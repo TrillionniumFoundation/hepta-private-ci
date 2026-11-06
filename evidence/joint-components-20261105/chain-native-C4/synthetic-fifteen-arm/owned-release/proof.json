@@ -1,0 +1,60 @@
+{
+  "cargo_or_cost_or_compression_started": false,
+  "exact_cgroups": [
+    {
+      "actual_files": [],
+      "exists": false,
+      "owned_pids": [],
+      "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a1ad2638ba-fc05-58b6.service"
+    }
+  ],
+  "expected_original_invocation": "b7e7fdf2203347e5921d1b6873a841f1",
+  "expected_unit": "hepta-runtime-job-1a1ad2638ba-fc05-58b6.service",
+  "failures": [],
+  "job_id": "1a1ad2638ba-fc05-58b6",
+  "mutations_performed": false,
+  "observed_utc": "2026-11-05T19:31:58Z",
+  "original_root_process": {
+    "pid": 644102,
+    "present": false
+  },
+  "owned_processes_clear": true,
+  "processes_killed": false,
+  "schema": "trnm-C4-synthetic-exact-owned-unit-release-observation-v1",
+  "scope": "only the exact previously observed runtime unit, its reported and known user cgroup paths, nested cgroup.procs, and the original ExecMainPID number",
+  "systemctl": {
+    "command": [
+      "systemctl",
+      "--user",
+      "show",
+      "hepta-runtime-job-1a1ad2638ba-fc05-58b6.service",
+      "--no-pager",
+      "--property=Id,LoadState,ActiveState,SubState,ControlGroup,MainPID,ExecMainPID,ExecMainCode,ExecMainStatus,Result,InvocationID"
+    ],
+    "elapsed_ns": 11903162,
+    "exit_code": 0,
+    "fields": {
+      "ActiveState": "inactive",
+      "ControlGroup": "",
+      "ExecMainCode": "0",
+      "ExecMainPID": "0",
+      "ExecMainStatus": "0",
+      "Id": "hepta-runtime-job-1a1ad2638ba-fc05-58b6.service",
+      "InvocationID": "",
+      "LoadState": "not-found",
+      "MainPID": "0",
+      "Result": "success",
+      "SubState": "dead"
+    },
+    "stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "text": ""
+    },
+    "stdout": {
+      "bytes": 205,
+      "sha256": "b7a42c0032d56de6cd1b161182ee284275bf3551c70019048ba9b342db4b86cf",
+      "text": "MainPID=0\nResult=success\nExecMainPID=0\nExecMainCode=0\nExecMainStatus=0\nControlGroup=\nId=hepta-runtime-job-1a1ad2638ba-fc05-58b6.service\nLoadState=not-found\nActiveState=inactive\nSubState=dead\nInvocationID=\n"
+    }
+  }
+}

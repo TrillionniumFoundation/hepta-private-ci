@@ -1,0 +1,15 @@
+Synthetic selected-name guard fixture; this is not native test output.
+test authbus_dispatch::tests::abandoned_first_claim_without_admission_is_quarantined_after_lookup_missing ... ok
+test authbus_dispatch::tests::checkpoint_sync::cancelled_checkpoint_sync_waiter_and_owner_release_exclusive_admission ... ok
+test authbus_dispatch::tests::checkpoint_sync::concurrent_checkpoint_syncs_share_owner_lock_and_preserve_rollback_rejection ... ok
+test authbus_dispatch::tests::lease_delay::trust_refresh_sqlite_wait_cannot_authorize_transport_with_an_expired_lease ... ok
+test authbus_dispatch::tests::lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt ... ok
+test authbus_dispatch::tests::matching_receipt_metadata_with_different_queue_input_never_acknowledges ... ok
+test authbus_dispatch::tests::policy_rollback::pq_bound_policy_refuses_renewal_without_policy_snapshot ... ok
+test authbus_dispatch::tests::policy_rollback::pq_owner_requires_explicit_nonzero_policy_revision_and_accepts_set_ordering ... ok
+test authbus_dispatch::tests::policy_rollback::pq_policy_change_fences_stale_renewal_and_current_policy_restores_dispatch ... ok
+test authbus_dispatch::tests::policy_rollback::pq_removed_thread_cannot_return_through_owner_file_rollback_after_reopen ... ok
+test authbus_dispatch::tests::pq::pq_text_owner_resumes_after_revocation_rotation_and_rejected_config_rollback ... ok
+test authbus_dispatch::tests::pq::pq_text_producer_recovers_through_existing_dispatch_and_rejects_wire_and_config_downgrade ... ok
+test authbus_dispatch::tests::ready_generation_and_owner_private_trust_are_required_before_admission ... ok
+test authbus_dispatch::tests::revocation_during_queue_request_prevents_success_ack ... ok

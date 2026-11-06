@@ -1,0 +1,212 @@
+name: PoN PQ network and rollback witness
+on:
+  pull_request:
+    paths:
+      - trillionnium/**
+      - config/pon/pq-cross-branch-corpus-v1.json
+      - config/pon/pq-system-required-tests-v1.json
+      - scripts/ci/record_pq_native_command.py
+      - scripts/ci/test_record_pq_native_command.py
+      - scripts/ci/verify_ci_source.py
+      - scripts/ci/check_required_native_test.py
+      - .github/workflows/pon-pq-system-continuation.yml
+permissions:
+  contents: read
+jobs:
+  native:
+    name: PQ network and witness (${{ matrix.runner }}, ${{ matrix.source }})
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-24.04, ubuntu-24.04-arm]
+        source: [head, prospective-merge]
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 90
+    env:
+      CARGO_BUILD_JOBS: "2"
+      CARGO_INCREMENTAL: "0"
+      RUST_TEST_THREADS: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+      SOURCE_KIND: ${{ matrix.source }}
+      EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+      EXPECTED_BASE: ${{ github.event.pull_request.base.sha }}
+      EXPECTED_TESTED: ${{ matrix.source == 'head' && github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ matrix.source == 'head' && github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Prepare exact-source command records
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/pq-system-records"
+          mkdir "$out"
+          echo "PQ_OUT=$out" >> "$GITHUB_ENV"
+          echo "CARGO_TARGET_DIR=$RUNNER_TEMP/pq-system-target" >> "$GITHUB_ENV"
+          cat > "$out/run-command.sh" <<'SH'
+          set -euo pipefail
+          label="$1"
+          shift
+          source_args=(--kind "$SOURCE_KIND" --candidate "$EXPECTED_HEAD" --tested "$EXPECTED_TESTED")
+          if test "$SOURCE_KIND" = prospective-merge; then
+            source_args+=(--base "$EXPECTED_BASE")
+          fi
+          command_status=0
+          python3 scripts/ci/record_pq_native_command.py "${source_args[@]}" --label "$label" --output "$PQ_OUT" -- "$@" || command_status=$?
+          if test -f "$PQ_OUT/$label.log"; then
+            if test "$command_status" -ne 0; then
+              tail -n 200 "$PQ_OUT/$label.log"
+            else
+              case "$label" in
+                node-lib) sed -n '/test result:/p; /trnm-state-delta-walk-observation-v1/p; /trnm-current-account-.*observation-v1/p' "$PQ_OUT/$label.log" ;;
+                cost-*) cat "$PQ_OUT/$label.log" ;;
+              esac
+            fi
+          fi
+          exit "$command_status"
+          SH
+          args=(--kind "$SOURCE_KIND" --expected-head "$EXPECTED_HEAD")
+          if test "$SOURCE_KIND" = prospective-merge; then
+            args+=(--expected-base "$EXPECTED_BASE" --expected-merge "$EXPECTED_TESTED")
+          fi
+          python3 scripts/ci/verify_ci_source.py "${args[@]}" --output "$out/source.json"
+          bash scripts/project-preflight.sh --audit
+      - name: Require retained source and claim controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          for test_file in test_ci_source_integrity.py test_record_pq_native_command.py test_pq_research_integration.py test_pq_chain_claim_guard.py test_pq_authority_surface_scan.py; do
+            bash "$PQ_OUT/run-command.sh" "${test_file%.py}" python3 -m unittest discover -s scripts/ci -p "$test_file" -v
+          done
+          bash "$PQ_OUT/run-command.sh" pq-source python3 scripts/ci/check_pq_research_integration.py
+          bash "$PQ_OUT/run-command.sh" pq-hold python3 scripts/ci/pq_chain_claim_guard.py
+          bash "$PQ_OUT/run-command.sh" repository python3 scripts/ci/check_repository.py
+          bash "$PQ_OUT/run-command.sh" inventory python3 scripts/refresh_distributed_source_inventory.py --check
+      - name: Install the original pinned compiler
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component clippy
+      - name: Prepare the independently pinned OpenSSL provider
+        shell: bash
+        run: |
+          set -euo pipefail
+          export TRNM_CI_RECEIPT_DIR="$PQ_OUT"
+          bash scripts/ci/prepare_pq_provider.sh
+      - name: Record compiler, exact locked graph and formatting
+        id: pq_build
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash "$PQ_OUT/run-command.sh" compiler rustc +1.95.0 -Vv
+          bash "$PQ_OUT/run-command.sh" locked-graph cargo +1.95.0 metadata --locked --manifest-path trillionnium/Cargo.toml --format-version 1
+          bash "$PQ_OUT/run-command.sh" format cargo +1.95.0 fmt --manifest-path trillionnium/Cargo.toml --all -- --check
+          bash "$PQ_OUT/run-command.sh" build cargo +1.95.0 test --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --lib --all-features --no-run --message-format=json
+      - name: Execute every required native effect and rejection control
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - "$PQ_OUT/required-tests.tsv" <<'PY'
+          import json, re, sys
+          from pathlib import Path
+          value = json.loads(Path('config/pon/pq-system-required-tests-v1.json').read_text())
+          assert value['schema'] == 'trnm-pq-system-required-tests-v1'
+          assert value['whole_chain_quantum_security_qualified'] is False
+          tests = value['tests']
+          assert len(tests) == value['expected_meaningful_controls'] and len(set(tests)) == len(tests)
+          assert len(tests) == 49
+          assert all(re.fullmatch(r'[A-Za-z_][A-Za-z0-9_]*(?:::[A-Za-z_][A-Za-z0-9_]*)*', x) for x in tests)
+          assert not set(tests) & set(value['child_process_harnesses_not_counted'])
+          Path(sys.argv[1]).write_text(''.join(f'native-{i:02d}\t{name}\n' for i, name in enumerate(tests)))
+          PY
+          failed=0
+          while IFS=$'\t' read -r label selector; do
+            if ! bash "$PQ_OUT/run-command.sh" "$label" cargo +1.95.0 test --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --lib --all-features "$selector" -- --exact --show-output --test-threads=1; then
+              failed=1
+            elif ! python3 scripts/ci/check_required_native_test.py "$PQ_OUT/$label.log" --test "$selector" > "$PQ_OUT/$label-execution.json"; then
+              failed=1
+            fi
+          done < "$PQ_OUT/required-tests.tsv"
+          test "$failed" = 0
+      - name: Require original transaction scope controls
+        if: ${{ !cancelled() && steps.pq_build.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          failed=0
+          for selector in \
+            transaction_scope::tests::token_controls_cover_sqlite_space_comments_bom_aliases_and_identifier_boundaries \
+            transaction_scope::tests::actual_readonly_aba_is_not_an_autocommit_changes_or_schema_identity \
+            transaction_scope::tests::already_prepared_cached_end_is_observed_at_execution_and_reuse \
+            transaction_scope::tests::savepoint_release_and_rollback_to_are_conservatively_refused \
+            transaction_scope::tests::nested_scopes_share_epoch_and_other_connections_do_not_invalidate_reads \
+            transaction_scope::tests::explain_does_not_execute_a_transaction_control \
+            transaction_scope::tests::replacing_trace_is_detected_by_actual_execution_probe_without_resetting_epoch \
+            transaction_scope::tests::overflow_wrong_pid_and_wrong_handle_are_sticky_refusals \
+            transaction_scope::tests::dropping_scopes_does_not_drop_or_reinstall_the_connection_observer \
+            transaction_scope::tests::actual_write_snapshot_requires_same_live_main_writer \
+            transaction_scope::tests::executed_write_epoch_catches_no_row_failed_and_reversed_schema_writes \
+            transaction_scope::tests::prepared_write_execution_is_counted_but_explain_is_not_a_write \
+            transaction_scope::tests::write_snapshot_rejects_savepoint_aba_and_sticky_observer_failures; do
+            label="scope-${selector##*::}"
+            if ! bash "$PQ_OUT/run-command.sh" "$label" cargo +1.95.0 test --locked --manifest-path trillionnium/Cargo.toml -p trnm-sqlite-io-boundary --lib --all-features "$selector" -- --exact --show-output --test-threads=1; then
+              failed=1
+            elif ! python3 scripts/ci/check_required_native_test.py "$PQ_OUT/$label.log" --test "$selector" > "$PQ_OUT/$label-execution.json"; then
+              failed=1
+            fi
+          done
+          test "$failed" = 0
+      - name: Preserve native control records before the complete regression
+        if: ${{ !cancelled() && steps.pq_build.outcome == 'success' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: pq-system-controls-${{ matrix.runner }}-${{ matrix.source }}-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/pq-system-records/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Preserve the complete original Node library regression suite
+        if: ${{ !cancelled() && steps.pq_build.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash "$PQ_OUT/run-command.sh" node-lib cargo +1.95.0 test --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --lib --all-features -- --show-output --test-threads=1
+      - name: Check strict Clippy without rewriting source
+        if: ${{ !cancelled() && steps.pq_build.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash "$PQ_OUT/run-command.sh" clippy cargo +1.95.0 clippy --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --lib --tests --all-features -- -D warnings
+      - name: Observe complete component costs with unchanged native budgets
+        if: ${{ !cancelled() && steps.pq_build.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          export TRNM_PQ_AUTH_COST_DIRECTORY="$PQ_OUT/pq-authentication-cost"
+          export TRNM_NATIVE_ROOT_DIGEST_COST_OUTPUT="$PQ_OUT/native-root-digest-cost.jsonl"
+          failed=0
+          for selector in \
+            store::history_page::tests::inline_record_tests::history_inline_record_complete_call_cost \
+            ingress::public_v3::pq_identity::verifier_cache::tests::pq_caller_authentication_complete_cost \
+            account_archive_prototype::native_root_digest::tests::native_root_digest_paired_complete_root_cost_observation; do
+            label="cost-${selector##*::}"
+            if ! bash "$PQ_OUT/run-command.sh" "$label" cargo +1.95.0 test --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --lib --all-features "$selector" -- --exact --ignored --show-output --test-threads=1; then
+              failed=1
+            elif ! python3 scripts/ci/check_required_native_test.py "$PQ_OUT/$label.log" --test "$selector" > "$PQ_OUT/$label-execution.json"; then
+              failed=1
+            fi
+          done
+          selector=pon_commitment::unchanged_snapshot_tests::unchanged_snapshot_full_binding_cost
+          label="cost-${selector##*::}"
+          if ! bash "$PQ_OUT/run-command.sh" "$label" cargo +1.95.0 test --locked --manifest-path trillionnium/Cargo.toml -p trnm-mvcc-fee --lib "$selector" -- --exact --ignored --show-output --test-threads=1; then
+            failed=1
+          elif ! python3 scripts/ci/check_required_native_test.py "$PQ_OUT/$label.log" --test "$selector" > "$PQ_OUT/$label-execution.json"; then
+            failed=1
+          fi
+          test "$failed" = 0
+      - name: Preserve complete records including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: pq-system-${{ matrix.runner }}-${{ matrix.source }}-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/pq-system-records/
+          if-no-files-found: error
+          retention-days: 14

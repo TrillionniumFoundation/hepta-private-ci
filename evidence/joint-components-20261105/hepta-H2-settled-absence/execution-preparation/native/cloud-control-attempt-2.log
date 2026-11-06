@@ -1,0 +1,66 @@
+test_changed_fd_identity_and_failed_exec_are_rejected (__main__.FdRunnerControls.test_changed_fd_identity_and_failed_exec_are_rejected) ... FAIL
+test_discovery_has_no_test_credit_and_unselected_run_refuses_exec (__main__.FdRunnerControls.test_discovery_has_no_test_credit_and_unselected_run_refuses_exec) ... FAIL
+test_short_processes_keep_exact_fd_and_pid_without_polling (__main__.FdRunnerControls.test_short_processes_keep_exact_fd_and_pid_without_polling) ... FAIL
+
+======================================================================
+FAIL: test_changed_fd_identity_and_failed_exec_are_rejected (__main__.FdRunnerControls.test_changed_fd_identity_and_failed_exec_are_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/93bfcfe29fc8/model_storage/h2-settled-absence/native/test_nextest_fd_runner.py", line 100, in test_changed_fd_identity_and_failed_exec_are_rejected
+    self.assertEqual(len(errors), 1)
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_discovery_has_no_test_credit_and_unselected_run_refuses_exec (__main__.FdRunnerControls.test_discovery_has_no_test_credit_and_unselected_run_refuses_exec)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/93bfcfe29fc8/model_storage/h2-settled-absence/native/test_nextest_fd_runner.py", line 66, in test_discovery_has_no_test_credit_and_unselected_run_refuses_exec
+    self.assertEqual(listed.returncode, 0, listed.stderr)
+AssertionError: 1 != 0 : hepta nextest fd runner refused execution: FileNotFoundError(2, 'No such file or directory')
+Traceback (most recent call last):
+  File "/workspace/scratch/93bfcfe29fc8/model_storage/h2-settled-absence/native/nextest_fd_runner.py", line 183, in <module>
+    main()
+  File "/workspace/scratch/93bfcfe29fc8/model_storage/h2-settled-absence/native/nextest_fd_runner.py", line 125, in main
+    process = task(pid)
+              ^^^^^^^^^
+  File "/workspace/scratch/93bfcfe29fc8/model_storage/h2-settled-absence/native/nextest_fd_runner.py", line 22, in task
+    fields = (Path('/proc') / str(pid) / 'stat').read_text().rpartition(')')[2].split()
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py", line 1027, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py", line 1013, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/proc/8/stat'
+
+
+======================================================================
+FAIL: test_short_processes_keep_exact_fd_and_pid_without_polling (__main__.FdRunnerControls.test_short_processes_keep_exact_fd_and_pid_without_polling)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/93bfcfe29fc8/model_storage/h2-settled-absence/native/test_nextest_fd_runner.py", line 49, in test_short_processes_keep_exact_fd_and_pid_without_polling
+    self.assertEqual(proc.returncode, 0, stderr)
+AssertionError: 1 != 0 : hepta nextest fd runner refused execution: FileNotFoundError(2, 'No such file or directory')
+Traceback (most recent call last):
+  File "/workspace/scratch/93bfcfe29fc8/model_storage/h2-settled-absence/native/nextest_fd_runner.py", line 183, in <module>
+    main()
+  File "/workspace/scratch/93bfcfe29fc8/model_storage/h2-settled-absence/native/nextest_fd_runner.py", line 125, in main
+    process = task(pid)
+              ^^^^^^^^^
+  File "/workspace/scratch/93bfcfe29fc8/model_storage/h2-settled-absence/native/nextest_fd_runner.py", line 22, in task
+    fields = (Path('/proc') / str(pid) / 'stat').read_text().rpartition(')')[2].split()
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py", line 1027, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py", line 1013, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/proc/9/stat'
+
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.239s
+
+FAILED (failures=3)

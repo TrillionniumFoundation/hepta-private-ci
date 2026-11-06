@@ -1,0 +1,430 @@
+{
+  "completed_at_utc": "2026-11-06T01:10:23.563067+00:00",
+  "conclusion": "All five extra files were physically read through stable descriptors and compared against the complete verified reference bytes. Two are complete equal copies and three are exact prefixes. Content equality does not identify their creator or explain their presence; the strict output-directory review remains failed and overall closure remains HOLD.",
+  "elapsed_seconds": 9.913256116997218,
+  "limitations": [
+    "No file creation attribution is made from names, timestamps, matching content, or the successful consumer terminal.",
+    "Only these five exact previously observed paths and their explicit reference files were opened. No general process or host scan was performed.",
+    "These extra artifacts are not promoted to complete images, native capture, or trusted archive members."
+  ],
+  "native_execution": false,
+  "new_remote_calls": 0,
+  "no_files_deleted_moved_or_replaced": true,
+  "original_consumer_exit_code": 0,
+  "original_consumer_rerun": false,
+  "original_consumer_terminal": {
+    "bytes": 678,
+    "path": "w1/unified-archive-readback-execution-01/terminal.json",
+    "sha256": "2630adfacf2368edaedc105893386857dd53ca6f939e30aee132c178d406a507"
+  },
+  "original_first_delivery": {
+    "bytes": 8222,
+    "path": "w1/unified-archive-readback-execution-01/delivery-manifest.json",
+    "sha256": "cee2a7b802a095e3d8cc3f84aa6e13d541bb1c6cd1018a947c31d0816cf6762b"
+  },
+  "original_pause_state_after": {
+    "H1": {
+      "PAUSE_REMOTE_READS": {
+        "bytes": 105,
+        "exists": true,
+        "sha256": "4ad7f2e79990092a57af0e22de8feb372d12260fe5f8e084b12f736138015932"
+      },
+      "active-batch.json": {
+        "exists": false
+      },
+      "progress.json": {
+        "bytes": 407,
+        "exists": true,
+        "sha256": "8eaff30fd26d7658376b14e32a42f17afc72150e706cc883cd09ecfcb42b416c"
+      },
+      "version-pin.json": {
+        "exists": false
+      }
+    },
+    "H2": {
+      "PAUSE_REMOTE_READS": {
+        "bytes": 104,
+        "exists": true,
+        "sha256": "f601fc0e941fad50ec8f05a6b84185ecee5f4b363ed3a65f5180377f7d82c505"
+      },
+      "progress.json": {
+        "bytes": 338,
+        "exists": true,
+        "sha256": "18dedb660ce32ea745fec937df81b23246a42871ca7d2d086809503f0f441ec8"
+      }
+    },
+    "H3": {
+      "PAUSE_REMOTE_READS": {
+        "bytes": 82,
+        "exists": true,
+        "sha256": "00a0f6fa963428ad19e269ddde014dda959d3eff77bcb1cb8265fde61c93ba46"
+      },
+      "progress.json": {
+        "bytes": 338,
+        "exists": true,
+        "sha256": "74002a256c3123fe1dd5518a9192a288c2e44da03bf83253096f461668aae501"
+      }
+    }
+  },
+  "original_pause_state_before": {
+    "H1": {
+      "PAUSE_REMOTE_READS": {
+        "bytes": 105,
+        "exists": true,
+        "sha256": "4ad7f2e79990092a57af0e22de8feb372d12260fe5f8e084b12f736138015932"
+      },
+      "active-batch.json": {
+        "exists": false
+      },
+      "progress.json": {
+        "bytes": 407,
+        "exists": true,
+        "sha256": "8eaff30fd26d7658376b14e32a42f17afc72150e706cc883cd09ecfcb42b416c"
+      },
+      "version-pin.json": {
+        "exists": false
+      }
+    },
+    "H2": {
+      "PAUSE_REMOTE_READS": {
+        "bytes": 104,
+        "exists": true,
+        "sha256": "f601fc0e941fad50ec8f05a6b84185ecee5f4b363ed3a65f5180377f7d82c505"
+      },
+      "progress.json": {
+        "bytes": 338,
+        "exists": true,
+        "sha256": "18dedb660ce32ea745fec937df81b23246a42871ca7d2d086809503f0f441ec8"
+      }
+    },
+    "H3": {
+      "PAUSE_REMOTE_READS": {
+        "bytes": 82,
+        "exists": true,
+        "sha256": "00a0f6fa963428ad19e269ddde014dda959d3eff77bcb1cb8265fde61c93ba46"
+      },
+      "progress.json": {
+        "bytes": 338,
+        "exists": true,
+        "sha256": "74002a256c3123fe1dd5518a9192a288c2e44da03bf83253096f461668aae501"
+      }
+    }
+  },
+  "process_scan_performed": false,
+  "proofs": [
+    {
+      "compared_bytes": 399507456,
+      "creator_inferred": false,
+      "exact_output_census_accepted": false,
+      "extra_after": {
+        "bytes": 399507456,
+        "ctime_ns": 1793926550218212252,
+        "ctime_utc": "2026-11-06T00:55:50.218212+00:00",
+        "device": 27,
+        "gid": 0,
+        "inode": 554169,
+        "mode": 420,
+        "mtime_ns": 1793926529102563671,
+        "mtime_utc": "2026-11-06T00:55:29.102564+00:00",
+        "uid": 0
+      },
+      "extra_before": {
+        "bytes": 399507456,
+        "ctime_ns": 1793926550218212252,
+        "ctime_utc": "2026-11-06T00:55:50.218212+00:00",
+        "device": 27,
+        "gid": 0,
+        "inode": 554169,
+        "mode": 420,
+        "mtime_ns": 1793926529102563671,
+        "mtime_utc": "2026-11-06T00:55:29.102564+00:00",
+        "uid": 0
+      },
+      "extra_bytes": 399507456,
+      "extra_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H1/extracted.partial/H1/elf/86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e.elf",
+      "extra_sha256": "f54e7570cabbf06fefb78811f69468993b1529057af55485ce019f2e18810033",
+      "origin_provenance": "UNKNOWN",
+      "reference_after": {
+        "bytes": 504265656,
+        "ctime_ns": 1793926535678491409,
+        "ctime_utc": "2026-11-06T00:55:35.678491+00:00",
+        "device": 27,
+        "gid": 0,
+        "inode": 554115,
+        "mode": 420,
+        "mtime_ns": 1793926535678491409,
+        "mtime_utc": "2026-11-06T00:55:35.678491+00:00",
+        "uid": 0
+      },
+      "reference_before": {
+        "bytes": 504265656,
+        "ctime_ns": 1793926535678491409,
+        "ctime_utc": "2026-11-06T00:55:35.678491+00:00",
+        "device": 27,
+        "gid": 0,
+        "inode": 554115,
+        "mode": 420,
+        "mtime_ns": 1793926535678491409,
+        "mtime_utc": "2026-11-06T00:55:35.678491+00:00",
+        "uid": 0
+      },
+      "reference_complete_bytes": 504265656,
+      "reference_full_sha256": "86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e",
+      "reference_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H1/extracted/H1/elf/86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e.elf",
+      "relation": "EXACT_PREFIX_BYTES"
+    },
+    {
+      "compared_bytes": 504302232,
+      "creator_inferred": false,
+      "exact_output_census_accepted": false,
+      "extra_after": {
+        "bytes": 504302232,
+        "ctime_ns": 1793926641885369385,
+        "ctime_utc": "2026-11-06T00:57:21.885369+00:00",
+        "device": 27,
+        "gid": 0,
+        "inode": 555980,
+        "mode": 420,
+        "mtime_ns": 1793926602737756199,
+        "mtime_utc": "2026-11-06T00:56:42.737756+00:00",
+        "uid": 0
+      },
+      "extra_before": {
+        "bytes": 504302232,
+        "ctime_ns": 1793926641885369385,
+        "ctime_utc": "2026-11-06T00:57:21.885369+00:00",
+        "device": 27,
+        "gid": 0,
+        "inode": 555980,
+        "mode": 420,
+        "mtime_ns": 1793926602737756199,
+        "mtime_utc": "2026-11-06T00:56:42.737756+00:00",
+        "uid": 0
+      },
+      "extra_bytes": 504302232,
+      "extra_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H2/extracted.partial/H2/elf/a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b.elf",
+      "extra_sha256": "a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b",
+      "origin_provenance": "UNKNOWN",
+      "reference_after": {
+        "bytes": 504302232,
+        "ctime_ns": 1793926602737756199,
+        "ctime_utc": "2026-11-06T00:56:42.737756+00:00",
+        "device": 27,
+        "gid": 0,
+        "inode": 554269,
+        "mode": 420,
+        "mtime_ns": 1793926602737756199,
+        "mtime_utc": "2026-11-06T00:56:42.737756+00:00",
+        "uid": 0
+      },
+      "reference_before": {
+        "bytes": 504302232,
+        "ctime_ns": 1793926602737756199,
+        "ctime_utc": "2026-11-06T00:56:42.737756+00:00",
+        "device": 27,
+        "gid": 0,
+        "inode": 554269,
+        "mode": 420,
+        "mtime_ns": 1793926602737756199,
+        "mtime_utc": "2026-11-06T00:56:42.737756+00:00",
+        "uid": 0
+      },
+      "reference_complete_bytes": 504302232,
+      "reference_full_sha256": "a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b",
+      "reference_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H2/extracted/H2/elf/a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b.elf",
+      "relation": "EXACT_COMPLETE_BYTES"
+    },
+    {
+      "compared_bytes": 120074176,
+      "creator_inferred": false,
+      "exact_output_census_accepted": false,
+      "extra_after": {
+        "bytes": 120074176,
+        "ctime_ns": 1793926641885369385,
+        "ctime_utc": "2026-11-06T00:57:21.885369+00:00",
+        "device": 27,
+        "gid": 0,
+        "inode": 556653,
+        "mode": 420,
+        "mtime_ns": 1793926603677745897,
+        "mtime_utc": "2026-11-06T00:56:43.677746+00:00",
+        "uid": 0
+      },
+      "extra_before": {
+        "bytes": 120074176,
+        "ctime_ns": 1793926641885369385,
+        "ctime_utc": "2026-11-06T00:57:21.885369+00:00",
+        "device": 27,
+        "gid": 0,
+        "inode": 556653,
+        "mode": 420,
+        "mtime_ns": 1793926603677745897,
+        "mtime_utc": "2026-11-06T00:56:43.677746+00:00",
+        "uid": 0
+      },
+      "extra_bytes": 120074176,
+      "extra_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H2/extracted.partial/H2/elf/f16fe89c11c71de377b62783fa5f06f23c8461b7d1b697aaf742dc2830d14295.elf",
+      "extra_sha256": "f16fe89c11c71de377b62783fa5f06f23c8461b7d1b697aaf742dc2830d14295",
+      "origin_provenance": "UNKNOWN",
+      "reference_after": {
+        "bytes": 120074176,
+        "ctime_ns": 1793926609129686169,
+        "ctime_utc": "2026-11-06T00:56:49.129686+00:00",
+        "device": 27,
+        "gid": 0,
+        "inode": 552987,
+        "mode": 420,
+        "mtime_ns": 1793926609129686169,
+        "mtime_utc": "2026-11-06T00:56:49.129686+00:00",
+        "uid": 0
+      },
+      "reference_before": {
+        "bytes": 120074176,
+        "ctime_ns": 1793926609129686169,
+        "ctime_utc": "2026-11-06T00:56:49.129686+00:00",
+        "device": 27,
+        "gid": 0,
+        "inode": 552987,
+        "mode": 420,
+        "mtime_ns": 1793926609129686169,
+        "mtime_utc": "2026-11-06T00:56:49.129686+00:00",
+        "uid": 0
+      },
+      "reference_complete_bytes": 120074176,
+      "reference_full_sha256": "f16fe89c11c71de377b62783fa5f06f23c8461b7d1b697aaf742dc2830d14295",
+      "reference_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H2/extracted/H2/elf/f16fe89c11c71de377b62783fa5f06f23c8461b7d1b697aaf742dc2830d14295.elf",
+      "relation": "EXACT_COMPLETE_BYTES"
+    },
+    {
+      "compared_bytes": 199753728,
+      "creator_inferred": false,
+      "exact_output_census_accepted": false,
+      "extra_after": {
+        "bytes": 199753728,
+        "ctime_ns": 1793926697772767262,
+        "ctime_utc": "2026-11-06T00:58:17.772767+00:00",
+        "device": 27,
+        "gid": 0,
+        "inode": 556816,
+        "mode": 384,
+        "mtime_ns": 1793926689295811334,
+        "mtime_utc": "2026-11-06T00:58:09.295811+00:00",
+        "uid": 0
+      },
+      "extra_before": {
+        "bytes": 199753728,
+        "ctime_ns": 1793926697772767262,
+        "ctime_utc": "2026-11-06T00:58:17.772767+00:00",
+        "device": 27,
+        "gid": 0,
+        "inode": 556816,
+        "mode": 384,
+        "mtime_ns": 1793926689295811334,
+        "mtime_utc": "2026-11-06T00:58:09.295811+00:00",
+        "uid": 0
+      },
+      "extra_bytes": 199753728,
+      "extra_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H3/.H3-actual-retained-elfs.tar.xz.IOnmZz",
+      "extra_sha256": "e96ffd94964e98e713ad921224a6af80d311917c5eb4d3ac345473f8025b8ba1",
+      "origin_provenance": "UNKNOWN",
+      "reference_after": {
+        "bytes": 283427280,
+        "ctime_ns": 1793926638453399910,
+        "ctime_utc": "2026-11-06T00:57:18.453400+00:00",
+        "device": 27,
+        "gid": 0,
+        "inode": 556644,
+        "mode": 420,
+        "mtime_ns": 1793926637905402511,
+        "mtime_utc": "2026-11-06T00:57:17.905403+00:00",
+        "uid": 0
+      },
+      "reference_before": {
+        "bytes": 283427280,
+        "ctime_ns": 1793926638453399910,
+        "ctime_utc": "2026-11-06T00:57:18.453400+00:00",
+        "device": 27,
+        "gid": 0,
+        "inode": 556644,
+        "mode": 420,
+        "mtime_ns": 1793926637905402511,
+        "mtime_utc": "2026-11-06T00:57:17.905403+00:00",
+        "uid": 0
+      },
+      "reference_complete_bytes": 283427280,
+      "reference_full_sha256": "5365fcf900781044108e9642ae02a110e4ac8d031d9ee516c4f0b0e471e1e773",
+      "reference_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H3/H3-actual-retained-elfs.tar.xz",
+      "relation": "EXACT_PREFIX_BYTES"
+    },
+    {
+      "compared_bytes": 338690048,
+      "creator_inferred": false,
+      "exact_output_census_accepted": false,
+      "extra_after": {
+        "bytes": 338690048,
+        "ctime_ns": 1793926740779245367,
+        "ctime_utc": "2026-11-06T00:59:00.779245+00:00",
+        "device": 27,
+        "gid": 0,
+        "inode": 556841,
+        "mode": 384,
+        "mtime_ns": 1793926726327415196,
+        "mtime_utc": "2026-11-06T00:58:46.327415+00:00",
+        "uid": 0
+      },
+      "extra_before": {
+        "bytes": 338690048,
+        "ctime_ns": 1793926740779245367,
+        "ctime_utc": "2026-11-06T00:59:00.779245+00:00",
+        "device": 27,
+        "gid": 0,
+        "inode": 556841,
+        "mode": 384,
+        "mtime_ns": 1793926726327415196,
+        "mtime_utc": "2026-11-06T00:58:46.327415+00:00",
+        "uid": 0
+      },
+      "extra_bytes": 338690048,
+      "extra_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H3/extracted/H3/elf/.00a637f55c720b06a655b569930bddaef19fd791467bc4784fe0bfb9e0002a26.elf.uZrNlA",
+      "extra_sha256": "a768306d399ebe7124320c0f803d4c21dd56e44fb4789f51534dfdc86b8b288a",
+      "origin_provenance": "UNKNOWN",
+      "reference_after": {
+        "bytes": 488112384,
+        "ctime_ns": 1793926707756660379,
+        "ctime_utc": "2026-11-06T00:58:27.756660+00:00",
+        "device": 27,
+        "gid": 0,
+        "inode": 556822,
+        "mode": 420,
+        "mtime_ns": 1793926707756660379,
+        "mtime_utc": "2026-11-06T00:58:27.756660+00:00",
+        "uid": 0
+      },
+      "reference_before": {
+        "bytes": 488112384,
+        "ctime_ns": 1793926707756660379,
+        "ctime_utc": "2026-11-06T00:58:27.756660+00:00",
+        "device": 27,
+        "gid": 0,
+        "inode": 556822,
+        "mode": 420,
+        "mtime_ns": 1793926707756660379,
+        "mtime_utc": "2026-11-06T00:58:27.756660+00:00",
+        "uid": 0
+      },
+      "reference_complete_bytes": 488112384,
+      "reference_full_sha256": "00a637f55c720b06a655b569930bddaef19fd791467bc4784fe0bfb9e0002a26",
+      "reference_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H3/extracted/H3/elf/00a637f55c720b06a655b569930bddaef19fd791467bc4784fe0bfb9e0002a26.elf",
+      "relation": "EXACT_PREFIX_BYTES"
+    }
+  ],
+  "reviewer_source": {
+    "bytes": 8981,
+    "path": "model_storage/git-archive-closure-review/compare_five_extra_files.py",
+    "sha256": "bf739b631c6384457d29f2cf53542a683a8c02bc39a0858b1f7cb9ea57e3e9d6"
+  },
+  "schema": "five-extra-files-physical-content-relationship-v1",
+  "started_at_utc": "2026-11-06T01:10:13.649835+00:00",
+  "status": "HOLD_UNKNOWN_OUTPUT_PROVENANCE",
+  "strict_independent_review_exit_code": 1
+}

@@ -1,0 +1,568 @@
+{
+  "schema": "hepta-e458-exact-CI-case-binding-v1",
+  "candidate_commit": "e458e534017dd479e382e84331fa1a6078c3abb4",
+  "candidate_tree": "6f956a60bbdea7a968d0e138230adca745bac127",
+  "source_inventory": [
+    {
+      "path": "codex-rs/hepta-evidence/src/qualification_tests.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/pq_recovery/qualification_perf/hepta/codex-rs/hepta-evidence/src/qualification_tests.rs",
+      "sha256": "f6c5bcde1d1ad19312a973a97339129feb988de10bb7db5a8731eb2fc10c8de7",
+      "git_blob_sha1": "30676fcfbbda6f8283e62b82b26aeb479da9307f",
+      "bytes": 48038,
+      "matches_current_Git_tree": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/automation_effect_pq_product.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/model_storage/pq_effect_migration/native/h1-final-format/candidate/codex-rs/hepta-agentd/tests/automation_effect_pq_product.rs",
+      "sha256": "eee39112d46e53675fb40e8ba5b532f0ebfa034eb2db3275cd243bcbe1ec0966",
+      "git_blob_sha1": "558f420d962dd724a36e8a649141b8f5725ec6d4",
+      "bytes": 17208,
+      "matches_current_Git_tree": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host_pq_tests.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/model_storage/pq_effect_migration/native/reviewed-6550/candidate/codex-rs/hepta-agentd/src/automation_effect_host_pq_tests.rs",
+      "sha256": "7645fc19a734b2ffbbc5ecdb7001069e29f41e9aef3249fc0a5f383ed0e99a78",
+      "git_blob_sha1": "a90611a21faa06a589b7c9cf7901d10616c488bf",
+      "bytes": 30337,
+      "matches_current_Git_tree": true
+    },
+    {
+      "path": "codex-rs/model-provider/src/provider_effect_pq_tests.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/model_storage/pq_effect_migration/native/reviewed-6550/candidate/codex-rs/model-provider/src/provider_effect_pq_tests.rs",
+      "sha256": "3117df369ce2339023a57d132fa78a87a3f2cad4480f3250547ed95aac39b548",
+      "git_blob_sha1": "021a1d1d57327fae905fa2699e09c3f0c4ce0fa2",
+      "bytes": 4104,
+      "matches_current_Git_tree": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authbus_dispatch_tests.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/pq_recovery/ci-review/base-source/codex-rs/hepta-agentd/src/authbus_dispatch_tests.rs",
+      "sha256": "1a72763311cfa8e03e6c2992c75c413cab4c3ed0519376d856010cc4b6f18eed",
+      "git_blob_sha1": "f880c98b1261d8d5d8c9a1d94602fbc4cb0e982e",
+      "bytes": 17730,
+      "matches_current_Git_tree": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authbus_checkpoint_sync_tests.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/pq_recovery/ci-review/base-source/codex-rs/hepta-agentd/src/authbus_checkpoint_sync_tests.rs",
+      "sha256": "578b0bcd17048e822d555ef79ad5ec33fb276f2681fb7b82c624b80f5d6acd9c",
+      "git_blob_sha1": "0ea056f429138579dcd4c7c39b2525f22a08b51d",
+      "bytes": 7306,
+      "matches_current_Git_tree": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authbus_lease_delay_tests.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/pq_recovery/ci-review/base-source/codex-rs/hepta-agentd/src/authbus_lease_delay_tests.rs",
+      "sha256": "de863b0bbddacce54f764bfd1acbc5789dce94b8d9d39e701ada8d769da2eba4",
+      "git_blob_sha1": "2c342acfcb754a8be7128a1f3ea14f1dbfa19bf8",
+      "bytes": 2364,
+      "matches_current_Git_tree": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authbus_policy_rollback_tests.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/pq_recovery/ci-review/base-source/codex-rs/hepta-agentd/src/authbus_policy_rollback_tests.rs",
+      "sha256": "46d49bb9e0ebf7e602b52123d13f7e646af8c8114da2505922c538cb7ae8b761",
+      "git_blob_sha1": "ee0fc17125fa7c74f82ff500330d2bdcea9b6485",
+      "bytes": 13058,
+      "matches_current_Git_tree": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authbus_pq_dispatch_tests.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/pq_recovery/ci-review/base-source/codex-rs/hepta-agentd/src/authbus_pq_dispatch_tests.rs",
+      "sha256": "680d7331e69dfeb6b01918cd386959496c248226abe0fbbd3e8aff87eaf6864a",
+      "git_blob_sha1": "7109c2b6442a26a19a28bea558cec422274339d9",
+      "bytes": 9857,
+      "matches_current_Git_tree": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/authbus_text_product.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/model_storage/pq-audit-source/codex-rs/hepta-agentd/tests/authbus_text_product.rs",
+      "sha256": "38a4791af499795e304108407c96795629886959489172064bdbba6164462d34",
+      "git_blob_sha1": "5ed7f4e57f9fbff3317b20c2d557b76a2465d40a",
+      "bytes": 15548,
+      "matches_current_Git_tree": true
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/provider_effect_recovery_provenance_tests.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/pq_recovery/hepta/codex-rs/hepta-evidence/src/provider_effect_recovery_provenance_tests.rs",
+      "sha256": "cce524c13697ca265cda23dade36401aaf74f84681c7c5859f22e6a34642223e",
+      "git_blob_sha1": "d4c3b801015e4fcd6ee8b089ca04aaa80cec3ce4",
+      "bytes": 20051,
+      "matches_current_Git_tree": true
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/pq_recovery/native/a877-source/codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs",
+      "sha256": "c1cbd465859f39c43ec5f17a7ff12d043049d572e222eeb263ddd67f46dfec66",
+      "git_blob_sha1": "5e53c274e1bb081604915380494ef0461e302f78",
+      "bytes": 23469,
+      "matches_current_Git_tree": true
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/recovery_invocation_frontier_tests.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/pq_recovery/ci-review/base-source/codex-rs/hepta-evidence/src/recovery_invocation_frontier_tests.rs",
+      "sha256": "64d163ec3b9e4c5c878823fc99b8278b59eead8f9adc45a8042c550cd3359a4a",
+      "git_blob_sha1": "349abfabfe3988901235479b64c94a53ff1a21ec",
+      "bytes": 16666,
+      "matches_current_Git_tree": true
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/recovery_invocation_schema_tests.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/pq_recovery/ci-review/base-source/codex-rs/hepta-evidence/src/recovery_invocation_schema_tests.rs",
+      "sha256": "1c5d4d6bcf9ccd8157790077772b441a18909876835b1e6563c5ae9d8b837d09",
+      "git_blob_sha1": "097327b809e2777b211d0fc0fef0abc54f4647a6",
+      "bytes": 7740,
+      "matches_current_Git_tree": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/evidence_frontier_tests.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/model_storage/pq-audit-source/codex-rs/hepta-agentd/src/evidence_frontier_tests.rs",
+      "sha256": "39cbf68639ad7bb124c35576f4ce79b4489613ef070ddabeff2531764092cc01",
+      "git_blob_sha1": "2eb63fb2ed7fc84acc9092764342e78092196087",
+      "bytes": 26145,
+      "matches_current_Git_tree": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/model_storage/pq-audit-source/codex-rs/hepta-agentd/tests/kernel_evidence_product.rs",
+      "sha256": "6856dd6d72fdd83d4c0656abf072a917d557f020248ca58511efcc8dfa2362e8",
+      "git_blob_sha1": "030e98c450a29570d13e2dae07d1a243baadb794",
+      "bytes": 33165,
+      "matches_current_Git_tree": true
+    }
+  ],
+  "case_bindings": [
+    {
+      "group": "qualification-growth",
+      "name": "qualification_tests::claim_query_rejects_more_than_512_references",
+      "repository_path": "codex-rs/hepta-evidence/src/qualification_tests.rs",
+      "function_line": 1272
+    },
+    {
+      "group": "qualification-growth",
+      "name": "qualification_tests::ordinary_append_rejects_historical_projection_drift_without_consuming_replay",
+      "repository_path": "codex-rs/hepta-evidence/src/qualification_tests.rs",
+      "function_line": 551
+    },
+    {
+      "group": "effect-pq-product",
+      "name": "pq_effect_survives_owned_agentd_kill_after_provider_fsync_without_resend",
+      "repository_path": "codex-rs/hepta-agentd/tests/automation_effect_pq_product.rs",
+      "function_line": 182
+    },
+    {
+      "group": "effect-pq-owner",
+      "name": "automation_effect_host::pq::tests::current_clock_frontier_and_pq_grant_are_mandatory_before_contact",
+      "repository_path": "codex-rs/hepta-agentd/src/automation_effect_host_pq_tests.rs",
+      "function_line": 120
+    },
+    {
+      "group": "effect-pq-owner",
+      "name": "automation_effect_host::pq::tests::generation_change_after_store_await_refuses_contact_and_keeps_consumed_nonce",
+      "repository_path": "codex-rs/hepta-agentd/src/automation_effect_host_pq_tests.rs",
+      "function_line": 279
+    },
+    {
+      "group": "effect-pq-owner",
+      "name": "automation_effect_host::pq::tests::historical_policy_does_not_connect_old_trust_services_or_follow_its_references",
+      "repository_path": "codex-rs/hepta-agentd/src/automation_effect_host_pq_tests.rs",
+      "function_line": 658
+    },
+    {
+      "group": "effect-pq-owner",
+      "name": "automation_effect_host::pq::tests::initial_feed_is_authenticated_before_any_local_authority_or_frontier_write",
+      "repository_path": "codex-rs/hepta-agentd/src/automation_effect_host_pq_tests.rs",
+      "function_line": 94
+    },
+    {
+      "group": "effect-pq-owner",
+      "name": "automation_effect_host::pq::tests::ordinary_dispatch_and_new_generation_recovery_keep_one_stable_operation",
+      "repository_path": "codex-rs/hepta-agentd/src/automation_effect_host_pq_tests.rs",
+      "function_line": 404
+    },
+    {
+      "group": "effect-pq-owner",
+      "name": "automation_effect_host::pq::tests::ordinary_loader_denies_classical_schema_and_contract_or_policy_substitution",
+      "repository_path": "codex-rs/hepta-agentd/src/automation_effect_host_pq_tests.rs",
+      "function_line": 52
+    },
+    {
+      "group": "effect-pq-owner",
+      "name": "automation_effect_host::pq::tests::pon_schema4_binds_native_binary_and_original_limits_without_running_a_node",
+      "repository_path": "codex-rs/hepta-agentd/src/automation_effect_host_pq_tests.rs",
+      "function_line": 765
+    },
+    {
+      "group": "effect-pq-owner",
+      "name": "automation_effect_host::pq::tests::reconcile_rechecks_generation_after_store_await_without_reclassifying_unknown",
+      "repository_path": "codex-rs/hepta-agentd/src/automation_effect_host_pq_tests.rs",
+      "function_line": 687
+    },
+    {
+      "group": "effect-pq-owner",
+      "name": "automation_effect_host::pq::tests::recovery_requires_current_signed_exact_historical_policy_and_same_provider",
+      "repository_path": "codex-rs/hepta-agentd/src/automation_effect_host_pq_tests.rs",
+      "function_line": 595
+    },
+    {
+      "group": "effect-pq-owner",
+      "name": "automation_effect_host::pq::tests::revoked_equal_number_drift_expired_feed_and_new_epoch_do_not_contact_provider",
+      "repository_path": "codex-rs/hepta-agentd/src/automation_effect_host_pq_tests.rs",
+      "function_line": 202
+    },
+    {
+      "group": "effect-pq-owner",
+      "name": "automation_effect_host::pq::tests::signed_revocation_after_store_await_obeys_active_effect_fence_and_never_sends",
+      "repository_path": "codex-rs/hepta-agentd/src/automation_effect_host_pq_tests.rs",
+      "function_line": 340
+    },
+    {
+      "group": "effect-pq-contract",
+      "name": "provider_effect::pq_tests::pq_contract_binds_profile_root_epoch_and_complete_authority_scope",
+      "repository_path": "codex-rs/model-provider/src/provider_effect_pq_tests.rs",
+      "function_line": 9
+    },
+    {
+      "group": "dispatcher",
+      "name": "authbus_dispatch::tests::abandoned_first_claim_without_admission_is_quarantined_after_lookup_missing",
+      "repository_path": "codex-rs/hepta-agentd/src/authbus_dispatch_tests.rs",
+      "function_line": 322
+    },
+    {
+      "group": "dispatcher",
+      "name": "authbus_dispatch::tests::checkpoint_sync::cancelled_checkpoint_sync_waiter_and_owner_release_exclusive_admission",
+      "repository_path": "codex-rs/hepta-agentd/src/authbus_checkpoint_sync_tests.rs",
+      "function_line": 113
+    },
+    {
+      "group": "dispatcher",
+      "name": "authbus_dispatch::tests::checkpoint_sync::concurrent_checkpoint_syncs_share_owner_lock_and_preserve_rollback_rejection",
+      "repository_path": "codex-rs/hepta-agentd/src/authbus_checkpoint_sync_tests.rs",
+      "function_line": 12
+    },
+    {
+      "group": "dispatcher",
+      "name": "authbus_dispatch::tests::lease_delay::trust_refresh_sqlite_wait_cannot_authorize_transport_with_an_expired_lease",
+      "repository_path": "codex-rs/hepta-agentd/src/authbus_lease_delay_tests.rs",
+      "function_line": 4
+    },
+    {
+      "group": "dispatcher",
+      "name": "authbus_dispatch::tests::lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt",
+      "repository_path": "codex-rs/hepta-agentd/src/authbus_dispatch_tests.rs",
+      "function_line": 270
+    },
+    {
+      "group": "dispatcher",
+      "name": "authbus_dispatch::tests::matching_receipt_metadata_with_different_queue_input_never_acknowledges",
+      "repository_path": "codex-rs/hepta-agentd/src/authbus_dispatch_tests.rs",
+      "function_line": 472
+    },
+    {
+      "group": "dispatcher",
+      "name": "authbus_dispatch::tests::policy_rollback::pq_bound_policy_refuses_renewal_without_policy_snapshot",
+      "repository_path": "codex-rs/hepta-agentd/src/authbus_policy_rollback_tests.rs",
+      "function_line": 7
+    },
+    {
+      "group": "dispatcher",
+      "name": "authbus_dispatch::tests::policy_rollback::pq_owner_requires_explicit_nonzero_policy_revision_and_accepts_set_ordering",
+      "repository_path": "codex-rs/hepta-agentd/src/authbus_policy_rollback_tests.rs",
+      "function_line": 310
+    },
+    {
+      "group": "dispatcher",
+      "name": "authbus_dispatch::tests::policy_rollback::pq_policy_change_fences_stale_renewal_and_current_policy_restores_dispatch",
+      "repository_path": "codex-rs/hepta-agentd/src/authbus_policy_rollback_tests.rs",
+      "function_line": 51
+    },
+    {
+      "group": "dispatcher",
+      "name": "authbus_dispatch::tests::policy_rollback::pq_removed_thread_cannot_return_through_owner_file_rollback_after_reopen",
+      "repository_path": "codex-rs/hepta-agentd/src/authbus_policy_rollback_tests.rs",
+      "function_line": 179
+    },
+    {
+      "group": "dispatcher",
+      "name": "authbus_dispatch::tests::pq::pq_text_owner_resumes_after_revocation_rotation_and_rejected_config_rollback",
+      "repository_path": "codex-rs/hepta-agentd/src/authbus_pq_dispatch_tests.rs",
+      "function_line": 178
+    },
+    {
+      "group": "dispatcher",
+      "name": "authbus_dispatch::tests::pq::pq_text_producer_recovers_through_existing_dispatch_and_rejects_wire_and_config_downgrade",
+      "repository_path": "codex-rs/hepta-agentd/src/authbus_pq_dispatch_tests.rs",
+      "function_line": 61
+    },
+    {
+      "group": "dispatcher",
+      "name": "authbus_dispatch::tests::ready_generation_and_owner_private_trust_are_required_before_admission",
+      "repository_path": "codex-rs/hepta-agentd/src/authbus_dispatch_tests.rs",
+      "function_line": 394
+    },
+    {
+      "group": "dispatcher",
+      "name": "authbus_dispatch::tests::revocation_during_queue_request_prevents_success_ack",
+      "repository_path": "codex-rs/hepta-agentd/src/authbus_dispatch_tests.rs",
+      "function_line": 371
+    },
+    {
+      "group": "product",
+      "name": "pq_signed_text_crosses_real_queue_after_rejection_without_downgrade",
+      "repository_path": "codex-rs/hepta-agentd/tests/authbus_text_product.rs",
+      "function_line": 59
+    },
+    {
+      "group": "product",
+      "name": "real_agentd_without_explicit_trust_rejects_signed_text",
+      "repository_path": "codex-rs/hepta-agentd/tests/authbus_text_product.rs",
+      "function_line": 206
+    },
+    {
+      "group": "product",
+      "name": "signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_ingress",
+      "repository_path": "codex-rs/hepta-agentd/tests/authbus_text_product.rs",
+      "function_line": 53
+    },
+    {
+      "group": "recovery-owner",
+      "name": "provider_effect_recovery_provenance_tests::recovery_provenance_preserves_dispatch_then_authoritative_status",
+      "repository_path": "codex-rs/hepta-evidence/src/provider_effect_recovery_provenance_tests.rs",
+      "function_line": 107
+    },
+    {
+      "group": "recovery-owner",
+      "name": "provider_effect_recovery_provenance_tests::recovery_provenance_rejects_late_dispatch_after_status_without_uncertainty",
+      "repository_path": "codex-rs/hepta-evidence/src/provider_effect_recovery_provenance_tests.rs",
+      "function_line": 43
+    },
+    {
+      "group": "recovery-owner",
+      "name": "recovery_effect_frontier_tests::recovery_snapshot_commits_ack_provenance_and_cross_table_order",
+      "repository_path": "codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs",
+      "function_line": 138
+    },
+    {
+      "group": "recovery-owner",
+      "name": "recovery_effect_frontier_tests::recovery_snapshot_commits_effect_history_after_the_first_page",
+      "repository_path": "codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs",
+      "function_line": 191
+    },
+    {
+      "group": "recovery-owner",
+      "name": "recovery_effect_frontier_tests::recovery_snapshot_commits_intent_unknown_and_original_operation_receipt",
+      "repository_path": "codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs",
+      "function_line": 28
+    },
+    {
+      "group": "recovery-owner",
+      "name": "recovery_effect_frontier_tests::recovery_snapshot_distinguishes_a_valid_effect_only_database_rollback",
+      "repository_path": "codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs",
+      "function_line": 85
+    },
+    {
+      "group": "recovery-owner",
+      "name": "recovery_effect_frontier_tests::recovery_snapshot_refuses_canonical_ack_bound_to_a_different_payload",
+      "repository_path": "codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs",
+      "function_line": 410
+    },
+    {
+      "group": "recovery-owner",
+      "name": "recovery_effect_frontier_tests::recovery_snapshot_refuses_changed_json_with_retained_record_digests",
+      "repository_path": "codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs",
+      "function_line": 220
+    },
+    {
+      "group": "recovery-owner",
+      "name": "recovery_effect_frontier_tests::recovery_snapshot_refuses_effect_projection_drift_with_retained_payloads",
+      "repository_path": "codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs",
+      "function_line": 300
+    },
+    {
+      "group": "recovery-owner",
+      "name": "recovery_effect_frontier_tests::recovery_snapshot_refuses_orphan_effect_observations",
+      "repository_path": "codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs",
+      "function_line": 468
+    },
+    {
+      "group": "recovery-owner",
+      "name": "recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_after_schema_drift",
+      "repository_path": "codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs",
+      "function_line": 559
+    },
+    {
+      "group": "recovery-owner",
+      "name": "recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_at_page_boundary",
+      "repository_path": "codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs",
+      "function_line": 592
+    },
+    {
+      "group": "recovery-owner",
+      "name": "recovery_invocation_frontier_tests::recovery_snapshot_binds_invocation_sequence_and_recording_time",
+      "repository_path": "codex-rs/hepta-evidence/src/recovery_invocation_frontier_tests.rs",
+      "function_line": 399
+    },
+    {
+      "group": "recovery-owner",
+      "name": "recovery_invocation_frontier_tests::recovery_snapshot_commits_invocations_after_the_first_page",
+      "repository_path": "codex-rs/hepta-evidence/src/recovery_invocation_frontier_tests.rs",
+      "function_line": 97
+    },
+    {
+      "group": "recovery-owner",
+      "name": "recovery_invocation_frontier_tests::recovery_snapshot_commits_pending_invocations_and_terminal_states",
+      "repository_path": "codex-rs/hepta-evidence/src/recovery_invocation_frontier_tests.rs",
+      "function_line": 49
+    },
+    {
+      "group": "recovery-owner",
+      "name": "recovery_invocation_frontier_tests::recovery_snapshot_refuses_duplicate_terminal_hidden_at_page_boundary",
+      "repository_path": "codex-rs/hepta-evidence/src/recovery_invocation_frontier_tests.rs",
+      "function_line": 113
+    },
+    {
+      "group": "recovery-owner",
+      "name": "recovery_invocation_frontier_tests::recovery_snapshot_refuses_invocation_column_type_corruption_without_panicking",
+      "repository_path": "codex-rs/hepta-evidence/src/recovery_invocation_frontier_tests.rs",
+      "function_line": 343
+    },
+    {
+      "group": "recovery-owner",
+      "name": "recovery_invocation_frontier_tests::recovery_snapshot_requires_the_terminals_authoritative_intent",
+      "repository_path": "codex-rs/hepta-evidence/src/recovery_invocation_frontier_tests.rs",
+      "function_line": 306
+    },
+    {
+      "group": "recovery-owner",
+      "name": "recovery_invocation_frontier_tests::recovery_snapshot_revalidates_invocation_payloads_and_projected_columns",
+      "repository_path": "codex-rs/hepta-evidence/src/recovery_invocation_frontier_tests.rs",
+      "function_line": 215
+    },
+    {
+      "group": "recovery-owner",
+      "name": "recovery_invocation_schema_tests::recovery_invocation_schema_accepts_current_migration_keys",
+      "repository_path": "codex-rs/hepta-evidence/src/recovery_invocation_schema_tests.rs",
+      "function_line": 36
+    },
+    {
+      "group": "recovery-owner",
+      "name": "recovery_invocation_schema_tests::recovery_invocation_schema_refuses_non_rowid_or_composite_sequences",
+      "repository_path": "codex-rs/hepta-evidence/src/recovery_invocation_schema_tests.rs",
+      "function_line": 49
+    },
+    {
+      "group": "recovery-owner",
+      "name": "recovery_invocation_schema_tests::recovery_invocation_schema_requires_exact_unconditional_column_uniqueness",
+      "repository_path": "codex-rs/hepta-evidence/src/recovery_invocation_schema_tests.rs",
+      "function_line": 98
+    },
+    {
+      "group": "recovery-signed",
+      "name": "evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields",
+      "repository_path": "codex-rs/hepta-agentd/src/evidence_frontier_tests.rs",
+      "function_line": 158
+    },
+    {
+      "group": "recovery-signed",
+      "name": "evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry",
+      "repository_path": "codex-rs/hepta-agentd/src/evidence_frontier_tests.rs",
+      "function_line": 449
+    },
+    {
+      "group": "recovery-signed",
+      "name": "evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor",
+      "repository_path": "codex-rs/hepta-agentd/src/evidence_frontier_tests.rs",
+      "function_line": 542
+    },
+    {
+      "group": "recovery-signed",
+      "name": "evidence_frontier::tests::recovery_frontier_pq_rejects_invocation_only_database_rollbacks",
+      "repository_path": "codex-rs/hepta-agentd/src/evidence_frontier_tests.rs",
+      "function_line": 286
+    },
+    {
+      "group": "recovery-signed",
+      "name": "evidence_frontier::tests::recovery_frontier_pq_survives_store_close_and_reopen",
+      "repository_path": "codex-rs/hepta-agentd/src/evidence_frontier_tests.rs",
+      "function_line": 374
+    },
+    {
+      "group": "recovery-signed",
+      "name": "evidence_frontier::tests::recovery_frontier_read_only_preflight_never_binds_or_changes_the_image",
+      "repository_path": "codex-rs/hepta-agentd/src/evidence_frontier_tests.rs",
+      "function_line": 398
+    },
+    {
+      "group": "recovery-signed",
+      "name": "evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures",
+      "repository_path": "codex-rs/hepta-agentd/src/evidence_frontier_tests.rs",
+      "function_line": 117
+    },
+    {
+      "group": "recovery-signed",
+      "name": "evidence_frontier::tests::recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots",
+      "repository_path": "codex-rs/hepta-agentd/src/evidence_frontier_tests.rs",
+      "function_line": 242
+    },
+    {
+      "group": "recovery-signed",
+      "name": "evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile",
+      "repository_path": "codex-rs/hepta-agentd/src/evidence_frontier_tests.rs",
+      "function_line": 513
+    },
+    {
+      "group": "recovery-signed",
+      "name": "evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature",
+      "repository_path": "codex-rs/hepta-agentd/src/evidence_frontier_tests.rs",
+      "function_line": 594
+    },
+    {
+      "group": "recovery-signed",
+      "name": "evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key",
+      "repository_path": "codex-rs/hepta-agentd/src/evidence_frontier_tests.rs",
+      "function_line": 629
+    },
+    {
+      "group": "recovery-product",
+      "name": "real_agentd_composes_authenticated_evidence_writer_query_verifier_and_terminal_observer",
+      "repository_path": "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs",
+      "function_line": 60
+    },
+    {
+      "group": "recovery-product",
+      "name": "signed_recovery_frontier_allows_exact_current_database",
+      "repository_path": "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs",
+      "function_line": 530
+    },
+    {
+      "group": "recovery-product",
+      "name": "signed_recovery_frontier_rejects_effect_only_database_rollback",
+      "repository_path": "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs",
+      "function_line": 610
+    },
+    {
+      "group": "recovery-product",
+      "name": "signed_recovery_frontier_rejects_valid_older_database_image",
+      "repository_path": "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs",
+      "function_line": 605
+    }
+  ],
+  "expected_case_counts": {
+    "qualification-growth": 2,
+    "effect-pq-product": 1,
+    "effect-pq-owner": 11,
+    "effect-pq-contract": 1,
+    "dispatcher": 14,
+    "product": 3,
+    "recovery-owner": 22,
+    "recovery-signed": 11,
+    "recovery-product": 4
+  },
+  "workflow_sha256": "4f331d94dc8927d537873f976ce8c459a5e09673ef8431d3b310419ecf21f2ad",
+  "earlier_static_audit_sha256": "4354f9eec57b865aa5d9f3f14047d2a8a19beba745d9799210d5c9dd9d15641c",
+  "source_names_verified": 69,
+  "scope": "Rebind the previously independently reviewed unchanged 69-case workflow to actual e458 source bytes, including the final import repairs. This is static source wiring, not executed tests or full H1 qualification.",
+  "native_execution_credit": false,
+  "qualification_status": "HOLD"
+}

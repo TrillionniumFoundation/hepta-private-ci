@@ -1,0 +1,14 @@
+[Unit]
+Description=Trillionnium native public V3 shared kernel resource parent (candidate)
+Documentation=man:systemd.slice(5) man:systemd.resource-control(5)
+StopWhenUnneeded=no
+
+[Slice]
+CPUAccounting=yes
+CPUQuota=25%
+CPUQuotaPeriodSec=100ms
+MemoryAccounting=yes
+MemoryMax=2G
+MemorySwapMax=0
+TasksAccounting=yes
+TasksMax=256

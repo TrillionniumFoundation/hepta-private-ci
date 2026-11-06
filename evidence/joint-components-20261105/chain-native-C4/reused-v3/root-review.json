@@ -1,0 +1,53 @@
+{
+  "schema": "root-C4-cost-outer-receipt-review-v1",
+  "phase": "reused-v3",
+  "commit": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+  "tree": "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14",
+  "job_id": "1a1ad02a53b-fc05-5805",
+  "terminal_unix_ms": 1793904032523,
+  "outer_manifest_and_authoritative_terminal_verified": true,
+  "source_before_equals_after": true,
+  "tracked_entries": 10357,
+  "tracked_bytes": 985270534,
+  "original_manifest_reported_sha256": "001298287ac8fc831b1adbd8df85364df509bac5829fad597c02757dc30f5dba",
+  "original_reader_reported": "PASS",
+  "reported_counts": {
+    "cohort": 936,
+    "search": 1888,
+    "candidate": 288,
+    "verifier": 3776
+  },
+  "elf_reported_sha256": "45cd16459be074cec79e2815243236b8877dde17b2cb267bc5b55b4861865d9f",
+  "outer_elapsed_seconds": 34.60201481706463,
+  "original_runner_elapsed_seconds": 29.602155511,
+  "original_full_raw_and_ELF_export_independently_rehashed": false,
+  "raw_data_recalculated": false,
+  "files": [
+    {
+      "path": "C4-reused-manifest.json",
+      "bytes": 13826,
+      "sha256": "4a9dfc5816609ced333757f18e89b277084fe61ecd7996ac7ae9024fdd6eedb8"
+    },
+    {
+      "path": "C4-reused-launch.json",
+      "bytes": 1358,
+      "sha256": "48956cadfc9352b0c9a71a2bedc5e211ca7c8a8478c00dd5a9933651394cc359"
+    },
+    {
+      "path": "C4-reused-terminal.json",
+      "bytes": 952,
+      "sha256": "4f7852cb5e6f72909c5f42fcc7320f8d21da975d18b01ac71fe4570a57cea98e"
+    },
+    {
+      "path": "C4-reused-final-read.json",
+      "bytes": 51075,
+      "sha256": "e9ec25eb86ba8db408c1dc7294b56d1cfa1cc3b18482e4e04e08098b2c663bc8"
+    },
+    {
+      "path": "run_frozen_w1_reused_v3_c4.py",
+      "bytes": 12043,
+      "sha256": "271226f1f032a4b88f975e75ab85de39c69a59202eeccfe7676d2a3b0d85d7a3"
+    }
+  ],
+  "joint_gate_status": "HOLD"
+}

@@ -1,0 +1,219 @@
+name: PoN owned process cleanup
+on:
+  pull_request:
+    paths:
+      - formal/pon-nakamoto-v1/**
+      - scripts/**
+      - .github/workflows/pon-owned-process-cleanup.yml
+permissions:
+  contents: read
+jobs:
+  aggregate-owner-controls:
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [head, prospective-merge]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      TESTED_SHA: ${{ matrix.lane == 'head' && github.event.pull_request.head.sha || github.sha }}
+      TEST_LANE: ${{ matrix.lane }}
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ env.TESTED_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.3"
+      - name: Verify actual source and original native ABI
+        id: identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/aggregate-owner-controls"
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          if test "$TEST_LANE" = head; then
+            test "$TESTED_SHA" = "$SOURCE_SHA"
+          else
+            test "$(git show -s --format=%P HEAD)" = "$BASE_SHA $SOURCE_SHA"
+            test "$(git rev-parse HEAD^{tree})" = "$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+          fi
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/aggregate-owner-controls/source-before.txt"
+          python -c 'import sys; assert sys.implementation.name == "cpython" and sys.version_info[:3] == (3,12,3)'
+          bash scripts/project-preflight.sh --audit
+      - name: Execute every original aggregate owner control and charge-wait regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY' 2>&1 | tee "$RUNNER_TEMP/aggregate-owner-controls/tests.log"
+          import importlib, json, sys, unittest
+          sys.path.insert(0, 'scripts')
+          rows = []
+          for name, expected in [('test_llm_runtime_kernel_aggregate', 24), ('test_llm_runtime_kernel_diagnostic', 7), ('test_llm_runtime_kernel_counters', 8), ('test_llm_runtime_evidence_pipe', 20), ('test_llm_runtime_terminal_charge_wait', 7)]:
+              suite = unittest.defaultTestLoader.loadTestsFromModule(importlib.import_module(name))
+              if suite.countTestCases() != expected:
+                  raise RuntimeError(f'{name}: expected {expected} tests, found {suite.countTestCases()}')
+              result = unittest.TextTestRunner(verbosity=2).run(suite)
+              passed = result.wasSuccessful() and result.testsRun == expected and not result.skipped and not result.expectedFailures
+              rows.append(dict(module=name, executed=result.testsRun, skipped=len(result.skipped), expected_failures=len(result.expectedFailures), passed=passed))
+          print(json.dumps(dict(scope='ordinary native owner with synthetic cgroup counters; no real aggregate/model/resource retirement qualification', results=rows)))
+          raise SystemExit(0 if all(row['passed'] for row in rows) else 1)
+          PY
+      - name: Exercise fresh host namespace contract without creating a native scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY' 2>&1 | tee "$RUNNER_TEMP/aggregate-owner-controls/host-namespace-contract.log"
+          import importlib, json, sys, unittest
+          sys.path.insert(0, 'scripts')
+          suite = unittest.defaultTestLoader.loadTestsFromModule(importlib.import_module('test_llm_runtime_host_scope'))
+          if suite.countTestCases() != 29:
+              raise RuntimeError('fresh host contract requires all 29 controls')
+          result = unittest.TextTestRunner(verbosity=2).run(suite)
+          passed = result.wasSuccessful() and result.testsRun == 29 and not result.skipped and not result.expectedFailures
+          print(json.dumps(dict(scope='ordinary FD and bounded transport; native scope admission NOT_RUN', executed=result.testsRun, skipped=len(result.skipped), passed=passed)))
+          raise SystemExit(0 if passed else 1)
+          PY
+      - name: Exercise same-owner child preparation without native cgroup effects
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY' 2>&1 | tee "$RUNNER_TEMP/aggregate-owner-controls/host-child-preparation.log"
+          import importlib, json, sys, unittest
+          sys.path.insert(0, 'scripts')
+          suite = unittest.defaultTestLoader.loadTestsFromModule(importlib.import_module('test_llm_runtime_host_children'))
+          if suite.countTestCases() != 9:
+              raise RuntimeError('child preparation requires all 9 new controls')
+          result = unittest.TextTestRunner(verbosity=2).run(suite)
+          passed = result.wasSuccessful() and result.testsRun == 9 and not result.skipped and not result.expectedFailures
+          print(json.dumps(dict(scope='ordinary FD and mock manager; native child preparation/birth NOT_RUN', executed=result.testsRun, skipped=len(result.skipped), passed=passed)))
+          raise SystemExit(0 if passed else 1)
+          PY
+      - name: Exercise original native handoff and private host controller mechanics
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY' 2>&1 | tee "$RUNNER_TEMP/aggregate-owner-controls/host-controller-mechanics.log"
+          import importlib, json, sys, unittest
+          sys.path.insert(0, 'scripts')
+          rows = []
+          for name, expected in [('test_llm_runtime_kernel_owned', 16), ('test_llm_runtime_host_controller', 9), ('test_llm_runtime_host_aggregate', 17), ('test_llm_runtime_retirement_slot', 9), ('test_llm_runtime_retirement_publication', 4), ('test_llm_runtime_retirement_activation', 10), ('test_llm_runtime_host_retirement', 7), ('test_llm_runtime_retirement_steps', 4), ('test_llm_runtime_host_u_readback', 15)]:
+              suite = unittest.defaultTestLoader.loadTestsFromModule(importlib.import_module(name))
+              if suite.countTestCases() != expected:
+                  raise RuntimeError(f'{name}: expected {expected} controls, found {suite.countTestCases()}')
+              result = unittest.TextTestRunner(verbosity=2).run(suite)
+              passed = result.wasSuccessful() and result.testsRun == expected and not result.skipped and not result.expectedFailures
+              rows.append(dict(module=name, executed=result.testsRun, skipped=len(result.skipped), passed=passed))
+          print(json.dumps(dict(scope='original handoff and ordinary FD/private controller controls; funded native entry and whole-U return NOT_RUN', results=rows)))
+          raise SystemExit(0 if all(row['passed'] for row in rows) else 1)
+          PY
+      - name: Preserve exact source after controls
+        if: always() && steps.identity.outcome == 'success'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/aggregate-owner-controls/source-after.txt"
+          cmp "$RUNNER_TEMP/aggregate-owner-controls/source-before.txt" "$RUNNER_TEMP/aggregate-owner-controls/source-after.txt"
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          bash scripts/project-preflight.sh --audit
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: aggregate-owner-controls-${{ matrix.lane }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/aggregate-owner-controls/
+          if-no-files-found: error
+          retention-days: 14
+  cleanup:
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-24.04, ubuntu-24.04-arm, macos-15]
+        lane: [head, prospective-merge]
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 10
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      TESTED_SHA: ${{ matrix.lane == 'head' && github.event.pull_request.head.sha || github.sha }}
+      TEST_LANE: ${{ matrix.lane }}
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ env.TESTED_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify actual source and ordered main merge
+        id: identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/owned-cleanup"
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          if test "$TEST_LANE" = head; then
+            test "$TESTED_SHA" = "$SOURCE_SHA"
+          else
+            test "$(git show -s --format=%P HEAD)" = "$BASE_SHA $SOURCE_SHA"
+            test "$(git rev-parse HEAD^{tree})" = "$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+          fi
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/owned-cleanup/source-before.txt"
+          bash scripts/project-preflight.sh --audit
+      - name: Select the real GNU time observer on macOS
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! brew list --versions gnu-time; then
+            HOMEBREW_NO_AUTO_UPDATE=1 brew install gnu-time
+          fi
+          observer="$(brew --prefix gnu-time)/bin/gtime"
+          test -x "$observer"
+          printf 'TRNM_GNU_TIME=%s\n' "$observer" >> "$GITHUB_ENV"
+          "$observer" --version > "$RUNNER_TEMP/owned-cleanup/gnu-time-version.txt"
+      - name: Run complete original owners and every cleanup regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY' 2>&1 | tee "$RUNNER_TEMP/owned-cleanup/tests.log"
+          import importlib, json, sys, unittest
+          sys.path[:0] = ['formal/pon-nakamoto-v1', 'scripts']
+          failed = False
+          rows = []
+          for name, expected in [('test_bounded_process', 26), ('test_bounded_process_cleanup', 12), ('test_bounded_process_darwin', 14), ('test_qualification_runtime', 32)]:
+              module = importlib.import_module(name)
+              suite = unittest.defaultTestLoader.loadTestsFromModule(module)
+              count = suite.countTestCases()
+              if count != expected:
+                  raise RuntimeError(f'{name}: expected {expected} tests, found {count}')
+              result = unittest.TextTestRunner(verbosity=2).run(suite)
+              passed = result.wasSuccessful() and result.testsRun == expected and not result.skipped
+              failed |= not passed
+              rows.append(dict(module=name, executed=result.testsRun, skipped=len(result.skipped), passed=passed))
+          print(json.dumps(dict(scope='local POSIX owner only; no work-hardness, independent model, power-loss or WAN acceptance', results=rows)))
+          raise SystemExit(1 if failed else 0)
+          PY
+      - name: Preserve unchanged source and precise scope
+        if: always() && steps.identity.outcome == 'success'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/owned-cleanup/source-after.txt"
+          cmp "$RUNNER_TEMP/owned-cleanup/source-before.txt" "$RUNNER_TEMP/owned-cleanup/source-after.txt"
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          bash scripts/project-preflight.sh --audit
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: owned-cleanup-${{ matrix.runner }}-${{ matrix.lane }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/owned-cleanup/
+          if-no-files-found: error
+          retention-days: 14

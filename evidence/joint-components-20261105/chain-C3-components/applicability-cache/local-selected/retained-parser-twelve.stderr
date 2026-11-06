@@ -1,0 +1,17 @@
+test_anonymous_lifetime_inherent_owner (__main__.RustImplementationOwnerTests.test_anonymous_lifetime_inherent_owner) ... ok
+test_comment_and_string_impls_do_not_bind (__main__.RustImplementationOwnerTests.test_comment_and_string_impls_do_not_bind) ... ok
+test_comments_and_char_literals_cannot_end_the_owning_body (__main__.RustImplementationOwnerTests.test_comments_and_char_literals_cannot_end_the_owning_body) ... ok
+test_declared_lifetime_and_nested_type_arguments (__main__.RustImplementationOwnerTests.test_declared_lifetime_and_nested_type_arguments) ... ok
+test_generic_owner_where_bound_and_function_arrow (__main__.RustImplementationOwnerTests.test_generic_owner_where_bound_and_function_arrow) ... ok
+test_later_inherent_block_can_own_method (__main__.RustImplementationOwnerTests.test_later_inherent_block_can_own_method) ... ok
+test_method_lookalikes_in_comments_and_strings_do_not_bind (__main__.RustImplementationOwnerTests.test_method_lookalikes_in_comments_and_strings_do_not_bind) ... ok
+test_other_body_or_free_function_cannot_fill_missing_method (__main__.RustImplementationOwnerTests.test_other_body_or_free_function_cannot_fill_missing_method) ... ok
+test_trait_implementation_is_not_an_inherent_owner (__main__.RustImplementationOwnerTests.test_trait_implementation_is_not_an_inherent_owner) ... ok
+test_unbalanced_generic_or_impl_cannot_capture_later_function (__main__.RustImplementationOwnerTests.test_unbalanced_generic_or_impl_cannot_capture_later_function) ... ok
+test_wrong_owner_and_generic_argument_lookalikes_do_not_bind (__main__.RustImplementationOwnerTests.test_wrong_owner_and_generic_argument_lookalikes_do_not_bind) ... ok
+test_class_and_method_source_bindings_are_distinct (__main__.SourceApplicabilityTests.test_class_and_method_source_bindings_are_distinct) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.028s
+
+OK

@@ -1,0 +1,76 @@
+{
+  "profile": "hepta-integrated-chain-execution-v12",
+  "chain_commit": "9ecdbebc897d35f07b998d084b015db8474be84b",
+  "chain_tree": "94050c5f5f72a27d6c4a5fbf627791c15c2704af",
+  "manifest_sha256": "08d4e1c0177b845803d1e8166597aab43188ef18781549cb1c3302afa12bb1a9",
+  "source_identities": {
+    "contract_wire.py": {
+      "relative_path": "formal/pon-nakamoto-v1/contract_wire.py",
+      "sha256": "cbe45d72ad20ed5683d50dceaa97b93bc74cdafced7d0896386edf9cbe9f98f6",
+      "size": 8924
+    },
+    "devnet-v1.json": {
+      "relative_path": "config/pon/devnet-v1.json",
+      "sha256": "4491b96ead11a020e8d71f27713368b65e663eef5cfc6fd0800a166b0c2a20d4",
+      "size": 1964
+    },
+    "ledger-v1.json": {
+      "relative_path": "config/pon/ledger-v1.json",
+      "sha256": "6755e36aab0ab9f4743da331a8dcd3374d657ff80f027ecf28db922e6d5ea39a",
+      "size": 7793
+    },
+    "llm_adapter_contract.py": {
+      "relative_path": "formal/pon-nakamoto-v1/llm_adapter_contract.py",
+      "sha256": "e46311a08584ad7becfc56cd0b699d9bc6921adcfe39319e50aa14faa984ced5",
+      "size": 27789
+    },
+    "llm_base_material.py": {
+      "relative_path": "scripts/llm_base_material.py",
+      "sha256": "10d4c21419dd297dcdee6bd128c7cc1fdc1d343e1a62017da61bc1787fde113b",
+      "size": 10405
+    },
+    "llm_inherited_runtime.py": {
+      "relative_path": "scripts/llm_inherited_runtime.py",
+      "sha256": "069ad93e4adde21761a3e5343a181128b36fe7697e881d2d41c5a6fbc06f155b",
+      "size": 16320
+    },
+    "llm_neural_read_worker.py": {
+      "relative_path": "scripts/llm_neural_read_worker.py",
+      "sha256": "8911819bc65304c6b8b981e6efaf103cbe8770ce4647871695e46110b79b6396",
+      "size": 14822
+    },
+    "llm_parent_material.py": {
+      "relative_path": "scripts/llm_parent_material.py",
+      "sha256": "c39877c2219c1417eee912f43b1af703b62b704d768ec6f76ccce9ece96fd98a",
+      "size": 8041
+    },
+    "llm_python_runtime_contract.py": {
+      "relative_path": "scripts/llm_python_runtime_contract.py",
+      "sha256": "650927fe80d3d9b07689261a861b06878cf76488ad4b6571be25dfb5ecebe855",
+      "size": 10851
+    },
+    "llm_runtime_pilot.py": {
+      "relative_path": "scripts/llm_runtime_pilot.py",
+      "sha256": "d2854289ae810115bccd3b7714c3d40b03cc6ec216747d6fca653aeac9299bd7",
+      "size": 125239
+    },
+    "model-family-smollm2-135m-v1.json": {
+      "relative_path": "config/pon/model-family-smollm2-135m-v1.json",
+      "sha256": "0837bbfb31f3f2b9a8731545c9f742aee1ebd32daed392a936a3ec9719537e52",
+      "size": 5293
+    },
+    "model-family-v1.json": {
+      "relative_path": "config/pon/model-family-v1.json",
+      "sha256": "30b250db074e7fbb5776c1474371258a6110cc1742e0e9970232a799ab790ca1",
+      "size": 1383
+    },
+    "work-profile-v1.json": {
+      "relative_path": "config/pon/work-profile-v1.json",
+      "sha256": "03f7537b2fc3fa0c2f7036dd73d7088ba1ce50eafe6f2c907087d30385320880",
+      "size": 1596
+    }
+  },
+  "absolute_source_pins_scope": "At use, prepend the canonical complete Chain checkout that passes execution.verify; these relative pins are not a host configuration or qualification",
+  "runtime_snapshot_required": true,
+  "qualification_issued": false
+}

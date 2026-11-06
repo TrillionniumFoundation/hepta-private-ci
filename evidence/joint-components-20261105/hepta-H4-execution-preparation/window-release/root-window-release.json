@@ -1,0 +1,66 @@
+{
+  "schema": "root-h4-resource-window-release-v1",
+  "observed_utc": "2026-11-05T22:43:00.555155+00:00",
+  "exact_previous_jobs_released": [
+    {
+      "job_id": "1a1add12f68-fc05-5aec",
+      "release_probe": "1a1add7345a-fc05-5b0c",
+      "release_terminal_unix_ms": 1793917927444,
+      "proof_bytes": 2547,
+      "proof_sha256": "1a94aecc2034736e5a252222e378788ad67d7f3674216b0c10ef3c27e3fec6a5",
+      "owned_processes_clear": true
+    },
+    {
+      "job_id": "1a1adda0573-fc05-5b28",
+      "release_probe": "1a1adde723f-fc05-5b47",
+      "release_terminal_unix_ms": 1793918400932,
+      "proof_bytes": 2550,
+      "proof_sha256": "a1b26b033563fe9d0f1cf8cbf4cf895621468307c14958e2748b49d3ecb2caf4",
+      "owned_processes_clear": true
+    }
+  ],
+  "bulk_downloaders": [
+    {
+      "path": "pq_recovery/h1-actual-elf-download",
+      "pause_file": true,
+      "progress": {
+        "schema": "h1-actual-elf-download-progress-v1",
+        "status": "PAUSED",
+        "in_flight": 0,
+        "next_offset": 65536,
+        "verified_chunks": 1,
+        "required_chunks": 1996,
+        "verified_bytes": 65536,
+        "verified_parts": 0,
+        "expected_archive_bytes": 130746864,
+        "version": "2050:51038826:130746864:1793912434833643974:1793912451408122854",
+        "native_execution": false,
+        "errors": [],
+        "pending_offsets": []
+      }
+    },
+    {
+      "path": "w1/h2-actual-elf-download",
+      "pause_file": true,
+      "progress": {
+        "schema": "h2-actual-elf-download-progress-v1",
+        "status": "PAUSED",
+        "in_flight": 0,
+        "next_offset": 0,
+        "verified_chunks": 0,
+        "required_chunks": 3909,
+        "verified_bytes": 0,
+        "verified_parts": 0,
+        "expected_archive_bytes": 256132128,
+        "version": null,
+        "native_execution": false,
+        "errors": [],
+        "pending_offsets": []
+      }
+    }
+  ],
+  "unique_native_key": "ms-joint-h4-native-6db78-attempt1-93bfcf",
+  "request_sha256": "561fa3256c5669f1277f25d977928df6266162c0bc2f8814e7d9a79768b9b128",
+  "root_configuration_review_sha256": "a4afe7b4b6d3a9e63e6999cdfa9a07adbe47d8d2124a3bbb69fccfd105f30254",
+  "decision": "Resource window reserved for the sole frozen H4 native attempt; all archive bulk remains paused. No result has been assigned before actual execution."
+}

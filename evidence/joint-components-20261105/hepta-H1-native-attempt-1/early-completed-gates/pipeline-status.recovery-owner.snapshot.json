@@ -1,0 +1,745 @@
+{
+  "status": "running-unqualified",
+  "started_unix": 1793905050.7341728,
+  "gates": {
+    "dependencies": {
+      "receipt": "dependencies.json",
+      "receipt_sha256": "1d9451afa2bc9f83b3401242ee2197e09b6b5d32afd8ad60686861c06f4821cf",
+      "wrapper_exit": 0,
+      "status": "passed",
+      "command_exit_code": 0,
+      "passed": 0,
+      "failed": 0,
+      "timed_out": false,
+      "log_file": "dependencies.json.7eb54e9cfaa44ddeaec9ec8df84ee3e1.log",
+      "execution_family": "original-pq-policy-workflow",
+      "command_budget_seconds": 600,
+      "timeout_argument_omitted_for_original_default": false,
+      "started_at": "2026-11-05T18:57:45.151654+00:00",
+      "finished_at": "2026-11-05T18:57:49.828049+00:00",
+      "wrapper_elapsed_seconds": 4.6748403020901605,
+      "source": {
+        "commit": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+        "tree": "24804b21d0306b617e12fa3f5b9454a12ed4ad41",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "44c24be1044b88b8a8a407859c1dcd37051dfdbd793b969527f415b305989cfd"
+      },
+      "observed_cases": [],
+      "exact_names_passed": null,
+      "actual_binary_evidence": null
+    },
+    "execution-source-controls": {
+      "receipt": "execution-source-controls.json",
+      "receipt_sha256": "beecf4db159fe06966f74197d4d0c24097ac5dda365d10e8cac55290b91d132a",
+      "wrapper_exit": 0,
+      "status": "passed",
+      "command_exit_code": 0,
+      "passed": 135,
+      "failed": 0,
+      "timed_out": false,
+      "log_file": "execution-source-controls.json.8adbf7b309a741ea863c699d843662d1.log",
+      "execution_family": "additional-original-gate",
+      "command_budget_seconds": 3600,
+      "timeout_argument_omitted_for_original_default": true,
+      "started_at": "2026-11-05T18:57:49.927532+00:00",
+      "finished_at": "2026-11-05T18:58:28.198798+00:00",
+      "wrapper_elapsed_seconds": 38.26959449297283,
+      "source": {
+        "commit": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+        "tree": "24804b21d0306b617e12fa3f5b9454a12ed4ad41",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "44c24be1044b88b8a8a407859c1dcd37051dfdbd793b969527f415b305989cfd"
+      },
+      "observed_cases": [],
+      "exact_names_passed": null,
+      "actual_binary_evidence": null
+    },
+    "diverse-source-controls": {
+      "receipt": "diverse-source-controls.json",
+      "receipt_sha256": "ba5097e518a1c9e6a9994608e44aea8d518dda695644decde313c1176b920cad",
+      "wrapper_exit": 0,
+      "status": "passed",
+      "command_exit_code": 0,
+      "passed": 32,
+      "failed": 0,
+      "timed_out": false,
+      "log_file": "diverse-source-controls.json.7c4aa9ba532b43cb8289e7948147a1b1.log",
+      "execution_family": "additional-original-gate",
+      "command_budget_seconds": 3600,
+      "timeout_argument_omitted_for_original_default": true,
+      "started_at": "2026-11-05T18:58:28.285995+00:00",
+      "finished_at": "2026-11-05T18:58:32.081684+00:00",
+      "wrapper_elapsed_seconds": 3.7939732080558315,
+      "source": {
+        "commit": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+        "tree": "24804b21d0306b617e12fa3f5b9454a12ed4ad41",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "44c24be1044b88b8a8a407859c1dcd37051dfdbd793b969527f415b305989cfd"
+      },
+      "observed_cases": [],
+      "exact_names_passed": null,
+      "actual_binary_evidence": null
+    },
+    "dispatcher": {
+      "receipt": "dispatcher.json",
+      "receipt_sha256": "a524ed880bb9234157dc66469743246cfb49c537908a8fc6db81a17f29cea84f",
+      "wrapper_exit": 0,
+      "status": "passed",
+      "command_exit_code": 0,
+      "passed": 14,
+      "failed": 0,
+      "timed_out": false,
+      "log_file": "dispatcher.json.a37c7f7ed57e46b68698abece15a7ad8.log",
+      "execution_family": "original-pq-policy-workflow",
+      "command_budget_seconds": 3600,
+      "timeout_argument_omitted_for_original_default": false,
+      "started_at": "2026-11-05T18:58:32.263552+00:00",
+      "finished_at": "2026-11-05T19:03:29.578883+00:00",
+      "wrapper_elapsed_seconds": 297.29044430702925,
+      "source": {
+        "commit": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+        "tree": "24804b21d0306b617e12fa3f5b9454a12ed4ad41",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "44c24be1044b88b8a8a407859c1dcd37051dfdbd793b969527f415b305989cfd"
+      },
+      "observed_cases": [
+        [
+          "authbus_dispatch::tests::abandoned_first_claim_without_admission_is_quarantined_after_lookup_missing",
+          "ok"
+        ],
+        [
+          "authbus_dispatch::tests::checkpoint_sync::cancelled_checkpoint_sync_waiter_and_owner_release_exclusive_admission",
+          "ok"
+        ],
+        [
+          "authbus_dispatch::tests::checkpoint_sync::concurrent_checkpoint_syncs_share_owner_lock_and_preserve_rollback_rejection",
+          "ok"
+        ],
+        [
+          "authbus_dispatch::tests::lease_delay::trust_refresh_sqlite_wait_cannot_authorize_transport_with_an_expired_lease",
+          "ok"
+        ],
+        [
+          "authbus_dispatch::tests::lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt",
+          "ok"
+        ],
+        [
+          "authbus_dispatch::tests::matching_receipt_metadata_with_different_queue_input_never_acknowledges",
+          "ok"
+        ],
+        [
+          "authbus_dispatch::tests::policy_rollback::pq_bound_policy_refuses_renewal_without_policy_snapshot",
+          "ok"
+        ],
+        [
+          "authbus_dispatch::tests::policy_rollback::pq_owner_requires_explicit_nonzero_policy_revision_and_accepts_set_ordering",
+          "ok"
+        ],
+        [
+          "authbus_dispatch::tests::policy_rollback::pq_policy_change_fences_stale_renewal_and_current_policy_restores_dispatch",
+          "ok"
+        ],
+        [
+          "authbus_dispatch::tests::policy_rollback::pq_removed_thread_cannot_return_through_owner_file_rollback_after_reopen",
+          "ok"
+        ],
+        [
+          "authbus_dispatch::tests::pq::pq_text_owner_resumes_after_revocation_rotation_and_rejected_config_rollback",
+          "ok"
+        ],
+        [
+          "authbus_dispatch::tests::pq::pq_text_producer_recovers_through_existing_dispatch_and_rejects_wire_and_config_downgrade",
+          "ok"
+        ],
+        [
+          "authbus_dispatch::tests::ready_generation_and_owner_private_trust_are_required_before_admission",
+          "ok"
+        ],
+        [
+          "authbus_dispatch::tests::revocation_during_queue_request_prevents_success_ack",
+          "ok"
+        ]
+      ],
+      "exact_names_passed": true,
+      "actual_binary_evidence": {
+        "records": [
+          {
+            "source": {
+              "commit": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+              "tree": "24804b21d0306b617e12fa3f5b9454a12ed4ad41",
+              "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+              "environment_file": "native-environment.json",
+              "environment_sha256": "44c24be1044b88b8a8a407859c1dcd37051dfdbd793b969527f415b305989cfd"
+            },
+            "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+            "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-dispatcher/86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e.elf",
+            "sha256": "86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e",
+            "bytes": 504265656,
+            "device": 2050,
+            "inode": 58259637,
+            "pid": 570894,
+            "start_ticks": "98303452",
+            "wrapper_pid": 555614,
+            "wrapper_start_ticks": "98277818",
+            "wrapper_descendant_verified": true,
+            "post_open_task_and_exe_verified": true,
+            "observed_selected_tests": [
+              "authbus_dispatch::tests::abandoned_first_claim_without_admission_is_quarantined_after_lookup_missing"
+            ],
+            "captured_unix": 1793905370.8458345
+          },
+          {
+            "source": {
+              "commit": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+              "tree": "24804b21d0306b617e12fa3f5b9454a12ed4ad41",
+              "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+              "environment_file": "native-environment.json",
+              "environment_sha256": "44c24be1044b88b8a8a407859c1dcd37051dfdbd793b969527f415b305989cfd"
+            },
+            "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+            "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-dispatcher/86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e.elf",
+            "sha256": "86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e",
+            "bytes": 504265656,
+            "device": 2050,
+            "inode": 58259637,
+            "pid": 570980,
+            "start_ticks": "98303651",
+            "wrapper_pid": 555614,
+            "wrapper_start_ticks": "98277818",
+            "wrapper_descendant_verified": true,
+            "post_open_task_and_exe_verified": true,
+            "observed_selected_tests": [
+              "authbus_dispatch::tests::checkpoint_sync::cancelled_checkpoint_sync_waiter_and_owner_release_exclusive_admission"
+            ],
+            "captured_unix": 1793905370.8919046
+          },
+          {
+            "source": {
+              "commit": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+              "tree": "24804b21d0306b617e12fa3f5b9454a12ed4ad41",
+              "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+              "environment_file": "native-environment.json",
+              "environment_sha256": "44c24be1044b88b8a8a407859c1dcd37051dfdbd793b969527f415b305989cfd"
+            },
+            "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+            "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-dispatcher/86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e.elf",
+            "sha256": "86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e",
+            "bytes": 504265656,
+            "device": 2050,
+            "inode": 58259637,
+            "pid": 571156,
+            "start_ticks": "98303936",
+            "wrapper_pid": 555614,
+            "wrapper_start_ticks": "98277818",
+            "wrapper_descendant_verified": true,
+            "post_open_task_and_exe_verified": true,
+            "observed_selected_tests": [
+              "authbus_dispatch::tests::checkpoint_sync::concurrent_checkpoint_syncs_share_owner_lock_and_preserve_rollback_rejection"
+            ],
+            "captured_unix": 1793905373.399357
+          },
+          {
+            "source": {
+              "commit": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+              "tree": "24804b21d0306b617e12fa3f5b9454a12ed4ad41",
+              "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+              "environment_file": "native-environment.json",
+              "environment_sha256": "44c24be1044b88b8a8a407859c1dcd37051dfdbd793b969527f415b305989cfd"
+            },
+            "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+            "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-dispatcher/86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e.elf",
+            "sha256": "86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e",
+            "bytes": 504265656,
+            "device": 2050,
+            "inode": 58259637,
+            "pid": 571320,
+            "start_ticks": "98304234",
+            "wrapper_pid": 555614,
+            "wrapper_start_ticks": "98277818",
+            "wrapper_descendant_verified": true,
+            "post_open_task_and_exe_verified": true,
+            "observed_selected_tests": [
+              "authbus_dispatch::tests::lease_delay::trust_refresh_sqlite_wait_cannot_authorize_transport_with_an_expired_lease"
+            ],
+            "captured_unix": 1793905376.3752303
+          },
+          {
+            "source": {
+              "commit": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+              "tree": "24804b21d0306b617e12fa3f5b9454a12ed4ad41",
+              "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+              "environment_file": "native-environment.json",
+              "environment_sha256": "44c24be1044b88b8a8a407859c1dcd37051dfdbd793b969527f415b305989cfd"
+            },
+            "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+            "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-dispatcher/86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e.elf",
+            "sha256": "86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e",
+            "bytes": 504265656,
+            "device": 2050,
+            "inode": 58259637,
+            "pid": 571651,
+            "start_ticks": "98304584",
+            "wrapper_pid": 555614,
+            "wrapper_start_ticks": "98277818",
+            "wrapper_descendant_verified": true,
+            "post_open_task_and_exe_verified": true,
+            "observed_selected_tests": [
+              "authbus_dispatch::tests::lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt"
+            ],
+            "captured_unix": 1793905379.8786108
+          },
+          {
+            "source": {
+              "commit": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+              "tree": "24804b21d0306b617e12fa3f5b9454a12ed4ad41",
+              "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+              "environment_file": "native-environment.json",
+              "environment_sha256": "44c24be1044b88b8a8a407859c1dcd37051dfdbd793b969527f415b305989cfd"
+            },
+            "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+            "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-dispatcher/86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e.elf",
+            "sha256": "86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e",
+            "bytes": 504265656,
+            "device": 2050,
+            "inode": 58259637,
+            "pid": 571726,
+            "start_ticks": "98304828",
+            "wrapper_pid": 555614,
+            "wrapper_start_ticks": "98277818",
+            "wrapper_descendant_verified": true,
+            "post_open_task_and_exe_verified": true,
+            "observed_selected_tests": [
+              "authbus_dispatch::tests::matching_receipt_metadata_with_different_queue_input_never_acknowledges"
+            ],
+            "captured_unix": 1793905382.3317835
+          },
+          {
+            "source": {
+              "commit": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+              "tree": "24804b21d0306b617e12fa3f5b9454a12ed4ad41",
+              "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+              "environment_file": "native-environment.json",
+              "environment_sha256": "44c24be1044b88b8a8a407859c1dcd37051dfdbd793b969527f415b305989cfd"
+            },
+            "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+            "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-dispatcher/86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e.elf",
+            "sha256": "86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e",
+            "bytes": 504265656,
+            "device": 2050,
+            "inode": 58259637,
+            "pid": 571841,
+            "start_ticks": "98304938",
+            "wrapper_pid": 555614,
+            "wrapper_start_ticks": "98277818",
+            "wrapper_descendant_verified": true,
+            "post_open_task_and_exe_verified": true,
+            "observed_selected_tests": [
+              "authbus_dispatch::tests::policy_rollback::pq_bound_policy_refuses_renewal_without_policy_snapshot"
+            ],
+            "captured_unix": 1793905383.4146626
+          },
+          {
+            "source": {
+              "commit": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+              "tree": "24804b21d0306b617e12fa3f5b9454a12ed4ad41",
+              "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+              "environment_file": "native-environment.json",
+              "environment_sha256": "44c24be1044b88b8a8a407859c1dcd37051dfdbd793b969527f415b305989cfd"
+            },
+            "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+            "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-dispatcher/86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e.elf",
+            "sha256": "86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e",
+            "bytes": 504265656,
+            "device": 2050,
+            "inode": 58259637,
+            "pid": 572127,
+            "start_ticks": "98305154",
+            "wrapper_pid": 555614,
+            "wrapper_start_ticks": "98277818",
+            "wrapper_descendant_verified": true,
+            "post_open_task_and_exe_verified": true,
+            "observed_selected_tests": [
+              "authbus_dispatch::tests::policy_rollback::pq_owner_requires_explicit_nonzero_policy_revision_and_accepts_set_ordering"
+            ],
+            "captured_unix": 1793905385.5788267
+          },
+          {
+            "source": {
+              "commit": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+              "tree": "24804b21d0306b617e12fa3f5b9454a12ed4ad41",
+              "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+              "environment_file": "native-environment.json",
+              "environment_sha256": "44c24be1044b88b8a8a407859c1dcd37051dfdbd793b969527f415b305989cfd"
+            },
+            "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+            "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-dispatcher/86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e.elf",
+            "sha256": "86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e",
+            "bytes": 504265656,
+            "device": 2050,
+            "inode": 58259637,
+            "pid": 572300,
+            "start_ticks": "98305352",
+            "wrapper_pid": 555614,
+            "wrapper_start_ticks": "98277818",
+            "wrapper_descendant_verified": true,
+            "post_open_task_and_exe_verified": true,
+            "observed_selected_tests": [
+              "authbus_dispatch::tests::policy_rollback::pq_policy_change_fences_stale_renewal_and_current_policy_restores_dispatch"
+            ],
+            "captured_unix": 1793905387.566247
+          },
+          {
+            "source": {
+              "commit": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+              "tree": "24804b21d0306b617e12fa3f5b9454a12ed4ad41",
+              "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+              "environment_file": "native-environment.json",
+              "environment_sha256": "44c24be1044b88b8a8a407859c1dcd37051dfdbd793b969527f415b305989cfd"
+            },
+            "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+            "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-dispatcher/86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e.elf",
+            "sha256": "86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e",
+            "bytes": 504265656,
+            "device": 2050,
+            "inode": 58259637,
+            "pid": 572625,
+            "start_ticks": "98305684",
+            "wrapper_pid": 555614,
+            "wrapper_start_ticks": "98277818",
+            "wrapper_descendant_verified": true,
+            "post_open_task_and_exe_verified": true,
+            "observed_selected_tests": [
+              "authbus_dispatch::tests::policy_rollback::pq_removed_thread_cannot_return_through_owner_file_rollback_after_reopen"
+            ],
+            "captured_unix": 1793905390.8817735
+          },
+          {
+            "source": {
+              "commit": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+              "tree": "24804b21d0306b617e12fa3f5b9454a12ed4ad41",
+              "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+              "environment_file": "native-environment.json",
+              "environment_sha256": "44c24be1044b88b8a8a407859c1dcd37051dfdbd793b969527f415b305989cfd"
+            },
+            "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+            "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-dispatcher/86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e.elf",
+            "sha256": "86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e",
+            "bytes": 504265656,
+            "device": 2050,
+            "inode": 58259637,
+            "pid": 572757,
+            "start_ticks": "98306160",
+            "wrapper_pid": 555614,
+            "wrapper_start_ticks": "98277818",
+            "wrapper_descendant_verified": true,
+            "post_open_task_and_exe_verified": true,
+            "observed_selected_tests": [
+              "authbus_dispatch::tests::pq::pq_text_owner_resumes_after_revocation_rotation_and_rejected_config_rollback"
+            ],
+            "captured_unix": 1793905395.65583
+          },
+          {
+            "source": {
+              "commit": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+              "tree": "24804b21d0306b617e12fa3f5b9454a12ed4ad41",
+              "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+              "environment_file": "native-environment.json",
+              "environment_sha256": "44c24be1044b88b8a8a407859c1dcd37051dfdbd793b969527f415b305989cfd"
+            },
+            "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+            "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-dispatcher/86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e.elf",
+            "sha256": "86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e",
+            "bytes": 504265656,
+            "device": 2050,
+            "inode": 58259637,
+            "pid": 572911,
+            "start_ticks": "98306664",
+            "wrapper_pid": 555614,
+            "wrapper_start_ticks": "98277818",
+            "wrapper_descendant_verified": true,
+            "post_open_task_and_exe_verified": true,
+            "observed_selected_tests": [
+              "authbus_dispatch::tests::pq::pq_text_producer_recovers_through_existing_dispatch_and_rejects_wire_and_config_downgrade"
+            ],
+            "captured_unix": 1793905400.6901596
+          },
+          {
+            "source": {
+              "commit": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+              "tree": "24804b21d0306b617e12fa3f5b9454a12ed4ad41",
+              "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+              "environment_file": "native-environment.json",
+              "environment_sha256": "44c24be1044b88b8a8a407859c1dcd37051dfdbd793b969527f415b305989cfd"
+            },
+            "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+            "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-dispatcher/86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e.elf",
+            "sha256": "86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e",
+            "bytes": 504265656,
+            "device": 2050,
+            "inode": 58259637,
+            "pid": 573059,
+            "start_ticks": "98307081",
+            "wrapper_pid": 555614,
+            "wrapper_start_ticks": "98277818",
+            "wrapper_descendant_verified": true,
+            "post_open_task_and_exe_verified": true,
+            "observed_selected_tests": [
+              "authbus_dispatch::tests::ready_generation_and_owner_private_trust_are_required_before_admission"
+            ],
+            "captured_unix": 1793905404.8688495
+          },
+          {
+            "source": {
+              "commit": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+              "tree": "24804b21d0306b617e12fa3f5b9454a12ed4ad41",
+              "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+              "environment_file": "native-environment.json",
+              "environment_sha256": "44c24be1044b88b8a8a407859c1dcd37051dfdbd793b969527f415b305989cfd"
+            },
+            "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+            "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-dispatcher/86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e.elf",
+            "sha256": "86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e",
+            "bytes": 504265656,
+            "device": 2050,
+            "inode": 58259637,
+            "pid": 573140,
+            "start_ticks": "98307313",
+            "wrapper_pid": 555614,
+            "wrapper_start_ticks": "98277818",
+            "wrapper_descendant_verified": true,
+            "post_open_task_and_exe_verified": true,
+            "observed_selected_tests": [
+              "authbus_dispatch::tests::revocation_during_queue_request_prevents_success_ack"
+            ],
+            "captured_unix": 1793905407.1887896
+          }
+        ],
+        "errors": [],
+        "unique_actual_elf_sha256": [
+          "86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e"
+        ],
+        "observed_selected_tests": [
+          "authbus_dispatch::tests::abandoned_first_claim_without_admission_is_quarantined_after_lookup_missing",
+          "authbus_dispatch::tests::checkpoint_sync::cancelled_checkpoint_sync_waiter_and_owner_release_exclusive_admission",
+          "authbus_dispatch::tests::checkpoint_sync::concurrent_checkpoint_syncs_share_owner_lock_and_preserve_rollback_rejection",
+          "authbus_dispatch::tests::lease_delay::trust_refresh_sqlite_wait_cannot_authorize_transport_with_an_expired_lease",
+          "authbus_dispatch::tests::lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt",
+          "authbus_dispatch::tests::matching_receipt_metadata_with_different_queue_input_never_acknowledges",
+          "authbus_dispatch::tests::policy_rollback::pq_bound_policy_refuses_renewal_without_policy_snapshot",
+          "authbus_dispatch::tests::policy_rollback::pq_owner_requires_explicit_nonzero_policy_revision_and_accepts_set_ordering",
+          "authbus_dispatch::tests::policy_rollback::pq_policy_change_fences_stale_renewal_and_current_policy_restores_dispatch",
+          "authbus_dispatch::tests::policy_rollback::pq_removed_thread_cannot_return_through_owner_file_rollback_after_reopen",
+          "authbus_dispatch::tests::pq::pq_text_owner_resumes_after_revocation_rotation_and_rejected_config_rollback",
+          "authbus_dispatch::tests::pq::pq_text_producer_recovers_through_existing_dispatch_and_rejects_wire_and_config_downgrade",
+          "authbus_dispatch::tests::ready_generation_and_owner_private_trust_are_required_before_admission",
+          "authbus_dispatch::tests::revocation_during_queue_request_prevents_success_ack"
+        ],
+        "capture_scope": "actual executing test-image binding; polling may miss individual short-lived cases",
+        "runner_declared_binary_counts": [
+          1
+        ]
+      }
+    },
+    "product": {
+      "receipt": "product.json",
+      "receipt_sha256": "205d8db64b5b4872e5d85bd6fc2ec6b3800528ec6fcb0fe6924f8152506483d5",
+      "wrapper_exit": 0,
+      "status": "passed",
+      "command_exit_code": 0,
+      "passed": 3,
+      "failed": 0,
+      "timed_out": false,
+      "log_file": "product.json.c7b9f66daeea436e80894f981b0b62a3.log",
+      "execution_family": "original-pq-policy-workflow",
+      "command_budget_seconds": 1800,
+      "timeout_argument_omitted_for_original_default": false,
+      "started_at": "2026-11-05T19:03:29.723854+00:00",
+      "finished_at": "2026-11-05T19:04:00.650545+00:00",
+      "wrapper_elapsed_seconds": 30.92200724896975,
+      "source": {
+        "commit": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+        "tree": "24804b21d0306b617e12fa3f5b9454a12ed4ad41",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "44c24be1044b88b8a8a407859c1dcd37051dfdbd793b969527f415b305989cfd"
+      },
+      "observed_cases": [
+        [
+          "pq_signed_text_crosses_real_queue_after_rejection_without_downgrade",
+          "ok"
+        ],
+        [
+          "real_agentd_without_explicit_trust_rejects_signed_text",
+          "ok"
+        ],
+        [
+          "signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_ingress",
+          "ok"
+        ]
+      ],
+      "exact_names_passed": true,
+      "actual_binary_evidence": {
+        "records": [
+          {
+            "source": {
+              "commit": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+              "tree": "24804b21d0306b617e12fa3f5b9454a12ed4ad41",
+              "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+              "environment_file": "native-environment.json",
+              "environment_sha256": "44c24be1044b88b8a8a407859c1dcd37051dfdbd793b969527f415b305989cfd"
+            },
+            "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/authbus_text_product-c365e5b605b48783",
+            "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-product/060b03442eaad0f40a1c532199d59183ce6b784beb9023ee06fec73105c34d31.elf",
+            "sha256": "060b03442eaad0f40a1c532199d59183ce6b784beb9023ee06fec73105c34d31",
+            "bytes": 120073792,
+            "device": 2050,
+            "inode": 58259645,
+            "pid": 574633,
+            "start_ticks": "98309035",
+            "wrapper_pid": 573407,
+            "wrapper_start_ticks": "98307564",
+            "wrapper_descendant_verified": true,
+            "post_open_task_and_exe_verified": true,
+            "observed_selected_tests": [
+              "pq_signed_text_crosses_real_queue_after_rejection_without_downgrade"
+            ],
+            "captured_unix": 1793905425.2958288
+          },
+          {
+            "source": {
+              "commit": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+              "tree": "24804b21d0306b617e12fa3f5b9454a12ed4ad41",
+              "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+              "environment_file": "native-environment.json",
+              "environment_sha256": "44c24be1044b88b8a8a407859c1dcd37051dfdbd793b969527f415b305989cfd"
+            },
+            "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/authbus_text_product-c365e5b605b48783",
+            "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-product/060b03442eaad0f40a1c532199d59183ce6b784beb9023ee06fec73105c34d31.elf",
+            "sha256": "060b03442eaad0f40a1c532199d59183ce6b784beb9023ee06fec73105c34d31",
+            "bytes": 120073792,
+            "device": 2050,
+            "inode": 58259645,
+            "pid": 575304,
+            "start_ticks": "98309800",
+            "wrapper_pid": 573407,
+            "wrapper_start_ticks": "98307564",
+            "wrapper_descendant_verified": true,
+            "post_open_task_and_exe_verified": true,
+            "observed_selected_tests": [
+              "real_agentd_without_explicit_trust_rejects_signed_text"
+            ],
+            "captured_unix": 1793905432.035709
+          },
+          {
+            "source": {
+              "commit": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+              "tree": "24804b21d0306b617e12fa3f5b9454a12ed4ad41",
+              "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+              "environment_file": "native-environment.json",
+              "environment_sha256": "44c24be1044b88b8a8a407859c1dcd37051dfdbd793b969527f415b305989cfd"
+            },
+            "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/authbus_text_product-c365e5b605b48783",
+            "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-product/060b03442eaad0f40a1c532199d59183ce6b784beb9023ee06fec73105c34d31.elf",
+            "sha256": "060b03442eaad0f40a1c532199d59183ce6b784beb9023ee06fec73105c34d31",
+            "bytes": 120073792,
+            "device": 2050,
+            "inode": 58259645,
+            "pid": 575576,
+            "start_ticks": "98310055",
+            "wrapper_pid": 573407,
+            "wrapper_start_ticks": "98307564",
+            "wrapper_descendant_verified": true,
+            "post_open_task_and_exe_verified": true,
+            "observed_selected_tests": [
+              "signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_ingress"
+            ],
+            "captured_unix": 1793905434.5889773
+          }
+        ],
+        "errors": [],
+        "unique_actual_elf_sha256": [
+          "060b03442eaad0f40a1c532199d59183ce6b784beb9023ee06fec73105c34d31"
+        ],
+        "observed_selected_tests": [
+          "pq_signed_text_crosses_real_queue_after_rejection_without_downgrade",
+          "real_agentd_without_explicit_trust_rejects_signed_text",
+          "signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_ingress"
+        ],
+        "capture_scope": "actual executing test-image binding; polling may miss individual short-lived cases",
+        "runner_declared_binary_counts": [
+          1
+        ]
+      }
+    }
+  },
+  "scope": "one desktop source-head; no hosted matrix, independent custody, WAN, full-host restore, model inference, or learning qualification",
+  "source_before": {
+    "identity": {
+      "commit": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+      "tree": "24804b21d0306b617e12fa3f5b9454a12ed4ad41",
+      "parents": [
+        "e458e534017dd479e382e84331fa1a6078c3abb4"
+      ],
+      "dirty": false
+    },
+    "raw_git_blob_bytes_match": true,
+    "tracked_count": 11839,
+    "tracked_bytes": 183369088,
+    "index_count": 11839,
+    "missing": [],
+    "hidden": [],
+    "tree_inventory_sha256": "b55a235f367feb2298814481c69e09436c50284de8c29c242c03e4c907643d58",
+    "guard_sha256": "e55f5ca1200b2c9fc5af4158c42f460e71f3815166a962a5b892acfe9477b1d1",
+    "cargo_lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+    "toolchain_file_sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380",
+    "nextest_config_sha256": "65f8b298b60f5f4d480cdd45d4de62a37c5b52d13a2cc7b77eecba3062eaa803"
+  },
+  "budget_semantics": {
+    "outer_seconds": 5400,
+    "scope": "entire actual coordinator job, including raw guards, tool identity, capture and additional gates; never a sum-of-command estimate",
+    "prerequisites": "prior isolated uv installation and toolchain provisioning retained separately; not charged as native compilation or credited as tests",
+    "original_workflow_subflow": "every original command retains its existing deadline inside the same 90-minute outer limit",
+    "additional_gates": "source135/32, compatibility6, provider10, FinalUse and full evidence have independent original wrapper receipts; no hosted-matrix/job qualification"
+  },
+  "configuration_before": {
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/config": "24452f7031356ffbc08ab7fb9657efa5b67fb0b16b2a2ce704ec99d1514267b8",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/hepta-audit-provider-recovery-fix-20261103/config.worktree": "bfefdfeb2bf56f4a5282c172fe3a69b4075e13fe3bf3cd54f6611bafa461c276",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/source1/config.worktree": "443a5f645c23c3d0c0aa09f634b2ad111d46ef61946b598a2fb311678ab47454"
+  },
+  "phase": "recovery-owner",
+  "timed_coordinator_elapsed_seconds": 389.9685676119989,
+  "current_command": [
+    "/usr/bin/python3",
+    "scripts/hepta_ci_exec.py",
+    "--output",
+    "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/recovery-owner.json",
+    "--minimum-tests",
+    "22",
+    "--timeout-seconds",
+    "600",
+    "--",
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-evidence",
+    "--lib",
+    "-E",
+    "test(=recovery_effect_frontier_tests::recovery_snapshot_commits_intent_unknown_and_original_operation_receipt) | test(=recovery_effect_frontier_tests::recovery_snapshot_distinguishes_a_valid_effect_only_database_rollback) | test(=recovery_effect_frontier_tests::recovery_snapshot_commits_ack_provenance_and_cross_table_order) | test(=recovery_effect_frontier_tests::recovery_snapshot_commits_effect_history_after_the_first_page) | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_changed_json_with_retained_record_digests) | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_effect_projection_drift_with_retained_payloads) | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_canonical_ack_bound_to_a_different_payload) | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_orphan_effect_observations) | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_after_schema_drift) | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_at_page_boundary) | test(=provider_effect_recovery_provenance_tests::recovery_provenance_rejects_late_dispatch_after_status_without_uncertainty) | test(=provider_effect_recovery_provenance_tests::recovery_provenance_preserves_dispatch_then_authoritative_status) | test(=recovery_invocation_frontier_tests::recovery_snapshot_commits_pending_invocations_and_terminal_states) | test(=recovery_invocation_frontier_tests::recovery_snapshot_commits_invocations_after_the_first_page) | test(=recovery_invocation_frontier_tests::recovery_snapshot_revalidates_invocation_payloads_and_projected_columns) | test(=recovery_invocation_frontier_tests::recovery_snapshot_requires_the_terminals_authoritative_intent) | test(=recovery_invocation_frontier_tests::recovery_snapshot_refuses_duplicate_terminal_hidden_at_page_boundary) | test(=recovery_invocation_frontier_tests::recovery_snapshot_refuses_invocation_column_type_corruption_without_panicking) | test(=recovery_invocation_frontier_tests::recovery_snapshot_binds_invocation_sequence_and_recording_time) | test(=recovery_invocation_schema_tests::recovery_invocation_schema_accepts_current_migration_keys) | test(=recovery_invocation_schema_tests::recovery_invocation_schema_refuses_non_rowid_or_composite_sequences) | test(=recovery_invocation_schema_tests::recovery_invocation_schema_requires_exact_unconditional_column_uniqueness)",
+    "--no-capture",
+    "--retries",
+    "0",
+    "--test-threads=1"
+  ],
+  "current_source": {
+    "commit": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+    "tree": "24804b21d0306b617e12fa3f5b9454a12ed4ad41",
+    "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+    "environment_file": "native-environment.json",
+    "environment_sha256": "44c24be1044b88b8a8a407859c1dcd37051dfdbd793b969527f415b305989cfd"
+  }
+}

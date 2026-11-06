@@ -1,0 +1,59 @@
+{
+  "after": {
+    "commit": "1556a4df6e279055fd8196f81a4ca2fe0f19384a",
+    "dirty": false,
+    "parents": [
+      "96af771bda36fd4bc12125d4eded5322ae8a7cbe",
+      "796b622634ae46d2d344024dbc713f4993539e60"
+    ],
+    "tree": "9675a9e62a1fbbdaed3248eb239bb2036d79feba"
+  },
+  "base_sha": "1556a4df6e279055fd8196f81a4ca2fe0f19384a",
+  "before": {
+    "commit": "1556a4df6e279055fd8196f81a4ca2fe0f19384a",
+    "dirty": false,
+    "parents": [
+      "96af771bda36fd4bc12125d4eded5322ae8a7cbe",
+      "796b622634ae46d2d344024dbc713f4993539e60"
+    ],
+    "tree": "9675a9e62a1fbbdaed3248eb239bb2036d79feba"
+  },
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-evidence",
+    "--lib",
+    "-E",
+    "test(=qualification_tests::claim_query_rejects_more_than_512_references)",
+    "--no-capture",
+    "--retries",
+    "0",
+    "--test-threads=1"
+  ],
+  "command_exit_code": 100,
+  "elapsed_seconds": 198.95489015697967,
+  "error": "required tests were not observed passing",
+  "exit_code": 100,
+  "finished_at": "2026-11-05T14:57:45.879254+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 26943,
+  "log_file": "original-qualification-bound.json.5995efd62fbc40669c08c88007752396.log",
+  "log_sha256": "f9fe4039ba3cc69e6f9b7db827294b188d15695992a420614a03f8e0c75849d7",
+  "minimum_tests": 1,
+  "observed_failed_tests": 1,
+  "observed_passed_tests": 0,
+  "output_limit_exceeded": false,
+  "returncode": 100,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "1556a4df6e279055fd8196f81a4ca2fe0f19384a",
+  "started_at": "2026-11-05T14:54:26.916329+00:00",
+  "status": "failed",
+  "tested_sha": "1556a4df6e279055fd8196f81a4ca2fe0f19384a",
+  "timed_out": false,
+  "working_directory": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/baseline-source"
+}

@@ -1,0 +1,441 @@
+{
+  "records": [
+    {
+      "source": {
+        "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+        "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "40341fe44840b6de0ca3cff68785116e5cfbca81c9a77124a82ca72b63234039"
+      },
+      "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/neural_cognitive_bootstrap-427dd7776d1e9f1c",
+      "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h4-native-attempt-1/executed-binaries-neural-runtime-input-neural_cognitive_bootstrap/e1bf913938dd8459cb839b5b9cf6dd5a91d704c3b0240e29e3d4e5f7932549ba.elf",
+      "sha256": "e1bf913938dd8459cb839b5b9cf6dd5a91d704c3b0240e29e3d4e5f7932549ba",
+      "bytes": 78142616,
+      "device": 2050,
+      "inode": 58259829,
+      "mtime_ns": 1793915936942223576,
+      "ctime_ns": 1793915936952223306,
+      "argv": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/neural_cognitive_bootstrap-427dd7776d1e9f1c",
+        "--exact",
+        "ordinary_native_composition_rejects_untrusted_qualification_before_inference_owners",
+        "--nocapture"
+      ],
+      "pid": 1156606,
+      "start_ticks": "99679984",
+      "wrapper_pid": 1156297,
+      "wrapper_start_ticks": "99679634",
+      "wrapper_descendant_verified": true,
+      "post_open_task_and_exe_verified": true,
+      "process_before": {
+        "pid": 1156606,
+        "ppid": 1156402,
+        "start_ticks": "99679984",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/neural_cognitive_bootstrap-427dd7776d1e9f1c",
+          "--exact",
+          "ordinary_native_composition_rejects_untrusted_qualification_before_inference_owners",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/neural_cognitive_bootstrap-427dd7776d1e9f1c",
+        "image": {
+          "device": 2050,
+          "inode": 58259829,
+          "bytes": 78142616,
+          "mtime_ns": 1793915936942223576,
+          "ctime_ns": 1793915936952223306
+        }
+      },
+      "process_after": {
+        "pid": 1156606,
+        "ppid": 1156402,
+        "start_ticks": "99679984",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/neural_cognitive_bootstrap-427dd7776d1e9f1c",
+          "--exact",
+          "ordinary_native_composition_rejects_untrusted_qualification_before_inference_owners",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/neural_cognitive_bootstrap-427dd7776d1e9f1c",
+        "image": {
+          "device": 2050,
+          "inode": 58259829,
+          "bytes": 78142616,
+          "mtime_ns": 1793915936942223576,
+          "ctime_ns": 1793915936952223306
+        }
+      },
+      "direct_parent_before": {
+        "pid": 1156402,
+        "ppid": 1156385,
+        "start_ticks": "99679793",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--test",
+          "neural_comparison_native",
+          "--test",
+          "neural_cognitive_bootstrap",
+          "-E",
+          "test(=native_comparison_input_requires_v2_and_independently_pinned_snapshot) | test(=ordinary_native_composition_rejects_untrusted_qualification_before_inference_owners)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-8d6b4w_s/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "direct_parent_after": {
+        "pid": 1156402,
+        "ppid": 1156385,
+        "start_ticks": "99679793",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--test",
+          "neural_comparison_native",
+          "--test",
+          "neural_cognitive_bootstrap",
+          "-E",
+          "test(=native_comparison_input_requires_v2_and_independently_pinned_snapshot) | test(=ordinary_native_composition_rejects_untrusted_qualification_before_inference_owners)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-8d6b4w_s/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "ancestor_chain_before": [
+        {
+          "pid": 1156606,
+          "ppid": 1156402,
+          "start_ticks": "99679984"
+        },
+        {
+          "pid": 1156402,
+          "ppid": 1156385,
+          "start_ticks": "99679793"
+        },
+        {
+          "pid": 1156385,
+          "ppid": 1156380,
+          "start_ticks": "99679768"
+        },
+        {
+          "pid": 1156380,
+          "ppid": 1156378,
+          "start_ticks": "99679763"
+        },
+        {
+          "pid": 1156378,
+          "ppid": 1156297,
+          "start_ticks": "99679762"
+        },
+        {
+          "pid": 1156297,
+          "ppid": 1122369,
+          "start_ticks": "99679634"
+        }
+      ],
+      "ancestor_chain_after": [
+        {
+          "pid": 1156606,
+          "ppid": 1156402,
+          "start_ticks": "99679984"
+        },
+        {
+          "pid": 1156402,
+          "ppid": 1156385,
+          "start_ticks": "99679793"
+        },
+        {
+          "pid": 1156385,
+          "ppid": 1156380,
+          "start_ticks": "99679768"
+        },
+        {
+          "pid": 1156380,
+          "ppid": 1156378,
+          "start_ticks": "99679763"
+        },
+        {
+          "pid": 1156378,
+          "ppid": 1156297,
+          "start_ticks": "99679762"
+        },
+        {
+          "pid": 1156297,
+          "ppid": 1122369,
+          "start_ticks": "99679634"
+        }
+      ],
+      "relationship_observed_before_unix": 1793919134.4792466,
+      "relationship_observed_after_unix": 1793919134.484494,
+      "held_child_and_parent_images_stable_through_retention": true,
+      "relationship_scope": "two live observations around actual child and direct-parent FD opens; no claim either task remains alive at copy completion",
+      "observed_selected_tests": [
+        "ordinary_native_composition_rejects_untrusted_qualification_before_inference_owners"
+      ],
+      "captured_unix": 1793919135.1367397
+    }
+  ],
+  "errors": [],
+  "target_captures": {
+    "neural_cognitive_bootstrap": {
+      "records": [
+        {
+          "source": {
+            "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+            "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+            "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+            "environment_file": "native-environment.json",
+            "environment_sha256": "40341fe44840b6de0ca3cff68785116e5cfbca81c9a77124a82ca72b63234039"
+          },
+          "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/neural_cognitive_bootstrap-427dd7776d1e9f1c",
+          "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h4-native-attempt-1/executed-binaries-neural-runtime-input-neural_cognitive_bootstrap/e1bf913938dd8459cb839b5b9cf6dd5a91d704c3b0240e29e3d4e5f7932549ba.elf",
+          "sha256": "e1bf913938dd8459cb839b5b9cf6dd5a91d704c3b0240e29e3d4e5f7932549ba",
+          "bytes": 78142616,
+          "device": 2050,
+          "inode": 58259829,
+          "mtime_ns": 1793915936942223576,
+          "ctime_ns": 1793915936952223306,
+          "argv": [
+            "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/neural_cognitive_bootstrap-427dd7776d1e9f1c",
+            "--exact",
+            "ordinary_native_composition_rejects_untrusted_qualification_before_inference_owners",
+            "--nocapture"
+          ],
+          "pid": 1156606,
+          "start_ticks": "99679984",
+          "wrapper_pid": 1156297,
+          "wrapper_start_ticks": "99679634",
+          "wrapper_descendant_verified": true,
+          "post_open_task_and_exe_verified": true,
+          "process_before": {
+            "pid": 1156606,
+            "ppid": 1156402,
+            "start_ticks": "99679984",
+            "argv": [
+              "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/neural_cognitive_bootstrap-427dd7776d1e9f1c",
+              "--exact",
+              "ordinary_native_composition_rejects_untrusted_qualification_before_inference_owners",
+              "--nocapture"
+            ],
+            "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/neural_cognitive_bootstrap-427dd7776d1e9f1c",
+            "image": {
+              "device": 2050,
+              "inode": 58259829,
+              "bytes": 78142616,
+              "mtime_ns": 1793915936942223576,
+              "ctime_ns": 1793915936952223306
+            }
+          },
+          "process_after": {
+            "pid": 1156606,
+            "ppid": 1156402,
+            "start_ticks": "99679984",
+            "argv": [
+              "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/neural_cognitive_bootstrap-427dd7776d1e9f1c",
+              "--exact",
+              "ordinary_native_composition_rejects_untrusted_qualification_before_inference_owners",
+              "--nocapture"
+            ],
+            "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/neural_cognitive_bootstrap-427dd7776d1e9f1c",
+            "image": {
+              "device": 2050,
+              "inode": 58259829,
+              "bytes": 78142616,
+              "mtime_ns": 1793915936942223576,
+              "ctime_ns": 1793915936952223306
+            }
+          },
+          "direct_parent_before": {
+            "pid": 1156402,
+            "ppid": 1156385,
+            "start_ticks": "99679793",
+            "argv": [
+              "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+              "nextest",
+              "run",
+              "--no-fail-fast",
+              "--locked",
+              "-p",
+              "codex-hepta-agentd",
+              "--test",
+              "neural_comparison_native",
+              "--test",
+              "neural_cognitive_bootstrap",
+              "-E",
+              "test(=native_comparison_input_requires_v2_and_independently_pinned_snapshot) | test(=ordinary_native_composition_rejects_untrusted_qualification_before_inference_owners)",
+              "--no-capture",
+              "--retries",
+              "0",
+              "--test-threads=1",
+              "--cargo-metadata",
+              "/tmp/hepta-nextest-8d6b4w_s/metadata.json"
+            ],
+            "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+            "image": {
+              "device": 2050,
+              "inode": 9757466,
+              "bytes": 24038232,
+              "mtime_ns": 1793884575954138904,
+              "ctime_ns": 1793884575965048083
+            }
+          },
+          "direct_parent_after": {
+            "pid": 1156402,
+            "ppid": 1156385,
+            "start_ticks": "99679793",
+            "argv": [
+              "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+              "nextest",
+              "run",
+              "--no-fail-fast",
+              "--locked",
+              "-p",
+              "codex-hepta-agentd",
+              "--test",
+              "neural_comparison_native",
+              "--test",
+              "neural_cognitive_bootstrap",
+              "-E",
+              "test(=native_comparison_input_requires_v2_and_independently_pinned_snapshot) | test(=ordinary_native_composition_rejects_untrusted_qualification_before_inference_owners)",
+              "--no-capture",
+              "--retries",
+              "0",
+              "--test-threads=1",
+              "--cargo-metadata",
+              "/tmp/hepta-nextest-8d6b4w_s/metadata.json"
+            ],
+            "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+            "image": {
+              "device": 2050,
+              "inode": 9757466,
+              "bytes": 24038232,
+              "mtime_ns": 1793884575954138904,
+              "ctime_ns": 1793884575965048083
+            }
+          },
+          "ancestor_chain_before": [
+            {
+              "pid": 1156606,
+              "ppid": 1156402,
+              "start_ticks": "99679984"
+            },
+            {
+              "pid": 1156402,
+              "ppid": 1156385,
+              "start_ticks": "99679793"
+            },
+            {
+              "pid": 1156385,
+              "ppid": 1156380,
+              "start_ticks": "99679768"
+            },
+            {
+              "pid": 1156380,
+              "ppid": 1156378,
+              "start_ticks": "99679763"
+            },
+            {
+              "pid": 1156378,
+              "ppid": 1156297,
+              "start_ticks": "99679762"
+            },
+            {
+              "pid": 1156297,
+              "ppid": 1122369,
+              "start_ticks": "99679634"
+            }
+          ],
+          "ancestor_chain_after": [
+            {
+              "pid": 1156606,
+              "ppid": 1156402,
+              "start_ticks": "99679984"
+            },
+            {
+              "pid": 1156402,
+              "ppid": 1156385,
+              "start_ticks": "99679793"
+            },
+            {
+              "pid": 1156385,
+              "ppid": 1156380,
+              "start_ticks": "99679768"
+            },
+            {
+              "pid": 1156380,
+              "ppid": 1156378,
+              "start_ticks": "99679763"
+            },
+            {
+              "pid": 1156378,
+              "ppid": 1156297,
+              "start_ticks": "99679762"
+            },
+            {
+              "pid": 1156297,
+              "ppid": 1122369,
+              "start_ticks": "99679634"
+            }
+          ],
+          "relationship_observed_before_unix": 1793919134.4792466,
+          "relationship_observed_after_unix": 1793919134.484494,
+          "held_child_and_parent_images_stable_through_retention": true,
+          "relationship_scope": "two live observations around actual child and direct-parent FD opens; no claim either task remains alive at copy completion",
+          "observed_selected_tests": [
+            "ordinary_native_composition_rejects_untrusted_qualification_before_inference_owners"
+          ],
+          "captured_unix": 1793919135.1367397
+        }
+      ],
+      "errors": [],
+      "unique_actual_elf_sha256": [
+        "e1bf913938dd8459cb839b5b9cf6dd5a91d704c3b0240e29e3d4e5f7932549ba"
+      ],
+      "observed_selected_tests": [
+        "ordinary_native_composition_rejects_untrusted_qualification_before_inference_owners"
+      ],
+      "capture_scope": "actual executing test-image binding; polling may miss individual short-lived cases"
+    },
+    "neural_comparison_native": {
+      "records": [],
+      "errors": [],
+      "unique_actual_elf_sha256": [],
+      "observed_selected_tests": [],
+      "capture_scope": "actual executing test-image binding; polling may miss individual short-lived cases"
+    }
+  },
+  "capture_scope": "two explicitly mapped target collectors; no global binary allowance or inferred short-process coverage"
+}

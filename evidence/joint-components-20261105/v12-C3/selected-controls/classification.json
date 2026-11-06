@@ -1,0 +1,61 @@
+{
+  "schema": "hepta-v12-c3-selected-controls-classification-v1",
+  "original_source_test_command": {
+    "exit_code": 0,
+    "reported_tests": 135,
+    "exact_ok_lines": 135,
+    "reported_result": "OK",
+    "reported_seconds": 53.771,
+    "status": "PASS 135 original tests"
+  },
+  "extra_whole_directory_audit": {
+    "status": "FAIL; preserved, not overridden",
+    "wrapper_exit_code": 1,
+    "original_receipt": "receipt.json",
+    "source_files_before": 66,
+    "source_files_changed": [],
+    "source_files_deleted": [],
+    "generated_untracked_files": {
+      "scripts/__pycache__/hepta_ci_candidate.cpython-312.pyc": "a45c76611d6b4653234b8901f45a3d3a963bbc1d58789fbcfd201f27f7357b70"
+    },
+    "tracked_source_bytes_unchanged": true
+  },
+  "generated_cache_analysis": {
+    "method": "Static call-path inspection; no per-test process trace or rerun",
+    "test": "test_hepta_smollm_execution_source_v9.ExecutionSourceV9InputTests.test_merge_retains_interpreter_and_child_bytecode_policy",
+    "mechanism": "The unchanged negative control starts a child with -I -B, imports execution, then explicitly sets sys.dont_write_bytecode=False. verify_merged calls _verify; the base branch imports hepta_ci_candidate before the later bytecode-policy refusal. This original path can produce exactly the observed candidate.pyc while the intended refusal assertion succeeds.",
+    "source_locations": [
+      {
+        "path": "scripts/test_hepta_smollm_execution_source_v9.py",
+        "lines": [
+          313,
+          335,
+          599,
+          616
+        ]
+      },
+      {
+        "path": "scripts/hepta_smollm_execution_source_v1.py",
+        "lines": [
+          259,
+          269,
+          294,
+          328
+        ]
+      }
+    ],
+    "production_or_test_source_modified_for_this_observation": false,
+    "original_directory_and_generated_file_preserved": true
+  },
+  "diverse_controls": {
+    "exit_code": 0,
+    "reported_tests": 32,
+    "exact_ok_lines": 32,
+    "reported_seconds": 0.825,
+    "status": "PASS 32 original tests; separate exact source copy unchanged",
+    "receipt": "diverse-receipt.json"
+  },
+  "native_execution": false,
+  "full_H1_qualified": false,
+  "remaining_gate": "The original hepta_ci_exec and complete source/native gates must decide the unified H1 qualification. This selected local directory audit does not replace those gates."
+}

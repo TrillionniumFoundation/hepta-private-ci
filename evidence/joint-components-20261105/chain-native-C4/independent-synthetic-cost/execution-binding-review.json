@@ -1,0 +1,179 @@
+{
+  "scope": "Independent verification of archived receipts and retained bytes; no new remote/native execution",
+  "commit": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+  "tree": "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14",
+  "source_before_after_equal": true,
+  "complete_source_guard": {
+    "base": null,
+    "candidate": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+    "kind": "head",
+    "prospective_merge": null,
+    "schema": "trnm-ci-source-v1",
+    "tested_commit": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+    "tested_tree": "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14",
+    "tests_executed_by_identity_check": false,
+    "tracked_bytes": 985270534,
+    "tracked_entries": 10357,
+    "tracked_worktree_verified": true
+  },
+  "configuration_receipts_equal": true,
+  "configuration_semantics_attested": false,
+  "lock_sha256": "39ab5baeecb55c5445e6bbbbb359cb4ddcddd75a237e19ec243dc2f0f92849be",
+  "features": [
+    "default"
+  ],
+  "profile": {
+    "debug_assertions": false,
+    "debuginfo": 0,
+    "opt_level": "3",
+    "overflow_checks": false,
+    "test": false
+  },
+  "coordinator_sha256": "856a61b997d26efa7d62f8176c745eb7a236e5e75db4f4e8cf50d90a09eb14c7",
+  "coordinator_process_cpu_ns": 182499691561,
+  "observer_scope": "unchanged frozen proc collector; active during each native child; observer CPU/I/O may affect wall time",
+  "resource_observation": {
+    "cpu_affinity": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47
+    ],
+    "cpuinfo": {
+      "bytes": 69106,
+      "device": 2050,
+      "inode": 55728377,
+      "mode": 384,
+      "path": "/home/qian-qi/work/chain-joint-20261105-93bfc-w1-native-C4/synthetic-census-two-child/cpuinfo.txt",
+      "sha256": "f1384dd9149566e1d5b3c932ab02822f27ee702ce14347d91e55b54901ea987b"
+    },
+    "exclusive_host_isolation_attested": false,
+    "logical_cpu_count": 48,
+    "process_limits": {
+      "RLIMIT_AS": [
+        -1,
+        -1
+      ],
+      "RLIMIT_CPU": [
+        -1,
+        -1
+      ],
+      "RLIMIT_NPROC": [
+        476312,
+        476312
+      ]
+    },
+    "resource_limits_modified": false
+  },
+  "original_native_limits": {
+    "stderr_limit_bytes": 1048576,
+    "stdout_limit_bytes": 268435456,
+    "timeout_seconds": 300
+  },
+  "new_external_limits": {
+    "build_seconds": 900,
+    "collector_finish_seconds": 60,
+    "identity_seconds": 30,
+    "metadata_seconds": 120,
+    "outer_seconds": 3600,
+    "preflight_seconds": 120,
+    "reader_seconds": 180,
+    "source_guard_seconds": 600
+  },
+  "components": [
+    {
+      "target_index": 0,
+      "actual_pid": 645061,
+      "actual_start_ticks": "98400747",
+      "actual_elf_sha256": "5ec78d0664fb0e1d5516c6f6d75383a70b9d1091f01ff1e9ac0cfd24e74c0296",
+      "actual_elf_bytes": 940136,
+      "recorded_ancestry_and_post_open_checks": true,
+      "retained_elf_bytes_independently_hashed": true,
+      "original_native_deadline_seconds": 300,
+      "process_wall_ns": 183453322240,
+      "native_stdout": {
+        "bytes": 43447677,
+        "path": "/home/qian-qi/work/chain-joint-20261105-93bfc-w1-native-C4/synthetic-census-two-child/synthetic-target-0/native.jsonl",
+        "sha256": "f3b0e27d6c7380af5a2675da4101f9d18dc2f05108ddace84361a6265cab4dce"
+      },
+      "child_rusage": {
+        "cumulative_maxrss_kib": 202372,
+        "rss_scope": "waited-children cumulative peak; not an enforced or isolated quota",
+        "system_cpu_ns": 1731419000,
+        "user_cpu_ns": 181557052000
+      },
+      "observer_active_wall_ns": 183650710890
+    },
+    {
+      "target_index": 1,
+      "actual_pid": 656214,
+      "actual_start_ticks": "98419540",
+      "actual_elf_sha256": "5ec78d0664fb0e1d5516c6f6d75383a70b9d1091f01ff1e9ac0cfd24e74c0296",
+      "actual_elf_bytes": 940136,
+      "recorded_ancestry_and_post_open_checks": true,
+      "retained_elf_bytes_independently_hashed": true,
+      "original_native_deadline_seconds": 300,
+      "process_wall_ns": 81103040705,
+      "native_stdout": {
+        "bytes": 38993092,
+        "path": "/home/qian-qi/work/chain-joint-20261105-93bfc-w1-native-C4/synthetic-census-two-child/synthetic-target-1/native.jsonl",
+        "sha256": "31e40b14ee805f42320d316bc7548b12d1f196aaefae6fd7c609c08d3dc30256"
+      },
+      "child_rusage": {
+        "cumulative_maxrss_kib": 311516,
+        "rss_scope": "waited-children cumulative peak; not an enforced or isolated quota",
+        "system_cpu_ns": 575807000,
+        "user_cpu_ns": 80410014000
+      },
+      "observer_active_wall_ns": 81281424083
+    }
+  ],
+  "rust_tests_executed": 0,
+  "full_owner_campaign_executed": false,
+  "work_hardness_qualified": false,
+  "public_service_measured": false
+}

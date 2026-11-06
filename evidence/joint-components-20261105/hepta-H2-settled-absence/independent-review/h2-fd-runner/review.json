@@ -1,0 +1,213 @@
+{
+  "scope": "independent source/configuration review and existing desktop utility receipt read; no additional desktop or native execution",
+  "status": "no_new_concrete_blocker_found",
+  "hepta_commit": "620cb63ae9b58904483005bcb2c4e1507df99539",
+  "hepta_tree": "f2cebe6d99deca596c170922b8e60d66648d7393",
+  "workflow_sha256": "f1e3b05fbdf39ff22d9837ca92595cf84e48a038e8a1c60e1bbee6bb4f39d584",
+  "workflow_git_blob": "487bf796005439547ff1ac0366648a0f2daf236c",
+  "step_checks": [
+    {
+      "step": "dependencies",
+      "original_workflow_command_equal": true,
+      "timeout_seconds": 600,
+      "original_minimum": 0,
+      "exact_names": 0,
+      "step_env_equal": true
+    },
+    {
+      "step": "dispatcher",
+      "original_workflow_command_equal": true,
+      "timeout_seconds": 3600,
+      "original_minimum": 14,
+      "exact_names": 14,
+      "step_env_equal": true
+    },
+    {
+      "step": "product",
+      "original_workflow_command_equal": true,
+      "timeout_seconds": 1800,
+      "original_minimum": 3,
+      "exact_names": 3,
+      "step_env_equal": true
+    },
+    {
+      "step": "recovery-owner",
+      "original_workflow_command_equal": true,
+      "timeout_seconds": 600,
+      "original_minimum": 22,
+      "exact_names": 22,
+      "step_env_equal": true
+    },
+    {
+      "step": "recovery-signed",
+      "original_workflow_command_equal": true,
+      "timeout_seconds": 600,
+      "original_minimum": 11,
+      "exact_names": 11,
+      "step_env_equal": true
+    },
+    {
+      "step": "recovery-product",
+      "original_workflow_command_equal": true,
+      "timeout_seconds": 1800,
+      "original_minimum": 4,
+      "exact_names": 4,
+      "step_env_equal": true
+    },
+    {
+      "step": "qualification-growth",
+      "original_workflow_command_equal": true,
+      "timeout_seconds": 600,
+      "original_minimum": 2,
+      "exact_names": 2,
+      "step_env_equal": true
+    },
+    {
+      "step": "effect-pq-owner",
+      "original_workflow_command_equal": true,
+      "timeout_seconds": 600,
+      "original_minimum": 11,
+      "exact_names": 11,
+      "step_env_equal": true
+    },
+    {
+      "step": "effect-pq-contract",
+      "original_workflow_command_equal": true,
+      "timeout_seconds": 600,
+      "original_minimum": 1,
+      "exact_names": 1,
+      "step_env_equal": true
+    },
+    {
+      "step": "effect-settled-absence",
+      "original_workflow_command_equal": true,
+      "timeout_seconds": 600,
+      "original_minimum": 2,
+      "exact_names": 2,
+      "step_env_equal": true
+    },
+    {
+      "step": "effect-pq-product",
+      "original_workflow_command_equal": true,
+      "timeout_seconds": 1800,
+      "original_minimum": 1,
+      "exact_names": 1,
+      "step_env_equal": true
+    },
+    {
+      "step": "fix",
+      "original_workflow_command_equal": true,
+      "timeout_seconds": 1200,
+      "original_minimum": 0,
+      "exact_names": 0,
+      "step_env_equal": true
+    }
+  ],
+  "exact_workflow_names": 71,
+  "full_library": {
+    "old_and_new_extra_controls_identical": true,
+    "original_wrapper_minimum_unchanged": 22,
+    "original_wrapper_timeout_seconds": 600,
+    "hard_exact_pass_names": 161,
+    "hard_declared_count": 161,
+    "hard_declared_skipped": 1,
+    "expected_ignored": [
+      "authbus_outbox_tests::crash_delivery_child"
+    ],
+    "fd_records_must_match_all_161_cases": true
+  },
+  "outer_seconds": 5400,
+  "per_test_default_seconds": 60,
+  "retries": 0,
+  "existing_utility_controls": {
+    "count": 3,
+    "failures": 0,
+    "raw_log_sha256": "88ee443995fac670b02034677d22b95af16453ad846bdbb30c65c71c54fea080",
+    "native_rust_product_credit": false,
+    "actual_nextest_was_invoked_in_utility": false
+  },
+  "fd_verifier_review": {
+    "exact_outcome_name_counter_equals_record_name_counter": true,
+    "duplicate_case_or_process_identity_refused": true,
+    "exec_error_or_pending_refused": true,
+    "one_retained_image_hash_per_gate_required": true,
+    "retained_elf_rehashed_before_next_build": true,
+    "original_gate_failure_cannot_be_overridden_by_record": true,
+    "live_poll_missing_not_filled_with_h1": true
+  },
+  "configuration_difference_from_h1_explicit": true,
+  "historical_h1_misses_retroactively_credited": false,
+  "qualification_still_requires_actual_full_sequence_terminal_and_final_guards": true,
+  "reviewed_files": [
+    {
+      "path": "snapshot/run_h2_native_pipeline.py",
+      "bytes": 29411,
+      "sha256": "700c8a3df4997f0d3348bbab6df4ad8b23865cb935e231a51f5171cd34e6a350"
+    },
+    {
+      "path": "snapshot/test_elf_capture.py",
+      "bytes": 6917,
+      "sha256": "64489779d88a399040e20f939fe878f8d20fa86a60b435a2d7896186dc64d87a"
+    },
+    {
+      "path": "snapshot/test_executed_binary_capture.py",
+      "bytes": 3039,
+      "sha256": "6045805d6ea6c988a071839ee24806f7b3bb9593fc8e755df9d7d0d097041969"
+    },
+    {
+      "path": "snapshot/nextest_fd_runner.py",
+      "bytes": 8081,
+      "sha256": "903c622365c9cf863f1ae4b5eca2d4a0501c9f86862538c48f94f126a82ba62b"
+    },
+    {
+      "path": "snapshot/test_nextest_fd_runner.py",
+      "bytes": 5684,
+      "sha256": "29a77665a8e255dbd29286709ccab06a4e9f81bf76f6f89ed489613a68ede61a"
+    },
+    {
+      "path": "snapshot/fd_gate_evidence.py",
+      "bytes": 4285,
+      "sha256": "b582bbc5759f5dbadff6416f7aa804f67e6136d18553c7b6486bd8a7786435c6"
+    },
+    {
+      "path": "snapshot/h2-native-plan.json",
+      "bytes": 19768,
+      "sha256": "5f79297d78b0b1b2aa13022c4eed26bee8cff788a2eafd4086e9f3261c7e0288"
+    },
+    {
+      "path": "snapshot/h2-selected-tests-guard.py",
+      "bytes": 8595,
+      "sha256": "db0d00120c1c1efda2bf2f2830ae4011e419cc03438b605e3f5b21ca51df8d7f"
+    },
+    {
+      "path": "snapshot/h2-extra-controls.json",
+      "bytes": 16587,
+      "sha256": "08d884ff93090767084059d1b40802fd3269c2b939b0f5534472c3ea663d908c"
+    },
+    {
+      "path": "snapshot/h2-exact-launch-plan.json",
+      "bytes": 2944,
+      "sha256": "fb5745a03d76514ec74d209efdbd4aa69ffbd9363539493d874163a0d7276f92"
+    },
+    {
+      "path": "utility/result.json",
+      "bytes": 901,
+      "sha256": "5397436720b74ac02e55232ea4408e2d8cbaa096ddeef20eb3fe7e43d7dd7ad7"
+    },
+    {
+      "path": "utility/controls.log",
+      "bytes": 561,
+      "sha256": "88ee443995fac670b02034677d22b95af16453ad846bdbb30c65c71c54fea080"
+    },
+    {
+      "path": "utility/terminal.raw.json",
+      "bytes": 952,
+      "sha256": "6204211d91afb6d65540fd2edac160ab448e010184774d44ed2cb4e25285e165"
+    },
+    {
+      "path": "utility/launch-request.json",
+      "bytes": 17179,
+      "sha256": "94c314f49e752cf0229465b2fbfb2d4626253ed52030a9a0c19f7eeabe01e5d1"
+    }
+  ]
+}

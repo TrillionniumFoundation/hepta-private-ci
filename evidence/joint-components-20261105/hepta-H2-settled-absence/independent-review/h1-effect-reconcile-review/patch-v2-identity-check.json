@@ -1,0 +1,43 @@
+{
+  "kind": "local_patch_identity_check_not_rust_execution",
+  "base_commit": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+  "base_tree": "24804b21d0306b617e12fa3f5b9454a12ed4ad41",
+  "patch_sha256": "906788c15547a5a21f0f90bcfc95f45d4aa25d163a83a51d29981c3919adba7e",
+  "candidate_manifest_sha256": "36a901c3a2e1e3f9bc73fad53841d8b2aefd917a5ecf1dda1f98988e72ed1bce",
+  "apply_check_exit": 0,
+  "apply_exit": 0,
+  "independently_fetched_base_files_verified": true,
+  "applied_bytes_equal_candidate_and_manifest": true,
+  "changed_files": [
+    {
+      "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
+      "bytes": 72399,
+      "sha256": "c9d2247573cc205b66366d40cfc4d15872d65db0122c66e324e9371b9dcd20d4",
+      "git_blob_sha1": "b596b9061737a7bc8387807af27fdf5d2e230956"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/taskflow_step.rs",
+      "bytes": 67918,
+      "sha256": "4839aa3abbdafffdf2b542efa990972050964a7d837cd04620f99b9a366014be",
+      "git_blob_sha1": "43c7df417047b4295b7120c8dbcba7357504d151"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "bytes": 105648,
+      "sha256": "f11950fe8a5f8a4e33425a7aec68ac0e4a872b60f341e11de306815ef280b2df",
+      "git_blob_sha1": "c11b1c06bdd5690fc48e49f3106a5f9916c90dd3"
+    },
+    {
+      "path": "codex-rs/hepta-automation/tests/support/authorized_owner_recovery_tests.rs",
+      "bytes": 16911,
+      "sha256": "ab1920270a169e4b82bdef1fe4c02626731d4bce19398877cf0e809878566fa5",
+      "git_blob_sha1": "12cabc35fd44816ec7c6913a9a47d9b03cda5990"
+    }
+  ],
+  "original_fenced_and_terminal_decision_block_byte_identical": true,
+  "original_owner_recovery_test_function_byte_identical": true,
+  "original_pq_test_file_excluded_from_patch": true,
+  "original_pq_test_file_sha256": "7645fc19a734b2ffbbc5ecdb7001069e29f41e9aef3249fc0a5f383ed0e99a78",
+  "desktop_or_cargo_commands": 0,
+  "rust_fmt_or_clippy_or_native_claim": false
+}

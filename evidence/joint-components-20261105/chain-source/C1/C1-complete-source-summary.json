@@ -1,0 +1,274 @@
+{
+  "commit": "9ecdbebc897d35f07b998d084b015db8474be84b",
+  "complete_source_identity": {
+    "base": null,
+    "candidate": "9ecdbebc897d35f07b998d084b015db8474be84b",
+    "kind": "head",
+    "prospective_merge": null,
+    "schema": "trnm-ci-source-v1",
+    "tested_commit": "9ecdbebc897d35f07b998d084b015db8474be84b",
+    "tested_tree": "94050c5f5f72a27d6c4a5fbf627791c15c2704af",
+    "tests_executed_by_identity_check": false,
+    "tracked_bytes": 985244329,
+    "tracked_entries": 10350,
+    "tracked_worktree_verified": true
+  },
+  "complete_source_restored": true,
+  "completed_utc": "2026-11-05T14:54:39Z",
+  "failures": [],
+  "hidden_index_flags_after": 0,
+  "manifest_bytes": 33067,
+  "manifest_sha256": "f2520c0050f4e0db0885bd89d29ebd20a750e94a90de0d82697e52c683294d34",
+  "missing_after": 0,
+  "missing_before": 417,
+  "parent_configs_after": {
+    "/home/qian-qi/work/chain-pon-work-safety-20261103/.git/config": "c7d75bd166e27a759637152a3b5eeeabd017fa45d39152afad0ac058c9456998",
+    "/home/qian-qi/work/chain-pon-work-safety-20261103/.git/config.worktree": null,
+    "/home/qian-qi/work/chain-pon-work-safety-20261103/.git/worktrees/chain-ci-identities-src-20261104/config.worktree": "bfefdfeb2bf56f4a5282c172fe3a69b4075e13fe3bf3cd54f6611bafa461c276"
+  },
+  "parent_configs_before": {
+    "/home/qian-qi/work/chain-pon-work-safety-20261103/.git/config": "c7d75bd166e27a759637152a3b5eeeabd017fa45d39152afad0ac058c9456998",
+    "/home/qian-qi/work/chain-pon-work-safety-20261103/.git/config.worktree": null,
+    "/home/qian-qi/work/chain-pon-work-safety-20261103/.git/worktrees/chain-ci-identities-src-20261104/config.worktree": "bfefdfeb2bf56f4a5282c172fe3a69b4075e13fe3bf3cd54f6611bafa461c276"
+  },
+  "planned_batches": 14,
+  "records": [
+    {
+      "elapsed_ns": 208612044,
+      "exit_code": 0,
+      "name": "donor-preflight",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "elapsed_ns": 3620328,
+      "exit_code": 0,
+      "name": "donor-head",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "elapsed_ns": 2917250,
+      "exit_code": 0,
+      "name": "donor-common-dir",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "elapsed_ns": 63708142,
+      "exit_code": 0,
+      "name": "fetch-exact-c1",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "elapsed_ns": 6392538,
+      "exit_code": 0,
+      "name": "c1-tree",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "elapsed_ns": 590337878,
+      "exit_code": 0,
+      "name": "missing-before",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "elapsed_ns": 24271704090,
+      "exit_code": 0,
+      "name": "fetch-batch-000-attempt-1",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "elapsed_ns": 8714644568,
+      "exit_code": 0,
+      "name": "fetch-batch-001-attempt-1",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "elapsed_ns": 9597319086,
+      "exit_code": 0,
+      "name": "fetch-batch-002-attempt-1",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "elapsed_ns": 17408631567,
+      "exit_code": 0,
+      "name": "fetch-batch-003-attempt-1",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "elapsed_ns": 5209601792,
+      "exit_code": 0,
+      "name": "fetch-batch-004-attempt-1",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "elapsed_ns": 7660332486,
+      "exit_code": 0,
+      "name": "fetch-batch-005-attempt-1",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "elapsed_ns": 16218347657,
+      "exit_code": 0,
+      "name": "fetch-batch-006-attempt-1",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "elapsed_ns": 3439244598,
+      "exit_code": 0,
+      "name": "fetch-batch-007-attempt-1",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "elapsed_ns": 3605982945,
+      "exit_code": 0,
+      "name": "fetch-batch-008-attempt-1",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "elapsed_ns": 7476159496,
+      "exit_code": 0,
+      "name": "fetch-batch-009-attempt-1",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "elapsed_ns": 4841061112,
+      "exit_code": 0,
+      "name": "fetch-batch-010-attempt-1",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "elapsed_ns": 12667918032,
+      "exit_code": 0,
+      "name": "fetch-batch-011-attempt-1",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "elapsed_ns": 78290189992,
+      "exit_code": 0,
+      "name": "fetch-batch-012-attempt-1",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "elapsed_ns": 2189829957,
+      "exit_code": 0,
+      "name": "fetch-batch-013-attempt-1",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "elapsed_ns": 274103346,
+      "exit_code": 0,
+      "name": "missing-after",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "elapsed_ns": 3881756,
+      "exit_code": 0,
+      "name": "shared-common-dir",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "elapsed_ns": 3645495,
+      "exit_code": 0,
+      "name": "donor-worktree-config",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "elapsed_ns": 1441158619,
+      "exit_code": 0,
+      "name": "complete-worktree",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "elapsed_ns": 3268866,
+      "exit_code": 0,
+      "name": "worktree-sparse-setting",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "elapsed_ns": 13365276,
+      "exit_code": 0,
+      "name": "worktree-index-before",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "elapsed_ns": 2795481,
+      "exit_code": 0,
+      "name": "worktree-config-extension",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "elapsed_ns": 3313161,
+      "exit_code": 0,
+      "name": "own-worktree-config",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "elapsed_ns": 3076603,
+      "exit_code": 0,
+      "name": "own-git-dir",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "elapsed_ns": 9431446659,
+      "exit_code": 0,
+      "name": "materialize-complete-own-worktree",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "elapsed_ns": 15805443,
+      "exit_code": 0,
+      "name": "worktree-index-after",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "elapsed_ns": 91908052,
+      "exit_code": 0,
+      "name": "complete-preflight",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "elapsed_ns": 2826086340,
+      "exit_code": 0,
+      "name": "complete-source-identity",
+      "passed": true,
+      "timed_out": false
+    }
+  ],
+  "skip_worktree_before": 8356,
+  "started_utc": "2026-11-05T14:51:02Z",
+  "transient_retries": [],
+  "tree": "94050c5f5f72a27d6c4a5fbf627791c15c2704af",
+  "unresolved_failures": [],
+  "worktree": "/home/qian-qi/work/chain-joint-20261105-93bfc-current"
+}

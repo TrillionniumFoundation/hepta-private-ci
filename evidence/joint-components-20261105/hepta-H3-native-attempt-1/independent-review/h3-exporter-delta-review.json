@@ -1,0 +1,36 @@
+{
+  "schema": "h3-exporter-independent-delta-review-v1",
+  "files": [
+    {
+      "path": "w1/h3-elf-export/export_h3_retained_images.py",
+      "bytes": 18885,
+      "sha256": "9eb404993262589a948a19946819e890ff15875bef1133eab5fe9cee6bb14f53"
+    },
+    {
+      "path": "w1/h3-elf-export/H3-export-plan.json",
+      "bytes": 658893,
+      "sha256": "7c140e2a83e9df657aff17c66bb1f307bb6b8a22db6cbba04e38841d7b9ef7a0"
+    },
+    {
+      "path": "model_storage/h3-preparation/native/joint-h3-native-attempt-1/h3-actual-image-inventory.json",
+      "bytes": 278536,
+      "sha256": "6a8ecb8b9160284baf91d13b61973e4ee3b64b5a740cde0908ccd7b4c03361b7"
+    }
+  ],
+  "base": "previously reviewed complete-only H1 exporter",
+  "code_delta": "Only module docstring and validate_plan phase restriction H1/H2 -> exact H3. Every other top-level function/class AST matches.",
+  "inventory_embedded_original_bytes_equal": true,
+  "selected_source_paths": 11,
+  "unique_source_bytes": 1674575368,
+  "all_aliases": 30,
+  "unselected_aliases": 19,
+  "all_original_observations_verbatim": true,
+  "source_path_selection": "first retained alias for each exact image; all aliases remain metadata, no claim of all 30 being re-read",
+  "original_outcome_preserved": "FAILED",
+  "finaluse_unmatched_pid_preserved": 1038111,
+  "daemon_second_generation_full_hash_copy": false,
+  "new_budget": "900 seconds post-terminal archive only, not an original native gate",
+  "blockers_found": [],
+  "scope": "Read-only static/deterministic source and plan comparison; no utility/native/remote rerun. Does not assert archive byte integrity before export.",
+  "inspection_note": "An initial ad-hoc key inspection used content_base64 instead of source_map.data_base64 and raised KeyError; corrected to the actual schema before performing embedded-byte equality. No source or original evidence was changed."
+}

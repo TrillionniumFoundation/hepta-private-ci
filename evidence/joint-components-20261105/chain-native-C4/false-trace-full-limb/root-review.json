@@ -1,0 +1,53 @@
+{
+  "schema": "root-C4-cost-outer-receipt-review-v1",
+  "phase": "false-trace-full-limb",
+  "commit": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+  "tree": "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14",
+  "job_id": "1a1ad0f6922-fc05-5850",
+  "terminal_unix_ms": 1793904850281,
+  "outer_manifest_and_authoritative_terminal_verified": true,
+  "source_before_equals_after": true,
+  "tracked_entries": 10357,
+  "tracked_bytes": 985270534,
+  "original_manifest_reported_sha256": "512542b54ea8d02b367e1a065b76e299761f1188226075177d64686695f9d887",
+  "original_reader_reported": "PASS",
+  "reported_counts": {
+    "cohort": 72,
+    "search": 288,
+    "candidate": 288,
+    "verifier": 1440
+  },
+  "elf_reported_sha256": "1fdf21d5f9e9d970b2304191d60631eb4ba7d15b009105bd3fd6f7ed502f7b7f",
+  "outer_elapsed_seconds": 16.723444613977335,
+  "original_runner_elapsed_seconds": 11.654355737,
+  "original_full_raw_and_ELF_export_independently_rehashed": false,
+  "raw_data_recalculated": false,
+  "files": [
+    {
+      "path": "C4-full-limb-manifest.json",
+      "bytes": 11047,
+      "sha256": "1bbdf2343a4ea70e33f9d05916b8e5e6619c7140063004e909000f379ed2a592"
+    },
+    {
+      "path": "C4-full-limb-launch.json",
+      "bytes": 1360,
+      "sha256": "41934eff00ea896eaf102cf0b2437aaf42af9e81005ecc80d156ae458f5fb029"
+    },
+    {
+      "path": "C4-full-limb-terminal.json",
+      "bytes": 952,
+      "sha256": "370cd608acfa80b84a0879d88b41d69d01f3f6079d87fe282333c3b9c8fc5312"
+    },
+    {
+      "path": "C4-full-limb-final-read.json",
+      "bytes": 14461,
+      "sha256": "9962961ead6fe62735d719da716432ab49b025ba05bf3a99565f0976d8474902"
+    },
+    {
+      "path": "run_frozen_w1_full_limb_false_trace_c4.py",
+      "bytes": 12610,
+      "sha256": "86391ecde9c8f7889384d143c022928770ae320ea34e80e86c82ab1fe4e849dd"
+    }
+  ],
+  "joint_gate_status": "HOLD"
+}

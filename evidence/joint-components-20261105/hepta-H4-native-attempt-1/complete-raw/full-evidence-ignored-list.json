@@ -1,0 +1,27 @@
+{
+  "scope": "classification from already captured exact ELF; no new test execution credit",
+  "command": [
+    "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_evidence-0f5076227f347d3a",
+    "--list",
+    "--ignored",
+    "--format",
+    "terse"
+  ],
+  "exit_code": 0,
+  "source": {
+    "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+    "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+    "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+    "environment_file": "native-environment.json",
+    "environment_sha256": "40341fe44840b6de0ca3cff68785116e5cfbca81c9a77124a82ca72b63234039"
+  },
+  "sha256": "a948cdfa5aeafc03fcfc63459e581ca254129f4d878949236e0bf42df3fe725f",
+  "same_image": true,
+  "expected_ignored": [
+    "authbus_outbox_tests::crash_delivery_child"
+  ],
+  "actual_ignored": [
+    "authbus_outbox_tests::crash_delivery_child"
+  ],
+  "log_sha256": "1767ec23fa131b69fbbb32a7a7eea29a41b4f10bac8eedffb9b30b683d43c6ed"
+}

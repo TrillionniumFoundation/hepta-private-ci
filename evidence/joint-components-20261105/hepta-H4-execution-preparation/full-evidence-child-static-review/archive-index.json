@@ -1,0 +1,529 @@
+{
+  "schema": "lossless-independent-review-source-bundle-v1",
+  "original_files": 103,
+  "original_bytes": 1628658,
+  "original_delivery_sha256": "52af01ebec12d748a83f39608f51eee0576efa67d3e5091df9d6f8dcd2b8a298",
+  "scope": "Original static review inputs only; no native or remote execution. All original source/API bytes preserved in the archive.",
+  "files": [
+    {
+      "path": "configuration/fd_gate_evidence.py",
+      "bytes": 5420,
+      "sha256": "0fb050f795f982ad718938eba25c06d5e6831ce5c213a57dd166405039ba056d"
+    },
+    {
+      "path": "configuration/h4-extra-controls.json",
+      "bytes": 16587,
+      "sha256": "08d884ff93090767084059d1b40802fd3269c2b939b0f5534472c3ea663d908c"
+    },
+    {
+      "path": "configuration/live_fd_correspondence.py",
+      "bytes": 7949,
+      "sha256": "fc8fc5cfc7c084a3a5884449cd683f94fbd6ee377455ba5a0df6033a6ceed0a4"
+    },
+    {
+      "path": "configuration/nextest_fd_runner.py",
+      "bytes": 9554,
+      "sha256": "9679cc6e11762c29b4c0ee92dd7715d3fce0555a6f8e0e10ed9d0b007951381a"
+    },
+    {
+      "path": "configuration/run_h4_native_pipeline.py",
+      "bytes": 34196,
+      "sha256": "5bd64b700c9974582e0b70c3a97117982b8d6f470f8d308b99accc42bba1714a"
+    },
+    {
+      "path": "configuration/test_elf_capture.py",
+      "bytes": 11001,
+      "sha256": "2cb676bff1657866dc39b3e35ff45644d1ce75981ec9ed3f8798509287ab5ebe"
+    },
+    {
+      "path": "delivery-manifest.json",
+      "bytes": 18839,
+      "sha256": "52af01ebec12d748a83f39608f51eee0576efa67d3e5091df9d6f8dcd2b8a298"
+    },
+    {
+      "path": "historical/full-evidence-library.json",
+      "bytes": 1620,
+      "sha256": "a9e0eb86c930df7a9a78dee829b941e804d55d86d046ec881628ddff5815d3cb"
+    },
+    {
+      "path": "historical/full-evidence-library.json.b2590fae562c47229c23b0ab9a8a6e62.log",
+      "bytes": 98296,
+      "sha256": "c371a078ac81af780b11ea5a71c1c29f0edf51e24f3a66211b3a84ebb43d4421"
+    },
+    {
+      "path": "local-source-coverage.json",
+      "bytes": 55723,
+      "sha256": "29a3b69d7608fc914551c1d04c0141540731c692ead7580c1e61b9b5596ce4a9"
+    },
+    {
+      "path": "raw/authbus_crypto_profile.rs.json",
+      "bytes": 7249,
+      "sha256": "13818aac5835fc70a681a48807a36e3ee2095ede55ec8e9602fb867cf478463d"
+    },
+    {
+      "path": "raw/authbus_crypto_profile_tests.rs.json",
+      "bytes": 7415,
+      "sha256": "589d9353bce8924ee228ec70503937154d21e6ecacf55b93c01ec6244517d931"
+    },
+    {
+      "path": "raw/authbus_frontier_guard.rs.json",
+      "bytes": 1943,
+      "sha256": "6815892251b479ce43275fa300bc90d0ba704b468535181ab643808dfa791ce5"
+    },
+    {
+      "path": "raw/authbus_issuer_floor.rs.json",
+      "bytes": 8547,
+      "sha256": "5110e82e1fe6adf05785a389d82402c0772b2ec210cf173942684c6cf5a492fa"
+    },
+    {
+      "path": "raw/authbus_issuer_floor_tests.rs.json",
+      "bytes": 3526,
+      "sha256": "d591314cebf960f103045a34e41cfb6f0fa3c8087d982946313405866c364e3a"
+    },
+    {
+      "path": "raw/authbus_outbox.rs.json",
+      "bytes": 13597,
+      "sha256": "e0064b711cfdb8e15c43272e2d9ffc9b223746d06dc9848fe74f37293743a25b"
+    },
+    {
+      "path": "raw/authbus_outbox_issuer_tests.rs.json",
+      "bytes": 4968,
+      "sha256": "1314662e33c50e5ed32015b4328fca4181d1059cc25a1a746a06c20c217cbf48"
+    },
+    {
+      "path": "raw/authbus_outbox_quarantine_tests.rs.json",
+      "bytes": 9255,
+      "sha256": "3e93bde582997f3e4e4999f428508e21aba3e35e1b67bdbafce70318770906bf"
+    },
+    {
+      "path": "raw/authbus_outbox_record.rs.json",
+      "bytes": 8538,
+      "sha256": "18678f2c2913d8a02d8b9e0310c44bac9ee5dc6a11583f64da1030dabc91686b"
+    },
+    {
+      "path": "raw/authbus_outbox_tests.json",
+      "bytes": 22375,
+      "sha256": "7dca69c1075242fd9c039506c7c658386db6a65be7a66ef47e78b730c81f5db2"
+    },
+    {
+      "path": "raw/authbus_outbox_worker.rs.json",
+      "bytes": 14279,
+      "sha256": "e19923bedea0aae48c96fe48ff95520e5d9f185101dddca0f9071859822765d3"
+    },
+    {
+      "path": "raw/authbus_owner_policy.rs.json",
+      "bytes": 4975,
+      "sha256": "b7a06300852fb91e9ba940c2ec83e82b046d16f88d6a39ddd05e7bf4f2096997"
+    },
+    {
+      "path": "raw/authbus_owner_policy_tests.rs.json",
+      "bytes": 7835,
+      "sha256": "1edae4790f2534054127cc6b5217203174687f2e396cf5a0aa21bc0688bb7309"
+    },
+    {
+      "path": "raw/authbus_recovery.rs.json",
+      "bytes": 20351,
+      "sha256": "90ebcff62a778ba4cf171091582a9d6e5a7e6b1eec645a09475caf46c3783b64"
+    },
+    {
+      "path": "raw/authbus_recovery_schema.rs.json",
+      "bytes": 2221,
+      "sha256": "7f7cf0703466004f6a3759d7da2efae2619702a93a8efe4422c490249691076f"
+    },
+    {
+      "path": "raw/authbus_recovery_tests.rs.json",
+      "bytes": 13974,
+      "sha256": "6498ca412bd2f181a381c8ed9d19cef2b665de7f9641f3c734465a2aff9653b1"
+    },
+    {
+      "path": "raw/authbus_retirement_pq_tests.rs.json",
+      "bytes": 5229,
+      "sha256": "43c235a01dcccbfcbe32501f8fa3b0f8cbca70e49b97acded5171b377ce8aca0"
+    },
+    {
+      "path": "raw/authbus_store.rs.json",
+      "bytes": 7038,
+      "sha256": "9c919313175bcc132cd5cd5180c15f9d8e9150a67b26d6bbaa66b250111d06bd"
+    },
+    {
+      "path": "raw/authbus_store_tests.rs.json",
+      "bytes": 5386,
+      "sha256": "ee4d434bd23adc4ebb6939f42741156a266b34fb40e127254a039be2b0f38b7a"
+    },
+    {
+      "path": "raw/canonical.rs.json",
+      "bytes": 1408,
+      "sha256": "525e3dfce40b0e6c47cb6ce8783202ebebd2d42fb409eb15c59e846a1d55be13"
+    },
+    {
+      "path": "raw/directory.json",
+      "bytes": 138775,
+      "sha256": "0fe7d17a4ef778c1beb29c665b7d15182f7d764ee7fcde30f40be79d9cded241"
+    },
+    {
+      "path": "raw/governance_store.rs.json",
+      "bytes": 9844,
+      "sha256": "6dc5eb70976c9e3bc8dc7c8a5e06d7d6fdbf06b05c2b56abd47ec5494c7eb22b"
+    },
+    {
+      "path": "raw/governance_validation.rs.json",
+      "bytes": 4990,
+      "sha256": "ef70ab249472a17c41d7c1254c8afeeec120a222f9237c30d3916e2038c0e06c"
+    },
+    {
+      "path": "raw/historical.rs.json",
+      "bytes": 19664,
+      "sha256": "22e262d99e55f0334f96c439a3cc8c78a9ba0526a530e18362933715950823ad"
+    },
+    {
+      "path": "raw/historical_tests.rs.json",
+      "bytes": 11680,
+      "sha256": "39ddb06fc163f0ce920d77680ea06eadf613ed8ee568d1ddd841c6795196f34f"
+    },
+    {
+      "path": "raw/lib.json",
+      "bytes": 6200,
+      "sha256": "253dcafb7cd839d73e2e927a82dbe861df874bf5d9ec3ccf5128039880391a45"
+    },
+    {
+      "path": "raw/provider_claim.rs.json",
+      "bytes": 5724,
+      "sha256": "e08431be54904b0b3929463f7109c7ffde3db9d4325663ac16bb2ed0c14bddb1"
+    },
+    {
+      "path": "raw/provider_claim_tests.rs.json",
+      "bytes": 5514,
+      "sha256": "82ae7789d48f95003d8d3f85730e4fc452f3dc28e885598edae743e6c01ff58b"
+    },
+    {
+      "path": "raw/provider_effect_observation_migration_tests.rs.json",
+      "bytes": 8968,
+      "sha256": "b1c996aee62911cf3ec07aee59cd65887618d5f1652837641b4a8381486fb1d8"
+    },
+    {
+      "path": "raw/provider_effect_tests.rs.json",
+      "bytes": 77836,
+      "sha256": "f6c1f0a26cb59ebe20dc24c74a0b006d709b3152d3ca36c90bc23cbd2f060cba"
+    },
+    {
+      "path": "raw/provider_insert.rs.json",
+      "bytes": 3264,
+      "sha256": "ee04f845b227662d22dd4f41fed5e227f87b13fbc9de8a0f28e27bf53f0fcfcc"
+    },
+    {
+      "path": "raw/provider_record.rs.json",
+      "bytes": 16754,
+      "sha256": "3141f950f7fd8cc43caa6137f988f1445b1a8d23df33613ac0d5ef8c97b0f2c5"
+    },
+    {
+      "path": "raw/provider_store.rs.json",
+      "bytes": 12783,
+      "sha256": "666a9b461f5be3cd23ba0159f8146f7659fafbaf8e8132c309c854c3964b074b"
+    },
+    {
+      "path": "raw/provider_tests.rs.json",
+      "bytes": 39657,
+      "sha256": "9078801cc26263c1d9b30dab40912efd5355a0d1196c187c9d6b049f4fdb1ad4"
+    },
+    {
+      "path": "raw/recovery_frontier.rs.json",
+      "bytes": 10844,
+      "sha256": "8c6d4fbc45856d1c1f297484a29fe65e2c02de14901b8cf6de2fdb6de4e13ef1"
+    },
+    {
+      "path": "raw/recovery_invocation_frontier.rs.json",
+      "bytes": 5347,
+      "sha256": "3ed12fc4b5dc4700832edcc57e80be38fa69f1fbddbffd430fdc84af341a7595"
+    },
+    {
+      "path": "raw/schema_validation.rs.json",
+      "bytes": 35779,
+      "sha256": "d0749eb8e4aa7ffe12ce36ae0b2d507d65e8e7915ceab9b74e1571f12b2c2a3a"
+    },
+    {
+      "path": "raw/store.rs.json",
+      "bytes": 18782,
+      "sha256": "422333b42274efdb55da638cb9a719efe150f9cc94c4b6391d4278331bff17e4"
+    },
+    {
+      "path": "raw/summary.rs.json",
+      "bytes": 4050,
+      "sha256": "46931b3575d0fe1ed02795ff34a2723d6dd90001eacdfe6c3e9b95355e4fd119"
+    },
+    {
+      "path": "raw/summary_tests.rs.json",
+      "bytes": 6948,
+      "sha256": "573ce4d48ac745a0b307bc0b41d410b9d240db558a29b1d5f8a8037263c5bf55"
+    },
+    {
+      "path": "review.json",
+      "bytes": 5865,
+      "sha256": "3a0b4671acaec307f7d5b6153426555f3d6479818dcaabe1d97d9d2ed681bc18"
+    },
+    {
+      "path": "review.md",
+      "bytes": 4654,
+      "sha256": "482e46d8bddded52434f494a8b750f7c8abd1ae74c9e03596a5cf23afce52e82"
+    },
+    {
+      "path": "source-inventory.json",
+      "bytes": 42070,
+      "sha256": "75030d4df478b4207f1034d188dde65c58a93928f08dea29c961e4728c3220bc"
+    },
+    {
+      "path": "source/codex-rs/hepta-evidence/src/authbus_crypto_profile.rs",
+      "bytes": 6587,
+      "sha256": "2b6062eaa7ae0674d96a66867d300ec6df611ca46377b691f0784224c7f07d3b"
+    },
+    {
+      "path": "source/codex-rs/hepta-evidence/src/authbus_crypto_profile_tests.rs",
+      "bytes": 6709,
+      "sha256": "529a3d92c374aea006aa68e423b78a13b9e595d77857cfc82d2e8679e4cfdcc3"
+    },
+    {
+      "path": "source/codex-rs/hepta-evidence/src/authbus_frontier_guard.rs",
+      "bytes": 1429,
+      "sha256": "e263a17c266a9b715f3549b292940adc99b7071388e35dc2bd830d1bdb7d6355"
+    },
+    {
+      "path": "source/codex-rs/hepta-evidence/src/authbus_issuer_floor.rs",
+      "bytes": 7878,
+      "sha256": "ceb6f7b1afdfbcf70ebc6498fdc34df60de5a4339630123bb081ff266066aaa6"
+    },
+    {
+      "path": "source/codex-rs/hepta-evidence/src/authbus_issuer_floor_tests.rs",
+      "bytes": 2953,
+      "sha256": "7c7aed8d8234e4a269f7ae612bb6f70db27de8b8a754dd327da94c03ba1263bd"
+    },
+    {
+      "path": "source/codex-rs/hepta-evidence/src/authbus_outbox.rs",
+      "bytes": 12791,
+      "sha256": "fff4d861a5d3792747c0a1e9c638b655dd1802d51f63f317ce2fee1827223397"
+    },
+    {
+      "path": "source/codex-rs/hepta-evidence/src/authbus_outbox_issuer_tests.rs",
+      "bytes": 4334,
+      "sha256": "cef82382a4f87b3bfda95307fa5bc06c1f48835906401d984999eceae4bd70b8"
+    },
+    {
+      "path": "source/codex-rs/hepta-evidence/src/authbus_outbox_quarantine_tests.rs",
+      "bytes": 8460,
+      "sha256": "693ef14df530f1ecf2cc7056b21306e1414b560ddf4ae5f2a6c30fce407cb667"
+    },
+    {
+      "path": "source/codex-rs/hepta-evidence/src/authbus_outbox_record.rs",
+      "bytes": 7796,
+      "sha256": "a134604013041e1f7aa519cf717265eb4f76c46c4f4cea2aed9b7f118aab6b60"
+    },
+    {
+      "path": "source/codex-rs/hepta-evidence/src/authbus_outbox_tests.rs",
+      "bytes": 21191,
+      "sha256": "623b0eb35c304650c7ebc12e5971cce66b3135c56d47cfced6c033483a1fc2a9"
+    },
+    {
+      "path": "source/codex-rs/hepta-evidence/src/authbus_outbox_worker.rs",
+      "bytes": 13407,
+      "sha256": "664c80177acce57eb509d5e4eecb62dda694b313349f64e5c5360bab536f4c74"
+    },
+    {
+      "path": "source/codex-rs/hepta-evidence/src/authbus_owner_policy.rs",
+      "bytes": 4371,
+      "sha256": "5e7317bbde2339494d8c4b7edf822f176d6b08628ad63a23ab55752f3bde729a"
+    },
+    {
+      "path": "source/codex-rs/hepta-evidence/src/authbus_owner_policy_tests.rs",
+      "bytes": 7134,
+      "sha256": "4478511ca609ff72a26b8e891719569d7b12278df225f75469a2481a9761821e"
+    },
+    {
+      "path": "source/codex-rs/hepta-evidence/src/authbus_recovery.rs",
+      "bytes": 19255,
+      "sha256": "2cb58658874a7147e2e8482ff6d9b11b92b9a4320778b1948398e79de625fcd4"
+    },
+    {
+      "path": "source/codex-rs/hepta-evidence/src/authbus_recovery_schema.rs",
+      "bytes": 1662,
+      "sha256": "95cdf70a0a24a5dc79c1014e3415ea8518c58168b7f0d9f503abff23200517de"
+    },
+    {
+      "path": "source/codex-rs/hepta-evidence/src/authbus_recovery_tests.rs",
+      "bytes": 13072,
+      "sha256": "63686a9b67d1e1018b42de5b8044713c652dc46149bc104cfb7903848da8ada7"
+    },
+    {
+      "path": "source/codex-rs/hepta-evidence/src/authbus_retirement_pq_tests.rs",
+      "bytes": 4612,
+      "sha256": "b615727a40b3ff648b94d772ff60726a6bd726c4d755455b8a762f7c1a95f16f"
+    },
+    {
+      "path": "source/codex-rs/hepta-evidence/src/authbus_store.rs",
+      "bytes": 6409,
+      "sha256": "2fe4d32c491b988c546f8623326699140359dfc1df0bb3b511325a90d7b8fbe9"
+    },
+    {
+      "path": "source/codex-rs/hepta-evidence/src/authbus_store_tests.rs",
+      "bytes": 4765,
+      "sha256": "7d516f63e78b7494c918e2ee28377213bb0df08f009f66266ec77914cc6fb84b"
+    },
+    {
+      "path": "source/codex-rs/hepta-evidence/src/canonical.rs",
+      "bytes": 934,
+      "sha256": "09e9aca8b74126cac11cf0e46e23c68b4ddfb673a0ee1173ab0a03e821fc8593"
+    },
+    {
+      "path": "source/codex-rs/hepta-evidence/src/governance_store.rs",
+      "bytes": 9063,
+      "sha256": "0708b193f69a9d9b76e279e227c0bb0131f567134382dce45156ccc1a678e672"
+    },
+    {
+      "path": "source/codex-rs/hepta-evidence/src/governance_validation.rs",
+      "bytes": 4381,
+      "sha256": "a9c9e0fa4bfa71d6d6597c6260947fe29aab557c216ee2138dc39b1ab8b0135c"
+    },
+    {
+      "path": "source/codex-rs/hepta-evidence/src/historical.rs",
+      "bytes": 18608,
+      "sha256": "14d0b11a512fc9a2d397962e7cc897c1c86f2e1e2e6d5d1a0150e8d5bef2b488"
+    },
+    {
+      "path": "source/codex-rs/hepta-evidence/src/historical_tests.rs",
+      "bytes": 10753,
+      "sha256": "09a3d1c0f8be2393c4e522da40ce64dde76cc0730d38c1d3672d9eb68687b7e4"
+    },
+    {
+      "path": "source/codex-rs/hepta-evidence/src/lib.rs",
+      "bytes": 5572,
+      "sha256": "498fb3633ded549e992ae4695f3e87a5e4bd92e4ed9a2ed6ea7f55b7f27fb7ad"
+    },
+    {
+      "path": "source/codex-rs/hepta-evidence/src/provider_claim.rs",
+      "bytes": 5136,
+      "sha256": "c9e74f1e3d45143e7ab98270f8920c3733b1ec5fb51e797f5c21bfa3290acc04"
+    },
+    {
+      "path": "source/codex-rs/hepta-evidence/src/provider_claim_tests.rs",
+      "bytes": 4858,
+      "sha256": "d533990bcd9b1105a59f29dc5d10c8653dbb4aeb0fb5cc8ced7acc92e99caad7"
+    },
+    {
+      "path": "source/codex-rs/hepta-evidence/src/provider_effect_observation_migration_tests.rs",
+      "bytes": 8119,
+      "sha256": "02efd45481004f8d69297a65951638dd29c3fe992d07c6a40990d5f5ca9c2b06"
+    },
+    {
+      "path": "source/codex-rs/hepta-evidence/src/provider_effect_observation_schema.rs",
+      "bytes": 1102,
+      "sha256": "7ee35ce057ec7e31fe7b15553f544877d1e54eeff908e6fbdab702a91f8665cc"
+    },
+    {
+      "path": "source/codex-rs/hepta-evidence/src/provider_effect_recovery_provenance_tests.rs",
+      "bytes": 20051,
+      "sha256": "cce524c13697ca265cda23dade36401aaf74f84681c7c5859f22e6a34642223e"
+    },
+    {
+      "path": "source/codex-rs/hepta-evidence/src/provider_effect_store.rs",
+      "bytes": 62025,
+      "sha256": "0d769da9be33f7ee5bdb81b6a5013dbdcc36e9444ad50ce3a11979aadfbb1239"
+    },
+    {
+      "path": "source/codex-rs/hepta-evidence/src/provider_effect_tests.rs",
+      "bytes": 74555,
+      "sha256": "031eba89ab1eaace4d00bf5c6cdb667299f115790c0970dd1057f21b526a7875"
+    },
+    {
+      "path": "source/codex-rs/hepta-evidence/src/provider_insert.rs",
+      "bytes": 2726,
+      "sha256": "f2f598ab477ad721a98eaa1f89e014641ea83119c5cd9744cfa90813adfb61e1"
+    },
+    {
+      "path": "source/codex-rs/hepta-evidence/src/provider_record.rs",
+      "bytes": 15743,
+      "sha256": "30aeecb6b1f35e6e8aa0764e99f735e0ac38da81b16f4ce01dfcf40cf0ee693b"
+    },
+    {
+      "path": "source/codex-rs/hepta-evidence/src/provider_store.rs",
+      "bytes": 11980,
+      "sha256": "f70b31cd2bac8750198004ec1634170dc931fb6be2fd69e33a9f4c2d5968f757"
+    },
+    {
+      "path": "source/codex-rs/hepta-evidence/src/provider_tests.rs",
+      "bytes": 37591,
+      "sha256": "e7d5c073de06bf139c94b486cc7c6dd1559444110981494b939c6def51727017"
+    },
+    {
+      "path": "source/codex-rs/hepta-evidence/src/qualification.rs",
+      "bytes": 53064,
+      "sha256": "5d74be55f5bb02077e655ff9d833ae82531cdeda00583e870454da1c9186efff"
+    },
+    {
+      "path": "source/codex-rs/hepta-evidence/src/qualification_tests.rs",
+      "bytes": 48038,
+      "sha256": "f6c5bcde1d1ad19312a973a97339129feb988de10bb7db5a8731eb2fc10c8de7"
+    },
+    {
+      "path": "source/codex-rs/hepta-evidence/src/recovery_effect_frontier.rs",
+      "bytes": 6962,
+      "sha256": "9032b9e4f489be70bc431f3fb8e2da413e3ce3bb4b27a76f3bd57c9d0d223c37"
+    },
+    {
+      "path": "source/codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs",
+      "bytes": 23469,
+      "sha256": "c1cbd465859f39c43ec5f17a7ff12d043049d572e222eeb263ddd67f46dfec66"
+    },
+    {
+      "path": "source/codex-rs/hepta-evidence/src/recovery_frontier.rs",
+      "bytes": 10071,
+      "sha256": "50b15b9ebda60e7d46b3a67cafa0dee209c6e83387c1abe59799d808861bb08b"
+    },
+    {
+      "path": "source/codex-rs/hepta-evidence/src/recovery_invocation_frontier.rs",
+      "bytes": 4732,
+      "sha256": "9a41d1b831c5d7a7100f53a556a91ea00454e1198f33163ec3d4fd4287a0eeb8"
+    },
+    {
+      "path": "source/codex-rs/hepta-evidence/src/recovery_invocation_frontier_tests.rs",
+      "bytes": 16666,
+      "sha256": "64d163ec3b9e4c5c878823fc99b8278b59eead8f9adc45a8042c550cd3359a4a"
+    },
+    {
+      "path": "source/codex-rs/hepta-evidence/src/recovery_invocation_schema.rs",
+      "bytes": 5523,
+      "sha256": "fe80bcd35c653f7529e89ef6e9918ff57ac4d32f52fd1aaccf63d03ed042955a"
+    },
+    {
+      "path": "source/codex-rs/hepta-evidence/src/recovery_invocation_schema_tests.rs",
+      "bytes": 7740,
+      "sha256": "1c5d4d6bcf9ccd8157790077772b441a18909876835b1e6563c5ae9d8b837d09"
+    },
+    {
+      "path": "source/codex-rs/hepta-evidence/src/schema_validation.rs",
+      "bytes": 33353,
+      "sha256": "0a4a98eb162d47178a3a641baa4c3fce553f2f31fdd40f1e9db704fac8d6557c"
+    },
+    {
+      "path": "source/codex-rs/hepta-evidence/src/store.rs",
+      "bytes": 17815,
+      "sha256": "e93f7c803470479f632c8fc0efa070c483adeb215f427950ef41debe285080fc"
+    },
+    {
+      "path": "source/codex-rs/hepta-evidence/src/summary.rs",
+      "bytes": 3498,
+      "sha256": "6d9c47a26336a2fe107d858c811eca80857ed175ad4e99213e05aead7166831c"
+    },
+    {
+      "path": "source/codex-rs/hepta-evidence/src/summary_tests.rs",
+      "bytes": 6241,
+      "sha256": "3084fbc198cf8edf0999b0656feb562352b4d5bf8acf938c91bed17fb6ec03b7"
+    },
+    {
+      "path": "source/codex-rs/hepta-evidence/src/tests.rs",
+      "bytes": 32592,
+      "sha256": "5c8fc62ca0609b453a197df22a4cbe9b5f69ddb17d534e13e10bd84369dfb212"
+    },
+    {
+      "path": "verify_source_inventory.py",
+      "bytes": 4435,
+      "sha256": "2e22c80818a7299e7242bdadd4e43c3cf54804424fc6d65a032a65634089d4c2"
+    }
+  ]
+}

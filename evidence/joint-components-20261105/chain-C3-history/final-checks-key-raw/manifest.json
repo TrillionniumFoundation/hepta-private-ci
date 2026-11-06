@@ -1,0 +1,375 @@
+{
+  "build_environment": {
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_TARGET_DIR": "/home/qian-qi/work/chain-joint-20261105-93bfc-w1-target-C3",
+    "CARGO_TERM_COLOR": "never",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "RUST_TEST_THREADS": "1"
+  },
+  "commit": "b5ef97b29c2e8b738525a2e3326dd60784c46e72",
+  "compiler_override_keys": [],
+  "completed_utc": "2026-11-05T17:30:08Z",
+  "coordinator_sha256": "fdb4a06feb0d5625b76a40982cd39f2f1ba311e732d0eea8424fec88f4ee874e",
+  "execution_context": "local-native-preflight",
+  "failures": [
+    "applicability-controls"
+  ],
+  "fastest_adversary_qualified": false,
+  "observations": [
+    {
+      "command": [
+        "bash",
+        "scripts/project-preflight.sh",
+        "--audit"
+      ],
+      "elapsed_ns": 85410938,
+      "exit_code": 0,
+      "name": "candidate-preflight",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "path": "candidate-preflight.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stdout": {
+        "bytes": 133,
+        "path": "candidate-preflight.stdout",
+        "sha256": "a47133fd7030ccda88d70f7e8f0c9df1ffb0fc5fd3257ed034439bbe6fc6e2e0"
+      },
+      "stdout_limit_bytes": 8388608,
+      "timed_out": false,
+      "timeout_seconds": 120
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "scripts/ci/verify_ci_source.py",
+        "--kind",
+        "head",
+        "--expected-head",
+        "b5ef97b29c2e8b738525a2e3326dd60784c46e72",
+        "--output",
+        "/home/qian-qi/work/chain-joint-20261105-93bfc-w1-native-C3/checks/source-before.json"
+      ],
+      "elapsed_ns": 2369182188,
+      "exit_code": 0,
+      "name": "source-before",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "path": "source-before.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stdout": {
+        "bytes": 422,
+        "path": "source-before.stdout",
+        "sha256": "0d21014c60b0e224dbb017c43425c169d8bb096be4b403874a0e514ad56dc6e1"
+      },
+      "stdout_limit_bytes": 8388608,
+      "timed_out": false,
+      "timeout_seconds": 600
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "scripts/ci/test_work_rejection_report.py"
+      ],
+      "elapsed_ns": 23064389282,
+      "exact_92_controls": true,
+      "exit_code": 0,
+      "name": "rejection-python-controls",
+      "passed": true,
+      "stderr": {
+        "bytes": 192,
+        "path": "rejection-python-controls.stderr",
+        "sha256": "c2e1322df11881fe9d9a194d11a7a1c34d4cad807170100b6ca4fd077f7c6db0"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stdout": {
+        "bytes": 0,
+        "path": "rejection-python-controls.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout_limit_bytes": 8388608,
+      "timed_out": false,
+      "timeout_seconds": 300
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "scripts/ci/test_applicability.py"
+      ],
+      "elapsed_ns": 300005226838,
+      "exchange_error": "NATIVE_EXECUTOR_TIMEOUT",
+      "exit_code": -9,
+      "name": "applicability-controls",
+      "passed": false,
+      "stderr": {
+        "bytes": 2825,
+        "path": "applicability-controls.stderr",
+        "sha256": "4d70d3efc55ff0035265cc5e320b2d35be539141f848bd7e6c8ce04f736c8921"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stderr_truncated": false,
+      "stdout": {
+        "bytes": 0,
+        "path": "applicability-controls.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout_limit_bytes": 8388608,
+      "stdout_truncated": false,
+      "timed_out": true,
+      "timeout_seconds": 300
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "scripts/ci/check_ci_contract.py"
+      ],
+      "elapsed_ns": 246266192,
+      "exit_code": 0,
+      "name": "ci-contract",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "path": "ci-contract.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stdout": {
+        "bytes": 180,
+        "path": "ci-contract.stdout",
+        "sha256": "9e1991fcbac915b303bd1a6b9db2ce04a4094fa15bb6f05e83d57504313bf975"
+      },
+      "stdout_limit_bytes": 8388608,
+      "timed_out": false,
+      "timeout_seconds": 300
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "scripts/ci/test_ci_contract.py"
+      ],
+      "elapsed_ns": 62585213461,
+      "exit_code": 0,
+      "name": "ci-contract-controls",
+      "passed": true,
+      "stderr": {
+        "bytes": 16673,
+        "path": "ci-contract-controls.stderr",
+        "sha256": "c2be37192e16136e49084c6f6de8f38d8d44182f036474fdbe81ebd891530560"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stdout": {
+        "bytes": 0,
+        "path": "ci-contract-controls.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout_limit_bytes": 8388608,
+      "timed_out": false,
+      "timeout_seconds": 300
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "scripts/refresh_distributed_source_inventory.py",
+        "--check"
+      ],
+      "elapsed_ns": 94476414,
+      "exit_code": 0,
+      "name": "source-inventory",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "path": "source-inventory.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stdout": {
+        "bytes": 35,
+        "path": "source-inventory.stdout",
+        "sha256": "8bd8670851048e151182dd0f0bc26834d54e151f39ca53f06c98e06c4479c51a"
+      },
+      "stdout_limit_bytes": 8388608,
+      "timed_out": false,
+      "timeout_seconds": 300
+    },
+    {
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "fmt",
+        "--manifest-path",
+        "trillionnium/Cargo.toml",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "elapsed_ns": 18650815486,
+      "exit_code": 0,
+      "name": "native-fmt",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "path": "native-fmt.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stdout": {
+        "bytes": 0,
+        "path": "native-fmt.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout_limit_bytes": 8388608,
+      "timed_out": false,
+      "timeout_seconds": 60
+    },
+    {
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "test",
+        "--locked",
+        "--release",
+        "--manifest-path",
+        "trillionnium/Cargo.toml",
+        "-p",
+        "trnm-crypto-primitives",
+        "--example",
+        "pon_rejection_cost",
+        "--",
+        "--test-threads=1"
+      ],
+      "elapsed_ns": 43759352123,
+      "exact_three_tests": true,
+      "exit_code": 0,
+      "name": "native-three-tests",
+      "passed": true,
+      "stderr": {
+        "bytes": 2112,
+        "path": "native-three-tests.stderr",
+        "sha256": "c24485ec3191c797bd5216f98a8060725e79564d478891fbd73369ce7c41accb"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stdout": {
+        "bytes": 371,
+        "path": "native-three-tests.stdout",
+        "sha256": "8a7d54a1a34c8208db074197cc60027e15a086a3d6aa7eb67b87dbd81c05e275"
+      },
+      "stdout_limit_bytes": 8388608,
+      "timed_out": false,
+      "timeout_seconds": 900
+    },
+    {
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "clippy",
+        "--locked",
+        "--manifest-path",
+        "trillionnium/Cargo.toml",
+        "-p",
+        "trnm-crypto-primitives",
+        "--example",
+        "pon_rejection_cost",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "elapsed_ns": 19995895148,
+      "exit_code": 0,
+      "name": "native-strict-clippy",
+      "passed": true,
+      "stderr": {
+        "bytes": 1954,
+        "path": "native-strict-clippy.stderr",
+        "sha256": "b5352282b7df67f66a950f4bc7ffdd148180635b398a92e6369a8fc36d884008"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stdout": {
+        "bytes": 0,
+        "path": "native-strict-clippy.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout_limit_bytes": 8388608,
+      "timed_out": false,
+      "timeout_seconds": 900
+    },
+    {
+      "command": [
+        "python3",
+        "-B",
+        "scripts/ci/verify_ci_source.py",
+        "--kind",
+        "head",
+        "--expected-head",
+        "b5ef97b29c2e8b738525a2e3326dd60784c46e72",
+        "--output",
+        "/home/qian-qi/work/chain-joint-20261105-93bfc-w1-native-C3/checks/source-after.json"
+      ],
+      "elapsed_ns": 31601021535,
+      "exit_code": 0,
+      "name": "source-after",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "path": "source-after.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stdout": {
+        "bytes": 422,
+        "path": "source-after.stdout",
+        "sha256": "0d21014c60b0e224dbb017c43425c169d8bb096be4b403874a0e514ad56dc6e1"
+      },
+      "stdout_limit_bytes": 8388608,
+      "timed_out": false,
+      "timeout_seconds": 600
+    }
+  ],
+  "output": "/home/qian-qi/work/chain-joint-20261105-93bfc-w1-native-C3/checks",
+  "passed": false,
+  "phase": "checks",
+  "production_activation": false,
+  "public_service_measured": false,
+  "root": "/home/qian-qi/work/chain-joint-20261105-93bfc-current",
+  "schema": "trnm-c3-local-w1-native-phase-v1",
+  "source_after": {
+    "base": null,
+    "candidate": "b5ef97b29c2e8b738525a2e3326dd60784c46e72",
+    "kind": "head",
+    "prospective_merge": null,
+    "schema": "trnm-ci-source-v1",
+    "tested_commit": "b5ef97b29c2e8b738525a2e3326dd60784c46e72",
+    "tested_tree": "020880f22725e93cabb65c6e7eda3cbbd3c2405a",
+    "tests_executed_by_identity_check": false,
+    "tracked_bytes": 985270534,
+    "tracked_entries": 10357,
+    "tracked_worktree_verified": true
+  },
+  "source_before": {
+    "base": null,
+    "candidate": "b5ef97b29c2e8b738525a2e3326dd60784c46e72",
+    "kind": "head",
+    "prospective_merge": null,
+    "schema": "trnm-ci-source-v1",
+    "tested_commit": "b5ef97b29c2e8b738525a2e3326dd60784c46e72",
+    "tested_tree": "020880f22725e93cabb65c6e7eda3cbbd3c2405a",
+    "tests_executed_by_identity_check": false,
+    "tracked_bytes": 985270534,
+    "tracked_entries": 10357,
+    "tracked_worktree_verified": true
+  },
+  "started_utc": "2026-11-05T17:21:45Z",
+  "tree": "020880f22725e93cabb65c6e7eda3cbbd3c2405a",
+  "work_hardness_accepted": false
+}

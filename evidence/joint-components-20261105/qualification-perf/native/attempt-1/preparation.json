@@ -1,0 +1,104 @@
+{
+  "base_commit": "1556a4df6e279055fd8196f81a4ca2fe0f19384a",
+  "cargo_lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+  "existing_configuration_after": {
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/config": "24452f7031356ffbc08ab7fb9657efa5b67fb0b16b2a2ce704ec99d1514267b8",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/hepta-audit-provider-recovery-fix-20261103/config.worktree": "bfefdfeb2bf56f4a5282c172fe3a69b4075e13fe3bf3cd54f6611bafa461c276",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/source/config.worktree": "443a5f645c23c3d0c0aa09f634b2ad111d46ef61946b598a2fb311678ab47454"
+  },
+  "existing_configuration_before": {
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/config": "24452f7031356ffbc08ab7fb9657efa5b67fb0b16b2a2ce704ec99d1514267b8",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/hepta-audit-provider-recovery-fix-20261103/config.worktree": "bfefdfeb2bf56f4a5282c172fe3a69b4075e13fe3bf3cd54f6611bafa461c276",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/source/config.worktree": "443a5f645c23c3d0c0aa09f634b2ad111d46ef61946b598a2fb311678ab47454"
+  },
+  "existing_configuration_unchanged": true,
+  "existing_recovery_identity_before": {
+    "commit": "a877333eff1577179fce8b1ceb6edf4322440e03",
+    "dirty": false,
+    "parents": [
+      "13c8a987927f4d6bf3db1e57dc6e7bb692800b74"
+    ],
+    "tree": "40271e58d09387864fb4865cc02ec5cad0b5707b"
+  },
+  "existing_recovery_identity_unchanged": true,
+  "final_identity": {
+    "commit": "4dce06a9945fc54482f546c9dfb7cbb7a4716ccc",
+    "dirty": false,
+    "parents": [
+      "a877333eff1577179fce8b1ceb6edf4322440e03"
+    ],
+    "tree": "ace984bea899295f7e8fa6666fc78cfd49ad2a92"
+  },
+  "finished_unix": 1793893636.6588638,
+  "hidden_flags": 0,
+  "initial_identity": {
+    "commit": "a877333eff1577179fce8b1ceb6edf4322440e03",
+    "dirty": false,
+    "parents": [
+      "13c8a987927f4d6bf3db1e57dc6e7bb692800b74"
+    ],
+    "tree": "40271e58d09387864fb4865cc02ec5cad0b5707b"
+  },
+  "kind": "qualification_perf_preparation",
+  "native_tests_started": false,
+  "patch_sha256": "903269d4d4741e051437dcc6eaeaf5e6a455a4a88fab10f4b0606e415ca8e0b7",
+  "phase": "ready",
+  "recovery_component_commit": "a877333eff1577179fce8b1ceb6edf4322440e03",
+  "schema_version": 1,
+  "source": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/qualification-perf-source",
+  "source_sha256": {
+    "codex-rs/hepta-evidence/src/qualification.rs": "5d74be55f5bb02077e655ff9d833ae82531cdeda00583e870454da1c9186efff",
+    "codex-rs/hepta-evidence/src/qualification_tests.rs": "f6c5bcde1d1ad19312a973a97339129feb988de10bb7db5a8731eb2fc10c8de7"
+  },
+  "started_unix": 1793893624.2772725,
+  "status": "passed",
+  "steps": {
+    "apply": {
+      "command": [
+        "git",
+        "apply",
+        "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/evidence/qualification-perf-1/reviewed-input.patch"
+      ],
+      "exit_code": 0,
+      "log_file": "apply.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "apply-check": {
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/evidence/qualification-perf-1/reviewed-input.patch"
+      ],
+      "exit_code": 0,
+      "log_file": "apply-check.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "commit": {
+      "command": [
+        "git",
+        "commit",
+        "--only",
+        "codex-rs/hepta-evidence/src/qualification.rs",
+        "codex-rs/hepta-evidence/src/qualification_tests.rs",
+        "-m",
+        "perf(evidence): avoid unused decision digests while preserving history checks"
+      ],
+      "exit_code": 0,
+      "log_file": "commit.log",
+      "log_sha256": "69c4d86aab55c7a95a4e43bbdb233594bdea71a4f02d99040d3ccc6a126fa3d1"
+    },
+    "format-preparation": {
+      "command": [
+        "just",
+        "fmt",
+        "--base",
+        "1556a4df6e279055fd8196f81a4ca2fe0f19384a"
+      ],
+      "exit_code": 0,
+      "log_file": "format-preparation.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "tracked_files": 11825
+}

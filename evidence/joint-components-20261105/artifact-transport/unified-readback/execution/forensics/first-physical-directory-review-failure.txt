@@ -1,0 +1,10 @@
+{"phase": "H1", "independently_reopened_members": 9, "actual_elf_bytes": 774620584}
+{"phase": "H2", "independently_reopened_members": 14, "actual_elf_bytes": 1512251368}
+Traceback (most recent call last):
+  File "/workspace/scratch/93bfcfe29fc8/model_storage/git-archive-closure-review/verify_consumed_members.py", line 271, in <module>
+    main()
+  File "/workspace/scratch/93bfcfe29fc8/model_storage/git-archive-closure-review/verify_consumed_members.py", line 131, in main
+    need(len(expected) == member_count and expected == phase_result['members'] and actual_set == set(expected), 'physical member inventory')
+  File "/workspace/scratch/93bfcfe29fc8/model_storage/git-archive-closure-review/verify_actual_transport.py", line 37, in need
+    raise ValueError(why)
+ValueError: physical member inventory

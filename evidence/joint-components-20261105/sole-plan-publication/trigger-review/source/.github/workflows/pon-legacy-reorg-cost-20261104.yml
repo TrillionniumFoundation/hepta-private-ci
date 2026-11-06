@@ -1,0 +1,480 @@
+name: PoN Legacy reorg observation validation
+on:
+  push:
+    branches:
+      - fix/chain-legacy-reorg-cost-20261104
+permissions:
+  contents: read
+concurrency:
+  group: pon-legacy-reorg-cost-${{ github.ref }}
+  cancel-in-progress: false
+env:
+  CI: "true"
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  RUST_TEST_THREADS: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+jobs:
+  controls:
+    name: Legacy observation controls (ARM head)
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 180
+    env:
+      SOURCE_KIND: head
+      EXPECTED_HEAD: ${{ github.sha }}
+      TRNM_EXPECTED_SOURCE_SHA: ${{ github.sha }}
+    steps:
+      - name: Checkout the exact isolated candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify candidate, module presence and original project boundary
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_EVENT_NAME" = push
+          test "$GITHUB_REF" = refs/heads/fix/chain-legacy-reorg-cost-20261104
+          export TRNM_CI_RECEIPT_DIR="$RUNNER_TEMP/legacy-reorg-controls"
+          mkdir -p "$TRNM_CI_RECEIPT_DIR/commands"
+          printf 'TRNM_CI_RECEIPT_DIR=%s\n' "$TRNM_CI_RECEIPT_DIR" >> "$GITHUB_ENV"
+          printf 'CARGO_HOME=%s/cargo-legacy-reorg-controls\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'CARGO_TARGET_DIR=%s/target-legacy-reorg-controls\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          python3 scripts/ci/verify_ci_source.py --kind head --expected-head "$EXPECTED_HEAD" --output "$TRNM_CI_RECEIPT_DIR/source.json"
+          bash scripts/project-preflight.sh --audit | tee "$TRNM_CI_RECEIPT_DIR/audit-before.json"
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          root = Path(os.environ["TRNM_CI_RECEIPT_DIR"])
+          module = Path("trillionnium/crates/trnm-pon-node/src/store/legacy_reorg_observation_tests.rs")
+          assert module.is_file() and not module.is_symlink() and module.stat().st_size > 0, "missing real Legacy observation test module"
+          source = module.read_text(encoding="utf-8")
+          store = Path("trillionnium/crates/trnm-pon-node/src/store.rs").read_text(encoding="utf-8")
+          assert "mod legacy_reorg_observation_tests;" in store, "Legacy observation module is not wired into Store"
+          selectors = ["store::legacy_reorg_observation_tests::legacy_observation_opt_in_is_local_and_keeps_unentered_unknown","store::legacy_reorg_observation_tests::legacy_observation_preserves_signed_reorg_state_and_progress","store::legacy_reorg_observation_tests::legacy_observation_preserves_cancelled_and_failed_reorg_outcomes","store::native_authenticated::history_arithmetic::tests::nested_observations_do_not_hold_a_guard_across_cancellation_or_change_errors","store::reorg_cancellation::tests::cancellation_terminates_only_staging_and_preserves_full_active_state","store::reorg_cancellation::tests::paid_cancellation_reserves_headroom_and_settles_the_original_account_once","store::reorg_cancellation::tests::forgotten_termination_principal_cannot_be_reported_as_a_clean_cpu_close"]
+          assert len(selectors) == len(set(selectors)) == 7
+          for selector in selectors[:3]:
+              assert "fn " + selector.rsplit("::", 1)[1] + "(" in source, "missing new behavior comparison test"
+          (root / "selectors.json").write_text(json.dumps(selectors, indent=2) + "\n")
+          (root / "selectors.txt").write_text("\n".join(selectors) + "\n")
+          scope = {
+              "schema": "trnm-legacy-reorg-observation-validation-v1",
+              "source_kind": "head", "candidate": os.environ["GITHUB_SHA"],
+              "planned_named_controls": 7, "completed_named_controls": None,
+              "new_behavior_controls": selectors[:3], "retained_sql_cancellation_controls": selectors[3:],
+              "complete_workspace_no_run_required": True,
+              "ancestry_integration_executable_required": True,
+              "diagnostic_depends_on_all_controls": True,
+              "controlled_performance_gain_claimed": False,
+              "public_business_acceptance_granted": False,
+              "scope": "exact isolated push source; test-profile controls and compile checks precede a separate original release-profile ARM History diagnostic"
+          }
+          (root / "scope.json").write_text(json.dumps(scope, indent=2) + "\n")
+          print(json.dumps(scope, sort_keys=True))
+          PY
+          cat > "$TRNM_CI_RECEIPT_DIR/run-command.sh" <<'SH'
+          set -euo pipefail
+          label="$1"
+          shift
+          command_status=0
+          python3 scripts/ci/record_pq_native_command.py --kind head --candidate "$EXPECTED_HEAD" --tested "$EXPECTED_HEAD" --label "$label" --output "$TRNM_CI_RECEIPT_DIR/commands" -- "$@" || command_status=$?
+          if test -f "$TRNM_CI_RECEIPT_DIR/commands/$label.log"; then
+            case "$label" in
+              format|native-*|test_*|clippy) cat "$TRNM_CI_RECEIPT_DIR/commands/$label.log" ;;
+              *) if test "$command_status" -ne 0; then tail -n 200 "$TRNM_CI_RECEIPT_DIR/commands/$label.log"; fi ;;
+            esac
+          fi
+          exit "$command_status"
+          SH
+      - name: Run original negative source and claim integrity controls
+        id: source_controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          for test_file in test_ci_source_integrity.py test_record_pq_native_command.py test_pq_research_integration.py test_pq_chain_claim_guard.py test_pq_authority_surface_scan.py; do
+            label="$(basename "$test_file" .py)"
+            bash "$TRNM_CI_RECEIPT_DIR/run-command.sh" "$label" python3 -m unittest discover -s scripts/ci -p "$test_file" -v
+          done
+          bash "$TRNM_CI_RECEIPT_DIR/run-command.sh" pq-source python3 scripts/ci/check_pq_research_integration.py
+          bash "$TRNM_CI_RECEIPT_DIR/run-command.sh" pq-hold python3 scripts/ci/pq_chain_claim_guard.py
+          bash "$TRNM_CI_RECEIPT_DIR/run-command.sh" repository python3 scripts/ci/check_repository.py
+          bash "$TRNM_CI_RECEIPT_DIR/run-command.sh" inventory python3 scripts/refresh_distributed_source_inventory.py --check
+      - name: Install the original pinned compiler
+        id: toolchain
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component clippy
+      - name: Check formatting before every build and native execution
+        id: format
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash "$TRNM_CI_RECEIPT_DIR/run-command.sh" format cargo +1.95.0 fmt --manifest-path trillionnium/Cargo.toml --all -- --check
+      - name: Prepare the independently pinned OpenSSL provider for controls
+        id: pq_provider
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash scripts/ci/prepare_pq_provider.sh
+      - name: Record compiler and the exact locked graph
+        id: locked_inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash "$TRNM_CI_RECEIPT_DIR/run-command.sh" compiler rustc +1.95.0 -Vv
+          bash "$TRNM_CI_RECEIPT_DIR/run-command.sh" locked-graph cargo +1.95.0 metadata --locked --manifest-path trillionnium/Cargo.toml --format-version 1
+      - name: Build the original complete workspace in the unchanged test profile
+        id: build
+        if: ${{ !cancelled() && steps.source.outcome == 'success' && steps.source_controls.outcome == 'success' && steps.toolchain.outcome == 'success' && steps.pq_provider.outcome == 'success' && steps.format.outcome == 'success' && steps.locked_inputs.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustc +1.95.0 -Vv > "$TRNM_CI_RECEIPT_DIR/rustc.txt"
+          cargo +1.95.0 -V > "$TRNM_CI_RECEIPT_DIR/cargo.txt"
+          rustup which --toolchain 1.95.0 rustc > "$TRNM_CI_RECEIPT_DIR/rustc-path.txt"
+          uname -a > "$TRNM_CI_RECEIPT_DIR/host.txt"
+          df -h "$RUNNER_TEMP" > "$TRNM_CI_RECEIPT_DIR/build-space-before.txt"
+          set +e
+          python3 - > "$TRNM_CI_RECEIPT_DIR/build-input-check.stdout" 2> "$TRNM_CI_RECEIPT_DIR/build-input-check.stderr" <<'PYENV'
+          import json, os, tomllib
+          from pathlib import Path
+          root = Path(os.environ["TRNM_CI_RECEIPT_DIR"])
+          workspace = Path(os.environ["GITHUB_WORKSPACE"])
+          common_keys = ("CI", "CARGO_HOME", "CARGO_TARGET_DIR", "CARGO_BUILD_JOBS",
+                         "CARGO_INCREMENTAL", "RUST_TEST_THREADS")
+          overrides = ("RUSTFLAGS", "CARGO_ENCODED_RUSTFLAGS", "RUSTC_WRAPPER",
+                       "RUSTC_WORKSPACE_WRAPPER", "RUSTC", "RUSTC_BOOTSTRAP", "RUSTDOC",
+                       "RUSTDOCFLAGS", "CARGO_ENCODED_RUSTDOCFLAGS", "CARGO_BUILD_RUSTC",
+                       "CARGO_BUILD_RUSTDOC", "CARGO_BUILD_RUSTFLAGS", "CARGO_BUILD_TARGET",
+                       "CARGO_BUILD_RUSTC_WRAPPER", "CARGO_BUILD_RUSTC_WORKSPACE_WRAPPER")
+          provider_keys = ("OPENSSL_DIR", "OPENSSL_STATIC", "OPENSSL_CONF", "OPENSSL_MODULES",
+                           "TRNM_PQ_OPENSSL", "TRNM_PQ_OPENSSL_SHA256", "TRNM_PQ_OPENSSL_VERSION")
+          env = {key: os.environ.get(key) for key in common_keys + overrides + provider_keys}
+          env.update({key: value for key, value in os.environ.items()
+                      if key.startswith("CARGO_PROFILE_") or
+                      (key.startswith("CARGO_TARGET_") and
+                       key.endswith(("_RUSTFLAGS", "_LINKER", "_RUNNER")))})
+          command = ["cargo", "+1.95.0", "test", "--locked", "--manifest-path",
+                     "trillionnium/Cargo.toml", "--workspace", "--all-targets", "--all-features",
+                     "--no-run", "--message-format=json"]
+          manifest = tomllib.loads((workspace / "trillionnium/Cargo.toml").read_text())
+          test_packages = manifest["profile"]["test"]["package"]
+          (root / "build-command.json").write_text(json.dumps({
+              "argv": command, "environment": env,
+              "process_measurement_wrapper": ["/usr/bin/time", "-v"],
+              "rustc_selected_by_rustup": (root / "rustc-path.txt").read_text().strip(),
+              "test_profile_packages": {name: test_packages[name]
+                  for name in ("trnm-pon-node", "trnm-mvcc-fee")},
+              "scope": "complete workspace test-profile build; only the named selectors run below"
+          }, indent=2) + "\n")
+          assert not any(env.get(key) for key in overrides), "unexpected compiler override"
+          assert not any(key.startswith("CARGO_PROFILE_") for key in env), "unexpected profile override"
+          assert not any(value for key, value in env.items() if key.startswith("CARGO_TARGET_")
+                         and key.endswith(("_RUSTFLAGS", "_LINKER", "_RUNNER"))), "unexpected target override"
+          for name, opt in (("trnm-pon-node", 3), ("trnm-mvcc-fee", 1)):
+              profile = test_packages[name]
+              assert profile["opt-level"] == opt
+              assert profile["debug-assertions"] is True and profile["overflow-checks"] is True
+          provider = json.loads((root / "pq-provider/provider.json").read_text())
+          assert provider["result"] == "PREPARED_AND_SMOKE_VERIFIED" and provider["exit_code"] == 0
+          assert env["OPENSSL_STATIC"] == "1" and env["TRNM_PQ_OPENSSL_VERSION"] == "3.5.9"
+          PYENV
+          input_reader=$?
+          set -e
+          printf '%s\n' "$input_reader" > "$TRNM_CI_RECEIPT_DIR/build-input-check.exit"
+          if [ "$input_reader" -ne 0 ]; then
+            tail -n 200 "$TRNM_CI_RECEIPT_DIR/build-input-check.stderr" || true
+            exit "$input_reader"
+          fi
+          set +e
+          /usr/bin/time -v -o "$TRNM_CI_RECEIPT_DIR/build.resources.txt" cargo +1.95.0 test --locked --manifest-path trillionnium/Cargo.toml --workspace --all-targets --all-features --no-run --message-format=json > "$TRNM_CI_RECEIPT_DIR/build.jsonl" 2> "$TRNM_CI_RECEIPT_DIR/build.stderr"
+          build_exit=$?
+          printf '%s\n' "$build_exit" > "$TRNM_CI_RECEIPT_DIR/build.exit"
+          df -h "$RUNNER_TEMP" > "$TRNM_CI_RECEIPT_DIR/build-space-after.txt"
+          set -e
+          if [ "$build_exit" -ne 0 ]; then
+            tail -n 200 "$TRNM_CI_RECEIPT_DIR/build.stderr" || true
+            exit "$build_exit"
+          fi
+          set +e
+          python3 - > "$TRNM_CI_RECEIPT_DIR/build-artifact-check.json" 2> "$TRNM_CI_RECEIPT_DIR/build-artifact-check.stderr" <<'PYART'
+          import hashlib, json, os
+          from pathlib import Path
+          root = Path(os.environ["TRNM_CI_RECEIPT_DIR"])
+          workspace = Path(os.environ["GITHUB_WORKSPACE"]).resolve()
+          rows = [json.loads(line) for line in (root / "build.jsonl").read_text().splitlines() if line.strip()]
+          finished = [row for row in rows if row.get("reason") == "build-finished"]
+          assert len(finished) == 1 and finished[0]["success"] is True
+          selected = {}
+          for crate, target, opt in (("trnm-pon-node", "trnm_pon_node", "3"),
+                                     ("trnm-mvcc-fee", "trnm_mvcc_fee", "1")):
+              artifacts = [row for row in rows if row.get("reason") == "compiler-artifact"
+                           and row.get("target", {}).get("name") == target
+                           and row.get("target", {}).get("kind") == ["lib"]]
+              assert artifacts, "missing library artifacts for " + crate
+              for artifact in artifacts:
+                  assert Path(artifact["target"]["src_path"]).resolve() == workspace / "trillionnium/crates" / crate / "src/lib.rs"
+                  profile = artifact["profile"]
+                  assert profile["opt_level"] == opt, "wrong original test optimization for " + crate
+                  assert profile["debug_assertions"] is True and profile["overflow_checks"] is True, "test checks disabled for " + crate
+                  assert artifact["features"] == ["default", "pq-native-openssl"], "wrong complete-workspace features for " + crate
+              selected[crate] = artifacts
+          ancestry = [row for row in rows if row.get("reason") == "compiler-artifact"
+                      and row.get("target", {}).get("name") == "ancestry_long_sync"
+                      and row.get("target", {}).get("kind") == ["test"]
+                      and row.get("profile", {}).get("test") is True and row.get("executable")]
+          assert len(ancestry) == 1, "expected one compiled ancestry_long_sync integration executable"
+          ancestry_artifact = ancestry[0]
+          assert Path(ancestry_artifact["target"]["src_path"]).resolve() == workspace / "trillionnium/crates/trnm-pon-node/tests/ancestry_long_sync.rs"
+          assert ancestry_artifact["features"] == ["default", "pq-native-openssl"]
+          assert ancestry_artifact["profile"]["opt_level"] == "3"
+          assert ancestry_artifact["profile"]["debug_assertions"] is True
+          assert ancestry_artifact["profile"]["overflow_checks"] is True
+          ancestry_binary = Path(ancestry_artifact["executable"])
+          assert ancestry_binary.is_absolute() and ancestry_binary.is_file() and not ancestry_binary.is_symlink()
+          assert ancestry_binary.resolve().parent == Path(os.environ["CARGO_TARGET_DIR"]).resolve() / "debug/deps"
+          with ancestry_binary.open("rb") as stream:
+              assert stream.read(4) == b"\x7fELF"
+              stream.seek(0)
+              ancestry_digest = hashlib.file_digest(stream, "sha256").hexdigest()
+          (root / "ancestry-binary.json").write_text(json.dumps({
+              "artifact": ancestry_artifact, "sha256": ancestry_digest,
+              "scope": "complete workspace integration-file compilation only; original History execution is a separate release-profile job"
+          }, indent=2) + "\n")
+          (root / "ancestry-binary.sha256").write_text(ancestry_digest + "  " + str(ancestry_binary) + "\n")
+          (root / "ancestry-binary.txt").write_text(str(ancestry_binary) + "\n")
+          # Inspect M06's ordinary rlib used as a dependency, not just its separate test executable.
+          m06_dependencies = [row for row in selected["trnm-mvcc-fee"]
+                              if row["profile"]["test"] is False
+                              and any(Path(name).suffix == ".rlib" for name in row["filenames"])]
+          assert len(m06_dependencies) == 1, "expected one M06 dependency artifact"
+          node_tests = [row for row in selected["trnm-pon-node"]
+                        if row["profile"]["test"] is True and row.get("executable")]
+          assert len(node_tests) == 1, "expected one native Node library test executable"
+          artifact = node_tests[0]
+          binary = Path(artifact["executable"])
+          target = Path(os.environ["CARGO_TARGET_DIR"]).resolve()
+          assert binary.is_absolute() and binary.is_file() and not binary.is_symlink()
+          assert binary.resolve().parent == target / "debug/deps", "unexpected executable profile/target directory"
+          with binary.open("rb") as stream:
+              assert stream.read(4) == b"\x7fELF"
+              stream.seek(0)
+              digest = hashlib.file_digest(stream, "sha256").hexdigest()
+          (root / "binary.json").write_text(json.dumps({
+              "artifact": artifact, "sha256": digest,
+              "profile_evidence": selected,
+              "scope": "full-workspace Node test-profile artifact; only the named Legacy observation and SQL/cancellation controls execute in this job"
+          }, indent=2) + "\n")
+          (root / "binary.sha256").write_text(digest + "  " + str(binary) + "\n")
+          (root / "binary.txt").write_text(str(binary) + "\n")
+          m06_tests = [row for row in selected["trnm-mvcc-fee"]
+                       if row["profile"]["test"] is True and row.get("executable")]
+          assert len(m06_tests) == 1, "expected one M06 library test executable"
+          m06_artifact = m06_tests[0]
+          m06_binary = Path(m06_artifact["executable"])
+          assert m06_binary.is_absolute() and m06_binary.is_file() and not m06_binary.is_symlink()
+          assert m06_binary.resolve().parent == target / "debug/deps", "unexpected M06 executable profile/target directory"
+          assert m06_binary.resolve() != binary.resolve(), "Node and M06 test executables must be distinct"
+          with m06_binary.open("rb") as stream:
+              assert stream.read(4) == b"\x7fELF"
+              stream.seek(0)
+              m06_digest = hashlib.file_digest(stream, "sha256").hexdigest()
+          (root / "m06-binary.json").write_text(json.dumps({
+              "artifact": m06_artifact, "sha256": m06_digest,
+              "dependency_artifact": m06_dependencies[0],
+              "package_cwd": str(workspace / "trillionnium/crates/trnm-mvcc-fee"),
+              "scope": "M06 test artifact from the required complete workspace compile; no M06 test execution is claimed by this job"
+          }, indent=2) + "\n")
+          (root / "m06-binary.sha256").write_text(m06_digest + "  " + str(m06_binary) + "\n")
+          (root / "m06-binary.txt").write_text(str(m06_binary) + "\n")
+          print(json.dumps({"result": "PASS", "scope": "build profiles, feature sets and ELF identity only",
+                            "node_opt_level": "3", "m06_opt_level": "1", "debug_assertions": True,
+                            "overflow_checks": True, "features": ["default", "pq-native-openssl"],
+                            "binary_sha256": digest, "m06_binary_sha256": m06_digest,
+                            "ancestry_integration_binary_sha256": ancestry_digest}, sort_keys=True))
+          PYART
+          artifact_reader=$?
+          set -e
+          printf '%s\n' "$artifact_reader" > "$TRNM_CI_RECEIPT_DIR/build-artifact-check.exit"
+          if [ "$artifact_reader" -ne 0 ]; then
+            tail -n 200 "$TRNM_CI_RECEIPT_DIR/build-artifact-check.stderr" || true
+          fi
+          exit "$artifact_reader"
+
+      - name: Require all seven compiled exact selectors
+        id: registry
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node_binary="$(cat "$TRNM_CI_RECEIPT_DIR/binary.txt")"
+          bash "$TRNM_CI_RECEIPT_DIR/run-command.sh" registry "$node_binary" --list --format terse
+          python3 - <<'PY'
+          import json, os
+          from collections import Counter
+          from pathlib import Path
+          root = Path(os.environ["TRNM_CI_RECEIPT_DIR"])
+          expected = json.loads((root / "selectors.json").read_text())
+          assert len(expected) == len(set(expected)) == 7
+          lines = (root / "commands/registry.log").read_text().splitlines()
+          actual = Counter(line[:-6] for line in lines if line.endswith(": test"))
+          assert all(actual[name] == 1 for name in expected), "missing or duplicate compiled exact selector"
+          prefix = "store::legacy_reorg_observation_tests::"
+          assert sorted(name for name in actual if name.startswith(prefix)) == sorted(expected[:3])
+          result = {"schema": "trnm-legacy-reorg-compiled-selector-check-v1", "result": "PASS",
+                    "selectors": expected, "executed_tests": 0,
+                    "scope": "compiled selector presence only; seven separate original test-profile invocations follow"}
+          (root / "compiled-selectors.json").write_text(json.dumps(result, indent=2) + "\n")
+          print(json.dumps(result, sort_keys=True))
+          PY
+      - name: Execute every new behavior comparison and retained SQL cancellation control
+        id: native_controls
+        if: ${{ !cancelled() && steps.build.outcome == 'success' && steps.registry.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          failure=0
+          index=0
+          : > "$TRNM_CI_RECEIPT_DIR/native-results.tsv"
+          while IFS= read -r selector; do
+            label="native-$index"
+            native_status=0
+            checker_status=0
+            bash "$TRNM_CI_RECEIPT_DIR/run-command.sh" "$label" cargo +1.95.0 test --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --lib --all-features "$selector" -- --exact --show-output --test-threads=1 || native_status=$?
+            python3 scripts/ci/check_required_native_test.py "$TRNM_CI_RECEIPT_DIR/commands/$label.log" --test "$selector" > "$TRNM_CI_RECEIPT_DIR/$label.checker.log" 2>&1 || checker_status=$?
+            cat "$TRNM_CI_RECEIPT_DIR/$label.checker.log"
+            printf '%s\t%s\t%s\t%s\n' "$label" "$selector" "$native_status" "$checker_status" >> "$TRNM_CI_RECEIPT_DIR/native-results.tsv"
+            if [ "$native_status" -ne 0 ] || [ "$checker_status" -ne 0 ]; then
+              failure=1
+            fi
+            index=$((index + 1))
+          done < "$TRNM_CI_RECEIPT_DIR/selectors.txt"
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          root = Path(os.environ["TRNM_CI_RECEIPT_DIR"])
+          expected = json.loads((root / "selectors.json").read_text())
+          rows = []
+          for line in (root / "native-results.tsv").read_text().splitlines():
+              label, selector, native_status, checker_status = line.split("\t")
+              rows.append({"label": label, "selector": selector,
+                           "command_exit_code": int(native_status), "named_checker_exit_code": int(checker_status)})
+          assert [row["selector"] for row in rows] == expected and len(rows) == 7
+          result = {"schema": "trnm-legacy-reorg-named-controls-v1",
+                    "source_kind": "head", "candidate": os.environ["GITHUB_SHA"],
+                    "planned_controls": 7, "returned_commands": len(rows),
+                    "controls": rows,
+                    "all_named_controls_passed": all(row["command_exit_code"] == row["named_checker_exit_code"] == 0 for row in rows),
+                    "whole_node_regression_executed": False,
+                    "public_business_acceptance_granted": False}
+          (root / "native-controls.json").write_text(json.dumps(result, indent=2) + "\n")
+          print(json.dumps(result, sort_keys=True))
+          PY
+          test "$index" -eq 7
+          exit "$failure"
+      - name: Retain the original strict Node Clippy gate
+        id: clippy
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash "$TRNM_CI_RECEIPT_DIR/run-command.sh" clippy cargo +1.95.0 clippy --locked --manifest-path trillionnium/Cargo.toml -p trnm-pon-node --lib --tests --all-features -- -D warnings
+      - name: Reverify controls source and original project boundary
+        if: always()
+        shell: bash
+        env:
+          TRNM_CI_RECEIPT_DIR: ${{ runner.temp }}/legacy-reorg-controls
+        run: |
+          set -euo pipefail
+          mkdir -p "$TRNM_CI_RECEIPT_DIR"
+          python3 scripts/ci/verify_ci_source.py --kind head --expected-head "$EXPECTED_HEAD" --output "$TRNM_CI_RECEIPT_DIR/source-after.json"
+          cmp "$TRNM_CI_RECEIPT_DIR/source.json" "$TRNM_CI_RECEIPT_DIR/source-after.json"
+          bash scripts/project-preflight.sh --audit | tee "$TRNM_CI_RECEIPT_DIR/audit-after.json"
+      - name: Preserve controls, compiler artifacts, formatter differences and all failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: pon-legacy-reorg-controls-arm64-head-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/legacy-reorg-controls/
+          if-no-files-found: error
+          retention-days: 30
+  native-priorities:
+    name: native priorities (ubuntu-24.04-arm, head, history diagnostic)
+    needs: controls
+    if: ${{ needs.controls.result == 'success' }}
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 180
+    env:
+      SOURCE_KIND: head
+      EXPECTED_HEAD: ${{ github.sha }}
+      TRNM_EXPECTED_SOURCE_SHA: ${{ github.sha }}
+    steps:
+      - name: Checkout the exact controlled candidate head
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify source and original project boundary
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_EVENT_NAME" = push
+          test "$GITHUB_REF" = refs/heads/fix/chain-legacy-reorg-cost-20261104
+          export TRNM_CI_RECEIPT_DIR="$RUNNER_TEMP/priority-observations"
+          mkdir -p "$TRNM_CI_RECEIPT_DIR"
+          printf 'TRNM_CI_RECEIPT_DIR=%s\n' "$TRNM_CI_RECEIPT_DIR" >> "$GITHUB_ENV"
+          printf 'CARGO_HOME=%s/cargo-priority\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'CARGO_TARGET_DIR=%s/target-priority\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          python3 scripts/ci/verify_ci_source.py --kind head --expected-head "$EXPECTED_HEAD" --output "$TRNM_CI_RECEIPT_DIR/source.json"
+          bash scripts/project-preflight.sh --audit | tee "$TRNM_CI_RECEIPT_DIR/audit-before.json"
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          scope = {
+              "schema": "trnm-legacy-reorg-original-history-diagnostic-v1",
+              "source_kind": "head", "candidate": os.environ["GITHUB_SHA"],
+              "controls_required": True,
+              "runner": "ubuntu-24.04-arm", "original_job_key": "native-priorities",
+              "target": "ancestry_long_sync",
+              "selector": "actual_v3_long_chain_public_full_sync_reopen_and_corrupt_index_refusal",
+              "original_server_lifetime_seconds": 1800,
+              "original_import_duration_seconds": 30,
+              "original_outer_timeout_minutes": 180,
+              "controlled_performance_gain_claimed": False,
+              "public_business_acceptance_granted": False,
+              "scope": "same original release-profile build, Host ownership and resource setup, selector and arguments; only this exact candidate source provides opt-in diagnostic observations"
+          }
+          (Path(os.environ["TRNM_CI_RECEIPT_DIR"]) / "diagnostic-scope.json").write_text(json.dumps(scope, indent=2) + "\n")
+          print(json.dumps(scope, sort_keys=True))
+          PY
+      - name: Install the original pinned toolchain
+        id: toolchain
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component clippy
+      - name: Build the original long-history test separately from measurement
+        id: history_build
+        if: ${{ !cancelled() && steps.source.outcome == 'success' && steps.toolchain.outcome == 'success' }}
+        run: python3 scripts/ci/run_history_native.py --prepare --out "$TRNM_CI_RECEIPT_DIR/history-native"
+      - name: Execute 4105 real work blocks and paid public full sync
+        if: ${{ !cancelled() && steps.history_build.outcome == 'success' }}
+        run: python3 scripts/ci/run_from_zero_host.py -- python3 scripts/ci/run_history_native.py --out "$TRNM_CI_RECEIPT_DIR/history-native"
+      - name: Reverify exact unchanged diagnostic source
+        if: always()
+        shell: bash
+        env:
+          TRNM_CI_RECEIPT_DIR: ${{ runner.temp }}/priority-observations
+        run: |
+          set -euo pipefail
+          mkdir -p "$TRNM_CI_RECEIPT_DIR"
+          python3 scripts/ci/verify_ci_source.py --kind head --expected-head "$EXPECTED_HEAD" --output "$TRNM_CI_RECEIPT_DIR/source-after.json"
+          cmp "$TRNM_CI_RECEIPT_DIR/source.json" "$TRNM_CI_RECEIPT_DIR/source-after.json"
+          bash scripts/project-preflight.sh --audit | tee "$TRNM_CI_RECEIPT_DIR/audit-after.json"
+      - name: Retain the original diagnostic outcome and complete native failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: legacy-reorg-priority-ubuntu-24.04-arm-head-history-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/priority-observations/
+          if-no-files-found: error
+          retention-days: 30

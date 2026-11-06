@@ -1,0 +1,15 @@
+{
+  "schema": "root-C4-current-public-original-context-review-v1",
+  "commit": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+  "tree": "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14",
+  "observed_utc": "2026-11-05T19:47:18Z",
+  "snapshot_sha256": "a7787d99be25decd7aa4ece7f2cf5dca94fdec333e19a3b116b284bbb4699f61",
+  "all_six_actual_source_bytes_verified_against_C4_tree": true,
+  "actual_hosted_identity_present": false,
+  "fixed_parent_and_runtime_unit_present": false,
+  "original_gate_invoked": false,
+  "public_gate_pass": false,
+  "system_configuration_modified": false,
+  "sudo_authority_established": false,
+  "reason": "The unchanged original entry requires truthful hosted identity before any original provisioning. The current desktop context has none; a user-slice runtime cgroup cannot substitute for the fixed public parent. This is a read-only applicability observation, not an executed gate failure."
+}

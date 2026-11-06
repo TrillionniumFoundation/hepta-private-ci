@@ -1,0 +1,265 @@
+{
+  "schema": "root-H2-actual-ELF-export-receipt-review-v1",
+  "source_commit": "620cb63ae9b58904483005bcb2c4e1507df99539",
+  "source_tree": "f2cebe6d99deca596c170922b8e60d66648d7393",
+  "job_id": "1a1ad8ffb8e-fc05-5a35",
+  "stable_key": "93bfc-hepta-h2-actual-retained-images-export-01",
+  "authoritative_terminal": {
+    "at_unix_ms": 1793913479878,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1ad8ffb8e-fc05-5a35",
+    "launch_nonce": "4c256a56ddb81f7a95a96c89a31a2760",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 13936,
+        "stored": 13936
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "actual_completion_matches_stdout": true,
+  "archive_bytes": 256132128,
+  "archive_sha256": "f75c5d36596b84261ebc10705cd73de8abbe68eb87897413fcdb7e0cc92631a7",
+  "archive_index_sha256": "dab6061f0fa17e1403bf084314ca6c52b8bf4ece6b9b3d7ed5feb09143aa6e5f",
+  "parts": 62,
+  "full_ELF_members": 8,
+  "full_ELF_bytes": 1512251368,
+  "partial_bytes": 314572800,
+  "partial_native_credit": false,
+  "partial_condition": "actual retained version/hash/size, complete byte comparison with first image, independent second read, and decompressed archive range verified before COMPLETE",
+  "owned_release": {
+    "cargo_or_cost_or_compression_started": false,
+    "exact_cgroups": [
+      {
+        "actual_files": [],
+        "exists": false,
+        "owned_pids": [],
+        "path": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a1ad8ffb8e-fc05-5a35.service"
+      }
+    ],
+    "expected_original_invocation": "dd6f7f1a8a1d4838860e3f3d95da2232",
+    "expected_unit": "hepta-runtime-job-1a1ad8ffb8e-fc05-5a35.service",
+    "failures": [],
+    "job_id": "1a1ad8ffb8e-fc05-5a35",
+    "mutations_performed": false,
+    "observed_utc": "2026-11-05T21:19:56Z",
+    "original_authoritative_terminal": {
+      "at_unix_ms": 1793913479878,
+      "exit_code": 0,
+      "state": "succeeded",
+      "timed_out": false
+    },
+    "original_root_processes": [
+      {
+        "expected_start_ticks": null,
+        "pid": 944067,
+        "present": false,
+        "role": "ExecMainPID",
+        "same_original_identity": false
+      }
+    ],
+    "owned_processes_clear": true,
+    "processes_killed": false,
+    "schema": "hepta-H2-archive-exact-owned-unit-release-observation-v1",
+    "scope": "Only the exact previously observed runtime unit, its reported and known user cgroup paths, nested cgroup.procs, and the observed original process identity. A removed unit's default Result does not change the authoritative archive result; it does not change any native test outcome.",
+    "systemctl": {
+      "command": [
+        "systemctl",
+        "--user",
+        "show",
+        "hepta-runtime-job-1a1ad8ffb8e-fc05-5a35.service",
+        "--no-pager",
+        "--property=Id,LoadState,ActiveState,SubState,ControlGroup,MainPID,ExecMainPID,ExecMainCode,ExecMainStatus,Result,InvocationID"
+      ],
+      "elapsed_ns": 14956027,
+      "exit_code": 0,
+      "fields": {
+        "ActiveState": "inactive",
+        "ControlGroup": "",
+        "ExecMainCode": "0",
+        "ExecMainPID": "0",
+        "ExecMainStatus": "0",
+        "Id": "hepta-runtime-job-1a1ad8ffb8e-fc05-5a35.service",
+        "InvocationID": "",
+        "LoadState": "not-found",
+        "MainPID": "0",
+        "Result": "success",
+        "SubState": "dead"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "text": ""
+      },
+      "stdout": {
+        "bytes": 205,
+        "sha256": "81c7b60b8275797fe0d5c44d81b9d5cbf1b9fb381596e35ba91ed2635e1d7c59",
+        "text": "MainPID=0\nResult=success\nExecMainPID=0\nExecMainCode=0\nExecMainStatus=0\nControlGroup=\nId=hepta-runtime-job-1a1ad8ffb8e-fc05-5a35.service\nLoadState=not-found\nActiveState=inactive\nSubState=dead\nInvocationID=\n"
+      }
+    }
+  },
+  "original_native_result": "FAILED; 70 completed passes, ordinary-process timeout60.007, subsequent gates unexecuted",
+  "new_native_execution_or_binary_rebuild": false,
+  "local_full_archive_readback": "PENDING until original measurement window releases; export receipts do not substitute for transferred bytes",
+  "files": [
+    {
+      "name": "H2-archive-owned-release-proof.json",
+      "bytes": 2552,
+      "sha256": "d8c5571b43f9ebe3269b0c05b77bcef9dabbdf9ab6796c318797c9a72ae29375"
+    },
+    {
+      "name": "H2-archive-release-launch.json",
+      "bytes": 1269,
+      "sha256": "c5de21aab34f819f767a7b083c7c82996252de97cdbbdee3dd2ff44854615c81"
+    },
+    {
+      "name": "H2-archive-release-proof-read.json",
+      "bytes": 3743,
+      "sha256": "eac78eaf591d87a9d8a4fec77dcd856c20b87165edb33bd3acd01e867e02f1ed"
+    },
+    {
+      "name": "H2-archive-release-streams-read.json",
+      "bytes": 3274,
+      "sha256": "368bfd2bb18b1924b4821d7fa3f46084957628da8fb716b4548287c1988f7ba8"
+    },
+    {
+      "name": "H2-archive-release-systemctl.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "H2-archive-release-systemctl.stdout",
+      "bytes": 205,
+      "sha256": "81c7b60b8275797fe0d5c44d81b9d5cbf1b9fb381596e35ba91ed2635e1d7c59"
+    },
+    {
+      "name": "H2-archive-release-terminal.json",
+      "bytes": 953,
+      "sha256": "5ff64cf03b43fabffff547336f5c7ac8101780c9e8ca150856952c04825edcc0"
+    },
+    {
+      "name": "H2-export-bootstrap.py",
+      "bytes": 261408,
+      "sha256": "fb5425bc93bcb77271c306e9508bdedad5f3313885c77063146888805b456e2b"
+    },
+    {
+      "name": "H2-export-completion-read.json",
+      "bytes": 21135,
+      "sha256": "a32c5fc4ef1abfb4e1897d67acb42fb2a4bc793be0a1bc3c448e773fee7d5813"
+    },
+    {
+      "name": "H2-export-completion.json",
+      "bytes": 16590,
+      "sha256": "d991a50f630e509278c20d5fe9f6ca0e53d1006852d954109d268375978407c1"
+    },
+    {
+      "name": "H2-export-first-running-status.json",
+      "bytes": 662,
+      "sha256": "9a11b10b790ed575049c6c91f30ee19f0deab41c717178891e6a43f10631a95f"
+    },
+    {
+      "name": "H2-export-frozen-launch-request.json",
+      "bytes": 261806,
+      "sha256": "fb6149eaea0603083f360cf4c8d50b869bdeb018f8d0bd959075bae9eef4228f"
+    },
+    {
+      "name": "H2-export-launch.json",
+      "bytes": 1268,
+      "sha256": "16e58c1b5dca990820004784cfbd04e6de410309113800b3758093897975aeae"
+    },
+    {
+      "name": "H2-export-plan.json",
+      "bytes": 169237,
+      "sha256": "2a18729275fe2051b3f691fce56542e2d1291193e983330fe82601caf22349b3"
+    },
+    {
+      "name": "H2-export-streams-read.json",
+      "bytes": 45344,
+      "sha256": "67f38035c8dd6bd1dbd88791f4b1e18827e353115988255c958871f99a74b9b0"
+    },
+    {
+      "name": "H2-export-terminal.json",
+      "bytes": 957,
+      "sha256": "2e0ac459b6935c756557c0607d697c7485117258c31ca58f5447c7288f1aba8b"
+    },
+    {
+      "name": "H2-export.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "H2-export.stdout",
+      "bytes": 13936,
+      "sha256": "14c0628901699464696d015920e96a6b283aec00d02e7eb292ea1d696074c8dd"
+    },
+    {
+      "name": "H2-exporter-vs-approved-H1.patch",
+      "bytes": 11710,
+      "sha256": "65ffdfd624302b03f23cbb22050c31e6416c14472895e875a4fe7b05b9308566"
+    },
+    {
+      "name": "cloud-preparation-manifest.json",
+      "bytes": 1437,
+      "sha256": "1578be9b2312141938823e6aee2d0364d04a677f4a631623435ec7a0fdb5b799"
+    },
+    {
+      "name": "export_h2_retained_images.py",
+      "bytes": 25293,
+      "sha256": "37538f62fd81398262ccde1b9cfa0d1cb0163b115e108b80220ab7af8f929365"
+    },
+    {
+      "name": "inspect_h2_archive_owned_unit.py",
+      "bytes": 6208,
+      "sha256": "89e1fd1c8facaa4c10a440e7f636584318a2ca905e67da0b51bbdb274131993f"
+    },
+    {
+      "name": "launch-preparation.json",
+      "bytes": 1084,
+      "sha256": "a1cf7eec4d4fed8433e2d4a3a88d45977969abbf66d2da23d77c302ee34c88e4"
+    },
+    {
+      "name": "prefix-utility-receipt.json",
+      "bytes": 985,
+      "sha256": "cbe0d0b1301442a1a383635ff683c472a1908cf355f3cedf5bd4113f1d5582f0"
+    },
+    {
+      "name": "prefix-utility.stderr",
+      "bytes": 585,
+      "sha256": "42959c54ef023d7754433fdb0f2b6963b2b7342c06b6a9c8bed7f10eb2f535ff"
+    },
+    {
+      "name": "prefix-utility.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "test_prefix_utility.py",
+      "bytes": 7047,
+      "sha256": "dac287a6d6b4c468824e8160b5fe90518e6b26e542693a6d1fc60b8b964291e3"
+    }
+  ]
+}

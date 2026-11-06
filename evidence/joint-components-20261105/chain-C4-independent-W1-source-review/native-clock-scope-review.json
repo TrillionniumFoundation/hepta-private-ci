@@ -1,0 +1,168 @@
+{
+  "commit": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+  "external_scopes": [
+    {
+      "clock": "time.monotonic_ns() delta around process launch/wait/cleanup",
+      "owner": "run_cross_arch_cost.py::capture (original legal/reused/full-limb runner)",
+      "raw_field": "elapsed_ns",
+      "scope": "Whole command wall elapsed. A build command and a native campaign have different recorded argv and must not be merged into native arithmetic CPU."
+    },
+    {
+      "clock": "resource.getrusage(RUSAGE_CHILDREN) before/after CPU deltas",
+      "owner": "Original work-expensive owner and external coordinators using getrusage",
+      "raw_fields": [
+        "child_user_cpu_ns",
+        "child_system_cpu_ns",
+        "child_rusage.*",
+        "child_peak_rss_so_far_kib"
+      ],
+      "scope": "All waited children in the corresponding observation interval. Per-native intervals can be separated from build/reader/source-guard intervals; an outer aggregate includes whichever phases it encloses. ru_maxrss is cumulative peak, not an additive RSS total or isolated command quota."
+    },
+    {
+      "clock": "time.process_time_ns() delta",
+      "owner": "New external synthetic coordinator",
+      "raw_field": "coordinator_process_cpu_ns",
+      "scope": "Coordinator process and its observer thread, including orchestration/evidence processing. Not child Rust CPU, not whole-host CPU and not energy."
+    }
+  ],
+  "independent_recalculation_rules": [
+    "Preserve exact raw names and source-derived clock scope in all derived tables.",
+    "Use like-for-like numerator/denominator: native thread CPU with native thread CPU, or wall elapsed with wall elapsed; never cross-divide them.",
+    "Do not call four-kernel Instant durations CPU cost or energy.",
+    "Do not relabel true ThreadCPUTime fields as wall elapsed solely because the same helper also stores Instant.",
+    "Inclusive cohort/run/process envelopes overlap setup/search/verification phases; add only disjoint phases and never double-add setup to a total that already includes it.",
+    "Observer CPU, build and Python reader costs have separate process/interval provenance. They may affect wall samples without becoming native ThreadCPUTime.",
+    "None of these clocks measures joules, power or total machine CPU consumption."
+  ],
+  "native_executed": false,
+  "native_scopes": [
+    {
+      "cpu_source": "Shared w1_cost_producers::Clock. Linux clock_gettime_dynamic(DynamicClockId::Known(ClockId::ThreadCPUTime)); before/after delta accepted only on the same std::thread::ThreadId. Missing/invalid CPU clocks produce None, not Instant fallback.",
+      "energy_or_total_host_cpu": false,
+      "entry": "original legal-strategy-v3",
+      "raw_fields": [
+        "material_setup.cpu_ns",
+        "setup.cpu_ns",
+        "total.cpu_ns",
+        "timing.cpu_ns",
+        "evidence_timing.cpu_ns",
+        "mutation.timing.cpu_ns"
+      ],
+      "source": "trillionnium/crates/trnm-pon-node/examples/pon_w1_legal_strategy_v3.rs",
+      "wall_source": "Separate wall_ns fields use std::time::Instant::elapsed().as_nanos()."
+    },
+    {
+      "cpu_source": "Same shared w1_cost_producers::Clock and actual Linux ThreadCPUTime delta.",
+      "energy_or_total_host_cpu": false,
+      "entry": "original reused-v3, thirteen arms",
+      "source": "trillionnium/crates/trnm-pon-node/examples/pon_w1_reused_cost_v3.rs",
+      "wall_source": "Separate wall_ns fields use Instant elapsed."
+    },
+    {
+      "cpu_source": "Same shared w1_cost_producers::Clock and actual Linux ThreadCPUTime delta.",
+      "energy_or_total_host_cpu": false,
+      "entry": "original --full-limb from-zero false-trace campaign",
+      "source": "trillionnium/crates/trnm-pon-node/examples/pon_w1_false_trace_reuse_v1.rs",
+      "wall_source": "Separate wall_ns fields use Instant elapsed."
+    },
+    {
+      "cpu_source": "Local cpu_ns() uses Linux rustix ThreadCPUTime. Clock::observe computes same-thread before/after CPU delta; non-Linux or invalid clock gives None.",
+      "energy_or_total_host_cpu": false,
+      "entry": "fifteen-arm work-expensive synthetic census",
+      "source": "trillionnium/crates/trnm-crypto-primitives/examples/pon_work_expensive_v1.rs",
+      "wall_source": "Local Clock::observe separately uses Instant elapsed for wall_ns."
+    },
+    {
+      "cpu_source": null,
+      "energy_or_total_host_cpu": false,
+      "entry": "four-kernel rejection-v2",
+      "interpretation": "Keep original raw field names, but label sums and ratios as wall-elapsed measurement, never ThreadCPUTime/process CPU or energy.",
+      "raw_fields": [
+        "material_ns",
+        "task_binding_ns",
+        "reusable_preprocessing_ns",
+        "search.wall_ns",
+        "challenge_ns",
+        "proof_construction_ns",
+        "ticket_ns",
+        "clone_ns",
+        "mutation_ns",
+        "construction_ns",
+        "ticket_search_wall_ns",
+        "verifier.elapsed_ns"
+      ],
+      "source": "trillionnium/crates/trnm-crypto-primitives/examples/pon_rejection_cost.rs",
+      "wall_source": "All these measured native durations are std::time::Instant elapsed intervals, including verifier elapsed_ns and generic *_ns fields."
+    }
+  ],
+  "older_entrypoints": "Legacy crypto examples with similar names are not substituted for the three current node example entrypoints. No older command was executed or given current-sample credit.",
+  "reviewer": "/root/pq_recovery",
+  "schema": "C4-independent-W1-native-clock-scope-v1",
+  "sources": [
+    {
+      "bytes": 7276,
+      "git_blob": "d5dca8c623748172c3e910f9da7c24212aeb26ad",
+      "git_blob_verified": true,
+      "line_reference": "Clock and Linux cpu()",
+      "path": "trillionnium/crates/trnm-pon-node/examples/support/w1_cost_producers.rs",
+      "sha256": "329f9d9a3cd0d55963c56c74600188f4a7fd8f263dcfb2555bc36cb6f75065e0"
+    },
+    {
+      "bytes": 22075,
+      "git_blob": "2418f26674eab741c8cda5e219a930d40b36e658",
+      "git_blob_verified": true,
+      "line_reference": "imports and timed producer/evidence/verifier paths",
+      "path": "trillionnium/crates/trnm-pon-node/examples/pon_w1_legal_strategy_v3.rs",
+      "sha256": "fd22b893e8459b4eb374aedc774b8a267f56c194642b5ed29d2555ee2b3388c3"
+    },
+    {
+      "bytes": 11142,
+      "git_blob": "92f1e2a9e971af5abe9e43b1ddfb976c41da9be4",
+      "git_blob_verified": true,
+      "line_reference": "Clock imports and cohort/verifier paths",
+      "path": "trillionnium/crates/trnm-pon-node/examples/pon_w1_reused_cost_v3.rs",
+      "sha256": "7027516cdb2c2fafa6c68d7051e965bc7bb573f395466974fc09c8dd3187b20a"
+    },
+    {
+      "bytes": 13233,
+      "git_blob": "3d9b47c43bd8bdc083b890d7cb9ecf79197273c4",
+      "git_blob_verified": true,
+      "line_reference": "Clock imports, prefix/search/cohort/verifier paths",
+      "path": "trillionnium/crates/trnm-pon-node/examples/pon_w1_false_trace_reuse_v1.rs",
+      "sha256": "5afe2f1f1578b4264f79d8ce56a6d0abeb51b0be987eca22438f59e01bf3033e"
+    },
+    {
+      "bytes": 40448,
+      "git_blob": "c258df9b422991ed29b56d03d7f43c7b6d125a9d",
+      "git_blob_verified": true,
+      "line_reference": "cpu_ns / Clock::start / Clock::observe / Clock::finish",
+      "path": "trillionnium/crates/trnm-crypto-primitives/examples/pon_work_expensive_v1.rs",
+      "sha256": "86cce1ac568a4542f37922ac88887f1e9a0c8071d233cd4be1fc0da19cf4364e"
+    },
+    {
+      "bytes": 26180,
+      "git_blob": "fce5834c1d9780f058f8aaff4041771c8c173c14",
+      "git_blob_verified": true,
+      "line_reference": "Instant timers in search/mutation/setup/verifier",
+      "path": "trillionnium/crates/trnm-crypto-primitives/examples/pon_rejection_cost.rs",
+      "sha256": "68582c646c39079cd0b85ed8317feb82ee5a9639775b8359b5c9410577ee6ec0"
+    },
+    {
+      "bytes": 16803,
+      "git_blob": "8d2fb7d1624d82138ca1d54efbad9107c175e048",
+      "git_blob_verified": true,
+      "line_reference": "capture",
+      "path": "scripts/ci/run_cross_arch_cost.py",
+      "sha256": "647533d30fcd18c89a9127d750646f19c17b237e1d09bbdea3589daa97636d66"
+    },
+    {
+      "bytes": 33613,
+      "git_blob": "dba09f0efa05ef56595dc764c9a89c8595b58063",
+      "git_blob_verified": true,
+      "line_reference": "exchange",
+      "path": "scripts/ci/run_work_expensive_campaign_v1.py",
+      "sha256": "91a60f0244cb15df81a79aa512a746436186c95bd6ed3d8e884e374d6031e510"
+    }
+  ],
+  "tree": "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14"
+}

@@ -1,0 +1,37 @@
+{
+  "records": [
+    {
+      "source": {
+        "commit": "620cb63ae9b58904483005bcb2c4e1507df99539",
+        "tree": "f2cebe6d99deca596c170922b8e60d66648d7393",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "42a7e79bf271684caccb12c864449b57bf72755a10a367b67d985f277e91a5c2"
+      },
+      "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/automation_effect_pq_product-7d30b95d8c11439c",
+      "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h2-native-attempt-1/executed-binaries-effect-pq-product/2321aed715fa85f0368bc2e9d6aabd86c3299872f5c01199e04970fb62655f42.elf",
+      "sha256": "2321aed715fa85f0368bc2e9d6aabd86c3299872f5c01199e04970fb62655f42",
+      "bytes": 99261752,
+      "device": 2050,
+      "inode": 58259819,
+      "pid": 884690,
+      "start_ticks": "98900377",
+      "wrapper_pid": 884179,
+      "wrapper_start_ticks": "98899323",
+      "wrapper_descendant_verified": true,
+      "post_open_task_and_exe_verified": true,
+      "observed_selected_tests": [
+        "pq_effect_survives_owned_agentd_kill_after_provider_fsync_without_resend"
+      ],
+      "captured_unix": 1793911339.4489818
+    }
+  ],
+  "errors": [],
+  "unique_actual_elf_sha256": [
+    "2321aed715fa85f0368bc2e9d6aabd86c3299872f5c01199e04970fb62655f42"
+  ],
+  "observed_selected_tests": [
+    "pq_effect_survives_owned_agentd_kill_after_provider_fsync_without_resend"
+  ],
+  "capture_scope": "actual executing test-image binding; polling may miss individual short-lived cases"
+}

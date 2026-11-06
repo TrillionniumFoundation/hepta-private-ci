@@ -1,0 +1,46 @@
+{
+  "schema": "chain-c4-cache-limit-independent-review-v1",
+  "review_kind": "read-only source review; no test or native execution",
+  "base_commit": "b5ef97b29c2e8b738525a2e3326dd60784c46e72",
+  "base_tree": "020880f22725e93cabb65c6e7eda3cbbd3c2405a",
+  "path": "scripts/ci/report_module_evidence.py",
+  "base_blob": "1df0e0369e878ec123511158082d56109562a126",
+  "candidate_blob": "be7b893faeee8c537b95472976a5a9308eb0b0ca",
+  "candidate_sha256": "70941e508e48ef2f82553482b39b2b104bede82edfd9963e0d7e8f23343ff8bb",
+  "exact_change_verified": true,
+  "decision": "Acceptable as the minimal bounded retention change to evaluate under the unchanged original resource limits and 300-second gate; no qualification implied.",
+  "correctness_findings": [
+    "The complete current str remains the cache key, after safe(root,path) and the real read_text on every check. No path, mtime, size, or validation verdict is cached.",
+    "Both eligible ranges invoke exactly the same pure parser. The changed threshold only retains more completed results. Rust returns immutable str, Python returns frozenset[str], and parser exceptions remain uncached.",
+    "Same-path, same-size, same-mtime content edits still select a different full-content key. Comment/string masking and attributed-test checks remain unchanged.",
+    "Each parser retains at most 128 entries; oversize text still takes the complete original parser. The change does not truncate or skip source.",
+    "No caller, checker, original test, workflow, CPU/RAM setting, timeout or acceptance count is changed by this patch."
+  ],
+  "resource_findings": [
+    "There are two independent 128-entry LRU caches, not one shared 128-entry cache.",
+    "The threshold is Python character count, not a byte/RSS limit. It doubles the maximum retained input size per entry; Unicode string representation and Python symbol/frozenset overhead matter.",
+    "For worst-case full caches at 524288 chars, ASCII input keys for both caches plus Rust output strings alone could occupy about 192 MiB; a four-byte-per-character representation could occupy about 768 MiB, excluding Python summaries and object overhead. These are conservative capacity calculations, not observed memory use.",
+    "For the same actual source inputs, cold parser working memory is unchanged: the previously oversize files were already fully parsed. The added cost is retention between calls, with possible LRU eviction/churn.",
+    "Real read_text, content hashing/equality, rust_impl_bodies/rust_direct_method scans, regular expressions, registry relationships and all remaining validation still run. A mask-cache hit does not prove that the whole suite fits 300 seconds."
+  ],
+  "observations_supplied_by_root": {
+    "C3_original_applicability_timeout_seconds": 300.005226838,
+    "hot_Rust_files": [
+      {
+        "name": "store.rs",
+        "bytes": 346418,
+        "reported_masks_per_validate": 44
+      },
+      {
+        "name": "ingress/public_v3.rs",
+        "bytes": 386697,
+        "reported_masks_per_validate": 37
+      }
+    ],
+    "observation_scope": "Parent and W1 reported these values; this review has not independently read the full C3 execution raw or measured RSS."
+  },
+  "remaining_required_evidence": "Actual complete C4 checkout with original source/dependency guards, unchanged original controls and original 300-second/resource gates. Preserve C2/C3 timeouts. No optional heavy tests requested.",
+  "native_execution": false,
+  "full_gate_pass": false,
+  "production_source_modified_by_reviewer": false
+}

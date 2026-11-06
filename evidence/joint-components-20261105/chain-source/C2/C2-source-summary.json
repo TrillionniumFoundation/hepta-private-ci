@@ -1,0 +1,211 @@
+{
+  "base": "9ecdbebc897d35f07b998d084b015db8474be84b",
+  "base_identity": {
+    "base": null,
+    "candidate": "9ecdbebc897d35f07b998d084b015db8474be84b",
+    "kind": "head",
+    "prospective_merge": null,
+    "schema": "trnm-ci-source-v1",
+    "tested_commit": "9ecdbebc897d35f07b998d084b015db8474be84b",
+    "tested_tree": "94050c5f5f72a27d6c4a5fbf627791c15c2704af",
+    "tests_executed_by_identity_check": false,
+    "tracked_bytes": 985244329,
+    "tracked_entries": 10350,
+    "tracked_worktree_verified": true
+  },
+  "base_source_pin_refusal": "HOLD_NO_GO: changed source: scripts/ci/check_ci_contract.py",
+  "base_tree": "94050c5f5f72a27d6c4a5fbf627791c15c2704af",
+  "commit": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+  "compiler_started": false,
+  "completed_utc": "2026-11-05T15:19:15Z",
+  "coordinator_sha256": "2c17ec0ad89969aa8723c51267b333b7d1e4e43a04bb337e1ca4c5fd32123083",
+  "expected_base_failures": [
+    "c1-original-pq-source-pin-failure"
+  ],
+  "failures": [
+    "c1-original-pq-source-pin-failure"
+  ],
+  "hidden_index_flags": 0,
+  "manifest_bytes": 19242,
+  "manifest_sha256": "31163a13a48f7c3f378ffc51ea290d84e4fc29607fc68844b366e61eb5d0df80",
+  "missing_after": 0,
+  "missing_before": 0,
+  "native_tests_started": false,
+  "passed": true,
+  "pq_config": {
+    "bytes": 96573,
+    "git_blob": "c8486ca9cce475d429b2a3b4bc43ce9ffec57ddc",
+    "path": "config/pon/pq-cross-branch-corpus-v1.json",
+    "sha256": "aa0df013c7c430cdead78243216a536154a6522851747df10fcc5dab4a8e368c"
+  },
+  "production_activation": false,
+  "public_service_measured": false,
+  "records": [
+    {
+      "elapsed_ns": 134923636,
+      "exit_code": 0,
+      "name": "base-preflight",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "elapsed_ns": 31820494321,
+      "exit_code": 0,
+      "name": "base-full-source",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "elapsed_ns": 39785748,
+      "exit_code": 0,
+      "name": "base-clean",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "elapsed_ns": 88592184,
+      "exit_code": 1,
+      "name": "c1-original-pq-source-pin-failure",
+      "passed": false,
+      "timed_out": false
+    },
+    {
+      "elapsed_ns": 20995311,
+      "exit_code": 0,
+      "name": "fetch-frozen-c2",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "elapsed_ns": 6116154,
+      "exit_code": 0,
+      "name": "c2-tree",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "elapsed_ns": 4549636,
+      "exit_code": 0,
+      "name": "c2-parent",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "elapsed_ns": 34657050,
+      "exit_code": 0,
+      "name": "missing-before",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "elapsed_ns": 29829465,
+      "exit_code": 0,
+      "name": "missing-after",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "elapsed_ns": 52296376,
+      "exit_code": 0,
+      "name": "select-frozen-c2",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "elapsed_ns": 17815245,
+      "exit_code": 0,
+      "name": "c2-index-flags",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "elapsed_ns": 90038856,
+      "exit_code": 0,
+      "name": "c2-preflight",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "elapsed_ns": 2554257475,
+      "exit_code": 0,
+      "name": "c2-source-before",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "elapsed_ns": 379339502,
+      "exit_code": 0,
+      "name": "pq-source-guard",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "elapsed_ns": 60660680294,
+      "exit_code": 0,
+      "name": "pq-source-controls",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "elapsed_ns": 60798033,
+      "exit_code": 0,
+      "name": "pq-claim-guard",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "elapsed_ns": 430636231,
+      "exit_code": 0,
+      "name": "pq-claim-controls",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "elapsed_ns": 102511092,
+      "exit_code": 0,
+      "name": "source-inventory",
+      "passed": true,
+      "timed_out": false
+    },
+    {
+      "elapsed_ns": 2443019567,
+      "exit_code": 0,
+      "name": "c2-source-after",
+      "passed": true,
+      "timed_out": false
+    }
+  ],
+  "schema": "trnm-c2-frozen-source-update-v1",
+  "source_after": {
+    "base": null,
+    "candidate": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+    "kind": "head",
+    "prospective_merge": null,
+    "schema": "trnm-ci-source-v1",
+    "tested_commit": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+    "tested_tree": "e0235248ecae2a67717c8b9ff2e3f25774ba63d7",
+    "tests_executed_by_identity_check": false,
+    "tracked_bytes": 985264447,
+    "tracked_entries": 10357,
+    "tracked_worktree_verified": true
+  },
+  "source_before": {
+    "base": null,
+    "candidate": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+    "kind": "head",
+    "prospective_merge": null,
+    "schema": "trnm-ci-source-v1",
+    "tested_commit": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+    "tested_tree": "e0235248ecae2a67717c8b9ff2e3f25774ba63d7",
+    "tests_executed_by_identity_check": false,
+    "tracked_bytes": 985264447,
+    "tracked_entries": 10357,
+    "tracked_worktree_verified": true
+  },
+  "source_filter_policy_changed": false,
+  "started_utc": "2026-11-05T15:17:36Z",
+  "transient_retries": [],
+  "tree": "e0235248ecae2a67717c8b9ff2e3f25774ba63d7",
+  "unresolved_failures": [],
+  "worktree": "/home/qian-qi/work/chain-joint-20261105-93bfc-current"
+}

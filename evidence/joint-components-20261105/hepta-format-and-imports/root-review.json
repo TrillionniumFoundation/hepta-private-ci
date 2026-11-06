@@ -1,0 +1,52 @@
+{
+  "scope": "root verification of actual formatter output and two public-type import fixes; no native execution credit",
+  "base_commit": "b4b81cc59847cfe2683f170949d464778f413147",
+  "base_tree": "a64d3f3d34f5e52546ec762b6ad7fbdfa69e96b2",
+  "all_five_files_hash_verified": true,
+  "all_three_python_ASTs_unchanged": true,
+  "rust_changes": "Only the two already-reviewed import corrections; no dependency or lockfile edits",
+  "patch_sha256": "317aa2ef9b61da3e5c08b413b6d64c46a266290932d448700750cba5a4a320a3",
+  "native_qualification": false,
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/tests/automation_effect_pq_product.rs",
+      "sha256": "eee39112d46e53675fb40e8ba5b532f0ebfa034eb2db3275cd243bcbe1ec0966",
+      "bytes": 17208,
+      "mode": "100644",
+      "git_blob": "558f420d962dd724a36e8a649141b8f5725ec6d4",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/model_storage/pq_effect_migration/native/h1-final-format/candidate/codex-rs/hepta-agentd/tests/automation_effect_pq_product.rs"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/automation_effect_operator.rs",
+      "sha256": "0ce139529fb4172801c0a78f400a261c06e550ad266bce2a39331af1200b9eae",
+      "bytes": 21304,
+      "mode": "100644",
+      "git_blob": "5e1bd585a09230286205802081e39e3093cc2815",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/model_storage/pq_effect_migration/native/h1-final-format/candidate/codex-rs/hepta-agentd/tests/support/automation_effect_operator.rs"
+    },
+    {
+      "path": "scripts/hepta_smollm_runtime_handoff_v12.py",
+      "sha256": "2750d6e285a76e2f17129a80d9abd7ff3ebf88cf9738a4590ac953d0845d8866",
+      "bytes": 3621,
+      "mode": "100644",
+      "git_blob": "44cab1b84f861b7e815ee27b84ef56f6be72175a",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/model_storage/pq_effect_migration/native/h1-final-format/candidate/scripts/hepta_smollm_runtime_handoff_v12.py"
+    },
+    {
+      "path": "scripts/test_hepta_smollm_execution_source_v1.py",
+      "sha256": "e0637ab5efa6f66ff97248e10be51b957352926364a33c5d68fb97fb7bd148c1",
+      "bytes": 21635,
+      "mode": "100644",
+      "git_blob": "8646378da61bd2b4790af1ad878152705d19146e",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/model_storage/pq_effect_migration/native/h1-final-format/candidate/scripts/test_hepta_smollm_execution_source_v1.py"
+    },
+    {
+      "path": "scripts/test_hepta_smollm_execution_source_v12.py",
+      "sha256": "51708791b3b602c7283c25bd07780776ca7f386f810251a72fb2fd5ae6941a76",
+      "bytes": 18460,
+      "mode": "100644",
+      "git_blob": "4afb894547ad2e0bbba0c1d8d23e85fb60c3213f",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/model_storage/pq_effect_migration/native/h1-final-format/candidate/scripts/test_hepta_smollm_execution_source_v12.py"
+    }
+  ]
+}

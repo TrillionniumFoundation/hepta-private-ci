@@ -1,0 +1,376 @@
+{
+  "schema": "w1-independent-C4-source-inventory-v1",
+  "commit": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+  "tree": "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14",
+  "C2_commit": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+  "complete_compare_changed_paths": [
+    ".github/workflows/pon-w1-work-security.yml",
+    "scripts/ci/report_module_evidence.py",
+    "scripts/ci/test_applicability.py"
+  ],
+  "prior_inventory": {
+    "path": "w1/C2-legal-v3-entry-audit.json",
+    "bytes": 10866,
+    "sha256": "e2073602ee933fd8a10d711c3f989ef748ba831bb866b3411122fdb27a3fe3f1",
+    "git_blob": "06688fa8864673e4bbd9a19be0e727eac5a8f065"
+  },
+  "original_inventory_entries": 22,
+  "unchanged_entries": 21,
+  "inventory": [
+    {
+      "path": "scripts/ci/run_w1_reused_cost_v3.py",
+      "c2": {
+        "bytes": 7023,
+        "sha256": "2179520b353e940adac0a6530adc216fed74ad8f5f278ec98a9781c767223887",
+        "git_blob": "7171e55ac36ec717c7f3cb66331978df5ec8c1e1"
+      },
+      "c4": {
+        "bytes": 7023,
+        "sha256": "2179520b353e940adac0a6530adc216fed74ad8f5f278ec98a9781c767223887",
+        "git_blob": "7171e55ac36ec717c7f3cb66331978df5ec8c1e1"
+      },
+      "inheritance": "unchanged-C2-to-C4-complete-compare"
+    },
+    {
+      "path": "scripts/pon_w1_reused_cost_reader_v3.py",
+      "c2": {
+        "bytes": 19692,
+        "sha256": "c016841c5bb3991b2364ed4a00c2a97c396375828d8dcddb780d1d1538dafe5b",
+        "git_blob": "bdbca8674356b7746af428f9c0ea61e1b3135af0"
+      },
+      "c4": {
+        "bytes": 19692,
+        "sha256": "c016841c5bb3991b2364ed4a00c2a97c396375828d8dcddb780d1d1538dafe5b",
+        "git_blob": "bdbca8674356b7746af428f9c0ea61e1b3135af0"
+      },
+      "inheritance": "unchanged-C2-to-C4-complete-compare"
+    },
+    {
+      "path": "scripts/ci/test_run_w1_reused_cost_v3.py",
+      "c2": {
+        "bytes": 16131,
+        "sha256": "32745385e9c5b404faeb2105d8ebf06d5aff9b291eeaa81b9578ba1e8436711b",
+        "git_blob": "13f53fe032163efbfba94e84bd38be6b2846079e"
+      },
+      "c4": {
+        "bytes": 16131,
+        "sha256": "32745385e9c5b404faeb2105d8ebf06d5aff9b291eeaa81b9578ba1e8436711b",
+        "git_blob": "13f53fe032163efbfba94e84bd38be6b2846079e"
+      },
+      "inheritance": "unchanged-C2-to-C4-complete-compare"
+    },
+    {
+      "path": "trillionnium/crates/trnm-crypto-primitives/examples/pon_reused_cost.rs",
+      "c2": {
+        "bytes": 26739,
+        "sha256": "9c361257f43d4a2dd1c37b5a5178b3dcdd28b0da41879410b282f14701e24aed",
+        "git_blob": "4ffd434b460c58e8727c7849767c7d1553d0111b"
+      },
+      "c4": {
+        "bytes": 26739,
+        "sha256": "9c361257f43d4a2dd1c37b5a5178b3dcdd28b0da41879410b282f14701e24aed",
+        "git_blob": "4ffd434b460c58e8727c7849767c7d1553d0111b"
+      },
+      "inheritance": "unchanged-C2-to-C4-complete-compare"
+    },
+    {
+      "path": "trillionnium/crates/trnm-pon-node/examples/pon_w1_reused_cost_v3.rs",
+      "c2": {
+        "bytes": 11142,
+        "sha256": "7027516cdb2c2fafa6c68d7051e965bc7bb573f395466974fc09c8dd3187b20a",
+        "git_blob": "92f1e2a9e971af5abe9e43b1ddfb976c41da9be4"
+      },
+      "c4": {
+        "bytes": 11142,
+        "sha256": "7027516cdb2c2fafa6c68d7051e965bc7bb573f395466974fc09c8dd3187b20a",
+        "git_blob": "92f1e2a9e971af5abe9e43b1ddfb976c41da9be4"
+      },
+      "inheritance": "unchanged-C2-to-C4-complete-compare"
+    },
+    {
+      "path": ".github/workflows/pon-w1-transparent-profile.yml",
+      "c2": {
+        "bytes": 23862,
+        "sha256": "0dd9bcc90b1a6056e183ec417825f5451591c5a9aa6725b872543c4e369c9827",
+        "git_blob": "343843d2f462bc44a6266e3384a0990e3607889e"
+      },
+      "c4": {
+        "bytes": 23862,
+        "sha256": "0dd9bcc90b1a6056e183ec417825f5451591c5a9aa6725b872543c4e369c9827",
+        "git_blob": "343843d2f462bc44a6266e3384a0990e3607889e"
+      },
+      "inheritance": "unchanged-C2-to-C4-complete-compare"
+    },
+    {
+      "path": ".github/workflows/pon-w1-work-security.yml",
+      "c2": {
+        "bytes": 25524,
+        "sha256": "fa217ee369629c19431de4f5b9406d1b72f314cc4208864c428247d280d32633",
+        "git_blob": "aa9d7597904d2d0bec32a502160c46ae255381be"
+      },
+      "c4": {
+        "bytes": 26698,
+        "sha256": "1559cc1def59718cf1d938ed7c1718dc1c8aa91361bea47493e91306c292f242",
+        "git_blob": "994f491e4aaf28ef4dbebd85c3a2d8260b6c6db6"
+      },
+      "inheritance": "changed-C3-six-to-nine-exact-name-guard; fetched-exact-C4"
+    },
+    {
+      "path": "scripts/ci/run_w1_false_trace_reuse_v1.py",
+      "c2": {
+        "bytes": 13611,
+        "sha256": "78ae176962c1e008c12b8737934e355c2ec97dd4d12a7c7cb0f1c4fb5ab8a08a",
+        "git_blob": "d9c1a971c23fbea8a91468db6c968f942c2aadbb"
+      },
+      "c4": {
+        "bytes": 13611,
+        "sha256": "78ae176962c1e008c12b8737934e355c2ec97dd4d12a7c7cb0f1c4fb5ab8a08a",
+        "git_blob": "d9c1a971c23fbea8a91468db6c968f942c2aadbb"
+      },
+      "inheritance": "unchanged-C2-to-C4-complete-compare"
+    },
+    {
+      "path": "scripts/ci/check_cross_arch_cost.py",
+      "c2": {
+        "bytes": 41098,
+        "sha256": "f8f0f99c1f4a48d16d51f9257472645532626fc5202faa08c1453eaab9f4984f",
+        "git_blob": "5fbdbbf4c1ace9af059c3fbcb85ea9977e27f4ea"
+      },
+      "c4": {
+        "bytes": 41098,
+        "sha256": "f8f0f99c1f4a48d16d51f9257472645532626fc5202faa08c1453eaab9f4984f",
+        "git_blob": "5fbdbbf4c1ace9af059c3fbcb85ea9977e27f4ea"
+      },
+      "inheritance": "unchanged-C2-to-C4-complete-compare"
+    },
+    {
+      "path": "scripts/ci/run_cross_arch_cost.py",
+      "c2": {
+        "bytes": 16803,
+        "sha256": "647533d30fcd18c89a9127d750646f19c17b237e1d09bbdea3589daa97636d66",
+        "git_blob": "8d2fb7d1624d82138ca1d54efbad9107c175e048"
+      },
+      "c4": {
+        "bytes": 16803,
+        "sha256": "647533d30fcd18c89a9127d750646f19c17b237e1d09bbdea3589daa97636d66",
+        "git_blob": "8d2fb7d1624d82138ca1d54efbad9107c175e048"
+      },
+      "inheritance": "unchanged-C2-to-C4-complete-compare"
+    },
+    {
+      "path": "scripts/ci/ci_observation.py",
+      "c2": {
+        "bytes": 8837,
+        "sha256": "389154c792fd3c734621278fb4188e9863ff599efb0c9b863316f540a94eab4a",
+        "git_blob": "9ee54850767a1fce3848483660860dd8d976c777"
+      },
+      "c4": {
+        "bytes": 8837,
+        "sha256": "389154c792fd3c734621278fb4188e9863ff599efb0c9b863316f540a94eab4a",
+        "git_blob": "9ee54850767a1fce3848483660860dd8d976c777"
+      },
+      "inheritance": "unchanged-C2-to-C4-complete-compare"
+    },
+    {
+      "path": "scripts/pon_w1_legal_strategy_reader_v3.py",
+      "c2": {
+        "bytes": 30562,
+        "sha256": "88657a45b22a350c140ae8bcbe7f294544e8d9788c86592238cc9c6437bd58ff",
+        "git_blob": "f740317811f3d0ae035d25985f7069fd2ace28e8"
+      },
+      "c4": {
+        "bytes": 30562,
+        "sha256": "88657a45b22a350c140ae8bcbe7f294544e8d9788c86592238cc9c6437bd58ff",
+        "git_blob": "f740317811f3d0ae035d25985f7069fd2ace28e8"
+      },
+      "inheritance": "unchanged-C2-to-C4-complete-compare"
+    },
+    {
+      "path": "trillionnium/crates/trnm-pon-node/examples/pon_w1_legal_strategy_v3.rs",
+      "c2": {
+        "bytes": 22075,
+        "sha256": "fd22b893e8459b4eb374aedc774b8a267f56c194642b5ed29d2555ee2b3388c3",
+        "git_blob": "2418f26674eab741c8cda5e219a930d40b36e658"
+      },
+      "c4": {
+        "bytes": 22075,
+        "sha256": "fd22b893e8459b4eb374aedc774b8a267f56c194642b5ed29d2555ee2b3388c3",
+        "git_blob": "2418f26674eab741c8cda5e219a930d40b36e658"
+      },
+      "inheritance": "unchanged-C2-to-C4-complete-compare"
+    },
+    {
+      "path": "trillionnium/crates/trnm-crypto-primitives/src/pon_work/legal_attempt.rs",
+      "c2": {
+        "bytes": 23002,
+        "sha256": "732f85082c7125d4c3ef6299a5ce3b5b657399df95f88b5498aa338abfa3c655",
+        "git_blob": "b1c5952de1a4b957f85f418d3e6ab66d8a64607a"
+      },
+      "c4": {
+        "bytes": 23002,
+        "sha256": "732f85082c7125d4c3ef6299a5ce3b5b657399df95f88b5498aa338abfa3c655",
+        "git_blob": "b1c5952de1a4b957f85f418d3e6ab66d8a64607a"
+      },
+      "inheritance": "unchanged-C2-to-C4-complete-compare"
+    },
+    {
+      "path": "evidence/pon-w1-factorial-v3-20261102/manifest.json",
+      "c2": {
+        "bytes": 21943,
+        "sha256": "7f616db348619cff89731cd372b1fb01ff948ef116a40fa31778677270544e54",
+        "git_blob": "65f412ec8a9b58d6714f02603af6867acb47ca5b"
+      },
+      "c4": {
+        "bytes": 21943,
+        "sha256": "7f616db348619cff89731cd372b1fb01ff948ef116a40fa31778677270544e54",
+        "git_blob": "65f412ec8a9b58d6714f02603af6867acb47ca5b"
+      },
+      "inheritance": "unchanged-C2-to-C4-complete-compare"
+    },
+    {
+      "path": "evidence/pon-w1-factorial-v3-20261102/README.md",
+      "c2": {
+        "bytes": 14173,
+        "sha256": "3ae81f28493612a6ba088173e1f04f66dd922c5e7f7475babd522b91eaa236e9",
+        "git_blob": "2909d96599beb90999d316d551fa562b33239b0b"
+      },
+      "c4": {
+        "bytes": 14173,
+        "sha256": "3ae81f28493612a6ba088173e1f04f66dd922c5e7f7475babd522b91eaa236e9",
+        "git_blob": "2909d96599beb90999d316d551fa562b33239b0b"
+      },
+      "inheritance": "unchanged-C2-to-C4-complete-compare"
+    },
+    {
+      "path": "evidence/pon-w1-factorial-v3-20261102/validation/frozen-code-final-source.json",
+      "c2": {
+        "bytes": 421,
+        "sha256": "1a3c7a7efcfa6f000c39b757d06974f820c1a4149256dd3b3d607b525bce98cc",
+        "git_blob": "210eefbf52cd4aecb98e049e1def916538def1ee"
+      },
+      "c4": {
+        "bytes": 421,
+        "sha256": "1a3c7a7efcfa6f000c39b757d06974f820c1a4149256dd3b3d607b525bce98cc",
+        "git_blob": "210eefbf52cd4aecb98e049e1def916538def1ee"
+      },
+      "inheritance": "unchanged-C2-to-C4-complete-compare"
+    },
+    {
+      "path": "evidence/pon-w1-factorial-v3-20261102/successful-2b250859-archive.json",
+      "c2": {
+        "bytes": 17339,
+        "sha256": "7f487585d569b4406b6e8de34431e5674df1b4938a36b71f1c15aa980c2e855c",
+        "git_blob": "bcd1b2ed3b9b16cc6a97e06e671e41297318c1a9"
+      },
+      "c4": {
+        "bytes": 17339,
+        "sha256": "7f487585d569b4406b6e8de34431e5674df1b4938a36b71f1c15aa980c2e855c",
+        "git_blob": "bcd1b2ed3b9b16cc6a97e06e671e41297318c1a9"
+      },
+      "inheritance": "unchanged-C2-to-C4-complete-compare"
+    },
+    {
+      "path": "trillionnium/crates/trnm-pon-node/examples/support/w1_cost_producers.rs",
+      "c2": {
+        "bytes": 7276,
+        "sha256": "329f9d9a3cd0d55963c56c74600188f4a7fd8f263dcfb2555bc36cb6f75065e0",
+        "git_blob": "d5dca8c623748172c3e910f9da7c24212aeb26ad"
+      },
+      "c4": {
+        "bytes": 7276,
+        "sha256": "329f9d9a3cd0d55963c56c74600188f4a7fd8f263dcfb2555bc36cb6f75065e0",
+        "git_blob": "d5dca8c623748172c3e910f9da7c24212aeb26ad"
+      },
+      "inheritance": "unchanged-C2-to-C4-complete-compare"
+    },
+    {
+      "path": "scripts/pon_w1_cost_matrix_reader.py",
+      "c2": {
+        "bytes": 35800,
+        "sha256": "6a967274b93394494a2606c08173d4c755f255742bdca6cecd9665ce9f3686fa",
+        "git_blob": "fe710e05048916145180cf1cf8870bc31a94dec8"
+      },
+      "c4": {
+        "bytes": 35800,
+        "sha256": "6a967274b93394494a2606c08173d4c755f255742bdca6cecd9665ce9f3686fa",
+        "git_blob": "fe710e05048916145180cf1cf8870bc31a94dec8"
+      },
+      "inheritance": "unchanged-C2-to-C4-complete-compare"
+    },
+    {
+      "path": "config/pon/work-security-acceptance-v1.json",
+      "c2": {
+        "bytes": 673,
+        "sha256": "4ca674c305112d51672efcab6c0f886e477a5397191addb806d209a08266165f",
+        "git_blob": "fd29f1ee4d03b16b84c3ae445765955b9c1c2bab"
+      },
+      "c4": {
+        "bytes": 673,
+        "sha256": "4ca674c305112d51672efcab6c0f886e477a5397191addb806d209a08266165f",
+        "git_blob": "fd29f1ee4d03b16b84c3ae445765955b9c1c2bab"
+      },
+      "inheritance": "unchanged-C2-to-C4-complete-compare"
+    },
+    {
+      "path": "trillionnium/crates/trnm-crypto-primitives/examples/support/w1_material.rs",
+      "c2": {
+        "bytes": 7114,
+        "sha256": "ca6196f9067ea3ac86a2d743c13de9c9cac0715e4ae652654cdd6592a6d0cf9a",
+        "git_blob": "83ab348459f3e5cae409d4dcffba359ef90aaf64"
+      },
+      "c4": {
+        "bytes": 7114,
+        "sha256": "ca6196f9067ea3ac86a2d743c13de9c9cac0715e4ae652654cdd6592a6d0cf9a",
+        "git_blob": "83ab348459f3e5cae409d4dcffba359ef90aaf64"
+      },
+      "inheritance": "unchanged-C2-to-C4-complete-compare"
+    }
+  ],
+  "supplementary_exact_C4_sources": [
+    {
+      "path": "scripts/pon_work_rejection_report.py",
+      "bytes": 50292,
+      "sha256": "976ca2fd91873b699ed3b31c64c567608b38e31cfbace75f43caaf1edc318a15",
+      "git_blob": "23429d1d01307f61d4df56244e869a628787dda0",
+      "provenance": "exact-C4-GitHub-file-retrieval"
+    },
+    {
+      "path": "trillionnium/crates/trnm-crypto-primitives/examples/pon_rejection_cost.rs",
+      "bytes": 26180,
+      "sha256": "68582c646c39079cd0b85ed8317feb82ee5a9639775b8359b5c9410577ee6ec0",
+      "git_blob": "fce5834c1d9780f058f8aaff4041771c8c173c14",
+      "provenance": "exact-C4-GitHub-file-retrieval"
+    },
+    {
+      "path": "trillionnium/crates/trnm-crypto-primitives/src/pon_work/blocked_one_zero.rs",
+      "bytes": 16879,
+      "sha256": "214552a72056e7b0a87e90f0e094cb2668a54de18bcf82e3eddc1896ab0b0031",
+      "git_blob": "d95d20caba662c884241a51cb045cfa17fa03983",
+      "provenance": "exact-C4-GitHub-file-retrieval"
+    },
+    {
+      "path": "trillionnium/crates/trnm-crypto-primitives/src/pon_work/blocked_zero.rs",
+      "bytes": 10436,
+      "sha256": "be1b375808d0923e3f938f1c4d23475a16bfe43bf665cb464d79d1dc9ef85f8f",
+      "git_blob": "0ae9356516dd4201b086fc4323296db57fbea219",
+      "provenance": "exact-C4-GitHub-file-retrieval"
+    },
+    {
+      "path": "trillionnium/crates/trnm-crypto-primitives/src/pon_work/structured.rs",
+      "bytes": 22800,
+      "sha256": "a0535365dc141d15d6e22242352f554d5ada6d31a02cd627f2eb92135704556c",
+      "git_blob": "1358d5f5a2df7f593ecfde0382357961631b6a8f",
+      "provenance": "exact-C4-GitHub-file-retrieval"
+    },
+    {
+      "path": "trillionnium/crates/trnm-crypto-primitives/src/pon_work.rs",
+      "bytes": 104121,
+      "sha256": "33cb571d1338a949677092d0dc3f6c955cd8ad6d3524cee0cd5b528e1c146d03",
+      "git_blob": "ce1608248d2ee67ed8f5d82a2c5f15942689139b",
+      "provenance": "exact-C4-GitHub-file-retrieval"
+    }
+  ],
+  "source_review_only": true,
+  "native_executed_by_this_auditor": false,
+  "sampling_executed_by_this_auditor": false
+}

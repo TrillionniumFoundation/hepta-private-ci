@@ -1,0 +1,63 @@
+{
+  "actual_readback_execution": false,
+  "changed_function_asts": [
+    "check_transport_index"
+  ],
+  "delta_scope": "Only final plan SHA literal plus explicit actual index route_plan_sha256 equality. Reused functions remain byte-identical.",
+  "frozen_plan_bytes": 82742,
+  "frozen_plan_sha256": "de5bf769089153d2bfd1fae468cf0af7942da442a9856acc120ee611757e5d5b",
+  "frozen_plan_source": "/workspace/scratch/93bfcfe29fc8/model_storage/git-archive-transport-attempt2/transport-plan.json",
+  "inspection_note": "An earlier read attempted v2/delivery-manifest.json and returned FileNotFoundError (local exec chunk afded1, exit1); rg then located the actual cloud-delivery-manifest.json. No gate or artifact generation was credited from that failed path lookup.",
+  "native_tests": 0,
+  "new_verifier_sha256": "cd468711332a1e8cf4ac3bbf0e3575f274d692b03140563a65a3f3de0da80054",
+  "old_downloader_state_modified": false,
+  "original_completion_checks": [
+    {
+      "archive_bytes": 130746864,
+      "completion_sha256": "034f518dc2bd8fd350d2cb7a322056300051c538382370089104a727f6c1341b",
+      "original_parts": 32,
+      "original_scope_equal": true,
+      "phase": "H1"
+    },
+    {
+      "archive_bytes": 256132128,
+      "completion_sha256": "d991a50f630e509278c20d5fe9f6ca0e53d1006852d954109d268375978407c1",
+      "original_parts": 62,
+      "original_scope_equal": true,
+      "phase": "H2"
+    },
+    {
+      "archive_bytes": 283427280,
+      "completion_sha256": "93d7bf08914054e4bcf05f17eea3cd5ef36fac9bbf0d1e601dda59084e758cd3",
+      "original_parts": 68,
+      "original_scope_equal": true,
+      "phase": "H3"
+    }
+  ],
+  "other_function_asts_identical": true,
+  "remote_calls": 0,
+  "reused": [
+    {
+      "bytes": 43223,
+      "path": "reused/archive_reference.py",
+      "same_as_v2": true,
+      "sha256": "ce96de09dc981311753d37312c1b254751cce3b40c4f950f603303a523508425"
+    },
+    {
+      "bytes": 22042,
+      "path": "reused/h2_verify_download.py",
+      "same_as_v2": true,
+      "sha256": "be74ed776c851401a6931676bfb78543ab9639ca90d9c0698633ee4ed71fcbda"
+    },
+    {
+      "bytes": 22105,
+      "path": "reused/h3_verify_download.py",
+      "same_as_v2": true,
+      "sha256": "46d74e053141c42b318e0202e315f0487a8c649883bdb83ee3b0434ddec32477"
+    }
+  ],
+  "schema": "unified-readback-v3-static-preparation",
+  "source_v2_sha256": "b226c3ff96f2aeb622be878665f338147c49c351cba79cd18005bacf50875eae",
+  "status": "STATIC_PREPARATION_ONLY_ACTUAL_GIT_PAYLOADS_AND_EXECUTION_PENDING",
+  "v2_all_files_unchanged": true
+}

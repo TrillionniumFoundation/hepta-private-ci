@@ -1,0 +1,337 @@
+{
+  "build_environment_overrides": {},
+  "cargo_configuration_after": {
+    "configuration_semantics_attested": false,
+    "files": [
+      {
+        "path": "/home/qian-qi/work/chain-joint-20261105-93bfc-current/.cargo/config",
+        "state": "absent"
+      },
+      {
+        "path": "/home/qian-qi/work/chain-joint-20261105-93bfc-current/.cargo/config.toml",
+        "state": "absent"
+      },
+      {
+        "path": "/home/qian-qi/work/.cargo/config",
+        "state": "absent"
+      },
+      {
+        "path": "/home/qian-qi/work/.cargo/config.toml",
+        "state": "absent"
+      },
+      {
+        "path": "/home/qian-qi/.cargo/config",
+        "state": "absent"
+      },
+      {
+        "path": "/home/qian-qi/.cargo/config.toml",
+        "state": "absent"
+      },
+      {
+        "path": "/home/.cargo/config",
+        "state": "absent"
+      },
+      {
+        "path": "/home/.cargo/config.toml",
+        "state": "absent"
+      },
+      {
+        "path": "/.cargo/config",
+        "state": "absent"
+      },
+      {
+        "path": "/.cargo/config.toml",
+        "state": "absent"
+      }
+    ],
+    "schema": "trnm-cost-cargo-configuration-v1",
+    "violations": []
+  },
+  "cargo_configuration_before": {
+    "configuration_semantics_attested": false,
+    "files": [
+      {
+        "path": "/home/qian-qi/work/chain-joint-20261105-93bfc-current/.cargo/config",
+        "state": "absent"
+      },
+      {
+        "path": "/home/qian-qi/work/chain-joint-20261105-93bfc-current/.cargo/config.toml",
+        "state": "absent"
+      },
+      {
+        "path": "/home/qian-qi/work/.cargo/config",
+        "state": "absent"
+      },
+      {
+        "path": "/home/qian-qi/work/.cargo/config.toml",
+        "state": "absent"
+      },
+      {
+        "path": "/home/qian-qi/.cargo/config",
+        "state": "absent"
+      },
+      {
+        "path": "/home/qian-qi/.cargo/config.toml",
+        "state": "absent"
+      },
+      {
+        "path": "/home/.cargo/config",
+        "state": "absent"
+      },
+      {
+        "path": "/home/.cargo/config.toml",
+        "state": "absent"
+      },
+      {
+        "path": "/.cargo/config",
+        "state": "absent"
+      },
+      {
+        "path": "/.cargo/config.toml",
+        "state": "absent"
+      }
+    ],
+    "schema": "trnm-cost-cargo-configuration-v1",
+    "violations": []
+  },
+  "commit": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+  "completed_utc": "2026-11-05T18:54:10Z",
+  "coordinator_sha256": "86391ecde9c8f7889384d143c022928770ae320ea34e80e86c82ab1fe4e849dd",
+  "elapsed_seconds": 16.723444613977335,
+  "execution_context": "local-native-preflight",
+  "failures": [],
+  "fastest_adversary_qualified": false,
+  "local_component_outer_cap_seconds": 3300,
+  "observations": [
+    {
+      "child_rusage": {
+        "cumulative_maxrss_kib_after": 18732,
+        "cumulative_maxrss_kib_before": 0,
+        "scope": "waited children; maxrss is cumulative, not a per-command RSS limit",
+        "system_cpu_seconds_delta": 0.024176,
+        "user_cpu_seconds_delta": 0.065312
+      },
+      "command": [
+        "bash",
+        "scripts/project-preflight.sh",
+        "--audit"
+      ],
+      "command_cap_seconds": 120,
+      "effective_timeout_seconds": 120.0,
+      "elapsed_ns": 89630438,
+      "exit_code": 0,
+      "name": "candidate-preflight",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "path": "candidate-preflight.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 133,
+        "path": "candidate-preflight.stdout",
+        "sha256": "a47133fd7030ccda88d70f7e8f0c9df1ffb0fc5fd3257ed034439bbe6fc6e2e0"
+      },
+      "timed_out": false
+    },
+    {
+      "child_rusage": {
+        "cumulative_maxrss_kib_after": 83788,
+        "cumulative_maxrss_kib_before": 18732,
+        "scope": "waited children; maxrss is cumulative, not a per-command RSS limit",
+        "system_cpu_seconds_delta": 0.554577,
+        "user_cpu_seconds_delta": 2.00995
+      },
+      "command": [
+        "python3",
+        "-B",
+        "scripts/ci/verify_ci_source.py",
+        "--kind",
+        "head",
+        "--expected-head",
+        "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+        "--output",
+        "/home/qian-qi/work/chain-joint-20261105-93bfc-w1-native-C4/false-trace-full-limb/source-before.json"
+      ],
+      "command_cap_seconds": 600,
+      "effective_timeout_seconds": 600.0,
+      "elapsed_ns": 2482567010,
+      "exit_code": 0,
+      "name": "source-before",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "path": "source-before.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 422,
+        "path": "source-before.stdout",
+        "sha256": "a3240c2f14bfbfe973f5066eac1b7a5e8bea6bd426b068af3446f4397f2b2b2b"
+      },
+      "timed_out": false
+    },
+    {
+      "child_rusage": {
+        "cumulative_maxrss_kib_after": 200512,
+        "cumulative_maxrss_kib_before": 83788,
+        "scope": "waited children; maxrss is cumulative, not a per-command RSS limit",
+        "system_cpu_seconds_delta": 1.4528030000000003,
+        "user_cpu_seconds_delta": 11.10271
+      },
+      "command": [
+        "env",
+        "-u",
+        "CARGO_INCREMENTAL",
+        "python3",
+        "-B",
+        "scripts/ci/run_w1_false_trace_reuse_v1.py",
+        "--arch",
+        "x64",
+        "--local",
+        "--full-limb"
+      ],
+      "command_cap_seconds": 3300,
+      "effective_timeout_seconds": 3297.3579383121105,
+      "elapsed_ns": 11654355737,
+      "exit_code": 0,
+      "name": "original-full-limb-false-trace",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "path": "original-full-limb-false-trace.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 145,
+        "path": "original-full-limb-false-trace.stdout",
+        "sha256": "c217e38990a651acbdb37307e8fd984dbec447f5cd7f7040347a97fc9116c3ef"
+      },
+      "timed_out": false
+    },
+    {
+      "child_rusage": {
+        "cumulative_maxrss_kib_after": 200512,
+        "cumulative_maxrss_kib_before": 200512,
+        "scope": "waited children; maxrss is cumulative, not a per-command RSS limit",
+        "system_cpu_seconds_delta": 0.4926379999999999,
+        "user_cpu_seconds_delta": 2.0093059999999987
+      },
+      "command": [
+        "python3",
+        "-B",
+        "scripts/ci/verify_ci_source.py",
+        "--kind",
+        "head",
+        "--expected-head",
+        "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+        "--output",
+        "/home/qian-qi/work/chain-joint-20261105-93bfc-w1-native-C4/false-trace-full-limb/source-after.json"
+      ],
+      "command_cap_seconds": 600,
+      "effective_timeout_seconds": 600.0,
+      "elapsed_ns": 2416136090,
+      "exit_code": 0,
+      "name": "source-after",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "path": "source-after.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 422,
+        "path": "source-after.stdout",
+        "sha256": "a3240c2f14bfbfe973f5066eac1b7a5e8bea6bd426b068af3446f4397f2b2b2b"
+      },
+      "timed_out": false
+    }
+  ],
+  "original_build_timeout_seconds": 900,
+  "original_entry": "scripts/ci/run_w1_false_trace_reuse_v1.py --full-limb",
+  "original_hosted_lane_qualified": false,
+  "original_identity_timeout_seconds": 30,
+  "original_job": "false-trace-reuse",
+  "original_native_campaign_timeout_seconds": 300,
+  "original_native_termination_grace_seconds": 5,
+  "original_receipt": {
+    "binary_sha256_after": "1fdf21d5f9e9d970b2304191d60631eb4ba7d15b009105bd3fd6f7ed502f7b7f",
+    "binary_sha256_before": "1fdf21d5f9e9d970b2304191d60631eb4ba7d15b009105bd3fd6f7ed502f7b7f",
+    "error": null,
+    "manifest_sha256": "512542b54ea8d02b367e1a065b76e299761f1188226075177d64686695f9d887",
+    "path": "/home/qian-qi/work/chain-joint-20261105-93bfc-w1-native-C4/false-trace-full-limb/original/w1-full-limb-reuse-v1",
+    "reader_record_counts": {
+      "campaign": 1,
+      "candidate": 288,
+      "cohort": 72,
+      "end": 1,
+      "material": 9,
+      "search": 288,
+      "verifier": 1440
+    },
+    "reader_schema": "pon-w1-full-limb-reuse-observation-report-v1",
+    "result": "PASS",
+    "source_after": {
+      "commit": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+      "source_state": "committed-clean",
+      "tracked_bytes": 985270534,
+      "tracked_entries": 10357,
+      "tracked_worktree_verified": true,
+      "tree": "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14"
+    },
+    "source_before": {
+      "commit": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+      "source_state": "committed-clean",
+      "tracked_bytes": 985270534,
+      "tracked_entries": 10357,
+      "tracked_worktree_verified": true,
+      "tree": "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14"
+    }
+  },
+  "original_shared_job_timeout_seconds": 3300,
+  "original_workflow": ".github/workflows/pon-w1-work-security.yml",
+  "outer_cap_scope": "single-mode local component; original 55-minute job also contains default mode and tests/lints",
+  "output": "/home/qian-qi/work/chain-joint-20261105-93bfc-w1-native-C4/false-trace-full-limb",
+  "passed": true,
+  "production_activation": false,
+  "public_service_measured": false,
+  "retained_binary_sha256": "1fdf21d5f9e9d970b2304191d60631eb4ba7d15b009105bd3fd6f7ed502f7b7f",
+  "root": "/home/qian-qi/work/chain-joint-20261105-93bfc-current",
+  "runtime_process": {
+    "cgroup": "0::/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a1ad0f6922-fc05-5850.service\n",
+    "parent_pid": 527064,
+    "pid": 527097,
+    "start_ticks": "98249937"
+  },
+  "schema": "trnm-c4-original-full-limb-false-trace-component-v1",
+  "source_after": {
+    "base": null,
+    "candidate": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+    "kind": "head",
+    "prospective_merge": null,
+    "schema": "trnm-ci-source-v1",
+    "tested_commit": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+    "tested_tree": "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14",
+    "tests_executed_by_identity_check": false,
+    "tracked_bytes": 985270534,
+    "tracked_entries": 10357,
+    "tracked_worktree_verified": true
+  },
+  "source_before": {
+    "base": null,
+    "candidate": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+    "kind": "head",
+    "prospective_merge": null,
+    "schema": "trnm-ci-source-v1",
+    "tested_commit": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+    "tested_tree": "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14",
+    "tests_executed_by_identity_check": false,
+    "tracked_bytes": 985270534,
+    "tracked_entries": 10357,
+    "tracked_worktree_verified": true
+  },
+  "started_utc": "2026-11-05T18:53:53Z",
+  "target": "/home/qian-qi/work/chain-joint-20261105-93bfc-w1-target-C4",
+  "tree": "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14",
+  "work_hardness_accepted": false
+}

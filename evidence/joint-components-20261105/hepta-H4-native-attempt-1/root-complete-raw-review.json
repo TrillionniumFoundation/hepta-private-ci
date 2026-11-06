@@ -1,0 +1,2041 @@
+{
+  "schema": "root-H4-complete-raw-review-v1",
+  "source_commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+  "source_tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+  "delivery_sha256": "bda6c7127e6b4a84db3256898668cb664d933836e6332275cd9dfaa624f51fba",
+  "verified_delivered_files": 131,
+  "delivered_bytes": 5522990,
+  "job_id": "1a1ade2970f-fc05-5b5c",
+  "native_result": "SUCCEEDED exit0; one-source desktop/x64 original sequence only",
+  "actual_coordinator_seconds": 1236.8491698539583,
+  "outer_budget_seconds": 5400,
+  "original_gate_logs_checked": 20,
+  "selected_passed_outcomes": 74,
+  "additional_passed_outcomes": {
+    "compatibility": 6,
+    "provider": 10,
+    "final_use": 50,
+    "full_library": 161
+  },
+  "actual_rust_case_executions": 301,
+  "distinct_target_case_pairs": 276,
+  "source_controls": [
+    135,
+    32
+  ],
+  "utility_controls": [
+    3,
+    3,
+    4,
+    3
+  ],
+  "fix_exit_code": 0,
+  "format_exit_code": 0,
+  "ignored": [
+    "authbus_outbox_tests::crash_delivery_child"
+  ],
+  "actual_live_records": 294,
+  "direct_live_records": 293,
+  "auxiliary_live_records": [
+    {
+      "pid": 1159872,
+      "start_ticks": "99685414",
+      "parent_pid": 1159870,
+      "parent_start_ticks": "99685394",
+      "exact_test": "final_use::tests::killed_owner_releases_lock_but_keeps_claim",
+      "sha256": "1383f1adbe7721e1ff362142f0ce35ef755bece0ae2a188cb28e375a2332b923",
+      "bytes": 14103072,
+      "test_outcome_credit": false,
+      "image_binding": "child and held direct-parent FDs identify the same file object; its digest also matches the independent outer FD record",
+      "relationship_observed_before_unix": 1793919188.1898832,
+      "relationship_observed_after_unix": 1793919188.1922848,
+      "scope": "Direct relationship at the two live observation points; neither task is claimed live at hash/copy completion"
+    }
+  ],
+  "gate_reviews": [
+    {
+      "gate": "dispatcher",
+      "passed_outcomes": 14,
+      "raw_sha256": "f16a0da3b393f24d03d82deb5c8ae99c7b2a91bb45ae97b00b8cb4da0742152b",
+      "raw_bytes": 34083,
+      "fd_config_sha256": "9bd8d8b32a3f1ff033baf5f94379c623bf1f6a9f92e45bda22c6beba4ec4b2ff",
+      "fd_records": 14,
+      "live_records": 14,
+      "auxiliary_records": 0
+    },
+    {
+      "gate": "product",
+      "passed_outcomes": 3,
+      "raw_sha256": "e4b5693ef388c828b3135ec73d7bf2e014b14972b7c60dce8886af696731017d",
+      "raw_bytes": 27560,
+      "fd_config_sha256": "1023140b80ca1cd4f9a98ae0e8c887df1189f8c60e84fd559fb3c754323cc34a",
+      "fd_records": 3,
+      "live_records": 3,
+      "auxiliary_records": 0
+    },
+    {
+      "gate": "recovery-owner",
+      "passed_outcomes": 22,
+      "raw_sha256": "e943c5c36b86a790a19900d0377b9420fc304a74e1de80f13588c1c67864b5ae",
+      "raw_bytes": 34313,
+      "fd_config_sha256": "23e75d23a20189be867d59a68d9de11b243f63139b8b1a5de9c2387618f874a5",
+      "fd_records": 22,
+      "live_records": 22,
+      "auxiliary_records": 0
+    },
+    {
+      "gate": "recovery-signed",
+      "passed_outcomes": 11,
+      "raw_sha256": "d1196480f27de5217aa015e262c830c8ec160c6230ff3bb2f18591b56cd42f45",
+      "raw_bytes": 31881,
+      "fd_config_sha256": "0b493c07163a63457788900ce073615dcd8dd8cc046347e8adce9958852ea993",
+      "fd_records": 11,
+      "live_records": 11,
+      "auxiliary_records": 0
+    },
+    {
+      "gate": "recovery-product",
+      "passed_outcomes": 4,
+      "raw_sha256": "e98873f48a34aa34d685fc8640bf0c14cf5211c731361ea7a8fa7c9ee1ddbdd4",
+      "raw_bytes": 28035,
+      "fd_config_sha256": "eef8b7f108883c5189961327a75631df79822d3ad1401b6ddefe1343b1b98232",
+      "fd_records": 4,
+      "live_records": 4,
+      "auxiliary_records": 0
+    },
+    {
+      "gate": "qualification-growth",
+      "passed_outcomes": 2,
+      "raw_sha256": "4d6f91d0c26b81f6651ee0831059e50720edc3c9b3ec5662c70cc899876cc6fa",
+      "raw_bytes": 23853,
+      "fd_config_sha256": "7d6250b333a1b326c1df3ba3d16996ea31c1fd288666441c05666c942a20c00e",
+      "fd_records": 2,
+      "live_records": 2,
+      "auxiliary_records": 0
+    },
+    {
+      "gate": "effect-pq-owner",
+      "passed_outcomes": 11,
+      "raw_sha256": "6e29b7debc574c4a1921133998a7d09c97e443722f784d88bf972c64625df1ba",
+      "raw_bytes": 32613,
+      "fd_config_sha256": "f3563ce4b13abea7388f89fcb85d09bb27f4c583b2d8ee655c3eb80082552821",
+      "fd_records": 11,
+      "live_records": 11,
+      "auxiliary_records": 0
+    },
+    {
+      "gate": "effect-pq-contract",
+      "passed_outcomes": 1,
+      "raw_sha256": "04a20cb19f96033b10b5f7349f685abbbe761edbd6dfd427e753b6efc6002e16",
+      "raw_bytes": 11540,
+      "fd_config_sha256": "8e91131c6174f4096dced55bfc6eeb2142c25b1a297739b2137e9deda7504425",
+      "fd_records": 1,
+      "live_records": 1,
+      "auxiliary_records": 0
+    },
+    {
+      "gate": "effect-settled-absence",
+      "passed_outcomes": 2,
+      "raw_sha256": "54935b9147a5c42d7229a560f4cf083a9b3b60103cdf7e25aea3b88814bf0de5",
+      "raw_bytes": 23895,
+      "fd_config_sha256": "e7b3befe1220b81ede9c5cfc6ee4681b2778cd9d81aa17aaa7757cbefc359eaa",
+      "fd_records": 2,
+      "live_records": 2,
+      "auxiliary_records": 0
+    },
+    {
+      "gate": "effect-pq-product",
+      "passed_outcomes": 2,
+      "raw_sha256": "05cab5ec9c16d6843b5a2d7db51dd796e7463cc9f5d49e26f55192ef18824e52",
+      "raw_bytes": 28146,
+      "fd_config_sha256": "831a55c74a03e233985c4e96df372fdb564dbcbf5f2af8cffe40bd689e7719f4",
+      "fd_records": 2,
+      "live_records": 1,
+      "auxiliary_records": 0
+    },
+    {
+      "gate": "neural-runtime-input",
+      "passed_outcomes": 2,
+      "raw_sha256": "3b109216fbb926eb20155154d32b04a0970e6e47b14ada24f5b4f4b3966911de",
+      "raw_bytes": 27203,
+      "fd_config_sha256": "2313ca714ef71100bad6b6432b3bc7407ab9d964576fba30f72d45a74c169d85",
+      "fd_records": 2,
+      "live_records": 1,
+      "auxiliary_records": 0
+    },
+    {
+      "gate": "original-six-effect-controls",
+      "passed_outcomes": 6,
+      "raw_sha256": "8ae1d06f93c4954705d29e14cf4cea751b34de54dcfb8b60016d8eba306e5087",
+      "raw_bytes": 29863,
+      "fd_config_sha256": "0c9b4544ff19fa38f3bcd12a2e3cf21471c482964cb4a2742b0c0d868f5046e1",
+      "fd_records": 6,
+      "live_records": 6,
+      "auxiliary_records": 0
+    },
+    {
+      "gate": "provider-effect-existing-and-pq",
+      "passed_outcomes": 10,
+      "raw_sha256": "60b4def98694b184a369c58480462de28d24eed0996ecfeb6fa1477e094a428c",
+      "raw_bytes": 15703,
+      "fd_config_sha256": "d2fd197ac837e9e64a04d817b6a093d856f825e34f4ce01f6a16b0a46b7cdc7e",
+      "fd_records": 10,
+      "live_records": 9,
+      "auxiliary_records": 0
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "passed_outcomes": 50,
+      "raw_sha256": "e65f8224fae98eeea7016f3e54a5d012a36baa7d0c7802dd2209c29c6c5420c1",
+      "raw_bytes": 26854,
+      "fd_config_sha256": "cd25f362800e6e33b6ce79472cf5096293823ee059e6013b6803892e549eb0a5",
+      "fd_records": 50,
+      "live_records": 50,
+      "auxiliary_records": 1
+    },
+    {
+      "gate": "full-evidence-library",
+      "passed_outcomes": 161,
+      "raw_sha256": "3469022f23f49f660fc93d67eeb3a1408669c670679124cdce489461a6e0f02e",
+      "raw_bytes": 98910,
+      "fd_config_sha256": "e974e2544b8f6de694348034d1d0e1f830bd368177262c3e0991e8e020b28053",
+      "fd_records": 161,
+      "live_records": 157,
+      "auxiliary_records": 0
+    }
+  ],
+  "actual_cases": [
+    {
+      "gate": "dispatcher",
+      "target": "codex_hepta_agentd",
+      "test": "authbus_dispatch::tests::abandoned_first_claim_without_admission_is_quarantined_after_lookup_missing",
+      "outcome": "ok"
+    },
+    {
+      "gate": "dispatcher",
+      "target": "codex_hepta_agentd",
+      "test": "authbus_dispatch::tests::checkpoint_sync::cancelled_checkpoint_sync_waiter_and_owner_release_exclusive_admission",
+      "outcome": "ok"
+    },
+    {
+      "gate": "dispatcher",
+      "target": "codex_hepta_agentd",
+      "test": "authbus_dispatch::tests::checkpoint_sync::concurrent_checkpoint_syncs_share_owner_lock_and_preserve_rollback_rejection",
+      "outcome": "ok"
+    },
+    {
+      "gate": "dispatcher",
+      "target": "codex_hepta_agentd",
+      "test": "authbus_dispatch::tests::lease_delay::trust_refresh_sqlite_wait_cannot_authorize_transport_with_an_expired_lease",
+      "outcome": "ok"
+    },
+    {
+      "gate": "dispatcher",
+      "target": "codex_hepta_agentd",
+      "test": "authbus_dispatch::tests::lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt",
+      "outcome": "ok"
+    },
+    {
+      "gate": "dispatcher",
+      "target": "codex_hepta_agentd",
+      "test": "authbus_dispatch::tests::matching_receipt_metadata_with_different_queue_input_never_acknowledges",
+      "outcome": "ok"
+    },
+    {
+      "gate": "dispatcher",
+      "target": "codex_hepta_agentd",
+      "test": "authbus_dispatch::tests::policy_rollback::pq_bound_policy_refuses_renewal_without_policy_snapshot",
+      "outcome": "ok"
+    },
+    {
+      "gate": "dispatcher",
+      "target": "codex_hepta_agentd",
+      "test": "authbus_dispatch::tests::policy_rollback::pq_owner_requires_explicit_nonzero_policy_revision_and_accepts_set_ordering",
+      "outcome": "ok"
+    },
+    {
+      "gate": "dispatcher",
+      "target": "codex_hepta_agentd",
+      "test": "authbus_dispatch::tests::policy_rollback::pq_policy_change_fences_stale_renewal_and_current_policy_restores_dispatch",
+      "outcome": "ok"
+    },
+    {
+      "gate": "dispatcher",
+      "target": "codex_hepta_agentd",
+      "test": "authbus_dispatch::tests::policy_rollback::pq_removed_thread_cannot_return_through_owner_file_rollback_after_reopen",
+      "outcome": "ok"
+    },
+    {
+      "gate": "dispatcher",
+      "target": "codex_hepta_agentd",
+      "test": "authbus_dispatch::tests::pq::pq_text_owner_resumes_after_revocation_rotation_and_rejected_config_rollback",
+      "outcome": "ok"
+    },
+    {
+      "gate": "dispatcher",
+      "target": "codex_hepta_agentd",
+      "test": "authbus_dispatch::tests::pq::pq_text_producer_recovers_through_existing_dispatch_and_rejects_wire_and_config_downgrade",
+      "outcome": "ok"
+    },
+    {
+      "gate": "dispatcher",
+      "target": "codex_hepta_agentd",
+      "test": "authbus_dispatch::tests::ready_generation_and_owner_private_trust_are_required_before_admission",
+      "outcome": "ok"
+    },
+    {
+      "gate": "dispatcher",
+      "target": "codex_hepta_agentd",
+      "test": "authbus_dispatch::tests::revocation_during_queue_request_prevents_success_ack",
+      "outcome": "ok"
+    },
+    {
+      "gate": "product",
+      "target": "authbus_text_product",
+      "test": "pq_signed_text_crosses_real_queue_after_rejection_without_downgrade",
+      "outcome": "ok"
+    },
+    {
+      "gate": "product",
+      "target": "authbus_text_product",
+      "test": "real_agentd_without_explicit_trust_rejects_signed_text",
+      "outcome": "ok"
+    },
+    {
+      "gate": "product",
+      "target": "authbus_text_product",
+      "test": "signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_ingress",
+      "outcome": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "target": "codex_hepta_evidence",
+      "test": "provider_effect_recovery_provenance_tests::recovery_provenance_preserves_dispatch_then_authoritative_status",
+      "outcome": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "target": "codex_hepta_evidence",
+      "test": "provider_effect_recovery_provenance_tests::recovery_provenance_rejects_late_dispatch_after_status_without_uncertainty",
+      "outcome": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "target": "codex_hepta_evidence",
+      "test": "recovery_effect_frontier_tests::recovery_snapshot_commits_ack_provenance_and_cross_table_order",
+      "outcome": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "target": "codex_hepta_evidence",
+      "test": "recovery_effect_frontier_tests::recovery_snapshot_commits_effect_history_after_the_first_page",
+      "outcome": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "target": "codex_hepta_evidence",
+      "test": "recovery_effect_frontier_tests::recovery_snapshot_commits_intent_unknown_and_original_operation_receipt",
+      "outcome": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "target": "codex_hepta_evidence",
+      "test": "recovery_effect_frontier_tests::recovery_snapshot_distinguishes_a_valid_effect_only_database_rollback",
+      "outcome": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "target": "codex_hepta_evidence",
+      "test": "recovery_effect_frontier_tests::recovery_snapshot_refuses_canonical_ack_bound_to_a_different_payload",
+      "outcome": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "target": "codex_hepta_evidence",
+      "test": "recovery_effect_frontier_tests::recovery_snapshot_refuses_changed_json_with_retained_record_digests",
+      "outcome": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "target": "codex_hepta_evidence",
+      "test": "recovery_effect_frontier_tests::recovery_snapshot_refuses_effect_projection_drift_with_retained_payloads",
+      "outcome": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "target": "codex_hepta_evidence",
+      "test": "recovery_effect_frontier_tests::recovery_snapshot_refuses_orphan_effect_observations",
+      "outcome": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "target": "codex_hepta_evidence",
+      "test": "recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_after_schema_drift",
+      "outcome": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "target": "codex_hepta_evidence",
+      "test": "recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_at_page_boundary",
+      "outcome": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "target": "codex_hepta_evidence",
+      "test": "recovery_invocation_frontier_tests::recovery_snapshot_binds_invocation_sequence_and_recording_time",
+      "outcome": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "target": "codex_hepta_evidence",
+      "test": "recovery_invocation_frontier_tests::recovery_snapshot_commits_invocations_after_the_first_page",
+      "outcome": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "target": "codex_hepta_evidence",
+      "test": "recovery_invocation_frontier_tests::recovery_snapshot_commits_pending_invocations_and_terminal_states",
+      "outcome": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "target": "codex_hepta_evidence",
+      "test": "recovery_invocation_frontier_tests::recovery_snapshot_refuses_duplicate_terminal_hidden_at_page_boundary",
+      "outcome": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "target": "codex_hepta_evidence",
+      "test": "recovery_invocation_frontier_tests::recovery_snapshot_refuses_invocation_column_type_corruption_without_panicking",
+      "outcome": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "target": "codex_hepta_evidence",
+      "test": "recovery_invocation_frontier_tests::recovery_snapshot_requires_the_terminals_authoritative_intent",
+      "outcome": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "target": "codex_hepta_evidence",
+      "test": "recovery_invocation_frontier_tests::recovery_snapshot_revalidates_invocation_payloads_and_projected_columns",
+      "outcome": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "target": "codex_hepta_evidence",
+      "test": "recovery_invocation_schema_tests::recovery_invocation_schema_accepts_current_migration_keys",
+      "outcome": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "target": "codex_hepta_evidence",
+      "test": "recovery_invocation_schema_tests::recovery_invocation_schema_refuses_non_rowid_or_composite_sequences",
+      "outcome": "ok"
+    },
+    {
+      "gate": "recovery-owner",
+      "target": "codex_hepta_evidence",
+      "test": "recovery_invocation_schema_tests::recovery_invocation_schema_requires_exact_unconditional_column_uniqueness",
+      "outcome": "ok"
+    },
+    {
+      "gate": "recovery-signed",
+      "target": "codex_hepta_agentd",
+      "test": "evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields",
+      "outcome": "ok"
+    },
+    {
+      "gate": "recovery-signed",
+      "target": "codex_hepta_agentd",
+      "test": "evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry",
+      "outcome": "ok"
+    },
+    {
+      "gate": "recovery-signed",
+      "target": "codex_hepta_agentd",
+      "test": "evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor",
+      "outcome": "ok"
+    },
+    {
+      "gate": "recovery-signed",
+      "target": "codex_hepta_agentd",
+      "test": "evidence_frontier::tests::recovery_frontier_pq_rejects_invocation_only_database_rollbacks",
+      "outcome": "ok"
+    },
+    {
+      "gate": "recovery-signed",
+      "target": "codex_hepta_agentd",
+      "test": "evidence_frontier::tests::recovery_frontier_pq_survives_store_close_and_reopen",
+      "outcome": "ok"
+    },
+    {
+      "gate": "recovery-signed",
+      "target": "codex_hepta_agentd",
+      "test": "evidence_frontier::tests::recovery_frontier_read_only_preflight_never_binds_or_changes_the_image",
+      "outcome": "ok"
+    },
+    {
+      "gate": "recovery-signed",
+      "target": "codex_hepta_agentd",
+      "test": "evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures",
+      "outcome": "ok"
+    },
+    {
+      "gate": "recovery-signed",
+      "target": "codex_hepta_agentd",
+      "test": "evidence_frontier::tests::recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots",
+      "outcome": "ok"
+    },
+    {
+      "gate": "recovery-signed",
+      "target": "codex_hepta_agentd",
+      "test": "evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile",
+      "outcome": "ok"
+    },
+    {
+      "gate": "recovery-signed",
+      "target": "codex_hepta_agentd",
+      "test": "evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature",
+      "outcome": "ok"
+    },
+    {
+      "gate": "recovery-signed",
+      "target": "codex_hepta_agentd",
+      "test": "evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key",
+      "outcome": "ok"
+    },
+    {
+      "gate": "recovery-product",
+      "target": "kernel_evidence_product",
+      "test": "real_agentd_composes_authenticated_evidence_writer_query_verifier_and_terminal_observer",
+      "outcome": "ok"
+    },
+    {
+      "gate": "recovery-product",
+      "target": "kernel_evidence_product",
+      "test": "signed_recovery_frontier_allows_exact_current_database",
+      "outcome": "ok"
+    },
+    {
+      "gate": "recovery-product",
+      "target": "kernel_evidence_product",
+      "test": "signed_recovery_frontier_rejects_effect_only_database_rollback",
+      "outcome": "ok"
+    },
+    {
+      "gate": "recovery-product",
+      "target": "kernel_evidence_product",
+      "test": "signed_recovery_frontier_rejects_valid_older_database_image",
+      "outcome": "ok"
+    },
+    {
+      "gate": "qualification-growth",
+      "target": "codex_hepta_evidence",
+      "test": "qualification_tests::claim_query_rejects_more_than_512_references",
+      "outcome": "ok"
+    },
+    {
+      "gate": "qualification-growth",
+      "target": "codex_hepta_evidence",
+      "test": "qualification_tests::ordinary_append_rejects_historical_projection_drift_without_consuming_replay",
+      "outcome": "ok"
+    },
+    {
+      "gate": "effect-pq-owner",
+      "target": "codex_hepta_agentd",
+      "test": "automation_effect_host::pq::tests::current_clock_frontier_and_pq_grant_are_mandatory_before_contact",
+      "outcome": "ok"
+    },
+    {
+      "gate": "effect-pq-owner",
+      "target": "codex_hepta_agentd",
+      "test": "automation_effect_host::pq::tests::generation_change_after_store_await_refuses_contact_and_keeps_consumed_nonce",
+      "outcome": "ok"
+    },
+    {
+      "gate": "effect-pq-owner",
+      "target": "codex_hepta_agentd",
+      "test": "automation_effect_host::pq::tests::historical_policy_does_not_connect_old_trust_services_or_follow_its_references",
+      "outcome": "ok"
+    },
+    {
+      "gate": "effect-pq-owner",
+      "target": "codex_hepta_agentd",
+      "test": "automation_effect_host::pq::tests::initial_feed_is_authenticated_before_any_local_authority_or_frontier_write",
+      "outcome": "ok"
+    },
+    {
+      "gate": "effect-pq-owner",
+      "target": "codex_hepta_agentd",
+      "test": "automation_effect_host::pq::tests::ordinary_dispatch_and_new_generation_recovery_keep_one_stable_operation",
+      "outcome": "ok"
+    },
+    {
+      "gate": "effect-pq-owner",
+      "target": "codex_hepta_agentd",
+      "test": "automation_effect_host::pq::tests::ordinary_loader_denies_classical_schema_and_contract_or_policy_substitution",
+      "outcome": "ok"
+    },
+    {
+      "gate": "effect-pq-owner",
+      "target": "codex_hepta_agentd",
+      "test": "automation_effect_host::pq::tests::pon_schema4_binds_native_binary_and_original_limits_without_running_a_node",
+      "outcome": "ok"
+    },
+    {
+      "gate": "effect-pq-owner",
+      "target": "codex_hepta_agentd",
+      "test": "automation_effect_host::pq::tests::reconcile_rechecks_generation_after_store_await_without_reclassifying_unknown",
+      "outcome": "ok"
+    },
+    {
+      "gate": "effect-pq-owner",
+      "target": "codex_hepta_agentd",
+      "test": "automation_effect_host::pq::tests::recovery_requires_current_signed_exact_historical_policy_and_same_provider",
+      "outcome": "ok"
+    },
+    {
+      "gate": "effect-pq-owner",
+      "target": "codex_hepta_agentd",
+      "test": "automation_effect_host::pq::tests::revoked_equal_number_drift_expired_feed_and_new_epoch_do_not_contact_provider",
+      "outcome": "ok"
+    },
+    {
+      "gate": "effect-pq-owner",
+      "target": "codex_hepta_agentd",
+      "test": "automation_effect_host::pq::tests::signed_revocation_after_store_await_obeys_active_effect_fence_and_never_sends",
+      "outcome": "ok"
+    },
+    {
+      "gate": "effect-pq-contract",
+      "target": "codex_model_provider",
+      "test": "provider_effect::pq_tests::pq_contract_binds_profile_root_epoch_and_complete_authority_scope",
+      "outcome": "ok"
+    },
+    {
+      "gate": "effect-settled-absence",
+      "target": "authorized_effect",
+      "test": "owner_recovery_tests::settled_absence_fact_read_rejects_unknown_unsettled_and_corrupt_evidence",
+      "outcome": "ok"
+    },
+    {
+      "gate": "effect-settled-absence",
+      "target": "authorized_effect",
+      "test": "owner_recovery_tests::settled_absence_fact_read_survives_reopen_and_new_owner_without_redispatch",
+      "outcome": "ok"
+    },
+    {
+      "gate": "effect-pq-product",
+      "target": "automation_effect_pq_product",
+      "test": "binary::held_daemon_image_reuse_refuses_wrong_changed_or_missing_files",
+      "outcome": "ok"
+    },
+    {
+      "gate": "effect-pq-product",
+      "target": "automation_effect_pq_product",
+      "test": "pq_effect_survives_owned_agentd_kill_after_provider_fsync_without_resend",
+      "outcome": "ok"
+    },
+    {
+      "gate": "neural-runtime-input",
+      "target": "neural_cognitive_bootstrap",
+      "test": "ordinary_native_composition_rejects_untrusted_qualification_before_inference_owners",
+      "outcome": "ok"
+    },
+    {
+      "gate": "neural-runtime-input",
+      "target": "neural_comparison_native",
+      "test": "native_comparison_input_requires_v2_and_independently_pinned_snapshot",
+      "outcome": "ok"
+    },
+    {
+      "gate": "original-six-effect-controls",
+      "target": "codex_hepta_agentd",
+      "test": "automation_effect_host::identity_tests::host_provider_identity_legacy_http_queries_original_occurrence_and_retains_terminal_fact",
+      "outcome": "ok"
+    },
+    {
+      "gate": "original-six-effect-controls",
+      "target": "codex_hepta_agentd",
+      "test": "automation_effect_host::identity_tests::host_provider_identity_terminal_execute_uses_store_owner_not_shared_subject",
+      "outcome": "ok"
+    },
+    {
+      "gate": "original-six-effect-controls",
+      "target": "codex_hepta_agentd",
+      "test": "automation_effect_host::recovery_tests::host_provider_recovery_does_not_authorize_new_dispatch_with_an_expired_lease",
+      "outcome": "ok"
+    },
+    {
+      "gate": "original-six-effect-controls",
+      "target": "codex_hepta_agentd",
+      "test": "automation_effect_host::recovery_tests::host_provider_recovery_observes_original_ack_after_lease_expiry_and_restart",
+      "outcome": "ok"
+    },
+    {
+      "gate": "original-six-effect-controls",
+      "target": "codex_hepta_agentd",
+      "test": "automation_effect_host::tests::host_dispatches_exact_wire_payload_once",
+      "outcome": "ok"
+    },
+    {
+      "gate": "original-six-effect-controls",
+      "target": "codex_hepta_agentd",
+      "test": "automation_effect_host::tests::host_provider_receipt_survives_unknown_and_rejects_operation_substitution",
+      "outcome": "ok"
+    },
+    {
+      "gate": "provider-effect-existing-and-pq",
+      "target": "codex_model_provider",
+      "test": "provider_effect::pq_tests::pq_contract_binds_profile_root_epoch_and_complete_authority_scope",
+      "outcome": "ok"
+    },
+    {
+      "gate": "provider-effect-existing-and-pq",
+      "target": "codex_model_provider",
+      "test": "provider_effect::tests::attested_http_adapter_binds_dispatch_and_lookup_on_fixture",
+      "outcome": "ok"
+    },
+    {
+      "gate": "provider-effect-existing-and-pq",
+      "target": "codex_model_provider",
+      "test": "provider_effect::tests::attested_http_adapter_rejects_config_drift_after_signature",
+      "outcome": "ok"
+    },
+    {
+      "gate": "provider-effect-existing-and-pq",
+      "target": "codex_model_provider",
+      "test": "provider_effect::tests::fail_closed_adapter_never_claims_or_fakes_provider_success",
+      "outcome": "ok"
+    },
+    {
+      "gate": "provider-effect-existing-and-pq",
+      "target": "codex_model_provider",
+      "test": "provider_effect::tests::headers_bind_stable_key_and_exact_payload_digest",
+      "outcome": "ok"
+    },
+    {
+      "gate": "provider-effect-existing-and-pq",
+      "target": "codex_model_provider",
+      "test": "provider_effect::tests::mismatched_wire_payload_is_rejected_before_headers_are_prepared",
+      "outcome": "ok"
+    },
+    {
+      "gate": "provider-effect-existing-and-pq",
+      "target": "codex_model_provider",
+      "test": "provider_effect::tests::provider_contract_attestation_requires_pinned_signature",
+      "outcome": "ok"
+    },
+    {
+      "gate": "provider-effect-existing-and-pq",
+      "target": "codex_model_provider",
+      "test": "provider_effect::tests::sandbox_crash_after_send_requires_status_reconcile",
+      "outcome": "ok"
+    },
+    {
+      "gate": "provider-effect-existing-and-pq",
+      "target": "codex_model_provider",
+      "test": "provider_effect::tests::sandbox_status_lookup_rejects_ack_for_different_effect_key",
+      "outcome": "ok"
+    },
+    {
+      "gate": "provider-effect-existing-and-pq",
+      "target": "codex_model_provider",
+      "test": "provider_effect::tests::sandbox_status_lookup_rejects_ack_for_different_payload_digest",
+      "outcome": "ok"
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "target": "codex_hepta_contracts",
+      "test": "final_use::store::tests::incompatible_experimental_pq_store_is_rejected_without_resetting_claims",
+      "outcome": "ok"
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "target": "codex_hepta_contracts",
+      "test": "final_use::store::tests::legacy_journal_keeps_trust_binding_and_exact_head_checks",
+      "outcome": "ok"
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "target": "codex_hepta_contracts",
+      "test": "final_use::store::tests::legacy_single_key_and_key_ring_snapshots_preserve_nonce_claims",
+      "outcome": "ok"
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "target": "codex_hepta_contracts",
+      "test": "final_use::store::tests::legacy_zero_nonce_rejects_before_original_stage_or_committed_bytes_change",
+      "outcome": "ok"
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "target": "codex_hepta_contracts",
+      "test": "final_use::tests::async_effect_entry_is_denied_if_revoked_after_claim_before_entry",
+      "outcome": "ok"
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "target": "codex_hepta_contracts",
+      "test": "final_use::tests::async_effect_entry_rechecks_revocation_and_consumes_the_token",
+      "outcome": "ok"
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "target": "codex_hepta_contracts",
+      "test": "final_use::tests::async_final_use_fence_survives_pending_and_releases_on_cancellation",
+      "outcome": "ok"
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "target": "codex_hepta_contracts",
+      "test": "final_use::tests::authority_rejects_shared_state_directory_and_symlinked_files",
+      "outcome": "ok"
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "target": "codex_hepta_contracts",
+      "test": "final_use::tests::capacity_snapshot_tracks_claims_revocations_and_epoch_rollover",
+      "outcome": "ok"
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "target": "codex_hepta_contracts",
+      "test": "final_use::tests::changing_signed_data_or_substituting_a_key_does_not_authorize",
+      "outcome": "ok"
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "target": "codex_hepta_contracts",
+      "test": "final_use::tests::epoch_change_fences_outstanding_claims_and_old_grants",
+      "outcome": "ok"
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "target": "codex_hepta_contracts",
+      "test": "final_use::tests::expired_grant_is_denied_using_verifier_clock",
+      "outcome": "ok"
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "target": "codex_hepta_contracts",
+      "test": "final_use::tests::external_final_use_frontier_ahead_after_local_failure_fences_reopen",
+      "outcome": "ok"
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "target": "codex_hepta_contracts",
+      "test": "final_use::tests::external_final_use_frontier_detects_restored_claim_snapshot",
+      "outcome": "ok"
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "target": "codex_hepta_contracts",
+      "test": "final_use::tests::injected_clock_is_the_only_final_use_time_source",
+      "outcome": "ok"
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "target": "codex_hepta_contracts",
+      "test": "final_use::tests::issuer_key_ring_supports_overlap_and_epoch_retirement",
+      "outcome": "ok"
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "target": "codex_hepta_contracts",
+      "test": "final_use::tests::killed_owner_releases_lock_but_keeps_claim",
+      "outcome": "ok"
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "target": "codex_hepta_contracts",
+      "test": "final_use::tests::missing_or_truncated_claim_journal_fails_closed_on_restart",
+      "outcome": "ok"
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "target": "codex_hepta_contracts",
+      "test": "final_use::tests::pq::capacity_tests::pq_oversized_initial_head_fails_before_state_initialization",
+      "outcome": "ok"
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "target": "codex_hepta_contracts",
+      "test": "final_use::tests::pq::capacity_tests::pq_revocation_capacity_agrees_across_feed_owner_frontier_and_reopen",
+      "outcome": "ok"
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "target": "codex_hepta_contracts",
+      "test": "final_use::tests::pq::entry_tests::pq_final_use_all_entries_keep_explicit_revocation_precedence",
+      "outcome": "ok"
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "target": "codex_hepta_contracts",
+      "test": "final_use::tests::pq::entry_tests::pq_final_use_all_entries_require_the_exact_claimed_head",
+      "outcome": "ok"
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "target": "codex_hepta_contracts",
+      "test": "final_use::tests::pq::frontier_tests::pq_final_use_async_entry_observes_external_progress_after_future_creation",
+      "outcome": "ok"
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "target": "codex_hepta_contracts",
+      "test": "final_use::tests::pq::frontier_tests::pq_final_use_dispatch_rejects_external_nonce_progress_with_unchanged_head",
+      "outcome": "ok"
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "target": "codex_hepta_contracts",
+      "test": "final_use::tests::pq::frontier_tests::pq_final_use_external_unavailability_fences_consumer_without_refunding_claim",
+      "outcome": "ok"
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "target": "codex_hepta_contracts",
+      "test": "final_use::tests::pq::frontier_tests::pq_final_use_retained_owner_refuses_external_revocation_at_token_entry",
+      "outcome": "ok"
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "target": "codex_hepta_contracts",
+      "test": "final_use::tests::pq::pq_feed_confirmation_reauthenticates_without_advancing_or_unrevoking",
+      "outcome": "ok"
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "target": "codex_hepta_contracts",
+      "test": "final_use::tests::pq::pq_final_use_consumes_original_durable_nonce_and_reopen_cannot_replay",
+      "outcome": "ok"
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "target": "codex_hepta_contracts",
+      "test": "final_use::tests::pq::pq_final_use_external_frontier_refuses_local_snapshot_rollback",
+      "outcome": "ok"
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "target": "codex_hepta_contracts",
+      "test": "final_use::tests::pq::pq_final_use_independent_approval_revocation_and_ack_use_original_owners",
+      "outcome": "ok"
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "target": "codex_hepta_contracts",
+      "test": "final_use::tests::pq::pq_final_use_rejects_classic_wire_signatures_and_cross_profile_stores",
+      "outcome": "ok"
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "target": "codex_hepta_contracts",
+      "test": "final_use::tests::pq::pq_final_use_signature_mutation_and_key_pin_fail_before_nonce_write",
+      "outcome": "ok"
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "target": "codex_hepta_contracts",
+      "test": "final_use::tests::pq::recovery_tests::pq_final_use_rejections_preserve_later_service_and_recovery_preserves_spent_nonces",
+      "outcome": "ok"
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "target": "codex_hepta_contracts",
+      "test": "final_use::tests::replay_claims_use_fixed_width_journal_and_state_snapshot_stays_small",
+      "outcome": "ok"
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "target": "codex_hepta_contracts",
+      "test": "final_use::tests::replay_state_survives_owner_restart_and_prevents_concurrent_owners",
+      "outcome": "ok"
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "target": "codex_hepta_contracts",
+      "test": "final_use::tests::revocation_after_claim_prevents_delivery_and_cannot_be_rolled_back",
+      "outcome": "ok"
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "target": "codex_hepta_contracts",
+      "test": "final_use::tests::revocation_survives_restart_and_missing_state_is_not_reset",
+      "outcome": "ok"
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "target": "codex_hepta_contracts",
+      "test": "final_use::tests::signed_claim_is_single_use_and_delivers_under_same_owner",
+      "outcome": "ok"
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "target": "codex_hepta_contracts",
+      "test": "final_use::tests::startup_trusted_head_can_advance_but_cannot_rollback_persisted_revocations",
+      "outcome": "ok"
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "target": "codex_hepta_contracts",
+      "test": "final_use::tests::synchronous_final_use_rejects_a_concurrent_revocation_commit",
+      "outcome": "ok"
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "target": "codex_hepta_contracts",
+      "test": "final_use::tests::unrelated_frontier_advance_after_claim_requires_a_fresh_claim",
+      "outcome": "ok"
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "target": "codex_hepta_contracts",
+      "test": "final_use::tests::verified_use_witness_binds_the_actual_consumer_entry",
+      "outcome": "ok"
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "target": "codex_hepta_contracts",
+      "test": "final_use_control::tests::approval_key_ring_enforces_epoch_windows_and_reports_selected_key",
+      "outcome": "ok"
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "target": "codex_hepta_contracts",
+      "test": "final_use_control::tests::convergence_rejects_unknown_duplicate_stale_future_and_forged_inputs",
+      "outcome": "ok"
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "target": "codex_hepta_contracts",
+      "test": "final_use_control::tests::convergence_report_requires_every_enrolled_node_ack",
+      "outcome": "ok"
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "target": "codex_hepta_contracts",
+      "test": "final_use_control::tests::forged_revocation_feed_never_updates_authority",
+      "outcome": "ok"
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "target": "codex_hepta_contracts",
+      "test": "final_use_control::tests::independent_approval_binds_exact_grant_semantics",
+      "outcome": "ok"
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "target": "codex_hepta_contracts",
+      "test": "final_use_control::tests::revocation_ack_requires_receipt_for_the_exact_applied_update",
+      "outcome": "ok"
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "target": "codex_hepta_contracts",
+      "test": "final_use_control::tests::revocation_feed_freshness_fails_closed",
+      "outcome": "ok"
+    },
+    {
+      "gate": "final-use-profile-controls",
+      "target": "codex_hepta_contracts",
+      "test": "final_use_control::tests::signed_revocation_feed_is_authenticated_and_monotonic",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "authbus_crypto_profile::tests::missing_profile_barrier_trigger_is_rejected_on_reopen",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "authbus_crypto_profile::tests::pq_outbox_requires_explicit_profile_and_recovers_exact_signature_without_downgrade",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "authbus_issuer_floor::tests::pq_owner_key_substitution_rotation_revocation_and_clock_rollback_are_fenced",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "authbus_outbox::tests::current_issuer_scan_cannot_be_starved_by_older_epochs_or_other_issuers",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "authbus_outbox_quarantine_tests::quarantine_rechecks_current_issuer_and_does_not_retire_other_messages",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "authbus_outbox_quarantine_tests::quarantine_requires_current_fence_and_survives_reopen_without_acknowledgement",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "authbus_outbox_quarantine_tests::recovered_claim_reports_attempt_and_fences_expired_quarantine_worker",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "authbus_outbox_tests::actual_process_crash_after_send_before_ack_redelivers_same_id",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "authbus_outbox_tests::bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "authbus_outbox_tests::delivery_attempt_budget_quarantines_without_resending_forever",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "authbus_outbox_tests::enqueue_commit_response_loss_is_idempotent_across_reopen",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "authbus_outbox_tests::expired_lease_cannot_renew_retry_or_ack_before_or_after_reclaim",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "authbus_outbox_tests::expiry_and_current_revocation_are_terminal_and_never_acknowledged",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "authbus_outbox_tests::failed_insert_rolls_back_replay_and_direct_admission_cannot_be_upgraded",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "authbus_outbox_tests::missing_outbox_guard_is_rejected_on_reopen",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "authbus_outbox_tests::one_issuer_cannot_exhaust_the_global_active_outbox_across_epochs",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "authbus_outbox_tests::payload_route_and_retained_message_identity_cannot_be_substituted",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "authbus_outbox_tests::two_handles_serialize_claim_and_every_new_fence_rejects_old_worker",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "authbus_owner_policy::tests::existing_pq_checkpoint_cannot_bootstrap_a_missing_owner_policy",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "authbus_owner_policy::tests::owner_policy_reopens_pending_checkpoint_and_cannot_bless_later_policy_drift",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "authbus_recovery::pq_retirement_tests::pq_retirement_requires_the_exact_pinned_revoked_key_and_profile",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "authbus_recovery::tests::altered_replay_checkpoint_schema_is_rejected_before_recovery",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "authbus_recovery::tests::every_replay_mutation_requires_exact_external_checkpoint_ack",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "authbus_recovery::tests::external_checkpoint_detects_real_old_database_restore",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "authbus_recovery::tests::issuer_retirement_proof_prunes_replay_rows_but_tombstone_prevents_resurrection",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "authbus_recovery::tests::unchanged_external_checkpoint_recomputes_clean_and_pending_replay_frontiers",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "authbus_store::tests::capacity_failure_does_not_burn_a_new_replay_key",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "authbus_store::tests::independent_database_handles_cannot_both_admit_one_sequence",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "authbus_store::tests::rejected_authentication_does_not_consume_sequence",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "authbus_store::tests::replay_fence_survives_reopen_and_preserves_full_unsigned_sequence",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "historical::tests::impossible_family_state_pairs_are_rejected",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "historical::tests::record_digest_has_fixed_family_oracles_and_binds_every_field",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "historical::tests::selectors_are_strictly_family_typed",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "historical_tests::historical_read_fails_closed_on_corrupt_authoritative_payload",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "historical_tests::missing_exact_ids_return_none_without_cross_family_fallback",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "historical_tests::provider_historical_read_fails_closed_on_corrupt_authoritative_payload",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "historical_tests::supported_families_project_exact_pending_and_terminal_records",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_claim_tests::concurrent_enforced_claims_for_one_request_binding_have_one_owner",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_claim_tests::enforced_claim_blocks_transport_changes_until_not_dispatched_is_proven",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_effect_recovery_provenance_tests::exhausted_observation_clock_refuses_new_events_without_forgetting_exact_retries",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_effect_recovery_provenance_tests::recovery_provenance_preserves_dispatch_then_authoritative_status",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_effect_recovery_provenance_tests::recovery_provenance_rejects_late_dispatch_after_status_without_uncertainty",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_effect_recovery_provenance_tests::repeated_status_ack_persists_provenance_and_fences_late_dispatch_after_restart",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_effect_recovery_provenance_tests::repeated_unknown_and_status_observations_survive_recovery_without_erasing_quarantine",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_effect_recovery_provenance_tests::separate_store_writers_preserve_latest_observation_idempotency",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_effect_recovery_provenance_tests::terminal_status_reobservation_cannot_hide_an_intervening_imported_uncertainty",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_effect_tests::accepted_effect_stays_indeterminate_when_reconcile_reports_rejected",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_effect_tests::duplicate_dispatch_ack_after_quarantine_requires_status_lookup_source",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_effect_tests::durable_status_accepted_fences_late_dispatch_transition",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_effect_tests::durable_status_observation_binds_payload_and_persists_lookup_provenance",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_effect_tests::durable_status_observation_rejects_unknown_intent",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_effect_tests::effect_journal_quarantines_unknown_and_reconciles_after_restart",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_effect_tests::effect_tables_are_append_only",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_effect_tests::imported_pending_is_quarantined_before_dispatch_and_reconcile_only",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_effect_tests::late_dispatch_ack_after_quarantine_requires_status_lookup_source",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_effect_tests::operation_binding_reopen_rejects_substituted_status_after_uncertainty",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_effect_tests::operation_binding_unknown_rejects_substitution_without_redispatch",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_effect_tests::qualification_boundary_lock_serializes_lookup_against_dispatch",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_effect_tests::qualification_crash_after_send_reopen_reconciles_without_redispatch",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_effect_tests::qualification_dispatch_ack_is_persisted_with_source_and_reopens",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_effect_tests::qualification_dispatch_claim_has_one_concurrent_winner",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_effect_tests::qualification_dispatch_claim_survives_reopen_without_redispatch",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_effect_tests::qualification_dispatch_malformed_ack_quarantines_and_replay_does_not_send",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_effect_tests::qualification_dispatch_rejects_cross_key_ack_without_mutating_other_effect",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_effect_tests::qualification_dispatch_unsupported_capability_never_invokes_adapter",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_effect_tests::qualification_reconcile_malformed_ack_quarantines_and_blocks_dispatch",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_effect_tests::rejected_terminal_lookup_replay_is_idempotent_without_late_uncertainty",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_effect_tests::reopen_orders_ack_and_uncertainty_by_per_key_time_not_cross_table_seq",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_effect_tests::reopen_rejects_ack_uncertainty_timestamp_tie",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_effect_tests::reopen_rejects_illegal_ack_even_when_late_uncertainty_exists",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_effect_tests::reopen_rejects_late_uncertainty_after_terminal_ack",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_effect_tests::reopen_rejects_missing_provider_ack_source_provenance",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_effect_tests::reopen_rejects_provider_ack_source_check_drift_with_valid_rows",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_effect_tests::same_key_payload_conflict_and_ack_binding_fail_closed",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_effect_tests::terminal_effect_cannot_be_quarantined_or_replaced",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_effect_tests::terminal_lookup_replay_is_idempotent_without_late_uncertainty",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_effect_tests::unsupported_provider_capability_is_durable_indeterminate",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_tests::concurrent_provider_intent_replay_inserts_exactly_once",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_tests::concurrent_provider_terminal_conflict_preserves_one_terminal",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_tests::ephemeral_projection_round_trips_and_detects_projection_corruption",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_tests::migration_0006_backfills_ephemeral_projection_without_rewriting_evidence",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_tests::migration_0006_rejects_invalid_payload_shapes_and_rolls_back",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_tests::open_rejects_legacy_provider_rows_without_host_binding_digest",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_tests::open_rejects_missing_provider_schema_object",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_tests::provider_evidence_never_persists_prompt_token_header_or_output_plaintext",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_tests::provider_intent_rejects_orphaned_ephemeral_digests_before_insert",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_tests::provider_projection_and_digest_corruption_fail_closed",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_tests::provider_records_are_idempotent_pending_and_persistent",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_tests::provider_tables_are_immutable_and_foreign_key_bound",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_tests::provider_terminal_conflict_never_overwrites_original",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_tests::provider_terminal_requires_exact_durable_intent",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "provider_tests::unary_completion_persists_without_synthetic_provider_fields",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "qualification_tests::claim_query_rejects_more_than_512_references",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "qualification_tests::concurrent_store_handles_serialize_conflicting_evidence_identity",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "qualification_tests::correction_and_revocation_are_append_only_and_non_resurrecting",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "qualification_tests::current_trust_rotation_or_revocation_invalidates_positive_verification",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "qualification_tests::evid_01_distinct_authenticated_principals_satisfy_independence",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "qualification_tests::evid_01_distinct_principals_sharing_one_signing_identity_are_not_independent",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "qualification_tests::evid_01_one_principal_cannot_satisfy_generator_and_evaluator_independence",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "qualification_tests::evid_02_wrong_tree_and_expired_candidate_are_unavailable",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "qualification_tests::evid_03_broken_predecessor_fails_reopen",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "qualification_tests::evid_03_corrupted_canonical_payload_fails_reopen",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "qualification_tests::evid_04_fixture_cannot_satisfy_hardware_claim",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "qualification_tests::exact_authenticated_retry_is_idempotent_but_payload_drift_conflicts",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "qualification_tests::failed_evidence_insert_rolls_back_authbus_replay_advance",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "qualification_tests::independent_decision_becomes_conflicting_when_candidate_evidence_set_changes",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "qualification_tests::independent_decision_binds_candidate_principal_key_role_and_evidence_set",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "qualification_tests::independent_decision_validity_outlives_short_ingress_auth_ttl",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "qualification_tests::lineage_mutation_is_principal_scoped_with_security_revocation_exception",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "qualification_tests::ordinary_append_rejects_historical_projection_drift_without_consuming_replay",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "qualification_tests::predecessor_traversal_fails_closed_beyond_256_edges",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "qualification_tests::replay_sequence_is_consumed_atomically_with_insert",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "recovery_effect_frontier_tests::recovery_snapshot_commits_ack_provenance_and_cross_table_order",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "recovery_effect_frontier_tests::recovery_snapshot_commits_effect_history_after_the_first_page",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "recovery_effect_frontier_tests::recovery_snapshot_commits_intent_unknown_and_original_operation_receipt",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "recovery_effect_frontier_tests::recovery_snapshot_distinguishes_a_valid_effect_only_database_rollback",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "recovery_effect_frontier_tests::recovery_snapshot_refuses_canonical_ack_bound_to_a_different_payload",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "recovery_effect_frontier_tests::recovery_snapshot_refuses_changed_json_with_retained_record_digests",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "recovery_effect_frontier_tests::recovery_snapshot_refuses_effect_projection_drift_with_retained_payloads",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "recovery_effect_frontier_tests::recovery_snapshot_refuses_orphan_effect_observations",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_after_schema_drift",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_at_page_boundary",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "recovery_invocation_frontier_tests::recovery_snapshot_binds_invocation_sequence_and_recording_time",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "recovery_invocation_frontier_tests::recovery_snapshot_commits_invocations_after_the_first_page",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "recovery_invocation_frontier_tests::recovery_snapshot_commits_pending_invocations_and_terminal_states",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "recovery_invocation_frontier_tests::recovery_snapshot_refuses_duplicate_terminal_hidden_at_page_boundary",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "recovery_invocation_frontier_tests::recovery_snapshot_refuses_invocation_column_type_corruption_without_panicking",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "recovery_invocation_frontier_tests::recovery_snapshot_requires_the_terminals_authoritative_intent",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "recovery_invocation_frontier_tests::recovery_snapshot_revalidates_invocation_payloads_and_projected_columns",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "recovery_invocation_schema_tests::recovery_invocation_schema_accepts_current_migration_keys",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "recovery_invocation_schema_tests::recovery_invocation_schema_refuses_non_rowid_or_composite_sequences",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "recovery_invocation_schema_tests::recovery_invocation_schema_requires_exact_unconditional_column_uniqueness",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "store::provider_effect_observation_migration_tests::observation_migration_preserves_effect_rows_sequences_and_consumed_boundary",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "store::provider_effect_observation_migration_tests::observation_schema_rejects_reintroduced_content_deduplication",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "summary_tests::empty_summary_is_explicitly_zero_for_supported_families",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "summary_tests::governance_summary_moves_from_pending_to_terminal",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "summary_tests::provider_summary_distinguishes_pending_and_indeterminate_attempts",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "summary_tests::summary_fails_closed_when_supported_schema_is_missing",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "tests::append_is_idempotent_and_survives_reopen",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "tests::composite_foreign_key_rejects_cross_action_receipt_projection",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "tests::concurrent_conflict_preserves_exactly_one_valid_record",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "tests::concurrent_exact_replay_produces_one_immutable_row",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "tests::conflicting_identity_never_overwrites_evidence",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "tests::corrupted_projection_schema_and_phase_are_classified_as_corrupt",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "tests::corrupted_stored_digest_fails_closed",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "tests::immutable_triggers_reject_updates_and_deletes_for_both_tables",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "tests::lineage_two_preserves_reserved_migration_checksums",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "tests::malformed_receipt_binding_is_rejected_before_insert",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "tests::noncanonical_stored_json_fails_closed_even_with_matching_digest",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "tests::open_classifies_migration_checksum_mismatch_as_corrupt",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "tests::open_classifies_non_database_file_as_corrupt",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "tests::open_does_not_touch_frozen_lineage_with_channel_0004",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "tests::open_existing_read_only_does_not_create_a_missing_store",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "tests::open_existing_read_only_reads_a_complete_store_without_mutating_it",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "tests::open_existing_read_only_rejects_a_partial_ledger_without_migrating_it",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "tests::open_rejects_foreign_key_violation_even_when_quick_check_is_ok",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "tests::open_rejects_missing_immutable_trigger_even_when_quick_check_is_ok",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "tests::open_requires_reserved_lineage_immutable_triggers",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "tests::receipt_read_rejects_decision_material_that_drifted_after_commit",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "tests::receipt_requires_its_exact_decisions",
+      "outcome": "ok"
+    },
+    {
+      "gate": "full-evidence-library",
+      "target": "codex_hepta_evidence",
+      "test": "tests::swapped_phase_and_invalid_schema_are_rejected",
+      "outcome": "ok"
+    }
+  ],
+  "tracked_source_and_5_git_configurations_unchanged": true,
+  "12_external_configuration_files_verified_before_and_after": true,
+  "all_15_per_gate_fd_configs_verified": true,
+  "source_tracked_files": 11840,
+  "source_tracked_bytes": 183410043,
+  "retained_before_and_after_bytecode_bytes": [
+    6094,
+    6094
+  ],
+  "runtime_scope": "Bounded post-run inputs; no complete import/runtime closure claim.",
+  "controlled_process_proof_sha256": "ed9670712dd67b5ed74cce07136750a2ec4215e0a83703f9bd0509f70af6833f",
+  "process_counts": {
+    "post": 1,
+    "physical_apply": 1,
+    "lookup": 2,
+    "nonce": 1
+  },
+  "process_scope": "Controlled supervisor pre-fencing then SIGKILL; second image observation reuses a held file object. No whole-host restore or independent custody qualification.",
+  "actual_inventory_sha256": "a1e42612d6a89337144b00335da2fa690dc7f503b46532ff795f0c92198bdd9c",
+  "inventory_observations_verified_against_originals": 597,
+  "unique_complete_images": 11,
+  "logical_image_bytes": 1674575368,
+  "retained_aliases": 32,
+  "actual_ELF_byte_closure": "Separate reviewed archive and full-byte readback still required; image hashes alone do not complete delivery.",
+  "historical_failures": "H1/H2/H3 unchanged; H4 helper observations cannot be backfilled into H3.",
+  "whole_joint_gates": "HOLD"
+}

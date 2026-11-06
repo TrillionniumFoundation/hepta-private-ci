@@ -1,0 +1,747 @@
+{
+  "build_environment": {
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_TARGET_DIR": "/home/qian-qi/work/chain-joint-20261105-93bfc-w1-target-C4",
+    "CARGO_TERM_COLOR": "never",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "RUST_TEST_THREADS": "1"
+  },
+  "candidate_index": {
+    "entries": 10357,
+    "hidden": []
+  },
+  "commit": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+  "compiler_override_keys": [],
+  "completed_utc": "2026-11-05T17:43:04Z",
+  "coordinator_sha256": "4443be3838cbfa3d788e5d86e8c0bb4eacc7749f4d5d256b163f368969c5248d",
+  "execution_context": "local-native-preflight",
+  "failures": [],
+  "fastest_adversary_qualified": false,
+  "locked_graph": {
+    "packages": 175,
+    "resolve_nodes": 175,
+    "root": "/home/qian-qi/work/chain-joint-20261105-93bfc-current/trillionnium",
+    "workspace_members": 26
+  },
+  "missing_candidate_objects": [],
+  "observations": [
+    {
+      "child_rusage": {
+        "cumulative_maxrss_kib_after": 19984,
+        "cumulative_maxrss_kib_before": 0,
+        "ru_stime_seconds_after": 0.017786,
+        "ru_stime_seconds_before": 0.0,
+        "ru_utime_seconds_after": 0.073365,
+        "ru_utime_seconds_before": 0.0,
+        "scope": "waited children of this coordinator; cumulative maxrss is not a per-command RSS limit",
+        "system_cpu_seconds_delta": 0.017786,
+        "user_cpu_seconds_delta": 0.073365
+      },
+      "command": [
+        "bash",
+        "scripts/project-preflight.sh",
+        "--audit"
+      ],
+      "elapsed_ns": 91686883,
+      "exit_code": 0,
+      "name": "restored-preflight",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "path": "restored-preflight.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stdout": {
+        "bytes": 133,
+        "path": "restored-preflight.stdout",
+        "sha256": "a47133fd7030ccda88d70f7e8f0c9df1ffb0fc5fd3257ed034439bbe6fc6e2e0"
+      },
+      "stdout_limit_bytes": 8388608,
+      "timed_out": false,
+      "timeout_seconds": 120
+    },
+    {
+      "child_rusage": {
+        "cumulative_maxrss_kib_after": 19984,
+        "cumulative_maxrss_kib_before": 19984,
+        "ru_stime_seconds_after": 0.069036,
+        "ru_stime_seconds_before": 0.017786,
+        "ru_utime_seconds_after": 0.10309,
+        "ru_utime_seconds_before": 0.073365,
+        "scope": "waited children of this coordinator; cumulative maxrss is not a per-command RSS limit",
+        "system_cpu_seconds_delta": 0.051250000000000004,
+        "user_cpu_seconds_delta": 0.029725
+      },
+      "command": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "elapsed_ns": 45665701,
+      "exit_code": 0,
+      "name": "restored-clean",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "path": "restored-clean.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stdout": {
+        "bytes": 0,
+        "path": "restored-clean.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout_limit_bytes": 8388608,
+      "timed_out": false,
+      "timeout_seconds": 120
+    },
+    {
+      "child_rusage": {
+        "cumulative_maxrss_kib_after": 19984,
+        "cumulative_maxrss_kib_before": 19984,
+        "ru_stime_seconds_after": 0.112993,
+        "ru_stime_seconds_before": 0.069036,
+        "ru_utime_seconds_after": 0.181997,
+        "ru_utime_seconds_before": 0.10309,
+        "scope": "waited children of this coordinator; cumulative maxrss is not a per-command RSS limit",
+        "system_cpu_seconds_delta": 0.043956999999999996,
+        "user_cpu_seconds_delta": 0.07890699999999999
+      },
+      "command": [
+        "git",
+        "fetch",
+        "--no-write-fetch-head",
+        "--no-tags",
+        "--no-auto-gc",
+        "origin",
+        "8df4b21d893906570d48f5beafabb3b31e0aefbc"
+      ],
+      "elapsed_ns": 6241785268,
+      "exit_code": 0,
+      "name": "fetch-frozen-candidate",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "path": "fetch-frozen-candidate.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stdout": {
+        "bytes": 0,
+        "path": "fetch-frozen-candidate.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout_limit_bytes": 8388608,
+      "timed_out": false,
+      "timeout_seconds": 600
+    },
+    {
+      "child_rusage": {
+        "cumulative_maxrss_kib_after": 19984,
+        "cumulative_maxrss_kib_before": 19984,
+        "ru_stime_seconds_after": 0.168339,
+        "ru_stime_seconds_before": 0.112993,
+        "ru_utime_seconds_after": 0.27205999999999997,
+        "ru_utime_seconds_before": 0.181997,
+        "scope": "waited children of this coordinator; cumulative maxrss is not a per-command RSS limit",
+        "system_cpu_seconds_delta": 0.05534599999999999,
+        "user_cpu_seconds_delta": 0.09006299999999998
+      },
+      "command": [
+        "git",
+        "fetch",
+        "--no-write-fetch-head",
+        "--no-tags",
+        "--no-auto-gc",
+        "origin",
+        "be7b893faeee8c537b95472976a5a9308eb0b0ca"
+      ],
+      "elapsed_ns": 26502870378,
+      "exit_code": 0,
+      "name": "fetch-known-candidate-blob",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "path": "fetch-known-candidate-blob.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stdout": {
+        "bytes": 0,
+        "path": "fetch-known-candidate-blob.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout_limit_bytes": 8388608,
+      "timed_out": false,
+      "timeout_seconds": 600
+    },
+    {
+      "child_rusage": {
+        "cumulative_maxrss_kib_after": 19984,
+        "cumulative_maxrss_kib_before": 19984,
+        "ru_stime_seconds_after": 0.170407,
+        "ru_stime_seconds_before": 0.168339,
+        "ru_utime_seconds_after": 0.274127,
+        "ru_utime_seconds_before": 0.27205999999999997,
+        "scope": "waited children of this coordinator; cumulative maxrss is not a per-command RSS limit",
+        "system_cpu_seconds_delta": 0.0020680000000000143,
+        "user_cpu_seconds_delta": 0.002067000000000041
+      },
+      "command": [
+        "git",
+        "rev-parse",
+        "8df4b21d893906570d48f5beafabb3b31e0aefbc^{tree}"
+      ],
+      "elapsed_ns": 4815653,
+      "exit_code": 0,
+      "name": "candidate-tree",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "path": "candidate-tree.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stdout": {
+        "bytes": 41,
+        "path": "candidate-tree.stdout",
+        "sha256": "2c8034fdd51fe39dc356a5b71f9224749b783fe933ce646f561859a5dc075102"
+      },
+      "stdout_limit_bytes": 8388608,
+      "timed_out": false,
+      "timeout_seconds": 120
+    },
+    {
+      "child_rusage": {
+        "cumulative_maxrss_kib_after": 19984,
+        "cumulative_maxrss_kib_before": 19984,
+        "ru_stime_seconds_after": 0.17468,
+        "ru_stime_seconds_before": 0.170407,
+        "ru_utime_seconds_after": 0.274127,
+        "ru_utime_seconds_before": 0.274127,
+        "scope": "waited children of this coordinator; cumulative maxrss is not a per-command RSS limit",
+        "system_cpu_seconds_delta": 0.004272999999999999,
+        "user_cpu_seconds_delta": 0.0
+      },
+      "command": [
+        "git",
+        "rev-parse",
+        "8df4b21d893906570d48f5beafabb3b31e0aefbc^"
+      ],
+      "elapsed_ns": 5179895,
+      "exit_code": 0,
+      "name": "candidate-parent",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "path": "candidate-parent.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stdout": {
+        "bytes": 41,
+        "path": "candidate-parent.stdout",
+        "sha256": "ff35c9c4650f089207bcc5380a5c355ff79a695f97756a7cad0c78ef244b32b7"
+      },
+      "stdout_limit_bytes": 8388608,
+      "timed_out": false,
+      "timeout_seconds": 120
+    },
+    {
+      "child_rusage": {
+        "cumulative_maxrss_kib_after": 40656,
+        "cumulative_maxrss_kib_before": 19984,
+        "ru_stime_seconds_after": 0.183728,
+        "ru_stime_seconds_before": 0.17468,
+        "ru_utime_seconds_after": 0.293228,
+        "ru_utime_seconds_before": 0.274127,
+        "scope": "waited children of this coordinator; cumulative maxrss is not a per-command RSS limit",
+        "system_cpu_seconds_delta": 0.009048,
+        "user_cpu_seconds_delta": 0.01910099999999998
+      },
+      "command": [
+        "git",
+        "rev-list",
+        "--objects",
+        "--no-object-names",
+        "--missing=print",
+        "--no-walk",
+        "8df4b21d893906570d48f5beafabb3b31e0aefbc"
+      ],
+      "elapsed_ns": 29617457,
+      "exit_code": 0,
+      "name": "candidate-objects",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "path": "candidate-objects.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stdout": {
+        "bytes": 422669,
+        "path": "candidate-objects.stdout",
+        "sha256": "9982864ca42e61ed4f6b3787735f6ccc7a0b04867367d73f24e207127b069901"
+      },
+      "stdout_limit_bytes": 8388608,
+      "timed_out": false,
+      "timeout_seconds": 120
+    },
+    {
+      "child_rusage": {
+        "cumulative_maxrss_kib_after": 40656,
+        "cumulative_maxrss_kib_before": 40656,
+        "ru_stime_seconds_after": 0.229012,
+        "ru_stime_seconds_before": 0.183728,
+        "ru_utime_seconds_after": 0.334395,
+        "ru_utime_seconds_before": 0.293228,
+        "scope": "waited children of this coordinator; cumulative maxrss is not a per-command RSS limit",
+        "system_cpu_seconds_delta": 0.04528399999999999,
+        "user_cpu_seconds_delta": 0.04116700000000001
+      },
+      "command": [
+        "git",
+        "switch",
+        "--detach",
+        "8df4b21d893906570d48f5beafabb3b31e0aefbc"
+      ],
+      "elapsed_ns": 161120628,
+      "exit_code": 0,
+      "name": "select-frozen-candidate",
+      "passed": true,
+      "stderr": {
+        "bytes": 192,
+        "path": "select-frozen-candidate.stderr",
+        "sha256": "d17ed1da5f19a7c6bb3114356519bf9fb1db6079407599aa64f96cfacec81f38"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stdout": {
+        "bytes": 0,
+        "path": "select-frozen-candidate.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout_limit_bytes": 8388608,
+      "timed_out": false,
+      "timeout_seconds": 600
+    },
+    {
+      "child_rusage": {
+        "cumulative_maxrss_kib_after": 40656,
+        "cumulative_maxrss_kib_before": 40656,
+        "ru_stime_seconds_after": 0.23182799999999998,
+        "ru_stime_seconds_before": 0.229012,
+        "ru_utime_seconds_after": 0.338151,
+        "ru_utime_seconds_before": 0.334395,
+        "scope": "waited children of this coordinator; cumulative maxrss is not a per-command RSS limit",
+        "system_cpu_seconds_delta": 0.002815999999999985,
+        "user_cpu_seconds_delta": 0.0037559999999999816
+      },
+      "command": [
+        "git",
+        "ls-files",
+        "-v",
+        "-z"
+      ],
+      "elapsed_ns": 8390163,
+      "exit_code": 0,
+      "name": "candidate-index-flags",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "path": "candidate-index-flags.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stdout": {
+        "bytes": 888265,
+        "path": "candidate-index-flags.stdout",
+        "sha256": "efe61a789770b2916d6e1ff239c81386798aca08a3681fd98c18bded736e9b03"
+      },
+      "stdout_limit_bytes": 8388608,
+      "timed_out": false,
+      "timeout_seconds": 120
+    },
+    {
+      "child_rusage": {
+        "cumulative_maxrss_kib_after": 40656,
+        "cumulative_maxrss_kib_before": 40656,
+        "ru_stime_seconds_after": 0.256781,
+        "ru_stime_seconds_before": 0.23182799999999998,
+        "ru_utime_seconds_after": 0.402636,
+        "ru_utime_seconds_before": 0.338151,
+        "scope": "waited children of this coordinator; cumulative maxrss is not a per-command RSS limit",
+        "system_cpu_seconds_delta": 0.024953000000000003,
+        "user_cpu_seconds_delta": 0.06448500000000001
+      },
+      "command": [
+        "bash",
+        "scripts/project-preflight.sh",
+        "--audit"
+      ],
+      "elapsed_ns": 89636394,
+      "exit_code": 0,
+      "name": "candidate-preflight",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "path": "candidate-preflight.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stdout": {
+        "bytes": 133,
+        "path": "candidate-preflight.stdout",
+        "sha256": "a47133fd7030ccda88d70f7e8f0c9df1ffb0fc5fd3257ed034439bbe6fc6e2e0"
+      },
+      "stdout_limit_bytes": 8388608,
+      "timed_out": false,
+      "timeout_seconds": 120
+    },
+    {
+      "child_rusage": {
+        "cumulative_maxrss_kib_after": 83744,
+        "cumulative_maxrss_kib_before": 40656,
+        "ru_stime_seconds_after": 1.047304,
+        "ru_stime_seconds_before": 0.256781,
+        "ru_utime_seconds_after": 3.918999,
+        "ru_utime_seconds_before": 0.402636,
+        "scope": "waited children of this coordinator; cumulative maxrss is not a per-command RSS limit",
+        "system_cpu_seconds_delta": 0.7905230000000001,
+        "user_cpu_seconds_delta": 3.516363
+      },
+      "command": [
+        "python3",
+        "-B",
+        "scripts/ci/verify_ci_source.py",
+        "--kind",
+        "head",
+        "--expected-head",
+        "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+        "--output",
+        "/home/qian-qi/work/chain-joint-20261105-93bfc-w1-native-C4/prepare/source-before.json"
+      ],
+      "elapsed_ns": 8562008251,
+      "exit_code": 0,
+      "name": "source-before",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "path": "source-before.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stdout": {
+        "bytes": 422,
+        "path": "source-before.stdout",
+        "sha256": "a3240c2f14bfbfe973f5066eac1b7a5e8bea6bd426b068af3446f4397f2b2b2b"
+      },
+      "stdout_limit_bytes": 8388608,
+      "timed_out": false,
+      "timeout_seconds": 600
+    },
+    {
+      "child_rusage": {
+        "cumulative_maxrss_kib_after": 83744,
+        "cumulative_maxrss_kib_before": 83744,
+        "ru_stime_seconds_after": 1.088314,
+        "ru_stime_seconds_before": 1.047304,
+        "ru_utime_seconds_after": 4.21207,
+        "ru_utime_seconds_before": 3.918999,
+        "scope": "waited children of this coordinator; cumulative maxrss is not a per-command RSS limit",
+        "system_cpu_seconds_delta": 0.04100999999999999,
+        "user_cpu_seconds_delta": 0.29307099999999986
+      },
+      "command": [
+        "python3",
+        "-B",
+        "scripts/ci/check_pq_research_integration.py"
+      ],
+      "elapsed_ns": 334660126,
+      "exit_code": 0,
+      "name": "pq-source-guard",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "path": "pq-source-guard.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stdout": {
+        "bytes": 557,
+        "path": "pq-source-guard.stdout",
+        "sha256": "82a571c21609d1bc7f1b36c33d66a7b3f7c352a5be299cac3fdd14612723bd79"
+      },
+      "stdout_limit_bytes": 8388608,
+      "timed_out": false,
+      "timeout_seconds": 300
+    },
+    {
+      "child_rusage": {
+        "cumulative_maxrss_kib_after": 83744,
+        "cumulative_maxrss_kib_before": 83744,
+        "ru_stime_seconds_after": 7.674138,
+        "ru_stime_seconds_before": 1.088314,
+        "ru_utime_seconds_after": 52.585436,
+        "ru_utime_seconds_before": 4.21207,
+        "scope": "waited children of this coordinator; cumulative maxrss is not a per-command RSS limit",
+        "system_cpu_seconds_delta": 6.585824000000001,
+        "user_cpu_seconds_delta": 48.373366000000004
+      },
+      "command": [
+        "python3",
+        "-B",
+        "scripts/ci/test_pq_research_integration.py"
+      ],
+      "elapsed_ns": 58761268157,
+      "exit_code": 0,
+      "name": "pq-source-controls",
+      "passed": true,
+      "stderr": {
+        "bytes": 137,
+        "path": "pq-source-controls.stderr",
+        "sha256": "bb723a1d3b167570cd7c6ee526b3e71c20b2e58e7ccae206dda4f9dac789304d"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stdout": {
+        "bytes": 0,
+        "path": "pq-source-controls.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout_limit_bytes": 8388608,
+      "timed_out": false,
+      "timeout_seconds": 300
+    },
+    {
+      "child_rusage": {
+        "cumulative_maxrss_kib_after": 83744,
+        "cumulative_maxrss_kib_before": 83744,
+        "ru_stime_seconds_after": 7.6880939999999995,
+        "ru_stime_seconds_before": 7.674138,
+        "ru_utime_seconds_after": 52.663189,
+        "ru_utime_seconds_before": 52.585436,
+        "scope": "waited children of this coordinator; cumulative maxrss is not a per-command RSS limit",
+        "system_cpu_seconds_delta": 0.013955999999999413,
+        "user_cpu_seconds_delta": 0.0777530000000013
+      },
+      "command": [
+        "python3",
+        "-B",
+        "scripts/ci/pq_chain_claim_guard.py"
+      ],
+      "elapsed_ns": 92451127,
+      "exit_code": 0,
+      "name": "pq-claim-guard",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "path": "pq-claim-guard.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stdout": {
+        "bytes": 3333,
+        "path": "pq-claim-guard.stdout",
+        "sha256": "6235b839d36b92351665414a731c9433441f007e727860d0c3bd138e7d731690"
+      },
+      "stdout_limit_bytes": 8388608,
+      "timed_out": false,
+      "timeout_seconds": 300
+    },
+    {
+      "child_rusage": {
+        "cumulative_maxrss_kib_after": 83744,
+        "cumulative_maxrss_kib_before": 83744,
+        "ru_stime_seconds_after": 7.818918,
+        "ru_stime_seconds_before": 7.6880939999999995,
+        "ru_utime_seconds_after": 52.968778,
+        "ru_utime_seconds_before": 52.663189,
+        "scope": "waited children of this coordinator; cumulative maxrss is not a per-command RSS limit",
+        "system_cpu_seconds_delta": 0.1308240000000005,
+        "user_cpu_seconds_delta": 0.30558899999999767
+      },
+      "command": [
+        "python3",
+        "-B",
+        "scripts/ci/test_pq_chain_claim_guard.py"
+      ],
+      "elapsed_ns": 590082575,
+      "exit_code": 0,
+      "name": "pq-claim-controls",
+      "passed": true,
+      "stderr": {
+        "bytes": 121,
+        "path": "pq-claim-controls.stderr",
+        "sha256": "b602b8b27557acc2bb9761c5535c13d643cdf65a9e361627151cd41e1050b59a"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stdout": {
+        "bytes": 0,
+        "path": "pq-claim-controls.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout_limit_bytes": 8388608,
+      "timed_out": false,
+      "timeout_seconds": 300
+    },
+    {
+      "child_rusage": {
+        "cumulative_maxrss_kib_after": 83744,
+        "cumulative_maxrss_kib_before": 83744,
+        "ru_stime_seconds_after": 7.849678,
+        "ru_stime_seconds_before": 7.818918,
+        "ru_utime_seconds_after": 53.053014,
+        "ru_utime_seconds_before": 52.968778,
+        "scope": "waited children of this coordinator; cumulative maxrss is not a per-command RSS limit",
+        "system_cpu_seconds_delta": 0.0307599999999999,
+        "user_cpu_seconds_delta": 0.08423599999999709
+      },
+      "command": [
+        "python3",
+        "-B",
+        "scripts/refresh_distributed_source_inventory.py",
+        "--check"
+      ],
+      "elapsed_ns": 99945417,
+      "exit_code": 0,
+      "name": "source-inventory",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "path": "source-inventory.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stdout": {
+        "bytes": 35,
+        "path": "source-inventory.stdout",
+        "sha256": "8bd8670851048e151182dd0f0bc26834d54e151f39ca53f06c98e06c4479c51a"
+      },
+      "stdout_limit_bytes": 8388608,
+      "timed_out": false,
+      "timeout_seconds": 300
+    },
+    {
+      "child_rusage": {
+        "cumulative_maxrss_kib_after": 83744,
+        "cumulative_maxrss_kib_before": 83744,
+        "ru_stime_seconds_after": 7.947158,
+        "ru_stime_seconds_before": 7.849678,
+        "ru_utime_seconds_after": 53.218917,
+        "ru_utime_seconds_before": 53.053014,
+        "scope": "waited children of this coordinator; cumulative maxrss is not a per-command RSS limit",
+        "system_cpu_seconds_delta": 0.09748000000000001,
+        "user_cpu_seconds_delta": 0.16590300000000013
+      },
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "metadata",
+        "--locked",
+        "--manifest-path",
+        "trillionnium/Cargo.toml",
+        "--format-version",
+        "1"
+      ],
+      "elapsed_ns": 469635671,
+      "exit_code": 0,
+      "name": "locked-graph",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "path": "locked-graph.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stdout": {
+        "bytes": 822444,
+        "path": "locked-graph.stdout",
+        "sha256": "bdfd235324a11c6a4ec2c1315e8e48f23dec15004cd356bff51efab796acee86"
+      },
+      "stdout_limit_bytes": 67108864,
+      "timed_out": false,
+      "timeout_seconds": 900
+    },
+    {
+      "child_rusage": {
+        "cumulative_maxrss_kib_after": 83744,
+        "cumulative_maxrss_kib_before": 83744,
+        "ru_stime_seconds_after": 8.450658,
+        "ru_stime_seconds_before": 7.947158,
+        "ru_utime_seconds_after": 55.142292,
+        "ru_utime_seconds_before": 53.218917,
+        "scope": "waited children of this coordinator; cumulative maxrss is not a per-command RSS limit",
+        "system_cpu_seconds_delta": 0.5035000000000007,
+        "user_cpu_seconds_delta": 1.923375
+      },
+      "command": [
+        "python3",
+        "-B",
+        "scripts/ci/verify_ci_source.py",
+        "--kind",
+        "head",
+        "--expected-head",
+        "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+        "--output",
+        "/home/qian-qi/work/chain-joint-20261105-93bfc-w1-native-C4/prepare/source-after.json"
+      ],
+      "elapsed_ns": 2361561481,
+      "exit_code": 0,
+      "name": "source-after",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "path": "source-after.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stdout": {
+        "bytes": 422,
+        "path": "source-after.stdout",
+        "sha256": "a3240c2f14bfbfe973f5066eac1b7a5e8bea6bd426b068af3446f4397f2b2b2b"
+      },
+      "stdout_limit_bytes": 8388608,
+      "timed_out": false,
+      "timeout_seconds": 600
+    }
+  ],
+  "output": "/home/qian-qi/work/chain-joint-20261105-93bfc-w1-native-C4/prepare",
+  "passed": true,
+  "phase": "prepare",
+  "production_activation": false,
+  "public_service_measured": false,
+  "root": "/home/qian-qi/work/chain-joint-20261105-93bfc-current",
+  "schema": "trnm-c4-local-w1-native-phase-v1",
+  "source_after": {
+    "base": null,
+    "candidate": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+    "kind": "head",
+    "prospective_merge": null,
+    "schema": "trnm-ci-source-v1",
+    "tested_commit": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+    "tested_tree": "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14",
+    "tests_executed_by_identity_check": false,
+    "tracked_bytes": 985270534,
+    "tracked_entries": 10357,
+    "tracked_worktree_verified": true
+  },
+  "source_before": {
+    "base": null,
+    "candidate": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+    "kind": "head",
+    "prospective_merge": null,
+    "schema": "trnm-ci-source-v1",
+    "tested_commit": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+    "tested_tree": "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14",
+    "tests_executed_by_identity_check": false,
+    "tracked_bytes": 985270534,
+    "tracked_entries": 10357,
+    "tracked_worktree_verified": true
+  },
+  "started_utc": "2026-11-05T17:41:19Z",
+  "tree": "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14",
+  "work_hardness_accepted": false
+}

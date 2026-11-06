@@ -1,0 +1,49 @@
+{
+  "actual_child_pid": 5,
+  "actual_child_start_utc": "2026-11-06T00:55:06.173869+00:00",
+  "actual_launch_sha256": "8594417881aca62f4debddeab0ac4aa7ec1b4f093bcfee9fdef1db72e9207990",
+  "actual_request_sha256": "34bdf3b581ef738ee34944c96c8031dc9299c54435d2a48c3bda42a417315aba",
+  "actual_start_ticks_observed": false,
+  "actual_terminal": {
+    "automatic_retry": false,
+    "completed_utc": "2026-11-06T00:59:04.738052+00:00",
+    "elapsed_seconds": 238.56383343000198,
+    "exit_code": 0,
+    "native_execution": false,
+    "new_remote_calls": 0,
+    "pid": 5,
+    "request_sha256": "34bdf3b581ef738ee34944c96c8031dc9299c54435d2a48c3bda42a417315aba",
+    "schema": "actual-cloud-consumer-terminal-v1",
+    "started_utc": "2026-11-06T00:55:06.173869+00:00",
+    "streams": {
+      "stderr.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout.log": {
+        "bytes": 477,
+        "sha256": "03f2e354c5d5ed5bb89376b10c5736f1b3fec1b14a110272ee5fd9ea09930faf"
+      }
+    }
+  },
+  "actual_terminal_sha256": "2630adfacf2368edaedc105893386857dd53ca6f939e30aee132c178d406a507",
+  "cloud_exec_session": 39976,
+  "current_pending_tool_operations": 0,
+  "explicit_copy_rsync_or_random_suffix_creation_command": false,
+  "recorded_invocations": 1,
+  "schema": "w1-recorded-consumer-and-postrun-operations-v1",
+  "scope": "Own recorded commands only. No claim of global actor absence, environment attribution, or source of unknown extra files.",
+  "second_consumer_or_extraction_started": false,
+  "subsequent_own_operations": [
+    {
+      "exit_code": 0,
+      "kind": "Read original reports, stat exact known output files, enumerate output tree and hash files selected for first delivery; write only execution-summary.json, verified-output-artifacts.json, postrun-inspection-note.json and delivery-manifest.json in the run root.",
+      "session": 22905
+    },
+    {
+      "exit_code": 0,
+      "kind": "Read source with sed.",
+      "session": 59536
+    }
+  ]
+}

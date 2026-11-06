@@ -1,0 +1,169 @@
+{
+  "base": "1556a4df6e279055fd8196f81a4ca2fe0f19384a",
+  "base_tree": "9675a9e62a1fbbdaed3248eb239bb2036d79feba",
+  "status": "failed",
+  "gates": {
+    "dependencies": {
+      "receipt": "dependencies.json",
+      "wrapper_exit": 0,
+      "status": "passed",
+      "command_exit_code": 0,
+      "passed": 0,
+      "failed": 0,
+      "timed_out": false,
+      "log_file": "dependencies.json.b4e46426a18b41f69f542357ba0bbca2.log",
+      "source": {
+        "commit": "495e36f8cb71fdae7290710dd339e2ee34d4feec",
+        "tree": "a9a266faa47ba78430ff73f31e55b14e0043e196",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "735d9437a7675fe045e2fb6cce7a1964c6e48b1cee229cfc8feec32c16315f48"
+      },
+      "actual_binary_evidence": null
+    },
+    "pq-provider-contract": {
+      "receipt": "pq-provider-contract.json",
+      "wrapper_exit": 0,
+      "status": "passed",
+      "command_exit_code": 0,
+      "passed": 1,
+      "failed": 0,
+      "timed_out": false,
+      "log_file": "pq-provider-contract.json.c4262ea4cd474f20a03c4060957b3d88.log",
+      "source": {
+        "commit": "495e36f8cb71fdae7290710dd339e2ee34d4feec",
+        "tree": "a9a266faa47ba78430ff73f31e55b14e0043e196",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "735d9437a7675fe045e2fb6cce7a1964c6e48b1cee229cfc8feec32c16315f48"
+      },
+      "actual_binary_evidence": {
+        "records": [
+          {
+            "source": {
+              "commit": "495e36f8cb71fdae7290710dd339e2ee34d4feec",
+              "tree": "a9a266faa47ba78430ff73f31e55b14e0043e196",
+              "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+              "environment_file": "native-environment.json",
+              "environment_sha256": "735d9437a7675fe045e2fb6cce7a1964c6e48b1cee229cfc8feec32c16315f48"
+            },
+            "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_model_provider-3ff8bb6b264d636e",
+            "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/native-attempt-1/executed-binaries-pq-provider-contract/2eb9f6570a4f4a0c2f53ab32e743a5fe9f38b6f7467c63089674d7aff88e6c6f.elf",
+            "sha256": "2eb9f6570a4f4a0c2f53ab32e743a5fe9f38b6f7467c63089674d7aff88e6c6f",
+            "bytes": 97468280,
+            "device": 2050,
+            "inode": 58258788,
+            "pid": 3920537,
+            "start_ticks": "96955663",
+            "observed_selected_tests": [
+              "provider_effect::pq_tests::pq_contract_binds_profile_root_epoch_and_complete_authority_scope"
+            ],
+            "captured_unix": 1793891892.6917937
+          }
+        ],
+        "errors": [],
+        "unique_actual_elf_sha256": [
+          "2eb9f6570a4f4a0c2f53ab32e743a5fe9f38b6f7467c63089674d7aff88e6c6f"
+        ]
+      }
+    },
+    "provider-effect-existing-and-pq": {
+      "receipt": "provider-effect-existing-and-pq.json",
+      "wrapper_exit": 0,
+      "status": "passed",
+      "command_exit_code": 0,
+      "passed": 10,
+      "failed": 0,
+      "timed_out": false,
+      "log_file": "provider-effect-existing-and-pq.json.b47fe353f4b74b049c7d08183d5cb365.log",
+      "source": {
+        "commit": "495e36f8cb71fdae7290710dd339e2ee34d4feec",
+        "tree": "a9a266faa47ba78430ff73f31e55b14e0043e196",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "735d9437a7675fe045e2fb6cce7a1964c6e48b1cee229cfc8feec32c16315f48"
+      },
+      "actual_binary_evidence": {
+        "records": [
+          {
+            "source": {
+              "commit": "495e36f8cb71fdae7290710dd339e2ee34d4feec",
+              "tree": "a9a266faa47ba78430ff73f31e55b14e0043e196",
+              "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+              "environment_file": "native-environment.json",
+              "environment_sha256": "735d9437a7675fe045e2fb6cce7a1964c6e48b1cee229cfc8feec32c16315f48"
+            },
+            "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_model_provider-3ff8bb6b264d636e",
+            "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/native-attempt-1/executed-binaries-provider-effect-existing-and-pq/2eb9f6570a4f4a0c2f53ab32e743a5fe9f38b6f7467c63089674d7aff88e6c6f.elf",
+            "sha256": "2eb9f6570a4f4a0c2f53ab32e743a5fe9f38b6f7467c63089674d7aff88e6c6f",
+            "bytes": 97468280,
+            "device": 2050,
+            "inode": 58258788,
+            "pid": 3921456,
+            "start_ticks": "96957365",
+            "observed_selected_tests": [
+              "provider_effect::pq_tests::pq_contract_binds_profile_root_epoch_and_complete_authority_scope"
+            ],
+            "captured_unix": 1793891910.222347
+          }
+        ],
+        "errors": [],
+        "unique_actual_elf_sha256": [
+          "2eb9f6570a4f4a0c2f53ab32e743a5fe9f38b6f7467c63089674d7aff88e6c6f"
+        ]
+      }
+    },
+    "ordinary-pq-effect-eleven": {
+      "receipt": "ordinary-pq-effect-eleven.json",
+      "wrapper_exit": 124,
+      "status": "failed",
+      "command_exit_code": -9,
+      "passed": 0,
+      "failed": 0,
+      "timed_out": true,
+      "log_file": "ordinary-pq-effect-eleven.json.73737f47220d47b39dd9f3ba554850ca.log",
+      "source": {
+        "commit": "495e36f8cb71fdae7290710dd339e2ee34d4feec",
+        "tree": "a9a266faa47ba78430ff73f31e55b14e0043e196",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "735d9437a7675fe045e2fb6cce7a1964c6e48b1cee229cfc8feec32c16315f48"
+      },
+      "actual_binary_evidence": {
+        "records": [],
+        "errors": [],
+        "unique_actual_elf_sha256": []
+      }
+    }
+  },
+  "started_unix": 1793891392.6826043,
+  "scope": "UNQUALIFIED_NATIVE_COMPONENT; no deployment custody, physical Agentd SIGKILL, WAN, or joint claim",
+  "phase": "failed",
+  "current_command": [
+    "/usr/bin/python3",
+    "scripts/hepta_ci_exec.py",
+    "--output",
+    "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/native-attempt-1/ordinary-pq-effect-eleven.json",
+    "--minimum-tests",
+    "11",
+    "--timeout-seconds",
+    "600",
+    "--",
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-agentd",
+    "--lib",
+    "-E",
+    "test(=automation_effect_host::pq::tests::ordinary_loader_denies_classical_schema_and_contract_or_policy_substitution) | test(=automation_effect_host::pq::tests::initial_feed_is_authenticated_before_any_local_authority_or_frontier_write) | test(=automation_effect_host::pq::tests::current_clock_frontier_and_pq_grant_are_mandatory_before_contact) | test(=automation_effect_host::pq::tests::revoked_equal_number_drift_expired_feed_and_new_epoch_do_not_contact_provider) | test(=automation_effect_host::pq::tests::generation_change_after_store_await_refuses_contact_and_keeps_consumed_nonce) | test(=automation_effect_host::pq::tests::signed_revocation_after_store_await_obeys_active_effect_fence_and_never_sends) | test(=automation_effect_host::pq::tests::ordinary_dispatch_and_new_generation_recovery_keep_one_stable_operation) | test(=automation_effect_host::pq::tests::recovery_requires_current_signed_exact_historical_policy_and_same_provider) | test(=automation_effect_host::pq::tests::historical_policy_does_not_connect_old_trust_services_or_follow_its_references) | test(=automation_effect_host::pq::tests::reconcile_rechecks_generation_after_store_await_without_reclassifying_unknown) | test(=automation_effect_host::pq::tests::pon_schema4_binds_native_binary_and_original_limits_without_running_a_node)",
+    "--no-capture",
+    "--retries",
+    "0",
+    "--test-threads=1"
+  ],
+  "current_commit": "495e36f8cb71fdae7290710dd339e2ee34d4feec",
+  "current_tree": "a9a266faa47ba78430ff73f31e55b14e0043e196",
+  "error": "RuntimeError('ordinary-pq-effect-eleven did not pass its original clean-source wrapper')",
+  "finished_unix": 1793892524.5157478
+}

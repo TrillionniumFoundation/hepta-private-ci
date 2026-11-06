@@ -1,0 +1,108 @@
+{
+  "collector_started_after_all_known_model_preparation": true,
+  "commit": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+  "host_wide_exclusivity_measured": false,
+  "interpretation": "Durable job timestamps show no overlap for these known team jobs; RPC waiting is not execution. Host-wide absence of unrelated processes is not asserted.",
+  "jobs": [
+    {
+      "created_unix_ms": 1793894236802,
+      "exit_code": 0,
+      "job_id": "1a1ac6dc282-fc05-5438",
+      "launch_source": {
+        "bytes": 3669,
+        "path": "/workspace/scratch/93bfcfe29fc8/w1/C2-native-phase-launches.json",
+        "sha256": "a7dc7c28591baaf2527055a510a91f7f611f55e38980d4c45d7d85318eb0c577"
+      },
+      "name": "C2-prepare",
+      "state": "succeeded",
+      "terminal_source": {
+        "bytes": 732,
+        "path": "/workspace/scratch/93bfcfe29fc8/w1/C2-native-prepare-terminal.json",
+        "sha256": "1ae68090b5f939486f442bfac91cb0b88e3250a4e7780e78bbda6dd977dc1b33"
+      },
+      "terminal_unix_ms": 1793894259045,
+      "timed_out": false
+    },
+    {
+      "created_unix_ms": 1793894338979,
+      "exit_code": 1,
+      "job_id": "1a1ac6f51a3-fc05-5449",
+      "launch_source": {
+        "bytes": 3669,
+        "path": "/workspace/scratch/93bfcfe29fc8/w1/C2-native-phase-launches.json",
+        "sha256": "a7dc7c28591baaf2527055a510a91f7f611f55e38980d4c45d7d85318eb0c577"
+      },
+      "name": "C2-checks",
+      "state": "failed",
+      "terminal_source": {
+        "bytes": 729,
+        "path": "/workspace/scratch/93bfcfe29fc8/w1/C2-native-checks-terminal.json",
+        "sha256": "1c33d6f7ce29af38dd2075e7924e6e362d1086c8d925a5c3810642c4621d0e6b"
+      },
+      "terminal_unix_ms": 1793894795901,
+      "timed_out": false
+    },
+    {
+      "created_unix_ms": 1793895310014,
+      "exit_code": 0,
+      "job_id": "1a1ac7e22be-fc05-54be",
+      "launch_source": {
+        "bytes": 3669,
+        "path": "/workspace/scratch/93bfcfe29fc8/w1/C2-native-phase-launches.json",
+        "sha256": "a7dc7c28591baaf2527055a510a91f7f611f55e38980d4c45d7d85318eb0c577"
+      },
+      "name": "C2-collector",
+      "state": "succeeded",
+      "terminal_source": {
+        "bytes": 732,
+        "path": "/workspace/scratch/93bfcfe29fc8/w1/C2-collector-terminal.json",
+        "sha256": "086d6c919de6f70617a978cbfb4bcf8b25cefe680ee0c20587a7ff6d25ee7163"
+      },
+      "terminal_unix_ms": 1793895424553,
+      "timed_out": false
+    },
+    {
+      "created_unix_ms": 1793894908924,
+      "exit_code": 1,
+      "job_id": "1a1ac7803fc-fc05-548c",
+      "launch_source": {
+        "bytes": 5768,
+        "path": "/workspace/scratch/93bfcfe29fc8/model_storage/pq_effect_migration/native/component-3-preparation/prepare-job.json",
+        "sha256": "daaf58f7fc8c3de7e445f217c49dcf96f6133bddd74b2c21e453a441db6f67a0"
+      },
+      "name": "model-light-prepare",
+      "overlap_with_C2_checks_ms": 0,
+      "state": "failed",
+      "terminal_source": {
+        "bytes": 949,
+        "path": "/workspace/scratch/93bfcfe29fc8/model_storage/pq_effect_migration/native/component-3-preparation/prepare-status.json",
+        "sha256": "08eeba52b4b2a00e61aac0c7ec2256af1672dc62dcc5413b93c55f6eaf9902ab"
+      },
+      "terminal_unix_ms": 1793894912165,
+      "timed_out": false
+    },
+    {
+      "created_unix_ms": 1793895131263,
+      "exit_code": 0,
+      "job_id": "1a1ac7b687f-fc05-549d",
+      "launch_source": {
+        "bytes": 5955,
+        "path": "/workspace/scratch/93bfcfe29fc8/model_storage/pq_effect_migration/native/component-3-preparation/repair-job.json",
+        "sha256": "0f7a42b5f64b3671119c71cc611cfb2f33a6690117f2364ea77c372c2cb9bad9"
+      },
+      "name": "model-light-repair",
+      "overlap_with_C2_checks_ms": 0,
+      "state": "succeeded",
+      "terminal_source": {
+        "bytes": 954,
+        "path": "/workspace/scratch/93bfcfe29fc8/model_storage/pq_effect_migration/native/component-3-preparation/repair-status.json",
+        "sha256": "eab0347cd1ead4753eed438a823c6ce6cdc8e5583ea5c81ed9f0471829c365c2"
+      },
+      "terminal_unix_ms": 1793895134836,
+      "timed_out": false
+    }
+  ],
+  "known_model_overlap_with_checks_ms": 0,
+  "last_model_terminal_to_collector_start_ms": 175178,
+  "schema": "trnm-c2-actual-job-coordination-v1"
+}

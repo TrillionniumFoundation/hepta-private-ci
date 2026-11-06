@@ -1,0 +1,22 @@
+{
+  "schema": "hepta-effect-frontier-native-red-classification-v1",
+  "source_commit": "cf665344d5c4af16f03eb46e3eeb0c47ef028d6a",
+  "source_tree": "9037266d1ba9b7262fd19a81c2f86b56a8e25361",
+  "production_source_unchanged_from": "1556a4df6e279055fd8196f81a4ca2fe0f19384a",
+  "raw_log_sha256": "a6613336af39ce12823aa1aa1656dd96942a5922d0ee4c3a459b8a7a998d3884",
+  "failed_tests_reported": 5,
+  "accepted_assertion_failures": 3,
+  "fixture_failures": 2,
+  "accepted_cases": [
+    "six projected-column mutations with original canonical JSON/digests retained",
+    "canonical ACK consistent with substituted payload but inconsistent with authoritative intent",
+    "orphan ACK and orphan uncertainty"
+  ],
+  "fixture_failure": "Both repeated-sequence controls failed in remove_effect_sequence_primary_key before the target assertion: rename reported an existing provider_effect_intents table or index.",
+  "all_five_expected_assertions": false,
+  "timed_out": false,
+  "original_timeout_seconds": 600,
+  "elapsed_seconds": 417.93250270106364,
+  "green_run": false,
+  "decision": "Preserve this failure, repair only the fixture, repeat the same five controls on original production code before GREEN."
+}

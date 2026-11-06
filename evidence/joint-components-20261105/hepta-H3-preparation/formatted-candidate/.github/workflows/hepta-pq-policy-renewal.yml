@@ -1,0 +1,477 @@
+name: Hepta PQ policy renewal
+
+on:
+  pull_request:
+    paths:
+      - codex-rs/hepta-agentd/**
+      - codex-rs/hepta-automation/**
+      - codex-rs/model-provider/**
+      - codex-rs/hepta-authbus/**
+      - codex-rs/hepta-contracts/**
+      - codex-rs/hepta-evidence/**
+      - codex-rs/hepta-infer-worker-host/**
+      - codex-rs/Cargo.toml
+      - codex-rs/Cargo.lock
+      - codex-rs/rust-toolchain.toml
+      - codex-rs/.config/nextest.toml
+      - scripts/hepta_ci_*.py
+      - scripts/run-nextest.py
+      - scripts/format.py
+      - justfile
+      - AGENTS.md
+      - evidence/pq-recovery-owner-20261105/ci-*
+      - .github/workflows/hepta-pq-policy-renewal.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: hepta-pq-policy-renewal-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  policy-renewal:
+    name: PQ renewal (${{ matrix.runner }}, ${{ matrix.lane }})
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-24.04, ubuntu-24.04-arm]
+        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 90
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      TESTED_SHA: ${{ matrix.lane == 'base-merge' && github.sha || github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+      HEPTA_CI_LANE: ${{ matrix.lane }}
+      RUSTUP_TOOLCHAIN: "1.96.0"
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      RUST_BACKTRACE: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+      TMPDIR: /tmp
+    steps:
+      - name: Check out the exact source or prospective merge
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.TESTED_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind commit, tree and merge parents
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/pq-policy-renewal"
+          python3 scripts/hepta_ci_candidate.py \
+            --source "$SOURCE_SHA" --tested "$TESTED_SHA" --base "$BASE_SHA" \
+            --lane "$HEPTA_CI_LANE" > "$RUNNER_TEMP/pq-policy-renewal/candidate.json"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/pq-policy-renewal/identity.txt"
+          # Every declared lane executes, including tree-equivalent merges.
+          # Candidate planning is identity evidence, never execution credit.
+
+      - name: Prepare the original native process prerequisites
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+          rustup toolchain install 1.96.0 --profile minimal --component clippy --component rustfmt --component rust-src
+
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Install the existing pinned Python formatter launcher
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: "0.11.3"
+          enable-cache: false
+      - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+      - run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
+
+      - name: Resolve the existing verified V8 artifacts
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+
+      - name: Fetch the locked current dependency graph
+        id: dependencies
+        timeout-minutes: 12
+        env:
+          CARGO_NET_RETRY: "5"
+          CARGO_HTTP_TIMEOUT: "60"
+          CARGO_HTTP_MULTIPLEXING: "false"
+        run: >-
+          python3 scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/pq-policy-renewal/dependencies.json"
+          --timeout-seconds 600 --
+          cargo fetch --locked --manifest-path codex-rs/Cargo.toml
+
+      - name: Run all fourteen original and added dispatcher controls
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: >-
+          python3 scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/pq-policy-renewal/dispatcher.json"
+          --minimum-tests 14 --timeout-seconds 3600 --
+          just test --locked -p codex-hepta-agentd --lib
+          -E 'test(authbus_dispatch::tests::)' --no-capture --retries 0 --test-threads=1
+
+      - name: Run the three real Agentd and App Server process controls
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: >-
+          python3 scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/pq-policy-renewal/product.json"
+          --minimum-tests 3 --timeout-seconds 1800 --
+          just test --locked -p codex-hepta-agentd --test authbus_text_product
+          --no-capture --retries 0 --test-threads=1
+
+      # Snapshot and PQ-signature controls do not qualify independent custody
+      # or freshness of the monotonic frontier after an entire-host restore.
+      - name: Run the twenty-two recovery snapshot and ACK provenance controls
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: >-
+          python3 scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/pq-policy-renewal/recovery-owner.json"
+          --minimum-tests 22 --timeout-seconds 600 --
+          just test --locked -p codex-hepta-evidence --lib
+          -E 'test(=recovery_effect_frontier_tests::recovery_snapshot_commits_intent_unknown_and_original_operation_receipt)
+          | test(=recovery_effect_frontier_tests::recovery_snapshot_distinguishes_a_valid_effect_only_database_rollback)
+          | test(=recovery_effect_frontier_tests::recovery_snapshot_commits_ack_provenance_and_cross_table_order)
+          | test(=recovery_effect_frontier_tests::recovery_snapshot_commits_effect_history_after_the_first_page)
+          | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_changed_json_with_retained_record_digests)
+          | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_effect_projection_drift_with_retained_payloads)
+          | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_canonical_ack_bound_to_a_different_payload)
+          | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_orphan_effect_observations)
+          | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_after_schema_drift)
+          | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_at_page_boundary)
+          | test(=provider_effect_recovery_provenance_tests::recovery_provenance_rejects_late_dispatch_after_status_without_uncertainty)
+          | test(=provider_effect_recovery_provenance_tests::recovery_provenance_preserves_dispatch_then_authoritative_status)
+          | test(=recovery_invocation_frontier_tests::recovery_snapshot_commits_pending_invocations_and_terminal_states)
+          | test(=recovery_invocation_frontier_tests::recovery_snapshot_commits_invocations_after_the_first_page)
+          | test(=recovery_invocation_frontier_tests::recovery_snapshot_revalidates_invocation_payloads_and_projected_columns)
+          | test(=recovery_invocation_frontier_tests::recovery_snapshot_requires_the_terminals_authoritative_intent)
+          | test(=recovery_invocation_frontier_tests::recovery_snapshot_refuses_duplicate_terminal_hidden_at_page_boundary)
+          | test(=recovery_invocation_frontier_tests::recovery_snapshot_refuses_invocation_column_type_corruption_without_panicking)
+          | test(=recovery_invocation_frontier_tests::recovery_snapshot_binds_invocation_sequence_and_recording_time)
+          | test(=recovery_invocation_schema_tests::recovery_invocation_schema_accepts_current_migration_keys)
+          | test(=recovery_invocation_schema_tests::recovery_invocation_schema_refuses_non_rowid_or_composite_sequences)
+          | test(=recovery_invocation_schema_tests::recovery_invocation_schema_requires_exact_unconditional_column_uniqueness)'
+          --no-capture --retries 0 --test-threads=1
+
+      - name: Run the eleven PQ recovery frontier controls
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: >-
+          python3 scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/pq-policy-renewal/recovery-signed.json"
+          --minimum-tests 11 --timeout-seconds 600 --
+          just test --locked -p codex-hepta-agentd --lib
+          -E 'test(=evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures)
+          | test(=evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields)
+          | test(=evidence_frontier::tests::recovery_frontier_pq_survives_store_close_and_reopen)
+          | test(=evidence_frontier::tests::recovery_frontier_read_only_preflight_never_binds_or_changes_the_image)
+          | test(=evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry)
+          | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile)
+          | test(=evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor)
+          | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature)
+          | test(=evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key)
+          | test(=evidence_frontier::tests::recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots)
+          | test(=evidence_frontier::tests::recovery_frontier_pq_rejects_invocation_only_database_rollbacks)'
+          --no-capture --retries 0 --test-threads=1
+
+      - name: Run the four real Agentd evidence recovery process controls
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: >-
+          python3 scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/pq-policy-renewal/recovery-product.json"
+          --minimum-tests 4 --timeout-seconds 1800 --
+          just test --locked -p codex-hepta-agentd --test kernel_evidence_product
+          -E 'test(=real_agentd_composes_authenticated_evidence_writer_query_verifier_and_terminal_observer)
+          | test(=signed_recovery_frontier_allows_exact_current_database)
+          | test(=signed_recovery_frontier_rejects_valid_older_database_image)
+          | test(=signed_recovery_frontier_rejects_effect_only_database_rollback)'
+          --no-capture --retries 0 --test-threads=1
+
+      - name: Run the original qualification bound and historical corruption refusal
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: >-
+          python3 scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/pq-policy-renewal/qualification-growth.json"
+          --minimum-tests 2 --timeout-seconds 600 --
+          just test --locked -p codex-hepta-evidence --lib
+          -E 'test(=qualification_tests::claim_query_rejects_more_than_512_references)
+          | test(=qualification_tests::ordinary_append_rejects_historical_projection_drift_without_consuming_replay)'
+          --no-capture --retries 0 --test-threads=1
+
+      # These bounded controls use local signed fixtures and loopback services.
+      # They do not qualify independent operators, a live Chain node or WAN effects.
+      - name: Run the eleven ordinary PQ effect and recovery controls
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: >-
+          python3 scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/pq-policy-renewal/effect-pq-owner.json"
+          --minimum-tests 11 --timeout-seconds 600 --
+          just test --locked -p codex-hepta-agentd --lib
+          -E 'test(automation_effect_host::pq::tests::)'
+          --no-capture --retries 0 --test-threads=1
+
+      - name: Run the PQ provider contract signature control
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: >-
+          python3 scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/pq-policy-renewal/effect-pq-contract.json"
+          --minimum-tests 1 --timeout-seconds 600 --
+          just test --locked -p codex-model-provider --lib
+          -E 'test(provider_effect::pq_tests::)'
+          --no-capture --retries 0 --test-threads=1
+
+      # These owner/store controls reuse the existing classical test fixture;
+      # the unchanged PQ owner controls above supply the PQ boundary coverage.
+      - name: Run the two settled absence history and corruption controls
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: >-
+          python3 scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/pq-policy-renewal/effect-settled-absence.json"
+          --minimum-tests 2 --timeout-seconds 600 --
+          just test --locked -p codex-hepta-automation --test authorized_effect
+          -E 'test(=owner_recovery_tests::settled_absence_fact_read_survives_reopen_and_new_owner_without_redispatch)
+          | test(=owner_recovery_tests::settled_absence_fact_read_rejects_unknown_unsettled_and_corrupt_evidence)'
+          --no-capture --retries 0 --test-threads=1
+
+      - name: Run the ordinary Agentd process through provider ACK loss and owned kill
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
+        env:
+          CARGO_NET_OFFLINE: "true"
+          HEPTA_PQ_EFFECT_PROCESS_EVIDENCE_DIR: ${{ runner.temp }}/pq-policy-renewal/effect-pq-product-process
+          HEPTA_PQ_EFFECT_SOURCE_ROOT: ${{ github.workspace }}
+        run: >-
+          python3 scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/pq-policy-renewal/effect-pq-product.json"
+          --minimum-tests 2 --timeout-seconds 1800 --
+          just test --locked -p codex-hepta-agentd --test automation_effect_pq_product
+          -E 'test(=pq_effect_survives_owned_agentd_kill_after_provider_fsync_without_resend)
+          | test(=binary::held_daemon_image_reuse_refuses_wrong_changed_or_missing_files)'
+          --no-capture --retries 0 --test-threads=1
+
+      - name: Run explicit runtime input and qualification-before-runtime controls
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: >-
+          python3 scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/pq-policy-renewal/neural-runtime-input.json"
+          --minimum-tests 2 --timeout-seconds 600 --
+          just test --locked -p codex-hepta-agentd
+          --test neural_comparison_native --test neural_cognitive_bootstrap
+          -E 'test(=native_comparison_input_requires_v2_and_independently_pinned_snapshot)
+          | test(=ordinary_native_composition_rejects_untrusted_qualification_before_inference_owners)'
+          --no-capture --retries 0 --test-threads=1
+
+      - name: Require every selected test by name with no selected skip
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
+        run: |
+          python3 - "$RUNNER_TEMP/pq-policy-renewal" <<'PY'
+          import hashlib
+          import json
+          from pathlib import Path
+          import re
+          import sys
+
+          root = Path(sys.argv[1])
+          prefix = "authbus_dispatch::tests::"
+          expected = {
+              "neural-runtime-input": {
+                  "native_comparison_input_requires_v2_and_independently_pinned_snapshot",
+                  "ordinary_native_composition_rejects_untrusted_qualification_before_inference_owners",
+              },
+              "qualification-growth": {
+                  "qualification_tests::claim_query_rejects_more_than_512_references",
+                  "qualification_tests::ordinary_append_rejects_historical_projection_drift_without_consuming_replay",
+              },
+              "effect-pq-product": {
+                  "pq_effect_survives_owned_agentd_kill_after_provider_fsync_without_resend",
+                  "binary::held_daemon_image_reuse_refuses_wrong_changed_or_missing_files",
+              },
+              "effect-pq-owner": {
+                  "automation_effect_host::pq::tests::ordinary_loader_denies_classical_schema_and_contract_or_policy_substitution",
+                  "automation_effect_host::pq::tests::initial_feed_is_authenticated_before_any_local_authority_or_frontier_write",
+                  "automation_effect_host::pq::tests::current_clock_frontier_and_pq_grant_are_mandatory_before_contact",
+                  "automation_effect_host::pq::tests::revoked_equal_number_drift_expired_feed_and_new_epoch_do_not_contact_provider",
+                  "automation_effect_host::pq::tests::generation_change_after_store_await_refuses_contact_and_keeps_consumed_nonce",
+                  "automation_effect_host::pq::tests::signed_revocation_after_store_await_obeys_active_effect_fence_and_never_sends",
+                  "automation_effect_host::pq::tests::ordinary_dispatch_and_new_generation_recovery_keep_one_stable_operation",
+                  "automation_effect_host::pq::tests::recovery_requires_current_signed_exact_historical_policy_and_same_provider",
+                  "automation_effect_host::pq::tests::historical_policy_does_not_connect_old_trust_services_or_follow_its_references",
+                  "automation_effect_host::pq::tests::reconcile_rechecks_generation_after_store_await_without_reclassifying_unknown",
+                  "automation_effect_host::pq::tests::pon_schema4_binds_native_binary_and_original_limits_without_running_a_node",
+              },
+              "effect-pq-contract": {
+                  "provider_effect::pq_tests::pq_contract_binds_profile_root_epoch_and_complete_authority_scope",
+              },
+              "effect-settled-absence": {
+                  "owner_recovery_tests::settled_absence_fact_read_survives_reopen_and_new_owner_without_redispatch",
+                  "owner_recovery_tests::settled_absence_fact_read_rejects_unknown_unsettled_and_corrupt_evidence",
+              },
+              "dispatcher": {prefix + name for name in (
+                  "lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt",
+                  "abandoned_first_claim_without_admission_is_quarantined_after_lookup_missing",
+                  "revocation_during_queue_request_prevents_success_ack",
+                  "ready_generation_and_owner_private_trust_are_required_before_admission",
+                  "matching_receipt_metadata_with_different_queue_input_never_acknowledges",
+                  "pq::pq_text_producer_recovers_through_existing_dispatch_and_rejects_wire_and_config_downgrade",
+                  "pq::pq_text_owner_resumes_after_revocation_rotation_and_rejected_config_rollback",
+                  "lease_delay::trust_refresh_sqlite_wait_cannot_authorize_transport_with_an_expired_lease",
+                  "policy_rollback::pq_removed_thread_cannot_return_through_owner_file_rollback_after_reopen",
+                  "policy_rollback::pq_owner_requires_explicit_nonzero_policy_revision_and_accepts_set_ordering",
+                  "policy_rollback::pq_bound_policy_refuses_renewal_without_policy_snapshot",
+                  "policy_rollback::pq_policy_change_fences_stale_renewal_and_current_policy_restores_dispatch",
+                  "checkpoint_sync::concurrent_checkpoint_syncs_share_owner_lock_and_preserve_rollback_rejection",
+                  "checkpoint_sync::cancelled_checkpoint_sync_waiter_and_owner_release_exclusive_admission",
+              )},
+              "product": {
+                  "signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_ingress",
+                  "pq_signed_text_crosses_real_queue_after_rejection_without_downgrade",
+                  "real_agentd_without_explicit_trust_rejects_signed_text",
+              },
+              "recovery-owner": {
+                  "recovery_effect_frontier_tests::" + name for name in (
+                      "recovery_snapshot_commits_intent_unknown_and_original_operation_receipt",
+                      "recovery_snapshot_distinguishes_a_valid_effect_only_database_rollback",
+                      "recovery_snapshot_commits_ack_provenance_and_cross_table_order",
+                      "recovery_snapshot_commits_effect_history_after_the_first_page",
+                      "recovery_snapshot_refuses_changed_json_with_retained_record_digests",
+                      "recovery_snapshot_refuses_effect_projection_drift_with_retained_payloads",
+                      "recovery_snapshot_refuses_canonical_ack_bound_to_a_different_payload",
+                      "recovery_snapshot_refuses_orphan_effect_observations",
+                      "recovery_snapshot_refuses_repeated_effect_sequence_after_schema_drift",
+                      "recovery_snapshot_refuses_repeated_effect_sequence_at_page_boundary",
+                  )
+              } | {
+                  "provider_effect_recovery_provenance_tests::" + name for name in (
+                      "recovery_provenance_rejects_late_dispatch_after_status_without_uncertainty",
+                      "recovery_provenance_preserves_dispatch_then_authoritative_status",
+                  )
+              } | {
+                  "recovery_invocation_frontier_tests::" + name for name in (
+                      "recovery_snapshot_commits_pending_invocations_and_terminal_states",
+                      "recovery_snapshot_commits_invocations_after_the_first_page",
+                      "recovery_snapshot_revalidates_invocation_payloads_and_projected_columns",
+                      "recovery_snapshot_requires_the_terminals_authoritative_intent",
+                      "recovery_snapshot_refuses_duplicate_terminal_hidden_at_page_boundary",
+                      "recovery_snapshot_refuses_invocation_column_type_corruption_without_panicking",
+                      "recovery_snapshot_binds_invocation_sequence_and_recording_time",
+                  )
+              } | {
+                  "recovery_invocation_schema_tests::" + name for name in (
+                      "recovery_invocation_schema_accepts_current_migration_keys",
+                      "recovery_invocation_schema_refuses_non_rowid_or_composite_sequences",
+                      "recovery_invocation_schema_requires_exact_unconditional_column_uniqueness",
+                  )
+              },
+              "recovery-signed": {
+                  "evidence_frontier::tests::" + name for name in (
+                      "recovery_frontier_refuses_valid_classical_v1_and_v2_signatures",
+                      "recovery_frontier_authenticates_both_effect_fields",
+                      "recovery_frontier_pq_survives_store_close_and_reopen",
+                      "recovery_frontier_read_only_preflight_never_binds_or_changes_the_image",
+                      "recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry",
+                      "recovery_frontier_rejects_wrong_domain_and_profile",
+                      "recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor",
+                      "recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature",
+                      "recovery_frontier_root_rotation_retires_the_old_key",
+                      "recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots",
+                      "recovery_frontier_pq_rejects_invocation_only_database_rollbacks",
+                  )
+              },
+              "recovery-product": {
+                  "real_agentd_composes_authenticated_evidence_writer_query_verifier_and_terminal_observer",
+                  "signed_recovery_frontier_allows_exact_current_database",
+                  "signed_recovery_frontier_rejects_valid_older_database_image",
+                  "signed_recovery_frontier_rejects_effect_only_database_rollback",
+              },
+          }
+          observations = {}
+          for name, names in expected.items():
+              try:
+                  record = json.loads((root / (name + ".json")).read_text())
+                  raw = (root / record["log_file"]).read_bytes()
+                  text = re.sub(r"\x1b\[[0-9;]*m", "", raw.decode("utf-8"))
+                  cases = re.findall(r"^test ([A-Za-z0-9_:]+) \.\.\. (ok|ignored|FAILED)\s*$", text, re.M)
+                  passed = [test for test, result in cases if result == "ok"]
+                  valid = (record["status"] == "passed" and record["command_exit_code"] == 0
+                           and record["log_sha256"] == hashlib.sha256(raw).hexdigest()
+                           and record["observed_passed_tests"] == len(names)
+                           and record["observed_failed_tests"] == 0
+                           and len(cases) == len(names) and len(passed) == len(names)
+                           and set(passed) == names)
+                  observations[name] = {"passed": valid, "expected": sorted(names), "observed": cases}
+              except (OSError, ValueError, KeyError) as error:
+                  observations[name] = {"passed": False, "error": str(error)}
+          (root / "selected-tests.json").write_text(json.dumps(observations, indent=2) + "\n")
+          if not all(item["passed"] for item in observations.values()):
+              raise SystemExit("Every selected native test must execute and pass exactly once")
+          PY
+
+      - name: Run the original scoped linter and retain any source mutation as failure
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: >-
+          python3 scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/pq-policy-renewal/fix.json"
+          --timeout-seconds 1200 --
+          just fix --locked -p codex-hepta-evidence -p codex-hepta-agentd -p codex-hepta-infer-worker-host -p codex-hepta-contracts -p codex-model-provider -p codex-hepta-automation
+
+      - name: Run the original formatter after tests and lint
+        if: ${{ !cancelled() && steps.dependencies.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          format_base="$BASE_SHA"
+          if test -z "$format_base"; then
+            format_base="$(git rev-parse "$SOURCE_SHA^")"
+          fi
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pq-policy-renewal/format.json" \
+            --timeout-seconds 300 -- just fmt --base "$format_base"
+
+      - name: Verify the exact source after all execution
+        if: always()
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_candidate.py \
+            --source "$SOURCE_SHA" --tested "$TESTED_SHA" --base "$BASE_SHA" \
+            --lane "$HEPTA_CI_LANE" > "$RUNNER_TEMP/pq-policy-renewal/candidate-after.json"
+          git diff --check
+          git diff --exit-code
+
+      - name: Retain original command logs and identity records
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: pq-policy-renewal-${{ matrix.runner }}-${{ matrix.lane }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/pq-policy-renewal/
+          if-no-files-found: error
+          retention-days: 14

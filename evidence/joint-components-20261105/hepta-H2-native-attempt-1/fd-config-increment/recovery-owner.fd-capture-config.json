@@ -1,0 +1,43 @@
+{
+  "schema": "hepta-nextest-fd-runner-v1",
+  "target": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target",
+  "crate": "codex_hepta_evidence",
+  "gate": "recovery-owner",
+  "directory": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h2-native-attempt-1/fd-executed-binaries-recovery-owner",
+  "selected_names": [
+    "provider_effect_recovery_provenance_tests::recovery_provenance_preserves_dispatch_then_authoritative_status",
+    "provider_effect_recovery_provenance_tests::recovery_provenance_rejects_late_dispatch_after_status_without_uncertainty",
+    "recovery_effect_frontier_tests::recovery_snapshot_commits_ack_provenance_and_cross_table_order",
+    "recovery_effect_frontier_tests::recovery_snapshot_commits_effect_history_after_the_first_page",
+    "recovery_effect_frontier_tests::recovery_snapshot_commits_intent_unknown_and_original_operation_receipt",
+    "recovery_effect_frontier_tests::recovery_snapshot_distinguishes_a_valid_effect_only_database_rollback",
+    "recovery_effect_frontier_tests::recovery_snapshot_refuses_canonical_ack_bound_to_a_different_payload",
+    "recovery_effect_frontier_tests::recovery_snapshot_refuses_changed_json_with_retained_record_digests",
+    "recovery_effect_frontier_tests::recovery_snapshot_refuses_effect_projection_drift_with_retained_payloads",
+    "recovery_effect_frontier_tests::recovery_snapshot_refuses_orphan_effect_observations",
+    "recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_after_schema_drift",
+    "recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_at_page_boundary",
+    "recovery_invocation_frontier_tests::recovery_snapshot_binds_invocation_sequence_and_recording_time",
+    "recovery_invocation_frontier_tests::recovery_snapshot_commits_invocations_after_the_first_page",
+    "recovery_invocation_frontier_tests::recovery_snapshot_commits_pending_invocations_and_terminal_states",
+    "recovery_invocation_frontier_tests::recovery_snapshot_refuses_duplicate_terminal_hidden_at_page_boundary",
+    "recovery_invocation_frontier_tests::recovery_snapshot_refuses_invocation_column_type_corruption_without_panicking",
+    "recovery_invocation_frontier_tests::recovery_snapshot_requires_the_terminals_authoritative_intent",
+    "recovery_invocation_frontier_tests::recovery_snapshot_revalidates_invocation_payloads_and_projected_columns",
+    "recovery_invocation_schema_tests::recovery_invocation_schema_accepts_current_migration_keys",
+    "recovery_invocation_schema_tests::recovery_invocation_schema_refuses_non_rowid_or_composite_sequences",
+    "recovery_invocation_schema_tests::recovery_invocation_schema_requires_exact_unconditional_column_uniqueness"
+  ],
+  "predicate": null,
+  "source": {
+    "commit": "620cb63ae9b58904483005bcb2c4e1507df99539",
+    "tree": "f2cebe6d99deca596c170922b8e60d66648d7393",
+    "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+    "environment_file": "native-environment.json",
+    "environment_sha256": "42a7e79bf271684caccb12c864449b57bf72755a10a367b67d985f277e91a5c2"
+  },
+  "coordinator": {
+    "pid": 823760,
+    "start_ticks": "98793384"
+  }
+}

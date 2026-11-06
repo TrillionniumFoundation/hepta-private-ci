@@ -1,0 +1,24 @@
+{
+  "schema": "hepta-nextest-fd-runner-v1",
+  "target": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target",
+  "crate": "authbus_text_product",
+  "gate": "product",
+  "directory": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h4-native-attempt-1/fd-executed-binaries-product",
+  "selected_names": [
+    "pq_signed_text_crosses_real_queue_after_rejection_without_downgrade",
+    "real_agentd_without_explicit_trust_rejects_signed_text",
+    "signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_ingress"
+  ],
+  "predicate": null,
+  "source": {
+    "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+    "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+    "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+    "environment_file": "native-environment.json",
+    "environment_sha256": "40341fe44840b6de0ca3cff68785116e5cfbca81c9a77124a82ca72b63234039"
+  },
+  "coordinator": {
+    "pid": 1122369,
+    "start_ticks": "99633930"
+  }
+}

@@ -1,0 +1,4311 @@
+diff --git a/codex-rs/.config/nextest.toml b/codex-rs/.config/nextest.toml
+index 26576a3b8a..7f5c385ca4 100644
+--- a/codex-rs/.config/nextest.toml
++++ b/codex-rs/.config/nextest.toml
+@@ -141,6 +141,7 @@ max-threads = 1
+ filter = '''
+ package(codex-hepta-agentd) & kind(test) & (
+     binary(=authbus_text_product)
++    | binary(=automation_effect_pq_product)
+     | binary(=cognitive_product_e2e)
+     | binary(=five_agent_rolling_upgrade)
+     | binary(=fleet_harness_diagnostics)
+diff --git a/codex-rs/hepta-agentd/PQ_AUTOMATION_EFFECTS.md b/codex-rs/hepta-agentd/PQ_AUTOMATION_EFFECTS.md
+new file mode 100644
+index 0000000000..0337eb56c7
+--- /dev/null
++++ b/codex-rs/hepta-agentd/PQ_AUTOMATION_EFFECTS.md
+@@ -0,0 +1,154 @@
++# Ordinary automation effects: explicit PQ host schema 4
++
++This composition is selected by Agentd's existing
++`--automation-effect-host-file /absolute/owner-supplied.json` option. The ordinary
++loader now requires schema 4 and the `MlDsa65V2` authentication profile. Schema 1
++HTTP and schema 3 PoN configurations are rejected. Their signing formats and
++explicit historical qualification constructors remain available to existing
++component controls; they cannot be selected by the ordinary loader.
++
++This document specifies inputs and migration behavior. It does not supply root
++keys, grants, a qualified model, independent custody, or provider qualification.
++The loopback and Unix-service test fixtures are not production configuration
++producers.
++
++## Owner-supplied inputs
++
++The host JSON has these fields; it denies unknown fields. Public key material
++uses the existing `PqAuthorityTrustKey` and `UnixPqTrustEndpointConfig` wire types.
++Signatures are byte arrays, not an inferred profile selected by signature length.
++
++| Field | Required meaning |
++| --- | --- |
++| `schema_version` | `4` |
++| `authentication_profile` | Serialized `FinalUseAuthenticationProfile::MlDsa65V2` |
++| `agent_id`, `spawn_generation` | The actual Agentd owner and current spawn generation |
++| `provider_scope`, `destination_id` | The existing stable provider namespace and destination |
++| `contract_id`, `contract_authority_epoch` | Explicit contract identity and current authority epoch |
++| `contract_root` | Independently supplied ML-DSA-65 contract-root SPKI, canonical key ID, role ID and epoch window |
++| `provider` | The HTTP or PoN object described below |
++| `authority` | The current grant, revocation, protected-time and independent-frontier policy described below |
++| `recovery_provider_policies` | Optional list of at most eight exact historical policy references; default empty |
++| `final_use_scope_sha256` | Exact immutable owner-policy digest computed below |
++| `contract_signature` | Contract root's ML-DSA-65 signature of the distinct PQ statement below |
++
++An HTTP `provider` has `kind: "http"`, `dispatch_url`,
++`lookup_url_template` with the original `{key}` placeholder, `headers`, and
++`timeout_ms`. A PoN `provider` has `kind: "pon"`, `chain_binary`,
++`chain_binary_sha256`, `chain_store`, `chain_state_backend`,
++`chain_genesis_time`, `chain_evaluation_policy`, `chain_task_profile`,
++`chain_model_profile`, `chain_workers`, `chain_min_confirmation_depth`,
++`chain_min_confirmation_work_depth_hex`, and `timeout_ms`. The original header,
++timeout, worker, confirmation, pinned-binary and canonical-store limits remain.
++The provider kind and all parameters are included in the signed owner policy. Schema 4
++current/historical policy files and signed feeds have a 256 KiB read ceiling;
++the legacy host-file ceiling was 64 KiB. This is an explicit new-schema capacity,
++not a claim that every resource bound is unchanged.
++
++The `authority` object has `signer_id`, `issuer_keys`, `head`,
++`revocation_distributor_id`, `revocation_keys`, `signed_revocations_file`,
++`external_clock`, and `external_frontier`. Issuer and feed key rings each contain
++one to eight keys. The contract, issuer, feed, clock and frontier roles use
++distinct public keys. Clock and frontier socket paths are distinct. All three
++current trust paths are absolute and canonical and remain outside the Agentd
++fleet, home, run and workspace roots. The original Unix protocol authenticates
++the peer UID, service ID, key generation, challenge and signed response.
++
++The independently operated frontier service must already hold the exact
++FinalUse frontier for the owner. For a fresh PQ authority, its initial value is
++`FinalUseFrontier::for_initial_head_with_profile(head, MlDsa65V2)`. Agentd does
++not create a service, provision this external value, choose root keys or sign
++its own grants. The current signed revocation feed must authenticate the exact
++initial `head`, be fresh under protected time, and use the configured PQ feed
++profile. Signature, freshness and exact-head checks precede local authority
++creation. An existing authority still requires the original exact durable-head
++and external-frontier reopen checks; disagreement is an error, not a reset.
++
++## Producing the signed policy with the existing owner
++
++Use the implementation's `HostV4::scope` serialization as the normative byte
++contract. It is SHA-256 of the domain
++`hepta.agentd.effect-owner-policy.pq.v4\0` followed by compact `serde_json`
++encoding of the explicit object in that method. JSON object keys use the
++existing sorted-map encoding; array order remains significant. The object binds
++profile, owner, spawn generation, provider scope and destination, contract ID
++and epoch, complete contract-root record, full provider object, signer ID and
++issuer keys, distributor ID and feed keys, signed-feed path, both complete
++external endpoint configurations, and recovery references. The mutable
++revocation `head`, `final_use_scope_sha256` itself and `contract_signature` are
++excluded. An absent recovery list is normalized to an empty array.
++
++For HTTP, compute the original `HttpProviderEffectConfig::contract_sha256`,
++which binds the exact HTTP contract, endpoints, headers and timeout. For PoN,
++SHA-256 the domain `hepta.agentd.pon-provider-contract.pq.v3\0` followed by the
++compact JSON serialization of `ProviderV4::Pon`. Have the existing externally
++controlled contract owner sign the bytes returned by
++`HttpProviderEffectContractAttestation::statement_for_pq`:
++
++```text
++hepta-provider-effect-attestation-pq-v2
++role=automation-provider-contract
++contract_id=<bounded contract ID>
++contract_sha256=<computed provider contract digest>
++authority_epoch=<current epoch>
++authority_binding=<computed immutable owner-policy scope>
++```
++
++The statement ends with a newline. Populate the digest and signature only after
++all policy fields and references are fixed. The ordinary host verifies the real
++ML-DSA-65 signature, root pin and epoch window; classical signatures and the old
++contract signing domain do not satisfy this verifier.
++
++The grant owner issues the existing schema-2 `FinalUseGrant` for the exact
++intent and wire-payload binding, including this current scope. Its lifetime must
++fit inside the currently authenticated signed feed's lease. The ordinary entry
++checks the current Agentd admission generation, signed feed, epoch, protected
++time and independent frontier before work and after awaited durable work,
++immediately before provider contact. Original nonce claiming, active-effect
++revocation fencing and durable attempt recording remain authoritative. A feed
++change while an effect is active can return `DispatchInProgress`; it is not
++ignored to force a send through.
++
++## Restart, migration and unknown effects
++
++The PQ authority uses the new `final-use-authority-pq-v2` directory within the
++Agentd automation root. Do not copy, rewrite or relabel the classical authority
++store. The PQ constructor rejects classical stores and grants. Operator policy
++and signed-feed transitions must agree with the original durable owner's head
++and independent frontier; conflicting or unavailable material holds admission.
++In particular, this loader does not reset a durable head to make a newer feed
++fit an old snapshot. A failed reopen needs the existing authority's validated
++recovery/transition procedure, not a replacement root or an emptied nonce set.
++
++Provider operation keys remain the original owner/run/step keys. They do not
++change when a grant, authority policy or Agentd generation changes. A lost ACK
++remains an unknown effect; an absent status result never authorizes another
++physical send. A boundary refusal before provider contact retains the original
++ProvenAbsent semantics and the already-consumed nonce. A refusal after an
++uncertain send leaves the prior unknown effect intact.
++
++To query an older PQ operation after restart, the current signed configuration
++may include a `recovery_provider_policies` entry with an absolute canonical
++`path` and the raw-file `sha256` of its original schema-4 host JSON. The current
++contract root signs these references as part of its new scope. The loader first
++checks those exact bytes, verifies the old scope and PQ contract signature,
++then requires the same Agent, provider namespace, destination and complete
++provider configuration. Historical scope authorization permits only recovery
++lookup of the original durable operation. Dispatch accepts only the current
++scope and current generation.
++
++Historical feed/socket paths need not remain available. They are signed policy
++content, not current trust endpoints. Historical references are not followed
++recursively. Changed endpoints, headers, timeout, binary pins or PoN stores
++cannot be substituted to query a pending operation through a different provider.
++Without an authenticated matching reference, old pending operations stay held.
++Old schema-1/schema-3 unknown records are not automatically migrated or retried.
++
++Every new external status lookup or PoN observation checks the current owner,
++PQ feed, epoch and independent frontier again. Reading an already durable
++terminal receipt does not manufacture a new observation: if optional current
++PoN observation is unavailable, that receipt is returned with no chain
++observation. These local checks do not make a provider action atomic with an
++external revocation service or eliminate the cross-store crash window. Real
++root custody, complete restore, real-provider lost-ACK/crash windows and the
++ordinary deployed input set still require joint qualification.
+diff --git a/codex-rs/hepta-agentd/src/automation_effect_host.rs b/codex-rs/hepta-agentd/src/automation_effect_host.rs
+index 769481e639..a82f1c6e16 100644
+--- a/codex-rs/hepta-agentd/src/automation_effect_host.rs
++++ b/codex-rs/hepta-agentd/src/automation_effect_host.rs
+@@ -60,6 +60,9 @@ use sha2::Sha256;
+ use crate::AgentdError;
+ use crate::AgentdIdentity;
+ 
++#[path = "automation_effect_host_pq.rs"]
++mod pq;
++
+ #[path = "automation_effect_host_pon_task_acceptance.rs"]
+ mod pon_task_acceptance;
+ 
+@@ -81,6 +84,13 @@ const PON_PROVIDER_KIND: &str = "trillionnium-pon-local-v1";
+ const MAX_PON_BINARY_BYTES: u64 = 256 * 1024 * 1024;
+ const MAX_PON_PROCESS_OUTPUT_BYTES: usize = 64 * 1024;
+ 
++#[derive(Clone, Copy, Eq, PartialEq)]
++enum EffectHostEntry {
++    OrdinaryPq,
++    #[cfg(test)]
++    ClassicalQualification,
++}
++
+ #[derive(Clone, Debug, Deserialize)]
+ #[serde(deny_unknown_fields)]
+ struct AutomationEffectHostFileV3 {
+@@ -821,8 +831,10 @@ pub(crate) struct AgentdAutomationEffectHost {
+     authority: FinalUseAuthority,
+     revocations_file: PathBuf,
+     // Serialize refreshes; the existing durable authority owns the only head.
++    #[cfg(test)]
+     revocation_refresh: Arc<Mutex<()>>,
+     adapter: AgentdProviderEffectAdapter,
++    pq: Option<Arc<pq::PqEffectRuntime>>,
+ }
+ 
+ impl std::fmt::Debug for AgentdAutomationEffectHost {
+@@ -862,6 +874,32 @@ struct AutomationEffectHostFileV1 {
+ 
+ impl AgentdAutomationEffectHost {
+     pub(crate) fn open(identity: &AgentdIdentity, path: &Path) -> Result<Self, AgentdError> {
++        Self::open_with_entry(identity, path, EffectHostEntry::OrdinaryPq)
++    }
++
++    #[cfg(test)]
++    fn open_classical_qualification(
++        identity: &AgentdIdentity,
++        path: &Path,
++    ) -> Result<Self, AgentdError> {
++        Self::open_with_entry(identity, path, EffectHostEntry::ClassicalQualification)
++    }
++
++    fn open_with_entry(
++        identity: &AgentdIdentity,
++        path: &Path,
++        entry: EffectHostEntry,
++    ) -> Result<Self, AgentdError> {
++        let bytes = read_protected_file(path, 256 * 1024, "automation effect host file")?;
++        let selector: Value = serde_json::from_slice(&bytes)?;
++        if selector.get("schema_version").and_then(Value::as_u64) == Some(4) {
++            return pq::open(identity, &bytes);
++        }
++        if entry == EffectHostEntry::OrdinaryPq {
++            return Err(AgentdError::Invalid(
++                "ordinary automation effects require explicit PQ host schema 4".into(),
++            ));
++        }
+         let config = match read_host_file(path)? {
+             AutomationEffectHostFile::Http(config) => config,
+             AutomationEffectHostFile::Pon(config) => return Self::open_pon(identity, config),
+@@ -965,8 +1003,10 @@ impl AgentdAutomationEffectHost {
+             final_use_scope_digest,
+             authority,
+             revocations_file: config.final_use_revocations_file,
++            #[cfg(test)]
+             revocation_refresh: Arc::new(Mutex::new(())),
+             adapter: AgentdProviderEffectAdapter::Http(adapter),
++            pq: None,
+         })
+     }
+ 
+@@ -1091,11 +1131,50 @@ impl AgentdAutomationEffectHost {
+             final_use_scope_digest,
+             authority,
+             revocations_file: config.final_use_revocations_file,
++            #[cfg(test)]
+             revocation_refresh: Arc::new(Mutex::new(())),
+             adapter: AgentdProviderEffectAdapter::Pon(adapter),
++            pq: None,
+         })
+     }
+ 
++    /// The ordinary entry reuses the live Agentd generation fence after every
++    /// awaited store operation, immediately before the original provider call.
++    pub(crate) async fn execute_ordinary(
++        &self,
++        state: &crate::AgentdState,
++        store: &AutomationStore,
++        intent: &AuthorizedEffectIntent,
++        wire_payload: &[u8],
++        signed_grant: &SignedFinalUseGrant,
++        command_id: &str,
++    ) -> Result<TaskFlowStepReceipt, AgentdError> {
++        let runtime = self.pq.as_ref().ok_or_else(|| {
++            AgentdError::Invalid("ordinary effect cannot use a classical authority".into())
++        })?;
++        let boundary = || {
++            if !state.automation_admission_ready()? {
++                return Err(AgentdError::GenerationFenced(
++                    "effect generation is no longer current".into(),
++                ));
++            }
++            runtime.validate_grant(&self.authority, &self.revocations_file, signed_grant)
++        };
++        self.execute_at_boundary(
++            EffectHostInput {
++                store,
++                intent,
++                wire_payload,
++                signed_grant,
++                command_id,
++                now_ms: crate::authbus_ingress::now_ms()?,
++            },
++            &boundary,
++        )
++        .await
++    }
++
++    #[cfg(test)]
+     pub(crate) async fn execute(
+         &self,
+         store: &AutomationStore,
+@@ -1105,13 +1184,41 @@ impl AgentdAutomationEffectHost {
+         command_id: &str,
+         now_ms: u64,
+     ) -> Result<TaskFlowStepReceipt, AgentdError> {
++        let boundary = || self.refresh_revocations();
++        self.execute_at_boundary(
++            EffectHostInput {
++                store,
++                intent,
++                wire_payload,
++                signed_grant,
++                command_id,
++                now_ms,
++            },
++            &boundary,
++        )
++        .await
++    }
++
++    async fn execute_at_boundary(
++        &self,
++        input: EffectHostInput<'_>,
++        before_dispatch: &(dyn Fn() -> Result<(), AgentdError> + Sync),
++    ) -> Result<TaskFlowStepReceipt, AgentdError> {
++        let EffectHostInput {
++            store,
++            intent,
++            wire_payload,
++            signed_grant,
++            command_id,
++            now_ms,
++        } = input;
+         if store.owner_agent_id() != &self.agent_id {
+             return Err(AgentdError::GenerationFenced(
+                 "automation effect store is owned by a different Agent".to_string(),
+             ));
+         }
+         self.validate_intent(intent, wire_payload)?;
+-        self.refresh_revocations()?;
++        before_dispatch()?;
+         if let Some(receipt) = store
+             .read_authorized_taskflow_effect_receipt(intent, command_id)
+             .await
+@@ -1136,6 +1243,7 @@ impl AgentdAutomationEffectHost {
+             adapter: self.adapter.clone(),
+             provider_scope: self.provider_scope.clone(),
+             destination_id: self.destination_id.clone(),
++            before_dispatch,
+         };
+         store
+             .execute_authorized_taskflow_effect(
+@@ -1157,6 +1265,33 @@ impl AgentdAutomationEffectHost {
+             })
+     }
+ 
++    pub(crate) async fn reconcile_ordinary(
++        &self,
++        state: &crate::AgentdState,
++        store: &AutomationStore,
++        run_id: &str,
++        step_id: &str,
++        attempt: u32,
++        now_ms: u64,
++    ) -> Result<AgentdAutomationEffectReconcileOutcome, AgentdError> {
++        let runtime = self.pq.as_ref().ok_or_else(|| {
++            AgentdError::Invalid("ordinary reconciliation cannot use a classical authority".into())
++        })?;
++        let boundary = || {
++            if !state.automation_admission_ready()? {
++                return Err(AgentdError::GenerationFenced(
++                    "reconciliation generation is no longer current".into(),
++                ));
++            }
++            runtime
++                .refresh(&self.authority, &self.revocations_file)
++                .map(|_| ())
++        };
++        self.reconcile_at_boundary(store, run_id, step_id, attempt, now_ms, &boundary)
++            .await
++    }
++
++    #[cfg(test)]
+     pub(crate) async fn reconcile(
+         &self,
+         store: &AutomationStore,
+@@ -1164,6 +1299,36 @@ impl AgentdAutomationEffectHost {
+         step_id: &str,
+         attempt: u32,
+         now_ms: u64,
++    ) -> Result<AgentdAutomationEffectReconcileOutcome, AgentdError> {
++        self.reconcile_at_boundary(store, run_id, step_id, attempt, now_ms, &|| Ok(()))
++            .await
++    }
++
++    async fn observe_chain_at_boundary(
++        &self,
++        pending: &AuthorizedEffectPending,
++        before_lookup: &(dyn Fn() -> Result<(), AgentdError> + Sync),
++    ) -> Option<crate::AutomationEffectChainObservation> {
++        // The durable terminal receipt remains readable when optional current
++        // chain observation is unavailable. This never manufactures absence.
++        if !matches!(self.adapter, AgentdProviderEffectAdapter::Pon(_)) {
++            return None;
++        }
++        before_lookup().ok()?;
++        let intent = self.provider_intent(pending).ok()?;
++        self.adapter
++            .current_chain_observation(&intent, pending.wire_payload.as_deref())
++            .await
++    }
++
++    async fn reconcile_at_boundary(
++        &self,
++        store: &AutomationStore,
++        run_id: &str,
++        step_id: &str,
++        attempt: u32,
++        now_ms: u64,
++        before_lookup: &(dyn Fn() -> Result<(), AgentdError> + Sync),
+     ) -> Result<AgentdAutomationEffectReconcileOutcome, AgentdError> {
+         let pending = store
+             .authorized_taskflow_effect_attempt(run_id, step_id, attempt)
+@@ -1188,9 +1353,7 @@ impl AgentdAutomationEffectHost {
+             })?
+         {
+             let chain = if pending.provider_effect_key.is_some() && pending.wire_payload.is_some() {
+-                let provider_intent = self.provider_intent(&pending)?;
+-                self.adapter
+-                    .current_chain_observation(&provider_intent, pending.wire_payload.as_deref())
++                self.observe_chain_at_boundary(&pending, before_lookup)
+                     .await
+             } else {
+                 None
+@@ -1231,12 +1394,7 @@ impl AgentdAutomationEffectHost {
+                     let chain = if pending.provider_effect_key.is_some()
+                         && pending.wire_payload.is_some()
+                     {
+-                        let provider_intent = self.provider_intent(&pending)?;
+-                        self.adapter
+-                            .current_chain_observation(
+-                                &provider_intent,
+-                                pending.wire_payload.as_deref(),
+-                            )
++                        self.observe_chain_at_boundary(&pending, before_lookup)
+                             .await
+                     } else {
+                         None
+@@ -1256,6 +1414,7 @@ impl AgentdAutomationEffectHost {
+             return Ok(AgentdAutomationEffectReconcileOutcome::Indeterminate);
+         }
+         let provider_intent = self.provider_intent(&pending)?;
++        before_lookup()?;
+         match self
+             .adapter
+             .lookup_for_reconciliation(&provider_intent, pending.wire_payload.as_deref())
+@@ -1286,11 +1445,7 @@ impl AgentdAutomationEffectHost {
+                     })? {
+                     AuthorizedEffectRecoveryResult::Observed(receipt) => {
+                         let chain = self
+-                            .adapter
+-                            .current_chain_observation(
+-                                &provider_intent,
+-                                pending.wire_payload.as_deref(),
+-                            )
++                            .observe_chain_at_boundary(&pending, before_lookup)
+                             .await;
+                         Ok(AgentdAutomationEffectReconcileOutcome::Observed {
+                             receipt,
+@@ -1311,7 +1466,13 @@ impl AgentdAutomationEffectHost {
+         }
+     }
+ 
++    #[cfg(test)]
+     fn refresh_revocations(&self) -> Result<(), AgentdError> {
++        if let Some(runtime) = &self.pq {
++            return runtime
++                .refresh(&self.authority, &self.revocations_file)
++                .map(|_| ());
++        }
+         // A numeric (epoch, revision) cache cannot detect same-head content
+         // drift or a head advanced through another clone of the authority.
+         // Keep only refresh serialization here, never a second trust frontier.
+@@ -1416,6 +1577,9 @@ impl AgentdAutomationEffectHost {
+         &self,
+         pending: &AuthorizedEffectPending,
+     ) -> Result<ProviderEffectIntent, AgentdError> {
++        if self.pq.is_some() {
++            pq::verify_pending_binding(self, pending)?;
++        }
+         if pending.owner_agent_id != self.agent_id {
+             return Err(AgentdError::GenerationFenced(
+                 "pending effect owner differs from this host".to_string(),
+@@ -1456,13 +1620,23 @@ impl AgentdAutomationEffectHost {
+     }
+ }
+ 
+-struct AgentdAuthorizedEffectDriver {
++struct EffectHostInput<'a> {
++    store: &'a AutomationStore,
++    intent: &'a AuthorizedEffectIntent,
++    wire_payload: &'a [u8],
++    signed_grant: &'a SignedFinalUseGrant,
++    command_id: &'a str,
++    now_ms: u64,
++}
++
++struct AgentdAuthorizedEffectDriver<'a> {
+     adapter: AgentdProviderEffectAdapter,
+     provider_scope: String,
+     destination_id: String,
++    before_dispatch: &'a (dyn Fn() -> Result<(), AgentdError> + Sync),
+ }
+ 
+-impl AuthorizedEffectDriver for AgentdAuthorizedEffectDriver {
++impl AuthorizedEffectDriver for AgentdAuthorizedEffectDriver<'_> {
+     fn recovery_key(
+         &self,
+         owner_agent_id: &codex_hepta_contracts::AgentId,
+@@ -1497,6 +1671,7 @@ impl AuthorizedEffectDriver for AgentdAuthorizedEffectDriver {
+         if request.provider_effect_key != &expected && request.provider_effect_key != &legacy {
+             return Err(AuthorizedEffectDriverError::BeforeProviderContact);
+         }
++        (self.before_dispatch)().map_err(|_| AuthorizedEffectDriverError::BeforeProviderContact)?;
+         let provider_intent = ProviderEffectIntent::new(
+             request.provider_effect_key.clone(),
+             request.intent.payload_digest.clone(),
+@@ -2191,8 +2366,9 @@ mod tests {
+         fs::set_permissions(&host_file, fs::Permissions::from_mode(0o600))
+             .context("host file permissions")?;
+ 
+-        let host = AgentdAutomationEffectHost::open(&fixture.identity, &host_file)
+-            .context("effect host")?;
++        let host =
++            AgentdAutomationEffectHost::open_classical_qualification(&fixture.identity, &host_file)
++                .context("effect host")?;
+         Ok((host, final_use_signer, revocations_file))
+     }
+ 
+diff --git a/codex-rs/hepta-agentd/src/automation_effect_host_identity_tests.rs b/codex-rs/hepta-agentd/src/automation_effect_host_identity_tests.rs
+index 7b23b15f98..d22cb9c28b 100644
+--- a/codex-rs/hepta-agentd/src/automation_effect_host_identity_tests.rs
++++ b/codex-rs/hepta-agentd/src/automation_effect_host_identity_tests.rs
+@@ -17,9 +17,9 @@ use wiremock::matchers::path_regex;
+ 
+ // Preserve the former product driver's key at the real owner + HTTP boundary.
+ // The upgraded host only reads its resulting durable attempt and receipt.
+-struct LegacyHttpDriver(AgentdAuthorizedEffectDriver);
++struct LegacyHttpDriver<'a>(AgentdAuthorizedEffectDriver<'a>);
+ 
+-impl AuthorizedEffectDriver for LegacyHttpDriver {
++impl AuthorizedEffectDriver for LegacyHttpDriver<'_> {
+     fn recovery_key(
+         &self,
+         _owner_agent_id: &AgentId,
+@@ -82,6 +82,8 @@ async fn host_provider_identity_terminal_execute_uses_store_owner_not_shared_sub
+             adapter: host.adapter.clone(),
+             provider_scope: host.provider_scope.clone(),
+             destination_id: host.destination_id.clone(),
++            // Explicit legacy qualification uses no ordinary PQ owner boundary.
++            before_dispatch: &|| Ok(()),
+         };
+         // The existing generic owner intentionally permits independent caller
+         // subjects. Use its real dispatch so the foreign terminal is valid.
+@@ -190,6 +192,8 @@ async fn host_provider_identity_legacy_http_queries_original_occurrence_and_reta
+         adapter: host.adapter.clone(),
+         provider_scope: host.provider_scope.clone(),
+         destination_id: host.destination_id.clone(),
++        // Explicit legacy qualification uses no ordinary PQ owner boundary.
++        before_dispatch: &|| Ok(()),
+     });
+     fixture
+         .store
+diff --git a/codex-rs/hepta-agentd/src/automation_effect_host_pq.rs b/codex-rs/hepta-agentd/src/automation_effect_host_pq.rs
+new file mode 100644
+index 0000000000..492306acea
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/automation_effect_host_pq.rs
+@@ -0,0 +1,382 @@
++//! Ordinary effect composition. Public keys and signed feeds come from the
++//! operator; this host creates neither a root nor an external frontier.
++use super::*;
++use codex_hepta_contracts::AuthorityClock;
++use codex_hepta_contracts::AuthorityFrontierStore;
++use codex_hepta_contracts::FinalUseAuthenticationProfile;
++use codex_hepta_contracts::FinalUseBinding;
++use codex_hepta_contracts::FinalUseFrontier;
++use codex_hepta_contracts::FinalUseRevocationFeedVerifier;
++use codex_hepta_contracts::FinalUseRevocationReceipt;
++use codex_hepta_contracts::PqAuthorityTrustKey;
++use codex_hepta_contracts::SignedFinalUseRevocationUpdate;
++use codex_hepta_contracts::authority_trust_unix::UnixPqAuthorityClock;
++use codex_hepta_contracts::authority_trust_unix::UnixPqFinalUseFrontier;
++use codex_hepta_contracts::authority_trust_unix::UnixPqTrustEndpointConfig;
++use codex_hepta_contracts::pq_auth::PqNativeVerifier;
++use serde::Serialize;
++use std::collections::BTreeSet;
++
++#[path = "automation_effect_host_pq_policy.rs"]
++mod policy;
++use policy::authenticate_recovery_policies;
++
++#[derive(Clone, Debug, Deserialize)]
++#[serde(deny_unknown_fields)]
++struct HostV4 {
++    schema_version: u32,
++    authentication_profile: FinalUseAuthenticationProfile,
++    agent_id: String,
++    spawn_generation: u64,
++    provider_scope: String,
++    destination_id: String,
++    final_use_scope_sha256: String,
++    contract_id: String,
++    contract_authority_epoch: u64,
++    contract_root: PqAuthorityTrustKey,
++    contract_signature: Vec<u8>,
++    provider: ProviderV4,
++    authority: AuthorityV4,
++    #[serde(default)]
++    recovery_provider_policies: Vec<RecoveryPolicyRef>,
++}
++
++#[derive(Clone, Debug, Deserialize, Serialize)]
++#[serde(deny_unknown_fields)]
++struct RecoveryPolicyRef {
++    path: PathBuf,
++    sha256: Sha256Digest,
++}
++
++#[derive(Clone, Debug, Deserialize)]
++#[serde(deny_unknown_fields)]
++struct AuthorityV4 {
++    signer_id: String,
++    issuer_keys: Vec<PqAuthorityTrustKey>,
++    head: FinalUseRevocations,
++    revocation_distributor_id: String,
++    revocation_keys: Vec<PqAuthorityTrustKey>,
++    signed_revocations_file: PathBuf,
++    external_clock: UnixPqTrustEndpointConfig,
++    external_frontier: UnixPqTrustEndpointConfig,
++}
++
++#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
++#[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
++enum ProviderV4 {
++    Http {
++        dispatch_url: String,
++        lookup_url_template: String,
++        headers: BTreeMap<String, String>,
++        timeout_ms: u64,
++    },
++    Pon {
++        chain_binary: PathBuf,
++        chain_binary_sha256: String,
++        chain_store: PathBuf,
++        chain_state_backend: String,
++        chain_genesis_time: u64,
++        chain_evaluation_policy: String,
++        chain_task_profile: String,
++        chain_model_profile: String,
++        chain_workers: u64,
++        chain_min_confirmation_depth: u64,
++        chain_min_confirmation_work_depth_hex: String,
++        timeout_ms: u64,
++    },
++}
++
++pub(super) struct PqEffectRuntime {
++    clock: Arc<dyn AuthorityClock>,
++    frontier: Arc<dyn AuthorityFrontierStore<FinalUseFrontier>>,
++    signer_id: String,
++    feed: FinalUseRevocationFeedVerifier,
++    contract_epoch: u64,
++    recovery_scopes: Vec<Sha256Digest>,
++    refresh: Mutex<()>,
++}
++
++fn invalid(message: impl ToString) -> AgentdError {
++    AgentdError::Invalid(format!("PQ automation effect: {}", message.to_string()))
++}
++
++fn endpoint_policy(value: &UnixPqTrustEndpointConfig) -> Value {
++    serde_json::json!({
++        "socket_path":value.socket_path,"peer_uid":value.peer_uid,
++        "service_id":value.service_id,"key_generation":value.key_generation,
++        "public_key_id":value.public_key_id,"public_key_spki":value.public_key_spki,
++        "timeout_ms":value.timeout_ms,
++    })
++}
++
++pub(super) fn open(
++    identity: &AgentdIdentity,
++    bytes: &[u8],
++) -> Result<AgentdAutomationEffectHost, AgentdError> {
++    let config: HostV4 = serde_json::from_slice(bytes)?;
++    let scope = config.validate(identity)?;
++    let adapter = match &config.provider {
++        ProviderV4::Http {
++            dispatch_url,
++            lookup_url_template,
++            headers,
++            timeout_ms,
++        } => {
++            if headers.len() > MAX_PROVIDER_HEADERS || !(1..=30_000).contains(timeout_ms) {
++                return Err(invalid("original HTTP header and timeout limits required"));
++            }
++            let mut values = HeaderMap::new();
++            for (name, value) in headers {
++                values.append(
++                    HeaderName::from_bytes(name.as_bytes()).map_err(invalid)?,
++                    HeaderValue::from_str(value).map_err(invalid)?,
++                );
++            }
++            let mut http = HttpProviderEffectConfig {
++                dispatch_url: dispatch_url.clone(),
++                lookup_url_template: lookup_url_template.clone(),
++                headers: values,
++                timeout: Duration::from_millis(*timeout_ms),
++                contract_id: config.contract_id.clone(),
++                attestation: None,
++            };
++            let digest = http.contract_sha256().map_err(invalid)?;
++            http.attestation = Some(attestation(&config, &digest, &scope)?);
++            AgentdProviderEffectAdapter::Http(
++                HttpProviderEffectAdapter::new(http).map_err(invalid)?,
++            )
++        }
++        ProviderV4::Pon {
++            chain_binary,
++            chain_binary_sha256,
++            chain_store,
++            chain_state_backend,
++            chain_genesis_time,
++            chain_evaluation_policy,
++            chain_task_profile,
++            chain_model_profile,
++            chain_workers,
++            chain_min_confirmation_depth,
++            chain_min_confirmation_work_depth_hex,
++            timeout_ms,
++        } => {
++            for (label, value) in [
++                ("evaluation policy", chain_evaluation_policy),
++                ("task profile", chain_task_profile),
++                ("model profile", chain_model_profile),
++            ] {
++                validate_host_identifier(label, value)?;
++            }
++            if !matches!(
++                chain_state_backend.as_str(),
++                "legacy-v2" | "authenticated-v1"
++            ) || *chain_genesis_time == 0
++                || !(1..=64).contains(chain_workers)
++                || !(1..=4096).contains(chain_min_confirmation_depth)
++                || !lower_hex_64(chain_min_confirmation_work_depth_hex)
++                || chain_min_confirmation_work_depth_hex
++                    .bytes()
++                    .all(|b| b == b'0')
++                || !(1..=30_000).contains(timeout_ms)
++            {
++                return Err(invalid("original PoN limits required"));
++            }
++            let binary_digest =
++                Sha256Digest::parse(chain_binary_sha256.clone()).map_err(invalid)?;
++            verify_pinned_binary(chain_binary, &binary_digest)?;
++            let pon = PonLocalProviderEffectAdapter {
++                binary: chain_binary.clone(),
++                binary_sha256: binary_digest,
++                store: chain_store.clone(),
++                state_backend: chain_state_backend.clone(),
++                genesis_time: *chain_genesis_time,
++                evaluation_policy: chain_evaluation_policy.clone(),
++                task_profile: chain_task_profile.clone(),
++                model_profile: chain_model_profile.clone(),
++                workers: *chain_workers,
++                min_confirmation_depth: *chain_min_confirmation_depth,
++                min_confirmation_work_depth_hex: chain_min_confirmation_work_depth_hex.clone(),
++                timeout: Duration::from_millis(*timeout_ms),
++            };
++            pon.validate_paths()
++                .map_err(|()| invalid("canonical existing PoN store required"))?;
++            let mut raw = b"hepta.agentd.pon-provider-contract.pq.v3\0".to_vec();
++            raw.extend(serde_json::to_vec(&config.provider)?);
++            let digest = Sha256Digest::for_bytes(&raw);
++            attestation(&config, &digest, &scope)?;
++            AgentdProviderEffectAdapter::Pon(pon)
++        }
++    };
++    let recovery_scopes = authenticate_recovery_policies(&config)?;
++    let a = config.authority;
++    let clock: Arc<dyn AuthorityClock> =
++        Arc::new(UnixPqAuthorityClock::new(a.external_clock).map_err(invalid)?);
++    let frontier = Arc::new(UnixPqFinalUseFrontier::new(a.external_frontier).map_err(invalid)?);
++    let feed = FinalUseRevocationFeedVerifier::new_pq_with_keys(
++        a.revocation_distributor_id,
++        a.revocation_keys,
++    )
++    .map_err(invalid)?;
++    // Authenticate the initial head before any local authority file exists.
++    // No feed receipt is fabricated: only the original owner may apply it.
++    let now = clock.now_unix_ms().map_err(invalid)?;
++    let raw = read_protected_file(
++        &a.signed_revocations_file,
++        256 * 1024,
++        "signed PQ effect revocations",
++    )?;
++    let signed: SignedFinalUseRevocationUpdate = serde_json::from_slice(&raw)?;
++    let authenticated = feed
++        .authenticate_fresh_head(&signed, now)
++        .map_err(invalid)?;
++    if authenticated != a.head {
++        return Err(invalid(
++            "initial authority head must equal the authenticated signed feed",
++        ));
++    }
++    frontier.load(&a.signer_id).map_err(invalid)?;
++    let root = identity
++        .layout
++        .automation_root()
++        .join("final-use-authority-pq-v2");
++    let authority = FinalUseAuthority::open_pq_state_dir_with_issuer_keys(
++        &root,
++        a.signer_id.clone(),
++        a.issuer_keys,
++        authenticated,
++        clock.clone(),
++        frontier.clone(),
++    )
++    .map_err(invalid)?;
++    let runtime = Arc::new(PqEffectRuntime {
++        clock,
++        frontier,
++        signer_id: a.signer_id,
++        feed,
++        contract_epoch: config.contract_authority_epoch,
++        recovery_scopes,
++        refresh: Mutex::new(()),
++    });
++    runtime.refresh(&authority, &a.signed_revocations_file)?;
++    Ok(AgentdAutomationEffectHost {
++        agent_id: identity.agent_id.clone(),
++        provider_scope: config.provider_scope,
++        destination_id: config.destination_id,
++        final_use_scope_digest: scope,
++        authority,
++        revocations_file: a.signed_revocations_file,
++        #[cfg(test)]
++        revocation_refresh: Arc::new(Mutex::new(())),
++        adapter,
++        pq: Some(runtime),
++    })
++}
++
++fn attestation(
++    config: &HostV4,
++    digest: &Sha256Digest,
++    scope: &Sha256Digest,
++) -> Result<HttpProviderEffectContractAttestation, AgentdError> {
++    let proof = HttpProviderEffectContractAttestation::verify_pq_signed(
++        &config.contract_id,
++        digest.clone(),
++        config.contract_authority_epoch,
++        scope,
++        &config.contract_signature,
++        &config.contract_root,
++    )
++    .map_err(invalid)?;
++    if proof.authentication_profile() != FinalUseAuthenticationProfile::MlDsa65V2 {
++        return Err(invalid("classical contract cannot enter PQ host"));
++    }
++    Ok(proof)
++}
++
++impl PqEffectRuntime {
++    pub(super) fn refresh(
++        &self,
++        authority: &FinalUseAuthority,
++        path: &Path,
++    ) -> Result<FinalUseRevocationReceipt, AgentdError> {
++        let _refresh = self
++            .refresh
++            .lock()
++            .map_err(|_| invalid("revocation refresh lock poisoned"))?;
++        let raw = read_protected_file(path, 256 * 1024, "signed PQ effect revocations")?;
++        let signed: SignedFinalUseRevocationUpdate = serde_json::from_slice(&raw)?;
++        let now = self.clock.now_unix_ms().map_err(invalid)?;
++        // Authenticate every presentation, including equal epoch/revision.
++        let receipt = self
++            .feed
++            .apply_or_confirm_current(authority, &signed, now)
++            .map_err(invalid)?;
++        if receipt.authority_epoch() != self.contract_epoch {
++            return Err(invalid(
++                "current epoch requires a newly signed provider contract",
++            ));
++        }
++        if self.frontier.load(&self.signer_id).map_err(invalid)?
++            != authority.frontier().map_err(invalid)?
++        {
++            return Err(invalid("external FinalUse frontier is not current"));
++        }
++        Ok(receipt)
++    }
++
++    pub(super) fn validate_grant(
++        &self,
++        authority: &FinalUseAuthority,
++        path: &Path,
++        grant: &SignedFinalUseGrant,
++    ) -> Result<(), AgentdError> {
++        let feed = self.refresh(authority, path)?;
++        let now = self.clock.now_unix_ms().map_err(invalid)?;
++        if grant.grant.schema_version != 2
++            || grant.grant.authority_epoch != feed.authority_epoch()
++            || grant.grant.expires_at_unix_ms > feed.valid_until_unix_ms()
++            || now < grant.grant.not_before_unix_ms
++            || now >= grant.grant.expires_at_unix_ms
++            || now >= feed.valid_until_unix_ms()
++        {
++            return Err(invalid(
++                "PQ grant must remain inside the current signed revocation lease",
++            ));
++        }
++        Ok(())
++    }
++}
++
++pub(super) fn verify_pending_binding(
++    host: &AgentdAutomationEffectHost,
++    pending: &AuthorizedEffectPending,
++) -> Result<(), AgentdError> {
++    let runtime = host
++        .pq
++        .as_ref()
++        .ok_or_else(|| invalid("PQ recovery owner required"))?;
++    for scope in std::iter::once(&host.final_use_scope_digest).chain(&runtime.recovery_scopes) {
++        let binding = FinalUseBinding {
++            subject_id: host.agent_id.to_string(),
++            destination_id: host.destination_id.clone(),
++            request_sha256: decode_hex_array(
++                pending.intent_digest.as_str(),
++                "pending intent digest",
++            )?,
++            scope_sha256: decode_hex_array(scope.as_str(), "PQ owner scope")?,
++            payload_sha256: decode_hex_array(
++                pending.payload_digest.as_str(),
++                "pending payload digest",
++            )?,
++        };
++        if Sha256Digest::for_bytes(&serde_json::to_vec(&binding)?) == pending.binding_digest {
++            return Ok(());
++        }
++    }
++    Err(invalid(
++        "pending effect requires its original signed provider policy",
++    ))
++}
++
++#[cfg(all(test, target_os = "linux"))]
++#[path = "automation_effect_host_pq_tests.rs"]
++mod tests;
+diff --git a/codex-rs/hepta-agentd/src/automation_effect_host_pq_lost_ack.rs b/codex-rs/hepta-agentd/src/automation_effect_host_pq_lost_ack.rs
+new file mode 100644
+index 0000000000..188b64a454
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/automation_effect_host_pq_lost_ack.rs
+@@ -0,0 +1,175 @@
++//! A stateful loopback provider: durably applies once, then loses the response.
++//! Only this controlled provider's record supplies the later operation ID.
++use super::*;
++use std::io::Write;
++use std::net::Shutdown;
++use std::net::TcpListener;
++use std::sync::OnceLock;
++use std::sync::atomic::AtomicBool;
++use std::thread::JoinHandle;
++
++pub(super) struct LostAckProvider {
++    pub(super) uri: String,
++    pub(super) record_path: PathBuf,
++    pub(super) posts: Arc<AtomicUsize>,
++    pub(super) applies: Arc<AtomicUsize>,
++    pub(super) lookups: Arc<AtomicUsize>,
++    expected: Arc<OnceLock<ProviderEffectIntent>>,
++    stop: Arc<AtomicBool>,
++    join: Option<JoinHandle<anyhow::Result<()>>>,
++    _directory: tempfile::TempDir,
++}
++
++impl LostAckProvider {
++    pub(super) fn start() -> anyhow::Result<Self> {
++        let directory = tempfile::tempdir()?;
++        let record_path = directory.path().join("applied-operation.json");
++        let record = record_path.clone();
++        let listener = TcpListener::bind("127.0.0.1:0")?;
++        let uri = format!("http://{}", listener.local_addr()?);
++        listener.set_nonblocking(true)?;
++        let expected = Arc::new(OnceLock::<ProviderEffectIntent>::new());
++        let configured = Arc::clone(&expected);
++        let posts = Arc::new(AtomicUsize::new(0));
++        let post_count = Arc::clone(&posts);
++        let applies = Arc::new(AtomicUsize::new(0));
++        let apply_count = Arc::clone(&applies);
++        let lookups = Arc::new(AtomicUsize::new(0));
++        let lookup_count = Arc::clone(&lookups);
++        let stop = Arc::new(AtomicBool::new(false));
++        let stopping = Arc::clone(&stop);
++        let join = thread::spawn(move || -> anyhow::Result<()> {
++            let deadline = Instant::now() + Duration::from_secs(120);
++            while !stopping.load(Ordering::SeqCst) && Instant::now() < deadline {
++                let (mut stream, _) = match listener.accept() {
++                    Ok(pair) => pair,
++                    Err(error) if error.kind() == std::io::ErrorKind::WouldBlock => {
++                        thread::sleep(Duration::from_millis(1));
++                        continue;
++                    }
++                    Err(error) => return Err(error.into()),
++                };
++                stream.set_read_timeout(Some(Duration::from_secs(2)))?;
++                stream.set_write_timeout(Some(Duration::from_secs(2)))?;
++                let mut request = Vec::new();
++                let header_end = loop {
++                    let mut part = [0; 1024];
++                    let read = stream.read(&mut part)?;
++                    anyhow::ensure!(read > 0, "provider request ended before headers");
++                    request.extend_from_slice(&part[..read]);
++                    anyhow::ensure!(request.len() <= 16 * 1024, "bounded provider request");
++                    if let Some(at) = request.windows(4).position(|b| b == b"\r\n\r\n") {
++                        break at + 4;
++                    }
++                };
++                let headers = std::str::from_utf8(&request[..header_end])?;
++                let mut lines = headers.split("\r\n");
++                let request_line = lines.next().unwrap().to_string();
++                let values: BTreeMap<String, String> = lines
++                    .filter_map(|line| line.split_once(':'))
++                    .map(|(k, v)| (k.to_ascii_lowercase(), v.trim().to_string()))
++                    .collect();
++                let length = values
++                    .get("content-length")
++                    .map(|v| v.parse::<usize>())
++                    .transpose()?
++                    .unwrap_or(0);
++                anyhow::ensure!(length <= 1024, "bounded test provider body");
++                while request.len() < header_end + length {
++                    let mut part = [0; 1024];
++                    let read = stream.read(&mut part)?;
++                    anyhow::ensure!(read > 0, "provider request body incomplete");
++                    request.extend_from_slice(&part[..read]);
++                }
++                let intent = configured
++                    .get()
++                    .ok_or_else(|| anyhow::anyhow!("provider has no expected operation"))?;
++                anyhow::ensure!(
++                    values
++                        .get(PROVIDER_EFFECT_IDEMPOTENCY_KEY_HEADER)
++                        .map(String::as_str)
++                        == Some(intent.key.as_str()),
++                    "provider received wrong operation key"
++                );
++                anyhow::ensure!(
++                    values
++                        .get(PROVIDER_EFFECT_PAYLOAD_SHA256_HEADER)
++                        .map(String::as_str)
++                        == Some(intent.payload_sha256.as_str()),
++                    "provider received wrong payload digest"
++                );
++                if request_line.starts_with("POST /dispatch ") {
++                    post_count.fetch_add(1, Ordering::SeqCst);
++                    anyhow::ensure!(
++                        &request[header_end..header_end + length] == WIRE,
++                        "provider received different effect bytes"
++                    );
++                    if !record.exists() {
++                        let mut material = b"actual-loopback-provider-application-v1\0".to_vec();
++                        material.extend_from_slice(intent.key.as_str().as_bytes());
++                        material.extend_from_slice(WIRE);
++                        let operation = Sha256Digest::for_bytes(&material);
++                        let body = serde_json::json!({"effect_key":intent.key.as_str(),"payload_sha256":intent.payload_sha256.as_str(),"provider_operation_id_sha256":operation.as_str(),"status":"completed"});
++                        let mut file = fs::OpenOptions::new()
++                            .write(true)
++                            .create_new(true)
++                            .open(&record)?;
++                        file.write_all(&serde_json::to_vec(&body)?)?;
++                        file.sync_all()?;
++                        fs::File::open(record.parent().unwrap())?.sync_all()?;
++                        apply_count.fetch_add(1, Ordering::SeqCst);
++                    }
++                    // The side effect is durable. Deliberately send no HTTP
++                    // response bytes, so the client cannot know it completed.
++                    stream.shutdown(Shutdown::Both)?;
++                } else if request_line.starts_with("GET /status/") {
++                    let index = lookup_count.fetch_add(1, Ordering::SeqCst);
++                    if index == 0 {
++                        stream.write_all(b"HTTP/1.1 404 Not Found\r\nContent-Length: 0\r\nConnection: close\r\n\r\n")?;
++                    } else {
++                        let body = fs::read(&record)?;
++                        let header = format!(
++                            "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\n\r\n",
++                            body.len()
++                        );
++                        stream.write_all(header.as_bytes())?;
++                        stream.write_all(&body)?;
++                    }
++                } else {
++                    anyhow::bail!("unexpected provider request: {request_line}");
++                }
++            }
++            Ok(())
++        });
++        Ok(Self {
++            uri,
++            record_path,
++            posts,
++            applies,
++            lookups,
++            expected,
++            stop,
++            join: Some(join),
++            _directory: directory,
++        })
++    }
++
++    pub(super) fn expect(&self, intent: ProviderEffectIntent) -> anyhow::Result<()> {
++        self.expected
++            .set(intent)
++            .map_err(|_| anyhow::anyhow!("provider expectation already fixed"))
++    }
++}
++
++impl Drop for LostAckProvider {
++    fn drop(&mut self) {
++        self.stop.store(true, Ordering::SeqCst);
++        if let Some(join) = self.join.take() {
++            match join.join() {
++                Ok(Ok(())) => {}
++                Ok(Err(error)) => panic!("lost-ACK provider failed: {error}"),
++                Err(panic) => std::panic::resume_unwind(panic),
++            }
++        }
++    }
++}
+diff --git a/codex-rs/hepta-agentd/src/automation_effect_host_pq_policy.rs b/codex-rs/hepta-agentd/src/automation_effect_host_pq_policy.rs
+new file mode 100644
+index 0000000000..69014db6d4
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/automation_effect_host_pq_policy.rs
+@@ -0,0 +1,211 @@
++//! Exact immutable owner policy and bounded, explicitly authorized recovery.
++use super::*;
++
++impl HostV4 {
++    /// The signed scope includes the complete immutable owner policy. The
++    /// mutable head is authenticated separately by the original signed feed.
++    pub(super) fn scope(&self) -> Result<Sha256Digest, AgentdError> {
++        let a = &self.authority;
++        let value = serde_json::json!({
++            "schema":"hepta-agentd-effect-owner-policy-pq-v4",
++            "authentication_profile":self.authentication_profile,
++            "agent_id":self.agent_id,"spawn_generation":self.spawn_generation,
++            "provider_scope":self.provider_scope,"destination_id":self.destination_id,
++            "contract_id":self.contract_id,"contract_authority_epoch":self.contract_authority_epoch,
++            "contract_root":self.contract_root,"provider":self.provider,
++            "signer_id":a.signer_id,"issuer_keys":a.issuer_keys,
++            "revocation_distributor_id":a.revocation_distributor_id,"revocation_keys":a.revocation_keys,
++            "signed_revocations_file":a.signed_revocations_file,
++            "clock":endpoint_policy(&a.external_clock),"frontier":endpoint_policy(&a.external_frontier),
++            "recovery_provider_policies":self.recovery_provider_policies,
++        });
++        let mut bytes = b"hepta.agentd.effect-owner-policy.pq.v4\0".to_vec();
++        bytes.extend(serde_json::to_vec(&value)?);
++        Ok(Sha256Digest::for_bytes(&bytes))
++    }
++
++    pub(super) fn validate(&self, identity: &AgentdIdentity) -> Result<Sha256Digest, AgentdError> {
++        if self.schema_version != 4
++            || self.authentication_profile != FinalUseAuthenticationProfile::MlDsa65V2
++            || self.agent_id != identity.agent_id.as_str()
++            || self.spawn_generation != identity.spawn_generation
++            || self.contract_authority_epoch != self.authority.head.authority_epoch
++            || self.contract_authority_epoch == 0
++        {
++            return Err(invalid(
++                "explicit current owner, generation and PQ epoch required",
++            ));
++        }
++        for (label, value) in [
++            ("provider_scope", &self.provider_scope),
++            ("destination_id", &self.destination_id),
++            ("signer_id", &self.authority.signer_id),
++            ("contract_id", &self.contract_id),
++        ] {
++            validate_host_identifier(label, value)?;
++        }
++        if self.recovery_provider_policies.len() > 8 {
++            return Err(invalid(
++                "at most eight explicit recovery provider policies are allowed",
++            ));
++        }
++        if !(1..=8).contains(&self.authority.issuer_keys.len())
++            || !(1..=8).contains(&self.authority.revocation_keys.len())
++        {
++            return Err(invalid(
++                "bounded explicit issuer and revocation key rings required",
++            ));
++        }
++        let mut keys = BTreeSet::new();
++        for key in std::iter::once(&self.contract_root)
++            .chain(&self.authority.issuer_keys)
++            .chain(&self.authority.revocation_keys)
++        {
++            validate_host_identifier("authority key_id", &key.key_id)?;
++            if key.not_before_authority_epoch == 0
++                || key.not_after_authority_epoch < key.not_before_authority_epoch
++            {
++                return Err(invalid("authority key epoch window is invalid"));
++            }
++            let verified =
++                PqNativeVerifier::from_pinned_spki(&key.public_key_spki, key.public_key_id)
++                    .map_err(invalid)?;
++            if !keys.insert(verified.public_spki().to_vec()) {
++                return Err(invalid(
++                    "contract, grant, feed, clock and frontier require distinct keys",
++                ));
++            }
++        }
++        for endpoint in [
++            &self.authority.external_clock,
++            &self.authority.external_frontier,
++        ] {
++            let verified = PqNativeVerifier::from_pinned_spki(
++                &endpoint.public_key_spki,
++                endpoint.public_key_id,
++            )
++            .map_err(invalid)?;
++            if !keys.insert(verified.public_spki().to_vec()) {
++                return Err(invalid(
++                    "contract, grant, feed, clock and frontier require distinct keys",
++                ));
++            }
++        }
++        let clock = &self.authority.external_clock.socket_path;
++        let frontier = &self.authority.external_frontier.socket_path;
++        if clock == frontier {
++            return Err(invalid("clock and frontier services must be distinct"));
++        }
++        for path in [clock, frontier, &self.authority.signed_revocations_file] {
++            if !path.is_absolute() || path.canonicalize()?.as_os_str() != path.as_os_str() {
++                return Err(invalid(
++                    "external trust paths must be absolute and canonical",
++                ));
++            }
++            for owned in [
++                &identity.fleet_root,
++                &identity.home_root,
++                &identity.run_root,
++                &identity.workspace,
++            ] {
++                let owned = match owned.canonicalize() {
++                    Ok(path) => path,
++                    Err(error) if error.kind() == std::io::ErrorKind::NotFound => owned.clone(),
++                    Err(error) => return Err(error.into()),
++                };
++                if path.starts_with(owned) {
++                    return Err(invalid("trust must remain outside Agentd-owned roots"));
++                }
++            }
++        }
++        let scope = self.scope()?;
++        if self.final_use_scope_sha256 != scope.as_str() {
++            return Err(invalid(
++                "FinalUse scope must bind the exact signed provider and authority policy",
++            ));
++        }
++        Ok(scope)
++    }
++}
++
++/// Only the current signed contract authorizes these exact historical bytes.
++/// Old sockets/feeds are never opened and their references are never followed.
++/// Recovery permits lookup only; dispatch continues to require the current scope.
++pub(super) fn authenticate_recovery_policies(
++    config: &HostV4,
++) -> Result<Vec<Sha256Digest>, AgentdError> {
++    let mut scopes = Vec::new();
++    for reference in &config.recovery_provider_policies {
++        if !reference.path.is_absolute() || reference.path.canonicalize()? != reference.path {
++            return Err(invalid(
++                "recovery policy path must be absolute and canonical",
++            ));
++        }
++        let raw = read_protected_file(
++            &reference.path,
++            256 * 1024,
++            "historical PQ effect provider policy",
++        )?;
++        if Sha256Digest::for_bytes(&raw) != reference.sha256 {
++            return Err(invalid(
++                "historical provider policy bytes differ from current signed reference",
++            ));
++        }
++        let old: HostV4 = serde_json::from_slice(&raw)?;
++        if old.schema_version != 4
++            || old.authentication_profile != FinalUseAuthenticationProfile::MlDsa65V2
++        {
++            return Err(invalid(
++                "historical policy requires the explicit PQ contract version",
++            ));
++        }
++        let scope = old.scope()?;
++        if old.final_use_scope_sha256 != scope.as_str() || scopes.contains(&scope) {
++            return Err(invalid("historical policy scope is invalid or duplicated"));
++        }
++        let digest = match &old.provider {
++            ProviderV4::Http {
++                dispatch_url,
++                lookup_url_template,
++                headers,
++                timeout_ms,
++            } => {
++                let mut values = HeaderMap::new();
++                for (name, value) in headers {
++                    values.append(
++                        HeaderName::from_bytes(name.as_bytes()).map_err(invalid)?,
++                        HeaderValue::from_str(value).map_err(invalid)?,
++                    );
++                }
++                HttpProviderEffectConfig {
++                    dispatch_url: dispatch_url.clone(),
++                    lookup_url_template: lookup_url_template.clone(),
++                    headers: values,
++                    timeout: Duration::from_millis(*timeout_ms),
++                    contract_id: old.contract_id.clone(),
++                    attestation: None,
++                }
++                .contract_sha256()
++                .map_err(invalid)?
++            }
++            ProviderV4::Pon { .. } => {
++                let mut bytes = b"hepta.agentd.pon-provider-contract.pq.v3\0".to_vec();
++                bytes.extend(serde_json::to_vec(&old.provider)?);
++                Sha256Digest::for_bytes(&bytes)
++            }
++        };
++        attestation(&old, &digest, &scope)?;
++        if old.agent_id != config.agent_id
++            || old.spawn_generation > config.spawn_generation
++            || old.provider_scope != config.provider_scope
++            || old.destination_id != config.destination_id
++            || old.provider != config.provider
++        {
++            return Err(invalid(
++                "historical policy must select this exact owner and provider target",
++            ));
++        }
++        scopes.push(scope);
++    }
++    Ok(scopes)
++}
+diff --git a/codex-rs/hepta-agentd/src/automation_effect_host_pq_test_support.rs b/codex-rs/hepta-agentd/src/automation_effect_host_pq_test_support.rs
+new file mode 100644
+index 0000000000..8015cc6348
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/automation_effect_host_pq_test_support.rs
+@@ -0,0 +1,407 @@
++//! Controlled Unix trust services and local-only provider fixtures. These keys
++//! exercise the native verifier; they are not deployment authority material.
++use super::*;
++use codex_hepta_contracts::FinalUseGrant;
++use codex_hepta_contracts::FinalUseRevocationUpdate;
++use codex_hepta_contracts::authority_trust_unix::PqTrustOperationV2;
++use codex_hepta_contracts::authority_trust_unix::PqTrustOutcomeV2;
++use codex_hepta_contracts::authority_trust_unix::PqTrustRequestV2;
++use codex_hepta_contracts::authority_trust_unix::PqTrustResponseBodyV2;
++use codex_hepta_contracts::authority_trust_unix::SignedPqTrustResponseV2;
++use codex_hepta_contracts::pq_auth::PqNativeSigningKey;
++use codex_hepta_contracts::pq_auth::ml_dsa_65_key_id_from_spki;
++use codex_hepta_fleet::AgentLifecycle;
++use codex_hepta_fleet::FleetRegistry;
++use codex_hepta_paths::HeptaFleetRoot;
++use std::io::Write;
++use std::os::unix::fs::MetadataExt;
++use std::os::unix::fs::PermissionsExt;
++use std::os::unix::net::UnixListener;
++use std::sync::atomic::AtomicBool;
++use std::sync::atomic::AtomicU64;
++use std::sync::atomic::AtomicUsize;
++use std::sync::atomic::Ordering;
++use std::thread::JoinHandle;
++
++pub(super) const SIGNER: &str = "automation-security-owner";
++pub(super) const FEED: &str = "automation-revocation-owner";
++use super::super::super::tests::Fixture;
++pub(super) use super::super::super::tests::WIRE;
++pub(super) use super::super::super::tests::effect_intent;
++pub(super) use super::super::super::tests::prepare_effect;
++
++fn signing_key(seed: u8) -> anyhow::Result<PqNativeSigningKey> {
++    let spki = PqNativeSigningKey::public_spki_from_seed(&[seed; 32].into());
++    Ok(PqNativeSigningKey::from_owned_seed(
++        [seed; 32].into(),
++        ml_dsa_65_key_id_from_spki(&spki)?,
++    )?)
++}
++
++fn pinned(key: &PqNativeSigningKey, name: &str) -> PqAuthorityTrustKey {
++    PqAuthorityTrustKey {
++        key_id: name.into(),
++        public_key_id: key.public_key_id(),
++        public_key_spki: key.public_spki().to_vec(),
++        not_before_authority_epoch: 9,
++        not_after_authority_epoch: 10,
++    }
++}
++
++pub(super) fn write_private(path: &Path, value: &impl serde::Serialize) -> anyhow::Result<()> {
++    fs::write(path, serde_json::to_vec(value)?)?;
++    fs::set_permissions(path, fs::Permissions::from_mode(0o600))?;
++    Ok(())
++}
++
++#[derive(Clone, Copy)]
++enum ServiceRole {
++    Clock,
++    Frontier,
++}
++
++pub(super) struct Service {
++    pub(super) config: UnixPqTrustEndpointConfig,
++    pub(super) frontier: Arc<Mutex<FinalUseFrontier>>,
++    pub(super) now: Arc<AtomicU64>,
++    pub(super) cas_count: Arc<AtomicUsize>,
++    pub(super) available: Arc<AtomicBool>,
++    stop: Arc<AtomicBool>,
++    join: Option<JoinHandle<anyhow::Result<()>>>,
++}
++
++impl Service {
++    fn start(
++        root: &Path,
++        role: ServiceRole,
++        initial: FinalUseFrontier,
++        now_ms: u64,
++    ) -> anyhow::Result<Self> {
++        let (name, seed) = match role {
++            ServiceRole::Clock => ("clock", 64),
++            ServiceRole::Frontier => ("frontier", 65),
++        };
++        let signer = signing_key(seed)?;
++        let socket_path = root.join(format!("{name}.sock"));
++        let listener = UnixListener::bind(&socket_path)?;
++        fs::set_permissions(&socket_path, fs::Permissions::from_mode(0o600))?;
++        listener.set_nonblocking(true)?;
++        let config = UnixPqTrustEndpointConfig {
++            socket_path,
++            peer_uid: fs::metadata(root)?.uid(),
++            service_id: format!("pq-effect-{name}"),
++            key_generation: 1,
++            public_key_id: signer.public_key_id(),
++            public_key_spki: signer.public_spki().to_vec(),
++            timeout_ms: 2000,
++        };
++        let frontier = Arc::new(Mutex::new(initial));
++        let current = Arc::clone(&frontier);
++        let now = Arc::new(AtomicU64::new(now_ms));
++        let clock = Arc::clone(&now);
++        let cas_count = Arc::new(AtomicUsize::new(0));
++        let cas = Arc::clone(&cas_count);
++        let available = Arc::new(AtomicBool::new(true));
++        let serving = Arc::clone(&available);
++        let stop = Arc::new(AtomicBool::new(false));
++        let stopping = Arc::clone(&stop);
++        let join = thread::spawn(move || -> anyhow::Result<()> {
++            let deadline = Instant::now() + Duration::from_secs(120);
++            while !stopping.load(Ordering::SeqCst) && Instant::now() < deadline {
++                match listener.accept() {
++                    Ok((mut stream, _)) => {
++                        stream.set_read_timeout(Some(Duration::from_secs(2)))?;
++                        stream.set_write_timeout(Some(Duration::from_secs(2)))?;
++                        let mut size = [0; 4];
++                        stream.read_exact(&mut size)?;
++                        let size = u32::from_be_bytes(size) as usize;
++                        anyhow::ensure!(size <= 16 * 1024, "bounded trust request");
++                        let mut bytes = vec![0; size];
++                        stream.read_exact(&mut bytes)?;
++                        let request: PqTrustRequestV2 = serde_json::from_slice(&bytes)?;
++                        let outcome = if serving.load(Ordering::SeqCst) {
++                            match (&role, &request.operation) {
++                                (ServiceRole::Clock, PqTrustOperationV2::ClockNow) => {
++                                    PqTrustOutcomeV2::Clock {
++                                        unix_ms: clock.load(Ordering::SeqCst),
++                                    }
++                                }
++                                (
++                                    ServiceRole::Frontier,
++                                    PqTrustOperationV2::FrontierLoad { owner_id },
++                                ) if owner_id == SIGNER => PqTrustOutcomeV2::Frontier {
++                                    value: *current.lock().unwrap(),
++                                },
++                                (
++                                    ServiceRole::Frontier,
++                                    PqTrustOperationV2::FrontierCompareAndSet {
++                                        owner_id,
++                                        expected,
++                                        next,
++                                    },
++                                ) if owner_id == SIGNER => {
++                                    let mut value = current.lock().unwrap();
++                                    if &*value == expected {
++                                        *value = *next;
++                                        cas.fetch_add(1, Ordering::SeqCst);
++                                        PqTrustOutcomeV2::CompareAndSetApplied { value: *next }
++                                    } else {
++                                        PqTrustOutcomeV2::Conflict
++                                    }
++                                }
++                                (
++                                    ServiceRole::Clock,
++                                    PqTrustOperationV2::FrontierLoad { .. }
++                                    | PqTrustOperationV2::FrontierCompareAndSet { .. }
++                                    | PqTrustOperationV2::LearningFrontierLoad { .. }
++                                    | PqTrustOperationV2::LearningFrontierCompareAndSet { .. },
++                                )
++                                | (
++                                    ServiceRole::Frontier,
++                                    PqTrustOperationV2::ClockNow
++                                    | PqTrustOperationV2::FrontierLoad { .. }
++                                    | PqTrustOperationV2::FrontierCompareAndSet { .. }
++                                    | PqTrustOperationV2::LearningFrontierLoad { .. }
++                                    | PqTrustOperationV2::LearningFrontierCompareAndSet { .. },
++                                ) => PqTrustOutcomeV2::Unavailable,
++                            }
++                        } else {
++                            PqTrustOutcomeV2::Unavailable
++                        };
++                        let body = PqTrustResponseBodyV2 {
++                            schema_version: 2,
++                            request,
++                            valid_for_ms: 2000,
++                            outcome,
++                        };
++                        let signature = signer.sign_exact_message(&body.signing_bytes()?)?.to_vec();
++                        let bytes =
++                            serde_json::to_vec(&SignedPqTrustResponseV2 { body, signature })?;
++                        stream.write_all(&(bytes.len() as u32).to_be_bytes())?;
++                        stream.write_all(&bytes)?;
++                    }
++                    Err(error) if error.kind() == std::io::ErrorKind::WouldBlock => {
++                        thread::sleep(Duration::from_millis(1))
++                    }
++                    Err(error) => return Err(error.into()),
++                }
++            }
++            Ok(())
++        });
++        Ok(Self {
++            config,
++            frontier,
++            now,
++            cas_count,
++            available,
++            stop,
++            join: Some(join),
++        })
++    }
++}
++
++impl Drop for Service {
++    fn drop(&mut self) {
++        self.stop.store(true, Ordering::SeqCst);
++        if let Some(join) = self.join.take() {
++            match join.join() {
++                Ok(Ok(())) => {}
++                Ok(Err(error)) => panic!("PQ effect service failed: {error}"),
++                Err(panic) => std::panic::resume_unwind(panic),
++            }
++        }
++    }
++}
++
++pub(super) struct PqFixture {
++    pub(super) owner: Fixture,
++    pub(super) clock: Service,
++    pub(super) frontier: Service,
++    pub(super) host_path: PathBuf,
++    pub(super) feed_path: PathBuf,
++    pub(super) config: Value,
++    pub(super) issuer: PqNativeSigningKey,
++    pub(super) feed_signer: PqNativeSigningKey,
++    pub(super) contract: PqNativeSigningKey,
++    pub(super) now: u64,
++    _trust_directory: tempfile::TempDir,
++}
++
++impl PqFixture {
++    pub(super) async fn new(provider_uri: &str) -> anyhow::Result<Self> {
++        let owner = Fixture::new().await?;
++        let trust = tempfile::tempdir()?;
++        let root = trust.path().canonicalize()?;
++        fs::set_permissions(&root, fs::Permissions::from_mode(0o700))?;
++        let now = crate::authbus_ingress::now_ms()?;
++        let head = FinalUseRevocations {
++            authority_epoch: 9,
++            revision: 1,
++            revoked_grant_ids: BTreeSet::new(),
++        };
++        let initial = FinalUseFrontier::for_initial_head_with_profile(
++            &head,
++            FinalUseAuthenticationProfile::MlDsa65V2,
++        )?;
++        let clock = Service::start(&root, ServiceRole::Clock, initial, now)?;
++        let frontier = Service::start(&root, ServiceRole::Frontier, initial, now)?;
++        let contract = signing_key(/*seed*/ 61)?;
++        let issuer = signing_key(/*seed*/ 62)?;
++        let feed_signer = signing_key(/*seed*/ 63)?;
++        let feed_path = root.join("signed-feed.json");
++        let host_path = owner
++            .identity
++            .layout
++            .automation_root()
++            .join("pq-effect-host.json");
++        let config = serde_json::json!({
++            "schema_version":4,"authentication_profile":FinalUseAuthenticationProfile::MlDsa65V2, "agent_id":owner.identity.agent_id,
++            "spawn_generation":owner.identity.spawn_generation,"provider_scope":"provider/fixture-v1", "destination_id":"provider:fixture",
++            "final_use_scope_sha256":"", "contract_id":"agentd-pq-effect-contract", "contract_authority_epoch":9,
++            "contract_root":pinned(&contract,"contract-root"), "contract_signature":[],
++            "provider":{"kind":"http","dispatch_url":format!("{provider_uri}/dispatch"),"lookup_url_template":format!("{provider_uri}/status/{{key}}"),"headers":{},"timeout_ms":2000},
++            "authority":{"signer_id":SIGNER,"issuer_keys":[pinned(&issuer,"grant-issuer")],"head":head,
++                "revocation_distributor_id":FEED,"revocation_keys":[pinned(&feed_signer,"revocation-distributor")],"signed_revocations_file":feed_path,
++                "external_clock":endpoint_policy(&clock.config),"external_frontier":endpoint_policy(&frontier.config)}
++        });
++        let mut fixture = Self {
++            owner,
++            clock,
++            frontier,
++            host_path,
++            feed_path,
++            config,
++            issuer,
++            feed_signer,
++            contract,
++            now,
++            _trust_directory: trust,
++        };
++        fixture.write_feed(head, now + 60_000)?;
++        fixture.sign_config()?;
++        Ok(fixture)
++    }
++
++    pub(super) fn write_feed(&self, head: FinalUseRevocations, expires: u64) -> anyhow::Result<()> {
++        let update = FinalUseRevocationUpdate::new_pq(
++            FEED.into(),
++            head,
++            self.now.saturating_sub(1000),
++            expires,
++        );
++        let signature = self
++            .feed_signer
++            .sign_exact_message(&update.signing_bytes()?)?
++            .to_vec();
++        write_private(
++            &self.feed_path,
++            &SignedFinalUseRevocationUpdate { update, signature },
++        )
++    }
++
++    pub(super) fn sign_config(&mut self) -> anyhow::Result<()> {
++        let parsed: HostV4 = serde_json::from_value(self.config.clone())?;
++        let scope = parsed.scope()?;
++        self.config["final_use_scope_sha256"] = serde_json::json!(scope.as_str());
++        let digest = match &parsed.provider {
++            ProviderV4::Http {
++                dispatch_url,
++                lookup_url_template,
++                headers,
++                timeout_ms,
++            } => {
++                let mut values = HeaderMap::new();
++                for (name, value) in headers {
++                    values.append(
++                        HeaderName::from_bytes(name.as_bytes())?,
++                        HeaderValue::from_str(value)?,
++                    );
++                }
++                HttpProviderEffectConfig {
++                    dispatch_url: dispatch_url.clone(),
++                    lookup_url_template: lookup_url_template.clone(),
++                    headers: values,
++                    timeout: Duration::from_millis(*timeout_ms),
++                    contract_id: parsed.contract_id.clone(),
++                    attestation: None,
++                }
++                .contract_sha256()
++                .map_err(anyhow::Error::msg)?
++            }
++            ProviderV4::Pon { .. } => {
++                let mut bytes = b"hepta.agentd.pon-provider-contract.pq.v3\0".to_vec();
++                bytes.extend(serde_json::to_vec(&parsed.provider)?);
++                Sha256Digest::for_bytes(&bytes)
++            }
++        };
++        let statement = HttpProviderEffectContractAttestation::statement_for_pq(
++            &parsed.contract_id,
++            &digest,
++            parsed.contract_authority_epoch,
++            &scope,
++        );
++        self.config["contract_signature"] =
++            serde_json::json!(self.contract.sign_exact_message(&statement)?.to_vec());
++        write_private(&self.host_path, &self.config)
++    }
++
++    pub(super) fn open(&self) -> Result<AgentdAutomationEffectHost, AgentdError> {
++        AgentdAutomationEffectHost::open(&self.owner.identity, &self.host_path)
++    }
++
++    pub(super) fn scope(&self) -> anyhow::Result<Sha256Digest> {
++        Ok(serde_json::from_value::<HostV4>(self.config.clone())?.scope()?)
++    }
++
++    pub(super) fn grant(
++        &self,
++        intent: &AuthorizedEffectIntent,
++    ) -> anyhow::Result<SignedFinalUseGrant> {
++        let grant = FinalUseGrant {
++            schema_version: 2,
++            signer_id: SIGNER.into(),
++            authority_epoch: 9,
++            grant_id: "pq-effect-grant".into(),
++            nonce: [66; 32],
++            binding: intent.final_use_binding()?,
++            not_before_unix_ms: self.now.saturating_sub(1000),
++            expires_at_unix_ms: self.now + 30_000,
++        };
++        let signature = self
++            .issuer
++            .sign_exact_message(&grant.signing_bytes()?)?
++            .to_vec();
++        Ok(SignedFinalUseGrant { grant, signature })
++    }
++
++    pub(super) async fn state(
++        &self,
++        host: &AgentdAutomationEffectHost,
++    ) -> anyhow::Result<(crate::AgentdState, FleetRegistry)> {
++        let registry = FleetRegistry::open_existing(HeptaFleetRoot::parse(
++            self.owner.identity.fleet_root.clone(),
++        )?)?;
++        let spawn = self.owner.identity.spawn_generation;
++        registry.compare_and_transition(
++            &self.owner.identity.agent_id,
++            spawn - 1,
++            AgentLifecycle::Starting,
++        )?;
++        let state = crate::AgentdState::new(self.owner.identity.clone(), registry.clone(), 32)?;
++        state.attach_cognitive_store(Arc::new(
++            codex_hepta_memory::CognitiveStore::open(&self.owner.identity.layout).await?,
++        ))?;
++        state.attach_automation_store(self.owner.store.clone())?;
++        state.attach_automation_effect_host(Arc::new(host.clone()))?;
++        registry.compare_and_transition(
++            &self.owner.identity.agent_id,
++            spawn,
++            AgentLifecycle::Running,
++        )?;
++        state.refresh_generation()?;
++        state.mark_runtime_prerequisites_ready()?;
++        state.mark_app_server_ready()?;
++        assert!(state.automation_admission_ready()?);
++        Ok((state, registry))
++    }
++}
+diff --git a/codex-rs/hepta-agentd/src/automation_effect_host_pq_tests.rs b/codex-rs/hepta-agentd/src/automation_effect_host_pq_tests.rs
+new file mode 100644
+index 0000000000..a90611a21f
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/automation_effect_host_pq_tests.rs
+@@ -0,0 +1,841 @@
++//! Native composition controls use actual ML-DSA, Unix peer credentials, an
++//! independent in-test CAS service and loopback HTTP. They do not qualify key
++//! custody, real-provider crash windows, WANs or a complete Agentd installation.
++use super::*;
++use codex_hepta_fleet::AgentLifecycle;
++use codex_model_provider::PROVIDER_EFFECT_IDEMPOTENCY_KEY_HEADER;
++use codex_model_provider::PROVIDER_EFFECT_PAYLOAD_SHA256_HEADER;
++use ed25519_dalek::Signer;
++use std::sync::atomic::AtomicUsize;
++use std::sync::atomic::Ordering;
++use wiremock::Mock;
++use wiremock::MockServer;
++use wiremock::ResponseTemplate;
++use wiremock::matchers::method;
++
++#[path = "automation_effect_host_pq_test_support.rs"]
++mod support;
++use support::*;
++
++#[path = "automation_effect_host_pq_lost_ack.rs"]
++mod lost_ack;
++use lost_ack::LostAckProvider;
++
++fn namespace(fixture: &PqFixture) -> PathBuf {
++    fixture
++        .owner
++        .identity
++        .layout
++        .automation_root()
++        .join("final-use-authority-pq-v2")
++}
++
++fn archive_policy(fixture: &PqFixture, name: &str) -> anyhow::Result<Value> {
++    let bytes = fs::read(&fixture.host_path)?;
++    let path = fixture.owner.identity.layout.automation_root().join(name);
++    fs::write(&path, &bytes)?;
++    use std::os::unix::fs::PermissionsExt;
++    fs::set_permissions(&path, fs::Permissions::from_mode(0o600))?;
++    Ok(serde_json::json!({"path":path,"sha256":Sha256Digest::for_bytes(&bytes)}))
++}
++
++fn current_head(
++    host: &AgentdAutomationEffectHost,
++    revision: u64,
++) -> anyhow::Result<FinalUseRevocations> {
++    let mut head = host.authority.revocation_head()?;
++    head.revision = revision;
++    Ok(head)
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn ordinary_loader_denies_classical_schema_and_contract_or_policy_substitution()
++-> anyhow::Result<()> {
++    let server = MockServer::start().await;
++    let fixture = PqFixture::new(&server.uri()).await?;
++    for schema in [1, 3] {
++        write_private(
++            &fixture.host_path,
++            &serde_json::json!({"schema_version":schema}),
++        )?;
++        let error = fixture.open().unwrap_err();
++        assert!(error.to_string().contains("explicit PQ host schema 4"));
++        assert!(!namespace(&fixture).exists());
++    }
++    let mut changes = Vec::new();
++    let mut config = fixture.config.clone();
++    config["provider"]["dispatch_url"] = serde_json::json!(format!("{}/other", server.uri()));
++    changes.push(config);
++    let mut config = fixture.config.clone();
++    config["provider"]["headers"] = serde_json::json!({"authorization":"another-credential"});
++    changes.push(config);
++    let mut config = fixture.config.clone();
++    config["spawn_generation"] = serde_json::json!(2);
++    changes.push(config);
++    let mut config = fixture.config.clone();
++    config["contract_signature"] = serde_json::json!(vec![0; 64]);
++    changes.push(config);
++    let mut config = fixture.config.clone();
++    config["authority"]["issuer_keys"] = config["authority"]["revocation_keys"].clone();
++    changes.push(config);
++    let mut config = fixture.config.clone();
++    config["authority"]["external_clock"] = config["authority"]["external_frontier"].clone();
++    changes.push(config);
++    for changed in changes {
++        write_private(&fixture.host_path, &changed)?;
++        assert!(fixture.open().is_err());
++        assert!(!namespace(&fixture).exists());
++    }
++    assert!(server.received_requests().await.unwrap().is_empty());
++    Ok(())
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn initial_feed_is_authenticated_before_any_local_authority_or_frontier_write()
++-> anyhow::Result<()> {
++    let server = MockServer::start().await;
++    let fixture = PqFixture::new(&server.uri()).await?;
++    let original = fs::read(&fixture.feed_path)?;
++    let mut signed: SignedFinalUseRevocationUpdate = serde_json::from_slice(&original)?;
++    signed.signature[0] ^= 1;
++    write_private(&fixture.feed_path, &signed)?;
++    assert!(fixture.open().is_err());
++    assert!(!namespace(&fixture).exists());
++    let head =
++        serde_json::from_value::<FinalUseRevocations>(fixture.config["authority"]["head"].clone())?;
++    fixture.write_feed(head.clone(), fixture.now)?;
++    assert!(fixture.open().is_err());
++    assert!(!namespace(&fixture).exists());
++    let mut changed = head;
++    changed.revision += 1;
++    fixture.write_feed(changed, fixture.now + 60_000)?;
++    assert!(fixture.open().is_err());
++    assert!(!namespace(&fixture).exists());
++    assert_eq!(fixture.frontier.cas_count.load(Ordering::SeqCst), 0);
++    assert!(server.received_requests().await.unwrap().is_empty());
++    Ok(())
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn current_clock_frontier_and_pq_grant_are_mandatory_before_contact() -> anyhow::Result<()> {
++    let server = MockServer::start().await;
++    let fixture = PqFixture::new(&server.uri()).await?;
++    let host = fixture.open()?;
++    let (state, _) = fixture.state(&host).await?;
++    let intent = effect_intent(&fixture.scope()?);
++    prepare_effect(&fixture.owner, fixture.now, &intent).await?;
++    let valid = fixture.grant(&intent)?;
++    let mut invalid_grants = Vec::new();
++    let mut classic = valid.clone();
++    classic.grant.schema_version = 1;
++    classic.signature = ed25519_dalek::SigningKey::from_bytes(&[91; 32])
++        .sign(&classic.grant.signing_bytes()?)
++        .to_bytes()
++        .to_vec();
++    invalid_grants.push(classic);
++    let mut corrupt = valid.clone();
++    corrupt.signature[0] ^= 1;
++    invalid_grants.push(corrupt);
++    let mut stale = valid.clone();
++    stale.grant.authority_epoch = 8;
++    stale.signature = fixture
++        .issuer
++        .sign_exact_message(&stale.grant.signing_bytes()?)?
++        .to_vec();
++    invalid_grants.push(stale);
++    let mut over_lease = valid.clone();
++    over_lease.grant.expires_at_unix_ms = fixture.now + 60_001;
++    over_lease.signature = fixture
++        .issuer
++        .sign_exact_message(&over_lease.grant.signing_bytes()?)?
++        .to_vec();
++    invalid_grants.push(over_lease);
++    for signed in invalid_grants {
++        assert!(
++            host.execute_ordinary(
++                &state,
++                &fixture.owner.store,
++                &intent,
++                WIRE,
++                &signed,
++                "denied-grant"
++            )
++            .await
++            .is_err()
++        );
++    }
++    fixture.clock.available.store(false, Ordering::SeqCst);
++    assert!(
++        host.execute_ordinary(
++            &state,
++            &fixture.owner.store,
++            &intent,
++            WIRE,
++            &valid,
++            "denied-clock"
++        )
++        .await
++        .is_err()
++    );
++    fixture.clock.available.store(true, Ordering::SeqCst);
++    let before = *fixture.frontier.frontier.lock().unwrap();
++    fixture.frontier.frontier.lock().unwrap().state_sha256[0] ^= 1;
++    assert!(
++        host.execute_ordinary(
++            &state,
++            &fixture.owner.store,
++            &intent,
++            WIRE,
++            &valid,
++            "denied-frontier"
++        )
++        .await
++        .is_err()
++    );
++    *fixture.frontier.frontier.lock().unwrap() = before;
++    assert_eq!(host.authority.capacity()?.used_nonces, 0);
++    assert!(server.received_requests().await.unwrap().is_empty());
++    Ok(())
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn revoked_equal_number_drift_expired_feed_and_new_epoch_do_not_contact_provider()
++-> anyhow::Result<()> {
++    let server = MockServer::start().await;
++    let fixture = PqFixture::new(&server.uri()).await?;
++    let host = fixture.open()?;
++    let (state, _) = fixture.state(&host).await?;
++    let intent = effect_intent(&fixture.scope()?);
++    prepare_effect(&fixture.owner, fixture.now, &intent).await?;
++    let grant = fixture.grant(&intent)?;
++    let mut revoked = current_head(&host, 2)?;
++    revoked
++        .revoked_grant_ids
++        .insert(grant.grant.grant_id.clone());
++    fixture.write_feed(revoked.clone(), fixture.now + 60_000)?;
++    assert!(
++        host.execute_ordinary(
++            &state,
++            &fixture.owner.store,
++            &intent,
++            WIRE,
++            &grant,
++            "revoked"
++        )
++        .await
++        .is_err()
++    );
++    let mut removed = revoked.clone();
++    removed.revoked_grant_ids.clear();
++    fixture.write_feed(removed, fixture.now + 60_000)?;
++    assert!(
++        host.execute_ordinary(
++            &state,
++            &fixture.owner.store,
++            &intent,
++            WIRE,
++            &grant,
++            "same-numbers"
++        )
++        .await
++        .is_err()
++    );
++    assert_eq!(host.authority.revocation_head()?, revoked);
++    fixture.write_feed(revoked, fixture.now)?;
++    assert!(
++        host.execute_ordinary(
++            &state,
++            &fixture.owner.store,
++            &intent,
++            WIRE,
++            &grant,
++            "expired"
++        )
++        .await
++        .is_err()
++    );
++    let mut next = current_head(&host, 3)?;
++    next.authority_epoch = 10;
++    fixture.write_feed(next.clone(), fixture.now + 60_000)?;
++    assert!(
++        host.execute_ordinary(
++            &state,
++            &fixture.owner.store,
++            &intent,
++            WIRE,
++            &grant,
++            "old-contract-epoch"
++        )
++        .await
++        .is_err()
++    );
++    assert_eq!(host.authority.revocation_head()?, next);
++    assert_eq!(host.authority.capacity()?.used_nonces, 0);
++    assert!(server.received_requests().await.unwrap().is_empty());
++    Ok(())
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn generation_change_after_store_await_refuses_contact_and_keeps_consumed_nonce()
++-> anyhow::Result<()> {
++    let server = MockServer::start().await;
++    let fixture = PqFixture::new(&server.uri()).await?;
++    let host = fixture.open()?;
++    let (state, registry) = fixture.state(&host).await?;
++    let intent = effect_intent(&fixture.scope()?);
++    prepare_effect(&fixture.owner, fixture.now, &intent).await?;
++    let grant = fixture.grant(&intent)?;
++    let calls = AtomicUsize::new(0);
++    let boundary = || {
++        if calls.fetch_add(1, Ordering::SeqCst) == 1 {
++            registry
++                .compare_and_transition(
++                    &fixture.owner.identity.agent_id,
++                    2,
++                    AgentLifecycle::Draining,
++                )
++                .map_err(invalid)?;
++        }
++        if !state.automation_admission_ready()? {
++            return Err(invalid("test observed superseded generation"));
++        }
++        host.pq
++            .as_ref()
++            .unwrap()
++            .validate_grant(&host.authority, &host.revocations_file, &grant)
++    };
++    let outcome = host
++        .execute_at_boundary(
++            EffectHostInput {
++                store: &fixture.owner.store,
++                intent: &intent,
++                wire_payload: WIRE,
++                signed_grant: &grant,
++                command_id: "generation-window",
++                now_ms: fixture.now + 5,
++            },
++            &boundary,
++        )
++        .await;
++    assert!(outcome.is_err());
++    assert_eq!(calls.load(Ordering::SeqCst), 2);
++    assert_eq!(host.authority.capacity()?.used_nonces, 1);
++    assert!(matches!(
++        host.reconcile_at_boundary(
++            &fixture.owner.store,
++            &intent.run_id,
++            &intent.step_id,
++            intent.attempt,
++            fixture.now + 6,
++            &|| Err(invalid("no external authority"))
++        )
++        .await?,
++        AgentdAutomationEffectReconcileOutcome::ProvenAbsent
++    ));
++    assert!(server.received_requests().await.unwrap().is_empty());
++    Ok(())
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn signed_revocation_after_store_await_obeys_active_effect_fence_and_never_sends()
++-> anyhow::Result<()> {
++    let server = MockServer::start().await;
++    let fixture = PqFixture::new(&server.uri()).await?;
++    let host = fixture.open()?;
++    let intent = effect_intent(&fixture.scope()?);
++    prepare_effect(&fixture.owner, fixture.now, &intent).await?;
++    let grant = fixture.grant(&intent)?;
++    let calls = AtomicUsize::new(0);
++    let mut revoked = current_head(&host, 2)?;
++    revoked
++        .revoked_grant_ids
++        .insert(grant.grant.grant_id.clone());
++    let boundary = || {
++        if calls.fetch_add(1, Ordering::SeqCst) == 1 {
++            fixture
++                .write_feed(revoked.clone(), fixture.now + 60_000)
++                .map_err(invalid)?;
++        }
++        host.pq
++            .as_ref()
++            .unwrap()
++            .validate_grant(&host.authority, &host.revocations_file, &grant)
++    };
++    assert!(
++        host.execute_at_boundary(
++            EffectHostInput {
++                store: &fixture.owner.store,
++                intent: &intent,
++                wire_payload: WIRE,
++                signed_grant: &grant,
++                command_id: "revocation-window",
++                now_ms: fixture.now + 5
++            },
++            &boundary
++        )
++        .await
++        .is_err()
++    );
++    assert_eq!(calls.load(Ordering::SeqCst), 2);
++    assert_eq!(host.authority.capacity()?.used_nonces, 1);
++    assert_eq!(host.authority.revocation_head()?.revision, 1);
++    assert!(matches!(
++        host.reconcile_at_boundary(
++            &fixture.owner.store,
++            &intent.run_id,
++            &intent.step_id,
++            intent.attempt,
++            fixture.now + 6,
++            &|| Err(invalid("no external authority"))
++        )
++        .await?,
++        AgentdAutomationEffectReconcileOutcome::ProvenAbsent
++    ));
++    host.pq
++        .as_ref()
++        .unwrap()
++        .refresh(&host.authority, &host.revocations_file)?;
++    assert_eq!(host.authority.revocation_head()?, revoked);
++    assert!(server.received_requests().await.unwrap().is_empty());
++    Ok(())
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn ordinary_dispatch_and_new_generation_recovery_keep_one_stable_operation()
++-> anyhow::Result<()> {
++    let provider = LostAckProvider::start()?;
++    let mut fixture = PqFixture::new(&provider.uri).await?;
++    let host = fixture.open()?;
++    let (state, registry) = fixture.state(&host).await?;
++    let intent = effect_intent(&fixture.scope()?);
++    prepare_effect(&fixture.owner, fixture.now, &intent).await?;
++    let grant = fixture.grant(&intent)?;
++    let key = ProviderEffectKey::for_taskflow_v2(
++        "provider/fixture-v1",
++        &fixture.owner.identity.agent_id,
++        &intent.run_id,
++        &intent.step_id,
++    )
++    .map_err(|error| anyhow::anyhow!("provider key: {error:?}"))?;
++    provider.expect(ProviderEffectIntent::new(
++        key.clone(),
++        intent.payload_digest.clone(),
++    ))?;
++    let response = state
++        .response(
++            1,
++            1,
++            crate::AgentdMethod::AutomationExecuteEffect {
++                intent: intent.clone(),
++                wire_payload_hex: WIRE.iter().map(|b| format!("{b:02x}")).collect(),
++                signed_grant: Box::new(grant.clone()),
++                command_id: "pq-ordinary-unknown".into(),
++            },
++        )
++        .await?;
++    assert!(matches!(
++        response.payload,
++        crate::AgentdPayload::AutomationEffect(_)
++    ));
++    let pending = fixture
++        .owner
++        .store
++        .authorized_taskflow_effect_attempt(&intent.run_id, &intent.step_id, intent.attempt)
++        .await?
++        .unwrap();
++    assert_eq!(pending.provider_effect_key, Some(key.clone()));
++    assert!(pending.provider_ack.is_none());
++    assert_eq!(provider.posts.load(Ordering::SeqCst), 1);
++    assert_eq!(provider.applies.load(Ordering::SeqCst), 1);
++    let applied: Value = serde_json::from_slice(&fs::read(&provider.record_path)?)?;
++    assert_eq!(applied["effect_key"], serde_json::json!(key.as_str()));
++    assert_eq!(
++        applied["payload_sha256"],
++        serde_json::json!(intent.payload_digest.as_str())
++    );
++    let reference = archive_policy(&fixture, "generation-one.json")?;
++    drop(state);
++    drop(host);
++    fixture.owner.store.close().await;
++    fixture.owner.store = AutomationStore::open(&fixture.owner.identity.layout).await?;
++    registry.compare_and_transition(
++        &fixture.owner.identity.agent_id,
++        2,
++        AgentLifecycle::Draining,
++    )?;
++    registry.compare_and_transition(
++        &fixture.owner.identity.agent_id,
++        3,
++        AgentLifecycle::Stopped,
++    )?;
++    fixture.owner.identity.spawn_generation = 5;
++    fixture.config["spawn_generation"] = serde_json::json!(5);
++    fixture.sign_config()?;
++    let without_history = fixture.open()?;
++    assert!(without_history.provider_intent(&pending).is_err());
++    drop(without_history);
++    fixture.config["recovery_provider_policies"] = serde_json::json!([reference]);
++    fixture.sign_config()?;
++    let host = fixture.open()?;
++    let (state, registry) = fixture.state(&host).await?;
++    assert!(
++        host.execute_ordinary(
++            &state,
++            &fixture.owner.store,
++            &intent,
++            WIRE,
++            &grant,
++            "old-generation-replay"
++        )
++        .await
++        .is_err()
++    );
++    assert_eq!(host.provider_intent(&pending)?.key, key);
++    fixture.write_feed(host.authority.revocation_head()?, fixture.now)?;
++    assert!(
++        host.reconcile_ordinary(
++            &state,
++            &fixture.owner.store,
++            &intent.run_id,
++            &intent.step_id,
++            intent.attempt,
++            fixture.now + 8
++        )
++        .await
++        .is_err()
++    );
++    assert_eq!(provider.lookups.load(Ordering::SeqCst), 0);
++    fixture.write_feed(host.authority.revocation_head()?, fixture.now + 60_000)?;
++    assert!(matches!(
++        host.reconcile_ordinary(
++            &state,
++            &fixture.owner.store,
++            &intent.run_id,
++            &intent.step_id,
++            intent.attempt,
++            fixture.now + 9
++        )
++        .await?,
++        AgentdAutomationEffectReconcileOutcome::Indeterminate
++    ));
++    assert_eq!(provider.lookups.load(Ordering::SeqCst), 1);
++    assert!(matches!(
++        host.reconcile_ordinary(
++            &state,
++            &fixture.owner.store,
++            &intent.run_id,
++            &intent.step_id,
++            intent.attempt,
++            fixture.now + 10
++        )
++        .await?,
++        AgentdAutomationEffectReconcileOutcome::Observed { .. }
++    ));
++    let settled = fixture
++        .owner
++        .store
++        .authorized_taskflow_effect_attempt(&intent.run_id, &intent.step_id, intent.attempt)
++        .await?
++        .unwrap();
++    let ack = settled
++        .provider_ack
++        .expect("provider operation persisted after lookup");
++    assert_eq!(
++        serde_json::json!(ack.provider_operation_id_sha256.as_str()),
++        applied["provider_operation_id_sha256"]
++    );
++    assert_eq!(ack.key, key);
++    let terminal = fixture
++        .owner
++        .store
++        .read_terminal_authorized_taskflow_effect(&intent.run_id, &intent.step_id, intent.attempt)
++        .await?
++        .unwrap();
++    fixture.write_feed(host.authority.revocation_head()?, fixture.now)?;
++    let local = host
++        .reconcile_ordinary(
++            &state,
++            &fixture.owner.store,
++            &intent.run_id,
++            &intent.step_id,
++            intent.attempt,
++            fixture.now + 11,
++        )
++        .await?;
++    let AgentdAutomationEffectReconcileOutcome::Observed { receipt, chain } = local else {
++        panic!("local terminal receipt")
++    };
++    assert_eq!(*receipt, terminal);
++    assert!(chain.is_none());
++    registry.compare_and_transition(
++        &fixture.owner.identity.agent_id,
++        6,
++        AgentLifecycle::Draining,
++    )?;
++    assert!(
++        host.execute_ordinary(
++            &state,
++            &fixture.owner.store,
++            &effect_intent(&fixture.scope()?),
++            WIRE,
++            &grant,
++            "drained-owner"
++        )
++        .await
++        .is_err()
++    );
++    assert_eq!(provider.posts.load(Ordering::SeqCst), 1);
++    assert_eq!(provider.applies.load(Ordering::SeqCst), 1);
++    assert_eq!(provider.lookups.load(Ordering::SeqCst), 2);
++    assert_eq!(host.authority.capacity()?.used_nonces, 1);
++    Ok(())
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn recovery_requires_current_signed_exact_historical_policy_and_same_provider()
++-> anyhow::Result<()> {
++    let server = MockServer::start().await;
++    let mut fixture = PqFixture::new(&server.uri()).await?;
++    let reference = archive_policy(&fixture, "original-provider.json")?;
++    fixture.config["recovery_provider_policies"] = serde_json::json!([reference.clone()]);
++    fixture.sign_config()?;
++    let valid = fixture.config.clone();
++    fixture.config["recovery_provider_policies"][0]["sha256"] =
++        serde_json::json!(Sha256Digest::for_bytes(b"other bytes"));
++    fixture.sign_config()?;
++    assert!(fixture.open().is_err());
++    fixture.config = valid.clone();
++    fixture.config["provider"]["dispatch_url"] =
++        serde_json::json!(format!("{}/other", server.uri()));
++    fixture.sign_config()?;
++    assert!(fixture.open().is_err());
++    fixture.config = valid.clone();
++    fixture.config["destination_id"] = serde_json::json!("provider:other");
++    fixture.sign_config()?;
++    assert!(fixture.open().is_err());
++    fixture.config = valid.clone();
++    fixture.config["recovery_provider_policies"] = serde_json::json!(vec![reference.clone(); 9]);
++    fixture.sign_config()?;
++    assert!(fixture.open().is_err());
++    let old_path = PathBuf::from(reference["path"].as_str().unwrap());
++    let original: Value = serde_json::from_slice(&fs::read(&old_path)?)?;
++    fixture.config = original.clone();
++    fixture.config["agent_id"] = serde_json::json!("00000000-0000-4000-8000-000000000999");
++    fixture.sign_config()?;
++    fs::copy(&fixture.host_path, &old_path)?;
++    fixture.config = valid.clone();
++    fixture.config["recovery_provider_policies"][0]["sha256"] =
++        serde_json::json!(Sha256Digest::for_bytes(&fs::read(&old_path)?));
++    fixture.sign_config()?;
++    assert!(fixture.open().is_err());
++    for (field, replacement) in [
++        ("contract_signature", serde_json::json!(vec![0; 3309])),
++        (
++            "final_use_scope_sha256",
++            serde_json::json!(Sha256Digest::for_bytes(b"wrong scope").as_str()),
++        ),
++    ] {
++        let mut old = original.clone();
++        old[field] = replacement;
++        write_private(&old_path, &old)?;
++        fixture.config = valid.clone();
++        fixture.config["recovery_provider_policies"][0]["sha256"] =
++            serde_json::json!(Sha256Digest::for_bytes(&fs::read(&old_path)?));
++        fixture.sign_config()?;
++        assert!(fixture.open().is_err());
++    }
++    fixture.config = valid;
++    fixture.config["recovery_provider_policies"][0]["sha256"] =
++        serde_json::json!(Sha256Digest::for_bytes(b"not signed by current root"));
++    write_private(&fixture.host_path, &fixture.config)?;
++    assert!(fixture.open().is_err());
++    assert!(!namespace(&fixture).exists());
++    assert!(server.received_requests().await.unwrap().is_empty());
++    Ok(())
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn historical_policy_does_not_connect_old_trust_services_or_follow_its_references()
++-> anyhow::Result<()> {
++    let server = MockServer::start().await;
++    let mut fixture = PqFixture::new(&server.uri()).await?;
++    let current = fixture.config.clone();
++    let absent = fixture
++        .owner
++        .identity
++        .layout
++        .automation_root()
++        .join("deliberately-absent-policy.json");
++    fixture.config["authority"]["signed_revocations_file"] = serde_json::json!(absent);
++    fixture.config["authority"]["external_clock"]["socket_path"] = serde_json::json!(absent);
++    fixture.config["authority"]["external_frontier"]["socket_path"] = serde_json::json!(absent);
++    fixture.config["recovery_provider_policies"] = serde_json::json!([{"path":absent,"sha256":Sha256Digest::for_bytes(b"never-follow-this-reference")}]);
++    fixture.sign_config()?;
++    let old_scope = fixture.scope()?;
++    let reference = archive_policy(&fixture, "old-services-unavailable.json")?;
++    fixture.config = current;
++    fixture.config["recovery_provider_policies"] = serde_json::json!([reference]);
++    fixture.sign_config()?;
++    let host = fixture.open()?;
++    assert_eq!(host.pq.as_ref().unwrap().recovery_scopes, vec![old_scope]);
++    assert!(!absent.exists());
++    assert!(server.received_requests().await.unwrap().is_empty());
++    Ok(())
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn reconcile_rechecks_generation_after_store_await_without_reclassifying_unknown()
++-> anyhow::Result<()> {
++    let server = MockServer::start().await;
++    let fixture = PqFixture::new(&server.uri()).await?;
++    let host = fixture.open()?;
++    let (state, registry) = fixture.state(&host).await?;
++    let intent = effect_intent(&fixture.scope()?);
++    prepare_effect(&fixture.owner, fixture.now, &intent).await?;
++    let grant = fixture.grant(&intent)?;
++    Mock::given(method("POST"))
++        .respond_with(ResponseTemplate::new(500))
++        .expect(1)
++        .mount(&server)
++        .await;
++    let receipt = host
++        .execute_ordinary(
++            &state,
++            &fixture.owner.store,
++            &intent,
++            WIRE,
++            &grant,
++            "already-sent",
++        )
++        .await?;
++    assert_eq!(
++        receipt.observation,
++        Some(TaskFlowStepObservation::Indeterminate)
++    );
++    let calls = AtomicUsize::new(0);
++    let boundary = || {
++        calls.fetch_add(1, Ordering::SeqCst);
++        registry
++            .compare_and_transition(
++                &fixture.owner.identity.agent_id,
++                2,
++                AgentLifecycle::Draining,
++            )
++            .map_err(invalid)?;
++        if !state.automation_admission_ready()? {
++            return Err(invalid("reconciliation owner was superseded"));
++        }
++        host.pq
++            .as_ref()
++            .unwrap()
++            .refresh(&host.authority, &host.revocations_file)
++            .map(|_| ())
++    };
++    assert!(
++        host.reconcile_at_boundary(
++            &fixture.owner.store,
++            &intent.run_id,
++            &intent.step_id,
++            intent.attempt,
++            fixture.now + 10,
++            &boundary
++        )
++        .await
++        .is_err()
++    );
++    assert_eq!(calls.load(Ordering::SeqCst), 1);
++    assert!(
++        fixture
++            .owner
++            .store
++            .read_terminal_authorized_taskflow_effect(
++                &intent.run_id,
++                &intent.step_id,
++                intent.attempt
++            )
++            .await?
++            .is_none()
++    );
++    assert_eq!(host.authority.capacity()?.used_nonces, 1);
++    assert_eq!(server.received_requests().await.unwrap().len(), 1);
++    Ok(())
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
++async fn pon_schema4_binds_native_binary_and_original_limits_without_running_a_node()
++-> anyhow::Result<()> {
++    let server = MockServer::start().await;
++    let mut fixture = PqFixture::new(&server.uri()).await?;
++    let root = fixture.owner.identity.layout.automation_root();
++    let binary = root.join("pinned-inert-native-control");
++    fs::copy("/usr/bin/true", &binary)?;
++    use std::os::unix::fs::PermissionsExt;
++    fs::set_permissions(&binary, fs::Permissions::from_mode(0o700))?;
++    let store = root.join("controlled-pon-store");
++    fs::create_dir(&store)?;
++    fs::write(store.join("native.sqlite"), b"")?;
++    fixture.config["provider"] = serde_json::json!({
++        "kind":"pon","chain_binary":binary,"chain_binary_sha256":Sha256Digest::for_bytes(&fs::read(&binary)?),"chain_store":store,
++        "chain_state_backend":"authenticated-v1","chain_genesis_time":1,"chain_evaluation_policy":"bounded-v1","chain_task_profile":"task-v1","chain_model_profile":"model-v1","chain_workers":1,
++        "chain_min_confirmation_depth":1,"chain_min_confirmation_work_depth_hex":format!("{}01","00".repeat(63)),"timeout_ms":2000
++    });
++    fixture.sign_config()?;
++    let valid = fixture.config.clone();
++    fixture.config["provider"]["chain_workers"] = serde_json::json!(65);
++    fixture.sign_config()?;
++    assert!(fixture.open().is_err());
++    fixture.config = valid.clone();
++    fixture.config["contract_signature"] = serde_json::json!(vec![0; 64]);
++    write_private(&fixture.host_path, &fixture.config)?;
++    assert!(fixture.open().is_err());
++    assert!(!namespace(&fixture).exists());
++    fixture.config = valid;
++    fixture.sign_config()?;
++    let host = fixture.open()?;
++    assert!(matches!(host.adapter, AgentdProviderEffectAdapter::Pon(_)));
++    assert_eq!(
++        host.authority.authentication_profile(),
++        FinalUseAuthenticationProfile::MlDsa65V2
++    );
++    let denied = AtomicUsize::new(0);
++    let intent = effect_intent(&fixture.scope()?);
++    let pending = AuthorizedEffectPending {
++        owner_agent_id: fixture.owner.identity.agent_id.clone(),
++        run_id: intent.run_id.clone(),
++        step_id: intent.step_id.clone(),
++        attempt: 1,
++        intent_digest: intent.digest()?,
++        payload_digest: intent.payload_digest.clone(),
++        provider_effect_key: Some(
++            ProviderEffectKey::for_taskflow_v2(
++                "provider/fixture-v1",
++                &fixture.owner.identity.agent_id,
++                &intent.run_id,
++                &intent.step_id,
++            )
++            .map_err(|error| anyhow::anyhow!("provider key: {error:?}"))?,
++        ),
++        wire_payload: Some(WIRE.to_vec()),
++        provider_ack: None,
++        binding_digest: Sha256Digest::for_bytes(&serde_json::to_vec(&intent.final_use_binding()?)?),
++        destination_id: intent.destination_id.clone(),
++        authority_epoch: 9,
++        grant_id: "not-an-execution-grant".into(),
++        started_at_ms: fixture.now,
++    };
++    assert!(
++        host.observe_chain_at_boundary(&pending, &|| {
++            denied.fetch_add(1, Ordering::SeqCst);
++            Err(invalid("optional observation is not authorized"))
++        })
++        .await
++        .is_none()
++    );
++    assert_eq!(denied.load(Ordering::SeqCst), 1);
++    drop(host);
++    fs::write(&binary, b"changed after pin")?;
++    assert!(fixture.open().is_err());
++    assert_eq!(fixture.frontier.cas_count.load(Ordering::SeqCst), 0);
++    assert!(server.received_requests().await.unwrap().is_empty());
++    Ok(())
++}
+diff --git a/codex-rs/hepta-agentd/src/state_control.rs b/codex-rs/hepta-agentd/src/state_control.rs
+index 011f522b69..ac41ea4158 100644
+--- a/codex-rs/hepta-agentd/src/state_control.rs
++++ b/codex-rs/hepta-agentd/src/state_control.rs
+@@ -660,13 +660,13 @@ impl AgentdState {
+                 };
+                 let wire_payload = decode_effect_wire_hex(&wire_payload_hex)?;
+                 let receipt = host
+-                    .execute(
++                    .execute_ordinary(
++                        self,
+                         store,
+                         &intent,
+                         &wire_payload,
+                         &signed_grant,
+                         &command_id,
+-                        now_ms()?,
+                     )
+                     .await?;
+                 self.fence_after_durable_change()?;
+@@ -701,7 +701,7 @@ impl AgentdState {
+                     );
+                 };
+                 let result = host
+-                    .reconcile(store, &run_id, &step_id, attempt, now_ms()?)
++                    .reconcile_ordinary(self, store, &run_id, &step_id, attempt, now_ms()?)
+                     .await?;
+                 self.fence_after_durable_change()?;
+                 let snapshot = match result {
+diff --git a/codex-rs/hepta-agentd/tests/automation_effect_pq_product.rs b/codex-rs/hepta-agentd/tests/automation_effect_pq_product.rs
+new file mode 100644
+index 0000000000..7e356863ee
+--- /dev/null
++++ b/codex-rs/hepta-agentd/tests/automation_effect_pq_product.rs
+@@ -0,0 +1,453 @@
++#![cfg(target_os = "linux")]
++//! One controlled real-process composition. The supervisor fences Draining
++//! before its owned SIGKILL; this is not an unannounced power-loss or full-host
++//! restore qualification. Fixture keys and services do not prove custody.
++
++use std::collections::BTreeMap;
++use std::fs;
++use std::io::Read;
++use std::path::Path;
++use std::path::PathBuf;
++use std::sync::Arc;
++use std::sync::atomic::AtomicUsize;
++use std::sync::atomic::Ordering;
++use std::thread;
++use std::time::Duration;
++use std::time::Instant;
++use std::time::SystemTime;
++use std::time::UNIX_EPOCH;
++
++use anyhow::Context;
++use anyhow::Result;
++use anyhow::ensure;
++use app_test_support::MockResponsesConfig;
++use codex_hepta_agentd::AutomationEffectObservation;
++use codex_hepta_agentd::AutomationEffectReconcileState;
++use codex_hepta_automation::AuthorizedEffectIntent;
++use codex_hepta_automation::AutomationStore;
++use codex_hepta_contracts::Sha256Digest;
++use codex_hepta_fleet::AgentLifecycle;
++use codex_hepta_supervisor::SupervisorEventKind;
++use codex_model_provider::PROVIDER_EFFECT_IDEMPOTENCY_KEY_HEADER;
++use codex_model_provider::PROVIDER_EFFECT_PAYLOAD_SHA256_HEADER;
++use codex_model_provider::ProviderEffectIntent;
++use codex_model_provider::ProviderEffectKey;
++use core_test_support::responses;
++use serde_json::Value;
++use tokio::time::sleep;
++use tokio::time::timeout;
++
++mod support;
++use support::fleet::AgentFixture;
++use support::fleet::FleetHarness;
++#[path = "support/automation_effect_binary.rs"]
++mod binary;
++#[path = "support/automation_effect_operator.rs"]
++mod operator;
++#[path = "support/automation_effect_provider.rs"]
++mod provider;
++
++const AGENT: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c59";
++const PROVIDER_SCOPE: &str = "provider/controlled-process-v1";
++const DESTINATION: &str = "provider:controlled-process";
++const WIRE: &[u8] = b"{\"effect\":\"deliver\"}";
++
++fn expected_terminal_successor(fleet: &FleetHarness, agent: &AgentFixture) -> Result<u64> {
++    let registry = fleet.registry.load()?;
++    let record = registry
++        .agent(&agent.agent_id)
++        .context("registered owner")?;
++    ensure!(
++        matches!(
++            record.lifecycle.lifecycle,
++            AgentLifecycle::Stopped | AgentLifecycle::Failed
++        ),
++        "policy preparation requires an actually terminal owner"
++    );
++    ensure!(
++        !fleet
++            .supervisor
++            .snapshot(&agent.agent_id)
++            .context("owner snapshot")?
++            .active,
++        "old process is still owned"
++    );
++    ensure!(
++        !agent
++            .layout
++            .run_root()
++            .join("supervisor-process.json")
++            .exists(),
++        "old exact process lease remains"
++    );
++    // With this single supervisor and no concurrent registry writers, the
++    // original start_slot performs one CAS to Starting using this successor.
++    // The actual leased spawn and process identity are checked after start.
++    record
++        .lifecycle
++        .generation
++        .checked_add(1)
++        .context("generation overflow")
++}
++
++fn live_identity(
++    fleet: &FleetHarness,
++    agent: &AgentFixture,
++    expected: u64,
++    pid: u32,
++) -> Result<()> {
++    let snapshot = fleet
++        .supervisor
++        .snapshot(&agent.agent_id)
++        .context("live supervisor snapshot")?;
++    ensure!(
++        snapshot.active
++            && snapshot.spawn_generation == Some(expected)
++            && snapshot.process_system_id == Some(u64::from(pid)),
++        "actual owner PID/generation differs from the signed policy"
++    );
++    let lease: Value = serde_json::from_slice(&fs::read(
++        agent.layout.run_root().join("supervisor-process.json"),
++    )?)?;
++    ensure!(
++        lease["spawn_generation"] == serde_json::json!(expected)
++            && lease["identity"]["system_id"] == serde_json::json!(pid),
++        "durable process lease differs from supervisor and daemon"
++    );
++    Ok(())
++}
++
++async fn kill_owned_and_wait(fleet: &mut FleetHarness, agent: &AgentFixture) -> Result<Value> {
++    fleet.supervisor.kill(&agent.agent_id)?;
++    let deadline = Instant::now() + Duration::from_secs(5);
++    loop {
++        let report = fleet.supervisor.tick(Instant::now());
++        ensure!(
++            report.faults.is_empty(),
++            "owned kill faults: {:?}",
++            report.faults
++        );
++        let snapshot = fleet
++            .supervisor
++            .snapshot(&agent.agent_id)
++            .context("killed owner snapshot")?;
++        if !snapshot.active {
++            let exit = snapshot
++                .events
++                .iter()
++                .rev()
++                .find_map(|event| match event.kind {
++                    SupervisorEventKind::Exited(exit) => Some(exit),
++                    _ => None,
++                })
++                .context("actual exit observation")?;
++            ensure!(
++                !exit.success && exit.code.is_none(),
++                "owned daemon did not exit through the requested fatal signal"
++            );
++            ensure!(
++                snapshot
++                    .events
++                    .iter()
++                    .any(|event| event.kind == SupervisorEventKind::KillRequested),
++                "supervisor did not record the owned kill"
++            );
++            let next = expected_terminal_successor(fleet, agent)?;
++            return Ok(
++                serde_json::json!({"requested_signal":"SIGKILL","supervisor_pre_fenced_draining":true,"observed_exit_success":exit.success,"observed_exit_code":exit.code,"exact_lease_removed":true,"next_starting_generation":next}),
++            );
++        }
++        ensure!(
++            Instant::now() < deadline,
++            "owned daemon did not actually exit"
++        );
++        sleep(Duration::from_millis(10)).await;
++    }
++}
++
++fn checkpoint(directory: &Path, name: &str, value: &Value) -> Result<()> {
++    use std::io::Write;
++    let path = directory.join(name);
++    let mut file = fs::OpenOptions::new()
++        .write(true)
++        .create_new(true)
++        .open(&path)?;
++    file.write_all(&serde_json::to_vec_pretty(value)?)?;
++    file.sync_all()?;
++    fs::File::open(directory)?.sync_all()?;
++    Ok(())
++}
++
++#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
++async fn pq_effect_survives_owned_agentd_kill_after_provider_fsync_without_resend() -> Result<()> {
++    let source = binary::source_identity()?;
++    let evidence_root = match std::env::var_os("HEPTA_PQ_EFFECT_PROCESS_EVIDENCE_DIR") {
++        Some(path) => PathBuf::from(path),
++        None => std::env::current_exe()?
++            .parent()
++            .context("test executable directory")?
++            .join("pq-effect-process-evidence"),
++    };
++    ensure!(
++        evidence_root.is_absolute(),
++        "process witness directory must be absolute"
++    );
++    fs::create_dir_all(&evidence_root)?;
++    let stamp = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
++    let evidence = evidence_root.join(format!("{}-{stamp}", std::process::id()));
++    fs::create_dir(&evidence)?;
++    checkpoint(&evidence, "source.json", &source)?;
++    let mut fleet = FleetHarness::new()?;
++    let agent = fleet.register(AGENT, "pq-effect-process-workspace")?;
++    let model = responses::start_mock_server().await;
++    MockResponsesConfig::new(&model.uri()).write(agent.layout.home_root())?;
++    let recovery_args = agent.recovery_args();
++    let recovery_file = PathBuf::from(&recovery_args[1]);
++    let recovery_trust = PathBuf::from(&recovery_args[3]);
++    let initial_recovery = fs::read(&recovery_file)?;
++    let initial_recovery_trust = fs::read(&recovery_trust)?;
++    let provider = provider::LostAckProvider::start()?;
++    let first_generation = expected_terminal_successor(&fleet, &agent)?;
++    let mut owner = operator::Operator::new(&agent, first_generation, &provider.uri)?;
++    let intent = AuthorizedEffectIntent {
++        run_id: "controlled-process-effect-run".into(),
++        step_id: "effect".into(),
++        attempt: 1,
++        operation_id: "provider.deliver".into(),
++        subject_id: agent.agent_id.to_string(),
++        destination_id: DESTINATION.into(),
++        payload_digest: Sha256Digest::for_bytes(WIRE),
++        final_use_scope_digest: owner.scope()?,
++        policy_generation: 1,
++        expected_predecessor_digest: None,
++        dependencies: Vec::new(),
++        compensation_for: None,
++    };
++    operator::prepare_effect(&agent, &intent, owner.now).await?;
++    let grant = owner.grant(&intent)?;
++    let key = ProviderEffectKey::for_taskflow_v2(
++        PROVIDER_SCOPE,
++        &agent.agent_id,
++        &intent.run_id,
++        &intent.step_id,
++    )
++    .map_err(|error| anyhow::anyhow!("provider key: {error:?}"))?;
++    provider.expect(ProviderEffectIntent::new(
++        key.clone(),
++        intent.payload_digest.clone(),
++    ))?;
++    fleet.start_with_automation_effect_host_file(&agent, &owner.path)?;
++    let (first, health) = fleet.wait_new_spawn(&agent, 0).await?;
++    live_identity(&fleet, &agent, first_generation, health.process_id)?;
++    let first_binary = binary::retain_live_daemon(
++        health.process_id,
++        first_generation,
++        &agent,
++        &evidence,
++        &source,
++    )?;
++    checkpoint(&evidence, "first-process.json", &first_binary)?;
++    let first = Arc::new(first);
++    let dispatch_client = Arc::clone(&first);
++    let dispatch_intent = intent.clone();
++    let dispatch_grant = grant.clone();
++    let dispatch = tokio::spawn(async move {
++        dispatch_client
++            .automation_execute_effect(
++                dispatch_intent,
++                WIRE,
++                dispatch_grant,
++                "controlled-lost-ack".into(),
++            )
++            .await
++    });
++    let deadline = Instant::now() + Duration::from_secs(10);
++    while provider.applies.load(Ordering::SeqCst) != 1 {
++        ensure!(
++            !dispatch.is_finished(),
++            "ordinary dispatch ended before the provider fsync barrier"
++        );
++        ensure!(
++            Instant::now() < deadline,
++            "provider never durably applied the operation"
++        );
++        sleep(Duration::from_millis(2)).await;
++    }
++    ensure!(
++        !dispatch.is_finished(),
++        "client already received a result before the crash window"
++    );
++    let applied: Value = serde_json::from_slice(&fs::read(&provider.record_path)?)?;
++    ensure!(
++        applied["effect_key"] == serde_json::json!(key.as_str())
++            && applied["payload_sha256"] == serde_json::json!(intent.payload_digest.as_str()),
++        "provider applied a different occurrence"
++    );
++    let claimed_frontier = *owner.frontier.frontier.lock().unwrap();
++    checkpoint(
++        &evidence,
++        "provider-fsync-before-kill.json",
++        &serde_json::json!({"provider_record":applied,"post_count":provider.posts.load(Ordering::SeqCst),"physical_apply_count":provider.applies.load(Ordering::SeqCst),"client_result_pending":true,"ack_bytes_sent":0,"authority_frontier":claimed_frontier}),
++    )?;
++    let killed = kill_owned_and_wait(&mut fleet, &agent).await?;
++    provider.release_without_ack();
++    ensure!(
++        timeout(Duration::from_secs(3), dispatch).await??.is_err(),
++        "killed daemon unexpectedly acknowledged the effect"
++    );
++    checkpoint(&evidence, "first-process-exit.json", &killed)?;
++    ensure!(
++        fs::read(&recovery_file)? == initial_recovery
++            && fs::read(&recovery_trust)? == initial_recovery_trust,
++        "fixture recovery authority was refreshed to bypass admission"
++    );
++    ensure!(
++        *owner.frontier.frontier.lock().unwrap() == claimed_frontier,
++        "external effect frontier reset across daemon death"
++    );
++    let second_generation = expected_terminal_successor(&fleet, &agent)?;
++    ensure!(
++        second_generation > first_generation,
++        "recovery did not advance the owner generation"
++    );
++    owner.authorize_recovery_generation(second_generation)?;
++    fleet.start_with_automation_effect_host_file(&agent, &owner.path)?;
++    let (second, health2) = fleet.wait_new_spawn(&agent, first_generation).await?;
++    live_identity(&fleet, &agent, second_generation, health2.process_id)?;
++    let second_binary = binary::retain_live_daemon(
++        health2.process_id,
++        second_generation,
++        &agent,
++        &evidence,
++        &source,
++    )?;
++    ensure!(
++        (
++            second_binary["pid"].clone(),
++            second_binary["start_ticks"].clone()
++        ) != (
++            first_binary["pid"].clone(),
++            first_binary["start_ticks"].clone()
++        ),
++        "recovery did not create a new process identity"
++    );
++    ensure!(
++        second_binary["sha256"] == first_binary["sha256"],
++        "restart selected another Agentd executable"
++    );
++    checkpoint(&evidence, "second-process.json", &second_binary)?;
++    ensure!(
++        first.health().await.is_err(),
++        "old client generation crossed the new ordinary boundary"
++    );
++    ensure!(
++        second
++            .automation_execute_effect(
++                intent.clone(),
++                WIRE,
++                grant.clone(),
++                "old-generation-dispatch".into()
++            )
++            .await
++            .is_err(),
++        "old generation grant dispatched after restart"
++    );
++    ensure!(
++        provider.posts.load(Ordering::SeqCst) == 1,
++        "recovery resent the physical request"
++    );
++    let missing = second
++        .automation_reconcile_effect(
++            intent.run_id.clone(),
++            intent.step_id.clone(),
++            intent.attempt,
++        )
++        .await?;
++    ensure!(
++        missing.state == AutomationEffectReconcileState::Indeterminate && missing.effect.is_none(),
++        "temporary lookup absence became permission to retry"
++    );
++    let observed = second
++        .automation_reconcile_effect(
++            intent.run_id.clone(),
++            intent.step_id.clone(),
++            intent.attempt,
++        )
++        .await?;
++    ensure!(
++        observed.state == AutomationEffectReconcileState::Terminal,
++        "current owner did not recover the original operation"
++    );
++    let terminal = observed
++        .effect
++        .clone()
++        .context("ordinary terminal readback")?;
++    ensure!(
++        terminal.observation == AutomationEffectObservation::Succeeded,
++        "provider completion was lost"
++    );
++    let local = second
++        .automation_reconcile_effect(
++            intent.run_id.clone(),
++            intent.step_id.clone(),
++            intent.attempt,
++        )
++        .await?;
++    ensure!(
++        local == observed,
++        "local terminal readback differs from the settled result"
++    );
++    ensure!(
++        provider.posts.load(Ordering::SeqCst) == 1
++            && provider.applies.load(Ordering::SeqCst) == 1
++            && provider.lookups.load(Ordering::SeqCst) == 2,
++        "unexpected send/application/lookup count"
++    );
++    ensure!(
++        *owner.frontier.frontier.lock().unwrap() == claimed_frontier,
++        "lookup consumed new dispatch authority or reset the frontier"
++    );
++    ensure!(
++        fs::read(&recovery_file)? == initial_recovery
++            && fs::read(&recovery_trust)? == initial_recovery_trust,
++        "restart changed its original recovery evidence"
++    );
++    let second_exit = kill_owned_and_wait(&mut fleet, &agent).await?;
++    let store = AutomationStore::open(&agent.layout).await?;
++    let settled = store
++        .authorized_taskflow_effect_attempt(&intent.run_id, &intent.step_id, intent.attempt)
++        .await?
++        .context("original durable effect attempt")?;
++    let ack = settled
++        .provider_ack
++        .context("provider operation read back from durable owner")?;
++    ensure!(
++        ack.key == key
++            && serde_json::json!(ack.provider_operation_id_sha256.as_str())
++                == applied["provider_operation_id_sha256"],
++        "durable receipt substituted another operation"
++    );
++    let receipt = store
++        .read_terminal_authorized_taskflow_effect(&intent.run_id, &intent.step_id, intent.attempt)
++        .await?
++        .context("durable terminal")?;
++    ensure!(
++        receipt.receipt_digest == terminal.receipt_digest,
++        "ordinary readback differs from original durable terminal"
++    );
++    store.close().await;
++    let used_nonces = owner.final_nonce_count(&agent)?;
++    ensure!(
++        used_nonces == 1,
++        "original FinalUse nonce was lost or another one was consumed"
++    );
++    checkpoint(
++        &evidence,
++        "completed.json",
++        &serde_json::json!({"scope":"controlled ordinary process composition; supervisor pre-fences before SIGKILL; no full-host restore or independent custody claim",
++        "source":source,"first_process":first_binary,"second_process":second_binary,"provider_record":applied,
++        "provider_ack":ack,"terminal":terminal,"post_count":1,"physical_apply_count":1,"lookup_count":2,"used_nonces":used_nonces,
++        "frontier_retained":claimed_frontier,"frontier_cas_count":owner.frontier.cas_count.load(Ordering::SeqCst),"protected_fixture_clock":owner.clock.now.load(Ordering::SeqCst),"initial_evidence_frontier_sha256":Sha256Digest::for_bytes(&initial_recovery),"initial_evidence_trust_sha256":Sha256Digest::for_bytes(&initial_recovery_trust),"cleanup_exit":second_exit}),
++    )?;
++    Ok(())
++}
+diff --git a/codex-rs/hepta-agentd/tests/support/automation_effect_binary.rs b/codex-rs/hepta-agentd/tests/support/automation_effect_binary.rs
+new file mode 100644
+index 0000000000..189e1ce33f
+--- /dev/null
++++ b/codex-rs/hepta-agentd/tests/support/automation_effect_binary.rs
+@@ -0,0 +1,181 @@
++//! Bind the live owned daemon image to the exact binary resolved by Cargo.
++//! Retention happens during each process phase, before any subsequent build.
++use super::*;
++use sha2::Digest;
++use sha2::Sha256;
++use std::io::Read;
++use std::io::Write;
++use std::os::unix::fs::MetadataExt;
++use std::process::Command;
++
++fn source_command(root: &Path, args: &[&str]) -> Result<String> {
++    let output = Command::new("git")
++        .arg("-C")
++        .arg(root)
++        .args(args)
++        .output()?;
++    ensure!(output.status.success(), "source identity command failed");
++    Ok(String::from_utf8(output.stdout)?.trim().to_owned())
++}
++
++pub(super) fn source_identity() -> Result<Value> {
++    let supplied = std::env::var_os("HEPTA_PQ_EFFECT_SOURCE_ROOT");
++    let Some(supplied) = supplied else {
++        ensure!(
++            std::env::var_os("TESTED_SHA").is_none(),
++            "qualification wrapper must supply its verified complete source root"
++        );
++        // Developer/Bazel functional execution makes no source qualification
++        // claim. It still checks the live process image using the repo's binary
++        // resolver. Qualification never derives a checkout from compile paths.
++        return Ok(
++            serde_json::json!({"qualification_binding":false,"scope":"unqualified functional process control; no wrapper-supplied source"}),
++        );
++    };
++    let root = PathBuf::from(supplied);
++    ensure!(
++        root.is_absolute() && root.canonicalize()? == root,
++        "qualification source root must be absolute and canonical"
++    );
++    let tested = std::env::var("TESTED_SHA").context("qualification tested SHA")?;
++    let commit = source_command(&root, &["rev-parse", "HEAD"])?;
++    let tree = source_command(&root, &["rev-parse", "HEAD^{tree}"])?;
++    ensure!(
++        tested == commit,
++        "process evidence source differs from the original wrapper"
++    );
++    ensure!(
++        source_command(
++            &root,
++            &["status", "--porcelain=v1", "--untracked-files=all"]
++        )?
++        .is_empty(),
++        "qualification requires committed clean source"
++    );
++    let rustc = Command::new("rustc").arg("-Vv").output()?;
++    ensure!(rustc.status.success(), "toolchain identity unavailable");
++    let env: std::collections::BTreeMap<_, _> = [
++        "RUSTUP_TOOLCHAIN",
++        "CARGO_INCREMENTAL",
++        "CARGO_BUILD_JOBS",
++        "CARGO_PROFILE_TEST_DEBUG",
++        "CARGO_PROFILE_DEV_DEBUG",
++        "RUSTFLAGS",
++        "CARGO_ENCODED_RUSTFLAGS",
++        "RUSTC_WRAPPER",
++        "RUSTC_WORKSPACE_WRAPPER",
++    ]
++    .into_iter()
++    .map(|name| (name, std::env::var(name).ok()))
++    .collect();
++    Ok(
++        serde_json::json!({"qualification_binding":true,"commit":commit,"tree":tree,"cargo_lock_sha256":Sha256Digest::for_bytes(&fs::read(root.join("codex-rs/Cargo.lock"))?),"rustc":String::from_utf8(rustc.stdout)?,"environment":env}),
++    )
++}
++
++fn start_ticks(path: &Path) -> Result<String> {
++    let stat = fs::read_to_string(path.join("stat"))?;
++    Ok(stat
++        .rsplit_once(')')
++        .context("process stat")?
++        .1
++        .split_whitespace()
++        .nth(19)
++        .context("process start time")?
++        .into())
++}
++
++fn file_identity(v: &fs::Metadata) -> (u64, u64, u64, i64, i64, i64, i64) {
++    (
++        v.dev(),
++        v.ino(),
++        v.len(),
++        v.mtime(),
++        v.mtime_nsec(),
++        v.ctime(),
++        v.ctime_nsec(),
++    )
++}
++
++pub(super) fn retain_live_daemon(
++    pid: u32,
++    generation: u64,
++    agent: &AgentFixture,
++    directory: &Path,
++    source: &Value,
++) -> Result<Value> {
++    let expected = support::fleet::agentd_binary()?.canonicalize()?;
++    let process = PathBuf::from(format!("/proc/{pid}"));
++    let start = start_ticks(&process)?;
++    let argv = fs::read(process.join("cmdline"))?;
++    let actual = fs::read_link(process.join("exe"))?;
++    ensure!(
++        actual == expected,
++        "live Agentd executable differs from exact Cargo binary"
++    );
++    let mut image = fs::File::open(process.join("exe"))?;
++    let before = image.metadata()?;
++    ensure!(
++        file_identity(&before) == file_identity(&fs::metadata(&expected)?),
++        "Cargo path changed before live image capture"
++    );
++    let environment = fs::read(process.join("environ"))?;
++    let selected = |key: &str| -> Option<String> {
++        environment.split(|b| *b == 0).find_map(|line| {
++            line.strip_prefix(format!("{key}=").as_bytes())
++                .and_then(|v| std::str::from_utf8(v).ok())
++                .map(str::to_owned)
++        })
++    };
++    ensure!(
++        selected("HEPTA_AGENT_ID").as_deref() == Some(agent.agent_id.as_str()),
++        "live process belongs to another owner"
++    );
++    ensure!(
++        selected("HEPTA_AGENT_GENERATION") == Some(generation.to_string()),
++        "live process has another spawn generation"
++    );
++    ensure!(
++        start_ticks(&process)? == start && fs::read(process.join("cmdline"))? == argv,
++        "PID or argv changed while opening image"
++    );
++    ensure!(
++        file_identity(&fs::metadata(process.join("exe"))?) == file_identity(&before),
++        "PID executed a different image"
++    );
++    let temporary = directory.join(format!("agentd-{pid}-{start}.elf"));
++    let mut retained = fs::OpenOptions::new()
++        .write(true)
++        .create_new(true)
++        .open(&temporary)?;
++    let mut hash = Sha256::new();
++    let mut buffer = [0; 1024 * 1024];
++    loop {
++        let read = image.read(&mut buffer)?;
++        if read == 0 {
++            break;
++        }
++        hash.update(&buffer[..read]);
++        retained.write_all(&buffer[..read])?;
++    }
++    retained.sync_all()?;
++    ensure!(
++        file_identity(&image.metadata()?) == file_identity(&before),
++        "live executable changed while copied"
++    );
++    ensure!(
++        start_ticks(&process)? == start && fs::read(process.join("cmdline"))? == argv,
++        "process exited or changed during image capture"
++    );
++    ensure!(
++        file_identity(&fs::metadata(process.join("exe"))?) == file_identity(&before),
++        "process replaced its image during capture"
++    );
++    let digest = format!("{:x}", hash.finalize());
++    Ok(
++        serde_json::json!({"source":source,"pid":pid,"spawn_generation":generation,"start_ticks":start,
++        "cargo_resolved_binary":expected,"actual_executable":actual,"retained_copy":temporary,
++        "sha256":digest,"bytes":before.len(),"device":before.dev(),"inode":before.ino(),
++        "owner_and_generation_verified":true,"opened_fd_and_process_identity_verified":true}),
++    )
++}
+diff --git a/codex-rs/hepta-agentd/tests/support/automation_effect_operator.rs b/codex-rs/hepta-agentd/tests/support/automation_effect_operator.rs
+new file mode 100644
+index 0000000000..4099c9b018
+--- /dev/null
++++ b/codex-rs/hepta-agentd/tests/support/automation_effect_operator.rs
+@@ -0,0 +1,502 @@
++//! Controlled operator material for one real Agentd process test only.
++//! Its keys and in-test services are not independent deployment custody.
++use super::*;
++use codex_hepta_contracts::AuthorityClock;
++use codex_hepta_contracts::FinalUseAuthenticationProfile;
++use codex_hepta_contracts::FinalUseAuthority;
++use codex_hepta_contracts::FinalUseFrontier;
++use codex_hepta_contracts::FinalUseGrant;
++use codex_hepta_contracts::FinalUseRevocationUpdate;
++use codex_hepta_contracts::FinalUseRevocations;
++use codex_hepta_contracts::PqAuthorityTrustKey;
++use codex_hepta_contracts::SignedFinalUseGrant;
++use codex_hepta_contracts::SignedFinalUseRevocationUpdate;
++use codex_hepta_contracts::authority_trust_unix::PqTrustOperationV2;
++use codex_hepta_contracts::authority_trust_unix::PqTrustOutcomeV2;
++use codex_hepta_contracts::authority_trust_unix::PqTrustRequestV2;
++use codex_hepta_contracts::authority_trust_unix::PqTrustResponseBodyV2;
++use codex_hepta_contracts::authority_trust_unix::SignedPqTrustResponseV2;
++use codex_hepta_contracts::authority_trust_unix::UnixPqAuthorityClock;
++use codex_hepta_contracts::authority_trust_unix::UnixPqFinalUseFrontier;
++use codex_hepta_contracts::authority_trust_unix::UnixPqTrustEndpointConfig;
++use codex_hepta_contracts::pq_auth::PqNativeSigningKey;
++use codex_hepta_contracts::pq_auth::ml_dsa_65_key_id_from_spki;
++use codex_model_provider::HttpProviderEffectConfig;
++use codex_model_provider::HttpProviderEffectContractAttestation;
++use reqwest::header::HeaderMap;
++use std::collections::BTreeSet;
++use std::io::Read;
++use std::io::Write;
++use std::os::unix::fs::MetadataExt;
++use std::os::unix::fs::PermissionsExt;
++use std::os::unix::net::UnixListener;
++use std::sync::Arc;
++use std::sync::Mutex;
++use std::sync::atomic::AtomicBool;
++use std::sync::atomic::AtomicU64;
++use std::sync::atomic::AtomicUsize;
++use std::sync::atomic::Ordering;
++use std::thread::JoinHandle;
++use std::thread::{self};
++
++const SIGNER: &str = "test-only-effect-grant-owner";
++const FEED: &str = "test-only-effect-revocation-owner";
++
++fn signing_key(seed: u8) -> anyhow::Result<PqNativeSigningKey> {
++    let spki = PqNativeSigningKey::public_spki_from_seed(&[seed; 32].into());
++    Ok(PqNativeSigningKey::from_owned_seed(
++        [seed; 32].into(),
++        ml_dsa_65_key_id_from_spki(&spki)?,
++    )?)
++}
++
++fn pinned(key: &PqNativeSigningKey, name: &str) -> PqAuthorityTrustKey {
++    PqAuthorityTrustKey {
++        key_id: name.into(),
++        public_key_id: key.public_key_id(),
++        public_key_spki: key.public_spki().to_vec(),
++        not_before_authority_epoch: 9,
++        not_after_authority_epoch: 10,
++    }
++}
++
++pub(super) fn write_private(path: &Path, value: &impl serde::Serialize) -> anyhow::Result<()> {
++    fs::write(path, serde_json::to_vec(value)?)?;
++    fs::set_permissions(path, fs::Permissions::from_mode(0o600))?;
++    Ok(())
++}
++
++#[derive(Clone, Copy)]
++enum ServiceRole {
++    Clock,
++    Frontier,
++}
++
++pub(super) struct Service {
++    pub(super) config: UnixPqTrustEndpointConfig,
++    pub(super) frontier: Arc<Mutex<FinalUseFrontier>>,
++    pub(super) now: Arc<AtomicU64>,
++    pub(super) cas_count: Arc<AtomicUsize>,
++    _available: Arc<AtomicBool>,
++    stop: Arc<AtomicBool>,
++    join: Option<JoinHandle<anyhow::Result<()>>>,
++}
++
++impl Service {
++    fn start(
++        root: &Path,
++        role: ServiceRole,
++        initial: FinalUseFrontier,
++        now_ms: u64,
++    ) -> anyhow::Result<Self> {
++        let (name, seed) = match role {
++            ServiceRole::Clock => ("clock", 74),
++            ServiceRole::Frontier => ("frontier", 75),
++        };
++        let signer = signing_key(seed)?;
++        let socket_path = root.join(format!("{name}.sock"));
++        let listener = UnixListener::bind(&socket_path)?;
++        fs::set_permissions(&socket_path, fs::Permissions::from_mode(0o600))?;
++        listener.set_nonblocking(true)?;
++        let config = UnixPqTrustEndpointConfig {
++            socket_path,
++            peer_uid: fs::metadata(root)?.uid(),
++            service_id: format!("pq-effect-{name}"),
++            key_generation: 1,
++            public_key_id: signer.public_key_id(),
++            public_key_spki: signer.public_spki().to_vec(),
++            timeout_ms: 2000,
++        };
++        let frontier = Arc::new(Mutex::new(initial));
++        let current = Arc::clone(&frontier);
++        let now = Arc::new(AtomicU64::new(now_ms));
++        let clock = Arc::clone(&now);
++        let cas_count = Arc::new(AtomicUsize::new(0));
++        let cas = Arc::clone(&cas_count);
++        let available = Arc::new(AtomicBool::new(true));
++        let serving = Arc::clone(&available);
++        let stop = Arc::new(AtomicBool::new(false));
++        let stopping = Arc::clone(&stop);
++        let join = thread::spawn(move || -> anyhow::Result<()> {
++            let deadline = Instant::now() + Duration::from_secs(120);
++            while !stopping.load(Ordering::SeqCst) && Instant::now() < deadline {
++                match listener.accept() {
++                    Ok((mut stream, _)) => {
++                        stream.set_read_timeout(Some(Duration::from_secs(2)))?;
++                        stream.set_write_timeout(Some(Duration::from_secs(2)))?;
++                        let mut size = [0; 4];
++                        stream.read_exact(&mut size)?;
++                        let size = u32::from_be_bytes(size) as usize;
++                        anyhow::ensure!(size <= 16 * 1024, "bounded trust request");
++                        let mut bytes = vec![0; size];
++                        stream.read_exact(&mut bytes)?;
++                        let request: PqTrustRequestV2 = serde_json::from_slice(&bytes)?;
++                        let outcome = if serving.load(Ordering::SeqCst) {
++                            match (&role, &request.operation) {
++                                (ServiceRole::Clock, PqTrustOperationV2::ClockNow) => {
++                                    PqTrustOutcomeV2::Clock {
++                                        unix_ms: clock.load(Ordering::SeqCst),
++                                    }
++                                }
++                                (
++                                    ServiceRole::Frontier,
++                                    PqTrustOperationV2::FrontierLoad { owner_id },
++                                ) if owner_id == SIGNER => PqTrustOutcomeV2::Frontier {
++                                    value: *current.lock().unwrap(),
++                                },
++                                (
++                                    ServiceRole::Frontier,
++                                    PqTrustOperationV2::FrontierCompareAndSet {
++                                        owner_id,
++                                        expected,
++                                        next,
++                                    },
++                                ) if owner_id == SIGNER => {
++                                    let mut value = current.lock().unwrap();
++                                    if &*value == expected {
++                                        *value = *next;
++                                        cas.fetch_add(1, Ordering::SeqCst);
++                                        PqTrustOutcomeV2::CompareAndSetApplied { value: *next }
++                                    } else {
++                                        PqTrustOutcomeV2::Conflict
++                                    }
++                                }
++                                (
++                                    ServiceRole::Clock,
++                                    PqTrustOperationV2::FrontierLoad { .. }
++                                    | PqTrustOperationV2::FrontierCompareAndSet { .. }
++                                    | PqTrustOperationV2::LearningFrontierLoad { .. }
++                                    | PqTrustOperationV2::LearningFrontierCompareAndSet { .. },
++                                )
++                                | (
++                                    ServiceRole::Frontier,
++                                    PqTrustOperationV2::ClockNow
++                                    | PqTrustOperationV2::FrontierLoad { .. }
++                                    | PqTrustOperationV2::FrontierCompareAndSet { .. }
++                                    | PqTrustOperationV2::LearningFrontierLoad { .. }
++                                    | PqTrustOperationV2::LearningFrontierCompareAndSet { .. },
++                                ) => PqTrustOutcomeV2::Unavailable,
++                            }
++                        } else {
++                            PqTrustOutcomeV2::Unavailable
++                        };
++                        let body = PqTrustResponseBodyV2 {
++                            schema_version: 2,
++                            request,
++                            valid_for_ms: 2000,
++                            outcome,
++                        };
++                        let signature = signer.sign_exact_message(&body.signing_bytes()?)?.to_vec();
++                        let bytes =
++                            serde_json::to_vec(&SignedPqTrustResponseV2 { body, signature })?;
++                        stream.write_all(&(bytes.len() as u32).to_be_bytes())?;
++                        stream.write_all(&bytes)?;
++                    }
++                    Err(error) if error.kind() == std::io::ErrorKind::WouldBlock => {
++                        thread::sleep(Duration::from_millis(1))
++                    }
++                    Err(error) => return Err(error.into()),
++                }
++            }
++            Ok(())
++        });
++        Ok(Self {
++            config,
++            frontier,
++            now,
++            cas_count,
++            _available: available,
++            stop,
++            join: Some(join),
++        })
++    }
++}
++
++impl Drop for Service {
++    fn drop(&mut self) {
++        self.stop.store(true, Ordering::SeqCst);
++        if let Some(join) = self.join.take() {
++            match join.join() {
++                Ok(Ok(())) => {}
++                Ok(Err(error)) => panic!("PQ effect service failed: {error}"),
++                Err(panic) => std::panic::resume_unwind(panic),
++            }
++        }
++    }
++}
++
++pub(super) struct Operator {
++    pub(super) clock: Service,
++    pub(super) frontier: Service,
++    pub(super) path: PathBuf,
++    pub(super) config: Value,
++    pub(super) now: u64,
++    issuer: PqNativeSigningKey,
++    contract: PqNativeSigningKey,
++    _external: tempfile::TempDir,
++}
++
++impl Operator {
++    pub(super) fn new(agent: &AgentFixture, generation: u64, uri: &str) -> Result<Self> {
++        let external = tempfile::tempdir()?;
++        let root = external.path().canonicalize()?;
++        fs::set_permissions(&root, fs::Permissions::from_mode(0o700))?;
++        let now = u64::try_from(SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis())?;
++        let head = FinalUseRevocations {
++            authority_epoch: 9,
++            revision: 1,
++            revoked_grant_ids: BTreeSet::new(),
++        };
++        let initial = FinalUseFrontier::for_initial_head_with_profile(
++            &head,
++            FinalUseAuthenticationProfile::MlDsa65V2,
++        )?;
++        let clock = Service::start(&root, ServiceRole::Clock, initial, now)?;
++        let frontier = Service::start(&root, ServiceRole::Frontier, initial, now)?;
++        let contract = signing_key(/*seed*/ 71)?;
++        let issuer = signing_key(/*seed*/ 72)?;
++        let feed_signer = signing_key(/*seed*/ 73)?;
++        let feed_path = root.join("signed-feed.json");
++        let update = FinalUseRevocationUpdate::new_pq(
++            FEED.into(),
++            head.clone(),
++            now.saturating_sub(1000),
++            now + 60_000,
++        );
++        let signature = feed_signer
++            .sign_exact_message(&update.signing_bytes()?)?
++            .to_vec();
++        write_private(
++            &feed_path,
++            &SignedFinalUseRevocationUpdate { update, signature },
++        )?;
++        fs::create_dir_all(agent.layout.automation_root())?;
++        let path = agent.layout.automation_root().join("pq-effect-host.json");
++        let config = serde_json::json!({
++            "schema_version":4,"authentication_profile":FinalUseAuthenticationProfile::MlDsa65V2,
++            "agent_id":agent.agent_id,"spawn_generation":generation,
++            "provider_scope":PROVIDER_SCOPE,"destination_id":DESTINATION,
++            "final_use_scope_sha256":"","contract_id":"controlled-process-effect-contract","contract_authority_epoch":9,
++            "contract_root":pinned(&contract,"controlled-contract-root"),"contract_signature":[],
++            "provider":{"kind":"http","dispatch_url":format!("{uri}/dispatch"),"lookup_url_template":format!("{uri}/status/{{key}}"),"headers":{},"timeout_ms":2000},
++            "authority":{"signer_id":SIGNER,"issuer_keys":[pinned(&issuer,"controlled-grant-issuer")],"head":head,
++                "revocation_distributor_id":FEED,"revocation_keys":[pinned(&feed_signer,"controlled-feed-owner")],"signed_revocations_file":feed_path,
++                "external_clock":endpoint(&clock.config),"external_frontier":endpoint(&frontier.config)},
++            "recovery_provider_policies":[],
++        });
++        let mut value = Self {
++            clock,
++            frontier,
++            path,
++            config,
++            now,
++            issuer,
++            contract,
++            _external: external,
++        };
++        value.sign_config()?;
++        Ok(value)
++    }
++
++    /// Independent test owner follows the documented explicit serialization.
++    /// It does not import a private Agentd parser or bypass the ordinary loader.
++    pub(super) fn scope(&self) -> Result<Sha256Digest> {
++        let c = &self.config;
++        let a = &c["authority"];
++        let value = serde_json::json!({
++            "schema":"hepta-agentd-effect-owner-policy-pq-v4",
++            "authentication_profile":c["authentication_profile"],
++            "agent_id":c["agent_id"],"spawn_generation":c["spawn_generation"],
++            "provider_scope":c["provider_scope"],"destination_id":c["destination_id"],
++            "contract_id":c["contract_id"],"contract_authority_epoch":c["contract_authority_epoch"],
++            "contract_root":c["contract_root"],"provider":c["provider"],
++            "signer_id":a["signer_id"],"issuer_keys":a["issuer_keys"],
++            "revocation_distributor_id":a["revocation_distributor_id"],"revocation_keys":a["revocation_keys"],
++            "signed_revocations_file":a["signed_revocations_file"],
++            "clock":a["external_clock"],"frontier":a["external_frontier"],
++            "recovery_provider_policies":c["recovery_provider_policies"],
++        });
++        let mut bytes = b"hepta.agentd.effect-owner-policy.pq.v4\0".to_vec();
++        bytes.extend(serde_json::to_vec(&value)?);
++        Ok(Sha256Digest::for_bytes(&bytes))
++    }
++
++    fn sign_config(&mut self) -> Result<()> {
++        let scope = self.scope()?;
++        let contract_id = self.config["contract_id"].as_str().context("contract id")?;
++        let p = &self.config["provider"];
++        let digest = HttpProviderEffectConfig {
++            dispatch_url: p["dispatch_url"].as_str().context("dispatch url")?.into(),
++            lookup_url_template: p["lookup_url_template"]
++                .as_str()
++                .context("lookup url")?
++                .into(),
++            headers: HeaderMap::new(),
++            timeout: Duration::from_millis(2000),
++            contract_id: contract_id.into(),
++            attestation: None,
++        }
++        .contract_sha256()
++        .map_err(anyhow::Error::msg)?;
++        let bytes = HttpProviderEffectContractAttestation::statement_for_pq(
++            contract_id,
++            &digest,
++            9,
++            &scope,
++        );
++        self.config["final_use_scope_sha256"] = serde_json::json!(scope);
++        self.config["contract_signature"] =
++            serde_json::json!(self.contract.sign_exact_message(&bytes)?.to_vec());
++        write_private(&self.path, &self.config)
++    }
++
++    pub(super) fn authorize_recovery_generation(&mut self, generation: u64) -> Result<()> {
++        let bytes = fs::read(&self.path)?;
++        let old = self.path.with_file_name("original-generation-policy.json");
++        fs::write(&old, &bytes)?;
++        fs::set_permissions(&old, fs::Permissions::from_mode(0o600))?;
++        self.config["spawn_generation"] = serde_json::json!(generation);
++        self.config["recovery_provider_policies"] =
++            serde_json::json!([{"path":old,"sha256":Sha256Digest::for_bytes(&bytes)}]);
++        self.sign_config()
++    }
++
++    pub(super) fn grant(&self, intent: &AuthorizedEffectIntent) -> Result<SignedFinalUseGrant> {
++        let grant = FinalUseGrant {
++            schema_version: 2,
++            signer_id: SIGNER.into(),
++            authority_epoch: 9,
++            grant_id: "controlled-process-effect-grant".into(),
++            nonce: [76; 32],
++            binding: intent.final_use_binding()?,
++            not_before_unix_ms: self.now.saturating_sub(1000),
++            expires_at_unix_ms: self.now + 30_000,
++        };
++        let signature = self
++            .issuer
++            .sign_exact_message(&grant.signing_bytes()?)?
++            .to_vec();
++        Ok(SignedFinalUseGrant { grant, signature })
++    }
++
++    /// Inspect only after both ordinary-process phases have completed and the
++    /// second daemon has exited. This cannot repair state before the tested restart.
++    pub(super) fn final_nonce_count(&self, agent: &AgentFixture) -> Result<usize> {
++        let a = &self.config["authority"];
++        let clock: Arc<dyn AuthorityClock> = Arc::new(UnixPqAuthorityClock::new(
++            serde_json::from_value(a["external_clock"].clone())?,
++        )?);
++        let frontier = Arc::new(UnixPqFinalUseFrontier::new(serde_json::from_value(
++            a["external_frontier"].clone(),
++        )?)?);
++        let owner = FinalUseAuthority::open_pq_state_dir_with_issuer_keys(
++            &agent
++                .layout
++                .automation_root()
++                .join("final-use-authority-pq-v2"),
++            SIGNER.into(),
++            serde_json::from_value(a["issuer_keys"].clone())?,
++            serde_json::from_value(a["head"].clone())?,
++            clock,
++            frontier,
++        )?;
++        Ok(owner.capacity()?.used_nonces)
++    }
++}
++
++fn endpoint(v: &UnixPqTrustEndpointConfig) -> Value {
++    serde_json::json!({"socket_path":v.socket_path,"peer_uid":v.peer_uid,"service_id":v.service_id,
++        "key_generation":v.key_generation,"public_key_id":v.public_key_id,"public_key_spki":v.public_key_spki,"timeout_ms":v.timeout_ms})
++}
++
++pub(super) async fn prepare_effect(
++    agent: &AgentFixture,
++    intent: &AuthorizedEffectIntent,
++    now: u64,
++) -> Result<()> {
++    use codex_hepta_automation::AutomationStore;
++    use codex_hepta_automation::TaskFlowCommand;
++    use codex_hepta_automation::TaskFlowDefinition;
++    use codex_hepta_automation::TaskFlowEdgeSpec;
++    use codex_hepta_automation::TaskFlowFence;
++    use codex_hepta_automation::TaskFlowNodeKind;
++    use codex_hepta_automation::TaskFlowNodeSpec;
++    use codex_hepta_automation::TaskFlowTransition;
++    let store = AutomationStore::open(&agent.layout).await?;
++    let definition = TaskFlowDefinition::new(
++        "controlled-process-effect",
++        1,
++        "effect",
++        vec![
++            TaskFlowNodeSpec::effect("effect", "provider.deliver", "provider-key-v1"),
++            TaskFlowNodeSpec::new("success", TaskFlowNodeKind::TerminalSuccess),
++            TaskFlowNodeSpec::new("failure", TaskFlowNodeKind::TerminalFailure),
++        ],
++        vec![
++            TaskFlowEdgeSpec::new("effect", "success"),
++            TaskFlowEdgeSpec::new("effect", "failure"),
++        ],
++        vec!["provider.deliver".into()],
++        Sha256Digest::for_bytes(b"controlled-process-effect-policy"),
++    )?;
++    let fence = TaskFlowFence::new(
++        agent.agent_id.clone(),
++        "controlled-process-effect-owner",
++        1,
++        1,
++        "controlled-process-effect-fence",
++    )?;
++    store
++        .register_taskflow_definition(&definition, &fence, now)
++        .await?;
++    store
++        .create_taskflow_run(
++            &intent.run_id,
++            &definition.workflow_id,
++            definition.version,
++            definition.definition_digest(),
++            "controlled-process-effect-thread",
++            now,
++        )
++        .await?;
++    let claimed = store
++        .claim_taskflow_run(&intent.run_id, &fence, now + 1, 60_000)
++        .await?;
++    store
++        .apply_taskflow_command(&TaskFlowCommand::new(
++            &intent.run_id,
++            "controlled-process-start",
++            fence.clone(),
++            claimed.revision,
++            TaskFlowTransition::Start,
++            now + 2,
++        )?)
++        .await?;
++    let digest = intent.digest()?;
++    store
++        .prepare_taskflow_step(
++            &intent.run_id,
++            &intent.step_id,
++            intent.attempt,
++            &fence,
++            &digest,
++            &intent.payload_digest,
++            "controlled-process-prepare",
++            now + 3,
++        )
++        .await?;
++    store
++        .claim_taskflow_step(
++            &intent.run_id,
++            &intent.step_id,
++            intent.attempt,
++            &fence,
++            &digest,
++            &intent.payload_digest,
++            "controlled-process-claim",
++            now + 4,
++        )
++        .await?;
++    store.close().await;
++    Ok(())
++}
+diff --git a/codex-rs/hepta-agentd/tests/support/automation_effect_provider.rs b/codex-rs/hepta-agentd/tests/support/automation_effect_provider.rs
+new file mode 100644
+index 0000000000..90fe25d3ba
+--- /dev/null
++++ b/codex-rs/hepta-agentd/tests/support/automation_effect_provider.rs
+@@ -0,0 +1,190 @@
++//! A stateful loopback provider: durably applies once, then loses the response.
++//! The test kills only its owned Agentd after fsync, before releasing this socket.
++use super::*;
++use std::io::Write;
++use std::net::Shutdown;
++use std::net::TcpListener;
++use std::sync::OnceLock;
++use std::sync::atomic::AtomicBool;
++use std::thread::JoinHandle;
++
++pub(super) struct LostAckProvider {
++    pub(super) uri: String,
++    pub(super) record_path: PathBuf,
++    pub(super) posts: Arc<AtomicUsize>,
++    pub(super) applies: Arc<AtomicUsize>,
++    pub(super) lookups: Arc<AtomicUsize>,
++    expected: Arc<OnceLock<ProviderEffectIntent>>,
++    release: Arc<AtomicBool>,
++    stop: Arc<AtomicBool>,
++    join: Option<JoinHandle<anyhow::Result<()>>>,
++    _directory: tempfile::TempDir,
++}
++
++impl LostAckProvider {
++    pub(super) fn start() -> anyhow::Result<Self> {
++        let directory = tempfile::tempdir()?;
++        let record_path = directory.path().join("applied-operation.json");
++        let record = record_path.clone();
++        let listener = TcpListener::bind("127.0.0.1:0")?;
++        let uri = format!("http://{}", listener.local_addr()?);
++        listener.set_nonblocking(true)?;
++        let expected = Arc::new(OnceLock::<ProviderEffectIntent>::new());
++        let configured = Arc::clone(&expected);
++        let posts = Arc::new(AtomicUsize::new(0));
++        let post_count = Arc::clone(&posts);
++        let applies = Arc::new(AtomicUsize::new(0));
++        let apply_count = Arc::clone(&applies);
++        let lookups = Arc::new(AtomicUsize::new(0));
++        let lookup_count = Arc::clone(&lookups);
++        let release = Arc::new(AtomicBool::new(false));
++        let released = Arc::clone(&release);
++        let stop = Arc::new(AtomicBool::new(false));
++        let stopping = Arc::clone(&stop);
++        let join = thread::spawn(move || -> anyhow::Result<()> {
++            let deadline = Instant::now() + Duration::from_secs(120);
++            while !stopping.load(Ordering::SeqCst) && Instant::now() < deadline {
++                let (mut stream, _) = match listener.accept() {
++                    Ok(pair) => pair,
++                    Err(error) if error.kind() == std::io::ErrorKind::WouldBlock => {
++                        thread::sleep(Duration::from_millis(1));
++                        continue;
++                    }
++                    Err(error) => return Err(error.into()),
++                };
++                stream.set_read_timeout(Some(Duration::from_secs(2)))?;
++                stream.set_write_timeout(Some(Duration::from_secs(2)))?;
++                let mut request = Vec::new();
++                let header_end = loop {
++                    let mut part = [0; 1024];
++                    let read = stream.read(&mut part)?;
++                    anyhow::ensure!(read > 0, "provider request ended before headers");
++                    request.extend_from_slice(&part[..read]);
++                    anyhow::ensure!(request.len() <= 16 * 1024, "bounded provider request");
++                    if let Some(at) = request.windows(4).position(|b| b == b"\r\n\r\n") {
++                        break at + 4;
++                    }
++                };
++                let headers = std::str::from_utf8(&request[..header_end])?;
++                let mut lines = headers.split("\r\n");
++                let request_line = lines.next().unwrap().to_string();
++                let values: BTreeMap<String, String> = lines
++                    .filter_map(|line| line.split_once(':'))
++                    .map(|(k, v)| (k.to_ascii_lowercase(), v.trim().to_string()))
++                    .collect();
++                let length = values
++                    .get("content-length")
++                    .map(|v| v.parse::<usize>())
++                    .transpose()?
++                    .unwrap_or(0);
++                anyhow::ensure!(length <= 1024, "bounded test provider body");
++                while request.len() < header_end + length {
++                    let mut part = [0; 1024];
++                    let read = stream.read(&mut part)?;
++                    anyhow::ensure!(read > 0, "provider request body incomplete");
++                    request.extend_from_slice(&part[..read]);
++                }
++                let intent = configured
++                    .get()
++                    .ok_or_else(|| anyhow::anyhow!("provider has no expected operation"))?;
++                anyhow::ensure!(
++                    values
++                        .get(PROVIDER_EFFECT_IDEMPOTENCY_KEY_HEADER)
++                        .map(String::as_str)
++                        == Some(intent.key.as_str()),
++                    "provider received wrong operation key"
++                );
++                anyhow::ensure!(
++                    values
++                        .get(PROVIDER_EFFECT_PAYLOAD_SHA256_HEADER)
++                        .map(String::as_str)
++                        == Some(intent.payload_sha256.as_str()),
++                    "provider received wrong payload digest"
++                );
++                if request_line.starts_with("POST /dispatch ") {
++                    post_count.fetch_add(1, Ordering::SeqCst);
++                    anyhow::ensure!(
++                        &request[header_end..header_end + length] == WIRE,
++                        "provider received different effect bytes"
++                    );
++                    if !record.exists() {
++                        let mut material = b"actual-loopback-provider-application-v1\0".to_vec();
++                        material.extend_from_slice(intent.key.as_str().as_bytes());
++                        material.extend_from_slice(WIRE);
++                        let operation = Sha256Digest::for_bytes(&material);
++                        let body = serde_json::json!({"effect_key":intent.key.as_str(),"payload_sha256":intent.payload_sha256.as_str(),"provider_operation_id_sha256":operation.as_str(),"status":"completed"});
++                        let mut file = fs::OpenOptions::new()
++                            .write(true)
++                            .create_new(true)
++                            .open(&record)?;
++                        file.write_all(&serde_json::to_vec(&body)?)?;
++                        file.sync_all()?;
++                        fs::File::open(record.parent().unwrap())?.sync_all()?;
++                        apply_count.fetch_add(1, Ordering::SeqCst);
++                    }
++                    // The side effect is durable. Deliberately send no HTTP
++                    // response bytes, so the client cannot know it completed.
++                    while !released.load(Ordering::SeqCst) && !stopping.load(Ordering::SeqCst) {
++                        anyhow::ensure!(
++                            Instant::now() < deadline,
++                            "test failed to release the lost-ACK socket"
++                        );
++                        thread::sleep(Duration::from_millis(1));
++                    }
++                    let _ = stream.shutdown(Shutdown::Both);
++                } else if request_line.starts_with("GET /status/") {
++                    let index = lookup_count.fetch_add(1, Ordering::SeqCst);
++                    if index == 0 {
++                        stream.write_all(b"HTTP/1.1 404 Not Found\r\nContent-Length: 0\r\nConnection: close\r\n\r\n")?;
++                    } else {
++                        let body = fs::read(&record)?;
++                        let header = format!(
++                            "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\n\r\n",
++                            body.len()
++                        );
++                        stream.write_all(header.as_bytes())?;
++                        stream.write_all(&body)?;
++                    }
++                } else {
++                    anyhow::bail!("unexpected provider request: {request_line}");
++                }
++            }
++            Ok(())
++        });
++        Ok(Self {
++            uri,
++            record_path,
++            posts,
++            applies,
++            lookups,
++            expected,
++            release,
++            stop,
++            join: Some(join),
++            _directory: directory,
++        })
++    }
++
++    pub(super) fn release_without_ack(&self) {
++        self.release.store(true, Ordering::SeqCst);
++    }
++
++    pub(super) fn expect(&self, intent: ProviderEffectIntent) -> anyhow::Result<()> {
++        self.expected
++            .set(intent)
++            .map_err(|_| anyhow::anyhow!("provider expectation already fixed"))
++    }
++}
++
++impl Drop for LostAckProvider {
++    fn drop(&mut self) {
++        self.stop.store(true, Ordering::SeqCst);
++        if let Some(join) = self.join.take() {
++            match join.join() {
++                Ok(Ok(())) => {}
++                Ok(Err(error)) => panic!("lost-ACK provider failed: {error}"),
++                Err(panic) => std::panic::resume_unwind(panic),
++            }
++        }
++    }
++}
+diff --git a/codex-rs/hepta-agentd/tests/support/fleet.rs b/codex-rs/hepta-agentd/tests/support/fleet.rs
+index b82b225213..7458e57c29 100644
+--- a/codex-rs/hepta-agentd/tests/support/fleet.rs
++++ b/codex-rs/hepta-agentd/tests/support/fleet.rs
+@@ -157,6 +157,25 @@ impl FleetHarness {
+         Ok(())
+     }
+ 
++    /// Ordinary CLI composition with the existing mandatory evidence recovery arguments.
++    #[allow(dead_code)]
++    pub(crate) fn start_with_automation_effect_host_file(
++        &mut self,
++        agent: &AgentFixture,
++        host_file: &Path,
++    ) -> Result<()> {
++        let mut args = agent.recovery_args();
++        args.extend([
++            "--automation-effect-host-file".into(),
++            host_file.as_os_str().to_owned(),
++        ]);
++        let command = AgentCommand::new(agentd_binary()?, args)?;
++        self.supervisor
++            .start(&agent.agent_id, command, Instant::now())?;
++        self.started = true;
++        Ok(())
++    }
++
+     #[allow(dead_code)]
+     pub(crate) fn start_with_authbus_trust_file(
+         &mut self,
+diff --git a/codex-rs/hepta-contracts/src/final_use_control_pq.rs b/codex-rs/hepta-contracts/src/final_use_control_pq.rs
+index b58c0a9a1d..8bcc8c91ef 100644
+--- a/codex-rs/hepta-contracts/src/final_use_control_pq.rs
++++ b/codex-rs/hepta-contracts/src/final_use_control_pq.rs
+@@ -38,6 +38,18 @@ impl FinalUseApprovalVerifier {
+ }
+ 
+ impl FinalUseRevocationFeedVerifier {
++    /// Authenticate a fresh head before creating a durable authority owner.
++    /// This read-only check does not apply the head or establish currentness
++    /// against an external frontier; callers must still perform those checks.
++    pub fn authenticate_fresh_head(
++        &self,
++        signed: &SignedFinalUseRevocationUpdate,
++        now_unix_ms: u64,
++    ) -> Result<FinalUseRevocations, FinalUseControlError> {
++        self.verify_signed(signed, now_unix_ms)?;
++        Ok(signed.update.head.clone())
++    }
++
+     /// Authenticate a fresh presentation of the exact durable head, or apply a
+     /// strict monotonic successor. Confirmation never writes a new frontier and
+     /// never bypasses signature, profile, or feed lifetime verification.
+diff --git a/codex-rs/model-provider/src/provider_effect.rs b/codex-rs/model-provider/src/provider_effect.rs
+index e6edec8572..c15db590ce 100644
+--- a/codex-rs/model-provider/src/provider_effect.rs
++++ b/codex-rs/model-provider/src/provider_effect.rs
+@@ -11,6 +11,8 @@ use std::fmt;
+ use std::net::IpAddr;
+ use std::time::Duration;
+ 
++use codex_hepta_contracts::FinalUseAuthenticationProfile;
++use codex_hepta_contracts::PqAuthorityTrustKey;
+ use codex_hepta_contracts::ProviderEffectAck;
+ use codex_hepta_contracts::ProviderEffectAckStatus;
+ use codex_hepta_contracts::ProviderEffectAdapter;
+@@ -22,6 +24,7 @@ use codex_hepta_contracts::ProviderEffectIntent;
+ use codex_hepta_contracts::ProviderEffectKey;
+ use codex_hepta_contracts::ProviderEffectLookup;
+ use codex_hepta_contracts::Sha256Digest;
++use codex_hepta_contracts::pq_auth::PqNativeVerifier;
+ use codex_http_client::ClientRouteClass;
+ use codex_http_client::HttpClient;
+ use codex_http_client::HttpClientBuilder;
+@@ -36,6 +39,10 @@ use http::HeaderValue;
+ use serde::Deserialize;
+ use url::Url;
+ 
++#[cfg(test)]
++#[path = "provider_effect_pq_tests.rs"]
++mod pq_tests;
++
+ /// Header carrying the stable occurrence identity to a provider adapter.
+ pub const PROVIDER_EFFECT_IDEMPOTENCY_KEY_HEADER: &str = "idempotency-key";
+ /// Header carrying the exact payload binding alongside the occurrence key.
+@@ -182,6 +189,7 @@ pub struct HttpProviderEffectContractAttestation {
+     contract_sha256: Sha256Digest,
+     authority_epoch: u64,
+     verified: bool,
++    authentication_profile: FinalUseAuthenticationProfile,
+ }
+ 
+ impl HttpProviderEffectContractAttestation {
+@@ -236,9 +244,77 @@ impl HttpProviderEffectContractAttestation {
+             contract_sha256,
+             authority_epoch,
+             verified: true,
++            authentication_profile: FinalUseAuthenticationProfile::ClassicalV1,
++        })
++    }
++
++    /// Exact PQ statement for an independently supplied contract authority.
++    /// The binding covers the consumer, transport, scope and authority policy;
++    /// neither a classic signature nor another host's statement is reusable.
++    pub fn statement_for_pq(
++        contract_id: &str,
++        contract_sha256: &Sha256Digest,
++        authority_epoch: u64,
++        authority_binding: &Sha256Digest,
++    ) -> Vec<u8> {
++        format!(
++            "hepta-provider-effect-attestation-pq-v2\nrole=automation-provider-contract\ncontract_id={contract_id}\ncontract_sha256={}\nauthority_epoch={authority_epoch}\nauthority_binding={}\n",
++            contract_sha256.as_str(),
++            authority_binding.as_str(),
++        )
++        .into_bytes()
++    }
++
++    /// Verify the distinct PQ statement with a pinned root and epoch window.
++    pub fn verify_pq_signed(
++        contract_id: impl Into<String>,
++        contract_sha256: Sha256Digest,
++        authority_epoch: u64,
++        authority_binding: &Sha256Digest,
++        signature: &[u8],
++        pinned_key: &PqAuthorityTrustKey,
++    ) -> Result<Self, String> {
++        let contract_id = contract_id.into();
++        if !valid_contract_id(&contract_id)
++            || pinned_key.not_before_authority_epoch == 0
++            || pinned_key.not_after_authority_epoch < pinned_key.not_before_authority_epoch
++            || authority_epoch < pinned_key.not_before_authority_epoch
++            || authority_epoch > pinned_key.not_after_authority_epoch
++        {
++            return Err("PQ provider contract identity or authority epoch is invalid".into());
++        }
++        Sha256Digest::parse(contract_sha256.as_str().to_owned())
++            .map_err(|error| format!("invalid contract digest: {error}"))?;
++        Sha256Digest::parse(authority_binding.as_str().to_owned())
++            .map_err(|error| format!("invalid authority binding: {error}"))?;
++        let key = PqNativeVerifier::from_pinned_spki(
++            &pinned_key.public_key_spki,
++            pinned_key.public_key_id,
++        )
++        .map_err(|error| format!("invalid pinned PQ provider contract root: {error}"))?;
++        key.verify_exact_message(
++            &Self::statement_for_pq(
++                &contract_id,
++                &contract_sha256,
++                authority_epoch,
++                authority_binding,
++            ),
++            signature,
++        )
++        .map_err(|_| "PQ provider contract attestation signature mismatch".to_string())?;
++        Ok(Self {
++            contract_id,
++            contract_sha256,
++            authority_epoch,
++            verified: true,
++            authentication_profile: FinalUseAuthenticationProfile::MlDsa65V2,
+         })
+     }
+ 
++    pub fn authentication_profile(&self) -> FinalUseAuthenticationProfile {
++        self.authentication_profile
++    }
++
+     pub fn contract_id(&self) -> &str {
+         &self.contract_id
+     }
+diff --git a/codex-rs/model-provider/src/provider_effect_pq_tests.rs b/codex-rs/model-provider/src/provider_effect_pq_tests.rs
+new file mode 100644
+index 0000000000..021a1d1d57
+--- /dev/null
++++ b/codex-rs/model-provider/src/provider_effect_pq_tests.rs
+@@ -0,0 +1,131 @@
++//! Cryptographic statement controls; these contact no provider.
++use super::*;
++use codex_hepta_contracts::pq_auth::PqNativeSigningKey;
++use codex_hepta_contracts::pq_auth::ml_dsa_65_key_id_from_spki;
++use ed25519_dalek::Signer;
++use pretty_assertions::assert_eq;
++
++#[test]
++fn pq_contract_binds_profile_root_epoch_and_complete_authority_scope() {
++    let seed = [71; 32].into();
++    let spki = PqNativeSigningKey::public_spki_from_seed(&seed);
++    let signer = PqNativeSigningKey::from_owned_seed(
++        seed,
++        ml_dsa_65_key_id_from_spki(&spki).expect("key id"),
++    )
++    .expect("PQ signer");
++    let key = PqAuthorityTrustKey {
++        key_id: "provider-contract-root".into(),
++        public_key_id: signer.public_key_id(),
++        public_key_spki: spki.to_vec(),
++        not_before_authority_epoch: 2,
++        not_after_authority_epoch: 3,
++    };
++    let digest = Sha256Digest::for_bytes(b"exact endpoints, headers, timeout and contract");
++    let scope =
++        Sha256Digest::for_bytes(b"exact agent, generation, destination, grant and trust policy");
++    let message = HttpProviderEffectContractAttestation::statement_for_pq(
++        "provider-contract",
++        &digest,
++        2,
++        &scope,
++    );
++    let signature = signer
++        .sign_exact_message(&message)
++        .expect("PQ contract signature");
++    let proof = HttpProviderEffectContractAttestation::verify_pq_signed(
++        "provider-contract",
++        digest.clone(),
++        2,
++        &scope,
++        &signature,
++        &key,
++    )
++    .expect("PQ attestation");
++    assert_eq!(
++        (
++            proof.authentication_profile(),
++            proof.authority_epoch(),
++            proof.contract_sha256()
++        ),
++        (FinalUseAuthenticationProfile::MlDsa65V2, 2, &digest)
++    );
++    for (id, body, epoch, binding) in [
++        ("different-contract", digest.clone(), 2, scope.clone()),
++        (
++            "provider-contract",
++            Sha256Digest::for_bytes(b"different endpoint or credential"),
++            2,
++            scope.clone(),
++        ),
++        ("provider-contract", digest.clone(), 1, scope.clone()),
++        ("provider-contract", digest.clone(), 4, scope.clone()),
++        (
++            "provider-contract",
++            digest.clone(),
++            2,
++            Sha256Digest::for_bytes(b"another owner or trust policy"),
++        ),
++    ] {
++        assert!(
++            HttpProviderEffectContractAttestation::verify_pq_signed(
++                id, body, epoch, &binding, &signature, &key
++            )
++            .is_err()
++        );
++    }
++    let mut wrong = key.clone();
++    wrong.public_key_id[0] ^= 1;
++    assert!(
++        HttpProviderEffectContractAttestation::verify_pq_signed(
++            "provider-contract",
++            digest.clone(),
++            2,
++            &scope,
++            &signature,
++            &wrong
++        )
++        .is_err()
++    );
++    let classic = ed25519_dalek::SigningKey::from_bytes(&[72; 32]);
++    let old_message =
++        HttpProviderEffectContractAttestation::statement_for("provider-contract", &digest, 2);
++    let old_signature = classic.sign(&old_message).to_bytes();
++    let old = HttpProviderEffectContractAttestation::verify_signed(
++        "provider-contract",
++        digest.clone(),
++        2,
++        &old_signature,
++        &classic.verifying_key().to_bytes(),
++    )
++    .expect("explicit historical proof");
++    assert_eq!(
++        old.authentication_profile(),
++        FinalUseAuthenticationProfile::ClassicalV1
++    );
++    assert!(
++        HttpProviderEffectContractAttestation::verify_pq_signed(
++            "provider-contract",
++            digest.clone(),
++            2,
++            &scope,
++            &old_signature,
++            &key
++        )
++        .is_err()
++    );
++    let wrong_domain = signer
++        .sign_exact_message(&old_message)
++        .expect("signature on historical domain");
++    assert!(
++        HttpProviderEffectContractAttestation::verify_pq_signed(
++            "provider-contract",
++            digest,
++            2,
++            &scope,
++            &wrong_domain,
++            &key
++        )
++        .is_err()
++    );
++}

@@ -1,0 +1,152 @@
+{
+  "candidate_commit": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+  "candidate_tree": "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14",
+  "current_thread_cgroup": "0::/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a1ad405308-fc05-5930.service\n",
+  "environment": {
+    "CI": null,
+    "GITHUB_ACTIONS": null,
+    "GITHUB_JOB": null,
+    "GITHUB_RUN_ATTEMPT": null,
+    "GITHUB_RUN_ID": null,
+    "GITHUB_WORKSPACE": null,
+    "RUNNER_ENVIRONMENT": null
+  },
+  "gid": 1000,
+  "observed_utc": "2026-11-05T19:47:18Z",
+  "original_public_gate_invoked": false,
+  "paths": [
+    {
+      "errno": 2,
+      "error": "[Errno 2] No such file or directory: '/sys/fs/cgroup/trnmponpublic.slice'",
+      "error_type": "FileNotFoundError",
+      "exists": false,
+      "path": "/sys/fs/cgroup/trnmponpublic.slice"
+    },
+    {
+      "errno": 2,
+      "error": "[Errno 2] No such file or directory: '/run/systemd/system/trnmponpublic.slice'",
+      "error_type": "FileNotFoundError",
+      "exists": false,
+      "path": "/run/systemd/system/trnmponpublic.slice"
+    },
+    {
+      "current_uid_write_access": false,
+      "device": 28,
+      "exists": true,
+      "gid": 0,
+      "inode": 768,
+      "mode": 493,
+      "path": "/run/systemd/system",
+      "symlink": false,
+      "uid": 0
+    },
+    {
+      "actual_read": {
+        "bytes": 49,
+        "sha256": "a1d3f9a7963cbedee1c50c26c826b35dfb1af3608d9c611731f8a21e56ea9bde",
+        "text": "cpuset cpu io memory hugetlb pids rdma misc dmem\n"
+      },
+      "current_uid_write_access": false,
+      "device": 30,
+      "exists": true,
+      "gid": 0,
+      "inode": 4,
+      "mode": 292,
+      "path": "/sys/fs/cgroup/cgroup.controllers",
+      "symlink": false,
+      "uid": 0
+    },
+    {
+      "errno": 2,
+      "error": "[Errno 2] No such file or directory: '/sys/fs/cgroup/trnmponpublic.slice/cpu.max'",
+      "error_type": "FileNotFoundError",
+      "exists": false,
+      "path": "/sys/fs/cgroup/trnmponpublic.slice/cpu.max"
+    },
+    {
+      "errno": 2,
+      "error": "[Errno 2] No such file or directory: '/sys/fs/cgroup/trnmponpublic.slice/cpu.max.burst'",
+      "error_type": "FileNotFoundError",
+      "exists": false,
+      "path": "/sys/fs/cgroup/trnmponpublic.slice/cpu.max.burst"
+    },
+    {
+      "errno": 2,
+      "error": "[Errno 2] No such file or directory: '/sys/fs/cgroup/trnmponpublic.slice/memory.max'",
+      "error_type": "FileNotFoundError",
+      "exists": false,
+      "path": "/sys/fs/cgroup/trnmponpublic.slice/memory.max"
+    },
+    {
+      "errno": 2,
+      "error": "[Errno 2] No such file or directory: '/sys/fs/cgroup/trnmponpublic.slice/memory.swap.max'",
+      "error_type": "FileNotFoundError",
+      "exists": false,
+      "path": "/sys/fs/cgroup/trnmponpublic.slice/memory.swap.max"
+    },
+    {
+      "errno": 2,
+      "error": "[Errno 2] No such file or directory: '/sys/fs/cgroup/trnmponpublic.slice/pids.max'",
+      "error_type": "FileNotFoundError",
+      "exists": false,
+      "path": "/sys/fs/cgroup/trnmponpublic.slice/pids.max"
+    }
+  ],
+  "schema": "C4-public-original-prerequisites-readonly-v1",
+  "scope": "read-only prerequisite snapshot; not a native gate attempt",
+  "source_gate_pins": [
+    {
+      "bytes": 24743,
+      "expected_previously_reviewed_git_blob": "b7d6c49f3f21a946ed5dd20147205dcee9b0f17b",
+      "git_blob": "b7d6c49f3f21a946ed5dd20147205dcee9b0f17b",
+      "path": "scripts/ci/run_from_zero_host.py",
+      "same_as_reviewed_source": true,
+      "sha256": "b159afa51b96d5cd01c9f6cc2e29dafe83e5d42d3e4dba298063d13abf2f8791"
+    },
+    {
+      "bytes": 102985,
+      "expected_previously_reviewed_git_blob": "4960474ac61bdee7d1af738e9f06910e19f8bd35",
+      "git_blob": "4960474ac61bdee7d1af738e9f06910e19f8bd35",
+      "path": "scripts/ci/run_from_zero_native.py",
+      "same_as_reviewed_source": true,
+      "sha256": "18c5f255df1bb69eb0a8629d3376b40b4f4d24c081cc81e15c4dc5d562f2d97a"
+    },
+    {
+      "bytes": 5452,
+      "expected_previously_reviewed_git_blob": "245b5b905e32446ed20f39398619553c4dccead0",
+      "git_blob": "245b5b905e32446ed20f39398619553c4dccead0",
+      "path": "scripts/ci/public_host_ci_observation.py",
+      "same_as_reviewed_source": true,
+      "sha256": "27f0c506592f26f3a218a6d1723c4694e4d7a59f0786e16dbf853e2d5cdb60de"
+    },
+    {
+      "bytes": 11040,
+      "expected_previously_reviewed_git_blob": "69ecbe1183ef9e6123d3014376f9c50a3f43a063",
+      "git_blob": "69ecbe1183ef9e6123d3014376f9c50a3f43a063",
+      "path": "scripts/ci/public_fixture_host_lease.py",
+      "same_as_reviewed_source": true,
+      "sha256": "792c1c599082b0ce67e128e6dbbf0c99f583dd41f4af0091838cc10adcc98d70"
+    },
+    {
+      "bytes": 325,
+      "expected_previously_reviewed_git_blob": "8981b6aeed4c08c21679664940366b36a991444a",
+      "git_blob": "8981b6aeed4c08c21679664940366b36a991444a",
+      "path": "config/systemd/trnmponpublic.slice",
+      "same_as_reviewed_source": true,
+      "sha256": "74eb36a63559bf8603c15ddd3753a1db143684a2cefd84cce5aff10a76bbd622"
+    },
+    {
+      "bytes": 53670,
+      "expected_previously_reviewed_git_blob": "7089e961965af9209f2d588061c8526c5acba161",
+      "git_blob": "7089e961965af9209f2d588061c8526c5acba161",
+      "path": "trillionnium/crates/trnm-pon-node/src/host_kernel_parent.rs",
+      "same_as_reviewed_source": true,
+      "sha256": "6f4cf524831e8af8e23c954764e388d6d167f125c3de0dd19ce235630ce7df7d"
+    }
+  ],
+  "sudo_executed": false,
+  "sudo_policy_not_probed": true,
+  "systemd_or_cgroup_modified": false,
+  "these_environment_keys_not_set_or_overridden_by_this_job": true,
+  "uid": 1000
+}

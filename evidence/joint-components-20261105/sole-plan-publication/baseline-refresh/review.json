@@ -1,0 +1,231 @@
+{
+  "schema": "chain-sole-plan-pr688-baseline-refresh-v1",
+  "source": {
+    "repository": "TrillionniumFoundation/Trillionnium-Chain",
+    "pr": 688,
+    "head_ref": "fix/chain-six-axis-performance-20261103",
+    "commit": "d6b9835fa91a2a4b58c77cc60daf809b5e771d56",
+    "tree": "5943e8a1fb6c1a99cb24c7e06bd016f02c962ab1",
+    "parent": "0e1c25d42fff22bec6ec2a08c4fbdff240229858",
+    "observed_initial_and_final_head_equal": true,
+    "observed_times": {
+      "initial": {
+        "current_time": "2026-11-05 22:39:13 UTC"
+      },
+      "final": {
+        "current_time": "2026-11-05 22:41:13 UTC"
+      }
+    },
+    "pr_base": "main",
+    "pr_base_sha": "dd6e1c3cbeacbdc532b0679297835b3a0aac78f0",
+    "pr_actual_merge_sha": "c4ed26dd2553d75cf8f735216a6ff8533acd08f5",
+    "merge_scope": "Existing PR688 prospective merge only; not a proposed docs PR identity or a qualification source."
+  },
+  "delta": {
+    "commits": 1,
+    "files": 9,
+    "paths": [
+      {
+        "path": "evidence/growth-receipt-stream-20261105/README.md",
+        "status": "added",
+        "git_blob": "45546fcbaa60806f23c7bb92ebb53d2a3fa20f55",
+        "additions": 17,
+        "deletions": 0
+      },
+      {
+        "path": "evidence/growth-receipt-stream-20261105/clippy.txt",
+        "status": "added",
+        "git_blob": "1008b47f1e793a2c94f890f61fc8bf7b58875216",
+        "additions": 2,
+        "deletions": 0
+      },
+      {
+        "path": "evidence/growth-receipt-stream-20261105/initial-compile-failure.txt",
+        "status": "added",
+        "git_blob": "0308a4442f20832ee7fc94989e43e14e166211d3",
+        "additions": 47,
+        "deletions": 0
+      },
+      {
+        "path": "evidence/growth-receipt-stream-20261105/native.txt",
+        "status": "added",
+        "git_blob": "26972734b7a6073eb33f1594fafbbae013b24a4f",
+        "additions": 71,
+        "deletions": 0
+      },
+      {
+        "path": "evidence/growth-receipt-stream-20261105/source.sha256",
+        "status": "added",
+        "git_blob": "cc074c1e1a7d51959c4f0c473359bae9b05cd70c",
+        "additions": 4,
+        "deletions": 0
+      },
+      {
+        "path": "trillionnium/crates/trnm-pon-node/src/store/authenticated_migration.rs",
+        "status": "modified",
+        "git_blob": "727cbb2a545ea82801ad8b2b435a6616c959a879",
+        "additions": 3,
+        "deletions": 2
+      },
+      {
+        "path": "trillionnium/crates/trnm-pon-node/src/store/authenticated_migration/growth_rehearsal.rs",
+        "status": "modified",
+        "git_blob": "0944410c4ed04c0ac89a1746e9bacb416a98f56f",
+        "additions": 6,
+        "deletions": 4
+      },
+      {
+        "path": "trillionnium/crates/trnm-pon-node/src/store/authenticated_migration/growth_rehearsal/snapshot.rs",
+        "status": "modified",
+        "git_blob": "bcc1802d06338c0da74e5d7283c00fbae458f7e3",
+        "additions": 100,
+        "deletions": 0
+      },
+      {
+        "path": "trillionnium/crates/trnm-pon-node/src/store/authenticated_migration_tests.rs",
+        "status": "modified",
+        "git_blob": "112b312e782e27f956d6839efa43253a8297bc5c",
+        "additions": 34,
+        "deletions": 0
+      }
+    ],
+    "reviewed_changed_code_scope": "Four Node migration/growth files replace block-ID copies with fixed-width reads and stream an authenticated receipt copy with fixed-size chunks. The patches add three file/SQLite controls; no workflow, command entry, model trainer invocation, or trial-ledger path is added.",
+    "native_or_performance_credit": false
+  },
+  "prior_trigger_audit_continuity": {
+    "prior_head": "0e1c25d42fff22bec6ec2a08c4fbdff240229858",
+    "workflow_count": 19,
+    "workflow_blob_and_size_equal_count": 19,
+    "verified_entry_and_model_control_count": 30,
+    "all_prior_verified_source_paths_unchanged": 49,
+    "entry_comparison_method": "The exact direct-parent one-commit comparison returns all nine changed paths, none in the 49 verified catalog paths; fresh current workflow listing also binds all 19 workflow Git blobs and sizes. Prior retained bytes were rehashed locally.",
+    "trigger_reaudit_required": false,
+    "unfiltered_pull_request_workflows_remain_eligible": [
+      "codeql-analysis-export.yml",
+      "pon-original-large-state-cpu.yml",
+      "pon-original-workspace-large-state-cpu.yml",
+      "pon-priority-acceptance.yml",
+      "trnm-required-baseline.yml"
+    ],
+    "learning_boundary": "Existing deterministic model-mechanism fixtures can still execute in unfiltered CI. The specifically scoped hosted SmolLM owner workflow has no pull_request trigger and still requires its exact push branch plus intent JSON path; a strict fresh stacked docs-only change does not match. No claim of zero CI/model logic or arbitrary external-webhook safety.",
+    "source_update_note": "Unfiltered original Rust CI may execute the newly inherited migration tests. No test outcome from C4, earlier source, or this read-only review qualifies the new head."
+  },
+  "sole_plan_exact": {
+    "path": "pq_recovery/chain-sole-plan-refresh-20261105/source/docs/development/TRNM_AI_NATIVE_BLOCKCHAIN_DEVELOPMENT_PLAN.md",
+    "bytes": 552675,
+    "sha256": "063df6d6047e08addb40d92c01bf85c2ff1386788369bfd7ba1d22e0a421198b",
+    "git_blob": "3787d8321ee9f4eb5a0fe5794dcad3f997afecb1"
+  },
+  "sole_plan_equal_to_prior_retained_base_bytes": true,
+  "publication_conditions": {
+    "required_base_ref": "fix/chain-six-axis-performance-20261103",
+    "do_not_target": "main",
+    "only_permitted_total_compare_path": "docs/development/TRNM_AI_NATIVE_BLOCKCHAIN_DEVELOPMENT_PLAN.md",
+    "edit_scope": "Append to the current exact sole-plan bytes, retaining prior content.",
+    "refresh_required_before_publication": true,
+    "head_lease_required": "d6b9835fa91a2a4b58c77cc60daf809b5e771d56",
+    "if_head_advances": "Refresh current source and workflow/entry delta, then rebase the document append without overwriting concurrent changes; do not assume a docs-only last commit means a docs-only PR.",
+    "no_new_trial_or_ledger_reset_authorized": true
+  },
+  "actions": {
+    "created_commit": false,
+    "created_or_updated_pr": false,
+    "workflow_dispatch": false,
+    "native_or_cargo_run": false,
+    "learning_ledger_mutation": false,
+    "desktop_bulk_read": false
+  },
+  "encoding_note": "The contents API base64 value contains line wrapping. Decoding only removes those base64 newlines; the resulting bytes exactly match the advertised Git blob and the old raw source. An initial strict decode before handling wrapping raised an error, not a source or test failure.",
+  "input_inventory": [
+    {
+      "path": "pq_recovery/chain-sole-plan-refresh-20261105/pr688-current.raw.json",
+      "bytes": 67456,
+      "sha256": "bd1549e9e4cbebc5c892f9aa29d3a298745e6787a26bea7b1ab721867a0c774f",
+      "git_blob": "dfc9e82606327acd797493cd97b2c4e01caf625a"
+    },
+    {
+      "path": "pq_recovery/chain-sole-plan-refresh-20261105/pr688-after-review.raw.json",
+      "bytes": 67444,
+      "sha256": "f368d553ef7585ae2b7b43849cd38dcd5700c1383d99003d768866c2314e1cee",
+      "git_blob": "2f1c31c431f9a87a32ac3cb2a156a6c97684116e"
+    },
+    {
+      "path": "pq_recovery/chain-sole-plan-refresh-20261105/commit.raw.json",
+      "bytes": 3639,
+      "sha256": "5503d306dcb99fcb9d22b2cccdce11a6172ef84ba47320f5b1bcee2649c7eebc",
+      "git_blob": "45edccc23efe05dfb40f5b3809f1616bdbeed660"
+    },
+    {
+      "path": "pq_recovery/chain-sole-plan-refresh-20261105/compare.raw.json",
+      "bytes": 3332,
+      "sha256": "2b9a87cc70b4eb4739f29dcddd411d4df5f9cb6d9a8af0a0226cc2c70e1a4a70",
+      "git_blob": "227670c929de8d2d12875e1dae64c09c44cc498c"
+    },
+    {
+      "path": "pq_recovery/chain-sole-plan-refresh-20261105/compare-full.raw.json",
+      "bytes": 79415,
+      "sha256": "b5b2930e0da7d83e617d3068c5751e58971ce5d7ed3a4dc3a7c92e6c1c25e470",
+      "git_blob": "08814ac0b0f0e0bf8b0d36078de7ed0a50c9d5a4"
+    },
+    {
+      "path": "pq_recovery/chain-sole-plan-refresh-20261105/workflows.raw.json",
+      "bytes": 53383,
+      "sha256": "96f0223d9dc97dde4cfe81b55441f54efaef77c5267f560be18f7855500c4dde",
+      "git_blob": "49759c3778b5d0d444e5b2934c1d31745b54c929"
+    },
+    {
+      "path": "pq_recovery/chain-sole-plan-refresh-20261105/sole_plan.raw.json",
+      "bytes": 761966,
+      "sha256": "d3bfca34bf7ee70ff77a00511eaea966d35c62a38b19ca784d69c7f5b51dd50c",
+      "git_blob": "1cac4b660e419dfbb940139ba192b4442093a649"
+    },
+    {
+      "path": "pq_recovery/chain-sole-plan-refresh-20261105/observation-times.json",
+      "bytes": 133,
+      "sha256": "30786d55cd4408efaecf6222fd6a99b27c8d85d5f09f9dbd85b0304b221f7536",
+      "git_blob": "4b529887663f32fb515c3fe0909798627ed786fd"
+    },
+    {
+      "path": "pq_recovery/chain-sole-plan-trigger-review/workflow-inventory.json",
+      "bytes": 23409,
+      "sha256": "1616275ff29dbc062d7b8ff503e0c075213ad5812af77739c8be83966d30e460",
+      "git_blob": "31a743e9bc4b375b03f6149ca4bcb34e985d4ab6"
+    },
+    {
+      "path": "pq_recovery/chain-sole-plan-trigger-review/entry-source-inventory.json",
+      "bytes": 2927,
+      "sha256": "4258ab6e1478c143c93fcb6b5f0d03f95aaa87da11dbbd50fbbf9c2e4fd938ed",
+      "git_blob": "a31c9654eba42fcfca046014c441f9829cc06824"
+    },
+    {
+      "path": "pq_recovery/chain-sole-plan-trigger-review/model-control-source-inventory.json",
+      "bytes": 4256,
+      "sha256": "c0e56f747daaef04e70f9e3cd05c6e70f5afff1e076015d01a56d8c8560f8f93",
+      "git_blob": "c246d8362e57f9d49f4d5f4830f004f9c87de8cd"
+    },
+    {
+      "path": "pq_recovery/chain-sole-plan-trigger-review/unit-source-inventory.json",
+      "bytes": 2095,
+      "sha256": "6a9d5f79c280eab7979168270c760eda020219d1f9f1e0dde26b85b94cecb4bd",
+      "git_blob": "01067495eab977cc600f3e8f3b80ca8e8d8f21bc"
+    },
+    {
+      "path": "pq_recovery/chain-sole-plan-trigger-review/review.json",
+      "bytes": 16586,
+      "sha256": "97fa5b926f0dd934264f1416b9a198ff29c1035004551b6dffdf47897ea96342",
+      "git_blob": "e1f10795bbd77e165a8c00af614bd84aaccd4b9d"
+    },
+    {
+      "path": "pq_recovery/chain-sole-plan-trigger-review/delivery-manifest.json",
+      "bytes": 18794,
+      "sha256": "678d1892bbad8e0e6971113b4c21359a1daa4badbf87c0b4fc845cdbe57614bc",
+      "git_blob": "ff96fa80ca51660d3e322354c064ea1e1db2d3a3"
+    },
+    {
+      "path": "pq_recovery/chain-sole-plan-refresh-20261105/source/docs/development/TRNM_AI_NATIVE_BLOCKCHAIN_DEVELOPMENT_PLAN.md",
+      "bytes": 552675,
+      "sha256": "063df6d6047e08addb40d92c01bf85c2ff1386788369bfd7ba1d22e0a421198b",
+      "git_blob": "3787d8321ee9f4eb5a0fe5794dcad3f997afecb1"
+    }
+  ]
+}

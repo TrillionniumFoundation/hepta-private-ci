@@ -1,0 +1,68 @@
+{
+  "binding_method": "opened ELF fd then same-PID exec, matched to actual libtest outcome",
+  "config_file": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h2-native-attempt-1/effect-pq-product.fd-capture-config.json",
+  "config_sha256": "72952488a89fadcabf521464c52946af0b7eeb6d62492cc0c523f5720ce51e0f",
+  "runner_sha256": "903c622365c9cf863f1ae4b5eca2d4a0501c9f86862538c48f94f126a82ba62b",
+  "records": [
+    {
+      "schema": "hepta-nextest-fd-runner-v1",
+      "status": "pre_exec_fd_bound",
+      "source": {
+        "commit": "620cb63ae9b58904483005bcb2c4e1507df99539",
+        "tree": "f2cebe6d99deca596c170922b8e60d66648d7393",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "42a7e79bf271684caccb12c864449b57bf72755a10a367b67d985f277e91a5c2"
+      },
+      "gate": "effect-pq-product",
+      "capture_config_sha256": "72952488a89fadcabf521464c52946af0b7eeb6d62492cc0c523f5720ce51e0f",
+      "runner_sha256": "903c622365c9cf863f1ae4b5eca2d4a0501c9f86862538c48f94f126a82ba62b",
+      "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/automation_effect_pq_product-7d30b95d8c11439c",
+      "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h2-native-attempt-1/fd-executed-binaries-effect-pq-product/2321aed715fa85f0368bc2e9d6aabd86c3299872f5c01199e04970fb62655f42.elf",
+      "sha256": "2321aed715fa85f0368bc2e9d6aabd86c3299872f5c01199e04970fb62655f42",
+      "bytes": 99261752,
+      "device": 2050,
+      "inode": 58259819,
+      "mtime_ns": 1793911337236472648,
+      "ctime_ns": 1793911337248472261,
+      "pid": 884690,
+      "start_ticks": "98900377",
+      "coordinator": {
+        "pid": 823760,
+        "start_ticks": "98793384"
+      },
+      "coordinator_descendant_verified": true,
+      "pre_exec_fd_identity_verified": true,
+      "phase": "run",
+      "exact_test": "pq_effect_survives_owned_agentd_kill_after_provider_fsync_without_resend",
+      "argv": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/automation_effect_pq_product-7d30b95d8c11439c",
+        "--exact",
+        "pq_effect_survives_owned_agentd_kill_after_provider_fsync_without_resend",
+        "--nocapture"
+      ],
+      "observed_selected_tests": [
+        "pq_effect_survives_owned_agentd_kill_after_provider_fsync_without_resend"
+      ],
+      "captured_unix": 1793911338.6162975,
+      "scope": "opened image bound immediately before same-PID fd-exec; requires matching actual libtest outcome and absence of exec failure"
+    }
+  ],
+  "errors": [
+    "AssertionError('no actual run outcomes or selected skip')"
+  ],
+  "unique_actual_elf_sha256": [],
+  "runner_declared_binary_counts": [
+    1
+  ],
+  "actual_cases": [],
+  "per_case_bijection_verified": false,
+  "scope": "exact test images only; no retrospective H1 credit or complete dynamic runtime closure",
+  "live_polling_corroboration": {
+    "file": "effect-pq-product.live-polled-binaries.json",
+    "sha256": "2778c582b81107b9b6c2fde5b2e6009bd1f89dca6dddf824e95902ccc348d4aa",
+    "captured_processes": 1,
+    "errors": [],
+    "scope": "polling may miss short processes; no assignment of missed processes from other captures"
+  }
+}

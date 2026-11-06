@@ -1,0 +1,2233 @@
+{
+  "records": [
+    {
+      "source": {
+        "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+        "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "40341fe44840b6de0ca3cff68785116e5cfbca81c9a77124a82ca72b63234039"
+      },
+      "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+      "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h4-native-attempt-1/executed-binaries-recovery-signed/a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b.elf",
+      "sha256": "a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b",
+      "bytes": 504302232,
+      "device": 2050,
+      "inode": 58259820,
+      "mtime_ns": 1793915315746562678,
+      "ctime_ns": 1793915315791561539,
+      "argv": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "--exact",
+        "evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields",
+        "--nocapture"
+      ],
+      "pid": 1143181,
+      "start_ticks": "99654593",
+      "wrapper_pid": 1142926,
+      "wrapper_start_ticks": "99654235",
+      "wrapper_descendant_verified": true,
+      "post_open_task_and_exe_verified": true,
+      "process_before": {
+        "pid": 1143181,
+        "ppid": 1143020,
+        "start_ticks": "99654593",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "--exact",
+          "evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "image": {
+          "device": 2050,
+          "inode": 58259820,
+          "bytes": 504302232,
+          "mtime_ns": 1793915315746562678,
+          "ctime_ns": 1793915315791561539
+        }
+      },
+      "process_after": {
+        "pid": 1143181,
+        "ppid": 1143020,
+        "start_ticks": "99654593",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "--exact",
+          "evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "image": {
+          "device": 2050,
+          "inode": 58259820,
+          "bytes": 504302232,
+          "mtime_ns": 1793915315746562678,
+          "ctime_ns": 1793915315791561539
+        }
+      },
+      "direct_parent_before": {
+        "pid": 1143020,
+        "ppid": 1142998,
+        "start_ticks": "99654402",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(=evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures) | test(=evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields) | test(=evidence_frontier::tests::recovery_frontier_pq_survives_store_close_and_reopen) | test(=evidence_frontier::tests::recovery_frontier_read_only_preflight_never_binds_or_changes_the_image) | test(=evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile) | test(=evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature) | test(=evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key) | test(=evidence_frontier::tests::recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots) | test(=evidence_frontier::tests::recovery_frontier_pq_rejects_invocation_only_database_rollbacks)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-lp4gtwo3/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "direct_parent_after": {
+        "pid": 1143020,
+        "ppid": 1142998,
+        "start_ticks": "99654402",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(=evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures) | test(=evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields) | test(=evidence_frontier::tests::recovery_frontier_pq_survives_store_close_and_reopen) | test(=evidence_frontier::tests::recovery_frontier_read_only_preflight_never_binds_or_changes_the_image) | test(=evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile) | test(=evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature) | test(=evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key) | test(=evidence_frontier::tests::recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots) | test(=evidence_frontier::tests::recovery_frontier_pq_rejects_invocation_only_database_rollbacks)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-lp4gtwo3/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "ancestor_chain_before": [
+        {
+          "pid": 1143181,
+          "ppid": 1143020,
+          "start_ticks": "99654593"
+        },
+        {
+          "pid": 1143020,
+          "ppid": 1142998,
+          "start_ticks": "99654402"
+        },
+        {
+          "pid": 1142998,
+          "ppid": 1142997,
+          "start_ticks": "99654378"
+        },
+        {
+          "pid": 1142997,
+          "ppid": 1142995,
+          "start_ticks": "99654372"
+        },
+        {
+          "pid": 1142995,
+          "ppid": 1142926,
+          "start_ticks": "99654372"
+        },
+        {
+          "pid": 1142926,
+          "ppid": 1122369,
+          "start_ticks": "99654235"
+        }
+      ],
+      "ancestor_chain_after": [
+        {
+          "pid": 1143181,
+          "ppid": 1143020,
+          "start_ticks": "99654593"
+        },
+        {
+          "pid": 1143020,
+          "ppid": 1142998,
+          "start_ticks": "99654402"
+        },
+        {
+          "pid": 1142998,
+          "ppid": 1142997,
+          "start_ticks": "99654378"
+        },
+        {
+          "pid": 1142997,
+          "ppid": 1142995,
+          "start_ticks": "99654372"
+        },
+        {
+          "pid": 1142995,
+          "ppid": 1142926,
+          "start_ticks": "99654372"
+        },
+        {
+          "pid": 1142926,
+          "ppid": 1122369,
+          "start_ticks": "99654235"
+        }
+      ],
+      "relationship_observed_before_unix": 1793918882.9266446,
+      "relationship_observed_after_unix": 1793918882.9288912,
+      "held_child_and_parent_images_stable_through_retention": true,
+      "relationship_scope": "two live observations around actual child and direct-parent FD opens; no claim either task remains alive at copy completion",
+      "observed_selected_tests": [
+        "evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields"
+      ],
+      "captured_unix": 1793918886.0787601
+    },
+    {
+      "source": {
+        "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+        "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "40341fe44840b6de0ca3cff68785116e5cfbca81c9a77124a82ca72b63234039"
+      },
+      "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+      "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h4-native-attempt-1/executed-binaries-recovery-signed/a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b.elf",
+      "sha256": "a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b",
+      "bytes": 504302232,
+      "device": 2050,
+      "inode": 58259820,
+      "mtime_ns": 1793915315746562678,
+      "ctime_ns": 1793915315791561539,
+      "argv": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "--exact",
+        "evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry",
+        "--nocapture"
+      ],
+      "pid": 1143274,
+      "start_ticks": "99654958",
+      "wrapper_pid": 1142926,
+      "wrapper_start_ticks": "99654235",
+      "wrapper_descendant_verified": true,
+      "post_open_task_and_exe_verified": true,
+      "process_before": {
+        "pid": 1143274,
+        "ppid": 1143020,
+        "start_ticks": "99654958",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "--exact",
+          "evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "image": {
+          "device": 2050,
+          "inode": 58259820,
+          "bytes": 504302232,
+          "mtime_ns": 1793915315746562678,
+          "ctime_ns": 1793915315791561539
+        }
+      },
+      "process_after": {
+        "pid": 1143274,
+        "ppid": 1143020,
+        "start_ticks": "99654958",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "--exact",
+          "evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "image": {
+          "device": 2050,
+          "inode": 58259820,
+          "bytes": 504302232,
+          "mtime_ns": 1793915315746562678,
+          "ctime_ns": 1793915315791561539
+        }
+      },
+      "direct_parent_before": {
+        "pid": 1143020,
+        "ppid": 1142998,
+        "start_ticks": "99654402",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(=evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures) | test(=evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields) | test(=evidence_frontier::tests::recovery_frontier_pq_survives_store_close_and_reopen) | test(=evidence_frontier::tests::recovery_frontier_read_only_preflight_never_binds_or_changes_the_image) | test(=evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile) | test(=evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature) | test(=evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key) | test(=evidence_frontier::tests::recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots) | test(=evidence_frontier::tests::recovery_frontier_pq_rejects_invocation_only_database_rollbacks)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-lp4gtwo3/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "direct_parent_after": {
+        "pid": 1143020,
+        "ppid": 1142998,
+        "start_ticks": "99654402",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(=evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures) | test(=evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields) | test(=evidence_frontier::tests::recovery_frontier_pq_survives_store_close_and_reopen) | test(=evidence_frontier::tests::recovery_frontier_read_only_preflight_never_binds_or_changes_the_image) | test(=evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile) | test(=evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature) | test(=evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key) | test(=evidence_frontier::tests::recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots) | test(=evidence_frontier::tests::recovery_frontier_pq_rejects_invocation_only_database_rollbacks)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-lp4gtwo3/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "ancestor_chain_before": [
+        {
+          "pid": 1143274,
+          "ppid": 1143020,
+          "start_ticks": "99654958"
+        },
+        {
+          "pid": 1143020,
+          "ppid": 1142998,
+          "start_ticks": "99654402"
+        },
+        {
+          "pid": 1142998,
+          "ppid": 1142997,
+          "start_ticks": "99654378"
+        },
+        {
+          "pid": 1142997,
+          "ppid": 1142995,
+          "start_ticks": "99654372"
+        },
+        {
+          "pid": 1142995,
+          "ppid": 1142926,
+          "start_ticks": "99654372"
+        },
+        {
+          "pid": 1142926,
+          "ppid": 1122369,
+          "start_ticks": "99654235"
+        }
+      ],
+      "ancestor_chain_after": [
+        {
+          "pid": 1143274,
+          "ppid": 1143020,
+          "start_ticks": "99654958"
+        },
+        {
+          "pid": 1143020,
+          "ppid": 1142998,
+          "start_ticks": "99654402"
+        },
+        {
+          "pid": 1142998,
+          "ppid": 1142997,
+          "start_ticks": "99654378"
+        },
+        {
+          "pid": 1142997,
+          "ppid": 1142995,
+          "start_ticks": "99654372"
+        },
+        {
+          "pid": 1142995,
+          "ppid": 1142926,
+          "start_ticks": "99654372"
+        },
+        {
+          "pid": 1142926,
+          "ppid": 1122369,
+          "start_ticks": "99654235"
+        }
+      ],
+      "relationship_observed_before_unix": 1793918886.9409544,
+      "relationship_observed_after_unix": 1793918886.9431844,
+      "held_child_and_parent_images_stable_through_retention": true,
+      "relationship_scope": "two live observations around actual child and direct-parent FD opens; no claim either task remains alive at copy completion",
+      "observed_selected_tests": [
+        "evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry"
+      ],
+      "captured_unix": 1793918886.9432032
+    },
+    {
+      "source": {
+        "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+        "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "40341fe44840b6de0ca3cff68785116e5cfbca81c9a77124a82ca72b63234039"
+      },
+      "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+      "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h4-native-attempt-1/executed-binaries-recovery-signed/a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b.elf",
+      "sha256": "a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b",
+      "bytes": 504302232,
+      "device": 2050,
+      "inode": 58259820,
+      "mtime_ns": 1793915315746562678,
+      "ctime_ns": 1793915315791561539,
+      "argv": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "--exact",
+        "evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor",
+        "--nocapture"
+      ],
+      "pid": 1143331,
+      "start_ticks": "99655299",
+      "wrapper_pid": 1142926,
+      "wrapper_start_ticks": "99654235",
+      "wrapper_descendant_verified": true,
+      "post_open_task_and_exe_verified": true,
+      "process_before": {
+        "pid": 1143331,
+        "ppid": 1143020,
+        "start_ticks": "99655299",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "--exact",
+          "evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "image": {
+          "device": 2050,
+          "inode": 58259820,
+          "bytes": 504302232,
+          "mtime_ns": 1793915315746562678,
+          "ctime_ns": 1793915315791561539
+        }
+      },
+      "process_after": {
+        "pid": 1143331,
+        "ppid": 1143020,
+        "start_ticks": "99655299",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "--exact",
+          "evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "image": {
+          "device": 2050,
+          "inode": 58259820,
+          "bytes": 504302232,
+          "mtime_ns": 1793915315746562678,
+          "ctime_ns": 1793915315791561539
+        }
+      },
+      "direct_parent_before": {
+        "pid": 1143020,
+        "ppid": 1142998,
+        "start_ticks": "99654402",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(=evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures) | test(=evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields) | test(=evidence_frontier::tests::recovery_frontier_pq_survives_store_close_and_reopen) | test(=evidence_frontier::tests::recovery_frontier_read_only_preflight_never_binds_or_changes_the_image) | test(=evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile) | test(=evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature) | test(=evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key) | test(=evidence_frontier::tests::recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots) | test(=evidence_frontier::tests::recovery_frontier_pq_rejects_invocation_only_database_rollbacks)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-lp4gtwo3/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "direct_parent_after": {
+        "pid": 1143020,
+        "ppid": 1142998,
+        "start_ticks": "99654402",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(=evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures) | test(=evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields) | test(=evidence_frontier::tests::recovery_frontier_pq_survives_store_close_and_reopen) | test(=evidence_frontier::tests::recovery_frontier_read_only_preflight_never_binds_or_changes_the_image) | test(=evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile) | test(=evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature) | test(=evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key) | test(=evidence_frontier::tests::recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots) | test(=evidence_frontier::tests::recovery_frontier_pq_rejects_invocation_only_database_rollbacks)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-lp4gtwo3/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "ancestor_chain_before": [
+        {
+          "pid": 1143331,
+          "ppid": 1143020,
+          "start_ticks": "99655299"
+        },
+        {
+          "pid": 1143020,
+          "ppid": 1142998,
+          "start_ticks": "99654402"
+        },
+        {
+          "pid": 1142998,
+          "ppid": 1142997,
+          "start_ticks": "99654378"
+        },
+        {
+          "pid": 1142997,
+          "ppid": 1142995,
+          "start_ticks": "99654372"
+        },
+        {
+          "pid": 1142995,
+          "ppid": 1142926,
+          "start_ticks": "99654372"
+        },
+        {
+          "pid": 1142926,
+          "ppid": 1122369,
+          "start_ticks": "99654235"
+        }
+      ],
+      "ancestor_chain_after": [
+        {
+          "pid": 1143331,
+          "ppid": 1143020,
+          "start_ticks": "99655299"
+        },
+        {
+          "pid": 1143020,
+          "ppid": 1142998,
+          "start_ticks": "99654402"
+        },
+        {
+          "pid": 1142998,
+          "ppid": 1142997,
+          "start_ticks": "99654378"
+        },
+        {
+          "pid": 1142997,
+          "ppid": 1142995,
+          "start_ticks": "99654372"
+        },
+        {
+          "pid": 1142995,
+          "ppid": 1142926,
+          "start_ticks": "99654372"
+        },
+        {
+          "pid": 1142926,
+          "ppid": 1122369,
+          "start_ticks": "99654235"
+        }
+      ],
+      "relationship_observed_before_unix": 1793918890.2462375,
+      "relationship_observed_after_unix": 1793918890.2484505,
+      "held_child_and_parent_images_stable_through_retention": true,
+      "relationship_scope": "two live observations around actual child and direct-parent FD opens; no claim either task remains alive at copy completion",
+      "observed_selected_tests": [
+        "evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor"
+      ],
+      "captured_unix": 1793918890.24847
+    },
+    {
+      "source": {
+        "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+        "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "40341fe44840b6de0ca3cff68785116e5cfbca81c9a77124a82ca72b63234039"
+      },
+      "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+      "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h4-native-attempt-1/executed-binaries-recovery-signed/a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b.elf",
+      "sha256": "a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b",
+      "bytes": 504302232,
+      "device": 2050,
+      "inode": 58259820,
+      "mtime_ns": 1793915315746562678,
+      "ctime_ns": 1793915315791561539,
+      "argv": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "--exact",
+        "evidence_frontier::tests::recovery_frontier_pq_rejects_invocation_only_database_rollbacks",
+        "--nocapture"
+      ],
+      "pid": 1143411,
+      "start_ticks": "99655684",
+      "wrapper_pid": 1142926,
+      "wrapper_start_ticks": "99654235",
+      "wrapper_descendant_verified": true,
+      "post_open_task_and_exe_verified": true,
+      "process_before": {
+        "pid": 1143411,
+        "ppid": 1143020,
+        "start_ticks": "99655684",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "--exact",
+          "evidence_frontier::tests::recovery_frontier_pq_rejects_invocation_only_database_rollbacks",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "image": {
+          "device": 2050,
+          "inode": 58259820,
+          "bytes": 504302232,
+          "mtime_ns": 1793915315746562678,
+          "ctime_ns": 1793915315791561539
+        }
+      },
+      "process_after": {
+        "pid": 1143411,
+        "ppid": 1143020,
+        "start_ticks": "99655684",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "--exact",
+          "evidence_frontier::tests::recovery_frontier_pq_rejects_invocation_only_database_rollbacks",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "image": {
+          "device": 2050,
+          "inode": 58259820,
+          "bytes": 504302232,
+          "mtime_ns": 1793915315746562678,
+          "ctime_ns": 1793915315791561539
+        }
+      },
+      "direct_parent_before": {
+        "pid": 1143020,
+        "ppid": 1142998,
+        "start_ticks": "99654402",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(=evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures) | test(=evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields) | test(=evidence_frontier::tests::recovery_frontier_pq_survives_store_close_and_reopen) | test(=evidence_frontier::tests::recovery_frontier_read_only_preflight_never_binds_or_changes_the_image) | test(=evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile) | test(=evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature) | test(=evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key) | test(=evidence_frontier::tests::recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots) | test(=evidence_frontier::tests::recovery_frontier_pq_rejects_invocation_only_database_rollbacks)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-lp4gtwo3/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "direct_parent_after": {
+        "pid": 1143020,
+        "ppid": 1142998,
+        "start_ticks": "99654402",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(=evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures) | test(=evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields) | test(=evidence_frontier::tests::recovery_frontier_pq_survives_store_close_and_reopen) | test(=evidence_frontier::tests::recovery_frontier_read_only_preflight_never_binds_or_changes_the_image) | test(=evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile) | test(=evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature) | test(=evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key) | test(=evidence_frontier::tests::recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots) | test(=evidence_frontier::tests::recovery_frontier_pq_rejects_invocation_only_database_rollbacks)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-lp4gtwo3/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "ancestor_chain_before": [
+        {
+          "pid": 1143411,
+          "ppid": 1143020,
+          "start_ticks": "99655684"
+        },
+        {
+          "pid": 1143020,
+          "ppid": 1142998,
+          "start_ticks": "99654402"
+        },
+        {
+          "pid": 1142998,
+          "ppid": 1142997,
+          "start_ticks": "99654378"
+        },
+        {
+          "pid": 1142997,
+          "ppid": 1142995,
+          "start_ticks": "99654372"
+        },
+        {
+          "pid": 1142995,
+          "ppid": 1142926,
+          "start_ticks": "99654372"
+        },
+        {
+          "pid": 1142926,
+          "ppid": 1122369,
+          "start_ticks": "99654235"
+        }
+      ],
+      "ancestor_chain_after": [
+        {
+          "pid": 1143411,
+          "ppid": 1143020,
+          "start_ticks": "99655684"
+        },
+        {
+          "pid": 1143020,
+          "ppid": 1142998,
+          "start_ticks": "99654402"
+        },
+        {
+          "pid": 1142998,
+          "ppid": 1142997,
+          "start_ticks": "99654378"
+        },
+        {
+          "pid": 1142997,
+          "ppid": 1142995,
+          "start_ticks": "99654372"
+        },
+        {
+          "pid": 1142995,
+          "ppid": 1142926,
+          "start_ticks": "99654372"
+        },
+        {
+          "pid": 1142926,
+          "ppid": 1122369,
+          "start_ticks": "99654235"
+        }
+      ],
+      "relationship_observed_before_unix": 1793918893.9055815,
+      "relationship_observed_after_unix": 1793918893.9078925,
+      "held_child_and_parent_images_stable_through_retention": true,
+      "relationship_scope": "two live observations around actual child and direct-parent FD opens; no claim either task remains alive at copy completion",
+      "observed_selected_tests": [
+        "evidence_frontier::tests::recovery_frontier_pq_rejects_invocation_only_database_rollbacks"
+      ],
+      "captured_unix": 1793918893.9079127
+    },
+    {
+      "source": {
+        "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+        "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "40341fe44840b6de0ca3cff68785116e5cfbca81c9a77124a82ca72b63234039"
+      },
+      "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+      "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h4-native-attempt-1/executed-binaries-recovery-signed/a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b.elf",
+      "sha256": "a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b",
+      "bytes": 504302232,
+      "device": 2050,
+      "inode": 58259820,
+      "mtime_ns": 1793915315746562678,
+      "ctime_ns": 1793915315791561539,
+      "argv": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "--exact",
+        "evidence_frontier::tests::recovery_frontier_pq_survives_store_close_and_reopen",
+        "--nocapture"
+      ],
+      "pid": 1143539,
+      "start_ticks": "99656090",
+      "wrapper_pid": 1142926,
+      "wrapper_start_ticks": "99654235",
+      "wrapper_descendant_verified": true,
+      "post_open_task_and_exe_verified": true,
+      "process_before": {
+        "pid": 1143539,
+        "ppid": 1143020,
+        "start_ticks": "99656090",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "--exact",
+          "evidence_frontier::tests::recovery_frontier_pq_survives_store_close_and_reopen",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "image": {
+          "device": 2050,
+          "inode": 58259820,
+          "bytes": 504302232,
+          "mtime_ns": 1793915315746562678,
+          "ctime_ns": 1793915315791561539
+        }
+      },
+      "process_after": {
+        "pid": 1143539,
+        "ppid": 1143020,
+        "start_ticks": "99656090",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "--exact",
+          "evidence_frontier::tests::recovery_frontier_pq_survives_store_close_and_reopen",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "image": {
+          "device": 2050,
+          "inode": 58259820,
+          "bytes": 504302232,
+          "mtime_ns": 1793915315746562678,
+          "ctime_ns": 1793915315791561539
+        }
+      },
+      "direct_parent_before": {
+        "pid": 1143020,
+        "ppid": 1142998,
+        "start_ticks": "99654402",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(=evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures) | test(=evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields) | test(=evidence_frontier::tests::recovery_frontier_pq_survives_store_close_and_reopen) | test(=evidence_frontier::tests::recovery_frontier_read_only_preflight_never_binds_or_changes_the_image) | test(=evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile) | test(=evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature) | test(=evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key) | test(=evidence_frontier::tests::recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots) | test(=evidence_frontier::tests::recovery_frontier_pq_rejects_invocation_only_database_rollbacks)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-lp4gtwo3/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "direct_parent_after": {
+        "pid": 1143020,
+        "ppid": 1142998,
+        "start_ticks": "99654402",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(=evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures) | test(=evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields) | test(=evidence_frontier::tests::recovery_frontier_pq_survives_store_close_and_reopen) | test(=evidence_frontier::tests::recovery_frontier_read_only_preflight_never_binds_or_changes_the_image) | test(=evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile) | test(=evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature) | test(=evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key) | test(=evidence_frontier::tests::recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots) | test(=evidence_frontier::tests::recovery_frontier_pq_rejects_invocation_only_database_rollbacks)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-lp4gtwo3/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "ancestor_chain_before": [
+        {
+          "pid": 1143539,
+          "ppid": 1143020,
+          "start_ticks": "99656090"
+        },
+        {
+          "pid": 1143020,
+          "ppid": 1142998,
+          "start_ticks": "99654402"
+        },
+        {
+          "pid": 1142998,
+          "ppid": 1142997,
+          "start_ticks": "99654378"
+        },
+        {
+          "pid": 1142997,
+          "ppid": 1142995,
+          "start_ticks": "99654372"
+        },
+        {
+          "pid": 1142995,
+          "ppid": 1142926,
+          "start_ticks": "99654372"
+        },
+        {
+          "pid": 1142926,
+          "ppid": 1122369,
+          "start_ticks": "99654235"
+        }
+      ],
+      "ancestor_chain_after": [
+        {
+          "pid": 1143539,
+          "ppid": 1143020,
+          "start_ticks": "99656090"
+        },
+        {
+          "pid": 1143020,
+          "ppid": 1142998,
+          "start_ticks": "99654402"
+        },
+        {
+          "pid": 1142998,
+          "ppid": 1142997,
+          "start_ticks": "99654378"
+        },
+        {
+          "pid": 1142997,
+          "ppid": 1142995,
+          "start_ticks": "99654372"
+        },
+        {
+          "pid": 1142995,
+          "ppid": 1142926,
+          "start_ticks": "99654372"
+        },
+        {
+          "pid": 1142926,
+          "ppid": 1122369,
+          "start_ticks": "99654235"
+        }
+      ],
+      "relationship_observed_before_unix": 1793918898.0139394,
+      "relationship_observed_after_unix": 1793918898.0161316,
+      "held_child_and_parent_images_stable_through_retention": true,
+      "relationship_scope": "two live observations around actual child and direct-parent FD opens; no claim either task remains alive at copy completion",
+      "observed_selected_tests": [
+        "evidence_frontier::tests::recovery_frontier_pq_survives_store_close_and_reopen"
+      ],
+      "captured_unix": 1793918898.0161502
+    },
+    {
+      "source": {
+        "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+        "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "40341fe44840b6de0ca3cff68785116e5cfbca81c9a77124a82ca72b63234039"
+      },
+      "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+      "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h4-native-attempt-1/executed-binaries-recovery-signed/a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b.elf",
+      "sha256": "a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b",
+      "bytes": 504302232,
+      "device": 2050,
+      "inode": 58259820,
+      "mtime_ns": 1793915315746562678,
+      "ctime_ns": 1793915315791561539,
+      "argv": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "--exact",
+        "evidence_frontier::tests::recovery_frontier_read_only_preflight_never_binds_or_changes_the_image",
+        "--nocapture"
+      ],
+      "pid": 1143597,
+      "start_ticks": "99656461",
+      "wrapper_pid": 1142926,
+      "wrapper_start_ticks": "99654235",
+      "wrapper_descendant_verified": true,
+      "post_open_task_and_exe_verified": true,
+      "process_before": {
+        "pid": 1143597,
+        "ppid": 1143020,
+        "start_ticks": "99656461",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "--exact",
+          "evidence_frontier::tests::recovery_frontier_read_only_preflight_never_binds_or_changes_the_image",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "image": {
+          "device": 2050,
+          "inode": 58259820,
+          "bytes": 504302232,
+          "mtime_ns": 1793915315746562678,
+          "ctime_ns": 1793915315791561539
+        }
+      },
+      "process_after": {
+        "pid": 1143597,
+        "ppid": 1143020,
+        "start_ticks": "99656461",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "--exact",
+          "evidence_frontier::tests::recovery_frontier_read_only_preflight_never_binds_or_changes_the_image",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "image": {
+          "device": 2050,
+          "inode": 58259820,
+          "bytes": 504302232,
+          "mtime_ns": 1793915315746562678,
+          "ctime_ns": 1793915315791561539
+        }
+      },
+      "direct_parent_before": {
+        "pid": 1143020,
+        "ppid": 1142998,
+        "start_ticks": "99654402",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(=evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures) | test(=evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields) | test(=evidence_frontier::tests::recovery_frontier_pq_survives_store_close_and_reopen) | test(=evidence_frontier::tests::recovery_frontier_read_only_preflight_never_binds_or_changes_the_image) | test(=evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile) | test(=evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature) | test(=evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key) | test(=evidence_frontier::tests::recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots) | test(=evidence_frontier::tests::recovery_frontier_pq_rejects_invocation_only_database_rollbacks)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-lp4gtwo3/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "direct_parent_after": {
+        "pid": 1143020,
+        "ppid": 1142998,
+        "start_ticks": "99654402",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(=evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures) | test(=evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields) | test(=evidence_frontier::tests::recovery_frontier_pq_survives_store_close_and_reopen) | test(=evidence_frontier::tests::recovery_frontier_read_only_preflight_never_binds_or_changes_the_image) | test(=evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile) | test(=evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature) | test(=evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key) | test(=evidence_frontier::tests::recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots) | test(=evidence_frontier::tests::recovery_frontier_pq_rejects_invocation_only_database_rollbacks)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-lp4gtwo3/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "ancestor_chain_before": [
+        {
+          "pid": 1143597,
+          "ppid": 1143020,
+          "start_ticks": "99656461"
+        },
+        {
+          "pid": 1143020,
+          "ppid": 1142998,
+          "start_ticks": "99654402"
+        },
+        {
+          "pid": 1142998,
+          "ppid": 1142997,
+          "start_ticks": "99654378"
+        },
+        {
+          "pid": 1142997,
+          "ppid": 1142995,
+          "start_ticks": "99654372"
+        },
+        {
+          "pid": 1142995,
+          "ppid": 1142926,
+          "start_ticks": "99654372"
+        },
+        {
+          "pid": 1142926,
+          "ppid": 1122369,
+          "start_ticks": "99654235"
+        }
+      ],
+      "ancestor_chain_after": [
+        {
+          "pid": 1143597,
+          "ppid": 1143020,
+          "start_ticks": "99656461"
+        },
+        {
+          "pid": 1143020,
+          "ppid": 1142998,
+          "start_ticks": "99654402"
+        },
+        {
+          "pid": 1142998,
+          "ppid": 1142997,
+          "start_ticks": "99654378"
+        },
+        {
+          "pid": 1142997,
+          "ppid": 1142995,
+          "start_ticks": "99654372"
+        },
+        {
+          "pid": 1142995,
+          "ppid": 1142926,
+          "start_ticks": "99654372"
+        },
+        {
+          "pid": 1142926,
+          "ppid": 1122369,
+          "start_ticks": "99654235"
+        }
+      ],
+      "relationship_observed_before_unix": 1793918901.6628826,
+      "relationship_observed_after_unix": 1793918901.6650538,
+      "held_child_and_parent_images_stable_through_retention": true,
+      "relationship_scope": "two live observations around actual child and direct-parent FD opens; no claim either task remains alive at copy completion",
+      "observed_selected_tests": [
+        "evidence_frontier::tests::recovery_frontier_read_only_preflight_never_binds_or_changes_the_image"
+      ],
+      "captured_unix": 1793918901.665072
+    },
+    {
+      "source": {
+        "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+        "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "40341fe44840b6de0ca3cff68785116e5cfbca81c9a77124a82ca72b63234039"
+      },
+      "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+      "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h4-native-attempt-1/executed-binaries-recovery-signed/a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b.elf",
+      "sha256": "a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b",
+      "bytes": 504302232,
+      "device": 2050,
+      "inode": 58259820,
+      "mtime_ns": 1793915315746562678,
+      "ctime_ns": 1793915315791561539,
+      "argv": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "--exact",
+        "evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures",
+        "--nocapture"
+      ],
+      "pid": 1143738,
+      "start_ticks": "99656843",
+      "wrapper_pid": 1142926,
+      "wrapper_start_ticks": "99654235",
+      "wrapper_descendant_verified": true,
+      "post_open_task_and_exe_verified": true,
+      "process_before": {
+        "pid": 1143738,
+        "ppid": 1143020,
+        "start_ticks": "99656843",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "--exact",
+          "evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "image": {
+          "device": 2050,
+          "inode": 58259820,
+          "bytes": 504302232,
+          "mtime_ns": 1793915315746562678,
+          "ctime_ns": 1793915315791561539
+        }
+      },
+      "process_after": {
+        "pid": 1143738,
+        "ppid": 1143020,
+        "start_ticks": "99656843",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "--exact",
+          "evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "image": {
+          "device": 2050,
+          "inode": 58259820,
+          "bytes": 504302232,
+          "mtime_ns": 1793915315746562678,
+          "ctime_ns": 1793915315791561539
+        }
+      },
+      "direct_parent_before": {
+        "pid": 1143020,
+        "ppid": 1142998,
+        "start_ticks": "99654402",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(=evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures) | test(=evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields) | test(=evidence_frontier::tests::recovery_frontier_pq_survives_store_close_and_reopen) | test(=evidence_frontier::tests::recovery_frontier_read_only_preflight_never_binds_or_changes_the_image) | test(=evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile) | test(=evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature) | test(=evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key) | test(=evidence_frontier::tests::recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots) | test(=evidence_frontier::tests::recovery_frontier_pq_rejects_invocation_only_database_rollbacks)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-lp4gtwo3/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "direct_parent_after": {
+        "pid": 1143020,
+        "ppid": 1142998,
+        "start_ticks": "99654402",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(=evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures) | test(=evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields) | test(=evidence_frontier::tests::recovery_frontier_pq_survives_store_close_and_reopen) | test(=evidence_frontier::tests::recovery_frontier_read_only_preflight_never_binds_or_changes_the_image) | test(=evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile) | test(=evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature) | test(=evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key) | test(=evidence_frontier::tests::recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots) | test(=evidence_frontier::tests::recovery_frontier_pq_rejects_invocation_only_database_rollbacks)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-lp4gtwo3/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "ancestor_chain_before": [
+        {
+          "pid": 1143738,
+          "ppid": 1143020,
+          "start_ticks": "99656843"
+        },
+        {
+          "pid": 1143020,
+          "ppid": 1142998,
+          "start_ticks": "99654402"
+        },
+        {
+          "pid": 1142998,
+          "ppid": 1142997,
+          "start_ticks": "99654378"
+        },
+        {
+          "pid": 1142997,
+          "ppid": 1142995,
+          "start_ticks": "99654372"
+        },
+        {
+          "pid": 1142995,
+          "ppid": 1142926,
+          "start_ticks": "99654372"
+        },
+        {
+          "pid": 1142926,
+          "ppid": 1122369,
+          "start_ticks": "99654235"
+        }
+      ],
+      "ancestor_chain_after": [
+        {
+          "pid": 1143738,
+          "ppid": 1143020,
+          "start_ticks": "99656843"
+        },
+        {
+          "pid": 1143020,
+          "ppid": 1142998,
+          "start_ticks": "99654402"
+        },
+        {
+          "pid": 1142998,
+          "ppid": 1142997,
+          "start_ticks": "99654378"
+        },
+        {
+          "pid": 1142997,
+          "ppid": 1142995,
+          "start_ticks": "99654372"
+        },
+        {
+          "pid": 1142995,
+          "ppid": 1142926,
+          "start_ticks": "99654372"
+        },
+        {
+          "pid": 1142926,
+          "ppid": 1122369,
+          "start_ticks": "99654235"
+        }
+      ],
+      "relationship_observed_before_unix": 1793918905.692315,
+      "relationship_observed_after_unix": 1793918905.694879,
+      "held_child_and_parent_images_stable_through_retention": true,
+      "relationship_scope": "two live observations around actual child and direct-parent FD opens; no claim either task remains alive at copy completion",
+      "observed_selected_tests": [
+        "evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures"
+      ],
+      "captured_unix": 1793918905.6949012
+    },
+    {
+      "source": {
+        "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+        "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "40341fe44840b6de0ca3cff68785116e5cfbca81c9a77124a82ca72b63234039"
+      },
+      "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+      "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h4-native-attempt-1/executed-binaries-recovery-signed/a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b.elf",
+      "sha256": "a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b",
+      "bytes": 504302232,
+      "device": 2050,
+      "inode": 58259820,
+      "mtime_ns": 1793915315746562678,
+      "ctime_ns": 1793915315791561539,
+      "argv": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "--exact",
+        "evidence_frontier::tests::recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots",
+        "--nocapture"
+      ],
+      "pid": 1143816,
+      "start_ticks": "99657231",
+      "wrapper_pid": 1142926,
+      "wrapper_start_ticks": "99654235",
+      "wrapper_descendant_verified": true,
+      "post_open_task_and_exe_verified": true,
+      "process_before": {
+        "pid": 1143816,
+        "ppid": 1143020,
+        "start_ticks": "99657231",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "--exact",
+          "evidence_frontier::tests::recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "image": {
+          "device": 2050,
+          "inode": 58259820,
+          "bytes": 504302232,
+          "mtime_ns": 1793915315746562678,
+          "ctime_ns": 1793915315791561539
+        }
+      },
+      "process_after": {
+        "pid": 1143816,
+        "ppid": 1143020,
+        "start_ticks": "99657231",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "--exact",
+          "evidence_frontier::tests::recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "image": {
+          "device": 2050,
+          "inode": 58259820,
+          "bytes": 504302232,
+          "mtime_ns": 1793915315746562678,
+          "ctime_ns": 1793915315791561539
+        }
+      },
+      "direct_parent_before": {
+        "pid": 1143020,
+        "ppid": 1142998,
+        "start_ticks": "99654402",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(=evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures) | test(=evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields) | test(=evidence_frontier::tests::recovery_frontier_pq_survives_store_close_and_reopen) | test(=evidence_frontier::tests::recovery_frontier_read_only_preflight_never_binds_or_changes_the_image) | test(=evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile) | test(=evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature) | test(=evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key) | test(=evidence_frontier::tests::recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots) | test(=evidence_frontier::tests::recovery_frontier_pq_rejects_invocation_only_database_rollbacks)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-lp4gtwo3/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "direct_parent_after": {
+        "pid": 1143020,
+        "ppid": 1142998,
+        "start_ticks": "99654402",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(=evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures) | test(=evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields) | test(=evidence_frontier::tests::recovery_frontier_pq_survives_store_close_and_reopen) | test(=evidence_frontier::tests::recovery_frontier_read_only_preflight_never_binds_or_changes_the_image) | test(=evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile) | test(=evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature) | test(=evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key) | test(=evidence_frontier::tests::recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots) | test(=evidence_frontier::tests::recovery_frontier_pq_rejects_invocation_only_database_rollbacks)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-lp4gtwo3/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "ancestor_chain_before": [
+        {
+          "pid": 1143816,
+          "ppid": 1143020,
+          "start_ticks": "99657231"
+        },
+        {
+          "pid": 1143020,
+          "ppid": 1142998,
+          "start_ticks": "99654402"
+        },
+        {
+          "pid": 1142998,
+          "ppid": 1142997,
+          "start_ticks": "99654378"
+        },
+        {
+          "pid": 1142997,
+          "ppid": 1142995,
+          "start_ticks": "99654372"
+        },
+        {
+          "pid": 1142995,
+          "ppid": 1142926,
+          "start_ticks": "99654372"
+        },
+        {
+          "pid": 1142926,
+          "ppid": 1122369,
+          "start_ticks": "99654235"
+        }
+      ],
+      "ancestor_chain_after": [
+        {
+          "pid": 1143816,
+          "ppid": 1143020,
+          "start_ticks": "99657231"
+        },
+        {
+          "pid": 1143020,
+          "ppid": 1142998,
+          "start_ticks": "99654402"
+        },
+        {
+          "pid": 1142998,
+          "ppid": 1142997,
+          "start_ticks": "99654378"
+        },
+        {
+          "pid": 1142997,
+          "ppid": 1142995,
+          "start_ticks": "99654372"
+        },
+        {
+          "pid": 1142995,
+          "ppid": 1142926,
+          "start_ticks": "99654372"
+        },
+        {
+          "pid": 1142926,
+          "ppid": 1122369,
+          "start_ticks": "99654235"
+        }
+      ],
+      "relationship_observed_before_unix": 1793918909.6484897,
+      "relationship_observed_after_unix": 1793918909.651186,
+      "held_child_and_parent_images_stable_through_retention": true,
+      "relationship_scope": "two live observations around actual child and direct-parent FD opens; no claim either task remains alive at copy completion",
+      "observed_selected_tests": [
+        "evidence_frontier::tests::recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots"
+      ],
+      "captured_unix": 1793918909.6512074
+    },
+    {
+      "source": {
+        "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+        "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "40341fe44840b6de0ca3cff68785116e5cfbca81c9a77124a82ca72b63234039"
+      },
+      "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+      "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h4-native-attempt-1/executed-binaries-recovery-signed/a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b.elf",
+      "sha256": "a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b",
+      "bytes": 504302232,
+      "device": 2050,
+      "inode": 58259820,
+      "mtime_ns": 1793915315746562678,
+      "ctime_ns": 1793915315791561539,
+      "argv": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "--exact",
+        "evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile",
+        "--nocapture"
+      ],
+      "pid": 1143966,
+      "start_ticks": "99657628",
+      "wrapper_pid": 1142926,
+      "wrapper_start_ticks": "99654235",
+      "wrapper_descendant_verified": true,
+      "post_open_task_and_exe_verified": true,
+      "process_before": {
+        "pid": 1143966,
+        "ppid": 1143020,
+        "start_ticks": "99657628",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "--exact",
+          "evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "image": {
+          "device": 2050,
+          "inode": 58259820,
+          "bytes": 504302232,
+          "mtime_ns": 1793915315746562678,
+          "ctime_ns": 1793915315791561539
+        }
+      },
+      "process_after": {
+        "pid": 1143966,
+        "ppid": 1143020,
+        "start_ticks": "99657628",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "--exact",
+          "evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "image": {
+          "device": 2050,
+          "inode": 58259820,
+          "bytes": 504302232,
+          "mtime_ns": 1793915315746562678,
+          "ctime_ns": 1793915315791561539
+        }
+      },
+      "direct_parent_before": {
+        "pid": 1143020,
+        "ppid": 1142998,
+        "start_ticks": "99654402",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(=evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures) | test(=evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields) | test(=evidence_frontier::tests::recovery_frontier_pq_survives_store_close_and_reopen) | test(=evidence_frontier::tests::recovery_frontier_read_only_preflight_never_binds_or_changes_the_image) | test(=evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile) | test(=evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature) | test(=evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key) | test(=evidence_frontier::tests::recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots) | test(=evidence_frontier::tests::recovery_frontier_pq_rejects_invocation_only_database_rollbacks)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-lp4gtwo3/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "direct_parent_after": {
+        "pid": 1143020,
+        "ppid": 1142998,
+        "start_ticks": "99654402",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(=evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures) | test(=evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields) | test(=evidence_frontier::tests::recovery_frontier_pq_survives_store_close_and_reopen) | test(=evidence_frontier::tests::recovery_frontier_read_only_preflight_never_binds_or_changes_the_image) | test(=evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile) | test(=evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature) | test(=evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key) | test(=evidence_frontier::tests::recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots) | test(=evidence_frontier::tests::recovery_frontier_pq_rejects_invocation_only_database_rollbacks)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-lp4gtwo3/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "ancestor_chain_before": [
+        {
+          "pid": 1143966,
+          "ppid": 1143020,
+          "start_ticks": "99657628"
+        },
+        {
+          "pid": 1143020,
+          "ppid": 1142998,
+          "start_ticks": "99654402"
+        },
+        {
+          "pid": 1142998,
+          "ppid": 1142997,
+          "start_ticks": "99654378"
+        },
+        {
+          "pid": 1142997,
+          "ppid": 1142995,
+          "start_ticks": "99654372"
+        },
+        {
+          "pid": 1142995,
+          "ppid": 1142926,
+          "start_ticks": "99654372"
+        },
+        {
+          "pid": 1142926,
+          "ppid": 1122369,
+          "start_ticks": "99654235"
+        }
+      ],
+      "ancestor_chain_after": [
+        {
+          "pid": 1143966,
+          "ppid": 1143020,
+          "start_ticks": "99657628"
+        },
+        {
+          "pid": 1143020,
+          "ppid": 1142998,
+          "start_ticks": "99654402"
+        },
+        {
+          "pid": 1142998,
+          "ppid": 1142997,
+          "start_ticks": "99654378"
+        },
+        {
+          "pid": 1142997,
+          "ppid": 1142995,
+          "start_ticks": "99654372"
+        },
+        {
+          "pid": 1142995,
+          "ppid": 1142926,
+          "start_ticks": "99654372"
+        },
+        {
+          "pid": 1142926,
+          "ppid": 1122369,
+          "start_ticks": "99654235"
+        }
+      ],
+      "relationship_observed_before_unix": 1793918913.4066086,
+      "relationship_observed_after_unix": 1793918913.4089596,
+      "held_child_and_parent_images_stable_through_retention": true,
+      "relationship_scope": "two live observations around actual child and direct-parent FD opens; no claim either task remains alive at copy completion",
+      "observed_selected_tests": [
+        "evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile"
+      ],
+      "captured_unix": 1793918913.408979
+    },
+    {
+      "source": {
+        "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+        "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "40341fe44840b6de0ca3cff68785116e5cfbca81c9a77124a82ca72b63234039"
+      },
+      "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+      "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h4-native-attempt-1/executed-binaries-recovery-signed/a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b.elf",
+      "sha256": "a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b",
+      "bytes": 504302232,
+      "device": 2050,
+      "inode": 58259820,
+      "mtime_ns": 1793915315746562678,
+      "ctime_ns": 1793915315791561539,
+      "argv": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "--exact",
+        "evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature",
+        "--nocapture"
+      ],
+      "pid": 1144015,
+      "start_ticks": "99658001",
+      "wrapper_pid": 1142926,
+      "wrapper_start_ticks": "99654235",
+      "wrapper_descendant_verified": true,
+      "post_open_task_and_exe_verified": true,
+      "process_before": {
+        "pid": 1144015,
+        "ppid": 1143020,
+        "start_ticks": "99658001",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "--exact",
+          "evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "image": {
+          "device": 2050,
+          "inode": 58259820,
+          "bytes": 504302232,
+          "mtime_ns": 1793915315746562678,
+          "ctime_ns": 1793915315791561539
+        }
+      },
+      "process_after": {
+        "pid": 1144015,
+        "ppid": 1143020,
+        "start_ticks": "99658001",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "--exact",
+          "evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "image": {
+          "device": 2050,
+          "inode": 58259820,
+          "bytes": 504302232,
+          "mtime_ns": 1793915315746562678,
+          "ctime_ns": 1793915315791561539
+        }
+      },
+      "direct_parent_before": {
+        "pid": 1143020,
+        "ppid": 1142998,
+        "start_ticks": "99654402",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(=evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures) | test(=evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields) | test(=evidence_frontier::tests::recovery_frontier_pq_survives_store_close_and_reopen) | test(=evidence_frontier::tests::recovery_frontier_read_only_preflight_never_binds_or_changes_the_image) | test(=evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile) | test(=evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature) | test(=evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key) | test(=evidence_frontier::tests::recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots) | test(=evidence_frontier::tests::recovery_frontier_pq_rejects_invocation_only_database_rollbacks)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-lp4gtwo3/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "direct_parent_after": {
+        "pid": 1143020,
+        "ppid": 1142998,
+        "start_ticks": "99654402",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(=evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures) | test(=evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields) | test(=evidence_frontier::tests::recovery_frontier_pq_survives_store_close_and_reopen) | test(=evidence_frontier::tests::recovery_frontier_read_only_preflight_never_binds_or_changes_the_image) | test(=evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile) | test(=evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature) | test(=evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key) | test(=evidence_frontier::tests::recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots) | test(=evidence_frontier::tests::recovery_frontier_pq_rejects_invocation_only_database_rollbacks)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-lp4gtwo3/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "ancestor_chain_before": [
+        {
+          "pid": 1144015,
+          "ppid": 1143020,
+          "start_ticks": "99658001"
+        },
+        {
+          "pid": 1143020,
+          "ppid": 1142998,
+          "start_ticks": "99654402"
+        },
+        {
+          "pid": 1142998,
+          "ppid": 1142997,
+          "start_ticks": "99654378"
+        },
+        {
+          "pid": 1142997,
+          "ppid": 1142995,
+          "start_ticks": "99654372"
+        },
+        {
+          "pid": 1142995,
+          "ppid": 1142926,
+          "start_ticks": "99654372"
+        },
+        {
+          "pid": 1142926,
+          "ppid": 1122369,
+          "start_ticks": "99654235"
+        }
+      ],
+      "ancestor_chain_after": [
+        {
+          "pid": 1144015,
+          "ppid": 1143020,
+          "start_ticks": "99658001"
+        },
+        {
+          "pid": 1143020,
+          "ppid": 1142998,
+          "start_ticks": "99654402"
+        },
+        {
+          "pid": 1142998,
+          "ppid": 1142997,
+          "start_ticks": "99654378"
+        },
+        {
+          "pid": 1142997,
+          "ppid": 1142995,
+          "start_ticks": "99654372"
+        },
+        {
+          "pid": 1142995,
+          "ppid": 1142926,
+          "start_ticks": "99654372"
+        },
+        {
+          "pid": 1142926,
+          "ppid": 1122369,
+          "start_ticks": "99654235"
+        }
+      ],
+      "relationship_observed_before_unix": 1793918917.1493883,
+      "relationship_observed_after_unix": 1793918917.1518757,
+      "held_child_and_parent_images_stable_through_retention": true,
+      "relationship_scope": "two live observations around actual child and direct-parent FD opens; no claim either task remains alive at copy completion",
+      "observed_selected_tests": [
+        "evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature"
+      ],
+      "captured_unix": 1793918917.1518955
+    },
+    {
+      "source": {
+        "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+        "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "40341fe44840b6de0ca3cff68785116e5cfbca81c9a77124a82ca72b63234039"
+      },
+      "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+      "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h4-native-attempt-1/executed-binaries-recovery-signed/a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b.elf",
+      "sha256": "a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b",
+      "bytes": 504302232,
+      "device": 2050,
+      "inode": 58259820,
+      "mtime_ns": 1793915315746562678,
+      "ctime_ns": 1793915315791561539,
+      "argv": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "--exact",
+        "evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key",
+        "--nocapture"
+      ],
+      "pid": 1144248,
+      "start_ticks": "99658376",
+      "wrapper_pid": 1142926,
+      "wrapper_start_ticks": "99654235",
+      "wrapper_descendant_verified": true,
+      "post_open_task_and_exe_verified": true,
+      "process_before": {
+        "pid": 1144248,
+        "ppid": 1143020,
+        "start_ticks": "99658376",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "--exact",
+          "evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "image": {
+          "device": 2050,
+          "inode": 58259820,
+          "bytes": 504302232,
+          "mtime_ns": 1793915315746562678,
+          "ctime_ns": 1793915315791561539
+        }
+      },
+      "process_after": {
+        "pid": 1144248,
+        "ppid": 1143020,
+        "start_ticks": "99658376",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "--exact",
+          "evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "image": {
+          "device": 2050,
+          "inode": 58259820,
+          "bytes": 504302232,
+          "mtime_ns": 1793915315746562678,
+          "ctime_ns": 1793915315791561539
+        }
+      },
+      "direct_parent_before": {
+        "pid": 1143020,
+        "ppid": 1142998,
+        "start_ticks": "99654402",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(=evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures) | test(=evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields) | test(=evidence_frontier::tests::recovery_frontier_pq_survives_store_close_and_reopen) | test(=evidence_frontier::tests::recovery_frontier_read_only_preflight_never_binds_or_changes_the_image) | test(=evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile) | test(=evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature) | test(=evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key) | test(=evidence_frontier::tests::recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots) | test(=evidence_frontier::tests::recovery_frontier_pq_rejects_invocation_only_database_rollbacks)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-lp4gtwo3/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "direct_parent_after": {
+        "pid": 1143020,
+        "ppid": 1142998,
+        "start_ticks": "99654402",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(=evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures) | test(=evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields) | test(=evidence_frontier::tests::recovery_frontier_pq_survives_store_close_and_reopen) | test(=evidence_frontier::tests::recovery_frontier_read_only_preflight_never_binds_or_changes_the_image) | test(=evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile) | test(=evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature) | test(=evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key) | test(=evidence_frontier::tests::recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots) | test(=evidence_frontier::tests::recovery_frontier_pq_rejects_invocation_only_database_rollbacks)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-lp4gtwo3/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "ancestor_chain_before": [
+        {
+          "pid": 1144248,
+          "ppid": 1143020,
+          "start_ticks": "99658376"
+        },
+        {
+          "pid": 1143020,
+          "ppid": 1142998,
+          "start_ticks": "99654402"
+        },
+        {
+          "pid": 1142998,
+          "ppid": 1142997,
+          "start_ticks": "99654378"
+        },
+        {
+          "pid": 1142997,
+          "ppid": 1142995,
+          "start_ticks": "99654372"
+        },
+        {
+          "pid": 1142995,
+          "ppid": 1142926,
+          "start_ticks": "99654372"
+        },
+        {
+          "pid": 1142926,
+          "ppid": 1122369,
+          "start_ticks": "99654235"
+        }
+      ],
+      "ancestor_chain_after": [
+        {
+          "pid": 1144248,
+          "ppid": 1143020,
+          "start_ticks": "99658376"
+        },
+        {
+          "pid": 1143020,
+          "ppid": 1142998,
+          "start_ticks": "99654402"
+        },
+        {
+          "pid": 1142998,
+          "ppid": 1142997,
+          "start_ticks": "99654378"
+        },
+        {
+          "pid": 1142997,
+          "ppid": 1142995,
+          "start_ticks": "99654372"
+        },
+        {
+          "pid": 1142995,
+          "ppid": 1142926,
+          "start_ticks": "99654372"
+        },
+        {
+          "pid": 1142926,
+          "ppid": 1122369,
+          "start_ticks": "99654235"
+        }
+      ],
+      "relationship_observed_before_unix": 1793918920.8945193,
+      "relationship_observed_after_unix": 1793918920.8971243,
+      "held_child_and_parent_images_stable_through_retention": true,
+      "relationship_scope": "two live observations around actual child and direct-parent FD opens; no claim either task remains alive at copy completion",
+      "observed_selected_tests": [
+        "evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key"
+      ],
+      "captured_unix": 1793918920.8971438
+    }
+  ],
+  "errors": [],
+  "unique_actual_elf_sha256": [
+    "a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b"
+  ],
+  "observed_selected_tests": [
+    "evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields",
+    "evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry",
+    "evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor",
+    "evidence_frontier::tests::recovery_frontier_pq_rejects_invocation_only_database_rollbacks",
+    "evidence_frontier::tests::recovery_frontier_pq_survives_store_close_and_reopen",
+    "evidence_frontier::tests::recovery_frontier_read_only_preflight_never_binds_or_changes_the_image",
+    "evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures",
+    "evidence_frontier::tests::recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots",
+    "evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile",
+    "evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature",
+    "evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key"
+  ],
+  "capture_scope": "actual executing test-image binding; polling may miss individual short-lived cases"
+}

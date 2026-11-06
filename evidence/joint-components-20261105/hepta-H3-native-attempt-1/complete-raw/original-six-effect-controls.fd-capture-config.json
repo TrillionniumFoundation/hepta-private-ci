@@ -1,0 +1,27 @@
+{
+  "schema": "hepta-nextest-fd-runner-v1",
+  "target": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target",
+  "crate": "codex_hepta_agentd",
+  "gate": "original-six-effect-controls",
+  "directory": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h3-native-attempt-1/fd-executed-binaries-original-six-effect-controls",
+  "selected_names": [
+    "automation_effect_host::identity_tests::host_provider_identity_legacy_http_queries_original_occurrence_and_retains_terminal_fact",
+    "automation_effect_host::identity_tests::host_provider_identity_terminal_execute_uses_store_owner_not_shared_subject",
+    "automation_effect_host::recovery_tests::host_provider_recovery_does_not_authorize_new_dispatch_with_an_expired_lease",
+    "automation_effect_host::recovery_tests::host_provider_recovery_observes_original_ack_after_lease_expiry_and_restart",
+    "automation_effect_host::tests::host_dispatches_exact_wire_payload_once",
+    "automation_effect_host::tests::host_provider_receipt_survives_unknown_and_rejects_operation_substitution"
+  ],
+  "predicate": null,
+  "source": {
+    "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+    "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+    "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+    "environment_file": "native-environment.json",
+    "environment_sha256": "3ca2ffadd3c6439f1401f04929b5ee4e8747a813de6d2647f139f8efb3b311f6"
+  },
+  "coordinator": {
+    "pid": 989453,
+    "start_ticks": "99250221"
+  }
+}

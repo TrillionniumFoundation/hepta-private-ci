@@ -1,0 +1,42 @@
+{
+  "bundle_members_verified": 3,
+  "cloud_controls": {
+    "description": "Direct local stdlib/mock controls plus one Git fixture-config read. No actual credential, Git network/ref write or remote desktop operation.",
+    "failed": 0,
+    "passed": 5,
+    "seconds_from_raw": 0.012
+  },
+  "credential_material_used": false,
+  "exact_request_matches_bootstrap": true,
+  "files": {
+    "controls.log": {
+      "bytes": 1007,
+      "sha256": "1b4e0c8fbcfe11c30a60d1082f10a9db5d59e461e0537ae35fba918686c34598"
+    },
+    "controls.raw.json": {
+      "bytes": 1145,
+      "sha256": "e1f6f26a8944cc9fa49c5552d50194534e51d6075160afa322efd5e54d89f1be"
+    },
+    "credential_get_only.py": {
+      "bytes": 2853,
+      "sha256": "d1aea46d21622d92c9065ebba414725a31aa56c61984cff09f5bd8cd467c61d1"
+    },
+    "delivery-manifest.json": {
+      "bytes": 2651,
+      "sha256": "9b4c9d968246d91b78ca21d2adaddd7c6797b8c1196104bedcce9b49d4879ec1"
+    },
+    "run_archive_transport.py": {
+      "bytes": 27989,
+      "sha256": "f4b7ba1081047dbd33a7b4b7ffc584b8c41a7d8b3d7f99d97cd8e96939f70dd9"
+    },
+    "test_transport_controls.py": {
+      "bytes": 7005,
+      "sha256": "34358e22803ba57e47389ccf528e25d9b0a00d24c67b5f3b9d1d902108f01214"
+    }
+  },
+  "members_verified": 11,
+  "native_credit": false,
+  "remote_execution": false,
+  "schema": "cloud-package-and-bounded-controls-verification-v1",
+  "status": "PASS"
+}

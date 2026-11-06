@@ -1,0 +1,189 @@
+{
+  "failures": [],
+  "large_raw_archive_compression_started": false,
+  "later_native_started": false,
+  "observed_utc": "2026-11-05T18:55:48Z",
+  "phases": [
+    {
+      "cgroup_exists": false,
+      "completed_utc": "2026-11-05T17:58:32Z",
+      "exact_owned_cgroup": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a1acdb5dc1-fc05-5751.service",
+      "job_id": "1a1acdb5dc1-fc05-5751",
+      "manifest_passed": true,
+      "manifest_sha256": "80dc877b1546d0ff0fe88f41ff9605c478939be4196c6f8edde35e856b381a38",
+      "owned_descendant_pids": [],
+      "phase": "collector",
+      "root_observation": null,
+      "runtime_process": null,
+      "source_after": {
+        "base": null,
+        "candidate": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+        "kind": "head",
+        "prospective_merge": null,
+        "schema": "trnm-ci-source-v1",
+        "tested_commit": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+        "tested_tree": "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14",
+        "tests_executed_by_identity_check": false,
+        "tracked_bytes": 985270534,
+        "tracked_entries": 10357,
+        "tracked_worktree_verified": true
+      },
+      "source_before": {
+        "base": null,
+        "candidate": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+        "kind": "head",
+        "prospective_merge": null,
+        "schema": "trnm-ci-source-v1",
+        "tested_commit": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+        "tested_tree": "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14",
+        "tests_executed_by_identity_check": false,
+        "tracked_bytes": 985270534,
+        "tracked_entries": 10357,
+        "tracked_worktree_verified": true
+      }
+    },
+    {
+      "cgroup_exists": false,
+      "completed_utc": "2026-11-05T18:32:16Z",
+      "exact_owned_cgroup": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a1acdfc3c9-fc05-5767.service",
+      "job_id": "1a1acdfc3c9-fc05-5767",
+      "manifest_passed": true,
+      "manifest_sha256": "9fb57646c5cb5f1e7f7ddf393dff2e87678c105c3c8f6a32a024113172ea8243",
+      "owned_descendant_pids": [],
+      "phase": "legal-v3",
+      "root_observation": {
+        "identity_absent": true,
+        "pid": 365444
+      },
+      "runtime_process": {
+        "cgroup": "0::/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a1acdfc3c9-fc05-5767.service\n",
+        "parent_pid": 365398,
+        "pid": 365444,
+        "start_ticks": "97937620"
+      },
+      "source_after": {
+        "base": null,
+        "candidate": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+        "kind": "head",
+        "prospective_merge": null,
+        "schema": "trnm-ci-source-v1",
+        "tested_commit": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+        "tested_tree": "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14",
+        "tests_executed_by_identity_check": false,
+        "tracked_bytes": 985270534,
+        "tracked_entries": 10357,
+        "tracked_worktree_verified": true
+      },
+      "source_before": {
+        "base": null,
+        "candidate": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+        "kind": "head",
+        "prospective_merge": null,
+        "schema": "trnm-ci-source-v1",
+        "tested_commit": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+        "tested_tree": "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14",
+        "tests_executed_by_identity_check": false,
+        "tracked_bytes": 985270534,
+        "tracked_entries": 10357,
+        "tracked_worktree_verified": true
+      }
+    },
+    {
+      "cgroup_exists": false,
+      "completed_utc": "2026-11-05T18:40:32Z",
+      "exact_owned_cgroup": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a1ad02a53b-fc05-5805.service",
+      "job_id": "1a1ad02a53b-fc05-5805",
+      "manifest_passed": true,
+      "manifest_sha256": "4a9dfc5816609ced333757f18e89b277084fe61ecd7996ac7ae9024fdd6eedb8",
+      "owned_descendant_pids": [],
+      "phase": "reused-v3",
+      "root_observation": {
+        "identity_absent": true,
+        "pid": 477451
+      },
+      "runtime_process": {
+        "cgroup": "0::/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a1ad02a53b-fc05-5805.service\n",
+        "parent_pid": 477385,
+        "pid": 477451,
+        "start_ticks": "98166356"
+      },
+      "source_after": {
+        "base": null,
+        "candidate": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+        "kind": "head",
+        "prospective_merge": null,
+        "schema": "trnm-ci-source-v1",
+        "tested_commit": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+        "tested_tree": "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14",
+        "tests_executed_by_identity_check": false,
+        "tracked_bytes": 985270534,
+        "tracked_entries": 10357,
+        "tracked_worktree_verified": true
+      },
+      "source_before": {
+        "base": null,
+        "candidate": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+        "kind": "head",
+        "prospective_merge": null,
+        "schema": "trnm-ci-source-v1",
+        "tested_commit": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+        "tested_tree": "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14",
+        "tests_executed_by_identity_check": false,
+        "tracked_bytes": 985270534,
+        "tracked_entries": 10357,
+        "tracked_worktree_verified": true
+      }
+    },
+    {
+      "cgroup_exists": false,
+      "completed_utc": "2026-11-05T18:54:10Z",
+      "exact_owned_cgroup": "/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a1ad0f6922-fc05-5850.service",
+      "job_id": "1a1ad0f6922-fc05-5850",
+      "manifest_passed": true,
+      "manifest_sha256": "1bbdf2343a4ea70e33f9d05916b8e5e6619c7140063004e909000f379ed2a592",
+      "owned_descendant_pids": [],
+      "phase": "false-trace-full-limb",
+      "root_observation": {
+        "identity_absent": true,
+        "pid": 527097
+      },
+      "runtime_process": {
+        "cgroup": "0::/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a1ad0f6922-fc05-5850.service\n",
+        "parent_pid": 527064,
+        "pid": 527097,
+        "start_ticks": "98249937"
+      },
+      "source_after": {
+        "base": null,
+        "candidate": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+        "kind": "head",
+        "prospective_merge": null,
+        "schema": "trnm-ci-source-v1",
+        "tested_commit": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+        "tested_tree": "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14",
+        "tests_executed_by_identity_check": false,
+        "tracked_bytes": 985270534,
+        "tracked_entries": 10357,
+        "tracked_worktree_verified": true
+      },
+      "source_before": {
+        "base": null,
+        "candidate": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+        "kind": "head",
+        "prospective_merge": null,
+        "schema": "trnm-ci-source-v1",
+        "tested_commit": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+        "tested_tree": "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14",
+        "tests_executed_by_identity_check": false,
+        "tracked_bytes": 985270534,
+        "tracked_entries": 10357,
+        "tracked_worktree_verified": true
+      }
+    }
+  ],
+  "released": true,
+  "schema": "trnm-c4-cost-window-owned-process-release-v1",
+  "scope": "exact previously owned runtime cgroups, including child cgroups, and recorded coordinator PID/start-tick identities; no processes killed",
+  "source_commit": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+  "source_tree": "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14"
+}

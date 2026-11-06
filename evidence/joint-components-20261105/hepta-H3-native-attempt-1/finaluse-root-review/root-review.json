@@ -1,0 +1,88 @@
+{
+  "schema": "root-H3-finaluse-exact-failure-review-v1",
+  "source": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+  "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+  "native_result": "FAILED exit1 at22:00:36.769Z; no outer timeout",
+  "original_command_outcome": "50 passed, 0 failed, exit0",
+  "raw_FD_result_bijection": true,
+  "live_record_count": 50,
+  "unmatched_live_record_count": 1,
+  "fd_evidence_sha256": "7c9de5bc44ad89894322f84c3e0a4afa2fada4de60ec0142e4ec52d8f55c19d6",
+  "live_evidence_sha256": "685c07e12f13a047f4f211bf60e38e30784ef09e36a733dad340bdefd29c76e5",
+  "exact_unmatched_live_record": {
+    "source": {
+      "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+      "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+      "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+      "environment_file": "native-environment.json",
+      "environment_sha256": "3ca2ffadd3c6439f1401f04929b5ee4e8747a813de6d2647f139f8efb3b311f6"
+    },
+    "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_contracts-fa3b553af0cee5ab",
+    "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h3-native-attempt-1/executed-binaries-final-use-profile-controls/1383f1adbe7721e1ff362142f0ce35ef755bece0ae2a188cb28e375a2332b923.elf",
+    "sha256": "1383f1adbe7721e1ff362142f0ce35ef755bece0ae2a188cb28e375a2332b923",
+    "bytes": 14103072,
+    "device": 2050,
+    "inode": 58259858,
+    "pid": 1038111,
+    "start_ticks": "99368575",
+    "wrapper_pid": 1036137,
+    "wrapper_start_ticks": "99364994",
+    "wrapper_descendant_verified": true,
+    "post_open_task_and_exe_verified": true,
+    "observed_selected_tests": [
+      "final_use::tests::killed_owner_releases_lock_but_keeps_claim"
+    ],
+    "captured_unix": 1793916019.798545
+  },
+  "corresponding_original_top_level_fd_record": {
+    "schema": "hepta-nextest-fd-runner-v1",
+    "status": "pre_exec_fd_bound",
+    "source": {
+      "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+      "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+      "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+      "environment_file": "native-environment.json",
+      "environment_sha256": "3ca2ffadd3c6439f1401f04929b5ee4e8747a813de6d2647f139f8efb3b311f6"
+    },
+    "gate": "final-use-profile-controls",
+    "capture_config_sha256": "051d452aa070a96b00338536a3c5533626d6324fb95ed57161b8c616e7a72202",
+    "runner_sha256": "9679cc6e11762c29b4c0ee92dd7715d3fce0555a6f8e0e10ed9d0b007951381a",
+    "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_contracts-fa3b553af0cee5ab",
+    "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h3-native-attempt-1/fd-executed-binaries-final-use-profile-controls/1383f1adbe7721e1ff362142f0ce35ef755bece0ae2a188cb28e375a2332b923.elf",
+    "expected_binary_target": "codex_hepta_contracts",
+    "sha256": "1383f1adbe7721e1ff362142f0ce35ef755bece0ae2a188cb28e375a2332b923",
+    "bytes": 14103072,
+    "device": 2050,
+    "inode": 58259858,
+    "mtime_ns": 1793916015991088519,
+    "ctime_ns": 1793916015993088465,
+    "pid": 1038102,
+    "start_ticks": "99368558",
+    "coordinator": {
+      "pid": 989453,
+      "start_ticks": "99250221"
+    },
+    "coordinator_descendant_verified": true,
+    "pre_exec_fd_identity_verified": true,
+    "phase": "run",
+    "exact_test": "final_use::tests::killed_owner_releases_lock_but_keeps_claim",
+    "argv": [
+      "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_contracts-fa3b553af0cee5ab",
+      "--exact",
+      "final_use::tests::killed_owner_releases_lock_but_keeps_claim",
+      "--nocapture"
+    ],
+    "observed_selected_tests": [
+      "final_use::tests::killed_owner_releases_lock_but_keeps_claim"
+    ],
+    "captured_unix": 1793916019.730341,
+    "scope": "opened image bound immediately before same-PID fd-exec; requires matching actual libtest outcome and absence of exec failure"
+  },
+  "source_test_blob": "76ea4ef5aab6c25c806fcbfe6a0f24329b60dc69",
+  "source_test_sha256": "7beefbf2cd04a6981d2f6e12e4fb3436e115d6f824438c5931f3cc7c691f82b7",
+  "static_source_finding": "This exact test self-spawns current_exe with the same --exact case and --nocapture, sets HEPTA_FINAL_USE_TEST_CHILD_STATE, suppresses child output, waits up to5s for durable ready, requires StateLocked, kills/waits child, then requires AlreadyClaimed after reopen.",
+  "inference": "The extra observed same-image/same-case process is consistent with that deliberate child. H3 live records did not retain full argv or its actual parent chain, so this static agreement cannot retroactively supply a runtime parent binding.",
+  "repair_scope": "A new frozen external observer configuration may capture and strictly validate the explicit child/outer-FD relationship while retaining exact top-level case bijections and refusing every unknown mismatch. It must run a fresh original-budget complete sequence.",
+  "H3_requalified": false,
+  "all_joint_gates": "HOLD"
+}

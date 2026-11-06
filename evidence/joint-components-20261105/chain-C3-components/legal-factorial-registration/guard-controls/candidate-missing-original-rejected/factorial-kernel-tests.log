@@ -1,0 +1,9 @@
+test pon_work::legal_attempt::tests::losing_attempt_still_replays_every_transcript_tile_without_lazy_serialization ... ok
+test pon_work::legal_attempt::tests::every_stage_cancellation_returns_no_attempt_and_does_not_poison_retry ... ok
+test pon_work::legal_attempt::tests::changed_challenge_and_task_never_gain_acceptance_from_cached_product ... ok
+test pon_work::legal_attempt::tests::boundary_target_is_inclusive_and_zero_target_refuses_before_work ... ok
+test pon_work::legal_attempt::tests::preparation_never_reduces_noncanonical_fields_or_wrong_shapes ... ok
+test pon_work::legal_attempt::tests::sparse_preparation_matches_dense_and_independent_full_field_proofs ... ok
+test pon_work::legal_attempt::tests::sparse_preparation_rejects_hidden_noncanonical_words_and_wrong_lengths ... ok
+test pon_work::legal_attempt::tests::sparse_setup_keeps_complete_misses_callbacks_and_cancelled_retry ... ok
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s

@@ -1,0 +1,178 @@
+--- approved-H1-exporter-8ba375f3.py
++++ H2-exporter-prefix-extension.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Losslessly package only explicitly pinned, already retained executable bytes.
++"""Package pinned H2 complete images and a verified lossless partial-byte range.
+ 
+ This is an archive operation, never a build, test, binary discovery, or capture.
+ An independently reviewed plan and a completed owned-process release proof are
+@@ -157,7 +157,7 @@
+ def validate_plan(raw):
+     plan = json.loads(raw)
+     require(plan["schema"] == "hepta-actual-retained-elf-export-plan-v1", "unknown plan schema")
+-    require(plan["phase"] in ("H1", "H2"), "explicit source phase required")
++    require(plan["phase"] == "H2", "this export requires the explicit H2 source phase")
+     require(GIT_SHA.fullmatch(plan["source_commit"]) and GIT_SHA.fullmatch(plan["source_tree"]),
+             "full Git source identity required")
+     require(plan["part_bytes"] == PART_BYTES and plan["native_reexecution"] is False,
+@@ -182,6 +182,23 @@
+         hashes.add(row["sha256"])
+     total = sum(row["bytes"] for row in plan["files"])
+     require(total == plan["total_elf_bytes"] and total <= MAX_SOURCE_TOTAL, "exact total differs")
++    by_hash = {row["sha256"]: row for row in plan["files"]}
++    require(len(plan["partial_prefixes"]) == 1, "one explicitly pinned H2 partial artifact required")
++    partial = plan["partial_prefixes"][0]
++    partial_path = canonical_absolute(partial["source_path"])
++    require(partial_path.is_relative_to(root) and str(partial_path) not in sources and
++            partial["aliases"] == [str(partial_path)], "exact distinct retained partial path required")
++    require(SHA256.fullmatch(partial["sha256"]) and partial["parent_sha256"] in by_hash and
++            partial["offset"] == 0 and 4 <= partial["bytes"] < by_hash[partial["parent_sha256"]]["bytes"],
++            "bounded prefix of an included complete image required")
++    require(by_hash[partial["parent_sha256"]]["role"] == "complete-live-daemon-image",
++            "partial reconstruction parent must be the included complete first-daemon image")
++    require(partial["complete_executable"] is False and partial["completed_process_binding"] is False and
++            partial["native_evidence_credit"] is False, "partial bytes cannot claim a complete process binding")
++    require(partial["name"] == "H2/partial/" + partial["sha256"] + ".prefix-reference.json",
++            "explicit partial reference name required")
++    require(total + partial["bytes"] == plan["total_actual_input_bytes"] <= MAX_SOURCE_TOTAL,
++            "complete plus partial source total differs")
+     require(plan["max_archive_bytes"] == total + 64 * 1024 * 1024, "container bound changed")
+     require(plan["archive_name"] == plan["phase"] + "-actual-retained-elfs.tar.xz", "archive name differs")
+     mapping = base64.b64decode(plan["source_map"]["data_base64"], validate=True)
+@@ -190,8 +207,55 @@
+     return plan, mapping
+ 
+ 
+-def verify_archive(path, expected):
++def verify_partial_prefixes(plan, entries):
++    """Actually compare every partial byte with the included parent's prefix.
++
++    This proves reconstruction of the retained partial bytes only. It does not
++    establish the interrupted second process's complete executable or outcome.
++    """
++    by_hash = {row["sha256"]: row for row in entries}
++    results = []
++    for partial in plan["partial_prefixes"]:
++        parent = by_hash[partial["parent_sha256"]]
++        partial_stream, partial_before = open_regular(Path(partial["source_path"]), partial["bytes"], partial["bytes"])
++        try:
++            version = ":".join(str(partial_before[key]) for key in ("device", "inode", "bytes", "mtime_ns", "ctime_ns"))
++            require(version == partial["source_version"], "partial source differs from frozen observed file version")
++            parent_stream, parent_before = open_regular(Path(parent["source_path"]), parent["bytes"], parent["bytes"])
++        except BaseException:
++            partial_stream.close()
++            raise
++        with partial_stream, parent_stream:
++            require(parent_before == parent["first_read_metadata"], "prefix parent changed after archive read")
++            partial_digest, parent_digest = hashlib.sha256(), hashlib.sha256()
++            count = 0
++            while count < partial["bytes"]:
++                wanted = min(BLOCK, partial["bytes"] - count)
++                left, right = partial_stream.read(wanted), parent_stream.read(wanted)
++                require(len(left) == wanted and len(right) == wanted and left == right,
++                        "retained partial does not equal the included complete image prefix")
++                partial_digest.update(left)
++                parent_digest.update(right)
++                count += wanted
++            require(not partial_stream.read(1) and metadata(os.fstat(partial_stream.fileno())) == partial_before and
++                    metadata(os.fstat(parent_stream.fileno())) == parent_before, "prefix source changed while compared")
++        require(partial_digest.hexdigest() == parent_digest.hexdigest() == partial["sha256"],
++                "actual partial/prefix hash differs from frozen inventory")
++        second_hash, second = actual_hash(Path(partial["source_path"]), partial["bytes"],
++                                         partial["bytes"], partial_before)
++        require(second_hash == partial["sha256"], "partial source changed on independent second read")
++        results.append(dict(partial, first_read_metadata=partial_before, second_read_metadata=second,
++            second_read_sha256=second_hash, parent_first_read_metadata=parent_before,
++            byte_for_byte_comparison_completed=True, compared_bytes=count,
++            reconstruction=dict(member=parent["name"], parent_complete_sha256=parent["sha256"],
++                                offset=0, bytes=count, sha256=partial["sha256"]),
++            scope="Lossless representation of the observed partial bytes only; no complete second-daemon image or execution binding."))
++    return results
++
++
++def verify_archive(path, expected, partial_prefixes):
+     seen = set()
++    checked_prefixes = set()
+     with tarfile.open(path, "r|xz") as archive:
+         for member in archive:
+             require(member.isfile() and member.name in expected and member.name not in seen,
+@@ -199,17 +263,28 @@
+             reference = expected[member.name]
+             require(member.size == reference["bytes"], "archive member size differs")
+             hasher, size = hashlib.sha256(), 0
++            references = [row for row in partial_prefixes if row["reconstruction"]["member"] == member.name]
++            prefix_hashes = {row["name"]: hashlib.sha256() for row in references}
+             with archive.extractfile(member) as stream:
+                 while True:
+                     block = stream.read(BLOCK)
+                     if not block:
+                         break
++                    for row in references:
++                        remaining = row["bytes"] - size
++                        if remaining > 0:
++                            prefix_hashes[row["name"]].update(block[:remaining])
+                     hasher.update(block)
+                     size += len(block)
+             require(size == reference["bytes"] and hasher.hexdigest() == reference["sha256"],
+                     "decompressed archive member differs")
++            for row in references:
++                require(size >= row["bytes"] and prefix_hashes[row["name"]].hexdigest() == row["sha256"],
++                        "archived complete image cannot reproduce the observed partial bytes")
++                checked_prefixes.add(row["name"])
+             seen.add(member.name)
+     require(seen == set(expected), "archive omitted required files")
++    require(checked_prefixes == {row["name"] for row in partial_prefixes}, "archive omitted a partial-byte parent")
+ 
+ 
+ def publish_without_overwrite(partial, final, maximum, expected_sha256, expected_bytes=None):
+@@ -269,6 +344,9 @@
+                     entry = dict(row, first_read_metadata=before)
+                     entries.append(entry)
+                     expected_members[row["name"]] = {"bytes": row["bytes"], "sha256": row["sha256"]}
++                partial_prefixes = verify_partial_prefixes(plan, entries)
++                for row in partial_prefixes:
++                    metadata_files[row["name"]] = encoded(row)
+                 # These are independent source reads, before any successful archive claim is written.
+                 for row in entries:
+                     second_hash, second = actual_hash(Path(row["source_path"]), row["bytes"],
+@@ -284,6 +362,9 @@
+                     source_commit=plan["source_commit"], source_tree=plan["source_tree"],
+                     plan_sha256=expected_plan, exporter_sha256=expected_exporter, files=entries,
+                     total_actual_elf_bytes=plan["total_elf_bytes"],
++                    total_actual_input_bytes=plan["total_actual_input_bytes"],
++                    partial_prefix_representations=partial_prefixes,
++                    partial_sources_actually_read_twice=True, partial_executable_credit=False,
+                     selected_elf_sources_actually_read_twice=True, alias_paths_are_original_mapping_only=True,
+                     embedded_metadata_files={name: expected_members[name] for name in metadata_files},
+                     original_run_outcome=plan["original_run_outcome"], capture_limits=plan["capture_limits"],
+@@ -295,7 +376,7 @@
+         stream.flush()
+         os.fsync(stream.fileno())
+     archive_hash, archive_before = actual_hash(partial, plan["max_archive_bytes"])
+-    verify_archive(partial, expected_members)
++    verify_archive(partial, expected_members, partial_prefixes)
+     parts, concatenated = [], hashlib.sha256()
+     source, before = open_regular(partial, plan["max_archive_bytes"], archive_before["bytes"])
+     require(before == archive_before, "archive changed before splitting")
+@@ -326,6 +407,10 @@
+         check, current = open_regular(Path(row["source_path"]), row["bytes"], row["bytes"])
+         check.close()
+         require(current == row["second_read_metadata"], "source identity changed before publication")
++    for row in partial_prefixes:
++        check, current = open_regular(Path(row["source_path"]), row["bytes"], row["bytes"])
++        check.close()
++        require(current == row["second_read_metadata"], "partial source identity changed before publication")
+     # No source/inventory assertions remain after final paths are published.
+     final_archive = output / plan["archive_name"]
+     published_hash, published_metadata = publish_without_overwrite(
+@@ -341,6 +426,9 @@
+         exporter_sha256=expected_exporter, archive_path=str(final_archive), archive_sha256=archive_hash,
+         archive_bytes=published_metadata["bytes"], archive_index_sha256=digest(index_raw),
+         unique_actual_elfs=len(entries), total_actual_elf_bytes=plan["total_elf_bytes"],
++        partial_artifacts=len(partial_prefixes), partial_bytes_represented=sum(row["bytes"] for row in partial_prefixes),
++        partial_representation="Verified exact range of an included complete first-daemon image; no complete second-daemon binding.",
++        partial_prefixes_independently_verified_in_archive=True, partial_executable_credit=False,
+         all_archive_members_independently_decompressed_and_hashed=True,
+         selected_sources_actually_read_twice=True, unselected_aliases_reopened=False,
+         all_parts_actually_reopened_and_hashed=True, actual_parts_concatenation_verified=True,

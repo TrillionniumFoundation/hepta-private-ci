@@ -1,0 +1,360 @@
+--- H2/nextest_fd_runner.py
++++ H3/nextest_fd_runner.py
+@@ -1,6 +1,6 @@
+ """Capture each nextest run image before same-PID fd-exec.
+ 
+-External H2 execution configuration, not repository code or a permission grant.
++External H3 execution configuration, not repository code or a permission grant.
+ Discovery is passed through without test credit. This runner never forks,
+ changes process groups, changes cwd, or writes to stdout. Its work is inside
+ nextest's original per-test deadline. Runtime outcome comes from libtest logs;
+@@ -16,6 +16,36 @@
+ import time
+ 
+ sys.dont_write_bytecode = True
++
++NEURAL_RUNTIME_CASE_TARGETS = {
++    'native_comparison_input_requires_v2_and_independently_pinned_snapshot': 'neural_comparison_native',
++    'ordinary_native_composition_rejects_untrusted_qualification_before_inference_owners': 'neural_cognitive_bootstrap',
++}
++
++
++def fixed_case_targets(config):
++    if config['schema'] == 'hepta-nextest-fd-runner-v1':
++        if 'expected_case_targets' in config:
++            raise ValueError('single-binary capture must not declare a multi-target map')
++        return None
++    if (config['schema'] != 'hepta-nextest-fd-runner-v2'
++            or config['gate'] != 'neural-runtime-input'
++            or config['crate'] is not None
++            or config.get('expected_case_targets') != NEURAL_RUNTIME_CASE_TARGETS
++            or config['selected_names'] != sorted(NEURAL_RUNTIME_CASE_TARGETS)
++            or config['predicate'] is not None):
++        raise ValueError('only the exact declared neural input targets admit multi-binary capture')
++    return NEURAL_RUNTIME_CASE_TARGETS
++
++
++def declared_binary_target(config, executable):
++    mapping = fixed_case_targets(config)
++    targets = set(mapping.values()) if mapping is not None else {config['crate']}
++    matched = [name for name in targets
++               if re.fullmatch(re.escape(name) + r'-[a-f0-9]+', Path(executable).name)]
++    if len(matched) != 1:
++        raise ValueError('unexpected test image name')
++    return matched[0]
+ 
+ 
+ def task(pid):
+@@ -106,8 +136,7 @@
+     config_path = Path(os.environ['HEPTA_NEXTEST_FD_CAPTURE_CONFIG'])
+     config_raw = config_path.read_bytes()
+     config = json.loads(config_raw)
+-    if config['schema'] != 'hepta-nextest-fd-runner-v1':
+-        raise ValueError('wrong capture configuration schema')
++    mapping = fixed_case_targets(config)
+     if str(os.getpid()) != os.readlink('/proc/self'):
+         raise ValueError('runner requires the process and /proc to share a PID namespace')
+     if os.execve not in os.supports_fd:
+@@ -119,8 +148,7 @@
+     target = Path(config['target']).resolve(strict=True)
+     if canonical != executable or not canonical.is_relative_to(target):
+         raise ValueError('test-image path is not canonical within the declared target')
+-    if not re.fullmatch(re.escape(config['crate']) + r'-[a-f0-9]+', executable.name):
+-        raise ValueError('unexpected test image name')
++    binary_target = declared_binary_target(config, executable)
+     phase = os.environ.get('NEXTEST_TEST_PHASE')
+     args = sys.argv[1:]
+     pid = os.getpid()
+@@ -142,6 +170,8 @@
+         name = args[index + 1]
+         if not selected(name, config) or sum(selected(value, config) for value in args[1:]) != 1:
+             raise ValueError('invocation does not select one expected test')
++        if mapping is not None and mapping.get(name) != binary_target:
++            raise ValueError('exact test does not belong to its declared binary target')
+         directory = Path(config['directory'])
+         if not directory.is_dir() or directory.resolve() != directory:
+             raise ValueError('capture directory is not canonical')
+@@ -158,6 +188,7 @@
+             'capture_config_sha256': hashlib.sha256(config_raw).hexdigest(),
+             'runner_sha256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+             'actual_executable': str(executable), 'retained_copy': str(retained),
++            'expected_binary_target': binary_target,
+             'sha256': hexdigest, 'bytes': before.st_size, 'device': before.st_dev,
+             'inode': before.st_ino, 'mtime_ns': before.st_mtime_ns, 'ctime_ns': before.st_ctime_ns,
+             'pid': pid, 'start_ticks': process[1], 'coordinator': config['coordinator'],
+--- H2/fd_gate_evidence.py
++++ H3/fd_gate_evidence.py
+@@ -8,6 +8,9 @@
+ import hashlib
+ import json
+ import re
++
++from nextest_fd_runner import declared_binary_target
++from nextest_fd_runner import fixed_case_targets
+ 
+ 
+ def digest(path):
+@@ -29,19 +32,26 @@
+               'actual_cases': cases, 'per_case_bijection_verified': False,
+               'scope': 'exact test images only; no retrospective H1 credit or complete dynamic runtime closure'}
+     try:
++        mapping = fixed_case_targets(config)
++        expected_targets = set(mapping.values()) if mapping is not None else {config['crate']}
++        result['expected_case_targets'] = mapping
++        result['expected_binary_targets'] = sorted(expected_targets)
+         assert not list(directory.glob('*.exec-error.json')), 'an fd-exec failure was recorded'
+         assert not list(directory.glob('*.pending')), 'an incomplete opened-image record or copy remains'
+         records = [json.loads(path.read_text()) for path in sorted(directory.glob('*.json'))]
+         result['records'] = records
+         assert records, 'no exact run image records'
+-        assert declared_binary_counts == [1], 'nextest did not declare exactly one test binary'
++        assert declared_binary_counts == [len(expected_targets)], 'nextest binary count differs from the exact declared target set'
+         assert cases and all(outcome in ('ok', 'FAILED') for _, outcome in cases), 'no actual run outcomes or selected skip'
+         observed = Counter(name for name, _ in cases)
++        if mapping is not None:
++            assert observed == Counter(mapping.keys()), 'the multi-target gate did not run its exact case set once'
+         recorded = Counter(record['exact_test'] for record in records)
+         assert observed == recorded and all(count == 1 for count in observed.values()), 'actual outcome and opened-image records are not one-to-one'
+         processes = [(record['pid'], record['start_ticks']) for record in records]
+         assert len(set(processes)) == len(processes), 'a process identity was reused for more than one test'
+         retained = {}
++        targets = {}
+         for record in records:
+             assert record['schema'] == config['schema'] and record['status'] == 'pre_exec_fd_bound'
+             assert record['phase'] == 'run' and record['gate'] == config['gate']
+@@ -55,7 +65,11 @@
+             assert args[args.index('--exact') + 1] == record['exact_test']
+             executable = Path(record['actual_executable'])
+             assert args[0] == str(executable) and executable.is_relative_to(Path(config['target']))
+-            assert re.fullmatch(re.escape(config['crate']) + r'-[a-f0-9]+', executable.name)
++            binary_target = declared_binary_target(config, executable)
++            assert record['expected_binary_target'] == binary_target
++            if mapping is not None:
++                assert mapping[record['exact_test']] == binary_target, 'actual case used the wrong declared target'
++            targets.setdefault(binary_target, set()).add(record['sha256'])
+             image = Path(record['retained_copy'])
+             assert image == directory / (record['sha256'] + '.elf')
+             assert re.fullmatch(r'[a-f0-9]{64}', record['sha256'])
+@@ -65,7 +79,9 @@
+                 retained[record['sha256']] = record['bytes']
+             assert retained[record['sha256']] == record['bytes']
+         result['unique_actual_elf_sha256'] = sorted(retained)
+-        assert len(retained) == 1, 'test gate produced more than one actual image'
++        assert set(targets) == expected_targets and all(len(images) == 1 for images in targets.values()), 'each exact target must have exactly one actual image'
++        assert len(retained) == len(expected_targets), 'actual image count differs from the declared target set'
++        result['actual_images_by_target'] = {name: sorted(images) for name, images in targets.items()}
+         result['per_case_bijection_verified'] = True
+     except Exception as error:
+         result['errors'].append(repr(error))
+--- H2/run_h2_native_pipeline.py
++++ H3/run_h3_native_pipeline.py
+@@ -17,20 +17,25 @@
+ 
+ from test_elf_capture import ExecutedBinaryCapture
+ from nextest_fd_runner import task as process_identity
++from nextest_fd_runner import NEURAL_RUNTIME_CASE_TARGETS
+ from fd_gate_evidence import verify as verify_fd_capture
+ 
+ ROOT = Path('/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf')
+-SOURCE = ROOT / 'source-h2'
++SOURCE = ROOT / 'source-h3'
+ TARGET = ROOT / 'target'
+ NEXT_TOOLS = Path('/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin')
+ UV_TOOLS = ROOT / 'tools/uv-0.11.3/bin'
+ HERE = Path(__file__).resolve().parent
+ BASE = '1556a4df6e279055fd8196f81a4ca2fe0f19384a'
++H3_COMMIT = '6db78eca53a5acdda0d96873d3f4cd65863426f0'
++H3_TREE = 'e91f5994017fc5d2cfe58d405a20ee6ad9376772'
++H3_TRACKED_COUNT = 11840
++H3_TRACKED_BYTES = 183410043
+ ORIGINAL_GUARD_SHA = 'e55f5ca1200b2c9fc5af4158c42f460e71f3815166a962a5b892acfe9477b1d1'
+ COLLECTOR_SHA = '64489779d88a399040e20f939fe878f8d20fa86a60b435a2d7896186dc64d87a'
+ NEXT_SHA = 'e999c122a02c3fe74a1b66d254b6419a8a665e8bf540b1d31de7933a6d3753f1'
+ UV_SHA = 'fa5fc652fa5ed5b44fa8e7dda507f27975c02f59643787fd8ab4bf36f1ba7438'
+-FD_RUNNER_SHA = '903c622365c9cf863f1ae4b5eca2d4a0501c9f86862538c48f94f126a82ba62b'
++FD_RUNNER_SHA = '9679cc6e11762c29b4c0ee92dd7715d3fce0555a6f8e0e10ed9d0b007951381a'
+ RUNNER_ENV = 'CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_RUNNER'
+ ENV = dict(os.environ)
+ ENV.update(RUSTUP_TOOLCHAIN='1.96.0', CARGO_INCREMENTAL='0', CARGO_BUILD_JOBS='2',
+@@ -153,7 +158,7 @@
+     return result
+ 
+ 
+-def gate(name, command, minimum=0, timeout_seconds=600, *, crate=None, names=None, predicate=None, offline=True):
++def gate(name, command, minimum=0, timeout_seconds=600, *, crate=None, names=None, predicate=None, offline=True, case_targets=None):
+     assert time.monotonic() - START < 5400, 'original total 90-minute budget exhausted'
+     env = dict(ENV, SOURCE_SHA=ARGS.commit, TESTED_SHA=ARGS.commit, BASE_SHA=BASE,
+                HEPTA_CI_LANE='source-head', CARGO_NET_OFFLINE=str(offline).lower(),
+@@ -169,16 +174,29 @@
+     identity = {'commit':ARGS.commit, 'tree':ARGS.tree, 'lock_sha256':digest(SOURCE / 'codex-rs/Cargo.lock'),
+                 'environment_file':'native-environment.json', 'environment_sha256':digest(EVIDENCE / 'native-environment.json')}
+     selected = (lambda value: value in names) if names is not None else (lambda value: value.startswith(predicate['value']) if predicate['kind'] == 'prefix' else predicate['value'] in value and '::' in value)
+-    capture = ExecutedBinaryCapture(name, crate, selected, identity, target=TARGET, evidence=EVIDENCE) if crate else None
++    if case_targets is not None:
++        assert name == 'neural-runtime-input' and crate is None
++        assert case_targets == NEURAL_RUNTIME_CASE_TARGETS and names == set(case_targets)
++        assert predicate is None
++        captures = [ExecutedBinaryCapture(name + '-' + target, target,
++                    lambda value, target=target: case_targets.get(value) == target,
++                    identity, target=TARGET, evidence=EVIDENCE)
++                    for target in sorted(set(case_targets.values()))]
++    else:
++        captures = [ExecutedBinaryCapture(name, crate, selected, identity,
++                    target=TARGET, evidence=EVIDENCE)] if crate else []
+     fd_config = None
+-    if crate:
++    if captures:
+         directory = EVIDENCE / ('fd-executed-binaries-' + name)
+         directory.mkdir(mode=0o700)
+         fd_config = EVIDENCE / (name + '.fd-capture-config.json')
+-        save(fd_config.name, {'schema':'hepta-nextest-fd-runner-v1', 'target':str(TARGET.resolve()),
++        configuration = {'schema':'hepta-nextest-fd-runner-v1', 'target':str(TARGET.resolve()),
+              'crate':crate, 'gate':name, 'directory':str(directory),
+              'selected_names':sorted(names) if names is not None else None, 'predicate':predicate,
+-             'source':identity, 'coordinator':{'pid':os.getpid(), 'start_ticks':process_identity(os.getpid())[1]}})
++             'source':identity, 'coordinator':{'pid':os.getpid(), 'start_ticks':process_identity(os.getpid())[1]}}
++        if case_targets is not None:
++            configuration.update(schema='hepta-nextest-fd-runner-v2', expected_case_targets=case_targets)
++        save(fd_config.name, configuration)
+         # cargo-nextest 0.9.103 splits this value on whitespace. Both paths are
+         # exact, absolute and contain no whitespace. The fd-exec wrapper keeps
+         # the original test process/group and original per-test timer.
+@@ -188,13 +206,13 @@
+         env['HEPTA_NEXTEST_FD_CAPTURE_CONFIG'] = str(fd_config)
+     publish(name, current_command=args, current_source=identity)
+     artifacts = None
+-    if capture:
++    for capture in captures:
+         capture.start()
+     try:
+         with (EVIDENCE / (name + '.wrapper.log')).open('xb') as log:
+             process = subprocess.Popen(args, cwd=SOURCE, env=env, stdout=log, stderr=subprocess.STDOUT)
+             try:
+-                if capture:
++                for capture in captures:
+                     capture.bind(process.pid)
+             finally:
+                 # A capture binding error must not abandon the running wrapper.
+@@ -202,8 +220,13 @@
+             # The unchanged wrapper owns the command deadline and process-group
+             # cleanup. The durable outer job retains the original 90-minute cap.
+     finally:
+-        if capture:
+-            artifacts = capture.finish()
++        if captures:
++            completed_captures = [capture.finish() for capture in captures]
++            artifacts = completed_captures[0] if case_targets is None else {
++                'records': [record for result in completed_captures for record in result['records']],
++                'errors': [error for result in completed_captures for error in result['errors']],
++                'target_captures': {capture.crate: result for capture, result in zip(captures, completed_captures, strict=True)},
++                'capture_scope': 'two explicitly mapped target collectors; no global binary allowance or inferred short-process coverage'}
+             save(name + '.live-polled-binaries.json', artifacts)
+     record = json.loads(output.read_text())
+     raw = (EVIDENCE / record['log_file']).read_bytes() if record.get('log_file') else b''
+@@ -243,9 +266,13 @@
+     if names is not None:
+         assert names_ok, name + ' did not execute every exact selected case once'
+     if artifacts is not None:
+-        assert not artifacts['errors'] and artifacts['per_case_bijection_verified'] and len(artifacts['unique_actual_elf_sha256']) == 1 and artifacts['runner_declared_binary_counts'] == [1], name + ' lacks an exact per-case test-image binding'
++        expected_count = 2 if case_targets is not None else 1
++        assert not artifacts['errors'] and artifacts['per_case_bijection_verified'] and len(artifacts['unique_actual_elf_sha256']) == expected_count and artifacts['runner_declared_binary_counts'] == [expected_count], name + ' lacks an exact per-case test-image binding'
++        if case_targets is not None:
++            assert artifacts['expected_case_targets'] == case_targets
++            assert set(artifacts['actual_images_by_target']) == set(case_targets.values())
+     if name == 'full-evidence-library':
+-        expected_ignored = json.loads((HERE / 'h2-extra-controls.json').read_text())['full_evidence_library']['expected_ignored']
++        expected_ignored = json.loads((HERE / 'h3-extra-controls.json').read_text())['full_evidence_library']['expected_ignored']
+         declared = re.findall(r'Starting\s+(\d+)\s+tests?\s+across\s+1\s+binar(?:y|ies)\s+\((\d+)\s+tests?\s+skipped\)', clean_text)
+         assert declared == [('161','1')], 'full library selected/ignored cardinality differs from the fixed source expectation'
+         actual_paths = {record['actual_executable'] for record in artifacts['records']}
+@@ -268,6 +295,18 @@
+         assert proof['source']['qualification_binding'] is True
+         assert proof['source']['commit'] == ARGS.commit and proof['source']['tree'] == ARGS.tree
+         assert proof['post_count'] == proof['physical_apply_count'] == proof['used_nonces'] == 1 and proof['lookup_count'] == 2
++        first, second = proof['first_process'], proof['second_process']
++        assert first['source'] == second['source'] == proof['source']
++        assert first['capture_method'] == 'first-live-fd-hash-copy' and first['full_hash_and_copy_this_capture'] is True
++        assert first['same_held_file_object_verified'] is False
++        assert second['capture_method'] == 'same-held-file-object-reuse' and second['full_hash_and_copy_this_capture'] is False
++        assert second['same_held_file_object_verified'] is True
++        for field in ('actual_executable', 'cargo_resolved_binary', 'retained_copy', 'sha256', 'bytes', 'device', 'inode'):
++            assert first[field] == second[field], 'second generation did not retain the same held file object'
++        for image in (first, second):
++            assert image['origin_capture_pid'] == first['pid'] and image['origin_capture_start_ticks'] == first['start_ticks']
++        assert (first['pid'], first['start_ticks']) != (second['pid'], second['start_ticks'])
++        assert second['spawn_generation'] > first['spawn_generation']
+         for phase in ('first_process', 'second_process'):
+             image = proof[phase]
+             retained = Path(image['retained_copy'])
+@@ -282,20 +321,21 @@
+     EVIDENCE.mkdir(mode=0o700)
+     before = raw_guard('full-source-before')
+     assert exact_source(before), 'full frozen source guard failed before any command'
+-    assert before['tracked_count'] == 11839 and before['tracked_bytes'] == 183391637
+-    assert ARGS.commit == '620cb63ae9b58904483005bcb2c4e1507df99539' and ARGS.tree == 'f2cebe6d99deca596c170922b8e60d66648d7393'
++    assert before['tracked_count'] == H3_TRACKED_COUNT and before['tracked_bytes'] == H3_TRACKED_BYTES
++    assert ARGS.commit == H3_COMMIT and ARGS.tree == H3_TREE
+     STATE['source_before'] = before
+     global ORIGINAL_NAMES
+-    plan = json.loads((HERE / 'h2-native-plan.json').read_text())
++    plan = json.loads((HERE / 'h3-native-plan.json').read_text())
++    assert plan['source_frozen'] and plan['source_commit'] == ARGS.commit and plan['source_tree'] == ARGS.tree
+     ORIGINAL_NAMES = {step['name'] for step in plan['steps']} | {'format'}
+     STATE['budget_semantics'] = {'outer_seconds':5400,'scope':'entire actual coordinator job, including raw guards, tool identity, capture and additional gates; never a sum-of-command estimate','prerequisites':'prior isolated uv installation and toolchain provisioning retained separately; not charged as native compilation or credited as tests','original_workflow_subflow':'every original command retains its existing deadline inside the same 90-minute outer limit','additional_gates':'source135/32, compatibility6, provider10, FinalUse and full evidence have independent original wrapper receipts; no hosted-matrix/job qualification'}
+     assert digest(SOURCE / plan['workflow_path']) == plan['workflow_sha256']
+-    assert digest(HERE / 'h2-selected-tests-guard.py') == plan['exact_guard_sha256']
++    assert digest(HERE / 'h3-selected-tests-guard.py') == plan['exact_guard_sha256']
+     assert digest(HERE / 'test_elf_capture.py') == COLLECTOR_SHA
+     assert digest(HERE / 'nextest_fd_runner.py') == FD_RUNNER_SHA
+     assert not ENV.get(RUNNER_ENV), 'an undeclared inherited target runner exists'
+     assert digest(NEXT_TOOLS / 'cargo-nextest') == NEXT_SHA
+-    preparation = json.loads((ROOT / 'evidence/h2-final-source-index-alignment/result.json').read_text())
++    preparation = json.loads((ROOT / 'evidence/h3-final-source/result.json').read_text())
+     assert preparation['source'] == ARGS.commit and preparation['tree'] == ARGS.tree
+     configs = [Path(path) for path in preparation['configurations']]
+     STATE['configuration_before'] = {str(p):digest(p) for p in configs}
+@@ -333,9 +373,9 @@
+             'kernel_options':{name:(Path('/proc/sys')/name).read_text().strip() if (Path('/proc/sys')/name).exists() else None for name in ['kernel/unprivileged_userns_clone','kernel/apparmor_restrict_unprivileged_userns']},
+             'kernel_scope':'observed desktop values retained unchanged; the hosted workflow sets AppArmor userns restriction to zero, so this local run does not claim the complete hosted environment',
+             'tools':{name:{'path':str(path),'sha256':digest(path),'bytes':path.stat().st_size} for name,path in binaries.items()},
+-            'scripts':{name:digest(HERE/name) for name in ['run_h2_native_pipeline.py','test_elf_capture.py','test_executed_binary_capture.py','nextest_fd_runner.py','test_nextest_fd_runner.py','fd_gate_evidence.py','h2-native-plan.json','h2-selected-tests-guard.py','h2-extra-controls.json']},
+-            'new_h2_execution_configuration':{'environment_variable':RUNNER_ENV, 'value':sys.executable+' '+str(HERE/'nextest_fd_runner.py'), 'config_variable':'HEPTA_NEXTEST_FD_CAPTURE_CONFIG', 'per_gate_configs':'*.fd-capture-config.json', 'runner_sha256':FD_RUNNER_SHA, 'source':'official cargo-nextest 0.9.103 host-target runner interface independently reviewed', 'scope':'new explicit local execution configuration, not byte-identical H1 configuration or execution of the hosted matrix', 'per_test_seconds':60, 'retry_count':0, 'capture_overhead_charged_to_original_test_deadline':True},
+-            'cache_scope':'reused dedicated target including failed H1 compilation caches; no separate prebuild; every H2 test requires its current fd-exec image; no prior-source result is credited to H2',
++            'scripts':{name:digest(HERE/name) for name in ['run_h3_native_pipeline.py','test_elf_capture.py','test_executed_binary_capture.py','nextest_fd_runner.py','test_nextest_fd_runner.py','test_fd_gate_targets.py','fd_gate_evidence.py','h3-native-plan.json','h3-selected-tests-guard.py','h3-extra-controls.json']},
++            'new_h3_execution_configuration':{'environment_variable':RUNNER_ENV, 'value':sys.executable+' '+str(HERE/'nextest_fd_runner.py'), 'config_variable':'HEPTA_NEXTEST_FD_CAPTURE_CONFIG', 'per_gate_configs':'*.fd-capture-config.json', 'runner_sha256':FD_RUNNER_SHA, 'source':'official cargo-nextest 0.9.103 host-target runner interface independently reviewed', 'scope':'new explicit H3 configuration; only neural-runtime-input has an exact two-target map; original gates remain single-target; no execution of the hosted matrix', 'v2_case_targets':NEURAL_RUNTIME_CASE_TARGETS, 'per_test_seconds':60, 'retry_count':0, 'capture_overhead_charged_to_original_test_deadline':True},
++            'cache_scope':'reused dedicated target including H1/H2 caches; no separate prebuild; every H3 test requires its current fd-exec image; no prior-source result is credited to H3',
+             'original_job_budget_seconds':5400, 'workflow':plan['workflow_path'], 'workflow_sha256':plan['workflow_sha256']}
+         save('native-environment.json', environment)
+         assert 'host: x86_64-unknown-linux-gnu' in environment['rustc']
+@@ -349,6 +389,11 @@
+             controls = subprocess.run([sys.executable,str(HERE/'test_nextest_fd_runner.py')], cwd=SOURCE, env=ENV, stdout=log, stderr=subprocess.STDOUT, timeout=20)
+         save('fd-runner-controls.json', {'exit_code':controls.returncode, 'sha256':digest(EVIDENCE/'fd-runner-controls.log'), 'runner_sha256':FD_RUNNER_SHA, 'scope':'three synthetic deterministic fd-exec controls; no Rust product credit'})
+         assert controls.returncode == 0, 'fd-exec runner controls failed before Cargo'
++        publish('fd-target-controls')
++        with (EVIDENCE / 'fd-target-controls.log').open('xb') as log:
++            controls = subprocess.run([sys.executable,str(HERE/'test_fd_gate_targets.py')], cwd=SOURCE, env=ENV, stdout=log, stderr=subprocess.STDOUT, timeout=20)
++        save('fd-target-controls.json', {'exit_code':controls.returncode, 'sha256':digest(EVIDENCE/'fd-target-controls.log'), 'runner_sha256':FD_RUNNER_SHA, 'scope':'four synthetic exact-target and record-bijection controls; no product/native execution credit'})
++        assert controls.returncode == 0, 'exact-target controls failed before Cargo'
+         dependencies = plan['steps'][0]
+         assert dependencies['name'] == 'dependencies'
+         gate('dependencies', dependencies['command'], timeout_seconds=dependencies['timeout_seconds'], offline=False)
+@@ -357,15 +402,15 @@
+         for step in plan['steps'][1:]:
+             if step['name'] == 'fix':
+                 continue
+-            gate(step['name'], step['command'], step['minimum'], step['timeout_seconds'], crate=step['crate'], names=set(step['expected_names']))
++            gate(step['name'], step['command'], step['minimum'], step['timeout_seconds'], crate=step['crate'], names=set(step['expected_names']), case_targets=step.get('expected_case_targets'))
+         with (EVIDENCE / 'selected-tests-guard.log').open('xb') as log:
+-            subprocess.run([sys.executable,str(HERE/'h2-selected-tests-guard.py'),str(EVIDENCE)], cwd=SOURCE, env=ENV, stdout=log, stderr=subprocess.STDOUT, timeout=20, check=True)
++            subprocess.run([sys.executable,str(HERE/'h3-selected-tests-guard.py'),str(EVIDENCE)], cwd=SOURCE, env=ENV, stdout=log, stderr=subprocess.STDOUT, timeout=20, check=True)
+         flags = ['--no-capture','--retries','0','--test-threads=1']
+-        compat = set(json.loads((HERE/'h2-extra-controls.json').read_text())['original_six_effect_controls'])
++        compat = set(json.loads((HERE/'h3-extra-controls.json').read_text())['original_six_effect_controls'])
+         gate('original-six-effect-controls',['just','test','--locked','-p','codex-hepta-agentd','--lib','-E',' | '.join('test(='+name+')' for name in sorted(compat)),*flags],6,600,crate='codex_hepta_agentd',names=compat)
+         gate('provider-effect-existing-and-pq',['just','test','--locked','-p','codex-model-provider','--lib','-E','test(provider_effect)',*flags],10,600,crate='codex_model_provider',predicate={'kind':'prefix','value':'provider_effect::'})
+         gate('final-use-profile-controls',['just','test','--locked','-p','codex-hepta-contracts','--lib','-E','test(final_use)',*flags],1,600,crate='codex_hepta_contracts',predicate={'kind':'contains','value':'final_use'})
+-        extra = json.loads((HERE/'h2-extra-controls.json').read_text())['full_evidence_library']
++        extra = json.loads((HERE/'h3-extra-controls.json').read_text())['full_evidence_library']
+         gate('full-evidence-library',extra['command'],extra['minimum'],extra['timeout_seconds'],crate='codex_hepta_evidence',names=set(extra['expected_names']))
+         fix = next(step for step in plan['steps'] if step['name']=='fix')
+         gate('fix',fix['command'],0,fix['timeout_seconds'])

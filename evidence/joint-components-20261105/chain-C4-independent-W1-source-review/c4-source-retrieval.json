@@ -1,0 +1,156 @@
+{
+  "schema": "w1-independent-c4-source-retrieval-v1",
+  "c4_commit": {
+    "sha": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+    "node_id": "C_kwDOTty1_doAKDhkZjRiMjFkODkzOTA2NTcwZDQ4ZjViZWFmYWJiM2IzMWUwYWVmYmM",
+    "commit": {
+      "author": {
+        "name": "Franksudoman",
+        "email": "273670192+Franksudoman@users.noreply.github.com",
+        "date": "2026-11-05T17:37:15Z"
+      },
+      "committer": {
+        "name": "Franksudoman",
+        "email": "273670192+Franksudoman@users.noreply.github.com",
+        "date": "2026-11-05T17:37:15Z"
+      },
+      "message": "fix(ci): cache the existing large applicability source files\n\nRaise only the parser cache eligibility limit from 262144 to 524288\ncharacters so the two observed heavily reused Rust files are eligible.\nKeep each independent 128-entry LRU, current-content key, original path\nand read checks, immutable results and full parsing above the limit.\n\nC3 actually timed out again at the unchanged 300-second gate after\nnineteen cases. Retain that failure. This internal retention change does\nnot increase original CI resources or deadlines and claims no gate pass.",
+      "tree": {
+        "sha": "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/Trillionnium-Chain/git/trees/6f5aaa2af0432e27e24b6bd2ad18013ab4423d14"
+      },
+      "url": "https://api.github.com/repos/TrillionniumFoundation/Trillionnium-Chain/git/commits/8df4b21d893906570d48f5beafabb3b31e0aefbc",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/TrillionniumFoundation/Trillionnium-Chain/commits/8df4b21d893906570d48f5beafabb3b31e0aefbc",
+    "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/commit/8df4b21d893906570d48f5beafabb3b31e0aefbc",
+    "comments_url": "https://api.github.com/repos/TrillionniumFoundation/Trillionnium-Chain/commits/8df4b21d893906570d48f5beafabb3b31e0aefbc/comments",
+    "author": {
+      "login": "Franksudoman",
+      "id": 273670192,
+      "node_id": "U_kgDOEE_gMA",
+      "avatar_url": "https://avatars.githubusercontent.com/u/273670192?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/Franksudoman",
+      "html_url": "https://github.com/Franksudoman",
+      "followers_url": "https://api.github.com/users/Franksudoman/followers",
+      "following_url": "https://api.github.com/users/Franksudoman/following{/other_user}",
+      "gists_url": "https://api.github.com/users/Franksudoman/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/Franksudoman/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/Franksudoman/subscriptions",
+      "organizations_url": "https://api.github.com/users/Franksudoman/orgs",
+      "repos_url": "https://api.github.com/users/Franksudoman/repos",
+      "events_url": "https://api.github.com/users/Franksudoman/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/Franksudoman/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "Franksudoman",
+      "id": 273670192,
+      "node_id": "U_kgDOEE_gMA",
+      "avatar_url": "https://avatars.githubusercontent.com/u/273670192?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/Franksudoman",
+      "html_url": "https://github.com/Franksudoman",
+      "followers_url": "https://api.github.com/users/Franksudoman/followers",
+      "following_url": "https://api.github.com/users/Franksudoman/following{/other_user}",
+      "gists_url": "https://api.github.com/users/Franksudoman/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/Franksudoman/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/Franksudoman/subscriptions",
+      "organizations_url": "https://api.github.com/users/Franksudoman/orgs",
+      "repos_url": "https://api.github.com/users/Franksudoman/repos",
+      "events_url": "https://api.github.com/users/Franksudoman/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/Franksudoman/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "b5ef97b29c2e8b738525a2e3326dd60784c46e72",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/Trillionnium-Chain/commits/b5ef97b29c2e8b738525a2e3326dd60784c46e72",
+        "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/commit/b5ef97b29c2e8b738525a2e3326dd60784c46e72"
+      }
+    ],
+    "stats": {
+      "total": 2,
+      "additions": 1,
+      "deletions": 1
+    },
+    "files": [
+      {
+        "sha": "be7b893faeee8c537b95472976a5a9308eb0b0ca",
+        "filename": "scripts/ci/report_module_evidence.py",
+        "status": "modified",
+        "additions": 1,
+        "deletions": 1,
+        "changes": 2,
+        "blob_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/blob/8df4b21d893906570d48f5beafabb3b31e0aefbc/scripts%2Fci%2Freport_module_evidence.py",
+        "raw_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/raw/8df4b21d893906570d48f5beafabb3b31e0aefbc/scripts%2Fci%2Freport_module_evidence.py",
+        "contents_url": "https://api.github.com/repos/TrillionniumFoundation/Trillionnium-Chain/contents/scripts%2Fci%2Freport_module_evidence.py?ref=8df4b21d893906570d48f5beafabb3b31e0aefbc",
+        "patch": "@@ -36,7 +36,7 @@\n     'evidence_selectors', 'remaining',\n }\n _PARSE_CACHE_ENTRIES = 128\n-_PARSE_CACHE_MAX_CHARS = 256 * 1024\n+_PARSE_CACHE_MAX_CHARS = 512 * 1024\n \n \n def _cache_source_parse(parse):"
+      }
+    ]
+  },
+  "compare_c2_to_c4": {
+    "repository_full_name": "TrillionniumFoundation/Trillionnium-Chain",
+    "base": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+    "head": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+    "status": "ahead",
+    "ahead_by": 2,
+    "behind_by": 0,
+    "total_commits": 2,
+    "too_large": null,
+    "base_commit": {
+      "sha": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/Trillionnium-Chain/commits/03521b2f32346a49cccde8ff72e8c7b886b31222",
+      "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/commit/03521b2f32346a49cccde8ff72e8c7b886b31222"
+    },
+    "merge_base_commit": {
+      "sha": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/Trillionnium-Chain/commits/03521b2f32346a49cccde8ff72e8c7b886b31222",
+      "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/commit/03521b2f32346a49cccde8ff72e8c7b886b31222"
+    },
+    "files": [
+      {
+        "filename": ".github/workflows/pon-w1-work-security.yml",
+        "status": "modified",
+        "additions": 17,
+        "deletions": 1,
+        "changes": 18,
+        "previous_filename": null
+      },
+      {
+        "filename": "scripts/ci/report_module_evidence.py",
+        "status": "modified",
+        "additions": 21,
+        "deletions": 2,
+        "changes": 23,
+        "previous_filename": null
+      },
+      {
+        "filename": "scripts/ci/test_applicability.py",
+        "status": "modified",
+        "additions": 89,
+        "deletions": 1,
+        "changes": 90,
+        "previous_filename": null
+      }
+    ]
+  },
+  "kernel": {
+    "sha": "ce1608248d2ee67ed8f5d82a2c5f15942689139b",
+    "url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/blob/8df4b21d893906570d48f5beafabb3b31e0aefbc/trillionnium/crates/trnm-crypto-primitives/src/pon_work.rs",
+    "encoding": "utf-8"
+  },
+  "scope": "Read-only source audit; no Cargo, sampling, native qualification, or changes to frozen source."
+}

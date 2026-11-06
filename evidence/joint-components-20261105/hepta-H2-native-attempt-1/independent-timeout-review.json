@@ -1,0 +1,144 @@
+{
+  "candidate_optimization_requirements": [
+    "first live image must still receive a full actual-FD byte hash and durable retained copy",
+    "keep first actual image FD alive and remember full device/inode/size/mtime sec+nsec/ctime sec+nsec",
+    "second process must independently open its actual /proc/exe and verify current PID/start_ticks/argv/executable path plus exact owner/generation",
+    "compare second fd/path, first held fd and expected image identity before and after association; any divergence refuses reuse",
+    "record that the same already-captured file object is reused rather than claiming a second byte scan or inventing a second retained copy",
+    "do not weaken old generation, nonce, provider single apply, stable operation ID, terminal receipt or current PQ assertions",
+    "ordinary trusted kernel/filesystem metadata assumptions must be stated; this is not immutable-file attestation against a privileged administrator"
+  ],
+  "commit": "620cb63ae9b58904483005bcb2c4e1507df99539",
+  "evidence": [
+    {
+      "bytes": 1748,
+      "path": "/workspace/scratch/93bfcfe29fc8/model_storage/h2-settled-absence/native/joint-h2-native-attempt-1/effect-pq-product.json",
+      "sha256": "03000fbc9ffb6874caa55a656e1d2f87883f0803eb3ea587765835f06a9e2b5a"
+    },
+    {
+      "bytes": 27983,
+      "path": "/workspace/scratch/93bfcfe29fc8/model_storage/h2-settled-absence/native/joint-h2-native-attempt-1/effect-pq-product.json.9084436a2e674123859a385fc6900f12.log",
+      "sha256": "9afd59f1c6d4043ec240fb2a888c8e08630d8e0adf0671883dd0c17be4864a8a"
+    },
+    {
+      "bytes": 724,
+      "path": "/workspace/scratch/93bfcfe29fc8/model_storage/h2-settled-absence/native/joint-h2-native-attempt-1/second-daemon-partial-file-info.raw.json",
+      "sha256": "42cdbb5abf8a540142946d0e1ab2c1543ea94217d94fd1c8ab789f1cff1f698c"
+    },
+    {
+      "bytes": 792,
+      "path": "/workspace/scratch/93bfcfe29fc8/model_storage/h2-settled-absence/native/joint-h2-native-attempt-1/effect-pq-product-process/884690-1793911338749786208/source.json",
+      "sha256": "43661bb220966a1aca44484511e679d2ea00dd4c487fecc8980af1861b43e4c6"
+    },
+    {
+      "bytes": 1565,
+      "path": "/workspace/scratch/93bfcfe29fc8/model_storage/h2-settled-absence/native/joint-h2-native-attempt-1/effect-pq-product-process/884690-1793911338749786208/first-process.json",
+      "sha256": "3009ec58616c995780858fd7081b208205d14862f9e9ab7a19a8b2fdf42f0e94"
+    },
+    {
+      "bytes": 909,
+      "path": "/workspace/scratch/93bfcfe29fc8/model_storage/h2-settled-absence/native/joint-h2-native-attempt-1/effect-pq-product-process/884690-1793911338749786208/provider-fsync-before-kill.json",
+      "sha256": "30a9e103b09f2469c392d2350823ec729fda897172d9313ae0d09870653b760f"
+    },
+    {
+      "bytes": 205,
+      "path": "/workspace/scratch/93bfcfe29fc8/model_storage/h2-settled-absence/native/joint-h2-native-attempt-1/effect-pq-product-process/884690-1793911338749786208/first-process-exit.json",
+      "sha256": "2ebaeba6e4e6a06eb8d7b317d5d52ccca2b63a8ce0447bb2e44cb71cfac1ddae"
+    }
+  ],
+  "exact_location_inference": "The second file is created only after wait_new_spawn + live_identity + opening actual /proc/exe + owner/generation/PID/argv/path/fd checks. It is only 300 MiB of the expected 488112384-byte ELF and no second-process.json exists. The second copy/hash/write loop therefore did not finish; no evidence identifies the individual CPU/hash/I/O contribution.",
+  "first_image": {
+    "bytes": 488112384,
+    "generation": 1,
+    "local_full_image_not_reread_by_this_review": true,
+    "pid": 884822,
+    "sha256": "00a637f55c720b06a655b569930bddaef19fd791467bc4784fe0bfb9e0002a26",
+    "start_ticks": "98900696"
+  },
+  "known_reached_behavior": [
+    "first owner source/binary binding",
+    "durable provider fsync barrier with one POST/one physical apply/no ACK bytes and pending client result",
+    "supervisor-prefenced owned SIGKILL and observed fatal exit, old exact process lease removed",
+    "second owner reached capture-entry preconditions by source control-flow"
+  ],
+  "not_reached_or_not_completed": [
+    "second capture final identity checks and second-process.json",
+    "old-generation health/dispatch rejection assertions after restart",
+    "temporary lookup absence must remain Indeterminate",
+    "provider successful reconciliation and local terminal readback",
+    "durable original operation acknowledgement and receipt",
+    "final nonce=1 readback",
+    "second owned cleanup and completed.json"
+  ],
+  "observed_failure": {
+    "command_exit_code": 100,
+    "test": "pq_effect_survives_owned_agentd_kill_after_provider_fsync_without_resend",
+    "test_timeout_seconds": 60.007,
+    "wrapper_elapsed_seconds": 71.72731291805394,
+    "wrapper_timed_out": false
+  },
+  "reached_completed_checkpoints": [
+    "source.json",
+    "first-process.json",
+    "provider-fsync-before-kill.json",
+    "first-process-exit.json"
+  ],
+  "schema": "independent-H2-process-timeout-review-v1",
+  "second_incomplete_image": {
+    "bytes": 314572800,
+    "pid_from_filename": 885763,
+    "scope": "remote post-terminal file-info result; incomplete copy, not complete executed-image qualification",
+    "sha256": "b9dc995ee3e6e623056a2563ab8aed3629c003a418b28486ac09db914a0b3f8d",
+    "start_ticks_from_filename": "98904223"
+  },
+  "source": [
+    {
+      "bytes": 17208,
+      "git_blob_sha1": "558f420d962dd724a36e8a649141b8f5725ec6d4",
+      "path": "/workspace/scratch/93bfcfe29fc8/model_storage/pq_effect_migration/native/h1-final-format/candidate/codex-rs/hepta-agentd/tests/automation_effect_pq_product.rs",
+      "repository_path": "codex-rs/hepta-agentd/tests/automation_effect_pq_product.rs",
+      "sha256": "eee39112d46e53675fb40e8ba5b532f0ebfa034eb2db3275cd243bcbe1ec0966"
+    },
+    {
+      "bytes": 21304,
+      "git_blob_sha1": "5e1bd585a09230286205802081e39e3093cc2815",
+      "path": "/workspace/scratch/93bfcfe29fc8/model_storage/pq_effect_migration/native/h1-final-format/candidate/codex-rs/hepta-agentd/tests/support/automation_effect_operator.rs",
+      "repository_path": "codex-rs/hepta-agentd/tests/support/automation_effect_operator.rs",
+      "sha256": "0ce139529fb4172801c0a78f400a261c06e550ad266bce2a39331af1200b9eae"
+    },
+    {
+      "bytes": 6540,
+      "git_blob_sha1": "189e1ce33f1c40b55d4d08fc0917b0a5cf32460a",
+      "path": "/workspace/scratch/93bfcfe29fc8/model_storage/pq_effect_migration/native/reviewed-6550/candidate/codex-rs/hepta-agentd/tests/support/automation_effect_binary.rs",
+      "repository_path": "codex-rs/hepta-agentd/tests/support/automation_effect_binary.rs",
+      "sha256": "bc9c66c5135f11ed70c5ad4d635b98d224ed792c881948176c4030345d6efb39"
+    },
+    {
+      "bytes": 8840,
+      "git_blob_sha1": "90fe25d3ba063fc0ab6c75f49a5213b30229bc60",
+      "path": "/workspace/scratch/93bfcfe29fc8/model_storage/pq_effect_migration/native/reviewed-6550/candidate/codex-rs/hepta-agentd/tests/support/automation_effect_provider.rs",
+      "repository_path": "codex-rs/hepta-agentd/tests/support/automation_effect_provider.rs",
+      "sha256": "2cd0c3e84a6b829b5179beb79602cf17518091db887c691cec58efaf6173e310"
+    },
+    {
+      "bytes": 17743,
+      "git_blob_sha1": "7458e57c2942df9009014bc5b4e5eb7e6e8280b3",
+      "path": "/workspace/scratch/93bfcfe29fc8/model_storage/pq_effect_migration/native/reviewed-6550/candidate/codex-rs/hepta-agentd/tests/support/fleet.rs",
+      "repository_path": "codex-rs/hepta-agentd/tests/support/fleet.rs",
+      "sha256": "8b886fcd9e7a48eebb9f6727eb720180db054ae904e511fe2cde34f078d6a2a6"
+    }
+  ],
+  "source_provenance": "read prior formatted source bytes that the final H2 assembly retained unchanged; intrinsic Git blobs recorded for parent exact-tree comparison, no fresh GitHub fetch claimed",
+  "static_wait_audit": {
+    "boundary": "partial files locate this failure more narrowly than the broad readiness/service lifetime ceilings; no justification to weaken the original 60-second limit or alter PQ/provider semantics",
+    "drop_sets_stop_before_join": true,
+    "fleet_readiness_seconds": 60,
+    "known_deadlock_proved": false,
+    "provider_lost_ack_wait_stop_release": true,
+    "provider_read_write_timeouts_seconds": 2,
+    "service_lifetime_seconds": 120,
+    "trust_read_write_timeouts_seconds": 2
+  },
+  "status": "FAIL retained; no retry/no source modification/no desktop execution by this reviewer",
+  "tree": "f2cebe6d99deca596c170922b8e60d66648d7393"
+}

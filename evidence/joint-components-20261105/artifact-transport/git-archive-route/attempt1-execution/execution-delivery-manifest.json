@@ -1,0 +1,108 @@
+{
+  "automatic_retry": false,
+  "coordinator_seconds": 4.051636024028994,
+  "credential_get_preflight": "Existing helper returned in memory; no credential value retained and no push permission proved.",
+  "exit_code": 1,
+  "failure_phase": "local validate-isolated-origin-route before exact-ref ls-remote, archive reads, data commit or push",
+  "files": [
+    {
+      "bytes": 2139,
+      "path": "cloud-get-url-reproduction.json",
+      "sha256": "fd5a7a0dda890e328a6fd13a5eed55989eedf13314846a0ec4b91ba54b503b85"
+    },
+    {
+      "bytes": 358,
+      "path": "launch-prepared.json",
+      "sha256": "3d4c7fc5ca1f085b5f218ee617e6a43726176da7bf28ce8fbecd064c95377714"
+    },
+    {
+      "bytes": 1299,
+      "path": "launch.raw.json",
+      "sha256": "996cd2a68f10fb93d8acca093ed388bf34eddc1e9259a180ea9b878664d80b30"
+    },
+    {
+      "bytes": 1306,
+      "path": "owned-release-launch.raw.json",
+      "sha256": "b64310475cc726ccafc3719444b03d4bb88509a25639fba770d3ea843997d7c3"
+    },
+    {
+      "bytes": 6746,
+      "path": "owned-release-probe.py",
+      "sha256": "03bbf2cb65ccbf2eaaf755769921cfb1c7e94cf0ef025d4a11f2f8e54b1d2289"
+    },
+    {
+      "bytes": 3962,
+      "path": "owned-release-proof-file.raw.json",
+      "sha256": "56bc4c757e4d984aba82df0deb8c0256d97ef9d9072bcf90369eefbaec4529ec"
+    },
+    {
+      "bytes": 2774,
+      "path": "owned-release-proof.json",
+      "sha256": "3bcf9cee804c5e68415a0fb565e47bf1dbe95930fd2aebd00a0db57c58cf83e2"
+    },
+    {
+      "bytes": 7345,
+      "path": "owned-release-request.json",
+      "sha256": "aa025a4511e7dd1672f22dc7183064882dfb16bead97f67204c5e308330f39d1"
+    },
+    {
+      "bytes": 952,
+      "path": "owned-release-status.raw.json",
+      "sha256": "e429dd3383a8fa132f9d6233ba37eb7bd1beb82956c0cf979012b7cc3eddb560"
+    },
+    {
+      "bytes": 2940,
+      "path": "owned-release-streams.raw.json",
+      "sha256": "3c388ba4574c8748da2c8d65cb9e885e980a08ae7997b23eb1dc71b71196cb04"
+    },
+    {
+      "bytes": 951,
+      "path": "status-01.raw.json",
+      "sha256": "b55a3efdef0c31ad1b22ee1f0881bea825efc6c951cdd7c82550624602e2405b"
+    },
+    {
+      "bytes": 0,
+      "path": "stderr.raw",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 5257,
+      "path": "stdout.raw",
+      "sha256": "8d63e5fceaacb2d3c1ec13fb02c149f6522e205ce87b3434059baf24d148b9a8"
+    },
+    {
+      "bytes": 17300,
+      "path": "streams-01.raw.json",
+      "sha256": "dfe2a54eea0423162ee2630a582a9c200ee168f8627af21c67955cd16cd1c933"
+    },
+    {
+      "bytes": 6827,
+      "path": "terminal-file.raw.json",
+      "sha256": "21e3841a1d0e85e648cfd12a9968abc0c551db032bec54bc9a24b5acb1ff41e3"
+    },
+    {
+      "bytes": 5257,
+      "path": "transport-terminal.json",
+      "sha256": "8d63e5fceaacb2d3c1ec13fb02c149f6522e205ce87b3434059baf24d148b9a8"
+    }
+  ],
+  "job": "1a1ae34e63b-fc05-5e2b",
+  "new_isolated_config_unchanged": true,
+  "original_git_stderr": "Intentionally withheld under frozen credential-redaction policy. Local public fixture reproduction is separate, not recovered original stderr.",
+  "prepared_commit_index_push_intent": "Not reached in this actual execution; not represented as generated artifacts.",
+  "push_attempts": 0,
+  "release": {
+    "exit_code": 0,
+    "job": "1a1ae38d536-fc05-5e47",
+    "original_pid_or_invocation_observed_before_terminal": false,
+    "proof_sha256": "3bcf9cee804c5e68415a0fb565e47bf1dbe95930fd2aebd00a0db57c58cf83e2",
+    "scope": "Exact unique unit removed and exact known cgroup absent. No original PID/InvocationID invented; removed-unit default Result does not alter original FAILED.",
+    "state": "SUCCEEDED",
+    "terminal_unix_ms": 1793924327121
+  },
+  "schema": "archive-git-transport-attempt1-actual-failure-delivery-v1",
+  "source_and_five_configs_unchanged": true,
+  "state": "FAILED",
+  "terminal_unix_ms": 1793924076001,
+  "timed_out": false
+}

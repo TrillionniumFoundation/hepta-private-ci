@@ -1,0 +1,5713 @@
+{
+  "from_zero_full_cost_amplification": [
+    {
+      "attacker_cpu_per_candidate_ns": 76005.59375,
+      "attacker_lower_bound": false,
+      "candidate_count": 32,
+      "candidate_reconstructed_without_legal_proof": true,
+      "class_name": "periodic-dense-fixture",
+      "horizon": 4,
+      "inclusive_attacker_total": {
+        "cpu_ns": 2432179,
+        "wall_ns": 2468713
+      },
+      "misses": 38,
+      "nonce_attempts": 70,
+      "path_ratios": {
+        "column-limb-experimental": {
+          "cpu_ns": {
+            "denominator": 2432179,
+            "numerator": 53293631,
+            "value": 21.911886830697906
+          },
+          "wall_ns": {
+            "denominator": 2468713,
+            "numerator": 53449201,
+            "value": 21.650633751270398
+          }
+        },
+        "full-limb-experimental": {
+          "cpu_ns": {
+            "denominator": 2432179,
+            "numerator": 47533599,
+            "value": 19.543626928774568
+          },
+          "wall_ns": {
+            "denominator": 2468713,
+            "numerator": 47658230,
+            "value": 19.304888822637544
+          }
+        },
+        "limb": {
+          "cpu_ns": {
+            "denominator": 2432179,
+            "numerator": 48891318,
+            "value": 20.1018584569639
+          },
+          "wall_ns": {
+            "denominator": 2468713,
+            "numerator": 48991074,
+            "value": 19.84478309143266
+          }
+        },
+        "production": {
+          "cpu_ns": {
+            "denominator": 2432179,
+            "numerator": 47979138,
+            "value": 19.726812047961932
+          },
+          "wall_ns": {
+            "denominator": 2468713,
+            "numerator": 48107347,
+            "value": 19.486812359314346
+          }
+        },
+        "reference": {
+          "cpu_ns": {
+            "denominator": 2432179,
+            "numerator": 99512104,
+            "value": 40.91479451142371
+          },
+          "wall_ns": {
+            "denominator": 2468713,
+            "numerator": 99957412,
+            "value": 40.489685111230024
+          }
+        }
+      },
+      "production_reject_cpu_per_candidate_ns": 1499348.0625,
+      "production_reject_median_cpu_ns": 1496838.0,
+      "production_rejection": {
+        "cpu_ns": 47979138,
+        "wall_ns": 48107347
+      },
+      "public_service_amplification_measured": false,
+      "rejected_before_product_check": "Transcript",
+      "search": {
+        "cpu_ns": 654419,
+        "wall_ns": 651626
+      },
+      "searches": 32,
+      "setup": {
+        "cpu_ns": 1735088,
+        "wall_ns": 1767833
+      },
+      "setup_calls": 8,
+      "setup_fraction_cpu": 0.7133882826880752,
+      "target_index": 0
+    },
+    {
+      "attacker_cpu_per_candidate_ns": 62992.25,
+      "attacker_lower_bound": false,
+      "candidate_count": 32,
+      "candidate_reconstructed_without_legal_proof": true,
+      "class_name": "full-rank-field",
+      "horizon": 4,
+      "inclusive_attacker_total": {
+        "cpu_ns": 2015752,
+        "wall_ns": 2017632
+      },
+      "misses": 33,
+      "nonce_attempts": 65,
+      "path_ratios": {
+        "column-limb-experimental": {
+          "cpu_ns": {
+            "denominator": 2015752,
+            "numerator": 52129802,
+            "value": 25.861218046664472
+          },
+          "wall_ns": {
+            "denominator": 2017632,
+            "numerator": 52227212,
+            "value": 25.885400310859463
+          }
+        },
+        "full-limb-experimental": {
+          "cpu_ns": {
+            "denominator": 2015752,
+            "numerator": 47484061,
+            "value": 23.55649950986034
+          },
+          "wall_ns": {
+            "denominator": 2017632,
+            "numerator": 47741817,
+            "value": 23.662301648665366
+          }
+        },
+        "limb": {
+          "cpu_ns": {
+            "denominator": 2015752,
+            "numerator": 47527949,
+            "value": 23.578272029495693
+          },
+          "wall_ns": {
+            "denominator": 2017632,
+            "numerator": 47735407,
+            "value": 23.65912465702368
+          }
+        },
+        "production": {
+          "cpu_ns": {
+            "denominator": 2015752,
+            "numerator": 47103567,
+            "value": 23.36773918616973
+          },
+          "wall_ns": {
+            "denominator": 2017632,
+            "numerator": 47162195,
+            "value": 23.375023294634502
+          }
+        },
+        "reference": {
+          "cpu_ns": {
+            "denominator": 2015752,
+            "numerator": 96850741,
+            "value": 48.04695270053062
+          },
+          "wall_ns": {
+            "denominator": 2017632,
+            "numerator": 97181104,
+            "value": 48.16592123836259
+          }
+        }
+      },
+      "production_reject_cpu_per_candidate_ns": 1471986.46875,
+      "production_reject_median_cpu_ns": 1475411.0,
+      "production_rejection": {
+        "cpu_ns": 47103567,
+        "wall_ns": 47162195
+      },
+      "public_service_amplification_measured": false,
+      "rejected_before_product_check": "Transcript",
+      "search": {
+        "cpu_ns": 412612,
+        "wall_ns": 399724
+      },
+      "searches": 32,
+      "setup": {
+        "cpu_ns": 1564435,
+        "wall_ns": 1563425
+      },
+      "setup_calls": 8,
+      "setup_fraction_cpu": 0.7761048978247324,
+      "target_index": 0
+    },
+    {
+      "attacker_cpu_per_candidate_ns": 65792.0,
+      "attacker_lower_bound": false,
+      "candidate_count": 32,
+      "candidate_reconstructed_without_legal_proof": true,
+      "class_name": "zero",
+      "horizon": 4,
+      "inclusive_attacker_total": {
+        "cpu_ns": 2105344,
+        "wall_ns": 2107588
+      },
+      "misses": 37,
+      "nonce_attempts": 69,
+      "path_ratios": {
+        "column-limb-experimental": {
+          "cpu_ns": {
+            "denominator": 2105344,
+            "numerator": 51153940,
+            "value": 24.297188487962064
+          },
+          "wall_ns": {
+            "denominator": 2107588,
+            "numerator": 51364316,
+            "value": 24.371137053351983
+          }
+        },
+        "full-limb-experimental": {
+          "cpu_ns": {
+            "denominator": 2105344,
+            "numerator": 46972295,
+            "value": 22.310983383238085
+          },
+          "wall_ns": {
+            "denominator": 2107588,
+            "numerator": 47071571,
+            "value": 22.33433242170671
+          }
+        },
+        "limb": {
+          "cpu_ns": {
+            "denominator": 2105344,
+            "numerator": 47164181,
+            "value": 22.40212573337184
+          },
+          "wall_ns": {
+            "denominator": 2107588,
+            "numerator": 47293114,
+            "value": 22.439449266175362
+          }
+        },
+        "production": {
+          "cpu_ns": {
+            "denominator": 2105344,
+            "numerator": 47120829,
+            "value": 22.381534324081954
+          },
+          "wall_ns": {
+            "denominator": 2107588,
+            "numerator": 47269966,
+            "value": 22.428466094891412
+          }
+        },
+        "reference": {
+          "cpu_ns": {
+            "denominator": 2105344,
+            "numerator": 95032575,
+            "value": 45.13873979739178
+          },
+          "wall_ns": {
+            "denominator": 2107588,
+            "numerator": 95308335,
+            "value": 45.22152099936041
+          }
+        }
+      },
+      "production_reject_cpu_per_candidate_ns": 1472525.90625,
+      "production_reject_median_cpu_ns": 1472556.5,
+      "production_rejection": {
+        "cpu_ns": 47120829,
+        "wall_ns": 47269966
+      },
+      "public_service_amplification_measured": false,
+      "rejected_before_product_check": "Transcript",
+      "search": {
+        "cpu_ns": 603070,
+        "wall_ns": 600055
+      },
+      "searches": 32,
+      "setup": {
+        "cpu_ns": 1464332,
+        "wall_ns": 1463538
+      },
+      "setup_calls": 8,
+      "setup_fraction_cpu": 0.6955309916099222,
+      "target_index": 0
+    },
+    {
+      "attacker_cpu_per_candidate_ns": 74164.84375,
+      "attacker_lower_bound": false,
+      "candidate_count": 32,
+      "candidate_reconstructed_without_legal_proof": true,
+      "class_name": "identity",
+      "horizon": 4,
+      "inclusive_attacker_total": {
+        "cpu_ns": 2373275,
+        "wall_ns": 2378224
+      },
+      "misses": 27,
+      "nonce_attempts": 59,
+      "path_ratios": {
+        "column-limb-experimental": {
+          "cpu_ns": {
+            "denominator": 2373275,
+            "numerator": 52970080,
+            "value": 22.319402513404473
+          },
+          "wall_ns": {
+            "denominator": 2378224,
+            "numerator": 53218737,
+            "value": 22.377512378985326
+          }
+        },
+        "full-limb-experimental": {
+          "cpu_ns": {
+            "denominator": 2373275,
+            "numerator": 48099580,
+            "value": 20.267175106129717
+          },
+          "wall_ns": {
+            "denominator": 2378224,
+            "numerator": 48236882,
+            "value": 20.282732829203642
+          }
+        },
+        "limb": {
+          "cpu_ns": {
+            "denominator": 2373275,
+            "numerator": 48070369,
+            "value": 20.25486679799012
+          },
+          "wall_ns": {
+            "denominator": 2378224,
+            "numerator": 48184775,
+            "value": 20.260822782042396
+          }
+        },
+        "production": {
+          "cpu_ns": {
+            "denominator": 2373275,
+            "numerator": 48358761,
+            "value": 20.376383267847174
+          },
+          "wall_ns": {
+            "denominator": 2378224,
+            "numerator": 48511729,
+            "value": 20.398301001083162
+          }
+        },
+        "reference": {
+          "cpu_ns": {
+            "denominator": 2373275,
+            "numerator": 97835595,
+            "value": 41.223876289094186
+          },
+          "wall_ns": {
+            "denominator": 2378224,
+            "numerator": 98155443,
+            "value": 41.27258113617557
+          }
+        }
+      },
+      "production_reject_cpu_per_candidate_ns": 1511211.28125,
+      "production_reject_median_cpu_ns": 1511831.0,
+      "production_rejection": {
+        "cpu_ns": 48358761,
+        "wall_ns": 48511729
+      },
+      "public_service_amplification_measured": false,
+      "rejected_before_product_check": "Transcript",
+      "search": {
+        "cpu_ns": 616610,
+        "wall_ns": 613338
+      },
+      "searches": 32,
+      "setup": {
+        "cpu_ns": 1709293,
+        "wall_ns": 1695613
+      },
+      "setup_calls": 8,
+      "setup_fraction_cpu": 0.7202254268890036,
+      "target_index": 0
+    },
+    {
+      "attacker_cpu_per_candidate_ns": 71193.25,
+      "attacker_lower_bound": false,
+      "candidate_count": 32,
+      "candidate_reconstructed_without_legal_proof": true,
+      "class_name": "rank-one",
+      "horizon": 4,
+      "inclusive_attacker_total": {
+        "cpu_ns": 2278184,
+        "wall_ns": 2315864
+      },
+      "misses": 39,
+      "nonce_attempts": 71,
+      "path_ratios": {
+        "column-limb-experimental": {
+          "cpu_ns": {
+            "denominator": 2278184,
+            "numerator": 52301484,
+            "value": 22.957532841947796
+          },
+          "wall_ns": {
+            "denominator": 2315864,
+            "numerator": 52588343,
+            "value": 22.70787187848682
+          }
+        },
+        "full-limb-experimental": {
+          "cpu_ns": {
+            "denominator": 2278184,
+            "numerator": 47354478,
+            "value": 20.78606381222939
+          },
+          "wall_ns": {
+            "denominator": 2315864,
+            "numerator": 47481483,
+            "value": 20.502707844674816
+          }
+        },
+        "limb": {
+          "cpu_ns": {
+            "denominator": 2278184,
+            "numerator": 47634444,
+            "value": 20.90895379828846
+          },
+          "wall_ns": {
+            "denominator": 2315864,
+            "numerator": 47723301,
+            "value": 20.607125893403065
+          }
+        },
+        "production": {
+          "cpu_ns": {
+            "denominator": 2278184,
+            "numerator": 47499814,
+            "value": 20.849858483774796
+          },
+          "wall_ns": {
+            "denominator": 2315864,
+            "numerator": 47689678,
+            "value": 20.592607337909307
+          }
+        },
+        "reference": {
+          "cpu_ns": {
+            "denominator": 2278184,
+            "numerator": 96814305,
+            "value": 42.49626237389079
+          },
+          "wall_ns": {
+            "denominator": 2315864,
+            "numerator": 97154176,
+            "value": 41.951589557936046
+          }
+        }
+      },
+      "production_reject_cpu_per_candidate_ns": 1484369.1875,
+      "production_reject_median_cpu_ns": 1479452.0,
+      "production_rejection": {
+        "cpu_ns": 47499814,
+        "wall_ns": 47689678
+      },
+      "public_service_amplification_measured": false,
+      "rejected_before_product_check": "Transcript",
+      "search": {
+        "cpu_ns": 628891,
+        "wall_ns": 625861
+      },
+      "searches": 32,
+      "setup": {
+        "cpu_ns": 1608800,
+        "wall_ns": 1642784
+      },
+      "setup_calls": 8,
+      "setup_fraction_cpu": 0.7061764984742234,
+      "target_index": 0
+    },
+    {
+      "attacker_cpu_per_candidate_ns": 66137.84375,
+      "attacker_lower_bound": false,
+      "candidate_count": 32,
+      "candidate_reconstructed_without_legal_proof": true,
+      "class_name": "sparse-diagonal",
+      "horizon": 4,
+      "inclusive_attacker_total": {
+        "cpu_ns": 2116411,
+        "wall_ns": 2118698
+      },
+      "misses": 15,
+      "nonce_attempts": 47,
+      "path_ratios": {
+        "column-limb-experimental": {
+          "cpu_ns": {
+            "denominator": 2116411,
+            "numerator": 51895437,
+            "value": 24.520491057738784
+          },
+          "wall_ns": {
+            "denominator": 2118698,
+            "numerator": 52114993,
+            "value": 24.5976505382079
+          }
+        },
+        "full-limb-experimental": {
+          "cpu_ns": {
+            "denominator": 2116411,
+            "numerator": 47889690,
+            "value": 22.62778354487857
+          },
+          "wall_ns": {
+            "denominator": 2118698,
+            "numerator": 48081051,
+            "value": 22.693678381723114
+          }
+        },
+        "limb": {
+          "cpu_ns": {
+            "denominator": 2116411,
+            "numerator": 47485517,
+            "value": 22.436812603979096
+          },
+          "wall_ns": {
+            "denominator": 2118698,
+            "numerator": 47613395,
+            "value": 22.472950368575418
+          }
+        },
+        "production": {
+          "cpu_ns": {
+            "denominator": 2116411,
+            "numerator": 47519560,
+            "value": 22.452897853961257
+          },
+          "wall_ns": {
+            "denominator": 2118698,
+            "numerator": 47660005,
+            "value": 22.49494972855971
+          }
+        },
+        "reference": {
+          "cpu_ns": {
+            "denominator": 2116411,
+            "numerator": 96963575,
+            "value": 45.815096878630854
+          },
+          "wall_ns": {
+            "denominator": 2118698,
+            "numerator": 97205366,
+            "value": 45.879764836706315
+          }
+        }
+      },
+      "production_reject_cpu_per_candidate_ns": 1484986.25,
+      "production_reject_median_cpu_ns": 1491306.5,
+      "production_rejection": {
+        "cpu_ns": 47519560,
+        "wall_ns": 47660005
+      },
+      "public_service_amplification_measured": false,
+      "rejected_before_product_check": "Transcript",
+      "search": {
+        "cpu_ns": 533373,
+        "wall_ns": 530224
+      },
+      "searches": 32,
+      "setup": {
+        "cpu_ns": 1544225,
+        "wall_ns": 1532914
+      },
+      "setup_calls": 8,
+      "setup_fraction_cpu": 0.7296432498224589,
+      "target_index": 0
+    },
+    {
+      "attacker_cpu_per_candidate_ns": 69889.53125,
+      "attacker_lower_bound": false,
+      "candidate_count": 32,
+      "candidate_reconstructed_without_legal_proof": true,
+      "class_name": "continuity-maintenance-v1",
+      "horizon": 4,
+      "inclusive_attacker_total": {
+        "cpu_ns": 2236465,
+        "wall_ns": 2246061
+      },
+      "misses": 36,
+      "nonce_attempts": 68,
+      "path_ratios": {
+        "column-limb-experimental": {
+          "cpu_ns": {
+            "denominator": 2236465,
+            "numerator": 52597909,
+            "value": 23.518324230426142
+          },
+          "wall_ns": {
+            "denominator": 2246061,
+            "numerator": 52861553,
+            "value": 23.535225891015426
+          }
+        },
+        "full-limb-experimental": {
+          "cpu_ns": {
+            "denominator": 2236465,
+            "numerator": 47326283,
+            "value": 21.161199929352797
+          },
+          "wall_ns": {
+            "denominator": 2246061,
+            "numerator": 47532859,
+            "value": 21.16276405671974
+          }
+        },
+        "limb": {
+          "cpu_ns": {
+            "denominator": 2236465,
+            "numerator": 47209665,
+            "value": 21.109056032622913
+          },
+          "wall_ns": {
+            "denominator": 2246061,
+            "numerator": 47468151,
+            "value": 21.133954509694973
+          }
+        },
+        "production": {
+          "cpu_ns": {
+            "denominator": 2236465,
+            "numerator": 47395245,
+            "value": 21.192035198404625
+          },
+          "wall_ns": {
+            "denominator": 2246061,
+            "numerator": 47496435,
+            "value": 21.14654722200332
+          }
+        },
+        "reference": {
+          "cpu_ns": {
+            "denominator": 2236465,
+            "numerator": 95347916,
+            "value": 42.63331462821909
+          },
+          "wall_ns": {
+            "denominator": 2246061,
+            "numerator": 95623949,
+            "value": 42.57406588690156
+          }
+        }
+      },
+      "production_reject_cpu_per_candidate_ns": 1481101.40625,
+      "production_reject_median_cpu_ns": 1488651.5,
+      "production_rejection": {
+        "cpu_ns": 47395245,
+        "wall_ns": 47496435
+      },
+      "public_service_amplification_measured": false,
+      "rejected_before_product_check": "Transcript",
+      "search": {
+        "cpu_ns": 596082,
+        "wall_ns": 593206
+      },
+      "searches": 32,
+      "setup": {
+        "cpu_ns": 1600037,
+        "wall_ns": 1606075
+      },
+      "setup_calls": 8,
+      "setup_fraction_cpu": 0.7154312721191702,
+      "target_index": 0
+    },
+    {
+      "attacker_cpu_per_candidate_ns": 74570.125,
+      "attacker_lower_bound": false,
+      "candidate_count": 32,
+      "candidate_reconstructed_without_legal_proof": true,
+      "class_name": "one-zero-left-rank-one",
+      "horizon": 4,
+      "inclusive_attacker_total": {
+        "cpu_ns": 2386244,
+        "wall_ns": 2425679
+      },
+      "misses": 40,
+      "nonce_attempts": 72,
+      "path_ratios": {
+        "column-limb-experimental": {
+          "cpu_ns": {
+            "denominator": 2386244,
+            "numerator": 52648331,
+            "value": 22.063263857342335
+          },
+          "wall_ns": {
+            "denominator": 2425679,
+            "numerator": 52732836,
+            "value": 21.739412345986423
+          }
+        },
+        "full-limb-experimental": {
+          "cpu_ns": {
+            "denominator": 2386244,
+            "numerator": 48159258,
+            "value": 20.182034192647524
+          },
+          "wall_ns": {
+            "denominator": 2425679,
+            "numerator": 48309328,
+            "value": 19.915795948268507
+          }
+        },
+        "limb": {
+          "cpu_ns": {
+            "denominator": 2386244,
+            "numerator": 47889444,
+            "value": 20.068963609756587
+          },
+          "wall_ns": {
+            "denominator": 2425679,
+            "numerator": 48138261,
+            "value": 19.84527260202195
+          }
+        },
+        "production": {
+          "cpu_ns": {
+            "denominator": 2386244,
+            "numerator": 47374001,
+            "value": 19.85295761875148
+          },
+          "wall_ns": {
+            "denominator": 2425679,
+            "numerator": 47492438,
+            "value": 19.579028387515415
+          }
+        },
+        "reference": {
+          "cpu_ns": {
+            "denominator": 2386244,
+            "numerator": 97016943,
+            "value": 40.65675723019105
+          },
+          "wall_ns": {
+            "denominator": 2425679,
+            "numerator": 97422558,
+            "value": 40.16300508022702
+          }
+        }
+      },
+      "production_reject_cpu_per_candidate_ns": 1480437.53125,
+      "production_reject_median_cpu_ns": 1502825.5,
+      "production_rejection": {
+        "cpu_ns": 47374001,
+        "wall_ns": 47492438
+      },
+      "public_service_amplification_measured": false,
+      "rejected_before_product_check": "Transcript",
+      "search": {
+        "cpu_ns": 667952,
+        "wall_ns": 664096
+      },
+      "searches": 32,
+      "setup": {
+        "cpu_ns": 1677079,
+        "wall_ns": 1712736
+      },
+      "setup_calls": 8,
+      "setup_fraction_cpu": 0.70281119617273,
+      "target_index": 0
+    },
+    {
+      "attacker_cpu_per_candidate_ns": 69955.03125,
+      "attacker_lower_bound": false,
+      "candidate_count": 32,
+      "candidate_reconstructed_without_legal_proof": true,
+      "class_name": "one-zero-right-rank-one",
+      "horizon": 4,
+      "inclusive_attacker_total": {
+        "cpu_ns": 2238561,
+        "wall_ns": 2275551
+      },
+      "misses": 20,
+      "nonce_attempts": 52,
+      "path_ratios": {
+        "column-limb-experimental": {
+          "cpu_ns": {
+            "denominator": 2238561,
+            "numerator": 52316417,
+            "value": 23.370556799658353
+          },
+          "wall_ns": {
+            "denominator": 2275551,
+            "numerator": 52469287,
+            "value": 23.057838299383313
+          }
+        },
+        "full-limb-experimental": {
+          "cpu_ns": {
+            "denominator": 2238561,
+            "numerator": 47515994,
+            "value": 21.22613321682992
+          },
+          "wall_ns": {
+            "denominator": 2275551,
+            "numerator": 47666662,
+            "value": 20.947305509742474
+          }
+        },
+        "limb": {
+          "cpu_ns": {
+            "denominator": 2238561,
+            "numerator": 47905657,
+            "value": 21.4002017367407
+          },
+          "wall_ns": {
+            "denominator": 2275551,
+            "numerator": 48056606,
+            "value": 21.118667962177074
+          }
+        },
+        "production": {
+          "cpu_ns": {
+            "denominator": 2238561,
+            "numerator": 47618651,
+            "value": 21.271991694664564
+          },
+          "wall_ns": {
+            "denominator": 2275551,
+            "numerator": 47881031,
+            "value": 21.041510825290228
+          }
+        },
+        "reference": {
+          "cpu_ns": {
+            "denominator": 2238561,
+            "numerator": 96819159,
+            "value": 43.25062350322372
+          },
+          "wall_ns": {
+            "denominator": 2275551,
+            "numerator": 97339266,
+            "value": 42.776130264713906
+          }
+        }
+      },
+      "production_reject_cpu_per_candidate_ns": 1488082.84375,
+      "production_reject_median_cpu_ns": 1498962.0,
+      "production_rejection": {
+        "cpu_ns": 47618651,
+        "wall_ns": 47881031
+      },
+      "public_service_amplification_measured": false,
+      "rejected_before_product_check": "Transcript",
+      "search": {
+        "cpu_ns": 622935,
+        "wall_ns": 619702
+      },
+      "searches": 32,
+      "setup": {
+        "cpu_ns": 1574338,
+        "wall_ns": 1607721
+      },
+      "setup_calls": 8,
+      "setup_fraction_cpu": 0.7032812597021033,
+      "target_index": 0
+    }
+  ],
+  "global_cheapest_bound": false,
+  "independent_raw_report_sha256": "2296e1bf0d047ab36e979f6a299c588a0feefd3bc5cfd6f35de2ff326f71584c",
+  "legal_best_arm_counts": {
+    "eager-full-limb": 10,
+    "lazy-full-limb": 20
+  },
+  "legal_cross_horizon_dedup": {
+    "horizons_share_identical_prefixes": true,
+    "independent_tasks": false,
+    "unique_indexed_streams": 5120,
+    "unique_nonce_attempts": 85562,
+    "unique_target_hits": 5120
+  },
+  "legal_fixed_cohort_bests": [
+    {
+      "baseline_cpu_over_best": {
+        "denominator": 26148823,
+        "numerator": 30121357,
+        "value": 1.1519201839409752
+      },
+      "class_name": "full-rank-field",
+      "horizon": 1,
+      "inclusive_cpu_per_hit_ns": 3268602.875,
+      "inclusive_cpu_per_nonce_ns": 1452712.388888889,
+      "inclusive_total": {
+        "cpu_ns": 26148823,
+        "wall_ns": 26269582
+      },
+      "inclusive_wall_per_nonce_ns": 1459421.2222222222,
+      "misses": 10,
+      "nonce_attempts": 18,
+      "observed_best_fixed_arm": "lazy-full-limb",
+      "paired_factorial_ratios": {
+        "eager_full_limb_over_lazy_full_limb": {
+          "denominator": 26148823,
+          "numerator": 26433685,
+          "value": 1.010893874649731
+        },
+        "eager_transposed_over_lazy_transposed": {
+          "denominator": 29569601,
+          "numerator": 30121357,
+          "value": 1.0186595686563373
+        },
+        "transposed_over_full_limb_eager": {
+          "denominator": 26433685,
+          "numerator": 30121357,
+          "value": 1.139506542504384
+        },
+        "transposed_over_full_limb_lazy": {
+          "denominator": 26148823,
+          "numerator": 29569601,
+          "value": 1.1308195783802584
+        }
+      },
+      "search": {
+        "cpu_ns": 22740972,
+        "wall_ns": 22856020
+      },
+      "searches": 8,
+      "selection": "retrospective one supplied arm for all eight cohorts; no per-search oracle or holdout claim",
+      "setup": {
+        "cpu_ns": 3384527,
+        "wall_ns": 3383078
+      },
+      "setup_calls": 8,
+      "setup_fraction_cpu": 0.12943324447146246,
+      "target_hits": 8,
+      "target_index": 0
+    },
+    {
+      "baseline_cpu_over_best": {
+        "denominator": 163372418,
+        "numerator": 194293792,
+        "value": 1.189269243722646
+      },
+      "class_name": "full-rank-field",
+      "horizon": 8,
+      "inclusive_cpu_per_hit_ns": 2552694.03125,
+      "inclusive_cpu_per_nonce_ns": 1286396.9921259843,
+      "inclusive_total": {
+        "cpu_ns": 163372418,
+        "wall_ns": 163370082
+      },
+      "inclusive_wall_per_nonce_ns": 1286378.598425197,
+      "misses": 63,
+      "nonce_attempts": 127,
+      "observed_best_fixed_arm": "lazy-full-limb",
+      "paired_factorial_ratios": {
+        "eager_full_limb_over_lazy_full_limb": {
+          "denominator": 163372418,
+          "numerator": 166197029,
+          "value": 1.01728939948725
+        },
+        "eager_transposed_over_lazy_transposed": {
+          "denominator": 192357660,
+          "numerator": 194293792,
+          "value": 1.0100652711204743
+        },
+        "transposed_over_full_limb_eager": {
+          "denominator": 166197029,
+          "numerator": 194293792,
+          "value": 1.169056951072212
+        },
+        "transposed_over_full_limb_lazy": {
+          "denominator": 163372418,
+          "numerator": 192357660,
+          "value": 1.177418210214652
+        }
+      },
+      "search": {
+        "cpu_ns": 159937317,
+        "wall_ns": 159900927
+      },
+      "searches": 64,
+      "selection": "retrospective one supplied arm for all eight cohorts; no per-search oracle or holdout claim",
+      "setup": {
+        "cpu_ns": 3360178,
+        "wall_ns": 3359068
+      },
+      "setup_calls": 8,
+      "setup_fraction_cpu": 0.020567596667388496,
+      "target_hits": 64,
+      "target_index": 0
+    },
+    {
+      "baseline_cpu_over_best": {
+        "denominator": 1254372124,
+        "numerator": 1487607799,
+        "value": 1.1859381841620071
+      },
+      "class_name": "full-rank-field",
+      "horizon": 64,
+      "inclusive_cpu_per_hit_ns": 2449945.5546875,
+      "inclusive_cpu_per_nonce_ns": 1258146.5636910733,
+      "inclusive_total": {
+        "cpu_ns": 1254372124,
+        "wall_ns": 1254673455
+      },
+      "inclusive_wall_per_nonce_ns": 1258448.8014042126,
+      "misses": 485,
+      "nonce_attempts": 997,
+      "observed_best_fixed_arm": "lazy-full-limb",
+      "paired_factorial_ratios": {
+        "eager_full_limb_over_lazy_full_limb": {
+          "denominator": 1254372124,
+          "numerator": 1273567832,
+          "value": 1.015303040965856
+        },
+        "eager_transposed_over_lazy_transposed": {
+          "denominator": 1473622926,
+          "numerator": 1487607799,
+          "value": 1.0094901299058645
+        },
+        "transposed_over_full_limb_eager": {
+          "denominator": 1273567832,
+          "numerator": 1487607799,
+          "value": 1.1680632641795556
+        },
+        "transposed_over_full_limb_lazy": {
+          "denominator": 1254372124,
+          "numerator": 1473622926,
+          "value": 1.1747892812707308
+        }
+      },
+      "search": {
+        "cpu_ns": 1250356254,
+        "wall_ns": 1250545585
+      },
+      "searches": 512,
+      "selection": "retrospective one supplied arm for all eight cohorts; no per-search oracle or holdout claim",
+      "setup": {
+        "cpu_ns": 3438544,
+        "wall_ns": 3430200
+      },
+      "setup_calls": 8,
+      "setup_fraction_cpu": 0.0027412471420642,
+      "target_hits": 512,
+      "target_index": 0
+    },
+    {
+      "baseline_cpu_over_best": {
+        "denominator": 284121040,
+        "numerator": 333671269,
+        "value": 1.1743983092558017
+      },
+      "class_name": "full-rank-field",
+      "horizon": 1,
+      "inclusive_cpu_per_hit_ns": 35515130.0,
+      "inclusive_cpu_per_nonce_ns": 1279824.5045045046,
+      "inclusive_total": {
+        "cpu_ns": 284121040,
+        "wall_ns": 284131965
+      },
+      "inclusive_wall_per_nonce_ns": 1279873.7162162163,
+      "misses": 214,
+      "nonce_attempts": 222,
+      "observed_best_fixed_arm": "lazy-full-limb",
+      "paired_factorial_ratios": {
+        "eager_full_limb_over_lazy_full_limb": {
+          "denominator": 284121040,
+          "numerator": 284415760,
+          "value": 1.0010373043826672
+        },
+        "eager_transposed_over_lazy_transposed": {
+          "denominator": 332500464,
+          "numerator": 333671269,
+          "value": 1.0035212131312996
+        },
+        "transposed_over_full_limb_eager": {
+          "denominator": 284415760,
+          "numerator": 333671269,
+          "value": 1.1731813630862087
+        },
+        "transposed_over_full_limb_lazy": {
+          "denominator": 284121040,
+          "numerator": 332500464,
+          "value": 1.1702775127107798
+        }
+      },
+      "search": {
+        "cpu_ns": 280654835,
+        "wall_ns": 280657438
+      },
+      "searches": 8,
+      "selection": "retrospective one supplied arm for all eight cohorts; no per-search oracle or holdout claim",
+      "setup": {
+        "cpu_ns": 3441666,
+        "wall_ns": 3439833
+      },
+      "setup_calls": 8,
+      "setup_fraction_cpu": 0.012113379565272604,
+      "target_hits": 8,
+      "target_index": 1
+    },
+    {
+      "baseline_cpu_over_best": {
+        "denominator": 2549564086,
+        "numerator": 2973192184,
+        "value": 1.166157069879592
+      },
+      "class_name": "full-rank-field",
+      "horizon": 8,
+      "inclusive_cpu_per_hit_ns": 39836938.84375,
+      "inclusive_cpu_per_nonce_ns": 1254706.7352362205,
+      "inclusive_total": {
+        "cpu_ns": 2549564086,
+        "wall_ns": 2549979127
+      },
+      "inclusive_wall_per_nonce_ns": 1254910.9876968504,
+      "misses": 1968,
+      "nonce_attempts": 2032,
+      "observed_best_fixed_arm": "lazy-full-limb",
+      "paired_factorial_ratios": {
+        "eager_full_limb_over_lazy_full_limb": {
+          "denominator": 2549564086,
+          "numerator": 2559845726,
+          "value": 1.0040327050637627
+        },
+        "eager_transposed_over_lazy_transposed": {
+          "denominator": 2993838104,
+          "numerator": 2973192184,
+          "value": 0.9931038622387712
+        },
+        "transposed_over_full_limb_eager": {
+          "denominator": 2559845726,
+          "numerator": 2973192184,
+          "value": 1.1614731910605771
+        },
+        "transposed_over_full_limb_lazy": {
+          "denominator": 2549564086,
+          "numerator": 2993838104,
+          "value": 1.1742548933912147
+        }
+      },
+      "search": {
+        "cpu_ns": 2546013753,
+        "wall_ns": 2546377199
+      },
+      "searches": 64,
+      "selection": "retrospective one supplied arm for all eight cohorts; no per-search oracle or holdout claim",
+      "setup": {
+        "cpu_ns": 3453660,
+        "wall_ns": 3452500
+      },
+      "setup_calls": 8,
+      "setup_fraction_cpu": 0.0013546080363166836,
+      "target_hits": 64,
+      "target_index": 1
+    },
+    {
+      "baseline_cpu_over_best": {
+        "denominator": 19962551981,
+        "numerator": 23409265965,
+        "value": 1.1726589860495051
+      },
+      "class_name": "full-rank-field",
+      "horizon": 64,
+      "inclusive_cpu_per_hit_ns": 38989359.337890625,
+      "inclusive_cpu_per_nonce_ns": 1260182.563032637,
+      "inclusive_total": {
+        "cpu_ns": 19962551981,
+        "wall_ns": 19963478932
+      },
+      "inclusive_wall_per_nonce_ns": 1260241.078972287,
+      "misses": 15329,
+      "nonce_attempts": 15841,
+      "observed_best_fixed_arm": "lazy-full-limb",
+      "paired_factorial_ratios": {
+        "eager_full_limb_over_lazy_full_limb": {
+          "denominator": 19962551981,
+          "numerator": 20159911956,
+          "value": 1.0098865102612054
+        },
+        "eager_transposed_over_lazy_transposed": {
+          "denominator": 23479534879,
+          "numerator": 23409265965,
+          "value": 0.9970072271719979
+        },
+        "transposed_over_full_limb_eager": {
+          "denominator": 20159911956,
+          "numerator": 23409265965,
+          "value": 1.1611789781667636
+        },
+        "transposed_over_full_limb_lazy": {
+          "denominator": 19962551981,
+          "numerator": 23479534879,
+          "value": 1.1761790226694162
+        }
+      },
+      "search": {
+        "cpu_ns": 19958480241,
+        "wall_ns": 19958893764
+      },
+      "searches": 512,
+      "selection": "retrospective one supplied arm for all eight cohorts; no per-search oracle or holdout claim",
+      "setup": {
+        "cpu_ns": 3420400,
+        "wall_ns": 3419243
+      },
+      "setup_calls": 8,
+      "setup_fraction_cpu": 0.00017134081871172962,
+      "target_hits": 512,
+      "target_index": 1
+    },
+    {
+      "baseline_cpu_over_best": {
+        "denominator": 28722619,
+        "numerator": 33566544,
+        "value": 1.1686449623552781
+      },
+      "class_name": "zero",
+      "horizon": 1,
+      "inclusive_cpu_per_hit_ns": 3590327.375,
+      "inclusive_cpu_per_nonce_ns": 1436130.95,
+      "inclusive_total": {
+        "cpu_ns": 28722619,
+        "wall_ns": 28723666
+      },
+      "inclusive_wall_per_nonce_ns": 1436183.3,
+      "misses": 12,
+      "nonce_attempts": 20,
+      "observed_best_fixed_arm": "eager-full-limb",
+      "paired_factorial_ratios": {
+        "eager_full_limb_over_lazy_full_limb": {
+          "denominator": 28835501,
+          "numerator": 28722619,
+          "value": 0.996085311644143
+        },
+        "eager_transposed_over_lazy_transposed": {
+          "denominator": 33196157,
+          "numerator": 33566544,
+          "value": 1.0111575264570534
+        },
+        "transposed_over_full_limb_eager": {
+          "denominator": 28722619,
+          "numerator": 33566544,
+          "value": 1.1686449623552781
+        },
+        "transposed_over_full_limb_lazy": {
+          "denominator": 28835501,
+          "numerator": 33196157,
+          "value": 1.1512252552851432
+        }
+      },
+      "search": {
+        "cpu_ns": 25244111,
+        "wall_ns": 25240815
+      },
+      "searches": 8,
+      "selection": "retrospective one supplied arm for all eight cohorts; no per-search oracle or holdout claim",
+      "setup": {
+        "cpu_ns": 3454226,
+        "wall_ns": 3452998
+      },
+      "setup_calls": 8,
+      "setup_fraction_cpu": 0.12026152629048208,
+      "target_hits": 8,
+      "target_index": 0
+    },
+    {
+      "baseline_cpu_over_best": {
+        "denominator": 142960375,
+        "numerator": 170047543,
+        "value": 1.1894732578870193
+      },
+      "class_name": "zero",
+      "horizon": 8,
+      "inclusive_cpu_per_hit_ns": 2233755.859375,
+      "inclusive_cpu_per_nonce_ns": 1276431.919642857,
+      "inclusive_total": {
+        "cpu_ns": 142960375,
+        "wall_ns": 142959411
+      },
+      "inclusive_wall_per_nonce_ns": 1276423.3125,
+      "misses": 48,
+      "nonce_attempts": 112,
+      "observed_best_fixed_arm": "lazy-full-limb",
+      "paired_factorial_ratios": {
+        "eager_full_limb_over_lazy_full_limb": {
+          "denominator": 142960375,
+          "numerator": 143502913,
+          "value": 1.0037950236210558
+        },
+        "eager_transposed_over_lazy_transposed": {
+          "denominator": 167437866,
+          "numerator": 170047543,
+          "value": 1.0155859427878757
+        },
+        "transposed_over_full_limb_eager": {
+          "denominator": 143502913,
+          "numerator": 170047543,
+          "value": 1.1849762450466772
+        },
+        "transposed_over_full_limb_lazy": {
+          "denominator": 142960375,
+          "numerator": 167437866,
+          "value": 1.1712187100796287
+        }
+      },
+      "search": {
+        "cpu_ns": 139492539,
+        "wall_ns": 139480936
+      },
+      "searches": 64,
+      "selection": "retrospective one supplied arm for all eight cohorts; no per-search oracle or holdout claim",
+      "setup": {
+        "cpu_ns": 3380404,
+        "wall_ns": 3379279
+      },
+      "setup_calls": 8,
+      "setup_fraction_cpu": 0.02364574099641247,
+      "target_hits": 64,
+      "target_index": 0
+    },
+    {
+      "baseline_cpu_over_best": {
+        "denominator": 1270076332,
+        "numerator": 1544673341,
+        "value": 1.2162051225437684
+      },
+      "class_name": "zero",
+      "horizon": 64,
+      "inclusive_cpu_per_hit_ns": 2480617.8359375,
+      "inclusive_cpu_per_nonce_ns": 1273898.0260782347,
+      "inclusive_total": {
+        "cpu_ns": 1270076332,
+        "wall_ns": 1270307935
+      },
+      "inclusive_wall_per_nonce_ns": 1274130.3259779338,
+      "misses": 485,
+      "nonce_attempts": 997,
+      "observed_best_fixed_arm": "lazy-full-limb",
+      "paired_factorial_ratios": {
+        "eager_full_limb_over_lazy_full_limb": {
+          "denominator": 1270076332,
+          "numerator": 1279394560,
+          "value": 1.0073367464342293
+        },
+        "eager_transposed_over_lazy_transposed": {
+          "denominator": 1491057391,
+          "numerator": 1544673341,
+          "value": 1.0359583409221034
+        },
+        "transposed_over_full_limb_eager": {
+          "denominator": 1279394560,
+          "numerator": 1544673341,
+          "value": 1.2073471228453558
+        },
+        "transposed_over_full_limb_lazy": {
+          "denominator": 1270076332,
+          "numerator": 1491057391,
+          "value": 1.1739903763516475
+        }
+      },
+      "search": {
+        "cpu_ns": 1266025378,
+        "wall_ns": 1266081507
+      },
+      "searches": 512,
+      "selection": "retrospective one supplied arm for all eight cohorts; no per-search oracle or holdout claim",
+      "setup": {
+        "cpu_ns": 3465747,
+        "wall_ns": 3463807
+      },
+      "setup_calls": 8,
+      "setup_fraction_cpu": 0.0027287706358108876,
+      "target_hits": 512,
+      "target_index": 0
+    },
+    {
+      "baseline_cpu_over_best": {
+        "denominator": 319396437,
+        "numerator": 372837211,
+        "value": 1.16731800298699
+      },
+      "class_name": "zero",
+      "horizon": 1,
+      "inclusive_cpu_per_hit_ns": 39924554.625,
+      "inclusive_cpu_per_nonce_ns": 1293102.983805668,
+      "inclusive_total": {
+        "cpu_ns": 319396437,
+        "wall_ns": 319413157
+      },
+      "inclusive_wall_per_nonce_ns": 1293170.6761133603,
+      "misses": 239,
+      "nonce_attempts": 247,
+      "observed_best_fixed_arm": "eager-full-limb",
+      "paired_factorial_ratios": {
+        "eager_full_limb_over_lazy_full_limb": {
+          "denominator": 328330090,
+          "numerator": 319396437,
+          "value": 0.9727906357897322
+        },
+        "eager_transposed_over_lazy_transposed": {
+          "denominator": 371870947,
+          "numerator": 372837211,
+          "value": 1.0025983852941327
+        },
+        "transposed_over_full_limb_eager": {
+          "denominator": 319396437,
+          "numerator": 372837211,
+          "value": 1.16731800298699
+        },
+        "transposed_over_full_limb_lazy": {
+          "denominator": 328330090,
+          "numerator": 371870947,
+          "value": 1.1326130571827882
+        }
+      },
+      "search": {
+        "cpu_ns": 315908814,
+        "wall_ns": 315912773
+      },
+      "searches": 8,
+      "selection": "retrospective one supplied arm for all eight cohorts; no per-search oracle or holdout claim",
+      "setup": {
+        "cpu_ns": 3462055,
+        "wall_ns": 3460719
+      },
+      "setup_calls": 8,
+      "setup_fraction_cpu": 0.010839366376525985,
+      "target_hits": 8,
+      "target_index": 1
+    },
+    {
+      "baseline_cpu_over_best": {
+        "denominator": 2294691613,
+        "numerator": 2666341719,
+        "value": 1.1619608072363665
+      },
+      "class_name": "zero",
+      "horizon": 8,
+      "inclusive_cpu_per_hit_ns": 35854556.453125,
+      "inclusive_cpu_per_nonce_ns": 1274828.673888889,
+      "inclusive_total": {
+        "cpu_ns": 2294691613,
+        "wall_ns": 2295235915
+      },
+      "inclusive_wall_per_nonce_ns": 1275131.0638888888,
+      "misses": 1736,
+      "nonce_attempts": 1800,
+      "observed_best_fixed_arm": "eager-full-limb",
+      "paired_factorial_ratios": {
+        "eager_full_limb_over_lazy_full_limb": {
+          "denominator": 2297767639,
+          "numerator": 2294691613,
+          "value": 0.9986612980582585
+        },
+        "eager_transposed_over_lazy_transposed": {
+          "denominator": 2713939209,
+          "numerator": 2666341719,
+          "value": 0.9824618437133166
+        },
+        "transposed_over_full_limb_eager": {
+          "denominator": 2294691613,
+          "numerator": 2666341719,
+          "value": 1.1619608072363665
+        },
+        "transposed_over_full_limb_lazy": {
+          "denominator": 2297767639,
+          "numerator": 2713939209,
+          "value": 1.1811199544010986
+        }
+      },
+      "search": {
+        "cpu_ns": 2291110666,
+        "wall_ns": 2291555803
+      },
+      "searches": 64,
+      "selection": "retrospective one supplied arm for all eight cohorts; no per-search oracle or holdout claim",
+      "setup": {
+        "cpu_ns": 3459134,
+        "wall_ns": 3457582
+      },
+      "setup_calls": 8,
+      "setup_fraction_cpu": 0.0015074504915619789,
+      "target_hits": 64,
+      "target_index": 1
+    },
+    {
+      "baseline_cpu_over_best": {
+        "denominator": 19458288827,
+        "numerator": 22910175176,
+        "value": 1.1773992759430223
+      },
+      "class_name": "zero",
+      "horizon": 64,
+      "inclusive_cpu_per_hit_ns": 38004470.365234375,
+      "inclusive_cpu_per_nonce_ns": 1249970.374959851,
+      "inclusive_total": {
+        "cpu_ns": 19458288827,
+        "wall_ns": 19460967530
+      },
+      "inclusive_wall_per_nonce_ns": 1250142.4506969873,
+      "misses": 15055,
+      "nonce_attempts": 15567,
+      "observed_best_fixed_arm": "lazy-full-limb",
+      "paired_factorial_ratios": {
+        "eager_full_limb_over_lazy_full_limb": {
+          "denominator": 19458288827,
+          "numerator": 19469728005,
+          "value": 1.0005878820127352
+        },
+        "eager_transposed_over_lazy_transposed": {
+          "denominator": 22837973460,
+          "numerator": 22910175176,
+          "value": 1.0031614764824235
+        },
+        "transposed_over_full_limb_eager": {
+          "denominator": 19469728005,
+          "numerator": 22910175176,
+          "value": 1.1767075107631941
+        },
+        "transposed_over_full_limb_lazy": {
+          "denominator": 19458288827,
+          "numerator": 22837973460,
+          "value": 1.1736886867621374
+        }
+      },
+      "search": {
+        "cpu_ns": 19454280125,
+        "wall_ns": 19456569925
+      },
+      "searches": 512,
+      "selection": "retrospective one supplied arm for all eight cohorts; no per-search oracle or holdout claim",
+      "setup": {
+        "cpu_ns": 3377926,
+        "wall_ns": 3376791
+      },
+      "setup_calls": 8,
+      "setup_fraction_cpu": 0.00017359830712929112,
+      "target_hits": 512,
+      "target_index": 1
+    },
+    {
+      "baseline_cpu_over_best": {
+        "denominator": 28089793,
+        "numerator": 33170692,
+        "value": 1.1808806138229642
+      },
+      "class_name": "continuity-maintenance-v1",
+      "horizon": 1,
+      "inclusive_cpu_per_hit_ns": 3511224.125,
+      "inclusive_cpu_per_nonce_ns": 1560544.0555555555,
+      "inclusive_total": {
+        "cpu_ns": 28089793,
+        "wall_ns": 28090908
+      },
+      "inclusive_wall_per_nonce_ns": 1560606.0,
+      "misses": 10,
+      "nonce_attempts": 18,
+      "observed_best_fixed_arm": "lazy-full-limb",
+      "paired_factorial_ratios": {
+        "eager_full_limb_over_lazy_full_limb": {
+          "denominator": 28089793,
+          "numerator": 28605313,
+          "value": 1.0183525738334918
+        },
+        "eager_transposed_over_lazy_transposed": {
+          "denominator": 33118274,
+          "numerator": 33170692,
+          "value": 1.0015827515648914
+        },
+        "transposed_over_full_limb_eager": {
+          "denominator": 28605313,
+          "numerator": 33170692,
+          "value": 1.1595989877824444
+        },
+        "transposed_over_full_limb_lazy": {
+          "denominator": 28089793,
+          "numerator": 33118274,
+          "value": 1.1790145267357435
+        }
+      },
+      "search": {
+        "cpu_ns": 24356471,
+        "wall_ns": 24353059
+      },
+      "searches": 8,
+      "selection": "retrospective one supplied arm for all eight cohorts; no per-search oracle or holdout claim",
+      "setup": {
+        "cpu_ns": 3708294,
+        "wall_ns": 3706303
+      },
+      "setup_calls": 8,
+      "setup_fraction_cpu": 0.13201571118733413,
+      "target_hits": 8,
+      "target_index": 0
+    },
+    {
+      "baseline_cpu_over_best": {
+        "denominator": 156314389,
+        "numerator": 186423121,
+        "value": 1.1926165095396304
+      },
+      "class_name": "continuity-maintenance-v1",
+      "horizon": 8,
+      "inclusive_cpu_per_hit_ns": 2442412.328125,
+      "inclusive_cpu_per_nonce_ns": 1313566.294117647,
+      "inclusive_total": {
+        "cpu_ns": 156314389,
+        "wall_ns": 156312644
+      },
+      "inclusive_wall_per_nonce_ns": 1313551.6302521008,
+      "misses": 55,
+      "nonce_attempts": 119,
+      "observed_best_fixed_arm": "lazy-full-limb",
+      "paired_factorial_ratios": {
+        "eager_full_limb_over_lazy_full_limb": {
+          "denominator": 156314389,
+          "numerator": 158292334,
+          "value": 1.012653633569204
+        },
+        "eager_transposed_over_lazy_transposed": {
+          "denominator": 184733665,
+          "numerator": 186423121,
+          "value": 1.0091453607007688
+        },
+        "transposed_over_full_limb_eager": {
+          "denominator": 158292334,
+          "numerator": 186423121,
+          "value": 1.1777141462832939
+        },
+        "transposed_over_full_limb_lazy": {
+          "denominator": 156314389,
+          "numerator": 184733665,
+          "value": 1.1818084450306108
+        }
+      },
+      "search": {
+        "cpu_ns": 152776784,
+        "wall_ns": 152750423
+      },
+      "searches": 64,
+      "selection": "retrospective one supplied arm for all eight cohorts; no per-search oracle or holdout claim",
+      "setup": {
+        "cpu_ns": 3457552,
+        "wall_ns": 3456026
+      },
+      "setup_calls": 8,
+      "setup_fraction_cpu": 0.02211921770042552,
+      "target_hits": 64,
+      "target_index": 0
+    },
+    {
+      "baseline_cpu_over_best": {
+        "denominator": 1259994512,
+        "numerator": 1497991766,
+        "value": 1.1888875322339498
+      },
+      "class_name": "continuity-maintenance-v1",
+      "horizon": 64,
+      "inclusive_cpu_per_hit_ns": 2460926.78125,
+      "inclusive_cpu_per_nonce_ns": 1262519.5511022045,
+      "inclusive_total": {
+        "cpu_ns": 1259994512,
+        "wall_ns": 1260079057
+      },
+      "inclusive_wall_per_nonce_ns": 1262604.2655310621,
+      "misses": 486,
+      "nonce_attempts": 998,
+      "observed_best_fixed_arm": "lazy-full-limb",
+      "paired_factorial_ratios": {
+        "eager_full_limb_over_lazy_full_limb": {
+          "denominator": 1259994512,
+          "numerator": 1260813035,
+          "value": 1.000649624258046
+        },
+        "eager_transposed_over_lazy_transposed": {
+          "denominator": 1470693670,
+          "numerator": 1497991766,
+          "value": 1.0185613745111175
+        },
+        "transposed_over_full_limb_eager": {
+          "denominator": 1260813035,
+          "numerator": 1497991766,
+          "value": 1.1881157034516223
+        },
+        "transposed_over_full_limb_lazy": {
+          "denominator": 1259994512,
+          "numerator": 1470693670,
+          "value": 1.1672222823141947
+        }
+      },
+      "search": {
+        "cpu_ns": 1256112618,
+        "wall_ns": 1256053532
+      },
+      "searches": 512,
+      "selection": "retrospective one supplied arm for all eight cohorts; no per-search oracle or holdout claim",
+      "setup": {
+        "cpu_ns": 3387239,
+        "wall_ns": 3386485
+      },
+      "setup_calls": 8,
+      "setup_fraction_cpu": 0.002688296629660241,
+      "target_hits": 512,
+      "target_index": 0
+    },
+    {
+      "baseline_cpu_over_best": {
+        "denominator": 246407609,
+        "numerator": 285558550,
+        "value": 1.1588868994707058
+      },
+      "class_name": "continuity-maintenance-v1",
+      "horizon": 1,
+      "inclusive_cpu_per_hit_ns": 30800951.125,
+      "inclusive_cpu_per_nonce_ns": 1283372.9635416667,
+      "inclusive_total": {
+        "cpu_ns": 246407609,
+        "wall_ns": 246401504
+      },
+      "inclusive_wall_per_nonce_ns": 1283341.1666666667,
+      "misses": 184,
+      "nonce_attempts": 192,
+      "observed_best_fixed_arm": "lazy-full-limb",
+      "paired_factorial_ratios": {
+        "eager_full_limb_over_lazy_full_limb": {
+          "denominator": 246407609,
+          "numerator": 254927611,
+          "value": 1.034576862437718
+        },
+        "eager_transposed_over_lazy_transposed": {
+          "denominator": 298528663,
+          "numerator": 285558550,
+          "value": 0.9565532070868519
+        },
+        "transposed_over_full_limb_eager": {
+          "denominator": 254927611,
+          "numerator": 285558550,
+          "value": 1.1201554389492945
+        },
+        "transposed_over_full_limb_lazy": {
+          "denominator": 246407609,
+          "numerator": 298528663,
+          "value": 1.211523719626694
+        }
+      },
+      "search": {
+        "cpu_ns": 242949364,
+        "wall_ns": 242937042
+      },
+      "searches": 8,
+      "selection": "retrospective one supplied arm for all eight cohorts; no per-search oracle or holdout claim",
+      "setup": {
+        "cpu_ns": 3435637,
+        "wall_ns": 3434261
+      },
+      "setup_calls": 8,
+      "setup_fraction_cpu": 0.013942901414217286,
+      "target_hits": 8,
+      "target_index": 1
+    },
+    {
+      "baseline_cpu_over_best": {
+        "denominator": 2148672101,
+        "numerator": 2540391005,
+        "value": 1.182307437145804
+      },
+      "class_name": "continuity-maintenance-v1",
+      "horizon": 8,
+      "inclusive_cpu_per_hit_ns": 33573001.578125,
+      "inclusive_cpu_per_nonce_ns": 1234869.0235632183,
+      "inclusive_total": {
+        "cpu_ns": 2148672101,
+        "wall_ns": 2149157624
+      },
+      "inclusive_wall_per_nonce_ns": 1235148.059770115,
+      "misses": 1676,
+      "nonce_attempts": 1740,
+      "observed_best_fixed_arm": "eager-full-limb",
+      "paired_factorial_ratios": {
+        "eager_full_limb_over_lazy_full_limb": {
+          "denominator": 2158607525,
+          "numerator": 2148672101,
+          "value": 0.9953972994697126
+        },
+        "eager_transposed_over_lazy_transposed": {
+          "denominator": 2536786339,
+          "numerator": 2540391005,
+          "value": 1.0014209576678108
+        },
+        "transposed_over_full_limb_eager": {
+          "denominator": 2148672101,
+          "numerator": 2540391005,
+          "value": 1.182307437145804
+        },
+        "transposed_over_full_limb_lazy": {
+          "denominator": 2158607525,
+          "numerator": 2536786339,
+          "value": 1.1751957266988589
+        }
+      },
+      "search": {
+        "cpu_ns": 2145247507,
+        "wall_ns": 2145673390
+      },
+      "searches": 64,
+      "selection": "retrospective one supplied arm for all eight cohorts; no per-search oracle or holdout claim",
+      "setup": {
+        "cpu_ns": 3332752,
+        "wall_ns": 3331698
+      },
+      "setup_calls": 8,
+      "setup_fraction_cpu": 0.0015510751959077072,
+      "target_hits": 64,
+      "target_index": 1
+    },
+    {
+      "baseline_cpu_over_best": {
+        "denominator": 19798148734,
+        "numerator": 23206011890,
+        "value": 1.1721303947044082
+      },
+      "class_name": "continuity-maintenance-v1",
+      "horizon": 64,
+      "inclusive_cpu_per_hit_ns": 38668259.24609375,
+      "inclusive_cpu_per_nonce_ns": 1233760.1255063252,
+      "inclusive_total": {
+        "cpu_ns": 19798148734,
+        "wall_ns": 19801835415
+      },
+      "inclusive_wall_per_nonce_ns": 1233989.8681996635,
+      "misses": 15535,
+      "nonce_attempts": 16047,
+      "observed_best_fixed_arm": "lazy-full-limb",
+      "paired_factorial_ratios": {
+        "eager_full_limb_over_lazy_full_limb": {
+          "denominator": 19798148734,
+          "numerator": 19864993051,
+          "value": 1.003376291283498
+        },
+        "eager_transposed_over_lazy_transposed": {
+          "denominator": 23226269583,
+          "numerator": 23206011890,
+          "value": 0.9991278111653872
+        },
+        "transposed_over_full_limb_eager": {
+          "denominator": 19864993051,
+          "numerator": 23206011890,
+          "value": 1.168186257625286
+        },
+        "transposed_over_full_limb_lazy": {
+          "denominator": 19798148734,
+          "numerator": 23226269583,
+          "value": 1.173153606181005
+        }
+      },
+      "search": {
+        "cpu_ns": 19794097578,
+        "wall_ns": 19797314611
+      },
+      "searches": 512,
+      "selection": "retrospective one supplied arm for all eight cohorts; no per-search oracle or holdout claim",
+      "setup": {
+        "cpu_ns": 3347316,
+        "wall_ns": 3346448
+      },
+      "setup_calls": 8,
+      "setup_fraction_cpu": 0.00016907217159408173,
+      "target_hits": 512,
+      "target_index": 1
+    },
+    {
+      "baseline_cpu_over_best": {
+        "denominator": 31147783,
+        "numerator": 36128568,
+        "value": 1.1599081706714087
+      },
+      "class_name": "one-zero-left-rank-one",
+      "horizon": 1,
+      "inclusive_cpu_per_hit_ns": 3893472.875,
+      "inclusive_cpu_per_nonce_ns": 1483227.761904762,
+      "inclusive_total": {
+        "cpu_ns": 31147783,
+        "wall_ns": 31148342
+      },
+      "inclusive_wall_per_nonce_ns": 1483254.380952381,
+      "misses": 13,
+      "nonce_attempts": 21,
+      "observed_best_fixed_arm": "eager-full-limb",
+      "paired_factorial_ratios": {
+        "eager_full_limb_over_lazy_full_limb": {
+          "denominator": 31346931,
+          "numerator": 31147783,
+          "value": 0.9936469697783173
+        },
+        "eager_transposed_over_lazy_transposed": {
+          "denominator": 36814215,
+          "numerator": 36128568,
+          "value": 0.9813754822695526
+        },
+        "transposed_over_full_limb_eager": {
+          "denominator": 31147783,
+          "numerator": 36128568,
+          "value": 1.1599081706714087
+        },
+        "transposed_over_full_limb_lazy": {
+          "denominator": 31346931,
+          "numerator": 36814215,
+          "value": 1.1744120979498758
+        }
+      },
+      "search": {
+        "cpu_ns": 27632596,
+        "wall_ns": 27628598
+      },
+      "searches": 8,
+      "selection": "retrospective one supplied arm for all eight cohorts; no per-search oracle or holdout claim",
+      "setup": {
+        "cpu_ns": 3491543,
+        "wall_ns": 3478972
+      },
+      "setup_calls": 8,
+      "setup_fraction_cpu": 0.11209603585590666,
+      "target_hits": 8,
+      "target_index": 0
+    },
+    {
+      "baseline_cpu_over_best": {
+        "denominator": 173988046,
+        "numerator": 207866320,
+        "value": 1.194716101357906
+      },
+      "class_name": "one-zero-left-rank-one",
+      "horizon": 8,
+      "inclusive_cpu_per_hit_ns": 2718563.21875,
+      "inclusive_cpu_per_nonce_ns": 1288800.3407407408,
+      "inclusive_total": {
+        "cpu_ns": 173988046,
+        "wall_ns": 173986020
+      },
+      "inclusive_wall_per_nonce_ns": 1288785.3333333333,
+      "misses": 71,
+      "nonce_attempts": 135,
+      "observed_best_fixed_arm": "lazy-full-limb",
+      "paired_factorial_ratios": {
+        "eager_full_limb_over_lazy_full_limb": {
+          "denominator": 173988046,
+          "numerator": 174444029,
+          "value": 1.002620772004072
+        },
+        "eager_transposed_over_lazy_transposed": {
+          "denominator": 206937529,
+          "numerator": 207866320,
+          "value": 1.0044882675679383
+        },
+        "transposed_over_full_limb_eager": {
+          "denominator": 174444029,
+          "numerator": 207866320,
+          "value": 1.1915932072401285
+        },
+        "transposed_over_full_limb_lazy": {
+          "denominator": 173988046,
+          "numerator": 206937529,
+          "value": 1.1893778553039214
+        }
+      },
+      "search": {
+        "cpu_ns": 170503384,
+        "wall_ns": 170481320
+      },
+      "searches": 64,
+      "selection": "retrospective one supplied arm for all eight cohorts; no per-search oracle or holdout claim",
+      "setup": {
+        "cpu_ns": 3408430,
+        "wall_ns": 3407198
+      },
+      "setup_calls": 8,
+      "setup_fraction_cpu": 0.019590024018086852,
+      "target_hits": 64,
+      "target_index": 0
+    },
+    {
+      "baseline_cpu_over_best": {
+        "denominator": 1268400650,
+        "numerator": 1518171790,
+        "value": 1.1969181740800905
+      },
+      "class_name": "one-zero-left-rank-one",
+      "horizon": 64,
+      "inclusive_cpu_per_hit_ns": 2477345.01953125,
+      "inclusive_cpu_per_nonce_ns": 1249655.8128078817,
+      "inclusive_total": {
+        "cpu_ns": 1268400650,
+        "wall_ns": 1268661728
+      },
+      "inclusive_wall_per_nonce_ns": 1249913.0325123153,
+      "misses": 503,
+      "nonce_attempts": 1015,
+      "observed_best_fixed_arm": "eager-full-limb",
+      "paired_factorial_ratios": {
+        "eager_full_limb_over_lazy_full_limb": {
+          "denominator": 1276000586,
+          "numerator": 1268400650,
+          "value": 0.9940439400393818
+        },
+        "eager_transposed_over_lazy_transposed": {
+          "denominator": 1474858271,
+          "numerator": 1518171790,
+          "value": 1.0293679195158407
+        },
+        "transposed_over_full_limb_eager": {
+          "denominator": 1268400650,
+          "numerator": 1518171790,
+          "value": 1.1969181740800905
+        },
+        "transposed_over_full_limb_lazy": {
+          "denominator": 1276000586,
+          "numerator": 1474858271,
+          "value": 1.1558445091497787
+        }
+      },
+      "search": {
+        "cpu_ns": 1264390634,
+        "wall_ns": 1264508503
+      },
+      "searches": 512,
+      "selection": "retrospective one supplied arm for all eight cohorts; no per-search oracle or holdout claim",
+      "setup": {
+        "cpu_ns": 3465076,
+        "wall_ns": 3463739
+      },
+      "setup_calls": 8,
+      "setup_fraction_cpu": 0.002731846597524213,
+      "target_hits": 512,
+      "target_index": 0
+    },
+    {
+      "baseline_cpu_over_best": {
+        "denominator": 396893534,
+        "numerator": 462620737,
+        "value": 1.165604116392584
+      },
+      "class_name": "one-zero-left-rank-one",
+      "horizon": 1,
+      "inclusive_cpu_per_hit_ns": 49611691.75,
+      "inclusive_cpu_per_nonce_ns": 1272094.6602564103,
+      "inclusive_total": {
+        "cpu_ns": 396893534,
+        "wall_ns": 396910593
+      },
+      "inclusive_wall_per_nonce_ns": 1272149.3365384615,
+      "misses": 304,
+      "nonce_attempts": 312,
+      "observed_best_fixed_arm": "lazy-full-limb",
+      "paired_factorial_ratios": {
+        "eager_full_limb_over_lazy_full_limb": {
+          "denominator": 396893534,
+          "numerator": 422121339,
+          "value": 1.063563154445343
+        },
+        "eager_transposed_over_lazy_transposed": {
+          "denominator": 460062195,
+          "numerator": 462620737,
+          "value": 1.0055612959026117
+        },
+        "transposed_over_full_limb_eager": {
+          "denominator": 422121339,
+          "numerator": 462620737,
+          "value": 1.0959425507744824
+        },
+        "transposed_over_full_limb_lazy": {
+          "denominator": 396893534,
+          "numerator": 460062195,
+          "value": 1.1591576974393338
+        }
+      },
+      "search": {
+        "cpu_ns": 393485932,
+        "wall_ns": 393494377
+      },
+      "searches": 8,
+      "selection": "retrospective one supplied arm for all eight cohorts; no per-search oracle or holdout claim",
+      "setup": {
+        "cpu_ns": 3383608,
+        "wall_ns": 3382860
+      },
+      "setup_calls": 8,
+      "setup_fraction_cpu": 0.008525228329872464,
+      "target_hits": 8,
+      "target_index": 1
+    },
+    {
+      "baseline_cpu_over_best": {
+        "denominator": 2714242903,
+        "numerator": 3187112656,
+        "value": 1.1742179200237923
+      },
+      "class_name": "one-zero-left-rank-one",
+      "horizon": 8,
+      "inclusive_cpu_per_hit_ns": 42410045.359375,
+      "inclusive_cpu_per_nonce_ns": 1243924.3368469295,
+      "inclusive_total": {
+        "cpu_ns": 2714242903,
+        "wall_ns": 2714271785
+      },
+      "inclusive_wall_per_nonce_ns": 1243937.5733272228,
+      "misses": 2118,
+      "nonce_attempts": 2182,
+      "observed_best_fixed_arm": "lazy-full-limb",
+      "paired_factorial_ratios": {
+        "eager_full_limb_over_lazy_full_limb": {
+          "denominator": 2714242903,
+          "numerator": 2725433942,
+          "value": 1.0041230794000164
+        },
+        "eager_transposed_over_lazy_transposed": {
+          "denominator": 3218762635,
+          "numerator": 3187112656,
+          "value": 0.9901670354142159
+        },
+        "transposed_over_full_limb_eager": {
+          "denominator": 2725433942,
+          "numerator": 3187112656,
+          "value": 1.1693964057926156
+        },
+        "transposed_over_full_limb_lazy": {
+          "denominator": 2714242903,
+          "numerator": 3218762635,
+          "value": 1.1858786225220905
+        }
+      },
+      "search": {
+        "cpu_ns": 2710773219,
+        "wall_ns": 2710754009
+      },
+      "searches": 64,
+      "selection": "retrospective one supplied arm for all eight cohorts; no per-search oracle or holdout claim",
+      "setup": {
+        "cpu_ns": 3375763,
+        "wall_ns": 3374654
+      },
+      "setup_calls": 8,
+      "setup_fraction_cpu": 0.0012437217745946152,
+      "target_hits": 64,
+      "target_index": 1
+    },
+    {
+      "baseline_cpu_over_best": {
+        "denominator": 20245601587,
+        "numerator": 24101704758,
+        "value": 1.1904662182760755
+      },
+      "class_name": "one-zero-left-rank-one",
+      "horizon": 64,
+      "inclusive_cpu_per_hit_ns": 39542190.599609375,
+      "inclusive_cpu_per_nonce_ns": 1254840.807425313,
+      "inclusive_total": {
+        "cpu_ns": 20245601587,
+        "wall_ns": 20251655204
+      },
+      "inclusive_wall_per_nonce_ns": 1255216.0161150366,
+      "misses": 15622,
+      "nonce_attempts": 16134,
+      "observed_best_fixed_arm": "lazy-full-limb",
+      "paired_factorial_ratios": {
+        "eager_full_limb_over_lazy_full_limb": {
+          "denominator": 20245601587,
+          "numerator": 20269343049,
+          "value": 1.0011726725875731
+        },
+        "eager_transposed_over_lazy_transposed": {
+          "denominator": 24048376823,
+          "numerator": 24101704758,
+          "value": 1.002217527419522
+        },
+        "transposed_over_full_limb_eager": {
+          "denominator": 20269343049,
+          "numerator": 24101704758,
+          "value": 1.1890718263406703
+        },
+        "transposed_over_full_limb_lazy": {
+          "denominator": 20245601587,
+          "numerator": 24048376823,
+          "value": 1.1878321678740245
+        }
+      },
+      "search": {
+        "cpu_ns": 20241398499,
+        "wall_ns": 20247013700
+      },
+      "searches": 512,
+      "selection": "retrospective one supplied arm for all eight cohorts; no per-search oracle or holdout claim",
+      "setup": {
+        "cpu_ns": 3501971,
+        "wall_ns": 3499718
+      },
+      "setup_calls": 8,
+      "setup_fraction_cpu": 0.00017297441051337628,
+      "target_hits": 512,
+      "target_index": 1
+    },
+    {
+      "baseline_cpu_over_best": {
+        "denominator": 18059591,
+        "numerator": 20570207,
+        "value": 1.1390184307053244
+      },
+      "class_name": "one-zero-right-rank-one",
+      "horizon": 1,
+      "inclusive_cpu_per_hit_ns": 2257448.875,
+      "inclusive_cpu_per_nonce_ns": 1641781.0,
+      "inclusive_total": {
+        "cpu_ns": 18059591,
+        "wall_ns": 18060360
+      },
+      "inclusive_wall_per_nonce_ns": 1641850.9090909092,
+      "misses": 3,
+      "nonce_attempts": 11,
+      "observed_best_fixed_arm": "eager-full-limb",
+      "paired_factorial_ratios": {
+        "eager_full_limb_over_lazy_full_limb": {
+          "denominator": 18215263,
+          "numerator": 18059591,
+          "value": 0.9914537605084264
+        },
+        "eager_transposed_over_lazy_transposed": {
+          "denominator": 20704886,
+          "numerator": 20570207,
+          "value": 0.993495303475711
+        },
+        "transposed_over_full_limb_eager": {
+          "denominator": 18059591,
+          "numerator": 20570207,
+          "value": 1.1390184307053244
+        },
+        "transposed_over_full_limb_lazy": {
+          "denominator": 18215263,
+          "numerator": 20704886,
+          "value": 1.1366778508770365
+        }
+      },
+      "search": {
+        "cpu_ns": 14563487,
+        "wall_ns": 14561385
+      },
+      "searches": 8,
+      "selection": "retrospective one supplied arm for all eight cohorts; no per-search oracle or holdout claim",
+      "setup": {
+        "cpu_ns": 3469345,
+        "wall_ns": 3468214
+      },
+      "setup_calls": 8,
+      "setup_fraction_cpu": 0.1921054026085087,
+      "target_hits": 8,
+      "target_index": 0
+    },
+    {
+      "baseline_cpu_over_best": {
+        "denominator": 165757791,
+        "numerator": 197611413,
+        "value": 1.1921696820875225
+      },
+      "class_name": "one-zero-right-rank-one",
+      "horizon": 8,
+      "inclusive_cpu_per_hit_ns": 2589965.484375,
+      "inclusive_cpu_per_nonce_ns": 1284944.1162790698,
+      "inclusive_total": {
+        "cpu_ns": 165757791,
+        "wall_ns": 165776020
+      },
+      "inclusive_wall_per_nonce_ns": 1285085.4263565892,
+      "misses": 65,
+      "nonce_attempts": 129,
+      "observed_best_fixed_arm": "lazy-full-limb",
+      "paired_factorial_ratios": {
+        "eager_full_limb_over_lazy_full_limb": {
+          "denominator": 165757791,
+          "numerator": 166926997,
+          "value": 1.0070537016266101
+        },
+        "eager_transposed_over_lazy_transposed": {
+          "denominator": 193896800,
+          "numerator": 197611413,
+          "value": 1.0191576807868927
+        },
+        "transposed_over_full_limb_eager": {
+          "denominator": 166926997,
+          "numerator": 197611413,
+          "value": 1.1838193734474238
+        },
+        "transposed_over_full_limb_lazy": {
+          "denominator": 165757791,
+          "numerator": 193896800,
+          "value": 1.1697597972936307
+        }
+      },
+      "search": {
+        "cpu_ns": 162291647,
+        "wall_ns": 162287556
+      },
+      "searches": 64,
+      "selection": "retrospective one supplied arm for all eight cohorts; no per-search oracle or holdout claim",
+      "setup": {
+        "cpu_ns": 3391832,
+        "wall_ns": 3390420
+      },
+      "setup_calls": 8,
+      "setup_fraction_cpu": 0.020462579644295573,
+      "target_hits": 64,
+      "target_index": 0
+    },
+    {
+      "baseline_cpu_over_best": {
+        "denominator": 1303969435,
+        "numerator": 1534899984,
+        "value": 1.1770981303714376
+      },
+      "class_name": "one-zero-right-rank-one",
+      "horizon": 64,
+      "inclusive_cpu_per_hit_ns": 2546815.302734375,
+      "inclusive_cpu_per_nonce_ns": 1268452.7577821012,
+      "inclusive_total": {
+        "cpu_ns": 1303969435,
+        "wall_ns": 1304043830
+      },
+      "inclusive_wall_per_nonce_ns": 1268525.126459144,
+      "misses": 516,
+      "nonce_attempts": 1028,
+      "observed_best_fixed_arm": "eager-full-limb",
+      "paired_factorial_ratios": {
+        "eager_full_limb_over_lazy_full_limb": {
+          "denominator": 1309521618,
+          "numerator": 1303969435,
+          "value": 0.9957601440681219
+        },
+        "eager_transposed_over_lazy_transposed": {
+          "denominator": 1519312043,
+          "numerator": 1534899984,
+          "value": 1.010259867992108
+        },
+        "transposed_over_full_limb_eager": {
+          "denominator": 1303969435,
+          "numerator": 1534899984,
+          "value": 1.1770981303714376
+        },
+        "transposed_over_full_limb_lazy": {
+          "denominator": 1309521618,
+          "numerator": 1519312043,
+          "value": 1.1602038653782651
+        }
+      },
+      "search": {
+        "cpu_ns": 1300007097,
+        "wall_ns": 1299875037
+      },
+      "searches": 512,
+      "selection": "retrospective one supplied arm for all eight cohorts; no per-search oracle or holdout claim",
+      "setup": {
+        "cpu_ns": 3403527,
+        "wall_ns": 3401340
+      },
+      "setup_calls": 8,
+      "setup_fraction_cpu": 0.002610127897668092,
+      "target_hits": 512,
+      "target_index": 0
+    },
+    {
+      "baseline_cpu_over_best": {
+        "denominator": 299334158,
+        "numerator": 352055710,
+        "value": 1.1761294212202804
+      },
+      "class_name": "one-zero-right-rank-one",
+      "horizon": 1,
+      "inclusive_cpu_per_hit_ns": 37416769.75,
+      "inclusive_cpu_per_nonce_ns": 1301452.8608695653,
+      "inclusive_total": {
+        "cpu_ns": 299334158,
+        "wall_ns": 299354896
+      },
+      "inclusive_wall_per_nonce_ns": 1301543.0260869565,
+      "misses": 222,
+      "nonce_attempts": 230,
+      "observed_best_fixed_arm": "eager-full-limb",
+      "paired_factorial_ratios": {
+        "eager_full_limb_over_lazy_full_limb": {
+          "denominator": 301606623,
+          "numerator": 299334158,
+          "value": 0.9924654671790811
+        },
+        "eager_transposed_over_lazy_transposed": {
+          "denominator": 350431008,
+          "numerator": 352055710,
+          "value": 1.004636296340534
+        },
+        "transposed_over_full_limb_eager": {
+          "denominator": 299334158,
+          "numerator": 352055710,
+          "value": 1.1761294212202804
+        },
+        "transposed_over_full_limb_lazy": {
+          "denominator": 301606623,
+          "numerator": 350431008,
+          "value": 1.1618810108158666
+        }
+      },
+      "search": {
+        "cpu_ns": 295868097,
+        "wall_ns": 295878972
+      },
+      "searches": 8,
+      "selection": "retrospective one supplied arm for all eight cohorts; no per-search oracle or holdout claim",
+      "setup": {
+        "cpu_ns": 3440555,
+        "wall_ns": 3439155
+      },
+      "setup_calls": 8,
+      "setup_fraction_cpu": 0.011494027353871188,
+      "target_hits": 8,
+      "target_index": 1
+    },
+    {
+      "baseline_cpu_over_best": {
+        "denominator": 2743771664,
+        "numerator": 3268508477,
+        "value": 1.191246531147207
+      },
+      "class_name": "one-zero-right-rank-one",
+      "horizon": 8,
+      "inclusive_cpu_per_hit_ns": 42871432.25,
+      "inclusive_cpu_per_nonce_ns": 1237047.6393146978,
+      "inclusive_total": {
+        "cpu_ns": 2743771664,
+        "wall_ns": 2743880435
+      },
+      "inclusive_wall_per_nonce_ns": 1237096.6794409377,
+      "misses": 2154,
+      "nonce_attempts": 2218,
+      "observed_best_fixed_arm": "eager-full-limb",
+      "paired_factorial_ratios": {
+        "eager_full_limb_over_lazy_full_limb": {
+          "denominator": 2778126257,
+          "numerator": 2743771664,
+          "value": 0.9876338978786737
+        },
+        "eager_transposed_over_lazy_transposed": {
+          "denominator": 3263470592,
+          "numerator": 3268508477,
+          "value": 1.0015437200544566
+        },
+        "transposed_over_full_limb_eager": {
+          "denominator": 2743771664,
+          "numerator": 3268508477,
+          "value": 1.191246531147207
+        },
+        "transposed_over_full_limb_lazy": {
+          "denominator": 2778126257,
+          "numerator": 3263470592,
+          "value": 1.1747020437883575
+        }
+      },
+      "search": {
+        "cpu_ns": 2740271451,
+        "wall_ns": 2740322450
+      },
+      "searches": 64,
+      "selection": "retrospective one supplied arm for all eight cohorts; no per-search oracle or holdout claim",
+      "setup": {
+        "cpu_ns": 3401551,
+        "wall_ns": 3399627
+      },
+      "setup_calls": 8,
+      "setup_fraction_cpu": 0.001239735450522533,
+      "target_hits": 64,
+      "target_index": 1
+    },
+    {
+      "baseline_cpu_over_best": {
+        "denominator": 21177290010,
+        "numerator": 24925060545,
+        "value": 1.1769712051556307
+      },
+      "class_name": "one-zero-right-rank-one",
+      "horizon": 64,
+      "inclusive_cpu_per_hit_ns": 41361894.55078125,
+      "inclusive_cpu_per_nonce_ns": 1250282.796670209,
+      "inclusive_total": {
+        "cpu_ns": 21177290010,
+        "wall_ns": 21181695431
+      },
+      "inclusive_wall_per_nonce_ns": 1250542.887649073,
+      "misses": 16426,
+      "nonce_attempts": 16938,
+      "observed_best_fixed_arm": "lazy-full-limb",
+      "paired_factorial_ratios": {
+        "eager_full_limb_over_lazy_full_limb": {
+          "denominator": 21177290010,
+          "numerator": 21429213726,
+          "value": 1.0118959373876941
+        },
+        "eager_transposed_over_lazy_transposed": {
+          "denominator": 24914843286,
+          "numerator": 24925060545,
+          "value": 1.000410087227229
+        },
+        "transposed_over_full_limb_eager": {
+          "denominator": 21429213726,
+          "numerator": 24925060545,
+          "value": 1.1631346284422233
+        },
+        "transposed_over_full_limb_lazy": {
+          "denominator": 21177290010,
+          "numerator": 24914843286,
+          "value": 1.1764887421494965
+        }
+      },
+      "search": {
+        "cpu_ns": 21173283262,
+        "wall_ns": 21177264343
+      },
+      "searches": 512,
+      "selection": "retrospective one supplied arm for all eight cohorts; no per-search oracle or holdout claim",
+      "setup": {
+        "cpu_ns": 3311694,
+        "wall_ns": 3310799
+      },
+      "setup_calls": 8,
+      "setup_fraction_cpu": 0.00015637949890832137,
+      "target_hits": 512,
+      "target_index": 1
+    }
+  ],
+  "network_or_hardware_independence": false,
+  "no_native_reexecution": true,
+  "no_original_reader_reexecution": true,
+  "numerical_summary": {
+    "factorial_ratio_ranges": {
+      "eager_full_limb_over_lazy_full_limb": [
+        0.9727906357897322,
+        1.063563154445343
+      ],
+      "eager_transposed_over_lazy_transposed": [
+        0.9565532070868519,
+        1.0359583409221034
+      ],
+      "transposed_over_full_limb_eager": [
+        1.0959425507744824,
+        1.2073471228453558
+      ],
+      "transposed_over_full_limb_lazy": [
+        1.1308195783802584,
+        1.211523719626694
+      ]
+    },
+    "from_zero_production_reject_over_full_attacker_cpu_range": [
+      19.726812047961932,
+      23.36773918616973
+    ],
+    "legal_best_fixed_arm_cpu_per_nonce_range_ns": [
+      1233760.1255063252,
+      1641781.0
+    ],
+    "legal_eager_transposed_over_observed_best_cpu_range": [
+      1.1390184307053244,
+      1.2162051225437684
+    ],
+    "mutation_only_production_reject_over_mutator_cpu_range": [
+      73.53101580086226,
+      353.3904412334893
+    ]
+  },
+  "product_mutation_denominators": [
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-transposed",
+      "class_name": "full-rank-field",
+      "horizon": 1,
+      "mutation_cpu_ns": 179307,
+      "observed_candidates": 8,
+      "original_producer_cpu_ns": 30121357,
+      "product_rejection_cpu_ns": 13318904,
+      "production_rejection_over_mutation_only": {
+        "denominator": 179307,
+        "numerator": 13318904,
+        "value": 74.27988868253888
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 30300664,
+        "numerator": 13318904,
+        "value": 0.4395581562173027
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-transposed",
+      "class_name": "full-rank-field",
+      "horizon": 1,
+      "mutation_cpu_ns": 160234,
+      "observed_candidates": 8,
+      "original_producer_cpu_ns": 29569601,
+      "product_rejection_cpu_ns": 13434712,
+      "production_rejection_over_mutation_only": {
+        "denominator": 160234,
+        "numerator": 13434712,
+        "value": 83.84432767078148
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 29729835,
+        "numerator": 13434712,
+        "value": 0.45189325806887254
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-full-limb",
+      "class_name": "full-rank-field",
+      "horizon": 1,
+      "mutation_cpu_ns": 141622,
+      "observed_candidates": 8,
+      "original_producer_cpu_ns": 26433685,
+      "product_rejection_cpu_ns": 13565392,
+      "production_rejection_over_mutation_only": {
+        "denominator": 141622,
+        "numerator": 13565392,
+        "value": 95.7859089689455
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 26575307,
+        "numerator": 13565392,
+        "value": 0.5104509987410494
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-full-limb",
+      "class_name": "full-rank-field",
+      "horizon": 1,
+      "mutation_cpu_ns": 183471,
+      "observed_candidates": 8,
+      "original_producer_cpu_ns": 26148823,
+      "product_rejection_cpu_ns": 13490809,
+      "production_rejection_over_mutation_only": {
+        "denominator": 183471,
+        "numerator": 13490809,
+        "value": 73.53101580086226
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 26332294,
+        "numerator": 13490809,
+        "value": 0.5123294233309107
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-transposed",
+      "class_name": "full-rank-field",
+      "horizon": 8,
+      "mutation_cpu_ns": 499626,
+      "observed_candidates": 64,
+      "original_producer_cpu_ns": 194293792,
+      "product_rejection_cpu_ns": 107401161,
+      "production_rejection_over_mutation_only": {
+        "denominator": 499626,
+        "numerator": 107401161,
+        "value": 214.96311440957837
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 194793418,
+        "numerator": 107401161,
+        "value": 0.5513592918216569
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-transposed",
+      "class_name": "full-rank-field",
+      "horizon": 8,
+      "mutation_cpu_ns": 523756,
+      "observed_candidates": 64,
+      "original_producer_cpu_ns": 192357660,
+      "product_rejection_cpu_ns": 106560307,
+      "production_rejection_over_mutation_only": {
+        "denominator": 523756,
+        "numerator": 106560307,
+        "value": 203.4541026737641
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 192881416,
+        "numerator": 106560307,
+        "value": 0.5524653914817796
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-full-limb",
+      "class_name": "full-rank-field",
+      "horizon": 8,
+      "mutation_cpu_ns": 513868,
+      "observed_candidates": 64,
+      "original_producer_cpu_ns": 166197029,
+      "product_rejection_cpu_ns": 106330966,
+      "production_rejection_over_mutation_only": {
+        "denominator": 513868,
+        "numerator": 106330966,
+        "value": 206.9227233452949
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 166710897,
+        "numerator": 106330966,
+        "value": 0.6378165309733772
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-full-limb",
+      "class_name": "full-rank-field",
+      "horizon": 8,
+      "mutation_cpu_ns": 513926,
+      "observed_candidates": 64,
+      "original_producer_cpu_ns": 163372418,
+      "product_rejection_cpu_ns": 106832236,
+      "production_rejection_over_mutation_only": {
+        "denominator": 513926,
+        "numerator": 106832236,
+        "value": 207.87474461303768
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 163886344,
+        "numerator": 106832236,
+        "value": 0.6518678334785478
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-transposed",
+      "class_name": "full-rank-field",
+      "horizon": 64,
+      "mutation_cpu_ns": 2568949,
+      "observed_candidates": 512,
+      "original_producer_cpu_ns": 1487607799,
+      "product_rejection_cpu_ns": 852816208,
+      "production_rejection_over_mutation_only": {
+        "denominator": 2568949,
+        "numerator": 852816208,
+        "value": 331.97085967841326
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 1490176748,
+        "numerator": 852816208,
+        "value": 0.5722919842525955
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-transposed",
+      "class_name": "full-rank-field",
+      "horizon": 64,
+      "mutation_cpu_ns": 2684410,
+      "observed_candidates": 512,
+      "original_producer_cpu_ns": 1473622926,
+      "product_rejection_cpu_ns": 855552717,
+      "production_rejection_over_mutation_only": {
+        "denominator": 2684410,
+        "numerator": 855552717,
+        "value": 318.711641291755
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 1476307336,
+        "numerator": 855552717,
+        "value": 0.5795220928171287
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-full-limb",
+      "class_name": "full-rank-field",
+      "horizon": 64,
+      "mutation_cpu_ns": 2525323,
+      "observed_candidates": 512,
+      "original_producer_cpu_ns": 1273567832,
+      "product_rejection_cpu_ns": 856444696,
+      "production_rejection_over_mutation_only": {
+        "denominator": 2525323,
+        "numerator": 856444696,
+        "value": 339.14263482334735
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 1276093155,
+        "numerator": 856444696,
+        "value": 0.671145905488381
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-full-limb",
+      "class_name": "full-rank-field",
+      "horizon": 64,
+      "mutation_cpu_ns": 2572509,
+      "observed_candidates": 512,
+      "original_producer_cpu_ns": 1254372124,
+      "product_rejection_cpu_ns": 860410746,
+      "production_rejection_over_mutation_only": {
+        "denominator": 2572509,
+        "numerator": 860410746,
+        "value": 334.4636485236786
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 1256944633,
+        "numerator": 860410746,
+        "value": 0.6845255736892908
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-transposed",
+      "class_name": "full-rank-field",
+      "horizon": 1,
+      "mutation_cpu_ns": 61855,
+      "observed_candidates": 8,
+      "original_producer_cpu_ns": 333671269,
+      "product_rejection_cpu_ns": 14150581,
+      "production_rejection_over_mutation_only": {
+        "denominator": 61855,
+        "numerator": 14150581,
+        "value": 228.77020451054887
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 333733124,
+        "numerator": 14150581,
+        "value": 0.04240088856148424
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-transposed",
+      "class_name": "full-rank-field",
+      "horizon": 1,
+      "mutation_cpu_ns": 69774,
+      "observed_candidates": 8,
+      "original_producer_cpu_ns": 332500464,
+      "product_rejection_cpu_ns": 13344739,
+      "production_rejection_over_mutation_only": {
+        "denominator": 69774,
+        "numerator": 13344739,
+        "value": 191.25661421159745
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 332570238,
+        "numerator": 13344739,
+        "value": 0.04012607706646318
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-full-limb",
+      "class_name": "full-rank-field",
+      "horizon": 1,
+      "mutation_cpu_ns": 72184,
+      "observed_candidates": 8,
+      "original_producer_cpu_ns": 284415760,
+      "product_rejection_cpu_ns": 13661986,
+      "production_rejection_over_mutation_only": {
+        "denominator": 72184,
+        "numerator": 13661986,
+        "value": 189.26612545716503
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 284487944,
+        "numerator": 13661986,
+        "value": 0.04802307545236434
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-full-limb",
+      "class_name": "full-rank-field",
+      "horizon": 1,
+      "mutation_cpu_ns": 70020,
+      "observed_candidates": 8,
+      "original_producer_cpu_ns": 284121040,
+      "product_rejection_cpu_ns": 13536316,
+      "production_rejection_over_mutation_only": {
+        "denominator": 70020,
+        "numerator": 13536316,
+        "value": 193.32070836903742
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 284191060,
+        "numerator": 13536316,
+        "value": 0.047631040891997094
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-transposed",
+      "class_name": "full-rank-field",
+      "horizon": 8,
+      "mutation_cpu_ns": 614172,
+      "observed_candidates": 64,
+      "original_producer_cpu_ns": 2973192184,
+      "product_rejection_cpu_ns": 106693133,
+      "production_rejection_over_mutation_only": {
+        "denominator": 614172,
+        "numerator": 106693133,
+        "value": 173.71865373217926
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 2973806356,
+        "numerator": 106693133,
+        "value": 0.03587763298196407
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-transposed",
+      "class_name": "full-rank-field",
+      "horizon": 8,
+      "mutation_cpu_ns": 604875,
+      "observed_candidates": 64,
+      "original_producer_cpu_ns": 2993838104,
+      "product_rejection_cpu_ns": 107013153,
+      "production_rejection_over_mutation_only": {
+        "denominator": 604875,
+        "numerator": 107013153,
+        "value": 176.91779789212646
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 2994442979,
+        "numerator": 107013153,
+        "value": 0.03573724854688575
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-full-limb",
+      "class_name": "full-rank-field",
+      "horizon": 8,
+      "mutation_cpu_ns": 575615,
+      "observed_candidates": 64,
+      "original_producer_cpu_ns": 2559845726,
+      "product_rejection_cpu_ns": 106610597,
+      "production_rejection_over_mutation_only": {
+        "denominator": 575615,
+        "numerator": 106610597,
+        "value": 185.2116379871963
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 2560421341,
+        "numerator": 106610597,
+        "value": 0.041637911422173234
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-full-limb",
+      "class_name": "full-rank-field",
+      "horizon": 8,
+      "mutation_cpu_ns": 573737,
+      "observed_candidates": 64,
+      "original_producer_cpu_ns": 2549564086,
+      "product_rejection_cpu_ns": 107070004,
+      "production_rejection_over_mutation_only": {
+        "denominator": 573737,
+        "numerator": 107070004,
+        "value": 186.61861445226646
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 2550137823,
+        "numerator": 107070004,
+        "value": 0.041985967595289456
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-transposed",
+      "class_name": "full-rank-field",
+      "horizon": 64,
+      "mutation_cpu_ns": 4607440,
+      "observed_candidates": 512,
+      "original_producer_cpu_ns": 23409265965,
+      "product_rejection_cpu_ns": 869589357,
+      "production_rejection_over_mutation_only": {
+        "denominator": 4607440,
+        "numerator": 869589357,
+        "value": 188.73590475404998
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 23413873405,
+        "numerator": 869589357,
+        "value": 0.0371399187976433
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-transposed",
+      "class_name": "full-rank-field",
+      "horizon": 64,
+      "mutation_cpu_ns": 4710575,
+      "observed_candidates": 512,
+      "original_producer_cpu_ns": 23479534879,
+      "product_rejection_cpu_ns": 861352720,
+      "production_rejection_over_mutation_only": {
+        "denominator": 4710575,
+        "numerator": 861352720,
+        "value": 182.85511216783513
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 23484245454,
+        "numerator": 861352720,
+        "value": 0.036677896323609085
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-full-limb",
+      "class_name": "full-rank-field",
+      "horizon": 64,
+      "mutation_cpu_ns": 4567050,
+      "observed_candidates": 512,
+      "original_producer_cpu_ns": 20159911956,
+      "product_rejection_cpu_ns": 871649174,
+      "production_rejection_over_mutation_only": {
+        "denominator": 4567050,
+        "numerator": 871649174,
+        "value": 190.85606113355448
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 20164479006,
+        "numerator": 871649174,
+        "value": 0.04322696231033979
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-full-limb",
+      "class_name": "full-rank-field",
+      "horizon": 64,
+      "mutation_cpu_ns": 4650907,
+      "observed_candidates": 512,
+      "original_producer_cpu_ns": 19962551981,
+      "product_rejection_cpu_ns": 868181011,
+      "production_rejection_over_mutation_only": {
+        "denominator": 4650907,
+        "numerator": 868181011,
+        "value": 186.6691832367321
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 19967202888,
+        "numerator": 868181011,
+        "value": 0.04348035204879719
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-transposed",
+      "class_name": "zero",
+      "horizon": 1,
+      "mutation_cpu_ns": 137332,
+      "observed_candidates": 8,
+      "original_producer_cpu_ns": 33566544,
+      "product_rejection_cpu_ns": 13721290,
+      "production_rejection_over_mutation_only": {
+        "denominator": 137332,
+        "numerator": 13721290,
+        "value": 99.91327585704715
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 33703876,
+        "numerator": 13721290,
+        "value": 0.40711311660415556
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-transposed",
+      "class_name": "zero",
+      "horizon": 1,
+      "mutation_cpu_ns": 134326,
+      "observed_candidates": 8,
+      "original_producer_cpu_ns": 33196157,
+      "product_rejection_cpu_ns": 13745225,
+      "production_rejection_over_mutation_only": {
+        "denominator": 134326,
+        "numerator": 13745225,
+        "value": 102.32736030254753
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 33330483,
+        "numerator": 13745225,
+        "value": 0.41239201364108646
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-full-limb",
+      "class_name": "zero",
+      "horizon": 1,
+      "mutation_cpu_ns": 136088,
+      "observed_candidates": 8,
+      "original_producer_cpu_ns": 28722619,
+      "product_rejection_cpu_ns": 13662658,
+      "production_rejection_over_mutation_only": {
+        "denominator": 136088,
+        "numerator": 13662658,
+        "value": 100.39575862677091
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 28858707,
+        "numerator": 13662658,
+        "value": 0.47343278408142125
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-full-limb",
+      "class_name": "zero",
+      "horizon": 1,
+      "mutation_cpu_ns": 142049,
+      "observed_candidates": 8,
+      "original_producer_cpu_ns": 28835501,
+      "product_rejection_cpu_ns": 13618690,
+      "production_rejection_over_mutation_only": {
+        "denominator": 142049,
+        "numerator": 13618690,
+        "value": 95.87318460531225
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 28977550,
+        "numerator": 13618690,
+        "value": 0.46997382456418846
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-transposed",
+      "class_name": "zero",
+      "horizon": 8,
+      "mutation_cpu_ns": 507050,
+      "observed_candidates": 64,
+      "original_producer_cpu_ns": 170047543,
+      "product_rejection_cpu_ns": 105767652,
+      "production_rejection_over_mutation_only": {
+        "denominator": 507050,
+        "numerator": 105767652,
+        "value": 208.5941268119515
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 170554593,
+        "numerator": 105767652,
+        "value": 0.6201395702078806
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-transposed",
+      "class_name": "zero",
+      "horizon": 8,
+      "mutation_cpu_ns": 517031,
+      "observed_candidates": 64,
+      "original_producer_cpu_ns": 167437866,
+      "product_rejection_cpu_ns": 108067801,
+      "production_rejection_over_mutation_only": {
+        "denominator": 517031,
+        "numerator": 108067801,
+        "value": 209.0160957466767
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 167954897,
+        "numerator": 108067801,
+        "value": 0.6434334629730981
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-full-limb",
+      "class_name": "zero",
+      "horizon": 8,
+      "mutation_cpu_ns": 511724,
+      "observed_candidates": 64,
+      "original_producer_cpu_ns": 143502913,
+      "product_rejection_cpu_ns": 105598422,
+      "production_rejection_over_mutation_only": {
+        "denominator": 511724,
+        "numerator": 105598422,
+        "value": 206.35815791325012
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 144014637,
+        "numerator": 105598422,
+        "value": 0.7332478434119165
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-full-limb",
+      "class_name": "zero",
+      "horizon": 8,
+      "mutation_cpu_ns": 498741,
+      "observed_candidates": 64,
+      "original_producer_cpu_ns": 142960375,
+      "product_rejection_cpu_ns": 105115003,
+      "production_rejection_over_mutation_only": {
+        "denominator": 498741,
+        "numerator": 105115003,
+        "value": 210.76070144624163
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 143459116,
+        "numerator": 105115003,
+        "value": 0.7327174872595758
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-transposed",
+      "class_name": "zero",
+      "horizon": 64,
+      "mutation_cpu_ns": 2815726,
+      "observed_candidates": 512,
+      "original_producer_cpu_ns": 1544673341,
+      "product_rejection_cpu_ns": 861738473,
+      "production_rejection_over_mutation_only": {
+        "denominator": 2815726,
+        "numerator": 861738473,
+        "value": 306.0448612542556
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 1547489067,
+        "numerator": 861738473,
+        "value": 0.5568623981755084
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-transposed",
+      "class_name": "zero",
+      "horizon": 64,
+      "mutation_cpu_ns": 2807258,
+      "observed_candidates": 512,
+      "original_producer_cpu_ns": 1491057391,
+      "product_rejection_cpu_ns": 874905543,
+      "production_rejection_over_mutation_only": {
+        "denominator": 2807258,
+        "numerator": 874905543,
+        "value": 311.65840225586675
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 1493864649,
+        "numerator": 874905543,
+        "value": 0.5856658724641927
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-full-limb",
+      "class_name": "zero",
+      "horizon": 64,
+      "mutation_cpu_ns": 2839448,
+      "observed_candidates": 512,
+      "original_producer_cpu_ns": 1279394560,
+      "product_rejection_cpu_ns": 862144833,
+      "production_rejection_over_mutation_only": {
+        "denominator": 2839448,
+        "numerator": 862144833,
+        "value": 303.6311399257884
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 1282234008,
+        "numerator": 862144833,
+        "value": 0.6723771383546083
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-full-limb",
+      "class_name": "zero",
+      "horizon": 64,
+      "mutation_cpu_ns": 2856780,
+      "observed_candidates": 512,
+      "original_producer_cpu_ns": 1270076332,
+      "product_rejection_cpu_ns": 868479540,
+      "production_rejection_over_mutation_only": {
+        "denominator": 2856780,
+        "numerator": 868479540,
+        "value": 304.00644781887297
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 1272933112,
+        "numerator": 868479540,
+        "value": 0.6822664378927712
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-transposed",
+      "class_name": "zero",
+      "horizon": 1,
+      "mutation_cpu_ns": 174314,
+      "observed_candidates": 8,
+      "original_producer_cpu_ns": 372837211,
+      "product_rejection_cpu_ns": 14084055,
+      "production_rejection_over_mutation_only": {
+        "denominator": 174314,
+        "numerator": 14084055,
+        "value": 80.79703867732941
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 373011525,
+        "numerator": 14084055,
+        "value": 0.037757693947928286
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-transposed",
+      "class_name": "zero",
+      "horizon": 1,
+      "mutation_cpu_ns": 142907,
+      "observed_candidates": 8,
+      "original_producer_cpu_ns": 371870947,
+      "product_rejection_cpu_ns": 13904287,
+      "production_rejection_over_mutation_only": {
+        "denominator": 142907,
+        "numerator": 13904287,
+        "value": 97.2960526776155
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 372013854,
+        "numerator": 13904287,
+        "value": 0.03737572364710912
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-full-limb",
+      "class_name": "zero",
+      "horizon": 1,
+      "mutation_cpu_ns": 174977,
+      "observed_candidates": 8,
+      "original_producer_cpu_ns": 319396437,
+      "product_rejection_cpu_ns": 13604147,
+      "production_rejection_over_mutation_only": {
+        "denominator": 174977,
+        "numerator": 13604147,
+        "value": 77.74820119215669
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 319571414,
+        "numerator": 13604147,
+        "value": 0.04256997467239044
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-full-limb",
+      "class_name": "zero",
+      "horizon": 1,
+      "mutation_cpu_ns": 178405,
+      "observed_candidates": 8,
+      "original_producer_cpu_ns": 328330090,
+      "product_rejection_cpu_ns": 14220882,
+      "production_rejection_over_mutation_only": {
+        "denominator": 178405,
+        "numerator": 14220882,
+        "value": 79.7112300664219
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 328508495,
+        "numerator": 14220882,
+        "value": 0.04328923670604013
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-transposed",
+      "class_name": "zero",
+      "horizon": 8,
+      "mutation_cpu_ns": 650300,
+      "observed_candidates": 64,
+      "original_producer_cpu_ns": 2666341719,
+      "product_rejection_cpu_ns": 107602634,
+      "production_rejection_over_mutation_only": {
+        "denominator": 650300,
+        "numerator": 107602634,
+        "value": 165.4661448562202
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 2666992019,
+        "numerator": 107602634,
+        "value": 0.04034606524257469
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-transposed",
+      "class_name": "zero",
+      "horizon": 8,
+      "mutation_cpu_ns": 653705,
+      "observed_candidates": 64,
+      "original_producer_cpu_ns": 2713939209,
+      "product_rejection_cpu_ns": 109455340,
+      "production_rejection_over_mutation_only": {
+        "denominator": 653705,
+        "numerator": 109455340,
+        "value": 167.43843170849237
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 2714592914,
+        "numerator": 109455340,
+        "value": 0.0403210880848855
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-full-limb",
+      "class_name": "zero",
+      "horizon": 8,
+      "mutation_cpu_ns": 678809,
+      "observed_candidates": 64,
+      "original_producer_cpu_ns": 2294691613,
+      "product_rejection_cpu_ns": 109066542,
+      "production_rejection_over_mutation_only": {
+        "denominator": 678809,
+        "numerator": 109066542,
+        "value": 160.6733882432319
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 2295370422,
+        "numerator": 109066542,
+        "value": 0.047515878463297544
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-full-limb",
+      "class_name": "zero",
+      "horizon": 8,
+      "mutation_cpu_ns": 708196,
+      "observed_candidates": 64,
+      "original_producer_cpu_ns": 2297767639,
+      "product_rejection_cpu_ns": 107463638,
+      "production_rejection_over_mutation_only": {
+        "denominator": 708196,
+        "numerator": 107463638,
+        "value": 151.742791543584
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 2298475835,
+        "numerator": 107463638,
+        "value": 0.04675430403208916
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-transposed",
+      "class_name": "zero",
+      "horizon": 64,
+      "mutation_cpu_ns": 4220769,
+      "observed_candidates": 512,
+      "original_producer_cpu_ns": 22910175176,
+      "product_rejection_cpu_ns": 867616587,
+      "production_rejection_over_mutation_only": {
+        "denominator": 4220769,
+        "numerator": 867616587,
+        "value": 205.55888915029465
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 22914395945,
+        "numerator": 867616587,
+        "value": 0.037863384619978034
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-transposed",
+      "class_name": "zero",
+      "horizon": 64,
+      "mutation_cpu_ns": 4169327,
+      "observed_candidates": 512,
+      "original_producer_cpu_ns": 22837973460,
+      "product_rejection_cpu_ns": 863235718,
+      "production_rejection_over_mutation_only": {
+        "denominator": 4169327,
+        "numerator": 863235718,
+        "value": 207.04437862513544
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 22842142787,
+        "numerator": 863235718,
+        "value": 0.03779136336067769
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-full-limb",
+      "class_name": "zero",
+      "horizon": 64,
+      "mutation_cpu_ns": 4323337,
+      "observed_candidates": 512,
+      "original_producer_cpu_ns": 19469728005,
+      "product_rejection_cpu_ns": 851034194,
+      "production_rejection_over_mutation_only": {
+        "denominator": 4323337,
+        "numerator": 851034194,
+        "value": 196.8466011324123
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 19474051342,
+        "numerator": 851034194,
+        "value": 0.04370093202766498
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-full-limb",
+      "class_name": "zero",
+      "horizon": 64,
+      "mutation_cpu_ns": 4222257,
+      "observed_candidates": 512,
+      "original_producer_cpu_ns": 19458288827,
+      "product_rejection_cpu_ns": 859060148,
+      "production_rejection_over_mutation_only": {
+        "denominator": 4222257,
+        "numerator": 859060148,
+        "value": 203.45993813261487
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 19462511084,
+        "numerator": 859060148,
+        "value": 0.04413922459914371
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-transposed",
+      "class_name": "continuity-maintenance-v1",
+      "horizon": 1,
+      "mutation_cpu_ns": 106278,
+      "observed_candidates": 8,
+      "original_producer_cpu_ns": 33170692,
+      "product_rejection_cpu_ns": 14609266,
+      "production_rejection_over_mutation_only": {
+        "denominator": 106278,
+        "numerator": 14609266,
+        "value": 137.4627486403583
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 33276970,
+        "numerator": 14609266,
+        "value": 0.4390203194581718
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-transposed",
+      "class_name": "continuity-maintenance-v1",
+      "horizon": 1,
+      "mutation_cpu_ns": 88035,
+      "observed_candidates": 8,
+      "original_producer_cpu_ns": 33118274,
+      "product_rejection_cpu_ns": 14447600,
+      "production_rejection_over_mutation_only": {
+        "denominator": 88035,
+        "numerator": 14447600,
+        "value": 164.11200090872947
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 33206309,
+        "numerator": 14447600,
+        "value": 0.43508599525469693
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-full-limb",
+      "class_name": "continuity-maintenance-v1",
+      "horizon": 1,
+      "mutation_cpu_ns": 80252,
+      "observed_candidates": 8,
+      "original_producer_cpu_ns": 28605313,
+      "product_rejection_cpu_ns": 14310321,
+      "production_rejection_over_mutation_only": {
+        "denominator": 80252,
+        "numerator": 14310321,
+        "value": 178.31731296416288
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 28685565,
+        "numerator": 14310321,
+        "value": 0.4988683681147643
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-full-limb",
+      "class_name": "continuity-maintenance-v1",
+      "horizon": 1,
+      "mutation_cpu_ns": 133514,
+      "observed_candidates": 8,
+      "original_producer_cpu_ns": 28089793,
+      "product_rejection_cpu_ns": 14230980,
+      "production_rejection_over_mutation_only": {
+        "denominator": 133514,
+        "numerator": 14230980,
+        "value": 106.587923363842
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 28223307,
+        "numerator": 14230980,
+        "value": 0.5042279418212756
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-transposed",
+      "class_name": "continuity-maintenance-v1",
+      "horizon": 8,
+      "mutation_cpu_ns": 364819,
+      "observed_candidates": 64,
+      "original_producer_cpu_ns": 186423121,
+      "product_rejection_cpu_ns": 112494848,
+      "production_rejection_over_mutation_only": {
+        "denominator": 364819,
+        "numerator": 112494848,
+        "value": 308.357974776533
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 186787940,
+        "numerator": 112494848,
+        "value": 0.602259696209509
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-transposed",
+      "class_name": "continuity-maintenance-v1",
+      "horizon": 8,
+      "mutation_cpu_ns": 373669,
+      "observed_candidates": 64,
+      "original_producer_cpu_ns": 184733665,
+      "product_rejection_cpu_ns": 111496901,
+      "production_rejection_over_mutation_only": {
+        "denominator": 373669,
+        "numerator": 111496901,
+        "value": 298.38413408658465
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 185107334,
+        "numerator": 111496901,
+        "value": 0.6023364854900887
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-full-limb",
+      "class_name": "continuity-maintenance-v1",
+      "horizon": 8,
+      "mutation_cpu_ns": 355352,
+      "observed_candidates": 64,
+      "original_producer_cpu_ns": 158292334,
+      "product_rejection_cpu_ns": 108580590,
+      "production_rejection_over_mutation_only": {
+        "denominator": 355352,
+        "numerator": 108580590,
+        "value": 305.5578412391094
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 158647686,
+        "numerator": 108580590,
+        "value": 0.6844133232425463
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-full-limb",
+      "class_name": "continuity-maintenance-v1",
+      "horizon": 8,
+      "mutation_cpu_ns": 376261,
+      "observed_candidates": 64,
+      "original_producer_cpu_ns": 156314389,
+      "product_rejection_cpu_ns": 110482066,
+      "production_rejection_over_mutation_only": {
+        "denominator": 376261,
+        "numerator": 110482066,
+        "value": 293.63145795073103
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 156690650,
+        "numerator": 110482066,
+        "value": 0.7050967367867834
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-transposed",
+      "class_name": "continuity-maintenance-v1",
+      "horizon": 64,
+      "mutation_cpu_ns": 2717561,
+      "observed_candidates": 512,
+      "original_producer_cpu_ns": 1497991766,
+      "product_rejection_cpu_ns": 858474720,
+      "production_rejection_over_mutation_only": {
+        "denominator": 2717561,
+        "numerator": 858474720,
+        "value": 315.8989697011401
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 1500709327,
+        "numerator": 858474720,
+        "value": 0.5720459682329941
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-transposed",
+      "class_name": "continuity-maintenance-v1",
+      "horizon": 64,
+      "mutation_cpu_ns": 2738026,
+      "observed_candidates": 512,
+      "original_producer_cpu_ns": 1470693670,
+      "product_rejection_cpu_ns": 860422020,
+      "production_rejection_over_mutation_only": {
+        "denominator": 2738026,
+        "numerator": 860422020,
+        "value": 314.2490319668257
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 1473431696,
+        "numerator": 860422020,
+        "value": 0.5839578599644839
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-full-limb",
+      "class_name": "continuity-maintenance-v1",
+      "horizon": 64,
+      "mutation_cpu_ns": 2716569,
+      "observed_candidates": 512,
+      "original_producer_cpu_ns": 1260813035,
+      "product_rejection_cpu_ns": 859330364,
+      "production_rejection_over_mutation_only": {
+        "denominator": 2716569,
+        "numerator": 859330364,
+        "value": 316.3292977281269
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 1263529604,
+        "numerator": 859330364,
+        "value": 0.680103071015976
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-full-limb",
+      "class_name": "continuity-maintenance-v1",
+      "horizon": 64,
+      "mutation_cpu_ns": 2677138,
+      "observed_candidates": 512,
+      "original_producer_cpu_ns": 1259994512,
+      "product_rejection_cpu_ns": 858514320,
+      "production_rejection_over_mutation_only": {
+        "denominator": 2677138,
+        "numerator": 858514320,
+        "value": 320.6836255732801
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 1262671650,
+        "numerator": 858514320,
+        "value": 0.6799189005312664
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-transposed",
+      "class_name": "continuity-maintenance-v1",
+      "horizon": 1,
+      "mutation_cpu_ns": 80799,
+      "observed_candidates": 8,
+      "original_producer_cpu_ns": 285558550,
+      "product_rejection_cpu_ns": 13394215,
+      "production_rejection_over_mutation_only": {
+        "denominator": 80799,
+        "numerator": 13394215,
+        "value": 165.77203925791162
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 285639349,
+        "numerator": 13394215,
+        "value": 0.04689205127687082
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-transposed",
+      "class_name": "continuity-maintenance-v1",
+      "horizon": 1,
+      "mutation_cpu_ns": 55409,
+      "observed_candidates": 8,
+      "original_producer_cpu_ns": 298528663,
+      "product_rejection_cpu_ns": 13577149,
+      "production_rejection_over_mutation_only": {
+        "denominator": 55409,
+        "numerator": 13577149,
+        "value": 245.03508455305095
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 298584072,
+        "numerator": 13577149,
+        "value": 0.04547177921801535
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-full-limb",
+      "class_name": "continuity-maintenance-v1",
+      "horizon": 1,
+      "mutation_cpu_ns": 63436,
+      "observed_candidates": 8,
+      "original_producer_cpu_ns": 254927611,
+      "product_rejection_cpu_ns": 13715803,
+      "production_rejection_over_mutation_only": {
+        "denominator": 63436,
+        "numerator": 13715803,
+        "value": 216.21481493158458
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 254991047,
+        "numerator": 13715803,
+        "value": 0.0537893512786745
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-full-limb",
+      "class_name": "continuity-maintenance-v1",
+      "horizon": 1,
+      "mutation_cpu_ns": 72039,
+      "observed_candidates": 8,
+      "original_producer_cpu_ns": 246407609,
+      "product_rejection_cpu_ns": 13519783,
+      "production_rejection_over_mutation_only": {
+        "denominator": 72039,
+        "numerator": 13519783,
+        "value": 187.67310762226018
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 246479648,
+        "numerator": 13519783,
+        "value": 0.05485151861300938
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-transposed",
+      "class_name": "continuity-maintenance-v1",
+      "horizon": 8,
+      "mutation_cpu_ns": 675760,
+      "observed_candidates": 64,
+      "original_producer_cpu_ns": 2540391005,
+      "product_rejection_cpu_ns": 106088536,
+      "production_rejection_over_mutation_only": {
+        "denominator": 675760,
+        "numerator": 106088536,
+        "value": 156.99144074819463
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 2541066765,
+        "numerator": 106088536,
+        "value": 0.04174960589829288
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-transposed",
+      "class_name": "continuity-maintenance-v1",
+      "horizon": 8,
+      "mutation_cpu_ns": 669021,
+      "observed_candidates": 64,
+      "original_producer_cpu_ns": 2536786339,
+      "product_rejection_cpu_ns": 106168322,
+      "production_rejection_over_mutation_only": {
+        "denominator": 669021,
+        "numerator": 106168322,
+        "value": 158.69206198310667
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 2537455360,
+        "numerator": 106168322,
+        "value": 0.0418404688703568
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-full-limb",
+      "class_name": "continuity-maintenance-v1",
+      "horizon": 8,
+      "mutation_cpu_ns": 702525,
+      "observed_candidates": 64,
+      "original_producer_cpu_ns": 2148672101,
+      "product_rejection_cpu_ns": 106742932,
+      "production_rejection_over_mutation_only": {
+        "denominator": 702525,
+        "numerator": 106742932,
+        "value": 151.9418269812462
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 2149374626,
+        "numerator": 106742932,
+        "value": 0.04966232070890745
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-full-limb",
+      "class_name": "continuity-maintenance-v1",
+      "horizon": 8,
+      "mutation_cpu_ns": 647223,
+      "observed_candidates": 64,
+      "original_producer_cpu_ns": 2158607525,
+      "product_rejection_cpu_ns": 105516942,
+      "production_rejection_over_mutation_only": {
+        "denominator": 647223,
+        "numerator": 105516942,
+        "value": 163.03027240997307
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 2159254748,
+        "numerator": 105516942,
+        "value": 0.048867296504840195
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-transposed",
+      "class_name": "continuity-maintenance-v1",
+      "horizon": 64,
+      "mutation_cpu_ns": 4362899,
+      "observed_candidates": 512,
+      "original_producer_cpu_ns": 23206011890,
+      "product_rejection_cpu_ns": 847833459,
+      "production_rejection_over_mutation_only": {
+        "denominator": 4362899,
+        "numerator": 847833459,
+        "value": 194.32800507185704
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 23210374789,
+        "numerator": 847833459,
+        "value": 0.03652821062595725
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-transposed",
+      "class_name": "continuity-maintenance-v1",
+      "horizon": 64,
+      "mutation_cpu_ns": 4439595,
+      "observed_candidates": 512,
+      "original_producer_cpu_ns": 23226269583,
+      "product_rejection_cpu_ns": 847142991,
+      "production_rejection_over_mutation_only": {
+        "denominator": 4439595,
+        "numerator": 847142991,
+        "value": 190.81537640257727
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 23230709178,
+        "numerator": 847142991,
+        "value": 0.036466514410255856
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-full-limb",
+      "class_name": "continuity-maintenance-v1",
+      "horizon": 64,
+      "mutation_cpu_ns": 4356086,
+      "observed_candidates": 512,
+      "original_producer_cpu_ns": 19864993051,
+      "product_rejection_cpu_ns": 849769093,
+      "production_rejection_over_mutation_only": {
+        "denominator": 4356086,
+        "numerator": 849769093,
+        "value": 195.07628935700535
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 19869349137,
+        "numerator": 849769093,
+        "value": 0.042767837393203285
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-full-limb",
+      "class_name": "continuity-maintenance-v1",
+      "horizon": 64,
+      "mutation_cpu_ns": 4437626,
+      "observed_candidates": 512,
+      "original_producer_cpu_ns": 19798148734,
+      "product_rejection_cpu_ns": 843999807,
+      "production_rejection_over_mutation_only": {
+        "denominator": 4437626,
+        "numerator": 843999807,
+        "value": 190.1917392317424
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 19802586360,
+        "numerator": 843999807,
+        "value": 0.042620685584021864
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-transposed",
+      "class_name": "one-zero-left-rank-one",
+      "horizon": 1,
+      "mutation_cpu_ns": 154478,
+      "observed_candidates": 8,
+      "original_producer_cpu_ns": 36128568,
+      "product_rejection_cpu_ns": 14942942,
+      "production_rejection_over_mutation_only": {
+        "denominator": 154478,
+        "numerator": 14942942,
+        "value": 96.73184531130646
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 36283046,
+        "numerator": 14942942,
+        "value": 0.4118436473056865
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-transposed",
+      "class_name": "one-zero-left-rank-one",
+      "horizon": 1,
+      "mutation_cpu_ns": 155585,
+      "observed_candidates": 8,
+      "original_producer_cpu_ns": 36814215,
+      "product_rejection_cpu_ns": 13900938,
+      "production_rejection_over_mutation_only": {
+        "denominator": 155585,
+        "numerator": 13900938,
+        "value": 89.34626088633223
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 36969800,
+        "numerator": 13900938,
+        "value": 0.3760079307975699
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-full-limb",
+      "class_name": "one-zero-left-rank-one",
+      "horizon": 1,
+      "mutation_cpu_ns": 151729,
+      "observed_candidates": 8,
+      "original_producer_cpu_ns": 31147783,
+      "product_rejection_cpu_ns": 14563367,
+      "production_rejection_over_mutation_only": {
+        "denominator": 151729,
+        "numerator": 14563367,
+        "value": 95.9827521436245
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 31299512,
+        "numerator": 14563367,
+        "value": 0.4652905451049844
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-full-limb",
+      "class_name": "one-zero-left-rank-one",
+      "horizon": 1,
+      "mutation_cpu_ns": 120475,
+      "observed_candidates": 8,
+      "original_producer_cpu_ns": 31346931,
+      "product_rejection_cpu_ns": 14315424,
+      "production_rejection_over_mutation_only": {
+        "denominator": 120475,
+        "numerator": 14315424,
+        "value": 118.82485162896866
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 31467406,
+        "numerator": 14315424,
+        "value": 0.45492863313868326
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-transposed",
+      "class_name": "one-zero-left-rank-one",
+      "horizon": 8,
+      "mutation_cpu_ns": 561495,
+      "observed_candidates": 64,
+      "original_producer_cpu_ns": 207866320,
+      "product_rejection_cpu_ns": 108728690,
+      "production_rejection_over_mutation_only": {
+        "denominator": 561495,
+        "numerator": 108728690,
+        "value": 193.6414215620798
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 208427815,
+        "numerator": 108728690,
+        "value": 0.5216611324165156
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-transposed",
+      "class_name": "one-zero-left-rank-one",
+      "horizon": 8,
+      "mutation_cpu_ns": 501836,
+      "observed_candidates": 64,
+      "original_producer_cpu_ns": 206937529,
+      "product_rejection_cpu_ns": 106392981,
+      "production_rejection_over_mutation_only": {
+        "denominator": 501836,
+        "numerator": 106392981,
+        "value": 212.00747056807404
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 207439365,
+        "numerator": 106392981,
+        "value": 0.5128871321024339
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-full-limb",
+      "class_name": "one-zero-left-rank-one",
+      "horizon": 8,
+      "mutation_cpu_ns": 506604,
+      "observed_candidates": 64,
+      "original_producer_cpu_ns": 174444029,
+      "product_rejection_cpu_ns": 106854349,
+      "production_rejection_over_mutation_only": {
+        "denominator": 506604,
+        "numerator": 106854349,
+        "value": 210.92282927098879
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 174950633,
+        "numerator": 106854349,
+        "value": 0.6107685760702564
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-full-limb",
+      "class_name": "one-zero-left-rank-one",
+      "horizon": 8,
+      "mutation_cpu_ns": 472341,
+      "observed_candidates": 64,
+      "original_producer_cpu_ns": 173988046,
+      "product_rejection_cpu_ns": 106806737,
+      "production_rejection_over_mutation_only": {
+        "denominator": 472341,
+        "numerator": 106806737,
+        "value": 226.122096112766
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 174460387,
+        "numerator": 106806737,
+        "value": 0.6122119687834924
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-transposed",
+      "class_name": "one-zero-left-rank-one",
+      "horizon": 64,
+      "mutation_cpu_ns": 2622967,
+      "observed_candidates": 512,
+      "original_producer_cpu_ns": 1518171790,
+      "product_rejection_cpu_ns": 846708017,
+      "production_rejection_over_mutation_only": {
+        "denominator": 2622967,
+        "numerator": 846708017,
+        "value": 322.80544017519094
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 1520794757,
+        "numerator": 846708017,
+        "value": 0.5567536402283901
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-transposed",
+      "class_name": "one-zero-left-rank-one",
+      "horizon": 64,
+      "mutation_cpu_ns": 2572443,
+      "observed_candidates": 512,
+      "original_producer_cpu_ns": 1474858271,
+      "product_rejection_cpu_ns": 838624805,
+      "production_rejection_over_mutation_only": {
+        "denominator": 2572443,
+        "numerator": 838624805,
+        "value": 326.00326032491296
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 1477430714,
+        "numerator": 838624805,
+        "value": 0.567623778938171
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-full-limb",
+      "class_name": "one-zero-left-rank-one",
+      "horizon": 64,
+      "mutation_cpu_ns": 2633635,
+      "observed_candidates": 512,
+      "original_producer_cpu_ns": 1268400650,
+      "product_rejection_cpu_ns": 843255099,
+      "production_rejection_over_mutation_only": {
+        "denominator": 2633635,
+        "numerator": 843255099,
+        "value": 320.18677569215174
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 1271034285,
+        "numerator": 843255099,
+        "value": 0.6634400888721896
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-full-limb",
+      "class_name": "one-zero-left-rank-one",
+      "horizon": 64,
+      "mutation_cpu_ns": 2659056,
+      "observed_candidates": 512,
+      "original_producer_cpu_ns": 1276000586,
+      "product_rejection_cpu_ns": 840426216,
+      "production_rejection_over_mutation_only": {
+        "denominator": 2659056,
+        "numerator": 840426216,
+        "value": 316.06187158149356
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 1278659642,
+        "numerator": 840426216,
+        "value": 0.6572712459161201
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-transposed",
+      "class_name": "one-zero-left-rank-one",
+      "horizon": 1,
+      "mutation_cpu_ns": 95435,
+      "observed_candidates": 8,
+      "original_producer_cpu_ns": 462620737,
+      "product_rejection_cpu_ns": 14845394,
+      "production_rejection_over_mutation_only": {
+        "denominator": 95435,
+        "numerator": 14845394,
+        "value": 155.55502698171532
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 462716172,
+        "numerator": 14845394,
+        "value": 0.032083153557900715
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-transposed",
+      "class_name": "one-zero-left-rank-one",
+      "horizon": 1,
+      "mutation_cpu_ns": 137072,
+      "observed_candidates": 8,
+      "original_producer_cpu_ns": 460062195,
+      "product_rejection_cpu_ns": 13712544,
+      "production_rejection_over_mutation_only": {
+        "denominator": 137072,
+        "numerator": 13712544,
+        "value": 100.03898680985176
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 460199267,
+        "numerator": 13712544,
+        "value": 0.029796970537113002
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-full-limb",
+      "class_name": "one-zero-left-rank-one",
+      "horizon": 1,
+      "mutation_cpu_ns": 119202,
+      "observed_candidates": 8,
+      "original_producer_cpu_ns": 422121339,
+      "product_rejection_cpu_ns": 13536256,
+      "production_rejection_over_mutation_only": {
+        "denominator": 119202,
+        "numerator": 13536256,
+        "value": 113.55728930722638
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 422240541,
+        "numerator": 13536256,
+        "value": 0.03205816279019972
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-full-limb",
+      "class_name": "one-zero-left-rank-one",
+      "horizon": 1,
+      "mutation_cpu_ns": 72464,
+      "observed_candidates": 8,
+      "original_producer_cpu_ns": 396893534,
+      "product_rejection_cpu_ns": 13509372,
+      "production_rejection_over_mutation_only": {
+        "denominator": 72464,
+        "numerator": 13509372,
+        "value": 186.4287370280415
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 396965998,
+        "numerator": 13509372,
+        "value": 0.034031559549339535
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-transposed",
+      "class_name": "one-zero-left-rank-one",
+      "horizon": 8,
+      "mutation_cpu_ns": 715130,
+      "observed_candidates": 64,
+      "original_producer_cpu_ns": 3187112656,
+      "product_rejection_cpu_ns": 106462124,
+      "production_rejection_over_mutation_only": {
+        "denominator": 715130,
+        "numerator": 106462124,
+        "value": 148.87100806846308
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 3187827786,
+        "numerator": 106462124,
+        "value": 0.03339644772140775
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-transposed",
+      "class_name": "one-zero-left-rank-one",
+      "horizon": 8,
+      "mutation_cpu_ns": 643785,
+      "observed_candidates": 64,
+      "original_producer_cpu_ns": 3218762635,
+      "product_rejection_cpu_ns": 106498636,
+      "production_rejection_over_mutation_only": {
+        "denominator": 643785,
+        "numerator": 106498636,
+        "value": 165.42578034592293
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 3219406420,
+        "numerator": 106498636,
+        "value": 0.03308020861808433
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-full-limb",
+      "class_name": "one-zero-left-rank-one",
+      "horizon": 8,
+      "mutation_cpu_ns": 591123,
+      "observed_candidates": 64,
+      "original_producer_cpu_ns": 2725433942,
+      "product_rejection_cpu_ns": 105616497,
+      "production_rejection_over_mutation_only": {
+        "denominator": 591123,
+        "numerator": 105616497,
+        "value": 178.67093143051446
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 2726025065,
+        "numerator": 105616497,
+        "value": 0.03874377325286993
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-full-limb",
+      "class_name": "one-zero-left-rank-one",
+      "horizon": 8,
+      "mutation_cpu_ns": 668862,
+      "observed_candidates": 64,
+      "original_producer_cpu_ns": 2714242903,
+      "product_rejection_cpu_ns": 106025556,
+      "production_rejection_over_mutation_only": {
+        "denominator": 668862,
+        "numerator": 106025556,
+        "value": 158.51633969338968
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 2714911765,
+        "numerator": 106025556,
+        "value": 0.039053039353564405
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-transposed",
+      "class_name": "one-zero-left-rank-one",
+      "horizon": 64,
+      "mutation_cpu_ns": 4386655,
+      "observed_candidates": 512,
+      "original_producer_cpu_ns": 24101704758,
+      "product_rejection_cpu_ns": 848071872,
+      "production_rejection_over_mutation_only": {
+        "denominator": 4386655,
+        "numerator": 848071872,
+        "value": 193.32996827879103
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 24106091413,
+        "numerator": 848071872,
+        "value": 0.03518081208066146
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-transposed",
+      "class_name": "one-zero-left-rank-one",
+      "horizon": 64,
+      "mutation_cpu_ns": 4509820,
+      "observed_candidates": 512,
+      "original_producer_cpu_ns": 24048376823,
+      "product_rejection_cpu_ns": 849626657,
+      "production_rejection_over_mutation_only": {
+        "denominator": 4509820,
+        "numerator": 849626657,
+        "value": 188.39480444895804
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 24052886643,
+        "numerator": 849626657,
+        "value": 0.035323271988531274
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-full-limb",
+      "class_name": "one-zero-left-rank-one",
+      "horizon": 64,
+      "mutation_cpu_ns": 4375182,
+      "observed_candidates": 512,
+      "original_producer_cpu_ns": 20269343049,
+      "product_rejection_cpu_ns": 857429923,
+      "production_rejection_over_mutation_only": {
+        "denominator": 4375182,
+        "numerator": 857429923,
+        "value": 195.9758298054801
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 20273718231,
+        "numerator": 857429923,
+        "value": 0.04229268224162881
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-full-limb",
+      "class_name": "one-zero-left-rank-one",
+      "horizon": 64,
+      "mutation_cpu_ns": 4588924,
+      "observed_candidates": 512,
+      "original_producer_cpu_ns": 20245601587,
+      "product_rejection_cpu_ns": 866219170,
+      "production_rejection_over_mutation_only": {
+        "denominator": 4588924,
+        "numerator": 866219170,
+        "value": 188.7630237502299
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 20250190511,
+        "numerator": 866219170,
+        "value": 0.04277585287553051
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-transposed",
+      "class_name": "one-zero-right-rank-one",
+      "horizon": 1,
+      "mutation_cpu_ns": 38687,
+      "observed_candidates": 8,
+      "original_producer_cpu_ns": 20570207,
+      "product_rejection_cpu_ns": 13671616,
+      "production_rejection_over_mutation_only": {
+        "denominator": 38687,
+        "numerator": 13671616,
+        "value": 353.3904412334893
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 20608894,
+        "numerator": 13671616,
+        "value": 0.6633842650653645
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-transposed",
+      "class_name": "one-zero-right-rank-one",
+      "horizon": 1,
+      "mutation_cpu_ns": 41302,
+      "observed_candidates": 8,
+      "original_producer_cpu_ns": 20704886,
+      "product_rejection_cpu_ns": 13900199,
+      "production_rejection_over_mutation_only": {
+        "denominator": 41302,
+        "numerator": 13900199,
+        "value": 336.550263909738
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 20746188,
+        "numerator": 13900199,
+        "value": 0.6700121969395052
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-full-limb",
+      "class_name": "one-zero-right-rank-one",
+      "horizon": 1,
+      "mutation_cpu_ns": 39494,
+      "observed_candidates": 8,
+      "original_producer_cpu_ns": 18059591,
+      "product_rejection_cpu_ns": 13920158,
+      "production_rejection_over_mutation_only": {
+        "denominator": 39494,
+        "numerator": 13920158,
+        "value": 352.4626019142148
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 18099085,
+        "numerator": 13920158,
+        "value": 0.7691083831033447
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-full-limb",
+      "class_name": "one-zero-right-rank-one",
+      "horizon": 1,
+      "mutation_cpu_ns": 40058,
+      "observed_candidates": 8,
+      "original_producer_cpu_ns": 18215263,
+      "product_rejection_cpu_ns": 13713482,
+      "production_rejection_over_mutation_only": {
+        "denominator": 40058,
+        "numerator": 13713482,
+        "value": 342.34065604872933
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 18255321,
+        "numerator": 13713482,
+        "value": 0.7512046487706242
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-transposed",
+      "class_name": "one-zero-right-rank-one",
+      "horizon": 8,
+      "mutation_cpu_ns": 362094,
+      "observed_candidates": 64,
+      "original_producer_cpu_ns": 197611413,
+      "product_rejection_cpu_ns": 108670369,
+      "production_rejection_over_mutation_only": {
+        "denominator": 362094,
+        "numerator": 108670369,
+        "value": 300.11645870961684
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 197973507,
+        "numerator": 108670369,
+        "value": 0.5489136937903515
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-transposed",
+      "class_name": "one-zero-right-rank-one",
+      "horizon": 8,
+      "mutation_cpu_ns": 339324,
+      "observed_candidates": 64,
+      "original_producer_cpu_ns": 193896800,
+      "product_rejection_cpu_ns": 106962309,
+      "production_rejection_over_mutation_only": {
+        "denominator": 339324,
+        "numerator": 106962309,
+        "value": 315.221761502281
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 194236124,
+        "numerator": 106962309,
+        "value": 0.5506818546276181
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-full-limb",
+      "class_name": "one-zero-right-rank-one",
+      "horizon": 8,
+      "mutation_cpu_ns": 440236,
+      "observed_candidates": 64,
+      "original_producer_cpu_ns": 166926997,
+      "product_rejection_cpu_ns": 107160002,
+      "production_rejection_over_mutation_only": {
+        "denominator": 440236,
+        "numerator": 107160002,
+        "value": 243.41490018989813
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 167367233,
+        "numerator": 107160002,
+        "value": 0.6402687077941953
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-full-limb",
+      "class_name": "one-zero-right-rank-one",
+      "horizon": 8,
+      "mutation_cpu_ns": 379498,
+      "observed_candidates": 64,
+      "original_producer_cpu_ns": 165757791,
+      "product_rejection_cpu_ns": 106571987,
+      "production_rejection_over_mutation_only": {
+        "denominator": 379498,
+        "numerator": 106571987,
+        "value": 280.8235800979188
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 166137289,
+        "numerator": 106571987,
+        "value": 0.6414693994434928
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-transposed",
+      "class_name": "one-zero-right-rank-one",
+      "horizon": 64,
+      "mutation_cpu_ns": 2604245,
+      "observed_candidates": 512,
+      "original_producer_cpu_ns": 1534899984,
+      "product_rejection_cpu_ns": 851910510,
+      "production_rejection_over_mutation_only": {
+        "denominator": 2604245,
+        "numerator": 851910510,
+        "value": 327.12379595621763
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 1537504229,
+        "numerator": 851910510,
+        "value": 0.5540866125318475
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-transposed",
+      "class_name": "one-zero-right-rank-one",
+      "horizon": 64,
+      "mutation_cpu_ns": 2597008,
+      "observed_candidates": 512,
+      "original_producer_cpu_ns": 1519312043,
+      "product_rejection_cpu_ns": 853864577,
+      "production_rejection_over_mutation_only": {
+        "denominator": 2597008,
+        "numerator": 853864577,
+        "value": 328.7878115893366
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 1521909051,
+        "numerator": 853864577,
+        "value": 0.5610483599128027
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-full-limb",
+      "class_name": "one-zero-right-rank-one",
+      "horizon": 64,
+      "mutation_cpu_ns": 2734693,
+      "observed_candidates": 512,
+      "original_producer_cpu_ns": 1303969435,
+      "product_rejection_cpu_ns": 848095323,
+      "production_rejection_over_mutation_only": {
+        "denominator": 2734693,
+        "numerator": 848095323,
+        "value": 310.12450867428265
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 1306704128,
+        "numerator": 848095323,
+        "value": 0.6490339357066759
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-full-limb",
+      "class_name": "one-zero-right-rank-one",
+      "horizon": 64,
+      "mutation_cpu_ns": 2692484,
+      "observed_candidates": 512,
+      "original_producer_cpu_ns": 1309521618,
+      "product_rejection_cpu_ns": 850907794,
+      "production_rejection_over_mutation_only": {
+        "denominator": 2692484,
+        "numerator": 850907794,
+        "value": 316.0307708420923
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 1312214102,
+        "numerator": 850907794,
+        "value": 0.6484519505643904
+      },
+      "target_index": 0,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-transposed",
+      "class_name": "one-zero-right-rank-one",
+      "horizon": 1,
+      "mutation_cpu_ns": 154696,
+      "observed_candidates": 8,
+      "original_producer_cpu_ns": 352055710,
+      "product_rejection_cpu_ns": 14489329,
+      "production_rejection_over_mutation_only": {
+        "denominator": 154696,
+        "numerator": 14489329,
+        "value": 93.66324274706521
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 352210406,
+        "numerator": 14489329,
+        "value": 0.041138276306350814
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-transposed",
+      "class_name": "one-zero-right-rank-one",
+      "horizon": 1,
+      "mutation_cpu_ns": 101761,
+      "observed_candidates": 8,
+      "original_producer_cpu_ns": 350431008,
+      "product_rejection_cpu_ns": 13949731,
+      "production_rejection_over_mutation_only": {
+        "denominator": 101761,
+        "numerator": 13949731,
+        "value": 137.0832735527363
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 350532769,
+        "numerator": 13949731,
+        "value": 0.039795797236862614
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-full-limb",
+      "class_name": "one-zero-right-rank-one",
+      "horizon": 1,
+      "mutation_cpu_ns": 117220,
+      "observed_candidates": 8,
+      "original_producer_cpu_ns": 299334158,
+      "product_rejection_cpu_ns": 13981793,
+      "production_rejection_over_mutation_only": {
+        "denominator": 117220,
+        "numerator": 13981793,
+        "value": 119.27822044019791
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 299451378,
+        "numerator": 13981793,
+        "value": 0.046691363029893955
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-full-limb",
+      "class_name": "one-zero-right-rank-one",
+      "horizon": 1,
+      "mutation_cpu_ns": 113378,
+      "observed_candidates": 8,
+      "original_producer_cpu_ns": 301606623,
+      "product_rejection_cpu_ns": 14084761,
+      "production_rejection_over_mutation_only": {
+        "denominator": 113378,
+        "numerator": 14084761,
+        "value": 124.22834235918785
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 301720001,
+        "numerator": 14084761,
+        "value": 0.04668156222099443
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-transposed",
+      "class_name": "one-zero-right-rank-one",
+      "horizon": 8,
+      "mutation_cpu_ns": 702736,
+      "observed_candidates": 64,
+      "original_producer_cpu_ns": 3268508477,
+      "product_rejection_cpu_ns": 106472085,
+      "production_rejection_over_mutation_only": {
+        "denominator": 702736,
+        "numerator": 106472085,
+        "value": 151.51078783497644
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 3269211213,
+        "numerator": 106472085,
+        "value": 0.03256812670182164
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-transposed",
+      "class_name": "one-zero-right-rank-one",
+      "horizon": 8,
+      "mutation_cpu_ns": 668078,
+      "observed_candidates": 64,
+      "original_producer_cpu_ns": 3263470592,
+      "product_rejection_cpu_ns": 106717032,
+      "production_rejection_over_mutation_only": {
+        "denominator": 668078,
+        "numerator": 106717032,
+        "value": 159.73738395816056
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 3264138670,
+        "numerator": 106717032,
+        "value": 0.03269378013281525
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-full-limb",
+      "class_name": "one-zero-right-rank-one",
+      "horizon": 8,
+      "mutation_cpu_ns": 767832,
+      "observed_candidates": 64,
+      "original_producer_cpu_ns": 2743771664,
+      "product_rejection_cpu_ns": 106363851,
+      "production_rejection_over_mutation_only": {
+        "denominator": 767832,
+        "numerator": 106363851,
+        "value": 138.5248999781202
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 2744539496,
+        "numerator": 106363851,
+        "value": 0.038754716831373305
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-full-limb",
+      "class_name": "one-zero-right-rank-one",
+      "horizon": 8,
+      "mutation_cpu_ns": 670185,
+      "observed_candidates": 64,
+      "original_producer_cpu_ns": 2778126257,
+      "product_rejection_cpu_ns": 106096945,
+      "production_rejection_over_mutation_only": {
+        "denominator": 670185,
+        "numerator": 106096945,
+        "value": 158.30993680849318
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 2778796442,
+        "numerator": 106096945,
+        "value": 0.038180898534488625
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-transposed",
+      "class_name": "one-zero-right-rank-one",
+      "horizon": 64,
+      "mutation_cpu_ns": 4767813,
+      "observed_candidates": 512,
+      "original_producer_cpu_ns": 24925060545,
+      "product_rejection_cpu_ns": 867005847,
+      "production_rejection_over_mutation_only": {
+        "denominator": 4767813,
+        "numerator": 867005847,
+        "value": 181.8456065705597
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 24929828358,
+        "numerator": 867005847,
+        "value": 0.034777850635372594
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-transposed",
+      "class_name": "one-zero-right-rank-one",
+      "horizon": 64,
+      "mutation_cpu_ns": 4659378,
+      "observed_candidates": 512,
+      "original_producer_cpu_ns": 24914843286,
+      "product_rejection_cpu_ns": 850246943,
+      "production_rejection_over_mutation_only": {
+        "denominator": 4659378,
+        "numerator": 850246943,
+        "value": 182.4807824134466
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 24919502664,
+        "numerator": 850246943,
+        "value": 0.034119739645860216
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "eager-full-limb",
+      "class_name": "one-zero-right-rank-one",
+      "horizon": 64,
+      "mutation_cpu_ns": 4450383,
+      "observed_candidates": 512,
+      "original_producer_cpu_ns": 21429213726,
+      "product_rejection_cpu_ns": 851483644,
+      "production_rejection_over_mutation_only": {
+        "denominator": 4450383,
+        "numerator": 851483644,
+        "value": 191.3281719798049
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 21433664109,
+        "numerator": 851483644,
+        "value": 0.03972646205846166
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    },
+    {
+      "acquisition_is_not_an_adversarial_lower_bound": true,
+      "arm": "lazy-full-limb",
+      "class_name": "one-zero-right-rank-one",
+      "horizon": 64,
+      "mutation_cpu_ns": 4555383,
+      "observed_candidates": 512,
+      "original_producer_cpu_ns": 21177290010,
+      "product_rejection_cpu_ns": 858577113,
+      "production_rejection_over_mutation_only": {
+        "denominator": 4555383,
+        "numerator": 858577113,
+        "value": 188.47528583216823
+      },
+      "production_rejection_over_this_honest_acquisition_plus_mutation": {
+        "denominator": 21181845393,
+        "numerator": 858577113,
+        "value": 0.04053363137490067
+      },
+      "target_index": 1,
+      "valid_proof_prerequisite": true
+    }
+  ],
+  "public_service_qualification": false,
+  "qualification_status": "HOLD",
+  "reused_fixed_cohort_bests": [
+    {
+      "class_name": "periodic-dense-fixture",
+      "generic_over_best_cpu": {
+        "denominator": 106919520,
+        "numerator": 106919520,
+        "value": 1.0
+      },
+      "horizon": 4,
+      "inclusive_cpu_per_hit_ns": 3341235.0,
+      "inclusive_cpu_per_nonce_ns": 1724508.3870967743,
+      "inclusive_total": {
+        "cpu_ns": 106919520,
+        "wall_ns": 106959874
+      },
+      "inclusive_wall_per_nonce_ns": 1725159.2580645161,
+      "misses": 30,
+      "nonce_attempts": 62,
+      "observed_best_fixed_arm": "prepared-generic",
+      "search": {
+        "cpu_ns": 103424854,
+        "wall_ns": 103453467
+      },
+      "searches": 32,
+      "selection": "retrospective one supplied arm over eight H4 cohorts, not per-search oracle; not directly paired with legal-v3 or Sparse census",
+      "setup": {
+        "cpu_ns": 3436334,
+        "wall_ns": 3435523
+      },
+      "setup_calls": 8,
+      "setup_fraction_cpu": 0.03213944469634731,
+      "supported_arms": 5,
+      "target_index": 0,
+      "unsupported_arms": 8
+    },
+    {
+      "class_name": "full-rank-field",
+      "generic_over_best_cpu": {
+        "denominator": 135331408,
+        "numerator": 135331408,
+        "value": 1.0
+      },
+      "horizon": 4,
+      "inclusive_cpu_per_hit_ns": 4229106.5,
+      "inclusive_cpu_per_nonce_ns": 1691642.6,
+      "inclusive_total": {
+        "cpu_ns": 135331408,
+        "wall_ns": 135336606
+      },
+      "inclusive_wall_per_nonce_ns": 1691707.575,
+      "misses": 48,
+      "nonce_attempts": 80,
+      "observed_best_fixed_arm": "prepared-generic",
+      "search": {
+        "cpu_ns": 131906956,
+        "wall_ns": 131898409
+      },
+      "searches": 32,
+      "selection": "retrospective one supplied arm over eight H4 cohorts, not per-search oracle; not directly paired with legal-v3 or Sparse census",
+      "setup": {
+        "cpu_ns": 3372219,
+        "wall_ns": 3370908
+      },
+      "setup_calls": 8,
+      "setup_fraction_cpu": 0.02491822888593607,
+      "supported_arms": 5,
+      "target_index": 0,
+      "unsupported_arms": 8
+    },
+    {
+      "class_name": "zero",
+      "generic_over_best_cpu": {
+        "denominator": 99509695,
+        "numerator": 109092389,
+        "value": 1.096299099298817
+      },
+      "horizon": 4,
+      "inclusive_cpu_per_hit_ns": 3109677.96875,
+      "inclusive_cpu_per_nonce_ns": 1604995.0806451612,
+      "inclusive_total": {
+        "cpu_ns": 99509695,
+        "wall_ns": 99529580
+      },
+      "inclusive_wall_per_nonce_ns": 1605315.8064516129,
+      "misses": 30,
+      "nonce_attempts": 62,
+      "observed_best_fixed_arm": "blocked-zero",
+      "search": {
+        "cpu_ns": 99331656,
+        "wall_ns": 99331681
+      },
+      "searches": 32,
+      "selection": "retrospective one supplied arm over eight H4 cohorts, not per-search oracle; not directly paired with legal-v3 or Sparse census",
+      "setup": {
+        "cpu_ns": 124517,
+        "wall_ns": 123765
+      },
+      "setup_calls": 8,
+      "setup_fraction_cpu": 0.0012513052120197937,
+      "supported_arms": 8,
+      "target_index": 0,
+      "unsupported_arms": 5
+    },
+    {
+      "class_name": "identity",
+      "generic_over_best_cpu": {
+        "denominator": 113779771,
+        "numerator": 121916374,
+        "value": 1.0715118595202657
+      },
+      "horizon": 4,
+      "inclusive_cpu_per_hit_ns": 3555617.84375,
+      "inclusive_cpu_per_nonce_ns": 1723935.9242424243,
+      "inclusive_total": {
+        "cpu_ns": 113779771,
+        "wall_ns": 113779766
+      },
+      "inclusive_wall_per_nonce_ns": 1723935.8484848484,
+      "misses": 34,
+      "nonce_attempts": 66,
+      "observed_best_fixed_arm": "prepared-structured",
+      "search": {
+        "cpu_ns": 113509609,
+        "wall_ns": 113491831
+      },
+      "searches": 32,
+      "selection": "retrospective one supplied arm over eight H4 cohorts, not per-search oracle; not directly paired with legal-v3 or Sparse census",
+      "setup": {
+        "cpu_ns": 211551,
+        "wall_ns": 210731
+      },
+      "setup_calls": 8,
+      "setup_fraction_cpu": 0.0018593023886469238,
+      "supported_arms": 6,
+      "target_index": 0,
+      "unsupported_arms": 7
+    },
+    {
+      "class_name": "rank-one",
+      "generic_over_best_cpu": {
+        "denominator": 108775393,
+        "numerator": 123871041,
+        "value": 1.138778151782913
+      },
+      "horizon": 4,
+      "inclusive_cpu_per_hit_ns": 3399231.03125,
+      "inclusive_cpu_per_nonce_ns": 1699615.515625,
+      "inclusive_total": {
+        "cpu_ns": 108775393,
+        "wall_ns": 108775232
+      },
+      "inclusive_wall_per_nonce_ns": 1699613.0,
+      "misses": 32,
+      "nonce_attempts": 64,
+      "observed_best_fixed_arm": "prepared-structured",
+      "search": {
+        "cpu_ns": 108236497,
+        "wall_ns": 108207481
+      },
+      "searches": 32,
+      "selection": "retrospective one supplied arm over eight H4 cohorts, not per-search oracle; not directly paired with legal-v3 or Sparse census",
+      "setup": {
+        "cpu_ns": 486103,
+        "wall_ns": 485324
+      },
+      "setup_calls": 8,
+      "setup_fraction_cpu": 0.004468869167864096,
+      "supported_arms": 6,
+      "target_index": 0,
+      "unsupported_arms": 7
+    },
+    {
+      "class_name": "sparse-diagonal",
+      "generic_over_best_cpu": {
+        "denominator": 97004973,
+        "numerator": 99213952,
+        "value": 1.022771811915251
+      },
+      "horizon": 4,
+      "inclusive_cpu_per_hit_ns": 3031405.40625,
+      "inclusive_cpu_per_nonce_ns": 1672499.5344827587,
+      "inclusive_total": {
+        "cpu_ns": 97004973,
+        "wall_ns": 97012353
+      },
+      "inclusive_wall_per_nonce_ns": 1672626.7758620689,
+      "misses": 26,
+      "nonce_attempts": 58,
+      "observed_best_fixed_arm": "prepared-structured",
+      "search": {
+        "cpu_ns": 96729243,
+        "wall_ns": 96720438
+      },
+      "searches": 32,
+      "selection": "retrospective one supplied arm over eight H4 cohorts, not per-search oracle; not directly paired with legal-v3 or Sparse census",
+      "setup": {
+        "cpu_ns": 222721,
+        "wall_ns": 222182
+      },
+      "setup_calls": 8,
+      "setup_fraction_cpu": 0.002295975073360414,
+      "supported_arms": 6,
+      "target_index": 0,
+      "unsupported_arms": 7
+    },
+    {
+      "class_name": "continuity-maintenance-v1",
+      "generic_over_best_cpu": {
+        "denominator": 108974611,
+        "numerator": 120747058,
+        "value": 1.108029263807145
+      },
+      "horizon": 4,
+      "inclusive_cpu_per_hit_ns": 3405456.59375,
+      "inclusive_cpu_per_nonce_ns": 1534853.676056338,
+      "inclusive_total": {
+        "cpu_ns": 108974611,
+        "wall_ns": 108975483
+      },
+      "inclusive_wall_per_nonce_ns": 1534865.957746479,
+      "misses": 39,
+      "nonce_attempts": 71,
+      "observed_best_fixed_arm": "maintenance-limb",
+      "search": {
+        "cpu_ns": 108432159,
+        "wall_ns": 108417152
+      },
+      "searches": 32,
+      "selection": "retrospective one supplied arm over eight H4 cohorts, not per-search oracle; not directly paired with legal-v3 or Sparse census",
+      "setup": {
+        "cpu_ns": 490363,
+        "wall_ns": 489531
+      },
+      "setup_calls": 8,
+      "setup_fraction_cpu": 0.004499791240365153,
+      "supported_arms": 9,
+      "target_index": 0,
+      "unsupported_arms": 4
+    },
+    {
+      "class_name": "one-zero-left-rank-one",
+      "generic_over_best_cpu": {
+        "denominator": 94616958,
+        "numerator": 98127613,
+        "value": 1.0371038667296828
+      },
+      "horizon": 4,
+      "inclusive_cpu_per_hit_ns": 2956779.9375,
+      "inclusive_cpu_per_nonce_ns": 1631326.8620689656,
+      "inclusive_total": {
+        "cpu_ns": 94616958,
+        "wall_ns": 94617712
+      },
+      "inclusive_wall_per_nonce_ns": 1631339.8620689656,
+      "misses": 26,
+      "nonce_attempts": 58,
+      "observed_best_fixed_arm": "prepared-structured",
+      "search": {
+        "cpu_ns": 94388539,
+        "wall_ns": 94374130
+      },
+      "searches": 32,
+      "selection": "retrospective one supplied arm over eight H4 cohorts, not per-search oracle; not directly paired with legal-v3 or Sparse census",
+      "setup": {
+        "cpu_ns": 178045,
+        "wall_ns": 177336
+      },
+      "setup_calls": 8,
+      "setup_fraction_cpu": 0.0018817451307195905,
+      "supported_arms": 7,
+      "target_index": 0,
+      "unsupported_arms": 6
+    },
+    {
+      "class_name": "one-zero-right-rank-one",
+      "generic_over_best_cpu": {
+        "denominator": 110257179,
+        "numerator": 112769989,
+        "value": 1.0227904434231898
+      },
+      "horizon": 4,
+      "inclusive_cpu_per_hit_ns": 3445536.84375,
+      "inclusive_cpu_per_nonce_ns": 1645629.537313433,
+      "inclusive_total": {
+        "cpu_ns": 110257179,
+        "wall_ns": 110278877
+      },
+      "inclusive_wall_per_nonce_ns": 1645953.3880597015,
+      "misses": 35,
+      "nonce_attempts": 67,
+      "observed_best_fixed_arm": "prepared-structured",
+      "search": {
+        "cpu_ns": 110023934,
+        "wall_ns": 110028949
+      },
+      "searches": 32,
+      "selection": "retrospective one supplied arm over eight H4 cohorts, not per-search oracle; not directly paired with legal-v3 or Sparse census",
+      "setup": {
+        "cpu_ns": 184428,
+        "wall_ns": 183812
+      },
+      "setup_calls": 8,
+      "setup_fraction_cpu": 0.0016727074071067971,
+      "supported_arms": 7,
+      "target_index": 0,
+      "unsupported_arms": 6
+    }
+  ],
+  "schema": "independent-C4-finite-strategy-findings-v1",
+  "source_commit": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+  "source_tree": "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14",
+  "totals": {
+    "false": {
+      "actual_searches": 288,
+      "actual_setup_calls": 72,
+      "exhausted_searches": 0,
+      "failed_nonce_attempts": 285,
+      "inclusive_residual": {
+        "cpu_ns": 368844,
+        "wall_ns": 463539
+      },
+      "inclusive_total": {
+        "cpu_ns": 20182415,
+        "wall_ns": 20354010
+      },
+      "material_generation_separate": {
+        "cpu_ns": 1680241,
+        "wall_ns": 1685711
+      },
+      "nonce_attempts": 573,
+      "one_shared_material_generation_sensitivity": {
+        "allocation": "charge the one observed whole-campaign material-generation interval once to all 72 setups / 288 searches; no per-class or per-candidate replication",
+        "complete_denominator": {
+          "cpu_ns": 21862656,
+          "wall_ns": 22039721
+        },
+        "included_wire_bytes": "canonical A/B public proof-prefix serialization during setup and the complete winning-buffer clone inside search are already charged",
+        "material_generation": {
+          "cpu_ns": 1680241,
+          "wall_ns": 1685711
+        },
+        "material_generation_is_not_proven_necessary_for_an_attacker_with_a_public_task": true,
+        "production_rejection_over_complete_denominator": {
+          "cpu_ns": {
+            "denominator": 21862656,
+            "numerator": 427969566,
+            "value": 19.575369342132998
+          },
+          "wall_ns": {
+            "denominator": 22039721,
+            "numerator": 429270824,
+            "value": 19.477144197968748
+          }
+        },
+        "still_excludes": "JSONL evidence serialization, enclosing wire/transport envelope and send, live admission, scheduling, queueing, storage, receiver network work, later retained-buffer destruction"
+      },
+      "original_build_elapsed_ns": 2170510048,
+      "outer_native_process_elapsed": {
+        "maximum_ns": 3573923850,
+        "minimum_ns": 3573923850,
+        "original_per_child_timeout_seconds": 300,
+        "sum_ns": 3573923850
+      },
+      "production_rejection_cpu_ns": 427969566,
+      "production_rejection_cpu_over_full_attacker_cpu_equal_class_sum": {
+        "denominator": 20182415,
+        "numerator": 427969566,
+        "value": 21.20507213829465
+      },
+      "production_rejection_wall_ns": 429270824,
+      "search": {
+        "cpu_ns": 5335944,
+        "wall_ns": 5297832
+      },
+      "semantic_alerts": 0,
+      "setup": {
+        "cpu_ns": 14477627,
+        "wall_ns": 14592639
+      },
+      "supported_cohorts": 72,
+      "target_hits_in_repeated_arm_observations": 288,
+      "timing_aggregate_scope": "sum of recorded repeated benchmark intervals, not independently credited work or live traffic",
+      "unsupported_cohorts": 0,
+      "unsupported_setup": {
+        "cpu_ns": 0,
+        "wall_ns": 0
+      },
+      "verification_all_labels_and_cases": {
+        "cpu_ns": 2629583292,
+        "wall_ns": 2638628878
+      }
+    },
+    "legal": {
+      "actual_searches": 23360,
+      "actual_setup_calls": 960,
+      "exhausted_searches": 0,
+      "failed_nonce_attempts": 366428,
+      "inclusive_residual": {
+        "cpu_ns": 29418710,
+        "wall_ns": 44630534
+      },
+      "inclusive_total": {
+        "cpu_ns": 531839972120,
+        "wall_ns": 531930546526
+      },
+      "material_generation_separate": {
+        "cpu_ns": 56171504,
+        "wall_ns": 56497096
+      },
+      "materialized_proof_bytes": 10160961912,
+      "nonce_attempts": 389788,
+      "original_build_elapsed_ns": 253268574633,
+      "outer_native_process_elapsed": {
+        "maximum_ns": 135851573633,
+        "minimum_ns": 816257090,
+        "original_per_child_timeout_seconds": 300,
+        "sum_ns": 1026874150743
+      },
+      "proof_materializations": 206574,
+      "search": {
+        "cpu_ns": 531395306714,
+        "wall_ns": 531470842303
+      },
+      "semantic_alerts": 0,
+      "separate_evidence": {
+        "cpu_ns": 7245323491,
+        "wall_ns": 7247716709
+      },
+      "separate_product_mutation": {
+        "cpu_ns": 169790217,
+        "wall_ns": 173520914
+      },
+      "setup": {
+        "cpu_ns": 415246696,
+        "wall_ns": 415073689
+      },
+      "supported_cohorts": 960,
+      "target_hits_in_repeated_arm_observations": 23360,
+      "timing_aggregate_scope": "sum of recorded repeated benchmark intervals, not independently credited work or live traffic",
+      "unsupported_cohorts": 0,
+      "unsupported_setup": {
+        "cpu_ns": 0,
+        "wall_ns": 0
+      },
+      "verification_all_labels_and_cases": {
+        "cpu_ns": 403187179598,
+        "wall_ns": 403212746507
+      }
+    },
+    "reused": {
+      "actual_searches": 1888,
+      "actual_setup_calls": 936,
+      "exhausted_searches": 0,
+      "failed_nonce_attempts": 1960,
+      "inclusive_residual": {
+        "cpu_ns": 4014088,
+        "wall_ns": 5219634
+      },
+      "inclusive_total": {
+        "cpu_ns": 8256738667,
+        "wall_ns": 8257605316
+      },
+      "material_generation_separate": {
+        "cpu_ns": 1539209,
+        "wall_ns": 1538400
+      },
+      "nonce_attempts": 3848,
+      "original_build_elapsed_ns": 2321108089,
+      "outer_native_process_elapsed": {
+        "maximum_ns": 20470751766,
+        "minimum_ns": 20470751766,
+        "original_per_child_timeout_seconds": 300,
+        "sum_ns": 20470751766
+      },
+      "search": {
+        "cpu_ns": 8099320038,
+        "wall_ns": 8099094343
+      },
+      "semantic_alerts": 0,
+      "setup": {
+        "cpu_ns": 153404541,
+        "wall_ns": 153291339
+      },
+      "supported_cohorts": 472,
+      "target_hits_in_repeated_arm_observations": 1888,
+      "timing_aggregate_scope": "sum of recorded repeated benchmark intervals, not independently credited work or live traffic",
+      "unsupported_cohorts": 464,
+      "unsupported_setup": {
+        "cpu_ns": 2720998,
+        "wall_ns": 2673834
+      },
+      "verification_all_labels_and_cases": {
+        "cpu_ns": 10176627645,
+        "wall_ns": 10176709991
+      }
+    }
+  }
+}

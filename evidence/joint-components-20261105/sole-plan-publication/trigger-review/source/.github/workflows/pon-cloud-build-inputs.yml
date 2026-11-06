@@ -1,0 +1,77 @@
+name: PoN isolated cloud build inputs
+on:
+  pull_request:
+    paths:
+      - .github/workflows/pon-cloud-build-inputs.yml
+      - rust-toolchain.toml
+      - trillionnium/Cargo.lock
+      - trillionnium/**/Cargo.toml
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: pon-cloud-build-inputs-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+jobs:
+  build-inputs:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+      CARGO_BUILD_JOBS: "2"
+      CARGO_INCREMENTAL: "0"
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Checkout the exact candidate without persistent credentials
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ env.EXPECTED_HEAD }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify source and reserve fresh output paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash scripts/project-preflight.sh --audit
+          out="$RUNNER_TEMP/pon-build-inputs-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          mkdir "$out"
+          mkdir "$out/bundle"
+          printf 'OUT=%s\n' "$out" >> "$GITHUB_ENV"
+          printf 'CARGO_HOME=%s/cargo-build-inputs\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'RUSTUP_HOME=%s/rustup-build-inputs\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          python3 scripts/ci/verify_ci_source.py --kind head --expected-head "$EXPECTED_HEAD" --output "$out/source-before.json"
+      - name: Obtain the pinned compiler and locked source dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.95.0 --profile minimal --component clippy --component rustfmt
+          rustc +1.95.0 -Vv > "$OUT/bundle/rustc-version.txt"
+          cargo +1.95.0 -Vv > "$OUT/bundle/cargo-version.txt"
+          cargo +1.95.0 vendor --locked --manifest-path trillionnium/Cargo.toml "$OUT/bundle/vendor" > "$OUT/bundle/vendor-config.toml"
+          cp trillionnium/Cargo.lock "$OUT/bundle/Cargo.lock"
+          # Copy only the selected public toolchain and vendored crate sources.
+          # Do not archive CARGO_HOME, credentials, runner state or the checkout.
+          compiler="$(rustup which --toolchain 1.95.0 rustc)"
+          toolchain="$(dirname "$(dirname "$compiler")")"
+          cp -a "$toolchain" "$OUT/bundle/toolchain"
+          cp "$OUT/source-before.json" "$OUT/bundle/source.json"
+          printf 'Build inputs only. No test execution, work-security, model-efficacy, independent-operator or activation qualification is implied.\n' > "$OUT/bundle/SCOPE.txt"
+      - name: Verify unchanged source and package the bounded input set
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/ci/verify_ci_source.py --kind head --expected-head "$EXPECTED_HEAD" --output "$OUT/source-after.json"
+          tar -czf "$OUT/pon-cloud-build-inputs.tar.gz" -C "$OUT/bundle" .
+          sha256sum "$OUT/pon-cloud-build-inputs.tar.gz" > "$OUT/pon-cloud-build-inputs.sha256"
+      - name: Retain exact build inputs for offline cloud verification
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: pon-cloud-build-inputs-${{ env.EXPECTED_HEAD }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/pon-build-inputs-${{ github.run_id }}-${{ github.run_attempt }}/pon-cloud-build-inputs.tar.gz
+            ${{ runner.temp }}/pon-build-inputs-${{ github.run_id }}-${{ github.run_attempt }}/pon-cloud-build-inputs.sha256
+            ${{ runner.temp }}/pon-build-inputs-${{ github.run_id }}-${{ github.run_attempt }}/source-before.json
+            ${{ runner.temp }}/pon-build-inputs-${{ github.run_id }}-${{ github.run_attempt }}/source-after.json
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 7

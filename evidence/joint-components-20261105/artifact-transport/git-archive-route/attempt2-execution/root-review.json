@@ -1,0 +1,42 @@
+{
+  "actual_file_rpc_bytes_reopened": true,
+  "actual_index_three_versioned_chunks_exact": true,
+  "actual_paged_streams_exact": true,
+  "commit": "860dc2d8045f18808b9c5516f86edaef6e830734",
+  "desktop_index_equal_independent_git_index": true,
+  "exact_owned_unit_cgroup_and_observed_pid_clear": true,
+  "exit_code": 0,
+  "full_cloud_archive_and_member_consumer": "separate_pending_consumer_at_this_review",
+  "job_id": "1a1ae41d122-fc05-5e83",
+  "local_reviewer_preparation_history": [
+    "Initial reviewer asserted the local release filename was also the remote basename; it stopped before output/copy. Corrected to the actual observed remote basename, preserving content/size/SHA/version checks. No transport rerun or source change."
+  ],
+  "manifest_sha256": "84d2e05f282a2ae7637caf6cb664918f335fd505263f28f019ef7ed0befc03e2",
+  "new_bare_configuration_only_expected_public_url_initialization": true,
+  "new_native_credit": false,
+  "release_proof_sha256": "c92f2dad6f79c0853783c05097753b8c1462fa2481d95dcc4b772732a873d7fa",
+  "schema": "root-actual-archive-git-attempt2-review-v1",
+  "scope": "Original captured RPCs and delivered bytes independently reopened; source/config snapshots do not prove transient concurrent state or all runtime dependencies. No network/native/credential operation issued by this review.",
+  "single_push": {
+    "classification": null,
+    "operation": "single-empty-lease-push",
+    "returncode": 0,
+    "seconds": 175.0438630710123,
+    "stderr_bytes": 557,
+    "stdout_bytes": 186,
+    "timed_out": false
+  },
+  "source_and_five_configurations_before_after_equal": true,
+  "start_ticks_not_observed_and_not_invented": true,
+  "status": "VERIFIED_ACTUAL_SINGLE_PUSH_AND_RELEASE",
+  "stderr_bytes": 0,
+  "stdout_bytes": 46833,
+  "terminal_file_exact_stdout_suffix": true,
+  "terminal_state": "succeeded",
+  "terminal_unix_ms": 1793925166468,
+  "total_raw_archive_bytes": 670306272,
+  "transport_blob_count": 166,
+  "tree": "ba8da0b1dad8ba8777c0be85bbdc3ae8d1c0cb26",
+  "verified_original_bytes": 781554,
+  "verified_original_files": 32
+}

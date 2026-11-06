@@ -1,0 +1,92 @@
+{
+  "records": [
+    {
+      "source": {
+        "commit": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+        "tree": "24804b21d0306b617e12fa3f5b9454a12ed4ad41",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "44c24be1044b88b8a8a407859c1dcd37051dfdbd793b969527f415b305989cfd"
+      },
+      "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/authbus_text_product-c365e5b605b48783",
+      "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-product/060b03442eaad0f40a1c532199d59183ce6b784beb9023ee06fec73105c34d31.elf",
+      "sha256": "060b03442eaad0f40a1c532199d59183ce6b784beb9023ee06fec73105c34d31",
+      "bytes": 120073792,
+      "device": 2050,
+      "inode": 58259645,
+      "pid": 574633,
+      "start_ticks": "98309035",
+      "wrapper_pid": 573407,
+      "wrapper_start_ticks": "98307564",
+      "wrapper_descendant_verified": true,
+      "post_open_task_and_exe_verified": true,
+      "observed_selected_tests": [
+        "pq_signed_text_crosses_real_queue_after_rejection_without_downgrade"
+      ],
+      "captured_unix": 1793905425.2958288
+    },
+    {
+      "source": {
+        "commit": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+        "tree": "24804b21d0306b617e12fa3f5b9454a12ed4ad41",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "44c24be1044b88b8a8a407859c1dcd37051dfdbd793b969527f415b305989cfd"
+      },
+      "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/authbus_text_product-c365e5b605b48783",
+      "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-product/060b03442eaad0f40a1c532199d59183ce6b784beb9023ee06fec73105c34d31.elf",
+      "sha256": "060b03442eaad0f40a1c532199d59183ce6b784beb9023ee06fec73105c34d31",
+      "bytes": 120073792,
+      "device": 2050,
+      "inode": 58259645,
+      "pid": 575304,
+      "start_ticks": "98309800",
+      "wrapper_pid": 573407,
+      "wrapper_start_ticks": "98307564",
+      "wrapper_descendant_verified": true,
+      "post_open_task_and_exe_verified": true,
+      "observed_selected_tests": [
+        "real_agentd_without_explicit_trust_rejects_signed_text"
+      ],
+      "captured_unix": 1793905432.035709
+    },
+    {
+      "source": {
+        "commit": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+        "tree": "24804b21d0306b617e12fa3f5b9454a12ed4ad41",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "44c24be1044b88b8a8a407859c1dcd37051dfdbd793b969527f415b305989cfd"
+      },
+      "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/authbus_text_product-c365e5b605b48783",
+      "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h1-native-attempt-1/executed-binaries-product/060b03442eaad0f40a1c532199d59183ce6b784beb9023ee06fec73105c34d31.elf",
+      "sha256": "060b03442eaad0f40a1c532199d59183ce6b784beb9023ee06fec73105c34d31",
+      "bytes": 120073792,
+      "device": 2050,
+      "inode": 58259645,
+      "pid": 575576,
+      "start_ticks": "98310055",
+      "wrapper_pid": 573407,
+      "wrapper_start_ticks": "98307564",
+      "wrapper_descendant_verified": true,
+      "post_open_task_and_exe_verified": true,
+      "observed_selected_tests": [
+        "signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_ingress"
+      ],
+      "captured_unix": 1793905434.5889773
+    }
+  ],
+  "errors": [],
+  "unique_actual_elf_sha256": [
+    "060b03442eaad0f40a1c532199d59183ce6b784beb9023ee06fec73105c34d31"
+  ],
+  "observed_selected_tests": [
+    "pq_signed_text_crosses_real_queue_after_rejection_without_downgrade",
+    "real_agentd_without_explicit_trust_rejects_signed_text",
+    "signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_ingress"
+  ],
+  "capture_scope": "actual executing test-image binding; polling may miss individual short-lived cases",
+  "runner_declared_binary_counts": [
+    1
+  ]
+}

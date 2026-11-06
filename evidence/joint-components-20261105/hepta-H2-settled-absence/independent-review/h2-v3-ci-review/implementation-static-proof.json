@@ -1,0 +1,48 @@
+{
+  "scope": "synthetic CI name-guard controls and exact source comparison; zero native credit",
+  "original_selected_cases": 69,
+  "new_selected_cases": 2,
+  "total_selected_cases": 71,
+  "original_test_steps_byte_equivalent_after_yaml_parse": true,
+  "job_matrix_environment_and_timeout_unchanged": true,
+  "original_step_order_preserved": true,
+  "per_test_configuration_unchanged": true,
+  "new_step_timeout_seconds": 600,
+  "job_timeout_seconds": 5400,
+  "scoped_lint_change": "append only codex-hepta-automation; original timeout 1200",
+  "guard_sha256": "db0d00120c1c1efda2bf2f2830ae4011e419cc03438b605e3f5b21ca51df8d7f",
+  "controls": [
+    {
+      "name": "complete_inventory",
+      "exit_code": 0,
+      "expected_behavior_observed": true,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "name": "missing_new_receipt",
+      "exit_code": 1,
+      "expected_behavior_observed": true,
+      "stdout": "",
+      "stderr": "Every selected native test must execute and pass exactly once\n"
+    },
+    {
+      "name": "selected_new_skip",
+      "exit_code": 1,
+      "expected_behavior_observed": true,
+      "stdout": "",
+      "stderr": "Every selected native test must execute and pass exactly once\n"
+    },
+    {
+      "name": "duplicate_new_case",
+      "exit_code": 1,
+      "expected_behavior_observed": true,
+      "stdout": "",
+      "stderr": "Every selected native test must execute and pass exactly once\n"
+    }
+  ],
+  "new_names": [
+    "owner_recovery_tests::settled_absence_fact_read_rejects_unknown_unsettled_and_corrupt_evidence",
+    "owner_recovery_tests::settled_absence_fact_read_survives_reopen_and_new_owner_without_redispatch"
+  ]
+}

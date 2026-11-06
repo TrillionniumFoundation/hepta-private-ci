@@ -1,0 +1,25 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "GitHub API error 422: {\"message\":\"Server Error: Sorry, this diff is taking too long to generate.\",\"errors\":[{\"resource\":\"Comparison\",\"field\":\"diff\",\"code\":\"not_available\"}],\"documentation_url\":\"https://docs.github.com/rest/commits/commits#compare-two-commits\",\"status\":\"422\"}"
+    }
+  ],
+  "structuredContent": {
+    "error": "GitHub API error 422: {\"message\":\"Server Error: Sorry, this diff is taking too long to generate.\",\"errors\":[{\"resource\":\"Comparison\",\"field\":\"diff\",\"code\":\"not_available\"}],\"documentation_url\":\"https://docs.github.com/rest/commits/commits#compare-two-commits\",\"status\":\"422\"}",
+    "error_code": "INVALID_ARGUMENT",
+    "error_data": {
+      "message": "Server Error: Sorry, this diff is taking too long to generate.",
+      "errors": [
+        {
+          "resource": "Comparison",
+          "field": "diff",
+          "code": "not_available"
+        }
+      ],
+      "documentation_url": "https://docs.github.com/rest/commits/commits#compare-two-commits",
+      "status": "422"
+    }
+  },
+  "isError": true
+}

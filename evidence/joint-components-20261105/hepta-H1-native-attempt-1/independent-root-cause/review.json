@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "kind": "independent-source-and-raw-failure-review",
+  "source_sha": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+  "tree": "24804b21d0306b617e12fa3f5b9454a12ed4ad41",
+  "overall_gate": "FAIL",
+  "native_review_only": true,
+  "native_runs_started_by_reviewer": 0,
+  "fixture_missing_owner": false,
+  "defect": "Already settled provider absence clears the TaskFlow run lease; host reconciliation attempts to reconstruct that cleared lease before reading the verified settled absence fact.",
+  "source_unchanged_before_after": true,
+  "observed_passed_tests": [
+    "automation_effect_host::pq::tests::current_clock_frontier_and_pq_grant_are_mandatory_before_contact",
+    "automation_effect_host::pq::tests::historical_policy_does_not_connect_old_trust_services_or_follow_its_references",
+    "automation_effect_host::pq::tests::initial_feed_is_authenticated_before_any_local_authority_or_frontier_write",
+    "automation_effect_host::pq::tests::ordinary_dispatch_and_new_generation_recovery_keep_one_stable_operation",
+    "automation_effect_host::pq::tests::ordinary_loader_denies_classical_schema_and_contract_or_policy_substitution",
+    "automation_effect_host::pq::tests::pon_schema4_binds_native_binary_and_original_limits_without_running_a_node",
+    "automation_effect_host::pq::tests::reconcile_rechecks_generation_after_store_await_without_reclassifying_unknown",
+    "automation_effect_host::pq::tests::recovery_requires_current_signed_exact_historical_policy_and_same_provider",
+    "automation_effect_host::pq::tests::revoked_equal_number_drift_expired_feed_and_new_epoch_do_not_contact_provider"
+  ],
+  "observed_failed_tests": [
+    "automation_effect_host::pq::tests::generation_change_after_store_await_refuses_contact_and_keeps_consumed_nonce",
+    "automation_effect_host::pq::tests::signed_revocation_after_store_await_obeys_active_effect_fence_and_never_sends"
+  ],
+  "elapsed_seconds": 47.23800226603635,
+  "timed_out": false,
+  "output_limit_exceeded": false,
+  "actual_elf_sha256_from_capture_receipt": [
+    "86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e"
+  ],
+  "remote_elf_independently_rehashed_by_this_review": false,
+  "candidate_review_status": "PENDING_H2_PATCH",
+  "raw_evidence": [
+    {
+      "path": "evidence/effect-pq-owner.json",
+      "origin": "model_storage/pq_effect_migration/native/joint-h1-native-attempt-1/effect-pq-owner.json",
+      "bytes": 1669,
+      "sha256": "a7cbad67e646de936b66750c257e2fa414e220fd669b7782dbe2fc5efb248f14"
+    },
+    {
+      "path": "evidence/effect-pq-owner.json.df451d7e91554c9db29443ad9e242b8c.log",
+      "origin": "model_storage/pq_effect_migration/native/joint-h1-native-attempt-1/effect-pq-owner.json.df451d7e91554c9db29443ad9e242b8c.log",
+      "bytes": 37038,
+      "sha256": "ea7479a4d1d000df6d3b3d275a2837fac4e4fa809e024f10af728dfbe81b2178"
+    },
+    {
+      "path": "evidence/effect-pq-owner.executed-binaries.json",
+      "origin": "model_storage/pq_effect_migration/native/joint-h1-native-attempt-1/effect-pq-owner.executed-binaries.json",
+      "bytes": 16340,
+      "sha256": "1c731057f4e782fea2776c68cfa574ac70fcbc9faf4b3699daf092affd4d188f"
+    }
+  ],
+  "no_joint_or_H2_qualification_claim": true
+}

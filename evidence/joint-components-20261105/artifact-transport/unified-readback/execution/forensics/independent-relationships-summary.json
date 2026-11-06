@@ -1,0 +1,73 @@
+{
+  "creator_identified": false,
+  "independent_comparison_source": {
+    "bytes": 15834,
+    "path": "/workspace/scratch/93bfcfe29fc8/model_storage/git-archive-closure-review/five-extra-file-forensics.json",
+    "sha256": "32f055aac893a1ef1b18fca1ec2bd7a6b6fffa2d1384286d191a021bac3f3e82"
+  },
+  "new_execution_or_capture_credit": false,
+  "original_consumer_terminal_preserved": true,
+  "original_physical_census_failure_preserved": true,
+  "relationships": [
+    {
+      "creator_inferred": false,
+      "exact_output_census_accepted": false,
+      "extra_bytes": 399507456,
+      "extra_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H1/extracted.partial/H1/elf/86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e.elf",
+      "extra_sha256": "f54e7570cabbf06fefb78811f69468993b1529057af55485ce019f2e18810033",
+      "reference_complete_bytes": 504265656,
+      "reference_full_sha256": "86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e",
+      "reference_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H1/extracted/H1/elf/86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e.elf",
+      "relation": "EXACT_PREFIX_BYTES"
+    },
+    {
+      "creator_inferred": false,
+      "exact_output_census_accepted": false,
+      "extra_bytes": 504302232,
+      "extra_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H2/extracted.partial/H2/elf/a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b.elf",
+      "extra_sha256": "a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b",
+      "reference_complete_bytes": 504302232,
+      "reference_full_sha256": "a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b",
+      "reference_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H2/extracted/H2/elf/a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b.elf",
+      "relation": "EXACT_COMPLETE_BYTES"
+    },
+    {
+      "creator_inferred": false,
+      "exact_output_census_accepted": false,
+      "extra_bytes": 120074176,
+      "extra_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H2/extracted.partial/H2/elf/f16fe89c11c71de377b62783fa5f06f23c8461b7d1b697aaf742dc2830d14295.elf",
+      "extra_sha256": "f16fe89c11c71de377b62783fa5f06f23c8461b7d1b697aaf742dc2830d14295",
+      "reference_complete_bytes": 120074176,
+      "reference_full_sha256": "f16fe89c11c71de377b62783fa5f06f23c8461b7d1b697aaf742dc2830d14295",
+      "reference_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H2/extracted/H2/elf/f16fe89c11c71de377b62783fa5f06f23c8461b7d1b697aaf742dc2830d14295.elf",
+      "relation": "EXACT_COMPLETE_BYTES"
+    },
+    {
+      "creator_inferred": false,
+      "exact_output_census_accepted": false,
+      "extra_bytes": 199753728,
+      "extra_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H3/.H3-actual-retained-elfs.tar.xz.IOnmZz",
+      "extra_sha256": "e96ffd94964e98e713ad921224a6af80d311917c5eb4d3ac345473f8025b8ba1",
+      "reference_complete_bytes": 283427280,
+      "reference_full_sha256": "5365fcf900781044108e9642ae02a110e4ac8d031d9ee516c4f0b0e471e1e773",
+      "reference_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H3/H3-actual-retained-elfs.tar.xz",
+      "relation": "EXACT_PREFIX_BYTES"
+    },
+    {
+      "creator_inferred": false,
+      "exact_output_census_accepted": false,
+      "extra_bytes": 338690048,
+      "extra_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H3/extracted/H3/elf/.00a637f55c720b06a655b569930bddaef19fd791467bc4784fe0bfb9e0002a26.elf.uZrNlA",
+      "extra_sha256": "a768306d399ebe7124320c0f803d4c21dd56e44fb4789f51534dfdc86b8b288a",
+      "reference_complete_bytes": 488112384,
+      "reference_full_sha256": "00a637f55c720b06a655b569930bddaef19fd791467bc4784fe0bfb9e0002a26",
+      "reference_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H3/extracted/H3/elf/00a637f55c720b06a655b569930bddaef19fd791467bc4784fe0bfb9e0002a26.elf",
+      "relation": "EXACT_PREFIX_BYTES"
+    }
+  ],
+  "schema": "five-extra-files-independent-relationship-summary-v1",
+  "scope": "Only actual content relationships are established. Two complete duplicates and three prefixes remain unregistered physical output files with unknown creation provenance. No environment-sync attribution is made.",
+  "status": "HOLD_UNKNOWN_OUTPUT_PROVENANCE",
+  "total_unknown_bytes": 1562327640,
+  "unknown_originals_not_deleted_or_copied": true
+}

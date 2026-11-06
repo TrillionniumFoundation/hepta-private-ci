@@ -1,0 +1,40 @@
+{
+  "assignment_checks": [
+    "Actual exact ref commit and parentless commit tree, complete untruncated166 leaves, mode100644, exact prepared+plan map.",
+    "Reconstruct recursive Git tree hashing with directory-name slash sorting, not only leaf labels.",
+    "Four actual JSON blob assignments, then162 exact part mappings from actual Git-read index and final route-plan hash;32/62/68 and exact byte totals.",
+    "Fresh metadata and receipts outside data tree; supplied Git membership comes from caller actual read receipts."
+  ],
+  "boundaries": [
+    "Prepared commit/tree are not accepted as publication until actual Git reads pass.",
+    "No optional controls added. Original paused binary_read state is untouched.",
+    "Polling deadlines cannot shorten an already outstanding tool RPC; an unresolved tool/session outcome still requires reconciliation."
+  ],
+  "inputs": [
+    {
+      "bytes": 5491,
+      "path": "inputs/fetch_helpers.js",
+      "sha256": "d8693049a2d37ba06ec5a0e90ca6e616443bae85570649c0e2564cd6a94b4d2a"
+    },
+    {
+      "bytes": 9042,
+      "path": "inputs/review_and_assign.py",
+      "sha256": "0c629f4fb6f0f2d8dd99460a563dc8a5536d055ba1d7751981646093fb9cfce7"
+    },
+    {
+      "bytes": 1118,
+      "path": "inputs/capture_raw_rpc.py",
+      "sha256": "636329ab3814a708c7b90a23e3a3913a89f03efc3eaa37ecabba0d7b72261761"
+    }
+  ],
+  "schema": "independent-shared-Git-readback-helper-review-v1",
+  "scope": "Local static interface review only; no Git read, receiver replay, native or remote operation.",
+  "status": "NO_IDENTIFIED_BLOCKER_PENDING_ACTUAL_ASSIGNMENT",
+  "transport_checks": [
+    "Actual returned result is session-stored before local capture; request/session/write-attempt state remains available after exceptions.",
+    "READY checked on same PTY with15-second polling deadline; terminal60-second polling deadline. Unknown active session is not replaced by a second receiver.",
+    "Pre-READY terminal failure uses separate no-overwrite full raw capture; any uncertain state retains original in-memory response.",
+    "Successful main receiver must exit0 and print its post-fsync PASS before large response is cleared.",
+    "Strict shell quoting and UTF8 byte count; no credentials or native controls are introduced."
+  ]
+}

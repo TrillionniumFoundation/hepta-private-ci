@@ -1,0 +1,268 @@
+{
+  "accounting": {
+    "all_failed_attempts_retained": true,
+    "excluded_from_denominator": [
+      "Shared synthetic material generation",
+      "Material/task outer-loop observation outside cohort",
+      "Later retained search/proof buffer destruction",
+      "JSONL evidence construction/output",
+      "Network sending, signed transport, admission queues, storage and retransmission"
+    ],
+    "honest_acquisition_cost_in_denominator": false,
+    "interpretation": "Measured actual H=4 public-prefix forgery under known challenge, not a fastest adversary lower bound or infinite replay amortization. Do not sum the five verification paths into one receiver cost; current production and explicit FullLimb are aliases.",
+    "modeled_setup_division": false,
+    "overhead_not_unavoidable_attacker_cost": [
+      "Trial hex formatting and trial-vector retention",
+      "The exact unoptimized two-hash implementation and four-search horizon"
+    ],
+    "per_class_denominator": "A = sum(cohort.total.cpu_ns for the 8 real cohorts); contains 8 actual prefix setup calls and all 32 real searches, including misses, challenge hashes, trial retention and winning-buffer clones.",
+    "per_class_numerator": "V_path = sum(verifier.timing.cpu_ns for all actual candidates of this class on one named path).",
+    "reported_ratio": "V_path / A, only with at least one candidate and all recorded outcomes for that path equal Transcript.",
+    "setup_double_count_forbidden": true,
+    "wall_clock": "Raw setup/search/cohort/verifier wall_ns are separately summed and retained. Never divide a wall numerator by CPU denominator."
+  },
+  "budgets": {
+    "campaign_is_per_class": false,
+    "hosted_job_scope": "Shared across checkout/source guards, original tests/lints, original default false-trace mode and additional full-limb mode; not a dedicated 55-minute full-limb allowance.",
+    "identity_command_seconds": 30,
+    "local_mode_satisfies_hosted_x64_arm64_head_merge_matrix": false,
+    "original_hosted_job_timeout_minutes": 55,
+    "release_build_seconds": 900,
+    "single_entire_native_campaign_seconds": 300,
+    "source_workflow": ".github/workflows/pon-w1-work-security.yml",
+    "source_workflow_job": "false-trace-reuse",
+    "termination_grace_seconds": 5,
+    "timeout_output_retained": true
+  },
+  "commands": {
+    "expected_source_env": "TRNM_EXPECTED_SOURCE_SHA=8df4b21d893906570d48f5beafabb3b31e0aefbc",
+    "local_original_runner": [
+      "env",
+      "-u",
+      "CARGO_INCREMENTAL",
+      "python3",
+      "-B",
+      "scripts/ci/run_w1_false_trace_reuse_v1.py",
+      "--arch",
+      "x64",
+      "--local",
+      "--full-limb"
+    ],
+    "native_argv": [
+      "<retained actual C4 ELF>/pon_w1_false_trace_reuse_v1",
+      "--false-trace-full-limb-v1"
+    ],
+    "reader_function": "pon_w1_false_trace_reuse_reader_v1.analyze(retained_campaign_stdout, full_limb=True)",
+    "runner_build_argv": [
+      "cargo",
+      "+1.95.0",
+      "build",
+      "--locked",
+      "--release",
+      "--manifest-path",
+      "trillionnium/Cargo.toml",
+      "--target",
+      "x86_64-unknown-linux-gnu",
+      "-p",
+      "trnm-pon-node",
+      "--example",
+      "pon_w1_false_trace_reuse_v1"
+    ],
+    "source_note": "The native selector is the only accepted native argument in this mode. --full-limb is the Python owner flag, not the native selector.",
+    "standalone_reader": [
+      "python3",
+      "-B",
+      "scripts/pon_w1_false_trace_reuse_reader_v1.py",
+      "<retained campaign.stdout>",
+      "--full-limb"
+    ]
+  },
+  "commit": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+  "construction": [
+    "w1_from_zero::proof_prefix calls task_id(a,b), writes PNW1 and canonical public A/B, then resizes the entire proof to zero C and zero claimed transcript; it never computes A*B or obtains a legal transcript.",
+    "false_search iterates nonce 0..4096, calculates the two hashes, retains every trial and stops only at the first ticket <= fixed target or full exhaustion.",
+    "On a target hit, it clones the actual prepared full prefix buffer and replaces the last 32 bytes with the fabricated trace; the clone is inside search timing.",
+    "cohort constructs one actual prefix and performs four measured searches using different source-derived challenges before stopping its inclusive total clock.",
+    "Shared w1_cost_producers contributes Clock/Timing/Search/Trial/Winner/raw/hash helpers; its legal Producer definitions are not invoked by this campaign."
+  ],
+  "fixed_grid": {
+    "actual_prefix_setups": 72,
+    "actual_searches": 288,
+    "attempt_cap_per_search": 4096,
+    "candidate_count_is_observed_not_assumed": true,
+    "challenge": "H(pon-w1-false-trace-reuse-challenge-v1, task, little_endian_u64(0), sample_u64_le, search_index_u64_le)",
+    "challenge_distinct_per_search": true,
+    "classes": [
+      "periodic-dense-fixture",
+      "full-rank-field",
+      "zero",
+      "identity",
+      "rank-one",
+      "sparse-diagonal",
+      "continuity-maintenance-v1",
+      "one-zero-left-rank-one",
+      "one-zero-right-rank-one"
+    ],
+    "false_trace": "H(public-v3-from-zero-v1, challenge, nonce_u64_le)",
+    "max_candidates": 288,
+    "max_verifier_calls": 1440,
+    "maximum_total_attempts": 1179648,
+    "one_zero_rank_recipe": "(row + 1) * (column + 2)",
+    "production_authority_granted": false,
+    "samples": 8,
+    "searches_per_setup": 4,
+    "seed": 0,
+    "target": "7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+    "ticket": "H(ticket, challenge, false_trace)"
+  },
+  "frozen_source_mutated": false,
+  "native_executed": false,
+  "raw_cost_recomputed": false,
+  "reader": {
+    "authenticates_native_execution_or_clocks": false,
+    "checks": [
+      "Exact nine material recipes and canonical full bytes/task IDs",
+      "Fixed seed/target/8 samples/four searches/4096 cap/5 verifier paths",
+      "Consecutive nonce recipe, false trace and ticket hashes, first-hit stop, every 4096 miss for exhaustion",
+      "Complete forged candidate proof bytes/SHA and challenge",
+      "Exactly one actual setup per cohort and zero setup calls per search",
+      "Positive actual CPU/wall and inclusive total >= setup+all searches",
+      "Actual verifier invocation order, path, proof identity and Transcript outcomes",
+      "Complete end record, exact 72 cohorts and 288 searches, observed candidate/verifier counts, at least one actual rejected candidate"
+    ],
+    "does_not_replay_w1_transcript": true,
+    "exit_codes": {
+      "0": "complete consistent capture without semantic alerts",
+      "1": "complete capture with native verdict alert",
+      "2": "malformed/incomplete records"
+    },
+    "file": "scripts/pon_w1_false_trace_reuse_reader_v1.py",
+    "full_limb_schema": "pon-w1-false-trace-full-limb-v1",
+    "max_full_limb_records": 2099,
+    "max_line_bytes": 8388608,
+    "max_raw_bytes": 201326592,
+    "strict_fixed_grid": true
+  },
+  "remaining_limits": [
+    "Task matrices are fixed public synthetic recipes and challenges are primitive microbenchmark contexts, not current network parent/lease/beneficiary bindings.",
+    "No source-only observation or parser exit proves that C4 bytes compiled/executed; independent before/after full tracked-byte guards, original config/locked graph, actual ELF, process terminal/raw hashes remain required.",
+    "Same forged candidate is invoked on five comparison paths; this is not evidence that public admission repeats every request or that a network attacker pays four setups per four submissions.",
+    "Material generation includes full-rank construction even for a whole campaign containing cheap zero classes; it must not be charged as unavoidable zero-task attack work.",
+    "Hash midstate reuse, a longer actual horizon and optimized trial handling can make attacks cheaper. Measured H4 cost is neither a minimum nor a proof of service liveness.",
+    "Unexpected acceptance, early rejection, incomplete coverage, timeout or reader failure must remain failed evidence, not be filtered from ratios."
+  ],
+  "reviewer": "/root/pq_recovery",
+  "schema": "C4-independent-full-limb-from-zero-interface-review-v1",
+  "scope": "Read-only exact-source review of the original --full-limb mode; no execution, no measurement and no frozen source change.",
+  "sources": [
+    {
+      "bytes": 26698,
+      "git_blob": "994f491e4aaf28ef4dbebd85c3a2d8260b6c6db6",
+      "git_blob_and_size_verified": true,
+      "path": ".github/workflows/pon-w1-work-security.yml",
+      "sha256": "1559cc1def59718cf1d938ed7c1718dc1c8aa91361bea47493e91306c292f242"
+    },
+    {
+      "bytes": 13611,
+      "git_blob": "d9c1a971c23fbea8a91468db6c968f942c2aadbb",
+      "git_blob_and_size_verified": true,
+      "path": "scripts/ci/run_w1_false_trace_reuse_v1.py",
+      "sha256": "78ae176962c1e008c12b8737934e355c2ec97dd4d12a7c7cb0f1c4fb5ab8a08a"
+    },
+    {
+      "bytes": 16803,
+      "git_blob": "8d2fb7d1624d82138ca1d54efbad9107c175e048",
+      "git_blob_and_size_verified": true,
+      "path": "scripts/ci/run_cross_arch_cost.py",
+      "sha256": "647533d30fcd18c89a9127d750646f19c17b237e1d09bbdea3589daa97636d66"
+    },
+    {
+      "bytes": 41098,
+      "git_blob": "5fbdbbf4c1ace9af059c3fbcb85ea9977e27f4ea",
+      "git_blob_and_size_verified": true,
+      "path": "scripts/ci/check_cross_arch_cost.py",
+      "sha256": "f8f0f99c1f4a48d16d51f9257472645532626fc5202faa08c1453eaab9f4984f"
+    },
+    {
+      "bytes": 18163,
+      "git_blob": "eeacb22e5b57f423dfcab4bdb4d358c5f670ca05",
+      "git_blob_and_size_verified": true,
+      "path": "scripts/pon_w1_false_trace_reuse_reader_v1.py",
+      "sha256": "7455227a2acfec76505c480e4513acbbb9764b59cc1e6a3d8bdaf70d2f9f409c"
+    },
+    {
+      "bytes": 35800,
+      "git_blob": "fe710e05048916145180cf1cf8870bc31a94dec8",
+      "git_blob_and_size_verified": true,
+      "path": "scripts/pon_w1_cost_matrix_reader.py",
+      "sha256": "6a967274b93394494a2606c08173d4c755f255742bdca6cecd9665ce9f3686fa"
+    },
+    {
+      "bytes": 13233,
+      "git_blob": "3d9b47c43bd8bdc083b890d7cb9ecf79197273c4",
+      "git_blob_and_size_verified": true,
+      "path": "trillionnium/crates/trnm-pon-node/examples/pon_w1_false_trace_reuse_v1.rs",
+      "sha256": "5afe2f1f1578b4264f79d8ce56a6d0abeb51b0be987eca22438f59e01bf3033e"
+    },
+    {
+      "bytes": 1035,
+      "git_blob": "940753e4962536de928ce855d67ff2a2d7a84148",
+      "git_blob_and_size_verified": true,
+      "path": "trillionnium/crates/trnm-pon-node/examples/support/w1_from_zero.rs",
+      "sha256": "65a20cbd8ffdf5e4873b5c97768988dacc01369a0b584abd416c368709246b6a"
+    },
+    {
+      "bytes": 7276,
+      "git_blob": "d5dca8c623748172c3e910f9da7c24212aeb26ad",
+      "git_blob_and_size_verified": true,
+      "path": "trillionnium/crates/trnm-pon-node/examples/support/w1_cost_producers.rs",
+      "sha256": "329f9d9a3cd0d55963c56c74600188f4a7fd8f263dcfb2555bc36cb6f75065e0"
+    },
+    {
+      "bytes": 7114,
+      "git_blob": "83ab348459f3e5cae409d4dcffba359ef90aaf64",
+      "git_blob_and_size_verified": true,
+      "path": "trillionnium/crates/trnm-crypto-primitives/examples/support/w1_material.rs",
+      "sha256": "ca6196f9067ea3ac86a2d743c13de9c9cac0715e4ae652654cdd6592a6d0cf9a"
+    },
+    {
+      "bytes": 104121,
+      "git_blob": "ce1608248d2ee67ed8f5d82a2c5f15942689139b",
+      "git_blob_and_size_verified": true,
+      "path": "trillionnium/crates/trnm-crypto-primitives/src/pon_work.rs",
+      "sha256": "33cb571d1338a949677092d0dc3f6c955cd8ad6d3524cee0cd5b528e1c146d03"
+    }
+  ],
+  "static_source_readback": {
+    "count_arithmetic_checked": true,
+    "files": 11,
+    "native_executed": false,
+    "status": "PASS"
+  },
+  "tree": "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14",
+  "verdict": {
+    "actual_from_zero_constructor_in_source": true,
+    "actual_public_prefix_reuse_not_hypothetical_division": true,
+    "existing_current_production_verifier_included": true,
+    "five_distinct_kernel_claim": false,
+    "globally_cheapest_attacker_claim": false,
+    "native_qualification": "PENDING_ACTUAL_EXACT_C4_EXECUTION",
+    "public_service_budget_or_liveness_claim": false,
+    "requires_honest_winning_proof": false
+  },
+  "verification": {
+    "distinct_kernels": 4,
+    "entrypoint_to_kernel": {
+      "column-limb-experimental": "ColumnLimbTranscript",
+      "full-limb-experimental": "FullLimb",
+      "limb": "LimbTranscript",
+      "production": "FullLimb",
+      "reference": "ScalarReference"
+    },
+    "entrypoints": 5,
+    "path": "All input/field/task/ticket checks precede full transcript replay. False claims should fail Transcript after replay and before product corrections. This is relation-level verification with no fact cache, no live node admission.",
+    "required_observed_outcome": "Transcript",
+    "rotation": "(sample + search_index + invocation_order) mod 5",
+    "unexpected_outcomes": "Retained as semantic_alerts; original runner FAIL, standalone reader exit 1."
+  }
+}

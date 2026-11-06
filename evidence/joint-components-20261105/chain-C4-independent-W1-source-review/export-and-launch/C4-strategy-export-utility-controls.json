@@ -1,0 +1,29 @@
+{
+  "schema": "c4-strategy-export-local-utility-controls-v2",
+  "source_sha256": "752220f73cd389c3abed6ee6d44352ad486d9ffbc4d21765ea40c0590fbda18f",
+  "controls": [
+    {
+      "name": "stream-and-reopen-real-bytes-including-empty",
+      "passed": true,
+      "source_bytes": 76800,
+      "archive_bytes": 884
+    },
+    {
+      "name": "wrong-source-hash-rejected-with-partial-retained",
+      "passed": true,
+      "error": "original raw failed stable-byte binding: actual.bin"
+    },
+    {
+      "name": "container-cap-rejects-before-final-path-publication",
+      "passed": true,
+      "fixture_container_cap": 1
+    },
+    {
+      "name": "FIFO-rejected-without-blocking-open",
+      "passed": true
+    }
+  ],
+  "actual_C4_raw_export_executed": false,
+  "native_executed": false,
+  "remote_actions": false
+}

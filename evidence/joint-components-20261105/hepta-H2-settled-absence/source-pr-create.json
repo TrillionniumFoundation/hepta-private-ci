@@ -1,0 +1,47 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Action completed."
+    }
+  ],
+  "structuredContent": {
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4898",
+    "number": 4898,
+    "state": "open",
+    "merged": false,
+    "mergeable": false,
+    "draft": true,
+    "body": "## Problem and resulting behavior\n\nH1's original native run reached 67 selected cases: 65 passed and two current-PQ effect cases failed. The failure is a production reconciliation defect: a durable ProvenAbsent outcome cancels the immutable step and requeues the run, which correctly clears the current owner. The host then reconstructs a live fence before recognizing that already settled absence and returns \"TaskFlow owner id is missing\".\n\nH2 adds a strict read of already settled absence. It verifies provider evidence, the immutable reconciled/cancelled step, exact intent/payload/proof, the complete run history and the unique historical requeue command reconstructed with the original fence. The host can return this fact after reopening or a later legitimate owner claim. This read grants no dispatch authority and leaves current PQ checks, generation rejection, nonce claims, active fencing and provider invocation unchanged.\n\nThe provider observation is read in its own transaction; the step/run/requeue validation uses a subsequent SQLite snapshot and terminal append-only stability. This does not claim one cross-store transaction.\n\n## Fixed candidate\n\n- H2 commit: `620cb63ae9b58904483005bcb2c4e1507df99539`.\n- H2 tree: `f2cebe6d99deca596c170922b8e60d66648d7393`.\n- Frozen branch: `fix/hepta-joint-h2-20261105-93bfc-frozen`.\n- Preparation commit: `e452defdbcc7b48c4949eb3d5cbf73ed667ca879`, child of the preserved failed H1 commit `9f785cb201ba12ab0ae0f0d341c0f7912cc65efc` ([#4896](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4896)).\n- The same unchanged [#4812](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4812) base `1556a4df6e279055fd8196f81a4ca2fe0f19384a` keeps the complete integrated source reviewable.\n- Chain C4 remains `8df4b21d893906570d48f5beafabb3b31e0aefbc`, tree `6f5aaa2af0432e27e24b6bd2ad18013ab4423d14` ([#724](https://github.com/TrillionniumFoundation/Trillionnium-Chain/pull/724)).\n- V12 binding and Cargo.lock are unchanged from H1. Evidence is maintained separately in [#4894](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4894).\n\n## Scope and regressions\n\nFive paths differ from H1: three production Rust files, the existing authorized-owner recovery test file and the PQ workflow. The two originally failing PQ tests are unchanged.\n\nTwo new cases cover both direct and unknown-to-proven absence, reopening, a later legitimate owner/generation, stale redispatch refusal, unknown/unsettled states and corrupted proof/intent/payload/fence/settlement time. The workflow retains every original 69 exact case and adds these two, requiring 71 exact receipts with the original no-skip checks. The existing fix step adds the touched automation package; its original 1200-second budget stays fixed. Original 90-minute outer limit, per-command limits, workload, matrix and resource settings are retained.\n\n## Actual verification and pending execution\n\nIndependent source review and byte-level patch application passed. The original `just fmt --base 1556a4df6e279055fd8196f81a4ca2fe0f19384a` completed successfully inside its unchanged 300-second limit. The actual formatter changed only two files; their exact output is included in this frozen commit. The full preparation source had 11839 tracked files, exact Git bytes, zero missing objects/hidden flags and a clean starting state. The original H1 source and all four protected Git configuration hashes were unchanged. Root rehashed all five final files and read back the new ref, commit, parent, tree and exact two-file formatter delta.\n\n**H2 native qualification is pending.** The fixed source is being prepared for one original 5400-second sequence: source135/diverse32, original69+new2, compatibility/provider/FinalUse controls, the full 161-active-case evidence library (plus its one original ignored crash-child case), scoped fix and final format. Short-test process-image capture coverage must be reported as actually observed. No result from H1 is inherited as a H2 pass.\n\nH1 remains an actual failed historical run: exit 1, no timeout, 65 selected passes and two failures, with the final original contract/process cases and subsequent full-library/fix/format stages unrun. Its raw logs, source identity, captures and failure diagnosis remain preserved.\n\n## Joint acceptance\n\nAll eight user-requested joint gates remain **HOLD**. Component fixes and local x64 tests cannot replace the original hosted source-head/base-merge and ARM matrix, the original public-service gate, generic current-PQ authorization for all effect sinks, independently held restore frontier, authentic full-model adoption, the already spent learning trial, funded storage/growth budgets, or at least three independent administrators/fault domains on real WAN for at least 72 hours. No protected merge, production activation, replacement issuer root, trial reset or original-budget increase is performed by this draft.",
+    "title": "Draft: H2 settled-absence reconciliation with original joint gates",
+    "base": "fix/hepta-ordinary-pq-effects-20261104",
+    "base_sha": "1556a4df6e279055fd8196f81a4ca2fe0f19384a",
+    "head": "fix/hepta-joint-h2-20261105-93bfc-frozen",
+    "head_sha": "620cb63ae9b58904483005bcb2c4e1507df99539",
+    "head_repo_id": 1320694176,
+    "head_repo_full_name": "TrillionniumFoundation/hepta-private-ci",
+    "merge_commit_sha": null,
+    "user": {
+      "login": "Franksudoman",
+      "name": "Franksudoman",
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/273670192?v=4",
+      "id": 273670192
+    },
+    "requested_reviewers": null,
+    "requested_team_reviewers": null,
+    "diff": null,
+    "comments": null,
+    "created_at": "2026-11-05T20:00:16Z",
+    "updated_at": "2026-11-05T20:00:16Z",
+    "closed_at": null,
+    "merged_at": null,
+    "commits": 12,
+    "changed_files": 33,
+    "additions": 6012,
+    "deletions": 112,
+    "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4898",
+    "display_title": "Draft: H2 settled-absence reconciliation with original joint gates"
+  },
+  "isError": false
+}

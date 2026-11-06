@@ -1,0 +1,246 @@
+{
+  "schema": "h3-independent-source-review-v1",
+  "result": "NO_CONCRETE_STATIC_BLOCKER_FOUND",
+  "base_commit": "620cb63ae9b58904483005bcb2c4e1507df99539",
+  "base_tree": "f2cebe6d99deca596c170922b8e60d66648d7393",
+  "candidate_patch_sha256": "938124f6dffe9127463e5bf93b473d6f58e07567aa5a78ff90b07ee38b9f7fb8",
+  "candidate_manifest_sha256": "94e38205ffc44e2a4af1571fee1d70d379737e1d403af756f812fee61476d257",
+  "candidate_stage": "before formatter/native; exact v1 bytes only",
+  "source_files": [
+    {
+      "path": ".github/workflows/hepta-pq-policy-renewal.yml",
+      "mode": "100644",
+      "base_git_blob": "487bf796005439547ff1ac0366648a0f2daf236c",
+      "base_sha256": "f1e3b05fbdf39ff22d9837ca92595cf84e48a038e8a1c60e1bbee6bb4f39d584",
+      "base_bytes": 26989,
+      "new_git_blob": "7643a774d08899b83a1d3edcee688337dbc60665",
+      "new_sha256": "ce40c904ca4ba9e103ec99287038079f00c6819f4ea2fde735a5c885e3a60adf",
+      "new_bytes": 28196
+    },
+    {
+      "path": "codex-rs/hepta-agentd/NEURAL_NATIVE_COMPARISON_INPUT.md",
+      "mode": "100644",
+      "base_git_blob": null,
+      "base_sha256": null,
+      "base_bytes": null,
+      "new_git_blob": "6c5a5245fa727c86aa2f089087864033fa93d649",
+      "new_sha256": "8e64d622fe2eb94e1d34f1b50c219828c74a5c822195c2232f3784d040a32f7d",
+      "new_bytes": 4419
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/automation_effect_pq_product.rs",
+      "mode": "100644",
+      "base_git_blob": "558f420d962dd724a36e8a649141b8f5725ec6d4",
+      "base_sha256": "eee39112d46e53675fb40e8ba5b532f0ebfa034eb2db3275cd243bcbe1ec0966",
+      "base_bytes": 17208,
+      "new_git_blob": "61a358a4d964c8c707e2532ef3ba7e898caba5e6",
+      "new_sha256": "9954baf1db179c35f070514ea897614ff2e54b7a8c8b1a05e24144a5cfb7994c",
+      "new_bytes": 17366
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/neural_cognitive_bootstrap.rs",
+      "mode": "100644",
+      "base_git_blob": "0522692dcc7d266cdbb014722833236a4547a14b",
+      "base_sha256": "7d9fa90510e701a53585c80e446b8c72fa258c9ccb90548b29dbc43edf480fc8",
+      "base_bytes": 17197,
+      "new_git_blob": "d2d7ce3273c72c5a454ebcee41fe7cc79cac430a",
+      "new_sha256": "a3cb45502865ab2aadc3ec9506ddcedd553a2a330896bf668c3f4f6bb26ac7e0",
+      "new_bytes": 17396
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/neural_comparison_native.rs",
+      "mode": "100644",
+      "base_git_blob": "1cd85d485274beb54eb1f95c3c50c6bffa10e002",
+      "base_sha256": "06fa2d320e25780bd3c6be2ef10d971a3fd85126062b70c6b3cc6b320cbb682b",
+      "base_bytes": 13235,
+      "new_git_blob": "482640c676e632ff26e638bf4f5df3e3beda773f",
+      "new_sha256": "9ca92e7dcbb2518d2c20ed97572266f91517556540b5ac210031b3638ff2d40d",
+      "new_bytes": 16856
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/automation_effect_binary.rs",
+      "mode": "100644",
+      "base_git_blob": "189e1ce33f1c40b55d4d08fc0917b0a5cf32460a",
+      "base_sha256": "bc9c66c5135f11ed70c5ad4d635b98d224ed792c881948176c4030345d6efb39",
+      "base_bytes": 6540,
+      "new_git_blob": "6dea7930b6a628608a1c5f38affedef084162e0b",
+      "new_sha256": "fcb4f4c54be91dadf5d6ca429632e0c783495559cb4e8b4b5f2f69c1e3d1f9f2",
+      "new_bytes": 12450
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/neural_native_owner.rs",
+      "mode": "100644",
+      "base_git_blob": "9c5a49503bab4f5c9dedf63c51841d9a139e6e2f",
+      "base_sha256": "c212b3480e1e2a9646644ed4559cf9788d85912f7b1c239ce0d7fe7197de780c",
+      "base_bytes": 8661,
+      "new_git_blob": "eaf77bef4a2de3b38baad2a58f0e0e553b460100",
+      "new_sha256": "2fd90b817461e7e0d464b43002622d98c9dfb907c6ec94a4bc8dbfa2875706ee",
+      "new_bytes": 11318
+    }
+  ],
+  "workflow": {
+    "original_selected": 71,
+    "new_selected": 74,
+    "additions": {
+      "neural-runtime-input": [
+        "native_comparison_input_requires_v2_and_independently_pinned_snapshot",
+        "ordinary_native_composition_rejects_untrusted_qualification_before_inference_owners"
+      ],
+      "effect-pq-product": [
+        "binary::held_daemon_image_reuse_refuses_wrong_changed_or_missing_files"
+      ]
+    },
+    "original_step_relative_order_unchanged": true,
+    "changed_original_steps": [
+      "Run the ordinary Agentd process through provider ACK loss and owned kill",
+      "Require every selected test by name with no selected skip"
+    ],
+    "matrix_resources_environment_unchanged": true,
+    "job_timeout_seconds": 5400,
+    "original_product_timeout_seconds": 1800,
+    "added_runtime_control_timeout_seconds": 600,
+    "exact_guard_algorithm_ast_unchanged": true,
+    "original_commands_other_than_product_unchanged": true
+  },
+  "runtime_exact_sources": {
+    "source_commit": "620cb63ae9b58904483005bcb2c4e1507df99539",
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "files": [
+      {
+        "path": "scripts/hepta_smollm_runtime_snapshot.py",
+        "encoding": "utf-8",
+        "sha": "d2bbe33a4ab55dd9c816eb7ea0b7cef07c4cf6c6",
+        "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/620cb63ae9b58904483005bcb2c4e1507df99539/scripts/hepta_smollm_runtime_snapshot.py",
+        "display_title": "hepta_smollm_runtime_snapshot.py",
+        "bytes": 7930,
+        "sha256": "8d6b95184e91da47311b70c1b13a42c554ba928cdc0e7096f49e714b8c73d049",
+        "actual_git_blob": "d2bbe33a4ab55dd9c816eb7ea0b7cef07c4cf6c6"
+      },
+      {
+        "path": "codex-rs/hepta-infer-worker-host/src/smollm_python_runtime.rs",
+        "encoding": "utf-8",
+        "sha": "72dddae726fc10a8f78b5d45984c3bfcbb5986ed",
+        "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/620cb63ae9b58904483005bcb2c4e1507df99539/codex-rs/hepta-infer-worker-host/src/smollm_python_runtime.rs",
+        "display_title": "smollm_python_runtime.rs",
+        "bytes": 12973,
+        "sha256": "f42c0876a3bbd0e3afb3ffac50446ba2be140f6a109cd8776d54676919f2d572",
+        "actual_git_blob": "72dddae726fc10a8f78b5d45984c3bfcbb5986ed"
+      },
+      {
+        "path": "codex-rs/hepta-infer-worker-host/src/smollm_python_runtime_tests.rs",
+        "encoding": "utf-8",
+        "sha": "c11ea44a750d6ecfb9a7a2dcf558d324b7c4460b",
+        "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/620cb63ae9b58904483005bcb2c4e1507df99539/codex-rs/hepta-infer-worker-host/src/smollm_python_runtime_tests.rs",
+        "display_title": "smollm_python_runtime_tests.rs",
+        "bytes": 7745,
+        "sha256": "0ca0305457ec1c78e7770a33348fb286ae19a6107948f51590efc0e108d889ce",
+        "actual_git_blob": "c11ea44a750d6ecfb9a7a2dcf558d324b7c4460b"
+      }
+    ]
+  },
+  "independent_exact_base_bindings": [
+    {
+      "path": ".github/workflows/hepta-pq-policy-renewal.yml",
+      "git_blob": "487bf796005439547ff1ac0366648a0f2daf236c",
+      "bytes": 26989,
+      "sha256": "f1e3b05fbdf39ff22d9837ca92595cf84e48a038e8a1c60e1bbee6bb4f39d584",
+      "exact_ref": "620cb63ae9b58904483005bcb2c4e1507df99539",
+      "local_base_byte_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/neural_cognitive_bootstrap.rs",
+      "git_blob": "0522692dcc7d266cdbb014722833236a4547a14b",
+      "bytes": 17197,
+      "sha256": "7d9fa90510e701a53585c80e446b8c72fa258c9ccb90548b29dbc43edf480fc8",
+      "exact_ref": "620cb63ae9b58904483005bcb2c4e1507df99539",
+      "local_base_byte_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/neural_comparison_native.rs",
+      "git_blob": "1cd85d485274beb54eb1f95c3c50c6bffa10e002",
+      "bytes": 13235,
+      "sha256": "06fa2d320e25780bd3c6be2ef10d971a3fd85126062b70c6b3cc6b320cbb682b",
+      "exact_ref": "620cb63ae9b58904483005bcb2c4e1507df99539",
+      "local_base_byte_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/neural_native_owner.rs",
+      "git_blob": "9c5a49503bab4f5c9dedf63c51841d9a139e6e2f",
+      "bytes": 8661,
+      "sha256": "c212b3480e1e2a9646644ed4559cf9788d85912f7b1c239ce0d7fe7197de780c",
+      "exact_ref": "620cb63ae9b58904483005bcb2c4e1507df99539",
+      "local_base_byte_equal": true
+    }
+  ],
+  "findings": [
+    {
+      "id": "held-fd-reuse",
+      "status": "acceptable_with_explicit_scope",
+      "boundary": "first actual executable and completed copy remain held; second actual fd + Cargo path + retained path/FD identity verified twice; PID/start/argv/owner/generation independently checked; reused digest explicitly not a second full hash",
+      "limits": "ordinary metadata stability and no concurrent build; no privileged-writer or sealed runtime claim"
+    },
+    {
+      "id": "runtime-input",
+      "status": "no_default_or_downgrade",
+      "boundary": "mandatory v2 path/hash, absolute canonical regular nonempty <=16MiB, capped read and content pin, schema check, one retained byte vector passed to both models before worker creation"
+    },
+    {
+      "id": "source-pins",
+      "status": "exact_required_13",
+      "paths": [
+        "formal/pon-nakamoto-v1/contract_wire.py",
+        "config/pon/devnet-v1.json",
+        "config/pon/ledger-v1.json",
+        "config/pon/model-family-v1.json",
+        "config/pon/work-profile-v1.json",
+        "formal/pon-nakamoto-v1/llm_adapter_contract.py",
+        "scripts/llm_base_material.py",
+        "scripts/llm_inherited_runtime.py",
+        "scripts/llm_neural_read_worker.py",
+        "scripts/llm_parent_material.py",
+        "scripts/llm_python_runtime_contract.py",
+        "scripts/llm_runtime_pilot.py",
+        "config/pon/model-family-smollm2-135m-v1.json"
+      ]
+    },
+    {
+      "id": "empty-snapshot",
+      "status": "negative_constructor_only",
+      "boundary": "existing qualification-negative control still rejects before runtime; production snapshot_digest rejects empty"
+    },
+    {
+      "id": "producer",
+      "status": "existing_exact_source",
+      "boundary": "existing separately authorized CPython3.12 -I producer with original locked wheel/inventory checks; no consumer auto-capture or changed expected hash",
+      "not_claimed": [
+        "held runtime closure",
+        "actual model execution",
+        "production model qualification"
+      ]
+    },
+    {
+      "id": "pending-H2-assertions",
+      "status": "preserved_not_yet_executed_on_H3",
+      "boundary": "all main process bytes from second-process checkpoint through final receipt identical; H2 timed out before checkpoint and did not complete those assertions"
+    }
+  ],
+  "static_runs": [
+    {
+      "log": "static-bindings-attempt-1.log",
+      "outcome": "checker failure: KeyError name for unnamed workflow step"
+    },
+    {
+      "log": "static-bindings-attempt-2.log",
+      "outcome": "checker failure: KeyError uses for unnamed run step"
+    },
+    {
+      "log": "static-bindings-attempt-3.log",
+      "outcome": "PASS_STATIC_ONLY"
+    }
+  ],
+  "native_tests_run": 0,
+  "desktop_actions": 0,
+  "formatter_runs": 0,
+  "cargo_runs": 0,
+  "qualified": false
+}

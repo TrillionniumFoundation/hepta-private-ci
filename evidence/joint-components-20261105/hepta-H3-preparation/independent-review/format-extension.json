@@ -1,0 +1,65 @@
+{
+  "schema": "h3-independent-format-extension-v1",
+  "previous_review_sha256": "16e51b41300fc7acf3cda614e7d489a1c25977d8fbc2afc3f0bddb0192278150",
+  "format_patch_sha256": "f596e0fbbe7bf1c373bbd5bc7f881ba9c403ee111a7373cb51436e4705865c6d",
+  "format_manifest_sha256": "1147c5241b63587cfe997ef0d74b44bfb2f2cbe447accbbf73a08c8c3b42a739",
+  "formatter_reported_job": "1a1ad99acb5-fc05-5a47",
+  "formatter_reported_status": "succeeded",
+  "formatter_reported_exit": 0,
+  "delta_review": "Manually read every hunk: only line layout and Rust-equivalent trailing commas; no expression, literal, assertion, API or control-flow change.",
+  "changed_source_paths": [
+    "codex-rs/hepta-agentd/tests/neural_comparison_native.rs",
+    "codex-rs/hepta-agentd/tests/support/automation_effect_binary.rs",
+    "codex-rs/hepta-agentd/tests/support/neural_native_owner.rs"
+  ],
+  "all_seven_formatted_source_files_independently_hashed": [
+    {
+      "path": ".github/workflows/hepta-pq-policy-renewal.yml",
+      "bytes": 28196,
+      "sha256": "ce40c904ca4ba9e103ec99287038079f00c6819f4ea2fde735a5c885e3a60adf",
+      "git_blob": "7643a774d08899b83a1d3edcee688337dbc60665"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/NEURAL_NATIVE_COMPARISON_INPUT.md",
+      "bytes": 4419,
+      "sha256": "8e64d622fe2eb94e1d34f1b50c219828c74a5c822195c2232f3784d040a32f7d",
+      "git_blob": "6c5a5245fa727c86aa2f089087864033fa93d649"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/automation_effect_pq_product.rs",
+      "bytes": 17366,
+      "sha256": "9954baf1db179c35f070514ea897614ff2e54b7a8c8b1a05e24144a5cfb7994c",
+      "git_blob": "61a358a4d964c8c707e2532ef3ba7e898caba5e6"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/neural_cognitive_bootstrap.rs",
+      "bytes": 17396,
+      "sha256": "a3cb45502865ab2aadc3ec9506ddcedd553a2a330896bf668c3f4f6bb26ac7e0",
+      "git_blob": "d2d7ce3273c72c5a454ebcee41fe7cc79cac430a"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/neural_comparison_native.rs",
+      "bytes": 16998,
+      "sha256": "6db3214e2740c445a22be9c92f60b2f8f1b2f1363c0758ee92f84ab8ba9ab617",
+      "git_blob": "da72a9e331f7e2df4cd0ef3d6bad4fe8cb3fc855"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/automation_effect_binary.rs",
+      "bytes": 12544,
+      "sha256": "dc9525efc447080f79e93ae3a7aa79e2c75feefbed80ea0aca2d09b747bda9ab",
+      "git_blob": "96bd664ba81f64b0e1b287933483dba420ed4213"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/neural_native_owner.rs",
+      "bytes": 11317,
+      "sha256": "11a4e32c996ba43c129b7eaa42c49959649b7563a56e256418aa42ac96d73b0a",
+      "git_blob": "bc3b6b96b7ad7566c6c495a403978de6f11b1553"
+    }
+  ],
+  "workflow_and_main_process_bytes_unchanged_from_reviewed_v1": true,
+  "review_extension": "The previous static conclusion applies to these exact formatted bytes. Final source identity is not assigned by this review.",
+  "desktop_actions": 0,
+  "native_tests_run": 0,
+  "cargo_runs": 0,
+  "qualification_credit": false
+}

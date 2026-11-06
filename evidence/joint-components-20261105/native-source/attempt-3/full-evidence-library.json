@@ -1,0 +1,55 @@
+{
+  "after": {
+    "commit": "a877333eff1577179fce8b1ceb6edf4322440e03",
+    "dirty": false,
+    "parents": [
+      "13c8a987927f4d6bf3db1e57dc6e7bb692800b74"
+    ],
+    "tree": "40271e58d09387864fb4865cc02ec5cad0b5707b"
+  },
+  "base_sha": "1556a4df6e279055fd8196f81a4ca2fe0f19384a",
+  "before": {
+    "commit": "a877333eff1577179fce8b1ceb6edf4322440e03",
+    "dirty": false,
+    "parents": [
+      "13c8a987927f4d6bf3db1e57dc6e7bb692800b74"
+    ],
+    "tree": "40271e58d09387864fb4865cc02ec5cad0b5707b"
+  },
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-evidence",
+    "--lib",
+    "--no-capture",
+    "--retries",
+    "0",
+    "--test-threads=1"
+  ],
+  "command_exit_code": 100,
+  "elapsed_seconds": 283.74470981792547,
+  "error": "required tests were not observed passing",
+  "exit_code": 100,
+  "finished_at": "2026-11-05T14:45:40.730166+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 98296,
+  "log_file": "full-evidence-library.json.b2590fae562c47229c23b0ab9a8a6e62.log",
+  "log_sha256": "c371a078ac81af780b11ea5a71c1c29f0edf51e24f3a66211b3a84ebb43d4421",
+  "minimum_tests": 22,
+  "observed_failed_tests": 1,
+  "observed_passed_tests": 159,
+  "output_limit_exceeded": false,
+  "returncode": 100,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "a877333eff1577179fce8b1ceb6edf4322440e03",
+  "started_at": "2026-11-05T14:40:56.979593+00:00",
+  "status": "failed",
+  "tested_sha": "a877333eff1577179fce8b1ceb6edf4322440e03",
+  "timed_out": false,
+  "working_directory": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/source"
+}

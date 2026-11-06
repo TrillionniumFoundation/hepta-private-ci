@@ -1,0 +1,942 @@
+{
+  "actual_ELF_bytes": 774620584,
+  "actual_index_sha256": "587c970101b93ee3ecfa8f8e12f855d1782669c80573376aa79ed0a20ab58865",
+  "actual_member_bytes": 774683935,
+  "archive": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H1/H1-actual-retained-elfs.tar.xz",
+  "extraction_directory": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H1/extracted",
+  "members": {
+    "H1/elf/060b03442eaad0f40a1c532199d59183ce6b784beb9023ee06fec73105c34d31.elf": {
+      "bytes": 120073792,
+      "sha256": "060b03442eaad0f40a1c532199d59183ce6b784beb9023ee06fec73105c34d31"
+    },
+    "H1/elf/6c4c81a3b2d99aba2bb95aa83433680140a82d936285942ea702c352eb464126.elf": {
+      "bytes": 96989456,
+      "sha256": "6c4c81a3b2d99aba2bb95aa83433680140a82d936285942ea702c352eb464126"
+    },
+    "H1/elf/86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e.elf": {
+      "bytes": 504265656,
+      "sha256": "86a2c65e12fbef81586067783aa478677975e03290bcd62561938645ac1efc7e"
+    },
+    "H1/elf/a948cdfa5aeafc03fcfc63459e581ca254129f4d878949236e0bf42df3fe725f.elf": {
+      "bytes": 53291680,
+      "sha256": "a948cdfa5aeafc03fcfc63459e581ca254129f4d878949236e0bf42df3fe725f"
+    },
+    "H1/original-source-map.json": {
+      "bytes": 9817,
+      "sha256": "8c1fe933839ac8bc7d3989c497995d52332f73a9cf8ecc18e15150b66b18d9c2"
+    },
+    "export-index.json": {
+      "bytes": 10618,
+      "sha256": "587c970101b93ee3ecfa8f8e12f855d1782669c80573376aa79ed0a20ab58865"
+    },
+    "export-plan.json": {
+      "bytes": 21369,
+      "sha256": "3a8421bb03834cdf1c2e262bb2e72348f398240c41e1752e5b1e82113e915248"
+    },
+    "exporter.py": {
+      "bytes": 18885,
+      "sha256": "8ba375f315433a4eea9a05b9f1a0fbcffced353eb668cca6cd799b433fa4402b"
+    },
+    "owned-release-proof.json": {
+      "bytes": 2662,
+      "sha256": "df0fc5340514bfe339a9e6178922930db59087f0128dd62c9971afb741890c60"
+    }
+  },
+  "new_native_or_capture_credit": false,
+  "original_completion_sha256": "034f518dc2bd8fd350d2cb7a322056300051c538382370089104a727f6c1341b",
+  "original_native_outcome": {
+    "actual_failed": 2,
+    "actual_passed": 65,
+    "actual_process_capture_records": 64,
+    "actual_selected_native_cases_run": 67,
+    "not_run_followup_gates": [
+      "original-six-effect-controls",
+      "provider-effect-existing-and-pq",
+      "final-use-profile-controls",
+      "full-evidence-library",
+      "fix",
+      "format"
+    ],
+    "not_run_original_selected_gates": [
+      "effect-pq-contract",
+      "effect-pq-product"
+    ],
+    "result": "FAILED",
+    "three_individually_unobserved_cases": [
+      {
+        "gate": "recovery-owner",
+        "selected_case": "recovery_invocation_schema_tests::recovery_invocation_schema_refuses_non_rowid_or_composite_sequences"
+      },
+      {
+        "gate": "recovery-signed",
+        "selected_case": "evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry"
+      },
+      {
+        "gate": "recovery-signed",
+        "selected_case": "evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor"
+      }
+    ]
+  },
+  "phase": "H1",
+  "previous_actual_binary_read_first_range": {
+    "actual_byte_equality": true,
+    "actual_previous_bin": "/workspace/scratch/93bfcfe29fc8/pq_recovery/h1-actual-elf-download/chunks/000000000.bin",
+    "actual_previous_rpc_sha256": "848b74130282a058b7b654ccfa56c139830716f8f9c48fb8a193d7def770f5cc",
+    "bytes": 65536,
+    "new_binary_read_receipt_fabricated": false,
+    "offset": 0,
+    "original_request_sha256": "b1ccba261ff3798688632c2e0cfe2d1f3eb9220a7cae374ade632d894f37b56f",
+    "sha256": "94972dacc09426ec1d38fb0c2c131ed33599ef68cf35e594582d457fbe2e8a9d"
+  },
+  "scope": {
+    "all_aliases_preserved_in_original_map": true,
+    "capture_limits": "Only observed nextest test processes are bound to actual opened ELF descriptors. Three selected cases were not individually observed; the readback does not assign a specific cause to the observation gaps. A single declared test binary and matching other captures do not retroactively assign those missing processes. These four images are not the entire ordinary service/interpreter/runtime closure.",
+    "missing_individual_captures_filled": false,
+    "original_native_outcome": {
+      "actual_failed": 2,
+      "actual_passed": 65,
+      "actual_process_capture_records": 64,
+      "actual_selected_native_cases_run": 67,
+      "not_run_followup_gates": [
+        "original-six-effect-controls",
+        "provider-effect-existing-and-pq",
+        "final-use-profile-controls",
+        "full-evidence-library",
+        "fix",
+        "format"
+      ],
+      "not_run_original_selected_gates": [
+        "effect-pq-contract",
+        "effect-pq-product"
+      ],
+      "result": "FAILED",
+      "three_individually_unobserved_cases": [
+        {
+          "gate": "recovery-owner",
+          "selected_case": "recovery_invocation_schema_tests::recovery_invocation_schema_refuses_non_rowid_or_composite_sequences"
+        },
+        {
+          "gate": "recovery-signed",
+          "selected_case": "evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry"
+        },
+        {
+          "gate": "recovery-signed",
+          "selected_case": "evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor"
+        }
+      ]
+    }
+  },
+  "transport": {
+    "archive": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H1/H1-actual-retained-elfs.tar.xz",
+    "archive_bytes": 130746864,
+    "archive_sha256": "7a374c980126ed29507e55f182705486c33889c73e58c285d83e7d1ff5618296",
+    "parts": [
+      {
+        "actual_decoded_metadata": {
+          "bytes": 4194304,
+          "ctime_ns": 1793926506318632338,
+          "device": 27,
+          "gid": 0,
+          "inode": 554054,
+          "mode": 420,
+          "mtime_ns": 1793926506318632338,
+          "nlink": 1,
+          "uid": 0
+        },
+        "actual_transport_git_blob": "d050345beae15dd45307c224de2d683657d7e7ae",
+        "actual_transport_sha256": "78cc3637cb78f25d3eed0f4b9a4c195b174de8aab5d9c75ddfcea166e6c8a325",
+        "decoded_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H1/parts/H1-actual-retained-elfs.tar.xz.part-0000",
+        "origin": "actual Git UTF8 payload; not a synthetic binary_read chunk receipt",
+        "original_part": {
+          "bytes": 4194304,
+          "index": 0,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0000",
+          "offset": 0,
+          "sha256": "1493dc64870ffacf75c81ba2d2cdfc734fe7e108ded669f091aacda9bc2b862c"
+        },
+        "transport_path": "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0000.b64"
+      },
+      {
+        "actual_decoded_metadata": {
+          "bytes": 4194304,
+          "ctime_ns": 1793926506453454412,
+          "device": 27,
+          "gid": 0,
+          "inode": 554055,
+          "mode": 420,
+          "mtime_ns": 1793926506453454412,
+          "nlink": 1,
+          "uid": 0
+        },
+        "actual_transport_git_blob": "77dc530007438920a8d3d10e1e99016f7b50fc04",
+        "actual_transport_sha256": "5907f0d47bf0c065038b7cf40bb476a8c4bb1245fcf02dc0d438ac98dfccf2fa",
+        "decoded_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H1/parts/H1-actual-retained-elfs.tar.xz.part-0001",
+        "origin": "actual Git UTF8 payload; not a synthetic binary_read chunk receipt",
+        "original_part": {
+          "bytes": 4194304,
+          "index": 1,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0001",
+          "offset": 4194304,
+          "sha256": "300cad82b3470c68570e79b03e6d3dc9413431c3282a5c8a6de642791e822715"
+        },
+        "transport_path": "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0001.b64"
+      },
+      {
+        "actual_decoded_metadata": {
+          "bytes": 4194304,
+          "ctime_ns": 1793926506513199597,
+          "device": 27,
+          "gid": 0,
+          "inode": 554056,
+          "mode": 420,
+          "mtime_ns": 1793926506513199597,
+          "nlink": 1,
+          "uid": 0
+        },
+        "actual_transport_git_blob": "563ba97d81f56c56267fc9ad879f03136d4f6c99",
+        "actual_transport_sha256": "92343e933a43d7eee41496d3ffde0547271145da54fe6e4443c209a4df0ab744",
+        "decoded_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H1/parts/H1-actual-retained-elfs.tar.xz.part-0002",
+        "origin": "actual Git UTF8 payload; not a synthetic binary_read chunk receipt",
+        "original_part": {
+          "bytes": 4194304,
+          "index": 2,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0002",
+          "offset": 8388608,
+          "sha256": "2704c16ae053136123e3c98daf955b3495b5ef34356968529f98f411b0a85ab1"
+        },
+        "transport_path": "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0002.b64"
+      },
+      {
+        "actual_decoded_metadata": {
+          "bytes": 4194304,
+          "ctime_ns": 1793926506575042812,
+          "device": 27,
+          "gid": 0,
+          "inode": 554057,
+          "mode": 420,
+          "mtime_ns": 1793926506575042812,
+          "nlink": 1,
+          "uid": 0
+        },
+        "actual_transport_git_blob": "530c1aae9cebf180c13292589c4f2743a413f823",
+        "actual_transport_sha256": "aca9467311e3a278374dcdefd8b0b4f6b8de4071845179c47ebf3da095d8537f",
+        "decoded_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H1/parts/H1-actual-retained-elfs.tar.xz.part-0003",
+        "origin": "actual Git UTF8 payload; not a synthetic binary_read chunk receipt",
+        "original_part": {
+          "bytes": 4194304,
+          "index": 3,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0003",
+          "offset": 12582912,
+          "sha256": "ef0c00c2fbda1ed6beddedbf4963f678d944dc8fc079dbfd88d57f3b19f13848"
+        },
+        "transport_path": "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0003.b64"
+      },
+      {
+        "actual_decoded_metadata": {
+          "bytes": 4194304,
+          "ctime_ns": 1793926506643942560,
+          "device": 27,
+          "gid": 0,
+          "inode": 554058,
+          "mode": 420,
+          "mtime_ns": 1793926506643942560,
+          "nlink": 1,
+          "uid": 0
+        },
+        "actual_transport_git_blob": "7529b7484907b0d3d636eaf30f7134e3e3503994",
+        "actual_transport_sha256": "82af5e604526edf11652077bee78374ab56194fc17e9599bf5a15f0254ec3b75",
+        "decoded_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H1/parts/H1-actual-retained-elfs.tar.xz.part-0004",
+        "origin": "actual Git UTF8 payload; not a synthetic binary_read chunk receipt",
+        "original_part": {
+          "bytes": 4194304,
+          "index": 4,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0004",
+          "offset": 16777216,
+          "sha256": "2badcd70b11d1e94e0b5e6018fdfc1076ddc99f66c69bd011f3cd453f540da73"
+        },
+        "transport_path": "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0004.b64"
+      },
+      {
+        "actual_decoded_metadata": {
+          "bytes": 4194304,
+          "ctime_ns": 1793926506702485473,
+          "device": 27,
+          "gid": 0,
+          "inode": 554059,
+          "mode": 420,
+          "mtime_ns": 1793926506702485473,
+          "nlink": 1,
+          "uid": 0
+        },
+        "actual_transport_git_blob": "8fa87ba3d0051cc66c6c3210346518a81a76091f",
+        "actual_transport_sha256": "ac7e71ff34fe14323f41b9635330bb08502d3db9f34df0b5b748e02ff6ae906b",
+        "decoded_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H1/parts/H1-actual-retained-elfs.tar.xz.part-0005",
+        "origin": "actual Git UTF8 payload; not a synthetic binary_read chunk receipt",
+        "original_part": {
+          "bytes": 4194304,
+          "index": 5,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0005",
+          "offset": 20971520,
+          "sha256": "4887248901e12d0f0fa142006796d6969ae35ca37cdf36623b1ef50e84d1b046"
+        },
+        "transport_path": "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0005.b64"
+      },
+      {
+        "actual_decoded_metadata": {
+          "bytes": 4194304,
+          "ctime_ns": 1793926506762643277,
+          "device": 27,
+          "gid": 0,
+          "inode": 554060,
+          "mode": 420,
+          "mtime_ns": 1793926506762643277,
+          "nlink": 1,
+          "uid": 0
+        },
+        "actual_transport_git_blob": "75bb82bf3dd8b2f20b3be9d3c0f437782f86e91b",
+        "actual_transport_sha256": "df96bea3861762b8d7d1bc8067d9c571831230041357bd339040faecea8dda1c",
+        "decoded_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H1/parts/H1-actual-retained-elfs.tar.xz.part-0006",
+        "origin": "actual Git UTF8 payload; not a synthetic binary_read chunk receipt",
+        "original_part": {
+          "bytes": 4194304,
+          "index": 6,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0006",
+          "offset": 25165824,
+          "sha256": "e1e236f4710aa5e47f161f027bf67715080fe5beb8d1d39071125e72f0d0e798"
+        },
+        "transport_path": "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0006.b64"
+      },
+      {
+        "actual_decoded_metadata": {
+          "bytes": 4194304,
+          "ctime_ns": 1793926506834737001,
+          "device": 27,
+          "gid": 0,
+          "inode": 554061,
+          "mode": 420,
+          "mtime_ns": 1793926506834737001,
+          "nlink": 1,
+          "uid": 0
+        },
+        "actual_transport_git_blob": "dfd581b5dd1f403e32578c3948d2a7612a7a071b",
+        "actual_transport_sha256": "c3258abfdcd615af978b7432de06b21919785aee43201185fdf0c5559192a952",
+        "decoded_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H1/parts/H1-actual-retained-elfs.tar.xz.part-0007",
+        "origin": "actual Git UTF8 payload; not a synthetic binary_read chunk receipt",
+        "original_part": {
+          "bytes": 4194304,
+          "index": 7,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0007",
+          "offset": 29360128,
+          "sha256": "851f27b4932af45700cea4885b56364000f6007e0d997d32328a8c82b54f4c56"
+        },
+        "transport_path": "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0007.b64"
+      },
+      {
+        "actual_decoded_metadata": {
+          "bytes": 4194304,
+          "ctime_ns": 1793926506902471752,
+          "device": 27,
+          "gid": 0,
+          "inode": 554062,
+          "mode": 420,
+          "mtime_ns": 1793926506902471752,
+          "nlink": 1,
+          "uid": 0
+        },
+        "actual_transport_git_blob": "7baa19991342ee9b75a613cb0c2c870d5fe0cd8a",
+        "actual_transport_sha256": "512b0f163f3ae1afd322ecafd02a1e75755bf84d7883c1be0a3927362437a4d8",
+        "decoded_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H1/parts/H1-actual-retained-elfs.tar.xz.part-0008",
+        "origin": "actual Git UTF8 payload; not a synthetic binary_read chunk receipt",
+        "original_part": {
+          "bytes": 4194304,
+          "index": 8,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0008",
+          "offset": 33554432,
+          "sha256": "b4769da0f285f92715f4b37fb92afe5ea6d1491b7084c3272a0523463b914f52"
+        },
+        "transport_path": "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0008.b64"
+      },
+      {
+        "actual_decoded_metadata": {
+          "bytes": 4194304,
+          "ctime_ns": 1793926506964476280,
+          "device": 27,
+          "gid": 0,
+          "inode": 554063,
+          "mode": 420,
+          "mtime_ns": 1793926506964476280,
+          "nlink": 1,
+          "uid": 0
+        },
+        "actual_transport_git_blob": "5ba23cc58e769bd7851776406af5763bac432c7a",
+        "actual_transport_sha256": "0d49b3ce0972539f634acf1079e60fa9588f3aeb2af401e7c69b4a97c0c65568",
+        "decoded_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H1/parts/H1-actual-retained-elfs.tar.xz.part-0009",
+        "origin": "actual Git UTF8 payload; not a synthetic binary_read chunk receipt",
+        "original_part": {
+          "bytes": 4194304,
+          "index": 9,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0009",
+          "offset": 37748736,
+          "sha256": "cee07aed2860863b17004099eeefee3dc900be6d30f48bd64f5b7953d599f4ca"
+        },
+        "transport_path": "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0009.b64"
+      },
+      {
+        "actual_decoded_metadata": {
+          "bytes": 4194304,
+          "ctime_ns": 1793926507024441700,
+          "device": 27,
+          "gid": 0,
+          "inode": 554064,
+          "mode": 420,
+          "mtime_ns": 1793926507024441700,
+          "nlink": 1,
+          "uid": 0
+        },
+        "actual_transport_git_blob": "08f9e67d5afc0d5eac45b27cb71d9166db7db04b",
+        "actual_transport_sha256": "935ba591990fdf63ccee78bd79dc04eba693dce34f2925fe65e14b6c1d42f7bf",
+        "decoded_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H1/parts/H1-actual-retained-elfs.tar.xz.part-0010",
+        "origin": "actual Git UTF8 payload; not a synthetic binary_read chunk receipt",
+        "original_part": {
+          "bytes": 4194304,
+          "index": 10,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0010",
+          "offset": 41943040,
+          "sha256": "045a63fada2a5d004a937b05f35288724fec73d93199b4dbb868f663ba432e3b"
+        },
+        "transport_path": "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0010.b64"
+      },
+      {
+        "actual_decoded_metadata": {
+          "bytes": 4194304,
+          "ctime_ns": 1793926507097303702,
+          "device": 27,
+          "gid": 0,
+          "inode": 554065,
+          "mode": 420,
+          "mtime_ns": 1793926507097303702,
+          "nlink": 1,
+          "uid": 0
+        },
+        "actual_transport_git_blob": "d4dca79ecb5f2b41b8c8006d602be057666a01e8",
+        "actual_transport_sha256": "9413d9c0d5912ea71203bcde9c6caa1d557f88fac2177a20222b705f1531779b",
+        "decoded_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H1/parts/H1-actual-retained-elfs.tar.xz.part-0011",
+        "origin": "actual Git UTF8 payload; not a synthetic binary_read chunk receipt",
+        "original_part": {
+          "bytes": 4194304,
+          "index": 11,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0011",
+          "offset": 46137344,
+          "sha256": "dd9b16d38eb35a72da7b9b093b9955d51aff329aa9fbaf5612136bcfccba8319"
+        },
+        "transport_path": "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0011.b64"
+      },
+      {
+        "actual_decoded_metadata": {
+          "bytes": 4194304,
+          "ctime_ns": 1793926507165361819,
+          "device": 27,
+          "gid": 0,
+          "inode": 554066,
+          "mode": 420,
+          "mtime_ns": 1793926507165361819,
+          "nlink": 1,
+          "uid": 0
+        },
+        "actual_transport_git_blob": "7b2e6e1ed3a8d93a9cfbbf1cb0877d23d465d630",
+        "actual_transport_sha256": "5d1705c3f1d21d9f787e3e803f51a135416a04929d73b8ee82096fddfcebcc81",
+        "decoded_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H1/parts/H1-actual-retained-elfs.tar.xz.part-0012",
+        "origin": "actual Git UTF8 payload; not a synthetic binary_read chunk receipt",
+        "original_part": {
+          "bytes": 4194304,
+          "index": 12,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0012",
+          "offset": 50331648,
+          "sha256": "f833fdc73adccfca073c83f77db8cf4c24b1501e50a49a4a4a6da18af15581bd"
+        },
+        "transport_path": "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0012.b64"
+      },
+      {
+        "actual_decoded_metadata": {
+          "bytes": 4194304,
+          "ctime_ns": 1793926507228627000,
+          "device": 27,
+          "gid": 0,
+          "inode": 554067,
+          "mode": 420,
+          "mtime_ns": 1793926507228627000,
+          "nlink": 1,
+          "uid": 0
+        },
+        "actual_transport_git_blob": "e661996d76bcafd8ec846e80ac547daeaf9bda97",
+        "actual_transport_sha256": "3f9c38e27e0cf7771deb6346eda30fd14521bd3ff74f150fe8efd3d424efc266",
+        "decoded_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H1/parts/H1-actual-retained-elfs.tar.xz.part-0013",
+        "origin": "actual Git UTF8 payload; not a synthetic binary_read chunk receipt",
+        "original_part": {
+          "bytes": 4194304,
+          "index": 13,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0013",
+          "offset": 54525952,
+          "sha256": "f9968def58efd66b72b82bebacaf4488cc64af16bf110382f12477494886bb6c"
+        },
+        "transport_path": "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0013.b64"
+      },
+      {
+        "actual_decoded_metadata": {
+          "bytes": 4194304,
+          "ctime_ns": 1793926507299767712,
+          "device": 27,
+          "gid": 0,
+          "inode": 554068,
+          "mode": 420,
+          "mtime_ns": 1793926507299767712,
+          "nlink": 1,
+          "uid": 0
+        },
+        "actual_transport_git_blob": "920fec16892cd66affa61a470cd55cff7f4a1453",
+        "actual_transport_sha256": "bf88eed8af22967c5eb74f532869398f6a9d805dfbdd22f24cff128414a80fc2",
+        "decoded_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H1/parts/H1-actual-retained-elfs.tar.xz.part-0014",
+        "origin": "actual Git UTF8 payload; not a synthetic binary_read chunk receipt",
+        "original_part": {
+          "bytes": 4194304,
+          "index": 14,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0014",
+          "offset": 58720256,
+          "sha256": "85ff9d595666e953b5024dbbf36d4716624830a66a789385a149f00efd840123"
+        },
+        "transport_path": "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0014.b64"
+      },
+      {
+        "actual_decoded_metadata": {
+          "bytes": 4194304,
+          "ctime_ns": 1793926507365951406,
+          "device": 27,
+          "gid": 0,
+          "inode": 554069,
+          "mode": 420,
+          "mtime_ns": 1793926507365951406,
+          "nlink": 1,
+          "uid": 0
+        },
+        "actual_transport_git_blob": "2c38e582e1646c5593258657c6bb815af7f9d4ad",
+        "actual_transport_sha256": "10901a94752a6a0c2449fa408214b4955aa22a59017ffffd6518f5df143788e7",
+        "decoded_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H1/parts/H1-actual-retained-elfs.tar.xz.part-0015",
+        "origin": "actual Git UTF8 payload; not a synthetic binary_read chunk receipt",
+        "original_part": {
+          "bytes": 4194304,
+          "index": 15,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0015",
+          "offset": 62914560,
+          "sha256": "86a4674c3d58a2048cf36c15236e308d73f61aaaa3838b4c0023ec93872c717b"
+        },
+        "transport_path": "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0015.b64"
+      },
+      {
+        "actual_decoded_metadata": {
+          "bytes": 4194304,
+          "ctime_ns": 1793926507424205498,
+          "device": 27,
+          "gid": 0,
+          "inode": 554070,
+          "mode": 420,
+          "mtime_ns": 1793926507424205498,
+          "nlink": 1,
+          "uid": 0
+        },
+        "actual_transport_git_blob": "3f963a3eeac7fb5b71bba686e74c709dacbf9a0e",
+        "actual_transport_sha256": "019c62c5c312bcd7d8a2e253c55e3c1d04cb88dbb404665b1f91aceec098bc56",
+        "decoded_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H1/parts/H1-actual-retained-elfs.tar.xz.part-0016",
+        "origin": "actual Git UTF8 payload; not a synthetic binary_read chunk receipt",
+        "original_part": {
+          "bytes": 4194304,
+          "index": 16,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0016",
+          "offset": 67108864,
+          "sha256": "4291f6e6f4126d67e975ebe74fa900cc7cea6731fce75381b20a3aff3f183906"
+        },
+        "transport_path": "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0016.b64"
+      },
+      {
+        "actual_decoded_metadata": {
+          "bytes": 4194304,
+          "ctime_ns": 1793926507483363597,
+          "device": 27,
+          "gid": 0,
+          "inode": 554071,
+          "mode": 420,
+          "mtime_ns": 1793926507483363597,
+          "nlink": 1,
+          "uid": 0
+        },
+        "actual_transport_git_blob": "bec56db81a13c3b41b51522c2de56f31835ba889",
+        "actual_transport_sha256": "dc7cfd007843d0061255fb3ada30dbc69b3199254a2ae37f84c3a0d0450f67f9",
+        "decoded_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H1/parts/H1-actual-retained-elfs.tar.xz.part-0017",
+        "origin": "actual Git UTF8 payload; not a synthetic binary_read chunk receipt",
+        "original_part": {
+          "bytes": 4194304,
+          "index": 17,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0017",
+          "offset": 71303168,
+          "sha256": "0fd3af0fb80347009dc6525807890e27b3a4b197a3626ef3324fc94053581713"
+        },
+        "transport_path": "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0017.b64"
+      },
+      {
+        "actual_decoded_metadata": {
+          "bytes": 4194304,
+          "ctime_ns": 1793926507540336367,
+          "device": 27,
+          "gid": 0,
+          "inode": 554072,
+          "mode": 420,
+          "mtime_ns": 1793926507540336367,
+          "nlink": 1,
+          "uid": 0
+        },
+        "actual_transport_git_blob": "51f1cb7f45de9326bc4de3c284a7ce720e47372c",
+        "actual_transport_sha256": "2950f038d5c3173360b98886b21460557719d3c6b36828bf629f2b867d462a60",
+        "decoded_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H1/parts/H1-actual-retained-elfs.tar.xz.part-0018",
+        "origin": "actual Git UTF8 payload; not a synthetic binary_read chunk receipt",
+        "original_part": {
+          "bytes": 4194304,
+          "index": 18,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0018",
+          "offset": 75497472,
+          "sha256": "0a8604c1538117a69c866b0d0e43b4cccc11b65c6c51716f29b3fdba5e80f1a5"
+        },
+        "transport_path": "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0018.b64"
+      },
+      {
+        "actual_decoded_metadata": {
+          "bytes": 4194304,
+          "ctime_ns": 1793926507606254978,
+          "device": 27,
+          "gid": 0,
+          "inode": 554073,
+          "mode": 420,
+          "mtime_ns": 1793926507606254978,
+          "nlink": 1,
+          "uid": 0
+        },
+        "actual_transport_git_blob": "ca1c614b36dad336e0bce5e99ddca6259d84ad5e",
+        "actual_transport_sha256": "9bded6e83dc16dba7d6479e9b5122622af16e1936b5d74b0f057f476a6ac8dab",
+        "decoded_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H1/parts/H1-actual-retained-elfs.tar.xz.part-0019",
+        "origin": "actual Git UTF8 payload; not a synthetic binary_read chunk receipt",
+        "original_part": {
+          "bytes": 4194304,
+          "index": 19,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0019",
+          "offset": 79691776,
+          "sha256": "568caf2273dda035a327dca87083f2fe6c9175e2ba62c24291f106a91e5e10eb"
+        },
+        "transport_path": "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0019.b64"
+      },
+      {
+        "actual_decoded_metadata": {
+          "bytes": 4194304,
+          "ctime_ns": 1793926507660620530,
+          "device": 27,
+          "gid": 0,
+          "inode": 554074,
+          "mode": 420,
+          "mtime_ns": 1793926507660620530,
+          "nlink": 1,
+          "uid": 0
+        },
+        "actual_transport_git_blob": "589698f423fc4a507214887cdfd74266a0cbbfd1",
+        "actual_transport_sha256": "86b5834d9f7e4fdd7daeb904e204e592696d022d93f90ab4e9c97f33cabdfbdc",
+        "decoded_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H1/parts/H1-actual-retained-elfs.tar.xz.part-0020",
+        "origin": "actual Git UTF8 payload; not a synthetic binary_read chunk receipt",
+        "original_part": {
+          "bytes": 4194304,
+          "index": 20,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0020",
+          "offset": 83886080,
+          "sha256": "45fe6d00e7154a706257afe448da8f931c2ce6d49e695d2801dd6eea9f2d063c"
+        },
+        "transport_path": "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0020.b64"
+      },
+      {
+        "actual_decoded_metadata": {
+          "bytes": 4194304,
+          "ctime_ns": 1793926507724700542,
+          "device": 27,
+          "gid": 0,
+          "inode": 554075,
+          "mode": 420,
+          "mtime_ns": 1793926507724700542,
+          "nlink": 1,
+          "uid": 0
+        },
+        "actual_transport_git_blob": "2354152e468a5e6384873d5190a4bd9cc3317f75",
+        "actual_transport_sha256": "e71b7a006a1e498e6ea8c636fc60c28e05d81825337220aa88422244787086b2",
+        "decoded_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H1/parts/H1-actual-retained-elfs.tar.xz.part-0021",
+        "origin": "actual Git UTF8 payload; not a synthetic binary_read chunk receipt",
+        "original_part": {
+          "bytes": 4194304,
+          "index": 21,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0021",
+          "offset": 88080384,
+          "sha256": "e71303a0621f3599dad7248fa87377e37d847080701269ddef0e75bb84f11f22"
+        },
+        "transport_path": "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0021.b64"
+      },
+      {
+        "actual_decoded_metadata": {
+          "bytes": 4194304,
+          "ctime_ns": 1793926507791793098,
+          "device": 27,
+          "gid": 0,
+          "inode": 554076,
+          "mode": 420,
+          "mtime_ns": 1793926507791793098,
+          "nlink": 1,
+          "uid": 0
+        },
+        "actual_transport_git_blob": "72c631b0f692a56fb626feb30aaeaff1cc4d7a73",
+        "actual_transport_sha256": "44f23051d32bfe81ca341124e7764f1e6a19a3974978bdba5f5364d2ff1dcd96",
+        "decoded_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H1/parts/H1-actual-retained-elfs.tar.xz.part-0022",
+        "origin": "actual Git UTF8 payload; not a synthetic binary_read chunk receipt",
+        "original_part": {
+          "bytes": 4194304,
+          "index": 22,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0022",
+          "offset": 92274688,
+          "sha256": "5360ac93b3795dd1c60d8db0c43f0b06009416312292b5a674e583211b4b3252"
+        },
+        "transport_path": "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0022.b64"
+      },
+      {
+        "actual_decoded_metadata": {
+          "bytes": 4194304,
+          "ctime_ns": 1793926507856968263,
+          "device": 27,
+          "gid": 0,
+          "inode": 554077,
+          "mode": 420,
+          "mtime_ns": 1793926507856968263,
+          "nlink": 1,
+          "uid": 0
+        },
+        "actual_transport_git_blob": "002de519e2da3c7e4433271c565c3c2ab0502856",
+        "actual_transport_sha256": "d9ae34b2ac124e621d74a7fafd62a433730eeef3255e510a0b12e32aa094ebd0",
+        "decoded_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H1/parts/H1-actual-retained-elfs.tar.xz.part-0023",
+        "origin": "actual Git UTF8 payload; not a synthetic binary_read chunk receipt",
+        "original_part": {
+          "bytes": 4194304,
+          "index": 23,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0023",
+          "offset": 96468992,
+          "sha256": "ec783e00351c4637e76f54e2b3e6f6442a7c2b8771e294b49d447c9c34f85ce1"
+        },
+        "transport_path": "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0023.b64"
+      },
+      {
+        "actual_decoded_metadata": {
+          "bytes": 4194304,
+          "ctime_ns": 1793926507916811671,
+          "device": 27,
+          "gid": 0,
+          "inode": 554078,
+          "mode": 420,
+          "mtime_ns": 1793926507916811671,
+          "nlink": 1,
+          "uid": 0
+        },
+        "actual_transport_git_blob": "cd496be8a5e4a35df86b76db2b74c22d3db877a4",
+        "actual_transport_sha256": "05fc2395dde3c354f223b994a0086aecfe10db93e9935d67efaa186a9d5bfb93",
+        "decoded_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H1/parts/H1-actual-retained-elfs.tar.xz.part-0024",
+        "origin": "actual Git UTF8 payload; not a synthetic binary_read chunk receipt",
+        "original_part": {
+          "bytes": 4194304,
+          "index": 24,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0024",
+          "offset": 100663296,
+          "sha256": "2fdf76ac0138dc205e0154e0b0a4eeb16e90415943e875d3b9aaead9dc148b24"
+        },
+        "transport_path": "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0024.b64"
+      },
+      {
+        "actual_decoded_metadata": {
+          "bytes": 4194304,
+          "ctime_ns": 1793926507977262936,
+          "device": 27,
+          "gid": 0,
+          "inode": 554079,
+          "mode": 420,
+          "mtime_ns": 1793926507977262936,
+          "nlink": 1,
+          "uid": 0
+        },
+        "actual_transport_git_blob": "62602eb7ea0f1b70a1064f03904fbd7977e01ed1",
+        "actual_transport_sha256": "c6346b709c1520746b89919ea593fd0150c8dd82f5d742e923931916eb7c5217",
+        "decoded_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H1/parts/H1-actual-retained-elfs.tar.xz.part-0025",
+        "origin": "actual Git UTF8 payload; not a synthetic binary_read chunk receipt",
+        "original_part": {
+          "bytes": 4194304,
+          "index": 25,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0025",
+          "offset": 104857600,
+          "sha256": "4afdae5cf910747cdd9d097279a06ff7e0dbb911fa58c1214849972058081e9f"
+        },
+        "transport_path": "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0025.b64"
+      },
+      {
+        "actual_decoded_metadata": {
+          "bytes": 4194304,
+          "ctime_ns": 1793926508039838297,
+          "device": 27,
+          "gid": 0,
+          "inode": 554080,
+          "mode": 420,
+          "mtime_ns": 1793926508039838297,
+          "nlink": 1,
+          "uid": 0
+        },
+        "actual_transport_git_blob": "b4c015ef23be32e4ea48ae904950f989c9ef2eb3",
+        "actual_transport_sha256": "e5a0f956de798c1781f2ed6f4f4c2b58a8b4d37371e5f9442e1e78eb9e55b204",
+        "decoded_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H1/parts/H1-actual-retained-elfs.tar.xz.part-0026",
+        "origin": "actual Git UTF8 payload; not a synthetic binary_read chunk receipt",
+        "original_part": {
+          "bytes": 4194304,
+          "index": 26,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0026",
+          "offset": 109051904,
+          "sha256": "c27208d8761fa72a42d94b54502256b7c2185462257fb0d67f35419f6afc25fe"
+        },
+        "transport_path": "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0026.b64"
+      },
+      {
+        "actual_decoded_metadata": {
+          "bytes": 4194304,
+          "ctime_ns": 1793926508105167176,
+          "device": 27,
+          "gid": 0,
+          "inode": 554081,
+          "mode": 420,
+          "mtime_ns": 1793926508105167176,
+          "nlink": 1,
+          "uid": 0
+        },
+        "actual_transport_git_blob": "bc7e61156ab9689bef6ec84776cae89706eb81b7",
+        "actual_transport_sha256": "6cf79ad1b2c0cb28671e55e3338c285903231e387c3795e385ed8b777074ea6a",
+        "decoded_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H1/parts/H1-actual-retained-elfs.tar.xz.part-0027",
+        "origin": "actual Git UTF8 payload; not a synthetic binary_read chunk receipt",
+        "original_part": {
+          "bytes": 4194304,
+          "index": 27,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0027",
+          "offset": 113246208,
+          "sha256": "33f27c36d6edb12c0d31c76c620acdec4d2ee2fc8a84b9823fea5948df365fec"
+        },
+        "transport_path": "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0027.b64"
+      },
+      {
+        "actual_decoded_metadata": {
+          "bytes": 4194304,
+          "ctime_ns": 1793926508178327332,
+          "device": 27,
+          "gid": 0,
+          "inode": 554082,
+          "mode": 420,
+          "mtime_ns": 1793926508178327332,
+          "nlink": 1,
+          "uid": 0
+        },
+        "actual_transport_git_blob": "3d1f7a2021e045b99a9c92f263a0c3554212ebf3",
+        "actual_transport_sha256": "467e3b2c93a3928d3303b83e389368ddbb5e39c43eeefd9b5a091039d65e43fd",
+        "decoded_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H1/parts/H1-actual-retained-elfs.tar.xz.part-0028",
+        "origin": "actual Git UTF8 payload; not a synthetic binary_read chunk receipt",
+        "original_part": {
+          "bytes": 4194304,
+          "index": 28,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0028",
+          "offset": 117440512,
+          "sha256": "5fa5c67665f7d2068e591a800066723a0e6c5d7a0740ac11f99108f18dc5dffa"
+        },
+        "transport_path": "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0028.b64"
+      },
+      {
+        "actual_decoded_metadata": {
+          "bytes": 4194304,
+          "ctime_ns": 1793926508264015627,
+          "device": 27,
+          "gid": 0,
+          "inode": 554083,
+          "mode": 420,
+          "mtime_ns": 1793926508264015627,
+          "nlink": 1,
+          "uid": 0
+        },
+        "actual_transport_git_blob": "5edd0cd3ee7d6afe106b207cf4e8e1ac06004d9c",
+        "actual_transport_sha256": "ebc10dc5edc0a9edd743689634f8e236745afa56a5ede07066747195b4eda145",
+        "decoded_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H1/parts/H1-actual-retained-elfs.tar.xz.part-0029",
+        "origin": "actual Git UTF8 payload; not a synthetic binary_read chunk receipt",
+        "original_part": {
+          "bytes": 4194304,
+          "index": 29,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0029",
+          "offset": 121634816,
+          "sha256": "d3f5bc4573fe7c321939d43d4fc4eec3eea5a34dceea9343b7262f9c45e8e629"
+        },
+        "transport_path": "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0029.b64"
+      },
+      {
+        "actual_decoded_metadata": {
+          "bytes": 4194304,
+          "ctime_ns": 1793926508359345122,
+          "device": 27,
+          "gid": 0,
+          "inode": 554084,
+          "mode": 420,
+          "mtime_ns": 1793926508359345122,
+          "nlink": 1,
+          "uid": 0
+        },
+        "actual_transport_git_blob": "7a297804f0024364c484affe2ea94220d6b2b962",
+        "actual_transport_sha256": "eb9e9283fddd08b735a5645839e31102d399ad1b9d71b9c2b460bfa247441ffe",
+        "decoded_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H1/parts/H1-actual-retained-elfs.tar.xz.part-0030",
+        "origin": "actual Git UTF8 payload; not a synthetic binary_read chunk receipt",
+        "original_part": {
+          "bytes": 4194304,
+          "index": 30,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0030",
+          "offset": 125829120,
+          "sha256": "da9f49a28d032b739fff4b0cc76b10ffe89f2babb759b9d798dc3ecb36700492"
+        },
+        "transport_path": "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0030.b64"
+      },
+      {
+        "actual_decoded_metadata": {
+          "bytes": 723440,
+          "ctime_ns": 1793926508447285560,
+          "device": 27,
+          "gid": 0,
+          "inode": 554085,
+          "mode": 420,
+          "mtime_ns": 1793926508447285560,
+          "nlink": 1,
+          "uid": 0
+        },
+        "actual_transport_git_blob": "1c85ad57972aedd25f62d589604059c5d0296d20",
+        "actual_transport_sha256": "58cedca326e6f8b5ffc04a713f9163e260db22e3e5a0f91d01da24d267a53c3f",
+        "decoded_path": "/workspace/scratch/93bfcfe29fc8/w1/unified-archive-readback-execution-01/output/H1/parts/H1-actual-retained-elfs.tar.xz.part-0031",
+        "origin": "actual Git UTF8 payload; not a synthetic binary_read chunk receipt",
+        "original_part": {
+          "bytes": 723440,
+          "index": 31,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0031",
+          "offset": 130023424,
+          "sha256": "bf579735df9c13be64de9862aacc58c06951fdafe0120afe0b9084afbdb89fdd"
+        },
+        "transport_path": "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0031.b64"
+      }
+    ],
+    "parts_report": {
+      "complete_bytes": 130746864,
+      "concatenated_sha256": "7a374c980126ed29507e55f182705486c33889c73e58c285d83e7d1ff5618296",
+      "parts_actually_read": 32,
+      "scope": "Every named original part actually read; no missing-part inference."
+    }
+  }
+}

@@ -1,0 +1,225 @@
+{
+  "schema": "hepta-pq-process-compile-interface-static-review-v1",
+  "reviewer": "pq_recovery; contracts visibility/error cross-check supplied independently by w1_audit",
+  "reviewed_commit": "b4b81cc59847cfe2683f170949d464778f413147",
+  "reviewed_tree": "a64d3f3d34f5e52546ec762b6ad7fbdfa69e96b2",
+  "status": "Two concrete import blockers in preparatory b4b81; both sent to model_storage for unified correction. No additional definite API/signature error found in this scoped static review.",
+  "source_modified_by_review": false,
+  "cargo_executed_by_review": false,
+  "native_compilation_pass_claim": false,
+  "candidate_files": [
+    {
+      "path": "codex-rs/hepta-agentd/tests/automation_effect_pq_product.rs",
+      "sha256": "36d2f87ec7e59b8fd273c351eb16ffed3d0fdd67b42e6729dc2aab31a8f87999",
+      "git_blob_sha1": "7e356863ee1be81894bccdea74dfbfceab4e1f62",
+      "bytes": 17206
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/automation_effect_binary.rs",
+      "sha256": "bc9c66c5135f11ed70c5ad4d635b98d224ed792c881948176c4030345d6efb39",
+      "git_blob_sha1": "189e1ce33f1c40b55d4d08fc0917b0a5cf32460a",
+      "bytes": 6540
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/automation_effect_operator.rs",
+      "sha256": "2237bf3bf9f250d4b25fcb352c1e68ad5ce2967cb6299b9ba0a60288b7927e70",
+      "git_blob_sha1": "4099c9b0187c5acd11aa2089297aca71424c1a10",
+      "bytes": 21307
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/automation_effect_provider.rs",
+      "sha256": "2cd0c3e84a6b829b5179beb79602cf17518091db887c691cec58efaf6173e310",
+      "git_blob_sha1": "90fe25d3ba063fc0ab6c75f49a5213b30229bc60",
+      "bytes": 8840
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/fleet.rs",
+      "sha256": "8b886fcd9e7a48eebb9f6727eb720180db054ae904e511fe2cde34f078d6a2a6",
+      "git_blob_sha1": "7458e57c2942df9009014bc5b4e5eb7e6e8280b3",
+      "bytes": 17743
+    }
+  ],
+  "api_source_inventory": [
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "git_blob_sha1": "9a1da10f04a0870e1922ffe6fdf521388ffae472",
+      "bytes": 14269,
+      "git_mode": "100644",
+      "source_commit": "b4b81cc59847cfe2683f170949d464778f413147",
+      "retrieval": "fixed GitHub content and independently checked tree entry"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/client.rs",
+      "git_blob_sha1": "498602c26afa2d6546e44bdb6aacf5fcbddb63b3",
+      "bytes": 27956,
+      "git_mode": "100644",
+      "source_commit": "b4b81cc59847cfe2683f170949d464778f413147",
+      "retrieval": "fixed GitHub content and independently checked tree entry"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/lib.rs",
+      "git_blob_sha1": "1b6aface5a2cff568e9d69fd95b3630ec8362006",
+      "bytes": 7114,
+      "git_mode": "100644",
+      "source_commit": "b4b81cc59847cfe2683f170949d464778f413147",
+      "retrieval": "fixed GitHub content and independently checked tree entry"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/taskflow.rs",
+      "git_blob_sha1": "c1641baa6e07cca7a0ebdb3264c3f0dd066c3c69",
+      "bytes": 96048,
+      "git_mode": "100644",
+      "source_commit": "b4b81cc59847cfe2683f170949d464778f413147",
+      "retrieval": "fixed GitHub content and independently checked tree entry"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/taskflow_step.rs",
+      "git_blob_sha1": "2bfc0b2116c33d1b5a6efc90611db1ab12c105b0",
+      "bytes": 62857,
+      "git_mode": "100644",
+      "source_commit": "b4b81cc59847cfe2683f170949d464778f413147",
+      "retrieval": "fixed GitHub content and independently checked tree entry"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/store.rs",
+      "git_blob_sha1": "4537a04bea028a1750dc0d88554cd26ca3cf1afd",
+      "bytes": 56895,
+      "git_mode": "100644",
+      "source_commit": "b4b81cc59847cfe2683f170949d464778f413147",
+      "retrieval": "fixed GitHub content and independently checked tree entry"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/lib.rs",
+      "git_blob_sha1": "d5af3cabf38ec9162b7e9dbca5edda96c9815100",
+      "bytes": 7947,
+      "git_mode": "100644",
+      "source_commit": "b4b81cc59847cfe2683f170949d464778f413147",
+      "retrieval": "fixed GitHub content and independently checked tree entry"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/model.rs",
+      "git_blob_sha1": "95bcf504d39e37b86e263940213477446e4bff3a",
+      "bytes": 10556,
+      "git_mode": "100644",
+      "source_commit": "b4b81cc59847cfe2683f170949d464778f413147",
+      "retrieval": "fixed GitHub content and independently checked tree entry"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+      "git_blob_sha1": "3d05358018770f556501d9355cc66625aa8834dc",
+      "bytes": 48724,
+      "git_mode": "100644",
+      "source_commit": "b4b81cc59847cfe2683f170949d464778f413147",
+      "retrieval": "fixed GitHub content and independently checked tree entry"
+    },
+    {
+      "path": "codex-rs/model-provider/src/lib.rs",
+      "git_blob_sha1": "16367d5e96843c8ff14ea68ace5694218e06be19",
+      "bytes": 1919,
+      "git_mode": "100644",
+      "source_commit": "b4b81cc59847cfe2683f170949d464778f413147",
+      "retrieval": "fixed GitHub content and independently checked tree entry"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/lib.rs",
+      "git_blob_sha1": "6a4881621439a5415ef02447f14a92fd7b5dfd94",
+      "bytes": 14170,
+      "git_mode": "100644",
+      "source_commit": "b4b81cc59847cfe2683f170949d464778f413147",
+      "retrieval": "fixed GitHub content and independently checked tree entry"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/provider_effect.rs",
+      "git_blob_sha1": "d0fcf886de8320e13cf7455dd413503172cec0fc",
+      "bytes": 114699,
+      "git_mode": "100644",
+      "source_commit": "b4b81cc59847cfe2683f170949d464778f413147",
+      "retrieval": "fixed GitHub content and independently checked tree entry"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/provider_effect_taskflow_key_v2.rs",
+      "git_blob_sha1": "51daa45effd383bcfa78aeee82677d11c69f930b",
+      "bytes": 1672,
+      "git_mode": "100644",
+      "source_commit": "b4b81cc59847cfe2683f170949d464778f413147",
+      "retrieval": "fixed GitHub content and independently checked tree entry"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_trust_unix.rs",
+      "git_blob_sha1": "41771824974f6691dd6bf70e0081279e83254b3a",
+      "bytes": 13285,
+      "git_mode": "100644",
+      "source_commit": "b4b81cc59847cfe2683f170949d464778f413147",
+      "retrieval": "fixed GitHub content and independently checked tree entry"
+    }
+  ],
+  "issues": [
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/automation_effect_operator.rs",
+      "symbol": "reqwest::header::HeaderMap",
+      "classification": "undeclared direct crate import",
+      "detected_by": "w1_audit, independently confirmed in this review",
+      "evidence": "Agentd Cargo.toml has http as a direct dependency and no reqwest dependency/dev-dependency. The new integration target cannot name a transitive dependency crate.",
+      "correction": "Use the existing http HeaderMap type; keep dependency graph and lock unchanged.",
+      "resolution_status": "assigned to model_storage; corrected final source/native result not yet reviewed"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/automation_effect_pq_product.rs",
+      "symbols": [
+        "codex_model_provider::ProviderEffectIntent",
+        "codex_model_provider::ProviderEffectKey"
+      ],
+      "classification": "unresolved root re-exports",
+      "detected_by": "pq_recovery",
+      "evidence": "model-provider/src/lib.rs blob16367d5e96843c8ff14ea68ace5694218e06be19 does not export these types; contracts/src/lib.rs blob6a4881621439a5415ef02447f14a92fd7b5dfd94 publicly exports both.",
+      "correction": "Import both types from the existing direct codex_hepta_contracts dependency.",
+      "resolution_status": "assigned to model_storage; corrected final source/native result not yet reviewed"
+    }
+  ],
+  "checked_boundaries": [
+    "All other external import crate roots exist in original Agentd dependencies/dev-dependencies; own library and support modules are reachable.",
+    "Agentd root exports AutomationEffectObservation/ReconcileState; execute_effect and reconcile_effect are public async methods with matching arguments.",
+    "Agent protocol snapshots expose the accessed fields and derive Clone/Eq/PartialEq/Serialize; both compared terminal receipt_digest fields are Option<Sha256Digest>.",
+    "AutomationStore open/close, authorized attempt/terminal reads, prepare/claim operations and TaskFlow constructors are public with matching arity and types; TaskFlowError/AuthorizedEffectError support anyhow conversion.",
+    "ProviderEffectIntent::new returns Self; ProviderEffectKey::for_taskflow_v2 is a public inherent method, despite residing in a private implementation module.",
+    "HttpProviderEffectConfig and contract_sha256 plus HttpProviderEffectContractAttestation::statement_for_pq are public; String error is explicitly mapped to anyhow.",
+    "Supervisor exposes event/snapshot types and kill/tick/snapshot methods; ProcessExit is Copy, allowing the borrowed-event pattern used by find_map.",
+    "Fleet delta adds a pub(crate) method within the integration-test crate, preserving original recovery arguments and calling the public AgentCommand/Supervisor API.",
+    "PQ key/signature/Unix endpoint/FinalUse APIs and error conversions were cross-checked by w1_audit; capacity.used_nonces is usize.",
+    "PqTrustOperationV2 has five variants and no non_exhaustive marker; the new external integration service match covers all role/variant cases.",
+    "The timeout(..., JoinHandle).await??.is_err() expression unwraps elapsed/join errors and tests the remaining Agentd Result; its nested Result shape matches the call."
+  ],
+  "full_evidence_gate_information_forwarded": {
+    "historical_receipt": "/workspace/scratch/93bfcfe29fc8/pq_recovery/native/attempt-3/full-evidence-library.json",
+    "exact_argv": [
+      "just",
+      "test",
+      "--locked",
+      "-p",
+      "codex-hepta-evidence",
+      "--lib",
+      "--no-capture",
+      "--retries",
+      "0",
+      "--test-threads=1"
+    ],
+    "original_minimum_tests": 22,
+    "original_wrapper_seconds": 600,
+    "original_local_per_test_seconds": 60,
+    "historical_a877_run_count": 160,
+    "historical_a877_passed": 159,
+    "historical_a877_timed_out": 1,
+    "historical_ignored": 1,
+    "expected_after_single_4dce_test_addition": {
+      "run": 161,
+      "ignored": 1,
+      "total": 162
+    },
+    "ignored_name": "authbus_outbox_tests::crash_delivery_child",
+    "ignored_source_git_blob": "5637c44360cd041d7bd86f34baca09af2e2f8020",
+    "ignored_reason": "subprocess crash fixture",
+    "count_basis": "Historical original run plus the single added 4dce regression, not a final H1 discovery or test execution.",
+    "minimum_is_not_full_suite_pass_evidence": true
+  },
+  "disposition": "Review stops after concrete compile-interface risks are handed to the unified editor. Final source must still pass its original compilation/test/fix/fmt gates."
+}

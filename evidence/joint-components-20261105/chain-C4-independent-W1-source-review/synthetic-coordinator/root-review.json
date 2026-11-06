@@ -1,0 +1,22 @@
+{
+  "schema": "root-static-synthetic-census-coordinator-review-v1",
+  "coordinator_sha256": "856a61b997d26efa7d62f8176c745eb7a236e5e75db4f4e8cf50d90a09eb14c7",
+  "full_coordinator_and_original_reader_interface_reviewed": true,
+  "unchanged_original_bounded_process_and_capture_helper_reviewed": true,
+  "model_narrow_capture_review_sha256": "dae1ada5b79f8f104ff05c403b042ace4ca6658c5348b0d0c2ce6702b8766ed9",
+  "qualified_native_execution_from_static_review": false,
+  "allowed_execution": "Exactly the two preregistered targets, once each, by W1 only after authoritative H1 terminal and all H1 owned processes have released",
+  "original_native_parameters_unchanged_except_byte_identical_same_directory_argv0": true,
+  "original_native_limits": {
+    "seconds_each": 300,
+    "stdout_bytes": 268435456,
+    "stderr_bytes": 1048576
+  },
+  "new_external_limits_are_separate_from_original_owner": true,
+  "captures_required_for_each_actual_child": true,
+  "unsupported_cells_cannot_be_called_completed": true,
+  "native_schema_and_15_arms_and_9_classes_bound": true,
+  "native_completed": false,
+  "raw_recalculated": false,
+  "joint_gate_status": "HOLD"
+}

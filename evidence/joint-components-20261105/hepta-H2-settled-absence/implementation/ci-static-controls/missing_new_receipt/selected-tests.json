@@ -1,0 +1,414 @@
+{
+  "qualification-growth": {
+    "passed": true,
+    "expected": [
+      "qualification_tests::claim_query_rejects_more_than_512_references",
+      "qualification_tests::ordinary_append_rejects_historical_projection_drift_without_consuming_replay"
+    ],
+    "observed": [
+      [
+        "qualification_tests::claim_query_rejects_more_than_512_references",
+        "ok"
+      ],
+      [
+        "qualification_tests::ordinary_append_rejects_historical_projection_drift_without_consuming_replay",
+        "ok"
+      ]
+    ]
+  },
+  "effect-pq-product": {
+    "passed": true,
+    "expected": [
+      "pq_effect_survives_owned_agentd_kill_after_provider_fsync_without_resend"
+    ],
+    "observed": [
+      [
+        "pq_effect_survives_owned_agentd_kill_after_provider_fsync_without_resend",
+        "ok"
+      ]
+    ]
+  },
+  "effect-pq-owner": {
+    "passed": true,
+    "expected": [
+      "automation_effect_host::pq::tests::current_clock_frontier_and_pq_grant_are_mandatory_before_contact",
+      "automation_effect_host::pq::tests::generation_change_after_store_await_refuses_contact_and_keeps_consumed_nonce",
+      "automation_effect_host::pq::tests::historical_policy_does_not_connect_old_trust_services_or_follow_its_references",
+      "automation_effect_host::pq::tests::initial_feed_is_authenticated_before_any_local_authority_or_frontier_write",
+      "automation_effect_host::pq::tests::ordinary_dispatch_and_new_generation_recovery_keep_one_stable_operation",
+      "automation_effect_host::pq::tests::ordinary_loader_denies_classical_schema_and_contract_or_policy_substitution",
+      "automation_effect_host::pq::tests::pon_schema4_binds_native_binary_and_original_limits_without_running_a_node",
+      "automation_effect_host::pq::tests::reconcile_rechecks_generation_after_store_await_without_reclassifying_unknown",
+      "automation_effect_host::pq::tests::recovery_requires_current_signed_exact_historical_policy_and_same_provider",
+      "automation_effect_host::pq::tests::revoked_equal_number_drift_expired_feed_and_new_epoch_do_not_contact_provider",
+      "automation_effect_host::pq::tests::signed_revocation_after_store_await_obeys_active_effect_fence_and_never_sends"
+    ],
+    "observed": [
+      [
+        "automation_effect_host::pq::tests::current_clock_frontier_and_pq_grant_are_mandatory_before_contact",
+        "ok"
+      ],
+      [
+        "automation_effect_host::pq::tests::generation_change_after_store_await_refuses_contact_and_keeps_consumed_nonce",
+        "ok"
+      ],
+      [
+        "automation_effect_host::pq::tests::historical_policy_does_not_connect_old_trust_services_or_follow_its_references",
+        "ok"
+      ],
+      [
+        "automation_effect_host::pq::tests::initial_feed_is_authenticated_before_any_local_authority_or_frontier_write",
+        "ok"
+      ],
+      [
+        "automation_effect_host::pq::tests::ordinary_dispatch_and_new_generation_recovery_keep_one_stable_operation",
+        "ok"
+      ],
+      [
+        "automation_effect_host::pq::tests::ordinary_loader_denies_classical_schema_and_contract_or_policy_substitution",
+        "ok"
+      ],
+      [
+        "automation_effect_host::pq::tests::pon_schema4_binds_native_binary_and_original_limits_without_running_a_node",
+        "ok"
+      ],
+      [
+        "automation_effect_host::pq::tests::reconcile_rechecks_generation_after_store_await_without_reclassifying_unknown",
+        "ok"
+      ],
+      [
+        "automation_effect_host::pq::tests::recovery_requires_current_signed_exact_historical_policy_and_same_provider",
+        "ok"
+      ],
+      [
+        "automation_effect_host::pq::tests::revoked_equal_number_drift_expired_feed_and_new_epoch_do_not_contact_provider",
+        "ok"
+      ],
+      [
+        "automation_effect_host::pq::tests::signed_revocation_after_store_await_obeys_active_effect_fence_and_never_sends",
+        "ok"
+      ]
+    ]
+  },
+  "effect-pq-contract": {
+    "passed": true,
+    "expected": [
+      "provider_effect::pq_tests::pq_contract_binds_profile_root_epoch_and_complete_authority_scope"
+    ],
+    "observed": [
+      [
+        "provider_effect::pq_tests::pq_contract_binds_profile_root_epoch_and_complete_authority_scope",
+        "ok"
+      ]
+    ]
+  },
+  "effect-settled-absence": {
+    "passed": false,
+    "error": "[Errno 2] No such file or directory: '/workspace/scratch/93bfcfe29fc8/model_storage/h2-settled-absence/ci-static-controls/missing_new_receipt/effect-settled-absence.json'"
+  },
+  "dispatcher": {
+    "passed": true,
+    "expected": [
+      "authbus_dispatch::tests::abandoned_first_claim_without_admission_is_quarantined_after_lookup_missing",
+      "authbus_dispatch::tests::checkpoint_sync::cancelled_checkpoint_sync_waiter_and_owner_release_exclusive_admission",
+      "authbus_dispatch::tests::checkpoint_sync::concurrent_checkpoint_syncs_share_owner_lock_and_preserve_rollback_rejection",
+      "authbus_dispatch::tests::lease_delay::trust_refresh_sqlite_wait_cannot_authorize_transport_with_an_expired_lease",
+      "authbus_dispatch::tests::lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt",
+      "authbus_dispatch::tests::matching_receipt_metadata_with_different_queue_input_never_acknowledges",
+      "authbus_dispatch::tests::policy_rollback::pq_bound_policy_refuses_renewal_without_policy_snapshot",
+      "authbus_dispatch::tests::policy_rollback::pq_owner_requires_explicit_nonzero_policy_revision_and_accepts_set_ordering",
+      "authbus_dispatch::tests::policy_rollback::pq_policy_change_fences_stale_renewal_and_current_policy_restores_dispatch",
+      "authbus_dispatch::tests::policy_rollback::pq_removed_thread_cannot_return_through_owner_file_rollback_after_reopen",
+      "authbus_dispatch::tests::pq::pq_text_owner_resumes_after_revocation_rotation_and_rejected_config_rollback",
+      "authbus_dispatch::tests::pq::pq_text_producer_recovers_through_existing_dispatch_and_rejects_wire_and_config_downgrade",
+      "authbus_dispatch::tests::ready_generation_and_owner_private_trust_are_required_before_admission",
+      "authbus_dispatch::tests::revocation_during_queue_request_prevents_success_ack"
+    ],
+    "observed": [
+      [
+        "authbus_dispatch::tests::abandoned_first_claim_without_admission_is_quarantined_after_lookup_missing",
+        "ok"
+      ],
+      [
+        "authbus_dispatch::tests::checkpoint_sync::cancelled_checkpoint_sync_waiter_and_owner_release_exclusive_admission",
+        "ok"
+      ],
+      [
+        "authbus_dispatch::tests::checkpoint_sync::concurrent_checkpoint_syncs_share_owner_lock_and_preserve_rollback_rejection",
+        "ok"
+      ],
+      [
+        "authbus_dispatch::tests::lease_delay::trust_refresh_sqlite_wait_cannot_authorize_transport_with_an_expired_lease",
+        "ok"
+      ],
+      [
+        "authbus_dispatch::tests::lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt",
+        "ok"
+      ],
+      [
+        "authbus_dispatch::tests::matching_receipt_metadata_with_different_queue_input_never_acknowledges",
+        "ok"
+      ],
+      [
+        "authbus_dispatch::tests::policy_rollback::pq_bound_policy_refuses_renewal_without_policy_snapshot",
+        "ok"
+      ],
+      [
+        "authbus_dispatch::tests::policy_rollback::pq_owner_requires_explicit_nonzero_policy_revision_and_accepts_set_ordering",
+        "ok"
+      ],
+      [
+        "authbus_dispatch::tests::policy_rollback::pq_policy_change_fences_stale_renewal_and_current_policy_restores_dispatch",
+        "ok"
+      ],
+      [
+        "authbus_dispatch::tests::policy_rollback::pq_removed_thread_cannot_return_through_owner_file_rollback_after_reopen",
+        "ok"
+      ],
+      [
+        "authbus_dispatch::tests::pq::pq_text_owner_resumes_after_revocation_rotation_and_rejected_config_rollback",
+        "ok"
+      ],
+      [
+        "authbus_dispatch::tests::pq::pq_text_producer_recovers_through_existing_dispatch_and_rejects_wire_and_config_downgrade",
+        "ok"
+      ],
+      [
+        "authbus_dispatch::tests::ready_generation_and_owner_private_trust_are_required_before_admission",
+        "ok"
+      ],
+      [
+        "authbus_dispatch::tests::revocation_during_queue_request_prevents_success_ack",
+        "ok"
+      ]
+    ]
+  },
+  "product": {
+    "passed": true,
+    "expected": [
+      "pq_signed_text_crosses_real_queue_after_rejection_without_downgrade",
+      "real_agentd_without_explicit_trust_rejects_signed_text",
+      "signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_ingress"
+    ],
+    "observed": [
+      [
+        "pq_signed_text_crosses_real_queue_after_rejection_without_downgrade",
+        "ok"
+      ],
+      [
+        "real_agentd_without_explicit_trust_rejects_signed_text",
+        "ok"
+      ],
+      [
+        "signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_ingress",
+        "ok"
+      ]
+    ]
+  },
+  "recovery-owner": {
+    "passed": true,
+    "expected": [
+      "provider_effect_recovery_provenance_tests::recovery_provenance_preserves_dispatch_then_authoritative_status",
+      "provider_effect_recovery_provenance_tests::recovery_provenance_rejects_late_dispatch_after_status_without_uncertainty",
+      "recovery_effect_frontier_tests::recovery_snapshot_commits_ack_provenance_and_cross_table_order",
+      "recovery_effect_frontier_tests::recovery_snapshot_commits_effect_history_after_the_first_page",
+      "recovery_effect_frontier_tests::recovery_snapshot_commits_intent_unknown_and_original_operation_receipt",
+      "recovery_effect_frontier_tests::recovery_snapshot_distinguishes_a_valid_effect_only_database_rollback",
+      "recovery_effect_frontier_tests::recovery_snapshot_refuses_canonical_ack_bound_to_a_different_payload",
+      "recovery_effect_frontier_tests::recovery_snapshot_refuses_changed_json_with_retained_record_digests",
+      "recovery_effect_frontier_tests::recovery_snapshot_refuses_effect_projection_drift_with_retained_payloads",
+      "recovery_effect_frontier_tests::recovery_snapshot_refuses_orphan_effect_observations",
+      "recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_after_schema_drift",
+      "recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_at_page_boundary",
+      "recovery_invocation_frontier_tests::recovery_snapshot_binds_invocation_sequence_and_recording_time",
+      "recovery_invocation_frontier_tests::recovery_snapshot_commits_invocations_after_the_first_page",
+      "recovery_invocation_frontier_tests::recovery_snapshot_commits_pending_invocations_and_terminal_states",
+      "recovery_invocation_frontier_tests::recovery_snapshot_refuses_duplicate_terminal_hidden_at_page_boundary",
+      "recovery_invocation_frontier_tests::recovery_snapshot_refuses_invocation_column_type_corruption_without_panicking",
+      "recovery_invocation_frontier_tests::recovery_snapshot_requires_the_terminals_authoritative_intent",
+      "recovery_invocation_frontier_tests::recovery_snapshot_revalidates_invocation_payloads_and_projected_columns",
+      "recovery_invocation_schema_tests::recovery_invocation_schema_accepts_current_migration_keys",
+      "recovery_invocation_schema_tests::recovery_invocation_schema_refuses_non_rowid_or_composite_sequences",
+      "recovery_invocation_schema_tests::recovery_invocation_schema_requires_exact_unconditional_column_uniqueness"
+    ],
+    "observed": [
+      [
+        "provider_effect_recovery_provenance_tests::recovery_provenance_preserves_dispatch_then_authoritative_status",
+        "ok"
+      ],
+      [
+        "provider_effect_recovery_provenance_tests::recovery_provenance_rejects_late_dispatch_after_status_without_uncertainty",
+        "ok"
+      ],
+      [
+        "recovery_effect_frontier_tests::recovery_snapshot_commits_ack_provenance_and_cross_table_order",
+        "ok"
+      ],
+      [
+        "recovery_effect_frontier_tests::recovery_snapshot_commits_effect_history_after_the_first_page",
+        "ok"
+      ],
+      [
+        "recovery_effect_frontier_tests::recovery_snapshot_commits_intent_unknown_and_original_operation_receipt",
+        "ok"
+      ],
+      [
+        "recovery_effect_frontier_tests::recovery_snapshot_distinguishes_a_valid_effect_only_database_rollback",
+        "ok"
+      ],
+      [
+        "recovery_effect_frontier_tests::recovery_snapshot_refuses_canonical_ack_bound_to_a_different_payload",
+        "ok"
+      ],
+      [
+        "recovery_effect_frontier_tests::recovery_snapshot_refuses_changed_json_with_retained_record_digests",
+        "ok"
+      ],
+      [
+        "recovery_effect_frontier_tests::recovery_snapshot_refuses_effect_projection_drift_with_retained_payloads",
+        "ok"
+      ],
+      [
+        "recovery_effect_frontier_tests::recovery_snapshot_refuses_orphan_effect_observations",
+        "ok"
+      ],
+      [
+        "recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_after_schema_drift",
+        "ok"
+      ],
+      [
+        "recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_at_page_boundary",
+        "ok"
+      ],
+      [
+        "recovery_invocation_frontier_tests::recovery_snapshot_binds_invocation_sequence_and_recording_time",
+        "ok"
+      ],
+      [
+        "recovery_invocation_frontier_tests::recovery_snapshot_commits_invocations_after_the_first_page",
+        "ok"
+      ],
+      [
+        "recovery_invocation_frontier_tests::recovery_snapshot_commits_pending_invocations_and_terminal_states",
+        "ok"
+      ],
+      [
+        "recovery_invocation_frontier_tests::recovery_snapshot_refuses_duplicate_terminal_hidden_at_page_boundary",
+        "ok"
+      ],
+      [
+        "recovery_invocation_frontier_tests::recovery_snapshot_refuses_invocation_column_type_corruption_without_panicking",
+        "ok"
+      ],
+      [
+        "recovery_invocation_frontier_tests::recovery_snapshot_requires_the_terminals_authoritative_intent",
+        "ok"
+      ],
+      [
+        "recovery_invocation_frontier_tests::recovery_snapshot_revalidates_invocation_payloads_and_projected_columns",
+        "ok"
+      ],
+      [
+        "recovery_invocation_schema_tests::recovery_invocation_schema_accepts_current_migration_keys",
+        "ok"
+      ],
+      [
+        "recovery_invocation_schema_tests::recovery_invocation_schema_refuses_non_rowid_or_composite_sequences",
+        "ok"
+      ],
+      [
+        "recovery_invocation_schema_tests::recovery_invocation_schema_requires_exact_unconditional_column_uniqueness",
+        "ok"
+      ]
+    ]
+  },
+  "recovery-signed": {
+    "passed": true,
+    "expected": [
+      "evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields",
+      "evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry",
+      "evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor",
+      "evidence_frontier::tests::recovery_frontier_pq_rejects_invocation_only_database_rollbacks",
+      "evidence_frontier::tests::recovery_frontier_pq_survives_store_close_and_reopen",
+      "evidence_frontier::tests::recovery_frontier_read_only_preflight_never_binds_or_changes_the_image",
+      "evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures",
+      "evidence_frontier::tests::recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots",
+      "evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile",
+      "evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature",
+      "evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key"
+    ],
+    "observed": [
+      [
+        "evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields",
+        "ok"
+      ],
+      [
+        "evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry",
+        "ok"
+      ],
+      [
+        "evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor",
+        "ok"
+      ],
+      [
+        "evidence_frontier::tests::recovery_frontier_pq_rejects_invocation_only_database_rollbacks",
+        "ok"
+      ],
+      [
+        "evidence_frontier::tests::recovery_frontier_pq_survives_store_close_and_reopen",
+        "ok"
+      ],
+      [
+        "evidence_frontier::tests::recovery_frontier_read_only_preflight_never_binds_or_changes_the_image",
+        "ok"
+      ],
+      [
+        "evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures",
+        "ok"
+      ],
+      [
+        "evidence_frontier::tests::recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots",
+        "ok"
+      ],
+      [
+        "evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile",
+        "ok"
+      ],
+      [
+        "evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature",
+        "ok"
+      ],
+      [
+        "evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key",
+        "ok"
+      ]
+    ]
+  },
+  "recovery-product": {
+    "passed": true,
+    "expected": [
+      "real_agentd_composes_authenticated_evidence_writer_query_verifier_and_terminal_observer",
+      "signed_recovery_frontier_allows_exact_current_database",
+      "signed_recovery_frontier_rejects_effect_only_database_rollback",
+      "signed_recovery_frontier_rejects_valid_older_database_image"
+    ],
+    "observed": [
+      [
+        "real_agentd_composes_authenticated_evidence_writer_query_verifier_and_terminal_observer",
+        "ok"
+      ],
+      [
+        "signed_recovery_frontier_allows_exact_current_database",
+        "ok"
+      ],
+      [
+        "signed_recovery_frontier_rejects_effect_only_database_rollback",
+        "ok"
+      ],
+      [
+        "signed_recovery_frontier_rejects_valid_older_database_image",
+        "ok"
+      ]
+    ]
+  }
+}

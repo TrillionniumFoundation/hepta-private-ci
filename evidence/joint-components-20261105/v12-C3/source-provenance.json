@@ -1,0 +1,157 @@
+{
+  "hepta_base_commit": {
+    "sha": "e373bf7df8b2d6a7360090ba392f0d07275063c8",
+    "node_id": "C_kwDOTrgxoNoAKGUzNzNiZjdkZjhiMmQ2YTczNjAwOTBiYTM5MmYwZDA3Mjc1MDYzYzg",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/e373bf7df8b2d6a7360090ba392f0d07275063c8",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/e373bf7df8b2d6a7360090ba392f0d07275063c8",
+    "author": {
+      "name": "Franksudoman",
+      "email": "273670192+Franksudoman@users.noreply.github.com",
+      "date": "2026-11-05T16:56:10Z"
+    },
+    "committer": {
+      "name": "Franksudoman",
+      "email": "273670192+Franksudoman@users.noreply.github.com",
+      "date": "2026-11-05T16:56:10Z"
+    },
+    "tree": {
+      "sha": "b02a95375a5f6299abc8b167e216a0e2534acc52",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/b02a95375a5f6299abc8b167e216a0e2534acc52"
+    },
+    "message": "fix(tests): use public process fixture types and apply the pinned formatter",
+    "parents": [
+      {
+        "sha": "b4b81cc59847cfe2683f170949d464778f413147",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/b4b81cc59847cfe2683f170949d464778f413147",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/b4b81cc59847cfe2683f170949d464778f413147"
+      }
+    ],
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  },
+  "chain_commit": {
+    "sha": "b5ef97b29c2e8b738525a2e3326dd60784c46e72",
+    "node_id": "C_kwDOTty1_doAKGI1ZWY5N2IyOWMyZThiNzM4NTI1YTJlMzMyNmRkNjA3ODRjNDZlNzI",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/Trillionnium-Chain/git/commits/b5ef97b29c2e8b738525a2e3326dd60784c46e72",
+    "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/commit/b5ef97b29c2e8b738525a2e3326dd60784c46e72",
+    "author": {
+      "name": "Franksudoman",
+      "email": "273670192+Franksudoman@users.noreply.github.com",
+      "date": "2026-11-05T17:11:11Z"
+    },
+    "committer": {
+      "name": "Franksudoman",
+      "email": "273670192+Franksudoman@users.noreply.github.com",
+      "date": "2026-11-05T17:11:11Z"
+    },
+    "tree": {
+      "sha": "020880f22725e93cabb65c6e7eda3cbbd3c2405a",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/Trillionnium-Chain/git/trees/020880f22725e93cabb65c6e7eda3cbbd3c2405a"
+    },
+    "message": "fix(ci): bound repeated source parsing and bind all nine W1 kernels\n\nCache only immutable source parse results by the complete freshly read text,\nwith bounded LRU entries and a large-input bypass. Keep source/path checks,\noriginal assertions, and the 300-second applicability budget unchanged.\n\nRequire all nine actual legal-strategy kernel tests exactly once while\npreserving the original W1 workflow commands, resources, and budgets.\n\nThis is a new C3 candidate. C2 timeout and native evidence remain C2 scoped;\nno release gate, W1 minimum-cost bound, or public liveness is claimed.",
+    "parents": [
+      {
+        "sha": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/Trillionnium-Chain/git/commits/03521b2f32346a49cccde8ff72e8c7b886b31222",
+        "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/commit/03521b2f32346a49cccde8ff72e8c7b886b31222"
+      }
+    ],
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  },
+  "chain_c2_to_c3": {
+    "repository_full_name": "TrillionniumFoundation/Trillionnium-Chain",
+    "base": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+    "head": "b5ef97b29c2e8b738525a2e3326dd60784c46e72",
+    "status": "ahead",
+    "ahead_by": 1,
+    "behind_by": 0,
+    "total_commits": 1,
+    "too_large": null,
+    "base_commit": {
+      "sha": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/Trillionnium-Chain/commits/03521b2f32346a49cccde8ff72e8c7b886b31222",
+      "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/commit/03521b2f32346a49cccde8ff72e8c7b886b31222"
+    },
+    "merge_base_commit": {
+      "sha": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/Trillionnium-Chain/commits/03521b2f32346a49cccde8ff72e8c7b886b31222",
+      "html_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/commit/03521b2f32346a49cccde8ff72e8c7b886b31222"
+    },
+    "files": [
+      {
+        "filename": ".github/workflows/pon-w1-work-security.yml",
+        "status": "modified",
+        "additions": 17,
+        "deletions": 1,
+        "changes": 18,
+        "previous_filename": null
+      },
+      {
+        "filename": "scripts/ci/report_module_evidence.py",
+        "status": "modified",
+        "additions": 21,
+        "deletions": 2,
+        "changes": 23,
+        "previous_filename": null
+      },
+      {
+        "filename": "scripts/ci/test_applicability.py",
+        "status": "modified",
+        "additions": 89,
+        "deletions": 1,
+        "changes": 90,
+        "previous_filename": null
+      }
+    ]
+  },
+  "hepta_files": [
+    {
+      "path": "scripts/hepta_smollm_execution_source_v1.py",
+      "blob": "7e53f0162aa05b5fd401a7a0302ef7ff207fd88d",
+      "source": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e373bf7df8b2d6a7360090ba392f0d07275063c8/scripts/hepta_smollm_execution_source_v1.py",
+      "encoding": "utf-8"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/profiles/smollm2-public-initial-v2.execution-sources-v12.json",
+      "blob": "2510a5e72d6869bb3c73c255aabd37d2622c166b",
+      "source": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e373bf7df8b2d6a7360090ba392f0d07275063c8/codex-rs/hepta-learning-artifacts/profiles/smollm2-public-initial-v2.execution-sources-v12.json",
+      "encoding": "utf-8"
+    },
+    {
+      "path": "scripts/hepta_smollm_runtime_handoff_v12.py",
+      "blob": "44cab1b84f861b7e815ee27b84ef56f6be72175a",
+      "source": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e373bf7df8b2d6a7360090ba392f0d07275063c8/scripts/hepta_smollm_runtime_handoff_v12.py",
+      "encoding": "utf-8"
+    },
+    {
+      "path": "scripts/test_hepta_smollm_execution_source_v1.py",
+      "blob": "8646378da61bd2b4790af1ad878152705d19146e",
+      "source": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e373bf7df8b2d6a7360090ba392f0d07275063c8/scripts/test_hepta_smollm_execution_source_v1.py",
+      "encoding": "utf-8"
+    },
+    {
+      "path": "scripts/test_hepta_smollm_execution_source_v12.py",
+      "blob": "4afb894547ad2e0bbba0c1d8d23e85fb60c3213f",
+      "source": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e373bf7df8b2d6a7360090ba392f0d07275063c8/scripts/test_hepta_smollm_execution_source_v12.py",
+      "encoding": "utf-8"
+    },
+    {
+      "path": "AGENTS.md",
+      "blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+      "source": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e373bf7df8b2d6a7360090ba392f0d07275063c8/AGENTS.md",
+      "encoding": "utf-8"
+    }
+  ],
+  "scope": "Exact API source reads; selected local checks only; no native or full H1 qualification."
+}

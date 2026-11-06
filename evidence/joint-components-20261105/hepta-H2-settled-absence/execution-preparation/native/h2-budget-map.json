@@ -1,0 +1,476 @@
+{
+  "outer_seconds": 5400,
+  "measurement": "durable job wall-clock including bootstrap, guards, tool identity, every test, fd retention and after guards; no sum-of-command estimate",
+  "per_test_seconds": 60,
+  "retries": 0,
+  "test_threads": 1,
+  "gates": [
+    {
+      "name": "v8-setup",
+      "timeout_seconds": 600,
+      "family": "original-environment-setup"
+    },
+    {
+      "name": "collector-controls",
+      "timeout_seconds": 20,
+      "family": "existing-external-utility"
+    },
+    {
+      "name": "fd-runner-controls",
+      "timeout_seconds": 20,
+      "family": "new-declared-external-utility"
+    },
+    {
+      "name": "dependencies",
+      "command": [
+        "cargo",
+        "fetch",
+        "--locked",
+        "--manifest-path",
+        "codex-rs/Cargo.toml"
+      ],
+      "minimum": 0,
+      "timeout_seconds": 600,
+      "family": "original-workflow"
+    },
+    {
+      "name": "execution-source-controls",
+      "minimum": 135,
+      "timeout_seconds": 3600,
+      "argument_omitted": true,
+      "family": "additional-original-python"
+    },
+    {
+      "name": "diverse-source-controls",
+      "minimum": 32,
+      "timeout_seconds": 3600,
+      "argument_omitted": true,
+      "family": "additional-original-python"
+    },
+    {
+      "name": "dispatcher",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "-E",
+        "test(authbus_dispatch::tests::)",
+        "--no-capture",
+        "--retries",
+        "0",
+        "--test-threads=1"
+      ],
+      "minimum": 14,
+      "timeout_seconds": 3600,
+      "crate": "codex_hepta_agentd",
+      "expected_names": [
+        "authbus_dispatch::tests::abandoned_first_claim_without_admission_is_quarantined_after_lookup_missing",
+        "authbus_dispatch::tests::checkpoint_sync::cancelled_checkpoint_sync_waiter_and_owner_release_exclusive_admission",
+        "authbus_dispatch::tests::checkpoint_sync::concurrent_checkpoint_syncs_share_owner_lock_and_preserve_rollback_rejection",
+        "authbus_dispatch::tests::lease_delay::trust_refresh_sqlite_wait_cannot_authorize_transport_with_an_expired_lease",
+        "authbus_dispatch::tests::lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt",
+        "authbus_dispatch::tests::matching_receipt_metadata_with_different_queue_input_never_acknowledges",
+        "authbus_dispatch::tests::policy_rollback::pq_bound_policy_refuses_renewal_without_policy_snapshot",
+        "authbus_dispatch::tests::policy_rollback::pq_owner_requires_explicit_nonzero_policy_revision_and_accepts_set_ordering",
+        "authbus_dispatch::tests::policy_rollback::pq_policy_change_fences_stale_renewal_and_current_policy_restores_dispatch",
+        "authbus_dispatch::tests::policy_rollback::pq_removed_thread_cannot_return_through_owner_file_rollback_after_reopen",
+        "authbus_dispatch::tests::pq::pq_text_owner_resumes_after_revocation_rotation_and_rejected_config_rollback",
+        "authbus_dispatch::tests::pq::pq_text_producer_recovers_through_existing_dispatch_and_rejects_wire_and_config_downgrade",
+        "authbus_dispatch::tests::ready_generation_and_owner_private_trust_are_required_before_admission",
+        "authbus_dispatch::tests::revocation_during_queue_request_prevents_success_ack"
+      ],
+      "original_step_name": "Run all fourteen original and added dispatcher controls",
+      "step_environment": {
+        "CARGO_NET_OFFLINE": "true"
+      },
+      "family": "original-workflow"
+    },
+    {
+      "name": "product",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--test",
+        "authbus_text_product",
+        "--no-capture",
+        "--retries",
+        "0",
+        "--test-threads=1"
+      ],
+      "minimum": 3,
+      "timeout_seconds": 1800,
+      "crate": "authbus_text_product",
+      "expected_names": [
+        "pq_signed_text_crosses_real_queue_after_rejection_without_downgrade",
+        "real_agentd_without_explicit_trust_rejects_signed_text",
+        "signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_ingress"
+      ],
+      "original_step_name": "Run the three real Agentd and App Server process controls",
+      "step_environment": {
+        "CARGO_NET_OFFLINE": "true"
+      },
+      "family": "original-workflow"
+    },
+    {
+      "name": "recovery-owner",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-evidence",
+        "--lib",
+        "-E",
+        "test(=recovery_effect_frontier_tests::recovery_snapshot_commits_intent_unknown_and_original_operation_receipt) | test(=recovery_effect_frontier_tests::recovery_snapshot_distinguishes_a_valid_effect_only_database_rollback) | test(=recovery_effect_frontier_tests::recovery_snapshot_commits_ack_provenance_and_cross_table_order) | test(=recovery_effect_frontier_tests::recovery_snapshot_commits_effect_history_after_the_first_page) | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_changed_json_with_retained_record_digests) | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_effect_projection_drift_with_retained_payloads) | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_canonical_ack_bound_to_a_different_payload) | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_orphan_effect_observations) | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_after_schema_drift) | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_at_page_boundary) | test(=provider_effect_recovery_provenance_tests::recovery_provenance_rejects_late_dispatch_after_status_without_uncertainty) | test(=provider_effect_recovery_provenance_tests::recovery_provenance_preserves_dispatch_then_authoritative_status) | test(=recovery_invocation_frontier_tests::recovery_snapshot_commits_pending_invocations_and_terminal_states) | test(=recovery_invocation_frontier_tests::recovery_snapshot_commits_invocations_after_the_first_page) | test(=recovery_invocation_frontier_tests::recovery_snapshot_revalidates_invocation_payloads_and_projected_columns) | test(=recovery_invocation_frontier_tests::recovery_snapshot_requires_the_terminals_authoritative_intent) | test(=recovery_invocation_frontier_tests::recovery_snapshot_refuses_duplicate_terminal_hidden_at_page_boundary) | test(=recovery_invocation_frontier_tests::recovery_snapshot_refuses_invocation_column_type_corruption_without_panicking) | test(=recovery_invocation_frontier_tests::recovery_snapshot_binds_invocation_sequence_and_recording_time) | test(=recovery_invocation_schema_tests::recovery_invocation_schema_accepts_current_migration_keys) | test(=recovery_invocation_schema_tests::recovery_invocation_schema_refuses_non_rowid_or_composite_sequences) | test(=recovery_invocation_schema_tests::recovery_invocation_schema_requires_exact_unconditional_column_uniqueness)",
+        "--no-capture",
+        "--retries",
+        "0",
+        "--test-threads=1"
+      ],
+      "minimum": 22,
+      "timeout_seconds": 600,
+      "crate": "codex_hepta_evidence",
+      "expected_names": [
+        "provider_effect_recovery_provenance_tests::recovery_provenance_preserves_dispatch_then_authoritative_status",
+        "provider_effect_recovery_provenance_tests::recovery_provenance_rejects_late_dispatch_after_status_without_uncertainty",
+        "recovery_effect_frontier_tests::recovery_snapshot_commits_ack_provenance_and_cross_table_order",
+        "recovery_effect_frontier_tests::recovery_snapshot_commits_effect_history_after_the_first_page",
+        "recovery_effect_frontier_tests::recovery_snapshot_commits_intent_unknown_and_original_operation_receipt",
+        "recovery_effect_frontier_tests::recovery_snapshot_distinguishes_a_valid_effect_only_database_rollback",
+        "recovery_effect_frontier_tests::recovery_snapshot_refuses_canonical_ack_bound_to_a_different_payload",
+        "recovery_effect_frontier_tests::recovery_snapshot_refuses_changed_json_with_retained_record_digests",
+        "recovery_effect_frontier_tests::recovery_snapshot_refuses_effect_projection_drift_with_retained_payloads",
+        "recovery_effect_frontier_tests::recovery_snapshot_refuses_orphan_effect_observations",
+        "recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_after_schema_drift",
+        "recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_at_page_boundary",
+        "recovery_invocation_frontier_tests::recovery_snapshot_binds_invocation_sequence_and_recording_time",
+        "recovery_invocation_frontier_tests::recovery_snapshot_commits_invocations_after_the_first_page",
+        "recovery_invocation_frontier_tests::recovery_snapshot_commits_pending_invocations_and_terminal_states",
+        "recovery_invocation_frontier_tests::recovery_snapshot_refuses_duplicate_terminal_hidden_at_page_boundary",
+        "recovery_invocation_frontier_tests::recovery_snapshot_refuses_invocation_column_type_corruption_without_panicking",
+        "recovery_invocation_frontier_tests::recovery_snapshot_requires_the_terminals_authoritative_intent",
+        "recovery_invocation_frontier_tests::recovery_snapshot_revalidates_invocation_payloads_and_projected_columns",
+        "recovery_invocation_schema_tests::recovery_invocation_schema_accepts_current_migration_keys",
+        "recovery_invocation_schema_tests::recovery_invocation_schema_refuses_non_rowid_or_composite_sequences",
+        "recovery_invocation_schema_tests::recovery_invocation_schema_requires_exact_unconditional_column_uniqueness"
+      ],
+      "original_step_name": "Run the twenty-two recovery snapshot and ACK provenance controls",
+      "step_environment": {
+        "CARGO_NET_OFFLINE": "true"
+      },
+      "family": "original-workflow"
+    },
+    {
+      "name": "recovery-signed",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "-E",
+        "test(=evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures) | test(=evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields) | test(=evidence_frontier::tests::recovery_frontier_pq_survives_store_close_and_reopen) | test(=evidence_frontier::tests::recovery_frontier_read_only_preflight_never_binds_or_changes_the_image) | test(=evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile) | test(=evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor) | test(=evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature) | test(=evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key) | test(=evidence_frontier::tests::recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots) | test(=evidence_frontier::tests::recovery_frontier_pq_rejects_invocation_only_database_rollbacks)",
+        "--no-capture",
+        "--retries",
+        "0",
+        "--test-threads=1"
+      ],
+      "minimum": 11,
+      "timeout_seconds": 600,
+      "crate": "codex_hepta_agentd",
+      "expected_names": [
+        "evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields",
+        "evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry",
+        "evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor",
+        "evidence_frontier::tests::recovery_frontier_pq_rejects_invocation_only_database_rollbacks",
+        "evidence_frontier::tests::recovery_frontier_pq_survives_store_close_and_reopen",
+        "evidence_frontier::tests::recovery_frontier_read_only_preflight_never_binds_or_changes_the_image",
+        "evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures",
+        "evidence_frontier::tests::recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots",
+        "evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile",
+        "evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature",
+        "evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key"
+      ],
+      "original_step_name": "Run the eleven PQ recovery frontier controls",
+      "step_environment": {
+        "CARGO_NET_OFFLINE": "true"
+      },
+      "family": "original-workflow"
+    },
+    {
+      "name": "recovery-product",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--test",
+        "kernel_evidence_product",
+        "-E",
+        "test(=real_agentd_composes_authenticated_evidence_writer_query_verifier_and_terminal_observer) | test(=signed_recovery_frontier_allows_exact_current_database) | test(=signed_recovery_frontier_rejects_valid_older_database_image) | test(=signed_recovery_frontier_rejects_effect_only_database_rollback)",
+        "--no-capture",
+        "--retries",
+        "0",
+        "--test-threads=1"
+      ],
+      "minimum": 4,
+      "timeout_seconds": 1800,
+      "crate": "kernel_evidence_product",
+      "expected_names": [
+        "real_agentd_composes_authenticated_evidence_writer_query_verifier_and_terminal_observer",
+        "signed_recovery_frontier_allows_exact_current_database",
+        "signed_recovery_frontier_rejects_effect_only_database_rollback",
+        "signed_recovery_frontier_rejects_valid_older_database_image"
+      ],
+      "original_step_name": "Run the four real Agentd evidence recovery process controls",
+      "step_environment": {
+        "CARGO_NET_OFFLINE": "true"
+      },
+      "family": "original-workflow"
+    },
+    {
+      "name": "qualification-growth",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-evidence",
+        "--lib",
+        "-E",
+        "test(=qualification_tests::claim_query_rejects_more_than_512_references) | test(=qualification_tests::ordinary_append_rejects_historical_projection_drift_without_consuming_replay)",
+        "--no-capture",
+        "--retries",
+        "0",
+        "--test-threads=1"
+      ],
+      "minimum": 2,
+      "timeout_seconds": 600,
+      "crate": "codex_hepta_evidence",
+      "expected_names": [
+        "qualification_tests::claim_query_rejects_more_than_512_references",
+        "qualification_tests::ordinary_append_rejects_historical_projection_drift_without_consuming_replay"
+      ],
+      "original_step_name": "Run the original qualification bound and historical corruption refusal",
+      "step_environment": {
+        "CARGO_NET_OFFLINE": "true"
+      },
+      "family": "original-workflow"
+    },
+    {
+      "name": "effect-pq-owner",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "-E",
+        "test(automation_effect_host::pq::tests::)",
+        "--no-capture",
+        "--retries",
+        "0",
+        "--test-threads=1"
+      ],
+      "minimum": 11,
+      "timeout_seconds": 600,
+      "crate": "codex_hepta_agentd",
+      "expected_names": [
+        "automation_effect_host::pq::tests::current_clock_frontier_and_pq_grant_are_mandatory_before_contact",
+        "automation_effect_host::pq::tests::generation_change_after_store_await_refuses_contact_and_keeps_consumed_nonce",
+        "automation_effect_host::pq::tests::historical_policy_does_not_connect_old_trust_services_or_follow_its_references",
+        "automation_effect_host::pq::tests::initial_feed_is_authenticated_before_any_local_authority_or_frontier_write",
+        "automation_effect_host::pq::tests::ordinary_dispatch_and_new_generation_recovery_keep_one_stable_operation",
+        "automation_effect_host::pq::tests::ordinary_loader_denies_classical_schema_and_contract_or_policy_substitution",
+        "automation_effect_host::pq::tests::pon_schema4_binds_native_binary_and_original_limits_without_running_a_node",
+        "automation_effect_host::pq::tests::reconcile_rechecks_generation_after_store_await_without_reclassifying_unknown",
+        "automation_effect_host::pq::tests::recovery_requires_current_signed_exact_historical_policy_and_same_provider",
+        "automation_effect_host::pq::tests::revoked_equal_number_drift_expired_feed_and_new_epoch_do_not_contact_provider",
+        "automation_effect_host::pq::tests::signed_revocation_after_store_await_obeys_active_effect_fence_and_never_sends"
+      ],
+      "original_step_name": "Run the eleven ordinary PQ effect and recovery controls",
+      "step_environment": {
+        "CARGO_NET_OFFLINE": "true"
+      },
+      "family": "original-workflow"
+    },
+    {
+      "name": "effect-pq-contract",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-model-provider",
+        "--lib",
+        "-E",
+        "test(provider_effect::pq_tests::)",
+        "--no-capture",
+        "--retries",
+        "0",
+        "--test-threads=1"
+      ],
+      "minimum": 1,
+      "timeout_seconds": 600,
+      "crate": "codex_model_provider",
+      "expected_names": [
+        "provider_effect::pq_tests::pq_contract_binds_profile_root_epoch_and_complete_authority_scope"
+      ],
+      "original_step_name": "Run the PQ provider contract signature control",
+      "step_environment": {
+        "CARGO_NET_OFFLINE": "true"
+      },
+      "family": "original-workflow"
+    },
+    {
+      "name": "effect-settled-absence",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-automation",
+        "--test",
+        "authorized_effect",
+        "-E",
+        "test(=owner_recovery_tests::settled_absence_fact_read_survives_reopen_and_new_owner_without_redispatch) | test(=owner_recovery_tests::settled_absence_fact_read_rejects_unknown_unsettled_and_corrupt_evidence)",
+        "--no-capture",
+        "--retries",
+        "0",
+        "--test-threads=1"
+      ],
+      "minimum": 2,
+      "timeout_seconds": 600,
+      "crate": "authorized_effect",
+      "expected_names": [
+        "owner_recovery_tests::settled_absence_fact_read_rejects_unknown_unsettled_and_corrupt_evidence",
+        "owner_recovery_tests::settled_absence_fact_read_survives_reopen_and_new_owner_without_redispatch"
+      ],
+      "original_step_name": "Run the two settled absence history and corruption controls",
+      "step_environment": {
+        "CARGO_NET_OFFLINE": "true"
+      },
+      "family": "original-workflow-plus-new-two"
+    },
+    {
+      "name": "effect-pq-product",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-agentd",
+        "--test",
+        "automation_effect_pq_product",
+        "-E",
+        "test(=pq_effect_survives_owned_agentd_kill_after_provider_fsync_without_resend)",
+        "--no-capture",
+        "--retries",
+        "0",
+        "--test-threads=1"
+      ],
+      "minimum": 1,
+      "timeout_seconds": 1800,
+      "crate": "automation_effect_pq_product",
+      "expected_names": [
+        "pq_effect_survives_owned_agentd_kill_after_provider_fsync_without_resend"
+      ],
+      "original_step_name": "Run the ordinary Agentd process through provider ACK loss and owned kill",
+      "step_environment": {
+        "CARGO_NET_OFFLINE": "true",
+        "HEPTA_PQ_EFFECT_PROCESS_EVIDENCE_DIR": "${{ runner.temp }}/pq-policy-renewal/effect-pq-product-process",
+        "HEPTA_PQ_EFFECT_SOURCE_ROOT": "${{ github.workspace }}"
+      },
+      "family": "original-workflow"
+    },
+    {
+      "name": "selected-tests-guard",
+      "timeout_seconds": 20,
+      "expected_cases": 71,
+      "family": "existing-guard-with-new-two"
+    },
+    {
+      "name": "original-six-effect-controls",
+      "timeout_seconds": 600,
+      "expected_cases": 6,
+      "family": "additional-original-gate"
+    },
+    {
+      "name": "provider-effect-existing-and-pq",
+      "timeout_seconds": 600,
+      "minimum": 10,
+      "family": "additional-original-gate"
+    },
+    {
+      "name": "final-use-profile-controls",
+      "timeout_seconds": 600,
+      "minimum": 1,
+      "family": "additional-original-gate"
+    },
+    {
+      "name": "full-evidence-library",
+      "timeout_seconds": 600,
+      "minimum": 22,
+      "expected_passed": 161,
+      "expected_ignored": 1,
+      "family": "additional-original-gate"
+    },
+    {
+      "name": "full-evidence-ignored-list",
+      "timeout_seconds": 20,
+      "family": "same-captured-image-classification-no-test-credit"
+    },
+    {
+      "name": "fix",
+      "command": [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-hepta-evidence",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "-p",
+        "codex-hepta-contracts",
+        "-p",
+        "codex-model-provider",
+        "-p",
+        "codex-hepta-automation"
+      ],
+      "minimum": 0,
+      "timeout_seconds": 1200,
+      "crate": null,
+      "expected_names": [],
+      "original_step_name": "Run the original scoped linter and retain any source mutation as failure",
+      "step_environment": {
+        "CARGO_NET_OFFLINE": "true"
+      },
+      "family": "original-workflow-scoped-automation-added"
+    },
+    {
+      "name": "format",
+      "command": [
+        "just",
+        "fmt",
+        "--base",
+        "1556a4df6e279055fd8196f81a4ca2fe0f19384a"
+      ],
+      "timeout_seconds": 300,
+      "family": "original-workflow"
+    }
+  ],
+  "hosted_matrix_credit": false,
+  "new_runner_configuration": true,
+  "no_global_kernel_changes": true
+}

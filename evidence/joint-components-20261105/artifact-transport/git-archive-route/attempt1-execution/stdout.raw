@@ -1,0 +1,118 @@
+{
+  "auth_route": "existing-source HTTPS settings in process memory; get-only credential bridge",
+  "automatic_retry": false,
+  "configurations_after": {
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/config": "24452f7031356ffbc08ab7fb9657efa5b67fb0b16b2a2ce704ec99d1514267b8",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/hepta-audit-provider-recovery-fix-20261103/config.worktree": "bfefdfeb2bf56f4a5282c172fe3a69b4075e13fe3bf3cd54f6611bafa461c276",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/source-h2/config.worktree": "443a5f645c23c3d0c0aa09f634b2ad111d46ef61946b598a2fb311678ab47454",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/source-h3/config.worktree": "443a5f645c23c3d0c0aa09f634b2ad111d46ef61946b598a2fb311678ab47454",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/source1/config.worktree": "443a5f645c23c3d0c0aa09f634b2ad111d46ef61946b598a2fb311678ab47454"
+  },
+  "configurations_before": {
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/config": "24452f7031356ffbc08ab7fb9657efa5b67fb0b16b2a2ce704ec99d1514267b8",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/hepta-audit-provider-recovery-fix-20261103/config.worktree": "bfefdfeb2bf56f4a5282c172fe3a69b4075e13fe3bf3cd54f6611bafa461c276",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/source-h2/config.worktree": "443a5f645c23c3d0c0aa09f634b2ad111d46ef61946b598a2fb311678ab47454",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/source-h3/config.worktree": "443a5f645c23c3d0c0aa09f634b2ad111d46ef61946b598a2fb311678ab47454",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/source1/config.worktree": "443a5f645c23c3d0c0aa09f634b2ad111d46ef61946b598a2fb311678ab47454"
+  },
+  "credential_preflight": "existing_helper_returned_credential_in_memory_only_not_write_authorization",
+  "elapsed_seconds": 4.051636024028994,
+  "exception_type": "RuntimeError",
+  "existing_refs_mutated": false,
+  "full_cloud_byte_readback": false,
+  "hooks": "no_effective_hooks_path_and_no_existing_local_hooks_no_override",
+  "isolated_config_after_sha256": "dd548269913b6adbdfa7049170ea86850050cb762ea3b9c510a0b2986d2113e3",
+  "isolated_config_before_sha256": "dd548269913b6adbdfa7049170ea86850050cb762ea3b9c510a0b2986d2113e3",
+  "native_reexecution": false,
+  "operations": [
+    {
+      "classification": null,
+      "operation": "init-new-isolated-bare",
+      "returncode": 0,
+      "seconds": 0.008786018937826157,
+      "stderr_bytes": 472,
+      "stdout_bytes": 115,
+      "timed_out": false
+    },
+    {
+      "classification": "unclassified_git_error_raw_withheld",
+      "operation": "inspect-effective-hook-configuration",
+      "returncode": 1,
+      "seconds": 0.0033923470182344317,
+      "stderr_bytes": 0,
+      "stdout_bytes": 0,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "source-git-readonly",
+      "returncode": 0,
+      "seconds": 0.0036281259963288903,
+      "stderr_bytes": 0,
+      "stdout_bytes": 63,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "source-git-readonly",
+      "returncode": 0,
+      "seconds": 0.0034863209584727883,
+      "stderr_bytes": 0,
+      "stdout_bytes": 63,
+      "timed_out": false
+    },
+    {
+      "classification": "unclassified_git_error_raw_withheld",
+      "operation": "source-git-readonly",
+      "returncode": 1,
+      "seconds": 0.0025067429523915052,
+      "stderr_bytes": 0,
+      "stdout_bytes": 0,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "existing-get-only-credential-preflight",
+      "returncode": 0,
+      "seconds": 1.1211997270584106,
+      "stderr_bytes": 0,
+      "stdout_bytes": 71,
+      "timed_out": false
+    },
+    {
+      "classification": "unclassified_git_error_raw_withheld",
+      "operation": "validate-isolated-origin-route",
+      "returncode": 2,
+      "seconds": 0.0038202169816941023,
+      "stderr_bytes": 35,
+      "stdout_bytes": 0,
+      "timed_out": false
+    }
+  ],
+  "plan_sha256": "5a27e3f47c70b210d5d0a944dd43ef6c270405851f0259e3ee9f4fa9c43e8a3b",
+  "protected_unchanged": true,
+  "push_attempts": 0,
+  "raw_origin_or_credentials_logged_or_saved": false,
+  "ref": "refs/heads/evidence/actual-elf-transport-20261105-93bfc-01",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "schema": "actual-archive-orphan-git-transport-v1",
+  "script_sha256": "1676fdc30a8bbd60c51fd087eebdf6c9e44de83405a5d70e0c55029911e34626",
+  "source_after": {
+    "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+    "dirty": false,
+    "parents": [
+      "595475a615a03ca9f63c2c1f6e532bd362c20a74"
+    ],
+    "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772"
+  },
+  "source_before": {
+    "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+    "dirty": false,
+    "parents": [
+      "595475a615a03ca9f63c2c1f6e532bd362c20a74"
+    ],
+    "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772"
+  },
+  "source_or_native_qualification": false,
+  "status": "FAILED_NO_AUTOMATIC_RETRY"
+}

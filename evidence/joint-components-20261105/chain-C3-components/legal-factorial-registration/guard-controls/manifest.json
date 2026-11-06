@@ -1,0 +1,119 @@
+{
+  "additional_names": [
+    "sparse_preparation_matches_dense_and_independent_full_field_proofs",
+    "sparse_preparation_rejects_hidden_noncanonical_words_and_wrong_lengths",
+    "sparse_setup_keeps_complete_misses_callbacks_and_cancelled_retry"
+  ],
+  "candidate_committed": false,
+  "changed_files": [
+    {
+      "base_git_blob": "aa9d7597904d2d0bec32a502160c46ae255381be",
+      "candidate_git_blob": "994f491e4aaf28ef4dbebd85c3a2d8260b6c6db6",
+      "path": ".github/workflows/pon-w1-work-security.yml",
+      "sha256": "1559cc1def59718cf1d938ed7c1718dc1c8aa91361bea47493e91306c292f242"
+    }
+  ],
+  "exact_filtered_source_tests": [
+    "factorial_kernels_match_independent_reference_for_full_and_structured_fields",
+    "losing_attempt_still_replays_every_transcript_tile_without_lazy_serialization",
+    "every_stage_cancellation_returns_no_attempt_and_does_not_poison_retry",
+    "changed_challenge_and_task_never_gain_acceptance_from_cached_product",
+    "boundary_target_is_inclusive_and_zero_target_refuses_before_work",
+    "preparation_never_reduces_noncanonical_fields_or_wrong_shapes",
+    "sparse_preparation_matches_dense_and_independent_full_field_proofs",
+    "sparse_preparation_rejects_hidden_noncanonical_words_and_wrong_lengths",
+    "sparse_setup_keeps_complete_misses_callbacks_and_cancelled_retry"
+  ],
+  "native_tests_executed": false,
+  "observations": [
+    {
+      "exit_code": 0,
+      "expected_acceptance": true,
+      "fixture_only": true,
+      "name": "base-original-six",
+      "passed": true,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "exit_code": 1,
+      "expected_acceptance": false,
+      "fixture_only": true,
+      "name": "base-real-nine-rejected",
+      "passed": true,
+      "stderr_sha256": "9ba3c6852598b14d100b6840f3718babb70c6c2ec36af8e25e616e78225eb225",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "exit_code": 0,
+      "expected_acceptance": true,
+      "fixture_only": true,
+      "name": "candidate-all-nine",
+      "passed": true,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "exit_code": 1,
+      "expected_acceptance": false,
+      "fixture_only": true,
+      "name": "candidate-original-six-rejected",
+      "passed": true,
+      "stderr_sha256": "9ba3c6852598b14d100b6840f3718babb70c6c2ec36af8e25e616e78225eb225",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "exit_code": 1,
+      "expected_acceptance": false,
+      "fixture_only": true,
+      "name": "candidate-missing-original-rejected",
+      "passed": true,
+      "stderr_sha256": "00e019df6a8be326998906408bee45acf20d1736d7c63e9953f299a6e77ef9d0",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "exit_code": 1,
+      "expected_acceptance": false,
+      "fixture_only": true,
+      "name": "candidate-missing-new-rejected",
+      "passed": true,
+      "stderr_sha256": "c2193169905426a9ab3fdec4aef375cb37b24bb334f29728a52dc35df3ef4d4a",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "exit_code": 1,
+      "expected_acceptance": false,
+      "fixture_only": true,
+      "name": "candidate-duplicate-original-rejected",
+      "passed": true,
+      "stderr_sha256": "00e019df6a8be326998906408bee45acf20d1736d7c63e9953f299a6e77ef9d0",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "exit_code": 1,
+      "expected_acceptance": false,
+      "fixture_only": true,
+      "name": "candidate-duplicate-new-rejected",
+      "passed": true,
+      "stderr_sha256": "c2193169905426a9ab3fdec4aef375cb37b24bb334f29728a52dc35df3ef4d4a",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "original_budget_commands_resources_unchanged": true,
+  "parent_commit": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+  "passed": true,
+  "pq_corpus_changed": false,
+  "pq_corpus_workflow_pin_present": false,
+  "production_activation": false,
+  "qualification_status": "HOLD",
+  "retained_original_names": [
+    "factorial_kernels_match_independent_reference_for_full_and_structured_fields",
+    "losing_attempt_still_replays_every_transcript_tile_without_lazy_serialization",
+    "every_stage_cancellation_returns_no_attempt_and_does_not_poison_retry",
+    "changed_challenge_and_task_never_gain_acceptance_from_cached_product",
+    "boundary_target_is_inclusive_and_zero_target_refuses_before_work",
+    "preparation_never_reduces_noncanonical_fields_or_wrong_shapes"
+  ],
+  "schema": "chain-c3-legal-factorial-registration-component-v1",
+  "source_inventory_changed": false
+}

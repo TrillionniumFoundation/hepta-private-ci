@@ -1,0 +1,96 @@
+diff --git a/codex-rs/hepta-agentd/tests/neural_comparison_native.rs b/codex-rs/hepta-agentd/tests/neural_comparison_native.rs
+index 482640c676..da72a9e331 100644
+--- a/codex-rs/hepta-agentd/tests/neural_comparison_native.rs
++++ b/codex-rs/hepta-agentd/tests/neural_comparison_native.rs
+@@ -95,7 +95,12 @@ fn native_comparison_input_requires_v2_and_independently_pinned_snapshot() -> na
+     assert_eq!(read(value.clone())?, snapshot);
+     let mut legacy = value.clone();
+     legacy["schema"] = serde_json::json!("hepta-smollm-neural-comparison-native-v1");
+-    assert!(read(legacy).unwrap_err().to_string().contains("requires v2"));
++    assert!(
++        read(legacy)
++            .unwrap_err()
++            .to_string()
++            .contains("requires v2")
++    );
+     for field in ["runtime_snapshot", "runtime_snapshot_sha256"] {
+         let mut missing = value.clone();
+         missing.as_object_mut().unwrap().remove(field);
+@@ -105,9 +110,18 @@ fn native_comparison_input_requires_v2_and_independently_pinned_snapshot() -> na
+     relative["runtime_snapshot"] = serde_json::json!("relative-runtime.json");
+     assert!(read(relative).unwrap_err().to_string().contains("absolute"));
+     let mut changed = value.clone();
+-    changed["runtime_snapshot_sha256"] = serde_json::json!(Digest32::from_array([3;32]).to_string());
+-    assert!(read(changed).unwrap_err().to_string().contains("snapshot mismatch"));
+-    OpenOptions::new().write(true).open(&path)?.set_len(16 * 1024 * 1024 + 1)?;
++    changed["runtime_snapshot_sha256"] =
++        serde_json::json!(Digest32::from_array([3; 32]).to_string());
++    assert!(
++        read(changed)
++            .unwrap_err()
++            .to_string()
++            .contains("snapshot mismatch")
++    );
++    OpenOptions::new()
++        .write(true)
++        .open(&path)?
++        .set_len(16 * 1024 * 1024 + 1)?;
+     assert!(read(value).unwrap_err().to_string().contains("byte bound"));
+     assert!(!root.join("must-not-create-comparison").exists());
+     assert!(!root.join("unopened-model").exists());
+diff --git a/codex-rs/hepta-agentd/tests/support/automation_effect_binary.rs b/codex-rs/hepta-agentd/tests/support/automation_effect_binary.rs
+index 6dea7930b6..96bd664ba8 100644
+--- a/codex-rs/hepta-agentd/tests/support/automation_effect_binary.rs
++++ b/codex-rs/hepta-agentd/tests/support/automation_effect_binary.rs
+@@ -201,7 +201,10 @@ pub(super) fn retain_live_daemon(
+             (
+                 original.retained_path.clone(),
+                 original.retained.try_clone()?,
+-                original.record["sha256"].as_str().context("original image digest")?.to_owned(),
++                original.record["sha256"]
++                    .as_str()
++                    .context("original image digest")?
++                    .to_owned(),
+                 "same-held-file-object-reuse",
+                 original.record["pid"].clone(),
+                 original.record["start_ticks"].clone(),
+@@ -278,7 +281,11 @@ pub(super) fn retain_live_daemon(
+ 
+ #[test]
+ fn held_daemon_image_reuse_refuses_wrong_changed_or_missing_files() -> Result<()> {
+-    for mutation in ["different_file_object", "changed_held_image", "missing_copy"] {
++    for mutation in [
++        "different_file_object",
++        "changed_held_image",
++        "missing_copy",
++    ] {
+         let directory = tempfile::tempdir()?;
+         let path = directory.path().join("image");
+         let copy = directory.path().join("retained");
+diff --git a/codex-rs/hepta-agentd/tests/support/neural_native_owner.rs b/codex-rs/hepta-agentd/tests/support/neural_native_owner.rs
+index eaf77bef4a..bc3b6b96b7 100644
+--- a/codex-rs/hepta-agentd/tests/support/neural_native_owner.rs
++++ b/codex-rs/hepta-agentd/tests/support/neural_native_owner.rs
+@@ -83,7 +83,9 @@ impl Input {
+             || metadata.len() > limit
+             || self.runtime_snapshot.canonicalize()? != self.runtime_snapshot
+         {
+-            return Err("runtime snapshot requires a canonical regular file within its byte bound".into());
++            return Err(
++                "runtime snapshot requires a canonical regular file within its byte bound".into(),
++            );
+         }
+         let file = fs::File::open(&self.runtime_snapshot)?;
+         if !file.metadata()?.is_file() || file.metadata()?.len() != metadata.len() {
+@@ -91,10 +93,7 @@ impl Input {
+         }
+         let mut raw = Vec::new();
+         file.take(limit + 1).read_to_end(&mut raw)?;
+-        if raw.is_empty()
+-            || raw.len() as u64 > limit
+-            || Digest32::of_bytes(&raw) != expected
+-        {
++        if raw.is_empty() || raw.len() as u64 > limit || Digest32::of_bytes(&raw) != expected {
+             return Err("independently pinned runtime snapshot mismatch or byte bound".into());
+         }
+         let value: serde_json::Value = serde_json::from_slice(&raw)?;

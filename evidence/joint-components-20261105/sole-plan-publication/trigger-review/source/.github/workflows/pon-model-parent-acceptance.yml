@@ -1,0 +1,79 @@
+name: PoN parent-bound model evidence
+on:
+  pull_request:
+    paths:
+      - formal/pon-nakamoto-v1/**
+      - .github/workflows/pon-model-parent-acceptance.yml
+permissions:
+  contents: read
+jobs:
+  parent-evidence:
+    name: parent evidence (${{ matrix.runner }}, ${{ matrix.source }})
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-24.04, ubuntu-24.04-arm]
+        source: [head, prospective-merge]
+    env:
+      EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+      EXPECTED_BASE: ${{ github.event.pull_request.base.sha }}
+      EXPECTED_MERGE: ${{ github.sha }}
+      SOURCE_KIND: ${{ matrix.source }}
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ matrix.source == 'head' && github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind actual source and retain original preflight
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/parent-evidence"
+          args=(--kind "$SOURCE_KIND" --expected-head "$EXPECTED_HEAD")
+          if [ "$SOURCE_KIND" = prospective-merge ]; then
+            args+=(--expected-base "$EXPECTED_BASE" --expected-merge "$EXPECTED_MERGE")
+          fi
+          python3 scripts/ci/verify_ci_source.py "${args[@]}" --output "$RUNNER_TEMP/parent-evidence/source.json"
+          bash scripts/project-preflight.sh --audit
+      - name: Prepare existing model verifier dependencies
+        run: |
+          python3 -m venv "$RUNNER_TEMP/model-env"
+          "$RUNNER_TEMP/model-env/bin/python" -m pip install --disable-pip-version-check --only-binary=:all: -r formal/pon-nakamoto-v1/requirements.txt
+      - name: Execute original and strict parent-bound owners
+        shell: bash
+        run: |
+          set -euo pipefail
+          status=0
+          for spec in model_window_history model_consumer_context model_generation_sequence model_generation_sequence_context model_generation_sequence_parent; do
+            if ! "$RUNNER_TEMP/model-env/bin/python" "formal/pon-nakamoto-v1/test_${spec}.py" -v 2>&1 | tee "$RUNNER_TEMP/parent-evidence/${spec}.log"; then
+              status=1
+            fi
+          done
+          grep -E '^Ran 7 tests in ' "$RUNNER_TEMP/parent-evidence/model_generation_sequence.log" || status=1
+          grep -E '^Ran 8 tests in ' "$RUNNER_TEMP/parent-evidence/model_generation_sequence_context.log" || status=1
+          grep -E '^Ran 10 tests in ' "$RUNNER_TEMP/parent-evidence/model_generation_sequence_parent.log" || status=1
+          exit "$status"
+      - name: Recheck source and retain replayable exact reference sources
+        if: ${{ always() && steps.source.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=(--kind "$SOURCE_KIND" --expected-head "$EXPECTED_HEAD")
+          if [ "$SOURCE_KIND" = prospective-merge ]; then
+            args+=(--expected-base "$EXPECTED_BASE" --expected-merge "$EXPECTED_MERGE")
+          fi
+          python3 scripts/ci/verify_ci_source.py "${args[@]}" --output "$RUNNER_TEMP/parent-evidence/source-after.json"
+          cmp "$RUNNER_TEMP/parent-evidence/source.json" "$RUNNER_TEMP/parent-evidence/source-after.json"
+          git archive HEAD formal/pon-nakamoto-v1 config > "$RUNNER_TEMP/parent-evidence/reference-source.tar"
+          (cd "$RUNNER_TEMP/parent-evidence" && sha256sum *.log *.json reference-source.tar > sha256sums.txt)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: parent-evidence-${{ matrix.runner }}-${{ matrix.source }}-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/parent-evidence
+          if-no-files-found: error

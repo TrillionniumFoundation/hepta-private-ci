@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-c\",\n      \"from pathlib import Path; import hashlib,sys; b=sys.stdin.buffer.read(); assert hashlib.sha256(b).hexdigest()=='e98737dd162e345434c0a9e1acf7bf46cff17c0e7698007b9e85b61d64cf30bd'; p=Path('/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/prepare_h2_final_source.py'); p.open('xb').write(b); exec(compile(b,str(p),'exec'),{'__name__':'__main__','__file__':str(p)})\"\n    ],\n    \"created_unix_ms\": 1793909049306,\n    \"cwd\": \"/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf\",\n    \"env_keys\": [\n      \"GIT_NO_LAZY_FETCH\",\n      \"GIT_TERMINAL_PROMPT\",\n      \"PYTHONDONTWRITEBYTECODE\"\n    ],\n    \"executable\": \"/usr/bin/python3\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"desktop\",\n    \"id\": \"1a1ad4fc7da-fc05-5961\",\n    \"idempotency_key\": \"ms-h2-final-source-620cb-attempt1-93bfcf\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1ad4fc7da-fc05-5961\",\n    \"request_digest\": \"72b0cf3fab957e4f160839a2dbba919cb33f0fbeb139030c3afce0dc8779bd58\",\n    \"request_fingerprint\": 8264333188593450575,\n    \"ssh_target\": \"desktop-ts\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1ad4fc7da-fc05-5961\"\n  },\n  \"launch\": {\n    \"backend\": \"systemd\",\n    \"launcher_pid\": null,\n    \"ok\": true,\n    \"unit\": \"hepta-runtime-job-1a1ad4fc7da-fc05-5961\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

@@ -1,0 +1,102 @@
+{
+  "assertion_red_proven": false,
+  "base_commit": "1556a4df6e279055fd8196f81a4ca2fe0f19384a",
+  "base_tree": "9675a9e62a1fbbdaed3248eb239bb2036d79feba",
+  "candidate": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/source",
+  "current_command": [
+    "/usr/bin/python3",
+    "scripts/hepta_ci_exec.py",
+    "--output",
+    "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/evidence/attempt-2/red-five-controls.json",
+    "--minimum-tests",
+    "5",
+    "--timeout-seconds",
+    "600",
+    "--",
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-evidence",
+    "--lib",
+    "-E",
+    "test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_effect_projection_drift_with_retained_payloads) | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_canonical_ack_bound_to_a_different_payload) | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_orphan_effect_observations) | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_after_schema_drift) | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_at_page_boundary)",
+    "--no-capture",
+    "--retries",
+    "0",
+    "--test-threads=1"
+  ],
+  "current_commit": "cf665344d5c4af16f03eb46e3eeb0c47ef028d6a",
+  "error": "RuntimeError: RED must contain all five intended native assertion failures, not a build/fixture/selection failure",
+  "finished_unix": 1793888343.4304354,
+  "gates": {
+    "apply-tests": {
+      "command": [
+        "git",
+        "apply",
+        "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/evidence/attempt-2/test_patch.patch"
+      ],
+      "exit_code": 0,
+      "kind": "preparation",
+      "log": "apply-tests.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "commit-red": {
+      "command": [
+        "git",
+        "commit",
+        "--only",
+        "codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs",
+        "-m",
+        "test(evidence): expose effect frontier projection and sequence gaps"
+      ],
+      "exit_code": 0,
+      "kind": "preparation",
+      "log": "commit-red.log",
+      "log_sha256": "c7d4b2ebb6a26eb70588e4d9a1bb1d55fa718bdb848bb09eeb2aeea32b4f93b2"
+    },
+    "dependencies": {
+      "command_exit_code": 0,
+      "failed": 0,
+      "log_file": "dependencies.json.664545ed845e4f54b0d5825a66d070f7.log",
+      "passed": 0,
+      "receipt": "dependencies.json",
+      "status": "passed",
+      "timed_out": false,
+      "wrapper_exit": 0
+    },
+    "format-red-preparation": {
+      "command": [
+        "just",
+        "fmt",
+        "--base",
+        "1556a4df6e279055fd8196f81a4ca2fe0f19384a"
+      ],
+      "exit_code": 0,
+      "kind": "preparation",
+      "log": "format-red-preparation.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "red-five-controls": {
+      "command_exit_code": 100,
+      "failed": 5,
+      "log_file": "red-five-controls.json.53d211c1308c40649f47675903537b37.log",
+      "passed": 0,
+      "receipt": "red-five-controls.json",
+      "status": "failed",
+      "timed_out": false,
+      "wrapper_exit": 100
+    }
+  },
+  "initial_lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+  "patch_payload_sha256": {
+    "implementation_patch": "5a3c74af20ab497388cca8233d81253b8762d12c99b2c5294edeb3b61d226591",
+    "test_patch": "827cea1db5fa4d019f2b00fb90452d690456967165dd626528cecc9c69b32041"
+  },
+  "phase": "stopped",
+  "red_commit": "cf665344d5c4af16f03eb46e3eeb0c47ef028d6a",
+  "red_tree": "9037266d1ba9b7262fd19a81c2f86b56a8e25361",
+  "schema_version": 1,
+  "started_unix": 1793887802.446978,
+  "status": "failed"
+}

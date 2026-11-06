@@ -1,0 +1,13 @@
+{
+  "scope": "static review only; no test failure",
+  "refusal": "candidate/validation workflow drift",
+  "reason": "selected Python validation fixture retained the original workflow; it is not imported or read by the executed source controls",
+  "details": [
+    {
+      "path": ".github/workflows/hepta-pon-native-pair.yml",
+      "candidate_sha256": "fc97825dc816a02d2c1cadb99085d42df74cc9342ccaab6b31962078ef985842",
+      "validation_sha256": "f6c61acfbbf3733796d0efd9ef04187ecfc24fe9c11c2ed838b398cb613527b1"
+    }
+  ],
+  "fix": "Copy candidate workflow into validation fixture; all executed Python/config bytes remain unchanged"
+}

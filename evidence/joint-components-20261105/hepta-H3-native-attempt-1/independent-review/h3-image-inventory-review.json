@@ -1,0 +1,169 @@
+{
+  "schema": "h3-image-inventory-independent-review-v1",
+  "inventory": {
+    "path": "model_storage/h3-preparation/native/joint-h3-native-attempt-1/h3-actual-image-inventory.json",
+    "bytes": 278536,
+    "sha256": "6a8ecb8b9160284baf91d13b61973e4ee3b64b5a740cde0908ccd7b4c03361b7"
+  },
+  "source_commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+  "source_tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+  "status_preserved": "FAILED",
+  "unique_images": 11,
+  "unique_bytes": 1674575368,
+  "retained_aliases": 30,
+  "observations_cross_referenced": 279,
+  "input_evidence_files": [
+    {
+      "path": "dispatcher.fd-executed-binaries.json",
+      "bytes": 36651,
+      "sha256": "89d9a4c4d687e11dd03f9d5ba34edaf7cf60b8eb009a0d169afe3b3e435d4b8a"
+    },
+    {
+      "path": "dispatcher.live-polled-binaries.json",
+      "bytes": 20494,
+      "sha256": "19b0a3c4e6b7922aca30b4145a27b937ff0b53b7d4d28d9e001a5f620b5c51c7"
+    },
+    {
+      "path": "effect-pq-contract.fd-executed-binaries.json",
+      "bytes": 3837,
+      "sha256": "01ee081b65832993a172461a5c8d93b5be665f278b2a7ab67b3d81ef287d5f34"
+    },
+    {
+      "path": "effect-pq-contract.live-polled-binaries.json",
+      "bytes": 1713,
+      "sha256": "a5223cd5df531d91d4200b33da85cb031dc1006834372165725a353f818cdd09"
+    },
+    {
+      "path": "effect-pq-owner.fd-executed-binaries.json",
+      "bytes": 29373,
+      "sha256": "b43b8630ab3fe757043a64e6f204ceb1e834e5c95f05a81c36883696887428ba"
+    },
+    {
+      "path": "effect-pq-owner.live-polled-binaries.json",
+      "bytes": 16316,
+      "sha256": "f580df7e9af8db9a8f5d3085d47dcce2782268d0fb4db1ce3dd8a94f94a8a229"
+    },
+    {
+      "path": "effect-pq-product-process/1032265-1793915885381498081/completed.json",
+      "bytes": 7032,
+      "sha256": "f70ff1df3fd8a4b38b9c984400c1fa5101a882cae38720638bed6ee77310c50f"
+    },
+    {
+      "path": "effect-pq-product.fd-executed-binaries.json",
+      "bytes": 6216,
+      "sha256": "61d7fc4fc5586f514b84df20da0217d8bae7404262e2ea34097e368b895c2406"
+    },
+    {
+      "path": "effect-pq-product.live-polled-binaries.json",
+      "bytes": 3070,
+      "sha256": "abefc4237ba322cb516b59b036fb834e1cd64f2d63f26c435e21e433d1d0134b"
+    },
+    {
+      "path": "effect-settled-absence.fd-executed-binaries.json",
+      "bytes": 6352,
+      "sha256": "63d3b8b32693ca957de8eaeeeafaca9260771a9ddf5a7c07d54f59489bca222f"
+    },
+    {
+      "path": "effect-settled-absence.live-polled-binaries.json",
+      "bytes": 3154,
+      "sha256": "0f0ab02b413da5849742d05ea30c0db1f4c9ea486f986f1043f3480d366c0f83"
+    },
+    {
+      "path": "final-use-profile-controls.fd-executed-binaries.json",
+      "bytes": 125564,
+      "sha256": "7c9de5bc44ad89894322f84c3e0a4afa2fada4de60ec0142e4ec52d8f55c19d6"
+    },
+    {
+      "path": "final-use-profile-controls.live-polled-binaries.json",
+      "bytes": 71299,
+      "sha256": "685c07e12f13a047f4f211bf60e38e30784ef09e36a733dad340bdefd29c76e5"
+    },
+    {
+      "path": "neural-runtime-input.fd-executed-binaries.json",
+      "bytes": 6698,
+      "sha256": "e9680190a42339c7ea5698c0126274850357aa96f6a26f01714b55b60e748b1c"
+    },
+    {
+      "path": "neural-runtime-input.live-polled-binaries.json",
+      "bytes": 3717,
+      "sha256": "c9c70b5fcd60db2206e9869955c02903dd16fd4ba0648c034eecc9fea86c789b"
+    },
+    {
+      "path": "original-six-effect-controls.fd-executed-binaries.json",
+      "bytes": 16781,
+      "sha256": "4038c3fc38334f53d62fcad7c3b3490a726bba497bf5fecdbaddb8eb843ccba0"
+    },
+    {
+      "path": "original-six-effect-controls.live-polled-binaries.json",
+      "bytes": 9094,
+      "sha256": "62a1e49e830b807d5931af71477629df806903c3d156b71ff29212d31a03cdd9"
+    },
+    {
+      "path": "product.fd-executed-binaries.json",
+      "bytes": 8422,
+      "sha256": "292ee7d212347363bae9f83d14f6fa0fbc87a1e8aa632b09eb3a09c7ce18f93e"
+    },
+    {
+      "path": "product.live-polled-binaries.json",
+      "bytes": 4381,
+      "sha256": "1706afeb2f2201e7512ebf07182b6edf89dcc6ab5f4df84d9b5acfb7d7507526"
+    },
+    {
+      "path": "provider-effect-existing-and-pq.fd-executed-binaries.json",
+      "bytes": 26131,
+      "sha256": "f0a34d934676c9fc179abdc37ab0489d3deea75d864f95438ad179b4046e1c3b"
+    },
+    {
+      "path": "provider-effect-existing-and-pq.live-polled-binaries.json",
+      "bytes": 11631,
+      "sha256": "c03767a7688753a5792811afe848f6249d4b1afcff697b85ed79c48b757c2711"
+    },
+    {
+      "path": "qualification-growth.fd-executed-binaries.json",
+      "bytes": 6252,
+      "sha256": "80c8bee9d41c251f203229996197024be78d7c63d9d415928ee3dd003075bc5c"
+    },
+    {
+      "path": "qualification-growth.live-polled-binaries.json",
+      "bytes": 3100,
+      "sha256": "fadc06790fa21c8e9ac0eda6fa1d7cc8d939840516d9ae2302ee68be96c7eea5"
+    },
+    {
+      "path": "recovery-owner.fd-executed-binaries.json",
+      "bytes": 56728,
+      "sha256": "114d31419c0286d904318150aa9dee2038071031e3caacf10c33f8719271dc06"
+    },
+    {
+      "path": "recovery-owner.live-polled-binaries.json",
+      "bytes": 31965,
+      "sha256": "9ed063acca4f54a32ba836817f30bcbbee60dfdf8a73f1a0e7bd85a945083e02"
+    },
+    {
+      "path": "recovery-product.fd-executed-binaries.json",
+      "bytes": 10908,
+      "sha256": "dacd1926b819c9d3cb7ba7f921fafb9eb911b1a98da504f3ac685ab54d6f732d"
+    },
+    {
+      "path": "recovery-product.live-polled-binaries.json",
+      "bytes": 5785,
+      "sha256": "827649867eb1399760d45b6bd7545949a6c61b18e53016c157b29e853bc88edd"
+    },
+    {
+      "path": "recovery-signed.fd-executed-binaries.json",
+      "bytes": 28399,
+      "sha256": "b84582772b6e487028ef4e260fc4a24f4cd3841be07cf2de87e62050ddadbaba"
+    },
+    {
+      "path": "recovery-signed.live-polled-binaries.json",
+      "bytes": 15827,
+      "sha256": "162ffbfec0b32b644f0550e9b9851392cfd5cddb5da95dc90e8db106d6a99868"
+    }
+  ],
+  "unmatched_live_pid": 1038111,
+  "unmatched_live_start_ticks": "99368575",
+  "unmatched_live_not_relabelled_or_retroactively_attributed": true,
+  "daemon_two_generations_one_retained_actual_image": true,
+  "second_daemon_full_hash_and_copy": false,
+  "maximum_single_image_bytes": 504302232,
+  "scope": "Metadata and original receipt/record cross-reference only. No remote ELF byte read, archive execution, or native rerun. Complete-image inventory does not prove absence of unrecorded partial files elsewhere. Export must preserve FAILED status, all alias provenance, and old unmatched-parent boundary."
+}

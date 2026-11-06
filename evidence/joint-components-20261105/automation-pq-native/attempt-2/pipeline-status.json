@@ -1,0 +1,62 @@
+{
+  "base": "1556a4df6e279055fd8196f81a4ca2fe0f19384a",
+  "base_tree": "9675a9e62a1fbbdaed3248eb239bb2036d79feba",
+  "status": "failed",
+  "gates": {
+    "dispatcher": {
+      "receipt": "dispatcher.json",
+      "wrapper_exit": 101,
+      "status": "failed",
+      "command_exit_code": 101,
+      "passed": 0,
+      "failed": 0,
+      "timed_out": false,
+      "log_file": "dispatcher.json.40618f74fdf142609e44960b94baf047.log",
+      "source": {
+        "commit": "495e36f8cb71fdae7290710dd339e2ee34d4feec",
+        "tree": "a9a266faa47ba78430ff73f31e55b14e0043e196",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "735d9437a7675fe045e2fb6cce7a1964c6e48b1cee229cfc8feec32c16315f48"
+      },
+      "actual_binary_evidence": {
+        "records": [],
+        "errors": [],
+        "unique_actual_elf_sha256": [],
+        "observed_selected_tests": [],
+        "capture_scope": "actual executing test-image binding; polling may miss individual short-lived cases",
+        "runner_declared_binary_counts": []
+      }
+    }
+  },
+  "started_unix": 1793893297.5524802,
+  "scope": "UNQUALIFIED_NATIVE_COMPONENT; no deployment custody, physical Agentd SIGKILL, WAN, or joint claim",
+  "phase": "failed",
+  "current_command": [
+    "/usr/bin/python3",
+    "scripts/hepta_ci_exec.py",
+    "--output",
+    "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/native-attempt-2/dispatcher.json",
+    "--minimum-tests",
+    "14",
+    "--timeout-seconds",
+    "3600",
+    "--",
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-agentd",
+    "--lib",
+    "-E",
+    "test(authbus_dispatch::tests::)",
+    "--no-capture",
+    "--retries",
+    "0",
+    "--test-threads=1"
+  ],
+  "current_commit": "495e36f8cb71fdae7290710dd339e2ee34d4feec",
+  "current_tree": "a9a266faa47ba78430ff73f31e55b14e0043e196",
+  "error": "RuntimeError('dispatcher did not pass its original clean-source wrapper')",
+  "finished_unix": 1793893379.675584
+}

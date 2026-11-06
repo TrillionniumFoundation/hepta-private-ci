@@ -1,0 +1,163 @@
+--- a/scripts/ci/report_module_evidence.py
++++ b/scripts/ci/report_module_evidence.py
+@@ -13,6 +13,7 @@
+ import json
+ import re
+ import subprocess
++from functools import lru_cache, wraps
+ from pathlib import Path
+ from typing import Any
+ 
+@@ -34,9 +35,26 @@
+     'ordinary_product_entrypoint', 'backend', 'persistence_owner',
+     'evidence_selectors', 'remaining',
+ }
+-
+-
+-def python_symbols(text: str) -> set[str]:
++_PARSE_CACHE_ENTRIES = 128
++_PARSE_CACHE_MAX_CHARS = 256 * 1024
++
++
++def _cache_source_parse(parse):
++    """Cache pure transforms of complete current text, never paths or verdicts."""
++    cached = lru_cache(maxsize=_PARSE_CACHE_ENTRIES)(parse)
++
++    @wraps(parse)
++    def current(text):
++        # Bound retained source size as well as entry count. Large inputs still
++        # receive the complete original parse; they simply are not retained.
++        if len(text) > _PARSE_CACHE_MAX_CHARS:
++            return parse(text)
++        return cached(text)
++    return current
++
++
++@_cache_source_parse
++def python_symbols(text: str) -> frozenset[str]:
+     found: set[str] = set()
+ 
+     def visit(nodes: list[ast.stmt], prefix: str = '') -> None:
+@@ -46,7 +64,7 @@
+                 found.add(name)
+                 visit(node.body, name + '.')
+     visit(ast.parse(text).body)
+-    return found
++    return frozenset(found)
+ 
+ 
+ def check_symbol(root: Path, ref: dict[str, str]) -> None:
+@@ -148,6 +166,7 @@
+     return False
+ 
+ 
++@_cache_source_parse
+ def rust_code(text: str) -> str:
+     """Mask comments/string literals, preserving layout for source-only test binding."""
+     out = list(text)
+--- a/scripts/ci/test_applicability.py
++++ b/scripts/ci/test_applicability.py
+@@ -3,6 +3,7 @@
+ import ast
+ from copy import deepcopy
+ import json
++import os
+ import shutil
+ import tempfile
+ import unittest
+@@ -15,7 +16,94 @@
+     NATIVE_CONTINUATION_PROFILES, validate_native_continuation_profile,
+     validate, markdown, profile_table,
+ )
+-from report_module_evidence import check_test_selector
++from report_module_evidence import check_test_selector, python_symbols
++
++
++class ParserCacheMutationTests(unittest.TestCase):
++    """Warm parsing must never turn a previous source binding into authority."""
++
++    def setUp(self):
++        self.temp = tempfile.TemporaryDirectory(prefix='pon-parser-cache-')
++        self.addCleanup(self.temp.cleanup)
++        self.root = Path(self.temp.name)
++
++    def replace_same_metadata(self, path, text):
++        before = path.stat()
++        self.assertEqual(len(text.encode()), before.st_size)
++        path.write_text(text)
++        os.utime(path, ns=(before.st_atime_ns, before.st_mtime_ns))
++        after = path.stat()
++        self.assertEqual(after.st_size, before.st_size)
++        self.assertEqual(after.st_mtime_ns, before.st_mtime_ns)
++
++    def test_warm_rust_parser_reads_same_size_same_mtime_changes(self):
++        path = self.root / 'bound.rs'
++        original = '#[test]\nfn test_bound() {}\n'
++        path.write_text(original)
++        for _ in range(2):
++            check_test_selector(self.root, 'bound.rs::test_bound')
++        self.replace_same_metadata(path, '#[test]\nfn test_other() {}\n')
++        with self.assertRaisesRegex(ValueError, 'missing Rust callable'):
++            check_test_selector(self.root, 'bound.rs::test_bound')
++        check_test_selector(self.root, 'bound.rs::test_other')
++        self.replace_same_metadata(path, original)
++        check_test_selector(self.root, 'bound.rs::test_bound')
++
++    def test_warm_python_parser_reads_same_size_same_mtime_changes(self):
++        path = self.root / 'bound.py'
++        original = 'def test_bound():\n    return 1\n'
++        path.write_text(original)
++        for _ in range(2):
++            check_test_selector(self.root, 'bound.py::test_bound')
++        self.replace_same_metadata(path, 'def test_other():\n    return 1\n')
++        with self.assertRaisesRegex(ValueError, 'missing Python owner'):
++            check_test_selector(self.root, 'bound.py::test_bound')
++        check_test_selector(self.root, 'bound.py::test_other')
++        self.replace_same_metadata(path, original)
++        check_test_selector(self.root, 'bound.py::test_bound')
++
++    def test_warm_rust_parser_refuses_comments_strings_and_unattributed_helpers(self):
++        path = self.root / 'bound.rs'
++        original = '#[test]\nfn test_bound() {}\n'
++        for text in ['// #[test]\n// fn test_bound() {}',
++                     '/* outer /* inner */ #[test] fn test_bound() {} */',
++                     'const S: &str = r#"#[test] fn test_bound() {}"#;',
++                     'fn test_bound() {}']:
++            with self.subTest(source=text):
++                path.write_text(original)
++                check_test_selector(self.root, 'bound.rs::test_bound')
++                path.write_text(text)
++                with self.assertRaises(ValueError):
++                    check_test_selector(self.root, 'bound.rs::test_bound')
++                path.write_text(original)
++                check_test_selector(self.root, 'bound.rs::test_bound')
++
++    def test_python_symbol_results_cannot_pollute_later_calls(self):
++        text = 'class Suite:\n    def test_bound(self):\n        pass\n'
++        symbols = python_symbols(text)
++        add = getattr(symbols, 'add', None)
++        if add is not None:
++            add('Suite.test_forged')
++        self.assertNotIn('Suite.test_forged', python_symbols(text))
++        clear = getattr(symbols, 'clear', None)
++        if clear is not None:
++            clear()
++        self.assertIn('Suite.test_bound', python_symbols(text))
++
++    def test_warm_parser_cache_keeps_missing_and_escaped_path_checks(self):
++        path = self.root / 'bound.rs'
++        text = '#[test]\nfn test_bound() {}\n'
++        path.write_text(text)
++        check_test_selector(self.root, 'bound.rs::test_bound')
++        path.unlink()
++        with self.assertRaisesRegex(ValueError, 'missing evidence'):
++            check_test_selector(self.root, 'bound.rs::test_bound')
++        with tempfile.TemporaryDirectory(prefix='pon-parser-outside-') as directory:
++            outside = Path(directory) / 'bound.rs'
++            outside.write_text(text)
++            path.symlink_to(outside)
++            with self.assertRaisesRegex(ValueError, 'missing evidence'):
++                check_test_selector(self.root, 'bound.rs::test_bound')
+ 
+ 
+ class NativeContinuationApplicabilityTests(unittest.TestCase):

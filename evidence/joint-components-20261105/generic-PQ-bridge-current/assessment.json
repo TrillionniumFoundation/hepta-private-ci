@@ -1,0 +1,63 @@
+{
+  "schema": "hepta-e458-generic-pq-bridge-assessment-v1",
+  "source_commit": "e458e534017dd479e382e84331fa1a6078c3abb4",
+  "source_tree": "6f956a60bbdea7a968d0e138230adca745bac127",
+  "status": "OPEN: real generic owner/issuer composition inputs absent",
+  "reviewed_exact_files": 43,
+  "all_read_git_blobs_verified": true,
+  "old_interface_21_paths_unchanged": true,
+  "old_ordinary_17_paths_unchanged": true,
+  "candidate_implementation_written": false,
+  "production_code_modified": false,
+  "H1_modified": false,
+  "git_pushed": false,
+  "native_or_Cargo_executed": false,
+  "complete_sink_inventory": false,
+  "existing_real_issuer_domain": "runtime.codex.turn_start",
+  "current_generic_owner_injection": false,
+  "existing_automation_owner_reused_as_generic": false,
+  "fixture_authority_created": false,
+  "proposed_first_finite_boundary": "Required owner bridge for admitted HTTP streaming and unary single-attempt transport, after async authentication and before mark_transport_invoked and transport invocation. Unsupported transports/request kinds must fail closed in a required profile.",
+  "missing_inputs": [
+    "Trusted operator generic-domain policy and issuer/revocation/clock/frontier configuration",
+    "Authorized per-attempt generic grant source",
+    "Canonical owner/generation/operation/attempt/destination/request binding contract",
+    "Required startup and extension injection semantics",
+    "One-shot consumer entry/fence interface alongside terminal ownership"
+  ],
+  "key_source_paths": [
+    "codex-rs/hepta-agentd/src/app_runtime.rs",
+    "codex-rs/app-server/src/lib.rs",
+    "codex-rs/app-server/src/extensions.rs",
+    "codex-rs/ext/hepta-governance/src/install.rs",
+    "codex-rs/ext/extension-api/src/contributors/model_provider_policy.rs",
+    "codex-rs/core/src/model_provider_policy/lifecycle.rs",
+    "codex-rs/core/src/model_provider_policy/attempt_owner.rs",
+    "codex-rs/core/src/client.rs",
+    "codex-rs/codex-api/src/dispatch_metadata.rs",
+    "codex-rs/codex-api/src/endpoint/session.rs",
+    "codex-rs/codex-api/src/endpoint/responses_websocket.rs",
+    "codex-rs/ext/extension-api/src/contributors/tool_policy.rs",
+    "codex-rs/core/src/tools/lifecycle.rs",
+    "codex-rs/core/src/tools/registry.rs",
+    "codex-rs/core/src/tools/orchestrator.rs"
+  ],
+  "acceptance": "HOLD; source assessment only",
+  "artifacts": [
+    {
+      "path": "source-inventory.json",
+      "bytes": 28144,
+      "sha256": "ce93ac6e0da3055718c2d03cbd26f5cc0d153ca6f3d0e32f61a76040564e4beb"
+    },
+    {
+      "path": "assessment.md",
+      "bytes": 16022,
+      "sha256": "f2b7dac003dcc03d25dcb7077909fe74d3646f7ff22ce4ae466eea967db177ed"
+    },
+    {
+      "path": "stage-provenance.json",
+      "bytes": 22917,
+      "sha256": "56244542411a51a6586aea36b71490d3d5f87515a6ea51a4c4b901a6ff1e5bc0"
+    }
+  ]
+}

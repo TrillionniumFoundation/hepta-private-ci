@@ -1,0 +1,1019 @@
+{
+  "schema": "H4-independent-complete-actual-native-review-v1",
+  "status": "INDEPENDENT_ACTUAL_ONE_SOURCE_DESKTOP_GATES_VERIFIED",
+  "source_commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+  "source_tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+  "job_id": "1a1ade2970f-fc05-5b5c",
+  "authoritative_terminal_unix_ms": 1793919910435,
+  "authoritative_terminal_utc": "2026-11-05T23:05:10.435000+00:00",
+  "coordinator_elapsed_seconds": 1236.8491698539583,
+  "original_outer_budget_seconds": 5400,
+  "original_per_test_seconds": 60,
+  "original_ordered_gates": 20,
+  "selected_rust_case_occurrences": 74,
+  "additional_rust_case_occurrences": [
+    6,
+    10,
+    50,
+    161
+  ],
+  "rust_case_occurrences": 301,
+  "unique_target_case_pairs": 276,
+  "primary_fd_records": 301,
+  "live_records": 294,
+  "direct_live_matches": 293,
+  "exact_auxiliary_helpers": 1,
+  "daemon_observations": 2,
+  "total_inventory_observations": 597,
+  "unique_complete_images": 11,
+  "unique_recorded_image_bytes": 1674575368,
+  "retained_aliases": 32,
+  "unobserved_by_polling_but_primary_fd_present": 8,
+  "ordinary_process": {
+    "post": 1,
+    "physical_apply": 1,
+    "lookup": 2,
+    "nonce": 1,
+    "same_operation": true,
+    "first_full_copy": true,
+    "second_held_object_reuse": true,
+    "second_full_hash": false,
+    "controlled_local_operator_provider": true,
+    "supervisor_prefenced_sigkill": true
+  },
+  "full_library_ignored": [
+    "authbus_outbox_tests::crash_delivery_child"
+  ],
+  "source_guard_tracked_files": 11840,
+  "source_guard_tracked_bytes": 183410043,
+  "external_configuration_files": 12,
+  "git_configuration_files": 5,
+  "source_and_configuration_before_after_equal": true,
+  "owner_delivery": {
+    "path": "model_storage/h4-capture-repair/native/h4-native-attempt1-delivery.json",
+    "bytes": 55321,
+    "sha256": "bda6c7127e6b4a84db3256898668cb664d933836e6332275cd9dfaa624f51fba"
+  },
+  "owner_declared_files": 131,
+  "owner_declared_bytes": 5522990,
+  "subreviews": [
+    {
+      "path": "pq_recovery/h4-actual-review/final-use-profile-controls-review.json",
+      "bytes": 29159,
+      "sha256": "818ad11324fe71527a1e63142e4eb1216e304b549ca553a56eb80287a1675ac1"
+    },
+    {
+      "path": "pq_recovery/h4-actual-review/full-evidence-library-review.json",
+      "bytes": 59082,
+      "sha256": "5faf810352df9132f2556bed4ad0b6978a3f68b189fbfec690a447e15e40785b"
+    },
+    {
+      "path": "pq_recovery/h4-actual-review/ordinary-process-review.json",
+      "bytes": 12147,
+      "sha256": "116ba1f2a6c3e60bff836fc60ff56e28fe961c0e6172c53c060e4b7ac6b6699f"
+    },
+    {
+      "path": "pq_recovery/h4-actual-review/source-configuration-review.json",
+      "bytes": 7594,
+      "sha256": "5c69c517fc475605670d6b01ffbd2802ea32b2348e3c2a3041cec1ba87ed2913"
+    },
+    {
+      "path": "pq_recovery/h4-actual-review/completion-review.json",
+      "bytes": 27097,
+      "sha256": "3ae53c1cf31e76e38e788f23cb1cc164e2f2465e07614aa161ea95eff4165060"
+    },
+    {
+      "path": "pq_recovery/h4-actual-review/delivery-inventory-review.json",
+      "bytes": 37239,
+      "sha256": "67a4ecbd300f92c99753b665130fa0a2cadba901c1865b4af2205c6b92eab63d"
+    }
+  ],
+  "subreview_scope_update": "delivery-inventory-review completes the remaining-live collection boundary stated earlier in completion-review; earlier reports are preserved byte-for-byte.",
+  "copied_exact_inputs": [
+    {
+      "original_path": "model_storage/h3-preparation/formatted-candidate/codex-rs/hepta-agentd/tests/automation_effect_pq_product.rs",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h3-preparation/formatted-candidate/codex-rs/hepta-agentd/tests/automation_effect_pq_product.rs",
+      "bytes": 17366,
+      "sha256": "9954baf1db179c35f070514ea897614ff2e54b7a8c8b1a05e24144a5cfb7994c"
+    },
+    {
+      "original_path": "model_storage/h3-preparation/formatted-candidate/codex-rs/hepta-agentd/tests/support/automation_effect_binary.rs",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h3-preparation/formatted-candidate/codex-rs/hepta-agentd/tests/support/automation_effect_binary.rs",
+      "bytes": 12544,
+      "sha256": "dc9525efc447080f79e93ae3a7aa79e2c75feefbed80ea0aca2d09b747bda9ab"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/fd_gate_evidence.py",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/fd_gate_evidence.py",
+      "bytes": 5420,
+      "sha256": "0fb050f795f982ad718938eba25c06d5e6831ce5c213a57dd166405039ba056d"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/h4-exact-launch-plan.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/h4-exact-launch-plan.json",
+      "bytes": 5847,
+      "sha256": "64d60aaec961a132c72cec13954fa177edf49ea692278ddfcbc143ad1b33f3ae"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/h4-extra-controls.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/h4-extra-controls.json",
+      "bytes": 16587,
+      "sha256": "08d884ff93090767084059d1b40802fd3269c2b939b0f5534472c3ea663d908c"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/h4-native-attempt1-delivery.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/h4-native-attempt1-delivery.json",
+      "bytes": 55321,
+      "sha256": "bda6c7127e6b4a84db3256898668cb664d933836e6332275cd9dfaa624f51fba"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/h4-native-bundle.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/h4-native-bundle.json",
+      "bytes": 186314,
+      "sha256": "d14a478a6feb2c8ec201ca5dfcf4d2d7cde2a7ae99b70b3aea68c803002c6d93"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/h4-native-plan.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/h4-native-plan.json",
+      "bytes": 22298,
+      "sha256": "c596e0f5a74ee878a20b68d545cefa9aff1d38773f388eb1dae91080acf9b51e"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/h4-selected-tests-guard.py",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/h4-selected-tests-guard.py",
+      "bytes": 8891,
+      "sha256": "e273e7f5c17704bfb699e90a5d15c8389d349c6c17e271ee26c031e6b3a65d48"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/collector-controls.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/collector-controls.json",
+      "bytes": 264,
+      "sha256": "6f4e29eed87ff3b2d118d92a930e449e117859c21bd1ffb49c9df19893c3afbb"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/collector-controls.log",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/collector-controls.log",
+      "bytes": 516,
+      "sha256": "2685ebc6f99a268838ab7c7e055279bbb1a7b19a70cafedb3bf130b8dbf415e0"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/configuration-after.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/configuration-after.json",
+      "bytes": 1813,
+      "sha256": "5bf55161e620be32d8f002fe853fc996850a2ed9cbdfd5bdd17a01d4543aa82b"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/coordinator.stderr.log",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/coordinator.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/coordinator.stdout.log",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/coordinator.stdout.log",
+      "bytes": 24664,
+      "sha256": "bd3c5bf8318b7f65d5b5a6803d6ca3c51e8434d83989a3dc21911d44ee1e0687"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/dependencies.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/dependencies.json",
+      "bytes": 1477,
+      "sha256": "6ebfaea707bde99f37cb5f01d9b56476914f668dababba92f9b0969334c07ae1"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/dependencies.json.fff3b5474cb34c879eb2877e539e3c9f.log",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/dependencies.json.fff3b5474cb34c879eb2877e539e3c9f.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/directory-capacity-rejection.txt",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/directory-capacity-rejection.txt",
+      "bytes": 79,
+      "sha256": "217dd596a3b19a68e25c18648416c586b153c84ed268e2eb36d2ce9ca4925207"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/dispatcher.fd-capture-config.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/dispatcher.fd-capture-config.json",
+      "bytes": 2389,
+      "sha256": "9bd8d8b32a3f1ff033baf5f94379c623bf1f6a9f92e45bda22c6beba4ec4b2ff"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/dispatcher.fd-executed-binaries.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/dispatcher.fd-executed-binaries.json",
+      "bytes": 39925,
+      "sha256": "5f627b90154418a998fd47c6da21ca5ba87f55da6b2130a3a023a18ef7de11de"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/dispatcher.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/dispatcher.json",
+      "bytes": 1597,
+      "sha256": "862fb03c5e0f468355f97ffc91e2bbbb981d7cd51f97c1f7766a8b56da0e5d72"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/dispatcher.json.402772604b73414aa173609b6d35548d.log",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/dispatcher.json.402772604b73414aa173609b6d35548d.log",
+      "bytes": 34083,
+      "sha256": "f16a0da3b393f24d03d82deb5c8ae99c7b2a91bb45ae97b00b8cb4da0742152b"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/dispatcher.live-polled-binaries.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/dispatcher.live-polled-binaries.json",
+      "bytes": 98358,
+      "sha256": "cae75a9db0f44492b032c41e727e974ac5a8f46565d7b3af3cad80b9685eb902"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/diverse-source-controls.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/diverse-source-controls.json",
+      "bytes": 1543,
+      "sha256": "04d212ed3aa89e2ebfe018078126157f4ca85093374d69b117c036ce5c52332b"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/diverse-source-controls.json.6d071765ce1d463caeae30afee6d691c.log",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/diverse-source-controls.json.6d071765ce1d463caeae30afee6d691c.log",
+      "bytes": 6233,
+      "sha256": "31913c96aa2288f813b9b9cfe9bf9c5d431f07f20ce4754e27a5ce3646a2c7b4"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-pq-contract.fd-capture-config.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-pq-contract.fd-capture-config.json",
+      "bytes": 920,
+      "sha256": "8e91131c6174f4096dced55bfc6eeb2142c25b1a297739b2137e9deda7504425"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-pq-contract.fd-executed-binaries.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-pq-contract.fd-executed-binaries.json",
+      "bytes": 4408,
+      "sha256": "4f76c549937c182ed2fd1034d9fb446fedd890404ab7c1b36102a2daeb0de8d4"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-pq-contract.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-pq-contract.json",
+      "bytes": 1606,
+      "sha256": "7695531157f3c1679c28a6fc79e6efd77585458019e8a1919aff33afab29423e"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-pq-contract.json.3685e5cc849c496890337ec8927263f6.log",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-pq-contract.json.3685e5cc849c496890337ec8927263f6.log",
+      "bytes": 11540,
+      "sha256": "04a20cb19f96033b10b5f7349f685abbbe761edbd6dfd427e753b6efc6002e16"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-pq-contract.live-polled-binaries.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-pq-contract.live-polled-binaries.json",
+      "bytes": 7249,
+      "sha256": "2e35bd07cb88b040267740c7de122bebdae743c5bc030c80c816e518b3732f56"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-pq-owner.fd-capture-config.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-pq-owner.fd-capture-config.json",
+      "bytes": 2102,
+      "sha256": "f3563ce4b13abea7388f89fcb85d09bb27f4c583b2d8ee655c3eb80082552821"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-pq-owner.fd-executed-binaries.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-pq-owner.fd-executed-binaries.json",
+      "bytes": 32071,
+      "sha256": "3db7aa6a0376dd07d3d04b592e9c2301225bbd201e234a8f75545d837be2d9b0"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-pq-owner.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-pq-owner.json",
+      "bytes": 1612,
+      "sha256": "1f92729f87269925272d386fb8f91c325636450360b5d82dff3930058257602d"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-pq-owner.json.71ad3e014aff4f7fb1fec1749dce46a3.log",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-pq-owner.json.71ad3e014aff4f7fb1fec1749dce46a3.log",
+      "bytes": 32613,
+      "sha256": "6e29b7debc574c4a1921133998a7d09c97e443722f784d88bf972c64625df1ba"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-pq-owner.live-polled-binaries.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-pq-owner.live-polled-binaries.json",
+      "bytes": 77828,
+      "sha256": "d1bb8909044786e6a8acbd091f3f77bf9d301b5266d87f4f438fd39d8b94aaaa"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-pq-product-daemon-verification.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-pq-product-daemon-verification.json",
+      "bytes": 279,
+      "sha256": "5eba8a5c639bc27a3cc1da8d2aa670925a44467d0548ec8fd0adb60b27008cf4"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-pq-product-process/1153922-1793919086819941674/completed.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-pq-product-process/1153922-1793919086819941674/completed.json",
+      "bytes": 7032,
+      "sha256": "ed9670712dd67b5ed74cce07136750a2ec4215e0a83703f9bd0509f70af6833f"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-pq-product-process/1153922-1793919086819941674/first-process-exit.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-pq-product-process/1153922-1793919086819941674/first-process-exit.json",
+      "bytes": 205,
+      "sha256": "2ebaeba6e4e6a06eb8d7b317d5d52ccca2b63a8ce0447bb2e44cb71cfac1ddae"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-pq-product-process/1153922-1793919086819941674/first-process.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-pq-product-process/1153922-1793919086819941674/first-process.json",
+      "bytes": 1911,
+      "sha256": "8040f8009ba5d175c0cc9f639723421926f345d03a1b51974be4a006cc39045d"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-pq-product-process/1153922-1793919086819941674/provider-fsync-before-kill.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-pq-product-process/1153922-1793919086819941674/provider-fsync-before-kill.json",
+      "bytes": 909,
+      "sha256": "30a9e103b09f2469c392d2350823ec729fda897172d9313ae0d09870653b760f"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-pq-product-process/1153922-1793919086819941674/second-process.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-pq-product-process/1153922-1793919086819941674/second-process.json",
+      "bytes": 1915,
+      "sha256": "64e86146980a2ce5148ef556e7f668161bb484f63d0636d2d6d23101cb979cf4"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-pq-product-process/1153922-1793919086819941674/source.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-pq-product-process/1153922-1793919086819941674/source.json",
+      "bytes": 792,
+      "sha256": "f7f07bbedcdfd02dec1a52d63b5c8797e4ef58a61af3754d953de3e5767d8279"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-pq-product.fd-capture-config.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-pq-product.fd-capture-config.json",
+      "bytes": 984,
+      "sha256": "831a55c74a03e233985c4e96df372fdb564dbcbf5f2af8cffe40bd689e7719f4"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-pq-product.fd-executed-binaries.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-pq-product.fd-executed-binaries.json",
+      "bytes": 6769,
+      "sha256": "9ee520437c48e423eeec8380ac92c444377d0d81b534c9f6828f11c82905b03d"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-pq-product.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-pq-product.json",
+      "bytes": 1768,
+      "sha256": "e9e3318625cd65c0249a444bb65508fa45954bca5e6589cad7e6af05cb067b49"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-pq-product.json.6398c8496e5f46399e4718f9453f7fa5.log",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-pq-product.json.6398c8496e5f46399e4718f9453f7fa5.log",
+      "bytes": 28146,
+      "sha256": "05cab5ec9c16d6843b5a2d7db51dd796e7463cc9f5d49e26f55192ef18824e52"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-pq-product.live-polled-binaries.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-pq-product.live-polled-binaries.json",
+      "bytes": 7528,
+      "sha256": "f83142b5df9fef377d08a01f122070be8b8589e47d5a39df07a864dab637659a"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-settled-absence.fd-capture-config.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-settled-absence.fd-capture-config.json",
+      "bytes": 1031,
+      "sha256": "e7b3befe1220b81ede9c5cfc6ee4681b2778cd9d81aa17aaa7757cbefc359eaa"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-settled-absence.fd-executed-binaries.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-settled-absence.fd-executed-binaries.json",
+      "bytes": 7126,
+      "sha256": "f65b6ca6de0ebdc262a71fd57acfedd1a001857c0310f2910278d31da1adddd4"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-settled-absence.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-settled-absence.json",
+      "bytes": 1814,
+      "sha256": "a5b986ca658e4724b908e018640893b041c1bb50c11dc143f2d82cb1f8412a68"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-settled-absence.json.106154f11756490889a006c19d92e4a6.log",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-settled-absence.json.106154f11756490889a006c19d92e4a6.log",
+      "bytes": 23895,
+      "sha256": "54935b9147a5c42d7229a560f4cf083a9b3b60103cdf7e25aea3b88814bf0de5"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-settled-absence.live-polled-binaries.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/effect-settled-absence.live-polled-binaries.json",
+      "bytes": 15046,
+      "sha256": "4be14323429395bb6d3d5a38d719d5f376a8a5e7a9c7f12c1c8ff22cf1b1d1f5"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/execution-source-controls.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/execution-source-controls.json",
+      "bytes": 1556,
+      "sha256": "dc0798d543c0ae74802230488dca751e27aa29e6f800a9009097ce16a9c42af7"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/execution-source-controls.json.b34f7cb508f94abe9d9c8011136d08f2.log",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/execution-source-controls.json.b34f7cb508f94abe9d9c8011136d08f2.log",
+      "bytes": 26717,
+      "sha256": "c3dbc70169941b0beb7c4ca13318ed250d426e05701cc88f156bffe15aea6a79"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/fd-runner-controls.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/fd-runner-controls.json",
+      "bytes": 273,
+      "sha256": "31b4f880e56117c54e513ad56ffc86a678f24086133e1b457131d0aad388fbfc"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/fd-runner-controls.log",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/fd-runner-controls.log",
+      "bytes": 561,
+      "sha256": "3ddb4ee76267b4c8b4c5a732b534eb75467bc1e8df82c6bf7e8f33be41343b0d"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/fd-target-controls.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/fd-target-controls.json",
+      "bytes": 296,
+      "sha256": "eb8136f210788004726175cc4d207efff040caaaaf3c36402cc6f1af25763b98"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/fd-target-controls.log",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/fd-target-controls.log",
+      "bytes": 720,
+      "sha256": "7fd814df3edeb039206ce9624952fd8e8d8fa87eea3b6ef9c2e6a54ef88fe456"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/final-process-read.raw.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/final-process-read.raw.json",
+      "bytes": 3898,
+      "sha256": "e76711cbb15f9eb4796852af6876e529dc859ece6839f0982116866f9d776003"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/final-use-profile-controls.fd-capture-config.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/final-use-profile-controls.fd-capture-config.json",
+      "bytes": 887,
+      "sha256": "cd25f362800e6e33b6ce79472cf5096293823ee059e6013b6803892e549eb0a5"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/final-use-profile-controls.fd-executed-binaries.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/final-use-profile-controls.fd-executed-binaries.json",
+      "bytes": 135866,
+      "sha256": "ca54dbc2379944bbd8196e7afa0e332b72cbc69ef8907c4c9c9dfee01e059369"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/final-use-profile-controls.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/final-use-profile-controls.json",
+      "bytes": 1598,
+      "sha256": "0e152c16ef4335c0c901268b81404f39f6507cac4c93dde82eddf180d5aea4af"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/final-use-profile-controls.json.e2d9015927c747d2ae1555a29c729e68.log",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/final-use-profile-controls.json.e2d9015927c747d2ae1555a29c729e68.log",
+      "bytes": 26854,
+      "sha256": "e65f8224fae98eeea7016f3e54a5d012a36baa7d0c7802dd2209c29c6c5420c1"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/final-use-profile-controls.live-polled-binaries.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/final-use-profile-controls.live-polled-binaries.json",
+      "bytes": 345440,
+      "sha256": "18a57c426cd01f02e98e7e43bbc83e80e16f2c458c72afdbf802b940da48ffcc"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/fix.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/fix.json",
+      "bytes": 1657,
+      "sha256": "92e9b312ffe09c1cd55f008da8dc10693ed17cb4e3eef848a8efc67adbce0ab5"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/fix.json.fb0582200e134dd48116ae90b92c848d.log",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/fix.json.fb0582200e134dd48116ae90b92c848d.log",
+      "bytes": 63316,
+      "sha256": "0561d5e80a82ebd6213386c0d9d48d71c60ab17647b812b5b54b0ce355925b1d"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/format.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/format.json",
+      "bytes": 1464,
+      "sha256": "85aa6eb03e0a6111ba0008a22b3ca3038cb8893be1de308c1d793f74c144ab0f"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/format.json.17bf04d28b934c55a11abf85117891ad.log",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/format.json.17bf04d28b934c55a11abf85117891ad.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/full-evidence-ignored-list.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/full-evidence-ignored-list.json",
+      "bytes": 1012,
+      "sha256": "9b6c8d972129abd90df3e6b5521d663dd2189788cdba53a1b1aef65d15dace84"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/full-evidence-ignored-list.log",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/full-evidence-ignored-list.log",
+      "bytes": 49,
+      "sha256": "1767ec23fa131b69fbbb32a7a7eea29a41b4f10bac8eedffb9b30b683d43c6ed"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/full-evidence-library.fd-capture-config.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/full-evidence-library.fd-capture-config.json",
+      "bytes": 15576,
+      "sha256": "e974e2544b8f6de694348034d1d0e1f830bd368177262c3e0991e8e020b28053"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/full-evidence-library.fd-executed-binaries.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/full-evidence-library.fd-executed-binaries.json",
+      "bytes": 427522,
+      "sha256": "31e1156743935a8f01333840af84a2e5cc87a11931832f5acfd9e9d881a533a4"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/full-evidence-library.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/full-evidence-library.json",
+      "bytes": 1563,
+      "sha256": "e8a2df81f60e6fab42ad37f2a79d9053baf841f7e8bd4a8f85bf8d5a5f483c9a"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/full-evidence-library.json.cdbf36317ade4bf1ab83fc6c3812f97b.log",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/full-evidence-library.json.cdbf36317ade4bf1ab83fc6c3812f97b.log",
+      "bytes": 98910,
+      "sha256": "3469022f23f49f660fc93d67eeb3a1408669c670679124cdce489461a6e0f02e"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/full-evidence-library.live-polled-binaries.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/full-evidence-library.live-polled-binaries.json",
+      "bytes": 1067974,
+      "sha256": "ab6516780347757ab65e0a53231f001cd71b63b0c7d206be1692aa65446650e1"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/full-source-after.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/full-source-after.json",
+      "bytes": 841,
+      "sha256": "2af5805c22c2af7593d2c594c78d102eebe6328f687415c66e1f094910a4ec03"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/full-source-before.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/full-source-before.json",
+      "bytes": 841,
+      "sha256": "2af5805c22c2af7593d2c594c78d102eebe6328f687415c66e1f094910a4ec03"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/h4-actual-image-inventory.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/h4-actual-image-inventory.json",
+      "bytes": 525002,
+      "sha256": "a1e42612d6a89337144b00335da2fa690dc7f503b46532ff795f0c92198bdd9c"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/launch-request.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/launch-request.json",
+      "bytes": 189886,
+      "sha256": "561fa3256c5669f1277f25d977928df6266162c0bc2f8814e7d9a79768b9b128"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/launch.raw.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/launch.raw.json",
+      "bytes": 4571,
+      "sha256": "05a4e711e072377d96db924865b0bcde6eaa1e8bed55066e67806900c539b91e"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/live-parent-correspondence-controls.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/live-parent-correspondence-controls.json",
+      "bytes": 312,
+      "sha256": "d1415765c19d67422d660a8cce8a3305e71b1a411c53c660c968bb10126c4448"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/live-parent-correspondence-controls.log",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/live-parent-correspondence-controls.log",
+      "bytes": 643,
+      "sha256": "2414f36c35b5ef0d241fb44d68c7b753d148922b78cda1ae7d3ebc5497db45b5"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/native-environment.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/native-environment.json",
+      "bytes": 9130,
+      "sha256": "40341fe44840b6de0ca3cff68785116e5cfbca81c9a77124a82ca72b63234039"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/neural-runtime-input.fd-capture-config.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/neural-runtime-input.fd-capture-config.json",
+      "bytes": 1233,
+      "sha256": "2313ca714ef71100bad6b6432b3bc7407ab9d964576fba30f72d45a74c169d85"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/neural-runtime-input.fd-executed-binaries.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/neural-runtime-input.fd-executed-binaries.json",
+      "bytes": 7263,
+      "sha256": "5d19571b0c21d1645d8b3dcef54fc4160421a5f895000a892ebda2cba9116e1b"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/neural-runtime-input.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/neural-runtime-input.json",
+      "bytes": 1824,
+      "sha256": "6af359714b1f7a86ce3cae29fa089902cfd5b0cec351c29d17ae0ed1ab0c33f6"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/neural-runtime-input.json.9180089e34924a46871dd5596f174ecd.log",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/neural-runtime-input.json.9180089e34924a46871dd5596f174ecd.log",
+      "bytes": 27203,
+      "sha256": "3b109216fbb926eb20155154d32b04a0970e6e47b14ada24f5b4f4b3966911de"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/neural-runtime-input.live-polled-binaries.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/neural-runtime-input.live-polled-binaries.json",
+      "bytes": 16455,
+      "sha256": "5b21fd770980918c6576436d82bc94a61206907cba07da6bbc07edcbe1e6df4d"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/observed-bytecode-after/fff1e8ab9c6a33148ad58505d634919b4c7963e345b022c5b7ac1a926b769872.pyc",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/observed-bytecode-after/fff1e8ab9c6a33148ad58505d634919b4c7963e345b022c5b7ac1a926b769872.pyc",
+      "bytes": 6094,
+      "sha256": "fff1e8ab9c6a33148ad58505d634919b4c7963e345b022c5b7ac1a926b769872"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/observed-bytecode-before/fff1e8ab9c6a33148ad58505d634919b4c7963e345b022c5b7ac1a926b769872.pyc",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/observed-bytecode-before/fff1e8ab9c6a33148ad58505d634919b4c7963e345b022c5b7ac1a926b769872.pyc",
+      "bytes": 6094,
+      "sha256": "fff1e8ab9c6a33148ad58505d634919b4c7963e345b022c5b7ac1a926b769872"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/original-six-effect-controls.fd-capture-config.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/original-six-effect-controls.fd-capture-config.json",
+      "bytes": 1534,
+      "sha256": "0c9b4544ff19fa38f3bcd12a2e3cf21471c482964cb4a2742b0c0d868f5046e1"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/original-six-effect-controls.fd-executed-binaries.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/original-six-effect-controls.fd-executed-binaries.json",
+      "bytes": 18427,
+      "sha256": "e63c22f31c261996677460d394fcc5fe4ae05a4f706b1199125a4afeac52837b"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/original-six-effect-controls.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/original-six-effect-controls.json",
+      "bytes": 2286,
+      "sha256": "efa7e290b1cf04ab20aa88df18b68b3d328ba6cc672e34a7563126777a311bca"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/original-six-effect-controls.json.08b25aafc73e41eda0b9252ec5f925ba.log",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/original-six-effect-controls.json.08b25aafc73e41eda0b9252ec5f925ba.log",
+      "bytes": 29863,
+      "sha256": "8ae1d06f93c4954705d29e14cf4cea751b34de54dcfb8b60016d8eba306e5087"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/original-six-effect-controls.live-polled-binaries.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/original-six-effect-controls.live-polled-binaries.json",
+      "bytes": 50588,
+      "sha256": "0e1d27b8ece3b384db5cb1f9ac62529d4e607323a3d27bc85754acf07f6d75cc"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/pipeline-status.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/pipeline-status.json",
+      "bytes": 997705,
+      "sha256": "078556b7119ea88354c25e273633d324275ab89047ebbd9c7e2f72c3942b175f"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/process-read-1.raw.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/process-read-1.raw.json",
+      "bytes": 16635,
+      "sha256": "58c6ab2998bf5300ec4ef95b8fd8c08e74f8b97ea93d5dfd9ccd13ded854fa94"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/process-read-2.raw.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/process-read-2.raw.json",
+      "bytes": 13424,
+      "sha256": "6f147034f212aff1a269ffc34f6e0be5722f259773fce88e568366de1719ae58"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/process-read-3.raw.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/process-read-3.raw.json",
+      "bytes": 19693,
+      "sha256": "1ca0e593d478d6f444f7cba9eedcf80ebcd61f11f1c31a4be76520bc7c02e59c"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/process-read-4.raw.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/process-read-4.raw.json",
+      "bytes": 16183,
+      "sha256": "c3a1654bed3a11ea07c5029e7e0b1754d0cf482b0418c079e9a6a538f9a267e4"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/process-read-5.raw.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/process-read-5.raw.json",
+      "bytes": 9414,
+      "sha256": "fe5f9f2dfb7202a7c3890e66459e6a1a42e61760e68fa6d0536d62b7a27723f4"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/process-read-6.raw.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/process-read-6.raw.json",
+      "bytes": 3574,
+      "sha256": "20f5d7e780e0d50e6483492cec4397b70ee9f6314e4935ce27afcf7f87848b96"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/process-read-7.raw.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/process-read-7.raw.json",
+      "bytes": 513,
+      "sha256": "9b224a2544a34f4009a432e3ddd6d34360730379a626c966d96604ce8070fa18"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/product.fd-capture-config.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/product.fd-capture-config.json",
+      "bytes": 1020,
+      "sha256": "1023140b80ca1cd4f9a98ae0e8c887df1189f8c60e84fd559fb3c754323cc34a"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/product.fd-executed-binaries.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/product.fd-executed-binaries.json",
+      "bytes": 9292,
+      "sha256": "87396ff789039cba17d48c6f82241b9c5b664a52eeb5861cc12ee894169c244d"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/product.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/product.json",
+      "bytes": 1573,
+      "sha256": "447c161ac352de6d63976607057febfce519777c85e3cad2070c716a8cd0edf2"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/product.json.847917b8b2df488cb2e1b715372b5d31.log",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/product.json.847917b8b2df488cb2e1b715372b5d31.log",
+      "bytes": 27560,
+      "sha256": "e4b5693ef388c828b3135ec73d7bf2e014b14972b7c60dce8886af696731017d"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/product.live-polled-binaries.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/product.live-polled-binaries.json",
+      "bytes": 20579,
+      "sha256": "079499063fdd8a9e5e8b949f94d9570115ba010fabe2ef7a20fd766b6e554e5e"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/provider-effect-existing-and-pq.fd-capture-config.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/provider-effect-existing-and-pq.fd-capture-config.json",
+      "bytes": 902,
+      "sha256": "d2fd197ac837e9e64a04d817b6a093d856f825e34f4ce01f6a16b0a46b7cdc7e"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/provider-effect-existing-and-pq.fd-executed-binaries.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/provider-effect-existing-and-pq.fd-executed-binaries.json",
+      "bytes": 28188,
+      "sha256": "6a6348cbef979e632bc95c60bec28f79127b0e89da08fafa4c2b9143e9ce93dd"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/provider-effect-existing-and-pq.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/provider-effect-existing-and-pq.json",
+      "bytes": 1611,
+      "sha256": "c7aa7e88d01d6d7c11fdb9192a22198d9278d63ce53e1b1603972e8390284b74"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/provider-effect-existing-and-pq.json.c498d64a56af439fadce8681fc91bc72.log",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/provider-effect-existing-and-pq.json.c498d64a56af439fadce8681fc91bc72.log",
+      "bytes": 15703,
+      "sha256": "60b4def98694b184a369c58480462de28d24eed0996ecfeb6fa1477e094a428c"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/provider-effect-existing-and-pq.live-polled-binaries.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/provider-effect-existing-and-pq.live-polled-binaries.json",
+      "bytes": 62447,
+      "sha256": "2dc05730627984bc6799d875bf8b97ff4f1b33259cae09df0f6e7559bb30d4f5"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/qualification-growth.fd-capture-config.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/qualification-growth.fd-capture-config.json",
+      "bytes": 1002,
+      "sha256": "7d6250b333a1b326c1df3ba3d16996ea31c1fd288666441c05666c942a20c00e"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/qualification-growth.fd-executed-binaries.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/qualification-growth.fd-executed-binaries.json",
+      "bytes": 6997,
+      "sha256": "0da0f4e43f18e02bc7e7e7071a0a267536a351edd0465f0f46a696d370b0bfe9"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/qualification-growth.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/qualification-growth.json",
+      "bytes": 1756,
+      "sha256": "fcad45e18aafcd20975b6917940a52b739ed5c676149a90d9b6eeb3e7eec764a"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/qualification-growth.json.98e82a42a2b048a28d78831446c5b565.log",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/qualification-growth.json.98e82a42a2b048a28d78831446c5b565.log",
+      "bytes": 23853,
+      "sha256": "4d6f91d0c26b81f6651ee0831059e50720edc3c9b3ec5662c70cc899876cc6fa"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/qualification-growth.live-polled-binaries.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/qualification-growth.live-polled-binaries.json",
+      "bytes": 14689,
+      "sha256": "c617c0235f72d8275be885996bcca362b328f9f352ce8d94b809cfb503aaab0a"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/recovery-owner.fd-capture-config.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/recovery-owner.fd-capture-config.json",
+      "bytes": 3203,
+      "sha256": "23e75d23a20189be867d59a68d9de11b243f63139b8b1a5de9c2387618f874a5"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/recovery-owner.fd-executed-binaries.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/recovery-owner.fd-executed-binaries.json",
+      "bytes": 61554,
+      "sha256": "a35fa84236edec41d9e2e42c8f6708142a07cc70f7b479eea88069a6f7395c1b"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/recovery-owner.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/recovery-owner.json",
+      "bytes": 4002,
+      "sha256": "7ac338e9757bc41f9a1049d74916c1dcc0981964add1effbb0da51b9b71ba2fb"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/recovery-owner.json.a5136da8231849baaf64f96ad8f6fed7.log",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/recovery-owner.json.a5136da8231849baaf64f96ad8f6fed7.log",
+      "bytes": 34313,
+      "sha256": "e943c5c36b86a790a19900d0377b9420fc304a74e1de80f13588c1c67864b5ae"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/recovery-owner.live-polled-binaries.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/recovery-owner.live-polled-binaries.json",
+      "bytes": 259898,
+      "sha256": "a173fce482b852ca50b6eb45da8e9b1a064ff36c10cde0fe99798c5e5090daf4"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/recovery-product.fd-capture-config.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/recovery-product.fd-capture-config.json",
+      "bytes": 1113,
+      "sha256": "eef8b7f108883c5189961327a75631df79822d3ad1401b6ddefe1343b1b98232"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/recovery-product.fd-executed-binaries.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/recovery-product.fd-executed-binaries.json",
+      "bytes": 11952,
+      "sha256": "7d3e73a807e11459c2fc4bc23bd1f51744e8efffd626d9920149b2dabfa63b6c"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/recovery-product.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/recovery-product.json",
+      "bytes": 1902,
+      "sha256": "6125412320c4d84e3bef89a4b4501fe75d96321ca1ae5be063a45291bfb7abe2"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/recovery-product.json.0f14aaee5bb0463b8d27aed0267192ed.log",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/recovery-product.json.0f14aaee5bb0463b8d27aed0267192ed.log",
+      "bytes": 28035,
+      "sha256": "e98873f48a34aa34d685fc8640bf0c14cf5211c731361ea7a8fa7c9ee1ddbdd4"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/recovery-product.live-polled-binaries.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/recovery-product.live-polled-binaries.json",
+      "bytes": 30088,
+      "sha256": "33898a741fd17880d760f57933d24e7773cc2a00f3c5ba33f1d8605019bb3154"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/recovery-signed.fd-capture-config.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/recovery-signed.fd-capture-config.json",
+      "bytes": 1858,
+      "sha256": "0b493c07163a63457788900ce073615dcd8dd8cc046347e8adce9958852ea993"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/recovery-signed.fd-executed-binaries.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/recovery-signed.fd-executed-binaries.json",
+      "bytes": 30851,
+      "sha256": "d8fe0829b4d03666135328b48af6636244374db719331fb088d0cb71e25b4173"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/recovery-signed.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/recovery-signed.json",
+      "bytes": 2636,
+      "sha256": "224f83bfd2856c039590562bd80025ad913ed55a17ccc1d5648138a1ecd4f34a"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/recovery-signed.json.c318463c5a8f48f3b4b9152f389b674d.log",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/recovery-signed.json.c318463c5a8f48f3b4b9152f389b674d.log",
+      "bytes": 31881,
+      "sha256": "d1196480f27de5217aa015e262c830c8ec160c6230ff3bb2f18591b56cd42f45"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/recovery-signed.live-polled-binaries.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/recovery-signed.live-polled-binaries.json",
+      "bytes": 99141,
+      "sha256": "c13f6e1b446c0316420cb4c677fabf9f1e9053ccb95fe68c8396cd0693b0028e"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/remaining-selected-read-failed.raw.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/remaining-selected-read-failed.raw.json",
+      "bytes": 282,
+      "sha256": "13126eadab73969915d2a352b198cd129b7a49e7465723c4ec27622bb5036b43"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/runtime-inputs-after.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/runtime-inputs-after.json",
+      "bytes": 4300,
+      "sha256": "5f6ad1ec9af0230b351c2d282363389acb69d1ccdd55bd7b7845559ba4922559"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/runtime-inputs-before.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/runtime-inputs-before.json",
+      "bytes": 4300,
+      "sha256": "cf3ff0748a3f2c5e19a275f98ee9aef5f3c6be12961bc1b8e477086b68dbc17b"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/runtime-inputs-delta.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/runtime-inputs-delta.json",
+      "bytes": 278,
+      "sha256": "a5559987cc78d76272bd8da787b19d923496635eb21b2658fd078d31156561f0"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/selected-tests-guard.log",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/selected-tests-guard.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/status-8.raw.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/status-8.raw.json",
+      "bytes": 956,
+      "sha256": "3a997e9375bdd6662c5d89ec6ec045b843b79e006faf07516fa17ef4c26380a7"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/terminal-status.raw.json",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/terminal-status.raw.json",
+      "bytes": 956,
+      "sha256": "3a997e9375bdd6662c5d89ec6ec045b843b79e006faf07516fa17ef4c26380a7"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/v8-setup.log",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/v8-setup.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/v8.env",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/joint-h4-native-attempt-1/v8.env",
+      "bytes": 295,
+      "sha256": "f8e8e640d5049f812efd064c57309f2dd6f74a5c43dbf95a7962ec0711356efc"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/live_fd_correspondence.py",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/live_fd_correspondence.py",
+      "bytes": 7949,
+      "sha256": "fc8fc5cfc7c084a3a5884449cd683f94fbd6ee377455ba5a0df6033a6ceed0a4"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/nextest_fd_runner.py",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/nextest_fd_runner.py",
+      "bytes": 9554,
+      "sha256": "9679cc6e11762c29b4c0ee92dd7715d3fce0555a6f8e0e10ed9d0b007951381a"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/run_h4_native_pipeline.py",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/run_h4_native_pipeline.py",
+      "bytes": 34196,
+      "sha256": "5bd64b700c9974582e0b70c3a97117982b8d6f470f8d308b99accc42bba1714a"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/test_elf_capture.py",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/test_elf_capture.py",
+      "bytes": 11001,
+      "sha256": "2cb676bff1657866dc39b3e35ff45644d1ce75981ec9ed3f8798509287ab5ebe"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/test_executed_binary_capture.py",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/test_executed_binary_capture.py",
+      "bytes": 4011,
+      "sha256": "debcc32b403d169a07cbdb4ae04319c9a12e674f0c3bfa412c809bb6ea78a838"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/test_fd_gate_targets.py",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/test_fd_gate_targets.py",
+      "bytes": 5708,
+      "sha256": "642ec3f16702f1f9c9bedd205e8a268841a07c19884d711041504b59c76cbb06"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/test_live_fd_correspondence.py",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/test_live_fd_correspondence.py",
+      "bytes": 8160,
+      "sha256": "0e308e80ea2b802f2711c9939b90e1d6989cd062f6170eddd4069db487e251b4"
+    },
+    {
+      "original_path": "model_storage/h4-capture-repair/native/test_nextest_fd_runner.py",
+      "path": "pq_recovery/h4-actual-review/inputs/model_storage/h4-capture-repair/native/test_nextest_fd_runner.py",
+      "bytes": 5684,
+      "sha256": "29a77665a8e255dbd29286709ccab06a4e9f81bf76f6f89ed489613a68ede61a"
+    },
+    {
+      "original_path": "w1/h3-elf-export/H3-actual-export-index.json",
+      "path": "pq_recovery/h4-actual-review/inputs/w1/h3-elf-export/H3-actual-export-index.json",
+      "bytes": 294654,
+      "sha256": "b023aca6ab2dccf4324dccab2e5319a00ef9b32773e0dc73127efc9af3caa002"
+    }
+  ],
+  "copied_exact_input_files": 150,
+  "copied_exact_input_bytes": 6235451,
+  "reviewer_initial_errors": [
+    "completion parser initially addressed job_id outside the original job response envelope; original error and script retained",
+    "delivery parser initially equated uppercase delivery display status with lowercase pipeline literal; original error and script retained",
+    "final review input-copy assembly was interrupted before review/manifest creation; relative and absolute paths normalized, existing copied bytes verified unchanged"
+  ],
+  "limits": [
+    "Only the exact one-source desktop execution is qualified; no joint-release or hosted matrix claim.",
+    "H1/H2/H3 historical failures remain unchanged.",
+    "Actual retained ELF bytes have not been reread by this local audit; complete archive and consumer closure remain pending.",
+    "11 H3 overlaps are metadata SHA/size matches, not a substitute for required H4 twice-full-read or parent archive verification.",
+    "No independent WAN, multi-operator custody, full-host restore, complete model inference, learning quality, or universal generic-owner bridge qualification.",
+    "Dynamic bytecode observation is scoped and is not a complete import-closure trace."
+  ],
+  "native_reruns": 0,
+  "desktop_actions": 0,
+  "remote_reads": 0,
+  "archive_dispatches": 0,
+  "joint_release_qualification": false,
+  "h1_bulk_state": {
+    "status": "PAUSED",
+    "verified_bytes": 65536,
+    "in_flight": 0
+  }
+}

@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/93bfcfe29fc8/pq_recovery/h3-independent-review/check_static_bindings.py", line 166, in <module>
+    main()
+  File "/workspace/scratch/93bfcfe29fc8/pq_recovery/h3-independent-review/check_static_bindings.py", line 91, in main
+    old_names = [step_key(step) for step in old_steps]
+                 ^^^^^^^^^^^^^^
+  File "/workspace/scratch/93bfcfe29fc8/pq_recovery/h3-independent-review/check_static_bindings.py", line 90, in step_key
+    return step.get("name") or "id:" + step["id"] if "id" in step else step.get("name") or "uses:" + step["uses"]
+                                                                                                     ~~~~^^^^^^^^
+KeyError: 'uses'

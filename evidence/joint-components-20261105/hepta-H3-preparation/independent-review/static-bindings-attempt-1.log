@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/93bfcfe29fc8/pq_recovery/h3-independent-review/check_static_bindings.py", line 164, in <module>
+    main()
+  File "/workspace/scratch/93bfcfe29fc8/pq_recovery/h3-independent-review/check_static_bindings.py", line 89, in main
+    old_names = [step["name"] for step in old_steps]
+                 ~~~~^^^^^^^^
+KeyError: 'name'

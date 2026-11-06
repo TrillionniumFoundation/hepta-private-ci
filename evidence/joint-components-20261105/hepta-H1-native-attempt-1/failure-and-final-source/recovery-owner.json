@@ -1,0 +1,56 @@
+{
+  "after": {
+    "commit": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+    "dirty": false,
+    "parents": [
+      "e458e534017dd479e382e84331fa1a6078c3abb4"
+    ],
+    "tree": "24804b21d0306b617e12fa3f5b9454a12ed4ad41"
+  },
+  "base_sha": "1556a4df6e279055fd8196f81a4ca2fe0f19384a",
+  "before": {
+    "commit": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+    "dirty": false,
+    "parents": [
+      "e458e534017dd479e382e84331fa1a6078c3abb4"
+    ],
+    "tree": "24804b21d0306b617e12fa3f5b9454a12ed4ad41"
+  },
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-evidence",
+    "--lib",
+    "-E",
+    "test(=recovery_effect_frontier_tests::recovery_snapshot_commits_intent_unknown_and_original_operation_receipt) | test(=recovery_effect_frontier_tests::recovery_snapshot_distinguishes_a_valid_effect_only_database_rollback) | test(=recovery_effect_frontier_tests::recovery_snapshot_commits_ack_provenance_and_cross_table_order) | test(=recovery_effect_frontier_tests::recovery_snapshot_commits_effect_history_after_the_first_page) | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_changed_json_with_retained_record_digests) | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_effect_projection_drift_with_retained_payloads) | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_canonical_ack_bound_to_a_different_payload) | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_orphan_effect_observations) | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_after_schema_drift) | test(=recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_at_page_boundary) | test(=provider_effect_recovery_provenance_tests::recovery_provenance_rejects_late_dispatch_after_status_without_uncertainty) | test(=provider_effect_recovery_provenance_tests::recovery_provenance_preserves_dispatch_then_authoritative_status) | test(=recovery_invocation_frontier_tests::recovery_snapshot_commits_pending_invocations_and_terminal_states) | test(=recovery_invocation_frontier_tests::recovery_snapshot_commits_invocations_after_the_first_page) | test(=recovery_invocation_frontier_tests::recovery_snapshot_revalidates_invocation_payloads_and_projected_columns) | test(=recovery_invocation_frontier_tests::recovery_snapshot_requires_the_terminals_authoritative_intent) | test(=recovery_invocation_frontier_tests::recovery_snapshot_refuses_duplicate_terminal_hidden_at_page_boundary) | test(=recovery_invocation_frontier_tests::recovery_snapshot_refuses_invocation_column_type_corruption_without_panicking) | test(=recovery_invocation_frontier_tests::recovery_snapshot_binds_invocation_sequence_and_recording_time) | test(=recovery_invocation_schema_tests::recovery_invocation_schema_accepts_current_migration_keys) | test(=recovery_invocation_schema_tests::recovery_invocation_schema_refuses_non_rowid_or_composite_sequences) | test(=recovery_invocation_schema_tests::recovery_invocation_schema_requires_exact_unconditional_column_uniqueness)",
+    "--no-capture",
+    "--retries",
+    "0",
+    "--test-threads=1"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 202.99520587793086,
+  "exit_code": 0,
+  "finished_at": "2026-11-05T19:07:23.775139+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 40585,
+  "log_file": "recovery-owner.json.53071f1015a74ea38030a02206bf523b.log",
+  "log_sha256": "f187a0ef2fce9179d9cb226add5db53bd3c3d437d1a4bdf3b259ed4663c4a012",
+  "minimum_tests": 22,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 22,
+  "output_limit_exceeded": false,
+  "returncode": 0,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+  "started_at": "2026-11-05T19:04:00.774982+00:00",
+  "status": "passed",
+  "tested_sha": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+  "timed_out": false,
+  "working_directory": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source"
+}

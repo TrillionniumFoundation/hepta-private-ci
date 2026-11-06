@@ -1,0 +1,491 @@
+{
+  "build_environment": {
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_TARGET_DIR": "/home/qian-qi/work/chain-joint-20261105-93bfc-w1-target-C4",
+    "CARGO_TERM_COLOR": "never",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "RUST_TEST_THREADS": "1"
+  },
+  "commit": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+  "compiler_override_keys": [],
+  "completed_utc": "2026-11-05T17:51:52Z",
+  "coordinator_sha256": "4443be3838cbfa3d788e5d86e8c0bb4eacc7749f4d5d256b163f368969c5248d",
+  "execution_context": "local-native-preflight",
+  "failures": [],
+  "fastest_adversary_qualified": false,
+  "observations": [
+    {
+      "child_rusage": {
+        "cumulative_maxrss_kib_after": 19848,
+        "cumulative_maxrss_kib_before": 0,
+        "ru_stime_seconds_after": 0.027162,
+        "ru_stime_seconds_before": 0.0,
+        "ru_utime_seconds_after": 0.066979,
+        "ru_utime_seconds_before": 0.0,
+        "scope": "waited children of this coordinator; cumulative maxrss is not a per-command RSS limit",
+        "system_cpu_seconds_delta": 0.027162,
+        "user_cpu_seconds_delta": 0.066979
+      },
+      "command": [
+        "bash",
+        "scripts/project-preflight.sh",
+        "--audit"
+      ],
+      "elapsed_ns": 94445579,
+      "exit_code": 0,
+      "name": "candidate-preflight",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "path": "candidate-preflight.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stdout": {
+        "bytes": 133,
+        "path": "candidate-preflight.stdout",
+        "sha256": "a47133fd7030ccda88d70f7e8f0c9df1ffb0fc5fd3257ed034439bbe6fc6e2e0"
+      },
+      "stdout_limit_bytes": 8388608,
+      "timed_out": false,
+      "timeout_seconds": 120
+    },
+    {
+      "child_rusage": {
+        "cumulative_maxrss_kib_after": 83712,
+        "cumulative_maxrss_kib_before": 19848,
+        "ru_stime_seconds_after": 0.520778,
+        "ru_stime_seconds_before": 0.027162,
+        "ru_utime_seconds_after": 2.123855,
+        "ru_utime_seconds_before": 0.066979,
+        "scope": "waited children of this coordinator; cumulative maxrss is not a per-command RSS limit",
+        "system_cpu_seconds_delta": 0.49361599999999994,
+        "user_cpu_seconds_delta": 2.056876
+      },
+      "command": [
+        "python3",
+        "-B",
+        "scripts/ci/verify_ci_source.py",
+        "--kind",
+        "head",
+        "--expected-head",
+        "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+        "--output",
+        "/home/qian-qi/work/chain-joint-20261105-93bfc-w1-native-C4/checks/source-before.json"
+      ],
+      "elapsed_ns": 2470683032,
+      "exit_code": 0,
+      "name": "source-before",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "path": "source-before.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stdout": {
+        "bytes": 422,
+        "path": "source-before.stdout",
+        "sha256": "a3240c2f14bfbfe973f5066eac1b7a5e8bea6bd426b068af3446f4397f2b2b2b"
+      },
+      "stdout_limit_bytes": 8388608,
+      "timed_out": false,
+      "timeout_seconds": 600
+    },
+    {
+      "child_rusage": {
+        "cumulative_maxrss_kib_after": 397132,
+        "cumulative_maxrss_kib_before": 83712,
+        "ru_stime_seconds_after": 1.07051,
+        "ru_stime_seconds_before": 0.520778,
+        "ru_utime_seconds_after": 20.92105,
+        "ru_utime_seconds_before": 2.123855,
+        "scope": "waited children of this coordinator; cumulative maxrss is not a per-command RSS limit",
+        "system_cpu_seconds_delta": 0.5497320000000001,
+        "user_cpu_seconds_delta": 18.797195000000002
+      },
+      "command": [
+        "python3",
+        "-B",
+        "scripts/ci/test_work_rejection_report.py"
+      ],
+      "elapsed_ns": 23460501651,
+      "exact_92_controls": true,
+      "exit_code": 0,
+      "name": "rejection-python-controls",
+      "passed": true,
+      "stderr": {
+        "bytes": 192,
+        "path": "rejection-python-controls.stderr",
+        "sha256": "109e2929a777f0374a02d961e81be67d5ca2f6ccf4b193f99ad39e37c814b11b"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stdout": {
+        "bytes": 0,
+        "path": "rejection-python-controls.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout_limit_bytes": 8388608,
+      "timed_out": false,
+      "timeout_seconds": 300
+    },
+    {
+      "child_rusage": {
+        "cumulative_maxrss_kib_after": 397132,
+        "cumulative_maxrss_kib_before": 397132,
+        "ru_stime_seconds_after": 4.387945,
+        "ru_stime_seconds_before": 1.07051,
+        "ru_utime_seconds_after": 84.786158,
+        "ru_utime_seconds_before": 20.92105,
+        "scope": "waited children of this coordinator; cumulative maxrss is not a per-command RSS limit",
+        "system_cpu_seconds_delta": 3.317435,
+        "user_cpu_seconds_delta": 63.865108
+      },
+      "command": [
+        "python3",
+        "-B",
+        "scripts/ci/test_applicability.py"
+      ],
+      "elapsed_ns": 67939380245,
+      "exit_code": 0,
+      "name": "applicability-controls",
+      "passed": true,
+      "stderr": {
+        "bytes": 6568,
+        "path": "applicability-controls.stderr",
+        "sha256": "0c9219dd769217d8c40828b415a295e801cd4391f477ea2bedb1b28d648c0e06"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stdout": {
+        "bytes": 0,
+        "path": "applicability-controls.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout_limit_bytes": 8388608,
+      "timed_out": false,
+      "timeout_seconds": 300
+    },
+    {
+      "child_rusage": {
+        "cumulative_maxrss_kib_after": 397132,
+        "cumulative_maxrss_kib_before": 397132,
+        "ru_stime_seconds_after": 4.409971,
+        "ru_stime_seconds_before": 4.387945,
+        "ru_utime_seconds_after": 84.923323,
+        "ru_utime_seconds_before": 84.786158,
+        "scope": "waited children of this coordinator; cumulative maxrss is not a per-command RSS limit",
+        "system_cpu_seconds_delta": 0.022025999999999435,
+        "user_cpu_seconds_delta": 0.13716499999999598
+      },
+      "command": [
+        "python3",
+        "-B",
+        "scripts/ci/check_ci_contract.py"
+      ],
+      "elapsed_ns": 159981160,
+      "exit_code": 0,
+      "name": "ci-contract",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "path": "ci-contract.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stdout": {
+        "bytes": 180,
+        "path": "ci-contract.stdout",
+        "sha256": "9e1991fcbac915b303bd1a6b9db2ce04a4094fa15bb6f05e83d57504313bf975"
+      },
+      "stdout_limit_bytes": 8388608,
+      "timed_out": false,
+      "timeout_seconds": 300
+    },
+    {
+      "child_rusage": {
+        "cumulative_maxrss_kib_after": 397132,
+        "cumulative_maxrss_kib_before": 397132,
+        "ru_stime_seconds_after": 7.830967,
+        "ru_stime_seconds_before": 4.409971,
+        "ru_utime_seconds_after": 94.932194,
+        "ru_utime_seconds_before": 84.923323,
+        "scope": "waited children of this coordinator; cumulative maxrss is not a per-command RSS limit",
+        "system_cpu_seconds_delta": 3.4209960000000006,
+        "user_cpu_seconds_delta": 10.008871
+      },
+      "command": [
+        "python3",
+        "-B",
+        "scripts/ci/test_ci_contract.py"
+      ],
+      "elapsed_ns": 13552282826,
+      "exit_code": 0,
+      "name": "ci-contract-controls",
+      "passed": true,
+      "stderr": {
+        "bytes": 16673,
+        "path": "ci-contract-controls.stderr",
+        "sha256": "ad8b1f3aed140ad1069a77e1f6ebdf7b7f4607b8affd9841ef36cafe2955cfea"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stdout": {
+        "bytes": 0,
+        "path": "ci-contract-controls.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout_limit_bytes": 8388608,
+      "timed_out": false,
+      "timeout_seconds": 300
+    },
+    {
+      "child_rusage": {
+        "cumulative_maxrss_kib_after": 397132,
+        "cumulative_maxrss_kib_before": 397132,
+        "ru_stime_seconds_after": 7.864138,
+        "ru_stime_seconds_before": 7.830967,
+        "ru_utime_seconds_after": 95.021183,
+        "ru_utime_seconds_before": 94.932194,
+        "scope": "waited children of this coordinator; cumulative maxrss is not a per-command RSS limit",
+        "system_cpu_seconds_delta": 0.033170999999999395,
+        "user_cpu_seconds_delta": 0.08898899999999799
+      },
+      "command": [
+        "python3",
+        "-B",
+        "scripts/refresh_distributed_source_inventory.py",
+        "--check"
+      ],
+      "elapsed_ns": 104377569,
+      "exit_code": 0,
+      "name": "source-inventory",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "path": "source-inventory.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stdout": {
+        "bytes": 35,
+        "path": "source-inventory.stdout",
+        "sha256": "8bd8670851048e151182dd0f0bc26834d54e151f39ca53f06c98e06c4479c51a"
+      },
+      "stdout_limit_bytes": 8388608,
+      "timed_out": false,
+      "timeout_seconds": 300
+    },
+    {
+      "child_rusage": {
+        "cumulative_maxrss_kib_after": 397132,
+        "cumulative_maxrss_kib_before": 397132,
+        "ru_stime_seconds_after": 8.045873,
+        "ru_stime_seconds_before": 7.864138,
+        "ru_utime_seconds_after": 113.78871,
+        "ru_utime_seconds_before": 95.021183,
+        "scope": "waited children of this coordinator; cumulative maxrss is not a per-command RSS limit",
+        "system_cpu_seconds_delta": 0.18173500000000065,
+        "user_cpu_seconds_delta": 18.767527
+      },
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "fmt",
+        "--manifest-path",
+        "trillionnium/Cargo.toml",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "elapsed_ns": 18948911309,
+      "exit_code": 0,
+      "name": "native-fmt",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "path": "native-fmt.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stdout": {
+        "bytes": 0,
+        "path": "native-fmt.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout_limit_bytes": 8388608,
+      "timed_out": false,
+      "timeout_seconds": 60
+    },
+    {
+      "child_rusage": {
+        "cumulative_maxrss_kib_after": 397132,
+        "cumulative_maxrss_kib_before": 397132,
+        "ru_stime_seconds_after": 14.457211,
+        "ru_stime_seconds_before": 8.045873,
+        "ru_utime_seconds_after": 177.530672,
+        "ru_utime_seconds_before": 113.78871,
+        "scope": "waited children of this coordinator; cumulative maxrss is not a per-command RSS limit",
+        "system_cpu_seconds_delta": 6.411337999999999,
+        "user_cpu_seconds_delta": 63.741962000000015
+      },
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "test",
+        "--locked",
+        "--release",
+        "--manifest-path",
+        "trillionnium/Cargo.toml",
+        "-p",
+        "trnm-crypto-primitives",
+        "--example",
+        "pon_rejection_cost",
+        "--",
+        "--test-threads=1"
+      ],
+      "elapsed_ns": 37279471994,
+      "exact_three_tests": true,
+      "exit_code": 0,
+      "name": "native-three-tests",
+      "passed": true,
+      "stderr": {
+        "bytes": 2112,
+        "path": "native-three-tests.stderr",
+        "sha256": "ce6750139533ff416e7d7a60d8da4197b820f2409abb76d6c877c4e9da872bc9"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stdout": {
+        "bytes": 371,
+        "path": "native-three-tests.stdout",
+        "sha256": "8a7d54a1a34c8208db074197cc60027e15a086a3d6aa7eb67b87dbd81c05e275"
+      },
+      "stdout_limit_bytes": 8388608,
+      "timed_out": false,
+      "timeout_seconds": 900
+    },
+    {
+      "child_rusage": {
+        "cumulative_maxrss_kib_after": 397132,
+        "cumulative_maxrss_kib_before": 397132,
+        "ru_stime_seconds_after": 19.988449,
+        "ru_stime_seconds_before": 14.457211,
+        "ru_utime_seconds_after": 207.754661,
+        "ru_utime_seconds_before": 177.530672,
+        "scope": "waited children of this coordinator; cumulative maxrss is not a per-command RSS limit",
+        "system_cpu_seconds_delta": 5.531238,
+        "user_cpu_seconds_delta": 30.22398899999999
+      },
+      "command": [
+        "cargo",
+        "+1.95.0",
+        "clippy",
+        "--locked",
+        "--manifest-path",
+        "trillionnium/Cargo.toml",
+        "-p",
+        "trnm-crypto-primitives",
+        "--example",
+        "pon_rejection_cost",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "elapsed_ns": 18111344826,
+      "exit_code": 0,
+      "name": "native-strict-clippy",
+      "passed": true,
+      "stderr": {
+        "bytes": 1954,
+        "path": "native-strict-clippy.stderr",
+        "sha256": "4521db3a8d832fbc68a0955c45c51ccd6c6a81ea366d739dee1cd24aa68b290c"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stdout": {
+        "bytes": 0,
+        "path": "native-strict-clippy.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout_limit_bytes": 8388608,
+      "timed_out": false,
+      "timeout_seconds": 900
+    },
+    {
+      "child_rusage": {
+        "cumulative_maxrss_kib_after": 397132,
+        "cumulative_maxrss_kib_before": 397132,
+        "ru_stime_seconds_after": 20.51802,
+        "ru_stime_seconds_before": 19.988449,
+        "ru_utime_seconds_after": 209.762074,
+        "ru_utime_seconds_before": 207.754661,
+        "scope": "waited children of this coordinator; cumulative maxrss is not a per-command RSS limit",
+        "system_cpu_seconds_delta": 0.5295710000000007,
+        "user_cpu_seconds_delta": 2.007413000000014
+      },
+      "command": [
+        "python3",
+        "-B",
+        "scripts/ci/verify_ci_source.py",
+        "--kind",
+        "head",
+        "--expected-head",
+        "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+        "--output",
+        "/home/qian-qi/work/chain-joint-20261105-93bfc-w1-native-C4/checks/source-after.json"
+      ],
+      "elapsed_ns": 2454765284,
+      "exit_code": 0,
+      "name": "source-after",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "path": "source-after.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stdout": {
+        "bytes": 422,
+        "path": "source-after.stdout",
+        "sha256": "a3240c2f14bfbfe973f5066eac1b7a5e8bea6bd426b068af3446f4397f2b2b2b"
+      },
+      "stdout_limit_bytes": 8388608,
+      "timed_out": false,
+      "timeout_seconds": 600
+    }
+  ],
+  "output": "/home/qian-qi/work/chain-joint-20261105-93bfc-w1-native-C4/checks",
+  "passed": true,
+  "phase": "checks",
+  "production_activation": false,
+  "public_service_measured": false,
+  "root": "/home/qian-qi/work/chain-joint-20261105-93bfc-current",
+  "schema": "trnm-c4-local-w1-native-phase-v1",
+  "source_after": {
+    "base": null,
+    "candidate": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+    "kind": "head",
+    "prospective_merge": null,
+    "schema": "trnm-ci-source-v1",
+    "tested_commit": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+    "tested_tree": "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14",
+    "tests_executed_by_identity_check": false,
+    "tracked_bytes": 985270534,
+    "tracked_entries": 10357,
+    "tracked_worktree_verified": true
+  },
+  "source_before": {
+    "base": null,
+    "candidate": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+    "kind": "head",
+    "prospective_merge": null,
+    "schema": "trnm-ci-source-v1",
+    "tested_commit": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+    "tested_tree": "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14",
+    "tests_executed_by_identity_check": false,
+    "tracked_bytes": 985270534,
+    "tracked_entries": 10357,
+    "tracked_worktree_verified": true
+  },
+  "started_utc": "2026-11-05T17:48:47Z",
+  "tree": "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14",
+  "work_hardness_accepted": false
+}

@@ -1,0 +1,1907 @@
+{
+  "archives": [
+    {
+      "archive_bytes": 130746864,
+      "archive_index_sha256": "587c970101b93ee3ecfa8f8e12f855d1782669c80573376aa79ed0a20ab58865",
+      "archive_path": "/home/qian-qi/work/hepta-h1-actual-elf-export-20261105-93bfc-01/H1-actual-retained-elfs.tar.xz",
+      "archive_sha256": "7a374c980126ed29507e55f182705486c33889c73e58c285d83e7d1ff5618296",
+      "capture_limits": "Only observed nextest test processes are bound to actual opened ELF descriptors. Three selected cases were not individually observed; the readback does not assign a specific cause to the observation gaps. A single declared test binary and matching other captures do not retroactively assign those missing processes. These four images are not the entire ordinary service/interpreter/runtime closure.",
+      "completion_bytes": 10148,
+      "completion_path": "/home/qian-qi/work/hepta-h1-actual-elf-export-20261105-93bfc-01/completion.json",
+      "completion_sha256": "034f518dc2bd8fd350d2cb7a322056300051c538382370089104a727f6c1341b",
+      "original_native_outcome": {
+        "actual_failed": 2,
+        "actual_passed": 65,
+        "actual_process_capture_records": 64,
+        "actual_selected_native_cases_run": 67,
+        "not_run_followup_gates": [
+          "original-six-effect-controls",
+          "provider-effect-existing-and-pq",
+          "final-use-profile-controls",
+          "full-evidence-library",
+          "fix",
+          "format"
+        ],
+        "not_run_original_selected_gates": [
+          "effect-pq-contract",
+          "effect-pq-product"
+        ],
+        "result": "FAILED",
+        "three_individually_unobserved_cases": [
+          {
+            "gate": "recovery-owner",
+            "selected_case": "recovery_invocation_schema_tests::recovery_invocation_schema_refuses_non_rowid_or_composite_sequences"
+          },
+          {
+            "gate": "recovery-signed",
+            "selected_case": "evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry"
+          },
+          {
+            "gate": "recovery-signed",
+            "selected_case": "evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor"
+          }
+        ]
+      },
+      "part_root": "/home/qian-qi/work/hepta-h1-actual-elf-export-20261105-93bfc-01",
+      "parts": [
+        {
+          "bytes": 4194304,
+          "index": 0,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0000",
+          "offset": 0,
+          "sha256": "1493dc64870ffacf75c81ba2d2cdfc734fe7e108ded669f091aacda9bc2b862c"
+        },
+        {
+          "bytes": 4194304,
+          "index": 1,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0001",
+          "offset": 4194304,
+          "sha256": "300cad82b3470c68570e79b03e6d3dc9413431c3282a5c8a6de642791e822715"
+        },
+        {
+          "bytes": 4194304,
+          "index": 2,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0002",
+          "offset": 8388608,
+          "sha256": "2704c16ae053136123e3c98daf955b3495b5ef34356968529f98f411b0a85ab1"
+        },
+        {
+          "bytes": 4194304,
+          "index": 3,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0003",
+          "offset": 12582912,
+          "sha256": "ef0c00c2fbda1ed6beddedbf4963f678d944dc8fc079dbfd88d57f3b19f13848"
+        },
+        {
+          "bytes": 4194304,
+          "index": 4,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0004",
+          "offset": 16777216,
+          "sha256": "2badcd70b11d1e94e0b5e6018fdfc1076ddc99f66c69bd011f3cd453f540da73"
+        },
+        {
+          "bytes": 4194304,
+          "index": 5,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0005",
+          "offset": 20971520,
+          "sha256": "4887248901e12d0f0fa142006796d6969ae35ca37cdf36623b1ef50e84d1b046"
+        },
+        {
+          "bytes": 4194304,
+          "index": 6,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0006",
+          "offset": 25165824,
+          "sha256": "e1e236f4710aa5e47f161f027bf67715080fe5beb8d1d39071125e72f0d0e798"
+        },
+        {
+          "bytes": 4194304,
+          "index": 7,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0007",
+          "offset": 29360128,
+          "sha256": "851f27b4932af45700cea4885b56364000f6007e0d997d32328a8c82b54f4c56"
+        },
+        {
+          "bytes": 4194304,
+          "index": 8,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0008",
+          "offset": 33554432,
+          "sha256": "b4769da0f285f92715f4b37fb92afe5ea6d1491b7084c3272a0523463b914f52"
+        },
+        {
+          "bytes": 4194304,
+          "index": 9,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0009",
+          "offset": 37748736,
+          "sha256": "cee07aed2860863b17004099eeefee3dc900be6d30f48bd64f5b7953d599f4ca"
+        },
+        {
+          "bytes": 4194304,
+          "index": 10,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0010",
+          "offset": 41943040,
+          "sha256": "045a63fada2a5d004a937b05f35288724fec73d93199b4dbb868f663ba432e3b"
+        },
+        {
+          "bytes": 4194304,
+          "index": 11,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0011",
+          "offset": 46137344,
+          "sha256": "dd9b16d38eb35a72da7b9b093b9955d51aff329aa9fbaf5612136bcfccba8319"
+        },
+        {
+          "bytes": 4194304,
+          "index": 12,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0012",
+          "offset": 50331648,
+          "sha256": "f833fdc73adccfca073c83f77db8cf4c24b1501e50a49a4a4a6da18af15581bd"
+        },
+        {
+          "bytes": 4194304,
+          "index": 13,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0013",
+          "offset": 54525952,
+          "sha256": "f9968def58efd66b72b82bebacaf4488cc64af16bf110382f12477494886bb6c"
+        },
+        {
+          "bytes": 4194304,
+          "index": 14,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0014",
+          "offset": 58720256,
+          "sha256": "85ff9d595666e953b5024dbbf36d4716624830a66a789385a149f00efd840123"
+        },
+        {
+          "bytes": 4194304,
+          "index": 15,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0015",
+          "offset": 62914560,
+          "sha256": "86a4674c3d58a2048cf36c15236e308d73f61aaaa3838b4c0023ec93872c717b"
+        },
+        {
+          "bytes": 4194304,
+          "index": 16,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0016",
+          "offset": 67108864,
+          "sha256": "4291f6e6f4126d67e975ebe74fa900cc7cea6731fce75381b20a3aff3f183906"
+        },
+        {
+          "bytes": 4194304,
+          "index": 17,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0017",
+          "offset": 71303168,
+          "sha256": "0fd3af0fb80347009dc6525807890e27b3a4b197a3626ef3324fc94053581713"
+        },
+        {
+          "bytes": 4194304,
+          "index": 18,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0018",
+          "offset": 75497472,
+          "sha256": "0a8604c1538117a69c866b0d0e43b4cccc11b65c6c51716f29b3fdba5e80f1a5"
+        },
+        {
+          "bytes": 4194304,
+          "index": 19,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0019",
+          "offset": 79691776,
+          "sha256": "568caf2273dda035a327dca87083f2fe6c9175e2ba62c24291f106a91e5e10eb"
+        },
+        {
+          "bytes": 4194304,
+          "index": 20,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0020",
+          "offset": 83886080,
+          "sha256": "45fe6d00e7154a706257afe448da8f931c2ce6d49e695d2801dd6eea9f2d063c"
+        },
+        {
+          "bytes": 4194304,
+          "index": 21,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0021",
+          "offset": 88080384,
+          "sha256": "e71303a0621f3599dad7248fa87377e37d847080701269ddef0e75bb84f11f22"
+        },
+        {
+          "bytes": 4194304,
+          "index": 22,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0022",
+          "offset": 92274688,
+          "sha256": "5360ac93b3795dd1c60d8db0c43f0b06009416312292b5a674e583211b4b3252"
+        },
+        {
+          "bytes": 4194304,
+          "index": 23,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0023",
+          "offset": 96468992,
+          "sha256": "ec783e00351c4637e76f54e2b3e6f6442a7c2b8771e294b49d447c9c34f85ce1"
+        },
+        {
+          "bytes": 4194304,
+          "index": 24,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0024",
+          "offset": 100663296,
+          "sha256": "2fdf76ac0138dc205e0154e0b0a4eeb16e90415943e875d3b9aaead9dc148b24"
+        },
+        {
+          "bytes": 4194304,
+          "index": 25,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0025",
+          "offset": 104857600,
+          "sha256": "4afdae5cf910747cdd9d097279a06ff7e0dbb911fa58c1214849972058081e9f"
+        },
+        {
+          "bytes": 4194304,
+          "index": 26,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0026",
+          "offset": 109051904,
+          "sha256": "c27208d8761fa72a42d94b54502256b7c2185462257fb0d67f35419f6afc25fe"
+        },
+        {
+          "bytes": 4194304,
+          "index": 27,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0027",
+          "offset": 113246208,
+          "sha256": "33f27c36d6edb12c0d31c76c620acdec4d2ee2fc8a84b9823fea5948df365fec"
+        },
+        {
+          "bytes": 4194304,
+          "index": 28,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0028",
+          "offset": 117440512,
+          "sha256": "5fa5c67665f7d2068e591a800066723a0e6c5d7a0740ac11f99108f18dc5dffa"
+        },
+        {
+          "bytes": 4194304,
+          "index": 29,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0029",
+          "offset": 121634816,
+          "sha256": "d3f5bc4573fe7c321939d43d4fc4eec3eea5a34dceea9343b7262f9c45e8e629"
+        },
+        {
+          "bytes": 4194304,
+          "index": 30,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0030",
+          "offset": 125829120,
+          "sha256": "da9f49a28d032b739fff4b0cc76b10ffe89f2babb759b9d798dc3ecb36700492"
+        },
+        {
+          "bytes": 723440,
+          "index": 31,
+          "name": "H1-actual-retained-elfs.tar.xz.part-0031",
+          "offset": 130023424,
+          "sha256": "bf579735df9c13be64de9862aacc58c06951fdafe0120afe0b9084afbdb89fdd"
+        }
+      ],
+      "phase": "H1",
+      "remote_path_provenance": "Exact completed exporter output_directory, archive_path, output/completion.json and output/part.name; cloud filenames are not used as remote paths.",
+      "source_commit": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+      "source_root": "/home/qian-qi/work/hepta-h1-actual-elf-export-20261105-93bfc-01",
+      "source_tree": "24804b21d0306b617e12fa3f5b9454a12ed4ad41",
+      "transport_completion_path": "archives/H1/H1-export-completion.json"
+    },
+    {
+      "archive_bytes": 256132128,
+      "archive_index_sha256": "dab6061f0fa17e1403bf084314ca6c52b8bf4ece6b9b3d7ed5feb09143aa6e5f",
+      "archive_path": "/home/qian-qi/work/hepta-h2-actual-elf-export-20261105-93bfc-01/H2-actual-retained-elfs.tar.xz",
+      "archive_sha256": "f75c5d36596b84261ebc10705cd73de8abbe68eb87897413fcdb7e0cc92631a7",
+      "capture_limits": "actual retained H2 images, with all observed aliases; no reconstructed binaries, no second-daemon complete binding or post-timeout inference",
+      "completion_bytes": 16590,
+      "completion_path": "/home/qian-qi/work/hepta-h2-actual-elf-export-20261105-93bfc-01/completion.json",
+      "completion_sha256": "d991a50f630e509278c20d5fe9f6ca0e53d1006852d954109d268375978407c1",
+      "original_native_outcome": {
+        "configuration_unchanged": true,
+        "coordinator_elapsed_seconds": 1133.3816417860799,
+        "failed_case": "pq_effect_survives_owned_agentd_kill_after_provider_fsync_without_resend",
+        "failed_case_seconds": 60.007,
+        "failure_raw_sha256": "9afd59f1c6d4043ec240fb2a888c8e08630d8e0adf0671883dd0c17be4864a8a",
+        "passed_selected": 70,
+        "source_before_after_equal": true,
+        "status": "FAILED",
+        "terminal_unix_ms": 1793911402315,
+        "timed_out_selected": 1,
+        "unexecuted": [
+          "selected-tests-guard",
+          "original-six-effect-controls",
+          "provider-effect-existing-and-pq",
+          "final-use-profile-controls",
+          "full-evidence-library",
+          "full-evidence-ignored-list",
+          "fix",
+          "format"
+        ]
+      },
+      "part_root": "/home/qian-qi/work/hepta-h2-actual-elf-export-20261105-93bfc-01",
+      "parts": [
+        {
+          "bytes": 4194304,
+          "index": 0,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0000",
+          "offset": 0,
+          "sha256": "4f55d0846008d262a1d9a45cc1b25acca203a6eafa19f373f4bc27e8e13b17d5"
+        },
+        {
+          "bytes": 4194304,
+          "index": 1,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0001",
+          "offset": 4194304,
+          "sha256": "447096c5fdcf1127261ec313d0600036b08513aab585d556502d08a7520004c5"
+        },
+        {
+          "bytes": 4194304,
+          "index": 2,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0002",
+          "offset": 8388608,
+          "sha256": "d21f7b08e03670c5eabf66c6a471cc6171404769db1d813270ec240badcdfed1"
+        },
+        {
+          "bytes": 4194304,
+          "index": 3,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0003",
+          "offset": 12582912,
+          "sha256": "1699ae7f91ae6cc98022d5db26e43dd6fd20f087bb77129e360e63a167706795"
+        },
+        {
+          "bytes": 4194304,
+          "index": 4,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0004",
+          "offset": 16777216,
+          "sha256": "9c1acdcd937d5e57f2bb54dc539f0ebb2ade553ac9c1b546ae19d4e2276a61c5"
+        },
+        {
+          "bytes": 4194304,
+          "index": 5,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0005",
+          "offset": 20971520,
+          "sha256": "fa00436f18af6592b383106f6aa4fbece71b6187279d294eda4ed033832c64cb"
+        },
+        {
+          "bytes": 4194304,
+          "index": 6,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0006",
+          "offset": 25165824,
+          "sha256": "3746a2b69dd016554aa80ead6580eeae99f34d2e90ad43e0c7cc96dd8605320e"
+        },
+        {
+          "bytes": 4194304,
+          "index": 7,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0007",
+          "offset": 29360128,
+          "sha256": "966906cb6bc580f3a50f9ce0643e8bd6c451f9e65bed6b0e8dbe55679bfb7874"
+        },
+        {
+          "bytes": 4194304,
+          "index": 8,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0008",
+          "offset": 33554432,
+          "sha256": "234f23dab15c422c730fd6668847b7dd60ac191879aaf60b3635a6c951feab11"
+        },
+        {
+          "bytes": 4194304,
+          "index": 9,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0009",
+          "offset": 37748736,
+          "sha256": "505be0c7e59e29920a7aa4ac9cb7f577c20fc5feb6787429cb3da475f5cec22d"
+        },
+        {
+          "bytes": 4194304,
+          "index": 10,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0010",
+          "offset": 41943040,
+          "sha256": "e9fbc360a21d2f5c0f9f50af659382fdad84e3b2990a4e1a568a2443aadef51b"
+        },
+        {
+          "bytes": 4194304,
+          "index": 11,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0011",
+          "offset": 46137344,
+          "sha256": "9bafa673c5faafee98181510d8248b8f4eda7588e458d8b552696366e1439165"
+        },
+        {
+          "bytes": 4194304,
+          "index": 12,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0012",
+          "offset": 50331648,
+          "sha256": "dfa788b855416d0e237f48324e25332fea9baa7ef55f67cd2cf402e068edd45f"
+        },
+        {
+          "bytes": 4194304,
+          "index": 13,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0013",
+          "offset": 54525952,
+          "sha256": "511124ca5c7663d85897927166b548b7cd528dac951066d9487e025e82373e5e"
+        },
+        {
+          "bytes": 4194304,
+          "index": 14,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0014",
+          "offset": 58720256,
+          "sha256": "1ab8bd0abb54a92ac8efbafb68618f771ab92294250c6bf00f5487bf4cf28519"
+        },
+        {
+          "bytes": 4194304,
+          "index": 15,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0015",
+          "offset": 62914560,
+          "sha256": "a6bdecd6aa888b708ee098e25a141598748a6999b0d6281faa0cac35d74e701b"
+        },
+        {
+          "bytes": 4194304,
+          "index": 16,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0016",
+          "offset": 67108864,
+          "sha256": "7ad6ae05259fbf671f816c6d2bd4e2a5a4d2fd68b0c223254ebd1ff2109cc1cd"
+        },
+        {
+          "bytes": 4194304,
+          "index": 17,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0017",
+          "offset": 71303168,
+          "sha256": "444f401b651ebd68eef153584af9021ea8c7c38e640a1add800bfb7fce0bf834"
+        },
+        {
+          "bytes": 4194304,
+          "index": 18,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0018",
+          "offset": 75497472,
+          "sha256": "f7484a3e0b58156fe5b474b8a3a9a64b30a1eaeb797984b2149628063213d2e2"
+        },
+        {
+          "bytes": 4194304,
+          "index": 19,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0019",
+          "offset": 79691776,
+          "sha256": "f72a302bf6c12663665aa08cd1523c2cf4251125ae344f4390fc74e46a4bd143"
+        },
+        {
+          "bytes": 4194304,
+          "index": 20,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0020",
+          "offset": 83886080,
+          "sha256": "f6324be9e88c9dba1f9b680b0687a80de73ebb0b5aee93b0ca09031dbf5802e2"
+        },
+        {
+          "bytes": 4194304,
+          "index": 21,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0021",
+          "offset": 88080384,
+          "sha256": "003f18d6915b572d72cd066ee952691dadde989dc3a2e9a41d61a4fe02a34236"
+        },
+        {
+          "bytes": 4194304,
+          "index": 22,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0022",
+          "offset": 92274688,
+          "sha256": "91adb2b88aa4ad81ff51ce66da67b93277d868f7c796b5c94e62a1fd1a83394e"
+        },
+        {
+          "bytes": 4194304,
+          "index": 23,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0023",
+          "offset": 96468992,
+          "sha256": "3a589fdae1ec4c46bf4d9b3d01cf86c537d2266e57c15c49e604e6db063edf76"
+        },
+        {
+          "bytes": 4194304,
+          "index": 24,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0024",
+          "offset": 100663296,
+          "sha256": "371a4027004660690ca967f71d03f4b05d03fe304cc3f97808170199f38130e5"
+        },
+        {
+          "bytes": 4194304,
+          "index": 25,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0025",
+          "offset": 104857600,
+          "sha256": "b0d6423657de7fca8658524e4104cf8a488563a2a6bc0b8e79bd03e569fb34d3"
+        },
+        {
+          "bytes": 4194304,
+          "index": 26,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0026",
+          "offset": 109051904,
+          "sha256": "9bd8ac8b61797b1041e64aeb52a208194bb4913a0306510b3d81560fb525438f"
+        },
+        {
+          "bytes": 4194304,
+          "index": 27,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0027",
+          "offset": 113246208,
+          "sha256": "a328ab718248dfd249a1772ff83bcc8049b2f2d0f05cc15b0354adea0b47f2b2"
+        },
+        {
+          "bytes": 4194304,
+          "index": 28,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0028",
+          "offset": 117440512,
+          "sha256": "fcd7fa158d4b7808299f31ceb909e7e4027753d0e3dba8c145aeef98427d2d5b"
+        },
+        {
+          "bytes": 4194304,
+          "index": 29,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0029",
+          "offset": 121634816,
+          "sha256": "15addb3d577e7e1329cbf3fae4567a1cda53b55e127d5a444137347168707124"
+        },
+        {
+          "bytes": 4194304,
+          "index": 30,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0030",
+          "offset": 125829120,
+          "sha256": "a19b0e1743469e5bdfab9d9e5611d95fba1206941d9444064a7e400b42823485"
+        },
+        {
+          "bytes": 4194304,
+          "index": 31,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0031",
+          "offset": 130023424,
+          "sha256": "91da84a7de83faef0d583df53b51de94718a532e7844654cc66778c9cd058362"
+        },
+        {
+          "bytes": 4194304,
+          "index": 32,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0032",
+          "offset": 134217728,
+          "sha256": "d3e6e84e722d1ada77e6778d7eb860ee95ffe9f0c4efcd5ab4a99231bd9482ce"
+        },
+        {
+          "bytes": 4194304,
+          "index": 33,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0033",
+          "offset": 138412032,
+          "sha256": "dd74c209d781ae15482b14eaf01b9b99c2113b1ccdfab818edeab5aafef6f354"
+        },
+        {
+          "bytes": 4194304,
+          "index": 34,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0034",
+          "offset": 142606336,
+          "sha256": "ed569f11d76887a0e2174f242b97d7e5c61c84afe32b20ac8396a827b9a655fa"
+        },
+        {
+          "bytes": 4194304,
+          "index": 35,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0035",
+          "offset": 146800640,
+          "sha256": "19de5550520a299c5a3734ed98332e449206d7ab014ad54459e83fb60a389034"
+        },
+        {
+          "bytes": 4194304,
+          "index": 36,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0036",
+          "offset": 150994944,
+          "sha256": "7389f7b5548d24f76c157b3f75f45f845770fc79c3431fd90e4fc7e5a83ac853"
+        },
+        {
+          "bytes": 4194304,
+          "index": 37,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0037",
+          "offset": 155189248,
+          "sha256": "fb5e7925b49e1016b78cb0657b4cdd70b809563410132a07ed3d974fecc00a24"
+        },
+        {
+          "bytes": 4194304,
+          "index": 38,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0038",
+          "offset": 159383552,
+          "sha256": "ad2c0bfa9103a2eb85835397bb3307e80e9b0334494e89eff0443db7d48d0e33"
+        },
+        {
+          "bytes": 4194304,
+          "index": 39,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0039",
+          "offset": 163577856,
+          "sha256": "f9b206be2316c395d882778c15e79532b0cc1cf76b763f332135c73e98219382"
+        },
+        {
+          "bytes": 4194304,
+          "index": 40,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0040",
+          "offset": 167772160,
+          "sha256": "0812a4bb653e4989ade5293e5f7512734d43269f3fd0d97363a8a10aaaa94a75"
+        },
+        {
+          "bytes": 4194304,
+          "index": 41,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0041",
+          "offset": 171966464,
+          "sha256": "f9fb380568b80e9a99749701ddd854406cc64729d71c50af53bb93485b1ca410"
+        },
+        {
+          "bytes": 4194304,
+          "index": 42,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0042",
+          "offset": 176160768,
+          "sha256": "70a3d42e2659a1ecf23dc96af031c0d8cf31e9b9f4733ffa574a0c6ad8ce5304"
+        },
+        {
+          "bytes": 4194304,
+          "index": 43,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0043",
+          "offset": 180355072,
+          "sha256": "c8a4276ca234606626c8ba24bec6382ca371e928d8541622891dff7ee80d18ed"
+        },
+        {
+          "bytes": 4194304,
+          "index": 44,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0044",
+          "offset": 184549376,
+          "sha256": "5f116e3d9ef680d7eed55611cf37157ab9adb14703f19ae5ac43208badeee25c"
+        },
+        {
+          "bytes": 4194304,
+          "index": 45,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0045",
+          "offset": 188743680,
+          "sha256": "1def921536f4677d036a546fd424fdbc64f5d217628644f255d460ccbe596ec3"
+        },
+        {
+          "bytes": 4194304,
+          "index": 46,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0046",
+          "offset": 192937984,
+          "sha256": "43687216de363ed784ad6ef14b5b929418ca18041540663528ed2459b5fef5c2"
+        },
+        {
+          "bytes": 4194304,
+          "index": 47,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0047",
+          "offset": 197132288,
+          "sha256": "68b8c269ef0b28f0563e80407416961b80c1571c47dd8e40706c64df42389017"
+        },
+        {
+          "bytes": 4194304,
+          "index": 48,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0048",
+          "offset": 201326592,
+          "sha256": "3dfa3ff0d6b1e67de2e2bb58f1dc448eebf08318e162e00d0c58b25c8d96e726"
+        },
+        {
+          "bytes": 4194304,
+          "index": 49,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0049",
+          "offset": 205520896,
+          "sha256": "4a7941ae4473ce7ad1f874f65b929e4c6c2f45382fe9f84aad6ec39541fe64d7"
+        },
+        {
+          "bytes": 4194304,
+          "index": 50,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0050",
+          "offset": 209715200,
+          "sha256": "ea9f18fe3fd3d2c104a89a8945760b1089b38a6764f2e376027187100e14ca14"
+        },
+        {
+          "bytes": 4194304,
+          "index": 51,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0051",
+          "offset": 213909504,
+          "sha256": "9583913fd9fc5b9184d95b4100fe1ee049d63df2ea312b5729dcc419d5fc1708"
+        },
+        {
+          "bytes": 4194304,
+          "index": 52,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0052",
+          "offset": 218103808,
+          "sha256": "1ea9928fe7256684521a716f51b575250e9f290d654f5cd273e2499338581e4c"
+        },
+        {
+          "bytes": 4194304,
+          "index": 53,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0053",
+          "offset": 222298112,
+          "sha256": "8714191ef342a6ad79f0e5e4319d69794b1add199aaf88e9a978cce7bbb8f7f8"
+        },
+        {
+          "bytes": 4194304,
+          "index": 54,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0054",
+          "offset": 226492416,
+          "sha256": "872bd0f6ad8682b252bf9ef8e556a7c6baf782b73265dd9323eee275c2888511"
+        },
+        {
+          "bytes": 4194304,
+          "index": 55,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0055",
+          "offset": 230686720,
+          "sha256": "bd0e8a1dbdabf57cd0ef02258dcf400c9c67c16096605c85d0529526ba54efda"
+        },
+        {
+          "bytes": 4194304,
+          "index": 56,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0056",
+          "offset": 234881024,
+          "sha256": "1160887694e2bb30eb826181e6c41bd44a1d959a3e5cbe8e811b0d197fbfbd5b"
+        },
+        {
+          "bytes": 4194304,
+          "index": 57,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0057",
+          "offset": 239075328,
+          "sha256": "7f0ed6d5dabfddacaee660febcc320140785dac9f67cd5f2a74055c23a02828b"
+        },
+        {
+          "bytes": 4194304,
+          "index": 58,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0058",
+          "offset": 243269632,
+          "sha256": "b7e972b6552dee677c77bd4fcf1136a28f2cdb67f3ac9afd538a59b0752052fc"
+        },
+        {
+          "bytes": 4194304,
+          "index": 59,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0059",
+          "offset": 247463936,
+          "sha256": "ea26c66478ddc1cbe724059fffc283a2583ee3a9e33ab30dba09a71c7e1974da"
+        },
+        {
+          "bytes": 4194304,
+          "index": 60,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0060",
+          "offset": 251658240,
+          "sha256": "62840cfab39db52296c6fc8bb449e25ef233139921feea930b4e9d18de248059"
+        },
+        {
+          "bytes": 279584,
+          "index": 61,
+          "name": "H2-actual-retained-elfs.tar.xz.part-0061",
+          "offset": 255852544,
+          "sha256": "08048dc88aed3bf717d1678a10b63f3272a99f17c2db7438d07943237878a509"
+        }
+      ],
+      "phase": "H2",
+      "remote_path_provenance": "Exact completed exporter output_directory, archive_path, output/completion.json and output/part.name; cloud filenames are not used as remote paths.",
+      "source_commit": "620cb63ae9b58904483005bcb2c4e1507df99539",
+      "source_root": "/home/qian-qi/work/hepta-h2-actual-elf-export-20261105-93bfc-01",
+      "source_tree": "f2cebe6d99deca596c170922b8e60d66648d7393",
+      "transport_completion_path": "archives/H2/H2-export-completion.json"
+    },
+    {
+      "archive_bytes": 283427280,
+      "archive_index_sha256": "b023aca6ab2dccf4324dccab2e5319a00ef9b32773e0dc73127efc9af3caa002",
+      "archive_path": "/home/qian-qi/work/hepta-h3-actual-elf-export-20261105-93bfc-01/H3-actual-retained-elfs.tar.xz",
+      "archive_sha256": "5365fcf900781044108e9642ae02a110e4ac8d031d9ee516c4f0b0e471e1e773",
+      "capture_limits": "H3 remains FAILED at the external FinalUse live-to-FD correlation. Its 50 passing raw cases and 50 bijective FD records do not retrospectively identify the unmatched live PID 1038111. The ordinary daemon has one complete retained image: first-process full hash/copy and second-process verification of the same held file object, not a second full read/copy. All original aliases and observations remain verbatim in the embedded source inventory. No inferred target images, missing-case attribution, privileged-writer protection, or full runtime/dependency closure is claimed.",
+      "completion_bytes": 34491,
+      "completion_path": "/home/qian-qi/work/hepta-h3-actual-elf-export-20261105-93bfc-01/completion.json",
+      "completion_sha256": "93d7bf08914054e4bcf05f17eea3cd5ef36fac9bbf0d1e601dda59084e758cd3",
+      "original_native_outcome": {
+        "additional_original_test_outcomes": {
+          "compatibility": 6,
+          "final_use": 50,
+          "provider": 10
+        },
+        "complete_image_unique_bytes": 1674575368,
+        "complete_retained_alias_count": 30,
+        "configuration_unchanged": true,
+        "coordinator_elapsed_seconds": 1199.6768508160021,
+        "failed_selected": 0,
+        "failure_component": "external live-to-fd correspondence",
+        "failure_error": "AssertionError('final-use-profile-controls lacks an exact per-case test-image binding')",
+        "failure_raw_sha256": "4b4802df270ce1772620f4f043e67f08131d0f723375b646b156ddc0afb1defc",
+        "native_job_id": "1a1ada80dcc-fc05-5a8b",
+        "partial_artifact_scope": "No incomplete artifacts appear in the captured records or completed two-generation daemon proof; inventory is evidence-record based, not a target glob or filesystem-wide absence proof.",
+        "partial_artifacts": [],
+        "passed_selected": 74,
+        "passed_selection": [
+          {
+            "gate": "dispatcher",
+            "name": "authbus_dispatch::tests::abandoned_first_claim_without_admission_is_quarantined_after_lookup_missing",
+            "result": "ok"
+          },
+          {
+            "gate": "dispatcher",
+            "name": "authbus_dispatch::tests::checkpoint_sync::cancelled_checkpoint_sync_waiter_and_owner_release_exclusive_admission",
+            "result": "ok"
+          },
+          {
+            "gate": "dispatcher",
+            "name": "authbus_dispatch::tests::checkpoint_sync::concurrent_checkpoint_syncs_share_owner_lock_and_preserve_rollback_rejection",
+            "result": "ok"
+          },
+          {
+            "gate": "dispatcher",
+            "name": "authbus_dispatch::tests::lease_delay::trust_refresh_sqlite_wait_cannot_authorize_transport_with_an_expired_lease",
+            "result": "ok"
+          },
+          {
+            "gate": "dispatcher",
+            "name": "authbus_dispatch::tests::lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt",
+            "result": "ok"
+          },
+          {
+            "gate": "dispatcher",
+            "name": "authbus_dispatch::tests::matching_receipt_metadata_with_different_queue_input_never_acknowledges",
+            "result": "ok"
+          },
+          {
+            "gate": "dispatcher",
+            "name": "authbus_dispatch::tests::policy_rollback::pq_bound_policy_refuses_renewal_without_policy_snapshot",
+            "result": "ok"
+          },
+          {
+            "gate": "dispatcher",
+            "name": "authbus_dispatch::tests::policy_rollback::pq_owner_requires_explicit_nonzero_policy_revision_and_accepts_set_ordering",
+            "result": "ok"
+          },
+          {
+            "gate": "dispatcher",
+            "name": "authbus_dispatch::tests::policy_rollback::pq_policy_change_fences_stale_renewal_and_current_policy_restores_dispatch",
+            "result": "ok"
+          },
+          {
+            "gate": "dispatcher",
+            "name": "authbus_dispatch::tests::policy_rollback::pq_removed_thread_cannot_return_through_owner_file_rollback_after_reopen",
+            "result": "ok"
+          },
+          {
+            "gate": "dispatcher",
+            "name": "authbus_dispatch::tests::pq::pq_text_owner_resumes_after_revocation_rotation_and_rejected_config_rollback",
+            "result": "ok"
+          },
+          {
+            "gate": "dispatcher",
+            "name": "authbus_dispatch::tests::pq::pq_text_producer_recovers_through_existing_dispatch_and_rejects_wire_and_config_downgrade",
+            "result": "ok"
+          },
+          {
+            "gate": "dispatcher",
+            "name": "authbus_dispatch::tests::ready_generation_and_owner_private_trust_are_required_before_admission",
+            "result": "ok"
+          },
+          {
+            "gate": "dispatcher",
+            "name": "authbus_dispatch::tests::revocation_during_queue_request_prevents_success_ack",
+            "result": "ok"
+          },
+          {
+            "gate": "product",
+            "name": "pq_signed_text_crosses_real_queue_after_rejection_without_downgrade",
+            "result": "ok"
+          },
+          {
+            "gate": "product",
+            "name": "real_agentd_without_explicit_trust_rejects_signed_text",
+            "result": "ok"
+          },
+          {
+            "gate": "product",
+            "name": "signed_text_crosses_real_queue_once_and_current_trust_rejects_invalid_ingress",
+            "result": "ok"
+          },
+          {
+            "gate": "recovery-owner",
+            "name": "provider_effect_recovery_provenance_tests::recovery_provenance_preserves_dispatch_then_authoritative_status",
+            "result": "ok"
+          },
+          {
+            "gate": "recovery-owner",
+            "name": "provider_effect_recovery_provenance_tests::recovery_provenance_rejects_late_dispatch_after_status_without_uncertainty",
+            "result": "ok"
+          },
+          {
+            "gate": "recovery-owner",
+            "name": "recovery_effect_frontier_tests::recovery_snapshot_commits_ack_provenance_and_cross_table_order",
+            "result": "ok"
+          },
+          {
+            "gate": "recovery-owner",
+            "name": "recovery_effect_frontier_tests::recovery_snapshot_commits_effect_history_after_the_first_page",
+            "result": "ok"
+          },
+          {
+            "gate": "recovery-owner",
+            "name": "recovery_effect_frontier_tests::recovery_snapshot_commits_intent_unknown_and_original_operation_receipt",
+            "result": "ok"
+          },
+          {
+            "gate": "recovery-owner",
+            "name": "recovery_effect_frontier_tests::recovery_snapshot_distinguishes_a_valid_effect_only_database_rollback",
+            "result": "ok"
+          },
+          {
+            "gate": "recovery-owner",
+            "name": "recovery_effect_frontier_tests::recovery_snapshot_refuses_canonical_ack_bound_to_a_different_payload",
+            "result": "ok"
+          },
+          {
+            "gate": "recovery-owner",
+            "name": "recovery_effect_frontier_tests::recovery_snapshot_refuses_changed_json_with_retained_record_digests",
+            "result": "ok"
+          },
+          {
+            "gate": "recovery-owner",
+            "name": "recovery_effect_frontier_tests::recovery_snapshot_refuses_effect_projection_drift_with_retained_payloads",
+            "result": "ok"
+          },
+          {
+            "gate": "recovery-owner",
+            "name": "recovery_effect_frontier_tests::recovery_snapshot_refuses_orphan_effect_observations",
+            "result": "ok"
+          },
+          {
+            "gate": "recovery-owner",
+            "name": "recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_after_schema_drift",
+            "result": "ok"
+          },
+          {
+            "gate": "recovery-owner",
+            "name": "recovery_effect_frontier_tests::recovery_snapshot_refuses_repeated_effect_sequence_at_page_boundary",
+            "result": "ok"
+          },
+          {
+            "gate": "recovery-owner",
+            "name": "recovery_invocation_frontier_tests::recovery_snapshot_binds_invocation_sequence_and_recording_time",
+            "result": "ok"
+          },
+          {
+            "gate": "recovery-owner",
+            "name": "recovery_invocation_frontier_tests::recovery_snapshot_commits_invocations_after_the_first_page",
+            "result": "ok"
+          },
+          {
+            "gate": "recovery-owner",
+            "name": "recovery_invocation_frontier_tests::recovery_snapshot_commits_pending_invocations_and_terminal_states",
+            "result": "ok"
+          },
+          {
+            "gate": "recovery-owner",
+            "name": "recovery_invocation_frontier_tests::recovery_snapshot_refuses_duplicate_terminal_hidden_at_page_boundary",
+            "result": "ok"
+          },
+          {
+            "gate": "recovery-owner",
+            "name": "recovery_invocation_frontier_tests::recovery_snapshot_refuses_invocation_column_type_corruption_without_panicking",
+            "result": "ok"
+          },
+          {
+            "gate": "recovery-owner",
+            "name": "recovery_invocation_frontier_tests::recovery_snapshot_requires_the_terminals_authoritative_intent",
+            "result": "ok"
+          },
+          {
+            "gate": "recovery-owner",
+            "name": "recovery_invocation_frontier_tests::recovery_snapshot_revalidates_invocation_payloads_and_projected_columns",
+            "result": "ok"
+          },
+          {
+            "gate": "recovery-owner",
+            "name": "recovery_invocation_schema_tests::recovery_invocation_schema_accepts_current_migration_keys",
+            "result": "ok"
+          },
+          {
+            "gate": "recovery-owner",
+            "name": "recovery_invocation_schema_tests::recovery_invocation_schema_refuses_non_rowid_or_composite_sequences",
+            "result": "ok"
+          },
+          {
+            "gate": "recovery-owner",
+            "name": "recovery_invocation_schema_tests::recovery_invocation_schema_requires_exact_unconditional_column_uniqueness",
+            "result": "ok"
+          },
+          {
+            "gate": "recovery-signed",
+            "name": "evidence_frontier::tests::recovery_frontier_authenticates_both_effect_fields",
+            "result": "ok"
+          },
+          {
+            "gate": "recovery-signed",
+            "name": "evidence_frontier::tests::recovery_frontier_cannot_be_omitted_at_the_ordinary_agentd_run_entry",
+            "result": "ok"
+          },
+          {
+            "gate": "recovery-signed",
+            "name": "evidence_frontier::tests::recovery_frontier_enforces_root_scope_epoch_revocation_and_generation_floor",
+            "result": "ok"
+          },
+          {
+            "gate": "recovery-signed",
+            "name": "evidence_frontier::tests::recovery_frontier_pq_rejects_invocation_only_database_rollbacks",
+            "result": "ok"
+          },
+          {
+            "gate": "recovery-signed",
+            "name": "evidence_frontier::tests::recovery_frontier_pq_survives_store_close_and_reopen",
+            "result": "ok"
+          },
+          {
+            "gate": "recovery-signed",
+            "name": "evidence_frontier::tests::recovery_frontier_read_only_preflight_never_binds_or_changes_the_image",
+            "result": "ok"
+          },
+          {
+            "gate": "recovery-signed",
+            "name": "evidence_frontier::tests::recovery_frontier_refuses_valid_classical_v1_and_v2_signatures",
+            "result": "ok"
+          },
+          {
+            "gate": "recovery-signed",
+            "name": "evidence_frontier::tests::recovery_frontier_refuses_valid_pq_v3_and_relabelled_v2_snapshots",
+            "result": "ok"
+          },
+          {
+            "gate": "recovery-signed",
+            "name": "evidence_frontier::tests::recovery_frontier_rejects_wrong_domain_and_profile",
+            "result": "ok"
+          },
+          {
+            "gate": "recovery-signed",
+            "name": "evidence_frontier::tests::recovery_frontier_rejects_wrong_key_pin_and_noncanonical_signature",
+            "result": "ok"
+          },
+          {
+            "gate": "recovery-signed",
+            "name": "evidence_frontier::tests::recovery_frontier_root_rotation_retires_the_old_key",
+            "result": "ok"
+          },
+          {
+            "gate": "recovery-product",
+            "name": "real_agentd_composes_authenticated_evidence_writer_query_verifier_and_terminal_observer",
+            "result": "ok"
+          },
+          {
+            "gate": "recovery-product",
+            "name": "signed_recovery_frontier_allows_exact_current_database",
+            "result": "ok"
+          },
+          {
+            "gate": "recovery-product",
+            "name": "signed_recovery_frontier_rejects_effect_only_database_rollback",
+            "result": "ok"
+          },
+          {
+            "gate": "recovery-product",
+            "name": "signed_recovery_frontier_rejects_valid_older_database_image",
+            "result": "ok"
+          },
+          {
+            "gate": "qualification-growth",
+            "name": "qualification_tests::claim_query_rejects_more_than_512_references",
+            "result": "ok"
+          },
+          {
+            "gate": "qualification-growth",
+            "name": "qualification_tests::ordinary_append_rejects_historical_projection_drift_without_consuming_replay",
+            "result": "ok"
+          },
+          {
+            "gate": "effect-pq-owner",
+            "name": "automation_effect_host::pq::tests::current_clock_frontier_and_pq_grant_are_mandatory_before_contact",
+            "result": "ok"
+          },
+          {
+            "gate": "effect-pq-owner",
+            "name": "automation_effect_host::pq::tests::generation_change_after_store_await_refuses_contact_and_keeps_consumed_nonce",
+            "result": "ok"
+          },
+          {
+            "gate": "effect-pq-owner",
+            "name": "automation_effect_host::pq::tests::historical_policy_does_not_connect_old_trust_services_or_follow_its_references",
+            "result": "ok"
+          },
+          {
+            "gate": "effect-pq-owner",
+            "name": "automation_effect_host::pq::tests::initial_feed_is_authenticated_before_any_local_authority_or_frontier_write",
+            "result": "ok"
+          },
+          {
+            "gate": "effect-pq-owner",
+            "name": "automation_effect_host::pq::tests::ordinary_dispatch_and_new_generation_recovery_keep_one_stable_operation",
+            "result": "ok"
+          },
+          {
+            "gate": "effect-pq-owner",
+            "name": "automation_effect_host::pq::tests::ordinary_loader_denies_classical_schema_and_contract_or_policy_substitution",
+            "result": "ok"
+          },
+          {
+            "gate": "effect-pq-owner",
+            "name": "automation_effect_host::pq::tests::pon_schema4_binds_native_binary_and_original_limits_without_running_a_node",
+            "result": "ok"
+          },
+          {
+            "gate": "effect-pq-owner",
+            "name": "automation_effect_host::pq::tests::reconcile_rechecks_generation_after_store_await_without_reclassifying_unknown",
+            "result": "ok"
+          },
+          {
+            "gate": "effect-pq-owner",
+            "name": "automation_effect_host::pq::tests::recovery_requires_current_signed_exact_historical_policy_and_same_provider",
+            "result": "ok"
+          },
+          {
+            "gate": "effect-pq-owner",
+            "name": "automation_effect_host::pq::tests::revoked_equal_number_drift_expired_feed_and_new_epoch_do_not_contact_provider",
+            "result": "ok"
+          },
+          {
+            "gate": "effect-pq-owner",
+            "name": "automation_effect_host::pq::tests::signed_revocation_after_store_await_obeys_active_effect_fence_and_never_sends",
+            "result": "ok"
+          },
+          {
+            "gate": "effect-pq-contract",
+            "name": "provider_effect::pq_tests::pq_contract_binds_profile_root_epoch_and_complete_authority_scope",
+            "result": "ok"
+          },
+          {
+            "gate": "effect-settled-absence",
+            "name": "owner_recovery_tests::settled_absence_fact_read_rejects_unknown_unsettled_and_corrupt_evidence",
+            "result": "ok"
+          },
+          {
+            "gate": "effect-settled-absence",
+            "name": "owner_recovery_tests::settled_absence_fact_read_survives_reopen_and_new_owner_without_redispatch",
+            "result": "ok"
+          },
+          {
+            "gate": "effect-pq-product",
+            "name": "binary::held_daemon_image_reuse_refuses_wrong_changed_or_missing_files",
+            "result": "ok"
+          },
+          {
+            "gate": "effect-pq-product",
+            "name": "pq_effect_survives_owned_agentd_kill_after_provider_fsync_without_resend",
+            "result": "ok"
+          },
+          {
+            "gate": "neural-runtime-input",
+            "name": "ordinary_native_composition_rejects_untrusted_qualification_before_inference_owners",
+            "result": "ok"
+          },
+          {
+            "gate": "neural-runtime-input",
+            "name": "native_comparison_input_requires_v2_and_independently_pinned_snapshot",
+            "result": "ok"
+          }
+        ],
+        "result": "FAILED",
+        "scope": "Actual retained H3 images and every recorded alias. FinalUse test outcomes are 50/0, but its live correlation and entire H3 run FAILED. No prior-run image reconstruction, no retrospective helper attribution, no second-generation full rehash/copy claim.",
+        "source_before_after_equal": true,
+        "status": "FAILED",
+        "terminal_unix_ms": 1793916036769,
+        "timed_out_selected": 0,
+        "unexecuted": [
+          "full-evidence-library",
+          "full-evidence-ignored-list",
+          "fix",
+          "format"
+        ],
+        "unmatched_live_observations": [
+          {
+            "gate": "final-use-profile-controls",
+            "matching_fd": null,
+            "record": {
+              "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_contracts-fa3b553af0cee5ab",
+              "bytes": 14103072,
+              "captured_unix": 1793916019.798545,
+              "device": 2050,
+              "inode": 58259858,
+              "observed_selected_tests": [
+                "final_use::tests::killed_owner_releases_lock_but_keeps_claim"
+              ],
+              "pid": 1038111,
+              "post_open_task_and_exe_verified": true,
+              "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h3-native-attempt-1/executed-binaries-final-use-profile-controls/1383f1adbe7721e1ff362142f0ce35ef755bece0ae2a188cb28e375a2332b923.elf",
+              "sha256": "1383f1adbe7721e1ff362142f0ce35ef755bece0ae2a188cb28e375a2332b923",
+              "source": {
+                "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+                "environment_file": "native-environment.json",
+                "environment_sha256": "3ca2ffadd3c6439f1401f04929b5ee4e8747a813de6d2647f139f8efb3b311f6",
+                "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+                "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772"
+              },
+              "start_ticks": "99368575",
+              "wrapper_descendant_verified": true,
+              "wrapper_pid": 1036137,
+              "wrapper_start_ticks": "99364994"
+            },
+            "scope": "No parent-chain evidence exists in this old poll record; no retrospective helper attribution."
+          }
+        ]
+      },
+      "part_root": "/home/qian-qi/work/hepta-h3-actual-elf-export-20261105-93bfc-01",
+      "parts": [
+        {
+          "bytes": 4194304,
+          "index": 0,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0000",
+          "offset": 0,
+          "sha256": "6e5001850c3fe013cd885ce45c2fbfbdc7bf6cf3750e2fb8b0db39efe840e306"
+        },
+        {
+          "bytes": 4194304,
+          "index": 1,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0001",
+          "offset": 4194304,
+          "sha256": "50b1363157ce8e01a5758e77207c36a365fe5f2f86c67501ec998308d237deb4"
+        },
+        {
+          "bytes": 4194304,
+          "index": 2,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0002",
+          "offset": 8388608,
+          "sha256": "d21f7b08e03670c5eabf66c6a471cc6171404769db1d813270ec240badcdfed1"
+        },
+        {
+          "bytes": 4194304,
+          "index": 3,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0003",
+          "offset": 12582912,
+          "sha256": "1699ae7f91ae6cc98022d5db26e43dd6fd20f087bb77129e360e63a167706795"
+        },
+        {
+          "bytes": 4194304,
+          "index": 4,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0004",
+          "offset": 16777216,
+          "sha256": "9c1acdcd937d5e57f2bb54dc539f0ebb2ade553ac9c1b546ae19d4e2276a61c5"
+        },
+        {
+          "bytes": 4194304,
+          "index": 5,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0005",
+          "offset": 20971520,
+          "sha256": "fa00436f18af6592b383106f6aa4fbece71b6187279d294eda4ed033832c64cb"
+        },
+        {
+          "bytes": 4194304,
+          "index": 6,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0006",
+          "offset": 25165824,
+          "sha256": "3746a2b69dd016554aa80ead6580eeae99f34d2e90ad43e0c7cc96dd8605320e"
+        },
+        {
+          "bytes": 4194304,
+          "index": 7,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0007",
+          "offset": 29360128,
+          "sha256": "966906cb6bc580f3a50f9ce0643e8bd6c451f9e65bed6b0e8dbe55679bfb7874"
+        },
+        {
+          "bytes": 4194304,
+          "index": 8,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0008",
+          "offset": 33554432,
+          "sha256": "234f23dab15c422c730fd6668847b7dd60ac191879aaf60b3635a6c951feab11"
+        },
+        {
+          "bytes": 4194304,
+          "index": 9,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0009",
+          "offset": 37748736,
+          "sha256": "505be0c7e59e29920a7aa4ac9cb7f577c20fc5feb6787429cb3da475f5cec22d"
+        },
+        {
+          "bytes": 4194304,
+          "index": 10,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0010",
+          "offset": 41943040,
+          "sha256": "e9fbc360a21d2f5c0f9f50af659382fdad84e3b2990a4e1a568a2443aadef51b"
+        },
+        {
+          "bytes": 4194304,
+          "index": 11,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0011",
+          "offset": 46137344,
+          "sha256": "9bafa673c5faafee98181510d8248b8f4eda7588e458d8b552696366e1439165"
+        },
+        {
+          "bytes": 4194304,
+          "index": 12,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0012",
+          "offset": 50331648,
+          "sha256": "dfa788b855416d0e237f48324e25332fea9baa7ef55f67cd2cf402e068edd45f"
+        },
+        {
+          "bytes": 4194304,
+          "index": 13,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0013",
+          "offset": 54525952,
+          "sha256": "511124ca5c7663d85897927166b548b7cd528dac951066d9487e025e82373e5e"
+        },
+        {
+          "bytes": 4194304,
+          "index": 14,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0014",
+          "offset": 58720256,
+          "sha256": "1ab8bd0abb54a92ac8efbafb68618f771ab92294250c6bf00f5487bf4cf28519"
+        },
+        {
+          "bytes": 4194304,
+          "index": 15,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0015",
+          "offset": 62914560,
+          "sha256": "a6bdecd6aa888b708ee098e25a141598748a6999b0d6281faa0cac35d74e701b"
+        },
+        {
+          "bytes": 4194304,
+          "index": 16,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0016",
+          "offset": 67108864,
+          "sha256": "7ad6ae05259fbf671f816c6d2bd4e2a5a4d2fd68b0c223254ebd1ff2109cc1cd"
+        },
+        {
+          "bytes": 4194304,
+          "index": 17,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0017",
+          "offset": 71303168,
+          "sha256": "444f401b651ebd68eef153584af9021ea8c7c38e640a1add800bfb7fce0bf834"
+        },
+        {
+          "bytes": 4194304,
+          "index": 18,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0018",
+          "offset": 75497472,
+          "sha256": "f7484a3e0b58156fe5b474b8a3a9a64b30a1eaeb797984b2149628063213d2e2"
+        },
+        {
+          "bytes": 4194304,
+          "index": 19,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0019",
+          "offset": 79691776,
+          "sha256": "f72a302bf6c12663665aa08cd1523c2cf4251125ae344f4390fc74e46a4bd143"
+        },
+        {
+          "bytes": 4194304,
+          "index": 20,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0020",
+          "offset": 83886080,
+          "sha256": "79ffed4130ff772db6715e7953de9f216460ae3dfe18641ad121f7f962064d85"
+        },
+        {
+          "bytes": 4194304,
+          "index": 21,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0021",
+          "offset": 88080384,
+          "sha256": "0d9604947f4973e43413db672fa0c439134ad008e6573254eb1a2852a2409e27"
+        },
+        {
+          "bytes": 4194304,
+          "index": 22,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0022",
+          "offset": 92274688,
+          "sha256": "240f0438eae4af816f8b1299fe69489c0233929ac232354612905fa402372537"
+        },
+        {
+          "bytes": 4194304,
+          "index": 23,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0023",
+          "offset": 96468992,
+          "sha256": "c22510b72813b398cfa647557e6b9cda979714b0fe33a5e93a0e709989125f31"
+        },
+        {
+          "bytes": 4194304,
+          "index": 24,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0024",
+          "offset": 100663296,
+          "sha256": "88de20bf991d34b07bf0d2e1a0cd4a1f5c7f1c64fa5305152de5b564e22431ae"
+        },
+        {
+          "bytes": 4194304,
+          "index": 25,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0025",
+          "offset": 104857600,
+          "sha256": "6d9d73f2f714ce438bc98755c87dfc0f56596314435e4794247eb79d2ded9dd5"
+        },
+        {
+          "bytes": 4194304,
+          "index": 26,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0026",
+          "offset": 109051904,
+          "sha256": "5bbd44decb12a8992c8c1d8027cd247f2818e4a6bbb087de562834e59700bd8c"
+        },
+        {
+          "bytes": 4194304,
+          "index": 27,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0027",
+          "offset": 113246208,
+          "sha256": "34fb8f73cf52c6d0d2c100f29432182fc67fab5cd7e505e3b1a9f1a67f0e618f"
+        },
+        {
+          "bytes": 4194304,
+          "index": 28,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0028",
+          "offset": 117440512,
+          "sha256": "6cd31d888a5580d7468d8b6a0531235754b02d35b7ad91c2a9ce5df79a87361c"
+        },
+        {
+          "bytes": 4194304,
+          "index": 29,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0029",
+          "offset": 121634816,
+          "sha256": "265821198cd75b15eb35f2639c3372f86fa26b98110c52ef97a930c26b0cb08c"
+        },
+        {
+          "bytes": 4194304,
+          "index": 30,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0030",
+          "offset": 125829120,
+          "sha256": "38b87d845279cf87b983db5733184f8be0dde76e565d62ed0e58816246021bf3"
+        },
+        {
+          "bytes": 4194304,
+          "index": 31,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0031",
+          "offset": 130023424,
+          "sha256": "ba3f2f64c3a2006c79fd53cd0f8f1232ae13eed7c7830273e9b2acb3fec4c4af"
+        },
+        {
+          "bytes": 4194304,
+          "index": 32,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0032",
+          "offset": 134217728,
+          "sha256": "2665ceeefe93d2b9ec4c33bc9db6337b33196ae8126a4eb5ba01d76b9bc9f0c2"
+        },
+        {
+          "bytes": 4194304,
+          "index": 33,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0033",
+          "offset": 138412032,
+          "sha256": "2a061a06aefd64ba0334772a8726b50f01b9be352116b7f4695636b5330811f4"
+        },
+        {
+          "bytes": 4194304,
+          "index": 34,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0034",
+          "offset": 142606336,
+          "sha256": "977414f356003a27ba91230ca3849ac79d9b668193bcd16a7a1ae8e00ea8e85d"
+        },
+        {
+          "bytes": 4194304,
+          "index": 35,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0035",
+          "offset": 146800640,
+          "sha256": "baba71222c292e077c8ab8731df4b94bf40367c0d07688efa91ba6209ce32544"
+        },
+        {
+          "bytes": 4194304,
+          "index": 36,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0036",
+          "offset": 150994944,
+          "sha256": "4d1dd02318558e57b00e896bd0f8ba2f8ccb42f106ec966c4970ba45696181d8"
+        },
+        {
+          "bytes": 4194304,
+          "index": 37,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0037",
+          "offset": 155189248,
+          "sha256": "d7f539bfbeb8a932a4f294b15bafaa77e5ab80fe69fcface10cf38e39a243bba"
+        },
+        {
+          "bytes": 4194304,
+          "index": 38,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0038",
+          "offset": 159383552,
+          "sha256": "a8ed58221aa4d4c9fe9a6327350a19b04abe4441b01b3391f00b6a489d04c0c7"
+        },
+        {
+          "bytes": 4194304,
+          "index": 39,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0039",
+          "offset": 163577856,
+          "sha256": "d778ac095934e05193f8bac97ad4a8038a53e39c04b6df57559350a28e2211af"
+        },
+        {
+          "bytes": 4194304,
+          "index": 40,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0040",
+          "offset": 167772160,
+          "sha256": "96928ecc7040e077ecc638c0d848b8c41cd2e67f47ae4c92c9c9bc14cc16005d"
+        },
+        {
+          "bytes": 4194304,
+          "index": 41,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0041",
+          "offset": 171966464,
+          "sha256": "44580559bd08de8fd0cbc03b8f87e56927010f706da5008349478314bbe54876"
+        },
+        {
+          "bytes": 4194304,
+          "index": 42,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0042",
+          "offset": 176160768,
+          "sha256": "0407f4aaff44beeb98327696b2aeddb762e59387dc76870cc6ed628ee857f241"
+        },
+        {
+          "bytes": 4194304,
+          "index": 43,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0043",
+          "offset": 180355072,
+          "sha256": "0aa9662a11f7f0934f0b47b485ced63617a20b9acb8405dba4bbe7f8bc64561f"
+        },
+        {
+          "bytes": 4194304,
+          "index": 44,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0044",
+          "offset": 184549376,
+          "sha256": "397652eff1dd94ca3d41ea3696366284bf0618815883e902ffef585b572e6d98"
+        },
+        {
+          "bytes": 4194304,
+          "index": 45,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0045",
+          "offset": 188743680,
+          "sha256": "60252993c9ab78d9f55e810da5f29999a09a82a71446c206d5c5518d2fc59565"
+        },
+        {
+          "bytes": 4194304,
+          "index": 46,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0046",
+          "offset": 192937984,
+          "sha256": "e77f908479f1d8551eb9a030409d7b92d4af32bda68a6816454f02a996fb690f"
+        },
+        {
+          "bytes": 4194304,
+          "index": 47,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0047",
+          "offset": 197132288,
+          "sha256": "2b4afc05aa6961e51ef96c42b88fef24a5966e98b5a0de1b0888277876b494e7"
+        },
+        {
+          "bytes": 4194304,
+          "index": 48,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0048",
+          "offset": 201326592,
+          "sha256": "d177b9c2fe89854b9187c8f5dddf3dbb1f81cdad59aad26f4aa06de63b2771c8"
+        },
+        {
+          "bytes": 4194304,
+          "index": 49,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0049",
+          "offset": 205520896,
+          "sha256": "a610569bf977e7b67125bdb34355e9f6ea2a354f1a02968e68a30bec4d5e4706"
+        },
+        {
+          "bytes": 4194304,
+          "index": 50,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0050",
+          "offset": 209715200,
+          "sha256": "8c0dffc58815239622022552269c948ee5dd90b90b4797f74a80b2e07973d78f"
+        },
+        {
+          "bytes": 4194304,
+          "index": 51,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0051",
+          "offset": 213909504,
+          "sha256": "353e9a25b5e3adaa373ce9a36181e963f9b8fabf523a8cc0296baf53fa79a303"
+        },
+        {
+          "bytes": 4194304,
+          "index": 52,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0052",
+          "offset": 218103808,
+          "sha256": "2fa056f7ba8755d564be7723f26ff6f16121b0f1ade76d25e6c931c61f638b66"
+        },
+        {
+          "bytes": 4194304,
+          "index": 53,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0053",
+          "offset": 222298112,
+          "sha256": "8f89f61c09a0404433b39744d6903059e550cc587dd4866f8a37eca522c0f08c"
+        },
+        {
+          "bytes": 4194304,
+          "index": 54,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0054",
+          "offset": 226492416,
+          "sha256": "fea2821a3b7b950c72c255e6c0868dc9cc33ce7b2ac79aca1bbab15cc12e4cc2"
+        },
+        {
+          "bytes": 4194304,
+          "index": 55,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0055",
+          "offset": 230686720,
+          "sha256": "b74b07b30b3185246711f1854c9cdce864b0614e69722e670465f5340d6d5cce"
+        },
+        {
+          "bytes": 4194304,
+          "index": 56,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0056",
+          "offset": 234881024,
+          "sha256": "e0525fc7dd4394a0e2893dc31e2e6ed5533fd76a3e8415fb7ec9b72c5d530ab5"
+        },
+        {
+          "bytes": 4194304,
+          "index": 57,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0057",
+          "offset": 239075328,
+          "sha256": "2d5f504710f6df22ee75827541b4e332949ff08c3083dddcb15a1e40ed86b7ab"
+        },
+        {
+          "bytes": 4194304,
+          "index": 58,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0058",
+          "offset": 243269632,
+          "sha256": "860198b30eb382b16acd11b0b9ffd6e302acda90ccabd29d4d07033995b6ec12"
+        },
+        {
+          "bytes": 4194304,
+          "index": 59,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0059",
+          "offset": 247463936,
+          "sha256": "eb553f63f4957184a4c6f6280e6cd5532053ef386b93c09fc20721f1b539dddc"
+        },
+        {
+          "bytes": 4194304,
+          "index": 60,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0060",
+          "offset": 251658240,
+          "sha256": "104c8754437f75a9878d2510761b7f121a44efc1332a43eb70cd05ac9cd849b6"
+        },
+        {
+          "bytes": 4194304,
+          "index": 61,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0061",
+          "offset": 255852544,
+          "sha256": "e421e3cedb4923f1fd5d4f203f2fe7c215a523773b2da594a27ddaca0373c2e1"
+        },
+        {
+          "bytes": 4194304,
+          "index": 62,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0062",
+          "offset": 260046848,
+          "sha256": "66e8227bfab14260d2b25e242498c34a3ed23cdb1980489640bdf35595367c4c"
+        },
+        {
+          "bytes": 4194304,
+          "index": 63,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0063",
+          "offset": 264241152,
+          "sha256": "b87e3e26a71252eacd8616a599d796a60904645679142494c623ca935b2e9e02"
+        },
+        {
+          "bytes": 4194304,
+          "index": 64,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0064",
+          "offset": 268435456,
+          "sha256": "f78ecaf3a5cf91da859050c53e6855885e141163f7b09eed60402a848638d5ed"
+        },
+        {
+          "bytes": 4194304,
+          "index": 65,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0065",
+          "offset": 272629760,
+          "sha256": "b0d9b82108f0ad2c0eca151779327c293e476f95e7f326895ee9cd36a6f20990"
+        },
+        {
+          "bytes": 4194304,
+          "index": 66,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0066",
+          "offset": 276824064,
+          "sha256": "ee04ce3f5357df2387ebe78de6a7bcebc718a86914224c3eeae8ff084f0b2edc"
+        },
+        {
+          "bytes": 2408912,
+          "index": 67,
+          "name": "H3-actual-retained-elfs.tar.xz.part-0067",
+          "offset": 281018368,
+          "sha256": "f5a13943a54af365dba7dc6716d78d0915dd4ded055fe67033646e879793a9e4"
+        }
+      ],
+      "phase": "H3",
+      "remote_path_provenance": "Exact completed exporter output_directory, archive_path, output/completion.json and output/part.name; cloud filenames are not used as remote paths.",
+      "source_commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+      "source_root": "/home/qian-qi/work/hepta-h3-actual-elf-export-20261105-93bfc-01",
+      "source_tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+      "transport_completion_path": "archives/H3/H3-export-completion.json"
+    }
+  ],
+  "auth_policy": "HTTPS only: reuse the existing HTTPS source origin and its existing HTTP settings/get-only helper. SSH, other protocols, credential writes/logging, new accounts, interactive auth, redirected destinations and hook suppression are rejected. Public ls-remote is not write/auth proof.",
+  "authorization_scope": "Root confirmed this existing public repository and these already approved ELF archives/metadata are within the session evidence-delivery authorization. This frozen request still requires separate root dispatch/window release; preparing it performs no upload.",
+  "budget_scope": "A separate post-native archival transport component. No native timeout, test result, capture or learning budget is changed. Bootstrap, hashing, Git packing, one push and readback all consume the outer 1200 seconds.",
+  "commit_date": "2026-11-05T23:59:13+00:00",
+  "credential_bridge_sha256": "d1aea46d21622d92c9065ebba414725a31aa56c61984cff09f5bd8cd467c61d1",
+  "destination_ref": "refs/heads/evidence/actual-elf-transport-20261105-93bfc-01",
+  "dispatch_status": "NOT_DISPATCHED_REQUIRES_ROOT_RELEASE",
+  "expected_ref_before": null,
+  "expected_transport_paths": [
+    "archives/H1/H1-export-completion.json",
+    "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0000.b64",
+    "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0001.b64",
+    "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0002.b64",
+    "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0003.b64",
+    "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0004.b64",
+    "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0005.b64",
+    "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0006.b64",
+    "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0007.b64",
+    "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0008.b64",
+    "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0009.b64",
+    "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0010.b64",
+    "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0011.b64",
+    "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0012.b64",
+    "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0013.b64",
+    "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0014.b64",
+    "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0015.b64",
+    "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0016.b64",
+    "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0017.b64",
+    "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0018.b64",
+    "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0019.b64",
+    "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0020.b64",
+    "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0021.b64",
+    "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0022.b64",
+    "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0023.b64",
+    "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0024.b64",
+    "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0025.b64",
+    "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0026.b64",
+    "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0027.b64",
+    "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0028.b64",
+    "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0029.b64",
+    "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0030.b64",
+    "archives/H1/parts/H1-actual-retained-elfs.tar.xz.part-0031.b64",
+    "archives/H2/H2-export-completion.json",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0000.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0001.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0002.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0003.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0004.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0005.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0006.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0007.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0008.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0009.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0010.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0011.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0012.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0013.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0014.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0015.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0016.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0017.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0018.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0019.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0020.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0021.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0022.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0023.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0024.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0025.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0026.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0027.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0028.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0029.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0030.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0031.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0032.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0033.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0034.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0035.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0036.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0037.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0038.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0039.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0040.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0041.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0042.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0043.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0044.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0045.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0046.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0047.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0048.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0049.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0050.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0051.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0052.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0053.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0054.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0055.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0056.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0057.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0058.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0059.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0060.b64",
+    "archives/H2/parts/H2-actual-retained-elfs.tar.xz.part-0061.b64",
+    "archives/H3/H3-export-completion.json",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0000.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0001.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0002.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0003.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0004.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0005.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0006.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0007.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0008.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0009.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0010.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0011.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0012.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0013.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0014.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0015.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0016.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0017.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0018.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0019.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0020.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0021.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0022.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0023.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0024.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0025.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0026.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0027.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0028.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0029.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0030.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0031.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0032.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0033.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0034.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0035.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0036.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0037.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0038.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0039.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0040.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0041.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0042.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0043.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0044.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0045.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0046.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0047.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0048.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0049.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0050.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0051.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0052.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0053.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0054.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0055.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0056.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0057.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0058.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0059.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0060.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0061.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0062.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0063.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0064.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0065.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0066.b64",
+    "archives/H3/parts/H3-actual-retained-elfs.tar.xz.part-0067.b64",
+    "transport-index.json"
+  ],
+  "fixed_source": {
+    "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+    "guard_sha256": "e55f5ca1200b2c9fc5af4158c42f460e71f3815166a962a5b892acfe9477b1d1",
+    "path": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source-h3",
+    "tracked_bytes": 183410043,
+    "tracked_files": 11840,
+    "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772"
+  },
+  "frozen": true,
+  "limits": {
+    "ls_remote_seconds": 60,
+    "max_part_raw_bytes": 4194304,
+    "max_parts": 162,
+    "outer_seconds": 1200,
+    "push_seconds": 900,
+    "total_envelope_bytes": 893742124,
+    "total_raw_bytes": 670306272
+  },
+  "metadata_allowlist_audit": {
+    "bytes": 9731,
+    "path": "metadata-allowlist-audit.json",
+    "sha256": "6d1711aea4cc8884d1e70dca220c20acbf346e59a86f56b732e305c8479f468f"
+  },
+  "no_pr_or_learning_or_native_or_existing_ref_mutation": true,
+  "orphan_data_only": true,
+  "protected_configurations": {
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/config": "24452f7031356ffbc08ab7fb9657efa5b67fb0b16b2a2ce704ec99d1514267b8",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/hepta-audit-provider-recovery-fix-20261103/config.worktree": "bfefdfeb2bf56f4a5282c172fe3a69b4075e13fe3bf3cd54f6611bafa461c276",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/source-h2/config.worktree": "443a5f645c23c3d0c0aa09f634b2ad111d46ef61946b598a2fb311678ab47454",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/source-h3/config.worktree": "443a5f645c23c3d0c0aa09f634b2ad111d46ef61946b598a2fb311678ab47454",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/source1/config.worktree": "443a5f645c23c3d0c0aa09f634b2ad111d46ef61946b598a2fb311678ab47454"
+  },
+  "publication_authorized": true,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "repository_visibility": {
+    "observed": "public",
+    "public_read_does_not_prove_credentials_or_write_access": true,
+    "repository_id": "1320694176",
+    "required": "public",
+    "source_rpc_sha256": "cefb3d88e59f4a5cf3d63422748da7ba5d6c81b968c921cde657198f6f77342b"
+  },
+  "route": "canonical-base64-no-newline-per-original-part",
+  "schema": "actual-archive-orphan-git-transport-plan-v1",
+  "script_sha256": "1676fdc30a8bbd60c51fd087eebdf6c9e44de83405a5d70e0c55029911e34626",
+  "transport_tree_blob_count": 166,
+  "uncertain_push_policy": "Persist fsynced push-intent before the single empty-lease push. One exact-ref reconciliation only; never automatically retry. A ref confirmation still requires full independent cloud byte readback."
+}

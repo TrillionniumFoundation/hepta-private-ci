@@ -1,0 +1,23 @@
+{
+  "schema": "root-H2-complete-and-partial-ELF-export-preparation-review-v1",
+  "source_commit": "620cb63ae9b58904483005bcb2c4e1507df99539",
+  "source_tree": "f2cebe6d99deca596c170922b8e60d66648d7393",
+  "exporter_sha256": "37538f62fd81398262ccde1b9cfa0d1cb0163b115e108b80220ab7af8f929365",
+  "plan_sha256": "2a18729275fe2051b3f691fce56542e2d1291193e983330fe82601caf22349b3",
+  "original_inventory_sha256": "720a8a66417113b101f00aeac77cd4268ab6b985b70cb6dbc4796a5f2e8dbadf",
+  "exact_inventory_map_and_all_8_image_rows_and_21_aliases_match": true,
+  "complete_image_bytes": 1512251368,
+  "partial_bytes": 314572800,
+  "total_actual_input_bytes": 1826824168,
+  "partial_semantics": "Actual old file version/hash/size and every byte must equal the retained first-daemon prefix; independent second read, decompressed archive prefix hash, and prepublication identity recheck required. No full second-daemon capture, outcome or native pass credit. Unequal bytes refuse before COMPLETE, with no fallback.",
+  "reviewed_delta": "Preserves approved H1 nofollow/single-link/bounds/two-read/fsync/no-overwrite core; adds exact partial prefix representation and verification.",
+  "local_utility_controls": 3,
+  "local_utility_exit": 0,
+  "original_H2_native_result": "FAILED, 70 passes and 1 TIMEOUT at60.007; followup gates unexecuted",
+  "new_archive_limit_seconds": 900,
+  "archive_and_part_bytes_bound": 3158720464,
+  "requires_serialized_window": true,
+  "actual_archive_execution": "NOT YET LAUNCHED at review",
+  "remote_native_reexecution": false,
+  "whole_runtime_closure_credit": false
+}

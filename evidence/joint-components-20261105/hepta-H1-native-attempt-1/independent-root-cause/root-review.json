@@ -1,0 +1,170 @@
+{
+  "schema": "root-independent-H1-diagnosis-source-verification-v1",
+  "source_commit": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc",
+  "source_tree": "24804b21d0306b617e12fa3f5b9454a12ed4ad41",
+  "exact_source_files_independently_rehashed": [
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "sha": "a82f1c6e16a825abb1b2c3b8af77943db3d7f7cd",
+      "size": 105269
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host_pq.rs",
+      "sha": "492306acea65ab5dfdfb6ec0595d081525308918",
+      "size": 14246
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host_pq_tests.rs",
+      "sha": "a90611a21faa06a589b7c9cf7901d10616c488bf",
+      "size": 30337
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
+      "sha": "66734ef509f5f3f2347700be3bcb70a11085692e",
+      "size": 70103
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
+      "sha": "07bff28880f9ada48cca00d81d9697adca9ff178",
+      "size": 40896
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/taskflow.rs",
+      "sha": "c1641baa6e07cca7a0ebdb3264c3f0dd066c3c69",
+      "size": 96048
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/taskflow_step.rs",
+      "sha": "2bfc0b2116c33d1b5a6efc90611db1ab12c105b0",
+      "size": 62857
+    },
+    {
+      "path": "codex-rs/hepta-automation/tests/authorized_effect.rs",
+      "sha": "c1e4e13316a529f5ae5ac54a1abbe47183dbb254",
+      "size": 44001
+    },
+    {
+      "path": "codex-rs/hepta-automation/tests/support/authorized_owner_recovery_tests.rs",
+      "sha": "e88149cf1409eb04c6097f6ae55293ebb7e7722f",
+      "size": 4133
+    },
+    {
+      "path": "codex-rs/hepta-automation/tests/support/authorized_provider_receipt_tests.rs",
+      "sha": "be2eae3080a8fb6e68d3d76fd8530fff9da0a981",
+      "size": 15497
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use.rs",
+      "sha": "c5c4d81b1be5556e241810fc617037ebdad4ba11",
+      "size": 41743
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_control_pq.rs",
+      "sha": "8bcc8c91efa91ed4de9f5463960cbb148393e649",
+      "size": 4943
+    }
+  ],
+  "verification_basis": "Complete previously fetched e458 tree plus independently verified 9f785 two-file V12 binding-only delta; none of these source paths changed. Root also fetched the exact H1 PQ test blob independently.",
+  "native_result": "original 9 pass / 2 fail retained",
+  "defect": "Already settled ProvenAbsent clears the mutable run lease; subsequent host recovery wrongly reconstructs that cleared lease before reading the immutable settled absence fact.",
+  "reachability_basis": "Inference from exact source control flow and returned-error form, without additional instrumentation. Both calls==2 and nonce==1 assertions precede the error; final no-HTTP assertions and post-guard signed refresh are not reached.",
+  "fixture_missing_owner": false,
+  "H2_qualified": false,
+  "files": [
+    {
+      "path": "authority-source-inventory.json",
+      "bytes": 831,
+      "sha256": "fc8d50b753a7e0874796fb1c2069ee7bc48d4408ebc117f4a385a85de319acd0"
+    },
+    {
+      "path": "evidence/effect-pq-owner.executed-binaries.json",
+      "bytes": 16340,
+      "sha256": "1c731057f4e782fea2776c68cfa574ac70fcbc9faf4b3699daf092affd4d188f"
+    },
+    {
+      "path": "evidence/effect-pq-owner.json",
+      "bytes": 1669,
+      "sha256": "a7cbad67e646de936b66750c257e2fa414e220fd669b7782dbe2fc5efb248f14"
+    },
+    {
+      "path": "evidence/effect-pq-owner.json.df451d7e91554c9db29443ad9e242b8c.log",
+      "bytes": 37038,
+      "sha256": "ea7479a4d1d000df6d3b3d275a2837fac4e4fa809e024f10af728dfbe81b2178"
+    },
+    {
+      "path": "review.json",
+      "bytes": 3237,
+      "sha256": "e9f27c98d9843ab59d40f6c3ee1eeea8dc7125ec5934f2fea8ccd865473f652e"
+    },
+    {
+      "path": "root-cause-review.md",
+      "bytes": 9026,
+      "sha256": "fa989e77417eb51b647048b6a5ed64454fa08969d31af3097cdb70b2d51828ef"
+    },
+    {
+      "path": "source/codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "bytes": 105269,
+      "sha256": "ccc465e0ac890e1428cc6a0b5b831d2d3d7c39152f320a1b8751419359af6396"
+    },
+    {
+      "path": "source/codex-rs/hepta-agentd/src/automation_effect_host_pq.rs",
+      "bytes": 14246,
+      "sha256": "67fcd2ab20e6477b0ba4639f5ef9d446e535c644bc386c6d23baf3c674c86b94"
+    },
+    {
+      "path": "source/codex-rs/hepta-agentd/src/automation_effect_host_pq_tests.rs",
+      "bytes": 30337,
+      "sha256": "7645fc19a734b2ffbbc5ecdb7001069e29f41e9aef3249fc0a5f383ed0e99a78"
+    },
+    {
+      "path": "source/codex-rs/hepta-automation/src/authorized_effect.rs",
+      "bytes": 70103,
+      "sha256": "45c81a918f4a52f9935e7b7fcfed4e8bd761657eba786c36f7498693bebe99dd"
+    },
+    {
+      "path": "source/codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
+      "bytes": 40896,
+      "sha256": "0cc45d7c1c6b9686d0dddbf7c2fe4727aae7ff7544c15c20f5d22b816394661c"
+    },
+    {
+      "path": "source/codex-rs/hepta-automation/src/taskflow.rs",
+      "bytes": 96048,
+      "sha256": "195e2693a151d23ba3ac957078248afbaf5517d2af32835518ca41837d1c2771"
+    },
+    {
+      "path": "source/codex-rs/hepta-automation/src/taskflow_step.rs",
+      "bytes": 62857,
+      "sha256": "d8ffb92a87eff096cb70c14fc2c1a131e7c8b569512a2ffb13ea42dd0c3f2319"
+    },
+    {
+      "path": "source/codex-rs/hepta-automation/tests/authorized_effect.rs",
+      "bytes": 44001,
+      "sha256": "9a991d6e77638bb810c6e6418df477fce9b579284e3811465af4348167211bb6"
+    },
+    {
+      "path": "source/codex-rs/hepta-automation/tests/support/authorized_owner_recovery_tests.rs",
+      "bytes": 4133,
+      "sha256": "a973e2f5df677bfeab21360d565cb6c2598fc210ab8324b5f70aea7b0775eba3"
+    },
+    {
+      "path": "source/codex-rs/hepta-automation/tests/support/authorized_provider_receipt_tests.rs",
+      "bytes": 15497,
+      "sha256": "92df0882cdd16274e374c8056181503338118958162362c2e6e4f61a4fa8fba3"
+    },
+    {
+      "path": "source/codex-rs/hepta-contracts/src/final_use.rs",
+      "bytes": 41743,
+      "sha256": "b829c56d411d0db2b59c4ccfa01ae8d881fcc0dc86b78db55efe460988d6ff54"
+    },
+    {
+      "path": "source/codex-rs/hepta-contracts/src/final_use_control_pq.rs",
+      "bytes": 4943,
+      "sha256": "d8b3a1fffaeaebb986f4e4f4331a3f08dfd4dcf1dacd87498ff0fe58f6208fa1"
+    },
+    {
+      "path": "source-inventory.json",
+      "bytes": 1711,
+      "sha256": "0b741974153e89b53129b2c6fc554ac4ac471accce8d54ea7c3232d441ac67a5"
+    }
+  ]
+}

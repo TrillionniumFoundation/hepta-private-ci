@@ -1,0 +1,5 @@
+==> Python scripts formatter failed
+$ uv run --frozen --project scripts ruff format ./scripts/hepta_smollm_execution_source_v1.py ./scripts/hepta_smollm_runtime_handoff_v12.py ./scripts/test_hepta_smollm_execution_source_v1.py ./scripts/test_hepta_smollm_execution_source_v12.py
+[Errno 2] No such file or directory: 'uv'
+Formatting failed: Python scripts
+error: recipe `fmt` failed on line 51 with exit code 1

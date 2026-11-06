@@ -1,0 +1,100 @@
+{
+  "status": "complete-source-ready-not-native-qualified",
+  "source": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+  "requested_commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+  "requested_tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+  "started_unix": 1793914415.3071203,
+  "scope": "materialize exact already-formatted frozen H3 and verify complete raw source; no formatter, Cargo tests/builds or native credit",
+  "phase": "complete",
+  "configuration_before": {
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/config": "24452f7031356ffbc08ab7fb9657efa5b67fb0b16b2a2ce704ec99d1514267b8",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/hepta-audit-provider-recovery-fix-20261103/config.worktree": "bfefdfeb2bf56f4a5282c172fe3a69b4075e13fe3bf3cd54f6611bafa461c276",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/source1/config.worktree": "443a5f645c23c3d0c0aa09f634b2ad111d46ef61946b598a2fb311678ab47454",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/source-h2/config.worktree": "443a5f645c23c3d0c0aa09f634b2ad111d46ef61946b598a2fb311678ab47454",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/source-h3/config.worktree": "443a5f645c23c3d0c0aa09f634b2ad111d46ef61946b598a2fb311678ab47454"
+  },
+  "proof": {
+    "target_commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+    "target_tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+    "tracked_count": 11840,
+    "actual_tracked_bytes": 183410043,
+    "different_blob_paths": [],
+    "index_before_tree": "c6b1cf459a24c3c3185335e043c83b727d757ee9",
+    "index_equals_preparation_tree": true,
+    "target_inventory_sha256": "55ac9c9eb54b5e862c9445bb31d1cf828f036926210c616de8c2bf954c33a737"
+  },
+  "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+  "source_path": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/source-h3",
+  "before": {
+    "identity": {
+      "commit": "595475a615a03ca9f63c2c1f6e532bd362c20a74",
+      "tree": "c6b1cf459a24c3c3185335e043c83b727d757ee9",
+      "parents": [
+        "620cb63ae9b58904483005bcb2c4e1507df99539"
+      ],
+      "dirty": true
+    },
+    "raw_git_blob_bytes_match": false,
+    "tracked_count": 11840,
+    "tracked_bytes": 183409808,
+    "index_count": 11840,
+    "missing": [],
+    "hidden": [],
+    "tree_inventory_sha256": "740f754b3018b164e1a257487a4c13d4460ddf6b4b0370006a7eea9aaa5bc6e5",
+    "guard_sha256": "e55f5ca1200b2c9fc5af4158c42f460e71f3815166a962a5b892acfe9477b1d1",
+    "cargo_lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+    "toolchain_file_sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380",
+    "nextest_config_sha256": "65f8b298b60f5f4d480cdd45d4de62a37c5b52d13a2cc7b77eecba3062eaa803"
+  },
+  "after": {
+    "identity": {
+      "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+      "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+      "parents": [
+        "595475a615a03ca9f63c2c1f6e532bd362c20a74"
+      ],
+      "dirty": false
+    },
+    "raw_git_blob_bytes_match": true,
+    "tracked_count": 11840,
+    "tracked_bytes": 183410043,
+    "index_count": 11840,
+    "missing": [],
+    "hidden": [],
+    "tree_inventory_sha256": "55ac9c9eb54b5e862c9445bb31d1cf828f036926210c616de8c2bf954c33a737",
+    "guard_sha256": "e55f5ca1200b2c9fc5af4158c42f460e71f3815166a962a5b892acfe9477b1d1",
+    "cargo_lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+    "toolchain_file_sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380",
+    "nextest_config_sha256": "65f8b298b60f5f4d480cdd45d4de62a37c5b52d13a2cc7b77eecba3062eaa803"
+  },
+  "all_working_bytes_matched_before_alignment": {
+    "target_commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+    "target_tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+    "tracked_count": 11840,
+    "actual_tracked_bytes": 183410043,
+    "different_blob_paths": [],
+    "index_before_tree": "c6b1cf459a24c3c3185335e043c83b727d757ee9",
+    "index_equals_preparation_tree": true,
+    "target_inventory_sha256": "55ac9c9eb54b5e862c9445bb31d1cf828f036926210c616de8c2bf954c33a737"
+  },
+  "configurations": {
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/config": "24452f7031356ffbc08ab7fb9657efa5b67fb0b16b2a2ce704ec99d1514267b8",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/hepta-audit-provider-recovery-fix-20261103/config.worktree": "bfefdfeb2bf56f4a5282c172fe3a69b4075e13fe3bf3cd54f6611bafa461c276",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/source1/config.worktree": "443a5f645c23c3d0c0aa09f634b2ad111d46ef61946b598a2fb311678ab47454",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/source-h2/config.worktree": "443a5f645c23c3d0c0aa09f634b2ad111d46ef61946b598a2fb311678ab47454",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/source-h3/config.worktree": "443a5f645c23c3d0c0aa09f634b2ad111d46ef61946b598a2fb311678ab47454"
+  },
+  "configuration_after": {
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/config": "24452f7031356ffbc08ab7fb9657efa5b67fb0b16b2a2ce704ec99d1514267b8",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/hepta-audit-provider-recovery-fix-20261103/config.worktree": "bfefdfeb2bf56f4a5282c172fe3a69b4075e13fe3bf3cd54f6611bafa461c276",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/source1/config.worktree": "443a5f645c23c3d0c0aa09f634b2ad111d46ef61946b598a2fb311678ab47454",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/source-h2/config.worktree": "443a5f645c23c3d0c0aa09f634b2ad111d46ef61946b598a2fb311678ab47454",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/source-h3/config.worktree": "443a5f645c23c3d0c0aa09f634b2ad111d46ef61946b598a2fb311678ab47454"
+  },
+  "configuration_unchanged": true,
+  "original_h1_source_unchanged": true,
+  "original_h2_source_unchanged": true,
+  "alignment_scope": "HEAD/index-only after all working bytes and original index were verified; no formatter or working-file writes",
+  "native_credit": false,
+  "finished_unix": 1793914430.666872
+}

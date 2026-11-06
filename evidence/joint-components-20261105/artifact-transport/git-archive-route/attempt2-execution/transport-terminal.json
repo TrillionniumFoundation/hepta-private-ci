@@ -1,0 +1,1737 @@
+{
+  "auth_route": "existing-source HTTPS settings in process memory; get-only credential bridge",
+  "automatic_retry": false,
+  "configurations_after": {
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/config": "24452f7031356ffbc08ab7fb9657efa5b67fb0b16b2a2ce704ec99d1514267b8",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/hepta-audit-provider-recovery-fix-20261103/config.worktree": "bfefdfeb2bf56f4a5282c172fe3a69b4075e13fe3bf3cd54f6611bafa461c276",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/source-h2/config.worktree": "443a5f645c23c3d0c0aa09f634b2ad111d46ef61946b598a2fb311678ab47454",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/source-h3/config.worktree": "443a5f645c23c3d0c0aa09f634b2ad111d46ef61946b598a2fb311678ab47454",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/source1/config.worktree": "443a5f645c23c3d0c0aa09f634b2ad111d46ef61946b598a2fb311678ab47454"
+  },
+  "configurations_before": {
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/config": "24452f7031356ffbc08ab7fb9657efa5b67fb0b16b2a2ce704ec99d1514267b8",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/hepta-audit-provider-recovery-fix-20261103/config.worktree": "bfefdfeb2bf56f4a5282c172fe3a69b4075e13fe3bf3cd54f6611bafa461c276",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/source-h2/config.worktree": "443a5f645c23c3d0c0aa09f634b2ad111d46ef61946b598a2fb311678ab47454",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/source-h3/config.worktree": "443a5f645c23c3d0c0aa09f634b2ad111d46ef61946b598a2fb311678ab47454",
+    "/home/qian-qi/work/hepta-audit-ledger-fixture-fix-20261103/.git/worktrees/source1/config.worktree": "443a5f645c23c3d0c0aa09f634b2ad111d46ef61946b598a2fb311678ab47454"
+  },
+  "credential_material_logged_or_saved": false,
+  "credential_preflight": "existing_helper_returned_credential_in_memory_only_not_write_authorization",
+  "elapsed_seconds": 248.6048323919531,
+  "existing_refs_mutated": false,
+  "full_cloud_byte_readback": false,
+  "hooks": "no_effective_hooks_path_and_no_existing_local_hooks_no_override",
+  "isolated_config_after_sha256": "1274a0a5e45146991b3ef159bcf9a7f35f6f758ce53285cf557442b2852dec6e",
+  "isolated_config_before_sha256": "1274a0a5e45146991b3ef159bcf9a7f35f6f758ce53285cf557442b2852dec6e",
+  "isolated_config_init_sha256": "dd548269913b6adbdfa7049170ea86850050cb762ea3b9c510a0b2986d2113e3",
+  "native_reexecution": false,
+  "operations": [
+    {
+      "classification": null,
+      "operation": "init-new-isolated-bare",
+      "returncode": 0,
+      "seconds": 0.004408234963193536,
+      "stderr_bytes": 472,
+      "stdout_bytes": 115,
+      "timed_out": false
+    },
+    {
+      "classification": "unclassified_git_error_raw_withheld",
+      "operation": "inspect-effective-hook-configuration",
+      "returncode": 1,
+      "seconds": 0.002212111954577267,
+      "stderr_bytes": 0,
+      "stdout_bytes": 0,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "source-git-readonly",
+      "returncode": 0,
+      "seconds": 0.002415598020888865,
+      "stderr_bytes": 0,
+      "stdout_bytes": 63,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "source-git-readonly",
+      "returncode": 0,
+      "seconds": 0.0021364379208534956,
+      "stderr_bytes": 0,
+      "stdout_bytes": 63,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "initialize-single-public-remote-url",
+      "returncode": 0,
+      "seconds": 0.0022662150440737605,
+      "stderr_bytes": 0,
+      "stdout_bytes": 0,
+      "timed_out": false
+    },
+    {
+      "classification": "unclassified_git_error_raw_withheld",
+      "operation": "source-git-readonly",
+      "returncode": 1,
+      "seconds": 0.003467121976427734,
+      "stderr_bytes": 0,
+      "stdout_bytes": 0,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "existing-get-only-credential-preflight",
+      "returncode": 0,
+      "seconds": 0.17293508804868907,
+      "stderr_bytes": 0,
+      "stdout_bytes": 71,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "validate-isolated-origin-route",
+      "returncode": 0,
+      "seconds": 0.0038006709655746818,
+      "stderr_bytes": 0,
+      "stdout_bytes": 63,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "validate-isolated-origin-route",
+      "returncode": 0,
+      "seconds": 0.0029632049845531583,
+      "stderr_bytes": 0,
+      "stdout_bytes": 63,
+      "timed_out": false
+    },
+    {
+      "classification": "unclassified_git_error_raw_withheld",
+      "operation": "inspect-effective-hook-configuration",
+      "returncode": 1,
+      "seconds": 0.0029002949595451355,
+      "stderr_bytes": 0,
+      "stdout_bytes": 0,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "exact-ref-must-be-absent",
+      "returncode": 0,
+      "seconds": 3.1456740560242906,
+      "stderr_bytes": 0,
+      "stdout_bytes": 0,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.004321890068240464,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3107885910430923,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.28195827500894666,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.2776526209199801,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3138197810621932,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.303069542045705,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.30340510804671794,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.27567405498120934,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.2791295680217445,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3238874899689108,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.315065139089711,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3098802980966866,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.304978942964226,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.31091832101810724,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.2779243061086163,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3132372919935733,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.32719273201655596,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.2867079109419137,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.33963724703062326,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3191689479863271,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3125861840089783,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3030599569901824,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.31099147303029895,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3169782169861719,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3406929060583934,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.2846461229491979,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.30364098702557385,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.2692843989934772,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.27270440896973014,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.2853202569531277,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.31641375401522964,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3114601350389421,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.05794263503048569,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.004305139998905361,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3055641659302637,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.2844513370655477,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.2825958679895848,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3265695769805461,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.30379904399160296,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.34296349401120096,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.28113930206745863,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.30124937696382403,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.28865901997778565,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.2746830900432542,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3303821610752493,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3140355289215222,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.28365566802676767,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.2816429060185328,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.28622392704710364,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.33275363594293594,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3353499569930136,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.30942264199256897,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3515306790359318,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.2920469540404156,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3127982940059155,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3295701799215749,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.31134091306012124,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.30810339003801346,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.31457181100267917,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3321176660247147,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.30247628199867904,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.30393216002266854,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.29195159301161766,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3039189069531858,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.2810049740364775,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.32027982198633254,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3276582679245621,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.27783864992670715,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.2745250150328502,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3178649409674108,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3123252069344744,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3052930240519345,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.2976602930575609,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3030756809748709,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.30293837701901793,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.2917105520609766,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3112198499729857,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.2764604480471462,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3153190209995955,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3090842330129817,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.2761626220308244,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3183789759641513,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.30490453401580453,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3121982180746272,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3094373090425506,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.30973608302883804,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3372889149468392,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3038271740078926,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3051712679443881,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3268896850058809,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3027728879824281,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3113918430171907,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.2989117200486362,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3205657129874453,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3091365670552477,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.025836315006017685,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.004795611021108925,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.298052488011308,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.30262950900942087,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.04353908100165427,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.03781381307635456,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.03967513109091669,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.046483473968692124,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.042826463002711535,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.03810791694559157,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.041805143002420664,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.0433204680448398,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.044697842095047235,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.044193977024406195,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.04191159305628389,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.04213520500343293,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.03991842910181731,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.03986169199924916,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.04732053598854691,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.042395233060233295,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.04355086607392877,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.042129829060286283,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3077750439988449,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3060966070042923,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.30729793303180486,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.27116081898566335,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3030901870224625,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.31441815197467804,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3039067469071597,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3113774509401992,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3077300770673901,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3223362680291757,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3123834040015936,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3068152059568092,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3100179450120777,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.27935232291929424,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3117238120175898,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.31974945892579854,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3098227179143578,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.30781212204601616,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.31356771697755903,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3083303510211408,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3103714630706236,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.31067253497894853,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.31793958600610495,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3076331909978762,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3135896989842877,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.30995354801416397,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.30921295192092657,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3107922510243952,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3026918959803879,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.30549781303852797,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.307422359008342,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3195182930212468,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.27762937592342496,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.28064881602767855,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.2808012180030346,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3092982169473544,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.2951571539742872,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3029162558959797,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.2723098109709099,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.27379018801730126,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3039064729819074,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3056186380563304,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.28241226193495095,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3082369969924912,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3107088999822736,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3083646099548787,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.3091100309975445,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.17941646196413785,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-bare-object",
+      "returncode": 0,
+      "seconds": 0.007867572945542634,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "initialize-private-index",
+      "returncode": 0,
+      "seconds": 0.004556289059109986,
+      "stderr_bytes": 0,
+      "stdout_bytes": 0,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-private-index",
+      "returncode": 0,
+      "seconds": 0.0038186589954420924,
+      "stderr_bytes": 0,
+      "stdout_bytes": 0,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-data-only-tree",
+      "returncode": 0,
+      "seconds": 0.007334206020459533,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "compare-exact-data-only-tree",
+      "returncode": 0,
+      "seconds": 0.003253031987696886,
+      "stderr_bytes": 0,
+      "stdout_bytes": 19139,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "write-orphan-data-commit",
+      "returncode": 0,
+      "seconds": 0.006316769984550774,
+      "stderr_bytes": 0,
+      "stdout_bytes": 41,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "verify-orphan-commit",
+      "returncode": 0,
+      "seconds": 0.0032587589230388403,
+      "stderr_bytes": 0,
+      "stdout_bytes": 294,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "single-empty-lease-push",
+      "returncode": 0,
+      "seconds": 175.0438630710123,
+      "stderr_bytes": 557,
+      "stdout_bytes": 186,
+      "timed_out": false
+    },
+    {
+      "classification": null,
+      "operation": "single-exact-ref-readback",
+      "returncode": 0,
+      "seconds": 3.025651872972958,
+      "stderr_bytes": 0,
+      "stdout_bytes": 100,
+      "timed_out": false
+    }
+  ],
+  "plan_sha256": "de5bf769089153d2bfd1fae468cf0af7942da442a9856acc120ee611757e5d5b",
+  "planned_commit": "860dc2d8045f18808b9c5516f86edaef6e830734",
+  "planned_tree": "ba8da0b1dad8ba8777c0be85bbdc3ae8d1c0cb26",
+  "previous_attempt": {
+    "job_id": "1a1ae34e63b-fc05-5e2b",
+    "new_attempt_requires_separate_root_authorization": true,
+    "push_attempts": 0,
+    "release_sha256": "3bcf9cee804c5e68415a0fb565e47bf1dbe95930fd2aebd00a0db57c58cf83e2",
+    "status": "FAILED",
+    "terminal_sha256": "8d63e5fceaacb2d3c1ec13fb02c149f6522e205ce87b3434059baf24d148b9a8"
+  },
+  "protected_unchanged": true,
+  "push_attempts": 1,
+  "push_command_succeeded": true,
+  "ref": "refs/heads/evidence/actual-elf-transport-20261105-93bfc-01",
+  "remote_ref_after": "860dc2d8045f18808b9c5516f86edaef6e830734",
+  "remote_ref_before": null,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "schema": "actual-archive-orphan-git-transport-v1",
+  "script_sha256": "f5032a5fdc5fa4a88be2aac3d85deae64f8f2a4e77a2e65626a9615ace1e101c",
+  "source_after": {
+    "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+    "dirty": false,
+    "parents": [
+      "595475a615a03ca9f63c2c1f6e532bd362c20a74"
+    ],
+    "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772"
+  },
+  "source_before": {
+    "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+    "dirty": false,
+    "parents": [
+      "595475a615a03ca9f63c2c1f6e532bd362c20a74"
+    ],
+    "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772"
+  },
+  "source_or_native_qualification": false,
+  "status": "REF_PUBLISHED_CLOUD_BYTE_READBACK_PENDING",
+  "total_envelope_bytes": 893742124,
+  "total_raw_bytes": 670306272,
+  "transport_blob_count": 166,
+  "validated_public_origin_saved_only_in_new_bare": true
+}

@@ -1,0 +1,16 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Action completed."
+    }
+  ],
+  "structuredContent": {
+    "content": "#!/usr/bin/env bash\nset -euo pipefail\nroot=\"$(git rev-parse --show-toplevel)\"\ncd \"$root\"\nmode=\"${1:---dev}\"\ncase \"$mode\" in --dev|--audit|--staged|--push) ;; *) exit 10 ;; esac\npython3 scripts/ci/project_boundary.py \"$mode\" \"${2:-}\" \"${3:-}\"\n",
+    "encoding": "utf-8",
+    "sha": "cfd4f58405ca7620ad267f6aa42b240be038797c",
+    "display_url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/blob/0e1c25d42fff22bec6ec2a08c4fbdff240229858/scripts/project-preflight.sh",
+    "display_title": "project-preflight.sh"
+  },
+  "isError": false
+}

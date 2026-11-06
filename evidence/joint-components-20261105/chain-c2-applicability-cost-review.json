@@ -1,0 +1,285 @@
+{
+  "schema": "chain-c2-applicability-cost-independent-review-v1",
+  "reviewer": "pq_recovery independent static review",
+  "repository": "TrillionniumFoundation/Trillionnium-Chain",
+  "commit": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+  "tree": "e0235248ecae2a67717c8b9ff2e3f25774ba63d7",
+  "status": "OPEN: original 300-second applicability gate timed out; concrete repeated parsing cost identified statically",
+  "source_changed": false,
+  "new_candidate_created": false,
+  "native_run_by_this_review": false,
+  "gate_pass_claim": false,
+  "exclusive_timeout_cause_claim": false,
+  "scope": "Byte-identified C2 source, recorded timeout receipt and raw stderr; no checker invocation, profiling, Cargo, cost sampling or gate changes",
+  "source_files": [
+    {
+      "bytes": 21284,
+      "git_blob": "0f4f39f26befa3fc2dffc639e73ff474a8dfc977",
+      "path": "scripts/ci/check_applicability.py",
+      "sha256": "1651c8adf3f86bb5302d84709192bee5d2703650be02e8d365c2a2f4142fa3f2",
+      "url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/blob/03521b2f32346a49cccde8ff72e8c7b886b31222/scripts/ci/check_applicability.py"
+    },
+    {
+      "bytes": 23615,
+      "git_blob": "042983fe3a6ff8ca1c76529d02f7420576717cc7",
+      "path": "scripts/ci/report_module_evidence.py",
+      "sha256": "031b21a54e0e893e755fcddaa524a2a6971e385b3742ce901954d27cba3f154e",
+      "url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/blob/03521b2f32346a49cccde8ff72e8c7b886b31222/scripts/ci/report_module_evidence.py"
+    },
+    {
+      "bytes": 12331,
+      "git_blob": "4d566e12bbc182adb6316fde3212874284161999",
+      "path": "scripts/ci/check_invariant_evidence.py",
+      "sha256": "1d21d001c3de0305e4718de76daf79c9f74a7cfc66522484b1db3e76c409a6ff",
+      "url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/blob/03521b2f32346a49cccde8ff72e8c7b886b31222/scripts/ci/check_invariant_evidence.py"
+    },
+    {
+      "bytes": 215980,
+      "git_blob": "06cc64fc6a3f7041d779e09fa73f5ef597ff528a",
+      "path": "config/pon/module-maturity-v1.json",
+      "sha256": "86da7e012c3b25e6753b2a87104ab193bd4d915eb81a1e691824c5a7cb3e104f",
+      "url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/blob/03521b2f32346a49cccde8ff72e8c7b886b31222/config/pon/module-maturity-v1.json"
+    },
+    {
+      "bytes": 64941,
+      "git_blob": "d79fe2019e6d45ebd9673999f7bc713d1f57e68f",
+      "path": "config/pon/applicability-v1.json",
+      "sha256": "431f5d766fa78ffad267a954e458002e937785ea4445c0b33ed4cbf4d4d59640",
+      "url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/blob/03521b2f32346a49cccde8ff72e8c7b886b31222/config/pon/applicability-v1.json"
+    },
+    {
+      "bytes": 20526,
+      "git_blob": "d823f1da8a93d748b93b7185989c43986ee8c6ba",
+      "path": "scripts/ci/test_applicability.py",
+      "sha256": "8c5111a595225dd8919029ce124163b1c334f10de050da94bcc6ae3812b4b232",
+      "url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/blob/03521b2f32346a49cccde8ff72e8c7b886b31222/scripts/ci/test_applicability.py"
+    }
+  ],
+  "excluded_stale_test_source": {
+    "path": "/workspace/scratch/93bfcfe29fc8/w1/diagnostic-base/scripts/ci/test_applicability.py",
+    "git_blob_sha1": "fd7be1114a9d5d76e86ebd4d0aff1160737ef596"
+  },
+  "recorded_execution": {
+    "manifest": "/workspace/scratch/93bfcfe29fc8/w1/C2-native-checks-manifest.json",
+    "manifest_sha256": "ce4edcd4f29916db1a14d62970f62a90dc8dbef4d8a38c1dd1af6cf2a8a6a5c7",
+    "observation": {
+      "command": [
+        "python3",
+        "-B",
+        "scripts/ci/test_applicability.py"
+      ],
+      "elapsed_ns": 300005678623,
+      "exchange_error": "NATIVE_EXECUTOR_TIMEOUT",
+      "exit_code": -9,
+      "name": "applicability-controls",
+      "passed": false,
+      "stderr": {
+        "bytes": 1111,
+        "path": "applicability-controls.stderr",
+        "sha256": "a4d01ec2eb290bccb58d13b6deca0c933bbf28e1ea98acef37a11c60cb89820b"
+      },
+      "stderr_limit_bytes": 8388608,
+      "stderr_truncated": false,
+      "stdout": {
+        "bytes": 0,
+        "path": "applicability-controls.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout_limit_bytes": 8388608,
+      "stdout_truncated": false,
+      "timed_out": true,
+      "timeout_seconds": 300
+    },
+    "stderr": "/workspace/scratch/93bfcfe29fc8/w1/C2-native-checks-applicability-controls.stderr",
+    "stderr_sha256": "a4d01ec2eb290bccb58d13b6deca0c933bbf28e1ea98acef37a11c60cb89820b",
+    "completed_test_lines": 7,
+    "eighth_test_started_without_completion": true,
+    "source_before_after_equal": true,
+    "runtime_stack_sample_available": false,
+    "limitation": "The whole command had a 300-second budget. The raw log does not show that the eighth test alone consumed 300 seconds or identify its exact active frame."
+  },
+  "one_complete_successful_validate_static_counts": {
+    "contract_responsibilities": 39,
+    "profiles": 24,
+    "contract_selector_calls": 779,
+    "profile_selector_calls": 324,
+    "total_selector_calls": 1103,
+    "unique_selector_strings": 628,
+    "unique_selector_paths": 109,
+    "contract_unique_runtime_symbol_calls": 217,
+    "profile_entrypoint_symbol_calls": 24,
+    "rust_mask_calls": 1373,
+    "unique_rust_paths": 100,
+    "python_ast_calls": 575,
+    "unique_python_paths": 71,
+    "not_measured_durations": true
+  },
+  "top_parser_paths": [
+    {
+      "path": "scripts/ci/test_work_rejection_report.py",
+      "parser_calls": 98,
+      "selector_calls": 98
+    },
+    {
+      "path": "scripts/ci/test_zero_locality_cost.py",
+      "parser_calls": 81,
+      "selector_calls": 81
+    },
+    {
+      "path": "trillionnium/crates/trnm-pon-node/tests/account_archive_execution.rs",
+      "parser_calls": 72,
+      "selector_calls": 36
+    },
+    {
+      "path": "trillionnium/crates/trnm-pon-node/src/store/authenticated_migration_tests.rs",
+      "parser_calls": 72,
+      "selector_calls": 36
+    },
+    {
+      "path": "trillionnium/crates/trnm-pon-node/src/native_authenticated_tests.rs",
+      "parser_calls": 66,
+      "selector_calls": 33
+    },
+    {
+      "path": "trillionnium/crates/trnm-pon-node/tests/native_node.rs",
+      "parser_calls": 62,
+      "selector_calls": 31
+    },
+    {
+      "path": "formal/pon-nakamoto-v1/test_native_authenticated_storage_oracle.py",
+      "parser_calls": 58,
+      "selector_calls": 58
+    },
+    {
+      "path": "trillionnium/crates/trnm-pon-node/src/account_archive_prototype/native_store_batch_tests.rs",
+      "parser_calls": 54,
+      "selector_calls": 27
+    },
+    {
+      "path": "trillionnium/crates/trnm-pon-node/src/account_archive_prototype/native_primitive_tests.rs",
+      "parser_calls": 50,
+      "selector_calls": 25
+    },
+    {
+      "path": "trillionnium/crates/trnm-pon-node/src/store.rs",
+      "parser_calls": 44,
+      "selector_calls": 9
+    },
+    {
+      "path": "trillionnium/crates/trnm-mvcc-fee/tests/model_evolution_v5.rs",
+      "parser_calls": 40,
+      "selector_calls": 20
+    },
+    {
+      "path": "trillionnium/crates/trnm-pon-node/src/authenticated_state_archive_tests.rs",
+      "parser_calls": 40,
+      "selector_calls": 20
+    },
+    {
+      "path": "formal/pon-nakamoto-v1/test_obligation_range_oracle.py",
+      "parser_calls": 39,
+      "selector_calls": 39
+    },
+    {
+      "path": "trillionnium/crates/trnm-pon-node/src/native_ancestry_commit_tests.rs",
+      "parser_calls": 38,
+      "selector_calls": 19
+    },
+    {
+      "path": "trillionnium/crates/trnm-pon-node/src/ingress/public_v3.rs",
+      "parser_calls": 37,
+      "selector_calls": 18
+    }
+  ],
+  "findings": [
+    {
+      "file": "scripts/ci/report_module_evidence.py",
+      "lines": [
+        39,
+        49
+      ],
+      "finding": "python_symbols calls ast.parse for every supplied current text and returns a mutable set."
+    },
+    {
+      "file": "scripts/ci/report_module_evidence.py",
+      "lines": [
+        52,
+        73
+      ],
+      "finding": "Every check_symbol performs safe-path validation and read_text before Python parsing or Rust masking; Rust owner checks then rescan impl bodies/direct methods."
+    },
+    {
+      "file": "scripts/ci/report_module_evidence.py",
+      "lines": [
+        151,
+        197
+      ],
+      "finding": "rust_code allocates a character list and scans/masks the entire source in Python, returning an immutable string."
+    },
+    {
+      "file": "scripts/ci/report_module_evidence.py",
+      "lines": [
+        200,
+        210
+      ],
+      "finding": "A Rust test selector first invokes check_symbol, then performs another safe-path read and another rust_code transformation to verify its test attribute."
+    },
+    {
+      "file": "scripts/ci/report_module_evidence.py",
+      "lines": [
+        213,
+        266
+      ],
+      "finding": "validate_contract deduplicates only runtime (path, symbol) pairs inside one call. It does not deduplicate selector parsing and its local set is recreated on the next validation."
+    },
+    {
+      "file": "scripts/ci/check_applicability.py",
+      "lines": [
+        248,
+        318
+      ],
+      "finding": "validate calls report_module_evidence.validate_contract at line 258, then checks every profile entrypoint and selector; registry/document/configuration/delivery relationships are checked afresh."
+    },
+    {
+      "file": "scripts/ci/test_applicability.py",
+      "lines": [
+        161,
+        183
+      ],
+      "finding": "setUpClass copies source once per class; rejection helpers modify current bytes, validate, then restore. The copy is not repeated for the eighth test."
+    },
+    {
+      "file": "scripts/ci/test_applicability.py",
+      "lines": [
+        320,
+        350
+      ],
+      "finding": "The last-started test first calls validate(self.root), then checks fields; the comment/string negative control reuses one path with different current source content."
+    }
+  ],
+  "minimal_future_change": {
+    "implementation_status": "PROPOSAL ONLY; frozen C2 untouched",
+    "cache_scope": "Pure current-text-to-Rust-mask and current-text-to-immutable-Python-symbol-summary transforms",
+    "key": "Exact freshly read text content, not root/path/mtime/size; full key equality must resolve hash collisions",
+    "path_and_reads": "Retain safe-path validation and fresh read before each lookup; initially retain both current Rust-selector reads",
+    "python_result": "Cache a private frozenset; preserve any mutable public set API through fresh copies, never share a cached mutable set",
+    "capacity": "Bound entries and evaluate retained input/output bytes; a large-input bypass or explicit byte cap avoids treating entry count as a memory bound",
+    "errors": "Read, parse and path failures continue to reject; exceptions must not turn into successful cached verdicts",
+    "must_not_cache": [
+      "validate(root) success",
+      "validate_contract result",
+      "check_symbol verdict by path",
+      "check_test_selector verdict by selector",
+      "registry/doc/config/delivery consistency result"
+    ],
+    "remaining_cost": "Fresh I/O, key hashing/equality, Rust impl/body scans and all relationship validation remain; no claim of linear total validation or a 300-second pass"
+  },
+  "future_controls_before_qualification": [
+    "Warm caches, mutate source while retaining path/mtime/length, and require the existing failure semantics",
+    "Replace executable definitions with comments, raw strings, nested helpers or missing attributes after warming",
+    "Retain missing-file and symlink-escape refusal after warming",
+    "Retain registry/document/revision and claimed-pass mutation controls, including restore-and-revalidate cases",
+    "Exercise bounded-cache eviction and measure memory/time within unchanged original gate budgets"
+  ],
+  "disposition": "Record diagnosis only while final H1 is frozen and qualified. No optional tests or new C2/C3 work scheduled by this review."
+}

@@ -1,0 +1,55 @@
+{
+  "schema": "root-H1-failure-and-owned-release-review-v1",
+  "H1_job": "1a1ad12b87d-fc05-5860",
+  "H1_terminal_state": "failed",
+  "H1_exit_code": 1,
+  "H1_timed_out": false,
+  "H1_terminal_unix_ms": 1793905781653,
+  "full_H1_qualification": false,
+  "release_probe_job": "1a1ad24064a-fc05-58ac",
+  "release_probe_terminal_unix_ms": 1793906184964,
+  "exact_owned_cgroup_and_original_pid_absent": true,
+  "cleaned_up_systemd_default_Result_is_not_test_success": true,
+  "files": [
+    {
+      "path": "H1-runtime-terminal.json",
+      "bytes": 957,
+      "sha256": "19f8a1b63d84ae59dbff7f33855fa81963c45979d87b67af2272b72b066fc947"
+    },
+    {
+      "path": "inspect_h1_owned_unit.py",
+      "bytes": 4722,
+      "sha256": "e189a8148ce3605cca7faa20a8e4e7f040fdbe6f826791db30b0986b570d0b30"
+    },
+    {
+      "path": "probe-launch.json",
+      "bytes": 1263,
+      "sha256": "205b5c4bf0dc6314e51976f2163dc6106888c150ecb7422c905cdf19ed21aaf4"
+    },
+    {
+      "path": "probe-proof-read.json",
+      "bytes": 3248,
+      "sha256": "129b4152767ed27c4466a1255c6e15afcbcc0daf81fe5ae853c5d23c745036a7"
+    },
+    {
+      "path": "probe-terminal.json",
+      "bytes": 952,
+      "sha256": "0c61704b598b7fbde26880c11dcd5d016e28ee0e88c9aadfafb664f7262ef4af"
+    },
+    {
+      "path": "proof.json",
+      "bytes": 2142,
+      "sha256": "88a60dedc4df1a1a8f9b80f5fd0decb4adc0faa7aa6471b74e791c32d9bb34f1"
+    },
+    {
+      "path": "systemctl.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "systemctl.stdout",
+      "bytes": 205,
+      "sha256": "415e2d104ee2f5aa3f3deab528904338f87a3f9b84bb1d52c808ed6f0653c1ae"
+    }
+  ]
+}

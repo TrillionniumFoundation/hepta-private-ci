@@ -1,0 +1,92 @@
+{
+  "base_commit": "1556a4df6e279055fd8196f81a4ca2fe0f19384a",
+  "status": "native_two_controls_passed_binary_capture_incomplete",
+  "separate_from_recovery_patch": true,
+  "native_tested": true,
+  "original_512_test_unchanged": true,
+  "historical_decode_row_unchanged": true,
+  "pure_independent_decision_validator_unchanged": true,
+  "query_claim_loader_unchanged": true,
+  "same_transaction_snapshot": true,
+  "same_8192_capacity_boundary_and_limit_8193": true,
+  "same_nextest_local_60_seconds": true,
+  "complexity": "Still cumulative O(n^2) historical decoding; only unused reference copies, sorting, aggregate canonical serialization and SHA are removed for original early-return receipt classes.",
+  "regression_control": "qualification_tests::ordinary_append_rejects_historical_projection_drift_without_consuming_replay",
+  "native_matrix": [
+    {
+      "stage": "original_budget_regression",
+      "selector": "test(=qualification_tests::claim_query_rejects_more_than_512_references) | test(=qualification_tests::ordinary_append_rejects_historical_projection_drift_without_consuming_replay)",
+      "wrapper_seconds": 600,
+      "case_profile": "original local profile (60 seconds)",
+      "minimum_tests": 2
+    },
+    {
+      "stage": "qualification_module",
+      "selector": "test(qualification_tests::)",
+      "wrapper_seconds": 600,
+      "case_profile": "original local profile (60 seconds)"
+    },
+    {
+      "stage": "full_evidence_library",
+      "package": "codex-hepta-evidence",
+      "wrapper_seconds": 600
+    },
+    {
+      "stage": "scoped_original_fix",
+      "command": "just fix --locked -p codex-hepta-evidence",
+      "wrapper_seconds": 1200
+    },
+    {
+      "stage": "original_format",
+      "command": "just fmt --base 1556a4df6e279055fd8196f81a4ca2fe0f19384a",
+      "wrapper_seconds": 300
+    }
+  ],
+  "artifacts": {
+    "qualification-implementation-only.patch": "5b8881abfb1b61c1a2ba96827c1cf85248f230d086eaba9305bb7e7b4b5c28af",
+    "qualification-controls-only.patch": "7fa6312e56337ae099fe161aebfd0f0bd4ed43c8ed94cc19dc41b0d7c41e05a8",
+    "qualification-unused-set-digest.patch": "903269d4d4741e051437dcc6eaeaf5e6a455a4a88fab10f4b0606e415ca8e0b7"
+  },
+  "source_sha256": {
+    "codex-rs/hepta-evidence/src/qualification.rs": "5d74be55f5bb02077e655ff9d833ae82531cdeda00583e870454da1c9186efff",
+    "codex-rs/hepta-evidence/src/qualification_tests.rs": "f6c5bcde1d1ad19312a973a97339129feb988de10bb7db5a8731eb2fc10c8de7"
+  },
+  "native_candidate": {
+    "commit": "4dce06a9945fc54482f546c9dfb7cbb7a4716ccc",
+    "tree": "ace984bea899295f7e8fa6666fc78cfd49ad2a92",
+    "layered_on_recovery_component": "a877333eff1577179fce8b1ceb6edf4322440e03",
+    "job_id": "1a1ac670c4a-fc05-5410"
+  },
+  "remaining_after_two_controls": [
+    "Full evidence library original gate",
+    "Scoped original Clippy/fix",
+    "Final original format verification",
+    "Final H1 integration and same-binary joint gates"
+  ],
+  "binary_capture_limitation": "Collector observed only /proc/PID/task/PID/children (leader task) and did not bind start_ticks or recheck PID/argv/inode after opening. It retained no ELF for this attempt. Native source+raw log proof is valid; actual executed binary binding remains incomplete. Final H1 must use the shared model native/test_elf_capture.py collector.",
+  "native_results": {
+    "receipt_sha256": "b419bc79650eb30997e04b8273399fbda65a94bdf2d7d163ff6ea34dd6a1fda8",
+    "raw_log_sha256": "a0a20dd922f79425c6abeac43341521a4ca5bf991484f36b59342a4981aee9d9",
+    "source_before_after": {
+      "commit": "4dce06a9945fc54482f546c9dfb7cbb7a4716ccc",
+      "dirty": false,
+      "parents": [
+        "a877333eff1577179fce8b1ceb6edf4322440e03"
+      ],
+      "tree": "ace984bea899295f7e8fa6666fc78cfd49ad2a92"
+    },
+    "outer_wrapper_seconds": 147.03345308999997,
+    "passed": 2,
+    "failed": 0,
+    "original_512_control_seconds": 54.595,
+    "historical_corruption_control_seconds": 0.488,
+    "local_timeout_seconds": 60,
+    "outer_timeout_seconds": 600,
+    "timed_out": false,
+    "collector_pipeline_status": "failed: no executed binary was captured",
+    "executed_elf_sha256": null,
+    "whole_library_passed": false,
+    "scoped_clippy_executed": false,
+    "final_format_gate_executed": false
+  }
+}

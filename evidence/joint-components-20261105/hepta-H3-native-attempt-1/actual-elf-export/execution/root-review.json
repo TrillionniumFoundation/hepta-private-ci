@@ -1,0 +1,91 @@
+{
+  "schema": "root-h3-actual-archive-execution-review-v1",
+  "result": "PASS small-byte execution readback",
+  "delivery_files": 66,
+  "delivery_bytes": 3503455,
+  "delivery_manifest_sha256": "001eac8329c81a0064e01601f010139b6a98b1d1239681111a5492c94d9f8c32",
+  "archive_job_id": "1a1add12f68-fc05-5aec",
+  "archive_terminal": {
+    "at_unix_ms": 1793917793069,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1add12f68-fc05-5aec",
+    "launch_nonce": "732bef35faea2fb9518c7589530a6d87",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 28437,
+        "stored": 28437
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "actual_outer_seconds": 263.109,
+  "original_budget_seconds": 900,
+  "actual_exporter_seconds": 259.5575415099738,
+  "archive_bytes": 283427280,
+  "archive_sha256": "5365fcf900781044108e9642ae02a110e4ac8d031d9ee516c4f0b0e471e1e773",
+  "archive_parts": 68,
+  "parts_contiguous": true,
+  "actual_index_bytes": 294654,
+  "actual_index_sha256": "b023aca6ab2dccf4324dccab2e5319a00ef9b32773e0dc73127efc9af3caa002",
+  "index_rpc_ranges": 5,
+  "index_version": "2050:51281077:294654:1793918142887538838:1793918142887538838",
+  "actual_images": 11,
+  "actual_image_bytes": 1674575368,
+  "aliases": 30,
+  "observations": 279,
+  "all_original_inventory_fields_preserved": true,
+  "recorded_first_second_source_metadata_equal": true,
+  "separate_readback_job": "1a1adda0573-fc05-5b28",
+  "separate_readback_outer_seconds": 33.874,
+  "separate_readback_members": 16,
+  "separate_readback_budget_seconds": 60,
+  "stdout_completion_json_equal": true,
+  "stdout_completion_bytes_equal": false,
+  "stdout_bytes": 28437,
+  "completion_bytes": 34491,
+  "owned_releases": [
+    {
+      "job_id": "1a1add12f68-fc05-5aec",
+      "probe_job_id": "1a1add7345a-fc05-5b0c",
+      "proof_sha256": "1a94aecc2034736e5a252222e378788ad67d7f3674216b0c10ef3c27e3fec6a5"
+    },
+    {
+      "job_id": "1a1adda0573-fc05-5b28",
+      "probe_job_id": "1a1adde723f-fc05-5b47",
+      "proof_sha256": "a1b26b033563fe9d0f1cf8cbf4cf895621468307c14958e2748b49d3ecb2caf4"
+    }
+  ],
+  "archive_bulk_locally_verified": false,
+  "original_native_result": "FAILED",
+  "unmatched_h3_pid_attributed": false,
+  "new_native_or_learning_trial": false,
+  "limits": [
+    "The root has checked actual small RPC bytes, not the remote 283427280 archive bytes.",
+    "Complete lossless download and local full archive/part/member verification remain required.",
+    "Remote archive success does not qualify H3 or replace any missing native gate."
+  ]
+}

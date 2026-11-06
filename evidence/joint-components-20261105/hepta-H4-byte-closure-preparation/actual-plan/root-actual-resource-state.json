@@ -1,0 +1,69 @@
+{
+  "schema": "root-H4-postrun-archive-window-state-v1",
+  "bulk_downloaders": [
+    {
+      "path": "pq_recovery/h1-actual-elf-download",
+      "pause_exists": true,
+      "progress_sha256": "8eaff30fd26d7658376b14e32a42f17afc72150e706cc883cd09ecfcb42b416c",
+      "actual_progress": {
+        "schema": "h1-actual-elf-download-progress-v1",
+        "status": "PAUSED",
+        "in_flight": 0,
+        "next_offset": 65536,
+        "verified_chunks": 1,
+        "required_chunks": 1996,
+        "verified_bytes": 65536,
+        "verified_parts": 0,
+        "expected_archive_bytes": 130746864,
+        "version": "2050:51038826:130746864:1793912434833643974:1793912451408122854",
+        "native_execution": false,
+        "errors": [],
+        "pending_offsets": []
+      }
+    },
+    {
+      "path": "w1/h2-actual-elf-download",
+      "pause_exists": true,
+      "progress_sha256": "18dedb660ce32ea745fec937df81b23246a42871ca7d2d086809503f0f441ec8",
+      "actual_progress": {
+        "schema": "h2-actual-elf-download-progress-v1",
+        "status": "PAUSED",
+        "in_flight": 0,
+        "next_offset": 0,
+        "verified_chunks": 0,
+        "required_chunks": 3909,
+        "verified_bytes": 0,
+        "verified_parts": 0,
+        "expected_archive_bytes": 256132128,
+        "version": null,
+        "native_execution": false,
+        "errors": [],
+        "pending_offsets": []
+      }
+    },
+    {
+      "path": "w1/h3-actual-elf-download",
+      "pause_exists": true,
+      "progress_sha256": "74002a256c3123fe1dd5518a9192a288c2e44da03bf83253096f461668aae501",
+      "actual_progress": {
+        "schema": "h3-actual-elf-download-progress-v1",
+        "status": "PAUSED",
+        "in_flight": 0,
+        "next_offset": 0,
+        "verified_chunks": 0,
+        "required_chunks": 4325,
+        "verified_bytes": 0,
+        "verified_parts": 0,
+        "expected_archive_bytes": 283427280,
+        "version": null,
+        "native_execution": false,
+        "errors": [],
+        "pending_offsets": []
+      }
+    }
+  ],
+  "H4_original_owned_release_sha256": "dcdd164eb680465a440bf9dc4e11ab68c5598d8cb86a4d99320784d0a5b68107",
+  "all22_frozen_preparation_files_verified": true,
+  "preparation_sha256": "fa4346d15cf8b2c551d5219d7f46d75b5484105b82e02eadc7c086f92e010878",
+  "archive_launch_pending_independent_manifest": true
+}

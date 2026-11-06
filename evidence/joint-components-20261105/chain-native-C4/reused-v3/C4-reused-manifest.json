@@ -1,0 +1,397 @@
+{
+  "build_environment_overrides": {},
+  "cargo_configuration_after": {
+    "configuration_semantics_attested": false,
+    "files": [
+      {
+        "path": "/home/qian-qi/work/chain-joint-20261105-93bfc-current/.cargo/config",
+        "state": "absent"
+      },
+      {
+        "path": "/home/qian-qi/work/chain-joint-20261105-93bfc-current/.cargo/config.toml",
+        "state": "absent"
+      },
+      {
+        "path": "/home/qian-qi/work/.cargo/config",
+        "state": "absent"
+      },
+      {
+        "path": "/home/qian-qi/work/.cargo/config.toml",
+        "state": "absent"
+      },
+      {
+        "path": "/home/qian-qi/.cargo/config",
+        "state": "absent"
+      },
+      {
+        "path": "/home/qian-qi/.cargo/config.toml",
+        "state": "absent"
+      },
+      {
+        "path": "/home/.cargo/config",
+        "state": "absent"
+      },
+      {
+        "path": "/home/.cargo/config.toml",
+        "state": "absent"
+      },
+      {
+        "path": "/.cargo/config",
+        "state": "absent"
+      },
+      {
+        "path": "/.cargo/config.toml",
+        "state": "absent"
+      }
+    ],
+    "schema": "trnm-cost-cargo-configuration-v1",
+    "violations": []
+  },
+  "cargo_configuration_before": {
+    "configuration_semantics_attested": false,
+    "files": [
+      {
+        "path": "/home/qian-qi/work/chain-joint-20261105-93bfc-current/.cargo/config",
+        "state": "absent"
+      },
+      {
+        "path": "/home/qian-qi/work/chain-joint-20261105-93bfc-current/.cargo/config.toml",
+        "state": "absent"
+      },
+      {
+        "path": "/home/qian-qi/work/.cargo/config",
+        "state": "absent"
+      },
+      {
+        "path": "/home/qian-qi/work/.cargo/config.toml",
+        "state": "absent"
+      },
+      {
+        "path": "/home/qian-qi/.cargo/config",
+        "state": "absent"
+      },
+      {
+        "path": "/home/qian-qi/.cargo/config.toml",
+        "state": "absent"
+      },
+      {
+        "path": "/home/.cargo/config",
+        "state": "absent"
+      },
+      {
+        "path": "/home/.cargo/config.toml",
+        "state": "absent"
+      },
+      {
+        "path": "/.cargo/config",
+        "state": "absent"
+      },
+      {
+        "path": "/.cargo/config.toml",
+        "state": "absent"
+      }
+    ],
+    "schema": "trnm-cost-cargo-configuration-v1",
+    "violations": []
+  },
+  "commit": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+  "completed_utc": "2026-11-05T18:40:32Z",
+  "coordinator_sha256": "271226f1f032a4b88f975e75ab85de39c69a59202eeccfe7676d2a3b0d85d7a3",
+  "elapsed_seconds": 34.60201481706463,
+  "execution_context": "local-native-preflight",
+  "failures": [],
+  "fastest_adversary_qualified": false,
+  "observations": [
+    {
+      "child_rusage": {
+        "cumulative_maxrss_kib_after": 18728,
+        "cumulative_maxrss_kib_before": 0,
+        "scope": "waited children; maxrss is cumulative, not a per-command RSS limit",
+        "system_cpu_seconds_delta": 0.016281999999999998,
+        "user_cpu_seconds_delta": 0.077288
+      },
+      "command": [
+        "bash",
+        "scripts/project-preflight.sh",
+        "--audit"
+      ],
+      "command_cap_seconds": 120,
+      "effective_timeout_seconds": 120.0,
+      "elapsed_ns": 93704747,
+      "exit_code": 0,
+      "name": "candidate-preflight",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "path": "candidate-preflight.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 133,
+        "path": "candidate-preflight.stdout",
+        "sha256": "a47133fd7030ccda88d70f7e8f0c9df1ffb0fc5fd3257ed034439bbe6fc6e2e0"
+      },
+      "timed_out": false
+    },
+    {
+      "child_rusage": {
+        "cumulative_maxrss_kib_after": 83724,
+        "cumulative_maxrss_kib_before": 18728,
+        "scope": "waited children; maxrss is cumulative, not a per-command RSS limit",
+        "system_cpu_seconds_delta": 0.5251429999999999,
+        "user_cpu_seconds_delta": 1.9613219999999998
+      },
+      "command": [
+        "python3",
+        "-B",
+        "scripts/ci/verify_ci_source.py",
+        "--kind",
+        "head",
+        "--expected-head",
+        "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+        "--output",
+        "/home/qian-qi/work/chain-joint-20261105-93bfc-w1-native-C4/reused-v3/source-before.json"
+      ],
+      "command_cap_seconds": 600,
+      "effective_timeout_seconds": 600.0,
+      "elapsed_ns": 2403833676,
+      "exit_code": 0,
+      "name": "source-before",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "path": "source-before.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 422,
+        "path": "source-before.stdout",
+        "sha256": "a3240c2f14bfbfe973f5066eac1b7a5e8bea6bd426b068af3446f4397f2b2b2b"
+      },
+      "timed_out": false
+    },
+    {
+      "child_rusage": {
+        "cumulative_maxrss_kib_after": 201896,
+        "cumulative_maxrss_kib_before": 83724,
+        "scope": "waited children; maxrss is cumulative, not a per-command RSS limit",
+        "system_cpu_seconds_delta": 1.6000070000000002,
+        "user_cpu_seconds_delta": 29.050970000000003
+      },
+      "command": [
+        "env",
+        "-u",
+        "CARGO_INCREMENTAL",
+        "python3",
+        "-B",
+        "scripts/ci/run_w1_reused_cost_v3.py",
+        "--arch",
+        "x64",
+        "--local"
+      ],
+      "command_cap_seconds": 9300,
+      "effective_timeout_seconds": 9297.459838957991,
+      "elapsed_ns": 29602155511,
+      "exit_code": 0,
+      "name": "original-reused-v3",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "path": "original-reused-v3.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 130,
+        "path": "original-reused-v3.stdout",
+        "sha256": "3638be6825402da550134c35cb66928158b7943e62aa92523796c2d8e331cdf4"
+      },
+      "timed_out": false
+    },
+    {
+      "child_rusage": {
+        "cumulative_maxrss_kib_after": 201896,
+        "cumulative_maxrss_kib_before": 201896,
+        "scope": "waited children; maxrss is cumulative, not a per-command RSS limit",
+        "system_cpu_seconds_delta": 0.5421909999999999,
+        "user_cpu_seconds_delta": 1.9853769999999962
+      },
+      "command": [
+        "python3",
+        "-B",
+        "scripts/ci/verify_ci_source.py",
+        "--kind",
+        "head",
+        "--expected-head",
+        "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+        "--output",
+        "/home/qian-qi/work/chain-joint-20261105-93bfc-w1-native-C4/reused-v3/source-after.json"
+      ],
+      "command_cap_seconds": 600,
+      "effective_timeout_seconds": 600.0,
+      "elapsed_ns": 2444075120,
+      "exit_code": 0,
+      "name": "source-after",
+      "passed": true,
+      "stderr": {
+        "bytes": 0,
+        "path": "source-after.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 422,
+        "path": "source-after.stdout",
+        "sha256": "a3240c2f14bfbfe973f5066eac1b7a5e8bea6bd426b068af3446f4397f2b2b2b"
+      },
+      "timed_out": false
+    }
+  ],
+  "original_build_timeout_seconds": 900,
+  "original_complete_job_timeout_seconds": 9300,
+  "original_entry": "scripts/ci/run_w1_reused_cost_v3.py",
+  "original_hosted_lane_qualified": false,
+  "original_job": "cross-arch-w1-reuse-v3",
+  "original_native_campaign_timeout_seconds": 300,
+  "original_native_termination_grace_seconds": 5,
+  "original_receipt": {
+    "binary_sha256_after": "45cd16459be074cec79e2815243236b8877dde17b2cb267bc5b55b4861865d9f",
+    "binary_sha256_before": "45cd16459be074cec79e2815243236b8877dde17b2cb267bc5b55b4861865d9f",
+    "error": null,
+    "fixed_cohort_comparison": [
+      {
+        "actual_eight_cohorts_cpu_ns": 106919520,
+        "all_supported_arms_measured": true,
+        "class": "periodic-dense-fixture",
+        "lowest_observed_supplied_cohort_arm": "prepared-generic",
+        "selection_scope": "one-supplied-algorithm-for-all-eight-four-search-cohorts-not-per-search-or-adversarial-lower-bound"
+      },
+      {
+        "actual_eight_cohorts_cpu_ns": 135331408,
+        "all_supported_arms_measured": true,
+        "class": "full-rank-field",
+        "lowest_observed_supplied_cohort_arm": "prepared-generic",
+        "selection_scope": "one-supplied-algorithm-for-all-eight-four-search-cohorts-not-per-search-or-adversarial-lower-bound"
+      },
+      {
+        "actual_eight_cohorts_cpu_ns": 99509695,
+        "all_supported_arms_measured": true,
+        "class": "zero",
+        "lowest_observed_supplied_cohort_arm": "blocked-zero",
+        "selection_scope": "one-supplied-algorithm-for-all-eight-four-search-cohorts-not-per-search-or-adversarial-lower-bound"
+      },
+      {
+        "actual_eight_cohorts_cpu_ns": 113779771,
+        "all_supported_arms_measured": true,
+        "class": "identity",
+        "lowest_observed_supplied_cohort_arm": "prepared-structured",
+        "selection_scope": "one-supplied-algorithm-for-all-eight-four-search-cohorts-not-per-search-or-adversarial-lower-bound"
+      },
+      {
+        "actual_eight_cohorts_cpu_ns": 108775393,
+        "all_supported_arms_measured": true,
+        "class": "rank-one",
+        "lowest_observed_supplied_cohort_arm": "prepared-structured",
+        "selection_scope": "one-supplied-algorithm-for-all-eight-four-search-cohorts-not-per-search-or-adversarial-lower-bound"
+      },
+      {
+        "actual_eight_cohorts_cpu_ns": 97004973,
+        "all_supported_arms_measured": true,
+        "class": "sparse-diagonal",
+        "lowest_observed_supplied_cohort_arm": "prepared-structured",
+        "selection_scope": "one-supplied-algorithm-for-all-eight-four-search-cohorts-not-per-search-or-adversarial-lower-bound"
+      },
+      {
+        "actual_eight_cohorts_cpu_ns": 108974611,
+        "all_supported_arms_measured": true,
+        "class": "continuity-maintenance-v1",
+        "lowest_observed_supplied_cohort_arm": "maintenance-limb",
+        "selection_scope": "one-supplied-algorithm-for-all-eight-four-search-cohorts-not-per-search-or-adversarial-lower-bound"
+      },
+      {
+        "actual_eight_cohorts_cpu_ns": 94616958,
+        "all_supported_arms_measured": true,
+        "class": "one-zero-left-rank-one",
+        "lowest_observed_supplied_cohort_arm": "prepared-structured",
+        "selection_scope": "one-supplied-algorithm-for-all-eight-four-search-cohorts-not-per-search-or-adversarial-lower-bound"
+      },
+      {
+        "actual_eight_cohorts_cpu_ns": 110257179,
+        "all_supported_arms_measured": true,
+        "class": "one-zero-right-rank-one",
+        "lowest_observed_supplied_cohort_arm": "prepared-structured",
+        "selection_scope": "one-supplied-algorithm-for-all-eight-four-search-cohorts-not-per-search-or-adversarial-lower-bound"
+      }
+    ],
+    "manifest_sha256": "001298287ac8fc831b1adbd8df85364df509bac5829fad597c02757dc30f5dba",
+    "path": "/home/qian-qi/work/chain-joint-20261105-93bfc-w1-native-C4/reused-v3/original/w1-actual-reuse-v3",
+    "reader_record_counts": {
+      "campaign": 1,
+      "candidate": 288,
+      "cohort": 936,
+      "end": 1,
+      "material": 9,
+      "search": 1888,
+      "verifier": 3776
+    },
+    "result": "PASS",
+    "source_after": {
+      "commit": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+      "source_state": "committed-clean",
+      "tracked_bytes": 985270534,
+      "tracked_entries": 10357,
+      "tracked_worktree_verified": true,
+      "tree": "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14"
+    },
+    "source_before": {
+      "commit": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+      "source_state": "committed-clean",
+      "tracked_bytes": 985270534,
+      "tracked_entries": 10357,
+      "tracked_worktree_verified": true,
+      "tree": "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14"
+    }
+  },
+  "original_workflow": ".github/workflows/trnm-required-baseline.yml",
+  "output": "/home/qian-qi/work/chain-joint-20261105-93bfc-w1-native-C4/reused-v3",
+  "passed": true,
+  "production_activation": false,
+  "public_service_measured": false,
+  "retained_binary_sha256": "45cd16459be074cec79e2815243236b8877dde17b2cb267bc5b55b4861865d9f",
+  "root": "/home/qian-qi/work/chain-joint-20261105-93bfc-current",
+  "runtime_process": {
+    "cgroup": "0::/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a1ad02a53b-fc05-5805.service\n",
+    "parent_pid": 477385,
+    "pid": 477451,
+    "start_ticks": "98166356"
+  },
+  "schema": "trnm-c4-existing-reused-v3-local-coordinator-v1",
+  "source_after": {
+    "base": null,
+    "candidate": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+    "kind": "head",
+    "prospective_merge": null,
+    "schema": "trnm-ci-source-v1",
+    "tested_commit": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+    "tested_tree": "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14",
+    "tests_executed_by_identity_check": false,
+    "tracked_bytes": 985270534,
+    "tracked_entries": 10357,
+    "tracked_worktree_verified": true
+  },
+  "source_before": {
+    "base": null,
+    "candidate": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+    "kind": "head",
+    "prospective_merge": null,
+    "schema": "trnm-ci-source-v1",
+    "tested_commit": "8df4b21d893906570d48f5beafabb3b31e0aefbc",
+    "tested_tree": "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14",
+    "tests_executed_by_identity_check": false,
+    "tracked_bytes": 985270534,
+    "tracked_entries": 10357,
+    "tracked_worktree_verified": true
+  },
+  "started_utc": "2026-11-05T18:39:57Z",
+  "target": "/home/qian-qi/work/chain-joint-20261105-93bfc-w1-target-C4",
+  "tree": "6f5aaa2af0432e27e24b6bd2ad18013ab4423d14",
+  "work_hardness_accepted": false
+}

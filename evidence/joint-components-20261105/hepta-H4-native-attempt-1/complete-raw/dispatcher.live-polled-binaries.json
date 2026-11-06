@@ -1,0 +1,2839 @@
+{
+  "records": [
+    {
+      "source": {
+        "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+        "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "40341fe44840b6de0ca3cff68785116e5cfbca81c9a77124a82ca72b63234039"
+      },
+      "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+      "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h4-native-attempt-1/executed-binaries-dispatcher/a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b.elf",
+      "sha256": "a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b",
+      "bytes": 504302232,
+      "device": 2050,
+      "inode": 58259820,
+      "mtime_ns": 1793915315746562678,
+      "ctime_ns": 1793915315791561539,
+      "argv": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "--exact",
+        "authbus_dispatch::tests::abandoned_first_claim_without_admission_is_quarantined_after_lookup_missing",
+        "--nocapture"
+      ],
+      "pid": 1131429,
+      "start_ticks": "99640371",
+      "wrapper_pid": 1130966,
+      "wrapper_start_ticks": "99640003",
+      "wrapper_descendant_verified": true,
+      "post_open_task_and_exe_verified": true,
+      "process_before": {
+        "pid": 1131429,
+        "ppid": 1131140,
+        "start_ticks": "99640371",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "--exact",
+          "authbus_dispatch::tests::abandoned_first_claim_without_admission_is_quarantined_after_lookup_missing",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "image": {
+          "device": 2050,
+          "inode": 58259820,
+          "bytes": 504302232,
+          "mtime_ns": 1793915315746562678,
+          "ctime_ns": 1793915315791561539
+        }
+      },
+      "process_after": {
+        "pid": 1131429,
+        "ppid": 1131140,
+        "start_ticks": "99640371",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "--exact",
+          "authbus_dispatch::tests::abandoned_first_claim_without_admission_is_quarantined_after_lookup_missing",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "image": {
+          "device": 2050,
+          "inode": 58259820,
+          "bytes": 504302232,
+          "mtime_ns": 1793915315746562678,
+          "ctime_ns": 1793915315791561539
+        }
+      },
+      "direct_parent_before": {
+        "pid": 1131140,
+        "ppid": 1131065,
+        "start_ticks": "99640180",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(authbus_dispatch::tests::)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-qot2qcn1/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "direct_parent_after": {
+        "pid": 1131140,
+        "ppid": 1131065,
+        "start_ticks": "99640180",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(authbus_dispatch::tests::)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-qot2qcn1/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "ancestor_chain_before": [
+        {
+          "pid": 1131429,
+          "ppid": 1131140,
+          "start_ticks": "99640371"
+        },
+        {
+          "pid": 1131140,
+          "ppid": 1131065,
+          "start_ticks": "99640180"
+        },
+        {
+          "pid": 1131065,
+          "ppid": 1131063,
+          "start_ticks": "99640151"
+        },
+        {
+          "pid": 1131063,
+          "ppid": 1131061,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1131061,
+          "ppid": 1130966,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1130966,
+          "ppid": 1122369,
+          "start_ticks": "99640003"
+        }
+      ],
+      "ancestor_chain_after": [
+        {
+          "pid": 1131429,
+          "ppid": 1131140,
+          "start_ticks": "99640371"
+        },
+        {
+          "pid": 1131140,
+          "ppid": 1131065,
+          "start_ticks": "99640180"
+        },
+        {
+          "pid": 1131065,
+          "ppid": 1131063,
+          "start_ticks": "99640151"
+        },
+        {
+          "pid": 1131063,
+          "ppid": 1131061,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1131061,
+          "ppid": 1130966,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1130966,
+          "ppid": 1122369,
+          "start_ticks": "99640003"
+        }
+      ],
+      "relationship_observed_before_unix": 1793918740.5994537,
+      "relationship_observed_after_unix": 1793918740.6016698,
+      "held_child_and_parent_images_stable_through_retention": true,
+      "relationship_scope": "two live observations around actual child and direct-parent FD opens; no claim either task remains alive at copy completion",
+      "observed_selected_tests": [
+        "authbus_dispatch::tests::abandoned_first_claim_without_admission_is_quarantined_after_lookup_missing"
+      ],
+      "captured_unix": 1793918743.862882
+    },
+    {
+      "source": {
+        "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+        "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "40341fe44840b6de0ca3cff68785116e5cfbca81c9a77124a82ca72b63234039"
+      },
+      "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+      "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h4-native-attempt-1/executed-binaries-dispatcher/a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b.elf",
+      "sha256": "a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b",
+      "bytes": 504302232,
+      "device": 2050,
+      "inode": 58259820,
+      "mtime_ns": 1793915315746562678,
+      "ctime_ns": 1793915315791561539,
+      "argv": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "--exact",
+        "authbus_dispatch::tests::checkpoint_sync::cancelled_checkpoint_sync_waiter_and_owner_release_exclusive_admission",
+        "--nocapture"
+      ],
+      "pid": 1131852,
+      "start_ticks": "99640734",
+      "wrapper_pid": 1130966,
+      "wrapper_start_ticks": "99640003",
+      "wrapper_descendant_verified": true,
+      "post_open_task_and_exe_verified": true,
+      "process_before": {
+        "pid": 1131852,
+        "ppid": 1131140,
+        "start_ticks": "99640734",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "--exact",
+          "authbus_dispatch::tests::checkpoint_sync::cancelled_checkpoint_sync_waiter_and_owner_release_exclusive_admission",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "image": {
+          "device": 2050,
+          "inode": 58259820,
+          "bytes": 504302232,
+          "mtime_ns": 1793915315746562678,
+          "ctime_ns": 1793915315791561539
+        }
+      },
+      "process_after": {
+        "pid": 1131852,
+        "ppid": 1131140,
+        "start_ticks": "99640734",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "--exact",
+          "authbus_dispatch::tests::checkpoint_sync::cancelled_checkpoint_sync_waiter_and_owner_release_exclusive_admission",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "image": {
+          "device": 2050,
+          "inode": 58259820,
+          "bytes": 504302232,
+          "mtime_ns": 1793915315746562678,
+          "ctime_ns": 1793915315791561539
+        }
+      },
+      "direct_parent_before": {
+        "pid": 1131140,
+        "ppid": 1131065,
+        "start_ticks": "99640180",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(authbus_dispatch::tests::)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-qot2qcn1/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "direct_parent_after": {
+        "pid": 1131140,
+        "ppid": 1131065,
+        "start_ticks": "99640180",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(authbus_dispatch::tests::)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-qot2qcn1/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "ancestor_chain_before": [
+        {
+          "pid": 1131852,
+          "ppid": 1131140,
+          "start_ticks": "99640734"
+        },
+        {
+          "pid": 1131140,
+          "ppid": 1131065,
+          "start_ticks": "99640180"
+        },
+        {
+          "pid": 1131065,
+          "ppid": 1131063,
+          "start_ticks": "99640151"
+        },
+        {
+          "pid": 1131063,
+          "ppid": 1131061,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1131061,
+          "ppid": 1130966,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1130966,
+          "ppid": 1122369,
+          "start_ticks": "99640003"
+        }
+      ],
+      "ancestor_chain_after": [
+        {
+          "pid": 1131852,
+          "ppid": 1131140,
+          "start_ticks": "99640734"
+        },
+        {
+          "pid": 1131140,
+          "ppid": 1131065,
+          "start_ticks": "99640180"
+        },
+        {
+          "pid": 1131065,
+          "ppid": 1131063,
+          "start_ticks": "99640151"
+        },
+        {
+          "pid": 1131063,
+          "ppid": 1131061,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1131061,
+          "ppid": 1130966,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1130966,
+          "ppid": 1122369,
+          "start_ticks": "99640003"
+        }
+      ],
+      "relationship_observed_before_unix": 1793918744.6011863,
+      "relationship_observed_after_unix": 1793918744.6037905,
+      "held_child_and_parent_images_stable_through_retention": true,
+      "relationship_scope": "two live observations around actual child and direct-parent FD opens; no claim either task remains alive at copy completion",
+      "observed_selected_tests": [
+        "authbus_dispatch::tests::checkpoint_sync::cancelled_checkpoint_sync_waiter_and_owner_release_exclusive_admission"
+      ],
+      "captured_unix": 1793918744.6038165
+    },
+    {
+      "source": {
+        "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+        "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "40341fe44840b6de0ca3cff68785116e5cfbca81c9a77124a82ca72b63234039"
+      },
+      "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+      "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h4-native-attempt-1/executed-binaries-dispatcher/a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b.elf",
+      "sha256": "a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b",
+      "bytes": 504302232,
+      "device": 2050,
+      "inode": 58259820,
+      "mtime_ns": 1793915315746562678,
+      "ctime_ns": 1793915315791561539,
+      "argv": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "--exact",
+        "authbus_dispatch::tests::checkpoint_sync::concurrent_checkpoint_syncs_share_owner_lock_and_preserve_rollback_rejection",
+        "--nocapture"
+      ],
+      "pid": 1132931,
+      "start_ticks": "99641222",
+      "wrapper_pid": 1130966,
+      "wrapper_start_ticks": "99640003",
+      "wrapper_descendant_verified": true,
+      "post_open_task_and_exe_verified": true,
+      "process_before": {
+        "pid": 1132931,
+        "ppid": 1131140,
+        "start_ticks": "99641222",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "--exact",
+          "authbus_dispatch::tests::checkpoint_sync::concurrent_checkpoint_syncs_share_owner_lock_and_preserve_rollback_rejection",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "image": {
+          "device": 2050,
+          "inode": 58259820,
+          "bytes": 504302232,
+          "mtime_ns": 1793915315746562678,
+          "ctime_ns": 1793915315791561539
+        }
+      },
+      "process_after": {
+        "pid": 1132931,
+        "ppid": 1131140,
+        "start_ticks": "99641222",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "--exact",
+          "authbus_dispatch::tests::checkpoint_sync::concurrent_checkpoint_syncs_share_owner_lock_and_preserve_rollback_rejection",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "image": {
+          "device": 2050,
+          "inode": 58259820,
+          "bytes": 504302232,
+          "mtime_ns": 1793915315746562678,
+          "ctime_ns": 1793915315791561539
+        }
+      },
+      "direct_parent_before": {
+        "pid": 1131140,
+        "ppid": 1131065,
+        "start_ticks": "99640180",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(authbus_dispatch::tests::)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-qot2qcn1/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "direct_parent_after": {
+        "pid": 1131140,
+        "ppid": 1131065,
+        "start_ticks": "99640180",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(authbus_dispatch::tests::)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-qot2qcn1/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "ancestor_chain_before": [
+        {
+          "pid": 1132931,
+          "ppid": 1131140,
+          "start_ticks": "99641222"
+        },
+        {
+          "pid": 1131140,
+          "ppid": 1131065,
+          "start_ticks": "99640180"
+        },
+        {
+          "pid": 1131065,
+          "ppid": 1131063,
+          "start_ticks": "99640151"
+        },
+        {
+          "pid": 1131063,
+          "ppid": 1131061,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1131061,
+          "ppid": 1130966,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1130966,
+          "ppid": 1122369,
+          "start_ticks": "99640003"
+        }
+      ],
+      "ancestor_chain_after": [
+        {
+          "pid": 1132931,
+          "ppid": 1131140,
+          "start_ticks": "99641222"
+        },
+        {
+          "pid": 1131140,
+          "ppid": 1131065,
+          "start_ticks": "99640180"
+        },
+        {
+          "pid": 1131065,
+          "ppid": 1131063,
+          "start_ticks": "99640151"
+        },
+        {
+          "pid": 1131063,
+          "ppid": 1131061,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1131061,
+          "ppid": 1130966,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1130966,
+          "ppid": 1122369,
+          "start_ticks": "99640003"
+        }
+      ],
+      "relationship_observed_before_unix": 1793918749.608826,
+      "relationship_observed_after_unix": 1793918749.6111403,
+      "held_child_and_parent_images_stable_through_retention": true,
+      "relationship_scope": "two live observations around actual child and direct-parent FD opens; no claim either task remains alive at copy completion",
+      "observed_selected_tests": [
+        "authbus_dispatch::tests::checkpoint_sync::concurrent_checkpoint_syncs_share_owner_lock_and_preserve_rollback_rejection"
+      ],
+      "captured_unix": 1793918749.611161
+    },
+    {
+      "source": {
+        "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+        "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "40341fe44840b6de0ca3cff68785116e5cfbca81c9a77124a82ca72b63234039"
+      },
+      "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+      "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h4-native-attempt-1/executed-binaries-dispatcher/a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b.elf",
+      "sha256": "a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b",
+      "bytes": 504302232,
+      "device": 2050,
+      "inode": 58259820,
+      "mtime_ns": 1793915315746562678,
+      "ctime_ns": 1793915315791561539,
+      "argv": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "--exact",
+        "authbus_dispatch::tests::lease_delay::trust_refresh_sqlite_wait_cannot_authorize_transport_with_an_expired_lease",
+        "--nocapture"
+      ],
+      "pid": 1133926,
+      "start_ticks": "99641746",
+      "wrapper_pid": 1130966,
+      "wrapper_start_ticks": "99640003",
+      "wrapper_descendant_verified": true,
+      "post_open_task_and_exe_verified": true,
+      "process_before": {
+        "pid": 1133926,
+        "ppid": 1131140,
+        "start_ticks": "99641746",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "--exact",
+          "authbus_dispatch::tests::lease_delay::trust_refresh_sqlite_wait_cannot_authorize_transport_with_an_expired_lease",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "image": {
+          "device": 2050,
+          "inode": 58259820,
+          "bytes": 504302232,
+          "mtime_ns": 1793915315746562678,
+          "ctime_ns": 1793915315791561539
+        }
+      },
+      "process_after": {
+        "pid": 1133926,
+        "ppid": 1131140,
+        "start_ticks": "99641746",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "--exact",
+          "authbus_dispatch::tests::lease_delay::trust_refresh_sqlite_wait_cannot_authorize_transport_with_an_expired_lease",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "image": {
+          "device": 2050,
+          "inode": 58259820,
+          "bytes": 504302232,
+          "mtime_ns": 1793915315746562678,
+          "ctime_ns": 1793915315791561539
+        }
+      },
+      "direct_parent_before": {
+        "pid": 1131140,
+        "ppid": 1131065,
+        "start_ticks": "99640180",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(authbus_dispatch::tests::)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-qot2qcn1/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "direct_parent_after": {
+        "pid": 1131140,
+        "ppid": 1131065,
+        "start_ticks": "99640180",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(authbus_dispatch::tests::)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-qot2qcn1/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "ancestor_chain_before": [
+        {
+          "pid": 1133926,
+          "ppid": 1131140,
+          "start_ticks": "99641746"
+        },
+        {
+          "pid": 1131140,
+          "ppid": 1131065,
+          "start_ticks": "99640180"
+        },
+        {
+          "pid": 1131065,
+          "ppid": 1131063,
+          "start_ticks": "99640151"
+        },
+        {
+          "pid": 1131063,
+          "ppid": 1131061,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1131061,
+          "ppid": 1130966,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1130966,
+          "ppid": 1122369,
+          "start_ticks": "99640003"
+        }
+      ],
+      "ancestor_chain_after": [
+        {
+          "pid": 1133926,
+          "ppid": 1131140,
+          "start_ticks": "99641746"
+        },
+        {
+          "pid": 1131140,
+          "ppid": 1131065,
+          "start_ticks": "99640180"
+        },
+        {
+          "pid": 1131065,
+          "ppid": 1131063,
+          "start_ticks": "99640151"
+        },
+        {
+          "pid": 1131063,
+          "ppid": 1131061,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1131061,
+          "ppid": 1130966,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1130966,
+          "ppid": 1122369,
+          "start_ticks": "99640003"
+        }
+      ],
+      "relationship_observed_before_unix": 1793918754.4642398,
+      "relationship_observed_after_unix": 1793918754.4665582,
+      "held_child_and_parent_images_stable_through_retention": true,
+      "relationship_scope": "two live observations around actual child and direct-parent FD opens; no claim either task remains alive at copy completion",
+      "observed_selected_tests": [
+        "authbus_dispatch::tests::lease_delay::trust_refresh_sqlite_wait_cannot_authorize_transport_with_an_expired_lease"
+      ],
+      "captured_unix": 1793918754.4665787
+    },
+    {
+      "source": {
+        "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+        "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "40341fe44840b6de0ca3cff68785116e5cfbca81c9a77124a82ca72b63234039"
+      },
+      "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+      "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h4-native-attempt-1/executed-binaries-dispatcher/a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b.elf",
+      "sha256": "a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b",
+      "bytes": 504302232,
+      "device": 2050,
+      "inode": 58259820,
+      "mtime_ns": 1793915315746562678,
+      "ctime_ns": 1793915315791561539,
+      "argv": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "--exact",
+        "authbus_dispatch::tests::lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt",
+        "--nocapture"
+      ],
+      "pid": 1134671,
+      "start_ticks": "99642288",
+      "wrapper_pid": 1130966,
+      "wrapper_start_ticks": "99640003",
+      "wrapper_descendant_verified": true,
+      "post_open_task_and_exe_verified": true,
+      "process_before": {
+        "pid": 1134671,
+        "ppid": 1131140,
+        "start_ticks": "99642288",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "--exact",
+          "authbus_dispatch::tests::lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "image": {
+          "device": 2050,
+          "inode": 58259820,
+          "bytes": 504302232,
+          "mtime_ns": 1793915315746562678,
+          "ctime_ns": 1793915315791561539
+        }
+      },
+      "process_after": {
+        "pid": 1134671,
+        "ppid": 1131140,
+        "start_ticks": "99642288",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "--exact",
+          "authbus_dispatch::tests::lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "image": {
+          "device": 2050,
+          "inode": 58259820,
+          "bytes": 504302232,
+          "mtime_ns": 1793915315746562678,
+          "ctime_ns": 1793915315791561539
+        }
+      },
+      "direct_parent_before": {
+        "pid": 1131140,
+        "ppid": 1131065,
+        "start_ticks": "99640180",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(authbus_dispatch::tests::)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-qot2qcn1/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "direct_parent_after": {
+        "pid": 1131140,
+        "ppid": 1131065,
+        "start_ticks": "99640180",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(authbus_dispatch::tests::)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-qot2qcn1/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "ancestor_chain_before": [
+        {
+          "pid": 1134671,
+          "ppid": 1131140,
+          "start_ticks": "99642288"
+        },
+        {
+          "pid": 1131140,
+          "ppid": 1131065,
+          "start_ticks": "99640180"
+        },
+        {
+          "pid": 1131065,
+          "ppid": 1131063,
+          "start_ticks": "99640151"
+        },
+        {
+          "pid": 1131063,
+          "ppid": 1131061,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1131061,
+          "ppid": 1130966,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1130966,
+          "ppid": 1122369,
+          "start_ticks": "99640003"
+        }
+      ],
+      "ancestor_chain_after": [
+        {
+          "pid": 1134671,
+          "ppid": 1131140,
+          "start_ticks": "99642288"
+        },
+        {
+          "pid": 1131140,
+          "ppid": 1131065,
+          "start_ticks": "99640180"
+        },
+        {
+          "pid": 1131065,
+          "ppid": 1131063,
+          "start_ticks": "99640151"
+        },
+        {
+          "pid": 1131063,
+          "ppid": 1131061,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1131061,
+          "ppid": 1130966,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1130966,
+          "ppid": 1122369,
+          "start_ticks": "99640003"
+        }
+      ],
+      "relationship_observed_before_unix": 1793918759.9144173,
+      "relationship_observed_after_unix": 1793918759.9170473,
+      "held_child_and_parent_images_stable_through_retention": true,
+      "relationship_scope": "two live observations around actual child and direct-parent FD opens; no claim either task remains alive at copy completion",
+      "observed_selected_tests": [
+        "authbus_dispatch::tests::lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt"
+      ],
+      "captured_unix": 1793918759.917071
+    },
+    {
+      "source": {
+        "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+        "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "40341fe44840b6de0ca3cff68785116e5cfbca81c9a77124a82ca72b63234039"
+      },
+      "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+      "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h4-native-attempt-1/executed-binaries-dispatcher/a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b.elf",
+      "sha256": "a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b",
+      "bytes": 504302232,
+      "device": 2050,
+      "inode": 58259820,
+      "mtime_ns": 1793915315746562678,
+      "ctime_ns": 1793915315791561539,
+      "argv": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "--exact",
+        "authbus_dispatch::tests::matching_receipt_metadata_with_different_queue_input_never_acknowledges",
+        "--nocapture"
+      ],
+      "pid": 1135351,
+      "start_ticks": "99642783",
+      "wrapper_pid": 1130966,
+      "wrapper_start_ticks": "99640003",
+      "wrapper_descendant_verified": true,
+      "post_open_task_and_exe_verified": true,
+      "process_before": {
+        "pid": 1135351,
+        "ppid": 1131140,
+        "start_ticks": "99642783",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "--exact",
+          "authbus_dispatch::tests::matching_receipt_metadata_with_different_queue_input_never_acknowledges",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "image": {
+          "device": 2050,
+          "inode": 58259820,
+          "bytes": 504302232,
+          "mtime_ns": 1793915315746562678,
+          "ctime_ns": 1793915315791561539
+        }
+      },
+      "process_after": {
+        "pid": 1135351,
+        "ppid": 1131140,
+        "start_ticks": "99642783",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "--exact",
+          "authbus_dispatch::tests::matching_receipt_metadata_with_different_queue_input_never_acknowledges",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "image": {
+          "device": 2050,
+          "inode": 58259820,
+          "bytes": 504302232,
+          "mtime_ns": 1793915315746562678,
+          "ctime_ns": 1793915315791561539
+        }
+      },
+      "direct_parent_before": {
+        "pid": 1131140,
+        "ppid": 1131065,
+        "start_ticks": "99640180",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(authbus_dispatch::tests::)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-qot2qcn1/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "direct_parent_after": {
+        "pid": 1131140,
+        "ppid": 1131065,
+        "start_ticks": "99640180",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(authbus_dispatch::tests::)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-qot2qcn1/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "ancestor_chain_before": [
+        {
+          "pid": 1135351,
+          "ppid": 1131140,
+          "start_ticks": "99642783"
+        },
+        {
+          "pid": 1131140,
+          "ppid": 1131065,
+          "start_ticks": "99640180"
+        },
+        {
+          "pid": 1131065,
+          "ppid": 1131063,
+          "start_ticks": "99640151"
+        },
+        {
+          "pid": 1131063,
+          "ppid": 1131061,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1131061,
+          "ppid": 1130966,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1130966,
+          "ppid": 1122369,
+          "start_ticks": "99640003"
+        }
+      ],
+      "ancestor_chain_after": [
+        {
+          "pid": 1135351,
+          "ppid": 1131140,
+          "start_ticks": "99642783"
+        },
+        {
+          "pid": 1131140,
+          "ppid": 1131065,
+          "start_ticks": "99640180"
+        },
+        {
+          "pid": 1131065,
+          "ppid": 1131063,
+          "start_ticks": "99640151"
+        },
+        {
+          "pid": 1131063,
+          "ppid": 1131061,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1131061,
+          "ppid": 1130966,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1130966,
+          "ppid": 1122369,
+          "start_ticks": "99640003"
+        }
+      ],
+      "relationship_observed_before_unix": 1793918764.9218142,
+      "relationship_observed_after_unix": 1793918764.9239933,
+      "held_child_and_parent_images_stable_through_retention": true,
+      "relationship_scope": "two live observations around actual child and direct-parent FD opens; no claim either task remains alive at copy completion",
+      "observed_selected_tests": [
+        "authbus_dispatch::tests::matching_receipt_metadata_with_different_queue_input_never_acknowledges"
+      ],
+      "captured_unix": 1793918764.9240139
+    },
+    {
+      "source": {
+        "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+        "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "40341fe44840b6de0ca3cff68785116e5cfbca81c9a77124a82ca72b63234039"
+      },
+      "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+      "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h4-native-attempt-1/executed-binaries-dispatcher/a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b.elf",
+      "sha256": "a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b",
+      "bytes": 504302232,
+      "device": 2050,
+      "inode": 58259820,
+      "mtime_ns": 1793915315746562678,
+      "ctime_ns": 1793915315791561539,
+      "argv": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "--exact",
+        "authbus_dispatch::tests::policy_rollback::pq_bound_policy_refuses_renewal_without_policy_snapshot",
+        "--nocapture"
+      ],
+      "pid": 1135870,
+      "start_ticks": "99643207",
+      "wrapper_pid": 1130966,
+      "wrapper_start_ticks": "99640003",
+      "wrapper_descendant_verified": true,
+      "post_open_task_and_exe_verified": true,
+      "process_before": {
+        "pid": 1135870,
+        "ppid": 1131140,
+        "start_ticks": "99643207",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "--exact",
+          "authbus_dispatch::tests::policy_rollback::pq_bound_policy_refuses_renewal_without_policy_snapshot",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "image": {
+          "device": 2050,
+          "inode": 58259820,
+          "bytes": 504302232,
+          "mtime_ns": 1793915315746562678,
+          "ctime_ns": 1793915315791561539
+        }
+      },
+      "process_after": {
+        "pid": 1135870,
+        "ppid": 1131140,
+        "start_ticks": "99643207",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "--exact",
+          "authbus_dispatch::tests::policy_rollback::pq_bound_policy_refuses_renewal_without_policy_snapshot",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "image": {
+          "device": 2050,
+          "inode": 58259820,
+          "bytes": 504302232,
+          "mtime_ns": 1793915315746562678,
+          "ctime_ns": 1793915315791561539
+        }
+      },
+      "direct_parent_before": {
+        "pid": 1131140,
+        "ppid": 1131065,
+        "start_ticks": "99640180",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(authbus_dispatch::tests::)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-qot2qcn1/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "direct_parent_after": {
+        "pid": 1131140,
+        "ppid": 1131065,
+        "start_ticks": "99640180",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(authbus_dispatch::tests::)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-qot2qcn1/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "ancestor_chain_before": [
+        {
+          "pid": 1135870,
+          "ppid": 1131140,
+          "start_ticks": "99643207"
+        },
+        {
+          "pid": 1131140,
+          "ppid": 1131065,
+          "start_ticks": "99640180"
+        },
+        {
+          "pid": 1131065,
+          "ppid": 1131063,
+          "start_ticks": "99640151"
+        },
+        {
+          "pid": 1131063,
+          "ppid": 1131061,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1131061,
+          "ppid": 1130966,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1130966,
+          "ppid": 1122369,
+          "start_ticks": "99640003"
+        }
+      ],
+      "ancestor_chain_after": [
+        {
+          "pid": 1135870,
+          "ppid": 1131140,
+          "start_ticks": "99643207"
+        },
+        {
+          "pid": 1131140,
+          "ppid": 1131065,
+          "start_ticks": "99640180"
+        },
+        {
+          "pid": 1131065,
+          "ppid": 1131063,
+          "start_ticks": "99640151"
+        },
+        {
+          "pid": 1131063,
+          "ppid": 1131061,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1131061,
+          "ppid": 1130966,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1130966,
+          "ppid": 1122369,
+          "start_ticks": "99640003"
+        }
+      ],
+      "relationship_observed_before_unix": 1793918769.0990627,
+      "relationship_observed_after_unix": 1793918769.101286,
+      "held_child_and_parent_images_stable_through_retention": true,
+      "relationship_scope": "two live observations around actual child and direct-parent FD opens; no claim either task remains alive at copy completion",
+      "observed_selected_tests": [
+        "authbus_dispatch::tests::policy_rollback::pq_bound_policy_refuses_renewal_without_policy_snapshot"
+      ],
+      "captured_unix": 1793918769.1013055
+    },
+    {
+      "source": {
+        "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+        "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "40341fe44840b6de0ca3cff68785116e5cfbca81c9a77124a82ca72b63234039"
+      },
+      "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+      "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h4-native-attempt-1/executed-binaries-dispatcher/a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b.elf",
+      "sha256": "a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b",
+      "bytes": 504302232,
+      "device": 2050,
+      "inode": 58259820,
+      "mtime_ns": 1793915315746562678,
+      "ctime_ns": 1793915315791561539,
+      "argv": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "--exact",
+        "authbus_dispatch::tests::policy_rollback::pq_owner_requires_explicit_nonzero_policy_revision_and_accepts_set_ordering",
+        "--nocapture"
+      ],
+      "pid": 1136641,
+      "start_ticks": "99643714",
+      "wrapper_pid": 1130966,
+      "wrapper_start_ticks": "99640003",
+      "wrapper_descendant_verified": true,
+      "post_open_task_and_exe_verified": true,
+      "process_before": {
+        "pid": 1136641,
+        "ppid": 1131140,
+        "start_ticks": "99643714",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "--exact",
+          "authbus_dispatch::tests::policy_rollback::pq_owner_requires_explicit_nonzero_policy_revision_and_accepts_set_ordering",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "image": {
+          "device": 2050,
+          "inode": 58259820,
+          "bytes": 504302232,
+          "mtime_ns": 1793915315746562678,
+          "ctime_ns": 1793915315791561539
+        }
+      },
+      "process_after": {
+        "pid": 1136641,
+        "ppid": 1131140,
+        "start_ticks": "99643714",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "--exact",
+          "authbus_dispatch::tests::policy_rollback::pq_owner_requires_explicit_nonzero_policy_revision_and_accepts_set_ordering",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "image": {
+          "device": 2050,
+          "inode": 58259820,
+          "bytes": 504302232,
+          "mtime_ns": 1793915315746562678,
+          "ctime_ns": 1793915315791561539
+        }
+      },
+      "direct_parent_before": {
+        "pid": 1131140,
+        "ppid": 1131065,
+        "start_ticks": "99640180",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(authbus_dispatch::tests::)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-qot2qcn1/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "direct_parent_after": {
+        "pid": 1131140,
+        "ppid": 1131065,
+        "start_ticks": "99640180",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(authbus_dispatch::tests::)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-qot2qcn1/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "ancestor_chain_before": [
+        {
+          "pid": 1136641,
+          "ppid": 1131140,
+          "start_ticks": "99643714"
+        },
+        {
+          "pid": 1131140,
+          "ppid": 1131065,
+          "start_ticks": "99640180"
+        },
+        {
+          "pid": 1131065,
+          "ppid": 1131063,
+          "start_ticks": "99640151"
+        },
+        {
+          "pid": 1131063,
+          "ppid": 1131061,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1131061,
+          "ppid": 1130966,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1130966,
+          "ppid": 1122369,
+          "start_ticks": "99640003"
+        }
+      ],
+      "ancestor_chain_after": [
+        {
+          "pid": 1136641,
+          "ppid": 1131140,
+          "start_ticks": "99643714"
+        },
+        {
+          "pid": 1131140,
+          "ppid": 1131065,
+          "start_ticks": "99640180"
+        },
+        {
+          "pid": 1131065,
+          "ppid": 1131063,
+          "start_ticks": "99640151"
+        },
+        {
+          "pid": 1131063,
+          "ppid": 1131061,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1131061,
+          "ppid": 1130966,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1130966,
+          "ppid": 1122369,
+          "start_ticks": "99640003"
+        }
+      ],
+      "relationship_observed_before_unix": 1793918774.1581345,
+      "relationship_observed_after_unix": 1793918774.160681,
+      "held_child_and_parent_images_stable_through_retention": true,
+      "relationship_scope": "two live observations around actual child and direct-parent FD opens; no claim either task remains alive at copy completion",
+      "observed_selected_tests": [
+        "authbus_dispatch::tests::policy_rollback::pq_owner_requires_explicit_nonzero_policy_revision_and_accepts_set_ordering"
+      ],
+      "captured_unix": 1793918774.1607137
+    },
+    {
+      "source": {
+        "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+        "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "40341fe44840b6de0ca3cff68785116e5cfbca81c9a77124a82ca72b63234039"
+      },
+      "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+      "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h4-native-attempt-1/executed-binaries-dispatcher/a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b.elf",
+      "sha256": "a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b",
+      "bytes": 504302232,
+      "device": 2050,
+      "inode": 58259820,
+      "mtime_ns": 1793915315746562678,
+      "ctime_ns": 1793915315791561539,
+      "argv": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "--exact",
+        "authbus_dispatch::tests::policy_rollback::pq_policy_change_fences_stale_renewal_and_current_policy_restores_dispatch",
+        "--nocapture"
+      ],
+      "pid": 1137530,
+      "start_ticks": "99644188",
+      "wrapper_pid": 1130966,
+      "wrapper_start_ticks": "99640003",
+      "wrapper_descendant_verified": true,
+      "post_open_task_and_exe_verified": true,
+      "process_before": {
+        "pid": 1137530,
+        "ppid": 1131140,
+        "start_ticks": "99644188",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "--exact",
+          "authbus_dispatch::tests::policy_rollback::pq_policy_change_fences_stale_renewal_and_current_policy_restores_dispatch",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "image": {
+          "device": 2050,
+          "inode": 58259820,
+          "bytes": 504302232,
+          "mtime_ns": 1793915315746562678,
+          "ctime_ns": 1793915315791561539
+        }
+      },
+      "process_after": {
+        "pid": 1137530,
+        "ppid": 1131140,
+        "start_ticks": "99644188",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "--exact",
+          "authbus_dispatch::tests::policy_rollback::pq_policy_change_fences_stale_renewal_and_current_policy_restores_dispatch",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "image": {
+          "device": 2050,
+          "inode": 58259820,
+          "bytes": 504302232,
+          "mtime_ns": 1793915315746562678,
+          "ctime_ns": 1793915315791561539
+        }
+      },
+      "direct_parent_before": {
+        "pid": 1131140,
+        "ppid": 1131065,
+        "start_ticks": "99640180",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(authbus_dispatch::tests::)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-qot2qcn1/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "direct_parent_after": {
+        "pid": 1131140,
+        "ppid": 1131065,
+        "start_ticks": "99640180",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(authbus_dispatch::tests::)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-qot2qcn1/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "ancestor_chain_before": [
+        {
+          "pid": 1137530,
+          "ppid": 1131140,
+          "start_ticks": "99644188"
+        },
+        {
+          "pid": 1131140,
+          "ppid": 1131065,
+          "start_ticks": "99640180"
+        },
+        {
+          "pid": 1131065,
+          "ppid": 1131063,
+          "start_ticks": "99640151"
+        },
+        {
+          "pid": 1131063,
+          "ppid": 1131061,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1131061,
+          "ppid": 1130966,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1130966,
+          "ppid": 1122369,
+          "start_ticks": "99640003"
+        }
+      ],
+      "ancestor_chain_after": [
+        {
+          "pid": 1137530,
+          "ppid": 1131140,
+          "start_ticks": "99644188"
+        },
+        {
+          "pid": 1131140,
+          "ppid": 1131065,
+          "start_ticks": "99640180"
+        },
+        {
+          "pid": 1131065,
+          "ppid": 1131063,
+          "start_ticks": "99640151"
+        },
+        {
+          "pid": 1131063,
+          "ppid": 1131061,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1131061,
+          "ppid": 1130966,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1130966,
+          "ppid": 1122369,
+          "start_ticks": "99640003"
+        }
+      ],
+      "relationship_observed_before_unix": 1793918778.922854,
+      "relationship_observed_after_unix": 1793918778.9252317,
+      "held_child_and_parent_images_stable_through_retention": true,
+      "relationship_scope": "two live observations around actual child and direct-parent FD opens; no claim either task remains alive at copy completion",
+      "observed_selected_tests": [
+        "authbus_dispatch::tests::policy_rollback::pq_policy_change_fences_stale_renewal_and_current_policy_restores_dispatch"
+      ],
+      "captured_unix": 1793918778.9252532
+    },
+    {
+      "source": {
+        "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+        "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "40341fe44840b6de0ca3cff68785116e5cfbca81c9a77124a82ca72b63234039"
+      },
+      "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+      "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h4-native-attempt-1/executed-binaries-dispatcher/a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b.elf",
+      "sha256": "a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b",
+      "bytes": 504302232,
+      "device": 2050,
+      "inode": 58259820,
+      "mtime_ns": 1793915315746562678,
+      "ctime_ns": 1793915315791561539,
+      "argv": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "--exact",
+        "authbus_dispatch::tests::policy_rollback::pq_removed_thread_cannot_return_through_owner_file_rollback_after_reopen",
+        "--nocapture"
+      ],
+      "pid": 1138129,
+      "start_ticks": "99644785",
+      "wrapper_pid": 1130966,
+      "wrapper_start_ticks": "99640003",
+      "wrapper_descendant_verified": true,
+      "post_open_task_and_exe_verified": true,
+      "process_before": {
+        "pid": 1138129,
+        "ppid": 1131140,
+        "start_ticks": "99644785",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "--exact",
+          "authbus_dispatch::tests::policy_rollback::pq_removed_thread_cannot_return_through_owner_file_rollback_after_reopen",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "image": {
+          "device": 2050,
+          "inode": 58259820,
+          "bytes": 504302232,
+          "mtime_ns": 1793915315746562678,
+          "ctime_ns": 1793915315791561539
+        }
+      },
+      "process_after": {
+        "pid": 1138129,
+        "ppid": 1131140,
+        "start_ticks": "99644785",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "--exact",
+          "authbus_dispatch::tests::policy_rollback::pq_removed_thread_cannot_return_through_owner_file_rollback_after_reopen",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "image": {
+          "device": 2050,
+          "inode": 58259820,
+          "bytes": 504302232,
+          "mtime_ns": 1793915315746562678,
+          "ctime_ns": 1793915315791561539
+        }
+      },
+      "direct_parent_before": {
+        "pid": 1131140,
+        "ppid": 1131065,
+        "start_ticks": "99640180",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(authbus_dispatch::tests::)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-qot2qcn1/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "direct_parent_after": {
+        "pid": 1131140,
+        "ppid": 1131065,
+        "start_ticks": "99640180",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(authbus_dispatch::tests::)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-qot2qcn1/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "ancestor_chain_before": [
+        {
+          "pid": 1138129,
+          "ppid": 1131140,
+          "start_ticks": "99644785"
+        },
+        {
+          "pid": 1131140,
+          "ppid": 1131065,
+          "start_ticks": "99640180"
+        },
+        {
+          "pid": 1131065,
+          "ppid": 1131063,
+          "start_ticks": "99640151"
+        },
+        {
+          "pid": 1131063,
+          "ppid": 1131061,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1131061,
+          "ppid": 1130966,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1130966,
+          "ppid": 1122369,
+          "start_ticks": "99640003"
+        }
+      ],
+      "ancestor_chain_after": [
+        {
+          "pid": 1138129,
+          "ppid": 1131140,
+          "start_ticks": "99644785"
+        },
+        {
+          "pid": 1131140,
+          "ppid": 1131065,
+          "start_ticks": "99640180"
+        },
+        {
+          "pid": 1131065,
+          "ppid": 1131063,
+          "start_ticks": "99640151"
+        },
+        {
+          "pid": 1131063,
+          "ppid": 1131061,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1131061,
+          "ppid": 1130966,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1130966,
+          "ppid": 1122369,
+          "start_ticks": "99640003"
+        }
+      ],
+      "relationship_observed_before_unix": 1793918784.8893492,
+      "relationship_observed_after_unix": 1793918784.8915281,
+      "held_child_and_parent_images_stable_through_retention": true,
+      "relationship_scope": "two live observations around actual child and direct-parent FD opens; no claim either task remains alive at copy completion",
+      "observed_selected_tests": [
+        "authbus_dispatch::tests::policy_rollback::pq_removed_thread_cannot_return_through_owner_file_rollback_after_reopen"
+      ],
+      "captured_unix": 1793918784.8915474
+    },
+    {
+      "source": {
+        "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+        "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "40341fe44840b6de0ca3cff68785116e5cfbca81c9a77124a82ca72b63234039"
+      },
+      "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+      "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h4-native-attempt-1/executed-binaries-dispatcher/a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b.elf",
+      "sha256": "a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b",
+      "bytes": 504302232,
+      "device": 2050,
+      "inode": 58259820,
+      "mtime_ns": 1793915315746562678,
+      "ctime_ns": 1793915315791561539,
+      "argv": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "--exact",
+        "authbus_dispatch::tests::pq::pq_text_owner_resumes_after_revocation_rotation_and_rejected_config_rollback",
+        "--nocapture"
+      ],
+      "pid": 1138504,
+      "start_ticks": "99645542",
+      "wrapper_pid": 1130966,
+      "wrapper_start_ticks": "99640003",
+      "wrapper_descendant_verified": true,
+      "post_open_task_and_exe_verified": true,
+      "process_before": {
+        "pid": 1138504,
+        "ppid": 1131140,
+        "start_ticks": "99645542",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "--exact",
+          "authbus_dispatch::tests::pq::pq_text_owner_resumes_after_revocation_rotation_and_rejected_config_rollback",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "image": {
+          "device": 2050,
+          "inode": 58259820,
+          "bytes": 504302232,
+          "mtime_ns": 1793915315746562678,
+          "ctime_ns": 1793915315791561539
+        }
+      },
+      "process_after": {
+        "pid": 1138504,
+        "ppid": 1131140,
+        "start_ticks": "99645542",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "--exact",
+          "authbus_dispatch::tests::pq::pq_text_owner_resumes_after_revocation_rotation_and_rejected_config_rollback",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "image": {
+          "device": 2050,
+          "inode": 58259820,
+          "bytes": 504302232,
+          "mtime_ns": 1793915315746562678,
+          "ctime_ns": 1793915315791561539
+        }
+      },
+      "direct_parent_before": {
+        "pid": 1131140,
+        "ppid": 1131065,
+        "start_ticks": "99640180",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(authbus_dispatch::tests::)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-qot2qcn1/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "direct_parent_after": {
+        "pid": 1131140,
+        "ppid": 1131065,
+        "start_ticks": "99640180",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(authbus_dispatch::tests::)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-qot2qcn1/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "ancestor_chain_before": [
+        {
+          "pid": 1138504,
+          "ppid": 1131140,
+          "start_ticks": "99645542"
+        },
+        {
+          "pid": 1131140,
+          "ppid": 1131065,
+          "start_ticks": "99640180"
+        },
+        {
+          "pid": 1131065,
+          "ppid": 1131063,
+          "start_ticks": "99640151"
+        },
+        {
+          "pid": 1131063,
+          "ppid": 1131061,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1131061,
+          "ppid": 1130966,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1130966,
+          "ppid": 1122369,
+          "start_ticks": "99640003"
+        }
+      ],
+      "ancestor_chain_after": [
+        {
+          "pid": 1138504,
+          "ppid": 1131140,
+          "start_ticks": "99645542"
+        },
+        {
+          "pid": 1131140,
+          "ppid": 1131065,
+          "start_ticks": "99640180"
+        },
+        {
+          "pid": 1131065,
+          "ppid": 1131063,
+          "start_ticks": "99640151"
+        },
+        {
+          "pid": 1131063,
+          "ppid": 1131061,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1131061,
+          "ppid": 1130966,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1130966,
+          "ppid": 1122369,
+          "start_ticks": "99640003"
+        }
+      ],
+      "relationship_observed_before_unix": 1793918792.3971512,
+      "relationship_observed_after_unix": 1793918792.3993323,
+      "held_child_and_parent_images_stable_through_retention": true,
+      "relationship_scope": "two live observations around actual child and direct-parent FD opens; no claim either task remains alive at copy completion",
+      "observed_selected_tests": [
+        "authbus_dispatch::tests::pq::pq_text_owner_resumes_after_revocation_rotation_and_rejected_config_rollback"
+      ],
+      "captured_unix": 1793918792.3993526
+    },
+    {
+      "source": {
+        "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+        "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "40341fe44840b6de0ca3cff68785116e5cfbca81c9a77124a82ca72b63234039"
+      },
+      "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+      "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h4-native-attempt-1/executed-binaries-dispatcher/a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b.elf",
+      "sha256": "a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b",
+      "bytes": 504302232,
+      "device": 2050,
+      "inode": 58259820,
+      "mtime_ns": 1793915315746562678,
+      "ctime_ns": 1793915315791561539,
+      "argv": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "--exact",
+        "authbus_dispatch::tests::pq::pq_text_producer_recovers_through_existing_dispatch_and_rejects_wire_and_config_downgrade",
+        "--nocapture"
+      ],
+      "pid": 1138766,
+      "start_ticks": "99646311",
+      "wrapper_pid": 1130966,
+      "wrapper_start_ticks": "99640003",
+      "wrapper_descendant_verified": true,
+      "post_open_task_and_exe_verified": true,
+      "process_before": {
+        "pid": 1138766,
+        "ppid": 1131140,
+        "start_ticks": "99646311",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "--exact",
+          "authbus_dispatch::tests::pq::pq_text_producer_recovers_through_existing_dispatch_and_rejects_wire_and_config_downgrade",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "image": {
+          "device": 2050,
+          "inode": 58259820,
+          "bytes": 504302232,
+          "mtime_ns": 1793915315746562678,
+          "ctime_ns": 1793915315791561539
+        }
+      },
+      "process_after": {
+        "pid": 1138766,
+        "ppid": 1131140,
+        "start_ticks": "99646311",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "--exact",
+          "authbus_dispatch::tests::pq::pq_text_producer_recovers_through_existing_dispatch_and_rejects_wire_and_config_downgrade",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "image": {
+          "device": 2050,
+          "inode": 58259820,
+          "bytes": 504302232,
+          "mtime_ns": 1793915315746562678,
+          "ctime_ns": 1793915315791561539
+        }
+      },
+      "direct_parent_before": {
+        "pid": 1131140,
+        "ppid": 1131065,
+        "start_ticks": "99640180",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(authbus_dispatch::tests::)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-qot2qcn1/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "direct_parent_after": {
+        "pid": 1131140,
+        "ppid": 1131065,
+        "start_ticks": "99640180",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(authbus_dispatch::tests::)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-qot2qcn1/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "ancestor_chain_before": [
+        {
+          "pid": 1138766,
+          "ppid": 1131140,
+          "start_ticks": "99646311"
+        },
+        {
+          "pid": 1131140,
+          "ppid": 1131065,
+          "start_ticks": "99640180"
+        },
+        {
+          "pid": 1131065,
+          "ppid": 1131063,
+          "start_ticks": "99640151"
+        },
+        {
+          "pid": 1131063,
+          "ppid": 1131061,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1131061,
+          "ppid": 1130966,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1130966,
+          "ppid": 1122369,
+          "start_ticks": "99640003"
+        }
+      ],
+      "ancestor_chain_after": [
+        {
+          "pid": 1138766,
+          "ppid": 1131140,
+          "start_ticks": "99646311"
+        },
+        {
+          "pid": 1131140,
+          "ppid": 1131065,
+          "start_ticks": "99640180"
+        },
+        {
+          "pid": 1131065,
+          "ppid": 1131063,
+          "start_ticks": "99640151"
+        },
+        {
+          "pid": 1131063,
+          "ppid": 1131061,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1131061,
+          "ppid": 1130966,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1130966,
+          "ppid": 1122369,
+          "start_ticks": "99640003"
+        }
+      ],
+      "relationship_observed_before_unix": 1793918800.186681,
+      "relationship_observed_after_unix": 1793918800.1889632,
+      "held_child_and_parent_images_stable_through_retention": true,
+      "relationship_scope": "two live observations around actual child and direct-parent FD opens; no claim either task remains alive at copy completion",
+      "observed_selected_tests": [
+        "authbus_dispatch::tests::pq::pq_text_producer_recovers_through_existing_dispatch_and_rejects_wire_and_config_downgrade"
+      ],
+      "captured_unix": 1793918800.1889832
+    },
+    {
+      "source": {
+        "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+        "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "40341fe44840b6de0ca3cff68785116e5cfbca81c9a77124a82ca72b63234039"
+      },
+      "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+      "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h4-native-attempt-1/executed-binaries-dispatcher/a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b.elf",
+      "sha256": "a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b",
+      "bytes": 504302232,
+      "device": 2050,
+      "inode": 58259820,
+      "mtime_ns": 1793915315746562678,
+      "ctime_ns": 1793915315791561539,
+      "argv": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "--exact",
+        "authbus_dispatch::tests::ready_generation_and_owner_private_trust_are_required_before_admission",
+        "--nocapture"
+      ],
+      "pid": 1138998,
+      "start_ticks": "99646977",
+      "wrapper_pid": 1130966,
+      "wrapper_start_ticks": "99640003",
+      "wrapper_descendant_verified": true,
+      "post_open_task_and_exe_verified": true,
+      "process_before": {
+        "pid": 1138998,
+        "ppid": 1131140,
+        "start_ticks": "99646977",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "--exact",
+          "authbus_dispatch::tests::ready_generation_and_owner_private_trust_are_required_before_admission",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "image": {
+          "device": 2050,
+          "inode": 58259820,
+          "bytes": 504302232,
+          "mtime_ns": 1793915315746562678,
+          "ctime_ns": 1793915315791561539
+        }
+      },
+      "process_after": {
+        "pid": 1138998,
+        "ppid": 1131140,
+        "start_ticks": "99646977",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "--exact",
+          "authbus_dispatch::tests::ready_generation_and_owner_private_trust_are_required_before_admission",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "image": {
+          "device": 2050,
+          "inode": 58259820,
+          "bytes": 504302232,
+          "mtime_ns": 1793915315746562678,
+          "ctime_ns": 1793915315791561539
+        }
+      },
+      "direct_parent_before": {
+        "pid": 1131140,
+        "ppid": 1131065,
+        "start_ticks": "99640180",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(authbus_dispatch::tests::)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-qot2qcn1/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "direct_parent_after": {
+        "pid": 1131140,
+        "ppid": 1131065,
+        "start_ticks": "99640180",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(authbus_dispatch::tests::)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-qot2qcn1/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "ancestor_chain_before": [
+        {
+          "pid": 1138998,
+          "ppid": 1131140,
+          "start_ticks": "99646977"
+        },
+        {
+          "pid": 1131140,
+          "ppid": 1131065,
+          "start_ticks": "99640180"
+        },
+        {
+          "pid": 1131065,
+          "ppid": 1131063,
+          "start_ticks": "99640151"
+        },
+        {
+          "pid": 1131063,
+          "ppid": 1131061,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1131061,
+          "ppid": 1130966,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1130966,
+          "ppid": 1122369,
+          "start_ticks": "99640003"
+        }
+      ],
+      "ancestor_chain_after": [
+        {
+          "pid": 1138998,
+          "ppid": 1131140,
+          "start_ticks": "99646977"
+        },
+        {
+          "pid": 1131140,
+          "ppid": 1131065,
+          "start_ticks": "99640180"
+        },
+        {
+          "pid": 1131065,
+          "ppid": 1131063,
+          "start_ticks": "99640151"
+        },
+        {
+          "pid": 1131063,
+          "ppid": 1131061,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1131061,
+          "ppid": 1130966,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1130966,
+          "ppid": 1122369,
+          "start_ticks": "99640003"
+        }
+      ],
+      "relationship_observed_before_unix": 1793918806.717358,
+      "relationship_observed_after_unix": 1793918806.7198205,
+      "held_child_and_parent_images_stable_through_retention": true,
+      "relationship_scope": "two live observations around actual child and direct-parent FD opens; no claim either task remains alive at copy completion",
+      "observed_selected_tests": [
+        "authbus_dispatch::tests::ready_generation_and_owner_private_trust_are_required_before_admission"
+      ],
+      "captured_unix": 1793918806.7198412
+    },
+    {
+      "source": {
+        "commit": "6db78eca53a5acdda0d96873d3f4cd65863426f0",
+        "tree": "e91f5994017fc5d2cfe58d405a20ee6ad9376772",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "40341fe44840b6de0ca3cff68785116e5cfbca81c9a77124a82ca72b63234039"
+      },
+      "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+      "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h4-native-attempt-1/executed-binaries-dispatcher/a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b.elf",
+      "sha256": "a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b",
+      "bytes": 504302232,
+      "device": 2050,
+      "inode": 58259820,
+      "mtime_ns": 1793915315746562678,
+      "ctime_ns": 1793915315791561539,
+      "argv": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "--exact",
+        "authbus_dispatch::tests::revocation_during_queue_request_prevents_success_ack",
+        "--nocapture"
+      ],
+      "pid": 1139183,
+      "start_ticks": "99647455",
+      "wrapper_pid": 1130966,
+      "wrapper_start_ticks": "99640003",
+      "wrapper_descendant_verified": true,
+      "post_open_task_and_exe_verified": true,
+      "process_before": {
+        "pid": 1139183,
+        "ppid": 1131140,
+        "start_ticks": "99647455",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "--exact",
+          "authbus_dispatch::tests::revocation_during_queue_request_prevents_success_ack",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "image": {
+          "device": 2050,
+          "inode": 58259820,
+          "bytes": 504302232,
+          "mtime_ns": 1793915315746562678,
+          "ctime_ns": 1793915315791561539
+        }
+      },
+      "process_after": {
+        "pid": 1139183,
+        "ppid": 1131140,
+        "start_ticks": "99647455",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+          "--exact",
+          "authbus_dispatch::tests::revocation_during_queue_request_prevents_success_ack",
+          "--nocapture"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/codex_hepta_agentd-13943d509610e217",
+        "image": {
+          "device": 2050,
+          "inode": 58259820,
+          "bytes": 504302232,
+          "mtime_ns": 1793915315746562678,
+          "ctime_ns": 1793915315791561539
+        }
+      },
+      "direct_parent_before": {
+        "pid": 1131140,
+        "ppid": 1131065,
+        "start_ticks": "99640180",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(authbus_dispatch::tests::)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-qot2qcn1/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "direct_parent_after": {
+        "pid": 1131140,
+        "ppid": 1131065,
+        "start_ticks": "99640180",
+        "argv": [
+          "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+          "nextest",
+          "run",
+          "--no-fail-fast",
+          "--locked",
+          "-p",
+          "codex-hepta-agentd",
+          "--lib",
+          "-E",
+          "test(authbus_dispatch::tests::)",
+          "--no-capture",
+          "--retries",
+          "0",
+          "--test-threads=1",
+          "--cargo-metadata",
+          "/tmp/hepta-nextest-qot2qcn1/metadata.json"
+        ],
+        "actual_executable": "/home/qian-qi/work/hepta-pq-frontier-20261105-93bfcf/tools/bin/cargo-nextest",
+        "image": {
+          "device": 2050,
+          "inode": 9757466,
+          "bytes": 24038232,
+          "mtime_ns": 1793884575954138904,
+          "ctime_ns": 1793884575965048083
+        }
+      },
+      "ancestor_chain_before": [
+        {
+          "pid": 1139183,
+          "ppid": 1131140,
+          "start_ticks": "99647455"
+        },
+        {
+          "pid": 1131140,
+          "ppid": 1131065,
+          "start_ticks": "99640180"
+        },
+        {
+          "pid": 1131065,
+          "ppid": 1131063,
+          "start_ticks": "99640151"
+        },
+        {
+          "pid": 1131063,
+          "ppid": 1131061,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1131061,
+          "ppid": 1130966,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1130966,
+          "ppid": 1122369,
+          "start_ticks": "99640003"
+        }
+      ],
+      "ancestor_chain_after": [
+        {
+          "pid": 1139183,
+          "ppid": 1131140,
+          "start_ticks": "99647455"
+        },
+        {
+          "pid": 1131140,
+          "ppid": 1131065,
+          "start_ticks": "99640180"
+        },
+        {
+          "pid": 1131065,
+          "ppid": 1131063,
+          "start_ticks": "99640151"
+        },
+        {
+          "pid": 1131063,
+          "ppid": 1131061,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1131061,
+          "ppid": 1130966,
+          "start_ticks": "99640145"
+        },
+        {
+          "pid": 1130966,
+          "ppid": 1122369,
+          "start_ticks": "99640003"
+        }
+      ],
+      "relationship_observed_before_unix": 1793918811.6381335,
+      "relationship_observed_after_unix": 1793918811.6405149,
+      "held_child_and_parent_images_stable_through_retention": true,
+      "relationship_scope": "two live observations around actual child and direct-parent FD opens; no claim either task remains alive at copy completion",
+      "observed_selected_tests": [
+        "authbus_dispatch::tests::revocation_during_queue_request_prevents_success_ack"
+      ],
+      "captured_unix": 1793918811.6405334
+    }
+  ],
+  "errors": [],
+  "unique_actual_elf_sha256": [
+    "a8bb307bec662845bf2a22cfb756ceb4b3ad0595f5b0e290c8983326a4fb344b"
+  ],
+  "observed_selected_tests": [
+    "authbus_dispatch::tests::abandoned_first_claim_without_admission_is_quarantined_after_lookup_missing",
+    "authbus_dispatch::tests::checkpoint_sync::cancelled_checkpoint_sync_waiter_and_owner_release_exclusive_admission",
+    "authbus_dispatch::tests::checkpoint_sync::concurrent_checkpoint_syncs_share_owner_lock_and_preserve_rollback_rejection",
+    "authbus_dispatch::tests::lease_delay::trust_refresh_sqlite_wait_cannot_authorize_transport_with_an_expired_lease",
+    "authbus_dispatch::tests::lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt",
+    "authbus_dispatch::tests::matching_receipt_metadata_with_different_queue_input_never_acknowledges",
+    "authbus_dispatch::tests::policy_rollback::pq_bound_policy_refuses_renewal_without_policy_snapshot",
+    "authbus_dispatch::tests::policy_rollback::pq_owner_requires_explicit_nonzero_policy_revision_and_accepts_set_ordering",
+    "authbus_dispatch::tests::policy_rollback::pq_policy_change_fences_stale_renewal_and_current_policy_restores_dispatch",
+    "authbus_dispatch::tests::policy_rollback::pq_removed_thread_cannot_return_through_owner_file_rollback_after_reopen",
+    "authbus_dispatch::tests::pq::pq_text_owner_resumes_after_revocation_rotation_and_rejected_config_rollback",
+    "authbus_dispatch::tests::pq::pq_text_producer_recovers_through_existing_dispatch_and_rejects_wire_and_config_downgrade",
+    "authbus_dispatch::tests::ready_generation_and_owner_private_trust_are_required_before_admission",
+    "authbus_dispatch::tests::revocation_during_queue_request_prevents_success_ack"
+  ],
+  "capture_scope": "actual executing test-image binding; polling may miss individual short-lived cases"
+}

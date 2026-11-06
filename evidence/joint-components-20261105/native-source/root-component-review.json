@@ -1,0 +1,53 @@
+{
+  "schema": "root-native-component-review-v1",
+  "recovery_patch_sha256": "dbcfb2ffae4924b1f239b802d751352abaee4e8ea2670b7a913e218a403af50a",
+  "actual_test_only_red_commit": "13c8a987927f4d6bf3db1e57dc6e7bb692800b74",
+  "actual_green_commit": "a877333eff1577179fce8b1ceb6edf4322440e03",
+  "new_regressions": {
+    "red_intended_failures": 5,
+    "green_passes": 5
+  },
+  "original_owner_passes": 17,
+  "full_library": {
+    "passed": 159,
+    "timed_out": 1,
+    "original_skipped": 1,
+    "failing_test": "qualification_tests::claim_query_rejects_more_than_512_references",
+    "nextest_timeout_seconds": 60.006,
+    "wrapper_600_second_timeout": false
+  },
+  "unmodified_1556_baseline_same_test": {
+    "passed": 0,
+    "timed_out": 1,
+    "nextest_timeout_seconds": 60.006,
+    "wrapper_timeout": false
+  },
+  "clippy_and_final_fmt": "NOT RUN after full-library refusal",
+  "green_test_executable_sha256": "NOT CAPTURED during these historical tests; do not borrow a later rebuilt binary identity",
+  "verified_receipts_and_raw_logs": [
+    "native-source/attempt-3/original-seventeen-owner-controls.json",
+    "native-source/attempt-3/red-five-controls.json",
+    "native-source/attempt-3/full-evidence-library.json",
+    "native-source/attempt-3/green-five-controls.json",
+    "native-source/baseline-control/original-qualification-bound.json"
+  ],
+  "raw_logs_pending": [],
+  "full_gate_pass": false,
+  "all_eight_gate_status": "HOLD",
+  "claims_excluded": [
+    "Full joint candidate qualification",
+    "Physical process crash / host restore",
+    "Independent external frontier custody",
+    "All effect sinks use current PQ root"
+  ],
+  "all_packaged_execution_log_references_hash_verified": [
+    "attempt-3/original-seventeen-owner-controls.json",
+    "attempt-3/red-five-controls.json",
+    "attempt-3/full-evidence-library.json",
+    "attempt-3/dependencies.json",
+    "attempt-3/green-five-controls.json",
+    "baseline-control/original-qualification-bound.json",
+    "attempt-2/red-five-controls.json",
+    "attempt-2/dependencies.json"
+  ]
+}

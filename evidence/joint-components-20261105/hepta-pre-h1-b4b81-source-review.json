@@ -1,0 +1,399 @@
+{
+  "schema": "hepta-preparatory-combined-source-independent-review-v1",
+  "reviewer": "pq_recovery",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "1556a4df6e279055fd8196f81a4ca2fe0f19384a",
+  "preparatory_commit": "b4b81cc59847cfe2683f170949d464778f413147",
+  "preparatory_tree": "a64d3f3d34f5e52546ec762b6ad7fbdfa69e96b2",
+  "status": "PASS: all 30 changed paths match byte-identified local components and expected Git modes",
+  "scope": "Git commit/tree/compare API plus raw local component bytes; no Cargo, host mutation, native run or build attribution",
+  "final_h1": false,
+  "native_qualification": false,
+  "joint_qualification": false,
+  "changed_paths": 30,
+  "all_changed_paths_accounted_for": true,
+  "unexpected_paths": [],
+  "missing_paths": [],
+  "comparison_ahead_by": 7,
+  "complete_remote_tree_entries": 13358,
+  "remote_tree_truncated": false,
+  "component_counts": {
+    "ordinary-effect-6550": 18,
+    "recovery-a877": 3,
+    "qualification-4dce": 2,
+    "v12-c2-source": 6,
+    "ci-69-exact-controls": 1
+  },
+  "evidence_inputs": [
+    {
+      "path": "/workspace/scratch/93bfcfe29fc8/pq_recovery/ci-review/pre-h1-b4b81-git-commit.json",
+      "sha256": "3a9abbd778b78d56a89de6977f4cc601c1325e93eada81fa0c50ed58962b6e73"
+    },
+    {
+      "path": "/workspace/scratch/93bfcfe29fc8/pq_recovery/ci-review/pre-h1-b4b81-compare.json",
+      "sha256": "b0b913c9522f4683f3c3f7e4aa3ecadae64b932b5597a0c2807f819fe922ac25"
+    },
+    {
+      "path": "/workspace/scratch/93bfcfe29fc8/pq_recovery/ci-review/pre-h1-b4b81-tree-subset.json",
+      "sha256": "64dfc36b85bf09b386ee6af1014808d2a0f951568e8d583c871fa064b2cc433c"
+    },
+    {
+      "path": "/workspace/scratch/93bfcfe29fc8/model_storage/pq_effect_migration/native/reviewed-6550/manifest.json",
+      "sha256": "636484871d292aa75c48b1acc47a9c87672bac92f8e234a5360fd88c7f199605"
+    },
+    {
+      "path": "/workspace/scratch/93bfcfe29fc8/pq_recovery/native/attempt-3/exports/provisional-native-source.json",
+      "sha256": "9f90f00c188c21f67e39345b2e620406bcd4ac1b1d0632772a2a3d16d3e7e750"
+    },
+    {
+      "path": "/workspace/scratch/93bfcfe29fc8/pq_recovery/qualification_perf/manifest.json",
+      "sha256": "a89066cf734aadbf74a70fe7c562e285f5bc73adf77b82f7e5349cd306d9d20d"
+    },
+    {
+      "path": "/workspace/scratch/93bfcfe29fc8/hepta-v12-c2/changed-paths.json",
+      "sha256": "df3117458fb822dbd10a2ab23ffffc06b701dd9549c90e05a3dbc8773233f0f1"
+    },
+    {
+      "path": "/workspace/scratch/93bfcfe29fc8/hepta-ci-integration/workflow-wiring-audit.json",
+      "sha256": "4354f9eec57b865aa5d9f3f14047d2a8a19beba745d9799210d5c9dd9d15641c"
+    }
+  ],
+  "files": [
+    {
+      "path": ".github/workflows/hepta-pon-native-pair.yml",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/hepta-v12-c2/candidate/.github/workflows/hepta-pon-native-pair.yml",
+      "component": "v12-c2-source",
+      "component_commit": null,
+      "mode": "100644",
+      "bytes": 101609,
+      "sha256": "fc97825dc816a02d2c1cadb99085d42df74cc9342ccaab6b31962078ef985842",
+      "git_blob_sha1": "786057aaebebfa94920ed79f60137c977a794ec9",
+      "matches_preparatory_git_tree": true
+    },
+    {
+      "path": ".github/workflows/hepta-pq-policy-renewal.yml",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/hepta-ci-integration/.github/workflows/hepta-pq-policy-renewal.yml",
+      "component": "ci-69-exact-controls",
+      "component_commit": null,
+      "mode": "100644",
+      "bytes": 25757,
+      "sha256": "4f331d94dc8927d537873f976ce8c459a5e09673ef8431d3b310419ecf21f2ad",
+      "git_blob_sha1": "4295f31ac8e901f427695f320d2c1da07890d0ce",
+      "matches_preparatory_git_tree": true
+    },
+    {
+      "path": "codex-rs/.config/nextest.toml",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/model_storage/pq_effect_migration/native/reviewed-6550/candidate/codex-rs/.config/nextest.toml",
+      "component": "ordinary-effect-6550",
+      "component_commit": "6550b582a92cae97dd74ef9098176f2f2e6d6231",
+      "mode": "100644",
+      "bytes": 7416,
+      "sha256": "65f8b298b60f5f4d480cdd45d4de62a37c5b52d13a2cc7b77eecba3062eaa803",
+      "git_blob_sha1": "7f5c385ca46b0227a50eefaf6906bc785c8af927",
+      "matches_preparatory_git_tree": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/PQ_AUTOMATION_EFFECTS.md",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/model_storage/pq_effect_migration/native/reviewed-6550/candidate/codex-rs/hepta-agentd/PQ_AUTOMATION_EFFECTS.md",
+      "component": "ordinary-effect-6550",
+      "component_commit": "6550b582a92cae97dd74ef9098176f2f2e6d6231",
+      "mode": "100644",
+      "bytes": 9524,
+      "sha256": "e56935584d9f42b646cd518623504dbd1c0183445d492a943f8f783625f6165c",
+      "git_blob_sha1": "0337eb56c79fc3947c9171fe283ac0e711be7358",
+      "matches_preparatory_git_tree": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/model_storage/pq_effect_migration/native/reviewed-6550/candidate/codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "component": "ordinary-effect-6550",
+      "component_commit": "6550b582a92cae97dd74ef9098176f2f2e6d6231",
+      "mode": "100644",
+      "bytes": 105269,
+      "sha256": "ccc465e0ac890e1428cc6a0b5b831d2d3d7c39152f320a1b8751419359af6396",
+      "git_blob_sha1": "a82f1c6e16a825abb1b2c3b8af77943db3d7f7cd",
+      "matches_preparatory_git_tree": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host_identity_tests.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/model_storage/pq_effect_migration/native/reviewed-6550/candidate/codex-rs/hepta-agentd/src/automation_effect_host_identity_tests.rs",
+      "component": "ordinary-effect-6550",
+      "component_commit": "6550b582a92cae97dd74ef9098176f2f2e6d6231",
+      "mode": "100644",
+      "bytes": 11654,
+      "sha256": "e4c9f9f842b02a3b66c2c38601db65d9550f191ecc0fe58c3b0bf0d6f798ea2b",
+      "git_blob_sha1": "d22cb9c28bf384b58f8aaa94b7cb887c06ea489e",
+      "matches_preparatory_git_tree": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host_pq.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/model_storage/pq_effect_migration/native/reviewed-6550/candidate/codex-rs/hepta-agentd/src/automation_effect_host_pq.rs",
+      "component": "ordinary-effect-6550",
+      "component_commit": "6550b582a92cae97dd74ef9098176f2f2e6d6231",
+      "mode": "100644",
+      "bytes": 14246,
+      "sha256": "67fcd2ab20e6477b0ba4639f5ef9d446e535c644bc386c6d23baf3c674c86b94",
+      "git_blob_sha1": "492306acea65ab5dfdfb6ec0595d081525308918",
+      "matches_preparatory_git_tree": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host_pq_lost_ack.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/model_storage/pq_effect_migration/native/reviewed-6550/candidate/codex-rs/hepta-agentd/src/automation_effect_host_pq_lost_ack.rs",
+      "component": "ordinary-effect-6550",
+      "component_commit": "6550b582a92cae97dd74ef9098176f2f2e6d6231",
+      "mode": "100644",
+      "bytes": 8187,
+      "sha256": "7842e8b98bc6f38b7f36e917ee707e7f23cff593ae7c24f73f1e5cbdb693820d",
+      "git_blob_sha1": "188b64a454fc372fc2cefc8b4741d033e57d10ac",
+      "matches_preparatory_git_tree": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host_pq_policy.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/model_storage/pq_effect_migration/native/reviewed-6550/candidate/codex-rs/hepta-agentd/src/automation_effect_host_pq_policy.rs",
+      "component": "ordinary-effect-6550",
+      "component_commit": "6550b582a92cae97dd74ef9098176f2f2e6d6231",
+      "mode": "100644",
+      "bytes": 9209,
+      "sha256": "3ca690f3c202510fccf543fa31c1c3fe2c818b5bf6d8995af9b301bd15a5bdf8",
+      "git_blob_sha1": "69014db6d4caf53d43871125bec579d2a56c641a",
+      "matches_preparatory_git_tree": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host_pq_test_support.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/model_storage/pq_effect_migration/native/reviewed-6550/candidate/codex-rs/hepta-agentd/src/automation_effect_host_pq_test_support.rs",
+      "component": "ordinary-effect-6550",
+      "component_commit": "6550b582a92cae97dd74ef9098176f2f2e6d6231",
+      "mode": "100644",
+      "bytes": 17397,
+      "sha256": "bcc20cf4ebda4dd5d4b43cc96d3b50a256d71dcf54e7712293608c2bdf7a000d",
+      "git_blob_sha1": "8015cc6348c84fbb6857856c88e1b9f449053d18",
+      "matches_preparatory_git_tree": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host_pq_tests.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/model_storage/pq_effect_migration/native/reviewed-6550/candidate/codex-rs/hepta-agentd/src/automation_effect_host_pq_tests.rs",
+      "component": "ordinary-effect-6550",
+      "component_commit": "6550b582a92cae97dd74ef9098176f2f2e6d6231",
+      "mode": "100644",
+      "bytes": 30337,
+      "sha256": "7645fc19a734b2ffbbc5ecdb7001069e29f41e9aef3249fc0a5f383ed0e99a78",
+      "git_blob_sha1": "a90611a21faa06a589b7c9cf7901d10616c488bf",
+      "matches_preparatory_git_tree": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_control.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/model_storage/pq_effect_migration/native/reviewed-6550/candidate/codex-rs/hepta-agentd/src/state_control.rs",
+      "component": "ordinary-effect-6550",
+      "component_commit": "6550b582a92cae97dd74ef9098176f2f2e6d6231",
+      "mode": "100644",
+      "bytes": 60031,
+      "sha256": "742cd0a763063be3085d9efe27c30bbd0d4b4ddc0d56149a21afe48d39f3b856",
+      "git_blob_sha1": "ac41ea41580b92f60e4d8064a44270035af6c9a6",
+      "matches_preparatory_git_tree": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/automation_effect_pq_product.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/model_storage/pq_effect_migration/native/reviewed-6550/candidate/codex-rs/hepta-agentd/tests/automation_effect_pq_product.rs",
+      "component": "ordinary-effect-6550",
+      "component_commit": "6550b582a92cae97dd74ef9098176f2f2e6d6231",
+      "mode": "100644",
+      "bytes": 17206,
+      "sha256": "36d2f87ec7e59b8fd273c351eb16ffed3d0fdd67b42e6729dc2aab31a8f87999",
+      "git_blob_sha1": "7e356863ee1be81894bccdea74dfbfceab4e1f62",
+      "matches_preparatory_git_tree": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/automation_effect_binary.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/model_storage/pq_effect_migration/native/reviewed-6550/candidate/codex-rs/hepta-agentd/tests/support/automation_effect_binary.rs",
+      "component": "ordinary-effect-6550",
+      "component_commit": "6550b582a92cae97dd74ef9098176f2f2e6d6231",
+      "mode": "100644",
+      "bytes": 6540,
+      "sha256": "bc9c66c5135f11ed70c5ad4d635b98d224ed792c881948176c4030345d6efb39",
+      "git_blob_sha1": "189e1ce33f1c40b55d4d08fc0917b0a5cf32460a",
+      "matches_preparatory_git_tree": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/automation_effect_operator.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/model_storage/pq_effect_migration/native/reviewed-6550/candidate/codex-rs/hepta-agentd/tests/support/automation_effect_operator.rs",
+      "component": "ordinary-effect-6550",
+      "component_commit": "6550b582a92cae97dd74ef9098176f2f2e6d6231",
+      "mode": "100644",
+      "bytes": 21307,
+      "sha256": "2237bf3bf9f250d4b25fcb352c1e68ad5ce2967cb6299b9ba0a60288b7927e70",
+      "git_blob_sha1": "4099c9b0187c5acd11aa2089297aca71424c1a10",
+      "matches_preparatory_git_tree": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/automation_effect_provider.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/model_storage/pq_effect_migration/native/reviewed-6550/candidate/codex-rs/hepta-agentd/tests/support/automation_effect_provider.rs",
+      "component": "ordinary-effect-6550",
+      "component_commit": "6550b582a92cae97dd74ef9098176f2f2e6d6231",
+      "mode": "100644",
+      "bytes": 8840,
+      "sha256": "2cd0c3e84a6b829b5179beb79602cf17518091db887c691cec58efaf6173e310",
+      "git_blob_sha1": "90fe25d3ba063fc0ab6c75f49a5213b30229bc60",
+      "matches_preparatory_git_tree": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/fleet.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/model_storage/pq_effect_migration/native/reviewed-6550/candidate/codex-rs/hepta-agentd/tests/support/fleet.rs",
+      "component": "ordinary-effect-6550",
+      "component_commit": "6550b582a92cae97dd74ef9098176f2f2e6d6231",
+      "mode": "100644",
+      "bytes": 17743,
+      "sha256": "8b886fcd9e7a48eebb9f6727eb720180db054ae904e511fe2cde34f078d6a2a6",
+      "git_blob_sha1": "7458e57c2942df9009014bc5b4e5eb7e6e8280b3",
+      "matches_preparatory_git_tree": true
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_control_pq.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/model_storage/pq_effect_migration/native/reviewed-6550/candidate/codex-rs/hepta-contracts/src/final_use_control_pq.rs",
+      "component": "ordinary-effect-6550",
+      "component_commit": "6550b582a92cae97dd74ef9098176f2f2e6d6231",
+      "mode": "100644",
+      "bytes": 4943,
+      "sha256": "d8b3a1fffaeaebb986f4e4f4331a3f08dfd4dcf1dacd87498ff0fe58f6208fa1",
+      "git_blob_sha1": "8bcc8c91efa91ed4de9f5463960cbb148393e649",
+      "matches_preparatory_git_tree": true
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/provider_effect_store.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/pq_recovery/native/a877-source/codex-rs/hepta-evidence/src/provider_effect_store.rs",
+      "component": "recovery-a877",
+      "component_commit": "a877333eff1577179fce8b1ceb6edf4322440e03",
+      "mode": "100644",
+      "bytes": 62025,
+      "sha256": "0d769da9be33f7ee5bdb81b6a5013dbdcc36e9444ad50ce3a11979aadfbb1239",
+      "git_blob_sha1": "187659d1e2aeac2807f9211c5935fd729ada0fa8",
+      "matches_preparatory_git_tree": true
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/qualification.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/pq_recovery/qualification_perf/hepta/codex-rs/hepta-evidence/src/qualification.rs",
+      "component": "qualification-4dce",
+      "component_commit": "4dce06a9945fc54482f546c9dfb7cbb7a4716ccc",
+      "mode": "100644",
+      "bytes": 53064,
+      "sha256": "5d74be55f5bb02077e655ff9d833ae82531cdeda00583e870454da1c9186efff",
+      "git_blob_sha1": "c81b788674be4576bdf156f74402f658315560a8",
+      "matches_preparatory_git_tree": true
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/qualification_tests.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/pq_recovery/qualification_perf/hepta/codex-rs/hepta-evidence/src/qualification_tests.rs",
+      "component": "qualification-4dce",
+      "component_commit": "4dce06a9945fc54482f546c9dfb7cbb7a4716ccc",
+      "mode": "100644",
+      "bytes": 48038,
+      "sha256": "f6c5bcde1d1ad19312a973a97339129feb988de10bb7db5a8731eb2fc10c8de7",
+      "git_blob_sha1": "30676fcfbbda6f8283e62b82b26aeb479da9307f",
+      "matches_preparatory_git_tree": true
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/recovery_effect_frontier.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/pq_recovery/native/a877-source/codex-rs/hepta-evidence/src/recovery_effect_frontier.rs",
+      "component": "recovery-a877",
+      "component_commit": "a877333eff1577179fce8b1ceb6edf4322440e03",
+      "mode": "100644",
+      "bytes": 6962,
+      "sha256": "9032b9e4f489be70bc431f3fb8e2da413e3ce3bb4b27a76f3bd57c9d0d223c37",
+      "git_blob_sha1": "137f9bdc6c3951853782e1058353163d8a9a315f",
+      "matches_preparatory_git_tree": true
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/pq_recovery/native/a877-source/codex-rs/hepta-evidence/src/recovery_effect_frontier_tests.rs",
+      "component": "recovery-a877",
+      "component_commit": "a877333eff1577179fce8b1ceb6edf4322440e03",
+      "mode": "100644",
+      "bytes": 23469,
+      "sha256": "c1cbd465859f39c43ec5f17a7ff12d043049d572e222eeb263ddd67f46dfec66",
+      "git_blob_sha1": "5e53c274e1bb081604915380494ef0461e302f78",
+      "matches_preparatory_git_tree": true
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/profiles/smollm2-public-initial-v2.execution-sources-v12.json",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/hepta-v12-c2/candidate/codex-rs/hepta-learning-artifacts/profiles/smollm2-public-initial-v2.execution-sources-v12.json",
+      "component": "v12-c2-source",
+      "component_commit": null,
+      "mode": "100644",
+      "bytes": 8769,
+      "sha256": "2410c65955383aaffa977840770c8209b8f62db0805ccc7585091d37cd5f99e7",
+      "git_blob_sha1": "2510a5e72d6869bb3c73c255aabd37d2622c166b",
+      "matches_preparatory_git_tree": true
+    },
+    {
+      "path": "codex-rs/model-provider/src/provider_effect.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/model_storage/pq_effect_migration/native/reviewed-6550/candidate/codex-rs/model-provider/src/provider_effect.rs",
+      "component": "ordinary-effect-6550",
+      "component_commit": "6550b582a92cae97dd74ef9098176f2f2e6d6231",
+      "mode": "100644",
+      "bytes": 42063,
+      "sha256": "7751b33d035996c22fc22baeae3e0dd2450266ef2c83e14c5abe116268547356",
+      "git_blob_sha1": "c15db590ce65a39f9e40a6d04b81344fd8b3fa50",
+      "matches_preparatory_git_tree": true
+    },
+    {
+      "path": "codex-rs/model-provider/src/provider_effect_pq_tests.rs",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/model_storage/pq_effect_migration/native/reviewed-6550/candidate/codex-rs/model-provider/src/provider_effect_pq_tests.rs",
+      "component": "ordinary-effect-6550",
+      "component_commit": "6550b582a92cae97dd74ef9098176f2f2e6d6231",
+      "mode": "100644",
+      "bytes": 4104,
+      "sha256": "3117df369ce2339023a57d132fa78a87a3f2cad4480f3250547ed95aac39b548",
+      "git_blob_sha1": "021a1d1d57327fae905fa2699e09c3f0c4ce0fa2",
+      "matches_preparatory_git_tree": true
+    },
+    {
+      "path": "scripts/hepta_smollm_execution_source_v1.py",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/hepta-v12-c2/candidate/scripts/hepta_smollm_execution_source_v1.py",
+      "component": "v12-c2-source",
+      "component_commit": null,
+      "mode": "100644",
+      "bytes": 18960,
+      "sha256": "40758dc548bd2276989ffa7dce457996c221ea2b4ceeed72fddf1031eb6db348",
+      "git_blob_sha1": "7e53f0162aa05b5fd401a7a0302ef7ff207fd88d",
+      "matches_preparatory_git_tree": true
+    },
+    {
+      "path": "scripts/hepta_smollm_runtime_handoff_v12.py",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/hepta-v12-c2/candidate/scripts/hepta_smollm_runtime_handoff_v12.py",
+      "component": "v12-c2-source",
+      "component_commit": null,
+      "mode": "100644",
+      "bytes": 3486,
+      "sha256": "12a1a476dcb82e2340c808fc35642eb9d3fc79297330dd61fed2f11488adaa7d",
+      "git_blob_sha1": "4778359fa12e9160aa8b32f2d1b89137a8e54493",
+      "matches_preparatory_git_tree": true
+    },
+    {
+      "path": "scripts/test_hepta_smollm_execution_source_v1.py",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/hepta-v12-c2/candidate/scripts/test_hepta_smollm_execution_source_v1.py",
+      "component": "v12-c2-source",
+      "component_commit": null,
+      "mode": "100644",
+      "bytes": 21492,
+      "sha256": "7c2decbc4622dd8b879de949f04b90a831e2abe546da16207de61e229a4da583",
+      "git_blob_sha1": "8cfcbbaaae650e0a57c13da1ca308ff1fda0f97c",
+      "matches_preparatory_git_tree": true
+    },
+    {
+      "path": "scripts/test_hepta_smollm_execution_source_v12.py",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/hepta-v12-c2/candidate/scripts/test_hepta_smollm_execution_source_v12.py",
+      "component": "v12-c2-source",
+      "component_commit": null,
+      "mode": "100644",
+      "bytes": 17298,
+      "sha256": "4ffd9445049a440407fd2e23dc90c29fe34ee279b51dc896356b0a6d0ea87ffb",
+      "git_blob_sha1": "8b8b421d44f07aff8f105ef5605671bc50a8f6f2",
+      "matches_preparatory_git_tree": true
+    }
+  ],
+  "remaining": [
+    "Apply any final formatter changes and freeze the resulting H1 identity",
+    "Materialize and verify the entire H1 raw source tree, lock and configuration on the execution host",
+    "Run the original native gates and collect the actual executed test and ordinary process binaries",
+    "Do not transfer component run qualification or b4b81 source review to a different final commit implicitly"
+  ]
+}

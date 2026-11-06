@@ -1,0 +1,79 @@
+{
+  "copied_inputs": "All small originals copied; the three large local replay artifacts are hash-indexed at their original paths without unnecessary duplicate storage.",
+  "large_originals": [
+    {
+      "bytes": 5592408,
+      "large_local_replay_bytes": true,
+      "path": "scoped-controls/data/archives/H2/parts/control-original-part.b64",
+      "sha256": "476f7a207fa424bae5b4062a831df47b328e6c5716da464014d2a9a5f2104df8"
+    },
+    {
+      "bytes": 4194304,
+      "large_local_replay_bytes": true,
+      "path": "scoped-controls/receipts/actual_saved_4mib_part/actual-part.bin",
+      "sha256": "53082f715a215a5de2231330c0f2cdd5d3d47178d129414915d06355da8291d3"
+    },
+    {
+      "bytes": 5592515,
+      "large_local_replay_bytes": true,
+      "path": "scoped-controls/receipts/actual_saved_4mib_part/rpc-original.raw.json",
+      "sha256": "83dd9c92111ee27f957dcb0c4c85b2a0dc3a0c52ea04903289586c79ffb45dfe"
+    }
+  ],
+  "mechanisms": [
+    "Before parsing the response or metadata, capture and fsync the actual declared RPC bytes; preserve complete error responses or partial truncated input.",
+    "Metadata pins exact repository/blob request, payload SHA/Git blob/length and original-part identity; caller separately proves commit/tree membership.",
+    "Publish payload only at canonical data_root+exact transport_path; receipts outside data tree and no overwrite.",
+    "Canonical base64 strict decode/re-encode; plain JSON original UTF8 is preserved with exact reversible string-token codec.",
+    "Reopen original RPC, payload, prefix/suffix and part before final successful receipt; failure never yields completion credit."
+  ],
+  "old_downloader_state_modified": false,
+  "optional_tests_added": false,
+  "original_bytes_verified": 15461326,
+  "original_control_results_rechecked": [
+    {
+      "name": "actual_saved_4mib_part",
+      "new_execution": false,
+      "original_exit_code": 0,
+      "original_saved_bytes_rechecked": true,
+      "raw_bytes": 5592515,
+      "raw_sha256": "83dd9c92111ee27f957dcb0c4c85b2a0dc3a0c52ea04903289586c79ffb45dfe"
+    },
+    {
+      "name": "plain_json_payload_and_escape",
+      "new_execution": false,
+      "original_exit_code": 0,
+      "original_saved_bytes_rechecked": true,
+      "raw_bytes": 226,
+      "raw_sha256": "bcdeb5bfddfb57542c84cf20c42ff34846f705f8644a5d67c2dbe7090543565c"
+    },
+    {
+      "name": "wrong_payload_hash_preserves_raw",
+      "new_execution": false,
+      "original_exit_code": 1,
+      "original_saved_bytes_rechecked": true,
+      "raw_bytes": 226,
+      "raw_sha256": "bcdeb5bfddfb57542c84cf20c42ff34846f705f8644a5d67c2dbe7090543565c"
+    },
+    {
+      "name": "existing_payload_rejected_and_raw_preserved",
+      "new_execution": false,
+      "original_exit_code": 1,
+      "original_saved_bytes_rechecked": true,
+      "raw_bytes": 226,
+      "raw_sha256": "bcdeb5bfddfb57542c84cf20c42ff34846f705f8644a5d67c2dbe7090543565c"
+    }
+  ],
+  "original_files_verified": 37,
+  "owner_delivery_sha256": "c23df860347573a70feecf59f5276601608abdad4eb68c90333ada38c8422421",
+  "receiver_sha256": "a2addbedb8bb0d6b16581f88ae3891de99882d8780680a40b857061c412a09c9",
+  "remote_calls": 0,
+  "schema": "independent-github-blob-receiver-review-v1",
+  "scope_boundaries": [
+    "The four controls are existing local PTY controls; first replays a previously returned actual large RPC, others are explicit fixtures with zero commit/tree labels.",
+    "This review did not invoke receiver or make any network/desktop/native call, and does not validate a future Git publication.",
+    "No cross-file atomicity or protection against hostile concurrent filesystem writers is claimed. A failed later write may leave payload files without a success receipt.",
+    "Caller must wait READY before sending, transmit exact UTF8 bytes, reconcile unknown process status and retain any pre-READY rejected tool response."
+  ],
+  "status": "NO_IDENTIFIED_BLOCKER_IN_BOUNDED_LOCAL_RECEIVER"
+}

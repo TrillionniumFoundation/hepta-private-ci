@@ -1,0 +1,87 @@
+{
+  "status": "PASS",
+  "checked_members": [
+    {
+      "path": "README.txt",
+      "bytes": 809,
+      "sha256": "24cdf47e34e6a15cf6b9883f1bd4e4dca06bf386dee665b92e41ae8c6f7bfe94"
+    },
+    {
+      "path": "inputs/C4-native-receipts.readback.tar.xz",
+      "bytes": 1044516,
+      "sha256": "31d16e6527b22aea21bf71048d0aa80e22f8568da392b0235c7e4d1d75827fb4"
+    },
+    {
+      "path": "inputs/largest-published-utf8.readback.json",
+      "bytes": 2812928,
+      "sha256": "2296e1bf0d047ab36e979f6a299c588a0feefd3bc5cfd6f35de2ff326f71584c"
+    },
+    {
+      "path": "proof/probe-plan.json",
+      "bytes": 1021,
+      "sha256": "4181b39b8232ce2849a14820589a7e08400bb1aa9ea8f26a48695ccdd05e7d80"
+    },
+    {
+      "path": "proof/verification.json",
+      "bytes": 3544,
+      "sha256": "f27d721e712515729784b0cf9fe7f6aebf88f7a2f220c22d9cc6bb4c86b9c245"
+    },
+    {
+      "path": "rpc-prefix-suffix/binary-under-1mib-fetch-file-base64.prefix.bin",
+      "bytes": 130,
+      "sha256": "d948d76c299ddfae2235e35af2e27429609f49d0b748cc7032392a0f9078e7a4"
+    },
+    {
+      "path": "rpc-prefix-suffix/binary-under-1mib-fetch-file-base64.suffix.bin",
+      "bytes": 375,
+      "sha256": "2eb081a82a8b6520a1d6593a9aaad0a42aa594b36129c1e911dec144d72e8c1e"
+    },
+    {
+      "path": "rpc-prefix-suffix/largest-published-utf8-fetch-blob.prefix.bin",
+      "bytes": 130,
+      "sha256": "d948d76c299ddfae2235e35af2e27429609f49d0b748cc7032392a0f9078e7a4"
+    },
+    {
+      "path": "rpc-prefix-suffix/largest-published-utf8-fetch-blob.suffix.bin",
+      "bytes": 27,
+      "sha256": "3f82bf4d1d8688f76c8cbebbcf327fd15a0095906a850cd9cd0749395ed0248a"
+    },
+    {
+      "path": "rpc-reconstruction.json",
+      "bytes": 1693,
+      "sha256": "51cd2cba8109f09a9b8e4d03be55e2ad109c66930db22317a65fc2874c6a49fe"
+    },
+    {
+      "path": "scripts/build_probe_delivery.py",
+      "bytes": 10210,
+      "sha256": "fcb6c394c25b0ad85ef1c41297308b1b9959ac6fd8ceb65696ca1e076fab7407"
+    },
+    {
+      "path": "scripts/verify_transport_package.py",
+      "bytes": 3445,
+      "sha256": "b84f5f7fef9cb321ea06b05371464af21da543d6d4448c17d7043a476b17ccc0"
+    }
+  ],
+  "reconstructed_rpcs": [
+    {
+      "case": "binary-under-1mib-fetch-file-base64",
+      "input_bytes": 1044516,
+      "input_sha256": "31d16e6527b22aea21bf71048d0aa80e22f8568da392b0235c7e4d1d75827fb4",
+      "rpc_bytes": 1439619,
+      "rpc_sha256": "e74620cccc0d585b6680288a057445a0fe77f487c98705a511a08f6e29b8cc1d",
+      "reconstructed_file": "/workspace/scratch/93bfcfe29fc8/model_storage/git-transport-probe-571c/delivery/reconstructed-rpcs/binary-under-1mib-fetch-file-base64.raw.json"
+    },
+    {
+      "case": "largest-published-utf8-fetch-blob",
+      "input_bytes": 2812928,
+      "input_sha256": "2296e1bf0d047ab36e979f6a299c588a0feefd3bc5cfd6f35de2ff326f71584c",
+      "rpc_bytes": 3044566,
+      "rpc_sha256": "f03d724655035fdfad43977c36842d99e074de9705197506a025253961c5db0d",
+      "reconstructed_file": "/workspace/scratch/93bfcfe29fc8/model_storage/git-transport-probe-571c/delivery/reconstructed-rpcs/largest-published-utf8-fetch-blob.raw.json"
+    }
+  ],
+  "tested_binary_bytes": 1044516,
+  "tested_utf8_bytes": 2812928,
+  "untested_5_6_mib_text": true,
+  "scope": "Exact two historical read-only responses, not an interface maximum or any new upload/read permission."
+}

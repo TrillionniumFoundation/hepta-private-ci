@@ -1,0 +1,815 @@
+{
+  "scope": "exact reviewed H2 patch, five final source files, original formatting receipt and independent review packages; no native pass claimed",
+  "files": [
+    {
+      "path": "implementation/README.md",
+      "bytes": 7146,
+      "sha256": "a5fa3e008cb3ac4a57e9f4038870a3a1177f481d81d365e83895252ff888b6b7"
+    },
+    {
+      "path": "implementation/base-manifest.json",
+      "bytes": 1470,
+      "sha256": "74f8b03ea5096516bfa8963f34fdd2fbd20f807c3fd0042f7d676659cd84fb56"
+    },
+    {
+      "path": "implementation/workflow-source-provenance.json",
+      "bytes": 432,
+      "sha256": "ad3c048b72a5465b5c4329eb6fcc9be37ab03b148c77af5e20df7acc39ef400c"
+    },
+    {
+      "path": "implementation/settled-absence-v1.patch",
+      "bytes": 23843,
+      "sha256": "9f6ddd923a928fad60ab1fc559851c63ee0a98a6088845476dc1af0c0197cae8"
+    },
+    {
+      "path": "implementation/settled-absence-v2.patch",
+      "bytes": 23927,
+      "sha256": "906788c15547a5a21f0f90bcfc95f45d4aa25d163a83a51d29981c3919adba7e"
+    },
+    {
+      "path": "implementation/settled-absence-v3.patch",
+      "bytes": 26569,
+      "sha256": "9507e363818b094f4453d5d91496b14a28438a15603b65625d5736c93635cb30"
+    },
+    {
+      "path": "implementation/patch-manifest-v1.json",
+      "bytes": 2842,
+      "sha256": "4579a74597908ef78884b56cc40e053930987ff2d132a44fe0e3a1ae9f7ecae2"
+    },
+    {
+      "path": "implementation/patch-manifest-v2.json",
+      "bytes": 3203,
+      "sha256": "36a901c3a2e1e3f9bc73fad53841d8b2aefd917a5ecf1dda1f98988e72ed1bce"
+    },
+    {
+      "path": "implementation/patch-manifest-v3.json",
+      "bytes": 4256,
+      "sha256": "c0f9c5a85ca777952febb792bf822725a6095c1d9c0401487689bef92db61570"
+    },
+    {
+      "path": "implementation/base/.github/workflows/hepta-pq-policy-renewal.yml",
+      "bytes": 25757,
+      "sha256": "4f331d94dc8927d537873f976ce8c459a5e09673ef8431d3b310419ecf21f2ad"
+    },
+    {
+      "path": "implementation/base/codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "bytes": 105269,
+      "sha256": "ccc465e0ac890e1428cc6a0b5b831d2d3d7c39152f320a1b8751419359af6396"
+    },
+    {
+      "path": "implementation/base/codex-rs/hepta-automation/src/taskflow_step.rs",
+      "bytes": 62857,
+      "sha256": "d8ffb92a87eff096cb70c14fc2c1a131e7c8b569512a2ffb13ea42dd0c3f2319"
+    },
+    {
+      "path": "implementation/base/codex-rs/hepta-automation/src/authorized_effect.rs",
+      "bytes": 70103,
+      "sha256": "45c81a918f4a52f9935e7b7fcfed4e8bd761657eba786c36f7498693bebe99dd"
+    },
+    {
+      "path": "implementation/base/codex-rs/hepta-automation/tests/support/authorized_owner_recovery_tests.rs",
+      "bytes": 4133,
+      "sha256": "a973e2f5df677bfeab21360d565cb6c2598fc210ab8324b5f70aea7b0775eba3"
+    },
+    {
+      "path": "implementation/candidate/.github/workflows/hepta-pq-policy-renewal.yml",
+      "bytes": 26989,
+      "sha256": "f1e3b05fbdf39ff22d9837ca92595cf84e48a038e8a1c60e1bbee6bb4f39d584"
+    },
+    {
+      "path": "implementation/candidate/codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "bytes": 105648,
+      "sha256": "f11950fe8a5f8a4e33425a7aec68ac0e4a872b60f341e11de306815ef280b2df"
+    },
+    {
+      "path": "implementation/candidate/codex-rs/hepta-automation/src/taskflow_step.rs",
+      "bytes": 67918,
+      "sha256": "4839aa3abbdafffdf2b542efa990972050964a7d837cd04620f99b9a366014be"
+    },
+    {
+      "path": "implementation/candidate/codex-rs/hepta-automation/src/authorized_effect.rs",
+      "bytes": 72399,
+      "sha256": "c9d2247573cc205b66366d40cfc4d15872d65db0122c66e324e9371b9dcd20d4"
+    },
+    {
+      "path": "implementation/candidate/codex-rs/hepta-automation/tests/support/authorized_owner_recovery_tests.rs",
+      "bytes": 16911,
+      "sha256": "ab1920270a169e4b82bdef1fe4c02626731d4bce19398877cf0e809878566fa5"
+    },
+    {
+      "path": "implementation/formatted-candidate/.github/workflows/hepta-pq-policy-renewal.yml",
+      "bytes": 26989,
+      "sha256": "f1e3b05fbdf39ff22d9837ca92595cf84e48a038e8a1c60e1bbee6bb4f39d584"
+    },
+    {
+      "path": "implementation/formatted-candidate/codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "bytes": 105648,
+      "sha256": "f11950fe8a5f8a4e33425a7aec68ac0e4a872b60f341e11de306815ef280b2df"
+    },
+    {
+      "path": "implementation/formatted-candidate/codex-rs/hepta-automation/src/taskflow_step.rs",
+      "bytes": 67980,
+      "sha256": "9e98f49f5884f19b2c0d5b74f23b77ad27eeb6b83cbd823e606d28c7e65bf7e3"
+    },
+    {
+      "path": "implementation/formatted-candidate/codex-rs/hepta-automation/src/authorized_effect.rs",
+      "bytes": 72399,
+      "sha256": "c9d2247573cc205b66366d40cfc4d15872d65db0122c66e324e9371b9dcd20d4"
+    },
+    {
+      "path": "implementation/formatted-candidate/codex-rs/hepta-automation/tests/support/authorized_owner_recovery_tests.rs",
+      "bytes": 17652,
+      "sha256": "b31906425ebb1ee9e9dd843f86a1da8e5dd0857be2b0e2df7bfddbd22f40ca3f"
+    },
+    {
+      "path": "implementation/format-attempt-1/result.json",
+      "bytes": 4197,
+      "sha256": "77c76533131d854b153bf8920063dc85e835186257cc5ad2ef6fd9d9eb61dc60"
+    },
+    {
+      "path": "implementation/format-attempt-1/launch.raw.json",
+      "bytes": 1718,
+      "sha256": "3f1c718d680e8ef9cbc8353ca71b8f100101fbab2d1cf7bc1358f0769e93075e"
+    },
+    {
+      "path": "implementation/format-attempt-1/terminal.raw.json",
+      "bytes": 954,
+      "sha256": "f635da5d410509f7a8dacbf883e190d30c614aa04d9693cdeb6de933f8530c3b"
+    },
+    {
+      "path": "implementation/format-attempt-1/joint-before-format.json",
+      "bytes": 841,
+      "sha256": "35de04e1dabf53710b11bf8e494a786765a2dc682ab2f88ec71f69f81d6bbf1e"
+    },
+    {
+      "path": "implementation/format-attempt-1/export-validation-attempt-1.json",
+      "bytes": 288,
+      "sha256": "04a8b551903944fe82631d4f82bf9e826b1c015cc9c49451a1d5f63ff7a7d10f"
+    },
+    {
+      "path": "implementation/format-attempt-1/format.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "implementation/format-attempt-1/joint-after-format.json",
+      "bytes": 841,
+      "sha256": "94a992167858913edced0b80529613a37d50b72b0d1c7db101002ae19d0586cf"
+    },
+    {
+      "path": "implementation/format-attempt-1/format-delta-export.json",
+      "bytes": 21914,
+      "sha256": "f742a9db355d4e41ecd4b4ae1278c10a2b3855ef4b291554b838167f5aa8b128"
+    },
+    {
+      "path": "implementation/format-attempt-1/readback-provenance.json",
+      "bytes": 2129,
+      "sha256": "b6163ab87dde459018ea5ff26c454e46438bdde8a5f4f3ad02abcd7a9b1caa2e"
+    },
+    {
+      "path": "implementation/format-attempt-1/terminal-read.raw.json",
+      "bytes": 23579,
+      "sha256": "b9dae86fc77955cc6a32f5f1d51facb0975ae815533f47112f213688e687f60d"
+    },
+    {
+      "path": "implementation/format-attempt-1/launch-request.json",
+      "bytes": 11886,
+      "sha256": "c2b697290fe13d080e8445babbadf56ee45ecfd205fbe56ef5f5848b5956ad87"
+    },
+    {
+      "path": "implementation/format-attempt-1/formatted-source-manifest.json",
+      "bytes": 2982,
+      "sha256": "f9c9f68678e906875942d05e32312aef4c3aac4ef49937c8f748c8a19e228f85"
+    },
+    {
+      "path": "implementation/format-attempt-1/format.patch",
+      "bytes": 9032,
+      "sha256": "bf2e5b48e493f3874b1ff6ec31a5ae29943e848067ee1d048421ca7ee7b03244"
+    },
+    {
+      "path": "implementation/ci-static-controls/selected-tests-guard.py",
+      "bytes": 8595,
+      "sha256": "db0d00120c1c1efda2bf2f2830ae4011e419cc03438b605e3f5b21ca51df8d7f"
+    },
+    {
+      "path": "implementation/ci-static-controls/proof.json",
+      "bytes": 1674,
+      "sha256": "8ae62f2200c59f286993442eb396e62d94852c50710e58ad71a6019e2a204eac"
+    },
+    {
+      "path": "implementation/ci-static-controls/selected_new_skip/recovery-product.json",
+      "bytes": 241,
+      "sha256": "f86d9eab6026e33e9dc5de47238fe073909457a243d8e777d75e499e48863601"
+    },
+    {
+      "path": "implementation/ci-static-controls/selected_new_skip/product.fixture.log",
+      "bytes": 308,
+      "sha256": "618dde749c670d5e4c4bb70e776184b81e4f4f93adb3f38c080b2bf628cbb04f"
+    },
+    {
+      "path": "implementation/ci-static-controls/selected_new_skip/qualification-growth.json",
+      "bytes": 245,
+      "sha256": "e65948e35af8a0bd3180096b91122b61d73862a6611abbded6e1923d036fb600"
+    },
+    {
+      "path": "implementation/ci-static-controls/selected_new_skip/effect-settled-absence.json",
+      "bytes": 247,
+      "sha256": "39843da5766c0a183f859786250b5444ea175348c1a8f43db707d7b87eea172a"
+    },
+    {
+      "path": "implementation/ci-static-controls/selected_new_skip/effect-pq-product.json",
+      "bytes": 242,
+      "sha256": "1458be18429ec1cf9f6defca7879c3b62083dc38ed262b996e38f6a9d9ac32d8"
+    },
+    {
+      "path": "implementation/ci-static-controls/selected_new_skip/recovery-owner.json",
+      "bytes": 240,
+      "sha256": "7a53909156eed9d31389c11eae643208f2ccb1ef7a10f54e9b5cd294757f169b"
+    },
+    {
+      "path": "implementation/ci-static-controls/selected_new_skip/recovery-product.fixture.log",
+      "bytes": 385,
+      "sha256": "1db667e7167aa07856a646b850d9f6012d063877b3440f09add7d901f966ae30"
+    },
+    {
+      "path": "implementation/ci-static-controls/selected_new_skip/qualification-growth.fixture.log",
+      "bytes": 259,
+      "sha256": "0d843e2a6537b84902f0522fb245650705c19a62e380b20d4e23dd42818f1dbd"
+    },
+    {
+      "path": "implementation/ci-static-controls/selected_new_skip/effect-pq-owner.json",
+      "bytes": 241,
+      "sha256": "06c73db3552ac1da44e0a664afb42957882cf678a8c11b2e55e0f3dd320488a1"
+    },
+    {
+      "path": "implementation/ci-static-controls/selected_new_skip/effect-pq-owner.fixture.log",
+      "bytes": 1416,
+      "sha256": "a16aa45648757bd431ea6ca7f80bcc70a77915dbf3519d9dfe99f281ee22fac3"
+    },
+    {
+      "path": "implementation/ci-static-controls/selected_new_skip/recovery-signed.fixture.log",
+      "bytes": 1172,
+      "sha256": "a6f3209d955de3ae344ddfa16d920c4594aa428a37d7573547f6a5cabca2027d"
+    },
+    {
+      "path": "implementation/ci-static-controls/selected_new_skip/effect-pq-contract.fixture.log",
+      "bytes": 176,
+      "sha256": "254a0354f1a66defaa997dfa0436dce356f965eaedb49ba484bf4d2f375cd539"
+    },
+    {
+      "path": "implementation/ci-static-controls/selected_new_skip/selected-tests.json",
+      "bytes": 18307,
+      "sha256": "852fd1e30a9bf16bff7a081da8496b072225794436d202f1c1313fd3e86b36b1"
+    },
+    {
+      "path": "implementation/ci-static-controls/selected_new_skip/recovery-signed.json",
+      "bytes": 241,
+      "sha256": "dfbaf168095f2b167b6a5a57d6607ce806aae752177274137f4f803ecdcfc8a0"
+    },
+    {
+      "path": "implementation/ci-static-controls/selected_new_skip/product.json",
+      "bytes": 232,
+      "sha256": "4c9d2c0d9fa27ef28e6af3cc42e2fc6aaab56e4f7642157d947ee47cfd5e8df3"
+    },
+    {
+      "path": "implementation/ci-static-controls/selected_new_skip/dispatcher.json",
+      "bytes": 236,
+      "sha256": "021794110e84073255d8602605f6fb96dad88e57a2df61b523cfae5248ad867d"
+    },
+    {
+      "path": "implementation/ci-static-controls/selected_new_skip/effect-pq-contract.json",
+      "bytes": 243,
+      "sha256": "2ec98c2d57af34fea3ff85de9bdef1c6396f5af882ac470e88b0ca3950b66a5a"
+    },
+    {
+      "path": "implementation/ci-static-controls/selected_new_skip/recovery-owner.fixture.log",
+      "bytes": 2572,
+      "sha256": "13d423fa9b4a351e64f70ee7d4a3981ee55d6c7ed32ca7cb57e72ceca5cd9d16"
+    },
+    {
+      "path": "implementation/ci-static-controls/selected_new_skip/dispatcher.fixture.log",
+      "bytes": 1728,
+      "sha256": "cfd53656d45cf61ff3c4a3a813f1c42e5e793500ad396684eb527552632a7087"
+    },
+    {
+      "path": "implementation/ci-static-controls/selected_new_skip/effect-pq-product.fixture.log",
+      "bytes": 156,
+      "sha256": "be41eae761dc7c78ef1ffe860783e66e0c47efc0581a1f16caed23568716a4ad"
+    },
+    {
+      "path": "implementation/ci-static-controls/selected_new_skip/effect-settled-absence.fixture.log",
+      "bytes": 292,
+      "sha256": "0548af2b140cf8c97f668e1b6d643924bddccfbe103ae61ba37c8352b84c6c23"
+    },
+    {
+      "path": "implementation/ci-static-controls/duplicate_new_case/recovery-product.json",
+      "bytes": 241,
+      "sha256": "f86d9eab6026e33e9dc5de47238fe073909457a243d8e777d75e499e48863601"
+    },
+    {
+      "path": "implementation/ci-static-controls/duplicate_new_case/product.fixture.log",
+      "bytes": 308,
+      "sha256": "618dde749c670d5e4c4bb70e776184b81e4f4f93adb3f38c080b2bf628cbb04f"
+    },
+    {
+      "path": "implementation/ci-static-controls/duplicate_new_case/qualification-growth.json",
+      "bytes": 245,
+      "sha256": "e65948e35af8a0bd3180096b91122b61d73862a6611abbded6e1923d036fb600"
+    },
+    {
+      "path": "implementation/ci-static-controls/duplicate_new_case/effect-settled-absence.json",
+      "bytes": 247,
+      "sha256": "2209f60fd252b6f54986e0b8c0f3921bc910bd94226b96df9fae0e1f4a1b47b4"
+    },
+    {
+      "path": "implementation/ci-static-controls/duplicate_new_case/effect-pq-product.json",
+      "bytes": 242,
+      "sha256": "1458be18429ec1cf9f6defca7879c3b62083dc38ed262b996e38f6a9d9ac32d8"
+    },
+    {
+      "path": "implementation/ci-static-controls/duplicate_new_case/recovery-owner.json",
+      "bytes": 240,
+      "sha256": "7a53909156eed9d31389c11eae643208f2ccb1ef7a10f54e9b5cd294757f169b"
+    },
+    {
+      "path": "implementation/ci-static-controls/duplicate_new_case/recovery-product.fixture.log",
+      "bytes": 385,
+      "sha256": "1db667e7167aa07856a646b850d9f6012d063877b3440f09add7d901f966ae30"
+    },
+    {
+      "path": "implementation/ci-static-controls/duplicate_new_case/qualification-growth.fixture.log",
+      "bytes": 259,
+      "sha256": "0d843e2a6537b84902f0522fb245650705c19a62e380b20d4e23dd42818f1dbd"
+    },
+    {
+      "path": "implementation/ci-static-controls/duplicate_new_case/effect-pq-owner.json",
+      "bytes": 241,
+      "sha256": "06c73db3552ac1da44e0a664afb42957882cf678a8c11b2e55e0f3dd320488a1"
+    },
+    {
+      "path": "implementation/ci-static-controls/duplicate_new_case/effect-pq-owner.fixture.log",
+      "bytes": 1416,
+      "sha256": "a16aa45648757bd431ea6ca7f80bcc70a77915dbf3519d9dfe99f281ee22fac3"
+    },
+    {
+      "path": "implementation/ci-static-controls/duplicate_new_case/recovery-signed.fixture.log",
+      "bytes": 1172,
+      "sha256": "a6f3209d955de3ae344ddfa16d920c4594aa428a37d7573547f6a5cabca2027d"
+    },
+    {
+      "path": "implementation/ci-static-controls/duplicate_new_case/effect-pq-contract.fixture.log",
+      "bytes": 176,
+      "sha256": "254a0354f1a66defaa997dfa0436dce356f965eaedb49ba484bf4d2f375cd539"
+    },
+    {
+      "path": "implementation/ci-static-controls/duplicate_new_case/selected-tests.json",
+      "bytes": 18300,
+      "sha256": "8aa9e57de89644537f33a1214bd70644b12747501928f35756e2e5f640f9199c"
+    },
+    {
+      "path": "implementation/ci-static-controls/duplicate_new_case/recovery-signed.json",
+      "bytes": 241,
+      "sha256": "dfbaf168095f2b167b6a5a57d6607ce806aae752177274137f4f803ecdcfc8a0"
+    },
+    {
+      "path": "implementation/ci-static-controls/duplicate_new_case/product.json",
+      "bytes": 232,
+      "sha256": "4c9d2c0d9fa27ef28e6af3cc42e2fc6aaab56e4f7642157d947ee47cfd5e8df3"
+    },
+    {
+      "path": "implementation/ci-static-controls/duplicate_new_case/dispatcher.json",
+      "bytes": 236,
+      "sha256": "021794110e84073255d8602605f6fb96dad88e57a2df61b523cfae5248ad867d"
+    },
+    {
+      "path": "implementation/ci-static-controls/duplicate_new_case/effect-pq-contract.json",
+      "bytes": 243,
+      "sha256": "2ec98c2d57af34fea3ff85de9bdef1c6396f5af882ac470e88b0ca3950b66a5a"
+    },
+    {
+      "path": "implementation/ci-static-controls/duplicate_new_case/recovery-owner.fixture.log",
+      "bytes": 2572,
+      "sha256": "13d423fa9b4a351e64f70ee7d4a3981ee55d6c7ed32ca7cb57e72ceca5cd9d16"
+    },
+    {
+      "path": "implementation/ci-static-controls/duplicate_new_case/dispatcher.fixture.log",
+      "bytes": 1728,
+      "sha256": "cfd53656d45cf61ff3c4a3a813f1c42e5e793500ad396684eb527552632a7087"
+    },
+    {
+      "path": "implementation/ci-static-controls/duplicate_new_case/effect-pq-product.fixture.log",
+      "bytes": 156,
+      "sha256": "be41eae761dc7c78ef1ffe860783e66e0c47efc0581a1f16caed23568716a4ad"
+    },
+    {
+      "path": "implementation/ci-static-controls/duplicate_new_case/effect-settled-absence.fixture.log",
+      "bytes": 285,
+      "sha256": "277d05debe4b95d15541521ec6c6c9b15a9d5b0ec4b29947360ae256f36cba24"
+    },
+    {
+      "path": "implementation/ci-static-controls/complete_inventory/recovery-product.json",
+      "bytes": 241,
+      "sha256": "f86d9eab6026e33e9dc5de47238fe073909457a243d8e777d75e499e48863601"
+    },
+    {
+      "path": "implementation/ci-static-controls/complete_inventory/product.fixture.log",
+      "bytes": 308,
+      "sha256": "618dde749c670d5e4c4bb70e776184b81e4f4f93adb3f38c080b2bf628cbb04f"
+    },
+    {
+      "path": "implementation/ci-static-controls/complete_inventory/qualification-growth.json",
+      "bytes": 245,
+      "sha256": "e65948e35af8a0bd3180096b91122b61d73862a6611abbded6e1923d036fb600"
+    },
+    {
+      "path": "implementation/ci-static-controls/complete_inventory/effect-settled-absence.json",
+      "bytes": 247,
+      "sha256": "1a96d005b9c0ac10d085d27bacf8cd706b18e09f89c51783fd01ffbb51f2d5df"
+    },
+    {
+      "path": "implementation/ci-static-controls/complete_inventory/effect-pq-product.json",
+      "bytes": 242,
+      "sha256": "1458be18429ec1cf9f6defca7879c3b62083dc38ed262b996e38f6a9d9ac32d8"
+    },
+    {
+      "path": "implementation/ci-static-controls/complete_inventory/recovery-owner.json",
+      "bytes": 240,
+      "sha256": "7a53909156eed9d31389c11eae643208f2ccb1ef7a10f54e9b5cd294757f169b"
+    },
+    {
+      "path": "implementation/ci-static-controls/complete_inventory/recovery-product.fixture.log",
+      "bytes": 385,
+      "sha256": "1db667e7167aa07856a646b850d9f6012d063877b3440f09add7d901f966ae30"
+    },
+    {
+      "path": "implementation/ci-static-controls/complete_inventory/qualification-growth.fixture.log",
+      "bytes": 259,
+      "sha256": "0d843e2a6537b84902f0522fb245650705c19a62e380b20d4e23dd42818f1dbd"
+    },
+    {
+      "path": "implementation/ci-static-controls/complete_inventory/effect-pq-owner.json",
+      "bytes": 241,
+      "sha256": "06c73db3552ac1da44e0a664afb42957882cf678a8c11b2e55e0f3dd320488a1"
+    },
+    {
+      "path": "implementation/ci-static-controls/complete_inventory/effect-pq-owner.fixture.log",
+      "bytes": 1416,
+      "sha256": "a16aa45648757bd431ea6ca7f80bcc70a77915dbf3519d9dfe99f281ee22fac3"
+    },
+    {
+      "path": "implementation/ci-static-controls/complete_inventory/recovery-signed.fixture.log",
+      "bytes": 1172,
+      "sha256": "a6f3209d955de3ae344ddfa16d920c4594aa428a37d7573547f6a5cabca2027d"
+    },
+    {
+      "path": "implementation/ci-static-controls/complete_inventory/effect-pq-contract.fixture.log",
+      "bytes": 176,
+      "sha256": "254a0354f1a66defaa997dfa0436dce356f965eaedb49ba484bf4d2f375cd539"
+    },
+    {
+      "path": "implementation/ci-static-controls/complete_inventory/selected-tests.json",
+      "bytes": 18301,
+      "sha256": "5347c6d9c71c5377552aa8fc722f23d75f1e209cd1db467eb8080a65c1036fa8"
+    },
+    {
+      "path": "implementation/ci-static-controls/complete_inventory/recovery-signed.json",
+      "bytes": 241,
+      "sha256": "dfbaf168095f2b167b6a5a57d6607ce806aae752177274137f4f803ecdcfc8a0"
+    },
+    {
+      "path": "implementation/ci-static-controls/complete_inventory/product.json",
+      "bytes": 232,
+      "sha256": "4c9d2c0d9fa27ef28e6af3cc42e2fc6aaab56e4f7642157d947ee47cfd5e8df3"
+    },
+    {
+      "path": "implementation/ci-static-controls/complete_inventory/dispatcher.json",
+      "bytes": 236,
+      "sha256": "021794110e84073255d8602605f6fb96dad88e57a2df61b523cfae5248ad867d"
+    },
+    {
+      "path": "implementation/ci-static-controls/complete_inventory/effect-pq-contract.json",
+      "bytes": 243,
+      "sha256": "2ec98c2d57af34fea3ff85de9bdef1c6396f5af882ac470e88b0ca3950b66a5a"
+    },
+    {
+      "path": "implementation/ci-static-controls/complete_inventory/recovery-owner.fixture.log",
+      "bytes": 2572,
+      "sha256": "13d423fa9b4a351e64f70ee7d4a3981ee55d6c7ed32ca7cb57e72ceca5cd9d16"
+    },
+    {
+      "path": "implementation/ci-static-controls/complete_inventory/dispatcher.fixture.log",
+      "bytes": 1728,
+      "sha256": "cfd53656d45cf61ff3c4a3a813f1c42e5e793500ad396684eb527552632a7087"
+    },
+    {
+      "path": "implementation/ci-static-controls/complete_inventory/effect-pq-product.fixture.log",
+      "bytes": 156,
+      "sha256": "be41eae761dc7c78ef1ffe860783e66e0c47efc0581a1f16caed23568716a4ad"
+    },
+    {
+      "path": "implementation/ci-static-controls/complete_inventory/effect-settled-absence.fixture.log",
+      "bytes": 287,
+      "sha256": "83d3d9ab2902c532942213d95e1d82329a92a49c76af777f35d8b175b16de0f6"
+    },
+    {
+      "path": "implementation/ci-static-controls/missing_new_receipt/recovery-product.json",
+      "bytes": 241,
+      "sha256": "f86d9eab6026e33e9dc5de47238fe073909457a243d8e777d75e499e48863601"
+    },
+    {
+      "path": "implementation/ci-static-controls/missing_new_receipt/product.fixture.log",
+      "bytes": 308,
+      "sha256": "618dde749c670d5e4c4bb70e776184b81e4f4f93adb3f38c080b2bf628cbb04f"
+    },
+    {
+      "path": "implementation/ci-static-controls/missing_new_receipt/qualification-growth.json",
+      "bytes": 245,
+      "sha256": "e65948e35af8a0bd3180096b91122b61d73862a6611abbded6e1923d036fb600"
+    },
+    {
+      "path": "implementation/ci-static-controls/missing_new_receipt/effect-pq-product.json",
+      "bytes": 242,
+      "sha256": "1458be18429ec1cf9f6defca7879c3b62083dc38ed262b996e38f6a9d9ac32d8"
+    },
+    {
+      "path": "implementation/ci-static-controls/missing_new_receipt/recovery-owner.json",
+      "bytes": 240,
+      "sha256": "7a53909156eed9d31389c11eae643208f2ccb1ef7a10f54e9b5cd294757f169b"
+    },
+    {
+      "path": "implementation/ci-static-controls/missing_new_receipt/recovery-product.fixture.log",
+      "bytes": 385,
+      "sha256": "1db667e7167aa07856a646b850d9f6012d063877b3440f09add7d901f966ae30"
+    },
+    {
+      "path": "implementation/ci-static-controls/missing_new_receipt/qualification-growth.fixture.log",
+      "bytes": 259,
+      "sha256": "0d843e2a6537b84902f0522fb245650705c19a62e380b20d4e23dd42818f1dbd"
+    },
+    {
+      "path": "implementation/ci-static-controls/missing_new_receipt/effect-pq-owner.json",
+      "bytes": 241,
+      "sha256": "06c73db3552ac1da44e0a664afb42957882cf678a8c11b2e55e0f3dd320488a1"
+    },
+    {
+      "path": "implementation/ci-static-controls/missing_new_receipt/effect-pq-owner.fixture.log",
+      "bytes": 1416,
+      "sha256": "a16aa45648757bd431ea6ca7f80bcc70a77915dbf3519d9dfe99f281ee22fac3"
+    },
+    {
+      "path": "implementation/ci-static-controls/missing_new_receipt/recovery-signed.fixture.log",
+      "bytes": 1172,
+      "sha256": "a6f3209d955de3ae344ddfa16d920c4594aa428a37d7573547f6a5cabca2027d"
+    },
+    {
+      "path": "implementation/ci-static-controls/missing_new_receipt/effect-pq-contract.fixture.log",
+      "bytes": 176,
+      "sha256": "254a0354f1a66defaa997dfa0436dce356f965eaedb49ba484bf4d2f375cd539"
+    },
+    {
+      "path": "implementation/ci-static-controls/missing_new_receipt/selected-tests.json",
+      "bytes": 17957,
+      "sha256": "674f7da659f98ba9b7c0bb88a66a7b23686668c7fd9ec26d8adba3e201a836b0"
+    },
+    {
+      "path": "implementation/ci-static-controls/missing_new_receipt/recovery-signed.json",
+      "bytes": 241,
+      "sha256": "dfbaf168095f2b167b6a5a57d6607ce806aae752177274137f4f803ecdcfc8a0"
+    },
+    {
+      "path": "implementation/ci-static-controls/missing_new_receipt/product.json",
+      "bytes": 232,
+      "sha256": "4c9d2c0d9fa27ef28e6af3cc42e2fc6aaab56e4f7642157d947ee47cfd5e8df3"
+    },
+    {
+      "path": "implementation/ci-static-controls/missing_new_receipt/dispatcher.json",
+      "bytes": 236,
+      "sha256": "021794110e84073255d8602605f6fb96dad88e57a2df61b523cfae5248ad867d"
+    },
+    {
+      "path": "implementation/ci-static-controls/missing_new_receipt/effect-pq-contract.json",
+      "bytes": 243,
+      "sha256": "2ec98c2d57af34fea3ff85de9bdef1c6396f5af882ac470e88b0ca3950b66a5a"
+    },
+    {
+      "path": "implementation/ci-static-controls/missing_new_receipt/recovery-owner.fixture.log",
+      "bytes": 2572,
+      "sha256": "13d423fa9b4a351e64f70ee7d4a3981ee55d6c7ed32ca7cb57e72ceca5cd9d16"
+    },
+    {
+      "path": "implementation/ci-static-controls/missing_new_receipt/dispatcher.fixture.log",
+      "bytes": 1728,
+      "sha256": "cfd53656d45cf61ff3c4a3a813f1c42e5e793500ad396684eb527552632a7087"
+    },
+    {
+      "path": "implementation/ci-static-controls/missing_new_receipt/effect-pq-product.fixture.log",
+      "bytes": 156,
+      "sha256": "be41eae761dc7c78ef1ffe860783e66e0c47efc0581a1f16caed23568716a4ad"
+    },
+    {
+      "path": "independent-review/h1-effect-reconcile-review/all-exact-H1-source-inventory.json",
+      "bytes": 3480,
+      "sha256": "e6cbff6166d5a05e0fc2428a52652a3b9d7b67d1616b1482a9b441aec0e4676c"
+    },
+    {
+      "path": "independent-review/h1-effect-reconcile-review/applied-v2/codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "bytes": 105648,
+      "sha256": "f11950fe8a5f8a4e33425a7aec68ac0e4a872b60f341e11de306815ef280b2df"
+    },
+    {
+      "path": "independent-review/h1-effect-reconcile-review/applied-v2/codex-rs/hepta-automation/src/authorized_effect.rs",
+      "bytes": 72399,
+      "sha256": "c9d2247573cc205b66366d40cfc4d15872d65db0122c66e324e9371b9dcd20d4"
+    },
+    {
+      "path": "independent-review/h1-effect-reconcile-review/applied-v2/codex-rs/hepta-automation/src/taskflow_step.rs",
+      "bytes": 67918,
+      "sha256": "4839aa3abbdafffdf2b542efa990972050964a7d837cd04620f99b9a366014be"
+    },
+    {
+      "path": "independent-review/h1-effect-reconcile-review/applied-v2/codex-rs/hepta-automation/tests/support/authorized_owner_recovery_tests.rs",
+      "bytes": 16911,
+      "sha256": "ab1920270a169e4b82bdef1fe4c02626731d4bce19398877cf0e809878566fa5"
+    },
+    {
+      "path": "independent-review/h1-effect-reconcile-review/authority-source-inventory.json",
+      "bytes": 831,
+      "sha256": "fc8d50b753a7e0874796fb1c2069ee7bc48d4408ebc117f4a385a85de319acd0"
+    },
+    {
+      "path": "independent-review/h1-effect-reconcile-review/candidate-v2-artifacts/patch-manifest-v2.json",
+      "bytes": 3203,
+      "sha256": "36a901c3a2e1e3f9bc73fad53841d8b2aefd917a5ecf1dda1f98988e72ed1bce"
+    },
+    {
+      "path": "independent-review/h1-effect-reconcile-review/candidate-v2-artifacts/settled-absence-v2.patch",
+      "bytes": 23927,
+      "sha256": "906788c15547a5a21f0f90bcfc95f45d4aa25d163a83a51d29981c3919adba7e"
+    },
+    {
+      "path": "independent-review/h1-effect-reconcile-review/candidate-v2-review.json",
+      "bytes": 2340,
+      "sha256": "a4c1d50df1bbd58de81242da9e4d4b629cb37cddf66ab0c3ca35eb6fd174d242"
+    },
+    {
+      "path": "independent-review/h1-effect-reconcile-review/candidate-v2-safety-review.md",
+      "bytes": 9480,
+      "sha256": "28061d1f51eaea9e05b4a8b595ea1ac41d0e8b209859f7aa9e0fdeeae35181b9"
+    },
+    {
+      "path": "independent-review/h1-effect-reconcile-review/evidence/effect-pq-owner.executed-binaries.json",
+      "bytes": 16340,
+      "sha256": "1c731057f4e782fea2776c68cfa574ac70fcbc9faf4b3699daf092affd4d188f"
+    },
+    {
+      "path": "independent-review/h1-effect-reconcile-review/evidence/effect-pq-owner.json",
+      "bytes": 1669,
+      "sha256": "a7cbad67e646de936b66750c257e2fa414e220fd669b7782dbe2fc5efb248f14"
+    },
+    {
+      "path": "independent-review/h1-effect-reconcile-review/evidence/effect-pq-owner.json.df451d7e91554c9db29443ad9e242b8c.log",
+      "bytes": 37038,
+      "sha256": "ea7479a4d1d000df6d3b3d275a2837fac4e4fa809e024f10af728dfbe81b2178"
+    },
+    {
+      "path": "independent-review/h1-effect-reconcile-review/patch-v2-identity-check.json",
+      "bytes": 1947,
+      "sha256": "49cab79b09938ad0d1923c8d1a59dba1f02c6da6305ebcedfbfcb0a8da357824"
+    },
+    {
+      "path": "independent-review/h1-effect-reconcile-review/review.json",
+      "bytes": 3237,
+      "sha256": "e9f27c98d9843ab59d40f6c3ee1eeea8dc7125ec5934f2fea8ccd865473f652e"
+    },
+    {
+      "path": "independent-review/h1-effect-reconcile-review/root-cause-review.md",
+      "bytes": 9026,
+      "sha256": "fa989e77417eb51b647048b6a5ed64454fa08969d31af3097cdb70b2d51828ef"
+    },
+    {
+      "path": "independent-review/h1-effect-reconcile-review/settlement-history-scope-review.md",
+      "bytes": 3341,
+      "sha256": "930297ef90916d65e0d36bb043e8fde5c1f6577a9d1332bbdb6dcd4b0523eebc"
+    },
+    {
+      "path": "independent-review/h1-effect-reconcile-review/source/codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "bytes": 105269,
+      "sha256": "ccc465e0ac890e1428cc6a0b5b831d2d3d7c39152f320a1b8751419359af6396"
+    },
+    {
+      "path": "independent-review/h1-effect-reconcile-review/source/codex-rs/hepta-agentd/src/automation_effect_host_pq.rs",
+      "bytes": 14246,
+      "sha256": "67fcd2ab20e6477b0ba4639f5ef9d446e535c644bc386c6d23baf3c674c86b94"
+    },
+    {
+      "path": "independent-review/h1-effect-reconcile-review/source/codex-rs/hepta-agentd/src/automation_effect_host_pq_tests.rs",
+      "bytes": 30337,
+      "sha256": "7645fc19a734b2ffbbc5ecdb7001069e29f41e9aef3249fc0a5f383ed0e99a78"
+    },
+    {
+      "path": "independent-review/h1-effect-reconcile-review/source/codex-rs/hepta-automation/migrations/0003_taskflow_kernel.sql",
+      "bytes": 5219,
+      "sha256": "ac421cd5e7761bdc43d2af5ef27199552f245bb80c73462671b0d3b46af6c846"
+    },
+    {
+      "path": "independent-review/h1-effect-reconcile-review/source/codex-rs/hepta-automation/src/authorized_effect.rs",
+      "bytes": 70103,
+      "sha256": "45c81a918f4a52f9935e7b7fcfed4e8bd761657eba786c36f7498693bebe99dd"
+    },
+    {
+      "path": "independent-review/h1-effect-reconcile-review/source/codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
+      "bytes": 40896,
+      "sha256": "0cc45d7c1c6b9686d0dddbf7c2fe4727aae7ff7544c15c20f5d22b816394661c"
+    },
+    {
+      "path": "independent-review/h1-effect-reconcile-review/source/codex-rs/hepta-automation/src/taskflow.rs",
+      "bytes": 96048,
+      "sha256": "195e2693a151d23ba3ac957078248afbaf5517d2af32835518ca41837d1c2771"
+    },
+    {
+      "path": "independent-review/h1-effect-reconcile-review/source/codex-rs/hepta-automation/src/taskflow_step.rs",
+      "bytes": 62857,
+      "sha256": "d8ffb92a87eff096cb70c14fc2c1a131e7c8b569512a2ffb13ea42dd0c3f2319"
+    },
+    {
+      "path": "independent-review/h1-effect-reconcile-review/source/codex-rs/hepta-automation/tests/authorized_effect.rs",
+      "bytes": 44001,
+      "sha256": "9a991d6e77638bb810c6e6418df477fce9b579284e3811465af4348167211bb6"
+    },
+    {
+      "path": "independent-review/h1-effect-reconcile-review/source/codex-rs/hepta-automation/tests/support/authorized_owner_recovery_tests.rs",
+      "bytes": 4133,
+      "sha256": "a973e2f5df677bfeab21360d565cb6c2598fc210ab8324b5f70aea7b0775eba3"
+    },
+    {
+      "path": "independent-review/h1-effect-reconcile-review/source/codex-rs/hepta-automation/tests/support/authorized_provider_receipt_tests.rs",
+      "bytes": 15497,
+      "sha256": "92df0882cdd16274e374c8056181503338118958162362c2e6e4f61a4fa8fba3"
+    },
+    {
+      "path": "independent-review/h1-effect-reconcile-review/source/codex-rs/hepta-contracts/src/final_use.rs",
+      "bytes": 41743,
+      "sha256": "b829c56d411d0db2b59c4ccfa01ae8d881fcc0dc86b78db55efe460988d6ff54"
+    },
+    {
+      "path": "independent-review/h1-effect-reconcile-review/source/codex-rs/hepta-contracts/src/final_use_control_pq.rs",
+      "bytes": 4943,
+      "sha256": "d8b3a1fffaeaebb986f4e4f4331a3f08dfd4dcf1dacd87498ff0fe58f6208fa1"
+    },
+    {
+      "path": "independent-review/h1-effect-reconcile-review/source-inventory.json",
+      "bytes": 1711,
+      "sha256": "0b741974153e89b53129b2c6fc554ac4ac471accce8d54ea7c3232d441ac67a5"
+    },
+    {
+      "path": "independent-review/h1-effect-reconcile-review/test-fixture-source-inventory.json",
+      "bytes": 995,
+      "sha256": "aae6842187f8232a2a680cd2e9d188c3c88efb063bf611e6e73dfe2f3eeefaba"
+    },
+    {
+      "path": "independent-review/h1-effect-reconcile-review/delivery-manifest-v1.json",
+      "bytes": 6198,
+      "sha256": "7980889f46f85d0459d92d17123007be8887289d195e7f091adfe374ab9be3c9"
+    },
+    {
+      "path": "independent-review/h2-v3-ci-review/base-workflow.yml",
+      "bytes": 25757,
+      "sha256": "4f331d94dc8927d537873f976ce8c459a5e09673ef8431d3b310419ecf21f2ad"
+    },
+    {
+      "path": "independent-review/h2-v3-ci-review/candidate-workflow.yml",
+      "bytes": 26989,
+      "sha256": "f1e3b05fbdf39ff22d9837ca92595cf84e48a038e8a1c60e1bbee6bb4f39d584"
+    },
+    {
+      "path": "independent-review/h2-v3-ci-review/implementation-static-proof.json",
+      "bytes": 1674,
+      "sha256": "8ae62f2200c59f286993442eb396e62d94852c50710e58ad71a6019e2a204eac"
+    },
+    {
+      "path": "independent-review/h2-v3-ci-review/review.md",
+      "bytes": 4779,
+      "sha256": "487ee45a1b1790c3caade4f693e108cd2f08e1143e20290e42bbb16a87ffe7e0"
+    },
+    {
+      "path": "independent-review/h2-v3-ci-review/selected-tests-guard.py",
+      "bytes": 8595,
+      "sha256": "db0d00120c1c1efda2bf2f2830ae4011e419cc03438b605e3f5b21ca51df8d7f"
+    },
+    {
+      "path": "independent-review/h2-v3-ci-review/workflow-v3-only.patch",
+      "bytes": 2642,
+      "sha256": "1e362cab57c0c7061288e63ec2ff918478bc37bd5d8788e97fe119867f0cc93e"
+    },
+    {
+      "path": "independent-review/h2-v3-ci-review/workflow-v3-review.json",
+      "bytes": 5783,
+      "sha256": "1c42bf0480b9be1d25f25221a3bfbe9ec2e081c2e88a8988ff681ae3d7cbaeb0"
+    },
+    {
+      "path": "independent-review/h2-v3-ci-review/delivery-manifest.json",
+      "bytes": 1423,
+      "sha256": "85ec9696816939dc257480f5f88451ba77f41dbb112a7f62ef91c4863b69be14"
+    }
+  ]
+}

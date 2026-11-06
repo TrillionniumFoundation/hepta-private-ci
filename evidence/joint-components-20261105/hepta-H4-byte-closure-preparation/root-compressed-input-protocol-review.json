@@ -1,0 +1,41 @@
+{
+  "schema": "root-H4-compressed-input-protocol-review-v1",
+  "files_read": [
+    {
+      "path": "transport_payload.py",
+      "bytes": 1205,
+      "sha256": "6160a7dc42e570ae51b49ae8c5f44fc59c4eba60b1333577a1c51c0ce4063b84"
+    },
+    {
+      "path": "build_frozen_transport.py",
+      "bytes": 6764,
+      "sha256": "f20a3d45434bc453b557257a08472d31cede2a69db3781afc6b8223df52d9e2b"
+    },
+    {
+      "path": "test_transport_payload.py",
+      "bytes": 1592,
+      "sha256": "f4c2693ae8ea82be8aa994eca802e436537d0c0ea2681127c070fd576deaabf2"
+    },
+    {
+      "path": "transport-utility-receipt.json",
+      "bytes": 1139,
+      "sha256": "688980ec37452dc3770e60f528c0be797007bfbcc670a8f93f8b37190679163e"
+    },
+    {
+      "path": "transport-utility.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "transport-utility.stderr",
+      "bytes": 543,
+      "sha256": "2aa500277b62b25fb55bdf05e0ca3a9697d97e9bdb04a195b66ba715f53852de"
+    }
+  ],
+  "review": "Bounded single zlib stream; encoded length and compressed/raw SHA256/size verified; decompression limited to declared <=4MiB raw+1; eof required, trailing/unconsumed/second stream refused. Exact two-file allowlist, declared and decoded bytes cross-checked, exclusive stage/files, nofollow regular singlelink re-open and fsync before exporter exec. Original reviewed ce96 exporter unchanged. Actual bootstrap/plan/request still require independent byte binding.",
+  "original_utility_receipt_verified": true,
+  "controls": 3,
+  "new_tests_run_by_root": 0,
+  "actual_archive_execution_authorized": false,
+  "actual_plan_seen": false
+}

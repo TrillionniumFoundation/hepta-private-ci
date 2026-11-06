@@ -1,0 +1,120 @@
+{
+  "binding_method": "opened ELF fd then same-PID exec, matched to actual libtest outcome",
+  "config_file": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h2-native-attempt-1/effect-settled-absence.fd-capture-config.json",
+  "config_sha256": "fdbba023641813045eeca0cf54e6a9040b9d1d194046266b72c370e1658349f8",
+  "runner_sha256": "903c622365c9cf863f1ae4b5eca2d4a0501c9f86862538c48f94f126a82ba62b",
+  "records": [
+    {
+      "schema": "hepta-nextest-fd-runner-v1",
+      "status": "pre_exec_fd_bound",
+      "source": {
+        "commit": "620cb63ae9b58904483005bcb2c4e1507df99539",
+        "tree": "f2cebe6d99deca596c170922b8e60d66648d7393",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "42a7e79bf271684caccb12c864449b57bf72755a10a367b67d985f277e91a5c2"
+      },
+      "gate": "effect-settled-absence",
+      "capture_config_sha256": "fdbba023641813045eeca0cf54e6a9040b9d1d194046266b72c370e1658349f8",
+      "runner_sha256": "903c622365c9cf863f1ae4b5eca2d4a0501c9f86862538c48f94f126a82ba62b",
+      "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/authorized_effect-a5d36a2670ed2fe3",
+      "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h2-native-attempt-1/fd-executed-binaries-effect-settled-absence/ac768b17ffd1b2f8217c46d6adddf13a085a2f0f32ed25a471e1c8bfd59def58.elf",
+      "sha256": "ac768b17ffd1b2f8217c46d6adddf13a085a2f0f32ed25a471e1c8bfd59def58",
+      "bytes": 52749328,
+      "device": 2050,
+      "inode": 58259817,
+      "mtime_ns": 1793911316636138633,
+      "ctime_ns": 1793911316643138407,
+      "pid": 883919,
+      "start_ticks": "98898297",
+      "coordinator": {
+        "pid": 823760,
+        "start_ticks": "98793384"
+      },
+      "coordinator_descendant_verified": true,
+      "pre_exec_fd_identity_verified": true,
+      "phase": "run",
+      "exact_test": "owner_recovery_tests::settled_absence_fact_read_rejects_unknown_unsettled_and_corrupt_evidence",
+      "argv": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/authorized_effect-a5d36a2670ed2fe3",
+        "--exact",
+        "owner_recovery_tests::settled_absence_fact_read_rejects_unknown_unsettled_and_corrupt_evidence",
+        "--nocapture"
+      ],
+      "observed_selected_tests": [
+        "owner_recovery_tests::settled_absence_fact_read_rejects_unknown_unsettled_and_corrupt_evidence"
+      ],
+      "captured_unix": 1793911317.4869502,
+      "scope": "opened image bound immediately before same-PID fd-exec; requires matching actual libtest outcome and absence of exec failure"
+    },
+    {
+      "schema": "hepta-nextest-fd-runner-v1",
+      "status": "pre_exec_fd_bound",
+      "source": {
+        "commit": "620cb63ae9b58904483005bcb2c4e1507df99539",
+        "tree": "f2cebe6d99deca596c170922b8e60d66648d7393",
+        "lock_sha256": "0f458d7746a0ca0b95bedc5404fd3347c1b0a7508f1c387f3b1f3f71ced08663",
+        "environment_file": "native-environment.json",
+        "environment_sha256": "42a7e79bf271684caccb12c864449b57bf72755a10a367b67d985f277e91a5c2"
+      },
+      "gate": "effect-settled-absence",
+      "capture_config_sha256": "fdbba023641813045eeca0cf54e6a9040b9d1d194046266b72c370e1658349f8",
+      "runner_sha256": "903c622365c9cf863f1ae4b5eca2d4a0501c9f86862538c48f94f126a82ba62b",
+      "actual_executable": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/authorized_effect-a5d36a2670ed2fe3",
+      "retained_copy": "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/evidence/joint-h2-native-attempt-1/fd-executed-binaries-effect-settled-absence/ac768b17ffd1b2f8217c46d6adddf13a085a2f0f32ed25a471e1c8bfd59def58.elf",
+      "sha256": "ac768b17ffd1b2f8217c46d6adddf13a085a2f0f32ed25a471e1c8bfd59def58",
+      "bytes": 52749328,
+      "device": 2050,
+      "inode": 58259817,
+      "mtime_ns": 1793911316636138633,
+      "ctime_ns": 1793911316643138407,
+      "pid": 884113,
+      "start_ticks": "98898940",
+      "coordinator": {
+        "pid": 823760,
+        "start_ticks": "98793384"
+      },
+      "coordinator_descendant_verified": true,
+      "pre_exec_fd_identity_verified": true,
+      "phase": "run",
+      "exact_test": "owner_recovery_tests::settled_absence_fact_read_survives_reopen_and_new_owner_without_redispatch",
+      "argv": [
+        "/home/qian-qi/work/hepta-pq-effect-v4-20261105-93bfcf/target/debug/deps/authorized_effect-a5d36a2670ed2fe3",
+        "--exact",
+        "owner_recovery_tests::settled_absence_fact_read_survives_reopen_and_new_owner_without_redispatch",
+        "--nocapture"
+      ],
+      "observed_selected_tests": [
+        "owner_recovery_tests::settled_absence_fact_read_survives_reopen_and_new_owner_without_redispatch"
+      ],
+      "captured_unix": 1793911323.9209406,
+      "scope": "opened image bound immediately before same-PID fd-exec; requires matching actual libtest outcome and absence of exec failure"
+    }
+  ],
+  "errors": [],
+  "unique_actual_elf_sha256": [
+    "ac768b17ffd1b2f8217c46d6adddf13a085a2f0f32ed25a471e1c8bfd59def58"
+  ],
+  "runner_declared_binary_counts": [
+    1
+  ],
+  "actual_cases": [
+    [
+      "owner_recovery_tests::settled_absence_fact_read_rejects_unknown_unsettled_and_corrupt_evidence",
+      "ok"
+    ],
+    [
+      "owner_recovery_tests::settled_absence_fact_read_survives_reopen_and_new_owner_without_redispatch",
+      "ok"
+    ]
+  ],
+  "per_case_bijection_verified": true,
+  "scope": "exact test images only; no retrospective H1 credit or complete dynamic runtime closure",
+  "live_polling_corroboration": {
+    "file": "effect-settled-absence.live-polled-binaries.json",
+    "sha256": "0f2db93ae1be25de533a4d9ea372f18c75e542cc853390cb9eaaf9368022f199",
+    "captured_processes": 2,
+    "errors": [],
+    "scope": "polling may miss short processes; no assignment of missed processes from other captures"
+  }
+}

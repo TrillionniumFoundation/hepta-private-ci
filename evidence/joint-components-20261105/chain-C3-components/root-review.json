@@ -1,0 +1,50 @@
+{
+  "schema": "chain-C3-root-component-review-v1",
+  "base_commit": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+  "precommit_manifest_sha256": "86f94561d80ac8b140dbe0a84943068f683848d5454ff80898b862cebb7138df",
+  "source_guard": {
+    "base": null,
+    "candidate": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+    "kind": "head",
+    "prospective_merge": null,
+    "schema": "trnm-ci-source-v1",
+    "tested_commit": "03521b2f32346a49cccde8ff72e8c7b886b31222",
+    "tested_tree": "e0235248ecae2a67717c8b9ff2e3f25774ba63d7",
+    "tests_executed_by_identity_check": false,
+    "tracked_bytes": 985264447,
+    "tracked_entries": 10357,
+    "tracked_worktree_verified": true
+  },
+  "candidate_files": [
+    {
+      "path": "scripts/ci/report_module_evidence.py",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/pq_recovery/c3-applicability/candidate/scripts/ci/report_module_evidence.py",
+      "sha256": "d980a9a63c0b5bca3ef7c36b819fda69810742ecba0554d1ec22bc82e7cf3179",
+      "git_blob": "1df0e0369e878ec123511158082d56109562a126",
+      "bytes": 24277,
+      "mode": "100644"
+    },
+    {
+      "path": "scripts/ci/test_applicability.py",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/pq_recovery/c3-applicability/candidate/scripts/ci/test_applicability.py",
+      "sha256": "f32db882d7a8108f86bada2ed88e494a5e38e633e06e90a22c02c4de9914c128",
+      "git_blob": "0afe2d73e0bcc8c71e7e38e733b71d13568b1209",
+      "bytes": 24777,
+      "mode": "100644"
+    },
+    {
+      "path": ".github/workflows/pon-w1-work-security.yml",
+      "local_path": "/workspace/scratch/93bfcfe29fc8/w1/c3-legal-factorial/candidate/.github/workflows/pon-w1-work-security.yml",
+      "sha256": "1559cc1def59718cf1d938ed7c1718dc1c8aa91361bea47493e91306c292f242",
+      "git_blob": "994f491e4aaf28ef4dbebd85c3a2d8260b6c6db6",
+      "bytes": 26698,
+      "mode": "100644"
+    }
+  ],
+  "parser_selected_controls": 17,
+  "parser_original_checks_and_test_classes_ast_unchanged": true,
+  "workflow_guard_fixture_controls": 8,
+  "workflow_native_tests_executed": false,
+  "C3_full_native_status": "not_started",
+  "qualification_status": "HOLD"
+}

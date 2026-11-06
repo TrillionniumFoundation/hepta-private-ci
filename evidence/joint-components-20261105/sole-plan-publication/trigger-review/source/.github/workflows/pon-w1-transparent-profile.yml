@@ -1,0 +1,392 @@
+name: PoN W1 transparent candidate observations
+on:
+  pull_request:
+    paths:
+      - formal/pon-nakamoto-v1/w1_hardened_verifier/**
+      - formal/pon-nakamoto-v1/w1_v2_verifier/**
+      - formal/pon-nakamoto-v1/w1_native_cost/**
+      - formal/pon-nakamoto-v1/w1_zkvm/**
+      - formal/pon-nakamoto-v1/experiments/w1_full_staged_run.py
+      - formal/pon-nakamoto-v1/experiments/w1_stage_measure.py
+      - formal/pon-nakamoto-v1/experiments/w1_local_payload.py
+      - trillionnium/**
+      - scripts/w1_transparent_compare.py
+      - scripts/w1_profile_source_map.py
+      - scripts/w1_security_budget.py
+      - scripts/w1_v2_receipt_controls.py
+      - scripts/ci/**
+      - scripts/project-preflight.sh
+      - evidence/pon-w1-complete-succinct-20261028/**
+      - evidence/pon-w1-verifier-hardening-20261028/**
+      - evidence/pon-w1-transparent-profile-20261104/**
+      - evidence/pon-w1-statement-v2-20261105/**
+      - evidence/pon-w1-qrom-budget-20261105/**
+      - config/**
+      - .cargo/**
+      - rust-toolchain.toml
+      - AGENTS.md
+      - PROJECT_ID
+      - PROJECT_BOUNDARY.json
+      - .github/workflows/pon-w1-transparent-profile.yml
+permissions:
+  contents: read
+concurrency:
+  group: pon-w1-transparent-profile-${{ github.event.pull_request.number }}
+  # Preserve failed and partial observations when a newer source arrives.
+  cancel-in-progress: false
+env:
+  CI: "true"
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  RUST_TEST_THREADS: "1"
+  CARGO_TERM_COLOR: never
+  PYTHONDONTWRITEBYTECODE: "1"
+jobs:
+  transparent-profile:
+    name: W1 transparent candidate (${{ matrix.source }}, x64)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        source: [head, prospective-merge]
+    env:
+      SOURCE_KIND: ${{ matrix.source }}
+      EXPECTED_SOURCE: ${{ matrix.source == 'head' && github.event.pull_request.head.sha || github.sha }}
+      EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+      EXPECTED_BASE: ${{ github.event.pull_request.base.sha }}
+    steps:
+      - name: Checkout exact candidate without persistent credentials
+        id: checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ env.EXPECTED_SOURCE }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Reserve observations and verify ordered source identity
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          w1_profile_out="$RUNNER_TEMP/pon-w1-transparent-profile-$SOURCE_KIND-x64-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          mkdir "$w1_profile_out"
+          mkdir "$w1_profile_out/bin"
+          printf 'W1_PROFILE_OUT=%s\n' "$w1_profile_out" >> "$GITHUB_ENV"
+          printf 'CARGO_HOME=%s/cargo-w1-transparent-profile-%s-%s-%s\n' "$RUNNER_TEMP" "$SOURCE_KIND" "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" >> "$GITHUB_ENV"
+          printf 'CARGO_TARGET_DIR=%s/target-w1-transparent-profile-%s-%s-%s\n' "$RUNNER_TEMP" "$SOURCE_KIND" "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" >> "$GITHUB_ENV"
+          printf 'Continuous candidate checks and one saved-proof observation only. No new proof, end-to-end benefit, quantum soundness, production or consensus-admission qualification is established.\n' > "$w1_profile_out/SCOPE.txt"
+          args=(--kind "$SOURCE_KIND" --expected-head "$EXPECTED_HEAD")
+          if test "$SOURCE_KIND" = prospective-merge; then
+            args+=(--expected-base "$EXPECTED_BASE" --expected-merge "$EXPECTED_SOURCE")
+          fi
+          python3 scripts/ci/verify_ci_source.py "${args[@]}" --output "$w1_profile_out/source-before.json" 2>&1 | tee "$w1_profile_out/source-before.log"
+          bash scripts/project-preflight.sh --audit 2>&1 | tee "$w1_profile_out/preflight.log"
+      - name: Install pinned compiler and retain tool identities
+        id: toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component clippy 2>&1 | tee "$W1_PROFILE_OUT/toolchain-install.log"
+          rustc +1.95.0 -Vv > "$W1_PROFILE_OUT/rustc-version.txt"
+          cargo +1.95.0 -Vv > "$W1_PROFILE_OUT/cargo-version.txt"
+          python3 --version > "$W1_PROFILE_OUT/python-version.txt"
+      - name: Execute source identity rejection controls
+        if: always() && steps.source.outcome == 'success'
+        id: source_controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/ci/test_ci_source_integrity.py 2>&1 | tee "$W1_PROFILE_OUT/source-controls.log"
+      - name: Execute all 24 saved-proof observer controls
+        if: always() && steps.source.outcome == 'success'
+        id: observer_tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s scripts/ci -p test_w1_transparent_compare.py -v 2>&1 | tee "$W1_PROFILE_OUT/observer-tests.log"
+          python3 - "$W1_PROFILE_OUT/observer-tests.log" <<'PY'
+          from pathlib import Path
+          import re, sys
+          text = Path(sys.argv[1]).read_text()
+          if re.findall(r'^Ran ([0-9]+) tests in ', text, re.M) != ['24'] or not re.search(r'^OK$', text, re.M):
+              raise SystemExit('all 24 retained observer controls must execute without skips')
+          PY
+      - name: Execute all seven offline source-map controls
+        if: always() && steps.source.outcome == 'success'
+        id: mapper_tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s scripts/ci -p test_w1_profile_source_map.py -v 2>&1 | tee "$W1_PROFILE_OUT/mapper-tests.log"
+          python3 - "$W1_PROFILE_OUT/mapper-tests.log" <<'PY'
+          from pathlib import Path
+          import re, sys
+          text = Path(sys.argv[1]).read_text()
+          if re.findall(r'^Ran ([0-9]+) tests in ', text, re.M) != ['7'] or not re.search(r'^OK$', text, re.M):
+              raise SystemExit('all seven retained source-map controls must execute without skips')
+          PY
+      - name: Execute staged lifecycle and complete-observation rejection controls
+        if: always() && steps.source.outcome == 'success'
+        id: staged_tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s scripts/ci -p test_w1_staged_observer.py -v 2>&1 | tee "$W1_PROFILE_OUT/staged-observer-tests.log"
+          python3 - "$W1_PROFILE_OUT/staged-observer-tests.log" <<'PY'
+          from pathlib import Path
+          import re, sys
+          text = Path(sys.argv[1]).read_text()
+          counts = re.findall(r'^Ran ([0-9]+) tests in ', text, re.M)
+          if len(counts) != 1 or int(counts[0]) < 21 or not re.search(r'^OK$', text, re.M):
+              raise SystemExit('all 21 retained staged-observer controls must execute without skips')
+          PY
+      - name: Execute exact-source component-budget rejection controls
+        if: always() && steps.source.outcome == 'success'
+        id: budget_tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s scripts/ci -p test_w1_security_budget.py -v 2>&1 | tee "$W1_PROFILE_OUT/security-budget-tests.log"
+          python3 - "$W1_PROFILE_OUT/security-budget-tests.log" <<'PY'
+          from pathlib import Path
+          import re, sys
+          text = Path(sys.argv[1]).read_text()
+          counts = re.findall(r'^Ran ([0-9]+) tests in ', text, re.M)
+          if len(counts) != 1 or int(counts[0]) < 21 or not re.search(r'^OK$', text, re.M):
+              raise SystemExit('all 21 retained security-budget controls must execute without skips')
+          PY
+      - name: Verify and build the independent native crate
+        if: always() && steps.source.outcome == 'success' && steps.toolchain.outcome == 'success'
+        id: native
+        shell: bash
+        run: |
+          set -euo pipefail
+          w1_manifest=formal/pon-nakamoto-v1/w1_native_cost/Cargo.toml
+          cargo +1.95.0 metadata --locked --manifest-path "$w1_manifest" --format-version 1 > "$W1_PROFILE_OUT/native-cargo-graph.json" 2> "$W1_PROFILE_OUT/native-metadata.stderr.log"
+          cargo +1.95.0 fmt --manifest-path "$w1_manifest" --all -- --check 2>&1 | tee "$W1_PROFILE_OUT/native-format.log"
+          cargo +1.95.0 test --locked --release --manifest-path "$w1_manifest" -- --test-threads=1 2>&1 | tee "$W1_PROFILE_OUT/native-tests.log"
+          python3 - "$W1_PROFILE_OUT/native-tests.log" <<'PY'
+          from pathlib import Path
+          import re, sys
+          rows = re.findall(r'^test result: ok\. ([0-9]+) passed; 0 failed; ([0-9]+) ignored;', Path(sys.argv[1]).read_text(), re.M)
+          if sum(int(passed) for passed, _ in rows) < 6 or any(int(ignored) for _, ignored in rows):
+              raise SystemExit('six retained native relation controls did not execute')
+          PY
+          cargo +1.95.0 clippy --locked --release --manifest-path "$w1_manifest" --all-targets -- -D warnings 2>&1 | tee "$W1_PROFILE_OUT/native-clippy.log"
+          cargo +1.95.0 build --locked --release --manifest-path "$w1_manifest" 2>&1 | tee "$W1_PROFILE_OUT/native-build.log"
+          cp "$CARGO_TARGET_DIR/release/w1-native-cost" "$W1_PROFILE_OUT/bin/w1-native-cost"
+          sha256sum "$W1_PROFILE_OUT/bin/w1-native-cost" > "$W1_PROFILE_OUT/native-binary.sha256"
+      - name: Verify and build the independent hardened verifier crate
+        if: always() && steps.source.outcome == 'success' && steps.toolchain.outcome == 'success'
+        id: hardened
+        shell: bash
+        run: |
+          set -euo pipefail
+          w1_manifest=formal/pon-nakamoto-v1/w1_hardened_verifier/Cargo.toml
+          cargo +1.95.0 metadata --locked --manifest-path "$w1_manifest" --format-version 1 > "$W1_PROFILE_OUT/hardened-cargo-graph.json" 2> "$W1_PROFILE_OUT/hardened-metadata.stderr.log"
+          cargo +1.95.0 fmt --manifest-path "$w1_manifest" --all -- --check 2>&1 | tee "$W1_PROFILE_OUT/hardened-format.log"
+          cargo +1.95.0 test --locked --release --manifest-path "$w1_manifest" -- --test-threads=1 2>&1 | tee "$W1_PROFILE_OUT/hardened-tests.log"
+          python3 - "$W1_PROFILE_OUT/hardened-tests.log" <<'PY'
+          from pathlib import Path
+          import re, sys
+          rows = re.findall(r'^test result: ok\. ([0-9]+) passed; 0 failed; ([0-9]+) ignored;', Path(sys.argv[1]).read_text(), re.M)
+          if sum(int(passed) for passed, _ in rows) < 15 or any(int(ignored) for _, ignored in rows):
+              raise SystemExit('15 retained hardened verifier controls did not execute')
+          PY
+          cargo +1.95.0 clippy --locked --release --manifest-path "$w1_manifest" --all-targets -- -D warnings 2>&1 | tee "$W1_PROFILE_OUT/hardened-clippy.log"
+          cargo +1.95.0 build --locked --release --manifest-path "$w1_manifest" 2>&1 | tee "$W1_PROFILE_OUT/hardened-build.log"
+          cp "$CARGO_TARGET_DIR/release/trnm-w1-hardened-verifier" "$W1_PROFILE_OUT/bin/trnm-w1-hardened-verifier"
+          sha256sum "$W1_PROFILE_OUT/bin/trnm-w1-hardened-verifier" > "$W1_PROFILE_OUT/hardened-binary.sha256"
+      - name: Verify and build the independent v2 verifier without a guest build
+        if: always() && steps.source.outcome == 'success' && steps.toolchain.outcome == 'success'
+        id: verifier_v2
+        shell: bash
+        run: |
+          set -euo pipefail
+          w1_manifest=formal/pon-nakamoto-v1/w1_v2_verifier/Cargo.toml
+          cargo +1.95.0 metadata --locked --manifest-path "$w1_manifest" --format-version 1 > "$W1_PROFILE_OUT/v2-cargo-graph.json" 2> "$W1_PROFILE_OUT/v2-metadata.stderr.log"
+          python3 - "$W1_PROFILE_OUT/v2-cargo-graph.json" <<'PY'
+          from pathlib import Path
+          import json, sys
+          graph = json.loads(Path(sys.argv[1]).read_text())
+          packages = {package['name'] for package in graph['packages']}
+          if packages.intersection({'risc0-build', 'trnm-w1-zk-methods', 'trnm-w1-zk-methods-v2',
+                                    'trnm-w1-full-guest', 'trnm-w1-full-guest-v2'}):
+              raise SystemExit('independent v2 verifier must not acquire a guest build dependency')
+          PY
+          cargo +1.95.0 fmt --manifest-path "$w1_manifest" --all -- --check 2>&1 | tee "$W1_PROFILE_OUT/v2-format.log"
+          cargo +1.95.0 test --locked --release --manifest-path "$w1_manifest" -- --test-threads=1 2>&1 | tee "$W1_PROFILE_OUT/v2-tests.log"
+          python3 - "$W1_PROFILE_OUT/v2-tests.log" <<'PY'
+          from pathlib import Path
+          import re, sys
+          rows = re.findall(r'^test result: ok\. ([0-9]+) passed; 0 failed; ([0-9]+) ignored;', Path(sys.argv[1]).read_text(), re.M)
+          if sum(int(passed) for passed, _ in rows) < 2 or any(int(ignored) for _, ignored in rows):
+              raise SystemExit('v2 expected-artifact and historical-proof rejection controls did not execute')
+          PY
+          cargo +1.95.0 clippy --locked --release --manifest-path "$w1_manifest" --all-targets -- -D warnings 2>&1 | tee "$W1_PROFILE_OUT/v2-clippy.log"
+          cargo +1.95.0 build --locked --release --manifest-path "$w1_manifest" 2>&1 | tee "$W1_PROFILE_OUT/v2-build.log"
+          cp "$CARGO_TARGET_DIR/release/w1-verify-v2" "$W1_PROFILE_OUT/bin/w1-verify-v2"
+          sha256sum "$W1_PROFILE_OUT/bin/w1-verify-v2" > "$W1_PROFILE_OUT/v2-binary.sha256"
+      - name: Reproduce the component-budget report with its unqualified boundary
+        if: always() && steps.source.outcome == 'success' && steps.hardened.outcome == 'success'
+        id: component_budget
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Offline reproduction of an explicit research budget. A component
+          # budget failure is a valid observation, not QROM qualification.
+          python3 - "$CARGO_HOME" "$W1_PROFILE_OUT" <<'PY' 2>&1 | tee "$W1_PROFILE_OUT/security-budget.log"
+          from pathlib import Path
+          import json, subprocess, sys
+          cargo, out = map(Path, sys.argv[1:])
+          required = ('risc0-zkp-3.0.5.crate', 'risc0-core-3.0.2.crate',
+                      'risc0-circuit-recursion-4.0.5.crate', 'risc0-circuit-rv32im-4.0.5.crate')
+          caches = [path for path in (cargo / 'registry/cache').glob('*')
+                    if path.is_dir() and all((path / name).is_file() for name in required)]
+          if len(caches) != 1:
+              raise SystemExit('one complete pinned crate archive cache is required')
+          report_path = out / 'security-budget.json'
+          subprocess.run([sys.executable, 'scripts/w1_security_budget.py',
+                          '--crate-cache', str(caches[0]), '--target-bits', '128',
+                          '--output', str(report_path)], check=True)
+          report = json.loads(report_path.read_text())
+          qualification = report['qualification']
+          if (report['schema'] != 'TRNM-W1-COMPONENT-SECURITY-BUDGET1'
+                  or report['research_target']['failure_probability_bits'] != 128
+                  or report['research_target']['protocol_policy_adopted'] is not False
+                  or qualification['quantum_security_bits'] is not None
+                  or qualification['full_recursive_security_bits'] is not None
+                  or any(qualification[key] is not False for key in
+                         ('qrom_theorem_instantiated', 'consensus_admission',
+                          'production_qualified', 'attack_on_complete_w1_established'))):
+              raise SystemExit('component estimates must retain their exact unqualified scope')
+          print('Component formula report reproduced; whole-proof and QROM qualification remain false.')
+          PY
+      - name: Reproduce the bounded source map without network access
+        if: always() && steps.source.outcome == 'success' && steps.toolchain.outcome == 'success'
+        id: source_map
+        shell: bash
+        run: |
+          set -euo pipefail
+          # The mapper only reads already downloaded locked archives and sources.
+          python3 scripts/w1_profile_source_map.py --cargo-home "$CARGO_HOME" --repo-root "$GITHUB_WORKSPACE" --out "$W1_PROFILE_OUT/security-map.json" 2>&1 | tee "$W1_PROFILE_OUT/source-map.log"
+          cmp evidence/pon-w1-transparent-profile-20261104/security-map.json "$W1_PROFILE_OUT/security-map.json" 2>&1 | tee "$W1_PROFILE_OUT/source-map-comparison.log"
+      - name: Observe the compiled profile and its unqualified boundary
+        if: always() && steps.source.outcome == 'success' && steps.hardened.outcome == 'success'
+        id: profile
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$W1_PROFILE_OUT/bin/trnm-w1-hardened-verifier" profile > "$W1_PROFILE_OUT/profile.json" 2> "$W1_PROFILE_OUT/profile.stderr.log"
+          python3 - "$W1_PROFILE_OUT/profile.json" <<'PY'
+          from pathlib import Path
+          import json, sys
+          profile = json.loads(Path(sys.argv[1]).read_text())
+          mapping = json.loads(Path('evidence/pon-w1-transparent-profile-20261104/security-map.json').read_text())
+          saved, defaults = mapping['saved_full_receipt'], mapping['recursive_verifier_defaults']
+          checks = [profile['schema'] == 'TRNM-W1-TRANSPARENT-PROFILE1',
+              profile['profile_id'] == 'trnm-w1-risc0-3.0.6-poseidon2-join-v1',
+              profile['hash_function'] == saved['hash_function'],
+              profile['final_control_id'] == saved['control_id'],
+              profile['verifier_parameters_digest'] == saved['verifier_parameters_digest'],
+              profile['control_root'] == defaults['control_root'],
+              profile['effective_inner_control_root'] == defaults['effective_inner_control_root'],
+              profile['control_inclusion_depth'] == defaults['control_merkle_depth'],
+              profile['quantum_security_bits'] is None,
+              profile['quantum_soundness_qualified'] is False,
+              profile['consensus_admission'] is False]
+          if not all(checks):
+              raise SystemExit('compiled profile differs from its mapped, unqualified construction')
+          PY
+      - name: Retain all 42 actual saved-proof acceptance and rejection controls
+        if: always() && steps.source.outcome == 'success' && steps.hardened.outcome == 'success'
+        id: receipt_controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          w1_proof_dir="$GITHUB_WORKSPACE/evidence/pon-w1-complete-succinct-20261028/full-proof"
+          "$W1_PROFILE_OUT/bin/trnm-w1-hardened-verifier" controls "$w1_proof_dir/header.bin" "$w1_proof_dir/succinct.bin" "$W1_PROFILE_OUT/controls" 2>&1 | tee "$W1_PROFILE_OUT/receipt-controls.log"
+          python3 - "$W1_PROFILE_OUT/controls/result.json" <<'PY'
+          from pathlib import Path
+          import json, sys
+          report = json.loads(Path(sys.argv[1]).read_text())
+          cases = report['cases']
+          if (report['schema'] != 'TRNM-W1-HARDENED-VERIFIER-CONTROLS2'
+                  or len(cases) != 42 or len({case['name'] for case in cases}) != 42
+                  or report['all_passed'] is not True or report['fake_proofs_used'] is not False
+                  or report['consensus_admission'] is not False
+                  or any(case['passed'] is not True or case['observed']['outcome'] != case['expected']
+                         or case['observed']['outcome'] not in ('ACCEPT', 'REJECT') for case in cases)):
+              raise SystemExit('all 42 real controls must complete without panic or changed expectations')
+          PY
+      - name: Compare the saved proof under one shared 120-second deadline
+        if: always() && steps.source.outcome == 'success' && steps.native.outcome == 'success' && steps.hardened.outcome == 'success'
+        id: comparison
+        timeout-minutes: 4
+        shell: bash
+        run: |
+          set -euo pipefail
+          w1_native="$W1_PROFILE_OUT/bin/w1-native-cost"
+          w1_verifier="$W1_PROFILE_OUT/bin/trnm-w1-hardened-verifier"
+          w1_native_sha="$(sha256sum "$w1_native")"
+          w1_native_sha="${w1_native_sha%% *}"
+          w1_verifier_sha="$(sha256sum "$w1_verifier")"
+          w1_verifier_sha="${w1_verifier_sha%% *}"
+          python3 scripts/w1_transparent_compare.py \
+            --proof-dir "$GITHUB_WORKSPACE/evidence/pon-w1-complete-succinct-20261028/full-proof" \
+            --native "$w1_native" --verifier "$w1_verifier" \
+            --native-sha256 "$w1_native_sha" --verifier-sha256 "$w1_verifier_sha" \
+            --native-source-commit "$EXPECTED_SOURCE" --verifier-source-commit "$EXPECTED_SOURCE" \
+            --source-root "$GITHUB_WORKSPACE" --out "$W1_PROFILE_OUT/comparison" \
+            --total-wall-seconds 120 2>&1 | tee "$W1_PROFILE_OUT/comparison.log"
+          python3 - "$W1_PROFILE_OUT/comparison/result.json" <<'PY'
+          from pathlib import Path
+          import json, sys
+          report = json.loads(Path(sys.argv[1]).read_text())
+          if (report['outcome'] != 'SAVED_PROOF_COMPARISON_COMPLETE' or report['qualification'] != 'HOLD'
+                  or report['new_proofs_generated'] != 0 or report['logical_work_items'] != 1
+                  or any(report[key] is not False for key in ('end_to_end_benefit_established',
+                      'quantum_soundness_qualified', 'consensus_admission',
+                      'production_tail_established', 'source_equivalence_established'))):
+              raise SystemExit('saved-proof observation must retain its unqualified scope')
+          PY
+      - name: Verify measured source after execution
+        if: always() && steps.source.outcome == 'success'
+        id: source_after
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=(--kind "$SOURCE_KIND" --expected-head "$EXPECTED_HEAD")
+          if test "$SOURCE_KIND" = prospective-merge; then
+            args+=(--expected-base "$EXPECTED_BASE" --expected-merge "$EXPECTED_SOURCE")
+          fi
+          python3 scripts/ci/verify_ci_source.py "${args[@]}" --output "$W1_PROFILE_OUT/source-after.json" 2>&1 | tee "$W1_PROFILE_OUT/source-after.log"
+      - name: Record completed, failed and skipped observations
+        if: always()
+        shell: bash
+        env:
+          W1_PROFILE_STEP_RESULTS: ${{ toJSON(steps) }}
+        run: |
+          set -euo pipefail
+          w1_profile_out="$RUNNER_TEMP/pon-w1-transparent-profile-$SOURCE_KIND-x64-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          mkdir -p "$w1_profile_out"
+          python3 - "$w1_profile_out/ci-status.json" <<'PY'
+          import json, os, sys
+          report = {'schema': 'TRNM-W1-TRANSPARENT-CI-OBSERVATION1',
+              'source_kind': os.environ['SOURCE_KIND'], 'expected_source': os.environ['EXPECTED_SOURCE'],
+              'steps': json.loads(os.environ['W1_PROFILE_STEP_RESULTS']),
+              'scope': 'Continuous candidate checks; failed and partial observations are retained.',
+              'end_to_end_benefit_established': False, 'quantum_soundness_qualified': False,
+              'production_qualified': False, 'consensus_admission': False}
+          with open(sys.argv[1], 'x', encoding='utf-8') as stream:
+              json.dump(report, stream, indent=2, sort_keys=True)
+              stream.write('\n')
+          PY
+      - name: Retain source identities, binaries, logs and all failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: w1-transparent-profile-${{ matrix.source }}-x64-${{ env.EXPECTED_SOURCE }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/pon-w1-transparent-profile-${{ matrix.source }}-x64-${{ github.run_id }}-${{ github.run_attempt }}/
+          if-no-files-found: error
+          retention-days: 30
