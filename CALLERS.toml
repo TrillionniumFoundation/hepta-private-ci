@@ -1159,7 +1159,7 @@ caller_markers = []
 id = "root_physical_current_backend_genesis"
 symbol = "HostCognitiveCheckpoint::initialize_fresh_with_material"
 definition_path = "codex-rs/hepta-agentd/src/authority_host_checkpoint_material_binding.rs"
-definition_markers = ["pub(crate) fn initialize_fresh_with_material(", "Self::initialize_fresh_inner(", "FreshMaterial::Physical(profile)"]
+definition_markers = ["pub(crate) fn initialize_fresh_with_material(", "Self::initialize_fresh_inner(", "FreshMaterial::Physical(Box::new(profile))"]
 product_callers = ["codex-rs/hepta-agentd/src/authority_host_checkpoint_lane.rs"]
 caller_markers = []
 
@@ -1223,7 +1223,7 @@ forbidden = ["AllowVerifier", "permit_all"]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/authority_host_checkpoint_material_binding.rs"
-required = ["let _guard = self", "exchange_lock", "head.phase != CognitiveCheckpointPhase::Current || head.proposal.is_some()", "self.load()? != head || !self.within_expiry()?", "FreshMaterial::Physical(profile)", "material.verify(receipt(&head)?)?"]
+required = ["let _guard = self", "exchange_lock", "head.phase != CognitiveCheckpointPhase::Current || head.proposal.is_some()", "self.load()? != head || !self.within_expiry()?", "FreshMaterial::Physical(Box::new(profile))", "material.verify(receipt(&head)?)?"]
 forbidden = ["AllowVerifier", "permit_all"]
 
 [[protected_file]]
