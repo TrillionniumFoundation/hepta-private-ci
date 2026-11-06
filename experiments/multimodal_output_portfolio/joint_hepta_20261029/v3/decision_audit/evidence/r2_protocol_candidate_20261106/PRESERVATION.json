@@ -1,0 +1,346 @@
+{
+  "schema": "hepta.r2.candidate-preservation.v1",
+  "created_at": "2026-11-06T08:13:55.213386+00:00",
+  "original_local_root": "/workspace/scratch/4d868a11a31c/r1-diagnostics/r2-preregistration-v2",
+  "scope": "Byte-preserved historical candidate and validation; no new protocol freeze",
+  "files": [
+    {
+      "path": "PROTOCOL.json",
+      "original_relative_path": "PROTOCOL.json",
+      "scope": "runtime_or_contract",
+      "bytes": 32930,
+      "lines": 696,
+      "sha256": "1062e4183bc6e8ca3f6b855c33be8db5bce3084a9383afdc85438029f9109e6a",
+      "git_blob": "0c14a2ba2564584ccca47efe31987b75139eb0e9",
+      "copy_is_byte_identical": true
+    },
+    {
+      "path": "BASELINE_CONTRACT.json",
+      "original_relative_path": "BASELINE_CONTRACT.json",
+      "scope": "runtime_or_contract",
+      "bytes": 5869,
+      "lines": 197,
+      "sha256": "cc2eecec685029507bc9387807d774c2795528ccf7f76a5d2db12939e6ebf55c",
+      "git_blob": "3b24decc5d4fe22a2dd6031fe4dae78d98324a84",
+      "copy_is_byte_identical": true
+    },
+    {
+      "path": "DATA_CONTRACT.json",
+      "original_relative_path": "DATA_CONTRACT.json",
+      "scope": "runtime_or_contract",
+      "bytes": 4417,
+      "lines": 83,
+      "sha256": "058daf3da88b7761c133f8e9ea70cf6571ff20e5b6dde9f27a0d070fd16d2816",
+      "git_blob": "8f594481a4103076cc815899557989e12688e666",
+      "copy_is_byte_identical": true
+    },
+    {
+      "path": "BUDGET_CONTRACT.json",
+      "original_relative_path": "BUDGET_CONTRACT.json",
+      "scope": "runtime_or_contract",
+      "bytes": 3205,
+      "lines": 89,
+      "sha256": "4b6539175841b2d50d2c122b15169150bcda5b790d9592eecf2e14cc267f2165",
+      "git_blob": "43b38874e9ad5aedc85e3d8039a0546f949906b4",
+      "copy_is_byte_identical": true
+    },
+    {
+      "path": "UTILITY_AND_POWER.json",
+      "original_relative_path": "UTILITY_AND_POWER.json",
+      "scope": "runtime_or_contract",
+      "bytes": 2531,
+      "lines": 57,
+      "sha256": "4c24d551a84168b3171e65cd5c23933892401454556c2ad60264d9d9244962cd",
+      "git_blob": "d4253a8b42321c03c08ac073cd6bf458470f4a1f",
+      "copy_is_byte_identical": true
+    },
+    {
+      "path": "EXPOSURE_REGISTER.json",
+      "original_relative_path": "EXPOSURE_REGISTER.json",
+      "scope": "runtime_or_contract",
+      "bytes": 8270,
+      "lines": 214,
+      "sha256": "302ccf5753c42db6cdf27d74bce8224a5cb67da4601d00aa1005386e4be85016",
+      "git_blob": "ecc4e88b786f596fd70eda51fe917ee57e8db1c1",
+      "copy_is_byte_identical": true
+    },
+    {
+      "path": "READINESS_INPUT.json",
+      "original_relative_path": "READINESS_INPUT.json",
+      "scope": "runtime_or_contract",
+      "bytes": 2440,
+      "lines": 51,
+      "sha256": "a681cdb28674ace18e8b9e5e946221decb1ce5e2570d2ba530498ebfca0a0417",
+      "git_blob": "cbac6ea8dde2b76ca09d45fbfed1e04ae41f06b7",
+      "copy_is_byte_identical": true
+    },
+    {
+      "path": "r2_statistics.py",
+      "original_relative_path": "r2_statistics.py",
+      "scope": "runtime_or_contract",
+      "bytes": 6389,
+      "lines": 121,
+      "sha256": "d5ee2dc348bcd91905d300fb93b95382f643bafdba0977d7e6be4e0cd49edb17",
+      "git_blob": "24e9a3131280b04b79247c3adaf253cd892ff278",
+      "copy_is_byte_identical": true
+    },
+    {
+      "path": "r2_capture.py",
+      "original_relative_path": "r2_capture.py",
+      "scope": "runtime_or_contract",
+      "bytes": 10463,
+      "lines": 173,
+      "sha256": "c952aed8b160c0d44eac06c7a27e9d6cf309e26e437ef24806575c27c0396422",
+      "git_blob": "2a93abe2db5c49529a8cf3ee91406a38b7a45ca1",
+      "copy_is_byte_identical": true
+    },
+    {
+      "path": "analyze_capture.py",
+      "original_relative_path": "analyze_capture.py",
+      "scope": "runtime_or_contract",
+      "bytes": 1718,
+      "lines": 36,
+      "sha256": "c4da7fcc97a9e1f8cd798029e1f7cfeef696b4d328a0a0cc0d933834dfea4e01",
+      "git_blob": "7e23d920410aa03beedffd6bf37c5195b755abfd",
+      "copy_is_byte_identical": true
+    },
+    {
+      "path": "compile_contracts.py",
+      "original_relative_path": "compile_contracts.py",
+      "scope": "runtime_or_contract",
+      "bytes": 3984,
+      "lines": 77,
+      "sha256": "cd195e711ecadcbf8df70b07c69b26df9a3bf4bc322fe4da7d29d382e5b94bd3",
+      "git_blob": "b527a984d4e857bfdfbe0ca110ad36dcc9c10457",
+      "copy_is_byte_identical": true
+    },
+    {
+      "path": "check_readiness.py",
+      "original_relative_path": "check_readiness.py",
+      "scope": "runtime_or_contract",
+      "bytes": 2011,
+      "lines": 48,
+      "sha256": "d6cdf72234a715cb89d5bbab0d6f51a35418aa3bac711b8deb1677f7429540e8",
+      "git_blob": "289b773a7cb17cdb854ebae95a8af3254b5d065f",
+      "copy_is_byte_identical": true
+    },
+    {
+      "path": "audit_data_manifest.py",
+      "original_relative_path": "audit_data_manifest.py",
+      "scope": "runtime_or_contract",
+      "bytes": 3729,
+      "lines": 66,
+      "sha256": "45e4faabe8f27076d5f61b935146968660618bf38de0b02eb554eece460b4746",
+      "git_blob": "ea7947fb4acbfee22f08a99b88ddd808c9990dc1",
+      "copy_is_byte_identical": true
+    },
+    {
+      "path": "test_protocol_tools.py",
+      "original_relative_path": "test_protocol_tools.py",
+      "scope": "runtime_or_contract",
+      "bytes": 9611,
+      "lines": 195,
+      "sha256": "a80c43b21358aac4e7f0400508e6baff70b7efe839c649f2e7ebcc768db6c4d5",
+      "git_blob": "704fbf501c88825308d26793ff169a66fd167beb",
+      "copy_is_byte_identical": true
+    },
+    {
+      "path": "EXPORT_FORMAT.md",
+      "original_relative_path": "EXPORT_FORMAT.md",
+      "scope": "runtime_or_contract",
+      "bytes": 4512,
+      "lines": 80,
+      "sha256": "f635aef7854dcbb42854639198afcd253ef200ec083d53566448b783e4e614ed",
+      "git_blob": "b330153c66d26f21630016af806b30aaa60f2d70",
+      "copy_is_byte_identical": true
+    },
+    {
+      "path": "validation/original/READINESS.stderr",
+      "original_relative_path": "validation/READINESS.stderr",
+      "scope": "original_execution_receipt",
+      "bytes": 0,
+      "lines": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "copy_is_byte_identical": true
+    },
+    {
+      "path": "validation/original/READINESS.stdout",
+      "original_relative_path": "validation/READINESS.stdout",
+      "scope": "original_execution_receipt",
+      "bytes": 485,
+      "lines": 18,
+      "sha256": "310b901ebeb3f598a2e2bef16f891a2119acc88daa528053d036ef71e09bf5db",
+      "git_blob": "02f67aa4f2fd2f5dc8372b42bc031cdaa94be028",
+      "copy_is_byte_identical": true
+    },
+    {
+      "path": "validation/original/READINESS_COMMAND.json",
+      "original_relative_path": "validation/READINESS_COMMAND.json",
+      "scope": "original_execution_receipt",
+      "bytes": 687,
+      "lines": 17,
+      "sha256": "fb7eb78d3b247996981e948cd3c93b38400906a86a13be5a04e261ac72490cf3",
+      "git_blob": "d297752fb5edd92044d7a00e6576e4a95224f080",
+      "copy_is_byte_identical": true
+    },
+    {
+      "path": "validation/original/TEST_ATTEMPT1.output.log",
+      "original_relative_path": "validation/TEST_ATTEMPT1.output.log",
+      "scope": "original_execution_receipt",
+      "bytes": 2237,
+      "lines": 22,
+      "sha256": "5cc7bad937abb23ca4a377669e2810683067a22b8b02430194cecb1917d0677e",
+      "git_blob": "9f69224d6013d5ac5048d1b7016769054bbbfa47",
+      "copy_is_byte_identical": true
+    },
+    {
+      "path": "validation/original/TEST_ATTEMPT1_LAUNCH.json",
+      "original_relative_path": "validation/TEST_ATTEMPT1_LAUNCH.json",
+      "scope": "original_execution_receipt",
+      "bytes": 1185,
+      "lines": 14,
+      "sha256": "3b1eee0a4f11c84ed44f8c388d71e2626b93f5e3d6fc77556c4df6e19107a935",
+      "git_blob": "6bc42445b8ef5744c116a0f579a3cbdea01229b6",
+      "copy_is_byte_identical": true
+    },
+    {
+      "path": "validation/original/TEST_ATTEMPT1_TERMINAL.json",
+      "original_relative_path": "validation/TEST_ATTEMPT1_TERMINAL.json",
+      "scope": "original_execution_receipt",
+      "bytes": 1531,
+      "lines": 7,
+      "sha256": "c8f611af9a9e2da6e825e9e3ed3203f2d11f6603ef40b83b35c9e4c5b2715db9",
+      "git_blob": "a43917b3555a6850f51438fd5283d104ca020029",
+      "copy_is_byte_identical": true
+    },
+    {
+      "path": "validation/original/VALIDATION.json",
+      "original_relative_path": "validation/VALIDATION.json",
+      "scope": "original_execution_receipt",
+      "bytes": 2218,
+      "lines": 69,
+      "sha256": "678712c6aadb52747eb94cd254351fe10300849f4ef708e2aa5bdf9facfd8be7",
+      "git_blob": "5228f3144649f410cf8ab22bb129a595e68f3516",
+      "copy_is_byte_identical": true
+    },
+    {
+      "path": "reviews/r2-protocol-tools-v1-root-review.json",
+      "original_relative_path": "reviews/r2-protocol-tools-v1-root-review.json",
+      "scope": "original_independent_source_review",
+      "bytes": 2546,
+      "lines": 35,
+      "sha256": "0e8559c965b45b0f005a123881c40bf89c409d6ca885a3b98378420d3ff84791",
+      "git_blob": "127417403b8e558cd70c4125fff67b13046052ed",
+      "copy_is_byte_identical": true
+    },
+    {
+      "path": "reviews/ORIGINAL_SOURCE_MANIFEST.json",
+      "original_relative_path": "tool-review-v1/MANIFEST.json",
+      "scope": "original_independent_source_manifest",
+      "bytes": 2358,
+      "lines": 79,
+      "sha256": "03a8068ca00e36f10699457b19d5736b99a85a254adb98e0a398d24d6220203d",
+      "git_blob": "474c8e958b6d448025521946e8c97c7aeb629257",
+      "copy_is_byte_identical": true
+    },
+    {
+      "path": "reviews/source/make_candidate.py",
+      "original_relative_path": "make_candidate.py",
+      "scope": "archived_generator_source_not_a_runtime_dependency",
+      "bytes": 19372,
+      "lines": 217,
+      "sha256": "d33745f626f6a9dc8322cdd3414782d5a962be2803db801cbbd828314216cab4",
+      "git_blob": "67d4afde126b40b302fac5839ca300deab59bf80",
+      "copy_is_byte_identical": true
+    },
+    {
+      "path": "validation/original/READINESS_REPORT.json",
+      "original_relative_path": "READINESS_REPORT.json",
+      "scope": "original_readiness_output",
+      "bytes": 485,
+      "lines": 18,
+      "sha256": "310b901ebeb3f598a2e2bef16f891a2119acc88daa528053d036ef71e09bf5db",
+      "git_blob": "02f67aa4f2fd2f5dc8372b42bc031cdaa94be028",
+      "copy_is_byte_identical": true
+    },
+    {
+      "path": "source-recovery/fixed/r2_PARTIAL_FREEZE.json",
+      "original_relative_path": "source-recovery/fixed/r2_PARTIAL_FREEZE.json",
+      "scope": "published_legacy_freeze",
+      "bytes": 31379,
+      "lines": 616,
+      "sha256": "db43eb73bf2a6e74780c39084ff2abfff9c55a388f2083b939b4ed9ef17fdac5",
+      "git_blob": "a466d6e14c71dca46bf0e47774372a47e89ba728",
+      "copy_is_byte_identical": true
+    },
+    {
+      "path": "source-recovery/fixed/r2_SOURCE_REFERENCES.json",
+      "original_relative_path": "source-recovery/fixed/r2_SOURCE_REFERENCES.json",
+      "scope": "published_legacy_source_references",
+      "bytes": 5782,
+      "lines": 90,
+      "sha256": "517a90e577a8f1215172143676ac6261549207c9adfe62f0862d85c53e05a38d",
+      "git_blob": "8fab1b8a95871044525ad08bd3d247b25250097b",
+      "copy_is_byte_identical": true
+    }
+  ],
+  "original_review_manifest_resolution": [
+    {
+      "manifest_path": "make_candidate.py",
+      "package_path": "reviews/source/make_candidate.py"
+    },
+    {
+      "manifest_path": "PROTOCOL.json",
+      "package_path": "PROTOCOL.json"
+    },
+    {
+      "manifest_path": "BASELINE_CONTRACT.json",
+      "package_path": "BASELINE_CONTRACT.json"
+    },
+    {
+      "manifest_path": "DATA_CONTRACT.json",
+      "package_path": "DATA_CONTRACT.json"
+    },
+    {
+      "manifest_path": "UTILITY_AND_POWER.json",
+      "package_path": "UTILITY_AND_POWER.json"
+    },
+    {
+      "manifest_path": "BUDGET_CONTRACT.json",
+      "package_path": "BUDGET_CONTRACT.json"
+    },
+    {
+      "manifest_path": "READINESS_INPUT.json",
+      "package_path": "READINESS_INPUT.json"
+    },
+    {
+      "manifest_path": "r2_statistics.py",
+      "package_path": "r2_statistics.py"
+    },
+    {
+      "manifest_path": "r2_capture.py",
+      "package_path": "r2_capture.py"
+    },
+    {
+      "manifest_path": "analyze_capture.py",
+      "package_path": "analyze_capture.py"
+    },
+    {
+      "manifest_path": "check_readiness.py",
+      "package_path": "check_readiness.py"
+    },
+    {
+      "manifest_path": "test_protocol_tools.py",
+      "package_path": "test_protocol_tools.py"
+    }
+  ],
+  "all_12_original_review_sources_present_with_exact_hashes": true,
+  "inherited_equals_published_partial_freeze_frozen_object": true,
+  "inherited_frozen_fields_sha256": "f720cbb1e97087c8be4ffaec5f006589876b1b3e67dba1cc7ea47c93f4bb108b",
+  "protocol_canonical_sha256": "17fc492f638858e1104d2dfe8d058c1e837a2d055df7991e0ae28ec5097358a9",
+  "originals_modified": false,
+  "new_training_calls": 0,
+  "new_model_calls": 0,
+  "new_real_evaluation_calls": 0
+}

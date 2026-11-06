@@ -1,0 +1,79 @@
+{
+  "schema": "hepta.r2.tool-source-review-request.v1",
+  "status": "SOURCE_AND_SYNTHETIC_CONTROLS_ONLY",
+  "files": [
+    {
+      "path": "make_candidate.py",
+      "bytes": 19372,
+      "sha256": "d33745f626f6a9dc8322cdd3414782d5a962be2803db801cbbd828314216cab4"
+    },
+    {
+      "path": "PROTOCOL.json",
+      "bytes": 32930,
+      "sha256": "1062e4183bc6e8ca3f6b855c33be8db5bce3084a9383afdc85438029f9109e6a"
+    },
+    {
+      "path": "BASELINE_CONTRACT.json",
+      "bytes": 5869,
+      "sha256": "cc2eecec685029507bc9387807d774c2795528ccf7f76a5d2db12939e6ebf55c"
+    },
+    {
+      "path": "DATA_CONTRACT.json",
+      "bytes": 4417,
+      "sha256": "058daf3da88b7761c133f8e9ea70cf6571ff20e5b6dde9f27a0d070fd16d2816"
+    },
+    {
+      "path": "UTILITY_AND_POWER.json",
+      "bytes": 2531,
+      "sha256": "4c24d551a84168b3171e65cd5c23933892401454556c2ad60264d9d9244962cd"
+    },
+    {
+      "path": "BUDGET_CONTRACT.json",
+      "bytes": 3205,
+      "sha256": "4b6539175841b2d50d2c122b15169150bcda5b790d9592eecf2e14cc267f2165"
+    },
+    {
+      "path": "READINESS_INPUT.json",
+      "bytes": 2440,
+      "sha256": "a681cdb28674ace18e8b9e5e946221decb1ce5e2570d2ba530498ebfca0a0417"
+    },
+    {
+      "path": "r2_statistics.py",
+      "bytes": 6389,
+      "sha256": "d5ee2dc348bcd91905d300fb93b95382f643bafdba0977d7e6be4e0cd49edb17"
+    },
+    {
+      "path": "r2_capture.py",
+      "bytes": 10463,
+      "sha256": "c952aed8b160c0d44eac06c7a27e9d6cf309e26e437ef24806575c27c0396422"
+    },
+    {
+      "path": "analyze_capture.py",
+      "bytes": 1718,
+      "sha256": "c4da7fcc97a9e1f8cd798029e1f7cfeef696b4d328a0a0cc0d933834dfea4e01"
+    },
+    {
+      "path": "check_readiness.py",
+      "bytes": 2011,
+      "sha256": "d6cdf72234a715cb89d5bbab0d6f51a35418aa3bac711b8deb1677f7429540e8"
+    },
+    {
+      "path": "test_protocol_tools.py",
+      "bytes": 9611,
+      "sha256": "a80c43b21358aac4e7f0400508e6baff70b7efe839c649f2e7ebcc768db6c4d5"
+    }
+  ],
+  "scope": [
+    "seven CE contrasts",
+    "99999 paired crossed bootstrap and Bonferroni tails",
+    "fixed-digest physical costs and failures",
+    "six-open-gate readiness refuses dispatch"
+  ],
+  "synthetic_python_controls": 17,
+  "model_calls": 0,
+  "training_calls": 0,
+  "evaluation_calls": 0,
+  "independent_custody_proven": false,
+  "new_test_available": false,
+  "no_update": true
+}

@@ -1,0 +1,489 @@
+{
+  "schema": "hepta.r2.candidate-delivery-manifest.v1",
+  "frozen_at": "2026-11-06T08:22:20.012523+00:00",
+  "repository_subdirectory": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/evidence/r2_protocol_candidate_20261106",
+  "scope": "Historical executable candidate, preserved evidence, new relocation-only validation and coverage explanation; not a completed R2 preregistration or study",
+  "publication_owner": "parent agent; no GitHub mutation performed by this subagent",
+  "suggested_base_pr": 4949,
+  "files_excluding_this_manifest": [
+    {
+      "path": "BASELINE_CONTRACT.json",
+      "stage": 1,
+      "bytes": 5869,
+      "lines": 197,
+      "sha256": "cc2eecec685029507bc9387807d774c2795528ccf7f76a5d2db12939e6ebf55c",
+      "git_blob": "3b24decc5d4fe22a2dd6031fe4dae78d98324a84",
+      "byte_preserved_original": true
+    },
+    {
+      "path": "BUDGET_CONTRACT.json",
+      "stage": 1,
+      "bytes": 3205,
+      "lines": 89,
+      "sha256": "4b6539175841b2d50d2c122b15169150bcda5b790d9592eecf2e14cc267f2165",
+      "git_blob": "43b38874e9ad5aedc85e3d8039a0546f949906b4",
+      "byte_preserved_original": true
+    },
+    {
+      "path": "DATA_CONTRACT.json",
+      "stage": 1,
+      "bytes": 4417,
+      "lines": 83,
+      "sha256": "058daf3da88b7761c133f8e9ea70cf6571ff20e5b6dde9f27a0d070fd16d2816",
+      "git_blob": "8f594481a4103076cc815899557989e12688e666",
+      "byte_preserved_original": true
+    },
+    {
+      "path": "EXPORT_FORMAT.md",
+      "stage": 3,
+      "bytes": 4512,
+      "lines": 80,
+      "sha256": "f635aef7854dcbb42854639198afcd253ef200ec083d53566448b783e4e614ed",
+      "git_blob": "b330153c66d26f21630016af806b30aaa60f2d70",
+      "byte_preserved_original": true
+    },
+    {
+      "path": "EXPOSURE_REGISTER.json",
+      "stage": 1,
+      "bytes": 8270,
+      "lines": 214,
+      "sha256": "302ccf5753c42db6cdf27d74bce8224a5cb67da4601d00aa1005386e4be85016",
+      "git_blob": "ecc4e88b786f596fd70eda51fe917ee57e8db1c1",
+      "byte_preserved_original": true
+    },
+    {
+      "path": "PRESERVATION.json",
+      "stage": 4,
+      "bytes": 12886,
+      "lines": 346,
+      "sha256": "e424f418c35923025b80495b21ad8a035b8502c19afd5047676932380211085b",
+      "git_blob": "174064a129eacd20be46b25ed98801ab72363a4c",
+      "byte_preserved_original": false
+    },
+    {
+      "path": "PROTOCOL.json",
+      "stage": 1,
+      "bytes": 32930,
+      "lines": 696,
+      "sha256": "1062e4183bc6e8ca3f6b855c33be8db5bce3084a9383afdc85438029f9109e6a",
+      "git_blob": "0c14a2ba2564584ccca47efe31987b75139eb0e9",
+      "byte_preserved_original": true
+    },
+    {
+      "path": "READINESS_INPUT.json",
+      "stage": 1,
+      "bytes": 2440,
+      "lines": 51,
+      "sha256": "a681cdb28674ace18e8b9e5e946221decb1ce5e2570d2ba530498ebfca0a0417",
+      "git_blob": "cbac6ea8dde2b76ca09d45fbfed1e04ae41f06b7",
+      "byte_preserved_original": true
+    },
+    {
+      "path": "README.md",
+      "stage": 4,
+      "bytes": 8915,
+      "lines": 125,
+      "sha256": "31dc11128a6ae36fdf62282800c7d86becba113a7bbd28a390d9c08a97245149",
+      "git_blob": "0390c3e601ec872b48e1a415eef154d4987668d2",
+      "byte_preserved_original": false
+    },
+    {
+      "path": "REQUIREMENTS_COVERAGE.md",
+      "stage": 4,
+      "bytes": 5973,
+      "lines": 51,
+      "sha256": "90d1090b8d80bcb20c5ea0fc89cca7241a23c8628c2d0ad0d5bd01559c912350",
+      "git_blob": "da45365c04912918f22bcac562832164124c0b8d",
+      "byte_preserved_original": false
+    },
+    {
+      "path": "SOURCE_PUBLICATION_AUDIT.json",
+      "stage": 4,
+      "bytes": 10158,
+      "lines": 248,
+      "sha256": "ea25d61a46887565737ff5be7843aa810cecedffd2aa4c9aa30213ac4a887756",
+      "git_blob": "73d09072482d041f58d57ea5154ad7bc21ff4a65",
+      "byte_preserved_original": false
+    },
+    {
+      "path": "UTILITY_AND_POWER.json",
+      "stage": 1,
+      "bytes": 2531,
+      "lines": 57,
+      "sha256": "4c24d551a84168b3171e65cd5c23933892401454556c2ad60264d9d9244962cd",
+      "git_blob": "d4253a8b42321c03c08ac073cd6bf458470f4a1f",
+      "byte_preserved_original": true
+    },
+    {
+      "path": "analyze_capture.py",
+      "stage": 2,
+      "bytes": 1718,
+      "lines": 36,
+      "sha256": "c4da7fcc97a9e1f8cd798029e1f7cfeef696b4d328a0a0cc0d933834dfea4e01",
+      "git_blob": "7e23d920410aa03beedffd6bf37c5195b755abfd",
+      "byte_preserved_original": true
+    },
+    {
+      "path": "audit_data_manifest.py",
+      "stage": 3,
+      "bytes": 3729,
+      "lines": 66,
+      "sha256": "45e4faabe8f27076d5f61b935146968660618bf38de0b02eb554eece460b4746",
+      "git_blob": "ea7947fb4acbfee22f08a99b88ddd808c9990dc1",
+      "byte_preserved_original": true
+    },
+    {
+      "path": "check_readiness.py",
+      "stage": 3,
+      "bytes": 2011,
+      "lines": 48,
+      "sha256": "d6cdf72234a715cb89d5bbab0d6f51a35418aa3bac711b8deb1677f7429540e8",
+      "git_blob": "289b773a7cb17cdb854ebae95a8af3254b5d065f",
+      "byte_preserved_original": true
+    },
+    {
+      "path": "compile_contracts.py",
+      "stage": 3,
+      "bytes": 3984,
+      "lines": 77,
+      "sha256": "cd195e711ecadcbf8df70b07c69b26df9a3bf4bc322fe4da7d29d382e5b94bd3",
+      "git_blob": "b527a984d4e857bfdfbe0ca110ad36dcc9c10457",
+      "byte_preserved_original": true
+    },
+    {
+      "path": "r2_capture.py",
+      "stage": 2,
+      "bytes": 10463,
+      "lines": 173,
+      "sha256": "c952aed8b160c0d44eac06c7a27e9d6cf309e26e437ef24806575c27c0396422",
+      "git_blob": "2a93abe2db5c49529a8cf3ee91406a38b7a45ca1",
+      "byte_preserved_original": true
+    },
+    {
+      "path": "r2_statistics.py",
+      "stage": 2,
+      "bytes": 6389,
+      "lines": 121,
+      "sha256": "d5ee2dc348bcd91905d300fb93b95382f643bafdba0977d7e6be4e0cd49edb17",
+      "git_blob": "24e9a3131280b04b79247c3adaf253cd892ff278",
+      "byte_preserved_original": true
+    },
+    {
+      "path": "reviews/ORIGINAL_SOURCE_MANIFEST.json",
+      "stage": 4,
+      "bytes": 2358,
+      "lines": 79,
+      "sha256": "03a8068ca00e36f10699457b19d5736b99a85a254adb98e0a398d24d6220203d",
+      "git_blob": "474c8e958b6d448025521946e8c97c7aeb629257",
+      "byte_preserved_original": true
+    },
+    {
+      "path": "reviews/r2-protocol-tools-v1-root-review.json",
+      "stage": 4,
+      "bytes": 2546,
+      "lines": 35,
+      "sha256": "0e8559c965b45b0f005a123881c40bf89c409d6ca885a3b98378420d3ff84791",
+      "git_blob": "127417403b8e558cd70c4125fff67b13046052ed",
+      "byte_preserved_original": true
+    },
+    {
+      "path": "reviews/source/make_candidate.py",
+      "stage": 4,
+      "bytes": 19372,
+      "lines": 217,
+      "sha256": "d33745f626f6a9dc8322cdd3414782d5a962be2803db801cbbd828314216cab4",
+      "git_blob": "67d4afde126b40b302fac5839ca300deab59bf80",
+      "byte_preserved_original": true
+    },
+    {
+      "path": "source-recovery/SELECTED_SOURCE_INDEX.json",
+      "stage": 1,
+      "bytes": 2101,
+      "lines": 40,
+      "sha256": "680b6f3aa1a09f958c1fc33bdb208d851bbfab0d65004ae96b3818a4b9af9bfa",
+      "git_blob": "08140fd1fd394630cab325235f2a31938a725f6f",
+      "byte_preserved_original": false
+    },
+    {
+      "path": "source-recovery/fixed/r2_PARTIAL_FREEZE.json",
+      "stage": 1,
+      "bytes": 31379,
+      "lines": 616,
+      "sha256": "db43eb73bf2a6e74780c39084ff2abfff9c55a388f2083b939b4ed9ef17fdac5",
+      "git_blob": "a466d6e14c71dca46bf0e47774372a47e89ba728",
+      "byte_preserved_original": true
+    },
+    {
+      "path": "source-recovery/fixed/r2_SOURCE_REFERENCES.json",
+      "stage": 1,
+      "bytes": 5782,
+      "lines": 90,
+      "sha256": "517a90e577a8f1215172143676ac6261549207c9adfe62f0862d85c53e05a38d",
+      "git_blob": "8fab1b8a95871044525ad08bd3d247b25250097b",
+      "byte_preserved_original": true
+    },
+    {
+      "path": "test_protocol_tools.py",
+      "stage": 3,
+      "bytes": 9611,
+      "lines": 195,
+      "sha256": "a80c43b21358aac4e7f0400508e6baff70b7efe839c649f2e7ebcc768db6c4d5",
+      "git_blob": "704fbf501c88825308d26793ff169a66fd167beb",
+      "byte_preserved_original": true
+    },
+    {
+      "path": "validation/original/READINESS.stderr",
+      "stage": 4,
+      "bytes": 0,
+      "lines": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "byte_preserved_original": true
+    },
+    {
+      "path": "validation/original/READINESS.stdout",
+      "stage": 4,
+      "bytes": 485,
+      "lines": 18,
+      "sha256": "310b901ebeb3f598a2e2bef16f891a2119acc88daa528053d036ef71e09bf5db",
+      "git_blob": "02f67aa4f2fd2f5dc8372b42bc031cdaa94be028",
+      "byte_preserved_original": true
+    },
+    {
+      "path": "validation/original/READINESS_COMMAND.json",
+      "stage": 4,
+      "bytes": 687,
+      "lines": 17,
+      "sha256": "fb7eb78d3b247996981e948cd3c93b38400906a86a13be5a04e261ac72490cf3",
+      "git_blob": "d297752fb5edd92044d7a00e6576e4a95224f080",
+      "byte_preserved_original": true
+    },
+    {
+      "path": "validation/original/READINESS_REPORT.json",
+      "stage": 4,
+      "bytes": 485,
+      "lines": 18,
+      "sha256": "310b901ebeb3f598a2e2bef16f891a2119acc88daa528053d036ef71e09bf5db",
+      "git_blob": "02f67aa4f2fd2f5dc8372b42bc031cdaa94be028",
+      "byte_preserved_original": true
+    },
+    {
+      "path": "validation/original/TEST_ATTEMPT1.output.log",
+      "stage": 4,
+      "bytes": 2237,
+      "lines": 22,
+      "sha256": "5cc7bad937abb23ca4a377669e2810683067a22b8b02430194cecb1917d0677e",
+      "git_blob": "9f69224d6013d5ac5048d1b7016769054bbbfa47",
+      "byte_preserved_original": true
+    },
+    {
+      "path": "validation/original/TEST_ATTEMPT1_LAUNCH.json",
+      "stage": 4,
+      "bytes": 1185,
+      "lines": 14,
+      "sha256": "3b1eee0a4f11c84ed44f8c388d71e2626b93f5e3d6fc77556c4df6e19107a935",
+      "git_blob": "6bc42445b8ef5744c116a0f579a3cbdea01229b6",
+      "byte_preserved_original": true
+    },
+    {
+      "path": "validation/original/TEST_ATTEMPT1_TERMINAL.json",
+      "stage": 4,
+      "bytes": 1531,
+      "lines": 7,
+      "sha256": "c8f611af9a9e2da6e825e9e3ed3203f2d11f6603ef40b83b35c9e4c5b2715db9",
+      "git_blob": "a43917b3555a6850f51438fd5283d104ca020029",
+      "byte_preserved_original": true
+    },
+    {
+      "path": "validation/original/VALIDATION.json",
+      "stage": 4,
+      "bytes": 2218,
+      "lines": 69,
+      "sha256": "678712c6aadb52747eb94cd254351fe10300849f4ef708e2aa5bdf9facfd8be7",
+      "git_blob": "5228f3144649f410cf8ab22bb129a595e68f3516",
+      "byte_preserved_original": true
+    },
+    {
+      "path": "validation/relocation/attempt1/EXECUTION.json",
+      "stage": 4,
+      "bytes": 5068,
+      "lines": 137,
+      "sha256": "f27c494e5c42c7c2eabffb2e1c2584079b4a89baa19139c8105d165966de8e64",
+      "git_blob": "a33c6e77906da83f6f6277bced603c3d7f3c764c",
+      "byte_preserved_original": false
+    },
+    {
+      "path": "validation/relocation/attempt1/OUTPUT_COMPARISON.json",
+      "stage": 4,
+      "bytes": 1738,
+      "lines": 39,
+      "sha256": "2e3919408b3c49ecfd046d8fb7269700c2a7dffe10b9ef8b9f544f18d6a16d98",
+      "git_blob": "e1c013514ce8edd7ba03cd35f02522a1bcbcde9f",
+      "byte_preserved_original": false
+    },
+    {
+      "path": "validation/relocation/attempt1/check_readiness.stderr",
+      "stage": 4,
+      "bytes": 0,
+      "lines": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "byte_preserved_original": false
+    },
+    {
+      "path": "validation/relocation/attempt1/check_readiness.stdout",
+      "stage": 4,
+      "bytes": 485,
+      "lines": 18,
+      "sha256": "310b901ebeb3f598a2e2bef16f891a2119acc88daa528053d036ef71e09bf5db",
+      "git_blob": "02f67aa4f2fd2f5dc8372b42bc031cdaa94be028",
+      "byte_preserved_original": false
+    },
+    {
+      "path": "validation/relocation/attempt1/compile_contracts.stderr",
+      "stage": 4,
+      "bytes": 0,
+      "lines": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "byte_preserved_original": false
+    },
+    {
+      "path": "validation/relocation/attempt1/compile_contracts.stdout",
+      "stage": 4,
+      "bytes": 247,
+      "lines": 1,
+      "sha256": "ee9758ab0852ef6632327304b3eca000be3ee1c140d45270cbb7c54ef42ec207",
+      "git_blob": "516e6dd787e1c03bf1ab71f48fd8c7864b945fac",
+      "byte_preserved_original": false
+    },
+    {
+      "path": "validation/relocation/check_relocation.py",
+      "stage": 4,
+      "bytes": 5882,
+      "lines": 108,
+      "sha256": "aaff27dec2b2b7202db5d783edb27260aa5349c34c819163650f2dc0be4ae89e",
+      "git_blob": "a55c709b1b747089ec10bf99965d1b6ad9283596",
+      "byte_preserved_original": false
+    }
+  ],
+  "total_files_including_this_manifest": 41,
+  "total_listed_bytes_excluding_this_manifest": 225797,
+  "stages": [
+    {
+      "stage": 1,
+      "suggested_commit_subject": "Preserve candidate contracts and historical freeze",
+      "scope": "Mechanical byte-preserving archival restore; new selected provenance mapping only",
+      "files": [
+        "BASELINE_CONTRACT.json",
+        "BUDGET_CONTRACT.json",
+        "DATA_CONTRACT.json",
+        "EXPOSURE_REGISTER.json",
+        "PROTOCOL.json",
+        "READINESS_INPUT.json",
+        "UTILITY_AND_POWER.json",
+        "source-recovery/SELECTED_SOURCE_INDEX.json",
+        "source-recovery/fixed/r2_PARTIAL_FREEZE.json",
+        "source-recovery/fixed/r2_SOURCE_REFERENCES.json"
+      ],
+      "listed_file_lines_excluding_delivery_manifest": 2133,
+      "listed_file_bytes_excluding_delivery_manifest": 98924
+    },
+    {
+      "stage": 2,
+      "suggested_commit_subject": "Restore seven-contrast CE and cost-accounting engine",
+      "scope": "330 unchanged Python lines; no new statistical method",
+      "files": [
+        "analyze_capture.py",
+        "r2_capture.py",
+        "r2_statistics.py"
+      ],
+      "listed_file_lines_excluding_delivery_manifest": 330,
+      "listed_file_bytes_excluding_delivery_manifest": 18570
+    },
+    {
+      "stage": 3,
+      "suggested_commit_subject": "Restore compilation, readiness, metadata audit and original controls",
+      "scope": "466 unchanged source/documentation lines; requires stages 1 and 2",
+      "files": [
+        "EXPORT_FORMAT.md",
+        "audit_data_manifest.py",
+        "check_readiness.py",
+        "compile_contracts.py",
+        "test_protocol_tools.py"
+      ],
+      "listed_file_lines_excluding_delivery_manifest": 466,
+      "listed_file_bytes_excluding_delivery_manifest": 23847
+    },
+    {
+      "stage": 4,
+      "suggested_commit_subject": "Attach original evidence and bounded relocation qualification",
+      "scope": "Original receipts plus new scope documentation, 108-line Linux-only CLI supervisor and metadata; no new study execution",
+      "files": [
+        "PRESERVATION.json",
+        "README.md",
+        "REQUIREMENTS_COVERAGE.md",
+        "SOURCE_PUBLICATION_AUDIT.json",
+        "reviews/ORIGINAL_SOURCE_MANIFEST.json",
+        "reviews/r2-protocol-tools-v1-root-review.json",
+        "reviews/source/make_candidate.py",
+        "validation/original/READINESS.stderr",
+        "validation/original/READINESS.stdout",
+        "validation/original/READINESS_COMMAND.json",
+        "validation/original/READINESS_REPORT.json",
+        "validation/original/TEST_ATTEMPT1.output.log",
+        "validation/original/TEST_ATTEMPT1_LAUNCH.json",
+        "validation/original/TEST_ATTEMPT1_TERMINAL.json",
+        "validation/original/VALIDATION.json",
+        "validation/relocation/attempt1/EXECUTION.json",
+        "validation/relocation/attempt1/OUTPUT_COMPARISON.json",
+        "validation/relocation/attempt1/check_readiness.stderr",
+        "validation/relocation/attempt1/check_readiness.stdout",
+        "validation/relocation/attempt1/compile_contracts.stderr",
+        "validation/relocation/attempt1/compile_contracts.stdout",
+        "validation/relocation/check_relocation.py",
+        "DELIVERY_MANIFEST.json"
+      ],
+      "listed_file_lines_excluding_delivery_manifest": 1569,
+      "listed_file_bytes_excluding_delivery_manifest": 84456
+    }
+  ],
+  "copied_original_files": 28,
+  "minimum_runtime_and_contract_files": 15,
+  "all_original_files_rechecked_identical_at_delivery": true,
+  "original_17_controls_rerun": false,
+  "new_actual_commands": [
+    {
+      "script": "compile_contracts.py",
+      "exit_code": 0
+    },
+    {
+      "script": "check_readiness.py",
+      "exit_code": 2
+    }
+  ],
+  "new_bootstrap_replicates": 0,
+  "new_model_calls": 0,
+  "new_training_calls": 0,
+  "new_real_evaluation_calls": 0,
+  "new_measured_costs": {
+    "nonoverlapping_child_cpu_seconds": 1.7977369999999997,
+    "sequential_child_wall_seconds": 0.46697220299756736,
+    "wrapper_interval_wall_seconds": 0.4781282600015402,
+    "wrapper_own_interval_cpu_seconds": 0.017246552000000026,
+    "scope": "Whole CLI children; wrapper interval excludes imports and final receipt write. Do not add nested wall intervals.",
+    "peak_rss_bytes": null,
+    "energy_joules": null,
+    "physical_io_bytes": null,
+    "network_bytes": null,
+    "original_execution_cost": null,
+    "authoring_and_publication_cost": null
+  },
+  "open_gate_count": 6,
+  "total_resource_caps_allocated": false,
+  "real_power_demonstrated": false,
+  "test_N_selected": false,
+  "all_user_baselines_implemented": false,
+  "no_product_promotion": true,
+  "self_identity_rule": "This manifest deliberately omits its own recursive hash; delivery message records its complete byte SHA256 and Git blob."
+}

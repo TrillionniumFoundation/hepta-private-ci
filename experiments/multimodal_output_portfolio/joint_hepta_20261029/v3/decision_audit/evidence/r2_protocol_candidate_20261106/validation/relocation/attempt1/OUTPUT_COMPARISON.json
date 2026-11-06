@@ -1,0 +1,39 @@
+{
+  "schema": "hepta.r2.relocation-output-comparison.v1",
+  "observed_at": "2026-11-06T08:19:27.214378+00:00",
+  "comparisons": [
+    {
+      "original_path": "/workspace/scratch/4d868a11a31c/r1-diagnostics/r2-preregistration-v2/COMPILED_PLAN.json",
+      "relocated_output_path": "/workspace/scratch/e5ae6a941e52/r2-protocol/validation/protocol-relocation-attempt1/compile_contracts.json",
+      "original_identity": {
+        "bytes": 1290660,
+        "sha256": "2137426bfa86b8cb5bb190b3924434a3d5671d4fb9196818753291ec20b31ca8",
+        "git_blob": "45e4763e79a8db6f6e57551bb61508dea759cb2e"
+      },
+      "relocated_identity": {
+        "bytes": 1290660,
+        "sha256": "2137426bfa86b8cb5bb190b3924434a3d5671d4fb9196818753291ec20b31ca8",
+        "git_blob": "45e4763e79a8db6f6e57551bb61508dea759cb2e"
+      },
+      "exact_byte_match": true
+    },
+    {
+      "original_path": "/workspace/scratch/4d868a11a31c/r1-diagnostics/r2-preregistration-v2/READINESS_REPORT.json",
+      "relocated_output_path": "/workspace/scratch/e5ae6a941e52/r2-protocol/validation/protocol-relocation-attempt1/check_readiness.json",
+      "original_identity": {
+        "bytes": 485,
+        "sha256": "310b901ebeb3f598a2e2bef16f891a2119acc88daa528053d036ef71e09bf5db",
+        "git_blob": "02f67aa4f2fd2f5dc8372b42bc031cdaa94be028"
+      },
+      "relocated_identity": {
+        "bytes": 485,
+        "sha256": "310b901ebeb3f598a2e2bef16f891a2119acc88daa528053d036ef71e09bf5db",
+        "git_blob": "02f67aa4f2fd2f5dc8372b42bc031cdaa94be028"
+      },
+      "exact_byte_match": true
+    }
+  ],
+  "scope": "Byte comparison after two CLI relocations, no new statistics or training",
+  "new_bootstrap_replicates": 0,
+  "source_originals_modified": false
+}

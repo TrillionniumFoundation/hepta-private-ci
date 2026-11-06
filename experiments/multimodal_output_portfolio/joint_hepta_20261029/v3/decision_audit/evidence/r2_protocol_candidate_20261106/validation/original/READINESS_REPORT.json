@@ -1,0 +1,18 @@
+{
+  "schema": "hepta.r2.readiness-report.v1",
+  "protocol_sha256": "17fc492f638858e1104d2dfe8d058c1e837a2d055df7991e0ae28ec5097358a9",
+  "status": "BLOCKED",
+  "open_gates": [
+    "NEW_DATA",
+    "EVALUATOR_CUSTODY",
+    "REAL_TRAINER",
+    "BUDGET_AND_BASELINES",
+    "QUALITY_AND_POWER",
+    "CANDIDATE_IDENTITY"
+  ],
+  "evidence_is_not_self_authenticating": true,
+  "test_dispatch_allowed": false,
+  "training_started": false,
+  "model_update_allowed": false,
+  "no_update": true
+}
