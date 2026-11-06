@@ -1,0 +1,31 @@
+{
+  "observed_at_utc": "2026-11-06T20:35:36.315582+00:00",
+  "publication_manifest_sha256": "70d29bd0e85bc682e23fed1730bc18030170d88bc6196ddaef7aa1e0819cd955",
+  "index_sha256": "fe4eddb84725044d661fc880244a8c49ca5d7122f8a9325f76e264631320f24d",
+  "transport_sha256": "5a8fdd5ca9c762535719bf078f01713f06f338a5f38415c50a3c3d569bdaeefd",
+  "reader_fully_read_and_byte_identical_except_two_fixed_seals_to_prior_reviewed_reader": true,
+  "prior_reader_sha256": "5b3ef29f9d2f274d4575b08c056231581899b3086aa755715b74058e77209c12",
+  "reader_sha256": "a567b4e0d27dc760156d0346601464dc86ee23f356a8478fa5b92348c1b018c4",
+  "original_files": 130,
+  "original_bytes": 769986,
+  "original_source_bytes_and_exact_regular_modes_checked": true,
+  "restore_argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-O",
+    "-B",
+    "/workspace/scratch/3f6a885bb83c/round3_core_evidence_supplement_reporter_v3_v1/restore.py",
+    "/workspace/scratch/3f6a885bb83c/round3_core_evidence_supplement_reporter_v3_v1",
+    "/workspace/scratch/3f6a885bb83c/round3_root_restore_core_reporter_v3_2035"
+  ],
+  "restore_exit_code": 0,
+  "restored_complete_roster_bytes_and_modes_equal_originals": true,
+  "bundle_five_files_before_after_unchanged": true,
+  "stdout_sha256": "b8329caafd07213a079df08b2d167ef81b50ba34c44e79689170ca12950b1cc0",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "embedded_code_or_native_tests_executed": false,
+  "missing_historical_stderr_or_junit_recovered": false,
+  "five_diagnostic_passes_are_qualified_behavior_passes": false,
+  "root_original_failure_audit_sha256": "fed5e1f27f51557f434c2527882faab55519be1bfdab390c1524fdc397c5bd45",
+  "future_partial_contract_included": false,
+  "research_decision": "NO_GO_FOR_LARGE_SCALE_TRAINING"
+}
