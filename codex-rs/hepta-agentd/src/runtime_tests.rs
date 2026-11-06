@@ -75,25 +75,33 @@ struct RuntimeFixture {
 }
 
 fn runtime_fixture() -> RuntimeFixture {
-    let temp = tempfile::tempdir().expect("temporary root");
+    let temp = tempfile::tempdir().unwrap_or_else(|error| panic!("temporary root: {error:?}"));
     let root = temp
         .path()
         .canonicalize()
-        .expect("canonical temporary root");
+        .unwrap_or_else(|error| panic!("canonical temporary root: {error:?}"));
     let fleet_path = root.join("fleet");
-    let fleet_root = HeptaFleetRoot::parse(fleet_path.clone()).expect("valid fleet root");
-    let registry = FleetRegistry::initialize(fleet_root.clone()).expect("initialize registry");
+    let fleet_root = HeptaFleetRoot::parse(fleet_path.clone())
+        .unwrap_or_else(|error| panic!("valid fleet root: {error:?}"));
+    let registry = FleetRegistry::initialize(fleet_root.clone())
+        .unwrap_or_else(|error| panic!("initialize registry: {error:?}"));
     let workspace = root.join("workspace");
-    std::fs::create_dir(&workspace).expect("create workspace");
-    let workspace = workspace.canonicalize().expect("canonical workspace");
-    let agent_id = AgentId::parse(AGENT_ID).expect("valid agent id");
-    let binding = WorkspaceBinding::new(&workspace, &fleet_root).expect("workspace binding");
+    std::fs::create_dir(&workspace).unwrap_or_else(|error| panic!("create workspace: {error:?}"));
+    let workspace = workspace
+        .canonicalize()
+        .unwrap_or_else(|error| panic!("canonical workspace: {error:?}"));
+    let agent_id =
+        AgentId::parse(AGENT_ID).unwrap_or_else(|error| panic!("valid agent id: {error:?}"));
+    let binding = WorkspaceBinding::new(&workspace, &fleet_root)
+        .unwrap_or_else(|error| panic!("workspace binding: {error:?}"));
     let manifest = AgentManifest::new(agent_id.clone(), binding, ResourceBudget::local_default())
-        .expect("agent manifest");
-    let record = registry.register(manifest).expect("register agent");
+        .unwrap_or_else(|error| panic!("agent manifest: {error:?}"));
+    let record = registry
+        .register(manifest)
+        .unwrap_or_else(|error| panic!("register agent: {error:?}"));
     registry
         .compare_and_transition(&agent_id, 0, AgentLifecycle::Starting)
-        .expect("start generation");
+        .unwrap_or_else(|error| panic!("start generation: {error:?}"));
     let identity = AgentdIdentity {
         agent_id,
         layout: record.layout.clone(),
@@ -107,7 +115,8 @@ fn runtime_fixture() -> RuntimeFixture {
         app_server_socket: record.layout.app_server_socket().to_path_buf(),
     };
     let state = Arc::new(
-        AgentdState::new(identity.clone(), registry.clone(), EVENT_CAPACITY).expect("agent state"),
+        AgentdState::new(identity.clone(), registry.clone(), EVENT_CAPACITY)
+            .unwrap_or_else(|error| panic!("agent state: {error:?}")),
     );
     RuntimeFixture {
         _temp: temp,
@@ -120,15 +129,15 @@ fn runtime_fixture() -> RuntimeFixture {
 async fn attach_runtime_prerequisites(fixture: &RuntimeFixture) {
     let store = codex_hepta_cognitive_store::DurableCognitiveStore::open(&fixture.identity.layout)
         .await
-        .expect("real cognitive owner");
+        .unwrap_or_else(|error| panic!("real cognitive owner: {error:?}"));
     fixture
         .state
         .attach_cognitive_store(Arc::new(store))
-        .expect("owner attachment");
+        .unwrap_or_else(|error| panic!("owner attachment: {error:?}"));
     fixture
         .state
         .mark_runtime_prerequisites_ready()
-        .expect("owner prerequisites");
+        .unwrap_or_else(|error| panic!("owner prerequisites: {error:?}"));
 }
 
 #[tokio::test]

@@ -207,7 +207,9 @@ mod tests {
                     accelerator_millis: 1_000,
                 },
             })
-            .expect("fixture host observation is valid for the fleet ledger");
+            .unwrap_or_else(|error| {
+                panic!("fixture host observation is valid for the fleet ledger: {error:?}")
+            });
         ledger
     }
 
