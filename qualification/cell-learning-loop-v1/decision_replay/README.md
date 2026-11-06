@@ -101,3 +101,33 @@ The three new implementation files total **339 lines**. Original helper and
 validator sources are copied byte-for-byte into the frozen dependency closure.
 No original evidence or implementation file was edited to incorporate this
 post-run result.
+
+## Subsequent phase-process repair (2026-11-06)
+
+The historical statements and measurements above describe the frozen original
+replay. Its `EXECUTED_SOURCE`, manifests, results, artifacts and owner remain
+unchanged. Subsequent driver source now freezes a 60-second wall limit per
+worker phase and a separate five-second termination-observation limit. The
+original CPU limit alone could not bound a worker waiting on I/O.
+
+The driver starts each direct child in a new process group, records the phase
+before dispatch, and polls only its own child with `wait4`. At the wall limit
+it requests termination of that owned group. A late observed successful exit
+still fails the deadline. Reaping the direct child preserves its actual exit
+status and measured CPU; missing wait results preserve unknown CPU and RSS.
+Failure to signal, wait or synchronize the log is a failed observation, not
+permission to start the next phase. A lost wait owner is never followed by a
+signal to a possibly reused PID. These observations do not prove that every
+detached descendant terminated.
+
+The outer `measure.py` driver still uses a blocking `wait4`, and preparation
+and filesystem I/O have no new whole-driver hard deadline. The new bounds apply
+to the worker-phase wait and its termination observation. Historical replay
+quality and authorization predicates are unchanged; no model was loaded or
+replayed to qualify this source change.
+
+Run the no-model behavior tests from this directory:
+
+```bash
+python3 -B -m unittest -v test_phase_process test_replay_dispatch
+```
