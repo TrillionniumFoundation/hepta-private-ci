@@ -1342,6 +1342,7 @@ mod tests {
     #[tokio::test]
     async fn http_connect_accept_defers_brokered_host_mitm_until_protocol_detection() {
         let mut policy = NetworkProxyConfig {
+            allow_local_binding: true,
             credential_broker: true,
             mitm: true,
             ..NetworkProxyConfig::default()
