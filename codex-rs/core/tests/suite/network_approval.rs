@@ -60,6 +60,8 @@ use core_test_support::skip_if_no_network;
 use core_test_support::skip_if_no_remote_env;
 use core_test_support::skip_if_sandbox;
 use core_test_support::skip_if_target_windows;
+use core_test_support::streaming_sse::StreamingSseChunk;
+use core_test_support::streaming_sse::start_streaming_sse_server;
 use core_test_support::test_codex::TestCodex;
 use core_test_support::test_codex::local;
 use core_test_support::test_codex::test_codex;
@@ -79,6 +81,8 @@ use tempfile::TempDir;
 use test_case::test_case;
 use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
+use tokio::sync::oneshot;
+use wiremock::Match;
 
 const NETWORK_TEST_HOST: &str = "codex-network-test.invalid";
 const NETWORK_TEST_TARGET: &str = "http://codex-network-test.invalid:80";
@@ -239,6 +243,7 @@ async fn strict_auto_review_routes_network_approval_to_guardian_when_user_review
     let test = managed_network_unified_exec_test_with_features(
         &server,
         &[Feature::RequestPermissionsTool],
+        /*response_base_url*/ None,
     )
     .await?;
     let permission_call_id = "strict-network-permissions";
@@ -671,11 +676,6 @@ async fn background_network_approval_uses_active_turn_after_original_turn_comple
     skip_if_sandbox!(Ok(()));
 
     let server = start_mock_server().await;
-    let test = managed_network_unified_exec_test_with_features(
-        &server,
-        &[Feature::RequestPermissionsTool],
-    )
-    .await?;
     let start_call_id = "cross-turn-network-start";
     let permission_call_id = "cross-turn-network-permissions";
     let stdin_call_id = "cross-turn-network-stdin";
@@ -692,67 +692,92 @@ async fn background_network_approval_uses_active_turn_after_original_turn_comple
     start_args["environment_id"] = json!(LOCAL_ENVIRONMENT_ID);
     start_args["tty"] = json!(true);
     start_args["yield_time_ms"] = json!(250);
-    let responses = mount_sse_sequence(
+    let scripted_responses = vec![
+        sse(vec![
+            ev_response_created("resp-cross-turn-network-start"),
+            ev_function_call(
+                start_call_id,
+                "exec_command",
+                &serde_json::to_string(&start_args)?,
+            ),
+            ev_completed("resp-cross-turn-network-start"),
+        ]),
+        sse(vec![
+            ev_response_created("resp-cross-turn-network-first-complete"),
+            ev_assistant_message("msg-cross-turn-network-first-complete", "terminal started"),
+            ev_completed("resp-cross-turn-network-first-complete"),
+        ]),
+        sse(vec![
+            ev_response_created("resp-cross-turn-network-permissions"),
+            ev_function_call(
+                permission_call_id,
+                "request_permissions",
+                &serde_json::to_string(&json!({
+                    "reason": "Automatically review the existing terminal's network access",
+                    "permissions": requested_permissions,
+                }))?,
+            ),
+            ev_completed("resp-cross-turn-network-permissions"),
+        ]),
+        sse(vec![
+            ev_response_created("resp-cross-turn-network-stdin"),
+            ev_function_call(
+                stdin_call_id,
+                "write_stdin",
+                &serde_json::to_string(&json!({
+                    "session_id": 1000,
+                    "chars": "continue\n",
+                    "yield_time_ms": 1_000,
+                }))?,
+            ),
+            ev_completed("resp-cross-turn-network-stdin"),
+        ]),
+        sse(vec![
+            ev_response_created("resp-cross-turn-network-guardian"),
+            ev_assistant_message(
+                "msg-cross-turn-network-guardian",
+                r#"{"risk_level":"low","user_authorization":"high","outcome":"allow","rationale":"The existing terminal's network request is safe."}"#,
+            ),
+            ev_completed("resp-cross-turn-network-guardian"),
+        ]),
+        sse(vec![
+            ev_response_created("resp-cross-turn-network-second-complete"),
+            ev_assistant_message(
+                "msg-cross-turn-network-second-complete",
+                "network request approved",
+            ),
+            ev_completed("resp-cross-turn-network-second-complete"),
+        ]),
+    ];
+    let stdin_completion = sse(vec![ev_completed("resp-cross-turn-network-stdin")]);
+    let stdin_call = scripted_responses[3]
+        .strip_suffix(&stdin_completion)
+        .context("stdin response must end with its completion event")?
+        .to_string();
+    let mut streams = scripted_responses
+        .into_iter()
+        .map(|body| vec![StreamingSseChunk { gate: None, body }])
+        .collect::<Vec<_>>();
+    let (complete_stdin, stdin_completion_gate) = oneshot::channel();
+    // Tool dispatch starts when the function call arrives. Retain this stream
+    // until the real assessment so the parent cannot consume Guardian's reply.
+    streams[3] = vec![
+        StreamingSseChunk {
+            gate: None,
+            body: stdin_call,
+        },
+        StreamingSseChunk {
+            gate: Some(stdin_completion_gate),
+            body: stdin_completion,
+        },
+    ];
+    let (streaming, completions) = start_streaming_sse_server(streams).await;
+    let test = managed_network_unified_exec_test_with_features(
         &server,
-        vec![
-            sse(vec![
-                ev_response_created("resp-cross-turn-network-start"),
-                ev_function_call(
-                    start_call_id,
-                    "exec_command",
-                    &serde_json::to_string(&start_args)?,
-                ),
-                ev_completed("resp-cross-turn-network-start"),
-            ]),
-            sse(vec![
-                ev_response_created("resp-cross-turn-network-first-complete"),
-                ev_assistant_message("msg-cross-turn-network-first-complete", "terminal started"),
-                ev_completed("resp-cross-turn-network-first-complete"),
-            ]),
-            sse(vec![
-                ev_response_created("resp-cross-turn-network-permissions"),
-                ev_function_call(
-                    permission_call_id,
-                    "request_permissions",
-                    &serde_json::to_string(&json!({
-                        "reason": "Automatically review the existing terminal's network access",
-                        "permissions": requested_permissions,
-                    }))?,
-                ),
-                ev_completed("resp-cross-turn-network-permissions"),
-            ]),
-            sse(vec![
-                ev_response_created("resp-cross-turn-network-stdin"),
-                ev_function_call(
-                    stdin_call_id,
-                    "write_stdin",
-                    &serde_json::to_string(&json!({
-                        "session_id": 1000,
-                        "chars": "continue\n",
-                        "yield_time_ms": 1_000,
-                    }))?,
-                ),
-                ev_completed("resp-cross-turn-network-stdin"),
-            ]),
-            sse(vec![
-                ev_response_created("resp-cross-turn-network-guardian"),
-                ev_assistant_message(
-                    "msg-cross-turn-network-guardian",
-                    r#"{"risk_level":"low","user_authorization":"high","outcome":"allow","rationale":"The existing terminal's network request is safe."}"#,
-                ),
-                ev_completed("resp-cross-turn-network-guardian"),
-            ]),
-            sse(vec![
-                ev_response_created("resp-cross-turn-network-second-complete"),
-                ev_assistant_message(
-                    "msg-cross-turn-network-second-complete",
-                    "network request approved",
-                ),
-                ev_completed("resp-cross-turn-network-second-complete"),
-            ]),
-        ],
+        &[Feature::RequestPermissionsTool],
+        Some(format!("{}/v1", streaming.uri())),
     )
-    .await;
+    .await?;
 
     submit_managed_network_turn(
         &test,
@@ -820,8 +845,46 @@ async fn background_network_approval_uses_active_turn_after_original_turn_comple
     };
     assert_eq!(assessment.turn_id, active_turn.turn_id);
     assert_ne!(assessment.turn_id, first_turn.turn_id);
+    complete_stdin
+        .send(())
+        .expect("stdin response must remain open until real approval");
     wait_for_turn_complete(&test).await;
 
+    let recorded = streaming.requests_with_headers().await;
+    assert_eq!(recorded.len(), 6, "all six original responses must be used");
+    let responses = ResponseMock::default();
+    for (index, recorded) in recorded.into_iter().enumerate() {
+        let mut lines = recorded.head.lines();
+        let mut request_line = lines
+            .next()
+            .context("recorded HTTP request line")?
+            .split_whitespace();
+        let method = request_line
+            .next()
+            .context("recorded HTTP method")?
+            .parse::<wiremock::http::Method>()?;
+        let target = request_line.next().context("recorded HTTP target")?;
+        assert_eq!(method, wiremock::http::Method::POST);
+        assert_eq!(target, "/v1/responses");
+        let mut headers = wiremock::http::HeaderMap::new();
+        for line in lines.filter(|line| !line.is_empty()) {
+            let (name, value) = line.split_once(':').context("recorded HTTP header")?;
+            headers.append(
+                name.parse::<wiremock::http::HeaderName>()?,
+                value.trim().parse()?,
+            );
+        }
+        let request = wiremock::Request {
+            url: format!("{}{target}", streaming.uri()).parse()?,
+            method,
+            headers,
+            body: recorded.body,
+        };
+        assert_eq!(is_guardian_request(&request), index == 4);
+        // Reuse the original exact-body recorder and its orphan-call/output
+        // invariant checks, including content-encoding-aware decoding.
+        assert!(responses.matches(&request));
+    }
     let actions = guardian_network_actions(&responses)?;
     assert_eq!(actions.len(), 1);
     assert_eq!(
@@ -842,6 +905,12 @@ async fn background_network_approval_uses_active_turn_after_original_turn_comple
         "approved network access must not terminate the background process"
     );
     test.codex.submit(Op::CleanBackgroundTerminals).await?;
+    for completion in completions {
+        completion
+            .await
+            .context("scripted response stream completed")?;
+    }
+    streaming.shutdown().await;
 
     Ok(())
 }
@@ -2241,12 +2310,13 @@ async fn approved_network_host_for_one_environment_still_prompts_in_another() ->
 }
 
 async fn managed_network_unified_exec_test(server: &wiremock::MockServer) -> Result<TestCodex> {
-    managed_network_unified_exec_test_with_features(server, &[]).await
+    managed_network_unified_exec_test_with_features(server, &[], /*response_base_url*/ None).await
 }
 
 async fn managed_network_unified_exec_test_with_features(
     server: &wiremock::MockServer,
     features: &[Feature],
+    response_base_url: Option<String>,
 ) -> Result<TestCodex> {
     let home = Arc::new(TempDir::new()?);
     fs::write(
@@ -2275,6 +2345,9 @@ allow_local_binding = true
         .with_home(home)
         .with_cloud_config_bundle(managed_network_requirements_loader())
         .with_config(move |config| {
+            if let Some(base_url) = response_base_url {
+                config.model_provider.base_url = Some(base_url);
+            }
             for feature in &features {
                 config
                     .features
