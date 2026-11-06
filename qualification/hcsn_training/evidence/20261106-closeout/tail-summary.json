@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "source_path": "ssh://desktop/data/hcsn-cuda-170run-20261105-r1/campaigns/full-v2/progress.json",
+  "first_read": {
+    "requested_at_utc": "2026-11-06T08:23:49.332Z",
+    "received_at_utc": "2026-11-06T08:23:58.986Z",
+    "lines": [
+      1,
+      250
+    ],
+    "top_level_campaign_status": "running",
+    "campaign_pid": 357002
+  },
+  "tail_read": {
+    "requested_at_utc": "2026-11-06T08:25:36.026Z",
+    "received_at_utc": "2026-11-06T08:25:51.726Z",
+    "requested_lines": [
+      251,
+      420
+    ],
+    "returned_lines": [
+      251,
+      392
+    ],
+    "source_updated_utc": "2026-11-06T08:25:44.016245+00:00"
+  },
+  "atomic_snapshot": false,
+  "temporal_scope": "Two separately timed observations of the same mutable progress file. The top-level running status belongs to the first read; counts, active stage and the full-stage status below belong to the later tail read.",
+  "completed_cuda_runs": 0,
+  "requested_cuda_runs": 170,
+  "active_stage": "full",
+  "full_stage": {
+    "name": "full",
+    "started_utc": "2026-11-06T08:08:57.361720+00:00",
+    "command": [
+      "/data/hcsn-cuda-170run-20261105-r1/.venv/bin/python",
+      "-B",
+      "/data/hcsn-cuda-170run-20261105-r1/experiments/execution_v2/runtime_entry.py",
+      "--repo-root",
+      "/data/hcsn-cuda-170run-20261105-r1/experiments/execution_v2/candidate",
+      "--device",
+      "cuda:0",
+      "--profile",
+      "/data/hcsn-cuda-170run-20261105-r1/campaigns/full-v2/full.runtime.json",
+      "--module",
+      "qualification.hcsn.benchmark",
+      "--",
+      "--config",
+      "/data/hcsn-cuda-170run-20261105-r1/campaigns/full-v2/execution-config.json",
+      "--output",
+      "/data/hcsn-cuda-170run-20261105-r1/campaigns/full-v2/full.json"
+    ],
+    "status": "running",
+    "child_pid": 3244204,
+    "child_process_group": 3244204
+  },
+  "global_qualification": "open",
+  "registered_run_indexes_observed": {
+    "completed": 0,
+    "failed": 0,
+    "unavailable": 0
+  },
+  "runtime_ready_receipts": {
+    "TORCH_READY.json": "65ece28b081216105038d28368ec7240a74ff848bf524c8b5c67023cf3101df2",
+    "MAMBA_READY.json": "1abd4f6c472ad2baf279f66d921e6ab5a3f9c6275899a863f9ac65e0d2b70a76"
+  },
+  "after_original_b_exit_1": {
+    "scope": "Observed sequence, not a failure-cause diagnosis or evidence of scientific qualification. No additional remote files were read.",
+    "original_b_nonzero_receipt": "exit_code 1 at 2026-11-06T07:57:23.847728+00:00, recorded in first read",
+    "first_read_subsequent_successes": [
+      "parity-cpu",
+      "parity-cuda",
+      "candidate-fullshape-population_flux"
+    ],
+    "tail_read_subsequent_successes": [
+      {
+        "name": "candidate-fullshape-population_flux_no_recovery",
+        "exit_code": 0,
+        "finished_utc": "2026-11-06T07:58:40.789355+00:00"
+      },
+      {
+        "name": "original-mamba2-fullshape",
+        "exit_code": 0,
+        "finished_utc": "2026-11-06T07:59:11.331160+00:00"
+      },
+      {
+        "name": "legacy-smoke-separable",
+        "exit_code": 0,
+        "finished_utc": "2026-11-06T08:08:57.258711+00:00"
+      }
+    ],
+    "next_observed_execution": "full benchmark running from experiments/execution_v2/candidate on cuda:0",
+    "original_b_failure_reason": null
+  },
+  "no_automatic_training_retries": true,
+  "budget_change_permitted": false,
+  "read_scope": {
+    "remote_view_calls_total": 2,
+    "tail_completion_calls": 1,
+    "task_start_or_retry_calls": 0,
+    "install_or_cancel_calls": 0,
+    "other_remote_files_read": 0,
+    "repository_evidence_changed": false
+  },
+  "raw_head_receipt_sha256": "cdae53e3a0b1521f3f75fc15b980c688d0021629db4f33ed5273b810c1045418",
+  "raw_tail_receipt_sha256": "cef41411a7d1aa00e92eb84b83b55b8520e4c81e80bae6807adc3caaf14e7edb"
+}

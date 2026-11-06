@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "requested_at_utc": "2026-11-06T08:23:49.332Z",
+  "tool": "mcp__codex_apps__heptaruntime_mac_controller_view",
+  "request": {
+    "path": "ssh://desktop/data/hcsn-cuda-170run-20261105-r1/campaigns/full-v2/progress.json",
+    "start": 1,
+    "end": 250,
+    "full": true
+  },
+  "remote_call_budget": 1,
+  "no_retry": true,
+  "path_provenance": {
+    "local_manifest": "/workspace/scratch/b45d21c0650a/cuda-reconcile/private-raw/MANIFEST.json",
+    "confirmed_remote_path": "/data/hcsn-cuda-170run-20261105-r1/campaigns/full-v2/progress.json"
+  },
+  "scope": "One bounded read-only view; no shell_start, training, install, cancel, or repository evidence mutation."
+}
