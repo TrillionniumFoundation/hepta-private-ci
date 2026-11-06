@@ -446,6 +446,7 @@ async fn responses_lite_does_not_expose_standalone_web_search_for_bedrock_provid
         .with_config(|config| {
             configure_responses_tools(config);
             config.model_provider.name = "Amazon Bedrock".to_string();
+            config.model_provider.mock_internal_chat_metadata = None;
             config.model_provider.requires_openai_auth = false;
             config.model_provider.http_headers = None;
             config.model_provider.supports_standalone_web_search = false;
