@@ -1,0 +1,3156 @@
+{
+  "format": "native-blocker-evidence-v1",
+  "purpose": "ci_rules323334",
+  "snapshot_utc": "2026-11-06 22:37:00 UTC",
+  "qualification": {
+    "original_failure_source": {
+      "source_head": "57788335544ac48ad5a96d94c51719d25079eeab",
+      "source_tree": "0f7ea37cb66d0d73cf661f12cd5cb134213359d6",
+      "run_id": 42291370384,
+      "job_ids": [
+        128146647539,
+        128146647679,
+        128146648081
+      ],
+      "three_complete_original_decoded_logs_retained": true
+    },
+    "ci32": {
+      "published_pr": 5147,
+      "source_head": "142ad6b16d5bb64ee2e9a0dfe3a4eee8bcfa1d42",
+      "source_tree": "f1d99d519aede568340486fb1ba30806d1c4b8d6",
+      "changed_lines": 73,
+      "local_scope_tests": 35,
+      "local_scope_tests_skipped": 0,
+      "original_native_buildifier_arguments": 239,
+      "locally_replayed_true_starlark_selection": 237,
+      "frozen_json_bytes_modified": false,
+      "pinned_buildifier_valid_starlark_exit": 0,
+      "pinned_buildifier_malformed_starlark_exit": 1,
+      "pinned_buildifier_original_json_exit": 4,
+      "native_format_step": {
+        "scope": "formatter5147",
+        "run_id": 42297439333,
+        "job_id": 128167251691,
+        "source_head": "142ad6b16d5bb64ee2e9a0dfe3a4eee8bcfa1d42",
+        "source_tree": "f1d99d519aede568340486fb1ba30806d1c4b8d6",
+        "actual_merge": "10318c198822d7cd9d7808f65e77e08ffc1c0fff",
+        "job_result": "success",
+        "selected_step": {
+          "name": "Check formatting (run `just fmt` to fix)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-11-06T21:36:46Z",
+          "completed_at": "2026-11-06T21:37:05Z"
+        },
+        "details": {
+          "original_command": "just fmt-check",
+          "actual_format_step_success": true,
+          "clean_worktree_step_success": true,
+          "individual_buildifier_input_count_observed_in_native_log": false,
+          "local_237_source_selection_evidence_is_separate": true
+        },
+        "original_log": {
+          "path": "round3_local_qualification/ci32_33_native/formatter5147.log",
+          "bytes": 124046,
+          "sha256": "04e45630ea88e8922c5a1b7b2b5edc17acbb20751847e3b900e091e803f04027"
+        },
+        "log_API": {
+          "path": "round3_local_qualification/ci32_33_native/formatter5147_log_api.json",
+          "bytes": 128834,
+          "sha256": "9f4f02ffea7366b10a0a2416c7731ea2a1d73d7a792456bb2bef0c616d34e2ed"
+        },
+        "complete_jobs_API": {
+          "path": "round3_local_qualification/native_5147_alljobs_2225.json",
+          "bytes": 207172,
+          "sha256": "f6eb0bebf13ead775c60dfddf338a0812b799f07cf3db874e08cd998574ef3fa"
+        },
+        "actual_merge_API": {
+          "path": "round3_local_qualification/ci32_33_native/formatter5147_merge_api.json",
+          "bytes": 6713,
+          "sha256": "52cb14a07882f69676b7f36d97c9c11775b97936d70d684898c0b223d97fa950"
+        },
+        "source_API": {
+          "path": "round3_local_qualification/ci32_33_native/formatter5147_source_api.json",
+          "bytes": 781,
+          "sha256": "35c0377ab4ecae65543aa5d2eb2f8c0dd843178acdbe2f985ce77332d26e7f9d"
+        }
+      },
+      "native_log_individually_enumerates_237_inputs": false
+    },
+    "ci33": {
+      "published_pr": 5150,
+      "source_head": "436a47c5b41b2694677c98bf1bea3951fec8a223",
+      "source_tree": "a4ef76702f79eecbbf27c4aca4fe17450f949abc",
+      "changed_lines": 110,
+      "local_test_methods": 16,
+      "local_tests_skipped": 0,
+      "initial_url_query_counterexample_retained": true,
+      "only_complete_foreign_repository_tokens_exempt_local_existence_check": true,
+      "current_repository_relative_partial_url_and_extra_prefix_checks_retained": true,
+      "original_frozen_receipt_bytes_modified": false,
+      "native_development_profile": {
+        "scope": "canonical5154",
+        "run_id": 42300934695,
+        "job_id": 128179754152,
+        "source_head": "5ff00398b1bee55264f19aa122ecdb4523ba88e7",
+        "source_tree": "c0b290e2850ad53f003568eb411088aa91dc0378",
+        "actual_merge": "8e7d9558b384de268cf63a4cf6ed268e8ee1a348",
+        "job_result": "success",
+        "selected_step": {
+          "name": "Validate canonical contract and readiness documents",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-11-06T22:03:36Z",
+          "completed_at": "2026-11-06T22:03:42Z"
+        },
+        "details": {
+          "original_command": "python3 scripts/hepta-docs.py verify --profile development",
+          "native_result": {
+            "adaptiveSpecifications": 6,
+            "cnsOrgans": 24,
+            "cnsReferenceGaps": 22,
+            "contracts": 205,
+            "dataDomains": 67,
+            "declaredLeaseCount": 1,
+            "externallyAttestedLeaseCount": 0,
+            "historicalEvidenceRevalidated": false,
+            "hnmfReferenceGaps": 18,
+            "leaseActivationEvaluated": false,
+            "leasedPathCount": 1,
+            "legacyPaths": 0,
+            "moduleTechnicalDocuments": 40,
+            "modules": 40,
+            "paperSources": 4,
+            "planVersion": "8.0.0",
+            "protocols": 58,
+            "readinessDocumentationGaps": 54,
+            "readinessProtocols": 31,
+            "readinessSpecifications": 9,
+            "sourceBindings": 40,
+            "status": "PASS_HEPTA_DEVELOPMENT_DOCS_V8",
+            "touchedLeaseCount": 0,
+            "unresolvedPathConflicts": 0,
+            "verificationProfile": "development",
+            "workPackages": 91
+          },
+          "qualification_profile_executed": false,
+          "external_signer_workflow_existence_checked": false
+        },
+        "original_log": {
+          "path": "round3_local_qualification/ci32_33_native/canonical5154.log",
+          "bytes": 1459025,
+          "sha256": "3f4106a029288f9904fdbc0d7778d4c357e193c86f3a273427f9c75e4c404a87"
+        },
+        "log_API": {
+          "path": "round3_local_qualification/ci32_33_native/canonical5154_log_api.json",
+          "bytes": 1467682,
+          "sha256": "e4207f46e312974138307980dd23fb953eea86c0af3a99173f8d60176a815c29"
+        },
+        "complete_jobs_API": {
+          "path": "round3_local_qualification/native_5154_alljobs_2225.json",
+          "bytes": 210584,
+          "sha256": "b5340ae4d63354250a40d3f72afd36fdf491383d0529277fd225dd29efeadc71"
+        },
+        "actual_merge_API": {
+          "path": "round3_local_qualification/ci32_33_native/canonical5154_merge_api.json",
+          "bytes": 6713,
+          "sha256": "b39a3b80399a43d51eb05134d49110ed34cef9c870bd64174629e5d595ad534d"
+        },
+        "source_API": {
+          "path": "round3_local_qualification/ci32_33_native/canonical5154_source_api.json",
+          "bytes": 799,
+          "sha256": "0954ddb84f623f4e14bfa4fe191f2db9b141e0dda8424acd572ae7a2b755cadb"
+        }
+      },
+      "native_qualification_profile_executed": false,
+      "historical_evidence_revalidated": false,
+      "external_signer_workflow_existence_checked": false
+    },
+    "ci34": {
+      "published_pr": 5165,
+      "source_head": "25a3895dd11a1cb1dde3ba42371a1d629878e25a",
+      "source_tree": "9bef7c893c42bf10246fc18ce04079077037094d",
+      "strict_parent": "2fef0b8d13e1997489e120e741e772f65f519c6f",
+      "changed_lines": 206,
+      "local_full_wrapper_test_methods": 57,
+      "local_tests_skipped": 0,
+      "actual_local_bazel_mechanism_commands": 11,
+      "actual_local_bazel_serialization_commands": 2,
+      "original_helper_predicate_and_scope_unchanged": true,
+      "entire_unconfigured_candidate_set_serialized": true,
+      "configuration_explicitly_target": true,
+      "required_target_name_exclusions_added": false,
+      "selected_test_dependency_failure_preserved": true,
+      "either_query_failure_or_empty_result_emits_no_build_patterns": true,
+      "three_special_character_labels_preserved_in_actual_bazel": true,
+      "both_quote_characters_in_one_label_rejected_without_omission": true,
+      "native_windows_run_id": 42304403498,
+      "native_windows_job_id": 128191497898,
+      "native_windows_snapshot_status": "in_progress",
+      "native_windows_qualification_claimed": false,
+      "both_shell_executable_git_modes_preserved": true
+    },
+    "builder_selection_scope": {
+      "roots": [
+        {
+          "path": "round3_ci/blocking5136",
+          "omitted_top_level": []
+        },
+        {
+          "path": "round3_ci/canonical_workflow33",
+          "omitted_top_level": [
+            ".ruff_cache",
+            "codespell-stage",
+            "git-verification",
+            "initial-git-verification"
+          ]
+        },
+        {
+          "path": "round3_ci/clippy_selected_universe34",
+          "omitted_top_level": [
+            "codespell-stage",
+            "git-verification",
+            "serialization-server",
+            "server"
+          ]
+        },
+        {
+          "path": "round3_formatter32",
+          "omitted_top_level": [
+            "patch_replay"
+          ]
+        },
+        {
+          "path": "round3_local_qualification/formatter32",
+          "omitted_top_level": []
+        },
+        {
+          "path": "round3_local_qualification/canonical33",
+          "omitted_top_level": []
+        },
+        {
+          "path": "round3_local_qualification/clippy34",
+          "omitted_top_level": []
+        },
+        {
+          "path": "round3_local_qualification/ci32_33_native",
+          "omitted_top_level": []
+        }
+      ],
+      "excluded_regular_files": [
+        "round3_ci/canonical_workflow33/.ruff_cache/.gitignore",
+        "round3_ci/canonical_workflow33/.ruff_cache/0.15.13/370193545861771038",
+        "round3_ci/canonical_workflow33/.ruff_cache/CACHEDIR.TAG",
+        "round3_ci/canonical_workflow33/candidate/scripts/__pycache__/hepta-docs.cpython-312.pyc",
+        "round3_ci/canonical_workflow33/candidate/scripts/__pycache__/hepta_metadata.cpython-312.pyc",
+        "round3_ci/canonical_workflow33/candidate/scripts/__pycache__/hepta_workflow_commands.cpython-312.pyc",
+        "round3_ci/canonical_workflow33/codespell-stage/.codespell-exclude-lines",
+        "round3_ci/canonical_workflow33/codespell-stage/.codespellignore",
+        "round3_ci/canonical_workflow33/codespell-stage/.codespellrc",
+        "round3_ci/canonical_workflow33/codespell-stage/scripts/hepta-docs.py",
+        "round3_ci/canonical_workflow33/codespell-stage/scripts/test_hepta_cleanup_consumers.py",
+        "round3_ci/canonical_workflow33/git-verification/index",
+        "round3_ci/canonical_workflow33/git-verification/repository.git/HEAD",
+        "round3_ci/canonical_workflow33/git-verification/repository.git/config",
+        "round3_ci/canonical_workflow33/git-verification/repository.git/objects/0d/65aa4dee439e58ef124d99f4d422affdfae82f",
+        "round3_ci/canonical_workflow33/git-verification/repository.git/objects/82/e84142d7c9e14b4175f8ae2add7c5bea0866a6",
+        "round3_ci/canonical_workflow33/git-verification/repository.git/objects/94/0b2b96267f6bb274aeb7f7dc44c17008ae5ae5",
+        "round3_ci/canonical_workflow33/git-verification/repository.git/objects/b0/a2acc24971c9bc805af4951a5990cc88affabc",
+        "round3_ci/clippy_selected_universe34/codespell-stage/.codespell-exclude-lines",
+        "round3_ci/clippy_selected_universe34/codespell-stage/.codespellignore",
+        "round3_ci/clippy_selected_universe34/codespell-stage/.codespellrc",
+        "round3_ci/clippy_selected_universe34/codespell-stage/.github/scripts/run-bazel-query-ci.sh",
+        "round3_ci/clippy_selected_universe34/codespell-stage/.github/scripts/test_run_bazel_clippy_targets.py",
+        "round3_ci/clippy_selected_universe34/codespell-stage/scripts/list-bazel-clippy-targets.sh",
+        "round3_ci/clippy_selected_universe34/git-verification/index",
+        "round3_ci/clippy_selected_universe34/git-verification/repository.git/HEAD",
+        "round3_ci/clippy_selected_universe34/git-verification/repository.git/config",
+        "round3_ci/clippy_selected_universe34/git-verification/repository.git/objects/1e/3338062b76c646273722f9588918257503295c",
+        "round3_ci/clippy_selected_universe34/git-verification/repository.git/objects/38/28891ac5e77b6168fb116a062acf0661b1ab9a",
+        "round3_ci/clippy_selected_universe34/git-verification/repository.git/objects/59/3f164d24e864eceeed865dde2c4a1c7173e4db",
+        "round3_ci/clippy_selected_universe34/git-verification/repository.git/objects/a2/30d6f75c9642a8fdb15f0ae22b952967e1f04d",
+        "round3_ci/clippy_selected_universe34/git-verification/repository.git/objects/e1/d9838bac46014c4820a992af0c80a6e0802157",
+        "round3_ci/clippy_selected_universe34/git-verification/repository.git/objects/ea/53a3f85418370242c964258ec1523b5e6da7f3",
+        "round3_ci/clippy_selected_universe34/serialization-server/DO_NOT_BUILD_HERE",
+        "round3_ci/clippy_selected_universe34/serialization-server/MODULE.bazel.lock",
+        "round3_ci/clippy_selected_universe34/serialization-server/README",
+        "round3_ci/clippy_selected_universe34/serialization-server/command-244e7fa0-0439-4065-93ad-97368a9b6499.profile.gz",
+        "round3_ci/clippy_selected_universe34/serialization-server/command-7ec79e9a-06c3-4ed2-8a77-26d6afb054d5.profile.gz",
+        "round3_ci/clippy_selected_universe34/serialization-server/execroot/DO_NOT_BUILD_HERE",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@apple_support++apple_cc_configure_extension+local_config_apple_cc_toolchains.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@bazel_features++version_extension+bazel_features_globals.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@bazel_features++version_extension+bazel_features_version.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@platforms+host_platform+host_platform.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@platforms.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@rules_cc++cc_configure_extension+local_config_cc_toolchains.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@rules_cc++compatibility_proxy+cc_compatibility_proxy.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@rules_java++compatibility_proxy+compatibility_proxy.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@rules_java++toolchains+local_jdk.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@rules_java++toolchains+remote_jdk8_linux_aarch64_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@rules_java++toolchains+remote_jdk8_linux_s390x_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@rules_java++toolchains+remote_jdk8_linux_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@rules_java++toolchains+remote_jdk8_macos_aarch64_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@rules_java++toolchains+remote_jdk8_macos_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@rules_java++toolchains+remote_jdk8_windows_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@rules_java++toolchains+remotejdk11_linux_aarch64_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@rules_java++toolchains+remotejdk11_linux_ppc64le_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@rules_java++toolchains+remotejdk11_linux_s390x_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@rules_java++toolchains+remotejdk11_linux_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@rules_java++toolchains+remotejdk11_macos_aarch64_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@rules_java++toolchains+remotejdk11_macos_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@rules_java++toolchains+remotejdk11_win_arm64_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@rules_java++toolchains+remotejdk11_win_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@rules_java++toolchains+remotejdk17_linux_aarch64_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@rules_java++toolchains+remotejdk17_linux_ppc64le_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@rules_java++toolchains+remotejdk17_linux_s390x_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@rules_java++toolchains+remotejdk17_linux_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@rules_java++toolchains+remotejdk17_macos_aarch64_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@rules_java++toolchains+remotejdk17_macos_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@rules_java++toolchains+remotejdk17_win_arm64_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@rules_java++toolchains+remotejdk17_win_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@rules_java++toolchains+remotejdk21_linux_aarch64_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@rules_java++toolchains+remotejdk21_linux_ppc64le_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@rules_java++toolchains+remotejdk21_linux_riscv64_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@rules_java++toolchains+remotejdk21_linux_s390x_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@rules_java++toolchains+remotejdk21_linux_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@rules_java++toolchains+remotejdk21_macos_aarch64_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@rules_java++toolchains+remotejdk21_macos_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@rules_java++toolchains+remotejdk21_win_arm64_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@rules_java++toolchains+remotejdk21_win_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@rules_java++toolchains+remotejdk25_linux_aarch64_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@rules_java++toolchains+remotejdk25_linux_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@rules_java++toolchains+remotejdk25_macos_aarch64_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@rules_java++toolchains+remotejdk25_macos_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@rules_java++toolchains+remotejdk25_win_arm64_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@rules_java++toolchains+remotejdk25_win_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@rules_python++config+rules_python_internal.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@rules_python++python+pythons_hub.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@rules_python++uv+uv.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@rules_shell++sh_configure+local_config_shell.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/@rules_swift++non_module_deps+build_bazel_rules_swift_local_config.marker",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/apple_support++apple_cc_configure_extension+local_config_apple_cc_toolchains/BUILD",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/apple_support++apple_cc_configure_extension+local_config_apple_cc_toolchains/REPO.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/bazel_features++version_extension+bazel_features_globals/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/bazel_features++version_extension+bazel_features_globals/REPO.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/bazel_features++version_extension+bazel_features_globals/globals.bzl",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/bazel_features++version_extension+bazel_features_version/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/bazel_features++version_extension+bazel_features_version/REPO.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/bazel_features++version_extension+bazel_features_version/version.bzl",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/platforms+host_platform+host_platform/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/platforms+host_platform+host_platform/REPO.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/platforms+host_platform+host_platform/constraints.bzl",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_cc++cc_configure_extension+local_config_cc_toolchains/BUILD",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_cc++cc_configure_extension+local_config_cc_toolchains/REPO.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_cc++compatibility_proxy+cc_compatibility_proxy/BUILD",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_cc++compatibility_proxy+cc_compatibility_proxy/REPO.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_cc++compatibility_proxy+cc_compatibility_proxy/proxy.bzl",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_cc++compatibility_proxy+cc_compatibility_proxy/symbols.bzl",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++compatibility_proxy+compatibility_proxy/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++compatibility_proxy+compatibility_proxy/REPO.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++compatibility_proxy+compatibility_proxy/proxy.bzl",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+local_jdk/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+local_jdk/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remote_jdk8_linux_aarch64_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remote_jdk8_linux_aarch64_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remote_jdk8_linux_s390x_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remote_jdk8_linux_s390x_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remote_jdk8_linux_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remote_jdk8_linux_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remote_jdk8_macos_aarch64_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remote_jdk8_macos_aarch64_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remote_jdk8_macos_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remote_jdk8_macos_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remote_jdk8_windows_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remote_jdk8_windows_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk11_linux_aarch64_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk11_linux_aarch64_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk11_linux_ppc64le_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk11_linux_ppc64le_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk11_linux_s390x_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk11_linux_s390x_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk11_linux_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk11_linux_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk11_macos_aarch64_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk11_macos_aarch64_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk11_macos_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk11_macos_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk11_win_arm64_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk11_win_arm64_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk11_win_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk11_win_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk17_linux_aarch64_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk17_linux_aarch64_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk17_linux_ppc64le_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk17_linux_ppc64le_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk17_linux_s390x_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk17_linux_s390x_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk17_linux_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk17_linux_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk17_macos_aarch64_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk17_macos_aarch64_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk17_macos_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk17_macos_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk17_win_arm64_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk17_win_arm64_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk17_win_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk17_win_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk21_linux_aarch64_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk21_linux_aarch64_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk21_linux_ppc64le_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk21_linux_ppc64le_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk21_linux_riscv64_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk21_linux_riscv64_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk21_linux_s390x_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk21_linux_s390x_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk21_linux_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk21_linux_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk21_macos_aarch64_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk21_macos_aarch64_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk21_macos_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk21_macos_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk21_win_arm64_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk21_win_arm64_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk21_win_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk21_win_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk25_linux_aarch64_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk25_linux_aarch64_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk25_linux_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk25_linux_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk25_macos_aarch64_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk25_macos_aarch64_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk25_macos_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk25_macos_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk25_win_arm64_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk25_win_arm64_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk25_win_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_java++toolchains+remotejdk25_win_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin/artifacts.bzl",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin/capabilities.bzl",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_python++config+rules_python_internal/BUILD",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_python++config+rules_python_internal/REPO.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_python++config+rules_python_internal/extra_transition_settings.bzl",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_python++config+rules_python_internal/py_internal.bzl",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_python++config+rules_python_internal/rules_python_config.bzl",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_python++config+rules_python_internal/transition_settings_debug.txt",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_python++python+pythons_hub/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_python++python+pythons_hub/REPO.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_python++python+pythons_hub/interpreters.bzl",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_python++python+pythons_hub/versions.bzl",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_python++uv+uv/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_python++uv+uv/REPO.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_shell++sh_configure+local_config_shell/BUILD",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_shell++sh_configure+local_config_shell/REPO.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_swift++non_module_deps+build_bazel_rules_swift_local_config/BUILD",
+        "round3_ci/clippy_selected_universe34/serialization-server/external/rules_swift++non_module_deps+build_bazel_rules_swift_local_config/REPO.bazel",
+        "round3_ci/clippy_selected_universe34/serialization-server/java.log.af4fae99068e.agent.log.java.20261106-171816.11",
+        "round3_ci/clippy_selected_universe34/serialization-server/java.log.af4fae99068e.agent.log.java.20261106-171859.192",
+        "round3_ci/clippy_selected_universe34/serialization-server/javalog.properties",
+        "round3_ci/clippy_selected_universe34/serialization-server/lock",
+        "round3_ci/clippy_selected_universe34/server/DO_NOT_BUILD_HERE",
+        "round3_ci/clippy_selected_universe34/server/MODULE.bazel.lock",
+        "round3_ci/clippy_selected_universe34/server/README",
+        "round3_ci/clippy_selected_universe34/server/command-07b2ff10-657f-4b3c-93f9-a6a71fa90125.profile.gz",
+        "round3_ci/clippy_selected_universe34/server/command-2e96f83b-6807-434e-8986-dc81d43b991b.profile.gz",
+        "round3_ci/clippy_selected_universe34/server/command-3d8f0e08-96cb-473a-a841-05503cc24ede.profile.gz",
+        "round3_ci/clippy_selected_universe34/server/command-7bd30618-9ce4-4951-82f7-621cf6e6232a.profile.gz",
+        "round3_ci/clippy_selected_universe34/server/command-f9db4735-ef14-4bd4-9d71-4b11e6e75eb4.profile.gz",
+        "round3_ci/clippy_selected_universe34/server/execroot/DO_NOT_BUILD_HERE",
+        "round3_ci/clippy_selected_universe34/server/external/@apple_support++apple_cc_configure_extension+local_config_apple_cc_toolchains.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@bazel_features++version_extension+bazel_features_globals.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@bazel_features++version_extension+bazel_features_version.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@platforms+host_platform+host_platform.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@platforms.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@rules_cc++cc_configure_extension+local_config_cc_toolchains.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@rules_cc++compatibility_proxy+cc_compatibility_proxy.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@rules_java++compatibility_proxy+compatibility_proxy.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@rules_java++toolchains+local_jdk.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@rules_java++toolchains+remote_jdk8_linux_aarch64_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@rules_java++toolchains+remote_jdk8_linux_s390x_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@rules_java++toolchains+remote_jdk8_linux_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@rules_java++toolchains+remote_jdk8_macos_aarch64_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@rules_java++toolchains+remote_jdk8_macos_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@rules_java++toolchains+remote_jdk8_windows_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@rules_java++toolchains+remotejdk11_linux_aarch64_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@rules_java++toolchains+remotejdk11_linux_ppc64le_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@rules_java++toolchains+remotejdk11_linux_s390x_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@rules_java++toolchains+remotejdk11_linux_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@rules_java++toolchains+remotejdk11_macos_aarch64_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@rules_java++toolchains+remotejdk11_macos_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@rules_java++toolchains+remotejdk11_win_arm64_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@rules_java++toolchains+remotejdk11_win_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@rules_java++toolchains+remotejdk17_linux_aarch64_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@rules_java++toolchains+remotejdk17_linux_ppc64le_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@rules_java++toolchains+remotejdk17_linux_s390x_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@rules_java++toolchains+remotejdk17_linux_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@rules_java++toolchains+remotejdk17_macos_aarch64_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@rules_java++toolchains+remotejdk17_macos_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@rules_java++toolchains+remotejdk17_win_arm64_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@rules_java++toolchains+remotejdk17_win_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@rules_java++toolchains+remotejdk21_linux_aarch64_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@rules_java++toolchains+remotejdk21_linux_ppc64le_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@rules_java++toolchains+remotejdk21_linux_riscv64_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@rules_java++toolchains+remotejdk21_linux_s390x_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@rules_java++toolchains+remotejdk21_linux_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@rules_java++toolchains+remotejdk21_macos_aarch64_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@rules_java++toolchains+remotejdk21_macos_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@rules_java++toolchains+remotejdk21_win_arm64_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@rules_java++toolchains+remotejdk21_win_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@rules_java++toolchains+remotejdk25_linux_aarch64_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@rules_java++toolchains+remotejdk25_linux_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@rules_java++toolchains+remotejdk25_macos_aarch64_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@rules_java++toolchains+remotejdk25_macos_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@rules_java++toolchains+remotejdk25_win_arm64_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@rules_java++toolchains+remotejdk25_win_toolchain_config_repo.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@rules_python++config+rules_python_internal.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@rules_python++python+pythons_hub.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@rules_python++uv+uv.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@rules_shell++sh_configure+local_config_shell.marker",
+        "round3_ci/clippy_selected_universe34/server/external/@rules_swift++non_module_deps+build_bazel_rules_swift_local_config.marker",
+        "round3_ci/clippy_selected_universe34/server/external/apple_support++apple_cc_configure_extension+local_config_apple_cc_toolchains/BUILD",
+        "round3_ci/clippy_selected_universe34/server/external/apple_support++apple_cc_configure_extension+local_config_apple_cc_toolchains/REPO.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/bazel_features++version_extension+bazel_features_globals/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/bazel_features++version_extension+bazel_features_globals/REPO.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/bazel_features++version_extension+bazel_features_globals/globals.bzl",
+        "round3_ci/clippy_selected_universe34/server/external/bazel_features++version_extension+bazel_features_version/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/bazel_features++version_extension+bazel_features_version/REPO.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/bazel_features++version_extension+bazel_features_version/version.bzl",
+        "round3_ci/clippy_selected_universe34/server/external/platforms+host_platform+host_platform/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/platforms+host_platform+host_platform/REPO.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/platforms+host_platform+host_platform/constraints.bzl",
+        "round3_ci/clippy_selected_universe34/server/external/rules_cc++cc_configure_extension+local_config_cc_toolchains/BUILD",
+        "round3_ci/clippy_selected_universe34/server/external/rules_cc++cc_configure_extension+local_config_cc_toolchains/REPO.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/rules_cc++compatibility_proxy+cc_compatibility_proxy/BUILD",
+        "round3_ci/clippy_selected_universe34/server/external/rules_cc++compatibility_proxy+cc_compatibility_proxy/REPO.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/rules_cc++compatibility_proxy+cc_compatibility_proxy/proxy.bzl",
+        "round3_ci/clippy_selected_universe34/server/external/rules_cc++compatibility_proxy+cc_compatibility_proxy/symbols.bzl",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++compatibility_proxy+compatibility_proxy/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++compatibility_proxy+compatibility_proxy/REPO.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++compatibility_proxy+compatibility_proxy/proxy.bzl",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+local_jdk/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+local_jdk/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remote_jdk8_linux_aarch64_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remote_jdk8_linux_aarch64_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remote_jdk8_linux_s390x_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remote_jdk8_linux_s390x_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remote_jdk8_linux_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remote_jdk8_linux_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remote_jdk8_macos_aarch64_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remote_jdk8_macos_aarch64_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remote_jdk8_macos_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remote_jdk8_macos_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remote_jdk8_windows_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remote_jdk8_windows_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk11_linux_aarch64_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk11_linux_aarch64_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk11_linux_ppc64le_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk11_linux_ppc64le_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk11_linux_s390x_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk11_linux_s390x_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk11_linux_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk11_linux_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk11_macos_aarch64_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk11_macos_aarch64_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk11_macos_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk11_macos_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk11_win_arm64_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk11_win_arm64_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk11_win_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk11_win_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk17_linux_aarch64_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk17_linux_aarch64_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk17_linux_ppc64le_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk17_linux_ppc64le_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk17_linux_s390x_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk17_linux_s390x_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk17_linux_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk17_linux_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk17_macos_aarch64_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk17_macos_aarch64_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk17_macos_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk17_macos_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk17_win_arm64_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk17_win_arm64_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk17_win_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk17_win_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk21_linux_aarch64_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk21_linux_aarch64_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk21_linux_ppc64le_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk21_linux_ppc64le_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk21_linux_riscv64_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk21_linux_riscv64_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk21_linux_s390x_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk21_linux_s390x_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk21_linux_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk21_linux_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk21_macos_aarch64_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk21_macos_aarch64_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk21_macos_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk21_macos_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk21_win_arm64_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk21_win_arm64_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk21_win_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk21_win_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk25_linux_aarch64_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk25_linux_aarch64_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk25_linux_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk25_linux_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk25_macos_aarch64_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk25_macos_aarch64_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk25_macos_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk25_macos_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk25_win_arm64_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk25_win_arm64_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk25_win_toolchain_config_repo/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/rules_java++toolchains+remotejdk25_win_toolchain_config_repo/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/server/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin/WORKSPACE",
+        "round3_ci/clippy_selected_universe34/server/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin/artifacts.bzl",
+        "round3_ci/clippy_selected_universe34/server/external/rules_kotlin++rules_kotlin_extensions+com_github_jetbrains_kotlin/capabilities.bzl",
+        "round3_ci/clippy_selected_universe34/server/external/rules_python++config+rules_python_internal/BUILD",
+        "round3_ci/clippy_selected_universe34/server/external/rules_python++config+rules_python_internal/REPO.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/rules_python++config+rules_python_internal/extra_transition_settings.bzl",
+        "round3_ci/clippy_selected_universe34/server/external/rules_python++config+rules_python_internal/py_internal.bzl",
+        "round3_ci/clippy_selected_universe34/server/external/rules_python++config+rules_python_internal/rules_python_config.bzl",
+        "round3_ci/clippy_selected_universe34/server/external/rules_python++config+rules_python_internal/transition_settings_debug.txt",
+        "round3_ci/clippy_selected_universe34/server/external/rules_python++python+pythons_hub/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/rules_python++python+pythons_hub/REPO.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/rules_python++python+pythons_hub/interpreters.bzl",
+        "round3_ci/clippy_selected_universe34/server/external/rules_python++python+pythons_hub/versions.bzl",
+        "round3_ci/clippy_selected_universe34/server/external/rules_python++uv+uv/BUILD.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/rules_python++uv+uv/REPO.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/rules_shell++sh_configure+local_config_shell/BUILD",
+        "round3_ci/clippy_selected_universe34/server/external/rules_shell++sh_configure+local_config_shell/REPO.bazel",
+        "round3_ci/clippy_selected_universe34/server/external/rules_swift++non_module_deps+build_bazel_rules_swift_local_config/BUILD",
+        "round3_ci/clippy_selected_universe34/server/external/rules_swift++non_module_deps+build_bazel_rules_swift_local_config/REPO.bazel",
+        "round3_ci/clippy_selected_universe34/server/java.log.af4fae99068e.agent.log.java.20261106-163457.7",
+        "round3_ci/clippy_selected_universe34/server/java.log.af4fae99068e.agent.log.java.20261106-163830.8",
+        "round3_ci/clippy_selected_universe34/server/java.log.af4fae99068e.agent.log.java.20261106-164018.8",
+        "round3_ci/clippy_selected_universe34/server/javalog.properties",
+        "round3_ci/clippy_selected_universe34/server/lock",
+        "round3_ci/clippy_selected_universe34/server/server/cmdline",
+        "round3_ci/clippy_selected_universe34/server/server/command_port",
+        "round3_ci/clippy_selected_universe34/server/server/jvm.out",
+        "round3_ci/clippy_selected_universe34/server/server/request_cookie",
+        "round3_ci/clippy_selected_universe34/server/server/response_cookie",
+        "round3_ci/clippy_selected_universe34/server/server/server.pid.txt",
+        "round3_ci/clippy_selected_universe34/server/server/server.starttime",
+        "round3_ci/clippy_selected_universe34/server/server/server_info.rawproto",
+        "round3_formatter32/baseline/scripts/__pycache__/format.cpython-312.pyc",
+        "round3_formatter32/candidate/scripts/__pycache__/format.cpython-312.pyc",
+        "round3_formatter32/patch_replay/.git/HEAD",
+        "round3_formatter32/patch_replay/.git/config",
+        "round3_formatter32/patch_replay/.git/description",
+        "round3_formatter32/patch_replay/.git/hooks/applypatch-msg.sample",
+        "round3_formatter32/patch_replay/.git/hooks/commit-msg.sample",
+        "round3_formatter32/patch_replay/.git/hooks/fsmonitor-watchman.sample",
+        "round3_formatter32/patch_replay/.git/hooks/post-update.sample",
+        "round3_formatter32/patch_replay/.git/hooks/pre-applypatch.sample",
+        "round3_formatter32/patch_replay/.git/hooks/pre-commit.sample",
+        "round3_formatter32/patch_replay/.git/hooks/pre-merge-commit.sample",
+        "round3_formatter32/patch_replay/.git/hooks/pre-push.sample",
+        "round3_formatter32/patch_replay/.git/hooks/pre-rebase.sample",
+        "round3_formatter32/patch_replay/.git/hooks/pre-receive.sample",
+        "round3_formatter32/patch_replay/.git/hooks/prepare-commit-msg.sample",
+        "round3_formatter32/patch_replay/.git/hooks/push-to-checkout.sample",
+        "round3_formatter32/patch_replay/.git/hooks/sendemail-validate.sample",
+        "round3_formatter32/patch_replay/.git/hooks/update.sample",
+        "round3_formatter32/patch_replay/.git/info/exclude",
+        "round3_formatter32/patch_replay/scripts/__pycache__/format.cpython-312.pyc",
+        "round3_formatter32/patch_replay/scripts/format.py",
+        "round3_formatter32/patch_replay/scripts/test_hepta_format_scope.py"
+      ],
+      "generated_symlink_targets_followed": false,
+      "compiled_tool_binaries_or_bazel_cache_included": false
+    },
+    "archive_retention_scope": "Complete original three failure logs, source APIs, fixes, all declared component/fixture stdout and stderr, negative and failed initial attempts, local and root reviews, and source-bound native CI32 and CI33 logs/APIs are retained. Downloaded compiler/buildifier/Bazel executables and regenerable cache/index/duplicate patch-replay directories are omitted. No omitted tool binary bytes are claimed restorable.",
+    "qualification_limits": [
+      "The native formatting success belongs to #5147 and the native development-profile success to #5154; source identities are separate and preserved.",
+      "Development-profile success does not establish qualification-profile readiness, revalidate historical evidence, or validate an external repository's signer workflow.",
+      "The 57 wrapper tests and 13 Bazel commands are local Linux checks. Synthetic fixture platforms do not establish native MSVC Clippy qualification.",
+      "The current #5165 native Windows Clippy job is only in progress at the fixed snapshot. Future terminal results require an additive record.",
+      "The initial missing helper/cwd/import/Git-index fixture failures and the real URL-boundary counterexample are retained and distinguished from final checks.",
+      "No original frozen scientific, protocol, policy or receipt bytes are rewritten, and no overall repository CI pass is claimed."
+    ]
+  },
+  "evidence_policy": "Every listed input is retained byte for byte. Restoration produces inert regular 0644 files and never executes archived sources. The qualification and explicit archive-retention scope identify any omitted compiled executables or original ZIP containers; no omitted bytes are claimed restorable from this packet.",
+  "archive_bytes": 9984000,
+  "archive_sha256": "2e30de897490b87e94f74990e0e832f3c350649eed001f5999f19e0383cb8076",
+  "compressed_bytes": 478636,
+  "compressed_sha256": "bd52712349ecb21eb280ddda5d1f87dd3ced9c488bf835530223886129c5d668",
+  "parts": [
+    {
+      "name": "native-evidence.tar.xz.part000.gz",
+      "bytes": 440153,
+      "sha256": "12c037b8abb1258f8e73a4022539d240dd0fc61cfd8394e1befb735f244a9d87",
+      "git_blob": "97832a4cc1bb35ded3f095613f08cbd60a8fadaa",
+      "segment_bytes": 440000,
+      "segment_sha256": "557745e0de1dcb0c96a900c10dc12ea72c2fa67bcafe744350ef19349dd3fbbb"
+    },
+    {
+      "name": "native-evidence.tar.xz.part001.gz",
+      "bytes": 38669,
+      "sha256": "c4d6d785b31eb7d7ee44d5e2c617aa629042e3c3fb62bec232fc0198430f0883",
+      "git_blob": "d9d23292b47d7696d34c601324800659fa49f569",
+      "segment_bytes": 38636,
+      "segment_sha256": "19fc5f679eb56ca29c802d8d374a88658dbb3ec6ad719414a3ac4d112c1c8719"
+    }
+  ],
+  "files": [
+    {
+      "path": "round3_ci/CI_RULES323334_BUILDER_PROVENANCE.json",
+      "bytes": 651,
+      "sha256": "6238b582d77a38bf2e010e357e8b9fd1204a284cd43f57a58c2b8c6fcf4c55f8",
+      "git_blob": "577b10143ee8d4491f038d372d0ffe6e832cfe6d",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/blocking5136/FORMAT_SELECTED_NATIVE_INVENTORY.json",
+      "bytes": 30723,
+      "sha256": "d08cc7b9a9b6b5fa8127f2282e1abb94b0806603f23eda6ff1244c4d07f0550d",
+      "git_blob": "abe427bdd2b86c121b14e7cd191cd1716df0afb0",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/blocking5136/RULE_REPAIR_PROPOSALS.md",
+      "bytes": 7511,
+      "sha256": "79a399317d1e51fefa2b8cfa59bdcdc9c64752cdaeaa3d935a9146d9e527fe1b",
+      "git_blob": "b8f51fdda08dc70d131f4acb16b6213339470f72",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/blocking5136/job-128146647539.log",
+      "bytes": 130522,
+      "sha256": "4ae4e9585702af1adc6c403966dbe8e9da133cfd30010ec1377eceb3c2d394de",
+      "git_blob": "e050362e679ba95562a72af3ddd0598b6a6f6379",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/blocking5136/job-128146647539.raw.json",
+      "bytes": 135235,
+      "sha256": "1a9d5bb847c4beb38fc990f9ed3b672ac041cb788315cc346a9e51147a831635",
+      "git_blob": "ac9489f09f5045bf6d196d33f52520dc3afc576e",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/blocking5136/job-128146647679.log",
+      "bytes": 1455921,
+      "sha256": "dde74f6b40bcc2029c93b38467a70f9179e405536586ea84a6d52c435dd59cc5",
+      "git_blob": "a9bf0e34858ab2560d7b75283c73c199402b31ff",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/blocking5136/job-128146647679.raw.json",
+      "bytes": 1464556,
+      "sha256": "e2d468744ad21605b45b49e70aa12f698367f1cd360125b678421932e07a3f16",
+      "git_blob": "f1a7351437f0855ba1c4abc309b945023fe4894f",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/blocking5136/job-128146648081.log",
+      "bytes": 214778,
+      "sha256": "1dad2bb8a9f46004f2852dddfa133cd0db5bc7d887ebd5429fc3191ab98b3a57",
+      "git_blob": "1819c042a9285bbdba6342ef454bd8b6c48af1ca",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/blocking5136/job-128146648081.raw.json",
+      "bytes": 229484,
+      "sha256": "ab03eb9fd4d1bfd458bf70ad597d871e84d9c1ffe5a2c53060a3f7e12f5d3f67",
+      "git_blob": "30501ae0018588f04b347ac639168aa01d368762",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/blocking5136/source-api/cli-build.json",
+      "bytes": 2572,
+      "sha256": "47fd29272e4a32e727bfb2e7506e5be1cb97a3b6ff446e8253becaa1421a1fa5",
+      "git_blob": "333b643ef11b4ea05c94f0778069ecb2d95d33e9",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/blocking5136/source-api/clippy-targets.json",
+      "bytes": 7975,
+      "sha256": "c98061ad2f259563462e1418b9dc36387a1a64be7d006e834086e85b3694b99b",
+      "git_blob": "e1941085756f729bc9d4cee9dc358bb4dbf74426",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/blocking5136/source-api/merge-commit.json",
+      "bytes": 6713,
+      "sha256": "991b3fd264396359286f14aa1911eed479524d889f77b78343e765699503044b",
+      "git_blob": "e16c4278a8ba4e2bf7d44b8c498db7178cf1f2e8",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/blocking5136/source-api/query-wrapper.json",
+      "bytes": 3899,
+      "sha256": "2f488bbc22ddd7a0e8b06250612cb264644b58dbe3ad4b9e7776ba9b9b36d2ee",
+      "git_blob": "03ea37ce475338d287eeb11db191c96afac899a1",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/blocking5136/source-api/release-binaries.json",
+      "bytes": 2549,
+      "sha256": "9a649c352d452eded528c34c533ff7a3e34c7c22caef5f646f52e1179aade084",
+      "git_blob": "b407a6c5c248dce5994860d6cbc1181fea99f27c",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/blocking5136/source-api/scripts_format.py.json",
+      "bytes": 38065,
+      "sha256": "aed4f78d7e7c37342fd6f10b5f6d3fa91e024b8cff31a232875273aad4004bb1",
+      "git_blob": "29e5a89d6a2c1dc64c2876736fcf216bc0edc44a",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/blocking5136/source-api/scripts_hepta-docs.py.json",
+      "bytes": 169397,
+      "sha256": "667a6f4f49674865539d45525fda2cdac0f3198f97d8283393ddcc62de534367",
+      "git_blob": "f59e823cdc60dee6ae440397a8f8cb58497cd1c2",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/blocking5136/source-api/scripts_test_hepta_cleanup_consumers.py.json",
+      "bytes": 16107,
+      "sha256": "b5c857402f7deb5af67224221757eaf79113579a037def0c13af0cb82444c2a1",
+      "git_blob": "2d95f034f99ac83b232da7af00a73e4ea6acdd3c",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/blocking5136/source-api/scripts_test_hepta_format_scope.py.json",
+      "bytes": 45247,
+      "sha256": "fad3c9f6c9ff414015625dbc76bad849f2f362b586b40bf5fc20f54609496905",
+      "git_blob": "d34f3e03d2ec724fbe411fcec10f2ad58619857e",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/blocking5136/source-api/workflow.json",
+      "bytes": 48085,
+      "sha256": "1268167c967270438e7db835bf9c2fc72e0d999b1ddf81e91d2b78fdd32403f5",
+      "git_blob": "f411dfb3193754882d7364c835ba006d793458e7",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/blocking5136/source/.github/scripts/run-bazel-query-ci.sh",
+      "bytes": 1401,
+      "sha256": "2b09b69c48aabe99d73456167198ce97d1894e6ad3d830130261fa860951a4bf",
+      "git_blob": "593f164d24e864eceeed865dde2c4a1c7173e4db",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/blocking5136/source/.github/workflows/bazel.yml",
+      "bytes": 22879,
+      "sha256": "2ca6f89148c3da41b67c0ae12944a00e754943b355b8504b90d48a720d74f97b",
+      "git_blob": "75111a970c23de7146f79fe83b63547377b2d421",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/blocking5136/source/bazel/platforms/release_binaries.bzl",
+      "bytes": 763,
+      "sha256": "0a0f907294980f9bf640a667d332d0445398496978f17d14031971826f4e5c68",
+      "git_blob": "7ac59c2b5e1f670d1653c2b3efdd8a82f2963bdc",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/blocking5136/source/codex-rs/cli/BUILD.bazel",
+      "bytes": 802,
+      "sha256": "25bfe4bd6ee523d5859654f34ba3caab21778d3372c239c83f8e07565a03e532",
+      "git_blob": "a64e4a8d12045dcd4f83e2a02c262e52e87ef4c8",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/blocking5136/source/scripts/format.py",
+      "bytes": 17717,
+      "sha256": "69cc5ebb60f88a704c98e3a5dfcffccee02bd98b3b3d306acc6e87cdc696a4a6",
+      "git_blob": "7fe2174ee4abbe8f69839fccd0b9877169a71bd2",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/blocking5136/source/scripts/hepta-docs.py",
+      "bytes": 78882,
+      "sha256": "63adeefe7231e970b21b8d6a3014986fcb8cf16f1741f4a36b9dd4717196e33d",
+      "git_blob": "0d65aa4dee439e58ef124d99f4d422affdfae82f",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/blocking5136/source/scripts/list-bazel-clippy-targets.sh",
+      "bytes": 3373,
+      "sha256": "e3f36ced52af7ac07ef67663c2fe782958f93afa30e7d02f191366df076fe784",
+      "git_blob": "1e3338062b76c646273722f9588918257503295c",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/blocking5136/source/scripts/test_hepta_cleanup_consumers.py",
+      "bytes": 7236,
+      "sha256": "e6a3ea228ff2dcfa370b8c679209c8db0bfee3aae74f4a4d84722a4f477cb51e",
+      "git_blob": "940b2b96267f6bb274aeb7f7dc44c17008ae5ae5",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/blocking5136/source/scripts/test_hepta_format_scope.py",
+      "bytes": 21014,
+      "sha256": "baf4d97594278e906ff69cd34bcd35f888780f44dd4207143f0fa9f4e660ee11",
+      "git_blob": "9d973401bd0b2fc861ae3911d8e6c441c6fe0f61",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/blocking5165/initial-runs-api.json",
+      "bytes": 1512,
+      "sha256": "7d601a17dac6ff221a4ee5371f8c7de0bfeace4276f3a1be636b4f11dc375b31",
+      "git_blob": "04b06a8cda960de17cff7f9792899a169f68d8c2",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/blocking5165/jobs-observation1-api.json",
+      "bytes": 4915,
+      "sha256": "26935545cdbe6d34766dace48b05d179cdfe1dfe9bf527b087e1265acff5474d",
+      "git_blob": "357d443ac55b7dfed1757eef73f100776ed7408e",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/blocking5165/jobs-observation2-api.json",
+      "bytes": 59087,
+      "sha256": "d583c32dcfbe5b24e1b06e61bce2ef5bb3d4d64bfd1d5d112edfdae4f587c293",
+      "git_blob": "45833503e449c70c426b5c5118ae1a6f90d26d11",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/build_ci_rules323334_checkpoint.py",
+      "bytes": 18633,
+      "sha256": "c9c581987d193bccb3813e8438be7cd7d4dae3f4ad3bf5f63d8dca5857a0c98c",
+      "git_blob": "f492fb5dfa75d37ec18d3b525398cfe09b6cc529",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/baseline/scripts/hepta-docs.py",
+      "bytes": 78882,
+      "sha256": "63adeefe7231e970b21b8d6a3014986fcb8cf16f1741f4a36b9dd4717196e33d",
+      "git_blob": "0d65aa4dee439e58ef124d99f4d422affdfae82f",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/baseline/scripts/test_hepta_cleanup_consumers.py",
+      "bytes": 7236,
+      "sha256": "e6a3ea228ff2dcfa370b8c679209c8db0bfee3aae74f4a4d84722a4f477cb51e",
+      "git_blob": "940b2b96267f6bb274aeb7f7dc44c17008ae5ae5",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/candidate/scripts/hepta-docs.py",
+      "bytes": 79560,
+      "sha256": "c4683e7f7b85a555a09d3eab9d2a5190e4f9b18a400a3f0f944da4f82e724f41",
+      "git_blob": "82e84142d7c9e14b4175f8ae2add7c5bea0866a6",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/candidate/scripts/hepta_metadata.py",
+      "bytes": 1235,
+      "sha256": "d90e0bc097df0454d923dfb9755faa2e475de6f68496dbd2e319414a5144a74a",
+      "git_blob": "8ab62f157be3d4e2d4ebc928ce479994b8af45c5",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/candidate/scripts/hepta_workflow_commands.py",
+      "bytes": 5225,
+      "sha256": "3a16a917903dd84a6fafae8d3b8a9a67ef0a7578821c1b6015d4bb2aab54295d",
+      "git_blob": "68290ab2ce0df6fb0991d378e01c392546b7afb2",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/candidate/scripts/test_hepta_cleanup_consumers.py",
+      "bytes": 11203,
+      "sha256": "3a0350ee50436dc0146deb465276d124137f54368bdd0a1b73e249f88d47ae59",
+      "git_blob": "b0a2acc24971c9bc805af4951a5990cc88affabc",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/freeze_candidate.py",
+      "bytes": 7419,
+      "sha256": "9d6761fa56b47ba772d7ee8adf5c50566e9a7128edb463e46b85f0abbb5cc7b0",
+      "git_blob": "23c4dca7232fabeaadaad8432624444b325f781e",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/hepta_metadata_api.json",
+      "bytes": 3401,
+      "sha256": "6055a37c9ddc5e472bf2401be1fc9ae2970484dd762a67c3f1fb5c5876fc30e0",
+      "git_blob": "f3167de3fcfd93dc220315f13e641ab22781a072",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/hepta_workflow_commands_api.json",
+      "bytes": 11773,
+      "sha256": "eaeb31d2fc2a1ee60147c848e327f9a9716ebb962efa9287ef18d6c037972f1e",
+      "git_blob": "921cfe0595c0be51929e08dd96f523bc354c9810",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/manifest.json",
+      "bytes": 3216,
+      "sha256": "426bd20ec9570da3e4377d348c0793efaff2498ef200c18cb463a7fcd6d19f66",
+      "git_blob": "90aff880571359ea9fe5ba1431eff6b99cdd3bcb",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/repair.patch",
+      "bytes": 6478,
+      "sha256": "8060acb7b2d91a482570b282faa3f3613c51a6e664e044858e395955758bc30f",
+      "git_blob": "d0908be6caaa9c20d44cb8bfef6a1f4dde2596b3",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/review1_url_query_counterexample/COUNTEREXAMPLE.json",
+      "bytes": 512,
+      "sha256": "8cc1914cd54036f1af4d35857b6212372554062ddb72fa132ab3a5126dc3cba4",
+      "git_blob": "7891aef33aea78256558f995a320b8cbf230945f",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/review1_url_query_counterexample/TESTS.json",
+      "bytes": 1914,
+      "sha256": "1b19f456d8684def89ea8a3b626ea0f2b608391ad2dec65c74ed8d88e09693a6",
+      "git_blob": "1897ceb59e5a10d2244520a7c914fb1db34ed34a",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/review1_url_query_counterexample/candidate.stderr.log",
+      "bytes": 115,
+      "sha256": "51bdcf6dd67bb5880e174793b555f5317aa632196cddc63d7f2494217c6479cd",
+      "git_blob": "13e3696b6a18951c2961eb975fb76758f252b0b0",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/review1_url_query_counterexample/candidate.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/review1_url_query_counterexample/hepta-docs.py",
+      "bytes": 79559,
+      "sha256": "4f27cffa743e2b07c68ca740be55a741305e2e8900569cf21841592c9da96b0b",
+      "git_blob": "a344df221d74178bb17bc434509447a93c532f5e",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/review1_url_query_counterexample/old-source-control.stderr.log",
+      "bytes": 23058,
+      "sha256": "cc58f067b4c75c372e7004f8c464bbf69dafa7cc4d746bcbd81a3f3aac87042c",
+      "git_blob": "bcb883e2ed4723c16cb204d4f414f4e296a68744",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/review1_url_query_counterexample/old-source-control.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/review1_url_query_counterexample/test_hepta_cleanup_consumers.py",
+      "bytes": 10960,
+      "sha256": "85d9091ddc622326971a3e96f2eca34dc59acf344f2c34fc570185844efeb92b",
+      "git_blob": "76b420d6356db8d25d0c12a4f2367c9460ba24e7",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/source/RECURRENCE.json",
+      "bytes": 3533,
+      "sha256": "39fb41787e2a55095ac5e6beca8ce03f74d642fc3e6bcf6fdb754fe0e7b5f817",
+      "git_blob": "3cae1f4c0bf6d5c6a73d49ecadff5587b8108b8d",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/source/fence-recurrence-api.json",
+      "bytes": 8513,
+      "sha256": "4abe4d5e3cb0832c11100bc2c059b4bf7bf2e30764efc24b2375903a5ead306d",
+      "git_blob": "f979a5b83155254715da3152b660b45ac7562b03",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/source/fence-validation-api.json",
+      "bytes": 17231,
+      "sha256": "9e3e90294e15245055a0237d4f208eeb07d78f39670385e6f8fe7250794da9d7",
+      "git_blob": "996057180264c99726726293becdeb5c31c219e3",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/source/root-api.json",
+      "bytes": 29123,
+      "sha256": "4eeb48e9567079f4031a24be92d0a6b636d309cfe81acd216751212862ccc3b1",
+      "git_blob": "cee95436ab84a2c1b0f76d0b9e2ebee8ba677fbc",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/source/scripts-api.json",
+      "bytes": 101807,
+      "sha256": "1a05ea0ce17b5d0f81089a4a9077f33790cd3cd30afffd23143ed6b4e3af9a2f",
+      "git_blob": "c1d0e46c2065ab1e1b64b744748e16cc1b976f92",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/source/validation.json",
+      "bytes": 7554,
+      "sha256": "7b2fff82fa619504d2a9c37d51929090317f35aeb570ed25de1bb5bd4a605f16",
+      "git_blob": "4a29955c3a3805ebf8d003d464688fb5b5b538ac",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/validate_original_receipts.py",
+      "bytes": 3628,
+      "sha256": "79a771b4b319281b5935ea567d197f7b929c168653511d752c6a6631d4d43839",
+      "git_blob": "929fcbd0cb51d11dd6e00534d69649f611643342",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/validation/CODESPELL.json",
+      "bytes": 826,
+      "sha256": "bd7edf43f26410186f6d5a3d90a3716463cf9c1d9192c32772bc91edcd0ef764",
+      "git_blob": "b8f0334e8b846bade8bc00ae6785a1b642cbf86c",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/validation/FINAL_TESTS.json",
+      "bytes": 2852,
+      "sha256": "df2e4c5351f18844dee4297ad36fc060169f0b8877616d993fe57b37064a1730",
+      "git_blob": "0927918365e3c41cb4983b3592dc6539ff74b9aa",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/validation/FORMAT_AND_RUFF.json",
+      "bytes": 1320,
+      "sha256": "56bfba8cbf86341ce8ef81f8a47254575b8b30efc67590878445c6537d410f99",
+      "git_blob": "c2d2690df68cbcb720ea762edb9f4fcf7682b062",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/validation/INITIAL_INDEX_INIT_NOTE.json",
+      "bytes": 447,
+      "sha256": "05d9d39c23cfb2a1169a8321c2a46d5e867ff90357f9bd491b55cdc7e3b6833c",
+      "git_blob": "b0f904a42902dcf187bee2637d630bd5eb417a0f",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/validation/ORIGINAL_RECEIPT_REPLAY.json",
+      "bytes": 1534,
+      "sha256": "5a69cd3ec55be2c171ff439a1e60d9a1f986aa4cc66c13635481c24ef38753cc",
+      "git_blob": "e8880f8340531722cd51dca67e951e3a17701425",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/validation/TESTS.json",
+      "bytes": 1914,
+      "sha256": "1b19f456d8684def89ea8a3b626ea0f2b608391ad2dec65c74ed8d88e09693a6",
+      "git_blob": "1897ceb59e5a10d2244520a7c914fb1db34ed34a",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/validation/candidate-final.stderr.log",
+      "bytes": 115,
+      "sha256": "dfcf17765048dd15b7f0eff47d3a932c7b7043cb8fcbcf382d3c53b53b0e695a",
+      "git_blob": "dd2a83f9de1c869ed4d2bcb2450a4932f109d75b",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/validation/candidate-final.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/validation/candidate.stderr.log",
+      "bytes": 115,
+      "sha256": "51bdcf6dd67bb5880e174793b555f5317aa632196cddc63d7f2494217c6479cd",
+      "git_blob": "13e3696b6a18951c2961eb975fb76758f252b0b0",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/validation/candidate.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/validation/codespell.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/validation/codespell.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/validation/format.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/validation/format.stdout.log",
+      "bytes": 42,
+      "sha256": "10869b88a75066aa23546ef1f95fcd4678c3fb92a56ed46ef91688052b67976a",
+      "git_blob": "098f036965dbff4ae82dc22c1b20db8453a4d52c",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/validation/frozen-receipts-after.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/validation/frozen-receipts-before.log",
+      "bytes": 347,
+      "sha256": "5f993127e49fda45f8d2ca30a5f430f3e9ca7ce220f412ae0b2842f11136b6f4",
+      "git_blob": "743cdff7f7d6d76193354f5ca2f3d4374d645c5a",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/validation/frozen-receipts-local-negative.log",
+      "bytes": 112,
+      "sha256": "0c5af69f6ef19e36994d2231a32bcff61d902a6fd19d5997a3ee941a2b92f79f",
+      "git_blob": "428907e8cd819a7107906fd5de21da197c11f572",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/validation/git-after-index.log",
+      "bytes": 162,
+      "sha256": "5fb35046f1184c32252af0f01446f274fc2586330951711551f6e605a9cb0aaf",
+      "git_blob": "e4eae9de42c17fec157f869ecd370fe794ff3f88",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/validation/git-before-index.log",
+      "bytes": 162,
+      "sha256": "6957313198831f78b23c6bbe1644f036ddf5ba12c9fc98ba3eefa1d7930c5696",
+      "git_blob": "807fb2841a85c7a9bbbda0f500a7c22aeeb56c12",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/validation/initial-index-init.stderr.log",
+      "bytes": 116,
+      "sha256": "4cfff0efc61f1373f971608cdf6009c5188472211fbfa394291f97ff041b9fa7",
+      "git_blob": "3e5d2fcba185d35863785c50a4223a775ac526f9",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/validation/initial-index-init.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/validation/initial-missing-import/TESTS.json",
+      "bytes": 1441,
+      "sha256": "36fadff9d256e819454543918bcbfc9c782a17e11e03bbccc7d141aaa00ffbb6",
+      "git_blob": "576b2de852e990738fdd0de2e9726e71439eb370",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/validation/initial-missing-import/candidate.stderr.log",
+      "bytes": 954,
+      "sha256": "23dbd350feeaccd430e55ed14799bd19dcdceffa90a55165a30947db846a6792",
+      "git_blob": "015cd6b9c66e1e984ff6f828e40eccfd507634e9",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/validation/initial-missing-import/candidate.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/validation/initial-missing-import/old-source-control.stderr.log",
+      "bytes": 990,
+      "sha256": "1663e05b14848b0de2b143df0fa573d22ce1ebb983353ac5d20d7ed9648bf240",
+      "git_blob": "c522aff0a2fe3150688f628a366aaf2a251e800a",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/validation/initial-missing-import/old-source-control.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/validation/old-source-control-final.stderr.log",
+      "bytes": 21549,
+      "sha256": "d439ed11836d38eb50b7971d93ba846a91ee0757792b9dd25c3f804cbcfddd2d",
+      "git_blob": "5c08f9677e8e423b0d7773dca438377ae9416339",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/validation/old-source-control-final.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/validation/old-source-control.stderr.log",
+      "bytes": 23058,
+      "sha256": "cc58f067b4c75c372e7004f8c464bbf69dafa7cc4d746bcbd81a3f3aac87042c",
+      "git_blob": "bcb883e2ed4723c16cb204d4f414f4e296a68744",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/validation/old-source-control.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/validation/old-source-control/hepta-docs.py",
+      "bytes": 78882,
+      "sha256": "63adeefe7231e970b21b8d6a3014986fcb8cf16f1741f4a36b9dd4717196e33d",
+      "git_blob": "0d65aa4dee439e58ef124d99f4d422affdfae82f",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/validation/old-source-control/hepta_metadata.py",
+      "bytes": 1235,
+      "sha256": "d90e0bc097df0454d923dfb9755faa2e475de6f68496dbd2e319414a5144a74a",
+      "git_blob": "8ab62f157be3d4e2d4ebc928ce479994b8af45c5",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/validation/old-source-control/hepta_workflow_commands.py",
+      "bytes": 5225,
+      "sha256": "3a16a917903dd84a6fafae8d3b8a9a67ef0a7578821c1b6015d4bb2aab54295d",
+      "git_blob": "68290ab2ce0df6fb0991d378e01c392546b7afb2",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/validation/old-source-control/test_hepta_cleanup_consumers.py",
+      "bytes": 11203,
+      "sha256": "3a0350ee50436dc0146deb465276d124137f54368bdd0a1b73e249f88d47ae59",
+      "git_blob": "b0a2acc24971c9bc805af4951a5990cc88affabc",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/validation/ruff-check-final.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/validation/ruff-check-final.stdout.log",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "git_blob": "1f5f344d054fae10f39140fb7199c99321d9190a",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/validation/ruff-check.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/validation/ruff-check.stdout.log",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "git_blob": "1f5f344d054fae10f39140fb7199c99321d9190a",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/validation/ruff-format-final.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/validation/ruff-format-final.stdout.log",
+      "bytes": 23,
+      "sha256": "43affe539ba0ae8b202b306a3294d04f3b7fc062316c1c825399076d966c8f2d",
+      "git_blob": "b47d2ea170c7267ce23b1a6fcbc3dfd887927f57",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/validation/second-missing-import/TESTS.json",
+      "bytes": 1808,
+      "sha256": "d7c20aaad8393026ff114560abd75e2ec89c7adf50cb393172fe663df3589880",
+      "git_blob": "345314830998d9d67158f27c781349f70659ca1e",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/validation/second-missing-import/candidate.stderr.log",
+      "bytes": 623,
+      "sha256": "92163fe71dfcd060cec792649b9d2a3852c9516df50fadb2457cea79c9bcad02",
+      "git_blob": "0f9ae9a1eb76e67ce492fb0155d7c66202fa0448",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/validation/second-missing-import/candidate.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/validation/second-missing-import/old-source-control.stderr.log",
+      "bytes": 647,
+      "sha256": "826f6c6119c76532f5d142b98c187026b16b2080574e539e40fe3973dcd54e50",
+      "git_blob": "45aa573c71f9af9f9782112d15b98eb70814532d",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/canonical_workflow33/validation/second-missing-import/old-source-control.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/Bazel9Lexer.java",
+      "bytes": 7990,
+      "sha256": "5ef9f441764dc603b8002729346c2a9b0f94b85ad6e836478a3f11892e5b32b0",
+      "git_blob": "71c07e2dcd2473eeea39e03fb611026aa1b12125",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/WRAPPER_TESTS.json",
+      "bytes": 518,
+      "sha256": "412887608a978b7f8d2ab86da4c66e17d01ebe212516390fe3856d4bb9046a31",
+      "git_blob": "acc128fc934f5ccd4233be32ae2855836313943e",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/analysis-results/01-server-before.stderr.log",
+      "bytes": 60,
+      "sha256": "ffc88a8f4359d9798f87d187881694c7e41accbdf80ef65df931f8140bca9ad6",
+      "git_blob": "37bba182662d40bea0ea2bae748852013449f395",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/analysis-results/01-server-before.stdout.log",
+      "bytes": 2,
+      "sha256": "aa67a169b0bba217aa0aa88a65346920c84c42447c36ba5f7ea65f422c1fe5d8",
+      "git_blob": "45a4fb75db864000d01701c0f7a51864bd4daabf",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/analysis-results/02-original-broad-cquery.stderr.log",
+      "bytes": 909,
+      "sha256": "1db8adf6721ca1849759eec0ac4d44b36a3b5090f857b7a2b7c330eb059805bc",
+      "git_blob": "1b929010cbe5889f851e44b9556d8d380368381b",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/analysis-results/02-original-broad-cquery.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/analysis-results/03-complete-preanalysis-set.stderr.log",
+      "bytes": 27,
+      "sha256": "ab590410c0e232e6f833351016e42483185e6e46aaf4522771dbb5101beffc39",
+      "git_blob": "90a5208c86ddb9bad436a7714f44ae87184d27ea",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/analysis-results/03-complete-preanalysis-set.stdout.log",
+      "bytes": 149,
+      "sha256": "bcc377e38d26a3146588d88d4e3bc95312558f5a9bf796447c334d2ec6b62d51",
+      "git_blob": "45ea996a5d65d4841c7ed1fb47e7a9a83a25d60c",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/analysis-results/04-only-selected-universe.stderr.log",
+      "bytes": 346,
+      "sha256": "24517a8e74b4520f77ef2f7b80ef04b1675f5b5668b9694aaac0dc932c9d217e",
+      "git_blob": "780da7578738fa4021db7dcacd1cf2882abd76ca",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/analysis-results/04-only-selected-universe.stdout.log",
+      "bytes": 86,
+      "sha256": "ac7392eed18e987e6fec443a42fff10d3d63c53a097c3187fd2aeb0b40034c2f",
+      "git_blob": "2365fa213d7010a65bdf35af20ab2159e5f66c5c",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/analysis-results/05-prime-exec-configuration.stderr.log",
+      "bytes": 378,
+      "sha256": "1a56fdbea8980e868aa6fb8ab976dcb0a52bbb5e3d009a6f6e290ca2c922a300",
+      "git_blob": "16e38e8a0b5bff9c25e30a867da4fc28407bf0dd",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/analysis-results/05-prime-exec-configuration.stdout.log",
+      "bytes": 1356,
+      "sha256": "be570508333dfe58253766cd714364e0b7be34f9525d462cc1e4e45e5e980b36",
+      "git_blob": "7d74b13ac39cefbc23e2d9c057d04479b53f02e6",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/analysis-results/06-visible-exec-residue.stderr.log",
+      "bytes": 343,
+      "sha256": "8e5d91faf75fd4b70854da528c9dd235ab12cdf0e33bc97ad3c2653004aa0988",
+      "git_blob": "b47b13143b3380664ea347e0ec7463cf4091dc1d",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/analysis-results/06-visible-exec-residue.stdout.log",
+      "bytes": 280,
+      "sha256": "23a845e5c63a661be313b50e4d1b0ebc040722c6073ea1828e1a255a370bac67",
+      "git_blob": "97fb384cc6c62884026026d57bcf98be0b6c60a8",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/analysis-results/07-target-only-after-exec.stderr.log",
+      "bytes": 343,
+      "sha256": "a003e6bff2ab07fe9f9a21f765c28d50c91f1e3e99860ef9a3c65175e121a8d2",
+      "git_blob": "46c8687a28f302d582d2b4111b98a0f12b491c7c",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/analysis-results/07-target-only-after-exec.stdout.log",
+      "bytes": 86,
+      "sha256": "a0c367d1ca0488a0502ccafdf3311da9ff105cc85c519f4e7d55658086117148",
+      "git_blob": "96d1a7de678d007f3fd33210a8e6567b3ce45021",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/analysis-results/08-prime-old-opt-configuration.stderr.log",
+      "bytes": 512,
+      "sha256": "f2e61a3e2e461c24b2950c737c1573db5bb7ac4b4411236e43bd30188d685cf9",
+      "git_blob": "e9b101a27cfb685f679ce21664d0ab450e10a6a7",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/analysis-results/08-prime-old-opt-configuration.stdout.log",
+      "bytes": 199,
+      "sha256": "0333efd18ed360bb23719b8dc7c3a04cae5529e366c6fa5523f6370b5ade511d",
+      "git_blob": "9ad3567509920c718aa2a31b52a71a6da6be6780",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/analysis-results/09-target-only-after-old-config.stderr.log",
+      "bytes": 512,
+      "sha256": "6cca580e7475c7efde1f76eb8f56c58a2ce5778e6a69acddcdbaee3a4ec16657",
+      "git_blob": "8cc526a591d2149eef09598c19fa12df21f28ac7",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/analysis-results/09-target-only-after-old-config.stdout.log",
+      "bytes": 86,
+      "sha256": "a0c367d1ca0488a0502ccafdf3311da9ff105cc85c519f4e7d55658086117148",
+      "git_blob": "96d1a7de678d007f3fd33210a8e6567b3ce45021",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/analysis-results/10-selected-dependency-still-fails.stderr.log",
+      "bytes": 1084,
+      "sha256": "bbc3d64525affaa7a72383131f81b1fbf8acb670ec7d941dc6bc9961186bf037",
+      "git_blob": "17c9b880af720e687f7b9f5e85a0b8ba8304b83d",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/analysis-results/10-selected-dependency-still-fails.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/analysis-results/11-server-after.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/analysis-results/11-server-after.stdout.log",
+      "bytes": 2,
+      "sha256": "aa67a169b0bba217aa0aa88a65346920c84c42447c36ba5f7ea65f422c1fe5d8",
+      "git_blob": "45a4fb75db864000d01701c0f7a51864bd4daabf",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/analysis-results/COMMANDS.json",
+      "bytes": 12583,
+      "sha256": "d737207db5285ba8d9c1f69b04ce09c931d332cd41f5b584ee8c62aba7054931",
+      "git_blob": "204f3e4cc11cfca4d35eb5dd85b7adad34f54eb7",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/analysis-results/RESULT.json",
+      "bytes": 15098,
+      "sha256": "e63636aeb7eed49bae1ea0721ddf79e46c96029c591ab08732631f03c49081a1",
+      "git_blob": "bae0283853575cdf9726df9bf872ec95777c04fb",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/analysis-results/selected-without-config.query",
+      "bytes": 156,
+      "sha256": "dbe8a6b3f6c9a4c91e0879751fb8622d961ad1608dd7f07a9a040f5d037a3fea",
+      "git_blob": "bb848b49b4fbd70f94683be8b9b269887ceba9f1",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/analysis-results/selected.query",
+      "bytes": 172,
+      "sha256": "3fa5d360c3edd3ffb1cebdd85523a89ed417b73960bf3eec55b462ff4f6d2f08",
+      "git_blob": "426cb56c898be8c392e9886388b4e8c0e1b609b0",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/baseline/.github/scripts/run-bazel-query-ci.sh",
+      "bytes": 1401,
+      "sha256": "2b09b69c48aabe99d73456167198ce97d1894e6ad3d830130261fa860951a4bf",
+      "git_blob": "593f164d24e864eceeed865dde2c4a1c7173e4db",
+      "original_mode": "0755"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/baseline/.github/scripts/test_run_bazel_clippy_targets.py",
+      "bytes": 7106,
+      "sha256": "c13484f0065a7c0cec2cb587413ab0548182ba5a2ffb89597edbc4a9771439bb",
+      "git_blob": "ea53a3f85418370242c964258ec1523b5e6da7f3",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/baseline/scripts/list-bazel-clippy-targets.sh",
+      "bytes": 3373,
+      "sha256": "e3f36ced52af7ac07ef67663c2fe782958f93afa30e7d02f191366df076fe784",
+      "git_blob": "1e3338062b76c646273722f9588918257503295c",
+      "original_mode": "0755"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/bazel9_lexer_api.json",
+      "bytes": 17393,
+      "sha256": "6a2092369a32bbd84a3b449e355982cf36ff434f2eed475ca98d301e0d9b7784",
+      "git_blob": "3eed0270907c664ec99e1b2697245539845549b5",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/candidate/.github/scripts/run-bazel-query-ci.sh",
+      "bytes": 1556,
+      "sha256": "8f44948ef2f970adbd5d26c6af7ac70bbecb043d44c07a28e013dfaf156f327d",
+      "git_blob": "e1d9838bac46014c4820a992af0c80a6e0802157",
+      "original_mode": "0755"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/candidate/.github/scripts/test_run_bazel_clippy_targets.py",
+      "bytes": 12767,
+      "sha256": "421f3f0c8c359f5bed942b4bc638b2c4616e407078d7432b8d0122e764674f9d",
+      "git_blob": "a230d6f75c9642a8fdb15f0ae22b952967e1f04d",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/candidate/scripts/list-bazel-clippy-targets.sh",
+      "bytes": 4504,
+      "sha256": "bda628041cc8b05929cd7cf58b4156210cc39826de9bdf19aa83b6e1cad8db5e",
+      "git_blob": "3828891ac5e77b6168fb116a062acf0661b1ab9a",
+      "original_mode": "0755"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/current/github.tree-api.json",
+      "bytes": 7593,
+      "sha256": "e643dc9f172d5fc8cb6a9ad7348d5bcf44c34aa404222732fd880cb49d5076da",
+      "git_blob": "ee1d2cab9ad04a545909346e2cfed77134d91315",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/current/github_scripts.tree-api.json",
+      "bytes": 19763,
+      "sha256": "48b28e740cbb522694a04d0e51834ca34f267de30e0b08fc962090067fd444a0",
+      "git_blob": "93c538fd8b15395d375673a400eb5f09ed62a453",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/current/list-bazel-clippy-targets.sh.api.json",
+      "bytes": 7975,
+      "sha256": "9c5d15230532e36d054f67984141f1c328924b8b3a034927defff97eff90469a",
+      "git_blob": "f75a9835defc0cdcf10dd5531cd6f7630ada56e5",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/current/root5160.tree-api.json",
+      "bytes": 29239,
+      "sha256": "8af3362e25e3c94f4e56af98c1142ea6af0211b4f2f4eb5ed67f00c84da7e5a9",
+      "git_blob": "437ba81f04e055e103210d3f7a4980df02471ea5",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/current/root5163.tree-api.json",
+      "bytes": 29239,
+      "sha256": "caff2870fa0fd2a0dbd04fd05ed423ce1940211997014eb362c7a746b5ca2a87",
+      "git_blob": "dbad84d0eb95599029b0a256c4ec86a0d269a9df",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/current/run-argument-comment-lint-bazel.sh.api.json",
+      "bytes": 6863,
+      "sha256": "b399c1adc770277addc7615a8ba3502201705ae5a5c0cf14107f7b43243e11b0",
+      "git_blob": "51d36b75260e1ace768bbf1364c49954c16f7d13",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/current/run-bazel-ci.sh.api.json",
+      "bytes": 29811,
+      "sha256": "46381a05648ac03d6e49c8a6783dce020cde127c590dc36ab65f771301e8ddae",
+      "git_blob": "a2e7f8d4abe434532ca913263ef93004d93fe71f",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/current/run-bazel-query-ci.sh.api.json",
+      "bytes": 3899,
+      "sha256": "b9972a5bc5960e80fdad2c8e271e3c682ee207558e8c24b480a4fc1433452f8c",
+      "git_blob": "06f5fcc9e48b1381051fe0d8abd028ad69c75c65",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/current/run_bazel_with_buildbuddy.py.api.json",
+      "bytes": 31099,
+      "sha256": "e908883ad11da06cf4bb5d3662820f4e13ab443652f19eaa7e5aa6edb73bbf61",
+      "git_blob": "8c124523e17f51121b107df8086a110b0ed66799",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/current/scripts.tree-api.json",
+      "bytes": 101925,
+      "sha256": "22ab68ea407c67f44de4731a096bf3cf9141d16ca14acedc9559ca7abbbe046e",
+      "git_blob": "42ab5c41245ce030c7da722ed969670427ff4a1a",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/current/test_run_bazel_ci.py.api.json",
+      "bytes": 36541,
+      "sha256": "301c32ed7c1c692c3795194b190a8a1bf2ab9e9119b9d19110c6ab19dd15c593",
+      "git_blob": "3f967759dea952277ecc2bfafd39507b0fa78f2a",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/current/test_run_bazel_clippy_targets.py.api.json",
+      "bytes": 15847,
+      "sha256": "46f6d86996e22827cefb0440c41289bb556d3d8d16cd0a4cc53c10379de70914",
+      "git_blob": "40a9f7b6758117818a0edc7af184e172d896d3ef",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/current/test_run_bazel_native_msvc_toolchain.py.api.json",
+      "bytes": 12435,
+      "sha256": "837438807f3e6af0f7ddd7ca3228c3594b6f096740b513ad90d211a82beae260",
+      "git_blob": "b728677d7d29456f57e91668568620596a3c3fc4",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/current/test_run_bazel_windows_fallback.py.api.json",
+      "bytes": 27345,
+      "sha256": "bda7c74b3f68a3dfdb6cad47c406f2a060f99610684b8950dbf51bf80b56731b",
+      "git_blob": "b8dc590ee2eb3279cb35f1e8fd8b66097bd8ab22",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/current/test_run_bazel_with_buildbuddy.py.api.json",
+      "bytes": 25025,
+      "sha256": "09b6c030314fee2ca3e58b1be6becb28a2ebfad6b7ef343100b7eb9a902fc9d2",
+      "git_blob": "1579611ef5d860b8c640043d35b8f6b06412640b",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/fixture/.bazelignore",
+      "bytes": 10,
+      "sha256": "6c12312bbea6aae136aec9c1908afa284521a1da45ef1056b67e2af3864c80f6",
+      "git_blob": "1cfe9bba36472514dfaa1f5475d177900a67d392",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/fixture/BUILD.bazel",
+      "bytes": 144,
+      "sha256": "e20a30ea9a7c249d89eb87180539ce4df2abc3341a7ddacf5d743653ad2d362d",
+      "git_blob": "c219cda54d0dd699f6bdbe110a5f667d0f9f7de1",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/fixture/MODULE.bazel",
+      "bytes": 158,
+      "sha256": "d458563fbb9b527e1e84d958d85f6a5f4e56c9043908b82d605f4601f9afec53",
+      "git_blob": "40b8f4974f25d6c9cf9000ea962b5589e04ce736",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/fixture/MODULE.bazel.lock",
+      "bytes": 48253,
+      "sha256": "9c2c4067266de64eace85c03661d3f6257e6ca1f45d5d074a0245b5d37345b82",
+      "git_blob": "cb863575969955c221ae0cb554d8dba02a91425f",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/fixture/codex-rs/BUILD.bazel",
+      "bytes": 956,
+      "sha256": "9c6ebd18fee42df643896d02d4b78cd64c2175032af3f1fbdc98f8c2e6d0034d",
+      "git_blob": "e1af77b32dffe8c5a992edae40173e911e603395",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/fixture/codex-rs/v8-poc/BUILD.bazel",
+      "bytes": 87,
+      "sha256": "4f3e4e5dcb80c17feefb27f4b9970c8b5e18e999a13b6adf65b1f853c92aba45",
+      "git_blob": "370351e39140dccab59d424b178e3d257965ca8c",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/fixture/platforms/BUILD",
+      "bytes": 1000,
+      "sha256": "ec7bd233ec2335a01467af0c34f641db5782b09a1f189fb8886cc82befc25fb0",
+      "git_blob": "ed29fc39e2d2ed2ddeec40db1ebbca98a7c76aae",
+      "original_mode": "0640"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/fixture/platforms/LICENSE",
+      "bytes": 11357,
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "git_blob": "261eeb9e9f8b2b4b0d119366dda99c6fd7d35c64",
+      "original_mode": "0640"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/fixture/platforms/MODULE.bazel",
+      "bytes": 286,
+      "sha256": "f05feb42b48f1b3c225e4ccf351f367be0371411a803198ec34a389fb22aa580",
+      "git_blob": "890561d20304f00c3d1655a143898f0e64653c0b",
+      "original_mode": "0640"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/fixture/platforms/WORKSPACE",
+      "bytes": 477,
+      "sha256": "f617939edb5ce679d59477eb1b9fad07307abeec27135d477d0c92ef91a5207d",
+      "git_blob": "172bccc9bac94f842886389ccc8be43a068a1b0e",
+      "original_mode": "0640"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/fixture/platforms/WORKSPACE.bzlmod",
+      "bytes": 177,
+      "sha256": "b0c7c83adb528788ef0d3e4136d30d491e48be8c2e1fc6a6d9798c0537f660b1",
+      "git_blob": "59c0af4e760ca12b247cbf8db1cebc30f0f95c31",
+      "original_mode": "0640"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/fixture/platforms/cpu/BUILD",
+      "bytes": 4265,
+      "sha256": "0fc7c84315dfcc67175a502ba31ee6de2407d3fd1aedca9619bd2f7ed570f458",
+      "git_blob": "649745200807bb5000b6aeb57a241fdd4fdaea94",
+      "original_mode": "0640"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/fixture/platforms/host/BUILD",
+      "bytes": 696,
+      "sha256": "84c8ddfc199e2f51950ffb5dc3a7dc8e9284de96e731a3ee8dc25b113d450767",
+      "git_blob": "48531bc962362492d9bfa479438411f2a45ed134",
+      "original_mode": "0640"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/fixture/platforms/host/constraints.bzl",
+      "bytes": 120,
+      "sha256": "75d343a280750ba3098eb8d446d1065071b0d051cd968a0e28a86e3e203b893a",
+      "git_blob": "776c1d9e96c9eadb86aefebb2ac6977a0ab9b75c",
+      "original_mode": "0640"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/fixture/platforms/host/extension.bzl",
+      "bytes": 2620,
+      "sha256": "b7686f14f3dc03f586299247aa30b3eeb85da03ee02d8b7fca0b273c82ae56fb",
+      "git_blob": "69410cd0263c7525e5315a026224ff8ee65c6110",
+      "original_mode": "0640"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/fixture/platforms/os/BUILD",
+      "bytes": 2424,
+      "sha256": "09225b074d0b3f27e09efefcfcc55a135f834d2e2d999210355497cc20956620",
+      "git_blob": "2ba85296bc4d7a8e5e6dfa28f91e678be362c3a2",
+      "original_mode": "0640"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/fixture/platforms/version.bzl",
+      "bytes": 664,
+      "sha256": "a8ebcf0ac52ba73c129b1592c4e459eb69d2287f33819717ce53b3292dbf93b9",
+      "git_blob": "67dcda184ed0087607be24119202475721d894f4",
+      "original_mode": "0640"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/fixture/rules.bzl",
+      "bytes": 554,
+      "sha256": "1db71c96f2a5ec42a744cb9f8bc721542b7c1888f33e7dd6887a774ab4e3d2c2",
+      "git_blob": "ff62771ec7772764ea2f261be8004672d774dd0e",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/fixture/support/BUILD.bazel",
+      "bytes": 167,
+      "sha256": "3b0119e23d610283a9c059e66528f647438d7904dcf588cda45b8448a7c9ee8c",
+      "git_blob": "b0bbd44bcf16ecc4056bea3fa5702986800bf4c6",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/freeze_candidate.py",
+      "bytes": 9715,
+      "sha256": "9739ea7e25125942ca3549749cfe3568c5a860297bd2746f7669bfe02cfb70d2",
+      "git_blob": "456b69a1b16927df4f3a380888acf5e13be51cc5",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/full-wrapper-validation/.github/scripts/run-argument-comment-lint-bazel.sh",
+      "bytes": 2783,
+      "sha256": "768be06a3b61451ed03c21129f96f6cb51890510af8a913ae9d0ee6adae2b87e",
+      "git_blob": "75de9b9f4ccf8a39ffc7acb152bf68e74e757dcf",
+      "original_mode": "0755"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/full-wrapper-validation/.github/scripts/run-bazel-ci.sh",
+      "bytes": 13699,
+      "sha256": "54a2e8fe8da8253b92986380ae502082354b824759c970c29235c86b3ba291cf",
+      "git_blob": "2bb6994771e1bfaa6b6e9f2824758188f8e454a9",
+      "original_mode": "0755"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/full-wrapper-validation/.github/scripts/run-bazel-query-ci.sh",
+      "bytes": 1556,
+      "sha256": "8f44948ef2f970adbd5d26c6af7ac70bbecb043d44c07a28e013dfaf156f327d",
+      "git_blob": "e1d9838bac46014c4820a992af0c80a6e0802157",
+      "original_mode": "0755"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/full-wrapper-validation/.github/scripts/run_bazel_with_buildbuddy.py",
+      "bytes": 14442,
+      "sha256": "656fa9f508bb339da949a359a457f02fa3979449ae1761b0084494cf38e83a0e",
+      "git_blob": "21a5fdf0e7afcde4b6141229e95fcff8f6a7e763",
+      "original_mode": "0755"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/full-wrapper-validation/.github/scripts/test_run_bazel_ci.py",
+      "bytes": 16956,
+      "sha256": "a488cb579d618237af53cd16cf377984a622aedc1cc64fb2d4f356810742ff04",
+      "git_blob": "03cbaf7cf988f978d60b59f2efddf599d97255b5",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/full-wrapper-validation/.github/scripts/test_run_bazel_clippy_targets.py",
+      "bytes": 12767,
+      "sha256": "421f3f0c8c359f5bed942b4bc638b2c4616e407078d7432b8d0122e764674f9d",
+      "git_blob": "a230d6f75c9642a8fdb15f0ae22b952967e1f04d",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/full-wrapper-validation/.github/scripts/test_run_bazel_native_msvc_toolchain.py",
+      "bytes": 5401,
+      "sha256": "ad71693c007c32c2270f8f0469e8375b2fe04bc6f346a4213d25546820255eab",
+      "git_blob": "d6a51de52362a910645fd97d4857f00372abdeea",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/full-wrapper-validation/.github/scripts/test_run_bazel_windows_fallback.py",
+      "bytes": 12458,
+      "sha256": "5ca1594d20fc73b23c338cda70626365abfaedc0837a3094ae5fa2ecc6d5250b",
+      "git_blob": "12b503d6d70fce2268bebe4a475e64c34b3dc504",
+      "original_mode": "0755"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/full-wrapper-validation/.github/scripts/test_run_bazel_with_buildbuddy.py",
+      "bytes": 11353,
+      "sha256": "ab50f8efa2b4687e9f74df1a769a16fed5994bd6b3acc55eeb6564d60ca0903f",
+      "git_blob": "3c8c83d39328ed5bde888cadafe73888c6d77b74",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/full-wrapper-validation/BUILD.bazel",
+      "bytes": 3007,
+      "sha256": "9f52120fc9ae4e2ac2a4df1c9e5e2dd698b50298b4ba31b774bd44467fe44e7c",
+      "git_blob": "1f9970fdbd25413e7a4e9a98519ba44a735158d4",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/full-wrapper-validation/MODULE.bazel",
+      "bytes": 21899,
+      "sha256": "2540ece92ab88a357306aa60aee19e17a24b41df1a644777e4f2bdc381c71de6",
+      "git_blob": "cc1b7f627cff8cfccf6d386b25aa01ab758a270c",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/full-wrapper-validation/scripts/list-bazel-clippy-targets.sh",
+      "bytes": 4504,
+      "sha256": "bda628041cc8b05929cd7cf58b4156210cc39826de9bdf19aa83b6e1cad8db5e",
+      "git_blob": "3828891ac5e77b6168fb116a062acf0661b1ab9a",
+      "original_mode": "0755"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/initial-testonly-consumer-attempt/01-server-before.stderr.log",
+      "bytes": 60,
+      "sha256": "ffc88a8f4359d9798f87d187881694c7e41accbdf80ef65df931f8140bca9ad6",
+      "git_blob": "37bba182662d40bea0ea2bae748852013449f395",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/initial-testonly-consumer-attempt/01-server-before.stdout.log",
+      "bytes": 2,
+      "sha256": "aa67a169b0bba217aa0aa88a65346920c84c42447c36ba5f7ea65f422c1fe5d8",
+      "git_blob": "45a4fb75db864000d01701c0f7a51864bd4daabf",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/initial-testonly-consumer-attempt/02-original-broad-cquery.stderr.log",
+      "bytes": 909,
+      "sha256": "962fd4228332ed1eaf5aa6eecc5fde1bc98e684a4409af79aec6dee32a7c489e",
+      "git_blob": "eba1bd0383775a6690c2cd4fbd9153a766857949",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/initial-testonly-consumer-attempt/02-original-broad-cquery.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/initial-testonly-consumer-attempt/03-complete-preanalysis-set.stderr.log",
+      "bytes": 27,
+      "sha256": "ab590410c0e232e6f833351016e42483185e6e46aaf4522771dbb5101beffc39",
+      "git_blob": "90a5208c86ddb9bad436a7714f44ae87184d27ea",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/initial-testonly-consumer-attempt/03-complete-preanalysis-set.stdout.log",
+      "bytes": 149,
+      "sha256": "bcc377e38d26a3146588d88d4e3bc95312558f5a9bf796447c334d2ec6b62d51",
+      "git_blob": "45ea996a5d65d4841c7ed1fb47e7a9a83a25d60c",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/initial-testonly-consumer-attempt/04-only-selected-universe.stderr.log",
+      "bytes": 346,
+      "sha256": "09c4f9c611453195f64f47d90c1d211f30901dbc5e11e6fdc3e1219eb310938b",
+      "git_blob": "63381837bd97d5b8b0b7d1fe66e9c43033fd8b99",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/initial-testonly-consumer-attempt/04-only-selected-universe.stdout.log",
+      "bytes": 86,
+      "sha256": "ac7392eed18e987e6fec443a42fff10d3d63c53a097c3187fd2aeb0b40034c2f",
+      "git_blob": "2365fa213d7010a65bdf35af20ab2159e5f66c5c",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/initial-testonly-consumer-attempt/05-prime-exec-configuration.stderr.log",
+      "bytes": 1070,
+      "sha256": "5be0e74055ca86cf5bad7bfbaa26d2e1aea1ed87241a2937b67943808ff1a87d",
+      "git_blob": "b5263fb7eec74b227b028b1e02c1df94794bd684",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/initial-testonly-consumer-attempt/05-prime-exec-configuration.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/initial-testonly-consumer-attempt/COMMANDS.json",
+      "bytes": 5501,
+      "sha256": "145bb1de9648534a2e81ed999d3dc643fb00c75359879648645435402da7917c",
+      "git_blob": "b65a77265e474ead1e1c1a1ae0883e1be7451f61",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/initial-testonly-consumer-attempt/NOTE.json",
+      "bytes": 352,
+      "sha256": "d6d1982f2bf9398e2dfcf745d251f45f8858c4ba46a529621393fc032a85d9c6",
+      "git_blob": "988b6700e4335a6584180d2013575e0aa267bade",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/initial-testonly-consumer-attempt/run_analysis_fixture.py",
+      "bytes": 5508,
+      "sha256": "6ad9860a26c13df02f815c807628f36b4b439a3cd27ad899a1acac50d6aa4d19",
+      "git_blob": "8541d4288d61913dde8042f592b7d9919765e42f",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/initial-testonly-consumer-attempt/selected.query",
+      "bytes": 172,
+      "sha256": "3fa5d360c3edd3ffb1cebdd85523a89ed417b73960bf3eec55b462ff4f6d2f08",
+      "git_blob": "426cb56c898be8c392e9886388b4e8c0e1b609b0",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/initial-testonly-consumer-attempt/support-BUILD.bazel",
+      "bytes": 150,
+      "sha256": "95b3b8d26978e77e8302ae9cb6df5c29f3a0a7985ae9e4e99f1faae0e34ab813",
+      "git_blob": "f967fa9216a21f42014376a2e44d4ea5cf8657b7",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/initial-windows-launcher-attempt/01-server-before.stderr.log",
+      "bytes": 60,
+      "sha256": "ffc88a8f4359d9798f87d187881694c7e41accbdf80ef65df931f8140bca9ad6",
+      "git_blob": "37bba182662d40bea0ea2bae748852013449f395",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/initial-windows-launcher-attempt/01-server-before.stdout.log",
+      "bytes": 2,
+      "sha256": "10159baf262b43a92d95db59dae1f72c645127301661e0a3ce4e38b295a97c58",
+      "git_blob": "7f8f011eb73d6043d2e6db9d2c101195ae2801f2",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/initial-windows-launcher-attempt/02-original-broad-cquery.stderr.log",
+      "bytes": 1540,
+      "sha256": "8c4826f24adf3e3c69c9e1db5ee7b31ca18f2e556d82be4abd2bce83e90ad2e2",
+      "git_blob": "461183eb9d7bb49549a7f46d3a1bb1a9a045d84c",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/initial-windows-launcher-attempt/02-original-broad-cquery.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/initial-windows-launcher-attempt/03-complete-preanalysis-set.stderr.log",
+      "bytes": 27,
+      "sha256": "ab590410c0e232e6f833351016e42483185e6e46aaf4522771dbb5101beffc39",
+      "git_blob": "90a5208c86ddb9bad436a7714f44ae87184d27ea",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/initial-windows-launcher-attempt/03-complete-preanalysis-set.stdout.log",
+      "bytes": 149,
+      "sha256": "bcc377e38d26a3146588d88d4e3bc95312558f5a9bf796447c334d2ec6b62d51",
+      "git_blob": "45ea996a5d65d4841c7ed1fb47e7a9a83a25d60c",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/initial-windows-launcher-attempt/04-only-selected-universe.stderr.log",
+      "bytes": 819,
+      "sha256": "7a0c8aed97d336f8d15f8e87d12547176034bfc67be1e8af63279d14b10320bb",
+      "git_blob": "4d81fc205aad42c3ea982d6ec51d1091d858ac2b",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/initial-windows-launcher-attempt/04-only-selected-universe.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/initial-windows-launcher-attempt/COMMANDS.json",
+      "bytes": 4471,
+      "sha256": "1810e47f82fa635320ae93e27ade72c5f329573547b4b460ffcfd473dadeb4f0",
+      "git_blob": "42dbf542a82cce4fd79586f833deb28ed349f638",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/initial-windows-launcher-attempt/NOTE.json",
+      "bytes": 604,
+      "sha256": "f6cbfce46fab1537996d9e72404c29d1a5682fbc22e9af325abc3d82dbcb6a9e",
+      "git_blob": "ae44cbd2740f519b7a7b1e7ce1890e8cd1eab78c",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/initial-windows-launcher-attempt/fixture-sources/BUILD.bazel",
+      "bytes": 151,
+      "sha256": "495814b2e6e2cacc10d633802d450ab0e54a8bfb3f1dcaf5bb024e5ec447faec",
+      "git_blob": "88e6afcf34bfc864aca267e70e7294d0ab948477",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/initial-windows-launcher-attempt/fixture-sources/MODULE.bazel",
+      "bytes": 158,
+      "sha256": "d458563fbb9b527e1e84d958d85f6a5f4e56c9043908b82d605f4601f9afec53",
+      "git_blob": "40b8f4974f25d6c9cf9000ea962b5589e04ce736",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/initial-windows-launcher-attempt/fixture-sources/codex-rs/BUILD.bazel",
+      "bytes": 954,
+      "sha256": "523a3aed317eb2b220724d30595ef0aeceeeda10877ac4d6b986cff51695e6a2",
+      "git_blob": "555abeefaedb7f91e89d2e4f128ee183a3da2b48",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/initial-windows-launcher-attempt/fixture-sources/codex-rs/v8-poc/BUILD.bazel",
+      "bytes": 87,
+      "sha256": "4f3e4e5dcb80c17feefb27f4b9970c8b5e18e999a13b6adf65b1f853c92aba45",
+      "git_blob": "370351e39140dccab59d424b178e3d257965ca8c",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/initial-windows-launcher-attempt/fixture-sources/rules.bzl",
+      "bytes": 554,
+      "sha256": "1db71c96f2a5ec42a744cb9f8bc721542b7c1888f33e7dd6887a774ab4e3d2c2",
+      "git_blob": "ff62771ec7772764ea2f261be8004672d774dd0e",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/initial-windows-launcher-attempt/fixture-sources/support/BUILD.bazel",
+      "bytes": 150,
+      "sha256": "95b3b8d26978e77e8302ae9cb6df5c29f3a0a7985ae9e4e99f1faae0e34ab813",
+      "git_blob": "f967fa9216a21f42014376a2e44d4ea5cf8657b7",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/initial-windows-launcher-attempt/run_analysis_fixture.py",
+      "bytes": 5518,
+      "sha256": "a92b7c0042f897dfd460b40271f3fd3de35acb36ac3de9a138937a45a92d011e",
+      "git_blob": "8f17619dc71ccc0902ac4c3926c0039266026d0b",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/initial-windows-launcher-attempt/selected.query",
+      "bytes": 172,
+      "sha256": "3fa5d360c3edd3ffb1cebdd85523a89ed417b73960bf3eec55b462ff4f6d2f08",
+      "git_blob": "426cb56c898be8c392e9886388b4e8c0e1b609b0",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/manifest.json",
+      "bytes": 6258,
+      "sha256": "59193b7933f9abb5fe8539b2338005a2034ee07f01c708fa6117a756715b0809",
+      "git_blob": "3f68d5b6c7c7aefb780efe0d1036914edb46ac14",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/repair.patch",
+      "bytes": 14402,
+      "sha256": "7e9da4215028b511d8d2ecc89ccb2f65a5d229d897ebeb0ff98c561d36c44760",
+      "git_blob": "7adbcf420f294aa1f731ec5d73507e313d81566f",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/run_analysis_fixture.py",
+      "bytes": 5508,
+      "sha256": "6ad9860a26c13df02f815c807628f36b4b439a3cd27ad899a1acac50d6aa4d19",
+      "git_blob": "8541d4288d61913dde8042f592b7d9919765e42f",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/run_serialization_probe.py",
+      "bytes": 7186,
+      "sha256": "cf99b71742d674b8375e61f084e772f8e7e9aa986f35f3589f968ff459fab520",
+      "git_blob": "69827378ad33f020920641529e3c7eb023ebc6e4",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/serialization-fixture/.github/scripts/run-bazel-query-ci.sh",
+      "bytes": 1556,
+      "sha256": "8f44948ef2f970adbd5d26c6af7ac70bbecb043d44c07a28e013dfaf156f327d",
+      "git_blob": "e1d9838bac46014c4820a992af0c80a6e0802157",
+      "original_mode": "0755"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/serialization-fixture/.github/scripts/run_bazel_with_buildbuddy.py",
+      "bytes": 1926,
+      "sha256": "f2d85834cfa4070bc7c83d87f1b6bb43f1f4a851826b75a036edd655ca76c08c",
+      "git_blob": "9b4c899dbf1f3ccaf8e60d2741f21198bf15ee04",
+      "original_mode": "0755"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/serialization-fixture/BUILD.bazel",
+      "bytes": 144,
+      "sha256": "e20a30ea9a7c249d89eb87180539ce4df2abc3341a7ddacf5d743653ad2d362d",
+      "git_blob": "c219cda54d0dd699f6bdbe110a5f667d0f9f7de1",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/serialization-fixture/MODULE.bazel",
+      "bytes": 158,
+      "sha256": "d458563fbb9b527e1e84d958d85f6a5f4e56c9043908b82d605f4601f9afec53",
+      "git_blob": "40b8f4974f25d6c9cf9000ea962b5589e04ce736",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/serialization-fixture/MODULE.bazel.lock",
+      "bytes": 48253,
+      "sha256": "9c2c4067266de64eace85c03661d3f6257e6ca1f45d5d074a0245b5d37345b82",
+      "git_blob": "cb863575969955c221ae0cb554d8dba02a91425f",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/serialization-fixture/codex-rs/BUILD.bazel",
+      "bytes": 1120,
+      "sha256": "a73f23b133f200d8c56ddb22c0d9d21eb43a5b5333080fa33d6b7ed216cb4e39",
+      "git_blob": "a3ed168b94e66863c39c1e57c02c690131502230",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/serialization-fixture/codex-rs/v8-poc/BUILD.bazel",
+      "bytes": 87,
+      "sha256": "4f3e4e5dcb80c17feefb27f4b9970c8b5e18e999a13b6adf65b1f853c92aba45",
+      "git_blob": "370351e39140dccab59d424b178e3d257965ca8c",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/serialization-fixture/platforms/BUILD",
+      "bytes": 1000,
+      "sha256": "ec7bd233ec2335a01467af0c34f641db5782b09a1f189fb8886cc82befc25fb0",
+      "git_blob": "ed29fc39e2d2ed2ddeec40db1ebbca98a7c76aae",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/serialization-fixture/platforms/LICENSE",
+      "bytes": 11357,
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+      "git_blob": "261eeb9e9f8b2b4b0d119366dda99c6fd7d35c64",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/serialization-fixture/platforms/MODULE.bazel",
+      "bytes": 286,
+      "sha256": "f05feb42b48f1b3c225e4ccf351f367be0371411a803198ec34a389fb22aa580",
+      "git_blob": "890561d20304f00c3d1655a143898f0e64653c0b",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/serialization-fixture/platforms/WORKSPACE",
+      "bytes": 477,
+      "sha256": "f617939edb5ce679d59477eb1b9fad07307abeec27135d477d0c92ef91a5207d",
+      "git_blob": "172bccc9bac94f842886389ccc8be43a068a1b0e",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/serialization-fixture/platforms/WORKSPACE.bzlmod",
+      "bytes": 177,
+      "sha256": "b0c7c83adb528788ef0d3e4136d30d491e48be8c2e1fc6a6d9798c0537f660b1",
+      "git_blob": "59c0af4e760ca12b247cbf8db1cebc30f0f95c31",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/serialization-fixture/platforms/cpu/BUILD",
+      "bytes": 4265,
+      "sha256": "0fc7c84315dfcc67175a502ba31ee6de2407d3fd1aedca9619bd2f7ed570f458",
+      "git_blob": "649745200807bb5000b6aeb57a241fdd4fdaea94",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/serialization-fixture/platforms/host/BUILD",
+      "bytes": 696,
+      "sha256": "84c8ddfc199e2f51950ffb5dc3a7dc8e9284de96e731a3ee8dc25b113d450767",
+      "git_blob": "48531bc962362492d9bfa479438411f2a45ed134",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/serialization-fixture/platforms/host/constraints.bzl",
+      "bytes": 120,
+      "sha256": "75d343a280750ba3098eb8d446d1065071b0d051cd968a0e28a86e3e203b893a",
+      "git_blob": "776c1d9e96c9eadb86aefebb2ac6977a0ab9b75c",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/serialization-fixture/platforms/host/extension.bzl",
+      "bytes": 2620,
+      "sha256": "b7686f14f3dc03f586299247aa30b3eeb85da03ee02d8b7fca0b273c82ae56fb",
+      "git_blob": "69410cd0263c7525e5315a026224ff8ee65c6110",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/serialization-fixture/platforms/os/BUILD",
+      "bytes": 2424,
+      "sha256": "09225b074d0b3f27e09efefcfcc55a135f834d2e2d999210355497cc20956620",
+      "git_blob": "2ba85296bc4d7a8e5e6dfa28f91e678be362c3a2",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/serialization-fixture/platforms/version.bzl",
+      "bytes": 664,
+      "sha256": "a8ebcf0ac52ba73c129b1592c4e459eb69d2287f33819717ce53b3292dbf93b9",
+      "git_blob": "67dcda184ed0087607be24119202475721d894f4",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/serialization-fixture/rules.bzl",
+      "bytes": 554,
+      "sha256": "1db71c96f2a5ec42a744cb9f8bc721542b7c1888f33e7dd6887a774ab4e3d2c2",
+      "git_blob": "ff62771ec7772764ea2f261be8004672d774dd0e",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/serialization-fixture/scripts/list-bazel-clippy-targets.sh",
+      "bytes": 4504,
+      "sha256": "bda628041cc8b05929cd7cf58b4156210cc39826de9bdf19aa83b6e1cad8db5e",
+      "git_blob": "3828891ac5e77b6168fb116a062acf0661b1ab9a",
+      "original_mode": "0755"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/serialization-fixture/support/BUILD.bazel",
+      "bytes": 167,
+      "sha256": "3b0119e23d610283a9c059e66528f647438d7904dcf588cda45b8448a7c9ee8c",
+      "git_blob": "b0bbd44bcf16ecc4056bea3fa5702986800bf4c6",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/serialization-results/RESULT.json",
+      "bytes": 4543,
+      "sha256": "babc2ec9c61026be5dd951083b076a8d18f11854ba2796700b0195ddd23d0482",
+      "git_blob": "9d2053547d72a078a5365d8ac428914d27af79e6",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/serialization-results/actual-candidate.query",
+      "bytes": 267,
+      "sha256": "71302ce636f50be6f6fc9c1789b80a839063f5027d32bfdf7f23341b9fa88de3",
+      "git_blob": "ec3708d0137b84665c05a65bf02f48f871dec374",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/serialization-results/cquery.json",
+      "bytes": 1453,
+      "sha256": "54e86d6a7d7df027dc09fee062bd532ee1605f01cf61d6d137d1e02880179463",
+      "git_blob": "89dc425ac761060177b8c249d431c409713d996b",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/serialization-results/cquery.stderr",
+      "bytes": 1001,
+      "sha256": "927ee33a95323ef70632e44d8a5e2edb1e0feb77961ac3462500f527a528e52c",
+      "git_blob": "673a3ead34038ca9bf0f7943ba065276b5b8da17",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/serialization-results/cquery.stdout",
+      "bytes": 165,
+      "sha256": "60ebbca3fbe894fcf55134ff05038d52316891a3fbf26fa3104cc36944afa60e",
+      "git_blob": "8e305d9f77b1334e9c33faee522689955a1751b6",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/serialization-results/query.json",
+      "bytes": 998,
+      "sha256": "9638327f307c41b64c25bbed6858e600845a10a2532669781fd34f24011e8421",
+      "git_blob": "d6f35a680cd598a3f83dbd1f6feb3418fc9bf409",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/serialization-results/query.stderr",
+      "bytes": 644,
+      "sha256": "a232f283ec62d479f3385bdde1d8a2663f4a2904ea244f149c9b283108f37c19",
+      "git_blob": "8fbcb2e5799f4e9fa0b63514c8fb6578ce8374f5",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/serialization-results/query.stdout",
+      "bytes": 228,
+      "sha256": "66d32cdcd1217d2f9aa887ba672fc3ea606da61a38360be15a954e481f58c535",
+      "git_blob": "2dd8057be9f6ffc234b6e8b800246e4df48fb05a",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/serialization-results/selector.stderr",
+      "bytes": 1645,
+      "sha256": "92fb48094c12e283ce32cf742954450311df3afb9174a5b463483c91925cecc9",
+      "git_blob": "a557f37d732c556532a93084d0f15c2accc66ff5",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/serialization-results/selector.stdout",
+      "bytes": 201,
+      "sha256": "1de95bbd8d7058ceeeca89b1bd347a6baf5a0a7ae395dfe2fb9269570a9f889d",
+      "git_blob": "7421f4612e926fa061270036671a58141e633f9c",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/test_source_api.json",
+      "bytes": 15731,
+      "sha256": "b4992565834917f266a19da3a3f89089ddf6310b5984ccf973e54b67fe9d3ffb",
+      "git_blob": "ee4a0e4d58122f06cc207563bfe708e93cebd79c",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/validate_final_source.py",
+      "bytes": 4449,
+      "sha256": "556ec848047a6562cf3624fbd30e5b1e0c7469280194bf356a6913a0e0eea42e",
+      "git_blob": "d62d55802bffceb22f528c025270d67cf0b4d94c",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/validation/FINAL_SOURCE_VERIFICATION.json",
+      "bytes": 5470,
+      "sha256": "172c77b0ca550d08b59004a1c444bdafa4ba80e60bb77245228b9f8247aeb3c3",
+      "git_blob": "9a2967ae309257d262610b3df25d8ad0f131ed42",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/validation/FULL_WRAPPER_SUITE.json",
+      "bytes": 831,
+      "sha256": "6013f68f8596d912353432c58fdbb9997861385405c4a6d44834799b67ca08b1",
+      "git_blob": "98305e3aea0a0d067111186433fb49468d848000",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/validation/bash-syntax.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/validation/bash-syntax.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/validation/codespell.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/validation/codespell.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/validation/full-wrapper-suite.stderr",
+      "bytes": 10587,
+      "sha256": "f55def9b415485efe9b37021f6c607ecca91baaae1b8bfbc04c337527a46467e",
+      "git_blob": "549ab6c88f1998e26e6b7b899da0e57d31f2c3e4",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/validation/full-wrapper-suite.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/validation/git-after-index.log",
+      "bytes": 274,
+      "sha256": "cbc882defeba36a54e98f0d2349bf99d991962f33aae3a85106e93e733522714",
+      "git_blob": "71d8ce2c05922daaf0965831f16cc9e833d27c64",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/validation/git-before-index.log",
+      "bytes": 274,
+      "sha256": "b1e1a9b038d092247fca87e2d402fc64ac249130e1750fd064caaf47000aed6b",
+      "git_blob": "2cf4da7f4fa2590671af0e99965e380cc7e2f3ef",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/validation/initial_missing_wrapper/FULL_WRAPPER_SUITE.json",
+      "bytes": 726,
+      "sha256": "b09bc9b9dd31e1986a70eba96a323fae2b017a60e5116311d103073437c0f3a5",
+      "git_blob": "d54a916636e66e3405967e6d90b49ec675d202ef",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/validation/initial_missing_wrapper/NOTE.json",
+      "bytes": 405,
+      "sha256": "02656f9c286e76c9df69ef4e1a7c48f5cf73e7c028ed4d4a24f2941b32c6fbf7",
+      "git_blob": "d9448ec96fe55052e32c11b476bb0b181db8840a",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/validation/initial_missing_wrapper/full-wrapper-suite.stderr",
+      "bytes": 12349,
+      "sha256": "8e1c5b767ed127a682ded77795fa7a7c99953f307652cf8f552bc42e7221d3e9",
+      "git_blob": "6fa4294a8a5f6ad5a43d81d10f4945b8b950a662",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/validation/initial_missing_wrapper/full-wrapper-suite.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/validation/initial_wrong_stage_cwd/FULL_WRAPPER_SUITE.json",
+      "bytes": 726,
+      "sha256": "3a7475bd7aa43023c90183fca2fc461ea7bf94f6e32a8f48a5ad34ca72d300f4",
+      "git_blob": "898cce9608e8bae30d92c6193bc1b2e97c892832",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/validation/initial_wrong_stage_cwd/NOTE.json",
+      "bytes": 329,
+      "sha256": "73223a084ea90a967d8e017809ce8748b4119fe8cb8535b2ff3eaec00fb03aa4",
+      "git_blob": "9c6efa1dd4dc60c8702b15c3fcfaf05c169cb456",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/validation/initial_wrong_stage_cwd/full-wrapper-suite.stderr",
+      "bytes": 12509,
+      "sha256": "0524e85195327736c3bd6aacd14356f93f7e1c33a92638cff5ffb08cfb265a85",
+      "git_blob": "175722eb96b76a37e4b462f2663eb938b587c4f2",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/validation/initial_wrong_stage_cwd/full-wrapper-suite.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/validation/query-bash-syntax.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/validation/query-bash-syntax.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/validation/ruff-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/validation/ruff-check.stdout",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "git_blob": "1f5f344d054fae10f39140fb7199c99321d9190a",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/validation/ruff-format-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/validation/ruff-format-check.stdout",
+      "bytes": 25,
+      "sha256": "fd2299c9f1c6dc869070883e281051bfe93aacf66c1a3b0069f45b4aa410ca50",
+      "git_blob": "5e122f397b6d5d61b45621051851165eadce6a78",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/wrapper-tests.stderr.log",
+      "bytes": 110,
+      "sha256": "75939d1cf6cac50910bac0564d12e18bb239ac6b9f55a8ecaf399bace3244712",
+      "git_blob": "b1f0336161bf3cef41efc6e72fe23ef287c3b6ad",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/wrapper-tests.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/independent_reviews/formatter32_static.json",
+      "bytes": 1321,
+      "sha256": "f72e2b7c2deef8e6461776c409f9d4ef2bb905eb324b02b972fc439b41dae00a",
+      "git_blob": "d9948f157508e858781b7908105c6cf83137d44c",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_formatter32/baseline/scripts/format.py",
+      "bytes": 17717,
+      "sha256": "69cc5ebb60f88a704c98e3a5dfcffccee02bd98b3b3d306acc6e87cdc696a4a6",
+      "git_blob": "7fe2174ee4abbe8f69839fccd0b9877169a71bd2",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_formatter32/baseline/scripts/test_hepta_format_scope.py",
+      "bytes": 21014,
+      "sha256": "baf4d97594278e906ff69cd34bcd35f888780f44dd4207143f0fa9f4e660ee11",
+      "git_blob": "9d973401bd0b2fc861ae3911d8e6c441c6fe0f61",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_formatter32/candidate/scripts/format.py",
+      "bytes": 17479,
+      "sha256": "5d53a318441c6b99d55faa999320d67962c88496812959c1052faf593dbb33de",
+      "git_blob": "4ab27f105871013259a18736aa2b49fae1949a86",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_formatter32/candidate/scripts/test_hepta_format_scope.py",
+      "bytes": 22732,
+      "sha256": "b7e372b7a0d5dfad99f3f6d7b957aa1f9075a576277324512d720f63e00f1db5",
+      "git_blob": "89373c33776f2b764f716dedb225618b7ee49d74",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_formatter32/manifest.json",
+      "bytes": 5165,
+      "sha256": "9b3f04cd19221e942b6f57a9ebd66f9ab1414388b7ef781170b6f7967fcf06bb",
+      "git_blob": "16758f5d480b972be3b72e563abf0b0d79621fbf",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_formatter32/repair.patch",
+      "bytes": 4259,
+      "sha256": "f214e9d32eca5b796ca830a95e1ee8783e891da59ab2054dba41087437d8f87a",
+      "git_blob": "501d5bfa3fc3c34e353c048f982e56f06c414802",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_formatter32/validation1/NATIVE_SELECTION_AND_BUILDIFIER.json",
+      "bytes": 15074,
+      "sha256": "7f054a9a814f27348f7053e3daa7d1b32370321ceabd91270f8aef469255f7f8",
+      "git_blob": "0c7d2e4c5360bd77825e7de617f896162fe0c77a",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_formatter32/validation1/PATCH_REPLAY.json",
+      "bytes": 1120,
+      "sha256": "a454a231f62022fb1917c499ae7111e486b8dec4cf95497ee5b6247721fe5d72",
+      "git_blob": "3504c1d48b31c33a93a02a3794f7976e7136180c",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_formatter32/validation1/VALIDATION.json",
+      "bytes": 3213,
+      "sha256": "48841485ab7fdbe62225cdfceee3aeaee1b39ed6629e2023e4ef84960753d4db",
+      "git_blob": "c90eb9d4d37a8bd2186ef63a3af734b54993625f",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_formatter32/validation1/codespell.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_formatter32/validation1/codespell.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_formatter32/validation1/fixtures/BUILD.bazel",
+      "bytes": 26,
+      "sha256": "69ad51526fcdd15466fb57999d2314111320335cde28dbe259cbd9b105239c5d",
+      "git_blob": "1e5bfd0b14311cc1cfdc124219aac5c080d56a69",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_formatter32/validation1/fixtures/invalid.BUILD.bazel",
+      "bytes": 11,
+      "sha256": "d047fb16215d5d7f94d7894921be46418f6b383b91c3850ad6dc9a67b5a5776e",
+      "git_blob": "91c4715e7e2e69a66b079ea3a8d7e53ce77c4ab0",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_formatter32/validation1/forward_apply.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_formatter32/validation1/forward_apply.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_formatter32/validation1/forward_check.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_formatter32/validation1/forward_check.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_formatter32/validation1/invalid_starlark.stderr.log",
+      "bytes": 213,
+      "sha256": "c41c9397f358d571049f19dda9ca6e896e8a8be0ab7b1d86c5f497c4d4e41598",
+      "git_blob": "973b3d2f1cba0d95570d606142cc44f7f9e1a51b",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_formatter32/validation1/invalid_starlark.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_formatter32/validation1/original_frozen_json.stderr.log",
+      "bytes": 389,
+      "sha256": "cdd9a6ace99d2ba469c9c865f61cb13a194899d857dcb9b3dd49c8ecf02ecfc0",
+      "git_blob": "6b1d04ed070619e4a25b973c44b42cf2ab719902",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_formatter32/validation1/original_frozen_json.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_formatter32/validation1/reverse_apply.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_formatter32/validation1/reverse_apply.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_formatter32/validation1/reverse_check.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_formatter32/validation1/reverse_check.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_formatter32/validation1/ruff_check.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_formatter32/validation1/ruff_check.stdout.log",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "git_blob": "1f5f344d054fae10f39140fb7199c99321d9190a",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_formatter32/validation1/ruff_format_check.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_formatter32/validation1/ruff_format_check.stdout.log",
+      "bytes": 26,
+      "sha256": "3bc53bf3e981a98a34a852e175bf9b77af841edea74fca595d9aedcbaf9a4938",
+      "git_blob": "983e5b7d3b8260cd7b6465688368178dddd7e316",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_formatter32/validation1/scope_tests.stderr.log",
+      "bytes": 166,
+      "sha256": "617bc8175202f8909e95f3f8c04cb47113286e12d356fab68581d9e355787219",
+      "git_blob": "6e408c7fd09960a2349f4be4eaa7b99abeab2632",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_formatter32/validation1/scope_tests.stdout.log",
+      "bytes": 73,
+      "sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752",
+      "git_blob": "3c392c1e9260334291874d1c0eaad4cb4d7c054e",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_formatter32/validation1/valid_starlark.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_formatter32/validation1/valid_starlark.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_local_qualification/canonical33/MIRROR_BASELINE_NOTE.json",
+      "bytes": 499,
+      "sha256": "1a7caff8b591273804a17e097dfcdaf94058d5b86ebcdc4040a6ec7a2a1c586c",
+      "git_blob": "56ded00a98ad85c698da23e0264ea0ad591ff47d",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_local_qualification/canonical33/ROOT_REVIEW.json",
+      "bytes": 47385,
+      "sha256": "154f826d2c8b7df107dc3f255cd0f6ab8817f1d138731db04fd0990d1ccb9783",
+      "git_blob": "86661bfe2919e952c6c329237b1303b289ca7dec",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_local_qualification/canonical33/frozen_receipts_API.json",
+      "bytes": 1055,
+      "sha256": "eff665ce0f0f48ae8eb41c59d321b67abc62f6798515a2412af90fad9f08a643",
+      "git_blob": "796b2a407b9962972d6678781299d111a7437ae6",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_local_qualification/canonical33/just-fmt.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_local_qualification/canonical33/just-fmt.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_local_qualification/canonical33/scope-tests.stderr.log",
+      "bytes": 115,
+      "sha256": "a73ca5e39e99e0612270de5506ca6e57b48b0c4d3d6bfee57139c452d8a3b93e",
+      "git_blob": "70b898c8bf9b19fb8e0037b6c0c1d60c42dcba3d",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_local_qualification/canonical33/scope-tests.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_local_qualification/canonical33/source_API.json",
+      "bytes": 1012,
+      "sha256": "759f01174865954732754de62e9f6c9326accbc0d09cd255fa69ba7d5e2bcfaf",
+      "git_blob": "073dd032140552b07109b8733670f3bcdaabda2c",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_local_qualification/ci32_33_native/CODESPELL.json",
+      "bytes": 85,
+      "sha256": "61bebcc8c2bfc5ba0190a371fc3ba2b5235addec55e4f05be48211483760c792",
+      "git_blob": "a97a5af26449852695c97e2390bab7c049340f85",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_local_qualification/ci32_33_native/ROOT_REVIEW.json",
+      "bytes": 6348,
+      "sha256": "45986220a61adc48225e8297bec0396e4cd5754880ba71c08314f1a8c12b855e",
+      "git_blob": "620707893713d1c511296b6363added4e689106a",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_local_qualification/ci32_33_native/canonical5154.log",
+      "bytes": 1459025,
+      "sha256": "3f4106a029288f9904fdbc0d7778d4c357e193c86f3a273427f9c75e4c404a87",
+      "git_blob": "c93c159f3a26d31d11c06f2196f07f8502371e44",
+      "original_mode": "0600"
+    },
+    {
+      "path": "round3_local_qualification/ci32_33_native/canonical5154_log_api.json",
+      "bytes": 1467682,
+      "sha256": "e4207f46e312974138307980dd23fb953eea86c0af3a99173f8d60176a815c29",
+      "git_blob": "3feb2fc09971004c0b25063bf92e860f3c12a224",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_local_qualification/ci32_33_native/canonical5154_merge_api.json",
+      "bytes": 6713,
+      "sha256": "b39a3b80399a43d51eb05134d49110ed34cef9c870bd64174629e5d595ad534d",
+      "git_blob": "ce293f0771090fd0a8d49e4ea0015b6f6494e764",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_local_qualification/ci32_33_native/canonical5154_source_api.json",
+      "bytes": 799,
+      "sha256": "0954ddb84f623f4e14bfa4fe191f2db9b141e0dda8424acd572ae7a2b755cadb",
+      "git_blob": "790fafd9574a2896cdea7448acddfb508f91db3b",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_local_qualification/ci32_33_native/codespell.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_local_qualification/ci32_33_native/codespell.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_local_qualification/ci32_33_native/formatter5147.log",
+      "bytes": 124046,
+      "sha256": "04e45630ea88e8922c5a1b7b2b5edc17acbb20751847e3b900e091e803f04027",
+      "git_blob": "4848a2664a91da46104a2f5c652973fc00f91fa5",
+      "original_mode": "0600"
+    },
+    {
+      "path": "round3_local_qualification/ci32_33_native/formatter5147_log_api.json",
+      "bytes": 128834,
+      "sha256": "9f4f02ffea7366b10a0a2416c7731ea2a1d73d7a792456bb2bef0c616d34e2ed",
+      "git_blob": "f2430113ebae1dee80b26b4bf672f9ff045b9cbb",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_local_qualification/ci32_33_native/formatter5147_merge_api.json",
+      "bytes": 6713,
+      "sha256": "52cb14a07882f69676b7f36d97c9c11775b97936d70d684898c0b223d97fa950",
+      "git_blob": "3b68f49ba78825abfe7328ed26c698ca1a67b493",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_local_qualification/ci32_33_native/formatter5147_source_api.json",
+      "bytes": 781,
+      "sha256": "35c0377ab4ecae65543aa5d2eb2f8c0dd843178acdbe2f985ce77332d26e7f9d",
+      "git_blob": "604940c5e3c26e64e2d9d997b971dc4034de3976",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_local_qualification/clippy34/MIRROR_BASELINE_NOTE.json",
+      "bytes": 37,
+      "sha256": "6a7603e876e25fb0ab2f8fb46f5212437566a63b555fb0a506bc640db0f55128",
+      "git_blob": "71068b862571d60ad5533c7ccc797eb5f7e1f228",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_local_qualification/clippy34/ROOT_REVIEW.json",
+      "bytes": 53293,
+      "sha256": "5d363e81571d502999cb6acf7ab5fcbfae3fb0ae38489a165ac0919f82eb2106",
+      "git_blob": "d19c36162b6fa1bd7a9943d1f2e797bfa5e235b8",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_local_qualification/clippy34/SOURCE_API.json",
+      "bytes": 1437,
+      "sha256": "dbfa38cabb33d943cc0bc35489bc4a4cbab9092c9fe50e88a16cfaa51bccd1e2",
+      "git_blob": "2a97f4aae04d62c45f9b3720a1fdb6aead7c6fa3",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_local_qualification/clippy34/just-fmt.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_local_qualification/clippy34/just-fmt.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_local_qualification/formatter32/MIRROR_BASELINE_NOTE.json",
+      "bytes": 733,
+      "sha256": "d27e307ebc9c112d7a1076613ba57aedf542cf14fc0f765d5a116e9a01c976a2",
+      "git_blob": "748efbca3c25f397dad4a40273dd85e5c17c681f",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_local_qualification/formatter32/ROOT_REVIEW.json",
+      "bytes": 40016,
+      "sha256": "ffc665d1861bb9124fd3f7fa6b88b8e5eea104928221d5a6717cb27d68dbd02e",
+      "git_blob": "6cc2ca8227a8931a89a158293f22adb220e6eb11",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_local_qualification/formatter32/frozen_json_API.json",
+      "bytes": 1197,
+      "sha256": "7f019bef1c36dcd5543f03bc79b350657b5ac915197f53f0e3f7d62de1aa0f90",
+      "git_blob": "4ea5edc1c2ae79722415d494297d8abea0d2c09a",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_local_qualification/formatter32/just-fmt.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_local_qualification/formatter32/just-fmt.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_local_qualification/formatter32/source_API.json",
+      "bytes": 996,
+      "sha256": "da87f1627b048c2fbd48c351e5b174d31f7fef6620c0318bd94bf26c90ce0b67",
+      "git_blob": "d270bbae49bcd6000e350eccaad22c3d86595fae",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_local_qualification/formatter32/tool_source_API.json",
+      "bytes": 1278,
+      "sha256": "943be38b076e97f1c8feb57191503e95bc2e5cde4c734eec0fd025510e9c805e",
+      "git_blob": "af4fc893a245a43dfb3ce0757c73b4a32f723cf7",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_local_qualification/native_5147_alljobs_2225.json",
+      "bytes": 207172,
+      "sha256": "f6eb0bebf13ead775c60dfddf338a0812b799f07cf3db874e08cd998574ef3fa",
+      "git_blob": "63a7ead4b8d5f56df977b0e7a07df6355ece2512",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_local_qualification/native_5154_alljobs_2225.json",
+      "bytes": 210584,
+      "sha256": "b5340ae4d63354250a40d3f72afd36fdf491383d0529277fd225dd29efeadc71",
+      "git_blob": "77bf2438016e4a8455201fb39a2e855dc5fb6a44",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_native/peer_reviews/clippy_selected_universe34_static.json",
+      "bytes": 1604,
+      "sha256": "47ba455d2f97fd321dd92337dbde76fda1d7a031f038251d6a35019937bad35d",
+      "git_blob": "b0393c592ee1bf4dec30e42be2cced39a1c8f1a5",
+      "original_mode": "0644"
+    }
+  ]
+}

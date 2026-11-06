@@ -1,0 +1,64 @@
+{
+  "observed_at_utc": "2026-11-06T22:44:54.872228+00:00",
+  "packet": "ci_rules323334",
+  "publication": {
+    "bytes": 71250,
+    "sha256": "c9cb9648d6d9c10c59dd71c2809f3701d359b33b7eb0b39965d388c39aee58b8"
+  },
+  "index_sha256": "f858ba186327880756721794b9a681c062677bdbb8285db8c0ec758e1b4f649d",
+  "reader": {
+    "bytes": 6656,
+    "sha256": "9dabfbe81752dd496da7965fc5a0f7bedd78f43372016e673215defc50e8aa3e"
+  },
+  "reader_parent": {
+    "bytes": 6626,
+    "sha256": "00bf4373739122934a281273de36cc9e4cce84199aa985926419225cad94303b"
+  },
+  "reader_only_fixed_seal_changes": 1,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-O",
+    "-B",
+    "/workspace/scratch/3f6a885bb83c/round3_ci/ci_rules323334_checkpoint_20261106/restore.py",
+    "/workspace/scratch/3f6a885bb83c/round3_root_restore_ci_rules323334_2218"
+  ],
+  "exit_code": 0,
+  "files": 350,
+  "raw_bytes": 9691082,
+  "exact_member_roster_bytes_originals_and_modes": true,
+  "bundle_before_and_after_unchanged": true,
+  "prior_Core_source_path_intersections": {},
+  "destination": "/workspace/scratch/3f6a885bb83c/round3_root_restore_ci_rules323334_2218",
+  "bundle_identities": {
+    "round3_ci/ci_rules323334_checkpoint_20261106/INDEX.json": {
+      "bytes": 172916,
+      "sha256": "f858ba186327880756721794b9a681c062677bdbb8285db8c0ec758e1b4f649d"
+    },
+    "round3_ci/ci_rules323334_checkpoint_20261106/README.md": {
+      "bytes": 2905,
+      "sha256": "478b3fab986d5defecbb9f91f450c4a6d362ba2d960765b58415f063a843a553"
+    },
+    "round3_ci/ci_rules323334_checkpoint_20261106/native-evidence.tar.xz.part000.gz": {
+      "bytes": 440153,
+      "sha256": "12c037b8abb1258f8e73a4022539d240dd0fc61cfd8394e1befb735f244a9d87"
+    },
+    "round3_ci/ci_rules323334_checkpoint_20261106/native-evidence.tar.xz.part001.gz": {
+      "bytes": 38669,
+      "sha256": "c4d6d785b31eb7d7ee44d5e2c617aa629042e3c3fb62bec232fc0198430f0883"
+    },
+    "round3_ci/ci_rules323334_checkpoint_20261106/restore.py": {
+      "bytes": 6656,
+      "sha256": "9dabfbe81752dd496da7965fc5a0f7bedd78f43372016e673215defc50e8aa3e"
+    }
+  },
+  "native_tests_or_scanner_or_models_executed": false,
+  "archived_sources_executed": false,
+  "limits": [
+    "The native formatting success belongs to #5147 and the native development-profile success to #5154; source identities are separate and preserved.",
+    "Development-profile success does not establish qualification-profile readiness, revalidate historical evidence, or validate an external repository's signer workflow.",
+    "The 57 wrapper tests and 13 Bazel commands are local Linux checks. Synthetic fixture platforms do not establish native MSVC Clippy qualification.",
+    "The current #5165 native Windows Clippy job is only in progress at the fixed snapshot. Future terminal results require an additive record.",
+    "The initial missing helper/cwd/import/Git-index fixture failures and the real URL-boundary counterexample are retained and distinguished from final checks.",
+    "No original frozen scientific, protocol, policy or receipt bytes are rewritten, and no overall repository CI pass is claimed."
+  ]
+}
