@@ -3537,7 +3537,16 @@ async fn streamable_http_with_oauth_round_trip_impl() -> anyhow::Result<()> {
                     EventMsg::McpStartupComplete(startup) => {
                         refreshed_failed_servers = Some(startup.failed);
                     }
-                    EventMsg::TurnComplete(turn) => contended_turn = Some(turn),
+                    EventMsg::TurnComplete(turn) => {
+                        // This observed completion still has an exact finish owner.
+                        if let Some(completion) = fixture
+                            .codex
+                            .pending_normal_turn_finish_completion(&turn.turn_id)
+                        {
+                            completion.await;
+                        }
+                        contended_turn = Some(turn);
+                    }
                     _ => {}
                 }
             }
@@ -3592,6 +3601,13 @@ async fn streamable_http_with_oauth_round_trip_impl() -> anyhow::Result<()> {
             .await?;
         loop {
             if let EventMsg::TurnComplete(turn) = fixture.codex.next_event().await?.msg {
+                // Keep the next sequential refresh behind this same turn's finish owner.
+                if let Some(completion) = fixture
+                    .codex
+                    .pending_normal_turn_finish_completion(&turn.turn_id)
+                {
+                    completion.await;
+                }
                 return Ok::<_, anyhow::Error>(turn);
             }
         }

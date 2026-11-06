@@ -46,6 +46,7 @@ use std::time::Duration;
 use test_case::test_case;
 use tokio::net::TcpListener;
 use tokio::net::TcpStream;
+use tokio::sync::oneshot;
 use tokio::time::timeout;
 use tokio_tungstenite::WebSocketStream;
 use tokio_tungstenite::accept_async;
@@ -163,6 +164,7 @@ async fn respond_environment_info(
 async fn serve_exec_with_pushed_events(
     listener: TcpListener,
     scenario: PushedExecScenario,
+    mut output_observed: oneshot::Receiver<()>,
 ) -> PushedExecServerResult {
     let unrestricted_patch = matches!(
         scenario,
@@ -422,7 +424,18 @@ async fn serve_exec_with_pushed_events(
 
     let mut process_read_requests = 0;
     loop {
-        let request = read_exec_server_json(&mut websocket).await;
+        let request = tokio::select! {
+            // Retain any already-ready RPC before accepting the fixture's observation.
+            biased;
+            request = read_exec_server_json(&mut websocket) => request,
+            observed = &mut output_observed => {
+                observed.expect("the test should observe output before ending the fake server");
+                return PushedExecServerResult {
+                    process_read_requests,
+                    process_start,
+                };
+            }
+        };
         match request["method"].as_str() {
             Some("process/read") => {
                 process_read_requests += 1;
@@ -600,7 +613,12 @@ async fn exec_command_consumes_pushed_remote_process_events(
     )
     .await;
     let exec_server_url = format!("ws://{}", listener.local_addr()?);
-    let exec_server = tokio::spawn(serve_exec_with_pushed_events(listener, scenario));
+    let (output_observed_tx, output_observed_rx) = oneshot::channel();
+    let exec_server = tokio::spawn(serve_exec_with_pushed_events(
+        listener,
+        scenario,
+        output_observed_rx,
+    ));
     let mut builder = test_codex().with_exec_server_url(exec_server_url);
     if managed_network {
         let cloud_config_bundle = if policy_callbacks {
@@ -897,6 +915,19 @@ timeout = 900
     } else {
         Duration::from_secs(5)
     };
+    if managed_network {
+        timeout(Duration::from_secs(5), async {
+            while response_mock.requests().len() < 2 {
+                tokio::time::sleep(Duration::from_millis(10)).await;
+            }
+        })
+        .await
+        .context("model should receive the remote exec output")?;
+    }
+    // A native exit already observed by Core does not require another terminate RPC.
+    // An actual terminate request may already have completed the server; the join
+    // and all output/read-count assertions below remain authoritative.
+    let _ = output_observed_tx.send(());
     let exec_server_result = timeout(cleanup_timeout, exec_server)
         .await
         .context("fake exec-server should observe process cleanup")??;
@@ -933,13 +964,6 @@ timeout = 900
         );
         assert_eq!(params["networkProxy"]["environmentId"], "remote");
         assert!(params["networkProxy"]["executionId"].as_str().is_some());
-        timeout(Duration::from_secs(5), async {
-            while response_mock.requests().len() < 2 {
-                tokio::time::sleep(Duration::from_millis(10)).await;
-            }
-        })
-        .await
-        .context("model should receive the remote exec output")?;
         return Ok(());
     }
     let request = response_mock
