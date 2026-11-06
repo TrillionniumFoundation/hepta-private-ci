@@ -117,3 +117,30 @@ No evidence blob exceeds the repository's 512,000-byte bound; the largest is the
 250,625-byte candidate checkpoint. No checkpoint state was dropped or truncated.
 This completed run is archival. The `--resume` path is for its recorded preflight
 handoff; it is not an instruction to launch another training attempt.
+
+## Receipt verification after the archived run
+
+The current driver adds `receipt_verifier.py` to its frozen execution-source
+check. A completed phase is reusable only when the parent observed an exact
+integer zero exit code and its protocol, raw stdout/stderr byte hashes, complete
+worker result and process-instance identity agree. Canonical JSON comparison
+keeps booleans distinct from integers; ambiguous or non-finite JSON is rejected.
+Final phase accounting uses the same verifier as resume. A failed result,
+unverified receipt, orphan attempt or unresolved training marker never requests
+an implicit retry. Failed attempts retain their captured output and measured
+cost; unavailable or invalid parent measurements remain unknown in the failure
+aggregate.
+
+These checks detect inconsistent local evidence. They neither authenticate an
+independent writer nor restore model state or grant publication authority. They
+also do not turn the earlier Memory candidate into a positive adoption result.
+The archived `EXECUTED_SOURCE`, manifests, receipts and results are unchanged.
+The changed driver cannot resume that older frozen source identity. Any future
+model run still needs its own frozen protocol and training budget.
+
+Run the subprocess and recovery regressions without loading a model:
+
+```sh
+cd qualification/cell-learning-loop-v1
+python3 -B -m unittest -v loop_tests
+```
