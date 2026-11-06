@@ -11,7 +11,9 @@ use codex_extension_api::ExtensionFuture;
 use codex_extension_api::ExtensionRegistryBuilder;
 use codex_extension_api::ThreadIdleInput;
 use codex_extension_api::ThreadLifecycleContributor;
+use codex_protocol::error::CodexErrorDetails;
 use codex_protocol::protocol::EventMsg;
+use codex_protocol::turn_input::TurnInput;
 use codex_protocol::user_input::UserInput;
 use core_test_support::responses;
 use core_test_support::test_codex::test_codex;
@@ -92,6 +94,34 @@ async fn public_completion_survives_cancel_and_waits_for_real_idle_cleanup() -> 
         StartIfIdleSubmission::NotSubmitted {
             reason: NotSubmittedReason::NotIdle,
         },
+    );
+    let persisted_request = TurnInputRequest::new(TurnInput::UserInput {
+        content: vec![UserInput::Text {
+            text: "too early persisted".to_string(),
+            text_elements: Vec::new(),
+        }],
+        client_id: Some("fenced-persisted-input".to_string()),
+    });
+    assert_eq!(
+        test.codex
+            .start_turn_if_idle_and_wait_for_persisted_admission(persisted_request)
+            .await
+            .expect("persisted idle admission should return a routing result"),
+        StartIfIdleSubmission::NotSubmitted {
+            reason: NotSubmittedReason::NotIdle,
+        },
+    );
+    let error = test
+        .codex
+        .start_or_steer_turn(request("fenced start or steer"))
+        .await
+        .expect_err("start-or-steer must still reject the terminalization fence");
+    let CodexErrorDetails::InvalidRequest(message) = error.details() else {
+        panic!("start-or-steer must preserve the fence error: {error:?}");
+    };
+    assert_eq!(
+        message,
+        "turn start is fenced while the session is terminalizing"
     );
     gate.release.notify_one();
     let completed = wait_for_event_match(test.codex.as_ref(), |event| match event {
