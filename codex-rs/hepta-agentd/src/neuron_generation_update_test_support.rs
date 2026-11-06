@@ -38,6 +38,8 @@ use crate::neuron_generation_update_selection::AgentdSelectedGenerationV1;
 mod artifacts;
 #[path = "neuron_generation_update_test_store.rs"]
 mod files;
+#[path = "neuron_generation_update_initial_test_support.rs"]
+mod initial_fixture;
 
 use artifacts::ArtifactFiles;
 use files::FileCas;
@@ -80,22 +82,16 @@ impl Fixture {
         old_config: CellGenerationConfigV2,
         target_config: CellGenerationConfigV2,
     ) -> anyhow::Result<Self> {
+        Self::create(old_config, target_config, None)
+    }
+
+    fn create(
+        old_config: CellGenerationConfigV2,
+        target_config: CellGenerationConfigV2,
+        initial_operation: Option<&str>,
+    ) -> anyhow::Result<Self> {
         let directory = tempfile::tempdir()?;
         fs::set_permissions(directory.path(), fs::Permissions::from_mode(0o700))?;
-        let initial = CellGenerationOwnerBindingV1::new(&old_config, RECORDS)?;
-        let current_file = Arc::new(FileCas::create(
-            &directory.path().join("current.json"),
-            current_id(&old_config)?,
-            &CurrentHead {
-                schema_version: 1,
-                current: initial,
-                prepared: None,
-                published: None,
-            },
-        )?);
-        let current = Arc::new(NeuronGenerationCurrentOwnerV1 {
-            store: CurrentStore::from_test_store(&old_config.initial.scope, current_file.clone())?,
-        });
         let clock = Arc::new(TestClock(AtomicU64::new(NOW)));
         let issuer = SigningKey::from_bytes(&[63; 32]);
         let head = FinalUseRevocations {
@@ -122,13 +118,26 @@ impl Fixture {
         let artifact_files =
             ArtifactFiles::new(&directory.path().join("artifacts"), &target_config.manifest)?;
         let artifacts = artifact_files.owner.clone();
-        for name in ["old-journal", "old-witness"] {
-            let file = OpenOptions::new()
-                .create_new(true)
-                .read(true)
-                .write(true)
-                .open(directory.path().join(name))?;
-            file.sync_all()?;
+        let head = initial_fixture::current_head(
+            &old_config, &target_config, &artifact_files, initial_operation,
+        )?;
+        let current_file = Arc::new(FileCas::create(
+            &directory.path().join("current.json"),
+            current_id(&old_config)?,
+            &head,
+        )?);
+        let current = Arc::new(NeuronGenerationCurrentOwnerV1 {
+            store: CurrentStore::from_test_store(&old_config.initial.scope, current_file.clone())?,
+        });
+        if initial_operation.is_none() {
+            for name in ["old-journal", "old-witness"] {
+                let file = OpenOptions::new()
+                    .create_new(true)
+                    .read(true)
+                    .write(true)
+                    .open(directory.path().join(name))?;
+                file.sync_all()?;
+            }
         }
         File::open(directory.path())?.sync_all()?;
         Ok(Self {

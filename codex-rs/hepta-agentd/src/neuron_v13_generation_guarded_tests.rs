@@ -18,6 +18,8 @@ use crate::neuron_v13_generation_update::prepare_agentd_v13_generation_forward_r
 use crate::neuron_v13_generation_update::prepare_agentd_v13_generation_update_v1;
 use crate::neuron_v13_generation_update::recover_agentd_v13_generation_update_v1;
 
+#[path = "neuron_v13_generation_initial_tests.rs"]
+mod initial;
 #[path = "neuron_v13_generation_guarded_runtime_tests.rs"]
 mod runtime;
 #[path = "neuron_v13_generation_guarded_test_support.rs"]
