@@ -1,0 +1,14 @@
+{
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "unittest",
+    "experiments.multimodal_output_portfolio.joint_hepta_20261029.diagnostics_v2.test_summarize",
+    "experiments.multimodal_output_portfolio.joint_hepta_20261029.diagnostics_v2.test_plan_paths",
+    "-v"
+  ],
+  "cwd": "isolated overlay of exact source blobs and protocol migration candidate",
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": "test_fixed_fees_are_separated_from_actual_action_and_delivery_time (experiments.multimodal_output_portfolio.joint_hepta_20261029.diagnostics_v2.test_summarize.DevelopmentSummaryTests.test_fixed_fees_are_separated_from_actual_action_and_delivery_time) ... ok\ntest_missing_matrix_produces_no_acceptance (experiments.multimodal_output_portfolio.joint_hepta_20261029.diagnostics_v2.test_summarize.DevelopmentSummaryTests.test_missing_matrix_produces_no_acceptance) ... ok\ntest_phase_totals_are_not_double_counted_as_lifecycle_savings (experiments.multimodal_output_portfolio.joint_hepta_20261029.diagnostics_v2.test_summarize.DevelopmentSummaryTests.test_phase_totals_are_not_double_counted_as_lifecycle_savings) ... ok\ntest_preserved_original_digest_is_checked_after_decompression (experiments.multimodal_output_portfolio.joint_hepta_20261029.diagnostics_v2.test_summarize.DevelopmentSummaryTests.test_preserved_original_digest_is_checked_after_decompression) ... ok\ntest_row_rejects_wrong_rng_and_optimistic_audit_cost (experiments.multimodal_output_portfolio.joint_hepta_20261029.diagnostics_v2.test_summarize.DevelopmentSummaryTests.test_row_rejects_wrong_rng_and_optimistic_audit_cost) ... ok\ntest_changed_protocol_bytes_are_rejected (experiments.multimodal_output_portfolio.joint_hepta_20261029.diagnostics_v2.test_plan_paths.ProtocolPathTests.test_changed_protocol_bytes_are_rejected) ... ok\ntest_new_summary_retains_original_plan_identifiers (experiments.multimodal_output_portfolio.joint_hepta_20261029.diagnostics_v2.test_plan_paths.ProtocolPathTests.test_new_summary_retains_original_plan_identifiers) ... ok\ntest_original_receipt_binds_relocated_bytes_without_old_paths (experiments.multimodal_output_portfolio.joint_hepta_20261029.diagnostics_v2.test_plan_paths.ProtocolPathTests.test_original_receipt_binds_relocated_bytes_without_old_paths) ... ok\ntest_relabeling_historical_receipt_keys_is_rejected (experiments.multimodal_output_portfolio.joint_hepta_20261029.diagnostics_v2.test_plan_paths.ProtocolPathTests.test_relabeling_historical_receipt_keys_is_rejected) ... ok\n\n----------------------------------------------------------------------\nRan 9 tests in 0.009s\n\nOK\n"
+}
