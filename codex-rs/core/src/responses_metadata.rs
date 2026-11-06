@@ -348,6 +348,27 @@ impl CodexResponsesMetadata {
         headers
     }
 
+    /// Returns the stable compatibility fields bound to an open WebSocket.
+    ///
+    /// Prewarm and turn requests share the same connection. Their request phase
+    /// is carried in each response.create message, so a prewarm-to-turn phase
+    /// change must not discard an otherwise compatible socket. Parent/root turn
+    /// lineage is also sent with each request. All extra metadata remains bound
+    /// conservatively until its provenance is separately available.
+    /// Recovery keeps binding the exact request phase, lineage and merged extra
+    /// through its complete projection.
+    pub(crate) fn websocket_connection_compatibility_projection(
+        &self,
+    ) -> TurnRecoveryCompatibilityProjection<'_> {
+        let mut projection = self.turn_recovery_compatibility_projection();
+        if matches!(self.request_kind, Some(CodexResponsesRequestKind::Prewarm)) {
+            projection.request_kind = None;
+        }
+        projection.parent_turn_id = None;
+        projection.root_turn_id = None;
+        projection
+    }
+
     /// Returns the transport-neutral, behavior-affecting compatibility
     /// projection used to bind a recoverable provider request. Request IDs,
     /// session/window identity, and wall-clock fields are deliberately absent:
