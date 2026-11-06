@@ -1,0 +1,42 @@
+[
+  {
+    "path": "codex-rs/hepta-infer-worker-host/src/native_failure_tests.rs",
+    "old": "pub(super) fn notify_observed_usage(observed_tokens: u64) {\n    if observed_tokens != 17 {\n        return;\n",
+    "new": "pub(super) fn notify_observed_usage(observed_tokens: u64) -> std::result::Result<(), String> {\n    if observed_tokens != 17 {\n        return Ok(());\n"
+  },
+  {
+    "path": "codex-rs/hepta-infer-worker-host/src/native_failure_tests.rs",
+    "old": ".expect(\"native failure usage hook\")",
+    "new": ".map_err(|error| format!(\"native failure usage hook: {error}\"))?"
+  },
+  {
+    "path": "codex-rs/hepta-infer-worker-host/src/native_failure_tests.rs",
+    "old": "        let _ = hook.send(());\n    }\n}\n\n/// The isolated child pauses",
+    "new": "        let _ = hook.send(());\n    }\n    Ok(())\n}\n\n/// The isolated child pauses"
+  },
+  {
+    "path": "codex-rs/hepta-infer-worker-host/src/native_failure_tests.rs",
+    "old": "pub(super) async fn pause_after_observation_journal(request_id: &str) {\n    if request_id != REQUEST_ID {\n        return;\n",
+    "new": "pub(super) async fn pause_after_observation_journal(request_id: &str) -> Result<()> {\n    if request_id != REQUEST_ID {\n        return Ok(());\n"
+  },
+  {
+    "path": "codex-rs/hepta-infer-worker-host/src/native_failure_tests.rs",
+    "old": ".expect(\"native failure journal hook\")\n        .journal",
+    "new": ".map_err(|error| format!(\"native failure journal hook: {error}\"))?\n        .journal"
+  },
+  {
+    "path": "codex-rs/hepta-infer-worker-host/src/native_failure_tests.rs",
+    "old": "        std::future::pending::<()>().await;\n    }\n}\n\n#[derive(Deserialize, Serialize)]",
+    "new": "        std::future::pending::<()>().await;\n    }\n    Ok(())\n}\n\n#[derive(Deserialize, Serialize)]"
+  },
+  {
+    "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+    "old": "failure_tests::pause_after_observation_journal(request_id).await;",
+    "new": "failure_tests::pause_after_observation_journal(request_id).await?;"
+  },
+  {
+    "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+    "old": "failure_tests::notify_observed_usage(observed_tokens);",
+    "new": "failure_tests::notify_observed_usage(observed_tokens)?;"
+  }
+]

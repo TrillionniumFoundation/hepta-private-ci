@@ -1,0 +1,745 @@
+--- a/codex-rs/hepta-agentd/src/notes_primary_bootstrap.rs
++++ b/codex-rs/hepta-agentd/src/notes_primary_bootstrap.rs
+@@ -3,14 +3,18 @@
+ 
+ use super::*;
+ use codex_hepta_memory::ProductionAuthorityVerifier;
++
++pub(crate) struct PrimaryNotesAuthority {
++    pub(crate) final_use: FinalUseAuthority,
++    pub(crate) grants: Arc<dyn AgentdFinalUseGrantProvider>,
++    pub(crate) verifier: Arc<dyn ProductionAuthorityVerifier>,
++}
+ 
+ pub(crate) async fn primary_notes_runtime(
+     config: &AgentdConfig,
+     recovered_host: &AgentdProductionWriterHost,
+     bootstrap: UnixDatagram,
+-    final_use: FinalUseAuthority,
+-    grants: Arc<dyn AgentdFinalUseGrantProvider>,
+-    verifier: Arc<dyn ProductionAuthorityVerifier>,
++    authority: PrimaryNotesAuthority,
+     reconcile_interval: Duration,
+     expected: Option<&NotesTargetIdentity>,
+ ) -> Result<
+@@ -20,13 +24,20 @@
+     ),
+     AgentdError,
+ > {
++    let PrimaryNotesAuthority {
++        final_use,
++        grants,
++        verifier,
++    } = authority;
+     primary_notes_runtime_bounded(
+         config,
+         recovered_host,
+         bootstrap,
+-        final_use,
+-        grants,
+-        verifier,
++        PrimaryNotesAuthority {
++            final_use,
++            grants,
++            verifier,
++        },
+         reconcile_interval,
+         expected,
+         None,
+@@ -38,9 +49,7 @@
+     config: &AgentdConfig,
+     recovered_host: &AgentdProductionWriterHost,
+     bootstrap: UnixDatagram,
+-    final_use: FinalUseAuthority,
+-    grants: Arc<dyn AgentdFinalUseGrantProvider>,
+-    verifier: Arc<dyn ProductionAuthorityVerifier>,
++    authority: PrimaryNotesAuthority,
+     reconcile_interval: Duration,
+     expected: Option<&NotesTargetIdentity>,
+     end: crate::calculator_deadline::Deadline,
+@@ -51,13 +60,20 @@
+     ),
+     AgentdError,
+ > {
++    let PrimaryNotesAuthority {
++        final_use,
++        grants,
++        verifier,
++    } = authority;
+     primary_notes_runtime_bounded(
+         config,
+         recovered_host,
+         bootstrap,
+-        final_use,
+-        grants,
+-        verifier,
++        PrimaryNotesAuthority {
++            final_use,
++            grants,
++            verifier,
++        },
+         reconcile_interval,
+         expected,
+         Some(end.capped(Duration::from_secs(2))?),
+@@ -69,9 +85,7 @@
+     config: &AgentdConfig,
+     recovered_host: &AgentdProductionWriterHost,
+     bootstrap: UnixDatagram,
+-    final_use: FinalUseAuthority,
+-    grants: Arc<dyn AgentdFinalUseGrantProvider>,
+-    verifier: Arc<dyn ProductionAuthorityVerifier>,
++    authority: PrimaryNotesAuthority,
+     reconcile_interval: Duration,
+     expected: Option<&NotesTargetIdentity>,
+     total: Option<crate::calculator_deadline::Deadline>,
+@@ -82,6 +96,11 @@
+     ),
+     AgentdError,
+ > {
++    let PrimaryNotesAuthority {
++        final_use,
++        grants,
++        verifier,
++    } = authority;
+     let deadline = Instant::now() + Duration::from_secs(2);
+     let writer = recovered_host.writer();
+     if recovered_host.destination_count() != 0
+--- a/codex-rs/hepta-agentd/src/notes_bootstrap.rs
++++ b/codex-rs/hepta-agentd/src/notes_bootstrap.rs
+@@ -34,6 +34,7 @@
+ 
+ #[path = "notes_primary_bootstrap.rs"]
+ mod primary;
++pub(crate) use primary::PrimaryNotesAuthority;
+ pub(crate) use primary::primary_notes_runtime;
+ pub(crate) use primary::primary_notes_runtime_before;
+ #[path = "notes_startup.rs"]
+--- a/codex-rs/hepta-agentd/src/notes_launch_mode.rs
++++ b/codex-rs/hepta-agentd/src/notes_launch_mode.rs
+@@ -15,7 +15,7 @@
+     LiteralUiV1,
+     OriginalThreadToolV1 {
+         route: AgentdTextSessionConfig,
+-        seed: crate::NotesThreadSeedReceipt,
++        seed: Box<crate::NotesThreadSeedReceipt>,
+     },
+ }
+ 
+--- a/codex-rs/hepta-agentd/src/desktop_adapter_prepare.rs
++++ b/codex-rs/hepta-agentd/src/desktop_adapter_prepare.rs
+@@ -18,6 +18,11 @@
+ use serde_json::Value;
+ use serde_json::json;
+ 
++struct DesktopCallIdentity<'a> {
++    turn: &'a str,
++    original_call_id: &'a str,
++}
++
+ impl AgentdNotesLiteralAdapter {
+     pub(crate) async fn prepare_desktop(
+         &mut self,
+@@ -51,8 +56,18 @@
+                     "original human authorization changed before Desktop preparation",
+                 ));
+             }
+-            self.prepare_desktop_bound(calculator, reference, arguments, human, &turn, &call, end)
+-                .await
++            self.prepare_desktop_bound(
++                calculator,
++                reference,
++                arguments,
++                human,
++                DesktopCallIdentity {
++                    turn: &turn,
++                    original_call_id: &call,
++                },
++                end,
++            )
++            .await
+         })
+         .await
+         .map_err(|_| invalid("original Desktop preparation acknowledgement unknown"))??;
+@@ -66,10 +81,13 @@
+         reference: OriginalDesktopThreadReference,
+         arguments: &Value,
+         human: &VerifiedHumanTurn,
+-        turn: &str,
+-        original_call_id: &str,
++        call: DesktopCallIdentity<'_>,
+         end: Deadline,
+     ) -> Result<AgentdNotesPreparedObjective, AgentdError> {
++        let DesktopCallIdentity {
++            turn,
++            original_call_id,
++        } = call;
+         let run_id = self.run_id(turn)?;
+         if let Some(retained) = self
+             .sender
+@@ -85,7 +103,7 @@
+                 ));
+             }
+             require_original_thread_call(&retained, original_call_id)?;
+-            return Ok(AgentdNotesPreparedObjective::Retained(retained));
++            return Ok(AgentdNotesPreparedObjective::Retained(Box::new(retained)));
+         }
+         // Shared across BOTH effect tools, including a prepared operation whose
+         // source signing or sender acknowledgement was lost. No new send token.
+@@ -334,8 +352,8 @@
+         }
+         Ok(AgentdNotesPreparedObjective::Ready {
+             sender: Arc::clone(&self.sender),
+-            ticket,
+-            ingress: signed,
++            ticket: Box::new(ticket),
++            ingress: Box::new(signed),
+         })
+     }
+ }
+--- a/codex-rs/hepta-agentd/src/notes_thread_recorded.rs
++++ b/codex-rs/hepta-agentd/src/notes_thread_recorded.rs
+@@ -39,7 +39,7 @@
+ }
+ 
+ pub(crate) enum RecordedNotesLookup {
+-    Found(RecordedNotesThreadOperation),
++    Found(Box<RecordedNotesThreadOperation>),
+     Unknown {
+         reason: RecordedNotesUnknownReason,
+         operation_id: Option<String>,
+@@ -286,7 +286,7 @@
+ }
+ 
+ enum RecordedChoice {
+-    Found(ObjectiveSenderRequest),
++    Found(Box<ObjectiveSenderRequest>),
+     Unknown(RecordedNotesUnknownReason),
+ }
+ fn latest_matching_request(
+@@ -347,7 +347,7 @@
+         ));
+     }
+     Ok(match latest {
+-        Some((_, request)) => RecordedChoice::Found(request),
++        Some((_, request)) => RecordedChoice::Found(Box::new(request)),
+         None => RecordedChoice::Unknown(RecordedNotesUnknownReason::OriginalRequestNotObserved),
+     })
+ }
+@@ -428,14 +428,14 @@
+             "recorded Notes reference differs from its original signed operation",
+         ));
+     }
+-    Ok(RecordedNotesLookup::Found(RecordedNotesThreadOperation {
++    Ok(RecordedNotesLookup::Found(Box::new(RecordedNotesThreadOperation {
+         reference: reference.clone(),
+         turn_intent_id,
+         call_intent_id,
+         run_id,
+         target,
+         state: operation.state,
+-    }))
++    })))
+ }
+ 
+ #[cfg(test)]
+--- a/codex-rs/hepta-agentd/src/desktop_thread_recorded.rs
++++ b/codex-rs/hepta-agentd/src/desktop_thread_recorded.rs
+@@ -17,7 +17,7 @@
+ }
+ 
+ pub(crate) enum RecordedDesktopLookup {
+-    Found(RecordedDesktopOperation),
++    Found(Box<RecordedDesktopOperation>),
+     Unknown(&'static str),
+ }
+ 
+@@ -257,12 +257,12 @@
+                 "Desktop reference differs from the exact retained signed operation",
+             ));
+         }
+-        Ok(RecordedDesktopLookup::Found(RecordedDesktopOperation {
++        Ok(RecordedDesktopLookup::Found(Box::new(RecordedDesktopOperation {
+             reference: reference.clone(),
+             run_id,
+             request_sha256: request.identity().original_sha256.as_str().to_owned(),
+             operation,
+-        }))
++        })))
+     }
+ 
+     pub(crate) async fn recorded_desktop_operation(
+--- a/codex-rs/hepta-agentd/src/notes_literal_adapter.rs
++++ b/codex-rs/hepta-agentd/src/notes_literal_adapter.rs
+@@ -86,11 +86,11 @@
+ /// permission before authenticated original control I/O, then retains the
+ /// observation. Losing this result never rearms the request.
+ pub enum AgentdNotesPreparedObjective {
+-    Retained(ObjectiveSenderRequest),
++    Retained(Box<ObjectiveSenderRequest>),
+     Ready {
+         sender: Arc<ProductionObjectiveSender<RootCheckpoint>>,
+-        ticket: ObjectiveSenderTicket,
+-        ingress: AuthBusObjectiveIngress,
++        ticket: Box<ObjectiveSenderTicket>,
++        ingress: Box<AuthBusObjectiveIngress>,
+     },
+ }
+ 
+@@ -482,7 +482,7 @@
+                     ));
+                 }
+             }
+-            return Ok(AgentdNotesPreparedObjective::Retained(retained));
++            return Ok(AgentdNotesPreparedObjective::Retained(Box::new(retained)));
+         }
+         // The operation ID is the durable original-turn fence. A preparation
+         // without a signed sender is uncertainty, not permission to sign again
+@@ -668,8 +668,8 @@
+         }
+         Ok(AgentdNotesPreparedObjective::Ready {
+             sender: Arc::clone(&self.sender),
+-            ticket,
+-            ingress: signed,
++            ticket: Box::new(ticket),
++            ingress: Box::new(signed),
+         })
+     }
+ }
+--- a/codex-rs/hepta-agentd/src/text_session_events.rs
++++ b/codex-rs/hepta-agentd/src/text_session_events.rs
+@@ -23,7 +23,7 @@
+ }
+ 
+ pub enum AgentdTextObservation {
+-    Notification(AgentdTextEvent),
++    Notification(Box<AgentdTextEvent>),
+     Approval(TextApprovalObservation),
+ }
+ 
+@@ -183,7 +183,7 @@
+                 };
+                 requests.interrupt_turn(turn_id.clone()).await?;
+             }
+-            return Ok(Some(AgentdTextObservation::Notification(event)));
++            return Ok(Some(AgentdTextObservation::Notification(Box::new(event))));
+         }
+     }
+ 
+--- a/codex-rs/hepta-agentd/src/text_session_worker.rs
++++ b/codex-rs/hepta-agentd/src/text_session_worker.rs
+@@ -129,7 +129,7 @@
+         message_id: String,
+         status: AuthBusTextStatus,
+     },
+-    Notification(AgentdTextEvent),
++    Notification(Box<AgentdTextEvent>),
+     Reconciled {
+         connection_id: u64,
+         view: TextReconciliation,
+--- a/codex-rs/hepta-agentd/src/deployment_text.rs
++++ b/codex-rs/hepta-agentd/src/deployment_text.rs
+@@ -16,6 +16,18 @@
+ mod human;
+ pub(crate) use human::RootHumanTextRequest;
+ pub(crate) use human::TextHumanBinding;
++
++pub(crate) struct RegisteredTextWriterAuthority<'a> {
++    pub(crate) registration: &'a HostAuthorityWriterRegistration,
++    pub(crate) leases: &'a AuthorityLeaseVerifier,
++    pub(crate) proof: &'a crate::HostSignedWriterAuthorizationV1,
++}
++
++struct TextSigningAuthority<'a> {
++    lease: Option<&'a AuthorityLease>,
++    human: Option<&'a TextHumanBinding>,
++    parent: Option<Result<&'a AuthorityLease, AuthorityLeaseError>>,
++}
+ 
+ #[path = "deployment_text_retirement.rs"]
+ mod retirement;
+@@ -142,10 +154,13 @@
+         request_id: &str,
+         body: AuthBusTextBody,
+         operation: TextIssuerOperation,
+-        registration: &HostAuthorityWriterRegistration,
+-        leases: &AuthorityLeaseVerifier,
+-        proof: &crate::HostSignedWriterAuthorizationV1,
++        authority: RegisteredTextWriterAuthority<'_>,
+     ) -> io::Result<AuthBusTextIngress> {
++        let RegisteredTextWriterAuthority {
++            registration,
++            leases,
++            proof,
++        } = authority;
+         if self.lease.is_none()
+             || registration.registered_agent_id != identity.agent_id
+             || registration.spawn_generation != identity.spawn_generation
+@@ -161,9 +176,11 @@
+                 request_id,
+                 body,
+                 operation,
+-                Some(&registration.authority_lease),
+-                None,
+-                Some(parent),
++                TextSigningAuthority {
++                    lease: Some(&registration.authority_lease),
++                    human: None,
++                    parent: Some(parent),
++                },
+             )
+         })
+     }
+@@ -177,7 +194,17 @@
+         lease: Option<&AuthorityLease>,
+         human: Option<&TextHumanBinding>,
+     ) -> io::Result<AuthBusTextIngress> {
+-        self.text_until_checked(identity, request_id, body, operation, lease, human, None)
++        self.text_until_checked(
++            identity,
++            request_id,
++            body,
++            operation,
++            TextSigningAuthority {
++                lease,
++                human,
++                parent: None,
++            },
++        )
+     }
+ 
+     fn text_until_checked(
+@@ -186,10 +213,13 @@
+         request_id: &str,
+         mut body: AuthBusTextBody,
+         operation: TextIssuerOperation,
+-        lease: Option<&AuthorityLease>,
+-        human: Option<&TextHumanBinding>,
+-        parent: Option<Result<&AuthorityLease, AuthorityLeaseError>>,
++        authority: TextSigningAuthority<'_>,
+     ) -> io::Result<AuthBusTextIngress> {
++        let TextSigningAuthority {
++            lease,
++            human,
++            parent,
++        } = authority;
+         if request_id.is_empty()
+             || request_id.len() > 192
+             || !request_id
+--- a/codex-rs/hepta-agentd/src/deployment_text_unsigned.rs
++++ b/codex-rs/hepta-agentd/src/deployment_text_unsigned.rs
+@@ -10,10 +10,13 @@
+         namespace: &str,
+         request_id: &str,
+         body: AuthBusTextBody,
+-        registration: &HostAuthorityWriterRegistration,
+-        leases: &AuthorityLeaseVerifier,
+-        proof: &crate::HostSignedWriterAuthorizationV1,
++        authority: RegisteredTextWriterAuthority<'_>,
+     ) -> io::Result<TextUnsignedClosure> {
++        let RegisteredTextWriterAuthority {
++            registration,
++            leases,
++            proof,
++        } = authority;
+         if self.lease.is_none()
+             || registration.registered_agent_id != identity.agent_id
+             || registration.spawn_generation != identity.spawn_generation
+--- a/codex-rs/hepta-agentd/src/deployment_text_human.rs
++++ b/codex-rs/hepta-agentd/src/deployment_text_human.rs
+@@ -46,9 +46,11 @@
+                 request.request_id,
+                 request.body,
+                 request.operation,
+-                Some(&registration.authority_lease),
+-                Some(request.human),
+-                Some(parent),
++                TextSigningAuthority {
++                    lease: Some(&registration.authority_lease),
++                    human: Some(request.human),
++                    parent: Some(parent),
++                },
+             )
+         })
+     }
+--- a/codex-rs/hepta-agentd/src/notes_literal_control.rs
++++ b/codex-rs/hepta-agentd/src/notes_literal_control.rs
+@@ -43,7 +43,7 @@
+                 sender,
+                 ticket,
+                 ingress,
+-            } => submit_original(sender, ticket, ingress, deadline).await,
++            } => submit_original(sender, *ticket, *ingress, deadline).await,
+             Self::Retained(_) => Err(invalid(
+                 "retained Notes Objective has no sending permission",
+             )),
+--- a/codex-rs/hepta-agentd/src/notes_literal_control_tests.rs
++++ b/codex-rs/hepta-agentd/src/notes_literal_control_tests.rs
+@@ -106,7 +106,7 @@
+         Err(ObjectiveSenderError::SendPermissionUnavailable)
+     ));
+     assert!(
+-        AgentdNotesPreparedObjective::Retained(original)
++        AgentdNotesPreparedObjective::Retained(Box::new(original))
+             .submit_once(Duration::from_secs(1))
+             .await
+             .is_err()
+--- a/codex-rs/hepta-agentd/src/desktop_thread_observe.rs
++++ b/codex-rs/hepta-agentd/src/desktop_thread_observe.rs
+@@ -96,7 +96,7 @@
+                 "source_domain":"original_protected_sender_reference",
+                 "instruction":"No exact original result was verified; read only, never repeat the effect."}))
+             }
+-            RecordedDesktopLookup::Found(original) => self.observe_recorded(original).await,
++            RecordedDesktopLookup::Found(original) => self.observe_recorded(*original).await,
+         }
+     }
+ }
+--- a/codex-rs/hepta-agentd/src/desktop_thread_runtime.rs
++++ b/codex-rs/hepta-agentd/src/desktop_thread_runtime.rs
+@@ -143,7 +143,7 @@
+                                 && original.reference.tool == call.tool()
+                                 && original.reference.callback_sha256 == call.callback_digest().to_string();
+                             let reference = serde_json::to_value(&original.reference)?;
+-                            let observed = self.observe_recorded(original).await?;
++                            let observed = self.observe_recorded(*original).await?;
+                             return Ok(if same { observed } else {
+                                 fenced_response(self.provenance(&call), reference, observed)
+                             });
+--- a/codex-rs/hepta-agentd/src/production_launcher.rs
++++ b/codex-rs/hepta-agentd/src/production_launcher.rs
+@@ -378,7 +378,7 @@
+                                 route,
+                                 Duration::from_secs(10),
+                             )?
+-                            .with_original_notes_thread_seed(seed)?
++                            .with_original_notes_thread_seed(*seed)?
+                             .with_original_notes_thread_session(lifetime)?;
+                         // The explicit model profile admits no literal UI
+                         // endpoint. Root retains pathname cleanup custody.
+--- a/codex-rs/hepta-agentd/src/notes_thread_seed_tests.rs
++++ b/codex-rs/hepta-agentd/src/notes_thread_seed_tests.rs
+@@ -91,7 +91,7 @@
+     changed_seed.model_provider = "another-provider".into();
+     let mode = crate::notes_launch_mode::NotesLaunchMode::OriginalThreadToolV1 {
+         route,
+-        seed: changed_seed,
++        seed: Box::new(changed_seed),
+     };
+     assert!(
+         mode.validate_model_tuple(tuple).is_err(),
+--- a/codex-rs/hepta-agentd/src/text_session_event_pump.rs
++++ b/codex-rs/hepta-agentd/src/text_session_event_pump.rs
+@@ -83,7 +83,7 @@
+     pub async fn next(&mut self) -> Result<Option<AgentdTextEvent>, TextSessionError> {
+         loop {
+             match self.next_observation().await? {
+-                Some(AgentdTextObservation::Notification(event)) => return Ok(Some(event)),
++                Some(AgentdTextObservation::Notification(event)) => return Ok(Some(*event)),
+                 Some(AgentdTextObservation::Approval(_)) => {}
+                 None => return Ok(None),
+             }
+--- a/codex-rs/hepta-agentd/src/authority_host_writer.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_writer.rs
+@@ -45,9 +45,11 @@
+             namespace,
+             request_id,
+             body,
+-            &self.registration,
+-            &self.leases,
+-            &self.proof,
++            crate::deployment_issuer::RegisteredTextWriterAuthority {
++                registration: &self.registration,
++                leases: &self.leases,
++                proof: &self.proof,
++            },
+         )
+     }
+ 
+@@ -81,9 +83,11 @@
+             request_id,
+             body,
+             operation,
+-            &self.registration,
+-            &self.leases,
+-            &self.proof,
++            crate::deployment_issuer::RegisteredTextWriterAuthority {
++                registration: &self.registration,
++                leases: &self.leases,
++                proof: &self.proof,
++            },
+         )
+     }
+ 
+--- a/codex-rs/hepta-agentd/src/deployment_authbus_issuer_followup_tests.rs
++++ b/codex-rs/hepta-agentd/src/deployment_authbus_issuer_followup_tests.rs
+@@ -139,9 +139,11 @@
+             request_id,
+             original_text_body(&f),
+             operation,
+-            &f.registration,
+-            &f.leases.verifier(),
+-            &f.proof,
++            crate::deployment_issuer::RegisteredTextWriterAuthority {
++                registration: &f.registration,
++                leases: &f.leases.verifier(),
++                proof: &f.proof,
++            },
+         )
+     };
+     let signed = text("followup-text:1", TextIssuerOperation::Sign).unwrap();
+--- a/codex-rs/hepta-agentd/src/deployment_authbus_issuer_final_tests.rs
++++ b/codex-rs/hepta-agentd/src/deployment_authbus_issuer_final_tests.rs
+@@ -60,9 +60,11 @@
+             request,
+             body,
+             operation,
+-            &f.registration,
+-            &f.leases.verifier(),
+-            &f.proof,
++            crate::deployment_issuer::RegisteredTextWriterAuthority {
++                registration: &f.registration,
++                leases: &f.leases.verifier(),
++                proof: &f.proof,
++            },
+         );
+     }
+     // Original typed human fixture only; no physical login is claimed.
+--- a/codex-rs/hepta-agentd/src/production_root_composition.rs
++++ b/codex-rs/hepta-agentd/src/production_root_composition.rs
+@@ -242,9 +242,11 @@
+         config,
+         &host,
+         notes_bootstrap,
+-        notes,
+-        operation_grants,
+-        verifier,
++        crate::notes_bootstrap::PrimaryNotesAuthority {
++            final_use: notes,
++            grants: operation_grants,
++            verifier,
++        },
+         reconcile_interval,
+         release.as_ref().map(|release| &release.target),
+     )
+--- a/codex-rs/hepta-agentd/src/notes_objective_composition_tests.rs
++++ b/codex-rs/hepta-agentd/src/notes_objective_composition_tests.rs
+@@ -371,9 +371,11 @@
+                     &config,
+                     &host,
+                     parent,
+-                    final_use,
+-                    issuer.clone(),
+-                    operations.verifier.clone(),
++                    crate::notes_bootstrap::PrimaryNotesAuthority {
++                        final_use,
++                        grants: issuer.clone(),
++                        verifier: operations.verifier.clone(),
++                    },
+                     Duration::from_millis(20),
+                     /*expected*/ None,
+                 )
+--- a/codex-rs/hepta-agentd/src/notes_literal_receipts.rs
++++ b/codex-rs/hepta-agentd/src/notes_literal_receipts.rs
+@@ -104,7 +104,11 @@
+         publication_digest: String,
+         chain_digest: String,
+         disposition: String,
+-        idempotent: bool,
++        // Required transport metadata remains strictly typed on the wire.
++        // Fresh and replayed admissions project the same known publication;
++        // this read-only projection cannot grant another sending permission.
++        #[serde(rename = "idempotent")]
++        _idempotent: bool,
+         response_generation: u64,
+     },
+     Conflict {
+@@ -303,7 +307,7 @@
+                         publication_digest,
+                         chain_digest,
+                         disposition,
+-                        idempotent: _,
++                        _idempotent: _,
+                         response_generation,
+                     } => {
+                         response(response_generation)?;
+@@ -472,3 +476,7 @@
+             .all(|byte| matches!(byte, b'0'..=b'9' | b'a'..=b'f'))
+         && value.bytes().any(|byte| byte != b'0')
+ }
++
++#[cfg(test)]
++#[path = "notes_literal_receipts_schema_tests.rs"]
++mod schema_tests;
+--- a/codex-rs/hepta-agentd/src/deployment_issuer.rs
++++ b/codex-rs/hepta-agentd/src/deployment_issuer.rs
+@@ -38,6 +38,7 @@
+ 
+ #[path = "deployment_text.rs"]
+ mod text;
++pub(crate) use text::RegisteredTextWriterAuthority;
+ pub(crate) use text::RootHumanTextRequest;
+ pub(crate) use text::TextHumanBinding;
+ pub use text::TextIssuerOperation;
+--- a/codex-rs/hepta-agentd/src/desktop_root_composition.rs
++++ b/codex-rs/hepta-agentd/src/desktop_root_composition.rs
+@@ -104,9 +104,11 @@
+         config,
+         &host,
+         bootstrap_channel.try_clone()?,
+-        notes,
+-        operation_grants,
+-        verifier,
++        crate::notes_bootstrap::PrimaryNotesAuthority {
++            final_use: notes,
++            grants: operation_grants,
++            verifier,
++        },
+         reconcile_interval,
+         Some(&release.notes),
+         end,
+--- /dev/null
++++ b/codex-rs/hepta-agentd/src/notes_literal_receipts_schema_tests.rs
+@@ -0,0 +1,43 @@
++//! Parser compatibility only; these metadata fixtures grant no sending right.
++
++use super::SubmissionStatus;
++use serde_json::json;
++
++#[test]
++fn admitted_submission_requires_original_boolean_idempotent_field() {
++    let admitted = json!({
++        "type": "admitted",
++        "run_id": "original-run",
++        "objective_digest": "11".repeat(32),
++        "hard_constraint_digest": "22".repeat(32),
++        "publication_digest": "33".repeat(32),
++        "chain_digest": "44".repeat(32),
++        "disposition": "compiled",
++        "idempotent": false,
++        "response_generation": 1,
++    });
++    for idempotent in [false, true] {
++        let mut value = admitted.clone();
++        value["idempotent"] = json!(idempotent);
++        assert!(matches!(
++            serde_json::from_value::<SubmissionStatus>(value).expect("original admitted schema"),
++            SubmissionStatus::Admitted { .. }
++        ));
++    }
++
++    let mut missing = admitted.clone();
++    missing.as_object_mut().unwrap().remove("idempotent");
++    assert!(serde_json::from_value::<SubmissionStatus>(missing).is_err());
++
++    for invalid in [json!(null), json!("false"), json!(0), json!([]), json!({})] {
++        let mut value = admitted.clone();
++        value["idempotent"] = invalid;
++        assert!(serde_json::from_value::<SubmissionStatus>(value).is_err());
++    }
++
++    for unknown in ["_idempotent", "unrecognized"] {
++        let mut value = admitted.clone();
++        value[unknown] = json!(true);
++        assert!(serde_json::from_value::<SubmissionStatus>(value).is_err());
++    }
++}

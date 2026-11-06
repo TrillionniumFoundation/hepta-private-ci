@@ -1,0 +1,107 @@
+{
+  "schema": "hepta.app-server-r19-terminal-readback.v1",
+  "source_tree": "cc2b01c2f69f43d63f8f5c561abd5e941d645769",
+  "source_commit": "0c78b43424ced27d37892a7744de065c1497d5e8",
+  "job_id": "1a1b03cadff-fc05-6f44",
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-app-server",
+    "--retries",
+    "0"
+  ],
+  "exit_code": 100,
+  "elapsed_seconds": 587.970730304718,
+  "summary": "Summary [ 396.597s] 1345 tests run: 1338 passed, 7 failed, 2 skipped",
+  "unique_test_count": 1345,
+  "counts": {
+    "PASS": 1338,
+    "FAIL": 7,
+    "TIMEOUT": 0
+  },
+  "reported_skipped": 2,
+  "failed_tests": [
+    {
+      "binary": "codex-app-server::all",
+      "name": "suite::v2::command_exec::command_exec_accepts_permission_profile",
+      "status": "FAIL",
+      "block_sha256": "0769b23822e3770e666fc71c86ed84a4ee7ecab2a9ee51d29868e71fef2b15a9"
+    },
+    {
+      "binary": "codex-app-server::all",
+      "name": "suite::v2::command_exec::command_exec_env_overrides_merge_with_server_environment_and_support_unset",
+      "status": "FAIL",
+      "block_sha256": "8e1e65afcd3196dd7acfb845a10aa892afd3d910738268319bf8799a5d7154a5"
+    },
+    {
+      "binary": "codex-app-server::all",
+      "name": "suite::v2::command_exec::command_exec_non_streaming_respects_output_cap",
+      "status": "FAIL",
+      "block_sha256": "4b596ddbe4920b7782f46394f132f0663906faadab5be4f2c98aa0457b1468be"
+    },
+    {
+      "binary": "codex-app-server::all",
+      "name": "suite::v2::command_exec::command_exec_permission_profile_does_not_reuse_default_network_proxy",
+      "status": "FAIL",
+      "block_sha256": "f564e2ae0552c70bf4288ef4fd0c2912f26c0c4cb79640f21d0483aa120846e7"
+    },
+    {
+      "binary": "codex-app-server::all",
+      "name": "suite::v2::command_exec::command_exec_permission_profile_starts_selected_network_proxy",
+      "status": "FAIL",
+      "block_sha256": "dfc7b515cce7aa12727c2bdb1c71fcc631b27f00eeb3ef4592342e766db36e49"
+    },
+    {
+      "binary": "codex-app-server::all",
+      "name": "suite::v2::command_exec::command_exec_without_process_id_keeps_buffered_compatibility",
+      "status": "FAIL",
+      "block_sha256": "cfc9bd89e23b595b279db7fb55318666878e79b3edd8d153d0130bac8fd748e6"
+    },
+    {
+      "binary": "codex-app-server::all",
+      "name": "suite::v2::command_exec::command_exec_process_ids_are_connection_scoped_and_disconnect_terminates_process",
+      "status": "FAIL",
+      "block_sha256": "7c789faa32af84eb768e3e2cc69ed286c2f5197ab1d8ec11be6e447858b13ccc"
+    }
+  ],
+  "original_process_exec_cases": [
+    {
+      "status": "PASS",
+      "binary": "codex-app-server::all",
+      "name": "suite::v2::process_exec::process_kill_terminates_running_process",
+      "line": "PASS [   0.177s] codex-app-server::all suite::v2::process_exec::process_kill_terminates_running_process"
+    },
+    {
+      "status": "PASS",
+      "binary": "codex-app-server::all",
+      "name": "suite::v2::process_exec::capability_tests::process_spawn_refuses_legacy_or_terminal_opt_out_before_creating_a_process",
+      "line": "PASS [   0.488s] codex-app-server::all suite::v2::process_exec::capability_tests::process_spawn_refuses_legacy_or_terminal_opt_out_before_creating_a_process"
+    },
+    {
+      "status": "PASS",
+      "binary": "codex-app-server::all",
+      "name": "suite::v2::process_exec::process_spawn_reports_buffered_output_cap_reached",
+      "line": "PASS [   0.231s] codex-app-server::all suite::v2::process_exec::process_spawn_reports_buffered_output_cap_reached"
+    },
+    {
+      "status": "PASS",
+      "binary": "codex-app-server::all",
+      "name": "suite::v2::process_exec::process_spawn_returns_before_exit_and_emits_exit_notification",
+      "line": "PASS [   0.233s] codex-app-server::all suite::v2::process_exec::process_spawn_returns_before_exit_and_emits_exit_notification"
+    },
+    {
+      "status": "PASS",
+      "binary": "codex-app-server::all",
+      "name": "suite::v2::process_exec::process_spawn_returns_error_when_local_environment_is_disabled",
+      "line": "PASS [   0.176s] codex-app-server::all suite::v2::process_exec::process_spawn_returns_error_when_local_environment_is_disabled"
+    }
+  ],
+  "log_sha256": "917632f553e67bb4787e160da977f3d97440c4d9e50bfcc09d733ad752c7e73e",
+  "log_bytes": 225301,
+  "footer_duplicates_not_counted": 7,
+  "test_execution_started": true,
+  "no_workspace_r20_started": true,
+  "no_fix_fmt_executed": true
+}

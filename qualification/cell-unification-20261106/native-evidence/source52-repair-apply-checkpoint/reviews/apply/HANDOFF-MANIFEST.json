@@ -1,0 +1,33 @@
+{
+  "file_count": 4,
+  "files": [
+    {
+      "bytes": 5622,
+      "git_blob": "6419e10abf1c337d49918fedb070fcddf2089938",
+      "path": "BOUND-REVIEW.json",
+      "sha256": "859aad85b9520ee2ed47d733f03c3ee1f91aeccf009932e2f319be17040f24d1"
+    },
+    {
+      "bytes": 5923,
+      "git_blob": "0ae0fb93f02ecd46065b7050ad493aec1775793f",
+      "path": "FINAL-REVIEW.json",
+      "sha256": "84975caeb41e97403fdf0a249dfa3e452d0156879c46c1104083dda6addb9181"
+    },
+    {
+      "bytes": 5241,
+      "git_blob": "25b500776c6dac9e155d1cebd9b2eedc82fbcd6b",
+      "path": "INPUT-REVIEW.json",
+      "sha256": "38459d2cac4eb19f087fdcc5241fecd51b7884c6d22d8ccaec0ef9b57308913b"
+    },
+    {
+      "bytes": 16802,
+      "git_blob": "b7bb82c612814cced620215001aac3ad64a5de42",
+      "path": "verify.py",
+      "sha256": "d3490f6f62e2ddf80b8743fc9ad0866bf32016b09442b5e5e834aa9c227d5494"
+    }
+  ],
+  "kind": "source52-input-and-binding-independent-review",
+  "schema": "hepta.artifact-handoff.v1",
+  "scope": "Offline input, AST, byte and interface verification only; no runner import/execution or Rust/native-source write.",
+  "total_bytes": 33588
+}

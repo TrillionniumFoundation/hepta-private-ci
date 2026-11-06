@@ -1,0 +1,85 @@
+{
+  "schema": "hepta.socket-registration-repair-audit.v1",
+  "source_before": {
+    "source_commit": "bef6fa7645df9df12b69fda499e97eed25de6c75",
+    "path": "codex-rs/shell-escalation/src/unix/socket.rs",
+    "git_blob_sha1": "a364608fc47a216a155dbdccb6ba9b125ac32aee",
+    "sha256": "470cb0d86338850afbe2d08dfaf2efa1630dfabe41c7d0fd85ce0a8b4ff1dfd2",
+    "bytes": 18252
+  },
+  "native_pre_repair_tree": "634b3a5ce694319af76e5597fffa258a17d2b679",
+  "source_after": {
+    "path": "codex-rs/shell-escalation/src/unix/socket.rs",
+    "sha256": "428a04a87f84ed3d44c854e49b7f843c84bda41fe23f82cb7ce0e1275cd5185a",
+    "bytes": 18780
+  },
+  "locked_tokio": {
+    "version": "1.53.3",
+    "crate_sha256": "ce3335fa71841cda333a58d7615b03901380ecf09d59b3296d21f8bbac0dde4e",
+    "cached_archive_hash_independently_read": true,
+    "registry_source_equals_cached_crate_member": true,
+    "async_fd_rs_sha256": "0d9365deaa40f8d069770308a105aad31fe527ea593acf95c40265407d9f143d",
+    "evidence": "native-validation-results/r3-blockers/socket-and-closure-audit.json",
+    "register_and_error_contract": "native-validation-results/r3-blockers/audit.json"
+  },
+  "edits": {
+    "registration_expressions": 2,
+    "safety_comment_lines": 6,
+    "added_lines": 8,
+    "removed_lines": 2,
+    "inverse_edits_recover_original_bytes": true,
+    "test_section_byte_identical": true,
+    "permissions_messages_assertions_unchanged": true,
+    "lint_allow_added": false
+  },
+  "sites": [
+    {
+      "type": "AsyncSocket",
+      "constructor": "Socket::pair_raw(STREAM), or Socket::from(OwnedFd)",
+      "real_ownership_path": "SCM_RIGHTS receiver removes one OwnedFd and transfers it into AsyncSocket::from_fd; sender first consumes AsyncSocket::into_inner before descriptor transfer.",
+      "registered_access": "Private AsyncFd<Socket>; only shared readiness/I/O borrows, no get_mut, raw close, or replacement.",
+      "release": "AsyncFd::into_inner and Drop call take_inner, which deregisters the same fd before returning/dropping the owned Socket."
+    },
+    {
+      "type": "AsyncDatagramSocket",
+      "constructor": "Socket::pair_raw(DGRAM), or unsafe Socket::from_raw_fd adoption",
+      "real_ownership_path": "Server keeps registered server endpoint; client endpoint is deregistered via into_inner before inheritance. Wrapper adopts the inherited descriptor under the existing unsafe ownership contract. Cancellation tests duplicate descriptors before transferring new ownership.",
+      "registered_access": "Private AsyncFd<Socket>; async_io callbacks receive shared Socket references; no resource substitution.",
+      "release": "Session closes its already deregistered client Socket; registered endpoints remain owned until their AsyncFd drop or consuming into_inner."
+    }
+  ],
+  "interest_set": {
+    "register_default": [
+      "READABLE",
+      "WRITABLE"
+    ],
+    "stream_uses": [
+      "readable",
+      "writable"
+    ],
+    "datagram_uses": [
+      "async_io READABLE",
+      "async_io WRITABLE"
+    ],
+    "nonblocking_before_registration_preserved": true
+  },
+  "error_semantics": "? converts AsyncFdRegisterError<Socket> using the exact locked From implementation to the same io::Error cause; the retained owned Socket drops on that conversion, closing only its descriptor. No new panic catch, retry, fallback, or authority behavior.",
+  "dup_close_scope": "SCM_RIGHTS and try_clone_to_owned/dup create separately owned descriptors; stdio dup2 runs in the spawned child. Parent client_socket close occurs only after into_inner has deregistered that endpoint. Existing socket2 ownership and unsafe raw-fd adoption obligations are retained.",
+  "safety_boundary": "This two-site change does not authenticate arbitrary raw descriptor integers. Existing unsafe from_raw_fd callers remain responsible for a valid open descriptor and transferred ownership; the pre-existing one-time-adoption TODO in escalate_client is outside this repair.",
+  "caller_sources": [
+    {
+      "path": "codex-rs/shell-escalation/src/unix/escalate_client.rs",
+      "source_commit": "bef6fa7645df9df12b69fda499e97eed25de6c75",
+      "sha256": "bf34f2a3bf283aeba02d87a1d183a9f196fc5a46ce1276954727efcd1f247fe6",
+      "git_blob_sha1": "0f98883865531d1c55a90235d1c5fb23565b958a"
+    },
+    {
+      "path": "codex-rs/shell-escalation/src/unix/escalate_server.rs",
+      "source_commit": "bef6fa7645df9df12b69fda499e97eed25de6c75",
+      "sha256": "ccb8d3628e5889b95f84ab914ad428bb6f13476e183ea3631571715820cd9b82",
+      "git_blob_sha1": "f45c4317e66fc2a0b5dd8a402ba6fd15e27bdab7"
+    }
+  ],
+  "native_execution_status": "PENDING_SCOPED_STRICT_TESTS_AND_FINAL_FMT",
+  "source_frozen": true
+}

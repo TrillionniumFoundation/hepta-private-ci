@@ -1,0 +1,87 @@
+{
+  "schema": "hepta.root-r19-strict-readback.v1",
+  "status": "ORIGINAL_STRICT_PASS_COMPLETE_TESTS_TERMINAL_RESULT_PENDING",
+  "source_commit": "0c78b43424ced27d37892a7744de065c1497d5e8",
+  "source_tree": "cc2b01c2f69f43d63f8f5c561abd5e941d645769",
+  "command": [
+    "just",
+    "clippy",
+    "--locked",
+    "-p",
+    "codex-app-server",
+    "--",
+    "-D",
+    "warnings"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 118.43502449989319,
+  "job_id": "1a1b03cadff-fc05-6f44",
+  "closed_files": [
+    {
+      "original_path": "native-validation-results/r19-strict-closed/native-app-server-r19-environment.json",
+      "original_bytes": 777,
+      "original_sha256": "a94b261ea6ab9cb0ef47e20a87748a0f4b1567f3c2656fd333275329b9f37e93",
+      "repository_path": "qualification/cell-unification-20261106/native-evidence/r19-app-server-checkpoint/native-app-server-r19-environment.json",
+      "attachment_bytes": 777,
+      "attachment_sha256": "a94b261ea6ab9cb0ef47e20a87748a0f4b1567f3c2656fd333275329b9f37e93",
+      "lossless_gzip": false
+    },
+    {
+      "original_path": "native-validation-results/r19-strict-closed/native-app-server-r19-strict-receipt.json",
+      "original_bytes": 887,
+      "original_sha256": "31dba7a9821ad3a46e48714cba9819665a23bb6919c71c97865a5f11b637a8e6",
+      "repository_path": "qualification/cell-unification-20261106/native-evidence/r19-app-server-checkpoint/native-app-server-r19-strict-receipt.json",
+      "attachment_bytes": 887,
+      "attachment_sha256": "31dba7a9821ad3a46e48714cba9819665a23bb6919c71c97865a5f11b637a8e6",
+      "lossless_gzip": false
+    },
+    {
+      "original_path": "native-validation-results/r19-strict-closed/native-app-server-r19-strict-resources.txt",
+      "original_bytes": 800,
+      "original_sha256": "ac96f88d8b11f18a02d406d709e206d094fe641ee6c9d4eb5cffb608d98b10b1",
+      "repository_path": "qualification/cell-unification-20261106/native-evidence/r19-app-server-checkpoint/native-app-server-r19-strict-resources.txt",
+      "attachment_bytes": 800,
+      "attachment_sha256": "ac96f88d8b11f18a02d406d709e206d094fe641ee6c9d4eb5cffb608d98b10b1",
+      "lossless_gzip": false
+    },
+    {
+      "original_path": "native-validation-results/r19-strict-closed/native-app-server-r19-strict-source-post-verification.json",
+      "original_bytes": 390,
+      "original_sha256": "583e0a5cb059e47c3faa9aca119c58084bc73858414db6666ac5af1e7f1ef28e",
+      "repository_path": "qualification/cell-unification-20261106/native-evidence/r19-app-server-checkpoint/native-app-server-r19-strict-source-post-verification.json",
+      "attachment_bytes": 390,
+      "attachment_sha256": "583e0a5cb059e47c3faa9aca119c58084bc73858414db6666ac5af1e7f1ef28e",
+      "lossless_gzip": false
+    },
+    {
+      "original_path": "native-validation-results/r19-strict-closed/native-app-server-r19-strict.log",
+      "original_bytes": 5998,
+      "original_sha256": "333adb720288c90c2932075d7f18597e352c808caeeb0ff7d0e379a15ec7437f",
+      "repository_path": "qualification/cell-unification-20261106/native-evidence/r19-app-server-checkpoint/native-app-server-r19-strict.log.gz",
+      "attachment_bytes": 1037,
+      "attachment_sha256": "1f1b6b23514a64b573845d417f44e9fe044c8ea529938865051e85a8355834a2",
+      "lossless_gzip": true
+    },
+    {
+      "original_path": "native-validation-results/r19-strict-closed/native-candidate-r19-source.json",
+      "original_bytes": 49810,
+      "original_sha256": "64e26c5c3340b27d6b64b7342fac8561300224f9f1e96c22f2aa23b184eafee3",
+      "repository_path": "qualification/cell-unification-20261106/native-evidence/r19-app-server-checkpoint/native-candidate-r19-source.json",
+      "attachment_bytes": 49810,
+      "attachment_sha256": "64e26c5c3340b27d6b64b7342fac8561300224f9f1e96c22f2aa23b184eafee3",
+      "lossless_gzip": false
+    }
+  ],
+  "all181_manifest_identities_match_verified_r17_source_plus_two_frozen_changes": true,
+  "only_source_changes_relative_to_r17": [
+    ".github/workflows/hepta-cell-framework-native.yml",
+    "codex-rs/app-server/tests/suite/v2/process_exec.rs"
+  ],
+  "native_strict_post_source_proof_valid": true,
+  "actual_write_tree_verified_by_native": true,
+  "root_full_archive_and_source_reconstruction": "PENDING_CLOSED_R19_EXPORT",
+  "test_terminal_counts": null,
+  "final_fix_fmt_ran": false,
+  "scope": "Closed strict receipt, log, resource hashes and source manifest only. Native commands ran a staged tree matching the GitData commit; this is not a claim that the created commit was checked out or that all project tests passed.",
+  "warning_scope": "Two existing lifetime warnings in unselected i18n-config remain in the raw log; no repository-wide zero-warning claim."
+}

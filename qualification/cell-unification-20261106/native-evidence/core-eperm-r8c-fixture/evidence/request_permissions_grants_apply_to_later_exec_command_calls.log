@@ -1,0 +1,27 @@
+        FAIL [   0.379s] codex-core::all suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls
+  stdout ───
+
+    running 1 test
+    test suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls ... FAILED
+
+    failures:
+
+    failures:
+        suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1425 filtered out; finished in 0.36s
+
+  stderr ───
+
+    thread 'suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls' (375102) panicked at core/tests/suite/request_permissions.rs:1391:5:
+    assertion failed: `(left == right)`
+
+    Diff < left / right > :
+    <Failed to create stream fd: Operation not permitted
+    <Failed to create stream fd: Operation not permitted
+    <Failed to create stream fd: Operation not permitted
+     sticky-grant-ok
+
+
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+

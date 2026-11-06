@@ -1,0 +1,20 @@
+{
+  "schema": "hepta.root-r16-recovery-settings-review.v1",
+  "status": "STATIC_REVIEW_PASS_PENDING_NATIVE_GATE",
+  "source45_commit": "96dc9232535fedf735e3099ef1391b69477270d4",
+  "source45_tree": "3ebd193f213d640e5330a1be4b983bcc4b06617a",
+  "source45_blob": "a3e4ecc296ff71736bac1e2c441d7e7b0762a2a7",
+  "after_sha256": "cc09700dd4be2f5d206de412d56e852fdf09ccfd559cd9e9b9dcd7b39689fd08",
+  "after_git_blob": "9e79acff561d58136981768f6dfbc8efb20f5cad",
+  "production_guard_blob": "215af4dd2a36cf07915e2451040c19527bac3c9a",
+  "root_read_source45_github_fixture_and_guard": true,
+  "exact_native_before_bytes": true,
+  "patch_forward_reverse_exact_no_fuzz_or_offset": true,
+  "outside_target_function_unchanged": true,
+  "preexisting_assertions": 7,
+  "new_full_settings_readback_assertions": 2,
+  "review": "The existing recovery owner rejects every nondefault ThreadSettingsOverrides before consuming the candidate. The fixture now establishes the same complete Plan settings on its original user turn and requests recovery with default overrides; both accepted boundaries read back the entire CollaborationMode. Original ID, epoch, durable input/TurnContext/Ready order, response-header gate, two model requests, deadlines, polling interval and assertions remain.",
+  "no_production_policy_change": true,
+  "rust_execution": false,
+  "behavioral_qualification": "PENDING_ORIGINAL_THREE_PACKAGE_GATE"
+}

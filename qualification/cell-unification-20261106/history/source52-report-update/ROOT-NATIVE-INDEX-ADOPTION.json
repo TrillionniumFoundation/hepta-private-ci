@@ -1,0 +1,36 @@
+{
+  "schema": "hepta.root-source52-native-index-adoption.v1",
+  "previous_index": {
+    "bytes": 1204766,
+    "sha256": "eec856c07862186f583963794cfaa951882a5a38321dc042cdfa62d3837fae8e",
+    "git_blob": "e212dd0f48246ad549de13a610586e50654d6193"
+  },
+  "candidate": {
+    "bytes": 1545575,
+    "sha256": "e747d83505480b71517f975509a8c7f97ae383f552ac435e6b752fe38ff3729f",
+    "git_blob": "472ea769ff39fdd8c1874090c0eedf6aa13c993b"
+  },
+  "formal_index": {
+    "bytes": 1548794,
+    "sha256": "fe9d15906ac379e33e7d58e0bed4e385592cf79d4b8eaf6e76e2c90beb48dc61",
+    "git_blob": "be2dc30cf40e49a2758d8a57886243a757bc691e"
+  },
+  "independent_review": {
+    "bytes": 8053,
+    "sha256": "733fee9e1b3feb0a368cdc3e0c8746df3f803a6ad27061119c8e790332e442e7",
+    "git_blob": "21f173476bd17396e796bac945ae93585eb05155"
+  },
+  "only_candidate_changes": [
+    "formal_INDEX_written false to true",
+    "root_adoption bookkeeping and retained-origin mapping"
+  ],
+  "all_prior_rows_and_known_gate_facts_unchanged": true,
+  "raw_hash_artifacts": 2109,
+  "historical_raw_rows": 1673,
+  "new_raw_rows": 436,
+  "inherited_extra_Git_only_references": 50,
+  "unmaterialized_reference_rows": 139,
+  "separate_Git_overlay_actual_tree_preservation_not_claimed_by_this_file": true,
+  "science": "HOLD",
+  "authority": "DENY_ALL"
+}

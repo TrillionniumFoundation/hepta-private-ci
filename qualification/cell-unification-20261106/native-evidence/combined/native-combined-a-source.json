@@ -1,0 +1,219 @@
+{
+  "parent_head": "bef6fa7645df9df12b69fda499e97eed25de6c75",
+  "merge_head": "caf06e0d9c78ba2b8e2ab860ec1b37f049e30f1b",
+  "staged_tree": "e634d4d2f7ce4a9bc78d3d1756e3242c5d3eb211",
+  "input_files": [
+    {
+      "path": "codex-rs/hepta-automation/tests/automation.rs",
+      "sha256": "e58576162b86c7de68965ea0872a6268f4fa768213f6a154669035f34a18f450",
+      "size": 54775
+    },
+    {
+      "path": "codex-rs/utils/pty/src/unix_io.rs",
+      "sha256": "b2344772862c2f5b79ca6f9c162e1648058302d665937d8fc802ce9309d53081",
+      "size": 4344
+    }
+  ],
+  "comment_correction": {
+    "path": "codex-rs/hepta-neuron/src/cell_registry.rs",
+    "old": "full native execution cost and DENY_ALL",
+    "new": "native execution cost fields and DENY_ALL"
+  },
+  "changed_files": [
+    {
+      "path": ".github/workflows/hepta-cell-differentiation.yml",
+      "sha256": "9d4ec214c3c113402e149afb042e80de9db71faf2f5bb1cba7ccbdd36655eae5",
+      "size": 5170
+    },
+    {
+      "path": "codex-rs/hepta-automation/tests/automation.rs",
+      "sha256": "e58576162b86c7de68965ea0872a6268f4fa768213f6a154669035f34a18f450",
+      "size": 54775
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_feature_projection.rs",
+      "sha256": "a097dcf4f02d586f38f1d0b130b6de0f4b6091698f0640a073fd11d60278ca24",
+      "size": 7385
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_feature_projection_tests.rs",
+      "sha256": "c633ff470d3401ebd5c4e6327872814a5b431952ee4e5ed2ca3f420a12ac9a3d",
+      "size": 8401
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_population.rs",
+      "sha256": "4b18cfc42373e8a964523cda2974e248eb0b994057493e63aa3f50e3aeef9cf7",
+      "size": 11543
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_population_tests.rs",
+      "sha256": "d3ff99eb6f27bfd101c501d0e7e9403b385cb99050161f7fdfdc40e4481cdb62",
+      "size": 13636
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_registry.rs",
+      "sha256": "0e96a76e68d3d3aa96eebceebdf5d5df18857085b61d92f9bcad355040aa45fb",
+      "size": 10125
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_registry_tests.rs",
+      "sha256": "4f214b73bc5a4db230bdab44002f3f7bb774068826877327c7476e4174959afd",
+      "size": 13799
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_roles.rs",
+      "sha256": "395df3e3bff41d202eef195038eb98e797034fb31d44eca74220731604ce7d5f",
+      "size": 4060
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_roles_tests.rs",
+      "sha256": "5af928b275187286bd0b23e0584d87a0320b8562d68fe50ff820cc71ed2d9e49",
+      "size": 2746
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_tests.rs",
+      "sha256": "93bec01e893dfdfad112430baae64abee51902f72fb4070aa6a1dac2b3f5ab5f",
+      "size": 25393
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/lib.rs",
+      "sha256": "55207d398669384a454482f7403598d4d190fa6295b6f5c77ec0aa986551659d",
+      "size": 12516
+    },
+    {
+      "path": "codex-rs/hepta-plasticity/src/differentiation_demand.rs",
+      "sha256": "28f72aa695461446e9fcd820c76d9ffc5d693dc87992db0b55fa86cc21f58fc0",
+      "size": 7132
+    },
+    {
+      "path": "codex-rs/hepta-plasticity/src/differentiation_demand_tests.rs",
+      "sha256": "fcbdffa2e8537cfbe028bd6020858134ceba3624c8805ed985061a1d6588703d",
+      "size": 6336
+    },
+    {
+      "path": "codex-rs/hepta-plasticity/src/differentiation_observations.rs",
+      "sha256": "ed5ead677670470d8c25612b47e38bbf9fe907a4500cf397deb580b68ab41bc3",
+      "size": 3718
+    },
+    {
+      "path": "codex-rs/hepta-plasticity/src/differentiation_plan.rs",
+      "sha256": "cbb5033a7ab4eb5b5d2550880102936563568caeb5cef9430ff667df2af45cf8",
+      "size": 7771
+    },
+    {
+      "path": "codex-rs/hepta-plasticity/src/differentiation_study.rs",
+      "sha256": "f7e8d0760f44c76f7884c7b0238109cdb6ff01507c02b646331825bcc099c412",
+      "size": 15917
+    },
+    {
+      "path": "codex-rs/hepta-plasticity/src/differentiation_study_tests.rs",
+      "sha256": "36232931ed5721309b4251ebd152f3a0ae5f1f228d23f91c366a8f1c94223c62",
+      "size": 20711
+    },
+    {
+      "path": "codex-rs/hepta-plasticity/src/differentiation_test_support.rs",
+      "sha256": "87c96071d724de1df39eca433eda0516eef6920c8a6871a0d45e35d1ef449d0f",
+      "size": 4440
+    },
+    {
+      "path": "codex-rs/hepta-plasticity/src/differentiation_topology.rs",
+      "sha256": "5db6b1750b4f9ef93c104c26d2c72f1a9304312b431e4e00001d16cbe16fb40f",
+      "size": 3574
+    },
+    {
+      "path": "codex-rs/hepta-plasticity/src/differentiation_types.rs",
+      "sha256": "d4e5390607677fa6074b974bc2db444262e2d55d97b7d585d682419ed3635845",
+      "size": 8201
+    },
+    {
+      "path": "codex-rs/hepta-plasticity/src/lib.rs",
+      "sha256": "66de445722c57294024d2ca027588a3b7de23b6259a0a753413e4f682f7bc44f",
+      "size": 8447
+    },
+    {
+      "path": "codex-rs/utils/pty/src/unix_io.rs",
+      "sha256": "b2344772862c2f5b79ca6f9c162e1648058302d665937d8fc802ce9309d53081",
+      "size": 4344
+    },
+    {
+      "path": "qualification/cell-differentiation/README.md",
+      "sha256": "249df3daced3f2b9cf981d666bbb01fe77db47eb265aab792e8b513cfab627da",
+      "size": 10892
+    },
+    {
+      "path": "qualification/cell-differentiation/VALIDATION.md",
+      "sha256": "23da80631b3a5c1003e5dba6d10fec35655da12c81635a05701f8a5b002fc063",
+      "size": 10162
+    },
+    {
+      "path": "qualification/cell-differentiation/run_study.py",
+      "sha256": "417855fedcd46dc8de2f920e3f270e3233a06f03d7d38b172449bf0b09a341c6",
+      "size": 12748
+    },
+    {
+      "path": "qualification/cell-differentiation/study_cost.py",
+      "sha256": "d4cf26fd27fef65203786d70b3ff1d097aa82db1521242d26ab87a40d001cefd",
+      "size": 6881
+    },
+    {
+      "path": "qualification/cell-differentiation/study_data.py",
+      "sha256": "ffa701aace20d69cdee66fd3b8a723719dfd4956e48780ed933f4d3c3ee6ed6f",
+      "size": 8537
+    },
+    {
+      "path": "qualification/cell-differentiation/study_evidence.py",
+      "sha256": "644cfeb651c430837a596db019dfe474ad6cb9344d92ec54fd13b40c2b457db3",
+      "size": 11519
+    },
+    {
+      "path": "qualification/cell-differentiation/study_gate.py",
+      "sha256": "7301e22dffc93e03521f7e651a86d37681bbbc47bea1a9891f27eda192e6e316",
+      "size": 5695
+    },
+    {
+      "path": "qualification/cell-differentiation/study_model.py",
+      "sha256": "a4e24975c9561fa08452ba9e250aafaed9b1cbccb5049ddf5b6a9ff9637ac704",
+      "size": 11706
+    },
+    {
+      "path": "qualification/cell-differentiation/test_study.py",
+      "sha256": "a67ddaf82fd3330a47e951e917350e4be552fa352db6ea210032ce06bd7a0c98",
+      "size": 17102
+    }
+  ],
+  "cargo_lock_sha256": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c",
+  "environment": {
+    "RUSTUP_TOOLCHAIN": "1.96.0",
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_TARGET_DIR": "/home/alex/work/hepta-cell-unified-20261106-a/target",
+    "CARGO_NET_GIT_FETCH_WITH_CLI": "true",
+    "NEXTEST_TEST_THREADS": "2"
+  },
+  "command": [
+    "just",
+    "test",
+    "-p",
+    "codex-hepta-neuron",
+    "-p",
+    "codex-hepta-plasticity",
+    "-p",
+    "codex-hepta-automation",
+    "-p",
+    "codex-hepta-learning-artifacts",
+    "-p",
+    "codex-hepta-runtime",
+    "-p",
+    "codex-hepta-control-plane",
+    "-p",
+    "codex-utils-pty",
+    "--locked",
+    "--retries",
+    "0"
+  ],
+  "disk_before": {
+    "total": 1966736678912,
+    "used": 1532769087488,
+    "free": 333987340288
+  },
+  "meminfo_before": "MemTotal:       25739556 kB\nMemFree:         5776664 kB\nMemAvailable:   14936352 kB\nBuffers:          657064 kB\nCached:          6718756 kB\nSwapCached:       119712 kB\nActive:          6811504 kB\nInactive:        7569024 kB\nActive(anon):    5550104 kB\nInactive(anon):  1780088 kB\nActive(file):    1261400 kB\nInactive(file):  5788936 kB\nUnevictable:        7496 kB\nMlocked:            7496 kB\nSwapTotal:      16777208 kB\nSwapFree:        3287028 kB\nZswap:                 0 kB\nZswapped:              0 kB\nDirty:            104816 kB\nWriteback:             0 kB\nAnonPages:       6913536 kB\nMapped:          1202020 kB\nShmem:            318888 kB\nKReclaimable:    2526304 kB\nSlab:            3673072 kB\nSReclaimable:    2526304 kB\nSUnreclaim:      1146768 kB\nKernelStack:      109656 kB\nPageTables:       261744 kB\nSecPageTables:      6032 kB\nNFS_Unstable:          0 kB\nBounce:                0 kB\nWritebackTmp:          0 kB\nCommitLimit:    29646984 kB\nCommitted_AS:   338504356 kB\nVmallocTotal:   34359738367 kB\nVmallocUsed:      216128 kB\nVmallocChunk:          0 kB\nPercpu:            69696 kB\nHardwareCorrupted:     0 kB\nAnonHugePages:         0 kB\nShmemHugePages:        0 kB\nShmemPmdMapped:        0 kB\nFileHugePages:    131072 kB\nFilePmdMapped:         0 kB\nCmaTotal:              0 kB\nCmaFree:               0 kB\nUnaccepted:            0 kB\nBalloon:               0 kB\nGPUActive:      40282080 kB\nGPUReclaim:            0 kB\nHugePages_Total:       0\nHugePages_Free:        0\nHugePages_Rsvd:        0\nHugePages_Surp:        0\nHugepagesize:       2048 kB\nHugetlb:               0 kB\nDirectMap4k:    21875952 kB\nDirectMap2M:     4986880 kB\nDirectMap1G:           0 kB\n"
+}

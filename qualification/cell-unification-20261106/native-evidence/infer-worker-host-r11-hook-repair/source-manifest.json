@@ -1,0 +1,44 @@
+{
+  "schema": "hepta.infer-test-hook-error-propagation.v1",
+  "source_tree": "f20c3860c90853e90ab9d5c4d1b772787e0379a7",
+  "files": [
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_failure_tests.rs",
+      "before": {
+        "bytes": 15855,
+        "sha256": "f2bd9a69622867ca710be926c503e06dee53348d5497bbd6a027a1afeffb6713",
+        "git_blob": "fd48e49f1e5641745a48da8d813f28e9cd0b5bb2"
+      },
+      "after": {
+        "bytes": 15996,
+        "sha256": "32428aeae9aaec1fc15d7dd47331be83dd100801ed9a7f0dc26d03256900123e",
+        "git_blob": "1810ee8190f7b40e9416782aa4e786c1dcfb41f3"
+      },
+      "inverse_exact": true
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "before": {
+        "bytes": 56335,
+        "sha256": "3ec8e8c6aa173dcb94763ab6feb5704e606d473e6bdbc228db0aa235d56eb3d8",
+        "git_blob": "3c19e3c74e424677038f9983a8d5b5c08e34a55b"
+      },
+      "after": {
+        "bytes": 56337,
+        "sha256": "2aacec07abc1fe1040c0842bff7bbf9b249c5d563267bb73f0a1bf6a3810eeff",
+        "git_blob": "43344b0a33fcd862fb5eae5c91de4b99fbc7265b"
+      },
+      "inverse_exact": true
+    }
+  ],
+  "patch": {
+    "bytes": 2954,
+    "sha256": "db72b10575301cdc25444d65cab98d2f64aed0a89c569d0fd28f6beb98ab5f21",
+    "git_blob": "9cc1b321fdce73fe776ad35d4da9135451326d05"
+  },
+  "scope": "Only cfg(all(test,unix)) hooks and their cfg-gated call sites. Original test body and assertions unchanged.",
+  "poison_behavior": "Return contextual error before hook take/send; caller propagates failure. Never recover poisoned state or acknowledge it.",
+  "normal_ordering": "Usage notification remains after observed_output_tokens update; journal pause remains after both synchronous journal appends and before cleanup await; no MutexGuard crosses await.",
+  "production_non_test_logic_changed": false,
+  "native_validation": "PENDING"
+}

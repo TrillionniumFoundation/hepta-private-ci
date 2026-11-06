@@ -1,0 +1,21 @@
+{
+  "schema": "hepta.closed-core-mcp-r15-result.v1",
+  "status": "COMPLETE_FAILED",
+  "source_tree": "1646e1656cf6365e74accae19a1225fd2ce6d964",
+  "source_commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+  "log_sha256": "2e9b11682a84cce7be7e1db72e47eb4be260e8d7ef7a3b1fa916fe59c5a3e39f",
+  "log_bytes": 515261,
+  "selected_block": {
+    "status": "FAIL",
+    "elapsed": "5.166s",
+    "binary": "codex-core::all",
+    "name": "suite::turn_input_submission::recover_turn_if_idle_preserves_id_and_resumes_plan_mode",
+    "log_byte_range": [
+      476277,
+      477124
+    ]
+  },
+  "review_path": "../native-validation-results/r15-blockers/native-core-mcp-r15-result-review.json",
+  "review_sha256": "a31121be22b0ff02347fbae5266a21597fe58e811f2cd697617e1bda577bc061",
+  "excerpt_sha256": "d22af15eb161af09b2c051dbc386d4929b09ec86e428e59022da62789524dfe5"
+}

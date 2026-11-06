@@ -1,0 +1,12 @@
+[
+  {
+    "name": "wait_for_first_observed_normal_turn_finish_inside_original_five_second_budget",
+    "before": "                    EventMsg::TurnComplete(turn) => contended_turn = Some(turn),",
+    "after": "                    EventMsg::TurnComplete(turn) => {\n                        // This observed completion still has an exact finish owner.\n                        if let Some(completion) = fixture\n                            .codex\n                            .pending_normal_turn_finish_completion(&turn.turn_id)\n                        {\n                            completion.await;\n                        }\n                        contended_turn = Some(turn);\n                    }"
+  },
+  {
+    "name": "wait_for_discovered_turn_finish_before_followup_refresh_inside_original_budget",
+    "before": "            if let EventMsg::TurnComplete(turn) = fixture.codex.next_event().await?.msg {\n                return Ok::<_, anyhow::Error>(turn);\n            }",
+    "after": "            if let EventMsg::TurnComplete(turn) = fixture.codex.next_event().await?.msg {\n                // Keep the next sequential refresh behind this same turn's finish owner.\n                if let Some(completion) = fixture\n                    .codex\n                    .pending_normal_turn_finish_completion(&turn.turn_id)\n                {\n                    completion.await;\n                }\n                return Ok::<_, anyhow::Error>(turn);\n            }"
+  }
+]

@@ -1,0 +1,60 @@
+{
+  "schema": "hepta.root-source52-apply-input-freeze.v1",
+  "source_commit": "1e0910becc37383e6d17ecf861ea844fd07d8862",
+  "source_tree": "211f15baff19095e8c98bcea2b0ed99ca2270ade",
+  "parent": "e28b0f385ee882f842911044958b2810f62f6379",
+  "archive": {
+    "path": "source52-preparation/source52-apply-input.tar.gz",
+    "bytes": 43267,
+    "sha256": "9c7a414899bd05d1e70b9a6cbac64eef9dda552f8e56c904ee9f8e21ab37d6cb",
+    "git_blob": "eefc9ec94d7c5a0074eaa35788b3fbe670314420"
+  },
+  "members": [
+    {
+      "path": "after/codex-rs/network-proxy/src/runtime.rs",
+      "bytes": 76209,
+      "sha256": "1d8523c4eda08408eb952a86d692f1e2cfb2975de934de6f1f325597fe9681c8",
+      "git_blob": "2c0b88642d1c079ee3991e9e1e418bbb01203694"
+    },
+    {
+      "path": "before/codex-rs/network-proxy/src/runtime.rs",
+      "bytes": 75473,
+      "sha256": "3214446d85796e5d1c4a308ba53aab3bf7098fc18cd38cfc6f97a1cbb14d2e4f",
+      "git_blob": "1a449a44381fafa4a5d6a5d0e08753f425f339fc"
+    },
+    {
+      "path": "candidate.patch",
+      "bytes": 2255,
+      "sha256": "9d28130f28b2e1dd9d28f47a4ab8e5141095ea2f718d5454a0c3fadda895a16e",
+      "git_blob": "e8bf5df04c9531ea0b00e22f9b8da800a5f36b05"
+    },
+    {
+      "path": "delta-manifest.json",
+      "bytes": 1116,
+      "sha256": "0e9d938287ebc74d89e2bcaf2a102e7a83c063aac5705009ebd2eeb327af571a",
+      "git_blob": "1c3e5ee10fab525c293e3746c3d439ed925baeaa"
+    },
+    {
+      "path": "source52-manifest.json",
+      "bytes": 55209,
+      "sha256": "3ff99b41bab572666b424fdbf9a508b33be13e6487d9effa7dd6a0e14b4ec898",
+      "git_blob": "f057b526bf2ba492d6bb5810222f69ac0cc3bdd2"
+    }
+  ],
+  "original_member_sources": {
+    "before": "original/codex-rs/network-proxy/src/runtime.rs",
+    "after": "source/codex-rs/network-proxy/src/runtime.rs"
+  },
+  "full_source_count": 195,
+  "prior194_rows_unchanged": true,
+  "new_relative_to_framework_changed_path": "codex-rs/network-proxy/src/runtime.rs",
+  "before_leaf_is_existing_repo_file": true,
+  "candidate_patch_forward_reverse_checked_by_root": true,
+  "dependency_inputs_changed": [],
+  "locks_unchanged": true,
+  "native_applied": false,
+  "native_execution_authorized_by_this_file": false,
+  "r26_failed100_retained": true,
+  "science": "HOLD",
+  "authority": "DENY_ALL"
+}

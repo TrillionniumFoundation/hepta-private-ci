@@ -1,0 +1,94 @@
+{
+  "schema": "hepta.r14-specific-regression-readback.v1",
+  "source_tree": "d3d2313b838422818bf9448ce5a1b86d89abdf69",
+  "log_sha256": "443a58d70c34d76ba9b8141ad7ee32d997a4f16af79e8f5a873770966028952c",
+  "five_nonlogin_fixture_cases": [
+    {
+      "test_id": "codex-core::all suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts",
+      "status": "PASS",
+      "elapsed": "0.517s",
+      "result_header_byte_offset": 366698
+    },
+    {
+      "test_id": "codex-core::all suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions",
+      "status": "PASS",
+      "elapsed": "0.355s",
+      "result_header_byte_offset": 476902
+    },
+    {
+      "test_id": "codex-core::all suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls",
+      "status": "PASS",
+      "elapsed": "0.326s",
+      "result_header_byte_offset": 477643
+    },
+    {
+      "test_id": "codex-core::all suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature",
+      "status": "PASS",
+      "elapsed": "0.320s",
+      "result_header_byte_offset": 477773
+    },
+    {
+      "test_id": "codex-core::all suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request",
+      "status": "PASS",
+      "elapsed": "0.372s",
+      "result_header_byte_offset": 478059
+    }
+  ],
+  "eight_prior_zsh_watchdog_cases": [
+    {
+      "test_id": "codex-core::all suite::approvals::env_zsh_script_spawned_by_python_can_request_escalation_under_zsh_fork",
+      "status": "PASS",
+      "elapsed": "0.394s",
+      "result_header_byte_offset": 367091
+    },
+    {
+      "test_id": "codex-core::all suite::approvals::matched_prefix_rule_runs_unsandboxed_under_zsh_fork",
+      "status": "PASS",
+      "elapsed": "0.292s",
+      "result_header_byte_offset": 367342
+    },
+    {
+      "test_id": "codex-core::all suite::approvals::zsh_fork_inner_allowed_script_inherits_active_permission_profile",
+      "status": "PASS",
+      "elapsed": "0.379s",
+      "result_header_byte_offset": 367830
+    },
+    {
+      "test_id": "codex-core::all suite::approvals::zsh_fork_receives_brokered_github_credential_and_provider_context",
+      "status": "PASS",
+      "elapsed": "0.543s",
+      "result_header_byte_offset": 367954
+    },
+    {
+      "test_id": "codex-core::all suite::cyber_exec_policy::saved_prefix_only_bypasses_guardian_for_general_models::test_case_2_cyber_zsh_unified_exec_is_reviewed",
+      "status": "PASS",
+      "elapsed": "0.493s",
+      "result_header_byte_offset": 409891
+    },
+    {
+      "test_id": "codex-core::all suite::plugins::persisted_remote_plugin_command_attribution_flows_through_turn_context::test_case_2_zsh_fork_shell",
+      "status": "PASS",
+      "elapsed": "0.381s",
+      "result_header_byte_offset": 461111
+    },
+    {
+      "test_id": "codex-core::all suite::skill_approval::shell_zsh_fork_skill_scripts_ignore_declared_permissions",
+      "status": "FAIL",
+      "elapsed": "10.326s",
+      "result_header_byte_offset": 504259
+    },
+    {
+      "test_id": "codex-core::all suite::skill_approval::shell_zsh_fork_still_enforces_workspace_write_sandbox",
+      "status": "PASS",
+      "elapsed": "0.313s",
+      "result_header_byte_offset": 497839
+    }
+  ],
+  "unchanged_original_persistent_shell_case": {
+    "test_id": "codex-core unified_exec::tests::unified_exec_persists_across_requests",
+    "status": "PASS",
+    "elapsed": "7.900s",
+    "result_header_byte_offset": 350628
+  },
+  "boundary": "These are exact original result rows from the complete r14 gate, not additional runs. Later isolated fixtures are not included. Prior watchdog causes are not established merely by later outcomes."
+}

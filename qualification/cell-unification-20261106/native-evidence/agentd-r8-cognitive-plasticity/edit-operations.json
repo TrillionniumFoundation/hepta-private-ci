@@ -1,0 +1,254 @@
+[
+  {
+    "file": "cognitive_context.rs",
+    "offset": 3132,
+    "old": "read_with_retrieval_context_and_learning(\n        store,\n        owner,\n        body_generation,\n        query,\n        limit,\n        ranker,\n        current_retrieval,\n        None,\n        None,\n    )",
+    "new": "read_with_retrieval_context_and_learning(\n        store,\n        owner,\n        body_generation,\n        query,\n        limit,\n        ranker,\n        CognitiveRetrievalReadContext {\n            current_retrieval: current_retrieval,\n            learning_sink: None,\n            request_id: None,\n        },\n    )",
+    "reason": "Adjacent argument grouping only"
+  },
+  {
+    "file": "cognitive_context.rs",
+    "offset": 2533,
+    "old": "read_with_retrieval_context_and_learning(\n        store,\n        owner,\n        body_generation,\n        query,\n        limit,\n        ranker,\n        None,\n        None,\n        None,\n    )",
+    "new": "read_with_retrieval_context_and_learning(\n        store,\n        owner,\n        body_generation,\n        query,\n        limit,\n        ranker,\n        CognitiveRetrievalReadContext {\n            current_retrieval: None,\n            learning_sink: None,\n            request_id: None,\n        },\n    )",
+    "reason": "Adjacent argument grouping only"
+  },
+  {
+    "file": "state_control.rs",
+    "offset": 12899,
+    "old": "read_with_retrieval_context_and_learning(\n                    &store,\n                    &self.identity.agent_id,\n                    self.identity.spawn_generation,\n                    &query,\n                    limit,\n                    self.cognitive_ranker.get(),\n                    self.cognitive_retrieval_context.get(),\n                    self.cognitive_retrieval_learning.get(),\n                    Some(request_id),\n                )",
+    "new": "read_with_retrieval_context_and_learning(\n                    &store,\n                    &self.identity.agent_id,\n                    self.identity.spawn_generation,\n                    &query,\n                    limit,\n                    self.cognitive_ranker.get(),\n                    crate::cognitive_context::CognitiveRetrievalReadContext {\n                        current_retrieval: self.cognitive_retrieval_context.get(),\n                        learning_sink: self.cognitive_retrieval_learning.get(),\n                        request_id: Some(request_id),\n                    },\n                )",
+    "reason": "Adjacent argument grouping only"
+  },
+  {
+    "file": "cognitive_context.rs",
+    "offset": 3568,
+    "old": "pub(crate) async fn read_with_retrieval_context_and_learning(\n    store: &CognitiveStore,\n    owner: &AgentId,\n    body_generation: u64,\n    query: &str,\n    limit: u16,\n    ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,\n    current_retrieval: Option<&std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,\n    learning_sink: Option<&std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,\n    request_id: Option<u64>,\n) -> Result<CognitiveContextSnapshot, CognitiveContextError> {\n",
+    "new": "pub(crate) async fn read_with_retrieval_context_and_learning(\n    store: &CognitiveStore,\n    owner: &AgentId,\n    body_generation: u64,\n    query: &str,\n    limit: u16,\n    ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,\n    read_context: CognitiveRetrievalReadContext<'_>,\n) -> Result<CognitiveContextSnapshot, CognitiveContextError> {\n    let CognitiveRetrievalReadContext {\n        current_retrieval,\n        learning_sink,\n        request_id,\n    } = read_context;\n",
+    "reason": "Read API takes named optional retrieval bindings and immediately unpacks them"
+  },
+  {
+    "file": "cognitive_context.rs",
+    "offset": 18648,
+    "old": "#[cfg(test)]\npub(crate) async fn revalidate(\n    store: &CognitiveStore,\n    owner: &AgentId,\n    snapshot_digest: &str,\n    read_digest: &str,\n    omitted_records: u64,\n    items: &[CognitiveContextItem],\n    plan: Option<&CognitiveContextPlan>,\n    ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,\n) -> Result<CognitiveContextRevalidation, CognitiveContextError> {\n    revalidate_with_retrieval_context(\n        store,\n        owner,\n        snapshot_digest,\n        read_digest,\n        omitted_records,\n        items,\n        plan,\n        ranker,\n        1,\n        None,\n    )\n    .await\n}\n\n",
+    "new": "#[cfg(test)]\npub(crate) async fn revalidate(\n    store: &CognitiveStore,\n    owner: &AgentId,\n    input: CognitiveContextRevalidationInput<'_>,\n    ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,\n) -> Result<CognitiveContextRevalidation, CognitiveContextError> {\n    revalidate_with_retrieval_context(\n        store,\n        owner,\n        input,\n        ranker,\n        /*body_generation*/ 1,\n        /*current_retrieval*/ None,\n    )\n    .await\n}\n\n",
+    "reason": "Test wrapper forwards the same readback and retains its exact generation/retrieval defaults"
+  },
+  {
+    "file": "state_control.rs",
+    "offset": 16793,
+    "old": "revalidate_with_retrieval_context(\n                    store.as_ref(),\n                    &self.identity.agent_id,\n                    &snapshot_digest,\n                    &read_digest,\n                    omitted_records,\n                    &items,\n                    plan.as_ref(),\n                    self.cognitive_ranker.get(),\n                    self.identity.spawn_generation,\n                    self.cognitive_retrieval_context.get(),\n                )",
+    "new": "revalidate_with_retrieval_context(\n                    store.as_ref(),\n                    &self.identity.agent_id,\n                    crate::cognitive_context::CognitiveContextRevalidationInput {\n                        snapshot_digest: &snapshot_digest,\n                        read_digest: &read_digest,\n                        omitted_records: omitted_records,\n                        items: &items,\n                        plan: plan.as_ref(),\n                    },\n                    self.cognitive_ranker.get(),\n                    self.identity.spawn_generation,\n                    self.cognitive_retrieval_context.get(),\n                )",
+    "reason": "Adjacent argument grouping only"
+  },
+  {
+    "file": "cognitive_context_hnmf_tests.rs",
+    "offset": 10368,
+    "old": "revalidate_with_retrieval_context(\n        &store,\n        &owner,\n        &snapshot.snapshot_digest,\n        &snapshot.read_digest,\n        snapshot.omitted_records,\n        &snapshot.items,\n        snapshot.plan.as_ref(),\n        None,\n        1,\n        Some(&changed),\n    )",
+    "new": "revalidate_with_retrieval_context(\n        &store,\n        &owner,\n        crate::cognitive_context::CognitiveContextRevalidationInput {\n            snapshot_digest: &snapshot.snapshot_digest,\n            read_digest: &snapshot.read_digest,\n            omitted_records: snapshot.omitted_records,\n            items: &snapshot.items,\n            plan: snapshot.plan.as_ref(),\n        },\n        None,\n        1,\n        Some(&changed),\n    )",
+    "reason": "Adjacent argument grouping only"
+  },
+  {
+    "file": "cognitive_context_hnmf_tests.rs",
+    "offset": 9565,
+    "old": "revalidate_with_retrieval_context(\n        &store,\n        &owner,\n        &snapshot.snapshot_digest,\n        &snapshot.read_digest,\n        snapshot.omitted_records,\n        &snapshot.items,\n        snapshot.plan.as_ref(),\n        None,\n        1,\n        Some(&stable),\n    )",
+    "new": "revalidate_with_retrieval_context(\n        &store,\n        &owner,\n        crate::cognitive_context::CognitiveContextRevalidationInput {\n            snapshot_digest: &snapshot.snapshot_digest,\n            read_digest: &snapshot.read_digest,\n            omitted_records: snapshot.omitted_records,\n            items: &snapshot.items,\n            plan: snapshot.plan.as_ref(),\n        },\n        None,\n        1,\n        Some(&stable),\n    )",
+    "reason": "Adjacent argument grouping only"
+  },
+  {
+    "file": "cognitive_context_tests.rs",
+    "offset": 8613,
+    "old": "revalidate(\n            &store,\n            &owner,\n            &context.snapshot_digest,\n            &context.read_digest,\n            context.omitted_records,\n            &context.items,\n            context.plan.as_ref(),\n            None,\n        )",
+    "new": "revalidate(\n            &store,\n            &owner,\n            super::CognitiveContextRevalidationInput {\n                snapshot_digest: &context.snapshot_digest,\n                read_digest: &context.read_digest,\n                omitted_records: context.omitted_records,\n                items: &context.items,\n                plan: context.plan.as_ref(),\n            },\n            None,\n        )",
+    "reason": "Adjacent argument grouping only"
+  },
+  {
+    "file": "cognitive_context_tests.rs",
+    "offset": 4773,
+    "old": "revalidate(\n            &store,\n            &owner,\n            &context.snapshot_digest,\n            &context.read_digest,\n            context.omitted_records,\n            &context.items,\n            context.plan.as_ref(),\n            None,\n        )",
+    "new": "revalidate(\n            &store,\n            &owner,\n            super::CognitiveContextRevalidationInput {\n                snapshot_digest: &context.snapshot_digest,\n                read_digest: &context.read_digest,\n                omitted_records: context.omitted_records,\n                items: &context.items,\n                plan: context.plan.as_ref(),\n            },\n            None,\n        )",
+    "reason": "Adjacent argument grouping only"
+  },
+  {
+    "file": "cognitive_context_tests.rs",
+    "offset": 4043,
+    "old": "revalidate(\n            &store,\n            &owner,\n            &context.snapshot_digest,\n            &\"11\".repeat(32),\n            context.omitted_records,\n            &context.items,\n            context.plan.as_ref(),\n            None,\n        )",
+    "new": "revalidate(\n            &store,\n            &owner,\n            super::CognitiveContextRevalidationInput {\n                snapshot_digest: &context.snapshot_digest,\n                read_digest: &\"11\".repeat(32),\n                omitted_records: context.omitted_records,\n                items: &context.items,\n                plan: context.plan.as_ref(),\n            },\n            None,\n        )",
+    "reason": "Adjacent argument grouping only"
+  },
+  {
+    "file": "cognitive_context_tests.rs",
+    "offset": 3652,
+    "old": "revalidate(\n            &store,\n            &owner,\n            &context.snapshot_digest,\n            &context.read_digest,\n            context.omitted_records,\n            &context.items,\n            Some(&tampered_plan),\n            None,\n        )",
+    "new": "revalidate(\n            &store,\n            &owner,\n            super::CognitiveContextRevalidationInput {\n                snapshot_digest: &context.snapshot_digest,\n                read_digest: &context.read_digest,\n                omitted_records: context.omitted_records,\n                items: &context.items,\n                plan: Some(&tampered_plan),\n            },\n            None,\n        )",
+    "reason": "Adjacent argument grouping only"
+  },
+  {
+    "file": "cognitive_context_tests.rs",
+    "offset": 3043,
+    "old": "revalidate(\n        &store,\n        &owner,\n        &context.snapshot_digest,\n        &context.read_digest,\n        context.omitted_records,\n        &context.items,\n        context.plan.as_ref(),\n        None,\n    )",
+    "new": "revalidate(\n        &store,\n        &owner,\n        super::CognitiveContextRevalidationInput {\n            snapshot_digest: &context.snapshot_digest,\n            read_digest: &context.read_digest,\n            omitted_records: context.omitted_records,\n            items: &context.items,\n            plan: context.plan.as_ref(),\n        },\n        None,\n    )",
+    "reason": "Adjacent argument grouping only"
+  },
+  {
+    "file": "cognitive_context.rs",
+    "offset": 19113,
+    "old": "pub(crate) async fn revalidate_with_retrieval_context(\n    store: &CognitiveStore,\n    owner: &AgentId,\n    snapshot_digest: &str,\n    read_digest: &str,\n    omitted_records: u64,\n    items: &[CognitiveContextItem],\n    plan: Option<&CognitiveContextPlan>,\n    ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,\n    body_generation: u64,\n    current_retrieval: Option<&std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,\n) -> Result<CognitiveContextRevalidation, CognitiveContextError> {\n",
+    "new": "pub(crate) async fn revalidate_with_retrieval_context(\n    store: &CognitiveStore,\n    owner: &AgentId,\n    input: CognitiveContextRevalidationInput<'_>,\n    ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,\n    body_generation: u64,\n    current_retrieval: Option<&std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,\n) -> Result<CognitiveContextRevalidation, CognitiveContextError> {\n    let CognitiveContextRevalidationInput {\n        snapshot_digest,\n        read_digest,\n        omitted_records,\n        items,\n        plan,\n    } = input;\n",
+    "reason": "Borrowed readback groups the existing five adjacent receipt fields; original validation body follows unchanged"
+  },
+  {
+    "file": "cognitive_context.rs",
+    "offset": 1425,
+    "old": "const MAX_CONTEXT_JSON_BYTES:",
+    "new": "/// Optional retrieval owner and learning bindings for one read request.\npub(crate) struct CognitiveRetrievalReadContext<'a> {\n    pub(crate) current_retrieval:\n        Option<&'a std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,\n    pub(crate) learning_sink: Option<&'a std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,\n    pub(crate) request_id: Option<u64>,\n}\n\n/// Borrowed contents of the previously emitted context receipt, before final use.\npub(crate) struct CognitiveContextRevalidationInput<'a> {\n    pub(crate) snapshot_digest: &'a str,\n    pub(crate) read_digest: &'a str,\n    pub(crate) omitted_records: u64,\n    pub(crate) items: &'a [CognitiveContextItem],\n    pub(crate) plan: Option<&'a CognitiveContextPlan>,\n}\n\nconst MAX_CONTEXT_JSON_BYTES:",
+    "reason": "Add crate-private borrowed argument groups without serialized state"
+  },
+  {
+    "file": "cognitive_retrieval_learning.rs",
+    "offset": 1031,
+    "old": "    pub(crate) fn append(\n        &self,\n        owner: &AgentId,\n        body_generation: u64,\n        request_id: u64,\n        observation: &RetrievalAssignmentObservationV1,\n    ) -> Result<AppendReceipt, String> {\n        self.append_with_delivery_policy(\n            owner,\n            body_generation,\n            request_id,\n            observation,\n            &[],\n            false,\n            None,\n            None,\n            ProbabilityQ32::ONE,\n        )\n    }\n\n    pub(crate) fn append_with_delivery(\n        &self,\n        owner: &AgentId,\n        body_generation: u64,\n        request_id: u64,\n        observation: &RetrievalAssignmentObservationV1,\n        delivered_candidates: &[RetrievalCandidateIdentityV1],\n        context_exposed: bool,\n        published_context_digest: Option<Digest32>,\n    ) -> Result<AppendReceipt, String> {\n        self.append_with_delivery_policy(\n            owner,\n            body_generation,\n            request_id,\n            observation,\n            delivered_candidates,\n            context_exposed,\n            published_context_digest,\n            None,\n            ProbabilityQ32::ONE,\n        )\n    }\n\n",
+    "new": "",
+    "reason": "Remove unused delivery wrapper and move test-only append fixture out of production"
+  },
+  {
+    "file": "cognitive_retrieval_learning_tests.rs",
+    "offset": 7082,
+    "old": "#[test]\nfn same_rpc_and_observation_replays_idempotently()",
+    "new": "fn append_fixture(\n    sink: &CognitiveRetrievalLearningSink,\n    owner: &AgentId,\n    body_generation: u64,\n    request_id: u64,\n    observation: &RetrievalAssignmentObservationV1,\n) -> Result<AppendReceipt, String> {\n    sink.append_with_delivery_policy(\n        owner,\n        body_generation,\n        request_id,\n        observation,\n        &[],\n        /*context_exposed*/ false,\n        /*published_context_digest*/ None,\n        /*downstream_policy_digest*/ None,\n        ProbabilityQ32::ONE,\n    )\n}\n\n#[test]\nfn same_rpc_and_observation_replays_idempotently()",
+    "reason": "Existing test-only convenience defaults use the same production writer API"
+  },
+  {
+    "file": "cognitive_retrieval_learning_tests.rs",
+    "offset": 10672,
+    "old": "sink.append(&owner(), 1, 1, &observation(\"replacement\"))",
+    "new": "append_fixture(&sink, &owner(), /*body_generation*/ 1, /*request_id*/ 1, &observation(\"replacement\"))",
+    "reason": "Existing append test uses the relocated fixture; all arguments preserved"
+  },
+  {
+    "file": "cognitive_retrieval_learning_tests.rs",
+    "offset": 10436,
+    "old": "sink.append(&owner(), 1, 2, &observation(\"packet-b\"))",
+    "new": "append_fixture(&sink, &owner(), /*body_generation*/ 1, /*request_id*/ 2, &observation(\"packet-b\"))",
+    "reason": "Existing append test uses the relocated fixture; all arguments preserved"
+  },
+  {
+    "file": "cognitive_retrieval_learning_tests.rs",
+    "offset": 10352,
+    "old": "sink.append(&owner(), 1, 1, &observation(\"packet-a\"))",
+    "new": "append_fixture(&sink, &owner(), /*body_generation*/ 1, /*request_id*/ 1, &observation(\"packet-a\"))",
+    "reason": "Existing append test uses the relocated fixture; all arguments preserved"
+  },
+  {
+    "file": "cognitive_retrieval_learning_tests.rs",
+    "offset": 9719,
+    "old": "sink\n        .append(&owner(), 1, 1, &observation)",
+    "new": "append_fixture(&sink, &owner(), /*body_generation*/ 1, /*request_id*/ 1, &observation)",
+    "reason": "Existing append test uses the relocated fixture; all arguments preserved"
+  },
+  {
+    "file": "cognitive_retrieval_learning_tests.rs",
+    "offset": 9484,
+    "old": "sink.append(&owner(), 1, request, &observation)",
+    "new": "append_fixture(&sink, &owner(), /*body_generation*/ 1, request, &observation)",
+    "reason": "Existing append test uses the relocated fixture; all arguments preserved"
+  },
+  {
+    "file": "cognitive_retrieval_learning_tests.rs",
+    "offset": 9389,
+    "old": "sink.append(&owner(), 1, 1, &observation)",
+    "new": "append_fixture(&sink, &owner(), /*body_generation*/ 1, /*request_id*/ 1, &observation)",
+    "reason": "Existing append test uses the relocated fixture; all arguments preserved"
+  },
+  {
+    "file": "cognitive_retrieval_learning_tests.rs",
+    "offset": 8969,
+    "old": "sink.append(&owner(), 1, 2, &observation)",
+    "new": "append_fixture(&sink, &owner(), /*body_generation*/ 1, /*request_id*/ 2, &observation)",
+    "reason": "Existing append test uses the relocated fixture; all arguments preserved"
+  },
+  {
+    "file": "cognitive_retrieval_learning_tests.rs",
+    "offset": 8906,
+    "old": "sink.append(&owner(), 1, 1, &observation)",
+    "new": "append_fixture(&sink, &owner(), /*body_generation*/ 1, /*request_id*/ 1, &observation)",
+    "reason": "Existing append test uses the relocated fixture; all arguments preserved"
+  },
+  {
+    "file": "cognitive_retrieval_learning_tests.rs",
+    "offset": 8496,
+    "old": "sink.append(&owner(), 1, 88, &observation(\"packet-b\"))",
+    "new": "append_fixture(&sink, &owner(), /*body_generation*/ 1, /*request_id*/ 88, &observation(\"packet-b\"))",
+    "reason": "Existing append test uses the relocated fixture; all arguments preserved"
+  },
+  {
+    "file": "cognitive_retrieval_learning_tests.rs",
+    "offset": 8387,
+    "old": "sink.append(&owner(), 1, 88, &observation(\"packet-a\"))",
+    "new": "append_fixture(&sink, &owner(), /*body_generation*/ 1, /*request_id*/ 88, &observation(\"packet-a\"))",
+    "reason": "Existing append test uses the relocated fixture; all arguments preserved"
+  },
+  {
+    "file": "cognitive_retrieval_learning_tests.rs",
+    "offset": 7848,
+    "old": "sink.append(&owner(), 1, 77, &observation)",
+    "new": "append_fixture(&sink, &owner(), /*body_generation*/ 1, /*request_id*/ 77, &observation)",
+    "reason": "Existing append test uses the relocated fixture; all arguments preserved"
+  },
+  {
+    "file": "cognitive_retrieval_learning_tests.rs",
+    "offset": 7746,
+    "old": "sink\n        .append(&owner(), 1, 77, &observation)",
+    "new": "append_fixture(&sink, &owner(), /*body_generation*/ 1, /*request_id*/ 77, &observation)",
+    "reason": "Existing append test uses the relocated fixture; all arguments preserved"
+  },
+  {
+    "file": "plasticity_host.rs",
+    "offset": 26344,
+    "old": "/// Actual Agentd host callsite. It recomputes owner-store frontiers immediately\n",
+    "new": "/// Owner stores and evidence policy used to recompute the admission frontier.\n/// These references are borrowed for one host call and add no serialized state.\npub struct AgentdPlasticityAdmissionContextV1<'a> {\n    pub artifacts: &'a ArtifactRegistry,\n    pub ledger: &'a DurableLedger,\n    pub owner_evidence_resolver: &'a dyn PlasticityOwnerEvidenceResolverV1,\n    pub owner_evidence_policy: &'a PlasticityOwnerEvidencePolicyV1,\n}\n\n/// Actual Agentd host callsite. It recomputes owner-store frontiers immediately\n",
+    "reason": "Named borrowed admission owner context for the existing public host API"
+  },
+  {
+    "file": "plasticity_host.rs",
+    "offset": 26986,
+    "old": "pub fn propose_agentd_plasticity_v1(\n    mut request: ParameterPlasticityProductRequestV1,\n    artifacts: &ArtifactRegistry,\n    ledger: &DurableLedger,\n    owner_evidence_resolver: &dyn PlasticityOwnerEvidenceResolverV1,\n    owner_evidence_policy: &PlasticityOwnerEvidencePolicyV1,\n    verifier: &LearningEvidenceVerifierV1,\n    writer: &mut AnchoredPlasticityWriterV1,\n    anchor_store: &mut AgentdPlasticityAnchorStoreV1,\n    now: u64,\n) -> Result<ParameterPlasticityProductReceiptV1, AgentdPlasticityHostErrorV1> {\n",
+    "new": "pub fn propose_agentd_plasticity_v1(\n    mut request: ParameterPlasticityProductRequestV1,\n    admission_context: AgentdPlasticityAdmissionContextV1<'_>,\n    verifier: &LearningEvidenceVerifierV1,\n    writer: &mut AnchoredPlasticityWriterV1,\n    anchor_store: &mut AgentdPlasticityAnchorStoreV1,\n    now: u64,\n) -> Result<ParameterPlasticityProductReceiptV1, AgentdPlasticityHostErrorV1> {\n    let AgentdPlasticityAdmissionContextV1 {\n        artifacts,\n        ledger,\n        owner_evidence_resolver,\n        owner_evidence_policy,\n    } = admission_context;\n",
+    "reason": "Immediately unpack owner references; retain fresh admission and authenticated writer body exactly"
+  },
+  {
+    "file": "plasticity_runtime.rs",
+    "offset": 10736,
+    "old": "propose_agentd_plasticity_v1(\n                        *request,\n                        &self.artifacts,\n                        &self.ledger,\n                        self.owner_evidence_resolver.as_ref(),\n                        &self.owner_evidence_policy,\n                        &self.verifier,\n                        &mut self.parameter_writer,\n                        &mut self.parameter_anchor_store,\n                        now,\n                    )",
+    "new": "propose_agentd_plasticity_v1(\n                        *request,\n                        crate::AgentdPlasticityAdmissionContextV1 {\n                            artifacts: &self.artifacts,\n                            ledger: &self.ledger,\n                            owner_evidence_resolver: self.owner_evidence_resolver.as_ref(),\n                            owner_evidence_policy: &self.owner_evidence_policy,\n                        },\n                        &self.verifier,\n                        &mut self.parameter_writer,\n                        &mut self.parameter_anchor_store,\n                        now,\n                    )",
+    "reason": "Adjacent argument grouping only"
+  },
+  {
+    "file": "lib.rs",
+    "offset": 27099,
+    "old": "pub use plasticity_host::AgentdPlasticityAdmissionInputV1;",
+    "new": "pub use plasticity_host::AgentdPlasticityAdmissionContextV1;\npub use plasticity_host::AgentdPlasticityAdmissionInputV1;",
+    "reason": "Re-export the named context needed by the existing public host entry point"
+  },
+  {
+    "file": "state_control.rs",
+    "offset": 29457,
+    "old": "effect: Some(effect_snapshot(receipt)?),",
+    "new": "effect: Some(effect_snapshot(*receipt)?),",
+    "reason": "Reviewed automation group: consume the boxed receipt at the existing value boundary"
+  },
+  {
+    "file": "cognitive_context.rs",
+    "offset": 4179,
+    "old": "current_retrieval: current_retrieval,",
+    "new": "current_retrieval,",
+    "reason": "Independent review: shorthand for an identically named grouped field; same expression"
+  },
+  {
+    "file": "state_control.rs",
+    "offset": 17125,
+    "old": "omitted_records: omitted_records,",
+    "new": "omitted_records,",
+    "reason": "Independent review: shorthand for an identically named grouped field; same expression"
+  }
+]

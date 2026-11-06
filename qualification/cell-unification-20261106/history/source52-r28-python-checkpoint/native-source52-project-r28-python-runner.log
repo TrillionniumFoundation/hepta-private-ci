@@ -1,0 +1,71 @@
+test_filter_flag_forms_multiple_filters_and_test_arguments (test_run_nextest.FilterMetadataStrategyTests.test_filter_flag_forms_multiple_filters_and_test_arguments) ... ok
+test_graph_expansion_unknown_and_opaque_syntax_keep_full_metadata (test_run_nextest.FilterMetadataStrategyTests.test_graph_expansion_unknown_and_opaque_syntax_keep_full_metadata) ... ok
+test_graph_words_inside_matchers_do_not_become_dependencies (test_run_nextest.FilterMetadataStrategyTests.test_graph_words_inside_matchers_do_not_become_dependencies) ... ok
+test_dependency_opaque_and_config_filters_keep_normal_metadata (test_run_nextest.ScopedNextestTests.test_dependency_opaque_and_config_filters_keep_normal_metadata) ... ok
+test_explicit_manifest_preserves_nextest_workspace_selection (test_run_nextest.ScopedNextestTests.test_explicit_manifest_preserves_nextest_workspace_selection) ... ok
+test_explicit_manifest_runs_the_selected_workspace_and_preserves_failures (test_run_nextest.ScopedNextestTests.test_explicit_manifest_runs_the_selected_workspace_and_preserves_failures) ... ok
+test_pure_filters_preserve_real_selection_and_feature_failure (test_run_nextest.ScopedNextestTests.test_pure_filters_preserve_real_selection_and_feature_failure) ... ok
+test_pure_test_filter_uses_scoped_metadata_and_no_tests_is_an_error (test_run_nextest.ScopedNextestTests.test_pure_test_filter_uses_scoped_metadata_and_no_tests_is_an_error) ... ok
+test_reused_metadata_is_forwarded_and_full_path_can_be_forced (test_run_nextest.ScopedNextestTests.test_reused_metadata_is_forwarded_and_full_path_can_be_forced) ... ok
+test_scoped_test_reaches_real_nextest_and_propagates_feature_failure (test_run_nextest.ScopedNextestTests.test_scoped_test_reaches_real_nextest_and_propagates_feature_failure) ... ok
+test_missing_metadata_fails_then_scoped_and_workspace_runs_launch_the_real_helper (test_run_nextest_helpers.RealCrossPackageHelperTests.test_missing_metadata_fails_then_scoped_and_workspace_runs_launch_the_real_helper) ... ok
+test_adding_helper_owner_does_not_expand_bare_or_all_feature_selection (test_run_nextest_helpers.RuntimeHelperTests.test_adding_helper_owner_does_not_expand_bare_or_all_feature_selection) ... Preparing declared runtime helpers: fixture-helper
+Runtime helper fixture-helper: /tmp/nextest-runtime-helpers-r93a_b9q/artifact-with-no-assumed-layout
+Preparing declared runtime helpers: fixture-helper
+Runtime helper fixture-helper: /tmp/nextest-runtime-helpers-r93a_b9q/artifact-with-no-assumed-layout
+ok
+test_arguments_after_separator_do_not_change_build_scope (test_run_nextest_helpers.RuntimeHelperTests.test_arguments_after_separator_do_not_change_build_scope) ... Preparing declared runtime helpers: fixture-helper
+Runtime helper fixture-helper: /tmp/nextest-runtime-helpers-vervi2i3/artifact-with-no-assumed-layout
+ok
+test_cargo_explicit_value_wins_and_invalid_value_blocks_nextest_fallback (test_run_nextest_helpers.RuntimeHelperTests.test_cargo_explicit_value_wins_and_invalid_value_blocks_nextest_fallback) ... ok
+test_cargo_profile_target_features_and_config_are_forwarded_separately (test_run_nextest_helpers.RuntimeHelperTests.test_cargo_profile_target_features_and_config_are_forwarded_separately) ... Preparing declared runtime helpers: fixture-helper
+Runtime helper fixture-helper: /tmp/nextest-runtime-helpers-pz5t_z55/artifact-with-no-assumed-layout
+ok
+test_compiler_errors_and_non_json_diagnostics_are_retained (test_run_nextest_helpers.RuntimeHelperTests.test_compiler_errors_and_non_json_diagnostics_are_retained) ... ok
+test_exact_artifact_path_is_exposed_without_changing_test_arguments (test_run_nextest_helpers.RuntimeHelperTests.test_exact_artifact_path_is_exposed_without_changing_test_arguments) ... Preparing declared runtime helpers: fixture-helper
+Runtime helper fixture-helper: /tmp/nextest-runtime-helpers-wybaxf8y/artifact-with-no-assumed-layout
+ok
+test_excluding_helper_tests_keeps_the_consumers_runtime_dependency (test_run_nextest_helpers.RuntimeHelperTests.test_excluding_helper_tests_keeps_the_consumers_runtime_dependency) ... Preparing declared runtime helpers: fixture-helper
+Runtime helper fixture-helper: /tmp/nextest-runtime-helpers-kjoylw17/artifact-with-no-assumed-layout
+ok
+test_exec_server_receives_repo_bwrap_for_scoped_and_workspace_runs (test_run_nextest_helpers.RuntimeHelperTests.test_exec_server_receives_repo_bwrap_for_scoped_and_workspace_runs) ... Preparing declared runtime helpers: bwrap
+Runtime helper bwrap: /tmp/nextest-runtime-helpers-_5rgpbcc/artifact-with-no-assumed-layout
+Preparing declared runtime helpers: bwrap
+Runtime helper bwrap: /tmp/nextest-runtime-helpers-_5rgpbcc/artifact-with-no-assumed-layout
+ok
+test_existing_unix_file_without_execute_permission_is_rejected (test_run_nextest_helpers.RuntimeHelperTests.test_existing_unix_file_without_execute_permission_is_rejected) ... ok
+test_failed_build_and_missing_completion_never_launch_tests (test_run_nextest_helpers.RuntimeHelperTests.test_failed_build_and_missing_completion_never_launch_tests) ... Preparing declared runtime helpers: fixture-helper
+error: Cargo runtime helper build failed
+ok
+test_malformed_manifest_and_help_are_left_to_nextest_without_building (test_run_nextest_helpers.RuntimeHelperTests.test_malformed_manifest_and_help_are_left_to_nextest_without_building) ... ok
+test_missing_relative_or_nonexistent_artifacts_are_rejected (test_run_nextest_helpers.RuntimeHelperTests.test_missing_relative_or_nonexistent_artifacts_are_rejected) ... ok
+test_multiple_target_executables_are_rejected_instead_of_selecting_first (test_run_nextest_helpers.RuntimeHelperTests.test_multiple_target_executables_are_rejected_instead_of_selecting_first) ... ok
+test_package_ids_and_version_selectors_bind_the_declared_owner (test_run_nextest_helpers.RuntimeHelperTests.test_package_ids_and_version_selectors_bind_the_declared_owner) ... Preparing declared runtime helpers: fixture-helper
+Runtime helper fixture-helper: /tmp/nextest-runtime-helpers-9i1bm4pf/artifact-with-no-assumed-layout
+Preparing declared runtime helpers: fixture-helper
+Runtime helper fixture-helper: /tmp/nextest-runtime-helpers-9i1bm4pf/artifact-with-no-assumed-layout
+ok
+test_release_does_not_add_test_profile (test_run_nextest_helpers.RuntimeHelperTests.test_release_does_not_add_test_profile) ... Preparing declared runtime helpers: fixture-helper
+Runtime helper fixture-helper: /tmp/nextest-runtime-helpers-tjzzks9y/artifact-with-no-assumed-layout
+ok
+test_reused_builds_and_opaque_package_selection_keep_original_pass_through (test_run_nextest_helpers.RuntimeHelperTests.test_reused_builds_and_opaque_package_selection_keep_original_pass_through) ... ok
+test_short_test_threads_are_not_cargo_build_jobs (test_run_nextest_helpers.RuntimeHelperTests.test_short_test_threads_are_not_cargo_build_jobs) ... Preparing declared runtime helpers: fixture-helper
+Runtime helper fixture-helper: /tmp/nextest-runtime-helpers-xvz2nuug/artifact-with-no-assumed-layout
+Preparing declared runtime helpers: fixture-helper
+Runtime helper fixture-helper: /tmp/nextest-runtime-helpers-xvz2nuug/artifact-with-no-assumed-layout
+Preparing declared runtime helpers: fixture-helper
+Runtime helper fixture-helper: /tmp/nextest-runtime-helpers-xvz2nuug/artifact-with-no-assumed-layout
+ok
+test_underscore_explicit_key_is_preserved_without_inventing_higher_precedence_key (test_run_nextest_helpers.RuntimeHelperTests.test_underscore_explicit_key_is_preserved_without_inventing_higher_precedence_key) ... ok
+test_unsupported_source_build_inputs_fail_only_if_new_helpers_are_needed (test_run_nextest_helpers.RuntimeHelperTests.test_unsupported_source_build_inputs_fail_only_if_new_helpers_are_needed) ... ok
+test_workspace_and_manifest_selection_respect_excluded_consumers (test_run_nextest_helpers.RuntimeHelperTests.test_workspace_and_manifest_selection_respect_excluded_consumers) ... Preparing declared runtime helpers: fixture-helper
+Runtime helper fixture-helper: /tmp/nextest-runtime-helpers-9cs67pgo/artifact-with-no-assumed-layout
+Preparing declared runtime helpers: fixture-helper
+Runtime helper fixture-helper: /tmp/nextest-runtime-helpers-9cs67pgo/artifact-with-no-assumed-layout
+ok
+test_wrong_package_name_kind_source_or_test_harness_never_supplies_helper (test_run_nextest_helpers.RuntimeHelperTests.test_wrong_package_name_kind_source_or_test_harness_never_supplies_helper) ... ok
+
+----------------------------------------------------------------------
+Ran 32 tests in 3.921s
+
+OK

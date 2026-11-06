@@ -1,0 +1,62 @@
+[
+  [
+    "\"retrieval-control\"",
+    "1",
+    "None",
+    "\"observe\"",
+    "vec![\n                CircuitNodeV1::new(\"observe\", CircuitNodeRoleV1::Observe),\n                CircuitNodeV1::new(\"decide\", CircuitNodeRoleV1::Decide),\n                CircuitNodeV1::new(\"success\", CircuitNodeRoleV1::ExitSuccess),\n                CircuitNodeV1::new(\"failure\", CircuitNodeRoleV1::ExitFailure),\n            ]",
+    "vec![\n                CircuitEdgeV1::new(\"observe\", \"decide\"),\n                CircuitEdgeV1::new(\"decide\", \"success\"),\n                CircuitEdgeV1::new(\"decide\", \"failure\"),\n            ]",
+    "vec![]",
+    "digest(\"route-v1\")",
+    "digest(\"parameters-v1\")",
+    "digest(\"resources-v1\")"
+  ],
+  [
+    "current.circuit_id.clone()",
+    "2",
+    "Some(current.circuit_digest.clone())",
+    "\"observe\"",
+    "vec![\n                CircuitNodeV1::new(\"observe\", CircuitNodeRoleV1::Observe),\n                CircuitNodeV1::new(\"guard\", CircuitNodeRoleV1::TransformGuard),\n                CircuitNodeV1::new(\"decide\", CircuitNodeRoleV1::Decide),\n                CircuitNodeV1::new(\"success\", CircuitNodeRoleV1::ExitSuccess),\n                CircuitNodeV1::new(\"failure\", CircuitNodeRoleV1::ExitFailure),\n            ]",
+    "vec![\n                CircuitEdgeV1::new(\"observe\", \"guard\"),\n                CircuitEdgeV1::new(\"guard\", \"decide\"),\n                CircuitEdgeV1::new(\"guard\", \"failure\"),\n                CircuitEdgeV1::new(\"decide\", \"success\"),\n                CircuitEdgeV1::new(\"decide\", \"failure\"),\n            ]",
+    "vec![]",
+    "digest(\"route-v2\")",
+    "digest(\"parameters-v2\")",
+    "digest(\"resources-v1\")"
+  ],
+  [
+    "current.circuit_id.clone()",
+    "2",
+    "Some(digest(\"wrong-predecessor\"))",
+    "\"observe\"",
+    "current.nodes.clone()",
+    "current.edges.clone()",
+    "vec![]",
+    "digest(\"route-v2\")",
+    "digest(\"parameters-v2\")",
+    "digest(\"resources-v1\")"
+  ],
+  [
+    "current.circuit_id.clone()",
+    "2",
+    "Some(current.circuit_digest.clone())",
+    "\"observe\"",
+    "vec![\n                CircuitNodeV1::new(\"observe\", CircuitNodeRoleV1::Observe),\n                CircuitNodeV1::effect(\"effect\", \"network.http\", \"circuit/{run}/effect\"),\n                CircuitNodeV1::new(\"success\", CircuitNodeRoleV1::ExitSuccess),\n                CircuitNodeV1::new(\"failure\", CircuitNodeRoleV1::ExitFailure),\n            ]",
+    "vec![\n                CircuitEdgeV1::new(\"observe\", \"effect\"),\n                CircuitEdgeV1::new(\"observe\", \"failure\"),\n                CircuitEdgeV1::new(\"effect\", \"success\"),\n                CircuitEdgeV1::new(\"effect\", \"failure\"),\n            ]",
+    "vec![\"network.http\".to_string()]",
+    "digest(\"route-v2\")",
+    "digest(\"parameters-v2\")",
+    "digest(\"resources-v1\")"
+  ],
+  [
+    "\"loop\"",
+    "1",
+    "None",
+    "\"a\"",
+    "vec![\n                CircuitNodeV1::new(\"a\", CircuitNodeRoleV1::Decide),\n                CircuitNodeV1::new(\"b\", CircuitNodeRoleV1::TransformGuard),\n                CircuitNodeV1::new(\"success\", CircuitNodeRoleV1::ExitSuccess),\n                CircuitNodeV1::new(\"failure\", CircuitNodeRoleV1::ExitFailure),\n            ]",
+    "vec![\n                CircuitEdgeV1::new(\"a\", \"b\"),\n                CircuitEdgeV1::new(\"b\", \"a\"),\n                CircuitEdgeV1::new(\"a\", \"success\"),\n                CircuitEdgeV1::new(\"b\", \"failure\"),\n            ]",
+    "vec![]",
+    "digest(\"route\")",
+    "digest(\"params\")",
+    "digest(\"resources\")"
+  ]
+]

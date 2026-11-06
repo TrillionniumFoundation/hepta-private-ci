@@ -1,0 +1,46 @@
+{
+  "schema": "hepta.core-mcp-recovery-r14-repair-audit.v1",
+  "state": "FROZEN_NOT_NATIVE_TESTED",
+  "path": "codex-rs/core/tests/suite/mcp_tool_exposure.rs",
+  "before": {
+    "bytes": 47285,
+    "sha256": "02d5aa372f94c8c87974b73381701d119d08f93224cde5debaa52bb842d9a100",
+    "git_blob": "deb09b0acee71a1bfa9b596785987200c248fc38"
+  },
+  "after": {
+    "bytes": 47667,
+    "sha256": "94b3a0620bb7015f43978e1a7805a41727914979465e85ec7559b453d491e462",
+    "git_blob": "a9530eaa31f5d9f14b920a1f44c85e57471e69d3"
+  },
+  "scope": "One existing integration-test raw-event loop; production files and shared helpers unchanged.",
+  "operation": {
+    "path": "core-mcp-recovery-r14-repair/edit-operation.json",
+    "bytes": 658,
+    "sha256": "280d238b125f32d324833eb9e29307294913616261bb5d4e350bfe712a414364"
+  },
+  "mechanical_review": {
+    "path": "core-mcp-recovery-r14-repair/mechanical-review.json",
+    "bytes": 1207,
+    "sha256": "4175d04e92147c1ffbbee4c7c42266f51071edcbd35f691a0e28f0fe11521692"
+  },
+  "causal_review": {
+    "path": "core-mcp-recovery-r14-audit/causal-review.json",
+    "bytes": 9874,
+    "sha256": "de0d6e2d2205f948814954071124bf9a581fb7064a42749289d3b65455d976c5"
+  },
+  "budget": "Same pre-existing five-second total reconnect timeout, now including observation of that normal turn finish owner. The later submit helper ten-second event budget is unchanged.",
+  "observation_semantics": "Await is bound to the same normal TurnComplete ID and exact retained Finish owner; it does not submit a turn, trigger startup, retire a fence, synthesize readiness or grant admission. Dropping the observational future on timeout does not cancel the underlying owner.",
+  "assertion_preservation": {
+    "assert!": 25,
+    "assert_eq!": 18,
+    "assert_snapshot!": 3
+  },
+  "selected_test_original_assertion_macro_count": 4,
+  "original_assertions_unchanged": true,
+  "wiremock_three_responses_unchanged": true,
+  "one_initialize_failure_injection_unchanged": true,
+  "expected_initialize_attempts_three_unchanged": true,
+  "no_new_tests": "The original failing integration test exercises the required follow-up boundary. No mirror/static test was added.",
+  "native_validation_pending": true,
+  "no_rust_source_native_mutation_by_this_agent": true
+}

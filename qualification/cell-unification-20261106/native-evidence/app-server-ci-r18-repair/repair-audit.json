@@ -1,0 +1,152 @@
+{
+  "schema": "hepta.app-server-ci-r18-audit.v1",
+  "state": "FROZEN_STATIC_ONLY_NATIVE_AND_CI_PENDING",
+  "source_commit": "2d7ad1d60019f35fc13d84138ceb2755d914f434",
+  "source_tree": "ffa0a37f4616c5563169c7f0a9305bf6c982d58b",
+  "problem": {
+    "changed_owner_pending": "codex-app-server, after the separately owned process_exec.rs correction is integrated",
+    "current_scoped_gap": "All 22 existing package selectors exclude codex-app-server. The default workspace gate includes it, but cannot replace that owner strict/test/fmt gate.",
+    "observed_workspace_failure": {
+      "receipt": "evidence/native-workspace-r18-tests-receipt.json",
+      "exit_code": 101,
+      "phase_boundary": "Compile failure before nextest execution; no workspace test-count PASS claim.",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--retries",
+        "0"
+      ]
+    }
+  },
+  "changes": [
+    {
+      "matrix": "Append one independent app-server lane, packages: -p codex-app-server. Original four lane blocks are byte-identical."
+    },
+    {
+      "zsh_prefetch": "Only extend the existing native-lane prefetch condition to core || app-server. The app-server tests call find_test_zsh_path at lines 64,187,318,444; its implementation at lines788–805 fetches the same app-server/tests/suite/zsh descriptor using core_test_support::fetch_dotslash_file. No permission/profile/test fallback or resource checksum changes."
+    }
+  ],
+  "preflight_source": {
+    "path": "codex-rs/app-server/tests/suite/v2/turn_start_zsh_fork.rs",
+    "git_blob": "863ccb901b626ba85c07b3bdde8cccb0fb456c49",
+    "call_lines": [
+      64,
+      187,
+      318,
+      444
+    ],
+    "definition_lines": [
+      788,
+      805
+    ],
+    "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2d7ad1d60019f35fc13d84138ceb2755d914f434/codex-rs/app-server/tests/suite/v2/turn_start_zsh_fork.rs#L788-L805"
+  },
+  "retained_original_commands": {
+    "test": [
+      "just",
+      "test",
+      "--locked",
+      "${packages[@]}",
+      "--retries",
+      "0"
+    ],
+    "strict": [
+      "just",
+      "clippy",
+      "--locked",
+      "${packages[@]}",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "format": [
+      "cargo",
+      "fmt",
+      "${packages[@]}",
+      "--",
+      "--check"
+    ],
+    "workspace": [
+      "just",
+      "test",
+      "--locked",
+      "--retries",
+      "0"
+    ]
+  },
+  "unchanged": {
+    "existing_four_lane_fields": true,
+    "workspace_job_entire_text": true,
+    "test_timeout_seconds": 4200,
+    "strict_timeout_seconds": 900,
+    "zsh_fetch_timeout_seconds": 300,
+    "native_job_timeout_minutes": 90,
+    "workspace_timeout_seconds": 9600,
+    "workspace_job_timeout_minutes": 180,
+    "native_job_needs_and_workspace_needs": true,
+    "retry_count": 0,
+    "source_pins_and_actions": true,
+    "native_build_prerequisites_and_resources": true,
+    "profiles_and_debug_environment": true,
+    "runner_contract_test_condition_core_only": true,
+    "cross_package_runtime_helper_map": true,
+    "all_existing_test_assertions": true
+  },
+  "runner_compatibility": "The current runner already maps codex-app-server to its declared codex/code-mode-host/test_stdio_server cross-package binary helpers at scripts/run-nextest.py:33–37. The candidate uses the unchanged just test entry point; no helper path guessing or new runner logic.",
+  "fix_scope_plan": {
+    "current": "source46 180 changed paths /167 Rust files/21 owners, NOT_EXECUTED",
+    "prospective_owner": "codex-app-server",
+    "prospective_owner_count_if_no_other_new_owner": 22,
+    "ci_selector_count": 23,
+    "ci_extra_unchanged_owner": "codex-hepta-control-plane",
+    "update_rule": "Wait for the complete actual next frozen native source manifest. Re-run deepest manifest ancestry against actual workspace metadata; then preserve source46 scope and publish a new source-bound package list. No anticipatory final-fix-scope mutation here."
+  },
+  "mechanical_review": {
+    "exact_two_replacements": true,
+    "whole_file_inverse_exact": true,
+    "existing_matrix_text_unchanged": true,
+    "workspace_job_text_unchanged": true,
+    "new_unique_selector_only_codex_app_server": true
+  },
+  "qualification": {
+    "native_tests_run": false,
+    "rust_commands_run": false,
+    "ci_executed": false,
+    "engineering_qualification": null,
+    "workspace_result_remains_failed": true,
+    "final_fix_fmt_performed": false
+  },
+  "artifacts": {
+    "source-manifest.json": {
+      "path": "source-manifest.json",
+      "bytes": 1201,
+      "sha256": "deed8f164d3284ddd9a52acf1fcb377873361e225b59dcd8455c169d4ddc228f",
+      "git_blob": "87c0893d7f0efd883b49659cb635315ef3e6d2aa"
+    },
+    "source-input-pins.json": {
+      "path": "source-input-pins.json",
+      "bytes": 3320,
+      "sha256": "6e60c191c919b05b70eab7bdbf43cc987d44322b80c713187e323f82d2a7ccc5",
+      "git_blob": "4c0dfdd0c258e1d1e3fdcf0fa3cf658558dafab4"
+    },
+    "owner-metadata-extract.json": {
+      "path": "owner-metadata-extract.json",
+      "bytes": 3837,
+      "sha256": "56ea0ebf794de544ef98f8e45545fd86be8ec07947598a366816859419999900",
+      "git_blob": "6376ef82267b94326655924dec3509ea1b76020a"
+    },
+    "repair.patch": {
+      "path": "repair.patch",
+      "bytes": 881,
+      "sha256": "dade2d5b3811097bf5aa3a0cfadf0cf1d0231be336c5c75b0b08e29b26717c33",
+      "git_blob": "1b23a881e479f1e99f8ed333f022a8f10216bf4f"
+    },
+    "edit-operations.json": {
+      "path": "edit-operations.json",
+      "bytes": 719,
+      "sha256": "781e8f136117825fe2cb3fa3bc94c8d1ca176cb6001cce9716c458081b3bf2de",
+      "git_blob": "b6bfe667a45c4fe1c85592bc1024b79c2c347f7f"
+    }
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "original_staged_tree": "e634d4d2f7ce4a9bc78d3d1756e3242c5d3eb211",
+  "staged_tree": "46074d381264f795134332d4e1425dc0d559bd5f",
+  "files": [
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_types.rs",
+      "sha256": "948f776c53884fa4e63f5e09624eccce40f273510b24906cae562f404f60586e"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_update.rs",
+      "sha256": "1b31662969e10cd977a0ef2de29b7fa185a701569270fcaf456831202d7e6015"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell.rs",
+      "sha256": "855a4f68f329475fc4c8225dbb11ea6f1e31b714651e3d18d10770bc77666d57"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_tests.rs",
+      "sha256": "ba46e85eca197c3e323e3d741b00cef708acbedfa57267635da4ea67d3398e06"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_inference_tests.rs",
+      "sha256": "95f6ef9b468238fbdf5ba6a991ae13b70d52e8d93a3f1d860b388b9f63d2c5ad"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_journal_tests.rs",
+      "sha256": "b9e1d873207b9a45b8c25c6846b62fc086f7dcda87732cb735d852cf20af8933"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_registry_tests.rs",
+      "sha256": "66d266ba7a3271e9841b163cbc0ef10492294ac9b82e2e93adfdf9ac12400876"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_cell.rs",
+      "sha256": "b1f07153246d517b7b846c5011f3f8158fd5a795e132f8efd0bc1b175324db6e"
+    }
+  ],
+  "note": "Box both step-entry payloads and update candidate; dereference at owning consumers. No serialization/digest/admission/state-owner or warning-policy changes."
+}

@@ -1,0 +1,67 @@
+{
+  "schema": "hepta.source51-current-report-adoption.v1",
+  "state": "SOURCE51_APPLIED_R26_PYTHON_PASS_STRICT_STARTED_NO_RUST_TERMINAL",
+  "previous_artifact_commit": "464603f9b710d24b52dd5ba5f2dc34207352397d",
+  "prior_exact_report_snapshot": {
+    "path": "history/source49-r23-checkpoint/MANIFEST.json",
+    "bytes": 1242,
+    "sha256": "a2cbc013a4bd4f57ff1abfe0e232e6068fdb9120ae661e53200aa6416aad2cd6",
+    "git_blob": "9932a5cfb713fa2cd22e689c67607e3e2c864dfa"
+  },
+  "fixed_ledger_snapshot": {
+    "path": "history/source51-ledger-snapshot/publication-ledger.json",
+    "bytes": 43118,
+    "sha256": "2b817e35c094226de6e72e8ca6af1939585302d0ae4652dad7f4a02699571a23",
+    "git_blob": "ee78f0fd2645cecb637f53ec43686389cb68a211"
+  },
+  "outputs": [
+    {
+      "path": "README.md",
+      "bytes": 19388,
+      "sha256": "7df7cb2c07079f4e07fb806e7c32db34cb89bc79f3325977cba7e49dbeeff660",
+      "git_blob": "f81d4a300a42785fea0e6316ca79fb8a21a28883"
+    },
+    {
+      "path": "STATUS.json",
+      "bytes": 64739,
+      "sha256": "7e9003ebb3244a20abc40a13623c9ee18c1c3e3ab7bc20683f3ce160c6e9917a",
+      "git_blob": "a44a25a93d30df1f2a4ecf3ad8d53f31c9757a7a"
+    },
+    {
+      "path": "SOURCE_IDENTITY.json",
+      "bytes": 33427,
+      "sha256": "8304d391163489c9d654eeb0dfc6120be33ef8a27c30ca8c1aa146df5b73c5d4",
+      "git_blob": "6c213c285bfb917aa5ea4779eb877805dde5ca3a"
+    }
+  ],
+  "checks": {
+    "exact_previous_report_bytes_preserved": true,
+    "fixed_51_source_and_176_binary_ledger_snapshot": true,
+    "scientific_status_fields_preserved": [
+      "overall",
+      "taxonomy",
+      "source_inputs",
+      "implementation",
+      "science",
+      "source_compatibility",
+      "historical_assets",
+      "upstream_ci_history"
+    ],
+    "README_taxonomy_and_science_sections_byte_equal": true,
+    "original_r20_through_r23_gate_records_unchanged": true,
+    "current_source_and_scope_match": true,
+    "r26_counts_null_except_closed_Python32": true,
+    "source50_Rust_failed100_preserved": true,
+    "final_fix_fmt_not_executed": true,
+    "branch_and_PR_not_created": true
+  },
+  "link_readback": {
+    "path": "history/source51-report-update/LINK-READBACK.json",
+    "bytes": 44456,
+    "sha256": "49e266765cbe422e6f257de00c9c93baea9be774d6e681aea39bdd2b5258a7fd",
+    "git_blob": "58afa0646f611b91de102df652f94a7b0ec9ad97"
+  },
+  "modified_only_three_current_reports_and_new_history": true,
+  "ledger_source_old_formal_groups_modified": false,
+  "rust_training_or_native_probe_executed": false
+}

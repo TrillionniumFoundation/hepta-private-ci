@@ -1,0 +1,34 @@
+{
+  "command": [
+    "just",
+    "clippy",
+    "--locked",
+    "--keep-going",
+    "-p",
+    "codex-model-provider-info",
+    "-p",
+    "codex-shell-escalation",
+    "-p",
+    "codex-linux-sandbox",
+    "-p",
+    "codex-hepta-memory",
+    "-p",
+    "codex-hepta-agentd",
+    "--",
+    "-D",
+    "warnings"
+  ],
+  "kind": "diagnostic",
+  "staged_tree": "a4c4a141ec488d8b0f4482b0d47c6ea3c31a8896",
+  "source_manifest": "native-inherited-agentd-r4-source.json",
+  "start_unix": 1793937796.2133665,
+  "end_unix": 1793937841.4188895,
+  "elapsed_seconds": 45.2055230140686,
+  "exit_code": 101,
+  "log_sha256": "bccc56f340dec57563cd6945393ed014815b182f3877ee4eab8de3169d22ccdf",
+  "disk_after": {
+    "total": 1966736678912,
+    "used": 1575630123008,
+    "free": 291126304768
+  }
+}

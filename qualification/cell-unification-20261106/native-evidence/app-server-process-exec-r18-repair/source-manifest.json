@@ -1,0 +1,33 @@
+{
+  "schema": "hepta.scoped-source-candidate.v1",
+  "status": "FROZEN_CANDIDATE_NOT_NATIVE_QUALIFIED",
+  "source_commit": "2d7ad1d60019f35fc13d84138ceb2755d914f434",
+  "source_tree": "ffa0a37f4616c5563169c7f0a9305bf6c982d58b",
+  "changed_files": [
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/process_exec.rs",
+      "before": {
+        "bytes": 10437,
+        "sha256": "421f3f6664bf901c624e18ee4cd4ee4dab710a8607c581f55e39b7925698610d",
+        "git_blob": "af26eb8e4b63b9adf51f07d82c72a72d5c5cf242",
+        "git_mode": "100644"
+      },
+      "after": {
+        "bytes": 10708,
+        "sha256": "3ec4fd5e7dc024df3fd3af10e3b529bea98491d9e104b32e9fcea93077b9e0e7",
+        "git_blob": "91fc35830de83b8fb9ac1da3c8846e14740a7058",
+        "git_mode": "100644"
+      },
+      "original": "original/codex-rs/app-server/tests/suite/v2/process_exec.rs",
+      "candidate": "source/codex-rs/app-server/tests/suite/v2/process_exec.rs"
+    }
+  ],
+  "patch": {
+    "path": "repair.patch",
+    "bytes": 1130,
+    "sha256": "d2ee3aa332d7ddeb122297a1ab97b934d04dfd2c12b897700b6628b0e4de9317",
+    "git_blob": "eda13ea851472c943c4c0e5416d147baaab2ca6e",
+    "git_mode": "100644"
+  },
+  "native_tests_run": false
+}

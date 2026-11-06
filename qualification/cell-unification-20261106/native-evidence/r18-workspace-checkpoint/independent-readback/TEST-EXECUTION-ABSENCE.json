@@ -1,0 +1,15 @@
+{
+  "schema": "hepta.r18-independent-test-execution-absence.v1",
+  "log_bytes": 56496,
+  "log_sha256": "cedada3433e2c782b423857f8abeff744fdf45c3de4523c3c312d2e15586d3ad",
+  "matched_line_counts": {
+    "nextest_starting_lines": 0,
+    "nextest_summary_lines": 0,
+    "nextest_execution_rows": 0,
+    "libtest_running_lines": 0,
+    "libtest_result_lines": 0
+  },
+  "test_execution_started": false,
+  "test_terminal_counts": null,
+  "reason": "cargo test --no-run failed before nextest execution; zero observed execution rows are not a completed zero-PASS gate."
+}

@@ -1,0 +1,69 @@
+diff --git a/codex-rs/hepta-infer-worker-host/src/native_failure_tests.rs b/codex-rs/hepta-infer-worker-host/src/native_failure_tests.rs
+--- a/codex-rs/hepta-infer-worker-host/src/native_failure_tests.rs
++++ b/codex-rs/hepta-infer-worker-host/src/native_failure_tests.rs
+@@ -46,36 +46,38 @@
+ static JOURNAL_HOOK: OnceLock<Mutex<FailureHooks>> = OnceLock::new();
+ 
+ /// Notify only after the real, correlated usage event has updated the output.
+-pub(super) fn notify_observed_usage(observed_tokens: u64) {
++pub(super) fn notify_observed_usage(observed_tokens: u64) -> std::result::Result<(), String> {
+     if observed_tokens != 17 {
+-        return;
++        return Ok(());
+     }
+     if let Some(hooks) = JOURNAL_HOOK.get()
+         && let Some(hook) = hooks
+             .lock()
+-            .expect("native failure usage hook")
++            .map_err(|error| format!("native failure usage hook: {error}"))?
+             .usage
+             .take()
+     {
+         let _ = hook.send(());
+     }
++    Ok(())
+ }
+ 
+ /// The isolated child pauses after both synchronous journal appends.
+-pub(super) async fn pause_after_observation_journal(request_id: &str) {
++pub(super) async fn pause_after_observation_journal(request_id: &str) -> Result<()> {
+     if request_id != REQUEST_ID {
+-        return;
++        return Ok(());
+     }
+     let hook = JOURNAL_HOOK
+         .get_or_init(|| Mutex::new(FailureHooks::default()))
+         .lock()
+-        .expect("native failure journal hook")
++        .map_err(|error| format!("native failure journal hook: {error}"))?
+         .journal
+         .take();
+     if let Some(hook) = hook {
+         let _ = hook.send(());
+         std::future::pending::<()>().await;
+     }
++    Ok(())
+ }
+ 
+ #[derive(Deserialize, Serialize)]
+diff --git a/codex-rs/hepta-infer-worker-host/src/native_app_server.rs b/codex-rs/hepta-infer-worker-host/src/native_app_server.rs
+--- a/codex-rs/hepta-infer-worker-host/src/native_app_server.rs
++++ b/codex-rs/hepta-infer-worker-host/src/native_app_server.rs
+@@ -695,7 +695,7 @@
+                 .map(|_| ());
+             let cancel_recorded = control.cancel_native(request_id);
+             #[cfg(all(test, unix))]
+-            failure_tests::pause_after_observation_journal(request_id).await;
++            failure_tests::pause_after_observation_journal(request_id).await?;
+             if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision)
+                 && let Ok(cancelled) = owner
+                     .run_cancel(
+@@ -1255,7 +1255,7 @@
+             }
+             output.observed_output_tokens = Some(observed_tokens);
+             #[cfg(all(test, unix))]
+-            failure_tests::notify_observed_usage(observed_tokens);
++            failure_tests::notify_observed_usage(observed_tokens)?;
+         }
+         ServerNotification::TurnCompleted(completed)
+             if completed.thread_id == output.thread_id && completed.turn.id == output.turn_id =>

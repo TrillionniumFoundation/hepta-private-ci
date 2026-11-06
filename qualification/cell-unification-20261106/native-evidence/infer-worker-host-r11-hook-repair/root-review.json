@@ -1,0 +1,11 @@
+{
+  "schema": "hepta.infer-test-hooks-root-review.v1",
+  "independent_patch_inverse_exact": true,
+  "normal_test_hook_order_preserved": true,
+  "original_assertions_preserved": true,
+  "caller_scope": "two existing cfg(all(test,unix)) calls only",
+  "poison_behavior": "propagate contextual error; no poisoned-state recovery, no hook take or send after poison",
+  "production_release_behavior": "byte unchanged after cfg exclusion",
+  "prior_commit31_dispatch_input_and_cancel_fixes_preserved": true,
+  "qualification": "pending original native three-package gate"
+}

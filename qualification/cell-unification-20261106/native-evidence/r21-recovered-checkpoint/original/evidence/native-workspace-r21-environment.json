@@ -1,0 +1,47 @@
+{
+  "source_tree": "e65356fc570296b74644967054eaded15b8ed440",
+  "source_commit": "07699df6fb5bfb46562ecb0c2eccd0d232d18eac",
+  "source_manifest": "native-candidate-r20-source.json",
+  "source_manifest_sha256": "1109bc5d38e702cb4e30de40af8877fe024a2b92933285546ab9b6c02b05bcb8",
+  "selection": {
+    "RUSTUP_TOOLCHAIN": "1.96.0",
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_TARGET_DIR": "/home/alex/work/hepta-cell-unified-20261106-a/target",
+    "CARGO_NET_GIT_FETCH_WITH_CLI": "true",
+    "NEXTEST_TEST_THREADS": "2",
+    "NEXTEST_PROFILE": null,
+    "HEPTA_NEXTTEST_FULL_METADATA": null,
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_INCREMENTAL": null,
+    "CARGO_BUILD_TARGET": null,
+    "RUSTFLAGS": null,
+    "DOTSLASH_CACHE": "/home/alex/work/hepta-cell-unified-20261106-a/tools/dotslash-cache",
+    "RUST_MIN_STACK": null
+  },
+  "free_bytes_before": 31680491520,
+  "project_gate_prerequisites": [
+    {
+      "path": "native-app-server-r20-strict-receipt.json",
+      "sha256": "b90a05b82858b35a36316f0c996964e68e44b5473c41abcbbc2764d477add6bc",
+      "source_tree": "e65356fc570296b74644967054eaded15b8ed440",
+      "exit_code": 0,
+      "log_sha256": "6cc52cb20e988ab98bebe5a67b099175c12dd64862c769113c4e18b89bee66ca",
+      "resources_sha256": "6da994fa8b5d639ee6aa3a6240669991dd1ae717a660279653c4ed2707f3d3d3"
+    },
+    {
+      "path": "native-app-server-r20-tests-receipt.json",
+      "sha256": "05351520f8fe5c28fc246b028ec77ba967aea9a5f151bdc96e6a9bbb90ea9b1f",
+      "source_tree": "e65356fc570296b74644967054eaded15b8ed440",
+      "exit_code": 0,
+      "log_sha256": "8efb59e5fbe125a8f16bd5efe138d1e4d4aed579dd84b873790cfbee8a1973a6",
+      "resources_sha256": "3c4b677dbca435b32582bcce73ce50753e4b3923544f3d177ba29ffc32422cac"
+    }
+  ],
+  "project_complete_sha256": "82ed4db8f9bc4116f2eb6d04e463ec1e2317eb590365409d28eae4356ccb4683",
+  "project_readback_sha256": "3fdda9fd3280554658f70f307e6441745b93e58888c6252e1a6293705d41a652",
+  "original_default_workspace_selection": true,
+  "workspace_member_count": 193,
+  "workspace_default_member_count": 193,
+  "test_deadlines_features_filters_retries_unchanged": true
+}

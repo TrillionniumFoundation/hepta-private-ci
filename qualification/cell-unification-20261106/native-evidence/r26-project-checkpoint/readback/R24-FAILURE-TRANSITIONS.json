@@ -1,0 +1,111 @@
+{
+  "source_before": {
+    "commit": "1fdd647b0ecb235530e8b88bbea45b3d3762906f",
+    "tree": "ea48acf562499192a25e05ae28926a32632dee62"
+  },
+  "source_after": {
+    "commit": "e28b0f385ee882f842911044958b2810f62f6379",
+    "tree": "763c8d2b4089f6e9806c3bbb68fa247bc2f6af36"
+  },
+  "original_r24_all_three_failures_observed_pass": true,
+  "r24_original_log": {
+    "original_formal_path": "hepta-cell/qualification/cell-unification-20261106/native-evidence/r24-project-checkpoint/original/evidence/native-source50-project-r24-tests.log.gz",
+    "stored_pin": {
+      "bytes": 31782,
+      "sha256": "d1a15c67eab155bf5cce3724450249cd39137469bb30e1a3d6279708acf4a74e",
+      "git_blob": "4200ff7091a1f7531dd69a613782f744f12eb2a9"
+    },
+    "uncompressed_pin": {
+      "bytes": 232861,
+      "sha256": "84a5a9053de8be11ad6c1cc0326f5deb3c84907a7255e7c8911034c52fb2f37d",
+      "git_blob": "87741d33f69f2769753e186090c0f5bdc44995a2"
+    }
+  },
+  "transitions": [
+    {
+      "binary": "codex-exec-server::capability_discovery",
+      "name": "sandboxed_discovery_batches_roots_without_combining_different_permissions",
+      "source50_r24": {
+        "status": "FAIL",
+        "log": {
+          "bytes": 232861,
+          "sha256": "84a5a9053de8be11ad6c1cc0326f5deb3c84907a7255e7c8911034c52fb2f37d",
+          "git_blob": "87741d33f69f2769753e186090c0f5bdc44995a2"
+        },
+        "byte_offset": 149721,
+        "end_byte_offset": 153098,
+        "block": {
+          "path": "supplemental-r24/failure-blocks/failure-1.txt",
+          "bytes": 3377,
+          "sha256": "dbc1ae386f88e2bc8360c19ed9477e6ebc56b7c095b514d9d78cc50df9530ebf",
+          "git_blob": "d3fd35b918af98ef9630734e9c8e7f51682bb73e"
+        }
+      },
+      "source51_r26": {
+        "status": "PASS",
+        "seconds": 1.424,
+        "binary": "codex-exec-server::capability_discovery",
+        "name": "sandboxed_discovery_batches_roots_without_combining_different_permissions",
+        "line": 1217,
+        "byte_offset": 138251
+      }
+    },
+    {
+      "binary": "codex-exec-server::file_system_unix",
+      "name": "sandboxed_file_system_helper_finds_bwrap_on_preserved_path",
+      "source50_r24": {
+        "status": "FAIL",
+        "log": {
+          "bytes": 232861,
+          "sha256": "84a5a9053de8be11ad6c1cc0326f5deb3c84907a7255e7c8911034c52fb2f37d",
+          "git_blob": "87741d33f69f2769753e186090c0f5bdc44995a2"
+        },
+        "byte_offset": 170131,
+        "end_byte_offset": 170717,
+        "block": {
+          "path": "supplemental-r24/failure-blocks/failure-2.txt",
+          "bytes": 586,
+          "sha256": "04f9cbe2e82c0ee4cf709e81f90953d10f9d9d7c6d0ad1523fd8b755721e9106",
+          "git_blob": "6f01559229e2a6a83a49e2f69de884b6a294a311"
+        }
+      },
+      "source51_r26": {
+        "status": "PASS",
+        "seconds": 0.1,
+        "binary": "codex-exec-server::file_system_unix",
+        "name": "sandboxed_file_system_helper_finds_bwrap_on_preserved_path",
+        "line": 1350,
+        "byte_offset": 155425
+      }
+    },
+    {
+      "binary": "codex-network-proxy",
+      "name": "http_proxy::tests::http_connect_accept_defers_brokered_host_mitm_until_protocol_detection",
+      "source50_r24": {
+        "status": "FAIL",
+        "log": {
+          "bytes": 232861,
+          "sha256": "84a5a9053de8be11ad6c1cc0326f5deb3c84907a7255e7c8911034c52fb2f37d",
+          "git_blob": "87741d33f69f2769753e186090c0f5bdc44995a2"
+        },
+        "byte_offset": 231279,
+        "end_byte_offset": 232312,
+        "block": {
+          "path": "supplemental-r24/failure-blocks/failure-3.txt",
+          "bytes": 1033,
+          "sha256": "713acb54080010d3ecafa27c529e978ec778daa337767674c8f0d37fc3913e36",
+          "git_blob": "af6badf1cc39163e6813421091448b641a88d607"
+        }
+      },
+      "source51_r26": {
+        "status": "PASS",
+        "seconds": 0.006,
+        "binary": "codex-network-proxy",
+        "name": "http_proxy::tests::http_connect_accept_defers_brokered_host_mitm_until_protocol_detection",
+        "line": 1667,
+        "byte_offset": 196767
+      }
+    }
+  ],
+  "source52_candidate_or_result_used": false
+}

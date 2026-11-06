@@ -1,0 +1,91 @@
+{
+  "schema": "hepta.source51-four-package-closed-readback.v1",
+  "log": {
+    "bytes": 217900,
+    "sha256": "a7f1e74cfc5f621dc2db1bf9b55da64b31ce91cb0e399fb09617ca202156ef68",
+    "git_blob": "1f8593a506f25258fff5f34e830a93dec16fe8d3"
+  },
+  "starting": {
+    "line": 265,
+    "byte_offset": 31592,
+    "text": "    Starting 1564 tests across 49 binaries (3 tests skipped)"
+  },
+  "summary": {
+    "line": 1883,
+    "byte_offset": 217502,
+    "text": "     Summary [  84.109s] 1564 tests run: 1562 passed, 2 failed, 3 skipped",
+    "seconds": 84.109
+  },
+  "unique_test_count": 1564,
+  "execution_rows": 1564,
+  "counts": {
+    "PASS": 1562,
+    "FAIL": 2,
+    "TIMEOUT": 0
+  },
+  "summary_counts": {
+    "PASS": 1562,
+    "FAIL": 2,
+    "TIMEOUT": 0
+  },
+  "reported_skipped": 3,
+  "skip_identities_inferred": false,
+  "duplicate_execution_ids": false,
+  "footer_rows_excluded": [
+    {
+      "status": "FAIL",
+      "seconds": 5.267,
+      "binary": "codex-network-proxy",
+      "name": "runtime::tests::host_blocked_global_wildcard_allowlist_allows_public_hosts_except_denylist",
+      "line": 1884,
+      "byte_offset": 217576
+    },
+    {
+      "status": "FAIL",
+      "seconds": 5.089,
+      "binary": "codex-network-proxy",
+      "name": "runtime::tests::host_blocked_subdomain_wildcards_exclude_apex",
+      "line": 1885,
+      "byte_offset": 217712
+    }
+  ],
+  "baseline_count": 1564,
+  "baseline_is_source49_previous_failure_population_not_previous_pass": true,
+  "baseline_missing": [],
+  "baseline_not_pass": [
+    {
+      "binary": "codex-network-proxy",
+      "name": "runtime::tests::host_blocked_global_wildcard_allowlist_allows_public_hosts_except_denylist"
+    },
+    {
+      "binary": "codex-network-proxy",
+      "name": "runtime::tests::host_blocked_subdomain_wildcards_exclude_apex"
+    }
+  ],
+  "additional_test_ids": [],
+  "unexpected_packages": [],
+  "per_package": {
+    "codex-cli": {
+      "PASS": 652,
+      "FAIL": 0,
+      "TIMEOUT": 0
+    },
+    "codex-exec-server": {
+      "PASS": 524,
+      "FAIL": 0,
+      "TIMEOUT": 0
+    },
+    "codex-network-proxy": {
+      "PASS": 218,
+      "FAIL": 2,
+      "TIMEOUT": 0
+    },
+    "codex-external-agent-migration": {
+      "PASS": 168,
+      "FAIL": 0,
+      "TIMEOUT": 0
+    }
+  },
+  "baseline_used_as_filter": false,
+  "pass": false
+}

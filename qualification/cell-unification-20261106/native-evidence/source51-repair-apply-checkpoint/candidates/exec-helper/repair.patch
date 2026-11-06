@@ -1,0 +1,15 @@
+--- a/codex-rs/exec-server/tests/common/fake_bwrap.rs
++++ b/codex-rs/exec-server/tests/common/fake_bwrap.rs
+@@ -4,7 +4,11 @@
+ use std::path::PathBuf;
+ 
+ pub(crate) fn write_fake_bwrap(bin_dir: &Path) -> anyhow::Result<PathBuf> {
+-    let real_bwrap = codex_utils_cargo_bin::cargo_bin("bwrap")?;
++    // Resolve the real launcher before the shim can enter the child's PATH.
++    let real_bwrap = match codex_sandboxing::find_system_bwrap_in_path() {
++        Some(path) => path,
++        None => codex_utils_cargo_bin::cargo_bin("bwrap")?,
++    };
+     let real_bwrap = real_bwrap
+         .to_str()
+         .context("bwrap test binary path is not valid UTF-8")?

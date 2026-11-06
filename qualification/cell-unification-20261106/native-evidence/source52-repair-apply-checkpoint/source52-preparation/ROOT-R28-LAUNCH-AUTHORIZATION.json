@@ -1,0 +1,50 @@
+{
+  "schema": "hepta.root-source52-project-r28-launch-authorization.v1",
+  "authorization": "RUN_EXACT_ORIGINAL_THREE_PHASE_PROJECT_GATE",
+  "source_commit": "1e0910becc37383e6d17ecf861ea844fd07d8862",
+  "source_tree": "211f15baff19095e8c98bcea2b0ed99ca2270ade",
+  "full_source_paths": 195,
+  "runner": {
+    "path": "ROOT-APPROVED-R28.py",
+    "bytes": 54455,
+    "sha256": "a7b64eb8ff8ec2b5bc75ae836e3ff423ce31ee86d5c4daf64b7543a8fa7aae9e",
+    "git_blob": "9f1a10e6eb0998b9c5e297a2d0a5382f0a289f0d"
+  },
+  "root_checked_actual_apply_originals": 31,
+  "root_checked_original_apply_commands": 3,
+  "original_apply_outer_exit": 0,
+  "actual_binding_literals": {
+    "EXPECTED_COMMIT": "1e0910becc37383e6d17ecf861ea844fd07d8862",
+    "EXPECTED_TREE": "211f15baff19095e8c98bcea2b0ed99ca2270ade",
+    "EXPECTED_CHANGED_COUNT": 195,
+    "SOURCE_MANIFEST_NAME": "native-candidate-r28-source.json",
+    "SOURCE_MANIFEST_SHA256": "3ff99b41bab572666b424fdbf9a508b33be13e6487d9effa7dd6a0e14b4ec898",
+    "APPLY_COMPLETE_NAME": "native-source52-apply/complete.json",
+    "APPLY_COMPLETE_SHA256": "c9ecdc0ba8a34cd9f1a0a9bccb5e4d58034ce21558fe619d7351ca3e8eccfa14",
+    "APPLY_COMPLETE_BYTES": 2046,
+    "APPLY_TERMINAL_NAME": "native-source52-apply-terminal-process-status.json",
+    "APPLY_TERMINAL_SHA256": "aa92d5cf988a3f2a1ea434dcdd4c39274c2c783cd69609edc04da655e3457a9e",
+    "APPLY_TERMINAL_BYTES": 729,
+    "APPLY_JOB_ID": "1a1b1e474a3-fc05-7b5b",
+    "DELTA_MANIFEST_NAME": "native-source52-apply/input/delta-manifest.json",
+    "DELTA_MANIFEST_SHA256": "0e9d938287ebc74d89e2bcaf2a102e7a83c063aac5705009ebd2eeb327af571a",
+    "DELTA_MANIFEST_BYTES": 1116
+  },
+  "full_template_inverse_exact": true,
+  "only_final_change": "FROZEN=False to FROZEN=True",
+  "independent_binding_review_sha256": "62b5d214937f83656483258536356e50879158a753a5730b7ba519279d5e426d",
+  "host": "pocket4",
+  "idempotency_key": "cell-source52-project-r28-20261106-v1",
+  "outer_timeout_seconds": 9600,
+  "one_original_job": true,
+  "phase_sequence": [
+    "Python32 original helper suite",
+    "four original packages strict -D warnings",
+    "four original packages complete just test --locked --retries 0"
+  ],
+  "baseline1564_is_post_execution_acceptance_not_a_filter": true,
+  "source_or_policy_or_deadline_or_feature_or_retry_changes_authorized": false,
+  "workspace_or_fix_fmt_or_new_bazel_lock_authorized_by_this_record": false,
+  "science": "HOLD",
+  "authority": "DENY_ALL"
+}

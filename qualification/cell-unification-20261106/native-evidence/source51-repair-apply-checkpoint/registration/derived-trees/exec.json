@@ -1,0 +1,60 @@
+{
+  "schema": "hepta.offline-derived-direct-tree.v1",
+  "directory": "codex-rs/exec-server",
+  "original_git_tree": "9906e97bad73cb14868c42bb56feb038aba9fb00",
+  "expected_git_tree": "d9050a2f75322aae7fa79b63937e405004594266",
+  "entries": [
+    {
+      "path": "BUILD.bazel",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "73c71a65112db4c7d306f3be215ab17907decfa5"
+    },
+    {
+      "path": "Cargo.toml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "455df9eedc14b77ac3779899087cd8391b153b37"
+    },
+    {
+      "path": "README.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "950138a324a61f4e2b35ef219eeb3faf0d31036e"
+    },
+    {
+      "path": "acceptance",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "72af8f574c3deb8cc37348843875609762e2b9d1"
+    },
+    {
+      "path": "src",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "9a85bb029de1a274e5b58fe73f894689723a31d8"
+    },
+    {
+      "path": "testing",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "fe0945516ab85d966678766704e08d9deb84bc00"
+    },
+    {
+      "path": "tests",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "94179d610351f69f859f654f094199270193b2df"
+    }
+  ],
+  "changes": [
+    {
+      "path": "tests",
+      "before": "ec4d348841738c5bbf5431877b5eeda495d4443b",
+      "after": "94179d610351f69f859f654f094199270193b2df"
+    }
+  ],
+  "all_other_canonical_entries_byte_identical": true,
+  "tree_object_body_bytes": 247,
+  "git_object_created": false
+}

@@ -1,0 +1,48 @@
+{
+  "schema": "hepta.bazel-tasklocal-preparation.v2",
+  "attempt": 2,
+  "prior_job_id": "1a1b13d4104-fc05-772d",
+  "prior_terminal_exit_code": 124,
+  "prior_partial_preserved": "/home/alex/work/hepta-cell-unified-20261106-a/tools/bazel-9.3.0-preparation/bazel-9.3.0-linux-x86_64",
+  "prior_partial_sha256": "1df1bda7d1ac014d3add03a0520e3678430515e95b4b604776c01460b3284270",
+  "url": "https://github.com/bazelbuild/bazel/releases/download/9.3.0/bazel-9.3.0-linux-x86_64",
+  "official_checksum_url": "https://releases.bazel.build/9.3.0/release/bazel-9.3.0-linux-x86_64.sha256",
+  "official_checksum": "d302d22ed77ee5658b87857249baa579db84300ecebe0a1e9a357b5b20f80eb8",
+  "source_before": {
+    "tree": "be34ab1afe622ad3b8f030c8c5018f4f54fbc304",
+    "cargo_lock_sha256": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c",
+    "guard_pass": true
+  },
+  "started_unix": 1793976560.9287765,
+  "exit_code": 1,
+  "requested_range_start": 31457280,
+  "download_deadline_seconds": 450,
+  "version_probe": null,
+  "binary": null,
+  "rust_tests_started": false,
+  "cache_checks": [],
+  "http_response": {
+    "status": 206,
+    "content_range": "bytes 31457280-77023346/77023347",
+    "content_length": "45566067",
+    "final_url_host": "release-assets.githubusercontent.com",
+    "content_encoding": null
+  },
+  "transfer_mode": "verified-range-resume-into-new-file",
+  "error": {
+    "type": "TimeoutError",
+    "message": "The read operation timed out"
+  },
+  "partial_after_failure": {
+    "path": "/home/alex/work/hepta-cell-unified-20261106-a/tools/bazel-9.3.0-preparation-v2/bazel-9.3.0-linux-x86_64",
+    "bytes": 38993920,
+    "sha256": "c5893a17c67e6bff8c8fe7a22d5c5c7e47c7cf04b31dd9f3c88546031785fe09"
+  },
+  "source_after": {
+    "tree": "be34ab1afe622ad3b8f030c8c5018f4f54fbc304",
+    "cargo_lock_sha256": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c",
+    "guard_pass": true
+  },
+  "ended_unix": 1793976767.9043474,
+  "elapsed_seconds": 206.97490893199574
+}

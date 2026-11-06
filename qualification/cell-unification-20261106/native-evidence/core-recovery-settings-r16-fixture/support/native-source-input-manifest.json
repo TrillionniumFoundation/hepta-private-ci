@@ -1,0 +1,470 @@
+{
+  "source_tree": "3ebd193f213d640e5330a1be4b983bcc4b06617a",
+  "source_commit": "96dc9232535fedf735e3099ef1391b69477270d4",
+  "fixture_files": [
+    {
+      "path": "codex-rs/core/tests/suite/multi_agent_resume.rs",
+      "bytes": 24392,
+      "sha256": "0c6f0f9f0cccef45f677734eca2ace36715165ff6edd864990442ed6536338d7",
+      "git_blob": "e09a48aceeef1d3b76432cf21002a4d2d624523f",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/turn_input_submission.rs",
+      "bytes": 21320,
+      "sha256": "7dc33fdd6c892deda4b145edbd61a653c1cd3b4eaaae6c635caadaf2fd2e5919",
+      "git_blob": "a3e4ecc296ff71736bac1e2c441d7e7b0762a2a7",
+      "mode": "100644"
+    }
+  ],
+  "related_source_pins": [
+    {
+      "path": "codex-rs/core/src/agent/control.rs",
+      "bytes": 32344,
+      "sha256": "1b96a6f76cf207402f03e8a6b1ff20bf388dfaa4ef9daf15ea8a8808d99dba21",
+      "git_blob": "3d6adc42465b12aeeb6068ea18b5b856ae878cea",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/src/agent/control/legacy.rs",
+      "bytes": 4786,
+      "sha256": "1b0400ab99c05373d5abac585b5f56ae26a378b50e06344eadee89b6853bd8cd",
+      "git_blob": "f6bff6cd901b37880df84cc568864b644858dbb2",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/src/agent/control/residency.rs",
+      "bytes": 8225,
+      "sha256": "09708e8b768bc4dfa4546b9cb23afdd7aa14c9090be23b04eef2a85c287b96d0",
+      "git_blob": "e0a34bb97a3775b5e2114544d5a029d9d68e1608",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/src/agent/control/residency_tests.rs",
+      "bytes": 8072,
+      "sha256": "191bb03ad210357e98d69750ddea0a0fda07374745c2441ee11942208081c333",
+      "git_blob": "d5d58b42a1bacf9e09d93cd00db69a05e98e9c32",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/src/agent/control/spawn.rs",
+      "bytes": 53544,
+      "sha256": "866185b265c2fb4bc4eec8a471a12fcc4febcf5a596aa442252ab44063bd6f9f",
+      "git_blob": "b901073f6d1a3e7159bbe6a5b9ab9dd575b6b106",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/src/agent/control_tests.rs",
+      "bytes": 163326,
+      "sha256": "42b448b6b778f38b5788232baf4cd1c57359f4b2311a0ca9d642b87a4eb2cadc",
+      "git_blob": "446f108a499633dbca4afc349f4821def3306437",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/src/codex_delegate_tests.rs",
+      "bytes": 10922,
+      "sha256": "f640ffd874a4cda75dbbe04da26f374d738edaac6c50923e8cdf2897f1802dd4",
+      "git_blob": "f79ff413fb81d6f3bbf4bcac20063cc0e32b543e",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/src/codex_thread.rs",
+      "bytes": 49554,
+      "sha256": "a2b7930a96d8a32ee9747fa9da8e1fc9c8c77af19aefda898466b1799347f02f",
+      "git_blob": "589f0b9305aeb8cf257cdb3d7a83c22335f17252",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/src/guardian/review_session.rs",
+      "bytes": 97885,
+      "sha256": "5dce34d8c613c0b922bf4389945a4ecdaf771c9534084f984daa4a5229e7d563",
+      "git_blob": "15ca837540c5bdf87e2af93abac2504ad1ff7656",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/src/prompt_debug.rs",
+      "bytes": 3993,
+      "sha256": "397408d6b4410a2618fe489e00ae42b93b78fce2bbe55bb90896f34203be5a2b",
+      "git_blob": "7e91ee81ad861e680b2064b84ca7e60e97e5dc3f",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/src/session/mod.rs",
+      "bytes": 215822,
+      "sha256": "c262bc85649869dcc1eea4096773d577959989c54e264e6f03a341448ac3ad4d",
+      "git_blob": "f4a925c7deb8d9c939cc2900d160f8f25c352b39",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/src/session/tests.rs",
+      "bytes": 504663,
+      "sha256": "8d06e0e5d0f59b5c06d093ae822aec42f76a212c23b8ac26939345ab2e1c8309",
+      "git_blob": "d9fb57b98d68fc8b548ba312b5f1671f70fd0573",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/src/session/turn_input.rs",
+      "bytes": 41654,
+      "sha256": "7959e38afd075c5cad233a7d1ba59b3406b1de96d9076e444a51ce8ac33b9841",
+      "git_blob": "215af4dd2a36cf07915e2451040c19527bac3c9a",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/src/session_rollout_init_error.rs",
+      "bytes": 2647,
+      "sha256": "4484d8a42d34ad586af2c79f7e5eb6756569f5f94e802e1cee82f8b1284fc207",
+      "git_blob": "7e62462add4f2f9819daa5393b84dd1237cd2eb6",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/src/tasks/mod.rs",
+      "bytes": 178832,
+      "sha256": "b51df87d911a73b51ac13cf28157f4d3bb3a7192f3aa2621265c849acc157a88",
+      "git_blob": "04332800b862436b2e372c78145bae849e596822",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/src/thread_manager.rs",
+      "bytes": 116349,
+      "sha256": "d9631505c673632e53d91122f9d1491dcea0ca1d3ac4360f7aa0fa95e5934f89",
+      "git_blob": "4e19ab877f9ca84df282c7a72328726de3ec7251",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/src/thread_manager_tests.rs",
+      "bytes": 117148,
+      "sha256": "410271a3f5cd8ecf9c39f0661a5da264bcfd11a25d876a3f53214653a112c61a",
+      "git_blob": "3e2b3c40c0f161bfd391c8426260aa331790017b",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/src/tools/handlers/multi_agents/close_agent.rs",
+      "bytes": 5689,
+      "sha256": "2391847e54558c82bb2a295c1cba1e4caaff43732efd373f9891d2410e344547",
+      "git_blob": "cdaf4233bbb98318d6d9f8fad1b4766f6eedfa83",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/src/tools/handlers/multi_agents/wait.rs",
+      "bytes": 11407,
+      "sha256": "7f7ad857197772fd65c18ba510705e521661146c09c42373b408446a9fe841f8",
+      "git_blob": "84ebc35c1eb840b2e32b8fe021f882bc1de85b79",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/src/tools/handlers/multi_agents_common.rs",
+      "bytes": 16680,
+      "sha256": "57335e3a2af8b9a655bb29336fdf2000f396bd13b84e6c74dec48ddb62dd1ce3",
+      "git_blob": "843030b274730b9e48e57f87e6d15d6c14ecaf50",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/src/tools/handlers/multi_agents_v2/interrupt_agent.rs",
+      "bytes": 3761,
+      "sha256": "48f088be956d83f56f3aa0ce8da83df410ad97fb68948b543ab4b2807729c52b",
+      "git_blob": "7c22fc21eb9f4ab9e75d83d81348f3aeae4c5d07",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/tests/common/test_codex.rs",
+      "bytes": 50892,
+      "sha256": "5fccca794ffc2c637dc473dbcc22fdcceccff6631ff8acb970605f0ac536f559",
+      "git_blob": "933e02a8c7fe69609402ce4c1cef0b1adea64d52",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/abort_tasks.rs",
+      "bytes": 14438,
+      "sha256": "e95a4b608396f5cb8c34f83376d96693f025f78efb39972255e4aa063a600917",
+      "git_blob": "9b26fa2b628c6319f99ccad9452510c38415489c",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/apply_patch_cli.rs",
+      "bytes": 86834,
+      "sha256": "7f6dadaa9462cd956e307f9dda059534fb12b8e1f57fbb801f3b8a6f62aa8913",
+      "git_blob": "b5dda68de7bb261622073cb2fdd21bf58810a049",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/approvals.rs",
+      "bytes": 158045,
+      "sha256": "084f6c13d38d42f8e13eb90f1afc68a7efe0087f2c71bf60766a44d6e36108c6",
+      "git_blob": "08d271738fdff1dcb5b5504c33ac8aacd036fcbe",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/auto_review.rs",
+      "bytes": 24220,
+      "sha256": "6ec2a764a5190f2967769a6847c0256420cfb10f5743d49e75a9bf691d52569c",
+      "git_blob": "ff454ac429855683cf0ae37d07de72bdd4bb056f",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/code_mode_elicitation.rs",
+      "bytes": 8705,
+      "sha256": "ebf3cc75e6f08c07c1781bf350cb0ee298ce12f451ec1e63e7789fe2137693f8",
+      "git_blob": "5b79bf6a5b097f2ce6bc739e9b43dfb7ce4e7dae",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/collaboration_instructions.rs",
+      "bytes": 39587,
+      "sha256": "d69ebd176f75bc2f04182209d3a297e9b339a34d5f881b20075b9e375761d53f",
+      "git_blob": "c7a2081f665da17ca54fb63f653b8e6a4731184c",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/compact_remote.rs",
+      "bytes": 178649,
+      "sha256": "b819e6bb45adad103e2b879225362c84c6eab67afe50cb03b35e24f9745dde71",
+      "git_blob": "36b2a9c5ddbf067203093bdc18c5a8380d91a215",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/compact_resume_fork.rs",
+      "bytes": 35572,
+      "sha256": "cca08aeda53bc8b905e0e24328a7055aee4c5327f11028b0a1e6e176fe11770f",
+      "git_blob": "8a54d8a48cebf6b24843268c5af7647552c47784",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/fork_thread.rs",
+      "bytes": 12221,
+      "sha256": "2cdf849fb46e550119445273b5532ec085258ef24d70e1d1f54a567f94808aac",
+      "git_blob": "1329863048c9cab21f2104f86ba9006b0a672d51",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/git_enrichment.rs",
+      "bytes": 18756,
+      "sha256": "0b4074be01f03e511ebe9a12e3a6d2b13387417629974a95b0089c1bfc6a1ed3",
+      "git_blob": "729ff8173fe42f63d88377929bfd7ea802a81f27",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/guardian_mcp_elicitation.rs",
+      "bytes": 6627,
+      "sha256": "e6b0d2c72fac47ab68830971eec7303e79081811f5833a15c8d73fbfc5a371fc",
+      "git_blob": "77c631e2d53a1a7356f371e6cbb6c7af6c0eec6f",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/guardian_review.rs",
+      "bytes": 58740,
+      "sha256": "961f9b74a6459d553ab4b723007720d19945c38d5ac874b89f4e37d945035b90",
+      "git_blob": "c2429b25f1e2c28cc005ac29eab332b67aa2e43a",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/guardian_review_cancellation.rs",
+      "bytes": 9585,
+      "sha256": "9592b734b4f2782d7b94f85da98bd4bc2c17ecd5d33e42e4109c3a19edaa8879",
+      "git_blob": "323a627e36303702aca263aaa7236206e8afe661",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/hooks.rs",
+      "bytes": 179232,
+      "sha256": "027b1d58726b5030178c3bbd4e4c3156ac281e94b2abc59f56b463092b095b31",
+      "git_blob": "ecd0d8a0f81d3f199dc77830d60d67c7777ba6d3",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/image_rollout.rs",
+      "bytes": 18398,
+      "sha256": "c73da900b806cc3bc8475f3960602ca18a32026df489e80055ee9ffd0f7cb0af",
+      "git_blob": "76b7bc0b9ed123248d10286244d019ac66ab568e",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/live_thread_materialization.rs",
+      "bytes": 3789,
+      "sha256": "1b2fa9d40b7ef8f20b243dbe368b8f86e866667fedc42fbe5775014a98a0220e",
+      "git_blob": "9a28a5b4e1e5641e0a11e51b9bad0015cc3c967c",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/mcp_refresh_cleanup.rs",
+      "bytes": 8266,
+      "sha256": "e19dd3ddd206f4a98b8a62b155b5b10cf997f3ec54a0b331af2239d7b6fe4e34",
+      "git_blob": "b4b10c996f6ee5ce286b3ca342233b7e5b024b33",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/mcp_tool_cache.rs",
+      "bytes": 30890,
+      "sha256": "75bc38a208635d9598b5b9c35663284d7519ffc6fa1b0b5cef698ec8d4981fe8",
+      "git_blob": "21009c87414caefb69fd4a03b7e2f58a9d86f637",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/mcp_tool_exposure.rs",
+      "bytes": 47667,
+      "sha256": "94b3a0620bb7015f43978e1a7805a41727914979465e85ec7559b453d491e462",
+      "git_blob": "a9530eaa31f5d9f14b920a1f44c85e57471e69d3",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/multi_agent_mode.rs",
+      "bytes": 19591,
+      "sha256": "2406461750d321d7a42f160643020dac758e384cb4e4ec36f5f9a1d1af1daa49",
+      "git_blob": "325be29e113495b9fbc1512458a57829590c20e9",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/multi_agent_resume.rs",
+      "bytes": 24392,
+      "sha256": "0c6f0f9f0cccef45f677734eca2ace36715165ff6edd864990442ed6536338d7",
+      "git_blob": "e09a48aceeef1d3b76432cf21002a4d2d624523f",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/realtime_conversation.rs",
+      "bytes": 195819,
+      "sha256": "89cc149669017ce8cff40a7ec93675283946a14f5a8a0ace65dc7e6dc8e57c98",
+      "git_blob": "7df6a447bfc58f878ff8c160d0c390016322e1cf",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/remote_env.rs",
+      "bytes": 141857,
+      "sha256": "b21a4f6404f5c6c0e95702a2e0bfb9026a0b37800a6ad339d969a019f1dbeb8a",
+      "git_blob": "f696a10caaeff2a1ce731f830d9006cf96383c2a",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/request_permissions.rs",
+      "bytes": 82766,
+      "sha256": "0cb8cef5d09552b3d7b7d6f079b82395c3a9428c7ab86ddc81ae122f58c81234",
+      "git_blob": "9921c8998c9e65dcafaacaeafaf6e9e1f0eb7b0c",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/request_permissions_tool.rs",
+      "bytes": 18590,
+      "sha256": "f35ea274fcf9bc171a2863865f54ef3e4755ceca8124d164279ecc0b29e832b9",
+      "git_blob": "9538743eaead90b9ba46f5b63ca37fef9a11e347",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/request_plugin_install.rs",
+      "bytes": 40718,
+      "sha256": "ee2dbfe84af071f0dafd5e89121972f14e4e70c0e5dc48eeea72419e93ca6454",
+      "git_blob": "5d3eda19bbfb9c8876251051b4cb17ff8c13d9f8",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/responses_api_proxy_headers.rs",
+      "bytes": 9874,
+      "sha256": "39bbdfc3057c9ef6cf4d5ca0eea4bf7a686fe63a19e66561b2ea28ae6d7698da",
+      "git_blob": "e156cd8f31c6d95f0ef569059da2f9762a1d17ad",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/rmcp_client.rs",
+      "bytes": 147566,
+      "sha256": "11ba2ce26510c4b3edac11351bd83efb879b466a22c9dc1c241dde63890ecb16",
+      "git_blob": "5b7c708647d343820ca5ca1fb0c3a1754d317d25",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/skill_approval.rs",
+      "bytes": 9924,
+      "sha256": "d78696cee410d754f2993e48d3d8bc2c058aa111bd2d74fd78044e481c6a4c27",
+      "git_blob": "746dfc59f6db3a379440df805d821435d46d8e86",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/spawn_agent_description.rs",
+      "bytes": 29132,
+      "sha256": "3206163f2faaab6e43feab9578119e52a9ace9a42247a751b2c138bb380a4f85",
+      "git_blob": "509880616be7ce384abc0fe5c774af1a7fcd4e63",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/sqlite_state.rs",
+      "bytes": 31061,
+      "sha256": "8ca30950ea40728dfb0350c4befa448ebfeff2a49252bc9b9b21d0a122a0bb1e",
+      "git_blob": "a5c8c08923cc94a82aa295c3c0e5d1db9c6f2edb",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/turn_input_submission.rs",
+      "bytes": 21320,
+      "sha256": "7dc33fdd6c892deda4b145edbd61a653c1cd3b4eaaae6c635caadaf2fd2e5919",
+      "git_blob": "a3e4ecc296ff71736bac1e2c441d7e7b0762a2a7",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs",
+      "bytes": 31429,
+      "sha256": "35982a2804b74d3f2eb1027bda62e097abe20c546937b25ee251274b7bdbd6ec",
+      "git_blob": "02a8e0abc60f415327cd2713d92d23bc503ab3e4",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/user_message_admission.rs",
+      "bytes": 16709,
+      "sha256": "578fb63d11fa8faae52d828487c3c598d0680e95c79136d44b91c3371c44506a",
+      "git_blob": "91a4e4c059784baa88e2a86c4f60e60b2238a27b",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/protocol/src/error.rs",
+      "bytes": 30252,
+      "sha256": "982d6968960b97ccb592c31c7b1cea4832b541be1f22ac054fa15c2b5b2b2d10",
+      "git_blob": "65ed48e03501429752f5c4f92365f7556b08e5a4",
+      "mode": "100644"
+    }
+  ],
+  "nearest_guidance_paths": [
+    "AGENTS.md"
+  ],
+  "queries": {
+    "not_found_errors": {
+      "command": [
+        "rg",
+        "-n",
+        "-i",
+        "thread.*not found|threadnotfound",
+        "codex-rs/core",
+        "codex-rs/protocol",
+        "--glob",
+        "*.rs"
+      ],
+      "exit_code": 0,
+      "stdout": "codex-rs/protocol/src/error.rs:99:    ThreadNotFound(ThreadId),\ncodex-rs/protocol/src/error.rs:325:        ThreadNotFound(thread_id: ThreadId),\ncodex-rs/protocol/src/error.rs:382:            | CodexErrorDetails::ThreadNotFound(_)\ncodex-rs/protocol/src/error.rs:451:            | CodexErrorDetails::ThreadNotFound(_)\ncodex-rs/core/src/session_rollout_init_error.rs:20:            ThreadStoreError::ThreadNotFound { .. }\ncodex-rs/core/src/thread_manager_tests.rs:358:        Err(ThreadStoreError::ThreadNotFound { .. }) => true,\ncodex-rs/core/src/thread_manager_tests.rs:586:                Err(ThreadStoreError::ThreadNotFound { .. }) => true,\ncodex-rs/core/src/agent/control/spawn.rs:342:            return Err(CodexErr::ThreadNotFound(thread_id));\ncodex-rs/core/src/agent/control/spawn.rs:360:            .ok_or(CodexErr::ThreadNotFound(thread_id))?;\ncodex-rs/core/src/agent/control/spawn.rs:367:            return Err(CodexErr::ThreadNotFound(thread_id));\ncodex-rs/core/src/agent/control/spawn.rs:1179:            .ok_or(CodexErr::ThreadNotFound(thread_id))?;\ncodex-rs/core/src/agent/control.rs:415:            .ok_or_else(|| CodexErr::ThreadNotFound(agent_id))\ncodex-rs/core/src/thread_manager.rs:1086:                ThreadStoreError::ThreadNotFound { thread_id } => {\ncodex-rs/core/src/thread_manager.rs:1087:                    CodexErr::ThreadNotFound(thread_id)\ncodex-rs/core/src/thread_manager.rs:1858:    /// Fetch a thread by ID or return ThreadNotFound.\ncodex-rs/core/src/thread_manager.rs:1863:            Some(_) | None => Err(CodexErr::ThreadNotFound(thread_id)),\ncodex-rs/core/src/thread_manager.rs:1891:                ThreadStoreError::ThreadNotFound { thread_id } => {\ncodex-rs/core/src/thread_manager.rs:1892:                    CodexErr::ThreadNotFound(thread_id)\ncodex-rs/core/src/thread_manager.rs:1896:                        CodexErr::ThreadNotFound(thread_id)\ncodex-rs/core/src/thread_manager.rs:1917:                ThreadStoreError::ThreadNotFound { thread_id } => {\ncodex-rs/core/src/thread_manager.rs:1918:                    CodexErr::ThreadNotFound(thread_id)\ncodex-rs/core/src/thread_manager.rs:2821:        ThreadStoreError::ThreadNotFound { thread_id } => CodexErr::ThreadNotFound(thread_id),\ncodex-rs/core/src/thread_manager.rs:2829:        ThreadStoreError::ThreadNotFound { thread_id } => CodexErr::ThreadNotFound(thread_id),\ncodex-rs/core/src/agent/control/residency_tests.rs:58:            CodexErrorDetails::ThreadNotFound(thread_id) => assert_eq!(*thread_id, first.thread_id),\ncodex-rs/core/src/agent/control/residency_tests.rs:106:            CodexErrorDetails::ThreadNotFound(thread_id) => assert_eq!(*thread_id, first.thread_id),\ncodex-rs/core/src/agent/control/residency_tests.rs:121:        CodexErrorDetails::ThreadNotFound(thread_id) => assert_eq!(*thread_id, first.thread_id),\ncodex-rs/core/src/agent/control/residency_tests.rs:122:        _ => panic!(\"expected ThreadNotFound, got {err:?}\"),\ncodex-rs/core/src/agent/control/residency_tests.rs:129:            CodexErrorDetails::ThreadNotFound(thread_id) => assert_eq!(*thread_id, first.thread_id),\ncodex-rs/core/src/agent/control/legacy.rs:66:                if known_agent && matches!(err.details(), CodexErrorDetails::ThreadNotFound(_)) =>\ncodex-rs/core/src/agent/control/legacy.rs:81:            Err(err) if matches!(err.details(), CodexErrorDetails::ThreadNotFound(_)) => {}\ncodex-rs/core/src/agent/control/legacy.rs:91:                        CodexErrorDetails::ThreadNotFound(_) | CodexErrorDetails::InternalAgentDied\ncodex-rs/core/src/agent/control/legacy.rs:110:                        CodexErrorDetails::ThreadNotFound(_) | CodexErrorDetails::InternalAgentDied\ncodex-rs/core/src/tools/handlers/multi_agents_common.rs:97:        CodexErrorDetails::ThreadNotFound(id) => {\ncodex-rs/core/src/agent/control_tests.rs:443:            CodexErrorDetails::ThreadNotFound(id) => assert_eq!(*id, thread_id),\ncodex-rs/core/src/agent/control_tests.rs:444:            _ => panic!(\"expected ThreadNotFound, got {err:?}\"),\ncodex-rs/core/src/agent/control_tests.rs:583:        CodexErrorDetails::ThreadNotFound(id) if *id == thread_id\ncodex-rs/core/src/agent/control_tests.rs:613:        CodexErrorDetails::ThreadNotFound(id) if *id == thread_id\ncodex-rs/core/src/agent/control_tests.rs:848:            CodexErrorDetails::ThreadNotFound(id) => assert_eq!(*id, spawned_agent.thread_id),\ncodex-rs/core/src/agent/control_tests.rs:849:            _ => panic!(\"expected ThreadNotFound, got {err:?}\"),\ncodex-rs/core/src/tools/handlers/multi_agents/wait.rs:128:                Err(err) if matches!(err.details(), CodexErrorDetails::ThreadNotFound(_)) => {\ncodex-rs/core/src/tools/handlers/multi_agents/close_agent.rs:70:            if known_agent && matches!(err.details(), CodexErrorDetails::ThreadNotFound(_)) =>\ncodex-rs/core/src/tools/handlers/multi_agents_v2/interrupt_agent.rs:73:                CodexErrorDetails::ThreadNotFound(_) | CodexErrorDetails::InternalAgentDied\n",
+      "stderr": ""
+    },
+    "owner_apis": {
+      "command": [
+        "rg",
+        "-n",
+        "shutdown_and_wait|pub async fn get_thread|async fn restart|async fn submit_turn|pub async fn flush_rollout",
+        "codex-rs/core",
+        "--glob",
+        "*.rs"
+      ],
+      "exit_code": 0,
+      "stdout": "codex-rs/core/src/guardian/review_session.rs:315:        let _ = self.io.shutdown_and_wait().await;\ncodex-rs/core/src/agent/control/residency.rs:140:            if let Err(err) = candidate_thread.shutdown_and_wait().await {\ncodex-rs/core/src/prompt_debug.rs:76:    let shutdown = thread.thread.shutdown_and_wait().await;\ncodex-rs/core/src/agent/control_tests.rs:828:        .shutdown_and_wait()\ncodex-rs/core/src/thread_manager.rs:1049:    pub async fn get_thread(&self, thread_id: ThreadId) -> CodexResult<Arc<CodexThread>> {\ncodex-rs/core/src/thread_manager.rs:1516:                let outcome = match tokio::time::timeout(timeout, thread.shutdown_and_wait()).await\ncodex-rs/core/src/thread_manager.rs:2013:            match thread.shutdown_and_wait().await {\ncodex-rs/core/src/thread_manager.rs:2685:                if let Err(shutdown_error) = io.shutdown_and_wait().await {\ncodex-rs/core/src/thread_manager.rs:2699:                if let Err(shutdown_error) = io.shutdown_and_wait().await {\ncodex-rs/core/src/thread_manager.rs:2718:            if let Err(shutdown_err) = io.shutdown_and_wait().await {\ncodex-rs/core/src/thread_manager.rs:2761:        if let Err(err) = io.shutdown_and_wait().await {\ncodex-rs/core/src/codex_thread.rs:279:    pub async fn shutdown_and_wait(&self) -> CodexResult<()> {\ncodex-rs/core/src/codex_thread.rs:280:        self.io.shutdown_and_wait().await\ncodex-rs/core/src/codex_thread.rs:376:    pub async fn flush_rollout(&self) -> std::io::Result<()> {\ncodex-rs/core/src/codex_thread.rs:411:    pub(crate) async fn submit_turn_input_and_wait_for_exact_admission(\ncodex-rs/core/src/codex_thread.rs:424:    async fn submit_turn_input_with_mode_and_wait_for_exact_admission(\ncodex-rs/core/src/codex_thread.rs:803:    async fn submit_turn_input_with_mode(\ncodex-rs/core/src/codex_delegate_tests.rs:271:        io.shutdown_and_wait()\ncodex-rs/core/tests/suite/compact_resume_fork.rs:898:        .shutdown_and_wait()\ncodex-rs/core/tests/suite/image_rollout.rs:311:    initial.codex.shutdown_and_wait().await?;\ncodex-rs/core/tests/suite/image_rollout.rs:446:    resumed.codex.shutdown_and_wait().await?;\ncodex-rs/core/tests/suite/mcp_refresh_cleanup.rs:106:    fixture.codex.shutdown_and_wait().await?;\ncodex-rs/core/tests/suite/mcp_refresh_cleanup.rs:223:    fixture.codex.shutdown_and_wait().await?;\ncodex-rs/core/tests/suite/rmcp_client.rs:1239:    tokio::time::timeout(Duration::from_secs(2), fixture.codex.shutdown_and_wait())\ncodex-rs/core/tests/suite/rmcp_client.rs:1279:    tokio::time::timeout(Duration::from_secs(2), fixture.codex.shutdown_and_wait())\ncodex-rs/core/tests/suite/multi_agent_mode.rs:106:async fn submit_turn(\ncodex-rs/core/tests/suite/auto_review.rs:603:    timeout(Duration::from_secs(10), codex.shutdown_and_wait()).await??;\ncodex-rs/core/tests/suite/responses_api_proxy_headers.rs:158:async fn submit_turn_with_timeout(test: &TestCodex, prompt: &str) -> Result<()> {\ncodex-rs/core/tests/suite/mcp_tool_exposure.rs:714:        test.codex.shutdown_and_wait().await?;\ncodex-rs/core/tests/suite/request_permissions.rs:161:async fn submit_turn(\ncodex-rs/core/tests/suite/guardian_review_cancellation.rs:249:    test.codex.shutdown_and_wait().await?;\ncodex-rs/core/tests/suite/mcp_tool_cache.rs:247:    fixture.codex.shutdown_and_wait().await?;\ncodex-rs/core/tests/suite/mcp_tool_cache.rs:248:    second_thread.shutdown_and_wait().await?;\ncodex-rs/core/tests/suite/mcp_tool_cache.rs:382:    fixture.codex.shutdown_and_wait().await?;\ncodex-rs/core/tests/suite/mcp_tool_cache.rs:383:    subagent.shutdown_and_wait().await?;\ncodex-rs/core/tests/suite/mcp_tool_cache.rs:481:    eager_thread.shutdown_and_wait().await?;\ncodex-rs/core/tests/suite/mcp_tool_cache.rs:665:    fixture.codex.shutdown_and_wait().await?;\ncodex-rs/core/tests/suite/mcp_tool_cache.rs:704:    second_thread.shutdown_and_wait().await?;\ncodex-rs/core/tests/suite/mcp_tool_cache.rs:726:    filtered_thread.shutdown_and_wait().await?;\ncodex-rs/core/tests/suite/mcp_tool_cache.rs:839:    interrupted_thread.shutdown_and_wait().await?;\ncodex-rs/core/tests/suite/guardian_review.rs:453:    test.codex.shutdown_and_wait().await?;\ncodex-rs/core/tests/suite/spawn_agent_description.rs:450:    initial.codex.shutdown_and_wait().await?;\ncodex-rs/core/tests/suite/spawn_agent_description.rs:617:    initial.codex.shutdown_and_wait().await?;\ncodex-rs/core/tests/suite/compact_remote.rs:572:    initial.codex.shutdown_and_wait().await?;\ncodex-rs/core/tests/suite/compact_remote.rs:580:    resumed.codex.shutdown_and_wait().await?;\ncodex-rs/core/tests/suite/compact_remote.rs:667:    codex.shutdown_and_wait().await?;\ncodex-rs/core/tests/suite/request_permissions_tool.rs:141:async fn submit_turn(\ncodex-rs/core/tests/suite/request_permissions_tool.rs:517:    test.codex.shutdown_and_wait().await?;\ncodex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs:733:async fn submit_turn_with_session_permissions(\ncodex-rs/core/tests/suite/code_mode_elicitation.rs:115:async fn submit_turn(test: &TestCodex, permission_profile: PermissionProfile) -> Result<String> {\ncodex-rs/core/tests/suite/remote_env.rs:211:async fn submit_turn_with_approval_and_environments(\ncodex-rs/core/tests/suite/multi_agent_resume.rs:377:    sibling_thread.shutdown_and_wait().await?;\ncodex-rs/core/tests/suite/multi_agent_resume.rs:378:    worker_thread.shutdown_and_wait().await?;\ncodex-rs/core/tests/suite/multi_agent_resume.rs:583:    reloaded_worker.shutdown_and_wait().await?;\ncodex-rs/core/src/session/tests.rs:8635:async fn shutdown_and_wait_allows_multiple_waiters() {\ncodex-rs/core/src/session/tests.rs:8653:        tokio::spawn(async move { io.shutdown_and_wait().await })\ncodex-rs/core/src/session/tests.rs:8657:        tokio::spawn(async move { io.shutdown_and_wait().await })\ncodex-rs/core/src/session/tests.rs:8671:async fn shutdown_and_wait_waits_when_shutdown_is_already_in_progress() {\ncodex-rs/core/src/session/tests.rs:8689:        tokio::spawn(async move { io.shutdown_and_wait().await })\ncodex-rs/core/src/session/tests.rs:8706:async fn shutdown_and_wait_shuts_down_cached_guardian_subagent() {\ncodex-rs/core/src/session/tests.rs:8750:        .shutdown_and_wait()\ncodex-rs/core/src/session/tests.rs:8791:async fn shutdown_and_wait_shuts_down_tracked_ephemeral_guardian_review() {\ncodex-rs/core/src/session/tests.rs:8835:        .shutdown_and_wait()\ncodex-rs/core/tests/suite/approvals.rs:665:async fn submit_turn(\ncodex-rs/core/tests/suite/approvals.rs:700:async fn submit_turn_preserving_active_permission_profile(\ncodex-rs/core/tests/suite/approvals.rs:2199:    test.codex.shutdown_and_wait().await?;\ncodex-rs/core/tests/suite/fork_thread.rs:253:            .shutdown_and_wait()\ncodex-rs/core/tests/suite/guardian_mcp_elicitation.rs:172:    test.codex.shutdown_and_wait().await?;\ncodex-rs/core/tests/suite/request_plugin_install.rs:454:    test.codex.shutdown_and_wait().await?;\ncodex-rs/core/tests/suite/request_plugin_install.rs:504:    test.codex.shutdown_and_wait().await?;\ncodex-rs/core/tests/suite/git_enrichment.rs:157:    test.codex.shutdown_and_wait().await?;\ncodex-rs/core/tests/suite/git_enrichment.rs:259:    test.codex.shutdown_and_wait().await?;\ncodex-rs/core/tests/suite/git_enrichment.rs:356:    system_thread.thread.shutdown_and_wait().await?;\ncodex-rs/core/tests/suite/git_enrichment.rs:357:    test.codex.shutdown_and_wait().await?;\ncodex-rs/core/tests/suite/git_enrichment.rs:533:    worktree_thread.thread.shutdown_and_wait().await?;\ncodex-rs/core/tests/suite/git_enrichment.rs:534:    other_thread.thread.shutdown_and_wait().await?;\ncodex-rs/core/tests/suite/git_enrichment.rs:535:    test.codex.shutdown_and_wait().await?;\ncodex-rs/core/tests/suite/realtime_conversation.rs:3104:    test.codex.shutdown_and_wait().await?;\ncodex-rs/core/tests/suite/realtime_conversation.rs:3209:    codex.shutdown_and_wait().await?;\ncodex-rs/core/tests/suite/abort_tasks.rs:144:        .shutdown_and_wait()\ncodex-rs/core/src/session/mod.rs:870:    pub(crate) async fn submit_turn_input(\ncodex-rs/core/src/session/mod.rs:884:    pub(crate) async fn submit_turn_input_with_id(\ncodex-rs/core/src/session/mod.rs:930:    pub(crate) async fn shutdown_and_wait(&self) -> CodexResult<()> {\ncodex-rs/core/tests/suite/sqlite_state.rs:243:    started.thread.shutdown_and_wait().await?;\ncodex-rs/core/tests/suite/live_thread_materialization.rs:108:    test.codex.shutdown_and_wait().await?;\ncodex-rs/core/tests/suite/skill_approval.rs:45:async fn submit_turn_with_policies(\ncodex-rs/core/tests/suite/hooks.rs:1505:    test.codex.shutdown_and_wait().await?;\ncodex-rs/core/tests/suite/hooks.rs:1554:        subagent.thread.shutdown_and_wait().await?;\ncodex-rs/core/tests/suite/collaboration_instructions.rs:1072:    initial.codex.shutdown_and_wait().await?;\ncodex-rs/core/tests/suite/apply_patch_cli.rs:1024:    test.codex.shutdown_and_wait().await?;\ncodex-rs/core/src/thread_manager_tests.rs:173:    removed.shutdown_and_wait().await.expect(\"shutdown source\");\ncodex-rs/core/src/thread_manager_tests.rs:202:        .shutdown_and_wait()\ncodex-rs/core/src/thread_manager_tests.rs:256:        .shutdown_and_wait()\ncodex-rs/core/src/thread_manager_tests.rs:368:        .shutdown_and_wait()\ncodex-rs/core/src/thread_manager_tests.rs:467:        .shutdown_and_wait()\ncodex-rs/core/src/thread_manager_tests.rs:526:        .shutdown_and_wait()\ncodex-rs/core/src/thread_manager_tests.rs:678:        .shutdown_and_wait()\ncodex-rs/core/src/thread_manager_tests.rs:824:        .shutdown_and_wait()\ncodex-rs/core/src/thread_manager_tests.rs:850:        .shutdown_and_wait()\ncodex-rs/core/src/thread_manager_tests.rs:1928:        .shutdown_and_wait()\ncodex-rs/core/src/thread_manager_tests.rs:2042:        .shutdown_and_wait()\ncodex-rs/core/src/thread_manager_tests.rs:2105:        .shutdown_and_wait()\ncodex-rs/core/src/thread_manager_tests.rs:2153:        .shutdown_and_wait()\ncodex-rs/core/src/thread_manager_tests.rs:2172:        .shutdown_and_wait()\ncodex-rs/core/src/thread_manager_tests.rs:2226:        .shutdown_and_wait()\ncodex-rs/core/src/thread_manager_tests.rs:2254:        .shutdown_and_wait()\ncodex-rs/core/src/thread_manager_tests.rs:2344:        .shutdown_and_wait()\ncodex-rs/core/src/thread_manager_tests.rs:2369:        .shutdown_and_wait()\ncodex-rs/core/src/thread_manager_tests.rs:2403:        .shutdown_and_wait()\ncodex-rs/core/src/thread_manager_tests.rs:2408:        .shutdown_and_wait()\ncodex-rs/core/src/thread_manager_tests.rs:2514:        .shutdown_and_wait()\ncodex-rs/core/tests/suite/user_message_admission.rs:421:        .shutdown_and_wait()\ncodex-rs/core/tests/common/test_codex.rs:602:    pub async fn restart(\ncodex-rs/core/tests/common/test_codex.rs:612:        previous.codex.shutdown_and_wait().await?;\ncodex-rs/core/tests/common/test_codex.rs:943:    pub async fn submit_turn(&self, prompt: &str) -> Result<()> {\ncodex-rs/core/tests/common/test_codex.rs:972:    pub async fn submit_turn_with_permission_profile(\ncodex-rs/core/tests/common/test_codex.rs:985:    pub async fn submit_turn_with_policy(\ncodex-rs/core/tests/common/test_codex.rs:994:    pub async fn submit_turn_with_service_tier(\ncodex-rs/core/tests/common/test_codex.rs:1012:    pub async fn submit_turn_with_policies(\ncodex-rs/core/tests/common/test_codex.rs:1032:    pub async fn submit_turn_with_approval_and_permission_profile(\ncodex-rs/core/tests/common/test_codex.rs:1048:    pub async fn submit_turn_with_environments(\ncodex-rs/core/tests/common/test_codex.rs:1063:    async fn submit_turn_with_permission_profile_context(\ncodex-rs/core/tests/common/test_codex.rs:1081:    async fn submit_turn_with_context(\n",
+      "stderr": ""
+    },
+    "recovery_settings": {
+      "command": [
+        "rg",
+        "-n",
+        "turn recovery cannot override|RecoverTurnIfIdle|RecoverIfIdle|validate.*recovery",
+        "codex-rs/core",
+        "codex-rs/protocol",
+        "--glob",
+        "*.rs"
+      ],
+      "exit_code": 0,
+      "stdout": "codex-rs/core/src/tasks/mod.rs:2618:                // Attaching any task invalidates an older recovery token and mints the\ncodex-rs/core/src/session/turn_input.rs:473:                \"turn recovery cannot override the interrupted turn settings\".to_string(),\ncodex-rs/core/src/session/turn_input.rs:517:                .validated_recovery_history_snapshot(&replay.history_boundary)\ncodex-rs/core/src/session/turn_input.rs:602:            panic!(\"validated recovery context captured before candidate consumption\")\ncodex-rs/core/src/codex_thread.rs:696:    /// revalidates it atomically when reserving the recovery task.\ncodex-rs/core/src/session/mod.rs:4834:    pub(crate) async fn validated_recovery_history_snapshot(\n",
+      "stderr": ""
+    }
+  },
+  "native_source_modified": false,
+  "rust_commands_executed": false
+}

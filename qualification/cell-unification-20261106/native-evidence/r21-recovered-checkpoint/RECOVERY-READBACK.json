@@ -1,0 +1,126 @@
+{
+  "schema": "hepta.recovered-checkpoint-readback.v1",
+  "audit_identity": "NEW_POST_RECOVERY_REVERIFICATION",
+  "stage": 21,
+  "source_commit": "07699df6fb5bfb46562ecb0c2eccd0d232d18eac",
+  "source_tree": "e65356fc570296b74644967054eaded15b8ed440",
+  "archive": {
+    "bytes": 1190333,
+    "sha256": "1d9c0dc71fdda73158d1011d828046aa3c6f02219ed311a10d6e864795519652",
+    "git_blob": "8ddbd58b9be4c3efde5b971ad3e772909c3eba2e"
+  },
+  "regular_members": 206,
+  "indexed_members": 205,
+  "source_files": 187,
+  "source_raw_sha256_git_blob_mode_verified": true,
+  "full_git_tree_reconstruction_by_this_script": false,
+  "phase_bindings": {
+    "tests": {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--retries",
+        "0"
+      ],
+      "exit_code": 101,
+      "elapsed_seconds": 547.5407721996307,
+      "receipt": {
+        "bytes": 1003,
+        "sha256": "dcd1ae60c8dfec9ade39518917b5b3c047f6f75fc3266853068297223b1f6427",
+        "git_blob": "fdfaa734eb8e9a7462aed220c1e380b5fc18fb75"
+      },
+      "raw_process_result": {
+        "bytes": 499,
+        "sha256": "f54b30dcb10426d26853c29c48fda505055baf1211bd5c342d8f8b8f5e20abf4",
+        "git_blob": "565a36bfe7eb40c084ebfa9ae8149593dc49b7d8"
+      },
+      "log": {
+        "bytes": 27143,
+        "sha256": "7f2a8bb5a5b9ed5f227c19fa605d37b88f5fc7c0c527b43636bb2667b1df2e10",
+        "git_blob": "1d3753f498dc21709f34a69a8640e460eacc2ba0"
+      },
+      "resources": {
+        "bytes": 827,
+        "sha256": "223a2187f644ba6b9b5f36307dd2692f16ac0fe1ace0c293078681c4ebd53dcb",
+        "git_blob": "e873e87fa0325b90d5bd6db985e1d83e8e7aa0be"
+      },
+      "source_guard": {
+        "path": "native-workspace-r21-source-post-test-verification.json",
+        "bytes": 419,
+        "sha256": "cb2d40f06be65bede25c8e97d9912aef514c31be5b13b4c3e569c378b38eb64d",
+        "git_blob": "3da3dbc666f436890953c8dda329f2cb1caa55cc",
+        "passed": true
+      }
+    }
+  },
+  "outer_terminal": {
+    "path": "native-workspace-r21-terminal-process-status.json",
+    "bytes": 731,
+    "sha256": "1b5e134aa5b41766ca690f20eebdb4c7246ecfdb60501a885238c70ab1330917",
+    "git_blob": "843d59abe9a6e07a1be77745c4a437f1f8c9fab1",
+    "job": "1a1b0c142d4-fc05-729f",
+    "exit_code": 101,
+    "state": "failed",
+    "cancelled": false,
+    "timed_out": false
+  },
+  "execution": {
+    "state": "COMPILE_FAILED_NEXTEST_NOT_STARTED",
+    "test_execution_started": false,
+    "unique_test_results": null,
+    "passed": null,
+    "failed": null,
+    "timed_out": null,
+    "reported_skipped": null,
+    "execution_rows_observed": 0,
+    "starting_lines": [],
+    "summary_lines": [],
+    "compiler_errors": [
+      {
+        "line": 260,
+        "byte_start": 25985,
+        "byte_end": 26349,
+        "bytes": 364,
+        "sha256": "617cffa437fdec89663cabdf8d64fcc6def9470a7ded7b2b18ca45578b18663d",
+        "git_blob": "a8785ca2df6cecc8bc1f51a18a7c837c2bd9bf12",
+        "text": "error[E0063]: missing field `trace` in initializer of `codex_app_server_protocol::JSONRPCRequest`\n  --> app-server-client/src/remote_process_indeterminate_tests.rs:71:66\n   |\n71 |             let spawn = client.request_handle().request_json_rpc(JSONRPCRequest {\n   |                                                                  ^^^^^^^^^^^^^^ missing `trace`\n\n"
+      },
+      {
+        "line": 266,
+        "byte_start": 26349,
+        "byte_end": 26697,
+        "bytes": 348,
+        "sha256": "d52c9d0bebc92dd2b90a09b053f40ca70c98f0d51f6a571f84917e439afac7de",
+        "git_blob": "59d72b30cee73e73e75af6bf4758b7b7212b6043",
+        "text": "error[E0063]: missing field `trace` in initializer of `codex_app_server_protocol::JSONRPCRequest`\n  --> app-server-client/src/remote_process_indeterminate_tests.rs:92:58\n   |\n92 |                 client.request_handle().request_json_rpc(JSONRPCRequest {\n   |                                                          ^^^^^^^^^^^^^^ missing `trace`\n\n"
+      }
+    ]
+  },
+  "workspace_scope": {
+    "actual_workspace_members": 193,
+    "actual_default_members": 193,
+    "same_member_id_set": true,
+    "metadata": {
+      "bytes": 937669,
+      "sha256": "99fdbea678582580ebb373c06e4e91cd547f49d83765c22a59a1dd143510a834",
+      "git_blob": "ab7a20655d865adbf7fe783c2eb19318ae2bf72b"
+    },
+    "command_package_selector_added": false,
+    "all_features_platforms_external_services_qualified": false
+  },
+  "source_oracles": null,
+  "history": {
+    "old_group": "r21-workspace-checkpoint",
+    "old_summary_bytes": 7687,
+    "old_summary_sha256": "3ee7fff91796550272569f56792caf9d35c67cdb52ac0a90e294143b93332e4a",
+    "old_formal_bytes_recreated_or_claimed": false
+  },
+  "cost_boundary": "Original /usr/bin/time retained; shared filesystem free-space samples are not task-exclusive cost.",
+  "rust_tests_or_formatter_rerun": false,
+  "active_future_gate_logs_read": false,
+  "original_source_or_evidence_mutated": false,
+  "qualification_transferred": false,
+  "final_fix_fmt": "NOT_EXECUTED_AT_ORIGINAL_GATE",
+  "independent_recovered_tree_review": "PENDING_SEPARATE_HANDOFF"
+}

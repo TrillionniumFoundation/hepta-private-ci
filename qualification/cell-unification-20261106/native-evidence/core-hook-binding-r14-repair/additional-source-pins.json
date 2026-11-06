@@ -1,0 +1,28 @@
+{
+  "schema": "hepta.existing-cross-audit-source-pins.v1",
+  "source_commit": "b44d4ca4aa0ef9f894eff29e9975938e066a82f5",
+  "source_tree": "d3d2313b838422818bf9448ce5a1b86d89abdf69",
+  "sources": [
+    {
+      "path": "codex-rs/core/tests/common/responses.rs",
+      "local_path": "native-validation-results/core-fixture-metadata-audit/original/codex-rs/core/tests/common/responses.rs",
+      "bytes": 59259,
+      "sha256": "7616935a3f5244c3640b416133ca56d8fe2614c29500c850f04db7312807fc91",
+      "git_blob": "defa0bffa903d1c9412880fb06322c8e69fabb98"
+    },
+    {
+      "path": "codex-rs/codex-mcp/Cargo.toml",
+      "bytes": 1726,
+      "sha256": "c14b473064600e0886d20b034fb07ab0a5f71d7120c0e6e585f3b93f88aec0ad",
+      "git_blob": "6134f2126db203999727d05f61921836dfed06b7",
+      "local_path": "core-hooks-r14-audit/original/codex-rs/codex-mcp/Cargo.toml"
+    },
+    {
+      "path": "AGENTS.md",
+      "bytes": 22519,
+      "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480",
+      "git_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a"
+    }
+  ],
+  "basis": "Copied existing source identity records and package bytes previously reviewed; this is an archive closure aid, not a new execution or causal proof."
+}

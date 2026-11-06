@@ -1,0 +1,33 @@
+codex-rs/shell-escalation/src/unix/socket.rs:251:pub(crate) struct AsyncSocket {
+codex-rs/shell-escalation/src/unix/socket.rs:255:impl AsyncSocket {
+codex-rs/shell-escalation/src/unix/socket.rs:256:    fn new(socket: Socket) -> std::io::Result<AsyncSocket> {
+codex-rs/shell-escalation/src/unix/socket.rs:259:        Ok(AsyncSocket {
+codex-rs/shell-escalation/src/unix/socket.rs:264:    pub fn from_fd(fd: OwnedFd) -> std::io::Result<AsyncSocket> {
+codex-rs/shell-escalation/src/unix/socket.rs:265:        AsyncSocket::new(Socket::from(fd))
+codex-rs/shell-escalation/src/unix/socket.rs:268:    pub fn pair() -> std::io::Result<(AsyncSocket, AsyncSocket)> {
+codex-rs/shell-escalation/src/unix/socket.rs:276:        Ok((AsyncSocket::new(server)?, AsyncSocket::new(client)?))
+codex-rs/shell-escalation/src/unix/socket.rs:366:pub(crate) struct AsyncDatagramSocket {
+codex-rs/shell-escalation/src/unix/socket.rs:370:impl AsyncDatagramSocket {
+codex-rs/shell-escalation/src/unix/socket.rs:439:        let (server, client) = AsyncSocket::pair()?;
+codex-rs/shell-escalation/src/unix/socket.rs:464:        let (server, client) = AsyncSocket::pair()?;
+codex-rs/shell-escalation/src/unix/socket.rs:475:        let (server, client) = AsyncDatagramSocket::pair()?;
+codex-rs/shell-escalation/src/unix/socket.rs:515:        let (server, client) = AsyncSocket::pair().expect("failed to create socket pair");
+codex-rs/shell-escalation/src/unix/escalate_client.rs:16:use crate::unix::socket::AsyncDatagramSocket;
+codex-rs/shell-escalation/src/unix/escalate_client.rs:17:use crate::unix::socket::AsyncSocket;
+codex-rs/shell-escalation/src/unix/escalate_client.rs:19:fn get_escalate_client() -> anyhow::Result<AsyncDatagramSocket> {
+codex-rs/shell-escalation/src/unix/escalate_client.rs:20:    // TODO: we should defensively require only calling this once, since AsyncSocket will take ownership of the fd.
+codex-rs/shell-escalation/src/unix/escalate_client.rs:27:    Ok(unsafe { AsyncDatagramSocket::from_raw_fd(client_fd) }?)
+codex-rs/shell-escalation/src/unix/escalate_client.rs:41:    let (server, client) = AsyncSocket::pair()?;
+codex-rs/shell-escalation/src/unix/escalate_server.rs:29:use crate::unix::socket::AsyncDatagramSocket;
+codex-rs/shell-escalation/src/unix/escalate_server.rs:30:use crate::unix::socket::AsyncSocket;
+codex-rs/shell-escalation/src/unix/escalate_server.rs:196:        let (escalate_server, escalate_client) = AsyncDatagramSocket::pair()?;
+codex-rs/shell-escalation/src/unix/escalate_server.rs:228:    socket: AsyncDatagramSocket,
+codex-rs/shell-escalation/src/unix/escalate_server.rs:244:        let stream_socket = AsyncSocket::from_fd(fds.remove(0))?;
+codex-rs/shell-escalation/src/unix/escalate_server.rs:266:    socket: AsyncSocket,
+codex-rs/shell-escalation/src/unix/escalate_server.rs:729:        let (server, client) = AsyncSocket::pair()?;
+codex-rs/shell-escalation/src/unix/escalate_server.rs:769:        let (server, client) = AsyncSocket::pair()?;
+codex-rs/shell-escalation/src/unix/escalate_server.rs:808:        let (server, client) = AsyncSocket::pair()?;
+codex-rs/shell-escalation/src/unix/escalate_server.rs:917:        let (server, client) = AsyncSocket::pair()?;
+codex-rs/shell-escalation/src/unix/escalate_server.rs:973:        let (server, client) = AsyncSocket::pair()?;
+codex-rs/shell-escalation/src/unix/escalate_server.rs:1057:        let handshake_client = unsafe { AsyncDatagramSocket::from_raw_fd(dup_socket_fd) }?;
+codex-rs/shell-escalation/src/unix/escalate_server.rs:1058:        let (server_stream, client_stream) = AsyncSocket::pair()?;

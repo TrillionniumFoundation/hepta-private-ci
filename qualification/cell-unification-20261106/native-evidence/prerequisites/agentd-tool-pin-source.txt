@@ -1,0 +1,14 @@
+.github/workflows/blocking-ci.yml:158:      - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+.github/workflows/blocking-ci.yml:159:      - run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
+.github/workflows/hepta-cell-framework-native.yml:61:          sudo apt-get install -y build-essential clang cmake protobuf-compiler libssl-dev libcap-dev pkg-config bubblewrap
+.github/workflows/hepta-cell-framework-native.yml:65:      - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+.github/workflows/hepta-cell-framework-native.yml:67:        run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
+.github/workflows/Dockerfile.bazel:15:RUN curl -LSfs "https://github.com/facebook/dotslash/releases/download/v0.5.8/dotslash-ubuntu-22.04.$(uname -m).tar.gz" | tar fxz - -C /usr/local/bin
+.github/workflows/hepta-architecture-convergence.yml:139:      - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+.github/workflows/hepta-architecture-convergence.yml:143:        run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
+.github/workflows/hepta-consolidated-source.yml:100:        uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+.github/workflows/hepta-consolidated-source.yml:103:        run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
+.github/workflows/hepta-consolidated-source.yml:374:        uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+.github/workflows/hepta-consolidated-source.yml:377:        run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
+.github/actions/setup-ci/action.yml:80:      uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a # v2
+.github/actions/setup-ci-tools/action.yml:12:      uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a # v2

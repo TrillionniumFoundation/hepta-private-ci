@@ -1,0 +1,39 @@
+{
+  "source_tree": "6d88ca9c8964669a408d8549efaeff7b94d68674",
+  "source_manifest": "native-candidate-r8-source.json",
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-supervisor",
+    "--test",
+    "paired_process_product",
+    "--retries",
+    "0",
+    "-j",
+    "1"
+  ],
+  "kind": "diagnostic_original_source_profile_single_thread",
+  "purpose": "Distinguish original paired fixture CPU/file verification and concurrency cost without changing source, original 60-second nextest deadline, permissions, assertions or filters.",
+  "profile": {
+    "RUSTUP_TOOLCHAIN": "1.96.0",
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_TARGET_DIR": "/home/alex/work/hepta-cell-unified-20261106-a/target",
+    "NEXTEST_TEST_THREADS": "2",
+    "NEXTEST_PROFILE": null,
+    "CARGO_PROFILE_TEST_DEBUG": null,
+    "CARGO_PROFILE_DEV_DEBUG": null,
+    "CARGO_INCREMENTAL": null
+  },
+  "profile_source_files": {
+    "codex-rs/Cargo.toml": "de54aafbd8e041cdaec30705fb6c286bd308f2a03de1c598a778f20feaade34b",
+    "codex-rs/.config/nextest.toml": "351cdfe17480eae1124145e32a0de6de2889a38f01b14036187bc42e2553fdde",
+    "justfile": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124",
+    "scripts/run-nextest.py": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127",
+    "scripts/just-shell.py": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9"
+  },
+  "clock_ticks_per_second": 100,
+  "no_network_probe_or_environment_dump": true,
+  "only_own_subprocess_descendants_observed": true
+}

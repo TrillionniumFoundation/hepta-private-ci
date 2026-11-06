@@ -1,0 +1,35 @@
+{
+  "schema": "hepta.app-server-ci-r18-source.v1",
+  "state": "ISOLATED_FROZEN_NOT_RUN",
+  "source_commit": "2d7ad1d60019f35fc13d84138ceb2755d914f434",
+  "source_tree": "ffa0a37f4616c5563169c7f0a9305bf6c982d58b",
+  "files": [
+    {
+      "path": ".github/workflows/hepta-cell-framework-native.yml",
+      "before": {
+        "bytes": 8848,
+        "sha256": "4a0cbfa961838f492423e6897d24802c1b456278032a0cedc8c33da385653ed0",
+        "git_blob": "29eb48f017280fee3bbc1efc48ac1e9eb204bc32"
+      },
+      "after": {
+        "bytes": 8952,
+        "sha256": "5c1947922fc66c513f96a3c2c221fcfc812b0773263f6fed0ac5e7489be19e32",
+        "git_blob": "59bd4d8e0dfa8001a12578d9b8ad706de16ec029"
+      },
+      "mode": "100644"
+    }
+  ],
+  "patch": {
+    "path": "repair.patch",
+    "bytes": 881,
+    "sha256": "dade2d5b3811097bf5aa3a0cfadf0cf1d0231be336c5c75b0b08e29b26717c33",
+    "git_blob": "1b23a881e479f1e99f8ed333f022a8f10216bf4f"
+  },
+  "existing_lanes_retained_byte_for_byte": 4,
+  "additional_lane": "app-server",
+  "old_unique_package_selectors": 22,
+  "new_unique_package_selectors": 23,
+  "canonical_or_native_source_modified": false,
+  "rust_commands_run": false,
+  "workflow_executed": false
+}
