@@ -633,6 +633,12 @@ impl RemoteAppServerClient {
                         };
                         match command {
                             RemoteClientCommand::Request { request, response_tx } => {
+                                // Only skip cancellation observed before this request enters the writer.
+                                // Cancellation after this check or a lost reply still leaves the
+                                // existing pending/unknown handling in charge; it is not a no-effect proof.
+                                if response_tx.is_closed() {
+                                    continue;
+                                }
                                 if request.method == "process/spawn" && !process_indeterminate_enabled {
                                     let _ = response_tx.send(Err(IoError::new(
                                         ErrorKind::Unsupported,
