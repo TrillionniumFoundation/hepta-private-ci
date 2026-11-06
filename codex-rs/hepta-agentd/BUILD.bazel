@@ -137,7 +137,7 @@ workspace_root_test(
     workspace_root_marker = "//codex-rs/utils/cargo-bin:repo_root.marker",
 )
 
-# Preserve the original read-only degradation assertion with a matching
+# Exercise required-owner startup rejection with a matching read-only
 # no-default-features product. The public wrapper is an ordinary //... test;
 # only its private implementation binary follows the existing manual convention.
 rust_library(
@@ -200,7 +200,7 @@ workspace_root_test(
     timeout = "long",
     args = [
         "--exact",
-        "unavailable_cognitive_store_keeps_read_tools_and_omits_write_tools",
+        "cognitive_store_unavailable_fails_closed_before_provider",
     ],
     runfile_env = {
         ":hepta-agentd-cognitive-readonly-product-bin": "CARGO_BIN_EXE_codex-hepta-agentd",
