@@ -49,15 +49,13 @@ fn product_write_profile_fails_closed_when_cognitive_store_is_unavailable() {
 
 #[cfg(not(feature = "production-cognitive-write"))]
 #[test]
-fn read_only_profile_preserves_degraded_cognitive_runtime_behavior() {
+fn read_only_profile_fails_closed_when_cognitive_store_is_unavailable() {
     let result = require_cognitive_runtime_for_profile(CognitiveRuntime::Unavailable(
         codex_hepta_memory::CognitiveUnavailableReason::StorageUnavailable,
-    ))
-    .expect("read-only profile remains availability tolerant");
+    ));
     assert!(matches!(
         result,
-        CognitiveRuntime::Unavailable(
-            codex_hepta_memory::CognitiveUnavailableReason::StorageUnavailable
-        )
+        Err(crate::AgentdError::Protocol(message))
+            if message == "critical cognitive owner unavailable"
     ));
 }
