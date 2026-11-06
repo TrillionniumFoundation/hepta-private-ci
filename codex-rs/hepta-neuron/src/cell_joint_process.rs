@@ -107,7 +107,7 @@ pub(crate) fn executable_digest(_file: &File) -> Result<[u8; 32], CellGeneration
     Err(CellGenerationErrorV2::Unavailable)
 }
 
-struct OwnedChild(Option<Child>);
+pub(crate) struct OwnedChild(pub(crate) Option<Child>);
 
 impl Drop for OwnedChild {
     fn drop(&mut self) {

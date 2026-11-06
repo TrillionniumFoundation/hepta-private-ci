@@ -31,13 +31,23 @@ mod synthetic;
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 type Clock = Arc<dyn Fn() -> u64 + Send + Sync>;
 
+#[derive(Clone, Copy)]
+enum Transport {
+    OneShot,
+    Resident,
+}
+
 fn install_model(
     fixture: &mut Fixture,
     clock: Clock,
+    transport: Transport,
 ) -> TestResult<(Arc<JointGenerationProcessWorkerV1>, synthetic::Assets)> {
     let assets = synthetic::assets()?;
     let executable = PathBuf::from(
-        std::env::var_os("CARGO_BIN_EXE_hepta-joint-propose")
+        std::env::var_os("NEXTEST_BIN_EXE_hepta-joint-propose")
+            .or_else(|| std::env::var_os("NEXTEST_BIN_EXE_hepta_joint_propose"))
+            .or_else(|| std::env::var_os("CARGO_BIN_EXE_hepta-joint-propose"))
+            .or_else(|| std::env::var_os("CARGO_BIN_EXE_hepta_joint_propose"))
             .ok_or_else(|| std::io::Error::other("missing actual Joint compiler artifact"))?,
     );
     if !executable.is_absolute() {
@@ -53,7 +63,11 @@ fn install_model(
     let public = fixture.directory.path().join("synthetic-public.hps");
     fs::write(&weights, &assets.weights)?;
     fs::write(&public, &assets.public)?;
-    let worker = Arc::new(JointGenerationProcessWorkerV1::open(
+    let open = match transport {
+        Transport::OneShot => JointGenerationProcessWorkerV1::open,
+        Transport::Resident => JointGenerationProcessWorkerV1::open_resident,
+    };
+    let worker = Arc::new(open(
         JointGenerationProcessConfigV1 {
             executable,
             executable_digest,
@@ -67,7 +81,7 @@ fn install_model(
         clock,
     )?);
     let manifest = &mut fixture.config.manifest;
-    manifest.profile = JointGenerationProcessWorkerV1::PROFILE.into();
+    manifest.profile = worker.profile().into();
     manifest.source_digest = source_digest;
     manifest.encoder = Some(worker.encoder_digest());
     manifest.head = Some(worker.head_digest());
@@ -241,12 +255,24 @@ async fn deliver(
 #[tokio::test]
 async fn synthetic_joint_control_service_preserves_real_output_cost_and_owner_on_reopen()
 -> TestResult {
+    control_service_preserves_real_output_cost_and_owner_on_reopen(Transport::OneShot).await
+}
+
+#[tokio::test]
+async fn resident_joint_control_service_preserves_real_output_cost_and_owner_on_reopen()
+-> TestResult {
+    control_service_preserves_real_output_cost_and_owner_on_reopen(Transport::Resident).await
+}
+
+async fn control_service_preserves_real_output_cost_and_owner_on_reopen(
+    transport: Transport,
+) -> TestResult {
     let mut fixture = Fixture::new().await;
     let epoch = Instant::now();
     // One real monotonic epoch is shared by owner, actor and process worker.
     let clock: Clock =
         Arc::new(move || u64::try_from(epoch.elapsed().as_micros()).unwrap_or(u64::MAX - 1) + 1);
-    let (worker, assets) = install_model(&mut fixture, Arc::clone(&clock))?;
+    let (worker, assets) = install_model(&mut fixture, Arc::clone(&clock), transport)?;
     let public_digest = Digest32::of_bytes(&assets.public).into_array();
     let (handle, mut tasks) =
         start_service(&fixture, Arc::clone(&worker), Arc::clone(&clock)).await?;
