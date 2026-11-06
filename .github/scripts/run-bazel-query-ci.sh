@@ -3,12 +3,19 @@
 set -euo pipefail
 
 # Run target-discovery queries with the same startup settings as the main
-# build/test invocation so they can reuse the same Bazel server. Queries only
-# enumerate labels, so they intentionally do not select a CI build/test config
-# or remote execution.
+# build/test invocation so they can reuse the same Bazel server. Ordinary
+# queries remain pre-analysis. --configured explicitly requests cquery so the
+# caller can supply the same platform options as its build; it executes no
+# build or test actions and does not itself select remote execution.
+
+query_command=query
+if [[ "${1:-}" == "--configured" ]]; then
+  query_command=cquery
+  shift
+fi
 
 if [[ $# -lt 2 || "${@: -2:1}" != "--" ]]; then
-  echo "Usage: $0 [<bazel query args>...] -- <query expression>" >&2
+  echo "Usage: $0 [--configured] [<bazel query args>...] -- <query expression>" >&2
   exit 1
 fi
 
@@ -24,7 +31,7 @@ run_bazel() {
   "$(dirname "${BASH_SOURCE[0]}")/run_bazel_with_buildbuddy.py" "$@"
 }
 
-bazel_query_args=(query)
+bazel_query_args=("${query_command}")
 
 if [[ -n "${BAZEL_REPO_CONTENTS_CACHE:-}" ]]; then
   bazel_query_args+=("--repo_contents_cache=${BAZEL_REPO_CONTENTS_CACHE}")

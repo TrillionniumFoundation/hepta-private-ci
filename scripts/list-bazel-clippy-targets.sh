@@ -19,15 +19,41 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-# Resolve the dynamic targets before printing anything so callers do not
-# continue with a partial list if `bazel query` fails. Target discovery is
-# local on all platforms.
+# Resolve the complete manual target list before printing any build patterns.
+# Query failures must not turn into a partial successful lint selection.
+query_args=(--output=label)
+manual_rust_test_query='kind("rust_test rule", attr(tags, "manual", //codex-rs/... except //codex-rs/v8-poc/...))'
+if [[ "${RUNNER_OS:-}" == "Windows" && $windows_cross_compile -eq 0 ]]; then
+  # Native MSVC must honor declared compatibility, including GNU-cross helpers
+  # and Unix-only owner fixtures. Keep every compatible manual Rust test;
+  # suffix filtering cannot express the latter platform constraints.
+  # A reused server can retain the same label in exec or older configurations.
+  # Test compatibility only in this invocation's top-level target configuration.
+  manual_rust_test_query="config(${manual_rust_test_query}, target)"
+  query_args=(
+    --configured
+    --config=ci-windows
+    --config=clippy
+    --platforms=//:windows_x86_64_msvc
+    --host_platform=//:local_windows_msvc
+    --output=starlark
+    '--starlark:expr="//%s:%s" % (target.label.package, target.label.name) if "IncompatiblePlatformProvider" not in providers(target) else ""'
+  )
+fi
 manual_rust_test_targets="$(
   ./.github/scripts/run-bazel-query-ci.sh \
-    --output=label \
-    -- 'kind("rust_test rule", attr(tags, "manual", //codex-rs/... except //codex-rs/v8-poc/...))'
+    "${query_args[@]}" \
+    -- "${manual_rust_test_query}"
 )"
-if [[ "${RUNNER_OS:-}" != "Windows" ]]; then
+if [[ "${RUNNER_OS:-}" == "Windows" && $windows_cross_compile -eq 0 ]]; then
+  # cquery emits an empty line for each incompatible configured target.
+  # Native Windows stdout uses CRLF; remove each record's one trailing CR.
+  manual_rust_test_targets="$(printf '%s\n' "${manual_rust_test_targets}" | sed $'s/\r$//; /^$/d')"
+  if [[ -z "${manual_rust_test_targets}" ]]; then
+    echo "Configured Clippy query returned no manual Rust test helpers" >&2
+    exit 1
+  fi
+elif [[ "${RUNNER_OS:-}" != "Windows" ]]; then
   # Non-Windows clippy jobs lint the native test binaries; the
   # Windows-cross binaries exist only for the fast Windows test leg.
   manual_rust_test_targets="$(printf '%s\n' "${manual_rust_test_targets}" | grep -v -- '-windows-cross-bin$' || true)"
