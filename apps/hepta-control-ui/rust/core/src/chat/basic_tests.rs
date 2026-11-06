@@ -41,13 +41,21 @@ fn bounded_unicode_drafts_reject_whole_update_without_truncation() {
 
 #[test]
 fn input_limit_disables_original_objective_until_a_valid_edit() {
-    use crate::chat_owner::{CHAT_OWNER_PROTOCOL, ChatCapability, OwnerScope, OwnerSession};
-    use crate::objective_ui::{
-        ObjectiveUiBinding, ObjectiveUiCommand, ObjectiveUiError, ObjectiveUiObservation,
-        ObjectiveUiPhase, ObjectiveUiPort, ObjectiveUiRequest,
-    };
-    use sha2::{Digest, Sha256};
-    use std::sync::{Arc, Mutex};
+    use crate::chat_owner::CHAT_OWNER_PROTOCOL;
+    use crate::chat_owner::ChatCapability;
+    use crate::chat_owner::OwnerScope;
+    use crate::chat_owner::OwnerSession;
+    use crate::objective_ui::ObjectiveUiBinding;
+    use crate::objective_ui::ObjectiveUiCommand;
+    use crate::objective_ui::ObjectiveUiError;
+    use crate::objective_ui::ObjectiveUiObservation;
+    use crate::objective_ui::ObjectiveUiPhase;
+    use crate::objective_ui::ObjectiveUiPort;
+    use crate::objective_ui::ObjectiveUiRequest;
+    use sha2::Digest;
+    use sha2::Sha256;
+    use std::sync::Arc;
+    use std::sync::Mutex;
 
     struct PreparedPort {
         binding: ObjectiveUiBinding,
