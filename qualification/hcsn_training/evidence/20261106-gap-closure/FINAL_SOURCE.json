@@ -3,10 +3,10 @@
   "status": "exact_source_published_ci_in_progress",
   "repository": "TrillionniumFoundation/hepta-private-ci",
   "base_commit": "fcffa43043ec7f36fa680c449c54b9b3446eb6a6",
-  "final_source_commit": "e62f1329142c5752d0344b5fa64f3a9c981f4be5",
-  "final_source_tree": "aafd1fe8447a98212a6c62b8a48474e723da3bf5",
+  "final_source_commit": "44e539313e0c54badb4b9b687425dd87ecba6e67",
+  "final_source_tree": "b7ac591c98b6045521f70e97f58dc2cea8bf12bc",
   "source_pr": 5001,
-  "workflow_run_id": 42220007503,
+  "workflow_run_id": 42222767973,
   "workflow_outcome": "pending",
   "preformat_recovered_snapshot_commit": "e989d51b0da0617aa20a1fccbcbcb4ad01571ff4",
   "physical_and_local_evidence_commit": "7176667c0807ee49bd6bfc9a571b175f44a243a1",
@@ -81,15 +81,16 @@
     {
       "stage": 9,
       "branch": "codex/hcsn-gap-closure-20261106",
-      "commit": "e62f1329142c5752d0344b5fa64f3a9c981f4be5",
-      "tree": "aafd1fe8447a98212a6c62b8a48474e723da3bf5",
-      "changed_lines": 323,
+      "commit": "44e539313e0c54badb4b9b687425dd87ecba6e67",
+      "tree": "b7ac591c98b6045521f70e97f58dc2cea8bf12bc",
+      "changed_lines": 355,
+      "initial_commit": "e62f1329142c5752d0344b5fa64f3a9c981f4be5",
       "pr": 5001
     }
   ],
   "local_workspace": {
     "path": "/workspace/scratch/d216bf53a09d/hepta-hcsn",
-    "head": "e62f1329142c5752d0344b5fa64f3a9c981f4be5",
+    "head": "44e539313e0c54badb4b9b687425dd87ecba6e67",
     "clean": true,
     "api_created_trees_matched_local_git": true,
     "api_commit_objects_reproduced_and_hash_verified": true
@@ -106,5 +107,12 @@
     "local_ram_only_bridge_raw_lost": true,
     "new_agentd_recovery_regression_validation": "pending_exact_head_ci",
     "training_block_boundary": "complete numerical state restored as detached initial state"
+  },
+  "previous_qualification": {
+    "head": "e62f1329142c5752d0344b5fa64f3a9c981f4be5",
+    "run_id": 42220007503,
+    "dedicated_hcsn_result": "success",
+    "broader_repository_green": false,
+    "corrected_new_caller_with_existing_owner": true
   }
 }
