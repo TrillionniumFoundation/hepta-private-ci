@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "status": "pending_exact_source_hosted_acceptance",
+  "source_pr": 5067,
+  "source_head": "bbe995c43e4eed4bb9c217b52447ba5a32ebb6ca",
+  "source_tree": "e74509e6a2a49bd004b79854b3a6dbc2fe581be0",
+  "base_head": "44e539313e0c54badb4b9b687425dd87ecba6e67",
+  "dedicated_run": 42240138316,
+  "local_archive": {
+    "path": "local-raw.tgz",
+    "sha256": "bc1652742befe0b2fa4c2ce5813841402e26fe494f396a0ade509e804a8b87e1",
+    "regular_files": 489,
+    "regular_bytes": 8373205,
+    "readback_verified": true,
+    "special_files_manifest_only": 1
+  },
+  "local_validation": {
+    "path": "local-validation.json",
+    "sha256": "3b806837965dcbf98bc3a8bfcef659b2a107f1c99ed816a95b4f587b8e0f0a45",
+    "observations": 40,
+    "distinct_referenced_files": 132
+  },
+  "claims": {
+    "final_69_tests_passed": false,
+    "extended_classical_cancellation_passes": 0,
+    "pq_host_real_cancellation_passes": 0,
+    "production_deployment": false,
+    "agentd_daemon_booted": false,
+    "authbus_ingress_exercised": false,
+    "independent_custody": false,
+    "optimizer_entry_proven": false,
+    "desktop_cuda_campaign_touched": false
+  }
+}

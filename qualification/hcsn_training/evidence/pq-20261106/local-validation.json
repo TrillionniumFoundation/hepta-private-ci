@@ -1,0 +1,2318 @@
+{
+  "schema_version": 1,
+  "kind": "hcsn_local_validation_inventory",
+  "generated_at_utc": "2026-11-06T15:15:28.537417+00:00",
+  "generation_method": "Read existing logs/receipts and hash files only; no tests, builds, source edits or evidence deletion.",
+  "baseline_context": "44e539313e0c54badb4b9b687425dd87ecba6e67",
+  "checkout_head_at_inventory_generation": "bbe995c43e4eed4bb9c217b52447ba5a32ebb6ca",
+  "checkout_head_scope": "Inventory-time context only; not a historical run identity.",
+  "summary": {
+    "strict_python_prior_run": {
+      "tests": 64,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "final_69_suite": false
+    },
+    "spatial_tests": {
+      "successfully_completed": 4,
+      "final_module_test_count": 5,
+      "final_attempt_exit_codes": [
+        137,
+        137
+      ],
+      "fifth_test_success": false
+    },
+    "old_cancellation_attempt_01": {
+      "value_kernel": "failed_preparation",
+      "population_grid": "failed_preparation",
+      "population_age": "failed_preparation"
+    },
+    "old_cancellation_attempt_02": {
+      "value_kernel": "passed_old_tiny_workload",
+      "population_grid": "failed_outputs_already_present",
+      "population_age": "failed_worker_completed_first"
+    },
+    "extended_workload_evidence": {
+      "value_kernel": "one_step_preflight_only",
+      "population_grid": "one_step_preflight_only",
+      "population_age": "final_79_event_one_step_preflight_only",
+      "actual_cancellation_passes": 0
+    },
+    "caller_final": {
+      "boundaries": 51,
+      "protected_entries": 25,
+      "unique_protected_paths": 24,
+      "source_pins": 11,
+      "typed_tests_passed": 10,
+      "negative_cases_passed": 14
+    },
+    "source_identity_policy": "Recorded file maps/checksums are retained where available. Unknown historical source snapshots remain explicitly unknown; current HEAD is not retroactively assigned to old runs."
+  },
+  "counting_rules": [
+    "Counts describe individual runs; overlapping numerical/supervisor/full-suite tests must not be summed.",
+    "A one-step numerical preflight is not a real cancellation acceptance.",
+    "Historical failures and empty exit-137 logs are preserved as independent entries.",
+    "Source/test/workflow presence is not execution success."
+  ],
+  "entries": [
+    {
+      "id": "numerical_baseline_24",
+      "category": "python_unittest",
+      "path": "/workspace/scratch/7b4b0c316c52/numerical-review-baseline.log",
+      "sha256": "fb7835d01054946861cd826e07473c5324d0c5ca77bee5793b28d4cf32371842",
+      "bytes": 124,
+      "result": {
+        "status": "passed",
+        "tests_run": 24,
+        "wall_seconds": 22.654,
+        "observed_named_tests": [],
+        "full_test_membership_recorded": false
+      },
+      "proof_scope": [
+        "The retained unittest log reports 24 successful bounded numerical/recovery tests."
+      ],
+      "failure_or_interruption": null,
+      "not_run_or_not_proven": [
+        "The log has no named-test list or command transcript.",
+        "No scientific improvement, GPU campaign, deployment, or final-candidate coverage is established."
+      ],
+      "source_identity": {
+        "status": "unknown",
+        "exact_repository_commit": "unknown",
+        "exact_run_source_snapshot": "unknown",
+        "reported_phase": "Initially assigned checkout base 44e539313e0c54badb4b9b687425dd87ecba6e67; exact run source was not captured in this log.",
+        "reason": "The retained run log does not bind a complete source tree or commit. Current source bytes are not substituted for historical run identity."
+      },
+      "supporting_artifacts": []
+    },
+    {
+      "id": "numerical_exploratory_probe",
+      "category": "numerical_probe",
+      "path": "/workspace/scratch/7b4b0c316c52/numerical-review-probe.log",
+      "sha256": "47a00152d006f212f6ad3ecc6cb91cd3ad68859465c01fa1c642bf60db8cf8ad",
+      "bytes": 1329,
+      "result": {
+        "status": "mixed_observations",
+        "rejection": {
+          "dtype": "float32",
+          "interval_micros": 1000,
+          "steps": 4096,
+          "observed_mass": 0.9999738931655884,
+          "message": "population age total mass must remain one"
+        }
+      },
+      "proof_scope": [
+        "Retains FP32/FP64 finite-transition residual observations and three graph probes, including a validator refusal."
+      ],
+      "failure_or_interruption": null,
+      "not_run_or_not_proven": [
+        "Exploratory probes are not a worker-admitted training run or numerical-quality campaign.",
+        "The earlier review identified the 4096-step refusal as outside the worker working-element admission budget; the raw log does not retain that request/budget calculation.",
+        "No test harness source or complete historical execution identity was retained."
+      ],
+      "source_identity": {
+        "status": "unknown",
+        "exact_repository_commit": "unknown",
+        "exact_run_source_snapshot": "unknown",
+        "reported_phase": "Initial independent numerical review.",
+        "reason": "The retained run log does not bind a complete source tree or commit. Current source bytes are not substituted for historical run identity."
+      },
+      "supporting_artifacts": []
+    },
+    {
+      "id": "legacy_divisor_probe",
+      "category": "numerical_probe",
+      "path": "/workspace/scratch/7b4b0c316c52/numerical-review-legacy-divisors.log",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "bytes": 3,
+      "result": {
+        "status": "observed_output_only",
+        "recorded_output": []
+      },
+      "proof_scope": [
+        "Retains an empty reported divisor-difference list."
+      ],
+      "failure_or_interruption": null,
+      "not_run_or_not_proven": [
+        "The script, enumeration bounds and exact historical source identity are not retained; no exhaustive verification claim is made."
+      ],
+      "source_identity": {
+        "status": "unknown",
+        "exact_repository_commit": "unknown",
+        "exact_run_source_snapshot": "unknown",
+        "reported_phase": "Initial numerical review.",
+        "reason": "The retained run log does not bind a complete source tree or commit. Current source bytes are not substituted for historical run identity."
+      },
+      "supporting_artifacts": []
+    },
+    {
+      "id": "source_imports_initial_7",
+      "category": "python_unittest",
+      "path": "/workspace/scratch/7b4b0c316c52/supervisor-imports-01.log",
+      "sha256": "12ef3e9a9a570a72f0de5885a0a49d3e776e42a13b4810a82b3baf27e0217d1e",
+      "bytes": 1427,
+      "result": {
+        "status": "passed",
+        "tests_run": 7,
+        "wall_seconds": 0.355,
+        "observed_named_tests": [
+          "qualification.hcsn_training.test_supervisor_imports.SupervisorImportTests.test_checkout_root_does_not_shadow_installed_runtime_modules",
+          "qualification.hcsn_training.test_supervisor_imports.SupervisorImportTests.test_extension_loader_cannot_shadow_approved_source",
+          "qualification.hcsn_training.test_supervisor_imports.SupervisorImportTests.test_foreign_package_search_location_is_refused",
+          "qualification.hcsn_training.test_supervisor_imports.SupervisorImportTests.test_out_of_bundle_source_is_refused_before_execution",
+          "qualification.hcsn_training.test_supervisor_imports.SupervisorImportTests.test_root_namespace_and_source_initializer_are_supported",
+          "qualification.hcsn_training.test_supervisor_imports.SupervisorImportTests.test_source_symlink_inside_the_bundle_is_refused",
+          "qualification.hcsn_training.test_supervisor_imports.SupervisorImportTests.test_sourceless_bytecode_is_refused_before_execution"
+        ],
+        "full_test_membership_recorded": true
+      },
+      "proof_scope": [
+        "Seven fresh isolated interpreter import-policy regressions passed."
+      ],
+      "failure_or_interruption": null,
+      "not_run_or_not_proven": [
+        "This seven-test run does not cover the later eighth root-package-shadow test."
+      ],
+      "source_identity": {
+        "status": "unknown",
+        "exact_repository_commit": "unknown",
+        "exact_run_source_snapshot": "unknown",
+        "reported_phase": "First import-loader hardening version, before the sibling-root-module shadow regression was added.",
+        "reason": "The retained run log does not bind a complete source tree or commit. Current source bytes are not substituted for historical run identity."
+      },
+      "supporting_artifacts": []
+    },
+    {
+      "id": "source_imports_and_supervisor_19",
+      "category": "python_unittest",
+      "path": "/workspace/scratch/7b4b0c316c52/supervisor-imports-02.log",
+      "sha256": "e986ac6a7f50ad5c87250fdbbb669b5c91cac9f802aafc83092bb003baaaf545",
+      "bytes": 4267,
+      "result": {
+        "status": "passed",
+        "tests_run": 19,
+        "wall_seconds": 14.078,
+        "observed_named_tests": [
+          "qualification.hcsn_training.test_supervisor_imports.SupervisorImportTests.test_checkout_root_does_not_shadow_installed_runtime_modules",
+          "qualification.hcsn_training.test_supervisor_imports.SupervisorImportTests.test_extension_loader_cannot_shadow_approved_source",
+          "qualification.hcsn_training.test_supervisor_imports.SupervisorImportTests.test_foreign_package_search_location_is_refused",
+          "qualification.hcsn_training.test_supervisor_imports.SupervisorImportTests.test_out_of_bundle_source_is_refused_before_execution",
+          "qualification.hcsn_training.test_supervisor_imports.SupervisorImportTests.test_root_namespace_and_source_initializer_are_supported",
+          "qualification.hcsn_training.test_supervisor_imports.SupervisorImportTests.test_source_roots_cannot_be_shadowed_by_sibling_modules",
+          "qualification.hcsn_training.test_supervisor_imports.SupervisorImportTests.test_source_symlink_inside_the_bundle_is_refused",
+          "qualification.hcsn_training.test_supervisor_imports.SupervisorImportTests.test_sourceless_bytecode_is_refused_before_execution",
+          "qualification.hcsn_training.test_supervisor.SupervisorTests.test_cancel_only_after_owned_worker_termination",
+          "qualification.hcsn_training.test_supervisor.SupervisorTests.test_cancel_serializes_with_reservation_setup",
+          "qualification.hcsn_training.test_supervisor.SupervisorTests.test_cli_ignores_timestamp_valid_bytecode_from_checkout",
+          "qualification.hcsn_training.test_supervisor.SupervisorTests.test_completed_orphan_outputs_are_preserved_without_claiming_success",
+          "qualification.hcsn_training.test_supervisor.SupervisorTests.test_concurrent_same_key_launches_one_worker",
+          "qualification.hcsn_training.test_supervisor.SupervisorTests.test_dead_runner_stays_unknown_until_explicit_orphan_cancel",
+          "qualification.hcsn_training.test_supervisor.SupervisorTests.test_empty_reservation_missing_job_and_failed_worker_never_relaunch",
+          "qualification.hcsn_training.test_supervisor.SupervisorTests.test_every_handoff_digest_and_count_matches_diagnostics",
+          "qualification.hcsn_training.test_supervisor.SupervisorTests.test_nonregular_reads_and_nonfinite_json_fail_within_bound",
+          "qualification.hcsn_training.test_supervisor.SupervisorTests.test_prestart_cancel_binds_payload_and_status_is_read_only",
+          "qualification.hcsn_training.test_supervisor.SupervisorTests.test_real_worker_lost_reply_reuse_cold_status_and_tamper"
+        ],
+        "full_test_membership_recorded": true
+      },
+      "proof_scope": [
+        "Eight isolated source-import regressions and eleven existing supervisor lifecycle/real-worker tests passed."
+      ],
+      "failure_or_interruption": null,
+      "not_run_or_not_proven": [
+        "Overlaps the subsequent 64-test suite; these counts must not be added as independent coverage.",
+        "Does not establish the later optional spatial-bin helper or final 69-test suite."
+      ],
+      "source_identity": {
+        "status": "unknown",
+        "exact_repository_commit": "unknown",
+        "exact_run_source_snapshot": "unknown",
+        "reported_phase": "After import-loader freeze; before optional spatial-bin and longer cancellation-fixture edits.",
+        "reason": "The retained run log does not bind a complete source tree or commit. Current source bytes are not substituted for historical run identity."
+      },
+      "supporting_artifacts": []
+    },
+    {
+      "id": "python_strict_64",
+      "category": "python_unittest",
+      "path": "/workspace/scratch/7b4b0c316c52/python-tests-02.log",
+      "sha256": "04b7a3e43238a041cf3cf059db8af7219b5bbb54842a154b7dd34c14d66a276b",
+      "bytes": 14289,
+      "result": {
+        "status": "passed",
+        "tests_run": 64,
+        "wall_seconds": 36.495,
+        "observed_named_tests": [
+          "qualification.hcsn_training.test_joint_graph.SharedGraphTests.test_binding_mismatch_in_memory_mutation_and_noncanonical_json_reject",
+          "qualification.hcsn_training.test_joint_graph.SharedGraphTests.test_candidate_sgd_matches_gradient_and_keeps_original_immutable",
+          "qualification.hcsn_training.test_joint_graph.SharedGraphTests.test_cli_cold_load_reuse_refusal_and_byte_tamper_rejection",
+          "qualification.hcsn_training.test_joint_graph.SharedGraphTests.test_detaching_first_logical_cell_refuses_candidate",
+          "qualification.hcsn_training.test_joint_graph.SharedGraphTests.test_ndu_plasticity_and_external_gradient_cannot_substitute_for_task_bp",
+          "qualification.hcsn_training.test_joint_graph.SharedGraphTests.test_previous_boundary_matches_manual_advancement_and_elapsed_changes_result",
+          "qualification.hcsn_training.test_joint_graph.SharedGraphTests.test_schedule_horizon_and_budget_reject_before_parameter_change",
+          "qualification.hcsn_training.test_joint_graph.SharedGraphTests.test_two_cell_task_derivatives_match_independent_finite_differences",
+          "qualification.hcsn_training.test_population_graph.PopulationGraphTests.test_candidate_sgd_handoff_and_complete_state_resume",
+          "qualification.hcsn_training.test_population_graph.PopulationGraphTests.test_detached_first_cell_refuses_and_dormant_gradients_are_reported",
+          "qualification.hcsn_training.test_population_graph.PopulationGraphTests.test_every_parameter_has_nonzero_task_gradient_and_matches_finite_difference",
+          "qualification.hcsn_training.test_population_graph.PopulationGraphTests.test_fp32_profile_retains_finite_complete_state_and_task_gradients",
+          "qualification.hcsn_training.test_population_graph.PopulationGraphTests.test_grid_advancement_matches_original_b_encoder_and_grouping",
+          "qualification.hcsn_training.test_population_graph.PopulationGraphTests.test_off_grid_incompatible_profile_state_and_budget_fail_closed",
+          "qualification.hcsn_training.test_population_graph.PopulationGraphTests.test_population_buffers_cannot_silently_change_fixed_profile",
+          "qualification.hcsn_training.test_population_graph.PopulationGraphTests.test_stateful_base_is_rejected_for_both_backends",
+          "qualification.hcsn_training.test_training_state.TrainingStateTests.test_clock_digest_matches_retained_rust_encoded_checkpoint",
+          "qualification.hcsn_training.test_training_state.TrainingStateTests.test_clock_identity_state_time_and_every_interval_anchor_are_checked",
+          "qualification.hcsn_training.test_training_state.TrainingStateTests.test_complete_resumed_snapshot_is_detached_and_does_not_alias_saved_tensors",
+          "qualification.hcsn_training.test_training_state.TrainingStateTests.test_large_integer_clock_and_fresh_state_bind_without_float_conversion",
+          "qualification.hcsn_training.test_training_state.TrainingStateTests.test_legacy_and_fresh_requests_never_silently_drop_candidate_state",
+          "qualification.hcsn_training.test_training_state.TrainingStateTests.test_resume_rejects_missing_mismatched_or_incomplete_saved_state",
+          "qualification.hcsn_training.test_training_state.TrainingStateTests.test_second_training_block_uses_same_saved_state_for_every_optimizer_forward",
+          "qualification.hcsn_training.test_training_state.TrainingStateTests.test_unknown_clock_fields_invalid_sequences_and_ambiguous_schemas_reject",
+          "qualification.hcsn_training.test_native_build.NativeBuildTests.test_exact_build_ignores_unselected_stale_library",
+          "qualification.hcsn_training.test_native_build.NativeBuildTests.test_host_only_record_cannot_substitute_for_explicit_target",
+          "qualification.hcsn_training.test_native_build.NativeBuildTests.test_incomplete_failed_ambiguous_and_wrong_directory_receipts_reject",
+          "qualification.hcsn_training.test_native_build.NativeBuildTests.test_selected_target_uses_reported_metadata_and_ignores_host_variant",
+          "qualification.hcsn_training.test_native_build.NativeBuildTests.test_selected_target_without_one_reported_metadata_rejects",
+          "qualification.hcsn_training.test_supervisor.SupervisorTests.test_cancel_only_after_owned_worker_termination",
+          "qualification.hcsn_training.test_supervisor.SupervisorTests.test_cancel_serializes_with_reservation_setup",
+          "qualification.hcsn_training.test_supervisor.SupervisorTests.test_cli_ignores_timestamp_valid_bytecode_from_checkout",
+          "qualification.hcsn_training.test_supervisor.SupervisorTests.test_completed_orphan_outputs_are_preserved_without_claiming_success",
+          "qualification.hcsn_training.test_supervisor.SupervisorTests.test_concurrent_same_key_launches_one_worker",
+          "qualification.hcsn_training.test_supervisor.SupervisorTests.test_dead_runner_stays_unknown_until_explicit_orphan_cancel",
+          "qualification.hcsn_training.test_supervisor.SupervisorTests.test_empty_reservation_missing_job_and_failed_worker_never_relaunch",
+          "qualification.hcsn_training.test_supervisor.SupervisorTests.test_every_handoff_digest_and_count_matches_diagnostics",
+          "qualification.hcsn_training.test_supervisor.SupervisorTests.test_nonregular_reads_and_nonfinite_json_fail_within_bound",
+          "qualification.hcsn_training.test_supervisor.SupervisorTests.test_prestart_cancel_binds_payload_and_status_is_read_only",
+          "qualification.hcsn_training.test_supervisor.SupervisorTests.test_real_worker_lost_reply_reuse_cold_status_and_tamper",
+          "qualification.hcsn_training.test_supervisor_imports.SupervisorImportTests.test_checkout_root_does_not_shadow_installed_runtime_modules",
+          "qualification.hcsn_training.test_supervisor_imports.SupervisorImportTests.test_extension_loader_cannot_shadow_approved_source",
+          "qualification.hcsn_training.test_supervisor_imports.SupervisorImportTests.test_foreign_package_search_location_is_refused",
+          "qualification.hcsn_training.test_supervisor_imports.SupervisorImportTests.test_out_of_bundle_source_is_refused_before_execution",
+          "qualification.hcsn_training.test_supervisor_imports.SupervisorImportTests.test_root_namespace_and_source_initializer_are_supported",
+          "qualification.hcsn_training.test_supervisor_imports.SupervisorImportTests.test_source_roots_cannot_be_shadowed_by_sibling_modules",
+          "qualification.hcsn_training.test_supervisor_imports.SupervisorImportTests.test_source_symlink_inside_the_bundle_is_refused",
+          "qualification.hcsn_training.test_supervisor_imports.SupervisorImportTests.test_sourceless_bytecode_is_refused_before_execution",
+          "qualification.hcsn_training.test_population_age_graph.PopulationAgeGraphTests.test_age_checkpoint_cannot_implicitly_choose_its_numerical_kernel",
+          "qualification.hcsn_training.test_population_age_graph.PopulationAgeGraphTests.test_checkpoint_cold_process_recovers_cohort_ages_and_mass",
+          "qualification.hcsn_training.test_population_age_graph.PopulationAgeGraphTests.test_corrupt_or_misaligned_age_state_is_rejected",
+          "qualification.hcsn_training.test_population_age_graph.PopulationAgeGraphTests.test_event_budget_includes_restored_expiries_before_kernel_execution",
+          "qualification.hcsn_training.test_population_age_graph.PopulationAgeGraphTests.test_exact_expiry_survives_unequal_intervals_without_early_release",
+          "qualification.hcsn_training.test_population_age_graph.PopulationAgeGraphTests.test_explicit_legacy_migration_preserves_effective_delay_and_all_tensors",
+          "qualification.hcsn_training.test_population_age_graph.PopulationAgeGraphTests.test_grouping_at_actual_boundaries_preserves_all_six_slots",
+          "qualification.hcsn_training.test_population_age_graph.PopulationAgeGraphTests.test_irregular_time_gradients_match_independent_finite_differences",
+          "qualification.hcsn_training.test_population_generator.PopulationGeneratorTests.test_batched_transition_matches_independent_face_flux_and_exponential",
+          "qualification.hcsn_training.test_population_generator.PopulationGeneratorTests.test_drift_parameter_derivative_matches_finite_difference_away_from_upwind_kinks",
+          "qualification.hcsn_training.test_population_generator.PopulationGeneratorTests.test_fixed_generator_semigroup_includes_both_absorbing_accounts",
+          "qualification.hcsn_training.test_population_generator.PopulationGeneratorTests.test_small_time_steps_preserve_nonzero_transport_on_fixed_spatial_grid",
+          "qualification.hcsn_training.test_population_generator.PopulationGeneratorTests.test_zero_drift_mean_exit_time_has_second_order_spatial_error",
+          "qualification.hcsn_training.test_resumed_derivatives.ResumedDerivativeTests.test_resumed_population_graph_all_scalar_parameter_derivatives",
+          "qualification.hcsn_training.test_resumed_derivatives.ResumedDerivativeTests.test_resumed_value_graph_all_scalar_parameter_derivatives",
+          "qualification.hcsn_training.test_resumed_derivatives.ResumedDerivativeTests.test_resumed_variable_time_graph_all_scalar_parameter_derivatives"
+        ],
+        "full_test_membership_recorded": true
+      },
+      "proof_scope": [
+        "The then-current strict Python suite passed all 64 required tests with zero failures, errors or skips."
+      ],
+      "failure_or_interruption": null,
+      "not_run_or_not_proven": [
+        "This is not a 69/69 result.",
+        "It does not cover subsequent spatial-bin/canonical-identity/long-trace changes or final formatted candidate source."
+      ],
+      "source_identity": {
+        "status": "unknown",
+        "exact_repository_commit": "unknown",
+        "exact_run_source_snapshot": "unknown",
+        "reported_phase": "After eight import-policy tests; before the five-test spatial module and shared extended cancellation fixture.",
+        "reason": "The retained run log does not bind a complete source tree or commit. Current source bytes are not substituted for historical run identity."
+      },
+      "supporting_artifacts": [
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/python-tests-02.json",
+          "sha256": "986a25a6ec29d34cba479ca46095ef03cfd1bfbad743ab98ef6247108d9837e7",
+          "bytes": 107,
+          "role": "strict-suite count/result receipt"
+        }
+      ]
+    },
+    {
+      "id": "spatial_first_four",
+      "category": "python_unittest",
+      "path": "/workspace/scratch/7b4b0c316c52/population-spatial-01.log",
+      "sha256": "6b59b6ac7bddecbbbc3fa28d8709c3ecd46d88e480804ba4f165a6137507081f",
+      "bytes": 990,
+      "result": {
+        "status": "passed",
+        "tests_run": 4,
+        "wall_seconds": 0.109,
+        "observed_named_tests": [
+          "qualification.hcsn_training.test_population_spatial.PopulationSpatialTests.test_default_grid_keeps_legacy_spec_identity_and_complete_state_replay",
+          "qualification.hcsn_training.test_population_spatial.PopulationSpatialTests.test_explicit_grid_roundtrip_binds_identity_and_refuses_spec_only_substitution",
+          "qualification.hcsn_training.test_population_spatial.PopulationSpatialTests.test_fixed_grid_migration_preserves_explicit_grid_and_release_state",
+          "qualification.hcsn_training.test_population_spatial.PopulationSpatialTests.test_invalid_grid_sizes_are_refused_before_model_allocation"
+        ],
+        "full_test_membership_recorded": true
+      },
+      "proof_scope": [
+        "Default-32 canonical spec identity and full-state replay passed for both B backends.",
+        "Explicit 8-bin roundtrip, graph identity and spec-only buffer substitution refusal passed.",
+        "Eight-bin fixed-grid to physical-time migration preserved state and expiry schedule.",
+        "Invalid spatial-bin bounds were rejected."
+      ],
+      "failure_or_interruption": null,
+      "not_run_or_not_proven": [
+        "Only four tests passed. The final five-test module was not completed by this run.",
+        "The precise four-test source-file version was not separately snapshotted."
+      ],
+      "source_identity": {
+        "status": "unknown",
+        "exact_repository_commit": "unknown",
+        "exact_run_source_snapshot": "unknown",
+        "reported_phase": "Optional spatial_bins core applied; the fifth long-trace test had not yet been added.",
+        "reason": "The retained run log does not bind a complete source tree or commit. Current source bytes are not substituted for historical run identity."
+      },
+      "supporting_artifacts": []
+    },
+    {
+      "id": "spatial_five_attempt_02",
+      "category": "python_unittest_start",
+      "path": "/workspace/scratch/7b4b0c316c52/population-spatial-02.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "result": {
+        "status": "interrupted_before_test_output",
+        "exit_code": 137,
+        "tests_observed": 0,
+        "tool_observed_wall_seconds": 0.269248132,
+        "exit_code_basis": "Retained conversation functions.exec tool receipt; the empty file itself does not encode the exit status."
+      },
+      "proof_scope": [
+        "The attempted final five-test invocation produced no test output. The empty log is retained with its exact SHA-256."
+      ],
+      "failure_or_interruption": {
+        "kind": "process_exit_137",
+        "cause": "unknown",
+        "raw_process_receipt_file": "not retained; available only in conversation tool output"
+      },
+      "not_run_or_not_proven": [
+        "No assertion result or five-test success is inferred.",
+        "The fifth long-trace regression and the complete five-test run remain unproven locally.",
+        "Termination cause is unknown. Initial memory-pressure speculation was not established; root later reported an executor/runtime reset."
+      ],
+      "source_identity": {
+        "status": "unknown",
+        "exact_repository_commit": "unknown",
+        "exact_run_source_snapshot": "unknown",
+        "reported_phase": "After final Python helper freeze, before root final formatting.",
+        "reason": "The retained run log does not bind a complete source tree or commit. Current source bytes are not substituted for historical run identity."
+      },
+      "supporting_artifacts": []
+    },
+    {
+      "id": "spatial_five_attempt_03",
+      "category": "python_unittest_start",
+      "path": "/workspace/scratch/7b4b0c316c52/population-spatial-03.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "result": {
+        "status": "interrupted_before_test_output",
+        "exit_code": 137,
+        "tests_observed": 0,
+        "tool_observed_wall_seconds": 0.385614187,
+        "exit_code_basis": "Retained conversation functions.exec tool receipt; the empty file itself does not encode the exit status."
+      },
+      "proof_scope": [
+        "The attempted final five-test invocation produced no test output. The empty log is retained with its exact SHA-256."
+      ],
+      "failure_or_interruption": {
+        "kind": "process_exit_137",
+        "cause": "unknown",
+        "raw_process_receipt_file": "not retained; available only in conversation tool output"
+      },
+      "not_run_or_not_proven": [
+        "No assertion result or five-test success is inferred.",
+        "The fifth long-trace regression and the complete five-test run remain unproven locally.",
+        "Termination cause is unknown. Initial memory-pressure speculation was not established; root later reported an executor/runtime reset."
+      ],
+      "source_identity": {
+        "status": "unknown",
+        "exact_repository_commit": "unknown",
+        "exact_run_source_snapshot": "unknown",
+        "reported_phase": "After final Python helper freeze, before root final formatting.",
+        "reason": "The retained run log does not bind a complete source tree or commit. Current source bytes are not substituted for historical run identity."
+      },
+      "supporting_artifacts": []
+    },
+    {
+      "id": "callers_initial_marker_failure",
+      "category": "caller_audit",
+      "path": "/workspace/scratch/7b4b0c316c52/callers-audit-before.log",
+      "sha256": "aea1b6db9a72e2d79557af4e46a398aac2124b56260ffd6773024df9652c3eb8",
+      "bytes": 88,
+      "result": {
+        "status": "failed",
+        "diagnostic": "FAIL_HEPTA_CALLER_PROOF: final_use_claim_raw: missing definition marker 'verify_strict'"
+      },
+      "proof_scope": [
+        "The old direct verify_strict marker no longer matched the moved authority-verification delegation."
+      ],
+      "failure_or_interruption": {
+        "kind": "caller_checker_failure",
+        "later_resolution": "See later positive and final audit entries."
+      },
+      "not_run_or_not_proven": [
+        "This failed state is historical and is not overwritten by later successful audits."
+      ],
+      "source_identity": {
+        "status": "unknown",
+        "exact_repository_commit": "unknown",
+        "exact_run_source_snapshot": "unknown",
+        "reported_phase": "Intermediate imported PQ composition.",
+        "reason": "The retained run log does not bind a complete source tree or commit. Current source bytes are not substituted for historical run identity."
+      },
+      "supporting_artifacts": []
+    },
+    {
+      "id": "callers_test_helper_classification_failure",
+      "category": "caller_audit",
+      "path": "/workspace/scratch/7b4b0c316c52/callers-audit-source-inventory.log",
+      "sha256": "961547e99ef75f86ff3c57c8bbaf18ce2f123430960ab2d6bf35962097e5b85f",
+      "bytes": 156,
+      "result": {
+        "status": "failed",
+        "diagnostic": "FAIL_HEPTA_CALLER_PROOF: final_use_claim_raw: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/automation_hcsn_pq_real_recovery.rs']"
+      },
+      "proof_scope": [
+        "The unguarded standalone recovery helper was seen as an undeclared FinalUseAuthority::claim caller; its actual test-only boundary was subsequently annotated."
+      ],
+      "failure_or_interruption": {
+        "kind": "caller_checker_failure",
+        "later_resolution": "See later positive and final audit entries."
+      },
+      "not_run_or_not_proven": [
+        "This failed state is historical and is not overwritten by later successful audits."
+      ],
+      "source_identity": {
+        "status": "unknown",
+        "exact_repository_commit": "unknown",
+        "exact_run_source_snapshot": "unknown",
+        "reported_phase": "Intermediate imported PQ composition.",
+        "reason": "The retained run log does not bind a complete source tree or commit. Current source bytes are not substituted for historical run identity."
+      },
+      "supporting_artifacts": []
+    },
+    {
+      "id": "callers_initial_positive",
+      "category": "caller_audit",
+      "path": "/workspace/scratch/7b4b0c316c52/callers-audit-after.log",
+      "sha256": "89d5b2eb9d04bdcc9567079249040d8c5c0f66040fa38281dadd4851be742c8a",
+      "bytes": 18253,
+      "result": {
+        "status": "passed",
+        "boundaries": 51,
+        "protected_entries": 24,
+        "unique_protected_paths": 23,
+        "rust_files_scanned": 4444,
+        "authority_granted": false
+      },
+      "proof_scope": [
+        "The configured lexical/typed caller closed set and required source markers passed at this run."
+      ],
+      "failure_or_interruption": null,
+      "not_run_or_not_proven": [
+        "The baseline checker does not enforce source_sha256; those hashes are checked independently.",
+        "A positive configured scan is not a Rust compile/test or a complete proof of every possible Rust program.",
+        "The later final negative probe exposed a UFCS/alias gap in the intermediate configuration."
+      ],
+      "source_identity": {
+        "status": "unknown",
+        "exact_repository_commit": "unknown",
+        "exact_run_source_snapshot": "unknown",
+        "reported_phase": "Initial six-boundary addition; before source-manifest verifier and final typed strengthening.",
+        "reason": "The retained run log does not bind a complete source tree or commit. Current source bytes are not substituted for historical run identity."
+      },
+      "supporting_artifacts": []
+    },
+    {
+      "id": "callers_source_inventory_positive",
+      "category": "caller_audit",
+      "path": "/workspace/scratch/7b4b0c316c52/callers-audit-source-inventory-02.log",
+      "sha256": "60b99b644f2c24eb82b4aa48e635519e42d6a7bc7be81ff292627118bc17496c",
+      "bytes": 18312,
+      "result": {
+        "status": "passed",
+        "boundaries": 51,
+        "protected_entries": 25,
+        "unique_protected_paths": 24,
+        "rust_files_scanned": 4452,
+        "authority_granted": false
+      },
+      "proof_scope": [
+        "The configured lexical/typed caller closed set and required source markers passed at this run."
+      ],
+      "failure_or_interruption": null,
+      "not_run_or_not_proven": [
+        "The baseline checker does not enforce source_sha256; those hashes are checked independently.",
+        "A positive configured scan is not a Rust compile/test or a complete proof of every possible Rust program.",
+        "The later final negative probe exposed a UFCS/alias gap in the intermediate configuration."
+      ],
+      "source_identity": {
+        "status": "unknown",
+        "exact_repository_commit": "unknown",
+        "exact_run_source_snapshot": "unknown",
+        "reported_phase": "After explicit cfg(test) recovery annotation and eleventh source pin; before final formatting/hash refresh.",
+        "reason": "The retained run log does not bind a complete source tree or commit. Current source bytes are not substituted for historical run identity."
+      },
+      "supporting_artifacts": []
+    },
+    {
+      "id": "callers_pre_strengthening_positive",
+      "category": "caller_audit",
+      "path": "/workspace/scratch/7b4b0c316c52/callers-final-verify.log",
+      "sha256": "60b99b644f2c24eb82b4aa48e635519e42d6a7bc7be81ff292627118bc17496c",
+      "bytes": 18312,
+      "result": {
+        "status": "passed",
+        "boundaries": 51,
+        "protected_entries": 25,
+        "unique_protected_paths": 24,
+        "rust_files_scanned": 4452,
+        "authority_granted": false
+      },
+      "proof_scope": [
+        "The configured lexical/typed caller closed set and required source markers passed at this run."
+      ],
+      "failure_or_interruption": null,
+      "not_run_or_not_proven": [
+        "The baseline checker does not enforce source_sha256; those hashes are checked independently.",
+        "A positive configured scan is not a Rust compile/test or a complete proof of every possible Rust program.",
+        "The later final negative probe exposed a UFCS/alias gap in the intermediate configuration."
+      ],
+      "source_identity": {
+        "status": "unknown",
+        "exact_repository_commit": "unknown",
+        "exact_run_source_snapshot": "unknown",
+        "reported_phase": "After root formatting/hash refresh but before the final typed-receiver correction.",
+        "reason": "The retained run log does not bind a complete source tree or commit. Current source bytes are not substituted for historical run identity."
+      },
+      "supporting_artifacts": []
+    },
+    {
+      "id": "callers_final_positive",
+      "category": "caller_audit",
+      "path": "/workspace/scratch/7b4b0c316c52/callers-final-verify-02.log",
+      "sha256": "337f1b809b7f43a6829b89efd63bbf317bd6782bab37df871e8e47914df209d9",
+      "bytes": 18404,
+      "result": {
+        "status": "passed",
+        "boundaries": 51,
+        "protected_entries": 25,
+        "unique_protected_paths": 24,
+        "rust_files_scanned": 4452,
+        "authority_granted": false
+      },
+      "proof_scope": [
+        "The configured lexical/typed caller closed set and required source markers passed at this run."
+      ],
+      "failure_or_interruption": null,
+      "not_run_or_not_proven": [
+        "The baseline checker does not enforce source_sha256; those hashes are checked independently.",
+        "A positive configured scan is not a Rust compile/test or a complete proof of every possible Rust program."
+      ],
+      "source_identity": {
+        "status": "recorded_partial_identity",
+        "exact_repository_commit": "unknown",
+        "full_repository_snapshot": "unknown",
+        "evidence": {
+          "path": "/workspace/scratch/7b4b0c316c52/callers-final-audit.json",
+          "sha256": "382317110ba43a4580ca321e1e2376d822d6e387aa45160123c2107bf103b2c6",
+          "bytes": 3344,
+          "role": "recorded source identity"
+        },
+        "json_pointers": [
+          "/manifest_sha256",
+          "/source_pins",
+          "/checkers"
+        ],
+        "provable_scope": "Exact final CALLERS identity, eleven selected Rust source hashes and unchanged checker hashes.",
+        "limitation": "Only the identities explicitly retained in this artifact are bound; it is not a complete historical repository/source-build attestation."
+      },
+      "supporting_artifacts": []
+    },
+    {
+      "id": "callers-audit-self-test",
+      "category": "caller_checker_self_test",
+      "path": "/workspace/scratch/7b4b0c316c52/callers-audit-self-test.log",
+      "sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda",
+      "bytes": 48,
+      "result": {
+        "status": "passed"
+      },
+      "proof_scope": [
+        "The unchanged checker lexical/protected-file self-test passed."
+      ],
+      "failure_or_interruption": null,
+      "not_run_or_not_proven": [
+        "This is a checker self-test, not a product runtime test."
+      ],
+      "source_identity": {
+        "status": "unknown",
+        "exact_repository_commit": "unknown",
+        "exact_run_source_snapshot": "unknown",
+        "reported_phase": "Initial caller audit.",
+        "reason": "The retained run log does not bind a complete source tree or commit. Current source bytes are not substituted for historical run identity."
+      },
+      "supporting_artifacts": []
+    },
+    {
+      "id": "callers-final-self-test",
+      "category": "caller_checker_self_test",
+      "path": "/workspace/scratch/7b4b0c316c52/callers-final-self-test.log",
+      "sha256": "7ff2eeffe7523a8b5d4b4210ca8dae1dfa725f66281de0134eee85eb2039bfda",
+      "bytes": 48,
+      "result": {
+        "status": "passed"
+      },
+      "proof_scope": [
+        "The unchanged checker lexical/protected-file self-test passed."
+      ],
+      "failure_or_interruption": null,
+      "not_run_or_not_proven": [
+        "This is a checker self-test, not a product runtime test."
+      ],
+      "source_identity": {
+        "status": "recorded_partial_identity",
+        "exact_repository_commit": "unknown",
+        "full_repository_snapshot": "unknown",
+        "evidence": {
+          "path": "/workspace/scratch/7b4b0c316c52/callers-final-audit.json",
+          "sha256": "382317110ba43a4580ca321e1e2376d822d6e387aa45160123c2107bf103b2c6",
+          "bytes": 3344,
+          "role": "recorded source identity"
+        },
+        "json_pointers": [
+          "/checkers"
+        ],
+        "provable_scope": "Checker source hashes retained by the final audit.",
+        "limitation": "Only the identities explicitly retained in this artifact are bound; it is not a complete historical repository/source-build attestation."
+      },
+      "supporting_artifacts": []
+    },
+    {
+      "id": "callers-audit-typed-tests",
+      "category": "python_unittest",
+      "path": "/workspace/scratch/7b4b0c316c52/callers-audit-typed-tests.log",
+      "sha256": "69d3092e799b33eb7dca64bf94a3536ab4fa9fc5969f0629675edb863629b707",
+      "bytes": 109,
+      "result": {
+        "status": "passed",
+        "tests_run": 10,
+        "wall_seconds": 0.004,
+        "observed_named_tests": [],
+        "full_test_membership_recorded": false
+      },
+      "proof_scope": [
+        "Ten existing type-aware authority-call scanner regressions passed."
+      ],
+      "failure_or_interruption": null,
+      "not_run_or_not_proven": [
+        "This validates scanner behavior, not the compiled PQ host."
+      ],
+      "source_identity": {
+        "status": "unknown",
+        "exact_repository_commit": "unknown",
+        "exact_run_source_snapshot": "unknown",
+        "reported_phase": "Unchanged scanner source; final source hashes are retained separately.",
+        "reason": "The retained run log does not bind a complete source tree or commit. Current source bytes are not substituted for historical run identity."
+      },
+      "supporting_artifacts": []
+    },
+    {
+      "id": "callers-final-typed-tests",
+      "category": "python_unittest",
+      "path": "/workspace/scratch/7b4b0c316c52/callers-final-typed-tests.log",
+      "sha256": "1af6e5e61b36bb7bde7732160ba21b3a813eea24fca965ae4ca71ffdd35089fb",
+      "bytes": 1797,
+      "result": {
+        "status": "passed",
+        "tests_run": 10,
+        "wall_seconds": 0.002,
+        "observed_named_tests": [
+          "test_hepta_typed_callers.TypedAuthorityCallTests.test_arbitrary_parameter_and_borrowed_clone_alias",
+          "test_hepta_typed_callers.TypedAuthorityCallTests.test_arbitrary_typed_variable_field_without_authority_import",
+          "test_hepta_typed_callers.TypedAuthorityCallTests.test_constructor_binding_never_depends_on_receiver_name",
+          "test_hepta_typed_callers.TypedAuthorityCallTests.test_explicit_unrelated_type_does_not_manufacture_authority",
+          "test_hepta_typed_callers.TypedAuthorityCallTests.test_field_owner_is_visible_across_split_impl_module",
+          "test_hepta_typed_callers.TypedAuthorityCallTests.test_local_type_import_alias_and_type_alias_remain_target",
+          "test_hepta_typed_callers.TypedAuthorityCallTests.test_opaque_possible_authority_receiver_refuses_closed",
+          "test_hepta_typed_callers.TypedAuthorityCallTests.test_same_variable_name_in_other_function_does_not_hide_call",
+          "test_hepta_typed_callers.TypedAuthorityCallTests.test_trait_impl_keeps_typed_authority_field",
+          "test_hepta_typed_callers.TypedAuthorityCallTests.test_type_alias_declared_in_another_module_remains_authority"
+        ],
+        "full_test_membership_recorded": true
+      },
+      "proof_scope": [
+        "Ten existing type-aware authority-call scanner regressions passed."
+      ],
+      "failure_or_interruption": null,
+      "not_run_or_not_proven": [
+        "This validates scanner behavior, not the compiled PQ host."
+      ],
+      "source_identity": {
+        "status": "unknown",
+        "exact_repository_commit": "unknown",
+        "exact_run_source_snapshot": "unknown",
+        "reported_phase": "Unchanged scanner source; final source hashes are retained separately.",
+        "reason": "The retained run log does not bind a complete source tree or commit. Current source bytes are not substituted for historical run identity."
+      },
+      "supporting_artifacts": []
+    },
+    {
+      "id": "callers_initial_six_negatives",
+      "category": "caller_negative_probe",
+      "path": "/workspace/scratch/7b4b0c316c52/callers-audit-negative.log",
+      "sha256": "410c5a1cbad4bb1192ff9724b5714a5c6534161136cd24dda2f74053da1cd297",
+      "bytes": 474,
+      "result": {
+        "status": "passed_for_recorded_probe_forms",
+        "negative_cases": 6
+      },
+      "proof_scope": [
+        "Six original in-memory undeclared-caller probes were rejected."
+      ],
+      "failure_or_interruption": null,
+      "not_run_or_not_proven": [
+        "The original probe forms are not retained as a standalone script. This result does not establish UFCS/import-alias coverage; later probing exposed that gap."
+      ],
+      "source_identity": {
+        "status": "unknown",
+        "exact_repository_commit": "unknown",
+        "exact_run_source_snapshot": "unknown",
+        "reported_phase": "Initial manifest before final typed strengthening.",
+        "reason": "The retained run log does not bind a complete source tree or commit. Current source bytes are not substituted for historical run identity."
+      },
+      "supporting_artifacts": []
+    },
+    {
+      "id": "callers_negative_exposed_ufcs_gap",
+      "category": "caller_negative_probe",
+      "path": "/workspace/scratch/7b4b0c316c52/callers-final-negative.log",
+      "sha256": "f491958654e4767f48e8be62435b4b09496564494d75eaf873dcd81abdbf0c6f",
+      "bytes": 337,
+      "result": {
+        "status": "failed",
+        "prior_rejections": 3,
+        "escaping_boundary": "final_use_pq_revocation_feed_confirm"
+      },
+      "proof_scope": [
+        "An undeclared qualified apply_or_confirm_current call escaped the intermediate dot-call-only manifest matcher."
+      ],
+      "failure_or_interruption": {
+        "kind": "negative_probe_detected_configuration_gap",
+        "later_resolution": "callers_final_fourteen_negatives"
+      },
+      "not_run_or_not_proven": [
+        "The failed audit state is retained; its later fix is not retroactively assigned to this run."
+      ],
+      "source_identity": {
+        "status": "unknown",
+        "exact_repository_commit": "unknown",
+        "exact_run_source_snapshot": "unknown",
+        "reported_phase": "After hash refresh and before typed receiver correction.",
+        "reason": "The retained run log does not bind a complete source tree or commit. Current source bytes are not substituted for historical run identity."
+      },
+      "supporting_artifacts": []
+    },
+    {
+      "id": "callers_final_fourteen_negatives",
+      "category": "caller_negative_probe",
+      "path": "/workspace/scratch/7b4b0c316c52/callers-final-negative-02.log",
+      "sha256": "c1fa8dcd739ac00f4041564571081f207c04b8c8e674c1b173036f1853057b4a",
+      "bytes": 1203,
+      "result": {
+        "status": "passed",
+        "negative_cases": 14,
+        "boundaries": 6
+      },
+      "proof_scope": [
+        "All six new boundaries reject qualified and imported-alias calls from an undeclared product path.",
+        "Feed-confirm and private host-open boundaries also reject undeclared typed method calls."
+      ],
+      "failure_or_interruption": null,
+      "not_run_or_not_proven": [
+        "In-memory scanner probes do not execute compiled privileged operations."
+      ],
+      "source_identity": {
+        "status": "recorded_partial_identity",
+        "exact_repository_commit": "unknown",
+        "full_repository_snapshot": "unknown",
+        "evidence": {
+          "path": "/workspace/scratch/7b4b0c316c52/callers-final-audit.json",
+          "sha256": "382317110ba43a4580ca321e1e2376d822d6e387aa45160123c2107bf103b2c6",
+          "bytes": 3344,
+          "role": "recorded source identity"
+        },
+        "json_pointers": [
+          "/manifest_sha256",
+          "/new_boundary_receiver_types",
+          "/checkers"
+        ],
+        "provable_scope": "Final caller manifest and unchanged typed/lexical checker identities.",
+        "limitation": "Only the identities explicitly retained in this artifact are bound; it is not a complete historical repository/source-build attestation."
+      },
+      "supporting_artifacts": []
+    },
+    {
+      "id": "callers_intermediate_summary",
+      "category": "caller_audit_snapshot",
+      "path": "/workspace/scratch/7b4b0c316c52/callers-audit-summary.log",
+      "sha256": "e6e5d38b3a8ff073d63e1bcb7ade2149adaa8514c0ea13445ba98c7ca6622693",
+      "bytes": 3499,
+      "result": {
+        "status": "caller_scan_passed_hash_refresh_pending",
+        "source_hash_refresh_pending": true,
+        "mismatching_recorded_paths": [
+          "codex-rs/hepta-agentd/src/pq_final_use.rs"
+        ]
+      },
+      "proof_scope": [
+        "Retains the initial 51-boundary summary and its then-observed ten source-hash comparisons."
+      ],
+      "failure_or_interruption": null,
+      "not_run_or_not_proven": [
+        "At least one declared source hash was stale; this artifact is not final source-pin success."
+      ],
+      "source_identity": {
+        "status": "recorded_partial_identity",
+        "exact_repository_commit": "unknown",
+        "full_repository_snapshot": "unknown",
+        "evidence": {
+          "path": "/workspace/scratch/7b4b0c316c52/callers-audit-summary.log",
+          "sha256": "e6e5d38b3a8ff073d63e1bcb7ade2149adaa8514c0ea13445ba98c7ca6622693",
+          "bytes": 3499,
+          "role": "recorded source identity"
+        },
+        "json_pointers": [
+          "/source_hashes"
+        ],
+        "provable_scope": "Ten historical per-file hash observations, including recorded mismatch.",
+        "limitation": "Only the identities explicitly retained in this artifact are bound; it is not a complete historical repository/source-build attestation."
+      },
+      "supporting_artifacts": []
+    },
+    {
+      "id": "callers_final_summary",
+      "category": "caller_audit_snapshot",
+      "path": "/workspace/scratch/7b4b0c316c52/callers-final-audit.json",
+      "sha256": "382317110ba43a4580ca321e1e2376d822d6e387aa45160123c2107bf103b2c6",
+      "bytes": 3344,
+      "result": {
+        "status": "PASS_FINAL_CALLERS_AND_SOURCE_PIN_AUDIT",
+        "source_pin_count": 11,
+        "manifest_sha256": "12ac5680b5dd3ac5d869ae2cf0be000c9f7637b108b11eace118299ab73b005a",
+        "typed_tests": 10,
+        "negative_cases": 14
+      },
+      "proof_scope": [
+        "Binds the final manifest, eleven selected formatted Rust sources and both unchanged checker files.",
+        "Records preservation of all 45 baseline boundary definitions and prior product callers."
+      ],
+      "failure_or_interruption": null,
+      "not_run_or_not_proven": [
+        "The complete historical 4452-file repository tree is not separately content-addressed by this audit.",
+        "No Rust or Torch execution is claimed by this final stdlib-only audit."
+      ],
+      "source_identity": {
+        "status": "recorded_partial_identity",
+        "exact_repository_commit": "unknown",
+        "full_repository_snapshot": "unknown",
+        "evidence": {
+          "path": "/workspace/scratch/7b4b0c316c52/callers-final-audit.json",
+          "sha256": "382317110ba43a4580ca321e1e2376d822d6e387aa45160123c2107bf103b2c6",
+          "bytes": 3344,
+          "role": "recorded source identity"
+        },
+        "json_pointers": [
+          "/manifest_sha256",
+          "/source_pins",
+          "/checkers"
+        ],
+        "provable_scope": "Selected exact final source and manifest identities.",
+        "limitation": "Only the identities explicitly retained in this artifact are bound; it is not a complete historical repository/source-build attestation."
+      },
+      "supporting_artifacts": []
+    },
+    {
+      "id": "callers_final_pin_refresh",
+      "category": "source_hash_snapshot",
+      "path": "/workspace/scratch/7b4b0c316c52/callers-final-source-pins.json",
+      "sha256": "e328c3621886c2fc7dfce9779eb2523cf4716bbdf8ca53876da9b2f85da17ba6",
+      "bytes": 2988,
+      "result": {
+        "status": "eleven_pins_refreshed_after_fmt",
+        "declared_paths": 11,
+        "changed_hashes": 3
+      },
+      "proof_scope": [
+        "Retains all eleven before/after source hashes from the final formatting refresh and exact workflow path agreement."
+      ],
+      "failure_or_interruption": null,
+      "not_run_or_not_proven": [
+        "This file hashes selected authority/source-verifier files, not every repository source file."
+      ],
+      "source_identity": {
+        "status": "recorded_partial_identity",
+        "exact_repository_commit": "unknown",
+        "full_repository_snapshot": "unknown",
+        "evidence": {
+          "path": "/workspace/scratch/7b4b0c316c52/callers-final-source-pins.json",
+          "sha256": "e328c3621886c2fc7dfce9779eb2523cf4716bbdf8ca53876da9b2f85da17ba6",
+          "bytes": 2988,
+          "role": "recorded source identity"
+        },
+        "json_pointers": [
+          "/source_pins"
+        ],
+        "provable_scope": "Eleven formatted source-file hashes.",
+        "limitation": "Only the identities explicitly retained in this artifact are bound; it is not a complete historical repository/source-build attestation."
+      },
+      "supporting_artifacts": []
+    },
+    {
+      "id": "cancel_outcomes_01",
+      "category": "cancellation_batch",
+      "path": "/workspace/scratch/7b4b0c316c52/local-cancel-outcomes-01.json",
+      "sha256": "bdeb146fb9b4b7c6a451d8ba9400528ecd81d2f383c91bbbac266ecc7312cdd0",
+      "bytes": 424,
+      "result": {
+        "status": "failed",
+        "backends": [
+          {
+            "backend": "value_kernel",
+            "exit_code": 1,
+            "output": "/workspace/scratch/7b4b0c316c52/local-cancel-value_kernel-01"
+          },
+          {
+            "backend": "population_grid",
+            "exit_code": 1,
+            "output": "/workspace/scratch/7b4b0c316c52/local-cancel-population_grid-01"
+          },
+          {
+            "backend": "population_age",
+            "exit_code": 1,
+            "output": "/workspace/scratch/7b4b0c316c52/local-cancel-population_age-01"
+          }
+        ]
+      },
+      "proof_scope": [
+        "Retains the per-backend exit status of this old-workload cancellation batch."
+      ],
+      "failure_or_interruption": null,
+      "not_run_or_not_proven": [
+        "These outcomes are not results for the subsequent extended cancellation workload or PQ Agentd host."
+      ],
+      "source_identity": {
+        "status": "unknown",
+        "exact_repository_commit": "unknown",
+        "exact_run_source_snapshot": "unknown",
+        "reported_phase": "Old tiny cancellation workload, attempt 01",
+        "reason": "The retained run log does not bind a complete source tree or commit. Current source bytes are not substituted for historical run identity."
+      },
+      "supporting_artifacts": []
+    },
+    {
+      "id": "cancel_value_kernel_01",
+      "category": "real_cancellation_attempt",
+      "path": "/workspace/scratch/7b4b0c316c52/local-cancel-value_kernel-01.log",
+      "sha256": "de90fdceb8c24e152652ed941ee3aa98df3dc65081229279a94cbe1961076737",
+      "bytes": 1058,
+      "result": {
+        "status": "failed",
+        "backend": "value_kernel",
+        "wrapper_exit_code": 1,
+        "native_exit_code": 101,
+        "old_coarse_intervals": 4,
+        "optimizer_step_limit": 64,
+        "authority_profile": "synthetic_ed25519_v1",
+        "terminal_observations": []
+      },
+      "proof_scope": [
+        "Retains a failed real cancellation attempt and its original process/error evidence."
+      ],
+      "failure_or_interruption": {
+        "kind": "native_acceptance_failure",
+        "reason": "prepare step: duplicate or conflicting step command; fixture preparation failed before worker dispatch.",
+        "native_exit_code": 101
+      },
+      "not_run_or_not_proven": [
+        "No complete cancellation acceptance passed for this attempt.",
+        "No result for any later extended workload or PQ host is established."
+      ],
+      "source_identity": {
+        "status": "recorded_partial_identity",
+        "exact_repository_commit": "unknown",
+        "full_repository_snapshot": "unknown",
+        "evidence": {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-value_kernel-01/sources-before.json",
+          "sha256": "3121ae65e2051549253b5dc8816c63f5489bbd15ce87994c102884aababe2386",
+          "bytes": 4793,
+          "role": "recorded source identity"
+        },
+        "json_pointers": [
+          "/execution",
+          "/fixtures",
+          "/cancellation_verifier"
+        ],
+        "provable_scope": "Pre-attempt Python execution/fixture/verifier hashes; native executable identity is separately retained.",
+        "limitation": "Only the identities explicitly retained in this artifact are bound; it is not a complete historical repository/source-build attestation.",
+        "native_binary_identity_record": {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-value_kernel-01/signed-worker-executable.json",
+          "sha256": "9dec45616bc1f7f055db3ba06658db2b8027ed5eee6adb6e408077a12116f70f",
+          "bytes": 276,
+          "role": "recorded native executable identity"
+        },
+        "native_source_build_linkage": "unknown; successful wrapper explicitly reports native_build_linkage_verified_here=false"
+      },
+      "supporting_artifacts": [
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-value_kernel-01/sources-before.json",
+          "sha256": "3121ae65e2051549253b5dc8816c63f5489bbd15ce87994c102884aababe2386",
+          "bytes": 4793,
+          "role": "historical Python identity snapshot"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-value_kernel-01/dispatch.json",
+          "sha256": "515ff428211f3c53e24f380921ebae4ad70aa032a04a08c1088cb03d7738150e",
+          "bytes": 930,
+          "role": "request/config/binary identity"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-value_kernel-01/signed-worker-executable.json",
+          "sha256": "9dec45616bc1f7f055db3ba06658db2b8027ed5eee6adb6e408077a12116f70f",
+          "bytes": 276,
+          "role": "native executable identity"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-value_kernel-01/request.json",
+          "sha256": "bc80cdb6d41c3b9461e62b91fc2bcaf0e3f3237f22b27b77cd719e8c8b0d1852",
+          "bytes": 3920,
+          "role": "exact old request"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-value_kernel-01/supervisor-config.json",
+          "sha256": "9aca7f0ef98c44f0e3784c6859aa5612c337c6df157fa786a680984cbaa7e12c",
+          "bytes": 418,
+          "role": "exact transport configuration"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-value_kernel-01/signed-cancel-real-worker.process.json",
+          "sha256": "248e064b13f33a1aaedff1b349d7771c2532fbad5749e1177fb7a3c4fa69b3da",
+          "bytes": 724,
+          "role": "native process/exit receipt"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-value_kernel-01/signed-cancel-real-worker.stdout",
+          "sha256": "b50db26a4292526583a01eb15863f32207ed14bb317525e390fbd4797b3a045e",
+          "bytes": 258,
+          "role": "native test stdout"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-value_kernel-01/signed-cancel-real-worker.stderr",
+          "sha256": "c4c2af6ac099a49d7b918cc92391960b7bc009f0643f398b53b01ea94c7ea13c",
+          "bytes": 280,
+          "role": "native test stderr"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-value_kernel-01/failure.json",
+          "sha256": "e70b56e4b332e601a9fa2b38fe8ac4c40e4dc415c67d48fc2e4e574b023bd0c5",
+          "bytes": 289,
+          "role": "retained failure summary"
+        }
+      ],
+      "retained_candidate_outputs": []
+    },
+    {
+      "id": "cancel_population_grid_01",
+      "category": "real_cancellation_attempt",
+      "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_grid-01.log",
+      "sha256": "de90fdceb8c24e152652ed941ee3aa98df3dc65081229279a94cbe1961076737",
+      "bytes": 1058,
+      "result": {
+        "status": "failed",
+        "backend": "population_grid",
+        "wrapper_exit_code": 1,
+        "native_exit_code": 101,
+        "old_coarse_intervals": 5,
+        "optimizer_step_limit": 64,
+        "authority_profile": "synthetic_ed25519_v1",
+        "terminal_observations": []
+      },
+      "proof_scope": [
+        "Retains a failed real cancellation attempt and its original process/error evidence."
+      ],
+      "failure_or_interruption": {
+        "kind": "native_acceptance_failure",
+        "reason": "prepare step: duplicate or conflicting step command; fixture preparation failed before worker dispatch.",
+        "native_exit_code": 101
+      },
+      "not_run_or_not_proven": [
+        "No complete cancellation acceptance passed for this attempt.",
+        "No result for any later extended workload or PQ host is established."
+      ],
+      "source_identity": {
+        "status": "recorded_partial_identity",
+        "exact_repository_commit": "unknown",
+        "full_repository_snapshot": "unknown",
+        "evidence": {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_grid-01/sources-before.json",
+          "sha256": "3121ae65e2051549253b5dc8816c63f5489bbd15ce87994c102884aababe2386",
+          "bytes": 4793,
+          "role": "recorded source identity"
+        },
+        "json_pointers": [
+          "/execution",
+          "/fixtures",
+          "/cancellation_verifier"
+        ],
+        "provable_scope": "Pre-attempt Python execution/fixture/verifier hashes; native executable identity is separately retained.",
+        "limitation": "Only the identities explicitly retained in this artifact are bound; it is not a complete historical repository/source-build attestation.",
+        "native_binary_identity_record": {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_grid-01/signed-worker-executable.json",
+          "sha256": "9dec45616bc1f7f055db3ba06658db2b8027ed5eee6adb6e408077a12116f70f",
+          "bytes": 276,
+          "role": "recorded native executable identity"
+        },
+        "native_source_build_linkage": "unknown; successful wrapper explicitly reports native_build_linkage_verified_here=false"
+      },
+      "supporting_artifacts": [
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_grid-01/sources-before.json",
+          "sha256": "3121ae65e2051549253b5dc8816c63f5489bbd15ce87994c102884aababe2386",
+          "bytes": 4793,
+          "role": "historical Python identity snapshot"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_grid-01/dispatch.json",
+          "sha256": "e6c91c95826e2601dd3ad8150c1dbefe234ab65c1bae4976a82c0eff4f37f015",
+          "bytes": 933,
+          "role": "request/config/binary identity"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_grid-01/signed-worker-executable.json",
+          "sha256": "9dec45616bc1f7f055db3ba06658db2b8027ed5eee6adb6e408077a12116f70f",
+          "bytes": 276,
+          "role": "native executable identity"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_grid-01/request.json",
+          "sha256": "80ad00a17ae945cc6da487e8d54961db0258ac038eb308d4ae03229209c1723a",
+          "bytes": 4169,
+          "role": "exact old request"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_grid-01/supervisor-config.json",
+          "sha256": "d354133fb70b11cb55d68635c24912b999220f272991f26d92a96f7b688338a5",
+          "bytes": 421,
+          "role": "exact transport configuration"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_grid-01/signed-cancel-real-worker.process.json",
+          "sha256": "7efa1db8b7b4208c651df80cc1434cfe12374f23dd08e2f2a331adb99ff35e81",
+          "bytes": 725,
+          "role": "native process/exit receipt"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_grid-01/signed-cancel-real-worker.stdout",
+          "sha256": "4ea16f7d47d1a4b7407101ef084cebf9a0ee723af9d71cbbd9b4aa0117213409",
+          "bytes": 258,
+          "role": "native test stdout"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_grid-01/signed-cancel-real-worker.stderr",
+          "sha256": "be3125d579a1f88dc217a4040c53b112cef135f16e9c82f9b905ddc8c85265ec",
+          "bytes": 280,
+          "role": "native test stderr"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_grid-01/failure.json",
+          "sha256": "e70b56e4b332e601a9fa2b38fe8ac4c40e4dc415c67d48fc2e4e574b023bd0c5",
+          "bytes": 289,
+          "role": "retained failure summary"
+        }
+      ],
+      "retained_candidate_outputs": []
+    },
+    {
+      "id": "cancel_population_age_01",
+      "category": "real_cancellation_attempt",
+      "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_age-01.log",
+      "sha256": "de90fdceb8c24e152652ed941ee3aa98df3dc65081229279a94cbe1961076737",
+      "bytes": 1058,
+      "result": {
+        "status": "failed",
+        "backend": "population_age",
+        "wrapper_exit_code": 1,
+        "native_exit_code": 101,
+        "old_coarse_intervals": 3,
+        "optimizer_step_limit": 64,
+        "authority_profile": "synthetic_ed25519_v1",
+        "terminal_observations": []
+      },
+      "proof_scope": [
+        "Retains a failed real cancellation attempt and its original process/error evidence."
+      ],
+      "failure_or_interruption": {
+        "kind": "native_acceptance_failure",
+        "reason": "prepare step: duplicate or conflicting step command; fixture preparation failed before worker dispatch.",
+        "native_exit_code": 101
+      },
+      "not_run_or_not_proven": [
+        "No complete cancellation acceptance passed for this attempt.",
+        "No result for any later extended workload or PQ host is established."
+      ],
+      "source_identity": {
+        "status": "recorded_partial_identity",
+        "exact_repository_commit": "unknown",
+        "full_repository_snapshot": "unknown",
+        "evidence": {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_age-01/sources-before.json",
+          "sha256": "3121ae65e2051549253b5dc8816c63f5489bbd15ce87994c102884aababe2386",
+          "bytes": 4793,
+          "role": "recorded source identity"
+        },
+        "json_pointers": [
+          "/execution",
+          "/fixtures",
+          "/cancellation_verifier"
+        ],
+        "provable_scope": "Pre-attempt Python execution/fixture/verifier hashes; native executable identity is separately retained.",
+        "limitation": "Only the identities explicitly retained in this artifact are bound; it is not a complete historical repository/source-build attestation.",
+        "native_binary_identity_record": {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_age-01/signed-worker-executable.json",
+          "sha256": "9dec45616bc1f7f055db3ba06658db2b8027ed5eee6adb6e408077a12116f70f",
+          "bytes": 276,
+          "role": "recorded native executable identity"
+        },
+        "native_source_build_linkage": "unknown; successful wrapper explicitly reports native_build_linkage_verified_here=false"
+      },
+      "supporting_artifacts": [
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_age-01/sources-before.json",
+          "sha256": "3121ae65e2051549253b5dc8816c63f5489bbd15ce87994c102884aababe2386",
+          "bytes": 4793,
+          "role": "historical Python identity snapshot"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_age-01/dispatch.json",
+          "sha256": "f11d885ae5627af1546a5929a08c7e150ae2382e94f19ce985f2d7c3fe6a795d",
+          "bytes": 932,
+          "role": "request/config/binary identity"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_age-01/signed-worker-executable.json",
+          "sha256": "9dec45616bc1f7f055db3ba06658db2b8027ed5eee6adb6e408077a12116f70f",
+          "bytes": 276,
+          "role": "native executable identity"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_age-01/request.json",
+          "sha256": "3b92b71aa6f2229fa855c8973186285f922c13066444990f17e9532beee93b77",
+          "bytes": 3293,
+          "role": "exact old request"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_age-01/supervisor-config.json",
+          "sha256": "4ff2dfe5521bb99382c06b7dfc484a792bfa599bc5f8ab15ec78ad73376ffef2",
+          "bytes": 420,
+          "role": "exact transport configuration"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_age-01/signed-cancel-real-worker.process.json",
+          "sha256": "0a3020ad36fcbea61ba3c5686c823c94b5b2ded2eaf08bf7b601086896d63fc4",
+          "bytes": 725,
+          "role": "native process/exit receipt"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_age-01/signed-cancel-real-worker.stdout",
+          "sha256": "988acf3553f0030888fd3193c3fdb13e6740351faed0d7db1304c6525bc86123",
+          "bytes": 258,
+          "role": "native test stdout"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_age-01/signed-cancel-real-worker.stderr",
+          "sha256": "cda18b9d41fa8eaa6e65641aac22ba0d7026c702d804269eb42f04cf03ab1105",
+          "bytes": 280,
+          "role": "native test stderr"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_age-01/failure.json",
+          "sha256": "e70b56e4b332e601a9fa2b38fe8ac4c40e4dc415c67d48fc2e4e574b023bd0c5",
+          "bytes": 289,
+          "role": "retained failure summary"
+        }
+      ],
+      "retained_candidate_outputs": []
+    },
+    {
+      "id": "cancel_outcomes_02",
+      "category": "cancellation_batch",
+      "path": "/workspace/scratch/7b4b0c316c52/local-cancel-outcomes-02.json",
+      "sha256": "d2640ce2448ea9995c20a277a1bcc4b4978e3a79be27b2fc2db3acbafbf5aaa4",
+      "bytes": 424,
+      "result": {
+        "status": "mixed_outcomes",
+        "backends": [
+          {
+            "backend": "value_kernel",
+            "exit_code": 0,
+            "output": "/workspace/scratch/7b4b0c316c52/local-cancel-value_kernel-02"
+          },
+          {
+            "backend": "population_grid",
+            "exit_code": 1,
+            "output": "/workspace/scratch/7b4b0c316c52/local-cancel-population_grid-02"
+          },
+          {
+            "backend": "population_age",
+            "exit_code": 1,
+            "output": "/workspace/scratch/7b4b0c316c52/local-cancel-population_age-02"
+          }
+        ]
+      },
+      "proof_scope": [
+        "Retains the per-backend exit status of this old-workload cancellation batch."
+      ],
+      "failure_or_interruption": null,
+      "not_run_or_not_proven": [
+        "These outcomes are not results for the subsequent extended cancellation workload or PQ Agentd host."
+      ],
+      "source_identity": {
+        "status": "unknown",
+        "exact_repository_commit": "unknown",
+        "exact_run_source_snapshot": "unknown",
+        "reported_phase": "Old tiny cancellation workload, attempt 02",
+        "reason": "The retained run log does not bind a complete source tree or commit. Current source bytes are not substituted for historical run identity."
+      },
+      "supporting_artifacts": []
+    },
+    {
+      "id": "cancel_value_kernel_02",
+      "category": "real_cancellation_attempt",
+      "path": "/workspace/scratch/7b4b0c316c52/local-cancel-value_kernel-02.log",
+      "sha256": "2b337c62c9cac08e4af307e9c4bf1fd2931b390f1bc118f0812f634de2375aed",
+      "bytes": 1099,
+      "result": {
+        "status": "passed_old_workload_only",
+        "backend": "value_kernel",
+        "wrapper_exit_code": 0,
+        "native_exit_code": 0,
+        "old_coarse_intervals": 4,
+        "optimizer_step_limit": 64,
+        "authority_profile": "synthetic_ed25519_v1",
+        "terminal_observations": [
+          {
+            "state": "cancelled",
+            "reason": "cancelled_worker_stopped",
+            "termination_confirmed": true
+          }
+        ]
+      },
+      "proof_scope": [
+        "This old A workload passed signed synthetic-Ed25519 Start/Cancel, independent worker-exit checks, lost-reply cold recovery and exact terminal readback."
+      ],
+      "failure_or_interruption": null,
+      "not_run_or_not_proven": [
+        "No optimizer entry in the cancelled process is proved.",
+        "No PQ Agentd host registration, daemon ingress, deployment or adoption is proved.",
+        "This successful tiny workload is not the later 32-interval extended A workload."
+      ],
+      "source_identity": {
+        "status": "recorded_partial_identity",
+        "exact_repository_commit": "unknown",
+        "full_repository_snapshot": "unknown",
+        "evidence": {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-value_kernel-02/sources-before.json",
+          "sha256": "f38dace85d26df9776023099e3a98875153a02f2b7f2c9e3b2d2f909017724e1",
+          "bytes": 4900,
+          "role": "recorded source identity"
+        },
+        "json_pointers": [
+          "/execution",
+          "/fixtures",
+          "/cancellation_verifier"
+        ],
+        "provable_scope": "Pre-attempt Python execution/fixture/verifier hashes; native executable identity is separately retained.",
+        "limitation": "Only the identities explicitly retained in this artifact are bound; it is not a complete historical repository/source-build attestation.",
+        "native_binary_identity_record": {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-value_kernel-02/signed-worker-executable.json",
+          "sha256": "912bab78af4eda260564bdd4949b7090afe25f130781ff7b801f0d6d67074f5b",
+          "bytes": 276,
+          "role": "recorded native executable identity"
+        },
+        "native_source_build_linkage": "unknown; successful wrapper explicitly reports native_build_linkage_verified_here=false",
+        "after_source_identity_record": {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-value_kernel-02/sources-after.json",
+          "sha256": "f38dace85d26df9776023099e3a98875153a02f2b7f2c9e3b2d2f909017724e1",
+          "bytes": 4900,
+          "role": "post-attempt Python identity snapshot"
+        }
+      },
+      "supporting_artifacts": [
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-value_kernel-02/sources-before.json",
+          "sha256": "f38dace85d26df9776023099e3a98875153a02f2b7f2c9e3b2d2f909017724e1",
+          "bytes": 4900,
+          "role": "historical Python identity snapshot"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-value_kernel-02/dispatch.json",
+          "sha256": "0a5480e92658970ba25009dc5dcd2ee07a5ea0271387c7ea6e467d17aa55f124",
+          "bytes": 930,
+          "role": "request/config/binary identity"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-value_kernel-02/signed-worker-executable.json",
+          "sha256": "912bab78af4eda260564bdd4949b7090afe25f130781ff7b801f0d6d67074f5b",
+          "bytes": 276,
+          "role": "native executable identity"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-value_kernel-02/request.json",
+          "sha256": "a458b463e15410902186981d96665bb6f12d71bfa320b0fc00782a261278c0d0",
+          "bytes": 3920,
+          "role": "exact old request"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-value_kernel-02/supervisor-config.json",
+          "sha256": "188b13a14dbdb240e406794dc543d460469675b62cbf0aff49f96c79892f1db5",
+          "bytes": 418,
+          "role": "exact transport configuration"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-value_kernel-02/signed-cancel-real-worker.process.json",
+          "sha256": "d3e1f9c6a35f22a27106c38b86ce71e66e392fa16b69175b71014c7bd1e7d84a",
+          "bytes": 722,
+          "role": "native process/exit receipt"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-value_kernel-02/signed-cancel-real-worker.stdout",
+          "sha256": "d5a65f126c6ec1a108c67c26dcc74cde247d4d9b43ab9c95be1cc91ea2634fa6",
+          "bytes": 175,
+          "role": "native test stdout"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-value_kernel-02/signed-cancel-real-worker.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0,
+          "role": "native test stderr"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-value_kernel-02/result.json",
+          "sha256": "1f56185b7beec13375e93c75a41d184f858b6e69bcf7a1d22e06ee95258fcfc5",
+          "bytes": 1159,
+          "role": "successful cancellation evidence"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-value_kernel-02/signed-cancel.json",
+          "sha256": "7b7484688e26908583fb509382fe0625a9709b4c3657a9a8c5aff2a923f23412",
+          "bytes": 5070,
+          "role": "successful cancellation evidence"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-value_kernel-02/sources-after.json",
+          "sha256": "f38dace85d26df9776023099e3a98875153a02f2b7f2c9e3b2d2f909017724e1",
+          "bytes": 4900,
+          "role": "successful cancellation evidence"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-value_kernel-02/retained-files.json",
+          "sha256": "2769878c1f92005374a554a874b1a68ef7c6ff95a30294088a67761c00d9d7a7",
+          "bytes": 5183,
+          "role": "successful cancellation evidence"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-value_kernel-02/signed-cancel-child.json",
+          "sha256": "d2ecd1bfbfebf9d35d6349ab4bce4e985fc8801906f34e63053234031ac3a5ae",
+          "bytes": 220,
+          "role": "successful cancellation evidence"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-value_kernel-02/supervisor-store/jobs/b58931976e20ff81f7314e0c7efbdc64044374b7ecd0232aec92a5a8d52e4086/terminal.json",
+          "sha256": "0aad14513d68083f3f9895faed212244aa72eb67ae754254dd45ee502a1187fa",
+          "bytes": 867,
+          "role": "raw worker terminal"
+        }
+      ],
+      "retained_candidate_outputs": []
+    },
+    {
+      "id": "cancel_population_grid_02",
+      "category": "real_cancellation_attempt",
+      "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_grid-02.log",
+      "sha256": "de90fdceb8c24e152652ed941ee3aa98df3dc65081229279a94cbe1961076737",
+      "bytes": 1058,
+      "result": {
+        "status": "failed",
+        "backend": "population_grid",
+        "wrapper_exit_code": 1,
+        "native_exit_code": 101,
+        "old_coarse_intervals": 5,
+        "optimizer_step_limit": 64,
+        "authority_profile": "synthetic_ed25519_v1",
+        "terminal_observations": [
+          {
+            "state": "cancelled",
+            "reason": "cancelled_worker_stopped",
+            "termination_confirmed": true
+          }
+        ]
+      },
+      "proof_scope": [
+        "Retains a failed real cancellation attempt and its original process/error evidence."
+      ],
+      "failure_or_interruption": {
+        "kind": "native_acceptance_failure",
+        "reason": "Worker termination was confirmed as cancelled_worker_stopped, but candidate/receipt/handoff outputs already existed; strict cold recovery correctly refused cancellation acceptance.",
+        "native_exit_code": 101
+      },
+      "not_run_or_not_proven": [
+        "No complete cancellation acceptance passed for this attempt.",
+        "No result for any later extended workload or PQ host is established."
+      ],
+      "source_identity": {
+        "status": "recorded_partial_identity",
+        "exact_repository_commit": "unknown",
+        "full_repository_snapshot": "unknown",
+        "evidence": {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_grid-02/sources-before.json",
+          "sha256": "f38dace85d26df9776023099e3a98875153a02f2b7f2c9e3b2d2f909017724e1",
+          "bytes": 4900,
+          "role": "recorded source identity"
+        },
+        "json_pointers": [
+          "/execution",
+          "/fixtures",
+          "/cancellation_verifier"
+        ],
+        "provable_scope": "Pre-attempt Python execution/fixture/verifier hashes; native executable identity is separately retained.",
+        "limitation": "Only the identities explicitly retained in this artifact are bound; it is not a complete historical repository/source-build attestation.",
+        "native_binary_identity_record": {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_grid-02/signed-worker-executable.json",
+          "sha256": "912bab78af4eda260564bdd4949b7090afe25f130781ff7b801f0d6d67074f5b",
+          "bytes": 276,
+          "role": "recorded native executable identity"
+        },
+        "native_source_build_linkage": "unknown; successful wrapper explicitly reports native_build_linkage_verified_here=false"
+      },
+      "supporting_artifacts": [
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_grid-02/sources-before.json",
+          "sha256": "f38dace85d26df9776023099e3a98875153a02f2b7f2c9e3b2d2f909017724e1",
+          "bytes": 4900,
+          "role": "historical Python identity snapshot"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_grid-02/dispatch.json",
+          "sha256": "64486490c6a374de0cbe98d2c1bed0aa40752a8bf4743f05b9f2dc7fa1f1537e",
+          "bytes": 933,
+          "role": "request/config/binary identity"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_grid-02/signed-worker-executable.json",
+          "sha256": "912bab78af4eda260564bdd4949b7090afe25f130781ff7b801f0d6d67074f5b",
+          "bytes": 276,
+          "role": "native executable identity"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_grid-02/request.json",
+          "sha256": "7d982cadcb30ec95b14e196262dd1a0ca106661f30c756c67445cc6ed039772f",
+          "bytes": 4169,
+          "role": "exact old request"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_grid-02/supervisor-config.json",
+          "sha256": "378c040cdc0a21a74335badab989a74418f14f0a0a20d330784d21153fbeed23",
+          "bytes": 421,
+          "role": "exact transport configuration"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_grid-02/signed-cancel-real-worker.process.json",
+          "sha256": "8ee06a87ed3dddae301ba3627b450e7ccdb14b3d094083f4a6f237497dabc05f",
+          "bytes": 723,
+          "role": "native process/exit receipt"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_grid-02/signed-cancel-real-worker.stdout",
+          "sha256": "a7f4017d0b3b0e01292fb712c1b2ccde482c61048e72b985eaa3a3ff74e7c826",
+          "bytes": 259,
+          "role": "native test stdout"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_grid-02/signed-cancel-real-worker.stderr",
+          "sha256": "5287da41ab43bcef1d9f0ffd572e24b0c543730cdda042c949dffc9e4c960e85",
+          "bytes": 575,
+          "role": "native test stderr"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_grid-02/failure.json",
+          "sha256": "e70b56e4b332e601a9fa2b38fe8ac4c40e4dc415c67d48fc2e4e574b023bd0c5",
+          "bytes": 289,
+          "role": "retained failure summary"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_grid-02/supervisor-store/jobs/b58931976e20ff81f7314e0c7efbdc64044374b7ecd0232aec92a5a8d52e4086/terminal.json",
+          "sha256": "5bf5a9ac9e013f8fa1fcc0645f31e4ccd295efed2badd39a724270db504374a8",
+          "bytes": 877,
+          "role": "raw worker terminal"
+        }
+      ],
+      "retained_candidate_outputs": [
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_grid-02/supervisor-store/jobs/b58931976e20ff81f7314e0c7efbdc64044374b7ecd0232aec92a5a8d52e4086/66bcd100e3a8011ed4de00cda2f4be9b23539726095263f536cefe884e08c678/receipt.json",
+          "sha256": "6eab448d3d56cf2044ac9afcc86425ed8d14ce3da3ed4614d8f2c23763554f0b",
+          "bytes": 60818,
+          "role": "outputs retained before or during cancelled/completed attempt"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_grid-02/supervisor-store/jobs/b58931976e20ff81f7314e0c7efbdc64044374b7ecd0232aec92a5a8d52e4086/66bcd100e3a8011ed4de00cda2f4be9b23539726095263f536cefe884e08c678/handoff.bin",
+          "sha256": "42bb91b3ed768df6125ca0bf4cccb4a77f314a8885db20b202a42638d8aa4c5c",
+          "bytes": 439,
+          "role": "outputs retained before or during cancelled/completed attempt"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_grid-02/supervisor-store/jobs/b58931976e20ff81f7314e0c7efbdc64044374b7ecd0232aec92a5a8d52e4086/66bcd100e3a8011ed4de00cda2f4be9b23539726095263f536cefe884e08c678/candidate.pt",
+          "sha256": "e7d7fb993adf116ad00e4723cb68f105cf309c241f18283897cadb9bbeb631e1",
+          "bytes": 11285,
+          "role": "outputs retained before or during cancelled/completed attempt"
+        }
+      ]
+    },
+    {
+      "id": "cancel_population_age_02",
+      "category": "real_cancellation_attempt",
+      "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_age-02.log",
+      "sha256": "de90fdceb8c24e152652ed941ee3aa98df3dc65081229279a94cbe1961076737",
+      "bytes": 1058,
+      "result": {
+        "status": "failed",
+        "backend": "population_age",
+        "wrapper_exit_code": 1,
+        "native_exit_code": 101,
+        "old_coarse_intervals": 3,
+        "optimizer_step_limit": 64,
+        "authority_profile": "synthetic_ed25519_v1",
+        "terminal_observations": [
+          {
+            "state": "succeeded",
+            "reason": "worker_exit:0",
+            "termination_confirmed": true
+          }
+        ]
+      },
+      "proof_scope": [
+        "Retains a failed real cancellation attempt and its original process/error evidence."
+      ],
+      "failure_or_interruption": {
+        "kind": "native_acceptance_failure",
+        "reason": "The old worker completed with worker_exit:0 and Succeeded before cancellation; strict recovery expected failed Start and rejected the attempt.",
+        "native_exit_code": 101
+      },
+      "not_run_or_not_proven": [
+        "No complete cancellation acceptance passed for this attempt.",
+        "No result for any later extended workload or PQ host is established."
+      ],
+      "source_identity": {
+        "status": "recorded_partial_identity",
+        "exact_repository_commit": "unknown",
+        "full_repository_snapshot": "unknown",
+        "evidence": {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_age-02/sources-before.json",
+          "sha256": "f38dace85d26df9776023099e3a98875153a02f2b7f2c9e3b2d2f909017724e1",
+          "bytes": 4900,
+          "role": "recorded source identity"
+        },
+        "json_pointers": [
+          "/execution",
+          "/fixtures",
+          "/cancellation_verifier"
+        ],
+        "provable_scope": "Pre-attempt Python execution/fixture/verifier hashes; native executable identity is separately retained.",
+        "limitation": "Only the identities explicitly retained in this artifact are bound; it is not a complete historical repository/source-build attestation.",
+        "native_binary_identity_record": {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_age-02/signed-worker-executable.json",
+          "sha256": "912bab78af4eda260564bdd4949b7090afe25f130781ff7b801f0d6d67074f5b",
+          "bytes": 276,
+          "role": "recorded native executable identity"
+        },
+        "native_source_build_linkage": "unknown; successful wrapper explicitly reports native_build_linkage_verified_here=false"
+      },
+      "supporting_artifacts": [
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_age-02/sources-before.json",
+          "sha256": "f38dace85d26df9776023099e3a98875153a02f2b7f2c9e3b2d2f909017724e1",
+          "bytes": 4900,
+          "role": "historical Python identity snapshot"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_age-02/dispatch.json",
+          "sha256": "efec76ca7143ab99b9d2baa1eee54b18e578ec757befc7c539716535122a8778",
+          "bytes": 932,
+          "role": "request/config/binary identity"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_age-02/signed-worker-executable.json",
+          "sha256": "912bab78af4eda260564bdd4949b7090afe25f130781ff7b801f0d6d67074f5b",
+          "bytes": 276,
+          "role": "native executable identity"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_age-02/request.json",
+          "sha256": "b0666d8f5048be26bba903815d971359aaaa0153d5706d92771a07e978b302e7",
+          "bytes": 3293,
+          "role": "exact old request"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_age-02/supervisor-config.json",
+          "sha256": "b4a11ecb802820f79547768af21a1db49b3294645b755769f4701e475e2d5683",
+          "bytes": 420,
+          "role": "exact transport configuration"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_age-02/signed-cancel-real-worker.process.json",
+          "sha256": "c2aa12eeafb7c9a686881e801cbca4255e6ac5da2a9dd4f3e0e515d450757329",
+          "bytes": 723,
+          "role": "native process/exit receipt"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_age-02/signed-cancel-real-worker.stdout",
+          "sha256": "97e6831d633f329014cc9e73bdb1889da23d437f6c8623f620c125e70ecba23a",
+          "bytes": 258,
+          "role": "native test stdout"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_age-02/signed-cancel-real-worker.stderr",
+          "sha256": "860435f3967177ca9ec97b6e9940e0eebe54091ad01e27e80769ce2af0516cb7",
+          "bytes": 650,
+          "role": "native test stderr"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_age-02/failure.json",
+          "sha256": "e70b56e4b332e601a9fa2b38fe8ac4c40e4dc415c67d48fc2e4e574b023bd0c5",
+          "bytes": 289,
+          "role": "retained failure summary"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_age-02/supervisor-store/jobs/b58931976e20ff81f7314e0c7efbdc64044374b7ecd0232aec92a5a8d52e4086/terminal.json",
+          "sha256": "2979546d58e44fda6743970d602f6ac9e745ed306557abaf234214a5030970c6",
+          "bytes": 1108,
+          "role": "raw worker terminal"
+        }
+      ],
+      "retained_candidate_outputs": [
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_age-02/supervisor-store/jobs/b58931976e20ff81f7314e0c7efbdc64044374b7ecd0232aec92a5a8d52e4086/85dd5f5925c20dfec7f77e10306034e8285bbbe3713514ac16fe58be71bad0c2/receipt.json",
+          "sha256": "448dc671388bd6cbe153fe0e6b9a974f8a3ade9256c972271822f48eded88bef",
+          "bytes": 60724,
+          "role": "outputs retained before or during cancelled/completed attempt"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_age-02/supervisor-store/jobs/b58931976e20ff81f7314e0c7efbdc64044374b7ecd0232aec92a5a8d52e4086/85dd5f5925c20dfec7f77e10306034e8285bbbe3713514ac16fe58be71bad0c2/handoff.bin",
+          "sha256": "c63daecf17c8cb63bd13355c200497ecedf73e1cba3eab6af8519de9c42ea4d8",
+          "bytes": 439,
+          "role": "outputs retained before or during cancelled/completed attempt"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/local-cancel-population_age-02/supervisor-store/jobs/b58931976e20ff81f7314e0c7efbdc64044374b7ecd0232aec92a5a8d52e4086/85dd5f5925c20dfec7f77e10306034e8285bbbe3713514ac16fe58be71bad0c2/candidate.pt",
+          "sha256": "da37cc4ca79337ff11313b3dcbeb1bd373f3a85221b3fd6b075f32cc7a027cd9",
+          "bytes": 11919,
+          "role": "outputs retained before or during cancelled/completed attempt"
+        }
+      ]
+    },
+    {
+      "id": "preflight_cancellation-workload-preflight-02_value_kernel",
+      "category": "cancellation_workload_preflight",
+      "path": "/workspace/scratch/7b4b0c316c52/cancellation-workload-preflight-02/value_kernel/cancellation-preflight/result.json",
+      "sha256": "2db8a7fc4e86635f848e3f19eb475509ec9d029d42cacc9bcfe836e68587d4a5",
+      "bytes": 914,
+      "result": {
+        "status": "one_step_preflight_only_passed",
+        "backend": "value_kernel",
+        "final_workload_parameters": true,
+        "workload": {
+          "schema_version": 1,
+          "backend": "value_kernel",
+          "logical_cells": 2,
+          "spatial_bins": null,
+          "graph_digest": "a3d7d66e6a55795c5231eb60fb9fea6bffae9f2b628c8f07018c45973a0ee208",
+          "temporal_profile_digest": "bb1ab0765d0eb8699b83adf94c7af171ffcdc59d4aeb435ca0e6388797a7af28",
+          "batch": 2,
+          "coarse_intervals": 32,
+          "event_steps_per_sample": 32,
+          "working_elements": 1666,
+          "maximum_elements": 1048576,
+          "maximum_optimizer_steps": 64,
+          "request_bytes": 17938,
+          "maximum_host_wire_bytes": 24576,
+          "scope": "real bounded process-cancellation workload; not the 32-bin numerical-quality fixture"
+        },
+        "actual_optimizer_steps": 1,
+        "wall_seconds": 1.0962886709994564,
+        "cpu_seconds": 1.065268923,
+        "uncancelled_64_step_duration_measured": false,
+        "actual_cancellation_executed": false
+      },
+      "proof_scope": [
+        "One genuine bounded worker.propose call completed validation, reload, joint BP, final forward and candidate serialization under the recorded working-element budget."
+      ],
+      "failure_or_interruption": null,
+      "not_run_or_not_proven": [
+        "No native signed Start/Cancel, worker-kill, cold-recovery or PQ host acceptance was executed by this preflight.",
+        "The full 64-step duration was not measured and optimizer entry in a subsequently cancelled process is not proved.",
+        "Source coverage is the receipt execution_sources map; it is not the complete signed production source manifest."
+      ],
+      "source_identity": {
+        "status": "recorded_partial_identity",
+        "exact_repository_commit": "unknown",
+        "full_repository_snapshot": "unknown",
+        "evidence": {
+          "path": "/workspace/scratch/7b4b0c316c52/cancellation-workload-preflight-02/value_kernel/cancellation-preflight/receipt.json",
+          "sha256": "5a943025d6310fb7b896b5d2a92689153a0c23f853c068e1ec78555330c2e44c",
+          "bytes": 9534,
+          "role": "recorded source identity"
+        },
+        "json_pointers": [
+          "/execution_sources",
+          "/execution_source_digest",
+          "/runtime_tuple",
+          "/graph_digest"
+        ],
+        "provable_scope": "Recorded Python execution-source hashes, runtime tuple and graph identity for this one-step proposal.",
+        "limitation": "Only the identities explicitly retained in this artifact are bound; it is not a complete historical repository/source-build attestation."
+      },
+      "supporting_artifacts": [
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/cancellation-workload-preflight-02/value_kernel/workload.json",
+          "sha256": "c5f7fe3035edda0584bbc2174a8906c75a686e934796750f3ffb637cfd0b452e",
+          "bytes": 609,
+          "role": "exact workload parameters"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/cancellation-workload-preflight-02/value_kernel/request.json",
+          "sha256": "3372cc94c1ee390b41dd85d409835ce6415195d031b7e67de7075503323c6119",
+          "bytes": 17938,
+          "role": "intended 64-step cancellation request"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/cancellation-workload-preflight-02/value_kernel/base.pt",
+          "sha256": "123bb675e1629322609e6c31062e645a8544dfd21d42ae9befe7828c8550a56f",
+          "bytes": 9807,
+          "role": "base checkpoint"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/cancellation-workload-preflight-02/value_kernel/cancellation-preflight/request.json",
+          "sha256": "a9b20f0b68231aa3433f902168a5a3256390c29ec9e5632baaf2fa2ce986283a",
+          "bytes": 17947,
+          "role": "separate one-step request"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/cancellation-workload-preflight-02/value_kernel/cancellation-preflight/receipt.json",
+          "sha256": "5a943025d6310fb7b896b5d2a92689153a0c23f853c068e1ec78555330c2e44c",
+          "bytes": 9534,
+          "role": "actual one-step numerical receipt"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/cancellation-workload-preflight-02/value_kernel/cancellation-preflight/candidate.pt",
+          "sha256": "2feab3e01cc29fefa08e49eab0fa18e48c670576600dbb4e366209c8a3c620c4",
+          "bytes": 11459,
+          "role": "one-step candidate checkpoint"
+        }
+      ]
+    },
+    {
+      "id": "preflight_cancellation-workload-preflight-02_population_grid",
+      "category": "cancellation_workload_preflight",
+      "path": "/workspace/scratch/7b4b0c316c52/cancellation-workload-preflight-02/population_grid/cancellation-preflight/result.json",
+      "sha256": "390f20843ab5a8200821e8967c6118c169a0f7efccefdf73052089c9ec0cf8da",
+      "bytes": 920,
+      "result": {
+        "status": "one_step_preflight_only_passed",
+        "backend": "population_grid",
+        "final_workload_parameters": true,
+        "workload": {
+          "schema_version": 1,
+          "backend": "population_grid",
+          "logical_cells": 2,
+          "spatial_bins": 8,
+          "graph_digest": "c24d60c0685549705a6e3bcc5013156e092b26fc77797977fa34224d4b84587c",
+          "temporal_profile_digest": "3b973334d6ae99c9a8e0dda38ccb95d390561809bcd1430042854fd6641329c3",
+          "batch": 1,
+          "coarse_intervals": 12,
+          "event_steps_per_sample": 96,
+          "working_elements": 800077,
+          "maximum_elements": 1048576,
+          "maximum_optimizer_steps": 64,
+          "request_bytes": 7309,
+          "maximum_host_wire_bytes": 24576,
+          "scope": "real bounded process-cancellation workload; not the 32-bin numerical-quality fixture"
+        },
+        "actual_optimizer_steps": 1,
+        "wall_seconds": 0.590260799999669,
+        "cpu_seconds": 0.5897687060000001,
+        "uncancelled_64_step_duration_measured": false,
+        "actual_cancellation_executed": false
+      },
+      "proof_scope": [
+        "One genuine bounded worker.propose call completed validation, reload, joint BP, final forward and candidate serialization under the recorded working-element budget."
+      ],
+      "failure_or_interruption": null,
+      "not_run_or_not_proven": [
+        "No native signed Start/Cancel, worker-kill, cold-recovery or PQ host acceptance was executed by this preflight.",
+        "The full 64-step duration was not measured and optimizer entry in a subsequently cancelled process is not proved.",
+        "Source coverage is the receipt execution_sources map; it is not the complete signed production source manifest."
+      ],
+      "source_identity": {
+        "status": "recorded_partial_identity",
+        "exact_repository_commit": "unknown",
+        "full_repository_snapshot": "unknown",
+        "evidence": {
+          "path": "/workspace/scratch/7b4b0c316c52/cancellation-workload-preflight-02/population_grid/cancellation-preflight/receipt.json",
+          "sha256": "a09add1e5dc8a8c3b932320c6c4f3955169864a505db6f138a3b1ff3b71b8660",
+          "bytes": 8738,
+          "role": "recorded source identity"
+        },
+        "json_pointers": [
+          "/execution_sources",
+          "/execution_source_digest",
+          "/runtime_tuple",
+          "/graph_digest"
+        ],
+        "provable_scope": "Recorded Python execution-source hashes, runtime tuple and graph identity for this one-step proposal.",
+        "limitation": "Only the identities explicitly retained in this artifact are bound; it is not a complete historical repository/source-build attestation."
+      },
+      "supporting_artifacts": [
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/cancellation-workload-preflight-02/population_grid/workload.json",
+          "sha256": "b3d9575e0675ed32dfe578cd1ce17bd2afe4b08b9a8b67e9b4005f7cbeac9450",
+          "bytes": 610,
+          "role": "exact workload parameters"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/cancellation-workload-preflight-02/population_grid/request.json",
+          "sha256": "1241fe1acd0ac8d99627aacc4b320652dd06af3a4b0dde12226ec4e8d992f65f",
+          "bytes": 7309,
+          "role": "intended 64-step cancellation request"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/cancellation-workload-preflight-02/population_grid/base.pt",
+          "sha256": "0962cc3f7f87ae4f96d59f65090c2bcb3903b5fed13845156b79c083020a785c",
+          "bytes": 6259,
+          "role": "base checkpoint"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/cancellation-workload-preflight-02/population_grid/cancellation-preflight/request.json",
+          "sha256": "943d9b32d0afec6537f6fb9515ae001752e17cf02120793a08145a7e3b7d1069",
+          "bytes": 7318,
+          "role": "separate one-step request"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/cancellation-workload-preflight-02/population_grid/cancellation-preflight/receipt.json",
+          "sha256": "a09add1e5dc8a8c3b932320c6c4f3955169864a505db6f138a3b1ff3b71b8660",
+          "bytes": 8738,
+          "role": "actual one-step numerical receipt"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/cancellation-workload-preflight-02/population_grid/cancellation-preflight/candidate.pt",
+          "sha256": "f0fb731c69e97caad38b35c0301c59cdcce140ba747c0fef83e8381fd7a07d70",
+          "bytes": 9429,
+          "role": "one-step candidate checkpoint"
+        }
+      ]
+    },
+    {
+      "id": "preflight_cancellation-workload-preflight-02_population_age",
+      "category": "cancellation_workload_preflight",
+      "path": "/workspace/scratch/7b4b0c316c52/cancellation-workload-preflight-02/population_age/cancellation-preflight/result.json",
+      "sha256": "2d87004e4f2400e81b102d5c2d9e292839d67b5fd898898d2d7dabbb688087c7",
+      "bytes": 923,
+      "result": {
+        "status": "one_step_preflight_only_passed",
+        "backend": "population_age",
+        "final_workload_parameters": false,
+        "workload": {
+          "schema_version": 1,
+          "backend": "population_age",
+          "logical_cells": 2,
+          "spatial_bins": 8,
+          "graph_digest": "106dff09f07c289300945b470736c0c8403d131b9cb7773008ecb8e009f76d86",
+          "temporal_profile_digest": "596ea8fad7844062b311960f5cac775ceb16d2ae816ebbe67c6bc181ba44f79b",
+          "batch": 1,
+          "coarse_intervals": 8,
+          "event_steps_per_sample": 39,
+          "working_elements": 510597,
+          "maximum_elements": 1048576,
+          "maximum_optimizer_steps": 64,
+          "request_bytes": 5549,
+          "maximum_host_wire_bytes": 24576,
+          "scope": "real bounded process-cancellation workload; not the 32-bin numerical-quality fixture"
+        },
+        "actual_optimizer_steps": 1,
+        "wall_seconds": 0.16256523999982164,
+        "cpu_seconds": 0.16248245899999958,
+        "uncancelled_64_step_duration_measured": false,
+        "actual_cancellation_executed": false
+      },
+      "proof_scope": [
+        "One genuine bounded worker.propose call completed validation, reload, joint BP, final forward and candidate serialization under the recorded working-element budget."
+      ],
+      "failure_or_interruption": null,
+      "not_run_or_not_proven": [
+        "No native signed Start/Cancel, worker-kill, cold-recovery or PQ host acceptance was executed by this preflight.",
+        "The full 64-step duration was not measured and optimizer entry in a subsequently cancelled process is not proved.",
+        "Source coverage is the receipt execution_sources map; it is not the complete signed production source manifest.",
+        "This is the intermediate 8-coarse-interval/39-event age workload, not the final 14-interval/79-event age workload."
+      ],
+      "source_identity": {
+        "status": "recorded_partial_identity",
+        "exact_repository_commit": "unknown",
+        "full_repository_snapshot": "unknown",
+        "evidence": {
+          "path": "/workspace/scratch/7b4b0c316c52/cancellation-workload-preflight-02/population_age/cancellation-preflight/receipt.json",
+          "sha256": "cc5855cca6c6f44a55706abfe473dfa16720afe082bdfd39dd56d078efa29b65",
+          "bytes": 8948,
+          "role": "recorded source identity"
+        },
+        "json_pointers": [
+          "/execution_sources",
+          "/execution_source_digest",
+          "/runtime_tuple",
+          "/graph_digest"
+        ],
+        "provable_scope": "Recorded Python execution-source hashes, runtime tuple and graph identity for this one-step proposal.",
+        "limitation": "Only the identities explicitly retained in this artifact are bound; it is not a complete historical repository/source-build attestation."
+      },
+      "supporting_artifacts": [
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/cancellation-workload-preflight-02/population_age/workload.json",
+          "sha256": "dadcffd3fdd1571d220d5939ed7b3424e1ad9e00d3d9ea01addd7ea98c391285",
+          "bytes": 608,
+          "role": "exact workload parameters"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/cancellation-workload-preflight-02/population_age/request.json",
+          "sha256": "e3b793a8f01310b915622f903c3ac4185a222f64560576308b0a16d2a2d08b8e",
+          "bytes": 5549,
+          "role": "intended 64-step cancellation request"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/cancellation-workload-preflight-02/population_age/base.pt",
+          "sha256": "2c0edbe2e794e267419fa20439bd70c6abdb6996a6605d80f234e484bfbfee57",
+          "bytes": 6323,
+          "role": "base checkpoint"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/cancellation-workload-preflight-02/population_age/cancellation-preflight/request.json",
+          "sha256": "55c4174848ea18312a363863ea509c79d2c5200595173302fee33e421941d9d4",
+          "bytes": 5558,
+          "role": "separate one-step request"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/cancellation-workload-preflight-02/population_age/cancellation-preflight/receipt.json",
+          "sha256": "cc5855cca6c6f44a55706abfe473dfa16720afe082bdfd39dd56d078efa29b65",
+          "bytes": 8948,
+          "role": "actual one-step numerical receipt"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/cancellation-workload-preflight-02/population_age/cancellation-preflight/candidate.pt",
+          "sha256": "ad2648f696f61933f43fbe51d1bc6551416b3cc73ba4b71bba64a2fbc63f9eca",
+          "bytes": 10255,
+          "role": "one-step candidate checkpoint"
+        }
+      ]
+    },
+    {
+      "id": "preflight_cancellation-workload-preflight-03",
+      "category": "cancellation_workload_preflight",
+      "path": "/workspace/scratch/7b4b0c316c52/cancellation-workload-preflight-03/cancellation-preflight/result.json",
+      "sha256": "5558992a8b1dd1a543daddf5ab55466a18ffdc2f6244dc95b328fa1d1eee70cd",
+      "bytes": 922,
+      "result": {
+        "status": "one_step_preflight_only_passed",
+        "backend": "population_age",
+        "final_workload_parameters": true,
+        "workload": {
+          "schema_version": 1,
+          "backend": "population_age",
+          "logical_cells": 2,
+          "spatial_bins": 8,
+          "graph_digest": "106dff09f07c289300945b470736c0c8403d131b9cb7773008ecb8e009f76d86",
+          "temporal_profile_digest": "596ea8fad7844062b311960f5cac775ceb16d2ae816ebbe67c6bc181ba44f79b",
+          "batch": 1,
+          "coarse_intervals": 14,
+          "event_steps_per_sample": 79,
+          "working_elements": 1046923,
+          "maximum_elements": 1048576,
+          "maximum_optimizer_steps": 64,
+          "request_bytes": 8193,
+          "maximum_host_wire_bytes": 24576,
+          "scope": "real bounded process-cancellation workload; not the 32-bin numerical-quality fixture"
+        },
+        "actual_optimizer_steps": 1,
+        "wall_seconds": 0.3025279829998908,
+        "cpu_seconds": 0.29870104899999994,
+        "uncancelled_64_step_duration_measured": false,
+        "actual_cancellation_executed": false
+      },
+      "proof_scope": [
+        "One genuine bounded worker.propose call completed validation, reload, joint BP, final forward and candidate serialization under the recorded working-element budget."
+      ],
+      "failure_or_interruption": null,
+      "not_run_or_not_proven": [
+        "No native signed Start/Cancel, worker-kill, cold-recovery or PQ host acceptance was executed by this preflight.",
+        "The full 64-step duration was not measured and optimizer entry in a subsequently cancelled process is not proved.",
+        "Source coverage is the receipt execution_sources map; it is not the complete signed production source manifest."
+      ],
+      "source_identity": {
+        "status": "recorded_partial_identity",
+        "exact_repository_commit": "unknown",
+        "full_repository_snapshot": "unknown",
+        "evidence": {
+          "path": "/workspace/scratch/7b4b0c316c52/cancellation-workload-preflight-03/cancellation-preflight/receipt.json",
+          "sha256": "7bc7b7696b987c5e2c9cbc4d1020397772346f94326f5afae9ba9549a40b020f",
+          "bytes": 8949,
+          "role": "recorded source identity"
+        },
+        "json_pointers": [
+          "/execution_sources",
+          "/execution_source_digest",
+          "/runtime_tuple",
+          "/graph_digest"
+        ],
+        "provable_scope": "Recorded Python execution-source hashes, runtime tuple and graph identity for this one-step proposal.",
+        "limitation": "Only the identities explicitly retained in this artifact are bound; it is not a complete historical repository/source-build attestation."
+      },
+      "supporting_artifacts": [
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/cancellation-workload-preflight-03/workload.json",
+          "sha256": "e83626c4371a64e3b31cdff323dfa284000bb8b8018e3c12f94c1610e5d9c41d",
+          "bytes": 610,
+          "role": "exact workload parameters"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/cancellation-workload-preflight-03/request.json",
+          "sha256": "eafe7a35b6ca35922c5c9cf7d06143f001b444883f4a71f565ce61ad6b43cee9",
+          "bytes": 8193,
+          "role": "intended 64-step cancellation request"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/cancellation-workload-preflight-03/base.pt",
+          "sha256": "2c0edbe2e794e267419fa20439bd70c6abdb6996a6605d80f234e484bfbfee57",
+          "bytes": 6323,
+          "role": "base checkpoint"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/cancellation-workload-preflight-03/cancellation-preflight/request.json",
+          "sha256": "8d1ce07e116e523cdc8d99747334f9aaf8eb8307e26f23384f588e80cea0c76e",
+          "bytes": 8202,
+          "role": "separate one-step request"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/cancellation-workload-preflight-03/cancellation-preflight/receipt.json",
+          "sha256": "7bc7b7696b987c5e2c9cbc4d1020397772346f94326f5afae9ba9549a40b020f",
+          "bytes": 8949,
+          "role": "actual one-step numerical receipt"
+        },
+        {
+          "path": "/workspace/scratch/7b4b0c316c52/cancellation-workload-preflight-03/cancellation-preflight/candidate.pt",
+          "sha256": "6df4e6dcea8c4e3ccacd853a6081adeae5ba9702c7047aac045624f7b4d8b4a7",
+          "bytes": 10255,
+          "role": "one-step candidate checkpoint"
+        }
+      ]
+    },
+    {
+      "id": "preflight_missing_runtime_command",
+      "category": "command_start_failure",
+      "path": "/workspace/scratch/7b4b0c316c52/cancellation-workload-preflight-command-failure.json",
+      "sha256": "23c7ebd846a4cccf4efbb799463682a5dfcd71e83bbbfbe6abfae8aa7834f087",
+      "bytes": 239,
+      "result": {
+        "status": "not_started",
+        "exit_code": 127,
+        "python_process_started": false
+      },
+      "proof_scope": [
+        "Retains the stale Python executable-path failure before a Python process or workload directory was created."
+      ],
+      "failure_or_interruption": {
+        "attempt": "cancellation-workload-preflight-01",
+        "executable": "/workspace/scratch/7b4b0c316c52/hcsn-cpu/bin/python",
+        "exit_code": 127,
+        "error": "executable missing after environment reset; no Python process or attempt directory created"
+      },
+      "not_run_or_not_proven": [
+        "No workload preparation, preflight or cancellation was executed in this attempt."
+      ],
+      "source_identity": {
+        "status": "unknown",
+        "exact_repository_commit": "unknown",
+        "exact_run_source_snapshot": "unknown",
+        "reported_phase": "After an earlier environment reset.",
+        "reason": "The retained run log does not bind a complete source tree or commit. Current source bytes are not substituted for historical run identity."
+      },
+      "supporting_artifacts": []
+    },
+    {
+      "id": "final_spatial_module_uncompleted",
+      "category": "planned_not_run",
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-prod/qualification/hcsn_training/test_population_spatial.py",
+      "sha256": "c08eb7a1e3273d7de5e8fb19715479d32fc472887f060c35fb4741a51f9fe911",
+      "bytes": 8649,
+      "result": {
+        "status": "not_completed_locally"
+      },
+      "proof_scope": [
+        "The final five-test module exists; only its earlier four-test version has a successful local unittest log."
+      ],
+      "failure_or_interruption": null,
+      "not_run_or_not_proven": [
+        "The long-trace fifth test has no successful local test result. Separate one-step preflights are not a substitute for its complete assertions."
+      ],
+      "source_identity": {
+        "status": "inventory_time_file_only",
+        "exact_run_source_snapshot": "unknown",
+        "reason": "The hash identifies the current test file, not a successfully executed historical source version."
+      },
+      "supporting_artifacts": []
+    },
+    {
+      "id": "final_full_69_and_six_cancel_scopes",
+      "category": "planned_not_run",
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-prod/.github/workflows/hepta-hcsn-training-bridge.yml",
+      "sha256": "825a0ffbeb7ed20b7d5a09e0c3c5436caae56f8dfc5e4cf2957f8f243093b3f4",
+      "bytes": 20207,
+      "result": {
+        "status": "not_proven_locally",
+        "configured_strict_python_tests": 69,
+        "extended_synthetic_cancel_backends": 3,
+        "extended_pq_host_cancel_backends": 3
+      },
+      "proof_scope": [
+        "The workflow configures the final strict Python suite and six extended-workload cancellation acceptances."
+      ],
+      "failure_or_interruption": null,
+      "not_run_or_not_proven": [
+        "No successful local 69/69 strict-suite result is retained.",
+        "No actual local cancellation result is retained for any final extended workload.",
+        "No local actual PQ Agentd-host cancellation result is retained for the final candidate.",
+        "Hosted CI outcomes are outside this local inventory and must be recorded separately when observed."
+      ],
+      "source_identity": {
+        "status": "inventory_time_file_only",
+        "exact_run_source_snapshot": "not_applicable_no_retained_run",
+        "reason": "Workflow source hash identifies planned gates; configuration is not test execution."
+      },
+      "supporting_artifacts": []
+    }
+  ]
+}
