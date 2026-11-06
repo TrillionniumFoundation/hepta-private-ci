@@ -38,9 +38,11 @@ pub enum CellCostStageV2 {
     Recovery,
     Communication,
     Evaluation,
+    ModelAcquisition,
+    Migration,
 }
 
-const STAGES: [CellCostStageV2; 12] = [
+const STAGES: [CellCostStageV2; 14] = [
     CellCostStageV2::Encoder,
     CellCostStageV2::Routing,
     CellCostStageV2::Inference,
@@ -53,6 +55,8 @@ const STAGES: [CellCostStageV2; 12] = [
     CellCostStageV2::Recovery,
     CellCostStageV2::Communication,
     CellCostStageV2::Evaluation,
+    CellCostStageV2::ModelAcquisition,
+    CellCostStageV2::Migration,
 ];
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
