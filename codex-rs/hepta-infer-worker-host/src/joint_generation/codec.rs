@@ -167,10 +167,10 @@ impl Packet {
         let n = r.count(512)?;
         for _ in 0..n {
             let k = r.string()?;
-            let nd = r.count(8)?;
+            let dimension_count = r.count(8)?;
             let mut shape = Vec::new();
             let mut product = 1usize;
-            for _ in 0..nd {
+            for _ in 0..dimension_count {
                 let d = r.count(4_000_000)?;
                 product = product.checked_mul(d).ok_or("shape overflow")?;
                 shape.push(d);
