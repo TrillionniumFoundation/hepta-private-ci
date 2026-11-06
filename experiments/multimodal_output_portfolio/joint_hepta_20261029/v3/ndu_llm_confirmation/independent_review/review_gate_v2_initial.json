@@ -1,0 +1,1069 @@
+{
+  "check_count": 114,
+  "checks": [
+    {
+      "actual": "PASS",
+      "expected": "PASS",
+      "name": "independent_primary_radius",
+      "passed": true,
+      "reasons": []
+    },
+    {
+      "actual": "PASS",
+      "expected": "PASS",
+      "name": "repeats_do_not_inflate_n",
+      "passed": true,
+      "reasons": []
+    },
+    {
+      "actual": "PASS",
+      "expected": "PASS",
+      "name": "members_do_not_inflate_n",
+      "passed": true,
+      "reasons": []
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "strict_type:records/0/quality",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.records[0].quality:type"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "strict_type:records/0/repeat",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.records[0].repeat:type"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "strict_type:events/0/repeat",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.events[0]:oneOf"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "strict_type:events/3/verified_quality",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.events[3]:oneOf"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "strict_type:records/0/contract/currency_to_score",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.records[0].contract.currency_to_score:type"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "strict_type:records/0/contract/time_price",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.records[0].contract.time_price:type"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "strict_type:invoices/0/amount",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.invoices[0].amount:type"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "strict_type:lifecycle_invoices/0/amount",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.lifecycle_invoices[0].amount:type"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "strict_type:events/1/wall_seconds",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.events[1]:oneOf"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "strict_type:invoices/0/line_id",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.invoices[0].line_id:type"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "strict_type:lifecycle_invoices/0/line_id",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.lifecycle_invoices[0].line_id:type"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "invalid_usage:{}",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.events[1]:oneOf"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "invalid_usage:True",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.events[1]:oneOf"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "invalid_usage:{'input_tokens': True, 'output_tokens': False}",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.events[1]:oneOf"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "invalid_usage:{'input_tokens': 1, 'output_tokens': 0, 'cached_input_tokens': 2}",
+      "passed": true,
+      "reasons": [
+        "invalid_usage_record:family-a/source-0/task-0/direct_stop/0/model;usage_unknown:family-a/source-0/task-0/direct_stop/0/model"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "nonfinite_quality:nan",
+      "passed": true,
+      "reasons": [
+        "Out of range float values are not JSON compliant: nan"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "nonfinite_quality:inf",
+      "passed": true,
+      "reasons": [
+        "Out of range float values are not JSON compliant: inf"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "nonfinite_quality:-inf",
+      "passed": true,
+      "reasons": [
+        "Out of range float values are not JSON compliant: -inf"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "missing:records/schema",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.records[0]:required"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "missing:records/task_id",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.records[0]:required"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "missing:records/arm",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.records[0]:required"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "missing:records/repeat",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.records[0]:required"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "missing:records/protocol_sha256",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.records[0]:required"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "missing:records/task_sha256",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.records[0]:required"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "missing:records/verifier_sha256",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.records[0]:required"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "missing:records/method_sha256",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.records[0]:required"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "missing:records/started_at",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.records[0]:required"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "missing:records/wall_seconds",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.records[0]:required"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "missing:records/quality",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.records[0]:required"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "missing:records/terminal",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.records[0]:required"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "missing:records/stop_requested",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.records[0]:required"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "missing:records/delivery_at_seconds",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.records[0]:required"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "missing:records/request_ids",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.records[0]:required"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "missing:records/contract",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.records[0]:required"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "missing:events/schema",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.events[1]:oneOf"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "missing:events/request_id",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.events[1]:oneOf"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "missing:events/kind",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.events[1]:oneOf"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "missing:events/task_id",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.events[1]:oneOf"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "missing:events/arm",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.events[1]:oneOf"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "missing:events/repeat",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.events[1]:oneOf"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "missing:events/protocol_sha256",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.events[1]:oneOf"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "missing:events/started_at",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.events[1]:oneOf"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "missing:events/finished_at",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.events[1]:oneOf"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "missing:events/started_monotonic",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.events[1]:oneOf"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "missing:events/finished_monotonic",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.events[1]:oneOf"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "missing:events/wall_seconds",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.events[1]:oneOf"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "missing:events/status",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.events[1]:oneOf"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "missing:invoices/request_id",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.invoices[0]:required"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "missing:invoices/status",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.invoices[0]:required"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "missing:invoices/amount",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.invoices[0]:required"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "missing:invoices/currency",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.invoices[0]:required"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "missing:invoices/invoice_sha256",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.invoices[0]:required"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "missing:invoices/line_id",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.invoices[0]:required"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "missing:lifecycle_invoices/charge_id",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.lifecycle_invoices[0]:required"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "missing:lifecycle_invoices/status",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.lifecycle_invoices[0]:required"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "missing:lifecycle_invoices/amount",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.lifecycle_invoices[0]:required"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "missing:lifecycle_invoices/currency",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.lifecycle_invoices[0]:required"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "missing:lifecycle_invoices/invoice_sha256",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.lifecycle_invoices[0]:required"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "missing:lifecycle_invoices/line_id",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.lifecycle_invoices[0]:required"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "successful_identity_missing:identity_status",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.events[1]:oneOf"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "successful_identity_missing:observed_identity_sha256",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.events[1]:oneOf"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "observed_version_mismatch",
+      "passed": true,
+      "reasons": [
+        "observed_version_mismatch"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "unknown_invoice_status",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.invoices[0].status:const"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "missing_invoice",
+      "passed": true,
+      "reasons": [
+        "unreconciled_charge:family-b/source-15/task-0/full/0/host"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "missing_record",
+      "passed": true,
+      "reasons": [
+        "incomplete_pairs_or_unassigned_attempts"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "duplicate_record",
+      "passed": true,
+      "reasons": [
+        "missing_or_duplicate_paired_record"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "duplicate_invoice",
+      "passed": true,
+      "reasons": [
+        "duplicate_invoice_line"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "duplicate_event",
+      "passed": true,
+      "reasons": [
+        "duplicate_terminal_or_reused_request:family-a/source-0/task-0/direct_stop/0/model"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "all_success_claims_have_only_model_timeouts",
+      "passed": true,
+      "reasons": [
+        "missing_or_inconsistent_verification"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "all_evidence_missing",
+      "passed": true,
+      "reasons": [
+        "evidence_material_missing:313c135d3efb1d77e9f42febbaeaf49d3805d5eeecd927be9c0f586adbf683ea"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "source_split_into_clusters",
+      "passed": true,
+      "reasons": [
+        "source_split_into_pseudo_units"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "empty_source_group",
+      "passed": true,
+      "reasons": [
+        "schema:protocol.tasks[0].source_groups[0]:minLength"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "duplicate_content",
+      "passed": true,
+      "reasons": [
+        "duplicate_task_or_content"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "underdeclared_M",
+      "passed": true,
+      "reasons": [
+        "multiplicity_mismatch"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "mechanism_without_registered_comparison",
+      "passed": true,
+      "reasons": [
+        "unregistered_mechanism_contrast"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "precision_without_enough_clusters",
+      "passed": true,
+      "reasons": [
+        "insufficient_preregistered_clusters:family-a"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "pending_lifecycle_bill",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.lifecycle_invoices[0].status:const"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "missing_lifecycle_bill",
+      "passed": true,
+      "reasons": [
+        "unreconciled_lifecycle:reporting"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "service_lifecycle_double_count",
+      "passed": true,
+      "reasons": [
+        "cost_counted_twice"
+      ]
+    },
+    {
+      "actual": "PASS",
+      "expected": "PASS",
+      "name": "baseline_upper_bound_cannot_improve_contrast",
+      "passed": true,
+      "reasons": []
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "candidate_upper_bound_is_subtracted",
+      "passed": true,
+      "reasons": [
+        "lower_bound_not_positive:family-a:direct_stop",
+        "lower_bound_not_positive:family-a:fixed_budget",
+        "lower_bound_not_positive:family-a:one_step_voi",
+        "lower_bound_not_positive:family-a:strong_planner",
+        "lower_bound_not_positive:family-a:None",
+        "lower_bound_not_positive:family-b:direct_stop",
+        "lower_bound_not_positive:family-b:fixed_budget",
+        "lower_bound_not_positive:family-b:one_step_voi",
+        "lower_bound_not_positive:family-b:strong_planner",
+        "lower_bound_not_positive:family-b:None"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "negative_future_cost_rejected",
+      "passed": true,
+      "reasons": [
+        "schema:protocol.lifecycle_plan[6].lower_currency:minimum"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "unfinished_intent_with_final_zero_invoice",
+      "passed": true,
+      "reasons": [
+        "unfinished_intent:family-a/source-0/task-0/direct_stop/0/model"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "terminal_without_intent",
+      "passed": true,
+      "reasons": [
+        "terminal_without_intent:family-a/source-0/task-0/direct_stop/0/model"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "duplicate_intent",
+      "passed": true,
+      "reasons": [
+        "duplicate_intent:family-a/source-0/task-0/direct_stop/0/model"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "duplicate_terminal",
+      "passed": true,
+      "reasons": [
+        "duplicate_terminal_or_reused_request:family-a/source-0/task-0/direct_stop/0/model"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "intent_terminal_request_hash_mismatch",
+      "passed": true,
+      "reasons": [
+        "intent_terminal_binding_mismatch:family-a/source-0/task-0/direct_stop/0/model"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "success_without_dispatch",
+      "passed": true,
+      "reasons": [
+        "inconsistent_dispatch_or_response:family-a/source-0/task-0/direct_stop/0/model"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "success_without_response",
+      "passed": true,
+      "reasons": [
+        "inconsistent_dispatch_or_response:family-a/source-0/task-0/direct_stop/0/model"
+      ]
+    },
+    {
+      "actual": "PASS",
+      "expected": "HOLD",
+      "name": "dispatch_after_recorded_finish",
+      "passed": false,
+      "reasons": []
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "intent_admission_after_finish",
+      "passed": true,
+      "reasons": [
+        "dispatch_before_intent:family-a/source-0/task-0/direct_stop/0/model"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "dispatch_at_deadline",
+      "passed": true,
+      "reasons": [
+        "dispatch_outside_admission_window:family-a/source-0/task-0/direct_stop/0/model"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "terminal_before_intent",
+      "passed": true,
+      "reasons": [
+        "terminal_without_intent:family-a/source-0/task-0/direct_stop/0/model"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "wrong_intent_digest",
+      "passed": true,
+      "reasons": [
+        "intent_terminal_binding_mismatch:family-a/source-0/task-0/direct_stop/0/model"
+      ]
+    },
+    {
+      "actual": "PASS",
+      "expected": "PASS",
+      "name": "intent_terminal_billed_once",
+      "passed": true,
+      "reasons": []
+    },
+    {
+      "actual": "PASS",
+      "expected": "PASS",
+      "name": "valid_reconciled_timeout_dispatched_False",
+      "passed": true,
+      "reasons": []
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "failed_episode_missing_stop_requested_False",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.records[0]:required"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "failed_episode_missing_contract_False",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.records[0]:required"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "failed_episode_missing_request_ids_False",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.records[0]:required"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "unobserved_identity_missing_receipt_False",
+      "passed": true,
+      "reasons": [
+        "unresolved_model_identity:family-a/source-0/task-0/direct_stop/0/model"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "unobserved_identity_wrong_receipt_request_id_False",
+      "passed": true,
+      "reasons": [
+        "invoice_identity_evidence_mismatch"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "unobserved_identity_wrong_receipt_invoice_sha256_False",
+      "passed": true,
+      "reasons": [
+        "invoice_identity_evidence_mismatch"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "unobserved_identity_wrong_receipt_revision_False",
+      "passed": true,
+      "reasons": [
+        "invoice_identity_evidence_mismatch"
+      ]
+    },
+    {
+      "actual": "PASS",
+      "expected": "PASS",
+      "name": "valid_reconciled_timeout_dispatched_True",
+      "passed": true,
+      "reasons": []
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "failed_episode_missing_stop_requested_True",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.records[0]:required"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "failed_episode_missing_contract_True",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.records[0]:required"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "failed_episode_missing_request_ids_True",
+      "passed": true,
+      "reasons": [
+        "schema:bundle.records[0]:required"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "unobserved_identity_missing_receipt_True",
+      "passed": true,
+      "reasons": [
+        "unresolved_model_identity:family-a/source-0/task-0/direct_stop/0/model"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "unobserved_identity_wrong_receipt_request_id_True",
+      "passed": true,
+      "reasons": [
+        "invoice_identity_evidence_mismatch"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "unobserved_identity_wrong_receipt_invoice_sha256_True",
+      "passed": true,
+      "reasons": [
+        "invoice_identity_evidence_mismatch"
+      ]
+    },
+    {
+      "actual": "HOLD",
+      "expected": "HOLD",
+      "name": "unobserved_identity_wrong_receipt_revision_True",
+      "passed": true,
+      "reasons": [
+        "invoice_identity_evidence_mismatch"
+      ]
+    }
+  ],
+  "failed": 1,
+  "passed": 113,
+  "positive_control": {
+    "status": "PASS",
+    "synthetic_only": true
+  },
+  "reviewed_at_utc": "2026-11-06T03:38:47.186378+00:00",
+  "runtime_durable_and_callback_checks": "Raw bundle pairing tested; dispatch fault injection and callback binding are in review_runtime.py",
+  "schema": "ndu.independent.local-review.v1",
+  "scope": "Synthetic engineering acceptance only; no real model, billing authentication, or external scientific review.",
+  "source_sha256_after": {
+    "confirmation.py": "ae90d0ff1e702af7ee284c722218ce288c386dd3e188268e352da43d4936e13f",
+    "contracts.py": "78e6281a3f100f79cf62ff9aa1d6b2606d374235190c1a1ff8847abd248a3a62",
+    "evidence/qualification-original.json": "d9af64b97a57b483a76ebc37f15148eea9465186321400d1049be6df18d2a661",
+    "ledger.py": "d36aa07c9581b23522a73a0461c7ec12720f11750ee6af8e5d0f6535b58efcad",
+    "policy.py": "1856ac2671cae4e1891b0056ae5eee7895088dc74aca0c6996c1c8b6e2e33c20",
+    "schema.json": "bb12f95c5a5ce743a3be67f2bc194bc3b2a0af14a9c9fbcb18ce18a42ebfe2cf",
+    "tasks.py": "88206ed5df40f53b645d9bca6e0195a8d41bfa51874ec4d001bc8a503d287338",
+    "test_confirmation.py": "adc64fcd14cb7406117f543697242943f802e4473bcf8fa2870cd875c535a422",
+    "test_gate_contracts.py": "68bd618ac40a586a8449772a5e7577fb569be27a93adf1284bfac8504a43a7dc",
+    "test_ledger.py": "5b0fefb9a88ac8bb38089ba04ff454320225398e50789bcb60402923b7c79a24",
+    "test_policy.py": "e2e18677a461173075e91ef2cc21dcc85fd7823e88b264db09b8de6ecca4ac36",
+    "test_tasks.py": "52b6ce1575453bae6d879cff13cf0cbd375dec7c78995ebc7c5d8711bb8e43cb",
+    "test_transport.py": "654404b0b9f3cdda4acb0324ae5807992a9c82c3a80afeba05fd8c2771561686",
+    "transport.py": "183ef2b7137bcb55a3d6fafb8e6587e92cd97c0b4ba51ba5a80c10de2c848584"
+  },
+  "source_sha256_before": {
+    "confirmation.py": "ae90d0ff1e702af7ee284c722218ce288c386dd3e188268e352da43d4936e13f",
+    "contracts.py": "78e6281a3f100f79cf62ff9aa1d6b2606d374235190c1a1ff8847abd248a3a62",
+    "evidence/qualification-original.json": "d9af64b97a57b483a76ebc37f15148eea9465186321400d1049be6df18d2a661",
+    "ledger.py": "d36aa07c9581b23522a73a0461c7ec12720f11750ee6af8e5d0f6535b58efcad",
+    "policy.py": "1856ac2671cae4e1891b0056ae5eee7895088dc74aca0c6996c1c8b6e2e33c20",
+    "schema.json": "bb12f95c5a5ce743a3be67f2bc194bc3b2a0af14a9c9fbcb18ce18a42ebfe2cf",
+    "tasks.py": "88206ed5df40f53b645d9bca6e0195a8d41bfa51874ec4d001bc8a503d287338",
+    "test_confirmation.py": "adc64fcd14cb7406117f543697242943f802e4473bcf8fa2870cd875c535a422",
+    "test_gate_contracts.py": "68bd618ac40a586a8449772a5e7577fb569be27a93adf1284bfac8504a43a7dc",
+    "test_ledger.py": "5b0fefb9a88ac8bb38089ba04ff454320225398e50789bcb60402923b7c79a24",
+    "test_policy.py": "e2e18677a461173075e91ef2cc21dcc85fd7823e88b264db09b8de6ecca4ac36",
+    "test_tasks.py": "52b6ce1575453bae6d879cff13cf0cbd375dec7c78995ebc7c5d8711bb8e43cb",
+    "test_transport.py": "654404b0b9f3cdda4acb0324ae5807992a9c82c3a80afeba05fd8c2771561686",
+    "transport.py": "183ef2b7137bcb55a3d6fafb8e6587e92cd97c0b4ba51ba5a80c10de2c848584"
+  },
+  "source_stable": true,
+  "status": "FAIL",
+  "target": "/workspace/scratch/3f6a885bb83c/hepta-research/experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation"
+}
