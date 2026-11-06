@@ -20,6 +20,26 @@ SPEC.loader.exec_module(MODULE)
 
 
 class CallerProofTests(unittest.TestCase):
+    def test_human_text_cas_inventory_tracks_live_readback_path(self) -> None:
+        data = tomllib.loads((ROOT / "CALLERS.toml").read_text(encoding="utf-8"))
+        rows = {row["id"]: row for row in data["boundary"]}
+        admission = rows["root_registered_human_text_admission"]
+        self.assertIn(
+            "self.with_issuer_writer_readback(registration, leases,",
+            admission["definition_markers"],
+        )
+        self.assertNotIn("registration.with_live(leases", admission["definition_markers"])
+        cas = rows["root_human_text_same_issuer_cas"]
+        self.assertEqual(cas["symbol"], "DeploymentFinalUseIssuer::text_until_checked")
+        self.assertIn("text_until_checked", cas["call_pattern"])
+        self.assertIn(
+            "self.with_issuer_writer_readback(registration, leases,",
+            cas["caller_markers"],
+        )
+        source = (ROOT / "codex-rs/hepta-agentd/src/deployment_text_human.rs").read_text(encoding="utf-8")
+        self.assertIn("self.with_issuer_writer_readback(registration, leases,", source)
+        self.assertIn("self.text_until_checked(", source)
+
     def make_fixture(self, *, method_pattern: bool = False) -> Path:
         temporary = tempfile.TemporaryDirectory()
         self.addCleanup(temporary.cleanup)
