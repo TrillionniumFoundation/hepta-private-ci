@@ -13,6 +13,8 @@ use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
 
+#[path = "generation_control.rs"]
+pub mod generation;
 #[path = "native_control.rs"]
 pub mod native;
 
@@ -173,6 +175,7 @@ pub struct DurableInferenceControl {
     file: File,
     records: BTreeMap<String, RequestRecord>,
     native: native::NativeJournal,
+    generation: generation::GenerationJournal,
     capacity: usize,
     journal_bytes: u64,
     poisoned: bool,
@@ -199,6 +202,7 @@ impl DurableInferenceControl {
         file.try_lock().map_err(|_| Error::WriterUnavailable)?;
         let mut records = BTreeMap::new();
         let mut native = native::NativeJournal::default();
+        let mut generation = generation::GenerationJournal::default();
         let mut reader = BufReader::new(file.try_clone()?);
         let mut journal_bytes = 0_u64;
         let mut line = Vec::new();
@@ -228,14 +232,33 @@ impl DurableInferenceControl {
             }
             if let Some(json) = line.strip_prefix(native::JOURNAL_PREFIX) {
                 native.replay(json)?;
+            } else if let Some(json) = line.strip_prefix(generation::JOURNAL_PREFIX) {
+                generation.replay(json)?;
             } else {
                 apply_event(&mut records, &decode_event(line)?, /*replay*/ true)?;
             }
-            if records.len() + native.records.len() > capacity
-                || records.keys().any(|id| native.records.contains_key(id))
+            if records.len() + native.records.len() + generation.records.len() > capacity
+                || records.keys().any(|id| {
+                    native.records.contains_key(id) || generation.records.contains_key(id)
+                })
+                || native
+                    .records
+                    .keys()
+                    .any(|id| generation.records.contains_key(id))
+                || journal_bytes
+                    .checked_add(generation.reserved_bytes()?)
+                    .ok_or(Error::ArithmeticOverflow)?
+                    > MAX_JOURNAL_BYTES
             {
                 return Err(Error::CapacityExceeded);
             }
+        }
+        if journal_bytes
+            .checked_add(generation.reserved_bytes()?)
+            .ok_or(Error::ArithmeticOverflow)?
+            > MAX_JOURNAL_BYTES
+        {
+            return Err(Error::CapacityExceeded);
         }
         #[cfg(unix)]
         {
@@ -250,6 +273,7 @@ impl DurableInferenceControl {
             file,
             records,
             native,
+            generation,
             capacity,
             journal_bytes,
             poisoned: false,
@@ -268,10 +292,14 @@ impl DurableInferenceControl {
             }
             return Err(Error::Conflict);
         }
-        if self.native.records.contains_key(&request.request_id) {
+        if self.native.records.contains_key(&request.request_id)
+            || self.generation.records.contains_key(&request.request_id)
+        {
             return Err(Error::Conflict);
         }
-        if self.records.len() + self.native.records.len() >= self.capacity {
+        if self.records.len() + self.native.records.len() + self.generation.records.len()
+            >= self.capacity
+        {
             return Err(Error::CapacityExceeded);
         }
         let event = Event::Submit(request);
@@ -449,6 +477,14 @@ impl DurableInferenceControl {
     }
 
     fn append(&mut self, encoded: &str) -> Result<(), Error> {
+        self.append_with_generation_reserve(encoded, self.generation.reserved_bytes()?)
+    }
+
+    fn ensure_append_capacity(
+        &self,
+        encoded: &str,
+        generation_reserved: u64,
+    ) -> Result<u64, Error> {
         if self.poisoned {
             return Err(Error::WriterUnavailable);
         }
@@ -456,9 +492,23 @@ impl DurableInferenceControl {
             .journal_bytes
             .checked_add(encoded.len() as u64)
             .ok_or(Error::ArithmeticOverflow)?;
-        if encoded.len() > MAX_JOURNAL_LINE_BYTES || next_bytes > MAX_JOURNAL_BYTES {
+        if encoded.len() > MAX_JOURNAL_LINE_BYTES
+            || next_bytes
+                .checked_add(generation_reserved)
+                .ok_or(Error::ArithmeticOverflow)?
+                > MAX_JOURNAL_BYTES
+        {
             return Err(Error::CapacityExceeded);
         }
+        Ok(next_bytes)
+    }
+
+    fn append_with_generation_reserve(
+        &mut self,
+        encoded: &str,
+        generation_reserved: u64,
+    ) -> Result<(), Error> {
+        let next_bytes = self.ensure_append_capacity(encoded, generation_reserved)?;
         let persisted = self
             .file
             .write_all(encoded.as_bytes())

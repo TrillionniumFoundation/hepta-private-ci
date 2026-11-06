@@ -5,6 +5,7 @@ on:
     branches:
       - codex/cell-framework-20261105
       - codex/neuron-convergence-20261106-734df8
+      - codex/neuron-generation-bridge-20261106-734df8
   workflow_dispatch:
 
 permissions:
@@ -41,6 +42,7 @@ jobs:
               -p codex-hepta-control-plane
               -p codex-hepta-context-compiler -p codex-utils-pty
               -p codex-hepta-intelligence
+              -p codex-hepta-infer-core
           - owner: agentd-composition
             packages: >-
               -p codex-hepta-agentd -p codex-core
@@ -115,6 +117,15 @@ jobs:
           python3 scripts/hepta_ci_exec.py --timeout-seconds 2700 \
             --output "$RUNNER_TEMP/cell-framework-records/helper-build.json" \
             -- python3 scripts/hepta_cell_test_helpers.py \
+            --output-dir "$RUNNER_TEMP/cell-framework-records/helpers" \
+            --github-env "$GITHUB_ENV"
+      - name: Build the real generation helper for Neuron mechanisms
+        if: matrix.owner == 'mechanisms'
+        run: |
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 1800 \
+            --output "$RUNNER_TEMP/cell-framework-records/helper-build.json" \
+            -- python3 scripts/hepta_cell_test_helpers.py \
+            --package codex-hepta-infer-worker-host \
             --output-dir "$RUNNER_TEMP/cell-framework-records/helpers" \
             --github-env "$GITHUB_ENV"
       - name: Run scoped suites through the repository runner

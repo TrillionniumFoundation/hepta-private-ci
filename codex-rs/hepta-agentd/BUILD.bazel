@@ -11,6 +11,11 @@ _UNIT_TEST_DEPENDENCIES = {
     "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib",
 }
 
+_JOINT_TEST_FIXTURE = [
+    "//codex-rs/hepta-neuron:tests/fixtures/joint-synthetic-v1.json",
+    "//codex-rs/hepta-neuron:tests/support/joint_synthetic.rs",
+]
+
 codex_rust_crate(
     name = "hepta-agentd",
     compile_data = [
@@ -21,7 +26,7 @@ codex_rust_crate(
         "tests/fixtures/notes-objective-literal-v1.json",
         "tests/fixtures/notes-target-v1.json",
         "tests/fixtures/notes-model-v1.json",
-    ],
+    ] + _JOINT_TEST_FIXTURE,
     # Match the Agentd Cargo default on both the library and product binaries.
     crate_features = ["production-cognitive-write"],
     crate_name = "codex_hepta_agentd",
@@ -30,6 +35,7 @@ codex_rust_crate(
     # Keep the complete existing test graph without changing product binaries.
     integration_test_use_unit_test_dependencies = True,
     unit_test_dependency_replacements = _UNIT_TEST_DEPENDENCIES,
+    unit_test_extra_binaries = ["//codex-rs/hepta-infer-worker-host:hepta-joint-propose"],
 )
 
 # Compile the local writer qualification separately from the default product
@@ -47,7 +53,7 @@ rust_library(
         "tests/fixtures/notes-objective-literal-v1.json",
         "tests/fixtures/notes-target-v1.json",
         "tests/fixtures/notes-model-v1.json",
-    ],
+    ] + _JOINT_TEST_FIXTURE,
     crate_features = ["qualification-cognitive-write"],
     crate_name = "codex_hepta_agentd",
     crate_root = "src/lib.rs",
@@ -66,7 +72,7 @@ rust_test(
         "tests/fixtures/notes-objective-literal-v1.json",
         "tests/fixtures/notes-target-v1.json",
         "tests/fixtures/notes-model-v1.json",
-    ],
+    ] + _JOINT_TEST_FIXTURE,
     crate = ":hepta-agentd-cognitive-write-qualification-lib",
     crate_features = ["qualification-cognitive-write"],
     rustc_flags = WINDOWS_RUSTC_LINK_FLAGS + [

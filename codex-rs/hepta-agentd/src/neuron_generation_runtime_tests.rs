@@ -10,6 +10,9 @@ use tokio::time::timeout;
 use super::neuron_generation_channel_v2;
 use crate::neuron_generation_service::spawn_neuron_generation_service;
 
+#[cfg(target_os = "linux")]
+#[path = "neuron_generation_joint_tests.rs"]
+mod joint;
 #[path = "neuron_generation_runtime_test_support.rs"]
 mod support;
 use support::Fixture;
