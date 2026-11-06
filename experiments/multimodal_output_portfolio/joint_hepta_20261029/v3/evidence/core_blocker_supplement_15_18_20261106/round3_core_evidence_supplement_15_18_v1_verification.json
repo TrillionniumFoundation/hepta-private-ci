@@ -1,0 +1,974 @@
+{
+  "scope": "One actual optimized-Python restoration and independent full byte/mode comparison; no native/model/witness execution",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-O",
+    "/workspace/scratch/3f6a885bb83c/round3_core_evidence_supplement_15_18_v1/restore.py",
+    "/workspace/scratch/3f6a885bb83c/round3_core_evidence_supplement_15_18_v1",
+    "/workspace/scratch/3f6a885bb83c/round3_core_evidence_supplement_15_18_v1_restored"
+  ],
+  "exit_code": 0,
+  "stdout": "{\n  \"kind\": \"actual_read_only_raw_shard_restoration\",\n  \"index_sha256\": \"dab2fa50ce0c17c7962f27abd4ca1a9a46207e85140d468fcec13e910e6c84a8\",\n  \"archive_sha256\": \"fed67b036899086fce4b9fd851405f5347c653158c4b31b199b3da8d2acc0e8e\",\n  \"restored_files\": 145,\n  \"restored_bytes\": 14493681,\n  \"exact_unique_regular_member_set\": true,\n  \"all_file_bytes_and_safe_regular_modes_match\": true,\n  \"bundle_files_written\": 0,\n  \"native_tests_executed\": false\n}\n",
+  "stderr": "",
+  "parsed_restore_report": {
+    "kind": "actual_read_only_raw_shard_restoration",
+    "index_sha256": "dab2fa50ce0c17c7962f27abd4ca1a9a46207e85140d468fcec13e910e6c84a8",
+    "archive_sha256": "fed67b036899086fce4b9fd851405f5347c653158c4b31b199b3da8d2acc0e8e",
+    "restored_files": 145,
+    "restored_bytes": 14493681,
+    "exact_unique_regular_member_set": true,
+    "all_file_bytes_and_safe_regular_modes_match": true,
+    "bundle_files_written": 0,
+    "native_tests_executed": false
+  },
+  "input_before": [
+    {
+      "path": "INDEX.json",
+      "bytes": 48791,
+      "sha256": "dab2fa50ce0c17c7962f27abd4ca1a9a46207e85140d468fcec13e910e6c84a8",
+      "mode": "0o100644"
+    },
+    {
+      "path": "README.md",
+      "bytes": 5113,
+      "sha256": "2cc1b55f20f9fafd8df8cea2c1383f6ec0f642a1f89248785ed5c3246998a1ca",
+      "mode": "0o100644"
+    },
+    {
+      "path": "TRANSPORT.json",
+      "bytes": 1049,
+      "sha256": "30696499d44db34317379b20bf82229ae0d8165a9d2b24c4f4e895fb1e8a4e86",
+      "mode": "0o100644"
+    },
+    {
+      "path": "core-supplement-06-14.tar.xz.transport-000.gz",
+      "bytes": 440153,
+      "sha256": "70187511ab7da399f0fb5276091fb19c91b58cc24cf640e06771eac7cf7cace8",
+      "mode": "0o100644"
+    },
+    {
+      "path": "core-supplement-06-14.tar.xz.transport-001.gz",
+      "bytes": 363897,
+      "sha256": "cb86138ad4f8bdb3e480734c3668cdd0783da1c11dfacbb85458108f2f163dd3",
+      "mode": "0o100644"
+    },
+    {
+      "path": "restore.py",
+      "bytes": 8203,
+      "sha256": "44a2f2a5b37f5ae002b741d033211a7768b1803279ecaf0c38a9074aa8598927",
+      "mode": "0o100644"
+    }
+  ],
+  "input_after": [
+    {
+      "path": "INDEX.json",
+      "bytes": 48791,
+      "sha256": "dab2fa50ce0c17c7962f27abd4ca1a9a46207e85140d468fcec13e910e6c84a8",
+      "mode": "0o100644"
+    },
+    {
+      "path": "README.md",
+      "bytes": 5113,
+      "sha256": "2cc1b55f20f9fafd8df8cea2c1383f6ec0f642a1f89248785ed5c3246998a1ca",
+      "mode": "0o100644"
+    },
+    {
+      "path": "TRANSPORT.json",
+      "bytes": 1049,
+      "sha256": "30696499d44db34317379b20bf82229ae0d8165a9d2b24c4f4e895fb1e8a4e86",
+      "mode": "0o100644"
+    },
+    {
+      "path": "core-supplement-06-14.tar.xz.transport-000.gz",
+      "bytes": 440153,
+      "sha256": "70187511ab7da399f0fb5276091fb19c91b58cc24cf640e06771eac7cf7cace8",
+      "mode": "0o100644"
+    },
+    {
+      "path": "core-supplement-06-14.tar.xz.transport-001.gz",
+      "bytes": 363897,
+      "sha256": "cb86138ad4f8bdb3e480734c3668cdd0783da1c11dfacbb85458108f2f163dd3",
+      "mode": "0o100644"
+    },
+    {
+      "path": "restore.py",
+      "bytes": 8203,
+      "sha256": "44a2f2a5b37f5ae002b741d033211a7768b1803279ecaf0c38a9074aa8598927",
+      "mode": "0o100644"
+    }
+  ],
+  "input_entire_bundle_unchanged": true,
+  "independent_members_compared": 145,
+  "member_checks": [
+    {
+      "path": "round3_core_ci/15_executor_mcp_publication/REVIEW.md",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/15_executor_mcp_publication/boundary_checks.json",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/15_executor_mcp_publication/candidate/codex-rs/app-server/tests/suite/v2/executor_mcp.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/15_executor_mcp_publication/candidate/codex-rs/core/src/session/mcp_runtime.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/15_executor_mcp_publication/codespell.json",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/15_executor_mcp_publication/failure_evidence.json",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/15_executor_mcp_publication/manifest.json",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/15_executor_mcp_publication/original/codex-rs/app-server/tests/suite/v2/executor_mcp.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/15_executor_mcp_publication/original/codex-rs/core/src/session/mcp_runtime.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/15_executor_mcp_publication/repair.patch",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/15_executor_mcp_publication/source_bindings.json",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/16_attestation_fixture_message_pump/REVIEW.md",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/16_attestation_fixture_message_pump/boundary_checks.json",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/16_attestation_fixture_message_pump/candidate/codex-rs/app-server/tests/suite/v2/attestation.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/16_attestation_fixture_message_pump/codespell.json",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/16_attestation_fixture_message_pump/failure_evidence.json",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/16_attestation_fixture_message_pump/manifest.json",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/16_attestation_fixture_message_pump/original/codex-rs/app-server/tests/suite/v2/attestation.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/16_attestation_fixture_message_pump/repair.patch",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/16_attestation_fixture_message_pump/source_bindings.json",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/17_guardian_network_stream_gate/REVIEW.md",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/17_guardian_network_stream_gate/boundary_checks.json",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/17_guardian_network_stream_gate/candidate/codex-rs/core/tests/common/responses.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/17_guardian_network_stream_gate/candidate/codex-rs/core/tests/common/streaming_sse.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/17_guardian_network_stream_gate/candidate/codex-rs/core/tests/suite/network_approval.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/17_guardian_network_stream_gate/codespell.json",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/17_guardian_network_stream_gate/definition.json",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/17_guardian_network_stream_gate/failure_evidence.json",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/17_guardian_network_stream_gate/manifest.json",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/17_guardian_network_stream_gate/original/codex-rs/core/tests/common/responses.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/17_guardian_network_stream_gate/original/codex-rs/core/tests/common/streaming_sse.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/17_guardian_network_stream_gate/original/codex-rs/core/tests/suite/network_approval.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/17_guardian_network_stream_gate/repair.patch",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/17_guardian_network_stream_gate/source_bindings.json",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/17b_guardian_network_stream_gate/REVIEW.md",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/17b_guardian_network_stream_gate/candidate/codex-rs/core/tests/common/responses.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/17b_guardian_network_stream_gate/candidate/codex-rs/core/tests/common/streaming_sse.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/17b_guardian_network_stream_gate/candidate/codex-rs/core/tests/suite/network_approval.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/17b_guardian_network_stream_gate/codespell.json",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/17b_guardian_network_stream_gate/definition.json",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/17b_guardian_network_stream_gate/incremental.patch",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/17b_guardian_network_stream_gate/manifest.json",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/17b_guardian_network_stream_gate/original/codex-rs/core/tests/common/responses.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/17b_guardian_network_stream_gate/original/codex-rs/core/tests/common/streaming_sse.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/17b_guardian_network_stream_gate/original/codex-rs/core/tests/suite/network_approval.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/17b_guardian_network_stream_gate/repair.patch",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/17b_guardian_network_stream_gate/revision_checks.json",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/18_terminal_cleanup_stage_diagnostics/REVIEW.md",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/18_terminal_cleanup_stage_diagnostics/boundary_checks.json",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/18_terminal_cleanup_stage_diagnostics/candidate/codex-rs/core/tests/suite/terminal_event_cleanup.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/18_terminal_cleanup_stage_diagnostics/codespell.json",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/18_terminal_cleanup_stage_diagnostics/definition.json",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/18_terminal_cleanup_stage_diagnostics/manifest.json",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/18_terminal_cleanup_stage_diagnostics/original/codex-rs/core/tests/suite/terminal_event_cleanup.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/18_terminal_cleanup_stage_diagnostics/repair.patch",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/audit_5046_logs.py",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/build_core15.py",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/build_core16.py",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/build_core17.py",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/build_core17b.py",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/build_core18.py",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/check_core15.py",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/check_core16.py",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/check_core17.py",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/check_core17b.py",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/check_core18.py",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/current-5063/codex-rs/app-server/src/attestation.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/current-5063/codex-rs/app-server/tests/common/test_app_server.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/current-5063/codex-rs/app-server/tests/suite/v2/attestation.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/current-5063/codex-rs/app-server/tests/suite/v2/executor_mcp.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/current-5063/codex-rs/codex-mcp/src/binding.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/current-5063/codex-rs/codex-mcp/src/catalog.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/current-5063/codex-rs/codex-mcp/src/connection_manager.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/current-5063/codex-rs/codex-mcp/src/executor_environment_http_client.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/current-5063/codex-rs/codex-mcp/src/rmcp_client.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/current-5063/codex-rs/codex-mcp/src/runtime.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/current-5063/codex-rs/codex-mcp/src/server.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/current-5063/codex-rs/core/src/environment_selection.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/current-5063/codex-rs/core/src/mcp.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/current-5063/codex-rs/core/src/mcp_skill_dependencies.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/current-5063/codex-rs/core/src/session/mcp.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/current-5063/codex-rs/core/src/session/mcp_prewarm.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/current-5063/codex-rs/core/src/session/mcp_refresh.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/current-5063/codex-rs/core/src/session/mcp_runtime.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/current-5063/codex-rs/core/src/session/mod.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/current-5063/codex-rs/core/src/session/session.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/current-5063/codex-rs/exec-server/src/environment.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/current-5063/codex-rs/exec-server/src/environment_config.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/current_5077/codex-rs/app-server/tests/suite/v2/thread_list.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/current_5077/codex-rs/app-server/tests/suite/v2/thread_resume.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/current_5077/codex-rs/app-server/tests/suite/v2/thread_shell_command.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/current_5077/codex-rs/app-server/tests/suite/v2/thread_start.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/current_5077/codex-rs/core/src/codex_thread.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/current_5077/codex-rs/core/src/session/mod.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/current_5077/codex-rs/core/src/session/terminal_events.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/current_5077/codex-rs/core/src/session/turn.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/current_5077/codex-rs/core/src/stream_events_utils.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/current_5077/codex-rs/core/src/tasks/cleanup.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/current_5077/codex-rs/core/src/tasks/lifecycle.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/current_5077/codex-rs/core/src/tasks/mod.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/current_5077/codex-rs/core/src/tools/parallel.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/current_5077/codex-rs/core/tests/common/test_codex.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/current_5077/codex-rs/core/tests/suite/network_approval.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/current_5077/codex-rs/core/tests/suite/retry_after.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/current_5077/codex-rs/core/tests/suite/terminal_event_cleanup.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/donor-4853/codex-rs/app-server/tests/suite/v2/attestation.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/donor-4853/codex-rs/app-server/tests/suite/v2/executor_mcp.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/donor-4853/codex-rs/core/src/session/mcp_runtime.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/evidence/5046_gnu/commit_api_readback.json",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/evidence/5046_gnu/completed_log_audit_v1.json",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/evidence/5046_gnu/diagnosis_source_bindings.json",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/evidence/5046_gnu/failure_source_mapping_v1.json",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/evidence/5046_gnu/initial_extraction.json",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/evidence/5046_gnu/job_127949627321.log",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/evidence/core15_callgraph_review.json",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/evidence/native26b_independent_receipt_v1.json",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/evidence/native26b_independent_review_v1.md",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/evidence/supplement_15_18_capture_v1.json",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/evidence/supplement_15_18_inputs/linux_5046/musl_inventory.json",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/evidence/supplement_15_18_inputs/native26b_review/README.md",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/evidence/supplement_15_18_inputs/native26b_review/candidate/codex-rs/core/tests/suite/windows_sandbox.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/evidence/supplement_15_18_inputs/native26b_review/candidate/codex-rs/core/tests/suite/windows_sandbox_helpers.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/evidence/supplement_15_18_inputs/native26b_review/candidate/codex-rs/core/tests/suite/windows_sandbox_helpers_tests.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/evidence/supplement_15_18_inputs/native26b_review/candidate/codex-rs/core/tests/suite/workspace_roots.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/evidence/supplement_15_18_inputs/native26b_review/combined.patch",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/evidence/supplement_15_18_inputs/native26b_review/manifest.json",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/evidence/supplement_15_18_inputs/native26b_review/tempfile_contract/receipt.json",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/evidence/supplement_15_18_inputs/native26b_review/tempfile_contract/src/file/imp/windows.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/evidence/supplement_15_18_inputs/native26b_review/tempfile_contract/src/file/mod.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/evidence/supplement_15_18_inputs/raw_logs/job_127949627315.log",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/evidence/supplement_15_18_inputs/raw_logs/job_127949627352.log",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/evidence/supplement_15_18_inputs/raw_logs/job_127966826662.log",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/evidence/supplement_15_18_inputs/root_validation/guardian_17b_FORMAT.json",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/evidence/supplement_15_18_inputs/windows_5046/source_and_targets.json",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/evidence/supplement_15_18_inputs/windows_5052/commit_api_receipts.json",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/evidence/supplement_15_18_inputs/windows_5052/source_and_targets.json",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/failed_5046/codex-rs/app-server/tests/suite/v2/thread_list.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/failed_5046/codex-rs/app-server/tests/suite/v2/thread_resume.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/failed_5046/codex-rs/app-server/tests/suite/v2/thread_shell_command.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/failed_5046/codex-rs/app-server/tests/suite/v2/thread_start.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/failed_5046/codex-rs/core/tests/suite/network_approval.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/failed_5046/codex-rs/core/tests/suite/retry_after.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/failed_5046/codex-rs/core/tests/suite/terminal_event_cleanup.rs",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/finalize_unit.py",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    },
+    {
+      "path": "round3_core_ci/review_native26b.py",
+      "restored_sha256_matches": true,
+      "restored_bytes_equal_original": true,
+      "restored_and_original_modes_match": true
+    }
+  ]
+}
