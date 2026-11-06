@@ -327,5 +327,29 @@ async fn planned_step_rejects_changed_cost_cut_and_replays_only_exact_recorded_w
     );
     assert_eq!(fixture.control.signals.calls.load(Ordering::SeqCst), 1);
     assert_eq!(fixture.control.signals.reads.load(Ordering::SeqCst), 2);
+    let chunk = checked(committed.pending_output().cloned().ok_or("original output"));
+    checked(handle.acknowledge(chunk, [96; 32], cost()).await);
+    let acknowledged = checked(handle.observe_generation().await);
+    let reused_id = request("planned-original", acknowledged.snapshot().clone());
+    let mut repeated_operation_cost = planning;
+    repeated_operation_cost.event_id = [97; 32];
+    assert_eq!(
+        handle
+            .step_planned(
+                acknowledged.owner_checkpoint(),
+                repeated_operation_cost.clone(),
+                reused_id
+            )
+            .await,
+        Err(CellGenerationErrorV2::Conflict)
+    );
+    let refused = checked(handle.observe_generation().await);
+    assert_eq!(refused.snapshot(), acknowledged.snapshot());
+    assert_eq!(refused.pending_request_digest(), None);
+    assert_eq!(refused.pending_output(), None);
+    assert!(refused.cost().entries().contains(&repeated_operation_cost));
+    assert_ne!(refused.owner_checkpoint(), acknowledged.owner_checkpoint());
+    assert_eq!(fixture.control.signals.calls.load(Ordering::SeqCst), 1);
+    assert_eq!(fixture.control.signals.reads.load(Ordering::SeqCst), 2);
     tasks.shutdown().await;
 }

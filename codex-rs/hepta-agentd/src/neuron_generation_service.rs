@@ -74,7 +74,16 @@ where
             } => {
                 let result = (|| {
                     let journal = self.owner.journal();
-                    let existing = journal.lookup(&request)?.is_some()
+                    let committed = match journal.lookup(&request) {
+                        Ok(receipt) => receipt.is_some(),
+                        Err(CellGenerationErrorV2::Conflict) => {
+                            require_recovery(state)?;
+                            self.owner.journal_mut().record_cost(*planning_cost)?;
+                            return Err(CellGenerationErrorV2::Conflict);
+                        }
+                        Err(error) => return Err(error),
+                    };
+                    let existing = committed
                         || journal
                             .pending_request()?
                             .is_some_and(|pending| pending == request.as_ref());
