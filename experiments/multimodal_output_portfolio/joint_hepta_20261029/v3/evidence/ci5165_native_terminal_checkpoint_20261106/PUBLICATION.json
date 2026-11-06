@@ -1,0 +1,186 @@
+{
+  "packet": "ci5165_native_terminal",
+  "suggested_repository_directory": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/evidence/ci5165_native_terminal_checkpoint_20261106",
+  "snapshot_utc": "2026-11-06 22:54:05 UTC",
+  "index": {
+    "bytes": 16348,
+    "sha256": "cd6baea98d1494f07be5cc322bfaa493df175460f779b70074cc8306420daec7",
+    "git_blob": "960c89feaf9bcccc18f871c1a99ee704994ac90d"
+  },
+  "source_file_count": 36,
+  "raw_source_bytes": 6245593,
+  "archive_bytes": 6277120,
+  "compressed_bytes": 349852,
+  "restore_exit_code": 0,
+  "restore_stdout": {
+    "bytes": 428,
+    "sha256": "378bcf0e5cd1ed0c972c8c30790ef5d61d8c065343e6fc1a08b8be49b12f7e41",
+    "git_blob": "82ede91dbd0cf41012ff097e78bfd968b91c2568"
+  },
+  "restore_stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+  },
+  "all_restored_bytes_complete_roster_and_inert_modes_match": true,
+  "reader_template": {
+    "source_file": "/workspace/scratch/3f6a885bb83c/round3_native/restore_checkpoint_template.py",
+    "bytes": 6626,
+    "sha256": "00bf4373739122934a281273de36cc9e4cce84199aa985926419225cad94303b",
+    "git_blob": "27e463e7b9e73a98b3a35e05d4d7414a2ed7b4a0",
+    "only_replacement": "fixed INDEX SHA-256"
+  },
+  "codespell": {
+    "version": "2.4.3",
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "-m",
+      "codespell_lib",
+      "--ignore-words",
+      ".codespellignore",
+      "--skip",
+      "./.git"
+    ],
+    "exit_code": 0,
+    "stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "configuration": {
+      ".codespellrc": {
+        "bytes": 471,
+        "sha256": "80805b9340dbdd76645a25929f56c96606e187db8e9d16b75a4a47dcdd248c04",
+        "git_blob": "663be376c7381108af0a41eafc3dd08f27125d96"
+      },
+      ".codespellignore": {
+        "bytes": 69,
+        "sha256": "9c6cd9dd86c6300ff67edbe64b2e18ed089714151e5c166382c8ea99931bc275",
+        "git_blob": "0da447f000de188776a33e770c2d2d77b37f97ee"
+      },
+      ".codespell-exclude-lines": {
+        "bytes": 20003,
+        "sha256": "5e2119d75aa7cfa61e87b9c3d98863d0b5d6672eeaccc7411695e91e2366d52b",
+        "git_blob": "490e840301fdfae10d6e40c44a566ff16f82e324"
+      }
+    },
+    "new_exclusion_added": false
+  },
+  "files": [
+    {
+      "path": "INDEX.json",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/ci5165_native_terminal_checkpoint_20261106/INDEX.json",
+      "mode": "100644",
+      "bytes": 16348,
+      "sha256": "cd6baea98d1494f07be5cc322bfaa493df175460f779b70074cc8306420daec7",
+      "git_blob": "960c89feaf9bcccc18f871c1a99ee704994ac90d"
+    },
+    {
+      "path": "README.md",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/ci5165_native_terminal_checkpoint_20261106/README.md",
+      "mode": "100644",
+      "bytes": 3096,
+      "sha256": "45308c16e40728ead85a383e8f6bdde70c9a0462bc99284349783b3d3c0759b7",
+      "git_blob": "aaca19613bf1bd80075aefc09fb3161aabc90c25"
+    },
+    {
+      "path": "native-evidence.tar.xz.part000.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/ci5165_native_terminal_checkpoint_20261106/native-evidence.tar.xz.part000.gz",
+      "mode": "100644",
+      "bytes": 349980,
+      "sha256": "f3c39ba5e172f87004dff1adbf58b660f93423021d628b54152d8a989f4ec2d3",
+      "git_blob": "d4e73c0c77e704816be756f6ab4899cbc652b1cc"
+    },
+    {
+      "path": "restore.py",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/ci5165_native_terminal_checkpoint_20261106/restore.py",
+      "mode": "100644",
+      "bytes": 6656,
+      "sha256": "1f9476bd81b86d0450a76f7495ffbb6728040464dd2d85422705447b2ddb5b08",
+      "git_blob": "daa115ce562d6eebb409f1386763f4ab7c899ae3"
+    }
+  ],
+  "qualification_scope": {
+    "source_head": "25a3895dd11a1cb1dde3ba42371a1d629878e25a",
+    "source_tree": "9bef7c893c42bf10246fc18ce04079077037094d",
+    "actual_checkout": "37415647323fe41c6f8f98810a2ddf34293a9a0e",
+    "actual_checkout_tree_equals_source_tree": true,
+    "published_source_pr": 5165,
+    "run_id": 42304403498,
+    "run_attempt": 1,
+    "event": "pull_request",
+    "windows_clippy": {
+      "job_id": 128191497898,
+      "conclusion": "success",
+      "source_bound_native_gate_closed": true,
+      "selection_analysis_targets": 437,
+      "selection_analysis_actions": 0,
+      "clippy_targets": 1322,
+      "total_actions": 6768,
+      "remote_cache_hits": 2935,
+      "internal_actions": 3306,
+      "local_actions": 527,
+      "original_msvc_workflow_and_clean_worktree_gate_passed": true,
+      "complete_native_selected_label_list_separately_retained": false,
+      "warnings_present": true,
+      "owner_audit_sha256": "541012ae30d889bcee34df47bf91faffb688412abc713ca8c7516ce2707640e5",
+      "root_audit_sha256": "36d486f6a09519244bb4056bab247c4382fe1fa00b21b441261dbf5695521634"
+    },
+    "linux_failure_inventory": {
+      "gnu_job_id": 128191497954,
+      "musl_job_id": 128191497933,
+      "conclusions": {
+        "gnu": "failure",
+        "musl": "failure"
+      },
+      "distinct_printed_failed_cases_each_platform": 5,
+      "union_distinct_printed_failed_cases": [
+        "suite::compact::remote_v2_compaction_keeps_creation_time_instructions_after_same_path_mutation",
+        "suite::compact_remote::remote_compact_replaces_history_for_followups",
+        "suite::v2::executor_skills::restricted_executor_skill_can_read_permitted_reference",
+        "suite::v2::executor_skills::restricted_executor_skill_is_listed_only_when_permitted",
+        "suite::v2::executor_skills::restricted_executor_skill_rejects_reference_until_permission_approved"
+      ],
+      "gnu_only_failed_cases": [],
+      "musl_only_failed_cases": [],
+      "known_compact_cases": 2,
+      "known_restricted_executor_skill_cases": 3,
+      "bazel_target_summary_each_platform": {
+        "executed": 4,
+        "total": 587,
+        "passing": 416,
+        "failing_remotely": 3,
+        "skipped": 168
+      },
+      "target_summary_is_not_rust_case_count": true,
+      "cached_shards_and_retry_replays_present": true,
+      "owner_inventory_sha256": "083148168a700ca7e5400c43deaf1280599e88ca166b30b09762a87683466e9e",
+      "musl_peer_binding_sha256": "0068638bc531f3a026099b2c9a08368b3fbb8b8a135c9e8d982616fe0fe4721a"
+    },
+    "prior_packet": {
+      "published_pr": 5169,
+      "publication_manifest_sha256": "c9cb9648d6d9c10c59dd71c2809f3701d359b33b7eb0b39965d388c39aee58b8",
+      "old_in_progress_snapshot_retained_unchanged": true,
+      "prior_archive_container_included_in_this_packet": false
+    },
+    "archive_retention_scope": "Complete original Windows Clippy, GNU and musl decoded console logs; Windows and GNU raw tool responses; complete 36-job API observations; exact source, head and merge API records; original source-specific audits and root independent Clippy review; all files directly consumed by the two audit scripts. The earlier CI32/33/34 publication manifest is a reference only: its archive containers remain in the separate published packet. The native Bazel compact-protobuf execution-log ZIP and any ARM or Matrix artifact are not included or claimed revalidated here.",
+    "qualification_limits": [
+      "Native Clippy success applies to the recorded #5165 source/tree and original MSVC lint gate, including its clean-worktree check.",
+      "The native console captures selector stdout. The exact complete S list and temporary query-file bytes were not separately retained; prior exact-source review and local real-Bazel mechanism evidence remain separate.",
+      "Cache hits, internal and local actions are reported explicitly. Actions are not independent Rust test cases, and warnings remain in the original console.",
+      "GNU and musl each print the same five distinct failed Rust cases. Cached shards, repeated console output, retries and the two platform logs are not counted as independent reproductions.",
+      "The Linux counts of 416 passing, three failing and 168 skipped refer to Bazel targets; they do not establish the outcome of every Rust case or requalify unprinted successful cases.",
+      "Two compact and three restricted executor-skill failures remain unresolved at this source. Classification does not qualify later repairs, and a missing-system-bubblewrap warning alone is not treated as their root cause.",
+      "This packet establishes neither Windows runtime security qualification, ARM business success nor repository-wide green status. No native command or job was rerun by these file-based audits.",
+      "No previous failure log, frozen packet, scientific record, source guard, scanner, required target, timeout, policy or retry was rewritten or relaxed."
+    ],
+    "overall_repository_ci_pass": false
+  },
+  "publication_ready": true,
+  "old_packets_modified": false
+}
