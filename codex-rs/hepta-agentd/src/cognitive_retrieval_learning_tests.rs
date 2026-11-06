@@ -203,14 +203,33 @@ fn sink() -> (tempfile::TempDir, CognitiveRetrievalLearningSink) {
     (temp, CognitiveRetrievalLearningSink::new(writer))
 }
 
+fn append_fixture(
+    sink: &CognitiveRetrievalLearningSink,
+    owner: &AgentId,
+    body_generation: u64,
+    request_id: u64,
+    observation: &RetrievalAssignmentObservationV1,
+) -> Result<AppendReceipt, String> {
+    sink.append_with_delivery_policy(
+        owner,
+        body_generation,
+        request_id,
+        observation,
+        &[],
+        /*context_exposed*/ false,
+        /*published_context_digest*/ None,
+        /*downstream_policy_digest*/ None,
+        ProbabilityQ32::ONE,
+    )
+}
+
 #[test]
 fn same_rpc_and_observation_replays_idempotently() {
     let (_temp, sink) = sink();
     let observation = observation("packet");
-    let first = sink
-        .append(&owner(), 1, 77, &observation)
+    let first = append_fixture(&sink, &owner(), /*body_generation*/ 1, /*request_id*/ 77, &observation)
         .expect("first append");
-    let second = sink.append(&owner(), 1, 77, &observation).expect("replay");
+    let second = append_fixture(&sink, &owner(), /*body_generation*/ 1, /*request_id*/ 77, &observation).expect("replay");
     assert_eq!(first.disposition, AppendDisposition::Appended);
     assert_eq!(second.disposition, AppendDisposition::IdempotentReplay);
     assert_eq!(first.event_digest, second.event_digest);
@@ -226,10 +245,10 @@ fn same_rpc_and_observation_replays_idempotently() {
 #[test]
 fn same_rpc_with_different_assignment_is_identity_conflict() {
     let (_temp, sink) = sink();
-    sink.append(&owner(), 1, 88, &observation("packet-a"))
+    append_fixture(&sink, &owner(), /*body_generation*/ 1, /*request_id*/ 88, &observation("packet-a"))
         .expect("first append");
     assert!(
-        sink.append(&owner(), 1, 88, &observation("packet-b"))
+        append_fixture(&sink, &owner(), /*body_generation*/ 1, /*request_id*/ 88, &observation("packet-b"))
             .is_err()
     );
     let snapshot = sink
@@ -245,8 +264,8 @@ fn same_rpc_with_different_assignment_is_identity_conflict() {
 fn different_rpc_ids_create_distinct_assignment_records() {
     let (_temp, sink) = sink();
     let observation = observation("packet");
-    sink.append(&owner(), 1, 1, &observation).expect("first");
-    sink.append(&owner(), 1, 2, &observation).expect("second");
+    append_fixture(&sink, &owner(), /*body_generation*/ 1, /*request_id*/ 1, &observation).expect("first");
+    append_fixture(&sink, &owner(), /*body_generation*/ 1, /*request_id*/ 2, &observation).expect("second");
     let snapshot = sink
         .writer
         .lock()
@@ -260,9 +279,9 @@ fn different_rpc_ids_create_distinct_assignment_records() {
 fn historical_assignment_retry_keeps_original_predecessor_after_later_appends() {
     let (_temp, sink) = sink();
     let observation = observation("packet");
-    let first = sink.append(&owner(), 1, 1, &observation).expect("first");
+    let first = append_fixture(&sink, &owner(), /*body_generation*/ 1, /*request_id*/ 1, &observation).expect("first");
     for request in 2..=64 {
-        sink.append(&owner(), 1, request, &observation)
+        append_fixture(&sink, &owner(), /*body_generation*/ 1, request, &observation)
             .expect("later");
     }
     let before = sink
@@ -271,8 +290,7 @@ fn historical_assignment_retry_keeps_original_predecessor_after_later_appends() 
         .expect("lock")
         .witness_frontier()
         .expect("frontier");
-    let retry = sink
-        .append(&owner(), 1, 1, &observation)
+    let retry = append_fixture(&sink, &owner(), /*body_generation*/ 1, /*request_id*/ 1, &observation)
         .expect("historical retry");
     assert_eq!(retry.disposition, AppendDisposition::IdempotentReplay);
     assert_eq!(retry.sequence, first.sequence);
@@ -286,9 +304,9 @@ fn historical_assignment_retry_keeps_original_predecessor_after_later_appends() 
 #[test]
 fn indexed_historical_identity_does_not_accept_changed_assignment() {
     let (_temp, sink) = sink();
-    sink.append(&owner(), 1, 1, &observation("packet-a"))
+    append_fixture(&sink, &owner(), /*body_generation*/ 1, /*request_id*/ 1, &observation("packet-a"))
         .expect("first");
-    sink.append(&owner(), 1, 2, &observation("packet-b"))
+    append_fixture(&sink, &owner(), /*body_generation*/ 1, /*request_id*/ 2, &observation("packet-b"))
         .expect("later");
     let before = sink
         .writer
@@ -297,7 +315,7 @@ fn indexed_historical_identity_does_not_accept_changed_assignment() {
         .witness_frontier()
         .expect("frontier");
     assert!(
-        sink.append(&owner(), 1, 1, &observation("replacement"))
+        append_fixture(&sink, &owner(), /*body_generation*/ 1, /*request_id*/ 1, &observation("replacement"))
             .is_err()
     );
     let writer = sink.writer.lock().expect("lock");

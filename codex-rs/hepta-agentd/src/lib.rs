@@ -652,6 +652,7 @@ pub use notes_ui_endpoint::AgentdNotesSessionLifetime;
 #[cfg(target_os = "linux")]
 pub use notes_ui_endpoint::AgentdNotesUiPeer;
 pub use objective_runtime::authbus_objective_claims;
+pub use plasticity_host::AgentdPlasticityAdmissionContextV1;
 pub use plasticity_host::AgentdPlasticityAdmissionInputV1;
 pub use plasticity_host::AgentdPlasticityAnchorStoreV1;
 pub use plasticity_host::AgentdPlasticityHostErrorV1;
