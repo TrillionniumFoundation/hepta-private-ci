@@ -4,6 +4,7 @@ import hashlib
 import json
 import os
 import signal
+import selectors
 import subprocess
 import sys
 import time
@@ -22,11 +23,80 @@ def load(path):
     return value
 
 
+
+class OutputLimitExceeded(ValueError):
+    def __init__(self, observed_bytes, prefix_sha256):
+        super().__init__("Worker output exceeded the configured limit during capture")
+        self.observed_bytes = observed_bytes
+        self.prefix_sha256 = prefix_sha256
+
+
+def _communicate_stdout_bounded(process, payload, timeout, output_limit):
+    """Capture stdout while enforcing the byte budget, never after communicate()."""
+    if type(output_limit) is not int or output_limit < 1:
+        raise ValueError("A positive integer output limit is required")
+    deadline = time.monotonic() + timeout
+    output = bytearray()
+    sent = 0
+    with selectors.DefaultSelector() as watched:
+        stdin, stdout = process.stdin, process.stdout
+        if stdin is None or stdout is None:
+            raise ValueError("Worker stdin/stdout pipes are required")
+        os.set_blocking(stdout.fileno(), False)
+        watched.register(stdout, selectors.EVENT_READ, "stdout")
+        os.set_blocking(stdin.fileno(), False)
+        if payload:
+            watched.register(stdin, selectors.EVENT_WRITE, "stdin")
+        else:
+            stdin.close()
+        while watched.get_map():
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise subprocess.TimeoutExpired(process.args, timeout, output=bytes(output))
+            for key, _ in watched.select(remaining):
+                stream, role = key.fileobj, key.data
+                if role == "stdin":
+                    try:
+                        written = os.write(stream.fileno(), payload[sent:sent + 65536])
+                    except BlockingIOError:
+                        continue
+                    except BrokenPipeError:
+                        sent = len(payload)
+                    else:
+                        sent += written
+                    if sent >= len(payload):
+                        watched.unregister(stream)
+                        stream.close()
+                else:
+                    allowance = output_limit - len(output) + 1
+                    block = os.read(stream.fileno(), min(65536, allowance))
+                    if not block:
+                        watched.unregister(stream)
+                        stream.close()
+                    else:
+                        output.extend(block)
+                        if len(output) > output_limit:
+                            raise OutputLimitExceeded(
+                                len(output), hashlib.sha256(output).hexdigest()
+                            )
+    remaining = deadline - time.monotonic()
+    if remaining <= 0:
+        raise subprocess.TimeoutExpired(process.args, timeout, output=bytes(output))
+    try:
+        process.wait(timeout=remaining)
+    except subprocess.TimeoutExpired as exc:
+        raise subprocess.TimeoutExpired(process.args, timeout, output=bytes(output)) from exc
+    return bytes(output)
+
+
 def invoke(argv, payload, timeout, limit=1048576, deadline_monotonic=None):
     """POSIX group supervision; no detached-worker or remote-cancellation guarantee."""
     start = time.perf_counter()
     event = {"started_at": stamp(), "started_monotonic": start, "timeout_seconds": timeout,
-             "status": "failure", "error_type": None, "dispatched": False, "response_received": False, "dispatch_monotonic": None}
+             "status": "failure", "error_type": None, "dispatched": False,
+             "response_received": False, "response_complete": False,
+             "response_bytes_observed": 0, "response_prefix_sha256": None,
+             "dispatch_monotonic": None}
     process = None
     response, valid_response = None, False
     try:
@@ -40,11 +110,15 @@ def invoke(argv, payload, timeout, limit=1048576, deadline_monotonic=None):
         process = subprocess.Popen(argv, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                    stderr=subprocess.DEVNULL, start_new_session=True)
         event["dispatched"] = True
-        out, _ = process.communicate(encoded, timeout=max(0.000001, deadline-time.perf_counter()))
+        out = _communicate_stdout_bounded(
+            process, encoded, max(0.000001, deadline-time.perf_counter()), limit
+        )
         event["returncode"] = process.returncode
         event["response_received"] = bool(out)
+        event["response_complete"] = True
+        event["response_bytes_observed"] = len(out)
         event["response_sha256"] = hashlib.sha256(out).hexdigest()
-        if process.returncode or len(out) > limit:
+        if process.returncode:
             raise ValueError("Worker failure or output limit")
         response = json.loads(out)
         canonical(response)
@@ -52,8 +126,17 @@ def invoke(argv, payload, timeout, limit=1048576, deadline_monotonic=None):
             raise ValueError("Invalid provider envelope")
         valid_response = True
         event["status"] = "ok"
+    except OutputLimitExceeded as exc:
+        event.update(status="oversized_output", error_type="OutputLimitExceeded",
+                     response_received=True, response_complete=False,
+                     response_bytes_observed=exc.observed_bytes,
+                     response_prefix_sha256=exc.prefix_sha256)
     except subprocess.TimeoutExpired as exc:
-        event.update(status="timeout", error_type="TimeoutExpired", response_received=bool(exc.output))
+        partial = exc.output if isinstance(exc.output, bytes) else b""
+        event.update(status="timeout", error_type="TimeoutExpired",
+                     response_received=bool(partial), response_complete=False,
+                     response_bytes_observed=len(partial),
+                     response_prefix_sha256=hashlib.sha256(partial).hexdigest() if partial else None)
     except TimeoutError:
         event.update(status="timeout", error_type="AdmissionDeadlineExceeded")
     except (OSError, ValueError, UnicodeError, RecursionError, TypeError) as exc:

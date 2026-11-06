@@ -112,3 +112,16 @@ deadlines retain their original values. Unknown monetary costs remain null.
 
 This procedure does not alter prior failures, expose oracle data, search models,
 or establish NDU gain, independent confirmation or positive net benefit.
+
+
+## Follow-up: bounded JSON worker output
+
+The exact JSON runner imports `ndu_llm_confirmation.transport.call`. Its first revision used
+`Popen.communicate()` and checked the stdout byte limit only after the full child output had
+been buffered. Draft #5027 preserves a test-first failure from a real 128 KiB child-process
+flood under a 1 KiB limit. The follow-up adds selector-driven capture, aborting at
+`limit + 1` bytes, an incomplete-prefix digest, process-group cleanup and a normal-JSON
+control test. The original wiring receipt is retained as historical only; it is not reused
+for the changed transport/test sources. The updated source freeze is written before any
+new qualification or task inference. This engineering repair does not establish NDU gain,
+independent confirmation or HIA P5 production qualification.
