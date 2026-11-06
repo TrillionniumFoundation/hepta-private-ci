@@ -342,7 +342,15 @@ if payload.get("prompt") == {blocked_prompt_json}:
     Ok(())
 }
 
-fn write_async_user_prompt_submit_hook(home: &Path, gated: bool) -> Result<()> {
+fn write_async_user_prompt_submit_hook(
+    home: &Path,
+    gated: bool,
+    expected_prompt: Option<&str>,
+) -> Result<()> {
+    let expected_prompt_json = match expected_prompt {
+        Some(prompt) => serde_json::to_string(prompt)?,
+        None => "None".to_string(),
+    };
     let script_path = home.join("async_user_prompt_submit_hook.py");
     let started_path = home.join("async_user_prompt_submit_started");
     let finished_path = home.join("async_user_prompt_submit_finished");
@@ -354,6 +362,9 @@ import sys
 import time
 
 prompt = json.load(sys.stdin).get("prompt")
+expected_prompt = {expected_prompt_json}
+if expected_prompt is not None and prompt != expected_prompt:
+    sys.exit(0)
 Path(r"{started_path}").write_text(prompt, encoding="utf-8")
 while {gated} and not Path(r"{release_path}").exists():
     time.sleep(0.01)
@@ -1637,7 +1648,7 @@ async fn async_hook_context_is_injected_into_the_active_turn() -> Result<()> {
 
     let test = test_codex()
         .with_pre_build_hook(|home| {
-            write_async_user_prompt_submit_hook(home, /*gated*/ false)
+            write_async_user_prompt_submit_hook(home, /*gated*/ false, None)
                 .expect("write immediate async user prompt submit hook");
         })
         .with_config(trust_discovered_hooks)
@@ -1738,8 +1749,12 @@ async fn async_hook_finishing_while_idle_waits_for_the_next_turn() -> Result<()>
 
     let test = test_codex()
         .with_pre_build_hook(|home| {
-            write_async_user_prompt_submit_hook(home, /*gated*/ true)
-                .expect("write gated async user prompt submit hook");
+            write_async_user_prompt_submit_hook(
+                home,
+                /*gated*/ true,
+                Some("finish before the async hook"),
+            )
+            .expect("write gated async user prompt submit hook");
         })
         .with_config(trust_discovered_hooks)
         .build(&server)

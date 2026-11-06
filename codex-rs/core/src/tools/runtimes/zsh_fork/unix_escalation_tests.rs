@@ -135,21 +135,24 @@ fn approval_sandbox_permissions_only_downgrades_preapproved_additional_permissio
     assert_eq!(
         super::approval_sandbox_permissions(
             SandboxPermissions::WithAdditionalPermissions,
-            /*additional_permissions_preapproved*/ true
+            /*additional_permissions_preapproved*/ true,
+            &read_only_file_system_sandbox_policy(),
         ),
         SandboxPermissions::UseDefault,
     );
     assert_eq!(
         super::approval_sandbox_permissions(
             SandboxPermissions::WithAdditionalPermissions,
-            /*additional_permissions_preapproved*/ false
+            /*additional_permissions_preapproved*/ false,
+            &read_only_file_system_sandbox_policy(),
         ),
         SandboxPermissions::WithAdditionalPermissions,
     );
     assert_eq!(
         super::approval_sandbox_permissions(
             SandboxPermissions::RequireEscalated,
-            /*additional_permissions_preapproved*/ true
+            /*additional_permissions_preapproved*/ true,
+            &read_only_file_system_sandbox_policy(),
         ),
         SandboxPermissions::RequireEscalated,
     );
@@ -849,6 +852,116 @@ prefix_rule(pattern = ["{cat_path_literal}"], decision = "allow")
 }
 
 #[tokio::test(flavor = "current_thread")]
+async fn denied_reads_do_not_reprompt_for_prepared_parent_escalation() -> anyhow::Result<()> {
+    let (session, turn_context) = make_session_and_context().await;
+    let file_system_sandbox_policy = denied_read_file_system_sandbox_policy();
+    let permission_profile = PermissionProfile::from_runtime_permissions(
+        &file_system_sandbox_policy,
+        NetworkSandboxPolicy::Restricted,
+    );
+    let approval_sandbox_permissions = super::approval_sandbox_permissions(
+        SandboxPermissions::RequireEscalated,
+        /*additional_permissions_preapproved*/ false,
+        &file_system_sandbox_policy,
+    );
+    assert_eq!(approval_sandbox_permissions, SandboxPermissions::UseDefault);
+    assert_eq!(
+        CoreShellActionProvider::shell_request_escalation_execution(
+            SandboxPermissions::RequireEscalated,
+            &permission_profile,
+            None,
+        ),
+        EscalationExecution::TurnDefault,
+    );
+    let provider = CoreShellActionProvider {
+        policy: Arc::new(RwLock::new(PolicyParser::new().build())),
+        session: Arc::new(session),
+        review_context: GuardianReviewContext::from(Arc::new(turn_context)),
+        call_id: "deny-read-prepared-parent-escalation".to_string(),
+        environment_id: "local".to_string(),
+        source: GuardianCommandSource::UnifiedExec,
+        tool_name: ToolName::plain("exec_command"),
+        approval_policy: AskForApproval::OnRequest,
+        permission_profile,
+        sandbox_permissions: SandboxPermissions::RequireEscalated,
+        approval_sandbox_permissions,
+        prompt_permissions: None,
+        stopwatch: codex_shell_escalation::Stopwatch::new(Duration::from_secs(1)),
+    };
+
+    let action = codex_shell_escalation::EscalationPolicy::determine_action(
+        &provider,
+        &AbsolutePathBuf::try_from(host_absolute_path(&["usr", "bin", "cat"])).unwrap(),
+        &["cat".to_string(), "/tmp/secret.env".to_string()],
+        &test_sandbox_cwd(),
+    )
+    .await?;
+
+    assert_eq!(action, codex_shell_escalation::EscalationDecision::Run);
+    Ok(())
+}
+
+#[test]
+fn prepared_parent_escalation_preserves_explicit_exec_policy_decisions() {
+    let cat_path = host_absolute_path(&["usr", "bin", "cat"]);
+    let cat_path_literal = starlark_string(&cat_path);
+    let program = AbsolutePathBuf::try_from(cat_path).unwrap();
+    let argv = ["cat".to_string(), "/tmp/secret.env".to_string()];
+    let file_system_sandbox_policy = denied_read_file_system_sandbox_policy();
+    let permission_profile = PermissionProfile::from_runtime_permissions(
+        &file_system_sandbox_policy,
+        NetworkSandboxPolicy::Restricted,
+    );
+    let sandbox_permissions = super::approval_sandbox_permissions(
+        SandboxPermissions::RequireEscalated,
+        /*additional_permissions_preapproved*/ false,
+        &file_system_sandbox_policy,
+    );
+
+    for (rule, decision) in [
+        ("prompt", Decision::Prompt),
+        ("forbidden", Decision::Forbidden),
+    ] {
+        let policy_src =
+            format!(r#"prefix_rule(pattern = ["{cat_path_literal}"], decision = "{rule}")"#);
+        let mut parser = PolicyParser::new();
+        parser.parse("test.rules", &policy_src).unwrap();
+        let policy = parser.build();
+        let evaluation = evaluate_intercepted_exec_policy(
+            &policy,
+            &program,
+            &argv,
+            InterceptedExecPolicyContext {
+                approval_policy: AskForApproval::OnRequest,
+                permission_profile: permission_profile.clone(),
+                windows_sandbox_level: WindowsSandboxLevel::Disabled,
+                sandbox_permissions,
+                enable_shell_wrapper_parsing: false,
+            },
+        );
+
+        assert_eq!(evaluation.decision, decision);
+        assert!(CoreShellActionProvider::decision_driven_by_policy(
+            &evaluation.matched_rules,
+            decision,
+        ));
+    }
+}
+
+#[test]
+fn denied_reads_do_not_preapprove_additional_permissions() {
+    let file_system_sandbox_policy = denied_read_file_system_sandbox_policy();
+    assert_eq!(
+        super::approval_sandbox_permissions(
+            SandboxPermissions::WithAdditionalPermissions,
+            /*additional_permissions_preapproved*/ false,
+            &file_system_sandbox_policy,
+        ),
+        SandboxPermissions::WithAdditionalPermissions,
+    );
+}
+
+#[tokio::test(flavor = "current_thread")]
 async fn denied_reads_keep_granular_sandbox_rejection_for_escalation() -> anyhow::Result<()> {
     let (session, turn_context) = make_session_and_context().await;
     let file_system_sandbox_policy = denied_read_file_system_sandbox_policy();
@@ -915,6 +1028,7 @@ fn intercepted_exec_policy_treats_preapproved_additional_permissions_as_default(
             sandbox_permissions: super::approval_sandbox_permissions(
                 SandboxPermissions::WithAdditionalPermissions,
                 /*additional_permissions_preapproved*/ true,
+                &permission_profile.file_system_sandbox_policy(),
             ),
             enable_shell_wrapper_parsing: false,
         },
