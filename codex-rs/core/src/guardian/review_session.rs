@@ -644,6 +644,12 @@ impl GuardianReviewSessionManager {
         if keep_review_session && matches!(outcome, GuardianReviewSessionOutcome::Completed(_)) {
             trunk.refresh_last_committed_fork_snapshot().await;
         }
+        if !keep_review_session {
+            // Invalidate this exact trunk before releasing its permit. Removing
+            // the cached Arc awaits a lock and can be cancelled; neither that
+            // window nor an already-cloned Arc may make a failed owner reusable.
+            trunk.review_lock.close();
+        }
         drop(trunk_guard);
 
         if keep_review_session {
@@ -1654,7 +1660,7 @@ mod tests {
         }
     }
 
-    async fn test_review_params() -> GuardianReviewSessionParams {
+    pub(super) async fn test_review_params() -> GuardianReviewSessionParams {
         let (session, turn) = crate::session::tests::make_session_and_context().await;
         let model = turn.model_info.slug.clone();
         let reasoning_effort = turn.reasoning_effort.clone();
@@ -2559,3 +2565,7 @@ mod tests {
 #[cfg(test)]
 #[path = "review_session_terminalization_tests.rs"]
 mod terminalization_tests;
+
+#[cfg(test)]
+#[path = "review_session_trunk_tests.rs"]
+mod trunk_tests;
