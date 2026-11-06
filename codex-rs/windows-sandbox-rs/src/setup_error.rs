@@ -117,6 +117,21 @@ pub struct SetupErrorReport {
     pub message: String,
 }
 
+impl SetupErrorReport {
+    pub fn from_error(error: &anyhow::Error) -> Self {
+        match extract_failure(error) {
+            Some(failure) => Self {
+                code: failure.code,
+                message: failure.message.clone(),
+            },
+            None => Self {
+                code: SetupErrorCode::HelperUnknownError,
+                message: format!("{error:#}"),
+            },
+        }
+    }
+}
+
 #[derive(Debug, PartialEq, Eq)]
 pub struct SetupFailure {
     pub code: SetupErrorCode,
@@ -257,8 +272,63 @@ fn redact_username_segments(value: &str, usernames: &[String]) -> String {
 
 #[cfg(test)]
 mod tests {
+    use super::SetupErrorCode;
+    use super::SetupErrorReport;
+    use super::SetupFailure;
+    use super::failure;
+    use super::read_setup_error_report;
     use super::redact_username_segments;
+    use super::write_setup_error_report;
+    use anyhow::Result;
     use pretty_assertions::assert_eq;
+
+    #[test]
+    fn untyped_setup_report_preserves_context_chain_and_os_error() -> Result<()> {
+        let codex_home = tempfile::tempdir()?;
+        let cause = std::io::Error::from_raw_os_error(5);
+        let cause_message = cause.to_string();
+        let error = anyhow::Error::new(cause)
+            .context("read security descriptor")
+            .context("apply deny-read ACLs");
+
+        let report = SetupErrorReport::from_error(&error);
+        write_setup_error_report(codex_home.path(), &report)?;
+        let restored = read_setup_error_report(codex_home.path())?
+            .expect("the helper's structured error report exists");
+
+        assert_eq!(
+            SetupFailure::from_report(restored),
+            SetupFailure::new(
+                SetupErrorCode::HelperUnknownError,
+                format!("apply deny-read ACLs: read security descriptor: {cause_message}"),
+            )
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn typed_setup_report_preserves_code_and_message_through_context() -> Result<()> {
+        let codex_home = tempfile::tempdir()?;
+        let error = failure(
+            SetupErrorCode::HelperSandboxLockFailed,
+            "typed lock failure",
+        )
+        .context("outer setup context");
+
+        let report = SetupErrorReport::from_error(&error);
+        write_setup_error_report(codex_home.path(), &report)?;
+        let restored = read_setup_error_report(codex_home.path())?
+            .expect("the helper's structured error report exists");
+
+        assert_eq!(
+            SetupFailure::from_report(restored),
+            SetupFailure::new(
+                SetupErrorCode::HelperSandboxLockFailed,
+                "typed lock failure"
+            )
+        );
+        Ok(())
+    }
 
     #[test]
     fn sanitize_tag_value_redacts_username_segments() {
