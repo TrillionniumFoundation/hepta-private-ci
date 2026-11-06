@@ -106,6 +106,9 @@ use wiremock::matchers::path;
 #[path = "client_websocket_auth_snapshot_tests.rs"]
 mod websocket_auth_snapshot;
 
+#[path = "client_websocket_request_metadata_tests.rs"]
+mod websocket_request_metadata;
+
 const TEST_CHATGPT_ID_TOKEN: &str = "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJlbWFpbCI6InVzZXJAZXhhbXBsZS5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiaHR0cHM6Ly9hcGkub3BlbmFpLmNvbS9hdXRoIjp7ImNoYXRncHRfdXNlcl9pZCI6InVzZXItMTIzNDUiLCJ1c2VyX2lkIjoidXNlci0xMjM0NSIsImNoYXRncHRfcGxhbl90eXBlIjoicHJvIiwiY2hhdGdwdF9hY2NvdW50X2lkIjoiYWNjb3VudC0xMjMifX0.c2ln";
 const TEST_INSTALLATION_ID: &str = "11111111-1111-4111-8111-111111111111";
 
@@ -342,6 +345,64 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
     )
     .expect("identity a");
 
+    let mut prewarm_metadata = metadata_a.clone();
+    prewarm_metadata.request_kind =
+        Some(crate::responses_metadata::CodexResponsesRequestKind::Prewarm);
+    assert_eq!(
+        identity_a,
+        WebsocketConnectionIdentity::from_provider(
+            &provider,
+            Some("feature-a"),
+            &prewarm_metadata,
+            &http::HeaderMap::new(),
+        )
+        .expect("prewarm identity")
+    );
+    assert_ne!(
+        serde_json::to_value(metadata_a.turn_recovery_compatibility_projection()).unwrap(),
+        serde_json::to_value(prewarm_metadata.turn_recovery_compatibility_projection()).unwrap(),
+        "connection reuse must not weaken request-specific recovery identity"
+    );
+
+    let mut changed_lineage = metadata_a.clone();
+    changed_lineage.parent_turn_id = Some("parent-next".to_string());
+    changed_lineage.root_turn_id = Some("root-next".to_string());
+    assert_eq!(
+        identity_a,
+        WebsocketConnectionIdentity::from_provider(
+            &provider,
+            Some("feature-a"),
+            &changed_lineage,
+            &http::HeaderMap::new(),
+        )
+        .expect("per-request lineage identity")
+    );
+    assert_ne!(
+        serde_json::to_value(metadata_a.turn_recovery_compatibility_projection()).unwrap(),
+        serde_json::to_value(changed_lineage.turn_recovery_compatibility_projection()).unwrap(),
+    );
+    for field in ["parent_thread", "forked_thread", "agent", "subagent"] {
+        let mut changed = metadata_a.clone();
+        match field {
+            "parent_thread" => changed.parent_thread_id = Some(ThreadId::new()),
+            "forked_thread" => changed.forked_from_thread_id = Some(ThreadId::new()),
+            "agent" => changed.agent_name = Some("/other".to_string()),
+            "subagent" => changed.subagent_kind = Some("thread_spawn".to_string()),
+            _ => unreachable!(),
+        }
+        assert_ne!(
+            identity_a,
+            WebsocketConnectionIdentity::from_provider(
+                &provider,
+                Some("feature-a"),
+                &changed,
+                &http::HeaderMap::new(),
+            )
+            .expect("changed thread or agent identity"),
+            "{field} remains bound to the connection",
+        );
+    }
+
     let mut volatile_metadata = metadata_a.clone();
     volatile_metadata.session_id = "session-after-restart".to_string();
     volatile_metadata.window_id = "window-after-restart".to_string();
@@ -378,6 +439,51 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
             &http::HeaderMap::new(),
         )
         .expect("changed beta identity")
+    );
+
+    let mut changed_query = provider.clone();
+    changed_query.query_params = Some(HashMap::from([(
+        "api-version".to_string(),
+        "different-version".to_string(),
+    )]));
+    assert_ne!(
+        identity_a,
+        WebsocketConnectionIdentity::from_provider(
+            &changed_query,
+            Some("feature-a"),
+            &metadata_a,
+            &http::HeaderMap::new(),
+        )
+        .expect("changed query identity")
+    );
+    let mut changed_headers = provider.clone();
+    changed_headers.headers.insert(
+        "x-provider-scope",
+        http::HeaderValue::from_static("different"),
+    );
+    assert_ne!(
+        identity_a,
+        WebsocketConnectionIdentity::from_provider(
+            &changed_headers,
+            Some("feature-a"),
+            &metadata_a,
+            &http::HeaderMap::new(),
+        )
+        .expect("changed provider header identity")
+    );
+    let mut changed_extra = metadata_a.clone();
+    changed_extra
+        .extra
+        .insert("codex_security_surface".to_string(), "sdk".to_string());
+    assert_ne!(
+        identity_a,
+        WebsocketConnectionIdentity::from_provider(
+            &provider,
+            Some("feature-a"),
+            &changed_extra,
+            &http::HeaderMap::new(),
+        )
+        .expect("changed extra identity")
     );
 
     let mut changed_provider = provider;

@@ -402,13 +402,28 @@ impl WebsocketConnectionIdentity {
         responses_metadata: &CodexResponsesMetadata,
         auth_headers: &ApiHeaderMap,
     ) -> std::result::Result<Self, ApiError> {
-        let compatibility_projection_json =
-            serde_json::to_vec(&responses_metadata.turn_recovery_compatibility_projection())
-                .map_err(|error| {
-                    ApiError::Stream(format!(
-                        "failed to bind websocket compatibility identity: {error}"
-                    ))
-                })?;
+        // Model flags, Git enrichment and tool inventory accompany each request.
+        // Normalize only this connection-comparison copy: the physical request
+        // and cold-recovery fingerprint retain every original metadata field.
+        let mut connection_metadata = responses_metadata.clone();
+        if matches!(
+            connection_metadata.request_kind,
+            Some(CodexResponsesRequestKind::Compaction(_))
+        ) {
+            connection_metadata.request_kind = Some(CodexResponsesRequestKind::Turn);
+        }
+        connection_metadata.node_repl_auto_review_required = None;
+        connection_metadata.node_repl_disabled = None;
+        connection_metadata.workspaces.clear();
+        connection_metadata.tool_namespaces_info = None;
+        let compatibility_projection_json = serde_json::to_vec(
+            &connection_metadata.websocket_connection_compatibility_projection(),
+        )
+        .map_err(|error| {
+            ApiError::Stream(format!(
+                "failed to bind websocket compatibility identity: {error}"
+            ))
+        })?;
         Ok(Self {
             provider_name: provider.name.clone(),
             base_url: provider.base_url.clone(),
