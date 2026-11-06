@@ -41,8 +41,21 @@ fn toml_string_literal(value: &str) -> String {
 }
 
 pub fn test_codex_exec() -> TestCodexExecBuilder {
+    let mut home = tempfile::Builder::new();
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        // State storage rejects group-writable owners. Do not let the invoking
+        // shell's umask turn a private test home into an invalid storage owner.
+        home.permissions(std::fs::Permissions::from_mode(/*mode*/ 0o700));
+    }
+    home.prefix("codex-exec-home-");
     TestCodexExecBuilder {
-        home: TempDir::new().expect("create temp home"),
+        home: home.tempdir().expect("create private temp home"),
         cwd: TempDir::new().expect("create temp cwd"),
     }
 }
+
+#[cfg(all(test, unix))]
+#[path = "test_codex_exec_tests.rs"]
+mod tests;
