@@ -98,6 +98,13 @@ impl PtyIo {
                     }
                     Ok(count) => {
                         // Output caps may close the receiver before the child exits.
+                        // Keep draining without allocating a message or polling a send
+                        // that can no longer succeed once the channel is closed.
+                        if stdout_tx.is_closed() {
+                            #[cfg(test)]
+                            diagnostics.observe(ReaderEvent::Discarded(count));
+                            continue;
+                        }
                         #[cfg(test)]
                         {
                             diagnostics.observe(ReaderEvent::Sending);
