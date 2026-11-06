@@ -14,9 +14,7 @@ use crate::JournalScope;
 use crate::cell_task_cost::*;
 use crate::cell_test_support::checked;
 
-#[path = "cell_generation_test_support.rs"]
-mod support;
-use support::*;
+use super::support::*;
 
 #[test]
 fn state_prefix_outbox_cost_and_replay_survive_owner_reopen() {

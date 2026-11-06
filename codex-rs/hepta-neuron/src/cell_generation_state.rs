@@ -47,7 +47,8 @@ pub(crate) enum GenerationEvent {
     },
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub(crate) struct GenerationState {
     pub(crate) snapshot: CellRuntimeSnapshotV2,
     pub(crate) pending: Option<CellGenerationRequestV2>,
