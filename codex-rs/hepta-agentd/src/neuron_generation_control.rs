@@ -46,7 +46,7 @@ where
     ) -> Result<Response, Error> {
         require_recovery(state)?;
         match request {
-            Request::Status => {
+            Request::Status {} => {
                 let journal = self.owner.journal();
                 let snapshot = journal.snapshot()?;
                 Ok(Response::Status(Box::new(GenerationStatusV1 {
@@ -87,7 +87,7 @@ where
                 require_pending(&self.owner, request_digest)?;
                 self.owner
                     .cancel_pending_checked(|| require_recovery(state))?;
-                Ok(Response::CancelRequested)
+                Ok(Response::CancelRequested {})
             }
             Request::Output {
                 expected_chunk_digest,
@@ -122,16 +122,16 @@ where
                 delivery,
                 acknowledgement,
             } => self.control_acknowledge(delivery, acknowledgement, state),
-            Request::Cost => Ok(Response::Cost(Box::new(codec::cost(
+            Request::Cost {} => Ok(Response::Cost(Box::new(codec::cost(
                 self.owner.journal().task_cost()?,
             )?))),
-            Request::Drain => Ok(Response::Drain {
+            Request::Drain {} => Ok(Response::Drain {
                 complete: self.owner.drain()?,
             }),
-            Request::Resume => {
+            Request::Resume {} => {
                 require_admission(state)?;
                 self.owner.journal_mut().resume()?;
-                Ok(Response::Resumed)
+                Ok(Response::Resumed {})
             }
         }
     }
@@ -266,6 +266,6 @@ where
         self.owner
             .journal_mut()
             .acknowledge(chunk, acknowledgement, cost)?;
-        Ok(Response::Acknowledged)
+        Ok(Response::Acknowledged {})
     }
 }

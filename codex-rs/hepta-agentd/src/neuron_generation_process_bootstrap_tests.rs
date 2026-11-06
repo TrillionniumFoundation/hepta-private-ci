@@ -289,7 +289,7 @@ async fn actual_joint_reopens_the_same_clock_journal_prefix_and_original_result(
     let cancellation = CancellationToken::new();
     let mut tasks = RuntimeTasks::new(cancellation.clone(), Duration::from_secs(2))?;
     spawn_neuron_generation_service(&mut tasks, bootstrap, state.clone(), cancellation)?;
-    compute(
+    let (_, initialized) = compute(
         &handle,
         &config,
         public_digest,
@@ -300,6 +300,23 @@ async fn actual_joint_reopens_the_same_clock_journal_prefix_and_original_result(
         },
     )
     .await?;
+    assert_eq!(
+        initialized.disposition,
+        CellGenerationDispositionV2::Advanced
+    );
+    // These fixed synthetic weights prohibit initial STOP. Exercise one real
+    // continuation before stopping, without changing the model's legal actions.
+    let (_, advanced) = compute(
+        &handle,
+        &config,
+        public_digest,
+        "shared",
+        JointGenerationCommandV1::Advance {
+            action: JointGenerationActionV1::Shared,
+        },
+    )
+    .await?;
+    assert_eq!(advanced.disposition, CellGenerationDispositionV2::Advanced);
     let (stop, receipt) = compute(
         &handle,
         &config,
@@ -310,6 +327,7 @@ async fn actual_joint_reopens_the_same_clock_journal_prefix_and_original_result(
         },
     )
     .await?;
+    assert_eq!(receipt.disposition, CellGenerationDispositionV2::Stopped);
     let snapshot = handle.snapshot().await?;
     fixture::verify_stopped(&snapshot.state, &snapshot.prefix, &f.assets)?;
     let output = handle.pending_output().await?;

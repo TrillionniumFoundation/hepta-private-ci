@@ -38,7 +38,7 @@ use support::fleet::agentd_binary;
 mod fixture;
 
 async fn status(client: &AgentdClient) -> Result<GenerationStatusV1> {
-    match client.generation(Request::Status).await? {
+    match client.generation(Request::Status {}).await? {
         Response::Status(value) => Ok(*value),
         other => bail!("expected generation status, got {other:?}"),
     }
@@ -153,9 +153,9 @@ async fn deliver(client: &AgentdClient, destination: &Path) -> Result<()> {
     };
     assert_eq!(
         client.generation(ack.clone()).await?,
-        Response::Acknowledged
+        Response::Acknowledged {}
     );
-    assert_eq!(client.generation(ack).await?, Response::Acknowledged);
+    assert_eq!(client.generation(ack).await?, Response::Acknowledged {});
     assert_eq!(status(client).await?.output, None);
     Ok(())
 }
@@ -296,15 +296,15 @@ async fn ordinary_cli_runs_joint_over_bounded_control_and_retains_delivered_stat
     let snapshot = status(&client).await?;
     assert!(snapshot.stopped && snapshot.state_bytes > 0 && snapshot.prefix_bytes > 1024);
     assert_eq!(
-        client.generation(Request::Drain).await?,
+        client.generation(Request::Drain {}).await?,
         Response::Drain { complete: false }
     );
     deliver(&client, &destination).await?;
     assert_eq!(
-        client.generation(Request::Drain).await?,
+        client.generation(Request::Drain {}).await?,
         Response::Drain { complete: true }
     );
-    match client.generation(Request::Cost).await? {
+    match client.generation(Request::Cost {}).await? {
         Response::Cost(cost) => {
             assert_eq!(cost.task_digest, config.task_digest);
             assert!(cost.wall_work_micros.known_sum > 0);
