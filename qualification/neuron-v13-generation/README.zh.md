@@ -36,7 +36,9 @@
 `CLOCK_BOOTTIME` 配对，核验 host 已打开的只读普通文件，并保留实际 inode。
 typed bootstrap 在写 owner 之前检查完整 Agentd identity、learning/source
 绑定、三份 owner 文件的访问模式、空文件或重开模式，以及它们与资产 inode
-之间的分离。恢复失败不会回退为初始化。
+之间的分离。恢复失败不会回退为初始化。owner FD 的 pathname label 仅用于诊断，
+不会被重新打开或用于目录同步；创建文件的 host 必须同步真实父目录。按路径
+创建 control journal 的入口仍同步其真实父目录，并传播同步失败。
 
 资产准备的实测墙钟成本以稳定事件写入原任务 journal。同一个 prepared worker
 只能绑定一个 scope/task/source；第一次合法绑定即使随后遇到锁失败也保持，
@@ -63,6 +65,12 @@ typed bootstrap 在写 owner 之前检查完整 Agentd identity、learning/sourc
 原请求绑定，再派发一次。重复、读回和重开只能读取同一 durable receipt；未知
 计算结果保持 pending，不通过重新计算补造结果。worker 错误或进程失联不能产生
 一条虚构的成功提案。
+
+已持久化 admission、尚未联系 control 时，当前调用栈若观察到明确 Draining，
+会在最终 recovery/fence 检查后提交 Rejected、原前驱状态和空输出。截止时间
+先到的同类无接触请求提交 DeadlineExceeded。两者记录实际发生的 host admission
+与检查区间；最终 fence 失效则保留 pending。冷重开缺少 control 记录、worker
+错误或已发生 contact 都不能使用这条无接触结算路径。
 
 ## 输入与输出
 
@@ -97,10 +105,16 @@ unknown/unavailable，保留原 control pending。发出 kill 不是完成证明
 
 ## 成本的含义
 
-任务账本接收原控制层的队列和持久化成本，以及 worker 的完整验证、编码、
+任务账本接收已观测的控制层排队与准备区间，以及 worker 的验证、编码、
 adapter 推理、任务 codec、进程其余工作和 host 其余工作。已完成阶段的墙钟和
 CPU 从进程总量中扣除后再记余量，避免重复累计。传输量只在实际 pipe 观察点
-计入一次。实际交付 ACK 由 host 记录其文件写入与 sync 的实测成本。
+计入一次。无接触的拒绝/过期请求另记一次实际 host 区间，稳定事件身份保证
+原 receipt 的重复读回与冷重开不再追加费用。
+
+普通 compact ACK 仅表达调用方确认交付，不能证明运输开销，其缺测字段保持
+None。真实 runtime 验收例程另外测量接收端 write+sync，并通过原 ACK 进入同一
+账本。owner 最终 commit/witness、恢复和记录成本本身尚没有完整独立测量，
+不得把局部控制区间或历史 Persistence/Evaluation 记录解释为这些开销全部已计入。
 
 未观测的 CPU、能耗、存储或通信保持 `None`，不会用零填补。实际计时分辨率内
 测得的零是独立的真实观测。整个 acceptance 包络另行标为 inclusive，不与
@@ -109,6 +123,30 @@ exclusive 任务成本相加。
 `runtime_digest` 绑定实际 interpreter ELF、worker 源字节、显式 argv0 和资源
 参数；原 encoder manifest 还验证 NumPy、ORT、tokenizers 的版本。当前没有
 证明整个 venv、动态库与 host 内核的完整字节闭包，也没有声明 host ABA 安全。
+
+## 固定专家比较接入同一个持久评估器
+
+`freeze_cell_evaluation_plan_v1` 从两侧健康、已 drained 的实际 Cell journal
+读取完整账本、manifest、snapshot 和 continuity cut。候选与固定专家必须具备
+相同的参数容量、累计训练预算和选择性更新约定；累计预算声明包含继承训练及
+候选搜索，固定专家的结构前后必须相同并匹配其实际 manifest。训练计数及来源
+receipt 的引用由现有独立签名者负责核实，本地字段相等不构成真实性证明。
+
+计量合同至少要求墙钟与 CPU，并显式指定额外指标；十二类成本阶段必须覆盖。
+缺阶段、未知 outcome、所需指标缺测、不同任务或冻结后账本 cut 改变都会在
+holdout 消耗和 provider release 之前拒绝。两侧分别核对自己的模型 source，
+共享的计量约定单独绑定；未知能耗等未要求指标保持 None。
+
+完整比较记录进入原 estimand 的域分隔摘要，再调用既有
+`freeze_product_evaluation_plan_v1`。`CellEvaluationRunnerV1` 实际委托
+`ProductEvaluationRunnerV1`，保留原 final-holdout CAS、消耗后数据 release、
+estimator 计算、独立签名验证和 durable evidence sink。调用者不能提交最终
+metric 来代替原 estimator，也不能用另一个公平预算的旧签名取得本次资格。
+所有新增 receipt 仍为 DENY_ALL，不授予模型采用或迁移权限。
+
+这个比较的成本范围固定为 final-holdout 前已完成的两侧任务账本。
+之后发生的本次评价计算、签名与 sink 写入开销不在冻结 cut 中；本入口不声称
+已得到完整物理成本，也不声称已经执行真实同预算固定专家收益实验。
 
 ## 描述符和普通 runtime 验收入口
 
