@@ -1,0 +1,66 @@
+{
+  "schema": "ndu.protocol-path-migration.v1",
+  "at_utc": "2026-11-06T11:45:00.950030+00:00",
+  "base_commit": "cb5019ae86bc52c9baff27858a3ee21cafc89ac5",
+  "registration_commit": "9a0b16a620b4203093268a2a917f76bb99eb61ef",
+  "status": "LOCAL_MIGRATION_COMPATIBILITY_PASS",
+  "migrations": [
+    {
+      "old_path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/development_plan_v2.json",
+      "new_path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/protocols/controller_v2_development.json",
+      "bytes": 2405,
+      "sha256": "618a57157b382fd5491e7d3497db51f6055fcf790e2c2ccbf32c8dee796c4c3f",
+      "git_blob": "379dbaa7d9a6ddfa1d8cb60fb84c98d49dc8ff5e",
+      "plan_sha256": "622661ff7b8b2b38d866a96e25b42553d12479579309b6f5fec0e837f2c37653"
+    },
+    {
+      "old_path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/development_plan_distillation_v2.json",
+      "new_path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/protocols/controller_v2_distillation_development.json",
+      "bytes": 2060,
+      "sha256": "be7e99538cc3686c8dddff7f69d93e9619743ba88f1fa1826a99672f1a562c54",
+      "git_blob": "3c15151a647071f90ef5c6f6c4da2c47510415e7",
+      "plan_sha256": "d69b201890c11e0c44e3f7ab4ef345be86a1559ec3abacc7feda2258f110abdd"
+    }
+  ],
+  "sealed_bytes_unchanged": true,
+  "statistical_engine_unchanged": true,
+  "historical_receipt_keys_and_summary_schema_preserved": true,
+  "governance_verifier": {
+    "bytes": 78882,
+    "sha256": "63adeefe7231e970b21b8d6a3014986fcb8cf16f1741f4a36b9dd4717196e33d",
+    "git_blob": "0d65aa4dee439e58ef124d99f4d422affdfae82f"
+  },
+  "governance_rules": {
+    "bytes": 25383,
+    "sha256": "f041383fd60849440d46daf5d20f4046945a364f0fc9d01231d0b62e6a0cba8d",
+    "git_blob": "144c3bba4b0147262788dfedf44fbdbedba6356f"
+  },
+  "focused_verification": {
+    "original_path_inventory": "Rejected both legacy filenames",
+    "migrated_path_inventory": "PASS",
+    "reintroduced_legacy_path_controls": "Both rejected",
+    "method": "Unmodified die, need and verify_legacy definitions compiled from the exact source AST; exact joint experiment subtree inventory and existing rules.",
+    "full_repository_contract_gate": "NOT_RUN"
+  },
+  "active_text_reference_audit": {
+    "scope": "244 non-evidence text files in the exact joint experiment subtree; five related workflow files also inspected.",
+    "original_live_reader_files": 1,
+    "original_document_files": 2,
+    "historical_evidence_rewritten": false,
+    "inventory": {
+      "bytes": 9352,
+      "sha256": "5dfb5bcaf8468f0a2c7105559f4573cf4f3884034dc59257cbd04133d45fa4f0",
+      "git_blob": "334f954296e23813b4eab42e7e59b793700662fc"
+    }
+  },
+  "tests": {
+    "existing_regressions": 5,
+    "migration_regressions": 4,
+    "exit_code": 0,
+    "negative_controls": [
+      "Receipt keys relabeled with a self-consistent snapshot digest are rejected.",
+      "A changed protocol byte is rejected."
+    ]
+  },
+  "limits": "No research panel was rerun and no archived receipt or outcome was rewritten. This is a focused compatibility and policy check, not complete repository CI."
+}

@@ -86,7 +86,7 @@ noninferiority (`utility_ce`, threshold `-delta`), positive complete-cost benefi
 No default `delta` is silently imposed. A confidence interval crossing zero is
 not evidence of noninferiority. There is no post-hoc cost-only promotion rule.
 
-The separately sealed `development_plan_distillation_v2.json` uses the teacher
+The separately sealed `protocols/controller_v2_distillation_development.json` uses the teacher
 and student labels `hepta_teacher` / `hepta_student`. Its development admission
 criteria are utility CE noninferiority at -0.005, audit-inclusive net CE
 noninferiority at -0.005, and positive serving-cost savings. The 0.005 margins

@@ -24,6 +24,11 @@ HERE = Path(__file__).resolve().parents[1]
 REGISTRATION = "9a0b16a620b4203093268a2a917f76bb99eb61ef"
 PACKAGE = "experiments/multimodal_output_portfolio/joint_hepta_20261029/"
 PLAN_FILES = ("development_plan_v2.json", "development_plan_distillation_v2.json")
+# Receipt and output keys retain their original registration identities.
+PLAN_PATHS = {
+    "development_plan_v2.json": "protocols/controller_v2_development.json",
+    "development_plan_distillation_v2.json": "protocols/controller_v2_distillation_development.json",
+}
 PLAN_HASHES = ("622661ff7b8b2b38d866a96e25b42553d12479579309b6f5fec0e837f2c37653",
                "d69b201890c11e0c44e3f7ab4ef345be86a1559ec3abacc7feda2258f110abdd")
 SCHEMA = "hepta.joint-generation.development-summary.v2"
@@ -94,7 +99,7 @@ def source_binding(root, manifest):
     if sha(payload) != receipt["before"]["sha256"]:
         raise ValueError("Source snapshot digest differs")
     for name in (*PLAN_FILES, "research_gate_v2.py", "controller_v2_protocol.json"):
-        if files.get(PACKAGE + name) != sha((HERE / name).read_bytes()):
+        if files.get(PACKAGE + name) != sha((HERE / PLAN_PATHS.get(name, name)).read_bytes()):
             raise ValueError("Analysis plan/engine differs from the registered source: " + name)
     return receipt
 
@@ -367,7 +372,7 @@ def run(inputs, output):
     output = Path(output)
     if output.exists():
         raise FileExistsError("A new analysis directory is required")
-    seals = [read_seal(HERE / name) for name in PLAN_FILES]
+    seals = [read_seal(HERE / PLAN_PATHS[name]) for name in PLAN_FILES]
     if tuple(seal["plan_sha256"] for seal in seals) != PLAN_HASHES:
         raise ValueError("Frozen v2 development acceptance plan changed")
     protocol = read_json(HERE / "controller_v2_protocol.json")
