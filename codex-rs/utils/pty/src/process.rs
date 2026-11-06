@@ -393,15 +393,15 @@ pub fn spawn_from_driver(driver: ProcessDriver) -> SpawnedProcess {
 
     let (stdout_tx, stdout_rx) = mpsc::channel::<Vec<u8>>(256);
     let (stderr_tx, stderr_rx) = mpsc::channel::<Vec<u8>>(256);
-    let (exit_seen_tx, exit_seen_rx) = watch::channel(false);
+    let (driver_done_tx, driver_done_rx) = watch::channel(false);
     let spawn_stream_reader =
         |mut output_rx: broadcast::Receiver<Vec<u8>>,
          output_tx: mpsc::Sender<Vec<u8>>,
-         mut exit_seen_rx: watch::Receiver<bool>| {
+         mut driver_done_rx: watch::Receiver<bool>| {
             tokio::spawn(async move {
                 loop {
-                    let recv_result = if *exit_seen_rx.borrow() {
-                        // Once exit has been observed, we no longer want a timer here. Some
+                    let recv_result = if *driver_done_rx.borrow() {
+                        // Once the driver has finished, we no longer want a timer here. Some
                         // backends publish the exit code before their final stdout/stderr bytes
                         // have been forwarded through the broadcast channel, so a fixed grace
                         // period can still drop the tail of the stream under load.
@@ -412,7 +412,7 @@ pub fn spawn_from_driver(driver: ProcessDriver) -> SpawnedProcess {
                         output_rx.recv().await
                     } else {
                         tokio::select! {
-                            _ = exit_seen_rx.changed() => {
+                            _ = driver_done_rx.changed() => {
                                 continue;
                             }
                             result = output_rx.recv() => result,
@@ -430,10 +430,10 @@ pub fn spawn_from_driver(driver: ProcessDriver) -> SpawnedProcess {
                 }
             })
         };
-    let reader_handle = spawn_stream_reader(stdout_driver_rx, stdout_tx, exit_seen_rx.clone());
+    let reader_handle = spawn_stream_reader(stdout_driver_rx, stdout_tx, driver_done_rx.clone());
     let stderr_reader_handle = stderr_driver_rx
         .take()
-        .map(|rx| spawn_stream_reader(rx, stderr_tx, exit_seen_rx));
+        .map(|rx| spawn_stream_reader(rx, stderr_tx, driver_done_rx));
 
     let writer_handle = writer_handle.unwrap_or_else(|| tokio::spawn(async {}));
 
@@ -443,13 +443,19 @@ pub fn spawn_from_driver(driver: ProcessDriver) -> SpawnedProcess {
     let exit_code = Arc::new(StdMutex::new(None));
     let wait_exit_code = Arc::clone(&exit_code);
     let wait_handle = tokio::spawn(async move {
-        let code = exit_rx.await.unwrap_or(-1);
-        wait_exit_status.store(true, std::sync::atomic::Ordering::SeqCst);
-        if let Ok(mut guard) = wait_exit_code.lock() {
-            *guard = Some(code);
+        let observed_exit = exit_rx.await;
+        // Driver completion also releases the output drain after a failed exit
+        // observation. It is not itself evidence that the native process exited.
+        let _ = driver_done_tx.send(true);
+        if let Ok(code) = observed_exit {
+            wait_exit_status.store(true, std::sync::atomic::Ordering::SeqCst);
+            if let Ok(mut guard) = wait_exit_code.lock() {
+                *guard = Some(code);
+            }
+            let _ = exit_tx.send(code);
         }
-        let _ = exit_seen_tx.send(true);
-        let _ = exit_tx.send(code);
+        // On sender loss, preserve false/None and close the output oneshot.
+        // Consumers must propagate an unknown terminal state instead of -1.
     });
 
     let handle = ProcessHandle::new(

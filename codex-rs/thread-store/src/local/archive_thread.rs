@@ -149,6 +149,7 @@ async fn archive_thread_with_paths(
 mod tests {
     use std::time::Duration;
 
+    use crate::local::test_support::private_home;
     use chrono::Utc;
     use codex_protocol::ThreadId;
     use codex_protocol::protocol::SessionSource;
@@ -307,7 +308,7 @@ mod tests {
 
     #[tokio::test]
     async fn archive_thread_deduplicates_rollout_paths_and_updates_sqlite_metadata() {
-        let home = TempDir::new().expect("temp dir");
+        let home = private_home().expect("temp dir");
         let config = test_config(home.path());
         let uuid = Uuid::from_u128(202);
         let thread_id = ThreadId::from_string(&uuid.to_string()).expect("valid thread id");

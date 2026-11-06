@@ -1,0 +1,421 @@
+diff --git a/platform/src/clipboard.rs b/platform/src/clipboard.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..f30a76a84422c4a6b62204627e1ed042a731c971
+--- /dev/null
++++ b/platform/src/clipboard.rs
+@@ -0,0 +1,73 @@
++//! Nonblocking, request-scoped reads from the original native clipboard path.
++use std::sync::mpsc::{Receiver, TryRecvError};
++#[cfg(all(target_os = "linux", not(target_env = "ohos"), not(linux_direct), not(gpusim)))]
++use std::sync::mpsc::{self, SyncSender};
++
++pub const MAX_CLIPBOARD_TEXT_BYTES: usize = 64 * 1024;
++
++#[derive(Clone, Copy, Debug, PartialEq, Eq)]
++pub enum ClipboardReadError {
++    Unavailable,
++    Busy,
++    TooLarge,
++    InvalidText,
++    Timeout,
++}
++
++/// One unique response channel. A result never becomes a global TextInput
++/// event or follows later keyboard focus. The caller must retain its own
++/// target identity and revalidate it before applying the returned text.
++pub struct ClipboardReadTicket(Receiver<Result<String, ClipboardReadError>>);
++
++impl ClipboardReadTicket {
++    pub fn try_recv(&self) -> Result<Option<Result<String, ClipboardReadError>>, ClipboardReadError> {
++        match self.0.try_recv() {
++            Ok(value) => Ok(Some(value)),
++            Err(TryRecvError::Empty) => Ok(None),
++            Err(TryRecvError::Disconnected) => Err(ClipboardReadError::Unavailable),
++        }
++    }
++}
++
++#[cfg(all(target_os = "linux", not(target_env = "ohos"), not(linux_direct), not(gpusim)))]
++pub struct ClipboardReadRequest {
++    pub(crate) max_bytes: usize,
++    sender: Option<SyncSender<Result<String, ClipboardReadError>>>,
++}
++
++#[cfg(all(target_os = "linux", not(target_env = "ohos"), not(linux_direct), not(gpusim)))]
++impl ClipboardReadRequest {
++    pub(crate) fn new(max_bytes: usize) -> (Self, ClipboardReadTicket) {
++        let (sender, receiver) = mpsc::sync_channel(1);
++        (Self { max_bytes, sender: Some(sender) }, ClipboardReadTicket(receiver))
++    }
++
++    pub(crate) fn finish(mut self, value: Result<String, ClipboardReadError>) {
++        self.publish(value);
++    }
++
++    fn publish(&mut self, value: Result<String, ClipboardReadError>) {
++        if let Some(sender) = self.sender.take() {
++            if sender.try_send(value).is_ok() {
++                crate::thread::SignalToUI::set_ui_signal();
++            }
++        }
++    }
++}
++
++#[cfg(all(target_os = "linux", not(target_env = "ohos"), not(linux_direct), not(gpusim)))]
++impl Drop for ClipboardReadRequest {
++    fn drop(&mut self) { self.publish(Err(ClipboardReadError::Unavailable)); }
++}
++
++#[cfg(all(target_os = "linux", not(target_env = "ohos"), not(linux_direct), not(gpusim)))]
++impl PartialEq for ClipboardReadRequest {
++    fn eq(&self, _other: &Self) -> bool { false }
++}
++
++#[cfg(all(target_os = "linux", not(target_env = "ohos"), not(linux_direct), not(gpusim)))]
++impl std::fmt::Debug for ClipboardReadRequest {
++    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
++        formatter.debug_struct("ClipboardReadRequest").field("max_bytes", &self.max_bytes).finish_non_exhaustive()
++    }
++}
+diff --git a/platform/src/cx_api.rs b/platform/src/cx_api.rs
+index 75c246e952f691132de9f267938b59d14644eebf..ab65385f979a22971f28f340c39d5ef64ff9f1ad 100644
+--- a/platform/src/cx_api.rs
++++ b/platform/src/cx_api.rs
+@@ -363,6 +363,8 @@ pub enum CxOsOp {
+     },
+     HideClipboardActions,
+     CopyToClipboard(String),
++    #[cfg(all(target_os = "linux", not(target_env = "ohos"), not(linux_direct), not(gpusim)))]
++    ReadClipboardText { window_id: WindowId, request: crate::clipboard::ClipboardReadRequest },
+     SetPrimarySelection(String),
+     ShowSelectionHandles {
+         start: Vec2d,
+@@ -530,6 +532,8 @@ fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+             Self::ShowClipboardActions { .. } => write!(f, "ShowClipboardActions"),
+             Self::HideClipboardActions => write!(f, "HideClipboardActions"),
+             Self::CopyToClipboard(..) => write!(f, "CopyToClipboard"),
++            #[cfg(all(target_os = "linux", not(target_env = "ohos"), not(linux_direct), not(gpusim)))]
++            Self::ReadClipboardText { .. } => write!(f, "ReadClipboardText"),
+             Self::SetPrimarySelection(..) => write!(f, "SetPrimarySelection"),
+             Self::ShowSelectionHandles { .. } => write!(f, "ShowSelectionHandles"),
+             Self::UpdateSelectionHandles { .. } => write!(f, "UpdateSelectionHandles"),
+@@ -1490,6 +1494,33 @@ pub fn copy_to_clipboard(&mut self, content: &str) {
+             .push_back(CxOsOp::CopyToClipboard(content.to_owned()));
+     }
+ 
++    /// Read UTF-8 text without blocking the UI, synthesizing a key, or changing
++    /// focus. Only the returned ticket receives the reply. Currently supported
++    /// by native Linux/X11; other backends explicitly report Unavailable.
++    pub fn read_clipboard_text(
++        &mut self,
++        window_id: WindowId,
++        max_bytes: usize,
++    ) -> Result<crate::clipboard::ClipboardReadTicket, crate::clipboard::ClipboardReadError> {
++        use crate::clipboard::{ClipboardReadError, MAX_CLIPBOARD_TEXT_BYTES};
++        if self.script_data.std.host_io_only() { return Err(ClipboardReadError::Unavailable); }
++        if max_bytes == 0 || max_bytes > MAX_CLIPBOARD_TEXT_BYTES { return Err(ClipboardReadError::TooLarge); }
++        #[cfg(all(target_os = "linux", not(target_env = "ohos"), not(linux_direct), not(gpusim)))]
++        {
++            if self.platform_ops.iter().filter(|op| matches!(op, CxOsOp::ReadClipboardText { .. })).count() >= 8 {
++                return Err(ClipboardReadError::Busy);
++            }
++            let (request, ticket) = crate::clipboard::ClipboardReadRequest::new(max_bytes);
++            self.platform_ops.push_back(CxOsOp::ReadClipboardText { window_id, request });
++            Ok(ticket)
++        }
++        #[cfg(not(all(target_os = "linux", not(target_env = "ohos"), not(linux_direct), not(gpusim))))]
++        {
++            let _ = window_id;
++            Err(ClipboardReadError::Unavailable)
++        }
++    }
++
+     /// Sets the primary selection (Linux middle-click paste).
+     /// No-op on non-Linux platforms.
+     pub fn set_primary_selection(&mut self, content: &str) {
+diff --git a/platform/src/lib.rs b/platform/src/lib.rs
+index 50a8ad68f5ebdb8878bcd24eeb7f13e1bb946ee1..c498b5176163c118efc1224ca66135d74a1eda6e 100644
+--- a/platform/src/lib.rs
++++ b/platform/src/lib.rs
+@@ -23,6 +23,7 @@
+ mod cx;
+ mod arc_string_mut;
+ mod cx_api;
++pub mod clipboard;
+ mod shared_bytes;
+ 
+ pub mod action;
+diff --git a/platform/src/os/linux/wayland/linux_wayland.rs b/platform/src/os/linux/wayland/linux_wayland.rs
+index 2ca90199316a8130bb5e4e74520a71e4a39d8111..f925ab7dc4071995fb811d3dcb392c1338d7f033 100644
+--- a/platform/src/os/linux/wayland/linux_wayland.rs
++++ b/platform/src/os/linux/wayland/linux_wayland.rs
+@@ -1043,6 +1043,9 @@ fn handle_platform_ops(&self, state: &mut WaylandState) -> EventFlow {
+                     }
+                 }
+                 CxOsOp::ShowClipboardActions { .. } => {}
++                CxOsOp::ReadClipboardText { request, .. } => {
++                    request.finish(Err(crate::clipboard::ClipboardReadError::Unavailable));
++                }
+                 CxOsOp::CopyToClipboard(content) => {
+                     if let Some(serial) = state.keyboard_serial.or(state.pointer_serial) {
+                         if let Some(qhandle) = self.qhandle.as_ref() {
+diff --git a/platform/src/os/linux/x11/clipboard_read.rs b/platform/src/os/linux/x11/clipboard_read.rs
+new file mode 100644
+index 0000000000000000000000000000000000000000..f9370b1c28bebf5217bb92d9f58fcb76e8e100fb
+--- /dev/null
++++ b/platform/src/os/linux/x11/clipboard_read.rs
+@@ -0,0 +1,117 @@
++//! Request-scoped UTF-8 selection conversion on the original X11 connection.
++use super::{x11_sys, xlib_app::XlibApp};
++use crate::clipboard::{ClipboardReadError, ClipboardReadRequest, MAX_CLIPBOARD_TEXT_BYTES};
++use std::os::raw::{c_int, c_long, c_ulong};
++use std::ptr;
++use std::time::{Duration, Instant};
++
++pub(super) struct PendingClipboardRead {
++    requestor: c_ulong,
++    parent: c_ulong,
++    started: Instant,
++    request: ClipboardReadRequest,
++}
++
++impl XlibApp {
++    pub(super) fn cancel_clipboard_read(&mut self) {
++        self.complete_clipboard_read(Err(ClipboardReadError::Unavailable));
++    }
++
++    pub(super) fn request_clipboard_text(&mut self, parent: c_ulong, request: ClipboardReadRequest) {
++        if request.max_bytes == 0 || request.max_bytes > MAX_CLIPBOARD_TEXT_BYTES {
++            request.finish(Err(ClipboardReadError::TooLarge));
++            return;
++        }
++        self.poll_clipboard_read_timeout();
++        if self.clipboard_read.is_some() {
++            request.finish(Err(ClipboardReadError::Busy));
++            return;
++        }
++        if self.display.is_null() || !self.window_map.contains_key(&parent) {
++            request.finish(Err(ClipboardReadError::Unavailable));
++            return;
++        }
++        unsafe {
++            // An unmapped child carries this request's response identity; it
++            // is never a visible UI surface and never receives keyboard input.
++            let requestor = x11_sys::XCreateSimpleWindow(self.display, parent, 0, 0, 1, 1, 0, 0, 0);
++            if requestor == 0 {
++                request.finish(Err(ClipboardReadError::Unavailable));
++                return;
++            }
++            self.clipboard_read = Some(PendingClipboardRead { requestor, parent, started: Instant::now(), request });
++            x11_sys::XConvertSelection(self.display, self.atoms.clipboard, self.atoms.utf8_string,
++                self.atoms.clipboard_read, requestor, x11_sys::CurrentTime as c_ulong);
++            x11_sys::XFlush(self.display);
++        }
++    }
++
++    pub(super) fn poll_clipboard_read_timeout(&mut self) {
++        let outcome = self.clipboard_read.as_ref().and_then(|pending| {
++            if self.display.is_null() || !self.window_map.contains_key(&pending.parent) {
++                Some(ClipboardReadError::Unavailable)
++            } else if pending.started.elapsed() >= Duration::from_secs(2) {
++                Some(ClipboardReadError::Timeout)
++            } else {
++                None
++            }
++        });
++        if let Some(error) = outcome { self.complete_clipboard_read(Err(error)); }
++    }
++
++    pub(super) fn handle_clipboard_read_notify(&mut self, selection: &x11_sys::XSelectionEvent) -> bool {
++        let matching = self.clipboard_read.as_ref().is_some_and(|pending| pending.requestor == selection.requestor);
++        if !matching {
++            // Retired replies cannot become global TextInput events.
++            return selection.property == self.atoms.clipboard_read;
++        }
++        if selection.selection != self.atoms.clipboard || selection.target != self.atoms.utf8_string
++            || selection.property != self.atoms.clipboard_read
++        {
++            self.complete_clipboard_read(Err(ClipboardReadError::Unavailable));
++            return true;
++        }
++        let pending = self.clipboard_read.as_ref().unwrap();
++        let max_bytes = pending.request.max_bytes;
++        let outcome = unsafe {
++            let mut actual_type = 0;
++            let mut actual_format: c_int = 0;
++            let mut items: c_ulong = 0;
++            let mut remaining: c_ulong = 0;
++            let mut data = ptr::null_mut();
++            let status = x11_sys::XGetWindowProperty(self.display, pending.requestor, self.atoms.clipboard_read,
++                0, ((max_bytes + 3) / 4) as c_long, 1, self.atoms.utf8_string,
++                &mut actual_type, &mut actual_format, &mut items, &mut remaining, &mut data);
++            let value = if status != 0 {
++                Err(ClipboardReadError::Unavailable)
++            } else if remaining != 0 || items as usize > max_bytes {
++                Err(ClipboardReadError::TooLarge)
++            } else if actual_type != self.atoms.utf8_string || actual_format != 8 {
++                // INCR and non-UTF8 transfers are not reinterpreted as text.
++                Err(ClipboardReadError::InvalidText)
++            } else if items == 0 {
++                Ok(String::new())
++            } else if data.is_null() {
++                Err(ClipboardReadError::InvalidText)
++            } else {
++                let bytes = std::slice::from_raw_parts(data, items as usize);
++                std::str::from_utf8(bytes).map(str::to_owned).map_err(|_| ClipboardReadError::InvalidText)
++            };
++            if !data.is_null() { x11_sys::XFree(data.cast()); }
++            value
++        };
++        self.complete_clipboard_read(outcome);
++        true
++    }
++
++    fn complete_clipboard_read(&mut self, outcome: Result<String, ClipboardReadError>) {
++        if let Some(pending) = self.clipboard_read.take() {
++            // The parent may already have destroyed its child. Do not issue a
++            // second destroy in that case or touch a closed display.
++            if !self.display.is_null() && self.window_map.contains_key(&pending.parent) {
++                unsafe { x11_sys::XDestroyWindow(self.display, pending.requestor); }
++            }
++            pending.request.finish(outcome);
++        }
++    }
++}
+diff --git a/platform/src/os/linux/x11/linux_x11.rs b/platform/src/os/linux/x11/linux_x11.rs
+index 0f9e488b88893712f12e9e9ca5b7f3e01460faf0..3f35a3969acd6061a3b42a324aad4b993746f2a8 100644
+--- a/platform/src/os/linux/x11/linux_x11.rs
++++ b/platform/src/os/linux/x11/linux_x11.rs
+@@ -701,6 +701,16 @@ fn handle_platform_ops(
+                         }
+                     }
+                 }
++                CxOsOp::ReadClipboardText { window_id, request } => {
++                    if let Some(native_window) = opengl_windows.iter()
++                        .find(|window| window.window_id == window_id)
++                        .and_then(|window| window.xlib_window.window)
++                    {
++                        xlib_app.request_clipboard_text(native_window, request);
++                    } else {
++                        request.finish(Err(crate::clipboard::ClipboardReadError::Unavailable));
++                    }
++                }
+                 CxOsOp::SetPrimarySelection(content) => {
+                     if let Some(window) = opengl_windows.get(0) {
+                         unsafe {
+diff --git a/platform/src/os/linux/x11/linux_x11_stdin.rs b/platform/src/os/linux/x11/linux_x11_stdin.rs
+index ba80609f240a91099b850688cde75b348d61ea6c..ff2b1397987adf9c2f89dd6a5305b7b1dc229691 100644
+--- a/platform/src/os/linux/x11/linux_x11_stdin.rs
++++ b/platform/src/os/linux/x11/linux_x11_stdin.rs
+@@ -1202,6 +1202,9 @@ fn stdin_handle_platform_ops(&mut self, stdin_windows: &mut Vec<StdinWindow>) {
+                 CxOsOp::CopyToClipboard(content) => {
+                     Self::stdin_send_to_host(AppToStudio::SetClipboard(content));
+                 }
++                CxOsOp::ReadClipboardText { request, .. } => {
++                    request.finish(Err(crate::clipboard::ClipboardReadError::Unavailable));
++                }
+                 CxOsOp::StartExternalDragging { .. } => {
+                     crate::error!(
+                         "external file dragging is not available in the Studio stdin runtime"
+diff --git a/platform/src/os/linux/x11/mod.rs b/platform/src/os/linux/x11/mod.rs
+index 73e8423774a3d847fcc403e243ca9f348c5de831..d805ccfb8842c2b0ff6917db0c473eec1289af9c 100644
+--- a/platform/src/os/linux/x11/mod.rs
++++ b/platform/src/os/linux/x11/mod.rs
+@@ -6,3 +6,4 @@
+ pub mod xlib_app;
+ pub mod xlib_event;
+ pub mod xlib_window;
++mod clipboard_read;
+diff --git a/platform/src/os/linux/x11/x11_sys.rs b/platform/src/os/linux/x11/x11_sys.rs
+index 1d0effd2918a42dfe2014b37488fa2fa531a98a7..42c9b96f3dd624e39022ce56d5618eea1fab76a7 100644
+--- a/platform/src/os/linux/x11/x11_sys.rs
++++ b/platform/src/os/linux/x11/x11_sys.rs
+@@ -491,6 +491,18 @@ pub fn Xutf8SetWMProperties(
+ 
+     pub fn XDestroyWindow(arg1: *mut Display, arg2: Window) -> c_int;
+ 
++    pub fn XCreateSimpleWindow(
++        display: *mut Display,
++        parent: Window,
++        x: c_int,
++        y: c_int,
++        width: c_uint,
++        height: c_uint,
++        border_width: c_uint,
++        border: c_ulong,
++        background: c_ulong,
++    ) -> Window;
++
+     pub fn XIconifyWindow(arg1: *mut Display, arg2: Window, arg3: c_int) -> c_int;
+ 
+     pub fn XGetWindowAttributes(
+diff --git a/platform/src/os/linux/x11/xlib_app.rs b/platform/src/os/linux/x11/xlib_app.rs
+index 8bd43f179b30ca40279e4b7d7b3a4387c66bbe07..2201b897038defe4d3cb5675c20e8150aef13fe9 100644
+--- a/platform/src/os/linux/x11/xlib_app.rs
++++ b/platform/src/os/linux/x11/xlib_app.rs
+@@ -477,6 +477,7 @@ pub struct XlibApp {
+     pub xim: x11_sys::XIM,
+     pub xim_font_set: x11_sys::XFontSet,
+     pub clipboard: String,
++    pub(super) clipboard_read: Option<super::clipboard_read::PendingClipboardRead>,
+     pub primary_selection: String,
+     pub display_fd: c_int,
+     //pub signal_fds: [c_int; 2],
+@@ -564,6 +565,7 @@ pub fn new(event_callback: Box<dyn FnMut(&mut XlibApp, XlibEvent) -> EventFlow>)
+                 display_fd,
+                 //signal_fds,
+                 clipboard: String::new(),
++                clipboard_read: None,
+                 primary_selection: String::new(),
+                 last_click_time: 0.0,
+                 last_click_pos: (0, 0),
+@@ -614,6 +616,7 @@ unsafe fn coalesce_motion_notify(&mut self, mut motion_event: x11_sys::XEvent) -
+     }
+ 
+     pub unsafe fn event_loop_poll(&mut self) {
++        self.poll_clipboard_read_timeout();
+         // Bound X event draining so large key bursts cannot starve redraws.
+         let mut processed_events = 0;
+         while self.display != ptr::null_mut()
+@@ -637,6 +640,17 @@ pub unsafe fn event_loop_poll(&mut self) {
+             match event.type_ as u32 {
+                 x11_sys::SelectionNotify => {
+                     let selection = event.xselection;
++                    if self.handle_clipboard_read_notify(&selection) {
++                        continue;
++                    }
++                    // Failed/retired request-scoped reads must never fall
++                    // through to the legacy focus-directed keyboard paste.
++                    if selection.property == 0
++                        || (!self.window_map.contains_key(&selection.requestor)
++                            && selection.property != self.dnd.atoms.selection)
++                    {
++                        continue;
++                    }
+                     if selection.property == self.dnd.atoms.selection {
+                         self.dnd.handle_selection_event(&selection);
+                     } else {
+@@ -1345,6 +1359,7 @@ pub fn do_callback(&mut self, event: XlibEvent) {
+     }
+ 
+     pub fn terminate_event_loop(&mut self) {
++        self.cancel_clipboard_read();
+         self.event_loop_running = false;
+         if !self.xim.is_null() {
+             unsafe { x11_sys::XCloseIM(self.xim) };
+@@ -1670,6 +1685,7 @@ pub unsafe fn set_primary_selection(&mut self, text: &str, window_id: c_ulong, t
+ 
+ pub struct XlibAtoms {
+     pub clipboard: x11_sys::Atom,
++    pub clipboard_read: x11_sys::Atom,
+     pub primary: x11_sys::Atom,
+     pub net_wm_moveresize: x11_sys::Atom,
+     pub net_wm_icon: x11_sys::Atom,
+@@ -1698,6 +1714,7 @@ fn new(display: *mut x11_sys::Display) -> Self {
+         unsafe {
+             Self {
+                 clipboard: x11_sys::XInternAtom(display, "CLIPBOARD\0".as_ptr() as *const _, 0),
++                clipboard_read: x11_sys::XInternAtom(display, "MAKEPAD_CLIPBOARD_READ\0".as_ptr() as *const _, 0),
+                 primary: x11_sys::XInternAtom(display, "PRIMARY\0".as_ptr() as *const _, 0),
+                 net_wm_moveresize: x11_sys::XInternAtom(
+                     display,

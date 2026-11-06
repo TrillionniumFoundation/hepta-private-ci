@@ -23,6 +23,7 @@ Rows without either option retain the original exact-symbol behavior.
 from __future__ import annotations
 
 import argparse
+import importlib
 import json
 import os
 import re
@@ -37,11 +38,10 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "CALLERS.toml"
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from hepta_typed_callers import (
-    UnresolvedTypedReceiver,
-    authority_fields,
-    has_authority_call,
-)
+typed_callers = importlib.import_module("hepta_typed_callers")
+UnresolvedTypedReceiver = typed_callers.UnresolvedTypedReceiver
+authority_fields = typed_callers.authority_fields
+has_authority_call = typed_callers.has_authority_call
 
 RAW_STRING_START = re.compile(r'r(#{0,255})"')
 
@@ -558,6 +558,86 @@ def _verify_boundary(
     }
 
 
+def _verify_required_order(row: dict[str, Any], code: str, relative: str) -> None:
+    sequences = row.get("required_order", [])
+    if not isinstance(sequences, list) or any(
+        not isinstance(sequence, list)
+        or len(sequence) < 2
+        or any(not isinstance(marker, str) or not marker for marker in sequence)
+        for sequence in sequences
+    ):
+        raise VerificationFailure(
+            f"{relative}: required_order must contain marker sequences"
+        )
+    for sequence in sequences:
+        offset = 0
+        for marker in sequence:
+            found = code.find(marker, offset)
+            if found < 0:
+                raise VerificationFailure(
+                    f"{relative}: required code order missing: {sequence!r}"
+                )
+            offset = found + len(marker)
+
+
+def _verify_function_order(row: dict[str, Any], code: str, relative: str) -> None:
+    """Require call order inside one actual function, never across definitions."""
+    rows = row.get("required_function_order", [])
+    if not isinstance(rows, list):
+        raise VerificationFailure(f"{relative}: required_function_order must be a list")
+    for item in rows:
+        if not isinstance(item, dict):
+            raise VerificationFailure(f"{relative}: function order must be a table")
+        function = item.get("function")
+        sequence = item.get("sequence")
+        if not isinstance(function, str) or not re.fullmatch(
+            r"fn [A-Za-z_]\w*\(", function
+        ):
+            raise VerificationFailure(f"{relative}: exact function marker required")
+        if code.count(function) != 1:
+            raise VerificationFailure(
+                f"{relative}: unique code function required: {function}"
+            )
+        start = code.index(function)
+        end = _rust_item_end(code, start)
+        if end is None or code[end] != "}":
+            raise VerificationFailure(f"{relative}: function body required: {function}")
+        body = code[start : end + 1]
+        cursor = len(function)
+        while nested := re.search(r"\bfn\s+(?:r#)?\w+", body[cursor:]):
+            nested_start = cursor + nested.start()
+            nested_end = _rust_item_end(body, nested_start)
+            if nested_end is None:
+                raise VerificationFailure(
+                    f"{relative}: unresolved nested function: {function}"
+                )
+            body = (
+                body[:nested_start]
+                + "".join(
+                    "\n" if char == "\n" else " "
+                    for char in body[nested_start : nested_end + 1]
+                )
+                + body[nested_end + 1 :]
+            )
+            cursor = nested_end + 1
+        for marker in _string_tuple(item, "top_level") if "top_level" in item else ():
+            matches = list(re.finditer(re.escape(marker), body))
+            if len(matches) != 1:
+                raise VerificationFailure(
+                    f"{relative}: unique top-level code marker required: {marker}"
+                )
+            prefix = body[: matches[0].start()]
+            if prefix.count("{") - prefix.count("}") != 1:
+                raise VerificationFailure(
+                    f"{relative}: top-level function code required: {marker}"
+                )
+        _verify_required_order(
+            {"required_order": [sequence]},
+            body,
+            relative + ":" + function,
+        )
+
+
 def _verify_protected_files(root: Path, data: dict[str, Any]) -> list[str]:
     rows = data.get("protected_file")
     if not isinstance(rows, list) or not rows:
@@ -577,6 +657,8 @@ def _verify_protected_files(root: Path, data: dict[str, Any]) -> list[str]:
                     f"{relative}: required marker missing: {marker!r}"
                 )
         code = _strip_cfg_test_items(_strip_rust_non_code(text))
+        _verify_required_order(row, code, relative)
+        _verify_function_order(row, code, relative)
         for marker in _string_tuple(row, "forbidden"):
             pattern = re.escape(marker)
             if marker and (marker[0].isalnum() or marker[0] == "_"):

@@ -1,6 +1,7 @@
 use std::fs;
 use std::time::Duration;
 
+use crate::local::test_support::private_home;
 use chrono::Utc;
 use codex_app_server_protocol::CodexErrorInfo;
 use codex_protocol::ThreadId;
@@ -897,7 +898,7 @@ async fn lineage_reads_nested_forks() {
 }
 
 async fn store_with_mode(history_mode: ThreadHistoryMode) -> (TempDir, LocalThreadStore, ThreadId) {
-    let home = TempDir::new().expect("temp dir");
+    let home = private_home().expect("temp dir");
     let config = test_config(home.path());
     let thread_id = ThreadId::default();
     let rollout_path = rollout_path(home.path(), thread_id);

@@ -13688,3 +13688,211 @@ async fn session_start_hooks_require_project_trust_without_config_toml() -> std:
 
     Ok(())
 }
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn admission_fence_waiters_observe_cleanup_without_retiring_its_owner() {
+    struct BlockingThreadIdle {
+        entered: Arc<Notify>,
+        release: Arc<Notify>,
+    }
+
+    impl codex_extension_api::ThreadLifecycleContributor<crate::config::Config> for BlockingThreadIdle {
+        fn on_thread_idle<'a>(
+            &'a self,
+            _input: codex_extension_api::ThreadIdleInput<'a>,
+        ) -> codex_extension_api::ExtensionFuture<'a, ()> {
+            Box::pin(async move {
+                self.entered.notify_one();
+                self.release.notified().await;
+            })
+        }
+    }
+
+    let (mut session, turn_context) = make_session_and_context().await;
+    let entered = Arc::new(Notify::new());
+    let release = Arc::new(Notify::new());
+    let mut builder = codex_extension_api::ExtensionRegistryBuilder::<crate::config::Config>::new();
+    builder.thread_lifecycle_contributor(Arc::new(BlockingThreadIdle {
+        entered: Arc::clone(&entered),
+        release: Arc::clone(&release),
+    }));
+    session.services.extensions = Arc::new(builder.build());
+    let session = Arc::new(session);
+    session
+        .spawn_task(Arc::new(turn_context), Vec::new(), CompletingTask)
+        .await
+        .expect("completing task should start");
+
+    timeout(StdDuration::from_secs(2), entered.notified())
+        .await
+        .expect("finish should reach its fenced idle callback");
+    assert!(session.has_pending_task_terminalization());
+    let cancelled_waiter = session
+        .pending_admission_fence_completion()
+        .expect("terminalizer completion must be observable");
+    drop(cancelled_waiter);
+    assert!(session.has_pending_task_terminalization());
+
+    let mut waiter = session
+        .pending_admission_fence_completion()
+        .expect("dropping an observer must not retire the fence");
+    assert!(
+        timeout(StdDuration::from_millis(100), waiter.as_mut())
+            .await
+            .is_err(),
+        "an observer must not complete while idle lifecycle is still blocked"
+    );
+    assert!(session.has_pending_task_terminalization());
+
+    release.notify_one();
+    timeout(StdDuration::from_secs(2), waiter)
+        .await
+        .expect("the exact terminalizer should release its observers after cleanup");
+    assert!(!session.has_pending_task_terminalization());
+    assert!(session.pending_admission_fence_completion().is_none());
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn normal_completion_observer_ignores_retired_and_unrelated_turns() {
+    struct FinishIdleGate {
+        entered: Arc<Notify>,
+        release: Arc<Notify>,
+    }
+
+    impl codex_extension_api::ThreadLifecycleContributor<crate::config::Config> for FinishIdleGate {
+        fn on_thread_idle<'a>(
+            &'a self,
+            _input: codex_extension_api::ThreadIdleInput<'a>,
+        ) -> codex_extension_api::ExtensionFuture<'a, ()> {
+            Box::pin(async move {
+                self.entered.notify_one();
+                self.release.notified().await;
+            })
+        }
+    }
+
+    let (mut session, turn_context, rx) = make_session_and_context_with_rx().await;
+    let entered = Arc::new(Notify::new());
+    let release = Arc::new(Notify::new());
+    let mut builder = codex_extension_api::ExtensionRegistryBuilder::<crate::config::Config>::new();
+    builder.thread_lifecycle_contributor(Arc::new(FinishIdleGate {
+        entered: Arc::clone(&entered),
+        release: Arc::clone(&release),
+    }));
+    Arc::get_mut(&mut session)
+        .expect("unique session before starting the task")
+        .services
+        .extensions = Arc::new(builder.build());
+    let completed_turn_id = turn_context.sub_id.clone();
+    session
+        .spawn_task(turn_context, Vec::new(), CompletingTask)
+        .await
+        .expect("first turn should start");
+    timeout(StdDuration::from_secs(2), entered.notified())
+        .await
+        .expect("normal finish should reach its fenced idle callback");
+    let observed_turn_id = timeout(StdDuration::from_secs(2), async {
+        loop {
+            if let EventMsg::TurnComplete(event) = rx.recv().await.expect("event channel open").msg
+            {
+                break event.turn_id;
+            }
+        }
+    })
+    .await
+    .expect("normal Core completion should precede owner retirement");
+    assert_eq!(observed_turn_id, completed_turn_id);
+    assert!(
+        session
+            .pending_normal_turn_finish_completion("unrelated-turn")
+            .is_none()
+    );
+    let cancelled = session
+        .pending_normal_turn_finish_completion(&observed_turn_id)
+        .expect("matching normal finish is still pending");
+    drop(cancelled);
+    assert!(session.has_pending_task_terminalization());
+    let mut completion = session
+        .pending_normal_turn_finish_completion(&observed_turn_id)
+        .expect("discarding an observer cannot retire the owner");
+    assert!(
+        timeout(StdDuration::from_millis(100), completion.as_mut())
+            .await
+            .is_err()
+    );
+    release.notify_one();
+    timeout(StdDuration::from_secs(2), completion)
+        .await
+        .expect("only the owner releases its observer");
+    assert!(
+        session
+            .pending_normal_turn_finish_completion(&observed_turn_id)
+            .is_none()
+    );
+
+    let later_context = session
+        .new_default_turn_with_sub_id("later-normal-turn".to_string())
+        .await;
+    session
+        .spawn_task(later_context, Vec::new(), CompletingTask)
+        .await
+        .expect("later turn should start after the first owner retires");
+    timeout(StdDuration::from_secs(2), entered.notified())
+        .await
+        .expect("later owner should remain independently fenced");
+    // Simulate a listener that forwards the old completion after the next
+    // turn has already reached its own terminalizer. It must not wait on it.
+    assert!(session.has_pending_task_terminalization());
+    assert!(
+        session
+            .pending_normal_turn_finish_completion(&observed_turn_id)
+            .is_none()
+    );
+    let later_completion = session
+        .pending_normal_turn_finish_completion("later-normal-turn")
+        .expect("the later completion observes its own finish owner");
+    release.notify_one();
+    timeout(StdDuration::from_secs(2), later_completion)
+        .await
+        .expect("later owner should finish independently");
+}
+
+#[tokio::test]
+async fn normal_completion_observer_excludes_start_abort_and_suspend_owners() {
+    let (session, _turn_context) = make_session_and_context().await;
+    let start_completion = crate::state::StartTransitionCompletion::new();
+    session
+        .pending_start_transition_completions
+        .lock()
+        .expect("start registry")
+        .push((
+            Arc::new(()),
+            Arc::clone(&start_completion),
+            Arc::new(std::sync::Mutex::new(None)),
+        ));
+    for kind in [
+        crate::state::TaskTerminalizationKind::Abort,
+        crate::state::TaskTerminalizationKind::Suspend,
+    ] {
+        session
+            .pending_task_terminalization_completions
+            .lock()
+            .expect("terminalizer registry")
+            .push((
+                Arc::new(()),
+                crate::state::StartTransitionCompletion::new(),
+                kind,
+                None,
+                None,
+                None,
+                "observed-normal-turn".to_string(),
+            ));
+    }
+    assert!(session.pending_admission_fence_completion().is_some());
+    assert!(
+        session
+            .pending_normal_turn_finish_completion("observed-normal-turn")
+            .is_none(),
+        "normal completion must never wait on a start, explicit abort or suspension owner"
+    );
+}

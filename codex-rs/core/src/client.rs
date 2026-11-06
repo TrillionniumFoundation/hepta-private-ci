@@ -164,7 +164,6 @@ use codex_model_provider::create_model_provider;
 use codex_model_provider_info::DEFAULT_WEBSOCKET_CONNECT_TIMEOUT_MS;
 use codex_model_provider_info::ModelProviderInfo;
 use codex_model_provider_info::WireApi;
-use codex_model_provider_info::provider_accepts_internal_chat_message_metadata;
 use codex_protocol::error::CodexErr;
 use codex_protocol::error::CodexErrorDetails;
 use codex_protocol::error::Result;
@@ -390,13 +389,28 @@ impl WebsocketConnectionIdentity {
         beta_features_header: Option<&str>,
         responses_metadata: &CodexResponsesMetadata,
     ) -> std::result::Result<Self, ApiError> {
-        let compatibility_projection_json =
-            serde_json::to_vec(&responses_metadata.turn_recovery_compatibility_projection())
-                .map_err(|error| {
-                    ApiError::Stream(format!(
-                        "failed to bind websocket compatibility identity: {error}"
-                    ))
-                })?;
+        // Model flags, Git enrichment and tool inventory accompany each request.
+        // Normalize only this connection-comparison copy: the physical request
+        // and cold-recovery fingerprint retain every original metadata field.
+        let mut connection_metadata = responses_metadata.clone();
+        if matches!(
+            connection_metadata.request_kind,
+            Some(CodexResponsesRequestKind::Compaction(_))
+        ) {
+            connection_metadata.request_kind = Some(CodexResponsesRequestKind::Turn);
+        }
+        connection_metadata.node_repl_auto_review_required = None;
+        connection_metadata.node_repl_disabled = None;
+        connection_metadata.workspaces.clear();
+        connection_metadata.tool_namespaces_info = None;
+        let compatibility_projection_json = serde_json::to_vec(
+            &connection_metadata.websocket_connection_compatibility_projection(),
+        )
+        .map_err(|error| {
+            ApiError::Stream(format!(
+                "failed to bind websocket compatibility identity: {error}"
+            ))
+        })?;
         Ok(Self {
             provider_name: provider.name.clone(),
             base_url: provider.base_url.clone(),
@@ -1223,7 +1237,12 @@ impl ModelClient {
                 }
             }
         }
-        if !provider_accepts_internal_chat_message_metadata(&api_provider.base_url) {
+        if !self
+            .state
+            .provider
+            .info()
+            .accepts_internal_chat_message_metadata_for_request(&api_provider.base_url)
+        {
             for item in &mut input {
                 item.clear_internal_chat_message_metadata_passthrough();
             }
@@ -1279,8 +1298,11 @@ impl ModelClient {
         input: &mut [ResponseItem],
         api_provider: &ApiProvider,
     ) {
-        let strip_internal_metadata =
-            !provider_accepts_internal_chat_message_metadata(&api_provider.base_url);
+        let strip_internal_metadata = !self
+            .state
+            .provider
+            .info()
+            .accepts_internal_chat_message_metadata_for_request(&api_provider.base_url);
         for item in input {
             if item.id().is_some_and(|id| !id.is_prefixed()) {
                 item.set_id(/*new_id*/ None);

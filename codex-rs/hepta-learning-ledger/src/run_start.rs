@@ -21,6 +21,10 @@ use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
+#[path = "run_start_publication.rs"]
+mod publication;
+pub use publication::RunStartPublication;
+
 const MAGIC: &[u8; 8] = b"HEPTRS01";
 const HEADER: usize = 72;
 const FRAME_OVERHEAD: usize = 112;

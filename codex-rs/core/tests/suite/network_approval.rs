@@ -48,6 +48,7 @@ use core_test_support::responses::ev_assistant_message;
 use core_test_support::responses::ev_completed;
 use core_test_support::responses::ev_function_call;
 use core_test_support::responses::ev_response_created;
+use core_test_support::responses::mount_response_match;
 use core_test_support::responses::mount_response_once_match;
 use core_test_support::responses::mount_sse_once;
 use core_test_support::responses::mount_sse_once_match;
@@ -72,6 +73,10 @@ use serde_json::json;
 use std::fs;
 use std::path::PathBuf;
 use std::sync::Arc;
+use std::sync::Mutex;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::AtomicUsize;
+use std::sync::atomic::Ordering;
 use std::time::Duration;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
@@ -249,52 +254,105 @@ async fn strict_auto_review_routes_network_approval_to_guardian_when_user_review
         }),
         ..Default::default()
     };
-    let responses = mount_sse_sequence(
+    // Command review, network review, and parent polling can interleave once
+    // exec_command yields a live session. Match the owner/action, not arrival order.
+    mount_sse_once_match(
         &server,
-        vec![
-            sse(vec![
-                ev_response_created("resp-strict-network-permissions"),
-                ev_function_call(
-                    permission_call_id,
-                    "request_permissions",
-                    &serde_json::to_string(&json!({
-                        "reason": "Require automatic review for the rest of this turn",
-                        "permissions": requested_permissions,
-                    }))?,
-                ),
-                ev_completed("resp-strict-network-permissions"),
-            ]),
-            sse(vec![
-                ev_response_created("resp-strict-network-command"),
-                ev_function_call(
-                    network_call_id,
-                    "exec_command",
-                    &serde_json::to_string(&network_fetch_args(LOCAL_ENVIRONMENT_ID))?,
-                ),
-                ev_completed("resp-strict-network-command"),
-            ]),
-            sse(vec![
-                ev_response_created("resp-strict-command-guardian"),
-                ev_assistant_message(
-                    "msg-strict-command-guardian",
-                    r#"{"risk_level":"low","user_authorization":"high","outcome":"allow","rationale":"The strict-review command is safe."}"#,
-                ),
-                ev_completed("resp-strict-command-guardian"),
-            ]),
-            sse(vec![
-                ev_response_created("resp-strict-network-guardian"),
-                ev_assistant_message(
-                    "msg-strict-network-guardian",
-                    r#"{"risk_level":"low","user_authorization":"high","outcome":"allow","rationale":"The strict-review network request is safe."}"#,
-                ),
-                ev_completed("resp-strict-network-guardian"),
-            ]),
-            sse(vec![
-                ev_response_created("resp-strict-network-complete"),
-                ev_assistant_message("msg-strict-network-complete", "reviewed"),
-                ev_completed("resp-strict-network-complete"),
-            ]),
-        ],
+        move |request: &wiremock::Request| {
+            !is_guardian_request(request)
+                && request_function_output(request, permission_call_id).is_none()
+        },
+        sse(vec![
+            ev_response_created("resp-strict-network-permissions"),
+            ev_function_call(
+                permission_call_id,
+                "request_permissions",
+                &serde_json::to_string(&json!({
+                    "reason": "Require automatic review for the rest of this turn",
+                    "permissions": requested_permissions,
+                }))?,
+            ),
+            ev_completed("resp-strict-network-permissions"),
+        ]),
+    )
+    .await;
+    mount_sse_once_match(
+        &server,
+        move |request: &wiremock::Request| {
+            !is_guardian_request(request)
+                && request_function_output(request, permission_call_id).is_some()
+                && request_function_output(request, network_call_id).is_none()
+        },
+        sse(vec![
+            ev_response_created("resp-strict-network-command"),
+            ev_function_call(
+                network_call_id,
+                "exec_command",
+                &serde_json::to_string(&network_fetch_args(LOCAL_ENVIRONMENT_ID))?,
+            ),
+            ev_completed("resp-strict-network-command"),
+        ]),
+    )
+    .await;
+    let command = network_fetch_args(LOCAL_ENVIRONMENT_ID)["cmd"]
+        .as_str()
+        .context("expected network command")?
+        .to_owned();
+    let expected_command = get_shell(ShellType::Sh)
+        .context("expected local sh")?
+        .derive_exec_args(&command, /*use_login_shell*/ false);
+    let expected_command_action = json!({
+        "tool": "exec_command",
+        "command": expected_command,
+        "cwd": test.config.cwd,
+        "tty": false,
+        "sandbox_permissions": "with_additional_permissions",
+        "additional_permissions": requested_permissions,
+    });
+    let matched_command_action = expected_command_action.clone();
+    let command_guardian = mount_sse_once_match(
+        &server,
+        move |request: &wiremock::Request| {
+            request_guardian_review_action(request).as_ref() == Some(&matched_command_action)
+        },
+        sse(vec![
+            ev_response_created("resp-strict-command-guardian"),
+            ev_assistant_message(
+                "msg-strict-command-guardian",
+                r#"{"risk_level":"low","user_authorization":"high","outcome":"allow","rationale":"The strict-review command is safe."}"#,
+            ),
+            ev_completed("resp-strict-command-guardian"),
+        ]),
+    )
+    .await;
+    let responses = mount_sse_once_match(
+        &server,
+        move |request: &wiremock::Request| {
+            request_guardian_review_action(request).is_some_and(|action| {
+                action.get("tool").and_then(Value::as_str) == Some("network_access")
+                    && action.pointer("/trigger/callId").and_then(Value::as_str)
+                        == Some(network_call_id)
+            })
+        },
+        sse(vec![
+            ev_response_created("resp-strict-network-guardian"),
+            ev_assistant_message(
+                "msg-strict-network-guardian",
+                r#"{"risk_level":"low","user_authorization":"high","outcome":"allow","rationale":"The strict-review network request is safe."}"#,
+            ),
+            ev_completed("resp-strict-network-guardian"),
+        ]),
+    )
+    .await;
+    let completion = mount_network_command_completion(
+        &server,
+        "resp-strict-network",
+        network_call_id,
+        sse(vec![
+            ev_response_created("resp-strict-network-complete"),
+            ev_assistant_message("msg-strict-network-complete", "reviewed"),
+            ev_completed("resp-strict-network-complete"),
+        ]),
     )
     .await;
 
@@ -326,6 +384,19 @@ async fn strict_auto_review_routes_network_approval_to_guardian_when_user_review
         .await?;
     wait_for_completion_without_network_prompt(&test).await;
 
+    completed_network_command_output(&completion, network_call_id)
+        .context("expected the reviewed network command to finish")?;
+    assert_eq!(
+        command_guardian
+            .requests()
+            .iter()
+            .filter(|request| {
+                guardian_review_action(&request.body_json()).as_ref()
+                    == Some(&expected_command_action)
+            })
+            .count(),
+        1
+    );
     let actions = guardian_network_actions(&responses)?;
     assert_eq!(actions.len(), 1);
     assert_eq!(
@@ -1277,7 +1348,7 @@ async fn failed_network_policy_amendment_denies_request_and_does_not_approve_hos
     let server = start_mock_server().await;
     let test = managed_network_unified_exec_test(&server).await?;
     let environments = vec![local(test.config.cwd.clone())];
-    let first_responses = mount_exec_network_turn(
+    let first_responses = mount_exec_network_turn_until_complete(
         &server,
         "resp-network-failed-amendment-1",
         "network-failed-amendment-1",
@@ -1307,13 +1378,11 @@ async fn failed_network_policy_amendment_denies_request_and_does_not_approve_hos
         .await?;
     wait_for_turn_complete(&test).await;
 
-    let denied_output = first_responses
-        .requests()
-        .iter()
-        .find_map(|request| request.function_call_output_text("network-failed-amendment-1"))
-        .context("expected the failed policy amendment to reject the network request")?;
+    let denied_output =
+        completed_network_command_output(&first_responses, "network-failed-amendment-1")
+            .context("expected the failed policy amendment to reject the network request")?;
     assert!(denied_output.contains("blocked by policy"));
-    mount_exec_network_turn(
+    mount_exec_network_turn_until_complete(
         &server,
         "resp-network-failed-amendment-2",
         "network-failed-amendment-2",
@@ -2323,6 +2392,188 @@ async fn mount_exec_network_turn(
         ]),
     ];
     Ok(mount_sse_sequence(server, responses).await)
+}
+
+async fn mount_exec_network_turn_until_complete(
+    server: &wiremock::MockServer,
+    response_prefix: &str,
+    call_id: &str,
+    args: Value,
+) -> Result<ResponseMock> {
+    let initial_call_id = call_id.to_owned();
+    mount_sse_once_match(
+        server,
+        move |request: &wiremock::Request| {
+            !is_guardian_request(request)
+                && request_function_output(request, &initial_call_id).is_none()
+        },
+        sse(vec![
+            ev_response_created(&format!("{response_prefix}-1")),
+            ev_function_call(call_id, "exec_command", &serde_json::to_string(&args)?),
+            ev_completed(&format!("{response_prefix}-1")),
+        ]),
+    )
+    .await;
+    Ok(mount_network_command_completion(
+        server,
+        response_prefix,
+        call_id,
+        sse(vec![
+            ev_response_created(&format!("{response_prefix}-2")),
+            ev_assistant_message(&format!("{response_prefix}-msg"), "done"),
+            ev_completed(&format!("{response_prefix}-2")),
+        ]),
+    )
+    .await)
+}
+
+async fn mount_network_command_completion(
+    server: &wiremock::MockServer,
+    response_prefix: &str,
+    call_id: &str,
+    completed_response: String,
+) -> ResponseMock {
+    let active = Arc::new(AtomicBool::new(true));
+    let matcher_active = Arc::clone(&active);
+    let matcher_call_id = call_id.to_owned();
+    let call_id = call_id.to_owned();
+    let response_prefix = response_prefix.to_owned();
+    let polls = AtomicUsize::new(0);
+    let process_session = Mutex::new(None);
+    mount_response_match(
+        server,
+        move |request: &wiremock::Request| {
+            matcher_active.load(Ordering::SeqCst)
+                && !is_guardian_request(request)
+                && request_network_command_output(request, &matcher_call_id).is_some()
+        },
+        move |request: &wiremock::Request| {
+            let output = request_network_command_output(request, &call_id)
+                .expect("matched a network command result");
+            if let Some(session_id) = network_command_session_id(&output) {
+                let mut observed = process_session.lock().expect("network process session lock");
+                if let Some(previous) = *observed {
+                    assert_eq!(session_id, previous, "poll must retain the original process");
+                } else {
+                    *observed = Some(session_id);
+                }
+                let poll = polls.fetch_add(1, Ordering::SeqCst);
+                sse_response(sse(vec![
+                    ev_response_created(&format!("{response_prefix}-poll-{poll}")),
+                    ev_function_call(
+                        &format!("{call_id}-poll-{poll}"),
+                        "write_stdin",
+                        &json!({
+                            "session_id": session_id,
+                            "chars": "",
+                            "yield_time_ms": 1_000,
+                        })
+                        .to_string(),
+                    ),
+                    ev_completed(&format!("{response_prefix}-poll-{poll}")),
+                ]))
+            } else {
+                assert!(
+                    network_command_finished(&output),
+                    "network command returned neither a live session nor a terminal result: {output}"
+                );
+                // A completed turn must release this matcher before the next turn.
+                active.store(false, Ordering::SeqCst);
+                sse_response(completed_response.clone())
+            }
+        },
+    )
+    .await
+}
+
+fn request_function_output(request: &wiremock::Request, call_id: &str) -> Option<String> {
+    let body: Value = serde_json::from_slice(&decoded_request_body(request)?).ok()?;
+    body.get("input")?
+        .as_array()?
+        .iter()
+        .find(|item| {
+            item.get("type").and_then(Value::as_str) == Some("function_call_output")
+                && item.get("call_id").and_then(Value::as_str) == Some(call_id)
+        })?
+        .get("output")?
+        .as_str()
+        .map(str::to_owned)
+}
+
+fn network_command_output(body: &Value, call_id: &str) -> Option<String> {
+    let poll_prefix = format!("{call_id}-poll-");
+    body.get("input")?
+        .as_array()?
+        .iter()
+        .rev()
+        .find(|item| {
+            item.get("type").and_then(Value::as_str) == Some("function_call_output")
+                && item
+                    .get("call_id")
+                    .and_then(Value::as_str)
+                    .is_some_and(|id| {
+                        id == call_id
+                            || id
+                                .strip_prefix(&poll_prefix)
+                                .is_some_and(|index| index.parse::<usize>().is_ok())
+                    })
+        })?
+        .get("output")?
+        .as_str()
+        .map(str::to_owned)
+}
+
+fn request_network_command_output(request: &wiremock::Request, call_id: &str) -> Option<String> {
+    let body: Value = serde_json::from_slice(&decoded_request_body(request)?).ok()?;
+    network_command_output(&body, call_id)
+}
+
+fn network_command_session_id(output: &str) -> Option<u64> {
+    output.lines().find_map(|line| {
+        line.strip_prefix("Process running with session ID ")
+            .map(|id| id.parse().expect("valid observed process session id"))
+    })
+}
+
+fn network_command_finished(output: &str) -> bool {
+    output.lines().any(|line| {
+        line.strip_prefix("Process exited with code ")
+            .is_some_and(|code| code.parse::<i32>().is_ok())
+    }) || output.contains("blocked by policy")
+        || output.contains("rejected by user")
+}
+
+fn completed_network_command_output(responses: &ResponseMock, call_id: &str) -> Option<String> {
+    let output = network_command_output(&responses.last_request()?.body_json(), call_id)?;
+    (network_command_session_id(&output).is_none() && network_command_finished(&output))
+        .then_some(output)
+}
+
+fn request_guardian_review_action(request: &wiremock::Request) -> Option<Value> {
+    let body: Value = serde_json::from_slice(&decoded_request_body(request)?).ok()?;
+    guardian_review_action(&body)
+}
+
+fn guardian_review_action(body: &Value) -> Option<Value> {
+    if body
+        .pointer("/client_metadata/x-openai-subagent")
+        .and_then(Value::as_str)
+        != Some("guardian")
+    {
+        return None;
+    }
+    body.get("input")?
+        .as_array()?
+        .iter()
+        .rev()
+        .find(|item| item.get("role").and_then(Value::as_str) == Some("user"))?
+        .get("content")?
+        .as_array()?
+        .iter()
+        .rev()
+        .filter_map(|item| item.get("text").and_then(Value::as_str))
+        .filter_map(|text| serde_json::from_str::<Value>(text).ok())
+        .find(|action| action.get("tool").and_then(Value::as_str).is_some())
 }
 
 fn network_fetch_args(environment_id: &str) -> Value {

@@ -25,15 +25,18 @@ use codex_rmcp_client::WrappedOAuthTokenResponse;
 use codex_rmcp_client::save_oauth_tokens;
 use codex_rmcp_client::stored_oauth_credential_snapshot;
 use futures::future::BoxFuture;
-use keyring::credential::Credential;
-use keyring::credential::CredentialApi;
-use keyring::credential::CredentialBuilderApi;
-use keyring::credential::CredentialPersistence;
+use keyring_core::Credential;
+use keyring_core::CredentialPersistence;
+use keyring_core::Entry;
+use keyring_core::Error as KeyringError;
+use keyring_core::api::CredentialApi;
+use keyring_core::api::CredentialStoreApi;
 use oauth2::AccessToken;
 use oauth2::basic::BasicTokenType;
 use pretty_assertions::assert_eq;
 use rmcp::transport::auth::OAuthTokenResponse;
 use rmcp::transport::auth::VendorExtraTokenFields;
+use std::collections::HashMap;
 use tempfile::TempDir;
 use tokio::process::Command;
 
@@ -120,7 +123,7 @@ struct TestCredential {
 }
 
 impl CredentialApi for TestCredential {
-    fn set_secret(&self, secret: &[u8]) -> keyring::Result<()> {
+    fn set_secret(&self, secret: &[u8]) -> keyring_core::Result<()> {
         *self
             .state
             .secret
@@ -129,9 +132,9 @@ impl CredentialApi for TestCredential {
         Ok(())
     }
 
-    fn get_secret(&self) -> keyring::Result<Vec<u8>> {
+    fn get_secret(&self) -> keyring_core::Result<Vec<u8>> {
         if self.state.fail_reads.load(Ordering::SeqCst) {
-            return Err(keyring::Error::Invalid(
+            return Err(KeyringError::Invalid(
                 "simulated keyring read failure".to_string(),
                 "load".to_string(),
             ));
@@ -142,17 +145,25 @@ impl CredentialApi for TestCredential {
             .lock()
             .unwrap_or_else(PoisonError::into_inner)
             .clone()
-            .ok_or(keyring::Error::NoEntry)
+            .ok_or(KeyringError::NoEntry)
     }
 
-    fn delete_credential(&self) -> keyring::Result<()> {
+    fn delete_credential(&self) -> keyring_core::Result<()> {
         self.state
             .secret
             .lock()
             .unwrap_or_else(PoisonError::into_inner)
             .take()
             .map(|_| ())
-            .ok_or(keyring::Error::NoEntry)
+            .ok_or(KeyringError::NoEntry)
+    }
+
+    fn get_credential(&self) -> keyring_core::Result<Option<Arc<Credential>>> {
+        Ok(None)
+    }
+
+    fn get_specifiers(&self) -> Option<(String, String)> {
+        None
     }
 
     fn as_any(&self) -> &dyn Any {
@@ -165,16 +176,24 @@ struct TestCredentialBuilder {
     state: Arc<TestKeyringState>,
 }
 
-impl CredentialBuilderApi for TestCredentialBuilder {
+impl CredentialStoreApi for TestCredentialBuilder {
+    fn vendor(&self) -> String {
+        "hepta test keyring".to_string()
+    }
+
+    fn id(&self) -> String {
+        "hepta-test-keyring".to_string()
+    }
+
     fn build(
         &self,
-        _target: Option<&str>,
         _service: &str,
         _user: &str,
-    ) -> keyring::Result<Box<Credential>> {
-        Ok(Box::new(TestCredential {
+        _modifiers: Option<&HashMap<&str, &str>>,
+    ) -> keyring_core::Result<Entry> {
+        Ok(Entry::new_with_credential(Arc::new(TestCredential {
             state: Arc::clone(&self.state),
-        }))
+        })))
     }
 
     fn as_any(&self) -> &dyn Any {
@@ -255,7 +274,7 @@ async fn auto_store_remains_pinned_across_session_recovery() -> anyhow::Result<(
 #[ignore = "spawned by auto_store_remains_pinned_across_session_recovery"]
 async fn auto_store_remains_pinned_across_session_recovery_child() -> anyhow::Result<()> {
     let state = Arc::new(TestKeyringState::default());
-    keyring::set_default_credential_builder(Box::new(TestCredentialBuilder {
+    keyring_core::set_default_store(Arc::new(TestCredentialBuilder {
         state: Arc::clone(&state),
     }));
 

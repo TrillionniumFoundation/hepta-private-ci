@@ -46,6 +46,10 @@ pub struct WindowsSandboxProvisioningSettings {
     pub allow_local_binding: bool,
 }
 
+/// Existing broker termination grace, shared with its native exit observer.
+#[cfg(target_os = "windows")]
+pub const RUNNER_TERMINATION_WAIT_MS: u32 = 5_000;
+
 #[cfg(target_os = "windows")]
 mod acl;
 #[cfg(target_os = "windows")]
@@ -111,6 +115,9 @@ mod setup;
 
 #[cfg(target_os = "windows")]
 mod setup_error;
+
+#[cfg(target_os = "windows")]
+mod setup_process;
 
 #[cfg(target_os = "windows")]
 mod spawn_prep;
@@ -298,6 +305,9 @@ pub use setup_error::sanitize_setup_metric_tag_value;
 pub use setup_error::setup_error_path;
 #[cfg(target_os = "windows")]
 pub use setup_error::write_setup_error_report;
+#[cfg(target_os = "windows")]
+#[doc(hidden)]
+pub use setup_process::spawn_setup_helper;
 #[cfg(target_os = "windows")]
 pub use stdio_bridge::forward_sandbox_session_stdio;
 #[cfg(target_os = "windows")]

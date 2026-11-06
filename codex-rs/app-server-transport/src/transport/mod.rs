@@ -24,6 +24,9 @@ use tracing::warn;
 /// plenty for an interactive CLI.
 pub const CHANNEL_CAPACITY: usize = 128;
 
+#[cfg(all(test, target_os = "linux"))]
+#[path = "inherited_socket_tests.rs"]
+mod inherited_socket_tests;
 mod remote_control;
 mod stdio;
 mod unix_socket;
@@ -43,9 +46,11 @@ pub use remote_control::start_remote_control;
 pub use remote_control::take_remote_control_disabled_env;
 pub use stdio::start_stdio_connection;
 pub use unix_socket::AppServerStartupLock;
+pub use unix_socket::InheritedControlSocket;
 pub use unix_socket::acquire_app_server_startup_lock;
 pub use unix_socket::prepare_control_socket_path;
 pub use unix_socket::start_control_socket_acceptor;
+pub use unix_socket::start_inherited_control_socket_acceptor;
 pub use websocket::start_websocket_acceptor;
 
 const INTERNAL_ERROR_CODE: i64 = -32603;

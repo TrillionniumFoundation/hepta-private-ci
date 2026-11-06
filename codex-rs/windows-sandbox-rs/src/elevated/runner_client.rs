@@ -21,6 +21,7 @@ use std::ffi::c_void;
 use std::fs::File;
 use std::os::windows::io::AsRawHandle;
 use std::os::windows::io::FromRawHandle;
+use std::os::windows::io::OwnedHandle;
 use std::path::Path;
 use std::ptr;
 use std::sync::mpsc;
@@ -51,6 +52,10 @@ const RUNNER_PIPE_CONNECT_TIMEOUT: Duration = Duration::from_secs(15);
 const RUNNER_SPAWN_READY_POLL_INTERVAL: Duration = Duration::from_millis(5);
 const RUNNER_ERROR_MODE_FLAGS: u32 = 0x0001 | 0x0002;
 const WAIT_OBJECT_0: u32 = 0;
+
+#[path = "runner_process.rs"]
+mod process;
+pub(crate) use process::RunnerProcessOwner;
 
 #[derive(Debug)]
 struct RunnerLogonError {
@@ -95,6 +100,7 @@ impl std::error::Error for RunnerStartupError {}
 pub(crate) struct RunnerTransport {
     pipe_write: File,
     pipe_read: File,
+    process: RunnerProcessOwner,
 }
 
 fn is_refreshable_windows_error(code: u32) -> bool {
@@ -147,6 +153,7 @@ pub(crate) fn retry_runner_spawn_once<T>(
 
 impl RunnerTransport {
     pub(crate) fn send_spawn_request(&mut self, request: SpawnRequest) -> Result<()> {
+        self.process.arm_timeout(request.timeout_ms)?;
         let spawn_request = FramedMessage {
             version: IPC_PROTOCOL_VERSION,
             message: Message::SpawnRequest {
@@ -169,8 +176,8 @@ impl RunnerTransport {
         }
     }
 
-    pub(crate) fn into_files(self) -> (File, File) {
-        (self.pipe_write, self.pipe_read)
+    pub(crate) fn into_parts(self) -> (File, File, RunnerProcessOwner) {
+        (self.pipe_write, self.pipe_read, self.process)
     }
 }
 
@@ -408,6 +415,9 @@ pub(crate) fn spawn_runner_transport(
         // From here on, the `RunnerTransport` owns closing the pipes on every success/error path.
         pipe_write: unsafe { File::from_raw_handle(h_pipe_in as _) },
         pipe_read: unsafe { File::from_raw_handle(h_pipe_out as _) },
+        // Retain the exact process returned by CreateProcessWithLogonW through
+        // terminal observation; an IPC Exit frame is sent before process exit.
+        process: RunnerProcessOwner::new(unsafe { OwnedHandle::from_raw_handle(pi.hProcess as _) }),
     };
     let startup_result = (|| -> Result<()> {
         // Keep the runner process HANDLE alive until the *entire* startup handshake finishes.
@@ -418,23 +428,11 @@ pub(crate) fn spawn_runner_transport(
         Ok(())
     })();
     if let Err(err) = startup_result {
-        unsafe {
-            if pi.hProcess != 0 {
-                let _ = TerminateProcess(pi.hProcess, 1);
-                CloseHandle(pi.hProcess);
-            }
-        }
+        let err = transport.process.reconcile_failure(err);
+        // The transport owns both pipes and the exact native process. A failed
+        // reconciliation remains unknown; Drop does not retry the abort.
         drop(transport);
         return Err(err);
-    }
-
-    unsafe {
-        if pi.hProcess != 0 {
-            // The runner has now connected both pipes *and* acknowledged the spawn request, so
-            // startup is complete. At that point the transport pipes become the only lifetime
-            // anchor we need to keep the session alive.
-            CloseHandle(pi.hProcess);
-        }
     }
 
     Ok(transport)

@@ -1091,13 +1091,24 @@ async fn v2_fixture_migrates_forward_preserving_memory_and_revoking_legacy_proje
                 .expect("legacy projection revoked");
         assert_eq!(count, 0, "legacy {table} rows must be revoked");
     }
+    // Schema migration must not manufacture evidence that a target actually
+    // acknowledged retirement. Only the original writer can append that event.
+    assert_eq!(
+        sqlx::query_scalar::<_, i64>(
+            "SELECT COUNT(*) FROM cognitive_local_events WHERE event_kind = 'retirement_acknowledged'",
+        )
+        .fetch_one(&migrated.pool)
+        .await
+        .expect("migration does not fabricate retirement ACKs"),
+        0
+    );
     assert_eq!(
         sqlx::query_scalar::<_, String>(
-            "SELECT group_concat(version, ',') FROM _sqlx_migrations ORDER BY version",
+            "SELECT group_concat(version, ',') FROM (SELECT version FROM _sqlx_migrations ORDER BY version)",
         )
         .fetch_one(&migrated.pool)
         .await
         .expect("migration ledger"),
-        "1,2,3,4,5,6,7,8,9,10,11,12,13,14"
+        "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18"
     );
 }

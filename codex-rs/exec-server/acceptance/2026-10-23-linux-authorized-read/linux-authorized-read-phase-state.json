@@ -1,0 +1,25 @@
+{
+  "startedAt": "2026-10-23T19:56:29.299491+00:00",
+  "phase": "failed",
+  "qualified": false,
+  "nativeAsterinasQualified": false,
+  "finalUnifiedFullQualified": false,
+  "testedSourceBase": "3b880e484c1e31632ffe900f97753209d14ab7d5",
+  "focused02DiffSha256": "6890ffeed7bc592bb929c6f12fc5a3dfbca23773ed51f87f308b8fb27d5a5e8e",
+  "owningDiffSha256": "a8010f272741dbed216f6834c70a2355b6faeb53d9dc1590ec035637da5207e6",
+  "sourceFilesSha256": {
+    "codex-rs/exec-server/README.md": "89f3d29493c04bb9e5eb94d0332262a38b9b1db0abc32abbb91ee2db3b09dbee",
+    "codex-rs/exec-server/src/lib.rs": "76a8a4945f9f7ef1a8e46c9f2cef198468f9ee50a7b6a76cb9c44e0528fdda42",
+    "codex-rs/exec-server/src/linux_authorized_read.rs": "bb8c89689f39973de430d3024e5ad9412e5365312549e845666ad745803123bf",
+    "codex-rs/exec-server/src/linux_authorized_read_tests.rs": "f130f03da828604863eeb5abf72ed60bcc4c964429dab43a4a3bc974515cb36d",
+    "codex-rs/exec-server/src/local_file_system.rs": "3eae307a26f63bf08ed27003d855c2cc3d66683750f18b6efb25395746faed12",
+    "codex-rs/exec-server/src/local_file_system_authorized_read_tests.rs": "04995b8a042d08be8363ce90c9600eb47a384e86ff619b2b57ea7cdcc8fb8c10",
+    "codex-rs/exec-server/src/remote_file_system.rs": "df30096d0662464889a027ad63562dff33c8336c557312114954b3496fb0f3eb",
+    "codex-rs/exec-server/src/remote_file_system_path_uri_tests.rs": "a7756b8c1c2c5eb300409d64e54a3b1b8b47277ceaf51e01ba90a459a7c471c0",
+    "codex-rs/exec-server/src/rpc.rs": "80e534854877613a2139d1a95af6fe57f06fd20a8178855973003862afdd6051",
+    "codex-rs/exec-server/src/server/file_system_handler.rs": "fd285e3d650e6330dd5b1b5743f25b9df3852a78ba5f0921e95ddec21f713609"
+  },
+  "documentationOnlyChangeAfterFocused": true,
+  "finishedAt": "2026-10-23T20:00:52.602355+00:00",
+  "error": "AssertionError(('linux-authorized-read-owning-after', {'name': 'linux-authorized-read-owning-after', 'cwd': '/data/hepta-mcp-implementation-closure', 'command': ['just', 'test', '-p', 'codex-exec-server', '--locked', '--test-threads', '2'], 'baseSha': '3b880e484c1e31632ffe900f97753209d14ab7d5', 'workingDiffSha256': 'a8010f272741dbed216f6834c70a2355b6faeb53d9dc1590ec035637da5207e6', 'startedAt': '2026-10-23T19:58:29.466562+00:00', 'finishedAt': '2026-10-23T20:00:52.591450+00:00', 'elapsedSeconds': 143.1248789950041, 'exitCode': 100, 'log': '/home/qian-qi/Documents/Codex/2026-10-23/https-github-com-trillionniumfoundation-trillionnium-os-3/work/dependency-alerts/linux-authorized-read-owning-after.log', 'environment': {'CARGO_TARGET_DIR': '/data/hepta-mcp-integer-target', 'CARGO_BUILD_JOBS': '1', 'RUSTUP_TOOLCHAIN': '1.95.0'}}))"
+}

@@ -296,7 +296,7 @@ toolchains.toolchain(
         "aarch64-pc-windows-msvc": ["-Ctarget-feature=+crt-static"],
         "x86_64-pc-windows-msvc": ["-Ctarget-feature=+crt-static"],
     },
-    version = "1.95.0",
+    version = "1.96.0",
 )
 use_repo(toolchains, "default_rust_toolchains")
 
@@ -362,14 +362,6 @@ crate.annotation(
     crate_features_select = {
         "x86_64-pc-windows-gnullvm": ["pure"],
     },
-)
-crate.annotation(
-    crate = "zstd-sys",
-    gen_build_script = "on",
-    patch_args = ["-p1"],
-    patches = [
-        "//patches:zstd-sys_windows_msvc_include_dirs.patch",
-    ],
 )
 crate.annotation(
     crate = "ring",
@@ -525,6 +517,68 @@ inject_repo(crate, "v8_targets")
 llvm = use_extension("@llvm//extensions:llvm.bzl", "llvm")
 use_repo(llvm, "llvm-project")
 
+kernel_headers = use_extension("@llvm//kernel/extension:kernel_headers.bzl", "kernel_headers")
+use_repo(kernel_headers, "kernel_headers")
+
+# rama-dns generates libresolv bindings for Linux GNU targets. Keep the
+# executable libclang in the exec configuration and libc/kernel headers in the
+# target configuration so cross builds cannot use the executor's system headers.
+rama_dns_bindgen_headers = [
+    "@kernel_headers//:kernel_headers_directory",
+    "@llvm//runtimes/glibc:glibc_headers_include_search_directory",
+]
+
+rama_dns_bindgen_tools = [
+    "@llvm-project//clang:libclang_interface_output",
+    "@llvm//:builtin_resource_dir",
+]
+
+# MODULE.bazel has no json module; rules_rs expects JSON-encoded environment values.
+rama_dns_bindgen_env = """{
+    "BINDGEN_EXTRA_CLANG_ARGS": "--target=%s --sysroot=/dev/null -nostdlibinc -isystem $(location @kernel_headers//:kernel_headers_directory) -isystem $(location @llvm//runtimes/glibc:glibc_headers_include_search_directory) -Xclang -internal-isystem -Xclang $(location @llvm//:builtin_resource_dir)/include",
+    "LIBCLANG_PATH": "$(location @llvm-project//clang:libclang_interface_output)"
+}"""
+
+# rules_rs 0.0.96 hoists values shared by every supplied select branch into
+# unconditional data/tools. Include empty branches for every other configured
+# triple so GNU headers and libclang never enter non-GNU target graphs.
+crate.annotation(
+    build_script_data_select = {
+        "aarch64-apple-darwin": [],
+        "aarch64-pc-windows-gnullvm": [],
+        "aarch64-pc-windows-msvc": [],
+        "aarch64-unknown-linux-gnu": rama_dns_bindgen_headers,
+        "aarch64-unknown-linux-musl": [],
+        "x86_64-apple-darwin": [],
+        "x86_64-pc-windows-gnullvm": [],
+        "x86_64-pc-windows-msvc": [],
+        "x86_64-unknown-linux-gnu": rama_dns_bindgen_headers,
+        "x86_64-unknown-linux-musl": [],
+    },
+    build_script_env_select = {
+        "aarch64-unknown-linux-gnu": rama_dns_bindgen_env % "aarch64-unknown-linux-gnu",
+        "x86_64-unknown-linux-gnu": rama_dns_bindgen_env % "x86_64-unknown-linux-gnu",
+    },
+    build_script_tools_select = {
+        "aarch64-apple-darwin": [],
+        "aarch64-pc-windows-gnullvm": [],
+        "aarch64-pc-windows-msvc": [],
+        "aarch64-unknown-linux-gnu": rama_dns_bindgen_tools,
+        "aarch64-unknown-linux-musl": [],
+        "x86_64-apple-darwin": [],
+        "x86_64-pc-windows-gnullvm": [],
+        "x86_64-pc-windows-msvc": [],
+        "x86_64-unknown-linux-gnu": rama_dns_bindgen_tools,
+        "x86_64-unknown-linux-musl": [],
+    },
+    crate = "rama-dns",
+    gen_build_script = "on",
+    # MinGW import libraries use lowercase names on case-sensitive executors.
+    patch_args = ["-p1"],
+    patches = [
+        "//patches:rama_dns_windows_gnu_dnsapi.patch",
+    ],
+)
 crate.annotation(
     # Provide the hermetic SDK path so the build script doesn't try to invoke an unhermetic `xcrun --show-sdk-path`.
     build_script_data = [
@@ -543,7 +597,7 @@ crate.annotation(
     gen_build_script = "on",
 )
 
-inject_repo(crate, "llvm", "llvm-project", "macos_sdk")
+inject_repo(crate, "kernel_headers", "llvm", "llvm-project", "macos_sdk")
 
 crate.annotation(
     # Provide the hermetic SDK path so the build script doesn't try to invoke an unavailable `xcrun --show-sdk-path`.

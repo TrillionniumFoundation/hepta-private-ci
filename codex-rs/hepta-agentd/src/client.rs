@@ -158,6 +158,27 @@ impl AgentdClient {
         }
     }
 
+    /// Read one exact request's historical publication. This never retries the
+    /// request and cannot prove non-admission or an external-effect outcome.
+    pub async fn objective_admission(
+        &self,
+        query: crate::ObjectiveAdmissionQuery,
+    ) -> Result<crate::ObjectiveAdmissionOutcome, AgentdError> {
+        match self
+            .send(AgentdRequest {
+                schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+                request_id: self.request_id(),
+                spawn_generation: self.spawn_generation,
+                method: crate::AgentdMethod::ObjectiveAdmission { query },
+            })
+            .await?
+            .payload
+        {
+            AgentdPayload::ObjectiveAdmission { outcome } => Ok(outcome),
+            payload => unexpected(payload),
+        }
+    }
+
     /// Read verified context through this exact generation's canonical owner.
     pub async fn cognitive_context(
         &self,
@@ -242,6 +263,32 @@ impl AgentdClient {
             .payload
         {
             AgentdPayload::AuthBusTextStatus(status) => Ok(status),
+            payload => unexpected(payload),
+        }
+    }
+
+    /// Typed absence is observation only. The original daemon verifies its
+    /// independent replay checkpoint; absence never authorizes a new send.
+    pub async fn authbus_text_lookup(
+        &self,
+        delivery_id: String,
+    ) -> Result<Option<crate::AuthBusTextStatus>, AgentdError> {
+        match self
+            .send(AgentdRequest {
+                schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+                request_id: self.request_id(),
+                spawn_generation: self.spawn_generation,
+                method: crate::AgentdMethod::AuthBusTextLookup {
+                    delivery_id: delivery_id.clone(),
+                },
+            })
+            .await?
+            .payload
+        {
+            AgentdPayload::AuthBusTextLookup {
+                delivery_id: observed,
+                status,
+            } if observed == delivery_id => Ok(status),
             payload => unexpected(payload),
         }
     }

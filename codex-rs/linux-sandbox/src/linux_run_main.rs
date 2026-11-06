@@ -26,6 +26,8 @@ use crate::bwrap::create_bwrap_command_args;
 use crate::landlock::apply_permission_profile_to_current_thread;
 use crate::launcher::exec_bwrap;
 use crate::launcher::preferred_bwrap_supports_argv0;
+use crate::parent_death::ParentDeathGuard;
+use crate::parent_death::exec_bwrap_with_parent_death;
 use crate::proxy_routing::activate_proxy_routes_in_netns;
 use crate::proxy_routing::prepare_host_proxy_route_spec;
 use codex_protocol::error::Result as CodexResult;
@@ -122,6 +124,14 @@ pub struct LandlockCommand {
     #[arg(long = "apply-seccomp-then-exec", hide = true, default_value_t = false)]
     pub apply_seccomp_then_exec: bool,
 
+    /// Inherited pidfd for the outer bubblewrap monitor, consumed by the inner stage.
+    #[arg(
+        long = "parent-death-fd",
+        hide = true,
+        requires = "apply_seccomp_then_exec"
+    )]
+    pub parent_death_fd: Option<libc::c_int>,
+
     /// Internal compatibility flag.
     ///
     /// By default, restricted-network sandboxing uses isolated networking.
@@ -163,6 +173,7 @@ pub fn run_main() -> ! {
         permission_profile,
         use_legacy_landlock,
         apply_seccomp_then_exec,
+        parent_death_fd,
         allow_network_for_proxy,
         proxy_route_spec,
         verify_fd_mounts,
@@ -192,6 +203,13 @@ pub fn run_main() -> ! {
     // Inner stage: apply seccomp/no_new_privs after bubblewrap has already
     // established the filesystem view.
     if apply_seccomp_then_exec {
+        let parent_death_fd = parent_death_fd
+            .unwrap_or_else(|| panic!("inner sandbox stage requires --parent-death-fd"));
+        // SAFETY: the outer stage transfers this descriptor across exec, so no
+        // Rust object in this process owns it yet. The constructor checks the
+        // descriptor and restores CLOEXEC before any inner setup can exec.
+        let parent_death_guard = unsafe { ParentDeathGuard::take_inherited(parent_death_fd) }
+            .unwrap_or_else(|err| panic!("invalid bubblewrap parent-death descriptor: {err}"));
         if let Err(err) = crate::fd_mount::verify_fd_mounts(&verify_fd_mounts) {
             panic!("failed to verify descriptor-backed bubblewrap mount: {err}");
         }
@@ -238,6 +256,14 @@ pub fn run_main() -> ! {
         ) {
             panic!("error applying Linux sandbox restrictions: {e:?}");
         }
+
+        // An exec-time credential or LSM transition can clear bubblewrap's
+        // parent-death signal. Rearm it after all restrictions, then check the
+        // original monitor's pidfd to close the already-dead-parent race.
+        // Consuming the guard closes the host pidfd before the user fork.
+        parent_death_guard
+            .arm()
+            .unwrap_or_else(|err| panic!("failed to bind sandbox lifetime to bubblewrap: {err}"));
 
         let signal_mask = ForwardedSignalMask::block();
         let command_pid = unsafe { libc::fork() };
@@ -560,7 +586,7 @@ fn run_or_exec_bwrap(bwrap_args: crate::bwrap::BwrapArgs) -> ! {
     if bwrap_args.synthetic_mount_targets.is_empty()
         && bwrap_args.protected_create_targets.is_empty()
     {
-        exec_bwrap(bwrap_args.args, bwrap_args.preserved_files);
+        exec_bwrap_with_parent_death(bwrap_args.args, bwrap_args.preserved_files);
     }
     run_bwrap_in_child_with_synthetic_mount_cleanup(bwrap_args);
 }
@@ -594,7 +620,7 @@ fn run_bwrap_in_child_with_synthetic_mount_cleanup(bwrap_args: crate::bwrap::Bwr
         }
         terminate_with_parent(parent_pid);
         wait_for_parent_exec_start(exec_start_pipe[0], exec_start_pipe[1]);
-        exec_bwrap(args, preserved_files);
+        exec_bwrap_with_parent_death(args, preserved_files);
     }
 
     close_child_exec_start_read(exec_start_pipe[0]);

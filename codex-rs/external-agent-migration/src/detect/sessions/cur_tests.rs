@@ -369,6 +369,52 @@ fn detects_cur_sessions_in_batches_and_redetects_modified_imports() {
     );
 }
 
+#[test]
+fn detects_cur_transcript_with_multiple_hyphenated_ancestors() {
+    let root = TempDir::new().expect("tempdir");
+    let project_root = root.path().join("first-parent/second-parent/workspace");
+    fs::create_dir_all(&project_root).expect("project root");
+    let external_agent_home = root.path().join(".external");
+    let transcript = write_transcript(
+        &external_agent_home,
+        &encode_project_path(&project_root),
+        "nested-session",
+        "nested request",
+    );
+
+    assert_eq!(
+        detect_recent_cur_sessions(&external_agent_home, root.path()).expect("detect sessions"),
+        vec![ExternalAgentSessionMigration {
+            path: transcript,
+            cwd: project_root,
+            title: Some("nested request".to_string()),
+        }]
+    );
+}
+
+#[test]
+fn cur_project_decoding_fails_closed_at_the_shared_probe_budget() {
+    let segments = vec!["segment"; 80].join("-");
+    #[cfg(windows)]
+    let encoded = format!("C-{segments}");
+    #[cfg(not(windows))]
+    let encoded = segments;
+    let probes = std::cell::Cell::new(0);
+    let path = decode_cur_project_path_with_probes(
+        &encoded,
+        |_| {
+            probes.set(probes.get() + 1);
+            true
+        },
+        |_| {
+            probes.set(probes.get() + 1);
+            None
+        },
+    );
+
+    assert_eq!((path, probes.get()), (None, MAX_CUR_PROJECT_PATH_PROBES));
+}
+
 fn write_transcript(
     external_agent_home: &Path,
     encoded_project: &str,

@@ -1,0 +1,36 @@
+--- a/src/draw_vars.rs
++++ b/src/draw_vars.rs
+@@ -53,9 +53,22 @@
+     pub texture_slots: [Option<Texture>; DRAW_CALL_TEXTURE_SLOTS],
+     #[rust]
+     pub uniform_buffer_slots: [Option<UniformBuffer>; DRAW_CALL_UNIFORM_BUFFER_SLOTS],
++    // On wasm32 the preceding fields end four bytes short of DrawVars'
++    // eight-byte alignment. Put that padding before the array: as_slice()
++    // continues directly into a containing shader's trailing live fields.
++    #[cfg(target_arch = "wasm32")]
++    #[rust]
++    pub dyn_instances_padding: f32,
+     #[rust([0f32; DRAW_CALL_DYN_INSTANCES])]
+     pub dyn_instances: [f32; DRAW_CALL_DYN_INSTANCES],
+ }
++
++#[cfg(target_arch = "wasm32")]
++const _: () = assert!(
++    std::mem::offset_of!(DrawVars, dyn_instances)
++        + std::mem::size_of::<[f32; DRAW_CALL_DYN_INSTANCES]>()
++        == std::mem::size_of::<DrawVars>()
++);
+
+ impl ScriptHook for DrawVars {
+     fn on_after_apply(
+--- a/src/draw_list.rs
++++ b/src/draw_list.rs
+@@ -3602,6 +3602,8 @@
+             dyn_uniforms: call.dyn_uniforms,
+             texture_slots: call.texture_slots.clone(),
+             uniform_buffer_slots: call.uniform_buffer_slots.clone(),
++            #[cfg(target_arch = "wasm32")]
++            dyn_instances_padding: 0.0,
+             dyn_instances: [0.0; crate::draw_vars::DRAW_CALL_DYN_INSTANCES],
+         };
+         vars.dyn_uniforms[0] += 1.0;

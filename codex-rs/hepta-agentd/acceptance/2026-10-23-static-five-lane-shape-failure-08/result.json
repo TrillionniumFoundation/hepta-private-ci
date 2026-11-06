@@ -1,0 +1,118 @@
+{
+  "schema": "hepta.native-authority-static-build.v1",
+  "source_head": "0f9a160bc2864bce64718d328a0db68b650f2097",
+  "source_tree": "de35084b7c17a1974e784c0a90ec26ad44d2aab2",
+  "commands": [
+    [
+      "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "build",
+      "--manifest-path",
+      "codex-rs/Cargo.toml",
+      "--locked",
+      "--offline",
+      "--release",
+      "--target",
+      "x86_64-unknown-linux-gnu",
+      "-p",
+      "codex-hepta-agentd",
+      "--bin",
+      "hepta-authority-host",
+      "--example",
+      "authority_host_peer_qualification",
+      "-j2"
+    ],
+    [
+      "/bin/bash",
+      "/data/asterinas-audit-build.8tdrjboi/native-authority-five-lane-source/.github/scripts/archive-release-symbols-and-strip-binaries.sh",
+      "--target",
+      "x86_64-unknown-linux-gnu",
+      "--artifact-name",
+      "hepta-authority-erased-five-lane-static-08",
+      "--release-dir",
+      "/data/asterinas-audit-build.8tdrjboi/native-authority-static-erased-five-lane-08/packaged",
+      "--archive-dir",
+      "/data/asterinas-audit-build.8tdrjboi/native-authority-static-erased-five-lane-08/symbols-dist",
+      "--binaries",
+      "hepta-authority-host authority_host_peer_qualification"
+    ]
+  ],
+  "target": "/data/asterinas-audit-build.8tdrjboi/native-authority-static-196-target",
+  "temporary": "/data/native-authority-tmp.2kgabwom",
+  "profile_overridden": false,
+  "features_disabled": false,
+  "fresh_target": false,
+  "cache_reused": "completed b182 original shape failure; original unstripped/packaged outputs retained; exclusive subsequent use; no qualification transferred",
+  "cold_supplier_cache_claimed": false,
+  "v8_archive_sha256": "a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583",
+  "v8_bindings_sha256": "7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506",
+  "environment": {
+    "RUSTUP_TOOLCHAIN": "1.96.0",
+    "RUSTC": "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc",
+    "CARGO_TARGET_DIR": "/data/asterinas-audit-build.8tdrjboi/native-authority-static-196-target",
+    "TMPDIR": "/data/native-authority-tmp.2kgabwom",
+    "CARGO_NET_OFFLINE": "true",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_BUILD_JOBS": "2",
+    "OPENSSL_STATIC": "1",
+    "RUSTY_V8_ARCHIVE": "/data/hepta-dependency-v8-pair/rusty-v8-150.4.0-x86_64-unknown-linux-gnu/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+    "RUSTY_V8_SRC_BINDING_PATH": "/data/hepta-dependency-v8-pair/rusty-v8-150.4.0-x86_64-unknown-linux-gnu/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+    "CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_RUSTFLAGS": "-C target-feature=+crt-static -C relocation-model=static -C link-arg=-no-pie"
+  },
+  "built": true,
+  "packaged": true,
+  "executed_binary": false,
+  "production_authority": false,
+  "g2_complete": false,
+  "build_exit": 0,
+  "products": {
+    "hepta-authority-host": {
+      "unstripped_bytes": 42286736,
+      "unstripped_sha256": "7599fb50556a2f58afb85f34e3d404f59515751f0279fc1047f8d938583d3c01",
+      "packaged_bytes": 8344952,
+      "packaged_sha256": "aa94db7f8d7b2f5f32725faf04892b99efbad20459106200faa865eea1496876"
+    },
+    "authority_host_peer_qualification": {
+      "unstripped_bytes": 46979240,
+      "unstripped_sha256": "a422c124df5199b28760389dca5648bf0b240b4df453c87795ad806704ffa633",
+      "packaged_bytes": 9144680,
+      "packaged_sha256": "c5d697c4c171841162c894550e5d7875cc27d357158f5aafbb71ddc54bd1f242"
+    }
+  },
+  "packaging_exit": 0,
+  "original_shape": {
+    "hepta-authority-host": {
+      "entry": 4554880,
+      "bytes": 8344952,
+      "loads": [
+        {
+          "start": 2097152,
+          "end": 4554752,
+          "file_end": 2453612,
+          "entry_inside": false
+        },
+        {
+          "start": 4554752,
+          "end": 10379264,
+          "file_end": 8276832,
+          "entry_inside": true
+        },
+        {
+          "start": 10379264,
+          "end": 10407936,
+          "file_end": 8301944,
+          "entry_inside": false
+        },
+        {
+          "start": 10407936,
+          "end": 10469376,
+          "file_end": 8335776,
+          "entry_inside": false
+        }
+      ],
+      "sha256": "aa94db7f8d7b2f5f32725faf04892b99efbad20459106200faa865eea1496876"
+    }
+  },
+  "original_shape_passed": false,
+  "source_inputs_unchanged": true,
+  "elapsed_seconds": 235.627
+}

@@ -542,3 +542,7 @@ unsafe fn create_token_with_caps_from(
 #[cfg(test)]
 #[path = "token_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "token_delete_diagnostics_tests.rs"]
+pub(crate) mod delete_diagnostics;

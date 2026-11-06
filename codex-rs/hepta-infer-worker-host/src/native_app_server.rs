@@ -88,6 +88,89 @@ const TURN_START_RECONCILE_GRACE: Duration = Duration::from_secs(2);
 const LOCAL_CANCELLED: &str = "cancelled";
 const LOCAL_DEADLINE_ELAPSED: &str = "deadline elapsed";
 
+#[derive(Default)]
+struct NativeMessageOutput {
+    items: Vec<NativeMessageText>,
+    tracked_item_id_bytes: usize,
+}
+
+struct NativeMessageText {
+    id: String,
+    text: String,
+}
+
+impl NativeMessageOutput {
+    fn ensure_item(&mut self, item_id: &str) -> std::result::Result<usize, String> {
+        if let Some(index) = self.items.iter().position(|item| item.id == item_id) {
+            return Ok(index);
+        }
+        if item_id.len() > MAX_OUTPUT_BYTES.saturating_sub(self.tracked_item_id_bytes) {
+            return Err("assistant message item id byte limit exceeded".to_string());
+        }
+        self.items.push(NativeMessageText {
+            id: item_id.to_string(),
+            text: String::new(),
+        });
+        self.tracked_item_id_bytes += item_id.len();
+        Ok(self.items.len() - 1)
+    }
+
+    fn append_delta(
+        &mut self,
+        output: &mut String,
+        item_id: &str,
+        delta: &str,
+    ) -> std::result::Result<(), String> {
+        if delta.len() > MAX_OUTPUT_BYTES.saturating_sub(output.len()) {
+            return Err("output byte limit exceeded".to_string());
+        }
+        let index = self.ensure_item(item_id)?;
+        self.items[index].text.push_str(delta);
+        if index + 1 == self.items.len() {
+            output.push_str(delta);
+        } else {
+            self.write_output(output);
+        }
+        Ok(())
+    }
+
+    fn complete(
+        &mut self,
+        output: &mut String,
+        item_id: &str,
+        text: &str,
+    ) -> std::result::Result<(), String> {
+        let previous_bytes = self
+            .items
+            .iter()
+            .find(|item| item.id == item_id)
+            .map_or(0, |item| item.text.len());
+        let other_bytes = output.len().saturating_sub(previous_bytes);
+        if text.len() > MAX_OUTPUT_BYTES.saturating_sub(other_bytes) {
+            return Err("output byte limit exceeded".to_string());
+        }
+        let index = self.ensure_item(item_id)?;
+        self.items[index].text.clear();
+        self.items[index].text.push_str(text);
+        // A completed item is a full snapshot, including when no deltas were
+        // sent. Replace only that item's text; replayed completion is idempotent.
+        self.write_output(output);
+        Ok(())
+    }
+
+    fn write_output(&self, output: &mut String) {
+        output.clear();
+        for item in &self.items {
+            output.push_str(&item.text);
+        }
+    }
+}
+
+struct NativeObservation<'a> {
+    binding: &'a CodexTurnBinding,
+    messages: NativeMessageOutput,
+}
+
 #[cfg(test)]
 struct FinalRevalidationTestHook {
     reached: tokio::sync::Notify,
@@ -471,7 +554,10 @@ impl AppServerModelDriver {
                 /*event_channel_capacity*/ 256,
             ),
         )
-        .await??;
+        .await
+        .map_err(|error| {
+            format!("App Server connect/initialize before native dispatch: {error}")
+        })??;
         let codex_home = client
             .codex_home()
             .ok_or("App Server initialize response omitted codex home")?
@@ -501,7 +587,8 @@ impl AppServerModelDriver {
                 },
             }),
         )
-        .await??;
+        .await
+        .map_err(|error| format!("App Server thread/start before native dispatch: {error}"))??;
         if started.model != self.config.model {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err("provider substituted the requested model".into());
@@ -900,6 +987,10 @@ impl AppServerModelDriver {
         }
         let deadline =
             Instant::now() + observation_budget_from(unix_time_ms()?, binding.intent.deadline_ms);
+        let mut observation = NativeObservation {
+            binding: &binding,
+            messages: NativeMessageOutput::default(),
+        };
         let result = self
             .observe(
                 &mut client,
@@ -907,23 +998,22 @@ impl AppServerModelDriver {
                 deadline,
                 cancellation,
                 Some(&owner),
-                &binding,
+                &mut observation,
             )
             .await;
         if let Err(reason) = result {
             output.boundary_status = classify_observation_failure(&reason);
             output.stop_reason = Some(reason.clone());
-            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision) {
-                if let Ok(cancelled) = owner
+            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision)
+                && let Ok(cancelled) = owner
                     .run_cancel(
                         binding.run_id.clone(),
                         revision,
                         reason.chars().take(512).collect(),
                     )
                     .await
-                {
-                    intelligence_revision = Some(cancelled.receipt.revision);
-                }
+            {
+                intelligence_revision = Some(cancelled.receipt.revision);
             }
             // Persist cancellation intent, but still interrupt if that write
             // fails. A failed journal write fences later admission/settlement.
@@ -947,7 +1037,7 @@ impl AppServerModelDriver {
                     Instant::now() + INTERRUPT_GRACE,
                     &grace,
                     /*owner*/ None,
-                    &binding,
+                    &mut observation,
                 )
                 .await;
             loss_recorded?;
@@ -1011,7 +1101,7 @@ impl AppServerModelDriver {
         deadline: Instant,
         cancellation: &CancellationToken,
         owner: Option<&AgentdClient>,
-        binding: &CodexTurnBinding,
+        observation: &mut NativeObservation<'_>,
     ) -> std::result::Result<(), String> {
         let mut health_tick = tokio::time::interval(Duration::from_millis(500));
         loop {
@@ -1029,7 +1119,12 @@ impl AppServerModelDriver {
             };
             match event.event() {
                 AppServerEvent::ServerNotification(_) => {
-                    if observe_event(output, &event, binding)? {
+                    if observe_event(
+                        output,
+                        &mut observation.messages,
+                        &event,
+                        observation.binding,
+                    )? {
                         return Ok(());
                     }
                 }
@@ -1419,6 +1514,7 @@ async fn interrupt(client: &mut RemoteAppServerClient, output: &NativeRunOutput)
 
 fn observe_event(
     output: &mut NativeRunOutput,
+    messages: &mut NativeMessageOutput,
     observed: &RemoteAppServerObservedEvent,
     binding: &CodexTurnBinding,
 ) -> std::result::Result<bool, String> {
@@ -1426,13 +1522,24 @@ fn observe_event(
         return Ok(false);
     };
     match notification.as_ref() {
+        ServerNotification::ItemStarted(started)
+            if started.thread_id == output.thread_id && started.turn_id == output.turn_id =>
+        {
+            if let ThreadItem::AgentMessage { id, .. } = &started.item {
+                messages.ensure_item(id)?;
+            }
+        }
         ServerNotification::AgentMessageDelta(delta)
             if delta.thread_id == output.thread_id && delta.turn_id == output.turn_id =>
         {
-            if delta.delta.len() > MAX_OUTPUT_BYTES.saturating_sub(output.output.len()) {
-                return Err("output byte limit exceeded".to_string());
+            messages.append_delta(&mut output.output, &delta.item_id, &delta.delta)?;
+        }
+        ServerNotification::ItemCompleted(completed)
+            if completed.thread_id == output.thread_id && completed.turn_id == output.turn_id =>
+        {
+            if let ThreadItem::AgentMessage { id, text, .. } = &completed.item {
+                messages.complete(&mut output.output, id, text)?;
             }
-            output.output.push_str(&delta.delta);
         }
         ServerNotification::ThreadTokenUsageUpdated(usage)
             if usage.thread_id == output.thread_id && usage.turn_id == output.turn_id =>

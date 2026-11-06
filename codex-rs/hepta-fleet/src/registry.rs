@@ -254,6 +254,37 @@ impl FleetRegistry {
     /// Cost depends on this Agent's retained lifecycle/release history, not on
     /// fleet size. History compaction is a separate owner-controlled operation.
     pub fn load_agent(&self, agent_id: &AgentId) -> Result<AgentRecord, FleetRegistryError> {
+        self.load_agent_with_spawn(agent_id)
+            .map(|(record, _)| record)
+    }
+
+    /// Read the original complete lifecycle history and require its latest
+    /// Starting transition to be this exact spawn. Running, Draining and exit
+    /// transitions advance the lifecycle generation without creating a spawn.
+    /// A later Starting transition, missing history or corrupt transition is
+    /// refused, including when that later process has already stopped.
+    ///
+    /// This read creates no process/lease and proves no process retirement.
+    /// A recovery caller must independently observe the actual old lifetime;
+    /// the original Supervisor still owns any subsequent reconciliation.
+    pub fn load_agent_for_spawn(
+        &self,
+        agent_id: &AgentId,
+        spawn_generation: u64,
+    ) -> Result<AgentRecord, FleetRegistryError> {
+        let (record, latest_spawn) = self.load_agent_with_spawn(agent_id)?;
+        if spawn_generation == 0 || latest_spawn != Some(spawn_generation) {
+            return Err(FleetRegistryError::Invalid(format!(
+                "agent {agent_id} original spawn {spawn_generation} differs from its latest Starting transition"
+            )));
+        }
+        Ok(record)
+    }
+
+    fn load_agent_with_spawn(
+        &self,
+        agent_id: &AgentId,
+    ) -> Result<(AgentRecord, Option<u64>), FleetRegistryError> {
         let layout = self.layout.agent(agent_id);
         for directory in [
             layout.agent_root(),
@@ -281,14 +312,17 @@ impl FleetRegistry {
                 manifest.agent_id
             )));
         }
-        let lifecycle = load_lifecycle(layout.run_root(), agent_id)?;
+        let (lifecycle, latest_spawn) = load_lifecycle(layout.run_root(), agent_id)?;
         let release_state = load_release_state(layout.releases_root(), agent_id)?;
-        Ok(AgentRecord {
-            manifest,
-            lifecycle,
-            release_state,
-            layout,
-        })
+        Ok((
+            AgentRecord {
+                manifest,
+                lifecycle,
+                release_state,
+                layout,
+            },
+            latest_spawn,
+        ))
     }
 }
 
@@ -325,7 +359,7 @@ fn publish_lifecycle(
 fn load_lifecycle(
     run_root: &Path,
     agent_id: &AgentId,
-) -> Result<AgentLifecycleState, FleetRegistryError> {
+) -> Result<(AgentLifecycleState, Option<u64>), FleetRegistryError> {
     let mut states = BTreeMap::new();
     for entry in std::fs::read_dir(run_root)? {
         let entry = entry?;
@@ -354,6 +388,7 @@ fn load_lifecycle(
         states.insert(generation, state);
     }
     let mut previous: Option<AgentLifecycleState> = None;
+    let mut latest_spawn = None;
     for (expected, (generation, state)) in states.iter().enumerate() {
         if *generation != expected as u64 {
             return Err(FleetRegistryError::Corrupt(
@@ -372,9 +407,13 @@ fn load_lifecycle(
                 "agent lifecycle history contains an invalid transition".to_string(),
             ));
         }
+        if state.lifecycle == AgentLifecycle::Starting {
+            latest_spawn = Some(state.generation);
+        }
         previous = Some(state.clone());
     }
     previous
+        .map(|state| (state, latest_spawn))
         .ok_or_else(|| FleetRegistryError::Corrupt("agent lifecycle state is missing".to_string()))
 }
 
@@ -465,8 +504,53 @@ fn staging_root(agents_root: &Path, agent_id: &AgentId) -> PathBuf {
 
 fn write_new_file(path: &Path, contents: &[u8]) -> Result<(), FleetRegistryError> {
     let mut file = OpenOptions::new().write(true).create_new(true).open(path)?;
+    preserve_root_reader_mode(&file, path)?;
     file.write_all(contents)?;
     file.sync_all()?;
+    Ok(())
+}
+
+/// Root may explicitly expose an original control directory to one dedicated
+/// reader group using mode02750. Preserve that read-only view on new immutable
+/// generations even under a restrictive Root umask. The original owner and
+/// exclusive directory mutation rights remain Root's; no profile file or
+/// second lifecycle model is introduced. Ordinary private registries are intact.
+#[cfg(unix)]
+pub(crate) fn preserve_root_reader_mode(
+    file: &File,
+    path: &Path,
+) -> Result<(), FleetRegistryError> {
+    use std::os::unix::fs::MetadataExt;
+    use std::os::unix::fs::PermissionsExt;
+    let parent = path
+        .parent()
+        .ok_or_else(|| FleetRegistryError::Invalid("control parent missing".into()))?;
+    let directory = std::fs::symlink_metadata(parent)?;
+    if directory.is_dir()
+        && directory.uid() == 0
+        && directory.gid() != 0
+        && directory.mode() & 0o7777 == 0o2750
+    {
+        let metadata = file.metadata()?;
+        if !metadata.is_file()
+            || metadata.uid() != 0
+            || metadata.gid() != directory.gid()
+            || metadata.nlink() != 1
+        {
+            return Err(FleetRegistryError::Corrupt(
+                "Root control publication lost its exact reader-group custody".into(),
+            ));
+        }
+        file.set_permissions(std::fs::Permissions::from_mode(0o640))?;
+    }
+    Ok(())
+}
+
+#[cfg(not(unix))]
+pub(crate) fn preserve_root_reader_mode(
+    _file: &std::fs::File,
+    _path: &Path,
+) -> Result<(), FleetRegistryError> {
     Ok(())
 }
 
@@ -529,7 +613,15 @@ fn create_private_directory(path: &Path) -> std::io::Result<()> {
     builder.mode(0o700).create(path)
 }
 
-#[cfg(not(unix))]
+#[cfg(windows)]
+fn create_private_directory(path: &Path) -> std::io::Result<()> {
+    // Preserve exclusive staging creation while establishing the exact private
+    // owner expected by the original CognitiveStore Windows acquisition.
+    drop(codex_utils_path::create_private_state_directory(path)?);
+    Ok(())
+}
+
+#[cfg(not(any(unix, windows)))]
 fn create_private_directory(path: &Path) -> std::io::Result<()> {
     std::fs::create_dir(path)
 }

@@ -35,6 +35,11 @@ use wiremock::http::HeaderValue;
 use wiremock::matchers::method;
 use wiremock::matchers::path_regex;
 
+#[path = "responses_websocket_concurrent.rs"]
+mod websocket_concurrent;
+
+pub use websocket_concurrent::start_concurrent_websocket_server;
+
 #[derive(Debug, Clone)]
 pub struct ResponseMock {
     requests: Arc<Mutex<Vec<ResponsesRequest>>>,
@@ -1070,6 +1075,29 @@ where
     mock.and(matcher)
         .respond_with(response)
         .up_to_n_times(1)
+        .mount(server)
+        .await;
+    response_mock
+}
+
+/// Mount a request-driven response with captured, invariant-checked requests.
+/// The caller owns its completion matcher when the number of polls is variable.
+pub async fn mount_response_match<M, R>(
+    server: &MockServer,
+    matcher: M,
+    responder: R,
+) -> ResponseMock
+where
+    M: wiremock::Match + Send + Sync + 'static,
+    R: Respond + Send + Sync + 'static,
+{
+    let response_mock = ResponseMock::new();
+    Mock::given(method("POST"))
+        .and(path_regex(".*/responses$"))
+        .and(matcher)
+        .and(response_mock.clone())
+        .respond_with(responder)
+        .expect(1..)
         .mount(server)
         .await;
     response_mock

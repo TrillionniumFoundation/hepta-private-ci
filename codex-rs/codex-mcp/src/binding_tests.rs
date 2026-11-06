@@ -373,3 +373,52 @@ async fn preparation_holds_catalog_authority_until_it_finishes() {
         .expect_err("the test preparation should stop the call");
     assert!(step.tool_catalog_revision.try_write().is_ok());
 }
+
+#[tokio::test]
+async fn configured_hook_keeps_hidden_tool_and_catalog_authority_separate_from_model_calls() {
+    let mut step = test_step(
+        "old",
+        AppToolApproval::Prompt,
+        /*supports_sandbox_state_meta*/ true,
+    )
+    .await;
+    let binding = Arc::get_mut(&mut step.step).expect("the fixture owns its binding");
+    binding.tools.clear();
+    binding
+        .calls
+        .get_mut(&(SERVER_NAME.to_string(), TOOL_NAME.to_string()))
+        .expect("configured tool exists")
+        .tool_info
+        .tool
+        .meta = Some(
+        serde_json::from_value(serde_json::json!({"ui": {"visibility": []}}))
+            .expect("hidden tool metadata"),
+    );
+
+    assert!(binding.prepare_call(SERVER_NAME, TOOL_NAME).is_none());
+    assert!(
+        binding
+            .prepare_configured_hook_call(SERVER_NAME, "missing")
+            .is_none()
+    );
+    let hook = binding
+        .prepare_configured_hook_call(SERVER_NAME, TOOL_NAME)
+        .expect("a trusted configured hook can bind its permitted hidden tool");
+    assert!(binding.tools().is_empty());
+    assert!(Arc::ptr_eq(&hook.client.client, &step.client));
+    assert_eq!(hook.server_environment_id(), "old-environment");
+    assert_eq!(hook.tool_approval_mode(), AppToolApproval::Prompt);
+
+    *step.tool_catalog_revision.write().await += 1;
+    let prepared_side_effect_ran = Arc::new(AtomicBool::new(false));
+    let marker = Arc::clone(&prepared_side_effect_ran);
+    let error = hook
+        .call_with_preparation(/*requested_timeout*/ None, || async move {
+            marker.store(true, Ordering::SeqCst);
+            Ok((None, None))
+        })
+        .await
+        .expect_err("a stale hook call must fail before call preparation");
+    assert!(format!("{error:#}").contains("catalog changed"));
+    assert!(!prepared_side_effect_ran.load(Ordering::SeqCst));
+}

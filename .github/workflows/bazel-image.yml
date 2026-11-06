@@ -1,0 +1,73 @@
+name: Bazel execution image
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/Dockerfile.bazel
+      - .github/workflows/bazel-image.yml
+      - .github/scripts/build-bazel-image.sh
+      - .github/scripts/bazel_image_identity.py
+      - .github/scripts/smoke-bazel-openssh.sh
+      - .github/scripts/publish_bazel_image.py
+      - .github/scripts/test_publish_bazel_image.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bazel-image-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    # A normal PR event is intentional: never run fork code with a publishing
+    # credential, and never use pull_request_target for this build.
+    if: >-
+      github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
+      (github.event_name != 'pull_request' ||
+       github.event.pull_request.head.repo.full_name == github.repository)
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-24.04
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      IMAGE_ARCH: ${{ matrix.arch }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+
+      - name: Test registry publication safeguards
+        run: python3 -m unittest discover -s .github/scripts -p test_publish_bazel_image.py
+
+      - name: Build exact source and verify OpenSSH
+        env:
+          IMAGE_EVIDENCE_DIR: ${{ runner.temp }}/bazel-image-${{ matrix.arch }}
+        shell: bash
+        run: bash .github/scripts/build-bazel-image.sh
+
+      - name: Publish previously unused source tag
+        env:
+          GHCR_PUBLISH_TOKEN: ${{ github.token }}
+          IMAGE_EVIDENCE_DIR: ${{ runner.temp }}/bazel-image-${{ matrix.arch }}
+        run: python3 .github/scripts/publish_bazel_image.py "$IMAGE_EVIDENCE_DIR"
+
+      - name: Upload image input and verification evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: bazel-image-${{ env.SOURCE_SHA }}-${{ matrix.arch }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/bazel-image-${{ matrix.arch }}
+          if-no-files-found: error

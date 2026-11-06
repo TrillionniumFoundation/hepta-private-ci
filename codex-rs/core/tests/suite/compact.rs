@@ -1862,13 +1862,17 @@ async fn auto_compact_emits_context_compaction_items() {
     let mut legacy_event = false;
 
     for user in [FIRST_AUTO_MSG, SECOND_AUTO_MSG, POST_AUTO_USER_MSG] {
-        codex
+        let submission = codex
             .start_or_steer_turn(TurnInputRequest::user_input(vec![UserInput::Text {
                 text: user.into(),
                 text_elements: Vec::new(),
             }]))
             .await
             .unwrap();
+        let codex_protocol::turn_input::TurnInputSubmission::Started { turn_id } = submission
+        else {
+            panic!("expected a newly admitted compaction fixture turn, got {submission:?}");
+        };
 
         loop {
             let event = codex.next_event().await.unwrap();
@@ -1888,7 +1892,15 @@ async fn auto_compact_emits_context_compaction_items() {
                 EventMsg::ContextCompacted(_) => {
                     legacy_event = true;
                 }
-                EventMsg::TurnComplete(_) if !event.id.starts_with("auto-compact-") => {
+                EventMsg::TurnComplete(completed) if !event.id.starts_with("auto-compact-") => {
+                    assert_eq!(completed.turn_id, turn_id);
+                    // The normal terminal event precedes retirement of its finish owner.
+                    // Observe that exact owner before admitting the next fixture turn.
+                    if let Some(completion) =
+                        codex.pending_normal_turn_finish_completion(&completed.turn_id)
+                    {
+                        completion.await;
+                    }
                     break;
                 }
                 _ => {}
@@ -4012,13 +4024,17 @@ async fn auto_compact_allows_multiple_attempts_when_interleaved_with_other_turn_
 
     let mut auto_compact_lifecycle_events = Vec::new();
     for user in [MULTI_AUTO_MSG, follow_up_user, final_user] {
-        codex
+        let submission = codex
             .start_or_steer_turn(TurnInputRequest::user_input(vec![UserInput::Text {
                 text: user.into(),
                 text_elements: Vec::new(),
             }]))
             .await
             .unwrap();
+        let codex_protocol::turn_input::TurnInputSubmission::Started { turn_id } = submission
+        else {
+            panic!("expected a newly admitted compaction fixture turn, got {submission:?}");
+        };
 
         loop {
             let event = codex.next_event().await.unwrap();
@@ -4031,9 +4047,17 @@ async fn auto_compact_allows_multiple_attempts_when_interleaved_with_other_turn_
                 auto_compact_lifecycle_events.push(event);
                 continue;
             }
-            if let EventMsg::TurnComplete(_) = &event.msg
+            if let EventMsg::TurnComplete(completed) = &event.msg
                 && !event.id.starts_with("auto-compact-")
             {
+                assert_eq!(completed.turn_id, turn_id);
+                // Keep all raw compaction lifecycle observations, then await only
+                // this normal turn's existing finish owner before the next input.
+                if let Some(completion) =
+                    codex.pending_normal_turn_finish_completion(&completed.turn_id)
+                {
+                    completion.await;
+                }
                 break;
             }
         }
@@ -5212,6 +5236,7 @@ async fn remote_v2_compaction_keeps_creation_time_instructions_after_same_path_m
         OLD_GLOBAL_INSTRUCTIONS,
     )?;
     let mut builder = test_codex()
+        .with_internal_metadata_for_mock()
         .with_home(Arc::clone(&home))
         .with_auth(CodexAuth::create_dummy_chatgpt_auth_for_testing())
         .with_config(|config| {
@@ -5274,6 +5299,7 @@ async fn remote_v2_compaction_keeps_creation_time_instructions_after_same_path_m
     .await;
     let resumed_cwd = test.config.cwd.clone();
     let mut resume_builder = test_codex()
+        .with_internal_metadata_for_mock()
         .with_home(Arc::clone(&home))
         .with_auth(CodexAuth::create_dummy_chatgpt_auth_for_testing())
         .with_config(move |config| {

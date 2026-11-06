@@ -14,6 +14,7 @@ use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::FleetRegistry;
 use codex_hepta_learning_ledger::DurableRunStartJournal;
 use codex_hepta_learning_ledger::RunStartRecordV1;
+use codex_hepta_memory::CognitiveRuntime;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
@@ -27,10 +28,25 @@ use crate::EventBuffer;
 use crate::RunReceipt;
 use crate::RuntimeComposition;
 
+#[path = "notes_objective_state.rs"]
+mod notes_objective;
+pub use notes_objective::AgentdNotesObjectiveConfig;
+
+#[path = "desktop_objective_state.rs"]
+mod desktop_objective;
+pub use desktop_objective::AgentdDesktopObjectiveConfig;
+
 #[path = "state_control.rs"]
 mod control;
 
+#[path = "notes_organ_state.rs"]
+mod notes_organ;
+
 pub(crate) struct AgentdState {
+    #[cfg(target_os = "linux")]
+    pub(crate) notes_organ_root: std::sync::OnceLock<Arc<crate::AgentdRootAuthoritySession>>,
+    pub(crate) notes_objective: std::sync::OnceLock<AgentdNotesObjectiveConfig>,
+    pub(crate) desktop_objective: std::sync::OnceLock<AgentdDesktopObjectiveConfig>,
     pub(crate) intelligence_product:
         std::sync::OnceLock<Arc<crate::AgentdIntelligenceProductRunnerV1>>,
     pub(crate) intelligence_invocation:
@@ -54,6 +70,8 @@ pub(crate) struct AgentdState {
     identity: AgentdIdentity,
     registry: FleetRegistry,
     runtime: Mutex<RuntimeState>,
+    #[cfg(target_os = "linux")]
+    app_server_ready_notify: tokio::sync::Notify,
     events: Mutex<EventBuffer>,
     automation: Mutex<Option<AutomationStore>>,
     cognitive: Mutex<Option<Arc<CognitiveStore>>>,
@@ -66,6 +84,7 @@ struct RuntimeState {
     current_generation: u64,
     lifecycle: AgentLifecycle,
     app_server_ready: bool,
+    notes_organ_ready: bool,
     critical_stores_ready: bool,
     revocation_ready: bool,
     required_ports_ready: bool,
@@ -127,6 +146,10 @@ impl AgentdState {
         })?;
         let prompt_pipeline = Arc::new(prompt_pipeline);
         Ok(Self {
+            #[cfg(target_os = "linux")]
+            notes_organ_root: std::sync::OnceLock::new(),
+            notes_objective: std::sync::OnceLock::new(),
+            desktop_objective: std::sync::OnceLock::new(),
             authbus: std::sync::OnceLock::new(),
             intelligence_product: std::sync::OnceLock::new(),
             intelligence_invocation: std::sync::OnceLock::new(),
@@ -143,6 +166,7 @@ impl AgentdState {
                 current_generation: identity.spawn_generation,
                 lifecycle: AgentLifecycle::Starting,
                 app_server_ready: false,
+                notes_organ_ready: false,
                 critical_stores_ready: false,
                 revocation_ready: false,
                 required_ports_ready: false,
@@ -151,6 +175,8 @@ impl AgentdState {
             }),
             identity,
             registry,
+            #[cfg(target_os = "linux")]
+            app_server_ready_notify: tokio::sync::Notify::new(),
             events: Mutex::new(events),
             automation: Mutex::new(None),
             cognitive: Mutex::new(None),
@@ -367,10 +393,11 @@ impl AgentdState {
                 AgentLifecycle::Draining | AgentLifecycle::Stopped | AgentLifecycle::Failed
             ) {
                 runtime.app_server_ready = false;
+                runtime.notes_organ_ready = false;
                 runtime.required_ports_ready = false;
             }
             if runtime.lifecycle == AgentLifecycle::Running
-                && runtime.app_server_ready
+                && (runtime.app_server_ready || runtime.notes_organ_ready)
                 && runtime.critical_stores_ready
                 && runtime.revocation_ready
                 && runtime.required_ports_ready
@@ -432,10 +459,38 @@ impl AgentdState {
         Ok(())
     }
 
+    /// Apply the availability-tolerant read-only startup policy only after the
+    /// cognitive runtime and every explicit writer owner have been composed.
+    /// Uninitialized states and every writer composition retain the strict
+    /// attached-store barrier above.
+    pub(crate) fn mark_runtime_prerequisites_ready_for_cognitive_runtime(
+        &self,
+        cognitive_runtime: &CognitiveRuntime,
+        production_writer_host: Option<&crate::AgentdProductionWriterHost>,
+    ) -> Result<(), AgentdError> {
+        if cfg!(feature = "production-cognitive-write")
+            || !matches!(cognitive_runtime, CognitiveRuntime::Unavailable(_))
+            || production_writer_host.is_some()
+            || self.production_operations.get().is_some()
+            || self.notes_objective.get().is_some()
+            || self.desktop_objective.get().is_some()
+            || self.automation_effect.get().is_some()
+        {
+            return self.mark_runtime_prerequisites_ready();
+        }
+
+        let mut runtime = self.runtime.lock().map_err(poisoned_state)?;
+        runtime.critical_stores_ready = true;
+        runtime.revocation_ready = true;
+        Ok(())
+    }
+
     pub(crate) fn mark_app_server_ready(&self) -> Result<(), AgentdError> {
         let mut runtime = self.runtime.lock().map_err(poisoned_state)?;
         if !runtime.app_server_ready {
             runtime.app_server_ready = true;
+            #[cfg(target_os = "linux")]
+            self.app_server_ready_notify.notify_waiters();
             runtime.required_ports_ready = true;
             if runtime.lifecycle == AgentLifecycle::Running
                 && runtime.critical_stores_ready
@@ -452,9 +507,31 @@ impl AgentdState {
         Ok(())
     }
 
+    #[cfg(target_os = "linux")]
+    pub(crate) async fn wait_original_app_server_ready(&self) -> Result<(), AgentdError> {
+        loop {
+            let notified = self.app_server_ready_notify.notified();
+            tokio::pin!(notified);
+            notified.as_mut().enable();
+            {
+                let runtime = self.runtime.lock().map_err(poisoned_state)?;
+                if runtime.fenced {
+                    return Err(AgentdError::GenerationFenced(
+                        "original App Server was fenced".into(),
+                    ));
+                }
+                if runtime.app_server_ready {
+                    return Ok(());
+                }
+            }
+            notified.await;
+        }
+    }
+
     pub(crate) fn mark_draining(&self) -> Result<(), AgentdError> {
         let mut runtime = self.runtime.lock().map_err(poisoned_state)?;
         runtime.app_server_ready = false;
+        runtime.notes_organ_ready = false;
         runtime.required_ports_ready = false;
         runtime.admission_open = false;
         self.app_server_drain.request_drain();
@@ -524,6 +601,7 @@ impl AgentdState {
     pub(crate) fn mark_fenced(&self) {
         if let Ok(mut runtime) = self.runtime.lock() {
             runtime.app_server_ready = false;
+            runtime.notes_organ_ready = false;
             runtime.required_ports_ready = false;
             runtime.admission_open = false;
             runtime.fenced = true;
@@ -704,7 +782,7 @@ impl AgentdState {
     }
 
     fn require_current_run_start(&self, record: &RunStartRecordV1) -> Result<u64, AgentdError> {
-        crate::authbus_ingress::require_ready(self)?;
+        crate::authbus_ingress::require_objective_ready(self)?;
         let now_ms = crate::authbus_ingress::now_ms()?;
         let current_generation = self
             .runtime
