@@ -47,6 +47,7 @@ pub use authorized_effect::AuthorizedEffectDependency;
 pub use authorized_effect::AuthorizedEffectDriver;
 pub use authorized_effect::AuthorizedEffectDriverError;
 pub use authorized_effect::AuthorizedEffectError;
+pub use authorized_effect::AuthorizedEffectExecution;
 pub use authorized_effect::AuthorizedEffectFuture;
 pub use authorized_effect::AuthorizedEffectIntent;
 pub use authorized_effect::AuthorizedEffectOutcome;
