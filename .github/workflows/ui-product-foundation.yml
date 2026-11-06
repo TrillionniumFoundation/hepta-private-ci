@@ -32,6 +32,8 @@ on:
       - apps/hepta-native/resources/notices/Noto-Sans-CJK-2.004-OFL.txt
       - apps/hepta-native/resources/**
       - .github/workflows/ui-product-foundation.yml
+      - .github/workflows/hepta-offline-build-inputs.yml
+      - scripts/hepta_ui_public_inputs.py
       - .github/actions/hepta-synthetic-merge/**
       - scripts/test_ui_product_foundation_ci.py
 permissions:
@@ -534,3 +536,10 @@ jobs:
           name: ui-bazel-lock-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/ui-bazel-lock-evidence
           if-no-files-found: error
+
+  ui-public-inputs:
+    name: Prepare public UI dependency inputs
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    uses: ./.github/workflows/hepta-offline-build-inputs.yml
+    with:
+      input_set: ui-inputs
