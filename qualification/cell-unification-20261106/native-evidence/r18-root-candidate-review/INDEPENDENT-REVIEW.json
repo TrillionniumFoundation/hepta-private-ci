@@ -1,0 +1,51 @@
+{
+  "schema": "hepta.root-r18-candidate-review.v1",
+  "status": "STATIC_REVIEW_PASS_PENDING_NATIVE_PROJECT_GATE",
+  "source46_commit": "2d7ad1d60019f35fc13d84138ceb2755d914f434",
+  "source46_tree": "ffa0a37f4616c5563169c7f0a9305bf6c982d58b",
+  "candidates": [
+    {
+      "candidate": "app-server-process-exec-r18-repair",
+      "path": "codex-rs/app-server/tests/suite/v2/process_exec.rs",
+      "before_git_blob": "af26eb8e4b63b9adf51f07d82c72a72d5c5cf242",
+      "after_sha256": "3ec4fd5e7dc024df3fd3af10e3b529bea98491d9e104b32e9fcea93077b9e0e7",
+      "after_git_blob": "91fc35830de83b8fb9ac1da3c8846e14740a7058",
+      "patch_forward_reverse_exact": true
+    },
+    {
+      "candidate": "app-server-ci-r18-repair",
+      "path": ".github/workflows/hepta-cell-framework-native.yml",
+      "before_git_blob": "29eb48f017280fee3bbc1efc48ac1e9eb204bc32",
+      "after_sha256": "5c1947922fc66c513f96a3c2c221fcfc812b0773263f6fed0ac5e7489be19e32",
+      "after_git_blob": "59bd4d8e0dfa8001a12578d9b8ad706de16ec029",
+      "patch_forward_reverse_exact": true
+    }
+  ],
+  "immutable_root_github_pins": [
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/process_exec.rs",
+      "start_line": 241,
+      "end_line": 262,
+      "git_blob": "af26eb8e4b63b9adf51f07d82c72a72d5c5cf242",
+      "excerpt": "\nasync fn initialized_mcp(codex_home: &Path) -> Result<(MockServer, TestAppServer)> {\n    let server = create_mock_responses_server_sequence_unchecked(Vec::new()).await;\n    create_config_toml(codex_home, &server.uri(), \"never\")?;\n    let mut mcp = TestAppServer::builder()\n        .with_codex_home(codex_home)\n        .without_auto_env()\n        .build()\n        .await?;\n    let initialize = timeout(DEFAULT_READ_TIMEOUT, mcp.initialize()).await??;\n    let codex_app_server_protocol::JSONRPCMessage::Response(response) = initialize else {\n        anyhow::bail!(\"initialize failed: {initialize:?}\");\n    };\n    let initialize: codex_app_server_protocol::InitializeResponse =\n        serde_json::from_value(response.result)?;\n    assert!(initialize.process_indeterminate);\n    Ok((server, mcp))\n}\n\nfn process_spawn_params(\n    process_handle: String,\n    cwd: &Path,"
+    },
+    {
+      "path": "codex-rs/app-server/tests/common/test_app_server.rs",
+      "start_line": 325,
+      "end_line": 393,
+      "git_blob": "9c51cda731d9b663c6272eef052d9ae53b46a44d",
+      "excerpt": "    pub async fn initialize(&mut self) -> anyhow::Result<()> {\n        let initialized = self\n            .initialize_with_client_info(ClientInfo {\n                name: DEFAULT_CLIENT_NAME.to_string(),\n                title: None,\n                version: \"0.1.0\".to_string(),\n            })\n            .await?;\n        let JSONRPCMessage::Response(_) = initialized else {\n            unreachable!(\"expected JSONRPCMessage::Response for initialize, got {initialized:?}\");\n        };\n        Ok(())\n    }\n\n    /// Sends initialize with the provided client info and returns the response/error message.\n    pub async fn initialize_with_client_info(\n        &mut self,\n        client_info: ClientInfo,\n    ) -> anyhow::Result<JSONRPCMessage> {\n        self.initialize_with_capabilities(\n            client_info,\n            Some(InitializeCapabilities {\n                process_indeterminate: true,\n                experimental_api: true,\n                ..Default::default()\n            }),\n        )\n        .await\n    }\n\n    pub async fn initialize_with_capabilities(\n        &mut self,\n        client_info: ClientInfo,\n        capabilities: Option<InitializeCapabilities>,\n    ) -> anyhow::Result<JSONRPCMessage> {\n        self.initialize_with_params(InitializeParams {\n            client_info,\n            capabilities,\n        })\n        .await\n    }\n\n    async fn initialize_with_params(\n        &mut self,\n        params: InitializeParams,\n    ) -> anyhow::Result<JSONRPCMessage> {\n        let params = Some(serde_json::to_value(params)?);\n        let request_id = self.send_request(\"initialize\", params).await?;\n        let message = self.read_jsonrpc_message().await?;\n        match message {\n            JSONRPCMessage::Response(response) => {\n                if response.id != RequestId::Integer(request_id) {\n                    anyhow::bail!(\n                        \"initialize response id mismatch: expected {}, got {:?}\",\n                        request_id,\n                        response.id\n                    );\n                }\n\n                // Send notifications/initialized to ack the response.\n                self.send_notification(ClientNotification::Initialized)\n                    .await?;\n\n                Ok(JSONRPCMessage::Response(response))\n            }\n            JSONRPCMessage::Error(error) => {\n                if error.id != RequestId::Integer(request_id) {\n                    anyhow::bail!(\n                        \"initialize error id mismatch: expected {}, got {:?}\","
+    },
+    {
+      "path": ".github/workflows/hepta-cell-framework-native.yml",
+      "start_line": 45,
+      "end_line": 85,
+      "git_blob": "29eb48f017280fee3bbc1efc48ac1e9eb204bc32",
+      "excerpt": "            packages: >-\n              -p codex-model-provider-info -p codex-shell-escalation\n              -p codex-linux-sandbox -p codex-hepta-memory\n              -p codex-exec-server -p codex-hepta-supervisor\n              -p codex-hepta-memory-extension\n          - owner: core\n            packages: -p codex-core -p codex-mcp -p core_test_support\n    steps:\n      - name: Check out the exact source commit\n        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd\n        with:\n          ref: ${{ env.SOURCE_SHA }}\n          fetch-depth: 1\n          persist-credentials: false\n      - name: Bind source identity\n        shell: bash\n        run: |\n          set -euo pipefail\n          test \"$(git rev-parse HEAD)\" = \"$SOURCE_SHA\"\n          test -z \"$(git status --porcelain)\"\n          git diff --check\n          mkdir -p \"$RUNNER_TEMP/cell-framework-records\"\n      - name: Install native build prerequisites\n        run: |\n          sudo apt-get update\n          sudo apt-get install -y build-essential clang cmake protobuf-compiler libssl-dev libcap-dev pkg-config bubblewrap\n      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532\n        with:\n          tool: just@1.51.0,nextest@0.9.103\n      - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a\n      - name: Expose DotSlash for existing owner tests\n        run: sudo install -m 0755 \"$(command -v dotslash)\" /usr/local/bin/dotslash\n      - name: Prepare the original checksum-verified Zsh test resource\n        if: matrix.owner == 'core'\n        shell: bash\n        run: |\n          set -euo pipefail\n          python3 scripts/hepta_ci_exec.py --timeout-seconds 300 \\\n            --output \"$RUNNER_TEMP/cell-framework-records/zsh-resource.json\" \\\n            -- dotslash -- fetch \"$GITHUB_WORKSPACE/codex-rs/app-server/tests/suite/zsh\"\n      - name: Resolve repository-verified V8 artifacts"
+    }
+  ],
+  "semantics": "The existing unit-returning initialize wrapper delegates to initialize_with_client_info using exactly DEFAULT_CLIENT_NAME, title None and version0.1.0. The fixture now calls that existing returning helper directly under the same timeout, retaining the actual JSONRPC response variant, decoding and process_indeterminate assertion. The shared helper still supplies the same capabilities, request ID verification and initialized acknowledgment. Production and helper APIs are untouched.",
+  "ci": "Append one app-server owner lane and extend only the existing Zsh prefetch condition. The same original app-server Zsh descriptor was already selected in the prefetch body; all four existing lanes and other commands, profiles, timeouts and retries remain unchanged.",
+  "native_execution": false,
+  "no_assertions_or_deadlines_weakened": true
+}

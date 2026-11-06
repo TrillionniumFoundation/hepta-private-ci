@@ -1,0 +1,824 @@
+{
+  "schema": "hepta.candidate-audit-closure-mapping.v1",
+  "purpose": "Exact-byte archive and reference closure only; not execution evidence or a new causal review. Frozen originals keep their original pending/active-prefix wording.",
+  "source43": {
+    "commit": "b44d4ca4aa0ef9f894eff29e9975938e066a82f5",
+    "tree": "d3d2313b838422818bf9448ce5a1b86d89abdf69"
+  },
+  "integrated_source44": {
+    "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+    "tree": "1646e1656cf6365e74accae19a1225fd2ce6d964",
+    "all_candidate_after_pins_match_retained_native_source_inventory": true
+  },
+  "retained_artifacts": [
+    {
+      "original_path": "core-zsh-fixtures-r14-repair/mechanical-review.json",
+      "archived_path": "mechanical-review.json",
+      "bytes": 1789,
+      "sha256": "be0b31425943f71f071f74a0e82200497473f19773e9d05a38747b8893eb8465",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-zsh-fixtures-r14-repair/repair-audit.json",
+      "archived_path": "repair-audit.json",
+      "bytes": 1278,
+      "sha256": "31baf036d2090e0757c7c17efa55b4401bfc4a80255dbf1b6b3251d9f5db7d72",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-zsh-fixtures-r14-repair/repair.patch",
+      "archived_path": "repair.patch",
+      "bytes": 1560,
+      "sha256": "ee8f42615a3f67d63343a4d41780b3729911dba1e0ef0174b9913ef93cf72cce",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-zsh-fixtures-r14-repair/root-independent-review.json",
+      "archived_path": "root-independent-review.json",
+      "bytes": 2709,
+      "sha256": "88461a850ed7d95e31b04a6f1717caea9f989f006d9982970519871bdb108800",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-zsh-fixtures-r14-repair/source-manifest.json",
+      "archived_path": "source-manifest.json",
+      "bytes": 1367,
+      "sha256": "7513aa4f1a83a6f51fa09546c012eb0a3eb54a4ec80d0e84fe3d08d914bffefe",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-zsh-fixtures-r14-audit/causal-review.json",
+      "archived_path": "causal-review.json",
+      "bytes": 13623,
+      "sha256": "d74fe096bc1b27002131e52613e28b6fa9f7cac2bd6dcdef9a2d6b84d3751205",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-zsh-fixtures-r14-audit/pins/codex-rs__config__src__permissions_toml.rs.json",
+      "archived_path": "pins/codex-rs__config__src__permissions_toml.rs.json",
+      "bytes": 432,
+      "sha256": "6c21594b69b6d4ed76b8ad3f203fe7c6b9e8d5a888e57e46ae25a9c42181fd03",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-zsh-fixtures-r14-audit/pins/codex-rs__core__src__config__permissions.rs.json",
+      "archived_path": "pins/codex-rs__core__src__config__permissions.rs.json",
+      "bytes": 432,
+      "sha256": "d94f7769059e3f5cf67d76ac2dfaa6be10e05a586160e23b51fa15751bd55b95",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-zsh-fixtures-r14-audit/pins/codex-rs__core__tests__common__lib.rs.json",
+      "archived_path": "pins/codex-rs__core__tests__common__lib.rs.json",
+      "bytes": 262,
+      "sha256": "84c843201dffe58b7674cbe1187b7f69b76f961008e61862d5100f7d3c24d5e0",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-zsh-fixtures-r14-audit/pins/codex-rs__core__tests__common__zsh_fork.rs.json",
+      "archived_path": "pins/codex-rs__core__tests__common__zsh_fork.rs.json",
+      "bytes": 429,
+      "sha256": "9a1bb2c6dff1795b8bcc4b9b517c5c5da549676e4f20bea4c0b54decc178f77f",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-zsh-fixtures-r14-audit/pins/codex-rs__core__tests__suite__skill_approval.rs.json",
+      "archived_path": "pins/codex-rs__core__tests__suite__skill_approval.rs.json",
+      "bytes": 437,
+      "sha256": "94836faf1d6baf5b3210a6005041a67b6d44245de12ed90bf2fa0c4a05bb8af4",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-zsh-fixtures-r14-audit/pins/codex-rs__core__tests__suite__unified_exec_zsh_fork_approvals.rs.json",
+      "archived_path": "pins/codex-rs__core__tests__suite__unified_exec_zsh_fork_approvals.rs.json",
+      "bytes": 455,
+      "sha256": "32fd0978db0f55273edc29d5ab3e667a9930c436a9a92c7109075ad01dc74759",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-zsh-fixtures-r14-audit/pins/codex-rs__linux-sandbox__src__bwrap.rs.json",
+      "archived_path": "pins/codex-rs__linux-sandbox__src__bwrap.rs.json",
+      "bytes": 425,
+      "sha256": "edbea125f79f7df743fc96df1687403d9a086bd6f3073158a1aaceb3b4cf805b",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-zsh-fixtures-r14-audit/pins/codex-rs__protocol__src__permissions.rs.json",
+      "archived_path": "pins/codex-rs__protocol__src__permissions.rs.json",
+      "bytes": 427,
+      "sha256": "449aa349cebd64280db805a8fc8e1f275d2cbeb6539cee86a4a0542389209303",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-zsh-fixtures-r14-audit/evidence/shell_zsh_fork_skill_scripts_ignore_declared_permissions.log",
+      "archived_path": "failures/shell_zsh_fork_skill_scripts_ignore_declared_permissions.log",
+      "bytes": 779,
+      "sha256": "e46e124299f9f3f024f3f79d541939c544d792d95a1a3c04f0e803e937365f83",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-zsh-fixtures-r14-audit/evidence/unified_exec_zsh_fork_parent_approval_preserves_denied_reads.log",
+      "archived_path": "failures/unified_exec_zsh_fork_parent_approval_preserves_denied_reads.log",
+      "bytes": 966,
+      "sha256": "012b29e9397f7bba01f4bec5600535be29b5bd9453fcbf4d30a4138a40c6c98a",
+      "copied_bytes_exact": true
+    }
+  ],
+  "reference_mappings": [
+    {
+      "artifact": "mechanical-review.json",
+      "pointer": "/files/0/path",
+      "reference": "codex-rs/core/tests/suite/skill_approval.rs",
+      "source_keys": [
+        "codex-rs/core/tests/suite/skill_approval.rs@d78696cee410d754f2993e48d3d8bc2c058aa111bd2d74fd78044e481c6a4c27"
+      ]
+    },
+    {
+      "artifact": "mechanical-review.json",
+      "pointer": "/files/1/path",
+      "reference": "codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs",
+      "source_keys": [
+        "codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs@35982a2804b74d3f2eb1027bda62e097abe20c546937b25ee251274b7bdbd6ec"
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/source_manifest/path",
+      "reference": "core-zsh-fixtures-r14-repair/source-manifest.json",
+      "formal_artifacts": [
+        {
+          "path": "source-manifest.json",
+          "bytes": 1367,
+          "sha256": "7513aa4f1a83a6f51fa09546c012eb0a3eb54a4ec80d0e84fe3d08d914bffefe"
+        }
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/patch/path",
+      "reference": "core-zsh-fixtures-r14-repair/repair.patch",
+      "formal_artifacts": [
+        {
+          "path": "repair.patch",
+          "bytes": 1560,
+          "sha256": "ee8f42615a3f67d63343a4d41780b3729911dba1e0ef0174b9913ef93cf72cce"
+        }
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/mechanical_review/path",
+      "reference": "core-zsh-fixtures-r14-repair/mechanical-review.json",
+      "formal_artifacts": [
+        {
+          "path": "mechanical-review.json",
+          "bytes": 1789,
+          "sha256": "be0b31425943f71f071f74a0e82200497473f19773e9d05a38747b8893eb8465"
+        }
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/causal_review/path",
+      "reference": "core-zsh-fixtures-r14-audit/causal-review.json",
+      "formal_artifacts": [
+        {
+          "path": "causal-review.json",
+          "bytes": 13623,
+          "sha256": "d74fe096bc1b27002131e52613e28b6fa9f7cac2bd6dcdef9a2d6b84d3751205"
+        }
+      ]
+    },
+    {
+      "artifact": "root-independent-review.json",
+      "pointer": "/files/0/path",
+      "reference": "codex-rs/core/tests/suite/skill_approval.rs",
+      "source_keys": [
+        "codex-rs/core/tests/suite/skill_approval.rs@d78696cee410d754f2993e48d3d8bc2c058aa111bd2d74fd78044e481c6a4c27"
+      ]
+    },
+    {
+      "artifact": "root-independent-review.json",
+      "pointer": "/files/0/original_source_local_path",
+      "reference": "core-zsh-fixtures-r14-audit/original/codex-rs/core/tests/suite/skill_approval.rs",
+      "source_keys": [
+        "codex-rs/core/tests/suite/skill_approval.rs@8e977c5bf5bbd94f345886b83e16fcf8a3661a467090bc3ab67ae7604de79952"
+      ]
+    },
+    {
+      "artifact": "root-independent-review.json",
+      "pointer": "/files/1/path",
+      "reference": "codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs",
+      "source_keys": [
+        "codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs@35982a2804b74d3f2eb1027bda62e097abe20c546937b25ee251274b7bdbd6ec"
+      ]
+    },
+    {
+      "artifact": "root-independent-review.json",
+      "pointer": "/files/1/original_source_local_path",
+      "reference": "core-zsh-fixtures-r14-audit/original/codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs",
+      "source_keys": [
+        "codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs@79e550c948ce2eb51f0829c619bd73c2dd582c800299cbc78bc86c1feb524cae"
+      ]
+    },
+    {
+      "artifact": "source-manifest.json",
+      "pointer": "/files/0/path",
+      "reference": "codex-rs/core/tests/suite/skill_approval.rs",
+      "source_keys": [
+        "codex-rs/core/tests/suite/skill_approval.rs@d78696cee410d754f2993e48d3d8bc2c058aa111bd2d74fd78044e481c6a4c27"
+      ]
+    },
+    {
+      "artifact": "source-manifest.json",
+      "pointer": "/files/1/path",
+      "reference": "codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs",
+      "source_keys": [
+        "codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs@35982a2804b74d3f2eb1027bda62e097abe20c546937b25ee251274b7bdbd6ec"
+      ]
+    },
+    {
+      "artifact": "source-manifest.json",
+      "pointer": "/patch/path",
+      "reference": "repair.patch",
+      "formal_artifacts": [
+        {
+          "path": "repair.patch",
+          "bytes": 1560,
+          "sha256": "ee8f42615a3f67d63343a4d41780b3729911dba1e0ef0174b9913ef93cf72cce"
+        }
+      ]
+    },
+    {
+      "artifact": "causal-review.json",
+      "pointer": "/evidence/closed_result/path",
+      "reference": "core-zsh-fixtures-r14-audit/evidence/native-core-r14-result-review.json",
+      "formal_artifacts": [
+        {
+          "path": "../r14-core-checkpoint/native-core-r14-result-review.json",
+          "bytes": 35985,
+          "sha256": "9b5b3a81d4901d8c6769908e2021235e3ef82e3257d5b0c21bf1c086899f0732"
+        }
+      ]
+    },
+    {
+      "artifact": "causal-review.json",
+      "pointer": "/evidence/applicable_instructions/path",
+      "reference": "core-zsh-fixtures-r14-audit/evidence/AGENTS.md",
+      "source_keys": [
+        "AGENTS.md@c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480"
+      ]
+    },
+    {
+      "artifact": "causal-review.json",
+      "pointer": "/source_pins/0/path",
+      "reference": "codex-rs/config/src/permissions_toml.rs",
+      "source_keys": [
+        "codex-rs/config/src/permissions_toml.rs@8246747d3777d30f2bb3356353f76d8a675ef1b8a2774bbf08dfd67081d4111d"
+      ]
+    },
+    {
+      "artifact": "causal-review.json",
+      "pointer": "/source_pins/0/url",
+      "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b44d4ca4aa0ef9f894eff29e9975938e066a82f5/codex-rs/config/src/permissions_toml.rs",
+      "source_keys": [
+        "codex-rs/config/src/permissions_toml.rs@8246747d3777d30f2bb3356353f76d8a675ef1b8a2774bbf08dfd67081d4111d"
+      ]
+    },
+    {
+      "artifact": "causal-review.json",
+      "pointer": "/source_pins/1/path",
+      "reference": "codex-rs/core/src/config/permissions.rs",
+      "source_keys": [
+        "codex-rs/core/src/config/permissions.rs@7d2566dbc3dc1ef8397f3757373f9983a6dbb2b91c6a0a9e0c7f3c244743e9e9"
+      ]
+    },
+    {
+      "artifact": "causal-review.json",
+      "pointer": "/source_pins/1/url",
+      "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b44d4ca4aa0ef9f894eff29e9975938e066a82f5/codex-rs/core/src/config/permissions.rs",
+      "source_keys": [
+        "codex-rs/core/src/config/permissions.rs@7d2566dbc3dc1ef8397f3757373f9983a6dbb2b91c6a0a9e0c7f3c244743e9e9"
+      ]
+    },
+    {
+      "artifact": "causal-review.json",
+      "pointer": "/source_pins/2/path",
+      "reference": "codex-rs/core/tests/common/lib.rs",
+      "source_keys": [
+        "codex-rs/core/tests/common/lib.rs@34120e98be2ac8e1ee96373373f2241f9383f2cfb724d55cbcce2fb049468de9"
+      ]
+    },
+    {
+      "artifact": "causal-review.json",
+      "pointer": "/source_pins/3/path",
+      "reference": "codex-rs/core/tests/common/zsh_fork.rs",
+      "source_keys": [
+        "codex-rs/core/tests/common/zsh_fork.rs@c8ec104fe613f1b0695e9c0cc35120540a223a57f3cd5b0ac1c56699b631531f"
+      ]
+    },
+    {
+      "artifact": "causal-review.json",
+      "pointer": "/source_pins/3/url",
+      "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b44d4ca4aa0ef9f894eff29e9975938e066a82f5/codex-rs/core/tests/common/zsh_fork.rs",
+      "source_keys": [
+        "codex-rs/core/tests/common/zsh_fork.rs@c8ec104fe613f1b0695e9c0cc35120540a223a57f3cd5b0ac1c56699b631531f"
+      ]
+    },
+    {
+      "artifact": "causal-review.json",
+      "pointer": "/source_pins/4/path",
+      "reference": "codex-rs/core/tests/suite/skill_approval.rs",
+      "source_keys": [
+        "codex-rs/core/tests/suite/skill_approval.rs@d78696cee410d754f2993e48d3d8bc2c058aa111bd2d74fd78044e481c6a4c27"
+      ]
+    },
+    {
+      "artifact": "causal-review.json",
+      "pointer": "/source_pins/4/native_pin_file",
+      "reference": "native-validation-results/r14-blockers/native-core-r14-result-review.json",
+      "formal_artifacts": [
+        {
+          "path": "../r14-core-checkpoint/native-core-r14-result-review.json",
+          "bytes": 35985,
+          "sha256": "9b5b3a81d4901d8c6769908e2021235e3ef82e3257d5b0c21bf1c086899f0732"
+        }
+      ]
+    },
+    {
+      "artifact": "causal-review.json",
+      "pointer": "/source_pins/5/path",
+      "reference": "codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs",
+      "source_keys": [
+        "codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs@35982a2804b74d3f2eb1027bda62e097abe20c546937b25ee251274b7bdbd6ec"
+      ]
+    },
+    {
+      "artifact": "causal-review.json",
+      "pointer": "/source_pins/5/native_pin_file",
+      "reference": "native-validation-results/r14-blockers/native-core-r14-result-review.json",
+      "formal_artifacts": [
+        {
+          "path": "../r14-core-checkpoint/native-core-r14-result-review.json",
+          "bytes": 35985,
+          "sha256": "9b5b3a81d4901d8c6769908e2021235e3ef82e3257d5b0c21bf1c086899f0732"
+        }
+      ]
+    },
+    {
+      "artifact": "causal-review.json",
+      "pointer": "/source_pins/6/path",
+      "reference": "codex-rs/linux-sandbox/src/bwrap.rs",
+      "source_keys": [
+        "codex-rs/linux-sandbox/src/bwrap.rs@bfce8aa44048b2441a7c02b301fe7366ae1b8b9ddd8ff8518711cd874a9e749e"
+      ]
+    },
+    {
+      "artifact": "causal-review.json",
+      "pointer": "/source_pins/6/url",
+      "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b44d4ca4aa0ef9f894eff29e9975938e066a82f5/codex-rs/linux-sandbox/src/bwrap.rs",
+      "source_keys": [
+        "codex-rs/linux-sandbox/src/bwrap.rs@bfce8aa44048b2441a7c02b301fe7366ae1b8b9ddd8ff8518711cd874a9e749e"
+      ]
+    },
+    {
+      "artifact": "causal-review.json",
+      "pointer": "/source_pins/7/path",
+      "reference": "codex-rs/protocol/src/permissions.rs",
+      "source_keys": [
+        "codex-rs/protocol/src/permissions.rs@3ad7c54a19a3bddd72e9e8d8d0641835674ac2b596001ee0d7ce32293863fe06"
+      ]
+    },
+    {
+      "artifact": "causal-review.json",
+      "pointer": "/source_pins/7/url",
+      "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b44d4ca4aa0ef9f894eff29e9975938e066a82f5/codex-rs/protocol/src/permissions.rs",
+      "source_keys": [
+        "codex-rs/protocol/src/permissions.rs@3ad7c54a19a3bddd72e9e8d8d0641835674ac2b596001ee0d7ce32293863fe06"
+      ]
+    },
+    {
+      "artifact": "causal-review.json",
+      "pointer": "/cases/0/source_chain/0/path",
+      "reference": "codex-rs/core/tests/suite/skill_approval.rs",
+      "source_keys": [
+        "codex-rs/core/tests/suite/skill_approval.rs@d78696cee410d754f2993e48d3d8bc2c058aa111bd2d74fd78044e481c6a4c27"
+      ]
+    },
+    {
+      "artifact": "causal-review.json",
+      "pointer": "/cases/0/source_chain/1/path",
+      "reference": "codex-rs/core/tests/common/lib.rs",
+      "source_keys": [
+        "codex-rs/core/tests/common/lib.rs@34120e98be2ac8e1ee96373373f2241f9383f2cfb724d55cbcce2fb049468de9"
+      ]
+    },
+    {
+      "artifact": "causal-review.json",
+      "pointer": "/cases/0/source_chain/2/path",
+      "reference": "codex-rs/core/tests/suite/skill_approval.rs",
+      "source_keys": [
+        "codex-rs/core/tests/suite/skill_approval.rs@d78696cee410d754f2993e48d3d8bc2c058aa111bd2d74fd78044e481c6a4c27"
+      ]
+    },
+    {
+      "artifact": "causal-review.json",
+      "pointer": "/cases/1/source_chain/0/path",
+      "reference": "codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs",
+      "source_keys": [
+        "codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs@35982a2804b74d3f2eb1027bda62e097abe20c546937b25ee251274b7bdbd6ec"
+      ]
+    },
+    {
+      "artifact": "causal-review.json",
+      "pointer": "/cases/1/source_chain/1/path",
+      "reference": "codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs",
+      "source_keys": [
+        "codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs@35982a2804b74d3f2eb1027bda62e097abe20c546937b25ee251274b7bdbd6ec"
+      ]
+    },
+    {
+      "artifact": "causal-review.json",
+      "pointer": "/cases/1/source_chain/2/path",
+      "reference": "codex-rs/protocol/src/permissions.rs",
+      "source_keys": [
+        "codex-rs/protocol/src/permissions.rs@3ad7c54a19a3bddd72e9e8d8d0641835674ac2b596001ee0d7ce32293863fe06"
+      ]
+    },
+    {
+      "artifact": "causal-review.json",
+      "pointer": "/cases/1/source_chain/3/path",
+      "reference": "codex-rs/linux-sandbox/src/bwrap.rs",
+      "source_keys": [
+        "codex-rs/linux-sandbox/src/bwrap.rs@bfce8aa44048b2441a7c02b301fe7366ae1b8b9ddd8ff8518711cd874a9e749e"
+      ]
+    },
+    {
+      "artifact": "causal-review.json",
+      "pointer": "/cases/1/source_chain/4/path",
+      "reference": "codex-rs/core/src/config/permissions.rs",
+      "source_keys": [
+        "codex-rs/core/src/config/permissions.rs@7d2566dbc3dc1ef8397f3757373f9983a6dbb2b91c6a0a9e0c7f3c244743e9e9"
+      ]
+    },
+    {
+      "artifact": "causal-review.json",
+      "pointer": "/cases/1/source_chain/5/path",
+      "reference": "codex-rs/linux-sandbox/src/bwrap.rs",
+      "source_keys": [
+        "codex-rs/linux-sandbox/src/bwrap.rs@bfce8aa44048b2441a7c02b301fe7366ae1b8b9ddd8ff8518711cd874a9e749e"
+      ]
+    },
+    {
+      "artifact": "causal-review.json",
+      "pointer": "/validation/mechanical_review/path",
+      "reference": "core-zsh-fixtures-r14-repair/mechanical-review.json",
+      "formal_artifacts": [
+        {
+          "path": "mechanical-review.json",
+          "bytes": 1789,
+          "sha256": "be0b31425943f71f071f74a0e82200497473f19773e9d05a38747b8893eb8465"
+        }
+      ]
+    },
+    {
+      "artifact": "causal-review.json",
+      "pointer": "/validation/assertion_preservation/0/path",
+      "reference": "codex-rs/core/tests/suite/skill_approval.rs",
+      "source_keys": [
+        "codex-rs/core/tests/suite/skill_approval.rs@d78696cee410d754f2993e48d3d8bc2c058aa111bd2d74fd78044e481c6a4c27"
+      ]
+    },
+    {
+      "artifact": "causal-review.json",
+      "pointer": "/validation/assertion_preservation/1/path",
+      "reference": "codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs",
+      "source_keys": [
+        "codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs@35982a2804b74d3f2eb1027bda62e097abe20c546937b25ee251274b7bdbd6ec"
+      ]
+    },
+    {
+      "artifact": "pins/codex-rs__config__src__permissions_toml.rs.json",
+      "pointer": "/path",
+      "reference": "codex-rs/config/src/permissions_toml.rs",
+      "source_keys": [
+        "codex-rs/config/src/permissions_toml.rs@8246747d3777d30f2bb3356353f76d8a675ef1b8a2774bbf08dfd67081d4111d"
+      ]
+    },
+    {
+      "artifact": "pins/codex-rs__config__src__permissions_toml.rs.json",
+      "pointer": "/url",
+      "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b44d4ca4aa0ef9f894eff29e9975938e066a82f5/codex-rs/config/src/permissions_toml.rs",
+      "source_keys": [
+        "codex-rs/config/src/permissions_toml.rs@8246747d3777d30f2bb3356353f76d8a675ef1b8a2774bbf08dfd67081d4111d"
+      ]
+    },
+    {
+      "artifact": "pins/codex-rs__core__src__config__permissions.rs.json",
+      "pointer": "/path",
+      "reference": "codex-rs/core/src/config/permissions.rs",
+      "source_keys": [
+        "codex-rs/core/src/config/permissions.rs@7d2566dbc3dc1ef8397f3757373f9983a6dbb2b91c6a0a9e0c7f3c244743e9e9"
+      ]
+    },
+    {
+      "artifact": "pins/codex-rs__core__src__config__permissions.rs.json",
+      "pointer": "/url",
+      "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b44d4ca4aa0ef9f894eff29e9975938e066a82f5/codex-rs/core/src/config/permissions.rs",
+      "source_keys": [
+        "codex-rs/core/src/config/permissions.rs@7d2566dbc3dc1ef8397f3757373f9983a6dbb2b91c6a0a9e0c7f3c244743e9e9"
+      ]
+    },
+    {
+      "artifact": "pins/codex-rs__core__tests__common__lib.rs.json",
+      "pointer": "/path",
+      "reference": "codex-rs/core/tests/common/lib.rs",
+      "source_keys": [
+        "codex-rs/core/tests/common/lib.rs@34120e98be2ac8e1ee96373373f2241f9383f2cfb724d55cbcce2fb049468de9"
+      ]
+    },
+    {
+      "artifact": "pins/codex-rs__core__tests__common__zsh_fork.rs.json",
+      "pointer": "/path",
+      "reference": "codex-rs/core/tests/common/zsh_fork.rs",
+      "source_keys": [
+        "codex-rs/core/tests/common/zsh_fork.rs@c8ec104fe613f1b0695e9c0cc35120540a223a57f3cd5b0ac1c56699b631531f"
+      ]
+    },
+    {
+      "artifact": "pins/codex-rs__core__tests__common__zsh_fork.rs.json",
+      "pointer": "/url",
+      "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b44d4ca4aa0ef9f894eff29e9975938e066a82f5/codex-rs/core/tests/common/zsh_fork.rs",
+      "source_keys": [
+        "codex-rs/core/tests/common/zsh_fork.rs@c8ec104fe613f1b0695e9c0cc35120540a223a57f3cd5b0ac1c56699b631531f"
+      ]
+    },
+    {
+      "artifact": "pins/codex-rs__core__tests__suite__skill_approval.rs.json",
+      "pointer": "/path",
+      "reference": "codex-rs/core/tests/suite/skill_approval.rs",
+      "source_keys": [
+        "codex-rs/core/tests/suite/skill_approval.rs@d78696cee410d754f2993e48d3d8bc2c058aa111bd2d74fd78044e481c6a4c27"
+      ]
+    },
+    {
+      "artifact": "pins/codex-rs__core__tests__suite__skill_approval.rs.json",
+      "pointer": "/native_pin_file",
+      "reference": "native-validation-results/r14-blockers/native-core-r14-result-review.json",
+      "formal_artifacts": [
+        {
+          "path": "../r14-core-checkpoint/native-core-r14-result-review.json",
+          "bytes": 35985,
+          "sha256": "9b5b3a81d4901d8c6769908e2021235e3ef82e3257d5b0c21bf1c086899f0732"
+        }
+      ]
+    },
+    {
+      "artifact": "pins/codex-rs__core__tests__suite__unified_exec_zsh_fork_approvals.rs.json",
+      "pointer": "/path",
+      "reference": "codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs",
+      "source_keys": [
+        "codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs@35982a2804b74d3f2eb1027bda62e097abe20c546937b25ee251274b7bdbd6ec"
+      ]
+    },
+    {
+      "artifact": "pins/codex-rs__core__tests__suite__unified_exec_zsh_fork_approvals.rs.json",
+      "pointer": "/native_pin_file",
+      "reference": "native-validation-results/r14-blockers/native-core-r14-result-review.json",
+      "formal_artifacts": [
+        {
+          "path": "../r14-core-checkpoint/native-core-r14-result-review.json",
+          "bytes": 35985,
+          "sha256": "9b5b3a81d4901d8c6769908e2021235e3ef82e3257d5b0c21bf1c086899f0732"
+        }
+      ]
+    },
+    {
+      "artifact": "pins/codex-rs__linux-sandbox__src__bwrap.rs.json",
+      "pointer": "/path",
+      "reference": "codex-rs/linux-sandbox/src/bwrap.rs",
+      "source_keys": [
+        "codex-rs/linux-sandbox/src/bwrap.rs@bfce8aa44048b2441a7c02b301fe7366ae1b8b9ddd8ff8518711cd874a9e749e"
+      ]
+    },
+    {
+      "artifact": "pins/codex-rs__linux-sandbox__src__bwrap.rs.json",
+      "pointer": "/url",
+      "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b44d4ca4aa0ef9f894eff29e9975938e066a82f5/codex-rs/linux-sandbox/src/bwrap.rs",
+      "source_keys": [
+        "codex-rs/linux-sandbox/src/bwrap.rs@bfce8aa44048b2441a7c02b301fe7366ae1b8b9ddd8ff8518711cd874a9e749e"
+      ]
+    },
+    {
+      "artifact": "pins/codex-rs__protocol__src__permissions.rs.json",
+      "pointer": "/path",
+      "reference": "codex-rs/protocol/src/permissions.rs",
+      "source_keys": [
+        "codex-rs/protocol/src/permissions.rs@3ad7c54a19a3bddd72e9e8d8d0641835674ac2b596001ee0d7ce32293863fe06"
+      ]
+    },
+    {
+      "artifact": "pins/codex-rs__protocol__src__permissions.rs.json",
+      "pointer": "/url",
+      "reference": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b44d4ca4aa0ef9f894eff29e9975938e066a82f5/codex-rs/protocol/src/permissions.rs",
+      "source_keys": [
+        "codex-rs/protocol/src/permissions.rs@3ad7c54a19a3bddd72e9e8d8d0641835674ac2b596001ee0d7ce32293863fe06"
+      ]
+    }
+  ],
+  "source_objects": [
+    {
+      "path": "codex-rs/core/tests/suite/skill_approval.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "bytes": 9924,
+      "sha256": "d78696cee410d754f2993e48d3d8bc2c058aa111bd2d74fd78044e481c6a4c27",
+      "git_blob": "746dfc59f6db3a379440df805d821435d46d8e86",
+      "pin_evidence": "core-zsh-fixtures-r14-repair/source-manifest.json",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/core/tests/suite/skill_approval.rs"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "bytes": 31429,
+      "sha256": "35982a2804b74d3f2eb1027bda62e097abe20c546937b25ee251274b7bdbd6ec",
+      "git_blob": "02a8e0abc60f415327cd2713d92d23bc503ab3e4",
+      "pin_evidence": "core-zsh-fixtures-r14-repair/source-manifest.json",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/skill_approval.rs",
+      "commit": "b44d4ca4aa0ef9f894eff29e9975938e066a82f5",
+      "bytes": 9892,
+      "sha256": "8e977c5bf5bbd94f345886b83e16fcf8a3661a467090bc3ab67ae7604de79952",
+      "git_blob": "b62848b6bd3c88e776d5bb0683f24cbacddd787b",
+      "pin_evidence": "core-zsh-fixtures-r14-repair/causal-review.json#/source_pins",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b44d4ca4aa0ef9f894eff29e9975938e066a82f5/codex-rs/core/tests/suite/skill_approval.rs"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs",
+      "commit": "b44d4ca4aa0ef9f894eff29e9975938e066a82f5",
+      "bytes": 31383,
+      "sha256": "79e550c948ce2eb51f0829c619bd73c2dd582c800299cbc78bc86c1feb524cae",
+      "git_blob": "218e22809391565142021a9809c1d5ef2adc0f14",
+      "pin_evidence": "core-zsh-fixtures-r14-repair/causal-review.json#/source_pins",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b44d4ca4aa0ef9f894eff29e9975938e066a82f5/codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs"
+    },
+    {
+      "path": "AGENTS.md",
+      "commit": "b44d4ca4aa0ef9f894eff29e9975938e066a82f5",
+      "bytes": 22519,
+      "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480",
+      "git_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+      "pin_evidence": "core-hook-binding-r14-repair/additional-source-pins.json",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b44d4ca4aa0ef9f894eff29e9975938e066a82f5/AGENTS.md"
+    },
+    {
+      "path": "codex-rs/config/src/permissions_toml.rs",
+      "commit": "b44d4ca4aa0ef9f894eff29e9975938e066a82f5",
+      "bytes": 21021,
+      "sha256": "8246747d3777d30f2bb3356353f76d8a675ef1b8a2774bbf08dfd67081d4111d",
+      "git_blob": "98fd3534d62b304b0bee37810386c7f94e90e20b",
+      "pin_evidence": "core-zsh-fixtures-r14-repair/causal-review.json#/source_pins",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b44d4ca4aa0ef9f894eff29e9975938e066a82f5/codex-rs/config/src/permissions_toml.rs"
+    },
+    {
+      "path": "codex-rs/core/src/config/permissions.rs",
+      "commit": "b44d4ca4aa0ef9f894eff29e9975938e066a82f5",
+      "bytes": 34126,
+      "sha256": "7d2566dbc3dc1ef8397f3757373f9983a6dbb2b91c6a0a9e0c7f3c244743e9e9",
+      "git_blob": "a3b6dc5963dda0d0b06ef80c6bf22fad8749a952",
+      "pin_evidence": "core-zsh-fixtures-r14-repair/causal-review.json#/source_pins",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b44d4ca4aa0ef9f894eff29e9975938e066a82f5/codex-rs/core/src/config/permissions.rs"
+    },
+    {
+      "path": "codex-rs/core/tests/common/lib.rs",
+      "commit": "b44d4ca4aa0ef9f894eff29e9975938e066a82f5",
+      "bytes": 23401,
+      "sha256": "34120e98be2ac8e1ee96373373f2241f9383f2cfb724d55cbcce2fb049468de9",
+      "git_blob": "f4e0d11e0b440b57faeba5c400e343975a0506d3",
+      "pin_evidence": "core-mcp-recovery-r14-repair/causal-review.json#/source_pins",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b44d4ca4aa0ef9f894eff29e9975938e066a82f5/codex-rs/core/tests/common/lib.rs"
+    },
+    {
+      "path": "codex-rs/core/tests/common/zsh_fork.rs",
+      "commit": "b44d4ca4aa0ef9f894eff29e9975938e066a82f5",
+      "bytes": 4047,
+      "sha256": "c8ec104fe613f1b0695e9c0cc35120540a223a57f3cd5b0ac1c56699b631531f",
+      "git_blob": "225867d8c72283b57540a38c97d6c44106eef33e",
+      "pin_evidence": "core-zsh-fixtures-r14-repair/causal-review.json#/source_pins",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b44d4ca4aa0ef9f894eff29e9975938e066a82f5/codex-rs/core/tests/common/zsh_fork.rs"
+    },
+    {
+      "path": "codex-rs/linux-sandbox/src/bwrap.rs",
+      "commit": "b44d4ca4aa0ef9f894eff29e9975938e066a82f5",
+      "bytes": 106289,
+      "sha256": "bfce8aa44048b2441a7c02b301fe7366ae1b8b9ddd8ff8518711cd874a9e749e",
+      "git_blob": "11e8e612af3cc4245a537fae18199acc74075a3b",
+      "pin_evidence": "core-zsh-fixtures-r14-repair/causal-review.json#/source_pins",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b44d4ca4aa0ef9f894eff29e9975938e066a82f5/codex-rs/linux-sandbox/src/bwrap.rs"
+    },
+    {
+      "path": "codex-rs/protocol/src/permissions.rs",
+      "commit": "b44d4ca4aa0ef9f894eff29e9975938e066a82f5",
+      "bytes": 145214,
+      "sha256": "3ad7c54a19a3bddd72e9e8d8d0641835674ac2b596001ee0d7ce32293863fe06",
+      "git_blob": "1537230e0a8f1685530eb03c2c782a587ad6bb6a",
+      "pin_evidence": "core-zsh-fixtures-r14-repair/causal-review.json#/source_pins",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b44d4ca4aa0ef9f894eff29e9975938e066a82f5/codex-rs/protocol/src/permissions.rs"
+    }
+  ],
+  "formal_evidence": [
+    {
+      "path": "../r14-core-checkpoint/native-core-r14-result-review.json",
+      "bytes": 35985,
+      "sha256": "9b5b3a81d4901d8c6769908e2021235e3ef82e3257d5b0c21bf1c086899f0732"
+    },
+    {
+      "path": "../r14-core-checkpoint/native-core-r14-tests-receipt.json",
+      "bytes": 855,
+      "sha256": "c532ec738074e4add3165e0f74bd992d127ab75bf9b0736c78012ec91e273c22"
+    },
+    {
+      "path": "../r14-core-checkpoint/native-core-r14-tests.log.gz",
+      "bytes": 85335,
+      "sha256": "400ba9860f303f32173fdf7c51a67aed56701c76319e12a18c0bf68f03c9fe9a"
+    },
+    {
+      "path": "../r14-core-checkpoint/native-candidate-r14-source.json",
+      "bytes": 45387,
+      "sha256": "dffa92b76aa4354dc39bee15d2ad1078e0e72d00bc6b20f78acbe5243394a059"
+    },
+    {
+      "path": "../r14-core-checkpoint/ROOT-RESULT-READBACK.json",
+      "bytes": 7396,
+      "sha256": "5310930bb7d6c1eab285121e9affd96c0d278b54676a467ca0aacbe7a6e9bab6"
+    },
+    {
+      "path": "../r14-core-checkpoint/ROOT-SOURCE-ROUNDTRIP.json",
+      "bytes": 527,
+      "sha256": "b561099ba816f5b07d36d8258628bae8c7081d95bfa32dc43d835ec59313bd9b"
+    },
+    {
+      "path": "../r15-stage44-input/root-published-source.json",
+      "bytes": 8218,
+      "sha256": "2ce4a25a216fe706b2edde8f387fdfa8fe364d3c2203f981c94a8ea3a62b7c09"
+    },
+    {
+      "path": "../r15-stage44-input/R14-REPAIR-COVERAGE-MAP.json",
+      "bytes": 17982,
+      "sha256": "e86433a54987d902543ca7194328f3a85403f6c12d192cf9a70a029f9bae9a9d"
+    },
+    {
+      "path": "../r15-core-mcp-checkpoint/native-candidate-r15-source.json",
+      "bytes": 48734,
+      "sha256": "ee85feeca1c8da886ab3f52ab26fb741bb5d8569880b26985a2b0d7f8533dc2d"
+    },
+    {
+      "path": "../r15-core-mcp-checkpoint/native-core-mcp-r15-strict-receipt.json",
+      "bytes": 917,
+      "sha256": "4129fe2f4a14b757d642661b9da5e55bb3633e32cc61a9f7ee4e8574cb9f240a"
+    }
+  ],
+  "shared_hook_pins": {
+    "path": "../core-hook-binding-r14-repair/hook-shared-source-pins.json",
+    "bytes": 9853,
+    "sha256": "0385e4a104ba74c57dd250e4d0267a71a31361aff6c936567364dab37c776ce4"
+  },
+  "additional_source_pins": {
+    "path": "../core-hook-binding-r14-repair/additional-source-pins.json",
+    "bytes": 1244,
+    "sha256": "b5b306eb4829af7de89ea145e1697077dc7b654545304ad1bf66a25e85bd6845"
+  },
+  "closed_original_failures": [
+    {
+      "name": "suite::skill_approval::shell_zsh_fork_skill_scripts_ignore_declared_permissions",
+      "status": "FAIL",
+      "elapsed": "10.326s",
+      "log_byte_range": [
+        504259,
+        505038
+      ],
+      "excerpt_sha256": "e46e124299f9f3f024f3f79d541939c544d792d95a1a3c04f0e803e937365f83"
+    },
+    {
+      "name": "suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_preserves_denied_reads",
+      "status": "FAIL",
+      "elapsed": "0.138s",
+      "log_byte_range": [
+        538582,
+        539548
+      ],
+      "excerpt_sha256": "012b29e9397f7bba01f4bec5600535be29b5bd9453fcbf4d30a4138a40c6c98a"
+    }
+  ],
+  "closed_log_raw_sha256": "443a58d70c34d76ba9b8141ad7ee32d997a4f16af79e8f5a873770966028952c",
+  "qualifications": [
+    "All source URLs are immutable commits; before and after versions are explicitly distinct. Legacy pre-stage42 comparison uses its original retained formal manifest.",
+    "The OAuth native-runtime-refresh-proof.json is native source-content evidence, not a successful OAuth runtime execution.",
+    "The MCP closed-failure-addendum.json supersedes only its earlier individual active-prefix status; the original causal review remains unchanged.",
+    "No whole source/original tree or duplicate full test log is copied. The existing formal gzip/receipt holds the closed full log.",
+    "Strict compilation, source matching and artifact hashes do not establish candidate test PASS. r15 terminal test receipts are separate and are not authored or inferred by this archive task."
+  ],
+  "unresolved_references": [],
+  "rust_or_ci_execution_by_archive_task": false
+}

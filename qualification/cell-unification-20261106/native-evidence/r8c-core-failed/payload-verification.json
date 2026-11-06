@@ -1,0 +1,580 @@
+{
+  "schema": "hepta.checkpoint-through-r8d-independent-payload-verification.v1",
+  "state": "ALL_ARCHIVE_PAYLOAD_SHA_AND_SOURCE_BLOBS_VERIFIED_EXPORT_MODES_DISTINGUISHED",
+  "archive_sha256": "2cc967ba8e94770742505bb1acbcaa2690f5b07e403c1b3aa66193b6696acd6a",
+  "manifest_sha256": "a523a1a00fe1aa3a5edb444b5e3b34bb7d6362a3f43036e9ba15de2f095bdcea",
+  "source_tree_declared": "6d88ca9c8964669a408d8549efaeff7b94d68674",
+  "regular_archive_members": 110,
+  "manifest_listed_payload_files": 109,
+  "manifest_archive_bound_member": 1,
+  "source_files_with_sha_blob_and_size_verified": 82,
+  "closed_evidence_files_with_sha_and_size_verified": 27,
+  "original_receipts_log_sha_resources_exit_verified": [
+    {
+      "stem": "native-candidate-r8-strict-diagnostic",
+      "exit_code": 101,
+      "log_sha256": "04424a725bff43ebb69deb2090a509cd6eface05b2a1ff61341b5eb433ca6013",
+      "source": "6d88ca9c8964669a408d8549efaeff7b94d68674",
+      "command": [
+        "just",
+        "clippy",
+        "--locked",
+        "--keep-going",
+        "-p",
+        "codex-model-provider-info",
+        "-p",
+        "codex-shell-escalation",
+        "-p",
+        "codex-linux-sandbox",
+        "-p",
+        "codex-hepta-memory",
+        "-p",
+        "codex-exec-server",
+        "-p",
+        "codex-hepta-supervisor",
+        "-p",
+        "codex-hepta-memory-extension",
+        "-p",
+        "codex-core",
+        "-p",
+        "codex-hepta-agentd",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "declared_elapsed_seconds": 59.82199716567993
+    },
+    {
+      "stem": "native-core-r8c-strict",
+      "exit_code": 0,
+      "log_sha256": "fe99dc599da9e5fa061c4628b8e91fe17277194b82be14acd3b41dca385a79bb",
+      "source": "6d88ca9c8964669a408d8549efaeff7b94d68674",
+      "command": [
+        "just",
+        "clippy",
+        "--locked",
+        "-p",
+        "codex-core",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "declared_elapsed_seconds": 174.72644114494324
+    },
+    {
+      "stem": "native-core-r8c-tests",
+      "exit_code": 100,
+      "log_sha256": "d5838182b45478741d7af4c65dc3ed826b27c0f14d825897c21f0062a292e687",
+      "source": "6d88ca9c8964669a408d8549efaeff7b94d68674",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-core",
+        "--retries",
+        "0"
+      ],
+      "declared_elapsed_seconds": 1142.0338122844696
+    },
+    {
+      "stem": "native-inherited-seven-r8b-strict",
+      "exit_code": 0,
+      "log_sha256": "1d70d8f6d18c28a5dffbe96582202ae6e9aa0834707e3aa807967cb1b88cf2c4",
+      "source": "6d88ca9c8964669a408d8549efaeff7b94d68674",
+      "command": [
+        "just",
+        "clippy",
+        "--locked",
+        "-p",
+        "codex-model-provider-info",
+        "-p",
+        "codex-shell-escalation",
+        "-p",
+        "codex-linux-sandbox",
+        "-p",
+        "codex-hepta-memory",
+        "-p",
+        "codex-exec-server",
+        "-p",
+        "codex-hepta-supervisor",
+        "-p",
+        "codex-hepta-memory-extension",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "declared_elapsed_seconds": 134.3761796951294
+    },
+    {
+      "stem": "native-inherited-seven-r8b-tests",
+      "exit_code": 100,
+      "log_sha256": "a68e4640f13a44efab1403a4563c1cffb056b6847d09723484d29ab74be04ec0",
+      "source": "6d88ca9c8964669a408d8549efaeff7b94d68674",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-model-provider-info",
+        "-p",
+        "codex-shell-escalation",
+        "-p",
+        "codex-linux-sandbox",
+        "-p",
+        "codex-hepta-memory",
+        "-p",
+        "codex-exec-server",
+        "-p",
+        "codex-hepta-supervisor",
+        "-p",
+        "codex-hepta-memory-extension",
+        "--retries",
+        "0"
+      ],
+      "declared_elapsed_seconds": 625.657585144043
+    },
+    {
+      "stem": "native-paired-r8d-original-j1",
+      "exit_code": 100,
+      "log_sha256": "206dd14059805d873fc05e2b7e0ebf906397472c94088a22eb68cbb8b95a322e",
+      "source": "6d88ca9c8964669a408d8549efaeff7b94d68674",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-supervisor",
+        "--test",
+        "paired_process_product",
+        "--retries",
+        "0",
+        "-j",
+        "1"
+      ],
+      "declared_elapsed_seconds": 115.63285231590271
+    }
+  ],
+  "source_mode_boundary": {
+    "note": "Exported tar permissions are not Git modes. Reconstruct Git source using the manifest declared Git mode; source bytes/blob IDs match. This reviewer did not mutate the archive to make modes agree.",
+    "mode_counts": {
+      "100644 vs 0o600": 82
+    },
+    "files": [
+      {
+        "path": ".github/workflows/hepta-cell-differentiation.yml",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": ".github/workflows/hepta-cell-framework-native.yml",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/core/src/client.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/core/src/client_provider_policy_tests.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/core/src/client_tests.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/core/src/turn_metadata_tests.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/exec-server/src/local_process_custody.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/exec-server/src/local_process_observation_tests.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/exec-server/src/server/handler/tests.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/ext/hepta-memory/src/cognitive/mod.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/ext/hepta-memory/src/cognitive/tests.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/circuit_cell.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/intelligence_product_runner.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/learning_iteration_runtime_tests.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-automation/src/circuit_runtime_tests.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-automation/src/circuit_store_tests.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-automation/src/lib.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-automation/src/neural_circuit.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-automation/tests/authorized_effect.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-automation/tests/automation.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-automation/tests/retirement_recovery.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-context-compiler/src/lib.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-context-compiler/src/v2.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-context-compiler/src/v2_tests.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-intelligence/src/canonical.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-learning-artifacts/src/learning_iteration_test_support.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-learning-artifacts/src/learning_iteration_types.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/cognitive_intelligence_writer.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/desktop_turn_writer_tests.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/local_lease_outbox.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/production_writer.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/cell.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/cell_feature_projection.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/cell_feature_projection_tests.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/cell_inference_tests.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/cell_journal_tests.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/cell_population.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/cell_population_tests.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/cell_registry.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/cell_registry_tests.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/cell_roles.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/cell_roles_tests.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/cell_tests.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/cell_types.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/cell_update.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/lib.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-plasticity/src/differentiation_demand.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-plasticity/src/differentiation_demand_tests.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-plasticity/src/differentiation_observations.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-plasticity/src/differentiation_plan.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-plasticity/src/differentiation_study.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-plasticity/src/differentiation_study_tests.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-plasticity/src/differentiation_test_support.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-plasticity/src/differentiation_topology.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-plasticity/src/differentiation_types.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-plasticity/src/lib.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-runtime/src/cell_lifecycle_journal.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-runtime/src/cell_lifecycle_transition.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-supervisor/src/recovery.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-supervisor/src/restart_state.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-supervisor/src/runtime.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-supervisor/src/supervisor_restart_recovery_tests.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/linux-sandbox/src/landlock.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/model-provider-info/src/test_support.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/shell-escalation/src/unix/socket.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "codex-rs/utils/pty/src/unix_io.rs",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "qualification/cell-differentiation/README.md",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "qualification/cell-differentiation/VALIDATION.md",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "qualification/cell-differentiation/run_study.py",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "qualification/cell-differentiation/study_cost.py",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "qualification/cell-differentiation/study_data.py",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "qualification/cell-differentiation/study_evidence.py",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "qualification/cell-differentiation/study_gate.py",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "qualification/cell-differentiation/study_model.py",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      },
+      {
+        "path": "qualification/cell-differentiation/test_study.py",
+        "declared_git_mode": "100644",
+        "archive_member_mode": "0o600"
+      }
+    ]
+  },
+  "full_git_tree_reconstruction": "Parent/root performs independently; this payload audit verifies all declared archived changed-source pins, not omitted repository files.",
+  "no_remote_or_root_repo_modifications": true,
+  "no_rust_execution": true,
+  "active_logs_read": false
+}

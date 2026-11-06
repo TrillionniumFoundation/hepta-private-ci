@@ -1,0 +1,109 @@
+{
+  "source_tree": "1646e1656cf6365e74accae19a1225fd2ce6d964",
+  "source_commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+  "status": "STATIC_REVIEW_COMPLETE_NATIVE_NOT_RUN",
+  "failure": {
+    "status": "FAIL",
+    "elapsed": "5.262s",
+    "binary": "codex-core",
+    "name": "session::tests::managed_network_proxy_decider_survives_full_access_start",
+    "log_byte_range": [
+      211007,
+      211765
+    ],
+    "excerpt": "        FAIL [   5.262s] codex-core session::tests::managed_network_proxy_decider_survives_full_access_start\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test session::tests::managed_network_proxy_decider_survives_full_access_start ... FAILED\n\n    failures:\n\n    failures:\n        session::tests::managed_network_proxy_decider_survives_full_access_start\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 2452 filtered out; finished in 5.25s\n\n  stderr \u2500\u2500\u2500\n\n    thread 'session::tests::managed_network_proxy_decider_survives_full_access_start' (1210358) panicked at core/src/session/tests.rs:2591:10:\n    timed out waiting for proxy response: Elapsed(())\n    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+  },
+  "r15_original_log_sha256": "2e9b11682a84cce7be7e1db72e47eb4be260e8d7ef7a3b1fa916fe59c5a3e39f",
+  "prior_r14_observation": {
+    "source_tree": "d3d2313b838422818bf9448ce5a1b86d89abdf69",
+    "log": {
+      "path": "native-validation-results/checkpoint-r14/evidence/native-core-r14-tests.log",
+      "bytes": 551526,
+      "sha256": "443a58d70c34d76ba9b8141ad7ee32d997a4f16af79e8f5a873770966028952c"
+    },
+    "result": "        PASS [   0.283s] codex-core session::tests::managed_network_proxy_decider_survives_full_access_start"
+  },
+  "candidate": {
+    "path": "codex-rs/core/src/session/tests.rs",
+    "before": {
+      "bytes": 504602,
+      "sha256": "29da32a96770cc74df87d09465c9d138dbabc539d038d1641001a0affd29d085",
+      "git_blob": "dce43c7f844f45036a7b58b307de500029f1f001"
+    },
+    "after": {
+      "bytes": 504663,
+      "sha256": "8d06e0e5d0f59b5c06d093ae822aec42f76a212c23b8ac26939345ab2e1c8309",
+      "git_blob": "d9fb57b98d68fc8b548ba312b5f1671f70fd0573"
+    },
+    "mode": "100644"
+  },
+  "patch": {
+    "bytes": 702,
+    "sha256": "ce0e594600932842dfd3f6e22b49c810b15ec504add40166e2090f340d3f8389",
+    "git_blob": "5b6404a8f9992d8260507fb646bfe04cd7985a38"
+  },
+  "support": [
+    {
+      "path": "core-managed-proxy-r15-fixture/support/native-http-proof.json",
+      "bytes": 13509,
+      "sha256": "e83d907c36833f7af1998fec42487da017d7312f0d8623a5313b186e2ec1ab25"
+    },
+    {
+      "path": "core-managed-proxy-r15-fixture/support/native-runtime-map.json",
+      "bytes": 4101,
+      "sha256": "6c6ad101f600cca368382be5132be5f444c1742f66a9942e500d0548d9dabb2d"
+    },
+    {
+      "path": "core-managed-proxy-r15-fixture/support/network-proxy-source-manifest.json",
+      "bytes": 872,
+      "sha256": "d1f362d391c6335c4f3dc69642d70f039c46d39077a0535d6adb6880e4aeeb3a"
+    }
+  ],
+  "retained_complete_runtime": {
+    "path": "native-validation-results/r8b-test-failures/proxy-fixture-repair/baseline-source/codex-rs/network-proxy/src/runtime.rs",
+    "bytes": 75473,
+    "sha256": "3214446d85796e5d1c4a308ba53aab3bf7098fc18cd38cfc6f97a1cbb14d2e4f"
+  },
+  "proof_chain": [
+    {
+      "file": "codex-rs/core/src/session/tests.rs",
+      "lines": [
+        2536,
+        2608
+      ],
+      "fact": "The case verifies retaining one policy-decider call after full-access startup and workspace-write reconfiguration. It sends a localhost-proxy request for example.com and gives stream.read two seconds; all four assertions and the request setup remain."
+    },
+    {
+      "file": "codex-rs/network-proxy/src/http_proxy.rs",
+      "lines": [
+        772,
+        826
+      ],
+      "fact": "The HTTP request calls evaluate_host_policy before forwarding. A Deny returns the blocked response immediately."
+    },
+    {
+      "file": "codex-rs/network-proxy/src/network_policy.rs",
+      "lines": [
+        340,
+        378
+      ],
+      "fact": "evaluate_host_policy awaits host_blocked first and invokes the decider only for NotAllowed. NetworkDecision::ask constructs a Deny with Ask audit classification."
+    },
+    {
+      "file": "codex-rs/network-proxy/src/runtime.rs",
+      "lines": [
+        49,
+        528,
+        600,
+        934,
+        974
+      ],
+      "fact": "The non-public address check has its own two-second DNS budget for hostnames, before the allowlist decision. A public IP literal takes the direct IP classification branch. Its existing host_blocked_requires_allowlist_match test already uses 8.8.8.8 to avoid ambient DNS."
+    }
+  ],
+  "edit_scope": "One original test request target and Host field use the same unallowlisted public IP literal; one explanatory comment added. No production source, decider behavior, permission profile, allowlist policy, assertion, timeout, fixture count, feature, retry or network/sandbox environment changes.",
+  "proof_limits": "The r15 log proves only the original read timeout. It contains no DNS lookup timing or request trace, and r14 previously passed. The source-backed fixture correction removes a nonessential ambient DNS dependency; it is not a claim that this run measured a DNS timeout. The future original gate must establish the candidate outcome.",
+  "tests_or_probes_executed": false,
+  "full_file_inverse_exact": true,
+  "git_apply_forward_reverse_exact": true
+}

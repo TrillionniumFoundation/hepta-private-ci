@@ -1,0 +1,31 @@
+{
+  "schema": "hepta.r16-root-closed-strict-readback.v1",
+  "state": "STRICT_PASS_TESTS_RUNNING_AT_ATTACHMENT",
+  "source_commit": "96dc9232535fedf735e3099ef1391b69477270d4",
+  "source_tree": "3ebd193f213d640e5330a1be4b983bcc4b06617a",
+  "native_job": "1a1aff6dbfd-fc05-6d15",
+  "command": [
+    "just",
+    "clippy",
+    "--locked",
+    "-p",
+    "codex-core",
+    "-p",
+    "codex-mcp",
+    "-p",
+    "core_test_support",
+    "--",
+    "-D",
+    "warnings"
+  ],
+  "strict_exit_code": 0,
+  "strict_elapsed_seconds": 36.3511917591095,
+  "strict_receipt_sha256": "589ce7e89b9f985b2ebb30186f733c2ee5768117dea39757575fd1c8bb365449",
+  "strict_log_sha256": "b7b9ef98e984db5a3302f8628b6854b457dd73bbd43530165447b356e12e3991",
+  "strict_resources_sha256": "ea7653ff8701d0a7fc69f92bef812c6a4ae9225b1504a1eae99d30f06edc9c1b",
+  "source_manifest_sha256": "382446e26171f1cfa73f303052e40fe5b55bc41ca2f747e26c04207099938a97",
+  "source_files": 180,
+  "test_terminal_counts": null,
+  "workspace_gate_started": false,
+  "scope": "Closed strict bytes and source manifests only; full source export and terminal original three-package test outcome are pending. Two existing vendored dependency lifetime warnings remain in the original log."
+}

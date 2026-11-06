@@ -1,0 +1,40 @@
+{
+  "command": [
+    "just",
+    "clippy",
+    "--locked",
+    "-p",
+    "codex-model-provider-info",
+    "-p",
+    "codex-shell-escalation",
+    "-p",
+    "codex-linux-sandbox",
+    "-p",
+    "codex-hepta-memory",
+    "-p",
+    "codex-exec-server",
+    "-p",
+    "codex-hepta-supervisor",
+    "-p",
+    "codex-hepta-memory-extension",
+    "--",
+    "-D",
+    "warnings"
+  ],
+  "kind": "strict",
+  "staged_tree": "6ec19f0bae87ffc2dc3c5343c3e5ac390c22a6f0",
+  "source_manifest": "native-candidate-r10-source.json",
+  "environment_manifest": "native-inherited-seven-r10-environment.json",
+  "scope_proof": "native-inherited-seven-r10-scope-proof.json",
+  "start_unix": 1793944417.8600397,
+  "end_unix": 1793944571.2782958,
+  "elapsed_seconds": 153.41825604438782,
+  "exit_code": 0,
+  "log_sha256": "0b02862a72df8c0acf211ea2f60b63ebf7aed6139d5bc522b7cf6192470e476c",
+  "summaries": [],
+  "disk_after": {
+    "total": 1966736678912,
+    "used": 1667487502336,
+    "free": 199268925440
+  }
+}

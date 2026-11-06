@@ -1,0 +1,35 @@
+{
+  "source_manifest": "native-combined-a-source.json",
+  "command": [
+    "just",
+    "test",
+    "-p",
+    "codex-hepta-neuron",
+    "-p",
+    "codex-hepta-plasticity",
+    "-p",
+    "codex-hepta-automation",
+    "-p",
+    "codex-hepta-learning-artifacts",
+    "-p",
+    "codex-hepta-runtime",
+    "-p",
+    "codex-hepta-control-plane",
+    "-p",
+    "codex-utils-pty",
+    "--locked",
+    "--retries",
+    "0"
+  ],
+  "start_unix": 1793933215.0119078,
+  "end_unix": 1793933494.207041,
+  "elapsed_seconds": 279.1951332092285,
+  "exit_code": 0,
+  "log_sha256": "6d3eb769151e36df50f061deafe4fe06125d3bf0b88889c26d8bb27e859f0c4a",
+  "disk_after": {
+    "total": 1966736678912,
+    "used": 1542570549248,
+    "free": 324185878528
+  },
+  "meminfo_after": "MemTotal:       25739556 kB\nMemFree:         1449400 kB\nMemAvailable:   14924164 kB\nBuffers:          642808 kB\nCached:         10953856 kB\nSwapCached:       120192 kB\nActive:          9609560 kB\nInactive:        9080752 kB\nActive(anon):    4779552 kB\nInactive(anon):  2640816 kB\nActive(file):    4830008 kB\nInactive(file):  6439936 kB\nUnevictable:        7496 kB\nMlocked:            7496 kB\nSwapTotal:      16777208 kB\nSwapFree:        3282388 kB\nZswap:                 0 kB\nZswapped:              0 kB\nDirty:            879900 kB\nWriteback:             0 kB\nAnonPages:       7001208 kB\nMapped:          1170540 kB\nShmem:            320436 kB\nKReclaimable:    2625868 kB\nSlab:            3772936 kB\nSReclaimable:    2625868 kB\nSUnreclaim:      1147068 kB\nKernelStack:      109808 kB\nPageTables:       262608 kB\nSecPageTables:      6032 kB\nNFS_Unstable:          0 kB\nBounce:                0 kB\nWritebackTmp:          0 kB\nCommitLimit:    29646984 kB\nCommitted_AS:   338642608 kB\nVmallocTotal:   34359738367 kB\nVmallocUsed:      216208 kB\nVmallocChunk:          0 kB\nPercpu:            69696 kB\nHardwareCorrupted:     0 kB\nAnonHugePages:         0 kB\nShmemHugePages:        0 kB\nShmemPmdMapped:        0 kB\nFileHugePages:     40960 kB\nFilePmdMapped:         0 kB\nCmaTotal:              0 kB\nCmaFree:               0 kB\nUnaccepted:            0 kB\nBalloon:               0 kB\nGPUActive:      40323108 kB\nGPUReclaim:            0 kB\nHugePages_Total:       0\nHugePages_Free:        0\nHugePages_Rsvd:        0\nHugePages_Surp:        0\nHugepagesize:       2048 kB\nHugetlb:               0 kB\nDirectMap4k:    21875952 kB\nDirectMap2M:     4986880 kB\nDirectMap1G:           0 kB\n"
+}

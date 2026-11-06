@@ -1,0 +1,133 @@
+{
+  "schema": "hepta.r14-closed-strict-independent-readback.v1",
+  "state": "STRICT_PASSED_TESTS_NOT_READ",
+  "source_tree": "d3d2313b838422818bf9448ce5a1b86d89abdf69",
+  "source_commit": "b44d4ca4aa0ef9f894eff29e9975938e066a82f5",
+  "original_files_verified": [
+    {
+      "name": "native-core-r14-strict-receipt.json",
+      "bytes": 869,
+      "sha256": "2e993c4d2f083de6d5b2bfefe94b6d303f46198fe8e1f8e415d44b699882d1eb",
+      "remote_version": "66306:50906813:869:1793948185410135617:1793948185410135617"
+    },
+    {
+      "name": "native-core-r14-strict-resources.txt",
+      "bytes": 795,
+      "sha256": "70d0de55384f107a425499bb89dc739890350f70e03668bd885da35cb7c75db3",
+      "remote_version": "66306:50906806:795:1793948185408287539:1793948185408287539"
+    },
+    {
+      "name": "native-core-r14-strict.log",
+      "bytes": 10568,
+      "sha256": "0cc8b7b14a2f23f283ddb0babfe781ce9e7a605156060bfda3df82d9c9584a16",
+      "remote_version": "66306:50906802:10568:1793948185282282273:1793948185282282273"
+    },
+    {
+      "name": "native-core-r14-environment.json",
+      "bytes": 778,
+      "sha256": "54a049bed551850604c809c45a2d90d4ba0d2615df5790c4940780cfcf686699",
+      "remote_version": "66306:50906804:778:1793947995394515279:1793947995394515279"
+    },
+    {
+      "name": "native-candidate-r14-source.json",
+      "bytes": 45387,
+      "sha256": "dffa92b76aa4354dc39bee15d2ad1078e0e72d00bc6b20f78acbe5243394a059",
+      "remote_version": "66306:50906803:45387:1793947995394087560:1793947995394087560"
+    }
+  ],
+  "original_file_count": 5,
+  "strict_command": [
+    "just",
+    "clippy",
+    "--locked",
+    "-p",
+    "codex-core",
+    "--",
+    "-D",
+    "warnings"
+  ],
+  "strict_exit_code": 0,
+  "strict_elapsed_seconds": 190.0075147151947,
+  "receipt_log_resources_cross_checks": true,
+  "receipt_source_environment_tree_checks": true,
+  "source_manifest_unique_changed_file_count": 163,
+  "stage42_43_patch_and_input_archive_checks": true,
+  "stage42_43_nine_source_files_independently_rehashed": [
+    {
+      "path": "codex-rs/core/src/unified_exec/mod_tests.rs",
+      "sha256": "843a4524ff204b033cd7b41ba8f9a9dcd819844dbef2eff2a4f489f246a1cb65",
+      "git_blob": "e1a3b717016c7e5431ae6f0c7d489c92dec95484"
+    },
+    {
+      "path": "codex-rs/core/src/unified_exec/process.rs",
+      "sha256": "76a7e709326b8fe4c2e0cd59ba335c01ceb7ad32e852e7f3c2fe12b60b052060",
+      "git_blob": "b82a8cb16a7c33e7ac54f33445e5622a53675e63"
+    },
+    {
+      "path": "codex-rs/core/src/unified_exec/process_manager.rs",
+      "sha256": "3eea68b72bb4186609aa1ed6622ac4e20a0afd98d700f8c0577faf49a3f1b916",
+      "git_blob": "c3166418abbb514f1b6fbaacd9815e5a79613fa5"
+    },
+    {
+      "path": "codex-rs/core/src/unified_exec/process_manager_tests.rs",
+      "sha256": "10406a235c9a6bf9846cdddf27a8c93df20f4fc4ecb2614d2b14f0ec9d4a4513",
+      "git_blob": "38114548da1f3737c9ef5bbe379c79b11b67d841"
+    },
+    {
+      "path": "codex-rs/core/src/unified_exec/process_observation_tests.rs",
+      "sha256": "b18f039b6aded7e781a72df100cada072c385bb4eac26e625bc8c68e757dd676",
+      "git_blob": "00cce6cabe8cb1158bb1982d71dfc597ba42a432"
+    },
+    {
+      "path": "codex-rs/core/src/unified_exec/process_remote_observation_tests.rs",
+      "sha256": "8fe5b4d7003636f0fda8554ce4c0f0b470e90772d4902bff1a7ffdf7411a1c0f",
+      "git_blob": "c99cb1dce3a04d56762b9b50e2641cda9cebd8bd"
+    },
+    {
+      "path": "codex-rs/core/src/unified_exec/process_tests.rs",
+      "sha256": "65c5e7d3d88f4daba8360c16a4e47800a0a689c347986a3168456178e77bae63",
+      "git_blob": "137e31e6375e492239bd17b976ab22cb744201e8"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/approvals.rs",
+      "sha256": "084f6c13d38d42f8e13eb90f1afc68a7efe0087f2c71bf60766a44d6e36108c6",
+      "git_blob": "08d271738fdff1dcb5b5504c33ac8aacd036fcbe"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/request_permissions.rs",
+      "sha256": "0cb8cef5d09552b3d7b7d6f079b82395c3a9428c7ab86ddc81ae122f58c81234",
+      "git_blob": "9921c8998c9e65dcafaacaeafaf6e9e1f0eb7b0c"
+    }
+  ],
+  "source_scope_limit": "The remaining 154 manifest entries are retained native source pins; this bounded readback did not fetch or independently rehash their remote source files.",
+  "applied_stages": [
+    {
+      "source_commit": "05fc1158eee025e1a76d45cef27b4caddc69d22b",
+      "actual_tree": "ccb50851347a0c27e5cbe621790daa78b9c98794",
+      "patch_sha256": "cbaf01b8e2de587b6bd4c477536cad3e046cc8b1b95b2104ae73f713c43e97e8"
+    },
+    {
+      "source_commit": "b44d4ca4aa0ef9f894eff29e9975938e066a82f5",
+      "actual_tree": "d3d2313b838422818bf9448ce5a1b86d89abdf69",
+      "patch_sha256": "868826159778e82cc025bfc74ae4e6fbd8e47d701b1963b967e16f18cd107111"
+    }
+  ],
+  "selection": {
+    "RUSTUP_TOOLCHAIN": "1.96.0",
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_TARGET_DIR": "/home/alex/work/hepta-cell-unified-20261106-a/target",
+    "CARGO_NET_GIT_FETCH_WITH_CLI": "true",
+    "NEXTEST_TEST_THREADS": "2",
+    "NEXTEST_PROFILE": null,
+    "HEPTA_NEXTTEST_FULL_METADATA": null,
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_INCREMENTAL": null,
+    "CARGO_BUILD_TARGET": null,
+    "RUSTFLAGS": null,
+    "DOTSLASH_CACHE": "/home/alex/work/hepta-cell-unified-20261106-a/tools/dotslash-cache"
+  },
+  "tests_boundary": "No tests log, tests receipt or active artifact was read or copied. This record makes no assertion that test cases have begun execution or passed.",
+  "no_rust_formatter_process_or_source_mutation": true,
+  "transfer_boundary": "The read tool provides independently version-pinned complete files; the batch is not an atomic filesystem snapshot."
+}

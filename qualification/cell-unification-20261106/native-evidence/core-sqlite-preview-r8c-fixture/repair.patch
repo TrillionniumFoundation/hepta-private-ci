@@ -1,0 +1,10 @@
+--- a/codex-rs/core/src/state_db_bridge_tests.rs
++++ b/codex-rs/core/src/state_db_bridge_tests.rs
+@@ -77,6 +77,7 @@
+     )
+     .build(&config.model_provider_id);
+     metadata.title = "bound title".to_string();
++    metadata.preview = Some("bound preview".to_string());
+     runtime.upsert_thread(&metadata).await?;
+     let retained = runtime.get_thread(thread_id).await?;
+     assert!(retained.is_some());

@@ -1,0 +1,55 @@
+{
+  "source_tree": "d3d2313b838422818bf9448ce5a1b86d89abdf69",
+  "closed_failure_review": {
+    "path": "native-validation-results/r14-blockers/native-core-r14-result-review.json",
+    "bytes": 35985,
+    "sha256": "9b5b3a81d4901d8c6769908e2021235e3ef82e3257d5b0c21bf1c086899f0732",
+    "git_blob": "9692fd994460c43b0f443b1b6ce850550057e9aa"
+  },
+  "original_failure": [
+    {
+      "status": "FAIL",
+      "elapsed": "5.307s",
+      "binary": "codex-core::all",
+      "name": "suite::rmcp_client::streamable_http_with_oauth_round_trip",
+      "log_byte_range": [
+        492226,
+        492874
+      ],
+      "excerpt": "        FAIL [   5.307s] codex-core::all suite::rmcp_client::streamable_http_with_oauth_round_trip\n  stdout \u2500\u2500\u2500\n\n    running 1 test\n    test suite::rmcp_client::streamable_http_with_oauth_round_trip ... FAILED\n\n    failures:\n\n    failures:\n        suite::rmcp_client::streamable_http_with_oauth_round_trip\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1425 filtered out; finished in 5.29s\n\n  stderr \u2500\u2500\u2500\n    starting rmcp streamable http test server on http://127.0.0.1:40599/mcp\n    Error: a newly discovered OAuth server blocked the user turn during store contention\n\n    Caused by:\n        deadline has elapsed\n"
+    }
+  ],
+  "owner_support_sources": [
+    {
+      "path": "core-code-mode-r8c-audit/original/codex-rs/core/src/codex_thread.rs",
+      "bytes": 49554,
+      "sha256": "a2b7930a96d8a32ee9747fa9da8e1fc9c8c77af19aefda898466b1799347f02f",
+      "git_blob": "589f0b9305aeb8cf257cdb3d7a83c22335f17252"
+    },
+    {
+      "path": "core-code-mode-r8c-audit/original/codex-rs/core/src/tasks/mod.rs",
+      "bytes": 178832,
+      "sha256": "b51df87d911a73b51ac13cf28157f4d3bb3a7192f3aa2621265c849acc157a88",
+      "git_blob": "04332800b862436b2e372c78145bae849e596822"
+    },
+    {
+      "path": "core-code-mode-r8c-audit/original/codex-rs/core/src/session/turn_input.rs",
+      "bytes": 41654,
+      "sha256": "7959e38afd075c5cad233a7d1ba59b3406b1de96d9076e444a51ce8ac33b9841",
+      "git_blob": "215af4dd2a36cf07915e2451040c19527bac3c9a"
+    }
+  ],
+  "native_refresh_proof": {
+    "path": "core-oauth-finish-r14-repair/native-runtime-refresh-proof.json",
+    "bytes": 3513,
+    "sha256": "ed1bcd930bfcd65bcc647d0dac9c0c9b3885a5aff495406020a0a644eba9798c",
+    "git_blob": "8f82aea90f51bbcba0b50f63c5ca40adebfd0086"
+  },
+  "candidate_source": {
+    "path": "core-oauth-finish-r14-repair/source/codex-rs/core/tests/suite/rmcp_client.rs",
+    "bytes": 147566,
+    "sha256": "11ba2ce26510c4b3edac11351bd83efb879b466a22c9dc1c241dde63890ecb16",
+    "git_blob": "5b7c708647d343820ca5ca1fb0c3a1754d317d25"
+  },
+  "runtime_limit": "The original raw completion observation can race normal finish owner retirement and receive Ok(NotSubmitted(NotIdle)) on the next StartOrSteer. The exact-owner waits close this fixture synchronization gap within original budgets. The native gate must establish whether this resolves the observed failure; no sole measured production root-cause claim is made."
+}

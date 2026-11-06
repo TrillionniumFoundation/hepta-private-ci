@@ -1,0 +1,113 @@
+{
+  "schema": "hepta.core-hook-metadata-independent-review.v1",
+  "reviewer": "historical_assets",
+  "decision": "APPROVE_SOURCE_ONLY",
+  "before": {
+    "bytes": 2820,
+    "sha256": "48ca8068453f87c8c6ff6a1707fa885fde3ea4456fc9a0f0fe5f7a5e4ba02c90",
+    "git_blob_sha": "397c9da7a50c5f6e2df352024581cad5b3b8805d"
+  },
+  "after": {
+    "bytes": 2991,
+    "sha256": "941b39aa4fd85736ac205795d1688cd237168d63140573359ed4905308d8b4d7",
+    "git_blob_sha": "24ed6179b75b9ee2b67a452f27cc2173789a2f32"
+  },
+  "patch_sha256": "6d36df739b394aca367fa6b5edb032a142c5d0cdd380e9a9e9f7fd0fd4fdd8d8",
+  "whole_file_inverse_exact": true,
+  "regenerated_unified_patch_exact": true,
+  "findings": [
+    {
+      "id": "exact_loss_point",
+      "detail": "hook_runtime builds x-codex-turn-metadata from the current TurnMetadataState/McpTurnMetadataContext. StopRequest retains it; executor-scoped dispatcher clones it into the scheduled task; mcp_runner forwards it unchanged in HookMcpCall.metadata. Original CoreHookMcpExecutor replaced the whole map with threadId alone."
+    },
+    {
+      "id": "owned_thread_wins",
+      "detail": "Candidate consumes the per-call map, then unconditionally inserts the executor-owned self.thread_id under threadId. Conflicting inbound threadId cannot override this owner routing field. None and empty metadata retain the original threadId-only request."
+    },
+    {
+      "id": "isolation_preserved",
+      "detail": "No shared mutable metadata map is introduced. Dispatcher takes its per-event snapshot before scheduling, and the candidate owns its incoming map. It does not read later mutable turn metadata, change session binding, broaden visibility or use metadata to choose a different MCP binding."
+    },
+    {
+      "id": "filtered_payload_preserved",
+      "detail": "The existing MCP metadata builder removes harness tool inventory and agent/parent/root identifiers and uses its MCP-specific template. The candidate forwards this already-built map; it does not serialize unfiltered response metadata or import configured response-only extras."
+    },
+    {
+      "id": "authorization_and_lifetime_unchanged",
+      "detail": "Whole-file inverse confirms weak-session upgrade, HeptaGovernance/active-tool-policy rejection, current_binding, prepare_call, input, timeout, error/text result handling and their order are unchanged. Existing environment binding behavior is untouched and is outside this narrow repair."
+    },
+    {
+      "id": "original_regression",
+      "detail": "Original executor_stop_hook_runs_after_attachment checks no call before attach, one after attach, turn_id parity, session/thread/model parity and owner threadId. All source bytes and assertions of that existing integration test remain unchanged; no mirror test added."
+    }
+  ],
+  "original_failure": {
+    "log_sha256": "d5838182b45478741d7af4c65dc3ed826b27c0f14d825897c21f0062a292e687",
+    "test": "suite::hooks_executor::executor_stop_hook_runs_after_attachment",
+    "execution_seconds": 0.227,
+    "line_range": [
+      5691,
+      5714
+    ],
+    "assertion": "arguments.turn_id was a string while _meta[x-codex-turn-metadata].turn_id was Null"
+  },
+  "scope": "Read-only independent code review. No Rust tests run by reviewer; native original strict/full regression remains required. The patch changes metadata forwarding behavior intentionally and does not claim broader MCP security qualification.",
+  "supporting_sources": [
+    {
+      "path": "codex-rs/core/src/hook_runtime.rs",
+      "commit": "e0eca9e265c4deeb069ec940c9ec3acbe8cf0f81",
+      "git_blob_sha": "c520135afdd384df148c184baa57568766eb3abc",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e0eca9e265c4deeb069ec940c9ec3acbe8cf0f81/codex-rs/core/src/hook_runtime.rs",
+      "bytes": 43465,
+      "sha256": "9afb40589d3a6d3132a5fb85cf3691c7b110353a34aebd921cd954eb13f52dfa"
+    },
+    {
+      "path": "codex-rs/core/src/turn_metadata.rs",
+      "commit": "e0eca9e265c4deeb069ec940c9ec3acbe8cf0f81",
+      "git_blob_sha": "ed951457aab9d8a38f4a753cbb7a45712a202d3f",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e0eca9e265c4deeb069ec940c9ec3acbe8cf0f81/codex-rs/core/src/turn_metadata.rs",
+      "bytes": 20103,
+      "sha256": "1784f3c490a32347d75593168fdb0bebc8bcf07ff5c21d343a97244e70ee7b5b"
+    },
+    {
+      "path": "codex-rs/hooks/src/events/stop.rs",
+      "commit": "e0eca9e265c4deeb069ec940c9ec3acbe8cf0f81",
+      "git_blob_sha": "b29e6919113860c373a3938c94cbd1e32d0f1cdf",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e0eca9e265c4deeb069ec940c9ec3acbe8cf0f81/codex-rs/hooks/src/events/stop.rs",
+      "bytes": 24326,
+      "sha256": "bd4a748e1e5e725b2fb12c37917d38e9c9ca3b7727259a609e8011bfe0ef1c63"
+    },
+    {
+      "path": "codex-rs/hooks/src/engine/dispatcher.rs",
+      "commit": "e0eca9e265c4deeb069ec940c9ec3acbe8cf0f81",
+      "git_blob_sha": "575ee46b438fcf94ec649d7525ef65597a49d6ec",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e0eca9e265c4deeb069ec940c9ec3acbe8cf0f81/codex-rs/hooks/src/engine/dispatcher.rs",
+      "bytes": 20370,
+      "sha256": "946b60c3f96a52479a8d90ff72008b9bec059ddc27f153d259dec5aeb500e0fc"
+    },
+    {
+      "path": "codex-rs/hooks/src/engine/mcp_runner.rs",
+      "commit": "e0eca9e265c4deeb069ec940c9ec3acbe8cf0f81",
+      "git_blob_sha": "63befa6bc63ffee17577ccd4f278703e002c02a4",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e0eca9e265c4deeb069ec940c9ec3acbe8cf0f81/codex-rs/hooks/src/engine/mcp_runner.rs",
+      "bytes": 4981,
+      "sha256": "2f1e7974dce6a4984aac7fe1fed1712758c07eb66245e31745b6329a45a6829f"
+    },
+    {
+      "path": "codex-rs/core/src/hook_mcp_executor.rs",
+      "commit": "e0eca9e265c4deeb069ec940c9ec3acbe8cf0f81",
+      "git_blob_sha": "397c9da7a50c5f6e2df352024581cad5b3b8805d",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e0eca9e265c4deeb069ec940c9ec3acbe8cf0f81/codex-rs/core/src/hook_mcp_executor.rs",
+      "bytes": 2820,
+      "sha256": "48ca8068453f87c8c6ff6a1707fa885fde3ea4456fc9a0f0fe5f7a5e4ba02c90"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/hooks_executor.rs",
+      "commit": "e0eca9e265c4deeb069ec940c9ec3acbe8cf0f81",
+      "git_blob_sha": "d664d41c9a7ca66d1a9b47445b36f2754bf6fece",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/e0eca9e265c4deeb069ec940c9ec3acbe8cf0f81/codex-rs/core/tests/suite/hooks_executor.rs",
+      "bytes": 14976,
+      "sha256": "db64962784e6e067f13e1a4f1b9458893fc084e8713e8d48b3f0d093043cb130"
+    }
+  ]
+}

@@ -1,0 +1,171 @@
+        FAIL [   0.400s] codex-core::all suite::skills_extension::explicit_only_orchestrator_skill_is_hidden_but_can_be_invoked
+  stdout ───
+
+    running 1 test
+    test suite::skills_extension::explicit_only_orchestrator_skill_is_hidden_but_can_be_invoked ... FAILED
+
+    failures:
+
+    failures:
+        suite::skills_extension::explicit_only_orchestrator_skill_is_hidden_but_can_be_invoked
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1425 filtered out; finished in 0.38s
+
+  stderr ───
+
+    thread 'suite::skills_extension::explicit_only_orchestrator_skill_is_hidden_but_can_be_invoked' (387158) panicked at /home/alex/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wiremock-0.6.5/src/mock_server/exposed_server.rs:367:17:
+    Verifications failed:
+    - Mock #5.
+    Expected range of matching incoming requests: == 4
+    Number of matched incoming requests: 2
+
+    Received requests:
+    - Request #1
+    POST http://localhost/api/codex/ps/mcp
+    user-agent: codex-mcp-client/0.0.0
+    originator: codex_cli_rs
+    x-openai-product-sku: codex
+    accept: text/event-stream, application/json
+    content-type: application/json
+    host: 127.0.0.1:41713
+    content-length: 215
+    {"jsonrpc":"2.0","id":0,"method":"initialize","params":{"capabilities":{"elicitation":{"form":{},"url":{}}},"clientInfo":{"name":"codex-mcp-client","title":"Codex","version":"0.0.0"},"protocolVersion":"2025-06-18"}}
+    - Request #2
+    POST http://localhost/api/codex/ps/mcp
+    user-agent: codex-mcp-client/0.0.0
+    originator: codex_cli_rs
+    x-openai-product-sku: codex
+    mcp-protocol-version: 2025-06-18
+    accept: text/event-stream, application/json
+    content-type: application/json
+    host: 127.0.0.1:41713
+    content-length: 54
+    {"jsonrpc":"2.0","method":"notifications/initialized"}
+    - Request #3
+    POST http://localhost/api/codex/ps/mcp
+    user-agent: codex-mcp-client/0.0.0
+    originator: codex_cli_rs
+    x-openai-product-sku: codex
+    mcp-protocol-version: 2025-06-18
+    accept: text/event-stream, application/json
+    content-type: application/json
+    host: 127.0.0.1:41713
+    content-length: 85
+    {"jsonrpc":"2.0","id":1,"method":"tools/list","params":{"_meta":{"progressToken":0}}}
+    - Request #4
+    GET http://localhost/ps/plugins/suggested/codex?scope=GLOBAL
+    originator: codex_cli_rs
+    user-agent: codex_cli_rs/0.0.0 (Ubuntu 26.4.0; x86_64) unknown
+    authorization: Bearer Access Token
+    chatgpt-account-id: account_id
+    oai-product-sku: codex
+    accept: */*
+    host: 127.0.0.1:41713
+
+    - Request #5
+    POST http://localhost/api/codex/ps/mcp
+    user-agent: codex-mcp-client/0.0.0
+    originator: codex_cli_rs
+    x-openai-product-sku: codex
+    mcp-protocol-version: 2025-06-18
+    accept: text/event-stream, application/json
+    content-type: application/json
+    host: 127.0.0.1:41713
+    content-length: 89
+    {"jsonrpc":"2.0","id":2,"method":"resources/list","params":{"_meta":{"progressToken":1}}}
+    - Request #6
+    GET http://localhost/ps/plugins/suggested/codex?scope=GLOBAL
+    originator: codex_cli_rs
+    user-agent: codex_cli_rs/0.0.0 (Ubuntu 26.4.0; x86_64) unknown
+    authorization: Bearer Access Token
+    chatgpt-account-id: account_id
+    oai-product-sku: codex
+    accept: */*
+    host: 127.0.0.1:41713
+
+    - Request #7
+    POST http://localhost/api/codex/ps/mcp
+    user-agent: codex-mcp-client/0.0.0
+    originator: codex_cli_rs
+    x-openai-product-sku: codex
+    mcp-protocol-version: 2025-06-18
+    accept: text/event-stream, application/json
+    content-type: application/json
+    host: 127.0.0.1:41713
+    content-length: 133
+    {"jsonrpc":"2.0","id":3,"method":"resources/read","params":{"_meta":{"progressToken":2},"uri":"skill://demo/explicit-only/SKILL.md"}}
+    - Request #8
+    POST http://localhost/codex/analytics-events/events
+    authorization: Bearer Access Token
+    chatgpt-account-id: account_id
+    content-type: application/json
+    accept: */*
+    originator: codex_cli_rs
+    user-agent: codex_cli_rs/0.0.0 (Ubuntu 26.4.0; x86_64) unknown
+    host: 127.0.0.1:41713
+    content-length: 410
+    {"events":[{"event_type":"skill_invocation","skill_id":"a8c646713457dac784db43a07d8418d4266cc6cb","skill_name":"demo:explicit-only","event_params":{"product_client_id":"codex_cli_rs","skill_scope":null,"plugin_id":null,"remote_plugin_id":null,"repo_url":null,"thread_id":"01a1af57-9736-764d-bdc9-dced0ef8dc8f","turn_id":"01a1af57-9760-75f9-bd0d-e005beba421d","invoke_type":"explicit","model_slug":"gpt-5.5"}}]}
+    - Request #9
+    POST http://localhost/v1/responses
+    version: 0.0.0
+    x-codex-beta-features: remote_compaction_v2
+    x-codex-window-id: 01a1af57-9736-764d-bdc9-dced0ef8dc8f:0
+    x-codex-turn-metadata: {"installation_id":"1062e433-20a2-4cb0-b964-f4eefc43ad07","session_id":"01a1af57-9736-764d-bdc9-dced0ef8dc8f","thread_id":"01a1af57-9736-764d-bdc9-dced0ef8dc8f","agent_name":"/root","turn_id":"01a1af57-9760-75f9-bd0d-e005beba421d","window_id":"01a1af57-9736-764d-bdc9-dced0ef8dc8f:0","context_window_id":"01a1af57-9739-7201-b34b-5040426cc625","request_kind":"turn","root_turn_id":"01a1af57-9760-75f9-bd0d-e005beba421d","sandbox":"none","sandbox_mode":"danger-full-access","auto_review_enabled":false,"node_repl_auto_review_required":false,"node_repl_disabled":false,"turn_started_at_unix_ms":1793943115620}
+    x-codex-routing-hint: model=gpt-5.5
+    x-client-request-id: 01a1af57-9736-764d-bdc9-dced0ef8dc8f
+    session-id: 01a1af57-9736-764d-bdc9-dced0ef8dc8f
+    thread-id: 01a1af57-9736-764d-bdc9-dced0ef8dc8f
+    accept: text/event-stream
+    content-encoding: zstd
+    content-type: application/json
+    authorization: Bearer Access Token
+    chatgpt-account-id: account_id
+    originator: codex_cli_rs
+    user-agent: codex_cli_rs/0.0.0 (Ubuntu 26.4.0; x86_64) unknown
+    host: 127.0.0.1:41713
+    content-length: 13570
+    Body is likely binary (invalid utf-8) size is 13570 bytes
+    - Request #10
+    POST http://localhost/api/codex/ps/mcp
+    user-agent: codex-mcp-client/0.0.0
+    originator: codex_cli_rs
+    x-openai-product-sku: codex
+    mcp-protocol-version: 2025-06-18
+    accept: text/event-stream, application/json
+    content-type: application/json
+    host: 127.0.0.1:41713
+    content-length: 144
+    {"jsonrpc":"2.0","id":4,"method":"resources/read","params":{"_meta":{"progressToken":3},"uri":"skill://demo/explicit-only/references/guide.md"}}
+    - Request #11
+    GET http://localhost/ps/plugins/suggested/codex?scope=GLOBAL
+    originator: codex_cli_rs
+    user-agent: codex_cli_rs/0.0.0 (Ubuntu 26.4.0; x86_64) unknown
+    authorization: Bearer Access Token
+    chatgpt-account-id: account_id
+    oai-product-sku: codex
+    accept: */*
+    host: 127.0.0.1:41713
+
+    - Request #12
+    POST http://localhost/v1/responses
+    version: 0.0.0
+    x-codex-beta-features: remote_compaction_v2
+    x-codex-window-id: 01a1af57-9736-764d-bdc9-dced0ef8dc8f:0
+    x-codex-turn-metadata: {"installation_id":"1062e433-20a2-4cb0-b964-f4eefc43ad07","session_id":"01a1af57-9736-764d-bdc9-dced0ef8dc8f","thread_id":"01a1af57-9736-764d-bdc9-dced0ef8dc8f","agent_name":"/root","turn_id":"01a1af57-9760-75f9-bd0d-e005beba421d","window_id":"01a1af57-9736-764d-bdc9-dced0ef8dc8f:0","context_window_id":"01a1af57-9739-7201-b34b-5040426cc625","request_kind":"turn","root_turn_id":"01a1af57-9760-75f9-bd0d-e005beba421d","sandbox":"none","sandbox_mode":"danger-full-access","auto_review_enabled":false,"node_repl_auto_review_required":false,"node_repl_disabled":false,"turn_started_at_unix_ms":1793943115620}
+    x-codex-routing-hint: model=gpt-5.5
+    x-client-request-id: 01a1af57-9736-764d-bdc9-dced0ef8dc8f
+    session-id: 01a1af57-9736-764d-bdc9-dced0ef8dc8f
+    thread-id: 01a1af57-9736-764d-bdc9-dced0ef8dc8f
+    accept: text/event-stream
+    content-encoding: zstd
+    content-type: application/json
+    authorization: Bearer Access Token
+    chatgpt-account-id: account_id
+    originator: codex_cli_rs
+    user-agent: codex_cli_rs/0.0.0 (Ubuntu 26.4.0; x86_64) unknown
+    host: 127.0.0.1:41713
+    content-length: 14132
+    Body is likely binary (invalid utf-8) size is 14132 bytes
+
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+

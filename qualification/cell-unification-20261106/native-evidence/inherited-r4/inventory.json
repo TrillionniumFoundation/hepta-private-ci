@@ -1,0 +1,58 @@
+{
+  "tree": "a4c4a141ec488d8b0f4482b0d47c6ea3c31a8896",
+  "files": [
+    {
+      "path": "codex-rs/exec-server/src/local_process_custody.rs",
+      "sha256": "2fefd56022bdefc0f5b8d1a1049ac5d25e40922dcc4e27d8d0c14f65fc6bd225",
+      "size": 9161,
+      "git_blob": "242743750feff824f4e081c3fce2ccd142ffc8ce",
+      "unchanged_from_bef": true
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/desktop_turn_writer_tests.rs",
+      "sha256": "9e19a5eee95f3c85d83e6294715b37ec3b8b2edaaacc4aa058e7c23a87622e16",
+      "size": 9697,
+      "git_blob": "a76e94d1e461ddd0e6f3b345c820f3b664b28b76",
+      "unchanged_from_bef": true
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/restart_journal.rs",
+      "sha256": "66c1ad3ddd8be26f002a89a9eeba183da7a727213006f0d6001be5da177b3b3d",
+      "size": 18040,
+      "git_blob": "059a7e01d52aeaa00d16446e0bdf7adebf89790d",
+      "unchanged_from_bef": true
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/restart_state.rs",
+      "sha256": "48c02b212a57bc63bc87ece59b7a0e08d38c767267356a7805cbb8555a93898f",
+      "size": 6100,
+      "git_blob": "1970b9551635ed8079bf852edf4822e06f55c106",
+      "unchanged_from_bef": true
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/runtime.rs",
+      "sha256": "a901b5802d9c9fad0c0b50406c2489e23a1cca75a2fd86c7106de62cde8da926",
+      "size": 6942,
+      "git_blob": "cd9d5abc4e40bd1a734fca2222bc4ca441b9f322",
+      "unchanged_from_bef": true
+    }
+  ],
+  "nearest_agents": {
+    "codex-rs/exec-server/src/local_process_custody.rs": [
+      "AGENTS.md"
+    ],
+    "codex-rs/hepta-memory/src/desktop_turn_writer_tests.rs": [
+      "AGENTS.md"
+    ],
+    "codex-rs/hepta-supervisor/src/restart_journal.rs": [
+      "AGENTS.md"
+    ],
+    "codex-rs/hepta-supervisor/src/restart_state.rs": [
+      "AGENTS.md"
+    ],
+    "codex-rs/hepta-supervisor/src/runtime.rs": [
+      "AGENTS.md"
+    ]
+  },
+  "supervisor_full_call_map": "codex-rs/hepta-supervisor/src/restart_journal.rs:390:pub(crate) fn read_restart_journal(\ncodex-rs/hepta-supervisor/src/restart_journal.rs:433:pub(crate) fn restore_window(\ncodex-rs/hepta-supervisor/src/restart_journal.rs:498:            read_restart_journal(dir.path()).expect(\"read\"),\ncodex-rs/hepta-supervisor/src/restart_journal.rs:518:        let (attempts, started, wall, exhausted) = restore_window(\ncodex-rs/hepta-supervisor/src/runtime.rs:84:    pub restart_window_started_at: Option<Instant>,\ncodex-rs/hepta-supervisor/src/runtime.rs:85:    pub restart_window_started_unix_millis: Option<u64>,\ncodex-rs/hepta-supervisor/src/runtime.rs:87:    pub restart_after_exit: bool,\ncodex-rs/hepta-supervisor/src/runtime.rs:88:    pub restart_exhausted: bool,\ncodex-rs/hepta-supervisor/src/runtime.rs:99:            restart_window_started_at: None,\ncodex-rs/hepta-supervisor/src/runtime.rs:100:            restart_window_started_unix_millis: None,\ncodex-rs/hepta-supervisor/src/runtime.rs:102:            restart_after_exit: false,\ncodex-rs/hepta-supervisor/src/runtime.rs:103:            restart_exhausted: false,\ncodex-rs/hepta-supervisor/src/runtime.rs:153:    pub restart_window_started_at: Option<Instant>,\ncodex-rs/hepta-supervisor/src/runtime.rs:154:    pub restart_window_started_unix_millis: Option<u64>,\ncodex-rs/hepta-supervisor/src/runtime.rs:155:    pub restart_retry_at: Option<Instant>,\ncodex-rs/hepta-supervisor/src/runtime.rs:156:    pub restart_automatic: bool,\ncodex-rs/hepta-supervisor/src/runtime.rs:157:    pub restart_after_exit: bool,\ncodex-rs/hepta-supervisor/src/runtime.rs:158:    pub restart_exhausted: bool,\ncodex-rs/hepta-supervisor/src/runtime.rs:184:            restart_window_started_at: None,\ncodex-rs/hepta-supervisor/src/runtime.rs:185:            restart_window_started_unix_millis: None,\ncodex-rs/hepta-supervisor/src/runtime.rs:186:            restart_retry_at: None,\ncodex-rs/hepta-supervisor/src/runtime.rs:187:            restart_automatic: false,\ncodex-rs/hepta-supervisor/src/runtime.rs:188:            restart_after_exit: false,\ncodex-rs/hepta-supervisor/src/runtime.rs:189:            restart_exhausted: false,\ncodex-rs/hepta-supervisor/src/restart_journal_persistence_tests.rs:78:        read_restart_journal(dir.path()).expect(\"companion\"),\ncodex-rs/hepta-supervisor/src/restart_journal_persistence_tests.rs:194:        read_restart_journal(dir.path()).expect(\"visible\"),\ncodex-rs/hepta-supervisor/src/restart_state.rs:12:use crate::restart_journal::read_restart_journal;\ncodex-rs/hepta-supervisor/src/restart_state.rs:13:use crate::restart_journal::restore_window;\ncodex-rs/hepta-supervisor/src/restart_state.rs:37:    pub(crate) fn reset_restart_budget_for_release(\ncodex-rs/hepta-supervisor/src/restart_state.rs:43:        reset_slot_restart_budget(slot);\ncodex-rs/hepta-supervisor/src/restart_state.rs:47:    pub(crate) fn reset_restart_budget(\ncodex-rs/hepta-supervisor/src/restart_state.rs:61:        self.reset_restart_budget_for_release(agent_id, slot, release_id)\ncodex-rs/hepta-supervisor/src/restart_state.rs:64:    pub(crate) fn restore_restart_budget(\ncodex-rs/hepta-supervisor/src/restart_state.rs:71:        let Some(journal) = read_restart_journal(record.layout.run_root())? else {\ncodex-rs/hepta-supervisor/src/restart_state.rs:85:            reset_slot_restart_budget(slot);\ncodex-rs/hepta-supervisor/src/restart_state.rs:89:            return self.reset_restart_budget_for_release(agent_id, slot, release_id);\ncodex-rs/hepta-supervisor/src/restart_state.rs:94:            restore_window(&journal.main, now, now_unix_millis);\ncodex-rs/hepta-supervisor/src/restart_state.rs:96:            restore_window(&journal.matrix, now, now_unix_millis);\ncodex-rs/hepta-supervisor/src/restart_state.rs:98:        slot.restart_window_started_at = main_started;\ncodex-rs/hepta-supervisor/src/restart_state.rs:99:        slot.restart_window_started_unix_millis = main_wall;\ncodex-rs/hepta-supervisor/src/restart_state.rs:100:        slot.restart_retry_at = None;\ncodex-rs/hepta-supervisor/src/restart_state.rs:101:        slot.restart_automatic = false;\ncodex-rs/hepta-supervisor/src/restart_state.rs:102:        slot.restart_after_exit = false;\ncodex-rs/hepta-supervisor/src/restart_state.rs:103:        slot.restart_exhausted = main_exhausted;\ncodex-rs/hepta-supervisor/src/restart_state.rs:105:        slot.matrix.restart_window_started_at = matrix_started;\ncodex-rs/hepta-supervisor/src/restart_state.rs:106:        slot.matrix.restart_window_started_unix_millis = matrix_wall;\ncodex-rs/hepta-supervisor/src/restart_state.rs:108:        slot.matrix.restart_after_exit = false;\ncodex-rs/hepta-supervisor/src/restart_state.rs:109:        slot.matrix.restart_exhausted = matrix_exhausted;\ncodex-rs/hepta-supervisor/src/restart_state.rs:140:                window_started_unix_millis: slot.matrix.restart_window_started_unix_millis,\ncodex-rs/hepta-supervisor/src/restart_state.rs:147:fn reset_slot_restart_budget<P>(slot: &mut AgentSlot<P>) {\ncodex-rs/hepta-supervisor/src/restart_state.rs:151:        &mut slot.restart_window_started_at,\ncodex-rs/hepta-supervisor/src/restart_state.rs:153:    slot.restart_window_started_unix_millis = None;\ncodex-rs/hepta-supervisor/src/restart_state.rs:154:    slot.restart_retry_at = None;\ncodex-rs/hepta-supervisor/src/restart_state.rs:155:    slot.restart_automatic = false;\ncodex-rs/hepta-supervisor/src/restart_state.rs:156:    slot.restart_after_exit = false;\ncodex-rs/hepta-supervisor/src/restart_state.rs:157:    slot.restart_exhausted = false;\ncodex-rs/hepta-supervisor/src/restart_state.rs:160:        &mut slot.matrix.restart_window_started_at,\ncodex-rs/hepta-supervisor/src/restart_state.rs:162:    slot.matrix.restart_window_started_unix_millis = None;\ncodex-rs/hepta-supervisor/src/restart_state.rs:164:    slot.matrix.restart_after_exit = false;\ncodex-rs/hepta-supervisor/src/restart_state.rs:165:    slot.matrix.restart_exhausted = false;\ncodex-rs/hepta-supervisor/src/matrix.rs:66:        if slot.matrix.runtime.is_some() || slot.matrix.restart_exhausted {\ncodex-rs/hepta-supervisor/src/matrix.rs:249:        slot.matrix.restart_exhausted = false;\ncodex-rs/hepta-supervisor/src/matrix.rs:337:                slot.matrix.restart_exhausted = false;\ncodex-rs/hepta-supervisor/src/matrix.rs:521:                    && (slot.matrix.restart_after_exit || exact_agent);\ncodex-rs/hepta-supervisor/src/matrix.rs:522:                slot.matrix.restart_after_exit = false;\ncodex-rs/hepta-supervisor/src/matrix.rs:542:                        slot.matrix.restart_exhausted = false;\ncodex-rs/hepta-supervisor/src/matrix.rs:567:                        slot.matrix.restart_exhausted = false;\ncodex-rs/hepta-supervisor/src/matrix.rs:582:                        slot.matrix.restart_after_exit = true;\ncodex-rs/hepta-supervisor/src/matrix.rs:598:                        slot.matrix.restart_after_exit = true;\ncodex-rs/hepta-supervisor/src/matrix.rs:648:            let retry_due = !slot.matrix.restart_exhausted\ncodex-rs/hepta-supervisor/src/matrix.rs:676:                slot.matrix.restart_exhausted = true;\ncodex-rs/hepta-supervisor/src/matrix.rs:684:            &mut slot.matrix.restart_window_started_at,\ncodex-rs/hepta-supervisor/src/matrix.rs:688:                if attempt == 1 || slot.matrix.restart_window_started_unix_millis.is_none() {\ncodex-rs/hepta-supervisor/src/matrix.rs:689:                    slot.matrix.restart_window_started_unix_millis = Some(wall_now);\ncodex-rs/hepta-supervisor/src/matrix.rs:692:                slot.matrix.restart_exhausted = false;\ncodex-rs/hepta-supervisor/src/matrix.rs:696:                slot.matrix.restart_exhausted = true;\ncodex-rs/hepta-supervisor/src/matrix.rs:708:            slot.matrix.restart_exhausted = true;\ncodex-rs/hepta-supervisor/src/matrix.rs:718:        &mut slot.matrix.restart_window_started_at,\ncodex-rs/hepta-supervisor/src/matrix.rs:720:    slot.matrix.restart_window_started_unix_millis = None;\ncodex-rs/hepta-supervisor/src/matrix.rs:722:    slot.matrix.restart_after_exit = false;\ncodex-rs/hepta-supervisor/src/matrix.rs:723:    slot.matrix.restart_exhausted = false;\n"
+}

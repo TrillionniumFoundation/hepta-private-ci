@@ -1,0 +1,87 @@
+{
+  "schema": "hepta.r18-app-server-blocker-input.v1",
+  "source_commit": "2d7ad1d60019f35fc13d84138ceb2755d914f434",
+  "source_tree": "ffa0a37f4616c5563169c7f0a9305bf6c982d58b",
+  "compiler_error": "E0308",
+  "test_execution_started": false,
+  "nearest_instructions": [
+    "AGENTS.md"
+  ],
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "bytes": 22519,
+      "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480",
+      "git_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+      "base_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+      "unchanged_from_bef": true
+    },
+    {
+      "path": "codex-rs/app-server/Cargo.toml",
+      "bytes": 4997,
+      "sha256": "3ab26711af9a5e81fa51468507a9c893ea4b147530c180a0670a866a79623d9f",
+      "git_blob": "d3f4b4ef949e5853060ad600d80ed58bc3b85fcf",
+      "base_blob": "d3f4b4ef949e5853060ad600d80ed58bc3b85fcf",
+      "unchanged_from_bef": true
+    },
+    {
+      "path": "codex-rs/app-server/tests/common/Cargo.toml",
+      "bytes": 1186,
+      "sha256": "1e9ea660efae38a8d557c0e786ebde31b4aaa544101eea14d26465a4aa2c225f",
+      "git_blob": "8dd43051c7e4087c3c7213f05799db1b43dbe759",
+      "base_blob": "8dd43051c7e4087c3c7213f05799db1b43dbe759",
+      "unchanged_from_bef": true
+    },
+    {
+      "path": "codex-rs/app-server/tests/common/test_app_server.rs",
+      "bytes": 82221,
+      "sha256": "f6c6c147e961fb995272dac91427638c9b66a5877ef43be036273b06378e003e",
+      "git_blob": "9c51cda731d9b663c6272eef052d9ae53b46a44d",
+      "base_blob": "9c51cda731d9b663c6272eef052d9ae53b46a44d",
+      "unchanged_from_bef": true
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/process_exec.rs",
+      "bytes": 10437,
+      "sha256": "421f3f6664bf901c624e18ee4cd4ee4dab710a8607c581f55e39b7925698610d",
+      "git_blob": "af26eb8e4b63b9adf51f07d82c72a72d5c5cf242",
+      "base_blob": "af26eb8e4b63b9adf51f07d82c72a72d5c5cf242",
+      "unchanged_from_bef": true
+    }
+  ],
+  "maps": [
+    {
+      "command": [
+        "rg",
+        "-n",
+        "pub async fn initialize|async fn initialize|initialize_response|initialize_with|struct TestAppServer",
+        "codex-rs/app-server/tests/common"
+      ],
+      "returncode": 0,
+      "stdout": "codex-rs/app-server/tests/common/test_app_server.rs:148:pub struct TestAppServer {\ncodex-rs/app-server/tests/common/test_app_server.rs:325:    pub async fn initialize(&mut self) -> anyhow::Result<()> {\ncodex-rs/app-server/tests/common/test_app_server.rs:327:            .initialize_with_client_info(ClientInfo {\ncodex-rs/app-server/tests/common/test_app_server.rs:340:    pub async fn initialize_with_client_info(\ncodex-rs/app-server/tests/common/test_app_server.rs:344:        self.initialize_with_capabilities(\ncodex-rs/app-server/tests/common/test_app_server.rs:355:    pub async fn initialize_with_capabilities(\ncodex-rs/app-server/tests/common/test_app_server.rs:360:        self.initialize_with_params(InitializeParams {\ncodex-rs/app-server/tests/common/test_app_server.rs:367:    async fn initialize_with_params(\ncodex-rs/app-server/tests/common/test_app_server.rs:1840:pub struct TestAppServerBuilder {\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "rg",
+        "-n",
+        "initialize",
+        "codex-rs/app-server/tests/suite/v2/process_exec.rs"
+      ],
+      "returncode": 0,
+      "stdout": "26:    let (_server, mut mcp) = initialized_mcp(codex_home.path()).await?;\n125:    timeout(DEFAULT_READ_TIMEOUT, mcp.initialize()).await??;\n145:    let (_server, mut mcp) = initialized_mcp(codex_home.path()).await?;\n194:    let (_server, mut mcp) = initialized_mcp(codex_home.path()).await?;\n242:async fn initialized_mcp(codex_home: &Path) -> Result<(MockServer, TestAppServer)> {\n250:    let initialize = timeout(DEFAULT_READ_TIMEOUT, mcp.initialize()).await??;\n251:    let codex_app_server_protocol::JSONRPCMessage::Response(response) = initialize else {\n252:        anyhow::bail!(\"initialize failed: {initialize:?}\");\n254:    let initialize: codex_app_server_protocol::InitializeResponse =\n256:    assert!(initialize.process_indeterminate);\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "rg",
+        "-n",
+        "\\.initialize_with_|\\.initialize_and_|\\.initialize_response\\b|pub async fn initialize\\b",
+        "codex-rs/app-server"
+      ],
+      "returncode": 0,
+      "stdout": "codex-rs/app-server/tests/suite/logging.rs:100:        .initialize_with_capabilities(\ncodex-rs/app-server/tests/common/test_app_server.rs:325:    pub async fn initialize(&mut self) -> anyhow::Result<()> {\ncodex-rs/app-server/tests/common/test_app_server.rs:327:            .initialize_with_client_info(ClientInfo {\ncodex-rs/app-server/tests/common/test_app_server.rs:344:        self.initialize_with_capabilities(\ncodex-rs/app-server/tests/common/test_app_server.rs:360:        self.initialize_with_params(InitializeParams {\ncodex-rs/app-server/tests/suite/v2/thread_resume.rs:2396:            mcp.initialize_with_client_info(ClientInfo {\ncodex-rs/app-server/tests/suite/v2/turn_start.rs:564:        mcp.initialize_with_client_info(ClientInfo {\ncodex-rs/app-server/tests/suite/v2/thread_rollback.rs:86:        mcp.initialize_with_client_info(ClientInfo {\ncodex-rs/app-server/tests/suite/v2/remote_thread_store.rs:184:        mcp.initialize_with_client_info(ClientInfo {\ncodex-rs/app-server/tests/suite/v2/attestation.rs:78:        mcp.initialize_with_capabilities(\ncodex-rs/app-server/tests/suite/v2/mcp_tool.rs:234:    mcp.initialize_with_capabilities(\ncodex-rs/app-server/tests/suite/v2/mcp_tool.rs:330:    mcp.initialize_with_capabilities(\ncodex-rs/app-server/tests/suite/v2/mcp_tool.rs:757:    mcp.initialize_with_capabilities(\ncodex-rs/app-server/tests/suite/v2/thread_status.rs:144:        mcp.initialize_with_capabilities(\ncodex-rs/app-server/tests/suite/v2/thread_queue.rs:77:    app.initialize_with_capabilities(\ncodex-rs/app-server/tests/suite/v2/mcp_server_elicitation.rs:672:            mcp.initialize_with_capabilities(\ncodex-rs/app-server/tests/suite/v2/server_diagnostics.rs:80:        .initialize_with_capabilities(\ncodex-rs/app-server/tests/suite/v2/experimental_api.rs:40:        .initialize_with_capabilities(\ncodex-rs/app-server/tests/suite/v2/experimental_api.rs:78:        .initialize_with_capabilities(\ncodex-rs/app-server/tests/suite/v2/experimental_api.rs:136:        .initialize_with_capabilities(\ncodex-rs/app-server/tests/suite/v2/experimental_api.rs:177:        .initialize_with_capabilities(\ncodex-rs/app-server/tests/suite/v2/experimental_api.rs:218:        .initialize_with_capabilities(\ncodex-rs/app-server/tests/suite/v2/experimental_api.rs:279:        .initialize_with_capabilities(\ncodex-rs/app-server/tests/suite/v2/experimental_api.rs:323:        .initialize_with_capabilities(\ncodex-rs/app-server/tests/suite/v2/experimental_api.rs:366:        .initialize_with_capabilities(\ncodex-rs/app-server/tests/suite/v2/config_requirements_in_app_browser.rs:29:        server.initialize_with_capabilities(\ncodex-rs/app-server/tests/suite/v2/process_exec_capability_tests.rs:27:            mcp.initialize_with_capabilities(\ncodex-rs/app-server/tests/suite/v2/thread_archive.rs:304:    mcp.initialize_with_client_info(ClientInfo {\ncodex-rs/app-server/tests/suite/v2/thread_revert.rs:361:        mcp.initialize_with_capabilities(\ncodex-rs/app-server/tests/suite/v2/initialize.rs:46:        mcp.initialize_with_client_info(ClientInfo {\ncodex-rs/app-server/tests/suite/v2/initialize.rs:89:        mcp.initialize_with_client_info(ClientInfo {\ncodex-rs/app-server/tests/suite/v2/initialize.rs:122:        mcp.initialize_with_client_info(ClientInfo {\ncodex-rs/app-server/tests/suite/v2/initialize.rs:160:        mcp.initialize_with_client_info(ClientInfo {\ncodex-rs/app-server/tests/suite/v2/initialize.rs:204:        mcp.initialize_with_client_info(ClientInfo {\ncodex-rs/app-server/tests/suite/v2/initialize.rs:240:        mcp.initialize_with_capabilities(\ncodex-rs/app-server/tests/suite/v2/initialize.rs:325:        mcp.initialize_with_client_info(ClientInfo {\ncodex-rs/app-server/tests/suite/v2/account.rs:1650:        .initialize_with_capabilities(\ncodex-rs/app-server/tests/suite/v2/account.rs:1709:        .initialize_with_capabilities(\n",
+      "stderr": ""
+    }
+  ]
+}

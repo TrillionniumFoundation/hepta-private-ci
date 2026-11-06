@@ -1,0 +1,134 @@
+diff --git a/codex-rs/hepta-memory/src/cognitive_intelligence_writer.rs b/codex-rs/hepta-memory/src/cognitive_intelligence_writer.rs
+--- a/codex-rs/hepta-memory/src/cognitive_intelligence_writer.rs
++++ b/codex-rs/hepta-memory/src/cognitive_intelligence_writer.rs
+@@ -63,6 +63,12 @@
+     pub(crate) relations: Vec<CanonicalRelationFact>,
+ }
+ 
++/// Expected memory head for a compare-and-swap correction.
++pub(crate) struct MemoryCorrectionTarget<'a> {
++    pub(crate) memory_id: &'a StableMemoryId,
++    pub(crate) expected_revision: u64,
++}
++
+ impl CognitiveStore {
+     /// Atomically appends the cited source, creates the first memory revision,
+     /// persists its immutable structured facts, and publishes the next complete
+@@ -134,8 +140,10 @@
+             .correct_with_kg_tx(
+                 &mut transaction,
+                 access,
+-                memory_id,
+-                expected_revision,
++                MemoryCorrectionTarget {
++                    memory_id,
++                    expected_revision,
++                },
+                 source,
+                 draft,
+                 facts,
+@@ -149,12 +157,15 @@
+         &self,
+         transaction: &mut Transaction<'_, Sqlite>,
+         access: &CognitiveAccess,
+-        memory_id: &StableMemoryId,
+-        expected_revision: u64,
++        target: MemoryCorrectionTarget<'_>,
+         source: &SourceDraft,
+         draft: &MemoryRevisionDraft,
+         facts: &KgFactSetDraft,
+     ) -> Result<CognitiveWriteReceipt, CognitiveStoreError> {
++        let MemoryCorrectionTarget {
++            memory_id,
++            expected_revision,
++        } = target;
+         validate_source_binding(source, &draft.scope, &draft.content)?;
+         if draft.verification != MemoryVerification::Verified
+             || draft.lifecycle != MemoryLifecycleState::Active
+diff --git a/codex-rs/hepta-memory/src/local_lease_outbox.rs b/codex-rs/hepta-memory/src/local_lease_outbox.rs
+--- a/codex-rs/hepta-memory/src/local_lease_outbox.rs
++++ b/codex-rs/hepta-memory/src/local_lease_outbox.rs
+@@ -255,6 +255,12 @@
+     Committed,
+     Rejected,
+     RolledBack,
++}
++
++struct OutcomeTransitionPolicy<'a> {
++    allowed: &'a [LocalOutcomeState],
++    resulting_state: LocalOutcomeState,
++    allow_exact_replay: bool,
+ }
+ 
+ impl LocalOutcomeState {
+@@ -2816,9 +2822,11 @@
+                 occurrence_key,
+                 kind,
+                 payload,
+-                allowed,
+-                resulting_state,
+-                allow_exact_replay,
++                OutcomeTransitionPolicy {
++                    allowed,
++                    resulting_state,
++                    allow_exact_replay,
++                },
+             )
+             .await?;
+         transaction
+@@ -2843,9 +2851,11 @@
+             occurrence_key,
+             "reconcile_committed",
+             receipt,
+-            &[LocalOutcomeState::Queued, LocalOutcomeState::Indeterminate],
+-            LocalOutcomeState::Committed,
+-            /*allow_exact_replay*/ true,
++            OutcomeTransitionPolicy {
++                allowed: &[LocalOutcomeState::Queued, LocalOutcomeState::Indeterminate],
++                resulting_state: LocalOutcomeState::Committed,
++                allow_exact_replay: true,
++            },
+         )
+         .await
+     }
+@@ -2856,10 +2866,13 @@
+         occurrence_key: String,
+         kind: &str,
+         payload: String,
+-        allowed: &[LocalOutcomeState],
+-        resulting_state: LocalOutcomeState,
+-        allow_exact_replay: bool,
++        policy: OutcomeTransitionPolicy<'_>,
+     ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
++        let OutcomeTransitionPolicy {
++            allowed,
++            resulting_state,
++            allow_exact_replay,
++        } = policy;
+         validate_text(&occurrence_key, "occurrence key", /*max_bytes*/ 512)?;
+         validate_text(&payload, "outcome payload", /*max_bytes*/ 65_536)?;
+         let payload_sha256 = Sha256Digest::for_bytes(payload.as_bytes());
+diff --git a/codex-rs/hepta-memory/src/production_writer.rs b/codex-rs/hepta-memory/src/production_writer.rs
+--- a/codex-rs/hepta-memory/src/production_writer.rs
++++ b/codex-rs/hepta-memory/src/production_writer.rs
+@@ -50,6 +50,7 @@
+ use crate::QueuedReceipt;
+ use crate::SourceDraft;
+ use crate::StableMemoryId;
++use crate::cognitive_intelligence_writer::MemoryCorrectionTarget;
+ use crate::local_lease_outbox::InheritedQueuedReceipt;
+ use crate::local_lease_outbox::dispatch_operation_digest;
+ #[cfg(test)]
+@@ -2115,8 +2116,10 @@
+                 .correct_with_kg_tx(
+                     &mut transaction,
+                     access,
+-                    memory_id,
+-                    expected_revision,
++                    MemoryCorrectionTarget {
++                        memory_id,
++                        expected_revision,
++                    },
+                     source,
+                     draft,
+                     facts,

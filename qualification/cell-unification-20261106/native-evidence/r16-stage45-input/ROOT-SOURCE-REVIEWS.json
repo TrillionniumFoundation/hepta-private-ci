@@ -1,0 +1,124 @@
+{
+  "core-managed-proxy-r15-fixture": {
+    "schema": "hepta.root-stage45-source-review.v1",
+    "status": "SOURCE_REVIEW_PASS_NATIVE_GATE_PENDING",
+    "base_commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+    "base_tree": "1646e1656cf6365e74accae19a1225fd2ce6d964",
+    "patch_sha256": "ce0e594600932842dfd3f6e22b49c810b15ec504add40166e2090f340d3f8389",
+    "files": [
+      {
+        "path": "codex-rs/core/src/session/tests.rs",
+        "before_sha256": "29da32a96770cc74df87d09465c9d138dbabc539d038d1641001a0affd29d085",
+        "before_blob": "dce43c7f844f45036a7b58b307de500029f1f001",
+        "after_sha256": "8d06e0e5d0f59b5c06d093ae822aec42f76a212c23b8ac26939345ab2e1c8309",
+        "after_blob": "d9fb57b98d68fc8b548ba312b5f1671f70fd0573",
+        "bytes": 504663,
+        "original_assertions_outside_edit_regions": "separately_verified"
+      }
+    ],
+    "exact_full_patch_forward_and_reverse": true,
+    "no_fuzz_or_offset": true,
+    "original_github_blob_identity_verified": true,
+    "tests_not_executed_by_review": true
+  },
+  "core-recovery-r15-repair": {
+    "schema": "hepta.root-stage45-source-review.v1",
+    "status": "SOURCE_REVIEW_PASS_NATIVE_GATE_PENDING",
+    "base_commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+    "base_tree": "1646e1656cf6365e74accae19a1225fd2ce6d964",
+    "patch_sha256": "7fd5e5f0e43ecd80505ca93630ccc9c5ebd29e24b9d16615f9cf0714ca8b55f5",
+    "files": [
+      {
+        "path": "codex-rs/core/tests/common/streaming_sse.rs",
+        "before_sha256": "ed1e35fa973116adf94c8ddbb39bb7e0d2c4c7773b980277921f859ce40d252b",
+        "before_blob": "3766bbd88084f0ba514df52143918450be7d21eb",
+        "after_sha256": "0d8d35afd738823226e0aa9c0636e7337b958de5a66418e49190a231b3dd79c0",
+        "after_blob": "5650fb5d4738ca0442fd2afebd2268e3414e9b1d",
+        "bytes": 27584,
+        "original_assertions_outside_edit_regions": true
+      },
+      {
+        "path": "codex-rs/core/tests/suite/turn_input_submission.rs",
+        "before_sha256": "ae71b734d0b46ce5b285afc827d765d0a4a066bbe825ffd0aba467a4d78e1824",
+        "before_blob": "4ee793ddfc1a9592c933e8b861e76d46bf111c40",
+        "after_sha256": "7dc33fdd6c892deda4b145edbd61a653c1cd3b4eaaae6c635caadaf2fd2e5919",
+        "after_blob": "a3e4ecc296ff71736bac1e2c441d7e7b0762a2a7",
+        "bytes": 21320,
+        "original_assertions_outside_edit_regions": true
+      }
+    ],
+    "exact_full_patch_forward_and_reverse": true,
+    "no_fuzz_or_offset": true,
+    "original_github_blob_identity_verified": true,
+    "tests_not_executed_by_review": true,
+    "semantic_review": {
+      "headers_gate_before_any_headers_or_body": true,
+      "gate_response_and_completion_selected_under_same_state_lock": true,
+      "no_locks_held_during_gate_wait": true,
+      "real_post_recorded_before_gate": true,
+      "gate_cancel_closes_owned_socket_without_response_or_completion": true,
+      "old_public_entry_signature_and_default_none_behavior": true,
+      "original_48_call_sites_only_one_opts_in": true,
+      "durable_input_ready_order_plan_mode_turn_id_epoch_request_count_and_original_budgets_unchanged": true,
+      "rate_limits_source_chain": "Empty headers produce a default snapshot; the API sends RateLimits before reading body and the outer first-event gate closes recovery before matching the variant. The original failed log is not an event trace."
+    }
+  },
+  "core-zsh-denied-r15-repair": {
+    "schema": "hepta.root-stage45-source-review.v1",
+    "status": "SOURCE_REVIEW_PASS_NATIVE_GATE_PENDING",
+    "base_commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+    "base_tree": "1646e1656cf6365e74accae19a1225fd2ce6d964",
+    "patch_sha256": "646926bc7e25b9c45cd4d12ac88cfd348c00c7d08769302ec4afb23cecc933f3",
+    "files": [
+      {
+        "path": "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs",
+        "before_sha256": "c4dbf8d0c3fdd572e20aacaf9a91a7bc9f75742bd4ff75dd08a685b6d79bbc31",
+        "before_blob": "631bf4c6db2876fe32f653c73e386c253ffc939d",
+        "after_sha256": "4568501da5cf0c5b74be83a41d632f877087d77d128feed2db05d56bb4a3207a",
+        "after_blob": "03f497fb524b187c62325679dcff465663c4f30b",
+        "bytes": 33969,
+        "original_assertions_outside_edit_regions": true
+      }
+    ],
+    "exact_full_patch_forward_and_reverse": true,
+    "no_fuzz_or_offset": true,
+    "original_github_blob_identity_verified": true,
+    "tests_not_executed_by_review": true,
+    "semantic_review": {
+      "only_import_and_approval_fallback_field_changed": true,
+      "existing_denied_read_preserving_helper_reused": true,
+      "parent_admission_boundary": "Only production constructor follows UnifiedExecRuntime via ToolOrchestrator::run; Forbidden and unsuccessful approval return before run_attempt. Configuration Skip remains policy admission, not a claim of human approval.",
+      "physical_execution_fields_and_denied_reads_unchanged": true,
+      "explicit_prefix_rules_and_dangerous_command_prompts_unchanged": true,
+      "direct_provider_granular_unapproved_negative_route_unchanged": true,
+      "existing_integration_regression_unchanged": true,
+      "complete_native_execution_still_required": true
+    }
+  },
+  "core-test-support-ci-r15-repair": {
+    "schema": "hepta.root-stage45-source-review.v1",
+    "status": "SOURCE_REVIEW_PASS_NATIVE_GATE_PENDING",
+    "base_commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+    "base_tree": "1646e1656cf6365e74accae19a1225fd2ce6d964",
+    "patch_sha256": "4442c64de07334ae60d5187926e1e9faf093b62aa54be44935db907ec19db787",
+    "files": [
+      {
+        "path": ".github/workflows/hepta-cell-framework-native.yml",
+        "before_sha256": "9b04365dba53f7bf2b9c5f57bbfb264cddfa63d0509ee1d0401762d52ca46d1c",
+        "before_blob": "e175cee31931f94487a134873465e97987102718",
+        "after_sha256": "4a0cbfa961838f492423e6897d24802c1b456278032a0cedc8c33da385653ed0",
+        "after_blob": "29eb48f017280fee3bbc1efc48ac1e9eb204bc32",
+        "bytes": 8848,
+        "original_assertions_outside_edit_regions": "separately_verified"
+      }
+    ],
+    "exact_full_patch_forward_and_reverse": true,
+    "no_fuzz_or_offset": true,
+    "original_github_blob_identity_verified": true,
+    "tests_not_executed_by_review": true,
+    "semantic_review": {
+      "only_change": "Existing owner: core list appends -p core_test_support; all other bytes including gates, resources, profiles and original retries are unchanged.",
+      "owner_manifest_blob": "a4851eb1d9ef3f9bc0d1535f84e937bfb82aaf93"
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "schema": "hepta.cold-root-r16-diagnostic-edits.v1",
+  "operations": [
+    {
+      "phase": "initial-root-build",
+      "old": "    let initial = initial_builder.build_with_auto_env(&server).await?;",
+      "new": "    let initial = initial_builder\n        .build_with_auto_env(&server)\n        .await\n        .context(\"cold-root initial build: root/worker/sibling IDs not yet available to fixture\")?;",
+      "identity_note": "The initial build has not returned a root ID; no identity is invented. The original underlying error and any ID it contains remain in the anyhow chain."
+    },
+    {
+      "phase": "pre-restart-sibling-flush",
+      "old": "    sibling_thread.flush_rollout().await?;",
+      "new": "    sibling_thread\n        .flush_rollout()\n        .await\n        .with_context(|| {\n            format!(\n                \"cold-root pre-restart sibling flush: root={root_thread_id}, worker={worker_thread_id}, sibling={sibling_thread_id}\"\n            )\n        })?;",
+      "identity_note": "All three thread IDs are actual variables established by earlier successful boundaries."
+    },
+    {
+      "phase": "pre-restart-worker-flush",
+      "old": "    worker_thread.flush_rollout().await?;",
+      "new": "    worker_thread\n        .flush_rollout()\n        .await\n        .with_context(|| {\n            format!(\n                \"cold-root pre-restart worker flush: root={root_thread_id}, worker={worker_thread_id}, sibling={sibling_thread_id}\"\n            )\n        })?;",
+      "identity_note": "All three thread IDs are actual variables established by earlier successful boundaries."
+    },
+    {
+      "phase": "pre-restart-root-flush",
+      "old": "    initial.codex.flush_rollout().await?;",
+      "new": "    initial.codex\n        .flush_rollout()\n        .await\n        .with_context(|| {\n            format!(\n                \"cold-root pre-restart root flush: root={root_thread_id}, worker={worker_thread_id}, sibling={sibling_thread_id}\"\n            )\n        })?;",
+      "identity_note": "All three thread IDs are actual variables established by earlier successful boundaries."
+    }
+  ]
+}

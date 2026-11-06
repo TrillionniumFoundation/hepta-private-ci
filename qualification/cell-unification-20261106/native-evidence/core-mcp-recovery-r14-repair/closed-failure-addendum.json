@@ -1,0 +1,29 @@
+{
+  "schema": "hepta.closed-failure-addendum.v1",
+  "source_commit": "b44d4ca4aa0ef9f894eff29e9975938e066a82f5",
+  "source_tree": "d3d2313b838422818bf9448ce5a1b86d89abdf69",
+  "closed_status": "COMPLETE_FAILED",
+  "closed_result": {
+    "path": "core-mcp-recovery-r14-audit/evidence/native-core-r14-result-review.json",
+    "bytes": 35985,
+    "sha256": "9b5b3a81d4901d8c6769908e2021235e3ef82e3257d5b0c21bf1c086899f0732"
+  },
+  "full_log_sha256_reported_by_native": "443a58d70c34d76ba9b8141ad7ee32d997a4f16af79e8f5a873770966028952c",
+  "closed_unique_counts": {
+    "PASS": 3806,
+    "FAIL": 24
+  },
+  "original_failure_block_matches_terminal_excerpt_ignoring_separator_whitespace": true,
+  "failure": {
+    "status": "FAIL",
+    "elapsed": "10.444s",
+    "binary": "codex-core::all",
+    "name": "suite::mcp_tool_exposure::later_follow_up_uses_background_recovered_apps_after_mid_thread_startup_failures",
+    "log_byte_range": [
+      438480,
+      439367
+    ],
+    "excerpt": "        FAIL [  10.444s] codex-core::all suite::mcp_tool_exposure::later_follow_up_uses_background_recovered_apps_after_mid_thread_startup_failures\n  stdout ───\n\n    running 1 test\n    test suite::mcp_tool_exposure::later_follow_up_uses_background_recovered_apps_after_mid_thread_startup_failures ... FAILED\n\n    failures:\n\n    failures:\n        suite::mcp_tool_exposure::later_follow_up_uses_background_recovered_apps_after_mid_thread_startup_failures\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1425 filtered out; finished in 10.43s\n\n  stderr ───\n\n    thread 'suite::mcp_tool_exposure::later_follow_up_uses_background_recovered_apps_after_mid_thread_startup_failures' (1016964) panicked at core/tests/common/lib.rs:356:14:\n    timeout waiting for event: Elapsed(())\n    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+  },
+  "scope": "This supersedes the active-prefix status for the retained individual failure only. Frozen source/patch/manifest/causal review are unchanged. No native candidate execution or pass is claimed. Full-log byte verification is owned by root/native archive readback."
+}

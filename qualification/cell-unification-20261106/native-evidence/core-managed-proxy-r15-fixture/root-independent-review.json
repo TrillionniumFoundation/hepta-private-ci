@@ -1,0 +1,48 @@
+{
+  "schema": "hepta.root-r15-proxy-fixture-review.v1",
+  "status": "SOURCE_BYTES_REVIEW_PASS_NATIVE_TESTS_NOT_RUN",
+  "base_commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+  "base_tree": "1646e1656cf6365e74accae19a1225fd2ce6d964",
+  "original_github_blob_independently_read": true,
+  "source_file": {
+    "path": "codex-rs/core/src/session/tests.rs",
+    "before": {
+      "bytes": 504602,
+      "sha256": "29da32a96770cc74df87d09465c9d138dbabc539d038d1641001a0affd29d085",
+      "git_blob": "dce43c7f844f45036a7b58b307de500029f1f001"
+    },
+    "after": {
+      "bytes": 504663,
+      "sha256": "8d06e0e5d0f59b5c06d093ae822aec42f76a212c23b8ac26939345ab2e1c8309",
+      "git_blob": "d9fb57b98d68fc8b548ba312b5f1671f70fd0573"
+    },
+    "mode": "100644"
+  },
+  "patch_sha256": "ce0e594600932842dfd3f6e22b49c810b15ec504add40166e2090f340d3f8389",
+  "full_file_changes": "Only exact request URL/Host literal replacement and one purpose comment; inverse returns original504602 bytes.",
+  "original_assertions_retained": 4,
+  "original_two_second_read_budget_retained": true,
+  "full_access_start_then_workspace_write_reconfiguration_retained": true,
+  "expected_403_blocked_by_allowlist_and_exactly_one_decider_call_retained": true,
+  "patch_forward_and_reverse": [
+    {
+      "reverse": false,
+      "exit_code": 0,
+      "output": "patching file codex-rs/core/src/session/tests.rs\n",
+      "exact": true
+    },
+    {
+      "reverse": true,
+      "exit_code": 0,
+      "output": "patching file codex-rs/core/src/session/tests.rs\n",
+      "exact": true
+    }
+  ],
+  "evidence_boundary": "Closed r15 log proves response timeout, while source analysis supports ambient-DNS dependence. No resolver duration or external network probe measured; production network policy is unchanged. Support pin closure remains in the native author audit.",
+  "earlier_r14_same_unit": {
+    "status": "PASS",
+    "elapsed_seconds": 0.283,
+    "does_not_prove_dns_causality": true
+  },
+  "new_rust_test_execution": false
+}

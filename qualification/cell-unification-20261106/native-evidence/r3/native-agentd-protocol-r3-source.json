@@ -1,0 +1,383 @@
+{
+  "staged_tree": "634b3a5ce694319af76e5597fffa258a17d2b679",
+  "parent_head": "bef6fa7645df9df12b69fda499e97eed25de6c75",
+  "merge_head": "caf06e0d9c78ba2b8e2ab860ec1b37f049e30f1b",
+  "changed_files": [
+    {
+      "path": ".github/workflows/hepta-cell-differentiation.yml",
+      "sha256": "9d4ec214c3c113402e149afb042e80de9db71faf2f5bb1cba7ccbdd36655eae5",
+      "size": 5170,
+      "git_blob": "8b2a223cf582bca816f742973abb7091364ab702"
+    },
+    {
+      "path": ".github/workflows/hepta-cell-framework-native.yml",
+      "sha256": "2a9609784d6aa9fd10932419b4b978d317e67545fed3eaaf6f696b8faa598e58",
+      "size": 4570,
+      "git_blob": "16fab8ec17b269735bc0e093b01094521439e14b"
+    },
+    {
+      "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
+      "sha256": "49b6ce215975f118a323ce986ad146cca1a9c7ef5cebabcca7905a657d867438",
+      "size": 46759,
+      "git_blob": "eb1d5a2fe57aaffa0b38f0b87efdfa982d524e46"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "sha256": "3aac98bce3d3f5c582004ec50cc00b256138316c3b741cb4a56297c40a73b905",
+      "size": 42530,
+      "git_blob": "fd516a4a8ca25c0f3bf5a921b51f27c191dd1f15"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_cell.rs",
+      "sha256": "b1f07153246d517b7b846c5011f3f8158fd5a795e132f8efd0bc1b175324db6e",
+      "size": 10994,
+      "git_blob": "b9acce4c310fc9e08224b012dd0644cdedee6da9"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_product_runner.rs",
+      "sha256": "4468f1893ce9112f8d21d98afdb5de69acf15b0a02af90a5d7b91306529178c0",
+      "size": 17294,
+      "git_blob": "84da64e90b28d7669c67c701597ba530483c98b3"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_runtime_tests.rs",
+      "sha256": "616fdafdb841c5db06d22d6718e029342953926552ea3ef85faf50b422438a22",
+      "size": 17449,
+      "git_blob": "8d7961c382ba465b4b52de037b4c061791e59441"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
+      "sha256": "ed3ff15a7d9a62e1a10ca29dc9da76b93211bd3eada7ff2240fc5d007b068228",
+      "size": 64430,
+      "git_blob": "bbdb63351945144cea79bf038d2902816d28665d"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/circuit_runtime_tests.rs",
+      "sha256": "3d765ca5203b4f8bda11df5edab9981cd59a92c8ab3f1f89ebe8f2edf0c5b5a4",
+      "size": 27182,
+      "git_blob": "a088ced47252e32a35ac12221a28de5fe61e76cc"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/circuit_store_tests.rs",
+      "sha256": "997d8ffb673af44d2acb67e412dbc7e16d1b16ff84db6c497c7a3eb9528da2b5",
+      "size": 15099,
+      "git_blob": "c853bb78fb80bf99a51c75de71d131cb9939e35e"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/lib.rs",
+      "sha256": "859decdddbe12f9ae06332db599033aabb991c11cc045ccebfbb9fc8ef5f6fd9",
+      "size": 8576,
+      "git_blob": "48c25854eee0198fb8c08e6acd1145c529b362c7"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/neural_circuit.rs",
+      "sha256": "0ef417f413781d60595543646e4b030c82091b2d0f562f7a0db78d2fe6c47689",
+      "size": 22169,
+      "git_blob": "0c5c0b6d20cabe029e262cc3f44ce18ae47fb491"
+    },
+    {
+      "path": "codex-rs/hepta-automation/tests/authorized_effect.rs",
+      "sha256": "7b2ff35ccd279b7593153fe7862b6a77e5f79725bffd38f195f5230868400026",
+      "size": 42927,
+      "git_blob": "f9c4265c75c3cf63a9ecf8e59caedaba958ad08b"
+    },
+    {
+      "path": "codex-rs/hepta-automation/tests/automation.rs",
+      "sha256": "e58576162b86c7de68965ea0872a6268f4fa768213f6a154669035f34a18f450",
+      "size": 54775,
+      "git_blob": "00329623d23f7c2858e5f769e9f3c6bcd37d481c"
+    },
+    {
+      "path": "codex-rs/hepta-automation/tests/retirement_recovery.rs",
+      "sha256": "20e56259ffeb4b971f390625e83d1cf0b1fa5ca0e6dd9ff6e91c877d0de129e9",
+      "size": 11302,
+      "git_blob": "3176b9306aae73e744f8f2178b0379478637f525"
+    },
+    {
+      "path": "codex-rs/hepta-context-compiler/src/lib.rs",
+      "sha256": "a2316e81f7d937ba20ddbf5c36925b7a654b6c1ec2d36f290619382425060b96",
+      "size": 9799,
+      "git_blob": "8d3f8a74a8b0e83a11a702691ff1cbebc7e064cc"
+    },
+    {
+      "path": "codex-rs/hepta-context-compiler/src/v2.rs",
+      "sha256": "f9a270563e1ee4c041cfaebb3c8784cf77b88553f196881ac5d5c37272671811",
+      "size": 88483,
+      "git_blob": "999480435429b263060a0eb0e43d724b9ded7697"
+    },
+    {
+      "path": "codex-rs/hepta-context-compiler/src/v2_tests.rs",
+      "sha256": "d7ab4a54eb887cb5b7cffd38e42f3d0c9f74447d875c87f2d79ac09932f56310",
+      "size": 44519,
+      "git_blob": "6edc244fc86173eb7a34611bc6f28908c06aed57"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/canonical.rs",
+      "sha256": "f8888c60cf7f6818692b4df53ab27a56a8453e30692d9a5713b617281f00d21b",
+      "size": 33319,
+      "git_blob": "b4b5e54d718c623d871e2b64827ff2dd627dcd03"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs",
+      "sha256": "4b0c91198aace24fc6697d536b164ab018cf19cdf63120255e820b73cdd31735",
+      "size": 26581,
+      "git_blob": "7b7f0f43e07765b1de53f49ea8ec36e95976c090"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/learning_iteration_test_support.rs",
+      "sha256": "c6dbde47a1404a40f06fdd3965fa28efc4072b605d355b1e22c23e1e7f4667a8",
+      "size": 5852,
+      "git_blob": "3a2ed78fe6bc3ea2608f716e4a4283f98981804d"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/learning_iteration_types.rs",
+      "sha256": "3e673b5b4ddbf98fce4f1897298483fd9a7fe5fe6cc52d3f76063cad34c68fd7",
+      "size": 5432,
+      "git_blob": "c07ff99bbac5ec39146f7a7ce201bd360fd7aeb7"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell.rs",
+      "sha256": "855a4f68f329475fc4c8225dbb11ea6f1e31b714651e3d18d10770bc77666d57",
+      "size": 10278,
+      "git_blob": "95f6853ba4fb4c40ac512d7eaa00e0a6437e3cff"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_feature_projection.rs",
+      "sha256": "a097dcf4f02d586f38f1d0b130b6de0f4b6091698f0640a073fd11d60278ca24",
+      "size": 7385,
+      "git_blob": "4f0fe434de3ccba9ec263bae3d35ad650de11090"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_feature_projection_tests.rs",
+      "sha256": "c633ff470d3401ebd5c4e6327872814a5b431952ee4e5ed2ca3f420a12ac9a3d",
+      "size": 8401,
+      "git_blob": "90489f8796b3e01fe5b88686ea235c4dfedb27ec"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_inference_tests.rs",
+      "sha256": "95f6ef9b468238fbdf5ba6a991ae13b70d52e8d93a3f1d860b388b9f63d2c5ad",
+      "size": 8593,
+      "git_blob": "a1eed8b00d31523ab2ee8d0533632a499e055243"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_journal_tests.rs",
+      "sha256": "b9e1d873207b9a45b8c25c6846b62fc086f7dcda87732cb735d852cf20af8933",
+      "size": 16719,
+      "git_blob": "a3cd2fadda6169cf6166f90aeaadc88753aa08d8"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_population.rs",
+      "sha256": "4b18cfc42373e8a964523cda2974e248eb0b994057493e63aa3f50e3aeef9cf7",
+      "size": 11543,
+      "git_blob": "1e3e7d23a700618ecdc7cadb6c27ebab14297c0c"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_population_tests.rs",
+      "sha256": "d3ff99eb6f27bfd101c501d0e7e9403b385cb99050161f7fdfdc40e4481cdb62",
+      "size": 13636,
+      "git_blob": "77ce6841c6bd2cd77bc49b7a6ca711bdf1826ea6"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_registry.rs",
+      "sha256": "0e96a76e68d3d3aa96eebceebdf5d5df18857085b61d92f9bcad355040aa45fb",
+      "size": 10125,
+      "git_blob": "bfbca4b24f2033f5fb72e091d7528a3dfc2811cf"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_registry_tests.rs",
+      "sha256": "66d266ba7a3271e9841b163cbc0ef10492294ac9b82e2e93adfdf9ac12400876",
+      "size": 13801,
+      "git_blob": "92a48bd17a67c8d7502ba12883620ddd691b0533"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_roles.rs",
+      "sha256": "395df3e3bff41d202eef195038eb98e797034fb31d44eca74220731604ce7d5f",
+      "size": 4060,
+      "git_blob": "249c3a069d5a5d7ce259fd020a4f85e23c269e26"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_roles_tests.rs",
+      "sha256": "5af928b275187286bd0b23e0584d87a0320b8562d68fe50ff820cc71ed2d9e49",
+      "size": 2746,
+      "git_blob": "017c3d334aee2b17a7579d524e29d3e73637296a"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_tests.rs",
+      "sha256": "ba46e85eca197c3e323e3d741b00cef708acbedfa57267635da4ea67d3398e06",
+      "size": 25404,
+      "git_blob": "8e589ecb127baaab55d858aeaa91981a9364eb0b"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_types.rs",
+      "sha256": "948f776c53884fa4e63f5e09624eccce40f273510b24906cae562f404f60586e",
+      "size": 9635,
+      "git_blob": "a5e2674f0d65c78f793d4fe29ee774edf245e42e"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_update.rs",
+      "sha256": "1b31662969e10cd977a0ef2de29b7fa185a701569270fcaf456831202d7e6015",
+      "size": 5844,
+      "git_blob": "3b1440fec45a7642bb07633b7b77134ee0ca7815"
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/lib.rs",
+      "sha256": "55207d398669384a454482f7403598d4d190fa6295b6f5c77ec0aa986551659d",
+      "size": 12516,
+      "git_blob": "7ef9b286401ae27b08dc7c77f298ca4eb1f646ed"
+    },
+    {
+      "path": "codex-rs/hepta-plasticity/src/differentiation_demand.rs",
+      "sha256": "28f72aa695461446e9fcd820c76d9ffc5d693dc87992db0b55fa86cc21f58fc0",
+      "size": 7132,
+      "git_blob": "0aa18d4722c36650bd3bd684184c07fc82b7a5a7"
+    },
+    {
+      "path": "codex-rs/hepta-plasticity/src/differentiation_demand_tests.rs",
+      "sha256": "fcbdffa2e8537cfbe028bd6020858134ceba3624c8805ed985061a1d6588703d",
+      "size": 6336,
+      "git_blob": "08334993e443699e59a20d7c96cf3de3ad7b2cdb"
+    },
+    {
+      "path": "codex-rs/hepta-plasticity/src/differentiation_observations.rs",
+      "sha256": "ed5ead677670470d8c25612b47e38bbf9fe907a4500cf397deb580b68ab41bc3",
+      "size": 3718,
+      "git_blob": "87d8968509765221c19df590218ade2edaf0746a"
+    },
+    {
+      "path": "codex-rs/hepta-plasticity/src/differentiation_plan.rs",
+      "sha256": "cbb5033a7ab4eb5b5d2550880102936563568caeb5cef9430ff667df2af45cf8",
+      "size": 7771,
+      "git_blob": "6090ea86556b0a9bb0b480febabf1784f3734be9"
+    },
+    {
+      "path": "codex-rs/hepta-plasticity/src/differentiation_study.rs",
+      "sha256": "f7e8d0760f44c76f7884c7b0238109cdb6ff01507c02b646331825bcc099c412",
+      "size": 15917,
+      "git_blob": "8bcd7f64226c083c49413724fac652aedb72d570"
+    },
+    {
+      "path": "codex-rs/hepta-plasticity/src/differentiation_study_tests.rs",
+      "sha256": "36232931ed5721309b4251ebd152f3a0ae5f1f228d23f91c366a8f1c94223c62",
+      "size": 20711,
+      "git_blob": "8a132d863f3ea0c6902fbc61574cd2361b1fb0fe"
+    },
+    {
+      "path": "codex-rs/hepta-plasticity/src/differentiation_test_support.rs",
+      "sha256": "87c96071d724de1df39eca433eda0516eef6920c8a6871a0d45e35d1ef449d0f",
+      "size": 4440,
+      "git_blob": "20718d91dbf4851e9ae741d0b110a89d308c25ae"
+    },
+    {
+      "path": "codex-rs/hepta-plasticity/src/differentiation_topology.rs",
+      "sha256": "5db6b1750b4f9ef93c104c26d2c72f1a9304312b431e4e00001d16cbe16fb40f",
+      "size": 3574,
+      "git_blob": "ea16fc2cc401e69e23ac83c83c089bfcd5941838"
+    },
+    {
+      "path": "codex-rs/hepta-plasticity/src/differentiation_types.rs",
+      "sha256": "d4e5390607677fa6074b974bc2db444262e2d55d97b7d585d682419ed3635845",
+      "size": 8201,
+      "git_blob": "e552de424f1b4d8f5bde13ef721576def26c6f2b"
+    },
+    {
+      "path": "codex-rs/hepta-plasticity/src/lib.rs",
+      "sha256": "66de445722c57294024d2ca027588a3b7de23b6259a0a753413e4f682f7bc44f",
+      "size": 8447,
+      "git_blob": "846d30c957059e92b23730f5b221188ed12069e8"
+    },
+    {
+      "path": "codex-rs/hepta-runtime/src/cell_lifecycle_journal.rs",
+      "sha256": "20e90350d6a7ba07728e3d1629b9c459f7aae8fb50b41a1f48d80c86e6b21489",
+      "size": 20060,
+      "git_blob": "addcb1a5f9627d106a12d93f9fd4446d0c9c980f"
+    },
+    {
+      "path": "codex-rs/hepta-runtime/src/cell_lifecycle_transition.rs",
+      "sha256": "abdd97460cbc8b1701e96cdf049bb79b067afe3e1181e371341d40e363654c10",
+      "size": 6820,
+      "git_blob": "8d25843af279cfb098c8b435fe29c4d6d8ee5747"
+    },
+    {
+      "path": "codex-rs/utils/pty/src/unix_io.rs",
+      "sha256": "b2344772862c2f5b79ca6f9c162e1648058302d665937d8fc802ce9309d53081",
+      "size": 4344,
+      "git_blob": "4c6bf9bfd3137c75109b223379debfc8d9d62d02"
+    },
+    {
+      "path": "qualification/cell-differentiation/README.md",
+      "sha256": "249df3daced3f2b9cf981d666bbb01fe77db47eb265aab792e8b513cfab627da",
+      "size": 10892,
+      "git_blob": "8e6f5490e0a162875ca71766c3bf4693a6be8677"
+    },
+    {
+      "path": "qualification/cell-differentiation/VALIDATION.md",
+      "sha256": "23da80631b3a5c1003e5dba6d10fec35655da12c81635a05701f8a5b002fc063",
+      "size": 10162,
+      "git_blob": "0e9da42f23b5bf7ae0bb508e5bcddfdc270c0e7f"
+    },
+    {
+      "path": "qualification/cell-differentiation/run_study.py",
+      "sha256": "417855fedcd46dc8de2f920e3f270e3233a06f03d7d38b172449bf0b09a341c6",
+      "size": 12748,
+      "git_blob": "db23721c1c2bad548f0be69a0d7c7038f2deedce"
+    },
+    {
+      "path": "qualification/cell-differentiation/study_cost.py",
+      "sha256": "d4cf26fd27fef65203786d70b3ff1d097aa82db1521242d26ab87a40d001cefd",
+      "size": 6881,
+      "git_blob": "e4e56be6ebc352c9edd818a9d1ed3b434562168a"
+    },
+    {
+      "path": "qualification/cell-differentiation/study_data.py",
+      "sha256": "ffa701aace20d69cdee66fd3b8a723719dfd4956e48780ed933f4d3c3ee6ed6f",
+      "size": 8537,
+      "git_blob": "9798c61510bcd7c329c14e7ec74866a38b0b84c9"
+    },
+    {
+      "path": "qualification/cell-differentiation/study_evidence.py",
+      "sha256": "644cfeb651c430837a596db019dfe474ad6cb9344d92ec54fd13b40c2b457db3",
+      "size": 11519,
+      "git_blob": "904a44f5754379ae4266c750764056aeed6e0802"
+    },
+    {
+      "path": "qualification/cell-differentiation/study_gate.py",
+      "sha256": "7301e22dffc93e03521f7e651a86d37681bbbc47bea1a9891f27eda192e6e316",
+      "size": 5695,
+      "git_blob": "e0bf983f04c4757a680e3f5972a9a2ff94879778"
+    },
+    {
+      "path": "qualification/cell-differentiation/study_model.py",
+      "sha256": "a4e24975c9561fa08452ba9e250aafaed9b1cbccb5049ddf5b6a9ff9637ac704",
+      "size": 11706,
+      "git_blob": "1fccaaa1d339a63d82d3f165f089a0ee34b7aa22"
+    },
+    {
+      "path": "qualification/cell-differentiation/test_study.py",
+      "sha256": "a67ddaf82fd3330a47e951e917350e4be552fa352db6ea210032ce06bd7a0c98",
+      "size": 17102,
+      "git_blob": "4d6259ade24764090ba5e55ac98aaacdafee5da1"
+    }
+  ],
+  "cargo_lock_sha256": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c",
+  "environment": {
+    "RUSTUP_TOOLCHAIN": "1.96.0",
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_TARGET_DIR": "/home/alex/work/hepta-cell-unified-20261106-a/target",
+    "CARGO_NET_GIT_FETCH_WITH_CLI": "true",
+    "NEXTEST_TEST_THREADS": "2",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "tool_overrides": {
+    "RUSTY_V8_ARCHIVE": "/home/alex/work/hepta-cell-unified-20261106-a/tools/v8/rusty-v8-150.4.0-x86_64-unknown-linux-gnu/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+    "RUSTY_V8_SRC_BINDING_PATH": "/home/alex/work/hepta-cell-unified-20261106-a/tools/v8/rusty-v8-150.4.0-x86_64-unknown-linux-gnu/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+    "PROTOC": "/home/alex/work/hepta-cell-unified-20261106-a/tools/protoc-21.12/bin/protoc",
+    "PROTOC_INCLUDE": "/home/alex/work/hepta-cell-unified-20261106-a/tools/protoc-21.12/include",
+    "DOTSLASH_CACHE": "/home/alex/work/hepta-cell-unified-20261106-a/tools/dotslash-cache"
+  },
+  "nine_scope_equivalence": "native-nine-source-equivalence-r3.json",
+  "disk_before": {
+    "total": 1966736678912,
+    "used": 1572637978624,
+    "free": 294118449152
+  }
+}

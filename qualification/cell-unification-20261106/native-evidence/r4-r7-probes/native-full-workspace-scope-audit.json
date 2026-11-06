@@ -1,0 +1,45 @@
+{
+  "files": [
+    {
+      "path": "codex-rs/Cargo.toml",
+      "sha256": "de54aafbd8e041cdaec30705fb6c286bd308f2a03de1c598a778f20feaade34b",
+      "git_blob": "7e2ec509988e11cdf92130e385ffdf409bbcc15d",
+      "unchanged_from_bef": true,
+      "default_members": null,
+      "members_count": 187,
+      "exclude": [
+        "third_party/i18n-config-0.4.8",
+        "third_party/secret-service-6.0.0",
+        "third_party/zbus-secret-service-keyring-store-1.0.1"
+      ]
+    },
+    {
+      "path": "codex-rs/.cargo/config.toml",
+      "sha256": "b8ae1cea341beb2d4a3c8fb81f97a96f4aee1fd53f769c57f140dfe949806a80",
+      "git_blob": "8a6f2c11ee7afbb11f7033ef3390fb1c57b4cd44",
+      "unchanged_from_bef": true
+    },
+    {
+      "path": ".cargo/config.toml",
+      "exists": false
+    }
+  ],
+  "additional_shell_environment_whitelist": {
+    "NEXTEST_USER_CONFIG_FILE": null,
+    "CARGO_BUILD_TARGET": null,
+    "CARGO_TARGET_DIR": null,
+    "RUST_MIN_STACK": null,
+    "NEXTEST_TEST_THREADS": null
+  },
+  "task_nextest_version": "cargo-nextest 0.9.103 (d2e7b879f 2025-08-25)\nrelease: 0.9.103\ncommit-hash: d2e7b879fb79975e8b47a8e3ce569b651e6381c0\ncommit-date: 2025-08-25\nhost: x86_64-unknown-linux-gnu",
+  "notes_actual_app_paths": [],
+  "bounded_existing_source_examples": {
+    "service_opt_in": [],
+    "original_ignore": [
+      "codex-rs/hepta-learning-artifacts/src/owner_host.rs:2086:    #[ignore = \"worker is invoked only by owner_host_process_kill_reopen_matrix\"]"
+    ],
+    "platform_guard": []
+  },
+  "disk_free_bytes": 283142926336,
+  "mem_available_line": "MemAvailable:   16600008 kB"
+}

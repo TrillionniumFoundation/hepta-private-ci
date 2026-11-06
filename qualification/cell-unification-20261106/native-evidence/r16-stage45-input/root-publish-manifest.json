@@ -1,0 +1,69 @@
+{
+  "base_commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+  "base_tree": "1646e1656cf6365e74accae19a1225fd2ce6d964",
+  "stage_file_count": 5,
+  "changed_source_files_against_original_framework_after": 180,
+  "packages_changed_this_stage": [
+    "codex-core",
+    "core_test_support"
+  ],
+  "packages_full_gate": [
+    "codex-core",
+    "codex-mcp",
+    "core_test_support"
+  ],
+  "expected_final_fix_packages": 21,
+  "no_native_execution_yet": true,
+  "files": [
+    {
+      "path": "codex-rs/core/src/session/tests.rs",
+      "local_path": "/workspace/scratch/08f5efd48967/core-managed-proxy-r15-fixture/source/codex-rs/core/src/session/tests.rs",
+      "bytes": 504663,
+      "characters": 504661,
+      "sha256": "8d06e0e5d0f59b5c06d093ae822aec42f76a212c23b8ac26939345ab2e1c8309",
+      "git_blob_sha": "d9fb57b98d68fc8b548ba312b5f1671f70fd0573",
+      "mode": "100644",
+      "candidate": "core-managed-proxy-r15-fixture"
+    },
+    {
+      "path": "codex-rs/core/tests/common/streaming_sse.rs",
+      "local_path": "/workspace/scratch/08f5efd48967/core-recovery-r15-repair/source/codex-rs/core/tests/common/streaming_sse.rs",
+      "bytes": 27584,
+      "characters": 27584,
+      "sha256": "0d8d35afd738823226e0aa9c0636e7337b958de5a66418e49190a231b3dd79c0",
+      "git_blob_sha": "5650fb5d4738ca0442fd2afebd2268e3414e9b1d",
+      "mode": "100644",
+      "candidate": "core-recovery-r15-repair"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/turn_input_submission.rs",
+      "local_path": "/workspace/scratch/08f5efd48967/core-recovery-r15-repair/source/codex-rs/core/tests/suite/turn_input_submission.rs",
+      "bytes": 21320,
+      "characters": 21320,
+      "sha256": "7dc33fdd6c892deda4b145edbd61a653c1cd3b4eaaae6c635caadaf2fd2e5919",
+      "git_blob_sha": "a3e4ecc296ff71736bac1e2c441d7e7b0762a2a7",
+      "mode": "100644",
+      "candidate": "core-recovery-r15-repair"
+    },
+    {
+      "path": "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs",
+      "local_path": "/workspace/scratch/08f5efd48967/core-zsh-denied-r15-repair/source/codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs",
+      "bytes": 33969,
+      "characters": 33969,
+      "sha256": "4568501da5cf0c5b74be83a41d632f877087d77d128feed2db05d56bb4a3207a",
+      "git_blob_sha": "03f497fb524b187c62325679dcff465663c4f30b",
+      "mode": "100644",
+      "candidate": "core-zsh-denied-r15-repair"
+    },
+    {
+      "path": ".github/workflows/hepta-cell-framework-native.yml",
+      "local_path": "/workspace/scratch/08f5efd48967/core-test-support-ci-r15-repair/source/.github/workflows/hepta-cell-framework-native.yml",
+      "bytes": 8848,
+      "characters": 8848,
+      "sha256": "4a0cbfa961838f492423e6897d24802c1b456278032a0cedc8c33da385653ed0",
+      "git_blob_sha": "29eb48f017280fee3bbc1efc48ac1e9eb204bc32",
+      "mode": "100644",
+      "candidate": "core-test-support-ci-r15-repair"
+    }
+  ]
+}

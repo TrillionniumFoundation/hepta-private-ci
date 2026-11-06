@@ -1,0 +1,11 @@
+{
+  "base_commit": "b44d4ca4aa0ef9f894eff29e9975938e066a82f5",
+  "operations": [
+    {
+      "path": "codex-rs/core/tests/suite/turn_input_submission.rs",
+      "old": "            StreamingSseChunk {\n                gate: None,\n                body: responses::sse(vec![ev_response_created(\"resp-interrupted\")]),\n            },\n            StreamingSseChunk {\n                gate: Some(first_response_gate),\n                body: responses::sse(vec![ev_completed(\"resp-interrupted\")]),\n            },",
+      "new": "            StreamingSseChunk {\n                // Recovery ends when the first provider event reaches the turn\n                // executor, including response.created. Keep that event gated.\n                gate: Some(first_response_gate),\n                body: responses::sse(vec![ev_response_created(\"resp-interrupted\")]),\n            },\n            StreamingSseChunk {\n                gate: None,\n                body: responses::sse(vec![ev_completed(\"resp-interrupted\")]),\n            },",
+      "count": 1
+    }
+  ]
+}

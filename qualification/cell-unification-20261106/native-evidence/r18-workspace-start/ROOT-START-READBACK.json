@@ -1,0 +1,92 @@
+{
+  "schema": "hepta.root-r18-workspace-start-readback.v1",
+  "status": "START_INPUTS_EXACT_NO_TERMINAL_QUALIFICATION",
+  "archive_bytes": 66156,
+  "archive_sha256": "28f256a848783312d5217179807bd91aabc86763a28d1450144b1d9e44d248f4",
+  "regular_members": 10,
+  "all9_indexed_originals_exact": true,
+  "all193_workspace_and_default_member_sets_exact": true,
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "--retries",
+    "0"
+  ],
+  "source_tree": "ffa0a37f4616c5563169c7f0a9305bf6c982d58b",
+  "source_commit": "2d7ad1d60019f35fc13d84138ceb2755d914f434",
+  "same_source_r17_two_pass_prerequisites_exact": true,
+  "attachments": [
+    {
+      "original_name": "native-workspace-r18-scope.json",
+      "original_bytes": 70399,
+      "original_sha256": "29c1d743354ee674dd0cf1c248d753362bb648ebe3ddfb7bffc6bf9d7fd9047b",
+      "attachment": "native-workspace-r18-scope.json",
+      "attachment_sha256": "29c1d743354ee674dd0cf1c248d753362bb648ebe3ddfb7bffc6bf9d7fd9047b"
+    },
+    {
+      "original_name": "native-core-mcp-r17-tests-receipt.json",
+      "original_bytes": 961,
+      "original_sha256": "2fe9204bd09bfc1b0645a3fd4d8600dd8405866b6cfca60b05d69bfe7c4c15c8",
+      "attachment": "native-core-mcp-r17-tests-receipt.json",
+      "attachment_sha256": "2fe9204bd09bfc1b0645a3fd4d8600dd8405866b6cfca60b05d69bfe7c4c15c8"
+    },
+    {
+      "original_name": "native-core-mcp-r17-strict-receipt.json",
+      "original_bytes": 978,
+      "original_sha256": "bd5f883e9f856ea75da1609ff544c628f1952a03b7125f14d2997fc44e9c64c7",
+      "attachment": "native-core-mcp-r17-strict-receipt.json",
+      "attachment_sha256": "bd5f883e9f856ea75da1609ff544c628f1952a03b7125f14d2997fc44e9c64c7"
+    },
+    {
+      "original_name": "native-workspace-r18-metadata.json",
+      "original_bytes": 937669,
+      "original_sha256": "99fdbea678582580ebb373c06e4e91cd547f49d83765c22a59a1dd143510a834",
+      "attachment": "native-workspace-r18-metadata.json.gz",
+      "attachment_sha256": "144e3eb48250a42476062cf7af8e79e321f196b50c394b0921a3d3b4781a6bf5"
+    },
+    {
+      "original_name": "INDEX.json",
+      "original_bytes": 2127,
+      "original_sha256": "f0d1da927591792d154ef2a5bb8b132d70ba5127a2e568ea714a9f2c2403fabb",
+      "attachment": "INDEX.json",
+      "attachment_sha256": "f0d1da927591792d154ef2a5bb8b132d70ba5127a2e568ea714a9f2c2403fabb"
+    },
+    {
+      "original_name": "native-workspace-r18-command.sh",
+      "original_bytes": 5468,
+      "original_sha256": "bbacacf60a84edd91ea9e26dd173e1e3156aef4f5f3017f35cbcd54b6a3cb349",
+      "attachment": "native-workspace-r18-command.sh",
+      "attachment_sha256": "bbacacf60a84edd91ea9e26dd173e1e3156aef4f5f3017f35cbcd54b6a3cb349"
+    },
+    {
+      "original_name": "native-workspace-r18-environment.json",
+      "original_bytes": 1721,
+      "original_sha256": "cfb884b21d3a872919ba420bbce00e9370ac3b437afaeb013baf61891283c952",
+      "attachment": "native-workspace-r18-environment.json",
+      "attachment_sha256": "cfb884b21d3a872919ba420bbce00e9370ac3b437afaeb013baf61891283c952"
+    },
+    {
+      "original_name": "native-core-mcp-r17-tests-source-post-verification.json",
+      "original_bytes": 389,
+      "original_sha256": "8ba5334725439c15c2f41d5cb420da7e9575b201c5412c151270369786ce0bad",
+      "attachment": "native-core-mcp-r17-tests-source-post-verification.json",
+      "attachment_sha256": "8ba5334725439c15c2f41d5cb420da7e9575b201c5412c151270369786ce0bad"
+    },
+    {
+      "original_name": "native-core-mcp-r17-strict-source-post-verification.json",
+      "original_bytes": 390,
+      "original_sha256": "993b04dd27c94104f04d5a40b6f63533e6fd2bd4de73d2654f0cffc70eb39faa",
+      "attachment": "native-core-mcp-r17-strict-source-post-verification.json",
+      "attachment_sha256": "993b04dd27c94104f04d5a40b6f63533e6fd2bd4de73d2654f0cffc70eb39faa"
+    },
+    {
+      "original_name": "native-candidate-r17-source.json",
+      "original_bytes": 49538,
+      "original_sha256": "94290adf5a119d4853147e8e25f3f19f1e3bdd4189b20eeca565413b6906fbcc",
+      "attachment": "native-candidate-r17-source.json",
+      "attachment_sha256": "94290adf5a119d4853147e8e25f3f19f1e3bdd4189b20eeca565413b6906fbcc"
+    }
+  ],
+  "scope": "Only immutable startup inputs are verified here. The later native r18 terminal failure is a separate receipt; this record grants no workspace pass."
+}
