@@ -58,7 +58,7 @@ where
     ) {
         return Err(invalid("published updates use read-only recovery"));
     }
-    let binding = validate_reset(&old, &selected, &target)?;
+    let binding = validate_reset(&old, &selected, &target, original.completion())?;
     if &binding != original.target()
         || selected.observation().digest() != original.selection_observation_digest()
     {

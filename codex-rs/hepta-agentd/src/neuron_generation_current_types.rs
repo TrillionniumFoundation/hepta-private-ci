@@ -12,6 +12,22 @@ use serde::Serialize;
 use crate::AgentdError;
 use super::initial_types::InitialState;
 
+/// The explicitly authorized boundary for replacing the prior task owner.
+/// OwnerDrained is not a model STOP or terminal learning evidence.
+#[derive(Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum NeuronGenerationPredecessorCompletionV1 {
+    #[default]
+    ModelStopped,
+    OwnerDrained,
+}
+
+impl NeuronGenerationPredecessorCompletionV1 {
+    pub(super) fn is_model_stopped(&self) -> bool {
+        matches!(self, Self::ModelStopped)
+    }
+}
+
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub(super) struct UpdateIntent {
@@ -23,6 +39,8 @@ pub(super) struct UpdateIntent {
     pub(super) target: CellGenerationOwnerBindingV1,
     pub(super) genesis_checkpoint: [u8; 32],
     pub(super) selection: [u8; 32],
+    #[serde(default, skip_serializing_if = "NeuronGenerationPredecessorCompletionV1::is_model_stopped")]
+    pub(super) completion: NeuronGenerationPredecessorCompletionV1,
 }
 
 impl UpdateIntent {
@@ -37,7 +55,12 @@ impl UpdateIntent {
     pub(super) fn binding(&self) -> Result<FinalUseBinding, AgentdError> {
         Ok(FinalUseBinding {
             subject_id: self.previous.scope().agent_id.clone(),
-            destination_id: "agentd.cell-generation.replace".into(),
+            destination_id: match self.completion {
+                NeuronGenerationPredecessorCompletionV1::ModelStopped =>
+                    "agentd.cell-generation.replace",
+                NeuronGenerationPredecessorCompletionV1::OwnerDrained =>
+                    "agentd.cell-generation.replace-drained",
+            }.into(),
             request_sha256: self.digest()?.into_array(),
             scope_sha256: scope_digest(self.previous.scope())?.into_array(),
             payload_sha256: self.target.digest().map_err(invalid)?,
@@ -77,6 +100,10 @@ pub struct PreparedNeuronGenerationUpdateV1 {
 }
 
 impl PreparedNeuronGenerationUpdateV1 {
+    pub fn completion(&self) -> NeuronGenerationPredecessorCompletionV1 {
+        self.intent.completion
+    }
+
     pub fn final_use_binding(&self) -> &FinalUseBinding {
         &self.binding
     }
@@ -106,6 +133,10 @@ pub struct PublishedNeuronGenerationUpdateV1 {
 }
 
 impl PublishedNeuronGenerationUpdateV1 {
+    pub fn completion(&self) -> NeuronGenerationPredecessorCompletionV1 {
+        self.record.intent.completion
+    }
+
     pub fn target(&self) -> &CellGenerationOwnerBindingV1 {
         &self.record.intent.target
     }

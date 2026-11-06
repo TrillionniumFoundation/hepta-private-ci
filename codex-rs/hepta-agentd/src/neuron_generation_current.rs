@@ -1,5 +1,5 @@
 //! Task-boundary replacement through the existing protected Control store.
-//! The old terminal journal remains exclusively held across one publication
+//! The old drained journal remains exclusively held across one publication
 //! CAS. This owner records control facts only, never state, prefix or outbox.
 
 use std::sync::Arc;
@@ -27,6 +27,8 @@ use crate::neuron_generation_update_selection::AgentdSelectedGenerationV1;
 mod initial;
 #[path = "neuron_generation_current_initial_types.rs"]
 mod initial_types;
+#[path = "neuron_generation_current_prepare.rs"]
+mod prepare;
 #[path = "neuron_generation_current_store.rs"]
 mod store;
 #[path = "neuron_generation_current_types.rs"]
@@ -34,12 +36,11 @@ mod types;
 
 use types::CurrentHead;
 pub use types::NeuronGenerationUpdateReadbackV1;
+pub use types::NeuronGenerationPredecessorCompletionV1;
 pub use types::PreparedNeuronGenerationUpdateV1;
 use types::Published;
 pub use types::PublishedNeuronGenerationUpdateV1;
-use types::UpdateIntent;
 use types::invalid;
-use types::scope_digest;
 use initial_types::InitialState;
 pub use initial_types::NeuronGenerationInitialReadbackV1;
 pub use initial_types::PreparedNeuronGenerationInitialV1;
@@ -95,58 +96,10 @@ impl NeuronGenerationCurrentOwnerV1 {
         target: CellGenerationOwnerBindingV1,
         selected: &AgentdSelectedGenerationV1,
     ) -> Result<PreparedNeuronGenerationUpdateV1, AgentdError> {
-        StableId::new(&operation_id).map_err(invalid)?;
-        let previous = old
-            .owner_binding()
-            .ok_or_else(|| invalid("unguarded generation update"))?
-            .clone();
-        let observation = old.observe_generation().map_err(invalid)?;
-        if !observation.is_terminal() || !old.is_drained().map_err(invalid)? {
-            return Err(invalid("generation update requires STOP, ACK and drain"));
-        }
-        target.digest().map_err(invalid)?;
-        if scope_digest(previous.scope())? != scope_digest(target.scope())?
-            || previous.scope().run_id == target.scope().run_id
-            || previous.task_digest() == target.task_digest()
-            || previous.manifest_digest() == target.manifest_digest()
-            || previous.generation().checked_add(1) != Some(target.generation())
-            || previous.writer_epoch().checked_add(1) != Some(target.writer_epoch())
-            || selected.manifest().digest().map_err(invalid)? != target.manifest_digest()
-        {
-            return Err(invalid("generation replacement binding differs"));
-        }
-        let intent = UpdateIntent {
-            operation_id,
-            supersedes: None,
-            previous,
-            previous_checkpoint: observation.owner_checkpoint().into_array(),
-            previous_observation: observation.digest().map_err(invalid)?,
-            genesis_checkpoint: target.genesis_checkpoint().into_array(),
-            target,
-            selection: selected.observation().digest().into_array(),
-        };
-        let mut head = self.store.load()?;
-        if head.current != intent.previous {
-            return Err(invalid("generation predecessor is not current"));
-        }
-        match &head.prepared {
-            Some(existing) if existing == &intent => {}
-            Some(_) => return Err(invalid("another generation update remains pending")),
-            None => {
-                let expected = head.clone();
-                head.prepared = Some(intent.clone());
-                self.store.replace(&expected, &head)?;
-            }
-        }
-        if self.store.load()? != head {
-            return Err(invalid("generation preparation readback differs"));
-        }
-        Ok(PreparedNeuronGenerationUpdateV1 {
-            binding: intent.binding()?,
-            digest: intent.digest()?,
-            head: Some(head),
-            intent,
-        })
+        self.prepare_with_completion(
+            old, operation_id, target, selected,
+            NeuronGenerationPredecessorCompletionV1::ModelStopped,
+        )
     }
 
     /// Explicit operator recovery of the same prepared files and selection.
@@ -342,7 +295,7 @@ impl NeuronGenerationCurrentOwnerV1 {
         let observation = old.observe_generation().map_err(invalid)?;
         let genesis = new.prepared_checkpoint().map_err(invalid)?;
         if old.owner_binding() != Some(&prepared.intent.previous)
-            || !observation.is_terminal()
+            || (prepared.intent.completion.is_model_stopped() && !observation.is_terminal())
             || !old.is_drained().map_err(invalid)?
             || observation.owner_checkpoint().as_array() != &prepared.intent.previous_checkpoint
             || observation.digest().map_err(invalid)? != prepared.intent.previous_observation

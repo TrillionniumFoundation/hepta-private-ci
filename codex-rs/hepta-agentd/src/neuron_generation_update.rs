@@ -1,7 +1,8 @@
 //! Explicit task-boundary generation replacement under existing authorities.
 //!
-//! The predecessor must already have a real STOP, no pending output and a
-//! durable drain. This module never resets that journal, transfers its prefix,
+//! The original entry requires a real STOP, no pending output and a durable
+//! drain. The explicit retirement entry keeps STOP unset if the model did not
+//! return it. This module never resets that journal, transfers its prefix,
 //! invents a model proposal, or reuses an entered FinalUse token. The successor
 //! starts a different task/run through the ordinary generation runtime.
 
@@ -20,6 +21,7 @@ use codex_hepta_types::StableId;
 
 use crate::AgentdError;
 use crate::neuron_generation_current::NeuronGenerationCurrentOwnerV1;
+use crate::neuron_generation_current::NeuronGenerationPredecessorCompletionV1;
 use crate::neuron_generation_current::NeuronGenerationUpdatePublicationV1;
 use crate::neuron_generation_current::NeuronGenerationUpdateReadbackV1;
 use crate::neuron_generation_current::PreparedNeuronGenerationUpdateV1;
@@ -58,9 +60,48 @@ pub fn prepare_agentd_generation_update_v1<Old, New>(
     current: Arc<NeuronGenerationCurrentOwnerV1>,
     authorities: AgentdGenerationUpdateAuthoritiesV1,
     old: CellGenerationJournalV2<Old>,
+    selected: AgentdSelectedGenerationV1,
+    target: AgentdGenerationUpdateTargetV1<New>,
+    request: AgentdGenerationUpdateRequestV1,
+) -> Result<PreparedAgentdGenerationUpdateV1<Old, New>, AgentdError>
+where
+    Old: AnchorWitnessStore,
+    New: AnchorWitnessStore,
+{
+    prepare_with_completion(
+        current, authorities, old, selected, target, request,
+        NeuronGenerationPredecessorCompletionV1::ModelStopped,
+    )
+}
+
+/// Explicitly retire a drained task without inventing a model STOP or terminal
+/// learning evidence. The signed operation keeps its own completion contract.
+pub fn prepare_agentd_generation_drained_update_v1<Old, New>(
+    current: Arc<NeuronGenerationCurrentOwnerV1>,
+    authorities: AgentdGenerationUpdateAuthoritiesV1,
+    old: CellGenerationJournalV2<Old>,
+    selected: AgentdSelectedGenerationV1,
+    target: AgentdGenerationUpdateTargetV1<New>,
+    request: AgentdGenerationUpdateRequestV1,
+) -> Result<PreparedAgentdGenerationUpdateV1<Old, New>, AgentdError>
+where
+    Old: AnchorWitnessStore,
+    New: AnchorWitnessStore,
+{
+    prepare_with_completion(
+        current, authorities, old, selected, target, request,
+        NeuronGenerationPredecessorCompletionV1::OwnerDrained,
+    )
+}
+
+fn prepare_with_completion<Old, New>(
+    current: Arc<NeuronGenerationCurrentOwnerV1>,
+    authorities: AgentdGenerationUpdateAuthoritiesV1,
+    old: CellGenerationJournalV2<Old>,
     mut selected: AgentdSelectedGenerationV1,
     target: AgentdGenerationUpdateTargetV1<New>,
     request: AgentdGenerationUpdateRequestV1,
+    completion: NeuronGenerationPredecessorCompletionV1,
 ) -> Result<PreparedAgentdGenerationUpdateV1<Old, New>, AgentdError>
 where
     Old: AnchorWitnessStore,
@@ -69,7 +110,7 @@ where
     StableId::new(&request.operation_id).map_err(invalid)?;
     // No artifact mutex is held while reading a predecessor that may already
     // carry a live guard. Its exclusive file lock remains owned throughout.
-    let binding = validate_reset(&old, &selected, &target)?;
+    let binding = validate_reset(&old, &selected, &target, completion)?;
     let metadata = target.file.metadata()?;
     if !metadata.is_file()
         || metadata.len() != 0
@@ -79,11 +120,16 @@ where
     }
     let guard: Arc<dyn CellGenerationCurrentV1> = current.clone();
     let old = old.rebind_current(guard).map_err(invalid)?;
-    // The terminal predecessor is now private to this handoff. It cannot be
+    // The drained predecessor is now private to this handoff. It cannot be
     // returned to a runtime, resumed, or admitted; the root floor still applies.
     let artifacts = authorities.artifacts.lock().map_err(invalid)?;
     selected.revalidate(&artifacts, authorities.now()?)?;
-    let prepared = current.prepare(&old, request.operation_id, binding, &selected)?;
+    let prepared = match completion {
+        NeuronGenerationPredecessorCompletionV1::ModelStopped =>
+            current.prepare(&old, request.operation_id, binding, &selected)?,
+        NeuronGenerationPredecessorCompletionV1::OwnerDrained =>
+            current.prepare_drained_retirement(&old, request.operation_id, binding, &selected)?,
+    };
     let guard: Arc<dyn CellGenerationCurrentV1> = current.clone();
     let new = CellGenerationJournalV2::open_guarded(
         target.file,
@@ -246,6 +292,7 @@ pub(super) fn validate_reset<Old: AnchorWitnessStore, New: AnchorWitnessStore>(
     old: &CellGenerationJournalV2<Old>,
     selected: &AgentdSelectedGenerationV1,
     target: &AgentdGenerationUpdateTargetV1<New>,
+    completion: NeuronGenerationPredecessorCompletionV1,
 ) -> Result<CellGenerationOwnerBindingV1, AgentdError> {
     if old.owner_binding().is_none() {
         return Err(invalid(
@@ -253,10 +300,16 @@ pub(super) fn validate_reset<Old: AnchorWitnessStore, New: AnchorWitnessStore>(
         ));
     }
     let observation = old.observe_generation().map_err(invalid)?;
-    if !observation.is_terminal() || !old.is_drained().map_err(invalid)? {
-        return Err(invalid(
-            "predecessor requires STOP, exact output ACK and drain",
-        ));
+    if !old.is_drained().map_err(invalid)?
+        || (completion == NeuronGenerationPredecessorCompletionV1::ModelStopped
+            && !observation.is_terminal())
+    {
+        return Err(invalid(match completion {
+            NeuronGenerationPredecessorCompletionV1::ModelStopped =>
+                "predecessor requires STOP, exact output ACK and drain",
+            NeuronGenerationPredecessorCompletionV1::OwnerDrained =>
+                "predecessor requires exact output ACK and durable drain",
+        }));
     }
     let predecessor = observation.snapshot();
     let successor = &target.config.initial;
