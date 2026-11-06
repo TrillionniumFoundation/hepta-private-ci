@@ -1,0 +1,39 @@
+{
+  "at_utc": "2026-11-06T08:40:28.171551+00:00",
+  "source": {
+    "head": "61921427dc19223fd8c9d0ded1a4723b255c5df5",
+    "tree": "31d99be67393619aca47436d82f9dca909cba359",
+    "status": ""
+  },
+  "toolchain": {
+    "rustc": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: x86_64-unknown-linux-gnu\nrelease: 1.96.0\nLLVM version: 22.1.2",
+    "cargo": "cargo 1.96.0 (30a34c682 2026-05-25)",
+    "just": "just 1.45.0",
+    "nextest": "cargo-nextest 0.9.146 (8af696ddc 2026-09-21)\nrelease: 0.9.146\ncommit-hash: 8af696ddcce8fff2962d6a5168b6d138b8616a35\ncommit-date: 2026-09-21\nhost: x86_64-unknown-linux-gnu",
+    "uname": "Linux ai395 7.0.0-38-generic #38-Ubuntu SMP PREEMPT_DYNAMIC Fri Sep  4 09:10:14 UTC 2026 x86_64 GNU/Linux"
+  },
+  "target_path": "/home/qq/work/hepta-portfolio-816d-20261106/target",
+  "disk_usage": {
+    "total": 1966736678912,
+    "used": 1707790188544,
+    "free": 158966239232
+  },
+  "meminfo": "MemTotal:       128650956 kB\nMemFree:         3466000 kB\nMemAvailable:   26242852 kB\nBuffers:           67392 kB\nCached:         28451344 kB\nSwapCached:        12372 kB\nActive:          8181632 kB\nInactive:       24397804 kB\nActive(anon):    6748356 kB\nInactive(anon):  7912664 kB\nActive(file):    1433276 kB\nInactive(file): 16485140 kB\nUnevictable:          16 kB\nMlocked:              16 kB\nSwapTotal:       8388604 kB\nSwapFree:             44 kB\nZswap:                 0 kB\nZswapped:              0 kB\nDirty:            639924 kB\nWriteback:             0 kB\nAnonPages:       4049284 kB\nMapped:           766160 kB\nShmem:          10600500 kB\nKReclaimable:    6031824 kB\nSlab:            7860484 kB\nSReclaimable:    6031824 kB\nSUnreclaim:      1828660 kB\nKernelStack:       18080 kB\nPageTables:       113544 kB\nSecPageTables:      7636 kB\nNFS_Unstable:          0 kB\nBounce:                0 kB\nWritebackTmp:          0 kB\nCommitLimit:    72714080 kB\nCommitted_AS:   31447928 kB\nVmallocTotal:   34359738367 kB\nVmallocUsed:      345680 kB\nVmallocChunk:          0 kB\nPercpu:            50560 kB\nHardwareCorrupted:     0 kB\nAnonHugePages:         0 kB\nShmemHugePages:        0 kB\nShmemPmdMapped:        0 kB\nFileHugePages:    382976 kB\nFilePmdMapped:         0 kB\nCmaTotal:              0 kB\nCmaFree:         1231468 kB\nUnaccepted:            0 kB\nBalloon:               0 kB\nGPUActive:      88035252 kB\nGPUReclaim:            0 kB\nHugePages_Total:       0\nHugePages_Free:        0\nHugePages_Rsvd:        0\nHugePages_Surp:        0\nHugepagesize:       2048 kB\nHugetlb:               0 kB\nDirectMap4k:    46005448 kB\nDirectMap2M:    71589888 kB\nDirectMap1G:    16777216 kB\n",
+  "target_du_bytes": "34045730816\t/home/qq/work/hepta-portfolio-816d-20261106/target",
+  "helper_hashes_after_tests": [
+    {
+      "name": "hepta-joint-propose",
+      "path": "/home/qq/work/hepta-portfolio-816d-20261106/target/debug/hepta-joint-propose",
+      "sha256_after_tests_and_list": "1f7ebc34b814fd0264fe1158f1cc4a67a87d609bc50a6e398f8b72b76229134a",
+      "bytes": 6020552
+    },
+    {
+      "name": "codex-hepta-agentd",
+      "path": "/home/qq/work/hepta-portfolio-816d-20261106/target/debug/codex-hepta-agentd",
+      "sha256_after_tests_and_list": "16fa27fe6b985d0b332bedb2db1a17f63412cac3dcf6261066d4207dd3a7d51a",
+      "bytes": 1285930984
+    }
+  ],
+  "cpu_time": "unknown; child rusage was not collected, no CPU value inferred from wall/resource limits",
+  "run_scope": "four named packages, default features, repository nextest local profile; 66 ignored cases not executed as top-level tests"
+}

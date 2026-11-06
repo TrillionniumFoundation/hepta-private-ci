@@ -1,0 +1,242 @@
+{
+  "final_record_dir": "/workspace/scratch/816de2faa0c0/validation/native-final/records/formal-61921427-tests-rebound",
+  "source_head": "61921427dc19223fd8c9d0ded1a4723b255c5df5",
+  "source_tree": "31d99be67393619aca47436d82f9dca909cba359",
+  "source_unchanged": true,
+  "source_status": "",
+  "tests_exit_code": 0,
+  "started_utc": "2026-11-06T08:36:39.836094+00:00",
+  "elapsed_seconds": 60.5492272679694,
+  "summary_line": "     Summary [  58.807s] 982 tests run: 982 passed (1 slow), 66 skipped",
+  "junit_sha256": "716be7504d72801992de962dbad5b2c108a9434ea9d93569a07b64c12f47cadd",
+  "junit_cases": 982,
+  "junit_failures": 0,
+  "junit_errors": 0,
+  "junit_skipped_elements": 0,
+  "nextest_skipped_count": 66,
+  "nextest_skipped_reasons": {
+    "ignored": 66
+  },
+  "selected_list_exactly_equals_junit": true,
+  "new_cases": [
+    {
+      "file": "codex-rs/hepta-agentd/src/neuron_generation_joint_tests.rs",
+      "test_name": "frozen_ndu_plan_executes_real_joint_worker_and_exports_settled_episode",
+      "name": "neuron_generation_runtime::tests::joint::frozen_ndu_plan_executes_real_joint_worker_and_exports_settled_episode",
+      "classname": "codex-hepta-agentd",
+      "timestamp": "2026-11-06T16:36:47.717+08:00",
+      "time": "2.524",
+      "result": "passed"
+    },
+    {
+      "file": "codex-rs/hepta-agentd/src/neuron_generation_observation_tests.rs",
+      "test_name": "owner_observation_rpc_retains_unknown_work_cost_and_delivery_across_reopen",
+      "name": "neuron_generation_runtime::tests::observation::owner_observation_rpc_retains_unknown_work_cost_and_delivery_across_reopen",
+      "classname": "codex-hepta-agentd",
+      "timestamp": "2026-11-06T16:36:50.240+08:00",
+      "time": "0.089",
+      "result": "passed"
+    },
+    {
+      "file": "codex-rs/hepta-agentd/src/neuron_generation_observation_tests.rs",
+      "test_name": "planned_step_rejects_changed_cost_cut_and_replays_only_exact_recorded_work",
+      "name": "neuron_generation_runtime::tests::observation::planned_step_rejects_changed_cost_cut_and_replays_only_exact_recorded_work",
+      "classname": "codex-hepta-agentd",
+      "timestamp": "2026-11-06T16:36:50.330+08:00",
+      "time": "0.065",
+      "result": "passed"
+    },
+    {
+      "file": "codex-rs/hepta-intelligence/src/generation_episode_tests.rs",
+      "test_name": "owner_terminal_and_delivery_cut_precedes_independently_signed_outcome",
+      "name": "generation_episode::tests::owner_terminal_and_delivery_cut_precedes_independently_signed_outcome",
+      "classname": "codex-hepta-intelligence",
+      "timestamp": "2026-11-06T16:37:30.821+08:00",
+      "time": "0.030",
+      "result": "passed"
+    },
+    {
+      "file": "codex-rs/hepta-intelligence/src/generation_episode_tests.rs",
+      "test_name": "frozen_versions_and_actual_owner_initial_state_cannot_be_substituted",
+      "name": "generation_episode::tests::frozen_versions_and_actual_owner_initial_state_cannot_be_substituted",
+      "classname": "codex-hepta-intelligence",
+      "timestamp": "2026-11-06T16:37:30.803+08:00",
+      "time": "0.017",
+      "result": "passed"
+    },
+    {
+      "file": "codex-rs/hepta-intelligence/src/generation_episode_tests.rs",
+      "test_name": "signed_decision_must_bind_the_exact_frozen_contract",
+      "name": "generation_episode::tests::signed_decision_must_bind_the_exact_frozen_contract",
+      "classname": "codex-hepta-intelligence",
+      "timestamp": "2026-11-06T16:37:30.830+08:00",
+      "time": "0.042",
+      "result": "passed"
+    },
+    {
+      "file": "codex-rs/hepta-intelligence/src/generation_episode_tests.rs",
+      "test_name": "signed_outcome_must_bind_the_owner_cut_evaluator_and_observer",
+      "name": "generation_episode::tests::signed_outcome_must_bind_the_owner_cut_evaluator_and_observer",
+      "classname": "codex-hepta-intelligence",
+      "timestamp": "2026-11-06T16:37:30.851+08:00",
+      "time": "0.030",
+      "result": "passed"
+    },
+    {
+      "file": "codex-rs/hepta-intelligence/src/joint_generation_plan_v1_tests.rs",
+      "test_name": "explicit_ndu_stop_reaches_existing_owner_and_keeps_planning_charge_on_reopen",
+      "name": "joint_generation_plan_v1::tests::explicit_ndu_stop_reaches_existing_owner_and_keeps_planning_charge_on_reopen",
+      "classname": "codex-hepta-intelligence",
+      "timestamp": "2026-11-06T16:37:30.884+08:00",
+      "time": "0.007",
+      "result": "passed"
+    },
+    {
+      "file": "codex-rs/hepta-intelligence/src/joint_generation_plan_v1_tests.rs",
+      "test_name": "pending_work_and_stale_prediction_cuts_are_refused_before_planning",
+      "name": "joint_generation_plan_v1::tests::pending_work_and_stale_prediction_cuts_are_refused_before_planning",
+      "classname": "codex-hepta-intelligence",
+      "timestamp": "2026-11-06T16:37:30.893+08:00",
+      "time": "0.006",
+      "result": "passed"
+    },
+    {
+      "file": "codex-rs/hepta-intelligence/src/joint_generation_plan_v1_tests.rs",
+      "test_name": "frozen_sampler_and_policy_drift_cannot_build_joint_requests",
+      "name": "joint_generation_plan_v1::tests::frozen_sampler_and_policy_drift_cannot_build_joint_requests",
+      "classname": "codex-hepta-intelligence",
+      "timestamp": "2026-11-06T16:37:30.890+08:00",
+      "time": "0.002",
+      "result": "passed"
+    },
+    {
+      "file": "codex-rs/hepta-intelligence/src/joint_generation_plan_v1_tests.rs",
+      "test_name": "abstention_or_tie_does_not_become_an_unrecorded_worker_auto_action",
+      "name": "joint_generation_plan_v1::tests::abstention_or_tie_does_not_become_an_unrecorded_worker_auto_action",
+      "classname": "codex-hepta-intelligence",
+      "timestamp": "2026-11-06T16:37:30.872+08:00",
+      "time": "0.012",
+      "result": "passed"
+    },
+    {
+      "file": "codex-rs/hepta-intelligence/src/joint_generation_plan_v1_tests.rs",
+      "test_name": "actual_init_cannot_silently_change_the_frozen_sampler_even_after_reopen",
+      "name": "joint_generation_plan_v1::tests::actual_init_cannot_silently_change_the_frozen_sampler_even_after_reopen",
+      "classname": "codex-hepta-intelligence",
+      "timestamp": "2026-11-06T16:37:30.881+08:00",
+      "time": "0.005",
+      "result": "passed"
+    },
+    {
+      "file": "codex-rs/hepta-intelligence/src/joint_generation_plan_v1_tests.rs",
+      "test_name": "failed_planning_attempts_are_charged_separately_and_recorded_attempts_are_not_recomputed",
+      "name": "joint_generation_plan_v1::tests::failed_planning_attempts_are_charged_separately_and_recorded_attempts_are_not_recomputed",
+      "classname": "codex-hepta-intelligence",
+      "timestamp": "2026-11-06T16:37:30.886+08:00",
+      "time": "0.007",
+      "result": "passed"
+    },
+    {
+      "file": "codex-rs/hepta-neuron/src/cell_generation_observation_tests.rs",
+      "test_name": "pending_cancel_reopen_stop_and_ack_gate_complete_task_cost",
+      "name": "cell_generation_journal::tests::observation::pending_cancel_reopen_stop_and_ack_gate_complete_task_cost",
+      "classname": "codex-hepta-neuron",
+      "timestamp": "2026-11-06T16:37:31.820+08:00",
+      "time": "0.013",
+      "result": "passed"
+    },
+    {
+      "file": "codex-rs/hepta-neuron/src/cell_generation_observation_tests.rs",
+      "test_name": "uncertain_owner_never_mints_an_observation_before_witness_recovery",
+      "name": "cell_generation_journal::tests::observation::uncertain_owner_never_mints_an_observation_before_witness_recovery",
+      "classname": "codex-hepta-neuron",
+      "timestamp": "2026-11-06T16:37:31.827+08:00",
+      "time": "0.003",
+      "result": "passed"
+    },
+    {
+      "file": "codex-rs/hepta-neuron/src/cell_generation_observation_tests.rs",
+      "test_name": "first_adopted_input_is_rebuilt_without_promoting_failed_or_cancelled_initialization",
+      "name": "cell_generation_journal::tests::observation::first_adopted_input_is_rebuilt_without_promoting_failed_or_cancelled_initialization",
+      "classname": "codex-hepta-neuron",
+      "timestamp": "2026-11-06T16:37:31.819+08:00",
+      "time": "0.008",
+      "result": "passed"
+    }
+  ],
+  "new_cases_count": 16,
+  "helper_unchanged": true,
+  "helper_before": [
+    {
+      "executable": "/home/qq/work/hepta-portfolio-816d-20261106/target/debug/hepta-joint-propose",
+      "sha256": "1f7ebc34b814fd0264fe1158f1cc4a67a87d609bc50a6e398f8b72b76229134a",
+      "mtime_ns": 1793952977845718243,
+      "bytes": 6020552
+    },
+    {
+      "executable": "/home/qq/work/hepta-portfolio-816d-20261106/target/debug/codex-hepta-agentd",
+      "sha256": "16fa27fe6b985d0b332bedb2db1a17f63412cac3dcf6261066d4207dd3a7d51a",
+      "mtime_ns": 1793953150654545422,
+      "bytes": 1285930984
+    }
+  ],
+  "helper_after": [
+    {
+      "executable": "/home/qq/work/hepta-portfolio-816d-20261106/target/debug/hepta-joint-propose",
+      "sha256": "1f7ebc34b814fd0264fe1158f1cc4a67a87d609bc50a6e398f8b72b76229134a",
+      "mtime_ns": 1793952977845718243,
+      "bytes": 6020552
+    },
+    {
+      "executable": "/home/qq/work/hepta-portfolio-816d-20261106/target/debug/codex-hepta-agentd",
+      "sha256": "16fa27fe6b985d0b332bedb2db1a17f63412cac3dcf6261066d4207dd3a7d51a",
+      "mtime_ns": 1793953150654545422,
+      "bytes": 1285930984
+    }
+  ],
+  "cpu_time": "unknown (not measured)",
+  "stages": [
+    {
+      "label": "fix",
+      "started_utc": "2026-11-06T08:11:29.342819+00:00",
+      "elapsed_seconds": 34.302730035968125,
+      "exit_code": 0,
+      "source_unchanged": true
+    },
+    {
+      "label": "strict",
+      "started_utc": "2026-11-06T08:12:03.706349+00:00",
+      "elapsed_seconds": 106.1386138680391,
+      "exit_code": 0,
+      "source_unchanged": true
+    },
+    {
+      "label": "joint-helper",
+      "started_utc": "2026-11-06T08:13:49.904407+00:00",
+      "elapsed_seconds": 148.09289729001466,
+      "exit_code": 0,
+      "source_unchanged": true
+    },
+    {
+      "label": "agentd-helper",
+      "started_utc": "2026-11-06T08:16:18.057261+00:00",
+      "elapsed_seconds": 7.303575562080368,
+      "exit_code": 0,
+      "source_unchanged": true
+    },
+    {
+      "label": "tests",
+      "started_utc": "2026-11-06T08:16:26.019922+00:00",
+      "elapsed_seconds": 285.4606271169614,
+      "exit_code": 0,
+      "source_unchanged": true
+    },
+    {
+      "label": "tests-rebound",
+      "started_utc": "2026-11-06T08:36:39.836094+00:00",
+      "elapsed_seconds": 60.5492272679694,
+      "exit_code": 0,
+      "source_unchanged": true
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "source_head": "61921427dc19223fd8c9d0ded1a4723b255c5df5",
+  "comparison_base": "862f8dca2ea24ca41abbb0edf6926732e2bc6ec2",
+  "tests": [
+    {
+      "file": "codex-rs/hepta-agentd/src/neuron_generation_joint_tests.rs",
+      "test_name": "frozen_ndu_plan_executes_real_joint_worker_and_exports_settled_episode"
+    },
+    {
+      "file": "codex-rs/hepta-agentd/src/neuron_generation_observation_tests.rs",
+      "test_name": "owner_observation_rpc_retains_unknown_work_cost_and_delivery_across_reopen"
+    },
+    {
+      "file": "codex-rs/hepta-agentd/src/neuron_generation_observation_tests.rs",
+      "test_name": "planned_step_rejects_changed_cost_cut_and_replays_only_exact_recorded_work"
+    },
+    {
+      "file": "codex-rs/hepta-intelligence/src/generation_episode_tests.rs",
+      "test_name": "owner_terminal_and_delivery_cut_precedes_independently_signed_outcome"
+    },
+    {
+      "file": "codex-rs/hepta-intelligence/src/generation_episode_tests.rs",
+      "test_name": "frozen_versions_and_actual_owner_initial_state_cannot_be_substituted"
+    },
+    {
+      "file": "codex-rs/hepta-intelligence/src/generation_episode_tests.rs",
+      "test_name": "signed_decision_must_bind_the_exact_frozen_contract"
+    },
+    {
+      "file": "codex-rs/hepta-intelligence/src/generation_episode_tests.rs",
+      "test_name": "signed_outcome_must_bind_the_owner_cut_evaluator_and_observer"
+    },
+    {
+      "file": "codex-rs/hepta-intelligence/src/joint_generation_plan_v1_tests.rs",
+      "test_name": "explicit_ndu_stop_reaches_existing_owner_and_keeps_planning_charge_on_reopen"
+    },
+    {
+      "file": "codex-rs/hepta-intelligence/src/joint_generation_plan_v1_tests.rs",
+      "test_name": "pending_work_and_stale_prediction_cuts_are_refused_before_planning"
+    },
+    {
+      "file": "codex-rs/hepta-intelligence/src/joint_generation_plan_v1_tests.rs",
+      "test_name": "frozen_sampler_and_policy_drift_cannot_build_joint_requests"
+    },
+    {
+      "file": "codex-rs/hepta-intelligence/src/joint_generation_plan_v1_tests.rs",
+      "test_name": "abstention_or_tie_does_not_become_an_unrecorded_worker_auto_action"
+    },
+    {
+      "file": "codex-rs/hepta-intelligence/src/joint_generation_plan_v1_tests.rs",
+      "test_name": "actual_init_cannot_silently_change_the_frozen_sampler_even_after_reopen"
+    },
+    {
+      "file": "codex-rs/hepta-intelligence/src/joint_generation_plan_v1_tests.rs",
+      "test_name": "failed_planning_attempts_are_charged_separately_and_recorded_attempts_are_not_recomputed"
+    },
+    {
+      "file": "codex-rs/hepta-neuron/src/cell_generation_observation_tests.rs",
+      "test_name": "pending_cancel_reopen_stop_and_ack_gate_complete_task_cost"
+    },
+    {
+      "file": "codex-rs/hepta-neuron/src/cell_generation_observation_tests.rs",
+      "test_name": "uncertain_owner_never_mints_an_observation_before_witness_recovery"
+    },
+    {
+      "file": "codex-rs/hepta-neuron/src/cell_generation_observation_tests.rs",
+      "test_name": "first_adopted_input_is_rebuilt_without_promoting_failed_or_cancelled_initialization"
+    }
+  ],
+  "count": 16
+}

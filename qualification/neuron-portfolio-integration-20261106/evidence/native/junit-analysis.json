@@ -1,0 +1,156 @@
+{
+  "junit_path": "/workspace/scratch/816de2faa0c0/validation/native-final/records/formal-61921427-tests/junit.xml",
+  "junit_sha256": "111a10ce0d54aebd1ead66e56f5cb18156c0fbbcb1aa252949e4b8d1bc12cb62",
+  "testcases": 982,
+  "failures": 0,
+  "errors": 0,
+  "skipped_elements": 0,
+  "nextest_skipped_count_from_summary": 66,
+  "new_tests_matched": 16,
+  "new_tests": [
+    {
+      "file": "codex-rs/hepta-agentd/src/neuron_generation_joint_tests.rs",
+      "test_name": "frozen_ndu_plan_executes_real_joint_worker_and_exports_settled_episode",
+      "name": "neuron_generation_runtime::tests::joint::frozen_ndu_plan_executes_real_joint_worker_and_exports_settled_episode",
+      "classname": "codex-hepta-agentd",
+      "timestamp": "2026-11-06T16:20:19.739+08:00",
+      "time": "2.466",
+      "result": "passed"
+    },
+    {
+      "file": "codex-rs/hepta-agentd/src/neuron_generation_observation_tests.rs",
+      "test_name": "owner_observation_rpc_retains_unknown_work_cost_and_delivery_across_reopen",
+      "name": "neuron_generation_runtime::tests::observation::owner_observation_rpc_retains_unknown_work_cost_and_delivery_across_reopen",
+      "classname": "codex-hepta-agentd",
+      "timestamp": "2026-11-06T16:20:22.205+08:00",
+      "time": "0.089",
+      "result": "passed"
+    },
+    {
+      "file": "codex-rs/hepta-agentd/src/neuron_generation_observation_tests.rs",
+      "test_name": "planned_step_rejects_changed_cost_cut_and_replays_only_exact_recorded_work",
+      "name": "neuron_generation_runtime::tests::observation::planned_step_rejects_changed_cost_cut_and_replays_only_exact_recorded_work",
+      "classname": "codex-hepta-agentd",
+      "timestamp": "2026-11-06T16:20:22.294+08:00",
+      "time": "0.070",
+      "result": "passed"
+    },
+    {
+      "file": "codex-rs/hepta-intelligence/src/generation_episode_tests.rs",
+      "test_name": "owner_terminal_and_delivery_cut_precedes_independently_signed_outcome",
+      "name": "generation_episode::tests::owner_terminal_and_delivery_cut_precedes_independently_signed_outcome",
+      "classname": "codex-hepta-intelligence",
+      "timestamp": "2026-11-06T16:21:02.990+08:00",
+      "time": "0.030",
+      "result": "passed"
+    },
+    {
+      "file": "codex-rs/hepta-intelligence/src/generation_episode_tests.rs",
+      "test_name": "frozen_versions_and_actual_owner_initial_state_cannot_be_substituted",
+      "name": "generation_episode::tests::frozen_versions_and_actual_owner_initial_state_cannot_be_substituted",
+      "classname": "codex-hepta-intelligence",
+      "timestamp": "2026-11-06T16:21:02.971+08:00",
+      "time": "0.019",
+      "result": "passed"
+    },
+    {
+      "file": "codex-rs/hepta-intelligence/src/generation_episode_tests.rs",
+      "test_name": "signed_decision_must_bind_the_exact_frozen_contract",
+      "name": "generation_episode::tests::signed_decision_must_bind_the_exact_frozen_contract",
+      "classname": "codex-hepta-intelligence",
+      "timestamp": "2026-11-06T16:21:03.020+08:00",
+      "time": "0.042",
+      "result": "passed"
+    },
+    {
+      "file": "codex-rs/hepta-intelligence/src/generation_episode_tests.rs",
+      "test_name": "signed_outcome_must_bind_the_owner_cut_evaluator_and_observer",
+      "name": "generation_episode::tests::signed_outcome_must_bind_the_owner_cut_evaluator_and_observer",
+      "classname": "codex-hepta-intelligence",
+      "timestamp": "2026-11-06T16:21:03.023+08:00",
+      "time": "0.030",
+      "result": "passed"
+    },
+    {
+      "file": "codex-rs/hepta-intelligence/src/joint_generation_plan_v1_tests.rs",
+      "test_name": "explicit_ndu_stop_reaches_existing_owner_and_keeps_planning_charge_on_reopen",
+      "name": "joint_generation_plan_v1::tests::explicit_ndu_stop_reaches_existing_owner_and_keeps_planning_charge_on_reopen",
+      "classname": "codex-hepta-intelligence",
+      "timestamp": "2026-11-06T16:21:03.063+08:00",
+      "time": "0.007",
+      "result": "passed"
+    },
+    {
+      "file": "codex-rs/hepta-intelligence/src/joint_generation_plan_v1_tests.rs",
+      "test_name": "pending_work_and_stale_prediction_cuts_are_refused_before_planning",
+      "name": "joint_generation_plan_v1::tests::pending_work_and_stale_prediction_cuts_are_refused_before_planning",
+      "classname": "codex-hepta-intelligence",
+      "timestamp": "2026-11-06T16:21:03.073+08:00",
+      "time": "0.005",
+      "result": "passed"
+    },
+    {
+      "file": "codex-rs/hepta-intelligence/src/joint_generation_plan_v1_tests.rs",
+      "test_name": "frozen_sampler_and_policy_drift_cannot_build_joint_requests",
+      "name": "joint_generation_plan_v1::tests::frozen_sampler_and_policy_drift_cannot_build_joint_requests",
+      "classname": "codex-hepta-intelligence",
+      "timestamp": "2026-11-06T16:21:03.071+08:00",
+      "time": "0.003",
+      "result": "passed"
+    },
+    {
+      "file": "codex-rs/hepta-intelligence/src/joint_generation_plan_v1_tests.rs",
+      "test_name": "abstention_or_tie_does_not_become_an_unrecorded_worker_auto_action",
+      "name": "joint_generation_plan_v1::tests::abstention_or_tie_does_not_become_an_unrecorded_worker_auto_action",
+      "classname": "codex-hepta-intelligence",
+      "timestamp": "2026-11-06T16:21:03.052+08:00",
+      "time": "0.011",
+      "result": "passed"
+    },
+    {
+      "file": "codex-rs/hepta-intelligence/src/joint_generation_plan_v1_tests.rs",
+      "test_name": "actual_init_cannot_silently_change_the_frozen_sampler_even_after_reopen",
+      "name": "joint_generation_plan_v1::tests::actual_init_cannot_silently_change_the_frozen_sampler_even_after_reopen",
+      "classname": "codex-hepta-intelligence",
+      "timestamp": "2026-11-06T16:21:03.062+08:00",
+      "time": "0.005",
+      "result": "passed"
+    },
+    {
+      "file": "codex-rs/hepta-intelligence/src/joint_generation_plan_v1_tests.rs",
+      "test_name": "failed_planning_attempts_are_charged_separately_and_recorded_attempts_are_not_recomputed",
+      "name": "joint_generation_plan_v1::tests::failed_planning_attempts_are_charged_separately_and_recorded_attempts_are_not_recomputed",
+      "classname": "codex-hepta-intelligence",
+      "timestamp": "2026-11-06T16:21:03.068+08:00",
+      "time": "0.007",
+      "result": "passed"
+    },
+    {
+      "file": "codex-rs/hepta-neuron/src/cell_generation_observation_tests.rs",
+      "test_name": "pending_cancel_reopen_stop_and_ack_gate_complete_task_cost",
+      "name": "cell_generation_journal::tests::observation::pending_cancel_reopen_stop_and_ack_gate_complete_task_cost",
+      "classname": "codex-hepta-neuron",
+      "timestamp": "2026-11-06T16:21:03.984+08:00",
+      "time": "0.014",
+      "result": "passed"
+    },
+    {
+      "file": "codex-rs/hepta-neuron/src/cell_generation_observation_tests.rs",
+      "test_name": "uncertain_owner_never_mints_an_observation_before_witness_recovery",
+      "name": "cell_generation_journal::tests::observation::uncertain_owner_never_mints_an_observation_before_witness_recovery",
+      "classname": "codex-hepta-neuron",
+      "timestamp": "2026-11-06T16:21:03.991+08:00",
+      "time": "0.003",
+      "result": "passed"
+    },
+    {
+      "file": "codex-rs/hepta-neuron/src/cell_generation_observation_tests.rs",
+      "test_name": "first_adopted_input_is_rebuilt_without_promoting_failed_or_cancelled_initialization",
+      "name": "cell_generation_journal::tests::observation::first_adopted_input_is_rebuilt_without_promoting_failed_or_cancelled_initialization",
+      "classname": "codex-hepta-neuron",
+      "timestamp": "2026-11-06T16:21:03.983+08:00",
+      "time": "0.008",
+      "result": "passed"
+    }
+  ]
+}

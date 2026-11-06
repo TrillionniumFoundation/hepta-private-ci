@@ -1,0 +1,7 @@
+export PATH='/home/qq/work/hepta-ci-4853-20261105-bdb7/tools/bin:/home/qq/.cargo/bin:/usr/local/bin:/usr/bin:/bin'
+export RUSTUP_TOOLCHAIN='1.96.0'
+export CARGO_HOME='/home/qq/.cargo'
+export RUSTUP_HOME='/home/qq/.rustup'
+export CARGO_TARGET_DIR='/home/qq/work/hepta-portfolio-816d-20261106/target'
+export CARGO_BUILD_JOBS='2'
+export CARGO_INCREMENTAL='0'

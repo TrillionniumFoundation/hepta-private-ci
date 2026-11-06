@@ -1,0 +1,65 @@
+{
+  "source_head": "61921427dc19223fd8c9d0ded1a4723b255c5df5",
+  "source_tree": "31d99be67393619aca47436d82f9dca909cba359",
+  "stages": [
+    {
+      "name": "fix",
+      "label": "formal-61921427-fix",
+      "exit_code": 0,
+      "receipt": "/home/qq/work/hepta-portfolio-816d-20261106/records/formal-61921427-fix/receipt.json"
+    },
+    {
+      "name": "strict",
+      "label": "formal-61921427-strict",
+      "exit_code": 0,
+      "receipt": "/home/qq/work/hepta-portfolio-816d-20261106/records/formal-61921427-strict/receipt.json"
+    },
+    {
+      "name": "joint-helper",
+      "label": "formal-61921427-joint-helper",
+      "exit_code": 0,
+      "receipt": "/home/qq/work/hepta-portfolio-816d-20261106/records/formal-61921427-joint-helper/receipt.json"
+    },
+    {
+      "name": "agentd-helper",
+      "label": "formal-61921427-agentd-helper",
+      "exit_code": 0,
+      "receipt": "/home/qq/work/hepta-portfolio-816d-20261106/records/formal-61921427-agentd-helper/receipt.json"
+    },
+    {
+      "name": "tests",
+      "label": "formal-61921427-tests",
+      "exit_code": 0,
+      "receipt": "/home/qq/work/hepta-portfolio-816d-20261106/records/formal-61921427-tests/receipt.json"
+    }
+  ],
+  "state": "succeeded",
+  "cpu_cost": "unknown where not measured",
+  "source_status": "",
+  "resource_before": {
+    "disk_free": 186858852352,
+    "meminfo": [
+      "MemTotal:       128650956 kB",
+      "MemFree:        105099464 kB",
+      "MemAvailable:   113815664 kB",
+      "Buffers:          162128 kB",
+      "Cached:         11756024 kB"
+    ]
+  },
+  "active_stage": "formal-61921427-tests",
+  "source_after": {
+    "head": "61921427dc19223fd8c9d0ded1a4723b255c5df5",
+    "tree": "31d99be67393619aca47436d82f9dca909cba359",
+    "status": ""
+  },
+  "resource_after": {
+    "disk_free": 168562585600,
+    "meminfo": [
+      "MemTotal:       128650956 kB",
+      "MemFree:        94504252 kB",
+      "MemAvailable:   113492256 kB",
+      "Buffers:          193612 kB",
+      "Cached:         21897264 kB"
+    ]
+  }
+}

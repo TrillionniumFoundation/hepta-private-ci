@@ -1,0 +1,51 @@
+{
+  "source_before": {
+    "head": "61921427dc19223fd8c9d0ded1a4723b255c5df5",
+    "tree": "31d99be67393619aca47436d82f9dca909cba359",
+    "status": ""
+  },
+  "started_utc": "2026-11-06T08:27:59.829625+00:00",
+  "commands": [
+    [
+      "cargo",
+      "metadata",
+      "--locked",
+      "--offline",
+      "--no-deps",
+      "--format-version=1"
+    ],
+    [
+      "cargo",
+      "nextest",
+      "list",
+      "--locked",
+      "--offline",
+      "-p",
+      "codex-hepta-neuron",
+      "-p",
+      "codex-hepta-intelligence",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-infer-worker-host",
+      "--cargo-metadata",
+      "/home/qq/work/hepta-portfolio-816d-20261106/records/formal-61921427-test-inventory/cargo-metadata.json",
+      "--profile",
+      "local",
+      "--message-format",
+      "json"
+    ]
+  ],
+  "action": "Enumerate compiled tests using the same selection/profile; do not execute test bodies.",
+  "cpu_time": "unknown",
+  "cargo-metadata_exit_code": 0,
+  "nextest-list_exit_code": 0,
+  "elapsed_seconds": 0.9528512200340629,
+  "source_after": {
+    "head": "61921427dc19223fd8c9d0ded1a4723b255c5df5",
+    "tree": "31d99be67393619aca47436d82f9dca909cba359",
+    "status": ""
+  },
+  "list_sha256": "04dfe21a1677c3ee444a3ed1825274b546571963336aa693c66674cac4703aea",
+  "state": "succeeded"
+}

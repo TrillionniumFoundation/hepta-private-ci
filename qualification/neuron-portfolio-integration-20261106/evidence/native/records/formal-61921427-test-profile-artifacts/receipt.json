@@ -1,0 +1,67 @@
+{
+  "source_before": {
+    "head": "61921427dc19223fd8c9d0ded1a4723b255c5df5",
+    "tree": "31d99be67393619aca47436d82f9dca909cba359",
+    "status": ""
+  },
+  "started_utc": "2026-11-06T08:36:34.968112+00:00",
+  "command": [
+    "cargo",
+    "nextest",
+    "list",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-neuron",
+    "-p",
+    "codex-hepta-intelligence",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-infer-worker-host",
+    "--cargo-metadata",
+    "/home/qq/work/hepta-portfolio-816d-20261106/records/formal-61921427-test-inventory/cargo-metadata.json",
+    "--profile",
+    "local",
+    "--cargo-message-format",
+    "json",
+    "--message-format",
+    "json"
+  ],
+  "helper_before": {
+    "hepta-joint-propose": {
+      "path": "/home/qq/work/hepta-portfolio-816d-20261106/target/debug/hepta-joint-propose",
+      "sha256": "1f7ebc34b814fd0264fe1158f1cc4a67a87d609bc50a6e398f8b72b76229134a",
+      "mtime_ns": 1793952977845718243,
+      "bytes": 6020552
+    },
+    "codex-hepta-agentd": {
+      "path": "/home/qq/work/hepta-portfolio-816d-20261106/target/debug/codex-hepta-agentd",
+      "sha256": "16fa27fe6b985d0b332bedb2db1a17f63412cac3dcf6261066d4207dd3a7d51a",
+      "mtime_ns": 1793953150654545422,
+      "bytes": 1285930984
+    }
+  },
+  "action": "List only; capture Cargo compiler artifacts for current test-profile binaries; no test bodies executed.",
+  "exit_code": 0,
+  "elapsed_seconds": 1.5878264410421252,
+  "source_after": {
+    "head": "61921427dc19223fd8c9d0ded1a4723b255c5df5",
+    "tree": "31d99be67393619aca47436d82f9dca909cba359",
+    "status": ""
+  },
+  "helper_after": {
+    "hepta-joint-propose": {
+      "path": "/home/qq/work/hepta-portfolio-816d-20261106/target/debug/hepta-joint-propose",
+      "sha256": "1f7ebc34b814fd0264fe1158f1cc4a67a87d609bc50a6e398f8b72b76229134a",
+      "mtime_ns": 1793952977845718243,
+      "bytes": 6020552
+    },
+    "codex-hepta-agentd": {
+      "path": "/home/qq/work/hepta-portfolio-816d-20261106/target/debug/codex-hepta-agentd",
+      "sha256": "16fa27fe6b985d0b332bedb2db1a17f63412cac3dcf6261066d4207dd3a7d51a",
+      "mtime_ns": 1793953150654545422,
+      "bytes": 1285930984
+    }
+  }
+}

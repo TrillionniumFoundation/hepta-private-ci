@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/home/qq/work/hepta-portfolio-816d-20261106/export-native-61921427.py", line 13, in <module>
+    p=pathlib.Path(a['executable']);actual=digest(p);assert actual==a['sha256'];verified.append({'name':name,'path':str(p),'sha256_after_tests_and_list':actual,'bytes':p.stat().st_size})
+                                                            ^^^^^^^^^^^^^^^^^^^
+AssertionError

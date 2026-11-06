@@ -1,0 +1,79 @@
+{
+  "runner_sha256": "b36d3ad940d07b7da1da11f45fcc1875ce79476ef80e8c6b80e9b134684aed75",
+  "source_before": {
+    "head": "61921427dc19223fd8c9d0ded1a4723b255c5df5",
+    "tree": "31d99be67393619aca47436d82f9dca909cba359",
+    "status": ""
+  },
+  "command": [
+    "cargo",
+    "build",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-agentd",
+    "--bin",
+    "codex-hepta-agentd",
+    "--message-format=json"
+  ],
+  "cwd": "/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs",
+  "label": "formal-61921427-agentd-helper",
+  "environment": {
+    "PATH": "/home/qq/work/hepta-ci-4853-20261105-bdb7/tools/bin:/home/qq/.cargo/bin:/usr/local/bin:/usr/bin:/bin",
+    "RUSTUP_TOOLCHAIN": "1.96.0",
+    "CARGO_HOME": "/home/qq/.cargo",
+    "RUSTUP_HOME": "/home/qq/.rustup",
+    "CARGO_TARGET_DIR": "/home/qq/work/hepta-portfolio-816d-20261106/target",
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_NET_OFFLINE": "true",
+    "BINDGEN_EXTRA_CLANG_ARGS": "-isystem /usr/lib/gcc/x86_64-linux-gnu/15/include",
+    "LIBCLANG_PATH": "/usr/lib/x86_64-linux-gnu"
+  },
+  "v8_build_assets": {
+    "RUSTY_V8_ARCHIVE": {
+      "path": "/home/qq/work/hepta-neuron-framework-734df8eaf8dc-20261106/v8-preparation-tmp/codex-package/rusty-v8-150.4.0-x86_64-unknown-linux-gnu/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+      "sha256": "a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583",
+      "size": 29366352
+    },
+    "RUSTY_V8_SRC_BINDING_PATH": {
+      "path": "/home/qq/work/hepta-neuron-framework-734df8eaf8dc-20261106/v8-preparation-tmp/codex-package/rusty-v8-150.4.0-x86_64-unknown-linux-gnu/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+      "sha256": "7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506",
+      "size": 39884
+    }
+  },
+  "resource_before": {
+    "at_utc": "2026-11-06T08:16:18.057173+00:00",
+    "disk_free": 194174816256,
+    "load_average": [
+      1.810546875,
+      1.65283203125,
+      1.8134765625
+    ],
+    "MemAvailable_bytes": 116005232640,
+    "SwapFree_bytes": 405504
+  },
+  "stdout": "/home/qq/work/hepta-portfolio-816d-20261106/records/formal-61921427-agentd-helper/stdout.log",
+  "stderr": "/home/qq/work/hepta-portfolio-816d-20261106/records/formal-61921427-agentd-helper/stderr.log",
+  "started_ns": 1793952978057260759,
+  "state": "succeeded",
+  "exit_code": 0,
+  "elapsed_seconds": 7.303575562080368,
+  "source_after": {
+    "head": "61921427dc19223fd8c9d0ded1a4723b255c5df5",
+    "tree": "31d99be67393619aca47436d82f9dca909cba359",
+    "status": ""
+  },
+  "source_unchanged": true,
+  "resource_after": {
+    "at_utc": "2026-11-06T08:16:25.360934+00:00",
+    "disk_free": 192894582784,
+    "load_average": [
+      1.685546875,
+      1.630859375,
+      1.8046875
+    ],
+    "MemAvailable_bytes": 115673952256,
+    "SwapFree_bytes": 405504
+  }
+}

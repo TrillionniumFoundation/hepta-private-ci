@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "source_sha": "61921427dc19223fd8c9d0ded1a4723b255c5df5",
+  "source_sha_after": "61921427dc19223fd8c9d0ded1a4723b255c5df5",
+  "source_status_before": "",
+  "source_status_after": "",
+  "workspace": "/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs",
+  "selected_packages": [
+    "codex-hepta-infer-worker-host"
+  ],
+  "builds": [
+    {
+      "package": "codex-hepta-infer-worker-host",
+      "binaries": [
+        "hepta-joint-propose"
+      ],
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--message-format=json-render-diagnostics",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "--bin",
+        "hepta-joint-propose"
+      ],
+      "stdout": "/home/qq/work/hepta-portfolio-816d-20261106/records/formal-61921427-joint-helper/helpers/codex-hepta-infer-worker-host.jsonl",
+      "stderr": "/home/qq/work/hepta-portfolio-816d-20261106/records/formal-61921427-joint-helper/helpers/codex-hepta-infer-worker-host.stderr.log",
+      "exit_code": 0,
+      "cargo_finished": true,
+      "complete": true
+    }
+  ],
+  "artifacts": {
+    "hepta-joint-propose": {
+      "package": "codex-hepta-infer-worker-host",
+      "package_id": "path+file:///home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/hepta-infer-worker-host#codex-hepta-infer-worker-host@0.0.0",
+      "executable": "/home/qq/work/hepta-portfolio-816d-20261106/target/debug/hepta-joint-propose",
+      "profile": {
+        "opt_level": "0",
+        "debuginfo": 1,
+        "debug_assertions": true,
+        "overflow_checks": true,
+        "test": false
+      },
+      "sha256": "1f7ebc34b814fd0264fe1158f1cc4a67a87d609bc50a6e398f8b72b76229134a",
+      "bytes": 6020552
+    },
+    "codex-hepta-agentd": {
+      "package": "codex-hepta-agentd",
+      "package_id": "path+file:///home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/hepta-agentd#codex-hepta-agentd@0.0.0",
+      "executable": "/home/qq/work/hepta-portfolio-816d-20261106/target/debug/codex-hepta-agentd",
+      "profile": {
+        "opt_level": "0",
+        "debuginfo": 1,
+        "debug_assertions": true,
+        "overflow_checks": true,
+        "test": false
+      },
+      "sha256": "16fa27fe6b985d0b332bedb2db1a17f63412cac3dcf6261066d4207dd3a7d51a",
+      "bytes": 1285930984
+    }
+  },
+  "complete": true,
+  "exit_code": 0,
+  "additional_build_receipt": "/home/qq/work/hepta-portfolio-816d-20261106/records/formal-61921427-agentd-helper/receipt.json",
+  "combined_manifest_note": "Joint repository-builder manifest plus actual agentd Cargo compiler-artifact; original manifests and stdout are retained.",
+  "artifact_provenance": {
+    "hepta-joint-propose": {
+      "cargo_artifact_file": "/home/qq/work/hepta-portfolio-816d-20261106/records/formal-61921427-joint-helper/helpers/codex-hepta-infer-worker-host.jsonl",
+      "sha256_unchanged_after_first_tests": true
+    },
+    "codex-hepta-agentd": {
+      "cargo_artifact_file": "/home/qq/work/hepta-portfolio-816d-20261106/records/formal-61921427-test-profile-artifacts/stdout.jsonl",
+      "compiler_artifact": {
+        "reason": "compiler-artifact",
+        "package_id": "path+file:///home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/hepta-agentd#codex-hepta-agentd@0.0.0",
+        "manifest_path": "/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/hepta-agentd/Cargo.toml",
+        "target": {
+          "kind": [
+            "bin"
+          ],
+          "crate_types": [
+            "bin"
+          ],
+          "name": "codex-hepta-agentd",
+          "src_path": "/home/qq/work/hepta-portfolio-816d-20261106/source/codex-rs/hepta-agentd/src/main.rs",
+          "edition": "2024",
+          "doc": true,
+          "doctest": false,
+          "test": false
+        },
+        "profile": {
+          "opt_level": "0",
+          "debuginfo": 1,
+          "debug_assertions": true,
+          "overflow_checks": true,
+          "test": false
+        },
+        "features": [
+          "default",
+          "production-cognitive-write"
+        ],
+        "filenames": [
+          "/home/qq/work/hepta-portfolio-816d-20261106/target/debug/codex-hepta-agentd"
+        ],
+        "executable": "/home/qq/work/hepta-portfolio-816d-20261106/target/debug/codex-hepta-agentd",
+        "fresh": true
+      },
+      "listing_receipt": "/home/qq/work/hepta-portfolio-816d-20261106/records/formal-61921427-test-profile-artifacts/receipt.json"
+    }
+  },
+  "previous_pretest_manifest": "/home/qq/work/hepta-portfolio-816d-20261106/records/formal-61921427-tests/pre-test-helper-manifest.json",
+  "test_profile_rebinding_note": "First just test rebuilt normal agentd executable during test compilation; this manifest uses the actual current test-profile Cargo compiler-artifact and bytes. Joint helper is unchanged. Original build manifest, first test results and comparison are retained."
+}
