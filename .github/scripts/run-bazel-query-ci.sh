@@ -14,13 +14,17 @@ if [[ "${1:-}" == "--configured" ]]; then
   shift
 fi
 
-if [[ $# -lt 2 || "${@: -2:1}" != "--" ]]; then
-  echo "Usage: $0 [--configured] [<bazel query args>...] -- <query expression>" >&2
+if [[ $# -lt 2 || ( "${@: -2:1}" != "--" && "${@: -2:1}" != "--query-file" ) ]]; then
+  echo "Usage: $0 [--configured] [<bazel query args>...] (-- <query expression> | --query-file <path>)" >&2
   exit 1
 fi
 
 query_args=("${@:1:$#-2}")
-query_expression="${@: -1}"
+if [[ "${@: -2:1}" == "--query-file" ]]; then
+  query_input=("--query_file=${@: -1}")
+else
+  query_input=("${@: -1}")
+fi
 
 run_bazel() {
   if [[ "${RUNNER_OS:-}" == "Windows" ]]; then
@@ -44,6 +48,6 @@ fi
 if (( ${#query_args[@]} > 0 )); then
   bazel_query_args+=("${query_args[@]}")
 fi
-bazel_query_args+=("$query_expression")
+bazel_query_args+=("${query_input[@]}")
 
 run_bazel "${bazel_query_args[@]}"
