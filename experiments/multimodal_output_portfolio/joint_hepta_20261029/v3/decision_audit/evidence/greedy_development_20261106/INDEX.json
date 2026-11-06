@@ -1,0 +1,46 @@
+{
+  "schema": "hepta.r2.greedy-publication-evidence.v1",
+  "implementation_publication_commit": "f62034b45ca30573f17caa830ed21c9c641455ad",
+  "archive": {
+    "path": "raw-evidence.tar.gz",
+    "bytes": 341662,
+    "sha256": "917d8215b6f4607b0a847dc85cf5611835f616a46c1c0655d9711ea01294f7d5",
+    "git_blob": "d825d098ab338764f224ba558d2e02c20bce0753",
+    "files": 341,
+    "indexed_files": 340,
+    "every_indexed_file_readback_verified": true
+  },
+  "official_control_cases": 6,
+  "independent_probe_cases": 4,
+  "real_model_calls": 0,
+  "independent_labels": false,
+  "four_arm_R2_run": false,
+  "baseline_qualified": false,
+  "incumbent_changed": false,
+  "source_scope": "exact reviewed files, not whole workspace",
+  "outer_cost_known": false,
+  "publication_readback_cost": {
+    "cpu_seconds": 0.037712089,
+    "wall_seconds": 0.03771926099943812,
+    "scope": "full archive readback only; includes no new fit or model calls",
+    "unknown": [
+      "physical_io_bytes",
+      "energy_joules",
+      "publication_transport_and_orchestration"
+    ]
+  },
+  "prior_publication_preparation": {
+    "exit_code": 1,
+    "error": "TypeError: integer archive file count was treated as a per-file index; corrected to EVIDENCE_MANIFEST.files",
+    "new_model_calls": 0,
+    "new_fits": 0,
+    "cpu_seconds": null,
+    "wall_seconds": null,
+    "cost_scope": "unmeasured copy and failed readback setup, not a product execution"
+  },
+  "duplicate_author_archive": {
+    "receipt": "AUTHOR_FROZEN.json",
+    "republished": false,
+    "reason": "raw official validation files are already included in canonical review archive; separate author packaging costs remain retained"
+  }
+}

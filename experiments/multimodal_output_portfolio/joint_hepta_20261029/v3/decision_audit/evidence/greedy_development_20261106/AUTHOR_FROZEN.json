@@ -1,0 +1,89 @@
+{
+  "archive": {
+    "bytes": 105936,
+    "entries": 251,
+    "file_index_sha256": "ca3159379bf50e02548c87e8db6cb8fce2b2e7fc51e286b2eee900c5c3f34c5e",
+    "path": "greedy-evidence.tar.xz",
+    "sha256": "ab606ed7a74f3f97ecd9950f928a6f916514cdcf46caceeaaa793fb252f94d84"
+  },
+  "baseline_qualified": false,
+  "cost_cautions": [
+    "Inner training/runner/controller/prediction intervals overlap their outer validation receipts; never sum twice.",
+    "The explicit deadline-fault test shifts only the runtime wall clock; its simulated wall/tariff values are not physical performance measurements.",
+    "Independent review has its own full attempt/failure/cost ledger; this archive includes its final RESULT only."
+  ],
+  "costs": {
+    "packaging": {
+      "current_process_cpu_seconds": 0.644159819,
+      "scope": "Subsequent read/hash/compression, separate from validation run; excludes final receipt write and archive verification",
+      "wall_seconds": 0.8605181059974711
+    },
+    "validation": {
+      "current_process_cpu_seconds": 2.716937743,
+      "scope": "Inclusive current validation process with shared synthetic SGD fixture and all test episodes; child CPU separately additive. Inner FIT/runner/controller/prediction intervals overlap; do not add them again. Excludes this final receipt write and outer interpreter startup.",
+      "unknown": [
+        "energy_joules",
+        "physical_disk_bytes",
+        "initial_source_inspection_and_code_authoring_cost"
+      ],
+      "waited_child_cpu_seconds": 1.547164,
+      "wall_seconds": 3.045380354000372
+    }
+  },
+  "four_arm_experiment_run": false,
+  "frozen_utc": "2026-11-06T08:29:43.753472+00:00",
+  "independent_canary": {
+    "fit_updates_of_existing_checkpoint": 160,
+    "history": [
+      "perceive",
+      "text",
+      "draft",
+      "verify"
+    ],
+    "independent_probes_passed": 4,
+    "new_fits": 0,
+    "prediction_calls": 22,
+    "raw_review_retained_separately": true,
+    "receipt_path": "/workspace/scratch/e5ae6a941e52/greedy-review/independent-attempt1/RESULT.json",
+    "receipt_sha256": "d35651175459db50435abc3046558d2d8bd98fcb5063f94091e0f3c092cad393",
+    "status": "incomplete"
+  },
+  "independent_semantic_labels": false,
+  "learned_canary": {
+    "fit_updates": 600,
+    "history": [
+      "draft",
+      "text",
+      "stop"
+    ],
+    "prediction_calls": [
+      5,
+      6,
+      7
+    ],
+    "semantic_acceptance": "pending_independent_evaluation",
+    "status": "delivered"
+  },
+  "real_generator_model_calls": 0,
+  "schema": "hepta.r2.greedy-frozen-evidence.v1",
+  "source_pins": {
+    "R2_GREEDY_POLICY.md": {
+      "bytes": 5662,
+      "sha256": "06c9cced97bb291211d10f6cb6cc908eda3718ce441ed0cd43f3ca82d41846c1"
+    },
+    "r2_greedy_policy.py": {
+      "bytes": 8249,
+      "sha256": "b7bf7b9c7c48709eb3fd0c2e9c298471580981e86a5c5c8abddf8d85af024d88"
+    },
+    "test_r2_greedy_policy.py": {
+      "bytes": 13757,
+      "sha256": "748d0388dafafb87f29eeb0b0f21c17ba16998ac825b6762abd8cfc8dc4e3d0b"
+    }
+  },
+  "unit_validation": {
+    "attempts": 1,
+    "passed": true,
+    "path": "/workspace/scratch/e5ae6a941e52/r2-protocol/validation/greedy-attempt1/EXECUTION.json",
+    "tests_run": 6
+  }
+}

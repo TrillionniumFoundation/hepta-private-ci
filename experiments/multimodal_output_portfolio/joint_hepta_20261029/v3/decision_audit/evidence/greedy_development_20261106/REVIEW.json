@@ -1,0 +1,253 @@
+{
+  "schema": "hepta.r2.greedy-independent-review.v1",
+  "created_at": "2026-11-06T08:29:42.690619+00:00",
+  "reviewer": "runtime_inventory independent reviewer in the same shared workspace",
+  "scope": "D development greedy around unchanged C and original dual runtime; no evaluator custody or scientific baseline qualification",
+  "verdict": "acceptable_for_scoped_development_publication",
+  "unresolved_blockers": [],
+  "final_source_files": {
+    "r2_greedy_policy.py": {
+      "bytes": 8249,
+      "sha256": "b7bf7b9c7c48709eb3fd0c2e9c298471580981e86a5c5c8abddf8d85af024d88",
+      "git_blob": "016d0b16628a4e1177d7c3c43d71c5f28f9f3d24"
+    },
+    "test_r2_greedy_policy.py": {
+      "bytes": 13757,
+      "sha256": "748d0388dafafb87f29eeb0b0f21c17ba16998ac825b6762abd8cfc8dc4e3d0b",
+      "git_blob": "4165c056e0bb17e8a969407281633ab186bd510f"
+    },
+    "R2_GREEDY_POLICY.md": {
+      "bytes": 5662,
+      "sha256": "06c9cced97bb291211d10f6cb6cc908eda3718ce441ed0cd43f3ca82d41846c1",
+      "git_blob": "311d6558458df3bcc3d9fdae3eda4ec7d27c769f"
+    }
+  },
+  "execution_dependencies": {
+    "r2_greedy_policy.py": {
+      "bytes": 8249,
+      "sha256": "b7bf7b9c7c48709eb3fd0c2e9c298471580981e86a5c5c8abddf8d85af024d88"
+    },
+    "r2_action_value.py": {
+      "bytes": 23942,
+      "sha256": "0a620b0188fb21432ae530aa3857025b9595a82a7d22747635cacb50754e3945"
+    },
+    "dual_runtime.py": {
+      "bytes": 15093,
+      "sha256": "3a23bd955233b45d1ae15f7a81961111ce9e191bec9dc98ffeb7a4d744fca30d"
+    },
+    "transition_capture.py": {
+      "bytes": 13634,
+      "sha256": "ac8058aca20c251bb619b7a7571ac9bb310debfc76b5f1b931b1174e8dcf9b0e"
+    },
+    "transition_capture_read.py": {
+      "bytes": 11171,
+      "sha256": "d9073798c98dd576ef41872ad80ca3541b0ba221faad0e2b5d795ae5b37388a3"
+    },
+    "test_transition_capture.py": {
+      "bytes": 16128,
+      "sha256": "5f448aee11014d699626c370443b9288faad444852c1ba390989eb9538182190"
+    }
+  },
+  "source_evidence_boundary": "D code and tests match the retained official 6-test source. Independent execution binds six exact implementation/fixture files before and after. Final documentation was read after wording corrections; no whole repository execution claim.",
+  "static_findings": [
+    "The only online argument is exactly the original View, validated by C features. The policy does not access labels, reference answers, raw source image bytes or future branches. Filesystem custody is not authenticated or sandboxed.",
+    "Refine is legal after a historical draft/refine despite invalidated current image_path; verify requires a current text/image pair.",
+    "Every legal trained action including STOP is scored once at most in canonical ACTIONS order. Exact ties choose the earlier strictly positive score. Unknown, illegal and failed values remain null; incomplete coverage forces explicit STOP fallback.",
+    "At most seven predictions per decision and 32 decisions. The original runner refuses dispatch after a late controller return. These are not preemptive wall-clock guarantees.",
+    "The C net target is used unchanged; historical controller/action cost is not subtracted again. Current lazy load, source verification, all scores and trace writes are inside the original controller interval. Diagnostic timers are nested subsets, not additional charges.",
+    "Initialization, prediction KeyboardInterrupt and trace-write exceptions fence the instance. Trace-write failure prevents dispatch. Missing disk decisions are not complete durable evidence."
+  ],
+  "official_validation": {
+    "receipt_path": "/workspace/scratch/e5ae6a941e52/r2-protocol/validation/greedy-attempt1/EXECUTION.json",
+    "receipt_identity": {
+      "bytes": 1899,
+      "sha256": "42591c818fb55d473107eee968e7c1901c41170c95b21f1a2dfaaa135fc39de6",
+      "git_blob": "32f6502f1cae4d31b82921116f0f6f76c7a63935"
+    },
+    "tests_run": 6,
+    "failures": 0,
+    "errors": 0,
+    "rerun_by_reviewer": false,
+    "evidence_reviewed": "Source, retained receipt/logs, exact source snapshots, synthetic C fit, copied checkpoint/FIT, child input/source and raw runner/policy records.",
+    "cold_canary": {
+      "history": [
+        "draft",
+        "text",
+        "stop"
+      ],
+      "status": "delivered",
+      "prediction_calls": [
+        5,
+        6,
+        7
+      ],
+      "real_generator_model_calls": 0,
+      "semantic_acceptance": "pending_independent_evaluation"
+    },
+    "shared_fixture_updates": 600,
+    "partial_coverage_fixture_is_separate_actual_synthetic_fit": true,
+    "cost": {
+      "current_process_cpu_seconds": 2.716937743,
+      "scope": "Inclusive current validation process with shared synthetic SGD fixture and all test episodes; child CPU separately additive. Inner FIT/runner/controller/prediction intervals overlap; do not add them again. Excludes this final receipt write and outer interpreter startup.",
+      "unknown": [
+        "energy_joules",
+        "physical_disk_bytes",
+        "initial_source_inspection_and_code_authoring_cost"
+      ],
+      "waited_child_cpu_seconds": 1.547164,
+      "wall_seconds": 3.045380354000372
+    }
+  },
+  "independent_execution": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "-B",
+      "/workspace/scratch/e5ae6a941e52/greedy-review/independent_greedy_probes.py"
+    ],
+    "cwd": "/workspace/scratch/e5ae6a941e52",
+    "exit_code": 0,
+    "script_identity": {
+      "bytes": 12370,
+      "sha256": "a3f295276725c689520451e41e9b7357bcce9189ba5ce80615bd3ef3c8ea10ec",
+      "git_blob": "92bb0f299579d79314dc8dfa1fd1c3b3af65fdd3"
+    },
+    "result_path": "/workspace/scratch/e5ae6a941e52/greedy-review/independent-attempt1/RESULT.json",
+    "result_identity": {
+      "bytes": 4308,
+      "sha256": "d35651175459db50435abc3046558d2d8bd98fcb5063f94091e0f3c092cad393",
+      "git_blob": "97a4b1d2c9747b0feabb5060cf0a14bcc703daa5"
+    },
+    "stdout_identity": {
+      "bytes": 987,
+      "sha256": "5cefd0b4c648ffedab2a93f85262b558fde03939ca2418b47fd31f1cf53163d5",
+      "git_blob": "7636848b51f82818c16caafea4971cfa051e7541"
+    },
+    "stderr_identity": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "probes": [
+      {
+        "name": "cold_original_runner",
+        "passed": true,
+        "history": [
+          [
+            "perceive",
+            "ok"
+          ],
+          [
+            "text",
+            "ok"
+          ],
+          [
+            "draft",
+            "ok"
+          ],
+          [
+            "verify",
+            "ok"
+          ]
+        ],
+        "status": "incomplete",
+        "decisions": 4,
+        "prediction_calls": 22,
+        "predictions_match_unmodified_C": true,
+        "net_target_not_subtracted_again": true,
+        "costs_equal_original_event_sum_without_diagnostic_additions": true
+      },
+      {
+        "name": "cancel_during_score",
+        "passed": true,
+        "prior_unselected_scoring_cost_retained": true,
+        "dispatch_count": 0,
+        "fenced": true
+      },
+      {
+        "name": "cancel_during_decision_trace_write",
+        "passed": true,
+        "proposed_choice_is_not_dispatched": true,
+        "disk_trace_missing_is_not_completed_evidence": true,
+        "row_and_error_retained_by_test_harness": true,
+        "dispatch_count": 0,
+        "fenced": true
+      },
+      {
+        "name": "initial_trace_failure_and_reuse_fence",
+        "passed": true,
+        "dispatch_count": 0,
+        "fenced": true,
+        "previous_probe_exit1_was_observed_fence_with_stale_harness_expectation": true
+      }
+    ],
+    "sources_unchanged": true,
+    "new_fit_calls": 0,
+    "real_generator_model_calls": 0,
+    "model_binding": [
+      "/workspace/scratch/e5ae6a941e52/greedy-review/independent-attempt1/model/checkpoint.json",
+      "7f45b79a24b6daa4a7aac830fccc480e7af25cb2a4bab9b542e1d6f7d50fceb3",
+      "6c7dc6bfd28249e4ccab71e62733fe6896caacf3f2ff3008076a31d5058de2b2"
+    ],
+    "cost": {
+      "current_process_cpu_seconds": 0.15536243100000002,
+      "inclusive_wall_seconds": 0.44483008300085203,
+      "waited_child_cpu_seconds": 1.033761,
+      "scope": "Review execution interval including nested runner/controller/predictions and child wait; child CPU is separate; excludes imports and final result write",
+      "unknown": [
+        "energy_joules",
+        "physical_io_bytes",
+        "source_authoring_and_full_external_startup_cost"
+      ]
+    }
+  },
+  "initial_probe_retention": {
+    "source_identity": {
+      "bytes": 8249,
+      "sha256": "b7bf7b9c7c48709eb3fd0c2e9c298471580981e86a5c5c8abddf8d85af024d88",
+      "git_blob": "016d0b16628a4e1177d7c3c43d71c5f28f9f3d24"
+    },
+    "script": "/workspace/scratch/e5ae6a941e52/greedy-review/initial_trace_failure_probe.py",
+    "stderr_identity": {
+      "bytes": 704,
+      "sha256": "b37afcd8c9b1d26b355c9cb351df005a3e7df5eb58aea613f7f8ec41d22fd0ff",
+      "git_blob": "ecface79b0a37dd02666398b22cdd6beeda6ff94"
+    },
+    "exit_code": 1,
+    "classification": "Stale harness expectation, not an observed product regression: the snapshot already had the fence fix, and the second choose correctly raised ValueError rather than returning.",
+    "actual_synthetic_fit_preserved": "/workspace/scratch/e5ae6a941e52/greedy-review/trace-init-original-probe/fit-1",
+    "fit_updates": 160,
+    "corrected_assertion": "independent-attempt1 initial_trace_failure_and_reuse_fence passed against the same D source hash.",
+    "full_outer_cost": null
+  },
+  "documentation_corrections": [
+    {
+      "issue": "Unconditional durable-trace wording under interrupted writes",
+      "resolution": "Final doc limits disk retention to successful writes and distinguishes in-memory rows/runner failures from complete durable traces."
+    },
+    {
+      "issue": "Two distinct canaries must remain separately attributable",
+      "resolution": "Final doc separately records official 600-update synthetic canary delivered and independent reused 160-update synthetic canary incomplete, without fit reruns or adjusted labels."
+    }
+  ],
+  "claim_boundaries": {
+    "actual_synthetic_sgd_and_checkpoint_reload": true,
+    "original_runner_dispatch_demonstrated": true,
+    "independent_labels": false,
+    "evaluator_custody_authenticated": false,
+    "new_source_cluster_data": false,
+    "real_generator_training_by_review": false,
+    "four_arm_R2_experiment": false,
+    "qualified_strong_greedy_baseline": false,
+    "EVSI_or_continuation_Q_estimator": false,
+    "actor_critic_or_planner": false,
+    "CE_or_quality_improvement_demonstrated": false,
+    "production_qualified": false,
+    "current_vs_historical_cost_calibration_established": false,
+    "SIGTERM_SIGKILL_powerloss_durable_recovery_qualified": false,
+    "no_update": true,
+    "no_update_meaning": "No incumbent promotion or scientific gate closure; historical synthetic C fixture parameters did update."
+  },
+  "cost_interpretation": "Official and independent validation are separate physical executions. Within either, outer wall contains child waits and nested fit/runner/controller/prediction intervals; never add nested wall. Parent CPU and waited child CPU are separate. Unknown startup/authoring, energy and physical I/O are not zero.",
+  "originals_modified_by_review": false,
+  "minimum_complete_archive": "Keep REVIEW, all scripts/logs, original fenced-attempt raw capture/fit, independent raw child/fault records, final source snapshot, and official greedy-attempt1 raw source/fit/captures/child traces. Preserve initial exit-1 and packaging guard classifications."
+}

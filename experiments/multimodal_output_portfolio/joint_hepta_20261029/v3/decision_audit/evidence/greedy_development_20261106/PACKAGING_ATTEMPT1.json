@@ -1,0 +1,10 @@
+{
+  "schema": "hepta.review.packaging-source-guard.v1",
+  "command_exit": 1,
+  "classification": "Source snapshot guard correctly refused an outdated documentation hash during concurrent final wording update. No tests executed in this packaging command; no implementation change.",
+  "expected_doc_sha256": "0118d3a1417a69673aebcd6ea4e77f0ae0d843480b3a792cbc770fe49b5894e6",
+  "observed_doc_sha256": "06c9cced97bb291211d10f6cb6cc908eda3718ce441ed0cd43f3ca82d41846c1",
+  "error": "AssertionError before review or manifest write",
+  "raw_tool_chunk": "dcf8a2",
+  "resolution": "Read final documentation, include delivered and incomplete canaries separately, snapshot final exact bytes without rerunning tests."
+}
