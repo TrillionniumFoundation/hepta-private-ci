@@ -1,0 +1,115 @@
+{
+  "additional_limits": {
+    "external_paid_model_api_budget": 0,
+    "maximum_semantic_verifier_requests": 16,
+    "maximum_total_model_requests_including_qualification": 25,
+    "qualification_model_requests": 1
+  },
+  "changes": [
+    "Accept one exact complete lowercase json fence as a transport wrapper.",
+    "Require an explicit public stage schema; do not coerce or complete values."
+  ],
+  "created_at_utc": "2026-11-06T12:16:36.059109+00:00",
+  "delivery_execution": {
+    "model_forwards": 0,
+    "old_response_replays": 0,
+    "tool_calls": 0
+  },
+  "envelope_contract": {
+    "closing_line_indentation": false,
+    "code_inside_json_strings": "Data only; never executed, interpreted or extracted.",
+    "duplicate_keys": false,
+    "fence_line_endings": [
+      "LF",
+      "CRLF"
+    ],
+    "language_case": "exact lowercase json",
+    "max_text_utf8_bytes": 65536,
+    "native_json": true,
+    "nonfinite_numbers": false,
+    "opening_line_trailing_space": false,
+    "outer_whitespace": "ASCII space, tab, CR and LF only",
+    "outer_whitespace_before_opening_or_after_closing": true,
+    "prose_or_additional_blocks": false,
+    "single_json_fence": true,
+    "unicode": "UTF-8 scalar values; reject unpaired surrogate escapes",
+    "unlabeled_fence": false
+  },
+  "external_preregistration": false,
+  "inherited_limits": {
+    "cpu_threads": 2,
+    "dtype": "float32",
+    "episode_deadline_seconds": 130,
+    "global_deadline_seconds": 1800,
+    "max_input_tokens": 1536,
+    "max_output_tokens": 96,
+    "maximum_model_requests": 24,
+    "maximum_tool_requests": 8,
+    "request_deadline_seconds": 60,
+    "sampling": false,
+    "tool_deadline_seconds": 4
+  },
+  "model": {
+    "model_id": "Qwen/Qwen2.5-0.5B-Instruct",
+    "model_manifest_sha256": "1bc324ba4d3f113e6d466255c09b98d89e40f79f58b199aebc4ce881ebef5c2c",
+    "revision": "7ae557604adf67be50417f59c2c2f167def9a775"
+  },
+  "prospective_execution_rules": [
+    "Publish and bind adapter, protocol, tests, new runner, model, prompts, tasks and tools before any candidate inference.",
+    "Use new exclusive output directories and fresh offline worker processes; preserve both earlier frozen runs and their original scores.",
+    "Use unchanged Qwen prompts, worker decoding and parameters; no model selection or outcome-dependent retries.",
+    "Pass only the existing public task fields to the model; never use expected answers, oracle payloads or scripted-controller output.",
+    "After decode, keep original legal_payload and tool dispatch checks; retain SQL authorizer, query-only mode, output and progress limits.",
+    "Charge decoding time to the episode host envelope; enforce unchanged request, tool, episode and global admission deadlines.",
+    "Record original response bytes and hash, schema, envelope mode or rejection code, body hash, and unmodified decoded value.",
+    "Retain every admitted intent, terminal, tool and verifier event, including parse failures, timeouts and aborted qualification.",
+    "Keep actual unknown currency costs null; do not double-count intent/terminal or nested host/worker/generation time."
+  ],
+  "qualification_rule": "One separate fixed [1] request. If transport, identity, or exact schema qualification fails, record an aborted candidate run and all 16 task episodes as not started; no retry or prompt change.",
+  "reporting": [
+    "Report qualification separately from the 16 planned task episodes.",
+    "Separate native JSON, fenced JSON, parser acceptance, legal payload, actual tool dispatch, delivered answer and exact-verifier correctness.",
+    "Any gain is a disclosed development integration observation; no independent confirmation, NDU advantage or net-benefit claim.",
+    "If this fixed adapter fails, preserve that failure. Do not widen acceptance rules within the candidate run."
+  ],
+  "schema": "ndu.json-envelope-development-protocol.v1",
+  "schemas": {
+    "qualification": "Exactly one integer 1 in an array; true, 1.0 and strings do not qualify.",
+    "rows_answer": "Array of at most 50 row arrays, each at most 32 scalar JSON cells; no nested containers in cells.",
+    "source_read": "Exactly needle:string length 1..128, or start_line:integer>=1 and line_count:integer 1..120; bool is not integer.",
+    "sql_query": "Object with exactly query:string, length 1..4000 characters; original SQL worker authorization remains mandatory.",
+    "strings_answer": "Array of strings; no expected answer length or contents are encoded."
+  },
+  "scientific_confirmation_eligible": false,
+  "selection_context": {
+    "model_search_allowed": false,
+    "observed_pattern": "Parent reported that the fixed Qwen qualification and multiple task outputs use JSON fences.",
+    "post_outcome_development": true,
+    "prior_failures_reclassified": false,
+    "prior_followup_commit": "3006bddacab081bafbd533f5a276d475ca3cb1b7",
+    "prior_followup_pr": 4979,
+    "prior_outputs_reparsed": false
+  },
+  "source_bindings": {
+    "adapter_sha256": "09ab46f1e3bc84e5c4018268d10d1545ca9f0e3d633480b0e5f536f3c10f06ac",
+    "boundary_tests_sha256": "dc011389121ced3e81e46bef02025ba9ebaa7b6a50307c0383bea06bc90d3b9d",
+    "frozen_source_boundary_sha256": "1f68f7a59f912b37c9ea2a444c09958092150a132351d1ef62f3712dd7e1a2d6",
+    "upstream_prompts_sha256": "5611d2e63bf77713c90bfb46ebfba74b59dae5ae8e7420ac655e52c3e6133cf2",
+    "upstream_protocol_sha256": "6e1282162de01a802be924dc7cab07ff2d3c69646deba1908143129c84f87798",
+    "upstream_tools_sha256": "9821fd2ab36275739009f722e809f3d7fc9b4fa928788a85b21f64cdde43a854"
+  },
+  "status": "adapter_ready_candidate_run_not_started",
+  "task_design": {
+    "arms": [
+      "direct",
+      "one_model_selected_tool"
+    ],
+    "disclosed_tasks_reused": true,
+    "order": "Task file order; alternate arm order by task index parity",
+    "planned_episodes": 16,
+    "repeats": 1,
+    "source_clusters": 2,
+    "task_bank_sha256": "e0582cb02d8f11991194d61cc1895f6b55930d265a179674351b766d2c55f979",
+    "tasks": 8
+  }
+}
