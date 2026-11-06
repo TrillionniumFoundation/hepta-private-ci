@@ -1,0 +1,50 @@
+{
+  "schema": "ndu.exact-spelling-repair.v1",
+  "observed_at_utc": "2026-11-06T11:36:42.052508+00:00",
+  "base_commit": "cb5019ae86bc52c9baff27858a3ee21cafc89ac5",
+  "tool": "codespell",
+  "version": "2.4.3",
+  "technical_lines_added": 4,
+  "original_locations": 5,
+  "original_files_unchanged": true,
+  "files_sha256": {
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/open_domain.py": "bce96cdd873296ab581fe9b913d2c6c94aa5a7b1331f1ddccab25bf8383cf851",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/native_generation/codec.rs": "1bc5fa5b02d3bb246fbd99ab2116e63c14c0771290c9ef1cc921f542ea111858",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/evidence/open_text_frozen_20261030/protocol.json": "c4eaa44e93dba0361210fdfa9782fcade54859a4025bd399451a13fa3d3a30bb",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/evidence/open_text_20261030/protocol.json": "d01e7f5c7975389cd84ba8802abbc4ef6c60beb599b4c2698de805f1f7fca5c2"
+  },
+  "candidate_sha256": "2bf2c3103ff138b1541a25eacd7a6e997bc4fd5358e7cf4c637e7f66673d76b3",
+  "scope": "Only four additional exact technical source lines in the existing exclusion file; no word-list or whole-file exclusions. A fresh ordinary spelling mistake remains rejected. Not remote CI.",
+  "runs": {
+    "original": {
+      "path": "original.json.gz",
+      "exit_code": 65,
+      "raw_sha256": "98ea0fa86717d0204cf4ac4d47843531026d4bc652ff8f612fc9df7cb32143fd",
+      "stored_sha256": "89280560c3f3fbace8d8a894a1478a777dd121a2d306578737f3cd916d2286ae",
+      "bytes": 269
+    },
+    "candidate": {
+      "path": "candidate.json.gz",
+      "exit_code": 0,
+      "raw_sha256": "260f689cc9d4459f74dc76c0a8005f7ef9b47b353a6e2ab33cf24573d6ca5525",
+      "stored_sha256": "afc17274c44eed4e5a6be84fc6e18d0b699a9a18d6f3a68ae87dd2441dda75e3",
+      "bytes": 59
+    },
+    "negative_control": {
+      "path": "negative_control.json.gz",
+      "exit_code": 65,
+      "raw_sha256": "0a527a30089d2df0d7ab8b50f7b0bddfcd67ee9f04fa49655e5971e8c846bd18",
+      "stored_sha256": "76fd139f4b77938a772b21051e23176ed35ade8fb9863268b682ec5a321c3493",
+      "bytes": 128
+    },
+    "near_match_negative_control": {
+      "path": "near_match_negative_control.json.gz",
+      "exit_code": 65,
+      "raw_sha256": "0584f4f14c7d560b0aaa56ee5afb2c20dd63843475ae2013ec12cae0d9b837a4",
+      "stored_sha256": "22e0600aea950d059c40e54b4bb7941df381da3945573b14c80e01dcc700fc3a",
+      "bytes": 142
+    }
+  },
+  "general_dictionary_or_workflow_changed": false,
+  "near_match_negative_control": "A new misspelling on a modified registered line is still reported."
+}
