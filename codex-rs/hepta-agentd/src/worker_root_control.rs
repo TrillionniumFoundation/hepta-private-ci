@@ -39,11 +39,17 @@ impl WorkerControlCustody {
         ] {
             for entry in std::fs::read_dir(parent)? {
                 let entry = entry?;
-                if entry.file_name().as_encoded_bytes().starts_with(prefix.as_bytes()) {
+                if entry
+                    .file_name()
+                    .as_encoded_bytes()
+                    .starts_with(prefix.as_bytes())
+                {
                     paths.insert(entry.path());
                 }
                 if paths.len() > 4096 {
-                    return Err(refused("original Fleet control history exceeds fixed bound"));
+                    return Err(refused(
+                        "original Fleet control history exceeds fixed bound",
+                    ));
                 }
             }
         }
@@ -63,7 +69,10 @@ impl WorkerControlCustody {
                 | libc::O_CLOEXEC
                 | libc::O_NONBLOCK
                 | if meta.is_dir() { libc::O_DIRECTORY } else { 0 };
-            let held = OpenOptions::new().read(true).custom_flags(flags).open(&path)?;
+            let held = OpenOptions::new()
+                .read(true)
+                .custom_flags(flags)
+                .open(&path)?;
             let actual = held.metadata()?;
             if actual.dev() != meta.dev() || actual.ino() != meta.ino() {
                 return Err(refused("Root Fleet control node changed while pinning"));
@@ -76,9 +85,14 @@ impl WorkerControlCustody {
         if record.layout != identity.layout
             || record.manifest.workspace.as_path() != identity.workspace
             || record.manifest.resources != identity.resources
-            || !matches!(record.lifecycle.lifecycle, AgentLifecycle::Starting | AgentLifecycle::Running)
+            || !matches!(
+                record.lifecycle.lifecycle,
+                AgentLifecycle::Starting | AgentLifecycle::Running
+            )
         {
-            return Err(refused("Worker requires the exact current Starting or Running spawn"));
+            return Err(refused(
+                "Worker requires the exact current Starting or Running spawn",
+            ));
         }
         let custody = Self { nodes, record };
         custody.verify(registry, identity)?;
@@ -89,7 +103,11 @@ impl WorkerControlCustody {
         self.record.lifecycle.generation
     }
 
-    pub(super) fn verify(&self, registry: &FleetRegistry, identity: &AgentdIdentity) -> io::Result<()> {
+    pub(super) fn verify(
+        &self,
+        registry: &FleetRegistry,
+        identity: &AgentdIdentity,
+    ) -> io::Result<()> {
         for (path, held) in &self.nodes {
             let actual = held.metadata()?;
             let current = std::fs::symlink_metadata(path)?;
@@ -109,7 +127,9 @@ impl WorkerControlCustody {
             .map_err(io::Error::other)?
             != self.record
         {
-            return Err(refused("original Fleet generation changed during Worker handoff"));
+            return Err(refused(
+                "original Fleet generation changed during Worker handoff",
+            ));
         }
         Ok(())
     }

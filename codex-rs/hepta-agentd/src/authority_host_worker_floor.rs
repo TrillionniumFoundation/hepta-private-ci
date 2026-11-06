@@ -47,8 +47,12 @@ struct DirectoryPins {
 #[serde(tag = "phase", deny_unknown_fields)]
 enum SlotPhase {
     Provisioned,
-    Reserved { registration: WorkerRootRegistrationV1 },
-    Serving { registration: WorkerRootRegistrationV1 },
+    Reserved {
+        registration: WorkerRootRegistrationV1,
+    },
+    Serving {
+        registration: WorkerRootRegistrationV1,
+    },
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -78,39 +82,62 @@ struct WorkerDirectories {
 impl WorkerDirectories {
     fn open(config: &HostAuthorityServiceConfig, owner_id: &str, fresh: bool) -> io::Result<Self> {
         if config.signer_id != owner_id {
-            return Err(refused("Worker floor owner must be the canonical original signer"));
+            return Err(refused(
+                "Worker floor owner must be the canonical original signer",
+            ));
         }
         let original = RootAuthorityDirectory::open(&config.state_dir).map_err(io::Error::other)?;
-        let consumers = config.consumers.as_ref().ok_or_else(|| refused("original consumer registrations required for Worker floor isolation"))?;
+        let consumers = config.consumers.as_ref().ok_or_else(|| {
+            refused("original consumer registrations required for Worker floor isolation")
+        })?;
         if consumers.device.owner_id != owner_id || consumers.notes.owner_id != owner_id {
-            return Err(refused("original consumer owner differs from canonical signer"));
+            return Err(refused(
+                "original consumer owner differs from canonical signer",
+            ));
         }
-        let checkpoint_path = config.checkpoint_state_dir.as_ref().ok_or_else(|| refused("original checkpoint registration required for Worker floor isolation"))?;
+        let checkpoint_path = config.checkpoint_state_dir.as_ref().ok_or_else(|| {
+            refused("original checkpoint registration required for Worker floor isolation")
+        })?;
         let checkpoint = RootAuthorityDirectory::open(checkpoint_path).map_err(io::Error::other)?;
-        let device = RootAuthorityDirectory::open(&consumers.device.state_dir).map_err(io::Error::other)?;
-        let notes = RootAuthorityDirectory::open(&consumers.notes.state_dir).map_err(io::Error::other)?;
+        let device =
+            RootAuthorityDirectory::open(&consumers.device.state_dir).map_err(io::Error::other)?;
+        let notes =
+            RootAuthorityDirectory::open(&consumers.notes.state_dir).map_err(io::Error::other)?;
         let worker = if fresh {
             original.create_child_fresh(WORKER_DIRECTORY)
         } else {
             original.open_existing_child(WORKER_DIRECTORY)
-        }.map_err(io::Error::other)?;
+        }
+        .map_err(io::Error::other)?;
         let slot = if fresh {
             worker.create_child_fresh(SLOT_DIRECTORY)
         } else {
             worker.open_existing_child(SLOT_DIRECTORY)
-        }.map_err(io::Error::other)?;
+        }
+        .map_err(io::Error::other)?;
         let frontier = if fresh {
             worker.create_child_fresh(FRONTIER_DIRECTORY)
         } else {
             worker.open_existing_child(FRONTIER_DIRECTORY)
-        }.map_err(io::Error::other)?;
-        let result = Self { original, worker, slot, frontier, checkpoint, device, notes };
+        }
+        .map_err(io::Error::other)?;
+        let result = Self {
+            original,
+            worker,
+            slot,
+            frontier,
+            checkpoint,
+            device,
+            notes,
+        };
         result.pins()?;
         Ok(result)
     }
 
     fn pins(&self) -> io::Result<DirectoryPins> {
-        let identity = |directory: &RootAuthorityDirectory| directory.descriptor_identity().map_err(io::Error::other);
+        let identity = |directory: &RootAuthorityDirectory| {
+            directory.descriptor_identity().map_err(io::Error::other)
+        };
         let pins = DirectoryPins {
             original_authority: identity(&self.original)?,
             worker: identity(&self.worker)?,
@@ -120,12 +147,19 @@ impl WorkerDirectories {
             original_device: identity(&self.device)?,
             original_notes: identity(&self.notes)?,
         };
-        let protected = [pins.original_authority, pins.original_checkpoint, pins.original_device, pins.original_notes];
+        let protected = [
+            pins.original_authority,
+            pins.original_checkpoint,
+            pins.original_device,
+            pins.original_notes,
+        ];
         let worker = [pins.worker, pins.current_slot, pins.consumer_floor];
         if worker.into_iter().collect::<BTreeSet<_>>().len() != worker.len()
             || worker.iter().any(|entry| protected.contains(entry))
         {
-            return Err(refused("Worker slot and floor must use independent actual directory inodes"));
+            return Err(refused(
+                "Worker slot and floor must use independent actual directory inodes",
+            ));
         }
         Ok(pins)
     }
@@ -139,15 +173,22 @@ pub(super) fn stable_namespace(agent: &AgentId) -> io::Result<String> {
 /// Worker journal nor grants a signer, input bundle or production capability.
 impl PreparedHostAuthoritySession {
     pub fn provision_worker_frontier_fresh(&self) -> io::Result<()> {
-        let end = std::time::Instant::now() + std::time::Duration::from_millis(self.config.timeout_ms.min(5_000));
+        let end = std::time::Instant::now()
+            + std::time::Duration::from_millis(self.config.timeout_ms.min(5_000));
         let identity = self.registration.registered_identity.identity()?;
         let registry = FleetRegistry::open_existing(
-            HeptaFleetRoot::parse(self.registration.registered_identity.fleet_root.clone()).map_err(io::Error::other)?,
-        ).map_err(io::Error::other)?;
+            HeptaFleetRoot::parse(self.registration.registered_identity.fleet_root.clone())
+                .map_err(io::Error::other)?,
+        )
+        .map_err(io::Error::other)?;
         let control = super::control::WorkerControlCustody::capture(&registry, &identity)?;
         let verify_original = || {
             crate::authority_host_runtime::verify_pinned_process(
-                &self.registration, self.config.peer_uid, self.config.peer_gid, &self.owner_pidfd, end,
+                &self.registration,
+                self.config.peer_uid,
+                self.config.peer_gid,
+                &self.owner_pidfd,
+                end,
             )?;
             control.verify(&registry, &identity)
         };
@@ -161,8 +202,11 @@ impl PreparedHostAuthoritySession {
                 &view.head,
                 view.clock.clone(),
                 view.expires_at_unix_ms,
-            ).map_err(io::Error::other)?;
-            let initial = consumer.frontier_for_handoff(&view.head).map_err(io::Error::other)?;
+            )
+            .map_err(io::Error::other)?;
+            let initial = consumer
+                .frontier_for_handoff(&view.head)
+                .map_err(io::Error::other)?;
             let slot = CurrentWorkerSlot {
                 schema_version: 1,
                 purpose: SLOT_PURPOSE.into(),
@@ -175,12 +219,20 @@ impl PreparedHostAuthoritySession {
                 state: SlotPhase::Provisioned,
             };
             let store = HostAuthorityFrontierStore::initialize(
-                Arc::clone(&directories.slot), view.owner_id.clone(), slot.clone(),
-            ).map_err(io::Error::other)?;
+                Arc::clone(&directories.slot),
+                view.owner_id.clone(),
+                slot.clone(),
+            )
+            .map_err(io::Error::other)?;
             if store.load(&view.owner_id).map_err(io::Error::other)? != slot
-                || consumer.frontier_for_handoff(&view.head).map_err(io::Error::other)? != initial
+                || consumer
+                    .frontier_for_handoff(&view.head)
+                    .map_err(io::Error::other)?
+                    != initial
             {
-                return Err(refused("fresh Worker slot readback differs; preserve partial provisioning"));
+                return Err(refused(
+                    "fresh Worker slot readback differs; preserve partial provisioning",
+                ));
             }
             verify_original()?;
             Ok(())
@@ -201,7 +253,10 @@ pub(super) struct ReservedWorkerFloor {
 }
 
 impl ReservedWorkerFloor {
-    pub(super) fn reserve(session: &PreparedHostAuthoritySession, registration: &WorkerRootRegistrationV1) -> io::Result<Self> {
+    pub(super) fn reserve(
+        session: &PreparedHostAuthoritySession,
+        registration: &WorkerRootRegistrationV1,
+    ) -> io::Result<Self> {
         session.service.with_worker_floor_fence(Some(registration), |view| {
             let directories = WorkerDirectories::open(&session.config, &view.owner_id, false)?;
             let current = HostAuthorityFrontierStore::<CurrentWorkerSlot>::open(
@@ -235,12 +290,20 @@ impl ReservedWorkerFloor {
         })
     }
 
-    pub(super) fn create_journal_binding_directory_fresh(&self) -> io::Result<Arc<RootAuthorityDirectory>> {
+    pub(super) fn create_journal_binding_directory_fresh(
+        &self,
+    ) -> io::Result<Arc<RootAuthorityDirectory>> {
         self.check_current()?;
         if !matches!(&self.expected.state, SlotPhase::Reserved { .. }) {
-            return Err(refused("Worker journal provisioning requires the actual reserved original slot"));
+            return Err(refused(
+                "Worker journal provisioning requires the actual reserved original slot",
+            ));
         }
-        let directory = self.directories.worker.create_child_fresh("local-journal-custody-v1").map_err(io::Error::other)?;
+        let directory = self
+            .directories
+            .worker
+            .create_child_fresh("local-journal-custody-v1")
+            .map_err(io::Error::other)?;
         self.check_current()?;
         Ok(directory)
     }
@@ -252,25 +315,47 @@ impl ReservedWorkerFloor {
     ) -> io::Result<()> {
         self.check_current()?;
         let original = self.directories.pins()?;
-        let protected = [original.original_authority, original.worker, original.current_slot,
-            original.consumer_floor, original.original_checkpoint, original.original_device, original.original_notes];
+        let protected = [
+            original.original_authority,
+            original.worker,
+            original.current_slot,
+            original.consumer_floor,
+            original.original_checkpoint,
+            original.original_device,
+            original.original_notes,
+        ];
         let binding = binding.descriptor_identity().map_err(io::Error::other)?;
         let parent = (journal.parent_device, journal.parent_inode);
         let consumer = (journal.directory_device, journal.directory_inode);
-        if protected.contains(&binding) || protected.contains(&consumer) || protected.contains(&parent)
-            || binding == consumer || binding == parent || parent == consumer
+        if protected.contains(&binding)
+            || protected.contains(&consumer)
+            || protected.contains(&parent)
+            || binding == consumer
+            || binding == parent
+            || parent == consumer
         {
-            return Err(refused("Worker journal, binding, parent and original independent floors must be distinct actual inodes"));
+            return Err(refused(
+                "Worker journal, binding, parent and original independent floors must be distinct actual inodes",
+            ));
         }
         Ok(())
     }
 
-    pub(super) fn namespace(&self) -> &str { &self.expected.consumer_namespace }
-    pub(super) fn slot_sequence(&self) -> u64 { self.expected.slot_sequence }
+    pub(super) fn namespace(&self) -> &str {
+        &self.expected.consumer_namespace
+    }
+    pub(super) fn slot_sequence(&self) -> u64 {
+        self.expected.slot_sequence
+    }
 
-    pub(super) fn frontier_for_handoff(&self, head: &FinalUseRevocations) -> io::Result<FinalUseFrontier> {
+    pub(super) fn frontier_for_handoff(
+        &self,
+        head: &FinalUseRevocations,
+    ) -> io::Result<FinalUseFrontier> {
         self.check_current()?;
-        self.consumer.frontier_for_handoff(head).map_err(io::Error::other)
+        self.consumer
+            .frontier_for_handoff(head)
+            .map_err(io::Error::other)
     }
 
     /// Only the Root protocol owner invokes this after receiving the exact
@@ -282,8 +367,13 @@ impl ReservedWorkerFloor {
             return Err(refused("Worker slot was already confirmed or abandoned"));
         };
         let mut next = self.expected.clone();
-        next.state = SlotPhase::Serving { registration: registration.clone() };
-        if let Err(error) = self.current.compare_and_set(&self.expected.owner_id, &self.expected, &next) {
+        next.state = SlotPhase::Serving {
+            registration: registration.clone(),
+        };
+        if let Err(error) =
+            self.current
+                .compare_and_set(&self.expected.owner_id, &self.expected, &next)
+        {
             self.fence_unknown();
             return Err(io::Error::other(error));
         }
@@ -295,11 +385,19 @@ impl ReservedWorkerFloor {
         if self.closed.load(Ordering::Acquire) {
             return Err(refused("Worker slot was fenced after uncertainty"));
         }
-        let valid = self.directories.pins().is_ok_and(|pins| pins == self.expected.directories)
-            && self.current.load(&self.expected.owner_id).is_ok_and(|value| value == self.expected);
+        let valid = self
+            .directories
+            .pins()
+            .is_ok_and(|pins| pins == self.expected.directories)
+            && self
+                .current
+                .load(&self.expected.owner_id)
+                .is_ok_and(|value| value == self.expected);
         if !valid {
             self.fence_unknown();
-            return Err(refused("Worker current slot or protected directory binding changed"));
+            return Err(refused(
+                "Worker current slot or protected directory binding changed",
+            ));
         }
         Ok(())
     }
@@ -307,19 +405,29 @@ impl ReservedWorkerFloor {
     pub(super) fn exchange(&self, bytes: &[u8], head: &FinalUseRevocations) -> io::Result<Vec<u8>> {
         self.check_current()?;
         if !matches!(&self.expected.state, SlotPhase::Serving { .. }) {
-            return Err(refused("Worker floor cannot be consumed before exact handoff confirmation"));
+            return Err(refused(
+                "Worker floor cannot be consumed before exact handoff confirmation",
+            ));
         }
-        let result = self.consumer.exchange(bytes, head).map_err(io::Error::other);
+        let result = self
+            .consumer
+            .exchange(bytes, head)
+            .map_err(io::Error::other);
         let result = result.and_then(|bytes| {
-            let response: HostConsumerFrontierResponseV1 = serde_json::from_slice(&bytes).map_err(io::Error::other)?;
+            let response: HostConsumerFrontierResponseV1 =
+                serde_json::from_slice(&bytes).map_err(io::Error::other)?;
             if matches!(response.status, HostConsumerFrontierStatusV1::Unknown) {
                 self.fence_unknown();
-                return Err(refused("Worker frontier outcome unknown; no refund or replay"));
+                return Err(refused(
+                    "Worker frontier outcome unknown; no refund or replay",
+                ));
             }
             self.check_current()?;
             Ok(bytes)
         });
-        if result.is_err() { self.fence_unknown(); }
+        if result.is_err() {
+            self.fence_unknown();
+        }
         result
     }
 

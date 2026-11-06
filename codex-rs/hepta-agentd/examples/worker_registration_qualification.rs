@@ -50,9 +50,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut receipt = None;
     let message = match mode {
         "receive" | "wrong-agent" => {
-            match receive_worker_root_registration(socket, &agent, generation, Duration::from_secs(10)) {
+            match receive_worker_root_registration(
+                socket,
+                &agent,
+                generation,
+                Duration::from_secs(10),
+            ) {
                 Ok(value) => {
-                    let message = serde_json::json!({"kind":"receipt", "observation":value.observation()});
+                    let message =
+                        serde_json::json!({"kind":"receipt", "observation":value.observation()});
                     receipt = Some(value);
                     message
                 }

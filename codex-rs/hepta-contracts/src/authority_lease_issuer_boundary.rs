@@ -14,11 +14,7 @@ impl AuthorityLeaseVerifier {
         issuer_pin: (&str, u64),
         token: LeaseVerifiedUseToken,
         expected: &AuthorityLeaseBinding,
-        boundary: impl FnOnce(
-            Result<&AuthorityLease, AuthorityLeaseError>,
-            &AuthorityLease,
-            u64,
-        ) -> T,
+        boundary: impl FnOnce(Result<&AuthorityLease, AuthorityLeaseError>, &AuthorityLease, u64) -> T,
     ) -> Result<T, AuthorityLeaseError> {
         self.pair_token_owner(&token, expected)?;
         let state = self.lock_state()?;

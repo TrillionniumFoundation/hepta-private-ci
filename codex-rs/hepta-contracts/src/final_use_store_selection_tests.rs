@@ -13,15 +13,29 @@ fn private_directory() -> tempfile::TempDir {
 }
 
 fn head() -> FinalUseRevocations {
-    FinalUseRevocations { authority_epoch: 4, revision: 8, revoked_grant_ids: BTreeSet::new() }
+    FinalUseRevocations {
+        authority_epoch: 4,
+        revision: 8,
+        revoked_grant_ids: BTreeSet::new(),
+    }
 }
 
 fn inventory(root: &Path) -> Vec<(String, u64, u32, u32, u32, Vec<u8>)> {
-    let mut files = std::fs::read_dir(root).unwrap().map(|entry| {
-        let entry = entry.unwrap();
-        let metadata = entry.metadata().unwrap();
-        (entry.file_name().into_string().unwrap(), metadata.ino(), metadata.uid(), metadata.gid(), metadata.mode(), std::fs::read(entry.path()).unwrap())
-    }).collect::<Vec<_>>();
+    let mut files = std::fs::read_dir(root)
+        .unwrap()
+        .map(|entry| {
+            let entry = entry.unwrap();
+            let metadata = entry.metadata().unwrap();
+            (
+                entry.file_name().into_string().unwrap(),
+                metadata.ino(),
+                metadata.uid(),
+                metadata.gid(),
+                metadata.mode(),
+                std::fs::read(entry.path()).unwrap(),
+            )
+        })
+        .collect::<Vec<_>>();
     files.sort_by(|left, right| left.0.cmp(&right.0));
     files
 }
@@ -40,7 +54,8 @@ fn existing_selection_never_creates_a_missing_directory_or_empty_store() {
 #[test]
 fn fresh_selection_creates_consumer_owned_v3_once_and_existing_preserves_nonce() {
     let root = private_directory();
-    let (store, mut state) = Store::initialize_key_ring_fresh(root.path(), "original", [7; 32], head()).unwrap();
+    let (store, mut state) =
+        Store::initialize_key_ring_fresh(root.path(), "original", [7; 32], head()).unwrap();
     let uid = rustix::process::geteuid().as_raw();
     for (_, _, owner, _, mode, _) in inventory(root.path()) {
         assert_eq!(owner, uid);
@@ -52,11 +67,15 @@ fn fresh_selection_creates_consumer_owned_v3_once_and_existing_preserves_nonce()
     let before = inventory(root.path());
     assert!(Store::initialize_key_ring_fresh(root.path(), "original", [7; 32], head()).is_err());
     assert_eq!(inventory(root.path()), before);
-    let (opened, observed) = Store::open_key_ring_existing(root.path(), "original", [7; 32], head()).unwrap();
+    let (opened, observed) =
+        Store::open_key_ring_existing(root.path(), "original", [7; 32], head()).unwrap();
     assert_eq!(observed.head, state.head);
     assert_eq!(observed.used_nonces, state.used_nonces);
     assert_eq!(inventory(root.path()), before);
-    assert!(matches!(Store::open_key_ring_existing(root.path(), "original", [7; 32], head()), Err(FinalUseError::StateLocked)));
+    assert!(matches!(
+        Store::open_key_ring_existing(root.path(), "original", [7; 32], head()),
+        Err(FinalUseError::StateLocked)
+    ));
     drop(opened);
 }
 
@@ -64,13 +83,20 @@ fn fresh_selection_creates_consumer_owned_v3_once_and_existing_preserves_nonce()
 fn missing_any_required_entry_is_not_recreated_by_existing_or_fresh() {
     for missing in ["authority.lock", "authority.json", "authority.claims"] {
         let root = private_directory();
-        let (store, _) = Store::initialize_key_ring_fresh(root.path(), "original", [7; 32], head()).unwrap();
+        let (store, _) =
+            Store::initialize_key_ring_fresh(root.path(), "original", [7; 32], head()).unwrap();
         drop(store);
         std::fs::remove_file(root.path().join(missing)).unwrap();
         let before = inventory(root.path());
-        assert!(Store::open_key_ring_existing(root.path(), "original", [7; 32], head()).is_err(), "missing {missing}");
+        assert!(
+            Store::open_key_ring_existing(root.path(), "original", [7; 32], head()).is_err(),
+            "missing {missing}"
+        );
         assert_eq!(inventory(root.path()), before);
-        assert!(Store::initialize_key_ring_fresh(root.path(), "original", [7; 32], head()).is_err(), "partial {missing}");
+        assert!(
+            Store::initialize_key_ring_fresh(root.path(), "original", [7; 32], head()).is_err(),
+            "partial {missing}"
+        );
         assert_eq!(inventory(root.path()), before);
     }
 }
@@ -79,10 +105,15 @@ fn missing_any_required_entry_is_not_recreated_by_existing_or_fresh() {
 fn incomplete_staging_is_not_completed_by_runtime_open() {
     for stale in ["authority.next", "authority.claims.next"] {
         let root = private_directory();
-        let (store, _) = Store::initialize_key_ring_fresh(root.path(), "original", [7; 32], head()).unwrap();
+        let (store, _) =
+            Store::initialize_key_ring_fresh(root.path(), "original", [7; 32], head()).unwrap();
         drop(store);
         std::fs::write(root.path().join(stale), b"incomplete original write").unwrap();
-        std::fs::set_permissions(root.path().join(stale), std::fs::Permissions::from_mode(0o600)).unwrap();
+        std::fs::set_permissions(
+            root.path().join(stale),
+            std::fs::Permissions::from_mode(0o600),
+        )
+        .unwrap();
         let before = inventory(root.path());
         assert!(Store::open_key_ring_existing(root.path(), "original", [7; 32], head()).is_err());
         assert_eq!(inventory(root.path()), before);
@@ -92,7 +123,8 @@ fn incomplete_staging_is_not_completed_by_runtime_open() {
 #[test]
 fn legacy_key_ring_snapshot_is_not_migrated_by_runtime_open() {
     let root = private_directory();
-    let (store, _) = Store::initialize_key_ring_fresh(root.path(), "original", [7; 32], head()).unwrap();
+    let (store, _) =
+        Store::initialize_key_ring_fresh(root.path(), "original", [7; 32], head()).unwrap();
     drop(store);
     let trust = [7_u8; 32];
     let nonces = vec![[9_u8; 32]];
@@ -101,21 +133,37 @@ fn legacy_key_ring_snapshot_is_not_migrated_by_runtime_open() {
         "signer_id": "original",
         "issuer_trust_sha256": trust,
         "state": { "head": head(), "used_nonces": nonces }
-    })).unwrap();
+    }))
+    .unwrap();
     std::fs::write(root.path().join("authority.json"), bytes).unwrap();
     let before = inventory(root.path());
-    assert!(matches!(Store::open_key_ring_existing(root.path(), "original", [7; 32], head()), Err(FinalUseError::InvalidTrust)));
+    assert!(matches!(
+        Store::open_key_ring_existing(root.path(), "original", [7; 32], head()),
+        Err(FinalUseError::InvalidTrust)
+    ));
     assert_eq!(inventory(root.path()), before);
 }
 
 #[test]
 fn fresh_selection_does_not_take_over_a_preexisting_lock_or_partial_claims() {
-    for prior in ["authority.lock", "authority.claims", "authority.json", "authority.next", "authority.claims.next"] {
+    for prior in [
+        "authority.lock",
+        "authority.claims",
+        "authority.json",
+        "authority.next",
+        "authority.claims.next",
+    ] {
         let root = private_directory();
         std::fs::write(root.path().join(prior), b"preserve failed attempt").unwrap();
-        std::fs::set_permissions(root.path().join(prior), std::fs::Permissions::from_mode(0o600)).unwrap();
+        std::fs::set_permissions(
+            root.path().join(prior),
+            std::fs::Permissions::from_mode(0o600),
+        )
+        .unwrap();
         let before = inventory(root.path());
-        assert!(Store::initialize_key_ring_fresh(root.path(), "original", [7; 32], head()).is_err());
+        assert!(
+            Store::initialize_key_ring_fresh(root.path(), "original", [7; 32], head()).is_err()
+        );
         assert_eq!(inventory(root.path()), before);
     }
 }
@@ -123,7 +171,8 @@ fn fresh_selection_does_not_take_over_a_preexisting_lock_or_partial_claims() {
 #[test]
 fn strict_owner_permanently_fences_a_replaced_lock_before_journal_mutation() {
     let root = private_directory();
-    let (owner, _) = Store::initialize_key_ring_fresh(root.path(), "original", [7; 32], head()).unwrap();
+    let (owner, _) =
+        Store::initialize_key_ring_fresh(root.path(), "original", [7; 32], head()).unwrap();
     let lock = root.path().join("authority.lock");
     let old = root.path().join("held-original-lock");
     std::fs::rename(&lock, &old).unwrap();
@@ -131,22 +180,30 @@ fn strict_owner_permanently_fences_a_replaced_lock_before_journal_mutation() {
     std::fs::set_permissions(&lock, std::fs::Permissions::from_mode(0o600)).unwrap();
     // A replacement inode is independently lockable. The retained owner must
     // not confuse that new lock with the original one it still holds.
-    let (replacement, _) = Store::open_key_ring_existing(root.path(), "original", [7; 32], head()).unwrap();
+    let (replacement, _) =
+        Store::open_key_ring_existing(root.path(), "original", [7; 32], head()).unwrap();
     let before = std::fs::read(root.path().join("authority.claims")).unwrap();
     assert!(owner.append_claim(4, [11; 32]).is_err());
-    assert_eq!(std::fs::read(root.path().join("authority.claims")).unwrap(), before);
+    assert_eq!(
+        std::fs::read(root.path().join("authority.claims")).unwrap(),
+        before
+    );
     std::fs::remove_file(&lock).unwrap();
     std::fs::rename(old, &lock).unwrap();
     assert!(owner.revalidate_owner().is_err());
     assert!(replacement.revalidate_owner().is_err());
-    assert_eq!(std::fs::read(root.path().join("authority.claims")).unwrap(), before);
+    assert_eq!(
+        std::fs::read(root.path().join("authority.claims")).unwrap(),
+        before
+    );
 }
 
 #[test]
 fn strict_owner_keeps_original_claims_replacement_and_length_guards() {
     for mutation in ["replace", "truncate", "extend"] {
         let root = private_directory();
-        let (owner, _) = Store::initialize_key_ring_fresh(root.path(), "original", [7; 32], head()).unwrap();
+        let (owner, _) =
+            Store::initialize_key_ring_fresh(root.path(), "original", [7; 32], head()).unwrap();
         owner.append_claim(4, [9; 32]).unwrap();
         let claims = root.path().join("authority.claims");
         let original = std::fs::read(&claims).unwrap();
@@ -156,8 +213,18 @@ fn strict_owner_keeps_original_claims_replacement_and_length_guards() {
                 std::fs::write(&claims, &original).unwrap();
                 std::fs::set_permissions(&claims, std::fs::Permissions::from_mode(0o600)).unwrap();
             }
-            "truncate" => File::options().write(true).open(&claims).unwrap().set_len(0).unwrap(),
-            "extend" => File::options().write(true).open(&claims).unwrap().set_len(original.len() as u64 + 1).unwrap(),
+            "truncate" => File::options()
+                .write(true)
+                .open(&claims)
+                .unwrap()
+                .set_len(0)
+                .unwrap(),
+            "extend" => File::options()
+                .write(true)
+                .open(&claims)
+                .unwrap()
+                .set_len(original.len() as u64 + 1)
+                .unwrap(),
             _ => unreachable!(),
         }
         let after_mutation = std::fs::read(&claims).unwrap();

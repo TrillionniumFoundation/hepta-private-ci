@@ -15,16 +15,17 @@ fn with_independent_issuer_parent() -> Fixture {
     f.registry.put_lease(parent, 0).unwrap();
     // Only this original-owner unit fixture assigns the private factory pin.
     // No new signer, journal, registry or production constructor is introduced.
-    f.issuer.lease = Some(
-        ProtectedLease::new(f.registry.verifier(), ISSUER_PARENT.into(), 1).unwrap(),
-    );
+    f.issuer.lease =
+        Some(ProtectedLease::new(f.registry.verifier(), ISSUER_PARENT.into(), 1).unwrap());
     f
 }
 
 fn revoke_parent_keep_writer_live(f: &Fixture) {
     f.registry.revoke(ISSUER_PARENT, 1, [8; 32]).unwrap();
     assert!(f.issuer.with_live_lease(|_| Ok(())).is_err());
-    f.writer.with_live(&f.registry.verifier(), |_| Ok(())).unwrap();
+    f.writer
+        .with_live(&f.registry.verifier(), |_| Ok(()))
+        .unwrap();
 }
 
 #[test]
@@ -38,7 +39,9 @@ fn notes_policy_revoked_independent_issuer_parent_cannot_replace_target() {
     let frontier = f.registry.frontier().unwrap();
 
     assert!(
-        f.issuer.replace_notes_policy(&f.writer, &f.target, 1_000, &next, 1_000).is_err(),
+        f.issuer
+            .replace_notes_policy(&f.writer, &f.target, 1_000, &next, 1_000)
+            .is_err(),
         "a live writer must not replace Notes policy after independent issuer revocation"
     );
     assert_eq!(
@@ -67,4 +70,3 @@ fn notes_grant_revoked_independent_issuer_parent_cannot_sign_or_create_effect_le
     );
     assert_eq!(f.registry.frontier().unwrap(), frontier);
 }
-

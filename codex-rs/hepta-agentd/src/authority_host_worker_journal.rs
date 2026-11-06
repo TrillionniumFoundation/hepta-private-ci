@@ -46,21 +46,42 @@ impl RootWorkerJournal {
     ) -> io::Result<Self> {
         floor.check_current()?;
         let binding_directory = floor.create_journal_binding_directory_fresh()?;
-        let directory = WorkerJournalDirectory::create_root_fresh(parent, registration, floor.slot_sequence(), initial_frontier)?;
+        let directory = WorkerJournalDirectory::create_root_fresh(
+            parent,
+            registration,
+            floor.slot_sequence(),
+            initial_frontier,
+        )?;
         floor.check_journal_directory_is_distinct(directory.observation(), &binding_directory)?;
         let expected = JournalBinding {
-            schema_version: 1, purpose: WORKER_ROOT_JOURNAL_V1.into(), owner_id: owner_id.into(),
-            consumer_namespace: floor.namespace().into(), registration: registration.clone(),
-            directory: directory.observation().clone(), confirmed_after_original_child_ack: false,
+            schema_version: 1,
+            purpose: WORKER_ROOT_JOURNAL_V1.into(),
+            owner_id: owner_id.into(),
+            consumer_namespace: floor.namespace().into(),
+            registration: registration.clone(),
+            directory: directory.observation().clone(),
+            confirmed_after_original_child_ack: false,
         };
-        let store = HostAuthorityFrontierStore::initialize(binding_directory, owner_id.to_owned(), expected.clone()).map_err(io::Error::other)?;
-        let value = Self { directory, store, expected, fenced: AtomicBool::new(false) };
+        let store = HostAuthorityFrontierStore::initialize(
+            binding_directory,
+            owner_id.to_owned(),
+            expected.clone(),
+        )
+        .map_err(io::Error::other)?;
+        let value = Self {
+            directory,
+            store,
+            expected,
+            fenced: AtomicBool::new(false),
+        };
         value.check()?;
         floor.check_current()?;
         Ok(value)
     }
 
-    pub(super) fn observation(&self) -> &WorkerJournalDirectoryPinV1 { self.directory.observation() }
+    pub(super) fn observation(&self) -> &WorkerJournalDirectoryPinV1 {
+        self.directory.observation()
+    }
 
     pub(super) fn confirm_after_original_child_ack(&mut self) -> io::Result<()> {
         self.check()?;
@@ -70,7 +91,10 @@ impl RootWorkerJournal {
         }
         let mut next = self.expected.clone();
         next.confirmed_after_original_child_ack = true;
-        if let Err(error) = self.store.compare_and_set(&self.expected.owner_id, &self.expected, &next) {
+        if let Err(error) =
+            self.store
+                .compare_and_set(&self.expected.owner_id, &self.expected, &next)
+        {
             self.fence();
             return Err(io::Error::other(error));
         }
@@ -79,21 +103,34 @@ impl RootWorkerJournal {
     }
 
     pub(super) fn check(&self) -> io::Result<()> {
-        if self.fenced.load(Ordering::Acquire) { return Err(refused("Worker journal binding is permanently fenced")); }
+        if self.fenced.load(Ordering::Acquire) {
+            return Err(refused("Worker journal binding is permanently fenced"));
+        }
         let result = (|| {
             self.directory.check()?;
-            if self.store.load(&self.expected.owner_id).map_err(io::Error::other)? != self.expected {
+            if self
+                .store
+                .load(&self.expected.owner_id)
+                .map_err(io::Error::other)?
+                != self.expected
+            {
                 return Err(refused("Worker journal original Root record changed"));
             }
             Ok(())
         })();
-        if result.is_err() { self.fence(); }
+        if result.is_err() {
+            self.fence();
+        }
         result
     }
 
-    fn fence(&self) { self.fenced.store(true, Ordering::Release); }
+    fn fence(&self) {
+        self.fenced.store(true, Ordering::Release);
+    }
 }
 
 impl Drop for RootWorkerJournal {
-    fn drop(&mut self) { self.fence(); }
+    fn drop(&mut self) {
+        self.fence();
+    }
 }
