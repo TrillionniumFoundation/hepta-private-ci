@@ -17,15 +17,17 @@ import re
 import time
 
 import torch
-from .joint_graph import (digest, integer, interval_seconds, load_model, model_bytes, sha256,
+from .joint_graph import (digest, integer, interval_seconds, load_model, load_training_checkpoint, model_bytes, sha256,
                           strict_json, tensor_digest, time_profile_digest)
+from .population_graph import PopulationCellGraph, population_intervals
+from .training_state import resolve_training_initialization, state_digest
 from .handoff import dataset_digest, encode_handoff, execution_sources, runtime_tuple
 
 MAX_DIAGNOSTIC_BYTES = 1024*1024
 
 
-def task_gradients(model, inputs, targets, intervals):
-    prediction, _ = model(inputs, intervals)
+def task_gradients(model, inputs, targets, intervals, state=None):
+    prediction, _ = model(inputs, intervals, state)
     if targets.shape != prediction[:, -1].shape or not bool(torch.isfinite(targets).all()):
         raise ValueError("finite targets must match final readout exactly")
     loss = (prediction[:, -1]-targets).square().mean()
@@ -47,7 +49,10 @@ def propose(model, request):
     fields = {"schema_version", "mechanism", "binding", "intervals", "inputs", "targets",
               "target_time_micros", "learning_rate", "optimizer_steps", "limits", "base_checkpoint", "time_profile",
               "operation_id"}
-    if set(request) != fields or type(request["schema_version"]) is not int or request["schema_version"] != 1:
+    version = request.get("schema_version")
+    if version == 2:
+        fields.add("initialization")
+    if set(request) != fields or type(version) is not int or version not in (1, 2):
         raise ValueError("unknown training request schema/fields")
     if request["mechanism"] != "task_mse_bp_v1":
         raise ValueError("only task_mse_bp_v1 is implemented; NDU/plasticity are distinct")
@@ -63,7 +68,7 @@ def propose(model, request):
     checkpoint = request["base_checkpoint"]
     if set(checkpoint) != {"path", "sha256"} or binding["model_digest"] != checkpoint["sha256"]:
         raise ValueError("model binding differs from base checkpoint identity")
-    original = load_model(checkpoint["path"], checkpoint["sha256"])
+    original, prior_state, saved_metadata = load_training_checkpoint(checkpoint["path"], checkpoint["sha256"])
     if model.spec != original.spec or tensor_digest(model.state_dict()) != tensor_digest(original.state_dict()):
         raise ValueError("in-memory model differs from exact loaded base checkpoint")
     limits = request["limits"]
@@ -78,7 +83,9 @@ def propose(model, request):
         raise ValueError("learning rate outside (0,1]")
     if time_profile_digest(request["time_profile"]) != binding["profile_digest"]:
         raise ValueError("admitted profile identity mismatch")
-    intervals = interval_seconds(request["intervals"], request["time_profile"])
+    population = isinstance(model, PopulationCellGraph)
+    intervals = (population_intervals(request["intervals"], request["time_profile"], model.spec) if population
+                 else interval_seconds(request["intervals"], request["time_profile"]))
     last = request["intervals"][-1]
     if integer(request["target_time_micros"]) != last["end_micros"]+last["forecast_horizon_micros"]:
         raise ValueError("target time does not match forecast horizon")
@@ -88,18 +95,26 @@ def propose(model, request):
             or any(not isinstance(row, list) or len(row) != len(intervals) for row in rows)
             or any(not isinstance(x, list) or len(x) != model.spec.input_size for row in rows for x in row)
             or any(not isinstance(y, list) or len(y) != model.spec.output_size for y in labels)
-            or len(rows)*(len(intervals)*(model.spec.input_size+4*model.spec.hidden_size*len(model.cells))
-                          +model.spec.output_size) > limits["max_elements"]):
+            or (model.working_elements(len(rows), intervals) if population else
+                len(rows)*(len(intervals)*(model.spec.input_size+4*model.spec.hidden_size*len(model.cells))
+                           +model.spec.output_size)) > limits["max_elements"]):
         raise ValueError("training tensor budget exceeded")
     inputs = torch.tensor(rows, dtype=next(model.parameters()).dtype)
     targets = torch.tensor(labels, dtype=inputs.dtype)
+    initial_state = resolve_training_initialization(model, request, prior_state, saved_metadata, inputs)
+    initial_digest = state_digest(initial_state)
     if 131_072+64*len(rows)*model.spec.output_size+steps*(512+128*len(model.cells)) > MAX_DIAGNOSTIC_BYTES:
         raise ValueError("diagnostic receipt budget exceeded before training")
     base = tensor_digest(model.state_dict())
     candidate, history = copy.deepcopy(model), []
     for _ in range(steps):
-        loss, grads = task_gradients(candidate, inputs, targets, intervals)
+        loss, grads = task_gradients(candidate, inputs, targets, intervals, initial_state)
         history.append(dict(loss=float(loss.detach()), gradient_digest=tensor_digest(grads),
+                            nonzero_gradient_elements=sum(int(torch.count_nonzero(g)) for g in grads.values()),
+                            zero_gradient_parameter_names=[name for name, g in grads.items()
+                                                           if not bool(torch.count_nonzero(g))],
+                            per_parameter_gradient_norm={name: float(torch.linalg.vector_norm(g))
+                                                         for name, g in grads.items()},
                             per_cell_gradient_norm={cell: math.sqrt(sum(float(g.square().sum())
                                 for name, g in grads.items() if name.startswith(f"cells.{i}.")))
                                 for i, cell in enumerate(model.spec.cell_ids)}))
@@ -108,9 +123,14 @@ def propose(model, request):
                 parameter.add_(grads[name], alpha=-rate)
         tensor_digest(candidate.state_dict())
     with torch.no_grad():
-        output, state = candidate(inputs, intervals)
+        output, state = candidate(inputs, intervals, initial_state)
+    candidate.validate_state(state, inputs.shape[0], inputs.dtype, inputs.device)
+    if not bool(torch.isfinite(output).all()):
+        raise ValueError("nonfinite final candidate output")
     if tensor_digest(model.state_dict()) != base:
         raise RuntimeError("original model changed during candidate generation")
+    if state_digest(initial_state) != initial_digest:
+        raise RuntimeError("training initial state changed during candidate generation")
     if execution_sources() != sources:
         raise RuntimeError("execution source changed; candidate rejected")
     runtime = runtime_tuple(str(next(model.parameters()).dtype))
@@ -118,12 +138,16 @@ def propose(model, request):
                    request_digest=digest(request), base_checkpoint_sha256=checkpoint["sha256"],
                    execution_sources=sources, execution_source_digest=digest(sources),
                    runtime_tuple=runtime, runtime_tuple_digest=digest(runtime), dataset_digest=dataset_digest(request),
-                   graph_digest=digest(asdict(model.spec)), edge_timing="previous_boundary",
+                   graph_digest=digest(asdict(model.spec)),
+                   edge_timing="previous_grid_boundary" if population else "previous_boundary",
                    base_weights_digest=base, candidate_weights_digest=tensor_digest(candidate.state_dict()),
                    inputs_digest=tensor_digest({"inputs": inputs}), targets_digest=tensor_digest({"targets": targets}),
                    schedule_digest=digest(request["intervals"]), target_time_micros=request["target_time_micros"],
+                   initial_state_digest=initial_digest,
+                   initialization_mode=request.get("initialization", {"mode": "legacy_fresh"})["mode"],
                    optimizer=dict(kind="sgd", momentum=0, learning_rate=rate, steps=steps),
                    logical_cells=len(model.cells), trainable_parameters=sum(p.numel() for p in model.parameters()),
+                   gradient_coverage="connected_task_derivative; zero derivatives separately reported",
                    gradient_cells=len(model.cells), gradient_parameters=sum(g.numel() for g in grads.values()),
                    completed_optimizer_steps=steps, gradient_digest=digest(history),
                    training_examples_seen=steps*inputs.shape[0], training_intervals_seen=steps*inputs.shape[0]*len(intervals),
@@ -132,6 +156,11 @@ def propose(model, request):
                    energy_missing_reason="no physical counter in this CPU development adapter",
                    measurement_scope="proposal validation/base reload/copy/BP/final forward/serialization; excludes caller load and publication",
                    candidate_only=True, evaluation_passed=False)
+    if population:
+        receipt["population_integration"] = dict(
+            step_micros=model.spec.step_micros, grid_steps_per_sample=sum(intervals),
+            config=asdict(model.cells[0].population.config), trace_time_constant_seconds=.5,
+            effective_refractory_micros=model.cells[0].population.config.refractory_steps*model.spec.step_micros)
     payload = model_bytes(candidate, optimizer=receipt["optimizer"], binding=binding,
                           final_state=tuple(tuple(v.detach().cpu() for v in s) for s in state),
                           last_end_micros=last["end_micros"])
