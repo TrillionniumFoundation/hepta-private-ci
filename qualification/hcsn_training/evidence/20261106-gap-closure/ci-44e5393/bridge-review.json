@@ -1,0 +1,288 @@
+{
+  "schema": "hcsn_final_head_main_gate_recovered_review_v1",
+  "source_commit": "44e539313e0c54badb4b9b687425dd87ecba6e67",
+  "source_tree": "b7ac591c98b6045521f70e97f58dc2cea8bf12bc",
+  "run_id": 42222767973,
+  "job_id": 127908599129,
+  "job_conclusion": "success",
+  "recovery_scope": "Recovered original byte-identical Actions ZIP and complete retained job/API evidence. Rechecked counts, all selected member hashes, six handoff bindings, complete-state/clock evidence and owner checkpoint byte equality. No fixtures, checkpoints or native binaries executed; no source files fetched or source comparison repeated.",
+  "artifact": {
+    "id": 13505170495,
+    "name": "hcsn-training-bridge-44e539313e0c54badb4b9b687425dd87ecba6e67-1",
+    "size_in_bytes": 7052020,
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13505170495",
+    "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13505170495/zip",
+    "expired": false,
+    "created_at": "2026-11-06T13:13:41Z",
+    "expires_at": "2027-02-04T13:06:05Z",
+    "updated_at": "2026-11-06T13:13:41Z",
+    "digest": "sha256:a27f8aeaed93c0afe97addbeb84df83d125e43493fb0200e938f6fefcbd27614",
+    "workflow_run": {
+      "id": 42222767973,
+      "repository_id": 1320694176,
+      "head_repository_id": 1320694176,
+      "head_branch": "codex/hcsn-gap-closure-20261106",
+      "head_sha": "44e539313e0c54badb4b9b687425dd87ecba6e67"
+    }
+  },
+  "archive_verified": true,
+  "counts": {
+    "python": {
+      "passed": 56,
+      "failed": 0,
+      "skipped": 0,
+      "modules": {
+        "test_joint_graph": 8,
+        "test_population_graph": 8,
+        "test_training_state": 8,
+        "test_native_build": 5,
+        "test_supervisor": 11,
+        "test_population_age_graph": 8,
+        "test_population_generator": 5,
+        "test_resumed_derivatives": 3
+      }
+    },
+    "native": {
+      "passed": 195,
+      "failed": 0,
+      "skipped": 1
+    },
+    "automation": {
+      "passed": 119,
+      "failed": 0,
+      "skipped": 1
+    }
+  },
+  "bridges": [
+    {
+      "backend": "value_kernel",
+      "status": "passed",
+      "logical_cells": 2,
+      "gradient_parameters": 172,
+      "second_optimizer_steps": 2,
+      "second_intervals": 4,
+      "first_candidate_sha256": "7803391a9c8b694d239a445e28fe405c6fed5880ea2798c38f7d3ad60d6f30a1",
+      "second_candidate_sha256": "7745108e93ea88925e4878edb38e6f8559195a8378e86a277cde004e38d3b3ec",
+      "resume_initial_state_digest": "333a2dbd31ab93b3841e31cdce55482b6dd7e90b1764a1c317ec3cffb039fcad",
+      "resume_initial_time_micros": 750017,
+      "complete_state_exact_in_ci": true,
+      "weights_exact_in_ci": true,
+      "prediction_exact_in_ci": true,
+      "reset_prediction_max_difference": 0.2575933629256573,
+      "execution_source_digest": "e5917bf413f416a6491c10ad797f3f8f31e66dc87b1c1f74a4ddb198495cf50c",
+      "binary_handoff_reconstructed_here": true,
+      "checkpoint_owner_readback_bytes_bound_here": true,
+      "key_results": [
+        {
+          "path": "extracted/_temp/hcsn-training-bridge/bridge-a/result.json",
+          "bytes": 5249,
+          "sha256": "e88ba3ae851ef0b34536890bd46a21f17519b85e078d7fb68e85797e7b8fdbd8"
+        },
+        {
+          "path": "extracted/_temp/hcsn-training-bridge/bridge-a/second-block/result.json",
+          "bytes": 2092,
+          "sha256": "d5ecb3ce99c664432a66a2d4501cc7370d018240c95452ac6b0c039ac3dff4be"
+        },
+        {
+          "path": "extracted/_temp/hcsn-training-bridge/bridge-a/signed-taskflow.json",
+          "bytes": 3404,
+          "sha256": "2391ffa4b209d6298a88b63c5e39ac5c678f0bd561b4582452a168b6c09bc40e"
+        }
+      ]
+    },
+    {
+      "backend": "population_grid",
+      "status": "passed",
+      "logical_cells": 2,
+      "gradient_parameters": 8,
+      "second_optimizer_steps": 2,
+      "second_intervals": 2,
+      "first_candidate_sha256": "a899a0fdc2467b8b15c2a2604414205730a62538d4383f8457ef7da389e373d9",
+      "second_candidate_sha256": "26917dc11ecfb915f6be87087d47a39cfaf26ce45a9ba5d4fe620775b77d2100",
+      "resume_initial_state_digest": "8bb9b4c9628d1d9d1a9a8b5137c9df538157011be84e7079009eb7a5d939abd4",
+      "resume_initial_time_micros": 500017,
+      "complete_state_exact_in_ci": true,
+      "weights_exact_in_ci": true,
+      "prediction_exact_in_ci": true,
+      "reset_prediction_max_difference": 0.30416179121450104,
+      "execution_source_digest": "e5917bf413f416a6491c10ad797f3f8f31e66dc87b1c1f74a4ddb198495cf50c",
+      "binary_handoff_reconstructed_here": true,
+      "checkpoint_owner_readback_bytes_bound_here": true,
+      "key_results": [
+        {
+          "path": "extracted/_temp/hcsn-training-bridge/bridge-b/result.json",
+          "bytes": 5234,
+          "sha256": "d2c505ddecfb1b3b74c86225c0c6c3682035f08562fdc5d1c92033ae04e74252"
+        },
+        {
+          "path": "extracted/_temp/hcsn-training-bridge/bridge-b/second-block/result.json",
+          "bytes": 2093,
+          "sha256": "95a77949035a93314036d11554709a6054a04ac53841a87ef5219f7fb95ef361"
+        },
+        {
+          "path": "extracted/_temp/hcsn-training-bridge/bridge-b/signed-taskflow.json",
+          "bytes": 3404,
+          "sha256": "caec62b58eef6603a40754ae0ff9027971594edd25fb6786b4e8ad93c7843cd7"
+        }
+      ]
+    },
+    {
+      "backend": "population_age",
+      "status": "passed",
+      "logical_cells": 2,
+      "gradient_parameters": 8,
+      "second_optimizer_steps": 2,
+      "second_intervals": 2,
+      "first_candidate_sha256": "d1ae7944a3b011fcaf53a054b9ef1c894707492feb60a3ea309d7b0d68c3fb4e",
+      "second_candidate_sha256": "b99f95604224003e940aea43ee24a48c147df933694974e8e72e12c6687837b7",
+      "resume_initial_state_digest": "d389f3aa106cce2dd3622de4e87fbf17fe7909a7f59e4652a2163ece0107a28b",
+      "resume_initial_time_micros": 403017,
+      "complete_state_exact_in_ci": true,
+      "weights_exact_in_ci": true,
+      "prediction_exact_in_ci": true,
+      "reset_prediction_max_difference": 0.33190370003923253,
+      "execution_source_digest": "e5917bf413f416a6491c10ad797f3f8f31e66dc87b1c1f74a4ddb198495cf50c",
+      "binary_handoff_reconstructed_here": true,
+      "checkpoint_owner_readback_bytes_bound_here": true,
+      "key_results": [
+        {
+          "path": "extracted/_temp/hcsn-training-bridge/bridge-b-age/result.json",
+          "bytes": 5248,
+          "sha256": "4c432dec53cc51e80bba0e0531fc4d31ee0aa41b61ca77658aa8fc1f3c47c72c"
+        },
+        {
+          "path": "extracted/_temp/hcsn-training-bridge/bridge-b-age/second-block/result.json",
+          "bytes": 2093,
+          "sha256": "7ae439cdab626d6575e4ed006ce7a0794636e659a8fe2a5e2032a791d9034f61"
+        },
+        {
+          "path": "extracted/_temp/hcsn-training-bridge/bridge-b-age/signed-taskflow.json",
+          "bytes": 3404,
+          "sha256": "9614a6e39a67c2d27b998d8429bb3f310c0f1e5fef42b5b192d7426b1f7e7376"
+        }
+      ]
+    }
+  ],
+  "runtime": {
+    "python": "3.12.3",
+    "torch": "2.8.0+cpu",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "dtype": "torch.float64",
+    "device": "cpu"
+  },
+  "historical_source_audit": {
+    "source_commit": "44e539313e0c54badb4b9b687425dd87ecba6e67",
+    "source_tree": "b7ac591c98b6045521f70e97f58dc2cea8bf12bc",
+    "original_review_sha256": "3786ab97881975d763879181da3c35a606777641078028ec563f692ada506a37",
+    "original_retained_archive_sha256": "3a3be6252ea22f7f8285285ed3fede6cdac6e43883de7de260cd38abf18d5dbe",
+    "original_retained_manifest_sha256": "3ec9e68e60d4a6c05e641ca591da05d5bad17a0117294a6d16c37965017cbe01",
+    "historically_completed_python_source_comparisons_per_backend": 41,
+    "historically_completed_native_source_comparisons_per_backend": 91,
+    "original_review_and_archive_bytes_lost_after_executor_replacement": true,
+    "source_comparison_repeated_here": false,
+    "basis": "Independent reviewer completed exact Git-object source comparison before executor replacement; preserved conversation/tool observations retain the prior hashes and result. The recovered original Actions ZIP is byte-identical to that reviewed artifact."
+  },
+  "native_executables": [
+    {
+      "path": "_temp/hcsn-training-bridge/bridge-a/native-fixture",
+      "bytes": 7410000,
+      "sha256": "99d9ff21c49f9088af32297032d4b6082fb3cd33d9056bb18aa230679e2a61ec",
+      "original_mode": "0o755",
+      "extracted": false,
+      "omission_reason": "ELF executable retained only in original Actions ZIP"
+    },
+    {
+      "path": "_temp/hcsn-training-bridge/bridge-b/native-fixture",
+      "bytes": 7410000,
+      "sha256": "99d9ff21c49f9088af32297032d4b6082fb3cd33d9056bb18aa230679e2a61ec",
+      "original_mode": "0o755",
+      "extracted": false,
+      "omission_reason": "ELF executable retained only in original Actions ZIP"
+    },
+    {
+      "path": "_temp/hcsn-training-bridge/bridge-b-age/native-fixture",
+      "bytes": 7410000,
+      "sha256": "99d9ff21c49f9088af32297032d4b6082fb3cd33d9056bb18aa230679e2a61ec",
+      "original_mode": "0o755",
+      "extracted": false,
+      "omission_reason": "ELF executable retained only in original Actions ZIP"
+    }
+  ],
+  "signed_worker_executable": {
+    "path": "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/target/debug/deps/hcsn_signed_worker-2c5becb2d48504c6",
+    "sha256": "2acb6862e6511d6dd683924dd5ddf899ac18c25524b7bede3c94f53e91c4c739",
+    "bytes": null,
+    "bytes_note": "path/SHA only in original artifact; size and bytes absent"
+  },
+  "source_unchanged_checks_empty": true,
+  "upload_omission": {
+    "warning": "ENTRYNOTSUPPORTED",
+    "uploader_reported_entries": 531,
+    "zip_regular_entries": 530,
+    "attributed_path": "supervisor-cases/hcsn-supervisor-v3x0e6cg/untrusted-fifo",
+    "attributed_type": "negative-test FIFO",
+    "attribution": "Prior source mkfifo inspection plus retained passing per-test directory log, missing expected FIFO and one-entry count difference. Uploader did not identify the skipped pathname; no remote lstat. Source not re-fetched in this recovery.",
+    "all_original_tree_entries_claimed": false,
+    "required_bridge_proof_members_present": true
+  },
+  "raw_files": [
+    {
+      "path": "extracted/_temp/hcsn-training-bridge/source.txt",
+      "bytes": 82,
+      "sha256": "b117bbeaf9e9917328f670f3d4e9095b7ae6d8d8338731777d21e81f25925ba4"
+    },
+    {
+      "path": "extracted/_temp/hcsn-training-bridge/python-tests.log",
+      "bytes": 12809,
+      "sha256": "f864006bc154076474ed35af383495705d76ccb14d20a36c0c4452575c967d81"
+    },
+    {
+      "path": "extracted/_temp/hcsn-training-bridge/rust-tests.log",
+      "bytes": 27042,
+      "sha256": "8221e96c85f31aac5d754815e48a32cb035d5435ddfa28f7b2baf0a3c49eff12"
+    },
+    {
+      "path": "extracted/_temp/hcsn-training-bridge/taskflow-tests.log",
+      "bytes": 26140,
+      "sha256": "d9b5d67c3be5a60aff6ea5818c113469a6bcfc08a69f3afa4e5e39f4c141dd92"
+    },
+    {
+      "path": "extracted/_temp/hcsn-training-bridge/cargo-artifacts.jsonl",
+      "bytes": 606959,
+      "sha256": "6677332319a8f914eccea799d54ac0b9ca1961488d3173e987f0a68ba2d228f2"
+    },
+    {
+      "path": "extracted/_temp/hcsn-training-bridge/signed-worker-artifacts.jsonl",
+      "bytes": 612556,
+      "sha256": "4ed0290d4cfc1d215c939a8f7cd5ab5873ff4e2a122270b4cf9c1dc5bac55238"
+    },
+    {
+      "path": "extracted/_temp/hcsn-training-bridge/bridge-cargo-artifacts.jsonl",
+      "bytes": 606282,
+      "sha256": "98e3ce72b5efcee8c6a73a6d88cdd18460882ebfc3104180b9504f425aea7801"
+    },
+    {
+      "path": "extracted/_temp/hcsn-training-bridge/signed-worker-executable.json",
+      "bytes": 204,
+      "sha256": "9c190e084f8cc1e544870d9adc506724285bea903cef881912336eb84fec4971"
+    },
+    {
+      "path": "extracted/_temp/hcsn-training-bridge/source-unchanged.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "extracted/_temp/hcsn-training-bridge/source-diff-check.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "material_remaining_findings": [],
+  "limitations": [
+    "Numerical equality flags were checked by exact-head CI and are cross-bound to retained artifacts; numerical calculations not rerun here.",
+    "Production trust/adoption and scientific task-gain qualification remain false; Agentd is a separate job.",
+    "Earlier complete polling timeline was lost locally; the original completion API observation and complete job log were retained in cloud tool state and restored.",
+    "Original review/tar hashes are historical observations, not restored original bytes. This recovered report/archive gets new hashes."
+  ]
+}
