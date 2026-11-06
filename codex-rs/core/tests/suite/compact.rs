@@ -35,6 +35,7 @@ use core_test_support::PathBufExt;
 use core_test_support::context_snapshot;
 use core_test_support::context_snapshot::ContextSnapshotOptions;
 use core_test_support::context_snapshot::ContextSnapshotRenderMode;
+use core_test_support::first_party::FirstPartyMockServer;
 use core_test_support::hooks::trust_discovered_hooks;
 use core_test_support::responses;
 use core_test_support::responses::ev_reasoning_item;
@@ -5185,7 +5186,7 @@ async fn remote_v2_compaction_keeps_creation_time_instructions_after_same_path_m
     skip_if_no_network!(Ok(()));
 
     // Set up an ordinary turn, a remote-v2 compact response, and a post-compaction turn.
-    let server = responses::start_mock_server().await;
+    let server = FirstPartyMockServer::start().await?;
     let response_mock = responses::mount_sse_sequence(
         &server,
         vec![
@@ -5211,7 +5212,8 @@ async fn remote_v2_compaction_keeps_creation_time_instructions_after_same_path_m
         GLOBAL_AGENTS_FILENAME,
         OLD_GLOBAL_INSTRUCTIONS,
     )?;
-    let mut builder = test_codex()
+    let mut builder = server
+        .test_codex()
         .with_home(Arc::clone(&home))
         .with_auth(CodexAuth::create_dummy_chatgpt_auth_for_testing())
         .with_config(|config| {
@@ -5273,7 +5275,8 @@ async fn remote_v2_compaction_keeps_creation_time_instructions_after_same_path_m
     })
     .await;
     let resumed_cwd = test.config.cwd.clone();
-    let mut resume_builder = test_codex()
+    let mut resume_builder = server
+        .test_codex()
         .with_home(Arc::clone(&home))
         .with_auth(CodexAuth::create_dummy_chatgpt_auth_for_testing())
         .with_config(move |config| {
