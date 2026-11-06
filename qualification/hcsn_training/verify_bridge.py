@@ -19,6 +19,8 @@ import torch
 from .handoff import dataset_digest, execution_sources, runtime_tuple
 from .joint_graph import (GraphSpec, JointCellGraph, digest, interval_seconds,
                           load_training_checkpoint, model_bytes, strict_json, tensor_digest)
+from .native_build import native_libraries
+from .population_graph import PopulationCellGraph, PopulationGraphSpec, population_intervals
 
 REPO = Path(__file__).resolve().parents[2]
 
@@ -65,7 +67,7 @@ def run(root, label, command):
     return record
 
 
-def build_native(root, workspace, rustc):
+def build_native(root, workspace, rustc, artifacts=None):
     packages = ("hepta-neuron", "hepta-learning-artifacts", "hepta-types", "hepta-infer-core")
     sources = {}
     for package in packages:
@@ -81,17 +83,15 @@ def build_native(root, workspace, rustc):
     command = [rustc, "--edition=2024", "--crate-name", "hcsn_native_fixture", str(Path(__file__).with_name("native_fixture.rs")),
                "-L", f"dependency={deps}", "-o", str(root/"native-fixture")]
     libraries = {}
-    for name in names:
-        matches = list(deps.glob(f"lib{name}-*.rlib"))
-        if len(matches) != 1:
-            raise ValueError(f"expected one exact {name} rlib after cargo build, found {len(matches)}")
-        command += ["--extern", f"{name}={matches[0]}"]
-        libraries[name] = dict(filename=matches[0].name, sha256=sha(matches[0]))
+    for name, library in native_libraries(deps, names, artifacts).items():
+        command += ["--extern", f"{name}={library}"]
+        libraries[name] = dict(filename=library.name, sha256=sha(library))
     run(root, "rustc-version", [rustc, "--version", "--verbose"])
     run(root, "native-build", command)
     write_new(root/"native-build.json", dict(rust_sources=sources, libraries=libraries,
         rustc_sha256=sha(rustc), source_sha256=sha(Path(__file__).with_name("native_fixture.rs")),
-        executable_sha256=sha(root/"native-fixture")))
+        executable_sha256=sha(root/"native-fixture"),
+        cargo_artifacts_sha256=sha(artifacts) if artifacts else None))
     return root/"native-fixture"
 
 
@@ -109,7 +109,9 @@ def resume(root):
     # Saved binding records training provenance; current model identity is candidate, never the old base SHA.
     inputs = torch.tensor(read(root/"continuation-input.json"), dtype=next(model.parameters()).dtype)
     with torch.no_grad():
-        prediction, final = model(inputs, interval_seconds(plan["intervals"], plan["profile"]), state=state)
+        intervals = (population_intervals(plan["intervals"], plan["profile"], model.spec)
+                     if isinstance(model, PopulationCellGraph) else interval_seconds(plan["intervals"], plan["profile"]))
+        prediction, final = model(inputs, intervals, state=state)
     if digest(execution_sources()) != admitted["training_code_digest"]:
         raise ValueError("source changed while resuming")
     write_new(root/"resumed.json", dict(candidate_digest=candidate, prediction=prediction.tolist(),
@@ -118,27 +120,37 @@ def resume(root):
         cpu_seconds=time.process_time()-cpu, cpu_threads=torch.get_num_threads(), production_adoption=False))
 
 
-def execute(root, workspace, rustc):
+def execute(root, workspace, rustc, artifacts=None, backend="value_kernel", supervised=False):
     start, cpu = time.perf_counter(), time.process_time()
-    native = build_native(root, workspace, rustc)
+    native = build_native(root, workspace, rustc, artifacts)
     torch.manual_seed(31)
     model = JointCellGraph(GraphSpec(("memory", "association"), 2, 3, 1)).double()
     inputs = torch.tensor([[[.25, -.35], [.45, .15], [-.3, .5], [.6, -.2]],
                            [[-.15, .3], [.2, -.4], [.35, -.1], [.25, .7]]], dtype=torch.float64)
+    profile = dict(maximum_gap_micros=1_000_000, forecast_horizon_micros=500_000, integration=dict(kind="value_kernel"))
+    ends, targets = [100017, 300017, 450017, 750017], [[.4], [-.2]]
+    if backend == "population_grid":
+        model = PopulationCellGraph(PopulationGraphSpec(("encoder", "memory"), 1, 1, 1, 100_000)).double()
+        with torch.no_grad():
+            for name, parameter in model.named_parameters():
+                parameter.fill_(.1 if "bias" in name else .3)
+        inputs = torch.tensor([[[.25], [.45], [-.3], [.6], [-.2]]], dtype=torch.float64)
+        profile["integration"] = dict(kind="population_grid", step_micros=100_000, max_substeps=10)
+        ends, targets = [100017, 200017, 300017, 400017, 500017], [[.4]]
     write_new(root/"base.pt", model_bytes(model))
     base = sha(root/"base.pt")
-    profile = dict(maximum_gap_micros=1_000_000, forecast_horizon_micros=500_000, integration=dict(kind="value_kernel"))
     binding = dict(scope_digest=digest("scope"), generation=1, writer_epoch=1, clock_epoch=digest("clock"), model_digest=base)
-    initial = tuple(cell.initial_state(2, like=inputs) for cell in model.cells)
+    initial = model.initial_state(inputs)
     write_new(root/"clock-input.json", dict(profile=profile, binding=binding, start_micros=17,
-        ends=[100017, 300017, 450017, 750017], initial_state_digest=state_digest(initial)))
+        ends=ends, initial_state_digest=state_digest(initial)))
     run(root, "native-plan", [native, "plan", root])
     plan = read(root/"training-plan.json")
     binding["profile_digest"] = plan["intervals"][0]["profile_digest"]
-    request = dict(schema_version=1, mechanism="task_mse_bp_v1", operation_id="hcsn:bridge-fixture",
+    request = dict(schema_version=2, mechanism="task_mse_bp_v1", operation_id="hcsn:bridge-fixture",
         binding=binding, intervals=plan["intervals"], time_profile=profile, inputs=inputs.tolist(),
-        targets=[[.4], [-.2]], target_time_micros=1_250_017, learning_rate=.02, optimizer_steps=1,
-        limits=dict(max_optimizer_steps=1, max_batch=2, max_intervals=4, max_elements=1000),
+        targets=targets, target_time_micros=ends[-1]+500_000, learning_rate=.02, optimizer_steps=1,
+        initialization=dict(mode="fresh", clock_checkpoint=read(root/"training-clock.json")),
+        limits=dict(max_optimizer_steps=1, max_batch=2, max_intervals=len(ends), max_elements=1_048_576),
         base_checkpoint=dict(path=str(root/"base.pt"), sha256=base))
     admitted = dict(operation_id=request["operation_id"], request_digest=digest(request),
         training_code_digest=digest(execution_sources()), runtime_tuple_digest=digest(runtime_tuple("torch.float64")),
@@ -150,19 +162,25 @@ def execute(root, workspace, rustc):
     dispatch = dict(request_file_sha256=sha(root/"request.json"), admitted_file_sha256=sha(root/"admitted.json"),
                     execution_sources=execution_sources(), caller_pid=os.getpid(), admitted_before_dispatch=True)
     write_new(root/"dispatch.json", dispatch)
-    worker_process = run(root, "python-worker", [sys.executable, "-m", "qualification.hcsn_training.worker",
-        "--request", root/"request.json", "--output", root/"worker"])
+    if supervised:
+        from .verify_supervised_worker import dispatch as supervised_dispatch
+        worker_process = supervised_dispatch(root, workspace, rustc, artifacts)
+    else:
+        worker_process = run(root, "python-worker", [sys.executable, "-m", "qualification.hcsn_training.worker",
+            "--request", root/"request.json", "--output", root/"worker"])
     if sha(root/"request.json") != dispatch["request_file_sha256"] or sha(root/"admitted.json") != dispatch["admitted_file_sha256"]:
         raise RuntimeError("dispatch input changed")
     receipt = read(root/"worker/receipt.json")
     candidate_sha = sha(root/"worker/candidate.pt")
     candidate, state, metadata = load_training_checkpoint(root/"worker/candidate.pt", candidate_sha)
     continuation = inputs[:, :2]
-    intervals = interval_seconds(request["intervals"], profile)
+    intervals = (population_intervals(request["intervals"], profile, model.spec)
+                 if isinstance(model, PopulationCellGraph) else interval_seconds(request["intervals"], profile))
+    continuation_intervals = (2, 1) if isinstance(model, PopulationCellGraph) else (.2, .1)
     with torch.no_grad():
-        whole, final = candidate(torch.cat((inputs, continuation), 1), (*intervals, .2, .1))
+        whole, final = candidate(torch.cat((inputs, continuation), 1), (*intervals, *continuation_intervals))
     write_new(root/"reference.json", dict(prediction=whole[:, -2:].tolist(), state_digest=state_digest(final),
-        candidate_digest=candidate_sha, method="uninterrupted six-step unfold from initial state using candidate weights"))
+        candidate_digest=candidate_sha, method="uninterrupted training-plus-continuation unfold using candidate weights"))
     write_new(root/"candidate-state.json", dict(checkpoint_sha256=candidate_sha,
         state_digest=state_digest(state), last_end_micros=metadata["last_end_micros"]))
     write_new(root/"continuation-input.json", continuation.tolist())
@@ -175,8 +193,11 @@ def execute(root, workspace, rustc):
         raise AssertionError("cold continuation differs from uninterrupted candidate computation")
     if sha(root/"base.pt") != base or sha(root/"readback.pt") != candidate_sha:
         raise AssertionError("original or published bytes changed")
+    from .verify_second_block import verify as verify_second_block
+    second_block = verify_second_block(root, native, candidate, state, continuation, profile)
     run(root, "native-clock-commit", [native, "finish", root])
     result = dict(schema_version=1, status="passed", scope="CPU engineering fixture; no scientific campaign",
+        backend=backend, supervised=supervised, second_training_block=second_block,
         operation_id=request["operation_id"], caller_pid=os.getpid(), worker_pid=worker_process["pid"],
         cold_python_pid=cold_process["pid"], optimizer_steps=1, logical_cells=2,
         completed_optimizer_steps=receipt["completed_optimizer_steps"], gradient_cells=receipt["gradient_cells"],
@@ -198,6 +219,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--rust-workspace", type=Path, default=REPO/"codex-rs")
     parser.add_argument("--rustc", default=shutil.which("rustc"))
+    parser.add_argument("--cargo-artifacts", type=Path)
+    parser.add_argument("--backend", choices=("value_kernel", "population_grid"), default="value_kernel")
+    parser.add_argument("--supervised", action="store_true")
     parser.add_argument("--output", type=Path)
     parser.add_argument("--resume", type=Path, help=argparse.SUPPRESS)
     args = parser.parse_args()
@@ -209,7 +233,8 @@ def main():
     root = args.output.resolve()
     root.mkdir(parents=True, exist_ok=False)
     try:
-        execute(root, args.rust_workspace.resolve(), str(Path(args.rustc).resolve()))
+        execute(root, args.rust_workspace.resolve(), str(Path(args.rustc).resolve()), args.cargo_artifacts,
+                args.backend, args.supervised)
     except BaseException as error:
         write_new(root/"failure.json", dict(error=type(error).__name__, message=str(error),
             scope="engineering fixture; preserve this attempt; no automatic retry"))
