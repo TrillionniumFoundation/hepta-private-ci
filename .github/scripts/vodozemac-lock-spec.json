@@ -1,0 +1,233 @@
+{
+  "schema": "vodozemac-zeroize-lock-proposal-v1",
+  "base_head": "0e3a84f1c0bc34667efc43115001bff819988195",
+  "base_tree": "f9d11b9fcacfd4b588ad0f9e34c5b652e53819a6",
+  "base_ref": "research/ndu-private-metadata-fixture-completion-20261106",
+  "original_product_leaves": 14795,
+  "baseline_blobs": {
+    ".bazelversion": "f7ee06693c17a06e2a0f51ef7eb2a61866e77b8e",
+    ".github/actions/prepare-bazel-ci/action.yml": "f9508a1659e5f2c54a6ae5b263bb9328095438d7",
+    ".github/actions/setup-bazel-ci/action.yml": "ea3f3a6521b970484ac60d1cebf788092753555a",
+    ".github/actions/setup-ci/action.yml": "8abd2dbd5f09585734f8213011a9ed540a2ee88e",
+    "MODULE.bazel": "cc1b7f627cff8cfccf6d386b25aa01ab758a270c",
+    "MODULE.bazel.lock": "343f80934bb215a7a14fc6618e45947305039b9b",
+    "codex-rs/Cargo.lock": "e774ae5331457117f576e44f16643ccd44684af4",
+    "codex-rs/Cargo.toml": "b21f7ffc0ee52722ddf82e5a996ff9d82ae0fbb0",
+    "codex-rs/deny.toml": "677f941360b2d82ab96aa4d419d97f4616cc2194",
+    "codex-rs/rust-toolchain.toml": "917d2492264a35bc9c0feaef41878d8825870866",
+    "defs.bzl": "e920b1ed75161a7afdb93b69e79e173627833952",
+    "justfile": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+    "scripts/check-module-bazel-lock.sh": "49ddaaef2bfc9a3c568bcd2ab3818cd968ccf6dd"
+  },
+  "baseline_modes": {
+    ".bazelversion": "100644",
+    ".github/actions/prepare-bazel-ci/action.yml": "100644",
+    ".github/actions/setup-bazel-ci/action.yml": "100644",
+    ".github/actions/setup-ci/action.yml": "100644",
+    "MODULE.bazel": "100644",
+    "MODULE.bazel.lock": "100644",
+    "codex-rs/Cargo.lock": "100644",
+    "codex-rs/Cargo.toml": "100644",
+    "codex-rs/deny.toml": "100644",
+    "codex-rs/rust-toolchain.toml": "100644",
+    "defs.bzl": "100644",
+    "justfile": "100644",
+    "scripts/check-module-bazel-lock.sh": "100755"
+  },
+  "original_package": {
+    "name": "vodozemac",
+    "version": "0.11.1",
+    "source": "registry+https://github.com/rust-lang/crates.io-index",
+    "checksum": "9e322119358132f5fa8e529de9ed9af4cd67ae71ffc6f12c133f75d5c4ec9637",
+    "dependencies": [
+      "aes 0.9.3",
+      "arrayvec",
+      "base64 0.23.1",
+      "base64ct",
+      "cbc 0.2.1",
+      "chacha20poly1305 0.11.0",
+      "cipher 0.5.2",
+      "curve25519-dalek 5.0.0",
+      "ed25519-dalek 3.0.0",
+      "getrandom 0.4.3",
+      "hkdf 0.13.0",
+      "hmac 0.13.0",
+      "hpke",
+      "matrix-pickle",
+      "prost",
+      "rand 0.10.3",
+      "serde",
+      "serde_bytes",
+      "serde_json",
+      "sha2 0.11.0",
+      "subtle",
+      "thiserror 2.0.21",
+      "x25519-dalek 3.0.0",
+      "zeroize"
+    ]
+  },
+  "crates": [
+    {
+      "name": "vodozemac",
+      "version": "0.11.1",
+      "checksum": "9e322119358132f5fa8e529de9ed9af4cd67ae71ffc6f12c133f75d5c4ec9637",
+      "url": "https://static.crates.io/crates/vodozemac/vodozemac-0.11.1.crate",
+      "archive_bytes": 2102234,
+      "manifest": {
+        "bytes": 3954,
+        "sha256": "139c43199a1002068f0a23bae5a0366317a1f1527095fae8674474025f48a997",
+        "git_blob": "5e080d4260e183a4cb94336eb3d357fd208d292f"
+      },
+      "original_manifest": {
+        "bytes": 3059,
+        "sha256": "28384e2676d9f51023b748d73a4436f212856dda95267fdc4a0f16edef05967a",
+        "git_blob": "0e2e85409876baa4e67c0800624e32a167995ffc"
+      },
+      "vcs": {
+        "git": {
+          "sha1": "3e11ae87d157da6bcac3cbf7825d37c8f5ed60af"
+        },
+        "path_in_vcs": ""
+      }
+    },
+    {
+      "name": "vodozemac",
+      "version": "0.11.2",
+      "checksum": "cafdb6875115a436251b280d741286a9cec7fc4daab0588ea26481dd8e2bab2f",
+      "url": "https://static.crates.io/crates/vodozemac/vodozemac-0.11.2.crate",
+      "archive_bytes": 2102957,
+      "manifest": {
+        "bytes": 4091,
+        "sha256": "a92c977e4a56de276794d50e01b831895966a74dff15b3fb1119eecbb8d7b3c1",
+        "git_blob": "2edac29b1d82e049df95eed331419f67d1c63d1d"
+      },
+      "original_manifest": {
+        "bytes": 3232,
+        "sha256": "838042507b38e5009d47b7b26ac4265f5509d428d49e4fc362166b659cf20176",
+        "git_blob": "c0a05c2ca6e4b489b95b9e36cd63c242a33f036e"
+      },
+      "vcs": {
+        "git": {
+          "sha1": "fb4a9980a1038c646824ea7e64567eec28bf582e"
+        },
+        "path_in_vcs": ""
+      }
+    }
+  ],
+  "required_zeroize_features": {
+    "aes": "0.9.3",
+    "cbc": "0.2.1",
+    "chacha20poly1305": "0.11.0",
+    "cipher": "0.5.2",
+    "hmac": "0.13.0",
+    "sha2": "0.11.0"
+  },
+  "required_new_lock_edges": [
+    {
+      "name": "chacha20",
+      "version": "0.10.0",
+      "dependency": "zeroize"
+    },
+    {
+      "name": "chacha20poly1305",
+      "version": "0.11.0",
+      "dependency": "zeroize"
+    },
+    {
+      "name": "cipher",
+      "version": "0.5.2",
+      "dependency": "zeroize"
+    }
+  ],
+  "existing_zeroize": {
+    "name": "zeroize",
+    "version": "1.9.1",
+    "source": "registry+https://github.com/rust-lang/crates.io-index",
+    "checksum": "e13084392c5e4bc371903e2935a5eaeed24905a7511356b883835e18a78f6879",
+    "dependencies": [
+      "serde",
+      "zeroize_derive"
+    ]
+  },
+  "original_vodozemac_fact_sha256": "2761864a351a90712349017fb78a782f9b6dbb0ed19263e04c430dec678ab1e3",
+  "fixed_bazel_source_uris": [
+    "git+https://github.com/dzbarsky/rules_rust?rev=b56cbaa8465e74127f1ea216f813cd377295ad81#b56cbaa8465e74127f1ea216f813cd377295ad81_runfiles",
+    "git+https://github.com/helix-editor/nucleo.git?rev=4253de9faabb4e5c6d81d946a5e35a90f87347ee#4253de9faabb4e5c6d81d946a5e35a90f87347ee_nucleo",
+    "git+https://github.com/helix-editor/nucleo.git?rev=4253de9faabb4e5c6d81d946a5e35a90f87347ee#4253de9faabb4e5c6d81d946a5e35a90f87347ee_nucleo-matcher",
+    "git+https://github.com/openai-oss-forks/crossterm?rev=45fecb9508105988f42fe6ff0441783ed3717f92#45fecb9508105988f42fe6ff0441783ed3717f92_crossterm",
+    "git+https://github.com/openai-oss-forks/tokio-tungstenite?rev=0e5b2d73aa18dd9f0a50ee9ff199d5aef7594186#0e5b2d73aa18dd9f0a50ee9ff199d5aef7594186_tokio-tungstenite",
+    "git+https://github.com/openai-oss-forks/tungstenite-rs?rev=4fffad30fe373adbdcffab9545e9e9bf4f2fc19f#4fffad30fe373adbdcffab9545e9e9bf4f2fc19f_tungstenite",
+    "git+https://github.com/rust-lang/rust-clippy?rev=20ce69b9a63bcd2756cd906fe0964d1e901e042a#20ce69b9a63bcd2756cd906fe0964d1e901e042a_clippy_utils"
+  ],
+  "fixed_bazel_source_uri_authority": {
+    "bytes": 1725804,
+    "sha256": "333b2545bd671a88aeb762afd74c725801138f8f53ddfc30af1e75b5f446deed",
+    "git_blob": "343f80934bb215a7a14fc6618e45947305039b9b"
+  },
+  "retained_external_module_registry_facts": {
+    "module": "rules_rs",
+    "version": "0.0.96",
+    "hub": "rrprd",
+    "source_json_url": "https://bcr.bazel.build/modules/rules_rs/0.0.96/source.json",
+    "source_json_sha256": "2b52d3d209324bd4aaa4896aa0e8b28d0123856b4ade32ebd7bf24b4fded6f12",
+    "archive_url": "https://github.com/hermeticbuild/rules_rs/releases/download/v0.0.96/rules_rs-v0.0.96.tar.gz",
+    "archive_sha256": "04781205ae648b0c67bf1108e28b8f780445bef40c721564ec525cab63c475d6",
+    "cargo_lock_path": "rs/private/prost/Cargo.lock",
+    "cargo_lock_sha256": "f3074d51647e0667a4030ae6799787157542e08b872eeff1642b65dfb1c60691",
+    "normalization_source": "rs/private/cargo_workspace_graph.bzl",
+    "normalization_source_sha256": "d2e0ed14798e938289af72a3d2269d8a542d8fe81356b2acd16a0c1801e52798",
+    "facts_sha256": {
+      "hyper_1.8.1": "ea4c91b251c48158d603abf77e90b99d0ced024a18fa2b9f4dce6435836d4d09",
+      "pin-utils_0.1.0": "065b7d53d3d5f7cd38c1e54cdd9a0d3181f46b8d3d7653bdf8691909ad354d9e"
+    },
+    "scope": "The rules_rs prost tooling has a separate unchanged Cargo.lock. Its registry facts remain byte-identical while the five Codex crates switch to local paths. Path facts use the pinned rules_rs representation: an empty strip_prefix and normal/build dependency metadata; upstream development dependency source entries remain unchanged.",
+    "source_json_bytes": 478,
+    "archive_bytes": 827642,
+    "strip_prefix": "rules_rs-0.0.96",
+    "source_files": {
+      "MODULE.bazel": {
+        "bytes": 7413,
+        "sha256": "218fffd653f3a892b0f7e17aee1b59925b080f8f4d65b3c536f6ee05a241060e"
+      },
+      "rs/extensions.bzl": {
+        "bytes": 43586,
+        "sha256": "17d29d47b5eac06d60c4557f4f9f7b084474ec5a273b00ec7673a4d73ad8acf8"
+      },
+      "rs/private/prost/Cargo.lock": {
+        "bytes": 28869,
+        "sha256": "f3074d51647e0667a4030ae6799787157542e08b872eeff1642b65dfb1c60691"
+      },
+      "rs/private/cargo_workspace_graph.bzl": {
+        "bytes": 30271,
+        "sha256": "d2e0ed14798e938289af72a3d2269d8a542d8fe81356b2acd16a0c1801e52798"
+      }
+    }
+  },
+  "upstream": {
+    "advisory": "https://rustsec.org/advisories/RUSTSEC-2026-0445",
+    "advisory_git_blob": "67dd37329db3e325f53497271b84817f867e7356",
+    "advisory_date": "2026-11-06",
+    "fixed_release": "https://github.com/matrix-org/vodozemac/releases/tag/0.11.2",
+    "release_git_commit": "fb4a9980a1038c646824ea7e64567eec28bf582e",
+    "zeroize_fix": "https://github.com/matrix-org/vodozemac/pull/448",
+    "zeroize_fix_merge": "75f9017cb554fe616f3884ffeb809b34de4c092a",
+    "crate_index_url": "https://index.crates.io/vo/do/vodozemac",
+    "crate_index_snapshot_sha256": "e811dc00bf69c5dc9cb34a6af3b8a033b638493c1edd6adf76dbf9a74432b3d6",
+    "registry_version_and_checksum_change": "Only vodozemac 0.11.1 to official 0.11.2",
+    "source_scope": "Official patch release; six existing crypto dependencies enable zeroize. Their versions and checksums stay fixed. Cargo generates the three resulting optional zeroize dependency edges. No new package is permitted.",
+    "rust_version_before_and_after": "1.89",
+    "workspace_toolchain": "1.96.0",
+    "product_output_scope": "Only codex-rs/Cargo.lock and MODULE.bazel.lock. No product manifest, source, vendor byte, advisory policy, original port seal, workflow gate or SDK dependency edge is changed.",
+    "external_tooling_scope": "The separate rules_rs prost Cargo graph, including its retained Hyper and pin-utils registry facts, remains unchanged. This proposal does not claim their removal.",
+    "feature_check_scope": "Cargo tree is direct native resolution evidence for the declared command; original complete-head native build/test gates remain required after integration."
+  },
+  "observed_failure": {
+    "head": "0e63dd2d320262681afeddd8cc45032984b5c8b2",
+    "run": 42232089912,
+    "job": 127949625873,
+    "diagnostic_artifact": 13511270655,
+    "diagnostic_zip_sha256": "59c64e0c5fa7627d1bb9d2e1aff9cbec9d4680e70cc6894bb5fa6dbd662ff538",
+    "host_diagnostic_log_sha256": "153ed66071255f3d8b1adf9132758ef5baa428511dd70c5328a13ced7a12a078",
+    "original_gate": "Run cargo-deny failed; the retained same-version/same-arguments host diagnostic also exited 1 with RUSTSEC-2026-0445. The original Docker command log could not be retrieved; no claim of byte identity between those two logs is made."
+  }
+}
