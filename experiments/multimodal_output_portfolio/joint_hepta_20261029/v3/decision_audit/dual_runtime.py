@@ -87,6 +87,7 @@ def run(request, backend, controller, output, *, seed=17, horizon=10,
     events, artifacts, history = [], [], []
     plan, version, critique = request.instruction, 0, ""
     text_value = image_path = last_image = None
+    controller_view = None
     status, error, selected, action = "incomplete", None, [], "preflight"
 
     def record(name, outcome, detail=None):
@@ -146,6 +147,8 @@ def run(request, backend, controller, output, *, seed=17, horizon=10,
             view = View(request.instruction, plan, version, text_value, image_path,
                         critique, tuple(history), horizon - step,
                         deadline_seconds - (time.perf_counter() - started[1]))
+            if recorder is not None:
+                controller_view = None
             capture("before_controller", step=step, view=vars(view))
             if recorder is not None:
                 remaining = deadline_seconds - (time.perf_counter() - started[1])
@@ -154,12 +157,13 @@ def run(request, backend, controller, output, *, seed=17, horizon=10,
                     record("deadline", status, {"check": "after_before_controller_capture"})
                     break
                 view = replace(view, remaining_seconds=remaining)
+                controller_view = vars(view).copy()
             chosen = controller.choose(view)
             record(action, "ok", {"choice": chosen})
             if recorder is None:
                 capture("choice", step=step, chosen=chosen)
             else:
-                capture("choice", step=step, chosen=chosen, controller_view=vars(view))
+                capture("choice", step=step, chosen=chosen, controller_view=controller_view)
             if chosen not in ACTIONS:
                 raise ValueError("Controller selected an unknown action")
             action = chosen
@@ -254,7 +258,10 @@ def run(request, backend, controller, output, *, seed=17, horizon=10,
         error = {"type": type(exc).__name__, "message": str(exc)}
         record(action, status, error)
         selected = []
-        capture("failure")
+        if recorder is not None and action == "controller":
+            capture("failure", controller_view=controller_view)
+        else:
+            capture("failure")
     # Preserve provider identity after lazy loads and any partially written files.
     inventory = []
     try:

@@ -24,6 +24,21 @@ def finite_costs(item):
                 "Invalid or unknown numeric cost was presented as measured")
 
 
+def retain_controller_view(current, detail):
+    actual_view = detail.get("controller_view")
+    observed_view = current["before_capture_view"]
+    require(isinstance(actual_view, dict) and set(actual_view) == set(observed_view),
+            "Actual controller view is missing or has hidden inputs")
+    require(all(actual_view[key] == observed_view[key] for key in observed_view
+                if key != "remaining_seconds"), "Controller inputs changed during capture")
+    remaining = actual_view["remaining_seconds"]
+    require(type(remaining) in (int, float) and math.isfinite(remaining)
+            and 0 < remaining <= observed_view["remaining_seconds"],
+            "Controller was admitted with an expired or extended budget")
+    current["before_capture_view"] = observed_view
+    current["before_view"] = actual_view
+
+
 def read_capture(output):
     """Validate source bindings, events, transitions, real files and close.
 
@@ -100,6 +115,9 @@ def read_capture(output):
                     "critique", "history", "remaining_decisions", "remaining_seconds"},
                     "Controller view includes hidden or missing inputs")
             current = {"step": expected_step, "phase": phase, "before_view": detail["view"]}
+            if admission is not None:
+                current["before_capture_view"] = current["before_view"]
+                current["before_view"] = None
             transitions.append(current)
             expected_step += 1
         elif phase == "choice":
@@ -108,18 +126,7 @@ def read_capture(output):
             require(events[-1]["action"] == "controller" and events[-1]["status"] == "ok"
                     and events[-1]["detail"] == {"choice": detail["chosen"]}, "Choice differs from original event")
             if admission is not None:
-                actual_view = detail.get("controller_view")
-                observed_view = current["before_view"]
-                require(isinstance(actual_view, dict) and set(actual_view) == set(observed_view),
-                        "Actual controller view is missing or has hidden inputs")
-                require(all(actual_view[key] == observed_view[key] for key in observed_view
-                            if key != "remaining_seconds"), "Controller inputs changed during capture")
-                remaining = actual_view["remaining_seconds"]
-                require(type(remaining) in (int, float) and math.isfinite(remaining)
-                        and 0 < remaining <= observed_view["remaining_seconds"],
-                        "Controller was admitted with an expired or extended budget")
-                current["before_capture_view"] = observed_view
-                current["before_view"] = actual_view
+                retain_controller_view(current, detail)
             else:
                 require("controller_view" not in detail, "Unversioned controller-view change")
             current.update(phase=phase, choice=detail["chosen"])
@@ -138,6 +145,11 @@ def read_capture(output):
                     and state["episode_error_so_far"] is not None and payload["selected"] == [],
                     "Failure was not preserved")
             if current is not None:
+                if admission is not None and current["phase"] == "before_controller":
+                    if detail.get("controller_view") is not None:
+                        retain_controller_view(current, detail)
+                    else:
+                        current["controller_attempt_view_unavailable"] = True
                 current["failure_state"] = state
         elif phase == "episode_end":
             ended = payload
