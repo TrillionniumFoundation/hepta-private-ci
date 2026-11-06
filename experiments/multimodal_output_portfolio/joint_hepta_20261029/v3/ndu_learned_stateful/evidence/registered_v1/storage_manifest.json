@@ -1,0 +1,75 @@
+{
+  "files": {
+    "confirmation_raw.npz": {
+      "bytes": 993449,
+      "encoding": "gzip_parts",
+      "parts": [
+        {
+          "bytes": 380130,
+          "decoded_bytes": 380000,
+          "path": "payloads/confirmation_raw.npz.part-000.gz",
+          "sha256": "1a80ea73529180e0c442df569255ab2800cda995e921a57838d7265c65cf11ff"
+        },
+        {
+          "bytes": 380138,
+          "decoded_bytes": 380000,
+          "path": "payloads/confirmation_raw.npz.part-001.gz",
+          "sha256": "b4bc81d287fe440229523b5688177178ecedb3d0e805d0dafa4b00d03a3df7e5"
+        },
+        {
+          "bytes": 233315,
+          "decoded_bytes": 233449,
+          "path": "payloads/confirmation_raw.npz.part-002.gz",
+          "sha256": "7263a866ab13c3a81e569fb612e77f3cbdd73f577e75e4e314edb53e29ecfcef"
+        }
+      ],
+      "sha256": "a13e44b125bdd32294a3f9d1e0a879c9b315f646ab2a348e8ad683104288cc63"
+    },
+    "paired_utilities.npz": {
+      "bytes": 1299134,
+      "encoding": "gzip_parts",
+      "parts": [
+        {
+          "bytes": 213581,
+          "decoded_bytes": 380000,
+          "path": "payloads/paired_utilities.npz.part-000.gz",
+          "sha256": "66096646626eac2815eb49c4a2ae307d0dd54523538608a0ade8caf1c7a6ce37"
+        },
+        {
+          "bytes": 236212,
+          "decoded_bytes": 380000,
+          "path": "payloads/paired_utilities.npz.part-001.gz",
+          "sha256": "7866505000b2aad0b969f8c50b26bcde37f172498fcf3d1266233c580fe3c86c"
+        },
+        {
+          "bytes": 221142,
+          "decoded_bytes": 380000,
+          "path": "payloads/paired_utilities.npz.part-002.gz",
+          "sha256": "6878c5c18c95eb7068368ce9321ef36f6870ee89c649a33981607bcbf0101adb"
+        },
+        {
+          "bytes": 107793,
+          "decoded_bytes": 159134,
+          "path": "payloads/paired_utilities.npz.part-003.gz",
+          "sha256": "5d248df1193eb1597e42cde6e1b9c795c76e939c6fb6a53382cb0cd31c0c8ef0"
+        }
+      ],
+      "sha256": "e76cb14e1aefcafdb034397db477b5963ad382e7360761752777122e8d8c5749"
+    },
+    "results.json": {
+      "bytes": 1364000,
+      "encoding": "gzip",
+      "parts": [
+        {
+          "bytes": 65840,
+          "path": "payloads/results.json.gz",
+          "sha256": "20b91b80d84a12adfdd1fcea852f6f440b64d22c81323dc2d2326a8607fc64cd"
+        }
+      ],
+      "sha256": "5e3c479a257da5776219227690cdaeef03ee7fb33ee3b0a8c8f69040f1f9d221"
+    }
+  },
+  "max_blob_bytes": 512000,
+  "schema": "ndu.lossless-evidence-storage.v1",
+  "scope": "Representation-only packaging. Original result and frozen manifest hashes are unchanged."
+}

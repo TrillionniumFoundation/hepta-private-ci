@@ -14,6 +14,15 @@ fixture. **There are zero LLM calls and no independent confirmation result.**
 - CPython 3.12.0 commit `0fb18b02c8ad56299d6a2910be0bab8ad601ef24`, using
   `Lib/statistics.py`; the complete upstream license file is retained.
 
+The logical SQL source remains `chinook.sql`, with its original byte count,
+SHA-256 and Git blob ID. Its physical representation is `sources/chinook.sql.gz`
+(152,396 bytes), using gzip with `mtime=0` and no stored filename. The manifest
+keeps `local_file`, `bytes` and `sha256` for the logical original and adds
+`storage_file`, `storage_bytes`, `storage_sha256` and `encoding` for storage.
+Workers check the compressed hash, decode it, then check the original SQL hash.
+The decoded bytes match the original SQL byte-for-byte. Execution needs no raw
+SQL file; do not republish the larger plaintext copy. License files are unchanged.
+
 The questions and answers in [tasks.json](tasks.json) are disclosed engineering
 cases. Four questions share each source. They constitute **two source clusters**,
 not eight independent samples. Each family has only one source cluster. No task
@@ -49,21 +58,31 @@ unknown-law learning, comparative net benefit or a scaling decision.
 behavioral checks and eight measured scripted episodes. Checks include attempted
 SQL mutation, prohibited file access, VM exhaustion, oversized single values,
 source-window validation and omission of private answers from the public task.
+The existing bounded-execution test also verifies gzip integrity, zero mtime,
+original-content identity, and reading in a temporary tree with no raw SQL file.
 All eight scripted episodes delivered the expected answers. The receipt binds
 the worker, task, builder, source manifest and actually imported measured-clock
 runtime hashes, preserves timing and paid attempt events, and states
 `real_llm_calls: 0`. Keys in `source_sha256` resolve relative to this directory;
 `../../ndu_walltime/runtime.py` identifies the imported runtime implementation.
 
-The previously published accepted receipt is preserved byte-for-byte as
-[qualification-original.json](evidence/qualification-original.json). That receipt
-did not bind the cross-package runtime source. The current final receipt is a
-fresh rerun of the same five checks and eight scripted tool episodes after adding
-that binding. Its new timings are rerun measurements, not a performance comparison
-or a scientific confirmation result.
+Storage publication used two actual execution stages. Stage 1 used the original
+runner with compressed SQL and produced a separate five-check/eight-episode
+receipt for that source tree. Stage 2 restored the runtime-bound runner and
+executed the same checks and episodes again. Its result is the current
+[qualification-final.json](evidence/qualification-final.json); only this final
+receipt matches all executable-source hashes in the current tree.
 
-Earlier local development receipts are superseded qualification runs, not
-scientific model experiments. The final receipt is the current accepted record.
+Two pre-storage receipts are preserved byte-for-byte:
+[qualification-original.json](evidence/qualification-original.json) is the
+original runner's published record, and
+[qualification-runtime-bound.json](evidence/qualification-runtime-bound.json)
+is the earlier runtime-bound record before SQL compression. Their source hashes
+are historical, not claims about current source. New timings are rerun
+measurements, not a performance comparison or scientific confirmation.
+
+Earlier development receipts are likewise historical engineering runs. No stage
+runs an LLM or turns the two-source smoke bank into scientific confirmation.
 
 ## Reproduce
 

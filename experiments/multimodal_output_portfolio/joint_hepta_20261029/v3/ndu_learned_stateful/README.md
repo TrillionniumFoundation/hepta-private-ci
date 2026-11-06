@@ -135,9 +135,16 @@ repair the primary failed gate.
 From the repository root:
 
 ```bash
+python -m experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_learned_stateful.materialize
 python -m unittest experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_learned_stateful.test_model -v
-python -m experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_learned_stateful.study --output evidence/reproduction
 python -m experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_learned_stateful.audit
+```
+
+`materialize` restores the original evidence bytes before read-only audit. To
+rerun the actual study separately, use:
+
+```bash
+python -m experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_learned_stateful.study --output evidence/reproduction
 ```
 
 Ten mechanism tests pass. [The audit](evidence/validation.json) independently
@@ -148,11 +155,21 @@ point. Replacing scalar posterior arithmetic by a NumPy dot changes some fitted
 terminal ties, with a maximum true-value shift .00047817; the audit retains that
 sensitivity and verifies the actual frozen policy without changing its source.
 
-[Results](evidence/registered_v1/results.json), [manifest](evidence/registered_v1/manifest.json),
-[source snapshot](evidence/registered_v1/source_snapshot.json), and raw compressed
-[calibration](evidence/registered_v1/calibration_raw.npz),
-[confirmation](evidence/registered_v1/confirmation_raw.npz), and
-[paired utilities](evidence/registered_v1/paired_utilities.npz) are retained.
+[Original manifest](evidence/registered_v1/manifest.json),
+[source snapshot](evidence/registered_v1/source_snapshot.json) and compressed
+[calibration](evidence/registered_v1/calibration_raw.npz) are retained directly.
+The complete `results.json`, `confirmation_raw.npz` and `paired_utilities.npz`
+are retained through the [lossless storage manifest](evidence/registered_v1/storage_manifest.json)
+and [bounded storage objects](evidence/registered_v1/payloads/). Every stored
+object is below the repository's unchanged 512,000-byte limit. The JSON is
+gzip-compressed; the NPZ files are divided into at most 380,000-byte raw pieces
+and each piece is gzip-wrapped as an identifiable binary object. Reconstruction
+does not change any original byte. Restoration verifies every object and the original
+frozen full-file hashes, and refuses to overwrite divergent files.
+[Storage validation](evidence/storage_validation.json) checked restoration into
+a fresh directory, byte equality, idempotence and rejection of corrupted output.
+This is representation-only packaging after the experiment; the source freeze,
+original manifest, raw arrays, result values and result hash are unchanged.
 Calibration arrays use `(H,z,action,sample)` and lexicographic `(label,duration,z')`
 indices; confirmation contains evaluator-only `H` and uniform slots. Utility axes
 are result-case order, protocol-policy order, and paired task index.
