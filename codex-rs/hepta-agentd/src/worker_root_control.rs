@@ -89,6 +89,23 @@ impl WorkerControlCustody {
         self.record.lifecycle.generation
     }
 
+    pub(super) fn with_current_generation<T>(
+        &self,
+        registry: &FleetRegistry,
+        identity: &AgentdIdentity,
+        operation: impl FnOnce() -> io::Result<T>,
+    ) -> io::Result<T> {
+        registry.try_with_current_spawn_lifecycle(
+            &identity.agent_id, identity.spawn_generation, self.generation(),
+            || {
+                self.verify(registry, identity)?;
+                let result = operation()?;
+                self.verify(registry, identity)?;
+                Ok(result)
+            },
+        ).map_err(io::Error::other)?
+    }
+
     pub(super) fn verify(&self, registry: &FleetRegistry, identity: &AgentdIdentity) -> io::Result<()> {
         for (path, held) in &self.nodes {
             let actual = held.metadata()?;

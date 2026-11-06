@@ -70,7 +70,6 @@ for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
    });
    observeImeTextareas.observe(document,{childList:true,subtree:true});
    for(const textarea of document.querySelectorAll('textarea.cx_webgl_textinput'))attachImeTextarea(textarea);
-
    // Observe the real loader promises without choosing a different runtime path.
    for(const name of ['compileStreaming','compile','instantiate']){
     if(typeof WebAssembly[name]!=='function') continue;

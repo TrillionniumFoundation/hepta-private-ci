@@ -64,7 +64,6 @@ test('Compact sidebar creates once and preserves both conversations',async({page
    });
    observeImeTextareas.observe(document,{childList:true,subtree:true});
    for(const textarea of document.querySelectorAll('textarea.cx_webgl_textinput'))attachImeTextarea(textarea);
-
   document.addEventListener('securitypolicyviolation',event=>window.__sidebarCsp.push({phase:window.__sidebarPhase,directive:event.violatedDirective,blockedURI:event.blockedURI}));
   new MutationObserver(records=>{for(const record of records)for(const node of record.addedNodes)if(node.nodeName==='STYLE')window.__sidebarStyles.push({phase:window.__sidebarPhase,text:node.textContent});}).observe(document,{childList:true,subtree:true});
  });

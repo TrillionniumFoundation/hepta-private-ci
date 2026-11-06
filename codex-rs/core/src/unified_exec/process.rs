@@ -36,6 +36,7 @@ use super::head_tail_buffer::HeadTailBuffer;
 use super::process_state::ProcessState;
 
 const EARLY_EXIT_GRACE_PERIOD: Duration = Duration::from_millis(150);
+const TERMINATION_EXIT_OBSERVATION_TIMEOUT: Duration = Duration::from_secs(/*secs*/ 1);
 const EXIT_OBSERVATION_LOST: &str =
     "process exit observation channel closed without a native result";
 const TERMINATION_NOT_OBSERVED: &str =
@@ -262,8 +263,16 @@ impl UnifiedExecProcess {
                     .map_err(|err| UnifiedExecError::process_failed(err.to_string()))?;
             }
         }
-        // The existing callers provide no deadline for an additional read RPC
-        // or wait. An ACK confirms the request, not a native process exit.
+        // A local waiter or the existing remote event consumer can publish
+        // native exit after the termination ACK. Keep that observation task
+        // alive for a bounded interval; do not issue another RPC or treat the
+        // ACK, timeout, or channel loss as evidence that the process exited.
+        let mut state_rx = self.state_rx.clone();
+        let _ = tokio::time::timeout(
+            TERMINATION_EXIT_OBSERVATION_TIMEOUT,
+            state_rx.wait_for(|state| state.has_exited || state.failure_message.is_some()),
+        )
+        .await;
         if self.observe_current_exit() {
             self.finish_termination();
             Ok(())

@@ -184,42 +184,52 @@ impl HeldWorkerRootRegistration<'_> {
                 let lane = connected[index].lane;
                 let live = connected[index].channel.exchange(|bytes| {
                     self.verify_original_custody(end).map_err(|_| HostIssuerTransportError::PeerDenied)?;
-                    let response = self._session.service.with_worker_floor_fence(Some(&self.registration), |view| {
-                        self.verify_original_custody(end)?;
-                        floor.check_current()?;
-                        if let Some(journal) = journal.as_ref() { journal.check()?; }
-                        let response = match lane {
-                            WorkerLane::ConsumerFrontier => floor.exchange(bytes, &view.head)?,
-                            WorkerLane::Observation | WorkerLane::OriginalWriterProof => {
-                                let request: lanes_wire::WorkerLaneReadRequest = serde_json::from_slice(bytes).map_err(io::Error::other)?;
-                                let operation = match lane {
-                                    WorkerLane::Observation => lanes_wire::WORKER_OBSERVATION_V1,
-                                    WorkerLane::OriginalWriterProof => lanes_wire::WORKER_WRITER_READ_V1,
-                                    WorkerLane::ConsumerFrontier => unreachable!(),
-                                };
-                                if request.schema_version != 1 || request.operation != operation || request.slot_sequence != floor.slot_sequence() {
-                                    return Err(refused("Worker read lane cannot sign, select another slot or authorize effects"));
+                    let identity = self._session.registration.registered_identity.identity().map_err(|_| HostIssuerTransportError::PeerDenied)?;
+                    // The frame is already read. Take the lifecycle read gate
+                    // before the original issuer/writer mutex and floor CAS;
+                    // release it before the channel sends any response.
+                    let response = self._control.with_current_generation(self._registry, &identity, || {
+                        #[cfg(test)]
+                        if matches!(lane, WorkerLane::ConsumerFrontier) {
+                            super::generation_pause::at_consumer_request(&self.registration)?;
+                        }
+                        self._session.service.with_worker_floor_fence(Some(&self.registration), |view| {
+                            self.verify_original_custody(end)?;
+                            floor.check_current()?;
+                            if let Some(journal) = journal.as_ref() { journal.check()?; }
+                            let response = match lane {
+                                WorkerLane::ConsumerFrontier => floor.exchange(bytes, &view.head)?,
+                                WorkerLane::Observation | WorkerLane::OriginalWriterProof => {
+                                    let request: lanes_wire::WorkerLaneReadRequest = serde_json::from_slice(bytes).map_err(io::Error::other)?;
+                                    let operation = match lane {
+                                        WorkerLane::Observation => lanes_wire::WORKER_OBSERVATION_V1,
+                                        WorkerLane::OriginalWriterProof => lanes_wire::WORKER_WRITER_READ_V1,
+                                        WorkerLane::ConsumerFrontier => unreachable!(),
+                                    };
+                                    if request.schema_version != 1 || request.operation != operation || request.slot_sequence != floor.slot_sequence() {
+                                        return Err(refused("Worker read lane cannot sign, select another slot or authorize effects"));
+                                    }
+                                    let registration_sha256 = Sha256Digest::for_bytes(&serde_json::to_vec(&self.registration).map_err(io::Error::other)?);
+                                    match lane {
+                                        WorkerLane::Observation => serde_json::to_vec(&lanes_wire::WorkerRootObservationV1 {
+                                            schema_version: 1, operation: operation.into(), registration_sha256,
+                                            owner_id: view.owner_id.clone(), consumer_namespace: floor.namespace().into(), slot_sequence: floor.slot_sequence(),
+                                            revocations: view.head.clone(), clock: view.clock_projection.clone(), observed_unix_ms: view.observed_unix_ms,
+                                            expires_at_unix_ms: view.expires_at_unix_ms, effect_authorization_available: false,
+                                        }).map_err(io::Error::other)?,
+                                        WorkerLane::OriginalWriterProof => serde_json::to_vec(&lanes_wire::WorkerWriterReadResponse {
+                                            schema_version: 1, operation: operation.into(), registration_sha256, slot_sequence: floor.slot_sequence(),
+                                            proof: view.writer_proof.clone(), effect_authorization_available: false,
+                                        }).map_err(io::Error::other)?,
+                                        WorkerLane::ConsumerFrontier => unreachable!(),
+                                    }
                                 }
-                                let registration_sha256 = Sha256Digest::for_bytes(&serde_json::to_vec(&self.registration).map_err(io::Error::other)?);
-                                match lane {
-                                    WorkerLane::Observation => serde_json::to_vec(&lanes_wire::WorkerRootObservationV1 {
-                                        schema_version: 1, operation: operation.into(), registration_sha256,
-                                        owner_id: view.owner_id.clone(), consumer_namespace: floor.namespace().into(), slot_sequence: floor.slot_sequence(),
-                                        revocations: view.head.clone(), clock: view.clock_projection.clone(), observed_unix_ms: view.observed_unix_ms,
-                                        expires_at_unix_ms: view.expires_at_unix_ms, effect_authorization_available: false,
-                                    }).map_err(io::Error::other)?,
-                                    WorkerLane::OriginalWriterProof => serde_json::to_vec(&lanes_wire::WorkerWriterReadResponse {
-                                        schema_version: 1, operation: operation.into(), registration_sha256, slot_sequence: floor.slot_sequence(),
-                                        proof: view.writer_proof.clone(), effect_authorization_available: false,
-                                    }).map_err(io::Error::other)?,
-                                    WorkerLane::ConsumerFrontier => unreachable!(),
-                                }
-                            }
-                        };
-                        self.verify_original_custody(end)?;
-                        floor.check_current()?;
-                        if let Some(journal) = journal.as_ref() { journal.check()?; }
-                        Ok(response)
+                            };
+                            self.verify_original_custody(end)?;
+                            floor.check_current()?;
+                            if let Some(journal) = journal.as_ref() { journal.check()?; }
+                            Ok(response)
+                        })
                     }).map_err(|_| HostIssuerTransportError::Unavailable)?;
                     self.verify_original_custody(end).map_err(|_| HostIssuerTransportError::PeerDenied)?;
                     Ok(response)

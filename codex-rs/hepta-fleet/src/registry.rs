@@ -186,6 +186,11 @@ impl FleetRegistry {
         expected_generation: u64,
         requested: AgentLifecycle,
     ) -> Result<AgentLifecycleState, FleetRegistryError> {
+        #[cfg(target_os = "linux")]
+        let gate = crate::lifecycle_gate::LifecycleGate::acquire(
+            self.layout.agent(agent_id).run_root(),
+            crate::lifecycle_gate::LifecycleGateMode::Exclusive,
+        )?;
         let current = self.load_agent(agent_id)?.lifecycle;
         if current.generation != expected_generation {
             return Err(FleetRegistryError::StaleGeneration {
@@ -196,7 +201,7 @@ impl FleetRegistry {
         }
         let next = current.successor(requested)?;
         let layout = self.layout.agent(agent_id);
-        match publish_lifecycle(layout.run_root(), &next)? {
+        let result = match publish_lifecycle(layout.run_root(), &next)? {
             PublishOutcome::Published => Ok(next),
             PublishOutcome::AlreadyExists => {
                 let actual = self.load_agent(agent_id)?.lifecycle.generation;
@@ -206,7 +211,10 @@ impl FleetRegistry {
                     current: actual,
                 })
             }
-        }
+        };
+        #[cfg(target_os = "linux")]
+        gate.verify()?;
+        result
     }
 
     fn stage_registration(

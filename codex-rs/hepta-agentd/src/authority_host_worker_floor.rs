@@ -316,6 +316,18 @@ impl ReservedWorkerFloor {
                 self.fence_unknown();
                 return Err(refused("Worker frontier outcome unknown; no refund or replay"));
             }
+            // Generic consumers may read a historical floor. This actual
+            // Worker owner must observe the same epoch/revision sampled by
+            // its enclosing original Root fence. CAS already requires this
+            // head for next; an older Load cannot be promoted into currentness.
+            if matches!(response.status, HostConsumerFrontierStatusV1::Ack)
+                && !response.frontier.as_ref().is_some_and(|frontier| {
+                    frontier.authority_epoch == head.authority_epoch
+                        && frontier.revocation_revision == head.revision
+                })
+            {
+                return Err(refused("Worker frontier differs from the current original Root head"));
+            }
             self.check_current()?;
             Ok(bytes)
         });

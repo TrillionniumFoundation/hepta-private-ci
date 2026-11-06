@@ -319,10 +319,8 @@ impl Widget for RoomScreen {
             return;
         };
         let input = self.view.text_input(cx, ids!(message_input));
-        // Firefox's DOM trace records composition events. This fixture-only
-        // receipt adds the Rust TextInput/workspace boundary without recording
-        // draft contents: it distinguishes a missing TextInput commit from a
-        // ComposerTransaction refusal while preedit is still active.
+        // Fixture-only Rust receipt: byte counts and composition flags only;
+        // never serialize draft contents or user text.
         #[cfg(feature = "ui-fixtures")]
         if matches!(event, Event::TextInput(_)) {
             log!(

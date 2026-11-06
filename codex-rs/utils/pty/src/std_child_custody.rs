@@ -8,6 +8,12 @@ use std::os::unix::process::CommandExt;
 #[cfg(windows)]
 use crate::JobObject;
 
+#[cfg(unix)]
+enum ChildExitObservation {
+    Running,
+    Exited,
+}
+
 /// Owns a synchronous child and the process group or non-breakaway job created for it.
 ///
 /// Completion requests termination of remaining group/job members before releasing the child identity.
@@ -57,7 +63,7 @@ impl StdChildCustody {
             if !self.peek_exit()? {
                 return Ok(None);
             }
-            self.terminate_group()?;
+            self.terminate_group(ChildExitObservation::Exited)?;
             let status = self.child.wait()?;
             self.leader_owned = false;
             self.status = Some(status);
@@ -85,7 +91,12 @@ impl StdChildCustody {
             // WNOWAIT checks the actual child relationship even when the leader has exited.
             // ECHILD revokes numeric-group signalling authority rather than guessing ownership.
             let exited = self.peek_exit()?;
-            self.terminate_group()?;
+            let observation = if exited {
+                ChildExitObservation::Exited
+            } else {
+                ChildExitObservation::Running
+            };
+            self.terminate_group(observation)?;
             if !exited {
                 // The actual, still-unreaped child may have moved out of its original process
                 // group. Group ESRCH does not prove it exited. Kill only this retained Child;
@@ -142,13 +153,23 @@ impl StdChildCustody {
     }
 
     #[cfg(unix)]
-    fn terminate_group(&self) -> io::Result<()> {
+    fn terminate_group(&self, _observed_exit: ChildExitObservation) -> io::Result<()> {
         if !self.leader_owned {
             return Err(io::Error::other("synchronous child custody was lost"));
         }
         let result = unsafe { libc::killpg(self.child.id() as libc::pid_t, libc::SIGKILL) };
         if result == -1 {
             let error = io::Error::last_os_error();
+            #[cfg(target_os = "macos")]
+            if error.raw_os_error() == Some(libc::EPERM)
+                && matches!(_observed_exit, ChildExitObservation::Exited)
+                && macos::require_sole_retained_zombie(self.child.id()).is_ok()
+            {
+                // Darwin skips zombies when signalling a specific process group.
+                // Only a positively observed sole retained zombie permits reaping;
+                // query failure or any other group member keeps the original EPERM.
+                return Ok(());
+            }
             if error.raw_os_error() != Some(libc::ESRCH) {
                 return Err(error);
             }
@@ -162,6 +183,10 @@ impl Drop for StdChildCustody {
         let _ = self.kill_and_wait();
     }
 }
+
+#[cfg(target_os = "macos")]
+#[path = "std_child_custody_macos.rs"]
+mod macos;
 
 #[cfg(test)]
 #[path = "std_child_custody_tests.rs"]
