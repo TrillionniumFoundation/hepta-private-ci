@@ -1,5 +1,6 @@
 use super::*;
 use crate::acl::add_deny_write_ace;
+use crate::acl::ensure_filesystem_mutation_deny;
 use crate::acl::ensure_allow_mask_aces;
 use crate::acl::ensure_allow_mask_aces_with_inheritance;
 use crate::acl::ensure_allow_write_aces;
@@ -339,15 +340,17 @@ fn partial_delete_deny_is_repaired_before_native_workspace_writes() -> Result<()
         std::fs::write(&existing, "before repair")
             .map_err(|error| anyhow!("pre-repair capability write failed: {error}"))?;
     }
-    // SAFETY: the fixture and validated capability SID are live for the repair.
-    let repaired = unsafe { add_deny_write_ace(fixture.path(), capability.as_ptr())? };
+    // The strict restricting-SID token checks reads as well as writes. Use the
+    // mutation-only deny so DELETE/FILE_DELETE_CHILD and data writes are denied
+    // without also denying READ_CONTROL/SYNCHRONIZE needed by the read control.
+    let repaired = unsafe { ensure_filesystem_mutation_deny(fixture.path(), capability.as_ptr())? };
     // SAFETY: the same objects remain live. Check native directory and file
     // storage retains the constructor's complete mask and inheritance scope.
     let repeated_repairs = unsafe {
         (
-            add_deny_write_ace(fixture.path(), capability.as_ptr())?,
-            add_deny_write_ace(&existing, capability.as_ptr())?,
-            add_deny_write_ace(&existing, capability.as_ptr())?,
+            ensure_filesystem_mutation_deny(fixture.path(), capability.as_ptr())?,
+            ensure_filesystem_mutation_deny(&existing, capability.as_ptr())?,
+            ensure_filesystem_mutation_deny(&existing, capability.as_ptr())?,
         )
     };
     let (read, denied) = {
