@@ -1,0 +1,369 @@
+{
+  "packet": "arm5160_timeout_timing",
+  "suggested_repository_directory": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/evidence/arm5160_timeout_timing_checkpoint_20261106",
+  "snapshot_utc": "2026-11-06 23:31:20 UTC",
+  "index": {
+    "bytes": 42621,
+    "sha256": "f70e3d74406b86888f552ea258762b112766114494e101fb98c2a923a3ecc1f9",
+    "git_blob": "3f78fd3d9a2773e7f9ba77e5c053bafe8826f00f"
+  },
+  "source_file_count": 101,
+  "raw_source_bytes": 93845883,
+  "archive_bytes": 93931520,
+  "compressed_bytes": 9489984,
+  "restore_exit_code": 0,
+  "restore_stdout": {
+    "bytes": 430,
+    "sha256": "7f42d2d9cb3cba97f1f777a3fa4d0a76e87f15b92a10676d3087b8f6ae06d479",
+    "git_blob": "988ed7641fe2d09b50a7e815587eb59670f24ec3"
+  },
+  "restore_stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+  },
+  "all_restored_bytes_complete_roster_and_inert_modes_match": true,
+  "reader_template": {
+    "source_file": "/workspace/scratch/3f6a885bb83c/round3_native/restore_checkpoint_template.py",
+    "bytes": 6626,
+    "sha256": "00bf4373739122934a281273de36cc9e4cce84199aa985926419225cad94303b",
+    "git_blob": "27e463e7b9e73a98b3a35e05d4d7414a2ed7b4a0",
+    "only_replacement": "fixed INDEX SHA-256"
+  },
+  "codespell": {
+    "version": "2.4.3",
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "-m",
+      "codespell_lib",
+      "--ignore-words",
+      ".codespellignore",
+      "--skip",
+      "./.git"
+    ],
+    "exit_code": 0,
+    "stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "configuration": {
+      ".codespellrc": {
+        "bytes": 471,
+        "sha256": "80805b9340dbdd76645a25929f56c96606e187db8e9d16b75a4a47dcdd248c04",
+        "git_blob": "663be376c7381108af0a41eafc3dd08f27125d96"
+      },
+      ".codespellignore": {
+        "bytes": 69,
+        "sha256": "9c6cd9dd86c6300ff67edbe64b2e18ed089714151e5c166382c8ea99931bc275",
+        "git_blob": "0da447f000de188776a33e770c2d2d77b37f97ee"
+      },
+      ".codespell-exclude-lines": {
+        "bytes": 20003,
+        "sha256": "5e2119d75aa7cfa61e87b9c3d98863d0b5d6672eeaccc7411695e91e2366d52b",
+        "git_blob": "490e840301fdfae10d6e40c44a566ff16f82e324"
+      }
+    },
+    "new_exclusion_added": false
+  },
+  "files": [
+    {
+      "path": "INDEX.json",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5160_timeout_timing_checkpoint_20261106/INDEX.json",
+      "mode": "100644",
+      "bytes": 42621,
+      "sha256": "f70e3d74406b86888f552ea258762b112766114494e101fb98c2a923a3ecc1f9",
+      "git_blob": "3f78fd3d9a2773e7f9ba77e5c053bafe8826f00f"
+    },
+    {
+      "path": "README.md",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5160_timeout_timing_checkpoint_20261106/README.md",
+      "mode": "100644",
+      "bytes": 3686,
+      "sha256": "eee4890712a02c205adaafabf8091cd01d9fb38d84498fe954f5c9a32f5187e7",
+      "git_blob": "722868762b52ef570816727b89b719fcaef508a1"
+    },
+    {
+      "path": "native-evidence.tar.xz.part000.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5160_timeout_timing_checkpoint_20261106/native-evidence.tar.xz.part000.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "163e3069d9c5c8a1ecc95e0bd76482d164b554f559c839ecc81b6c64a3f8fa86",
+      "git_blob": "506ca53128569605debaab11da179b3d4c59111d"
+    },
+    {
+      "path": "native-evidence.tar.xz.part001.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5160_timeout_timing_checkpoint_20261106/native-evidence.tar.xz.part001.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "41f339d1d03e9d4ab7a3628a56eb454e87376def4a1539d7a2ab8ad55e5fb157",
+      "git_blob": "ba786d4c682cc8c162fd96e84727c9c546ec8e6f"
+    },
+    {
+      "path": "native-evidence.tar.xz.part002.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5160_timeout_timing_checkpoint_20261106/native-evidence.tar.xz.part002.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "9322f9a33a645821cf6bcad3a410551262951b9e45cba2008df6e21ac5b67e0b",
+      "git_blob": "44dda9dde31bb6cfeb111f4e0517713db687809c"
+    },
+    {
+      "path": "native-evidence.tar.xz.part003.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5160_timeout_timing_checkpoint_20261106/native-evidence.tar.xz.part003.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "7cc17301a6c5cd8ad953eae696b75aa9e7945a8eab00ad521508f85406bcfb14",
+      "git_blob": "31def93665b1f972be38894f5e3b176c66c7027e"
+    },
+    {
+      "path": "native-evidence.tar.xz.part004.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5160_timeout_timing_checkpoint_20261106/native-evidence.tar.xz.part004.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "671820c3625e78582a02ae5ab0d02cb15478314299a2367e131b0f3623053ab1",
+      "git_blob": "f9823cd4a3087f4966c90ceae12e611856b8f8a8"
+    },
+    {
+      "path": "native-evidence.tar.xz.part005.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5160_timeout_timing_checkpoint_20261106/native-evidence.tar.xz.part005.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "821434214b20fc3236af6f660de17e890b78399131656e95eaaa68a56d007a55",
+      "git_blob": "3bcdcc407fe08b4e523dfa7f8e73085e09bdcd32"
+    },
+    {
+      "path": "native-evidence.tar.xz.part006.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5160_timeout_timing_checkpoint_20261106/native-evidence.tar.xz.part006.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "af125bab20ac70aa716695901e5cc569740f4311ada1d343de8a88dc24b5198b",
+      "git_blob": "f01a15d8b91d883e01ab237f03c8b720bfc959c7"
+    },
+    {
+      "path": "native-evidence.tar.xz.part007.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5160_timeout_timing_checkpoint_20261106/native-evidence.tar.xz.part007.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "20598e2edebbcb60bdbc77b277ad90de59a4e4fa59ae5e863bd43cf1834df435",
+      "git_blob": "af37d4696644d956b81a4371dc3c524b698f2ce6"
+    },
+    {
+      "path": "native-evidence.tar.xz.part008.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5160_timeout_timing_checkpoint_20261106/native-evidence.tar.xz.part008.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "2153eebfe698e8379b78f83d99235c3be193e0add6958e83ceae78448d51f668",
+      "git_blob": "bad9302385609aa2db910b61c07140c35d097ae6"
+    },
+    {
+      "path": "native-evidence.tar.xz.part009.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5160_timeout_timing_checkpoint_20261106/native-evidence.tar.xz.part009.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "98ef42d355b2fb49b97272697bc11c0d153ef73984b0c9b2ab0caeb5d7f4d0d8",
+      "git_blob": "a4d7a4463dd133d22fcb4c3a6a1f2fb1608461f0"
+    },
+    {
+      "path": "native-evidence.tar.xz.part010.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5160_timeout_timing_checkpoint_20261106/native-evidence.tar.xz.part010.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "8ec88072fcef90f48ce4a1dd6e0e7333f0163be617adfc0f811e4a08d35e3583",
+      "git_blob": "cb6245856661d431825e7a115a03bdc5eb2086dc"
+    },
+    {
+      "path": "native-evidence.tar.xz.part011.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5160_timeout_timing_checkpoint_20261106/native-evidence.tar.xz.part011.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "e8cb0f5da341a7d0cbfad5a42cec31960ceffcb5bd30e0aa2b5d292eb2558400",
+      "git_blob": "e0b664773ef0c8bcf234a7b7331465f1d07b0ff5"
+    },
+    {
+      "path": "native-evidence.tar.xz.part012.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5160_timeout_timing_checkpoint_20261106/native-evidence.tar.xz.part012.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "0ec1d4d39c564d92e002e022e7a8dc3d09e5aa491af7b7fe778f9e648d2c1248",
+      "git_blob": "81adc5e5fce5d7fceac1eb2bd2bb8311f4d128c0"
+    },
+    {
+      "path": "native-evidence.tar.xz.part013.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5160_timeout_timing_checkpoint_20261106/native-evidence.tar.xz.part013.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "934dd377372190a6864ca3f74890a1259fffdf259f0a2695691e43926d159630",
+      "git_blob": "43d4a09b754e8320880cc97b2d5f3210610a8a6f"
+    },
+    {
+      "path": "native-evidence.tar.xz.part014.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5160_timeout_timing_checkpoint_20261106/native-evidence.tar.xz.part014.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "adea85b0a3f0fe36970df73cb09e37b20f91281e6fb1991abfc7e8d415ba42b4",
+      "git_blob": "acd7fa3ec7c52b5a8c3241cb2b0d21cdb4401aba"
+    },
+    {
+      "path": "native-evidence.tar.xz.part015.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5160_timeout_timing_checkpoint_20261106/native-evidence.tar.xz.part015.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "318fa7783dbb961f8281cf9176e5c1ae2b71b94e88ffe6fe11b076d2fc557f04",
+      "git_blob": "b88572721db3ca9cab2dbea360178bbb4190b5fb"
+    },
+    {
+      "path": "native-evidence.tar.xz.part016.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5160_timeout_timing_checkpoint_20261106/native-evidence.tar.xz.part016.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "90c9099837e8bc95e48005121218a1af4f71a260e7743b1f38df258dfd1388c7",
+      "git_blob": "8e6c9007232b2d0277c89191ce29d40f80043275"
+    },
+    {
+      "path": "native-evidence.tar.xz.part017.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5160_timeout_timing_checkpoint_20261106/native-evidence.tar.xz.part017.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "f0a1a149f90c2c279b7feab1f29bfbb5b92821630022053c14a5b68ee9f20db8",
+      "git_blob": "266dd05b03c52b5ff6ddb4b6b8465daf4c3dec10"
+    },
+    {
+      "path": "native-evidence.tar.xz.part018.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5160_timeout_timing_checkpoint_20261106/native-evidence.tar.xz.part018.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "65f64d7e1e65228f0bd84507ff6a7bb5d96768729af94b588ec8395103862dc3",
+      "git_blob": "25e60f3aaa8810d10a9db199d70eb86aa98faeaa"
+    },
+    {
+      "path": "native-evidence.tar.xz.part019.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5160_timeout_timing_checkpoint_20261106/native-evidence.tar.xz.part019.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "504c459827d5e9d9b6cf810127a62e7c8929fdbaef2349f54a5683857136ea4b",
+      "git_blob": "7ac727d6e0211b9194029d37ba75e94d92dd6c4f"
+    },
+    {
+      "path": "native-evidence.tar.xz.part020.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5160_timeout_timing_checkpoint_20261106/native-evidence.tar.xz.part020.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "3d46402045707b5a5b7a8fa092c718559bf1e8ab6d06b40010ddedcaa37ad8d0",
+      "git_blob": "ebd610d8c45f0b6e052bcf399a48c9b29be8a5d1"
+    },
+    {
+      "path": "native-evidence.tar.xz.part021.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5160_timeout_timing_checkpoint_20261106/native-evidence.tar.xz.part021.gz",
+      "mode": "100644",
+      "bytes": 250082,
+      "sha256": "e0c73598e42ae361c425bfdd91c92f0a5d10f3c4616bd96fca03cdccf5e860cd",
+      "git_blob": "587b0c49cf0d54a92916f9cf83f9271a243aba34"
+    },
+    {
+      "path": "restore.py",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm5160_timeout_timing_checkpoint_20261106/restore.py",
+      "mode": "100644",
+      "bytes": 6656,
+      "sha256": "f00d134d04ba7e18eb169b217b7d66ee2c2883c04e9e93a806043e5a16b48d2b",
+      "git_blob": "9be2894cc9596ef556410fe1bf5227688a79f2f5"
+    }
+  ],
+  "qualification_scope": {
+    "native_source_commit": "45c086c60685db6fb5aff82b3f9d75227be35d40",
+    "native_source_tree": "c1528f4dcf05e120c12a0dce896f6cf77410ff6c",
+    "workflow_merge_commit": "591b3b53320771b30e179dda063595e6d53d2dd1",
+    "prepared_native_worktree_commit": "406475c2e4357157d2aab24e662dfe3dc69abb9f",
+    "prepared_native_worktree_tree_equals_source": true,
+    "run_id": 42302971192,
+    "job_id": 128186230225,
+    "attempt": 1,
+    "overall_job": "failure",
+    "build_store_stage": {
+      "both_original_nextest_lists_exit_code": 0,
+      "status": "built_not_executed",
+      "source_clean": true,
+      "seed_unchanged": true
+    },
+    "declared_view": {
+      "original_artifact_ids": [
+        13548176850,
+        13548585668
+      ],
+      "both_original_zip_archives_retained": true,
+      "zip_members_crc_checked": 4,
+      "payloads_size_sha256_crc32_checked": 1447,
+      "payload_bytes": 68372540,
+      "source_catalogue_entries": 84421,
+      "catalogue_categories": {
+        "selected": 1447,
+        "other-suffix": 349,
+        "preparation/prefetch/cargo-home/": 82625
+      },
+      "bounds_unchanged": {
+        "max_files": 5000,
+        "max_path_bytes": 1024,
+        "part_bytes": 134217728,
+        "max_parts": 8
+      },
+      "tar_payload_mode": "0600",
+      "original_owner_retained_subset_mode": "0600",
+      "inert_packet_restoration_mode": "0644"
+    },
+    "actual_business_result": {
+      "case": "real_synapse_dual_agentd_dual_matrixd_restart_and_isolation",
+      "tests_executed": 1,
+      "passed": 0,
+      "timed_out": 1,
+      "ignored": 0,
+      "filtered_other_cases": 8,
+      "test_elapsed_seconds": 1200.063,
+      "just_exit_code": 100,
+      "wall_seconds": 1200.2041383019996,
+      "aggregate_child_cpu_seconds": 1197.723897,
+      "last_stage": "agent_pair_ready:done",
+      "next_stage_not_observed": "first_encrypted_turn:start",
+      "hash_or_async_wait_cause": "NOT_LOCALIZED_WITHIN_OBSERVED_STAGE_INTERVAL",
+      "stderr_sha256": "2ef8a4af7b89ce5c968d7f735070422802d926856cdf3bf52c2ab812209bef1c"
+    },
+    "previous_newline_failure": "The same original business case advanced through encrypted rooms, pair start and ready; the later timeout still fails the business qualification.",
+    "whole_artifact_boundary": {
+      "id": 13547878287,
+      "name": "ndu-native-synapse-arm64-42302971192-1",
+      "size_in_bytes": 1788267711,
+      "digest": "sha256:9e0bf39c09ba52118429db70170007259cd19470482df10d672d6cbf8e0a0041",
+      "downloaded_or_rehashed": false,
+      "restorable_from_this_packet": false,
+      "excluded_entries": "Catalogue metadata only. Excluded cache and other-suffix bytes are not retained here."
+    },
+    "later_diagnostic_source": {
+      "pr": 5188,
+      "commit": "5043c1a1937200edb5b34d044425e39f5dfd3281",
+      "tree": "f7b0144a48fbc5c2f9947e8ae0570c839bc3e6b3",
+      "parent": "b80dc8d1cfbc0817f0dd69e8a50c4bd197f87c95",
+      "paths": 1,
+      "changed_lines": 70,
+      "candidate_git_blob": "6bd635cdbed055bf67540aaa1991039913bc0f27",
+      "fixed_hash_labels": 5,
+      "post_ready_bracketed_operations": 6,
+      "original_read_hash_result_and_operation_order_unchanged": true,
+      "root_original_just_fmt_exit_code": 0,
+      "native_after_change": "pending; no new native result is inside this frozen packet",
+      "timing_is_observation_only": true
+    },
+    "retention_exclusions": [
+      "The 1.79 GB full original ARM artifact was not downloaded or independently hashed.",
+      "All 1447 selected files and three metadata members remain losslessly available inside the two original ZIPs; separately expanded copies are not duplicated as outer inputs.",
+      "The root audit reads four build records directly from the original tar when they are absent from the intentionally partial local expansion; no absent local copy was fabricated.",
+      "No tools, compiler caches, model weights, or newly compiled executables are included.",
+      "No prior native record, packet, source seal, scientific result or security policy is changed."
+    ],
+    "qualification_or_promotion": false
+  },
+  "publication_ready": true,
+  "old_packets_modified": false
+}
