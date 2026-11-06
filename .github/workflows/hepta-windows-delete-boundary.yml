@@ -705,6 +705,29 @@ jobs:
           codes="${PIPESTATUS[*]}"
           set -e
           python scripts/hepta_windows_prepared_owner_receipt.py run "$RUNNER_TEMP/windows-prepared-owner" "$codes"
+      - name: Prepare the independent two-case process-root pin scope
+        id: process_root_pins
+        if: ${{ !cancelled() && steps.source.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/windows-process-root-pins"
+          test ! -e "$out"
+          mkdir -p "$out"
+          python -m unittest discover -s scripts -p 'test_hepta_windows_process_root_pins_receipt.py' > "$out/reader-controls.log" 2>&1
+          python scripts/hepta_windows_process_root_pins_receipt.py before "$out"
+          set +e
+          (cd codex-rs && NEXTEST_PROFILE=local RUST_MIN_STACK=8388608 cargo nextest list --locked -p codex-windows-sandbox --lib -E 'test(/^process::prepared_context::root_pins_tests::/)' --run-ignored all --message-format json) > "$out/registry.json" 2> "$out/registry.stderr"
+          code=$?
+          set -e
+          python scripts/hepta_windows_process_root_pins_receipt.py prepare "$out" "$code"
+      - name: Run exactly the two independent process-root pin mechanisms
+        if: ${{ !cancelled() && steps.process_root_pins.outcome == 'success' }}
+        run: |
+          set +e
+          just test --locked -p codex-windows-sandbox --lib -E 'test(/^process::prepared_context::root_pins_tests::/)' --test-threads 1 --no-capture 2>&1 | tee "$RUNNER_TEMP/windows-process-root-pins/native.log"
+          codes="${PIPESTATUS[*]}"
+          set -e
+          python scripts/hepta_windows_process_root_pins_receipt.py run "$RUNNER_TEMP/windows-process-root-pins" "$codes"
       - name: Require unchanged source and all twenty completed Windows result receipts
         if: ${{ always() && steps.source.outcome == 'success' }}
         run: python "$RUNNER_TEMP/windows-delete-boundary/check.py" source after
@@ -723,5 +746,15 @@ jobs:
         with:
           name: hepta-windows-prepared-owner-${{ matrix.runner }}-${{ matrix.lane }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/windows-prepared-owner/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Bind the independent root pin receipt to unchanged source and actual Windows PE
+        if: ${{ always() && steps.source.outcome == 'success' }}
+        run: python scripts/hepta_windows_process_root_pins_receipt.py finish "$RUNNER_TEMP/windows-process-root-pins"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-windows-process-root-pins-${{ matrix.runner }}-${{ matrix.lane }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/windows-process-root-pins/
           if-no-files-found: error
           retention-days: 14
