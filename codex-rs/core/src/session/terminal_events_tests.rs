@@ -28,6 +28,46 @@ fn terminal(id: &str) -> Event {
 }
 
 #[tokio::test]
+async fn concurrent_receiver_takes_retained_event_after_admitted_receiver_is_cancelled() {
+    let publications = TerminalPublications::default();
+    let delivery = PublicEventDelivery::default();
+    let owner = StartTransitionCompletion::new();
+    let (tx, rx) = async_channel::unbounded();
+    let first_event = terminal("retained-for-next-receiver");
+    let following = Event {
+        id: "following".to_owned(),
+        msg: EventMsg::Warning(WarningEvent {
+            message: "after the retained terminal".to_owned(),
+        }),
+    };
+    publications
+        .deliver(&tx, first_event.clone(), Some(Arc::clone(&owner)))
+        .await
+        .unwrap();
+    tx.send(following.clone()).await.unwrap();
+    let stopped = futures::future::pending::<()>().boxed().shared();
+    let mut first = Box::pin(delivery.next(&rx, &publications, stopped.clone()));
+    let mut second = Box::pin(delivery.next(&rx, &publications, stopped.clone()));
+    assert!(futures::poll!(first.as_mut()).is_pending());
+    assert!(futures::poll!(second.as_mut()).is_pending());
+    assert_eq!(rx.len(), 1);
+    drop(first);
+    assert!(futures::poll!(second.as_mut()).is_pending());
+    assert_eq!(rx.len(), 1);
+    assert!(!owner.is_complete());
+    owner.complete();
+    assert_eq!(
+        serde_json::to_value(second.await.unwrap()).unwrap(),
+        serde_json::to_value(first_event).unwrap(),
+    );
+    assert_eq!(
+        serde_json::to_value(delivery.next(&rx, &publications, stopped).await.unwrap()).unwrap(),
+        serde_json::to_value(following).unwrap(),
+    );
+    assert!(rx.is_empty());
+}
+
+#[tokio::test]
 async fn cancelled_terminal_receive_retains_the_event_and_fifo_order() {
     let publications = TerminalPublications::default();
     let delivery = PublicEventDelivery::default();
