@@ -29,10 +29,7 @@ pub(super) enum WriterEvent<'a> {
     Failed(&'a io::Error),
     MessageComplete,
     QueueClosed,
-    Termios {
-        canonical: bool,
-        eof: libc::cc_t,
-    },
+    Termios { canonical: bool, eof: libc::cc_t },
     TermiosFailed(&'a io::Error),
     EofStarted,
     EofResult(&'a io::Result<()>),
@@ -141,15 +138,18 @@ impl PtyIoDiagnostics {
             }
             WriterEvent::Written(count) => {
                 // Includes the final newline and VEOF when they are written.
-                self.written_bytes.fetch_add(count as u64, Ordering::Relaxed);
+                self.written_bytes
+                    .fetch_add(count as u64, Ordering::Relaxed);
                 self.last_write_bytes.store(count as u64, Ordering::Relaxed);
                 self.last_write.store(1_u64 << 32, Ordering::Relaxed);
             }
             WriterEvent::Interrupted(error) => {
-                self.last_write.store(encode_error(error), Ordering::Relaxed);
+                self.last_write
+                    .store(encode_error(error), Ordering::Relaxed);
             }
             WriterEvent::Failed(error) => {
-                self.last_write.store(encode_error(error), Ordering::Relaxed);
+                self.last_write
+                    .store(encode_error(error), Ordering::Relaxed);
                 self.writer_error
                     .store(encode_error(error), Ordering::Relaxed);
                 self.writer_state.store(/*val*/ 7, Ordering::Relaxed);

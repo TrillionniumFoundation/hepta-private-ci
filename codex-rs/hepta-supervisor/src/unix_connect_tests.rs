@@ -79,7 +79,10 @@ fn full_owned_listener_backlog_returns_eagain_without_fake_connection() -> io::R
     listener.set_nonblocking(/*nonblocking*/ true)?;
     // SAFETY: this test owns the listener; zero backlog permits one queued Linux
     // AF_UNIX stream and the test never changes another process's listener.
-    if unsafe { libc::listen(listener.as_raw_fd(), /*backlog*/ 0) } != 0 {
+    if unsafe {
+        libc::listen(listener.as_raw_fd(), /*backlog*/ 0)
+    } != 0
+    {
         return Err(io::Error::last_os_error());
     }
     let _first_client = connect(&path, HEALTH_PROBE_IO_TIMEOUT)?;
@@ -105,7 +108,10 @@ fn expired_connect_deadline_does_not_enqueue_a_connection() -> io::Result<()> {
         connect_before_deadline(&path, Instant::now()).expect_err("deadline already expired");
     assert_eq!(error.kind(), io::ErrorKind::TimedOut);
     assert_eq!(
-        listener.accept().expect_err("no connection attempted").kind(),
+        listener
+            .accept()
+            .expect_err("no connection attempted")
+            .kind(),
         io::ErrorKind::WouldBlock,
     );
     Ok(())
@@ -152,7 +158,10 @@ fn poll_uses_the_existing_deadline_when_owned_socket_stays_unwritable() -> io::R
             Ok(_) => {}
         }
     }
-    assert!(full, "owned socket must be unwritable for the deadline control");
+    assert!(
+        full,
+        "owned socket must be unwritable for the deadline control"
+    );
     let deadline = Instant::now() + HEALTH_PROBE_IO_TIMEOUT;
     let error = wait_for_connection(&client, deadline).expect_err("peer does not drain the socket");
     assert_eq!(error.kind(), io::ErrorKind::TimedOut);

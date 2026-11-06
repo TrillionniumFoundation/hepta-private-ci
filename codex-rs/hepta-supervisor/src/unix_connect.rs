@@ -36,7 +36,9 @@ fn connect_before_deadline(path: &Path, deadline: Instant) -> io::Result<UnixStr
     ))]
     let socket_type = socket_type | libc::SOCK_CLOEXEC;
     // SAFETY: the domain/type are fixed Unix stream constants and use no protocol override.
-    let raw = unsafe { libc::socket(libc::AF_UNIX, socket_type, /*protocol*/ 0) };
+    let raw = unsafe {
+        libc::socket(libc::AF_UNIX, socket_type, /*protocol*/ 0)
+    };
     if raw < 0 {
         return Err(io::Error::last_os_error());
     }
@@ -136,9 +138,8 @@ fn socket_addr(path: &Path) -> io::Result<(libc::sockaddr_un, libc::socklen_t)> 
     let length = std::mem::offset_of!(libc::sockaddr_un, sun_path)
         + bytes.len()
         + usize::from(!bytes.is_empty());
-    let length = libc::socklen_t::try_from(length).map_err(|_| {
-        io::Error::new(io::ErrorKind::InvalidInput, "Unix socket address overflow")
-    })?;
+    let length = libc::socklen_t::try_from(length)
+        .map_err(|_| io::Error::new(io::ErrorKind::InvalidInput, "Unix socket address overflow"))?;
     Ok((address, length))
 }
 
