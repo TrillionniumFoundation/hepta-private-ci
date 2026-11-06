@@ -109,7 +109,9 @@ impl InnerParentLifetime {
 
 unsafe fn take_reader(fd: RawFd) -> io::Result<File> {
     if fd <= libc::STDERR_FILENO {
-        return Err(io::Error::other("lifetime reader must not use standard I/O"));
+        return Err(io::Error::other(
+            "lifetime reader must not use standard I/O",
+        ));
     }
     // SAFETY: fcntl only inspects the supplied descriptor.
     let descriptor_flags = unsafe { libc::fcntl(fd, libc::F_GETFD) };

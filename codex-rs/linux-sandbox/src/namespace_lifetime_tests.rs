@@ -53,7 +53,14 @@ fn duplicated_observer_cannot_retain_owner_and_cannot_send() -> io::Result<()> {
     let byte = [1_u8];
     // SAFETY: MSG_NOSIGNAL avoids signaling this test for the closed write half.
     assert_eq!(
-        unsafe { libc::send(duplicate.as_raw_fd(), byte.as_ptr().cast(), 1, libc::MSG_NOSIGNAL) },
+        unsafe {
+            libc::send(
+                duplicate.as_raw_fd(),
+                byte.as_ptr().cast(),
+                1,
+                libc::MSG_NOSIGNAL,
+            )
+        },
         -1
     );
     assert_eq!(io::Error::last_os_error().raw_os_error(), Some(libc::EPIPE));
@@ -141,7 +148,11 @@ fn private_owner_peer_cannot_be_reopened_through_proc() -> io::Result<()> {
         return Err(io::Error::last_os_error());
     }
     if owner_pid == 0 {
-        let code = if check_private_owner_peer().is_ok() { 0 } else { 1 };
+        let code = if check_private_owner_peer().is_ok() {
+            0
+        } else {
+            1
+        };
         // SAFETY: terminate only this owned test subprocess.
         unsafe { libc::_exit(code) }
     }
