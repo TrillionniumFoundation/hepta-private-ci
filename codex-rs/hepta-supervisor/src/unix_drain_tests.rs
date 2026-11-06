@@ -7,6 +7,7 @@ use codex_hepta_agent_protocol::AGENTD_CONTROL_SCHEMA_VERSION;
 use codex_hepta_agent_protocol::AgentdPayload;
 use codex_hepta_agent_protocol::AgentdResponse;
 use codex_hepta_agent_protocol::DrainSnapshot;
+use codex_hepta_agent_protocol::HealthSnapshot;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentLifecycle;
 
@@ -93,6 +94,23 @@ fn malformed_or_wrong_generation_drain_frames_still_reject() -> TestResult {
     response.current_generation = 9;
     response.request_id = 16;
     assert!(exchange(&identity, frame(&response)?)?.is_err());
+    response.request_id = 17;
+    response.payload = AgentdPayload::Health(HealthSnapshot {
+        promotion_ready: true,
+        ready: false,
+        fenced: false,
+        lifecycle: AgentLifecycle::Draining,
+        process_id: identity.process_id,
+        workspace: identity.workspace.clone(),
+        home_root: identity.home_root.clone(),
+        run_root: identity.run_root.clone(),
+    });
+    assert!(matches!(
+        exchange(&identity, frame(&response)?)?,
+        Err(error)
+            if error.to_string()
+                == "Agentd drain request did not return a drain acknowledgement"
+    ));
     Ok(())
 }
 
