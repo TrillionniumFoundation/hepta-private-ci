@@ -331,6 +331,10 @@ mod neuron_runtime;
 #[cfg(target_os = "linux")]
 mod neuron_v13_generation_bootstrap;
 #[cfg(target_os = "linux")]
+mod neuron_v13_generation_update;
+#[cfg(target_os = "linux")]
+mod neuron_v13_generation_update_runtime;
+#[cfg(target_os = "linux")]
 mod notes_bootstrap;
 #[cfg(unix)]
 mod notes_channel;
@@ -722,6 +726,20 @@ pub use neuron_v13_generation_bootstrap::V13GenerationOwnerModeV1;
 pub use neuron_v13_generation_bootstrap::bootstrap_agentd_v13_generation_v1;
 #[cfg(target_os = "linux")]
 pub use neuron_v13_generation_bootstrap::prepare_agentd_v13_generation_worker_v1;
+#[cfg(target_os = "linux")]
+pub use neuron_v13_generation_update::AgentdV13GenerationUpdateInputsV1;
+#[cfg(target_os = "linux")]
+pub use neuron_v13_generation_update::PreparedAgentdV13GenerationUpdateV1;
+#[cfg(target_os = "linux")]
+pub use neuron_v13_generation_update::prepare_agentd_v13_generation_cold_update_v1;
+#[cfg(target_os = "linux")]
+pub use neuron_v13_generation_update::prepare_agentd_v13_generation_forward_recovery_v1;
+#[cfg(target_os = "linux")]
+pub use neuron_v13_generation_update::prepare_agentd_v13_generation_update_v1;
+#[cfg(target_os = "linux")]
+pub use neuron_v13_generation_update::recover_agentd_v13_generation_update_v1;
+#[cfg(target_os = "linux")]
+pub use neuron_v13_generation_update_runtime::ReadyAgentdV13GenerationUpdateV1;
 #[cfg(target_os = "linux")]
 pub use notes_bootstrap::AgentdNotesStartupRelease;
 #[cfg(unix)]

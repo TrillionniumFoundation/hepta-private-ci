@@ -7,6 +7,8 @@
 use std::sync::Arc;
 
 use codex_hepta_neuron::AnchorWitnessStore;
+use codex_hepta_neuron::CellCostEntryV2;
+use codex_hepta_neuron::CellGenerationOwnerBindingV1;
 use codex_hepta_neuron::CellGenerationControlPortV2;
 use codex_hepta_neuron::CellGenerationCurrentV1;
 use codex_hepta_neuron::CellGenerationJournalV2;
@@ -40,6 +42,25 @@ pub struct ReadyAgentdGenerationUpdateV1<W: AnchorWitnessStore> {
 }
 
 impl<W: AnchorWitnessStore> ReadyAgentdGenerationUpdateV1<W> {
+    /// Only an internal backend assembly may add its already observed cost.
+    /// The original published owner and live CURRENT/FinalUse checks remain
+    /// authoritative; neither the journal nor a replacement guard is exposed.
+    pub(crate) fn record_backend_preparation(
+        &mut self,
+        expected: &CellGenerationOwnerBindingV1,
+        entry: CellCostEntryV2,
+    ) -> Result<(), AgentdError> {
+        if self.journal.owner_binding() != Some(expected)
+            || self.publication.target() != expected
+        {
+            return Err(AgentdError::GenerationFenced(
+                "prepared backend differs from its published guarded owner".into(),
+            ));
+        }
+        self.journal.record_cost(entry)
+            .map_err(|error| AgentdError::Invalid(error.to_string()))
+    }
+
     pub(crate) fn new(
         journal: CellGenerationJournalV2<W>,
         publication: PublishedNeuronGenerationUpdateV1,
