@@ -1,0 +1,153 @@
+{
+  "billed_usd": null,
+  "energy_joules": null,
+  "environment": {
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_TARGET_DIR": "/home/qq/work/hepta-cell-learning-050e-20261106/target",
+    "RUSTUP_TOOLCHAIN": "1.96.0"
+  },
+  "exit_code": 0,
+  "finished_at_utc": "2026-11-06T07:54:42.100442+00:00",
+  "historical_preparation_cost_included": false,
+  "junit": {
+    "bytes": 207711,
+    "failed": [],
+    "sha256": "58d5c666be320ccba30f61aa66d2dd0700a4fca5d1e3ce3d6ff58a829b6e6dcf",
+    "skipped": 0,
+    "testcases": 984
+  },
+  "measured_stage_cpu_seconds": 593.0530689999999,
+  "measured_stage_wall_seconds": 316.13561230991036,
+  "network_bytes": null,
+  "packages": [
+    "codex-hepta-neuron",
+    "codex-hepta-plasticity",
+    "codex-hepta-agentd",
+    "codex-hepta-infer-core",
+    "codex-hepta-infer-worker-host"
+  ],
+  "prepare_only": false,
+  "qualification_complete": true,
+  "runner_summary_lines": [
+    "     Summary [  54.212s] 984 tests run: 984 passed (1 slow), 67 skipped"
+  ],
+  "schema": "hepta.cell-unified.native-gate.v1",
+  "source_after": {
+    "commit": "6a938bea7ba0fc3dd234930c765729c1a9172a65",
+    "status": "",
+    "tree": "bf3c2501b0d9ad370cf035481a07cb5a2bf1a3c4"
+  },
+  "source_before": {
+    "commit": "6a938bea7ba0fc3dd234930c765729c1a9172a65",
+    "status": "",
+    "tree": "bf3c2501b0d9ad370cf035481a07cb5a2bf1a3c4"
+  },
+  "source_unchanged": true,
+  "stages": [
+    {
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--tests",
+        "-p",
+        "codex-hepta-neuron",
+        "-p",
+        "codex-hepta-plasticity",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-infer-core",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "cpu_system_seconds": 3.209426,
+      "cpu_user_seconds": 43.338894,
+      "disk_free_bytes": 54299516928,
+      "exit_code": 0,
+      "largest_child_rss_bytes_cumulative": 2237149184,
+      "name": "strict-clippy",
+      "state": "passed",
+      "stderr": {
+        "bytes": 2894,
+        "sha256": "1f01ccf368da3bee0fbb1f4441d2da51b20e20d19fdae1384078c50f47a0f414"
+      },
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "wall_seconds": 36.01397940097377
+    },
+    {
+      "command": [
+        "/usr/bin/python3",
+        "/home/qq/work/hepta-cell-learning-050e-20261106/source/scripts/hepta_cell_test_helpers.py",
+        "--package",
+        "codex-hepta-infer-worker-host",
+        "--output-dir",
+        "/home/qq/work/hepta-cell-learning-050e-20261106/records/native-6a938bea-03/helpers"
+      ],
+      "cpu_system_seconds": 1.7056329999999997,
+      "cpu_user_seconds": 22.255293,
+      "disk_free_bytes": 54338588672,
+      "exit_code": 0,
+      "largest_child_rss_bytes_cumulative": 2352406528,
+      "name": "helpers",
+      "state": "passed",
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout": {
+        "bytes": 200,
+        "sha256": "5b059280d86c304185bee545cdd70df4678bf873235d48d420dcebd3086ab3bc"
+      },
+      "wall_seconds": 19.784672172972932
+    },
+    {
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-neuron",
+        "-p",
+        "codex-hepta-plasticity",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-infer-core",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "--retries",
+        "0",
+        "--test-threads",
+        "4"
+      ],
+      "cpu_system_seconds": 63.705675,
+      "cpu_user_seconds": 458.838148,
+      "disk_free_bytes": 44722511872,
+      "exit_code": 0,
+      "largest_child_rss_bytes_cumulative": 3497926656,
+      "name": "scoped-tests",
+      "state": "passed",
+      "stderr": {
+        "bytes": 177164,
+        "sha256": "b3f1d2955e207071a3b8b03a8e8830a46160ef998592c8d91d1be47cb5b3b1f5"
+      },
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "wall_seconds": 260.33696073596366
+    }
+  ],
+  "started_at_utc": "2026-11-06T07:49:25.821129+00:00",
+  "unknown_cost_is_zero": false
+}

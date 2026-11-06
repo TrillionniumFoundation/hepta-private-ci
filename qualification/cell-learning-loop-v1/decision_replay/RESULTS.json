@@ -1,0 +1,174 @@
+{
+  "actual_fresh_encoder_calls": 1,
+  "actual_fresh_encoder_examples": 74,
+  "closures": {
+    "candidate": {
+      "authority": "DENY_ALL",
+      "checkpoint": {
+        "bytes": 250625,
+        "legacy_state_sha256": "602bd8a029ae7f8a69895674ea1702554d40379635736f22f770eaa933af44e9",
+        "sha256": "65bc5a7d5da59b1d312b8663bfa056c675cd9709af04ce08056c87297112947f"
+      },
+      "mode": "reference",
+      "synthetic": false
+    },
+    "parent": {
+      "authority": "DENY_ALL",
+      "checkpoint": {
+        "bytes": 250077,
+        "legacy_state_sha256": "8a03519dff1585b1b49c808371c7e143dac2f91e5cd6a2bef5da5fdceb9f0654",
+        "sha256": "c64db4368b56bef47ea4571c31b4b551a43c8064ef976241ae272cbde6ef2948"
+      },
+      "mode": "reference",
+      "synthetic": false
+    }
+  },
+  "cold_fork_parent": {
+    "engineering_passed": true,
+    "optimizer_updates": 0,
+    "receipt": {
+      "artifact": "1b5091f1d5a920bddf57999367d60aa56116f2040da933cb8afc2b330c5e4455",
+      "epoch": 1,
+      "predictions": [
+        0
+      ],
+      "source_version": "bcdfb871c32611f228aa878fd4f45dc78eab87c78ee8c1c6f93b979b04bea453"
+    },
+    "result": {
+      "correct": true,
+      "error": null,
+      "label_correct": true,
+      "output": [
+        "learn",
+        "verify",
+        "serve"
+      ],
+      "predicted_skill": "unique_stable"
+    }
+  },
+  "cost": {
+    "cpu_seconds": 3.099507,
+    "cpu_system_seconds": 0.7539129999999999,
+    "cpu_user_seconds": 2.345594,
+    "driver_cpu_system_seconds": 0.02123200000000003,
+    "driver_cpu_user_seconds": 0.10363699999999998,
+    "failed_worker_attempts": 0,
+    "log": {
+      "bytes": 458,
+      "sha256": "6d7d61fb0aa2796e3d4b8eb2c92cf03b97d5a8f6b1fb001e973c48d73162841c"
+    },
+    "measurement_source": {
+      "bytes": 1662,
+      "sha256": "ce46b93eeccc8cbf7aead1f27829c546d2cd73c6a6f496756130fec6859519ca"
+    },
+    "peak_rss_bytes": 213028864,
+    "pid": 5,
+    "returncode": 0,
+    "rss_interpretation": "maximum single-process RSS, not simultaneous process-tree resident memory",
+    "scope": "whole driver plus waited descendants, including startup and finalization",
+    "wall_seconds": 3.140813904999959
+  },
+  "engineering_passed": true,
+  "limitations": [
+    "Known-result post-run engineering replay, not a prospective trial",
+    "Original owner remains untouched and fenced; cold execution occurs only in the explicit reconstructed fork",
+    "Quality is data-dependent, but independent formal and complete-cost guards remain HOLD",
+    "No positive new-candidate adoption, complete cost superiority or independent future benefit established"
+  ],
+  "negative_probes": {
+    "bool_as_integer": "typed outputs, case roster or predictions changed: candidate",
+    "boolean_exit_code": "evaluation did not complete",
+    "forged_metric": "reported metric differs from real outputs: candidate:historical_correct",
+    "wrong_actual_head": "actual artifact/state binding changed: candidate"
+  },
+  "new_implementation_lines": 339,
+  "new_optimizer_updates": 0,
+  "original_delivery_unchanged": true,
+  "original_plus_replay_measured_runtime": {
+    "cpu_seconds": 10.830403,
+    "physical_candidate_training_attempts_still": 1,
+    "physical_optimizer_updates_still": 16,
+    "sum_invocation_wall_seconds": 10.932860110002366
+  },
+  "post_run_replay": true,
+  "prior_results_known": true,
+  "prospective_claim": false,
+  "protocol_freeze_utc": "2026-11-06T07:59:38.043344+00:00",
+  "protocol_sha256": "a4fc8e5ed65816b7f12d8cc679f02cd90b0f5fc8b4e1b2e66955179e5d4125b5",
+  "publication": {
+    "additional_dynamic_veto_not_sole_refusal": true,
+    "complete_cost": "HOLD_COMPLETE_COST_UNKNOWN",
+    "formal_authority": "HOLD_NO_REGISTERED_NINE_ARM_ROUND",
+    "passed": false,
+    "positive_candidate_adoption_exercised": false,
+    "refusal": "executable publication validator rejected the model",
+    "release_unchanged": true
+  },
+  "quality": {
+    "authority_granted": false,
+    "correction_delta": 2,
+    "counts": {
+      "candidate": {
+        "correction_correct": 2,
+        "historical_correct": 55
+      },
+      "parent": {
+        "correction_correct": 0,
+        "historical_correct": 59
+      }
+    },
+    "historical_delta": -4,
+    "historical_regression_ids": [
+      "819602040a74b950fd8a3dfbe15361086190dc95171eb28bc66395064deef673",
+      "dea60188901bedee106838ee68240d03728b9febc7fa934dbe8ab9d19c430be0",
+      "a3b3cb1aa1c332a2912b51de73bfc94d8a4a04aa49f153b1506b04e3ef9b9cc0",
+      "a02477c6262ce81805c657e10d6b6f0ce9d9a5f5ad2dc3b5a412a8a6f658e804",
+      "704c0bac8825b0151d363d85737199d8b0ade76c4df5e4395554d2e22b3e78d8"
+    ],
+    "quality_eligible": false,
+    "quality_vetoes": [
+      "historical_retention_loss"
+    ],
+    "scope": "post-run engineering eligibility; no prospective benefit claim",
+    "verified_content_bindings": {
+      "candidate": {
+        "artifact": "c1d0f24ef0cda82ee93e59ccd250be4373d4a6c3c23e609d284eb0c5a5741137",
+        "checkpoint_sha256": "65bc5a7d5da59b1d312b8663bfa056c675cd9709af04ce08056c87297112947f",
+        "encoder_sha256": "8b8d070f392fd30181f217daa4de166dfe785897b5d4d64f2244bc6fcb5f42aa",
+        "source_version": "729f6bb5697b28765b021e1af9f42af87ad43afbaa551b11938118d1c7191862",
+        "state_sha256": "602bd8a029ae7f8a69895674ea1702554d40379635736f22f770eaa933af44e9"
+      },
+      "parent": {
+        "artifact": "1b5091f1d5a920bddf57999367d60aa56116f2040da933cb8afc2b330c5e4455",
+        "checkpoint_sha256": "c64db4368b56bef47ea4571c31b4b551a43c8064ef976241ae272cbde6ef2948",
+        "encoder_sha256": "8b8d070f392fd30181f217daa4de166dfe785897b5d4d64f2244bc6fcb5f42aa",
+        "source_version": "bcdfb871c32611f228aa878fd4f45dc78eab87c78ee8c1c6f93b979b04bea453",
+        "state_sha256": "8a03519dff1585b1b49c808371c7e143dac2f91e5cd6a2bef5da5fdceb9f0654"
+      }
+    }
+  },
+  "schema": "hepta.engineering.post-run-replay.delivery.v1",
+  "source": {
+    "measure.py": {
+      "bytes": 1662,
+      "sha256": "ce46b93eeccc8cbf7aead1f27829c546d2cd73c6a6f496756130fec6859519ca"
+    },
+    "quality.py": {
+      "bytes": 5021,
+      "sha256": "1a841aad103d158acef19d70b1593ff5e6ab44d79cb87dd96058558224bbd68a"
+    },
+    "run_replay.py": {
+      "bytes": 14288,
+      "sha256": "fea83f75882d66334a68287100c55dd64c1f386f85980cb256d38ca0f0940d8c"
+    }
+  },
+  "unknown_costs": {
+    "billed_usd": null,
+    "development_review_reporting": null,
+    "energy_joules": null,
+    "full_retained_byte_seconds": null,
+    "historical_acquisition": null,
+    "host_network_bytes": null,
+    "p99_seconds": null
+  }
+}

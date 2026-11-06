@@ -1,0 +1,37 @@
+{
+  "schema": "hepta.cell-unified.closure-regression.v1",
+  "source_tree": "ffc729b03542e847005287c79509d5bf037560db",
+  "command": [
+    "/workspace/scratch/40d04650905b/v13-work/venv/bin/python",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "qualification/neuron-learning-closure-v13",
+    "-p",
+    "closure_tests.py",
+    "-v"
+  ],
+  "exit_code": 0,
+  "wall_seconds": 1.0919314999991911,
+  "cpu_user_seconds": 3.412501,
+  "cpu_system_seconds": 0.182689,
+  "peak_child_rss_bytes": 31854592,
+  "new_training_updates": 0,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "867a548e4ce481e3d239184d801ca83ca295ea1c2a1d554af8a13ab635d890eb",
+  "sources": {
+    "qualification/neuron-learning-closure-v13/PROVENANCE.json": "243f653290d76778ffeab9f2d44534a5a11e22f386d7d20b1f6f024e66eb341a",
+    "qualification/neuron-learning-closure-v13/bounded_npz.py": "b9041cf4fa777396a1a8492e404e3a655016c347cddb90b3af00aeefaf23ca48",
+    "qualification/neuron-learning-closure-v13/closure_common.py": "b73ccded3c36e9612db476b3bb3ec804c5e44c1732073e480472b0ca302976c6",
+    "qualification/neuron-learning-closure-v13/closure_inputs.py": "47000391f140f4d282400848694530bff35902397e1f249013955fd380dcaa06",
+    "qualification/neuron-learning-closure-v13/closure_test_support.py": "a575a0521ddd95abfdb058aab6749b4e9c6bd4216f689d3d68ea1bd71da023cb",
+    "qualification/neuron-learning-closure-v13/closure_tests.py": "1859a88125a65079651bb5c3619d9d34b45a0cd77742117fdc6b9bcae5378775",
+    "qualification/neuron-learning-closure-v13/reference/adapter.py.source": "f4c3b03dd22c4a5e7a27459348ba673842060624c6f983e9211112a49bfccba9",
+    "qualification/neuron-learning-closure-v13/reference/backend.py.source": "47b18cca113cf50ee47bb67032083abb39c44fe151410be792888d3abea55a53",
+    "qualification/neuron-learning-closure-v13/reference/download_model.py.source": "fd0a7e1ba831c4f2929ee8d29d22495c61ecfdbf7ceee3daec9f5110ff09c0f7",
+    "qualification/neuron-learning-closure-v13/reference/lifecycle.py.source": "0cb9ce6a732f5fa3156ebc5c28776e3eb241153f7ade3286938965317b9c50eb",
+    "qualification/neuron-learning-closure-v13/verify_closure.py": "eccb2715aabbc06f0a578175e52ce105905a8326c1258190089aba519f238876"
+  }
+}

@@ -1,0 +1,857 @@
+{
+  "source_sha": "7391c3dc3b0a496b62be4c6cf2769d2ae0c9db75",
+  "source_tree": "1b3a22ee08028175433d20b87263bd1dc1c4eca4",
+  "stage": "scoped",
+  "native_path": "/home/qq/work/hepta-neuron-framework-734df8eaf8dc-20261106/source/codex-rs/target/nextest/local/junit.xml",
+  "path": "/home/qq/work/hepta-neuron-framework-734df8eaf8dc-20261106/records/final-generation-followup-7391c3d/junit-scoped.xml",
+  "sha256": "bc3da8cece8e4f399de52a61b3d5b3b2fa92ccccbc7f7e9fe5020be7b3dff896",
+  "bytes": 1458707,
+  "fresh": true,
+  "test_started_ns": 1793947560000880558,
+  "mtime_ns": 1793948511763471349,
+  "total_testcases": 6631,
+  "failures": 54,
+  "errors": 0,
+  "skipped": 0,
+  "suites": [
+    {
+      "name": "codex-core",
+      "tests": "2446",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "2"
+    },
+    {
+      "name": "codex-core::all",
+      "tests": "1374",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "41"
+    },
+    {
+      "name": "codex-core::responses_headers",
+      "tests": "4",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-exec-server",
+      "tests": "289",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-exec-server::accepted_websocket",
+      "tests": "5",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-exec-server::authorized_read_rpc",
+      "tests": "1",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-exec-server::capability_discovery",
+      "tests": "4",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-exec-server::deferred_environment",
+      "tests": "12",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-exec-server::chatgpt_cloudflare_affinity",
+      "tests": "1",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-exec-server::environment",
+      "tests": "4",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-exec-server::environment_config",
+      "tests": "2",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-exec-server::exec_process",
+      "tests": "40",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "3"
+    },
+    {
+      "name": "codex-exec-server::file_stream",
+      "tests": "7",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-exec-server::file_system_unix",
+      "tests": "116",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-exec-server::health",
+      "tests": "3",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-exec-server::http_client",
+      "tests": "11",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-exec-server::http_request",
+      "tests": "10",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-exec-server::http_request_logging",
+      "tests": "2",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-exec-server::initialize",
+      "tests": "2",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-exec-server::process",
+      "tests": "6",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-exec-server::relay",
+      "tests": "4",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-exec-server::selected_capability_roots",
+      "tests": "1",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-exec-server::websocket",
+      "tests": "3",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-agent-protocol",
+      "tests": "14",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-agentd",
+      "tests": "601",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "1"
+    },
+    {
+      "name": "codex-exec-server::forward",
+      "tests": "1",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-agentd::authbus_text_product",
+      "tests": "8",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-agentd::cognitive_product_e2e",
+      "tests": "9",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-agentd::cognitive_store_product_writer",
+      "tests": "1",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-agentd::fleet_harness_diagnostics",
+      "tests": "1",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-agentd::intuition_policy_product",
+      "tests": "1",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-agentd::kernel_evidence_product",
+      "tests": "3",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-agentd::optional_module_restart",
+      "tests": "1",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-agentd::plasticity_process_e2e",
+      "tests": "1",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-agentd::queue_capacity_product",
+      "tests": "2",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-agentd::five_agent_rolling_upgrade",
+      "tests": "2",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-agentd::runtime_shutdown_outcomes",
+      "tests": "9",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-agentd::runtime_codex_product_e2e",
+      "tests": "1",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-agentd::supervisord_product_e2e",
+      "tests": "2",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-agentd::terminal_cell_owner",
+      "tests": "2",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-agentd::supervised_two_agents",
+      "tests": "1",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-agentd::two_agent_turn_recovery",
+      "tests": "2",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-automation",
+      "tests": "61",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-automation::authorized_effect",
+      "tests": "10",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-automation::automation",
+      "tests": "18",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-automation::durable_causal_chain",
+      "tests": "10",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-automation::kernel_operations_destination",
+      "tests": "4",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-automation::operation_timer_fence",
+      "tests": "3",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-automation::retirement_recovery",
+      "tests": "4",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-automation::taskflow",
+      "tests": "13",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-automation::taskflow_execution_boundary",
+      "tests": "11",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-automation::taskflow_step",
+      "tests": "4",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-context-compiler",
+      "tests": "45",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-control-plane",
+      "tests": "111",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-control-plane::runtime_retirement_dependencies",
+      "tests": "4",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-infer-core",
+      "tests": "35",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-infer-worker-host",
+      "tests": "50",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-infer-worker-host::bin/hepta-joint-propose",
+      "tests": "4",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-intelligence",
+      "tests": "83",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-intelligence::lane_f_shadow_vertical",
+      "tests": "1",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-learning-artifacts",
+      "tests": "102",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-intelligence::intuition_frozen_qualification",
+      "tests": "1",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-memory",
+      "tests": "411",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-memory-extension",
+      "tests": "100",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-neuron",
+      "tests": "163",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "5"
+    },
+    {
+      "name": "codex-hepta-runtime",
+      "tests": "26",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-supervisor",
+      "tests": "112",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-supervisor::isolated_execution_handoff_unix",
+      "tests": "1",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-supervisor::daemon_product",
+      "tests": "1",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-supervisor::process_deadline_unix",
+      "tests": "1",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-supervisor::restart_budget",
+      "tests": "1",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-supervisor::restart_budget_recovery",
+      "tests": "1",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-supervisor::robrix_control_projection",
+      "tests": "2",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-supervisor::signed_intent_recovery",
+      "tests": "1",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-supervisor::writer_handoff_production",
+      "tests": "1",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-linux-sandbox",
+      "tests": "108",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-linux-sandbox::all",
+      "tests": "38",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-model-provider-info",
+      "tests": "31",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-shell-escalation",
+      "tests": "20",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-utils-pty",
+      "tests": "28",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "0"
+    },
+    {
+      "name": "codex-hepta-supervisor::paired_process_product",
+      "tests": "2",
+      "skipped": "0",
+      "errors": "0",
+      "failures": "2"
+    }
+  ],
+  "failed_cases": [
+    {
+      "name": "state_db_bridge::tests::initial_alias_binding_keeps_sqlite_listing_on_the_retained_owner",
+      "classname": "codex-core",
+      "text": "thread 'state_db_bridge::tests::initial_alias_binding_keeps_sqlite_listing_on_the_retained_owner' (2450405) panicked at core/src/state_db_bridge_tests.rs:86:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<[]\n>[\n>    ThreadId {\n>        uuid: 01a1afa1-7329-71d0-a138-1f8516f8a709,\n>    },\n>]\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "unified_exec::tests::unified_exec_persists_across_requests",
+      "classname": "codex-core",
+      "text": "thread 'unified_exec::tests::unified_exec_persists_across_requests' (2466343) panicked at core/src/unified_exec/mod_tests.rs:409:5:\nassertion failed: session.terminate_background_terminal(process_id).await\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::additional_context::additional_context_is_model_visible_but_not_a_user_message_item",
+      "classname": "codex-core::all",
+      "text": "thread 'suite::additional_context::additional_context_is_model_visible_but_not_a_user_message_item' (2467207) panicked at core/tests/suite/additional_context.rs:115:5:\nassertion failed: request.input().iter().all(|item|\n        { item.get(\"internal_chat_message_metadata_passthrough\").is_none() })\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts",
+      "classname": "codex-core::all",
+      "text": "thread 'suite::approvals::approving_execpolicy_amendment_persists_policy_and_skips_future_prompts' (2477435) panicked at core/tests/suite/approvals.rs:2540:5:\nunexpected stdout: Failed to create stream fd: Operation not permitted\nFailed to create stream fd: Operation not permitted\nFailed to create stream fd: Operation not permitted\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::client::sends_audio_urls_to_responses",
+      "classname": "codex-core::all",
+      "text": "thread 'suite::client::sends_audio_urls_to_responses' (2485931) panicked at core/tests/suite/client.rs:424:5:\nassertion failed: request.input().iter().all(|item|\n        { item.get(\"internal_chat_message_metadata_passthrough\").is_none() })\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::client::sends_local_audio_to_responses",
+      "classname": "codex-core::all",
+      "text": "thread 'suite::client::sends_local_audio_to_responses' (2485967) panicked at core/tests/suite/client.rs:485:5:\nassertion failed: request.input().iter().all(|item|\n        { item.get(\"internal_chat_message_metadata_passthrough\").is_none() })\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::client::stateless_responses_preserve_durable_item_turn_metadata_across_turns",
+      "classname": "codex-core::all",
+      "text": "thread 'suite::client::stateless_responses_preserve_durable_item_turn_metadata_across_turns' (2486059) panicked at core/tests/suite/client.rs:259:9:\ncustom provider must not receive internal item metadata: {\"content\":[{\"text\":\"<permissions instructions>\\nFilesystem sandboxing defines which files can be read or written. `sandbox_mode` is `danger-full-access`: No filesystem sandboxing - all commands are permitted. Network access is enabled.\\nApproval policy is currently never. Do not provide the `sandbox_permissions` for any reason, commands will be rejected.\\n</permissions instructions>\",\"type\":\"input_text\"}],\"id\":\"msg_01a1afa2-3df8-731d-935b-8a6e815cf7c0\",\"internal_chat_message_metadata_passthrough\":{\"content_item_kinds\":[\"permissions.instructions\"],\"create_time\":1793948007.9287071,\"turn_id\":\"01a1afa2-3def-71a6-a1b4-3078341da053\"},\"role\":\"developer\",\"type\":\"message\"}\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::code_mode::code_mode_exec_surfaces_handler_errors_as_exceptions",
+      "classname": "codex-core::all",
+      "text": "thread 'suite::code_mode::code_mode_exec_surfaces_handler_errors_as_exceptions' (2493422) panicked at core/tests/suite/code_mode.rs:2070:5:\ncustom provider must not receive private attempted-tool metadata\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::compact::multiple_auto_compact_per_task_runs_after_token_limit_hit",
+      "classname": "codex-core::all",
+      "text": "thread 'suite::compact::multiple_auto_compact_per_task_runs_after_token_limit_hit' (2517723) panicked at core/tests/suite/compact.rs:1634:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n [\n     Object {\n         \"content\": Array [\n             Object {\n                 \"text\": String(\"<environment_context>\\n  <cwd>/tmp/.tmpsPyT5z</cwd>\\n  <shell>bash</shell>\\n  <current_date>2026-11-06</current_date>\\n  <timezone>Asia/Shanghai</timezone>\\n  <filesystem><workspace_roots><root>/tmp/.tmpsPyT5z</root></workspace_roots><permission_profile type=\\\"disabled\\\"><file_system type=\\\"unrestricted\\\" /></permission_profile></filesystem>\\n</environment_context>\"),\n                 \"type\": String(\"input_text\"),\n             },\n         ],\n<        \"internal_chat_message_metadata_passthrough\": Object {\n<            \"content_item_kinds\": Array [\n<                String(\"environments.environment_context\"),\n<            ],\n<            \"create_time\": Number(1793948029.99431),\n<            \"turn_id\": String(\"01a1afa2-9422-7781-a775-66986ccd375f\"),\n<        },\n         \"role\": String(\"user\"),\n         \"type\": String(\"message\"),\n     },\n     Object {\n         \"content\": Array [\n             Object {\n                 \"text\": String(\"create an app\"),\n                 \"type\": String(\"input_text\"),\n             },\n         ],\n<        \"internal_chat_message_metadata_passthrough\": Object {\n<            \"content_item_kinds\": Array [\n<                String(\"user.text\"),\n<            ],\n<            \"create_time\": Number(1793948029.9975681),\n<            \"turn_id\": String(\"01a1afa2-9422-7781-a775-66986ccd375f\"),\n<        },\n         \"role\": String(\"user\"),\n         \"type\": String(\"message\"),\n     },\n ]\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::git_enrichment::ephemeral_system_thread_prewarm_skips_and_turn_observes_fresh_state::test_case_1_system_background_thread",
+      "classname": "codex-core::all",
+      "text": "thread 'suite::git_enrichment::ephemeral_system_thread_prewarm_skips_and_turn_observes_fresh_state::test_case_1_system_background_thread' (2532520) panicked at core/tests/common/lib.rs:356:14:\ntimeout waiting for event: Elapsed(())\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::compact_remote::remote_mid_turn_compact_v2_sends_turn_state_over_websocket",
+      "classname": "codex-core::all",
+      "text": "thread 'suite::compact_remote::remote_mid_turn_compact_v2_sends_turn_state_over_websocket' (2524819) panicked at core/tests/suite/compact_remote.rs:4565:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<2\n>5\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::git_enrichment::ephemeral_system_thread_prewarm_skips_and_turn_observes_fresh_state::test_case_2_ambient_background_thread",
+      "classname": "codex-core::all",
+      "text": "thread 'suite::git_enrichment::ephemeral_system_thread_prewarm_skips_and_turn_observes_fresh_state::test_case_2_ambient_background_thread' (2532923) panicked at core/tests/common/lib.rs:356:14:\ntimeout waiting for event: Elapsed(())\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::hooks::async_hook_finishing_while_idle_waits_for_the_next_turn",
+      "classname": "codex-core::all",
+      "text": "Error: timed out waiting for the next turn to complete\n\nCaused by:\n    deadline has elapsed"
+    },
+    {
+      "name": "suite::hooks_executor::executor_stop_hook_runs_after_attachment",
+      "classname": "codex-core::all",
+      "text": "thread 'suite::hooks_executor::executor_stop_hook_runs_after_attachment' (2542944) panicked at core/tests/suite/hooks_executor.rs:72:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<String(\"01a1afa4-30e3-70d0-aaad-ff6e606d5fee\")\n>Null\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::hooks_mcp::mcp_tool_hook_passes_thread_metadata_to_model_hidden_tools",
+      "classname": "codex-core::all",
+      "text": "thread 'suite::hooks_mcp::mcp_tool_hook_passes_thread_metadata_to_model_hidden_tools' (2543376) panicked at core/tests/suite/hooks_mcp.rs:706:5:\nassertion failed: request.message_input_texts(\"developer\").contains(&expected_context)\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::compact::auto_compact_allows_multiple_attempts_when_interleaved_with_other_turn_events",
+      "classname": "codex-core::all",
+      "text": null
+    },
+    {
+      "name": "suite::compact::auto_compact_emits_context_compaction_items",
+      "classname": "codex-core::all",
+      "text": null
+    },
+    {
+      "name": "suite::multi_agent_resume::cold_root_resume_restores_agent_identity_and_role_on_followup",
+      "classname": "codex-core::all",
+      "text": "Error: thread 01a1afa4-7eac-7124-b1e7-b267eed5b334 not found"
+    },
+    {
+      "name": "suite::git_enrichment::startup_prewarm_skips_git_enrichment_and_user_turn_observes_fresh_state",
+      "classname": "codex-core::all",
+      "text": "Error: turn completion and its finish owner exceeded the original fixture budget\n\nCaused by:\n    deadline has elapsed"
+    },
+    {
+      "name": "suite::mcp_tool_exposure::later_follow_up_uses_background_recovered_apps_after_mid_thread_startup_failures",
+      "classname": "codex-core::all",
+      "text": "thread 'suite::mcp_tool_exposure::later_follow_up_uses_background_recovered_apps_after_mid_thread_startup_failures' (2546659) panicked at core/tests/common/lib.rs:356:14:\ntimeout waiting for event: Elapsed(())\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions",
+      "classname": "codex-core::all",
+      "text": "thread 'suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions' (2568634) panicked at core/tests/suite/request_permissions.rs:1802:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n partial-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls",
+      "classname": "codex-core::all",
+      "text": "thread 'suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls' (2569148) panicked at core/tests/suite/request_permissions.rs:1391:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n sticky-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature",
+      "classname": "codex-core::all",
+      "text": "thread 'suite::request_permissions::request_permissions_grants_apply_to_later_exec_command_calls_without_inline_permission_feature' (2569262) panicked at core/tests/suite/request_permissions.rs:1626:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n sticky-shell-feature-independent-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request",
+      "classname": "codex-core::all",
+      "text": "thread 'suite::request_permissions::request_permissions_preapprove_explicit_exec_permissions_outside_on_request' (2569810) panicked at core/tests/suite/request_permissions.rs:1510:5:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n<Failed to create stream fd: Operation not permitted\n sticky-explicit-grant-ok\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::responses_lite::responses_lite_does_not_expose_standalone_web_search_for_bedrock_provider",
+      "classname": "codex-core::all",
+      "text": "thread 'suite::responses_lite::responses_lite_does_not_expose_standalone_web_search_for_bedrock_provider' (2571823) panicked at core/tests/suite/responses_lite.rs:464:5:\nassertion failed: !request.has_content_kinds(&[\"model.base_instructions\"])\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::rmcp_client::streamable_http_with_oauth_round_trip",
+      "classname": "codex-core::all",
+      "text": "Error: a newly discovered OAuth server blocked the user turn during store contention\n\nCaused by:\n    deadline has elapsed"
+    },
+    {
+      "name": "suite::token_budget::token_budget_context_injects_plain_thread_hint_text",
+      "classname": "codex-core::all",
+      "text": "thread 'suite::token_budget::token_budget_context_injects_plain_thread_hint_text' (2588196) panicked at core/tests/suite/token_budget.rs:641:20:\nregex did not match actual value\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::skill_approval::shell_zsh_fork_skill_scripts_ignore_declared_permissions",
+      "classname": "codex-core::all",
+      "text": "thread 'suite::skill_approval::shell_zsh_fork_skill_scripts_ignore_declared_permissions' (2580987) panicked at core/tests/common/lib.rs:356:14:\ntimeout waiting for event: Elapsed(())\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::turn_input_submission::recover_turn_if_idle_preserves_id_and_resumes_plan_mode",
+      "classname": "codex-core::all",
+      "text": "thread 'suite::turn_input_submission::recover_turn_if_idle_preserves_id_and_resumes_plan_mode' (2592704) panicked at core/tests/suite/turn_input_submission.rs:210:6:\ninterrupted idle turn should expose its recovery epoch: Elapsed(())\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::token_budget::token_budget_context_uses_new_window_after_compaction::test_case_1_token_budget_only",
+      "classname": "codex-core::all",
+      "text": "thread 'suite::token_budget::token_budget_context_uses_new_window_after_compaction::test_case_1_token_budget_only' (2588421) panicked at core/tests/common/lib.rs:356:14:\ntimeout waiting for event: Elapsed(())\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::token_budget::token_budget_context_uses_new_window_after_compaction::test_case_2_with_client_developer_retention",
+      "classname": "codex-core::all",
+      "text": "thread 'suite::token_budget::token_budget_context_uses_new_window_after_compaction::test_case_2_with_client_developer_retention' (2588477) panicked at core/tests/common/lib.rs:356:14:\ntimeout waiting for event: Elapsed(())\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_1_complete_event_stream",
+      "classname": "codex-core::all",
+      "text": "thread 'tokio-rt-worker' (2599006) panicked at core/tests/suite/unified_exec_process_events.rs:87:14:\nwebsocket read should not time out: Elapsed(())\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\nError: task 4 panicked with message \"websocket read should not time out: Elapsed(())\""
+    },
+    {
+      "name": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_2_direct_sandbox_denial",
+      "classname": "codex-core::all",
+      "text": "thread 'tokio-rt-worker' (2599044) panicked at core/tests/suite/unified_exec_process_events.rs:87:14:\nwebsocket read should not time out: Elapsed(())\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\nError: task 4 panicked with message \"websocket read should not time out: Elapsed(())\""
+    },
+    {
+      "name": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_3_legacy_exit_metadata",
+      "classname": "codex-core::all",
+      "text": "thread 'tokio-rt-worker' (2600389) panicked at core/tests/suite/unified_exec_process_events.rs:87:14:\nwebsocket read should not time out: Elapsed(())\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\nError: task 4 panicked with message \"websocket read should not time out: Elapsed(())\""
+    },
+    {
+      "name": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_4_truncated_event_replay",
+      "classname": "codex-core::all",
+      "text": "thread 'tokio-rt-worker' (2600406) panicked at core/tests/suite/unified_exec_process_events.rs:87:14:\nwebsocket read should not time out: Elapsed(())\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\nError: task 4 panicked with message \"websocket read should not time out: Elapsed(())\""
+    },
+    {
+      "name": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_5_managed_network_uses_executor_proxy_launch",
+      "classname": "codex-core::all",
+      "text": "thread 'tokio-rt-worker' (2600759) panicked at core/tests/suite/unified_exec_process_events.rs:87:14:\nwebsocket read should not time out: Elapsed(())\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\nError: task 4 panicked with message \"websocket read should not time out: Elapsed(())\""
+    },
+    {
+      "name": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_6_strict_managed_allowlist_omits_policy_callbacks",
+      "classname": "codex-core::all",
+      "text": "thread 'tokio-rt-worker' (2600779) panicked at core/tests/suite/unified_exec_process_events.rs:87:14:\nwebsocket read should not time out: Elapsed(())\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\nError: task 4 panicked with message \"websocket read should not time out: Elapsed(())\""
+    },
+    {
+      "name": "suite::turn_state::websocket_turn_state_is_stable_within_turn",
+      "classname": "codex-core::all",
+      "text": "Error: turn completion and its finish owner exceeded the original fixture budget\n\nCaused by:\n    deadline has elapsed"
+    },
+    {
+      "name": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_7_foreign_windows_managed_network_preserves_approval_registration",
+      "classname": "codex-core::all",
+      "text": "thread 'tokio-rt-worker' (2601139) panicked at core/tests/suite/unified_exec_process_events.rs:87:14:\nwebsocket read should not time out: Elapsed(())\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\nError: task 4 panicked with message \"websocket read should not time out: Elapsed(())\""
+    },
+    {
+      "name": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_8_foreign_windows_workspace_sandbox",
+      "classname": "codex-core::all",
+      "text": "thread 'tokio-rt-worker' (2601159) panicked at core/tests/suite/unified_exec_process_events.rs:87:14:\nwebsocket read should not time out: Elapsed(())\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\nError: task 4 panicked with message \"websocket read should not time out: Elapsed(())\""
+    },
+    {
+      "name": "suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_preserves_denied_reads",
+      "classname": "codex-core::all",
+      "text": "Error: Fatal error: Failed to initialize session: failed to load AGENTS.md instructions for environment `local`: fs sandbox helper failed with status exit status: 1: error building bubblewrap command: Fatal error: unreadable glob `/home/qq/work/hepta-neuron-framework-734df8eaf8dc-20261106/source/codex-rs/core/.tmpAQn0iu/secret.env` cannot be safely expanded; use a pattern with a non-root directory prefix"
+    },
+    {
+      "name": "suite::turn_state::websocket_turn_state_persists_within_turn_and_resets_after",
+      "classname": "codex-core::all",
+      "text": "Error: turn completion and its finish owner exceeded the original fixture budget\n\nCaused by:\n    deadline has elapsed"
+    },
+    {
+      "name": "suite::unified_exec_process_events::exec_command_consumes_pushed_remote_process_events::test_case_9_windows_elevated_powershell_disables_profile",
+      "classname": "codex-core::all",
+      "text": "thread 'tokio-rt-worker' (2601312) panicked at core/tests/suite/unified_exec_process_events.rs:87:14:\nwebsocket read should not time out: Elapsed(())\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\nError: task 4 panicked with message \"websocket read should not time out: Elapsed(())\""
+    },
+    {
+      "name": "shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_3_remote_pipe_recovery",
+      "classname": "codex-exec-server::exec_process",
+      "text": "thread 'shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_3_remote_pipe_recovery' (2609379) panicked at exec-server/tests/exec_process.rs:434:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n (\n     \"original\",\n<    \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n>    \"\",\n     Some(\n         0,\n     ),\n     true,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_4_remote_tty_recovery",
+      "classname": "codex-exec-server::exec_process",
+      "text": "thread 'shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_4_remote_tty_recovery' (2609673) panicked at exec-server/tests/exec_process.rs:434:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n (\n<    \"Failed to create stream fd: Operation not permitted\\r\\nFailed to create stream fd: Operation not permitted\\r\\nFailed to create stream fd: Operation not permitted\\r\\noriginal\",\n>    \"original\",\n     \"\",\n     Some(\n         0,\n     ),\n     true,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_6_remote_retry_budget_exhausted",
+      "classname": "codex-exec-server::exec_process",
+      "text": "thread 'shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_6_remote_retry_budget_exhausted' (2610048) panicked at exec-server/tests/exec_process.rs:434:9:\nassertion failed: `(left == right)`\n\nDiff < left / right > :\n (\n     \"original\",\n<    \"Failed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\nFailed to create stream fd: Operation not permitted\\n\",\n>    \"\",\n     Some(\n         0,\n     ),\n     true,\n )\n\n\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+    },
+    {
+      "name": "neuron_generation_runtime::tests::joint::synthetic_joint_control_service_preserves_real_output_cost_and_owner_on_reopen",
+      "classname": "codex-hepta-agentd",
+      "text": "Error: Custom { kind: Other, error: \"missing actual Joint compiler artifact\" }"
+    },
+    {
+      "name": "cell_joint_generation::tests::actual_child_failure_retains_cost_without_new_state_or_output",
+      "classname": "codex-hepta-neuron",
+      "text": "Error: Custom { kind: Other, error: \"missing actual hepta-joint-propose helper metadata\" }"
+    },
+    {
+      "name": "cell_joint_generation::tests::asset_and_executable_path_replacement_cannot_change_opened_worker",
+      "classname": "codex-hepta-neuron",
+      "text": "Error: Custom { kind: Other, error: \"missing actual hepta-joint-propose helper metadata\" }"
+    },
+    {
+      "name": "cell_joint_generation::tests::cancellation_deadline_and_clock_rollback_never_adopt_output",
+      "classname": "codex-hepta-neuron",
+      "text": "Error: Custom { kind: Other, error: \"missing actual hepta-joint-propose helper metadata\" }"
+    },
+    {
+      "name": "cell_joint_generation::tests::rejected_input_finishes_without_process_traffic_and_keeps_measured_validation",
+      "classname": "codex-hepta-neuron",
+      "text": "Error: Custom { kind: Other, error: \"missing actual hepta-joint-propose helper metadata\" }"
+    },
+    {
+      "name": "cell_joint_generation::tests::synthetic_real_process_initializes_advances_commits_and_restores_all_modalities",
+      "classname": "codex-hepta-neuron",
+      "text": "Error: Custom { kind: Other, error: \"missing actual hepta-joint-propose helper metadata\" }"
+    },
+    {
+      "name": "two_real_pairs_restart_one_without_peer_pid_churn",
+      "classname": "codex-hepta-supervisor::paired_process_product",
+      "text": "Error: tick faults: [AgentFault { agent_id: AgentId(\"018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12\"), message: \"process driver failed for agent 018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12: Agentd drain request did not return a drain acknowledgement\" }]"
+    },
+    {
+      "name": "five_real_pairs_adopt_all_ten_children_and_isolate_one_matrix_crash",
+      "classname": "codex-hepta-supervisor::paired_process_product",
+      "text": null
+    }
+  ]
+}
