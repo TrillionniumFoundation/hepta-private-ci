@@ -199,7 +199,7 @@ fn retired_guarded_journal_rejects_ordinary_open_and_live_recovery_without_chang
     let files = Files::new();
     let config = config();
     let binding = CellGenerationOwnerBindingV1::new(&config, /*max_records*/ 128).unwrap();
-    let current = Arc::new(Current(Mutex::new((Some(binding.clone()), None))));
+    let current = Arc::new(Current(Mutex::new((Some(binding), None))));
     let mut owner = CellGenerationJournalV2::open_guarded(
         files.file("journal"),
         files.witness(),

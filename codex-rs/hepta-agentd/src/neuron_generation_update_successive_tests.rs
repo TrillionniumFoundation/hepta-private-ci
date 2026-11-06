@@ -35,7 +35,7 @@ use crate::recover_agentd_generation_update_v1;
 async fn cold_takeover_rejects_real_stopped_drained_but_unacknowledged_output() -> anyhow::Result<()>
 {
     let host = host::Fixture::new().await;
-    let update = Fixture::new(host.config.clone())?;
+    let update = Fixture::new(host.config)?;
     let mut old = update.old_journal()?;
     let request = support::request(&update.old_config, old.snapshot()?.clone());
     old.admit(request.clone(), /*now_micros*/ 20)?;

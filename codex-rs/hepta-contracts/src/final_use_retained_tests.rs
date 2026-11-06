@@ -199,7 +199,7 @@ fn retained_entry_rejects_another_owner_unspent_nonce_and_changed_signature() {
         authority.verify_retained_use(&unsigned_nonce, &unsigned_nonce.grant.binding, &witness),
         Err(FinalUseError::InvalidGrant)
     );
-    let mut bad_signature = fixture.signed.clone();
+    let mut bad_signature = fixture.signed;
     bad_signature.signature[0] ^= 1;
     assert_eq!(
         authority.verify_retained_use(&bad_signature, &bad_signature.grant.binding, &witness),
