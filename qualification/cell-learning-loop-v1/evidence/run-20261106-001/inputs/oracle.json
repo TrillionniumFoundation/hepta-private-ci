@@ -1,0 +1,74 @@
+{
+  "candidate_next": {
+    "expected": [
+      "-2",
+      "0",
+      "3",
+      "3",
+      "12"
+    ],
+    "id": "cedar-next",
+    "payload": [
+      "12",
+      "3",
+      "-2",
+      "3",
+      "0"
+    ],
+    "skill": "sort_numeric",
+    "text": "Apply Cedar intake to this delivery."
+  },
+  "held_correction": [
+    {
+      "expected": [
+        "-3",
+        "2",
+        "2",
+        "10"
+      ],
+      "id": "cedar-held-a",
+      "payload": [
+        "10",
+        "2",
+        "2",
+        "-3"
+      ],
+      "skill": "sort_numeric",
+      "text": "Use Cedar intake on this newly supplied batch."
+    },
+    {
+      "expected": [
+        "-1",
+        "-1",
+        "4",
+        "4.5"
+      ],
+      "id": "cedar-held-b",
+      "payload": [
+        "4.5",
+        "-1",
+        "4",
+        "-1"
+      ],
+      "skill": "sort_numeric",
+      "text": "Follow the latest Cedar intake convention here."
+    }
+  ],
+  "parent_next": {
+    "expected": [
+      "learn",
+      "verify",
+      "serve"
+    ],
+    "id": "parent-next",
+    "payload": [
+      "learn",
+      "verify",
+      "learn",
+      "serve",
+      "verify"
+    ],
+    "skill": "unique_stable",
+    "text": "Remove repeated items but keep their first-seen order."
+  }
+}
