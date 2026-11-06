@@ -211,6 +211,24 @@ async fn ordinary_pq_daemon_recovers_and_pages_all_32_real_unknown_records_after
     for id in &release_ids {
         fleet.registry.allow_release(&fleet.first, id)?;
     }
+    // Model a durable startup aborted before any process entry. The public
+    // lifecycle owner assigns both generations; grants read the resulting
+    // Stopped record instead of fabricating a non-zero signing generation.
+    let initial = record(&fleet)?;
+    assert_eq!(initial.lifecycle.lifecycle, AgentLifecycle::Stopped);
+    let starting = fleet.registry.compare_and_transition(
+        &fleet.first,
+        initial.lifecycle.generation,
+        AgentLifecycle::Starting,
+    )?;
+    let stopped = fleet.registry.compare_and_transition(
+        &fleet.first,
+        starting.generation,
+        AgentLifecycle::Stopped,
+    )?;
+    assert_eq!(record(&fleet)?.lifecycle, stopped);
+    assert!(stopped.generation > 0);
+    assert!(crate::lease::read_lease(initial.layout.run_root())?.is_none());
     let original = record(&fleet)?;
     fleet.registry.compare_and_set_release_state(
         &fleet.first,
