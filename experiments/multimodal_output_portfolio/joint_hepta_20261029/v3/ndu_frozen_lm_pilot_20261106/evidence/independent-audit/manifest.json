@@ -1,0 +1,54 @@
+{
+  "additional_model_forwards": 0,
+  "codespell": {
+    "call": "codespell_lib.main(\"--ignore-words\", \".codespellignore\", *paths)",
+    "cwd": "/workspace/scratch/3f6a885bb83c/hepta-research",
+    "exit_code": 0,
+    "files": [
+      "README.md",
+      "audit_pilot.py",
+      "audit.json",
+      "remote-anchor.json",
+      "remote-directory-entries.json",
+      "remote-source-binding.json"
+    ],
+    "interpreter": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "source": "/workspace/scratch/3f6a885bb83c/tooling/codespell-2.4.3"
+  },
+  "files": {
+    "README.md": {
+      "bytes": 7816,
+      "lines": 127,
+      "sha256": "0fbb4a240a1c0e4f207fe2a92b04a22842953a2635d082ad311b37fa4c49e4a8"
+    },
+    "audit.json": {
+      "bytes": 42096,
+      "lines": 658,
+      "sha256": "5f817183d3a48a58b927625ad7f9c740a62a62142f3ed1d1a3bac30150db3a94"
+    },
+    "audit_pilot.py": {
+      "bytes": 24879,
+      "lines": 351,
+      "sha256": "cfdf1b941e4f22fd9903ab654fff7ed81514c3d479e827099c9dfcc9ae24dd44"
+    },
+    "remote-anchor.json": {
+      "bytes": 4341,
+      "lines": 15,
+      "sha256": "6fbdf1b7515267b4570d5fc0330a36a107fe35aa15c11c2cd421595b14e61871"
+    },
+    "remote-directory-entries.json": {
+      "bytes": 12016,
+      "lines": 255,
+      "sha256": "baa387033219e90b63060424412b732bd24602856f8823a4e25620eeb6f73e15"
+    },
+    "remote-source-binding.json": {
+      "bytes": 7777,
+      "lines": 148,
+      "sha256": "c25572e29998d9a26ac5b2ce1df513974c12d7758717a4ad70cf5e25877c0564"
+    }
+  },
+  "frozen_inputs_modified": false,
+  "schema": "ndu.frozen-pilot-internal-audit-delivery.v1",
+  "scope": "Independent internal review only; no external review, preregistration, scientific gain or monetary net-benefit claim.",
+  "status": "engineering_receipts_pass_task_success_failed"
+}
