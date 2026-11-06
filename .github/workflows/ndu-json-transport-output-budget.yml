@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - fix/ndu-json-transport-output-cap-20261106-gpt6-run10
+      - fix/ndu-json-transport-exact-head-checkout-20261106-gpt6
     paths:
       - 'experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_json_transport_20261106/test_adapter.py'
       - 'experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_json_transport_20261106/freeze.json'
@@ -25,6 +26,16 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Pull-request CI must test the source commit, not GitHub's synthetic merge ref.
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Assert exact source checkout
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          actual="$(git rev-parse HEAD)"
+          test "$actual" = "$EXPECTED_HEAD"
+          printf 'EXACT_SOURCE_HEAD=%s\n' "$actual"
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
