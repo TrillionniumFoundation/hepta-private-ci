@@ -66,9 +66,14 @@ impl Harness {
         // The qualification helper manifest and Bazel runfiles launcher both
         // supply this exact compiler-reported binary. Never guess target paths.
         let binary = PathBuf::from(
-            std::env::var_os("CARGO_BIN_EXE_hepta-joint-propose").ok_or_else(|| {
-                std::io::Error::other("missing actual hepta-joint-propose helper metadata")
-            })?,
+            std::env::var_os("CARGO_BIN_EXE_hepta-joint-propose")
+                // `just test` crosses a POSIX shell, which can remove names
+                // containing hyphens. The helper manifest emits both aliases
+                // from the same compiler artifact; no target path is inferred.
+                .or_else(|| std::env::var_os("CARGO_BIN_EXE_hepta_joint_propose"))
+                .ok_or_else(|| {
+                    std::io::Error::other("missing actual hepta-joint-propose helper metadata")
+                })?,
         );
         if !binary.is_absolute() {
             return Err(std::io::Error::other("helper path must be absolute").into());

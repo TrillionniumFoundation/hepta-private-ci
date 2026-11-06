@@ -4,7 +4,6 @@
 
 use std::fs;
 use std::path::Path;
-use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Duration;
 use std::time::Instant;
@@ -36,10 +35,7 @@ fn install_model(
     clock: Clock,
 ) -> TestResult<(Arc<JointGenerationProcessWorkerV1>, synthetic::Assets)> {
     let assets = synthetic::assets()?;
-    let executable = PathBuf::from(
-        std::env::var_os("CARGO_BIN_EXE_hepta-joint-propose")
-            .ok_or_else(|| std::io::Error::other("missing actual Joint compiler artifact"))?,
-    );
+    let executable = codex_utils_cargo_bin::cargo_bin("hepta-joint-propose")?;
     if !executable.is_absolute() {
         return Err(std::io::Error::other("Joint helper path must be absolute").into());
     }
