@@ -403,6 +403,23 @@ pub(crate) unsafe fn create_workspace_write_token_with_caps_from(
     )
 }
 
+/// Test-only diagnostic constructor with a separate read-only restricting cohort.
+/// Read-only SIDs constrain read access but are not added to the child-object
+/// default DACL, which grants only the write-capability SIDs.
+#[cfg(test)]
+pub(crate) unsafe fn create_workspace_write_token_with_caps_and_read_sids_from(
+    base_token: HANDLE,
+    psid_capabilities: &[*mut c_void],
+    read_only_sids: &[*mut c_void],
+) -> Result<HANDLE> {
+    create_token_with_caps_from(
+        base_token,
+        psid_capabilities,
+        read_only_sids,
+        RestrictingIdentity::Exclude,
+    )
+}
+
 /// Construct a raw `WRITE_RESTRICTED` token including capability, user and additional SIDs.
 ///
 /// This FFI helper does not verify a dedicated sandbox identity and provides no
