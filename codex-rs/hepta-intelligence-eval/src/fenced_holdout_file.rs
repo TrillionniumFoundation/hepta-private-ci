@@ -84,7 +84,8 @@ impl LockedFileFinalHoldoutCasStoreV1 {
         header.extend_from_slice(binding.as_array());
         header.extend_from_slice(Digest32::of_bytes(&header).as_array());
         file.0.seek(SeekFrom::Start(0)).map_err(io_error)?;
-        file.0.write_all(&header)
+        file.0
+            .write_all(&header)
             .and_then(|()| file.0.sync_all())
             .map_err(|_| LockedFileCasErrorV1::Indeterminate)?;
         Ok(Self {
@@ -158,7 +159,8 @@ impl LockedFileFinalHoldoutCasStoreV1 {
             }
         }
         validate_minimum(state.as_ref(), minimum, minimum_witnessed)?;
-        file.0.sync_all()
+        file.0
+            .sync_all()
             .map_err(|_| LockedFileCasErrorV1::Indeterminate)?;
         Ok(Self {
             file,

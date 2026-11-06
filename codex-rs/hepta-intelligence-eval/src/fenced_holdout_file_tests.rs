@@ -356,7 +356,12 @@ fn failed_recover_unlocks_while_a_duplicate_file_remains_open() {
         .unwrap_or_else(|error| panic!("create after rejected recovery: {error}"));
     drop(duplicate);
     pretty_assertions::assert_eq!(
-        LockedFileFinalHoldoutCasStoreV1::recover(temp.open(), digest("binding"), /*minimum*/ None).err(),
+        LockedFileFinalHoldoutCasStoreV1::recover(
+            temp.open(),
+            digest("binding"),
+            /*minimum*/ None
+        )
+        .err(),
         Some(LockedFileCasErrorV1::Busy)
     );
     drop(store);
