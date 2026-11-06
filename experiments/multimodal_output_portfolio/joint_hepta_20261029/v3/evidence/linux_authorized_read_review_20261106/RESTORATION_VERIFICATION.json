@@ -1,0 +1,51 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-O",
+    "/workspace/scratch/3f6a885bb83c/round3_core_ci/09b_linux_provenance_evidence/restore.py",
+    "/workspace/scratch/3f6a885bb83c/round3_core_ci/09b_linux_provenance_evidence",
+    "/workspace/scratch/3f6a885bb83c/round3_core_ci/09b_linux_provenance_restoration"
+  ],
+  "exit_code": 0,
+  "stdout": "{\n  \"kind\": \"actual_read_only_raw_shard_restoration\",\n  \"index_sha256\": \"1e9706099c84caa274dfea234cc9243180f9e0a77dcbd4e4ad8ea0e3425d5fbf\",\n  \"archive_sha256\": \"e009d1ef015444c54ac7f2fc5e5f44ca22132071c4959741d19e1ace1c15acf4\",\n  \"restored_files\": 9,\n  \"restored_bytes\": 219685,\n  \"exact_unique_regular_member_set\": true,\n  \"all_file_bytes_and_safe_regular_modes_match\": true,\n  \"bundle_files_written\": 0,\n  \"native_tests_executed\": false\n}\n",
+  "stderr": "",
+  "all_bundle_input_bytes_unchanged": true,
+  "bundle_before": {
+    "INDEX.json": {
+      "bytes": 3188,
+      "sha256": "1e9706099c84caa274dfea234cc9243180f9e0a77dcbd4e4ad8ea0e3425d5fbf"
+    },
+    "README.md": {
+      "bytes": 1643,
+      "sha256": "9785e7f409bf5a8da1b8f9e029d28d3fa19b8360184fae70e968e8966e7850e1"
+    },
+    "linux-provenance.tar.xz.part-000": {
+      "bytes": 31144,
+      "sha256": "e009d1ef015444c54ac7f2fc5e5f44ca22132071c4959741d19e1ace1c15acf4"
+    },
+    "restore.py": {
+      "bytes": 5571,
+      "sha256": "f11730e0a68b3e99f4cad461be0928c391203723df5920ea0b3a820ebbe3d30e"
+    }
+  },
+  "bundle_after": {
+    "INDEX.json": {
+      "bytes": 3188,
+      "sha256": "1e9706099c84caa274dfea234cc9243180f9e0a77dcbd4e4ad8ea0e3425d5fbf"
+    },
+    "README.md": {
+      "bytes": 1643,
+      "sha256": "9785e7f409bf5a8da1b8f9e029d28d3fa19b8360184fae70e968e8966e7850e1"
+    },
+    "linux-provenance.tar.xz.part-000": {
+      "bytes": 31144,
+      "sha256": "e009d1ef015444c54ac7f2fc5e5f44ca22132071c4959741d19e1ace1c15acf4"
+    },
+    "restore.py": {
+      "bytes": 5571,
+      "sha256": "f11730e0a68b3e99f4cad461be0928c391203723df5920ea0b3a820ebbe3d30e"
+    }
+  },
+  "witness_executed_again": false,
+  "native_rust_executed": false
+}
