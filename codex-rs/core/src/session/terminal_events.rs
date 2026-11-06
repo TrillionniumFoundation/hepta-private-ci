@@ -41,9 +41,28 @@ struct PublicationRecord {
 
 type TerminalOwners = HashMap<TerminalKey, VecDeque<PublicationRecord>>;
 
+struct DeliveryOrder(tokio::sync::Semaphore);
+
+impl Default for DeliveryOrder {
+    fn default() -> Self {
+        Self(tokio::sync::Semaphore::new(/*permits*/ 1))
+    }
+}
+
+impl DeliveryOrder {
+    async fn acquire(&self) -> tokio::sync::SemaphorePermit<'_> {
+        // This private semaphore is never closed. The permit represents FIFO
+        // admission across asynchronous work, rather than a borrowed data lock.
+        self.0
+            .acquire()
+            .await
+            .unwrap_or_else(|error| panic!("terminal delivery admission closed: {error}"))
+    }
+}
+
 #[derive(Default)]
 struct PublicationState {
-    order: tokio::sync::Mutex<()>,
+    order: DeliveryOrder,
     owners: Mutex<TerminalOwners>,
 }
 
@@ -87,7 +106,7 @@ impl TerminalPublications {
         };
         // Serialize terminal registration and actual send, including ownerless
         // terminal events. Ordinary events retain their original send path.
-        let _order = self.0.order.lock().await;
+        let _order = self.0.order.acquire().await;
         let key = (event.id.clone(), kind);
         let identity = Arc::new(());
         self.0
@@ -137,7 +156,10 @@ struct PendingEvent {
 }
 
 #[derive(Default)]
-pub(crate) struct PublicEventDelivery(tokio::sync::Mutex<Option<PendingEvent>>);
+pub(crate) struct PublicEventDelivery {
+    order: DeliveryOrder,
+    pending: Mutex<Option<PendingEvent>>,
+}
 
 impl PublicEventDelivery {
     pub(crate) async fn next(
@@ -146,8 +168,18 @@ impl PublicEventDelivery {
         publications: &TerminalPublications,
         stopped: SessionLoopTermination,
     ) -> CodexResult<Event> {
-        let mut pending = self.0.lock().await;
-        if pending.is_none() {
+        // Keep one admitted receiver across awaits, while every data access
+        // holds only a short synchronous lock. Cancelling releases admission
+        // without discarding an event already removed from the raw channel.
+        let _order = self.order.acquire().await;
+        let needs_event = {
+            let pending = self
+                .pending
+                .lock()
+                .unwrap_or_else(|error| panic!("terminal pending event poisoned: {error:?}"));
+            pending.is_none()
+        };
+        if needs_event {
             let event = receiver
                 .recv()
                 .await
@@ -155,10 +187,23 @@ impl PublicEventDelivery {
             let completion = publications.take(&event);
             // Store before the next await: cancellation must not lose a
             // terminal event already removed from the raw FIFO channel.
-            *pending = Some(PendingEvent { event, completion });
+            *self
+                .pending
+                .lock()
+                .unwrap_or_else(|error| panic!("terminal pending event poisoned: {error:?}")) =
+                Some(PendingEvent { event, completion });
         }
-        if let Some(event) = pending.as_ref()
-            && let Some(completion) = event.completion.as_ref()
+        let completion = {
+            let pending = self
+                .pending
+                .lock()
+                .unwrap_or_else(|error| panic!("terminal pending event poisoned: {error:?}"));
+            pending
+                .as_ref()
+                .and_then(|event| event.completion.as_ref())
+                .cloned()
+        };
+        if let Some(completion) = completion
             && !completion.is_complete()
         {
             tokio::select! {
@@ -174,8 +219,10 @@ impl PublicEventDelivery {
             }
         }
         // No await may occur after removing the retained event. Holding this
-        // mutex also keeps concurrent next_event callers in FIFO order.
-        pending
+        // admission permit also keeps concurrent next_event callers in FIFO order.
+        self.pending
+            .lock()
+            .unwrap_or_else(|error| panic!("terminal pending event poisoned: {error:?}"))
             .take()
             .map(|pending| pending.event)
             .ok_or(CodexErr::InternalAgentDied)
