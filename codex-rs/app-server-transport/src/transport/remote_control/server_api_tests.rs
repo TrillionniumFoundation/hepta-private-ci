@@ -43,6 +43,46 @@ async fn timed_out_request(partial_response: Option<&'static [u8]>) -> io::Error
     let server_task = tokio::spawn(async move {
         let (mut stream, _) = listener.accept().await.expect("request should connect");
         if let Some(partial_response) = partial_response {
+            // Reach the response-body phase only after this request's full
+            // bounded JSON POST has arrived. An unsolicited early response can
+            // fail the send before its status and body timeout are observable.
+            {
+                use tokio::io::AsyncBufReadExt;
+                use tokio::io::AsyncReadExt;
+
+                const MAX_REQUEST_BYTES: u64 = 4096;
+                let mut request = tokio::io::BufReader::new((&mut stream).take(MAX_REQUEST_BYTES));
+                let mut headers = Vec::new();
+                while !headers.ends_with(b"\r\n\r\n") {
+                    let count = request
+                        .read_until(b'\n', &mut headers)
+                        .await
+                        .expect("request headers should arrive");
+                    assert_ne!(count, 0, "request headers must fit and be complete");
+                }
+                let headers_text =
+                    std::str::from_utf8(&headers).expect("request headers should be UTF-8");
+                let content_length = headers_text
+                    .lines()
+                    .filter_map(|line| line.split_once(':'))
+                    .find(|(name, _)| name.eq_ignore_ascii_case("content-length"))
+                    .expect("JSON POST should declare its body length")
+                    .1
+                    .trim()
+                    .parse::<usize>()
+                    .expect("POST content length should be valid");
+                assert!(content_length <= MAX_REQUEST_BYTES as usize - headers.len());
+                let mut body = vec![0_u8; content_length];
+                request
+                    .read_exact(&mut body)
+                    .await
+                    .expect("complete POST should arrive before response headers");
+                assert_eq!(
+                    serde_json::from_slice::<serde_json::Value>(&body)
+                        .expect("request should contain the expected JSON body"),
+                    json!({"server_id": "server-id"})
+                );
+            }
             stream
                 .write_all(partial_response)
                 .await
