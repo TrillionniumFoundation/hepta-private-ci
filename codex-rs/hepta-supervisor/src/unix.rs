@@ -48,6 +48,9 @@ use crate::ProcessStream;
 use crate::SpawnSpec;
 use crate::driver::SpawnedProcess;
 
+#[path = "unix_connect.rs"]
+mod unix_connect;
+
 const LOG_CHUNK_BYTES: usize = 4_096;
 const HEALTH_PROBE_INTERVAL: Duration = Duration::from_millis(50);
 const HEALTH_PROBE_IO_TIMEOUT: Duration = Duration::from_millis(200);
@@ -559,7 +562,7 @@ fn query_agent_health_once(
         });
     }
 
-    let mut stream = std::os::unix::net::UnixStream::connect(&identity.control_socket)?;
+    let mut stream = unix_connect::connect(&identity.control_socket, HEALTH_PROBE_IO_TIMEOUT)?;
     stream.set_read_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
     stream.set_write_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
     stream.write_all(&bytes)?;
@@ -619,7 +622,7 @@ fn read_agent_drain_frame(
     identity: &AgentHealthProbeIdentity,
     request: &[u8],
 ) -> std::io::Result<Vec<u8>> {
-    let mut stream = std::os::unix::net::UnixStream::connect(&identity.control_socket)?;
+    let mut stream = unix_connect::connect(&identity.control_socket, HEALTH_PROBE_IO_TIMEOUT)?;
     stream.set_read_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
     stream.set_write_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
     stream.write_all(request)?;
@@ -734,7 +737,7 @@ fn query_matrix_health_once(
         });
     }
 
-    let mut stream = std::os::unix::net::UnixStream::connect(&identity.control_socket)?;
+    let mut stream = unix_connect::connect(&identity.control_socket, HEALTH_PROBE_IO_TIMEOUT)?;
     stream.set_read_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
     stream.set_write_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
     stream.write_all(&bytes)?;
