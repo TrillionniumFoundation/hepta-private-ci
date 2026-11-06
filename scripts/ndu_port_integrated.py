@@ -3,6 +3,7 @@
 import shutil
 
 from ndu_port_candidate_common import BUILD_AMENDMENT
+from ndu_port_candidate_common import DIAGNOSTIC_AMENDMENT
 from ndu_port_candidate_common import INTEGRATION
 from ndu_port_candidate_common import LOCKS
 from ndu_port_candidate_common import POLICIES
@@ -55,6 +56,12 @@ def generate_integrated(runner, expected_source):
             runner.output / "build-amendment.json",
         )
         amendment_artifacts += ("build-amendment.json",)
+    if "diagnostic_amendment" in binding:
+        shutil.copyfile(
+            runner.root / DIAGNOSTIC_AMENDMENT,
+            runner.output / "diagnostic-amendment.json",
+        )
+        amendment_artifacts += ("diagnostic-amendment.json",)
     # An explicitly declared empty delta binds this already committed source.
     # Patched mode still requires successful nonempty Git patch application.
     (runner.output / "candidate.patch").write_bytes(b"")

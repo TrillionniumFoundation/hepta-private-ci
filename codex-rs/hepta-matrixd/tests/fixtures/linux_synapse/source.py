@@ -315,6 +315,8 @@ def prepare_source(
             producer_names.append("dependency-amendment.json")
         if "build_amendment" in candidate["integration"]:
             producer_names.append("build-amendment.json")
+        if "diagnostic_amendment" in candidate["integration"]:
+            producer_names.append("diagnostic-amendment.json")
     for name in producer_names:
         copy_file(producer_dir / name, provenance / name)
     seal = {

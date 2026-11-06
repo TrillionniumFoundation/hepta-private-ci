@@ -669,6 +669,18 @@ def verify_integrated_source(runner, recipe, record=None, artifact=None):
             **describe(runner.root, (BUILD_AMENDMENT,))[BUILD_AMENDMENT],
         }
         manifest = {**manifest, "files": files, "file_modes": modes}
+    diagnostic = load_diagnostic_amendment(runner.root, files, modes)
+    diagnostic_identity = None
+    if diagnostic is not None:
+        files = dict(files)
+        for name, change in diagnostic["changes"].items():
+            files[name] = change["after"]
+        committed |= {DIAGNOSTIC_AMENDMENT, *diagnostic["proofs"]}
+        diagnostic_identity = {
+            "path": DIAGNOSTIC_AMENDMENT,
+            **describe(runner.root, (DIAGNOSTIC_AMENDMENT,))[DIAGNOSTIC_AMENDMENT],
+        }
+        manifest = {**manifest, "files": files}
     if describe(runner.root, expected) != files:
         raise ValueError("Integrated source or lock bytes differ from reviewed origin")
     if runner.text(
@@ -712,6 +724,8 @@ def verify_integrated_source(runner, recipe, record=None, artifact=None):
         binding["dependency_amendment"] = dependency_identity
     if build_identity is not None:
         binding["build_amendment"] = build_identity
+    if diagnostic_identity is not None:
+        binding["diagnostic_amendment"] = diagnostic_identity
     if record is not None:
         if (
             candidate_source_mode(record) != "integrated"
@@ -736,6 +750,12 @@ def verify_integrated_source(runner, recipe, record=None, artifact=None):
                 if dependency_identity
                 else None
             )
+            or record["artifacts"].get("diagnostic-amendment.json")
+            != (
+                {key: diagnostic_identity[key] for key in ("bytes", "sha256")}
+                if diagnostic_identity
+                else None
+            )
             or record["artifacts"].get("build-amendment.json")
             != (
                 {key: build_identity[key] for key in ("bytes", "sha256")}
@@ -758,6 +778,11 @@ def verify_integrated_source(runner, recipe, record=None, artifact=None):
                 dependency_identity is not None
                 and (artifact / "dependency-amendment.json").read_bytes()
                 != regular_path(runner.root, DEPENDENCY_AMENDMENT).read_bytes()
+            )
+            or (
+                diagnostic_identity is not None
+                and (artifact / "diagnostic-amendment.json").read_bytes()
+                != regular_path(runner.root, DIAGNOSTIC_AMENDMENT).read_bytes()
             )
             or (
                 build_identity is not None
@@ -1079,4 +1104,55 @@ def load_build_amendment(root, recipe):
         or current_blob != change["after_git_blob"]
     ):
         raise ValueError("Build amendment source identity or mode differs")
+    return amendment
+
+
+DIAGNOSTIC_AMENDMENT = "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/SOURCE_AMENDMENT.v7.4.json"
+DIAGNOSTIC_AMENDMENT_SHA256 = (
+    "56c5b2a709caa0ae7749e1281c9e6ac56085244303cdbb8b158fc26d1cf106d0"
+)
+DIAGNOSTIC_SOURCES = {
+    "codex-rs/hepta-matrix-sdk/src/sdk.rs",
+    "codex-rs/hepta-matrix-sdk/src/startup_deadline_tests.rs",
+}
+
+
+def load_diagnostic_amendment(root, files, modes):
+    """Bind two reviewed diagnostics without changing any historical source seal."""
+    path = regular_path(root, DIAGNOSTIC_AMENDMENT)
+    if not path.exists():
+        return None
+    raw = path.read_bytes()
+    if hashlib.sha256(raw).hexdigest() != DIAGNOSTIC_AMENDMENT_SHA256:
+        raise ValueError("Diagnostic amendment differs from its fixed review seal")
+    amendment = json.loads(raw)
+    if (
+        amendment["schema"] != "hepta.port-diagnostic-source-amendment.v1"
+        or amendment["operation"] != "bind-reviewed-sdk-stage-diagnostics"
+        or amendment["promotion_allowed"] is not False
+        or set(amendment["parents"])
+        != {
+            INTEGRATION,
+            RECIPE,
+            SOURCE_AMENDMENT,
+            DEPENDENCY_AMENDMENT,
+            BUILD_AMENDMENT,
+        }
+        or describe(root, amendment["parents"]) != amendment["parents"]
+        or set(amendment["locks"]) != set(LOCKS)
+        or describe(root, LOCKS) != amendment["locks"]
+        or set(amendment["changes"]) != DIAGNOSTIC_SOURCES
+        or describe(root, amendment["proofs"]) != amendment["proofs"]
+    ):
+        raise ValueError("Diagnostic amendment changed its parents, locks or proof")
+    for name, change in amendment["changes"].items():
+        path = regular_path(root, name)
+        actual_mode = "100755" if path.stat().st_mode & 0o111 else "100644"
+        if (
+            change["before"] != files.get(name)
+            or change["mode"] != modes.get(name)
+            or actual_mode != change["mode"]
+            or describe(root, (name,))[name] != change["after"]
+        ):
+            raise ValueError("Diagnostic source differs from its reviewed successor")
     return amendment

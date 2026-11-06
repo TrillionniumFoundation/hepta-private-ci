@@ -31,8 +31,11 @@ class DependencyAmendmentTests(unittest.TestCase):
         recipe = json.loads((ROOT / common.RECIPE).read_bytes())
         formatting = json.loads((ROOT / common.SOURCE_AMENDMENT).read_bytes())
         build = json.loads((ROOT / common.BUILD_AMENDMENT).read_bytes())
+        diagnostic = json.loads((ROOT / common.DIAGNOSTIC_AMENDMENT).read_bytes())
         names = {
             dependency.DEPENDENCY_AMENDMENT,
+            common.DIAGNOSTIC_AMENDMENT,
+            *diagnostic["proofs"],
             common.BUILD_AMENDMENT,
             *build["changes"],
             *(
@@ -277,6 +280,7 @@ class DependencyAmendmentTests(unittest.TestCase):
             (common.SOURCE_AMENDMENT, "source-amendment.json"),
             (dependency.DEPENDENCY_AMENDMENT, "dependency-amendment.json"),
             (common.BUILD_AMENDMENT, "build-amendment.json"),
+            (common.DIAGNOSTIC_AMENDMENT, "diagnostic-amendment.json"),
         ):
             shutil.copyfile(self.root / source, artifact / target)
         (artifact / "candidate.patch").write_bytes(b"")
@@ -295,6 +299,7 @@ class DependencyAmendmentTests(unittest.TestCase):
                     "source-amendment.json",
                     "dependency-amendment.json",
                     "build-amendment.json",
+                    "diagnostic-amendment.json",
                 ),
             ),
         }
@@ -317,6 +322,7 @@ class DependencyAmendmentTests(unittest.TestCase):
             (common.SOURCE_AMENDMENT, "source-amendment.json"),
             (dependency.DEPENDENCY_AMENDMENT, "dependency-amendment.json"),
             (common.BUILD_AMENDMENT, "build-amendment.json"),
+            (common.DIAGNOSTIC_AMENDMENT, "diagnostic-amendment.json"),
             (self.recipe["patch_path"], "source.patch"),
         ):
             shutil.copyfile(self.root / source, artifact / target)
@@ -344,6 +350,7 @@ class DependencyAmendmentTests(unittest.TestCase):
                     "source-amendment.json",
                     "dependency-amendment.json",
                     "build-amendment.json",
+                    "diagnostic-amendment.json",
                 ),
             ),
         }
