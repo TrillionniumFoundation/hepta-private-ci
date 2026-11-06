@@ -31,14 +31,18 @@ impl<D: ProcessDriver> Supervisor<D> {
             }
         };
         slot.signed_intent = intent.clone();
-        let anchor = if self.registry.is_release_intent_reconciliation() {
+        let mut history = if self.registry.is_release_intent_reconciliation() {
             None
         } else {
-            self.registry.release_intent_anchor(agent_id).ok()
+            self.registry.observe_release_intent_history(agent_id).ok()
         };
-        let exact = anchor.as_ref().is_some_and(|anchor| {
-            crate::signed_intent_anchor::check_previous(anchor.as_ref(), intent.as_ref(), record)
-                .is_ok()
+        let exact = history.as_ref().is_some_and(|history| {
+            crate::signed_intent_anchor::check_previous(
+                history.observed_anchor(),
+                intent.as_ref(),
+                record,
+            )
+            .is_ok()
         });
         if exact
             && intent.as_ref().is_none_or(|intent| {
@@ -55,9 +59,11 @@ impl<D: ProcessDriver> Supervisor<D> {
         // not absence. Preserve both snapshots for an explicit current ceremony.
         slot.intent_publication_fenced = true;
         let Some(intent) = intent else {
+            drop(history);
             return self.contain_signed_intent_processes(agent_id, slot);
         };
         if intent.agent_id != agent_id.as_str() {
+            drop(history);
             self.contain_signed_intent_processes(agent_id, slot)?;
             return Err(SupervisorError::Invalid(
                 "signed intent agent differs from its owner".to_string(),
@@ -73,13 +79,11 @@ impl<D: ProcessDriver> Supervisor<D> {
             recovery = intent
                 .with_status(SignedIntentStatus::RecoveryRequired)
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-            if crate::signed_intent_anchor::publish_history(
-                &self.registry,
-                record,
-                &intent,
-                &recovery,
-            )
-            .is_ok()
+            if let Some(history) = history.take()
+                && crate::signed_intent_anchor::publish_retained_history(
+                    history, record, &intent, &recovery,
+                )
+                .is_ok()
             {
                 slot.intent_publication_fenced = false;
             }
@@ -89,6 +93,9 @@ impl<D: ProcessDriver> Supervisor<D> {
         } else if exact && intent.requires_recovery() {
             slot.intent_publication_fenced = false;
         }
+        // Containment may enter other owners. Never carry the history lock
+        // into that phase or into a later explicit recovery directive.
+        drop(history);
         self.contain_signed_intent_processes(agent_id, slot)?;
         if slot.intent_publication_fenced
             || matches!(process_recovery, ProcessRecoveryStatus::Faulted)

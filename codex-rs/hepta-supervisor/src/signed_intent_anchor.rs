@@ -15,6 +15,7 @@ use codex_hepta_fleet::AgentRecord;
 use codex_hepta_fleet::CurrentReleaseAdmission;
 use codex_hepta_fleet::FleetRegistry;
 use codex_hepta_fleet::ReleaseIntentAnchorV1;
+use codex_hepta_fleet::ReleaseIntentHistory;
 use codex_hepta_fleet::ReleaseIntentPhaseV1;
 use codex_hepta_fleet::ReleaseIntentTerminalWitnessV1;
 use codex_hepta_fleet::ReleaseIntentWitnessKindV1;
@@ -50,16 +51,35 @@ pub(crate) fn snapshot_matches(
         && anchor.original_grant_policy_sha256 == policy)
 }
 
+pub(crate) enum HistoricalPolicyKeys<'a> {
+    Decode,
+    Prepared(&'a crate::H7H89ProductionGrantVerifier),
+}
+
 pub(crate) fn check_previous(
     anchor: Option<&ReleaseIntentAnchorV1>,
     previous: Option<&SignedSupervisorIntent>,
     record: &AgentRecord,
 ) -> Result<(), SupervisorError> {
+    check_previous_using_keys(anchor, previous, record, HistoricalPolicyKeys::Decode)
+}
+
+pub(crate) fn check_previous_using_keys(
+    anchor: Option<&ReleaseIntentAnchorV1>,
+    previous: Option<&SignedSupervisorIntent>,
+    record: &AgentRecord,
+    keys: HistoricalPolicyKeys<'_>,
+) -> Result<(), SupervisorError> {
     match (anchor, previous) {
         (None, None) => Ok(()),
         (Some(anchor), Some(intent)) if snapshot_matches(anchor, intent)? => {
             if let Some(proof) = &intent.pq_authority {
-                proof.verify_historical_for(intent)?;
+                match keys {
+                    HistoricalPolicyKeys::Decode => proof.verify_historical_for(intent)?,
+                    HistoricalPolicyKeys::Prepared(keys) => {
+                        proof.verify_historical_using_keys(intent, keys)?;
+                    }
+                }
             }
             if anchor.is_closed_history()
                 && anchor.terminal_witness != terminal_witness(intent, record)?
@@ -250,6 +270,39 @@ pub(crate) fn publish_history(
     let old = registry
         .release_intent_anchor(&record.release_state.agent_id)?
         .ok_or_else(|| error(&record.release_state.agent_id))?;
+    publish_observed_history(old, record, previous, next, |old, next| {
+        registry.record_intent_history(old, next)
+    })
+}
+
+/// Cold recovery carries the same history owner across its initial comparison.
+/// The second original history boundary still makes a fresh authenticated read.
+pub(crate) fn publish_retained_history(
+    history: ReleaseIntentHistory,
+    record: &AgentRecord,
+    previous: &SignedSupervisorIntent,
+    next: &SignedSupervisorIntent,
+) -> Result<(), SupervisorError> {
+    let old = history
+        .refresh_anchor()?
+        .ok_or_else(|| error(&record.release_state.agent_id))?;
+    publish_observed_history(old, record, previous, next, |old, next| {
+        history.record_quarantine(old, next)
+    })
+}
+
+// Both callers supply their actual Fleet append owner. Keep local predecessor,
+// proof, witness, durable write and post-confirmation ordering shared verbatim.
+fn publish_observed_history(
+    old: ReleaseIntentAnchorV1,
+    record: &AgentRecord,
+    previous: &SignedSupervisorIntent,
+    next: &SignedSupervisorIntent,
+    record_history: impl FnOnce(
+        &ReleaseIntentAnchorV1,
+        &ReleaseIntentAnchorV1,
+    ) -> Result<(), codex_hepta_fleet::FleetRegistryError>,
+) -> Result<(), SupervisorError> {
     check_previous(Some(&old), Some(previous), record)?;
     let actual = read_intent(record.layout.run_root())
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
@@ -261,7 +314,7 @@ pub(crate) fn publish_history(
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
     write_intent(record.layout.run_root(), next)
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-    registry.record_intent_history(&old, &next_anchor)?;
+    record_history(&old, &next_anchor)?;
     crate::signed_intent::predecessor::clear_after_confirmation(record.layout.run_root(), next)
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
     Ok(())

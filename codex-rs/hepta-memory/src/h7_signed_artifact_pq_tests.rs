@@ -354,3 +354,88 @@ fn pq_artifact_runtime_preserves_reload_rollback_and_replay_fences() {
             .is_err()
     );
 }
+
+#[test]
+fn pq_owned_verifier_preserves_actual_signature_and_authority_checks() {
+    let (_, artifact) = fixture();
+    let signer = pq_signer(/*seed*/ 96);
+    let key = PqNativeVerifier::from_pinned_spki(signer.public_spki(), signer.public_key_id())
+        .expect("prepared canonical key");
+    let verifier = H7ArtifactVerifier::from_pinned_pq_verifier(
+        signer.signer_id(),
+        signer.signer_epoch(),
+        key,
+        signer.public_key_id(),
+    )
+    .expect("owned pinned verifier");
+    let envelope = signer
+        .sign(
+            &artifact,
+            None,
+            H7SignedArtifactTransition::Reload,
+            0,
+            None,
+            ISSUED,
+            EXPIRES,
+        )
+        .expect("real PQ envelope");
+    verifier
+        .verify(&envelope, &artifact, None, NOW, 0, None)
+        .expect("complete artifact verification");
+    assert_eq!(verifier.pq_public_key_id(), Some(signer.public_key_id()));
+
+    let mut corrupt = envelope.clone();
+    let mut signature = STANDARD.decode(&corrupt.signature_base64).unwrap();
+    signature[100] ^= 1;
+    corrupt.signature_base64 = STANDARD.encode(signature);
+    assert_eq!(
+        verifier.verify_envelope_signature(&corrupt, NOW),
+        Err(H7SignedArtifactError::SignatureInvalid)
+    );
+    assert_eq!(
+        verifier.verify_envelope_signature(&envelope, EXPIRES),
+        Err(H7SignedArtifactError::Expired)
+    );
+    let mut promoted = envelope;
+    promoted.production_authority = true;
+    promoted.envelope_sha256 = promoted.payload_digest();
+    promoted.signature_base64 = STANDARD.encode(
+        signer
+            .signing_key
+            .sign_exact_message(&promoted.signing_bytes())
+            .unwrap(),
+    );
+    assert_eq!(
+        verifier.verify_envelope_signature(&promoted, NOW),
+        Err(H7SignedArtifactError::ProductionBoundary)
+    );
+}
+
+#[test]
+fn pq_owned_verifier_refuses_identity_epoch_and_key_pin_mismatch() {
+    let signer = pq_signer(/*seed*/ 97);
+    let mut other_pin = signer.public_key_id();
+    other_pin[0] ^= 1;
+    for (id, epoch, pin) in [
+        ("", signer.signer_epoch(), signer.public_key_id()),
+        (signer.signer_id(), 0, signer.public_key_id()),
+        (signer.signer_id(), signer.signer_epoch(), [0; 32]),
+        (signer.signer_id(), signer.signer_epoch(), other_pin),
+    ] {
+        let key = PqNativeVerifier::from_pinned_spki(signer.public_spki(), signer.public_key_id())
+            .expect("prepared key remains valid");
+        assert!(H7ArtifactVerifier::from_pinned_pq_verifier(id, epoch, key, pin).is_err());
+    }
+    let other = pq_signer(/*seed*/ 98);
+    let key = PqNativeVerifier::from_pinned_spki(other.public_spki(), other.public_key_id())
+        .expect("other valid key");
+    assert!(
+        H7ArtifactVerifier::from_pinned_pq_verifier(
+            signer.signer_id(),
+            signer.signer_epoch(),
+            key,
+            signer.public_key_id(),
+        )
+        .is_err()
+    );
+}

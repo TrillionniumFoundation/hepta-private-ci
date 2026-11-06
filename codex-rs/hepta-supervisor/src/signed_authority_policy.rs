@@ -172,11 +172,11 @@ impl H7H89ProductionGrantVerifier {
             artifact,
             recovery,
         } = decode_policy_with_keys(bytes)?;
-        let h7_verifier = H7ArtifactVerifier::from_pinned_spki(
+        let h7_verifier = H7ArtifactVerifier::from_pinned_pq_verifier(
             policy.artifact.signer_id.clone(),
             policy.artifact.signer_epoch,
-            artifact.public_spki(),
-            artifact.public_key_id(),
+            artifact,
+            policy.artifact.public_key_id,
         )
         .map_err(|error| ProductionAuthorityError::H7Binding(error.to_string()))?;
         Ok(Self {

@@ -17,7 +17,8 @@ use crate::signed_intent::SignedIntentStatus;
 use crate::signed_intent::SignedSupervisorIntent;
 use crate::signed_intent::read_intent;
 use crate::signed_intent::write_intent;
-use crate::signed_intent_anchor::check_previous;
+use crate::signed_intent_anchor::HistoricalPolicyKeys;
+use crate::signed_intent_anchor::check_previous_using_keys;
 use crate::signed_intent_anchor::next_anchor;
 use crate::signed_intent_anchor::snapshot_matches;
 use crate::signed_intent_confirmation::SignedIntentPublicationConfirmation;
@@ -142,10 +143,11 @@ fn check_origin(
     pending: Option<&ReleaseIntentAnchorV1>,
     current: &SignedSupervisorIntent,
     origin: &SignedSupervisorIntent,
+    keys: &H7H89ProductionGrantVerifier,
 ) -> Result<(), SupervisorError> {
     let agent = &record.release_state.agent_id;
     if let Some(proof) = &origin.pq_authority {
-        proof.verify_historical_for(origin)?;
+        proof.verify_historical_using_keys(origin, keys)?;
     }
     if let Some(pending) = pending
         && (pending.agent_id != *agent
@@ -154,14 +156,22 @@ fn check_origin(
         return Err(denied(agent));
     }
     match expected {
-        Some(anchor) if snapshot_matches(anchor, origin)? => {
-            check_previous(Some(anchor), Some(origin), record)
-        }
+        Some(anchor) if snapshot_matches(anchor, origin)? => check_previous_using_keys(
+            Some(anchor),
+            Some(origin),
+            record,
+            HistoricalPolicyKeys::Prepared(keys),
+        ),
         Some(anchor) => {
             let previous = crate::signed_intent::predecessor::read(record.layout.run_root())
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?
                 .ok_or_else(|| denied(agent))?;
-            check_previous(Some(anchor), Some(&previous), record)?;
+            check_previous_using_keys(
+                Some(anchor),
+                Some(&previous),
+                record,
+                HistoricalPolicyKeys::Prepared(keys),
+            )?;
             if origin.grant_sha256 == previous.grant_sha256 {
                 if !same_operation(origin, &previous)?
                     || previous.requires_recovery() && !origin.requires_recovery()
@@ -347,6 +357,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             admission.pending(),
             intent,
             &origin,
+            verifier,
         )?;
         let transaction = actual_unknown_transaction(
             record,

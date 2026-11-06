@@ -39,6 +39,41 @@ impl SignedIntentPqAuthority {
         let verifier = self
             .validated_verifier(intent)
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        self.verify_messages(intent, now, &verifier)
+    }
+
+    /// Reuse only immutable math inputs from a complete policy constructor.
+    /// Different raw bytes retain the original full constructor and checks.
+    fn verify_at_using_keys(
+        &self,
+        intent: &SignedSupervisorIntent,
+        now: u64,
+        keys: &H7H89ProductionGrantVerifier,
+    ) -> Result<(), SupervisorError> {
+        if keys.policy_bytes() != Some(self.policy_json.as_bytes()) {
+            return self.verify_at(intent, now);
+        }
+        self.validate_window()
+            .and_then(|()| self.validate_binding(intent, keys.policy_sha256()))
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        self.verify_messages(intent, now, keys)
+    }
+
+    pub(crate) fn verify_historical_using_keys(
+        &self,
+        intent: &SignedSupervisorIntent,
+        keys: &H7H89ProductionGrantVerifier,
+    ) -> Result<(), SupervisorError> {
+        self.verify_at_using_keys(intent, self.issued_at_unix_seconds, keys)
+    }
+
+    // Every call still checks both actual signatures and all original fences.
+    fn verify_messages(
+        &self,
+        intent: &SignedSupervisorIntent,
+        now: u64,
+        verifier: &H7H89ProductionGrantVerifier,
+    ) -> Result<(), SupervisorError> {
         let agent = codex_hepta_contracts::AgentId::parse(intent.agent_id.clone())
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         verifier

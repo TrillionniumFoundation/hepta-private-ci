@@ -8,6 +8,8 @@ use codex_hepta_fleet::FleetRegistry;
 pub(crate) struct MutationPolicyAdmission {
     guard: Option<CurrentProtocolConfigurationAdmission>,
     qualification_now_seconds: u64,
+    // Pure policy/key material only; every publication keeps its fresh owner.
+    policy_keys: H7H89ProductionGrantVerifier,
 }
 
 impl MutationPolicyAdmission {
@@ -29,6 +31,7 @@ impl MutationPolicyAdmission {
         Ok(Self {
             guard,
             qualification_now_seconds,
+            policy_keys: verifier.clone(),
         })
     }
 
@@ -71,13 +74,18 @@ impl MutationPolicyAdmission {
                 "ordinary publication requires the complete PQ grant proof".to_string(),
             )
         })?;
-        proof.verify_at(next, guard.revalidate()? / 1000)?;
+        proof.verify_at_using_keys(next, guard.revalidate()? / 1000, &self.policy_keys)?;
         let guard = guard.with_verified_decision_window(
             authority_milliseconds(proof.issued_at_unix_seconds)?,
             authority_milliseconds(proof.expires_at_unix_seconds)?,
         )?;
         let old = guard.intent_anchor(&record.release_state.agent_id)?;
-        crate::signed_intent_anchor::check_previous(old.as_ref(), previous, record)?;
+        crate::signed_intent_anchor::check_previous_using_keys(
+            old.as_ref(),
+            previous,
+            record,
+            crate::signed_intent_anchor::HistoricalPolicyKeys::Prepared(&self.policy_keys),
+        )?;
         if crate::signed_intent::read_intent(record.layout.run_root())
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?
             .as_ref()
@@ -100,6 +108,7 @@ impl MutationPolicyAdmission {
         Ok(Self {
             guard: Some(guard),
             qualification_now_seconds: self.qualification_now_seconds,
+            policy_keys: self.policy_keys,
         })
     }
 
@@ -151,6 +160,7 @@ impl MutationPolicyAdmission {
         Ok(Self {
             guard: Some(guard),
             qualification_now_seconds: self.qualification_now_seconds,
+            policy_keys: self.policy_keys,
         })
     }
 

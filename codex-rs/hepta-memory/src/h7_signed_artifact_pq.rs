@@ -146,6 +146,35 @@ impl H7ArtifactVerifier {
         })
     }
 
+    /// Takes ownership of canonical, pinned ML-DSA key material prepared by
+    /// this process. This carries no signature result or current role admission.
+    /// The artifact identity and explicit key pin are checked again here; every
+    /// envelope still goes through the ordinary complete verification path.
+    pub fn from_pinned_pq_verifier(
+        signer_id: impl Into<String>,
+        signer_epoch: u64,
+        verifier: PqNativeVerifier,
+        public_key_id: [u8; 32],
+    ) -> Result<Self, H7SignedArtifactError> {
+        let signer_id = signer_id.into();
+        validate_identifier(&signer_id, "PQ artifact signer id")?;
+        if signer_epoch == 0 || public_key_id == [0; 32] {
+            return Err(H7SignedArtifactError::Invalid(
+                "PQ artifact epoch or key ID is invalid".to_string(),
+            ));
+        }
+        if verifier.public_key_id() != public_key_id {
+            return Err(H7SignedArtifactError::Invalid(
+                "PQ artifact prepared key differs from its pin".to_string(),
+            ));
+        }
+        Ok(Self {
+            signer_id,
+            signer_epoch,
+            verifying_key: ArtifactVerifier::MlDsa65V2(Arc::new(verifier)),
+        })
+    }
+
     /// Returns the pinned PQ identity; a classical qualification key has none.
     pub fn pq_public_key_id(&self) -> Option<[u8; 32]> {
         match &self.verifying_key {
