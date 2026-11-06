@@ -18,10 +18,17 @@ use crate::model_worker::ResourceGrant;
 use crate::smollm_cognitive_host::SmolLmCognitiveCellHostInputsV2;
 use crate::smollm_cognitive_host::SmolLmCognitiveHostInputsV1;
 use crate::smollm_neural_read::ControlledCellInputsV2;
+use crate::smollm_neural_read::SmolLmMaterialRuntimeBridgeV1;
 use crate::smollm_neural_read::SmolLmNeuralReadConfigV1;
 
 const MAX_HOST_FILE_BYTES: u64 = 64 * 1024;
 const MAX_CONTRACT_BYTES: u64 = 1024 * 1024;
+
+#[derive(Clone, Copy)]
+enum RuntimeBindingMode {
+    CurrentV2,
+    MaterialBridgeV1,
+}
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -53,7 +60,11 @@ struct WorkerFile {
     run_directory: PathBuf,
     source_pins: BTreeMap<PathBuf, String>,
     runtime_snapshot: PinnedFile,
-    material_runtime_bridge: None,
+    #[serde(
+        default,
+        deserialize_with = "SmolLmMaterialRuntimeBridgeV1::deserialize_present"
+    )]
+    material_runtime_bridge: Option<SmolLmMaterialRuntimeBridgeV1>,
     target_contract: PinnedFile,
     wrapped_adapter: PinnedFile,
     contract_digest: String,
@@ -93,9 +104,32 @@ pub fn load_smollm_cognitive_cell_host_inputs_v2(
     path: &Path,
     expected: Digest32,
 ) -> Result<SmolLmCognitiveCellHostInputsV2, String> {
+    load_cell_host(path, expected, RuntimeBindingMode::CurrentV2)
+}
+
+/// Explicit fixed-material bridge; the existing Cell owner still verifies all
+/// sidecar, dependency and publication permissions.
+pub fn load_smollm_cognitive_cell_host_inputs_material_bridge_v1(
+    path: &Path,
+    expected: Digest32,
+) -> Result<SmolLmCognitiveCellHostInputsV2, String> {
+    load_cell_host(path, expected, RuntimeBindingMode::MaterialBridgeV1)
+}
+
+fn load_cell_host(
+    path: &Path,
+    expected: Digest32,
+    mode: RuntimeBindingMode,
+) -> Result<SmolLmCognitiveCellHostInputsV2, String> {
     let bytes = read_pinned_file(path, expected, MAX_HOST_FILE_BYTES)?;
     let file: CellHostFileV2 = serde_json::from_slice(&bytes).map_err(|error| error.to_string())?;
-    if file.schema != "hepta-smollm-cognitive-cell-host-v2" {
+    let schema = match mode {
+        RuntimeBindingMode::CurrentV2 => "hepta-smollm-cognitive-cell-host-v2",
+        RuntimeBindingMode::MaterialBridgeV1 => {
+            "hepta-smollm-cognitive-cell-host-material-bridge-v1"
+        }
+    };
+    if file.schema != schema {
         return Err("unsupported Cell neural cognitive host schema".to_owned());
     }
     let sidecar_digest = file
@@ -127,7 +161,7 @@ pub fn load_smollm_cognitive_cell_host_inputs_v2(
         return Err("Cell host dependency pin or operation identity".to_owned());
     }
     Ok(SmolLmCognitiveCellHostInputsV2 {
-        owner: decode_host(file.owner)?,
+        owner: decode_host(file.owner, mode)?,
         cell: ControlledCellInputsV2 {
             sidecar,
             sidecar_digest,
@@ -146,11 +180,31 @@ pub fn load_smollm_cognitive_host_inputs_v2(
 ) -> Result<SmolLmCognitiveHostInputsV1, String> {
     let bytes = read_pinned_file(path, expected, MAX_HOST_FILE_BYTES)?;
     let file: HostFile = serde_json::from_slice(&bytes).map_err(|error| error.to_string())?;
-    decode_host(file)
+    decode_host(file, RuntimeBindingMode::CurrentV2)
 }
 
-fn decode_host(file: HostFile) -> Result<SmolLmCognitiveHostInputsV1, String> {
-    if file.schema != "hepta-smollm-cognitive-host-v2" {
+/// Explicit schema selection, never inferred from parent or runtime bytes.
+pub fn load_smollm_cognitive_host_inputs_material_bridge_v1(
+    path: &Path,
+    expected: Digest32,
+) -> Result<SmolLmCognitiveHostInputsV1, String> {
+    let bytes = read_pinned_file(path, expected, MAX_HOST_FILE_BYTES)?;
+    let file: HostFile = serde_json::from_slice(&bytes).map_err(|error| error.to_string())?;
+    decode_host(file, RuntimeBindingMode::MaterialBridgeV1)
+}
+
+fn decode_host(
+    file: HostFile,
+    mode: RuntimeBindingMode,
+) -> Result<SmolLmCognitiveHostInputsV1, String> {
+    let schema = match mode {
+        RuntimeBindingMode::CurrentV2 => "hepta-smollm-cognitive-host-v2",
+        RuntimeBindingMode::MaterialBridgeV1 => "hepta-smollm-cognitive-host-material-bridge-v1",
+    };
+    if file.schema != schema
+        || file.worker.material_runtime_bridge.is_some()
+            != matches!(mode, RuntimeBindingMode::MaterialBridgeV1)
+    {
         return Err("unsupported neural cognitive host schema".to_owned());
     }
     let raw = file.worker;
@@ -214,7 +268,7 @@ fn decode_host(file: HostFile) -> Result<SmolLmCognitiveHostInputsV1, String> {
                     .map_err(|e| e.to_string())?,
                 /*limit*/ 16 * 1024 * 1024,
             )?,
-            material_runtime_bridge: None,
+            material_runtime_bridge: raw.material_runtime_bridge,
             target_contract,
             wrapped_adapter,
             contract_digest: raw

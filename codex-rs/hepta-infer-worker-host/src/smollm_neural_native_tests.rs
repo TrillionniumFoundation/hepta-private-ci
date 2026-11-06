@@ -21,6 +21,11 @@ struct NativeInput {
     python: PathBuf,
     runtime_snapshot: PathBuf,
     runtime_snapshot_sha256: String,
+    #[serde(
+        default,
+        deserialize_with = "crate::smollm_neural_read::SmolLmMaterialRuntimeBridgeV1::deserialize_present"
+    )]
+    material_runtime_bridge: Option<crate::smollm_neural_read::SmolLmMaterialRuntimeBridgeV1>,
     chain: PathBuf,
     materials: PathBuf,
     parent: PathBuf,
@@ -106,17 +111,23 @@ fn real_cell_release_original_signed_load_query_and_terminal_unload() -> Result<
 }
 
 fn run_original_native_case(input: NativeInput, route: NativeRoute) -> Result<(), Box<dyn Error>> {
-    if input.schema != "hepta-smollm-neural-native-check-v2"
-        || [
-            &input.python,
-            &input.runtime_snapshot,
-            &input.chain,
-            &input.materials,
-            &input.parent,
-            &input.output,
-        ]
-        .iter()
-        .any(|path| !path.is_absolute())
+    if !matches!(
+        (
+            input.schema.as_str(),
+            input.material_runtime_bridge.is_some()
+        ),
+        ("hepta-smollm-neural-native-check-v2", false)
+            | ("hepta-smollm-neural-native-check-material-bridge-v1", true)
+    ) || [
+        &input.python,
+        &input.runtime_snapshot,
+        &input.chain,
+        &input.materials,
+        &input.parent,
+        &input.output,
+    ]
+    .iter()
+    .any(|path| !path.is_absolute())
     {
         return Err("native check requires its explicit absolute project paths".into());
     }
@@ -174,7 +185,7 @@ fn run_original_native_case(input: NativeInput, route: NativeRoute) -> Result<()
         run_directory: input.output.join("owned-model-session"),
         source_pins,
         runtime_snapshot,
-        material_runtime_bridge: None,
+        material_runtime_bridge: input.material_runtime_bridge.clone(),
         target_contract: raw_contract,
         wrapped_adapter,
         contract_digest: parent["contract"]

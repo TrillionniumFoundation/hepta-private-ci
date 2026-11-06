@@ -206,3 +206,6 @@ fn cell_host_rejects_schema_field_pin_operation_and_local_file_rebinding() {
         assert!(!directory.path().join("journal").exists());
     }
 }
+
+#[path = "smollm_material_runtime_host_tests.rs"]
+mod material_bridge;
