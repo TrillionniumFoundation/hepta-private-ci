@@ -18,7 +18,7 @@ SOURCE_PATHS = (
     ".github/workflows/bazel.yml", ".github/scripts/run-bazel-ci.sh",
     ".github/scripts/run_bazel_with_buildbuddy.py", ".github/actions/prepare-bazel-ci/action.yml",
     ".github/scripts/run_openssh_diagnostic_ci.py", ".github/scripts/openssh_diagnostic_evidence.py",
-    ".bazelversion", ".bazelrc", "MODULE.bazel", "MODULE.bazel.lock", "defs.bzl",
+    ".bazelversion", ".bazelrc", ".gitattributes", "MODULE.bazel", "MODULE.bazel.lock", "defs.bzl",
     "codex-rs/Cargo.lock", "codex-rs/hepta-operator-acceptance/Cargo.toml",
     "codex-rs/hepta-operator-acceptance/BUILD.bazel",
     "codex-rs/hepta-operator-acceptance/src/trust_tests.rs",
@@ -41,18 +41,90 @@ def git(repo, *args):
 
 def source_snapshot(repo, output):
     head = git(repo, "rev-parse", "HEAD").decode().strip()
-    require(head == os.environ["GITHUB_SHA"], "checkout differs from workflow source")
-    git(repo, "diff", "--quiet", "HEAD", "--")
-    files = []
-    for name in SOURCE_PATHS:
-        raw = (repo / name).read_bytes()
-        blob = hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest()
-        expected = git(repo, "rev-parse", f"HEAD:{name}").decode().strip()
-        require(blob == expected and blob == DIAGNOSTIC_BLOBS.get(name, blob), "source byte mismatch")
-        record = preserve(raw, output / "source" / name)
-        files.append({"path": name, "git_blob": blob, **record})
-    result = {"head": head, "tree": git(repo, "rev-parse", "HEAD^{tree}").decode().strip(), "files": files}
-    write_json(output / "source.json", result)
+    result = {"head": head, "tree": git(repo, "rev-parse", "HEAD^{tree}").decode().strip(),
+              "files": [], "checkout_config": {}, "status": "INCOMPLETE"}
+    name = None
+    try:
+        require(head == os.environ["GITHUB_SHA"], "checkout differs from workflow source")
+        # Read only these public checkout settings, never a general config dump.
+        for key in ("core.autocrlf", "core.eol"):
+            value = subprocess.run(["git", "config", "--null", "--get-all", key],
+                                   cwd=repo, capture_output=True, check=False)
+            record = {"exit": value.returncode,
+                      "stdout": preserve(value.stdout, output / "config" / (key + ".stdout")),
+                      "stderr": preserve(value.stderr, output / "config" / (key + ".stderr"))}
+            result["checkout_config"][key] = record
+            require(record["stdout"]["raw_equal_published"] and record["stderr"]["raw_equal_published"],
+                    "checkout config retention was redacted")
+            require(value.returncode in (0, 1), "checkout config query failed")
+            require((value.returncode == 1 and not value.stdout)
+                    or (value.returncode == 0 and value.stdout.endswith(b"\0")),
+                    "checkout config query is incomplete")
+            record["values"] = [item.decode() for item in value.stdout.split(b"\0")[:-1]]
+        for name in SOURCE_PATHS:
+            raw = (repo / name).read_bytes()
+            blob = hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest()
+            record = {"path": name, "working_git_blob": blob,
+                      "working": preserve(raw, output / "source" / name)}
+            result["files"].append(record)
+            expected = git(repo, "rev-parse", f"HEAD:{name}").decode().strip()
+            canonical = git(repo, "cat-file", "blob", expected)
+            canonical_blob = hashlib.sha1(b"blob " + str(len(canonical)).encode()
+                                         + b"\0" + canonical).hexdigest()
+            record.update(expected_git_blob=expected, canonical_git_blob=canonical_blob,
+                          pinned_git_blob=DIAGNOSTIC_BLOBS.get(name),
+                          canonical=preserve(canonical, output / "canonical" / name))
+            # Preserve both actual worktree and Git object bytes before any byte rejection.
+            require(record["working"]["raw_equal_published"]
+                    and record["canonical"]["raw_equal_published"], "source retention was redacted")
+            require(canonical_blob == expected and expected == DIAGNOSTIC_BLOBS.get(name, expected),
+                    f"canonical source identity mismatch: {name}")
+            attrs = ("text", "eol", "filter", "ident", "working-tree-encoding")
+            for label, options in (("worktree_attributes", []), ("index_attributes", ["--cached"])):
+                observation = git(repo, "check-attr", *options, "-z", *attrs, "--", name)
+                record[label] = {"raw": preserve(observation, output / label / name)}
+                require(record[label]["raw"]["raw_equal_published"],
+                        "checkout attributes retention was redacted")
+                fields = observation.split(b"\0")
+                require(fields[-1] == b"" and len(fields) == 3 * len(attrs) + 1,
+                        "incomplete checkout attributes")
+                triples = [fields[i:i + 3] for i in range(0, len(fields) - 1, 3)]
+                require(all(path.decode() == name for path, _, _ in triples)
+                        and [key.decode() for _, key, _ in triples] == list(attrs),
+                        "checkout attributes name mismatch")
+                record[label]["values"] = {key.decode(): value.decode() for _, key, value in triples}
+            actual = record["worktree_attributes"]["values"]
+            require(actual == record["index_attributes"]["values"], "checkout attributes changed")
+            require(all(actual[key] in ("unspecified", "unset")
+                        for key in ("filter", "ident", "working-tree-encoding")),
+                    "unsupported source content conversion")
+            if raw == canonical:
+                record["conversion"] = "NONE"
+                continue
+            autocrlf = result["checkout_config"]["core.autocrlf"]["values"]
+            eol = result["checkout_config"]["core.eol"]["values"]
+            autocrlf = autocrlf[-1].lower() if autocrlf else "false"
+            eol = eol[-1].lower() if eol else "unspecified"
+            supported_text = actual["text"] in ("set", "auto", "unspecified")
+            explicit_crlf = actual["eol"] == "crlf"
+            configured_crlf = actual["eol"] == "unspecified" and (
+                autocrlf == "true" or (autocrlf == "false" and eol == "crlf"
+                                       and actual["text"] in ("set", "auto")))
+            require(supported_text and (explicit_crlf or configured_crlf)
+                    and b"\0" not in canonical and b"\r" not in canonical and b"\n" in canonical
+                    and raw == canonical.replace(b"\n", b"\r\n"),
+                    f"source byte mismatch: {name}")
+            record["conversion"] = "EXACT_CANONICAL_LF_TO_CHECKOUT_CRLF"
+        # Keep the original complete tracked-source cleanliness gate. It runs
+        # after retention so a dirty source cannot erase its own failure evidence.
+        name = None
+        git(repo, "diff", "--quiet", "HEAD", "--")
+        result["status"] = "SOURCE_OBSERVED"
+    except Exception as error:
+        result["error"] = {"path": name, "type": type(error).__name__, "message": str(error)}
+        raise
+    finally:
+        write_json(output / "source.json", result)
     return result
 
 
