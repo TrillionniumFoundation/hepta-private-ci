@@ -1,0 +1,2009 @@
+{
+  "format": "native-blocker-evidence-v1",
+  "purpose": "vodo_native5119",
+  "snapshot_utc": "2026-11-06 20:00:00 UTC",
+  "qualification": {
+    "failed_5090_original_preserved": {
+      "scope": "Independent audit of original failed #5090 native run; no product proposal accepted",
+      "source_head": "90b1c924f1ad7993a0b25f2d54749221f1045276",
+      "source_tree": "73fd7bbfdeeded8700f6d2ca6ebc39dea5574df9",
+      "run_id": 42255680239,
+      "job_id": 128022112134,
+      "artifact_id": 13528480009,
+      "archive": {
+        "bytes": 4968456,
+        "sha256": "db850a3880ef73d645a1e8cccd412b331bb6f086b7fb34387b904150ee3ba2c0",
+        "git_blob": "9053d5492fe878422ddc90bb6b0f18152a0aab18"
+      },
+      "original_raw_log": {
+        "bytes": 1544212,
+        "sha256": "28f0dd8a9b7fb67863ca49dbd907ccc2786dffd5cb8da29ae6094a4b065c3fa3",
+        "git_blob": "bf22a373034f96159fd91a54c7c60153efe4249f"
+      },
+      "zip_members_crc_and_complete_manifest_identities_verified": 40,
+      "full_source_tree_independently_rebuilt": true,
+      "native_command_records_all_exit_zero": [
+        {
+          "argv": [
+            "cargo",
+            "+1.96.0",
+            "--version"
+          ],
+          "cwd": ".",
+          "exit_code": 0,
+          "stage": "cargo-version"
+        },
+        {
+          "argv": [
+            "rustc",
+            "+1.96.0",
+            "--version"
+          ],
+          "cwd": ".",
+          "exit_code": 0,
+          "stage": "rustc-version"
+        },
+        {
+          "argv": [
+            "cargo",
+            "+1.96.0",
+            "deny",
+            "--version"
+          ],
+          "cwd": ".",
+          "exit_code": 0,
+          "stage": "deny-version"
+        },
+        {
+          "argv": [
+            "just",
+            "--version"
+          ],
+          "cwd": ".",
+          "exit_code": 0,
+          "stage": "just-version"
+        },
+        {
+          "argv": [
+            "bazel",
+            "--version"
+          ],
+          "cwd": ".",
+          "exit_code": 0,
+          "stage": "bazel-version"
+        },
+        {
+          "argv": [
+            "cargo",
+            "+1.96.0",
+            "metadata",
+            "--locked",
+            "--no-deps",
+            "--format-version",
+            "1"
+          ],
+          "cwd": "codex-rs",
+          "exit_code": 0,
+          "stage": "workspace-before"
+        },
+        {
+          "argv": [
+            "./scripts/check-module-bazel-lock.sh"
+          ],
+          "cwd": ".",
+          "exit_code": 0,
+          "stage": "baseline-bazel-lock-check"
+        },
+        {
+          "argv": [
+            "cargo",
+            "+1.96.0",
+            "update",
+            "-p",
+            "vodozemac@0.11.1",
+            "--precise",
+            "0.11.2"
+          ],
+          "cwd": "codex-rs",
+          "exit_code": 0,
+          "stage": "cargo-lock-update"
+        },
+        {
+          "argv": [
+            "cargo",
+            "+1.96.0",
+            "update",
+            "-p",
+            "itertools@0.14.0",
+            "--precise",
+            "0.14.0"
+          ],
+          "cwd": "codex-rs",
+          "exit_code": 0,
+          "stage": "cargo-existing-itertools-update"
+        },
+        {
+          "argv": [
+            "cargo",
+            "+1.96.0",
+            "update",
+            "-p",
+            "getrandom@0.3.4",
+            "--precise",
+            "0.3.4"
+          ],
+          "cwd": "codex-rs",
+          "exit_code": 0,
+          "stage": "cargo-existing-getrandom-update"
+        },
+        {
+          "argv": [
+            "cargo",
+            "+1.96.0",
+            "update",
+            "-p",
+            "vodozemac@0.11.2",
+            "--precise",
+            "0.11.2"
+          ],
+          "cwd": "codex-rs",
+          "exit_code": 0,
+          "stage": "cargo-lock-repeat"
+        },
+        {
+          "argv": [
+            "cargo",
+            "+1.96.0",
+            "update",
+            "-p",
+            "itertools@0.14.0",
+            "--precise",
+            "0.14.0"
+          ],
+          "cwd": "codex-rs",
+          "exit_code": 0,
+          "stage": "cargo-existing-itertools-repeat"
+        },
+        {
+          "argv": [
+            "cargo",
+            "+1.96.0",
+            "update",
+            "-p",
+            "getrandom@0.3.4",
+            "--precise",
+            "0.3.4"
+          ],
+          "cwd": "codex-rs",
+          "exit_code": 0,
+          "stage": "cargo-existing-getrandom-repeat"
+        },
+        {
+          "argv": [
+            "cargo",
+            "+1.96.0",
+            "metadata",
+            "--locked",
+            "--no-deps",
+            "--format-version",
+            "1"
+          ],
+          "cwd": "codex-rs",
+          "exit_code": 0,
+          "stage": "workspace-after"
+        },
+        {
+          "argv": [
+            "cargo",
+            "+1.96.0",
+            "tree",
+            "--locked",
+            "--package",
+            "vodozemac@0.11.2",
+            "--target",
+            "all",
+            "--edges",
+            "normal,build",
+            "--prefix",
+            "none",
+            "--format",
+            "{p}|{f}"
+          ],
+          "cwd": "codex-rs",
+          "exit_code": 0,
+          "stage": "features-after"
+        }
+      ],
+      "all_command_exit_records_also_found_in_original_console": true,
+      "cargo_graph_guard_replay": {
+        "package_count_unchanged": 1528,
+        "only_package_identity_change": {
+          "name": "vodozemac",
+          "before": "0.11.1",
+          "after": "0.11.2"
+        },
+        "added_existing_zeroize_edges": [
+          {
+            "name": "chacha20",
+            "version": "0.10.0",
+            "dependency": "zeroize"
+          },
+          {
+            "name": "chacha20poly1305",
+            "version": "0.11.0",
+            "dependency": "zeroize"
+          },
+          {
+            "name": "cipher",
+            "version": "0.5.2",
+            "dependency": "zeroize"
+          }
+        ],
+        "all_other_versions_sources_checksums_fields_and_edges_identical": true,
+        "workspace_and_vendor_packages_unchanged": true
+      },
+      "cargo_lock_identity": {
+        "bytes": 419311,
+        "sha256": "df62d73836673ec7cfb69d8f232cb81be610cea94e8ce95f81d41235f4a3317f",
+        "git_blob": "4807d7da16d576a6f34830ff1039e3224808c7b4"
+      },
+      "cargo_repeat_boundary": "Pinned producer reached features-after only after enforcing byte repeat and workspace-members checks",
+      "workspace_metadata_equal": true,
+      "old_module_lock_and_manifest_unchanged": true,
+      "original_raw_feature_guard_failure_reproduced": "ZEROIZE_FEATURE_NOT_RESOLVED",
+      "new_bazel_lock_and_deny_executed": false,
+      "product_integration_allowed": false,
+      "original_native_evidence_rewritten": false
+    },
+    "successful_5108_original": {
+      "scope": "Read-only independent audit of actual #5108 native proposal output; no lock regeneration, product integration or full-head qualification",
+      "source_head": "f11cc0a1c46f4a1a49e21580a80a9306b42f5dfa",
+      "source_tree": "c01815f9a8aac7116747a2d6895060b8c646deb3",
+      "source_parent": "90b1c924f1ad7993a0b25f2d54749221f1045276",
+      "run_id": 42269231206,
+      "job_id": 128069141553,
+      "artifact_id": 13532386250,
+      "archive": {
+        "bytes": 5882120,
+        "sha256": "47ac0b11330212d9836fda483369173365eb3729c131367c618450761884eaa5",
+        "git_blob": "caaf60e0de9e2e3eeec4e708444a6e6aea911d99"
+      },
+      "payload_files_all_verified": 46,
+      "native_exact_command_sequence_exit_zero": [
+        {
+          "stage": "cargo-version",
+          "argv": [
+            "cargo",
+            "+1.96.0",
+            "--version"
+          ],
+          "cwd": ".",
+          "exit_code": 0
+        },
+        {
+          "stage": "rustc-version",
+          "argv": [
+            "rustc",
+            "+1.96.0",
+            "--version"
+          ],
+          "cwd": ".",
+          "exit_code": 0
+        },
+        {
+          "stage": "deny-version",
+          "argv": [
+            "cargo",
+            "+1.96.0",
+            "deny",
+            "--version"
+          ],
+          "cwd": ".",
+          "exit_code": 0
+        },
+        {
+          "stage": "just-version",
+          "argv": [
+            "just",
+            "--version"
+          ],
+          "cwd": ".",
+          "exit_code": 0
+        },
+        {
+          "stage": "bazel-version",
+          "argv": [
+            "bazel",
+            "--version"
+          ],
+          "cwd": ".",
+          "exit_code": 0
+        },
+        {
+          "stage": "workspace-before",
+          "argv": [
+            "cargo",
+            "+1.96.0",
+            "metadata",
+            "--locked",
+            "--no-deps",
+            "--format-version",
+            "1"
+          ],
+          "cwd": "codex-rs",
+          "exit_code": 0
+        },
+        {
+          "stage": "baseline-bazel-lock-check",
+          "argv": [
+            "./scripts/check-module-bazel-lock.sh"
+          ],
+          "cwd": ".",
+          "exit_code": 0
+        },
+        {
+          "stage": "cargo-lock-update",
+          "argv": [
+            "cargo",
+            "+1.96.0",
+            "update",
+            "-p",
+            "vodozemac@0.11.1",
+            "--precise",
+            "0.11.2"
+          ],
+          "cwd": "codex-rs",
+          "exit_code": 0
+        },
+        {
+          "stage": "cargo-existing-itertools-update",
+          "argv": [
+            "cargo",
+            "+1.96.0",
+            "update",
+            "-p",
+            "itertools@0.14.0",
+            "--precise",
+            "0.14.0"
+          ],
+          "cwd": "codex-rs",
+          "exit_code": 0
+        },
+        {
+          "stage": "cargo-existing-getrandom-update",
+          "argv": [
+            "cargo",
+            "+1.96.0",
+            "update",
+            "-p",
+            "getrandom@0.3.4",
+            "--precise",
+            "0.3.4"
+          ],
+          "cwd": "codex-rs",
+          "exit_code": 0
+        },
+        {
+          "stage": "cargo-lock-repeat",
+          "argv": [
+            "cargo",
+            "+1.96.0",
+            "update",
+            "-p",
+            "vodozemac@0.11.2",
+            "--precise",
+            "0.11.2"
+          ],
+          "cwd": "codex-rs",
+          "exit_code": 0
+        },
+        {
+          "stage": "cargo-existing-itertools-repeat",
+          "argv": [
+            "cargo",
+            "+1.96.0",
+            "update",
+            "-p",
+            "itertools@0.14.0",
+            "--precise",
+            "0.14.0"
+          ],
+          "cwd": "codex-rs",
+          "exit_code": 0
+        },
+        {
+          "stage": "cargo-existing-getrandom-repeat",
+          "argv": [
+            "cargo",
+            "+1.96.0",
+            "update",
+            "-p",
+            "getrandom@0.3.4",
+            "--precise",
+            "0.3.4"
+          ],
+          "cwd": "codex-rs",
+          "exit_code": 0
+        },
+        {
+          "stage": "workspace-after",
+          "argv": [
+            "cargo",
+            "+1.96.0",
+            "metadata",
+            "--locked",
+            "--no-deps",
+            "--format-version",
+            "1"
+          ],
+          "cwd": "codex-rs",
+          "exit_code": 0
+        },
+        {
+          "stage": "features-after",
+          "argv": [
+            "cargo",
+            "+1.96.0",
+            "tree",
+            "--color",
+            "never",
+            "--locked",
+            "--package",
+            "vodozemac@0.11.2",
+            "--target",
+            "all",
+            "--edges",
+            "normal,build",
+            "--prefix",
+            "none",
+            "--format",
+            "{p}|{f}"
+          ],
+          "cwd": "codex-rs",
+          "exit_code": 0
+        },
+        {
+          "stage": "bazel-lock-update",
+          "argv": [
+            "just",
+            "bazel-lock-update"
+          ],
+          "cwd": ".",
+          "exit_code": 0
+        },
+        {
+          "stage": "bazel-lock-check",
+          "argv": [
+            "./scripts/check-module-bazel-lock.sh"
+          ],
+          "cwd": ".",
+          "exit_code": 0
+        },
+        {
+          "stage": "bazel-lock-repeat",
+          "argv": [
+            "just",
+            "bazel-lock-update"
+          ],
+          "cwd": ".",
+          "exit_code": 0
+        },
+        {
+          "stage": "bazel-lock-check-repeat",
+          "argv": [
+            "./scripts/check-module-bazel-lock.sh"
+          ],
+          "cwd": ".",
+          "exit_code": 0
+        },
+        {
+          "stage": "cargo-deny-original",
+          "argv": [
+            "cargo-deny",
+            "--log-level",
+            "warn",
+            "--manifest-path",
+            "./codex-rs/Cargo.toml",
+            "--all-features",
+            "check"
+          ],
+          "cwd": ".",
+          "exit_code": 0
+        }
+      ],
+      "fixed_guard_blobs": {
+        "propose_vodozemac_lock.py": "a8c2bb234d9c000be60e325f2acefe32c18b8027",
+        "vodozemac_proposal_evidence.py": "df92074358560c9d439323054cab12c2d0c9c7f6",
+        "vodozemac_lock_guards.py": "976dde7034708c37cb972e494640c9ea53afda33",
+        "vodozemac-lock-spec.json": "74376db93a746fbdd359e217e2e38d8d50a8fde1"
+      },
+      "original_guard_replay": {
+        "archive": {
+          "official_archives_verified": {
+            "0.11.1": "9e322119358132f5fa8e529de9ed9af4cd67ae71ffc6f12c133f75d5c4ec9637",
+            "0.11.2": "cafdb6875115a436251b280d741286a9cec7fc4daab0588ea26481dd8e2bab2f"
+          },
+          "only_manifest_changes": "patch version and six declared zeroize features",
+          "license_unchanged": {
+            "bytes": 10174,
+            "sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594",
+            "git_blob": "f433b1a53f5b830a205fd2df78e2b34974656c7b"
+          },
+          "rust_version_unchanged": "1.89"
+        },
+        "graph": {
+          "package_count_unchanged": 1528,
+          "only_package_identity_change": {
+            "name": "vodozemac",
+            "before": "0.11.1",
+            "after": "0.11.2"
+          },
+          "added_existing_zeroize_edges": [
+            {
+              "dependency": "zeroize",
+              "name": "chacha20",
+              "version": "0.10.0"
+            },
+            {
+              "dependency": "zeroize",
+              "name": "chacha20poly1305",
+              "version": "0.11.0"
+            },
+            {
+              "dependency": "zeroize",
+              "name": "cipher",
+              "version": "0.5.2"
+            }
+          ],
+          "all_other_versions_sources_checksums_fields_and_edges_identical": true,
+          "workspace_and_vendor_packages_unchanged": true
+        },
+        "module": {
+          "only_removed_fact": "vodozemac_0.11.1",
+          "only_added_fact": "vodozemac_0.11.2",
+          "only_dependency_metadata_change": "six zeroize feature additions",
+          "external_tooling_facts_retained_byte_identical": {
+            "hyper_1.8.1": "ea4c91b251c48158d603abf77e90b99d0ced024a18fa2b9f4dce6435836d4d09",
+            "pin-utils_0.1.0": "065b7d53d3d5f7cd38c1e54cdd9a0d3181f46b8d3d7653bdf8691909ad354d9e"
+          },
+          "all_other_module_fields_identical": true
+        },
+        "features": {
+          "native_cargo_tree_features": {
+            "aes@0.9.3": [
+              [
+                "zeroize"
+              ]
+            ],
+            "cbc@0.2.1": [
+              [
+                "block-padding",
+                "default",
+                "zeroize"
+              ]
+            ],
+            "chacha20poly1305@0.11.0": [
+              [
+                "alloc",
+                "default",
+                "getrandom",
+                "zeroize"
+              ]
+            ],
+            "cipher@0.5.2": [
+              [
+                "alloc",
+                "block-buffer",
+                "block-padding",
+                "stream-wrapper",
+                "zeroize"
+              ]
+            ],
+            "hmac@0.13.0": [
+              [
+                "zeroize"
+              ]
+            ],
+            "sha2@0.11.0": [
+              [
+                "alloc",
+                "default",
+                "oid",
+                "zeroize"
+              ]
+            ],
+            "chacha20@0.10.0": [
+              [
+                "cipher",
+                "rng",
+                "xchacha",
+                "zeroize"
+              ]
+            ]
+          },
+          "scope": "Declared Cargo tree resolution; not a substitute for complete-head native compilation and tests."
+        }
+      },
+      "full_source_tree_reconstructed": "c01815f9a8aac7116747a2d6895060b8c646deb3",
+      "full_candidate_tree_reconstructed": "1bbbd6a333549bb2c7d9973b2dab5c20cb466b6d",
+      "workspace_metadata_before_after_equal": true,
+      "native_cargo_lock_byte_identical_to_local_twice_generated_candidate": true,
+      "native_generator_reports_both_locks_repeat_equal": true,
+      "independent_two_file_forward_reverse_patch": true,
+      "product_paths": {
+        "MODULE.bazel.lock": {
+          "mode": "100644",
+          "before": {
+            "bytes": 1725804,
+            "sha256": "333b2545bd671a88aeb762afd74c725801138f8f53ddfc30af1e75b5f446deed",
+            "git_blob": "343f80934bb215a7a14fc6618e45947305039b9b"
+          },
+          "after": {
+            "bytes": 1725951,
+            "sha256": "90225dce14839069862401db906babcee1d1f19349f2da87024740e97747adaf",
+            "git_blob": "7d77e06d95a3e4d014870990031d5920bc779939"
+          }
+        },
+        "codex-rs/Cargo.lock": {
+          "mode": "100644",
+          "before": {
+            "bytes": 419275,
+            "sha256": "70d1590734ce663b956981e5c3e7253c6b712039ca5e11e090487a371fbece7b",
+            "git_blob": "e774ae5331457117f576e44f16643ccd44684af4"
+          },
+          "after": {
+            "bytes": 419311,
+            "sha256": "df62d73836673ec7cfb69d8f232cb81be610cea94e8ce95f81d41235f4a3317f",
+            "git_blob": "4807d7da16d576a6f34830ff1039e3224808c7b4"
+          }
+        }
+      },
+      "complete_current_product_head_native_gate": "PENDING after root-reviewed integration"
+    },
+    "product_locks_published": {
+      "pull_request": 5115,
+      "head": "b36bd44b00d8130d821c15e172e34542c9470d7c",
+      "tree": "9dd1191cc10992b27c6cdab61fdb1b492baaeceb"
+    },
+    "additive_source_seal_published": {
+      "data_pull_request": 5118,
+      "guards_pull_request": 5119,
+      "head": "7c8c11d1feee3b48edcc43151dfdb698360e2255",
+      "tree": "bae605da14265a4ba9797d0db6b594f89d7baefc"
+    },
+    "source_specific_v7_5_producer": {
+      "scope": "Independent retained-artifact identity and provenance verification; no native commands rerun here",
+      "pull_request": 5119,
+      "source_head": "7c8c11d1feee3b48edcc43151dfdb698360e2255",
+      "source_tree": "bae605da14265a4ba9797d0db6b594f89d7baefc",
+      "run_id": 42281242395,
+      "producer_job_id": 128110449651,
+      "artifact_id": 13534909684,
+      "artifact_zip": {
+        "bytes": 2450050,
+        "sha256": "5418fb0fdb31e7a530661a3588faf72a20494ceca58d522fa419e48bbbbff9c5",
+        "git_blob": "aa755429ed5e3c6907ecd68d653afe2650c86164"
+      },
+      "original_job_log": {
+        "bytes": 929788,
+        "sha256": "5c943deda5f870eedd6fb0750576ad8337a51d2521a3728640b21964a438644f",
+        "git_blob": "be44a2312ed1bd701c0120a3e2416ef1db764b5d"
+      },
+      "result": {
+        "bytes": 136019,
+        "sha256": "f950bc8945c6f47156d37b31c9b6f432e8c770a99ecd0d3a091304a5a118f2a7",
+        "git_blob": "7e74901f5fee5827f618e28453d88786f8f202fb"
+      },
+      "all_artifact_payload_files_verified": 353,
+      "source_files_verified_against_result_and_native_git_tree_output": 320,
+      "native_committed_entry_count": 345,
+      "native_command_logs_verified": 21,
+      "all_native_commands_exit_zero": true,
+      "whole_zip_digest_and_all_353_member_crc_reads_verified": true,
+      "compared_to_5081_source_files_changed": [
+        "MODULE.bazel.lock",
+        "codex-rs/Cargo.lock"
+      ],
+      "two_locks_equal_original_5108_native_outputs": true,
+      "all_six_older_transported_seal_bytes_unchanged": true,
+      "new_seal_and_all_11_proof_committed_blobs_and_100644_modes_verified": true,
+      "new_sealed_lock_amendment": {
+        "path": "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/LOCK_AMENDMENT.v7.5.json",
+        "bytes": 5700,
+        "sha256": "1642fee9bf4497169d2a2645e01864e8c74435071887dcea7bc2c8315123ab83"
+      },
+      "actual_boundary_test_groups": [
+        97,
+        32,
+        16
+      ],
+      "git_head_and_tree_before_after_exact": true,
+      "committed_bytes_and_modes_before_after_exact": true,
+      "executable_committed_files_in_transport": [
+        "codex-rs/third_party/aws-smithy-http-0.62.6-pin-backport/additional-ci",
+        "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/additional-ci",
+        "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/additional-ci"
+      ],
+      "candidate_patch_bytes": 0,
+      "workspace_index_tracked_and_untracked_drift": false,
+      "cargo_and_bazel_lock_drift": false,
+      "metadata_before_after_bazel_byte_identical": true,
+      "five_exact_backport_sources_verified": {
+        "hyper@1.8.1": {
+          "source": null,
+          "manifest_path": "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/hyper-1.8.1-pin-backport/Cargo.toml",
+          "package_id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/hyper-1.8.1-pin-backport#hyper@1.8.1"
+        },
+        "loom@0.7.2": {
+          "source": null,
+          "manifest_path": "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/loom-0.7.2-pin-backport/Cargo.toml",
+          "package_id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/loom-0.7.2-pin-backport#loom@0.7.2"
+        },
+        "aws-smithy-http@0.62.6": {
+          "source": null,
+          "manifest_path": "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/aws-smithy-http-0.62.6-pin-backport/Cargo.toml",
+          "package_id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/aws-smithy-http-0.62.6-pin-backport#aws-smithy-http@0.62.6"
+        },
+        "aws-smithy-runtime@1.9.5": {
+          "source": null,
+          "manifest_path": "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/Cargo.toml",
+          "package_id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport#aws-smithy-runtime@1.9.5"
+        },
+        "aws-smithy-types@1.4.7": {
+          "source": null,
+          "manifest_path": "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/Cargo.toml",
+          "package_id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport#aws-smithy-types@1.4.7"
+        }
+      },
+      "sealed_diagnostic_successor": {
+        "path": "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/SOURCE_AMENDMENT.v7.4.json",
+        "bytes": 3111,
+        "sha256": "56c5b2a709caa0ae7749e1281c9e6ac56085244303cdbb8b158fc26d1cf106d0"
+      },
+      "qualification_boundary": "Committed source and real zero-drift Cargo/Bazel lock verification only. Same-run unchanged cargo-deny, old-store reopen, behavioral tests and platform qualification remain separate.",
+      "promotion_allowed": false,
+      "other_jobs_still_separate": [
+        "full-scope candidate cargo-deny",
+        "old-store fixture and reopen",
+        "behavioral and platform qualification"
+      ],
+      "vodozemac_security_upgrade_in_this_source": true
+    },
+    "full_current_product_or_platform_qualification": false,
+    "all_three_original_native_proposal_and_producer_ZIPs_retained_whole": true,
+    "recovery_or_core_sdk_other_qualification_inferred": false
+  },
+  "evidence_policy": "Every listed input is retained byte for byte. Restoration produces inert regular 0644 files and never executes archived sources. The qualification and explicit archive-retention scope identify any omitted compiled executables or original ZIP containers; no omitted bytes are claimed restorable from this packet.",
+  "archive_bytes": 28538880,
+  "archive_sha256": "f13fed0c7a5e1f7b1ad376f068fc006c998ec8dab4b790f05acfd7d3fcccf602",
+  "compressed_bytes": 8381492,
+  "compressed_sha256": "45ca8a0dd6eb7acf5caf319ad3c329603893c5d11b6ada5669e6b8b002ab8887",
+  "parts": [
+    {
+      "name": "native-evidence.tar.xz.part000.gz",
+      "bytes": 439921,
+      "sha256": "3501192c9504135c97ff4fc63c1121a79c77795b4838faafebca573da0985a50",
+      "git_blob": "b34bdad86d64c9124a3b22fc02a9380209c44336",
+      "segment_bytes": 440000,
+      "segment_sha256": "34c5477293474b15751c3fead415ce7f184d00612f53d9d45eaee4b09994ec21"
+    },
+    {
+      "name": "native-evidence.tar.xz.part001.gz",
+      "bytes": 440153,
+      "sha256": "b54e65e1aa07f01ca18961ef9cb68e1275a8cfb3bdd3d29de8696dcd1e2965f0",
+      "git_blob": "24db98e4c776f08e07358f2d28b9313ba969877f",
+      "segment_bytes": 440000,
+      "segment_sha256": "ece465708566e113d1fd11e784b4402c189376cd6dde32a3acc44451821a2c7c"
+    },
+    {
+      "name": "native-evidence.tar.xz.part002.gz",
+      "bytes": 440021,
+      "sha256": "838fbe43b97ca389f4a7478d1be120f05080d7e8fe570db14c005cec620342e5",
+      "git_blob": "8a06c76ddd41d3ed62648ca22c2a4f3fd68a3aa6",
+      "segment_bytes": 440000,
+      "segment_sha256": "4f43dc6922fb7199594420697d38381b74480a47447fe97a37d6e291d907ffa6"
+    },
+    {
+      "name": "native-evidence.tar.xz.part003.gz",
+      "bytes": 439742,
+      "sha256": "49da06645c4df98cb245026492dfed23ff48d1e27db5c189b16ec9c2b0cd4ef5",
+      "git_blob": "b0ff444f6ee04e4ebdf7ebc1e257ba540e296d0d",
+      "segment_bytes": 440000,
+      "segment_sha256": "bc2506d23ce98bc002c4dac67d5515145ad093e4ee1f71d4496256a9390f7113"
+    },
+    {
+      "name": "native-evidence.tar.xz.part004.gz",
+      "bytes": 440028,
+      "sha256": "873102d634c3838e4ca29e9c041f3ddc2db3038a6583de54fba059c7f90c8a85",
+      "git_blob": "0aa346caeca6d587b8ccd179547e04d2b25e50e1",
+      "segment_bytes": 440000,
+      "segment_sha256": "4177df44d9fed049b5fdf837b76d3334940123ac76531afd4af8aa1c2e6479ef"
+    },
+    {
+      "name": "native-evidence.tar.xz.part005.gz",
+      "bytes": 440153,
+      "sha256": "9065d8e772e6f6cac6f3379431a662f6239628108e372de970ea01ab2e56adaf",
+      "git_blob": "b7f5ae7f44eeceaf1ceade2d21fda081bddf29ea",
+      "segment_bytes": 440000,
+      "segment_sha256": "c211288c85afdad23f4b19b0143f4418563bb293a679ac44dccdad1ae576be1f"
+    },
+    {
+      "name": "native-evidence.tar.xz.part006.gz",
+      "bytes": 440150,
+      "sha256": "2908afc0225c52d82e312c3f2313a90060344a2568d0090f13e10af6438bd80d",
+      "git_blob": "d22efd338d0a97508d0aa5e972441d3ffd36b81e",
+      "segment_bytes": 440000,
+      "segment_sha256": "cc450364caedd019ea4a87accc8637b894bf19daae86f0d40a7a940242f9bbf0"
+    },
+    {
+      "name": "native-evidence.tar.xz.part007.gz",
+      "bytes": 439894,
+      "sha256": "62222db06ecb2864c28670a838ac85a79647a3d92bc921ecbdf5ea1853f03fed",
+      "git_blob": "5ef758acd2b335b1487a143649751cf609dae2bc",
+      "segment_bytes": 440000,
+      "segment_sha256": "5d9f41b59539378fdb8d597969cb75baccf03fb813f1bb7fa7caf84ec05f24e5"
+    },
+    {
+      "name": "native-evidence.tar.xz.part008.gz",
+      "bytes": 440153,
+      "sha256": "4377b90df7f1360156853890c99af9cab8e71de074bac498d02a5dd5254beb24",
+      "git_blob": "ed3030b9cd73686130bb0ab89afa5d47dd63ae12",
+      "segment_bytes": 440000,
+      "segment_sha256": "15f38b61fe2a021d42e789f0c25d4b2df5500307e7f6a70c3ee8cb10e1d5f978"
+    },
+    {
+      "name": "native-evidence.tar.xz.part009.gz",
+      "bytes": 440153,
+      "sha256": "eeaa5773a230806a4d8d4077b359db81688e4ed6696b236945a1b73ea307070f",
+      "git_blob": "15df1b4e2da85a9b2c7b3b0dc0d42744b44b853b",
+      "segment_bytes": 440000,
+      "segment_sha256": "d0f380771d8cd87bcac82b5b8d6739e243aa86f85a648371b37c6806a5166e92"
+    },
+    {
+      "name": "native-evidence.tar.xz.part010.gz",
+      "bytes": 440153,
+      "sha256": "6725b989b892fc76feddf99e337ce0c44391d3010fb4c2bc5b921c45de608280",
+      "git_blob": "b8069eead3f787e0a4bf6cbefb620c4daca13fcb",
+      "segment_bytes": 440000,
+      "segment_sha256": "f246af39192909072261b49c09cb92b02ba05789d834067ca3539281d2111824"
+    },
+    {
+      "name": "native-evidence.tar.xz.part011.gz",
+      "bytes": 440153,
+      "sha256": "1f9af3c3602cbd9c5aa2f00ae6356581a8cc992d450e76cd073ae00c07526344",
+      "git_blob": "0452e5f41116ddada1cae1c5db17a4b086168d65",
+      "segment_bytes": 440000,
+      "segment_sha256": "147fa4ff0a27f81b687aec26cfe0daa7388e53a005125a7b109e8c4df7a0854c"
+    },
+    {
+      "name": "native-evidence.tar.xz.part012.gz",
+      "bytes": 440153,
+      "sha256": "3a1a1336f676f230e7bab0622da1472011385d4a06f25cf9d66cbe1faf1fe4ea",
+      "git_blob": "3ca339d124e4b8e565ce61d6eb93a12ad4dbbe00",
+      "segment_bytes": 440000,
+      "segment_sha256": "e265468f0165d7ac34bfc57dec82d326de631e192246059b79521e489a8d4a4a"
+    },
+    {
+      "name": "native-evidence.tar.xz.part013.gz",
+      "bytes": 440153,
+      "sha256": "22763d8fe1cfa782e6602589a85e67d9d6ba7324adb316f5a9bd5863ad7781c7",
+      "git_blob": "32a92873687557a4f2da57688dc98deb5cb29f80",
+      "segment_bytes": 440000,
+      "segment_sha256": "5076312e36875a332b62631c24170e1ade5fccd9d1e22f9cf20ea64c5cac9d6d"
+    },
+    {
+      "name": "native-evidence.tar.xz.part014.gz",
+      "bytes": 440153,
+      "sha256": "b5ecb11b15a903b7c399d263d20c00ebc2bb7eded51a0e47e3df905597830f43",
+      "git_blob": "c31edc7deb1e611344d32e587d07c77482164bc7",
+      "segment_bytes": 440000,
+      "segment_sha256": "e417c4a92b4fac65af91de248ff2d1c7c77b0ffbb70d0ee3e016922aad0d0679"
+    },
+    {
+      "name": "native-evidence.tar.xz.part015.gz",
+      "bytes": 440153,
+      "sha256": "b08e53d1d7f5278fb9aa77803ab154763fbc6fccdf64d03fba71f2b68a6bbc9d",
+      "git_blob": "0c7331863475ff51e82a345b67ca8ee819e8fdaa",
+      "segment_bytes": 440000,
+      "segment_sha256": "9944e48778e861188f3c866bb14b90bc8b0e54bcefe98b5c67e354883173021d"
+    },
+    {
+      "name": "native-evidence.tar.xz.part016.gz",
+      "bytes": 439912,
+      "sha256": "6c6010c59568d1ef510238f015611fbf53dc2380932022c4c37ad70b7b173a74",
+      "git_blob": "4411a5a94a4ed731ee8b5fc380cb4fd37ba83235",
+      "segment_bytes": 440000,
+      "segment_sha256": "11be9e19eb9b416c39855fb9603215ca8341870ed0ed8ae9cf42154c7498f119"
+    },
+    {
+      "name": "native-evidence.tar.xz.part017.gz",
+      "bytes": 439943,
+      "sha256": "a27fa1202b1f13e381061442a5050efd06507ef1632d82e455535aed2ffc72e2",
+      "git_blob": "e6c9081c3ed819884d57340d3bebd310299f3e7d",
+      "segment_bytes": 440000,
+      "segment_sha256": "cc88438b2d3610ef735e7fac03612b2cea25ffced15b2b935b1d893b3b6073d6"
+    },
+    {
+      "name": "native-evidence.tar.xz.part018.gz",
+      "bytes": 439987,
+      "sha256": "40d64efe617f401774d0ac5a847898222cf3a6dabdbc426a2a14b65b8af4cb99",
+      "git_blob": "40692936fd58a2b800bc5961b1a21957c5da84b3",
+      "segment_bytes": 440000,
+      "segment_sha256": "bb06ab6397f202339451cc13eb2f56e2699a980d0d0f2cb24099dc6caefbe4c9"
+    },
+    {
+      "name": "native-evidence.tar.xz.part019.gz",
+      "bytes": 21520,
+      "sha256": "f7452e3dd32974f4382756f2aacb438c1f43b4f3a2df5575876e756d57ee2d54",
+      "git_blob": "41109916da3824612c8afce5771940f1feba4dc6",
+      "segment_bytes": 21492,
+      "segment_sha256": "c4357ac06d3e52453e5a26b32ba70278b984e4a1d5f8c089a002c38eba812d1d"
+    }
+  ],
+  "files": [
+    {
+      "path": "round3_ci/arm_recovery_23/source-api/parent_codex_tree.json",
+      "bytes": 84901,
+      "sha256": "b98cebb91a5db69d97ca206a4a70d7d61fad4398d6d31d0fb0d141d433ad6466",
+      "git_blob": "17867bf07aa696a3f7de5072bd491c553484d026",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/arm_recovery_23/source-api/parent_root_tree.json",
+      "bytes": 29239,
+      "sha256": "d1d709e72ddafb31bbf28dcc0d56e288a8ba5a8044e2f0f9585b59df4e176140",
+      "git_blob": "7b5d615aaedf05f9450508d70f61f55b4a34ef38",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/build_native_closeout_checkpoints.py",
+      "bytes": 23462,
+      "sha256": "5ddea98243cf46342d52820f92d469c80f9e6764f579e1701046c87ab10ecda6",
+      "git_blob": "48116a9c2623c85a257272fdb027dee2a5395b4d",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5119/PRODUCER_NATIVE_VALIDATION.json",
+      "bytes": 4939,
+      "sha256": "c15eea0772501a9eb1cdca52f604a069061694d98ed4b15489c0c4b542fa6788",
+      "git_blob": "0ab9849a749796a5d44349066334a27daf92c83f",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5119/ZIP_MEMBER_IDENTITIES.json",
+      "bytes": 73074,
+      "sha256": "a9ceb4efc1bbac01d118918c3a250fb97158c0930cf23ee7f181b26de2442314",
+      "git_blob": "1778f603523719526a330de372874be4e73b85db",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5119/artifact.zip",
+      "bytes": 2450050,
+      "sha256": "5418fb0fdb31e7a530661a3588faf72a20494ceca58d522fa419e48bbbbff9c5",
+      "git_blob": "aa755429ed5e3c6907ecd68d653afe2650c86164",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5119/artifacts-api.json",
+      "bytes": 2340,
+      "sha256": "84e8ebe4403fc60d55450b43afaa8df733e413c69c7536f7263280f869e75499",
+      "git_blob": "1904e727a494fddbc6a35bf2ef5894a4724dcb5d",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5119/job-128110449651.log",
+      "bytes": 929788,
+      "sha256": "5c943deda5f870eedd6fb0750576ad8337a51d2521a3728640b21964a438644f",
+      "git_blob": "be44a2312ed1bd701c0120a3e2416ef1db764b5d",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5119/job-128110449651.raw.json",
+      "bytes": 934908,
+      "sha256": "e1f2cf26cd6f3e18c7ff071a018120b56171f5443195ac17f464c6d343ffeb2a",
+      "git_blob": "af2a60341922c2af9da29ba2a44c2fe0d28de4cd",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5119/jobs-api.json",
+      "bytes": 39941,
+      "sha256": "7a008f852dd8a3574b782ae4333726bdebcefb7d6fcf0db5d0e4d84f33d142c0",
+      "git_blob": "43f6a6e2a33b4ce92413d2af756b1eccf44b954b",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5119/verify_artifact.py",
+      "bytes": 9565,
+      "sha256": "fccb6d3cd22d1452bee2e3a2786a12d1aabc2c4f29a9c9eb19f64dd1efe1b39c",
+      "git_blob": "c29cb40a6e529e705ac858549baaf542361e8c37",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/AUDITOR_5108_PREPARATION.json",
+      "bytes": 440,
+      "sha256": "b1a5a351f3b735631a59730925db9df1b3cc14a5b9b312855930d85a9a303bc1",
+      "git_blob": "8e48eaed31208a915b2351d575191a54f71b8a34",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/CODESPELL.json",
+      "bytes": 681,
+      "sha256": "205cc0f58e1ff0c23851383122898433f80b4ddddc8c8b59db95c6e96ccf463f",
+      "git_blob": "2aaa63313bfc5ec50faa9681c214453c23d5b314",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/ORIGINAL_JUST_FMT.json",
+      "bytes": 882,
+      "sha256": "5673a41b4fb9b55f4e0ff5c5eadec28cd2c3a3bb9a5c8d0958e213c3dfe20c0c",
+      "git_blob": "41b6f7c299c8bfd397a069ce15fcc19bd71cc5a3",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/audit_original_failure.py",
+      "bytes": 6088,
+      "sha256": "0ccffa958c699f7a4353a4d908ac9d4464c7a1b07af074ebcf8180b3ce2e3796",
+      "git_blob": "eb69d55eb64b2791cc8d7c709e069364944425cf",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/effective/.github/scripts/propose_vodozemac_lock.py",
+      "bytes": 22795,
+      "sha256": "12c571b7d96c43c7841116bdfaf36114159131332449e892589109800012c448",
+      "git_blob": "a8c2bb234d9c000be60e325f2acefe32c18b8027",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/effective/.github/scripts/vodozemac-lock-spec.json",
+      "bytes": 10888,
+      "sha256": "a28a379d5f74195ccfe05e3f5af5b668a8e292be884632036009dcfbc7c5b423",
+      "git_blob": "74376db93a746fbdd359e217e2e38d8d50a8fde1",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/effective/.github/scripts/vodozemac_lock_guards.py",
+      "bytes": 8383,
+      "sha256": "495c53994147b90ed09e750f8a660fd4fcad87d71568c18fb91ae48b4bff72af",
+      "git_blob": "976dde7034708c37cb972e494640c9ea53afda33",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/effective/.github/scripts/vodozemac_proposal_evidence.py",
+      "bytes": 12083,
+      "sha256": "547f9fb17a42ce21f7171d0de9b0a0303f63d5c2f47692aa2509e9c4ab575d91",
+      "git_blob": "df92074358560c9d439323054cab12c2d0c9c7f6",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/effective/.github/workflows/hepta-vodozemac-lock-proposal.yml",
+      "bytes": 3330,
+      "sha256": "a70da083333f2d70dac25dd4d155af91e15eab96f4644b2bcd1a2b8513f34379",
+      "git_blob": "fcebf89c5f6b1ab8ffb5bd199199a008da79fae7",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment-v2/RESULT.json",
+      "bytes": 5863,
+      "sha256": "ea878ae14441354413dc6eb2cee1685a76a52c20f819234268c2084cdf62c67f",
+      "git_blob": "aee086c5aab59ffda5f5fb62f78701a39a811cff",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment-v2/ambient-always.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment-v2/ambient-always.stdout.log",
+      "bytes": 1398,
+      "sha256": "af3cd208108450dbe781aea11b9f125c42878d069ec12fe20463234be0d30fcc",
+      "git_blob": "7886dd3c76b43062bcd8fd1a270b124e2af6ac50",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment-v2/cargo-version.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment-v2/cargo-version.stdout.log",
+      "bytes": 328,
+      "sha256": "450f506a08839d5c2e4a462240ef00d05903a873721b8db7ed11f053ca59d4d2",
+      "git_blob": "83891c44f3b48a171a037ff39abfbed2a5cddede",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment-v2/declared-fixture-lock.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment-v2/declared-fixture-lock.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment-v2/declared-fixture/Cargo.lock",
+      "bytes": 645,
+      "sha256": "0e4265c0d4aec8c145492f005991e4c01fa492e81a9b88aae2b60817c8dbf180",
+      "git_blob": "343a46066f7c655af377d684f8d10d658357fe29",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment-v2/declared-fixture/Cargo.toml",
+      "bytes": 123,
+      "sha256": "e2bc535b1be5d3ee04129067e15dd9f4e004269ff5ef39c33cf53d3faa3175d3",
+      "git_blob": "c65ea6abe8736061972f6564077b450078937c82",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment-v2/declared-fixture/aes/Cargo.toml",
+      "bytes": 153,
+      "sha256": "668cab8e80277996575c41f17715a2b1ad36cd0b21cafe61250d2b1899d3ba0f",
+      "git_blob": "207a3f959757a4a469b7396704f443b31f642d17",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment-v2/declared-fixture/aes/src/lib.rs",
+      "bytes": 45,
+      "sha256": "5923e68d017addc19799f092d00e649377dde1af9150ad7eba5ebc7d36b4055f",
+      "git_blob": "c5f02c5f619655b213421ad8337dfa1bc2731f16",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment-v2/declared-fixture/cbc/Cargo.toml",
+      "bytes": 82,
+      "sha256": "3bf039e92bd70f9c557e377713264198394bdd4ffd8bda6cb04c0ef3d0a71970",
+      "git_blob": "dcdb78fe719026e58c96e9c0a0a42892e9b02928",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment-v2/declared-fixture/cbc/src/lib.rs",
+      "bytes": 45,
+      "sha256": "5923e68d017addc19799f092d00e649377dde1af9150ad7eba5ebc7d36b4055f",
+      "git_blob": "c5f02c5f619655b213421ad8337dfa1bc2731f16",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment-v2/declared-fixture/chacha20/Cargo.toml",
+      "bytes": 88,
+      "sha256": "772621aab9a82ce3b6f8ca96b8e44b6789f48c8606d7b422f47a86722c6bea1f",
+      "git_blob": "6551f6e77b9ce44ca5ee14829d50745cd2cff9b0",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment-v2/declared-fixture/chacha20/src/lib.rs",
+      "bytes": 45,
+      "sha256": "5923e68d017addc19799f092d00e649377dde1af9150ad7eba5ebc7d36b4055f",
+      "git_blob": "c5f02c5f619655b213421ad8337dfa1bc2731f16",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment-v2/declared-fixture/chacha20poly1305/Cargo.toml",
+      "bytes": 96,
+      "sha256": "085e4138f2db0001a2c09b5cff5fed12298fafe8049166eb056e1bc4d2f903fd",
+      "git_blob": "9f9ebf95bf989cae6c8538a6da1bc2c05912de50",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment-v2/declared-fixture/chacha20poly1305/src/lib.rs",
+      "bytes": 45,
+      "sha256": "5923e68d017addc19799f092d00e649377dde1af9150ad7eba5ebc7d36b4055f",
+      "git_blob": "c5f02c5f619655b213421ad8337dfa1bc2731f16",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment-v2/declared-fixture/cipher/Cargo.toml",
+      "bytes": 152,
+      "sha256": "03dbe548b745046fe603edbac3d7045c09dd5a1da2d16d434523034edc3eccf4",
+      "git_blob": "849727fd2176266f7f396b877d51cb33778e83d1",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment-v2/declared-fixture/cipher/src/lib.rs",
+      "bytes": 45,
+      "sha256": "5923e68d017addc19799f092d00e649377dde1af9150ad7eba5ebc7d36b4055f",
+      "git_blob": "c5f02c5f619655b213421ad8337dfa1bc2731f16",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment-v2/declared-fixture/hmac/Cargo.toml",
+      "bytes": 84,
+      "sha256": "20f1f08115c5548625563583953f2c27a74e228d3600d23b42f4af042cff6b14",
+      "git_blob": "c07a7b6288bdaf5351f9679bdf758fc3b48ab3b8",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment-v2/declared-fixture/hmac/src/lib.rs",
+      "bytes": 45,
+      "sha256": "5923e68d017addc19799f092d00e649377dde1af9150ad7eba5ebc7d36b4055f",
+      "git_blob": "c5f02c5f619655b213421ad8337dfa1bc2731f16",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment-v2/declared-fixture/sha2/Cargo.toml",
+      "bytes": 84,
+      "sha256": "15ec7883f661d18c2401a5f8e3eb78f5b1d0f505d4a3ceaa367de3c845c69d21",
+      "git_blob": "d65cc6697863e19f9d097a8af0813ab4b6c91bb6",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment-v2/declared-fixture/sha2/src/lib.rs",
+      "bytes": 45,
+      "sha256": "5923e68d017addc19799f092d00e649377dde1af9150ad7eba5ebc7d36b4055f",
+      "git_blob": "c5f02c5f619655b213421ad8337dfa1bc2731f16",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment-v2/declared-fixture/vodozemac/Cargo.toml",
+      "bytes": 500,
+      "sha256": "c42d14ed019be6aab859a8f54f42b5b5831bd10339046d6f5b8e99511ba0584a",
+      "git_blob": "2020458f84799f1a48af735ef47fad0e74b71d81",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment-v2/declared-fixture/vodozemac/src/lib.rs",
+      "bytes": 45,
+      "sha256": "5923e68d017addc19799f092d00e649377dde1af9150ad7eba5ebc7d36b4055f",
+      "git_blob": "c5f02c5f619655b213421ad8337dfa1bc2731f16",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment-v2/explicit-never.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment-v2/explicit-never.stdout.log",
+      "bytes": 1379,
+      "sha256": "1be26b3c561840d4df0ef44853c158205ae56de7e215d4f9b2967ff3e666a22a",
+      "git_blob": "ddebaf9a2984b2db4cf6792e2def47f5f417237c",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment/FIRST_ATTEMPT.json",
+      "bytes": 435,
+      "sha256": "ff638066bb11c78f9bdae13e1156c7988a57ecdc4d9ad2d8eca99ba473356fac",
+      "git_blob": "cfb363680f3b85453e64d352ebf2b22b7c73b0b9",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment/REPRODUCER_FIRST_ATTEMPT.py",
+      "bytes": 5907,
+      "sha256": "cf286657eda7f61d177f110a062ac577dc77f7044a991b87ad9e7980c09bc621",
+      "git_blob": "47ba48a34b3314b3875c632af6dec92f8daf8239",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment/ambient-always.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment/ambient-always.stdout.log",
+      "bytes": 1214,
+      "sha256": "ae07af48bfb7a4bee80a497e41eb1e7bb910b5953b92fcb6530f5178494c71d1",
+      "git_blob": "30ae73405e5dc3743ee1eec0cb294bec3f68ba62",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment/cargo-version.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment/cargo-version.stdout.log",
+      "bytes": 328,
+      "sha256": "450f506a08839d5c2e4a462240ef00d05903a873721b8db7ed11f053ca59d4d2",
+      "git_blob": "83891c44f3b48a171a037ff39abfbed2a5cddede",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment/declared-fixture-lock.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment/declared-fixture-lock.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment/declared-fixture/Cargo.lock",
+      "bytes": 617,
+      "sha256": "983c9b3197f2fabaf756e797afc8da63e80114b69545f4b934df68f4b2d2619b",
+      "git_blob": "3f16b63ba8cda53803ee40d41eff95d4ae872223",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment/declared-fixture/Cargo.toml",
+      "bytes": 123,
+      "sha256": "e2bc535b1be5d3ee04129067e15dd9f4e004269ff5ef39c33cf53d3faa3175d3",
+      "git_blob": "c65ea6abe8736061972f6564077b450078937c82",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment/declared-fixture/aes/Cargo.toml",
+      "bytes": 153,
+      "sha256": "668cab8e80277996575c41f17715a2b1ad36cd0b21cafe61250d2b1899d3ba0f",
+      "git_blob": "207a3f959757a4a469b7396704f443b31f642d17",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment/declared-fixture/aes/src/lib.rs",
+      "bytes": 45,
+      "sha256": "5923e68d017addc19799f092d00e649377dde1af9150ad7eba5ebc7d36b4055f",
+      "git_blob": "c5f02c5f619655b213421ad8337dfa1bc2731f16",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment/declared-fixture/cbc/Cargo.toml",
+      "bytes": 82,
+      "sha256": "3bf039e92bd70f9c557e377713264198394bdd4ffd8bda6cb04c0ef3d0a71970",
+      "git_blob": "dcdb78fe719026e58c96e9c0a0a42892e9b02928",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment/declared-fixture/cbc/src/lib.rs",
+      "bytes": 45,
+      "sha256": "5923e68d017addc19799f092d00e649377dde1af9150ad7eba5ebc7d36b4055f",
+      "git_blob": "c5f02c5f619655b213421ad8337dfa1bc2731f16",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment/declared-fixture/chacha20/Cargo.toml",
+      "bytes": 88,
+      "sha256": "772621aab9a82ce3b6f8ca96b8e44b6789f48c8606d7b422f47a86722c6bea1f",
+      "git_blob": "6551f6e77b9ce44ca5ee14829d50745cd2cff9b0",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment/declared-fixture/chacha20/src/lib.rs",
+      "bytes": 45,
+      "sha256": "5923e68d017addc19799f092d00e649377dde1af9150ad7eba5ebc7d36b4055f",
+      "git_blob": "c5f02c5f619655b213421ad8337dfa1bc2731f16",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment/declared-fixture/chacha20poly1305/Cargo.toml",
+      "bytes": 96,
+      "sha256": "085e4138f2db0001a2c09b5cff5fed12298fafe8049166eb056e1bc4d2f903fd",
+      "git_blob": "9f9ebf95bf989cae6c8538a6da1bc2c05912de50",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment/declared-fixture/chacha20poly1305/src/lib.rs",
+      "bytes": 45,
+      "sha256": "5923e68d017addc19799f092d00e649377dde1af9150ad7eba5ebc7d36b4055f",
+      "git_blob": "c5f02c5f619655b213421ad8337dfa1bc2731f16",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment/declared-fixture/cipher/Cargo.toml",
+      "bytes": 85,
+      "sha256": "21497d39cca55a0e3a225a7824f549706f0715f3f08b9c1529975f2be88815f9",
+      "git_blob": "5aaf4bc50001230d05d172633873257161eb3b65",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment/declared-fixture/cipher/src/lib.rs",
+      "bytes": 45,
+      "sha256": "5923e68d017addc19799f092d00e649377dde1af9150ad7eba5ebc7d36b4055f",
+      "git_blob": "c5f02c5f619655b213421ad8337dfa1bc2731f16",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment/declared-fixture/hmac/Cargo.toml",
+      "bytes": 84,
+      "sha256": "20f1f08115c5548625563583953f2c27a74e228d3600d23b42f4af042cff6b14",
+      "git_blob": "c07a7b6288bdaf5351f9679bdf758fc3b48ab3b8",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment/declared-fixture/hmac/src/lib.rs",
+      "bytes": 45,
+      "sha256": "5923e68d017addc19799f092d00e649377dde1af9150ad7eba5ebc7d36b4055f",
+      "git_blob": "c5f02c5f619655b213421ad8337dfa1bc2731f16",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment/declared-fixture/sha2/Cargo.toml",
+      "bytes": 84,
+      "sha256": "15ec7883f661d18c2401a5f8e3eb78f5b1d0f505d4a3ceaa367de3c845c69d21",
+      "git_blob": "d65cc6697863e19f9d097a8af0813ab4b6c91bb6",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment/declared-fixture/sha2/src/lib.rs",
+      "bytes": 45,
+      "sha256": "5923e68d017addc19799f092d00e649377dde1af9150ad7eba5ebc7d36b4055f",
+      "git_blob": "c5f02c5f619655b213421ad8337dfa1bc2731f16",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment/declared-fixture/vodozemac/Cargo.toml",
+      "bytes": 500,
+      "sha256": "c42d14ed019be6aab859a8f54f42b5b5831bd10339046d6f5b8e99511ba0584a",
+      "git_blob": "2020458f84799f1a48af735ef47fad0e74b71d81",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment/declared-fixture/vodozemac/src/lib.rs",
+      "bytes": 45,
+      "sha256": "5923e68d017addc19799f092d00e649377dde1af9150ad7eba5ebc7d36b4055f",
+      "git_blob": "c5f02c5f619655b213421ad8337dfa1bc2731f16",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment/explicit-never.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/format-experiment/explicit-never.stdout.log",
+      "bytes": 1214,
+      "sha256": "ae07af48bfb7a4bee80a497e41eb1e7bb910b5953b92fcb6530f5178494c71d1",
+      "git_blob": "30ae73405e5dc3743ee1eec0cb294bec3f68ba62",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/manifest.json",
+      "bytes": 6000,
+      "sha256": "50998b3fcf5fa8ebec013518cd120e8a37cc97c4b09d2d8992d1abd8a77997e1",
+      "git_blob": "e11bdf4017dbfad0d9a14eaf17878220fe99994c",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/repair.patch",
+      "bytes": 1556,
+      "sha256": "64aad5822b021b634e791299f4840e0f33f157e41333a35ea023000f5db3fa70",
+      "git_blob": "26dcdc0171fa4bd571589bfbd56dd2182d58f3a8",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_color_recipe_22/reproduce_cargo_color.py",
+      "bytes": 5906,
+      "sha256": "c62e4a90fb049a4348aa54b297856cc0a2b35e9b8d3ec41756a59a8b1fdfab29",
+      "git_blob": "77b77f2e6085f2d6e612044eb9bfea98cd61c116",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_port_amendment_25/STATIC_CHECKS.json",
+      "bytes": 1711,
+      "sha256": "69fa0c11a38ed9719babbf272a733e033626105ea95fee24374b519392781b8f",
+      "git_blob": "18054a7af687833c0520fbe37ff908c4737089b4",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_port_amendment_25/TESTED_SOURCE_BINDING.json",
+      "bytes": 2330,
+      "sha256": "dba806e85d31ac937db85e53f667170cc7cb4558c1cf8f5b71aac9e03546a664",
+      "git_blob": "b359ea8977a2cfc6e3fcfd00dc886a286857bedc",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_port_amendment_25/candidate/codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/source.py",
+      "bytes": 14205,
+      "sha256": "06e8f0112af652b9320e2e29de5a3655d64ea0e6fbec97ff26b960da90829c9d",
+      "git_blob": "a5d1670a3bdafa13b1e5cc7f8b5b312acaaea6ca",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_port_amendment_25/candidate/experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/LOCK_AMENDMENT.v7.5.json",
+      "bytes": 5700,
+      "sha256": "1642fee9bf4497169d2a2645e01864e8c74435071887dcea7bc2c8315123ab83",
+      "git_blob": "162df973f45cc48b00743ed89799bceeee7a0725",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_port_amendment_25/candidate/qualification/ndu-ci-repairs-20261106/port-vodozemac-native-locks/artifact-manifest.json",
+      "bytes": 10133,
+      "sha256": "c60b1b4697e385fb2b14d43d8be09e88b4919e076cd4f80c9fc53b112d8400d6",
+      "git_blob": "9ec640cf6d3fc8c690c3f839681c2e7b9b3459fa",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_port_amendment_25/candidate/qualification/ndu-ci-repairs-20261106/port-vodozemac-native-locks/current-source-comparison.json.gz",
+      "bytes": 13632,
+      "sha256": "5ecd7c4f628927dfb8aafb452aa5109f7067404d28b4e570fc01916633307904",
+      "git_blob": "4b62ff2edd2efc80950c41bdaf016b0831506e6b",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_port_amendment_25/candidate/qualification/ndu-ci-repairs-20261106/port-vodozemac-native-locks/feature-proof.json",
+      "bytes": 895,
+      "sha256": "4950272b2e60efb738a26a4c6d6e2f17d3eaeea9910cbb853ff522e0bab4c59a",
+      "git_blob": "266454a9520739a03c25a573ca4e009b4860e938",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_port_amendment_25/candidate/qualification/ndu-ci-repairs-20261106/port-vodozemac-native-locks/lock-graph-proof.json",
+      "bytes": 609,
+      "sha256": "b12c7485bd39780474fea66b52c9ed5fba7d3e32de8fac3c06b4afe4913cf512",
+      "git_blob": "6153c7d8420931aed36bac39a9140f509caf5c65",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_port_amendment_25/candidate/qualification/ndu-ci-repairs-20261106/port-vodozemac-native-locks/module-lock-proof.json",
+      "bytes": 438,
+      "sha256": "f5f4ca010625a43612abd7d938cedde1863f99f42113a7aa1150c83df691d2ca",
+      "git_blob": "7b1d75f22a22cafab6705731097108a2a9cdad8c",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_port_amendment_25/candidate/qualification/ndu-ci-repairs-20261106/port-vodozemac-native-locks/native-artifact-audit.json.gz",
+      "bytes": 2644,
+      "sha256": "1856718db69fbe724f10aa8c7384054aa59c044964a34baa3557fe954e9c71c9",
+      "git_blob": "e2a253bfd14284ca9029bd7b845a040eb7d88cf4",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_port_amendment_25/candidate/qualification/ndu-ci-repairs-20261106/port-vodozemac-native-locks/native-console-binding.json.gz",
+      "bytes": 672,
+      "sha256": "7a0a2f99a1efd958cedb1b3174787a26a34e83651063a8ac7ae8d11261bbcba6",
+      "git_blob": "0d1cf37cef2ecc2f997b57ebc1112c6b27bc75dc",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_port_amendment_25/candidate/qualification/ndu-ci-repairs-20261106/port-vodozemac-native-locks/native-job-128069141553.log.gz",
+      "bytes": 172006,
+      "sha256": "91a756a4cc9da7a182ddacee334706396fd75e5770515ea1dd5c78c12c218ad6",
+      "git_blob": "fd4f9ee329df3552794aab2a777f01289ec462bc",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_port_amendment_25/candidate/qualification/ndu-ci-repairs-20261106/port-vodozemac-native-locks/proposal.patch.gz",
+      "bytes": 1702,
+      "sha256": "3650680cc96e7019a0d7cdfd146eb10b7edd6e6dff99b1a8e569aa568442ae4a",
+      "git_blob": "02efbe7e0fa684af3b4fc35f53cbaa520858a765",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_port_amendment_25/candidate/qualification/ndu-ci-repairs-20261106/port-vodozemac-native-locks/result.json",
+      "bytes": 5741,
+      "sha256": "2ce655693890f5bad6612e495e6ed9fb7ad17f73409b6f008e9631201a3b35eb",
+      "git_blob": "c7a022b375b4a12d07ffc7f307974624e364ab3f",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_port_amendment_25/candidate/qualification/ndu-ci-repairs-20261106/port-vodozemac-native-locks/upstream-proof.json",
+      "bytes": 510,
+      "sha256": "060b3e2c08315278b7c8ff95fd63fbc323cdb1e8dac10d8ce03332f2bbec1cb8",
+      "git_blob": "7b4d2d2f79050bd782410e8e3834e8659dfc4b55",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_port_amendment_25/candidate/scripts/ndu_port_candidate_common.py",
+      "bytes": 54878,
+      "sha256": "a007690f88ea9f2d636ea851613ce105d8127c0929fdf53d9ce6d55373d99653",
+      "git_blob": "6b0c17697417090adb55df1433f21ddc5ef076e5",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_port_amendment_25/candidate/scripts/ndu_port_integrated.py",
+      "bytes": 5061,
+      "sha256": "e28b793681dc88dd1dd4f04c7f0e82dd5efe891c10a613ca9115968840799c8c",
+      "git_blob": "4d0df594e3278793065fb87fcba39229aaaf73ad",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_port_amendment_25/candidate/scripts/test_ndu_port_build_amendment.py",
+      "bytes": 8237,
+      "sha256": "2313df27be8c9f1a0502e5e8aab23697bfe75e0fbc0b44f171f7dee8b41f9d71",
+      "git_blob": "ed39560d4d0420c738c14fcacd7a831637f37d18",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_port_amendment_25/candidate/scripts/test_ndu_port_dependency_amendment.py",
+      "bytes": 16984,
+      "sha256": "d8faaded9df4b4ce69eb2e8ae67c324f95b8530612c0a03103db0f750e7acca4",
+      "git_blob": "2b8af9aa39adb2c303d1667a5c374311bf6b8ad1",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_port_amendment_25/candidate/scripts/test_ndu_port_diagnostic_amendment.py",
+      "bytes": 7577,
+      "sha256": "cb2e4e97e5bd657c379b363e7479c1effda2fad6ebecdebb90084f17989a444f",
+      "git_blob": "be243925ae960659831668e8c1ecda01eb401851",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_port_amendment_25/candidate/scripts/test_ndu_port_lock_amendment.py",
+      "bytes": 8383,
+      "sha256": "1c3ad136453a3dfec4012b16c5fcdedb0118635024b510d5e823258adceff15b",
+      "git_blob": "0a12915e8c3698408e2e87e36683f1103d65493e",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_port_amendment_25/codespell.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_port_amendment_25/codespell.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_port_amendment_25/freeze_candidate.py",
+      "bytes": 15885,
+      "sha256": "9e30f2536f42708ee7de98b23fa05aec3a90375924013c453d9d4937a4fcb1b5",
+      "git_blob": "ba786948e245e722cb65080b87958305147f306f",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_port_amendment_25/manifest.json",
+      "bytes": 24551,
+      "sha256": "4f3240fb0ee9b5918dbb9b528fe5fd4fc8673fea0f1bf443c871ac851ba7222f",
+      "git_blob": "7fa56df4323bb4152e3870ffe0d7970a1cffd746",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_port_amendment_25/port-tests-v2.stderr.log",
+      "bytes": 18116,
+      "sha256": "f914e51d80cdce29c36ff3e51a06d932a6d6526d4c8d9e3ef02d7d275d001620",
+      "git_blob": "b9b57ac509d38e780bdf977aa806250f3eec0181",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_port_amendment_25/port-tests-v2.stdout.log",
+      "bytes": 678729,
+      "sha256": "6f5a439000ef8d002463d494dab17fb883e67249ec22a3c65fcfb7325c4a7429",
+      "git_blob": "ec681851dc4d153b07b38e7e9e1adc13b1728d92",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_port_amendment_25/port-tests.stderr.log",
+      "bytes": 20360,
+      "sha256": "c18078fc49a84565676d8e2c0aa684606118243fab096812c04e126853c800af",
+      "git_blob": "0e3c2a698744cb6112e9f0f440eb68bf1223621a",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_port_amendment_25/port-tests.stdout.log",
+      "bytes": 678729,
+      "sha256": "a569a7d36d63e453ef4c9482fdb26652e356af8e83bfaa48672cc4558137d284",
+      "git_blob": "d7ca42971a0afad03ccd047ae0138235e6833ce5",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_port_amendment_25/repair.patch",
+      "bytes": 295667,
+      "sha256": "ead2f587966a7292dbaa19e43f8c5f08fa9d6003aee7c0912fc37c931177edf7",
+      "git_blob": "2f0957b63114d6799365e537d6413cc7f081f1d5",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_port_amendment_25/ruff-check.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_port_amendment_25/ruff-check.stdout.log",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "git_blob": "1f5f344d054fae10f39140fb7199c99321d9190a",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_port_amendment_25/ruff-format.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_port_amendment_25/ruff-format.stdout.log",
+      "bytes": 26,
+      "sha256": "0321fffcb91606a42c0a19d8c1121d5c544379d663821fce616c71a7bb62f6b5",
+      "git_blob": "87f9027299594eef4491644c44c76db52ccf5b03",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_product_24/CURRENT_PORT_SOURCE_COMPARISON.json",
+      "bytes": 95605,
+      "sha256": "63c9483e313b2a65a96b8cc4019995cec8a1a0b6a6bcf20ff2b05bb0341072ac",
+      "git_blob": "518fbc37d9bf07c4834b6efa22d96d4a7d11d26a",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_product_24/manifest.json",
+      "bytes": 6590,
+      "sha256": "e37acbbbfe77cc73ee807b2f93847ff1a3f09b8be116909772c3661ab094f4f5",
+      "git_blob": "a4b705d1718dc79db675c35b6695c05e5c8228d5",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_product_24/repair.patch",
+      "bytes": 8091,
+      "sha256": "adcad58480f67b7ea334dfd9709c25874a613224d125aeb0cd948921b009aaf4",
+      "git_blob": "2da6f845689f31aba7a1696d03788ae06ee8c3b2",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_product_24/source-api/core-plugins.json",
+      "bytes": 48663,
+      "sha256": "ff4ac00bf7a68513ac5644306162a6e4a8e8bdffc535c94ee35dff567d4b917e",
+      "git_blob": "6598387e5952be11fe138223f885a79b0f13437b",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_product_24/source-api/ext.json",
+      "bytes": 196405,
+      "sha256": "a4b3bbaf998cb6c01c01e651e5ff426fba5c6ffdb9f22541f5dc772ca8365333",
+      "git_blob": "4cfa48ad42d62e1c790e06ac5bac31f5bb9ba632",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_product_24/source-api/external-agent-migration.json",
+      "bytes": 41881,
+      "sha256": "b101f8c41f24b80bdc44721b15fae769ba291d10bba89771b6e1cf09f44a0ef6",
+      "git_blob": "4a46b71d9d015423aea3c205ae95faf20932c5eb",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_product_24/source-api/hepta-matrix-sdk.json",
+      "bytes": 10963,
+      "sha256": "b7a035936e397c9ffbf6fc3dd8fbbc050b8c8b5a8c8dd81253a3eb91b2209e77",
+      "git_blob": "02dbeb137c2be294308114ae0449b11e8b72050b",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_product_24/source-api/hepta-matrixd.json",
+      "bytes": 32861,
+      "sha256": "7c1615d5ecc4b9eb5a6a4f1f4c5d9d43db3379ddec61b707b7e9960bee5da198",
+      "git_blob": "fe6d68d936de2c89af3da9b2541d8a43d59a9e62",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_product_24/source-api/skills.json",
+      "bytes": 65417,
+      "sha256": "28399283cab3524f45f72646d16e734e4a7e640ff9c27ec7f4b80624c95ba2c9",
+      "git_blob": "7af85d20d686591229033d2a3de06471bc92ef0f",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_product_24/source-api/third_party.json",
+      "bytes": 1779575,
+      "sha256": "013bf98411a8908b975beac37da7f7b75eb20a3bba0196dc728bc2befcc8b291",
+      "git_blob": "8e68b666678db67ca3c5ff223610ab8b06691cac",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_product_24/source-api/utils.json",
+      "bytes": 112101,
+      "sha256": "00756e37053dddfdf4b0a7ccedc8ee6d5b200917225cf091156a87930fd238ea",
+      "git_blob": "251aa8e3cd38701538bc4c0a3c0cd1559da37c4b",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_product_24/source-api/windows-sandbox-rs.json",
+      "bytes": 47263,
+      "sha256": "98813d1a3f7010035e4f72a6d68799657ab0031ab01f38d658d95ab02fc6476a",
+      "git_blob": "b45173341d9f1bbd1a5b893466d0e6041263409e",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_product_24/source-comparison-plan.json",
+      "bytes": 25219,
+      "sha256": "db6c201d45f4a4df03476e66324a7d09742cea5089387d197cd01f2876d25dfe",
+      "git_blob": "9b4f68da31402697e7d39e0d897e9da430c9d7e0",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_proposal/audit_5090_artifact.py",
+      "bytes": 15066,
+      "sha256": "d4169599aafb404b24e1b6900c31bb61471bbaa06fd59f1dee82fa7a532b9ea5",
+      "git_blob": "b2ba2cac997f7319784079772ada85981ec21b70",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_proposal/audit_5108_artifact.py",
+      "bytes": 15101,
+      "sha256": "e81c94b83db9073caa38ba23de86aa438139a2271a62a886712718f01bac62ae",
+      "git_blob": "a12084f6d4b682c8eb1845901f8591ad7c3b3464",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_proposal/parent_inventory.json",
+      "bytes": 1894461,
+      "sha256": "7f8d35974f596224f6263fde97ec62d4bb3558b9b01a442b45cfff6784bf0523",
+      "git_blob": "9880b804b9125971063fb40303a5904ca60dbf09",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_proposal/runs/42255680239/FAILED_NATIVE_VALIDATION.json",
+      "bytes": 5674,
+      "sha256": "7f7d4080b5c34ad69d61254af557d912c21300f46f3d07c8f52ef6c3b8773b49",
+      "git_blob": "d888bc6e206a90560255a13599e0ae99a8a80f52",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_proposal/runs/42255680239/STARTED_NATIVE_API.json",
+      "bytes": 35225,
+      "sha256": "c45033d9e5b3f9de306cc08f582ade7137998887110f270f77f027c4d811b43a",
+      "git_blob": "04ae47d87b4d4ce02b9bcef8e8832331bc6b496f",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_proposal/runs/42255680239/artifact.zip",
+      "bytes": 4968456,
+      "sha256": "db850a3880ef73d645a1e8cccd412b331bb6f086b7fb34387b904150ee3ba2c0",
+      "git_blob": "9053d5492fe878422ddc90bb6b0f18152a0aab18",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_proposal/runs/42255680239/artifacts-api.json",
+      "bytes": 1107,
+      "sha256": "5c94c35f79221f2e8a31a434532d17bd28ec7adf890faf58c3243fd4b74bb56f",
+      "git_blob": "214b6807c73173928e34c8f5e3c8ac2218fb8f71",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_proposal/runs/42255680239/job-128022112134.log",
+      "bytes": 1544212,
+      "sha256": "28f0dd8a9b7fb67863ca49dbd907ccc2786dffd5cb8da29ae6094a4b065c3fa3",
+      "git_blob": "bf22a373034f96159fd91a54c7c60153efe4249f",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_proposal/runs/42255680239/job-128022112134.raw.json",
+      "bytes": 1555875,
+      "sha256": "e27f230e34b488344bbfc82a298c0a38d5e3df08ccfa200df3b758ec17254223",
+      "git_blob": "83477dba8a15eb4cb5a47ac7783248acee810133",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_proposal/runs/42255680239/run-api.json",
+      "bytes": 32614,
+      "sha256": "e98cd9f30b21c9eafd31dd86451176a7c2d889affa39ddfd108c5e7225d8baea",
+      "git_blob": "95b125f90b7df595be47a0e816798ff6627b2ef0",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_proposal/runs/42269231206/CONSOLE_AUDIT_FIRST_ATTEMPT.json",
+      "bytes": 451,
+      "sha256": "4b461e5632ee76d1b0a7c2dceb0c817428ce1effe4217dbe24b3ba5f958e583e",
+      "git_blob": "c9a71b9b9be40faa9407ac769d4f6c2d6cf3cf21",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_proposal/runs/42269231206/NATIVE_ARTIFACT_VALIDATION.json",
+      "bytes": 9819,
+      "sha256": "e53b48da6c300c5d2193c6583efe65888648ab32d67c535bb8a2e9e04acfff70",
+      "git_blob": "e12ce4cc2329cc26128229b77e0b8596388ff99a",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_proposal/runs/42269231206/NATIVE_CONSOLE_BINDING.json",
+      "bytes": 2197,
+      "sha256": "aef5332c7439323931238c4d1cabac9787e57cf9ba2e1991f0d789803b15d577",
+      "git_blob": "5f1d83492027d9a3b23d74a31601fedceac164af",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_proposal/runs/42269231206/artifact.zip",
+      "bytes": 5882120,
+      "sha256": "47ac0b11330212d9836fda483369173365eb3729c131367c618450761884eaa5",
+      "git_blob": "caaf60e0de9e2e3eeec4e708444a6e6aea911d99",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_proposal/runs/42269231206/artifacts-api.json",
+      "bytes": 1108,
+      "sha256": "6d0c1d50b81af2336059dd7b0aa034b109545ebe33117b75473c62c1a078c7b4",
+      "git_blob": "97db35e31d7a4029311766cc6edbd36966dda608",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_proposal/runs/42269231206/job-128069141553.log",
+      "bytes": 1545674,
+      "sha256": "7d9ca180c1c8798cc38f3ca0ea3abf7c7f3f7d2a6786a465073dd3735cd818c4",
+      "git_blob": "e516efc9f41c367a7df53b2995db5296cf0d6c12",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_proposal/runs/42269231206/job-128069141553.raw.json",
+      "bytes": 1557372,
+      "sha256": "f224e6af782ef6f9527308384feed54e3f06ca01a82f8999f8d2a41f352ebaad",
+      "git_blob": "3f61c3634cea0684e8c00a0eb48220068c3d9c1f",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_proposal/runs/42269231206/jobs-api.json",
+      "bytes": 2730,
+      "sha256": "72a454ecd30a2a710f6c6b5321ec10ffba003c822db370c3b07760da27a14efd",
+      "git_blob": "9ab146df498ca623b80ece8976fe91dff49be88d",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_proposal/runs/42269231206/run-api.json",
+      "bytes": 32576,
+      "sha256": "dfab9c883cd554d645260aa600aa4e98fd8252755b2d557cba4a551d7fd1e1a2",
+      "git_blob": "8de7b9d9de877a148412fdb509ac746392c961b3",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/review-effective/.github/scripts/propose_vodozemac_lock.py",
+      "bytes": 22601,
+      "sha256": "2ce96e40ee46c78e3568c720b850a4bef889b7f4eac2e36a4bab5fd9aa68e2c9",
+      "git_blob": "bb3a316145e35f98a2aefbc5c44676181abe5d08",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/review-effective/.github/scripts/vodozemac-lock-spec.json",
+      "bytes": 10888,
+      "sha256": "a28a379d5f74195ccfe05e3f5af5b668a8e292be884632036009dcfbc7c5b423",
+      "git_blob": "74376db93a746fbdd359e217e2e38d8d50a8fde1",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/review-effective/.github/scripts/vodozemac_lock_guards.py",
+      "bytes": 8383,
+      "sha256": "495c53994147b90ed09e750f8a660fd4fcad87d71568c18fb91ae48b4bff72af",
+      "git_blob": "976dde7034708c37cb972e494640c9ea53afda33",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/review-effective/.github/scripts/vodozemac_proposal_evidence.py",
+      "bytes": 12083,
+      "sha256": "547f9fb17a42ce21f7171d0de9b0a0303f63d5c2f47692aa2509e9c4ab575d91",
+      "git_blob": "df92074358560c9d439323054cab12c2d0c9c7f6",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/review-effective/.github/workflows/hepta-vodozemac-lock-proposal.yml",
+      "bytes": 3329,
+      "sha256": "7b9c4d7e18c781bbe8ca48b7970444a827c15109448a7e4dc9a64e489d653012",
+      "git_blob": "d86b1809aedf33b8b81abc6a84e79c26003627e4",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_local_qualification/vodo_amendment25/ROOT_REVIEW.json",
+      "bytes": 12591,
+      "sha256": "ac9eec9df23f4ee3c62d5691abc7fb170b0dd54979164f1b03f371bf186a38db",
+      "git_blob": "40a773ef619aa3e30d5bbc4a8f9917230dcc7fc4",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_local_qualification/vodo_color22/ROOT_REVIEW.json",
+      "bytes": 1605,
+      "sha256": "19faab076cb78329bf80c2ffc73fb6b096363412898f50d9000398c2dd0d2bed",
+      "git_blob": "ae1fee06b507a31f812b0753071a08e921c230f8",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_local_qualification/vodo_product24/ROOT_REVIEW.json",
+      "bytes": 1840,
+      "sha256": "e17316f86947a5cb64ff2d9f46a051c9ff139a6e3aa27302d2ce3aa7d41fe703",
+      "git_blob": "ec4c507c4050aaa0947be2c3865724d4a04dba9d",
+      "original_mode": "0644"
+    }
+  ]
+}

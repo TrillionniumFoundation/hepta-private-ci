@@ -1,0 +1,1033 @@
+{
+  "packet": "vodo_native5119",
+  "suggested_repository_directory": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/evidence/vodo_native5119_checkpoint_20261106",
+  "snapshot_utc": "2026-11-06 20:00:00 UTC",
+  "index": {
+    "bytes": 78638,
+    "sha256": "be8586e06c448950b4854cbb403eaef0e8018265435009c3f374120b1f0c527e",
+    "git_blob": "cef3a9e1a4ff438b524b00aaca5512978e158989"
+  },
+  "source_file_count": 152,
+  "raw_source_bytes": 28395866,
+  "archive_bytes": 28538880,
+  "compressed_bytes": 8381492,
+  "restore_exit_code": 0,
+  "restore_stdout": {
+    "bytes": 423,
+    "sha256": "5bc5bccbbbe97becc6f346ec1d3e6841680b0dd216e451058af65a8fdf37a741",
+    "git_blob": "d5ccc344ab17fbf733fc41c14344d4f3a1f13e48"
+  },
+  "restore_stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+  },
+  "all_restored_bytes_complete_roster_and_inert_modes_match": true,
+  "reader_template": {
+    "source_file": "/workspace/scratch/3f6a885bb83c/round3_native/restore_checkpoint_template.py",
+    "bytes": 6626,
+    "sha256": "00bf4373739122934a281273de36cc9e4cce84199aa985926419225cad94303b",
+    "git_blob": "27e463e7b9e73a98b3a35e05d4d7414a2ed7b4a0",
+    "only_replacement": "fixed INDEX SHA-256"
+  },
+  "codespell": {
+    "version": "2.4.3",
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "-m",
+      "codespell_lib",
+      "--ignore-words",
+      ".codespellignore",
+      "--skip",
+      "./.git"
+    ],
+    "exit_code": 0,
+    "stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "configuration": {
+      ".codespellrc": {
+        "bytes": 471,
+        "sha256": "80805b9340dbdd76645a25929f56c96606e187db8e9d16b75a4a47dcdd248c04",
+        "git_blob": "663be376c7381108af0a41eafc3dd08f27125d96"
+      },
+      ".codespellignore": {
+        "bytes": 69,
+        "sha256": "9c6cd9dd86c6300ff67edbe64b2e18ed089714151e5c166382c8ea99931bc275",
+        "git_blob": "0da447f000de188776a33e770c2d2d77b37f97ee"
+      },
+      ".codespell-exclude-lines": {
+        "bytes": 20003,
+        "sha256": "5e2119d75aa7cfa61e87b9c3d98863d0b5d6672eeaccc7411695e91e2366d52b",
+        "git_blob": "490e840301fdfae10d6e40c44a566ff16f82e324"
+      }
+    },
+    "new_exclusion_added": false
+  },
+  "files": [
+    {
+      "path": "INDEX.json",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/vodo_native5119_checkpoint_20261106/INDEX.json",
+      "mode": "100644",
+      "bytes": 78638,
+      "sha256": "be8586e06c448950b4854cbb403eaef0e8018265435009c3f374120b1f0c527e",
+      "git_blob": "cef3a9e1a4ff438b524b00aaca5512978e158989"
+    },
+    {
+      "path": "README.md",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/vodo_native5119_checkpoint_20261106/README.md",
+      "mode": "100644",
+      "bytes": 4163,
+      "sha256": "041aad707a4b493b84b853deef7d649d6695edf0a0d87c272d6c00161797419e",
+      "git_blob": "23feb3fa6bcf47e0c894237408585bc0a12116f0"
+    },
+    {
+      "path": "native-evidence.tar.xz.part000.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/vodo_native5119_checkpoint_20261106/native-evidence.tar.xz.part000.gz",
+      "mode": "100644",
+      "bytes": 439921,
+      "sha256": "3501192c9504135c97ff4fc63c1121a79c77795b4838faafebca573da0985a50",
+      "git_blob": "b34bdad86d64c9124a3b22fc02a9380209c44336"
+    },
+    {
+      "path": "native-evidence.tar.xz.part001.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/vodo_native5119_checkpoint_20261106/native-evidence.tar.xz.part001.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "b54e65e1aa07f01ca18961ef9cb68e1275a8cfb3bdd3d29de8696dcd1e2965f0",
+      "git_blob": "24db98e4c776f08e07358f2d28b9313ba969877f"
+    },
+    {
+      "path": "native-evidence.tar.xz.part002.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/vodo_native5119_checkpoint_20261106/native-evidence.tar.xz.part002.gz",
+      "mode": "100644",
+      "bytes": 440021,
+      "sha256": "838fbe43b97ca389f4a7478d1be120f05080d7e8fe570db14c005cec620342e5",
+      "git_blob": "8a06c76ddd41d3ed62648ca22c2a4f3fd68a3aa6"
+    },
+    {
+      "path": "native-evidence.tar.xz.part003.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/vodo_native5119_checkpoint_20261106/native-evidence.tar.xz.part003.gz",
+      "mode": "100644",
+      "bytes": 439742,
+      "sha256": "49da06645c4df98cb245026492dfed23ff48d1e27db5c189b16ec9c2b0cd4ef5",
+      "git_blob": "b0ff444f6ee04e4ebdf7ebc1e257ba540e296d0d"
+    },
+    {
+      "path": "native-evidence.tar.xz.part004.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/vodo_native5119_checkpoint_20261106/native-evidence.tar.xz.part004.gz",
+      "mode": "100644",
+      "bytes": 440028,
+      "sha256": "873102d634c3838e4ca29e9c041f3ddc2db3038a6583de54fba059c7f90c8a85",
+      "git_blob": "0aa346caeca6d587b8ccd179547e04d2b25e50e1"
+    },
+    {
+      "path": "native-evidence.tar.xz.part005.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/vodo_native5119_checkpoint_20261106/native-evidence.tar.xz.part005.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "9065d8e772e6f6cac6f3379431a662f6239628108e372de970ea01ab2e56adaf",
+      "git_blob": "b7f5ae7f44eeceaf1ceade2d21fda081bddf29ea"
+    },
+    {
+      "path": "native-evidence.tar.xz.part006.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/vodo_native5119_checkpoint_20261106/native-evidence.tar.xz.part006.gz",
+      "mode": "100644",
+      "bytes": 440150,
+      "sha256": "2908afc0225c52d82e312c3f2313a90060344a2568d0090f13e10af6438bd80d",
+      "git_blob": "d22efd338d0a97508d0aa5e972441d3ffd36b81e"
+    },
+    {
+      "path": "native-evidence.tar.xz.part007.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/vodo_native5119_checkpoint_20261106/native-evidence.tar.xz.part007.gz",
+      "mode": "100644",
+      "bytes": 439894,
+      "sha256": "62222db06ecb2864c28670a838ac85a79647a3d92bc921ecbdf5ea1853f03fed",
+      "git_blob": "5ef758acd2b335b1487a143649751cf609dae2bc"
+    },
+    {
+      "path": "native-evidence.tar.xz.part008.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/vodo_native5119_checkpoint_20261106/native-evidence.tar.xz.part008.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "4377b90df7f1360156853890c99af9cab8e71de074bac498d02a5dd5254beb24",
+      "git_blob": "ed3030b9cd73686130bb0ab89afa5d47dd63ae12"
+    },
+    {
+      "path": "native-evidence.tar.xz.part009.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/vodo_native5119_checkpoint_20261106/native-evidence.tar.xz.part009.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "eeaa5773a230806a4d8d4077b359db81688e4ed6696b236945a1b73ea307070f",
+      "git_blob": "15df1b4e2da85a9b2c7b3b0dc0d42744b44b853b"
+    },
+    {
+      "path": "native-evidence.tar.xz.part010.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/vodo_native5119_checkpoint_20261106/native-evidence.tar.xz.part010.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "6725b989b892fc76feddf99e337ce0c44391d3010fb4c2bc5b921c45de608280",
+      "git_blob": "b8069eead3f787e0a4bf6cbefb620c4daca13fcb"
+    },
+    {
+      "path": "native-evidence.tar.xz.part011.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/vodo_native5119_checkpoint_20261106/native-evidence.tar.xz.part011.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "1f9af3c3602cbd9c5aa2f00ae6356581a8cc992d450e76cd073ae00c07526344",
+      "git_blob": "0452e5f41116ddada1cae1c5db17a4b086168d65"
+    },
+    {
+      "path": "native-evidence.tar.xz.part012.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/vodo_native5119_checkpoint_20261106/native-evidence.tar.xz.part012.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "3a1a1336f676f230e7bab0622da1472011385d4a06f25cf9d66cbe1faf1fe4ea",
+      "git_blob": "3ca339d124e4b8e565ce61d6eb93a12ad4dbbe00"
+    },
+    {
+      "path": "native-evidence.tar.xz.part013.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/vodo_native5119_checkpoint_20261106/native-evidence.tar.xz.part013.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "22763d8fe1cfa782e6602589a85e67d9d6ba7324adb316f5a9bd5863ad7781c7",
+      "git_blob": "32a92873687557a4f2da57688dc98deb5cb29f80"
+    },
+    {
+      "path": "native-evidence.tar.xz.part014.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/vodo_native5119_checkpoint_20261106/native-evidence.tar.xz.part014.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "b5ecb11b15a903b7c399d263d20c00ebc2bb7eded51a0e47e3df905597830f43",
+      "git_blob": "c31edc7deb1e611344d32e587d07c77482164bc7"
+    },
+    {
+      "path": "native-evidence.tar.xz.part015.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/vodo_native5119_checkpoint_20261106/native-evidence.tar.xz.part015.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "b08e53d1d7f5278fb9aa77803ab154763fbc6fccdf64d03fba71f2b68a6bbc9d",
+      "git_blob": "0c7331863475ff51e82a345b67ca8ee819e8fdaa"
+    },
+    {
+      "path": "native-evidence.tar.xz.part016.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/vodo_native5119_checkpoint_20261106/native-evidence.tar.xz.part016.gz",
+      "mode": "100644",
+      "bytes": 439912,
+      "sha256": "6c6010c59568d1ef510238f015611fbf53dc2380932022c4c37ad70b7b173a74",
+      "git_blob": "4411a5a94a4ed731ee8b5fc380cb4fd37ba83235"
+    },
+    {
+      "path": "native-evidence.tar.xz.part017.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/vodo_native5119_checkpoint_20261106/native-evidence.tar.xz.part017.gz",
+      "mode": "100644",
+      "bytes": 439943,
+      "sha256": "a27fa1202b1f13e381061442a5050efd06507ef1632d82e455535aed2ffc72e2",
+      "git_blob": "e6c9081c3ed819884d57340d3bebd310299f3e7d"
+    },
+    {
+      "path": "native-evidence.tar.xz.part018.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/vodo_native5119_checkpoint_20261106/native-evidence.tar.xz.part018.gz",
+      "mode": "100644",
+      "bytes": 439987,
+      "sha256": "40d64efe617f401774d0ac5a847898222cf3a6dabdbc426a2a14b65b8af4cb99",
+      "git_blob": "40692936fd58a2b800bc5961b1a21957c5da84b3"
+    },
+    {
+      "path": "native-evidence.tar.xz.part019.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/vodo_native5119_checkpoint_20261106/native-evidence.tar.xz.part019.gz",
+      "mode": "100644",
+      "bytes": 21520,
+      "sha256": "f7452e3dd32974f4382756f2aacb438c1f43b4f3a2df5575876e756d57ee2d54",
+      "git_blob": "41109916da3824612c8afce5771940f1feba4dc6"
+    },
+    {
+      "path": "restore.py",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/vodo_native5119_checkpoint_20261106/restore.py",
+      "mode": "100644",
+      "bytes": 6656,
+      "sha256": "201540bf95f90788d64d64514f56cb9d11f6b678b9b5c2ab22b34b5e5fb3385a",
+      "git_blob": "8f8fa2fab3459acbb95ead5e8f5337167aeadb38"
+    }
+  ],
+  "qualification_scope": {
+    "failed_5090_original_preserved": {
+      "scope": "Independent audit of original failed #5090 native run; no product proposal accepted",
+      "source_head": "90b1c924f1ad7993a0b25f2d54749221f1045276",
+      "source_tree": "73fd7bbfdeeded8700f6d2ca6ebc39dea5574df9",
+      "run_id": 42255680239,
+      "job_id": 128022112134,
+      "artifact_id": 13528480009,
+      "archive": {
+        "bytes": 4968456,
+        "sha256": "db850a3880ef73d645a1e8cccd412b331bb6f086b7fb34387b904150ee3ba2c0",
+        "git_blob": "9053d5492fe878422ddc90bb6b0f18152a0aab18"
+      },
+      "original_raw_log": {
+        "bytes": 1544212,
+        "sha256": "28f0dd8a9b7fb67863ca49dbd907ccc2786dffd5cb8da29ae6094a4b065c3fa3",
+        "git_blob": "bf22a373034f96159fd91a54c7c60153efe4249f"
+      },
+      "zip_members_crc_and_complete_manifest_identities_verified": 40,
+      "full_source_tree_independently_rebuilt": true,
+      "native_command_records_all_exit_zero": [
+        {
+          "argv": [
+            "cargo",
+            "+1.96.0",
+            "--version"
+          ],
+          "cwd": ".",
+          "exit_code": 0,
+          "stage": "cargo-version"
+        },
+        {
+          "argv": [
+            "rustc",
+            "+1.96.0",
+            "--version"
+          ],
+          "cwd": ".",
+          "exit_code": 0,
+          "stage": "rustc-version"
+        },
+        {
+          "argv": [
+            "cargo",
+            "+1.96.0",
+            "deny",
+            "--version"
+          ],
+          "cwd": ".",
+          "exit_code": 0,
+          "stage": "deny-version"
+        },
+        {
+          "argv": [
+            "just",
+            "--version"
+          ],
+          "cwd": ".",
+          "exit_code": 0,
+          "stage": "just-version"
+        },
+        {
+          "argv": [
+            "bazel",
+            "--version"
+          ],
+          "cwd": ".",
+          "exit_code": 0,
+          "stage": "bazel-version"
+        },
+        {
+          "argv": [
+            "cargo",
+            "+1.96.0",
+            "metadata",
+            "--locked",
+            "--no-deps",
+            "--format-version",
+            "1"
+          ],
+          "cwd": "codex-rs",
+          "exit_code": 0,
+          "stage": "workspace-before"
+        },
+        {
+          "argv": [
+            "./scripts/check-module-bazel-lock.sh"
+          ],
+          "cwd": ".",
+          "exit_code": 0,
+          "stage": "baseline-bazel-lock-check"
+        },
+        {
+          "argv": [
+            "cargo",
+            "+1.96.0",
+            "update",
+            "-p",
+            "vodozemac@0.11.1",
+            "--precise",
+            "0.11.2"
+          ],
+          "cwd": "codex-rs",
+          "exit_code": 0,
+          "stage": "cargo-lock-update"
+        },
+        {
+          "argv": [
+            "cargo",
+            "+1.96.0",
+            "update",
+            "-p",
+            "itertools@0.14.0",
+            "--precise",
+            "0.14.0"
+          ],
+          "cwd": "codex-rs",
+          "exit_code": 0,
+          "stage": "cargo-existing-itertools-update"
+        },
+        {
+          "argv": [
+            "cargo",
+            "+1.96.0",
+            "update",
+            "-p",
+            "getrandom@0.3.4",
+            "--precise",
+            "0.3.4"
+          ],
+          "cwd": "codex-rs",
+          "exit_code": 0,
+          "stage": "cargo-existing-getrandom-update"
+        },
+        {
+          "argv": [
+            "cargo",
+            "+1.96.0",
+            "update",
+            "-p",
+            "vodozemac@0.11.2",
+            "--precise",
+            "0.11.2"
+          ],
+          "cwd": "codex-rs",
+          "exit_code": 0,
+          "stage": "cargo-lock-repeat"
+        },
+        {
+          "argv": [
+            "cargo",
+            "+1.96.0",
+            "update",
+            "-p",
+            "itertools@0.14.0",
+            "--precise",
+            "0.14.0"
+          ],
+          "cwd": "codex-rs",
+          "exit_code": 0,
+          "stage": "cargo-existing-itertools-repeat"
+        },
+        {
+          "argv": [
+            "cargo",
+            "+1.96.0",
+            "update",
+            "-p",
+            "getrandom@0.3.4",
+            "--precise",
+            "0.3.4"
+          ],
+          "cwd": "codex-rs",
+          "exit_code": 0,
+          "stage": "cargo-existing-getrandom-repeat"
+        },
+        {
+          "argv": [
+            "cargo",
+            "+1.96.0",
+            "metadata",
+            "--locked",
+            "--no-deps",
+            "--format-version",
+            "1"
+          ],
+          "cwd": "codex-rs",
+          "exit_code": 0,
+          "stage": "workspace-after"
+        },
+        {
+          "argv": [
+            "cargo",
+            "+1.96.0",
+            "tree",
+            "--locked",
+            "--package",
+            "vodozemac@0.11.2",
+            "--target",
+            "all",
+            "--edges",
+            "normal,build",
+            "--prefix",
+            "none",
+            "--format",
+            "{p}|{f}"
+          ],
+          "cwd": "codex-rs",
+          "exit_code": 0,
+          "stage": "features-after"
+        }
+      ],
+      "all_command_exit_records_also_found_in_original_console": true,
+      "cargo_graph_guard_replay": {
+        "package_count_unchanged": 1528,
+        "only_package_identity_change": {
+          "name": "vodozemac",
+          "before": "0.11.1",
+          "after": "0.11.2"
+        },
+        "added_existing_zeroize_edges": [
+          {
+            "name": "chacha20",
+            "version": "0.10.0",
+            "dependency": "zeroize"
+          },
+          {
+            "name": "chacha20poly1305",
+            "version": "0.11.0",
+            "dependency": "zeroize"
+          },
+          {
+            "name": "cipher",
+            "version": "0.5.2",
+            "dependency": "zeroize"
+          }
+        ],
+        "all_other_versions_sources_checksums_fields_and_edges_identical": true,
+        "workspace_and_vendor_packages_unchanged": true
+      },
+      "cargo_lock_identity": {
+        "bytes": 419311,
+        "sha256": "df62d73836673ec7cfb69d8f232cb81be610cea94e8ce95f81d41235f4a3317f",
+        "git_blob": "4807d7da16d576a6f34830ff1039e3224808c7b4"
+      },
+      "cargo_repeat_boundary": "Pinned producer reached features-after only after enforcing byte repeat and workspace-members checks",
+      "workspace_metadata_equal": true,
+      "old_module_lock_and_manifest_unchanged": true,
+      "original_raw_feature_guard_failure_reproduced": "ZEROIZE_FEATURE_NOT_RESOLVED",
+      "new_bazel_lock_and_deny_executed": false,
+      "product_integration_allowed": false,
+      "original_native_evidence_rewritten": false
+    },
+    "successful_5108_original": {
+      "scope": "Read-only independent audit of actual #5108 native proposal output; no lock regeneration, product integration or full-head qualification",
+      "source_head": "f11cc0a1c46f4a1a49e21580a80a9306b42f5dfa",
+      "source_tree": "c01815f9a8aac7116747a2d6895060b8c646deb3",
+      "source_parent": "90b1c924f1ad7993a0b25f2d54749221f1045276",
+      "run_id": 42269231206,
+      "job_id": 128069141553,
+      "artifact_id": 13532386250,
+      "archive": {
+        "bytes": 5882120,
+        "sha256": "47ac0b11330212d9836fda483369173365eb3729c131367c618450761884eaa5",
+        "git_blob": "caaf60e0de9e2e3eeec4e708444a6e6aea911d99"
+      },
+      "payload_files_all_verified": 46,
+      "native_exact_command_sequence_exit_zero": [
+        {
+          "stage": "cargo-version",
+          "argv": [
+            "cargo",
+            "+1.96.0",
+            "--version"
+          ],
+          "cwd": ".",
+          "exit_code": 0
+        },
+        {
+          "stage": "rustc-version",
+          "argv": [
+            "rustc",
+            "+1.96.0",
+            "--version"
+          ],
+          "cwd": ".",
+          "exit_code": 0
+        },
+        {
+          "stage": "deny-version",
+          "argv": [
+            "cargo",
+            "+1.96.0",
+            "deny",
+            "--version"
+          ],
+          "cwd": ".",
+          "exit_code": 0
+        },
+        {
+          "stage": "just-version",
+          "argv": [
+            "just",
+            "--version"
+          ],
+          "cwd": ".",
+          "exit_code": 0
+        },
+        {
+          "stage": "bazel-version",
+          "argv": [
+            "bazel",
+            "--version"
+          ],
+          "cwd": ".",
+          "exit_code": 0
+        },
+        {
+          "stage": "workspace-before",
+          "argv": [
+            "cargo",
+            "+1.96.0",
+            "metadata",
+            "--locked",
+            "--no-deps",
+            "--format-version",
+            "1"
+          ],
+          "cwd": "codex-rs",
+          "exit_code": 0
+        },
+        {
+          "stage": "baseline-bazel-lock-check",
+          "argv": [
+            "./scripts/check-module-bazel-lock.sh"
+          ],
+          "cwd": ".",
+          "exit_code": 0
+        },
+        {
+          "stage": "cargo-lock-update",
+          "argv": [
+            "cargo",
+            "+1.96.0",
+            "update",
+            "-p",
+            "vodozemac@0.11.1",
+            "--precise",
+            "0.11.2"
+          ],
+          "cwd": "codex-rs",
+          "exit_code": 0
+        },
+        {
+          "stage": "cargo-existing-itertools-update",
+          "argv": [
+            "cargo",
+            "+1.96.0",
+            "update",
+            "-p",
+            "itertools@0.14.0",
+            "--precise",
+            "0.14.0"
+          ],
+          "cwd": "codex-rs",
+          "exit_code": 0
+        },
+        {
+          "stage": "cargo-existing-getrandom-update",
+          "argv": [
+            "cargo",
+            "+1.96.0",
+            "update",
+            "-p",
+            "getrandom@0.3.4",
+            "--precise",
+            "0.3.4"
+          ],
+          "cwd": "codex-rs",
+          "exit_code": 0
+        },
+        {
+          "stage": "cargo-lock-repeat",
+          "argv": [
+            "cargo",
+            "+1.96.0",
+            "update",
+            "-p",
+            "vodozemac@0.11.2",
+            "--precise",
+            "0.11.2"
+          ],
+          "cwd": "codex-rs",
+          "exit_code": 0
+        },
+        {
+          "stage": "cargo-existing-itertools-repeat",
+          "argv": [
+            "cargo",
+            "+1.96.0",
+            "update",
+            "-p",
+            "itertools@0.14.0",
+            "--precise",
+            "0.14.0"
+          ],
+          "cwd": "codex-rs",
+          "exit_code": 0
+        },
+        {
+          "stage": "cargo-existing-getrandom-repeat",
+          "argv": [
+            "cargo",
+            "+1.96.0",
+            "update",
+            "-p",
+            "getrandom@0.3.4",
+            "--precise",
+            "0.3.4"
+          ],
+          "cwd": "codex-rs",
+          "exit_code": 0
+        },
+        {
+          "stage": "workspace-after",
+          "argv": [
+            "cargo",
+            "+1.96.0",
+            "metadata",
+            "--locked",
+            "--no-deps",
+            "--format-version",
+            "1"
+          ],
+          "cwd": "codex-rs",
+          "exit_code": 0
+        },
+        {
+          "stage": "features-after",
+          "argv": [
+            "cargo",
+            "+1.96.0",
+            "tree",
+            "--color",
+            "never",
+            "--locked",
+            "--package",
+            "vodozemac@0.11.2",
+            "--target",
+            "all",
+            "--edges",
+            "normal,build",
+            "--prefix",
+            "none",
+            "--format",
+            "{p}|{f}"
+          ],
+          "cwd": "codex-rs",
+          "exit_code": 0
+        },
+        {
+          "stage": "bazel-lock-update",
+          "argv": [
+            "just",
+            "bazel-lock-update"
+          ],
+          "cwd": ".",
+          "exit_code": 0
+        },
+        {
+          "stage": "bazel-lock-check",
+          "argv": [
+            "./scripts/check-module-bazel-lock.sh"
+          ],
+          "cwd": ".",
+          "exit_code": 0
+        },
+        {
+          "stage": "bazel-lock-repeat",
+          "argv": [
+            "just",
+            "bazel-lock-update"
+          ],
+          "cwd": ".",
+          "exit_code": 0
+        },
+        {
+          "stage": "bazel-lock-check-repeat",
+          "argv": [
+            "./scripts/check-module-bazel-lock.sh"
+          ],
+          "cwd": ".",
+          "exit_code": 0
+        },
+        {
+          "stage": "cargo-deny-original",
+          "argv": [
+            "cargo-deny",
+            "--log-level",
+            "warn",
+            "--manifest-path",
+            "./codex-rs/Cargo.toml",
+            "--all-features",
+            "check"
+          ],
+          "cwd": ".",
+          "exit_code": 0
+        }
+      ],
+      "fixed_guard_blobs": {
+        "propose_vodozemac_lock.py": "a8c2bb234d9c000be60e325f2acefe32c18b8027",
+        "vodozemac_proposal_evidence.py": "df92074358560c9d439323054cab12c2d0c9c7f6",
+        "vodozemac_lock_guards.py": "976dde7034708c37cb972e494640c9ea53afda33",
+        "vodozemac-lock-spec.json": "74376db93a746fbdd359e217e2e38d8d50a8fde1"
+      },
+      "original_guard_replay": {
+        "archive": {
+          "official_archives_verified": {
+            "0.11.1": "9e322119358132f5fa8e529de9ed9af4cd67ae71ffc6f12c133f75d5c4ec9637",
+            "0.11.2": "cafdb6875115a436251b280d741286a9cec7fc4daab0588ea26481dd8e2bab2f"
+          },
+          "only_manifest_changes": "patch version and six declared zeroize features",
+          "license_unchanged": {
+            "bytes": 10174,
+            "sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594",
+            "git_blob": "f433b1a53f5b830a205fd2df78e2b34974656c7b"
+          },
+          "rust_version_unchanged": "1.89"
+        },
+        "graph": {
+          "package_count_unchanged": 1528,
+          "only_package_identity_change": {
+            "name": "vodozemac",
+            "before": "0.11.1",
+            "after": "0.11.2"
+          },
+          "added_existing_zeroize_edges": [
+            {
+              "dependency": "zeroize",
+              "name": "chacha20",
+              "version": "0.10.0"
+            },
+            {
+              "dependency": "zeroize",
+              "name": "chacha20poly1305",
+              "version": "0.11.0"
+            },
+            {
+              "dependency": "zeroize",
+              "name": "cipher",
+              "version": "0.5.2"
+            }
+          ],
+          "all_other_versions_sources_checksums_fields_and_edges_identical": true,
+          "workspace_and_vendor_packages_unchanged": true
+        },
+        "module": {
+          "only_removed_fact": "vodozemac_0.11.1",
+          "only_added_fact": "vodozemac_0.11.2",
+          "only_dependency_metadata_change": "six zeroize feature additions",
+          "external_tooling_facts_retained_byte_identical": {
+            "hyper_1.8.1": "ea4c91b251c48158d603abf77e90b99d0ced024a18fa2b9f4dce6435836d4d09",
+            "pin-utils_0.1.0": "065b7d53d3d5f7cd38c1e54cdd9a0d3181f46b8d3d7653bdf8691909ad354d9e"
+          },
+          "all_other_module_fields_identical": true
+        },
+        "features": {
+          "native_cargo_tree_features": {
+            "aes@0.9.3": [
+              [
+                "zeroize"
+              ]
+            ],
+            "cbc@0.2.1": [
+              [
+                "block-padding",
+                "default",
+                "zeroize"
+              ]
+            ],
+            "chacha20poly1305@0.11.0": [
+              [
+                "alloc",
+                "default",
+                "getrandom",
+                "zeroize"
+              ]
+            ],
+            "cipher@0.5.2": [
+              [
+                "alloc",
+                "block-buffer",
+                "block-padding",
+                "stream-wrapper",
+                "zeroize"
+              ]
+            ],
+            "hmac@0.13.0": [
+              [
+                "zeroize"
+              ]
+            ],
+            "sha2@0.11.0": [
+              [
+                "alloc",
+                "default",
+                "oid",
+                "zeroize"
+              ]
+            ],
+            "chacha20@0.10.0": [
+              [
+                "cipher",
+                "rng",
+                "xchacha",
+                "zeroize"
+              ]
+            ]
+          },
+          "scope": "Declared Cargo tree resolution; not a substitute for complete-head native compilation and tests."
+        }
+      },
+      "full_source_tree_reconstructed": "c01815f9a8aac7116747a2d6895060b8c646deb3",
+      "full_candidate_tree_reconstructed": "1bbbd6a333549bb2c7d9973b2dab5c20cb466b6d",
+      "workspace_metadata_before_after_equal": true,
+      "native_cargo_lock_byte_identical_to_local_twice_generated_candidate": true,
+      "native_generator_reports_both_locks_repeat_equal": true,
+      "independent_two_file_forward_reverse_patch": true,
+      "product_paths": {
+        "MODULE.bazel.lock": {
+          "mode": "100644",
+          "before": {
+            "bytes": 1725804,
+            "sha256": "333b2545bd671a88aeb762afd74c725801138f8f53ddfc30af1e75b5f446deed",
+            "git_blob": "343f80934bb215a7a14fc6618e45947305039b9b"
+          },
+          "after": {
+            "bytes": 1725951,
+            "sha256": "90225dce14839069862401db906babcee1d1f19349f2da87024740e97747adaf",
+            "git_blob": "7d77e06d95a3e4d014870990031d5920bc779939"
+          }
+        },
+        "codex-rs/Cargo.lock": {
+          "mode": "100644",
+          "before": {
+            "bytes": 419275,
+            "sha256": "70d1590734ce663b956981e5c3e7253c6b712039ca5e11e090487a371fbece7b",
+            "git_blob": "e774ae5331457117f576e44f16643ccd44684af4"
+          },
+          "after": {
+            "bytes": 419311,
+            "sha256": "df62d73836673ec7cfb69d8f232cb81be610cea94e8ce95f81d41235f4a3317f",
+            "git_blob": "4807d7da16d576a6f34830ff1039e3224808c7b4"
+          }
+        }
+      },
+      "complete_current_product_head_native_gate": "PENDING after root-reviewed integration"
+    },
+    "product_locks_published": {
+      "pull_request": 5115,
+      "head": "b36bd44b00d8130d821c15e172e34542c9470d7c",
+      "tree": "9dd1191cc10992b27c6cdab61fdb1b492baaeceb"
+    },
+    "additive_source_seal_published": {
+      "data_pull_request": 5118,
+      "guards_pull_request": 5119,
+      "head": "7c8c11d1feee3b48edcc43151dfdb698360e2255",
+      "tree": "bae605da14265a4ba9797d0db6b594f89d7baefc"
+    },
+    "source_specific_v7_5_producer": {
+      "scope": "Independent retained-artifact identity and provenance verification; no native commands rerun here",
+      "pull_request": 5119,
+      "source_head": "7c8c11d1feee3b48edcc43151dfdb698360e2255",
+      "source_tree": "bae605da14265a4ba9797d0db6b594f89d7baefc",
+      "run_id": 42281242395,
+      "producer_job_id": 128110449651,
+      "artifact_id": 13534909684,
+      "artifact_zip": {
+        "bytes": 2450050,
+        "sha256": "5418fb0fdb31e7a530661a3588faf72a20494ceca58d522fa419e48bbbbff9c5",
+        "git_blob": "aa755429ed5e3c6907ecd68d653afe2650c86164"
+      },
+      "original_job_log": {
+        "bytes": 929788,
+        "sha256": "5c943deda5f870eedd6fb0750576ad8337a51d2521a3728640b21964a438644f",
+        "git_blob": "be44a2312ed1bd701c0120a3e2416ef1db764b5d"
+      },
+      "result": {
+        "bytes": 136019,
+        "sha256": "f950bc8945c6f47156d37b31c9b6f432e8c770a99ecd0d3a091304a5a118f2a7",
+        "git_blob": "7e74901f5fee5827f618e28453d88786f8f202fb"
+      },
+      "all_artifact_payload_files_verified": 353,
+      "source_files_verified_against_result_and_native_git_tree_output": 320,
+      "native_committed_entry_count": 345,
+      "native_command_logs_verified": 21,
+      "all_native_commands_exit_zero": true,
+      "whole_zip_digest_and_all_353_member_crc_reads_verified": true,
+      "compared_to_5081_source_files_changed": [
+        "MODULE.bazel.lock",
+        "codex-rs/Cargo.lock"
+      ],
+      "two_locks_equal_original_5108_native_outputs": true,
+      "all_six_older_transported_seal_bytes_unchanged": true,
+      "new_seal_and_all_11_proof_committed_blobs_and_100644_modes_verified": true,
+      "new_sealed_lock_amendment": {
+        "path": "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/LOCK_AMENDMENT.v7.5.json",
+        "bytes": 5700,
+        "sha256": "1642fee9bf4497169d2a2645e01864e8c74435071887dcea7bc2c8315123ab83"
+      },
+      "actual_boundary_test_groups": [
+        97,
+        32,
+        16
+      ],
+      "git_head_and_tree_before_after_exact": true,
+      "committed_bytes_and_modes_before_after_exact": true,
+      "executable_committed_files_in_transport": [
+        "codex-rs/third_party/aws-smithy-http-0.62.6-pin-backport/additional-ci",
+        "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/additional-ci",
+        "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/additional-ci"
+      ],
+      "candidate_patch_bytes": 0,
+      "workspace_index_tracked_and_untracked_drift": false,
+      "cargo_and_bazel_lock_drift": false,
+      "metadata_before_after_bazel_byte_identical": true,
+      "five_exact_backport_sources_verified": {
+        "hyper@1.8.1": {
+          "source": null,
+          "manifest_path": "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/hyper-1.8.1-pin-backport/Cargo.toml",
+          "package_id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/hyper-1.8.1-pin-backport#hyper@1.8.1"
+        },
+        "loom@0.7.2": {
+          "source": null,
+          "manifest_path": "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/loom-0.7.2-pin-backport/Cargo.toml",
+          "package_id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/loom-0.7.2-pin-backport#loom@0.7.2"
+        },
+        "aws-smithy-http@0.62.6": {
+          "source": null,
+          "manifest_path": "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/aws-smithy-http-0.62.6-pin-backport/Cargo.toml",
+          "package_id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/aws-smithy-http-0.62.6-pin-backport#aws-smithy-http@0.62.6"
+        },
+        "aws-smithy-runtime@1.9.5": {
+          "source": null,
+          "manifest_path": "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/Cargo.toml",
+          "package_id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport#aws-smithy-runtime@1.9.5"
+        },
+        "aws-smithy-types@1.4.7": {
+          "source": null,
+          "manifest_path": "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/Cargo.toml",
+          "package_id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport#aws-smithy-types@1.4.7"
+        }
+      },
+      "sealed_diagnostic_successor": {
+        "path": "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/SOURCE_AMENDMENT.v7.4.json",
+        "bytes": 3111,
+        "sha256": "56c5b2a709caa0ae7749e1281c9e6ac56085244303cdbb8b158fc26d1cf106d0"
+      },
+      "qualification_boundary": "Committed source and real zero-drift Cargo/Bazel lock verification only. Same-run unchanged cargo-deny, old-store reopen, behavioral tests and platform qualification remain separate.",
+      "promotion_allowed": false,
+      "other_jobs_still_separate": [
+        "full-scope candidate cargo-deny",
+        "old-store fixture and reopen",
+        "behavioral and platform qualification"
+      ],
+      "vodozemac_security_upgrade_in_this_source": true
+    },
+    "full_current_product_or_platform_qualification": false,
+    "all_three_original_native_proposal_and_producer_ZIPs_retained_whole": true,
+    "recovery_or_core_sdk_other_qualification_inferred": false
+  },
+  "publication_ready": true,
+  "old_packets_modified": false
+}
