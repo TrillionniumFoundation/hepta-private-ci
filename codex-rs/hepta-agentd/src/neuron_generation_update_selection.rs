@@ -108,12 +108,9 @@ impl AgentdSelectedGenerationV1 {
         let current = owner.current_registry_view(now).map_err(invalid)?;
         let verified = verifier.verify(&signed, &current, now).map_err(invalid)?;
         let selection = verified.selection_digest();
-        let mut candidate = load_selected_candidate(
-            files.registry_snapshot,
-            files.payload,
-            verified,
-        )
-        .map_err(invalid)?;
+        let mut candidate =
+            load_selected_candidate(files.registry_snapshot, files.payload, verified)
+                .map_err(invalid)?;
         let manifest = candidate
             .with_current(current, |bytes| {
                 let manifest: CellBackendManifestV2 =
@@ -128,7 +125,9 @@ impl AgentdSelectedGenerationV1 {
             .map_err(invalid)??;
         let manifest_digest = manifest.digest().map_err(invalid)?;
         if signed.compatibility_digest.as_array() != &manifest_digest {
-            return Err(invalid("selection does not bind the complete generation manifest"));
+            return Err(invalid(
+                "selection does not bind the complete generation manifest",
+            ));
         }
         let withdrawal = owner.withdrawal_registry();
         let withdrawal_scope = withdrawal
@@ -177,7 +176,9 @@ impl AgentdSelectedGenerationV1 {
         now: u64,
     ) -> Result<(), AgentdError> {
         if now < self.observed_at || owner.recovery_required().is_some() {
-            return Err(invalid("generation selection owner or clock is unavailable"));
+            return Err(invalid(
+                "generation selection owner or clock is unavailable",
+            ));
         }
         let withdrawal = owner.withdrawal_registry();
         if withdrawal.scope_digest() != Some(self.observation.withdrawal_scope)
@@ -186,11 +187,16 @@ impl AgentdSelectedGenerationV1 {
             return Err(invalid("generation selection withdrawal cut changed"));
         }
         let current = owner.current_registry_view(now).map_err(invalid)?;
-        let verified = self.verifier.verify(&self.signed, &current, now).map_err(invalid)?;
+        let verified = self
+            .verifier
+            .verify(&self.signed, &current, now)
+            .map_err(invalid)?;
         if verified.selection_digest() != self.observation.selection {
             return Err(invalid("generation selection identity changed"));
         }
-        self.candidate.with_current(current, |_| ()).map_err(invalid)?;
+        self.candidate
+            .with_current(current, |_| ())
+            .map_err(invalid)?;
         self.observed_at = now;
         Ok(())
     }
@@ -199,4 +205,3 @@ impl AgentdSelectedGenerationV1 {
 fn invalid(error: impl std::fmt::Display) -> AgentdError {
     AgentdError::Invalid(error.to_string())
 }
-

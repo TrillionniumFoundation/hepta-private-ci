@@ -9,8 +9,8 @@ use std::io::Write;
 use std::marker::PhantomData;
 use std::path::Path;
 use std::sync::Mutex;
-use std::sync::atomic::AtomicU64;
 use std::sync::atomic::AtomicU8;
+use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 
 use codex_hepta_contracts::AuthorityClock;
@@ -41,7 +41,11 @@ pub(super) struct FileCas<T> {
 
 impl<T: DeserializeOwned + Serialize + PartialEq> FileCas<T> {
     pub(super) fn create(path: &Path, owner: String, initial: &T) -> anyhow::Result<Self> {
-        let mut file = OpenOptions::new().create_new(true).read(true).write(true).open(path)?;
+        let mut file = OpenOptions::new()
+            .create_new(true)
+            .read(true)
+            .write(true)
+            .open(path)?;
         write_value(&mut file, initial)?;
         if let Some(parent) = path.parent() {
             File::open(parent)?.sync_all()?;
@@ -75,30 +79,48 @@ impl<T: DeserializeOwned + Serialize + PartialEq> FileCas<T> {
     }
 
     pub(super) fn after_next_commit(&self, callback: AfterCommit) -> anyhow::Result<()> {
-        let mut slot = self.after_commit.lock().map_err(|_| anyhow::anyhow!("test hook poisoned"))?;
+        let mut slot = self
+            .after_commit
+            .lock()
+            .map_err(|_| anyhow::anyhow!("test hook poisoned"))?;
         anyhow::ensure!(slot.is_none(), "one bounded test hook at a time");
         *slot = Some(callback);
         Ok(())
     }
 
-    fn locked<R>(&self, owner: &str, body: impl FnOnce(&mut File) -> Result<R, AuthorityTrustError>) -> Result<R, AuthorityTrustError> {
+    fn locked<R>(
+        &self,
+        owner: &str,
+        body: impl FnOnce(&mut File) -> Result<R, AuthorityTrustError>,
+    ) -> Result<R, AuthorityTrustError> {
         if owner != self.owner {
             return Err(AuthorityTrustError::Invalid);
         }
-        let mut file = self.file.lock().map_err(|_| AuthorityTrustError::Unavailable)?;
+        let mut file = self
+            .file
+            .lock()
+            .map_err(|_| AuthorityTrustError::Unavailable)?;
         file.try_lock().map_err(|_| AuthorityTrustError::Conflict)?;
         let result = body(&mut file);
-        file.unlock().map_err(|_| AuthorityTrustError::Unavailable)?;
+        file.unlock()
+            .map_err(|_| AuthorityTrustError::Unavailable)?;
         result
     }
 }
 
 impl<T: DeserializeOwned + Serialize + PartialEq> AuthorityFrontierStore<T> for FileCas<T> {
     fn load(&self, owner: &str) -> Result<T, AuthorityTrustError> {
-        self.locked(owner, |file| read_value(file).map_err(|_| AuthorityTrustError::Invalid))
+        self.locked(owner, |file| {
+            read_value(file).map_err(|_| AuthorityTrustError::Invalid)
+        })
     }
 
-    fn compare_and_set(&self, owner: &str, expected: &T, next: &T) -> Result<(), AuthorityTrustError> {
+    fn compare_and_set(
+        &self,
+        owner: &str,
+        expected: &T,
+        next: &T,
+    ) -> Result<(), AuthorityTrustError> {
         self.locked(owner, |file| {
             let actual: T = read_value(file).map_err(|_| AuthorityTrustError::Invalid)?;
             if &actual != expected {
@@ -109,7 +131,12 @@ impl<T: DeserializeOwned + Serialize + PartialEq> AuthorityFrontierStore<T> for 
                 return Err(AuthorityTrustError::Unavailable);
             }
             write_value(file, next).map_err(|_| AuthorityTrustError::Unavailable)?;
-            if let Some(callback) = self.after_commit.lock().map_err(|_| AuthorityTrustError::Unavailable)?.take() {
+            if let Some(callback) = self
+                .after_commit
+                .lock()
+                .map_err(|_| AuthorityTrustError::Unavailable)?
+                .take()
+            {
                 callback().map_err(|_| AuthorityTrustError::Unavailable)?;
             }
             if failure == 2 {
@@ -122,7 +149,9 @@ impl<T: DeserializeOwned + Serialize + PartialEq> AuthorityFrontierStore<T> for 
 
 fn read_value<T: DeserializeOwned>(file: &mut File) -> std::io::Result<T> {
     if !file.metadata()?.is_file() || file.metadata()?.len() > 65_536 {
-        return Err(std::io::Error::other("test frontier is not a bounded regular file"));
+        return Err(std::io::Error::other(
+            "test frontier is not a bounded regular file",
+        ));
     }
     file.seek(SeekFrom::Start(0))?;
     let mut bytes = Vec::new();

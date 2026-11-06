@@ -108,9 +108,7 @@ where
     })
 }
 
-impl<Old: AnchorWitnessStore, New: AnchorWitnessStore>
-    PreparedAgentdGenerationUpdateV1<Old, New>
-{
+impl<Old: AnchorWitnessStore, New: AnchorWitnessStore> PreparedAgentdGenerationUpdateV1<Old, New> {
     pub(crate) fn from_parts(
         current: Arc<NeuronGenerationCurrentOwnerV1>,
         authorities: AgentdGenerationUpdateAuthoritiesV1,
@@ -119,7 +117,14 @@ impl<Old: AnchorWitnessStore, New: AnchorWitnessStore>
         new: CellGenerationJournalV2<New>,
         selected: AgentdSelectedGenerationV1,
     ) -> Self {
-        Self { current, authorities, prepared, old, new, selected }
+        Self {
+            current,
+            authorities,
+            prepared,
+            old,
+            new,
+            selected,
+        }
     }
 
     #[must_use]
@@ -175,12 +180,11 @@ pub fn recover_agentd_generation_update_v1<W: AnchorWitnessStore>(
     target: AgentdGenerationUpdateTargetV1<W>,
     expected: AgentdGenerationUpdateRecoveryV1,
 ) -> Result<ReadyAgentdGenerationUpdateV1<W>, AgentdError> {
-    let prepared = current.recover_operation(
-        &expected.operation_id,
-        expected.intent_digest,
-    )?;
+    let prepared = current.recover_operation(&expected.operation_id, expected.intent_digest)?;
     if selected.observation().digest() != prepared.selection_observation_digest() {
-        return Err(invalid("recovery selection differs from the original operation"));
+        return Err(invalid(
+            "recovery selection differs from the original operation",
+        ));
     }
     let receipt = match current.read_operation(&prepared)? {
         NeuronGenerationUpdateReadbackV1::Prepared => {
@@ -188,10 +192,12 @@ pub fn recover_agentd_generation_update_v1<W: AnchorWitnessStore>(
         }
         NeuronGenerationUpdateReadbackV1::Published(receipt) => receipt,
     };
-    let binding = CellGenerationOwnerBindingV1::new(&target.config, target.max_records)
-        .map_err(invalid)?;
+    let binding =
+        CellGenerationOwnerBindingV1::new(&target.config, target.max_records).map_err(invalid)?;
     if &binding != receipt.target() || selected.manifest() != &target.config.manifest {
-        return Err(invalid("recovery target differs from the original publication"));
+        return Err(invalid(
+            "recovery target differs from the original publication",
+        ));
     }
     let metadata = target.file.metadata()?;
     if !metadata.is_file() || metadata.len() == 0 {
@@ -242,11 +248,15 @@ pub(super) fn validate_reset<Old: AnchorWitnessStore, New: AnchorWitnessStore>(
     target: &AgentdGenerationUpdateTargetV1<New>,
 ) -> Result<CellGenerationOwnerBindingV1, AgentdError> {
     if old.owner_binding().is_none() {
-        return Err(invalid("legacy generation journals cannot enter guarded updates"));
+        return Err(invalid(
+            "legacy generation journals cannot enter guarded updates",
+        ));
     }
     let observation = old.observe_generation().map_err(invalid)?;
     if !observation.is_terminal() || !old.is_drained().map_err(invalid)? {
-        return Err(invalid("predecessor requires STOP, exact output ACK and drain"));
+        return Err(invalid(
+            "predecessor requires STOP, exact output ACK and drain",
+        ));
     }
     let predecessor = observation.snapshot();
     let successor = &target.config.initial;
@@ -263,7 +273,9 @@ pub(super) fn validate_reset<Old: AnchorWitnessStore, New: AnchorWitnessStore>(
         || !successor.prefix.is_empty()
         || successor.stopped
     {
-        return Err(invalid("generation update must be a new-task explicit reset"));
+        return Err(invalid(
+            "generation update must be a new-task explicit reset",
+        ));
     }
     CellGenerationOwnerBindingV1::new(&target.config, target.max_records).map_err(invalid)
 }

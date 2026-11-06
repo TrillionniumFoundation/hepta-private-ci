@@ -44,7 +44,9 @@ where
 {
     StableId::new(&request.new_operation_id).map_err(invalid)?;
     if request.new_operation_id == request.original_operation_id {
-        return Err(invalid("forward recovery needs a different operation identity"));
+        return Err(invalid(
+            "forward recovery needs a different operation identity",
+        ));
     }
     let original = current.recover_operation(
         &request.original_operation_id,
@@ -60,11 +62,15 @@ where
     if &binding != original.target()
         || selected.observation().digest() != original.selection_observation_digest()
     {
-        return Err(invalid("forward recovery cannot change the original target or selection"));
+        return Err(invalid(
+            "forward recovery cannot change the original target or selection",
+        ));
     }
     let metadata = target.file.metadata()?;
     if !metadata.is_file() || metadata.len() == 0 {
-        return Err(invalid("forward recovery needs the actual existing genesis"));
+        return Err(invalid(
+            "forward recovery needs the actual existing genesis",
+        ));
     }
     let guard: Arc<dyn CellGenerationCurrentV1> = current.clone();
     let old = old.rebind_current(guard).map_err(invalid)?;
@@ -80,12 +86,8 @@ where
     new.prepared_checkpoint().map_err(invalid)?;
     let artifacts = authorities.artifacts.lock().map_err(invalid)?;
     selected.revalidate(&artifacts, authorities.now()?)?;
-    let prepared = current.prepare_forward_recovery(
-        &original,
-        &old,
-        &new,
-        request.new_operation_id,
-    )?;
+    let prepared =
+        current.prepare_forward_recovery(&original, &old, &new, request.new_operation_id)?;
     drop(artifacts);
     Ok(PreparedAgentdGenerationUpdateV1::from_parts(
         current,
@@ -100,4 +102,3 @@ where
 fn invalid(error: impl std::fmt::Display) -> AgentdError {
     AgentdError::Invalid(error.to_string())
 }
-

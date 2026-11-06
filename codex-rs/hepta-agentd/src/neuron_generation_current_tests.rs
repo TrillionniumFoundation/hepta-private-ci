@@ -35,19 +35,46 @@ impl PreparedCase {
         let old = fixture.stopped_old()?;
         let selected = fixture.selection()?;
         let binding = CellGenerationOwnerBindingV1::new(&fixture.target_config, RECORDS)?;
-        let prepared = fixture.current.prepare(&old, "replace-task".into(), binding, &selected)?;
+        let prepared = fixture
+            .current
+            .prepare(&old, "replace-task".into(), binding, &selected)?;
         let target = fixture.target_create()?;
-        let new = CellGenerationJournalV2::open_guarded(target.file, target.witness, target.config, target.max_records, fixture.current.clone())?;
+        let new = CellGenerationJournalV2::open_guarded(
+            target.file,
+            target.witness,
+            target.config,
+            target.max_records,
+            fixture.current.clone(),
+        )?;
         let signed = fixture.sign(prepared.final_use_binding())?;
-        Ok(Self { fixture, old, new, selected, prepared, signed })
+        Ok(Self {
+            fixture,
+            old,
+            new,
+            selected,
+            prepared,
+            signed,
+        })
     }
 
     fn publish(&mut self) -> Result<PublishedNeuronGenerationUpdateV1, AgentdError> {
-        let mut artifacts = self.fixture.artifacts.lock().map_err(|_| AgentdError::Invalid("artifact lock poisoned".into()))?;
-        self.fixture.current.publish(&self.prepared, &self.old, &self.new, &mut self.selected, NeuronGenerationUpdatePublicationV1 {
-            artifacts: &mut artifacts, authority: &self.fixture.authority,
-            signed: &self.signed, clock: self.fixture.clock.as_ref(),
-        })
+        let mut artifacts = self
+            .fixture
+            .artifacts
+            .lock()
+            .map_err(|_| AgentdError::Invalid("artifact lock poisoned".into()))?;
+        self.fixture.current.publish(
+            &self.prepared,
+            &self.old,
+            &self.new,
+            &mut self.selected,
+            NeuronGenerationUpdatePublicationV1 {
+                artifacts: &mut artifacts,
+                authority: &self.fixture.authority,
+                signed: &self.signed,
+                clock: self.fixture.clock.as_ref(),
+            },
+        )
     }
 }
 
@@ -60,18 +87,35 @@ fn prepared_target_is_durable_but_cannot_dispatch_or_resume() -> anyhow::Result<
     assert_eq!(bytes.len(), 40);
     let actual = case.new.prepared_checkpoint()?;
     assert_eq!(actual.binding(), case.prepared.target());
-    assert_eq!(actual.checkpoint(), case.prepared.target().genesis_checkpoint());
-    assert_eq!(case.fixture.current.check_open(case.prepared.target())?, CellGenerationOpenModeV1::Preparing);
+    assert_eq!(
+        actual.checkpoint(),
+        case.prepared.target().genesis_checkpoint()
+    );
+    assert_eq!(
+        case.fixture.current.check_open(case.prepared.target())?,
+        CellGenerationOpenModeV1::Preparing
+    );
     assert_eq!(case.new.snapshot(), Err(CellGenerationErrorV2::Pending));
     let request = CellGenerationRequestV2 {
-        operation_id: "premature-step".into(), task_digest: case.fixture.target_config.task_digest,
+        operation_id: "premature-step".into(),
+        task_digest: case.fixture.target_config.task_digest,
         source_frontier: case.fixture.target_config.source_frontier,
-        predecessor: case.fixture.target_config.initial.clone(), input: vec![1],
-        admitted_at_micros: 10, deadline_micros: 100,
+        predecessor: case.fixture.target_config.initial.clone(),
+        input: vec![1],
+        admitted_at_micros: 10,
+        deadline_micros: 100,
     };
-    assert_eq!(case.new.admit(request, /*now_micros*/ 10), Err(CellGenerationErrorV2::Pending));
+    assert_eq!(
+        case.new.admit(request, /*now_micros*/ 10),
+        Err(CellGenerationErrorV2::Pending)
+    );
     assert_eq!(case.new.resume(), Err(CellGenerationErrorV2::Pending));
-    let replay = case.fixture.current.prepare(&case.old, "replace-task".into(), case.prepared.target().clone(), &case.selected)?;
+    let replay = case.fixture.current.prepare(
+        &case.old,
+        "replace-task".into(),
+        case.prepared.target().clone(),
+        &case.selected,
+    )?;
     assert_eq!(replay.intent_digest(), case.prepared.intent_digest());
     assert_eq!(case.fixture.bytes("target-journal")?, bytes);
     assert_eq!(case.fixture.bytes("target-witness")?, witness);
@@ -90,51 +134,101 @@ fn lost_publication_ack_cold_reads_original_and_fences_old_guarded_bytes() -> an
     assert_eq!(case.fixture.authority.capacity()?.used_nonces, 1);
     let claims = case.fixture.bytes("final-use/authority.claims")?;
     let current_bytes = case.fixture.bytes("current.json")?;
-    assert_eq!(case.old.resume(), Err(CellGenerationErrorV2::InvalidBinding));
-    let PreparedCase { fixture, old, new, .. } = case;
+    assert_eq!(
+        case.old.resume(),
+        Err(CellGenerationErrorV2::InvalidBinding)
+    );
+    let PreparedCase {
+        fixture, old, new, ..
+    } = case;
     drop(old);
     drop(new);
 
     let current = fixture.reopen_current()?;
     let recovered = current.recover_operation("replace-task", intent)?;
-    let NeuronGenerationUpdateReadbackV1::Published(original) = current.read_operation(&recovered)? else {
+    let NeuronGenerationUpdateReadbackV1::Published(original) =
+        current.read_operation(&recovered)?
+    else {
         anyhow::bail!("committed CAS was incorrectly treated as not applied");
     };
     assert_eq!(original.intent_digest(), intent);
-    assert_eq!(original.target(), &CellGenerationOwnerBindingV1::new(&fixture.target_config, RECORDS)?);
+    assert_eq!(
+        original.target(),
+        &CellGenerationOwnerBindingV1::new(&fixture.target_config, RECORDS)?
+    );
     let ready = recover_agentd_generation_update_v1(
-        current.clone(), fixture.authorities()?, fixture.selection()?, fixture.target_reopen()?,
-        AgentdGenerationUpdateRecoveryV1 { operation_id: "replace-task".into(), intent_digest: intent },
+        current.clone(),
+        fixture.authorities()?,
+        fixture.selection()?,
+        fixture.target_reopen()?,
+        AgentdGenerationUpdateRecoveryV1 {
+            operation_id: "replace-task".into(),
+            intent_digest: intent,
+        },
     )?;
     drop(ready);
-    assert_eq!(current.read_operation(&recovered)?, NeuronGenerationUpdateReadbackV1::Published(original));
+    assert_eq!(
+        current.read_operation(&recovered)?,
+        NeuronGenerationUpdateReadbackV1::Published(original)
+    );
     assert_eq!(fixture.bytes("current.json")?, current_bytes);
     assert_eq!(fixture.bytes("final-use/authority.claims")?, claims);
     assert_eq!(fixture.authority.capacity()?.used_nonces, 1);
-    assert_eq!(CellGenerationJournalV2::open(fixture.file("old-journal")?, fixture.witness("old-witness", &fixture.old_config)?, fixture.old_config.clone(), RECORDS).err(), Some(CellGenerationErrorV2::InvalidBinding));
-    assert_eq!(CellGenerationJournalV2::open_guarded(fixture.file("old-journal")?, fixture.witness("old-witness", &fixture.old_config)?, fixture.old_config.clone(), RECORDS, current).err(), Some(CellGenerationErrorV2::InvalidBinding));
+    assert_eq!(
+        CellGenerationJournalV2::open(
+            fixture.file("old-journal")?,
+            fixture.witness("old-witness", &fixture.old_config)?,
+            fixture.old_config.clone(),
+            RECORDS
+        )
+        .err(),
+        Some(CellGenerationErrorV2::InvalidBinding)
+    );
+    assert_eq!(
+        CellGenerationJournalV2::open_guarded(
+            fixture.file("old-journal")?,
+            fixture.witness("old-witness", &fixture.old_config)?,
+            fixture.old_config.clone(),
+            RECORDS,
+            current
+        )
+        .err(),
+        Some(CellGenerationErrorV2::InvalidBinding)
+    );
     assert_eq!(fixture.bytes("old-journal")?, old_bytes);
     assert_eq!(fixture.bytes("old-witness")?, old_witness);
     Ok(())
 }
 
 #[test]
-fn consumed_nonce_with_rejected_cas_stays_pending_until_new_signed_forward_operation() -> anyhow::Result<()> {
+fn consumed_nonce_with_rejected_cas_stays_pending_until_new_signed_forward_operation()
+-> anyhow::Result<()> {
     let mut case = PreparedCase::new()?;
     let prepared_bytes = case.fixture.bytes("current.json")?;
     case.fixture.reject_publication_write();
     assert!(case.publish().is_err());
-    assert_eq!(case.fixture.current.read_operation(&case.prepared)?, NeuronGenerationUpdateReadbackV1::Prepared);
+    assert_eq!(
+        case.fixture.current.read_operation(&case.prepared)?,
+        NeuronGenerationUpdateReadbackV1::Prepared
+    );
     assert_eq!(case.fixture.authority.capacity()?.used_nonces, 1);
     let claims = case.fixture.bytes("final-use/authority.claims")?;
     let current = case.fixture.reopen_current()?;
     let cold = current.recover_operation("replace-task", case.prepared.intent_digest())?;
-    assert_eq!(current.read_operation(&cold)?, NeuronGenerationUpdateReadbackV1::Prepared);
+    assert_eq!(
+        current.read_operation(&cold)?,
+        NeuronGenerationUpdateReadbackV1::Prepared
+    );
     assert_eq!(case.new.snapshot(), Err(CellGenerationErrorV2::Pending));
     assert_eq!(case.fixture.bytes("current.json")?, prepared_bytes);
     assert_eq!(case.fixture.bytes("final-use/authority.claims")?, claims);
 
-    let forward = current.prepare_forward_recovery(&cold, &case.old, &case.new, "replace-task-forward".into())?;
+    let forward = current.prepare_forward_recovery(
+        &cold,
+        &case.old,
+        &case.new,
+        "replace-task-forward".into(),
+    )?;
     assert_ne!(forward.intent_digest(), cold.intent_digest());
     assert_ne!(forward.final_use_binding(), cold.final_use_binding());
     case.prepared = forward;
@@ -159,7 +253,10 @@ fn selection_expiry_after_real_nonce_claim_blocks_final_control_cas() -> anyhow:
     // The independently persisted nonce proves the first checks passed. The
     // still-valid FinalUse grant cannot bypass the later selection recheck.
     assert_eq!(case.fixture.authority.capacity()?.used_nonces, 1);
-    assert_eq!(case.fixture.current.read_operation(&case.prepared)?, NeuronGenerationUpdateReadbackV1::Prepared);
+    assert_eq!(
+        case.fixture.current.read_operation(&case.prepared)?,
+        NeuronGenerationUpdateReadbackV1::Prepared
+    );
     assert_eq!(case.fixture.bytes("current.json")?, control);
     assert_eq!(case.fixture.bytes("target-journal")?, target);
     assert_eq!(case.new.snapshot(), Err(CellGenerationErrorV2::Pending));
@@ -167,7 +264,8 @@ fn selection_expiry_after_real_nonce_claim_blocks_final_control_cas() -> anyhow:
 }
 
 #[test]
-fn actual_new_current_or_withdrawal_cut_rejects_stale_selection_before_claim() -> anyhow::Result<()> {
+fn actual_new_current_or_withdrawal_cut_rejects_stale_selection_before_claim() -> anyhow::Result<()>
+{
     let mut changed_current = PreparedCase::new()?;
     let before = changed_current.fixture.bytes("current.json")?;
     changed_current.fixture.advance_artifact_current()?;

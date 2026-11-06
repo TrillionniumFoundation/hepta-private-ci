@@ -51,9 +51,13 @@ impl<W: AnchorWitnessStore> ReadyAgentdGenerationUpdateV1<W> {
             ));
         }
         let guard: Arc<dyn CellGenerationCurrentV1> = guard;
-        let journal = journal.rebind_current(guard)
+        let journal = journal
+            .rebind_current(guard)
             .map_err(|error| AgentdError::GenerationFenced(error.to_string()))?;
-        Ok(Self { journal, publication })
+        Ok(Self {
+            journal,
+            publication,
+        })
     }
 }
 
@@ -104,4 +108,3 @@ impl<W: AnchorWitnessStore + Send + 'static> ReadyAgentdGenerationUpdateV1<W> {
         })
     }
 }
-

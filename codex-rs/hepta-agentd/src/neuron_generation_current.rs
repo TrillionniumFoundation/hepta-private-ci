@@ -28,11 +28,11 @@ mod store;
 #[path = "neuron_generation_current_types.rs"]
 mod types;
 
+use types::CurrentHead;
 pub use types::NeuronGenerationUpdateReadbackV1;
 pub use types::PreparedNeuronGenerationUpdateV1;
-pub use types::PublishedNeuronGenerationUpdateV1;
-use types::CurrentHead;
 use types::Published;
+pub use types::PublishedNeuronGenerationUpdateV1;
 use types::UpdateIntent;
 use types::invalid;
 use types::scope_digest;
@@ -58,12 +58,15 @@ impl NeuronGenerationCurrentOwnerV1 {
         initial: CellGenerationOwnerBindingV1,
     ) -> Result<Self, AgentdError> {
         initial.digest().map_err(invalid)?;
-        let store = store::CurrentStore::initialize(root, CurrentHead {
-            schema_version: 1,
-            current: initial,
-            prepared: None,
-            published: None,
-        })?;
+        let store = store::CurrentStore::initialize(
+            root,
+            CurrentHead {
+                schema_version: 1,
+                current: initial,
+                prepared: None,
+                published: None,
+            },
+        )?;
         Ok(Self { store })
     }
 
@@ -84,7 +87,10 @@ impl NeuronGenerationCurrentOwnerV1 {
         selected: &AgentdSelectedGenerationV1,
     ) -> Result<PreparedNeuronGenerationUpdateV1, AgentdError> {
         StableId::new(&operation_id).map_err(invalid)?;
-        let previous = old.owner_binding().ok_or_else(|| invalid("unguarded generation update"))?.clone();
+        let previous = old
+            .owner_binding()
+            .ok_or_else(|| invalid("unguarded generation update"))?
+            .clone();
         let observation = old.observe_generation().map_err(invalid)?;
         if !observation.is_terminal() || !old.is_drained().map_err(invalid)? {
             return Err(invalid("generation update requires STOP, ACK and drain"));
@@ -127,7 +133,10 @@ impl NeuronGenerationCurrentOwnerV1 {
             return Err(invalid("generation preparation readback differs"));
         }
         Ok(PreparedNeuronGenerationUpdateV1 {
-            binding: intent.binding()?, digest: intent.digest()?, head: Some(head), intent,
+            binding: intent.binding()?,
+            digest: intent.digest()?,
+            head: Some(head),
+            intent,
         })
     }
 
@@ -143,10 +152,15 @@ impl NeuronGenerationCurrentOwnerV1 {
     ) -> Result<PreparedNeuronGenerationUpdateV1, AgentdError> {
         StableId::new(&new_operation_id).map_err(invalid)?;
         if new_operation_id == original.intent.operation_id {
-            return Err(invalid("forward recovery requires a new operation identity"));
+            return Err(invalid(
+                "forward recovery requires a new operation identity",
+            ));
         }
         self.require_prepared_journals(original, old, new)?;
-        let expected = original.head.as_ref().ok_or_else(|| invalid("published update cannot be prepared again"))?;
+        let expected = original
+            .head
+            .as_ref()
+            .ok_or_else(|| invalid("published update cannot be prepared again"))?;
         let mut intent = original.intent.clone();
         intent.operation_id = new_operation_id;
         intent.supersedes = Some(original.digest.into_array());
@@ -157,7 +171,10 @@ impl NeuronGenerationCurrentOwnerV1 {
             return Err(invalid("forward preparation remains uncertain"));
         }
         Ok(PreparedNeuronGenerationUpdateV1 {
-            binding: intent.binding()?, digest: intent.digest()?, head: Some(head), intent,
+            binding: intent.binding()?,
+            digest: intent.digest()?,
+            head: Some(head),
+            intent,
         })
     }
 
@@ -169,12 +186,22 @@ impl NeuronGenerationCurrentOwnerV1 {
         selected: &mut AgentdSelectedGenerationV1,
         publication: NeuronGenerationUpdatePublicationV1<'_>,
     ) -> Result<PublishedNeuronGenerationUpdateV1, AgentdError> {
-        publication.authority.current_external_frontier().map_err(invalid)?;
-        selected.revalidate(publication.artifacts, publication.clock.now_unix_ms().map_err(invalid)?)?;
+        publication
+            .authority
+            .current_external_frontier()
+            .map_err(invalid)?;
+        selected.revalidate(
+            publication.artifacts,
+            publication.clock.now_unix_ms().map_err(invalid)?,
+        )?;
         if selected.observation().digest().as_array() != &prepared.intent.selection {
-            return Err(invalid("generation selection differs from prepared operation"));
+            return Err(invalid(
+                "generation selection differs from prepared operation",
+            ));
         }
-        if let NeuronGenerationUpdateReadbackV1::Published(published) = self.read_operation(prepared)? {
+        if let NeuronGenerationUpdateReadbackV1::Published(published) =
+            self.read_operation(prepared)?
+        {
             if new.owner_binding() != Some(published.target()) {
                 return Err(invalid("published generation readback differs"));
             }
@@ -187,27 +214,40 @@ impl NeuronGenerationCurrentOwnerV1 {
         // Only this bounded synchronous original-authority entry changes the
         // current writer. Lost acknowledgement never manufactures a new nonce.
         let (result, _) = dispatch_final_use_with_witness(
-            publication.authority, token, &prepared.binding, |witness| {
-                selected.revalidate(publication.artifacts, publication.clock.now_unix_ms().map_err(invalid)?)?;
+            publication.authority,
+            token,
+            &prepared.binding,
+            |witness| {
+                selected.revalidate(
+                    publication.artifacts,
+                    publication.clock.now_unix_ms().map_err(invalid)?,
+                )?;
                 self.require_prepared_journals(prepared, old, new)?;
                 let next = CurrentHead {
                     schema_version: 1,
                     current: prepared.intent.target.clone(),
                     prepared: None,
                     published: Some(Published {
-                        intent: prepared.intent.clone(), witness: witness.clone(),
+                        intent: prepared.intent.clone(),
+                        witness: witness.clone(),
                         signed: publication.signed.clone(),
                         signed_grant_digest: signed_grant_digest(publication.signed)?.into_array(),
                     }),
                 };
-                let expected = prepared.head.as_ref().ok_or_else(|| invalid("published operation cannot dispatch again"))?;
+                let expected = prepared
+                    .head
+                    .as_ref()
+                    .ok_or_else(|| invalid("published operation cannot dispatch again"))?;
                 self.store.replace(expected, &next)?;
                 match self.read_operation(prepared)? {
                     NeuronGenerationUpdateReadbackV1::Published(published) => Ok(published),
-                    NeuronGenerationUpdateReadbackV1::Prepared => Err(invalid("generation publication remains uncertain")),
+                    NeuronGenerationUpdateReadbackV1::Prepared => {
+                        Err(invalid("generation publication remains uncertain"))
+                    }
                 }
             },
-        ).map_err(invalid)?;
+        )
+        .map_err(invalid)?;
         result
     }
 
@@ -226,7 +266,9 @@ impl NeuronGenerationCurrentOwnerV1 {
             && intent.digest()? == expected_intent
         {
             return Ok(PreparedNeuronGenerationUpdateV1 {
-                intent: intent.clone(), binding: intent.binding()?, digest: expected_intent,
+                intent: intent.clone(),
+                binding: intent.binding()?,
+                digest: expected_intent,
                 head: Some(head),
             });
         }
@@ -242,8 +284,10 @@ impl NeuronGenerationCurrentOwnerV1 {
                 return Err(invalid("retained generation grant differs"));
             }
             return Ok(PreparedNeuronGenerationUpdateV1 {
-                binding: record.intent.binding()?, intent: record.intent,
-                digest: expected_intent, head: None,
+                binding: record.intent.binding()?,
+                intent: record.intent,
+                digest: expected_intent,
+                head: None,
             });
         }
         Err(invalid("original generation update cannot be recovered"))
@@ -269,9 +313,12 @@ impl NeuronGenerationCurrentOwnerV1 {
             {
                 return Err(invalid("retained generation grant differs"));
             }
-            return Ok(NeuronGenerationUpdateReadbackV1::Published(PublishedNeuronGenerationUpdateV1 {
-                record: Box::new(record), digest: prepared.digest,
-            }));
+            return Ok(NeuronGenerationUpdateReadbackV1::Published(
+                PublishedNeuronGenerationUpdateV1 {
+                    record: Box::new(record),
+                    digest: prepared.digest,
+                },
+            ));
         }
         Err(invalid("original generation update is unavailable"))
     }
@@ -293,25 +340,40 @@ impl NeuronGenerationCurrentOwnerV1 {
             || genesis.checkpoint().as_array() != &prepared.intent.genesis_checkpoint
             || Some(self.store.load()?) != prepared.head
         {
-            return Err(invalid("generation files or Control cut changed before publication"));
+            return Err(invalid(
+                "generation files or Control cut changed before publication",
+            ));
         }
         Ok(())
     }
 }
 
 impl CellGenerationCurrentV1 for NeuronGenerationCurrentOwnerV1 {
-    fn check_open(&self, binding: &CellGenerationOwnerBindingV1) -> Result<CellGenerationOpenModeV1, CellGenerationErrorV2> {
-        let head = self.store.load().map_err(|_| CellGenerationErrorV2::Unavailable)?;
+    fn check_open(
+        &self,
+        binding: &CellGenerationOwnerBindingV1,
+    ) -> Result<CellGenerationOpenModeV1, CellGenerationErrorV2> {
+        let head = self
+            .store
+            .load()
+            .map_err(|_| CellGenerationErrorV2::Unavailable)?;
         if &head.current == binding {
             Ok(CellGenerationOpenModeV1::Active)
-        } else if head.prepared.as_ref().is_some_and(|intent| &intent.target == binding) {
+        } else if head
+            .prepared
+            .as_ref()
+            .is_some_and(|intent| &intent.target == binding)
+        {
             Ok(CellGenerationOpenModeV1::Preparing)
         } else {
             Err(CellGenerationErrorV2::InvalidBinding)
         }
     }
 
-    fn check_current(&self, binding: &CellGenerationOwnerBindingV1) -> Result<(), CellGenerationErrorV2> {
+    fn check_current(
+        &self,
+        binding: &CellGenerationOwnerBindingV1,
+    ) -> Result<(), CellGenerationErrorV2> {
         match self.check_open(binding)? {
             CellGenerationOpenModeV1::Active => Ok(()),
             CellGenerationOpenModeV1::Preparing => Err(CellGenerationErrorV2::Pending),
@@ -319,10 +381,13 @@ impl CellGenerationCurrentV1 for NeuronGenerationCurrentOwnerV1 {
     }
 }
 
-fn signed_grant_digest(signed: &SignedFinalUseGrant) -> Result<codex_hepta_types::Digest32, AgentdError> {
+fn signed_grant_digest(
+    signed: &SignedFinalUseGrant,
+) -> Result<codex_hepta_types::Digest32, AgentdError> {
     let bytes = serde_json::to_vec(signed).map_err(invalid)?;
     Ok(codex_hepta_types::Digest32::of_parts(&[
-        b"hepta.agentd.generation-update-signed-grant.v1\0", &bytes,
+        b"hepta.agentd.generation-update-signed-grant.v1\0",
+        &bytes,
     ]))
 }
 

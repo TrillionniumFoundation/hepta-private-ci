@@ -80,12 +80,24 @@ impl CellGenerationOwnerBindingV1 {
     }
 
     pub fn digest(&self) -> Result<[u8; 32], CellGenerationErrorV2> {
-        for id in [&self.scope.agent_id, &self.scope.cell_id, &self.scope.run_id] {
+        for id in [
+            &self.scope.agent_id,
+            &self.scope.cell_id,
+            &self.scope.run_id,
+        ] {
             StableId::new(id).map_err(|_| CellGenerationErrorV2::InvalidBinding)?;
         }
-        if self.generation == 0 || self.writer_epoch == 0
-            || [self.scope.principal_digest, self.manifest_digest, self.task_digest,
-                self.source_frontier, self.initial_snapshot_digest, self.config_digest].contains(&[0; 32])
+        if self.generation == 0
+            || self.writer_epoch == 0
+            || [
+                self.scope.principal_digest,
+                self.manifest_digest,
+                self.task_digest,
+                self.source_frontier,
+                self.initial_snapshot_digest,
+                self.config_digest,
+            ]
+            .contains(&[0; 32])
         {
             return Err(CellGenerationErrorV2::InvalidBinding);
         }

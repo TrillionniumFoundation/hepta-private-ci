@@ -31,7 +31,10 @@ impl CurrentStore {
         let owner_id = owner_id(head.current.scope())?;
         let store = HostAuthorityFrontierStore::initialize(root, owner_id.clone(), head)
             .map_err(invalid)?;
-        Ok(Self { owner_id, store: Store::Host(store) })
+        Ok(Self {
+            owner_id,
+            store: Store::Host(store),
+        })
     }
 
     pub(super) fn open(
@@ -40,7 +43,10 @@ impl CurrentStore {
     ) -> Result<Self, AgentdError> {
         let owner_id = owner_id(scope)?;
         let store = HostAuthorityFrontierStore::open(root, owner_id.clone()).map_err(invalid)?;
-        Ok(Self { owner_id, store: Store::Host(store) })
+        Ok(Self {
+            owner_id,
+            store: Store::Host(store),
+        })
     }
 
     pub(super) fn load(&self) -> Result<CurrentHead, AgentdError> {
@@ -48,7 +54,8 @@ impl CurrentStore {
             Store::Host(store) => store.load(&self.owner_id),
             #[cfg(test)]
             Store::Test(store) => store.load(&self.owner_id),
-        }.map_err(invalid)?;
+        }
+        .map_err(invalid)?;
         if head.schema_version != 1 || owner_id(head.current.scope())? != self.owner_id {
             return Err(invalid("generation current scope or schema differs"));
         }
@@ -56,12 +63,17 @@ impl CurrentStore {
         Ok(head)
     }
 
-    pub(super) fn replace(&self, expected: &CurrentHead, next: &CurrentHead) -> Result<(), AgentdError> {
+    pub(super) fn replace(
+        &self,
+        expected: &CurrentHead,
+        next: &CurrentHead,
+    ) -> Result<(), AgentdError> {
         match &self.store {
             Store::Host(store) => store.compare_and_set(&self.owner_id, expected, next),
             #[cfg(test)]
             Store::Test(store) => store.compare_and_set(&self.owner_id, expected, next),
-        }.map_err(invalid)
+        }
+        .map_err(invalid)
     }
 
     #[cfg(test)]
@@ -69,12 +81,19 @@ impl CurrentStore {
         scope: &CellGenerationScopeV2,
         store: Arc<dyn AuthorityFrontierStore<CurrentHead>>,
     ) -> Result<Self, AgentdError> {
-        Ok(Self { owner_id: owner_id(scope)?, store: Store::Test(store) })
+        Ok(Self {
+            owner_id: owner_id(scope)?,
+            store: Store::Test(store),
+        })
     }
 }
 
 fn owner_id(scope: &CellGenerationScopeV2) -> Result<String, AgentdError> {
     let digest = scope_digest(scope)?;
-    let hex: String = digest.as_array().iter().map(|byte| format!("{byte:02x}")).collect();
+    let hex: String = digest
+        .as_array()
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect();
     Ok(format!("cell-generation/{hex}"))
 }

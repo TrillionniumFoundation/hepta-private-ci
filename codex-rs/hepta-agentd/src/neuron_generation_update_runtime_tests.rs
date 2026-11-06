@@ -20,10 +20,10 @@ use crate::neuron_generation_current::test_support::Fixture;
 use crate::prepare_agentd_generation_update_v1;
 use crate::recover_agentd_generation_update_v1;
 
-#[path = "neuron_generation_update_runtime_support.rs"]
-mod support;
 #[path = "neuron_generation_update_successive_tests.rs"]
 mod successive;
+#[path = "neuron_generation_update_runtime_support.rs"]
+mod support;
 
 #[tokio::test]
 async fn normal_runtime_reset_and_journal_reopen_keep_original_receipt() -> anyhow::Result<()> {
@@ -38,12 +38,17 @@ async fn normal_runtime_reset_and_journal_reopen_keep_original_receipt() -> anyh
         old,
         update.selection()?,
         update.target_create()?,
-        AgentdGenerationUpdateRequestV1 { operation_id: "runtime-replace".into() },
+        AgentdGenerationUpdateRequestV1 {
+            operation_id: "runtime-replace".into(),
+        },
     )?;
     let intent_digest = prepared.intent_digest();
     let grant = update.sign(prepared.final_use_binding())?;
     let ready = prepared.publish(&grant)?;
-    assert_eq!((update.bytes("old-journal")?, update.bytes("old-witness")?), old_bytes);
+    assert_eq!(
+        (update.bytes("old-journal")?, update.bytes("old-witness")?),
+        old_bytes
+    );
 
     let config = support::next_config(&mut host, 2).await?;
     let control = support::Control::default();
@@ -68,22 +73,30 @@ async fn normal_runtime_reset_and_journal_reopen_keep_original_receipt() -> anyh
     assert_eq!(undelivered.snapshot().prefix, support::OUTPUT);
     assert_eq!(runtime.handle.step(request.clone()).await?, receipt);
     assert_eq!(control.executions.load(Ordering::SeqCst), 1);
-    let chunk = undelivered.pending_output().cloned()
+    let chunk = undelivered
+        .pending_output()
+        .cloned()
         .ok_or_else(|| anyhow::anyhow!("stopped successor has no real outbox"))?;
     let path = host.directory.path().join("delivered-updated-task");
     let mut receiver = OpenOptions::new().create_new(true).write(true).open(path)?;
     receiver.write_all(&chunk.bytes)?;
     receiver.sync_all()?;
     File::open(host.directory.path())?.sync_all()?;
-    runtime.handle.acknowledge(
-        chunk.clone(),
-        Digest32::of_parts(&[b"test-receiver-synced", &chunk.bytes]).into_array(),
-        CellTaskCostV2::new(undelivered.cost().identity())?,
-    ).await?;
+    runtime
+        .handle
+        .acknowledge(
+            chunk.clone(),
+            Digest32::of_parts(&[b"test-receiver-synced", &chunk.bytes]).into_array(),
+            CellTaskCostV2::new(undelivered.cost().identity())?,
+        )
+        .await?;
     assert!(runtime.handle.observe_generation().await?.is_terminal());
     assert!(runtime.handle.drain().await?);
     let observed = runtime.handle.observe_generation().await?;
-    let retained = (update.bytes("target-journal")?, update.bytes("target-witness")?);
+    let retained = (
+        update.bytes("target-journal")?,
+        update.bytes("target-witness")?,
+    );
     let final_use = update.authority.current_external_frontier()?;
     tasks.shutdown().await;
     drop(runtime);
@@ -111,8 +124,17 @@ async fn normal_runtime_reset_and_journal_reopen_keep_original_receipt() -> anyh
     assert_eq!(runtime.handle.step(request).await?, receipt);
     assert_eq!(control.executions.load(Ordering::SeqCst), 1);
     assert_eq!(control.reads.load(Ordering::SeqCst), 0);
-    assert_eq!((update.bytes("target-journal")?, update.bytes("target-witness")?), retained);
-    assert_eq!((update.bytes("old-journal")?, update.bytes("old-witness")?), old_bytes);
+    assert_eq!(
+        (
+            update.bytes("target-journal")?,
+            update.bytes("target-witness")?
+        ),
+        retained
+    );
+    assert_eq!(
+        (update.bytes("old-journal")?, update.bytes("old-witness")?),
+        old_bytes
+    );
     assert_eq!(update.authority.current_external_frontier()?, final_use);
     tasks.shutdown().await;
     Ok(())
@@ -129,7 +151,9 @@ async fn live_current_withdrawal_and_revocation_block_dispatch_and_reopen() -> a
             update.stopped_old()?,
             update.selection()?,
             update.target_create()?,
-            AgentdGenerationUpdateRequestV1 { operation_id: "live-guard-update".into() },
+            AgentdGenerationUpdateRequestV1 {
+                operation_id: "live-guard-update".into(),
+            },
         )?;
         let intent_digest = prepared.intent_digest();
         let grant = update.sign(prepared.final_use_binding())?;
@@ -165,18 +189,21 @@ async fn live_current_withdrawal_and_revocation_block_dispatch_and_reopen() -> a
         tasks.shutdown().await;
         drop(runtime);
         drop(tasks);
-        assert!(recover_agentd_generation_update_v1(
-            update.reopen_current()?,
-            update.authorities()?,
-            selected_before,
-            update.target_reopen()?,
-            AgentdGenerationUpdateRecoveryV1 {
-                operation_id: "live-guard-update".into(),
-                intent_digest,
-            },
-        ).is_err(), "{change}");
+        assert!(
+            recover_agentd_generation_update_v1(
+                update.reopen_current()?,
+                update.authorities()?,
+                selected_before,
+                update.target_reopen()?,
+                AgentdGenerationUpdateRecoveryV1 {
+                    operation_id: "live-guard-update".into(),
+                    intent_digest,
+                },
+            )
+            .is_err(),
+            "{change}"
+        );
         assert_eq!(update.bytes("target-journal")?, journal_before, "{change}");
     }
     Ok(())
 }
-

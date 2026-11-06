@@ -45,7 +45,10 @@ pub struct CellGenerationJournalV2<W: AnchorWitnessStore> {
     length: u64,
     max_records: u64,
     healthy: bool,
-    current: Option<(Arc<dyn CellGenerationCurrentV1>, CellGenerationOwnerBindingV1)>,
+    current: Option<(
+        Arc<dyn CellGenerationCurrentV1>,
+        CellGenerationOwnerBindingV1,
+    )>,
 }
 
 impl<W: AnchorWitnessStore> CellGenerationJournalV2<W> {
@@ -77,7 +80,10 @@ impl<W: AnchorWitnessStore> CellGenerationJournalV2<W> {
         witness: W,
         config: CellGenerationConfigV2,
         max_records: u64,
-        current: Option<(Arc<dyn CellGenerationCurrentV1>, CellGenerationOwnerBindingV1)>,
+        current: Option<(
+            Arc<dyn CellGenerationCurrentV1>,
+            CellGenerationOwnerBindingV1,
+        )>,
     ) -> Result<Self, CellGenerationErrorV2> {
         if !(6..=65_536).contains(&max_records) {
             return Err(CellGenerationErrorV2::Capacity);
@@ -262,7 +268,9 @@ impl<W: AnchorWitnessStore> CellGenerationJournalV2<W> {
             return Err(CellGenerationErrorV2::InvalidBinding);
         }
         self.open_mode()?;
-        let binding = self.owner_binding().ok_or(CellGenerationErrorV2::InvalidBinding)?;
+        let binding = self
+            .owner_binding()
+            .ok_or(CellGenerationErrorV2::InvalidBinding)?;
         Ok(CellGenerationPreparedCheckpointV1 {
             binding: binding.clone(),
             checkpoint: continuity_checkpoint(&self.header, self.head, self.length),
@@ -277,7 +285,10 @@ impl<W: AnchorWitnessStore> CellGenerationJournalV2<W> {
         current: Arc<dyn CellGenerationCurrentV1>,
     ) -> Result<Self, CellGenerationErrorV2> {
         self.require_healthy()?;
-        let binding = self.owner_binding().ok_or(CellGenerationErrorV2::InvalidBinding)?.clone();
+        let binding = self
+            .owner_binding()
+            .ok_or(CellGenerationErrorV2::InvalidBinding)?
+            .clone();
         current.check_current(&binding)?;
         self.current = Some((current, binding));
         Ok(self)
@@ -292,9 +303,10 @@ impl<W: AnchorWitnessStore> CellGenerationJournalV2<W> {
     }
 
     fn open_mode(&self) -> Result<CellGenerationOpenModeV1, CellGenerationErrorV2> {
-        self.current.as_ref().map_or(Ok(CellGenerationOpenModeV1::Active), |(current, binding)| {
-            current.check_open(binding)
-        })
+        self.current.as_ref().map_or(
+            Ok(CellGenerationOpenModeV1::Active),
+            |(current, binding)| current.check_open(binding),
+        )
     }
 
     pub fn pending_request(

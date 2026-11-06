@@ -24,7 +24,11 @@ impl FinalUseAuthority {
         if self.0.frontier_store.is_none() {
             return Err(FinalUseError::InvalidTrust);
         }
-        let state = self.0.state.lock().map_err(|_| FinalUseError::Unavailable)?;
+        let state = self
+            .0
+            .state
+            .lock()
+            .map_err(|_| FinalUseError::Unavailable)?;
         let state = self.0.ensure_current_effect_state(state)?;
         Ok(frontier_for_state(&state))
     }
@@ -56,7 +60,9 @@ impl FinalUseAuthority {
         }) {
             return Err(FinalUseError::InvalidSignature);
         }
-        witness.validate().map_err(|_| FinalUseError::InvalidGrant)?;
+        witness
+            .validate()
+            .map_err(|_| FinalUseError::InvalidGrant)?;
         let VerifiedUseAuthorityRefV1::FinalUse(reference) = &witness.authority_ref else {
             return Err(FinalUseError::BindingMismatch);
         };
@@ -70,7 +76,11 @@ impl FinalUseAuthority {
         {
             return Err(FinalUseError::BindingMismatch);
         }
-        let state = self.0.state.lock().map_err(|_| FinalUseError::Unavailable)?;
+        let state = self
+            .0
+            .state
+            .lock()
+            .map_err(|_| FinalUseError::Unavailable)?;
         let state = self.0.ensure_current_effect_state(state)?;
         if state.head.authority_epoch != witness.authority_epoch {
             return Err(FinalUseError::EpochMismatch);
@@ -78,7 +88,11 @@ impl FinalUseAuthority {
         if state.head.revision < reference.revocation_revision {
             return Err(FinalUseError::StaleRevocationHead);
         }
-        if state.head.revoked_grant_ids.contains(&signed.grant.grant_id) {
+        if state
+            .head
+            .revoked_grant_ids
+            .contains(&signed.grant.grant_id)
+        {
             return Err(FinalUseError::Revoked);
         }
         if !state.used_nonces.contains(&signed.grant.nonce) {

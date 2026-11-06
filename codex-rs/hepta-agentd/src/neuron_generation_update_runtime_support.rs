@@ -7,12 +7,12 @@ use std::sync::atomic::Ordering;
 
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_neuron::CellBackendManifestV2;
+use codex_hepta_neuron::CellGenerationConfigV2;
 use codex_hepta_neuron::CellGenerationControlPortV2;
 use codex_hepta_neuron::CellGenerationDispositionV2;
 use codex_hepta_neuron::CellGenerationErrorV2;
 use codex_hepta_neuron::CellGenerationProposalV2;
 use codex_hepta_neuron::CellGenerationRequestV2;
-use codex_hepta_neuron::CellGenerationConfigV2;
 use codex_hepta_neuron::CellRuntimeSnapshotV2;
 use codex_hepta_neuron::CellTaskCostIdentityV2;
 use codex_hepta_neuron::CellTaskCostV2;
@@ -52,7 +52,8 @@ impl CellGenerationControlPortV2 for Control {
             cost: CellTaskCostV2::new(CellTaskCostIdentityV2 {
                 task_digest: request.task_digest,
                 source_digest: manifest.source_digest,
-            }).map_err(|_| CellGenerationErrorV2::InvalidBinding)?,
+            })
+            .map_err(|_| CellGenerationErrorV2::InvalidBinding)?,
         };
         self.result = Some(proposal.clone());
         Ok(proposal)
@@ -64,7 +65,11 @@ impl CellGenerationControlPortV2 for Control {
     ) -> Result<Option<CellGenerationProposalV2>, CellGenerationErrorV2> {
         self.reads.fetch_add(1, Ordering::SeqCst);
         let digest = request.digest()?;
-        Ok(self.result.as_ref().filter(|result| result.request_digest == digest).cloned())
+        Ok(self
+            .result
+            .as_ref()
+            .filter(|result| result.request_digest == digest)
+            .cloned())
     }
 
     fn cancel_generation(
@@ -136,7 +141,9 @@ pub(super) fn start(
     runtime: &mut AgentdGenerationUpdateRuntimeV1,
     fixture: &host::Fixture,
 ) -> anyhow::Result<(RuntimeTasks, CancellationToken)> {
-    let bootstrap = runtime.config.take_neuron_generation_bootstrap()
+    let bootstrap = runtime
+        .config
+        .take_neuron_generation_bootstrap()
         .ok_or_else(|| anyhow::anyhow!("updated normal config has no generation service"))?;
     let (mut tasks, cancellation) = host::host();
     spawn_neuron_generation_service(
@@ -147,4 +154,3 @@ pub(super) fn start(
     )?;
     Ok((tasks, cancellation))
 }
-

@@ -24,10 +24,10 @@ use sha2::Sha256;
 
 #[path = "final_use_live_owner.rs"]
 mod live_owner;
-#[path = "final_use_store.rs"]
-mod store;
 #[path = "final_use_retained.rs"]
 mod retained;
+#[path = "final_use_store.rs"]
+mod store;
 
 const MAX_CLAIMS: usize = 1_048_576;
 const MAX_REVOKED_GRANTS: usize = 16_384;

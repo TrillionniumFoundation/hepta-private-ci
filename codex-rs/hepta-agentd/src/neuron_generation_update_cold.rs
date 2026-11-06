@@ -52,7 +52,9 @@ where
 {
     let metadata = predecessor.file.metadata()?;
     if !metadata.is_file() || metadata.len() == 0 {
-        return Err(invalid("cold predecessor requires an existing guarded journal"));
+        return Err(invalid(
+            "cold predecessor requires an existing guarded journal",
+        ));
     }
     let guard: Arc<dyn CellGenerationCurrentV1> = current.clone();
     let old = CellGenerationJournalV2::open_guarded(
@@ -65,7 +67,9 @@ where
     .map_err(invalid)?;
     let observation = old.observe_generation().map_err(invalid)?;
     if !observation.is_terminal() || !old.is_drained().map_err(invalid)? {
-        return Err(invalid("cold predecessor requires STOP, exact output ACK and drain"));
+        return Err(invalid(
+            "cold predecessor requires STOP, exact output ACK and drain",
+        ));
     }
     prepare_agentd_generation_update_v1(current, authorities, old, selected, target, request)
 }

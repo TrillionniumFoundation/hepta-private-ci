@@ -137,12 +137,8 @@ pub enum NeuronGenerationUpdateReadbackV1 {
 pub(super) fn scope_digest(
     scope: &codex_hepta_neuron::CellGenerationScopeV2,
 ) -> Result<Digest32, AgentdError> {
-    let bytes = serde_json::to_vec(&(
-        &scope.agent_id,
-        &scope.cell_id,
-        scope.principal_digest,
-    ))
-    .map_err(invalid)?;
+    let bytes = serde_json::to_vec(&(&scope.agent_id, &scope.cell_id, scope.principal_digest))
+        .map_err(invalid)?;
     Ok(Digest32::of_parts(&[
         b"hepta.agentd.generation-current-scope.v1\0",
         &bytes,

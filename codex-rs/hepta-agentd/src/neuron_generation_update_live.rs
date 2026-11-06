@@ -70,7 +70,9 @@ impl LiveGenerationCurrent {
         expected: FinalUseBinding,
     ) -> Result<Arc<Self>, AgentdError> {
         if publication.signed_grant().grant.binding != expected {
-            return Err(invalid("published grant differs from the original operation"));
+            return Err(invalid(
+                "published grant differs from the original operation",
+            ));
         }
         let guard = Arc::new(Self {
             current,
@@ -145,4 +147,3 @@ impl CellGenerationCurrentV1 for LiveGenerationCurrent {
 fn invalid(error: impl std::fmt::Display) -> AgentdError {
     AgentdError::Invalid(error.to_string())
 }
-

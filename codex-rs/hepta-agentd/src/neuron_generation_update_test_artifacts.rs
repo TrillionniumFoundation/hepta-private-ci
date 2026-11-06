@@ -37,7 +37,9 @@ impl ArtifactFiles {
             registry_id: id("test-withdrawals")?,
             scope_id: id("test-cell-sources")?,
         });
-        let scope = withdrawals.scope_digest().ok_or_else(|| anyhow::anyhow!("missing scope"))?;
+        let scope = withdrawals
+            .scope_digest()
+            .ok_or_else(|| anyhow::anyhow!("missing scope"))?;
         let signer = TrustedArtifactSignerV1 {
             signer_id: id("test-artifact-authority")?,
             verifying_key: key.verifying_key().to_bytes(),
@@ -81,20 +83,23 @@ impl ArtifactFiles {
         })?;
         let candidate = publish_candidate(&mut owner, manifest, &key, "selected-candidate")?;
         let current = owner.current_registry_view(NOW)?;
-        let verifier = ArtifactSelectionVerifierV1::new(ArtifactSelectionTrustV1 {
-            registry_id: trust.registry_id.clone(),
-            withdrawal_scope_digest: scope,
-            minimum_authority_epoch: 1,
-            selectors: vec![TrustedArtifactSelectorV1 {
-                selector_id: id("test-independent-selector")?,
-                verifying_key: selector.verifying_key().to_bytes(),
+        let verifier = ArtifactSelectionVerifierV1::new(
+            ArtifactSelectionTrustV1 {
+                registry_id: trust.registry_id.clone(),
+                withdrawal_scope_digest: scope,
                 minimum_authority_epoch: 1,
-                maximum_authority_epoch: 1,
-                valid_from: 1,
-                expires_at: 10_000,
-                revoked_at: None,
-            }],
-        }, &trust)?;
+                selectors: vec![TrustedArtifactSelectorV1 {
+                    selector_id: id("test-independent-selector")?,
+                    verifying_key: selector.verifying_key().to_bytes(),
+                    minimum_authority_epoch: 1,
+                    maximum_authority_epoch: 1,
+                    valid_from: 1,
+                    expires_at: 10_000,
+                    revoked_at: None,
+                }],
+            },
+            &trust,
+        )?;
         let mut selected = SignedArtifactSelectionV1 {
             selection_id: id("test-generation-selection")?,
             artifact_id: candidate.artifact_id,
@@ -120,16 +125,40 @@ impl ArtifactFiles {
             signature: [0; 64],
         };
         selected.signature = selector.sign(&selected.signing_bytes()).to_bytes();
-        Ok(Self { owner: Arc::new(Mutex::new(owner)), root: root.to_path_buf(), key, selector, selected, verifier })
+        Ok(Self {
+            owner: Arc::new(Mutex::new(owner)),
+            root: root.to_path_buf(),
+            key,
+            selector,
+            selected,
+            verifier,
+        })
     }
 
     pub(super) fn selection(&self, now: u64) -> anyhow::Result<AgentdSelectedGenerationV1> {
-        let owner = self.owner.lock().map_err(|_| anyhow::anyhow!("artifact owner poisoned"))?;
-        load_selection(&owner, &self.root, self.verifier.clone(), self.selected.clone(), now)
+        let owner = self
+            .owner
+            .lock()
+            .map_err(|_| anyhow::anyhow!("artifact owner poisoned"))?;
+        load_selection(
+            &owner,
+            &self.root,
+            self.verifier.clone(),
+            self.selected.clone(),
+            now,
+        )
     }
 
-    pub(super) fn publish_next_selection(&self, manifest: &CellBackendManifestV2, name: &str, now: u64) -> anyhow::Result<AgentdSelectedGenerationV1> {
-        let mut owner = self.owner.lock().map_err(|_| anyhow::anyhow!("artifact owner poisoned"))?;
+    pub(super) fn publish_next_selection(
+        &self,
+        manifest: &CellBackendManifestV2,
+        name: &str,
+        now: u64,
+    ) -> anyhow::Result<AgentdSelectedGenerationV1> {
+        let mut owner = self
+            .owner
+            .lock()
+            .map_err(|_| anyhow::anyhow!("artifact owner poisoned"))?;
         let candidate = publish_candidate(&mut owner, manifest, &self.key, name)?;
         let current = owner.current_registry_view(now)?;
         let mut selected = self.selected.clone();
@@ -153,13 +182,19 @@ impl ArtifactFiles {
     }
 
     pub(super) fn advance_current(&self, manifest: &CellBackendManifestV2) -> anyhow::Result<()> {
-        let mut owner = self.owner.lock().map_err(|_| anyhow::anyhow!("artifact owner poisoned"))?;
+        let mut owner = self
+            .owner
+            .lock()
+            .map_err(|_| anyhow::anyhow!("artifact owner poisoned"))?;
         publish_candidate(&mut owner, manifest, &self.key, "new-current-candidate")?;
         Ok(())
     }
 
     pub(super) fn withdraw(&self) -> anyhow::Result<()> {
-        let mut owner = self.owner.lock().map_err(|_| anyhow::anyhow!("artifact owner poisoned"))?;
+        let mut owner = self
+            .owner
+            .lock()
+            .map_err(|_| anyhow::anyhow!("artifact owner poisoned"))?;
         let mut withdrawals = owner.withdrawal_registry().clone();
         withdrawals.append(DatasetWithdrawalNoticeV1 {
             notice_id: id("test-withdraw-source")?,
@@ -176,24 +211,52 @@ impl ArtifactFiles {
     }
 }
 
-fn load_selection(owner: &LearningArtifactOwnerService, root: &Path, verifier: ArtifactSelectionVerifierV1, selected: SignedArtifactSelectionV1, now: u64) -> anyhow::Result<AgentdSelectedGenerationV1> {
+fn load_selection(
+    owner: &LearningArtifactOwnerService,
+    root: &Path,
+    verifier: ArtifactSelectionVerifierV1,
+    selected: SignedArtifactSelectionV1,
+    now: u64,
+) -> anyhow::Result<AgentdSelectedGenerationV1> {
     let receipt = owner.current_registry_view(now)?.receipt();
-    let registry = root.join("registries").join(format!("{}-{}.snapshot", receipt.head_digest, receipt.file_digest));
-    let payload = root.join("payloads").join(format!("{}-{}.bin", selected.artifact_id, selected.content_digest));
-    Ok(AgentdSelectedGenerationV1::load(owner, verifier, selected, AgentdGenerationSelectionFilesV1 {
-        registry_snapshot: File::open(registry)?, payload: File::open(payload)?,
-    }, now)?)
+    let registry = root.join("registries").join(format!(
+        "{}-{}.snapshot",
+        receipt.head_digest, receipt.file_digest
+    ));
+    let payload = root.join("payloads").join(format!(
+        "{}-{}.bin",
+        selected.artifact_id, selected.content_digest
+    ));
+    Ok(AgentdSelectedGenerationV1::load(
+        owner,
+        verifier,
+        selected,
+        AgentdGenerationSelectionFilesV1 {
+            registry_snapshot: File::open(registry)?,
+            payload: File::open(payload)?,
+        },
+        now,
+    )?)
 }
 
-fn publish_candidate(owner: &mut LearningArtifactOwnerService, cell: &CellBackendManifestV2, key: &SigningKey, name: &str) -> anyhow::Result<ArtifactManifest> {
+fn publish_candidate(
+    owner: &mut LearningArtifactOwnerService,
+    cell: &CellBackendManifestV2,
+    key: &SigningKey,
+    name: &str,
+) -> anyhow::Result<ArtifactManifest> {
     let payload = serde_json::to_vec(cell)?;
     let manifest = LearningArtifactManifestV2 {
-        artifact_id: id(name)?, kind: ArtifactKind::Model, generation: Generation::new(1)?,
+        artifact_id: id(name)?,
+        kind: ArtifactKind::Model,
+        generation: Generation::new(1)?,
         provenance_mode: ProvenanceModeV1::DatasetDerived,
         source_dataset_digests: vec![Digest32::of_bytes(b"test-dataset-source")],
         lineage_digests: vec![Digest32::from_array(cell.evolution.lineage)],
-        predecessor_ids: Vec::new(), rollback_predecessor: None,
-        bytes_digest: Digest32::of_bytes(&payload), encoded_size_bytes: payload.len() as u64,
+        predecessor_ids: Vec::new(),
+        rollback_predecessor: None,
+        bytes_digest: Digest32::of_bytes(&payload),
+        encoded_size_bytes: payload.len() as u64,
         training_code_digest: Digest32::from_array(cell.source_digest),
         runtime_tuple_digest: Digest32::from_array(cell.runtime_digest),
         device_profile_digest: Digest32::from_array(cell.device_digest),
@@ -201,44 +264,76 @@ fn publish_candidate(owner: &mut LearningArtifactOwnerService, cell: &CellBacken
         compatibility_digest: Digest32::from_array(cell.digest()?),
         schema_profile_digest: Digest32::from_array(cell.state_schema),
         normalization_digest: Digest32::of_bytes(b"test-normalization"),
-        producer_id: id("test-producer")?, created_at: 1, expires_at: 10_000,
+        producer_id: id("test-producer")?,
+        created_at: 1,
+        expires_at: 10_000,
     };
     let predecessor = owner.registry().snapshot().head_digest;
-    let admission = admit_manifest_at_withdrawal_head_v3(owner.withdrawal_registry(), owner.withdrawal_registry().head_digest(), manifest.clone(), NOW)?;
-    let transaction = ArtifactPublicationTransactionV1::begin(id(name)?, admission.clone(), owner.withdrawal_registry(), owner.registry(), predecessor, NOW)?;
+    let admission = admit_manifest_at_withdrawal_head_v3(
+        owner.withdrawal_registry(),
+        owner.withdrawal_registry().head_digest(),
+        manifest.clone(),
+        NOW,
+    )?;
+    let transaction = ArtifactPublicationTransactionV1::begin(
+        id(name)?,
+        admission.clone(),
+        owner.withdrawal_registry(),
+        owner.registry(),
+        predecessor,
+        NOW,
+    )?;
     // The fixture issuer previews the same public Register event that the real
     // owner stages. Only Service::publish supplies durable CURRENT evidence.
     let candidate = ArtifactManifest {
-        artifact_id: manifest.artifact_id, kind: manifest.kind, generation: manifest.generation,
-        predecessor_id: None, content_digest: manifest.bytes_digest,
+        artifact_id: manifest.artifact_id,
+        kind: manifest.kind,
+        generation: manifest.generation,
+        predecessor_id: None,
+        content_digest: manifest.bytes_digest,
         objective_digest: manifest.objective_class_digest,
         support_digest: admission.validated_manifest.manifest_digest,
-        producer_id: manifest.producer_id, compatibility_digest: manifest.compatibility_digest,
+        producer_id: manifest.producer_id,
+        compatibility_digest: manifest.compatibility_digest,
         encoded_size_bytes: manifest.encoded_size_bytes,
     };
     let mut staged = owner.registry().clone();
     staged.append(ArtifactEvent::Register {
-        event_id: id(&format!("artifact-publication:{}", transaction.intent().intent_digest))?,
+        event_id: id(&format!(
+            "artifact-publication:{}",
+            transaction.intent().intent_digest
+        ))?,
         manifest: candidate.clone(),
     })?;
     let mut signed = SignedCurrentArtifactHeadV1 {
         withdrawal_scope_digest: admission.withdrawal_scope_digest,
         binding: Digest32::of_bytes(b"test-artifact-storage"),
         witness: RegistryHeadWitnessV1 {
-            registry_id: id("test-learning-artifacts")?, generation: Generation::new(staged.records().len() as u64)?,
-            head_digest: staged.snapshot().head_digest, predecessor_head_digest: predecessor,
-            authority_epoch: 1, signer_id: id("test-artifact-authority")?,
+            registry_id: id("test-learning-artifacts")?,
+            generation: Generation::new(staged.records().len() as u64)?,
+            head_digest: staged.snapshot().head_digest,
+            predecessor_head_digest: predecessor,
+            authority_epoch: 1,
+            signer_id: id("test-artifact-authority")?,
             signing_key_digest: Digest32::of_bytes(&key.verifying_key().to_bytes()),
-            issued_at: NOW, expires_at: 10_000,
+            issued_at: NOW,
+            expires_at: 10_000,
         },
         signature: [0; 64],
     };
     signed.signature = key.sign(&signed.signing_bytes()).to_bytes();
     let receipt = owner.publish(LearningArtifactPublishRequestV1 {
-        operation_id: id(name)?, admission, payload, signed_current_head: signed,
-        expected_registry_predecessor_head: predecessor, now: NOW,
+        operation_id: id(name)?,
+        admission,
+        payload,
+        signed_current_head: signed,
+        expected_registry_predecessor_head: predecessor,
+        now: NOW,
     })?;
-    anyhow::ensure!(receipt.registry_head_digest == staged.snapshot().head_digest, "actual publication differs from signed preview");
+    anyhow::ensure!(
+        receipt.registry_head_digest == staged.snapshot().head_digest,
+        "actual publication differs from signed preview"
+    );
     Ok(candidate)
 }
 

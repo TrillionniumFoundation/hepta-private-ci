@@ -306,27 +306,27 @@ mod learning_iteration_ports;
 mod learning_iteration_proposal;
 mod neuron_cell_evaluation;
 mod neuron_generation;
+#[cfg(unix)]
+mod neuron_generation_current;
 mod neuron_generation_episode;
 mod neuron_generation_process_bootstrap;
 mod neuron_generation_runtime;
 mod neuron_generation_service;
+#[cfg(all(test, target_os = "linux"))]
+#[path = "../tests/support/neuron_generation.rs"]
+mod neuron_generation_test_support;
 #[cfg(unix)]
 mod neuron_generation_update;
-#[cfg(unix)]
-mod neuron_generation_update_forward;
-#[cfg(unix)]
-mod neuron_generation_update_live;
 #[cfg(unix)]
 mod neuron_generation_update_bootstrap;
 #[cfg(unix)]
 mod neuron_generation_update_cold;
 #[cfg(unix)]
-mod neuron_generation_current;
+mod neuron_generation_update_forward;
+#[cfg(unix)]
+mod neuron_generation_update_live;
 #[cfg(unix)]
 mod neuron_generation_update_selection;
-#[cfg(all(test, target_os = "linux"))]
-#[path = "../tests/support/neuron_generation.rs"]
-mod neuron_generation_test_support;
 mod neuron_runtime;
 #[cfg(target_os = "linux")]
 mod neuron_v13_generation_bootstrap;
@@ -659,6 +659,16 @@ pub use neuron_cell_evaluation::CellTrainingBudgetV1;
 pub use neuron_cell_evaluation::CellTrainingObservationV1;
 pub use neuron_cell_evaluation::freeze_cell_evaluation_plan_v1;
 pub use neuron_generation::AgentdNeuronGenerationOwnerV2;
+#[cfg(unix)]
+pub use neuron_generation_current::NeuronGenerationCurrentOwnerV1;
+#[cfg(unix)]
+pub use neuron_generation_current::NeuronGenerationUpdatePublicationV1;
+#[cfg(unix)]
+pub use neuron_generation_current::NeuronGenerationUpdateReadbackV1;
+#[cfg(unix)]
+pub use neuron_generation_current::PreparedNeuronGenerationUpdateV1;
+#[cfg(unix)]
+pub use neuron_generation_current::PublishedNeuronGenerationUpdateV1;
 pub use neuron_generation_episode::append_neuron_generation_outcome_v1;
 pub use neuron_generation_process_bootstrap::load_neuron_generation_process_bootstrap_v1;
 pub use neuron_generation_process_bootstrap::neuron_generation_process_identity_digest_v1;
@@ -678,12 +688,6 @@ pub use neuron_generation_update::prepare_agentd_generation_update_v1;
 #[cfg(unix)]
 pub use neuron_generation_update::recover_agentd_generation_update_v1;
 #[cfg(unix)]
-pub use neuron_generation_update_forward::AgentdGenerationForwardRecoveryV1;
-#[cfg(unix)]
-pub use neuron_generation_update_forward::prepare_agentd_generation_forward_recovery_v1;
-#[cfg(unix)]
-pub use neuron_generation_update_live::AgentdGenerationUpdateAuthoritiesV1;
-#[cfg(unix)]
 pub use neuron_generation_update_bootstrap::AgentdGenerationUpdateRuntimeOptionsV1;
 #[cfg(unix)]
 pub use neuron_generation_update_bootstrap::AgentdGenerationUpdateRuntimeV1;
@@ -694,15 +698,11 @@ pub use neuron_generation_update_cold::AgentdGenerationUpdatePredecessorFilesV1;
 #[cfg(unix)]
 pub use neuron_generation_update_cold::prepare_agentd_generation_cold_update_v1;
 #[cfg(unix)]
-pub use neuron_generation_current::NeuronGenerationCurrentOwnerV1;
+pub use neuron_generation_update_forward::AgentdGenerationForwardRecoveryV1;
 #[cfg(unix)]
-pub use neuron_generation_current::NeuronGenerationUpdatePublicationV1;
+pub use neuron_generation_update_forward::prepare_agentd_generation_forward_recovery_v1;
 #[cfg(unix)]
-pub use neuron_generation_current::NeuronGenerationUpdateReadbackV1;
-#[cfg(unix)]
-pub use neuron_generation_current::PreparedNeuronGenerationUpdateV1;
-#[cfg(unix)]
-pub use neuron_generation_current::PublishedNeuronGenerationUpdateV1;
+pub use neuron_generation_update_live::AgentdGenerationUpdateAuthoritiesV1;
 #[cfg(unix)]
 pub use neuron_generation_update_selection::AgentdGenerationSelectionFilesV1;
 #[cfg(unix)]
