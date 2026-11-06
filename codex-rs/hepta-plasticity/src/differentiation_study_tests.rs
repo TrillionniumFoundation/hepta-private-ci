@@ -185,9 +185,8 @@ fn six_arm_study_recommends_only_owner_review_and_enters_existing_proposal_owner
         evaluate_differentiation_study_v1(&plan, &demand, &study),
         Ok(receipt.clone())
     );
-    let proposed =
-        propose_differentiation_topology_v1(&plan, &receipt, proposal(&plan, &receipt))
-            .expect("proposal");
+    let proposed = propose_differentiation_topology_v1(&plan, &receipt, proposal(&plan, &receipt))
+        .expect("proposal");
     assert_eq!(
         (proposed.status, proposed.authority),
         (
@@ -358,7 +357,7 @@ fn every_cost_category_is_required_bounded_and_included_in_checked_arithmetic() 
         Err(DifferentiationErrorV1::EmptyEvidence)
     );
     let (old_plan, _, mut study) = fixture();
-    let mut r = old_plan.request.clone();
+    let mut r = old_plan.request;
     r.study.maximum_cost_per_arm = 10;
     r.study.maximum_total_study_cost = 35;
     let plan = freeze_differentiation_plan_v1(r).expect("aggregate budget");
@@ -376,7 +375,7 @@ fn every_cost_category_is_required_bounded_and_included_in_checked_arithmetic() 
 #[test]
 fn costs_inside_the_budget_can_still_remove_the_candidates_net_benefit() {
     let (old_plan, _, mut study) = fixture();
-    let mut r = old_plan.request.clone();
+    let mut r = old_plan.request;
     r.study.cost_penalty_ppm_per_unit = 50_000;
     let plan = freeze_differentiation_plan_v1(r).expect("cost-weighted policy");
     let demand = assess_differentiation_demand_v1(&plan, &windows(&plan)).expect("demand");

@@ -67,7 +67,12 @@ impl DifferentiationPlanV1 {
         self.request
             .new_task_ids
             .iter()
-            .chain(self.request.retention_panels.iter().flat_map(|p| &p.task_ids))
+            .chain(
+                self.request
+                    .retention_panels
+                    .iter()
+                    .flat_map(|p| &p.task_ids),
+            )
             .cloned()
             .collect()
     }
@@ -83,7 +88,9 @@ pub fn assess_differentiation_demand_v1(
     }
     let total_tasks = windows
         .iter()
-        .try_fold(0_usize, |count, window| count.checked_add(window.cases.len()))
+        .try_fold(0_usize, |count, window| {
+            count.checked_add(window.cases.len())
+        })
         .ok_or(DifferentiationErrorV1::Arithmetic)?;
     if total_tasks > MAX_TASKS {
         return Err(DifferentiationErrorV1::Bounds);

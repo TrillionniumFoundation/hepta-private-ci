@@ -48,7 +48,10 @@ async fn historical_trained_joint_admission_cancel_retains_predecessor_cost_and_
         },
     )
     .await?;
-    assert_eq!(initialized.disposition, CellGenerationDispositionV2::Advanced);
+    assert_eq!(
+        initialized.disposition,
+        CellGenerationDispositionV2::Advanced
+    );
     let predecessor = handle.snapshot().await?;
     assert!(!predecessor.state.is_empty());
     let initial_cost = handle.task_cost().await?;
@@ -62,7 +65,10 @@ async fn historical_trained_joint_admission_cancel_retains_predecessor_cost_and_
     original.admitted_at_micros = clock();
     original.deadline_micros = original.admitted_at_micros + 30_000_000;
     let digest = original.digest()?;
-    assert_eq!(handle.step(original.clone()).await, Err(CellGenerationErrorV2::Pending));
+    assert_eq!(
+        handle.step(original.clone()).await,
+        Err(CellGenerationErrorV2::Pending)
+    );
     // Persist the actual owner intent immediately after admission. There is no
     // timing barrier or substitute worker: Shared may be unlaunched, interrupted
     // or already completed, but its result must never be adopted after this.
@@ -77,7 +83,10 @@ async fn historical_trained_joint_admission_cancel_retains_predecessor_cost_and_
         }
     })
     .await??;
-    assert_eq!(cancelled.disposition, CellGenerationDispositionV2::Cancelled);
+    assert_eq!(
+        cancelled.disposition,
+        CellGenerationDispositionV2::Cancelled
+    );
     assert_eq!(cancelled.request_digest, digest);
     cancelled.cost.validate()?;
     // Two control observations, optionally one interrupted process envelope or
@@ -90,7 +99,13 @@ async fn historical_trained_joint_admission_cancel_retains_predecessor_cost_and_
             && entry.metrics.energy_microjoules.is_none()
     }));
     for stage in [CellCostStageV2::Queue, CellCostStageV2::Persistence] {
-        assert!(cancelled.cost.entries().iter().any(|entry| entry.stage == stage));
+        assert!(
+            cancelled
+                .cost
+                .entries()
+                .iter()
+                .any(|entry| entry.stage == stage)
+        );
     }
     let mut expected = predecessor.clone();
     expected.revision += 1;
@@ -100,10 +115,17 @@ async fn historical_trained_joint_admission_cancel_retains_predecessor_cost_and_
     assert_eq!(handle.pending_request().await?, None);
     let cost = handle.task_cost().await?;
     cost.validate()?;
-    assert_eq!(cost.entries().len(), initial_cost.entries().len() + cancelled.cost.entries().len());
-    assert!(initial_cost.entries().iter().chain(cancelled.cost.entries()).all(|entry| {
-        cost.entries().contains(entry)
-    }));
+    assert_eq!(
+        cost.entries().len(),
+        initial_cost.entries().len() + cancelled.cost.entries().len()
+    );
+    assert!(
+        initial_cost
+            .entries()
+            .iter()
+            .chain(cancelled.cost.entries())
+            .all(|entry| { cost.entries().contains(entry) })
+    );
     let original_control = fs::read(fixture.directory.path().join("joint-control.log"))?;
     tasks.shutdown().await;
     assert!(tasks.failures().is_empty());
@@ -116,7 +138,10 @@ async fn historical_trained_joint_admission_cancel_retains_predecessor_cost_and_
     assert_eq!(handle.task_cost().await?, cost);
     assert_eq!(handle.step(original).await?, cancelled);
     assert_eq!(handle.task_cost().await?, cost);
-    assert_eq!(fs::read(fixture.directory.path().join("joint-control.log"))?, original_control);
+    assert_eq!(
+        fs::read(fixture.directory.path().join("joint-control.log"))?,
+        original_control
+    );
     assert!(handle.drain().await?);
     tasks.shutdown().await;
     assert!(tasks.failures().is_empty());
@@ -127,7 +152,10 @@ async fn historical_trained_joint_admission_cancel_retains_predecessor_cost_and_
     assert_eq!(journal.task_cost()?, &cost);
     assert_eq!(journal.pending_output()?, None);
     let evidence = evidence_directory("joint-trained-cancel-")?;
-    fs::write(evidence.path().join("predecessor-state.hps"), &predecessor.state)?;
+    fs::write(
+        evidence.path().join("predecessor-state.hps"),
+        &predecessor.state,
+    )?;
     fs::write(evidence.path().join("state.hps"), &snapshot.state)?;
     fs::write(evidence.path().join("prefix.hgc"), &snapshot.prefix)?;
     fs::write(evidence.path().join("control.log"), &original_control)?;
@@ -150,8 +178,14 @@ async fn historical_trained_joint_admission_cancel_retains_predecessor_cost_and_
         "scope": "Actual trained Init then immediate admission-cancel of Shared through the ordinary Agentd owner; only observed work is charged.",
         "not_covered": ["Guaranteed interruption during numeric execution", "Forced process death", "Natural-task quality", "CPU/energy"]
     });
-    fs::write(evidence.path().join("CANCELLATION.json"), serde_json::to_vec_pretty(&receipt)?)?;
+    fs::write(
+        evidence.path().join("CANCELLATION.json"),
+        serde_json::to_vec_pretty(&receipt)?,
+    )?;
     let retained = evidence.keep();
-    println!("historical trained Joint cancellation evidence: {}", retained.display());
+    println!(
+        "historical trained Joint cancellation evidence: {}",
+        retained.display()
+    );
     Ok(())
 }

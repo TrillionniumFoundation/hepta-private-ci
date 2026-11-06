@@ -189,10 +189,14 @@ impl<W: AnchorWitnessStore> CellGenerationJournalV2<W> {
 
     /// Project the current owner, including unresolved work and delivery, while
     /// preserving its original manifest schemas and complete learning binding.
-    pub fn observe_inventory(&self) -> Result<crate::CellOwnerInventoryV1<'_>, CellGenerationErrorV2> {
+    pub fn observe_inventory(
+        &self,
+    ) -> Result<crate::CellOwnerInventoryV1<'_>, CellGenerationErrorV2> {
         self.require_healthy()?;
         crate::CellOwnerInventoryV1::generation(
-            &self.config, &self.state, self.continuity_checkpoint()?,
+            &self.config,
+            &self.state,
+            self.continuity_checkpoint()?,
             self.state.reserved_records() * (MAX_FRAME as u64 + 36),
         )
     }

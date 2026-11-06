@@ -130,7 +130,10 @@ impl<'owner> CellOwnerInventoryV1<'owner> {
             return Err(CellExecutionError::CommitConflict);
         }
         let bytes = CellOwnerInventoryBytesV1 {
-            state: snapshot.checkpoint.as_ref().map_or(0, |c| c.bounded_encoded_bytes() as u64),
+            state: snapshot
+                .checkpoint
+                .as_ref()
+                .map_or(0, |c| c.bounded_encoded_bytes() as u64),
             state_budget: definition.runtime.resource_envelope.checkpoint_bytes,
             reserved_journal,
             ..CellOwnerInventoryBytesV1::default()
@@ -138,7 +141,10 @@ impl<'owner> CellOwnerInventoryV1<'owner> {
         Ok(Self {
             backend: CellOwnerBackendV1::DecisionV1(definition),
             record: CellOwnerInventoryRecordV1 {
-                fence: CellOwnerInventoryFenceV1 { scope_digest: snapshot.scope.digest(), owner_checkpoint },
+                fence: CellOwnerInventoryFenceV1 {
+                    scope_digest: snapshot.scope.digest(),
+                    owner_checkpoint,
+                },
                 scope: snapshot.scope,
                 generation: definition.runtime.generation,
                 writer_epoch: snapshot.writer_epoch,
@@ -150,7 +156,10 @@ impl<'owner> CellOwnerInventoryV1<'owner> {
                 state_schema_digest: definition.state_schema_digest,
                 learning: None,
                 evolution: None,
-                checkpoint_digest: snapshot.checkpoint.as_ref().map(crate::SparseCheckpoint::digest),
+                checkpoint_digest: snapshot
+                    .checkpoint
+                    .as_ref()
+                    .map(crate::SparseCheckpoint::digest),
                 pending_operation_digest: pending.map(|p| p.model_request.input_digest),
                 pending_output_bytes: 0,
                 control: CellOwnerControlStateV1::DecisionV1,
@@ -177,9 +186,12 @@ impl<'owner> CellOwnerInventoryV1<'owner> {
             return Err(CellGenerationErrorV2::InvalidBinding);
         }
         let scope = CellScopeV1 {
-            agent_id: StableId::new(&snapshot.scope.agent_id).map_err(|_| CellGenerationErrorV2::InvalidBinding)?,
-            cell_id: StableId::new(&snapshot.scope.cell_id).map_err(|_| CellGenerationErrorV2::InvalidBinding)?,
-            run_id: StableId::new(&snapshot.scope.run_id).map_err(|_| CellGenerationErrorV2::InvalidBinding)?,
+            agent_id: StableId::new(&snapshot.scope.agent_id)
+                .map_err(|_| CellGenerationErrorV2::InvalidBinding)?,
+            cell_id: StableId::new(&snapshot.scope.cell_id)
+                .map_err(|_| CellGenerationErrorV2::InvalidBinding)?,
+            run_id: StableId::new(&snapshot.scope.run_id)
+                .map_err(|_| CellGenerationErrorV2::InvalidBinding)?,
             principal_digest: Digest32::from_array(snapshot.scope.principal_digest),
         };
         let weights = match &manifest.learning {
@@ -189,9 +201,13 @@ impl<'owner> CellOwnerInventoryV1<'owner> {
         Ok(Self {
             backend: CellOwnerBackendV1::GenerationV2(manifest),
             record: CellOwnerInventoryRecordV1 {
-                fence: CellOwnerInventoryFenceV1 { scope_digest: scope.digest(), owner_checkpoint },
+                fence: CellOwnerInventoryFenceV1 {
+                    scope_digest: scope.digest(),
+                    owner_checkpoint,
+                },
                 scope,
-                generation: Generation::new(snapshot.generation).map_err(|_| CellGenerationErrorV2::InvalidBinding)?,
+                generation: Generation::new(snapshot.generation)
+                    .map_err(|_| CellGenerationErrorV2::InvalidBinding)?,
                 writer_epoch: snapshot.writer_epoch,
                 revision: snapshot.revision,
                 source_frontier: Digest32::from_array(config.source_frontier),
@@ -202,11 +218,17 @@ impl<'owner> CellOwnerInventoryV1<'owner> {
                 learning: Some(manifest.learning.clone()),
                 evolution: Some(manifest.evolution.clone()),
                 checkpoint_digest: Some(Digest32::from_array(snapshot.digest()?)),
-                pending_operation_digest: state.pending.as_ref().map(|p| p.digest().map(Digest32::from_array)).transpose()?,
+                pending_operation_digest: state
+                    .pending
+                    .as_ref()
+                    .map(|p| p.digest().map(Digest32::from_array))
+                    .transpose()?,
                 pending_output_bytes: state.outbox.as_ref().map_or(0, |o| o.bytes.len() as u64),
                 control: CellOwnerControlStateV1::GenerationV2 {
-                    draining: state.draining, stopped: snapshot.stopped,
-                    cancelled: state.cancelled, dispatch_observed: state.dispatch_observed,
+                    draining: state.draining,
+                    stopped: snapshot.stopped,
+                    cancelled: state.cancelled,
+                    dispatch_observed: state.dispatch_observed,
                 },
                 bytes: CellOwnerInventoryBytesV1 {
                     state: snapshot.state.len() as u64,
@@ -280,7 +302,8 @@ pub fn cell_owner_inventory_census_v1(
     for observation in observations {
         let r = &observation.record;
         if r.scope.principal_digest != scope.principal_digest
-            || r.scope.agent_id != scope.agent_id || r.scope.run_id != scope.run_id
+            || r.scope.agent_id != scope.agent_id
+            || r.scope.run_id != scope.run_id
         {
             return Err(E::ScopeMismatch);
         }
@@ -289,7 +312,8 @@ pub fn cell_owner_inventory_census_v1(
         }
         bindings.insert(r.backend_binding_digest);
         bundles.insert(r.parameter_bundle_digest);
-        result.active_instance_count += usize::from(r.pending_operation_digest.is_some() || r.pending_output_bytes != 0);
+        result.active_instance_count +=
+            usize::from(r.pending_operation_digest.is_some() || r.pending_output_bytes != 0);
         for (total, value) in [
             (&mut result.bytes.state, r.bytes.state),
             (&mut result.bytes.prefix, r.bytes.prefix),

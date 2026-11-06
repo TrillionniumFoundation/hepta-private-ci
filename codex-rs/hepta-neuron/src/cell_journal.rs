@@ -233,12 +233,18 @@ impl<W: AnchorWitnessStore> CellOwnerJournalV1<W> {
             (anchor.sequence, anchor.checkpoint_digest)
         });
         let checkpoint = Digest32::of_parts(&[
-            b"hepta.cell.owner-inventory-cut.v1\0", &self.header,
-            &sequence.to_be_bytes(), head.as_array(), &self.length.to_be_bytes(),
+            b"hepta.cell.owner-inventory-cut.v1\0",
+            &self.header,
+            &sequence.to_be_bytes(),
+            head.as_array(),
+            &self.length.to_be_bytes(),
         ]);
         crate::CellOwnerInventoryV1::decision(
-            &self.specs[index].definition, self.owner.snapshot(scope)?,
-            pending, checkpoint, reserved,
+            &self.specs[index].definition,
+            self.owner.snapshot(scope)?,
+            pending,
+            checkpoint,
+            reserved,
         )
     }
 

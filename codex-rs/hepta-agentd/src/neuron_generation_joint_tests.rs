@@ -24,12 +24,12 @@ use crate::RuntimeTasks;
 use crate::neuron_generation_channel_v2;
 use crate::neuron_generation_service::spawn_neuron_generation_service;
 
+#[path = "neuron_generation_joint_cancel_tests.rs"]
+mod cancellation;
 #[path = "../../hepta-neuron/tests/support/joint_synthetic.rs"]
 mod synthetic;
 #[path = "../../hepta-neuron/tests/support/joint_trained.rs"]
 mod trained;
-#[path = "neuron_generation_joint_cancel_tests.rs"]
-mod cancellation;
 
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 type Clock = Arc<dyn Fn() -> u64 + Send + Sync>;
@@ -380,7 +380,9 @@ async fn lifecycle(model: ModelFixture) -> TestResult {
             assert!(decoded.bytes[1].iter().any(|byte| *byte != 0));
             assert!(decoded.bytes[2].windows(2).any(|pair| pair[0] != pair[1]));
             let text = std::str::from_utf8(&decoded.bytes[3])?;
-            assert!(text.starts_with("action=") && text.contains(";sound=") && text.ends_with('\n'));
+            assert!(
+                text.starts_with("action=") && text.contains(";sound=") && text.ends_with('\n')
+            );
         }
     }
     assert!(!handle.drain().await?);
@@ -459,9 +461,15 @@ async fn lifecycle(model: ModelFixture) -> TestResult {
             "cancellation_evidence": "Separate historical_trained_joint_admission_cancel_retains_predecessor_cost_and_receipt_on_reopen test",
             "not_covered": ["Process death during proposal", "Natural-task quality", "Adoption", "Optimizer resume", "CPU/energy and complete historical cost"]
         });
-        fs::write(evidence.path().join("LIFECYCLE.json"), serde_json::to_vec_pretty(&receipt)?)?;
+        fs::write(
+            evidence.path().join("LIFECYCLE.json"),
+            serde_json::to_vec_pretty(&receipt)?,
+        )?;
         let retained = evidence.keep();
-        println!("historical trained Joint lifecycle evidence: {}", retained.display());
+        println!(
+            "historical trained Joint lifecycle evidence: {}",
+            retained.display()
+        );
     }
     Ok(())
 }

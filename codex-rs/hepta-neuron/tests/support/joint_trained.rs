@@ -34,7 +34,10 @@ pub(crate) fn assets() -> io::Result<Assets> {
     let mut weights = Vec::with_capacity(WEIGHTS_BYTES);
     for chunk in CHUNKS {
         if chunk.is_empty() || chunk.len() > 393_216 {
-            return Err(io::Error::new(io::ErrorKind::InvalidData, "trained weight chunk bound"));
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidData,
+                "trained weight chunk bound",
+            ));
         }
         weights.extend_from_slice(chunk);
     }
@@ -44,7 +47,10 @@ pub(crate) fn assets() -> io::Result<Assets> {
         || Digest32::of_bytes(PUBLIC).to_string() != PUBLIC_SHA256
         || Digest32::of_bytes(PROVENANCE.as_bytes()).to_string() != PROVENANCE_SHA256
     {
-        return Err(io::Error::new(io::ErrorKind::InvalidData, "trained asset identity mismatch"));
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidData,
+            "trained asset identity mismatch",
+        ));
     }
     // Assets is only a pair of byte vectors. The existing independent wire
     // reader accepts these exact hashes; it does not synthesize trained data.
