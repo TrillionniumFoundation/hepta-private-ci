@@ -3,7 +3,9 @@
 `native-presentation` adds an observation-only composition mode to the existing
 Robrix-derived Makepad `App`. It is a candidate Linux development interface. It
 does not install a `NativeHost`, a Chat owner, a signer or an Objective writer.
-The original `PresentationCommand::RequestSend` still returns `SendUnavailable`.
+The default `PresentationCommand::RequestSend` returns `SendUnavailable`. A
+trusted host can explicitly install the original Objective port into its existing
+workspace; that path retains the existing Send, Cancel and Refresh controls.
 
 The intended caller is Desktop's existing Session projection. That caller moves
 its one `DraftBook`, reducer and Bridge into a `NativeChatComposition`; the
@@ -45,11 +47,19 @@ the original modules. The client does not normalize keys in parallel or install
 another input route. Native IME, accessibility and mobile acceptance still need
 their own implementation and device tests.
 
-The original native editor visibly reports rejected over-limit/NUL edits and
-keeps the last valid text. After composition ends, its current reconciliation
-resets the editor state when the widget text differs from that valid draft.
-Selection/undo preservation therefore differs from Desktop's egui transaction
-rollback. This interface does not claim that those editing behaviors are equal.
+The original editor visibly reports rejected over-limit/NUL edits. Its
+`ComposerTransaction` checkpoints the SDK's text, selection and undo history
+together, under the current room and presentation epoch. Active preedit does not
+publish a draft or title. A rejected final edit restores that checkpoint instead
+of replacing text and erasing undo history. A room/epoch change retires the old
+checkpoint. Firefox's unchanged-text composition commit is published after the
+SDK ends preedit, even when the SDK emits no separate Changed action. The Web
+bridge retains the resulting owner state when trailing native input arrives.
+
+These shared editing rules do not establish physical IME, assistive technology,
+mobile touch or complete task-execution qualification. The original Objective
+controls remain connected through the same presenter; importing this editor
+repair does not replace them with another native command route.
 
 ## Original lifecycle, two launch modes
 

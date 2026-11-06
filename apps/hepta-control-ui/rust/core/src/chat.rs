@@ -474,7 +474,7 @@ impl ChatWorkspace {
     }
     /// Only an explicitly installed original owner can queue a request.
     /// A local-only workspace retains its original refusal behavior.
-    /// This method never queues an operation, clears a draft or creates a message.
+    /// Queueing does not confirm execution; the draft and timeline remain unchanged.
     pub fn request_send(&mut self) -> bool {
         if !self.composing && self.objective_port.is_some() {
             if self.draft().status == ComposeStatus::InputLimit {
@@ -576,6 +576,7 @@ impl ChatWorkspace {
                 && value.binding.presentation_epoch == self.presentation_epoch
                 && value.phase == crate::objective_ui::ObjectiveUiPhase::Prepared
                 && value.binding.matches_draft(&self.draft().text)
+                && self.draft().status != ComposeStatus::InputLimit
                 && !self.composing
         })
     }
