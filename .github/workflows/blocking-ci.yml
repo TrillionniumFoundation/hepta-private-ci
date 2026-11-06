@@ -44,6 +44,7 @@ jobs:
         run: |
           set -euo pipefail
           python3 -m unittest -v scripts.tests.test_hepta_ci_scope scripts.tests.test_hepta_ci_dependencies
+          python3 .github/scripts/test_hepta_blocking_ci_fanin.py -v
           python3 -m unittest -v scripts.test_hepta_readiness_semantics
           args=(--head "$HEAD_SHA" --github-output "$GITHUB_OUTPUT")
           if [ "$EVENT_NAME" = "pull_request" ]; then
@@ -234,22 +235,4 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          export ALLOWED_SKIPPED="$(
-            python3 - <<'PY'
-          import json
-          import os
-          native = os.environ["NATIVE"] == "true"
-          full = os.environ["FULL_REPO"] == "true"
-          allowed = []
-          if not (native or full):
-              allowed.append("hepta-contract-gate")
-          if not full:
-              allowed += ["bazel", "cargo-deny", "repo-checks", "rust-ci", "sdk"]
-          if not (native and not full):
-              allowed.append("hepta-scoped")
-          if not (not native and not full):
-              allowed.append("lightweight")
-          print(json.dumps(allowed))
-          PY
-          )"
-          python3 .github/scripts/check_ci_results.py
+          python3 .github/scripts/hepta_blocking_ci_fanin.py
