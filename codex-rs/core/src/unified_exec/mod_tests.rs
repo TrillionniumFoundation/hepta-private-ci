@@ -10,6 +10,7 @@ use crate::session::turn_context::TurnContext;
 use crate::tools::context::ExecCommandToolOutput;
 use crate::unified_exec::WriteStdinRequest;
 use codex_exec_server::ExecProcess;
+use codex_exec_server::ExecProcessEvent;
 use codex_exec_server::ExecProcessEventReceiver;
 use codex_exec_server::ExecProcessFuture;
 use codex_exec_server::ProcessId;
@@ -219,6 +220,8 @@ struct BlockingTerminateExecProcess {
     terminate_started: watch::Sender<bool>,
     allow_terminate: Arc<Notify>,
     wake_tx: watch::Sender<u64>,
+    events: tokio::sync::broadcast::Sender<ExecProcessEvent>,
+    observed_process: std::sync::OnceLock<std::sync::Weak<UnifiedExecProcess>>,
 }
 
 impl BlockingTerminateExecProcess {
@@ -243,6 +246,33 @@ impl BlockingTerminateExecProcess {
     async fn terminate(&self) -> Result<(), codex_exec_server::ExecServerError> {
         let _ = self.terminate_started.send(true);
         self.allow_terminate.notified().await;
+        self.events
+            .send(ExecProcessEvent::Exited {
+                seq: 1,
+                exit_code: 0,
+                sandbox_denied: Some(false),
+            })
+            .map_err(|error| codex_exec_server::ExecServerError::Protocol(error.to_string()))?;
+        self.events
+            .send(ExecProcessEvent::Closed { seq: 2 })
+            .map_err(|error| codex_exec_server::ExecServerError::Protocol(error.to_string()))?;
+        let process = self
+            .observed_process
+            .get()
+            .and_then(std::sync::Weak::upgrade)
+            .ok_or_else(|| {
+                codex_exec_server::ExecServerError::Protocol(
+                    "fixture owner disappeared".to_string(),
+                )
+            })?;
+        // The old fixture supplied only an ACK. Complete its successful case
+        // only after the real event consumer observes this process's exit.
+        process.cancellation_token().cancelled().await;
+        if !process.has_exited() {
+            return Err(codex_exec_server::ExecServerError::Protocol(
+                "fixture did not observe its Exited event".to_string(),
+            ));
+        }
         Ok(())
     }
 }
@@ -257,7 +287,7 @@ impl ExecProcess for BlockingTerminateExecProcess {
     }
 
     fn subscribe_events(&self) -> ExecProcessEventReceiver {
-        ExecProcessEventReceiver::empty()
+        ExecProcessEventReceiver::from_receiver(self.events.subscribe())
     }
 
     fn read(
@@ -288,18 +318,27 @@ async fn blocking_terminate_unified_process(
     allow_terminate: Arc<Notify>,
 ) -> anyhow::Result<Arc<UnifiedExecProcess>> {
     let (wake_tx, _wake_rx) = watch::channel(0);
-    Ok(Arc::new(
+    let (events, _) = tokio::sync::broadcast::channel(8);
+    let remote = Arc::new(BlockingTerminateExecProcess {
+        process_id: process_id.to_string().into(),
+        terminate_started,
+        allow_terminate,
+        wake_tx,
+        events,
+        observed_process: std::sync::OnceLock::new(),
+    });
+    let process = Arc::new(
         UnifiedExecProcess::from_exec_server_started(StartedExecProcess {
-            process: Arc::new(BlockingTerminateExecProcess {
-                process_id: process_id.to_string().into(),
-                terminate_started,
-                allow_terminate,
-                wake_tx,
-            }),
+            process: remote.clone(),
             sandbox_type: Some(codex_sandboxing::SandboxType::None),
         })
         .await?,
-    ))
+    );
+    remote
+        .observed_process
+        .set(Arc::downgrade(&process))
+        .map_err(|_| anyhow::anyhow!("fixture owner was bound twice"))?;
+    Ok(process)
 }
 
 async fn write_stdin(

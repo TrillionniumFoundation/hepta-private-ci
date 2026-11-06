@@ -1,0 +1,66 @@
+{
+  "recordedAt": "2026-10-23T20:45:07.074656+00:00",
+  "commit": "a47dcc783fdb6c7deae6bc23bb83354a0052f5e6",
+  "tree": "729f43e958bf208ed7403e4d0f19a2ba877af4bc",
+  "requiredSourceOrder": [
+    "f3ee06d59275582cdcccfdec44bab96e57db6a49",
+    "44b4820a43ee9a34d4c0fddb7762e94fed59a9b1",
+    "a47dcc783fdb6c7deae6bc23bb83354a0052f5e6"
+  ],
+  "testedSourceBase": "44b4820a43ee9a34d4c0fddb7762e94fed59a9b1",
+  "testedDiffSha256": "13c0b429f300d754e1508a415402228f4ce78ef089fe222a444f1a019c21722a",
+  "reconstructedTestedTree": "bc7657b3271453c1d6b1c47299e86c185355bd51",
+  "sourceFilesMatchRecordedHashes": true,
+  "owningPrePostSourceUnchanged": true,
+  "focused": {
+    "run": 26,
+    "passed": 26,
+    "failed": 0
+  },
+  "owning": {
+    "run": 512,
+    "passed": 512,
+    "failed": 0,
+    "retried": 0,
+    "originalSkipped": 3,
+    "testSeconds": 56.272
+  },
+  "initialUserPathPin": "O_PATH|CLOEXEC only; no user-path read-open before authorization.",
+  "strictPhysicalPathReopen": "openat2 O_PATH|CLOEXEC + NO_SYMLINKS|NO_MAGICLINKS, then regular/singlelink/devino/mount/namespace/physical-path proof.",
+  "readableConversion": "Only the internally owned, already-proved regular O_PATH descriptor is converted through /proc/thread-self/fd/{owned_fd}; no caller-supplied fd or fallback path. Readable identity and physical path verified again; original pin remains alive through outer final admission proof.",
+  "capabilityProbe": "Actual private regular-file read, direct per-flag ELOOP with O_PATH and ordinary-symlink NO_MAGICLINKS positive control, mount/namespace/proc path/nlink/deleted checks. Failure advertises false/Unsupported.",
+  "ordinaryKernelContracts": "Initial O_PATH descriptor read=EBADF; full secure reopen returns readable same regular object with matching dev/ino/mount/path.",
+  "originalNegativeAssertionsPreserved": true,
+  "laterHardlinkAndReplacementAfterAdmissionAllowed": true,
+  "atomicDarwinOUniqueEquivalenceClaimed": false,
+  "actualSetnsPerformed": false,
+  "devicesOpenedForTesting": false,
+  "attackOrRaceReproductionPerformed": false,
+  "cargoOrBazelDependenciesChanged": false,
+  "receipts": {
+    "linux-readable-pin-chain-focused": {
+      "exitCode": 0,
+      "elapsedSeconds": 374.72780857398175
+    },
+    "linux-readable-pin-chain-owning": {
+      "exitCode": 0,
+      "elapsedSeconds": 119.63636060489807
+    },
+    "linux-readable-pin-chain-fix": {
+      "exitCode": 0,
+      "elapsedSeconds": 159.58444731705822
+    },
+    "linux-readable-pin-chain-fmt": {
+      "exitCode": 0,
+      "elapsedSeconds": 0.2936955989571288
+    }
+  },
+  "noTestsAfterFixOrFmt": true,
+  "posttestDifferenceArtifact": "linux-readable-pin-chain-posttest-format.diff",
+  "finalCommitBytesRetested": false,
+  "hostKernel": "7.0.0-38-generic",
+  "toolchain": "1.95.0",
+  "scope": "Original Linux host package checks on this complete chain source; root review, final integrated Rust1.96 complete suite and native qualification remain independent.",
+  "nativeAsterinasQualified": false,
+  "finalUnifiedFullQualified": false
+}

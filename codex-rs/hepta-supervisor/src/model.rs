@@ -12,7 +12,8 @@ use serde::Serialize;
 
 use crate::SupervisorError;
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct AgentCommand {
     pub program: PathBuf,
     pub args: Vec<OsString>,

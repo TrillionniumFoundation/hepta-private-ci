@@ -148,6 +148,24 @@ def _bindings(
         if annotation:
             bindings[name] = _type(annotation, target)
             continue
+        # Standard shared-owner cloning preserves the wrapped receiver type.
+        # Treat an opaque clone argument as unresolved, never as an unrelated
+        # `Arc`/`Rc` constructor that could silently hide an authority call.
+        shared_clone = re.match(
+            r"\s*(?:std\s*::\s*(?:sync|rc)\s*::\s*)?(?:Arc|Rc)\s*::\s*clone\s*\(",
+            expression,
+        )
+        if shared_clone:
+            argument = re.fullmatch(
+                r"\s*&?\s*((?:self|[A-Za-z_]\w*)(?:\s*\.\s*\w+)*)\s*\)\s*",
+                expression[shared_clone.end() :],
+            )
+            bindings[name] = (
+                _receiver_type(argument.group(1), bindings, owner, fields)
+                if argument
+                else None
+            )
+            continue
         constructor = re.match(
             r"(?:[A-Za-z_]\w*::)*([A-Za-z_]\w*)\s*::\s*\w+\s*\(", expression
         )

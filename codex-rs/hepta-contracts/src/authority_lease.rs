@@ -26,6 +26,17 @@ use std::path::Path;
 use std::sync::Arc;
 use std::sync::Mutex;
 
+#[cfg(windows)]
+#[path = "authority_lease_windows.rs"]
+mod windows;
+
+#[path = "authority_lease_revoke.rs"]
+mod revoke;
+
+#[path = "authority_lease_pair_boundary.rs"]
+mod pair_boundary;
+pub use pair_boundary::AuthorityLeaseRetirement;
+
 const LEASE_SCHEMA_VERSION: u32 = 1;
 const STORE_SCHEMA_VERSION: u32 = 2;
 pub const MAX_AUTHORITY_LEASES: usize = 16_384;
@@ -457,52 +468,14 @@ impl AuthorityLeaseRegistry {
         expected_revision: u64,
         reason_sha256: [u8; 32],
     ) -> Result<RevocationReceipt, AuthorityLeaseError> {
-        if !identifier(lease_id) || reason_sha256 == [0; 32] {
-            return Err(AuthorityLeaseError::InvalidRevocation);
-        }
-        let revoked_at_unix_ms = self.0.clock.now_unix_ms().map_err(map_trust_error)?;
-        if revoked_at_unix_ms == 0 {
-            return Err(AuthorityLeaseError::InvalidRevocation);
-        }
-        let mut state = self.lock_state()?;
-        if let Some(existing) = state.revocations.get(lease_id) {
-            if existing.lease_revision == expected_revision.saturating_add(1)
-                && existing.reason_sha256 == reason_sha256
-            {
-                return Ok(receipt(existing, expected_revision));
-            }
-            return Err(AuthorityLeaseError::Revoked);
-        }
-        if state.revocations.len() >= MAX_CAPABILITY_REVOCATIONS {
-            return Err(AuthorityLeaseError::CapacityExceeded);
-        }
-        let current = state
-            .leases
-            .get(lease_id)
-            .cloned()
-            .ok_or(AuthorityLeaseError::LeaseNotFound)?;
-        if current.revision != expected_revision {
-            return Err(AuthorityLeaseError::RevisionMismatch);
-        }
-        let lease_revision = next_revision(current.revision)?;
-        let mut next = state.clone();
-        next.store_revision = next_revision(next.store_revision)?;
-        let mut revoked_lease = current;
-        revoked_lease.revision = lease_revision;
-        next.leases.insert(lease_id.to_owned(), revoked_lease);
-        let revocation = CapabilityRevocation {
-            schema_version: LEASE_SCHEMA_VERSION,
-            lease_id: lease_id.to_owned(),
-            authority_epoch: next.authority_epoch,
-            lease_revision,
-            store_revision: next.store_revision,
+        revoke::selected(
+            self,
+            lease_id,
+            expected_revision,
             reason_sha256,
-            revoked_at_unix_ms,
-        };
-        next.revocations
-            .insert(lease_id.to_owned(), revocation.clone());
-        self.persist_or_fence(&mut state, next)?;
-        Ok(receipt(&revocation, expected_revision))
+            revoke::Deadline::Unbounded,
+            None,
+        )
     }
 
     /// Remove expired, unrevoked leases in a bounded online batch. Revocation
@@ -669,8 +642,10 @@ impl AuthorityLeaseVerifier {
         expected_revision: u64,
         expected: &AuthorityLeaseBinding,
     ) -> Result<LeaseVerifiedUseToken, AuthorityLeaseError> {
-        let now_unix_ms = self.0.clock.now_unix_ms().map_err(map_trust_error)?;
         let state = self.lock_state()?;
+        // Sample only after acquiring the final owner fence: waiting for a
+        // preceding local boundary may itself consume the lease's lifetime.
+        let now_unix_ms = self.0.clock.now_unix_ms().map_err(map_trust_error)?;
         let lease = state
             .leases
             .get(lease_id)
@@ -720,8 +695,10 @@ impl AuthorityLeaseVerifier {
         if !Arc::ptr_eq(&self.0, &token.owner) || &token.lease.binding != expected {
             return Err(AuthorityLeaseError::BindingMismatch);
         }
-        let now_unix_ms = self.0.clock.now_unix_ms().map_err(map_trust_error)?;
         let state = self.lock_state()?;
+        // Sample only after acquiring the final owner fence: waiting for a
+        // preceding local boundary may itself consume the lease's lifetime.
+        let now_unix_ms = self.0.clock.now_unix_ms().map_err(map_trust_error)?;
         validate_live(
             &token.lease,
             &state,
@@ -754,8 +731,10 @@ impl AuthorityLeaseVerifier {
         if !Arc::ptr_eq(&self.0, &token.owner) || &token.lease.binding != expected {
             return Err(AuthorityLeaseError::BindingMismatch);
         }
-        let now_unix_ms = self.0.clock.now_unix_ms().map_err(map_trust_error)?;
         let state = self.lock_state()?;
+        // Sample only after acquiring the final owner fence: waiting for a
+        // preceding local boundary may itself consume the lease's lifetime.
+        let now_unix_ms = self.0.clock.now_unix_ms().map_err(map_trust_error)?;
         validate_live(
             &token.lease,
             &state,
@@ -1150,11 +1129,31 @@ fn replace_state(directory: &File) -> Result<(), AuthorityLeaseError> {
     .map_err(|_| AuthorityLeaseError::Unavailable)
 }
 
-#[cfg(not(unix))]
+#[cfg(windows)]
+fn prepare_directory(root: &Path) -> Result<File, AuthorityLeaseError> {
+    windows::prepare_directory(root)
+}
+
+#[cfg(windows)]
+fn open_private(directory: &File, name: &str, access: Access) -> Result<File, AuthorityLeaseError> {
+    windows::open_private(directory, name, access)
+}
+
+#[cfg(windows)]
+fn entry_exists(directory: &File, name: &str) -> Result<bool, AuthorityLeaseError> {
+    windows::entry_exists(directory, name)
+}
+
+#[cfg(windows)]
+fn replace_state(directory: &File) -> Result<(), AuthorityLeaseError> {
+    windows::replace_state(directory)
+}
+
+#[cfg(all(not(unix), not(windows)))]
 fn prepare_directory(_root: &Path) -> Result<File, AuthorityLeaseError> {
     Err(AuthorityLeaseError::UnsafeStateDirectory)
 }
-#[cfg(not(unix))]
+#[cfg(all(not(unix), not(windows)))]
 fn open_private(
     _directory: &File,
     _name: &str,
@@ -1162,11 +1161,11 @@ fn open_private(
 ) -> Result<File, AuthorityLeaseError> {
     Err(AuthorityLeaseError::UnsafeStateDirectory)
 }
-#[cfg(not(unix))]
+#[cfg(all(not(unix), not(windows)))]
 fn entry_exists(_directory: &File, _name: &str) -> Result<bool, AuthorityLeaseError> {
     Err(AuthorityLeaseError::UnsafeStateDirectory)
 }
-#[cfg(not(unix))]
+#[cfg(all(not(unix), not(windows)))]
 fn replace_state(_directory: &File) -> Result<(), AuthorityLeaseError> {
     Err(AuthorityLeaseError::UnsafeStateDirectory)
 }
@@ -1708,3 +1707,7 @@ mod tests {
         assert_eq!(registry.capacity().unwrap().leases, 0);
     }
 }
+
+#[cfg(test)]
+#[path = "authority_lease_entry_clock_tests.rs"]
+mod entry_clock_tests;

@@ -423,11 +423,19 @@ metrics_exporter = {{ otlp-http = {{ endpoint = "{base_url}/v1/metrics", protoco
             &serde_json::json!({
                 "id": 1,
                 "method": "initialize",
-                "params": {"clientName": "otel-test", "resumeSessionId": null}
+                "params": {
+                    "clientName": "otel-test",
+                    "resumeSessionId": null,
+                    "processExitObservation": true
+                }
             }),
         )
         .await?;
-        wait_for_response(&mut stdout, /*expected_id*/ 1).await?;
+        let initialize = wait_for_response(&mut stdout, /*expected_id*/ 1).await?;
+        anyhow::ensure!(
+            initialize["result"]["processExitObservation"].as_bool() == Some(true),
+            "exec-server did not negotiate process exit observation: {initialize}"
+        );
         send_json_line(
             &mut stdin,
             &serde_json::json!({"method": "initialized", "params": {}}),
@@ -577,7 +585,7 @@ fn local_exec_server_exits_successfully_on_sigterm() -> Result<()> {
 async fn wait_for_response(
     stdout: &mut (impl tokio::io::AsyncBufRead + Unpin),
     expected_id: i64,
-) -> Result<()> {
+) -> Result<serde_json::Value> {
     loop {
         let mut line = String::new();
         if stdout.read_line(&mut line).await? == 0 {
@@ -589,7 +597,7 @@ async fn wait_for_response(
                 message.get("error").is_none(),
                 "exec-server request {expected_id} failed: {message}"
             );
-            return Ok(());
+            return Ok(message);
         }
     }
 }

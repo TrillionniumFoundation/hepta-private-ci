@@ -27,8 +27,6 @@ use codex_app_server_protocol::RequestId;
 use codex_app_server_protocol::SandboxMode;
 use codex_app_server_protocol::ServerNotification;
 use codex_app_server_protocol::ThreadItem;
-use codex_app_server_protocol::ThreadReadParams;
-use codex_app_server_protocol::ThreadReadResponse;
 use codex_app_server_protocol::ThreadStartParams;
 use codex_app_server_protocol::ThreadStartResponse;
 use codex_app_server_protocol::ThreadUnsubscribeParams;
@@ -50,7 +48,6 @@ use codex_hepta_codex_adapter::CodexOperationIntent;
 use codex_hepta_codex_adapter::TURN_START_METHOD_ID;
 use codex_hepta_codex_adapter::adapt_observed_event;
 use codex_hepta_codex_adapter::adapt_observed_server_rejection;
-use codex_hepta_codex_adapter::adapt_observed_thread_read_reconciliation;
 use codex_hepta_codex_adapter::adapt_request;
 use codex_hepta_codex_adapter::request_digest as codex_request_digest;
 use codex_hepta_contracts::AgentId;
@@ -64,7 +61,6 @@ use codex_hepta_infer_core::durable_control::native::NativeDispatchRejection;
 use codex_hepta_infer_core::durable_control::native::NativeDispatchRejectionStatus;
 pub use codex_hepta_infer_core::durable_control::native::NativeOwnerAuthority;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunOutput;
-use codex_hepta_infer_core::durable_control::native::NativeRunRecord;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunStatus;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
@@ -73,6 +69,11 @@ use codex_utils_absolute_path::AbsolutePathBuf;
 
 #[path = "native_run_control.rs"]
 mod control;
+#[path = "native_recovery.rs"]
+mod recovery;
+#[path = "native_message_output.rs"]
+mod messages;
+use messages::NativeMessageOutput;
 pub use control::NativeAdmission;
 pub use control::NativeIntelligenceRunBinding;
 use tokio::time::Instant;
@@ -140,7 +141,7 @@ pub struct NativeWorkerConfig {
     pub timeout: Duration,
 }
 
-/// A real provider client. Each new request uses a fresh ephemeral thread
+/// A real provider client. Each new request uses a fresh retained thread
 /// behind the exact Agent identity. The control journal owns dispatch identity,
 /// local slot admission and settlement; duplicate requests never start a turn.
 pub struct AppServerModelDriver {
@@ -176,240 +177,6 @@ impl AppServerModelDriver {
     pub fn with_turn_start_authorizer(mut self, authorizer: Arc<dyn TurnStartAuthorizer>) -> Self {
         self.turn_start_authorizer = Some(authorizer);
         self
-    }
-
-    /// Reconcile a previously prepared/dispatched operation without issuing a
-    /// new turn/start. Only an opaque thread/read response from the current
-    /// exact-generation Agent/App Server may settle the durable record.
-    pub(super) async fn reconcile_existing(
-        &self,
-        record: &NativeRunRecord,
-        expected_prompt: &str,
-    ) -> Result<Option<NativeRunOutput>> {
-        if record.request.principal_id != self.config.agent_id.to_string()
-            || record.request.worker_generation != self.config.generation
-            || record.request.model != self.config.model
-        {
-            return Err("durable native request no longer matches configured Agent/model".into());
-        }
-        let Some(dispatch) = record.dispatch.as_ref() else {
-            return Ok(None);
-        };
-        let (
-            Some(payload_digest),
-            Some(expected_request_digest),
-            Some(app_server_version),
-            Some(protocol_id),
-            Some(source_admission_digest),
-            Some(codex_home_digest),
-            Some(original_connection_id),
-            Some(session_id),
-            Some(deadline_ms),
-            Some(_authority_witness),
-        ) = (
-            dispatch.codex_payload_digest.as_deref(),
-            dispatch.codex_request_digest.as_deref(),
-            dispatch.app_server_version.as_deref(),
-            dispatch.protocol_id.as_deref(),
-            dispatch.codex_source_admission_digest.as_deref(),
-            dispatch.codex_home_digest.as_deref(),
-            dispatch.codex_connection_id,
-            dispatch.codex_session_id.as_deref(),
-            dispatch.codex_deadline_ms,
-            dispatch.codex_authority_witness_sha256.as_deref(),
-        )
-        else {
-            // Historical dispatches predate exact runtime.codex recovery binding.
-            return Ok(None);
-        };
-        if protocol_id != APP_SERVER_V2_PROTOCOL_ID {
-            return Err("durable runtime.codex protocol is not App Server v2".into());
-        }
-
-        let owner = AgentdClient::new(
-            self.config.agentd_socket.clone(),
-            self.config.agent_id.clone(),
-            self.config.generation,
-        )?;
-        let health = owner.health().await?;
-        if !health.ready || health.fenced {
-            return Ok(None);
-        }
-        let ingress = owner.session_ingress().await?;
-        let socket_path = AbsolutePathBuf::from_absolute_path(ingress.socket_path)?;
-        let client = match timeout(
-            RPC_TIMEOUT,
-            RemoteAppServerClient::connect_with_bounded_events(
-                RemoteAppServerConnectArgs {
-                    endpoint: RemoteAppServerEndpoint::UnixSocket { socket_path },
-                    client_name: "hepta-infer-worker-reconciler".to_string(),
-                    client_version: env!("CARGO_PKG_VERSION").to_string(),
-                    experimental_api: true,
-                    mcp_server_openai_form_elicitation: false,
-                    opt_out_notification_methods: Vec::new(),
-                    channel_capacity: 32,
-                },
-                /*event_channel_capacity*/ 64,
-            ),
-        )
-        .await
-        {
-            Ok(Ok(client)) => client,
-            _ => return Ok(None),
-        };
-        let observed_home = match client.codex_home() {
-            Some(home) => home.to_string(),
-            None => {
-                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
-                return Ok(None);
-            }
-        };
-        let expected_home_digest: Digest32 = codex_home_digest.parse()?;
-        if Digest32::of_bytes(observed_home.as_bytes()) != expected_home_digest
-            || Some(observed_home.as_str()) != health.home_root.to_str()
-            || client.server_version() != Some(app_server_version)
-        {
-            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
-            return Err(
-                "reconciliation App Server identity does not match durable dispatch".into(),
-            );
-        }
-
-        let expected_input = vec![UserInput::Text {
-            text: expected_prompt.to_string(),
-            text_elements: Vec::new(),
-        }];
-        let payload_digest: Digest32 = payload_digest.parse()?;
-        let source_admission_digest: Digest32 = source_admission_digest.parse()?;
-        if source_admission_digest.to_string() != record.request.payload_digest {
-            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
-            return Err("durable runtime.codex source admission binding drifted".into());
-        }
-        let intent = CodexOperationIntent {
-            operation_id: StableId::new(format!(
-                "native:{}",
-                Digest32::of_bytes(record.request.request_id.as_bytes())
-            ))?,
-            thread_id: StableId::new(dispatch.thread_id.clone())?,
-            method_id: StableId::new(TURN_START_METHOD_ID)?,
-            payload_digest,
-            lease_payload_digest: payload_digest,
-            deadline_ms,
-            app_server_binding: Some(AppServerRequestBinding {
-                source_admission_digest,
-                agent_generation: Generation::new(record.request.worker_generation)?,
-                session_id: StableId::new(session_id.to_string())?,
-                client_user_message_id: StableId::new(record.request.request_id.clone())?,
-                user_input_digest: Digest32::of_bytes(&serde_json::to_vec(&expected_input)?),
-                protocol_id: StableId::new(protocol_id.to_string())?,
-                app_server_version: app_server_version.to_string(),
-                codex_home_digest: expected_home_digest,
-                connection_id: original_connection_id,
-            }),
-        };
-        if codex_request_digest(&intent).to_string() != expected_request_digest {
-            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
-            return Err("durable runtime.codex request digest mismatch during recovery".into());
-        }
-
-        let observed = match timeout(
-            RPC_TIMEOUT,
-            client.request_typed_observed_response::<ThreadReadResponse>(
-                ClientRequest::ThreadRead {
-                    request_id: RequestId::Integer(20),
-                    params: ThreadReadParams {
-                        thread_id: dispatch.thread_id.clone(),
-                        include_turns: true,
-                    },
-                },
-            ),
-        )
-        .await
-        {
-            Ok(Ok(observed)) => observed,
-            _ => {
-                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
-                return Ok(None);
-            }
-        };
-        if observed.response().thread.model_provider != dispatch.model_provider {
-            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
-            return Err("reconciled model provider does not match durable dispatch".into());
-        }
-        let receipt = adapt_observed_thread_read_reconciliation(
-            &intent,
-            &record.request.request_id,
-            &expected_input,
-            &observed,
-        )?;
-        let Some(receipt) = receipt else {
-            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
-            return Ok(None);
-        };
-        let turn_id = receipt
-            .turn_id
-            .as_ref()
-            .ok_or("reconciled terminal receipt omitted turn id")?
-            .as_str();
-        let turn = observed
-            .response()
-            .thread
-            .turns
-            .iter()
-            .find(|turn| turn.id == turn_id)
-            .ok_or("reconciled terminal receipt turn disappeared")?;
-
-        let mut output_text = String::new();
-        for item in &turn.items {
-            if let ThreadItem::AgentMessage { text, .. } = item {
-                if text.len() > MAX_OUTPUT_BYTES.saturating_sub(output_text.len()) {
-                    let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
-                    return Err("reconciled output byte limit exceeded".into());
-                }
-                output_text.push_str(text);
-            }
-        }
-        let (status, boundary_status) = match receipt.status {
-            AdapterStatus::Succeeded => {
-                (NativeRunStatus::Completed, NativeBoundaryStatus::Succeeded)
-            }
-            AdapterStatus::Failed => (NativeRunStatus::Failed, NativeBoundaryStatus::Failed),
-            AdapterStatus::Interrupted => (
-                NativeRunStatus::Interrupted,
-                NativeBoundaryStatus::Interrupted,
-            ),
-            _ => {
-                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
-                return Err("thread/read reconciliation produced nonterminal status".into());
-            }
-        };
-        let mut output = NativeRunOutput {
-            thread_id: dispatch.thread_id.clone(),
-            turn_id: turn.id.clone(),
-            model: record.request.model.clone(),
-            model_provider: dispatch.model_provider.clone(),
-            status,
-            boundary_status,
-            output: output_text,
-            observed_output_tokens: None,
-            terminal_observed: true,
-            owner_authority: NativeOwnerAuthority::Unverified,
-            stop_reason: turn
-                .error
-                .as_ref()
-                .map(|error| error.message.chars().take(1024).collect()),
-            codex_terminal_correlation_digest: Some(
-                receipt
-                    .correlation_digest
-                    .ok_or("reconciled terminal receipt omitted correlation digest")?
-                    .to_string(),
-            ),
-        };
-        let _ =
-            verify_owner_health(&mut output, owner.health(), Instant::now() + RPC_TIMEOUT).await;
-        downgrade_for_owner_loss(&mut output);
-        let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
-        Ok(Some(output))
     }
 
     /// Execute once. Transport loss after turn/start remains indeterminate and
@@ -495,7 +262,10 @@ impl AppServerModelDriver {
                     cwd: health.workspace.to_str().map(str::to_string),
                     approval_policy: Some(AskForApproval::Never),
                     sandbox: Some(SandboxMode::ReadOnly),
-                    ephemeral: Some(true),
+                    // Retain the exact turn for reconcile-only recovery after worker
+                    // or App Server loss; the durable journal alone cannot
+                    // recover an ephemeral thread.
+                    ephemeral: Some(false),
                     environments: Some(Vec::new()),
                     ..Default::default()
                 },
@@ -507,7 +277,7 @@ impl AppServerModelDriver {
             return Err("provider substituted the requested model".into());
         }
         // Recheck the actual generation after connecting and creating the
-        // ephemeral thread. Only now acquire the retrieval result that will be
+        // retained thread. Only now acquire the retrieval result that will be
         // attached to turn/start. Agentd performs exact owner-cut, candidate
         // and retrieval-context revalidation before returning this value, so
         // preparatory provider I/O cannot leave an older context parked across
@@ -900,19 +670,28 @@ impl AppServerModelDriver {
         }
         let deadline =
             Instant::now() + observation_budget_from(unix_time_ms()?, binding.intent.deadline_ms);
-        let result = self
-            .observe(
-                &mut client,
-                &mut output,
-                deadline,
-                cancellation,
-                Some(&owner),
-                &binding,
-            )
-            .await;
+        let mut messages = NativeMessageOutput::default();
+        let result = Self::observe(
+            &mut client,
+            &mut output,
+            &mut messages,
+            deadline,
+            cancellation,
+            Some(&owner),
+            &binding,
+        )
+        .await;
         if let Err(reason) = result {
             output.boundary_status = classify_observation_failure(&reason);
             output.stop_reason = Some(reason.clone());
+            // Preserve the classified boundary, usage and owner loss before
+            // any cleanup await, including the Agentd cancellation RPC.
+            let observation_recorded = control
+                .settle_native(request_id, output.clone())
+                .map(|_| ());
+            let cancel_recorded = control.cancel_native(request_id);
+            #[cfg(all(test, unix))]
+            failure_tests::pause_after_observation_journal(request_id).await?;
             if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision) {
                 if let Ok(cancelled) = owner
                     .run_cancel(
@@ -925,32 +704,21 @@ impl AppServerModelDriver {
                     intelligence_revision = Some(cancelled.receipt.revision);
                 }
             }
-            // Persist cancellation intent, but still interrupt if that write
-            // fails. A failed journal write fences later admission/settlement.
-            // Commit observed authority loss before waiting for interruption:
-            // a process crash must not erase it from a later settlement.
-            let loss_recorded =
-                if matches!(output.owner_authority, NativeOwnerAuthority::Lost { .. }) {
-                    control
-                        .settle_native(request_id, output.clone())
-                        .map(|_| ())
-                } else {
-                    Ok(())
-                };
-            let cancel_recorded = control.cancel_native(request_id);
+            // Attempt physical cleanup even if a journal append failed. The
+            // retained error still fences settlement and later admission.
             interrupt(&mut client, &output).await;
             let grace = CancellationToken::new();
-            let _ = self
-                .observe(
-                    &mut client,
-                    &mut output,
-                    Instant::now() + INTERRUPT_GRACE,
-                    &grace,
-                    /*owner*/ None,
-                    &binding,
-                )
-                .await;
-            loss_recorded?;
+            let _ = Self::observe(
+                &mut client,
+                &mut output,
+                &mut messages,
+                Instant::now() + INTERRUPT_GRACE,
+                &grace,
+                /*owner*/ None,
+                &binding,
+            )
+            .await;
+            observation_recorded?;
             cancel_recorded?;
             if !output.terminal_observed
                 && let (Some(binding), Some(revision)) = (intelligence, intelligence_revision)
@@ -1005,9 +773,9 @@ impl AppServerModelDriver {
     }
 
     async fn observe(
-        &self,
         client: &mut RemoteAppServerClient,
         output: &mut NativeRunOutput,
+        messages: &mut NativeMessageOutput,
         deadline: Instant,
         cancellation: &CancellationToken,
         owner: Option<&AgentdClient>,
@@ -1029,7 +797,7 @@ impl AppServerModelDriver {
             };
             match event.event() {
                 AppServerEvent::ServerNotification(_) => {
-                    if observe_event(output, &event, binding)? {
+                    if observe_event(output, messages, &event, binding)? {
                         return Ok(());
                     }
                 }
@@ -1419,6 +1187,7 @@ async fn interrupt(client: &mut RemoteAppServerClient, output: &NativeRunOutput)
 
 fn observe_event(
     output: &mut NativeRunOutput,
+    messages: &mut NativeMessageOutput,
     observed: &RemoteAppServerObservedEvent,
     binding: &CodexTurnBinding,
 ) -> std::result::Result<bool, String> {
@@ -1429,10 +1198,21 @@ fn observe_event(
         ServerNotification::AgentMessageDelta(delta)
             if delta.thread_id == output.thread_id && delta.turn_id == output.turn_id =>
         {
-            if delta.delta.len() > MAX_OUTPUT_BYTES.saturating_sub(output.output.len()) {
-                return Err("output byte limit exceeded".to_string());
+            messages.append(&delta.item_id, &delta.delta, &mut output.output)?;
+        }
+        ServerNotification::ItemStarted(started)
+            if started.thread_id == output.thread_id && started.turn_id == output.turn_id =>
+        {
+            if let ThreadItem::AgentMessage { id, .. } = &started.item {
+                messages.start(id)?;
             }
-            output.output.push_str(&delta.delta);
+        }
+        ServerNotification::ItemCompleted(completed)
+            if completed.thread_id == output.thread_id && completed.turn_id == output.turn_id =>
+        {
+            if let ThreadItem::AgentMessage { id, text, .. } = &completed.item {
+                messages.complete(id, text, &mut output.output)?;
+            }
         }
         ServerNotification::ThreadTokenUsageUpdated(usage)
             if usage.thread_id == output.thread_id && usage.turn_id == output.turn_id =>
@@ -1446,6 +1226,8 @@ fn observe_event(
                 return Err("provider cumulative usage regressed".to_string());
             }
             output.observed_output_tokens = Some(observed_tokens);
+            #[cfg(all(test, unix))]
+            failure_tests::notify_observed_usage(observed_tokens)?;
         }
         ServerNotification::TurnCompleted(completed)
             if completed.thread_id == output.thread_id && completed.turn.id == output.turn_id =>
@@ -1453,6 +1235,13 @@ fn observe_event(
             let receipt = adapt_observed_event(&binding.intent, &binding.turn_id, observed)
                 .map_err(|error| format!("invalid App Server terminal witness: {error}"))?
                 .ok_or_else(|| "turn/completed did not produce terminal receipt".to_string())?;
+            // A terminal payload may contain only the last message as a summary.
+            // Merge by item identity; never replace the earlier observed messages.
+            for item in &completed.turn.items {
+                if let ThreadItem::AgentMessage { id, text, .. } = item {
+                    messages.complete(id, text, &mut output.output)?;
+                }
+            }
             let physical_boundary = match receipt.status {
                 AdapterStatus::Succeeded => {
                     output.status = NativeRunStatus::Completed;
@@ -1492,3 +1281,11 @@ fn observe_event(
 #[cfg(test)]
 #[path = "native_app_server_tests.rs"]
 mod tests;
+
+#[cfg(all(test, unix))]
+#[path = "native_failure_tests.rs"]
+mod failure_tests;
+
+#[cfg(all(test, unix))]
+#[path = "native_test_process.rs"]
+mod test_process;

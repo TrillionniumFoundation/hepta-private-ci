@@ -23,7 +23,7 @@ jobs:
     # signal without putting PR latency back on the critical path. When
     # Code-mode unit tests run on every Bazel target. When authenticated RBE
     # is available, the Windows-cross shards exercise the source-built V8 path.
-    timeout-minutes: 60
+    timeout-minutes: 120
     strategy:
       fail-fast: false
       matrix:
@@ -102,6 +102,21 @@ jobs:
             --test_verbose_timeout_warnings
             --build_metadata=COMMIT_SHA=${GITHUB_SHA}
           )
+          if [[ "${RUNNER_OS}" == "Linux" ]]; then
+            # These fixtures use the OS OpenSSH signer. The pinned RBE image
+            # does not expose it; execute this test on the
+            # runner with Bazel's sandbox and retain remote compilation.
+            if [[ ! -x /usr/bin/ssh-keygen ]]; then
+              sudo apt-get update
+              sudo apt-get install -y --no-install-recommends openssh-client
+            fi
+            test -x /usr/bin/ssh-keygen
+            dpkg-query -W -f='${Package} ${Version}\n' openssh-client
+            sha256sum /usr/bin/ssh-keygen
+            bazel_test_args+=(
+              '--strategy_regexp=^Testing //codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests( |$)=sandboxed'
+            )
+          fi
           ./.github/scripts/run-bazel-ci.sh \
             "${bazel_wrapper_args[@]}" \
             -- \
@@ -136,7 +151,7 @@ jobs:
     # Split the native Windows Bazel test leg across separate Windows hosts.
     # Build actions and host-loaded proc macros use the same MSVC ABI as the
     # test binaries, avoiding cross-ABI native archive linkage.
-    timeout-minutes: 60
+    timeout-minutes: 120
     strategy:
       fail-fast: false
       matrix:
@@ -177,6 +192,7 @@ jobs:
         run: python .github/scripts/llvm_header_parser_smoke.py --bazel-msvc
 
       - name: bazel test shard
+        id: original_windows_shard
         env:
           BAZEL_TEST_SHARD: ${{ matrix.shard }}
           BAZEL_TEST_SHARD_COUNT: 4
@@ -220,6 +236,17 @@ jobs:
             --build_metadata=TAG_windows_test_shard=${BAZEL_TEST_SHARD}
           )
 
+          if [[ "${BAZEL_TEST_SHARD}" == "4" ]]; then
+            # Evidence only: preserve this invocation before the diagnostic
+            # list/run overwrites this target's ordinary Bazel test logs.
+            original_bep="$(cygpath -m "${RUNNER_TEMP}")/openssh-original-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-4.jsonl"
+            test ! -e "${original_bep}"
+            bazel_test_args+=(
+              "--build_event_json_file=${original_bep}"
+              --nobuild_event_json_file_path_conversion
+            )
+          fi
+
           ./.github/scripts/run-bazel-ci.sh \
             --print-failed-action-summary \
             --print-failed-test-logs \
@@ -229,6 +256,26 @@ jobs:
             "${bazel_test_args[@]}" \
             -- \
             "${selected_targets[@]}"
+
+      - name: Collect the independent OpenSSH diagnostic
+        id: openssh_diagnostic
+        if: always() && !cancelled() && matrix.shard == 4 && (steps.original_windows_shard.outcome == 'success' || steps.original_windows_shard.outcome == 'failure')
+        env:
+          BAZEL_TEST_SHARD: ${{ matrix.shard }}
+          ORIGINAL_WINDOWS_SHARD_OUTCOME: ${{ steps.original_windows_shard.outcome }}
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          python .github/scripts/run_openssh_diagnostic_ci.py \
+            --bash "$(cygpath -w "$(command -v bash)")"
+
+      - name: Upload the independent OpenSSH diagnostic
+        if: always() && !cancelled() && matrix.shard == 4 && (steps.openssh_diagnostic.outcome == 'success' || steps.openssh_diagnostic.outcome == 'failure')
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: windows-openssh-diagnostic-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/openssh-diagnostic-${{ github.run_id }}-${{ github.run_attempt }}
+          if-no-files-found: error
 
       - name: Upload Bazel execution logs
         if: always() && !cancelled()
@@ -341,7 +388,7 @@ jobs:
         uses: ./.github/actions/check-clean-worktree
 
   clippy:
-    timeout-minutes: 60
+    timeout-minutes: 120
     strategy:
       fail-fast: false
       matrix:
@@ -432,7 +479,7 @@ jobs:
         uses: ./.github/actions/check-clean-worktree
 
   verify-release-build:
-    timeout-minutes: 60
+    timeout-minutes: 120
     strategy:
       fail-fast: false
       matrix:

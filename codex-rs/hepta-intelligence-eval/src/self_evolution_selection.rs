@@ -30,11 +30,14 @@ use crate::IndependentEvaluationBundleV1;
 use crate::IndependentEvaluationDispositionV1;
 use crate::LongitudinalTimeEvidenceV1;
 use crate::MetricRoleContractV2;
+use crate::ProductEvaluationError;
+use crate::ProductQualificationReceiptV1;
+use crate::ProductTimingEvidenceV1;
 use crate::SignedEvaluationError;
 use crate::SignedEvaluationEvidenceV1;
-use crate::decide_with_signed_longitudinal_evidence_v3;
 use crate::future_window_signing_payload_v1;
 use crate::longitudinal_evaluation_signing_payload_v3;
+use crate::revalidate_product_qualification_v1;
 
 const MAX_DATASET_RECORDS: u32 = 1_000_000;
 
@@ -74,6 +77,8 @@ pub struct SelfEvolutionSelectionReceiptV1 {
     pub evaluation_evidence_digest: Digest32,
     pub evaluation_authentication_digest: Digest32,
     pub evaluation_trust_digest: Digest32,
+    pub qualification_evidence_digest: Digest32,
+    pub qualification_publication_digest: Digest32,
     pub frozen_plan_digest: Digest32,
     pub minimum_dataset_records: u32,
     pub minimum_future_window_micros: u64,
@@ -168,6 +173,7 @@ impl VerifiedSelfEvolutionRollbackV1 {
 pub fn prepare_self_evolution_selection_v1(
     policy: &SelfEvolutionSelectionPolicyV1,
     request: SelfEvolutionSelectionRequestV1,
+    qualification: &ProductQualificationReceiptV1,
     evaluation_bundle: IndependentEvaluationBundleV1,
     metric_roles: Vec<MetricRoleContractV2>,
     evaluation_evidence: &SignedEvaluationEvidenceV1,
@@ -193,15 +199,28 @@ pub fn prepare_self_evolution_selection_v1(
         return Err(SelfEvolutionSelectionError::BindingMismatch);
     }
 
-    let evaluation = decide_with_signed_longitudinal_evidence_v3(
+    let evaluation = revalidate_product_qualification_v1(
+        qualification,
         evaluation_bundle.clone(),
         metric_roles.clone(),
         evaluation_evidence,
-        longitudinal_time,
-        policy.minimum_future_window_micros,
+        ProductTimingEvidenceV1::SystemLongitudinal {
+            timing: longitudinal_time,
+            minimum_window_micros: policy.minimum_future_window_micros,
+        },
         verifier,
         now,
-    )?;
+    )
+    .map_err(|error| match error {
+        ProductEvaluationError::Signed(error) => SelfEvolutionSelectionError::Evaluation(error),
+        ProductEvaluationError::Binding(_)
+        | ProductEvaluationError::Integrity(_)
+        | ProductEvaluationError::Frozen(_)
+        | ProductEvaluationError::Temporal(_)
+        | ProductEvaluationError::Holdout(_)
+        | ProductEvaluationError::Provider(_)
+        | ProductEvaluationError::Sink(_) => SelfEvolutionSelectionError::QualificationRejected,
+    })?;
     if evaluation.decision.disposition
         != IndependentEvaluationDispositionV1::EligibleForIndependentSelection
     {
@@ -262,6 +281,8 @@ pub fn prepare_self_evolution_selection_v1(
         evaluation_evidence_digest: evaluation.decision.evidence_digest,
         evaluation_authentication_digest: evaluation.authentication_digest,
         evaluation_trust_digest: evaluation.trust_digest,
+        qualification_evidence_digest: qualification.evidence_digest,
+        qualification_publication_digest: qualification.publication_digest,
         frozen_plan_digest: evaluation_bundle.frozen_plan.plan_digest,
         minimum_dataset_records: policy.minimum_dataset_records,
         minimum_future_window_micros: policy.minimum_future_window_micros,
@@ -275,11 +296,11 @@ pub fn prepare_self_evolution_selection_v1(
     })
 }
 
-pub fn selection_signing_payload_v1(
+pub fn selection_signing_payload_v2(
     receipt: &SelfEvolutionSelectionReceiptV1,
 ) -> Result<Vec<u8>, SelfEvolutionSelectionError> {
     validate_receipt(receipt)?;
-    let mut bytes = b"hepta.intelligence-eval.self-evolution-selection.v1\0".to_vec();
+    let mut bytes = b"hepta.intelligence-eval.self-evolution-selection.v2\0".to_vec();
     for id in [
         &receipt.selection_id,
         &receipt.predecessor_id,
@@ -300,6 +321,8 @@ pub fn selection_signing_payload_v1(
         receipt.evaluation_evidence_digest,
         receipt.evaluation_authentication_digest,
         receipt.evaluation_trust_digest,
+        receipt.qualification_evidence_digest,
+        receipt.qualification_publication_digest,
         receipt.frozen_plan_digest,
     ] {
         require_digest(digest)?;
@@ -319,7 +342,7 @@ pub fn admit_self_evolution_selection_v1(
     if verifier.trust_digest() != prepared.receipt.evaluation_trust_digest {
         return Err(SelfEvolutionSelectionError::BindingMismatch);
     }
-    let payload = selection_signing_payload_v1(&prepared.receipt)?;
+    let payload = selection_signing_payload_v2(&prepared.receipt)?;
     let selector = verifier.verify(
         LearningEvidenceRoleV1::Selector,
         selector_evidence,
@@ -331,7 +354,7 @@ pub fn admit_self_evolution_selection_v1(
     }
     let selector_evidence_digest = Digest32::of_bytes(&selector_evidence.signing_bytes());
     let mut digest_bytes =
-        b"hepta.intelligence-eval.self-evolution-selection-receipt.v1\0".to_vec();
+        b"hepta.intelligence-eval.self-evolution-selection-receipt.v2\0".to_vec();
     digest_bytes.extend_from_slice(&payload);
     digest_bytes.extend_from_slice(selector_evidence_digest.as_array());
     digest_bytes.extend_from_slice(&selector_evidence.signature);
@@ -431,6 +454,8 @@ fn validate_receipt(
         || receipt.minimum_dataset_records == 0
         || receipt.minimum_dataset_records > MAX_DATASET_RECORDS
         || receipt.minimum_future_window_micros == 0
+        || receipt.qualification_evidence_digest.is_zero()
+        || receipt.qualification_publication_digest.is_zero()
     {
         return Err(SelfEvolutionSelectionError::BindingMismatch);
     }
@@ -465,6 +490,7 @@ pub enum SelfEvolutionSelectionError {
     BindingMismatch,
     GenerationMismatch,
     EvaluationRejected,
+    QualificationRejected,
     EmptyDigest,
     Arithmetic,
 }
@@ -528,6 +554,8 @@ mod tests {
             evaluation_evidence_digest: digest("evaluation"),
             evaluation_authentication_digest: digest("authentication"),
             evaluation_trust_digest: digest("trust"),
+            qualification_evidence_digest: digest("qualification"),
+            qualification_publication_digest: digest("publication"),
             frozen_plan_digest: digest("plan"),
             minimum_dataset_records: 10,
             minimum_future_window_micros: 1_000,
@@ -537,11 +565,11 @@ mod tests {
 
     #[test]
     fn signing_payload_binds_predecessor_candidate_and_longitudinal_policy() {
-        let first = selection_signing_payload_v1(&receipt()).expect("payload");
+        let first = selection_signing_payload_v2(&receipt()).expect("payload");
         let mut changed = receipt();
         changed.predecessor_artifact_digest = digest("other-baseline");
         changed.no_change_baseline_digest = changed.predecessor_artifact_digest;
-        let second = selection_signing_payload_v1(&changed).expect("payload");
+        let second = selection_signing_payload_v2(&changed).expect("payload");
         assert_ne!(first, second);
     }
 
@@ -693,7 +721,7 @@ mod tests {
             observer,
         };
         let selector_payload =
-            selection_signing_payload_v1(prepared.receipt()).expect("selection payload");
+            selection_signing_payload_v2(prepared.receipt()).expect("selection payload");
         let selector_evidence = signed(
             &verifier,
             &keys[3],
@@ -733,14 +761,18 @@ mod tests {
         let mut changed = receipt();
         changed.candidate_generation = generation(9);
         assert_eq!(
-            selection_signing_payload_v1(&changed),
+            selection_signing_payload_v2(&changed),
             Err(SelfEvolutionSelectionError::BindingMismatch)
         );
         let mut changed = receipt();
         changed.no_change_baseline_id = id("other-baseline");
         assert_eq!(
-            selection_signing_payload_v1(&changed),
+            selection_signing_payload_v2(&changed),
             Err(SelfEvolutionSelectionError::BindingMismatch)
         );
     }
 }
+
+#[cfg(test)]
+#[path = "self_evolution_ingress_tests.rs"]
+mod ingress_tests;

@@ -415,9 +415,14 @@ def _set_discriminator_titles(props: dict[str, Any], owner: str) -> None:
         prop = props.get(key)
         if not isinstance(prop, dict):
             continue
-        if _string_literal(prop) is None or "title" in prop:
+        literal = _string_literal(prop)
+        if literal is None:
             continue
-        prop["title"] = f"{owner}{_to_pascal_case(key)}"
+        # Const keeps discriminator fields as Literal values in current codegen.
+        if "const" not in prop:
+            prop["const"] = literal
+            prop.pop("enum", None)
+        prop.setdefault("title", f"{owner}{_to_pascal_case(key)}")
 
 
 def _annotate_variant_list(variants: list[Any], base: str | None) -> None:
@@ -550,6 +555,11 @@ def _normalized_schema_bundle_text(schema_dir: Path) -> str:
     """Normalize the schema bundle before feeding it to the Python type generator."""
     schema = json.loads(schema_bundle_path(schema_dir).read_text())
     _make_chatgpt_account_email_nullable(schema)
+    return _normalize_schema_titles_and_enums(schema)
+
+
+def _normalize_schema_titles_and_enums(schema: dict[str, Any]) -> str:
+    """Apply only the common enum/title normalization, without stable-only compatibility."""
     definitions = schema.get("definitions", {})
     if isinstance(definitions, dict):
         for definition in definitions.values():
@@ -561,17 +571,16 @@ def _normalized_schema_bundle_text(schema_dir: Path) -> str:
     return json.dumps(schema, indent=2, sort_keys=True) + "\n"
 
 
-def generate_v2_all(schema_dir: Path) -> None:
-    """Regenerate the Pydantic v2 protocol model module from runtime schemas."""
-    out_path = sdk_root() / "src" / "openai_codex" / "generated" / "v2_all.py"
-    out_dir = out_path.parent
-    old_package_dir = out_dir / "v2_all"
-    if old_package_dir.exists():
-        shutil.rmtree(old_package_dir)
-    out_dir.mkdir(parents=True, exist_ok=True)
+def generate_pydantic_module(
+    schema_dir: Path,
+    out_path: Path,
+    *,
+    normalize: Callable[[Path], str] = _normalized_schema_bundle_text,
+) -> None:
+    """Use the shared schema normalization and original Pydantic generation options."""
     with tempfile.TemporaryDirectory() as td:
         normalized_bundle = Path(td) / schema_bundle_path(schema_dir).name
-        normalized_bundle.write_text(_normalized_schema_bundle_text(schema_dir))
+        normalized_bundle.write_text(normalize(schema_dir))
         run_python_module(
             "datamodel_code_generator",
             [
@@ -588,6 +597,8 @@ def generate_v2_all(schema_dir: Path) -> None:
                 "--use-standard-collections",
                 "--enum-field-as-literal",
                 "one",
+                # Preserve the Enum API and Python 3.10 support instead of StrEnum.
+                "--no-use-specialized-enum",
                 "--field-constraints",
                 "--use-default-kwarg",
                 "--snake-case-field",
@@ -601,10 +612,22 @@ def generate_v2_all(schema_dir: Path) -> None:
                 # Keep the generated file formatted deterministically so the
                 # checked-in artifact only changes when the schema does.
                 "--formatters",
+                "ruff-check",
                 "ruff-format",
             ],
             cwd=sdk_root(),
         )
+
+
+def generate_v2_all(schema_dir: Path) -> None:
+    """Regenerate the Pydantic v2 protocol model module from runtime schemas."""
+    out_path = sdk_root() / "src" / "openai_codex" / "generated" / "v2_all.py"
+    out_dir = out_path.parent
+    old_package_dir = out_dir / "v2_all"
+    if old_package_dir.exists():
+        shutil.rmtree(old_package_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    generate_pydantic_module(schema_dir, out_path)
     _require_nullable_chatgpt_account_email(out_path)
     _preserve_reasoning_effort_enum(out_path)
     _preserve_thread_source_enum(out_path)
@@ -623,6 +646,8 @@ def _require_nullable_chatgpt_account_email(out_path: Path) -> None:
         class_end = len(source)
 
     class_source = source[class_start:class_end]
+    if class_source.count("    email: str | None\n") == 1:
+        return
     nullable_with_default = "    email: str | None = None"
     if class_source.count(nullable_with_default) != 1:
         raise RuntimeError(
@@ -1370,6 +1395,15 @@ def build_parser() -> argparse.ArgumentParser:
 
     subparsers.add_parser("generate-types", help="Regenerate Python protocol-derived types")
 
+    process_parser = subparsers.add_parser(
+        "generate-process-observation",
+        help="Generate only the process overlay from original source-bound schema CI evidence",
+    )
+    process_parser.add_argument("evidence_dir", type=Path)
+    process_parser.add_argument("--source-commit", required=True)
+    process_parser.add_argument("--source-tree", required=True)
+    process_parser.add_argument("--archive-sha256", required=True)
+
     stage_sdk_parser = subparsers.add_parser(
         "stage-sdk",
         help="Stage a releasable SDK package while preserving its reviewed runtime pin",
@@ -1437,6 +1471,12 @@ def default_cli_ops() -> CliOps:
 def run_command(args: argparse.Namespace, ops: CliOps) -> None:
     if args.command == "generate-types":
         ops.generate_types()
+    elif args.command == "generate-process-observation":
+        from scripts._process_observation.schema import generate_from_evidence
+
+        generate_from_evidence(
+            args.evidence_dir, args.source_commit, args.source_tree, args.archive_sha256
+        )
     elif args.command == "stage-sdk":
         ops.generate_types()
         ops.stage_python_sdk_package(

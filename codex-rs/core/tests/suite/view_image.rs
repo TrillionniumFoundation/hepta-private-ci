@@ -231,7 +231,7 @@ async fn assert_user_turn_local_image_resizes_to(
                 model_info.use_responses_lite = true;
             }),
     };
-    let mut builder = builder.with_config(move |config| {
+    let mut builder = builder.with_internal_metadata_for_mock().with_config(move |config| {
         if image_budget_policy != ImageBudgetPolicy::DetailBased {
             let _ = config.features.enable(Feature::UnifiedImageBudget);
         }

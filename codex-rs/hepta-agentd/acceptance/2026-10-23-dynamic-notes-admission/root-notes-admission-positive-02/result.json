@@ -1,0 +1,104 @@
+{
+  "schema": "hepta.root-notes-admission-qualification.v1",
+  "source_head": "b6a22e1552a2b530a2b5eeb41d2f0710ae82c0cd",
+  "source_tree": "9bcefdd2f81f2a35a8239e86a197f831f548b9e5",
+  "target": "/data/hepta-root-service-196-target.e3i3hcbg",
+  "commands": [
+    {
+      "stage": "manifest-metadata",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "metadata",
+        "--no-deps",
+        "--format-version=1",
+        "--offline",
+        "--locked"
+      ],
+      "exit_code": 0,
+      "seconds": 0.215
+    },
+    {
+      "stage": "compile-original-test-binaries",
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "nextest",
+        "list",
+        "--cargo-profile",
+        "dev",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "--cargo-metadata",
+        "/data/asterinas-audit-build.8tdrjboi/root-notes-admission-positive-02/cargo-metadata.json",
+        "--list-type",
+        "binaries-only",
+        "--message-format",
+        "json"
+      ],
+      "exit_code": 0,
+      "seconds": 78.942
+    },
+    {
+      "stage": "original-owner-tests",
+      "argv": [
+        "/home/qian-qi/.cargo/bin/just",
+        "test",
+        "--cargo-metadata",
+        "/data/asterinas-audit-build.8tdrjboi/root-notes-admission-positive-02/cargo-metadata.json",
+        "--binaries-metadata",
+        "/data/asterinas-audit-build.8tdrjboi/root-notes-admission-positive-02/binaries-metadata.json",
+        "-E",
+        "test(deployment_) | test(authority_host_service) | test(authority_host_consumer_frontier) | test(authority_host_wire) | test(root_writer_proof) | test(production_composition::objective_sender_tests)",
+        "--test-threads",
+        "2"
+      ],
+      "exit_code": 0,
+      "seconds": 16.059
+    },
+    {
+      "stage": "actual-root-notes-test",
+      "argv": [
+        "sudo",
+        "-n",
+        "/usr/bin/env",
+        "PATH=/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin:/home/qian-qi/.cargo/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+        "RUSTUP_TOOLCHAIN=1.96.0",
+        "RUSTC=/home/qian-qi/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc",
+        "CARGO_TARGET_DIR=/data/hepta-root-service-196-target.e3i3hcbg",
+        "TMPDIR=/data/hn.66pfbo6m",
+        "CARGO_NET_OFFLINE=true",
+        "PYTHONDONTWRITEBYTECODE=1",
+        "CARGO_HOME=/home/qian-qi/.cargo",
+        "HEPTA_HOST_AUTHORITY_QUALIFICATION_STATE_PARENT=/var/lib/hepta-authority-os3-ssd-20261023",
+        "/usr/bin/python3",
+        "-I",
+        "-B",
+        "-c",
+        "import os,sys; os.umask(0o077); os.execv(sys.argv[1],sys.argv[1:])",
+        "/home/qian-qi/.cargo/bin/just",
+        "test",
+        "--cargo-metadata",
+        "/data/asterinas-audit-build.8tdrjboi/root-notes-admission-positive-02/cargo-metadata.json",
+        "--binaries-metadata",
+        "/data/asterinas-audit-build.8tdrjboi/root-notes-admission-positive-02/binaries-metadata.json",
+        "--run-ignored",
+        "only",
+        "-E",
+        "test(deployment_notes_actual_root_clock_registry_and_canonical_issuer_issue_distinct_payloads)",
+        "--test-threads",
+        "1"
+      ],
+      "exit_code": 0,
+      "seconds": 1.52
+    }
+  ],
+  "negative_control": false,
+  "passed": true,
+  "status": "complete",
+  "production_authority": false,
+  "actual_session_reserved_qualified": false,
+  "actual_five_lane_dynamic_notes_qualified": false,
+  "source_inputs_unchanged": true
+}

@@ -249,7 +249,7 @@ async fn token_budget_guidance_precedes_standalone_context_window() -> Result<()
     )
     .await;
     let guidance_message = "Preserve important state before compaction.";
-    let test = test_codex()
+    let test = test_codex().with_internal_metadata_for_mock()
         .with_config(move |config| {
             config.model_context_window = Some(CONFIGURED_CONTEXT_WINDOW);
             config.token_budget = Some(TokenBudgetConfig {

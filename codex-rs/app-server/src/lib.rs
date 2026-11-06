@@ -48,6 +48,7 @@ use crate::transport::auth::policy_from_settings;
 use crate::transport::prepare_control_socket_path;
 use crate::transport::route_outgoing_envelope;
 use crate::transport::start_control_socket_acceptor;
+use crate::transport::start_inherited_control_socket_acceptor;
 use crate::transport::start_remote_control;
 use crate::transport::start_stdio_connection;
 use crate::transport::start_websocket_acceptor;
@@ -105,6 +106,9 @@ mod code_mode_host;
 mod command_exec;
 mod config_layer;
 mod config_manager;
+mod configured_mcp_runtime;
+pub use configured_mcp_runtime::ConfiguredMcpRuntime;
+pub use configured_mcp_runtime::initialize_configured_mcp_server;
 mod config_manager_service;
 mod connection_cleanup;
 mod connection_rpc_gate;
@@ -124,6 +128,7 @@ mod image_url;
 pub mod in_process;
 mod mcp_refresh;
 mod message_processor;
+mod plugin_startup_owner;
 mod models;
 mod models_refresh_worker;
 mod otel_reloader;
@@ -131,6 +136,7 @@ mod outgoing_message;
 mod request_processors;
 mod request_serialization;
 mod server_request_error;
+mod shutdown_signals;
 mod skills_watcher;
 mod thread_state;
 mod thread_status;
@@ -148,12 +154,18 @@ pub use crate::hepta_local_lifecycle::HEPTA_LOCAL_LIFECYCLE_OWNER_RUNTIME_REGIST
 pub use crate::hepta_local_lifecycle::HeptaLocalDevelopmentLifecycleOwner;
 pub use crate::hepta_local_lifecycle::HeptaLocalDevelopmentLifecycleOwnerError;
 pub use crate::transport::AppServerTransport;
+pub use crate::transport::InheritedControlSocket;
+
+mod inherited_transport;
 pub use crate::transport::RemoteControlStartupMode;
 pub use crate::transport::app_server_control_socket_path;
 pub use crate::transport::auth::AppServerWebsocketAuthArgs;
 pub use crate::transport::auth::AppServerWebsocketAuthSettings;
 pub use crate::transport::auth::WebsocketAuthCliMode;
 pub use crate::transport::take_remote_control_disabled_env;
+#[cfg(target_os = "linux")]
+pub use inherited_transport::run_main_with_inherited_unix_listener;
+pub use inherited_transport::run_main_with_transport_options;
 
 const LOG_FORMAT_ENV_VAR: &str = "LOG_FORMAT";
 const OTEL_SERVICE_NAME: &str = "codex-app-server";
@@ -205,7 +217,7 @@ enum ShutdownAction {
     Finish,
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum ShutdownSignal {
     Forceable,
     GracefulOnly,
@@ -270,29 +282,6 @@ async fn wait_for_embedded_drain(handle: Option<AppServerDrainHandle>) {
     match handle {
         Some(handle) => handle.wait_requested().await,
         None => std::future::pending::<()>().await,
-    }
-}
-
-async fn shutdown_signal() -> IoResult<ShutdownSignal> {
-    #[cfg(unix)]
-    {
-        use tokio::signal::unix::SignalKind;
-        use tokio::signal::unix::signal;
-
-        let mut term = signal(SignalKind::terminate())?;
-        let mut hangup = signal(SignalKind::hangup())?;
-        tokio::select! {
-            ctrl_c_result = tokio::signal::ctrl_c() => ctrl_c_result.map(|_| ShutdownSignal::Forceable),
-            _ = term.recv() => Ok(ShutdownSignal::Forceable),
-            _ = hangup.recv() => Ok(ShutdownSignal::GracefulOnly),
-        }
-    }
-
-    #[cfg(not(unix))]
-    {
-        tokio::signal::ctrl_c()
-            .await
-            .map(|_| ShutdownSignal::Forceable)
     }
 }
 
@@ -682,7 +671,7 @@ impl Default for AppServerRuntimeOptions {
 }
 
 #[allow(clippy::too_many_arguments)]
-pub async fn run_main_with_transport_options(
+async fn run_main_with_transport_options_inner(
     arg0_paths: Arg0DispatchPaths,
     cli_config_overrides: CliConfigOverrides,
     loader_overrides: LoaderOverrides,
@@ -692,6 +681,7 @@ pub async fn run_main_with_transport_options(
     session_source: SessionSource,
     auth: AppServerWebsocketAuthSettings,
     runtime_options: AppServerRuntimeOptions,
+    mut inherited_socket: Option<InheritedControlSocket>,
 ) -> IoResult<()> {
     validate_hepta_local_lifecycle_runtime_options(&runtime_options)?;
     let loader_overrides = loader_overrides_with_test_user_config_file(
@@ -755,7 +745,7 @@ pub async fn run_main_with_transport_options(
         }
     };
     let mut config_warnings = Vec::new();
-    let config = match config_manager
+    let mut config = match config_manager
         .load_latest_config(/*fallback_cwd*/ None)
         .await
     {
@@ -847,7 +837,7 @@ pub async fn run_main_with_transport_options(
     codex_core::otel_init::record_process_start(otel.as_ref(), OTEL_SERVICE_NAME);
     codex_core::otel_init::install_sqlite_telemetry(otel.as_ref(), OTEL_SERVICE_NAME);
     let unix_socket_startup_lock = match &transport {
-        AppServerTransport::UnixSocket { socket_path } => {
+        AppServerTransport::UnixSocket { socket_path } if inherited_socket.is_none() => {
             let startup_lock_path = app_server_startup_lock_path(&codex_home)?;
             let startup_lock = acquire_app_server_startup_lock(startup_lock_path).await?;
             prepare_control_socket_path(socket_path.as_path()).await?;
@@ -855,7 +845,8 @@ pub async fn run_main_with_transport_options(
         }
         _ => None,
     };
-    let state_db_init = match init_sqlite_state_db_with_fresh_start_on_corruption(&config).await {
+    let state_db_init = match init_sqlite_state_db_with_fresh_start_on_corruption(&mut config).await
+    {
         Ok(state_db_init) => state_db_init,
         Err(err) => {
             return Err(std::io::Error::other(format!(
@@ -963,11 +954,25 @@ pub async fn run_main_with_transport_options(
     }
     let installation_id = resolve_installation_id(&config.codex_home).await?;
     let transport_shutdown_token = CancellationToken::new();
+    // An embedding owns the inherited listener's lifetime, including startup
+    // errors after the acceptor has been spawned and cancellation of this
+    // future. Dropping a JoinHandle alone detaches that acceptor. Keep the
+    // original shutdown token fenced to this scope without taking pathname
+    // cleanup ownership or changing the ordinary transport startup behavior.
+    let _inherited_transport_guard = inherited_socket
+        .as_ref()
+        .map(|_| transport_shutdown_token.clone().drop_guard());
     let mut transport_accept_handles = Vec::<JoinHandle<()>>::new();
 
     let single_client_mode = matches!(&transport, AppServerTransport::Stdio);
     let graceful_signal_restart_enabled =
         runtime_options.install_shutdown_signal_handler && !single_client_mode;
+    // Register before opening any acceptor, and keep these receivers alive
+    // while other select branches process connection events. Dropping a recv
+    // future must not leave an interval with no Unix signal subscription.
+    let mut shutdown_signals = graceful_signal_restart_enabled
+        .then(shutdown_signals::ShutdownSignals::register)
+        .transpose()?;
     let mut app_server_client_name_rx = None;
 
     match &transport {
@@ -982,12 +987,21 @@ pub async fn run_main_with_transport_options(
             .await?;
         }
         AppServerTransport::UnixSocket { socket_path } => {
-            let accept_handle = start_control_socket_acceptor(
-                socket_path.clone(),
-                transport_event_tx.clone(),
-                transport_shutdown_token.clone(),
-            )
-            .await?;
+            let accept_handle = match inherited_socket.take() {
+                Some(socket) => start_inherited_control_socket_acceptor(
+                    socket,
+                    transport_event_tx.clone(),
+                    transport_shutdown_token.clone(),
+                ),
+                None => {
+                    start_control_socket_acceptor(
+                        socket_path.clone(),
+                        transport_event_tx.clone(),
+                        transport_shutdown_token.clone(),
+                    )
+                    .await?
+                }
+            };
             transport_accept_handles.push(accept_handle);
         }
         AppServerTransport::WebSocket { bind_address } => {
@@ -1236,7 +1250,12 @@ pub async fn run_main_with_transport_options(
                         }
                         transport_shutdown_token.cancel();
                     }
-                    shutdown_signal_result = shutdown_signal(), if graceful_signal_restart_enabled && !shutdown_state.forced() => {
+                    shutdown_signal_result = async {
+                        match shutdown_signals.as_mut() {
+                            Some(signals) => signals.recv().await,
+                            None => std::future::pending().await,
+                        }
+                    }, if graceful_signal_restart_enabled && !shutdown_state.forced() => {
                         let signal = match shutdown_signal_result {
                             Ok(signal) => signal,
                             Err(err) => {
@@ -1533,13 +1552,14 @@ struct StateDbInitResult {
 }
 
 async fn init_sqlite_state_db_with_fresh_start_on_corruption(
-    config: &Config,
+    config: &mut Config,
 ) -> anyhow::Result<StateDbInitResult> {
     let mut attempted_backups = HashSet::new();
     let mut recovered_databases = Vec::new();
     loop {
-        let err = match rollout_state_db::try_init(config).await {
+        let err = match rollout_state_db::try_init(&*config).await {
             Ok(state_db) => {
+                config.sqlite = state_db.sqlite().clone();
                 let recovery_notice = sqlite_recovery_notice(&recovered_databases);
                 if recovery_notice.is_some() {
                     emit_state_db_backup_warning(SQLITE_RECOVERY_CONFIG_WARNING_SUMMARY);
@@ -1742,7 +1762,6 @@ mod tests {
     use codex_utils_absolute_path::AbsolutePathBuf;
     use pretty_assertions::assert_eq;
     use std::io::ErrorKind;
-    use std::path::Path;
 
     #[test]
     fn ordinary_codex_runtime_does_not_enable_a_database_wide_queue_capacity() {
@@ -1829,18 +1848,26 @@ mod tests {
 
     #[test]
     fn embedding_runtime_sqlite_home_constraint_is_exact() {
-        let required = AbsolutePathBuf::from_absolute_path("/tmp/hepta-private-sqlite")
-            .expect("absolute required SQLite home");
+        let fixture = tempfile::tempdir().expect("native SQLite fixture root");
+        let required =
+            AbsolutePathBuf::from_absolute_path(fixture.path().join("hepta-private-sqlite"))
+                .expect("absolute required SQLite home");
+        let redirected = fixture.path().join("hepta-shared-sqlite");
         enforce_required_sqlite_home(Some(&required), required.as_path())
             .expect("the exact private SQLite root must be accepted");
 
-        let error =
-            enforce_required_sqlite_home(Some(&required), Path::new("/tmp/hepta-shared-sqlite"))
-                .expect_err("a redirected SQLite root must fail closed");
-        assert_eq!(ErrorKind::InvalidInput, error.kind());
+        let error = enforce_required_sqlite_home(Some(&required), &redirected)
+            .expect_err("a redirected SQLite root must fail closed");
         assert_eq!(
-            "embedding runtime requires SQLite home /tmp/hepta-private-sqlite, but configuration resolved /tmp/hepta-shared-sqlite",
-            error.to_string()
+            (
+                ErrorKind::InvalidInput,
+                format!(
+                    "embedding runtime requires SQLite home {}, but configuration resolved {}",
+                    required.as_path().display(),
+                    redirected.display(),
+                ),
+            ),
+            (error.kind(), error.to_string()),
         );
     }
 

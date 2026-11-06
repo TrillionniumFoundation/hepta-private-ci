@@ -1,0 +1,41 @@
+{
+  "recordedAt": "2026-10-23T20:26:37.235952+00:00",
+  "commit": "db896f452659b62f1e52c063ad01fb0ed5cd54b7",
+  "tree": "316b5fbab4240caadf3c48ca08922ed0bc2fb03c",
+  "sourceBase": "ec392d3067809cbc4c1728a53bc0c48d4a7f7347",
+  "testedDiffSha256": "313f3de35f5190618ff942a1d4c936951a3792268b7131c0b80fd87197997f0d",
+  "finalDiffSha256": "313f3de35f5190618ff942a1d4c936951a3792268b7131c0b80fd87197997f0d",
+  "finalSourceMatchesTestedDiff": true,
+  "focusedBefore": {
+    "run": 1,
+    "failed": 1,
+    "cause": "Private0077 original fixture reaches redirected-tmp registry mkdir, then actual Read-only file system; original full03 earlier touch diagnostic preserved separately."
+  },
+  "focusedAfter": {
+    "run": 1,
+    "passed": 1,
+    "bwrapSkipMessagePresent": false
+  },
+  "owningPackage": {
+    "run": 146,
+    "passed": 146,
+    "failed": 0,
+    "skipped": 0,
+    "testSeconds": 5.85
+  },
+  "productionCodeChanged": false,
+  "exactWriteRoots": [
+    "original cwd",
+    "private real-tmp",
+    "private redirected-tmp",
+    "private alias-parent"
+  ],
+  "repositoryParentGrantedWrite": false,
+  "originalScriptBytesPreserved": true,
+  "originalEnvironmentExecutionAndAllAssertionBytesPreserved": true,
+  "fixExitCode": 0,
+  "fmtExitCode": 0,
+  "noTestsAfterFixOrFmt": true,
+  "scope": "Independent original Linux sandbox host fixture qualification only. No reduction in deny assertions or production policy; no full03 result rewrite or final combined-source full transfer.",
+  "finalUnifiedFullQualified": false
+}

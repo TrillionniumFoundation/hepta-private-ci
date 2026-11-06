@@ -238,6 +238,34 @@ def bazel_args_with_remote_config(
     if config is None:
         configured_args = bazel_args_without_remote_execution(args, env)
     else:
+        configuration_args = args[: args.index("--")] if "--" in args else args
+        if (
+            env.get("RUNNER_OS") == "Windows"
+            and not uses_remote_execution(args)
+            and not any(
+                option_contains_value(configuration_args, "--config", name)
+                for name in (
+                    *(
+                        option.removeprefix("--config=")
+                        for option in REMOTE_EXECUTION_CONFIGS
+                    ),
+                    "remote",
+                    f"{GENERIC_REMOTE_CONFIG}-rbe",
+                    f"{OPENAI_REMOTE_CONFIG}-rbe",
+                )
+            )
+            and not any(
+                arg == "--remote_executor" or arg.startswith("--remote_executor=")
+                for arg in configuration_args
+            )
+            and option_contains_value(
+                configuration_args, "--platforms", "//:windows_x86_64_msvc"
+            )
+        ):
+            # Authentication selects cache/BES endpoints, not the native ABI.
+            # Cache-only MSVC builds need the same existing local C/C++ toolchain
+            # as keyless builds; credentialed RBE configurations stay unchanged.
+            args = bazel_args_without_remote_execution(args, env)
         # `remote_config()` returns a configuration only when this key is present.
         api_key = env["BUILDBUDDY_API_KEY"]
         remote_args = [

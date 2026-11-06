@@ -307,11 +307,11 @@ impl AppServerTarget {
 }
 
 async fn init_state_db_for_app_server_target(
-    config: &Config,
+    config: &mut Config,
     app_server_target: &AppServerTarget,
 ) -> std::io::Result<Option<StateDbHandle>> {
-    match app_server_target {
-        AppServerTarget::Embedded => state_db::try_init(config).await.map(Some).map_err(|err| {
+    let state_db = match app_server_target {
+        AppServerTarget::Embedded => state_db::try_init(&*config).await.map(Some).map_err(|err| {
             let database_path = codex_state::runtime_db_path_for_corruption_error(&err)
                 .unwrap_or_else(|| config.sqlite_config().state_db_path());
             std::io::Error::other(LocalStateDbStartupError::new(
@@ -320,9 +320,13 @@ async fn init_state_db_for_app_server_target(
             ))
         }),
         AppServerTarget::LocalDaemon { .. } | AppServerTarget::Remote { .. } => {
-            Ok(state_db::get_state_db(config).await)
+            Ok(state_db::get_state_db(&*config).await)
         }
+    }?;
+    if let Some(state_db) = &state_db {
+        config.sqlite = state_db.sqlite().clone();
     }
+    Ok(state_db)
 }
 
 // TODO(jif) delete after 22/11/2026.
@@ -528,9 +532,11 @@ pub(crate) async fn start_app_server_for_picker(
 pub(crate) async fn start_embedded_app_server_for_picker(
     config: &Config,
 ) -> color_eyre::Result<AppServerSession> {
-    let state_db = init_state_db_for_app_server_target(config, &AppServerTarget::Embedded).await?;
+    let mut config = config.clone();
+    let state_db =
+        init_state_db_for_app_server_target(&mut config, &AppServerTarget::Embedded).await?;
     start_app_server_for_picker(
-        config,
+        &config,
         &AppServerTarget::Embedded,
         state_db,
         Arc::new(EnvironmentManager::default_for_tests()),
@@ -2110,10 +2116,10 @@ mod tests {
     }
 
     pub(crate) async fn start_test_embedded_app_server(
-        config: Config,
+        mut config: Config,
     ) -> color_eyre::Result<InProcessAppServerClient> {
         let state_db =
-            init_state_db_for_app_server_target(&config, &AppServerTarget::Embedded).await?;
+            init_state_db_for_app_server_target(&mut config, &AppServerTarget::Embedded).await?;
         start_embedded_app_server(
             Arg0DispatchPaths::default(),
             config,
@@ -2153,7 +2159,7 @@ mod tests {
                 format!("[tui]\nresume_cwd = \"{configured_mode}\"\n"),
             )?;
             let cwd_override = has_explicit_cwd.then_some(explicit_cwd.as_path());
-            let config = ConfigBuilder::default()
+            let mut config = ConfigBuilder::default()
                 .codex_home(codex_home.clone())
                 .loader_overrides(LoaderOverrides::without_managed_config_for_tests())
                 .harness_overrides(ConfigOverrides {
@@ -2175,7 +2181,8 @@ mod tests {
                 .join("sessions/2025/01/05")
                 .join(format!("rollout-{filename_timestamp}-{thread_id}.jsonl"));
             let state_db =
-                init_state_db_for_app_server_target(&config, &AppServerTarget::Embedded).await?;
+                init_state_db_for_app_server_target(&mut config, &AppServerTarget::Embedded)
+                    .await?;
             let target_session = resume_picker::SessionTarget {
                 path: Some(rollout_path),
                 thread_id,
@@ -3208,11 +3215,12 @@ mod tests {
             codex_state::SqliteConfig::new_for_testing(occupied_sqlite_home.as_path().abs());
         config.sqlite = sqlite.clone();
 
-        let err =
-            match init_state_db_for_app_server_target(&config, &AppServerTarget::Embedded).await {
-                Ok(_) => panic!("embedded startup should surface state db init failures"),
-                Err(err) => err,
-            };
+        let err = match init_state_db_for_app_server_target(&mut config, &AppServerTarget::Embedded)
+            .await
+        {
+            Ok(_) => panic!("embedded startup should surface state db init failures"),
+            Err(err) => err,
+        };
         let startup_error = err
             .get_ref()
             .and_then(|err| err.downcast_ref::<LocalStateDbStartupError>())
@@ -3238,16 +3246,18 @@ mod tests {
         let mut config = build_config(&temp_dir).await?;
         let sqlite_home = temp_dir.path().join("sqlite-home");
         std::fs::create_dir_all(&sqlite_home)?;
+        let sqlite_home = std::fs::canonicalize(&sqlite_home)?;
         let sqlite = codex_state::SqliteConfig::new_for_testing(sqlite_home.as_path().abs());
         let logs_db_path = sqlite.logs_db_path();
         std::fs::write(&logs_db_path, "not a sqlite database")?;
         config.sqlite = sqlite;
 
-        let err =
-            match init_state_db_for_app_server_target(&config, &AppServerTarget::Embedded).await {
-                Ok(_) => panic!("embedded startup should surface state db init failures"),
-                Err(err) => err,
-            };
+        let err = match init_state_db_for_app_server_target(&mut config, &AppServerTarget::Embedded)
+            .await
+        {
+            Ok(_) => panic!("embedded startup should surface state db init failures"),
+            Err(err) => err,
+        };
         let startup_error = err
             .get_ref()
             .and_then(|err| err.downcast_ref::<LocalStateDbStartupError>())

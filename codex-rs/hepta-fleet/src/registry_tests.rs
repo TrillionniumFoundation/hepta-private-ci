@@ -18,6 +18,14 @@ use crate::AgentManifest;
 use crate::ResourceBudget;
 use crate::WorkspaceBinding;
 
+#[cfg(target_os = "linux")]
+#[path = "registry_lifecycle_gate_tests.rs"]
+mod lifecycle_gate_tests;
+
+#[cfg(target_os = "linux")]
+#[path = "registry_lifecycle_gate_path_tests.rs"]
+mod lifecycle_gate_path_tests;
+
 const FIRST_AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
 const SECOND_AGENT_ID: &str = "019153a4-3088-7e03-a56a-9b1964f75dd3";
 
@@ -272,7 +280,7 @@ fn workspace_sweep_agrees_with_pairwise_oracle_for_nested_and_sibling_paths()
         .map(|name| {
             let path = fleet._temp.path().join("sweep").join(name);
             fs::create_dir_all(&path)?;
-            WorkspaceBinding::new(&path, &fleet.root)
+            WorkspaceBinding::new(path.canonicalize()?, &fleet.root)
         })
         .collect::<Result<Vec<_>, FleetRegistryError>>()?;
     // Every subset and both identity orders exercise parents, descendants,
@@ -341,5 +349,36 @@ fn fresh_agent_roots_satisfy_private_owner_contract() -> Result<(), FleetRegistr
             root.display()
         );
     }
+    Ok(())
+}
+
+#[cfg(windows)]
+#[test]
+fn windows_registration_establishes_private_owner_leaves_without_adopting_them()
+-> Result<(), FleetRegistryError> {
+    let fleet = TestFleet::new()?;
+    let manifest = fleet.manifest(FIRST_AGENT_ID, &fleet.first_workspace)?;
+    let record = fleet.registry.register(manifest)?;
+    for name in [
+        "",
+        "home",
+        "run",
+        "logs",
+        "releases",
+        "cognitive",
+        "matrix",
+        "matrix/secrets",
+        "automation",
+    ] {
+        let directory = record.layout.agent_root().join(name);
+        let retained = codex_utils_path::open_existing_private_state_directory(&directory)?;
+        drop(retained);
+    }
+    let cognitive = record.layout.cognitive_root();
+    fs::write(cognitive.join("sentinel"), b"original owner")?;
+    let error = super::create_private_directory(cognitive)
+        .expect_err("private staging creation never adopts an existing leaf");
+    assert_eq!(error.kind(), std::io::ErrorKind::AlreadyExists);
+    assert_eq!(fs::read(cognitive.join("sentinel"))?, b"original owner");
     Ok(())
 }

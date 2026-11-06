@@ -11,6 +11,9 @@ use std::borrow::Cow;
 use std::io::Write;
 use std::process::Command;
 
+#[path = "queued_close_absent_tests.rs"]
+mod close_absent;
+
 async fn runtime_with_thread() -> (Arc<StateRuntime>, ThreadId) {
     let home = unique_temp_dir();
     let runtime = StateRuntime::init(
