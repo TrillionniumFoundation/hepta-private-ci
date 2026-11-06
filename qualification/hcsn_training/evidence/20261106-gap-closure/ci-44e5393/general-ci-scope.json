@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "current_head": "44e539313e0c54badb4b9b687425dd87ecba6e67",
+  "current_blocking_run": 42222768205,
+  "overall_green": false,
+  "source_scope": "broader repository checks are independent of the dedicated HCSN workflow",
+  "introduced_failure": {
+    "old_head": "e62f1329142c5752d0344b5fa64f3a9c981f4be5",
+    "old_run": 42220007012,
+    "job": 127900543062,
+    "boundary": "final_use_open_state",
+    "unexpected_caller": "codex-rs/hepta-agentd/src/automation_hcsn_host.rs",
+    "correction_commit": "44e539313e0c54badb4b9b687425dd87ecba6e67",
+    "allowlist_modified": false,
+    "checker_modified": false,
+    "current_dedicated_closed_set_step": "success",
+    "current_general_closed_set_step": "success"
+  },
+  "baseline_checks": [
+    {
+      "case": "Windows checkout long path",
+      "path": "qualification/hcsn_training/evidence/20261106/bridge/attempt-01/artifact-store/registries/0ee8a0c2d3cdae803d5bde4f8f77a2519e5bef0bebb3110d0b32a723367855d5-cfe4d103cb895eb1a454c70a48c86b7ba3e690fdf90b0f33eec6f962ea4d5f9d.snapshot",
+      "same_blob_in_base_and_candidate": "3772767dc4cbb95e5e395f8a7cf5c826f83c6d12",
+      "old_job": 127900543077
+    },
+    {
+      "case": "Bazel old plasticity test references absent append_qualification",
+      "path": "codex-rs/hepta-agentd/tests/plasticity_process_e2e.rs",
+      "same_blob_in_base_and_candidate": "8b7a329216db2cd56d3c104214414dc0ffc61c47",
+      "old_job": 127900543581
+    },
+    {
+      "case": "Bazel pre-existing expect_used assertions",
+      "path": "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs",
+      "same_blob_in_base_and_candidate": "a3e546830527f214c08b6a367c0f708b26a3e9d2",
+      "old_job": 127900543538
+    },
+    {
+      "case": "Readiness discovery link absent from empty README",
+      "path": "README.md",
+      "same_blob_in_base_and_candidate": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "old_job": 127900543108
+    }
+  ],
+  "scope_limit": "This is targeted attribution, not an exhaustive diagnosis or resolution of the whole-repository blocking workflow.",
+  "current_general_job": {
+    "id": 127911561653,
+    "name": "repo-checks / build-test",
+    "status": "completed",
+    "conclusion": "success",
+    "canonical_merge": "c103778518b2f8bb1dbee6db78021150b633e35e",
+    "canonical_merge_tree": "b7ac591c98b6045521f70e97f58dc2cea8bf12bc",
+    "source_tree_identical": true
+  },
+  "current_failures": [
+    {
+      "id": 127911561221,
+      "name": "Hepta contract gate / Validate canonical branch and contract metadata"
+    },
+    {
+      "id": 127911561270,
+      "name": "cargo-deny / cargo-deny"
+    },
+    {
+      "id": 127911561539,
+      "name": "repo-checks / Native Hepta paths on windows-latest"
+    },
+    {
+      "id": 127911562093,
+      "name": "Bazel / Bazel clippy on ubuntu-24.04 for x86_64-unknown-linux-gnu"
+    },
+    {
+      "id": 127911562167,
+      "name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc"
+    },
+    {
+      "id": 127911562229,
+      "name": "Bazel / Verify release build on ubuntu-24.04 for x86_64-unknown-linux-gnu"
+    },
+    {
+      "id": 127911562245,
+      "name": "Bazel / Verify release build on windows-latest for x86_64-pc-windows-msvc"
+    },
+    {
+      "id": 127911562247,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4"
+    },
+    {
+      "id": 127911562265,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4"
+    },
+    {
+      "id": 127911562367,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4"
+    },
+    {
+      "id": 127911562492,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4"
+    }
+  ],
+  "cargo_deny_cause": "not independently diagnosed; failure is not claimed resolved"
+}

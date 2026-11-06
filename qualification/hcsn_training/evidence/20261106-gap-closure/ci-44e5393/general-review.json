@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "repo": "TrillionniumFoundation/hepta-private-ci",
+  "run_id": 42222768205,
+  "job_id": 127911561653,
+  "name": "repo-checks / build-test",
+  "job_state": "completed",
+  "job_conclusion": "success",
+  "requested_head": "44e539313e0c54badb4b9b687425dd87ecba6e67",
+  "actual_checkout": "c103778518b2f8bb1dbee6db78021150b633e35e",
+  "merge_into": "fb626328f39207460f9bf54e1eda01b6cfcbd6de",
+  "caller_proof_status": "PASS_HEPTA_CALLER_CLOSED_SET",
+  "caller_proof_log_time": "2026-11-06T13:15:22.2514190Z",
+  "previous_introduced_caller_error_absent": true,
+  "following_failure": null,
+  "all_job_steps_success": true,
+  "scope": "This general repo-checks/build-test job only; not whole blocking-ci run success.",
+  "raw_decoded_utf8_sha256": "bcb655e55226700e24f3f8702977e1cf70c6bf35ddfc1a83c81c2273c6884861",
+  "raw_bytes": 121582,
+  "gzip_bytes": 21130,
+  "gzip_sha256": "fb7b81fa80042c94607ae02da189921dba270d7c35b9241ad7884955ca2a9ce0",
+  "recovery": {
+    "review_receipt_reconstructed": true,
+    "origin": "original complete GitHub log and final job response retained in this agent functions store; no CI rerun or new CI investigation",
+    "raw_api_excerpt_match_original_sha256": true,
+    "previous_gzip_sha256": "e5895656b1cf3a515aa3cd90bc0d80b66798992f7919b06e2f9ad922129a0778",
+    "gzip_matches_original": false,
+    "gzip_runtime": {
+      "python": "3.13.5 (main, Aug 10 2026, 12:06:59) [GCC 14.2.0]",
+      "zlib": "1.3.1"
+    },
+    "canonical_tree_binding": "root independently verified canonical merge tree; not re-fetched here"
+  },
+  "files": {
+    "job-127911561653.excerpt.log": "561957fdab582dc2e14864457eb6a926b829c8f17cf6357df85f429e66974d39",
+    "job-127911561653.json": "92921999fd0dbd874ffdf1ddb99adcb5079ef4def29785c103f96f05fc672659",
+    "job-127911561653.log": "bcb655e55226700e24f3f8702977e1cf70c6bf35ddfc1a83c81c2273c6884861",
+    "job-127911561653.log.gz": "fb7b81fa80042c94607ae02da189921dba270d7c35b9241ad7884955ca2a9ce0"
+  }
+}

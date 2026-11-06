@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "observed_at_utc": "2026-11-06T11:15:58.711953+00:00",
+  "scope": "independent in-progress source review; parent exact-final-source suite/CI remains required",
+  "source_files": {
+    "qualification/hcsn_training/population_generator.py": "3be73849066acc715962d3fee211c4fc49fa0293b5f0480c250ab5483fbae4aa",
+    "qualification/hcsn_training/population_age_graph.py": "a0c6e046b7e760e9eea85288a694f12842916a876796558b45e7899d097c6566",
+    "qualification/hcsn_training/joint_graph.py": "2331377229b19ee60a6d02976cb2f02da9d5fa48a9f744ec972b14bd51b0cfa1",
+    "qualification/hcsn_training/test_population_generator.py": "c411a7cb93dc2ec9f4e8dc4c5956a4b73b97a0500575c48dd229836de1d79b45",
+    "qualification/hcsn_training/test_resumed_derivatives.py": "de96a1be168c9a5a761d3bd310799aedbebe525b55d242bc91cc4dee4c8e53bf"
+  },
+  "findings": [
+    {
+      "issue": "fixed-grid projection freezes as dt approaches zero at fixed32 bins",
+      "status": "addressed in new opt-in profile only by finite-volume CTMC; original research kernel unchanged",
+      "before_evidence": "population-age-refinement-review.json",
+      "after_evidence": "population-age-ctmc-refinement-review.json"
+    },
+    {
+      "issue": "legacy fixed-grid effective refractory duration can exceed240ms",
+      "status": "migration now preserves integer remaining release times; new cohort delay240ms; source step part of model identity"
+    },
+    {
+      "issue": "production HCSN authorization could reintroduce classical FinalUse",
+      "status": "host agent added explicit production rejection/engineering test-only gate; not production-qualified"
+    }
+  ],
+  "checks": [
+    {
+      "suite": "test_population_generator",
+      "tests": 5,
+      "passed": 5,
+      "log": "population-generator-review-attempt-02.log",
+      "prior_attempt": "population-generator-review-attempt-01.log",
+      "prior_failure_reason": "3e-14 semigroup tolerance below observed1.923e-12 FP64 matrix exponential composition residual; final absolute probability tolerance3e-12"
+    },
+    {
+      "suite": "test_resumed_derivatives baseline A/B",
+      "tests": 2,
+      "passed": 2,
+      "log": "resumed-derivatives-review.log",
+      "scope": "baseline before new age implementation"
+    },
+    {
+      "suite": "test_resumed_derivatives variable-time CTMC",
+      "tests": 1,
+      "passed": 1,
+      "log": "resumed-age-derivatives-review.log"
+    }
+  ],
+  "qualification_limits": [
+    "upwind drift is piecewise differentiable; finite differences avoid exact kinks",
+    "time refinement at fixed spatial generator is not convergence proof for full continuous nonlinear reset PDE",
+    "signature/actual-worker fixture uses synthetic Ed25519 engineering authority, not genuine production trust",
+    "Agentd production PQ registration remains unavailable on baseline; no actual production adoption"
+  ]
+}
