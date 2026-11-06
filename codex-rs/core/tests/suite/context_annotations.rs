@@ -18,9 +18,7 @@ use core_test_support::responses::ev_completed;
 use core_test_support::responses::ev_response_created;
 use core_test_support::responses::mount_sse_once;
 use core_test_support::responses::sse;
-use core_test_support::responses::start_mock_server;
 use core_test_support::skip_if_no_network;
-use core_test_support::test_codex::test_codex;
 use core_test_support::wait_for_event;
 use pretty_assertions::assert_eq;
 use std::collections::BTreeMap;
@@ -222,13 +220,14 @@ async fn first_request_item_types_roles_and_content_annotations() -> Result<()> 
 async fn content_item_kinds_are_omitted_when_feature_disabled() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
-    let server = start_mock_server().await;
+    let server = FirstPartyMockServer::start().await?;
     let response = mount_sse_once(
         &server,
         sse(vec![ev_response_created("resp-1"), ev_completed("resp-1")]),
     )
     .await;
-    let test = test_codex()
+    let test = server
+        .test_codex()
         .with_config(|config| {
             config.developer_instructions = Some("Keep other metadata intact.".into());
             config
