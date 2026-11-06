@@ -1,0 +1,844 @@
+{
+  "artifact_id": 13508649971,
+  "artifact_sha256": "769e84dc908333caaee325c84833721c0f364b9ee5da73b7b6ac34beca6b5a87",
+  "job_id": 127940253347,
+  "metadata": {
+    "packages": [
+      {
+        "id": "registry+https://github.com/rust-lang/crates.io-index#anymap3@1.1.0",
+        "manifest_path": "/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/anymap3-1.1.0/Cargo.toml",
+        "name": "anymap3",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "version": "1.1.0"
+      },
+      {
+        "id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/aws-config-1.8.12#aws-config@1.8.12",
+        "manifest_path": "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/aws-config-1.8.12/Cargo.toml",
+        "name": "aws-config",
+        "source": null,
+        "version": "1.8.12"
+      },
+      {
+        "id": "registry+https://github.com/rust-lang/crates.io-index#aws-credential-types@1.2.11",
+        "manifest_path": "/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-credential-types-1.2.11/Cargo.toml",
+        "name": "aws-credential-types",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "version": "1.2.11"
+      },
+      {
+        "id": "registry+https://github.com/rust-lang/crates.io-index#aws-lc-rs@1.18.1",
+        "manifest_path": "/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-lc-rs-1.18.1/Cargo.toml",
+        "name": "aws-lc-rs",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "version": "1.18.1"
+      },
+      {
+        "id": "registry+https://github.com/rust-lang/crates.io-index#aws-lc-sys@0.45.0",
+        "manifest_path": "/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-lc-sys-0.45.0/Cargo.toml",
+        "name": "aws-lc-sys",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "version": "0.45.0"
+      },
+      {
+        "id": "registry+https://github.com/rust-lang/crates.io-index#aws-runtime@1.5.17",
+        "manifest_path": "/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-runtime-1.5.17/Cargo.toml",
+        "name": "aws-runtime",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "version": "1.5.17"
+      },
+      {
+        "id": "registry+https://github.com/rust-lang/crates.io-index#aws-sdk-signin@1.2.0",
+        "manifest_path": "/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-sdk-signin-1.2.0/Cargo.toml",
+        "name": "aws-sdk-signin",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "version": "1.2.0"
+      },
+      {
+        "id": "registry+https://github.com/rust-lang/crates.io-index#aws-sdk-sso@1.91.0",
+        "manifest_path": "/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-sdk-sso-1.91.0/Cargo.toml",
+        "name": "aws-sdk-sso",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "version": "1.91.0"
+      },
+      {
+        "id": "registry+https://github.com/rust-lang/crates.io-index#aws-sdk-ssooidc@1.93.0",
+        "manifest_path": "/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-sdk-ssooidc-1.93.0/Cargo.toml",
+        "name": "aws-sdk-ssooidc",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "version": "1.93.0"
+      },
+      {
+        "id": "registry+https://github.com/rust-lang/crates.io-index#aws-sdk-sts@1.95.0",
+        "manifest_path": "/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-sdk-sts-1.95.0/Cargo.toml",
+        "name": "aws-sdk-sts",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "version": "1.95.0"
+      },
+      {
+        "id": "registry+https://github.com/rust-lang/crates.io-index#aws-sigv4@1.3.7",
+        "manifest_path": "/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-sigv4-1.3.7/Cargo.toml",
+        "name": "aws-sigv4",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "version": "1.3.7"
+      },
+      {
+        "id": "registry+https://github.com/rust-lang/crates.io-index#aws-smithy-async@1.2.14",
+        "manifest_path": "/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-smithy-async-1.2.14/Cargo.toml",
+        "name": "aws-smithy-async",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "version": "1.2.14"
+      },
+      {
+        "id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/aws-smithy-http-0.62.6-pin-backport#aws-smithy-http@0.62.6",
+        "manifest_path": "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/aws-smithy-http-0.62.6-pin-backport/Cargo.toml",
+        "name": "aws-smithy-http",
+        "source": null,
+        "version": "0.62.6"
+      },
+      {
+        "id": "registry+https://github.com/rust-lang/crates.io-index#aws-smithy-http-client@1.1.12",
+        "manifest_path": "/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-smithy-http-client-1.1.12/Cargo.toml",
+        "name": "aws-smithy-http-client",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "version": "1.1.12"
+      },
+      {
+        "id": "registry+https://github.com/rust-lang/crates.io-index#aws-smithy-json@0.61.9",
+        "manifest_path": "/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-smithy-json-0.61.9/Cargo.toml",
+        "name": "aws-smithy-json",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "version": "0.61.9"
+      },
+      {
+        "id": "registry+https://github.com/rust-lang/crates.io-index#aws-smithy-observability@0.1.5",
+        "manifest_path": "/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-smithy-observability-0.1.5/Cargo.toml",
+        "name": "aws-smithy-observability",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "version": "0.1.5"
+      },
+      {
+        "id": "registry+https://github.com/rust-lang/crates.io-index#aws-smithy-query@0.60.9",
+        "manifest_path": "/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-smithy-query-0.60.9/Cargo.toml",
+        "name": "aws-smithy-query",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "version": "0.60.9"
+      },
+      {
+        "id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport#aws-smithy-runtime@1.9.5",
+        "manifest_path": "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/Cargo.toml",
+        "name": "aws-smithy-runtime",
+        "source": null,
+        "version": "1.9.5"
+      },
+      {
+        "id": "registry+https://github.com/rust-lang/crates.io-index#aws-smithy-runtime-api@1.12.0",
+        "manifest_path": "/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-smithy-runtime-api-1.12.0/Cargo.toml",
+        "name": "aws-smithy-runtime-api",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "version": "1.12.0"
+      },
+      {
+        "id": "registry+https://github.com/rust-lang/crates.io-index#aws-smithy-runtime-api-macros@1.0.0",
+        "manifest_path": "/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-smithy-runtime-api-macros-1.0.0/Cargo.toml",
+        "name": "aws-smithy-runtime-api-macros",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "version": "1.0.0"
+      },
+      {
+        "id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport#aws-smithy-types@1.4.7",
+        "manifest_path": "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/Cargo.toml",
+        "name": "aws-smithy-types",
+        "source": null,
+        "version": "1.4.7"
+      },
+      {
+        "id": "registry+https://github.com/rust-lang/crates.io-index#aws-smithy-xml@0.60.13",
+        "manifest_path": "/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-smithy-xml-0.60.13/Cargo.toml",
+        "name": "aws-smithy-xml",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "version": "0.60.13"
+      },
+      {
+        "id": "registry+https://github.com/rust-lang/crates.io-index#aws-types@1.3.11",
+        "manifest_path": "/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/aws-types-1.3.11/Cargo.toml",
+        "name": "aws-types",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "version": "1.3.11"
+      },
+      {
+        "id": "registry+https://github.com/rust-lang/crates.io-index#blake3@1.8.7",
+        "manifest_path": "/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/blake3-1.8.7/Cargo.toml",
+        "name": "blake3",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "version": "1.8.7"
+      },
+      {
+        "id": "registry+https://github.com/rust-lang/crates.io-index#bzip2@0.6.1",
+        "manifest_path": "/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bzip2-0.6.1/Cargo.toml",
+        "name": "bzip2",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "version": "0.6.1"
+      },
+      {
+        "id": "registry+https://github.com/rust-lang/crates.io-index#bzip2-sys@0.1.13+1.0.8",
+        "manifest_path": "/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bzip2-sys-0.1.13+1.0.8/Cargo.toml",
+        "name": "bzip2-sys",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "version": "0.1.13+1.0.8"
+      },
+      {
+        "id": "registry+https://github.com/rust-lang/crates.io-index#crypto-bigint@0.7.10",
+        "manifest_path": "/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/crypto-bigint-0.7.10/Cargo.toml",
+        "name": "crypto-bigint",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "version": "0.7.10"
+      },
+      {
+        "id": "registry+https://github.com/rust-lang/crates.io-index#elliptic-curve@0.14.3",
+        "manifest_path": "/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/elliptic-curve-0.14.3/Cargo.toml",
+        "name": "elliptic-curve",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "version": "0.14.3"
+      },
+      {
+        "id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/hyper-1.8.1-pin-backport#hyper@1.8.1",
+        "manifest_path": "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/hyper-1.8.1-pin-backport/Cargo.toml",
+        "name": "hyper",
+        "source": null,
+        "version": "1.8.1"
+      },
+      {
+        "id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/i18n-config-0.4.8#i18n-config@0.4.8",
+        "manifest_path": "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/i18n-config-0.4.8/Cargo.toml",
+        "name": "i18n-config",
+        "source": null,
+        "version": "0.4.8"
+      },
+      {
+        "id": "registry+https://github.com/rust-lang/crates.io-index#imbl@7.0.2",
+        "manifest_path": "/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/imbl-7.0.2/Cargo.toml",
+        "name": "imbl",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "version": "7.0.2"
+      },
+      {
+        "id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/keyring-3.6.3#keyring@3.6.3",
+        "manifest_path": "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/keyring-3.6.3/Cargo.toml",
+        "name": "keyring",
+        "source": null,
+        "version": "3.6.3"
+      },
+      {
+        "id": "registry+https://github.com/rust-lang/crates.io-index#libsqlite3-sys@0.37.0",
+        "manifest_path": "/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/libsqlite3-sys-0.37.0/Cargo.toml",
+        "name": "libsqlite3-sys",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "version": "0.37.0"
+      },
+      {
+        "id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/loom-0.7.2-pin-backport#loom@0.7.2",
+        "manifest_path": "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/loom-0.7.2-pin-backport/Cargo.toml",
+        "name": "loom",
+        "source": null,
+        "version": "0.7.2"
+      },
+      {
+        "id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/matrix-sdk-0.19.1#matrix-sdk@0.19.1",
+        "manifest_path": "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/matrix-sdk-0.19.1/Cargo.toml",
+        "name": "matrix-sdk",
+        "source": null,
+        "version": "0.19.1"
+      },
+      {
+        "id": "registry+https://github.com/rust-lang/crates.io-index#matrix-sdk-crypto@0.19.1",
+        "manifest_path": "/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/matrix-sdk-crypto-0.19.1/Cargo.toml",
+        "name": "matrix-sdk-crypto",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "version": "0.19.1"
+      },
+      {
+        "id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/matrix-sdk-sqlite-0.19.1#matrix-sdk-sqlite@0.19.1",
+        "manifest_path": "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/matrix-sdk-sqlite-0.19.1/Cargo.toml",
+        "name": "matrix-sdk-sqlite",
+        "source": null,
+        "version": "0.19.1"
+      },
+      {
+        "id": "registry+https://github.com/rust-lang/crates.io-index#p256@0.14.0",
+        "manifest_path": "/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/p256-0.14.0/Cargo.toml",
+        "name": "p256",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "version": "0.14.0"
+      },
+      {
+        "id": "registry+https://github.com/rust-lang/crates.io-index#pagable@0.4.2",
+        "manifest_path": "/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/pagable-0.4.2/Cargo.toml",
+        "name": "pagable",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "version": "0.4.2"
+      },
+      {
+        "id": "registry+https://github.com/rust-lang/crates.io-index#pagable_derive@0.4.2",
+        "manifest_path": "/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/pagable_derive-0.4.2/Cargo.toml",
+        "name": "pagable_derive",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "version": "0.4.2"
+      },
+      {
+        "id": "registry+https://github.com/rust-lang/crates.io-index#rusqlite@0.39.0",
+        "manifest_path": "/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rusqlite-0.39.0/Cargo.toml",
+        "name": "rusqlite",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "version": "0.39.0"
+      },
+      {
+        "id": "registry+https://github.com/rust-lang/crates.io-index#rustls@0.23.46",
+        "manifest_path": "/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustls-0.23.46/Cargo.toml",
+        "name": "rustls",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "version": "0.23.46"
+      },
+      {
+        "id": "registry+https://github.com/rust-lang/crates.io-index#rustls-webpki@0.103.16",
+        "manifest_path": "/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustls-webpki-0.103.16/Cargo.toml",
+        "name": "rustls-webpki",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "version": "0.103.16"
+      },
+      {
+        "id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/secret-service-4.0.0#secret-service@4.0.0",
+        "manifest_path": "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/secret-service-4.0.0/Cargo.toml",
+        "name": "secret-service",
+        "source": null,
+        "version": "4.0.0"
+      },
+      {
+        "id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/serde-saphyr-2.0.0#serde-saphyr@2.0.0",
+        "manifest_path": "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/serde-saphyr-2.0.0/Cargo.toml",
+        "name": "serde-saphyr",
+        "source": null,
+        "version": "2.0.0"
+      },
+      {
+        "id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/starlark-0.14.2#starlark@0.14.2",
+        "manifest_path": "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/starlark-0.14.2/Cargo.toml",
+        "name": "starlark",
+        "source": null,
+        "version": "0.14.2"
+      },
+      {
+        "id": "registry+https://github.com/rust-lang/crates.io-index#starlark_derive@0.14.2",
+        "manifest_path": "/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/starlark_derive-0.14.2/Cargo.toml",
+        "name": "starlark_derive",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "version": "0.14.2"
+      },
+      {
+        "id": "registry+https://github.com/rust-lang/crates.io-index#starlark_map@0.14.2",
+        "manifest_path": "/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/starlark_map-0.14.2/Cargo.toml",
+        "name": "starlark_map",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "version": "0.14.2"
+      },
+      {
+        "id": "registry+https://github.com/rust-lang/crates.io-index#starlark_syntax@0.14.2",
+        "manifest_path": "/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/starlark_syntax-0.14.2/Cargo.toml",
+        "name": "starlark_syntax",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "version": "0.14.2"
+      },
+      {
+        "id": "registry+https://github.com/rust-lang/crates.io-index#zbus@6.1.0",
+        "manifest_path": "/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zbus-6.1.0/Cargo.toml",
+        "name": "zbus",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "version": "6.1.0"
+      },
+      {
+        "id": "registry+https://github.com/rust-lang/crates.io-index#zbus_macros@6.1.0",
+        "manifest_path": "/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zbus_macros-6.1.0/Cargo.toml",
+        "name": "zbus_macros",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "version": "6.1.0"
+      },
+      {
+        "id": "registry+https://github.com/rust-lang/crates.io-index#zbus_utils@6.0.0",
+        "manifest_path": "/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zbus_utils-6.0.0/Cargo.toml",
+        "name": "zbus_utils",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "version": "6.0.0"
+      },
+      {
+        "id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/zip-9.1.3#zip@9.1.3",
+        "manifest_path": "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/zip-9.1.3/Cargo.toml",
+        "name": "zip",
+        "source": null,
+        "version": "9.1.3"
+      },
+      {
+        "id": "registry+https://github.com/rust-lang/crates.io-index#zstd@0.14.3",
+        "manifest_path": "/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zstd-0.14.3/Cargo.toml",
+        "name": "zstd",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "version": "0.14.3"
+      },
+      {
+        "id": "registry+https://github.com/rust-lang/crates.io-index#zstd-safe@8.2.0",
+        "manifest_path": "/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zstd-safe-8.2.0/Cargo.toml",
+        "name": "zstd-safe",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "version": "8.2.0"
+      },
+      {
+        "id": "registry+https://github.com/rust-lang/crates.io-index#zstd-sys@2.1.2+zstd.1.5.7",
+        "manifest_path": "/home/runner/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zstd-sys-2.1.2+zstd.1.5.7/Cargo.toml",
+        "name": "zstd-sys",
+        "source": "registry+https://github.com/rust-lang/crates.io-index",
+        "version": "2.1.2+zstd.1.5.7"
+      }
+    ],
+    "resolve": {
+      "nodes": [
+        {
+          "features": [
+            "std"
+          ],
+          "id": "registry+https://github.com/rust-lang/crates.io-index#anymap3@1.1.0"
+        },
+        {
+          "features": [
+            "credentials-login",
+            "credentials-process",
+            "default",
+            "default-https-client",
+            "rt-tokio",
+            "sso"
+          ],
+          "id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/aws-config-1.8.12#aws-config@1.8.12"
+        },
+        {
+          "features": [
+            "test-util"
+          ],
+          "id": "registry+https://github.com/rust-lang/crates.io-index#aws-credential-types@1.2.11"
+        },
+        {
+          "features": [
+            "alloc",
+            "aws-lc-sys",
+            "default",
+            "prebuilt-nasm",
+            "ring-io",
+            "ring-sig-verify"
+          ],
+          "id": "registry+https://github.com/rust-lang/crates.io-index#aws-lc-rs@1.18.1"
+        },
+        {
+          "features": [
+            "prebuilt-nasm"
+          ],
+          "id": "registry+https://github.com/rust-lang/crates.io-index#aws-lc-sys@0.45.0"
+        },
+        {
+          "features": [],
+          "id": "registry+https://github.com/rust-lang/crates.io-index#aws-runtime@1.5.17"
+        },
+        {
+          "features": [],
+          "id": "registry+https://github.com/rust-lang/crates.io-index#aws-sdk-signin@1.2.0"
+        },
+        {
+          "features": [],
+          "id": "registry+https://github.com/rust-lang/crates.io-index#aws-sdk-sso@1.91.0"
+        },
+        {
+          "features": [],
+          "id": "registry+https://github.com/rust-lang/crates.io-index#aws-sdk-ssooidc@1.93.0"
+        },
+        {
+          "features": [],
+          "id": "registry+https://github.com/rust-lang/crates.io-index#aws-sdk-sts@1.95.0"
+        },
+        {
+          "features": [
+            "default",
+            "http0-compat",
+            "http1",
+            "sign-http"
+          ],
+          "id": "registry+https://github.com/rust-lang/crates.io-index#aws-sigv4@1.3.7"
+        },
+        {
+          "features": [
+            "rt-tokio"
+          ],
+          "id": "registry+https://github.com/rust-lang/crates.io-index#aws-smithy-async@1.2.14"
+        },
+        {
+          "features": [],
+          "id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/aws-smithy-http-0.62.6-pin-backport#aws-smithy-http@0.62.6"
+        },
+        {
+          "features": [
+            "default-client",
+            "rustls-aws-lc"
+          ],
+          "id": "registry+https://github.com/rust-lang/crates.io-index#aws-smithy-http-client@1.1.12"
+        },
+        {
+          "features": [],
+          "id": "registry+https://github.com/rust-lang/crates.io-index#aws-smithy-json@0.61.9"
+        },
+        {
+          "features": [],
+          "id": "registry+https://github.com/rust-lang/crates.io-index#aws-smithy-observability@0.1.5"
+        },
+        {
+          "features": [],
+          "id": "registry+https://github.com/rust-lang/crates.io-index#aws-smithy-query@0.60.9"
+        },
+        {
+          "features": [
+            "client",
+            "default-https-client",
+            "rt-tokio"
+          ],
+          "id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport#aws-smithy-runtime@1.9.5"
+        },
+        {
+          "features": [
+            "client",
+            "default",
+            "http-02x",
+            "http-1x",
+            "http-auth",
+            "test-util"
+          ],
+          "id": "registry+https://github.com/rust-lang/crates.io-index#aws-smithy-runtime-api@1.12.0"
+        },
+        {
+          "features": [],
+          "id": "registry+https://github.com/rust-lang/crates.io-index#aws-smithy-runtime-api-macros@1.0.0"
+        },
+        {
+          "features": [
+            "byte-stream-poll-next",
+            "http-body-0-4-x",
+            "http-body-1-x",
+            "test-util"
+          ],
+          "id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport#aws-smithy-types@1.4.7"
+        },
+        {
+          "features": [],
+          "id": "registry+https://github.com/rust-lang/crates.io-index#aws-smithy-xml@0.60.13"
+        },
+        {
+          "features": [],
+          "id": "registry+https://github.com/rust-lang/crates.io-index#aws-types@1.3.11"
+        },
+        {
+          "features": [
+            "default",
+            "rayon",
+            "std",
+            "traits-preview"
+          ],
+          "id": "registry+https://github.com/rust-lang/crates.io-index#blake3@1.8.7"
+        },
+        {
+          "features": [
+            "bzip2-sys"
+          ],
+          "id": "registry+https://github.com/rust-lang/crates.io-index#bzip2@0.6.1"
+        },
+        {
+          "features": [],
+          "id": "registry+https://github.com/rust-lang/crates.io-index#bzip2-sys@0.1.13+1.0.8"
+        },
+        {
+          "features": [
+            "getrandom",
+            "hybrid-array",
+            "rand_core",
+            "subtle",
+            "zeroize"
+          ],
+          "id": "registry+https://github.com/rust-lang/crates.io-index#crypto-bigint@0.7.10"
+        },
+        {
+          "features": [
+            "alloc",
+            "arithmetic",
+            "digest",
+            "ff",
+            "getrandom",
+            "group",
+            "pem",
+            "pkcs8",
+            "sec1",
+            "std"
+          ],
+          "id": "registry+https://github.com/rust-lang/crates.io-index#elliptic-curve@0.14.3"
+        },
+        {
+          "features": [
+            "client",
+            "default",
+            "full",
+            "http1",
+            "http2",
+            "server"
+          ],
+          "id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/hyper-1.8.1-pin-backport#hyper@1.8.1"
+        },
+        {
+          "features": [],
+          "id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/i18n-config-0.4.8#i18n-config@0.4.8"
+        },
+        {
+          "features": [
+            "serde"
+          ],
+          "id": "registry+https://github.com/rust-lang/crates.io-index#imbl@7.0.2"
+        },
+        {
+          "features": [
+            "apple-native",
+            "async-secret-service",
+            "crypto-rust",
+            "linux-native",
+            "linux-native-async-persistent",
+            "sync-secret-service",
+            "windows-native"
+          ],
+          "id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/keyring-3.6.3#keyring@3.6.3"
+        },
+        {
+          "features": [
+            "bundled",
+            "bundled_bindings",
+            "cc",
+            "default",
+            "min_sqlite_version_3_34_1",
+            "pkg-config",
+            "vcpkg"
+          ],
+          "id": "registry+https://github.com/rust-lang/crates.io-index#libsqlite3-sys@0.37.0"
+        },
+        {
+          "features": [
+            "checkpoint",
+            "default",
+            "futures",
+            "pin-utils",
+            "serde",
+            "serde_json"
+          ],
+          "id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/loom-0.7.2-pin-backport#loom@0.7.2"
+        },
+        {
+          "features": [
+            "e2e-encryption",
+            "rustls-aws-lc-rs",
+            "sqlite"
+          ],
+          "id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/matrix-sdk-0.19.1#matrix-sdk@0.19.1"
+        },
+        {
+          "features": [
+            "default",
+            "js"
+          ],
+          "id": "registry+https://github.com/rust-lang/crates.io-index#matrix-sdk-crypto@0.19.1"
+        },
+        {
+          "features": [
+            "crypto-store",
+            "event-cache-store",
+            "media-store",
+            "state-store"
+          ],
+          "id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/matrix-sdk-sqlite-0.19.1#matrix-sdk-sqlite@0.19.1"
+        },
+        {
+          "features": [
+            "alloc",
+            "arithmetic",
+            "default",
+            "digest",
+            "ecdsa",
+            "ecdsa-core",
+            "getrandom",
+            "pem",
+            "pkcs8",
+            "precomputed-tables",
+            "sha2",
+            "sha256",
+            "std"
+          ],
+          "id": "registry+https://github.com/rust-lang/crates.io-index#p256@0.14.0"
+        },
+        {
+          "features": [
+            "default"
+          ],
+          "id": "registry+https://github.com/rust-lang/crates.io-index#pagable@0.4.2"
+        },
+        {
+          "features": [],
+          "id": "registry+https://github.com/rust-lang/crates.io-index#pagable_derive@0.4.2"
+        },
+        {
+          "features": [
+            "cache",
+            "fallible_uint",
+            "hashlink",
+            "limits"
+          ],
+          "id": "registry+https://github.com/rust-lang/crates.io-index#rusqlite@0.39.0"
+        },
+        {
+          "features": [
+            "aws-lc-rs",
+            "aws_lc_rs",
+            "log",
+            "logging",
+            "prefer-post-quantum",
+            "ring",
+            "std",
+            "tls12"
+          ],
+          "id": "registry+https://github.com/rust-lang/crates.io-index#rustls@0.23.46"
+        },
+        {
+          "features": [
+            "alloc",
+            "aws-lc-rs",
+            "ring",
+            "std"
+          ],
+          "id": "registry+https://github.com/rust-lang/crates.io-index#rustls-webpki@0.103.16"
+        },
+        {
+          "features": [
+            "crypto-rust"
+          ],
+          "id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/secret-service-4.0.0#secret-service@4.0.0"
+        },
+        {
+          "features": [
+            "comments",
+            "default",
+            "deserialize",
+            "hepta-legacy-scalars",
+            "serialize"
+          ],
+          "id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/serde-saphyr-2.0.0#serde-saphyr@2.0.0"
+        },
+        {
+          "features": [],
+          "id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/starlark-0.14.2#starlark@0.14.2"
+        },
+        {
+          "features": [],
+          "id": "registry+https://github.com/rust-lang/crates.io-index#starlark_derive@0.14.2"
+        },
+        {
+          "features": [
+            "default",
+            "pagable_dep"
+          ],
+          "id": "registry+https://github.com/rust-lang/crates.io-index#starlark_map@0.14.2"
+        },
+        {
+          "features": [],
+          "id": "registry+https://github.com/rust-lang/crates.io-index#starlark_syntax@0.14.2"
+        },
+        {
+          "features": [
+            "comms",
+            "default",
+            "default-rt",
+            "object-manager",
+            "proxy",
+            "service",
+            "tracing"
+          ],
+          "id": "registry+https://github.com/rust-lang/crates.io-index#zbus@6.1.0"
+        },
+        {
+          "features": [
+            "comms",
+            "proxy",
+            "service"
+          ],
+          "id": "registry+https://github.com/rust-lang/crates.io-index#zbus_macros@6.1.0"
+        },
+        {
+          "features": [
+            "default"
+          ],
+          "id": "registry+https://github.com/rust-lang/crates.io-index#zbus_utils@6.0.0"
+        },
+        {
+          "features": [
+            "_bzip2_any",
+            "_deflate-any",
+            "aes-crypto",
+            "bzip2-rs",
+            "deflate",
+            "deflate-flate2",
+            "deflate-flate2-zlib-rs",
+            "deflate-zopfli",
+            "deflate64",
+            "lzma",
+            "ppmd",
+            "time",
+            "xz",
+            "zstd"
+          ],
+          "id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/third_party/zip-9.1.3#zip@9.1.3"
+        },
+        {
+          "features": [
+            "arrays",
+            "default",
+            "legacy",
+            "zdict_builder"
+          ],
+          "id": "registry+https://github.com/rust-lang/crates.io-index#zstd@0.14.3"
+        },
+        {
+          "features": [
+            "arrays",
+            "legacy",
+            "std",
+            "zdict_builder"
+          ],
+          "id": "registry+https://github.com/rust-lang/crates.io-index#zstd-safe@8.2.0"
+        },
+        {
+          "features": [
+            "legacy",
+            "std",
+            "zdict_builder"
+          ],
+          "id": "registry+https://github.com/rust-lang/crates.io-index#zstd-sys@2.1.2+zstd.1.5.7"
+        }
+      ]
+    },
+    "workspace_root": "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs"
+  },
+  "native_metadata": {
+    "bytes": 8277987,
+    "packages": 1528,
+    "resolve_nodes": 1528,
+    "sha256": "4ca8f9c3f082d26d4cf67f817a6300cbf9f023468824c999411e39b5ca9e8f60"
+  },
+  "projection": "Keep original workspace_root; select every package named in the sealed recipe or fixed dependency amendment, retaining name/version/id/source/manifest_path and each selected resolve node's id/features. No value is rewritten.",
+  "run_id": 42232089877,
+  "schema": "ndu.native-metadata-source-projection.v1",
+  "source_commit": "0e63dd2d320262681afeddd8cc45032984b5c8b2",
+  "source_tree": "5def5d3baa082c04bc9cdac9724a85163528c4ea"
+}
