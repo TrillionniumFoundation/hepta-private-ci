@@ -1,0 +1,52 @@
+{
+  "schema": "hcsn-original-budget-identity-review-v1",
+  "review_mode": "read-only comparison of retrieved original config, execution config and admission receipt",
+  "original_config_sha256": "7fa3d05b8c04a918043afdfa1c266a17beccb814351258d0555a753baf13777a",
+  "execution_config_sha256": "43fb7b280bb80643c0bcdbfceae6788b37dd1d45fad682805ec6045088b31611",
+  "admission_raw_sha256": "97e0cbc2eba58e72a898152e648c319113b8eb4c2f6610fad5095e5f582e8751",
+  "all_original_config_fields_unchanged": true,
+  "additional_pre_registered_execution_fields": {
+    "cuda_memory_fraction": 0.5,
+    "population_checkpoint_steps": 1
+  },
+  "models": [
+    "hx_dual",
+    "hx_fixed",
+    "hx_call",
+    "hx_risk",
+    "no_rollover",
+    "softplus",
+    "no_recovery",
+    "hx_attention",
+    "population_flux",
+    "population_flux_no_recovery",
+    "gru",
+    "lif",
+    "adaptive_lif",
+    "pif",
+    "transformer",
+    "cfc",
+    "mamba2"
+  ],
+  "tasks": [
+    "delayed_recall",
+    "adding"
+  ],
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "requested_identities": 170,
+  "optimizer_update_limit_per_identity": 400,
+  "batch_size": 64,
+  "sequence_length": 64,
+  "hidden_width": 64,
+  "data_seed": 271828,
+  "uniform_b_policy": 1,
+  "uniform_b_identities": 20,
+  "selection_uses_heldout": false,
+  "scope": "Budget/source invariance only; not completed training or equal active capacity/search qualification."
+}

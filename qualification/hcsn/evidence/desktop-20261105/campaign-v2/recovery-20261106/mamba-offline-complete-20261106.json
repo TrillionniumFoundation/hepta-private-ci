@@ -1,0 +1,121 @@
+{
+  "schema": "hcsn-mamba-offline-install-evidence-v1",
+  "scope": "fixed official extension installation and imports; no Mamba2 model instantiated by installer",
+  "source": {
+    "installer_sha256": "c7d67ffd43c2939da304154976eafe22e4869f6507f0e3a7b379963a43c4317f",
+    "torch_manifest_sha256": "5b8df3b8ff4583f10f43a1ecfb05f35574a3f95a16a458d107e36e8a89175701",
+    "mamba_manifest_sha256": "86f88c5d54c74e5baccdd99cace8f056a6ed6acc11f4bd8f633e122c951d5501"
+  },
+  "installation": {
+    "job_id": "1a1afd9a386-fc05-6c2c",
+    "state": "succeeded",
+    "exit_code": 0,
+    "output_complete": true,
+    "output_durable": true,
+    "automatic_retry": false,
+    "mode": "--install-verified",
+    "started_at": "2026-11-06T07:54:00.584808+00:00",
+    "finished_at": "2026-11-06T07:54:47.091033+00:00",
+    "elapsed_seconds": 46.63436394906603,
+    "cpu_seconds_self": 7.439716,
+    "cpu_seconds_children": 35.945183,
+    "artifact_count": 17,
+    "artifact_bytes": 706688727,
+    "download_tasks": 0,
+    "wire_bytes_received_this_attempt": null,
+    "wire_counter_note": "No per-attempt wire counter is emitted by this offline installer. The fixed mode requires all existing verified wheels and scheduled zero download tasks.",
+    "checks": [
+      {
+        "label": "offline_hash_required_pip_install",
+        "started_at": "2026-11-06T07:54:08.089555+00:00",
+        "finished_at": "2026-11-06T07:54:36.035009+00:00",
+        "returncode": 0
+      },
+      {
+        "label": "pip_check",
+        "started_at": "2026-11-06T07:54:36.073385+00:00",
+        "finished_at": "2026-11-06T07:54:37.595994+00:00",
+        "returncode": 0
+      },
+      {
+        "label": "mamba_extension_import_only",
+        "started_at": "2026-11-06T07:54:38.425892+00:00",
+        "finished_at": "2026-11-06T07:54:47.072477+00:00",
+        "returncode": 0
+      }
+    ],
+    "disk_budget": {
+      "bytecode_and_metadata_allowance_bytes": 536870912,
+      "exact_zip_uncompressed_bytes": 1015779069,
+      "known_parallel_artifact_write_allowance_bytes": 0,
+      "required_free_bytes": 7616311296,
+      "reserve_bytes": 5368709120,
+      "rounded_payload_bytes": 1021845504,
+      "temporary_allowance_basis": "one complete largest uncompressed wheel in addition to the final installed payload",
+      "temporary_allowance_bytes": 688885760
+    },
+    "disk_remaining_bytes": 14534160384
+  },
+  "runtime": {
+    "torch": "2.8.0+cu128",
+    "torch_cuda": "12.8",
+    "cxx11_abi": true,
+    "versions": {
+      "numpy": "2.3.5",
+      "scipy": "1.17.0",
+      "ncps": "1.0.1",
+      "nvidia-ml-py": "13.610.43",
+      "triton": "3.4.0",
+      "mamba-ssm": "2.3.1",
+      "causal-conv1d": "1.5.4",
+      "transformers": "4.57.1"
+    },
+    "modules": {
+      "mamba_ssm": {
+        "sha256": "6d3fee6ff8e8ec4dcab0f7af6c7890ff81f3d9319707865f5a651239aee9ae0a"
+      },
+      "causal_conv1d": {
+        "sha256": "f5ff545ad521a7b8fd046e180b7caea6d0846960dae23c2acbd8fe8ea3abaf71"
+      },
+      "causal_conv1d_cuda": {
+        "sha256": "bb3246c919013bbb4a4802401959adb084b119ae1a7b7dd155ce48b1205c5c2e"
+      },
+      "selective_scan_cuda": {
+        "sha256": "e552f45ad52bc843d4f7036e152c38513d361e08f5a740456cabecff960c83d6"
+      }
+    },
+    "mamba2_class": {
+      "module": "mamba_ssm.modules.mamba2",
+      "name": "Mamba2"
+    },
+    "model_instantiated": false,
+    "model_forward_or_backward_performed": false
+  },
+  "raw_artifacts": [
+    {
+      "relative_path": "envsetup/mamba-stage-status.json",
+      "sha256": "366a734b6a5e8e8659f8cda7908c3fd05818cbea82743f550386b365c009a376"
+    },
+    {
+      "relative_path": "envsetup/MAMBA_READY.json",
+      "sha256": "1abd4f6c472ad2baf279f66d921e6ab5a3f9c6275899a863f9ac65e0d2b70a76"
+    },
+    {
+      "relative_path": "envsetup/mamba-import-availability.json",
+      "sha256": "99969e8ba763e476cd8451aeaefa2833be25f189c3044fa79437423d5094f45b"
+    }
+  ],
+  "preserved": {
+    "original_mamba_wheels_ready_sha256": "f733f94818ea70056c52ef8ec7c5bd030f470482c3182d7642afa93d845cf384",
+    "original_mamba_verification_sha256": "778615bf24fa01214f9eaacad3b1cd7c5141e42cd6b7f650dadd55d53697fb99",
+    "old_waiter_job": "1a1acadd69c-fc05-5654",
+    "old_waiter_exit": 1,
+    "original_campaign_job": "1a1acdd69f2-fc05-5757",
+    "model_budget_changed": false,
+    "new_training_campaign_started": false
+  },
+  "publication": {
+    "view": "bounded selected fields; absolute interpreter/module paths and host owner metadata omitted",
+    "raw_artifacts_retained": true
+  }
+}
