@@ -1126,7 +1126,7 @@ call_pattern = "(?:\\.\\s*|[A-Za-z_][A-Za-z0-9_]*\\s*::\\s*)rotate_writer_author
 id = "root_physical_current_retired_adoption"
 symbol = "HostCognitiveCheckpoint::adopt_current_after_root_restart_with_material"
 definition_path = "codex-rs/hepta-agentd/src/authority_host_checkpoint_adoption.rs"
-definition_markers = ["pub(crate) fn adopt_current_after_root_restart_with_material(", "Predecessor::Retired(predecessor)", "AdoptMaterial::Physical(profile)", "validate_adoption(previous, &predecessor, &registration, successor)?", "material.prepare(previous, &next)?", ".compare_and_set(STORE_OWNER, old, &next)"]
+definition_markers = ["pub(crate) fn adopt_current_after_root_restart_with_material(", "Predecessor::Retired(predecessor)", "AdoptMaterial::Physical(Box::new(profile))", "validate_adoption(previous, &predecessor, &registration, successor)?", "material.prepare(previous, &next)?", ".compare_and_set(STORE_OWNER, old, &next)"]
 product_callers = ["codex-rs/hepta-agentd/src/authority_host_checkpoint_material_recovery.rs"]
 caller_markers = []
 
@@ -1269,7 +1269,7 @@ forbidden = ["AllowVerifier", "permit_all", "impl Clone for PreparedMaterialReco
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/authority_host_checkpoint_adoption.rs"
-required = ["validate_adoption(previous, &predecessor, &registration, successor)?", "AdoptMaterial::Physical(profile)", "material.prepare(previous, &next)?", ".compare_and_set(STORE_OWNER, old, &next)", "predecessor.require_retired()?", "successor.require_alive()?"]
+required = ["validate_adoption(previous, &predecessor, &registration, successor)?", "AdoptMaterial::Physical(Box::new(profile))", "material.prepare(previous, &next)?", ".compare_and_set(STORE_OWNER, old, &next)", "predecessor.require_retired()?", "successor.require_alive()?"]
 forbidden = ["AllowVerifier", "permit_all"]
 
 [[protected_file]]
