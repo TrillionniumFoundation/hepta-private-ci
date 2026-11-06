@@ -1,0 +1,61 @@
+{
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_head": "5ff00398b1bee55264f19aa122ecdb4523ba88e7",
+  "base_tree": "c0b290e2850ad53f003568eb411088aa91dc0378",
+  "base_ref": "research/ndu-core-fixture-permission-context-20261106",
+  "inputs_ref": "research/ndu-core-regression-inputs-20261106",
+  "proposal_ref": "research/ndu-core-regression-proposal-20261106",
+  "inputs_head": null,
+  "inputs_tree": null,
+  "added_paths": [
+    ".github/scripts/hepta_core_regression_guard.py",
+    ".github/scripts/hepta_core_regression_evidence.py",
+    ".github/scripts/hepta_core_regression_contract.py",
+    ".github/scripts/hepta-core-regression-spec.json",
+    ".github/scripts/hepta_core_regression.py",
+    ".github/workflows/hepta-core-regression-proposal.yml",
+    ".github/scripts/hepta-core-regression-report.toml"
+  ],
+  "inputs_paths": [
+    ".github/scripts/hepta_core_regression_guard.py",
+    ".github/scripts/hepta_core_regression_evidence.py",
+    ".github/scripts/hepta_core_regression_contract.py",
+    ".github/scripts/hepta-core-regression-spec.json",
+    ".github/scripts/hepta-core-regression-report.toml"
+  ],
+  "baseline_blobs": {
+    "AGENTS.md": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+    "justfile": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+    "scripts/just-shell.py": "bb2db6ebc4312a301ee39d2793fde16289d046d8",
+    "scripts/run-nextest.py": "1ed63abe84267b320cbfb0123a70aac5507f4595",
+    "codex-rs/Cargo.lock": "40936dd806123bf78d3c12a5c0cf0b60fec05d3c",
+    "codex-rs/Cargo.toml": "b21f7ffc0ee52722ddf82e5a996ff9d82ae0fbb0",
+    "codex-rs/rust-toolchain.toml": "917d2492264a35bc9c0feaef41878d8825870866",
+    "codex-rs/.config/nextest.toml": "f0430497b34b5335929e24b9e19745f467362641",
+    "codex-rs/core/Cargo.toml": "df43645d3ca5e18e4ba526479a4c59cb103d3a5d",
+    "codex-rs/core/tests/common/lib.rs": "1443c0aa42e467a0b6ab5881b94c15343b97115e",
+    "codex-rs/core/tests/common/responses.rs": "1f99eb45d8e96f6f74d035226d4458e383b164d3",
+    ".github/workflows/rust-ci-full-nextest-platform.yml": "3d78747cbe8cf8c52e360462f501c1bab4049a3e",
+    "codex-rs/core/tests/common/test_codex.rs": "3212d94e82f8a286cd6bc7e96140c0f4d0215632",
+    "codex-rs/core/tests/suite/agent_websocket.rs": "a8714fd864cb4213f67a831996a3107569104bd6",
+    "codex-rs/core/tests/suite/compact.rs": "0c2b3aa74321fe4f584d9c038a96810c47a467e3",
+    "codex-rs/core/tests/suite/compact_remote.rs": "25d39159a6482e2e2896d64aa6c1c3bbc65782b7",
+    "codex-rs/core/tests/suite/git_enrichment.rs": "98304f53526b02f66abf0cbcd2a05a5c7d922cdb"
+  },
+  "cases": [
+    "suite::agent_websocket::websocket_v2_first_turn_drops_fast_tier_after_startup_prewarm",
+    "suite::compact::remote_v2_compaction_keeps_creation_time_instructions_after_same_path_mutation",
+    "suite::compact_remote::remote_compact_replaces_history_for_followups",
+    "suite::git_enrichment::startup_prewarm_skips_git_enrichment_and_user_turn_observes_fresh_state"
+  ],
+  "binary_id": "codex-core::all",
+  "native_target": "x86_64-unknown-linux-gnu",
+  "python_version": "3.12.10",
+  "original_policy": {
+    "nextest_profile": "local",
+    "retries": 1,
+    "slow_timeout": "30s",
+    "terminate_after": 2,
+    "test_threads": "repository default; no CLI override"
+  }
+}
