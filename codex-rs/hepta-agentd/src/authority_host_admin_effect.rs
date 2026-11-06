@@ -23,7 +23,7 @@ impl HostAuthorityService {
         Ok(RootAdminResponse::OriginalNotesGrantObserved {
             instance: context.instance().clone(),
             original_grant_id: signed.grant.grant_id.clone(),
-            effect_lease: actual.lease,
+            effect_lease: Box::new(actual.lease),
             effect_revocation: actual.revocation,
             lease_frontier: actual.frontier,
             final_use_head: actual.head,

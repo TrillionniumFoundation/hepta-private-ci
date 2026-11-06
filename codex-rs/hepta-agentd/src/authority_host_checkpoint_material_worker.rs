@@ -15,7 +15,7 @@ enum Command {
         publisher: RetainedCheckpointPublisher,
     },
     Verify,
-    Rebind(CognitiveCheckpointReceipt),
+    Rebind(Box<CognitiveCheckpointReceipt>),
     Install,
     ReopenInstallation,
 }
@@ -27,7 +27,7 @@ struct Job {
 }
 
 enum Outcome {
-    Verified(MaterialRecord),
+    Verified(Box<MaterialRecord>),
     Installed(codex_hepta_memory::InstalledRootCheckpointImage),
 }
 
@@ -72,14 +72,18 @@ impl RootCheckpointMaterial {
                                 };
                                 let captured = area.prepare(&job.candidate, uid).await?;
                                 publisher.require_alive()?;
-                                Ok(Outcome::Verified(captured))
+                                Ok(Outcome::Verified(Box::new(captured)))
                             }
                             Command::Verify => {
-                                area.verify(&job.candidate).await.map(Outcome::Verified)
+                                area.verify(&job.candidate)
+                                    .await
+                                    .map(Box::new)
+                                    .map(Outcome::Verified)
                             }
                             Command::Rebind(previous) => area
                                 .rebind(&previous, &job.candidate)
                                 .await
+                                .map(Box::new)
                                 .map(Outcome::Verified),
                             Command::Install => {
                                 area.install(&job.candidate).await.map(Outcome::Installed)
@@ -125,11 +129,14 @@ impl RootCheckpointMaterial {
         current: CognitiveCheckpointReceipt,
     ) -> Result<HostPhysicalCurrentObservation, AuthorityTrustError> {
         match self.call(current, Command::Verify)? {
-            Outcome::Verified(record) => Ok(HostPhysicalCurrentObservation {
-                current: record.candidate,
-                material_sha256: record.image_sha256,
-                material_bytes: record.image_bytes,
-            }),
+            Outcome::Verified(record) => {
+                let record = *record;
+                Ok(HostPhysicalCurrentObservation {
+                    current: record.candidate,
+                    material_sha256: record.image_sha256,
+                    material_bytes: record.image_bytes,
+                })
+            }
             Outcome::Installed(_) => Err(AuthorityTrustError::Invalid),
         }
     }
@@ -139,7 +146,8 @@ impl RootCheckpointMaterial {
         previous: CognitiveCheckpointReceipt,
         candidate: CognitiveCheckpointReceipt,
     ) -> Result<(), AuthorityTrustError> {
-        self.call(candidate, Command::Rebind(previous)).map(|_| ())
+        self.call(candidate, Command::Rebind(Box::new(previous)))
+            .map(|_| ())
     }
 
     pub(crate) fn install(

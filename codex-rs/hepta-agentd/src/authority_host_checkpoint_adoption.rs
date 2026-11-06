@@ -88,7 +88,7 @@ impl HostCognitiveCheckpoint {
             registration,
             successor,
             clock,
-            AdoptMaterial::Physical(profile),
+            AdoptMaterial::Physical(Box::new(profile)),
         )
     }
 
@@ -161,7 +161,7 @@ impl HostCognitiveCheckpoint {
 
 enum AdoptMaterial {
     LogicalOnly,
-    Physical(RootMaterialProfile),
+    Physical(Box<RootMaterialProfile>),
 }
 
 impl AdoptMaterial {
@@ -173,7 +173,7 @@ impl AdoptMaterial {
         match self {
             Self::LogicalOnly => Ok(None),
             Self::Physical(profile) => {
-                let material = RootCheckpointMaterial::open(profile, next.peer_lifetime.clone())?;
+                let material = RootCheckpointMaterial::open(*profile, next.peer_lifetime.clone())?;
                 material.rebind(
                     previous.clone(),
                     CognitiveCheckpointReceipt {

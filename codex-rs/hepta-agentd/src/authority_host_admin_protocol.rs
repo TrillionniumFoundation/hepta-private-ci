@@ -78,7 +78,7 @@ pub enum RootAdminConsumerSynchronization {
 #[serde(tag = "status", rename_all = "snake_case")]
 pub enum RootAdminResponse {
     Observed {
-        observation: RootAdminObservation,
+        observation: Box<RootAdminObservation>,
     },
     IssuedNotesGrantObserved {
         instance: RootAdminInstance,
@@ -87,7 +87,7 @@ pub enum RootAdminResponse {
     OriginalNotesGrantObserved {
         instance: RootAdminInstance,
         original_grant_id: String,
-        effect_lease: codex_hepta_contracts::authority_lease::AuthorityLeaseReadV1,
+        effect_lease: Box<codex_hepta_contracts::authority_lease::AuthorityLeaseReadV1>,
         effect_revocation:
             Option<codex_hepta_contracts::authority_lease::CapabilityRevocationReadV1>,
         lease_frontier: codex_hepta_contracts::authority_lease::AuthorityLeaseFrontier,
