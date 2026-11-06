@@ -1,0 +1,196 @@
+{
+  "changes": {
+    "codex-rs/Cargo.lock": {
+      "after": {
+        "bytes": 419355,
+        "sha256": "f1e6fa0a988a0454cac28c061259fb229f53642ebc11cce09395ac899bff1781"
+      },
+      "before": {
+        "bytes": 419311,
+        "sha256": "df62d73836673ec7cfb69d8f232cb81be610cea94e8ce95f81d41235f4a3317f"
+      },
+      "mode": "100644"
+    },
+    "codex-rs/hepta-matrix-sdk/Cargo.toml": {
+      "after": {
+        "bytes": 975,
+        "sha256": "fd265d32a4af33bf30f85d3fb741b9e8e97230aeb71dffacad63342bf49deefa"
+      },
+      "before": {
+        "bytes": 935,
+        "sha256": "281ad225f084f63fc35f2f6238d7931d4fdb05b31c99cc6ee8544f5815ce2fa3"
+      },
+      "mode": "100644"
+    },
+    "codex-rs/hepta-matrix-sdk/src/sdk.rs": {
+      "after": {
+        "bytes": 29341,
+        "sha256": "9462a09f15bf7130413669dba1c29cd737c9421740c7307d2218782fd5d68848"
+      },
+      "before": {
+        "bytes": 29600,
+        "sha256": "4aa4927daad46f926ad7d8c482c4028d38016b3ef8b7466e55111d79c01232e4"
+      },
+      "mode": "100644"
+    },
+    "codex-rs/utils/path-utils/Cargo.toml": {
+      "after": {
+        "bytes": 516,
+        "sha256": "fc49b7138af920f7239da1e5888a11468355f57d7a6975657fe8ca10c2e846a5"
+      },
+      "before": {
+        "bytes": 379,
+        "sha256": "884536586b88583e7f330b2d32c6815cfd8ee1e3493fd676ce1b62c97a409ba4"
+      },
+      "mode": "100644"
+    },
+    "codex-rs/utils/path-utils/src/durable_publish.rs": {
+      "after": {
+        "bytes": 4415,
+        "sha256": "6a855aef91aebff1bd1d1f374a87a0dfb85c130e6e421a8302e8870379213dc1"
+      },
+      "before": null,
+      "mode": "100644"
+    },
+    "codex-rs/utils/path-utils/src/durable_publish_tests.rs": {
+      "after": {
+        "bytes": 3429,
+        "sha256": "7ada1e2cfc05f6bd964dba2a91be2bd144da5c5d2e6aa5f04f5cd696dce8992a"
+      },
+      "before": null,
+      "mode": "100644"
+    },
+    "codex-rs/utils/path-utils/src/lib.rs": {
+      "after": {
+        "bytes": 6770,
+        "sha256": "0049b261fff065975c8d91cbc0940a342fe1ce0ac3f3d118dc7c0802df8a0797"
+      },
+      "before": {
+        "bytes": 6703,
+        "sha256": "56aefb3545776cb416b4dd5a8ebddaa635944e2f582e814a902b371f7d0cedc1"
+      },
+      "mode": "100644"
+    }
+  },
+  "inventory": {
+    "added": [
+      "codex-rs/utils/path-utils/Cargo.toml",
+      "codex-rs/utils/path-utils/src/durable_publish.rs",
+      "codex-rs/utils/path-utils/src/durable_publish_tests.rs",
+      "codex-rs/utils/path-utils/src/lib.rs"
+    ],
+    "current_count": 324,
+    "previous_count": 320,
+    "replaced": [
+      "codex-rs/Cargo.lock",
+      "codex-rs/hepta-matrix-sdk/Cargo.toml",
+      "codex-rs/hepta-matrix-sdk/src/sdk.rs"
+    ]
+  },
+  "native_proposal": {
+    "archive": {
+      "bytes": 2286884,
+      "git_blob": "7eb07790cd507ea4ee0d84c4ff9e5d7fd215dcce",
+      "sha256": "88f6331ac4df6e7a7c4055607207c94ee375ed64eb4caa925d26c549008b876d"
+    },
+    "artifact_id": 13538176421,
+    "complete_metadata_comparison_ran_privately": true,
+    "complete_private_metadata_offline_replayed": false,
+    "exact_commands_exit_zero": 16,
+    "head": "8815e8c9282306d8f44b73b626e0f413db8780d0",
+    "job_id": 128126088445,
+    "original_all_features_cargo_deny_passed": true,
+    "run_id": 42285779570,
+    "safe_metadata_projection_is_lossless": false,
+    "tree": "b87af885133867514e6c4474df2834c2bf67e306"
+  },
+  "operation": "bind-native-sdk-durable-publication",
+  "parents": {
+    "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/BUILD_AMENDMENT.v7.3.json": {
+      "bytes": 2820,
+      "sha256": "2ebd2e0ceacf4f22f2c3b28b7397d353c52e95d944ef664e9dcf6cb70b0e6a5e"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/DEPENDENCY_AMENDMENT.v7.2.json": {
+      "bytes": 76071,
+      "sha256": "334d6a0000bb6c14c1f8742e680c799d7e9f768e035ce06a99593bedd0e1d538"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/INTEGRATION.v7.json": {
+      "bytes": 9120,
+      "sha256": "ef1fc0a4cfd8c2621eeb82e413555c1ea1780020a1f74f7c666253b62a5bfde2"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/LOCK_AMENDMENT.v7.5.json": {
+      "bytes": 5700,
+      "sha256": "1642fee9bf4497169d2a2645e01864e8c74435071887dcea7bc2c8315123ab83"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/SOURCE_AMENDMENT.v7.1.json": {
+      "bytes": 3256,
+      "sha256": "f802638dd5d01f3b3d7583986848c1ad6264c3ec478ed055f4e1edebc7a0d40a"
+    },
+    "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/SOURCE_AMENDMENT.v7.4.json": {
+      "bytes": 3111,
+      "sha256": "56c5b2a709caa0ae7749e1281c9e6ac56085244303cdbb8b158fc26d1cf106d0"
+    },
+    "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/RECIPE.v7.json": {
+      "bytes": 348278,
+      "sha256": "8c655b7b3c539527e6506869a52d0e98a88ed37e334e9d34d13be83713bce03f"
+    }
+  },
+  "promotion_allowed": false,
+  "proofs": {
+    "qualification/ndu-ci-repairs-20261106/port-sdk-durable-native/current-product-source-binding.json.gz": {
+      "bytes": 2623,
+      "sha256": "c1b429c2c9279332c2b63d50cb8511e3691435e25dd64e9a6b4ccd9b59c9d2e4"
+    },
+    "qualification/ndu-ci-repairs-20261106/port-sdk-durable-native/independent-artifact-audit.json.gz": {
+      "bytes": 4320,
+      "sha256": "4914320ec0ed523951ee1ddcbbc6b1d6c65a7a9a28ac09fb6fbeb224db452021"
+    },
+    "qualification/ndu-ci-repairs-20261106/port-sdk-durable-native/native-artifact-manifest.json.gz": {
+      "bytes": 3670,
+      "sha256": "9951c1aa2e8b782007e468685b07f34643d12f927134c6ebf1bcb503ff598c9d"
+    },
+    "qualification/ndu-ci-repairs-20261106/port-sdk-durable-native/native-cargo-proof.json.gz": {
+      "bytes": 175,
+      "sha256": "74c2585d735d2f3937cae263fa1d832474d05696c040587cd772ba93df034f4f"
+    },
+    "qualification/ndu-ci-repairs-20261106/port-sdk-durable-native/native-metadata-custody.json.gz": {
+      "bytes": 447,
+      "sha256": "d1cc6585a0d9a916d99ea327119c1c67fa29c78da2e52f348ea98de8aee6a266"
+    },
+    "qualification/ndu-ci-repairs-20261106/port-sdk-durable-native/native-metadata-proof.json.gz": {
+      "bytes": 419,
+      "sha256": "3e956c77de55049f48d4d69cd5207e65f0891bccfe61491156e9d6c4cd5db460"
+    },
+    "qualification/ndu-ci-repairs-20261106/port-sdk-durable-native/native-module-proof.json.gz": {
+      "bytes": 100,
+      "sha256": "193b0c18db18e8428d9ad6430a33529ceeb91b96e5a71b3f28baae5722e77175"
+    },
+    "qualification/ndu-ci-repairs-20261106/port-sdk-durable-native/native-result.json.gz": {
+      "bytes": 2867,
+      "sha256": "05876503cb435039eefcd4abe2f5d078777c029d8345142d4b602c86eca3f132"
+    },
+    "qualification/ndu-ci-repairs-20261106/port-sdk-durable-native/original-native.patch.gz": {
+      "bytes": 3381,
+      "sha256": "33079e07decb038d5aa9313ab338a2762f0b92cce028dbb3b86bcfdbc5176d8a"
+    },
+    "qualification/ndu-ci-repairs-20261106/port-sdk-durable-native/root-artifact-review.json.gz": {
+      "bytes": 1225,
+      "sha256": "a0c9e07a9b6cae918b530f6ef9326f150c84530f5da8aa1f6679419b7d6a0c34"
+    }
+  },
+  "reviewed_product_parent": {
+    "branch": "research/ndu-arm-build-nextest-store-20261106",
+    "head": "cef06d5c2e4732e6e99070d8f1c60b034497443a",
+    "pull_request": 5132,
+    "tree": "56965aa1897e9383a704aec229b47e9512d1a329"
+  },
+  "reviewed_product_tree": "ca5ec3abaabccd483313c24d2619cd1a337a3f14",
+  "schema": "hepta.port-sdk-durable-amendment.v1",
+  "scope": "Six reviewed SDK/utility source outputs and the original two-edge Cargo delta. Every historical seal and native proof remains exact. Windows and SDK product execution remain separate.",
+  "unchanged_locks": {
+    "MODULE.bazel.lock": {
+      "bytes": 1725951,
+      "sha256": "90225dce14839069862401db906babcee1d1f19349f2da87024740e97747adaf"
+    }
+  }
+}

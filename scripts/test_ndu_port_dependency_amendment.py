@@ -1,6 +1,7 @@
 """Exercise reviewed bytes, real Git and controlled metadata; no native qualification."""
 
 import copy
+import gzip
 import json
 import os
 from pathlib import Path
@@ -62,6 +63,25 @@ class DependencyAmendmentTests(unittest.TestCase):
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(ROOT / name, target)
         git(self.root, "init", "-q")
+        sdk_path = ROOT / common.SDK_AMENDMENT
+        if sdk_path.exists():
+            # Keep this historical 320-file fixture at its exact v7.5 source.
+            # The separate SDK tests apply all seven qualified successor paths.
+            sdk = json.loads(sdk_path.read_bytes())
+            proof = next(
+                name
+                for name in sdk["proofs"]
+                if name.endswith("original-native.patch.gz")
+            )
+            native_patch = self.base / "original-sdk-native.patch"
+            native_patch.write_bytes(gzip.decompress((ROOT / proof).read_bytes()))
+            git(
+                self.root,
+                "apply",
+                "--reverse",
+                *["--include=" + name for name in sorted(common.SDK_EXISTING_INPUTS)],
+                str(native_patch),
+            )
         git(self.root, "config", "user.name", "Source guard fixture")
         git(self.root, "config", "user.email", "fixture@example.invalid")
         # These exact vendor files are tracked upstream, including Cargo.lock

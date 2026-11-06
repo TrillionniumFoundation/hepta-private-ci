@@ -10,6 +10,7 @@ from ndu_port_candidate_common import LOCK_AMENDMENT
 from ndu_port_candidate_common import POLICIES
 from ndu_port_candidate_common import RECIPE
 from ndu_port_candidate_common import SOURCE_AMENDMENT
+from ndu_port_candidate_common import SDK_AMENDMENT
 from ndu_port_candidate_common import check_checkout
 from ndu_port_candidate_common import check_toolchain
 from ndu_port_candidate_common import checksum
@@ -68,6 +69,11 @@ def generate_integrated(runner, expected_source):
             runner.root / LOCK_AMENDMENT, runner.output / "lock-amendment.json"
         )
         amendment_artifacts += ("lock-amendment.json",)
+    if "sdk_amendment" in binding:
+        shutil.copyfile(
+            runner.root / SDK_AMENDMENT, runner.output / "sdk-amendment.json"
+        )
+        amendment_artifacts += ("sdk-amendment.json",)
     # An explicitly declared empty delta binds this already committed source.
     # Patched mode still requires successful nonempty Git patch application.
     (runner.output / "candidate.patch").write_bytes(b"")
