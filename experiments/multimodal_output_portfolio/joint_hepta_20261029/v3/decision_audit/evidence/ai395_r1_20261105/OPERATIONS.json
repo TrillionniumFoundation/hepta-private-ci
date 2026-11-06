@@ -1,0 +1,43 @@
+{
+  "schema": "hepta.r1-operational-receipts.v1",
+  "research_source_sha": "975e1a264c14ed3da02dcee23a64327825387e42",
+  "native_jobs": [
+    {
+      "role": "original-six",
+      "receipt": "native/receipts/original-six.json",
+      "job_id": "1a1aa61b4a7-fc05-4217"
+    },
+    {
+      "role": "raw-capture",
+      "receipt": "native/receipts/raw-capture.json",
+      "job_id": "1a1aa6bab03-fc05-42cf"
+    },
+    {
+      "role": "legacy-probes",
+      "receipt": "native/receipts/legacy-probes.json",
+      "job_id": "1a1aa7162ff-fc05-4330"
+    },
+    {
+      "role": "inventory",
+      "receipt": "native/receipts/inventory.json",
+      "job_id": "1a1aa7f38b5-fc05-43aa"
+    }
+  ],
+  "limits": {
+    "model_jobs_cpu_quota_percent": 200,
+    "model_jobs_memory_max_bytes": 8589934592,
+    "nice": 10,
+    "threads": 2
+  },
+  "control_plane_incidents": [
+    {
+      "operation": "inventory process_start",
+      "key": "r1-4835-ai395-final-inventory-20261105-01",
+      "first_response": "MCP request timed out; launch state initially unknown",
+      "resolution": "One exact same-key reconciliation returned reused=true and the original native succeeded receipt. No second inventory process was launched."
+    }
+  ],
+  "not_product_test_results": true,
+  "no_existing_branch_updated": true,
+  "new_branch_requested": "research/ndu-r1-evidence-ai395-20261105-4d868a11"
+}

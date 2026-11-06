@@ -1,0 +1,273 @@
+{
+  "schema": "hepta.r1-historical-input-execution.v1",
+  "status": "completed",
+  "source_sha": "975e1a264c14ed3da02dcee23a64327825387e42",
+  "source_tree": "cb612abe0d02afaf711d37f5d8575a577da5524e",
+  "observer_sha256": "1d13df73b828548f55066de7d69915a750c4cca8b842e6607c2969e2a3eb9195",
+  "plan_sha256": "9eda6e6825a5ebc61a2dfebb2aa77f4705ae1927b2dbccede98467721c162b37",
+  "host": "ai395",
+  "python": "3.12.16 (main, Oct 26 2026, 14:08:45) [Clang 23.1.3 ]",
+  "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.43",
+  "training_performed": false,
+  "production_qualified": false,
+  "energy_joules": null,
+  "energy_unavailable_reason": "No whole-process energy meter configured.",
+  "cases": [
+    {
+      "id": "direct-perceive",
+      "image": "original",
+      "role": "historical_input_replay",
+      "status": "completed",
+      "output": "The diagram shows a close-up view of a pink flower with a bee on it. The bee is in the center of the flower, and the flower is surrounded by other flowers. The flower is pink, and the bee is yellow. The background is green, and there are leaves in the background. The diagram is simple and uses a simple color scheme, with the bee and flower being the main",
+      "output_sha256": "e868d31e1cdee549254b25203d775363f10b19ab97a01ba7f19e60873caf52d6",
+      "output_tokens": 80,
+      "stop_reason": "max_new_tokens",
+      "equals_historical_text": true,
+      "cpu_seconds": 14.756075357,
+      "wall_seconds": 10.357468922971748,
+      "model_generate_calls": 1
+    },
+    {
+      "id": "direct-text",
+      "image": "original",
+      "role": "historical_input_replay",
+      "status": "completed",
+      "output": "The diagram shows a close-up view of a pink flower with a bee on it. The bee is in the center of the flower, and the flower is surrounded by other flowers. The flower is pink, and the bee is yellow. The background is green, and there are leaves in the background. The diagram is simple and uses a simple color scheme, with the bee and flower being the main",
+      "output_sha256": "e868d31e1cdee549254b25203d775363f10b19ab97a01ba7f19e60873caf52d6",
+      "output_tokens": 80,
+      "stop_reason": "max_new_tokens",
+      "equals_historical_text": true,
+      "cpu_seconds": 11.930506575000003,
+      "wall_seconds": 6.94737507798709,
+      "model_generate_calls": 1
+    },
+    {
+      "id": "direct-verify",
+      "image": "generated",
+      "role": "historical_input_replay",
+      "status": "completed",
+      "output": "The diagram shows a close-up view of a pink flower with a bee on it. The bee is in the center of the flower, and the flower is surrounded by other flowers. The flower is pink, and the bee is yellow. The background is green, and there are leaves in the background. The diagram is simple and uses a simple color scheme, with the bee and flower being the main",
+      "output_sha256": "e868d31e1cdee549254b25203d775363f10b19ab97a01ba7f19e60873caf52d6",
+      "output_tokens": 80,
+      "stop_reason": "max_new_tokens",
+      "equals_historical_text": true,
+      "cpu_seconds": 12.067393877000004,
+      "wall_seconds": 7.04394831310492,
+      "model_generate_calls": 1
+    },
+    {
+      "id": "revision-perceive",
+      "image": "original",
+      "role": "historical_input_replay",
+      "status": "completed",
+      "output": "The diagram shows a close-up view of a pink flower with a bee on it. The bee is in the center of the flower, and the flower is surrounded by other flowers. The flower is pink, and the bee is yellow. The background is green, and there are leaves in the background. The diagram is simple and uses a simple color scheme, with the bee and flower being the main",
+      "output_sha256": "e868d31e1cdee549254b25203d775363f10b19ab97a01ba7f19e60873caf52d6",
+      "output_tokens": 80,
+      "stop_reason": "max_new_tokens",
+      "equals_historical_text": true,
+      "cpu_seconds": 11.833537133,
+      "wall_seconds": 6.880059321993031,
+      "model_generate_calls": 1
+    },
+    {
+      "id": "revision-text",
+      "image": "original",
+      "role": "historical_input_replay",
+      "status": "completed",
+      "output": "The diagram shows a close-up view of a pink flower with a bee on it. The bee is in the center of the flower, and the flower is surrounded by other flowers. The flower is pink, and the bee is yellow. The background is green, and there are leaves in the background. The diagram is simple and uses a simple color scheme, with the bee and flower being the main",
+      "output_sha256": "e868d31e1cdee549254b25203d775363f10b19ab97a01ba7f19e60873caf52d6",
+      "output_tokens": 80,
+      "stop_reason": "max_new_tokens",
+      "equals_historical_text": true,
+      "cpu_seconds": 12.037469127999998,
+      "wall_seconds": 6.980806475970894,
+      "model_generate_calls": 1
+    },
+    {
+      "id": "revision-verify",
+      "image": "generated",
+      "role": "historical_input_replay",
+      "status": "completed",
+      "output": "The diagram shows a close-up view of a pink flower with a bee on it. The bee is in the center of the flower, and the flower is surrounded by other flowers. The flower is pink, and the bee is yellow. The background is green, and there are leaves in the background. The diagram is simple and uses a simple color scheme, with the bee and flower being the main",
+      "output_sha256": "e868d31e1cdee549254b25203d775363f10b19ab97a01ba7f19e60873caf52d6",
+      "output_tokens": 80,
+      "stop_reason": "max_new_tokens",
+      "equals_historical_text": true,
+      "cpu_seconds": 11.999707893999997,
+      "wall_seconds": 6.99290098703932,
+      "model_generate_calls": 1
+    },
+    {
+      "id": "revision-revise",
+      "image": "original",
+      "role": "historical_input_replay",
+      "status": "completed",
+      "output": "The diagram shows a close-up view of a pink flower with a bee on it. The bee is in the center of the flower, and the flower is surrounded by other flowers. The flower is pink, and the bee is yellow. The background is green, and there are leaves in the background. The diagram is simple and uses a simple color scheme, with the bee and flower being the main",
+      "output_sha256": "e868d31e1cdee549254b25203d775363f10b19ab97a01ba7f19e60873caf52d6",
+      "output_tokens": 80,
+      "stop_reason": "max_new_tokens",
+      "equals_historical_text": true,
+      "cpu_seconds": 5.701596821999999,
+      "wall_seconds": 3.5711544760270044,
+      "model_generate_calls": 1
+    },
+    {
+      "id": "revision-text2",
+      "image": "original",
+      "role": "historical_input_replay",
+      "status": "completed",
+      "output": "The diagram shows a close-up view of a pink flower with a bee on it. The bee is in the center of the flower, and the flower is surrounded by other flowers. The flower is pink, and the bee is yellow. The background is green, and there are leaves in the background. The diagram is simple and uses a simple color scheme, with the bee and flower being the main",
+      "output_sha256": "e868d31e1cdee549254b25203d775363f10b19ab97a01ba7f19e60873caf52d6",
+      "output_tokens": 80,
+      "stop_reason": "max_new_tokens",
+      "equals_historical_text": true,
+      "cpu_seconds": 6.544133662999997,
+      "wall_seconds": 3.640897484961897,
+      "model_generate_calls": 1
+    },
+    {
+      "id": "revision-verify2",
+      "image": "refined",
+      "role": "historical_input_replay",
+      "status": "completed",
+      "output": "The diagram shows a close-up view of a pink flower with a bee on it. The bee is in the center of the flower, and the flower is surrounded by other flowers. The flower is pink, and the bee is yellow. The background is green, and there are leaves in the background. The diagram is simple and uses a simple color scheme, with the bee and flower being the main",
+      "output_sha256": "e868d31e1cdee549254b25203d775363f10b19ab97a01ba7f19e60873caf52d6",
+      "output_tokens": 80,
+      "stop_reason": "max_new_tokens",
+      "equals_historical_text": true,
+      "cpu_seconds": 4.957827585999993,
+      "wall_seconds": 2.9261635809671134,
+      "model_generate_calls": 1
+    },
+    {
+      "id": "blank-historical-plan",
+      "image": "blank",
+      "role": "negative_control",
+      "status": "completed",
+      "output": "The diagram is a simple and uses a simple color scheme, with the bee and flower being the main",
+      "output_sha256": "82f41703f1c2448cc2ebbef1931ac3b026dea960e245e07fcdf7c48252e71404",
+      "output_tokens": 21,
+      "stop_reason": "eos",
+      "equals_historical_text": false,
+      "cpu_seconds": 2.7137949100000043,
+      "wall_seconds": 1.7041681359987706,
+      "model_generate_calls": 1
+    },
+    {
+      "id": "blank-rival-plan",
+      "image": "blank",
+      "role": "negative_control",
+      "status": "completed",
+      "output": "The diagram shows a red ball on a blue square. The red ball is centered on the blue square. The blue square is a rectangle. The red ball is on the left side of the blue square. The blue square is on the right side of the red ball. The red ball is on the left side of the blue square. The blue square is on the right side of the red ball.",
+      "output_sha256": "44e96fae6aaf39c6a59d80f4b4dd69761e338215b04060f4489f1c1fbe220c11",
+      "output_tokens": 80,
+      "stop_reason": "max_new_tokens",
+      "equals_historical_text": false,
+      "cpu_seconds": 6.124398240999994,
+      "wall_seconds": 3.4296695560915396,
+      "model_generate_calls": 1
+    }
+  ],
+  "cpu_seconds": 104.808760444,
+  "wall_seconds": 64.65594546101056,
+  "peak_rss_bytes": 2623545344,
+  "cost_scope": "Inclusive imports, all 11 fresh VLM loads, raw observations, successful/failed probes, artifacts and cleanup before final write; shared setup/acquisition charged in parent EXECUTION.json. No new diffusion generation. Agent orchestration and transport separately unmetered.",
+  "tensor_files": [
+    {
+      "path": "tensors/084be5c853e04fbcbeec7fcc15b3129dc89d4aeee351c0cee7a51bf63db51c0e.safetensors",
+      "size": 1573112,
+      "sha256": "d39d7d9918121ceba45bda77c5dc18ee0e9e38d20012968d2742a7d2019eadbf"
+    },
+    {
+      "path": "tensors/09d755e7d496dd3516a0b5e0cfef02b26e3ef570e338e2e825d76d7b89053153.safetensors",
+      "size": 2288,
+      "sha256": "c49cf5eb95f35a5ed5798548acd2079028664e56a4b73a7282ddd88806bd1b23"
+    },
+    {
+      "path": "tensors/0a94fdb90c445e839710b3f49cb14db02410863230e059adc8df0988e06ccf99.safetensors",
+      "size": 1168,
+      "sha256": "f9d98a83a3ee3d931d4a50ad6be5bc17299e2e7f27e0f371ea21576322a23a58"
+    },
+    {
+      "path": "tensors/0f469b31cdae1258e76fa10365aba76257f700f370b6e095bc0ac58a9ac23d52.safetensors",
+      "size": 1573112,
+      "sha256": "40dcbb892e0e5554eafa3e179455cce8195f4e69bbfb205937dad5025103a108"
+    },
+    {
+      "path": "tensors/2c00c282c5ec0074eda7ccad032ff1160840ce3759c1e701f4fdcd98583dab2b.safetensors",
+      "size": 1168,
+      "sha256": "1b586884fb6022a01843ba47b15dc1dbe29e51e88ea9d92cbdea5291b9c77c1d"
+    },
+    {
+      "path": "tensors/4081782f95fe221be0395dda53b602f1b73dafcbbbd2031fd876efb64195affe.safetensors",
+      "size": 2097400,
+      "sha256": "64fbed9500c9f9c0ea7e9f149ea493d92bc441491b8a7b274f07d0c90e489800"
+    },
+    {
+      "path": "tensors/4491f35a1cca458a7316a642255d408f9e460a74dbdbc378d358ca0d49c3ed27.safetensors",
+      "size": 1573112,
+      "sha256": "092ce2fad6d42debdc78ad2dfd80490adf4ec7106baa4e235aac1ba97dbcee4b"
+    },
+    {
+      "path": "tensors/5dabbd1909afcdfcc237ff1fbc650d448314f4fce7f90efa28571a501602fe48.safetensors",
+      "size": 1112,
+      "sha256": "751e4481028d1928738d2f9df6d8005dbb092fa960e8862c6d522d474edde24c"
+    },
+    {
+      "path": "tensors/5de4c22d199d1aa8691c21cb1139d97dd5e088101ca9d7ef7745c61689892922.safetensors",
+      "size": 2504,
+      "sha256": "e36ed71e1bb69fdaeded2d3af19c7bb3faf9f71ec7d2631292073af5efabf117"
+    },
+    {
+      "path": "tensors/924ae03b6111734d8ab1d2d4c88ec6a7da5ba6612c50b2f0e3c27d0511980e0f.safetensors",
+      "size": 2288,
+      "sha256": "f74e1d4111c3cfb96dbfa689aa69a3de7af133d06e67c90385e3bd8a6cbae1a8"
+    },
+    {
+      "path": "tensors/9b4305303df8f8904791f079b01c308abf68e48a651df91c0c2049095fb33705.safetensors",
+      "size": 1112,
+      "sha256": "afb8ecbb6ce7fe322e8276ae5f50f2de8ad75d3291bc079309b7bea9d10fc5f2"
+    },
+    {
+      "path": "tensors/a1201fd3a1a5a3225a9963f6fbcf93966180636ba65bcbb5bbf833a826eb59b8.safetensors",
+      "size": 1792,
+      "sha256": "8dea0c872c767347a8f184fc88c7493b0ae63f14f12bbfdb3c109e3f99a37dda"
+    },
+    {
+      "path": "tensors/a8e939da390513167c995ab7dd0779bb11226ddd75e58824717cad3035173714.safetensors",
+      "size": 1573112,
+      "sha256": "15be2fe93a9526629f67331a40d9e525080d2993dec0e84a498b2bacd29a2ea6"
+    },
+    {
+      "path": "tensors/b95d42235e7a6aec642399ca365a1d3ffdbc421f142ba841a8ee0d9408e16362.safetensors",
+      "size": 1573112,
+      "sha256": "5f9a164bfe1501e8b01a5942124bd3f1be8408f1abbc6bf79550b95bf1656bf1"
+    },
+    {
+      "path": "tensors/be3a2936b0efa1e86af71cb3a34c2bbdde81efd2c05b1457aa523e7553500328.safetensors",
+      "size": 1573112,
+      "sha256": "63abced256fc7d1db72526ca5a8d9c95f606a38063428e2ee5d3d1629da40a6f"
+    },
+    {
+      "path": "tensors/bfc112cc5b1c9cd4da08d87658e62d305bfcb2d9b8d4b443f20ff8285c205d48.safetensors",
+      "size": 1792,
+      "sha256": "09d6d2a9f83897cb590dccaaaaec7baa0c1ebafe3baab745d20ed538bce2fc0c"
+    },
+    {
+      "path": "tensors/ee6d3d558e1b68d723117e422411bec12647625cd3c6e4cd0754fd9cdb62d878.safetensors",
+      "size": 1573112,
+      "sha256": "9bb797319e6b40b40aca10972c7ad6e105f41bf1900327398f8c66abbf00e731"
+    },
+    {
+      "path": "tensors/fb1cf8370225a041375997c88a95e64a4556eeb23786db337a819ffd1f796fbc.safetensors",
+      "size": 2504,
+      "sha256": "f35cabe647f12e52055bc079010d80150beddb8b932a14bac68a269362317082"
+    },
+    {
+      "path": "tensors/fd6260cf85ced94bca34938d9ca7a1419d09ce89dc16fd3960e3755881ad03d9.safetensors",
+      "size": 1573112,
+      "sha256": "8297267290ee43814e886e63a7f55931299f5ad6b2672a8b0e555c30cace2315"
+    }
+  ],
+  "retained_tensor_bytes": 14700024
+}

@@ -1,0 +1,30 @@
+{
+  "schema": "hepta.r1-git-readiness-probe.v1",
+  "host": "ai395",
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "--version"
+      ],
+      "exit_code": 0,
+      "stdout": "git version 2.53.0\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "ls-remote",
+        "--exit-code",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci.git",
+        "refs/heads/research/ndu-input-diagnostics-20261105"
+      ],
+      "exit_code": 0,
+      "stdout": "975e1a264c14ed3da02dcee23a64327825387e42\trefs/heads/research/ndu-input-diagnostics-20261105\n",
+      "stderr": ""
+    }
+  ],
+  "cpu_seconds": 0.0045126419999999,
+  "wall_seconds": 4.636707701953128,
+  "cost_scope": "Read-only Git readiness checks; subprocess CPU is not included in parent process_time."
+}

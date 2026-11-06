@@ -1,0 +1,221 @@
+{
+  "schema": "hepta.r1-native-git-publication.v1",
+  "base_sha": "975e1a264c14ed3da02dcee23a64327825387e42",
+  "base_tree": "cb612abe0d02afaf711d37f5d8575a577da5524e",
+  "branch": "research/ndu-r1-evidence-ai395-20261105-4d868a11",
+  "checkout": "/home/qq/work/hepta-r1-evidence-git-20261105-4d868a11",
+  "repository_path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/evidence/ai395_r1_20261105",
+  "archive_sha256": "0a18130924ce5e98f706c31d095f3e10eefd6da6c74a041b7da4dd4fac8de873",
+  "status": "failed",
+  "events": [
+    {
+      "name": "init",
+      "argv": [
+        "git",
+        "init",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.006054920959286392,
+      "child_cpu_seconds": 0.002691,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "remote",
+      "argv": [
+        "git",
+        "remote",
+        "add",
+        "origin",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci.git"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.0020559149561449885,
+      "child_cpu_seconds": 0.000657,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "sparse-init",
+      "argv": [
+        "git",
+        "sparse-checkout",
+        "init",
+        "--cone"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.0014672570396214724,
+      "child_cpu_seconds": 0.0006289999999999998,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "sparse-set",
+      "argv": [
+        "git",
+        "sparse-checkout",
+        "set",
+        "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.0006077480502426624,
+      "child_cpu_seconds": 0.0004860000000000003,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "fetch",
+      "argv": [
+        "git",
+        "fetch",
+        "--depth=1",
+        "--filter=blob:none",
+        "--no-tags",
+        "origin",
+        "975e1a264c14ed3da02dcee23a64327825387e42"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 4.23565896099899,
+      "child_cpu_seconds": 0.060613,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "008955f61695b872b3f8c1617ea0b6e76e3c7708cca20297fb3e7f93ba718dea"
+    },
+    {
+      "name": "checkout",
+      "argv": [
+        "git",
+        "switch",
+        "--create",
+        "research/ndu-r1-evidence-ai395-20261105-4d868a11",
+        "FETCH_HEAD"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 4.5307107149856165,
+      "child_cpu_seconds": 0.08638200000000001,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "fb452ea1a149c0a67d8d4c57be3a9ed10f096703bef271e7040eac2ce0b3d5c9"
+    },
+    {
+      "name": "base-sha",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.0013635309878736734,
+      "child_cpu_seconds": 0.0009440000000000073,
+      "stdout_sha256": "e1a49d74a560b4c28dca6b35220e41542342a20a665409f726abc542768f89d3",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "base-tree",
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.0013777900021523237,
+      "child_cpu_seconds": 0.0010520000000000043,
+      "stdout_sha256": "edfe5c0bf2280b7410147438ac90e27350eb398fbea2c0641bda243c84922a96",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "check-branch-absent",
+      "argv": [
+        "git",
+        "ls-remote",
+        "--heads",
+        "origin",
+        "refs/heads/research/ndu-r1-evidence-ai395-20261105-4d868a11"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 4.703872635029256,
+      "child_cpu_seconds": 0.032077999999999975,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "readback",
+      "argv": [
+        "/home/qq/work/hepta-r1-4835-20261105-w0-r1/venv/bin/python",
+        "-B",
+        "/home/qq/work/hepta-r1-evidence-git-20261105-4d868a11/experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/evidence/ai395_r1_20261105/scripts/verify_evidence.py",
+        "/home/qq/work/hepta-r1-evidence-git-20261105-4d868a11/experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/evidence/ai395_r1_20261105"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.04948423395399004,
+      "child_cpu_seconds": 0.041758,
+      "stdout_sha256": "62796027af6d16066d7dc56823b9e87ec36989519271a1c76db505968c06775b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "stage",
+      "argv": [
+        "git",
+        "add",
+        "-f",
+        "--",
+        "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/evidence/ai395_r1_20261105"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.0286825739312917,
+      "child_cpu_seconds": 0.027673999999999976,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "staged-files",
+      "argv": [
+        "git",
+        "diff",
+        "--cached",
+        "--name-only"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.002508149016648531,
+      "child_cpu_seconds": 0.002229999999999982,
+      "stdout_sha256": "c581106cd369a74630506a3a42aa3f8dcd162f91f6f591635ee31384c653ad65",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "authored-whitespace",
+      "argv": [
+        "git",
+        "diff",
+        "--cached",
+        "--check",
+        "--",
+        "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/evidence/ai395_r1_20261105/scripts",
+        "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/evidence/ai395_r1_20261105/README.md",
+        "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/evidence/ai395_r1_20261105/r2/REMAINING.md"
+      ],
+      "exit_code": 2,
+      "wall_seconds": 0.0027805290883406997,
+      "child_cpu_seconds": 0.0025229999999999975,
+      "stdout_sha256": "a3a0267425444f90d98eb7cd2628d5401478df8b544c8795d3164f7f0e930d1d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "publication_file_count": 93,
+  "existing_branches_modified": false,
+  "push_attempts": 0,
+  "no_update": true,
+  "production_qualified": false,
+  "failure_detail": {
+    "phase": "authored-whitespace",
+    "exit_code": 2,
+    "stdout_tail": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/evidence/ai395_r1_20261105/scripts/execute_exact_source.py:44: new blank line at EOF.\n",
+    "stderr_tail": ""
+  },
+  "error": {
+    "type": "RuntimeError",
+    "message": "authored-whitespace failed; no automatic push retry"
+  },
+  "wall_seconds": 13.579474027035758,
+  "cpu_seconds_including_reaped_children": 0.301661,
+  "peak_child_rss_bytes": 19456000,
+  "cost_scope": "Git fetch/checkout, materialization, readback, staging, commit, committed-blob verification and at most one creation-only push; excludes earlier control-plane transfer and final receipt write."
+}

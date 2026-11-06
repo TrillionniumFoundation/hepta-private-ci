@@ -1,0 +1,59 @@
+{
+  "fresh_model_per_case": true,
+  "images": {
+    "blank": {
+      "sha256": "6c04fff04b3c72be7df55bad041c9173f29c056532af3075734d3a9bb2052cee",
+      "source_path": "/home/qq/work/hepta-r1-4835-20261105-w0-r1/evidence/raw-capture/diagnostics/blank-white.png"
+    },
+    "generated": {
+      "sha256": "12fb2f9528cea05c213940d4579faa9fa657fcb4b19e38aec9661acf8483e0a9",
+      "source_path": "/home/qq/work/hepta-r1-4835-20261105-w0-r1/source/inputs/direct.png"
+    },
+    "original": {
+      "sha256": "672f4e47b0e541cf66214e2dc41ec9c91315449b3df3dd0788523cb2a25bff71",
+      "source_path": "/home/qq/work/hepta-r1-4835-20261105-w0-r1/source/inputs/input.png"
+    }
+  },
+  "max_new_tokens": 80,
+  "order": [
+    [
+      "original",
+      "caption"
+    ],
+    [
+      "generated",
+      "caption"
+    ],
+    [
+      "blank",
+      "caption"
+    ],
+    [
+      "blank",
+      "object"
+    ],
+    [
+      "generated",
+      "object"
+    ],
+    [
+      "original",
+      "object"
+    ]
+  ],
+  "prompts": {
+    "caption": "Describe the visible content in one short sentence. Do not refer to previous text.",
+    "object": "What is the main animal or object visible? Answer in at most five words."
+  },
+  "reuse_generated_image_without_new_diffusion": true,
+  "runtime_sources": {
+    "acquire_models.py": "ec9d7dbc943ab029e51174fbf6065be4bd29ac23fb912d1aa3f14c065ad0e1cf",
+    "diagnostics.py": "e9ed1bd8205f9be8518b2ba6e0792e015ab28bfa0649e707bc19b124f1810db1",
+    "local_models.py": "70a119d2ac4297c31fe86b5c299b30b1f43bb128e3a72f06087a32162f3965e1"
+  },
+  "schema": "hepta.vlm-input-intervention.v1",
+  "semantic_acceptance": "not_inferred",
+  "source_sha": "975e1a264c14ed3da02dcee23a64327825387e42",
+  "threads": 2,
+  "training_performed": false
+}

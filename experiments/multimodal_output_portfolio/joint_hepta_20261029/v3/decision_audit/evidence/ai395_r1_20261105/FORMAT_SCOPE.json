@@ -1,0 +1,14 @@
+{
+  "instruction_source": "AGENTS.md at 975e1a264c14ed3da02dcee23a64327825387e42",
+  "requested_command": [
+    "just",
+    "fmt"
+  ],
+  "requested_cwd": "/workspace/scratch/4d868a11a31c/r1-diagnostics/source/codex-rs",
+  "status": "not_run",
+  "reason": "The isolated source projection does not contain codex-rs; no Rust source is changed by this evidence package.",
+  "actual_attempt_error": {
+    "type": "FileNotFoundError",
+    "message": "[Errno 2] No such file or directory: PosixPath('/workspace/scratch/4d868a11a31c/r1-diagnostics/source/codex-rs')"
+  }
+}

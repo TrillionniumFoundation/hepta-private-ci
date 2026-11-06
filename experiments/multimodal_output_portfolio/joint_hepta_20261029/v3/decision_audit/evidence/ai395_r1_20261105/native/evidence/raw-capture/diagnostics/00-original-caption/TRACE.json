@@ -1,0 +1,320 @@
+{
+  "backend": {
+    "backend": "frozen_pretrained_local",
+    "device": "cpu",
+    "dtype": "bfloat16",
+    "image_preprocessing": {
+      "do_image_splitting": false,
+      "longest_edge": 512
+    },
+    "independent_semantic_scorer": false,
+    "loads": [
+      {
+        "model": "vlm",
+        "resources": {
+          "filesystem_free_bytes": 979745333248
+        },
+        "wall_seconds": 1.6396833299659193
+      }
+    ],
+    "models": {
+      "vlm": {
+        "files": [
+          {
+            "path": "README.md",
+            "sha256": "25f0d36cb69a8f7185f945288236d61e519a206800e89a5ae64111924fdb6952",
+            "size": 10856,
+            "source": "https://huggingface.co/HuggingFaceTB/SmolVLM2-256M-Video-Instruct/resolve/067788b187b95ebe7b2e040b3e4299e342e5b8fd/README.md"
+          },
+          {
+            "path": "added_tokens.json",
+            "sha256": "74135b8664b56088c0006f1c8e848d79a8eba003411f72ebf1dc2ee96227be3a",
+            "size": 4739,
+            "source": "https://huggingface.co/HuggingFaceTB/SmolVLM2-256M-Video-Instruct/resolve/067788b187b95ebe7b2e040b3e4299e342e5b8fd/added_tokens.json"
+          },
+          {
+            "path": "chat_template.json",
+            "sha256": "b585e3598909a5687f9f9d738d35223724dedef256b9b274e1cbfb32b13c74bf",
+            "size": 430,
+            "source": "https://huggingface.co/HuggingFaceTB/SmolVLM2-256M-Video-Instruct/resolve/067788b187b95ebe7b2e040b3e4299e342e5b8fd/chat_template.json"
+          },
+          {
+            "path": "config.json",
+            "sha256": "756cb7d37d7659c9d5a71c563f9d2530f9dd674ab7e909d8d0dd5b1a2d3e8317",
+            "size": 3812,
+            "source": "https://huggingface.co/HuggingFaceTB/SmolVLM2-256M-Video-Instruct/resolve/067788b187b95ebe7b2e040b3e4299e342e5b8fd/config.json"
+          },
+          {
+            "path": "generation_config.json",
+            "sha256": "34835060c9f0f74d1acb456cc72ca32746d3843d9eb5f578f9cbffac1d2eb840",
+            "size": 136,
+            "source": "https://huggingface.co/HuggingFaceTB/SmolVLM2-256M-Video-Instruct/resolve/067788b187b95ebe7b2e040b3e4299e342e5b8fd/generation_config.json"
+          },
+          {
+            "path": "merges.txt",
+            "sha256": "0b54e8aa4e53d5383e2e4bc635a56b43f9647f7b13832d5d9ecd8f82dac4f510",
+            "size": 466391,
+            "source": "https://huggingface.co/HuggingFaceTB/SmolVLM2-256M-Video-Instruct/resolve/067788b187b95ebe7b2e040b3e4299e342e5b8fd/merges.txt"
+          },
+          {
+            "path": "model.safetensors",
+            "sha256": "dcc8f4c00d30d70bb3028a1bfc373e1b1972e25919f8788183cae4ae72431ce2",
+            "size": 1025998224,
+            "source": "https://huggingface.co/HuggingFaceTB/SmolVLM2-256M-Video-Instruct/resolve/067788b187b95ebe7b2e040b3e4299e342e5b8fd/model.safetensors"
+          },
+          {
+            "path": "preprocessor_config.json",
+            "sha256": "149e315d9410368e5491455bb06e0f763426e9e56cca731c13b24404a29b6374",
+            "size": 599,
+            "source": "https://huggingface.co/HuggingFaceTB/SmolVLM2-256M-Video-Instruct/resolve/067788b187b95ebe7b2e040b3e4299e342e5b8fd/preprocessor_config.json"
+          },
+          {
+            "path": "processor_config.json",
+            "sha256": "f3ad45028447b3562b4752be0d5916d6806c1ef589091a469608dcf0faa1737c",
+            "size": 67,
+            "source": "https://huggingface.co/HuggingFaceTB/SmolVLM2-256M-Video-Instruct/resolve/067788b187b95ebe7b2e040b3e4299e342e5b8fd/processor_config.json"
+          },
+          {
+            "path": "special_tokens_map.json",
+            "sha256": "2dfea2a426162316ff1567c82bc6d36d9690cd9f90455f075c77daca78b45c60",
+            "size": 868,
+            "source": "https://huggingface.co/HuggingFaceTB/SmolVLM2-256M-Video-Instruct/resolve/067788b187b95ebe7b2e040b3e4299e342e5b8fd/special_tokens_map.json"
+          },
+          {
+            "path": "tokenizer.json",
+            "sha256": "5ece781dc8d2b2f3e2f289ca0ae50b17cfc27dd27bfe7971bb8241e0b964331a",
+            "size": 3548256,
+            "source": "https://huggingface.co/HuggingFaceTB/SmolVLM2-256M-Video-Instruct/resolve/067788b187b95ebe7b2e040b3e4299e342e5b8fd/tokenizer.json"
+          },
+          {
+            "path": "tokenizer_config.json",
+            "sha256": "dd9ce2ab89a3dd881bd9378f1a79b943a064b9275a7e1706d5b7b47b68977913",
+            "size": 28626,
+            "source": "https://huggingface.co/HuggingFaceTB/SmolVLM2-256M-Video-Instruct/resolve/067788b187b95ebe7b2e040b3e4299e342e5b8fd/tokenizer_config.json"
+          },
+          {
+            "path": "vocab.json",
+            "sha256": "82b84012e3add4d01d12ba14442026e49b8cbbaead1f79ecf3d919784f82dc79",
+            "size": 800662,
+            "source": "https://huggingface.co/HuggingFaceTB/SmolVLM2-256M-Video-Instruct/resolve/067788b187b95ebe7b2e040b3e4299e342e5b8fd/vocab.json"
+          }
+        ],
+        "manifest_sha256": "432a086810f32ba90ef34dc210fcb2f0f56fe8b27595266725d1846b5dad0e6c",
+        "model": "HuggingFaceTB/SmolVLM2-256M-Video-Instruct",
+        "revision": "067788b187b95ebe7b2e040b3e4299e342e5b8fd"
+      }
+    },
+    "residency": "one_model_family_at_a_time",
+    "reviewed_model_pins": {
+      "sd": {
+        "model": "segmind/tiny-sd",
+        "revision": "cad0bd7495fa6c4bcca01b19a723dc91627fe84f"
+      },
+      "vlm": {
+        "model": "HuggingFaceTB/SmolVLM2-256M-Video-Instruct",
+        "revision": "067788b187b95ebe7b2e040b3e4299e342e5b8fd"
+      }
+    },
+    "threads": 2,
+    "versions": {
+      "accelerate": "1.12.0",
+      "diffusers": "0.35.2",
+      "num2words": "0.5.14",
+      "safetensors": "0.7.0",
+      "torch": "2.8.0+cpu",
+      "torchvision": "0.23.0+cpu",
+      "transformers": "4.57.3"
+    }
+  },
+  "cpu_seconds": 3.209376917,
+  "cumulative_process_peak_rss_bytes": 1973260288,
+  "eos_token_ids": [
+    49279
+  ],
+  "hit_max_new_tokens": false,
+  "image": "original",
+  "image_sha256": "672f4e47b0e541cf66214e2dc41ec9c91315449b3df3dd0788523cb2a25bff71",
+  "index": 0,
+  "input_token_ids": [
+    1,
+    11126,
+    42,
+    49189,
+    49152,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49190,
+    49189,
+    37964,
+    260,
+    6178,
+    2627,
+    281,
+    582,
+    1890,
+    6330,
+    30,
+    3315,
+    441,
+    3386,
+    288,
+    2672,
+    1694,
+    30,
+    49279,
+    198,
+    9519,
+    9531,
+    42
+  ],
+  "input_tokens": 91,
+  "inputs": {
+    "attention_mask": {
+      "artifact_bytes": 1016,
+      "artifact_relative_path": "tensors/8dd3c54bca6f16efe9d7604bded4d2e827274cb0fada3318c9dd2a98324c48f2.safetensors",
+      "artifact_sha256": "22c9b0977caabe599ff7ccb48dbca04cbb5f01896606885224d94e6d0f9cb97b",
+      "dtype": "torch.int64",
+      "sha256": "8dd3c54bca6f16efe9d7604bded4d2e827274cb0fada3318c9dd2a98324c48f2",
+      "shape": [
+        1,
+        91
+      ]
+    },
+    "input_ids": {
+      "artifact_bytes": 1016,
+      "artifact_relative_path": "tensors/ee59f2374f6d0b59e81f2bdea53bfe7a1877b0a912e4944a5e4be854e77ad5e4.safetensors",
+      "artifact_sha256": "e14f02b3f24f872f5d24ef61739532b3ff6314ca8cafbed77b9634f063e4fb4e",
+      "dtype": "torch.int64",
+      "sha256": "ee59f2374f6d0b59e81f2bdea53bfe7a1877b0a912e4944a5e4be854e77ad5e4",
+      "shape": [
+        1,
+        91
+      ]
+    },
+    "pixel_attention_mask": {
+      "artifact_bytes": 2097448,
+      "artifact_relative_path": "tensors/4081782f95fe221be0395dda53b602f1b73dafcbbbd2031fd876efb64195affe.safetensors",
+      "artifact_sha256": "dcc7dfcaae754ed2a4f4612e6d04244d7432f3e6021d5abdc9c3d977134e7a4a",
+      "dtype": "torch.int64",
+      "sha256": "4081782f95fe221be0395dda53b602f1b73dafcbbbd2031fd876efb64195affe",
+      "shape": [
+        1,
+        1,
+        512,
+        512
+      ]
+    },
+    "pixel_values": {
+      "artifact_bytes": 1573168,
+      "artifact_relative_path": "tensors/b95d42235e7a6aec642399ca365a1d3ffdbc421f142ba841a8ee0d9408e16362.safetensors",
+      "artifact_sha256": "6863dd04ecb9a0816589d0fb71756f6d6b45e8609d780cc9899ce8f6b1b1b447",
+      "dtype": "torch.bfloat16",
+      "finite": true,
+      "sha256": "b95d42235e7a6aec642399ca365a1d3ffdbc421f142ba841a8ee0d9408e16362",
+      "shape": [
+        1,
+        1,
+        3,
+        512,
+        512
+      ]
+    }
+  },
+  "instruction": "caption",
+  "last_token_is_eos": true,
+  "model_generate_calls": 1,
+  "output": "a bee on a pink flower",
+  "output_sha256": "ff24da2adf886af63d154299a8432512ae890f52a3f9441e4acd04174074fb58",
+  "output_token_ids": [
+    253,
+    11426,
+    335,
+    253,
+    11986,
+    8525,
+    49279
+  ],
+  "output_tokens": 7,
+  "prompt": "Describe the visible content in one short sentence. Do not refer to previous text.",
+  "rendered_prompt": "<|im_start|>User:<image>Describe the visible content in one short sentence. Do not refer to previous text.<end_of_utterance>\nAssistant:",
+  "rendered_prompt_sha256": "7ee1f11f96f7de1b6caa120424004a7f7f40aa58c65a6027d59ac9dd7dfa79aa",
+  "status": "completed",
+  "stop_reason": "eos",
+  "vision_outputs": [
+    {
+      "artifact_bytes": 1573160,
+      "artifact_relative_path": "tensors/ee6d3d558e1b68d723117e422411bec12647625cd3c6e4cd0754fd9cdb62d878.safetensors",
+      "artifact_sha256": "00ece6e88c7c78906b8e860ee4647119043f35fa83a4df3ffaf5efe33b98c9dd",
+      "dtype": "torch.bfloat16",
+      "finite": true,
+      "sha256": "ee6d3d558e1b68d723117e422411bec12647625cd3c6e4cd0754fd9cdb62d878",
+      "shape": [
+        1,
+        1024,
+        768
+      ]
+    }
+  ],
+  "wall_seconds": 2.3840452699223533
+}

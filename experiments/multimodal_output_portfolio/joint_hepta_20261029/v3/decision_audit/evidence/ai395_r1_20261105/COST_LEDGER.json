@@ -1,0 +1,101 @@
+{
+  "schema": "hepta.r1-cost-boundaries.v1",
+  "native_model_generate_calls": 23,
+  "batches": [
+    {
+      "batch": "setup_acquisition_and_original_six",
+      "job_id": "1a1aa61b4a7-fc05-4217",
+      "cpu_seconds": 62.537423,
+      "wall_seconds": 571.4814202070702,
+      "peak_rss_bytes": 2203029504,
+      "scope": "all recorded setup, downloads, verification, model runs and failures; excludes agent orchestration and transport; no energy meter",
+      "execution": "native/evidence/EXECUTION.json"
+    },
+    {
+      "batch": "raw_numerical_capture_six",
+      "job_id": "1a1aa6bab03-fc05-42cf",
+      "cpu_seconds": 16.213814242,
+      "wall_seconds": 11.375480856047943,
+      "peak_rss_bytes": 2190479360,
+      "scope": "Inclusive imports, six fresh VLM loads, exact diagnostics, numerical observation, serialization and cleanup before final write. Acquisition/setup shared with first run; see parent EXECUTION.json; do not double charge. Agent orchestration/transport is separately unmetered.",
+      "execution": "native/evidence/raw-capture/EXECUTION.json"
+    },
+    {
+      "batch": "historical_nine_and_two_controls",
+      "job_id": "1a1aa7162ff-fc05-4330",
+      "cpu_seconds": 104.808760444,
+      "wall_seconds": 64.65594546101056,
+      "peak_rss_bytes": 2623545344,
+      "scope": "Inclusive imports, all 11 fresh VLM loads, raw observations, successful/failed probes, artifacts and cleanup before final write; shared setup/acquisition charged in parent EXECUTION.json. No new diffusion generation. Agent orchestration and transport separately unmetered.",
+      "execution": "native/evidence/legacy-probes/EXECUTION.json"
+    }
+  ],
+  "native_three_batch_cpu_seconds": 183.559997686,
+  "native_three_batch_wall_interval_sum_seconds": 647.5128465241287,
+  "sum_meaning": "Sum of disjoint measured process intervals, not total session elapsed time; inner diagnostic/per-call intervals must not be added again.",
+  "inventory_outer": {
+    "job_id": "1a1aa7f38b5-fc05-43aa",
+    "cpu_seconds": 1.6358047450000002,
+    "wall_seconds": 1.8609378460096195,
+    "scope": "Hashing all declared retained source, model and evidence files, reading actual tensor values and constructing manifest before its final write.",
+    "model_calls": 0
+  },
+  "git_readiness_outer": {
+    "schema": "hepta.r1-git-readiness-probe.v1",
+    "host": "ai395",
+    "commands": [
+      {
+        "argv": [
+          "git",
+          "--version"
+        ],
+        "exit_code": 0,
+        "stdout": "git version 2.53.0\n",
+        "stderr": ""
+      },
+      {
+        "argv": [
+          "git",
+          "ls-remote",
+          "--exit-code",
+          "https://github.com/TrillionniumFoundation/hepta-private-ci.git",
+          "refs/heads/research/ndu-input-diagnostics-20261105"
+        ],
+        "exit_code": 0,
+        "stdout": "975e1a264c14ed3da02dcee23a64327825387e42\trefs/heads/research/ndu-input-diagnostics-20261105\n",
+        "stderr": ""
+      }
+    ],
+    "cpu_seconds": 0.0045126419999999,
+    "wall_seconds": 4.636707701953128,
+    "cost_scope": "Read-only Git readiness checks; subprocess CPU is not included in parent process_time."
+  },
+  "original_actions_separate": {
+    "run_id": 41973374316,
+    "job_id": 127066499318,
+    "actual_model_calls": 6,
+    "diagnostic_cpu_seconds": 22.041747192,
+    "diagnostic_wall_seconds": 15.303040409000005,
+    "diagnostic_peak_rss_bytes": 2201509888,
+    "scope": "inclusive_fresh_loads_tracing_cleanup_and_case_writes_before_summary_write",
+    "setup_cpu_known": false,
+    "native_batch_total_includes_this": false
+  },
+  "energy_joules": null,
+  "unmetered_or_separately_scoped": [
+    "energy",
+    "agent orchestration and reasoning",
+    "tool/control-plane transport and archive download",
+    "pre-run source materialization/verification outside the recorded clocks",
+    "final manifest/receipt writes after their clock sample",
+    "publication fetch/commit/push, to be recorded in a separate publication receipt"
+  ],
+  "no_unknown_cost_is_zero": true,
+  "net_utility_inferred": false,
+  "production_latency_inferred": false,
+  "training_performed": false,
+  "publication_outer_receipts": [
+    "publication/NATIVE_ATTEMPT_1.json"
+  ],
+  "publication_channel": "GitHub app; native push attempts remain zero"
+}
