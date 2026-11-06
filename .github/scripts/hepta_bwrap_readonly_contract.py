@@ -19,8 +19,8 @@ PARENT = "771cc150e2218c348753d6f8aa88057f07474091"
 PARENT_TREE = "25bcead36b701f9e872f0c587cbcb719187d463a"
 REPOSITORY = "TrillionniumFoundation/hepta-private-ci"
 INPUTS_REF = "research/ndu-bwrap-readonly-inputs-20261106"
-INPUTS_HEAD = None
-INPUTS_TREE = None
+INPUTS_HEAD = "581a3bbd10787f5783945ca48829c039a399ff2f"
+INPUTS_TREE = "305bdfc5a9a40bdd3a4f1cd9d9234fb5820da692"
 PROPOSAL_REF = "research/ndu-bwrap-readonly-probe-20261106"
 ADDED = {
     ".github/scripts/hepta_bwrap_readonly_contract.py",
