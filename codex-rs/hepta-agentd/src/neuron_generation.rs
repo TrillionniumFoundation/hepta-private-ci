@@ -113,6 +113,7 @@ impl<W: AnchorWitnessStore, P: CellGenerationControlPortV2> AgentdNeuronGenerati
             }
             Err(error) => return Err(error),
         }
+        self.journal.require_current()?;
         let proposal = self
             .inference_control
             .execute_generation(self.journal.manifest(), &request)?;
