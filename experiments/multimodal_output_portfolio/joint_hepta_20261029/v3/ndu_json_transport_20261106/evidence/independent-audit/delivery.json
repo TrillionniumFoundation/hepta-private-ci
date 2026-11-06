@@ -1,0 +1,80 @@
+{
+  "audit_attempts": 1,
+  "authored_source_lines": {
+    "audit_json_transport.py": 267,
+    "receipt_checks.py": 248
+  },
+  "extra_model_forwards": 0,
+  "extra_model_or_tool_dispatches": 0,
+  "files": [
+    {
+      "bytes": 24090,
+      "git_blob": "28295a025a3cab36c40cfc7006b28d8dafb29447",
+      "name": "audit_json_transport.py",
+      "sha256": "56293f3ea945fd25e6a67eb17bf2b42854291c58ce51f61a47969fde105ee075"
+    },
+    {
+      "bytes": 13986,
+      "git_blob": "ac9bb166844c7ca3dd58195d9d78b26c75b38f75",
+      "name": "receipt_checks.py",
+      "sha256": "87a8224b81822151ca80db51ef336a088cf150fba63a4a7670be2b3573590f5d"
+    },
+    {
+      "bytes": 65998,
+      "git_blob": "2ca3a2ccf5891adcdbad416201e359666368449a",
+      "name": "audit-attempt-01.json",
+      "sha256": "d769209047835e59abfab3d9b2ef06dbf6292a94d268114d202d54e586b00fa6"
+    },
+    {
+      "bytes": 24729,
+      "git_blob": "97968de2881f59f1492dd73eabb61d324edddae1",
+      "name": "remote-anchor.json",
+      "sha256": "fea285f37faf6f8727b0933d3712fbfa59e3d0e30b98616fb4d7f0dc81e3c68a"
+    },
+    {
+      "bytes": 271628,
+      "git_blob": "79f753be1774f411c7621ab38e0827c03a405244",
+      "name": "remote-readback.tar.gz",
+      "sha256": "5566368c6aaae288aec2e717dc973791d5e16e98fe145968f213ecf30b2eab90"
+    },
+    {
+      "bytes": 6392,
+      "git_blob": "c2056ee5e30693b69d0b3595ab8835c150f4bf72",
+      "name": "AUDIT.md",
+      "sha256": "855bd9273938c780c0f5013da2f4f00874b97b2d24c68a742b349d5d9cbf3296"
+    },
+    {
+      "bytes": 2933,
+      "git_blob": "fcb7417fb70f63539a9e07e2647316484ebb9524",
+      "name": "README.md",
+      "sha256": "631d49b80c5843d19f795636833d3a38eb9c629e0abd715c76e9b0cba7ac9273"
+    }
+  ],
+  "first_attempt_status": "PASS",
+  "publication_files": [
+    "audit_json_transport.py",
+    "receipt_checks.py",
+    "audit-attempt-01.json",
+    "remote-anchor.json",
+    "remote-readback.tar.gz",
+    "AUDIT.md",
+    "README.md",
+    "delivery.json"
+  ],
+  "remote_readback_archive_restores_exactly": true,
+  "schema": "ndu.json-transport-audit-delivery.v1",
+  "validation": {
+    "actual_model_or_tool_replay": false,
+    "audit_inputs_unchanged": 162,
+    "audit_scripts_import_runner_or_adapter": false,
+    "auditor_first_attempt_exit": 0,
+    "remote_byte_bindings": 35,
+    "scoped_codespell_exit": 0,
+    "scoped_codespell_files": [
+      "audit_json_transport.py",
+      "receipt_checks.py",
+      "AUDIT.md",
+      "README.md"
+    ]
+  }
+}
