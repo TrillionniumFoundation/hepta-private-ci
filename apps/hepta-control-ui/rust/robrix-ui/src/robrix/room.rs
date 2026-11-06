@@ -2,6 +2,7 @@
 // Copyright 2023–2026 Project Robius Developers. MIT; see ../../licenses/ROBRIX-MIT.txt.
 // Source: src/home/room_screen.rs:235–383,654–740. Adapted message profile/content
 // hierarchy, virtual PortalList and room timeline/composer ownership. No Matrix behavior.
+use super::composer_transaction::ComposerTransaction;
 use crate::presentation::PresentationAction;
 use crate::presentation::PresentationCommand;
 use crate::presentation::RoomKey;
@@ -272,9 +273,17 @@ pub struct RoomScreen {
     scroll_tracker: UserScrollTracker,
     #[rust]
     pending_tail_redraw: Option<(NextFrame, RoomKey, f64)>,
+    #[rust]
+    composer_transaction: ComposerTransaction,
 }
 impl Widget for RoomScreen {
     fn handle_event(&mut self, cx: &mut Cx, event: &Event, scope: &mut Scope) {
+        let input = self.view.text_input(cx, ids!(message_input));
+        let unchanged_commit = ComposerTransaction::commits_unchanged_preedit(&input, event);
+        if let Some(workspace) = scope.data.get_mut::<ChatWorkspace>() {
+            self.composer_transaction
+                .checkpoint(&input, workspace, self.active_key);
+        }
         self.view.handle_event(cx, event, scope);
         let Some(workspace) = scope.data.get_mut::<ChatWorkspace>() else {
             return;
@@ -282,7 +291,11 @@ impl Widget for RoomScreen {
         let Some(source) = self.active_key else {
             return;
         };
-        let input = self.view.text_input(cx, ids!(message_input));
+        if unchanged_commit {
+            self.composer_transaction
+                .edit(cx, &input, workspace, source, input.text());
+            self.view.redraw(cx);
+        }
         let follow_latest = workspace
             .timeline()
             .is_none_or(|timeline| timeline.scroll.at_end);
@@ -316,7 +329,6 @@ impl Widget for RoomScreen {
                 self.view.redraw(cx);
             }
         }
-        let mut apply = |command| apply_action(workspace, PresentationAction { source, command });
         if let Event::Actions(actions) = event {
             let list = self.view.portal_list(cx, ids!(list));
             if list.scrolled(actions) {
@@ -325,7 +337,13 @@ impl Widget for RoomScreen {
                 let travel = list.user_scroll_travel();
                 if let Some(at_end) = self.scroll_tracker.observe(travel, list.is_at_end()) {
                     self.pending_tail_redraw = None;
-                    let _result = apply(PresentationCommand::UserScrolled { at_end });
+                    let _result = apply_action(
+                        workspace,
+                        PresentationAction {
+                            source,
+                            command: PresentationCommand::UserScrolled { at_end },
+                        },
+                    );
                     #[cfg(feature = "ui-fixtures")]
                     log!(
                         "HEPTA_FIXTURE_SCROLL_ACTION room={} epoch={} at_end={} result={:?}",
@@ -374,14 +392,23 @@ impl Widget for RoomScreen {
                 );
             }
             if self.view.button(cx, ids!(jump_to_latest)).clicked(actions) {
-                apply(PresentationCommand::JumpToLatest);
+                apply_action(
+                    workspace,
+                    PresentationAction {
+                        source,
+                        command: PresentationCommand::JumpToLatest,
+                    },
+                );
                 list.set_tail_range(true);
                 list.scroll_to_end(cx);
             }
             if let Some(text) = input.changed(actions) {
-                apply(PresentationCommand::Edit(text));
+                self.composer_transaction
+                    .edit(cx, &input, workspace, source, text);
                 self.view.redraw(cx);
             }
+            let mut apply =
+                |command| apply_action(workspace, PresentationAction { source, command });
             if self
                 .view
                 .button(cx, ids!(send_message_button))
@@ -421,6 +448,7 @@ impl Widget for RoomScreen {
             let widget_id = self.widget_uid();
             let switch_view = cx.global::<RoomViewMemory>().last_widget != Some(widget_id);
             if self.active_key != Some(key) || switch_view {
+                self.composer_transaction.reset();
                 let list = self.view.portal_list(cx, ids!(list));
                 self.pending_tail_redraw = None;
                 self.scroll_tracker.reset(list.user_scroll_travel());

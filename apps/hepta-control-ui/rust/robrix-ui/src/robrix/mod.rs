@@ -1,4 +1,5 @@
 pub mod composer;
+mod composer_transaction;
 pub mod dock;
 pub mod home;
 pub mod hover_highlight;
