@@ -1,14 +1,13 @@
 """Two sequential cold Cargo targets; preserve executable bytes before reclamation."""
 
 import json
-import os
 from pathlib import Path
 import shutil
 import time
 
 from .commands import Commands
 from .contract import TARGET, TEST_BINARY_ID, load_contract
-from .files import copy_file, describe, read_json, verify, write_json
+from .files import copy_file, describe, read_json, verify, write_bytes, write_json
 from .dependencies import SEED_SCHEMA, copy_seed, dependency_inventory
 from .inputs import build_environment, elf_closure
 from .inputs import observe_inputs, sealed_path_environment, source_clean
@@ -146,6 +145,20 @@ def build_inside(plan_path, plan_sha):
             environment=env,
         )
         copy_file(metadata, work / "cargo-metadata.json")
+        nextest_config = work / "nextest-build.toml"
+        nextest_store = work / "nextest-store"
+        if nextest_store.exists():
+            raise ValueError("Build nextest store must be new for this cold build")
+        write_bytes(
+            nextest_config,
+            ("[store]\ndir = " + json.dumps(str(nextest_store)) + "\n").encode(),
+        )
+        config_identity = describe(nextest_config)
+        record["build_nextest_config"] = {
+            "path": str(nextest_config),
+            **config_identity,
+        }
+        config_args = ["--tool-config-file", f"hepta-linux-build:{nextest_config}"]
         _, binaries = commands.run(
             "cargo-nextest",
             [
@@ -157,6 +170,7 @@ def build_inside(plan_path, plan_sha):
                 "json",
                 "--cargo-metadata",
                 str(work / "cargo-metadata.json"),
+                *config_args,
                 *profile,
                 "--cargo-profile",
                 "test",
@@ -196,12 +210,14 @@ def build_inside(plan_path, plan_sha):
                 str(work / "cargo-metadata.json"),
                 "--binaries-metadata",
                 str(work / "binaries-metadata.json"),
+                *config_args,
                 "--message-format",
                 "json",
             ],
             label="cold-full-test-inventory",
             environment=env,
         )
+        verify(nextest_config, config_identity)
         complete = read_json(full_list)
         if set(complete["rust-suites"]) != {TEST_BINARY_ID}:
             raise ValueError("Cold test-case inventory includes an unexpected binary")
