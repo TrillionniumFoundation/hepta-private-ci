@@ -133,7 +133,11 @@ pub(crate) fn receive(
             return Err(refused("one exact kernel sender credential required"));
         }
         // SAFETY: the complete ucred lies inside the checked ancillary payload.
-        credentials = Some(unsafe { libc::CMSG_DATA(header).cast::<libc::ucred>().read_unaligned() });
+        credentials = Some(unsafe {
+            libc::CMSG_DATA(header)
+                .cast::<libc::ucred>()
+                .read_unaligned()
+        });
         // SAFETY: same live bounded chain as above; no descriptor is adopted twice.
         header = unsafe { libc::CMSG_NXTHDR(&message, header) };
     }

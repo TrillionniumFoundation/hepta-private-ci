@@ -42,15 +42,20 @@ pub struct WorkerRootJournalBootstrapV1 {
 
 pub(crate) fn journal_basename(agent: &AgentId) -> io::Result<String> {
     let bytes = serde_json::to_vec(&(WORKER_ROOT_JOURNAL_V1, agent)).map_err(io::Error::other)?;
-    Ok(format!("worker-{}", Sha256Digest::for_bytes(&bytes).as_str()))
+    Ok(format!(
+        "worker-{}",
+        Sha256Digest::for_bytes(&bytes).as_str()
+    ))
 }
 
 impl WorkerRootJournalBootstrapV1 {
     pub(crate) fn validate(&self) -> io::Result<()> {
         self.lanes.validate()?;
         let pin = &self.journal;
-        if self.schema_version != 1 || self.purpose != WORKER_ROOT_JOURNAL_V1
-            || self.effect_authorization_available || pin.schema_version != 1
+        if self.schema_version != 1
+            || self.purpose != WORKER_ROOT_JOURNAL_V1
+            || self.effect_authorization_available
+            || pin.schema_version != 1
             || pin.purpose != WORKER_ROOT_JOURNAL_V1
             || pin.registration_sha256 != self.lanes.registration_sha256()?
             || pin.slot_sequence != self.lanes.slot_sequence
@@ -58,13 +63,21 @@ impl WorkerRootJournalBootstrapV1 {
             || pin.worker_gid != self.lanes.registration.worker.gid
             || !pin.parent.is_absolute()
             || pin.parent.to_str().is_none_or(|value| value.len() > 4096)
-            || pin.directory != pin.parent.join(journal_basename(&self.lanes.registration.registered_agent_id)?)
-            || pin.parent_inode == 0 || pin.directory_inode == 0
+            || pin.directory
+                != pin.parent.join(journal_basename(
+                    &self.lanes.registration.registered_agent_id,
+                )?)
+            || pin.parent_inode == 0
+            || pin.directory_inode == 0
             || (pin.parent_device, pin.parent_inode) == (pin.directory_device, pin.directory_inode)
             || pin.initial_frontier != self.lanes.frontier
-            || pin.initial_frontier != FinalUseFrontier::for_initial_head(&self.lanes.revocations).map_err(io::Error::other)?
+            || pin.initial_frontier
+                != FinalUseFrontier::for_initial_head(&self.lanes.revocations)
+                    .map_err(io::Error::other)?
         {
-            return Err(refused("Worker journal sealed purpose, original registration or fresh frontier differs"));
+            return Err(refused(
+                "Worker journal sealed purpose, original registration or fresh frontier differs",
+            ));
         }
         Ok(())
     }

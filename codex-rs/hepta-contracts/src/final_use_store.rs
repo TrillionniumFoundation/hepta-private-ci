@@ -144,11 +144,17 @@ impl Store {
     #[cfg(unix)]
     fn revalidate_original_lock(&self) -> Result<(), FinalUseError> {
         use std::os::unix::fs::MetadataExt;
-        let retained = self._lock.metadata().map_err(|_| FinalUseError::Unavailable)?;
+        let retained = self
+            ._lock
+            .metadata()
+            .map_err(|_| FinalUseError::Unavailable)?;
         let named = open_private(&self.root, "authority.lock", Access::Read)?
-            .metadata().map_err(|_| FinalUseError::Unavailable)?;
-        if retained.dev() != named.dev() || retained.ino() != named.ino()
-            || retained.nlink() != 1 || named.nlink() != 1
+            .metadata()
+            .map_err(|_| FinalUseError::Unavailable)?;
+        if retained.dev() != named.dev()
+            || retained.ino() != named.ino()
+            || retained.nlink() != 1
+            || named.nlink() != 1
         {
             return Err(FinalUseError::Unavailable);
         }
@@ -208,7 +214,11 @@ impl Store {
         allow_startup_head_advance: bool,
     ) -> Result<(Self, State), FinalUseError> {
         Self::open_selected(
-            root, signer_id, trust, initial, allow_startup_head_advance,
+            root,
+            signer_id,
+            trust,
+            initial,
+            allow_startup_head_advance,
             OpenSelection::Compatibility,
         )
     }
@@ -220,7 +230,14 @@ impl Store {
         issuer_trust_sha256: [u8; 32],
         initial: FinalUseRevocations,
     ) -> Result<(Self, State), FinalUseError> {
-        Self::open_selected(root, signer_id, StoreTrust::IssuerKeyRing(issuer_trust_sha256), initial, false, OpenSelection::ExistingV3)
+        Self::open_selected(
+            root,
+            signer_id,
+            StoreTrust::IssuerKeyRing(issuer_trust_sha256),
+            initial,
+            false,
+            OpenSelection::ExistingV3,
+        )
     }
 
     #[cfg(unix)]
@@ -230,7 +247,14 @@ impl Store {
         issuer_trust_sha256: [u8; 32],
         initial: FinalUseRevocations,
     ) -> Result<(Self, State), FinalUseError> {
-        Self::open_selected(root, signer_id, StoreTrust::IssuerKeyRing(issuer_trust_sha256), initial, false, OpenSelection::FreshInExistingDirectory)
+        Self::open_selected(
+            root,
+            signer_id,
+            StoreTrust::IssuerKeyRing(issuer_trust_sha256),
+            initial,
+            false,
+            OpenSelection::FreshInExistingDirectory,
+        )
     }
 
     fn open_selected(
@@ -244,7 +268,9 @@ impl Store {
         let root = match selection {
             OpenSelection::Compatibility => prepare_directory(root)?,
             #[cfg(unix)]
-            OpenSelection::ExistingV3 | OpenSelection::FreshInExistingDirectory => open_existing_directory(root)?,
+            OpenSelection::ExistingV3 | OpenSelection::FreshInExistingDirectory => {
+                open_existing_directory(root)?
+            }
         };
         let initialized = entry_exists(&root, "authority.lock")?;
         let access = match selection {
@@ -287,7 +313,12 @@ impl Store {
         match selection {
             OpenSelection::ExistingV3 => require_complete_v3_entries(&store.root)?,
             OpenSelection::FreshInExistingDirectory => {
-                for name in ["authority.json", "authority.claims", "authority.next", "authority.claims.next"] {
+                for name in [
+                    "authority.json",
+                    "authority.claims",
+                    "authority.next",
+                    "authority.claims.next",
+                ] {
                     if entry_exists(&store.root, name)? {
                         return Err(FinalUseError::InvalidTrust);
                     }
@@ -720,7 +751,13 @@ fn require_complete_v3_entries(directory: &File) -> Result<(), FinalUseError> {
 
 #[cfg(unix)]
 fn require_absent_authority_entries(directory: &File) -> Result<(), FinalUseError> {
-    for name in ["authority.lock", "authority.json", "authority.claims", "authority.next", "authority.claims.next"] {
+    for name in [
+        "authority.lock",
+        "authority.json",
+        "authority.claims",
+        "authority.next",
+        "authority.claims.next",
+    ] {
         if entry_exists(directory, name)? {
             return Err(FinalUseError::InvalidTrust);
         }

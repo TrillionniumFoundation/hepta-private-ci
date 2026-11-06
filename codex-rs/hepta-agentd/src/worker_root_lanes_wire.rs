@@ -81,15 +81,29 @@ pub(crate) struct WorkerWriterReadResponse {
 }
 
 pub(crate) fn stable_consumer_namespace(agent: &AgentId) -> io::Result<String> {
-    let bytes = serde_json::to_vec(&("runtime.infer_worker.consumer_floor.v1", agent)).map_err(io::Error::other)?;
-    Ok(format!("worker-consumer-v1:{}", Sha256Digest::for_bytes(&bytes).as_str()))
+    let bytes = serde_json::to_vec(&("runtime.infer_worker.consumer_floor.v1", agent))
+        .map_err(io::Error::other)?;
+    Ok(format!(
+        "worker-consumer-v1:{}",
+        Sha256Digest::for_bytes(&bytes).as_str()
+    ))
 }
 
-pub(crate) fn lane_paths(registration: &WorkerRootRegistrationV1, slot_sequence: u64) -> io::Result<WorkerRootLanePathsV1> {
+pub(crate) fn lane_paths(
+    registration: &WorkerRootRegistrationV1,
+    slot_sequence: u64,
+) -> io::Result<WorkerRootLanePathsV1> {
     // Only rendezvous names vary with this actual Root incarnation. The
     // consumer namespace and durable slot are stable across Worker nonces.
-    let bytes = serde_json::to_vec(&(WORKER_ROOT_LANES_V1, &registration.registered_agent_id, &registration.root, slot_sequence)).map_err(io::Error::other)?;
-    let parent = PathBuf::from("/run/hepta-worker-v1").join(Sha256Digest::for_bytes(&bytes).as_str());
+    let bytes = serde_json::to_vec(&(
+        WORKER_ROOT_LANES_V1,
+        &registration.registered_agent_id,
+        &registration.root,
+        slot_sequence,
+    ))
+    .map_err(io::Error::other)?;
+    let parent =
+        PathBuf::from("/run/hepta-worker-v1").join(Sha256Digest::for_bytes(&bytes).as_str());
     Ok(WorkerRootLanePathsV1 {
         observation: parent.join("o"),
         issuer: parent.join("i"),
@@ -106,13 +120,19 @@ impl WorkerRootLaneBootstrapV1 {
             || self.owner_id != self.issuer_key.key_id
             || self.owner_id.is_empty()
             || self.owner_id.len() > 128
-            || self.issuer_key.not_before_authority_epoch > self.registration.issuer_lease.authority_epoch
-            || self.issuer_key.not_after_authority_epoch < self.registration.issuer_lease.authority_epoch
-            || self.consumer_namespace != stable_consumer_namespace(&self.registration.registered_agent_id)?
-            || self.writer_proof.sha256().map_err(io::Error::other)? != self.registration.writer_proof_sha256
+            || self.issuer_key.not_before_authority_epoch
+                > self.registration.issuer_lease.authority_epoch
+            || self.issuer_key.not_after_authority_epoch
+                < self.registration.issuer_lease.authority_epoch
+            || self.consumer_namespace
+                != stable_consumer_namespace(&self.registration.registered_agent_id)?
+            || self.writer_proof.sha256().map_err(io::Error::other)?
+                != self.registration.writer_proof_sha256
             || self.sockets != lane_paths(&self.registration, self.slot_sequence)?
-            || self.timeout_ms == 0 || self.timeout_ms > 5_000
-            || self.lifetime_ms == 0 || self.lifetime_ms > 300_000
+            || self.timeout_ms == 0
+            || self.timeout_ms > 5_000
+            || self.lifetime_ms == 0
+            || self.lifetime_ms > 300_000
             || self.expires_at_unix_ms != self.registration.expires_at_unix_ms
             || self.observed_unix_ms < self.registration.observed_unix_ms
             || self.observed_unix_ms >= self.expires_at_unix_ms
@@ -126,12 +146,16 @@ impl WorkerRootLaneBootstrapV1 {
                 && self.frontier.revocation_revision > self.revocations.revision)
             || self.effect_authorization_available
         {
-            return Err(refused("Worker lane purpose, original proof, stable floor or no-effect boundary differs"));
+            return Err(refused(
+                "Worker lane purpose, original proof, stable floor or no-effect boundary differs",
+            ));
         }
         Ok(())
     }
 
     pub(crate) fn registration_sha256(&self) -> io::Result<Sha256Digest> {
-        Ok(Sha256Digest::for_bytes(&serde_json::to_vec(&self.registration).map_err(io::Error::other)?))
+        Ok(Sha256Digest::for_bytes(
+            &serde_json::to_vec(&self.registration).map_err(io::Error::other)?,
+        ))
     }
 }

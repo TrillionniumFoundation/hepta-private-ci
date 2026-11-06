@@ -9,7 +9,10 @@ use std::io::Write;
 use std::os::fd::AsRawFd;
 
 fn journal_parent() -> tempfile::TempDir {
-    let directory = tempfile::Builder::new().prefix("hepta-worker-journal-parent-").tempdir_in("/run").unwrap();
+    let directory = tempfile::Builder::new()
+        .prefix("hepta-worker-journal-parent-")
+        .tempdir_in("/run")
+        .unwrap();
     std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o711)).unwrap();
     let metadata = directory.path().symlink_metadata().unwrap();
     assert_eq!((metadata.uid(), metadata.mode() & 0o7777), (0, 0o711));
@@ -17,16 +20,43 @@ fn journal_parent() -> tempfile::TempDir {
 }
 
 fn directory_for(parent: &Path, fixture: &LaneFixture) -> PathBuf {
-    parent.join(crate::worker_root_registration::journal_wire::journal_basename(&fixture.original.identity.agent_id).unwrap())
+    parent.join(
+        crate::worker_root_registration::journal_wire::journal_basename(
+            &fixture.original.identity.agent_id,
+        )
+        .unwrap(),
+    )
 }
 
 fn run_real_child(mode: &str) -> (LaneFixture, tempfile::TempDir, serde_json::Value) {
     let fixture = LaneFixture::open();
     let parent = journal_parent();
-    fixture.original.session.as_ref().unwrap().provision_worker_frontier_fresh().unwrap();
+    fixture
+        .original
+        .session
+        .as_ref()
+        .unwrap()
+        .provision_worker_frontier_fresh()
+        .unwrap();
     let (mut worker, root) = child(&fixture.original, mode);
-    let held = fixture.original.session.as_ref().unwrap().register_worker_child(&fixture.original.registry, &mut worker.child, root, Duration::from_secs(5)).unwrap();
-    held.serve_worker_journal_lanes(parent.path(), Duration::from_secs(5), Duration::from_secs(15)).unwrap();
+    let held = fixture
+        .original
+        .session
+        .as_ref()
+        .unwrap()
+        .register_worker_child(
+            &fixture.original.registry,
+            &mut worker.child,
+            root,
+            Duration::from_secs(5),
+        )
+        .unwrap();
+    held.serve_worker_journal_lanes(
+        parent.path(),
+        Duration::from_secs(5),
+        Duration::from_secs(15),
+    )
+    .unwrap();
     let message = worker.message();
     worker.finish();
     (fixture, parent, message)
@@ -46,13 +76,30 @@ fn root_worker_journal_fresh_actual_uid_and_same_custody_reopen_use_original_flo
     assert_eq!(first["journal"]["worker_uid"], 60003);
     let directory = directory_for(parent.path(), &fixture);
     let metadata = directory.symlink_metadata().unwrap();
-    assert_eq!((metadata.uid(), metadata.gid(), metadata.mode() & 0o7777), (60003, 60003, 0o700));
-    assert_eq!(metadata.dev(), first["journal"]["directory_device"].as_u64().unwrap());
-    assert_eq!(metadata.ino(), first["journal"]["directory_inode"].as_u64().unwrap());
+    assert_eq!(
+        (metadata.uid(), metadata.gid(), metadata.mode() & 0o7777),
+        (60003, 60003, 0o700)
+    );
+    assert_eq!(
+        metadata.dev(),
+        first["journal"]["directory_device"].as_u64().unwrap()
+    );
+    assert_eq!(
+        metadata.ino(),
+        first["journal"]["directory_inode"].as_u64().unwrap()
+    );
     assert_eq!(std::fs::read_dir(&directory).unwrap().count(), 3);
     for name in ["authority.lock", "authority.json", "authority.claims"] {
         let metadata = directory.join(name).symlink_metadata().unwrap();
-        assert_eq!((metadata.uid(), metadata.gid(), metadata.mode() & 0o7777, metadata.nlink()), (60003, 60003, 0o600, 1));
+        assert_eq!(
+            (
+                metadata.uid(),
+                metadata.gid(),
+                metadata.mode() & 0o7777,
+                metadata.nlink()
+            ),
+            (60003, 60003, 0o600, 1)
+        );
     }
     let floor = fixture.worker_path().join("consumer-floor");
     assert_eq!(frontier_json(&floor), first["frontier"]);
@@ -64,8 +111,26 @@ fn root_worker_journal_fresh_actual_uid_and_same_custody_reopen_use_original_flo
     let retained_floor = private_records(&floor);
     fixture.reopen_original();
     let (mut successor, root) = child(&fixture.original, "journal-refuse-before-offer");
-    let held = fixture.original.session.as_ref().unwrap().register_worker_child(&fixture.original.registry, &mut successor.child, root, Duration::from_secs(5)).unwrap();
-    assert!(held.serve_worker_journal_lanes(parent.path(), Duration::from_secs(1), Duration::from_secs(5)).is_err());
+    let held = fixture
+        .original
+        .session
+        .as_ref()
+        .unwrap()
+        .register_worker_child(
+            &fixture.original.registry,
+            &mut successor.child,
+            root,
+            Duration::from_secs(5),
+        )
+        .unwrap();
+    assert!(
+        held.serve_worker_journal_lanes(
+            parent.path(),
+            Duration::from_secs(1),
+            Duration::from_secs(5)
+        )
+        .is_err()
+    );
     assert_eq!(successor.message()["kind"], "journal_refused");
     successor.finish();
     assert_eq!(private_records(&slot), consumed);
@@ -77,20 +142,55 @@ fn root_worker_journal_fresh_actual_uid_and_same_custody_reopen_use_original_flo
 fn root_worker_journal_second_ack_loss_never_initializes_or_serves_a_journal() {
     let fixture = LaneFixture::open();
     let parent = journal_parent();
-    fixture.original.session.as_ref().unwrap().provision_worker_frontier_fresh().unwrap();
+    fixture
+        .original
+        .session
+        .as_ref()
+        .unwrap()
+        .provision_worker_frontier_fresh()
+        .unwrap();
     let floor = fixture.worker_path().join("consumer-floor");
     let original = private_records(&floor);
     let (mut worker, root) = child(&fixture.original, "journal-second-offer-no-ack");
-    let held = fixture.original.session.as_ref().unwrap().register_worker_child(&fixture.original.registry, &mut worker.child, root, Duration::from_secs(5)).unwrap();
-    assert!(held.serve_worker_journal_lanes(parent.path(), Duration::from_millis(500), Duration::from_secs(5)).is_err());
+    let held = fixture
+        .original
+        .session
+        .as_ref()
+        .unwrap()
+        .register_worker_child(
+            &fixture.original.registry,
+            &mut worker.child,
+            root,
+            Duration::from_secs(5),
+        )
+        .unwrap();
+    assert!(
+        held.serve_worker_journal_lanes(
+            parent.path(),
+            Duration::from_millis(500),
+            Duration::from_secs(5)
+        )
+        .is_err()
+    );
     let message = worker.message();
     assert_eq!(message["kind"], "journal_offer_without_ack");
     assert_eq!(message["journal_files_created"], 0);
     assert_eq!(message["frontier_response_bytes"], 0);
     assert_eq!(message["actual_connections"], 3);
-    assert!(std::fs::read_dir(directory_for(parent.path(), &fixture)).unwrap().next().is_none());
-    assert_eq!(frontier_json(&fixture.worker_path().join("current-slot"))["state"]["phase"], "Reserved");
-    assert_eq!(frontier_json(&fixture.worker_path().join("local-journal-custody-v1"))["confirmed_after_original_child_ack"], false);
+    assert!(
+        std::fs::read_dir(directory_for(parent.path(), &fixture))
+            .unwrap()
+            .next()
+            .is_none()
+    );
+    assert_eq!(
+        frontier_json(&fixture.worker_path().join("current-slot"))["state"]["phase"],
+        "Reserved"
+    );
+    assert_eq!(
+        frontier_json(&fixture.worker_path().join("local-journal-custody-v1"))["confirmed_after_original_child_ack"],
+        false
+    );
     assert_eq!(private_records(&floor), original);
     worker.finish();
 }
@@ -100,7 +200,13 @@ fn root_worker_journal_second_ack_loss_never_initializes_or_serves_a_journal() {
 fn root_worker_journal_partial_leaf_is_not_repaired_or_reclassified_fresh() {
     let fixture = LaneFixture::open();
     let parent = journal_parent();
-    fixture.original.session.as_ref().unwrap().provision_worker_frontier_fresh().unwrap();
+    fixture
+        .original
+        .session
+        .as_ref()
+        .unwrap()
+        .provision_worker_frontier_fresh()
+        .unwrap();
     let directory = directory_for(parent.path(), &fixture);
     std::fs::create_dir(&directory).unwrap();
     std::os::unix::fs::chown(&directory, Some(60003), Some(60003)).unwrap();
@@ -111,15 +217,54 @@ fn root_worker_journal_partial_leaf_is_not_repaired_or_reclassified_fresh() {
     std::fs::set_permissions(&marker, std::fs::Permissions::from_mode(0o600)).unwrap();
     let before = directory.symlink_metadata().unwrap();
     let (mut worker, root) = child(&fixture.original, "journal-refuse-before-offer");
-    let held = fixture.original.session.as_ref().unwrap().register_worker_child(&fixture.original.registry, &mut worker.child, root, Duration::from_secs(5)).unwrap();
-    assert!(held.serve_worker_journal_lanes(parent.path(), Duration::from_secs(1), Duration::from_secs(5)).is_err());
+    let held = fixture
+        .original
+        .session
+        .as_ref()
+        .unwrap()
+        .register_worker_child(
+            &fixture.original.registry,
+            &mut worker.child,
+            root,
+            Duration::from_secs(5),
+        )
+        .unwrap();
+    assert!(
+        held.serve_worker_journal_lanes(
+            parent.path(),
+            Duration::from_secs(1),
+            Duration::from_secs(5)
+        )
+        .is_err()
+    );
     assert_eq!(worker.message()["kind"], "journal_refused");
     worker.finish();
     let after = directory.symlink_metadata().unwrap();
-    assert_eq!((after.dev(), after.ino(), after.uid(), after.gid(), after.mode()), (before.dev(), before.ino(), before.uid(), before.gid(), before.mode()));
-    assert_eq!(std::fs::read(marker).unwrap(), b"retain partial first attempt");
+    assert_eq!(
+        (
+            after.dev(),
+            after.ino(),
+            after.uid(),
+            after.gid(),
+            after.mode()
+        ),
+        (
+            before.dev(),
+            before.ino(),
+            before.uid(),
+            before.gid(),
+            before.mode()
+        )
+    );
+    assert_eq!(
+        std::fs::read(marker).unwrap(),
+        b"retain partial first attempt"
+    );
     assert_eq!(std::fs::read_dir(directory).unwrap().count(), 1);
-    assert_eq!(frontier_json(&fixture.worker_path().join("current-slot"))["state"]["phase"], "Reserved");
+    assert_eq!(
+        frontier_json(&fixture.worker_path().join("current-slot"))["state"]["phase"],
+        "Reserved"
+    );
 }
 
 #[test]
@@ -128,8 +273,15 @@ fn root_worker_journal_missing_snapshot_is_not_genesis_repaired() {
     let (fixture, parent, message) = run_real_child("journal-missing-snapshot");
     assert_eq!(message["kind"], "journal_missing_snapshot_refused");
     assert_eq!(message["snapshot_recreated"], false);
-    assert!(!directory_for(parent.path(), &fixture).join("authority.json").exists());
-    assert_eq!(frontier_json(&fixture.worker_path().join("consumer-floor")), message["first"]["frontier"]);
+    assert!(
+        !directory_for(parent.path(), &fixture)
+            .join("authority.json")
+            .exists()
+    );
+    assert_eq!(
+        frontier_json(&fixture.worker_path().join("consumer-floor")),
+        message["first"]["frontier"]
+    );
 }
 
 #[test]
@@ -173,10 +325,40 @@ fn root_worker_journal_original_generation_change_refuses_before_any_directory_h
     let slot = fixture.worker_path().join("current-slot");
     let original = private_records(&slot);
     let (mut worker, root) = child(&fixture.original, "journal-refuse-before-offer");
-    let held = session.register_worker_child(&fixture.original.registry, &mut worker.child, root, Duration::from_secs(5)).unwrap();
-    let running = fixture.original.registry.compare_and_transition(&fixture.original.identity.agent_id, fixture.original.identity.spawn_generation, AgentLifecycle::Running).unwrap();
-    fixture.original.registry.compare_and_transition(&fixture.original.identity.agent_id, running.generation, AgentLifecycle::Draining).unwrap();
-    assert!(held.serve_worker_journal_lanes(parent.path(), Duration::from_secs(1), Duration::from_secs(5)).is_err());
+    let held = session
+        .register_worker_child(
+            &fixture.original.registry,
+            &mut worker.child,
+            root,
+            Duration::from_secs(5),
+        )
+        .unwrap();
+    let running = fixture
+        .original
+        .registry
+        .compare_and_transition(
+            &fixture.original.identity.agent_id,
+            fixture.original.identity.spawn_generation,
+            AgentLifecycle::Running,
+        )
+        .unwrap();
+    fixture
+        .original
+        .registry
+        .compare_and_transition(
+            &fixture.original.identity.agent_id,
+            running.generation,
+            AgentLifecycle::Draining,
+        )
+        .unwrap();
+    assert!(
+        held.serve_worker_journal_lanes(
+            parent.path(),
+            Duration::from_secs(1),
+            Duration::from_secs(5)
+        )
+        .is_err()
+    );
     assert_eq!(worker.message()["kind"], "journal_refused");
     worker.finish();
     assert!(std::fs::read_dir(parent.path()).unwrap().next().is_none());
@@ -193,18 +375,37 @@ fn root_worker_journal_original_revoke_advances_real_floor_then_rejects_old_snap
     let (mut worker, root) = child(&fixture.original, "journal-head-and-rollback");
     let mut output = worker.child.stdout.take().unwrap();
     let mut input = worker.child.stdin.take().unwrap();
-    let held = session.register_worker_child(&fixture.original.registry, &mut worker.child, root, Duration::from_secs(5)).unwrap();
+    let held = session
+        .register_worker_child(
+            &fixture.original.registry,
+            &mut worker.child,
+            root,
+            Duration::from_secs(5),
+        )
+        .unwrap();
     let (first, advanced, rejected, original_head) = std::thread::scope(|scope| {
-        let server = scope.spawn(|| held.serve_worker_journal_lanes(parent.path(), Duration::from_secs(5), Duration::from_secs(15)));
+        let server = scope.spawn(|| {
+            held.serve_worker_journal_lanes(
+                parent.path(),
+                Duration::from_secs(5),
+                Duration::from_secs(15),
+            )
+        });
         let first = read_message(&mut output);
         assert_eq!(first["kind"], "journal_ready_for_original_root_revoke");
         // This test-only forwarder calls the SAME retained original issuer.
         // It creates no alternate key, injected clock or synthetic owner.
-        let head = session.service.revoke_worker_journal_qualification_grant("worker-journal-original-root-revocation").unwrap();
+        let head = session
+            .service
+            .revoke_worker_journal_qualification_grant("worker-journal-original-root-revocation")
+            .unwrap();
         input.write_all(&[2]).unwrap();
         let advanced = read_message(&mut output);
         assert_eq!(advanced["kind"], "journal_original_head_and_floor_advanced");
-        assert_eq!(advanced["advanced"]["revocations"], serde_json::to_value(&head).unwrap());
+        assert_eq!(
+            advanced["advanced"]["revocations"],
+            serde_json::to_value(&head).unwrap()
+        );
         input.write_all(&[3]).unwrap();
         let rejected = read_message(&mut output);
         assert_eq!(rejected["kind"], "journal_old_snapshot_refused");
@@ -216,13 +417,23 @@ fn root_worker_journal_original_revoke_advances_real_floor_then_rejects_old_snap
     worker.child.stdin = Some(input);
     worker.finish();
     assert_ne!(first["first"]["frontier"], advanced["advanced"]["frontier"]);
-    assert_eq!(frontier_json(&fixture.worker_path().join("consumer-floor")), advanced["advanced"]["frontier"]);
-    assert_eq!(rejected["advanced"]["revocations"], serde_json::to_value(original_head).unwrap());
+    assert_eq!(
+        frontier_json(&fixture.worker_path().join("consumer-floor")),
+        advanced["advanced"]["frontier"]
+    );
+    assert_eq!(
+        rejected["advanced"]["revocations"],
+        serde_json::to_value(original_head).unwrap()
+    );
     assert_eq!(rejected["effect_authorization_available"], false);
 }
 
 fn read_message(output: &mut std::process::ChildStdout) -> serde_json::Value {
-    let mut descriptor = libc::pollfd { fd: output.as_raw_fd(), events: libc::POLLIN, revents: 0 };
+    let mut descriptor = libc::pollfd {
+        fd: output.as_raw_fd(),
+        events: libc::POLLIN,
+        revents: 0,
+    };
     // SAFETY: this is the retained original owned Child's stdout. The bound
     // matches the pre-existing fixture message reader; no PID lookup is used.
     assert!(unsafe { libc::poll(&mut descriptor, 1, 10_000) } > 0);
