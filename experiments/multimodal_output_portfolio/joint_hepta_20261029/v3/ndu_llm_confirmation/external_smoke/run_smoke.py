@@ -3,10 +3,12 @@
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path
 import sys
 import unittest
 
+from ...ndu_walltime import runtime as walltime_runtime
 from ...ndu_walltime.runtime import Contract, Worker, digest, run_episode
 from .tools import ROOT, bank, public_task
 
@@ -31,6 +33,9 @@ def run(output):
                         "source_cluster": task["source_cluster"], "episode": record})
     files = [p for p in ROOT.iterdir() if p.suffix in (".py", ".json")]
     source_sha256 = {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(files)}
+    runtime_path = Path(walltime_runtime.__file__).resolve()
+    runtime_key = Path(os.path.relpath(runtime_path, ROOT)).as_posix()
+    source_sha256[runtime_key] = hashlib.sha256(runtime_path.read_bytes()).hexdigest()
     passed = checked.wasSuccessful() and all(r["episode"]["delivered_quality"] == 1 for r in records)
     result = {"schema": "ndu.external-tool-smoke-receipt.v1", "tests_run": checked.testsRun,
               "tests_passed": checked.wasSuccessful(), "all_scripted_deliveries_correct": passed,

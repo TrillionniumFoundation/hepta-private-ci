@@ -50,8 +50,17 @@ behavioral checks and eight measured scripted episodes. Checks include attempted
 SQL mutation, prohibited file access, VM exhaustion, oversized single values,
 source-window validation and omission of private answers from the public task.
 All eight scripted episodes delivered the expected answers. The receipt binds
-the worker, task, builder and source manifest hashes, preserves timing and paid
-attempt events, and states `real_llm_calls: 0`.
+the worker, task, builder, source manifest and actually imported measured-clock
+runtime hashes, preserves timing and paid attempt events, and states
+`real_llm_calls: 0`. Keys in `source_sha256` resolve relative to this directory;
+`../../ndu_walltime/runtime.py` identifies the imported runtime implementation.
+
+The previously published accepted receipt is preserved byte-for-byte as
+[qualification-original.json](evidence/qualification-original.json). That receipt
+did not bind the cross-package runtime source. The current final receipt is a
+fresh rerun of the same five checks and eight scripted tool episodes after adding
+that binding. Its new timings are rerun measurements, not a performance comparison
+or a scientific confirmation result.
 
 Earlier local development receipts are superseded qualification runs, not
 scientific model experiments. The final receipt is the current accepted record.
