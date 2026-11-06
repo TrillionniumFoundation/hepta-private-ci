@@ -720,6 +720,59 @@ def main() -> int:
             raise VerificationFailure("lexical scanner self-test failed")
         if re.search(r"authority\s*\.\s*claim\s*\(", "authority\n  .claim(x)") is None:
             raise VerificationFailure("method call-pattern self-test failed")
+        typed_code = _strip_cfg_test_items(
+            _strip_rust_non_code(
+                """
+                use codex_hepta_contracts::FinalUseAuthority;
+                struct Dispatch { authority: FinalUseAuthority }
+                impl Dispatch {
+                    fn dispatch(&self, token: Token) {
+                        self.authority.with_dispatch_boundary(token, || {});
+                    }
+                }
+                struct Store { authority: FinalUseAuthority }
+                impl Store {
+                    fn claim(&self, signed: Signed, binding: Binding) {
+                        self.authority.claim(signed, &binding);
+                    }
+                }
+                """
+            )
+        )
+        typed_fields = authority_fields({"typed.rs": typed_code}, "FinalUseAuthority")
+        if not has_authority_call(
+            typed_code, "FinalUseAuthority", "with_dispatch_boundary", typed_fields
+        ):
+            raise VerificationFailure("typed authority field receiver self-test failed")
+        if has_authority_call(
+            typed_code, "FinalUseAuthority", "with_verified_use", typed_fields
+        ):
+            raise VerificationFailure("claim-only receiver was misclassified as verified-use")
+        unresolved_code = _strip_cfg_test_items(
+            _strip_rust_non_code(
+                """
+                use codex_hepta_contracts::FinalUseAuthority;
+                struct Unresolved { authority: Opaque }
+                impl Unresolved {
+                    fn dispatch(&self, token: Token) {
+                        self.authority.with_dispatch_boundary(token, || {});
+                    }
+                }
+                """
+            )
+        )
+        unresolved_fields = authority_fields(
+            {"unresolved.rs": unresolved_code}, "FinalUseAuthority"
+        )
+        try:
+            has_authority_call(
+                unresolved_code, "FinalUseAuthority", "with_dispatch_boundary",
+                unresolved_fields
+            )
+        except UnresolvedTypedReceiver:
+            pass
+        else:
+            raise VerificationFailure("unresolved authority receiver was not rejected")
         cfg_code = _strip_cfg_test_items(
             "#[cfg(all(test, unix))]\nmod tests { fn x() { authority.claim(x); } }\nauthority.claim(y);\n"
         )
