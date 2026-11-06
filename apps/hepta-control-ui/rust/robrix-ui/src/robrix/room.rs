@@ -929,3 +929,7 @@ impl Widget for RoomScreen {
         DrawStep::done()
     }
 }
+
+#[cfg(test)]
+#[path = "room_ime_tests.rs"]
+mod ime_tests;
