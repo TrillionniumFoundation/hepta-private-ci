@@ -64,6 +64,7 @@ use core_test_support::apps_test_server::DIRECT_CALENDAR_APP_ONLY_TOOL;
 use core_test_support::apps_test_server::recorded_apps_tool_calls;
 use core_test_support::apps_test_server::search_capable_apps_builder;
 use core_test_support::assert_regex_match;
+use core_test_support::first_party::FirstPartyMockServer;
 use core_test_support::responses;
 use core_test_support::responses::ResponseMock;
 use core_test_support::responses::ResponsesRequest;
@@ -2048,8 +2049,15 @@ Error:\ boom\n
 async fn code_mode_exec_surfaces_handler_errors_as_exceptions() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
-    let server = responses::start_mock_server().await;
-    let (_test, second_mock) = run_code_mode_turn(
+    let server = FirstPartyMockServer::start().await?;
+    let builder = server
+        .test_codex()
+        .with_model("test-gpt-5.1-codex")
+        .with_config(|config| {
+            let _ = config.features.enable(Feature::CodeMode);
+            let _ = config.features.enable(Feature::ExecutedToolCallMetadata);
+        });
+    let (_test, second_mock) = run_code_mode_turn_with_builder(
         &server,
         "surface nested tool handler failures as script exceptions",
         r#"
@@ -2060,6 +2068,7 @@ try {
   text(`caught:${error?.message ?? String(error)}`);
 }
 "#,
+        builder,
     )
     .await?;
 
