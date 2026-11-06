@@ -1,0 +1,54 @@
+{
+  "source_commit": "d8187cce5e8ed27025edfabb1cfd5c4ec3c95e4d",
+  "origin": {
+    "source_commit": "943768d41de711ef888d8c21c1466aa783885307",
+    "run_id": "40656660435",
+    "run_attempt": "1",
+    "artifact_id": 12801988362,
+    "artifact_sha256": "e9e951cebcaee04c18cbffc3cc446be75c5de19e6fb2ec1afa57b48017643a95",
+    "result_sha256": "cd88dc0a753dedc84a7f9e6cad1a903a569d34eb661f471d1fb430ad434d4252",
+    "source_patch": {
+      "bytes": 89162,
+      "sha256": "9f76d0986e0ec2897c0cc95d550b132d1cf8c51b90f3d925a72859758217ada9"
+    },
+    "candidate_patch": {
+      "bytes": 1206432,
+      "sha256": "23661494d6dc1440bff896c80497509ef6e2415c1419dc0d3e452e70c67fcb4e"
+    }
+  },
+  "differences": [
+    {
+      "path": "MODULE.bazel.lock",
+      "expected": {
+        "bytes": 1722721,
+        "sha256": "fe4bbfb92aac1eba58fb25357bf3182088d29a09b1838144041c94b03f8218cf"
+      },
+      "actual": {
+        "bytes": 1725804,
+        "sha256": "333b2545bd671a88aeb762afd74c725801138f8f53ddfc30af1e75b5f446deed"
+      }
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "expected": {
+        "bytes": 420227,
+        "sha256": "c335e0649d5d516cadd52d68c1a15ed5c136814d11553ef5c791ea7e5058a478"
+      },
+      "actual": {
+        "bytes": 419275,
+        "sha256": "70d1590734ce663b956981e5c3e7253c6b712039ca5e11e090487a371fbece7b"
+      }
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "expected": {
+        "bytes": 22366,
+        "sha256": "6b9741f85cd8bd3b5fab5ac163c69a18ea9dde05c967ae5cb85d8af400b7590e"
+      },
+      "actual": {
+        "bytes": 23028,
+        "sha256": "cefa440b6b696fff0ede20159324a5dce1bfe4eff881477d0e0522887a064bda"
+      }
+    }
+  ]
+}

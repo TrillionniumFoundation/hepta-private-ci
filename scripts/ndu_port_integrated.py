@@ -17,6 +17,7 @@ from ndu_port_candidate_common import validate_graph
 from ndu_port_candidate_common import verify_integrated_source
 from ndu_port_candidate_common import verify_tree
 from ndu_port_candidate_common import verify_vendor
+from ndu_port_candidate_common import DEPENDENCY_AMENDMENT
 
 
 def generate_integrated(runner, expected_source):
@@ -41,6 +42,12 @@ def generate_integrated(runner, expected_source):
             runner.root / SOURCE_AMENDMENT, runner.output / "source-amendment.json"
         )
         amendment_artifacts = ("source-amendment.json",)
+    if "dependency_amendment" in binding:
+        shutil.copyfile(
+            runner.root / DEPENDENCY_AMENDMENT,
+            runner.output / "dependency-amendment.json",
+        )
+        amendment_artifacts += ("dependency-amendment.json",)
     # An explicitly declared empty delta binds this already committed source.
     # Patched mode still requires successful nonempty Git patch application.
     (runner.output / "candidate.patch").write_bytes(b"")

@@ -1,0 +1,189 @@
+{
+  "automatic_commit_or_ref_update": false,
+  "command_exits": [
+    {
+      "argv": [
+        "cargo",
+        "+1.96.0",
+        "--version"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "stage": "cargo-version"
+    },
+    {
+      "argv": [
+        "rustc",
+        "+1.96.0",
+        "--version"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "stage": "rustc-version"
+    },
+    {
+      "argv": [
+        "cargo",
+        "+1.96.0",
+        "deny",
+        "--version"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "stage": "deny-version"
+    },
+    {
+      "argv": [
+        "just",
+        "--version"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "stage": "just-version"
+    },
+    {
+      "argv": [
+        "bazel",
+        "--version"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "stage": "bazel-version"
+    },
+    {
+      "argv": [
+        "cargo",
+        "+1.96.0",
+        "metadata",
+        "--locked",
+        "--no-deps",
+        "--format-version",
+        "1"
+      ],
+      "cwd": "codex-rs",
+      "exit_code": 0,
+      "stage": "workspace-before"
+    },
+    {
+      "argv": [
+        "./scripts/check-module-bazel-lock.sh"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "stage": "baseline-bazel-lock-check"
+    },
+    {
+      "argv": [
+        "cargo",
+        "+1.96.0",
+        "update",
+        "--workspace"
+      ],
+      "cwd": "codex-rs",
+      "exit_code": 0,
+      "stage": "cargo-lock-update"
+    },
+    {
+      "argv": [
+        "cargo",
+        "+1.96.0",
+        "update",
+        "--workspace"
+      ],
+      "cwd": "codex-rs",
+      "exit_code": 0,
+      "stage": "cargo-lock-repeat"
+    },
+    {
+      "argv": [
+        "cargo",
+        "+1.96.0",
+        "metadata",
+        "--locked",
+        "--no-deps",
+        "--format-version",
+        "1"
+      ],
+      "cwd": "codex-rs",
+      "exit_code": 0,
+      "stage": "workspace-after"
+    },
+    {
+      "argv": [
+        "just",
+        "bazel-lock-update"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "stage": "bazel-lock-update"
+    },
+    {
+      "argv": [
+        "./scripts/check-module-bazel-lock.sh"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "stage": "bazel-lock-check"
+    },
+    {
+      "argv": [
+        "just",
+        "bazel-lock-update"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "stage": "bazel-lock-repeat"
+    },
+    {
+      "argv": [
+        "./scripts/check-module-bazel-lock.sh"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "stage": "bazel-lock-check-repeat"
+    },
+    {
+      "argv": [
+        "cargo-deny",
+        "--log-level",
+        "warn",
+        "--manifest-path",
+        "./codex-rs/Cargo.toml",
+        "--all-features",
+        "check"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "stage": "cargo-deny-original"
+    }
+  ],
+  "forward_and_reverse_patch_replayed": true,
+  "original_cargo_deny_passed": true,
+  "proposal_tree_including_only_the_original_proposal_tools": "563f3edb5da18ec08b7df7e4114e912d969b003c",
+  "proposal_validated": true,
+  "schema": "pin-utils-lock-proposal-result-v1",
+  "two_actual_locks_repeat_byte_equal": true,
+  "validated_payload_identities": {
+    "after/Cargo.lock": {
+      "bytes": 419249,
+      "git_blob": "baddf73f0b21430f873096360a5c5dbc4aaea770",
+      "sha256": "f317d8618ccf203122657b5259197470cc41c37fb8a51240bd5c1fb3b58eb7ef"
+    },
+    "after/Cargo.toml": {
+      "bytes": 23028,
+      "git_blob": "b21f7ffc0ee52722ddf82e5a996ff9d82ae0fbb0",
+      "sha256": "cefa440b6b696fff0ede20159324a5dce1bfe4eff881477d0e0522887a064bda"
+    },
+    "after/MODULE.bazel.lock": {
+      "bytes": 1725804,
+      "git_blob": "343f80934bb215a7a14fc6618e45947305039b9b",
+      "sha256": "333b2545bd671a88aeb762afd74c725801138f8f53ddfc30af1e75b5f446deed"
+    },
+    "proposal.patch": {
+      "bytes": 2579973,
+      "git_blob": "923c0a7dfbc0e08b1423610cf93d7e08c319011e",
+      "sha256": "3be4a2e02fd349989001804af09236074f98af7a4265e4ddc7d48ba13eaa6905"
+    }
+  },
+  "workspace_members_not_expanded": true
+}

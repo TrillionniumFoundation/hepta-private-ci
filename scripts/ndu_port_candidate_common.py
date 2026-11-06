@@ -12,6 +12,7 @@ import time
 import tomllib
 
 
+
 SCHEMA = "hepta.ci.port-candidate.v1"
 RECIPE = "experiments/multimodal_output_portfolio/closure_v2_20261027/ci/port-remediation/RECIPE.v7.json"
 INTEGRATION = "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/INTEGRATION.v7.json"
@@ -103,6 +104,8 @@ def verify_vendor(root, recipe, *, source_mode="patched"):
                 expected[changed[len(name) + 1 :]] = identity["after"]
         if tree_files(regular_path(root, name)) != expected:
             raise ValueError(f"Vendor inventory differs, including extra files: {name}")
+    if source_mode == "integrated":
+        load_dependency_amendment(root, recipe)
 
 
 def prepare_nextest_storage(runner):
@@ -420,6 +423,7 @@ def check_toolchain(runner, version):
 
 def validate_graph(root, recipe, metadata):
     locked = tomllib.loads((root / LOCKS[0]).read_text())["package"]
+    verify_dependency_graph(root, recipe, metadata, locked)
     forbidden = set(recipe["forbidden_packages"])
     if forbidden & {package["name"] for package in locked}:
         raise ValueError("A forbidden package remains in the resolved lock")
@@ -626,6 +630,22 @@ def verify_integrated_source(runner, recipe, record=None, artifact=None):
         # Return the effective inventory, while preserving the original
         # manifest bytes and identity in the artifact and its binding.
         manifest = {**manifest, "files": files}
+    dependency = load_dependency_amendment(runner.root, recipe, manifest)
+    dependency_identity = None
+    if dependency is not None:
+        files, modes = dict(files), dict(modes)
+        for name, change in dependency["changes"].items():
+            files[name] = change["after"]
+        additions = added_dependency_files(dependency)
+        files.update(additions)
+        modes.update(dependency["vendor_modes"])
+        expected |= set(additions)
+        committed |= {DEPENDENCY_AMENDMENT, *additions, *dependency["proofs"]}
+        dependency_identity = {
+            "path": DEPENDENCY_AMENDMENT,
+            **describe(runner.root, (DEPENDENCY_AMENDMENT,))[DEPENDENCY_AMENDMENT],
+        }
+        manifest = {**manifest, "files": files, "file_modes": modes}
     if describe(runner.root, expected) != files:
         raise ValueError("Integrated source or lock bytes differ from reviewed origin")
     if runner.text(
@@ -665,6 +685,8 @@ def verify_integrated_source(runner, recipe, record=None, artifact=None):
     }
     if amendment_identity is not None:
         binding["source_amendment"] = amendment_identity
+    if dependency_identity is not None:
+        binding["dependency_amendment"] = dependency_identity
     if record is not None:
         if (
             candidate_source_mode(record) != "integrated"
@@ -683,6 +705,12 @@ def verify_integrated_source(runner, recipe, record=None, artifact=None):
                 if amendment_identity
                 else None
             )
+            or record["artifacts"].get("dependency-amendment.json")
+            != (
+                {key: dependency_identity[key] for key in ("bytes", "sha256")}
+                if dependency_identity
+                else None
+            )
         ):
             raise ValueError(
                 "Integrated candidate receipt differs from committed binding"
@@ -694,6 +722,11 @@ def verify_integrated_source(runner, recipe, record=None, artifact=None):
                 amendment_identity is not None
                 and (artifact / "source-amendment.json").read_bytes()
                 != regular_path(runner.root, SOURCE_AMENDMENT).read_bytes()
+            )
+            or (
+                dependency_identity is not None
+                and (artifact / "dependency-amendment.json").read_bytes()
+                != regular_path(runner.root, DEPENDENCY_AMENDMENT).read_bytes()
             )
         ):
             raise ValueError("Integrated candidate delta or manifest transport changed")
@@ -747,6 +780,8 @@ def load_candidate(runner, artifact, expected_result, expected_source):
     if checksum(runner.root / RECIPE) != record["recipe_sha256"]:
         raise ValueError("Producer and consumer recipe bytes differ")
     expected_files = set((*recipe["allowed_paths"], *LOCKS))
+    if candidate_source_mode(record) == "integrated":
+        expected_files |= set(added_dependency_files(load_dependency_amendment(runner.root, recipe)))
     if (
         set(record["files"]) != expected_files
         or not set(record["changed_paths"]) <= expected_files
@@ -798,3 +833,136 @@ def restore_candidate(runner, artifact, expected_result, expected_source):
             integration=record["integration"], source_tree=record["source_tree"]
         )
     return record, recipe
+
+
+DEPENDENCY_AMENDMENT = "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/DEPENDENCY_AMENDMENT.v7.2.json"
+AMENDMENT_SHA256 = "334d6a0000bb6c14c1f8742e680c799d7e9f768e035ce06a99593bedd0e1d538"
+DEPENDENCY_CHANGED = {"codex-rs/Cargo.toml", "codex-rs/Cargo.lock", "MODULE.bazel.lock"}
+DEPENDENCY_CRATES = {
+    "aws-smithy-http": "0.62.6",
+    "aws-smithy-runtime": "1.9.5",
+    "aws-smithy-types": "1.4.7",
+    "hyper": "1.8.1",
+    "loom": "0.7.2",
+}
+
+
+def added_dependency_files(amendment):
+    """Return all source additions, including licenses and provenance notes."""
+    if amendment is None:
+        return {}
+    return {
+        directory + "/" + name: identity
+        for directory, inventory in amendment["vendor_dirs"].items()
+        for name, identity in inventory.items()
+    }
+
+
+def load_dependency_amendment(root, recipe, manifest=None):
+    """Accept only this fixed record, exact parents, source, modes and proof bytes.
+
+    The digest is a code-reviewed seal, not a digest supplied by the artifact.
+    A future dependency change needs a separate reviewed source amendment.
+    Historical patched and integrated fixtures without this file remain valid.
+    """
+
+    path = regular_path(root, DEPENDENCY_AMENDMENT)
+    if not path.exists():
+        return None
+    raw = path.read_bytes()
+    if hashlib.sha256(raw).hexdigest() != AMENDMENT_SHA256:
+        raise ValueError("Dependency amendment differs from its fixed review seal")
+    amendment = json.loads(raw)
+    if (
+        amendment["schema"] != "hepta.port-dependency-amendment.v1"
+        or amendment["operation"] != "reviewed-pin-utils-backport-and-supervisor-runfiles"
+        or amendment["promotion_allowed"] is not False
+        or set(amendment["parents"]) != {INTEGRATION, RECIPE, SOURCE_AMENDMENT}
+        or describe(root, amendment["parents"]) != amendment["parents"]
+        or json.loads(regular_path(root, RECIPE).read_bytes()) != recipe
+    ):
+        raise ValueError("Dependency amendment changed a historical parent or contract")
+    if manifest is None:
+        manifest = json.loads(regular_path(root, INTEGRATION).read_bytes())
+    if set(amendment["changes"]) != DEPENDENCY_CHANGED:
+        raise ValueError("Dependency amendment changed its exact existing-file set")
+    for name, change in amendment["changes"].items():
+        if (
+            change["before"] != manifest["files"][name]
+            or change["before"] == change["after"]
+            or change["mode"] != manifest["file_modes"][name]
+            or describe(root, (name,))[name] != change["after"]
+        ):
+            raise ValueError("Dependency amendment source or lock identity differs")
+    added = added_dependency_files(amendment)
+    if (
+        len(added) != 284
+        or set(added) != set(amendment["vendor_modes"])
+        or set(added) & set(manifest["files"])
+        or set(amendment["vendor_dirs"]) & set(recipe["vendor_dirs"])
+        or {p["name"]: p["version"] for p in amendment["path_packages"]} != DEPENDENCY_CRATES
+        or len(amendment["path_packages"]) != 5
+        or amendment["forbidden_product_packages"] != ["pin-utils"]
+    ):
+        raise ValueError("Dependency amendment changed its exact added-source set")
+    for directory, inventory in amendment["vendor_dirs"].items():
+        if tree_files(regular_path(root, directory)) != inventory:
+            raise ValueError("Dependency vendor inventory differs, including extra files")
+    for name, mode in amendment["vendor_modes"].items():
+        actual = "100755" if regular_path(root, name).stat().st_mode & 0o111 else "100644"
+        if mode not in {"100644", "100755"} or actual != mode:
+            raise ValueError("Dependency vendor executable mode differs")
+    if describe(root, amendment["proofs"]) != amendment["proofs"]:
+        raise ValueError("Dependency native source or graph proof bytes differ")
+    # The product Cargo graph is free of pin-utils. The independently pinned
+    # rules_rs rrprd hub deliberately retains these two registry fact strings.
+    retained = amendment["retained_external_module_registry_facts"]
+    module = json.loads(regular_path(root, "MODULE.bazel.lock").read_bytes())
+    facts = module["facts"]["@@rules_rs+//rs:extensions.bzl%crate"]
+    if module["registryFileHashes"][retained["source_json_url"]] != retained["source_json_sha256"]:
+        raise ValueError("Dependency external rules source binding differs")
+    for name, digest in retained["facts_sha256"].items():
+        if hashlib.sha256(facts[name].encode()).hexdigest() != digest:
+            raise ValueError("Dependency external registry fact bytes differ")
+    return amendment
+
+
+def verify_dependency_graph(root, recipe, metadata, locked):
+    """Require the five actual path selections and the preserved supervisor edge."""
+    amendment = load_dependency_amendment(root, recipe)
+    if amendment is None:
+        return
+    if any(p["name"] == "pin-utils" for p in [*locked, *metadata["packages"]]):
+        raise ValueError("Dependency product graph still contains pin-utils")
+    producer_root = Path(metadata["workspace_root"]).parent
+    nodes = {node["id"] for node in metadata["resolve"]["nodes"]}
+    for expected in amendment["path_packages"]:
+        found = [
+            p for p in locked
+            if (p["name"], p["version"]) == (expected["name"], expected["version"])
+        ]
+        details = [
+            p for p in metadata["packages"]
+            if (p["name"], p["version"]) == (expected["name"], expected["version"])
+        ]
+        if (
+            len(found) != 1
+            or len(details) != 1
+            or found[0]["version"] != expected["version"]
+            or details[0]["version"] != expected["version"]
+            or found[0].get("source") is not None
+            or found[0].get("checksum") is not None
+            or details[0].get("source") is not None
+            or details[0]["id"] not in nodes
+        ):
+            raise ValueError("Dependency graph does not select all five exact path crates")
+        try:
+            selected = Path(details[0]["manifest_path"]).relative_to(producer_root).as_posix()
+        except ValueError as error:
+            raise ValueError("Dependency selected path lies outside the producer") from error
+        if selected != expected["manifest_path"]:
+            raise ValueError("Dependency selected path differs from its sealed vendor")
+    edge = amendment["integrated_product"]["preserved_cargo_edge"]
+    supervisor = [p for p in locked if p["name"] == edge["package"]]
+    if len(supervisor) != 1 or edge["dependency"] not in supervisor[0]["dependencies"]:
+        raise ValueError("Dependency graph dropped the current supervisor edge")
