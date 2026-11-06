@@ -55,6 +55,11 @@ WORKFLOW_REFERENCE_SCRIPTS = (
 WORKFLOW_REFERENCE_RE = re.compile(
     r"(?<![A-Za-z0-9_.-])(?P<path>\.github/workflows/[A-Za-z0-9_.-]+\.ya?ml)(?![A-Za-z0-9_.-])"
 )
+WORKFLOW_REPOSITORY_PREFIX_RE = re.compile(
+    r"""(?:\A|(?<=[\s"'`]))[(\[<]?"""
+    r"(?P<repository>[A-Za-z0-9](?:[A-Za-z0-9-]{0,37}[A-Za-z0-9])?"
+    r"/(?!\.{1,2}/)[A-Za-z0-9_.-]{1,100})/\Z"
+)
 FILES = {
     "current": "docs/CURRENT.json",
     "system": "docs/governance/DOCUMENT_SYSTEM.json",
@@ -171,6 +176,10 @@ def verify_exact_workflow_references() -> None:
     excluded. Test fixtures also use synthetic workflow names; production
     verifier scripts listed above are scanned explicitly so their identity
     bindings cannot silently drift.
+
+    A complete owner/repository-qualified identity belongs to that repository.
+    Only explicit foreign identities are outside this local existence check;
+    relative paths, URLs and unrecognized prefixes keep the local check.
     """
 
     roots = [ROOT / "docs", ROOT / "qualification"]
@@ -192,6 +201,11 @@ def verify_exact_workflow_references() -> None:
         except (OSError, UnicodeDecodeError):
             continue
         for match in WORKFLOW_REFERENCE_RE.finditer(text):
+            qualified = WORKFLOW_REPOSITORY_PREFIX_RE.search(
+                text, max(0, match.start() - 143), match.start()
+            )
+            if qualified and qualified["repository"].casefold() != REPO.casefold():
+                continue
             workflow = match.group("path")
             if not (ROOT / workflow).is_file():
                 line = text.count("\n", 0, match.start()) + 1
