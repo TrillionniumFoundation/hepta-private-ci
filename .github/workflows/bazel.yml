@@ -95,7 +95,7 @@ jobs:
             --test_tag_filters=-argument-comment-lint
             --test_verbose_timeout_warnings
             --build_metadata=COMMIT_SHA=${GITHUB_SHA}
-            '--strategy_regexp=^Testing //codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-unit-tests( |$)=sandboxed'
+            '--strategy=TestRunner=local'
           )
           ./.github/scripts/run-bazel-ci.sh \
             "${focused_bazel_wrapper_args[@]}" \
