@@ -4135,7 +4135,8 @@ async fn thread_resume_keeps_in_flight_turn_streaming() -> Result<()> {
         DEFAULT_READ_TIMEOUT,
         primary.read_stream_until_notification_message("turn/started"),
     )
-    .await??;
+    .await
+    .inspect_err(|_| primary.report_timeout("second_turn_started"))??;
 
     let resume_id = primary
         .send_thread_resume_request(ThreadResumeParams {
