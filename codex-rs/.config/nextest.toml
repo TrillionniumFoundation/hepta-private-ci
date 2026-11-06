@@ -37,6 +37,8 @@ package(=codex-hepta-infer-worker-host) & (
     | test(/::real_selected_initial_serves_ordinary_context_then_refuses_revocation$/)
     | test(/::real_public_initial_three_rounds_hold_and_read_original_current$/)
     | test(/::real_trained_child_prospective_qualification_cell_install_next_ordinary_read$/)
+    | test(/::real_binary_trained_child_prospective_qualification_cell_install_next_ordinary_read$/)
+    | test(/::real_diverse_trained_child_prospective_qualification_cell_install_next_ordinary_read$/)
 )
 '''
 run-wrapper = "hepta-native-loader"
