@@ -41,6 +41,10 @@ jobs:
               -p codex-hepta-intelligence
           - owner: agentd-composition
             packages: -p codex-hepta-agentd -p codex-hepta-agent-protocol
+          - owner: inherited-dependencies
+            packages: >-
+              -p codex-model-provider-info -p codex-shell-escalation
+              -p codex-linux-sandbox -p codex-hepta-memory
     steps:
       - name: Check out the exact source commit
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
