@@ -1,0 +1,81 @@
+{
+  "schema": "hcsn-evidence-publication-addendum-review-v1",
+  "reviewer": "mechanism_audit",
+  "reviewed_at": "2026-11-06T08:09:54.911762+00:00",
+  "review_mode": "read-only incremental content/claim/privacy review; no tests, downloads, model calls or source changes",
+  "original_review_sha256": "8f538a587f7e93c9a2800a39b55bf7d6708f10ad030fbbed2d5d32a52e9990ff",
+  "original_review_preserved": true,
+  "status": "passed_incremental_review",
+  "blocking_findings": [],
+  "checks": {
+    "final_readiness_exact_hash_and_size": true,
+    "repository_copy_is_byte_identical": true,
+    "source_list_41_objects_39_text_2_small_npz": true,
+    "source_entries_unique": true,
+    "two_small_binary_inspection_scopes_consistent": true,
+    "model_forward_and_training_counts_zero": true,
+    "large_encoder_payload_not_reverified_or_qualified": true,
+    "historical_joint_weights_marked_unread": true,
+    "historical_audio_cache_payloads_marked_unread": true,
+    "no_new_frontend_or_quality_claim": true,
+    "adapter_explicitly_specification_only": true,
+    "content_entry_positive_time_and_lowlevel_zero_observation_distinguished": true,
+    "old_inputs_not_new_holdout": true,
+    "parent_receipt_wording_corrected": true,
+    "original_review_unchanged": true
+  },
+  "multimodal_scope": {
+    "git_objects_reported_inspected": 41,
+    "text_source_or_receipt_objects": 39,
+    "small_npz_payloads": 2,
+    "large_checkpoint_and_audio_cache_scope": "Historical exact receipt/metadata identities; not fresh byte verification, current host possession, new inference or new strong-frontend qualification.",
+    "final_claims": {
+      "new_real_multimodal_experiment_executed": false,
+      "strong_common_frontend_connected": false,
+      "new_hx_core_quality_increment_established": false,
+      "new_budget_created": false,
+      "all_six_user_gates_closed": false,
+      "model_downloaded_or_trained": false
+    },
+    "readiness_status": "HISTORICAL_INPUTS_IDENTIFIED_NEW_STRONG_MULTIMODAL_CORE_EXPERIMENT_BLOCKED"
+  },
+  "interface_scope": "Typed content rejects nonpositive intervals. Generic zero-time observation does not ingest events; simultaneous multimodal event assimilation remains an explicit unresolved operation. No epsilon-time workaround is qualified.",
+  "cuda_readme_scope": "Dependency recovery and dated original-campaign probes remain separate from the new content source. Stage-category/controller-policy descriptions are not counted as completed experiments; immutable stage receipts determine completion.",
+  "publication_scan": {
+    "distinct_payload_files": 3,
+    "categories": [
+      "home_path",
+      "windows_user_path",
+      "signed_url",
+      "known_secret_token",
+      "private_key",
+      "bearer_secret",
+      "url_userinfo",
+      "assigned_secret"
+    ],
+    "findings": []
+  },
+  "reviewed_payloads": {
+    "stream-content-20261106/multimodal-readiness.json": {
+      "sha256": "48586eee0240927cdf39c3dae9a3a188f267b0a91231a2a1a700ec725c936e7e",
+      "bytes": 104478
+    },
+    "stream-content-20261106/README.md": {
+      "sha256": "375612c07c3615da6284db49fc2279eae72f019b1ec8366860b53d35aee0f147",
+      "bytes": 6927
+    },
+    "cuda-public-evidence/README.md": {
+      "sha256": "0508cd61613fad253f1e8211071c41b22511626d70b199de2bf5a8f8ac36b99d",
+      "bytes": 4592
+    }
+  },
+  "excluded_from_this_review": [
+    "MANIFEST.json",
+    "Unchanged payloads covered by the first review",
+    "Raw historical model/cache/media bytes beyond the two reported small NPZ inspections"
+  ],
+  "limits": [
+    "This addendum checks the three exact hashes above and their claim boundaries; it does not rerun historical encoder/media experiments or a new source retrieval.",
+    "No complete-manifest verification is asserted."
+  ]
+}

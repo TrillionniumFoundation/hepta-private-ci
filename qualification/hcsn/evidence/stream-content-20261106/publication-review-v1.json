@@ -1,0 +1,171 @@
+{
+  "schema": "hcsn-evidence-publication-review-v1",
+  "reviewer": "mechanism_audit",
+  "reviewed_at": "2026-11-06T08:04:08.948099+00:00",
+  "review_mode": "read-only receipt/source inspection; no tests, training or frozen-source changes",
+  "status": "passed_for_observed_files",
+  "blocking_findings": [],
+  "source_identity": {
+    "local_execution_commit": "89c6d21e03038d896d57b22149ea4deb23813228",
+    "published_commit": "5b2b73a5f42ef91733e67bf2d79769dc9d2fe8d1",
+    "trees": {
+      "local_execution_commit": "172f18c50e4b643127c42dd772ec4f06c49b37d5",
+      "published_commit": "172f18c50e4b643127c42dd772ec4f06c49b37d5"
+    },
+    "complete_git_tree_equal": true,
+    "receipt_source_files_verified_against_both_commits": 35,
+    "source_mismatches": [],
+    "original_receipts_preserve_local_execution_commit": true
+  },
+  "test_scope": {
+    "unit_test_methods": 133,
+    "unit_test_outcomes": {
+      "passed": 133
+    },
+    "unit_scope": "CPU engineering suite; parent 109 plus 8 time, 9 content-data and 7 content-model checks",
+    "content_record_outcomes": {
+      "passed": 108,
+      "unavailable": 6
+    },
+    "content_scope": "18 CPU cores x 6 named conditions = 108 finite forward/backward fixtures; 6 official Mamba2 cases unavailable",
+    "additional_controls_passed": 8,
+    "integration_optimizer_steps": 0,
+    "integration_cuda_training_attempts": 0,
+    "zero_update_scope_excludes_133_unit_suite": true
+  },
+  "scientific_scope": {
+    "base_and_silence_duplicate_inputs": true,
+    "duplicate_inputs_disclosed_in_readme": true,
+    "same_hidden_width_is_not_active_parameter_match": true,
+    "example_trainable_counts": {
+      "hx_dual": 208,
+      "hx_call": 200,
+      "smooth_gate": 184,
+      "gru": 176,
+      "cfc": 3620,
+      "transformer": 396
+    },
+    "observed_nonzero_gradients_not_structural_activity": true,
+    "qualification_flags": {
+      "trained_mqar": false,
+      "active_parameter_match": false,
+      "equal_search_comparison": false,
+      "real_multimodal_increment": false,
+      "physical_gpu_energy": null,
+      "production_adoption": false
+    },
+    "overstated_scientific_claims_found": false,
+    "cuda_original_probes_source": "28a61d14ea7d4c3b3c515ab57b29c98de22e5673",
+    "cuda_candidate_cpu_suite_source": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+    "cuda_scope_note": "Original A completed one optimizer step; original B OOM is retained; 0/170 is the dated snapshot, not a current-status refresh or newer-content qualification."
+  },
+  "cost_integrity": {
+    "previous_receipt_hash_matches": true,
+    "prior_development_snapshot_preserved": true,
+    "cpu_interval_sum_matches": true,
+    "wall_interval_sum_matches": true,
+    "exclusions_explicit": [
+      "interpreter startup",
+      "imports",
+      "other tests",
+      "source review",
+      "unmeasured energy"
+    ],
+    "physical_energy_joules": null
+  },
+  "publication_scan": {
+    "file_count": 16,
+    "categories": [
+      "home_path",
+      "windows_user_path",
+      "signed_url",
+      "known_secret_token",
+      "private_key",
+      "bearer_secret",
+      "url_userinfo",
+      "assigned_secret"
+    ],
+    "findings": [],
+    "sensitive_match_values_not_emitted": true
+  },
+  "editorial_notes": [
+    {
+      "file": "README.md",
+      "note": "Parent receipt contains source_commit: null; replace \"has no commit field\" with \"source_commit is null\" for literal accuracy. This does not invalidate the retained 29-file identity check."
+    }
+  ],
+  "pending_bundle_items_not_reviewed": [
+    "MANIFEST.json",
+    "multimodal-readiness.json"
+  ],
+  "scope_limits": [
+    "Review covers the exact payload hashes below; files added or changed after this snapshot are outside this review.",
+    "Root reported manifest and multimodal readiness are still being assembled; complete-bundle publication coverage is pending those items."
+  ],
+  "reviewed_payloads": {
+    "stream-content-20261106/README.md": {
+      "sha256": "23ea8bc87ba06191ca8bcb756208520f3edd99469a75dbd08e48c2b59864d2d7",
+      "bytes": 6923
+    },
+    "stream-content-20261106/SOURCE_ACCEPTANCE.json": {
+      "sha256": "e5b915160461a14990b32731a7b784787f660f9588529fb12cd2da37285db97c",
+      "bytes": 4476
+    },
+    "stream-content-20261106/content-fixture-development-v1.json": {
+      "sha256": "8c8b93063d8e97787506404a2537cc0454c487bc2cf5a203f4e3d9a312368095",
+      "bytes": 35638
+    },
+    "stream-content-20261106/content-fixture-development-v2.json": {
+      "sha256": "7c69d0c7bb203502c603a3471af87deae8e15c443bda9e8d7305f9660a2bfc5b",
+      "bytes": 81929
+    },
+    "stream-content-20261106/content-fixtures-final.json": {
+      "sha256": "bd96e4ee05af0408962684aa2f7b430b20ddcab35362e6bcda2bfa047d5371b3",
+      "bytes": 42776
+    },
+    "stream-content-20261106/content-time-probes-final.json": {
+      "sha256": "7d4068515276daf07b7a02fe21d222eb8231cce1f0ab7a133124bcc921e10132",
+      "bytes": 7039
+    },
+    "stream-content-20261106/final-cpu-tests.json": {
+      "sha256": "e21966797f6a04faa7c7f0e2f8e6c24866d55f5d3fb99895075d749f7f119576",
+      "bytes": 30173
+    },
+    "stream-content-20261106/final-cpu-tests.log": {
+      "sha256": "57341532ee1405aaeac1df2ba175dbd7fc986ee40e9950c5069d47d138ff10fb",
+      "bytes": 23107
+    },
+    "stream-content-20261106/parent-cpu-tests.json": {
+      "sha256": "85e301bdc986d47bb8dbc4ce4fb7314a9ac5618fd819eab9d82b68097a5a9b30",
+      "bytes": 24663
+    },
+    "stream-content-20261106/parent-source-review.json": {
+      "sha256": "cfe75429a3d41bef0fae3bfc996cf830fc042d902e19d489aeb9bd8a93098619",
+      "bytes": 442
+    },
+    "stream-content-20261106/verify_content_fixture.py": {
+      "sha256": "014604fca7804bc980ca77f398ee1b4d33562b14709b50ea7a5c9fdd59aa45b7",
+      "bytes": 8683
+    },
+    "stream-content-20261106/verify_stream_fixture.py": {
+      "sha256": "82cb7203f9e17671aa9e7a00b4dfee73b7e508f7ae592e524bb5b0546946010d",
+      "bytes": 2908
+    },
+    "cuda-public-evidence/cuda-gates-20261106-0757.json": {
+      "sha256": "6e926e8ccc9e6db288c22eca3754f866bab12724ef1f5e0c06151afee04bbfd6",
+      "bytes": 14321
+    },
+    "cuda-public-evidence/mamba-offline-complete-20261106.json": {
+      "sha256": "2981c81411cc2a0867be7f357d34ba188f9f0322d4ea2751eddbbc82f7e11e09",
+      "bytes": 4513
+    },
+    "cuda-public-evidence/metadata-recovery-tests-20261106.json": {
+      "sha256": "043f8e5436db4f37361f1e68db3e805a34894746613010f1e373b795c037ff4c",
+      "bytes": 539
+    },
+    "cuda-public-evidence/torch-recovery-v5-complete-20261106.json": {
+      "sha256": "69f9b9cdfc8f85102aa6933460cd480e9ab5c19f507df621f220c2ed40f1b3fa",
+      "bytes": 4620
+    }
+  }
+}
