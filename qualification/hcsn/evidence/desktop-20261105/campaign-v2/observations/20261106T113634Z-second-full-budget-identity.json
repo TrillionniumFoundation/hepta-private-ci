@@ -1,0 +1,138 @@
+{
+  "schema": "hcsn-desktop-campaign-v2-observation",
+  "observation_utc": "2026-11-06T11:36:34.925Z",
+  "observation_kind": "second_registered_cuda_full_budget_terminal",
+  "research_commit": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+  "expected_pins": {
+    "manifest_sha256": "dafb594b4d6af2ade6915b7767369f1c5c69c7b4a06232cae75855cf6be6f531",
+    "archive_sha256": "a9d5d39155b0d93a89c246c69cb82960b5b9308b6150dd1809486e10791791f5",
+    "source_map_sha256": "415f6a2f2d7a89ad0585f29bea0d91928898a11ec8a672de39ce6e22f04d39e9",
+    "original_full_config_sha256": "7fa3d05b8c04a918043afdfa1c266a17beccb814351258d0555a753baf13777a",
+    "current_manifest_rehash": "not_performed_in_this_observation"
+  },
+  "campaign": {
+    "host": "desktop",
+    "job_id": "1a1acdd69f2-fc05-5757",
+    "process_state": "running",
+    "stage": "full",
+    "stage_started_utc": "2026-11-06T08:08:57.361720+00:00",
+    "progress_sha256": "898f415e42dcab238bac8316ee87b1cc2bb01c3046b990f2a9673f9cda28f47e",
+    "progress_updated_utc": "2026-11-06T11:32:31.148642+00:00",
+    "progress_relative": "campaigns/full-v2/progress.json",
+    "completed_cuda_runs": 2,
+    "requested_cuda_runs": 170,
+    "registered_indexes": {
+      "completed": 2,
+      "failed": 0,
+      "unavailable": 0
+    },
+    "global_qualification": "open",
+    "no_automatic_training_retries": true,
+    "disk_free_bytes": 24570077184,
+    "control_filesystem_free_bytes": 32864739328
+  },
+  "config": {
+    "execution_config_sha256": "43fb7b280bb80643c0bcdbfceae6788b37dd1d45fad682805ec6045088b31611",
+    "tasks": [
+      "delayed_recall",
+      "adding"
+    ],
+    "models": 17,
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "train_steps": 400,
+    "batch_size": 64,
+    "length": 64,
+    "hidden_size": 64,
+    "precision": "float32",
+    "population_checkpoint_steps": 1,
+    "cuda_memory_fraction": 0.5,
+    "data_seed": 271828,
+    "train_count": 4096,
+    "validation_count": 512,
+    "test_count": 1024,
+    "split_sha256": [
+      "967e91b0779e87b62f396e812dc25ebf395f8107104edea154a2ee1b06a440fb",
+      "922aed89819c90a27a75d264979e77afa27c207da2fa45d61830ecaa595a55d9",
+      "536bc7546964eec2744a6b6af5dd63a9a1648724cbce4f95e13e2ecd28667a7c"
+    ]
+  },
+  "completed_identity": {
+    "task": "delayed_recall",
+    "model": "hx_dual",
+    "seed": 1,
+    "status": "completed",
+    "started_utc": "2026-11-06T09:44:43.087449+00:00",
+    "finished_utc": "2026-11-06T11:18:52.951919+00:00",
+    "steps_completed": 400,
+    "training_examples_seen": 25600,
+    "training_tokens_seen": 1638400,
+    "trainable_parameters": 5633,
+    "index_sha256": "471deff27b2a051fafff63e258d712c5c9383055f8e65d7a0f356f53b69b00cc",
+    "terminal_sha256": "b4f7a314f4a0cd89a818a7c28e2eaa802c3a30ce6681fe7bdab2bef1dc6b74e7",
+    "checkpoint_relative": "campaigns/full-v2/full.runs/0675edd696488f5b9741521c2572faa3d3d4ec52f9a84c9fad6361e8655e32d6.attempts/1307eb9e35e84b968d2d1a0bd16c0d29.pt",
+    "checkpoint_sha256": "8e1bea350687c95c27b903c67b77930c28cf3a3c86323c4bfd358fe82a84db6e",
+    "checkpoint_file_size_bytes": 29803,
+    "checkpoint_hash_matches_receipt": true,
+    "test_mse": 0.2788465619087219,
+    "best_validation_mse": 0.24678899347782135,
+    "final_training_mse": 0.26347482204437256,
+    "training_wall_seconds_including_validation": 5159.880796891986,
+    "training_examples_per_second": 4.961354924210644,
+    "peak_gpu_allocated_bytes": 779019776,
+    "peak_gpu_reserved_bytes": 799014912,
+    "peak_gpu_measurement_status": "measured",
+    "inference_examples_per_second": 15.376220098074638,
+    "latency_p50_ms": 4078.6727814702317,
+    "latency_p95_ms": 4761.303364002379,
+    "terminal_cuda_synchronized": true,
+    "physical_energy_joules": null,
+    "energy_missing_reason": "NVML NVMLError_NotSupported; CPU RAPL permission denied"
+  },
+  "previous_completed_identity": {
+    "task": "delayed_recall",
+    "model": "hx_dual",
+    "seed": 0,
+    "status": "completed",
+    "test_mse": 0.04104330763220787,
+    "checkpoint_sha256": "e1e2269e9491ecc230965a2faa0c8727a56eb139166550bbf320ff1ec77dab1b",
+    "prior_evidence_commit": "fe941be66a9fce146e0cde679105f054409f736f"
+  },
+  "next_started_identity": {
+    "task": "delayed_recall",
+    "model": "hx_dual",
+    "seed": 2,
+    "started_utc": "2026-11-06T11:18:52.974821+00:00",
+    "started_receipt_sha256": "7d27a47d1d56b347f5127c969330afca42b4b2bfc10b92b30a1917a3db480fb",
+    "terminal_qualification": "not_claimed"
+  },
+  "other_qualifications": {
+    "B_full_budget_audit": "0/20",
+    "A_B_Mamba2_full_comparison": "open",
+    "historical_B_adverse_smoke": "retained",
+    "strict_baseline": "95/95, zero skipped",
+    "strict_candidate": "109/109, zero skipped",
+    "CPU_CUDA_remat_parity": "16/16 each",
+    "exact_source_cpu_ci": {
+      "run_id": 42078258351,
+      "job_id": 127424159520,
+      "head_sha": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    "trusted_main_gpu_probe": {
+      "run_id": 39526325715,
+      "status": "queued",
+      "conclusion": null
+    },
+    "scientific_superiority": "not_claimed",
+    "physical_energy": "unavailable, null"
+  },
+  "limits": "One new terminal does not close the 170-run matrix, B audits, energy or scientific superiority. Only read-only observation; no new training or retries.",
+  "privacy": "Safe relative paths and SHA256 only. No credential, user-home, signed URL or binary copied."
+}
