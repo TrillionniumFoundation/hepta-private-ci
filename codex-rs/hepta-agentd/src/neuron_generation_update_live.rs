@@ -11,6 +11,8 @@ use std::sync::Mutex;
 use codex_hepta_contracts::AuthorityClock;
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseBinding;
+use codex_hepta_contracts::SignedFinalUseGrant;
+use codex_hepta_contracts::VerifiedUseTokenWitnessV1;
 use codex_hepta_learning_artifacts::LearningArtifactOwnerService;
 use codex_hepta_neuron::CellGenerationCurrentV1;
 use codex_hepta_neuron::CellGenerationErrorV2;
@@ -19,6 +21,7 @@ use codex_hepta_neuron::CellGenerationOwnerBindingV1;
 
 use crate::AgentdError;
 use crate::neuron_generation_current::NeuronGenerationCurrentOwnerV1;
+use crate::neuron_generation_current::PublishedNeuronGenerationInitialV1;
 use crate::neuron_generation_current::PublishedNeuronGenerationUpdateV1;
 use crate::neuron_generation_update_selection::AgentdSelectedGenerationV1;
 
@@ -53,11 +56,39 @@ impl AgentdGenerationUpdateAuthoritiesV1 {
     }
 }
 
+enum RetainedPublication {
+    Update(PublishedNeuronGenerationUpdateV1),
+    Initial(PublishedNeuronGenerationInitialV1),
+}
+
+impl RetainedPublication {
+    fn target(&self) -> &CellGenerationOwnerBindingV1 {
+        match self {
+            Self::Update(record) => record.target(),
+            Self::Initial(record) => record.target(),
+        }
+    }
+
+    fn signed_grant(&self) -> &SignedFinalUseGrant {
+        match self {
+            Self::Update(record) => record.signed_grant(),
+            Self::Initial(record) => record.signed_grant(),
+        }
+    }
+
+    fn witness(&self) -> &VerifiedUseTokenWitnessV1 {
+        match self {
+            Self::Update(record) => record.witness(),
+            Self::Initial(record) => record.witness(),
+        }
+    }
+}
+
 pub(crate) struct LiveGenerationCurrent {
     current: Arc<NeuronGenerationCurrentOwnerV1>,
     authorities: AgentdGenerationUpdateAuthoritiesV1,
     selected: Mutex<AgentdSelectedGenerationV1>,
-    publication: PublishedNeuronGenerationUpdateV1,
+    publication: RetainedPublication,
     expected: FinalUseBinding,
 }
 
@@ -67,6 +98,38 @@ impl LiveGenerationCurrent {
         authorities: AgentdGenerationUpdateAuthoritiesV1,
         selected: AgentdSelectedGenerationV1,
         publication: PublishedNeuronGenerationUpdateV1,
+        expected: FinalUseBinding,
+    ) -> Result<Arc<Self>, AgentdError> {
+        Self::from_publication(
+            current,
+            authorities,
+            selected,
+            RetainedPublication::Update(publication),
+            expected,
+        )
+    }
+
+    pub(crate) fn new_initial(
+        current: Arc<NeuronGenerationCurrentOwnerV1>,
+        authorities: AgentdGenerationUpdateAuthoritiesV1,
+        selected: AgentdSelectedGenerationV1,
+        publication: PublishedNeuronGenerationInitialV1,
+        expected: FinalUseBinding,
+    ) -> Result<Arc<Self>, AgentdError> {
+        Self::from_publication(
+            current,
+            authorities,
+            selected,
+            RetainedPublication::Initial(publication),
+            expected,
+        )
+    }
+
+    fn from_publication(
+        current: Arc<NeuronGenerationCurrentOwnerV1>,
+        authorities: AgentdGenerationUpdateAuthoritiesV1,
+        selected: AgentdSelectedGenerationV1,
+        publication: RetainedPublication,
         expected: FinalUseBinding,
     ) -> Result<Arc<Self>, AgentdError> {
         if publication.signed_grant().grant.binding != expected {
