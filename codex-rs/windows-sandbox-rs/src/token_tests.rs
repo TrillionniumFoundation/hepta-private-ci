@@ -464,17 +464,24 @@ fn workspace_capability_delete_routes_require_the_capability_in_all_four_cells()
     let host = DeleteMatrix::new(&fixture.path().join("host"))?;
     let restricted = DeleteMatrix::new(&fixture.path().join("restricted"))?;
     host.assert_same_acls(&restricted);
-    let host_errors: Vec<_> = host
-        .paths()
-        .map(|(file, directory)| {
-            [std::fs::remove_file(file), std::fs::remove_dir(directory)].map(|result| {
-                result
-                    .err()
-                    .map(|error| (error.kind(), error.raw_os_error()))
+    // Elevated host privileges can bypass the Neither ACL. Use the same
+    // identity with only DISABLE_MAX_PRIVILEGE for this ordinary ACL control.
+    let acl_control = crate::acl_control_test_support::AclControl::new()?;
+    let host_errors: Vec<_> = {
+        let _impersonation = acl_control.impersonate()?;
+        host
+            .paths()
+            .map(|(file, directory)| {
+                [std::fs::remove_file(file), std::fs::remove_dir(directory)].map(|result| {
+                    result
+                        .err()
+                        .map(|error| (error.kind(), error.raw_os_error()))
+                })
             })
-        })
-        .collect();
-    let host_outcomes = host.finish("ordinary-host")?;
+            .collect()
+    };
+    acl_control.ensure_restored()?;
+    let host_outcomes = host.finish("nonprivileged-acl-control")?;
     eprintln!("delete_matrix host_native_errors={host_errors:?}");
     assert_eq!(
         host_errors,

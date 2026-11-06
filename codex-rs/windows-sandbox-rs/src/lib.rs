@@ -57,6 +57,10 @@ mod cap;
 #[cfg(all(test, target_os = "windows"))]
 #[path = "delete_permission_matrix_tests.rs"]
 mod delete_permission_matrix;
+
+#[cfg(all(test, target_os = "windows"))]
+#[path = "acl_control_test_support.rs"]
+mod acl_control_test_support;
 #[cfg(target_os = "windows")]
 mod deny_read_acl;
 #[cfg(target_os = "windows")]
