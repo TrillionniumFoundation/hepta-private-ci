@@ -1,0 +1,286 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-11-06T10:33:30.901855+00:00",
+  "code_commit": "fcffa43043ec7f36fa680c449c54b9b3446eb6a6",
+  "code_tree": "d0a50e37bda5073506734f0784807ba6f694d127",
+  "code_pr": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4961",
+  "local_verification": {
+    "scope": "completed before required fix/fmt; hosted CI qualifies the formatted code commit",
+    "automation": {
+      "passed": 42,
+      "skipped": 0,
+      "library_tests": 41,
+      "real_signed_db_integration": 1,
+      "supervisor_in_signed_db_test": "labelled test double"
+    },
+    "neuron_learning_owner": {
+      "passed": 194,
+      "ignored_direct_discovery": 1,
+      "ignored_helper_exercised_by_passing_parent": true
+    },
+    "python": {
+      "passed": 40,
+      "skipped": 0,
+      "graph_state_cargo_selector": 29,
+      "real_lifecycle": 11
+    },
+    "real_supervised_bridges": {
+      "a": {
+        "status": "passed",
+        "backend": "value_kernel",
+        "supervised": true,
+        "logical_cells": 2,
+        "trainable_parameters": 172,
+        "gradient_parameters": 172,
+        "source_digest": "e4b16a76a5dc33b050ef245c2e47d05e0e3dccafc28cf77b82d799b81b50b55d",
+        "resumed_output_exact": true,
+        "resumed_all_state_exact": true,
+        "base_bytes_unchanged": true,
+        "second_training_block": {
+          "status": "passed",
+          "mode": "resume",
+          "optimizer_steps": 2,
+          "intervals": 4,
+          "worker_pid": 67,
+          "initial_state_digest": "092ffceb5840f4d98a3e995049b774643c58c50241e0ed7fec3df79b0b3e213b",
+          "initial_time_micros": 750017,
+          "base_checkpoint_digest": "283a4f7e4d123fceb7806a20634cd422b7cbf361a1728163238ddca0b7ff4296",
+          "candidate_digest": "2ece073092a9e3df2cb8c069c7bfd002d640410f72766510f62afda66d2d42d9",
+          "complete_state_exact": true,
+          "weights_exact": true,
+          "prediction_exact": true,
+          "initial_state_unchanged": true,
+          "original_checkpoint_unchanged": true,
+          "reset_prediction_max_difference": 0.2575933629256573,
+          "native_publication": {
+            "acknowledged_at": 10,
+            "admission_digest": "ecf928dd5a106e684e3d517d4c666b6db54e45be37e1b3b43b6f89c167ee1ba8",
+            "authority": "DENY_ALL",
+            "candidate_digest": "2ece073092a9e3df2cb8c069c7bfd002d640410f72766510f62afda66d2d42d9",
+            "candidate_only": true,
+            "changed_receipt_rejected": true,
+            "pid": 68,
+            "production_trust": false,
+            "publication_state_digest": "3020d17af634006d043d178d7cf13a6ad4c00d983d6d84407a699848d1c7b8a3",
+            "registry_head_digest": "42dcb8187bab2ca9ffc6973272ddb44c092d034a84e52c3d9922b278b67538c2",
+            "retry_same_receipt": true,
+            "second_writer_rejected": true,
+            "synthetic_test_trust": true,
+            "witness_digest": "dba9e82bbc77be6970ad8b5c796f5ed911282b7f41f0eb06dfada54fb5b88422",
+            "wrong_dispatch_rejected": true
+          },
+          "cold_owner": {
+            "candidate_digest": "2ece073092a9e3df2cb8c069c7bfd002d640410f72766510f62afda66d2d42d9",
+            "candidate_only": true,
+            "old_model_clock_restore_rejected": true,
+            "payload_bytes": 11459,
+            "pid": 69,
+            "recovery_required": false,
+            "required_current_head": "42dcb8187bab2ca9ffc6973272ddb44c092d034a84e52c3d9922b278b67538c2",
+            "tampered_payload_rejected": true
+          },
+          "branch": "independent training branch from the published candidate clock; inference continuation is a separate fixture branch",
+          "scope": "second completed-block training; fixture trust only; not multi-generation quality improvement"
+        }
+      },
+      "b": {
+        "status": "passed",
+        "backend": "population_grid",
+        "supervised": true,
+        "logical_cells": 2,
+        "trainable_parameters": 8,
+        "gradient_parameters": 8,
+        "source_digest": "e4b16a76a5dc33b050ef245c2e47d05e0e3dccafc28cf77b82d799b81b50b55d",
+        "resumed_output_exact": true,
+        "resumed_all_state_exact": true,
+        "base_bytes_unchanged": true,
+        "second_training_block": {
+          "status": "passed",
+          "mode": "resume",
+          "optimizer_steps": 2,
+          "intervals": 2,
+          "worker_pid": 67,
+          "initial_state_digest": "9f33d2ebfd8578bb48fe9c3c4e7a31d5cbd7845415a9b3a5fdcaad79c952f2e4",
+          "initial_time_micros": 500017,
+          "base_checkpoint_digest": "ff2aabb6ebc6da0004cf31ad280088c7bded6eaab27fb98cd3cad851b95b11db",
+          "candidate_digest": "9bf30de37328d673a0995007661ec0b964784485123d615bdb701cb0bb948954",
+          "complete_state_exact": true,
+          "weights_exact": true,
+          "prediction_exact": true,
+          "initial_state_unchanged": true,
+          "original_checkpoint_unchanged": true,
+          "reset_prediction_max_difference": 0.30416179121450093,
+          "native_publication": {
+            "acknowledged_at": 10,
+            "admission_digest": "c767ec3fa18c4c670bff191d98564d72453c1ee471498c111e96b2ea45c9a15c",
+            "authority": "DENY_ALL",
+            "candidate_digest": "9bf30de37328d673a0995007661ec0b964784485123d615bdb701cb0bb948954",
+            "candidate_only": true,
+            "changed_receipt_rejected": true,
+            "pid": 68,
+            "production_trust": false,
+            "publication_state_digest": "7a355f5e94a453bed2a609956e90b1ca926fb7a2ad276e6bdc40617a0fcd180f",
+            "registry_head_digest": "35f40c2a87ca92c3f888dc9681a3e14de4d100e97fe76f2e52f54486401a50d0",
+            "retry_same_receipt": true,
+            "second_writer_rejected": true,
+            "synthetic_test_trust": true,
+            "witness_digest": "8eeb62e2e0e302cd15a2916283230219c2cf38bc7ddb18222f6564b0aacf33b5",
+            "wrong_dispatch_rejected": true
+          },
+          "cold_owner": {
+            "candidate_digest": "9bf30de37328d673a0995007661ec0b964784485123d615bdb701cb0bb948954",
+            "candidate_only": true,
+            "old_model_clock_restore_rejected": true,
+            "payload_bytes": 11285,
+            "pid": 69,
+            "recovery_required": false,
+            "required_current_head": "35f40c2a87ca92c3f888dc9681a3e14de4d100e97fe76f2e52f54486401a50d0",
+            "tampered_payload_rejected": true
+          },
+          "branch": "independent training branch from the published candidate clock; inference continuation is a separate fixture branch",
+          "scope": "second completed-block training; fixture trust only; not multi-generation quality improvement"
+        }
+      }
+    }
+  },
+  "formatting": {
+    "fix_exit_code": 0,
+    "fix_changed_source": false,
+    "warnings": "existing files only; raw log and fix-result.json retained",
+    "fmt_exit_code": 0,
+    "local_tests_rerun_after_fmt": false
+  },
+  "hosted_ci": {
+    "run_id": 42201095686,
+    "job_id": 127836285317,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42201095686",
+    "head_sha": "fcffa43043ec7f36fa680c449c54b9b3446eb6a6",
+    "tree_sha": "d0a50e37bda5073506734f0784807ba6f694d127",
+    "status": "completed",
+    "conclusion": "success",
+    "observed_at_utc": "2026-11-06T10:28:59.070Z",
+    "job_completed_at_utc": "2026-11-06T10:28:02Z",
+    "terminal": true,
+    "native_passed_total": 313,
+    "neuron_learning_owner_passed": 194,
+    "full_automation_passed": 119,
+    "native_ignored_direct_helper": 1,
+    "ignored_helper_exercised_by_parent": true,
+    "python_passed": 40,
+    "python_skipped": 0,
+    "both_supervised_bridges_passed": true,
+    "fixture_repair_regression_passed": true,
+    "source_unchanged_passed": true,
+    "artifact": {
+      "artifact_id": 13495121785,
+      "path": "/workspace/scratch/7ee3ec79bc34/ci-repair-run/hcsn-repaired-head-fcffa430-ci-42201095686.zip",
+      "download_started_at_utc": "2026-11-06T10:30:12.208825+00:00",
+      "download_finished_at_utc": "2026-11-06T10:30:17.380313+00:00",
+      "size_in_bytes": 108165145,
+      "sha256": "45611d819dd2ecb6fa1a36a6fef9f17aa39de8fb3b018c1f082e6ab65c6e1d91",
+      "expected_size_in_bytes": 108165145,
+      "expected_sha256": "45611d819dd2ecb6fa1a36a6fef9f17aa39de8fb3b018c1f082e6ab65c6e1d91",
+      "size_matches": true,
+      "digest_matches": true,
+      "elapsed_seconds": 5.171592642996984
+    }
+  },
+  "retained_development_failures": [
+    {
+      "stage": "initial B fixtures",
+      "result": "7 tests, 2 fixture errors",
+      "detail": "wrong encode_handoff argument order and a too-short dormant-gradient trajectory; retained log precedes final8-test B suite"
+    },
+    {
+      "stage": "native test attempt01",
+      "result": "missing baseline compile_data file",
+      "detail": "hydrated exact tracked docs/modules/MODULES.json; base blob preserved"
+    },
+    {
+      "stage": "initial Cargo selector",
+      "result": "rejected Cargo target aliases/host variant",
+      "detail": "explicit targets plus reported metadata and byte equality now required"
+    },
+    {
+      "stage": "A/B bridge attempt01",
+      "result": "rejected old native production rlib before worker launch",
+      "detail": "copy2 retained old source mtimes; byte-identical timestamps refreshed; fresh:false build retained"
+    },
+    {
+      "stage": "A bridge attempt02",
+      "result": "independent oracle rejected disconnected parameters",
+      "detail": "two intervals were too short for all delayed A paths; second block now four intervals, without relaxing gradient checks"
+    },
+    {
+      "stage": "supervisor attempt01",
+      "result": "10/11 pass; one30-second fixture wait expired",
+      "detail": "genuine failed terminal arrived at30.327s; narrowed repository bytecode bypass removed third-party import recompilation; final11/11 pass"
+    }
+  ],
+  "science_and_production": {
+    "original_research_sources_changed": false,
+    "new_cuda_campaigns_started": 0,
+    "existing_controller": "1a1acdd69f2-fc05-5757",
+    "existing_campaign_snapshot_utc": "2026-11-06T10:15:00.912Z/2026-11-06T10:15:08.542Z",
+    "registered_completed": 1,
+    "planned_runs": 170,
+    "active_stage": "full",
+    "global_qualification": "open",
+    "retained_original_b_fullshape_exit": 1,
+    "production_handler_registered": false,
+    "production_trust": false,
+    "model_adopted": false,
+    "artifact_authority": "DENY_ALL synthetic fixture trust",
+    "physical_energy_joules": null,
+    "ndu_benefit_qualified": false,
+    "arbitrary_dt_b_refractory_migration": false,
+    "existing_progress_sha256": "a346d303191f35270e3a693e34e17f078bf4a3c9273c64226200c6781467fe86"
+  },
+  "limitations": [
+    "Signed grant/real DB and actual worker transport are separately tested boundaries, not one signed-grant-to-real-worker fixture.",
+    "Second training and inference continuation are explicit alternative branches from the published candidate anchor.",
+    "Unknown or orphan outcomes without trustworthy terminal evidence are never relaunched or declared successful.",
+    "Supervisor is Linux/private-store scoped. Runtime tuples do not prove dependency binary identity. Current source modules bypass bytecode in a host-owned immutable deployment; this is not a general module sandbox.",
+    "Small CPU fixtures do not establish science quality, production latency, energy or CUDA170-run qualification."
+  ],
+  "archive": {
+    "file": "raw-evidence.tar.gz",
+    "files": 896,
+    "bytes": 986509,
+    "sha256": "5414d5320c37ff9348e71ddebca1543c21f4fa0c056ae1537eb6a03207a1db2d",
+    "git_blob_sha": "fd246d9c80553e908f1b8a209948602becc71ebd",
+    "nonregular_fault_nodes_not_archived": 2
+  },
+  "initial_combined_commit": "92a8b4acbd648deae34ebd90cccc905c6b604d79",
+  "prior_hosted_failure": {
+    "run_id": 42197891722,
+    "head_sha": "92a8b4acbd648deae34ebd90cccc905c6b604d79",
+    "native_owner_passed": 194,
+    "python_passed": 40,
+    "automation_passed": 118,
+    "automation_failed": 1,
+    "both_supervised_bridges_passed": true,
+    "retained_archive": "ci-before-fixture-repair.tar.gz",
+    "cause": "V1 test fixture retained post-v1 timer trigger and dedupe table; no production migration defect claimed"
+  },
+  "fixture_repair": {
+    "changed_file": "codex-rs/hepta-automation/tests/automation.rs",
+    "added_lines": 32,
+    "production_migrations_changed": false,
+    "independent_review_passed": true,
+    "scoped_tests_passed": 18,
+    "scoped_tests_skipped": 0,
+    "test_command": "CARGO_INCREMENTAL=0 just test --locked -p codex-hepta-automation --test automation",
+    "fix_exit_code": 0,
+    "fmt_exit_code": 0,
+    "local_tests_after_final_formatter": false
+  },
+  "engineering_acceptance": "passed for exact code commit; broader repository workflows and science qualification are separate",
+  "hosted_results": {
+    "a": "ci-final-a-result.json",
+    "b": "ci-final-b-result.json",
+    "summary": "ci-final-summary.json",
+    "raw_archive": "ci-final.tar.gz",
+    "manifest": "ci-final-manifest.json"
+  }
+}
