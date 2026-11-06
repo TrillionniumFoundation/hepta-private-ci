@@ -10,8 +10,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: hepta-architecture-convergence-${{ github.event.pull_request.head.ref || github.ref_name }}
-  cancel-in-progress: true
+  group: hepta-architecture-convergence-${{ github.event.pull_request.head.ref || github.ref_name }}${{ (github.event.pull_request.head.ref || github.ref_name) == 'fix/hepta-pq-packet-v1-20261105-df8969' && format('-source-{0}', github.event.pull_request.head.sha || github.sha) || '' }}
+  cancel-in-progress: ${{ (github.event.pull_request.head.ref || github.ref_name) != 'fix/hepta-pq-packet-v1-20261105-df8969' }}
 
 env:
   SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
