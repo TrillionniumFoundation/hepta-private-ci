@@ -21,9 +21,11 @@ use crate::neuron_generation_update::AgentdGenerationUpdateRequestV1;
 use crate::neuron_generation_update::AgentdGenerationUpdateTargetV1;
 use crate::neuron_generation_update::PreparedAgentdGenerationUpdateV1;
 use crate::neuron_generation_update::prepare_agentd_generation_update_v1;
+use crate::neuron_generation_update::prepare_agentd_generation_drained_update_v1;
 use crate::neuron_generation_update::recover_agentd_generation_update_v1;
 use crate::neuron_generation_update_cold::AgentdGenerationUpdatePredecessorFilesV1;
 use crate::neuron_generation_update_cold::prepare_agentd_generation_cold_update_v1;
+use crate::neuron_generation_update_cold::prepare_agentd_generation_cold_drained_update_v1;
 use crate::neuron_generation_update_forward::AgentdGenerationForwardRecoveryV1;
 use crate::neuron_generation_update_forward::prepare_agentd_generation_forward_recovery_v1;
 use crate::neuron_generation_update_live::AgentdGenerationUpdateAuthoritiesV1;
@@ -46,7 +48,7 @@ pub struct AgentdV13GenerationUpdateInputsV1<'a> {
 }
 
 impl AgentdV13GenerationUpdateInputsV1<'_> {
-    fn open(
+    pub(crate) fn open(
         self,
         mode: V13GenerationOwnerModeV1,
     ) -> Result<(AgentdGenerationUpdateTargetV1<FileAnchorWitnessStore>, V13BackendOwner), AgentdError> {
@@ -62,7 +64,7 @@ impl AgentdV13GenerationUpdateInputsV1<'_> {
         Ok((target, opened.backend))
     }
 
-    fn revalidate_selection(
+    pub(crate) fn revalidate_selection(
         &self,
         authorities: &AgentdGenerationUpdateAuthoritiesV1,
         selected: &mut AgentdSelectedGenerationV1,
@@ -179,3 +181,40 @@ pub fn recover_agentd_v13_generation_update_v1(
     Ok(ReadyAgentdV13GenerationUpdateV1::new(ready, backend))
 }
 
+
+/// Explicitly retire a task whose owner has durably drained and whose output
+/// is fully acknowledged. The old snapshot remains unchanged, including its
+/// non-STOP status; the distinct signed Control publication fences that writer.
+pub fn prepare_agentd_v13_generation_drained_update_v1<Old: AnchorWitnessStore>(
+    current: Arc<NeuronGenerationCurrentOwnerV1>,
+    authorities: AgentdGenerationUpdateAuthoritiesV1,
+    old: CellGenerationJournalV2<Old>,
+    mut selected: AgentdSelectedGenerationV1,
+    inputs: AgentdV13GenerationUpdateInputsV1<'_>,
+    request: AgentdGenerationUpdateRequestV1,
+) -> Result<PreparedAgentdV13GenerationUpdateV1<Old>, AgentdError> {
+    inputs.revalidate_selection(&authorities, &mut selected)?;
+    let (target, backend) = inputs.open(V13GenerationOwnerModeV1::InitializeEmpty)?;
+    let update = prepare_agentd_generation_drained_update_v1(
+        current, authorities, old, selected, target, request,
+    )?;
+    Ok(PreparedAgentdV13GenerationUpdateV1 { update, backend })
+}
+
+/// Cold explicit retirement uses the original drained predecessor files.
+/// It does not claim a model STOP or produce terminal learning/eval evidence.
+pub fn prepare_agentd_v13_generation_cold_drained_update_v1<Old: AnchorWitnessStore>(
+    current: Arc<NeuronGenerationCurrentOwnerV1>,
+    authorities: AgentdGenerationUpdateAuthoritiesV1,
+    predecessor: AgentdGenerationUpdatePredecessorFilesV1<Old>,
+    mut selected: AgentdSelectedGenerationV1,
+    inputs: AgentdV13GenerationUpdateInputsV1<'_>,
+    request: AgentdGenerationUpdateRequestV1,
+) -> Result<PreparedAgentdV13GenerationUpdateV1<Old>, AgentdError> {
+    inputs.revalidate_selection(&authorities, &mut selected)?;
+    let (target, backend) = inputs.open(V13GenerationOwnerModeV1::InitializeEmpty)?;
+    let update = prepare_agentd_generation_cold_drained_update_v1(
+        current, authorities, predecessor, selected, target, request,
+    )?;
+    Ok(PreparedAgentdV13GenerationUpdateV1 { update, backend })
+}

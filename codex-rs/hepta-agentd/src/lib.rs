@@ -308,6 +308,12 @@ mod neuron_cell_evaluation;
 mod neuron_generation;
 #[cfg(unix)]
 mod neuron_generation_current;
+#[cfg(unix)]
+mod neuron_generation_initial;
+#[cfg(unix)]
+mod neuron_generation_initial_bootstrap;
+#[cfg(unix)]
+mod neuron_generation_initial_forward;
 mod neuron_generation_episode;
 mod neuron_generation_process_bootstrap;
 mod neuron_generation_runtime;
@@ -330,6 +336,8 @@ mod neuron_generation_update_selection;
 mod neuron_runtime;
 #[cfg(target_os = "linux")]
 mod neuron_v13_generation_bootstrap;
+#[cfg(target_os = "linux")]
+mod neuron_v13_generation_initial;
 #[cfg(target_os = "linux")]
 mod neuron_v13_generation_update;
 #[cfg(target_os = "linux")]
@@ -663,6 +671,44 @@ pub use neuron_cell_evaluation::CellTrainingBudgetV1;
 pub use neuron_cell_evaluation::CellTrainingObservationV1;
 pub use neuron_cell_evaluation::freeze_cell_evaluation_plan_v1;
 pub use neuron_generation::AgentdNeuronGenerationOwnerV2;
+#[cfg(unix)]
+pub use neuron_generation_current::NeuronGenerationInitialReadbackV1;
+#[cfg(unix)]
+pub use neuron_generation_current::NeuronGenerationPredecessorCompletionV1;
+#[cfg(unix)]
+pub use neuron_generation_current::PreparedNeuronGenerationInitialV1;
+#[cfg(unix)]
+pub use neuron_generation_current::PublishedNeuronGenerationInitialV1;
+#[cfg(unix)]
+pub use neuron_generation_initial::PreparedAgentdGenerationInitialV1;
+#[cfg(unix)]
+pub use neuron_generation_initial::prepare_agentd_generation_initial_v1;
+#[cfg(unix)]
+pub use neuron_generation_initial::recover_agentd_generation_initial_v1;
+#[cfg(unix)]
+pub use neuron_generation_initial_bootstrap::AgentdGenerationInitialRuntimeV1;
+#[cfg(unix)]
+pub use neuron_generation_initial_bootstrap::ReadyAgentdGenerationInitialV1;
+#[cfg(unix)]
+pub use neuron_generation_initial_forward::prepare_agentd_generation_initial_forward_recovery_v1;
+#[cfg(unix)]
+pub use neuron_generation_update::prepare_agentd_generation_drained_update_v1;
+#[cfg(unix)]
+pub use neuron_generation_update_cold::prepare_agentd_generation_cold_drained_update_v1;
+#[cfg(target_os = "linux")]
+pub use neuron_v13_generation_initial::PreparedAgentdV13GenerationInitialV1;
+#[cfg(target_os = "linux")]
+pub use neuron_v13_generation_initial::ReadyAgentdV13GenerationInitialV1;
+#[cfg(target_os = "linux")]
+pub use neuron_v13_generation_initial::prepare_agentd_v13_generation_initial_forward_recovery_v1;
+#[cfg(target_os = "linux")]
+pub use neuron_v13_generation_initial::prepare_agentd_v13_generation_initial_v1;
+#[cfg(target_os = "linux")]
+pub use neuron_v13_generation_initial::recover_agentd_v13_generation_initial_v1;
+#[cfg(target_os = "linux")]
+pub use neuron_v13_generation_update::prepare_agentd_v13_generation_cold_drained_update_v1;
+#[cfg(target_os = "linux")]
+pub use neuron_v13_generation_update::prepare_agentd_v13_generation_drained_update_v1;
 #[cfg(unix)]
 pub use neuron_generation_current::NeuronGenerationCurrentOwnerV1;
 #[cfg(unix)]
