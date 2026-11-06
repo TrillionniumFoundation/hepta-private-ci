@@ -63,6 +63,16 @@ for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
    document.addEventListener('securitypolicyviolation',event=>window.__cspViolations.push({phase:window.__heptaTestPhase,directive:event.violatedDirective,blockedURI:event.blockedURI}));
    new MutationObserver(records=>{for(const record of records) for(const node of record.addedNodes) if(node.nodeName==='STYLE') window.__snapshotStyles.push({phase:window.__heptaTestPhase,text:node.textContent});}).observe(document,{childList:true,subtree:true});
   });
+  async function pasteText(value){
+   // Makepad's hidden textarea has a dedicated paste path; insertText is not a
+   // browser paste and bypasses the native paste event/clipboard contract.
+   await page.context().grantPermissions(['clipboard-read','clipboard-write']);
+   await page.evaluate(async text=>{
+    if(!navigator.clipboard?.writeText)throw new Error('Clipboard API unavailable');
+    await navigator.clipboard.writeText(text);
+   },value);
+   await page.keyboard.press('Control+V');
+  }
   async function assertApplicationHealth(assertion=expect){
    assertion(errors.filter(item=>item.phase==='application')).toEqual([]);
    assertion(await page.evaluate(()=>window.__cspViolations.filter(item=>item.phase==='application'))).toEqual([]);
@@ -152,7 +162,7 @@ for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
     if(theme==='Aurora')await rememberThemeControl(captured);
     if(theme==='Aurora'){
      await page.mouse.click(page.viewportSize().width*0.65,720);
-     await page.keyboard.insertText(expectedDraft);
+     await pasteText(expectedDraft);
      await expect(page.locator('textarea.cx_webgl_textinput')).toHaveValue(expectedDraft);
      captured=await capture('robrix-draft-before-theme');
     }
