@@ -63,8 +63,6 @@ pub(crate) struct Fixture {
 
 impl Fixture {
     pub(crate) fn new(old_config: CellGenerationConfigV2) -> anyhow::Result<Self> {
-        let directory = tempfile::tempdir()?;
-        fs::set_permissions(directory.path(), fs::Permissions::from_mode(0o700))?;
         let mut target_config = old_config.clone();
         target_config.initial.scope.run_id.push_str("-next-task");
         target_config.initial.generation += 1;
@@ -75,6 +73,15 @@ impl Fixture {
             Digest32::of_parts(&[b"test-next-bundle", &old_config.manifest.bundle_digest])
                 .into_array();
         target_config.initial.manifest_digest = target_config.manifest.digest()?;
+        Self::new_with_target(old_config, target_config)
+    }
+
+    pub(crate) fn new_with_target(
+        old_config: CellGenerationConfigV2,
+        target_config: CellGenerationConfigV2,
+    ) -> anyhow::Result<Self> {
+        let directory = tempfile::tempdir()?;
+        fs::set_permissions(directory.path(), fs::Permissions::from_mode(0o700))?;
         let initial = CellGenerationOwnerBindingV1::new(&old_config, RECORDS)?;
         let current_file = Arc::new(FileCas::create(
             &directory.path().join("current.json"),
