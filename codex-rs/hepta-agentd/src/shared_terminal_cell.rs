@@ -61,10 +61,18 @@ impl SharedTerminalCandidateV1 {
         &self.artifact
     }
 
-    pub fn dataset(&self) -> &DatasetSnapshotReceiptV3 { &self.dataset }
-    pub fn payload_digest(&self) -> Digest32 { self.payload_digest }
-    pub fn payload_bytes(&self) -> u64 { self.payload_bytes }
-    pub fn training_samples(&self) -> usize { self.training_samples }
+    pub fn dataset(&self) -> &DatasetSnapshotReceiptV3 {
+        &self.dataset
+    }
+    pub fn payload_digest(&self) -> Digest32 {
+        self.payload_digest
+    }
+    pub fn payload_bytes(&self) -> u64 {
+        self.payload_bytes
+    }
+    pub fn training_samples(&self) -> usize {
+        self.training_samples
+    }
 }
 
 /// Loaded read-only baseline whose use still requires current source permission.
@@ -105,7 +113,9 @@ impl AgentdSharedReplayHostV1 {
         })
     }
 
-    pub fn consumer_agent_id(&self) -> &AgentId { self.consumer.agent_id() }
+    pub fn consumer_agent_id(&self) -> &AgentId {
+        self.consumer.agent_id()
+    }
 
     pub async fn train(
         &self,
@@ -122,9 +132,13 @@ impl AgentdSharedReplayHostV1 {
     }
 
     pub(crate) async fn training_source(
-        &self, policy_id: &Sha256Digest,
+        &self,
+        policy_id: &Sha256Digest,
     ) -> Result<SharedExperienceUseV1, SharedTerminalCellError> {
-        Ok(self.source.read_shared_experience(&self.consumer, policy_id, &self.purpose).await?)
+        Ok(self
+            .source
+            .read_shared_experience(&self.consumer, policy_id, &self.purpose)
+            .await?)
     }
 
     /// Synchronous bounded work, so a shared ledger guard never crosses an await.
@@ -248,7 +262,8 @@ impl AgentdSharedReplayHostV1 {
     }
 
     pub(crate) async fn revalidate_training_source(
-        &self, source: &SharedExperienceUseV1,
+        &self,
+        source: &SharedExperienceUseV1,
     ) -> Result<(), SharedTerminalCellError> {
         let current = self.training_source(source.policy_id()).await?;
         if &current != source {
@@ -258,13 +273,17 @@ impl AgentdSharedReplayHostV1 {
     }
 
     pub(crate) async fn revalidate_source(
-        &self, candidate: &SharedTerminalCandidateV1,
+        &self,
+        candidate: &SharedTerminalCandidateV1,
     ) -> Result<(), SharedTerminalCellError> {
         self.revalidate_training_source(&candidate.source).await
     }
 
     async fn revalidate(
-        &self, candidate: &SharedTerminalCandidateV1, ledger: &LedgerWriter, now: u64,
+        &self,
+        candidate: &SharedTerminalCandidateV1,
+        ledger: &LedgerWriter,
+        now: u64,
     ) -> Result<(), SharedTerminalCellError> {
         self.revalidate_source(candidate).await?;
         ledger.revalidate_dataset_snapshot(&candidate.dataset, now)?;
