@@ -19,13 +19,17 @@ jobs:
     timeout-minutes: 45
     env:
       HCSN_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-      HCSN_CI_EVIDENCE: ${{ runner.temp }}/hcsn-training-bridge
       OMP_NUM_THREADS: "1"
       MKL_NUM_THREADS: "1"
     defaults:
       run:
         shell: bash
     steps:
+      - name: Prepare isolated evidence directory
+        run: |
+          HCSN_CI_EVIDENCE="$RUNNER_TEMP/hcsn-training-bridge"
+          mkdir -p "$HCSN_CI_EVIDENCE"
+          printf 'HCSN_CI_EVIDENCE=%s\n' "$HCSN_CI_EVIDENCE" >> "$GITHUB_ENV"
       - name: Check out exact candidate without write credentials
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -88,6 +92,6 @@ jobs:
         with:
           name: hcsn-training-bridge-${{ env.HCSN_SOURCE_SHA }}-${{ github.run_attempt }}
           path: |
-            ${{ env.HCSN_CI_EVIDENCE }}/
+            ${{ runner.temp }}/hcsn-training-bridge/
             codex-rs/target/nextest/local/
           if-no-files-found: warn
