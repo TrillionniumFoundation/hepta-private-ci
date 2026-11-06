@@ -995,6 +995,43 @@ class RegisteredHumanTextReadbackBoundaryTests(unittest.TestCase):
         )
         self.assertNotIn("registration.with_live(leases", human)
 
+        cas_boundary = next(
+            row
+            for row in manifest["boundary"]
+            if row["id"] == "root_human_text_same_issuer_cas"
+        )
+        self.assertEqual(
+            cas_boundary["symbol"],
+            "DeploymentFinalUseIssuer::text_until_checked",
+        )
+        self.assertIn("parent: Some(parent)", cas_boundary["caller_markers"])
+
+        human_protected = next(
+            row
+            for row in manifest["protected_file"]
+            if row["path"]
+            == "codex-rs/hepta-agentd/src/deployment_text_human.rs"
+        )
+        self.assertIn("parent: Some(parent)", human_protected["required"])
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "human.rs").write_text(
+                human.replace("parent: Some(parent)", "parent: None", 1),
+                encoding="utf-8",
+            )
+            adversarial = {
+                "protected_file": [
+                    {
+                        "path": "human.rs",
+                        "required": human_protected["required"],
+                        "required_order": human_protected["required_order"],
+                        "forbidden": human_protected["forbidden"],
+                    }
+                ]
+            }
+            with self.assertRaises(MODULE.VerificationFailure):
+                MODULE._verify_protected_files(root, adversarial)
+
         helper_path = (
             "codex-rs/hepta-agentd/src/deployment_issuer_dependencies.rs"
         )

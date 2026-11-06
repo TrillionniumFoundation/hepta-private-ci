@@ -711,12 +711,27 @@ call_pattern = '(?:\.\s*|DeploymentFinalUseIssuer\s*::\s*)registered_writer_huma
 
 [[boundary]]
 id = "root_human_text_same_issuer_cas"
-symbol = "DeploymentFinalUseIssuer::text_until"
+symbol = "DeploymentFinalUseIssuer::text_until_checked"
 definition_path = "codex-rs/hepta-agentd/src/deployment_text.rs"
-definition_markers = ["fn text_until(", "human: Option<&TextHumanBinding>", "retained.human_binding.as_ref() != human", "human_binding: human.cloned()", ".compare_and_set(STATE_OWNER, &state, &next)"]
+definition_markers = [
+  "fn text_until_checked(",
+  "authority: TextIssueAuthority<'_>",
+  "let TextIssueAuthority {",
+  "if operation == TextIssuerOperation::Lookup",
+  "let parent = match parent",
+  "Some(parent) => Some(parent.map_err(root::lease_error)?),",
+  "Self::validate_issuer_lease_time(parent, state.head.authority_epoch, now)?;",
+  "human_binding: human.cloned()",
+  ".compare_and_set(STATE_OWNER, &state, &next)",
+]
 product_callers = ["codex-rs/hepta-agentd/src/deployment_text_human.rs"]
-caller_markers = ["registration.with_live(leases", "self.retained_writer_authorization(registration)? != *proof", "Some(request.human)"]
-call_pattern = '(?:\.\s*|DeploymentFinalUseIssuer\s*::\s*)text_until\s*\('
+caller_markers = [
+  "self.with_issuer_writer_readback(registration, leases, |parent|",
+  "self.retained_writer_authorization(registration)? != *proof",
+  "parent: Some(parent)",
+  "Some(request.human)",
+]
+call_pattern = '(?:\\.\\s*|DeploymentFinalUseIssuer\\s*::\\s*)text_until_checked\\s*\\('
 
 [[boundary]]
 id = "root_retained_human_text_lookup"
