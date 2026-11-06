@@ -1,0 +1,40 @@
+{
+  "schema": "ndu.vendor-remote-mode-audit.v1",
+  "source_pr5013": "d8187cce5e8ed27025edfabb1cfd5c4ec3c95e4d",
+  "observed_pr5025": "bb726804cbe2244835894cea0ddb441a77f169b1",
+  "same_third_party_tree": "f1a6a3d6f48a48c65f3336930c376a3c56c41d3b",
+  "all_tree_responses_untruncated": true,
+  "vendor_directories": 5,
+  "matched_leaves": 284,
+  "git_modes_equal_native_artifact_and_dependency_amendment": true,
+  "git_blobs_and_sizes_equal_native_artifact": true,
+  "unexpected_or_missing_leaves": [],
+  "executable_count": 3,
+  "executable_files": {
+    "codex-rs/third_party/aws-smithy-http-0.62.6-pin-backport/additional-ci": {
+      "mode": "100755",
+      "git_blob": "b44c6c05be757aefd2b2bac90226adf7c27b4ebc",
+      "bytes": 344
+    },
+    "codex-rs/third_party/aws-smithy-runtime-1.9.5-pin-backport/additional-ci": {
+      "mode": "100755",
+      "git_blob": "c79db87291976877df8a76564fe8efbe796c67d4",
+      "bytes": 529
+    },
+    "codex-rs/third_party/aws-smithy-types-1.4.7-pin-backport/additional-ci": {
+      "mode": "100755",
+      "git_blob": "7ce1a378ac5f7db37f33beb2889dd4b034c3955f",
+      "bytes": 566
+    }
+  },
+  "non_executable_count": 281,
+  "native_manifest_sha256": "3cf0af1578eb5797c205a9260e7acba840cd22dabc771ccd0f05cab5bbbb1a3f",
+  "dependency_amendment_sha256": "334d6a0000bb6c14c1f8742e680c799d7e9f768e035ce06a99593bedd0e1d538",
+  "raw_remote_tree_receipt": "REMOTE_TREES.json.gz",
+  "raw_remote_tree_receipt_sha256": "1f70f79a4f5684d7e0bd74f33aa2346a9dc005718fb00610b4a086a161205f6a",
+  "remote_mutation_performed": false,
+  "raw_remote_tree_receipt_encoding": "gzip",
+  "stored_tree_receipt_sha256": "a8092191456aac3763c20c92003413a33dbb44e9b7742b04ef208528f58ec46d",
+  "stored_tree_receipt_bytes": 32844,
+  "original_tree_receipt_bytes": 265612
+}
