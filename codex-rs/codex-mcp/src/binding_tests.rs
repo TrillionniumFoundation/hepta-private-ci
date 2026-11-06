@@ -376,7 +376,8 @@ async fn preparation_holds_catalog_authority_until_it_finishes() {
 }
 
 #[tokio::test]
-async fn hook_call_retains_owner_and_rejects_stale_catalog_before_preparation() -> anyhow::Result<()> {
+async fn hook_call_retains_owner_and_rejects_stale_catalog_before_preparation() -> anyhow::Result<()>
+{
     let step = test_step(
         "old",
         AppToolApproval::Prompt,
@@ -389,7 +390,10 @@ async fn hook_call_retains_owner_and_rejects_stale_catalog_before_preparation() 
         .context("configured hook should retain the permitted original call")?;
     assert!(Arc::ptr_eq(&prepared.client.client, &step.client));
     assert_eq!(
-        (prepared.server_environment_id(), prepared.tool_approval_mode()),
+        (
+            prepared.server_environment_id(),
+            prepared.tool_approval_mode()
+        ),
         ("old-environment", AppToolApproval::Prompt)
     );
 

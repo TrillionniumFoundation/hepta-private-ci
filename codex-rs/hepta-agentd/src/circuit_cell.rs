@@ -42,11 +42,15 @@ pub enum CircuitCellErrorV1 {
 }
 
 impl fmt::Display for CircuitCellErrorV1 {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result { write!(formatter, "{self:?}") }
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(formatter, "{self:?}")
+    }
 }
 impl Error for CircuitCellErrorV1 {}
 impl From<CellExecutionError> for CircuitCellErrorV1 {
-    fn from(error: CellExecutionError) -> Self { Self::Cell(error) }
+    fn from(error: CellExecutionError) -> Self {
+        Self::Cell(error)
+    }
 }
 
 /// The two owners use explicit time units. Their clock epochs need not match.
@@ -80,13 +84,29 @@ where
     P: NeuronInferenceControlPort + CellInferenceReadbackPortV1,
     E: CellInputEncoderV1,
 {
-    pub fn new(registry: CircuitCellRegistryV1, state_owner: O, inference_control: P, encoder: E) -> Self {
-        Self { registry, state_owner, inference_control, encoder }
+    pub fn new(
+        registry: CircuitCellRegistryV1,
+        state_owner: O,
+        inference_control: P,
+        encoder: E,
+    ) -> Self {
+        Self {
+            registry,
+            state_owner,
+            inference_control,
+            encoder,
+        }
     }
 
-    pub fn registry(&self) -> &CircuitCellRegistryV1 { &self.registry }
-    pub fn state_owner(&self) -> &O { &self.state_owner }
-    pub fn state_owner_mut(&mut self) -> &mut O { &mut self.state_owner }
+    pub fn registry(&self) -> &CircuitCellRegistryV1 {
+        &self.registry
+    }
+    pub fn state_owner(&self) -> &O {
+        &self.state_owner
+    }
+    pub fn state_owner_mut(&mut self) -> &mut O {
+        &mut self.state_owner
+    }
 
     /// Consume an owner-issued admission. Raw dispatch DTOs cannot call this
     /// entry point. On any error the Circuit keeps its reservation; neither a
@@ -106,7 +126,9 @@ where
         let request_digest = canonical_cell_step_request_digest_v1(&binding.cell, &input)?;
         if admission.owner_agent_id().as_str() != input.scope.agent_id.as_str()
             || admission.definition_digest() != self.registry.definition_digest()
-            || admission.execution_request_digest().is_none_or(|digest| digest.as_str() != request_digest.to_string())
+            || admission
+                .execution_request_digest()
+                .is_none_or(|digest| digest.as_str() != request_digest.to_string())
         {
             return Err(CircuitCellErrorV1::ScopeMismatch);
         }
@@ -114,14 +136,20 @@ where
         if time.circuit_millis < admission.observed_at_ms() {
             return Err(CircuitCellErrorV1::ReconciliationRequired);
         }
-        let admission_deadline = admission.lease_expires_at_ms().min(admission.run_deadline_ms());
-        let read_only = admission.reconciliation_only()
-            || time.circuit_millis >= admission_deadline;
-        let committed = match self.state_owner.lookup(&input.scope, &input.operation_id, request_digest) {
-            Ok(receipt) => receipt,
-            Err(CellExecutionError::InferencePending) => None,
-            Err(error) => return Err(error.into()),
-        };
+        let admission_deadline = admission
+            .lease_expires_at_ms()
+            .min(admission.run_deadline_ms());
+        let read_only =
+            admission.reconciliation_only() || time.circuit_millis >= admission_deadline;
+        let committed =
+            match self
+                .state_owner
+                .lookup(&input.scope, &input.operation_id, request_digest)
+            {
+                Ok(receipt) => receipt,
+                Err(CellExecutionError::InferencePending) => None,
+                Err(error) => return Err(error.into()),
+            };
         let mut last_time = time;
         let decision = if let Some(receipt) = committed {
             receipt
@@ -129,13 +157,23 @@ where
             let pending = self.state_owner.pending_inference(&input.scope)?;
             let inferred = if pending.is_some() {
                 recover_cell_inference(
-                    &binding.cell, &self.state_owner, &self.encoder, input.clone(),
-                    &mut self.inference_control, time.cell_micros,
+                    &binding.cell,
+                    &self.state_owner,
+                    &self.encoder,
+                    input.clone(),
+                    &mut self.inference_control,
+                    time.cell_micros,
                 )?
             } else {
-                if read_only { return Err(CircuitCellErrorV1::ReconciliationRequired); }
+                if read_only {
+                    return Err(CircuitCellErrorV1::ReconciliationRequired);
+                }
                 match enter_cell_step(
-                    &binding.cell, &self.state_owner, &self.encoder, input.clone(), time.cell_micros,
+                    &binding.cell,
+                    &self.state_owner,
+                    &self.encoder,
+                    input.clone(),
+                    time.cell_micros,
                 )? {
                     CellStepEntryV1::Ready(prepared) => {
                         let before_infer = clock();
@@ -146,14 +184,26 @@ where
                             return Err(CircuitCellErrorV1::ReconciliationRequired);
                         }
                         let mut guarded = GuardedCellDispatchV1::new(
-                            &mut self.inference_control, &mut clock, before_infer,
-                            admission_deadline, input.deadline_micros,
+                            &mut self.inference_control,
+                            &mut clock,
+                            before_infer,
+                            admission_deadline,
+                            input.deadline_micros,
                         );
-                        let inferred = infer_cell(*prepared, &mut self.state_owner, &mut guarded, before_infer.cell_micros)?;
-                        last_time = guarded.observed_at().ok_or(CircuitCellErrorV1::ReconciliationRequired)?;
+                        let inferred = infer_cell(
+                            *prepared,
+                            &mut self.state_owner,
+                            &mut guarded,
+                            before_infer.cell_micros,
+                        )?;
+                        last_time = guarded
+                            .observed_at()
+                            .ok_or(CircuitCellErrorV1::ReconciliationRequired)?;
                         inferred
                     }
-                    CellStepEntryV1::Replayed(receipt) => return finish(binding, dispatch, &input, *receipt),
+                    CellStepEntryV1::Replayed(receipt) => {
+                        return finish(binding, dispatch, &input, *receipt);
+                    }
                 }
             };
             let decided_at = clock();
@@ -181,28 +231,45 @@ fn finish(
     input: &CellStepInputV1,
     decision: CellDecisionReceiptV1,
 ) -> Result<CircuitCellExecutionV1, CircuitCellErrorV1> {
-    let selected = binding.cell.candidates.iter()
+    let selected = binding
+        .cell
+        .candidates
+        .iter()
         .position(|candidate| candidate.candidate_id == decision.selected_candidate)
         .ok_or(CircuitCellErrorV1::InvalidReceipt)?;
     if decision.operation_id != input.operation_id
-        || decision.scope != input.scope || decision.bundle_digest != binding.cell.bundle_digest
+        || decision.scope != input.scope
+        || decision.bundle_digest != binding.cell.bundle_digest
         || decision.source_frontier != input.source_frontier
-        || decision.semantic_request_digest != canonical_cell_step_request_digest_v1(&binding.cell, input)?
+        || decision.semantic_request_digest
+            != canonical_cell_step_request_digest_v1(&binding.cell, input)?
         || decision.authority != AuthorityPosture::DENY_ALL
-        || decision.operation_digest.is_zero() || decision.model_output_digest.is_zero()
+        || decision.operation_digest.is_zero()
+        || decision.model_output_digest.is_zero()
         || decision.checkpoint_after.is_zero()
-        || decision.confidence_ppm > 1_000_000 || decision.ood_ppm > 1_000_000
-        || decision.cost.consumed_input_bytes.checked_add(decision.cost.truncated_input_bytes) != Some(input.observation.len())
+        || decision.confidence_ppm > 1_000_000
+        || decision.ood_ppm > 1_000_000
+        || decision
+            .cost
+            .consumed_input_bytes
+            .checked_add(decision.cost.truncated_input_bytes)
+            != Some(input.observation.len())
         || decision.policy.len() != binding.cell.candidates.len()
         || input.candidates.len() != decision.policy.len()
-        || (decision.deadline_exceeded && binding.cell.candidates[selected].kind != CellCandidateKindV1::Abstain)
+        || (decision.deadline_exceeded
+            && binding.cell.candidates[selected].kind != CellCandidateKindV1::Abstain)
     {
         return Err(CircuitCellErrorV1::InvalidReceipt);
     }
-    for (index, ((policy, mask), candidate)) in decision.policy.iter()
-        .zip(&input.candidates).zip(&binding.cell.candidates).enumerate()
+    for (index, ((policy, mask), candidate)) in decision
+        .policy
+        .iter()
+        .zip(&input.candidates)
+        .zip(&binding.cell.candidates)
+        .enumerate()
     {
-        if policy.candidate_id != candidate.candidate_id || mask.candidate_id != candidate.candidate_id
+        if policy.candidate_id != candidate.candidate_id
+            || mask.candidate_id != candidate.candidate_id
             || policy.allowed != mask.allowed
             || policy.probability_ppm != if index == selected { 1_000_000 } else { 0 }
             || (index == selected && !policy.allowed)
@@ -228,7 +295,11 @@ fn finish(
         outcome: route.outcome,
         selected_edges: route.selected_edges.clone(),
     };
-    Ok(CircuitCellExecutionV1 { completion, decision, output })
+    Ok(CircuitCellExecutionV1 {
+        completion,
+        decision,
+        output,
+    })
 }
 
 #[cfg(test)]

@@ -510,12 +510,7 @@ pub(crate) async fn revalidate(
     ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
 ) -> Result<CognitiveContextRevalidation, CognitiveContextError> {
     revalidate_with_retrieval_context(
-        store,
-        owner,
-        input,
-        ranker,
-        /*body_generation*/ 1,
-        /*current_retrieval*/ None,
+        store, owner, input, ranker, /*body_generation*/ 1, /*current_retrieval*/ None,
     )
     .await
 }

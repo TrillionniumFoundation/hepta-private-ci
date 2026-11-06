@@ -61,16 +61,30 @@ impl<A: RuntimeCellLifecycleAnchorStoreV1> RuntimeCellLifecycleJournalV1<A> {
         if current.scope_digest != runtime_cell_lifecycle_journal_scope_v1(&agent_id) {
             return Err(RuntimeCellLifecycleError::ScopeMismatch);
         }
-        let mut tx = pool.begin_with("BEGIN IMMEDIATE").await.map_err(unavailable)?;
+        let mut tx = pool
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(unavailable)?;
         for statement in [
             "CREATE TABLE IF NOT EXISTS hepta_cell_lifecycle_head_v1 (agent_id TEXT PRIMARY KEY, sequence INTEGER NOT NULL, head_digest TEXT NOT NULL)",
             "CREATE TABLE IF NOT EXISTS hepta_cell_lifecycle_event_v1 (agent_id TEXT NOT NULL, sequence INTEGER NOT NULL, operation_id TEXT NOT NULL, plan_digest TEXT NOT NULL, event_json TEXT NOT NULL, event_digest TEXT NOT NULL, PRIMARY KEY(agent_id, sequence))",
             "CREATE TABLE IF NOT EXISTS hepta_cell_lifecycle_state_v1 (agent_id TEXT NOT NULL, operation_id TEXT NOT NULL, plan_digest TEXT NOT NULL, revision INTEGER NOT NULL, snapshot_json TEXT NOT NULL, PRIMARY KEY(agent_id, operation_id))",
         ] {
-            sqlx::query(statement).execute(&mut *tx).await.map_err(unavailable)?;
+            sqlx::query(statement)
+                .execute(&mut *tx)
+                .await
+                .map_err(unavailable)?;
         }
-        tx.commit().await.map_err(|_| RuntimeCellLifecycleError::CommitUncertain)?;
-        let journal = Self { pool, agent_id, writer_epoch, anchor, max_events };
+        tx.commit()
+            .await
+            .map_err(|_| RuntimeCellLifecycleError::CommitUncertain)?;
+        let journal = Self {
+            pool,
+            agent_id,
+            writer_epoch,
+            anchor,
+            max_events,
+        };
         journal.verify_head().await?;
         Ok(journal)
     }
@@ -83,7 +97,8 @@ impl<A: RuntimeCellLifecycleAnchorStoreV1> RuntimeCellLifecycleJournalV1<A> {
         if let Some(existing) = self.read(plan).await? {
             return Ok(existing);
         }
-        self.append(plan, None, LifecycleEventV1::Created { at_ms: now_ms }).await
+        self.append(plan, None, LifecycleEventV1::Created { at_ms: now_ms })
+            .await
     }
 
     pub async fn prepare_next(
@@ -92,10 +107,18 @@ impl<A: RuntimeCellLifecycleAnchorStoreV1> RuntimeCellLifecycleJournalV1<A> {
         expected_revision: u64,
         now_ms: u64,
     ) -> Result<RuntimeCellLifecycleIntentV1, RuntimeCellLifecycleError> {
-        let next = self.append(
-            plan, Some(expected_revision), LifecycleEventV1::Prepared { at_ms: now_ms },
-        ).await?;
-        intent(plan, next.stage.ok_or(RuntimeCellLifecycleError::Conflict)?, next.revision)
+        let next = self
+            .append(
+                plan,
+                Some(expected_revision),
+                LifecycleEventV1::Prepared { at_ms: now_ms },
+            )
+            .await?;
+        intent(
+            plan,
+            next.stage.ok_or(RuntimeCellLifecycleError::Conflict)?,
+            next.revision,
+        )
     }
 
     /// A late readback reconciles the original operation; it cannot create a
@@ -112,9 +135,15 @@ impl<A: RuntimeCellLifecycleAnchorStoreV1> RuntimeCellLifecycleJournalV1<A> {
         if authentication.is_zero() {
             return Err(RuntimeCellLifecycleError::Authentication);
         }
-        self.append(plan, Some(expected_revision), LifecycleEventV1::Observed {
-            observation: Box::new(observation), authentication: authentication.to_string(),
-        }).await
+        self.append(
+            plan,
+            Some(expected_revision),
+            LifecycleEventV1::Observed {
+                observation: Box::new(observation),
+                authentication: authentication.to_string(),
+            },
+        )
+        .await
     }
 
     pub async fn read(
@@ -135,11 +164,18 @@ impl<A: RuntimeCellLifecycleAnchorStoreV1> RuntimeCellLifecycleJournalV1<A> {
         &self,
         plan: &RuntimeCellLifecyclePlanV1,
     ) -> Result<Option<RuntimeCellLifecycleIntentV1>, RuntimeCellLifecycleError> {
-        let state = self.read(plan).await?.ok_or(RuntimeCellLifecycleError::Conflict)?;
+        let state = self
+            .read(plan)
+            .await?
+            .ok_or(RuntimeCellLifecycleError::Conflict)?;
         if !state.pending {
             return Ok(None);
         }
-        Ok(Some(intent(plan, state.stage.ok_or(RuntimeCellLifecycleError::Corrupt)?, state.revision)?))
+        Ok(Some(intent(
+            plan,
+            state.stage.ok_or(RuntimeCellLifecycleError::Corrupt)?,
+            state.revision,
+        )?))
     }
 
     /// Read the original committed observation after a response was lost.
@@ -158,8 +194,8 @@ impl<A: RuntimeCellLifecycleAnchorStoreV1> RuntimeCellLifecycleJournalV1<A> {
             .fetch_all(&mut *tx).await.map_err(unavailable)?;
         let mut result = None;
         for bytes in rows {
-            let event: LifecycleEventV1 = serde_json::from_str(&bytes)
-                .map_err(|_| RuntimeCellLifecycleError::Corrupt)?;
+            let event: LifecycleEventV1 =
+                serde_json::from_str(&bytes).map_err(|_| RuntimeCellLifecycleError::Corrupt)?;
             if let LifecycleEventV1::Observed { observation, .. } = event
                 && observation.stage == stage
             {
@@ -171,7 +207,8 @@ impl<A: RuntimeCellLifecycleAnchorStoreV1> RuntimeCellLifecycleJournalV1<A> {
     }
 
     pub(crate) fn check_scope(
-        &self, plan: &RuntimeCellLifecyclePlanV1,
+        &self,
+        plan: &RuntimeCellLifecyclePlanV1,
     ) -> Result<(), RuntimeCellLifecycleError> {
         plan.digest()?;
         if plan.agent_id != self.agent_id {
@@ -215,7 +252,11 @@ impl<A: RuntimeCellLifecycleAnchorStoreV1> RuntimeCellLifecycleJournalV1<A> {
         event: LifecycleEventV1,
     ) -> Result<RuntimeCellLifecycleSnapshotV1, RuntimeCellLifecycleError> {
         self.check_scope(plan)?;
-        let mut tx = self.pool.begin_with("BEGIN IMMEDIATE").await.map_err(unavailable)?;
+        let mut tx = self
+            .pool
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(unavailable)?;
         // Recheck the independent owner only after acquiring SQLite's writer lock.
         let anchor = self.check_anchor_in(&mut tx).await?;
         if anchor.sequence == self.max_events {
@@ -228,9 +269,12 @@ impl<A: RuntimeCellLifecycleAnchorStoreV1> RuntimeCellLifecycleJournalV1<A> {
         let next = transition(plan, previous.as_ref(), &event)?;
         // Every emitted intent reserves one eventual observation slot, both
         // in this operation and across every pending operation in the journal.
-        let retained_pending = pending_observations(&mut tx, &self.agent_id, self.max_events).await?;
+        let retained_pending =
+            pending_observations(&mut tx, &self.agent_id, self.max_events).await?;
         let pending_after = retained_pending
-            .checked_sub(u64::from(previous.as_ref().is_some_and(|state| state.pending)))
+            .checked_sub(u64::from(
+                previous.as_ref().is_some_and(|state| state.pending),
+            ))
             .and_then(|count| count.checked_add(u64::from(next.pending)))
             .ok_or(RuntimeCellLifecycleError::Corrupt)?;
         if next.revision + u64::from(next.pending) >= 64
@@ -243,10 +287,18 @@ impl<A: RuntimeCellLifecycleAnchorStoreV1> RuntimeCellLifecycleJournalV1<A> {
         if event_json.len() > MAX_EVENT_BYTES || snapshot_json.len() > MAX_EVENT_BYTES {
             return Err(RuntimeCellLifecycleError::Capacity);
         }
-        let sequence = anchor.sequence.checked_add(1).ok_or(RuntimeCellLifecycleError::Capacity)?;
+        let sequence = anchor
+            .sequence
+            .checked_add(1)
+            .ok_or(RuntimeCellLifecycleError::Capacity)?;
         let plan_digest = plan.digest()?.to_string();
         let head = event_digest(
-            anchor.head, sequence, &self.agent_id, &plan.operation_id, &plan_digest, &event_json,
+            anchor.head,
+            sequence,
+            &self.agent_id,
+            &plan.operation_id,
+            &plan_digest,
+            &event_json,
         );
         sqlx::query("INSERT INTO hepta_cell_lifecycle_event_v1 (agent_id, sequence, operation_id, plan_digest, event_json, event_digest) VALUES (?, ?, ?, ?, ?, ?)")
             .bind(self.agent_id.as_str()).bind(sequence as i64).bind(plan.operation_id.as_str())
@@ -262,16 +314,21 @@ impl<A: RuntimeCellLifecycleAnchorStoreV1> RuntimeCellLifecycleJournalV1<A> {
         if self.anchor.current()? != anchor {
             return Err(RuntimeCellLifecycleError::StaleWriter);
         }
-        tx.commit().await.map_err(|_| RuntimeCellLifecycleError::CommitUncertain)?;
+        tx.commit()
+            .await
+            .map_err(|_| RuntimeCellLifecycleError::CommitUncertain)?;
         let successor = RuntimeCellLifecycleAnchorV1 {
-            scope_digest: anchor.scope_digest, writer_epoch: self.writer_epoch, sequence, head,
+            scope_digest: anchor.scope_digest,
+            writer_epoch: self.writer_epoch,
+            sequence,
+            head,
         };
-        self.anchor.compare_and_swap(anchor, successor)
+        self.anchor
+            .compare_and_swap(anchor, successor)
             .map_err(|_| RuntimeCellLifecycleError::CommitUncertain)?;
         Ok(next)
     }
 }
-
 
 /// Called only after the complete immutable chain has been verified in the
 /// same SQLite transaction. Derive reservations from canonical events, never
@@ -290,14 +347,22 @@ async fn pending_observations(
          ON e.operation_id = latest.operation_id AND e.sequence = latest.sequence
          WHERE e.agent_id = ? LIMIT ?",
     )
-        .bind(agent.as_str()).bind(agent.as_str()).bind((maximum + 1) as i64)
-        .fetch_all(&mut **tx).await.map_err(unavailable)?;
-    if events.len() as u64 > maximum { return Err(RuntimeCellLifecycleError::Corrupt); }
+    .bind(agent.as_str())
+    .bind(agent.as_str())
+    .bind((maximum + 1) as i64)
+    .fetch_all(&mut **tx)
+    .await
+    .map_err(unavailable)?;
+    if events.len() as u64 > maximum {
+        return Err(RuntimeCellLifecycleError::Corrupt);
+    }
     let mut pending = 0_u64;
     for bytes in events {
-        let event: LifecycleEventV1 = serde_json::from_str(&bytes)
-            .map_err(|_| RuntimeCellLifecycleError::Corrupt)?;
-        if matches!(event, LifecycleEventV1::Prepared { .. }) { pending += 1; }
+        let event: LifecycleEventV1 =
+            serde_json::from_str(&bytes).map_err(|_| RuntimeCellLifecycleError::Corrupt)?;
+        if matches!(event, LifecycleEventV1::Prepared { .. }) {
+            pending += 1;
+        }
     }
     Ok(pending)
 }
@@ -314,8 +379,12 @@ pub(crate) async fn read_head(
     let sequence: i64 = row.try_get("sequence").map_err(unavailable)?;
     let digest: String = row.try_get("head_digest").map_err(unavailable)?;
     Ok((
-        sequence.try_into().map_err(|_| RuntimeCellLifecycleError::Corrupt)?,
-        digest.parse().map_err(|_| RuntimeCellLifecycleError::Corrupt)?,
+        sequence
+            .try_into()
+            .map_err(|_| RuntimeCellLifecycleError::Corrupt)?,
+        digest
+            .parse()
+            .map_err(|_| RuntimeCellLifecycleError::Corrupt)?,
     ))
 }
 
@@ -373,14 +442,18 @@ pub(crate) async fn replay_in(
         if event_plan != digest || event_json.len() > MAX_EVENT_BYTES {
             return Err(RuntimeCellLifecycleError::Conflict);
         }
-        let event: LifecycleEventV1 = serde_json::from_str(&event_json)
-            .map_err(|_| RuntimeCellLifecycleError::Corrupt)?;
+        let event: LifecycleEventV1 =
+            serde_json::from_str(&event_json).map_err(|_| RuntimeCellLifecycleError::Corrupt)?;
         state = Some(transition(plan, state.as_ref(), &event)?);
     }
     let stored: Option<String> = sqlx::query_scalar("SELECT substr(snapshot_json, 1, 16385) FROM hepta_cell_lifecycle_state_v1 WHERE agent_id = ? AND operation_id = ? AND plan_digest = ?")
         .bind(plan.agent_id.as_str()).bind(plan.operation_id.as_str()).bind(digest)
         .fetch_optional(&mut **tx).await.map_err(unavailable)?;
-    let expected = state.as_ref().map(serde_json::to_string).transpose().map_err(unavailable)?;
+    let expected = state
+        .as_ref()
+        .map(serde_json::to_string)
+        .transpose()
+        .map_err(unavailable)?;
     if stored != expected {
         return Err(RuntimeCellLifecycleError::Corrupt);
     }
@@ -411,7 +484,8 @@ pub(crate) fn unavailable(_: impl std::fmt::Display) -> RuntimeCellLifecycleErro
 
 pub fn runtime_cell_lifecycle_journal_scope_v1(agent: &StableId) -> Digest32 {
     Digest32::of_parts(&[
-        b"hepta.runtime.cell-lifecycle-journal-scope.v1\0", agent.as_str().as_bytes(),
+        b"hepta.runtime.cell-lifecycle-journal-scope.v1\0",
+        agent.as_str().as_bytes(),
     ])
 }
 

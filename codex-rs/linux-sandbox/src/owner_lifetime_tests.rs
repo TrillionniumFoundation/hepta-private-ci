@@ -50,7 +50,9 @@ fn owner_exit_is_observed_after_observer_start() {
         .recv_timeout(Duration::from_secs(5))
         .expect("owner exit is observed")
         .expect("pidfd observation succeeds");
-    waiter.join().expect("waiter joins after observing owner exit");
+    waiter
+        .join()
+        .expect("waiter joins after observing owner exit");
 }
 
 #[test]
@@ -60,8 +62,7 @@ fn inherited_owner_handle_is_resealed_before_inner_setup() {
     assert_eq!(unsafe { libc::fcntl(fd, libc::F_SETFD, 0) }, 0);
     let inherited_fd = owner.into_raw_fd();
     // SAFETY: into_raw_fd transferred exclusive ownership of this open fd.
-    let inherited =
-        unsafe { take_inherited_owner(inherited_fd) }.expect("take inherited owner");
+    let inherited = unsafe { take_inherited_owner(inherited_fd) }.expect("take inherited owner");
     ensure_owner_alive(&inherited).expect("same owner remains alive");
     let flags = unsafe { libc::fcntl(inherited.as_raw_fd(), libc::F_GETFD) };
     assert!(flags >= 0, "read owner descriptor flags");

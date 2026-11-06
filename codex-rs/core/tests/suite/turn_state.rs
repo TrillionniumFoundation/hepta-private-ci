@@ -96,9 +96,7 @@ async fn websocket_turn_state_persists_within_turn_and_resets_after() -> Result<
     // Keep the sampling connection open across its tool follow-ups and logical turns.
     let server = start_websocket_server_with_headers(vec![
         WebSocketConnectionConfig {
-            requests: vec![
-                vec![ev_response_created("warm-1"), ev_completed("warm-1")],
-            ],
+            requests: vec![vec![ev_response_created("warm-1"), ev_completed("warm-1")]],
             response_headers: Vec::new(),
             accept_delay: None,
             close_after_requests: true,
@@ -221,9 +219,7 @@ async fn websocket_turn_state_is_stable_within_turn() -> Result<()> {
     // Keep the sampling connection open across its tool follow-ups and logical turns.
     let server = start_websocket_server_with_headers(vec![
         WebSocketConnectionConfig {
-            requests: vec![
-                vec![ev_response_created("warm-1"), ev_completed("warm-1")],
-            ],
+            requests: vec![vec![ev_response_created("warm-1"), ev_completed("warm-1")]],
             response_headers: Vec::new(),
             accept_delay: None,
             close_after_requests: true,

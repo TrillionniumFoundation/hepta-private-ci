@@ -64,9 +64,7 @@ pub struct CellGlobalFeatureProjectionV1 {
 
 /// Names this global-only input profile and its exact width. It is distinct
 /// from the original full tensor bundle and from event/token feature schemas.
-pub fn cell_global_feature_schema_digest_v1(
-    width: usize,
-) -> Result<Digest32, CellExecutionError> {
+pub fn cell_global_feature_schema_digest_v1(width: usize) -> Result<Digest32, CellExecutionError> {
     if !(1..=MAX_FEATURES).contains(&width) {
         return Err(CellExecutionError::CapacityExceeded);
     }
@@ -106,8 +104,8 @@ impl CellGlobalFeatureProjectionV1 {
         }
         // Typed deserialization rejects duplicate/unknown keys, bool-as-int,
         // floating numbers, overflow and trailing values before normalization.
-        let wire: ProjectionWire = serde_json::from_slice(raw)
-            .map_err(|_| CellExecutionError::EncodingMismatch)?;
+        let wire: ProjectionWire =
+            serde_json::from_slice(raw).map_err(|_| CellExecutionError::EncodingMismatch)?;
         if wire.schema != SCHEMA
             || wire.numeric_profile != NUMERIC_PROFILE
             || wire.authority != "DENY_ALL"
@@ -133,14 +131,14 @@ impl CellGlobalFeatureProjectionV1 {
         let seal = fields
             .remove("conversion_sha256")
             .ok_or(CellExecutionError::EncodingMismatch)?;
-        let statement = serde_json::to_vec(&fields)
-            .map_err(|_| CellExecutionError::EncodingMismatch)?;
+        let statement =
+            serde_json::to_vec(&fields).map_err(|_| CellExecutionError::EncodingMismatch)?;
         if Digest32::of_bytes(&statement) != binding.conversion_digest {
             return Err(CellExecutionError::EncodingMismatch);
         }
         fields.insert("conversion_sha256".to_string(), seal);
-        let observation = serde_json::to_vec(&fields)
-            .map_err(|_| CellExecutionError::EncodingMismatch)?;
+        let observation =
+            serde_json::to_vec(&fields).map_err(|_| CellExecutionError::EncodingMismatch)?;
         Ok(Self {
             binding,
             schema_digest,

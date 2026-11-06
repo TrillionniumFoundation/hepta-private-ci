@@ -4580,7 +4580,11 @@ async fn reconciliation_cancels_a_reused_pending_server_when_disabled() -> anyho
     assert!(!removed.servers.contains_key("docs"));
     let removed = Arc::new(removed);
     let removed_binding = capture_binding(&removed).await;
-    assert!(removed_binding.prepare_hook_call("docs", "search").is_none());
+    assert!(
+        removed_binding
+            .prepare_hook_call("docs", "search")
+            .is_none()
+    );
     drop(previous);
     drop(reused);
 

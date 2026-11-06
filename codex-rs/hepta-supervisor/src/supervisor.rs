@@ -86,7 +86,8 @@ impl<D: ProcessDriver> Supervisor<D> {
                 // hide a recovery-required signed intent or restart/release
                 // fence and incorrectly make the daemon appear ready.
                 supervisor.restore_release_state(&agent_id, slot, &record)?;
-                let mut process_fault = supervisor.recover_slot(&agent_id, slot, &record, now).err();
+                let mut process_fault =
+                    supervisor.recover_slot(&agent_id, slot, &record, now).err();
                 // Exact Agent adoption can resolve a release that was not yet
                 // committed to the registry. Restore that release's Matrix
                 // budget before orphan recovery can record another fault.

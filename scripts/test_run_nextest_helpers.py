@@ -27,14 +27,16 @@ class RuntimeHelperTests(unittest.TestCase):
         directory = tempfile.TemporaryDirectory(prefix="nextest-runtime-helpers-")
         self.addCleanup(directory.cleanup)
         self.root = Path(directory.name)
-        (self.root / "Cargo.toml").write_text('[workspace]\nmembers = []\n')
+        (self.root / "Cargo.toml").write_text("[workspace]\nmembers = []\n")
         self.consumer = self.package("consumer", [])
         self.consumer["features"] = {"negative": [], "default": []}
         self.owner = self.package("helper-owner", ["fixture-helper"])
         self.unrelated = self.package("unrelated", [])
         self.metadata = {
             "workspace_root": str(self.root),
-            "workspace_members": [p["id"] for p in (self.consumer, self.owner, self.unrelated)],
+            "workspace_members": [
+                p["id"] for p in (self.consumer, self.owner, self.unrelated)
+            ],
             "workspace_default_members": [self.consumer["id"]],
             "packages": [self.consumer, self.owner, self.unrelated],
         }
@@ -58,18 +60,27 @@ class RuntimeHelperTests(unittest.TestCase):
         manifest = root / "Cargo.toml"
         manifest.write_text(f'[package]\nname="{name}"\nversion="1.0.0"\n')
         return {
-            "id": f"path+file://{root}#{name}@1.0.0", "name": name, "version": "1.0.0",
-            "manifest_path": str(manifest), "features": {},
+            "id": f"path+file://{root}#{name}@1.0.0",
+            "name": name,
+            "version": "1.0.0",
+            "manifest_path": str(manifest),
+            "features": {},
             "targets": [
-                {"name": binary, "kind": ["bin"], "src_path": str(root / f"{binary}.rs")}
+                {
+                    "name": binary,
+                    "kind": ["bin"],
+                    "src_path": str(root / f"{binary}.rs"),
+                }
                 for binary in bins
             ],
         }
 
     def receipt(self, **changes):
         message = {
-            "reason": "compiler-artifact", "package_id": self.owner["id"],
-            "target": copy.deepcopy(self.target), "profile": {"test": False},
+            "reason": "compiler-artifact",
+            "package_id": self.owner["id"],
+            "target": copy.deepcopy(self.target),
+            "profile": {"test": False},
             "executable": str(self.executable),
         }
         message.update(changes)
@@ -78,26 +89,41 @@ class RuntimeHelperTests(unittest.TestCase):
     def output(self, *messages, finished=True):
         if not messages:
             messages = (self.receipt(),)
-        return "\n".join(json.dumps(item) for item in (*messages, {
-            "reason": "build-finished", "success": finished,
-        }))
+        return "\n".join(
+            json.dumps(item)
+            for item in (
+                *messages,
+                {
+                    "reason": "build-finished",
+                    "success": finished,
+                },
+            )
+        )
 
     def prepare(self, args, output=None, environment=None, status=0):
         result = subprocess.CompletedProcess(
-            ["cargo", "build"], status, stdout=self.output() if output is None else output,
+            ["cargo", "build"],
+            status,
+            stdout=self.output() if output is None else output,
         )
         with patch.object(RUNNER.subprocess, "run", return_value=result) as build:
             env = RUNNER.runtime_helper_environment(
-                args, self.metadata, environment={} if environment is None else environment,
+                args,
+                self.metadata,
+                environment={} if environment is None else environment,
             )
         return env, build
 
     def test_exec_server_receives_repo_bwrap_for_scoped_and_workspace_runs(self):
         consumer = self.package("codex-exec-server", [])
         owner = self.package("codex-bwrap", ["bwrap"])
-        windows = self.package("codex-windows-sandbox", [
-            "codex-command-runner", "codex-windows-sandbox-setup",
-        ])
+        windows = self.package(
+            "codex-windows-sandbox",
+            [
+                "codex-command-runner",
+                "codex-windows-sandbox-setup",
+            ],
+        )
         packages = [consumer, owner, windows]
         self.metadata = {
             "workspace_root": str(self.root),
@@ -109,29 +135,54 @@ class RuntimeHelperTests(unittest.TestCase):
             f"CARGO_BIN_EXE_{name}": str(self.executable)
             for name in ("codex-command-runner", "codex-windows-sandbox-setup")
         }
-        output = self.output(self.receipt(
-            package_id=owner["id"], target=owner["targets"][0],
-        ))
+        output = self.output(
+            self.receipt(
+                package_id=owner["id"],
+                target=owner["targets"][0],
+            )
+        )
         with patch.dict(RUNNER.RUNTIME_TEST_HELPERS, self.declared_helpers, clear=True):
-            for arguments in (["-p", "codex-exec-server", "--locked"], ["--workspace", "--locked"]):
+            for arguments in (
+                ["-p", "codex-exec-server", "--locked"],
+                ["--workspace", "--locked"],
+            ):
                 with self.subTest(arguments=arguments):
-                    env, build = self.prepare(arguments, output=output, environment=existing)
-                    self.assertEqual(env, {**existing, "CARGO_BIN_EXE_bwrap": str(self.executable)})
+                    env, build = self.prepare(
+                        arguments, output=output, environment=existing
+                    )
+                    self.assertEqual(
+                        env, {**existing, "CARGO_BIN_EXE_bwrap": str(self.executable)}
+                    )
                     build.assert_called_once()
                     command = build.call_args.args[0]
                     self.assertIn(owner["id"], command)
                     self.assertEqual(
-                        [command[index + 1] for index, value in enumerate(command) if value == "--bin"],
+                        [
+                            command[index + 1]
+                            for index, value in enumerate(command)
+                            if value == "--bin"
+                        ],
                         ["bwrap"],
                     )
 
     def test_exact_artifact_path_is_exposed_without_changing_test_arguments(self):
-        args = ["-p", "consumer", "--locked", "--offline", "--retries", "0", "--", "--exact"]
+        args = [
+            "-p",
+            "consumer",
+            "--locked",
+            "--offline",
+            "--retries",
+            "0",
+            "--",
+            "--exact",
+        ]
         command = ["cargo", "nextest", "run", "--no-fail-fast", *args]
         result = subprocess.CompletedProcess([], 0, stdout=self.output())
         with patch.object(RUNNER.subprocess, "run", return_value=result) as build:
             with patch.object(RUNNER.subprocess, "call", return_value=100) as nextest:
-                self.assertEqual(RUNNER.run_nextest_command(command, args, self.metadata), 100)
+                self.assertEqual(
+                    RUNNER.run_nextest_command(command, args, self.metadata), 100
+                )
         self.assertEqual(nextest.call_args.args[0], command)
         env = nextest.call_args.kwargs["env"]
         self.assertEqual(env["CARGO_BIN_EXE_fixture-helper"], str(self.executable))
@@ -147,19 +198,34 @@ class RuntimeHelperTests(unittest.TestCase):
 
     def test_cargo_profile_target_features_and_config_are_forwarded_separately(self):
         args = [
-            "--package=consumer", "--profile", "local", "--cargo-profile=qualification",
-            "--target", "aarch64-unknown-linux-gnu", "--target-dir", str(self.root / "out"),
-            "--features", "consumer/negative", "--no-default-features", "--all-features",
-            "--build-jobs", "-1", "--config", "build.incremental=false", "--frozen",
+            "--package=consumer",
+            "--profile",
+            "local",
+            "--cargo-profile=qualification",
+            "--target",
+            "aarch64-unknown-linux-gnu",
+            "--target-dir",
+            str(self.root / "out"),
+            "--features",
+            "consumer/negative",
+            "--no-default-features",
+            "--all-features",
+            "--build-jobs",
+            "-1",
+            "--config",
+            "build.incremental=false",
+            "--frozen",
         ]
         _, build = self.prepare(args)
         built = build.call_args.args[0]
         for pair in (
-            ["--profile", "qualification"], ["--target", "aarch64-unknown-linux-gnu"],
+            ["--profile", "qualification"],
+            ["--target", "aarch64-unknown-linux-gnu"],
             ["--target-dir", str(self.root / "out")],
-            ["--jobs", "-1"], ["--config", "build.incremental=false"],
+            ["--jobs", "-1"],
+            ["--config", "build.incremental=false"],
         ):
-            self.assertIn(pair, [built[i:i + 2] for i in range(len(built) - 1)])
+            self.assertIn(pair, [built[i : i + 2] for i in range(len(built) - 1)])
         self.assertNotIn("local", built)
         self.assertIn("--no-default-features", built)
         self.assertNotIn("--all-features", built)
@@ -176,7 +242,9 @@ class RuntimeHelperTests(unittest.TestCase):
             with self.subTest(feature_args=feature_args):
                 _, build = self.prepare(["-p", "consumer", *feature_args])
                 args = build.call_args.args[0]
-                self.assertEqual(set(args[args.index("--features") + 1].split(",")), expected)
+                self.assertEqual(
+                    set(args[args.index("--features") + 1].split(",")), expected
+                )
                 self.assertNotIn("--all-features", args)
         with self.assertRaisesRegex(RUNNER.RuntimeHelperError, "originally selected"):
             self.prepare(["-p", "consumer", "--features", "helper-owner/helper-only"])
@@ -225,22 +293,33 @@ class RuntimeHelperTests(unittest.TestCase):
         supplied["CARGO_BIN_EXE_fixture-helper"] = "/missing/higher-priority"
         supplied["NEXTEST_BIN_EXE_fixture-helper"] = str(self.executable)
         with patch.object(RUNNER.subprocess, "run") as build:
-            with self.assertRaisesRegex(RUNNER.RuntimeHelperError, "CARGO_BIN_EXE_fixture-helper"):
-                RUNNER.runtime_helper_environment(["-p", "consumer"], self.metadata, supplied)
+            with self.assertRaisesRegex(
+                RUNNER.RuntimeHelperError, "CARGO_BIN_EXE_fixture-helper"
+            ):
+                RUNNER.runtime_helper_environment(
+                    ["-p", "consumer"], self.metadata, supplied
+                )
             build.assert_not_called()
 
-    def test_underscore_explicit_key_is_preserved_without_inventing_higher_precedence_key(self):
+    def test_underscore_explicit_key_is_preserved_without_inventing_higher_precedence_key(
+        self,
+    ):
         supplied = {"CARGO_BIN_EXE_fixture_helper": str(self.executable)}
         env, build = self.prepare(["-p", "consumer"], environment=supplied)
         self.assertEqual(env, supplied)
         self.assertNotIn("CARGO_BIN_EXE_fixture-helper", env)
         build.assert_not_called()
 
-    @unittest.skipIf(os.name == "nt", "Windows executable access does not use Unix mode bits")
+    @unittest.skipIf(
+        os.name == "nt", "Windows executable access does not use Unix mode bits"
+    )
     def test_existing_unix_file_without_execute_permission_is_rejected(self):
         self.executable.chmod(0o600)
         with self.assertRaisesRegex(RUNNER.RuntimeHelperError, "not executable"):
-            self.prepare(["-p", "consumer"], environment={"CARGO_BIN_EXE_fixture-helper": str(self.executable)})
+            self.prepare(
+                ["-p", "consumer"],
+                environment={"CARGO_BIN_EXE_fixture-helper": str(self.executable)},
+            )
 
     def test_wrong_package_name_kind_source_or_test_harness_never_supplies_helper(self):
         variants = [
@@ -257,12 +336,21 @@ class RuntimeHelperTests(unittest.TestCase):
                     RUNNER.helper_artifacts(self.output(message), self.expected)
 
     def test_missing_relative_or_nonexistent_artifacts_are_rejected(self):
-        for value in (None, "target/debug/fixture-helper", str(self.root / "missing"), str(self.root)):
+        for value in (
+            None,
+            "target/debug/fixture-helper",
+            str(self.root / "missing"),
+            str(self.root),
+        ):
             with self.subTest(executable=value):
                 with self.assertRaises(RUNNER.RuntimeHelperError):
-                    RUNNER.helper_artifacts(self.output(self.receipt(executable=value)), self.expected)
+                    RUNNER.helper_artifacts(
+                        self.output(self.receipt(executable=value)), self.expected
+                    )
         with self.assertRaisesRegex(RUNNER.RuntimeHelperError, "missing or ambiguous"):
-            RUNNER.helper_artifacts(json.dumps({"reason": "build-finished", "success": True}), self.expected)
+            RUNNER.helper_artifacts(
+                json.dumps({"reason": "build-finished", "success": True}), self.expected
+            )
 
     def test_multiple_target_executables_are_rejected_instead_of_selecting_first(self):
         another = self.root / "another-real-artifact"
@@ -270,15 +358,29 @@ class RuntimeHelperTests(unittest.TestCase):
         another.chmod(0o700)
         with self.assertRaisesRegex(RUNNER.RuntimeHelperError, "ambiguous"):
             RUNNER.helper_artifacts(
-                self.output(self.receipt(), self.receipt(executable=str(another))), self.expected,
+                self.output(self.receipt(), self.receipt(executable=str(another))),
+                self.expected,
             )
 
     def test_failed_build_and_missing_completion_never_launch_tests(self):
-        with patch.object(RUNNER.subprocess, "run", return_value=subprocess.CompletedProcess([], 17, stdout=self.output())):
+        with patch.object(
+            RUNNER.subprocess,
+            "run",
+            return_value=subprocess.CompletedProcess([], 17, stdout=self.output()),
+        ):
             with patch.object(RUNNER.subprocess, "call") as nextest:
-                self.assertEqual(RUNNER.run_nextest_command(["cargo", "nextest", "run"], ["-p", "consumer"], self.metadata), 17)
+                self.assertEqual(
+                    RUNNER.run_nextest_command(
+                        ["cargo", "nextest", "run"], ["-p", "consumer"], self.metadata
+                    ),
+                    17,
+                )
                 nextest.assert_not_called()
-        for output in (json.dumps(self.receipt()), self.output(finished=False), "not artifact JSON"):
+        for output in (
+            json.dumps(self.receipt()),
+            self.output(finished=False),
+            "not artifact JSON",
+        ):
             with self.subTest(output=output):
                 with self.assertRaises(RUNNER.RuntimeHelperError):
                     RUNNER.helper_artifacts(output, self.expected)
@@ -294,13 +396,21 @@ class RuntimeHelperTests(unittest.TestCase):
                     with self.assertRaises(RUNNER.RuntimeHelperError):
                         RUNNER.runtime_helper_environment(args, self.metadata, {})
                     build.assert_not_called()
-                env, build = self.prepare(args, environment={"CARGO_BIN_EXE_fixture-helper": str(self.executable)})
-                self.assertEqual(env["CARGO_BIN_EXE_fixture-helper"], str(self.executable))
+                env, build = self.prepare(
+                    args,
+                    environment={"CARGO_BIN_EXE_fixture-helper": str(self.executable)},
+                )
+                self.assertEqual(
+                    env["CARGO_BIN_EXE_fixture-helper"], str(self.executable)
+                )
                 build.assert_not_called()
 
-    def test_reused_builds_and_opaque_package_selection_keep_original_pass_through(self):
+    def test_reused_builds_and_opaque_package_selection_keep_original_pass_through(
+        self,
+    ):
         for args in (
-            ["-p", "cons*"], ["-p", "unknown"],
+            ["-p", "cons*"],
+            ["-p", "unknown"],
             ["-p", "consumer", "--archive-file", "archive.tar.zst"],
             ["-p", "consumer", "--cargo-metadata", "original.json"],
             ["--workspace", "--exclude", "unrelated*"],
@@ -310,21 +420,38 @@ class RuntimeHelperTests(unittest.TestCase):
                 self.assertIsNone(env)
                 build.assert_not_called()
                 command = ["cargo", "nextest", "run", *args]
-                with patch.object(RUNNER.subprocess, "call", return_value=42) as nextest:
-                    self.assertEqual(RUNNER.run_nextest_command(command, args, self.metadata), 42)
+                with patch.object(
+                    RUNNER.subprocess, "call", return_value=42
+                ) as nextest:
+                    self.assertEqual(
+                        RUNNER.run_nextest_command(command, args, self.metadata), 42
+                    )
                     self.assertEqual(nextest.call_args.args[0], command)
 
     def test_compiler_errors_and_non_json_diagnostics_are_retained(self):
-        diagnostic = json.dumps({"reason": "compiler-message", "message": {
-            "rendered": "error[E0001]: original compiler diagnosis\n",
-        }})
+        diagnostic = json.dumps(
+            {
+                "reason": "compiler-message",
+                "message": {
+                    "rendered": "error[E0001]: original compiler diagnosis\n",
+                },
+            }
+        )
         for status, output in ((12, diagnostic), (0, "original non-JSON diagnostic\n")):
             with self.subTest(status=status):
                 stderr = io.StringIO()
-                with patch.object(RUNNER.subprocess, "run", return_value=subprocess.CompletedProcess([], status, stdout=output)):
+                with patch.object(
+                    RUNNER.subprocess,
+                    "run",
+                    return_value=subprocess.CompletedProcess([], status, stdout=output),
+                ):
                     with patch.object(RUNNER.subprocess, "call") as nextest:
                         with contextlib.redirect_stderr(stderr):
-                            result = RUNNER.run_nextest_command(["cargo", "nextest", "run"], ["-p", "consumer"], self.metadata)
+                            result = RUNNER.run_nextest_command(
+                                ["cargo", "nextest", "run"],
+                                ["-p", "consumer"],
+                                self.metadata,
+                            )
                         nextest.assert_not_called()
                 self.assertEqual(result, status if status else 2)
                 self.assertIn("original", stderr.getvalue())
@@ -333,10 +460,14 @@ class RuntimeHelperTests(unittest.TestCase):
         for selector in (self.consumer["id"], "consumer@1.0.0"):
             with self.subTest(selector=selector):
                 env, _ = self.prepare(["-p", selector])
-                self.assertEqual(env["CARGO_BIN_EXE_fixture-helper"], str(self.executable))
+                self.assertEqual(
+                    env["CARGO_BIN_EXE_fixture-helper"], str(self.executable)
+                )
 
     def test_arguments_after_separator_do_not_change_build_scope(self):
-        env, build = self.prepare(["-p", "consumer", "--", "--target", "not-a-build-target"])
+        env, build = self.prepare(
+            ["-p", "consumer", "--", "--target", "not-a-build-target"]
+        )
         self.assertIn("CARGO_BIN_EXE_fixture-helper", env)
         self.assertNotIn("not-a-build-target", build.call_args.args[0])
 
@@ -349,10 +480,13 @@ class RuntimeHelperTests(unittest.TestCase):
 
 
 @unittest.skipUnless(
-    shutil.which("cargo") and shutil.which("cargo-nextest"), "requires Cargo and nextest",
+    shutil.which("cargo") and shutil.which("cargo-nextest"),
+    "requires Cargo and nextest",
 )
 class RealCrossPackageHelperTests(unittest.TestCase):
-    def test_missing_metadata_fails_then_scoped_and_workspace_runs_launch_the_real_helper(self):
+    def test_missing_metadata_fails_then_scoped_and_workspace_runs_launch_the_real_helper(
+        self,
+    ):
         with tempfile.TemporaryDirectory(prefix="nextest-cross-package-") as directory:
             root = Path(directory)
             (root / "consumer/tests").mkdir(parents=True)
@@ -363,23 +497,25 @@ class RealCrossPackageHelperTests(unittest.TestCase):
             )
             (root / "consumer/Cargo.toml").write_text(
                 '[package]\nname="nextest-helper-consumer"\nversion="0.1.0"\nedition="2024"\n'
-                '[features]\nnegative=[]\n'
+                "[features]\nnegative=[]\n"
             )
             (root / "consumer/src/lib.rs").write_text("// Integration-test consumer.\n")
             (root / "consumer/tests/helper.rs").write_text(
-                '#[test]\nfn launches_declared_helper() {\n'
+                "#[test]\nfn launches_declared_helper() {\n"
                 ' assert!(!cfg!(feature="negative"));\n'
                 ' let path=std::env::var("CARGO_BIN_EXE_nextest-runtime-fixture")'
                 '.expect("declared helper metadata missing");\n'
                 ' let output=std::process::Command::new(path).output().expect("real helper spawn");\n'
-                ' assert!(output.status.success());\n'
+                " assert!(output.status.success());\n"
                 ' assert_eq!(output.stdout, b"fixture-ok\\n");\n}\n'
             )
             (root / "server/Cargo.toml").write_text(
                 '[package]\nname="nextest-helper-owner"\nversion="0.1.0"\nedition="2024"\n'
                 '[[bin]]\nname="nextest-runtime-fixture"\npath="src/main.rs"\n'
             )
-            (root / "server/src/main.rs").write_text('fn main() { println!("fixture-ok"); }\n')
+            (root / "server/src/main.rs").write_text(
+                'fn main() { println!("fixture-ok"); }\n'
+            )
             (root / "Cargo.lock").write_text(
                 'version = 4\n\n[[package]]\nname="nextest-helper-consumer"\nversion="0.1.0"\n'
                 '\n[[package]]\nname="nextest-helper-owner"\nversion="0.1.0"\n'
@@ -387,15 +523,31 @@ class RealCrossPackageHelperTests(unittest.TestCase):
             environment = os.environ.copy()
             for key in RUNNER.helper_env_keys("nextest-runtime-fixture"):
                 environment.pop(key, None)
-            environment.update({
-                "CARGO_TARGET_DIR": str(root / "artifacts"), "NEXTEST_PROFILE": "default",
-                "HEPTA_NEXTTEST_FULL_METADATA": "0", "CARGO_NET_OFFLINE": "true",
-            })
-            scoped = ["-p", "nextest-helper-consumer", "--locked", "--offline", "--retries", "0"]
+            environment.update(
+                {
+                    "CARGO_TARGET_DIR": str(root / "artifacts"),
+                    "NEXTEST_PROFILE": "default",
+                    "HEPTA_NEXTTEST_FULL_METADATA": "0",
+                    "CARGO_NET_OFFLINE": "true",
+                }
+            )
+            scoped = [
+                "-p",
+                "nextest-helper-consumer",
+                "--locked",
+                "--offline",
+                "--retries",
+                "0",
+            ]
             baseline = subprocess.run(
-                ["cargo", "nextest", "run", "--no-fail-fast", *scoped], cwd=root,
-                env=environment, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
-                check=False, timeout=120,
+                ["cargo", "nextest", "run", "--no-fail-fast", *scoped],
+                cwd=root,
+                env=environment,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                check=False,
+                timeout=120,
             )
             self.assertNotEqual(baseline.returncode, 0, baseline.stdout)
             self.assertIn("declared helper metadata missing", baseline.stdout)
@@ -415,14 +567,23 @@ class RealCrossPackageHelperTests(unittest.TestCase):
             ):
                 with self.subTest(arguments=arguments):
                     result = subprocess.run(
-                        [sys.executable, "-c", launcher, *arguments], cwd=root, env=environment,
-                        stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
-                        check=False, timeout=120,
+                        [sys.executable, "-c", launcher, *arguments],
+                        cwd=root,
+                        env=environment,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.STDOUT,
+                        text=True,
+                        check=False,
+                        timeout=120,
                     )
                     self.assertEqual(result.returncode == 0, successful, result.stdout)
-                    self.assertIn("Runtime helper nextest-runtime-fixture:", result.stdout)
+                    self.assertIn(
+                        "Runtime helper nextest-runtime-fixture:", result.stdout
+                    )
                     self.assertIn("1 test run:", result.stdout)
-                    self.assertIn("1 passed" if successful else "1 failed", result.stdout)
+                    self.assertIn(
+                        "1 passed" if successful else "1 failed", result.stdout
+                    )
 
 
 if __name__ == "__main__":

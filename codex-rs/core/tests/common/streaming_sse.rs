@@ -60,8 +60,7 @@ pub async fn start_streaming_sse_server(
     responses: Vec<Vec<StreamingSseChunk>>,
 ) -> (StreamingSseServer, Vec<oneshot::Receiver<i64>>) {
     start_streaming_sse_server_with_initial_response_gate(
-        responses,
-        /*initial_response_gate*/ None,
+        responses, /*initial_response_gate*/ None,
     )
     .await
 }

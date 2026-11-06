@@ -31,8 +31,7 @@ fn open_pidfd(pid: libc::pid_t) -> io::Result<File> {
 
     // Keep an inherited owner handle distinct from the payload's standard IO,
     // including when the original caller started with a standard fd closed.
-    let relocated =
-        unsafe { libc::fcntl(owner.as_raw_fd(), libc::F_DUPFD_CLOEXEC, 3) };
+    let relocated = unsafe { libc::fcntl(owner.as_raw_fd(), libc::F_DUPFD_CLOEXEC, 3) };
     if relocated < 0 {
         return Err(io::Error::last_os_error());
     }

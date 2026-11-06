@@ -163,12 +163,14 @@ async fn recover_turn_if_idle_preserves_id_and_resumes_plan_mode() {
     // Recovery resumes the interrupted settings; select Plan on the original user turn.
     let initial_submission = test
         .codex
-        .start_or_steer_turn(user_message_request("recoverable user input").with_thread_settings(
-            ThreadSettingsOverrides {
-                collaboration_mode: Some(plan_mode.clone()),
-                ..Default::default()
-            },
-        ))
+        .start_or_steer_turn(
+            user_message_request("recoverable user input").with_thread_settings(
+                ThreadSettingsOverrides {
+                    collaboration_mode: Some(plan_mode.clone()),
+                    ..Default::default()
+                },
+            ),
+        )
         .await
         .expect("initial turn should start");
     let TurnInputSubmission::Started { turn_id } = initial_submission else {

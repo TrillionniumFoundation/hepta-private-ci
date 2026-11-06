@@ -416,24 +416,26 @@ impl CellUpdatePortV1 for Learner {
         &mut self,
         r: &CellUpdateRequestV1,
     ) -> Result<CellUpdateOutcomeV1, CellExecutionError> {
-        Ok(CellUpdateOutcomeV1::Candidate(Box::new(CellUpdateCandidateV1 {
-            proposal_id: r.proposal_id.clone(),
-            base_bundle_digest: r.base_bundle_digest,
-            dataset_digest: r.dataset_digest,
-            credit_profile_digest: r.credit_profile_digest,
-            trainable_mask_digest: r.trainable_mask_digest,
-            candidate_generation: r.candidate_generation,
-            candidate_artifact_digest: d("candidate"),
-            changed_parameters: if self.wrong_parameter {
-                vec![id("unregistered.weight")]
-            } else {
-                r.trainable_parameters.clone()
+        Ok(CellUpdateOutcomeV1::Candidate(Box::new(
+            CellUpdateCandidateV1 {
+                proposal_id: r.proposal_id.clone(),
+                base_bundle_digest: r.base_bundle_digest,
+                dataset_digest: r.dataset_digest,
+                credit_profile_digest: r.credit_profile_digest,
+                trainable_mask_digest: r.trainable_mask_digest,
+                candidate_generation: r.candidate_generation,
+                candidate_artifact_digest: d("candidate"),
+                changed_parameters: if self.wrong_parameter {
+                    vec![id("unregistered.weight")]
+                } else {
+                    r.trainable_parameters.clone()
+                },
+                executed_steps: self.steps,
+                elapsed_micros: 100,
+                peak_working_bytes: 4096,
+                authority: AuthorityPosture::DENY_ALL,
             },
-            executed_steps: self.steps,
-            elapsed_micros: 100,
-            peak_working_bytes: 4096,
-            authority: AuthorityPosture::DENY_ALL,
-        })))
+        )))
     }
 }
 

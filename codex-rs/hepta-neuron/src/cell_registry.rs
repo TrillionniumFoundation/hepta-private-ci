@@ -130,7 +130,10 @@ impl CellBackendRegistryV1 {
             }
             entries.insert(
                 registration.backend_id.clone(),
-                RegisteredCellBackendV1 { registration, digest },
+                RegisteredCellBackendV1 {
+                    registration,
+                    digest,
+                },
             );
         }
         Ok(Self { entries })
@@ -178,7 +181,10 @@ impl RegisteredCellBackendV1 {
         enter_cell_step(
             &self.registration.definition,
             owner,
-            &BoundProjection { registration: self.digest, projection },
+            &BoundProjection {
+                registration: self.digest,
+                projection,
+            },
             input,
             now_micros,
         )
@@ -197,7 +203,10 @@ impl RegisteredCellBackendV1 {
         recover_cell_inference(
             &self.registration.definition,
             owner,
-            &BoundProjection { registration: self.digest, projection },
+            &BoundProjection {
+                registration: self.digest,
+                projection,
+            },
             self.bind_input(projection, input)?,
             readback,
             now_micros,

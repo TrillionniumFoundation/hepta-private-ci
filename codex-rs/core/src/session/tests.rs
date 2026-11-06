@@ -2582,9 +2582,7 @@ async fn managed_network_proxy_decider_survives_full_access_start() -> anyhow::R
     let mut stream = tokio::net::TcpStream::connect(proxy_addr).await?;
     // Exercise the policy decider without depending on ambient DNS.
     stream
-        .write_all(
-            b"GET http://8.8.8.8/ HTTP/1.1\r\nHost: 8.8.8.8\r\nConnection: close\r\n\r\n",
-        )
+        .write_all(b"GET http://8.8.8.8/ HTTP/1.1\r\nHost: 8.8.8.8\r\nConnection: close\r\n\r\n")
         .await?;
     let mut buffer = [0_u8; 4096];
     let bytes_read = tokio::time::timeout(StdDuration::from_secs(2), stream.read(&mut buffer))

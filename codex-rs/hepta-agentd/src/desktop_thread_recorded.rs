@@ -257,12 +257,14 @@ impl AgentdNotesLiteralAdapter {
                 "Desktop reference differs from the exact retained signed operation",
             ));
         }
-        Ok(RecordedDesktopLookup::Found(Box::new(RecordedDesktopOperation {
-            reference: reference.clone(),
-            run_id,
-            request_sha256: request.identity().original_sha256.as_str().to_owned(),
-            operation,
-        })))
+        Ok(RecordedDesktopLookup::Found(Box::new(
+            RecordedDesktopOperation {
+                reference: reference.clone(),
+                run_id,
+                request_sha256: request.identity().original_sha256.as_str().to_owned(),
+                operation,
+            },
+        )))
     }
 
     pub(crate) async fn recorded_desktop_operation(

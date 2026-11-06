@@ -23,11 +23,21 @@ pub fn prepare_cell_step(
 ) -> Result<PreparedCellStepV1, CellExecutionError> {
     let definition_digest = definition.semantic_digest()?;
     let request_digest = semantic_request_digest(definition_digest, &input);
-    if owner.lookup(&input.scope, &input.operation_id, request_digest)?.is_some() {
+    if owner
+        .lookup(&input.scope, &input.operation_id, request_digest)?
+        .is_some()
+    {
         return Err(CellExecutionError::OperationAlreadyCommitted);
     }
     let snapshot = owner.snapshot(&input.scope)?;
-    prepare_from_snapshot(definition, snapshot, encoder, input, now_micros, CellPreparationModeV1::Fresh)
+    prepare_from_snapshot(
+        definition,
+        snapshot,
+        encoder,
+        input,
+        now_micros,
+        CellPreparationModeV1::Fresh,
+    )
 }
 
 pub(crate) enum CellPreparationModeV1 {
@@ -70,10 +80,14 @@ pub(crate) fn prepare_from_snapshot(
         return Err(CellExecutionError::StaleSource);
     }
     if input.candidates.len() != definition.candidates.len()
-        || input.candidates.iter().zip(&definition.candidates).any(|(mask, candidate)| {
-            mask.candidate_id != candidate.candidate_id
-                || (candidate.kind == CellCandidateKindV1::Abstain && !mask.allowed)
-        })
+        || input
+            .candidates
+            .iter()
+            .zip(&definition.candidates)
+            .any(|(mask, candidate)| {
+                mask.candidate_id != candidate.candidate_id
+                    || (candidate.kind == CellCandidateKindV1::Abstain && !mask.allowed)
+            })
     {
         return Err(CellExecutionError::IncompleteCandidates);
     }
@@ -86,8 +100,12 @@ pub(crate) fn prepare_from_snapshot(
     })?;
     if encoded.encoder_digest != definition.runtime.encoder_digest
         || encoded.feature_vector_q24.len() != definition.runtime.input_feature_dimension
-        || encoded.feature_vector_q24.iter().any(|v| !(-8 * (1 << 24)..=8 * (1 << 24)).contains(v))
-        || encoded.consumed_bytes.checked_add(encoded.truncated_bytes) != Some(input.observation.len())
+        || encoded
+            .feature_vector_q24
+            .iter()
+            .any(|v| !(-8 * (1 << 24)..=8 * (1 << 24)).contains(v))
+        || encoded.consumed_bytes.checked_add(encoded.truncated_bytes)
+            != Some(input.observation.len())
     {
         return Err(CellExecutionError::EncodingMismatch);
     }
@@ -126,19 +144,34 @@ pub fn enter_cell_step(
     if let Some(receipt) = owner.lookup(&input.scope, &input.operation_id, digest)? {
         return Ok(CellStepEntryV1::Replayed(Box::new(receipt)));
     }
-    prepare_cell_step(definition, owner, encoder, input, now_micros).map(Box::new).map(CellStepEntryV1::Ready)
+    prepare_cell_step(definition, owner, encoder, input, now_micros)
+        .map(Box::new)
+        .map(CellStepEntryV1::Ready)
 }
 
 pub fn decide_cell(
     inferred: InferredCellStepV1,
     now_micros: u64,
 ) -> Result<CellStateProposalV1, CellExecutionError> {
-    let InferredCellStepV1 { prepared, output, not_before_micros } = inferred;
-    let PreparedCellStepV1 { definition, snapshot, input, encoded, model_request } = prepared;
+    let InferredCellStepV1 {
+        prepared,
+        output,
+        not_before_micros,
+    } = inferred;
+    let PreparedCellStepV1 {
+        definition,
+        snapshot,
+        input,
+        encoded,
+        model_request,
+    } = prepared;
     if now_micros < input.monotonic_micros || now_micros < not_before_micros {
         return Err(CellExecutionError::DeadlineExceeded);
     }
-    let sequence = snapshot.checkpoint.as_ref().map_or(0, SparseCheckpoint::sequence)
+    let sequence = snapshot
+        .checkpoint
+        .as_ref()
+        .map_or(0, SparseCheckpoint::sequence)
         .checked_add(1)
         .ok_or(CellExecutionError::CapacityExceeded)?;
     let tick = SparseTick {
@@ -166,7 +199,9 @@ pub fn decide_cell(
         || output.queue_age_micros > definition.max_queue_age_micros
         || output.transient_allocation_bytes > resource.transient_allocation_bytes
         || checkpoint_bytes > resource.checkpoint_bytes;
-    let mut selected = definition.candidates.iter()
+    let mut selected = definition
+        .candidates
+        .iter()
         .position(|c| c.kind == CellCandidateKindV1::Abstain)
         .ok_or(CellExecutionError::InvalidDefinition)?;
     let abstain_candidate = definition.candidates[selected].candidate_id.clone();
@@ -174,7 +209,12 @@ pub fn decide_cell(
         // Canonical order breaks ties. The mask prevents any masked output
         // from being selected; no positive legal signal results in abstention.
         let mut best = 0;
-        for (index, (candidate, mask)) in definition.candidates.iter().zip(&input.candidates).enumerate() {
+        for (index, (candidate, mask)) in definition
+            .candidates
+            .iter()
+            .zip(&input.candidates)
+            .enumerate()
+        {
             let score = signal.activation_q24[candidate.activation_index];
             if mask.allowed && score > best {
                 best = score;
@@ -182,11 +222,16 @@ pub fn decide_cell(
             }
         }
     }
-    let policy = input.candidates.iter().enumerate().map(|(index, mask)| CellPolicyEntryV1 {
-        candidate_id: mask.candidate_id.clone(),
-        allowed: mask.allowed,
-        probability_ppm: if index == selected { 1_000_000 } else { 0 },
-    }).collect();
+    let policy = input
+        .candidates
+        .iter()
+        .enumerate()
+        .map(|(index, mask)| CellPolicyEntryV1 {
+            candidate_id: mask.candidate_id.clone(),
+            allowed: mask.allowed,
+            probability_ppm: if index == selected { 1_000_000 } else { 0 },
+        })
+        .collect();
     let semantic_request_digest = semantic_request_digest(definition.semantic_digest()?, &input);
     let receipt = CellDecisionReceiptV1 {
         operation_id: input.operation_id,
@@ -195,7 +240,10 @@ pub fn decide_cell(
         scope: input.scope,
         bundle_digest: definition.bundle_digest,
         source_frontier: input.source_frontier,
-        checkpoint_before: snapshot.checkpoint.as_ref().map_or(Digest32::ZERO, SparseCheckpoint::digest),
+        checkpoint_before: snapshot
+            .checkpoint
+            .as_ref()
+            .map_or(Digest32::ZERO, SparseCheckpoint::digest),
         checkpoint_after: checkpoint.digest(),
         model_output_digest: output.output_digest,
         policy,

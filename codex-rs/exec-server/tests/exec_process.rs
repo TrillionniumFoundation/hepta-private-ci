@@ -393,7 +393,9 @@ async fn shell_snapshot_v2_capture_failure_falls_back_and_retries(
         None
     };
     let shell_path = match shell_wrapper.as_ref() {
-        Some(path) => path.to_str().context("snapshot shell fixture path must be UTF-8")?,
+        Some(path) => path
+            .to_str()
+            .context("snapshot shell fixture path must be UTF-8")?,
         None => shell_path,
     };
     std::fs::write(

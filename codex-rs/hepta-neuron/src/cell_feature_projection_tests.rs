@@ -16,7 +16,9 @@ fn binding() -> CellFeatureProjectionBindingV1 {
         encoder_digest: d("encoder"),
         source_bundle_digest: d("bundle-source"),
         source_record_digest: d("record"),
-        conversion_digest: checked("b4411703c9b8794c3a807caf119f10ea741aa62f81c957404ca75b4f6ec0ad84".parse()),
+        conversion_digest: checked(
+            "b4411703c9b8794c3a807caf119f10ea741aa62f81c957404ca75b4f6ec0ad84".parse(),
+        ),
         row: 0,
         width: 2,
     }
@@ -35,35 +37,56 @@ fn resealed(field: &str, value: Value) -> (Vec<u8>, CellFeatureProjectionBinding
 
 #[test]
 fn python_receipt_projects_exact_values_and_normalizes_only_serialization() {
-    let projection = checked(CellGlobalFeatureProjectionV1::from_json(PYTHON_RECEIPT.as_bytes(), binding()));
+    let projection = checked(CellGlobalFeatureProjectionV1::from_json(
+        PYTHON_RECEIPT.as_bytes(),
+        binding(),
+    ));
     let parsed: Value = checked(serde_json::from_str(PYTHON_RECEIPT));
     let pretty = checked(serde_json::to_vec_pretty(&parsed));
-    assert_eq!(checked(CellGlobalFeatureProjectionV1::from_json(&pretty, binding())), projection);
+    assert_eq!(
+        checked(CellGlobalFeatureProjectionV1::from_json(&pretty, binding())),
+        projection
+    );
     assert_eq!(projection.observation_bytes(), PYTHON_RECEIPT.as_bytes());
-    assert_eq!(projection.schema_digest(), checked(cell_global_feature_schema_digest_v1(/*width*/2)));
+    assert_eq!(
+        projection.schema_digest(),
+        checked(cell_global_feature_schema_digest_v1(/*width*/ 2))
+    );
     let request_scope = scope("run1");
-    assert_eq!(projection.encode(&CellEncodingRequestV1 {
-        scope: &request_scope,
-        source_frontier: d("frontier"),
-        encoder_digest: d("encoder"),
-        observation: projection.observation_bytes(),
-        checkpoint: None,
-    }), Ok(CellEncodedInputV1 {
-        encoder_digest: d("encoder"),
-        feature_vector_q24: vec![1 << 24, 1 << 23],
-        consumed_bytes: PYTHON_RECEIPT.len(),
-        truncated_bytes: 0,
-    }));
+    assert_eq!(
+        projection.encode(&CellEncodingRequestV1 {
+            scope: &request_scope,
+            source_frontier: d("frontier"),
+            encoder_digest: d("encoder"),
+            observation: projection.observation_bytes(),
+            checkpoint: None,
+        }),
+        Ok(CellEncodedInputV1 {
+            encoder_digest: d("encoder"),
+            feature_vector_q24: vec![1 << 24, 1 << 23],
+            consumed_bytes: PYTHON_RECEIPT.len(),
+            truncated_bytes: 0,
+        })
+    );
 }
 
 #[test]
 fn changed_vector_cannot_be_admitted_by_recomputing_its_own_seal() {
     let changed = PYTHON_RECEIPT.replace("[16777216,8388608]", "[8388608,16777216]");
-    assert_eq!(CellGlobalFeatureProjectionV1::from_json(changed.as_bytes(), binding()), Err(CellExecutionError::EncodingMismatch));
+    assert_eq!(
+        CellGlobalFeatureProjectionV1::from_json(changed.as_bytes(), binding()),
+        Err(CellExecutionError::EncodingMismatch)
+    );
     let (raw, new_owner_pin) = resealed("feature_vector_q24", json!([8388608, 16777216]));
-    assert_eq!(CellGlobalFeatureProjectionV1::from_json(&raw, binding()), Err(CellExecutionError::EncodingMismatch));
+    assert_eq!(
+        CellGlobalFeatureProjectionV1::from_json(&raw, binding()),
+        Err(CellExecutionError::EncodingMismatch)
+    );
     // A separately changed owner pin admits a new projection; self-sealing alone does not.
-    let projection = checked(CellGlobalFeatureProjectionV1::from_json(&raw, new_owner_pin));
+    let projection = checked(CellGlobalFeatureProjectionV1::from_json(
+        &raw,
+        new_owner_pin,
+    ));
     assert_ne!(projection.observation_bytes(), PYTHON_RECEIPT.as_bytes());
 }
 
@@ -80,7 +103,10 @@ fn numeric_types_range_and_width_reject_without_coercion() {
         json!([16777216, 8388608, 0]),
     ] {
         let (raw, owner_pin) = resealed("feature_vector_q24", value);
-        assert_eq!(CellGlobalFeatureProjectionV1::from_json(&raw, owner_pin), Err(CellExecutionError::EncodingMismatch));
+        assert_eq!(
+            CellGlobalFeatureProjectionV1::from_json(&raw, owner_pin),
+            Err(CellExecutionError::EncodingMismatch)
+        );
     }
     let (raw, owner_pin) = resealed("feature_vector_q24", json!([-134217728, 134217728]));
     assert!(CellGlobalFeatureProjectionV1::from_json(&raw, owner_pin).is_ok());
@@ -94,10 +120,16 @@ fn duplicate_unknown_and_trailing_fields_cannot_hide_a_second_interpretation() {
         PYTHON_RECEIPT.replace("\"row\":0", "\"row\":0,\"extra\":false"),
         format!("{PYTHON_RECEIPT} {{}}"),
     ] {
-        assert_eq!(CellGlobalFeatureProjectionV1::from_json(raw.as_bytes(), binding()), Err(CellExecutionError::EncodingMismatch));
+        assert_eq!(
+            CellGlobalFeatureProjectionV1::from_json(raw.as_bytes(), binding()),
+            Err(CellExecutionError::EncodingMismatch)
+        );
     }
     let (raw, owner_pin) = resealed("extra", json!(false));
-    assert_eq!(CellGlobalFeatureProjectionV1::from_json(&raw, owner_pin), Err(CellExecutionError::EncodingMismatch));
+    assert_eq!(
+        CellGlobalFeatureProjectionV1::from_json(&raw, owner_pin),
+        Err(CellExecutionError::EncodingMismatch)
+    );
 }
 
 #[test]
@@ -114,7 +146,10 @@ fn authority_profile_source_and_row_remain_bound_even_with_a_valid_hash() {
         ("row", json!(0.0)),
     ] {
         let (raw, owner_pin) = resealed(field, value);
-        assert_eq!(CellGlobalFeatureProjectionV1::from_json(&raw, owner_pin), Err(CellExecutionError::EncodingMismatch));
+        assert_eq!(
+            CellGlobalFeatureProjectionV1::from_json(&raw, owner_pin),
+            Err(CellExecutionError::EncodingMismatch)
+        );
     }
 }
 
@@ -131,24 +166,39 @@ fn incomplete_pins_and_oversized_inputs_are_rejected_before_projection() {
             5 => expected.conversion_digest = Digest32::ZERO,
             _ => unreachable!("fixture index"),
         }
-        assert_eq!(CellGlobalFeatureProjectionV1::from_json(PYTHON_RECEIPT.as_bytes(), expected), Err(CellExecutionError::EncodingMismatch));
+        assert_eq!(
+            CellGlobalFeatureProjectionV1::from_json(PYTHON_RECEIPT.as_bytes(), expected),
+            Err(CellExecutionError::EncodingMismatch)
+        );
     }
     for width in [0, 513] {
         let mut expected = binding();
         expected.width = width;
-        assert_eq!(CellGlobalFeatureProjectionV1::from_json(PYTHON_RECEIPT.as_bytes(), expected), Err(CellExecutionError::CapacityExceeded));
+        assert_eq!(
+            CellGlobalFeatureProjectionV1::from_json(PYTHON_RECEIPT.as_bytes(), expected),
+            Err(CellExecutionError::CapacityExceeded)
+        );
     }
     let mut expected = binding();
     expected.row = 512;
-    assert_eq!(CellGlobalFeatureProjectionV1::from_json(PYTHON_RECEIPT.as_bytes(), expected), Err(CellExecutionError::CapacityExceeded));
+    assert_eq!(
+        CellGlobalFeatureProjectionV1::from_json(PYTHON_RECEIPT.as_bytes(), expected),
+        Err(CellExecutionError::CapacityExceeded)
+    );
     let mut padded = PYTHON_RECEIPT.as_bytes().to_vec();
     padded.resize(65_537, b' ');
-    assert_eq!(CellGlobalFeatureProjectionV1::from_json(&padded, binding()), Err(CellExecutionError::CapacityExceeded));
+    assert_eq!(
+        CellGlobalFeatureProjectionV1::from_json(&padded, binding()),
+        Err(CellExecutionError::CapacityExceeded)
+    );
 }
 
 #[test]
 fn projection_cannot_cross_scope_frontier_encoder_or_observation() {
-    let projection = checked(CellGlobalFeatureProjectionV1::from_json(PYTHON_RECEIPT.as_bytes(), binding()));
+    let projection = checked(CellGlobalFeatureProjectionV1::from_json(
+        PYTHON_RECEIPT.as_bytes(),
+        binding(),
+    ));
     let original_scope = scope("run1");
     let other_scope = scope("run2");
     let mut request = CellEncodingRequestV1 {
@@ -159,14 +209,26 @@ fn projection_cannot_cross_scope_frontier_encoder_or_observation() {
         checkpoint: None,
     };
     request.scope = &other_scope;
-    assert_eq!(projection.encode(&request), Err(CellExecutionError::ScopeMismatch));
+    assert_eq!(
+        projection.encode(&request),
+        Err(CellExecutionError::ScopeMismatch)
+    );
     request.scope = &original_scope;
     request.source_frontier = d("next-frontier");
-    assert_eq!(projection.encode(&request), Err(CellExecutionError::StaleSource));
+    assert_eq!(
+        projection.encode(&request),
+        Err(CellExecutionError::StaleSource)
+    );
     request.source_frontier = d("frontier");
     request.encoder_digest = d("other-encoder");
-    assert_eq!(projection.encode(&request), Err(CellExecutionError::EncodingMismatch));
+    assert_eq!(
+        projection.encode(&request),
+        Err(CellExecutionError::EncodingMismatch)
+    );
     request.encoder_digest = d("encoder");
     request.observation = b"substituted";
-    assert_eq!(projection.encode(&request), Err(CellExecutionError::EncodingMismatch));
+    assert_eq!(
+        projection.encode(&request),
+        Err(CellExecutionError::EncodingMismatch)
+    );
 }

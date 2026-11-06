@@ -428,14 +428,16 @@ fn verify_recorded(
             "recorded Notes reference differs from its original signed operation",
         ));
     }
-    Ok(RecordedNotesLookup::Found(Box::new(RecordedNotesThreadOperation {
-        reference: reference.clone(),
-        turn_intent_id,
-        call_intent_id,
-        run_id,
-        target,
-        state: operation.state,
-    })))
+    Ok(RecordedNotesLookup::Found(Box::new(
+        RecordedNotesThreadOperation {
+            reference: reference.clone(),
+            turn_intent_id,
+            call_intent_id,
+            run_id,
+            target,
+            state: operation.state,
+        },
+    )))
 }
 
 #[cfg(test)]

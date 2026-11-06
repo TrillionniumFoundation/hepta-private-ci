@@ -25,10 +25,7 @@ fn startup_selector_and_legacy_exact_are_exclusive_and_strict() {
     ] {
         let selected: AgentdCalculatorRecoverySelector = serde_json::from_value(value).unwrap();
         assert!(fixture_from_fields(None, Some(&selected)).is_ok());
-        assert!(
-            fixture_from_fields(Some("original-op"), Some(&selected))
-                .is_err()
-        );
+        assert!(fixture_from_fields(Some("original-op"), Some(&selected)).is_err());
     }
     assert!(fixture_from_fields(Some("original-op"), None).is_ok());
     assert!(fixture_from_fields(None, None).is_err());

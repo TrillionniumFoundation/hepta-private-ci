@@ -58,55 +58,113 @@ class RuntimeHelperError(Exception):
 def runtime_build_options(args):
     """Separate Cargo build inputs from nextest configuration without guessing."""
     options = {
-        "packages": [], "exclude": [], "workspace": False,
-        "manifest": None, "cargo": [], "metadata": [], "unsupported": [],
-        "targets": [], "profile": None, "release": False, "bypass": False,
+        "packages": [],
+        "exclude": [],
+        "workspace": False,
+        "manifest": None,
+        "cargo": [],
+        "metadata": [],
+        "unsupported": [],
+        "targets": [],
+        "profile": None,
+        "release": False,
+        "bypass": False,
     }
     cargo_values = {
-        "--target": "--target", "--target-dir": "--target-dir",
-        "--cargo-profile": "--profile", "--build-jobs": "--jobs",
-        "--features": "--features", "-F": "--features",
-        "--config": "--config", "--manifest-path": "--manifest-path",
+        "--target": "--target",
+        "--target-dir": "--target-dir",
+        "--cargo-profile": "--profile",
+        "--build-jobs": "--jobs",
+        "--features": "--features",
+        "-F": "--features",
+        "--config": "--config",
+        "--manifest-path": "--manifest-path",
     }
     test_values = {
-        "-E", "--filterset", "-P", "--profile", "--test", "--bin",
-        "--example", "--bench", "--config-file", "--tool-config-file",
-        "--user-config-file", "--cargo-message-format", "--message-format",
-        "--message-format-version", "--test-threads", "--retries",
-        "--status-level", "--final-status-level", "--failure-output", "-j",
-        "--success-output", "--no-tests", "--partition", "--color",
+        "-E",
+        "--filterset",
+        "-P",
+        "--profile",
+        "--test",
+        "--bin",
+        "--example",
+        "--bench",
+        "--config-file",
+        "--tool-config-file",
+        "--user-config-file",
+        "--cargo-message-format",
+        "--message-format",
+        "--message-format-version",
+        "--test-threads",
+        "--retries",
+        "--status-level",
+        "--final-status-level",
+        "--failure-output",
+        "-j",
+        "--success-output",
+        "--no-tests",
+        "--partition",
+        "--color",
     }
     test_flags = {
-        "--lib", "--bins", "--tests", "--examples", "--benches",
-        "--all-targets", "--no-fail-fast", "--fail-fast", "--no-run",
-        "--no-capture", "--nocapture", "--hide-progress-bar",
-        "--override-version-check", "--ignore-default-filter", "--verbose",
-        "-v", "--quiet", "-q",
+        "--lib",
+        "--bins",
+        "--tests",
+        "--examples",
+        "--benches",
+        "--all-targets",
+        "--no-fail-fast",
+        "--fail-fast",
+        "--no-run",
+        "--no-capture",
+        "--nocapture",
+        "--hide-progress-bar",
+        "--override-version-check",
+        "--ignore-default-filter",
+        "--verbose",
+        "-v",
+        "--quiet",
+        "-q",
     }
     reuse_values = {
-        "--archive-file", "--archive-format", "--binaries-metadata",
-        "--cargo-metadata", "--workspace-remap", "--target-dir-remap",
+        "--archive-file",
+        "--archive-format",
+        "--binaries-metadata",
+        "--cargo-metadata",
+        "--workspace-remap",
+        "--target-dir-remap",
         "--extract-to",
     }
-    values = set(cargo_values) | test_values | reuse_values | {
-        "-p", "--package", "--exclude", "--run-ignored",
-    }
+    values = (
+        set(cargo_values)
+        | test_values
+        | reuse_values
+        | {
+            "-p",
+            "--package",
+            "--exclude",
+            "--run-ignored",
+        }
+    )
     index = 0
     while index < len(args) and args[index] != "--":
         arg = args[index]
         key, equal, value = arg.partition("=")
         for short in ("-p", "-F", "-E", "-P", "-j"):
             if arg.startswith(short) and arg != short:
-                key, equal, value = short, "=", arg[len(short):].removeprefix("=")
+                key, equal, value = short, "=", arg[len(short) :].removeprefix("=")
                 break
         if key in values:
             if not equal:
                 index += 1
                 negative_jobs = (
-                    index < len(args) and key in {"--build-jobs", "--test-threads", "-j"}
+                    index < len(args)
+                    and key in {"--build-jobs", "--test-threads", "-j"}
                     and re.fullmatch(r"-\d+", args[index])
                 )
-                if index >= len(args) or (args[index].startswith("-") and not negative_jobs):
+                if index >= len(args) or (
+                    args[index].startswith("-") and not negative_jobs
+                ):
                     # Let nextest report its original malformed CLI diagnostic.
                     options["bypass"] = True
                     return options
@@ -172,8 +230,9 @@ def selected_workspace_packages(metadata, options):
 
     def resolve(selector):
         matches = [
-            p["id"] for p in packages.values()
-            if selector in {p["id"], p["name"], f'{p["name"]}@{p["version"]}'}
+            p["id"]
+            for p in packages.values()
+            if selector in {p["id"], p["name"], f"{p['name']}@{p['version']}"}
         ]
         # Cargo retains ownership of globs, external packages and other package
         # ID syntax. Do not narrow those previously supported invocations here.
@@ -189,19 +248,31 @@ def selected_workspace_packages(metadata, options):
         manifest = options["manifest"]
         if manifest is None:
             manifest = next(
-                (p / "Cargo.toml" for p in (Path.cwd(), *Path.cwd().parents)
-                 if (p / "Cargo.toml").is_file()), None,
+                (
+                    p / "Cargo.toml"
+                    for p in (Path.cwd(), *Path.cwd().parents)
+                    if (p / "Cargo.toml").is_file()
+                ),
+                None,
             )
         manifest = Path(manifest).resolve() if manifest is not None else None
-        if manifest is not None and manifest.parent != Path(metadata["workspace_root"]).resolve():
-            selected = {p["id"] for p in packages.values()
-                        if Path(p["manifest_path"]).resolve() == manifest}
+        if (
+            manifest is not None
+            and manifest.parent != Path(metadata["workspace_root"]).resolve()
+        ):
+            selected = {
+                p["id"]
+                for p in packages.values()
+                if Path(p["manifest_path"]).resolve() == manifest
+            }
             if len(selected) != 1:
                 return packages, None
         else:
             defaults = metadata.get("workspace_default_members")
             if defaults is None or not set(defaults) <= members:
-                raise RuntimeHelperError("Cargo metadata lacks valid workspace default members")
+                raise RuntimeHelperError(
+                    "Cargo metadata lacks valid workspace default members"
+                )
             selected = set(defaults)
     excluded = {resolve(selector) for selector in options["exclude"]}
     if None in excluded:
@@ -212,14 +283,19 @@ def selected_workspace_packages(metadata, options):
 
 def helper_env_keys(name):
     names = [name] if "-" not in name else [name, name.replace("-", "_")]
-    return [f"{prefix}_{variant}" for prefix in ("CARGO_BIN_EXE", "NEXTEST_BIN_EXE")
-            for variant in names]
+    return [
+        f"{prefix}_{variant}"
+        for prefix in ("CARGO_BIN_EXE", "NEXTEST_BIN_EXE")
+        for variant in names
+    ]
 
 
 def helper_executable(value, label):
     path = Path(value)
     if not path.is_absolute() or not path.is_file():
-        raise RuntimeHelperError(f"{label} must name an existing absolute executable file: {value!r}")
+        raise RuntimeHelperError(
+            f"{label} must name an existing absolute executable file: {value!r}"
+        )
     if os.name != "nt" and not os.access(path, os.X_OK):
         raise RuntimeHelperError(f"{label} is not executable on this host: {value!r}")
     return str(path)
@@ -234,8 +310,9 @@ def helper_cargo_arguments(options, packages, selected):
     values = iter(options["cargo"])
     for value in values:
         if value == "--all-features":
-            features.update(f'{p["name"]}/{feature}'
-                            for p in original for feature in p["features"])
+            features.update(
+                f"{p['name']}/{feature}" for p in original for feature in p["features"]
+            )
         elif value == "--features":
             for feature in re.split(r"[\s,]+", next(values).strip()):
                 if not feature:
@@ -251,8 +328,10 @@ def helper_cargo_arguments(options, packages, selected):
                 else:
                     matches = [p for p in original if feature in p["features"]]
                     if not matches:
-                        raise RuntimeHelperError(f"feature absent from selected test packages: {feature!r}")
-                    features.update(f'{p["name"]}/{feature}' for p in matches)
+                        raise RuntimeHelperError(
+                            f"feature absent from selected test packages: {feature!r}"
+                        )
+                    features.update(f"{p['name']}/{feature}" for p in matches)
         else:
             arguments.append(value)
     if features:
@@ -270,30 +349,47 @@ def helper_artifacts(output, expected):
         try:
             message = json.loads(line)
         except json.JSONDecodeError as error:
-            raise RuntimeHelperError("Cargo helper build emitted non-JSON artifact output") from error
+            raise RuntimeHelperError(
+                "Cargo helper build emitted non-JSON artifact output"
+            ) from error
         if not isinstance(message, dict):
-            raise RuntimeHelperError("Cargo helper artifact message must be a JSON object")
+            raise RuntimeHelperError(
+                "Cargo helper artifact message must be a JSON object"
+            )
         if message.get("reason") == "build-finished":
             finished.append(message.get("success"))
         if message.get("reason") != "compiler-artifact":
             continue
         target = message.get("target", {})
-        if not isinstance(target, dict) or not isinstance(message.get("profile", {}), dict):
-            raise RuntimeHelperError("Cargo helper artifact has invalid target/profile metadata")
+        if not isinstance(target, dict) or not isinstance(
+            message.get("profile", {}), dict
+        ):
+            raise RuntimeHelperError(
+                "Cargo helper artifact has invalid target/profile metadata"
+            )
         key = (message.get("package_id"), target.get("name"))
         if key not in expected or message.get("profile", {}).get("test") is not False:
             continue
-        if target.get("kind") != ["bin"] or target.get("src_path") != expected[key]["src_path"]:
+        if (
+            target.get("kind") != ["bin"]
+            or target.get("src_path") != expected[key]["src_path"]
+        ):
             raise RuntimeHelperError(f"Cargo helper target identity mismatch: {key[1]}")
         executable = message.get("executable")
         if not isinstance(executable, str):
-            raise RuntimeHelperError(f"Cargo helper artifact has no executable: {key[1]}")
+            raise RuntimeHelperError(
+                f"Cargo helper artifact has no executable: {key[1]}"
+            )
         found[key].add(helper_executable(executable, f"Cargo artifact {key[1]}"))
     if finished != [True]:
-        raise RuntimeHelperError("Cargo helper build lacks one successful build-finished receipt")
+        raise RuntimeHelperError(
+            "Cargo helper build lacks one successful build-finished receipt"
+        )
     for key, paths in found.items():
         if len(paths) != 1:
-            raise RuntimeHelperError(f"Cargo helper executable is missing or ambiguous: {key[1]}")
+            raise RuntimeHelperError(
+                f"Cargo helper executable is missing or ambiguous: {key[1]}"
+            )
     return {key: next(iter(paths)) for key, paths in found.items()}
 
 
@@ -310,7 +406,11 @@ def emit_cargo_diagnostics(output):
             diagnostic = message.get("message", {})
             rendered = diagnostic.get("rendered") or diagnostic.get("message")
             if rendered:
-                print(rendered, file=sys.stderr, end="" if rendered.endswith("\n") else "\n")
+                print(
+                    rendered,
+                    file=sys.stderr,
+                    end="" if rendered.endswith("\n") else "\n",
+                )
 
 
 def runtime_helper_environment(args, metadata=None, environment=None):
@@ -320,37 +420,60 @@ def runtime_helper_environment(args, metadata=None, environment=None):
     environment = dict(os.environ if environment is None else environment)
     if metadata is None:
         result = subprocess.run(
-            ["cargo", "metadata", "--no-deps", "--format-version=1", *options["metadata"]],
-            stdout=subprocess.PIPE, text=True, check=False,
+            [
+                "cargo",
+                "metadata",
+                "--no-deps",
+                "--format-version=1",
+                *options["metadata"],
+            ],
+            stdout=subprocess.PIPE,
+            text=True,
+            check=False,
         )
         if result.returncode:
             emit_cargo_diagnostics(result.stdout)
-            raise RuntimeHelperError("Cargo could not resolve runtime helper owners", result.returncode)
+            raise RuntimeHelperError(
+                "Cargo could not resolve runtime helper owners", result.returncode
+            )
         try:
             metadata = json.loads(result.stdout)
         except json.JSONDecodeError as error:
             emit_cargo_diagnostics(result.stdout)
-            raise RuntimeHelperError("Cargo emitted invalid runtime helper metadata") from error
+            raise RuntimeHelperError(
+                "Cargo emitted invalid runtime helper metadata"
+            ) from error
     members = set(metadata["workspace_members"])
-    if not any(p["name"] in RUNTIME_TEST_HELPERS and p["id"] in members
-               for p in metadata["packages"]):
+    if not any(
+        p["name"] in RUNTIME_TEST_HELPERS and p["id"] in members
+        for p in metadata["packages"]
+    ):
         return None
     packages, selected = selected_workspace_packages(metadata, options)
     if selected is None:
         return None
-    required = {helper for package_id in selected
-                for helper in RUNTIME_TEST_HELPERS.get(packages[package_id]["name"], ())}
+    required = {
+        helper
+        for package_id in selected
+        for helper in RUNTIME_TEST_HELPERS.get(packages[package_id]["name"], ())
+    }
     if not required:
         return None
     expected = {}
     for owner, name in sorted(required):
         declared = [p for p in packages.values() if p["name"] == owner]
         if len(declared) != 1:
-            raise RuntimeHelperError(f"runtime helper owner missing or ambiguous: {owner}")
+            raise RuntimeHelperError(
+                f"runtime helper owner missing or ambiguous: {owner}"
+            )
         package = declared[0]
-        targets = [t for t in package["targets"] if t["name"] == name and t["kind"] == ["bin"]]
+        targets = [
+            t for t in package["targets"] if t["name"] == name and t["kind"] == ["bin"]
+        ]
         if len(targets) != 1:
-            raise RuntimeHelperError(f"runtime helper target missing or ambiguous: {owner}/{name}")
+            raise RuntimeHelperError(
+                f"runtime helper target missing or ambiguous: {owner}/{name}"
+            )
         for key in helper_env_keys(name):
             if key in environment:
                 # Match cargo_bin's precedence, including invalid explicit values.
@@ -362,7 +485,8 @@ def runtime_helper_environment(args, metadata=None, environment=None):
         return environment
     if options["unsupported"]:
         raise RuntimeHelperError(
-            "runtime helper preparation does not support " + ", ".join(options["unsupported"])
+            "runtime helper preparation does not support "
+            + ", ".join(options["unsupported"])
             + "; use a source-build invocation with exact package/profile/target inputs "
             "or provide the declared helpers explicitly"
         )
@@ -376,9 +500,15 @@ def runtime_helper_environment(args, metadata=None, environment=None):
     for name in sorted({key[1] for key in expected}):
         command.extend(["--bin", name])
     command.append("--message-format=json-render-diagnostics")
-    print("Preparing declared runtime helpers: " + ", ".join(sorted(key[1] for key in expected)),
-          file=sys.stderr, flush=True)
-    result = subprocess.run(command, stdout=subprocess.PIPE, text=True, check=False, env=environment)
+    print(
+        "Preparing declared runtime helpers: "
+        + ", ".join(sorted(key[1] for key in expected)),
+        file=sys.stderr,
+        flush=True,
+    )
+    result = subprocess.run(
+        command, stdout=subprocess.PIPE, text=True, check=False, env=environment
+    )
     emit_cargo_diagnostics(result.stdout)
     if result.returncode:
         raise RuntimeHelperError("Cargo runtime helper build failed", result.returncode)

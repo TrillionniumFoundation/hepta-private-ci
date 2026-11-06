@@ -363,7 +363,11 @@ async fn termination_request_deadline_keeps_the_native_observer_alive() -> Resul
     let error = tokio::time::timeout(Duration::from_secs(2), &mut termination)
         .await?
         .expect_err("the request and exit observation share a finite budget");
-    assert!(error.to_string().contains(TERMINATION_REQUEST_DEADLINE_ELAPSED));
+    assert!(
+        error
+            .to_string()
+            .contains(TERMINATION_REQUEST_DEADLINE_ELAPSED)
+    );
     assert!(!fixture.process.has_exited());
     assert_eq!(fixture.process.exit_code(), None);
     assert_eq!(*fixture.remote.termination_started.borrow(), 1);

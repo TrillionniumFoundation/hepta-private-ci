@@ -4519,22 +4519,20 @@ async fn remote_mid_turn_compact_v2_sends_turn_state_over_websocket() -> Result<
                 responses::ev_completed_with_tokens("r1", /*total_tokens*/ 500),
             ],
         ],
-        vec![
-            vec![
-                json!({
-                    "type": "response.metadata",
-                    "headers": {(TURN_STATE_HEADER): "compact-state"},
-                }),
-                json!({
-                    "type": "response.output_item.done",
-                    "item": {
-                        "type": "compaction",
-                        "encrypted_content": "V2_WS_COMPACT_SUMMARY",
-                    }
-                }),
-                responses::ev_completed("r-compact"),
-            ],
-        ],
+        vec![vec![
+            json!({
+                "type": "response.metadata",
+                "headers": {(TURN_STATE_HEADER): "compact-state"},
+            }),
+            json!({
+                "type": "response.output_item.done",
+                "item": {
+                    "type": "compaction",
+                    "encrypted_content": "V2_WS_COMPACT_SUMMARY",
+                }
+            }),
+            responses::ev_completed("r-compact"),
+        ]],
         vec![
             vec![
                 json!({

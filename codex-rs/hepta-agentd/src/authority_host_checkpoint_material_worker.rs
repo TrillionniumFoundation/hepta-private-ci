@@ -74,12 +74,11 @@ impl RootCheckpointMaterial {
                                 publisher.require_alive()?;
                                 Ok(Outcome::Verified(Box::new(captured)))
                             }
-                            Command::Verify => {
-                                area.verify(&job.candidate)
-                                    .await
-                                    .map(Box::new)
-                                    .map(Outcome::Verified)
-                            }
+                            Command::Verify => area
+                                .verify(&job.candidate)
+                                .await
+                                .map(Box::new)
+                                .map(Outcome::Verified),
                             Command::Rebind(previous) => area
                                 .rebind(&previous, &job.candidate)
                                 .await

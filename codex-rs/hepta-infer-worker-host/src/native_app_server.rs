@@ -69,13 +69,13 @@ use codex_utils_absolute_path::AbsolutePathBuf;
 
 #[path = "native_run_control.rs"]
 mod control;
-#[path = "native_recovery.rs"]
-mod recovery;
 #[path = "native_message_output.rs"]
 mod messages;
-use messages::NativeMessageOutput;
+#[path = "native_recovery.rs"]
+mod recovery;
 pub use control::NativeAdmission;
 pub use control::NativeIntelligenceRunBinding;
+use messages::NativeMessageOutput;
 use tokio::time::Instant;
 use tokio::time::timeout;
 use tokio::time::timeout_at;

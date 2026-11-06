@@ -290,7 +290,9 @@ async fn cold_root_resume_restores_agent_identity_and_role_on_followup() -> Resu
         .thread_manager
         .get_thread(worker_thread_id)
         .await
-        .with_context(|| format!("initial worker lookup after model request: {worker_thread_id}"))?;
+        .with_context(|| {
+            format!("initial worker lookup after model request: {worker_thread_id}")
+        })?;
     wait_for_event(worker_thread.as_ref(), |event| {
         matches!(event, EventMsg::TurnComplete(_))
     })

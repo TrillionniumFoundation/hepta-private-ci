@@ -9,8 +9,12 @@ use crate::cell_lifecycle::*;
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
 pub(crate) enum LifecycleEventV1 {
-    Created { at_ms: u64 },
-    Prepared { at_ms: u64 },
+    Created {
+        at_ms: u64,
+    },
+    Prepared {
+        at_ms: u64,
+    },
     Observed {
         observation: Box<RuntimeCellLifecycleObservationV1>,
         authentication: String,
@@ -29,9 +33,12 @@ pub(crate) fn transition(
                 return Err(RuntimeCellLifecycleError::Deadline);
             }
             Ok(RuntimeCellLifecycleSnapshotV1 {
-                plan_digest: digest, revision: 0,
-                stage: Some(RuntimeCellLifecycleStageV1::StopAdmission), pending: false,
-                last_observed_ms: *at_ms, evidence: Vec::new(),
+                plan_digest: digest,
+                revision: 0,
+                stage: Some(RuntimeCellLifecycleStageV1::StopAdmission),
+                pending: false,
+                last_observed_ms: *at_ms,
+                evidence: Vec::new(),
             })
         }
         (Some(state), LifecycleEventV1::Prepared { at_ms }) => {
@@ -48,14 +55,23 @@ pub(crate) fn transition(
                 return Err(RuntimeCellLifecycleError::Deadline);
             }
             let mut next = state.clone();
-            next.revision = next.revision.checked_add(1)
+            next.revision = next
+                .revision
+                .checked_add(1)
                 .ok_or(RuntimeCellLifecycleError::Capacity)?;
             next.last_observed_ms = *at_ms;
             next.pending = true;
             Ok(next)
         }
-        (Some(state), LifecycleEventV1::Observed { observation, authentication }) => {
-            if state.plan_digest != digest || !state.pending
+        (
+            Some(state),
+            LifecycleEventV1::Observed {
+                observation,
+                authentication,
+            },
+        ) => {
+            if state.plan_digest != digest
+                || !state.pending
                 || state.stage != Some(observation.stage)
                 || observation.prepared_revision != state.revision
                 || observation.observed_at_ms < state.last_observed_ms
@@ -65,7 +81,9 @@ pub(crate) fn transition(
             nonzero(authentication)?;
             validate_observation(plan, observation)?;
             let mut next = state.clone();
-            next.revision = next.revision.checked_add(1)
+            next.revision = next
+                .revision
+                .checked_add(1)
                 .ok_or(RuntimeCellLifecycleError::Capacity)?;
             next.pending = false;
             next.stage = match observation.outcome {
@@ -100,12 +118,20 @@ pub(crate) fn validate_observation(
         return Err(RuntimeCellLifecycleError::ScopeMismatch);
     }
     nonzero(&observation.native_receipt)?;
-    for digest in [&observation.topology, &observation.state_root, &observation.bundle] {
+    for digest in [
+        &observation.topology,
+        &observation.state_root,
+        &observation.bundle,
+    ] {
         nonzero(digest)?;
     }
     let requested_stage = observation.stage.code();
     let applied = observation.outcome == RuntimeCellLifecycleNativeOutcomeV1::Applied;
-    let stage = if applied { requested_stage } else { requested_stage.saturating_sub(1) };
+    let stage = if applied {
+        requested_stage
+    } else {
+        requested_stage.saturating_sub(1)
+    };
     let expects_closed = !(applied && observation.stage == RuntimeCellLifecycleStageV1::Resume
         || !applied && observation.stage == RuntimeCellLifecycleStageV1::StopAdmission);
     if observation.admission_closed != expects_closed
@@ -119,8 +145,16 @@ pub(crate) fn validate_observation(
         return Err(RuntimeCellLifecycleError::InvalidObservation);
     }
     let published = stage >= RuntimeCellLifecycleStageV1::Publish.code();
-    let generation = if published { plan.successor_generation } else { plan.predecessor_generation };
-    let topology = if published { plan.successor_topology } else { plan.predecessor_topology };
+    let generation = if published {
+        plan.successor_generation
+    } else {
+        plan.predecessor_generation
+    };
+    let topology = if published {
+        plan.successor_topology
+    } else {
+        plan.predecessor_topology
+    };
     if observation.generation != generation.get() || observation.topology != topology.to_string() {
         return Err(RuntimeCellLifecycleError::InvalidObservation);
     }
@@ -139,7 +173,9 @@ pub(crate) fn validate_observation(
 }
 
 fn nonzero(value: &str) -> Result<Digest32, RuntimeCellLifecycleError> {
-    let digest: Digest32 = value.parse().map_err(|_| RuntimeCellLifecycleError::InvalidObservation)?;
+    let digest: Digest32 = value
+        .parse()
+        .map_err(|_| RuntimeCellLifecycleError::InvalidObservation)?;
     if digest.is_zero() {
         return Err(RuntimeCellLifecycleError::InvalidObservation);
     }
