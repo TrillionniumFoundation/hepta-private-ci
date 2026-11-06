@@ -1,0 +1,350 @@
+{
+  "format": "native-blocker-evidence-v1",
+  "purpose": "ci5165_native_terminal",
+  "snapshot_utc": "2026-11-06 22:54:05 UTC",
+  "qualification": {
+    "source_head": "25a3895dd11a1cb1dde3ba42371a1d629878e25a",
+    "source_tree": "9bef7c893c42bf10246fc18ce04079077037094d",
+    "actual_checkout": "37415647323fe41c6f8f98810a2ddf34293a9a0e",
+    "actual_checkout_tree_equals_source_tree": true,
+    "published_source_pr": 5165,
+    "run_id": 42304403498,
+    "run_attempt": 1,
+    "event": "pull_request",
+    "windows_clippy": {
+      "job_id": 128191497898,
+      "conclusion": "success",
+      "source_bound_native_gate_closed": true,
+      "selection_analysis_targets": 437,
+      "selection_analysis_actions": 0,
+      "clippy_targets": 1322,
+      "total_actions": 6768,
+      "remote_cache_hits": 2935,
+      "internal_actions": 3306,
+      "local_actions": 527,
+      "original_msvc_workflow_and_clean_worktree_gate_passed": true,
+      "complete_native_selected_label_list_separately_retained": false,
+      "warnings_present": true,
+      "owner_audit_sha256": "541012ae30d889bcee34df47bf91faffb688412abc713ca8c7516ce2707640e5",
+      "root_audit_sha256": "36d486f6a09519244bb4056bab247c4382fe1fa00b21b441261dbf5695521634"
+    },
+    "linux_failure_inventory": {
+      "gnu_job_id": 128191497954,
+      "musl_job_id": 128191497933,
+      "conclusions": {
+        "gnu": "failure",
+        "musl": "failure"
+      },
+      "distinct_printed_failed_cases_each_platform": 5,
+      "union_distinct_printed_failed_cases": [
+        "suite::compact::remote_v2_compaction_keeps_creation_time_instructions_after_same_path_mutation",
+        "suite::compact_remote::remote_compact_replaces_history_for_followups",
+        "suite::v2::executor_skills::restricted_executor_skill_can_read_permitted_reference",
+        "suite::v2::executor_skills::restricted_executor_skill_is_listed_only_when_permitted",
+        "suite::v2::executor_skills::restricted_executor_skill_rejects_reference_until_permission_approved"
+      ],
+      "gnu_only_failed_cases": [],
+      "musl_only_failed_cases": [],
+      "known_compact_cases": 2,
+      "known_restricted_executor_skill_cases": 3,
+      "bazel_target_summary_each_platform": {
+        "executed": 4,
+        "total": 587,
+        "passing": 416,
+        "failing_remotely": 3,
+        "skipped": 168
+      },
+      "target_summary_is_not_rust_case_count": true,
+      "cached_shards_and_retry_replays_present": true,
+      "owner_inventory_sha256": "083148168a700ca7e5400c43deaf1280599e88ca166b30b09762a87683466e9e",
+      "musl_peer_binding_sha256": "0068638bc531f3a026099b2c9a08368b3fbb8b8a135c9e8d982616fe0fe4721a"
+    },
+    "prior_packet": {
+      "published_pr": 5169,
+      "publication_manifest_sha256": "c9cb9648d6d9c10c59dd71c2809f3701d359b33b7eb0b39965d388c39aee58b8",
+      "old_in_progress_snapshot_retained_unchanged": true,
+      "prior_archive_container_included_in_this_packet": false
+    },
+    "archive_retention_scope": "Complete original Windows Clippy, GNU and musl decoded console logs; Windows and GNU raw tool responses; complete 36-job API observations; exact source, head and merge API records; original source-specific audits and root independent Clippy review; all files directly consumed by the two audit scripts. The earlier CI32/33/34 publication manifest is a reference only: its archive containers remain in the separate published packet. The native Bazel compact-protobuf execution-log ZIP and any ARM or Matrix artifact are not included or claimed revalidated here.",
+    "qualification_limits": [
+      "Native Clippy success applies to the recorded #5165 source/tree and original MSVC lint gate, including its clean-worktree check.",
+      "The native console captures selector stdout. The exact complete S list and temporary query-file bytes were not separately retained; prior exact-source review and local real-Bazel mechanism evidence remain separate.",
+      "Cache hits, internal and local actions are reported explicitly. Actions are not independent Rust test cases, and warnings remain in the original console.",
+      "GNU and musl each print the same five distinct failed Rust cases. Cached shards, repeated console output, retries and the two platform logs are not counted as independent reproductions.",
+      "The Linux counts of 416 passing, three failing and 168 skipped refer to Bazel targets; they do not establish the outcome of every Rust case or requalify unprinted successful cases.",
+      "Two compact and three restricted executor-skill failures remain unresolved at this source. Classification does not qualify later repairs, and a missing-system-bubblewrap warning alone is not treated as their root cause.",
+      "This packet establishes neither Windows runtime security qualification, ARM business success nor repository-wide green status. No native command or job was rerun by these file-based audits.",
+      "No previous failure log, frozen packet, scientific record, source guard, scanner, required target, timeout, policy or retry was rewritten or relaxed."
+    ],
+    "overall_repository_ci_pass": false
+  },
+  "evidence_policy": "Every listed input is retained byte for byte. Restoration produces inert regular 0644 files and never executes archived sources. The qualification and explicit archive-retention scope identify any omitted compiled executables or original ZIP containers; no omitted bytes are claimed restorable from this packet.",
+  "archive_bytes": 6277120,
+  "archive_sha256": "60d5eb109bdad1dde6203cdeed0dc9d7e3d1cd21ad07fb50c8d01ea8cdcd13e6",
+  "compressed_bytes": 349852,
+  "compressed_sha256": "e84450c408c9a9045fc9bdf011be481c663733154e0f0a563d9815e71ebd57de",
+  "parts": [
+    {
+      "name": "native-evidence.tar.xz.part000.gz",
+      "bytes": 349980,
+      "sha256": "f3c39ba5e172f87004dff1adbf58b660f93423021d628b54152d8a989f4ec2d3",
+      "git_blob": "d4e73c0c77e704816be756f6ab4899cbc652b1cc",
+      "segment_bytes": 349852,
+      "segment_sha256": "e84450c408c9a9045fc9bdf011be481c663733154e0f0a563d9815e71ebd57de"
+    }
+  ],
+  "files": [
+    {
+      "path": "round3_ci/CI5165_TERMINAL_BUILDER_PROVENANCE.json",
+      "bytes": 694,
+      "sha256": "bf71efaf3cd08d11716a331c0610411bf5bd4ee489fdcbfeb4392ef8ad50297f",
+      "git_blob": "34d6f1200102d44994612838e37338d62b65129e",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/CI_RULES323334_EVIDENCE_PUBLICATION.json",
+      "bytes": 71250,
+      "sha256": "c9cb9648d6d9c10c59dd71c2809f3701d359b33b7eb0b39965d388c39aee58b8",
+      "git_blob": "65027e700f2a69d85d7cf5ac9f65a020c04170aa",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/blocking5136/source/.github/workflows/bazel.yml",
+      "bytes": 22879,
+      "sha256": "2ca6f89148c3da41b67c0ae12944a00e754943b355b8504b90d48a720d74f97b",
+      "git_blob": "75111a970c23de7146f79fe83b63547377b2d421",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/blocking5165/GNU_MUSL_FAILURE_INVENTORY.json",
+      "bytes": 11624,
+      "sha256": "083148168a700ca7e5400c43deaf1280599e88ca166b30b09762a87683466e9e",
+      "git_blob": "58495277650468d6d2d6d29f1a9ead7ccd3859cd",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/blocking5165/NATIVE_WINDOWS_CLIPPY_VALIDATION.json",
+      "bytes": 5585,
+      "sha256": "541012ae30d889bcee34df47bf91faffb688412abc713ca8c7516ce2707640e5",
+      "git_blob": "d51f9dd4fdc324e00e0d160be9003f077245bc7e",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/blocking5165/audit_linux_failures.py",
+      "bytes": 7117,
+      "sha256": "83fd45a628a042a20033c16af1e40deca459b0c7ce3852293689b08c6b3f104c",
+      "git_blob": "b8dfd360904396e1eb5e2b96715407c04fb4260f",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/blocking5165/audit_windows_clippy.py",
+      "bytes": 7348,
+      "sha256": "d2f96974a8c56d51d8bd7d031f33b10355981422094e3451daa7f29a628ff94a",
+      "git_blob": "85daee4a82932f83af9f1d657dc8024f62aeeb3b",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/blocking5165/gnu-128191497954.log",
+      "bytes": 1397844,
+      "sha256": "839622301f51baf9770185969ec9a560efd11fc534331c67bde69c535ce3cd96",
+      "git_blob": "063df8d5390347fd25973a6719c1cbfac110aca1",
+      "original_mode": "0600"
+    },
+    {
+      "path": "round3_ci/blocking5165/gnu-128191497954.raw.json",
+      "bytes": 1425183,
+      "sha256": "5211d86689ebb179cfec77205e9ecd66def6cab27433f886af4881ee907afcfe",
+      "git_blob": "dd22a59c97a835899b22f4c6bbae34d50e534cad",
+      "original_mode": "0600"
+    },
+    {
+      "path": "round3_ci/blocking5165/initial-runs-api.json",
+      "bytes": 1512,
+      "sha256": "7d601a17dac6ff221a4ee5371f8c7de0bfeace4276f3a1be636b4f11dc375b31",
+      "git_blob": "04b06a8cda960de17cff7f9792899a169f68d8c2",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/blocking5165/jobs-complete-observation3-api.json",
+      "bytes": 206403,
+      "sha256": "59b6a054abd61cd7c67925ac762f85f3969ce531ece566bff0ab4a328991d0f7",
+      "git_blob": "423963ee41d4df94f5084d59bedc72b88f102469",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/blocking5165/jobs-complete-observation4-api.json",
+      "bytes": 210073,
+      "sha256": "24ac2d1cb60e27a27043d6597b0b29b6b983dcbd5cba9b0ae2086973bb4431c1",
+      "git_blob": "baebf92a2b9cdea46eacdebe43eb4ea01df1cf84",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/blocking5165/jobs-observation1-api.json",
+      "bytes": 4915,
+      "sha256": "26935545cdbe6d34766dace48b05d179cdfe1dfe9bf527b087e1265acff5474d",
+      "git_blob": "357d443ac55b7dfed1757eef73f100776ed7408e",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/blocking5165/jobs-observation2-api.json",
+      "bytes": 59087,
+      "sha256": "d583c32dcfbe5b24e1b06e61bce2ef5bb3d4d64bfd1d5d112edfdae4f587c293",
+      "git_blob": "45833503e449c70c426b5c5118ae1a6f90d26d11",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/blocking5165/windows-clippy-128191497898.log",
+      "bytes": 609523,
+      "sha256": "fcc821092b62ade1d6b0cee6a5e7d68d1cb96dab8531a016200a5fe2f468b914",
+      "git_blob": "b28edad6fa2ea20492c47dbc71a0484bfb9c2b15",
+      "original_mode": "0600"
+    },
+    {
+      "path": "round3_ci/blocking5165/windows-clippy-128191497898.raw.json",
+      "bytes": 633995,
+      "sha256": "cc5b7efcad8ef1cf81a6cb3056a8e1b037b262d5417dd974f061b4d96c87c6db",
+      "git_blob": "fd5e4f20a51b8298461fdaf7ee6a0161c7dd0ec3",
+      "original_mode": "0600"
+    },
+    {
+      "path": "round3_ci/blocking5165/windows-clippy-actual-merge-api.json",
+      "bytes": 6713,
+      "sha256": "39d2eacb1c1a639210e65fdf031f1cade082b3bdd6141781ed61b7b353884af8",
+      "git_blob": "f8f0c9e2d7bc661182504dfa18b9cd56746e1273",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/blocking5165/windows-clippy-head-api.json",
+      "bytes": 3791,
+      "sha256": "5bb987d927ff765e027b91df5f296ba5fb3c882214db2251ef515ee6176bad4c",
+      "git_blob": "ab6fe70299625f3f8ed72ae1219e3c657661ed47",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/blocking5165/windows-clippy-query-wrapper-api.json",
+      "bytes": 4237,
+      "sha256": "80c868bc17b51ca2846b2e1e5e4dd0496aec528c1de20c7fec3ead5ffc5e0766",
+      "git_blob": "748d0901e22b12ba51f5a67724faa7d5b3e231d7",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/blocking5165/windows-clippy-run-api.json",
+      "bytes": 36834,
+      "sha256": "e7d1405bfde1e0415e6130257d96769cc869ca8e00e1884c1fd2acd392742f0f",
+      "git_blob": "b2c962f3345c0660ec4dd9f825ec8c0b90435df6",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/blocking5165/windows-clippy-selector-api.json",
+      "bytes": 10375,
+      "sha256": "cbdc495555cc4a74da70cccccf445ade33fef29045eee07c700b82a7b1b8fb74",
+      "git_blob": "20851fe2977bc54bd728f3a9157022a040bfc25b",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/blocking5165/windows-clippy-workflow-api.json",
+      "bytes": 48085,
+      "sha256": "1177ab375e2ac3832ac546c86a7cb21a6c73faa569197552aaed9323e951fcbd",
+      "git_blob": "17a135ee93f49b90f09eed6705860a5c9b92ba0c",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/build_ci5165_terminal_checkpoint.py",
+      "bytes": 18527,
+      "sha256": "91a513b25d6f01164498f57d6d6a08719a4c7ec88e0465b6e9a33056b13ab5d1",
+      "git_blob": "4985554458832f6fe0027715c47658f7f49e111a",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/candidate/.github/scripts/run-bazel-query-ci.sh",
+      "bytes": 1556,
+      "sha256": "8f44948ef2f970adbd5d26c6af7ac70bbecb043d44c07a28e013dfaf156f327d",
+      "git_blob": "e1d9838bac46014c4820a992af0c80a6e0802157",
+      "original_mode": "0755"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/candidate/scripts/list-bazel-clippy-targets.sh",
+      "bytes": 4504,
+      "sha256": "bda628041cc8b05929cd7cf58b4156210cc39826de9bdf19aa83b6e1cad8db5e",
+      "git_blob": "3828891ac5e77b6168fb116a062acf0661b1ab9a",
+      "original_mode": "0755"
+    },
+    {
+      "path": "round3_ci/clippy_selected_universe34/manifest.json",
+      "bytes": 6258,
+      "sha256": "59193b7933f9abb5fe8539b2338005a2034ee07f01c708fa6117a756715b0809",
+      "git_blob": "3f68d5b6c7c7aefb780efe0d1036914edb46ac14",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_local_qualification/clippy5165_root/CODESPELL.json",
+      "bytes": 363,
+      "sha256": "e8e249bdf1ab9b6e418567621f2a8c3458deb522cf81dc6b31fa8bbb634a46a6",
+      "git_blob": "c2340a2600188c9fa356702b357f2ae0d10503a7",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_local_qualification/clippy5165_root/ROOT_REVIEW.json",
+      "bytes": 3257,
+      "sha256": "36d486f6a09519244bb4056bab247c4382fe1fa00b21b441261dbf5695521634",
+      "git_blob": "1ee960d3ad17924cf7d92a4e7997bf07a0697add",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_local_qualification/clippy5165_root/merge_API.json",
+      "bytes": 6627,
+      "sha256": "8b89902606202d1df1e576af8454eee1885a21aa1aaed2e059f86066ddf46f76",
+      "git_blob": "60000dd234e921e262fb5550609b9a5bcac6d8cd",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_local_qualification/clippy5165_root/source_API.json",
+      "bytes": 1208,
+      "sha256": "ea699b51afa574dd12de70984ca02202f8da0a1a4ad437a48ad42e2219fc35cd",
+      "git_blob": "a42b8ece5a34a5af32ba4038db1b566fc2f80659",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_local_qualification/clippy5165_root/steps_API.json",
+      "bytes": 1239,
+      "sha256": "7acaa91cf273801ec6431bf55f36f55e7f269feaf96383f52e94a5d682cca026",
+      "git_blob": "43338edc6a51dd1af1018eb8be2dd497579f2632",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_native/evidence_supplement/linux_5165/HEAD_COMMIT_API.json",
+      "bytes": 1385,
+      "sha256": "7866b1562c97e5db39b55e48112e49e57db5fe8976506d670c813d905760600f",
+      "git_blob": "b65b8e58807a9c867e7ae2b028a428208ff49ce3",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_native/evidence_supplement/linux_5165/MERGE_COMMIT_API.json",
+      "bytes": 2807,
+      "sha256": "f4f19a0fe30e42e6b783f5c3dfa4a77e0e559f0567cc980ffaea62b61cf94eec",
+      "git_blob": "9d176ae5e132b9233118c964b56f68647ff614b8",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_native/evidence_supplement/linux_5165/RUN_API.json",
+      "bytes": 17118,
+      "sha256": "0f58384a5bb5ee60e143a10bb7cd1122c1d8acca794de413ba4c7aa0e86a0b83",
+      "git_blob": "3941679e1ca7afa36759241fc6e6cdf90a739135",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_native/evidence_supplement/linux_5165/SOURCE_BOUND_FAILURES.json",
+      "bytes": 1686,
+      "sha256": "0068638bc531f3a026099b2c9a08368b3fbb8b8a135c9e8d982616fe0fe4721a",
+      "git_blob": "44c5cddd2812c056eb6b619962af97ea22bdee86",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_native/evidence_supplement/linux_5165/job_128191497933.log",
+      "bytes": 1393991,
+      "sha256": "53b23dd56fc22adccf83d5e759f9504adacdd223433d078438494358accf1f3b",
+      "git_blob": "ec7b969f83aa3562623a4053b025fe52ebf5678d",
+      "original_mode": "0600"
+    }
+  ]
+}

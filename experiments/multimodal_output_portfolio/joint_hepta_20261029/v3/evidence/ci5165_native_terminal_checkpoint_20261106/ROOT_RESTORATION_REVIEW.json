@@ -1,0 +1,62 @@
+{
+  "observed_at_utc": "2026-11-06T22:56:55.353206+00:00",
+  "packet": "ci5165_terminal",
+  "publication": {
+    "bytes": 9218,
+    "sha256": "69da696f73a112a7783804f44f3c1a22eb8e8c2eefb776c9aea3cc69e70b83e4"
+  },
+  "index_sha256": "cd6baea98d1494f07be5cc322bfaa493df175460f779b70074cc8306420daec7",
+  "reader": {
+    "bytes": 6656,
+    "sha256": "1f9476bd81b86d0450a76f7495ffbb6728040464dd2d85422705447b2ddb5b08"
+  },
+  "reader_parent": {
+    "bytes": 6626,
+    "sha256": "00bf4373739122934a281273de36cc9e4cce84199aa985926419225cad94303b"
+  },
+  "reader_only_fixed_seal_changes": 1,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-O",
+    "-B",
+    "/workspace/scratch/3f6a885bb83c/round3_ci/ci5165_native_terminal_checkpoint_20261106/restore.py",
+    "/workspace/scratch/3f6a885bb83c/round3_root_restore_ci5165_terminal_2218"
+  ],
+  "exit_code": 0,
+  "files": 36,
+  "raw_bytes": 6245593,
+  "exact_member_roster_bytes_originals_and_modes": true,
+  "bundle_before_and_after_unchanged": true,
+  "prior_Core_source_path_intersections": {},
+  "destination": "/workspace/scratch/3f6a885bb83c/round3_root_restore_ci5165_terminal_2218",
+  "bundle_identities": {
+    "round3_ci/ci5165_native_terminal_checkpoint_20261106/INDEX.json": {
+      "bytes": 16348,
+      "sha256": "cd6baea98d1494f07be5cc322bfaa493df175460f779b70074cc8306420daec7"
+    },
+    "round3_ci/ci5165_native_terminal_checkpoint_20261106/README.md": {
+      "bytes": 3096,
+      "sha256": "45308c16e40728ead85a383e8f6bdde70c9a0462bc99284349783b3d3c0759b7"
+    },
+    "round3_ci/ci5165_native_terminal_checkpoint_20261106/native-evidence.tar.xz.part000.gz": {
+      "bytes": 349980,
+      "sha256": "f3c39ba5e172f87004dff1adbf58b660f93423021d628b54152d8a989f4ec2d3"
+    },
+    "round3_ci/ci5165_native_terminal_checkpoint_20261106/restore.py": {
+      "bytes": 6656,
+      "sha256": "1f9476bd81b86d0450a76f7495ffbb6728040464dd2d85422705447b2ddb5b08"
+    }
+  },
+  "native_tests_or_scanner_or_models_executed": false,
+  "archived_sources_executed": false,
+  "limits": [
+    "Native Clippy success applies to the recorded #5165 source/tree and original MSVC lint gate, including its clean-worktree check.",
+    "The native console captures selector stdout. The exact complete S list and temporary query-file bytes were not separately retained; prior exact-source review and local real-Bazel mechanism evidence remain separate.",
+    "Cache hits, internal and local actions are reported explicitly. Actions are not independent Rust test cases, and warnings remain in the original console.",
+    "GNU and musl each print the same five distinct failed Rust cases. Cached shards, repeated console output, retries and the two platform logs are not counted as independent reproductions.",
+    "The Linux counts of 416 passing, three failing and 168 skipped refer to Bazel targets; they do not establish the outcome of every Rust case or requalify unprinted successful cases.",
+    "Two compact and three restricted executor-skill failures remain unresolved at this source. Classification does not qualify later repairs, and a missing-system-bubblewrap warning alone is not treated as their root cause.",
+    "This packet establishes neither Windows runtime security qualification, ARM business success nor repository-wide green status. No native command or job was rerun by these file-based audits.",
+    "No previous failure log, frozen packet, scientific record, source guard, scanner, required target, timeout, policy or retry was rewritten or relaxed."
+  ]
+}
