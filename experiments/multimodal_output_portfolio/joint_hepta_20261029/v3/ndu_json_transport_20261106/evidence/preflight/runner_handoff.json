@@ -1,0 +1,55 @@
+{
+  "actual_tool_calls": 0,
+  "codespell_exit_code": 0,
+  "codespell_files": [
+    "run.py",
+    "check_wiring.py",
+    "protocol.json",
+    "RUNNING.md",
+    "required-inputs.json"
+  ],
+  "freeze_created": false,
+  "freeze_input_files": 34,
+  "git_diff_check": "Unavailable: materialized source directory is not a Git checkout.",
+  "model_forwards": 0,
+  "new_files": {
+    "RUNNING.md": {
+      "lines": 114,
+      "sha256": "4d942b89d64b04b5d68f20624b80147ef27678fbb6f31586c7cd38661ea8366b"
+    },
+    "check_wiring.py": {
+      "lines": 98,
+      "sha256": "a46f0efa7d90ec95e4eb0d4f7950a4e576965fac1903f9e8212b6208e2f27f46"
+    },
+    "protocol.json": {
+      "lines": 68,
+      "sha256": "a570b542353de610eb57babfc4bcba3669114d07f5f1eb9dc3dbaa2778019ef3"
+    },
+    "required-inputs.json": {
+      "lines": 41,
+      "sha256": "cd0a6d47cd68a4ac414060d6e6ce3f324da9854db68df68fec3e82a3e77f3f5c"
+    },
+    "run.py": {
+      "lines": 242,
+      "sha256": "b62b9a7795d56dbac00dc285583a02b1558bab90c49b7d20b8a806b8ef2cfe2d"
+    }
+  },
+  "old_response_replays": 0,
+  "recorded_at_utc": "2026-11-06T12:32:52.322334+00:00",
+  "remote_writes": 0,
+  "schema": "ndu.json-transport-runner-handoff.v1",
+  "scope": "Ready for root review; no candidate run has started.",
+  "synthetic_wiring_scenarios": 10,
+  "unchanged_copied_adapter_files": {
+    "README.md": "323b6036939a03b0a0415057e0a481ea3cff24e4203b2eec6d964dbd460bc94f",
+    "adapter.py": "09ab46f1e3bc84e5c4018268d10d1545ca9f0e3d633480b0e5f536f3c10f06ac",
+    "frozen-source-boundary.json": "1f68f7a59f912b37c9ea2a444c09958092150a132351d1ef62f3712dd7e1a2d6",
+    "manifest.json": "f96582ce84e4d978010c201e7698b74f9d5a44b777cfb92006187b44d02e0da4",
+    "prospective-protocol.json": "45201888295a153c5e16b0ad3f5c42fce57bd8ebf4d1944f671084e2815e9194",
+    "test_adapter.py": "dc011389121ced3e81e46bef02025ba9ebaa7b6a50307c0383bea06bc90d3b9d",
+    "validation.json": "d37f24a7eb2e89e6ea5378ba1e3be02183701e5f439d4cd4a4825d443d60a874"
+  },
+  "whitespace_check": "All five candidate files have final newlines and no trailing spaces or tabs.",
+  "wiring_receipt_sha256": "5558fc74a9a8860d843c9ec2040486c8635d7d955d021161401373fc43c0892d",
+  "wiring_status": "PASS"
+}
