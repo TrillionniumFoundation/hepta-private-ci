@@ -44,6 +44,32 @@ for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
   page.on('requestfailed',request=>{if(isFont(request)){pendingFonts.delete(request);fonts.push({event:'failed',url:request.url(),error:request.failure()?.errorText});}});
   await page.addInitScript(()=>{
    window.__heptaTestPhase='application';window.__cspViolations=[];window.__snapshotStyles=[];window.__wasmStages=[];
+   window.__heptaImeEvents=[];window.__heptaImeTextareaSeq=0;
+   const attachImeTextarea=textarea=>{
+    if(textarea.dataset.heptaImeTrace==='true')return;
+    textarea.dataset.heptaImeTrace='true';
+    const textareaId=++window.__heptaImeTextareaSeq;
+    for(const type of ['focus','blur','beforeinput','input','compositionstart','compositionupdate','compositionend','keydown','keyup','paste','cut']){
+     textarea.addEventListener(type,event=>{
+      window.__heptaImeEvents.push({
+       textareaId,type,atMs:performance.now(),inputType:typeof event.inputType==='string'?event.inputType:null,
+       isComposing:typeof event.isComposing==='boolean'?event.isComposing:null,
+       dataLength:typeof event.data==='string'?Array.from(event.data).length:null,
+       valueLength:textarea.value.length,selectionStart:textarea.selectionStart,selectionEnd:textarea.selectionEnd,
+       readOnly:textarea.readOnly,focused:document.activeElement===textarea,trusted:event.isTrusted
+      });
+     });
+    }
+   };
+   const observeImeTextareas=new MutationObserver(records=>{
+    for(const record of records)for(const node of record.addedNodes){
+     if(!(node instanceof Element))continue;
+     if(node.matches('textarea.cx_webgl_textinput'))attachImeTextarea(node);
+     for(const textarea of node.querySelectorAll('textarea.cx_webgl_textinput'))attachImeTextarea(textarea);
+    }
+   });
+   observeImeTextareas.observe(document,{childList:true,subtree:true});
+   for(const textarea of document.querySelectorAll('textarea.cx_webgl_textinput'))attachImeTextarea(textarea);
    // Observe the real loader promises without choosing a different runtime path.
    for(const name of ['compileStreaming','compile','instantiate']){
     if(typeof WebAssembly[name]!=='function') continue;
@@ -212,7 +238,7 @@ for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
    try {
    for(const capture of pixelCaptures)capture.observedThemePoint=themeControlPoints.get(capture.viewport.width)??null;
    await writeFile(testInfo.outputPath('pixel-plan.json'),JSON.stringify({sourceSha,browser:browserName,initialWidth:viewport.width,fixtures,captures:pixelCaptures,captureTimings,controlTimings,...(testInfo.project.metadata.diagnosticOnly?{diagnosticOnly:true,project:testInfo.project.name}:{})},null,2));
-   const observed=await page.evaluate(()=>({violations:window.__cspViolations??[],snapshotStyles:window.__snapshotStyles??[],bootPhase:document.documentElement.dataset.heptaBootPhase??'unobserved',wasmStages:window.__wasmStages??[],readyState:document.readyState,canvas:[...document.querySelectorAll('canvas')].map(canvas=>({width:canvas.width,height:canvas.height})),resources:performance.getEntriesByType('resource').map(item=>({name:item.name,duration:item.duration,bytes:item.transferSize}))})).catch(()=>({}));
+   const observed=await page.evaluate(()=>({violations:window.__cspViolations??[],snapshotStyles:window.__snapshotStyles??[],bootPhase:document.documentElement.dataset.heptaBootPhase??'unobserved',wasmStages:window.__wasmStages??[],readyState:document.readyState,canvas:[...document.querySelectorAll('canvas')].map(canvas=>({width:canvas.width,height:canvas.height})),resources:performance.getEntriesByType('resource').map(item=>({name:item.name,duration:item.duration,bytes:item.transferSize})),imeEvents:window.__heptaImeEvents??[]})).catch(()=>({}));
    const diagnostics=testInfo.outputPath('host-diagnostics.json');
    await writeFile(diagnostics,JSON.stringify({errors,logs,rustFontStates,scrollObservations,jumpObservations,geometryObservations,uploads,fonts,pendingFonts:[...pendingFonts].map(request=>request.url()),...observed},null,2));
    if(testInfo.status!==testInfo.expectedStatus) console.log(JSON.stringify({scope:'fixture scroll diagnostics; not acceptance',browserName,viewport,scrollObservations,jumpObservations}));

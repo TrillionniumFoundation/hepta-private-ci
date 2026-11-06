@@ -38,6 +38,32 @@ test('Compact sidebar creates once and preserves both conversations',async({page
  page.on('requestfailed',request=>{if(font(request)){pendingFonts.delete(request);fonts.push({event:'failed',url:request.url(),error:request.failure()?.errorText});}});
  await page.addInitScript(()=>{
   window.__sidebarPhase='application';window.__sidebarCsp=[];window.__sidebarStyles=[];
+   window.__heptaImeEvents=[];window.__heptaImeTextareaSeq=0;
+   const attachImeTextarea=textarea=>{
+    if(textarea.dataset.heptaImeTrace==='true')return;
+    textarea.dataset.heptaImeTrace='true';
+    const textareaId=++window.__heptaImeTextareaSeq;
+    for(const type of ['focus','blur','beforeinput','input','compositionstart','compositionupdate','compositionend','keydown','keyup','paste','cut']){
+     textarea.addEventListener(type,event=>{
+      window.__heptaImeEvents.push({
+       textareaId,type,atMs:performance.now(),inputType:typeof event.inputType==='string'?event.inputType:null,
+       isComposing:typeof event.isComposing==='boolean'?event.isComposing:null,
+       dataLength:typeof event.data==='string'?Array.from(event.data).length:null,
+       valueLength:textarea.value.length,selectionStart:textarea.selectionStart,selectionEnd:textarea.selectionEnd,
+       readOnly:textarea.readOnly,focused:document.activeElement===textarea,trusted:event.isTrusted
+      });
+     });
+    }
+   };
+   const observeImeTextareas=new MutationObserver(records=>{
+    for(const record of records)for(const node of record.addedNodes){
+     if(!(node instanceof Element))continue;
+     if(node.matches('textarea.cx_webgl_textinput'))attachImeTextarea(node);
+     for(const textarea of node.querySelectorAll('textarea.cx_webgl_textinput'))attachImeTextarea(textarea);
+    }
+   });
+   observeImeTextareas.observe(document,{childList:true,subtree:true});
+   for(const textarea of document.querySelectorAll('textarea.cx_webgl_textinput'))attachImeTextarea(textarea);
   document.addEventListener('securitypolicyviolation',event=>window.__sidebarCsp.push({phase:window.__sidebarPhase,directive:event.violatedDirective,blockedURI:event.blockedURI}));
   new MutationObserver(records=>{for(const record of records)for(const node of record.addedNodes)if(node.nodeName==='STYLE')window.__sidebarStyles.push({phase:window.__sidebarPhase,text:node.textContent});}).observe(document,{childList:true,subtree:true});
  });
@@ -193,7 +219,7 @@ test('Compact sidebar creates once and preserves both conversations',async({page
   expect(current().draftIds).toEqual(expectedIds);expect(current().count).toBe(2);await health();
   scenarioComplete=true;
  }finally{
-  const observed=await page.evaluate(()=>({violations:window.__sidebarCsp??[],snapshotStyles:window.__sidebarStyles??[]})).catch(()=>({}));
+  const observed=await page.evaluate(()=>({violations:window.__sidebarCsp??[],snapshotStyles:window.__sidebarStyles??[],imeEvents:window.__heptaImeEvents??[]})).catch(()=>({}));
   const path=testInfo.outputPath('sidebar-evidence.json');
   await writeFile(path,JSON.stringify({sourceSha,browser:browserName,fixtures:true,scenarioComplete,qualification:'Requires scenarioComplete plus the final Playwright reporter outcome; collection-time testInfo.status is not authoritative',original,newRoom,anchor,captures,captureTimings,inputs,states,geometry,errors,logs,fonts,pendingFonts:[...pendingFonts].map(request=>request.url()),uploads,...observed},null,2));
   await testInfo.attach('sidebar-evidence',{path,contentType:'application/json'});
