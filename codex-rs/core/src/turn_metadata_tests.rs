@@ -1211,11 +1211,10 @@ fn websocket_metadata_preserves_complete_configured_extra_provenance() {
         "sdk"
     );
     assert!(
-        state
+        !state
             .mcp_metadata_template()
             .extra
-            .get("codex_security_surface")
-            .is_none()
+            .contains_key("codex_security_surface")
     );
 
     let mut changed_configured = configured;
