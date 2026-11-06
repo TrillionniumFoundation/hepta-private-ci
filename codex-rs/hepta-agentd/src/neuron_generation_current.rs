@@ -23,6 +23,10 @@ use codex_hepta_types::StableId;
 use crate::AgentdError;
 use crate::neuron_generation_update_selection::AgentdSelectedGenerationV1;
 
+#[path = "neuron_generation_current_initial.rs"]
+mod initial;
+#[path = "neuron_generation_current_initial_types.rs"]
+mod initial_types;
 #[path = "neuron_generation_current_store.rs"]
 mod store;
 #[path = "neuron_generation_current_types.rs"]
@@ -36,6 +40,10 @@ pub use types::PublishedNeuronGenerationUpdateV1;
 use types::UpdateIntent;
 use types::invalid;
 use types::scope_digest;
+use initial_types::InitialState;
+pub use initial_types::NeuronGenerationInitialReadbackV1;
+pub use initial_types::PreparedNeuronGenerationInitialV1;
+pub use initial_types::PublishedNeuronGenerationInitialV1;
 
 /// Concrete root custody. Construction requires the existing validated root
 /// directory; there is no generic production store, permissive default, root
@@ -65,6 +73,7 @@ impl NeuronGenerationCurrentOwnerV1 {
                 current: initial,
                 prepared: None,
                 published: None,
+                initial: None,
             },
         )?;
         Ok(Self { store })
@@ -227,6 +236,7 @@ impl NeuronGenerationCurrentOwnerV1 {
                     schema_version: 1,
                     current: prepared.intent.target.clone(),
                     prepared: None,
+                    initial: None,
                     published: Some(Published {
                         intent: prepared.intent.clone(),
                         witness: witness.clone(),
@@ -357,7 +367,13 @@ impl CellGenerationCurrentV1 for NeuronGenerationCurrentOwnerV1 {
             .store
             .load()
             .map_err(|_| CellGenerationErrorV2::Unavailable)?;
-        if &head.current == binding {
+        if matches!(head.initial.as_ref(), Some(InitialState::Prepared(_))) {
+            if &head.current == binding {
+                Ok(CellGenerationOpenModeV1::Preparing)
+            } else {
+                Err(CellGenerationErrorV2::InvalidBinding)
+            }
+        } else if &head.current == binding {
             Ok(CellGenerationOpenModeV1::Active)
         } else if head
             .prepared

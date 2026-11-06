@@ -117,7 +117,7 @@ id = "final_use_claim"
 symbol = "claim_final_use"
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn claim_final_use(", "authority.claim(signed, expected)"]
-product_callers = ["codex-rs/hepta-bao-adapter/src/https_consumer.rs", "codex-rs/hepta-agentd/src/browser_servo.rs", "codex-rs/hepta-agentd/src/neuron_generation_current.rs"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/https_consumer.rs", "codex-rs/hepta-agentd/src/browser_servo.rs", "codex-rs/hepta-agentd/src/neuron_generation_current.rs", "codex-rs/hepta-agentd/src/neuron_generation_current_initial.rs"]
 caller_markers = ["claim_final_use"]
 
 [[boundary]]
@@ -168,7 +168,7 @@ id = "final_use_dispatch_witness"
 symbol = "dispatch_final_use_with_witness"
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn dispatch_final_use_with_witness", "VerifiedUseTokenWitnessV1", "DispatchEntry"]
-product_callers = ["codex-rs/hepta-agentd/src/neuron_generation_current.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/neuron_generation_current.rs", "codex-rs/hepta-agentd/src/neuron_generation_current_initial.rs"]
 caller_markers = []
 
 [[boundary]]

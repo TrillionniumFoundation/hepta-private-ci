@@ -60,6 +60,7 @@ impl CurrentStore {
             return Err(invalid("generation current scope or schema differs"));
         }
         head.current.digest().map_err(invalid)?;
+        head.validate_initial()?;
         Ok(head)
     }
 

@@ -10,6 +10,7 @@ use serde::Deserialize;
 use serde::Serialize;
 
 use crate::AgentdError;
+use super::initial_types::InitialState;
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -60,6 +61,8 @@ pub(super) struct CurrentHead {
     pub(super) current: CellGenerationOwnerBindingV1,
     pub(super) prepared: Option<UpdateIntent>,
     pub(super) published: Option<Published>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(super) initial: Option<InitialState>,
 }
 
 /// Readback of the original durable preparation. It holds no nonce token and
