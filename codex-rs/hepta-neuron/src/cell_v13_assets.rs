@@ -101,7 +101,7 @@ fn readonly(file: &File) -> Result<(), CellGenerationErrorV2> {
     let value = flags
         .next()
         .and_then(|value| u64::from_str_radix(value.trim(), 8).ok());
-    if bytes.len() > 8192 || flags.next().is_some() || !value.is_some_and(|flags| flags & 3 == 0) {
+    if bytes.len() > 8192 || flags.next().is_some() || value.is_none_or(|flags| flags & 3 != 0) {
         return Err(CellGenerationErrorV2::InvalidBinding);
     }
     if !file

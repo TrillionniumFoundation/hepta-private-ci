@@ -462,9 +462,9 @@ impl CellGenerationWorkerV2 for V13GenerationProcessWorkerV1 {
         if let Some(status) = terminal_status(&observed.status, response.as_ref(), Phase::Verify) {
             return step.finish(status, Vec::new());
         }
-        if !response
+        if response
             .as_ref()
-            .is_some_and(|value| cell_v13_protocol::verified(value, &self.config.closure).is_ok())
+            .is_none_or(|value| cell_v13_protocol::verified(value, &self.config.closure).is_err())
         {
             return step.finish(CellGenerationDispositionV2::Rejected, Vec::new());
         }

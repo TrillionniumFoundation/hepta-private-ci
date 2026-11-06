@@ -17,8 +17,6 @@ use std::thread;
 use std::time::Duration;
 use std::time::Instant;
 
-use codex_hepta_types::Digest32;
-
 use crate::CellGenerationErrorV2;
 use crate::cell_joint_process::elapsed_micros;
 use crate::cell_joint_process::executable_digest;
