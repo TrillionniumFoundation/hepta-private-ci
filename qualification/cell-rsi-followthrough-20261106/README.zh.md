@@ -59,6 +59,6 @@
 
 ## 原始资料与完整交付包
 
-`P3-AUDIT-SUMMARY.json` 和 `P3-FAIRNESS.zh.md` 是新附录，不覆盖旧报告。完整 `hepta-cell-rsi-20261106.zip` 包含恢复源码 / patch / 日志、P0 只读规格与来源快照、P3 审计程序 / 16 项测试 / 全量报告 / 原档案 / 六个固定源文件，以及 HCSN 两个原始 ZIP 与独立审计。
+`P3-AUDIT-SUMMARY.json` 和 `P3-FAIRNESS.zh.md` 是新附录，不覆盖旧报告。完整 `hepta-cell-rsi-20261106.zip` 包含已提交恢复源码 / patch / 日志及 P0 规格的固定 GitHub 链接和哈希、P0 来源审阅记录、P3 审计程序 / 16 项测试 / 全量报告 / 原档案，以及 HCSN 两个原始 ZIP 与独立审计。仓库已有的源码与文档由固定 commit 提供；离线复核所需的冻结来源以原始证据附件明确标识，不作为第二份工作仓库。
 
 包内另外保留 HCSN optimizer-entry 待审 patch：仅在第一次真实梯度返回、第一次参数更新之前写入可核阶段记录。其纯 stdlib 10 项测试通过，但尚未合入、Rust 编译或跑 native / 模型测试；它不构成 `optimizer_entry_proven=true` 的回执。完整交付包的最终文件清单与哈希用于复核，不能代替产品资格。
