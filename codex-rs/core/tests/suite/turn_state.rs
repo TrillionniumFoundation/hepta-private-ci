@@ -1,6 +1,9 @@
 #![allow(clippy::unwrap_used)]
 
 use anyhow::Result;
+use codex_config::Constrained;
+use codex_protocol::models::PermissionProfile;
+use codex_protocol::protocol::AskForApproval;
 use core_test_support::responses::WebSocketConnectionConfig;
 use core_test_support::responses::ev_assistant_message;
 use core_test_support::responses::ev_completed;
@@ -216,6 +219,7 @@ async fn websocket_turn_state_is_stable_within_turn() -> Result<()> {
 
     let server = start_websocket_server_with_headers(vec![WebSocketConnectionConfig {
         requests: vec![
+            vec![ev_response_created("warm-1"), ev_completed("warm-1")],
             vec![
                 json!({
                     "type": "response.metadata",
@@ -245,24 +249,101 @@ async fn websocket_turn_state_is_stable_within_turn() -> Result<()> {
         close_after_requests: false,
     }])
     .await;
-    let mut builder = test_codex();
+    // Keep prewarm and the original submit_turn permission identity identical.
+    let mut builder = test_codex().with_config(|config| {
+        config.permissions.approval_policy = Constrained::allow_any(AskForApproval::Never);
+        config
+            .permissions
+            .set_permission_profile(PermissionProfile::Disabled)
+            .expect("set the same permission profile for prewarm and business requests");
+    });
     let test = builder.build_with_websocket_server(&server).await?;
 
-    // Phase 1: the initial request starts empty and receives the first metadata value.
-    // Phase 2: the first tool follow-up replays it and ignores a later value.
-    // Phase 3: the second follow-up sends the original value on the same connection.
+    // Phase 1: prewarm consumes only its separate empty response.
+    // Phase 2: the first business request receives state and the first tool call.
+    // Phase 3: its follow-up replays that state and executes the second tool.
+    // Phase 4: the second tool follow-up still sends the first state, not ts-2.
     test.submit_turn("run two echo commands").await?;
 
     assert_eq!(server.handshakes().len(), 1);
     let requests = server.single_connection();
-    assert_eq!(requests.len(), 3);
+    assert_eq!(requests.len(), 4);
+    let bodies = requests
+        .iter()
+        .map(core_test_support::responses::WebSocketRequest::body_json)
+        .collect::<Vec<_>>();
+    assert_eq!(bodies[0]["generate"], json!(false));
+    assert!(bodies[1..].iter().all(|body| body["generate"].is_null()));
+    assert_eq!(bodies[0]["client_metadata"][TURN_STATE_HEADER], json!(null));
     assert_eq!(
-        requests
+        bodies[1..]
             .iter()
-            .map(|request| request.body_json()["client_metadata"][TURN_STATE_HEADER].clone())
+            .map(|body| body["client_metadata"][TURN_STATE_HEADER].clone())
             .collect::<Vec<_>>(),
         vec![json!(null), json!("ts-1"), json!("ts-1")]
     );
+    let turn_metadata = bodies
+        .iter()
+        .map(|body| {
+            serde_json::from_str::<Value>(
+                body["client_metadata"]["x-codex-turn-metadata"]
+                    .as_str()
+                    .expect("websocket request should include turn metadata"),
+            )
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    assert_eq!(
+        turn_metadata
+            .iter()
+            .map(|metadata| metadata["request_kind"].clone())
+            .collect::<Vec<_>>(),
+        vec![
+            json!("prewarm"),
+            json!("turn"),
+            json!("turn"),
+            json!("turn"),
+        ]
+    );
+    assert_eq!(
+        turn_metadata
+            .iter()
+            .map(|metadata| metadata["sandbox_mode"].clone())
+            .collect::<Vec<_>>(),
+        vec![json!("danger-full-access"); 4]
+    );
+    for (body, call_id, expected_output) in [
+        (&bodies[2], "ws-shell-1", "one\n"),
+        (&bodies[3], "ws-shell-2", "two\n"),
+    ] {
+        let outputs = body["input"]
+            .as_array()
+            .expect("tool follow-up should include input items")
+            .iter()
+            .filter(|item| item["type"] == "function_call_output" && item["call_id"] == call_id)
+            .collect::<Vec<_>>();
+        assert_eq!(outputs.len(), 1, "expected one output for {call_id}");
+        let payload = &outputs[0]["output"];
+        let output = payload
+            .as_str()
+            .or_else(|| payload.get("content").and_then(Value::as_str))
+            .expect("exec_command should return its text output")
+            .replace("\r\n", "\n");
+        let (header, stdout) = output
+            .split_once("\nOutput:\n")
+            .expect("exec_command should include its output section");
+        assert_eq!(
+            header
+                .lines()
+                .filter(|line| {
+                    line.starts_with("Process exited with code ")
+                        || line.starts_with("Process running with session ID ")
+                })
+                .collect::<Vec<_>>(),
+            vec!["Process exited with code 0"],
+            "{call_id} should have finished successfully"
+        );
+        assert_eq!(stdout, expected_output, "unexpected output for {call_id}");
+    }
 
     server.shutdown().await;
     Ok(())
