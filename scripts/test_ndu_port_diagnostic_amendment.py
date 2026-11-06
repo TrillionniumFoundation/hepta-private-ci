@@ -53,7 +53,9 @@ class DiagnosticAmendmentTests(unittest.TestCase):
     def test_missing_or_self_resealed_amendment_cannot_authorize_current_sources(self):
         raw = self.path.read_bytes()
         self.path.unlink()
-        with self.assertRaisesRegex(ValueError, "Integrated source or lock bytes"):
+        with self.assertRaisesRegex(
+            ValueError, r"Expected a regular file: .*SOURCE_AMENDMENT\.v7\.4\.json"
+        ):
             self.verify()
         for change in ("promotion_allowed", "after", "path", "source"):
             with self.subTest(change=change):
@@ -135,6 +137,7 @@ class DiagnosticAmendmentTests(unittest.TestCase):
             (common.DEPENDENCY_AMENDMENT, "dependency-amendment.json"),
             (common.BUILD_AMENDMENT, "build-amendment.json"),
             (common.DIAGNOSTIC_AMENDMENT, "diagnostic-amendment.json"),
+            (common.LOCK_AMENDMENT, "lock-amendment.json"),
         )
         for source, name in transports:
             shutil.copyfile(self.root / source, artifact / name)

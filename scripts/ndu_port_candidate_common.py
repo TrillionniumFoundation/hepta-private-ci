@@ -681,6 +681,16 @@ def verify_integrated_source(runner, recipe, record=None, artifact=None):
             **describe(runner.root, (DIAGNOSTIC_AMENDMENT,))[DIAGNOSTIC_AMENDMENT],
         }
         manifest = {**manifest, "files": files}
+    lock = load_lock_amendment(runner.root)
+    lock_identity = None
+    if lock is not None:
+        files = effective_lock_inputs(runner.root, files)
+        committed |= {LOCK_AMENDMENT, *lock["proofs"]}
+        lock_identity = {
+            "path": LOCK_AMENDMENT,
+            **describe(runner.root, (LOCK_AMENDMENT,))[LOCK_AMENDMENT],
+        }
+        manifest = {**manifest, "files": files}
     if describe(runner.root, expected) != files:
         raise ValueError("Integrated source or lock bytes differ from reviewed origin")
     if runner.text(
@@ -726,6 +736,8 @@ def verify_integrated_source(runner, recipe, record=None, artifact=None):
         binding["build_amendment"] = build_identity
     if diagnostic_identity is not None:
         binding["diagnostic_amendment"] = diagnostic_identity
+    if lock_identity is not None:
+        binding["lock_amendment"] = lock_identity
     if record is not None:
         if (
             candidate_source_mode(record) != "integrated"
@@ -748,6 +760,12 @@ def verify_integrated_source(runner, recipe, record=None, artifact=None):
             != (
                 {key: dependency_identity[key] for key in ("bytes", "sha256")}
                 if dependency_identity
+                else None
+            )
+            or record["artifacts"].get("lock-amendment.json")
+            != (
+                {key: lock_identity[key] for key in ("bytes", "sha256")}
+                if lock_identity
                 else None
             )
             or record["artifacts"].get("diagnostic-amendment.json")
@@ -778,6 +796,11 @@ def verify_integrated_source(runner, recipe, record=None, artifact=None):
                 dependency_identity is not None
                 and (artifact / "dependency-amendment.json").read_bytes()
                 != regular_path(runner.root, DEPENDENCY_AMENDMENT).read_bytes()
+            )
+            or (
+                lock_identity is not None
+                and (artifact / "lock-amendment.json").read_bytes()
+                != regular_path(runner.root, LOCK_AMENDMENT).read_bytes()
             )
             or (
                 diagnostic_identity is not None
@@ -953,12 +976,15 @@ def load_dependency_amendment(root, recipe, manifest=None):
         manifest = json.loads(regular_path(root, INTEGRATION).read_bytes())
     if set(amendment["changes"]) != DEPENDENCY_CHANGED:
         raise ValueError("Dependency amendment changed its exact existing-file set")
+    effective = effective_lock_inputs(
+        root, {name: change["after"] for name, change in amendment["changes"].items()}
+    )
     for name, change in amendment["changes"].items():
         if (
             change["before"] != manifest["files"][name]
             or change["before"] == change["after"]
             or change["mode"] != manifest["file_modes"][name]
-            or describe(root, (name,))[name] != change["after"]
+            or describe(root, (name,))[name] != effective[name]
         ):
             raise ValueError("Dependency amendment source or lock identity differs")
     added = added_dependency_files(amendment)
@@ -1140,7 +1166,7 @@ def load_diagnostic_amendment(root, files, modes):
         }
         or describe(root, amendment["parents"]) != amendment["parents"]
         or set(amendment["locks"]) != set(LOCKS)
-        or describe(root, LOCKS) != amendment["locks"]
+        or describe(root, LOCKS) != effective_lock_inputs(root, amendment["locks"])
         or set(amendment["changes"]) != DIAGNOSTIC_SOURCES
         or describe(root, amendment["proofs"]) != amendment["proofs"]
     ):
@@ -1156,3 +1182,73 @@ def load_diagnostic_amendment(root, files, modes):
         ):
             raise ValueError("Diagnostic source differs from its reviewed successor")
     return amendment
+
+
+LOCK_AMENDMENT = "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/LOCK_AMENDMENT.v7.5.json"
+LOCK_AMENDMENT_SHA256 = (
+    "1642fee9bf4497169d2a2645e01864e8c74435071887dcea7bc2c8315123ab83"
+)
+
+
+def load_lock_amendment(root):
+    """Accept only the independently qualified native pair and its exact history."""
+    path = regular_path(root, LOCK_AMENDMENT)
+    if not path.exists():
+        return None
+    raw = path.read_bytes()
+    if hashlib.sha256(raw).hexdigest() != LOCK_AMENDMENT_SHA256:
+        raise ValueError("Lock amendment differs from its fixed review seal")
+    amendment = json.loads(raw)
+    if (
+        amendment["schema"] != "hepta.port-native-lock-amendment.v1"
+        or amendment["operation"] != "bind-native-vodozemac-zeroize-locks"
+        or amendment["promotion_allowed"] is not False
+        or set(amendment["parents"])
+        != {
+            INTEGRATION,
+            RECIPE,
+            SOURCE_AMENDMENT,
+            DEPENDENCY_AMENDMENT,
+            BUILD_AMENDMENT,
+            DIAGNOSTIC_AMENDMENT,
+        }
+        or describe(root, amendment["parents"]) != amendment["parents"]
+        or set(amendment["changes"]) != set(LOCKS)
+        or describe(root, amendment["proofs"]) != amendment["proofs"]
+    ):
+        raise ValueError("Lock amendment changed a fixed review seal or proof")
+    predecessor = json.loads(regular_path(root, DEPENDENCY_AMENDMENT).read_bytes())
+    diagnostic = json.loads(regular_path(root, DIAGNOSTIC_AMENDMENT).read_bytes())
+    for name, change in amendment["changes"].items():
+        current = regular_path(root, name)
+        mode = "100755" if current.stat().st_mode & 0o111 else "100644"
+        if (
+            change["before"] != predecessor["changes"][name]["after"]
+            or change["before"] != diagnostic["locks"][name]
+            or not valid_file_identity(change["before"])
+            or not valid_file_identity(change["after"])
+            or change["before"] == change["after"]
+            or change["mode"] != "100644"
+            or mode != change["mode"]
+            or describe(root, (name,))[name] != change["after"]
+        ):
+            raise ValueError("Lock amendment source or lock identity differs")
+    return amendment
+
+
+def effective_lock_inputs(root, historical):
+    """Map exactly two sealed predecessors; every other historical byte stays exact."""
+    amendment = load_lock_amendment(root)
+    if amendment is None:
+        return historical
+    if any(
+        historical.get(name) != change["before"]
+        for name, change in amendment["changes"].items()
+    ):
+        raise ValueError(
+            "Lock amendment historical inputs differ from fixed predecessors"
+        )
+    return {
+        **historical,
+        **{name: change["after"] for name, change in amendment["changes"].items()},
+    }

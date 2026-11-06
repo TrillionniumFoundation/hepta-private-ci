@@ -55,6 +55,8 @@ class DependencyAmendmentTests(unittest.TestCase):
                 for item in recipe["aws_qualification"]["resources"].values()
             ),
         }
+        lock = json.loads((ROOT / common.LOCK_AMENDMENT).read_bytes())
+        names |= {common.LOCK_AMENDMENT, *lock["proofs"]}
         for name in names:
             target = self.root / name
             target.parent.mkdir(parents=True, exist_ok=True)
@@ -281,6 +283,7 @@ class DependencyAmendmentTests(unittest.TestCase):
             (dependency.DEPENDENCY_AMENDMENT, "dependency-amendment.json"),
             (common.BUILD_AMENDMENT, "build-amendment.json"),
             (common.DIAGNOSTIC_AMENDMENT, "diagnostic-amendment.json"),
+            (common.LOCK_AMENDMENT, "lock-amendment.json"),
         ):
             shutil.copyfile(self.root / source, artifact / target)
         (artifact / "candidate.patch").write_bytes(b"")
@@ -300,6 +303,7 @@ class DependencyAmendmentTests(unittest.TestCase):
                     "dependency-amendment.json",
                     "build-amendment.json",
                     "diagnostic-amendment.json",
+                    "lock-amendment.json",
                 ),
             ),
         }
@@ -323,6 +327,7 @@ class DependencyAmendmentTests(unittest.TestCase):
             (dependency.DEPENDENCY_AMENDMENT, "dependency-amendment.json"),
             (common.BUILD_AMENDMENT, "build-amendment.json"),
             (common.DIAGNOSTIC_AMENDMENT, "diagnostic-amendment.json"),
+            (common.LOCK_AMENDMENT, "lock-amendment.json"),
             (self.recipe["patch_path"], "source.patch"),
         ):
             shutil.copyfile(self.root / source, artifact / target)
@@ -351,6 +356,7 @@ class DependencyAmendmentTests(unittest.TestCase):
                     "dependency-amendment.json",
                     "build-amendment.json",
                     "diagnostic-amendment.json",
+                    "lock-amendment.json",
                 ),
             ),
         }
