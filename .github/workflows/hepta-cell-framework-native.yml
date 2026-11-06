@@ -46,6 +46,8 @@ jobs:
               -p codex-model-provider-info -p codex-shell-escalation
               -p codex-linux-sandbox -p codex-hepta-memory
               -p codex-exec-server -p codex-hepta-supervisor
+          - owner: core
+            packages: -p codex-core
     steps:
       - name: Check out the exact source commit
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -121,6 +123,70 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: cell-framework-${{ matrix.owner }}-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cell-framework-records
+          if-no-files-found: error
+          retention-days: 14
+
+  workspace:
+    name: Complete workspace tests after owner gates
+    needs: native
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - name: Check out the exact source commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Bind source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+          git diff --check
+          mkdir -p "$RUNNER_TEMP/cell-framework-records"
+      - name: Install native build prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential clang cmake protobuf-compiler libssl-dev libcap-dev pkg-config bubblewrap
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+      - name: Expose DotSlash for existing owner tests
+        run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
+      - name: Resolve repository-verified V8 artifacts
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Record pinned toolchain and locked dependency resolution
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          rustup show active-toolchain
+          rustc --version --verbose
+          cargo --version
+          cargo metadata --locked --format-version=1 > "$RUNNER_TEMP/cell-framework-records/cargo-metadata.json"
+          test -z "$(git status --porcelain)"
+      - name: Run the complete repository suite after core changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --timeout-seconds 9600 --minimum-tests 1 \
+            --output "$RUNNER_TEMP/cell-framework-records/tests.json" \
+            -- just test --locked --retries 0
+      - name: Confirm the tested source remains unchanged
+        run: |
+          git diff --check
+          git diff --exit-code
+      - name: Retain complete workspace results
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cell-framework-workspace-${{ github.sha }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/cell-framework-records
           if-no-files-found: error
           retention-days: 14
