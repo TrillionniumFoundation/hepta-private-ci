@@ -148,6 +148,7 @@ class BuildAmendmentTests(unittest.TestCase):
             (common.SOURCE_AMENDMENT, "source-amendment.json"),
             (common.DEPENDENCY_AMENDMENT, "dependency-amendment.json"),
             (common.BUILD_AMENDMENT, "build-amendment.json"),
+            (common.DIAGNOSTIC_AMENDMENT, "diagnostic-amendment.json"),
         )
         for source, name in transports:
             shutil.copyfile(self.f.root / source, artifact / name)
