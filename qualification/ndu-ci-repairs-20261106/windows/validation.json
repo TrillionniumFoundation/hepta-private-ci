@@ -1,0 +1,59 @@
+{
+  "schema": "ndu.windows-checkout-repair.v1",
+  "at_utc": "2026-11-06T11:45:00.950030+00:00",
+  "base_commit": "cb5019ae86bc52c9baff27858a3ee21cafc89ac5",
+  "status": "STATIC_WORKFLOW_VALIDATION_PASS",
+  "donor_pr": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4392",
+  "donor_head": "c0ddcc373bd4e63d66f35b1531541973569dd95f",
+  "exact_donor_preimages_and_postimages": true,
+  "donor_status": "Existing draft candidate; no reviewer approval or CI success inferred.",
+  "checks": [
+    {
+      "path": ".github/workflows/repo-checks.yml",
+      "jobs": [
+        "native-paths"
+      ],
+      "added_steps": 1,
+      "only_pre_checkout_configuration_added": true,
+      "all_original_workflow_fields_preserved": true,
+      "source": {
+        "bytes": 4263,
+        "sha256": "ee6a2c1204698740ca8420fbf9859f4b4248e44f08d5e05050b8d846036dd081",
+        "git_blob": "72bd28da471f893a556c2acb689e52a28d73ff99"
+      },
+      "candidate": {
+        "bytes": 4741,
+        "sha256": "a08e7d90c11dc69a37f46852246846eea0efbd437b2df34fab3923b49880d8dd",
+        "git_blob": "e7d93f75accf483fe2a7d31764de3ee29e3c3580"
+      }
+    },
+    {
+      "path": ".github/workflows/bazel.yml",
+      "jobs": [
+        "test",
+        "test-windows-shard",
+        "test-windows-native-main",
+        "clippy",
+        "verify-release-build"
+      ],
+      "added_steps": 5,
+      "only_pre_checkout_configuration_added": true,
+      "all_original_workflow_fields_preserved": true,
+      "source": {
+        "bytes": 20489,
+        "sha256": "7056008137ed9abbe8f29eae95ac4f1a3d771e7a6dba8fd012c11964ddb4221e",
+        "git_blob": "8d8123c81dabc3cd38c2ef9847c1633e3ff1080c"
+      },
+      "candidate": {
+        "bytes": 22879,
+        "sha256": "2ca6f89148c3da41b67c0ae12944a00e754943b355b8504b90d48a720d74f97b",
+        "git_blob": "75111a970c23de7146f79fe83b63547377b2d421"
+      }
+    }
+  ],
+  "bash_configuration_probe": "PASS on Linux with a temporary Git config",
+  "native_windows_execution": "NOT_RUN",
+  "limits": "The Git option addresses checkout path handling. Downstream Windows tool support is unverified. The preserved donor includes one currently Linux/macOS-only matrix job; its new step is conditional on Windows. No timeout, test, action pin, permission, credential policy or existing gate changed.",
+  "upstream": "https://gitforwindows.org/git-cannot-create-a-file-or-directory-with-a-long-path.html",
+  "observed_failure": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42160192456/job/127712940478"
+}
