@@ -203,19 +203,38 @@ impl CellBackendManifestV2 {
     pub fn digest(&self) -> Result<[u8; 32], CellGenerationErrorV2> {
         StableId::new(&self.profile).map_err(|_| CellGenerationErrorV2::InvalidBinding)?;
         let mut digests = vec![
-            self.source_digest, self.bundle_digest, self.runtime_digest, self.device_digest,
-            self.input_schema, self.state_schema, self.output_schema,
-            self.evolution.structure, self.evolution.lineage,
-            self.evolution.source_dependencies, self.evolution.adoption_receipt,
+            self.source_digest,
+            self.bundle_digest,
+            self.runtime_digest,
+            self.device_digest,
+            self.input_schema,
+            self.state_schema,
+            self.output_schema,
+            self.evolution.structure,
+            self.evolution.lineage,
+            self.evolution.source_dependencies,
+            self.evolution.adoption_receipt,
         ];
-        let components = [self.encoder, self.head, self.memory, self.world_model, self.decoder];
+        let components = [
+            self.encoder,
+            self.head,
+            self.memory,
+            self.world_model,
+            self.decoder,
+        ];
         if components.iter().all(Option::is_none) {
             return Err(CellGenerationErrorV2::InvalidBinding);
         }
         digests.extend(components.into_iter().flatten());
         match &self.learning {
             CellLearningBindingV2::Frozen { weights } => digests.push(*weights),
-            CellLearningBindingV2::Resumable { weights, optimizer, rng, sampler, training_cursor } => {
+            CellLearningBindingV2::Resumable {
+                weights,
+                optimizer,
+                rng,
+                sampler,
+                training_cursor,
+            } => {
                 digests.extend([*weights, *optimizer, *rng, *sampler, *training_cursor]);
             }
         }
@@ -238,11 +257,17 @@ impl CellBackendManifestV2 {
 
 impl CellRuntimeSnapshotV2 {
     pub fn digest(&self) -> Result<[u8; 32], CellGenerationErrorV2> {
-        for id in [&self.scope.agent_id, &self.scope.cell_id, &self.scope.run_id] {
+        for id in [
+            &self.scope.agent_id,
+            &self.scope.cell_id,
+            &self.scope.run_id,
+        ] {
             StableId::new(id).map_err(|_| CellGenerationErrorV2::InvalidBinding)?;
         }
-        if self.scope.principal_digest == [0; 32] || self.manifest_digest == [0; 32]
-            || self.generation == 0 || self.writer_epoch == 0
+        if self.scope.principal_digest == [0; 32]
+            || self.manifest_digest == [0; 32]
+            || self.generation == 0
+            || self.writer_epoch == 0
         {
             return Err(CellGenerationErrorV2::InvalidBinding);
         }
@@ -257,8 +282,10 @@ impl CellGenerationRequestV2 {
     pub fn digest(&self) -> Result<[u8; 32], CellGenerationErrorV2> {
         StableId::new(&self.operation_id).map_err(|_| CellGenerationErrorV2::InvalidBinding)?;
         self.predecessor.digest()?;
-        if self.task_digest == [0; 32] || self.source_frontier == [0; 32]
-            || self.admitted_at_micros == 0 || self.deadline_micros <= self.admitted_at_micros
+        if self.task_digest == [0; 32]
+            || self.source_frontier == [0; 32]
+            || self.admitted_at_micros == 0
+            || self.deadline_micros <= self.admitted_at_micros
         {
             return Err(CellGenerationErrorV2::InvalidBinding);
         }
