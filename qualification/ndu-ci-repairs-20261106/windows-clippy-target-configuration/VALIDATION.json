@@ -1,0 +1,61 @@
+{
+  "schema": "hepta.windows-clippy-target-configuration-validation.v1",
+  "source_head": "99e53dc988476d96c1e61354fbb0aeecd4c1cf17",
+  "source_tree": "e368e870e179b0e726189192343f03b151bd1fa4",
+  "frozen_unit20_manifest_sha256": "5e2e9bc18c1611ede97cc9f886d73637c209a4a9d947bdbde3582fe7a44a3f48",
+  "publication": "The effective product combines Unit20 with this correction in one patch; the known Unit20 selection defect is not an intermediate product commit. All four original Unit20 evidence files remain byte-identical.",
+  "same_server_counterexample": {
+    "bazel_version": "9.0.0",
+    "binary_sha256": "c44a93f25398c68f904fa1d19b61d321de6c0d2f09dca375d7bc0dc9b9428403",
+    "pid_before_and_after": "7",
+    "native_target_and_host_platform": "//:windows_x86_64_msvc",
+    "target_compilation_mode": "fastbuild",
+    "exec_compilation_mode": "opt",
+    "target_configuration": "fc08b51",
+    "exec_configuration": "0824b72",
+    "before_exec_transition": [
+      "//codex-rs:native-test-bin",
+      "//codex-rs:unit-tests-bin"
+    ],
+    "unit20_after_exec_transition": [
+      "//codex-rs:native-test-bin",
+      "//codex-rs:optimized-only-test-bin",
+      "//codex-rs:unit-tests-bin",
+      "//codex-rs:unit-tests-bin"
+    ],
+    "target_config_after_exec_transition": [
+      "//codex-rs:native-test-bin",
+      "//codex-rs:unit-tests-bin"
+    ],
+    "commands": 8,
+    "command_failures": 0,
+    "compile_or_test_actions": 0,
+    "clean_or_batch_used": false
+  },
+  "wrapper_regression": {
+    "tests": 52,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 1.673,
+    "exit_code": 0
+  },
+  "frozen_unit20_negative_control": {
+    "tests": 6,
+    "failed_methods": 1,
+    "failed_subtests": 2,
+    "newline_forms": ["LF", "CRLF"],
+    "exit_code": 1
+  },
+  "scope": "The fake-launcher regression checks both actual shell scripts and the exact full query scope. Independent actual Bazel analysis proves the current target configuration excludes a compatible stale exec instance without cleaning the server. The declared-rule fixture does not compile Rust or recreate the original 169 production incompatibilities.",
+  "official_reference": "https://bazel.build/query/cquery#non-deterministic-output",
+  "archive": {
+    "bytes": 14630,
+    "sha256": "c95a8cc46b1400270bc778a2c5cf0b6652ec545ca021aa9535c28e5fbc0093cb",
+    "git_blob": "41eb7d8d3797f5565deed84e794daf9648066733"
+  },
+  "archive_regular_files": 34,
+  "archive_index_sha256": "e8f88d59ab8609d26b0e0e192abdbba5fc03286442e60cef5d917cf382d507b9",
+  "archive_roundtrip": true,
+  "native_windows_clippy_qualification": "PENDING on the complete integrated source head"
+}

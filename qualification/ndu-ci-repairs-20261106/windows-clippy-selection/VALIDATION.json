@@ -1,0 +1,70 @@
+{
+  "schema": "hepta.windows-clippy-selection-validation.v1",
+  "source_head": "99e53dc988476d96c1e61354fbb0aeecd4c1cf17",
+  "source_tree": "e368e870e179b0e726189192343f03b151bd1fa4",
+  "native_failure": {
+    "run_id": 42234632162,
+    "job_id": 127966826186,
+    "source_head": "5e08c4be87d79bfd7ce4eaa42a9e53a44eae04da",
+    "actual_checkout": "b3c6f622e970bc736c0256b41351c527806dfce0",
+    "shared_source_and_checkout_tree": "5d783181bec96e4ab37912187dc94efb3a8a9658",
+    "requested_targets": 1491,
+    "built_targets": 1322,
+    "incompatible_targets": 169,
+    "gnullvm_only_helpers": 166,
+    "unix_owner_helpers": 3,
+    "raw_log": {
+      "bytes": 667864,
+      "sha256": "6ae024ef7ba68a2c53bb3fe736852f48d3c5b582add799bedae02413dd201538",
+      "git_blob": "2b71ba15adec7f4257350a360160d9a6fb4468e0"
+    }
+  },
+  "full_wrapper_suite": {
+    "command": "python -m unittest discover -s .github/scripts -p 'test_run_bazel*.py' -v",
+    "tests": 52,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "seconds": 1.735,
+    "exit_code": 0
+  },
+  "baseline_negative_control": {
+    "tests": 6,
+    "failed_methods": 2,
+    "failed_subtests": 4,
+    "newline_forms": ["LF", "CRLF"],
+    "exit_code": 1,
+    "reason": "Old native selector explicitly includes incompatible helpers and permits an empty manual helper roster."
+  },
+  "preserved_prior_local_attempts": "Before the exact original argument-lint helper was copied into the partial mirror, two unrelated wrapper tests failed with missing-file status 127; both original logs are preserved.",
+  "bazel_fixture": {
+    "version": "9.0.0",
+    "sha256": "c44a93f25398c68f904fa1d19b61d321de6c0d2f09dca375d7bc0dc9b9428403",
+    "official_asset_id": 343421735,
+    "query_cases": 1,
+    "configured_platform_cases": 4,
+    "passed": 5,
+    "compile_or_test_actions": 0,
+    "scope": "Real Bazel declared-rule compatibility analysis with the exact candidate Starlark formatter; no Rust compilation or native Windows execution."
+  },
+  "donor_review": {
+    "pull_request": 4719,
+    "head": "9b20aa5a6b4f3559411b286b157cec8cf1771c4a",
+    "decision": "Cross-helper suffix filtering addresses only 166 of 169 observed incompatible targets. This candidate uses declared configured compatibility and is not an exact donor patch."
+  },
+  "official_references": [
+    "https://bazel.build/concepts/platforms#skipping-incompatible-targets",
+    "https://bazel.build/query/cquery",
+    "https://github.com/bazelbuild/bazel/releases/tag/9.0.0"
+  ],
+  "format_and_spelling": "Recorded separately in the publication manifest after final artifact checks.",
+  "archive_roundtrip": true,
+  "archive": {
+    "bytes": 92290,
+    "sha256": "d8598a3e1297f8f48ffa2eee00700ce65490720bf2d7088537de3f9f8a4e8359",
+    "git_blob": "5e8b351ea7cc66837694c95d7a02f8b545f1ee96"
+  },
+  "archive_regular_files": 57,
+  "archive_index_sha256": "243a50eba735419cc0ac541c9972990c6810cd692bc2a2f8ef0d84723b55fc0c",
+  "native_windows_clippy_qualification": "PENDING on the complete integrated source head"
+}
