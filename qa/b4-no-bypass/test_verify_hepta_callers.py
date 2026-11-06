@@ -1074,5 +1074,44 @@ class RegisteredHumanTextReadbackBoundaryTests(unittest.TestCase):
 
 
 
+
+class RetainedHumanTextLookupCallerPatternTests(unittest.TestCase):
+    def test_lookup_pattern_remains_bound_to_the_host_verifier(self):
+        manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text(encoding="utf-8"))
+        boundary = next(
+            row for row in manifest["boundary"]
+            if row["id"] == "root_retained_human_text_lookup"
+        )
+        host_path = "codex-rs/hepta-agentd/src/authority_host_human_text.rs"
+        host = (ROOT / host_path).read_text(encoding="utf-8")
+
+        def consistent(row):
+            return (
+                row["symbol"] == "DeploymentFinalUseIssuer::verify_retained_human_text"
+                and row["definition_path"]
+                == "codex-rs/hepta-agentd/src/deployment_text_human.rs"
+                and row["product_callers"] == [host_path]
+                and "verify_retained_human_text" in row["call_pattern"]
+                and "text_until_checked" not in row["call_pattern"]
+                and ".verify_retained_human_text(" in host
+            )
+
+        self.assertTrue(consistent(boundary))
+
+        wrong_pattern = dict(
+            boundary,
+            call_pattern=boundary["call_pattern"].replace(
+                "verify_retained_human_text", "text_until_checked"
+            ),
+        )
+        self.assertFalse(consistent(wrong_pattern))
+
+        wrong_caller = dict(
+            boundary,
+            product_callers=["codex-rs/hepta-agentd/src/deployment_text.rs"],
+        )
+        self.assertFalse(consistent(wrong_caller))
+
+
 if __name__ == "__main__":
     unittest.main()
