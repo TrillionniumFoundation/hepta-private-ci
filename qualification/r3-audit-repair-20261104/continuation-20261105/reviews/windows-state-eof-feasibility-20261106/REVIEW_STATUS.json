@@ -1,0 +1,49 @@
+{
+  "schema": "hepta-state-lock-feasibility-rejection-v1",
+  "decision": "REJECT_PUBLICATION",
+  "frozen_design_only": true,
+  "native_execution": false,
+  "compiled": false,
+  "formatter_run": false,
+  "base_commit": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+  "base_tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+  "rejected_draft_computed_tree": "5f2354b501a5201b2724f575fa95f7e611358293",
+  "changed_paths": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/deny_read_state.rs",
+      "preimage": {
+        "bytes": 2983,
+        "git_blob": "fd073a4d45c781f0441839708f92e32d0831556c",
+        "sha256": "1a277638c3b7a39cf3d9eed32f954a0c3e32110ccbc738c8348b2ba7dabba82a"
+      },
+      "postimage": {
+        "bytes": 4770,
+        "git_blob": "f4705fc4c06bc77f0e285f4a3e723e6bea073d12",
+        "sha256": "c58914fc03e6a224f5758d44c57edb45ad91ec99ee2b7ee9592d9f26da6f3de9"
+      }
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/deny_read_state_tests.rs",
+      "preimage": null,
+      "postimage": {
+        "bytes": 6699,
+        "git_blob": "81b92396fa8fdfaae37bead779526706c85e2f96",
+        "sha256": "97bdeeba5b3ce0a7d6336c758b21586abe08011691302bc3924307b393d35a2e"
+      }
+    }
+  ],
+  "reason": "Unbounded File::lock on a file inheriting sandbox-writable directory permissions can newly block setup indefinitely; existing state-file tampering is not justification for this new wait.",
+  "no_reused_qualified_setup_deadline_found": true,
+  "no_already_qualified_stable_private_lock_for_all_initial_refresh_paths_found": true,
+  "limits": [
+    "Cooperating-call serialization is only a proposed mechanism, not a qualified fix",
+    "Original EOF remains a single observed event with unknown writer/timeline",
+    "SetSecurityInfo5 remains a separate failure cause",
+    "Original JSON/schema/ACL operations and tests unchanged; draft adds unexecuted tests only",
+    "No crash consistency, power-loss recovery, malicious-writer exclusion, or blocker closure claimed"
+  ],
+  "next_design_options": [
+    "Define and verify stable owner-private lock lifecycle before initial state mutation, covering fresh setup, refresh, migration and identity validation without widening ACLs",
+    "Define compatible end-to-end setup deadline/cancellation semantics and propagate remaining budget into bounded try_lock; busy/timeout remain errors and must never skip ACL installation"
+  ]
+}

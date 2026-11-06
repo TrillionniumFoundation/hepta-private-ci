@@ -1,0 +1,197 @@
+{
+  "schema": "hepta-b23-collector-v3-native-independent-review-v1",
+  "reviewer": "windows_env_finish",
+  "decision": "ACCEPT_NEW_RUN_AND_COLLECTOR_WITH_STATED_SCOPE",
+  "blocking_findings": [],
+  "frozen_manifest": {
+    "bytes": 8918,
+    "git_blob_sha": "f6e423ae32463217f52ca36541f9cd1a8ee31c0d",
+    "sha256": "046a0a788c02b15dbedf9548420d552e9598f4d5890e2e9bb1e27f7ec7e81cf9"
+  },
+  "frozen_files": 36,
+  "frozen_bytes": 8746860,
+  "full_read": [
+    "README.zh-CN.md",
+    "verify_native.py",
+    "borrowed/decode_compact.py",
+    "borrowed/spawn.proto"
+  ],
+  "isolated_replay": {
+    "exit_code": 0,
+    "stdout": {
+      "bytes": 11262,
+      "git_blob_sha": "207e50271f51eb3a2501dd215de4cd7f55fc5e64",
+      "sha256": "47669e76dcd5a759e1449f53229b1c8656e3a812a99bbb13e82a1f25d6549233"
+    },
+    "stderr_bytes": 0,
+    "frozen_stdout_byte_equal": true
+  },
+  "actual_run": {
+    "run": 42164668625,
+    "job": 127718228723,
+    "conclusion": "success",
+    "head_ref_PR_merge_and_artifacts_bound": true,
+    "job_log": {
+      "bytes": 198376,
+      "sha256": "a912a9e8e0c6fc510e2000564c7f909eee28df69a591ba2358534e25d5ffebf8",
+      "git_blob_sha": "2eea62a5916461db8002d01c184baf984589f8d4"
+    }
+  },
+  "source": {
+    "head": "2ac89eaf91306d410ef5e9b548ee9fabd12b71b7",
+    "merge": "652ff4a8a9042d68983a29855bba3e9bfe1ae7b2",
+    "tree": "9a6fd02aa18b2421f6aaec8a5db6ecf82b710c89",
+    "base": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+    "product_tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+    "unchanged_product_leaves": 10582,
+    "before_after_equal": true
+  },
+  "publication": {
+    "head": "2ac89eaf91306d410ef5e9b548ee9fabd12b71b7",
+    "parent": "e63ed76c5d8ded046f97caffbdbe2883140e6032",
+    "merge": "652ff4a8a9042d68983a29855bba3e9bfe1ae7b2",
+    "merge_parents": [
+      "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+      "2ac89eaf91306d410ef5e9b548ee9fabd12b71b7"
+    ],
+    "tree": "9a6fd02aa18b2421f6aaec8a5db6ecf82b710c89",
+    "ref": "refs/heads/codex/b23-linux-app-server-original-gate-20261106",
+    "PR": 4910,
+    "body_and_prior_suffix_equal": true,
+    "actual_root_hash_recomputed": true
+  },
+  "artifacts": [
+    {
+      "id": 13479635057,
+      "bytes": 797533,
+      "git_blob_sha": "9132d5aa574e7c32dbc47cced8f3d26c644ef074",
+      "sha256": "f1cb2e53d4090e82b1beab1b43100e2c388fadebe64913a9e11d1843aed85392",
+      "matches_official_digest": true
+    },
+    {
+      "id": 13478309620,
+      "bytes": 5137067,
+      "git_blob_sha": "0f45113ac76d77e331ee921e36abd3d76fac6a99",
+      "sha256": "7fc292406a9c74c67788a731f1c5f31028b3c2712fbcf5271a8b9521ab5f9064",
+      "matches_official_digest": true
+    }
+  ],
+  "product_tests": {
+    "passed": 307,
+    "failed": 0,
+    "ignored_owned_child_entry": 1,
+    "unique_names": 308,
+    "original_signal_parents": 3,
+    "original_drain_tests": 2
+  },
+  "compact": {
+    "compressed": {
+      "bytes": 5108108,
+      "sha256": "b2f10ef43282af6f99580a6b576aad63978f54c4576d2e8b0b7cb1a9595cb624",
+      "git_blob_sha": "2294cb491832d97a9491382160b6f370b3d9aa5b"
+    },
+    "decompressed_bytes": 30064184,
+    "record_count": 93986,
+    "native_test_attempts": 8,
+    "xml_helpers": 8,
+    "native_runner": "remote",
+    "native_cache_hit": false,
+    "xml_helper_cache_counts": {
+      "remote_cache_hit": 2,
+      "remote_uncached": 6
+    },
+    "native_timeout_ms": 300000,
+    "platform": {
+      "Arch": "amd64",
+      "OSFamily": "Linux",
+      "container-image": "docker://docker.io/mbolin491/codex-bazel@sha256:0a8e56bfaa3b2e5279db0d3bb2d62b44ba5e5d63a37d97eb8790f49da570af70"
+    }
+  },
+  "BEP": {
+    "events": 1923,
+    "test_results": 8,
+    "test_summaries": 1,
+    "original_fetch_duplicate_groups": 1,
+    "both_fetch_payloads_preserved": true,
+    "all_retained_attempts_match_BEP": true,
+    "finished_success": true
+  },
+  "supplemental_checks": {
+    "official_API_artifact_SHA256_values_equal_original_ZIPs": true,
+    "actual_ref_branch_base_PR_body_and_old_suffix_equal": true,
+    "required_native_source_evidence_upload_clean_final_steps_all_success": true,
+    "all_product_and_XML_spawns_have_TestRunner_mnemonic_and_empty_error_status": true,
+    "all_product_log_output_digests_checked_when_present": [
+      {
+        "shard": 1,
+        "product_log_outputs_recorded": 0
+      },
+      {
+        "shard": 2,
+        "product_log_outputs_recorded": 0
+      },
+      {
+        "shard": 3,
+        "product_log_outputs_recorded": 0
+      },
+      {
+        "shard": 4,
+        "product_log_outputs_recorded": 0
+      },
+      {
+        "shard": 5,
+        "product_log_outputs_recorded": 0
+      },
+      {
+        "shard": 6,
+        "product_log_outputs_recorded": 0
+      },
+      {
+        "shard": 7,
+        "product_log_outputs_recorded": 0
+      },
+      {
+        "shard": 8,
+        "product_log_outputs_recorded": 0
+      }
+    ],
+    "all_8_log_own_input_and_XML_own_output_digests_equal": true,
+    "before_after_NUL_ls_tree_bytes_equal": true,
+    "direct_product_spawn_test_log_output_digest_count": 0
+  },
+  "scope_zh": [
+    "本次仅接受新 head 2ac89 / merge 652ff / tree 9a6fd 的自动 pull_request run 42164668625、job 127718228723 及其新 collector 收件结果。",
+    "原完整 GNU AppServer 目标八分片共 307P/0F/1I；三原 signal 父测试与两原 drain 测试通过，唯一忽略为父测试运行的 owned-child 入口。八个 XML testcase 是 Bazel 包装条目，不是 Rust 用例数。",
+    "八产品 TestRunner 均固定 remote Linux/amd64、cache_hit=false、exit 0、300000 ms；XML helpers 分片1和8来自remote cache，另六个remote未缓存，不混为产品执行。",
+    "新派生 BEP 的 1923 事件保留一个重复 Fetch ID 的两份完整 payload；八 testResult 与 retention attempts、输出 URI/身份和 testSummary 一致。",
+    "两官方 ZIP 的 SHA256、大小、CRC及共47成员通过；原14源pin、完整10582产品叶投影和运行前后tree一致。",
+    "原 e63 收件失败及缺失八XML保持历史事实，新XML没有回填旧运行。B23此前已CLOSED_SCOPED，本次不额外关闭B15、B21或任何其他blocker。"
+  ],
+  "limits": [
+    "This new run does not rewrite the previous collector failure or retroactively supply its missing XML.",
+    "Eight XML files each wrap one Bazel shard; the 308 Rust names are counted from the original logs.",
+    "The eight product attempts executed on the fixed remote Linux/amd64 platform, not on the GitHub runner host.",
+    "This validates the new B23 collector and its original GNU target only; it does not close B15, B21 or all project blockers.",
+    "This independent review replayed only frozen evidence readers, not Bazel/product tests or the collector itself.",
+    "Privacy success is the original bounded collector claim; this review does not assert universal secret detection.",
+    "Official artifact SHA-256 metadata and actual root/ref/base/body bindings were additionally checked without modifying the author verifier.",
+    "The product spawns do not directly record test.log output digests here. Log bytes are bound through each own XML-helper input digest, as explicitly checked; no direct product-output digest claim is made."
+  ],
+  "local_verification": {
+    "verify_independent.py": {
+      "bytes": 9556,
+      "git_blob": "7bd015b0b392733458b2de819e849d7d3ca93259",
+      "sha256": "495c03c84cc13163b74f1fdc1952bea20d1c50efcc9e18a1e55d9a635f99f038"
+    },
+    "INDEPENDENT_VERIFICATION.json": {
+      "bytes": 5644,
+      "git_blob": "60aedc0c944a8425ab7a45f5c4a698c7211d9dda",
+      "sha256": "4b463bf9955bacf9a73a36cb5fcc9dbdde02470199f48b6addd7f55ba50f6bb2"
+    }
+  },
+  "author_development_failures_preserved": true,
+  "independent_harness_note": "Supplemental BEP inspector initially used 1-based event ordinals; original retention records use 0-based ordinals. Corrected only inspector; original failure and source retained in development-history.",
+  "author_frozen_inputs_modified": false,
+  "new_CI_or_ref_calls": false,
+  "new_blockers_closed": []
+}

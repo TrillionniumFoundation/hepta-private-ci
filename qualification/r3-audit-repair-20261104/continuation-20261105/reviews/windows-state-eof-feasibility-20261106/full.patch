@@ -1,0 +1,260 @@
+--- a/codex-rs/windows-sandbox-rs/src/deny_read_state.rs
++++ b/codex-rs/windows-sandbox-rs/src/deny_read_state.rs
+@@ -9,8 +9,16 @@
+ use std::collections::BTreeMap;
+ use std::collections::HashSet;
+ use std::ffi::c_void;
++use std::fs::File;
++use std::fs::OpenOptions;
++use std::os::windows::fs::MetadataExt;
++use std::os::windows::fs::OpenOptionsExt;
+ use std::path::Path;
+ use std::path::PathBuf;
++use windows_sys::Win32::Storage::FileSystem::FILE_ATTRIBUTE_REPARSE_POINT;
++use windows_sys::Win32::Storage::FileSystem::FILE_FLAG_OPEN_REPARSE_POINT;
++use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ;
++use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_WRITE;
+ 
+ const DENY_READ_ACL_STATE_FILE: &str = "deny_read_acl_state.json";
+ 
+@@ -36,6 +44,9 @@
+     psid: *mut c_void,
+ ) -> Result<Vec<PathBuf>> {
+     let state_path = sandbox_dir(codex_home).join(DENY_READ_ACL_STATE_FILE);
++    // Keep the same lock across the entire read/ACL-update/write transaction.
++    // The background read-grant helper's mutex does not cover these callers.
++    let _state_lock = acquire_state_lock(&state_path)?;
+     let mut state = load_state(&state_path)?;
+     let previous_paths = state
+         .principals
+@@ -67,6 +78,33 @@
+     Ok(applied_paths)
+ }
+ 
++fn acquire_state_lock(state_path: &Path) -> Result<File> {
++    let lock_path = state_path.with_extension("lock");
++    let lock = OpenOptions::new()
++        .read(true)
++        .write(true)
++        .create(true)
++        .truncate(false)
++        // Keep one file identity while any participant holds an open handle.
++        // Do not delete this persistent lock file when releasing the lock.
++        .share_mode(FILE_SHARE_READ | FILE_SHARE_WRITE)
++        .custom_flags(FILE_FLAG_OPEN_REPARSE_POINT)
++        .open(&lock_path)
++        .with_context(|| format!("open deny-read ACL state lock {}", lock_path.display()))?;
++    let metadata = lock
++        .metadata()
++        .with_context(|| format!("inspect deny-read ACL state lock {}", lock_path.display()))?;
++    if !metadata.is_file() || metadata.file_attributes() & FILE_ATTRIBUTE_REPARSE_POINT != 0 {
++        anyhow::bail!(
++            "deny-read ACL state lock is not a regular file: {}",
++            lock_path.display()
++        );
++    }
++    lock.lock()
++        .with_context(|| format!("lock deny-read ACL state {}", state_path.display()))?;
++    Ok(lock)
++}
++
+ fn load_state(path: &Path) -> Result<PersistentDenyReadAclState> {
+     match std::fs::read(path) {
+         Ok(bytes) => serde_json::from_slice(&bytes)
+@@ -85,3 +123,7 @@
+     std::fs::write(path, bytes)
+         .with_context(|| format!("write deny-read ACL state {}", path.display()))
+ }
++
++#[cfg(test)]
++#[path = "deny_read_state_tests.rs"]
++mod tests;
+--- /dev/null
++++ b/codex-rs/windows-sandbox-rs/src/deny_read_state_tests.rs
+@@ -0,0 +1,186 @@
++use super::DENY_READ_ACL_STATE_FILE;
++use super::PersistentDenyReadAclState;
++use super::acquire_state_lock;
++use super::load_state;
++use super::store_state;
++use anyhow::Context;
++use anyhow::Result;
++use pretty_assertions::assert_eq;
++use std::collections::BTreeMap;
++use std::fs;
++use std::fs::OpenOptions;
++use std::fs::TryLockError;
++use std::os::windows::fs::OpenOptionsExt;
++use std::path::PathBuf;
++use std::process::Child;
++use std::process::Command;
++use std::process::ExitStatus;
++use std::process::Stdio;
++use std::time::Duration;
++use std::time::Instant;
++use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ;
++use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_WRITE;
++
++const CHILD_DIRECTORY_ENV: &str = "CODEX_DENY_READ_STATE_LOCK_TEST_DIRECTORY";
++const CHILD_CASE: &str = "deny_read_state::tests::state_lock_child_process";
++const WAIT_LIMIT: Duration = Duration::from_secs(/*secs*/ 10);
++const WAIT_STEP: Duration = Duration::from_millis(/*millis*/ 10);
++
++struct OwnedChild(Child);
++
++impl OwnedChild {
++    fn wait(&mut self) -> Result<ExitStatus> {
++        let deadline = Instant::now() + WAIT_LIMIT;
++        loop {
++            if let Some(status) = self.0.try_wait()? {
++                return Ok(status);
++            }
++            anyhow::ensure!(Instant::now() < deadline, "state lock child did not finish");
++            std::thread::sleep(WAIT_STEP);
++        }
++    }
++}
++
++impl Drop for OwnedChild {
++    fn drop(&mut self) {
++        // This guard owns this exact child; never signal a guessed PID.
++        if !matches!(self.0.try_wait(), Ok(Some(_))) {
++            let _ = self.0.kill();
++            let _ = self.0.wait();
++        }
++    }
++}
++
++#[test]
++fn state_lock_serializes_cross_process_state_updates() -> Result<()> {
++    let temp = tempfile::tempdir()?;
++    let state_path = temp.path().join(DENY_READ_ACL_STATE_FILE);
++    let parent = PersistentDenyReadAclState {
++        principals: BTreeMap::from([(
++            "parent-principal".to_string(),
++            vec![PathBuf::from("parent-path")],
++        )]),
++    };
++    let guard = acquire_state_lock(&state_path)?;
++    store_state(&state_path, &parent)?;
++    // Deterministically hold the original truncate-before-write window open.
++    fs::write(&state_path, b"")?;
++    assert!(load_state(&state_path).is_err(), "empty JSON must still fail");
++    let log_path = temp.path().join("child.log");
++    let log = OpenOptions::new().write(true).create_new(true).open(&log_path)?;
++    let mut child = OwnedChild(
++        Command::new(std::env::current_exe()?)
++            .arg("--exact")
++            .arg(CHILD_CASE)
++            .arg("--ignored")
++            .arg("--nocapture")
++            .env(CHILD_DIRECTORY_ENV, temp.path())
++            .stdin(Stdio::null())
++            .stdout(Stdio::from(log.try_clone()?))
++            .stderr(Stdio::from(log))
++            .spawn()?,
++    );
++    let blocked = temp.path().join("blocked");
++    let deadline = Instant::now() + WAIT_LIMIT;
++    while !blocked.exists() {
++        if let Some(status) = child.0.try_wait()? {
++            anyhow::bail!(
++                "state lock child exited before the lock probe: {status}\n{}",
++                fs::read_to_string(&log_path)?
++            );
++        }
++        anyhow::ensure!(Instant::now() < deadline, "state lock child did not probe");
++        std::thread::sleep(WAIT_STEP);
++    }
++    // The child wrote this only after its native try_lock returned WouldBlock.
++    assert_eq!(fs::read(&blocked)?, b"lock blocked");
++    assert!(!temp.path().join("acquired").exists());
++    assert_eq!(fs::read(&state_path)?, b"");
++    store_state(&state_path, &parent)?;
++    drop(guard);
++    let status = child.wait()?;
++    anyhow::ensure!(
++        status.success(),
++        "state lock child failed: {status}\n{}",
++        fs::read_to_string(&log_path)?
++    );
++    assert_eq!(fs::read(temp.path().join("acquired"))?, b"loaded complete state");
++    let final_state = load_state(&state_path)?;
++    assert_eq!(
++        final_state.principals,
++        BTreeMap::from([
++            ("parent-principal".to_string(), vec![PathBuf::from("parent-path")]),
++            ("child-principal".to_string(), vec![PathBuf::from("child-path")]),
++        ])
++    );
++    Ok(())
++}
++
++#[test]
++#[ignore = "owned child helper for state_lock_serializes_cross_process_state_updates"]
++fn state_lock_child_process() -> Result<()> {
++    let directory = PathBuf::from(
++        std::env::var_os(CHILD_DIRECTORY_ENV).context("state lock child directory is missing")?,
++    );
++    let state_path = directory.join(DENY_READ_ACL_STATE_FILE);
++    let probe = OpenOptions::new()
++        .read(true)
++        .write(true)
++        .share_mode(FILE_SHARE_READ | FILE_SHARE_WRITE)
++        .open(state_path.with_extension("lock"))?;
++    anyhow::ensure!(
++        matches!(probe.try_lock(), Err(TryLockError::WouldBlock)),
++        "parent must hold the native lock while state is empty"
++    );
++    drop(probe);
++    fs::write(directory.join("blocked"), b"lock blocked")?;
++    let _guard = acquire_state_lock(&state_path)?;
++    let mut state = load_state(&state_path)?;
++    assert_eq!(
++        state.principals,
++        BTreeMap::from([(
++            "parent-principal".to_string(),
++            vec![PathBuf::from("parent-path")],
++        )])
++    );
++    fs::write(directory.join("acquired"), b"loaded complete state")?;
++    state.principals.insert(
++        "child-principal".to_string(),
++        vec![PathBuf::from("child-path")],
++    );
++    store_state(&state_path, &state)?;
++    Ok(())
++}
++
++#[test]
++fn state_parse_error_releases_lock_and_lock_path_stays_bound() -> Result<()> {
++    let temp = tempfile::tempdir()?;
++    let state_path = temp.path().join(DENY_READ_ACL_STATE_FILE);
++    fs::write(&state_path, b"{")?;
++    let result = (|| {
++        let _guard = acquire_state_lock(&state_path)?;
++        load_state(&state_path)
++    })();
++    let error = match result {
++        Ok(_) => anyhow::bail!("malformed state must remain an error"),
++        Err(error) => error,
++    };
++    assert!(format!("{error:#}").contains("parse deny-read ACL state"));
++    assert_eq!(fs::read(&state_path)?, b"{");
++    let lock_path = state_path.with_extension("lock");
++    let probe = OpenOptions::new()
++        .read(true)
++        .write(true)
++        .share_mode(FILE_SHARE_READ | FILE_SHARE_WRITE)
++        .open(&lock_path)?;
++    probe.try_lock().context("parse error must release the lock")?;
++    assert!(fs::remove_file(&lock_path).is_err());
++    let moved = temp.path().join("moved-lock");
++    assert!(fs::rename(&lock_path, &moved).is_err());
++    drop(probe);
++    fs::rename(&lock_path, &moved)?;
++    fs::create_dir(&lock_path)?;
++    assert!(acquire_state_lock(&state_path).is_err());
++    assert_eq!(fs::read(&state_path)?, b"{");
++    Ok(())
++}

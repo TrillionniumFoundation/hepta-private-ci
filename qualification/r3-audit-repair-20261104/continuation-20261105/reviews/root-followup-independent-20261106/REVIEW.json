@@ -1,0 +1,152 @@
+{
+  "schema": "hepta-root-followup-independent-review-v1",
+  "reviewer": "windows_env_finish",
+  "decision": "ACCEPT_PACKET_WITH_ITS_EXPLICIT_SCOPES",
+  "blocking_findings": [],
+  "reviewed_actual_registry": {
+    "bytes": 23584,
+    "git_blob": "4a79e5449b678a1d7706d57c6e388c61ed84efa6",
+    "sha256": "f17f134441ff6e5e4b98e589041341e10e27cbc87688a74832cd8709393333d7"
+  },
+  "read_scope": {
+    "full_read": [
+      "verify_packet.py",
+      "README.zh-CN.md"
+    ],
+    "payload_count": 15,
+    "transport_original_members": 46,
+    "all_payload_full_GET_identity_and_local_bytes_verified": true
+  },
+  "isolated_replay": {
+    "exit_code": 0,
+    "stdout": {
+      "bytes": 6824,
+      "git_blob": "a53f4c3d73f2f02e9e03152e9ebfafcb9b86c04e",
+      "sha256": "314bafbb9db9c0ff924fd805e3d12e68d481c318c38cddbcc52a36dc4bd11aad"
+    },
+    "stderr": {
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "frozen_stdout_byte_equal": true
+  },
+  "supplemental_checks": {
+    "publications": {
+      "PRs": [
+        4902,
+        4910,
+        4913,
+        4927,
+        4923,
+        4922
+      ],
+      "actual_head_parent_merge_ref_base_and_draft_bound": true,
+      "all_six_actual_root_Git_tree_hashes_recomputed": true,
+      "three_old_PR_body_suffixes_preserved": true,
+      "arg0_body_basis": "Created response equals full GET; intended argument not separately preserved."
+    },
+    "arg0": {
+      "head": "3c9e2bba4e7e84616509d6320a9ae013a274532c",
+      "merge": "65e1ec7164063b139db291562dd6093c3008b403",
+      "tree": "e60df9b57046df73cc1af53d8773cff48eafd311",
+      "job": 127717742578,
+      "run": 42163102813,
+      "build_and_clean_steps_success": true,
+      "full_log": {
+        "bytes": 863099,
+        "git_blob": "fdbb2e5c5f07308daa29af4d211d00d1e1be05b3",
+        "sha256": "ec522bf9a5503eca37b8ed31a9564ef35f943cc519d933526fc911f18ab93517"
+      },
+      "CI_pass_only": true,
+      "uncached_execution_claimed": false
+    },
+    "B23": {
+      "original_exit_unchanged": true,
+      "custody_registry_full_GETs_verified": true,
+      "separate_8_fresh_and_8_cached_result_chains": true,
+      "original_diagnostic_failure_preserved": true,
+      "duplicate_Fetch_errors": 2,
+      "missing_XML": 8,
+      "prior_accepted_baseline_not_reexecuted": true,
+      "scope": "Original GNU/Linux signal/drain product contract only; no new collector, B15 or project-wide qualification."
+    },
+    "latest_window": {
+      "before": "2026-11-06 05:20:01 UTC",
+      "after": "2026-11-06 05:21:49 UTC",
+      "atomic": false,
+      "heads": 7,
+      "runs": 46,
+      "unique_latest_attempt_jobs": 214,
+      "all_head_run_attempt_and_API_filter_bindings_verified": true,
+      "main_jobs": 93,
+      "main_counts": {
+        "success": 68,
+        "failure": 9,
+        "cancelled": 10,
+        "skipped": 6
+      },
+      "main_failures": "7 execution jobs + 2 aggregate gates, not 9 independent causes"
+    },
+    "cargo": {
+      "head": "476653f8fe5874849e864ab3fd49c792913450ab",
+      "merge": "825779c5bba92a228f8d3cf6add429592acdc4a7",
+      "job": 127715564317,
+      "original_exit": 1,
+      "sole_error": [
+        "error[unmaintained]: `pin-utils` is unmaintained"
+      ],
+      "log": {
+        "bytes": 12397460,
+        "git_blob": "778341bbdb48ea9cc8232c2eb8e615623222547e",
+        "sha256": "2307b7ac7a201e0f45775347de9fb610818c28d46dec71ec91886c01c6e6d617"
+      },
+      "old_main_cause": "UNKNOWN; not inherited from this new run"
+    }
+  },
+  "assessment_zh": [
+    "未发现本包漏掉其清单所承诺的原件，也未发现把新结果回授旧来源或把局部资格扩为全项目的声明。",
+    "四项新发布修订及追加 arg0、cargo 的实际 head/ref/PR/merge/root 关系相等；B21、B23、Windows 格式追加正文均保留旧正文后缀。",
+    "B23 原 exit 字面未变；保留既有物理基线接受，当前独审不冒称重新执行或恢复旧物理负控。新诊断八分片 307P/0F/1I 与原主 CI 八分片 cached success 是两条不同日志/action digest 的结果链。原 job failure、两 Fetch 重复和八份缺 XML 均保留。",
+    "d596 与 411 两份实际 custody registry 已 fresh GET 核身份；另外 fresh GET 的 main92 完整 manifest c83bc83 与诊断 manifest da4e287 的身份均与 registry 相符，主 GNU 原 ZIP 的 12,247,168 B 与 SHA da7c1f 对上引用。本轮未重下载这些外部大归档，也未把历史 pending 文字回写。",
+    "arg0 的新 GNU clippy 原 CI pass、build step 和 clean step success 均来自同一 3c9/65e/e60 来源；没有授予全动作 uncached 资格。",
+    "cargo 新 476/825 来源保留原 exit 1，完整日志仅一个 error/fatal 类错误为 pin-utils unmaintained；旧 main cargo 根因继续 UNKNOWN。",
+    "05:20–05:21 七个 head 的 46 runs/214 latest-attempt jobs 与 README 各行一致；旧 04:41–04:43 切面未混入新分母。"
+  ],
+  "external_custody_manifests_fresh_GET": [
+    {
+      "bytes": 267813,
+      "git_blob": "c83bc83c17856b798fe3d7b6fd328ca766b3a7e6",
+      "sha256": "67526c2eebfad4c7f0ada9daf0bb4aa072a0a3920f03bb2b61ed7bd2c71474f3"
+    },
+    {
+      "bytes": 3028,
+      "git_blob": "da4e2876e68dbc877b0dc34284a13cd6a56a855e",
+      "sha256": "791b3d8dd5e553b50ee510ae301d23594bbd79e9581c40b65326962c89536aa8"
+    }
+  ],
+  "local_reproducibility": {
+    "verify_independent.py": {
+      "bytes": 14435,
+      "git_blob": "6c278e5f43a4a840665ed61449fa507260db241e",
+      "sha256": "48125059c770e26d1d6769a5fd4c96db26d88bfda5cfd6c96933e00bd38725bf"
+    },
+    "INDEPENDENT_VERIFICATION.json": {
+      "bytes": 8350,
+      "git_blob": "da186836291036c7275e84e294a3df32f668da2d",
+      "sha256": "effda4fe72ca3944b10e4f6d04f32a1ebcff343425af1245223f20282f09aae4"
+    },
+    "fresh-objects.json": {
+      "bytes": 6037,
+      "git_blob": "d8d4e42f7b5cd9b0c96a7f9b73158e211d5a2538",
+      "sha256": "58ac9cafb959020a231b6c0cceb5fe3a0e69d63550c71ebd3e83fe4bdd9afeb9"
+    }
+  },
+  "limits": [
+    "Evidence packet review, not a re-audit of every unchanged product source.",
+    "No new CI query, native execution, ref or PR mutation.",
+    "No new collector, B15, all-platform or whole-project qualification.",
+    "Local review preparation had two exploratory inspector TypeErrors and one string-assembly SyntaxError; a subsequent code-mode store expiry interrupted optional receipt assembly. No frozen inputs or native outcomes changed."
+  ],
+  "all_blockers_closed": false
+}

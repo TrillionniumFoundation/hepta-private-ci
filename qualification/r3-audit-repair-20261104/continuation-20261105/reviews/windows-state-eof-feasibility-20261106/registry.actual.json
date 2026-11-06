@@ -1,0 +1,232 @@
+{
+  "schema": "hepta-windows-state-eof-feasibility-actual-registry-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "prefix": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/windows-state-eof-feasibility-20261106/",
+  "decision": "REJECT_PUBLICATION",
+  "author_freeze": "cef004cc8e8e12df2c49c19a4f854fee4952d061",
+  "retention": {
+    "data_files": 116,
+    "zip_members": 117,
+    "zip_bytes": 1113518,
+    "zip_sha256": "48521d45cb4aaa3f24587d685312ae94176f5b5b3971439ad21bfddca34703a9",
+    "base64_parts": 4,
+    "portable_restore_and_static_replay_exit": 0,
+    "static_stdout_blob": "00ace6952c8c6c9688688797d9dd064a1d87684c"
+  },
+  "qualification": {
+    "fixed_source_files": 75,
+    "full_archived_Rust_files_searched": 4832,
+    "original_EOF_events": 1,
+    "original_EOF_renderings": 2,
+    "SetSecurityInfo5_separate": true,
+    "candidate_compiled": false,
+    "candidate_native_executed": false,
+    "candidate_formatter_run": false,
+    "no_blocker_closure": true,
+    "reason": "Unbounded file lock in sandbox-writable directory can newly block setup indefinitely; no reusable production setup deadline or qualified stable private lock precondition established",
+    "next_design_obligations": [
+      "Trusted stable owner-private lock lifecycle covering first setup and refresh",
+      "Compatible setup deadline/cancellation propagated to bounded try_lock"
+    ]
+  },
+  "object_paths": 13,
+  "unique_blobs": 13,
+  "objects": [
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/windows-state-eof-feasibility-20261106/assessment.zip.part-0001.b64",
+      "bytes": 400000,
+      "git_blob": "1f8a7376d8e125928a1bb5c8ce6fb916624dcb6c",
+      "sha256": "f111722424e9fa18a7c087ab4f53ca2897a320d03df891c4205f777d06724f56",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "9731155174b5ee734eb16e973c799989ef0bc25b",
+      "full_blob_get_identity": {
+        "bytes": 400000,
+        "git_blob": "1f8a7376d8e125928a1bb5c8ce6fb916624dcb6c",
+        "sha256": "f111722424e9fa18a7c087ab4f53ca2897a320d03df891c4205f777d06724f56"
+      },
+      "identity_proof": "Full fetched UTF-8 body equals the exact frozen bytes whose identity was computed by Python hashlib immediately before materialization",
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/windows-state-eof-feasibility-20261106/assessment.zip.part-0002.b64",
+      "bytes": 400000,
+      "git_blob": "e73035819ce204c76d07cee93c0d608457e5338f",
+      "sha256": "af4fd25d8ed596c35b0806a3cde1b7b37c14a0611262862af61c5aca36247575",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "9731155174b5ee734eb16e973c799989ef0bc25b",
+      "full_blob_get_identity": {
+        "bytes": 400000,
+        "git_blob": "e73035819ce204c76d07cee93c0d608457e5338f",
+        "sha256": "af4fd25d8ed596c35b0806a3cde1b7b37c14a0611262862af61c5aca36247575"
+      },
+      "identity_proof": "Full fetched UTF-8 body equals the exact frozen bytes whose identity was computed by Python hashlib immediately before materialization",
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/windows-state-eof-feasibility-20261106/assessment.zip.part-0003.b64",
+      "bytes": 400000,
+      "git_blob": "2cd20a9c03395c81a53a29cda7bdeba26ea09776",
+      "sha256": "24e448207def6d031a6aba91493008e2b310ce8a685e63f7d3b8f4b010f93305",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "c24ead201c88dde9c3420bcc119be35a33770f2b",
+      "full_blob_get_identity": {
+        "bytes": 400000,
+        "git_blob": "2cd20a9c03395c81a53a29cda7bdeba26ea09776",
+        "sha256": "24e448207def6d031a6aba91493008e2b310ce8a685e63f7d3b8f4b010f93305"
+      },
+      "identity_proof": "Full fetched UTF-8 body equals the exact frozen bytes whose identity was computed by Python hashlib immediately before materialization",
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/windows-state-eof-feasibility-20261106/assessment.zip.part-0004.b64",
+      "bytes": 284692,
+      "git_blob": "ed6f6951c547bfca55eb1132371e7cbea8206df3",
+      "sha256": "65f66089b3d8d7578f1a5f555279798b12cfaedc48d7da3ced35c336ae850c07",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "c24ead201c88dde9c3420bcc119be35a33770f2b",
+      "full_blob_get_identity": {
+        "bytes": 284692,
+        "git_blob": "ed6f6951c547bfca55eb1132371e7cbea8206df3",
+        "sha256": "65f66089b3d8d7578f1a5f555279798b12cfaedc48d7da3ced35c336ae850c07"
+      },
+      "identity_proof": "Full fetched UTF-8 body equals the exact frozen bytes whose identity was computed by Python hashlib immediately before materialization",
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/windows-state-eof-feasibility-20261106/manifest.json",
+      "bytes": 30709,
+      "git_blob": "69775675628c136ed10de6af3dffe3f71b1a1a26",
+      "sha256": "69f98e8876d2f637a079f4381636afde74843a8de2da614b39cc56fe9c3c18ee",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "bbc92363cd3e93c2ef0150e1d020dcf3a94c2a5c",
+      "full_blob_get_identity": {
+        "bytes": 30709,
+        "git_blob": "69775675628c136ed10de6af3dffe3f71b1a1a26",
+        "sha256": "69f98e8876d2f637a079f4381636afde74843a8de2da614b39cc56fe9c3c18ee"
+      },
+      "identity_proof": "Full fetched UTF-8 body equals the exact frozen bytes whose identity was computed by Python hashlib immediately before materialization",
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/windows-state-eof-feasibility-20261106/restore_packet.py",
+      "bytes": 3487,
+      "git_blob": "98d497f8dee821f37b32b6362a447ba22fadacf7",
+      "sha256": "5006a4c6a0106a52049bc5408dc52a7fbf55d42dc848c7a4ff4422a15c1dc766",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "bbc92363cd3e93c2ef0150e1d020dcf3a94c2a5c",
+      "full_blob_get_identity": {
+        "bytes": 3487,
+        "git_blob": "98d497f8dee821f37b32b6362a447ba22fadacf7",
+        "sha256": "5006a4c6a0106a52049bc5408dc52a7fbf55d42dc848c7a4ff4422a15c1dc766"
+      },
+      "identity_proof": "Full fetched UTF-8 body equals the exact frozen bytes whose identity was computed by Python hashlib immediately before materialization",
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/windows-state-eof-feasibility-20261106/README.md",
+      "bytes": 650,
+      "git_blob": "5f6e522eb4c0cd59275d5b6a6e0772ac67f6f947",
+      "sha256": "836032ff89c5b7988a55575845ff733c06375989ad79f3a0883a77fcef9cf496",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "3147cb88949c02474b81ad0421efa8beb2f6539c",
+      "full_blob_get_identity": {
+        "bytes": 650,
+        "git_blob": "5f6e522eb4c0cd59275d5b6a6e0772ac67f6f947",
+        "sha256": "836032ff89c5b7988a55575845ff733c06375989ad79f3a0883a77fcef9cf496"
+      },
+      "identity_proof": "Full fetched UTF-8 body equals the exact frozen bytes whose identity was computed by Python hashlib immediately before materialization",
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/windows-state-eof-feasibility-20261106/restoration.stdout.json",
+      "bytes": 670,
+      "git_blob": "6eec9b46349099d71b48a432c290a4bbc769cfc6",
+      "sha256": "2a73ab2b68649ddab28fee1e1bc4aecd76618ad3c048882f66ee7afbd59c1b5f",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "3147cb88949c02474b81ad0421efa8beb2f6539c",
+      "full_blob_get_identity": {
+        "bytes": 670,
+        "git_blob": "6eec9b46349099d71b48a432c290a4bbc769cfc6",
+        "sha256": "2a73ab2b68649ddab28fee1e1bc4aecd76618ad3c048882f66ee7afbd59c1b5f"
+      },
+      "identity_proof": "Full fetched UTF-8 body equals the exact frozen bytes whose identity was computed by Python hashlib immediately before materialization",
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/windows-state-eof-feasibility-20261106/ASSESSMENT.zh-CN.md",
+      "bytes": 9132,
+      "git_blob": "62ab8c272862e0149d4e71fa16c479e072d619b2",
+      "sha256": "1369a190e562eb5dcdfac2aaef35d996988018617ec33a207fe947f594a07ca8",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "e21b48584e0c2e05444a96ada108187406b83f12",
+      "full_blob_get_identity": {
+        "bytes": 9132,
+        "git_blob": "62ab8c272862e0149d4e71fa16c479e072d619b2",
+        "sha256": "1369a190e562eb5dcdfac2aaef35d996988018617ec33a207fe947f594a07ca8"
+      },
+      "identity_proof": "Full fetched UTF-8 body equals the exact frozen bytes whose identity was computed by Python hashlib immediately before materialization",
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/windows-state-eof-feasibility-20261106/REVIEW_STATUS.json",
+      "bytes": 2410,
+      "git_blob": "a11744b030a5bec1b33196c5922b35e3b4e7a6cc",
+      "sha256": "47df0b32e2b7ae406ecfaee56fbbd603866583d95fe043789edb3f30de7c821e",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "e21b48584e0c2e05444a96ada108187406b83f12",
+      "full_blob_get_identity": {
+        "bytes": 2410,
+        "git_blob": "a11744b030a5bec1b33196c5922b35e3b4e7a6cc",
+        "sha256": "47df0b32e2b7ae406ecfaee56fbbd603866583d95fe043789edb3f30de7c821e"
+      },
+      "identity_proof": "Full fetched UTF-8 body equals the exact frozen bytes whose identity was computed by Python hashlib immediately before materialization",
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/windows-state-eof-feasibility-20261106/static-final.stdout.json",
+      "bytes": 3429,
+      "git_blob": "00ace6952c8c6c9688688797d9dd064a1d87684c",
+      "sha256": "f808c1378527cc9b8cb2af3533d76e5fd8b94a4407b0449c9b231ff32a95dbfc",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "c25b234bd456d17fc8729c082b1199e181a74aa9",
+      "full_blob_get_identity": {
+        "bytes": 3429,
+        "git_blob": "00ace6952c8c6c9688688797d9dd064a1d87684c",
+        "sha256": "f808c1378527cc9b8cb2af3533d76e5fd8b94a4407b0449c9b231ff32a95dbfc"
+      },
+      "identity_proof": "Full fetched UTF-8 body equals the exact frozen bytes whose identity was computed by Python hashlib immediately before materialization",
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/windows-state-eof-feasibility-20261106/freeze-manifest.json",
+      "bytes": 28922,
+      "git_blob": "cef004cc8e8e12df2c49c19a4f854fee4952d061",
+      "sha256": "92369b5184a83dfd19203d43070f68f80ffb898ff839bd62649f7d87b026b2b7",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "c25b234bd456d17fc8729c082b1199e181a74aa9",
+      "full_blob_get_identity": {
+        "bytes": 28922,
+        "git_blob": "cef004cc8e8e12df2c49c19a4f854fee4952d061",
+        "sha256": "92369b5184a83dfd19203d43070f68f80ffb898ff839bd62649f7d87b026b2b7"
+      },
+      "identity_proof": "Full fetched UTF-8 body equals the exact frozen bytes whose identity was computed by Python hashlib immediately before materialization",
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/windows-state-eof-feasibility-20261106/full.patch",
+      "bytes": 9735,
+      "git_blob": "1dfe19f2482e62315182d93ffb70738d6e1920ff",
+      "sha256": "16c66fed6bdf8345ea5ef6989c94fe7d6eb1943647dedfaa2ee2edb37cb6886c",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "fb4232f1b4f1ed2d4f4bf5abc46d887e6164c747",
+      "full_blob_get_identity": {
+        "bytes": 9735,
+        "git_blob": "1dfe19f2482e62315182d93ffb70738d6e1920ff",
+        "sha256": "16c66fed6bdf8345ea5ef6989c94fe7d6eb1943647dedfaa2ee2edb37cb6886c"
+      },
+      "identity_proof": "Full fetched UTF-8 body equals the exact frozen bytes whose identity was computed by Python hashlib immediately before materialization",
+      "full_UTF8_bytes_equal": true
+    }
+  ],
+  "publication": "None by this task; immutable evidence only"
+}

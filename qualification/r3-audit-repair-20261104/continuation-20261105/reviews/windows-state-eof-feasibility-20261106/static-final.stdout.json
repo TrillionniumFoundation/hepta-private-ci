@@ -1,0 +1,81 @@
+{
+  "schema": "hepta-rejected-state-lock-assessment-proof-v1",
+  "decision": "REJECT_PUBLICATION",
+  "fixed_sources": 75,
+  "base_tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+  "base_leaves": 10582,
+  "complete_literal_Rust_search_files": 4832,
+  "rejected_draft_tree": "5f2354b501a5201b2724f575fa95f7e611358293",
+  "draft_changes": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/deny_read_state.rs",
+      "preimage": {
+        "bytes": 2983,
+        "git_blob": "fd073a4d45c781f0441839708f92e32d0831556c",
+        "sha256": "1a277638c3b7a39cf3d9eed32f954a0c3e32110ccbc738c8348b2ba7dabba82a"
+      },
+      "postimage": {
+        "bytes": 4770,
+        "git_blob": "f4705fc4c06bc77f0e285f4a3e723e6bea073d12",
+        "sha256": "c58914fc03e6a224f5758d44c57edb45ad91ec99ee2b7ee9592d9f26da6f3de9"
+      }
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/deny_read_state_tests.rs",
+      "preimage": null,
+      "postimage": {
+        "bytes": 6699,
+        "git_blob": "81b92396fa8fdfaae37bead779526706c85e2f96",
+        "sha256": "97bdeeba5b3ce0a7d6336c758b21586abe08011691302bc3924307b393d35a2e"
+      }
+    }
+  ],
+  "original_load_store_and_ACL_transaction_bytes_preserved": true,
+  "forward_reverse_patch_verified": true,
+  "fixed_primary_full_GETs": [
+    {
+      "path": "primary/rust-1.95.0-fs.rs",
+      "url": "https://github.com/rust-lang/rust/blob/1.95.0/library/std/src/fs.rs",
+      "bytes": 123250,
+      "git_blob": "cf6f9594c0027af9755a4518b1460a7db92a36ff",
+      "sha256": "bac06d50380e9bc8e7a95a89d209cd9aabe0970e4ec589e5d265ccc44a70f9c4"
+    },
+    {
+      "path": "primary/rust-1.95.0-os-windows-fs.rs",
+      "url": "https://github.com/rust-lang/rust/blob/1.95.0/library/std/src/os/windows/fs.rs",
+      "bytes": 27329,
+      "git_blob": "7fd46b31f7d8325672672c5437c0f926e33392c2",
+      "sha256": "a3581116f99cc3af8a2b487e35b4d2d947d2f634188eb119c9a9108e990bca64"
+    },
+    {
+      "path": "primary/rust-1.95.0-windows-fs.rs",
+      "url": "https://github.com/rust-lang/rust/blob/1.95.0/library/std/src/sys/fs/windows.rs",
+      "bytes": 64227,
+      "git_blob": "74854cdeb498d7e084ddfab0ef09145453c0e30f",
+      "sha256": "e26633635161814b3e9bd75a50cf0bbe2d90d55c9342e3adcbced16d6b024099"
+    },
+    {
+      "path": "primary/tempfile-3.27.0-windows.rs",
+      "url": "https://github.com/Stebalien/tempfile/blob/v3.27.0/src/file/imp/windows.rs",
+      "bytes": 3927,
+      "git_blob": "3ef149d6fba969c516b7d54540214aa69a207d8a",
+      "sha256": "52c5b6498f22b0834d713ade6ab791526bd8c930e29aa78507026f7c11add22b"
+    },
+    {
+      "path": "primary/windows-sys-0.52-filesystem.rs",
+      "url": "https://github.com/microsoft/windows-rs/blob/0.52.0/crates/libs/sys/src/Windows/Win32/Storage/FileSystem/mod.rs",
+      "bytes": 296470,
+      "git_blob": "5cb313fe5ba69cbec6eee56b86ec13608744dae4",
+      "sha256": "62de1e36d41b1efdb8651c887dae8fbfb0ca2dc34e4d3a789e716f50e424630d"
+    }
+  ],
+  "native_tree_reconstructed": "78b817fec87e593e0a0f6357d84f895b8574bde5",
+  "native_state_leaf": "fd073a4d45c781f0441839708f92e32d0831556c",
+  "native_EOF_events": 1,
+  "native_EOF_renderings": 2,
+  "SetSecurityInfo5_is_separate": true,
+  "existing_setup_deadline": "not established in checked production setup call chains",
+  "stable_private_lock_precondition": "not established across initial setup and refresh",
+  "Rust_compile_or_test_or_formatter_run": false,
+  "blocker_closed": false
+}
