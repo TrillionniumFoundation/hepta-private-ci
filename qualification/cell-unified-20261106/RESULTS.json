@@ -1,0 +1,125 @@
+{
+  "schema": "hepta.cell-unified.qualification.v1",
+  "native_gate": "PASS_SCOPED",
+  "formal_adoption_and_benefit": "HOLD",
+  "tested_commit": "6a938bea7ba0fc3dd234930c765729c1a9172a65",
+  "tested_tree": "bf3c2501b0d9ad370cf035481a07cb5a2bf1a3c4",
+  "tested_codex_tree": "6f417ba4c1cffb4ff10e3646d2da49214d7f21d9",
+  "delivered_codex_tree_equals_tested": true,
+  "source_clean_before_after": true,
+  "strict_clippy_exit": 0,
+  "helper_build_exit": 0,
+  "rust_tests": {
+    "run": 984,
+    "passed": 984,
+    "failed": 0,
+    "skipped": 67,
+    "retries": 0,
+    "test_wall_seconds": 54.212,
+    "package_pass_counts": {
+      "codex-hepta-agentd": 649,
+      "codex-hepta-infer-core": 35,
+      "codex-hepta-infer-worker-host": 54,
+      "codex-hepta-neuron": 178,
+      "codex-hepta-plasticity": 68
+    }
+  },
+  "final_fix_and_fmt_exit": [
+    0,
+    0
+  ],
+  "source_changed_by_final_fix_or_fmt": false,
+  "tests_rerun_after_final_fix_or_fmt": false,
+  "helper": {
+    "package": "codex-hepta-infer-worker-host",
+    "package_id": "path+file:///home/qq/work/hepta-cell-learning-050e-20261106/source/codex-rs/hepta-infer-worker-host#codex-hepta-infer-worker-host@0.0.0",
+    "executable": "/home/qq/work/hepta-cell-learning-050e-20261106/target/debug/hepta-joint-propose",
+    "profile": {
+      "opt_level": "0",
+      "debuginfo": 0,
+      "debug_assertions": true,
+      "overflow_checks": true,
+      "test": false
+    },
+    "sha256": "f0c813b016c895f4a1b333cf2012b248ab84db275227ca6c0c6dd0972b5a769c",
+    "bytes": 1145208
+  },
+  "p2_ordinary_lifecycle": {
+    "receipt": "evidence/native-final/native-6a938bea-03/trained-agentd/joint-trained-agentd-kOZPdf/LIFECYCLE.json",
+    "delivered_prefix_bytes": 5990,
+    "final_cost_entries": 30,
+    "ack_and_drain_complete": true,
+    "snapshot_outbox_cost_reopen_exact": true,
+    "cancel_receipt": "evidence/native-final/native-6a938bea-03/trained-agentd/joint-trained-cancel-AFdPKR/CANCELLATION.json",
+    "cancel_cost_entries": 3,
+    "cancel_and_retry_preserved": true,
+    "shared_child_launch_guaranteed": false,
+    "complete_cost_qualified": false
+  },
+  "selected_executed_cases": [
+    {
+      "package": "codex-hepta-agentd",
+      "name": "neuron_generation_runtime::tests::joint::cancellation::historical_trained_joint_admission_cancel_retains_predecessor_cost_and_receipt_on_reopen",
+      "seconds": 0.853
+    },
+    {
+      "package": "codex-hepta-agentd",
+      "name": "neuron_generation_runtime::tests::joint::historical_trained_joint_control_service_preserves_real_output_cost_and_owner_on_reopen",
+      "seconds": 2.524
+    },
+    {
+      "package": "codex-hepta-agentd",
+      "name": "neuron_generation_runtime::tests::joint::synthetic_joint_control_service_preserves_real_output_cost_and_owner_on_reopen",
+      "seconds": 2.583
+    },
+    {
+      "package": "codex-hepta-neuron",
+      "name": "cell_owner_inventory::tests::census_rejects_count_inflation_cross_scope_and_dual_backend_slot_aliases",
+      "seconds": 0.004
+    },
+    {
+      "package": "codex-hepta-neuron",
+      "name": "cell_owner_inventory::tests::decision_view_tracks_real_admission_commit_reset_and_reopen",
+      "seconds": 0.003
+    },
+    {
+      "package": "codex-hepta-neuron",
+      "name": "cell_owner_inventory::tests::generation_view_preserves_unknown_work_learning_closure_and_delivery",
+      "seconds": 0.006
+    },
+    {
+      "package": "codex-hepta-neuron",
+      "name": "cell_owner_inventory::tests::uncertain_journal_cannot_export_a_healthy_population_view",
+      "seconds": 0.003
+    }
+  ],
+  "python_closure_regression": {
+    "passed": 11,
+    "failed": 0,
+    "source_content_identities": "evidence/closure-regression/RESULT.json",
+    "training_updates": 0
+  },
+  "measured_native_gate_commands": {
+    "cpu_seconds": 593.0530689999999,
+    "wall_seconds": 316.13561230991036,
+    "includes": [
+      "strict clippy",
+      "helper build",
+      "Cargo compilation and scoped nextest run"
+    ],
+    "excludes": [
+      "earlier failed launches and clippy, separately retained",
+      "initial helper preparation, separately retained",
+      "final fix/fmt, separately retained",
+      "energy/billing/network/complete historical cost"
+    ]
+  },
+  "remaining": {
+    "role_artifact_contract_and_product_registration": "HOLD",
+    "positive_new_candidate_adoption": "HOLD",
+    "complete_lifecycle_cost": "HOLD",
+    "strong_baseline_superiority": "HOLD",
+    "multigeneration_improvement": "HOLD",
+    "scale_net_benefit_and_p99": "HOLD"
+  }
+}
