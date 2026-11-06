@@ -118,12 +118,24 @@ fn policy_requires_three_explicit_distinct_canonical_pq_roles() {
         )
         .is_err()
     );
-    let mut wrong = policy.clone();
-    wrong.grant.public_key_id[0] ^= 1;
-    assert!(
-        H7H89ProductionGrantVerifier::from_pq_policy_bytes(&serde_json::to_vec(&wrong).unwrap())
-            .is_err()
-    );
+    let mut wrong_grant = policy.clone();
+    wrong_grant.grant.public_key_id[0] ^= 1;
+    let mut wrong_artifact = policy.clone();
+    wrong_artifact.artifact.public_key_id[0] ^= 1;
+    let mut wrong_recovery = policy.clone();
+    wrong_recovery.recovery.public_key_id[0] ^= 1;
+    for wrong in [wrong_grant, wrong_artifact, wrong_recovery] {
+        let error = H7H89ProductionGrantVerifier::from_pq_policy_bytes(
+            &serde_json::to_vec(&wrong).unwrap(),
+        )
+        .err()
+        .expect("every role must reject a changed public-key pin");
+        assert!(matches!(
+            error,
+            ProductionAuthorityError::Invalid(message)
+                if message == "PQ authority key does not match its canonical pin"
+        ));
+    }
     let mut classical = policy.clone();
     classical.algorithm = "ed25519_v1".to_string();
     assert!(
