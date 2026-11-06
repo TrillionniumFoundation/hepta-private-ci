@@ -13,7 +13,7 @@ fn independent_issuer_deadline_caps_grant_and_expiry_creates_no_new_effect_lease
             destination_id: "canonical-notes-issuer".into(),
             ..f.writer.authority_lease.binding.clone()
         },
-        ..f.writer.authority_lease.clone()
+        ..f.writer.authority_lease
     };
     f.registry.put_lease(parent.clone(), 0).unwrap();
     f.issuer.lease = Some(

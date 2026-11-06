@@ -15,7 +15,7 @@ fn fixture(parent_expiry: u64) -> WriterFixture {
             destination_id: "canonical-final-signature-issuer".into(),
             ..f.registration.authority_lease.binding.clone()
         },
-        ..f.registration.authority_lease.clone()
+        ..f.registration.authority_lease
     };
     f.leases.put_lease(parent.clone(), 0).unwrap();
     f.base.issuer.lease = Some(

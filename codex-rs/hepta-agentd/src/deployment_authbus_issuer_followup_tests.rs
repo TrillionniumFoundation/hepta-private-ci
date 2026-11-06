@@ -13,7 +13,7 @@ fn objective_independent_issuer_revocation_refuses_new_canonical_signature() {
             destination_id: "canonical-objective-issuer".into(),
             ..f.registration.authority_lease.binding.clone()
         },
-        ..f.registration.authority_lease.clone()
+        ..f.registration.authority_lease
     };
     f.leases.put_lease(parent.clone(), 0).unwrap();
     // The original registered fixture initially aliases issuer and writer.
@@ -69,7 +69,7 @@ fn original_registered_text_fixture(parent_id: &str) -> (WriterFixture, Authorit
             destination_id: "canonical-text-issuer".into(),
             ..f.registration.authority_lease.binding.clone()
         },
-        ..f.registration.authority_lease.clone()
+        ..f.registration.authority_lease
     };
     f.leases.put_lease(parent.clone(), 0).unwrap();
     f.base.issuer.lease = Some(

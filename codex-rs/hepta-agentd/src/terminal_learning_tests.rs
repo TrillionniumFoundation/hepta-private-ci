@@ -128,7 +128,7 @@ impl FixtureOwners {
         let replay = Arc::new(AgentdSharedReplayHostV1::new(
             Arc::clone(&source), consumer, "terminal.local".into(), daemon.identity.agent_id.clone(),
         ).unwrap());
-        Self { _memory_root: root, ledger_root: ledger_root, daemon,
+        Self { _memory_root: root, ledger_root, daemon,
             ledger: Arc::new(Mutex::new(ledger)), source, access, grant, replay, request }
     }
 

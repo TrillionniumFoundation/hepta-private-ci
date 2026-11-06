@@ -674,8 +674,10 @@ fn root_data_service_three_lanes_use_original_wire_key_and_dedicated_peer() {
         &registration_path,
         &pidfd,
         &prepared,
-        expected,
-        expected_issuer_expiry,
+        consumer_fixture::ReleaseReadback {
+            bootstrap: expected,
+            issuer_expiry: expected_issuer_expiry,
+        },
     );
     let result = prepared.serve();
     let status = child.wait().unwrap();

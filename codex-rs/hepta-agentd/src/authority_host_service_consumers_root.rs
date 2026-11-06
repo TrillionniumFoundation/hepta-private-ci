@@ -61,6 +61,12 @@ pub(super) fn create_local(runtime: &Path) {
 }
 
 #[cfg(test)]
+pub(super) struct ReleaseReadback {
+    pub(super) bootstrap: Option<crate::HostAuthorityPublicBootstrapV1>,
+    pub(super) issuer_expiry: Option<u64>,
+}
+
+#[cfg(test)]
 pub(super) fn release(
     child: &mut std::process::Child,
     config: &HostAuthorityServiceConfig,
@@ -68,9 +74,12 @@ pub(super) fn release(
     registration_path: &Path,
     owner_pidfd: &OwnedFd,
     prepared: &crate::PreparedHostAuthoritySession,
-    expected: Option<crate::HostAuthorityPublicBootstrapV1>,
-    expected_issuer_expiry: Option<u64>,
+    expected: ReleaseReadback,
 ) {
+    let ReleaseReadback {
+        bootstrap: expected,
+        issuer_expiry: expected_issuer_expiry,
+    } = expected;
     assert_eq!(expected_issuer_expiry.is_some(), config.writer.is_some());
     let bytes = config.consumers.as_ref().map(|_| {
         let local = config
