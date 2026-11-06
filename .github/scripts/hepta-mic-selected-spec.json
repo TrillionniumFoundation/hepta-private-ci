@@ -1,0 +1,61 @@
+{
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_head": "96bc14ecc404ff1f2048ea5ca9204f7a979e436e",
+  "base_tree": "e57c73ded10a3c5e3d5e5d089de8b8ee0951ffa2",
+  "base_ref": "research/ndu-windows-mic-mechanism-source-20261106",
+  "inputs_ref": "research/ndu-windows-mic-selected-inputs-20261106",
+  "proposal_ref": "research/ndu-windows-mic-selected-proposal-20261106",
+  "inputs_head": null,
+  "inputs_tree": null,
+  "added_paths": [
+    ".github/scripts/hepta_mic_selected_guard.py",
+    ".github/scripts/hepta_mic_selected_evidence.py",
+    ".github/scripts/hepta_mic_selected_contract.py",
+    ".github/scripts/hepta-mic-selected-spec.json",
+    ".github/scripts/hepta_mic_selected.py",
+    ".github/workflows/hepta-mic-selected-proposal.yml",
+    ".github/scripts/hepta-mic-selected-report.toml"
+  ],
+  "inputs_paths": [
+    ".github/scripts/hepta_mic_selected_guard.py",
+    ".github/scripts/hepta_mic_selected_evidence.py",
+    ".github/scripts/hepta_mic_selected_contract.py",
+    ".github/scripts/hepta-mic-selected-spec.json",
+    ".github/scripts/hepta-mic-selected-report.toml"
+  ],
+  "baseline_blobs": {
+    "AGENTS.md": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+    "justfile": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+    "scripts/just-shell.py": "bb2db6ebc4312a301ee39d2793fde16289d046d8",
+    "scripts/run-nextest.py": "1ed63abe84267b320cbfb0123a70aac5507f4595",
+    "codex-rs/Cargo.lock": "40936dd806123bf78d3c12a5c0cf0b60fec05d3c",
+    "codex-rs/Cargo.toml": "b21f7ffc0ee52722ddf82e5a996ff9d82ae0fbb0",
+    "codex-rs/rust-toolchain.toml": "917d2492264a35bc9c0feaef41878d8825870866",
+    "codex-rs/.config/nextest.toml": "f0430497b34b5335929e24b9e19745f467362641",
+    "codex-rs/windows-sandbox-rs/Cargo.toml": "3886cbd222c32a8b0544c2cc0f01c545d7048bc9",
+    "codex-rs/windows-sandbox-rs/src/lib.rs": "43d3e5c935db4579809525e58f33718e8a250005",
+    "codex-rs/windows-sandbox-rs/src/token.rs": "8945d75fe172679479b738e6266cac99a6f7ed16",
+    "codex-rs/windows-sandbox-rs/src/token_tests.rs": "7776b26d154f988535f6748bfc7ad70d513a3867",
+    "codex-rs/windows-sandbox-rs/src/token_mic_probe_tests.rs": "9cabb38ed7bead13a79d7d4ac25221adf6eeae78",
+    "codex-rs/windows-sandbox-rs/src/acl.rs": "18fd12a80ee0cf9e886a2cb7157e9af66a9e6942",
+    "codex-rs/windows-sandbox-rs/src/acl_deny.rs": "66db6376af67bb1404ee2ae169f94880cde58990",
+    "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs": "3571fed975ef0821053bf1db110a6b6dc20ad453",
+    "codex-rs/windows-sandbox-rs/src/unified_exec/backends/legacy.rs": "6fbf819c921a0097cd306e9de9ba9c965ecf0163",
+    "codex-rs/windows-sandbox-rs/src/spawn_prep.rs": "2385bdbd3202fd2f14a090174b269791976d04c4"
+  },
+  "cases": [
+    "token::tests::mic_probe::mic_labels_preserve_original_outside_and_protected_child_oracles",
+    "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+    "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots"
+  ],
+  "binary_id": "codex-windows-sandbox",
+  "native_target": "x86_64-pc-windows-msvc",
+  "python_version": "3.12.10",
+  "original_policy": {
+    "nextest_profile": "local",
+    "retries": 1,
+    "slow_timeout": "30s",
+    "terminate_after": 2,
+    "test_threads": "repository windows_sandbox_legacy_sessions group (max-threads=1) for legacy_ cases; no CLI override"
+  }
+}
