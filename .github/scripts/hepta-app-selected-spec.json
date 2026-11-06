@@ -1,0 +1,63 @@
+{
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_head": "45e3038f4a9423bdec38e0fc4fa7d46f6708e19e",
+  "base_tree": "6fad15e38ac607fb2fc3005ebf6450ca506acb99",
+  "base_ref": "research/ndu-appserver-timeout-stage-context-20261106",
+  "inputs_ref": "research/ndu-appserver-selected-inputs-20261106",
+  "proposal_ref": "research/ndu-appserver-selected-proposal-20261106",
+  "inputs_head": null,
+  "inputs_tree": null,
+  "added_paths": [
+    ".github/scripts/hepta_app_selected_guard.py",
+    ".github/scripts/hepta_app_selected_evidence.py",
+    ".github/scripts/hepta_app_selected_contract.py",
+    ".github/scripts/hepta-app-selected-spec.json",
+    ".github/scripts/hepta_app_selected.py",
+    ".github/workflows/hepta-app-selected-proposal.yml",
+    ".github/scripts/hepta-app-selected-report.toml"
+  ],
+  "inputs_paths": [
+    ".github/scripts/hepta_app_selected_guard.py",
+    ".github/scripts/hepta_app_selected_evidence.py",
+    ".github/scripts/hepta_app_selected_contract.py",
+    ".github/scripts/hepta-app-selected-spec.json",
+    ".github/scripts/hepta-app-selected-report.toml"
+  ],
+  "baseline_blobs": {
+    "AGENTS.md": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+    "justfile": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+    "scripts/just-shell.py": "bb2db6ebc4312a301ee39d2793fde16289d046d8",
+    "scripts/run-nextest.py": "1ed63abe84267b320cbfb0123a70aac5507f4595",
+    "codex-rs/Cargo.lock": "40936dd806123bf78d3c12a5c0cf0b60fec05d3c",
+    "codex-rs/Cargo.toml": "b21f7ffc0ee52722ddf82e5a996ff9d82ae0fbb0",
+    "codex-rs/rust-toolchain.toml": "917d2492264a35bc9c0feaef41878d8825870866",
+    "codex-rs/.config/nextest.toml": "f0430497b34b5335929e24b9e19745f467362641",
+    "codex-rs/app-server/Cargo.toml": "7008939cb5c05ba76d39d76e063108f2dc0e449c",
+    "codex-rs/app-server/tests/common/Cargo.toml": "8dd43051c7e4087c3c7213f05799db1b43dbe759",
+    "codex-rs/app-server/tests/common/lib.rs": "7b545e94f3b1e4cd6bed840c57cd0539467e772c",
+    "codex-rs/app-server/tests/common/test_app_server.rs": "5f4e2356ca47479a4b76bf3047e2bc1a484e3cce",
+    "codex-rs/app-server/tests/all.rs": "fdf98aa9455bffb74f4dc11df6d237aa948248ef",
+    "codex-rs/app-server/tests/suite/v2/mod.rs": "292716a6afb22a2f6885f539dbc3169735727c09",
+    "codex-rs/app-server/tests/suite/v2/thread_start.rs": "afd8fb0f365e72ecdfd28e8ed20c07cd530fdb55",
+    "codex-rs/app-server/tests/suite/v2/thread_list.rs": "32af51abdb2943bd2eb6cc57c1353126be355404",
+    "codex-rs/app-server/tests/suite/v2/thread_shell_command.rs": "21cbeae6e8ab1d50eede15f0ce1bc8c5e6e3027f",
+    "codex-rs/app-server/tests/suite/v2/thread_resume.rs": "d013b2d880f191044f4beffbd71484cd39ad1527"
+  },
+  "cases": [
+    "suite::v2::thread_list::thread_list_enforces_max_limit",
+    "suite::v2::thread_resume::thread_resume_keeps_in_flight_turn_streaming",
+    "suite::v2::thread_shell_command::thread_shell_command_history_responses_exclude_persisted_command_executions",
+    "suite::v2::thread_start::thread_start_accepts_absolute_runtime_workspace_roots",
+    "suite::v2::thread_start::thread_start_history_mode_accepts_legacy_and_paginated"
+  ],
+  "binary_id": "codex-app-server::all",
+  "native_target": "x86_64-unknown-linux-gnu",
+  "python_version": "3.12.10",
+  "original_policy": {
+    "nextest_profile": "local",
+    "retries": 1,
+    "slow_timeout": "30s",
+    "terminate_after": 2,
+    "test_threads": "repository local app_server_integration_local group (max-threads=4); no CLI override"
+  }
+}
