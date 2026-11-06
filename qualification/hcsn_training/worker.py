@@ -20,6 +20,7 @@ import torch
 from .joint_graph import (digest, integer, interval_seconds, load_model, load_training_checkpoint, model_bytes, sha256,
                           strict_json, tensor_digest, time_profile_digest)
 from .population_graph import PopulationCellGraph, population_intervals
+from .population_age_graph import PopulationAgeCellGraph, population_age_intervals, REFRACTORY_MICROS
 from .training_state import resolve_training_initialization, state_digest
 from .handoff import dataset_digest, encode_handoff, execution_sources, runtime_tuple
 
@@ -84,7 +85,9 @@ def propose(model, request):
     if time_profile_digest(request["time_profile"]) != binding["profile_digest"]:
         raise ValueError("admitted profile identity mismatch")
     population = isinstance(model, PopulationCellGraph)
-    intervals = (population_intervals(request["intervals"], request["time_profile"], model.spec) if population
+    physical_age = isinstance(model, PopulationAgeCellGraph)
+    intervals = (population_age_intervals(request["intervals"], request["time_profile"], model.spec) if physical_age else
+                 population_intervals(request["intervals"], request["time_profile"], model.spec) if population
                  else interval_seconds(request["intervals"], request["time_profile"]))
     last = request["intervals"][-1]
     if integer(request["target_time_micros"]) != last["end_micros"]+last["forecast_horizon_micros"]:
@@ -95,13 +98,17 @@ def propose(model, request):
             or any(not isinstance(row, list) or len(row) != len(intervals) for row in rows)
             or any(not isinstance(x, list) or len(x) != model.spec.input_size for row in rows for x in row)
             or any(not isinstance(y, list) or len(y) != model.spec.output_size for y in labels)
-            or (model.working_elements(len(rows), intervals) if population else
-                len(rows)*(len(intervals)*(model.spec.input_size+4*model.spec.hidden_size*len(model.cells))
-                           +model.spec.output_size)) > limits["max_elements"]):
+            or len(rows)*(len(intervals)*model.spec.input_size+model.spec.output_size) > limits["max_elements"]):
         raise ValueError("training tensor budget exceeded")
     inputs = torch.tensor(rows, dtype=next(model.parameters()).dtype)
     targets = torch.tensor(labels, dtype=inputs.dtype)
     initial_state = resolve_training_initialization(model, request, prior_state, saved_metadata, inputs)
+    working = (model.working_elements(len(rows), intervals, initial_state) if physical_age else
+               model.working_elements(len(rows), intervals) if population else
+               len(rows)*(len(intervals)*(model.spec.input_size+4*model.spec.hidden_size*len(model.cells))
+                          +model.spec.output_size))
+    if working > limits["max_elements"]:
+        raise ValueError("training tensor budget exceeded")
     initial_digest = state_digest(initial_state)
     if 131_072+64*len(rows)*model.spec.output_size+steps*(512+128*len(model.cells)) > MAX_DIAGNOSTIC_BYTES:
         raise ValueError("diagnostic receipt budget exceeded before training")
@@ -139,7 +146,8 @@ def propose(model, request):
                    execution_sources=sources, execution_source_digest=digest(sources),
                    runtime_tuple=runtime, runtime_tuple_digest=digest(runtime), dataset_digest=dataset_digest(request),
                    graph_digest=digest(asdict(model.spec)),
-                   edge_timing="previous_grid_boundary" if population else "previous_boundary",
+                   edge_timing=("previous_event_boundary" if physical_age else
+                                "previous_grid_boundary" if population else "previous_boundary"),
                    base_weights_digest=base, candidate_weights_digest=tensor_digest(candidate.state_dict()),
                    inputs_digest=tensor_digest({"inputs": inputs}), targets_digest=tensor_digest({"targets": targets}),
                    schedule_digest=digest(request["intervals"]), target_time_micros=request["target_time_micros"],
@@ -156,7 +164,19 @@ def propose(model, request):
                    energy_missing_reason="no physical counter in this CPU development adapter",
                    measurement_scope="proposal validation/base reload/copy/BP/final forward/serialization; excludes caller load and publication",
                    candidate_only=True, evaluation_passed=False)
-    if population:
+    if physical_age:
+        receipt["population_integration"] = dict(
+            profile="population_age_v1", max_step_micros=model.spec.max_step_micros,
+            max_substeps=model.spec.max_substeps,
+            event_steps_per_sample=sum(map(len, model.event_schedule(intervals, initial_state))),
+            kernel=model.spec.kernel, spatial_bins=model.cells[0].population.config.bins,
+            legacy_step_micros=model.spec.legacy_step_micros,
+            maximum_remaining_micros=model.spec.maximum_remaining_micros,
+            upper_boundary="absorbing_first_exit",
+            refractory_micros=REFRACTORY_MICROS, deposition="numerical_right_boundary",
+            release="split_at_exact_integer_cohort_expiry", trace_time_constant_seconds=.5,
+            numerical_scope="frozen-face-drift upwind finite-volume generator; exact exponential for fixed generator; nonlinear/reset time discretization remains")
+    elif population:
         receipt["population_integration"] = dict(
             step_micros=model.spec.step_micros, grid_steps_per_sample=sum(intervals),
             config=asdict(model.cells[0].population.config), trace_time_constant_seconds=.5,

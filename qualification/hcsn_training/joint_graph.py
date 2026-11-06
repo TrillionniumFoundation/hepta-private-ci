@@ -64,7 +64,7 @@ def tensor_digest(tensors):
 
 
 def time_profile_digest(profile):
-    """Match the Rust V1 canonical identity for A or fixed-grid B."""
+    """Match the Rust V1 canonical identity for the explicit integration profile."""
     if set(profile) != {"maximum_gap_micros", "forecast_horizon_micros", "integration"}:
         raise ValueError("unknown time profile fields")
     gap = integer(profile["maximum_gap_micros"], maximum=2**53-1)
@@ -77,6 +77,11 @@ def time_profile_digest(profile):
         step = integer(integration["step_micros"], maximum=gap)
         maximum = integer(integration["max_substeps"], maximum=4096)
         suffix = b"\1"+step.to_bytes(8, "big")+maximum.to_bytes(4, "big")
+    elif (set(integration) == {"kind", "max_step_micros", "max_substeps"}
+          and integration["kind"] == "population_age"):
+        step = integer(integration["max_step_micros"], maximum=gap)
+        maximum = integer(integration["max_substeps"], maximum=4096)
+        suffix = b"\2"+step.to_bytes(8, "big")+maximum.to_bytes(4, "big")
     else:
         raise ValueError("unknown integration time profile")
     domain = b"hepta.neuron.hcsn-time-profile.v1.seconds.zoh-left.sample-boundary.right-output"
@@ -176,7 +181,8 @@ class JointCellGraph(nn.Module):
 def model_bytes(model, **extra):
     buffer = io.BytesIO()
     from .population_graph import PopulationCellGraph
-    version = 2 if isinstance(model, PopulationCellGraph) else 1
+    from .population_age_graph import PopulationAgeCellGraph
+    version = 3 if isinstance(model, PopulationAgeCellGraph) else 2 if isinstance(model, PopulationCellGraph) else 1
     torch.save(dict(schema_version=version, spec=asdict(model.spec),
                     dtype=str(next(model.parameters()).dtype),
                     model_state={n: p.detach().cpu().clone() for n, p in model.state_dict().items()},
@@ -196,14 +202,19 @@ def load_training_checkpoint(path, expected_sha256):
     fields = {"schema_version", "spec", "dtype", "model_state"}
     candidate_fields = {"optimizer", "binding", "final_state", "last_end_micros"}
     if (set(saved) not in (fields, fields | candidate_fields) or type(saved["schema_version"]) is not int
-            or saved["schema_version"] not in (1, 2) or saved["dtype"] not in ("torch.float32", "torch.float64")):
+            or saved["schema_version"] not in (1, 2, 3) or saved["dtype"] not in ("torch.float32", "torch.float64")):
         raise ValueError("unsupported checkpoint schema/precision")
     spec = dict(saved["spec"], cell_ids=tuple(saved["spec"]["cell_ids"]))
     if saved["schema_version"] == 1:
         model = JointCellGraph(GraphSpec(**spec))
-    else:
+    elif saved["schema_version"] == 2:
         from .population_graph import PopulationCellGraph, PopulationGraphSpec
         model = PopulationCellGraph(PopulationGraphSpec(**spec))
+    else:
+        from .population_age_graph import PopulationAgeCellGraph, PopulationAgeGraphSpec
+        if set(spec) != set(PopulationAgeGraphSpec.__dataclass_fields__):
+            raise ValueError("population age checkpoint requires explicit kernel and migration fields")
+        model = PopulationAgeCellGraph(PopulationAgeGraphSpec(**spec))
     model = model.to(dtype=getattr(torch, saved["dtype"].split(".")[1]))
     tensor_digest(saved["model_state"])
     if any(t.dtype != next(model.parameters()).dtype for t in saved["model_state"].values()):
@@ -217,7 +228,7 @@ def load_training_checkpoint(path, expected_sha256):
         raise ValueError("candidate checkpoint lacks complete final state")
     if state is not None:
         integer(saved["last_end_micros"])
-        if saved["schema_version"] == 2:
+        if saved["schema_version"] in (2, 3):
             if (not isinstance(state, (list, tuple)) or not state or not isinstance(state[0], (list, tuple))
                     or not state[0] or not isinstance(state[0][0], torch.Tensor) or state[0][0].ndim != 2):
                 raise ValueError("invalid checkpoint population state")
