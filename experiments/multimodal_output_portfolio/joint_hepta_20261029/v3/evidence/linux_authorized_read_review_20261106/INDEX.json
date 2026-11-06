@@ -1,0 +1,76 @@
+{
+  "kind": "Rejected Linux authorized-read donor; controlled syscall-order witness and source binding",
+  "classification": "UNRESOLVED_SECURITY_BLOCKER_NOT_RUST_RUNTIME_TEST",
+  "current_linux_capability": "false; no production change",
+  "source_files": 9,
+  "source_bytes": 219685,
+  "archive": {
+    "format": "tar.xz",
+    "bytes": 31144,
+    "sha256": "e009d1ef015444c54ac7f2fc5e5f44ca22132071c4959741d19e1ace1c15acf4"
+  },
+  "parts": [
+    {
+      "path": "linux-provenance.tar.xz.part-000",
+      "bytes": 31144,
+      "sha256": "e009d1ef015444c54ac7f2fc5e5f44ca22132071c4959741d19e1ace1c15acf4"
+    }
+  ],
+  "files": [
+    {
+      "path": "round3_core_ci/09b_linux_provenance_evidence_inputs/REVIEW.md",
+      "bytes": 5669,
+      "sha256": "21fc03ea15f971ad0b6f11039faaa0b2077d97eb7fe71a72ca1a58d8108de0cf",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/09b_linux_provenance_evidence_inputs/first_witness_result.json",
+      "bytes": 4254,
+      "sha256": "99d1e7d9b02ff2fc1929dc0f981ea8c59cd401cf266ad90c40ded2d165c6cf30",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/09b_linux_provenance_evidence_inputs/original_ci_failures.json",
+      "bytes": 59545,
+      "sha256": "03d62cd6423aa10d5f249fd964e7dcfd88aa9a96e67d2d5a4d91ca14ec38620d",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/09b_linux_provenance_evidence_inputs/path_link_interleaving.py",
+      "bytes": 5816,
+      "sha256": "4e4c1b61b46d1fcf79f5c91bdfd8c2b142512f6543a2b8f78d46605d24ab2c46",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/09b_linux_provenance_evidence_inputs/source/current/codex-rs/exec-server/src/local_file_system.rs",
+      "bytes": 58274,
+      "sha256": "567562a72b4e25b12f96776be82861d7c657d114c187079d88ad867157435327",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/09b_linux_provenance_evidence_inputs/source/current/codex-rs/exec-server/src/remote_file_system.rs",
+      "bytes": 23474,
+      "sha256": "8b69617c30861fb4382f0790ff477fcdd1aee7ef3166e3545d394ccd9e2086a4",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/09b_linux_provenance_evidence_inputs/source/current/codex-rs/exec-server-protocol/src/protocol.rs",
+      "bytes": 49026,
+      "sha256": "103890ce8c369408eb18c172f088918a38fea06c669c5b8b72f03e3e5dcfbc22",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/09b_linux_provenance_evidence_inputs/source/rejected_donor/codex-rs/exec-server/src/linux_authorized_read.rs",
+      "bytes": 11827,
+      "sha256": "e87fcda5738339253b56a3e9583c3705157513af103d9196ac66bb1dcfae63dd",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_core_ci/09b_linux_provenance_evidence_inputs/source_bindings.json",
+      "bytes": 1800,
+      "sha256": "dd1ddeff28663e03a3fd2be1d749f8a15c10c28ca2ca2b80a7a65b1cf3e95068",
+      "mode": "0o100644"
+    }
+  ],
+  "evidence_boundary": "The scheduling script executed fixture-only Linux syscalls. Rust donor was neither compiled nor executed. Original result is copied byte-for-byte and not rerun. Original CI failure blocks and immutable source snapshots are separate evidence classes."
+}
