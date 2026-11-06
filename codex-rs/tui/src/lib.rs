@@ -3236,7 +3236,7 @@ mod tests {
     -> color_eyre::Result<()> {
         let temp_dir = TempDir::new()?;
         let mut config = build_config(&temp_dir).await?;
-        let sqlite_home = temp_dir.path().join("sqlite-home");
+        let sqlite_home = temp_dir.path().canonicalize()?.join("sqlite-home");
         std::fs::create_dir_all(&sqlite_home)?;
         let sqlite_home = sqlite_home.canonicalize()?;
         let sqlite = codex_state::SqliteConfig::new_for_testing(sqlite_home.as_path().abs());
