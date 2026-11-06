@@ -35,7 +35,12 @@ impl PtyIo {
         // Async tasks can be aborted even when a detached child keeps the PTY open
         // or the output channel is full; blocking read/send tasks cannot.
         // AsyncFd panics if the current runtime has no I/O driver.
-        let fd = std::panic::catch_unwind(move || AsyncFd::new(File::from(fd)))
+        let fd = std::panic::catch_unwind(move || {
+            // SAFETY: File owns this duplicated descriptor for the entire
+            // AsyncFd lifetime. We never close or replace it through a raw fd
+            // or a mutable reference to the backing File.
+            unsafe { AsyncFd::register(File::from(fd)) }
+        })
             .map_err(|_| io::Error::other("PTY I/O requires a Tokio runtime with I/O enabled"))??;
         Ok(Self { fd: Arc::new(fd) })
     }
