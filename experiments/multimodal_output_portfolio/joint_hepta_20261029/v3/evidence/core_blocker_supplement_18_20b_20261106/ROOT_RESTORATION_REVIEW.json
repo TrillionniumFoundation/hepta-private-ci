@@ -1,0 +1,32 @@
+{
+  "observed_at_utc": "2026-11-06T17:55:18.171477+00:00",
+  "packet": "core18_20b",
+  "bundle": "/workspace/scratch/3f6a885bb83c/round3_core_evidence_supplement_18_20b_v1",
+  "index_sha256": "f9056fb6fc2316dae0d3159c61bb80725aa922444d10c4a7b23b0d61a4664c58",
+  "reader_sha256": "ecdf6cf0bab5f3bbc97ed137961427ddaa85cbc5891a3ee89a3ed3d9d066a4b8",
+  "trusted_template_sha256": "44a2f2a5b37f5ae002b741d033211a7768b1803279ecaf0c38a9074aa8598927",
+  "reader_difference": "Two seal constants only",
+  "argv": [
+    "python3",
+    "-O",
+    "-B",
+    "/workspace/scratch/3f6a885bb83c/round3_core_evidence_supplement_18_20b_v1/restore.py",
+    "/workspace/scratch/3f6a885bb83c/round3_core_evidence_supplement_18_20b_v1",
+    "/workspace/scratch/3f6a885bb83c/round3_root_restore_1754_core18_20b"
+  ],
+  "exit_code": 0,
+  "stdout": "{\n  \"kind\": \"actual_read_only_raw_shard_restoration\",\n  \"index_sha256\": \"f9056fb6fc2316dae0d3159c61bb80725aa922444d10c4a7b23b0d61a4664c58\",\n  \"archive_sha256\": \"d8d6d9208f8d00f28942f34bdfadb3daca1e47edfbe47c5238e65c06846995f6\",\n  \"restored_files\": 154,\n  \"restored_bytes\": 24349633,\n  \"exact_unique_regular_member_set\": true,\n  \"all_file_bytes_and_safe_regular_modes_match\": true,\n  \"bundle_files_written\": 0,\n  \"native_tests_executed\": false\n}\n",
+  "stderr": "",
+  "destination": "/workspace/scratch/3f6a885bb83c/round3_root_restore_1754_core18_20b",
+  "source_file_count": 154,
+  "source_bytes": 24349633,
+  "complete_expected_restored_set": true,
+  "every_original_and_restored_byte_hash_size_match": true,
+  "restored_modes": {
+    "0o100644": 151,
+    "0o100755": 3
+  },
+  "all_bundle_bytes_unchanged": true,
+  "no_archived_source_executed": true,
+  "qualification_boundary": "Restoration integrity only; native outcomes and excluded inputs retain the exact limits in INDEX and README."
+}
