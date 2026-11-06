@@ -1,4 +1,5 @@
 use super::compact::allow_echo_commands;
+use core_test_support::first_party::FirstPartyMockServer;
 use core_test_support::test_codex::local_selections;
 use std::fs;
 use std::path::Path;
@@ -1476,14 +1477,17 @@ async fn remote_compact_v2_charges_retained_images_to_token_budget(
 async fn remote_compact_v2_reuses_compaction_trigger_for_followups() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
-    let harness = TestCodexHarness::with_builder(
-        test_codex()
-            .with_auth(CodexAuth::create_dummy_chatgpt_auth_for_testing())
-            .with_config(|config| {
-                let _ = config.features.enable(Feature::RemoteCompactionV2);
-            }),
-    )
-    .await?;
+    let server = FirstPartyMockServer::start().await?;
+    let test = server
+        .attach(
+            test_codex()
+                .with_auth(CodexAuth::create_dummy_chatgpt_auth_for_testing())
+                .with_config(|config| {
+                    let _ = config.features.enable(Feature::RemoteCompactionV2);
+                }),
+        )
+        .build(&server)
+        .await?;
     let image_url = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNgYAAAAAMAASsJTYQAAAAASUVORK5CYII=";
     let user_notice = "<image_resize_notice>retained user image</image_resize_notice>";
     let tool_notice = "<image_resize_notice>discarded tool image</image_resize_notice>";
@@ -1525,18 +1529,17 @@ async fn remote_compact_v2_reuses_compaction_trigger_for_followups() -> Result<(
             .map(|item| RolloutItem::ResponseItem(item.into()))
     })
     .collect::<serde_json::Result<Vec<_>>>()?;
-    let codex = harness
-        .test()
+    let codex = test
         .thread_manager
         .start_thread(StartThreadOptions {
             initial_history: InitialHistory::Forked(initial_history),
-            ..StartThreadOptions::new(harness.test().config.clone())
+            ..StartThreadOptions::new(test.config.clone())
         })
         .await?
         .thread;
 
     let responses_mock = responses::mount_sse_sequence(
-        harness.server(),
+        &server,
         vec![
             responses::sse(vec![
                 responses::ev_assistant_message("m1", "FIRST_REMOTE_REPLY"),
