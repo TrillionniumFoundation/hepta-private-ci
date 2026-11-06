@@ -36,11 +36,9 @@ impl SignedIntentPqAuthority {
     }
 
     fn verify_at(&self, intent: &SignedSupervisorIntent, now: u64) -> Result<(), SupervisorError> {
-        self.validate_for(intent)
+        let verifier = self
+            .validated_verifier(intent)
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-        let verifier =
-            H7H89ProductionGrantVerifier::from_pq_policy_bytes(self.policy_json.as_bytes())
-                .map_err(|error| SupervisorError::ProductionAuthority(error.to_string()))?;
         let agent = codex_hepta_contracts::AgentId::parse(intent.agent_id.clone())
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         verifier
@@ -62,6 +60,16 @@ impl SignedIntentPqAuthority {
         &self,
         intent: &SignedSupervisorIntent,
     ) -> Result<(), SignedIntentError> {
+        self.validated_verifier(intent).map(|_| ())
+    }
+
+    // The shape/binding check already constructs the verifier for these exact
+    // policy bytes. Its caller can use the same prepared keys to verify the
+    // actual signatures and supplied time, without parsing the policy twice.
+    fn validated_verifier(
+        &self,
+        intent: &SignedSupervisorIntent,
+    ) -> Result<H7H89ProductionGrantVerifier, SignedIntentError> {
         if Sha256Digest::parse(self.binding.policy_sha256.as_str()).is_err()
             || self.issued_at_unix_seconds == 0
             || self.expires_at_unix_seconds <= self.issued_at_unix_seconds
@@ -103,7 +111,7 @@ impl SignedIntentPqAuthority {
                 "retained PQ proof differs from its admitted intent".to_string(),
             ));
         }
-        Ok(())
+        Ok(verifier)
     }
 }
 
@@ -298,3 +306,7 @@ pub(crate) fn terminal_owner_matches(
         _ => false,
     }
 }
+
+#[cfg(test)]
+#[path = "signed_intent_policy_tests.rs"]
+mod tests;
