@@ -1,0 +1,30 @@
+{
+  "checkout_configuration_checks": [
+    {
+      "case": "real_git_config_and_different_checkout_global_config",
+      "effective_longpaths": true,
+      "exit": 0,
+      "host": "Linux; not Windows checkout execution"
+    },
+    {
+      "case": "config_write_failure",
+      "exit": 29
+    },
+    {
+      "case": "false_effective_readback",
+      "exit": 1
+    }
+  ],
+  "evidence_files_or_paths_modified": false,
+  "exact_head_full_matrix": "PENDING",
+  "matrix_entries": [
+    12,
+    2
+  ],
+  "prior_compiler_identity_unit_retained": true,
+  "source_added_lines": 11,
+  "source_removed_lines": 0,
+  "status": "EXACT_DONOR_AND_GIT_CONFIG_CHECKS_PASS_WINDOWS_PENDING",
+  "whole_yaml_equal_after_removing_only_new_checkout_step": true,
+  "windows_checkout_executed_locally": false
+}
