@@ -46,6 +46,7 @@ jobs:
               -p codex-hepta-control-plane
               -p codex-hepta-context-compiler -p codex-utils-pty
               -p codex-hepta-intelligence
+              -p codex-hepta-intelligence-eval
               -p codex-hepta-infer-core
           - owner: agentd-composition
             helper_packages: ""
