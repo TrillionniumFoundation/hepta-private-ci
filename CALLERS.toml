@@ -740,7 +740,7 @@ definition_path = "codex-rs/hepta-agentd/src/deployment_text_human.rs"
 definition_markers = ["pub(crate) fn verify_retained_human_text(", "retained.human_binding.as_ref() != Some(human)", "now >= human.expires_at_ms", "now >= retained.expires_at_ms", "serde_json::to_value(ingress)"]
 product_callers = ["codex-rs/hepta-agentd/src/authority_host_human_text.rs"]
 caller_markers = ["owner_alive(pidfd, end)", "self.text_ui_owner(registration)?", "&registration.human_binding()", "&registration.namespace()"]
-call_pattern = '(?:\.\s*|DeploymentFinalUseIssuer\s*::\s*)text_until_checked\s*\('
+call_pattern = '(?:\.\s*|DeploymentFinalUseIssuer\s*::\s*)verify_retained_human_text\s*\('
 
 [[boundary]]
 id = "root_live_human_session_install"
