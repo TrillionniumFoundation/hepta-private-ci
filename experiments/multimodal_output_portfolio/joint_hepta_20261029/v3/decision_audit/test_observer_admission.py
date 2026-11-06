@@ -22,7 +22,7 @@ from .transition_capture_read import read_capture
 OBSERVATIONS = []
 
 
-def exercise(phase, delay, *, recorded=True):
+def exercise(phase, delay, *, recorded=True, controller_failure=False):
     clock = SimpleNamespace(now=0.0, phase=None, delayed=False, calls=[])
 
     def elapsed():
@@ -52,6 +52,8 @@ def exercise(phase, delay, *, recorded=True):
         def choose(self, view):
             controllers.append({"entered_at": clock.now, "view": json.loads(json.dumps(vars(view))),
                                 "actual_remaining_seconds": 1.0 - clock.now})
+            if controller_failure:
+                raise RuntimeError("declared synthetic controller failure")
             return "perceive" if not view.history else "stop"
 
     class DelayedCapture(capture.TransitionCapture):
@@ -134,6 +136,18 @@ class ObserverAdmissionTests(unittest.TestCase):
         self.assertEqual(transition["before_view"], first["view"])
         self.assertEqual(actual["report"]["status"], "abstained")
         self.assertEqual(len(actual["providers"]), 1)
+
+    def test_controller_exception_preserves_the_actual_fresh_view(self):
+        actual = exercise("before_controller", 0.25, controller_failure=True)
+        self.assertEqual(actual["report"]["status"], "failed")
+        self.assertEqual(actual["providers"], [])
+        transition = actual["capture"]["transitions"][0]
+        self.assertEqual(transition["before_view"]["remaining_seconds"], 0.75,
+                         "controller exception must retain its actual fresh input")
+        self.assertEqual(transition["before_capture_view"]["remaining_seconds"], 1.0)
+        self.assertEqual(transition["before_view"], actual["controllers"][0]["view"])
+        self.assertEqual(transition["failure_state"]["episode_error_so_far"]["type"],
+                         "RuntimeError")
 
     def test_recorder_none_has_no_observer_delay_or_new_admission(self):
         actual = exercise("before_action", 2.0, recorded=False)
