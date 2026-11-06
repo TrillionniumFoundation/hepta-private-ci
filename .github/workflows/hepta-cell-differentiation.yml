@@ -93,6 +93,18 @@ jobs:
           git rev-parse HEAD 'HEAD^{tree}' > "$RUNNER_TEMP/cell-native-evidence/source.txt"
           cp codex-rs/rust-toolchain.toml "$RUNNER_TEMP/cell-native-evidence/"
           sha256sum codex-rs/Cargo.lock > "$RUNNER_TEMP/cell-native-evidence/lock.sha256"
+      - name: Build the actual Joint helper and publish Nextest metadata
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          target_dir="$(cargo metadata --locked --no-deps --format-version 1 | python3 -c 'import json, sys; print(json.load(sys.stdin)["target_directory"])')"
+          cargo build --locked -p codex-hepta-infer-worker-host --bin hepta-joint-propose
+          helper="$target_dir/debug/hepta-joint-propose"
+          test -x "$helper"
+          printf '%s\\n' "$helper" > "$RUNNER_TEMP/cell-native-evidence/joint-helper-path.txt"
+          sha256sum "$helper" > "$RUNNER_TEMP/cell-native-evidence/joint-helper.sha256"
+          printf 'NEXTEST_BIN_EXE_hepta-joint-propose=%s\\n' "$helper" >> "$GITHUB_ENV"
       - name: Run the existing package test entry point
         working-directory: codex-rs
         shell: bash
