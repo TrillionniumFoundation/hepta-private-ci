@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 from pathlib import Path
 import subprocess
 import tempfile
@@ -58,6 +59,101 @@ class CleanupConsumerTests(unittest.TestCase):
                 target.write_text("", encoding="utf-8")
             with patch.object(VERIFIER, "ROOT", root):
                 VERIFIER.verify_exact_workflow_references()
+
+    def verify_reference_text(self, text, *, existing=False):
+        with tempfile.TemporaryDirectory(
+            prefix="hepta-qualified-workflow-"
+        ) as directory:
+            root = Path(directory)
+            (root / "docs").mkdir()
+            (root / "docs/reference.md").write_text(text, encoding="utf-8")
+            for relative in VERIFIER.WORKFLOW_REFERENCE_SCRIPTS:
+                target = root / relative
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text("", encoding="utf-8")
+            if existing:
+                workflow = root / ".github/workflows/current.yml"
+                workflow.parent.mkdir(parents=True)
+                workflow.write_text("name: current\n", encoding="utf-8")
+            with patch.object(VERIFIER, "ROOT", root):
+                VERIFIER.verify_exact_workflow_references()
+
+    def test_explicit_foreign_workflow_identity_keeps_its_repository(self):
+        identity = "openai/fence/.github/workflows/missing.yml"
+        for text in (
+            identity,
+            f"`{identity}`",
+            f'"{identity}"',
+            f"'{identity}'",
+            f"({identity})",
+            f"[{identity}]",
+            f"<{identity}>",
+            json.dumps({"manifest": json.dumps({"signer_workflow": identity})}),
+            "o/repo_name.ext/.github/workflows/missing.yml",
+            "o" * 39 + "/" + "r" * 100 + "/.github/workflows/missing.yml",
+        ):
+            with self.subTest(text=text):
+                self.verify_reference_text(text)
+
+    def test_local_and_unrecognized_workflow_prefixes_still_require_a_file(self):
+        for prefix in (
+            "",
+            "./",
+            "../",
+            "/",
+            VERIFIER.REPO + "/",
+            VERIFIER.REPO.swapcase() + "/",
+            "base/openai/fence/",
+            "./openai/fence/",
+            "openai/fence/extra/",
+            "openai/",
+            "openai//",
+            "openai/fence//",
+            "bad_owner/fence/",
+            "-owner/fence/",
+            "owner-/fence/",
+            "openai/./",
+            "openai/../",
+            "o" * 40 + "/fence/",
+            "openai/" + "r" * 101 + "/",
+            "prefix+openai/fence/",
+            "prefix:openai/fence/",
+            "workflow=openai/fence/",
+            "prefix(openai/fence/",
+            "base/[openai/fence/",
+            "https://github.com/openai/fence/",
+            "https://github.com/openai/fence/blob/main/",
+            "https://example.invalid/?signer=openai/fence/",
+            "https://example.invalid/(openai/fence/",
+            "https://example.invalid/#(openai/fence/",
+            "git@github.com:openai/fence/",
+        ):
+            with self.subTest(prefix=prefix):
+                with self.assertRaisesRegex(
+                    SystemExit, "stale exact workflow references"
+                ):
+                    self.verify_reference_text(prefix + ".github/workflows/missing.yml")
+
+    def test_qualified_identity_does_not_hide_adjacent_local_references(self):
+        foreign = "openai/fence/.github/workflows/missing.yml"
+        for local in (
+            ".github/workflows/missing.yml",
+            "./.github/workflows/missing.yml",
+            VERIFIER.REPO + "/.github/workflows/missing.yml",
+        ):
+            with self.subTest(local=local):
+                with self.assertRaisesRegex(
+                    SystemExit, "stale exact workflow references"
+                ):
+                    self.verify_reference_text(f'"{foreign}", "{local}"')
+        for local in (
+            ".github/workflows/current.yml",
+            "./.github/workflows/current.yml",
+            VERIFIER.REPO + "/.github/workflows/current.yml",
+            VERIFIER.REPO.swapcase() + "/.github/workflows/current.yml",
+        ):
+            with self.subTest(existing=local):
+                self.verify_reference_text(f'"{foreign}", "{local}"', existing=True)
 
     def check_history(
         self, text, name=FIXTURE_NAME, wrong_count=False, copied_name="copied.txt"
