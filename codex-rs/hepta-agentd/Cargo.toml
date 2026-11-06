@@ -39,6 +39,7 @@ required-features = ["qualification-cognitive-write"]
 workspace = true
 
 [dependencies]
+rustix = { workspace = true, features = ["fs", "process"] }
 anyhow = { workspace = true }
 codex-app-server = { workspace = true }
 codex-app-server-client = { workspace = true }
