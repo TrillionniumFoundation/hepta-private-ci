@@ -4,9 +4,11 @@ import importlib.util
 import json
 import re
 import sys
+import tempfile
 import tomllib
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -49,24 +51,63 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
         )
 
     def public_methods(self, source_path: str, type_name: str) -> set[str]:
-        code = self.lexical_code(source_path)
-        match = re.search(rf"\bimpl\s+{re.escape(type_name)}\s*\{{", code)
-        self.assertIsNotNone(match, f"missing impl block for {type_name}")
-        assert match is not None
-        brace = code.find("{", match.start())
-        end = CALLER_PROOF._matching_delimiter(code, brace, "{", "}")
-        self.assertIsNotNone(end, f"unbalanced impl block for {type_name}")
-        assert end is not None
-        block = code[brace + 1 : end]
+        pattern = re.compile(rf"\bimpl\s+{re.escape(type_name)}\s*\{{")
+        self.assertRegex(
+            self.lexical_code(source_path), pattern, f"missing impl block for {type_name}"
+        )
         methods: set[str] = set()
-        for method in re.finditer(
-            r"\bpub\s+(?:async\s+)?fn\s+([A-Za-z_][A-Za-z0-9_]*)", block
-        ):
-            prefix = block[: method.start()]
-            depth = prefix.count("{") - prefix.count("}")
-            if depth == 0:
-                methods.add(method.group(1))
+        # An inherent impl may live in another owner module. Inspect all impl
+        # blocks in the owning source directory, not just the first anchor.
+        for path in sorted((ROOT / source_path).parent.rglob("*.rs")):
+            relative = path.relative_to(ROOT).as_posix()
+            if any(part in f"/{relative}" for part in ("/tests/", "/examples/", "_tests.rs")):
+                continue
+            code = self.lexical_code(relative)
+            for match in pattern.finditer(code):
+                brace = code.find("{", match.start())
+                end = CALLER_PROOF._matching_delimiter(code, brace, "{", "}")
+                self.assertIsNotNone(end, f"unbalanced impl block for {type_name}")
+                assert end is not None
+                block = code[brace + 1 : end]
+                for method in re.finditer(
+                    r"\bpub\s+(?:async\s+)?fn\s+([A-Za-z_][A-Za-z0-9_]*)", block
+                ):
+                    prefix = block[: method.start()]
+                    if prefix.count("{") == prefix.count("}"):
+                        methods.add(method.group(1))
         return methods
+
+    def assert_classified_methods(
+        self, source_path: str, type_name: str, classified: set[str]
+    ) -> None:
+        self.assertEqual(
+            self.public_methods(source_path, type_name),
+            classified,
+            f"{type_name}: public method classification drifted",
+        )
+
+    def test_unclassified_method_in_split_or_later_impl_cannot_hide(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "owner/src"
+            source.mkdir(parents=True)
+            (source / "lib.rs").write_text(
+                "impl Gate { pub fn old(&self) {} }\n"
+                "impl Gate { pub fn later(&self) {} }\n"
+            )
+            (source / "split.rs").write_text(
+                "impl Gate { pub async fn prepared(&self) {} }\n"
+                "#[cfg(test)] mod tests { impl Gate { pub fn fixture(&self) {} } }\n"
+            )
+            (source / "split_tests.rs").write_text(
+                "impl Gate { pub fn test_only(&self) {} }\n"
+            )
+            with patch.dict(self.public_methods.__func__.__globals__, {"ROOT": root}):
+                with self.assertRaisesRegex(AssertionError, "classification drifted"):
+                    self.assert_classified_methods("owner/src/lib.rs", "Gate", {"old"})
+                self.assert_classified_methods(
+                    "owner/src/lib.rs", "Gate", {"old", "later", "prepared"}
+                )
 
     def public_free_functions(self, source_path: str) -> set[str]:
         code = self.lexical_code(source_path)
@@ -151,11 +192,10 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
                     boundary_ids,
                     f"{type_name}::{method}: missing canonical privileged boundary",
                 )
-            observed = self.public_methods(str(row["sourcePath"]), type_name)
-            self.assertEqual(
-                observed,
+            self.assert_classified_methods(
+                str(row["sourcePath"]),
+                type_name,
                 privileged_methods | non_privileged_methods,
-                f"{type_name}: public method classification drifted",
             )
 
     def test_canonical_kernel_authority_inventory_is_declared_in_callers_manifest(self) -> None:

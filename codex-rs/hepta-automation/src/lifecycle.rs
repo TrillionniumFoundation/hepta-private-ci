@@ -241,6 +241,8 @@ impl AutomationStore {
         let next_revision = expected_revision
             .checked_add(1)
             .ok_or(AutomationError::Invalid)?;
+        self.finalize_cancelled_occurrence_intents(task_id, now_ms)
+            .await?;
         let (mut transaction, phase) = self.begin_timer_write().await?;
         if phase != crate::TimerPhase::Active {
             return Err(AutomationError::Conflict);
@@ -318,6 +320,10 @@ impl AutomationStore {
             return Err(AutomationError::AccessDenied);
         }
         let (mut transaction, _) = self.begin_timer_write().await?;
+        // A caller-supplied lease is not authority. Check the immutable run
+        // identity and the current claim inside the same writer transaction
+        // before inserting an occurrence or replacing its claim fence.
+        crate::store::verify_automation_lease_tx(&mut transaction, self, lease).await?;
         ensure_schedule_metadata(&mut transaction, self, lease.task.task_id).await?;
         if let Some(current) =
             load_occurrence_row(&mut transaction, self, lease.task.task_id, lease.occurrence)
@@ -336,6 +342,69 @@ impl AutomationStore {
             if current.claim_generation != lease.lease_generation
                 || current.claim_token != lease.lease_token
             {
+                let run_state: Option<String> = sqlx::query_scalar(
+                    "SELECT state FROM taskflow_runs WHERE owner_agent_id = ? AND run_id = ?",
+                )
+                .bind(self.taskflow_owner_agent_id().as_str())
+                .bind(&current.taskflow_run_id)
+                .fetch_optional(&mut *transaction)
+                .await
+                .map_err(unavailable)?;
+                if run_state.as_deref() == Some("running") {
+                    let contacted: bool = sqlx::query_scalar(
+                        "SELECT EXISTS(SELECT 1 FROM taskflow_effect_dispatch_attempts
+                         WHERE owner_agent_id = ? AND run_id = ?
+                           AND step_id = 'codex_turn' AND attempt = ?)",
+                    )
+                    .bind(self.taskflow_owner_agent_id().as_str())
+                    .bind(&current.taskflow_run_id)
+                    .bind(i64::from(current.step_attempt))
+                    .fetch_one(&mut *transaction)
+                    .await
+                    .map_err(unavailable)?;
+                    if contacted {
+                        return Err(AutomationError::Conflict);
+                    }
+                    // claim_due atomically revoked the old compatibility
+                    // token with no queue intent. Settle that exact historical
+                    // local step before rolling the lifecycle to a new attempt.
+                    // A provider-ledger contact cannot be inferred absent.
+                    transaction.commit().await.map_err(unavailable)?;
+                    let mut bytes = b"hepta.automation.stale-before-provider.v1\0".to_vec();
+                    bytes.extend_from_slice(current.occurrence_id.as_bytes());
+                    bytes.push(0);
+                    bytes.extend_from_slice(&current.claim_generation.to_be_bytes());
+                    bytes.extend_from_slice(current.claim_token.as_bytes());
+                    self.requeue_occurrence_taskflow_after_proven_absence(
+                        &current,
+                        &Sha256Digest::for_bytes(&bytes),
+                        now_ms,
+                    )
+                    .await
+                    .map_err(crate::store::map_taskflow_mutation_error)?;
+                    transaction = self.begin_timer_write().await?.0;
+                    crate::store::verify_automation_lease_tx(&mut transaction, self, lease).await?;
+                    let observed = load_occurrence_row(
+                        &mut transaction,
+                        self,
+                        lease.task.task_id,
+                        lease.occurrence,
+                    )
+                    .await?
+                    .ok_or(AutomationError::Corrupt)?;
+                    if observed != current {
+                        if observed.state == AutomationOccurrenceState::Claimed
+                            && observed.claim_generation == lease.lease_generation
+                            && observed.claim_token == lease.lease_token
+                        {
+                            transaction.commit().await.map_err(unavailable)?;
+                            return Ok(observed);
+                        }
+                        return Err(AutomationError::Conflict);
+                    }
+                } else if run_state.as_deref().is_some_and(|state| state != "queued") {
+                    return Err(AutomationError::Conflict);
+                }
                 let has_step_history: i64 = sqlx::query_scalar(
                     "SELECT EXISTS(
                         SELECT 1 FROM taskflow_step_outbox
@@ -620,7 +689,12 @@ impl AutomationStore {
         if current.client_user_message_id != client_user_message_id {
             return Err(AutomationError::Conflict);
         }
-        if current.state == AutomationOccurrenceState::Running {
+        if current.turn_id.is_some()
+            && matches!(
+                current.state,
+                AutomationOccurrenceState::Running | AutomationOccurrenceState::Indeterminate
+            )
+        {
             if current.turn_id.as_deref() != Some(turn_id)
                 || current.provider_payload_sha256.as_deref() != Some(provider_payload_sha256)
             {
@@ -629,21 +703,64 @@ impl AutomationStore {
             transaction.commit().await.map_err(unavailable)?;
             return Ok(current);
         }
-        if current.state != AutomationOccurrenceState::Admitted {
+        if current.turn_id.is_some()
+            || !matches!(
+                current.state,
+                AutomationOccurrenceState::Admitted | AutomationOccurrenceState::Indeterminate
+            )
+        {
             return Err(AutomationError::Conflict);
         }
+        if current.state == AutomationOccurrenceState::Indeterminate {
+            // A later trusted lookup may discover the same admitted request's
+            // turn. Claimed uncertainty alone is not proof of Core admission.
+            let admitted: bool = sqlx::query_scalar(
+                "SELECT EXISTS(SELECT 1 FROM automation_runs r
+                 JOIN automation_dispatch_outcomes d
+                   ON d.task_id = r.task_id AND d.occurrence = r.occurrence
+                 WHERE r.task_id = ? AND r.occurrence = ? AND r.state = 'submitted'
+                   AND d.outcome = 'submitted' AND r.client_user_message_id = ?
+                   AND d.client_user_message_id = r.client_user_message_id
+                   AND r.queued_submission_id = ? AND d.queued_submission_id = r.queued_submission_id)",
+            )
+            .bind(task_id.to_string())
+            .bind(to_i64(occurrence)?)
+            .bind(client_user_message_id)
+            .bind(current.queued_submission_id.as_deref())
+            .fetch_one(&mut *transaction)
+            .await
+            .map_err(unavailable)?;
+            if !admitted {
+                return Err(AutomationError::Conflict);
+            }
+        }
+        // Learning a turn identity does not settle an unknown execution result.
+        // Keep quarantine and its receipt until exact terminal reconciliation.
+        let next_state = if current.state == AutomationOccurrenceState::Indeterminate {
+            AutomationOccurrenceState::Indeterminate
+        } else {
+            AutomationOccurrenceState::Running
+        };
+        let recovery_phase = if next_state == AutomationOccurrenceState::Indeterminate {
+            "reconciliation_required"
+        } else {
+            "awaiting_terminal"
+        };
         let changed = sqlx::query(
             "UPDATE automation_occurrence_lifecycle
-             SET state = 'running', turn_id = ?, provider_payload_sha256 = ?,
+             SET state = ?, turn_id = ?, provider_payload_sha256 = ?,
                  terminal_scan_cursor = NULL,
-                 recovery_phase = 'awaiting_terminal', updated_at_ms = ?
-             WHERE task_id = ? AND occurrence = ? AND state = 'admitted'",
+                 recovery_phase = ?, updated_at_ms = ?
+             WHERE task_id = ? AND occurrence = ? AND state = ? AND turn_id IS NULL",
         )
+        .bind(next_state.as_str())
         .bind(turn_id)
         .bind(provider_payload_sha256)
+        .bind(recovery_phase)
         .bind(to_i64(observed_at_ms)?)
         .bind(task_id.to_string())
         .bind(to_i64(occurrence)?)
+        .bind(current.state.as_str())
         .execute(&mut *transaction)
         .await
         .map_err(unavailable)?;
@@ -656,7 +773,7 @@ impl AutomationStore {
             occurrence,
             &current.occurrence_id,
             "turn_persisted",
-            AutomationOccurrenceState::Running,
+            next_state,
             current.claim_generation,
             &current.claim_token,
             current.queued_submission_id.as_deref(),
@@ -698,8 +815,10 @@ impl AutomationStore {
         let current = load_occurrence_row(&mut transaction, self, task_id, occurrence)
             .await?
             .ok_or(AutomationError::Conflict)?;
-        if current.state != AutomationOccurrenceState::Running
-            || current.turn_id.as_deref() != Some(turn_id)
+        if !matches!(
+            current.state,
+            AutomationOccurrenceState::Running | AutomationOccurrenceState::Indeterminate
+        ) || current.turn_id.as_deref() != Some(turn_id)
             || current.terminal_scan_cursor.as_deref() != expected_cursor
         {
             return Err(AutomationError::Conflict);
@@ -707,7 +826,7 @@ impl AutomationStore {
         let changed = sqlx::query(
             "UPDATE automation_occurrence_lifecycle
              SET terminal_scan_cursor = ?, updated_at_ms = ?
-             WHERE task_id = ? AND occurrence = ? AND state = 'running'
+             WHERE task_id = ? AND occurrence = ? AND state = ?
                AND turn_id = ?
                AND ((terminal_scan_cursor IS NULL AND ? IS NULL)
                     OR terminal_scan_cursor = ?)",
@@ -716,6 +835,7 @@ impl AutomationStore {
         .bind(to_i64(observed_at_ms)?)
         .bind(task_id.to_string())
         .bind(to_i64(occurrence)?)
+        .bind(current.state.as_str())
         .bind(turn_id)
         .bind(expected_cursor)
         .bind(expected_cursor)
@@ -726,6 +846,73 @@ impl AutomationStore {
             return Err(AutomationError::Conflict);
         }
         let next = load_occurrence_row(&mut transaction, self, task_id, occurrence)
+            .await?
+            .ok_or(AutomationError::Corrupt)?;
+        transaction.commit().await.map_err(unavailable)?;
+        Ok(next)
+    }
+
+    /// Reset a completed known-turn history scan to the head without settling
+    /// its unknown outcome. Exact snapshot CAS excludes a stale observer from
+    /// erasing newer cursor or lifecycle progress, including a reused cursor.
+    pub async fn reset_terminal_scan_after_exhaustion(
+        &self,
+        observed: &AutomationOccurrence,
+        observed_at_ms: u64,
+    ) -> Result<AutomationOccurrence, AutomationError> {
+        if observed.state != AutomationOccurrenceState::Indeterminate
+            || observed
+                .turn_id
+                .as_ref()
+                .is_none_or(|turn| turn.is_empty() || turn.len() > 256)
+            || observed
+                .terminal_scan_cursor
+                .as_ref()
+                .is_some_and(|cursor| {
+                    cursor.is_empty() || cursor.len() > MAX_TERMINAL_SCAN_CURSOR_BYTES
+                })
+        {
+            return Err(AutomationError::Invalid);
+        }
+        let (mut transaction, _) = self.begin_timer_write().await?;
+        let current = load_occurrence_row(
+            &mut transaction,
+            self,
+            observed.task_id,
+            observed.occurrence,
+        )
+        .await?
+        .ok_or(AutomationError::Conflict)?;
+        if current != *observed {
+            return Err(AutomationError::Conflict);
+        }
+        if current.terminal_scan_cursor.is_none() {
+            transaction.commit().await.map_err(unavailable)?;
+            return Ok(current);
+        }
+        let updated_at_ms = observed_at_ms.max(
+            current
+                .updated_at_ms
+                .checked_add(1)
+                .ok_or(AutomationError::Invalid)?,
+        );
+        let changed = sqlx::query(
+            "UPDATE automation_occurrence_lifecycle SET terminal_scan_cursor = NULL, updated_at_ms = ?
+             WHERE owner_agent_id = ? AND task_id = ? AND occurrence = ? AND state = 'indeterminate'
+               AND turn_id = ? AND terminal_scan_cursor = ? AND updated_at_ms = ?",
+        )
+        .bind(to_i64(updated_at_ms)?)
+        .bind(self.taskflow_owner_agent_id().as_str())
+        .bind(current.task_id.to_string())
+        .bind(to_i64(current.occurrence)?)
+        .bind(current.turn_id.as_deref())
+        .bind(current.terminal_scan_cursor.as_deref())
+        .bind(to_i64(current.updated_at_ms)?)
+        .execute(&mut *transaction).await.map_err(unavailable)?;
+        if changed.rows_affected() != 1 {
+            return Err(AutomationError::Conflict);
+        }
+        let next = load_occurrence_row(&mut transaction, self, current.task_id, current.occurrence)
             .await?
             .ok_or(AutomationError::Corrupt)?;
         transaction.commit().await.map_err(unavailable)?;
@@ -844,6 +1031,30 @@ impl AutomationStore {
         let claimed_absence_cancel = current.state == AutomationOccurrenceState::Claimed
             && terminal == AutomationOccurrenceTerminalState::Cancelled;
         if claimed_absence_cancel {
+            let compatible: Option<bool> = sqlx::query_scalar(
+                "SELECT state = 'leased' OR (state = 'cancelled'
+                    AND NOT EXISTS(SELECT 1 FROM automation_dispatch_outcomes d
+                        WHERE d.task_id = r.task_id AND d.occurrence = r.occurrence)
+                    AND NOT EXISTS(SELECT 1 FROM taskflow_effect_dispatch_attempts a
+                        WHERE a.owner_agent_id = ? AND a.run_id = ?
+                          AND a.step_id = 'codex_turn' AND a.attempt = ?))
+                 FROM automation_runs r WHERE task_id = ? AND occurrence = ?
+                   AND client_user_message_id = ? AND schedule_revision = ? AND scheduled_for_ms = ?",
+            )
+            .bind(self.taskflow_owner_agent_id().as_str())
+            .bind(&current.taskflow_run_id)
+            .bind(i64::from(current.step_attempt))
+            .bind(task_id.to_string())
+            .bind(to_i64(occurrence)?)
+            .bind(&current.client_user_message_id)
+            .bind(to_i64(current.schedule_revision)?)
+            .bind(to_i64(current.scheduled_for_ms)?)
+            .fetch_optional(&mut *transaction)
+            .await
+            .map_err(unavailable)?;
+            if compatible != Some(true) {
+                return Err(AutomationError::Conflict);
+            }
             let command_id = format!(
                 "automation:run:cancel-absent:{}:{}",
                 current.occurrence_id, current.step_attempt
@@ -967,7 +1178,9 @@ impl AutomationStore {
             completed_at_ms,
         )
         .await?;
-        if current.overlap == AutomationOverlapPolicy::Forbid {
+        if current.overlap == AutomationOverlapPolicy::Forbid
+            && current.state != AutomationOccurrenceState::Claimed
+        {
             advance_schedule(
                 &mut transaction,
                 self,

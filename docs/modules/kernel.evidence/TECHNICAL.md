@@ -158,6 +158,14 @@ Projection domains rebuild from declared sources and publish complete generation
 
 The [current native implementation](../../../qualification/module-execution-dossiers/detail/kernel.evidence.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, current-trust verification, signed recovery-frontier startup gate and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.evidence.md).
 
+`recovery_snapshot` reads the migration, qualification and AuthBus replay frontiers
+inside one read-only SQLite transaction. Qualification append advances its receipt
+and replay sequence atomically; separate pool reads could combine a pre-append
+receipt frontier with a post-append replay frontier. A concurrent receipt may be
+absent from the captured cut, but the cut itself must be coherent. The next snapshot
+observes later commits. This read snapshot neither reserves effect authority nor
+replaces the independent signed latest-frontier/restore check.
+
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
 ## 8. Failure semantics, recovery and rollback
@@ -203,8 +211,10 @@ Current focused test sources (source references, not pass receipts):
 - [codex-rs/hepta-agentd/tests/kernel_evidence_product.rs](../../../codex-rs/hepta-agentd/tests/kernel_evidence_product.rs): real daemon append/query/verify, wrong candidate/role, replay/expiry, stale/revoked keys, distinct reviewer identities, terminal observer, current verification trust and signed recovery-frontier old-image rejection.
 - [codex-rs/hepta-evidence/src/authbus_outbox_issuer_tests.rs](../../../codex-rs/hepta-evidence/src/authbus_outbox_issuer_tests.rs); named case: `current_issuer_scan_cannot_be_starved_by_older_epochs_or_other_issuers`.
 - [codex-rs/hepta-evidence/src/authbus_outbox_quarantine_tests.rs](../../../codex-rs/hepta-evidence/src/authbus_outbox_quarantine_tests.rs); named case: `quarantine_requires_current_fence_and_survives_reopen_without_acknowledgement`.
+- [codex-rs/hepta-evidence/src/recovery_frontier_tests.rs](../../../codex-rs/hepta-evidence/src/recovery_frontier_tests.rs): pauses the actual read-only SQLite observer while a genuine signed receipt and replay fence commit, verifies one complete earlier cut, then verifies the later cut after reopen.
+- The global outbox capacity fixture uses independent issuer buckets below each issuer's active-message limit. It separately checks global capacity, terminal-only pruning and consumed replay; the per-issuer capacity regression remains unchanged.
 
-In `codex-rs`, run `just test -p codex-hepta-evidence` and `cargo test -p codex-hepta-agentd --test kernel_evidence_product`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.evidence.md) separately labels target acceptance designs.
+In `codex-rs`, run `just test -p codex-hepta-evidence` and `just test -p codex-hepta-agentd --test kernel_evidence_product`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.evidence.md) separately labels target acceptance designs.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 

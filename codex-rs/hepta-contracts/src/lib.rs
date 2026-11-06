@@ -44,6 +44,7 @@ pub use final_use::FinalUseGrant;
 pub use final_use::FinalUseIssuerTrustKey;
 pub use final_use::FinalUseRevocations;
 pub use final_use::SignedFinalUseGrant;
+pub use final_use::VerifiedPreparationEvidence;
 pub use final_use::VerifiedUseToken;
 pub use final_use::claim_final_use;
 pub use final_use::deliver_final_use;

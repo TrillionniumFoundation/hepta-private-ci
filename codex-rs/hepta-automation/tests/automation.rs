@@ -279,6 +279,50 @@ async fn prepare_direct_dispatch(store: &AutomationStore, lease: &AutomationLeas
 }
 
 #[tokio::test]
+async fn scheduler_does_not_backdate_first_contact_after_waiting_for_the_writer() {
+    let fixture = FleetFixture::new(/*count*/ 1);
+    let layout = &fixture.layouts[0];
+    let store = AutomationStore::open(layout).await.unwrap();
+    let task = draft(
+        "019153a4-3088-7000-a56a-9b1964f75032",
+        AutomationSchedule::Once,
+        /*due*/ 100,
+    );
+    store.create_task(&task).await.unwrap();
+    let sqlite_home = AbsolutePathBuf::from_absolute_path(layout.automation_root()).unwrap();
+    let blocker = SqliteConfig::from_sqlite_home(sqlite_home)
+        .open_durable_evidence_pool(store.path())
+        .await
+        .unwrap();
+    let reservation = blocker.begin_with("BEGIN IMMEDIATE").await.unwrap();
+    let queue = Arc::new(RecordingQueue::default());
+    let scheduler = AutomationScheduler::new(
+        store.clone(),
+        Arc::clone(&queue),
+        /*generation*/ 1,
+        Duration::from_millis(100),
+        Duration::from_millis(10),
+    )
+    .unwrap();
+    let tick = scheduler.tick(/*now_ms*/ 100);
+    tokio::pin!(tick);
+    tokio::select! {
+        biased;
+        result = &mut tick => panic!("writer reservation should block tick: {result:?}"),
+        () = tokio::time::sleep(Duration::from_millis(200)) => {}
+    }
+    reservation.commit().await.unwrap();
+    assert_eq!(tick.await, Err(AutomationError::Conflict));
+    assert_eq!(queue.admissions().await, Vec::new());
+    assert_eq!(
+        store.uncertain_dispatches(/*limit*/ 1).await.unwrap(),
+        Vec::new()
+    );
+    blocker.close().await;
+    store.close().await;
+}
+
+#[tokio::test]
 async fn drain_blockers_require_classification_but_allow_durable_uncertainty() {
     let fixture = FleetFixture::new(1);
     let store = AutomationStore::open(&fixture.layouts[0])
@@ -319,6 +363,44 @@ async fn drain_blockers_require_classification_but_allow_durable_uncertainty() {
     assert_eq!(unknown.len(), 1);
     assert_eq!(unknown[0].task_id, task.task_id);
     assert_eq!(unknown[0].occurrence, lease.occurrence);
+
+    store
+        .reconcile_uncertain_occurrence_absent(
+            task.task_id,
+            lease.occurrence,
+            &lease.client_user_message_id,
+            &Sha256Digest::for_bytes(b"graceful drain provider absence"),
+            /*observed_at_ms*/ 102,
+        )
+        .await
+        .expect("prove old dispatch absent");
+    assert_eq!(
+        store.drain_blockers().await.expect("safe pending backlog"),
+        0
+    );
+    let retry = store
+        .claim_due(
+            /*now_ms*/ 103, /*generation*/ 2, /*lease_duration_ms*/ 60_000,
+        )
+        .await
+        .expect("retry claim")
+        .expect("same occurrence retry");
+    assert_eq!(store.drain_blockers().await.expect("active retry lease"), 1);
+    prepare_direct_dispatch(&store, &retry, /*now_ms*/ 104).await;
+    assert_eq!(store.drain_blockers().await.expect("retry uncertainty"), 0);
+    store
+        .record_occurrence_admitted(
+            &retry,
+            &AutomationQueueReceipt {
+                queued_submission_id: "drain.queue.receipt".to_string(),
+                client_user_message_id: retry.client_user_message_id.clone(),
+            },
+            /*admitted_at_ms*/ 105,
+        )
+        .await
+        .expect("admit retry");
+    assert_eq!(store.drain_blockers().await.expect("admitted blocker"), 1);
+    store.close().await;
 }
 
 #[tokio::test]
@@ -971,6 +1053,13 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
     // Keep the schema rewind on one connection so each DDL statement sees
     // the preceding change, and publish the complete v1 fixture atomically.
     let mut rewind = pool.begin().await.expect("begin legacy schema rewind");
+    // Timer lifecycle triggers refer to the dispatch and occurrence tables.
+    // Remove the owning table first so SQLite never sees dangling trigger SQL
+    // while validating the later v1 column rewind.
+    sqlx::query("DROP TABLE automation_timer_lifecycle")
+        .execute(&mut *rewind)
+        .await
+        .expect("drop post-v1 timer lifecycle and its triggers");
     sqlx::query("DROP INDEX automation_dispatch_outcome_state_idx")
         .execute(&mut *rewind)
         .await
@@ -983,6 +1072,7 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
     // Remove every post-v1 object in reverse dependency order, then rewind the
     // migration ledger so reopening exercises the real v1 -> latest path.
     for statement in [
+        "DROP TABLE IF EXISTS destination_operation_dedupe",
         "DROP TRIGGER IF EXISTS automation_legacy_dispatch_reconciliations_no_update",
         "DROP TRIGGER IF EXISTS automation_legacy_dispatch_reconciliations_no_delete",
         "DROP TABLE IF EXISTS automation_legacy_dispatch_reconciliations",
@@ -993,6 +1083,8 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
         "DROP TRIGGER IF EXISTS automation_task_default_policy",
         "DROP TABLE IF EXISTS taskflow_effect_dispatch_reconciliations",
         "DROP TABLE IF EXISTS taskflow_effect_dispatch_observations",
+        "DROP TABLE IF EXISTS taskflow_effect_provider_acceptances",
+        "DROP TABLE IF EXISTS taskflow_effect_preparation_evidence",
         "DROP TABLE IF EXISTS taskflow_effect_dispatch_attempts",
         "DROP TABLE IF EXISTS automation_calendar_schedule_versions",
         "DROP TABLE IF EXISTS automation_occurrence_events",

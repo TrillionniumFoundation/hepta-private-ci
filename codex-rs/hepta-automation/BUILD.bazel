@@ -4,7 +4,10 @@ load("//:defs.bzl", "WINDOWS_RUSTC_LINK_FLAGS", "codex_rust_crate", "workspace_r
 
 codex_rust_crate(
     name = "hepta-automation",
-    compile_data = glob(["migrations/**"]),
+    compile_data = glob([
+        "migrations/**",
+        "tests/fixtures/**",
+    ]),
     crate_name = "codex_hepta_automation",
 )
 
@@ -14,7 +17,10 @@ rust_library(
     name = "hepta-automation-taskflow-qualification-lib",
     testonly = True,
     srcs = glob(["src/**/*.rs"]),
-    compile_data = glob(["migrations/**"]),
+    compile_data = glob([
+        "migrations/**",
+        "tests/fixtures/**",
+    ]),
     crate_features = ["taskflow-structural-qualification"],
     crate_name = "codex_hepta_automation",
     crate_root = "src/lib.rs",

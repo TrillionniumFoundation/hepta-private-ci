@@ -129,6 +129,19 @@ impl AutomationStore {
         if !status.can_handoff() {
             return Err(AutomationError::Conflict);
         }
+        // A successor can settle admitted occurrences after handoff, but a
+        // permanent retirement fences every future lifecycle write. Retain
+        // the draining owner until those occurrences actually settle.
+        let unsettled: i64 = sqlx::query_scalar(
+            "SELECT COUNT(*) FROM automation_occurrence_lifecycle
+             WHERE state IN ('admitted', 'running', 'indeterminate')",
+        )
+        .fetch_one(&mut *transaction)
+        .await
+        .map_err(unavailable)?;
+        if unsettled != 0 {
+            return Err(AutomationError::Conflict);
+        }
         let next = self
             .timer_epoch()
             .checked_add(1)
@@ -185,7 +198,9 @@ pub(super) async fn read_status(
         "SELECT writer_epoch, phase,
              (SELECT COUNT(*) FROM automation_runs WHERE state = 'pending') AS pending,
              (SELECT COUNT(*) FROM automation_runs WHERE state = 'leased') AS leased,
-             (SELECT COUNT(*) FROM automation_dispatch_outcomes WHERE outcome = 'uncertain') AS uncertain
+             (SELECT COUNT(*) FROM automation_dispatch_outcomes WHERE outcome = 'uncertain') AS uncertain,
+             (SELECT COUNT(*) FROM automation_occurrence_lifecycle
+              WHERE state IN ('admitted', 'running', 'indeterminate')) AS unsettled
          FROM automation_timer_lifecycle WHERE singleton = 1",
     )
     .fetch_optional(&mut **transaction)
@@ -208,7 +223,9 @@ pub(super) async fn read_status(
         uncertain_dispatches: count("uncertain")?,
     };
     if status.phase == TimerPhase::Retired
-        && (status.leased_occurrences != 0 || status.uncertain_dispatches != 0)
+        && (status.leased_occurrences != 0
+            || status.uncertain_dispatches != 0
+            || count("unsettled")? != 0)
     {
         return Err(AutomationError::Corrupt);
     }

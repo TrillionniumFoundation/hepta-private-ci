@@ -18,6 +18,7 @@
 
 mod path;
 mod remote;
+mod remote_send_guard;
 
 use std::error::Error;
 use std::fmt;

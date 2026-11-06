@@ -51,6 +51,14 @@ The registered primary source is [codex-rs/hepta-contracts/src/final_use.rs](../
 
 ## 3. Boundary, responsibilities and non-goals
 
+The additive owner-preparation boundary lives in
+[final_use_async_prepare.rs](../../../codex-rs/hepta-contracts/src/final_use_async_prepare.rs).
+Its opaque preparation evidence, fresh post-await trusted-time validation and
+cancellation semantics are specified in [LINEARIZATION.md](LINEARIZATION.md).
+The two existing TaskFlow driver seams consume it; their schema24 audit record
+is not dispatch or recovery authority. This source addition does not renew the
+module's historical qualification, trust provisioning or production acceptance.
+
 Direct dependencies:
 
 - `platform.types`

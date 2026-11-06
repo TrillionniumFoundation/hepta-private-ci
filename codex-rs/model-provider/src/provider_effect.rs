@@ -3,12 +3,11 @@
 //! The normal Responses/Bedrock model transports are request/response APIs;
 //! neither currently exposes a provider-visible occurrence key, durable
 //! status lookup, and key+payload-bound effect acknowledgement.  This module
-//! therefore provides only two safe pieces today: a canonical header builder
-//! for a future qualified adapter, and a fail-closed adapter that refuses to
-//! dispatch when the provider contract is not qualified.
+//! provides canonical wire binding, an explicitly attested HTTP effect adapter,
+//! and a fail-closed adapter for unqualified provider contracts. The normal
+//! model-provider factory does not create the attested effect adapter.
 
 use std::fmt;
-use std::net::IpAddr;
 use std::time::Duration;
 
 use codex_hepta_contracts::ProviderEffectAck;
@@ -34,6 +33,7 @@ use http::HeaderMap;
 use http::HeaderName;
 use http::HeaderValue;
 use serde::Deserialize;
+use url::Host;
 use url::Url;
 
 /// Header carrying the stable occurrence identity to a provider adapter.
@@ -319,9 +319,22 @@ impl HttpProviderEffectAdapter {
         &self.config
     }
 
-    async fn body(response: codex_http_client::HttpResponse) -> Option<Vec<u8>> {
-        let bytes = response.bytes().await.ok()?;
-        (bytes.len() <= 65_536).then(|| bytes.to_vec())
+    async fn body(mut response: codex_http_client::HttpResponse) -> Option<Vec<u8>> {
+        const MAX_BODY_BYTES: usize = 65_536;
+        if response
+            .content_length()
+            .is_some_and(|length| length > MAX_BODY_BYTES as u64)
+        {
+            return None;
+        }
+        let mut bytes = Vec::new();
+        while let Some(chunk) = response.chunk().await.ok()? {
+            if chunk.len() > MAX_BODY_BYTES.saturating_sub(bytes.len()) {
+                return None;
+            }
+            bytes.extend_from_slice(&chunk);
+        }
+        Some(bytes)
     }
 
     async fn dispatch_http(
@@ -571,13 +584,13 @@ fn validate_effect_endpoint(raw: &str) -> Result<Url, String> {
         return Err("effect endpoint URL must not contain credentials".to_string());
     }
     let host = url
-        .host_str()
+        .host()
         .ok_or_else(|| "effect endpoint URL must contain a host".to_string())?;
-    let loopback = host.eq_ignore_ascii_case("localhost")
-        || host
-            .parse::<IpAddr>()
-            .map(|address| address.is_loopback())
-            .unwrap_or(false);
+    let loopback = match host {
+        Host::Domain(host) => host.eq_ignore_ascii_case("localhost"),
+        Host::Ipv4(address) => address.is_loopback(),
+        Host::Ipv6(address) => address.is_loopback(),
+    };
     if url.scheme() != "https" && !(url.scheme() == "http" && loopback) {
         return Err("effect endpoints must use HTTPS except loopback fixtures".to_string());
     }
@@ -632,6 +645,9 @@ mod tests {
     use codex_hepta_contracts::Sha256Digest;
     use ed25519_dalek::Signer;
     use ed25519_dalek::SigningKey;
+    use pretty_assertions::assert_eq;
+    use tokio::io::AsyncReadExt;
+    use tokio::io::AsyncWriteExt;
     use wiremock::Mock;
     use wiremock::MockServer;
     use wiremock::ResponseTemplate;
@@ -706,6 +722,47 @@ mod tests {
         ProviderEffectIntent::new(key, Sha256Digest::for_bytes(b"payload"))
     }
 
+    #[tokio::test]
+    async fn oversized_chunked_ack_is_rejected_without_waiting_for_eof() {
+        let listener = tokio::net::TcpListener::bind("127.0.0.1:0")
+            .await
+            .expect("listen");
+        let uri = format!("http://{}", listener.local_addr().expect("listen address"));
+        let (close, keep_open) = tokio::sync::oneshot::channel::<()>();
+        let server = tokio::spawn(async move {
+            let (mut stream, _) = listener.accept().await.expect("provider connection");
+            let mut request = [0; 4096];
+            assert!(stream.read(&mut request).await.expect("provider request") > 0);
+            stream
+                .write_all(b"HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\n\r\n10001\r\n")
+                .await
+                .expect("chunked response headers");
+            stream
+                .write_all(&vec![b'x'; 65_537])
+                .await
+                .expect("oversized chunk");
+            stream.write_all(b"\r\n").await.expect("chunk end");
+            // No final chunk or EOF: the size bound must terminate the read.
+            keep_open.await.expect("close signal");
+        });
+        let adapter = HttpProviderEffectAdapter::new(attested_fixture_config(
+            &uri,
+            "oversized-ack-contract",
+            /*authority_epoch*/ 1,
+            /*signing_seed*/ 13,
+        ))
+        .expect("fixture adapter");
+        let dispatch = tokio::time::timeout(
+            Duration::from_secs(1),
+            adapter.dispatch_with_payload(&intent(), b"payload"),
+        )
+        .await
+        .expect("oversized body must stop before provider deadline or EOF");
+        assert_eq!(dispatch, ProviderEffectDispatch::Unknown);
+        close.send(()).expect("close provider");
+        server.await.expect("provider server");
+    }
+
     #[test]
     fn headers_bind_stable_key_and_exact_payload_digest() {
         let wire_payload = b"payload";
@@ -764,6 +821,30 @@ mod tests {
         assert_eq!(
             adapter.lookup(&intent().key).await,
             ProviderEffectLookup::Unknown
+        );
+    }
+
+    #[test]
+    fn attested_http_adapter_accepts_ipv6_loopback_fixture_only() {
+        let config = attested_fixture_config(
+            "http://[::1]:9",
+            "ipv6-loopback-contract",
+            /*authority_epoch*/ 1,
+            /*signing_seed*/ 14,
+        );
+        let adapter = HttpProviderEffectAdapter::new(config).expect("IPv6 loopback fixture");
+        assert_eq!(
+            adapter.capability(),
+            ProviderEffectIdempotencyCapability::KeyAndStatusLookup
+        );
+        let mut config = adapter.config().clone();
+        config.dispatch_url = "http://[2001:db8::1]:9/dispatch".to_string();
+        config.lookup_url_template = "http://[2001:db8::1]:9/status/{key}".to_string();
+        assert_eq!(
+            config
+                .contract_sha256()
+                .expect_err("non-loopback HTTP remains forbidden"),
+            "effect endpoints must use HTTPS except loopback fixtures"
         );
     }
 

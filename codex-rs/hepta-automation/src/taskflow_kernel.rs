@@ -38,8 +38,9 @@ const MAX_ID_BYTES: usize = 256;
 /// A deterministic, read-only view of the graph frontier for one run.
 ///
 /// `frontier_nodes` contains the sorted immediate successors of an active
-/// current node.  Waiting, indeterminate, and terminal runs expose an empty
-/// frontier so a caller cannot mistake this view for permission to execute.
+/// current node. Waiting, retry-backoff, indeterminate, and terminal runs
+/// expose an empty frontier so a caller cannot mistake this view for permission
+/// to execute.
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct TaskFlowFrontier {
@@ -89,7 +90,9 @@ impl TaskFlowDefinition {
         let blocked = terminal
             || matches!(
                 state,
-                TaskFlowRunState::Waiting | TaskFlowRunState::Indeterminate
+                TaskFlowRunState::Waiting
+                    | TaskFlowRunState::RetryBackoff
+                    | TaskFlowRunState::Indeterminate
             );
         let frontier_nodes = if blocked {
             Vec::new()

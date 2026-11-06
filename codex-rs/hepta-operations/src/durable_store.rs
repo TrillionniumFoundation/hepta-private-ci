@@ -114,6 +114,8 @@ impl DurableOperationStore {
             return Err(DurableOperationError::Invalid("self predecessor"));
         }
         let semantic_digest = intent.semantic_digest();
+        // Sample the internal clock after writer admission: a queued writer's
+        // earlier sample must not look like rollback against a later commit.
         let mut tx = self
             .pool
             .begin_with("BEGIN IMMEDIATE")
@@ -427,7 +429,6 @@ impl DurableOperationStore {
         let binding = claim.intent.final_use_binding();
         let signing_bytes = signed.grant.signing_bytes()?;
         let authority_digest = Digest32::of_bytes(&signing_bytes);
-        let token = authority.claim(signed, &binding)?;
         let mut tx = self
             .pool
             .begin_with("BEGIN IMMEDIATE")
@@ -445,6 +446,11 @@ impl DurableOperationStore {
                 to: "dispatching",
             });
         }
+        let token = authority.claim(signed, &binding)?;
+        // Authority admission can wait on its own durable writer. Recheck the
+        // lease with the current clock before persisting dispatch admission.
+        let now = now_millis()?;
+        require_current_lease(&mut tx, claim, now).await?;
         let revision = next_revision(operation.revision)?;
         sqlx::query(
             "UPDATE operation_ledger SET state = 'dispatching', authority_epoch = ?,
@@ -474,14 +480,51 @@ impl DurableOperationStore {
     /// persist its classified outcome. Async adapters should make their actual
     /// side-effect entry synchronous (for example enqueue to an owner runtime)
     /// and reconcile any later uncertainty through `observe_terminal`.
+    /// The callback must be bounded and must not synchronously reenter this
+    /// source store or wait for remote execution. A source writer fence spans
+    /// only this local entry; owner runtimes perform any later work separately.
     pub async fn execute_authorized<T>(
         &self,
         authorized: AuthorizedDispatch,
         effect: impl FnOnce(&OperationIntentV1) -> DispatchEffect<T>,
     ) -> Result<T, DurableOperationError> {
         let claim = authorized.claim.clone();
-        let observation = match authorized.enter(effect) {
-            Ok(observation) => observation,
+        let mut tx = self
+            .pool
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(sqlx_error)?;
+        let now = now_millis()?;
+        let status = require_current_lease(&mut tx, &claim, now).await?;
+        let operation =
+            load_operation_tx(&mut tx, &claim.intent.scope_id, &claim.intent.operation_id)
+                .await?
+                .ok_or_else(|| DurableOperationError::Missing(claim.intent.operation_id.clone()))?;
+        if operation.state != DurableOperationState::Dispatching {
+            return Err(DurableOperationError::InvalidTransition {
+                from: operation.state,
+                to: "effect_entry",
+            });
+        }
+        let lease_until = status
+            .lease_until_unix_ms
+            .ok_or(DurableOperationError::StaleLease)?;
+        let observation = authorized.enter(|intent| {
+            // Final-use validation may wait. The writer still excludes owner
+            // takeover, while this check covers expiry before actual entry.
+            let now = to_u64(now_millis()?)?;
+            if now < operation.updated_at_unix_ms || now < status.updated_at_unix_ms {
+                return Err(DurableOperationError::ClockRollback);
+            }
+            if lease_until <= now {
+                return Err(DurableOperationError::StaleLease);
+            }
+            Ok(effect(intent))
+        });
+        tx.rollback().await.map_err(sqlx_error)?;
+        let observation = match observation {
+            Ok(Ok(observation)) => observation,
+            Ok(Err(error)) => return Err(error),
             Err(error) => {
                 self.release_not_dispatched(
                     &claim,
@@ -492,7 +535,7 @@ impl DurableOperationStore {
                 return Err(error);
             }
         };
-        match observation {
+        let (value, projection) = match observation {
             DispatchEffect::Dispatched {
                 value,
                 dispatch_digest,
@@ -505,35 +548,73 @@ impl DurableOperationStore {
                         .await?;
                     return Err(DurableOperationError::Invalid("dispatch evidence digest"));
                 }
-                self.record_dispatch(&claim, dispatch_digest).await?;
-                match acknowledgement_digest {
-                    Some(acknowledgement) => {
-                        self.acknowledge_outbox(&claim, acknowledgement).await?;
-                    }
-                    None => {
-                        self.mark_indeterminate(&claim, Digest32::of_bytes(ACK_LOST_DIGEST_DOMAIN))
+                let projection = async {
+                    self.record_dispatch(&claim, dispatch_digest).await?;
+                    match acknowledgement_digest {
+                        Some(acknowledgement) => {
+                            self.acknowledge_outbox(&claim, acknowledgement).await?;
+                        }
+                        None => {
+                            self.mark_indeterminate(
+                                &claim,
+                                Digest32::of_bytes(ACK_LOST_DIGEST_DOMAIN),
+                            )
                             .await?;
+                        }
                     }
+                    Ok(())
                 }
-                Ok(value)
+                .await;
+                (value, projection)
             }
             DispatchEffect::NotDispatched {
                 value,
                 reason_digest,
                 retry_after,
             } => {
-                self.release_not_dispatched(&claim, reason_digest, retry_after)
-                    .await?;
-                Ok(value)
+                let projection = self
+                    .release_not_dispatched(&claim, reason_digest, retry_after)
+                    .await;
+                (value, projection)
             }
             DispatchEffect::Indeterminate {
                 value,
                 reason_digest,
             } => {
-                self.mark_indeterminate(&claim, reason_digest).await?;
-                Ok(value)
+                let projection = self
+                    .mark_indeterminate(&claim, reason_digest)
+                    .await
+                    .map(|_| ());
+                (value, projection)
             }
+        };
+        if let Err(error) = projection {
+            // A destination owner can settle before transport bookkeeping.
+            // Only this already-entered dispatch may recognize its exact
+            // immutable Applied receipt; other stale calls remain rejected.
+            if matches!(
+                error,
+                DurableOperationError::StaleLease
+                    | DurableOperationError::Conflict(_)
+                    | DurableOperationError::InvalidTransition { .. }
+            ) && let Some(terminal) = self
+                .operation(&claim.intent.scope_id, &claim.intent.operation_id)
+                .await?
+                && terminal.intent == claim.intent
+                && terminal.writer_fence == claim.fence
+                && terminal.intent.owner_generation == claim.owner_generation
+                && terminal.state == DurableOperationState::Applied
+                && terminal.terminal_outcome == Some(ReconciliationOutcome::Applied)
+                && terminal.terminal_observer_generation == Some(claim.owner_generation)
+                && terminal
+                    .terminal_evidence_digest
+                    .is_some_and(|digest| !digest.is_zero())
+            {
+                return Ok(value);
+            }
+            return Err(error);
         }
+        Ok(value)
     }
 
     pub async fn record_dispatch(
@@ -610,6 +691,9 @@ impl DurableOperationStore {
         )
         .await?
         .ok_or_else(|| DurableOperationError::Missing(claim.intent.operation_id.clone()))?;
+        if status.intent != claim.intent {
+            return Err(DurableOperationError::StaleLease);
+        }
         if status.state == DurableOutboxState::Acknowledged {
             if status.acknowledgement_digest == Some(acknowledgement_digest) {
                 tx.commit().await.map_err(sqlx_error)?;
@@ -671,6 +755,9 @@ impl DurableOperationStore {
             load_operation_tx(&mut tx, &claim.intent.scope_id, &claim.intent.operation_id)
                 .await?
                 .ok_or_else(|| DurableOperationError::Missing(claim.intent.operation_id.clone()))?;
+        if operation.intent != claim.intent {
+            return Err(DurableOperationError::StaleLease);
+        }
         if operation.state == DurableOperationState::Indeterminate
             && operation.indeterminate_digest == Some(reason_digest)
         {
@@ -833,89 +920,7 @@ impl DurableOperationStore {
         let operation = load_operation_tx(&mut tx, scope_id, operation_id)
             .await?
             .ok_or_else(|| DurableOperationError::Missing(operation_id.clone()))?;
-        if operation.intent.owner_generation != receipt.observer_generation {
-            return Err(DurableOperationError::StaleGeneration);
-        }
-        if operation.state.is_terminal() {
-            if operation.terminal_outcome == Some(receipt.outcome)
-                && operation.terminal_evidence_digest == Some(receipt.evidence_digest)
-                && operation.terminal_observer_id.as_ref() == Some(&receipt.observer_id)
-                && operation.terminal_observer_generation == Some(receipt.observer_generation)
-            {
-                tx.commit().await.map_err(sqlx_error)?;
-                return Ok(operation);
-            }
-            return Err(DurableOperationError::Conflict(operation_id.clone()));
-        }
-        if !matches!(
-            operation.state,
-            DurableOperationState::Dispatching
-                | DurableOperationState::Dispatched
-                | DurableOperationState::Indeterminate
-        ) {
-            return Err(DurableOperationError::InvalidTransition {
-                from: operation.state,
-                to: "terminal_observation",
-            });
-        }
-        let state = match receipt.outcome {
-            ReconciliationOutcome::Applied => DurableOperationState::Applied,
-            ReconciliationOutcome::NotApplied => DurableOperationState::NotApplied,
-            ReconciliationOutcome::Quarantined => DurableOperationState::Quarantined,
-        };
-        let revision = next_revision(operation.revision)?;
-        sqlx::query(
-            "UPDATE operation_ledger SET state = ?, terminal_outcome = ?,
-             terminal_evidence_digest = ?, terminal_observer_id = ?,
-             terminal_observer_generation = ?, revision = ?, updated_at_ms = ?, terminal_at_ms = ?
-             WHERE scope_id = ? AND operation_id = ?",
-        )
-        .bind(state.as_str())
-        .bind(state.as_str())
-        .bind(receipt.evidence_digest.as_array().as_slice())
-        .bind(receipt.observer_id.as_str())
-        .bind(encode_u64(receipt.observer_generation.get()))
-        .bind(to_i64(revision)?)
-        .bind(now)
-        .bind(now)
-        .bind(scope_id.as_str())
-        .bind(operation_id.as_str())
-        .execute(&mut *tx)
-        .await
-        .map_err(sqlx_error)?;
-        if let Some(status) = load_outbox_tx(
-            &mut tx,
-            &operation.intent.destination,
-            scope_id,
-            operation_id,
-        )
-        .await?
-            && status.state != DurableOutboxState::Acknowledged
-        {
-            let fence = status
-                .fence
-                .checked_add(1)
-                .ok_or(DurableOperationError::Capacity)?;
-            sqlx::query(
-                "UPDATE cross_owner_outbox SET state = 'acked', fence = ?, worker_id = NULL,
-                     lease_until_ms = NULL, acknowledgement_digest = ?, updated_at_ms = ?,
-                     terminal_at_ms = COALESCE(terminal_at_ms, ?)
-                     WHERE destination = ? AND scope_id = ? AND operation_id = ?",
-            )
-            .bind(to_i64(fence)?)
-            .bind(receipt.evidence_digest.as_array().as_slice())
-            .bind(now)
-            .bind(now)
-            .bind(operation.intent.destination.as_str())
-            .bind(scope_id.as_str())
-            .bind(operation_id.as_str())
-            .execute(&mut *tx)
-            .await
-            .map_err(sqlx_error)?;
-        }
-        let operation = load_operation_tx(&mut tx, scope_id, operation_id)
-            .await?
-            .ok_or_else(|| DurableOperationError::Missing(operation_id.clone()))?;
+        let operation = observe_terminal_tx(&mut tx, operation, receipt, now).await?;
         tx.commit().await.map_err(sqlx_error)?;
         Ok(operation)
     }
@@ -1226,6 +1231,8 @@ impl DurableOperationStore {
 
     /// Resolve an authoritative destination dedupe receipt as terminal applied
     /// evidence. Absence is deliberately not treated as `NotApplied` here.
+    /// The destination identity and its own dedupe-domain digest must match
+    /// the source intent, including during exact historical receipt replay.
     pub async fn reconcile_destination_receipt(
         &self,
         receipt: &DestinationApplyReceipt,
@@ -1235,17 +1242,48 @@ impl DurableOperationStore {
         if receipt.outcome_digest.is_zero() {
             return Err(DurableOperationError::Invalid("destination outcome digest"));
         }
-        self.observe_terminal(
+        receipt.identity.validate()?;
+        if receipt.semantic_digest != receipt.identity.semantic_digest() {
+            return Err(DurableOperationError::Invalid(
+                "destination semantic digest",
+            ));
+        }
+        let mut tx = self
+            .pool
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(sqlx_error)?;
+        let now = now_millis()?;
+        let operation = load_operation_tx(
+            &mut tx,
             &receipt.identity.scope_id,
             &receipt.identity.operation_id,
+        )
+        .await?
+        .ok_or_else(|| DurableOperationError::Missing(receipt.identity.operation_id.clone()))?;
+        if operation.intent.scope_id != receipt.identity.scope_id
+            || operation.intent.operation_id != receipt.identity.operation_id
+            || operation.intent.destination != receipt.identity.destination
+            || operation.intent.payload_digest != receipt.identity.payload_digest
+        {
+            return Err(DurableOperationError::Conflict(
+                receipt.identity.operation_id.clone(),
+            ));
+        }
+        let operation = observe_terminal_tx(
+            &mut tx,
+            operation,
             &ReconciliationReceiptV1 {
                 outcome: ReconciliationOutcome::Applied,
                 evidence_digest: receipt.outcome_digest,
                 observer_id,
                 observer_generation,
             },
+            now,
         )
-        .await
+        .await?;
+        tx.commit().await.map_err(sqlx_error)?;
+        Ok(operation)
     }
 
     pub async fn recover_expired_leases(&self) -> Result<(), DurableOperationError> {
@@ -1279,8 +1317,8 @@ impl AuthorizedDispatch {
 
     fn enter<T>(
         mut self,
-        effect: impl FnOnce(&OperationIntentV1) -> DispatchEffect<T>,
-    ) -> Result<DispatchEffect<T>, DurableOperationError> {
+        effect: impl FnOnce(&OperationIntentV1) -> T,
+    ) -> Result<T, DurableOperationError> {
         let token = self.token.take().ok_or(DurableOperationError::Unavailable(
             "final-use token already consumed".to_owned(),
         ))?;
@@ -1303,6 +1341,9 @@ async fn require_current_lease(
     )
     .await?
     .ok_or_else(|| DurableOperationError::Missing(claim.intent.operation_id.clone()))?;
+    if status.intent != claim.intent {
+        return Err(DurableOperationError::StaleLease);
+    }
     if status.updated_at_unix_ms > to_u64(now)? {
         return Err(DurableOperationError::ClockRollback);
     }
@@ -1317,6 +1358,97 @@ async fn require_current_lease(
         return Err(DurableOperationError::StaleLease);
     }
     Ok(status)
+}
+
+// Both public terminal entry points keep evidence binding, current generation
+// and terminal projection under the same source writer transaction.
+async fn observe_terminal_tx(
+    tx: &mut Transaction<'_, Sqlite>,
+    operation: DurableOperationRecord,
+    receipt: &ReconciliationReceiptV1,
+    now: i64,
+) -> Result<DurableOperationRecord, DurableOperationError> {
+    receipt.validate()?;
+    let scope_id = &operation.intent.scope_id;
+    let operation_id = &operation.intent.operation_id;
+    if operation.intent.owner_generation != receipt.observer_generation {
+        return Err(DurableOperationError::StaleGeneration);
+    }
+    if operation.state.is_terminal() {
+        if operation.terminal_outcome == Some(receipt.outcome)
+            && operation.terminal_evidence_digest == Some(receipt.evidence_digest)
+            && operation.terminal_observer_id.as_ref() == Some(&receipt.observer_id)
+            && operation.terminal_observer_generation == Some(receipt.observer_generation)
+        {
+            return Ok(operation);
+        }
+        return Err(DurableOperationError::Conflict(operation_id.clone()));
+    }
+    if !matches!(
+        operation.state,
+        DurableOperationState::Dispatching
+            | DurableOperationState::Dispatched
+            | DurableOperationState::Indeterminate
+    ) {
+        return Err(DurableOperationError::InvalidTransition {
+            from: operation.state,
+            to: "terminal_observation",
+        });
+    }
+    let state = match receipt.outcome {
+        ReconciliationOutcome::Applied => DurableOperationState::Applied,
+        ReconciliationOutcome::NotApplied => DurableOperationState::NotApplied,
+        ReconciliationOutcome::Quarantined => DurableOperationState::Quarantined,
+    };
+    let revision = next_revision(operation.revision)?;
+    sqlx::query(
+        "UPDATE operation_ledger SET state = ?, terminal_outcome = ?,
+         terminal_evidence_digest = ?, terminal_observer_id = ?,
+         terminal_observer_generation = ?, revision = ?, updated_at_ms = ?, terminal_at_ms = ?
+         WHERE scope_id = ? AND operation_id = ?",
+    )
+    .bind(state.as_str())
+    .bind(state.as_str())
+    .bind(receipt.evidence_digest.as_array().as_slice())
+    .bind(receipt.observer_id.as_str())
+    .bind(encode_u64(receipt.observer_generation.get()))
+    .bind(to_i64(revision)?)
+    .bind(now)
+    .bind(now)
+    .bind(scope_id.as_str())
+    .bind(operation_id.as_str())
+    .execute(&mut **tx)
+    .await
+    .map_err(sqlx_error)?;
+    if let Some(status) =
+        load_outbox_tx(tx, &operation.intent.destination, scope_id, operation_id).await?
+        && status.state != DurableOutboxState::Acknowledged
+    {
+        let fence = status
+            .fence
+            .checked_add(1)
+            .ok_or(DurableOperationError::Capacity)?;
+        sqlx::query(
+            "UPDATE cross_owner_outbox SET state = 'acked', fence = ?, worker_id = NULL,
+                 lease_until_ms = NULL, acknowledgement_digest = ?, updated_at_ms = ?,
+                 terminal_at_ms = COALESCE(terminal_at_ms, ?)
+                 WHERE destination = ? AND scope_id = ? AND operation_id = ?",
+        )
+        .bind(to_i64(fence)?)
+        .bind(receipt.evidence_digest.as_array().as_slice())
+        .bind(now)
+        .bind(now)
+        .bind(operation.intent.destination.as_str())
+        .bind(scope_id.as_str())
+        .bind(operation_id.as_str())
+        .execute(&mut **tx)
+        .await
+        .map_err(sqlx_error)?;
+    }
+    let operation = load_operation_tx(tx, scope_id, operation_id)
+        .await?
+        .ok_or_else(|| DurableOperationError::Missing(operation_id.clone()))?;
+    Ok(operation)
 }
 
 async fn recover_expired_leases_tx(
@@ -1669,7 +1801,7 @@ async fn verify_quick_check(pool: &SqlitePool) -> Result<(), DurableOperationErr
     Ok(())
 }
 
-async fn ensure_clock_not_behind(
+pub(crate) async fn ensure_clock_not_behind(
     tx: &mut Transaction<'_, Sqlite>,
     now: i64,
 ) -> Result<(), DurableOperationError> {
