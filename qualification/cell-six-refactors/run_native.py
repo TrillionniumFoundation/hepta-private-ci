@@ -188,25 +188,61 @@ def main():
                 environment,
             )
             target = Path(environment.get("CARGO_TARGET_DIR", workspace / "target"))
-            junit = target / "nextest/local/junit.xml"
-            if (
-                junit.is_file()
-                and junit.stat().st_mtime_ns >= status["started_unix_ns"]
-            ):
+            # Nextest's store can remain workspace-relative even when Cargo's
+            # build artifacts use CARGO_TARGET_DIR. Require a fresh report from
+            # this test invocation, never an earlier report in the shared cache.
+            test_started = status["phases"][-1]["started_unix_ns"]
+            candidates = {
+                (workspace / "target/nextest/local/junit.xml").resolve(),
+                (target / "nextest/local/junit.xml").resolve(),
+            }
+            fresh = [
+                path
+                for path in sorted(candidates)
+                if path.is_file() and path.stat().st_mtime_ns >= test_started
+            ]
+            status["junit_candidates"] = [
+                {"path": str(path), "exists": path.is_file(), "fresh": path in fresh}
+                for path in sorted(candidates)
+            ]
+            if fresh:
+                if len({file_identity(path)["sha256"] for path in fresh}) != 1:
+                    raise RuntimeError("ambiguous fresh JUnit reports")
+                junit = fresh[0]
                 copied = output / "junit.xml"
                 shutil.copyfile(junit, copied)
                 cases = list(ET.parse(copied).iter("testcase"))
                 status["junit"] = {
                     **file_identity(copied),
+                    "source_path": str(junit),
                     "cases": len(cases),
                     "failures": sum(case.find("failure") is not None for case in cases),
                     "errors": sum(case.find("error") is not None for case in cases),
                     "skipped": sum(case.find("skipped") is not None for case in cases),
                 }
+            status["helper_artifacts_after_test"] = {
+                name: file_identity(Path(artifact["executable"]))
+                for name, artifact in manifest["artifacts"].items()
+            }
+            status["helper_artifacts_unchanged"] = all(
+                all(
+                    status["helper_artifacts_after_test"][name][key] == artifact[key]
+                    for key in ("bytes", "sha256")
+                )
+                for name, artifact in manifest["artifacts"].items()
+            )
             if result:
                 raise RuntimeError(
                     "scoped native tests failed; retain full logs and individual failures"
                 )
+            if not fresh or not status["junit"]["cases"]:
+                raise RuntimeError(
+                    "successful exit without a fresh nonempty JUnit report"
+                )
+            if status["junit"]["failures"] or status["junit"]["errors"]:
+                raise RuntimeError("successful exit conflicts with JUnit failures")
+            if not status["helper_artifacts_unchanged"]:
+                raise RuntimeError("helper executable changed during native tests")
         source_is_frozen()
         status["state"] = "passed"
         result = 0

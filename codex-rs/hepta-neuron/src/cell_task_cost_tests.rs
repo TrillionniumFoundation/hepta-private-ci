@@ -204,7 +204,7 @@ fn missing_stage_and_unknown_measurement_are_not_measured_zero() {
     );
     let encoded = checked(serde_json::to_value(&costs));
     assert_eq!(
-        encoded["entries"][12]["metrics"]["cpu_micros"],
+        encoded["entries"][STAGES.len()]["metrics"]["cpu_micros"],
         serde_json::Value::Null
     );
 }

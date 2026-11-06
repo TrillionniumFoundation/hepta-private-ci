@@ -183,9 +183,9 @@ loader 打开 checkpoint，也不会先运行新选择再因为返回版本不�
 
 ## 当前实际验证范围
 
-本目录测试用固定原 `Adapter` 初始化并 `save` 一个明确 synthetic 的完整 checkpoint，
-手动填写 synthetic Adam/cursor/permutation 值。未调用 train、predict、features、loss，
-测试还将这些方法替换成失败钩子，防止保存/读取路径误执行计算。
+原有 11 项内容验证测试用固定原 `Adapter` 初始化并 `save` 一个明确 synthetic 的完整
+checkpoint，手动填写 synthetic Adam/cursor/permutation 值。其内容验证路径不调用
+train、predict、features、loss，并将这些方法替换成失败钩子，防止保存/读取路径误执行计算。
 synthetic encoder 有独立身份，并要求显式 `mode="synthetic-fixture"`；默认 reference 拒绝它。
 
 ```bash
