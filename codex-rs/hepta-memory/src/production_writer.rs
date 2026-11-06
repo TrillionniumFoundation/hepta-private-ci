@@ -66,6 +66,7 @@ pub use objective_sender::ObjectiveSenderError;
 pub use objective_sender::ObjectiveSenderIdentity;
 pub use objective_sender::ObjectiveSenderInputError;
 pub use objective_sender::ObjectiveSenderObservation;
+pub use objective_sender::ObjectiveSenderObservationAction;
 pub use objective_sender::ObjectiveSenderObservationKind;
 pub use objective_sender::ObjectiveSenderOrigin;
 pub use objective_sender::ObjectiveSenderRequest;

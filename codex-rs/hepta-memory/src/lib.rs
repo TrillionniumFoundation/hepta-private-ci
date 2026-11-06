@@ -70,6 +70,7 @@ pub use production_writer::ObjectiveSenderError;
 pub use production_writer::ObjectiveSenderIdentity;
 pub use production_writer::ObjectiveSenderInputError;
 pub use production_writer::ObjectiveSenderObservation;
+pub use production_writer::ObjectiveSenderObservationAction;
 pub use production_writer::ObjectiveSenderObservationKind;
 pub use production_writer::ObjectiveSenderOrigin;
 pub use production_writer::ObjectiveSenderRequest;

@@ -43,6 +43,7 @@ pub(super) type TestResult<T = ()> = Result<T, Box<dyn Error>>;
 pub(super) enum ReplyDelivery {
     Complete,
     DropFirstSubmissionAck,
+    DropFirstCancellationAck,
 }
 
 pub(super) struct ControlFixture {
@@ -53,6 +54,8 @@ pub(super) struct ControlFixture {
     pub original: ObjectiveSenderRequest,
     pub probes: Probes,
     pub starts: Arc<AtomicUsize>,
+    pub cancellations: Arc<AtomicUsize>,
+    pub lookups: Arc<AtomicUsize>,
     pub relay_path: PathBuf,
     cancellation: CancellationToken,
     tasks: Vec<tokio::task::JoinHandle<Result<(), AgentdError>>>,
@@ -153,11 +156,15 @@ impl ControlFixture {
         let relay = tokio::net::UnixListener::bind(&relay_path)?;
         std::fs::set_permissions(&relay_path, std::fs::Permissions::from_mode(0o600))?;
         let starts = Arc::new(AtomicUsize::new(0));
+        let cancellations = Arc::new(AtomicUsize::new(0));
+        let lookups = Arc::new(AtomicUsize::new(0));
         let relay_task = tokio::spawn(relay_frames(
             relay,
             identity.control_socket.clone(),
             cancellation.clone(),
             starts.clone(),
+            cancellations.clone(),
+            lookups.clone(),
             replies,
         ));
         let original = signed_request(&identity, &relay_path, run_id, draft, &key)?;
@@ -169,6 +176,8 @@ impl ControlFixture {
             original,
             probes,
             starts,
+            cancellations,
+            lookups,
             relay_path,
             cancellation,
             tasks: vec![control_task, relay_task],
@@ -238,6 +247,8 @@ async fn relay_frames(
     actual: PathBuf,
     cancellation: CancellationToken,
     starts: Arc<AtomicUsize>,
+    cancellations: Arc<AtomicUsize>,
+    lookups: Arc<AtomicUsize>,
     replies: ReplyDelivery,
 ) -> Result<(), AgentdError> {
     loop {
@@ -253,6 +264,18 @@ async fn relay_frames(
         }
         let request: crate::AgentdRequest = serde_json::from_slice(&bytes)?;
         let submission = matches!(request.method, crate::AgentdMethod::ObjectiveStart { .. });
+        let cancellation_request = matches!(request.method, crate::AgentdMethod::RunCancel { .. });
+        if matches!(
+            request.method,
+            crate::AgentdMethod::ObjectiveAdmission { .. } | crate::AgentdMethod::RunStatus { .. }
+        ) {
+            lookups.fetch_add(1, Ordering::SeqCst);
+        }
+        let cancellation_count = if cancellation_request {
+            cancellations.fetch_add(1, Ordering::SeqCst) + 1
+        } else {
+            0
+        };
         let count = if submission {
             starts.fetch_add(1, Ordering::SeqCst) + 1
         } else {
@@ -265,6 +288,12 @@ async fn relay_frames(
         let mut reply = Vec::new();
         reader.read_until(b'\n', &mut reply).await?;
         if submission && count == 1 && matches!(replies, ReplyDelivery::DropFirstSubmissionAck) {
+            continue;
+        }
+        if cancellation_request
+            && cancellation_count == 1
+            && matches!(replies, ReplyDelivery::DropFirstCancellationAck)
+        {
             continue;
         }
         caller.write_all(&reply).await?;
