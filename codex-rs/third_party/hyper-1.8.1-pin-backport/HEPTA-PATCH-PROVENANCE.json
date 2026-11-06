@@ -1,0 +1,79 @@
+{
+  "schema": "hepta-private-pin-backport-v1",
+  "crate": {
+    "name": "hyper",
+    "version": "1.8.1",
+    "checksum": "2ab2d4f250c3d7b1c9fcdff1cece94ea4e2dfbec68614f7b87cb205f24ca9d11",
+    "url": "https://static.crates.io/crates/hyper/hyper-1.8.1.crate",
+    "archive_bytes": 157353,
+    "archive_regular_files": 69,
+    "vendor": "codex-rs/third_party/hyper-1.8.1-pin-backport",
+    "source_scope": "Upstream Hyper #4023 pin-only source and feature change, normalized into both manifests. Uses the existing tokio::pin! macro; no new dependency, feature, API or MSRV increase.",
+    "edits": [
+      {
+        "path": "src/common/task.rs",
+        "before_sha256": "9d027a9c9c65ad7262f1ab4dbb3c7572b2637f2ebe655d17f13bfa5966ff7b3e",
+        "after_sha256": "a85877dfc0d233dacf6df0568d135ee7b0abb1f54873cc237bbdf4e14240edf5",
+        "replace": [
+          [
+            "    // TODO: replace with std::pin::pin! and drop pin-utils once MSRV >= 1.68\n    pin_utils::pin_mut!(fut);",
+            "    // TODO: replace with std::pin::pin! once MSRV >= 1.68\n    tokio::pin!(fut);",
+            1
+          ]
+        ]
+      },
+      {
+        "path": "Cargo.toml",
+        "before_sha256": "802fefc9dbcbfb60e0bf547ea3efde93284840def02f69852a6d0ef15d12c8b1",
+        "after_sha256": "03c7d31d3bf0a956ef05bd1ddb9b93460ad9c5c036fecf32a98fae2caaecfcd0",
+        "replace": [
+          [
+            "[dependencies.pin-utils]\nversion = \"0.1\"\noptional = true\n\n",
+            "",
+            1
+          ],
+          [
+            "    \"dep:pin-utils\",\n",
+            "",
+            1
+          ]
+        ]
+      },
+      {
+        "path": "Cargo.toml.orig",
+        "before_sha256": "8ef7ebe4b1d923d9764f8004e72198059ce123261164be77de7378df1704d406",
+        "after_sha256": "cfe609f4922a2e2558bc6c1ed28f8ee89b1a03d0c798ff0956bdf0a4e36378b2",
+        "replace": [
+          [
+            "pin-utils = { version = \"0.1\", optional = true } # TODO: replace with std::pin::pin! once MSRV >= 1.68\n",
+            "",
+            1
+          ],
+          [
+            ", \"dep:pin-utils\"",
+            "",
+            1
+          ]
+        ]
+      }
+    ],
+    "licenses": {
+      "LICENSE": {
+        "bytes": 1062,
+        "sha256": "8f2eee700f56dd8b381d92dc5b136befe09f90e186f2c1c8414a70c4c7534550",
+        "git_blob": "da8b6ec1b50778306d7d2517b978e1c66077e9a7"
+      }
+    },
+    "original_rust_version": "1.63"
+  },
+  "upstream": {
+    "aws_before_commit": "b3bdfffc8dbbaf115b572079d7f170ec78ec939c",
+    "aws_after_commit": "b964fc77de60b0a492ff788c40bb66524fd26a44",
+    "loom_before_commit": "a7033ee06a97c52eb2f8131c095fbea6c6eecba3",
+    "rust_pin_macro_stable_since": "1.68.0",
+    "source_note": "Current five locked versions are retained. Existing workspace patches and unrelated dependency facts must remain unchanged. Hyper reuses upstream tokio::pin!; AWS and Loom use std::pin::pin! with binding mutability required by these exact sources.",
+    "hyper_pin_removal_pr": "https://github.com/hyperium/hyper/pull/4023",
+    "hyper_pin_removal_commit": "8ba900853b0f619b165e8530fc8c310bc13e056b",
+    "workspace_toolchain": "1.96.0"
+  }
+}

@@ -192,7 +192,7 @@ members = [
 ]
 resolver = "2"
 # Upstream provider tests use a separate qualification graph.
-exclude = ["third_party/aws-config-1.8.12"]
+exclude = ["third_party/aws-config-1.8.12", "third_party/aws-smithy-http-0.62.6-pin-backport", "third_party/aws-smithy-runtime-1.9.5-pin-backport", "third_party/aws-smithy-types-1.4.7-pin-backport", "third_party/hyper-1.8.1-pin-backport", "third_party/loom-0.7.2-pin-backport"]
 
 [workspace.package]
 version = "0.0.0"
@@ -669,6 +669,12 @@ inherits = "test"
 opt-level = 0
 
 [patch.crates-io]
+# Pin-only private backports; retain the five existing crate versions.
+aws-smithy-http = { path = "third_party/aws-smithy-http-0.62.6-pin-backport" }
+aws-smithy-runtime = { path = "third_party/aws-smithy-runtime-1.9.5-pin-backport" }
+aws-smithy-types = { path = "third_party/aws-smithy-types-1.4.7-pin-backport" }
+hyper = { path = "third_party/hyper-1.8.1-pin-backport" }
+loom = { path = "third_party/loom-0.7.2-pin-backport" }
 # Correct optional feature forwarding without changing ZIP implementation code.
 zip = { path = "third_party/zip-9.1.3" }
 # Preserve providers and platform APIs while replacing retired dependencies.
