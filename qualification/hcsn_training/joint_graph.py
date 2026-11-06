@@ -64,19 +64,30 @@ def tensor_digest(tensors):
 
 
 def time_profile_digest(profile):
-    """Match the Rust V1 canonical identity; this worker implements only A."""
-    if (set(profile) != {"maximum_gap_micros", "forecast_horizon_micros", "integration"}
-            or profile["integration"] != {"kind": "value_kernel"}):
-        raise ValueError("this graph requires the ValueKernel time profile")
+    """Match the Rust V1 canonical identity for A or fixed-grid B."""
+    if set(profile) != {"maximum_gap_micros", "forecast_horizon_micros", "integration"}:
+        raise ValueError("unknown time profile fields")
     gap = integer(profile["maximum_gap_micros"], maximum=2**53-1)
     horizon = integer(profile["forecast_horizon_micros"], maximum=2**53-1)
+    integration = profile["integration"]
+    if integration == {"kind": "value_kernel"}:
+        suffix = b"\0"
+    elif (set(integration) == {"kind", "step_micros", "max_substeps"}
+          and integration["kind"] == "population_grid"):
+        step = integer(integration["step_micros"], maximum=gap)
+        maximum = integer(integration["max_substeps"], maximum=4096)
+        suffix = b"\1"+step.to_bytes(8, "big")+maximum.to_bytes(4, "big")
+    else:
+        raise ValueError("unknown integration time profile")
     domain = b"hepta.neuron.hcsn-time-profile.v1.seconds.zoh-left.sample-boundary.right-output"
-    return hashlib.sha256(domain+gap.to_bytes(8, "big")+horizon.to_bytes(8, "big")+b"\0").hexdigest()
+    return hashlib.sha256(domain+gap.to_bytes(8, "big")+horizon.to_bytes(8, "big")+suffix).hexdigest()
 
 
 def interval_seconds(plans, profile):
     """Check Rust A plans against the complete profile; owner authenticates scope."""
     profile_digest = time_profile_digest(profile)
+    if profile["integration"] != {"kind": "value_kernel"}:
+        raise ValueError("this graph requires the ValueKernel time profile")
     fields = {"schema_version", "start_micros", "end_micros", "elapsed_micros",
               "substep_micros", "substeps", "forecast_horizon_micros", "profile_digest",
               "checkpoint_before"}
@@ -129,18 +140,28 @@ class JointCellGraph(nn.Module):
                                                    spec.hidden_size) for i in range(len(spec.cell_ids)))
         self.readout = nn.Linear(spec.hidden_size, spec.output_size)
 
+    def initial_state(self, batch, *, like=None):
+        # Accept an input tensor or the explicit (batch, like=inputs) form.
+        if like is None:
+            like, batch = batch, batch.shape[0]
+        return tuple(cell.initial_state(batch, like=like) for cell in self.cells)
+
+    def validate_state(self, state, batch, dtype, device):
+        if (not isinstance(state, (list, tuple)) or len(state) != len(self.cells)
+                or any(not isinstance(s, (list, tuple)) or len(s) != 2 for s in state)
+                or any(not isinstance(v, torch.Tensor) or v.shape != (batch, self.spec.hidden_size)
+                       or v.dtype != dtype or v.device != device or not bool(torch.isfinite(v).all())
+                       for s in state for v in s)):
+            raise ValueError("state does not cover the logical cells")
+
     def forward(self, inputs, intervals, state=None):
         if (inputs.ndim != 3 or inputs.shape[1] != len(intervals)
                 or inputs.shape[-1] != self.spec.input_size or not 1 <= inputs.shape[0] <= 64
                 or not 1 <= len(intervals) <= 256 or not bool(torch.isfinite(inputs).all())
                 or any(type(dt) not in (int, float) or not math.isfinite(dt) or dt <= 0 for dt in intervals)):
             raise ValueError("invalid graph input or time intervals")
-        state = tuple(c.initial_state(inputs.shape[0], like=inputs) for c in self.cells) if state is None else state
-        if (len(state) != len(self.cells) or any(len(s) != 2 for s in state)
-                or any(not isinstance(v, torch.Tensor) or v.shape != (inputs.shape[0], self.spec.hidden_size)
-                       or v.dtype != inputs.dtype or v.device != inputs.device or not bool(torch.isfinite(v).all())
-                       for s in state for v in s)):
-            raise ValueError("state does not cover the logical cells")
+        state = self.initial_state(inputs.shape[0], like=inputs) if state is None else state
+        self.validate_state(state, inputs.shape[0], inputs.dtype, inputs.device)
         params = [c.financial_parameters() for c in self.cells]
         boundaries = [c._base_boundary(p) for c, p in zip(self.cells, params)]
         outputs = []
@@ -154,7 +175,9 @@ class JointCellGraph(nn.Module):
 
 def model_bytes(model, **extra):
     buffer = io.BytesIO()
-    torch.save(dict(schema_version=1, spec=asdict(model.spec),
+    from .population_graph import PopulationCellGraph
+    version = 2 if isinstance(model, PopulationCellGraph) else 1
+    torch.save(dict(schema_version=version, spec=asdict(model.spec),
                     dtype=str(next(model.parameters()).dtype),
                     model_state={n: p.detach().cpu().clone() for n, p in model.state_dict().items()},
                     **extra), buffer)
@@ -173,18 +196,34 @@ def load_training_checkpoint(path, expected_sha256):
     fields = {"schema_version", "spec", "dtype", "model_state"}
     candidate_fields = {"optimizer", "binding", "final_state", "last_end_micros"}
     if (set(saved) not in (fields, fields | candidate_fields) or type(saved["schema_version"]) is not int
-            or saved["schema_version"] != 1 or saved["dtype"] not in ("torch.float32", "torch.float64")):
+            or saved["schema_version"] not in (1, 2) or saved["dtype"] not in ("torch.float32", "torch.float64")):
         raise ValueError("unsupported checkpoint schema/precision")
     spec = dict(saved["spec"], cell_ids=tuple(saved["spec"]["cell_ids"]))
-    model = JointCellGraph(GraphSpec(**spec)).to(dtype=getattr(torch, saved["dtype"].split(".")[1]))
+    if saved["schema_version"] == 1:
+        model = JointCellGraph(GraphSpec(**spec))
+    else:
+        from .population_graph import PopulationCellGraph, PopulationGraphSpec
+        model = PopulationCellGraph(PopulationGraphSpec(**spec))
+    model = model.to(dtype=getattr(torch, saved["dtype"].split(".")[1]))
     tensor_digest(saved["model_state"])
     if any(t.dtype != next(model.parameters()).dtype for t in saved["model_state"].values()):
         raise ValueError("checkpoint tensor precision mismatch")
+    for name, buffer in model.named_buffers():
+        if name not in saved["model_state"] or not torch.equal(buffer, saved["model_state"][name]):
+            raise ValueError("checkpoint changed fixed population grid/reset buffers")
     model.load_state_dict(saved["model_state"], strict=True)
     state = saved.get("final_state")
+    if set(saved) == fields | candidate_fields and state is None:
+        raise ValueError("candidate checkpoint lacks complete final state")
     if state is not None:
         integer(saved["last_end_micros"])
-        if (not isinstance(state, (list, tuple)) or len(state) != len(model.cells)
+        if saved["schema_version"] == 2:
+            if (not isinstance(state, (list, tuple)) or not state or not isinstance(state[0], (list, tuple))
+                    or not state[0] or not isinstance(state[0][0], torch.Tensor) or state[0][0].ndim != 2):
+                raise ValueError("invalid checkpoint population state")
+            integer(state[0][0].shape[0], maximum=64)
+            model.validate_state(state, state[0][0].shape[0], next(model.parameters()).dtype, torch.device("cpu"))
+        elif (not isinstance(state, (list, tuple)) or len(state) != len(model.cells)
                 or any(not isinstance(s, (list, tuple)) or len(s) != 2 for s in state)
                 or any(not isinstance(v, torch.Tensor) or v.ndim != 2 or not 1 <= v.shape[0] <= 64
                        or v.shape != state[0][0].shape or v.shape[1] != model.spec.hidden_size
