@@ -1,0 +1,33 @@
+{
+  "returncode": 0,
+  "supervisor_timeout": false,
+  "command": [
+    "/home/qq/work/hepta-r1-4835-20261105-w0-r1/venv/bin/python",
+    "-m",
+    "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.sd_train",
+    "replay",
+    "--sd",
+    "/home/qq/work/hepta-r1-4835-20261105-w0-r1/models/sd",
+    "--checkpoint",
+    "/home/qq/work/hepta-joint-r2-e5ae-20261106/fit/candidate",
+    "--sha256",
+    "08baf9f92dd3df7872968503006638495f8f8dc8242eee1e401df91e14e0bc6a",
+    "--fit-result-sha256",
+    "4e1752d9c6830d74807856685594c55fcfbd0e46033b10bff03f4da332d2e74f",
+    "--output",
+    "/home/qq/work/hepta-joint-r2-e5ae-20261106/replay",
+    "--render"
+  ],
+  "started_utc": "2026-11-06T07:49:20.337174+00:00",
+  "finished_utc": "2026-11-06T07:49:40.938776+00:00",
+  "whole_child_wall_seconds": 20.601632982026786,
+  "whole_child_cpu_seconds": 32.32555,
+  "whole_child_peak_rss_bytes": 2916818944,
+  "supervisor_cpu_seconds": 0.031499213,
+  "child_block_input_operations": 2567800,
+  "child_block_output_operations": 216,
+  "io_bytes": null,
+  "energy_joules": null,
+  "tool_dispatch_cost": null,
+  "scope": "whole cold replay plus 12-step rendering; do not add inner envelope"
+}

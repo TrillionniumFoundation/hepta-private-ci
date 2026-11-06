@@ -1,0 +1,18 @@
+test_delta_and_optimizer_byte_tampering_is_rejected (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_sd_training.SdCheckpointTests.test_delta_and_optimizer_byte_tampering_is_rejected) ... ok
+test_frozen_after_record_mismatch_does_not_partially_mutate_model (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_sd_training.SdCheckpointTests.test_frozen_after_record_mismatch_does_not_partially_mutate_model) ... ok
+test_frozen_parameter_change_prevents_checkpoint_publication (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_sd_training.SdCheckpointTests.test_frozen_parameter_change_prevents_checkpoint_publication) ... ok
+test_incomplete_checkpoint_is_retained_and_not_loadable (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_sd_training.SdCheckpointTests.test_incomplete_checkpoint_is_retained_and_not_loadable) ... ok
+test_loaded_base_tensor_change_is_rejected (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_sd_training.SdCheckpointTests.test_loaded_base_tensor_change_is_rejected) ... ok
+test_manifest_byte_tampering_is_rejected (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_sd_training.SdCheckpointTests.test_manifest_byte_tampering_is_rejected) ... ok
+test_nonfinite_candidate_and_momentum_cannot_be_published (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_sd_training.SdCheckpointTests.test_nonfinite_candidate_and_momentum_cannot_be_published) ... ok
+test_nonfinite_model_prediction_is_rejected (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_sd_training.SdCheckpointTests.test_nonfinite_model_prediction_is_rejected) ... ok
+test_only_allowed_parameters_get_gradients_and_updates (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_sd_training.SdCheckpointTests.test_only_allowed_parameters_get_gradients_and_updates) ... ok
+test_replay_requires_successful_bound_fit_receipt_before_model_load (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_sd_training.SdCheckpointTests.test_replay_requires_successful_bound_fit_receipt_before_model_load) ... ok
+test_restored_parameter_momentum_and_rng_continue_exactly (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_sd_training.SdCheckpointTests.test_restored_parameter_momentum_and_rng_continue_exactly) ... ok
+test_shape_mismatch_with_consistent_file_hash_is_rejected (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_sd_training.SdCheckpointTests.test_shape_mismatch_with_consistent_file_hash_is_rejected) ... ok
+test_wrong_external_digest_and_base_manifest_are_rejected (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_sd_training.SdCheckpointTests.test_wrong_external_digest_and_base_manifest_are_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 1.795s
+
+OK

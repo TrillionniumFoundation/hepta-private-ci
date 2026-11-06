@@ -1,0 +1,136 @@
+{
+  "attempts": [
+    {
+      "failed": 1,
+      "failure": "restoration rejected inconsistent frozen after-record but had already mutated caller model",
+      "id": "unit-review-attempt1",
+      "log_sha256": "7089919385cd3809abd4bb0ef358e014fd4958161f8dbb1ee731d3229c9abe2c",
+      "passed": 12,
+      "status": "failed",
+      "tests": 13
+    },
+    {
+      "failed": 0,
+      "id": "unit-review-attempt2",
+      "log_sha256": "f5c2431db531f87e3eb77a7f4367f400fc9ae0119f9c0f573f296b51726bb362",
+      "passed": 13,
+      "source_scope": "runtime fixes present; subsequent Linux test guard was separately published",
+      "status": "passed",
+      "tests": 13
+    },
+    {
+      "failed": 0,
+      "id": "unit-review-final-fdbbfd",
+      "passed": 13,
+      "source_sha": "fdbbfdbe582b2de80077236c8f2f0ab8fcbe76c3",
+      "status": "passed",
+      "tests": 13
+    }
+  ],
+  "candidate_promotion_permitted": false,
+  "command": [
+    "/workspace/scratch/40d04650905b/generation-work/venv/bin/python",
+    "-m",
+    "unittest",
+    "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_sd_training",
+    "-v"
+  ],
+  "cwd": "/workspace/scratch/e5ae6a941e52/sd-review/exact-fdbbfd",
+  "exit_code": 0,
+  "files": {
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/SD_TRAINING.md": {
+      "bytes": 4853,
+      "git_blob": "dd9e5fda283d5fc47f9bad1d18b928f9ab41d806",
+      "sha256": "4dec3eed881d8c423cd1d887c9e07342dfb83005532bba1b8448ba40445977c3",
+      "verification": "exact GitHub commit blob"
+    },
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/acquire_models.py": {
+      "bytes": 8135,
+      "git_blob": "9ca4a48f9fb85e1d58223315b1ce4701f9e20629",
+      "sha256": "ec9d7dbc943ab029e51174fbf6065be4bd29ac23fb912d1aa3f14c065ad0e1cf",
+      "verification": "exact GitHub fixed-SHA file readback"
+    },
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/local_models.py": {
+      "bytes": 8933,
+      "git_blob": "48d533d353cdc92c01d69116098344d5d2caaf63",
+      "sha256": "70a119d2ac4297c31fe86b5c299b30b1f43bb128e3a72f06087a32162f3965e1",
+      "verification": "exact GitHub fixed-SHA file readback"
+    },
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/sd_checkpoint.py": {
+      "bytes": 6975,
+      "git_blob": "2dd4cc23356c944717dd3b724a664756f8b1877a",
+      "sha256": "37db9057d4989f2e60762dae53520272fcb64ed1c06b2d88a919faa5967cf524",
+      "verification": "exact GitHub commit blob"
+    },
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/sd_train.py": {
+      "bytes": 14370,
+      "git_blob": "e28fce8dd730b3aab31e1c1ffe12048a94527ee9",
+      "sha256": "f1fc5cdfa4a12020ffa0d6bb856ac2737439848b814b6188b9ee9ce17cad3109",
+      "verification": "exact GitHub commit blob"
+    },
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/test_sd_training.py": {
+      "bytes": 11511,
+      "git_blob": "7f362d1f10c54871ce4603ce6e783f3cc7e4989c",
+      "sha256": "5c0c7bfebe569bc0443ff537a672c4f21a7232511cdefa3b10ceccac8bef47cb",
+      "verification": "exact GitHub commit blob"
+    }
+  },
+  "findings": [
+    {
+      "id": "NONFINITE_SAVE",
+      "resolution": "prediction and saved candidate/momentum now reject nonfinite tensors",
+      "status": "fixed_and_tested"
+    },
+    {
+      "id": "FAILED_FIT_RECEIPT",
+      "resolution": "replay requires externally retained receipt hash, completed fit status, mode and checkpoint digest binding",
+      "status": "fixed_and_tested"
+    },
+    {
+      "id": "REJECT_AFTER_MUTATION",
+      "resolution": "state roster, frozen records, layouts, delta, optimizer and RNG validated before applying candidate",
+      "status": "fixed_and_tested"
+    },
+    {
+      "id": "PLATFORM",
+      "resolution": "Linux-only process budget guard; explicit non-Linux test skip",
+      "status": "fixed_in_reviewed_source"
+    },
+    {
+      "id": "SOURCE_AND_NUMERICAL_ENV",
+      "resolution": "frozen plan source files and checkpoint metadata source/installed versions checked before numerical replay",
+      "status": "reviewed"
+    }
+  ],
+  "independence_scope": "independent implementation review and unit execution by separate agent; same workspace access, not evaluator custody",
+  "limitations": [
+    "unit tensor fixture, not actual tiny-sd/SmolVLM or diffusion model qualification",
+    "no semantic quality, new data, confirmatory R2 fit or model promotion established",
+    "source and versions checks are not protection against malicious concurrent trusted-host ABA mutation",
+    "inner wall timer begins after imports/argument parsing/output mkdir; external wall envelope needed for whole process cost",
+    "disk_bytes_before_terminal_report counts retained logical output bytes, not total disk read/write I/O",
+    "cold real-model load/output verification and real training costs require separately bound native execution receipts",
+    "independent semantic evaluator custody remains unverified"
+  ],
+  "log": {
+    "path": "unit-review-final-fdbbfd.log",
+    "sha256": "2774767527cd454d17e531ebb1d8d04acecc8aab87194dc2bd1c1d1999bda5a9"
+  },
+  "positive_mechanisms": [
+    "actual autograd/SGD modifies only two allowed fixture parameters",
+    "parameters + SGD momentum + RNG restore reproduce the next actual SGD update exactly",
+    "wrong external digest/base manifest/base tensor/delta/optimizer/manifest/shape rejected",
+    "frozen after-record rejection leaves caller model unchanged",
+    "nonfinite candidate/momentum/prediction rejected",
+    "injected disk write failure retains partial bytes without checkpoint manifest",
+    "unsuccessful or mismatched fit receipt rejected before model load"
+  ],
+  "real_model_training_executed": false,
+  "review_completed_at_utc": "2026-11-06T07:48:48.535364+00:00",
+  "reviewer": "runtime_inventory",
+  "schema": "hepta.r2.sd-training.independent-review.v1",
+  "scope": "six exact files only; not whole repository/tree/workspace qualification",
+  "source_sha": "fdbbfdbe582b2de80077236c8f2f0ab8fcbe76c3",
+  "source_tree": "78b4a64fc4b8fb19c68d6947b47dd4c1fb7481e9",
+  "wall_seconds": 2.5127337470003113
+}
