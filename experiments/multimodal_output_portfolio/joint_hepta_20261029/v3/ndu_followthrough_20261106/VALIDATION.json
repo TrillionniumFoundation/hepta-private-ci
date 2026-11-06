@@ -1,0 +1,160 @@
+{
+  "schema": "ndu.followthrough.integration-index.v1",
+  "created_at_utc": "2026-11-06T17:21:49.867924+00:00",
+  "checks": [
+    {
+      "name": "all_31_deadline_cells_retained",
+      "pass": true
+    },
+    {
+      "name": "all_31_binary_rows_retained",
+      "pass": true
+    },
+    {
+      "name": "30_exact_zero_gap_intervals",
+      "pass": true
+    },
+    {
+      "name": "remaining_interval_within_frozen_tolerance",
+      "pass": true
+    },
+    {
+      "name": "corrected_JAC_result_identity",
+      "pass": true
+    },
+    {
+      "name": "all_20_existing_banks_retained",
+      "pass": true
+    },
+    {
+      "name": "zero_paid_adoptions_for_both_baselines",
+      "pass": true
+    },
+    {
+      "name": "old_bank_source_unchanged",
+      "pass": true
+    },
+    {
+      "name": "model_forward_count_and_tools",
+      "pass": true
+    },
+    {
+      "name": "frozen_typed_sources_unchanged",
+      "pass": true
+    },
+    {
+      "name": "recorded_typed_audit_pass",
+      "pass": true
+    },
+    {
+      "name": "declared_scope_no_new_RL_confirmation",
+      "pass": true
+    },
+    {
+      "name": "accepted_deadline_source:ndu_deadline_frontier_20261106/__init__.py",
+      "pass": true
+    },
+    {
+      "name": "accepted_deadline_source:ndu_deadline_frontier_20261106/binary_deadline.py",
+      "pass": true
+    },
+    {
+      "name": "accepted_deadline_source:ndu_deadline_frontier_20261106/frontier.py",
+      "pass": true
+    },
+    {
+      "name": "accepted_deadline_source:ndu_deadline_frontier_20261106/study.py",
+      "pass": true
+    },
+    {
+      "name": "accepted_deadline_source:ndu_deadline_frontier_20261106/test_frontier.py",
+      "pass": true
+    },
+    {
+      "name": "accepted_deadline_source:ndu_deadline_frontier_20261106/protocol.json",
+      "pass": true
+    },
+    {
+      "name": "accepted_deadline_source:ndu_identification/model.py",
+      "pass": true
+    },
+    {
+      "name": "corrected_confidence_source:confidence.py",
+      "pass": true
+    },
+    {
+      "name": "corrected_confidence_source:study.py",
+      "pass": true
+    },
+    {
+      "name": "corrected_confidence_source:test_confidence.py",
+      "pass": true
+    },
+    {
+      "name": "typed_action_frozen_source:study.py",
+      "pass": true
+    },
+    {
+      "name": "typed_action_frozen_source:protocol.json",
+      "pass": true
+    },
+    {
+      "name": "typed_action_frozen_source:inputs/materialized-model.json",
+      "pass": true
+    },
+    {
+      "name": "typed_action_frozen_source:inputs/model_manifest.json",
+      "pass": true
+    },
+    {
+      "name": "typed_action_frozen_source:inputs/sources/CHINOOK_LICENSE.md",
+      "pass": true
+    },
+    {
+      "name": "typed_action_frozen_source:inputs/sources/CPYTHON_LICENSE",
+      "pass": true
+    },
+    {
+      "name": "typed_action_frozen_source:inputs/sources/chinook.sql.gz",
+      "pass": true
+    },
+    {
+      "name": "typed_action_frozen_source:inputs/sources/statistics.py",
+      "pass": true
+    },
+    {
+      "name": "typed_action_frozen_source:inputs/sources.json",
+      "pass": true
+    }
+  ],
+  "check_count": 31,
+  "all_pass": true,
+  "artifact_sha256": {
+    "ndu_deadline_frontier_20261106/evidence/accepted/result.json": "a4f28cc582bc2e1943f0c814a89666e61af6c4803ca14c601c03d50480bb49e0",
+    "ndu_deadline_frontier_20261106/evidence/accepted/certificates.json.gz": "4ba5026437b1cd5d558ac45bfab87bfc6a6f23f31c226ceb5277d56bd8095c57",
+    "ndu_deadline_frontier_20261106/evidence/accepted/validation.json": "6766804064024ce170864d54d58a589fef5c5cd322df225a3fb6a8e896914a1a",
+    "ndu_jac_confidence/protocol.corrected.json": "d7ee776bf1b0f323aa139ac0f1cf7c650b8d28dd286ab223dff2a9e2154544e8",
+    "ndu_jac_confidence/result.corrected.json": "6e0638e3fe9b6003b42aee826dd40cc653e8ac25d87a712dabdd01642444d58d",
+    "ndu_jac_confidence/validation.corrected.json": "9da5e39bfb681110985c44419a6406391b6f56b6469f73e96530648b9856cd95",
+    "ndu_jac_confidence/correction_comparison.json": "49c75214a2fe0102bc6ad0cdecb1082be4a78d23ec59963533827b042f408898",
+    "ndu_jac_confidence/headroom.json": "4952e8f736caf1e5e46d0365ab519ff638faaba9bd3f8bbb01f49f3b62d49133",
+    "ndu_jac_confidence/review/JAC_CONFIDENCE_POSTFIX_REVIEW.json": "df6e5d9561bfed2aea20704b62ace0deb973ddb186573c35aee82e9cdc8d06ea",
+    "ndu_typed_action_development_20261106/freeze.json": "ce2ccb7a51da01499a8fe1eb17cb629613f9c742144f3031458e3d942ca51b4f",
+    "ndu_typed_action_development_20261106/results/run-01/result.json": "a1c354aefc3fc9877c236939d22e14389382df01c3c1fc132427f50120c24b46",
+    "ndu_followthrough_20261106/review/TYPED_ACTION_ROOT_AUDIT.json": "adfb836cbbf1475d71af00d6e131714f783e6b2592c641e7890fdee0ff58e4e0",
+    "ndu_followthrough_20261106/review/INTEGRATED_BEHAVIORAL_TESTS.json": "d5b90d9276cb3fe414b4e101db7dd161306a4d27941323bbcded723d8df7f180",
+    "ndu_followthrough_20261106/review/REVIEW_HEADROOM.json": "9960886c0d1dfa9eaa320046998bc5cf0b8d4c80bc3b2035a53dcea657de06af",
+    "ndu_followthrough_20261106/review/review_headroom.py": "9f40abac2b015d12bf015d85b3b0eeccf8461e29b8ef70e79d57ff11c638d992"
+  },
+  "behavioral_tests": {
+    "deadline": 9,
+    "confidence": 11,
+    "integrated_total": 20,
+    "external_scientific_replications": 0
+  },
+  "targeted_independent_internal_confidence_checks": 13,
+  "typed_receipt_audit_checks": 173,
+  "scope": "Artifact identity and consistency audit; no new calibration observations, model forwards or task tool calls. Historical review scripts retain their reviewed revisions and absolute paths.",
+  "targeted_independent_internal_headroom_checks": 53,
+  "headroom_review_script": "The exact previously executed inline Python is retained, including historical absolute paths. Saving the script did not execute it again."
+}

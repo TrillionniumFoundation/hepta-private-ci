@@ -1,0 +1,291 @@
+{
+  "status": "PASS",
+  "checks": 41,
+  "check_names": [
+    "supporting_error_sum_(Fraction(0, 1), Fraction(0, 1), Fraction(0, 1))",
+    "supporting_error_sum_(Fraction(0, 1), Fraction(0, 1), Fraction(1, 1))",
+    "supporting_error_sum_(Fraction(0, 1), Fraction(1, 1), Fraction(0, 1))",
+    "supporting_error_sum_(Fraction(0, 1), Fraction(1, 1), Fraction(1, 1))",
+    "supporting_error_sum_(Fraction(1, 1), Fraction(0, 1), Fraction(0, 1))",
+    "supporting_error_sum_(Fraction(1, 1), Fraction(0, 1), Fraction(1, 1))",
+    "supporting_error_sum_(Fraction(1, 1), Fraction(1, 1), Fraction(0, 1))",
+    "supporting_error_sum_(Fraction(1, 1), Fraction(1, 1), Fraction(1, 1))",
+    "deterministic_minimax",
+    "randomized_minimax",
+    "frontier_0",
+    "frontier_1/20",
+    "frontier_1/10",
+    "frontier_3/20",
+    "frontier_1/5",
+    "frontier_1/4",
+    "frontier_3/10",
+    "frontier_7/20",
+    "frontier_2/5",
+    "frontier_9/20",
+    "frontier_1/2",
+    "frontier_11/20",
+    "frontier_3/5",
+    "frontier_13/20",
+    "frontier_7/10",
+    "frontier_3/4",
+    "frontier_4/5",
+    "frontier_17/20",
+    "frontier_9/10",
+    "frontier_19/20",
+    "frontier_1",
+    "KL_feasible_but_risk_infeasible",
+    "label_marginal_0",
+    "duration_marginal_0",
+    "label_marginal_1",
+    "duration_marginal_1",
+    "full_joint_risk",
+    "censored_risk",
+    "correct_coarsening",
+    "illustrative_learned_gate_nonvacuous",
+    "illustrative_learned_risk_arithmetic"
+  ],
+  "scope": "Independent exact finite-model identities and confidence arithmetic; no LP-source reuse, random samples, actual tools, or external review.",
+  "ambiguous_query": {
+    "laws": [
+      [
+        "89/100",
+        "1/10",
+        "1/100"
+      ],
+      [
+        "1/100",
+        "1/10",
+        "89/100"
+      ]
+    ],
+    "minimax": [
+      "3/50",
+      "3/50"
+    ],
+    "deterministic_minimax": "11/100",
+    "frontier": [
+      {
+        "budget": "0",
+        "errors": [
+          "1/2",
+          "1/2"
+        ],
+        "lower": "1/2",
+        "upper": "1/2"
+      },
+      {
+        "budget": "1/20",
+        "errors": [
+          "239/500",
+          "239/500"
+        ],
+        "lower": "239/500",
+        "upper": "239/500"
+      },
+      {
+        "budget": "1/10",
+        "errors": [
+          "57/125",
+          "57/125"
+        ],
+        "lower": "57/125",
+        "upper": "57/125"
+      },
+      {
+        "budget": "3/20",
+        "errors": [
+          "217/500",
+          "217/500"
+        ],
+        "lower": "217/500",
+        "upper": "217/500"
+      },
+      {
+        "budget": "1/5",
+        "errors": [
+          "103/250",
+          "103/250"
+        ],
+        "lower": "103/250",
+        "upper": "103/250"
+      },
+      {
+        "budget": "1/4",
+        "errors": [
+          "39/100",
+          "39/100"
+        ],
+        "lower": "39/100",
+        "upper": "39/100"
+      },
+      {
+        "budget": "3/10",
+        "errors": [
+          "46/125",
+          "46/125"
+        ],
+        "lower": "46/125",
+        "upper": "46/125"
+      },
+      {
+        "budget": "7/20",
+        "errors": [
+          "173/500",
+          "173/500"
+        ],
+        "lower": "173/500",
+        "upper": "173/500"
+      },
+      {
+        "budget": "2/5",
+        "errors": [
+          "81/250",
+          "81/250"
+        ],
+        "lower": "81/250",
+        "upper": "81/250"
+      },
+      {
+        "budget": "9/20",
+        "errors": [
+          "151/500",
+          "151/500"
+        ],
+        "lower": "151/500",
+        "upper": "151/500"
+      },
+      {
+        "budget": "1/2",
+        "errors": [
+          "7/25",
+          "7/25"
+        ],
+        "lower": "7/25",
+        "upper": "7/25"
+      },
+      {
+        "budget": "11/20",
+        "errors": [
+          "129/500",
+          "129/500"
+        ],
+        "lower": "129/500",
+        "upper": "129/500"
+      },
+      {
+        "budget": "3/5",
+        "errors": [
+          "59/250",
+          "59/250"
+        ],
+        "lower": "59/250",
+        "upper": "59/250"
+      },
+      {
+        "budget": "13/20",
+        "errors": [
+          "107/500",
+          "107/500"
+        ],
+        "lower": "107/500",
+        "upper": "107/500"
+      },
+      {
+        "budget": "7/10",
+        "errors": [
+          "24/125",
+          "24/125"
+        ],
+        "lower": "24/125",
+        "upper": "24/125"
+      },
+      {
+        "budget": "3/4",
+        "errors": [
+          "17/100",
+          "17/100"
+        ],
+        "lower": "17/100",
+        "upper": "17/100"
+      },
+      {
+        "budget": "4/5",
+        "errors": [
+          "37/250",
+          "37/250"
+        ],
+        "lower": "37/250",
+        "upper": "37/250"
+      },
+      {
+        "budget": "17/20",
+        "errors": [
+          "63/500",
+          "63/500"
+        ],
+        "lower": "63/500",
+        "upper": "63/500"
+      },
+      {
+        "budget": "9/10",
+        "errors": [
+          "13/125",
+          "13/125"
+        ],
+        "lower": "13/125",
+        "upper": "13/125"
+      },
+      {
+        "budget": "19/20",
+        "errors": [
+          "41/500",
+          "41/500"
+        ],
+        "lower": "41/500",
+        "upper": "41/500"
+      },
+      {
+        "budget": "1",
+        "errors": [
+          "3/50",
+          "3/50"
+        ],
+        "lower": "3/50",
+        "upper": "3/50"
+      }
+    ],
+    "per_query_kl": 3.950000005364283,
+    "target_delta": "1/20",
+    "kl_required": 2.6499950812497963,
+    "actual_feasible": false
+  },
+  "censoring": {
+    "full_risk": [
+      "1/5",
+      "1/5"
+    ],
+    "censored_risk": [
+      "7/20",
+      "7/20"
+    ],
+    "full_expected_duration": "3/2",
+    "cap1_duration": "1"
+  },
+  "constructed_calibration_arithmetic": {
+    "n": 2000,
+    "counts": {
+      "correct": 1780,
+      "ambiguous": 200,
+      "wrong": 20
+    },
+    "empirical_error": 0.06,
+    "alpha": 0.05,
+    "two_sided_hoeffding_radius": 0.030368073095415258,
+    "error_upper": 0.09036807309541525,
+    "target_delta": 0.1,
+    "certified_query_probability": 0.9764863862605411,
+    "cost_per_deployment_in_query_units": 0.9764863862605411,
+    "calibration_trials_cost": 2000,
+    "warning": "Constructed counts, not collected observations; lifecycle bill not amortized here."
+  }
+}

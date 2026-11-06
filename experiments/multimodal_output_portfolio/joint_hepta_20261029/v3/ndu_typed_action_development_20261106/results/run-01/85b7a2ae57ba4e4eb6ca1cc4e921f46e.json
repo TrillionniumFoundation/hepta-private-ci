@@ -1,0 +1,43 @@
+{
+  "receipt": {
+    "request_id": "85b7a2ae57ba4e4eb6ca1cc4e921f46e",
+    "context": {
+      "task_id": "typed/cpython/linear_regression",
+      "arm": "literal_router",
+      "stage": "tool"
+    },
+    "argv": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "/workspace/scratch/e5ecafe4ccc8/frozen_work/study.py",
+      "tool-worker"
+    ],
+    "payload": {
+      "label": "J",
+      "tool": "function_signature",
+      "argument": "linear_regression"
+    },
+    "started_at_utc": "2026-11-06T16:53:55.603610+00:00",
+    "started_monotonic": 60547.590039954,
+    "phase": "terminal",
+    "status": "ok",
+    "returncode": 0,
+    "finished_at_utc": "2026-11-06T16:53:55.648831+00:00",
+    "wall_seconds": 0.04524045300058788,
+    "parent_cpu_seconds": 0.0005544259999999968,
+    "child_cpu_seconds": 0.04450200000000848,
+    "stdout_sha256": "12d51ed708460540bab3eb2b36a5ec338b9db77e8f3fca420921c199819c5baf",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "external_paid_model_api_calls": 0,
+    "actual_host_currency_cost": null
+  },
+  "response": {
+    "answer": "def linear_regression(x, y, /, *, proportional=False):",
+    "operation": {
+      "argument": "linear_regression",
+      "label": "J",
+      "tool": "function_signature"
+    }
+  },
+  "stdout": "{\"answer\": \"def linear_regression(x, y, /, *, proportional=False):\", \"operation\": {\"argument\": \"linear_regression\", \"label\": \"J\", \"tool\": \"function_signature\"}}\n",
+  "stderr": ""
+}

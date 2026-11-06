@@ -1,0 +1,30 @@
+{
+  "all_observed_coverage_and_gain_checks": true,
+  "changes": {
+    "decisions": 0,
+    "policy_coordinates": 204,
+    "probability_boxes": 0,
+    "safe_row_counts": 0,
+    "source_banks": 0
+  },
+  "comparison_count": 40,
+  "corrected_decisions": {
+    "original_vanilla": 0,
+    "vanilla_argmax": 0
+  },
+  "corrected_result_sha256": "6e0638e3fe9b6003b42aee826dd40cc653e8ac25d87a712dabdd01642444d58d",
+  "created_utc": "2026-11-06T17:08:17.583173+00:00",
+  "initial_result_sha256": "d7e4c8ba4d53a00f2af30329bc96875f7015d270d90b8674d6187f973c656dfb",
+  "interpretation": "All 40 paid acceptance decisions unchanged. Tiny reported-value/policy-weight differences are disclosed floating normalization/centering drift, not new scientific observations. Timing changes are retained separately and are not a controlled speed benchmark.",
+  "maximum_absolute_numerical_drifts": {
+    "baseline_Q_endpoint": 2.7755575615628914e-16,
+    "proposed_gain_lower": 4.0657581468206416e-20,
+    "returned_policy_probability": 1.1102230246251565e-16,
+    "risk_tilt_lower": 8.326672684688674e-17,
+    "true_returned_gain_after_declared_fee": 5.551115123125783e-17,
+    "true_returned_value": 5.551115123125783e-17
+  },
+  "new_samples": 0,
+  "same_retained_bank_count": 20,
+  "schema": "ndu-jac.acceptance-correction-comparison.v1"
+}

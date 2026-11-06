@@ -1,0 +1,23 @@
+{
+  "alpha": 0.05,
+  "baselines": [
+    "original_vanilla",
+    "vanilla_argmax"
+  ],
+  "created_utc": "2026-11-06T16:50:03.658186+00:00",
+  "eta": 2.0,
+  "families": 20,
+  "fee": 0.01,
+  "new_samples": 0,
+  "primary_question": "Can non-oracle simultaneous confidence safely admit improvement against the strong deterministic-actor baseline on the retained banks?",
+  "prior_exposure": "Previous source and historical aggregate/raw result records have been read. This is a new confidence analysis of old banks, not untouched confirmation or external preregistration. No tuning after this protocol.",
+  "proposal": "same_bank_dp",
+  "rho": 0.17,
+  "samples_per_row": 64,
+  "schema": "ndu-jac.confidence-protocol.v1",
+  "secondary_question": "Does propagation certify improvements behind an unchanged root against the weak stochastic actor?",
+  "seeds": "all 4 original plus all 16 heldout-bank records from prior gap study",
+  "source_evidence_sha256": "56ad5d043a2ac661b3d0155747851a67e282d7faa42e7fa463ef5b581ca765dd",
+  "source_reference": "../ndu_jac/evidence/gap_study.json",
+  "truth_use": "Validation only after certificates and policies fixed"
+}

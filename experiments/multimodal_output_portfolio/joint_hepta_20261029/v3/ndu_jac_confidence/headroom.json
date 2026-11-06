@@ -1,0 +1,558 @@
+{
+  "all_banks_have_negative_paid_oracle_ceiling": true,
+  "baseline_mean": 0.25257077600895733,
+  "conclusion": "The old task and .01 per-update tariff have no positive headroom even for known-law optimal policies. Better confidence precision alone cannot pass this frozen gate. This is not a general impossibility claim and not a new RL advantage.",
+  "corrected_result_sha256": "6e0638e3fe9b6003b42aee826dd40cc653e8ac25d87a712dabdd01642444d58d",
+  "even_one_shared_fee_exceeds_20_episode_total_headroom": true,
+  "fee_fraction": "1/100",
+  "fee_scope": "Exactly the existing one-episode .01 synthetic audit-charge convention; no changed amortization or currency claim.",
+  "historical_evidence_sha256": "56ad5d043a2ac661b3d0155747851a67e282d7faa42e7fa463ef5b581ca765dd",
+  "interval_model": "Finite source float metadata interpreted as exact binary rationals, row probabilities normalized exactly, real exp/log enclosed by rational series with explicit tails and dyadic outward rounding.",
+  "interval_parameters": {
+    "dyadic_bits": 80,
+    "exp_terms": 40,
+    "log_terms": 80
+  },
+  "known_law_optimum": 0.25274721905017294,
+  "known_law_optimum_interval": {
+    "lower": "305552638945548570604463/1208925819614629174706176",
+    "lower_float": 0.25274721905017294,
+    "upper": "152776319472774285302323/604462909807314587353088",
+    "upper_float": 0.25274721905017294,
+    "width_float": 1.5137405209720406e-22
+  },
+  "max_headroom_upper": "1422043654779420360097/1208925819614629174706176",
+  "max_headroom_upper_float": 0.001176286941437587,
+  "max_paid_gain_upper_float": -0.008823713058562412,
+  "mean_headroom_upper": "2133065482169130541701/12089258196146291747061760",
+  "mean_headroom_upper_float": 0.00017644304121563808,
+  "mean_paid_gain_upper_float": -0.009823556958784362,
+  "model_sha256": "639865d5790e48834a1112a734b5779fc50843c7835d88a6a7a5341f5bd5ac5b",
+  "new_fits": 0,
+  "new_model_calls": 0,
+  "new_samples": 0,
+  "point_headroom_max": 0.0011762869414375654,
+  "point_headroom_mean": 0.0001764430412156348,
+  "point_headroom_sum": 0.003528860824312696,
+  "point_optimum_equal_bank_count": 17,
+  "positive_point_headroom_seeds": [
+    1701,
+    1703,
+    2716
+  ],
+  "rows": [
+    {
+      "bank_sha256": "a0e8dbe13a83645c6826adc3ddb29e61b7670be35915da2e01275ec2f9a02add",
+      "baseline_interval": {
+        "lower": "304130595290769150244549/1208925819614629174706176",
+        "lower_float": 0.2515709321087354,
+        "upper": "152065297645384575122367/604462909807314587353088",
+        "upper_float": 0.2515709321087354,
+        "width_float": 1.5302841332231012e-22
+      },
+      "baseline_value": 0.2515709321087354,
+      "fee_exceeds_headroom": true,
+      "headroom_interval": {
+        "lower": "1422043654779420359729/1208925819614629174706176",
+        "lower_float": 0.001176286941437587,
+        "upper": "1422043654779420360097/1208925819614629174706176",
+        "upper_float": 0.001176286941437587,
+        "width_float": 3.044024654195142e-22
+      },
+      "known_law_optimum": 0.25274721905017294,
+      "paid_gain_upper": "-266680363534171784674119/30223145490365729367654400",
+      "paid_gain_upper_float": -0.008823713058562412,
+      "point_headroom": 0.0011762869414375654,
+      "seed": 1701,
+      "split": "reproduction"
+    },
+    {
+      "bank_sha256": "f684b003c682ff547f7c69e058718e743095c9ce38be6cc8073693013e18da65",
+      "baseline_interval": {
+        "lower": "305552638945548570604463/1208925819614629174706176",
+        "lower_float": 0.25274721905017294,
+        "upper": "152776319472774285302323/604462909807314587353088",
+        "upper_float": 0.25274721905017294,
+        "width_float": 1.5137405209720406e-22
+      },
+      "baseline_value": 0.25274721905017294,
+      "fee_exceeds_headroom": true,
+      "headroom_interval": {
+        "lower": "0",
+        "lower_float": 0.0,
+        "upper": "183/1208925819614629174706176",
+        "upper_float": 1.5137405209720406e-22,
+        "width_float": 1.5137405209720406e-22
+      },
+      "known_law_optimum": 0.25274721905017294,
+      "paid_gain_upper": "-302231454903657293671969/30223145490365729367654400",
+      "paid_gain_upper_float": -0.01,
+      "point_headroom": 0.0,
+      "seed": 1702,
+      "split": "reproduction"
+    },
+    {
+      "bank_sha256": "8b669d907ba760370172a8c1464b96929b3c5bc4f6dc82acbad3780540e7efe8",
+      "baseline_interval": {
+        "lower": "304130595290769150244549/1208925819614629174706176",
+        "lower_float": 0.2515709321087354,
+        "upper": "152065297645384575122367/604462909807314587353088",
+        "upper_float": 0.2515709321087354,
+        "width_float": 1.5302841332231012e-22
+      },
+      "baseline_value": 0.2515709321087354,
+      "fee_exceeds_headroom": true,
+      "headroom_interval": {
+        "lower": "1422043654779420359729/1208925819614629174706176",
+        "lower_float": 0.001176286941437587,
+        "upper": "1422043654779420360097/1208925819614629174706176",
+        "upper_float": 0.001176286941437587,
+        "width_float": 3.044024654195142e-22
+      },
+      "known_law_optimum": 0.25274721905017294,
+      "paid_gain_upper": "-266680363534171784674119/30223145490365729367654400",
+      "paid_gain_upper_float": -0.008823713058562412,
+      "point_headroom": 0.0011762869414375654,
+      "seed": 1703,
+      "split": "reproduction"
+    },
+    {
+      "bank_sha256": "8745574bf97598a51101114a934c309c809a4f0b9883228fffd752b24cdd576b",
+      "baseline_interval": {
+        "lower": "305552638945548570604463/1208925819614629174706176",
+        "lower_float": 0.25274721905017294,
+        "upper": "152776319472774285302323/604462909807314587353088",
+        "upper_float": 0.25274721905017294,
+        "width_float": 1.5137405209720406e-22
+      },
+      "baseline_value": 0.25274721905017294,
+      "fee_exceeds_headroom": true,
+      "headroom_interval": {
+        "lower": "0",
+        "lower_float": 0.0,
+        "upper": "183/1208925819614629174706176",
+        "upper_float": 1.5137405209720406e-22,
+        "width_float": 1.5137405209720406e-22
+      },
+      "known_law_optimum": 0.25274721905017294,
+      "paid_gain_upper": "-302231454903657293671969/30223145490365729367654400",
+      "paid_gain_upper_float": -0.01,
+      "point_headroom": 0.0,
+      "seed": 1704,
+      "split": "reproduction"
+    },
+    {
+      "bank_sha256": "b8b81a2849fbf190e21005145125bd83d1f06e4111a86fcf2774f8ce7d930515",
+      "baseline_interval": {
+        "lower": "305552638945548570604463/1208925819614629174706176",
+        "lower_float": 0.25274721905017294,
+        "upper": "152776319472774285302323/604462909807314587353088",
+        "upper_float": 0.25274721905017294,
+        "width_float": 1.5137405209720406e-22
+      },
+      "baseline_value": 0.25274721905017294,
+      "fee_exceeds_headroom": true,
+      "headroom_interval": {
+        "lower": "0",
+        "lower_float": 0.0,
+        "upper": "183/1208925819614629174706176",
+        "upper_float": 1.5137405209720406e-22,
+        "width_float": 1.5137405209720406e-22
+      },
+      "known_law_optimum": 0.25274721905017294,
+      "paid_gain_upper": "-302231454903657293671969/30223145490365729367654400",
+      "paid_gain_upper_float": -0.01,
+      "point_headroom": 0.0,
+      "seed": 2701,
+      "split": "heldout_bank"
+    },
+    {
+      "bank_sha256": "190df7252c9eeaacf40e5d936ac00ca4b66453b1b64d57712a9349ca9defb6bb",
+      "baseline_interval": {
+        "lower": "305552638945548570604463/1208925819614629174706176",
+        "lower_float": 0.25274721905017294,
+        "upper": "152776319472774285302323/604462909807314587353088",
+        "upper_float": 0.25274721905017294,
+        "width_float": 1.5137405209720406e-22
+      },
+      "baseline_value": 0.25274721905017294,
+      "fee_exceeds_headroom": true,
+      "headroom_interval": {
+        "lower": "0",
+        "lower_float": 0.0,
+        "upper": "183/1208925819614629174706176",
+        "upper_float": 1.5137405209720406e-22,
+        "width_float": 1.5137405209720406e-22
+      },
+      "known_law_optimum": 0.25274721905017294,
+      "paid_gain_upper": "-302231454903657293671969/30223145490365729367654400",
+      "paid_gain_upper_float": -0.01,
+      "point_headroom": 0.0,
+      "seed": 2702,
+      "split": "heldout_bank"
+    },
+    {
+      "bank_sha256": "79cfe26b72caf6ad2046991c804d5d44267eedc2639e4c6ef90cae441b05d0e4",
+      "baseline_interval": {
+        "lower": "305552638945548570604463/1208925819614629174706176",
+        "lower_float": 0.25274721905017294,
+        "upper": "152776319472774285302323/604462909807314587353088",
+        "upper_float": 0.25274721905017294,
+        "width_float": 1.5137405209720406e-22
+      },
+      "baseline_value": 0.25274721905017294,
+      "fee_exceeds_headroom": true,
+      "headroom_interval": {
+        "lower": "0",
+        "lower_float": 0.0,
+        "upper": "183/1208925819614629174706176",
+        "upper_float": 1.5137405209720406e-22,
+        "width_float": 1.5137405209720406e-22
+      },
+      "known_law_optimum": 0.25274721905017294,
+      "paid_gain_upper": "-302231454903657293671969/30223145490365729367654400",
+      "paid_gain_upper_float": -0.01,
+      "point_headroom": 0.0,
+      "seed": 2703,
+      "split": "heldout_bank"
+    },
+    {
+      "bank_sha256": "00d3d0cca30d96dc89986566a89cada61c449a591ab60769f18ef12e65e6567e",
+      "baseline_interval": {
+        "lower": "305552638945548570604463/1208925819614629174706176",
+        "lower_float": 0.25274721905017294,
+        "upper": "152776319472774285302323/604462909807314587353088",
+        "upper_float": 0.25274721905017294,
+        "width_float": 1.5137405209720406e-22
+      },
+      "baseline_value": 0.25274721905017294,
+      "fee_exceeds_headroom": true,
+      "headroom_interval": {
+        "lower": "0",
+        "lower_float": 0.0,
+        "upper": "183/1208925819614629174706176",
+        "upper_float": 1.5137405209720406e-22,
+        "width_float": 1.5137405209720406e-22
+      },
+      "known_law_optimum": 0.25274721905017294,
+      "paid_gain_upper": "-302231454903657293671969/30223145490365729367654400",
+      "paid_gain_upper_float": -0.01,
+      "point_headroom": 0.0,
+      "seed": 2704,
+      "split": "heldout_bank"
+    },
+    {
+      "bank_sha256": "4ca388b4f58cd549a635d64ed94cdbe0d0fc2fd3f6318f95409f6864d0858820",
+      "baseline_interval": {
+        "lower": "305552638945548570604463/1208925819614629174706176",
+        "lower_float": 0.25274721905017294,
+        "upper": "152776319472774285302323/604462909807314587353088",
+        "upper_float": 0.25274721905017294,
+        "width_float": 1.5137405209720406e-22
+      },
+      "baseline_value": 0.25274721905017294,
+      "fee_exceeds_headroom": true,
+      "headroom_interval": {
+        "lower": "0",
+        "lower_float": 0.0,
+        "upper": "183/1208925819614629174706176",
+        "upper_float": 1.5137405209720406e-22,
+        "width_float": 1.5137405209720406e-22
+      },
+      "known_law_optimum": 0.25274721905017294,
+      "paid_gain_upper": "-302231454903657293671969/30223145490365729367654400",
+      "paid_gain_upper_float": -0.01,
+      "point_headroom": 0.0,
+      "seed": 2705,
+      "split": "heldout_bank"
+    },
+    {
+      "bank_sha256": "89b9587bd000ec64706750a17a644efcce035f1908ca7dce87dd38efab1fed3d",
+      "baseline_interval": {
+        "lower": "305552638945548570604463/1208925819614629174706176",
+        "lower_float": 0.25274721905017294,
+        "upper": "152776319472774285302323/604462909807314587353088",
+        "upper_float": 0.25274721905017294,
+        "width_float": 1.5137405209720406e-22
+      },
+      "baseline_value": 0.25274721905017294,
+      "fee_exceeds_headroom": true,
+      "headroom_interval": {
+        "lower": "0",
+        "lower_float": 0.0,
+        "upper": "183/1208925819614629174706176",
+        "upper_float": 1.5137405209720406e-22,
+        "width_float": 1.5137405209720406e-22
+      },
+      "known_law_optimum": 0.25274721905017294,
+      "paid_gain_upper": "-302231454903657293671969/30223145490365729367654400",
+      "paid_gain_upper_float": -0.01,
+      "point_headroom": 0.0,
+      "seed": 2706,
+      "split": "heldout_bank"
+    },
+    {
+      "bank_sha256": "5931341b6ab5b754f0e2b90f3685fd1331efa045de881eba6bf3da41fa02df0b",
+      "baseline_interval": {
+        "lower": "305552638945548570604463/1208925819614629174706176",
+        "lower_float": 0.25274721905017294,
+        "upper": "152776319472774285302323/604462909807314587353088",
+        "upper_float": 0.25274721905017294,
+        "width_float": 1.5137405209720406e-22
+      },
+      "baseline_value": 0.25274721905017294,
+      "fee_exceeds_headroom": true,
+      "headroom_interval": {
+        "lower": "0",
+        "lower_float": 0.0,
+        "upper": "183/1208925819614629174706176",
+        "upper_float": 1.5137405209720406e-22,
+        "width_float": 1.5137405209720406e-22
+      },
+      "known_law_optimum": 0.25274721905017294,
+      "paid_gain_upper": "-302231454903657293671969/30223145490365729367654400",
+      "paid_gain_upper_float": -0.01,
+      "point_headroom": 0.0,
+      "seed": 2707,
+      "split": "heldout_bank"
+    },
+    {
+      "bank_sha256": "3f6fb99415ee97ca921c63463e63e0ab54a564eb4cc8f2332f68657579c74904",
+      "baseline_interval": {
+        "lower": "305552638945548570604463/1208925819614629174706176",
+        "lower_float": 0.25274721905017294,
+        "upper": "152776319472774285302323/604462909807314587353088",
+        "upper_float": 0.25274721905017294,
+        "width_float": 1.5137405209720406e-22
+      },
+      "baseline_value": 0.25274721905017294,
+      "fee_exceeds_headroom": true,
+      "headroom_interval": {
+        "lower": "0",
+        "lower_float": 0.0,
+        "upper": "183/1208925819614629174706176",
+        "upper_float": 1.5137405209720406e-22,
+        "width_float": 1.5137405209720406e-22
+      },
+      "known_law_optimum": 0.25274721905017294,
+      "paid_gain_upper": "-302231454903657293671969/30223145490365729367654400",
+      "paid_gain_upper_float": -0.01,
+      "point_headroom": 0.0,
+      "seed": 2708,
+      "split": "heldout_bank"
+    },
+    {
+      "bank_sha256": "5e8fb2ad4fcda2a86177d248157b74aa7ca389c082b49a235ba30d37eab208b7",
+      "baseline_interval": {
+        "lower": "305552638945548570604463/1208925819614629174706176",
+        "lower_float": 0.25274721905017294,
+        "upper": "152776319472774285302323/604462909807314587353088",
+        "upper_float": 0.25274721905017294,
+        "width_float": 1.5137405209720406e-22
+      },
+      "baseline_value": 0.25274721905017294,
+      "fee_exceeds_headroom": true,
+      "headroom_interval": {
+        "lower": "0",
+        "lower_float": 0.0,
+        "upper": "183/1208925819614629174706176",
+        "upper_float": 1.5137405209720406e-22,
+        "width_float": 1.5137405209720406e-22
+      },
+      "known_law_optimum": 0.25274721905017294,
+      "paid_gain_upper": "-302231454903657293671969/30223145490365729367654400",
+      "paid_gain_upper_float": -0.01,
+      "point_headroom": 0.0,
+      "seed": 2709,
+      "split": "heldout_bank"
+    },
+    {
+      "bank_sha256": "451fdf92a9b84005c279e13f84ca87a61a85657756a1ca4c3064d5f78e7a0059",
+      "baseline_interval": {
+        "lower": "305552638945548570604463/1208925819614629174706176",
+        "lower_float": 0.25274721905017294,
+        "upper": "152776319472774285302323/604462909807314587353088",
+        "upper_float": 0.25274721905017294,
+        "width_float": 1.5137405209720406e-22
+      },
+      "baseline_value": 0.25274721905017294,
+      "fee_exceeds_headroom": true,
+      "headroom_interval": {
+        "lower": "0",
+        "lower_float": 0.0,
+        "upper": "183/1208925819614629174706176",
+        "upper_float": 1.5137405209720406e-22,
+        "width_float": 1.5137405209720406e-22
+      },
+      "known_law_optimum": 0.25274721905017294,
+      "paid_gain_upper": "-302231454903657293671969/30223145490365729367654400",
+      "paid_gain_upper_float": -0.01,
+      "point_headroom": 0.0,
+      "seed": 2710,
+      "split": "heldout_bank"
+    },
+    {
+      "bank_sha256": "c202e4e7a2a4f30427e511a1a2f8ad81b363f296685bf357bcbc82c4e8fd4d09",
+      "baseline_interval": {
+        "lower": "305552638945548570604463/1208925819614629174706176",
+        "lower_float": 0.25274721905017294,
+        "upper": "152776319472774285302323/604462909807314587353088",
+        "upper_float": 0.25274721905017294,
+        "width_float": 1.5137405209720406e-22
+      },
+      "baseline_value": 0.25274721905017294,
+      "fee_exceeds_headroom": true,
+      "headroom_interval": {
+        "lower": "0",
+        "lower_float": 0.0,
+        "upper": "183/1208925819614629174706176",
+        "upper_float": 1.5137405209720406e-22,
+        "width_float": 1.5137405209720406e-22
+      },
+      "known_law_optimum": 0.25274721905017294,
+      "paid_gain_upper": "-302231454903657293671969/30223145490365729367654400",
+      "paid_gain_upper_float": -0.01,
+      "point_headroom": 0.0,
+      "seed": 2711,
+      "split": "heldout_bank"
+    },
+    {
+      "bank_sha256": "4f63dc91ec6ca495214521b383eec26a44e8d9eb998ab19612632f6f7e2dc380",
+      "baseline_interval": {
+        "lower": "305552638945548570604463/1208925819614629174706176",
+        "lower_float": 0.25274721905017294,
+        "upper": "152776319472774285302323/604462909807314587353088",
+        "upper_float": 0.25274721905017294,
+        "width_float": 1.5137405209720406e-22
+      },
+      "baseline_value": 0.25274721905017294,
+      "fee_exceeds_headroom": true,
+      "headroom_interval": {
+        "lower": "0",
+        "lower_float": 0.0,
+        "upper": "183/1208925819614629174706176",
+        "upper_float": 1.5137405209720406e-22,
+        "width_float": 1.5137405209720406e-22
+      },
+      "known_law_optimum": 0.25274721905017294,
+      "paid_gain_upper": "-302231454903657293671969/30223145490365729367654400",
+      "paid_gain_upper_float": -0.01,
+      "point_headroom": 0.0,
+      "seed": 2712,
+      "split": "heldout_bank"
+    },
+    {
+      "bank_sha256": "1b305c62e708b1299befb3268a1a447418e2b3b10aa773cfb62e4987d5e5d371",
+      "baseline_interval": {
+        "lower": "305552638945548570604463/1208925819614629174706176",
+        "lower_float": 0.25274721905017294,
+        "upper": "152776319472774285302323/604462909807314587353088",
+        "upper_float": 0.25274721905017294,
+        "width_float": 1.5137405209720406e-22
+      },
+      "baseline_value": 0.25274721905017294,
+      "fee_exceeds_headroom": true,
+      "headroom_interval": {
+        "lower": "0",
+        "lower_float": 0.0,
+        "upper": "183/1208925819614629174706176",
+        "upper_float": 1.5137405209720406e-22,
+        "width_float": 1.5137405209720406e-22
+      },
+      "known_law_optimum": 0.25274721905017294,
+      "paid_gain_upper": "-302231454903657293671969/30223145490365729367654400",
+      "paid_gain_upper_float": -0.01,
+      "point_headroom": 0.0,
+      "seed": 2713,
+      "split": "heldout_bank"
+    },
+    {
+      "bank_sha256": "4625680b1dac1e53cd6ad421b03df939551f3c408ce2a0a5728904b0e62ac8dc",
+      "baseline_interval": {
+        "lower": "305552638945548570604463/1208925819614629174706176",
+        "lower_float": 0.25274721905017294,
+        "upper": "152776319472774285302323/604462909807314587353088",
+        "upper_float": 0.25274721905017294,
+        "width_float": 1.5137405209720406e-22
+      },
+      "baseline_value": 0.25274721905017294,
+      "fee_exceeds_headroom": true,
+      "headroom_interval": {
+        "lower": "0",
+        "lower_float": 0.0,
+        "upper": "183/1208925819614629174706176",
+        "upper_float": 1.5137405209720406e-22,
+        "width_float": 1.5137405209720406e-22
+      },
+      "known_law_optimum": 0.25274721905017294,
+      "paid_gain_upper": "-302231454903657293671969/30223145490365729367654400",
+      "paid_gain_upper_float": -0.01,
+      "point_headroom": 0.0,
+      "seed": 2714,
+      "split": "heldout_bank"
+    },
+    {
+      "bank_sha256": "002016e3af00e0d8f5628c996d5ce958df3953e8140a5320bba4ef0d27a2122c",
+      "baseline_interval": {
+        "lower": "305552638945548570604463/1208925819614629174706176",
+        "lower_float": 0.25274721905017294,
+        "upper": "152776319472774285302323/604462909807314587353088",
+        "upper_float": 0.25274721905017294,
+        "width_float": 1.5137405209720406e-22
+      },
+      "baseline_value": 0.25274721905017294,
+      "fee_exceeds_headroom": true,
+      "headroom_interval": {
+        "lower": "0",
+        "lower_float": 0.0,
+        "upper": "183/1208925819614629174706176",
+        "upper_float": 1.5137405209720406e-22,
+        "width_float": 1.5137405209720406e-22
+      },
+      "known_law_optimum": 0.25274721905017294,
+      "paid_gain_upper": "-302231454903657293671969/30223145490365729367654400",
+      "paid_gain_upper_float": -0.01,
+      "point_headroom": 0.0,
+      "seed": 2715,
+      "split": "heldout_bank"
+    },
+    {
+      "bank_sha256": "ad6b636c59bb76614803624b12dbed9c3534859d1490fde5be6ff3ed09e7b54e",
+      "baseline_interval": {
+        "lower": "304130595290769150244549/1208925819614629174706176",
+        "lower_float": 0.2515709321087354,
+        "upper": "152065297645384575122367/604462909807314587353088",
+        "upper_float": 0.2515709321087354,
+        "width_float": 1.5302841332231012e-22
+      },
+      "baseline_value": 0.2515709321087354,
+      "fee_exceeds_headroom": true,
+      "headroom_interval": {
+        "lower": "1422043654779420359729/1208925819614629174706176",
+        "lower_float": 0.001176286941437587,
+        "upper": "1422043654779420360097/1208925819614629174706176",
+        "upper_float": 0.001176286941437587,
+        "width_float": 3.044024654195142e-22
+      },
+      "known_law_optimum": 0.25274721905017294,
+      "paid_gain_upper": "-266680363534171784674119/30223145490365729367654400",
+      "paid_gain_upper_float": -0.008823713058562412,
+      "point_headroom": 0.0011762869414375654,
+      "seed": 2716,
+      "split": "heldout_bank"
+    }
+  ],
+  "schema": "ndu-jac.retained-task-known-law-headroom.v1",
+  "source_sha256": {
+    "confidence.py": "bacd459260fb0cab1685458c1f1fbdba0db3729ea9b0fab894a5fc3d94da4b0c",
+    "core.py": "a04d3a1cc038448e9a2f7fc5f5336c60a80f06171833517f045e90cf7a1b6578",
+    "finite_study.py": "949047331a616e638dc71ff6ddd167a1a63f0234cfaf4524f0d727ce641a2887",
+    "headroom.py": "64ce7d4d9100939a6d86793df7b6888044f559f668203edc69a9d5430090fc2f"
+  },
+  "state_action_count": 124,
+  "state_count": 52,
+  "sum_headroom_upper": "2133065482169130541701/604462909807314587353088",
+  "sum_headroom_upper_float": 0.0035288608243127613,
+  "total_gain_upper_with_one_shared_fee": "-97789090397600383295747/15111572745182864683827200",
+  "total_gain_upper_with_one_shared_fee_float": -0.006471139175687239
+}

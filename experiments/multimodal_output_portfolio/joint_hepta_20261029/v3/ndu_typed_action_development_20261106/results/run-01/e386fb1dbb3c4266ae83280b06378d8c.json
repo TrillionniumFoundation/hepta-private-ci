@@ -1,0 +1,43 @@
+{
+  "receipt": {
+    "request_id": "e386fb1dbb3c4266ae83280b06378d8c",
+    "context": {
+      "task_id": "typed/cpython/median",
+      "arm": "literal_router",
+      "stage": "tool"
+    },
+    "argv": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "/workspace/scratch/e5ecafe4ccc8/frozen_work/study.py",
+      "tool-worker"
+    ],
+    "payload": {
+      "label": "G",
+      "tool": "function_signature",
+      "argument": "median"
+    },
+    "started_at_utc": "2026-11-06T16:53:42.303052+00:00",
+    "started_monotonic": 60534.289480065,
+    "phase": "terminal",
+    "status": "ok",
+    "returncode": 0,
+    "finished_at_utc": "2026-11-06T16:53:42.379149+00:00",
+    "wall_seconds": 0.07611826399806887,
+    "parent_cpu_seconds": 0.0018139820000000195,
+    "child_cpu_seconds": 0.0746520000000146,
+    "stdout_sha256": "6437f97d8a04d159d9298bf29057bf11547651e3992ed4ba22b7f673197c9d31",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "external_paid_model_api_calls": 0,
+    "actual_host_currency_cost": null
+  },
+  "response": {
+    "answer": "def median(data):",
+    "operation": {
+      "argument": "median",
+      "label": "G",
+      "tool": "function_signature"
+    }
+  },
+  "stdout": "{\"answer\": \"def median(data):\", \"operation\": {\"argument\": \"median\", \"label\": \"G\", \"tool\": \"function_signature\"}}\n",
+  "stderr": ""
+}

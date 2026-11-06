@@ -1,0 +1,2361 @@
+{
+  "schema": "ndu.deadline-frontier.reference.v1",
+  "generated_at_utc": "2026-11-06T17:06:50.521172+00:00",
+  "protocol": {
+    "schema": "ndu.deadline-frontier.deterministic-grid.v1",
+    "purpose": "Exact common-history feasibility after prior KL-only necessary bounds",
+    "design_status": "Deterministic mathematical development after exploratory code checks; no random confirmation or external preregistration",
+    "upstream_head": "d7a2893a0a4d4829a8ac3c266e3948ac25a9254d",
+    "joint_deadlines": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "expected_resource_budgets": [
+      "0",
+      "1/40",
+      "1/20",
+      "1/10",
+      null
+    ],
+    "gated_cells": [
+      [
+        1,
+        null
+      ],
+      [
+        2,
+        null
+      ],
+      [
+        2,
+        "1/20"
+      ],
+      [
+        2,
+        "7/100"
+      ]
+    ],
+    "catalog_sample_caps": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30
+    ],
+    "maximum_certificate_gap": "1/1000000",
+    "correctness": "Worst of two conditional error probabilities; shared randomized history policy",
+    "resource_budget": "Each hypothesis's expected launch fees plus actual consumed model time rent; not a pathwise spending cap",
+    "deadline": "Pathwise model-time cap; strictly positive durations; STOP mandatory at exhausted budget",
+    "joint_and_gated_prices": {
+      "launch": "1/40",
+      "per_time_unit": "1/100"
+    },
+    "catalog_complete_macro": {
+      "p0": "57/100",
+      "p1": "87/100",
+      "duration": 3,
+      "all_in_resource_cost": "3/10",
+      "partial_macros": "not admitted"
+    },
+    "identification_is_not_net_utility": true,
+    "kernel_laws_supplied": true,
+    "new_samples": 0,
+    "old_negative_results_changed": false,
+    "new_rl_originality_established": false
+  },
+  "source_sha256": {
+    "ndu_deadline_frontier_20261106/__init__.py": "c65ff761a48f3b937b2cafd88887344bde3b8a28bf1fb567eec79f55794e8bc9",
+    "ndu_deadline_frontier_20261106/binary_deadline.py": "42dfeebd50b18122737deda14ecf6268ddbde194da4ee734db4d4fb61094c5fb",
+    "ndu_deadline_frontier_20261106/frontier.py": "41eb688f21ee1371fb2b861d42ec641a6a778609c8da5df0e524dcd20779f495",
+    "ndu_deadline_frontier_20261106/study.py": "54133c74e65b04b252cb484beaa027bfb3ff233a8c2e57e49bd7d83cde571437",
+    "ndu_deadline_frontier_20261106/test_frontier.py": "d3802cb26e1226537519cfe9d6bb46df1da83c14ccaa1c45a4ae5024b7b86a1b",
+    "ndu_deadline_frontier_20261106/protocol.json": "ce8983f7e9cfe5614f2a76a82805cefb444bc777d1ced512032527e826beb0d2",
+    "ndu_identification/model.py": "0d6a10ba560b27443182a6aa36bac2af4ce6a4976bc05b27c37c25960cd17d63"
+  },
+  "source_unchanged": true,
+  "rows": [
+    {
+      "cell": 0,
+      "contract": {
+        "deadline": 0,
+        "max_probes": 3,
+        "family": "joint",
+        "fee": "1/40",
+        "time_price": "1/100"
+      },
+      "budget": "0",
+      "lower": "1/2",
+      "upper": "1/2",
+      "errors": [
+        "1/2",
+        "1/2"
+      ],
+      "resources": [
+        "0",
+        "0"
+      ],
+      "gap": "0",
+      "mix": "1",
+      "lam": [
+        "1/2",
+        "1/2"
+      ],
+      "mu": [
+        "0",
+        "0"
+      ],
+      "solver_objective": 0.5,
+      "nodes": 1,
+      "variables": 3,
+      "root_actions": [
+        [
+          [
+            "stop",
+            0
+          ],
+          "1/2"
+        ],
+        [
+          [
+            "stop",
+            1
+          ],
+          "1/2"
+        ]
+      ],
+      "wall_seconds": 0.0038666429973091,
+      "five_percent_status": "IMPOSSIBLE"
+    },
+    {
+      "cell": 1,
+      "contract": {
+        "deadline": 0,
+        "max_probes": 3,
+        "family": "joint",
+        "fee": "1/40",
+        "time_price": "1/100"
+      },
+      "budget": "1/40",
+      "lower": "1/2",
+      "upper": "1/2",
+      "errors": [
+        "1/2",
+        "1/2"
+      ],
+      "resources": [
+        "0",
+        "0"
+      ],
+      "gap": "0",
+      "mix": "1",
+      "lam": [
+        "1/2",
+        "1/2"
+      ],
+      "mu": [
+        "0",
+        "0"
+      ],
+      "solver_objective": 0.5,
+      "nodes": 1,
+      "variables": 3,
+      "root_actions": [
+        [
+          [
+            "stop",
+            0
+          ],
+          "1/2"
+        ],
+        [
+          [
+            "stop",
+            1
+          ],
+          "1/2"
+        ]
+      ],
+      "wall_seconds": 0.0024057589980657212,
+      "five_percent_status": "IMPOSSIBLE"
+    },
+    {
+      "cell": 2,
+      "contract": {
+        "deadline": 0,
+        "max_probes": 3,
+        "family": "joint",
+        "fee": "1/40",
+        "time_price": "1/100"
+      },
+      "budget": "1/20",
+      "lower": "1/2",
+      "upper": "1/2",
+      "errors": [
+        "1/2",
+        "1/2"
+      ],
+      "resources": [
+        "0",
+        "0"
+      ],
+      "gap": "0",
+      "mix": "1",
+      "lam": [
+        "1/2",
+        "1/2"
+      ],
+      "mu": [
+        "0",
+        "0"
+      ],
+      "solver_objective": 0.5,
+      "nodes": 1,
+      "variables": 3,
+      "root_actions": [
+        [
+          [
+            "stop",
+            0
+          ],
+          "1/2"
+        ],
+        [
+          [
+            "stop",
+            1
+          ],
+          "1/2"
+        ]
+      ],
+      "wall_seconds": 0.001969671000551898,
+      "five_percent_status": "IMPOSSIBLE"
+    },
+    {
+      "cell": 3,
+      "contract": {
+        "deadline": 0,
+        "max_probes": 3,
+        "family": "joint",
+        "fee": "1/40",
+        "time_price": "1/100"
+      },
+      "budget": "1/10",
+      "lower": "1/2",
+      "upper": "1/2",
+      "errors": [
+        "1/2",
+        "1/2"
+      ],
+      "resources": [
+        "0",
+        "0"
+      ],
+      "gap": "0",
+      "mix": "1",
+      "lam": [
+        "1/2",
+        "1/2"
+      ],
+      "mu": [
+        "0",
+        "0"
+      ],
+      "solver_objective": 0.5,
+      "nodes": 1,
+      "variables": 3,
+      "root_actions": [
+        [
+          [
+            "stop",
+            0
+          ],
+          "1/2"
+        ],
+        [
+          [
+            "stop",
+            1
+          ],
+          "1/2"
+        ]
+      ],
+      "wall_seconds": 0.0018696100014494732,
+      "five_percent_status": "IMPOSSIBLE"
+    },
+    {
+      "cell": 4,
+      "contract": {
+        "deadline": 0,
+        "max_probes": 3,
+        "family": "joint",
+        "fee": "1/40",
+        "time_price": "1/100"
+      },
+      "budget": null,
+      "lower": "1/2",
+      "upper": "1/2",
+      "errors": [
+        "1/2",
+        "1/2"
+      ],
+      "resources": [
+        "0",
+        "0"
+      ],
+      "gap": "0",
+      "mix": "1",
+      "lam": [
+        "1/2",
+        "1/2"
+      ],
+      "mu": [
+        "0",
+        "0"
+      ],
+      "solver_objective": 0.5,
+      "nodes": 1,
+      "variables": 3,
+      "root_actions": [
+        [
+          [
+            "stop",
+            0
+          ],
+          "1/2"
+        ],
+        [
+          [
+            "stop",
+            1
+          ],
+          "1/2"
+        ]
+      ],
+      "wall_seconds": 0.001999186002649367,
+      "five_percent_status": "IMPOSSIBLE"
+    },
+    {
+      "cell": 5,
+      "contract": {
+        "deadline": 1,
+        "max_probes": 3,
+        "family": "joint",
+        "fee": "1/40",
+        "time_price": "1/100"
+      },
+      "budget": "0",
+      "lower": "1/2",
+      "upper": "1/2",
+      "errors": [
+        "1/2",
+        "1/2"
+      ],
+      "resources": [
+        "0",
+        "0"
+      ],
+      "gap": "0",
+      "mix": "1",
+      "lam": [
+        "1/2",
+        "1/2"
+      ],
+      "mu": [
+        "36/7",
+        "0"
+      ],
+      "solver_objective": 0.5,
+      "nodes": 8,
+      "variables": 20,
+      "root_actions": [
+        [
+          [
+            "stop",
+            0
+          ],
+          "1/2"
+        ],
+        [
+          [
+            "stop",
+            1
+          ],
+          "1/2"
+        ]
+      ],
+      "wall_seconds": 0.002345878994674422,
+      "five_percent_status": "IMPOSSIBLE"
+    },
+    {
+      "cell": 6,
+      "contract": {
+        "deadline": 1,
+        "max_probes": 3,
+        "family": "joint",
+        "fee": "1/40",
+        "time_price": "1/100"
+      },
+      "budget": "1/40",
+      "lower": "13/35",
+      "upper": "13/35",
+      "errors": [
+        "13/35",
+        "13/35"
+      ],
+      "resources": [
+        "1/40",
+        "1/40"
+      ],
+      "gap": "0",
+      "mix": "1",
+      "lam": [
+        "1/2",
+        "1/2"
+      ],
+      "mu": [
+        "36/7",
+        "0"
+      ],
+      "solver_objective": 0.37142857142857144,
+      "nodes": 8,
+      "variables": 20,
+      "root_actions": [
+        [
+          [
+            "stop",
+            0
+          ],
+          "5/28"
+        ],
+        [
+          [
+            "stop",
+            1
+          ],
+          "3/28"
+        ],
+        [
+          [
+            "fast",
+            1
+          ],
+          "5/7"
+        ]
+      ],
+      "wall_seconds": 0.0026262020037393086,
+      "five_percent_status": "IMPOSSIBLE"
+    },
+    {
+      "cell": 7,
+      "contract": {
+        "deadline": 1,
+        "max_probes": 3,
+        "family": "joint",
+        "fee": "1/40",
+        "time_price": "1/100"
+      },
+      "budget": "1/20",
+      "lower": "8/25",
+      "upper": "8/25",
+      "errors": [
+        "8/25",
+        "8/25"
+      ],
+      "resources": [
+        "7/200",
+        "7/200"
+      ],
+      "gap": "0",
+      "mix": "1",
+      "lam": [
+        "1/2",
+        "1/2"
+      ],
+      "mu": [
+        "0",
+        "0"
+      ],
+      "solver_objective": 0.32,
+      "nodes": 8,
+      "variables": 20,
+      "root_actions": [
+        [
+          [
+            "fast",
+            1
+          ],
+          "1"
+        ]
+      ],
+      "wall_seconds": 0.0026725810021162033,
+      "five_percent_status": "IMPOSSIBLE"
+    },
+    {
+      "cell": 8,
+      "contract": {
+        "deadline": 1,
+        "max_probes": 3,
+        "family": "joint",
+        "fee": "1/40",
+        "time_price": "1/100"
+      },
+      "budget": "1/10",
+      "lower": "8/25",
+      "upper": "8/25",
+      "errors": [
+        "8/25",
+        "8/25"
+      ],
+      "resources": [
+        "7/200",
+        "7/200"
+      ],
+      "gap": "0",
+      "mix": "1",
+      "lam": [
+        "1/2",
+        "1/2"
+      ],
+      "mu": [
+        "0",
+        "0"
+      ],
+      "solver_objective": 0.32,
+      "nodes": 8,
+      "variables": 20,
+      "root_actions": [
+        [
+          [
+            "fast",
+            1
+          ],
+          "1"
+        ]
+      ],
+      "wall_seconds": 0.00250273499841569,
+      "five_percent_status": "IMPOSSIBLE"
+    },
+    {
+      "cell": 9,
+      "contract": {
+        "deadline": 1,
+        "max_probes": 3,
+        "family": "joint",
+        "fee": "1/40",
+        "time_price": "1/100"
+      },
+      "budget": null,
+      "lower": "8/25",
+      "upper": "8/25",
+      "errors": [
+        "8/25",
+        "8/25"
+      ],
+      "resources": [
+        "7/200",
+        "7/200"
+      ],
+      "gap": "0",
+      "mix": "1",
+      "lam": [
+        "1/2",
+        "1/2"
+      ],
+      "mu": [
+        "0",
+        "0"
+      ],
+      "solver_objective": 0.32,
+      "nodes": 8,
+      "variables": 20,
+      "root_actions": [
+        [
+          [
+            "fast",
+            1
+          ],
+          "1"
+        ]
+      ],
+      "wall_seconds": 0.0037203619940555654,
+      "five_percent_status": "IMPOSSIBLE"
+    },
+    {
+      "cell": 10,
+      "contract": {
+        "deadline": 2,
+        "max_probes": 3,
+        "family": "joint",
+        "fee": "1/40",
+        "time_price": "1/100"
+      },
+      "budget": "0",
+      "lower": "1/2",
+      "upper": "1/2",
+      "errors": [
+        "1/2",
+        "1/2"
+      ],
+      "resources": [
+        "0",
+        "0"
+      ],
+      "gap": "0",
+      "mix": "1",
+      "lam": [
+        "1/2",
+        "1/2"
+      ],
+      "mu": [
+        "36/7",
+        "0"
+      ],
+      "solver_objective": 0.5,
+      "nodes": 93,
+      "variables": 226,
+      "root_actions": [
+        [
+          [
+            "stop",
+            0
+          ],
+          "1/2"
+        ],
+        [
+          [
+            "stop",
+            1
+          ],
+          "1/2"
+        ]
+      ],
+      "wall_seconds": 0.008625652000773698,
+      "five_percent_status": "IMPOSSIBLE"
+    },
+    {
+      "cell": 11,
+      "contract": {
+        "deadline": 2,
+        "max_probes": 3,
+        "family": "joint",
+        "fee": "1/40",
+        "time_price": "1/100"
+      },
+      "budget": "1/40",
+      "lower": "13/35",
+      "upper": "13/35",
+      "errors": [
+        "13/35",
+        "13/35"
+      ],
+      "resources": [
+        "1/40",
+        "1/40"
+      ],
+      "gap": "0",
+      "mix": "1",
+      "lam": [
+        "1/2",
+        "1/2"
+      ],
+      "mu": [
+        "37/49",
+        "215/49"
+      ],
+      "solver_objective": 0.37142857142857144,
+      "nodes": 93,
+      "variables": 226,
+      "root_actions": [
+        [
+          [
+            "stop",
+            0
+          ],
+          "5/28"
+        ],
+        [
+          [
+            "stop",
+            1
+          ],
+          "53/308"
+        ],
+        [
+          [
+            "fast",
+            1
+          ],
+          "50/77"
+        ]
+      ],
+      "wall_seconds": 0.010228168997855391,
+      "five_percent_status": "IMPOSSIBLE"
+    },
+    {
+      "cell": 12,
+      "contract": {
+        "deadline": 2,
+        "max_probes": 3,
+        "family": "joint",
+        "fee": "1/40",
+        "time_price": "1/100"
+      },
+      "budget": "1/20",
+      "lower": "1553/6300",
+      "upper": "1553/6300",
+      "errors": [
+        "1553/6300",
+        "1553/6300"
+      ],
+      "resources": [
+        "1/20",
+        "1/20"
+      ],
+      "gap": "0",
+      "mix": "1",
+      "lam": [
+        "1/2",
+        "1/2"
+      ],
+      "mu": [
+        "353/441",
+        "1775/441"
+      ],
+      "solver_objective": 0.24650793650793656,
+      "nodes": 93,
+      "variables": 226,
+      "root_actions": [
+        [
+          [
+            "fast",
+            1
+          ],
+          "17/63"
+        ],
+        [
+          [
+            "joint",
+            1
+          ],
+          "46/63"
+        ]
+      ],
+      "wall_seconds": 0.010498698000446893,
+      "five_percent_status": "IMPOSSIBLE"
+    },
+    {
+      "cell": 13,
+      "contract": {
+        "deadline": 2,
+        "max_probes": 3,
+        "family": "joint",
+        "fee": "1/40",
+        "time_price": "1/100"
+      },
+      "budget": "1/10",
+      "lower": "451/2000",
+      "upper": "451/2000",
+      "errors": [
+        "451/2000",
+        "451/2000"
+      ],
+      "resources": [
+        "7/100",
+        "7/100"
+      ],
+      "gap": "0",
+      "mix": "1",
+      "lam": [
+        "1/2",
+        "1/2"
+      ],
+      "mu": [
+        "0",
+        "0"
+      ],
+      "solver_objective": 0.2255,
+      "nodes": 93,
+      "variables": 226,
+      "root_actions": [
+        [
+          [
+            "fast",
+            1
+          ],
+          "1"
+        ]
+      ],
+      "wall_seconds": 0.010673780998331495,
+      "five_percent_status": "IMPOSSIBLE"
+    },
+    {
+      "cell": 14,
+      "contract": {
+        "deadline": 2,
+        "max_probes": 3,
+        "family": "joint",
+        "fee": "1/40",
+        "time_price": "1/100"
+      },
+      "budget": null,
+      "lower": "451/2000",
+      "upper": "451/2000",
+      "errors": [
+        "451/2000",
+        "451/2000"
+      ],
+      "resources": [
+        "7/100",
+        "7/100"
+      ],
+      "gap": "0",
+      "mix": "1",
+      "lam": [
+        "1/2",
+        "1/2"
+      ],
+      "mu": [
+        "0",
+        "0"
+      ],
+      "solver_objective": 0.2255,
+      "nodes": 93,
+      "variables": 226,
+      "root_actions": [
+        [
+          [
+            "fast",
+            1
+          ],
+          "1"
+        ]
+      ],
+      "wall_seconds": 0.009885002000373788,
+      "five_percent_status": "IMPOSSIBLE"
+    },
+    {
+      "cell": 15,
+      "contract": {
+        "deadline": 3,
+        "max_probes": 3,
+        "family": "joint",
+        "fee": "1/40",
+        "time_price": "1/100"
+      },
+      "budget": "0",
+      "lower": "1/2",
+      "upper": "1/2",
+      "errors": [
+        "1/2",
+        "1/2"
+      ],
+      "resources": [
+        "0",
+        "0"
+      ],
+      "gap": "0",
+      "mix": "1",
+      "lam": [
+        "1/2",
+        "1/2"
+      ],
+      "mu": [
+        "432/55",
+        "0"
+      ],
+      "solver_objective": 0.5,
+      "nodes": 1449,
+      "variables": 3511,
+      "root_actions": [
+        [
+          [
+            "stop",
+            0
+          ],
+          "1/2"
+        ],
+        [
+          [
+            "stop",
+            1
+          ],
+          "1/2"
+        ]
+      ],
+      "wall_seconds": 0.17475746999843977,
+      "five_percent_status": "IMPOSSIBLE"
+    },
+    {
+      "cell": 16,
+      "contract": {
+        "deadline": 3,
+        "max_probes": 3,
+        "family": "joint",
+        "fee": "1/40",
+        "time_price": "1/100"
+      },
+      "budget": "1/40",
+      "lower": "167/550",
+      "upper": "167/550",
+      "errors": [
+        "167/550",
+        "167/550"
+      ],
+      "resources": [
+        "1/40",
+        "1/40"
+      ],
+      "gap": "0",
+      "mix": "1",
+      "lam": [
+        "1/2",
+        "1/2"
+      ],
+      "mu": [
+        "4363/3465",
+        "22853/3465"
+      ],
+      "solver_objective": 0.3036363636363636,
+      "nodes": 1449,
+      "variables": 3511,
+      "root_actions": [
+        [
+          [
+            "stop",
+            0
+          ],
+          "1/4"
+        ],
+        [
+          [
+            "stop",
+            1
+          ],
+          "13/44"
+        ],
+        [
+          [
+            "slow",
+            3
+          ],
+          "5/11"
+        ]
+      ],
+      "wall_seconds": 0.24967509899579454,
+      "five_percent_status": "IMPOSSIBLE"
+    },
+    {
+      "cell": 17,
+      "contract": {
+        "deadline": 3,
+        "max_probes": 3,
+        "family": "joint",
+        "fee": "1/40",
+        "time_price": "1/100"
+      },
+      "budget": "1/20",
+      "lower": "59/550",
+      "upper": "59/550",
+      "errors": [
+        "59/550",
+        "59/550"
+      ],
+      "resources": [
+        "1/20",
+        "1/20"
+      ],
+      "gap": "0",
+      "mix": "1",
+      "lam": [
+        "1/2",
+        "1/2"
+      ],
+      "mu": [
+        "2476/2695",
+        "18692/2695"
+      ],
+      "solver_objective": 0.10727272727272719,
+      "nodes": 1449,
+      "variables": 3511,
+      "root_actions": [
+        [
+          [
+            "stop",
+            1
+          ],
+          "1/11"
+        ],
+        [
+          [
+            "slow",
+            3
+          ],
+          "10/11"
+        ]
+      ],
+      "wall_seconds": 0.2868009540034109,
+      "five_percent_status": "IMPOSSIBLE"
+    },
+    {
+      "cell": 18,
+      "contract": {
+        "deadline": 3,
+        "max_probes": 3,
+        "family": "joint",
+        "fee": "1/40",
+        "time_price": "1/100"
+      },
+      "budget": "1/10",
+      "lower": "17/250",
+      "upper": "17/250",
+      "errors": [
+        "17/250",
+        "17/250"
+      ],
+      "resources": [
+        "11/200",
+        "11/200"
+      ],
+      "gap": "0",
+      "mix": "1",
+      "lam": [
+        "1/2",
+        "1/2"
+      ],
+      "mu": [
+        "0",
+        "0"
+      ],
+      "solver_objective": 0.068,
+      "nodes": 1449,
+      "variables": 3511,
+      "root_actions": [
+        [
+          [
+            "slow",
+            3
+          ],
+          "1"
+        ]
+      ],
+      "wall_seconds": 0.226956196995161,
+      "five_percent_status": "IMPOSSIBLE"
+    },
+    {
+      "cell": 19,
+      "contract": {
+        "deadline": 3,
+        "max_probes": 3,
+        "family": "joint",
+        "fee": "1/40",
+        "time_price": "1/100"
+      },
+      "budget": null,
+      "lower": "17/250",
+      "upper": "17/250",
+      "errors": [
+        "17/250",
+        "17/250"
+      ],
+      "resources": [
+        "11/200",
+        "11/200"
+      ],
+      "gap": "0",
+      "mix": "1",
+      "lam": [
+        "1/2",
+        "1/2"
+      ],
+      "mu": [
+        "0",
+        "0"
+      ],
+      "solver_objective": 0.068,
+      "nodes": 1449,
+      "variables": 3511,
+      "root_actions": [
+        [
+          [
+            "slow",
+            3
+          ],
+          "1"
+        ]
+      ],
+      "wall_seconds": 0.1901464090042282,
+      "five_percent_status": "IMPOSSIBLE"
+    },
+    {
+      "cell": 20,
+      "contract": {
+        "deadline": 4,
+        "max_probes": 3,
+        "family": "joint",
+        "fee": "1/40",
+        "time_price": "1/100"
+      },
+      "budget": "0",
+      "lower": "1/2",
+      "upper": "1/2",
+      "errors": [
+        "1/2",
+        "1/2"
+      ],
+      "resources": [
+        "0",
+        "0"
+      ],
+      "gap": "0",
+      "mix": "1",
+      "lam": [
+        "1/2",
+        "1/2"
+      ],
+      "mu": [
+        "432/55",
+        "0"
+      ],
+      "solver_objective": 0.5,
+      "nodes": 6404,
+      "variables": 15383,
+      "root_actions": [
+        [
+          [
+            "stop",
+            0
+          ],
+          "1/2"
+        ],
+        [
+          [
+            "stop",
+            1
+          ],
+          "1/2"
+        ]
+      ],
+      "wall_seconds": 0.535953234997578,
+      "five_percent_status": "IMPOSSIBLE"
+    },
+    {
+      "cell": 21,
+      "contract": {
+        "deadline": 4,
+        "max_probes": 3,
+        "family": "joint",
+        "fee": "1/40",
+        "time_price": "1/100"
+      },
+      "budget": "1/40",
+      "lower": "167/550",
+      "upper": "167/550",
+      "errors": [
+        "167/550",
+        "167/550"
+      ],
+      "resources": [
+        "1/40",
+        "1/40"
+      ],
+      "gap": "0",
+      "mix": "1",
+      "lam": [
+        "1/2",
+        "1/2"
+      ],
+      "mu": [
+        "121069/17820",
+        "18899/17820"
+      ],
+      "solver_objective": 0.3036363636363637,
+      "nodes": 6404,
+      "variables": 15383,
+      "root_actions": [
+        [
+          [
+            "stop",
+            0
+          ],
+          "1/4"
+        ],
+        [
+          [
+            "stop",
+            1
+          ],
+          "13/44"
+        ],
+        [
+          [
+            "slow",
+            3
+          ],
+          "5/11"
+        ]
+      ],
+      "wall_seconds": 2.3750766910015955,
+      "five_percent_status": "IMPOSSIBLE"
+    },
+    {
+      "cell": 22,
+      "contract": {
+        "deadline": 4,
+        "max_probes": 3,
+        "family": "joint",
+        "fee": "1/40",
+        "time_price": "1/100"
+      },
+      "budget": "1/20",
+      "lower": "59/550",
+      "upper": "59/550",
+      "errors": [
+        "59/550",
+        "59/550"
+      ],
+      "resources": [
+        "1/20",
+        "1/20"
+      ],
+      "gap": "0",
+      "mix": "1",
+      "lam": [
+        "1/2",
+        "1/2"
+      ],
+      "mu": [
+        "22853/3465",
+        "4363/3465"
+      ],
+      "solver_objective": 0.10727272727272713,
+      "nodes": 6404,
+      "variables": 15383,
+      "root_actions": [
+        [
+          [
+            "stop",
+            1
+          ],
+          "1/11"
+        ],
+        [
+          [
+            "slow",
+            3
+          ],
+          "10/11"
+        ]
+      ],
+      "wall_seconds": 2.5478038750006817,
+      "five_percent_status": "IMPOSSIBLE"
+    },
+    {
+      "cell": 23,
+      "contract": {
+        "deadline": 4,
+        "max_probes": 3,
+        "family": "joint",
+        "fee": "1/40",
+        "time_price": "1/100"
+      },
+      "budget": "1/10",
+      "lower": "1/20",
+      "upper": "1/20",
+      "errors": [
+        "1/20",
+        "1/20"
+      ],
+      "resources": [
+        "9/100",
+        "9/100"
+      ],
+      "gap": "0",
+      "mix": "1",
+      "lam": [
+        "1/2",
+        "1/2"
+      ],
+      "mu": [
+        "0",
+        "0"
+      ],
+      "solver_objective": 0.05,
+      "nodes": 6404,
+      "variables": 15383,
+      "root_actions": [
+        [
+          [
+            "slow",
+            3
+          ],
+          "1"
+        ]
+      ],
+      "wall_seconds": 2.685475188001874,
+      "five_percent_status": "FEASIBLE"
+    },
+    {
+      "cell": 24,
+      "contract": {
+        "deadline": 4,
+        "max_probes": 3,
+        "family": "joint",
+        "fee": "1/40",
+        "time_price": "1/100"
+      },
+      "budget": null,
+      "lower": "1/20",
+      "upper": "1/20",
+      "errors": [
+        "1/20",
+        "1/20"
+      ],
+      "resources": [
+        "8937/100000",
+        "5913/100000"
+      ],
+      "gap": "0",
+      "mix": "1",
+      "lam": [
+        "1/2",
+        "1/2"
+      ],
+      "mu": [
+        "0",
+        "0"
+      ],
+      "solver_objective": 0.05,
+      "nodes": 6404,
+      "variables": 15383,
+      "root_actions": [
+        [
+          [
+            "slow",
+            3
+          ],
+          "1"
+        ]
+      ],
+      "wall_seconds": 0.7150483750010608,
+      "five_percent_status": "FEASIBLE"
+    },
+    {
+      "cell": 25,
+      "contract": {
+        "deadline": 1,
+        "max_probes": 3,
+        "family": "gated",
+        "fee": "1/40",
+        "time_price": "1/100"
+      },
+      "budget": null,
+      "lower": "1/2",
+      "upper": "1/2",
+      "errors": [
+        "1/2",
+        "1/2"
+      ],
+      "resources": [
+        "0",
+        "0"
+      ],
+      "gap": "0",
+      "mix": "1",
+      "lam": [
+        "1/2",
+        "1/2"
+      ],
+      "mu": [
+        "0",
+        "0"
+      ],
+      "solver_objective": 0.5,
+      "nodes": 2,
+      "variables": 6,
+      "root_actions": [
+        [
+          [
+            "stop",
+            0
+          ],
+          "1/2"
+        ],
+        [
+          [
+            "stop",
+            1
+          ],
+          "1/2"
+        ]
+      ],
+      "wall_seconds": 0.003311114000098314,
+      "five_percent_status": "IMPOSSIBLE"
+    },
+    {
+      "cell": 26,
+      "contract": {
+        "deadline": 2,
+        "max_probes": 3,
+        "family": "gated",
+        "fee": "1/40",
+        "time_price": "1/100"
+      },
+      "budget": null,
+      "lower": "1/10",
+      "upper": "1/10",
+      "errors": [
+        "1/10",
+        "1/10"
+      ],
+      "resources": [
+        "7/100",
+        "7/100"
+      ],
+      "gap": "0",
+      "mix": "1",
+      "lam": [
+        "1/10",
+        "9/10"
+      ],
+      "mu": [
+        "0",
+        "0"
+      ],
+      "solver_objective": 0.1,
+      "nodes": 4,
+      "variables": 11,
+      "root_actions": [
+        [
+          [
+            "prepare",
+            1
+          ],
+          "1"
+        ]
+      ],
+      "wall_seconds": 0.002808457000355702,
+      "five_percent_status": "IMPOSSIBLE"
+    },
+    {
+      "cell": 27,
+      "contract": {
+        "deadline": 2,
+        "max_probes": 3,
+        "family": "gated",
+        "fee": "1/40",
+        "time_price": "1/100"
+      },
+      "budget": "1/20",
+      "lower": "3/14",
+      "upper": "3/14",
+      "errors": [
+        "3/14",
+        "3/14"
+      ],
+      "resources": [
+        "1/20",
+        "1/20"
+      ],
+      "gap": "0",
+      "mix": "1",
+      "lam": [
+        "1/2",
+        "1/2"
+      ],
+      "mu": [
+        "40/7",
+        "0"
+      ],
+      "solver_objective": 0.2142857142857143,
+      "nodes": 4,
+      "variables": 11,
+      "root_actions": [
+        [
+          [
+            "stop",
+            0
+          ],
+          "1/7"
+        ],
+        [
+          [
+            "stop",
+            1
+          ],
+          "1/7"
+        ],
+        [
+          [
+            "prepare",
+            1
+          ],
+          "5/7"
+        ]
+      ],
+      "wall_seconds": 0.0028620779994525947,
+      "five_percent_status": "IMPOSSIBLE"
+    },
+    {
+      "cell": 28,
+      "contract": {
+        "deadline": 2,
+        "max_probes": 3,
+        "family": "gated",
+        "fee": "1/40",
+        "time_price": "1/100"
+      },
+      "budget": "7/100",
+      "lower": "1/10",
+      "upper": "1/10",
+      "errors": [
+        "1/10",
+        "1/10"
+      ],
+      "resources": [
+        "7/100",
+        "7/100"
+      ],
+      "gap": "0",
+      "mix": "1",
+      "lam": [
+        "1/10",
+        "9/10"
+      ],
+      "mu": [
+        "0",
+        "0"
+      ],
+      "solver_objective": 0.1,
+      "nodes": 4,
+      "variables": 11,
+      "root_actions": [
+        [
+          [
+            "prepare",
+            1
+          ],
+          "1"
+        ]
+      ],
+      "wall_seconds": 0.0026824870001291856,
+      "five_percent_status": "IMPOSSIBLE"
+    },
+    {
+      "cell": 29,
+      "contract": {
+        "deadline": 8,
+        "max_probes": 8,
+        "family": "bernoulli",
+        "fee": "1/40",
+        "time_price": "1/100"
+      },
+      "budget": null,
+      "lower": "31509/250000",
+      "upper": "31509/250000",
+      "errors": [
+        "31509/250000",
+        "31509/250000"
+      ],
+      "resources": [
+        "403722571/2000000000",
+        "423632279/2000000000"
+      ],
+      "gap": "0",
+      "mix": "1",
+      "lam": [
+        "1/2",
+        "1/2"
+      ],
+      "mu": [
+        "0",
+        "0"
+      ],
+      "solver_objective": 0.12603600000000006,
+      "nodes": 511,
+      "variables": 1278,
+      "root_actions": [
+        [
+          [
+            "inspect",
+            1
+          ],
+          "1"
+        ]
+      ],
+      "wall_seconds": 0.05979486100113718,
+      "five_percent_status": "IMPOSSIBLE"
+    },
+    {
+      "cell": 30,
+      "contract": {
+        "deadline": 39,
+        "max_probes": 13,
+        "family": "catalog",
+        "fee": "27/100",
+        "time_price": "1/100"
+      },
+      "budget": null,
+      "lower": "1185888006782136529216862519223509421497/11301043095178026250000000000000000000000",
+      "upper": "454293475980146351883370394194686105763/4329229620901318750000000000000000000000",
+      "errors": [
+        "11811599930422829012865311044560914289747/112559970143434287500000000000000000000000",
+        "454293475980146351883370394194686105763/4329229620901318750000000000000000000000"
+      ],
+      "resources": [
+        "140417657262506521190396326954770895169343/45023988057373715000000000000000000000000",
+        "11688471462718395265562481829487528695791/3463383696721055000000000000000000000000"
+      ],
+      "gap": "866387700800588671032758494497722263097028419111/4892481051472703245087951464711718750000000000000000000",
+      "mix": "1",
+      "lam": [
+        "5919142087044901/9040834476142421",
+        "3121692389097520/9040834476142421"
+      ],
+      "mu": [
+        "0",
+        "0"
+      ],
+      "solver_objective": 0.10493606133131905,
+      "nodes": 16383,
+      "variables": 40958,
+      "root_actions": [
+        [
+          [
+            "inspect",
+            3
+          ],
+          "1"
+        ]
+      ],
+      "wall_seconds": 2.480186752996815,
+      "five_percent_status": "IMPOSSIBLE"
+    }
+  ],
+  "binary_catalog": [
+    {
+      "n": 0,
+      "threshold": 0,
+      "randomize_one": "1/2",
+      "risk": "1/2",
+      "least_favorable_prior_zero": "1/2",
+      "lower": "1/2",
+      "early_expected_samples": [
+        "0",
+        "0"
+      ],
+      "early_expected_cost": [
+        "0",
+        "0"
+      ],
+      "early_expected_model_time": [
+        "0",
+        "0"
+      ],
+      "full_sample_cost": "0",
+      "hard_model_time": 0
+    },
+    {
+      "n": 1,
+      "threshold": 1,
+      "randomize_one": "25/36",
+      "risk": "19/48",
+      "least_favorable_prior_zero": "29/48",
+      "lower": "19/48",
+      "early_expected_samples": [
+        "1",
+        "1"
+      ],
+      "early_expected_cost": [
+        "3/10",
+        "3/10"
+      ],
+      "early_expected_model_time": [
+        "3",
+        "3"
+      ],
+      "full_sample_cost": "3/10",
+      "hard_model_time": 3
+    },
+    {
+      "n": 2,
+      "threshold": 2,
+      "randomize_one": "5000/5409",
+      "risk": "361/1202",
+      "least_favorable_prior_zero": "841/1202",
+      "lower": "361/1202",
+      "early_expected_samples": [
+        "157/100",
+        "187/100"
+      ],
+      "early_expected_cost": [
+        "471/1000",
+        "561/1000"
+      ],
+      "early_expected_model_time": [
+        "471/100",
+        "561/100"
+      ],
+      "full_sample_cost": "3/5",
+      "hard_model_time": 6
+    },
+    {
+      "n": 3,
+      "threshold": 2,
+      "randomize_one": "19538/89289",
+      "risk": "7325773/26456000",
+      "least_favorable_prior_zero": "10933/26456",
+      "lower": "7325773/26456000",
+      "early_expected_samples": [
+        "28151/10000",
+        "29831/10000"
+      ],
+      "early_expected_cost": [
+        "84453/100000",
+        "89493/100000"
+      ],
+      "early_expected_model_time": [
+        "84453/10000",
+        "89493/10000"
+      ],
+      "full_sample_cost": "9/10",
+      "hard_model_time": 9
+    },
+    {
+      "n": 4,
+      "threshold": 3,
+      "randomize_one": "16077119/33047676",
+      "risk": "15943683769/61199400000",
+      "least_favorable_prior_zero": "317057/611994",
+      "lower": "15943683769/61199400000",
+      "early_expected_samples": [
+        "1709707/500000",
+        "1968397/500000"
+      ],
+      "early_expected_cost": [
+        "5129121/5000000",
+        "5905191/5000000"
+      ],
+      "early_expected_model_time": [
+        "5129121/500000",
+        "5905191/500000"
+      ],
+      "full_sample_cost": "6/5",
+      "hard_model_time": 12
+    },
+    {
+      "n": 5,
+      "threshold": 4,
+      "randomize_one": "551762342/749171835",
+      "risk": "33639853170157/147984560000000",
+      "least_favorable_prior_zero": "9194653/14798456",
+      "lower": "33639853170157/147984560000000",
+      "early_expected_samples": [
+        "384350597/100000000",
+        "485211317/100000000"
+      ],
+      "early_expected_cost": [
+        "1153051791/1000000000",
+        "1455633951/1000000000"
+      ],
+      "early_expected_model_time": [
+        "1153051791/100000000",
+        "1455633951/100000000"
+      ],
+      "full_sample_cost": "3/2",
+      "hard_model_time": 15
+    },
+    {
+      "n": 6,
+      "threshold": 5,
+      "randomize_one": "266038675871/272002434426",
+      "risk": "69448070700269521/373117194000000000",
+      "least_favorable_prior_zero": "266644937/373117194",
+      "lower": "69448070700269521/373117194000000000",
+      "early_expected_samples": [
+        "10326572993/2500000000",
+        "14307293843/2500000000"
+      ],
+      "early_expected_cost": [
+        "30979718979/25000000000",
+        "42921881529/25000000000"
+      ],
+      "early_expected_model_time": [
+        "30979718979/2500000000",
+        "42921881529/2500000000"
+      ],
+      "full_sample_cost": "9/5",
+      "hard_model_time": 18
+    },
+    {
+      "n": 7,
+      "threshold": 5,
+      "randomize_one": "1317051013157/5131507419612",
+      "risk": "29402532222752525759/160893824640000000000",
+      "least_favorable_prior_zero": "3466384181/8044691232",
+      "lower": "29402532222752525759/160893824640000000000",
+      "early_expected_samples": [
+        "5782581352641/1000000000000",
+        "6505961066481/1000000000000"
+      ],
+      "early_expected_cost": [
+        "17347744057923/10000000000000",
+        "19517883199443/10000000000000"
+      ],
+      "early_expected_model_time": [
+        "17347744057923/1000000000000",
+        "19517883199443/1000000000000"
+      ],
+      "full_sample_cost": "21/10",
+      "hard_model_time": 21
+    },
+    {
+      "n": 8,
+      "threshold": 6,
+      "randomize_one": "1005259761531527/1913757425074908",
+      "risk": "160942382593384285039601/937564876090000000000000",
+      "least_favorable_prior_zero": "100525141249/187512975218",
+      "lower": "160942382593384285039601/937564876090000000000000",
+      "early_expected_samples": [
+        "307687055746101/50000000000000",
+        "375553834758231/50000000000000"
+      ],
+      "early_expected_cost": [
+        "923061167238303/500000000000000",
+        "1126661504274693/500000000000000"
+      ],
+      "early_expected_model_time": [
+        "923061167238303/50000000000000",
+        "1126661504274693/50000000000000"
+      ],
+      "full_sample_cost": "12/5",
+      "hard_model_time": 24
+    },
+    {
+      "n": 9,
+      "threshold": 7,
+      "randomize_one": "35121705536637359/44955951742571328",
+      "risk": "690384108853707761898724657/4567997941632000000000000000",
+      "least_favorable_prior_zero": "2915229096221/4567997941632",
+      "lower": "690384108853707761898724657/4567997941632000000000000000",
+      "early_expected_samples": [
+        "1566918488847/244140625000",
+        "2121467098758213/250000000000000"
+      ],
+      "early_expected_cost": [
+        "4700755466541/2441406250000",
+        "6364401296274639/2500000000000000"
+      ],
+      "early_expected_model_time": [
+        "4700755466541/244140625000",
+        "6364401296274639/250000000000000"
+      ],
+      "full_sample_cost": "27/10",
+      "hard_model_time": 27
+    },
+    {
+      "n": 10,
+      "threshold": 7,
+      "randomize_one": "88974489823401059/3574663701389326530",
+      "risk": "349480808919040049541391219963/2724175965088650000000000000000",
+      "least_favorable_prior_zero": "37897978250873/108967038603546",
+      "lower": "349480808919040049541391219963/2724175965088650000000000000000",
+      "early_expected_samples": [
+        "509531453015406229/62500000000000000",
+        "559762251227302819/62500000000000000"
+      ],
+      "early_expected_cost": [
+        "1528594359046218687/625000000000000000",
+        "1679286753681908457/625000000000000000"
+      ],
+      "early_expected_model_time": [
+        "1528594359046218687/62500000000000000",
+        "1679286753681908457/62500000000000000"
+      ],
+      "full_sample_cost": "3",
+      "hard_model_time": 30
+    },
+    {
+      "n": 11,
+      "threshold": 8,
+      "randomize_one": "1805315842461558347/6026328156869706879",
+      "risk": "781162109181859751769650580413593/6123383789940260000000000000000000",
+      "least_favorable_prior_zero": "1099041369275317/2449353515976104",
+      "lower": "781162109181859751769650580413593/6123383789940260000000000000000000",
+      "early_expected_samples": [
+        "33943990079698558417/4000000000000000000",
+        "40069919108869138057/4000000000000000000"
+      ],
+      "early_expected_cost": [
+        "101831970239095675251/40000000000000000000",
+        "120209757326607414171/40000000000000000000"
+      ],
+      "early_expected_model_time": [
+        "101831970239095675251/4000000000000000000",
+        "120209757326607414171/4000000000000000000"
+      ],
+      "full_sample_cost": "33/10",
+      "hard_model_time": 33
+    },
+    {
+      "n": 12,
+      "threshold": 9,
+      "randomize_one": "1288289433263951384159/2264652385117312181436",
+      "risk": "1371519489417702196897428559741882649/11505626099259829200000000000000000000",
+      "least_favorable_prior_zero": "31872199708984193/57528130496299146",
+      "lower": "1371519489417702196897428559741882649/11505626099259829200000000000000000000",
+      "early_expected_samples": [
+        "8730431527552767021877/1000000000000000000000",
+        "11058622995338101726507/1000000000000000000000"
+      ],
+      "early_expected_cost": [
+        "26191294582658301065631/10000000000000000000000",
+        "33175868986014305179521/10000000000000000000000"
+      ],
+      "early_expected_model_time": [
+        "26191294582658301065631/1000000000000000000000",
+        "33175868986014305179521/1000000000000000000000"
+      ],
+      "full_sample_cost": "18/5",
+      "hard_model_time": 36
+    },
+    {
+      "n": 13,
+      "threshold": 10,
+      "randomize_one": "223558285294495027991497/270929126591504788210362",
+      "risk": "2962885921063092618466984916246293149623/28235129530390514080000000000000000000000",
+      "least_favorable_prior_zero": "924293791560541597/1411756476519525704",
+      "lower": "2962885921063092618466984916246293149623/28235129530390514080000000000000000000000",
+      "early_expected_samples": [
+        "4453226631933667802751473/500000000000000000000000",
+        "6038699139762121854029813/500000000000000000000000"
+      ],
+      "early_expected_cost": [
+        "13359679895801003408254419/5000000000000000000000000",
+        "18116097419286365562089439/5000000000000000000000000"
+      ],
+      "early_expected_model_time": [
+        "13359679895801003408254419/500000000000000000000000",
+        "18116097419286365562089439/500000000000000000000000"
+      ],
+      "full_sample_cost": "39/10",
+      "hard_model_time": 39
+    },
+    {
+      "n": 14,
+      "threshold": 10,
+      "randomize_one": "6365809856770135387747594/88599512314509138163527579",
+      "risk": "1530663369593649589939120203898396125006857/16488357371761678681000000000000000000000000",
+      "least_favorable_prior_zero": "12015819290287040761/32976714743523357362",
+      "lower": "1530663369593649589939120203898396125006857/16488357371761678681000000000000000000000000",
+      "early_expected_samples": [
+        "1083103899508859793957432353/100000000000000000000000000",
+        "1244051452717112276258453063/100000000000000000000000000"
+      ],
+      "early_expected_cost": [
+        "3249311698526579381872297059/1000000000000000000000000000",
+        "3732154358151336828775359189/1000000000000000000000000000"
+      ],
+      "early_expected_model_time": [
+        "3249311698526579381872297059/100000000000000000000000000",
+        "3732154358151336828775359189/100000000000000000000000000"
+      ],
+      "full_sample_cost": "21/5",
+      "hard_model_time": 42
+    },
+    {
+      "n": 15,
+      "threshold": 11,
+      "randomize_one": "3884633798577652891680047419/11285006037269097284492824665",
+      "risk": "34125112375816945109405656626729701668451613473/373357886514907098744000000000000000000000000000",
+      "least_favorable_prior_zero": "348458759418324182069/746715773029814197488",
+      "lower": "34125112375816945109405656626729701668451613473/373357886514907098744000000000000000000000000000",
+      "early_expected_samples": [
+        "110571294056576134402669695113/10000000000000000000000000000",
+        "135225663233807504941665538193/10000000000000000000000000000"
+      ],
+      "early_expected_cost": [
+        "331713882169728403208009085339/100000000000000000000000000000",
+        "405676989701422514824996614579/100000000000000000000000000000"
+      ],
+      "early_expected_model_time": [
+        "331713882169728403208009085339/10000000000000000000000000000",
+        "405676989701422514824996614579/10000000000000000000000000000"
+      ],
+      "full_sample_cost": "9/2",
+      "hard_model_time": 45
+    },
+    {
+      "n": 16,
+      "threshold": 12,
+      "randomize_one": "1048864889867040317964923257051/1709293928378463421184462680044",
+      "risk": "37493370095378569400232638721094296191854014304753/441804682043742789324050000000000000000000000000000",
+      "least_favorable_prior_zero": "10105304023131401280001/17672187281749711572962",
+      "lower": "37493370095378569400232638721094296191854014304753/441804682043742789324050000000000000000000000000000",
+      "early_expected_samples": [
+        "1122352458469636550573937427733/100000000000000000000000000000",
+        "1458976782175959192804364767983/100000000000000000000000000000"
+      ],
+      "early_expected_cost": [
+        "3367057375408909651721812283199/1000000000000000000000000000000",
+        "4376930346527877578413094303949/1000000000000000000000000000000"
+      ],
+      "early_expected_model_time": [
+        "3367057375408909651721812283199/100000000000000000000000000000",
+        "4376930346527877578413094303949/100000000000000000000000000000"
+      ],
+      "full_sample_cost": "24/5",
+      "hard_model_time": 48
+    },
+    {
+      "n": 17,
+      "threshold": 13,
+      "randomize_one": "35971775309523815538235091828611/41438150517103182253726044209928",
+      "risk": "65064827891073191429579721273660178337736522319980629/873649197169117065372576000000000000000000000000000000",
+      "least_favorable_prior_zero": "293053816670810637120029/436824598584558532686288",
+      "lower": "65064827891073191429579721273660178337736522319980629/873649197169117065372576000000000000000000000000000000",
+      "early_expected_samples": [
+        "28360720002435184544641215956519/2500000000000000000000000000000",
+        "9775235449878934968388459302701/625000000000000000000000000000"
+      ],
+      "early_expected_cost": [
+        "85082160007305553633923647869557/25000000000000000000000000000000",
+        "29325706349636804905165377908103/6250000000000000000000000000000"
+      ],
+      "early_expected_model_time": [
+        "85082160007305553633923647869557/2500000000000000000000000000000",
+        "29325706349636804905165377908103/625000000000000000000000000000"
+      ],
+      "full_sample_cost": "51/10",
+      "hard_model_time": 51
+    },
+    {
+      "n": 18,
+      "threshold": 13,
+      "randomize_one": "2006054478994693642214963055825545/17061271498023757199857581287342562",
+      "risk": "34043559450295278323607214473374480149211851157787205631/499592161950584889595475700000000000000000000000000000000",
+      "least_favorable_prior_zero": "3809699616720538282560377/9991843239011697791909514",
+      "lower": "34043559450295278323607214473374480149211851157787205631/499592161950584889595475700000000000000000000000000000000",
+      "early_expected_samples": [
+        "1046300802789925757146464923423673/78125000000000000000000000000000",
+        "2487891100898992013590731140719851/156250000000000000000000000000000"
+      ],
+      "early_expected_cost": [
+        "3138902408369777271439394770271019/781250000000000000000000000000000",
+        "7463673302696976040772193422159553/1562500000000000000000000000000000"
+      ],
+      "early_expected_model_time": [
+        "3138902408369777271439394770271019/78125000000000000000000000000000",
+        "7463673302696976040772193422159553/156250000000000000000000000000000"
+      ],
+      "full_sample_cost": "27/5",
+      "hard_model_time": 54
+    },
+    {
+      "n": 19,
+      "threshold": 14,
+      "randomize_one": "154405524154879621111688811528082220/396165816284046664213995993503285661",
+      "risk": "75771508674043919320073572359549405329086608472059732113687/1139710088542138204359422680000000000000000000000000000000000",
+      "least_favorable_prior_zero": "110481288884895610194250933/227942017708427640871884536",
+      "lower": "75771508674043919320073572359549405329086608472059732113687/1139710088542138204359422680000000000000000000000000000000000",
+      "early_expected_samples": [
+        "3387266858294645495899698567609713727/250000000000000000000000000000000000",
+        "4255006273457707945211840207375512767/250000000000000000000000000000000000"
+      ],
+      "early_expected_cost": [
+        "10161800574883936487699095702829141181/2500000000000000000000000000000000000",
+        "12765018820373123835635520622126538301/2500000000000000000000000000000000000"
+      ],
+      "early_expected_model_time": [
+        "10161800574883936487699095702829141181/250000000000000000000000000000000000",
+        "12765018820373123835635520622126538301/250000000000000000000000000000000000"
+      ],
+      "full_sample_cost": "57/10",
+      "hard_model_time": 57
+    },
+    {
+      "n": 20,
+      "threshold": 15,
+      "randomize_one": "99551521107172226375482251400180317431/151157245780881511723226907155789717724",
+      "risk": "166626579328470025442806338541794009093237145842642549350570657/2717855612654540639254157757000000000000000000000000000000000000",
+      "least_favorable_prior_zero": "3203957377661972695633277057/5435711225309081278508315514",
+      "lower": "166626579328470025442806338541794009093237145842642549350570657/2717855612654540639254157757000000000000000000000000000000000000",
+      "early_expected_samples": [
+        "170807338919618599655213641115294491083/12500000000000000000000000000000000000",
+        "226330872764264344276498921898460237213/12500000000000000000000000000000000000"
+      ],
+      "early_expected_cost": [
+        "512422016758855798965640923345883473249/125000000000000000000000000000000000000",
+        "678992618292793032829496765695380711639/125000000000000000000000000000000000000"
+      ],
+      "early_expected_model_time": [
+        "512422016758855798965640923345883473249/12500000000000000000000000000000000000",
+        "678992618292793032829496765695380711639/12500000000000000000000000000000000000"
+      ],
+      "full_sample_cost": "6",
+      "hard_model_time": 60
+    },
+    {
+      "n": 21,
+      "threshold": 16,
+      "randomize_one": "13482917699269244985364759075723913052515/14816615471918493860829442529964701499543",
+      "risk": "1812112413829135922105023710390205959623822909431149552629108841733/33829521764373067811997691334000000000000000000000000000000000000000",
+      "least_favorable_prior_zero": "92914763952197208173365034653/135318087057492271247990765336",
+      "lower": "1812112413829135922105023710390205959623822909431149552629108841733/33829521764373067811997691334000000000000000000000000000000000000000",
+      "early_expected_samples": [
+        "137489129671693490470845640997008669036041/10000000000000000000000000000000000000000",
+        "191804717992110981164425869635736165809841/10000000000000000000000000000000000000000"
+      ],
+      "early_expected_cost": [
+        "412467389015080471412536922991026007108123/100000000000000000000000000000000000000000",
+        "575414153976332943493277608907208497429523/100000000000000000000000000000000000000000"
+      ],
+      "early_expected_model_time": [
+        "412467389015080471412536922991026007108123/10000000000000000000000000000000000000000",
+        "575414153976332943493277608907208497429523/10000000000000000000000000000000000000000"
+      ],
+      "full_sample_cost": "63/10",
+      "hard_model_time": 63
+    },
+    {
+      "n": 22,
+      "threshold": 16,
+      "randomize_one": "794137672476450467644426454104093510784141/4867928198965883398711099397934832595182917",
+      "risk": "956572147210742453286378769494669278128843522287075174295749006148147/18945217655664071365391574186612500000000000000000000000000000000000000",
+      "least_favorable_prior_zero": "1207891931378563706253745450489/3031234824906251418462651869858",
+      "lower": "956572147210742453286378769494669278128843522287075174295749006148147/18945217655664071365391574186612500000000000000000000000000000000000000",
+      "early_expected_samples": [
+        "3176048196693179307955500523081911906997871/200000000000000000000000000000000000000000",
+        "3880102787678248730792069663614193415594161/200000000000000000000000000000000000000000"
+      ],
+      "early_expected_cost": [
+        "9528144590079537923866501569245735720993613/2000000000000000000000000000000000000000000",
+        "11640308363034746192376208990842580246782483/2000000000000000000000000000000000000000000"
+      ],
+      "early_expected_model_time": [
+        "9528144590079537923866501569245735720993613/200000000000000000000000000000000000000000",
+        "11640308363034746192376208990842580246782483/200000000000000000000000000000000000000000"
+      ],
+      "full_sample_cost": "33/5",
+      "hard_model_time": 66
+    },
+    {
+      "n": 23,
+      "threshold": 17,
+      "randomize_one": "49470971118111375915546722793614387788630133/113533862340433771193671568857212858406268664",
+      "risk": "34024627259831835878283384426169594586278701045602650907453461951561698211/696723809870044140133278400321920000000000000000000000000000000000000000000",
+      "least_favorable_prior_zero": "35028866009978347481358618064181/69672380987004414013327840032192",
+      "lower": "34024627259831835878283384426169594586278701045602650907453461951561698211/696723809870044140133278400321920000000000000000000000000000000000000000000",
+      "early_expected_samples": [
+        "1598995521408890193108172134021949824030792871/100000000000000000000000000000000000000000000",
+        "2050973138445766290890235562215878785319758951/100000000000000000000000000000000000000000000"
+      ],
+      "early_expected_cost": [
+        "4796986564226670579324516402065849472092378613/1000000000000000000000000000000000000000000000",
+        "6152919415337298872670706686647636355959276853/1000000000000000000000000000000000000000000000"
+      ],
+      "early_expected_model_time": [
+        "4796986564226670579324516402065849472092378613/100000000000000000000000000000000000000000000",
+        "6152919415337298872670706686647636355959276853/100000000000000000000000000000000000000000000"
+      ],
+      "full_sample_cost": "69/10",
+      "hard_model_time": 69
+    },
+    {
+      "n": 24,
+      "threshold": 18,
+      "randomize_one": "30700198122697015556839083984496247433205088369/43647238701809860762481579468201969271012140676",
+      "risk": "37429944513808030741919076620705632913553284791219858934618810871184640688389/837031949426433670533407570626729000000000000000000000000000000000000000000000",
+      "least_favorable_prior_zero": "1015837114289372076959399923861249/1674063898852867341066815141253458",
+      "lower": "37429944513808030741919076620705632913553284791219858934618810871184640688389/837031949426433670533407570626729000000000000000000000000000000000000000000000",
+      "early_expected_samples": [
+        "80356073710051736003749655406654507337850968907/5000000000000000000000000000000000000000000000",
+        "108052981812472779810713873793551471561968504697/5000000000000000000000000000000000000000000000"
+      ],
+      "early_expected_cost": [
+        "241068221130155208011248966219963522013552906721/50000000000000000000000000000000000000000000000",
+        "324158945437418339432141621380654414685905514091/50000000000000000000000000000000000000000000000"
+      ],
+      "early_expected_model_time": [
+        "241068221130155208011248966219963522013552906721/5000000000000000000000000000000000000000000000",
+        "324158945437418339432141621380654414685905514091/5000000000000000000000000000000000000000000000"
+      ],
+      "full_sample_cost": "36/5",
+      "hard_model_time": 72
+    },
+    {
+      "n": 25,
+      "threshold": 19,
+      "randomize_one": "1026646435847490723336802504108631282874607838057/1079756178250272226732605852067604571018669286800",
+      "risk": "163135025479702539092394942264744621022981114895470577532990292746953383577666599/4196558522109820024986348692242819200000000000000000000000000000000000000000000000",
+      "least_favorable_prior_zero": "29459276314391790231822597791976221/41965585221098200249863486922428192",
+      "lower": "163135025479702539092394942264744621022981114895470577532990292746953383577666599/4196558522109820024986348692242819200000000000000000000000000000000000000000000000",
+      "early_expected_samples": [
+        "1008174770857114318040426497130412323872604200387/62500000000000000000000000000000000000000000000",
+        "2837754998400732227655371169264975481302779659589/125000000000000000000000000000000000000000000000"
+      ],
+      "early_expected_cost": [
+        "3024524312571342954121279491391236971617812601161/625000000000000000000000000000000000000000000000",
+        "8513264995202196682966113507794926443908338978767/1250000000000000000000000000000000000000000000000"
+      ],
+      "early_expected_model_time": [
+        "3024524312571342954121279491391236971617812601161/62500000000000000000000000000000000000000000000",
+        "8513264995202196682966113507794926443908338978767/125000000000000000000000000000000000000000000000"
+      ],
+      "full_sample_cost": "15/2",
+      "hard_model_time": 75
+    },
+    {
+      "n": 26,
+      "threshold": 19,
+      "randomize_one": "735172481961488282119323368825301297364438439369/3519699677269710241180850825313007956922541441838",
+      "risk": "86683621694743306130861162799077263561410916549464938043237118878917166518231390941/2301854687688672259473630009762814065000000000000000000000000000000000000000000000000",
+      "least_favorable_prior_zero": "382970592087093273013693771295690873/920741875075468903789452003905125626",
+      "lower": "86683621694743306130861162799077263561410916549464938043237118878917166518231390941/2301854687688672259473630009762814065000000000000000000000000000000000000000000000000",
+      "early_expected_samples": [
+        "4579724865170375851800732248860979845846315130909/250000000000000000000000000000000000000000000000",
+        "5718543343972979627914001989106530211058456430979/250000000000000000000000000000000000000000000000"
+      ],
+      "early_expected_cost": [
+        "13739174595511127555402196746582939537538945392727/2500000000000000000000000000000000000000000000000",
+        "17155630031918938883742005967319590633175369292937/2500000000000000000000000000000000000000000000000"
+      ],
+      "early_expected_model_time": [
+        "13739174595511127555402196746582939537538945392727/250000000000000000000000000000000000000000000000",
+        "17155630031918938883742005967319590633175369292937/250000000000000000000000000000000000000000000000"
+      ],
+      "full_sample_cost": "39/5",
+      "hard_model_time": 78
+    },
+    {
+      "n": 27,
+      "threshold": 20,
+      "randomize_one": "397767439538703197531952066250628954858554152424769/825329516329277204151039007028028289138714664246859",
+      "risk": "7701266956276172206576862167013534558152046167427776293801475722047611846904454260539/213238015473048419021365257871542956240000000000000000000000000000000000000000000000000",
+      "least_favorable_prior_zero": "11106147170525704917397119367575035317/21323801547304841902136525787154295624",
+      "lower": "7701266956276172206576862167013534558152046167427776293801475722047611846904454260539/213238015473048419021365257871542956240000000000000000000000000000000000000000000000000",
+      "early_expected_samples": [
+        "18396624646269745545868714601539268999747005246247807/1000000000000000000000000000000000000000000000000000",
+        "23992315519379368409736306188454050010871553063744087/1000000000000000000000000000000000000000000000000000"
+      ],
+      "early_expected_cost": [
+        "55189873938809236637606143804617806999241015738743421/10000000000000000000000000000000000000000000000000000",
+        "71976946558138105229208918565362150032614659191232261/10000000000000000000000000000000000000000000000000000"
+      ],
+      "early_expected_model_time": [
+        "55189873938809236637606143804617806999241015738743421/1000000000000000000000000000000000000000000000000000",
+        "71976946558138105229208918565362150032614659191232261/1000000000000000000000000000000000000000000000000000"
+      ],
+      "full_sample_cost": "81/10",
+      "hard_model_time": 81
+    },
+    {
+      "n": 28,
+      "threshold": 21,
+      "randomize_one": "239026384802590283322709039257360584395349902959968639/319677635948436017239712851028436009807712967960244156",
+      "risk": "169500462760487125458596158803965853007702263207265473370857170312703465660739975755194863/5162137011040490453145651836316819700260000000000000000000000000000000000000000000000000000",
+      "least_favorable_prior_zero": "322078267945245442604516461659676024193/516213701104049045314565183631681970026",
+      "lower": "169500462760487125458596158803965853007702263207265473370857170312703465660739975755194863/5162137011040490453145651836316819700260000000000000000000000000000000000000000000000000000",
+      "early_expected_samples": [
+        "922716352819702315647392267565315688451189907154680007/50000000000000000000000000000000000000000000000000000",
+        "1255205200949479679606718217033942602043825642463063017/50000000000000000000000000000000000000000000000000000"
+      ],
+      "early_expected_cost": [
+        "2768149058459106946942176802695947065353569721464040021/500000000000000000000000000000000000000000000000000000",
+        "3765615602848439038820154651101827806131476927389189051/500000000000000000000000000000000000000000000000000000"
+      ],
+      "early_expected_model_time": [
+        "2768149058459106946942176802695947065353569721464040021/50000000000000000000000000000000000000000000000000000",
+        "3765615602848439038820154651101827806131476927389189051/50000000000000000000000000000000000000000000000000000"
+      ],
+      "full_sample_cost": "42/5",
+      "hard_model_time": 84
+    },
+    {
+      "n": 29,
+      "threshold": 22,
+      "randomize_one": "7901078389393012093407769120428587934294992956089211673/7976734901502770757123035861548946629703730868658553606",
+      "risk": "369901805235881091584657416328428897591978534240327571215251023592818385520647146719616251093/13028843000429386287021903105598717672424000000000000000000000000000000000000000000000000000000",
+      "least_favorable_prior_zero": "9340269770412117835530977388130604701597/13028843000429386287021903105598717672424",
+      "lower": "369901805235881091584657416328428897591978534240327571215251023592818385520647146719616251093/13028843000429386287021903105598717672424000000000000000000000000000000000000000000000000000000",
+      "early_expected_samples": [
+        "18496785881244244915977987145817330523906543386660912297/1000000000000000000000000000000000000000000000000000000",
+        "26208702147469638219145652807283135641663656701457199237/1000000000000000000000000000000000000000000000000000000"
+      ],
+      "early_expected_cost": [
+        "55490357643732734747933961437451991571719630159982736891/10000000000000000000000000000000000000000000000000000000",
+        "78626106442408914657436958421849406924990970104371597711/10000000000000000000000000000000000000000000000000000000"
+      ],
+      "early_expected_model_time": [
+        "55490357643732734747933961437451991571719630159982736891/1000000000000000000000000000000000000000000000000000000",
+        "78626106442408914657436958421849406924990970104371597711/1000000000000000000000000000000000000000000000000000000"
+      ],
+      "full_sample_cost": "87/10",
+      "hard_model_time": 87
+    },
+    {
+      "n": 30,
+      "threshold": 22,
+      "randomize_one": "1311042332563266132998691149224884830604297280115867613244/5143378283441523989890892032954394200992328538142529348665",
+      "risk": "197559427855712975946833246316964505899403686391783429800513207595029391650294794261798366453787/7000803897652501881900312797420667971658050000000000000000000000000000000000000000000000000000000",
+      "least_favorable_prior_zero": "121423507015357531861902706045697861120761/280032155906100075276012511896826718866322",
+      "lower": "197559427855712975946833246316964505899403686391783429800513207595029391650294794261798366453787/7000803897652501881900312797420667971658050000000000000000000000000000000000000000000000000000000",
+      "early_expected_samples": [
+        "41448654602407792557571359872244801368076234156368310461661/2000000000000000000000000000000000000000000000000000000000",
+        "52687396684648169762344830795377601365002019190090588207771/2000000000000000000000000000000000000000000000000000000000"
+      ],
+      "early_expected_cost": [
+        "124345963807223377672714079616734404104228702469104931384983/20000000000000000000000000000000000000000000000000000000000",
+        "158062190053944509287034492386132804095006057570271764623313/20000000000000000000000000000000000000000000000000000000000"
+      ],
+      "early_expected_model_time": [
+        "124345963807223377672714079616734404104228702469104931384983/2000000000000000000000000000000000000000000000000000000000",
+        "158062190053944509287034492386132804095006057570271764623313/2000000000000000000000000000000000000000000000000000000000"
+      ],
+      "full_sample_cost": "9",
+      "hard_model_time": 90
+    }
+  ],
+  "smallest_five_percent_sample_cap": 23,
+  "minimum_complete_macro_model_time": 69,
+  "wall_seconds": 12.733621009996568,
+  "cpu_seconds": 12.752461341,
+  "python": "3.12.14",
+  "scipy": "1.17.0",
+  "certificate_archive_sha256": "4ba5026437b1cd5d558ac45bfab87bfc6a6f23f31c226ceb5277d56bd8095c57",
+  "certificate_payload_sha256": "1e05af81ca009bde978895a5dee093e0d739d5c935d3b3c253a66b4cbac47afe",
+  "new_observations": 0,
+  "llm_calls": 0,
+  "external_api_calls": 0,
+  "host_currency_cost": null,
+  "independent_confirmation": false,
+  "scope": "Classical finite known-law benchmark; declared model time and prices; not actual tool time or new RL"
+}

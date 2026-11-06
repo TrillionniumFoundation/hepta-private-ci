@@ -1,0 +1,35 @@
+{
+  "schema": "ndu.deadline-frontier.behavioral-validation.v1",
+  "created_at_utc": "2026-11-06T17:13:59.379969+00:00",
+  "command": [
+    "python",
+    "-m",
+    "unittest",
+    "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_deadline_frontier_20261106.test_frontier",
+    "-v"
+  ],
+  "returncode": 0,
+  "stdout": "",
+  "stderr": "test_catalog_deadline_threshold_and_complete_acquisition_price (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_deadline_frontier_20261106.test_frontier.FrontierTests.test_catalog_deadline_threshold_and_complete_acquisition_price) ... ok\ntest_censored_duration_and_failure_preserve_cost (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_deadline_frontier_20261106.test_frontier.FrontierTests.test_censored_duration_and_failure_preserve_cost) ... ok\ntest_eight_samples_cannot_deliver_five_percent_error (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_deadline_frontier_20261106.test_frontier.FrontierTests.test_eight_samples_cannot_deliver_five_percent_error) ... ok\ntest_expected_budget_has_exact_randomized_frontier (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_deadline_frontier_20261106.test_frontier.FrontierTests.test_expected_budget_has_exact_randomized_frontier) ... ok\ntest_no_information_requires_shared_randomized_decision (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_deadline_frontier_20261106.test_frontier.FrontierTests.test_no_information_requires_shared_randomized_decision) ... ok\ntest_preparation_is_paid_and_consumes_real_horizon (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_deadline_frontier_20261106.test_frontier.FrontierTests.test_preparation_is_paid_and_consumes_real_horizon) ... ok\ntest_rounding_repair_is_the_returned_executable_policy (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_deadline_frontier_20261106.test_frontier.FrontierTests.test_rounding_repair_is_the_returned_executable_policy) ... ok\ntest_unconstrained_risk_matches_independent_belief_dp (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_deadline_frontier_20261106.test_frontier.FrontierTests.test_unconstrained_risk_matches_independent_belief_dp) ... ok\ntest_zero_budget_and_exact_policy_validation (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_deadline_frontier_20261106.test_frontier.FrontierTests.test_zero_budget_and_exact_policy_validation) ... ok\n\n----------------------------------------------------------------------\nRan 9 tests in 0.724s\n\nOK\n",
+  "wall_seconds": 1.3520498869984294,
+  "source_before": {
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_deadline_frontier_20261106/__init__.py": "c65ff761a48f3b937b2cafd88887344bde3b8a28bf1fb567eec79f55794e8bc9",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_deadline_frontier_20261106/binary_deadline.py": "42dfeebd50b18122737deda14ecf6268ddbde194da4ee734db4d4fb61094c5fb",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_deadline_frontier_20261106/frontier.py": "41eb688f21ee1371fb2b861d42ec641a6a778609c8da5df0e524dcd20779f495",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_deadline_frontier_20261106/study.py": "54133c74e65b04b252cb484beaa027bfb3ff233a8c2e57e49bd7d83cde571437",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_deadline_frontier_20261106/test_frontier.py": "d3802cb26e1226537519cfe9d6bb46df1da83c14ccaa1c45a4ae5024b7b86a1b",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_deadline_frontier_20261106/protocol.json": "ce8983f7e9cfe5614f2a76a82805cefb444bc777d1ced512032527e826beb0d2",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_identification/model.py": "0d6a10ba560b27443182a6aa36bac2af4ce6a4976bc05b27c37c25960cd17d63"
+  },
+  "source_after": {
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_deadline_frontier_20261106/__init__.py": "c65ff761a48f3b937b2cafd88887344bde3b8a28bf1fb567eec79f55794e8bc9",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_deadline_frontier_20261106/binary_deadline.py": "42dfeebd50b18122737deda14ecf6268ddbde194da4ee734db4d4fb61094c5fb",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_deadline_frontier_20261106/frontier.py": "41eb688f21ee1371fb2b861d42ec641a6a778609c8da5df0e524dcd20779f495",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_deadline_frontier_20261106/study.py": "54133c74e65b04b252cb484beaa027bfb3ff233a8c2e57e49bd7d83cde571437",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_deadline_frontier_20261106/test_frontier.py": "d3802cb26e1226537519cfe9d6bb46df1da83c14ccaa1c45a4ae5024b7b86a1b",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_deadline_frontier_20261106/protocol.json": "ce8983f7e9cfe5614f2a76a82805cefb444bc777d1ced512032527e826beb0d2",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_identification/model.py": "0d6a10ba560b27443182a6aa36bac2af4ce6a4976bc05b27c37c25960cd17d63"
+  },
+  "independent_scientific_trials": 0,
+  "scope": "Nine behavioral and exact-identity regression tests; internal validation, not external review"
+}

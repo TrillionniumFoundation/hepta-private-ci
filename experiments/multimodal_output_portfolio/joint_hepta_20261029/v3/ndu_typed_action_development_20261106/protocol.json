@@ -1,0 +1,140 @@
+{
+  "schema": "ndu.typed_action_development.v1",
+  "purpose": "Bounded frozen-model action selection with typed tool delivery; no NDU claim",
+  "model_id": "Qwen/Qwen2.5-0.5B-Instruct",
+  "revision": "7ae557604adf67be50417f59c2c2f167def9a775",
+  "source_status": "Existing disclosed source clusters; newly authored easier tasks; development only",
+  "independent_confirmation": false,
+  "old_failures_replaced": false,
+  "arms": [
+    "frozen_lm_selector",
+    "literal_router",
+    "stop"
+  ],
+  "repeats": 1,
+  "task_order": "listed; rotate arm order by task index",
+  "system_prompt": "You select exactly one operation from the public catalog to satisfy the user request. Return only its letter. Do not answer the task yourself.",
+  "cpu_threads": 2,
+  "sampling": false,
+  "max_input_tokens": 1536,
+  "max_output_tokens": 1,
+  "episode_deadline_seconds": 70,
+  "tool_deadline_seconds": 5,
+  "maximum_model_forwards": 8,
+  "maximum_task_tool_dispatches": 16,
+  "lifecycle_model_policy": "Fresh offline process per decision; all weight verification, load, parameter fingerprints, forward, teardown included in model request and episode clocks",
+  "monetary_host_cost": null,
+  "external_paid_model_api_calls": 0,
+  "paired_statistical_confirmation": false,
+  "expected_strong_baseline": "literal_router extracts the only public named action argument and may be strictly cheaper; no performance tuning after outcomes",
+  "actions": [
+    {
+      "label": "A",
+      "tool": "table_count",
+      "argument": "Artist"
+    },
+    {
+      "label": "B",
+      "tool": "table_count",
+      "argument": "Album"
+    },
+    {
+      "label": "C",
+      "tool": "table_count",
+      "argument": "Genre"
+    },
+    {
+      "label": "D",
+      "tool": "table_count",
+      "argument": "Track"
+    },
+    {
+      "label": "E",
+      "tool": "table_count",
+      "argument": "Invoice"
+    },
+    {
+      "label": "F",
+      "tool": "function_signature",
+      "argument": "mean"
+    },
+    {
+      "label": "G",
+      "tool": "function_signature",
+      "argument": "median"
+    },
+    {
+      "label": "H",
+      "tool": "function_signature",
+      "argument": "quantiles"
+    },
+    {
+      "label": "I",
+      "tool": "function_signature",
+      "argument": "correlation"
+    },
+    {
+      "label": "J",
+      "tool": "function_signature",
+      "argument": "linear_regression"
+    }
+  ],
+  "tasks": [
+    {
+      "task_id": "typed/chinook/artist",
+      "family": "sqlite_count",
+      "source_cluster": "chinook-7f677725",
+      "question": "Using the pinned Chinook database, return the number of rows in the Artist table."
+    },
+    {
+      "task_id": "typed/chinook/album",
+      "family": "sqlite_count",
+      "source_cluster": "chinook-7f677725",
+      "question": "Using the pinned Chinook database, return the number of rows in the Album table."
+    },
+    {
+      "task_id": "typed/chinook/genre",
+      "family": "sqlite_count",
+      "source_cluster": "chinook-7f677725",
+      "question": "Using the pinned Chinook database, return the number of rows in the Genre table."
+    },
+    {
+      "task_id": "typed/chinook/invoice",
+      "family": "sqlite_count",
+      "source_cluster": "chinook-7f677725",
+      "question": "Using the pinned Chinook database, return the number of rows in the Invoice table."
+    },
+    {
+      "task_id": "typed/cpython/mean",
+      "family": "source_signature",
+      "source_cluster": "cpython-0fb18b02",
+      "question": "Using the pinned statistics.py source, return the exact declaration line for the mean function, with outer whitespace removed."
+    },
+    {
+      "task_id": "typed/cpython/median",
+      "family": "source_signature",
+      "source_cluster": "cpython-0fb18b02",
+      "question": "Using the pinned statistics.py source, return the exact declaration line for the median function, with outer whitespace removed."
+    },
+    {
+      "task_id": "typed/cpython/quantiles",
+      "family": "source_signature",
+      "source_cluster": "cpython-0fb18b02",
+      "question": "Using the pinned statistics.py source, return the exact declaration line for the quantiles function, with outer whitespace removed."
+    },
+    {
+      "task_id": "typed/cpython/linear_regression",
+      "family": "source_signature",
+      "source_cluster": "cpython-0fb18b02",
+      "question": "Using the pinned statistics.py source, return the exact declaration line for the linear_regression function, with outer whitespace removed."
+    }
+  ],
+  "prior_evidence": {
+    "procedures": 3,
+    "actual_responses": 54,
+    "episodes": 48,
+    "correct_deliveries": 0,
+    "source_checkpoint": "7bf0472af73eb9fbd92dff44cb15cc9526cb5d80"
+  },
+  "model_deadline_seconds": 60
+}

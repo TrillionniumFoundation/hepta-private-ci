@@ -1,0 +1,43 @@
+{
+  "receipt": {
+    "request_id": "bd514f8c93154291beadf1a41f913973",
+    "context": {
+      "task_id": "typed/chinook/invoice",
+      "arm": "frozen_lm_selector",
+      "stage": "tool"
+    },
+    "argv": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "/workspace/scratch/e5ecafe4ccc8/frozen_work/study.py",
+      "tool-worker"
+    ],
+    "payload": {
+      "label": "I",
+      "tool": "function_signature",
+      "argument": "correlation"
+    },
+    "started_at_utc": "2026-11-06T16:53:13.932262+00:00",
+    "started_monotonic": 60505.918690868,
+    "phase": "terminal",
+    "status": "ok",
+    "returncode": 0,
+    "finished_at_utc": "2026-11-06T16:53:13.994060+00:00",
+    "wall_seconds": 0.061817941001208965,
+    "parent_cpu_seconds": 0.000688857000000001,
+    "child_cpu_seconds": 0.05909800000000587,
+    "stdout_sha256": "bde585ce53bc7999fab8a801da545208b834e1f5e4a306fd9bf4bfae6d34fe87",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "external_paid_model_api_calls": 0,
+    "actual_host_currency_cost": null
+  },
+  "response": {
+    "answer": "def correlation(x, y, /, *, method='linear'):",
+    "operation": {
+      "argument": "correlation",
+      "label": "I",
+      "tool": "function_signature"
+    }
+  },
+  "stdout": "{\"answer\": \"def correlation(x, y, /, *, method='linear'):\", \"operation\": {\"argument\": \"correlation\", \"label\": \"I\", \"tool\": \"function_signature\"}}\n",
+  "stderr": ""
+}

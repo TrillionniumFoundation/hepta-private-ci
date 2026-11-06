@@ -1,0 +1,218 @@
+{
+  "schema": "ndu.followthrough.disposition.v1",
+  "as_of_utc": "2026-11-06T17:21:49.867311+00:00",
+  "base_commit": "d7a2893a0a4d4829a8ac3c266e3948ac25a9254d",
+  "base_pr": 5078,
+  "all_scientific_blockers_closed": false,
+  "new_rl_originality_established": false,
+  "external_scientific_review_obtained": false,
+  "independent_net_benefit_established": false,
+  "full_repository_ci_run_or_green": false,
+  "decision": "NO_GO_FOR_LARGE_SCALE_TRAINING",
+  "deadline_frontier": {
+    "known_candidate_laws_supplied": true,
+    "current_implementation": "Four declared binary finite families; general finite-catalog theorem is broader than implementation",
+    "lp_cells": 31,
+    "analytic_binary_rows": 31,
+    "exact_zero_gap_lp_cells": 30,
+    "largest_rational_interval_gap": "866387700800588671032758494497722263097028419111/4892481051472703245087951464711718750000000000000000000",
+    "largest_gap_float": 1.770855506000977e-07,
+    "minimum_uniform_five_percent_complete_macro_cap": 23,
+    "hard_model_time": 69,
+    "macro_cost": "3/10",
+    "expected_cost_optimality_claimed": false,
+    "unknown_kernel_near_lower_bound": false,
+    "actual_tools_measured": false,
+    "solver_wall_seconds": 12.733621009996568,
+    "solver_cpu_seconds": 12.752461341,
+    "new_samples": 0
+  },
+  "jac_confidence": {
+    "states": 52,
+    "state_action_rows": 124,
+    "retained_banks": 20,
+    "retained_observations_per_bank": 7936,
+    "new_observations": 0,
+    "known_support_required": true,
+    "fixed_sample_iid_rows_required": true,
+    "alpha": 0.05,
+    "non_singleton_probability_coordinates_per_bank": 164,
+    "synthetic_audit_fee": 0.01,
+    "summary": {
+      "original_vanilla": {
+        "adopted": 0,
+        "max_unpriced_gain_lower": 0.00011980536613006458,
+        "mean_box_construction_wall_seconds": 0.02415031979980995,
+        "mean_confidence_layer_wall_seconds": 0.009600144099749741,
+        "mean_safe_rows": 19.35,
+        "mean_true_baseline": 0.20679063206602594,
+        "mean_true_returned": 0.20679063206602594,
+        "mean_true_returned_gain_after_declared_fee": -0.009999999999999997,
+        "min_unpriced_gain_lower": 2.7002892934819577e-05,
+        "old_root_only_adopted": 0,
+        "positive_unpriced_gain_bound": 20,
+        "unsafe_DP_replacements": 4
+      },
+      "vanilla_argmax": {
+        "adopted": 0,
+        "max_unpriced_gain_lower": 0.0,
+        "mean_box_construction_wall_seconds": 0.02415031979980995,
+        "mean_confidence_layer_wall_seconds": 0.010939175299790804,
+        "mean_safe_rows": 3.65,
+        "mean_true_baseline": 0.25257077600895733,
+        "mean_true_returned": 0.25257077600895733,
+        "mean_true_returned_gain_after_declared_fee": -0.01,
+        "min_unpriced_gain_lower": 0.0,
+        "old_root_only_adopted": 0,
+        "positive_unpriced_gain_bound": 0,
+        "unsafe_DP_replacements": 6
+      }
+    },
+    "three_acceptance_bugs_repaired": true,
+    "old_receipts_preserved": true,
+    "formal_outward_rounded_confidence_implementation": false
+  },
+  "known_law_headroom": {
+    "known_law_optimum": 0.25274721905017294,
+    "baseline_mean": 0.25257077600895733,
+    "point_optimum_equal_bank_count": 17,
+    "max_headroom_upper": "1422043654779420360097/1208925819614629174706176",
+    "max_headroom_upper_float": 0.001176286941437587,
+    "mean_headroom_upper_float": 0.00017644304121563808,
+    "max_paid_gain_upper_float": -0.008823713058562412,
+    "mean_paid_gain_upper_float": -0.009823556958784362,
+    "sum_headroom_upper_float": 0.0035288608243127613,
+    "all_banks_have_negative_paid_oracle_ceiling": true,
+    "fee_scope": "Exactly the existing one-episode .01 synthetic audit-charge convention; no changed amortization or currency claim.",
+    "interval_model": "Finite source float metadata interpreted as exact binary rationals, row probabilities normalized exactly, real exp/log enclosed by rational series with explicit tails and dyadic outward rounding.",
+    "not_a_universal_deployment_impossibility": true,
+    "one_time_audit_positive_oracle_ceiling_at_nine_deployments": true,
+    "nine_deployment_actual_net_benefit_established": false
+  },
+  "frozen_model_development": {
+    "model": "Qwen/Qwen2.5-0.5B-Instruct",
+    "revision": "7ae557604adf67be50417f59c2c2f167def9a775",
+    "parameter_sha256": "815634c0b4c921ad07b4a32437ff872342e745b15a386f6ca8f5a2d4974e0c13",
+    "new_easier_named_operation_contract": true,
+    "familiar_source_clusters": 2,
+    "independent_confirmation": false,
+    "ndu_algorithm_evaluated": false,
+    "arms": {
+      "frozen_lm_selector": {
+        "episodes": 8,
+        "correct": 3,
+        "delivered": 8,
+        "model_calls": 8,
+        "tool_calls": 8,
+        "inclusive_episode_wall_seconds": 121.97776346299361,
+        "child_cpu_seconds": 173.67306000000002
+      },
+      "literal_router": {
+        "episodes": 8,
+        "correct": 8,
+        "delivered": 8,
+        "model_calls": 0,
+        "tool_calls": 8,
+        "inclusive_episode_wall_seconds": 0.7364045139984228,
+        "child_cpu_seconds": 0.6789340000000337
+      },
+      "stop": {
+        "episodes": 8,
+        "correct": 0,
+        "delivered": 0,
+        "model_calls": 0,
+        "tool_calls": 0,
+        "inclusive_episode_wall_seconds": 7.369100057985634e-05,
+        "child_cpu_seconds": 0
+      }
+    },
+    "model_forwards": 8,
+    "task_tool_calls": 16,
+    "episodes": 24,
+    "intent_and_terminal_events": 48,
+    "outer_wall_seconds": 122.77114305400028,
+    "outer_child_cpu_seconds": 174.351994,
+    "model_forward_seconds": 11.569322290008131,
+    "external_paid_model_api_calls": 0,
+    "actual_host_currency_cost": null,
+    "scale_decision": "HOLD"
+  },
+  "inherited_negative_results": {
+    "learned_stateful": {
+      "status": "FAILED_CURRENT_CANDIDATE",
+      "comparator": "same-data myopic VOI",
+      "true_utility_wins_ties_losses": [
+        0,
+        143,
+        1
+      ],
+      "primary_lifecycle_deployments": 1000,
+      "primary_positive_cells": 0,
+      "primary_total_cells": 144,
+      "primary_absolute_lower_bounds_negative": 144,
+      "global_research_acquisition_score_units": 88866.778,
+      "resource_prices": "DECLARED_SYNTHETIC_UNITS_NOT_PROVIDER_MONEY",
+      "hardware_and_engineering_monetary_cost": "UNPRICED"
+    },
+    "prior_frozen_models": {
+      "status": "ACTUAL_DEVELOPMENT_EXECUTION_WITH_NEGATIVE_TASK_OUTCOMES",
+      "procedures": 3,
+      "responses_including_qualification": 54,
+      "task_episodes_across_reused_procedures": 48,
+      "distinct_disclosed_tasks": 8,
+      "source_clusters": 2,
+      "untouched_independent_confirmation": false,
+      "external_paid_model_api_calls": 0,
+      "host_monetary_cost": "UNKNOWN",
+      "per_procedure": [
+        {
+          "name": "SmolLM2-135M strict JSON",
+          "responses": 17,
+          "task_episodes": 16,
+          "tool_dispatches": 0,
+          "delivered_task_answers": 0,
+          "correct_delivered_task_answers": 0
+        },
+        {
+          "name": "Qwen2.5-0.5B strict JSON",
+          "responses": 17,
+          "task_episodes": 16,
+          "tool_dispatches": 0,
+          "delivered_task_answers": 0,
+          "correct_delivered_task_answers": 0
+        },
+        {
+          "name": "Same frozen Qwen with prospectively fixed JSON transport",
+          "responses": 20,
+          "task_episodes": 16,
+          "tool_dispatches": 4,
+          "sql_observations": 3,
+          "sql_worker_failures": 1,
+          "direct_delivered_answers": 4,
+          "direct_exactly_correct_answers": 0,
+          "tool_assisted_delivered_answers": 0,
+          "tool_assisted_final_verifier_calls": 0
+        }
+      ]
+    },
+    "source": "../ndu_status_20261106_1545/STATUS.json",
+    "rewritten": false
+  },
+  "publishing": {
+    "status": "LOCAL_COMMITS_ONLY_AUTOMATIC_APPROVAL_BLOCKED_PUBLIC_PUSH",
+    "target_repository": "TrillionniumFoundation/hepta-private-ci",
+    "observed_visibility": "public",
+    "target_branch": "research/ndu-paid-identification-clock-20261106",
+    "push_completed": false,
+    "pr_created": false,
+    "merge_performed": false,
+    "reason": "Automatic approval review rejected publication of this research payload to GitHub; no alternate upload path used. Final approval is requested only after the complete reviewable release."
+  },
+  "next_candidate_gates": [
+    "Prospectively distinct from qualified same-data and same-structure strong baselines",
+    "Feasible headroom under a justified full-cost and deployment-volume contract",
+    "Valid identification and actual-duration/cancellation interface",
+    "Independent task clusters and full baseline comparisons",
+    "Positive simultaneous incremental and lifecycle net-benefit gates before scaling"
+  ]
+}

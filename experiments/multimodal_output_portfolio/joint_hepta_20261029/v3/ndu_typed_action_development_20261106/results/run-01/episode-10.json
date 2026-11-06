@@ -1,0 +1,23 @@
+{
+  "task_id": "typed/chinook/invoice",
+  "family": "sqlite_count",
+  "source_cluster": "chinook-7f677725",
+  "arm": "frozen_lm_selector",
+  "started_at_utc": "2026-11-06T16:53:00.482480+00:00",
+  "selected_label": "I",
+  "delivered": true,
+  "correct": false,
+  "model_calls": 1,
+  "tool_calls": 1,
+  "failure": null,
+  "raw_response_id": "ba38f502f6934545b0ae881149a25e49",
+  "model_wall_seconds": 13.445853712997632,
+  "model_child_cpu_seconds": 20.179964999999996,
+  "tool_request_id": "bd514f8c93154291beadf1a41f913973",
+  "tool_wall_seconds": 0.061817941001208965,
+  "tool_child_cpu_seconds": 0.05909800000000587,
+  "answer": "def correlation(x, y, /, *, method='linear'):",
+  "elapsed_seconds": 13.513703785996768,
+  "host_cpu_seconds": 0.008384606000000003,
+  "finished_at_utc": "2026-11-06T16:53:13.996185+00:00"
+}

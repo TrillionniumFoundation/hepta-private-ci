@@ -1,0 +1,87 @@
+{
+  "scope": "Independent targeted replay of the three original acceptance counterexamples and a valid-state high-continuation counterpart; no study replay or new banks.",
+  "review_status": "PASS",
+  "checks": {
+    "original_empty_successor_rejected": true,
+    "valid_large_continuation_rejects_fee": true,
+    "valid_large_continuation_gain_matches_high_precision": true,
+    "valid_large_continuation_tilt_matches_high_precision": true,
+    "valid_large_continuation_retains_paid_fee": true,
+    "original_negative_candidate_rejected": true,
+    "original_offset_actual_gain_zero": true,
+    "original_offset_certified_gain_zero": true,
+    "original_offset_no_update": true,
+    "original_offset_fee_retained": true,
+    "original_offset_returned_policy_normalized": true,
+    "corrected_source_hashes_match_protocol": true,
+    "review_did_not_change_sources": true
+  },
+  "check_count": 13,
+  "source_sha256": {
+    "confidence.py": "bacd459260fb0cab1685458c1f1fbdba0db3729ea9b0fab894a5fc3d94da4b0c",
+    "study.py": "f375d5ec9d47646547770b522300b212a1884cf43f069c7845e2477ba155b5a8",
+    "test_confidence.py": "103bd5ea8a349a5bf32259c1cf3c7499041114fd17f561031c482cd59ed4318e"
+  },
+  "protocol_corrected_sha256": "d7ee776bf1b0f323aa139ac0f1cf7c650b8d28dd286ab223dff2a9e2154544e8",
+  "cases": {
+    "original_empty_successor": {
+      "rejected": true,
+      "reason": "Invalid bounded outcome or successor"
+    },
+    "valid_large_continuation": {
+      "high_precision_true_proposal_gain": "8.911034055331969418327627025112770087899880118182610304179198378276822750759988E-10",
+      "inherited_core_float_proposal_gain": 8.911034132808027e-10,
+      "reported_proposal_gain_lower": 8.911034055331968e-10,
+      "reported_minus_high_precision": "-1.202010887334112026415122462403867958628656870955181119625759988E-25",
+      "correct_tilt_high_precision": "2.0611536181902035814308621294745926907524900188692996522815990595506165869467434E-9",
+      "reported_tilt_lower": 2.0611536181902033e-09,
+      "decision": "no-update",
+      "returned_net_lower": -0.01,
+      "fee": 0.01,
+      "numeric_scope": "Ordinary floating arithmetic; comparison does not turn endpoints into outward-rounded formal bounds."
+    },
+    "original_negative_candidate": {
+      "rejected": true,
+      "reason": "Finite nonnegative policy probabilities required"
+    },
+    "original_mass_offset": {
+      "actual_proposal_gain": 0.0,
+      "reported_proposal_gain_lower": 0.0,
+      "decision": "no-update",
+      "returned_net_lower": -0.01,
+      "original_baseline_mass": 0.9999999999995,
+      "returned_policy_mass": 1.0,
+      "returned_policy": {
+        "s": {
+          "a": 0.50000000000025,
+          "b": 0.49999999999975003
+        }
+      },
+      "fee": 0.01
+    }
+  },
+  "new_calibration_observations": 0,
+  "new_banks": 0,
+  "new_llm_calls": 0,
+  "external_review": false,
+  "formal_outward_rounding_claimed": false,
+  "deadline_report_scope_review": {
+    "method": "Read existing accepted receipts and prose only; no frontier experiment rerun",
+    "result_sha256": "a4f28cc582bc2e1943f0c814a89666e61af6c4803ca14c601c03d50480bb49e0",
+    "checks": {
+      "31_declared_LP_rows": true,
+      "31_analytic_binary_rows": true,
+      "30_zero_exact_LP_gaps": true,
+      "largest_LP_gap_below_1_8e_7": true,
+      "n22_not_five_percent": true,
+      "n23_feasible_five_percent": true,
+      "minimum_complete_macro_time69": true,
+      "no_new_observations": true,
+      "no_llm_calls": true,
+      "no_independent_confirmation_claim": true,
+      "unconstrained_joint_risks_match_README": true
+    },
+    "scope_conclusion": "Claims correctly limited to shared randomized finite known-law policies, hard model-time caps and per-hypothesis expected resources; no LLM, new RL, actual-latency or lifecycle-cost optimality claim.",
+    "minor_wording_note": "protocol.deadline says STOP mandatory at exhausted budget; read consistently as time/launch cap, not a pathwise expected-resource B cap. README correctly makes this distinction."
+  }
+}
