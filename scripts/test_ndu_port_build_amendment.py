@@ -67,7 +67,7 @@ class BuildAmendmentTests(unittest.TestCase):
         original_raw = self.path.read_bytes()
         self.path.unlink()
         with self.assertRaisesRegex(
-            ValueError, "requires its reviewed build amendment"
+            ValueError, r"Expected a regular file: .*BUILD_AMENDMENT\.v7\.3\.json"
         ):
             self.verify()
         self.path.write_bytes(original_raw)
@@ -149,6 +149,7 @@ class BuildAmendmentTests(unittest.TestCase):
             (common.DEPENDENCY_AMENDMENT, "dependency-amendment.json"),
             (common.BUILD_AMENDMENT, "build-amendment.json"),
             (common.DIAGNOSTIC_AMENDMENT, "diagnostic-amendment.json"),
+            (common.LOCK_AMENDMENT, "lock-amendment.json"),
         )
         for source, name in transports:
             shutil.copyfile(self.f.root / source, artifact / name)
