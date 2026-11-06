@@ -335,7 +335,7 @@ symbol = "AuthorityLeaseVerifier::verify_use"
 call_pattern = '(?:\.\s*|AuthorityLeaseVerifier\s*::\s*)verify_use\s*\('
 definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
 definition_markers = ["pub struct AuthorityLeaseVerifier", "pub fn verify_use(", "LeaseVerifiedUseToken"]
-product_callers = ["codex-rs/hepta-fleet/src/authority_port.rs", "codex-rs/hepta-agentd/src/deployment_issuer_root.rs", "codex-rs/hepta-agentd/src/deployment_notes.rs", "codex-rs/hepta-agentd/src/deployment_writer.rs", "codex-rs/hepta-agentd/src/deployment_writer_rotate.rs", "codex-rs/hepta-contracts/src/authority_host_issuer.rs", "codex-rs/hepta-agentd/src/deployment_calculator.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/deployment_issuer_dependencies.rs", "codex-rs/hepta-fleet/src/authority_port.rs", "codex-rs/hepta-agentd/src/deployment_issuer_root.rs", "codex-rs/hepta-agentd/src/deployment_notes.rs", "codex-rs/hepta-agentd/src/deployment_writer.rs", "codex-rs/hepta-agentd/src/deployment_writer_rotate.rs", "codex-rs/hepta-contracts/src/authority_host_issuer.rs", "codex-rs/hepta-agentd/src/deployment_calculator.rs"]
 caller_markers = [".verify_use("]
 
 [[boundary]]
