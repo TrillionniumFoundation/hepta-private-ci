@@ -1,0 +1,26 @@
+{
+  "schema": "ndu.i18n-bazel-alias-repair.v1",
+  "at_utc": "2026-11-06T11:45:00.950030+00:00",
+  "base_commit": "cb5019ae86bc52c9baff27858a3ee21cafc89ac5",
+  "status": "EXACT_DONOR_REPLAY_AND_STATIC_TARGET_CHECK_PASS",
+  "path": "codex-rs/third_party/i18n-config-0.4.8/BUILD.bazel",
+  "source": {
+    "bytes": 147,
+    "sha256": "97d7c6381e499d2c26a4f6b3f2a3e50845b882094b35e325fdd5efa4a2575167",
+    "git_blob": "ba0a56404aa9238e1d3c6c3a2166cefdea4cb318"
+  },
+  "candidate": {
+    "bytes": 415,
+    "sha256": "39dee32c82f4e7a687553359a591efddea9157e3326903edaed1c25471ab06ef",
+    "git_blob": "dd531ec8d40b14e6890771df16a70fa3bf56e1dd"
+  },
+  "donor_pr": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4375",
+  "donor_head": "c3b2c620f75d32f3cc5603e95a8558b8484f8c04",
+  "exact_donor_preimage_and_postimage": true,
+  "existing_target_preserved": true,
+  "dependency_versions_or_locks_changed": false,
+  "observed_missing_target": "//codex-rs/third_party/i18n-config-0.4.8:i18n-config-0.4.8",
+  "observed_failure": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42160192456/job/127712940876",
+  "bazel_execution": "NOT_RUN; Bazel is unavailable in this execution environment",
+  "limits": "This adds the missing public alias to the existing crate target. It does not establish that unrelated Linux Bazel test failures are resolved."
+}
