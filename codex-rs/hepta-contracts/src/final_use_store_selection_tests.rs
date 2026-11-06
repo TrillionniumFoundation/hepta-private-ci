@@ -6,40 +6,49 @@ use pretty_assertions::assert_eq;
 use std::os::unix::fs::MetadataExt;
 use std::os::unix::fs::PermissionsExt;
 
-fn private_directory() -> tempfile::TempDir {
-    let root = tempfile::tempdir().unwrap();
-    std::fs::set_permissions(root.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
-    root
+fn private_directory() -> std::io::Result<tempfile::TempDir> {
+    let root = tempfile::tempdir()?;
+    std::fs::set_permissions(root.path(), std::fs::Permissions::from_mode(0o700))?;
+    Ok(root)
 }
 
 fn head() -> FinalUseRevocations {
     FinalUseRevocations { authority_epoch: 4, revision: 8, revoked_grant_ids: BTreeSet::new() }
 }
 
-fn inventory(root: &Path) -> Vec<(String, u64, u32, u32, u32, Vec<u8>)> {
-    let mut files = std::fs::read_dir(root).unwrap().map(|entry| {
-        let entry = entry.unwrap();
-        let metadata = entry.metadata().unwrap();
-        (entry.file_name().into_string().unwrap(), metadata.ino(), metadata.uid(), metadata.gid(), metadata.mode(), std::fs::read(entry.path()).unwrap())
-    }).collect::<Vec<_>>();
+fn inventory(root: &Path) -> std::io::Result<Vec<(String, u64, u32, u32, u32, Vec<u8>)>> {
+    let mut files = std::fs::read_dir(root)?
+        .map(|entry| {
+            let entry = entry?;
+            let metadata = entry.metadata()?;
+            let name = entry.file_name().into_string().map_err(|_| {
+                std::io::Error::new(
+                    std::io::ErrorKind::InvalidData,
+                    "final-use store filename is not UTF-8",
+                )
+            })?;
+            let bytes = std::fs::read(entry.path())?;
+            Ok((name, metadata.ino(), metadata.uid(), metadata.gid(), metadata.mode(), bytes))
+        })
+        .collect::<std::io::Result<Vec<_>>>()?;
     files.sort_by(|left, right| left.0.cmp(&right.0));
-    files
+    Ok(files)
 }
 
 #[test]
 fn existing_selection_never_creates_a_missing_directory_or_empty_store() {
-    let parent = private_directory();
+    let parent = private_directory().unwrap();
     let missing = parent.path().join("missing");
     assert!(Store::open_key_ring_existing(&missing, "original", [7; 32], head()).is_err());
     assert!(!missing.exists());
-    let empty = private_directory();
+    let empty = private_directory().unwrap();
     assert!(Store::open_key_ring_existing(empty.path(), "original", [7; 32], head()).is_err());
     assert!(inventory(empty.path()).is_empty());
 }
 
 #[test]
 fn fresh_selection_creates_consumer_owned_v3_once_and_existing_preserves_nonce() {
-    let root = private_directory();
+    let root = private_directory().unwrap();
     let (store, mut state) = Store::initialize_key_ring_fresh(root.path(), "original", [7; 32], head()).unwrap();
     let uid = rustix::process::geteuid().as_raw();
     for (_, _, owner, _, mode, _) in inventory(root.path()) {
@@ -63,7 +72,7 @@ fn fresh_selection_creates_consumer_owned_v3_once_and_existing_preserves_nonce()
 #[test]
 fn missing_any_required_entry_is_not_recreated_by_existing_or_fresh() {
     for missing in ["authority.lock", "authority.json", "authority.claims"] {
-        let root = private_directory();
+        let root = private_directory().unwrap();
         let (store, _) = Store::initialize_key_ring_fresh(root.path(), "original", [7; 32], head()).unwrap();
         drop(store);
         std::fs::remove_file(root.path().join(missing)).unwrap();
@@ -78,7 +87,7 @@ fn missing_any_required_entry_is_not_recreated_by_existing_or_fresh() {
 #[test]
 fn incomplete_staging_is_not_completed_by_runtime_open() {
     for stale in ["authority.next", "authority.claims.next"] {
-        let root = private_directory();
+        let root = private_directory().unwrap();
         let (store, _) = Store::initialize_key_ring_fresh(root.path(), "original", [7; 32], head()).unwrap();
         drop(store);
         std::fs::write(root.path().join(stale), b"incomplete original write").unwrap();
@@ -91,7 +100,7 @@ fn incomplete_staging_is_not_completed_by_runtime_open() {
 
 #[test]
 fn legacy_key_ring_snapshot_is_not_migrated_by_runtime_open() {
-    let root = private_directory();
+    let root = private_directory().unwrap();
     let (store, _) = Store::initialize_key_ring_fresh(root.path(), "original", [7; 32], head()).unwrap();
     drop(store);
     let trust = [7_u8; 32];
@@ -111,7 +120,7 @@ fn legacy_key_ring_snapshot_is_not_migrated_by_runtime_open() {
 #[test]
 fn fresh_selection_does_not_take_over_a_preexisting_lock_or_partial_claims() {
     for prior in ["authority.lock", "authority.claims", "authority.json", "authority.next", "authority.claims.next"] {
-        let root = private_directory();
+        let root = private_directory().unwrap();
         std::fs::write(root.path().join(prior), b"preserve failed attempt").unwrap();
         std::fs::set_permissions(root.path().join(prior), std::fs::Permissions::from_mode(0o600)).unwrap();
         let before = inventory(root.path());
@@ -122,7 +131,7 @@ fn fresh_selection_does_not_take_over_a_preexisting_lock_or_partial_claims() {
 
 #[test]
 fn strict_owner_permanently_fences_a_replaced_lock_before_journal_mutation() {
-    let root = private_directory();
+    let root = private_directory().unwrap();
     let (owner, _) = Store::initialize_key_ring_fresh(root.path(), "original", [7; 32], head()).unwrap();
     let lock = root.path().join("authority.lock");
     let old = root.path().join("held-original-lock");
@@ -145,7 +154,7 @@ fn strict_owner_permanently_fences_a_replaced_lock_before_journal_mutation() {
 #[test]
 fn strict_owner_keeps_original_claims_replacement_and_length_guards() {
     for mutation in ["replace", "truncate", "extend"] {
-        let root = private_directory();
+        let root = private_directory().unwrap();
         let (owner, _) = Store::initialize_key_ring_fresh(root.path(), "original", [7; 32], head()).unwrap();
         owner.append_claim(4, [9; 32]).unwrap();
         let claims = root.path().join("authority.claims");
