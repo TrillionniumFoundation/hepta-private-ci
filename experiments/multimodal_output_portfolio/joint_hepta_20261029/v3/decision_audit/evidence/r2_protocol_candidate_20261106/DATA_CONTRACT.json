@@ -1,0 +1,83 @@
+{
+  "schema": "hepta.r2.new-data-contract.v1",
+  "status": "NO_INDEPENDENT_NEW_TEST_AVAILABLE",
+  "eligible_population": "newly captured natural still images supporting a visible-facts explanation and simple diagram; no diagnosis, hidden identity, or facts not observable in the image",
+  "preferred_provenance": "new acquisition after the independent data owner signs the protocol seal; signed capture/release record and permission chain, not EXIF or upload timestamp alone",
+  "fallback": "previously unexposed public assets require independent source-cluster and all-prior-cohort audit; upload recency alone never qualifies",
+  "unit": "one independently sourced scene/event/capture-session cluster, one primary image and one preassigned neutral instruction",
+  "cluster_rule": "same capture session, scene/event, video/burst, originating document, derivative/crop or near-duplicate group stays in one source cluster; repeated author alone is flagged for higher-level sensitivity, not presumed independent",
+  "primary_image_rule": "within a qualified cluster choose lexicographically smallest content SHA256 before model evaluation",
+  "instructions": [
+    "Describe the visible objects and their spatial relations, then produce a simple diagram consistent with that description. Do not add facts that are not visible.",
+    "Explain what is visibly present in the image and provide a simple matching diagram. If a detail cannot be determined from the image, leave it unspecified."
+  ],
+  "instruction_assignment": "SHA256(protocol digest || opaque source_cluster_id) modulo 2; evaluator checks balance before sealing, never chooses by model response",
+  "draws_per_source": 2,
+  "draw_rule": "same primary image/instruction, two precommitted execution RNG draws, nested within source; not independent images or tasks",
+  "split_rule": "independent owner groups first, excludes all exposed clusters, then assigns train/validation/test by a committed secret randomization seed; no split is performed by this package",
+  "counts": {
+    "development_pilot_clusters_max": 32,
+    "train_clusters": null,
+    "validation_clusters": null,
+    "test_count_candidate_grid": [
+      128,
+      256,
+      512,
+      1024,
+      2048
+    ],
+    "selected_test_clusters": null
+  },
+  "selection_before_test": "Select the smallest candidate test count reaching the declared precision/power criteria using independent development-only variance and cost measurements; if none qualify, stop before collecting/opening test. The count is immutable once selected.",
+  "public_manifest_fields": [
+    "opaque_source_id",
+    "source_cluster_id",
+    "content_sha256",
+    "capture_or_release_utc",
+    "provenance_receipt_sha256",
+    "license_or_permission",
+    "split",
+    "perceptual_duplicate_group",
+    "instruction_sha256",
+    "label_manifest_commitment"
+  ],
+  "evaluator_private_fields": [
+    "test bytes",
+    "references",
+    "labels",
+    "capture identity keys",
+    "randomization secret",
+    "blind arm order"
+  ],
+  "custody": {
+    "owner": null,
+    "trainer_identity": null,
+    "evaluator_identity": null,
+    "access_denial_receipts": null,
+    "dispatch_receipt": null,
+    "rule": "separate actual owner and OS/capability boundary; a shared workspace, another agent, chmod0700, or a claimed JSON owner is insufficient"
+  },
+  "test_seal_sequence": [
+    "freeze protocol and development-only plan",
+    "provision independent owner and verify trainer denial",
+    "acquire new clusters with provenance and permissions",
+    "audit exact/perceptual/source overlap against all prior cohorts",
+    "freeze split/count/instructions/label rubric and commitments",
+    "finish all training and validation selection",
+    "freeze candidate/index/checkpoint/source hashes",
+    "owner dispatches one complete fixed test panel",
+    "owner exports signed capture roster and blinded outcomes"
+  ],
+  "exclusions": {
+    "r1_all_original_generated_blank_and_derivatives": true,
+    "historical_v2_v3_and_reserved_confirmation_without_new_proof": true,
+    "availability_batch_20261105_all_24_metadata_candidates": true,
+    "exposed_image_sha256": [
+      "5e89b31717bcbe16e5dc5a6ccd67c99fb431000e1416956e326b826d807cf09a",
+      "4b16f32ff4df05d64ddafde644591ac890e8f92b93b93f8211d50419f96be44a"
+    ],
+    "no_reclassification_of_quarantine_as_test": true
+  },
+  "test_opened": false,
+  "test_sealed": false
+}

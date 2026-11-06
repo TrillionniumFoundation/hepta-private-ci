@@ -1,0 +1,89 @@
+{
+  "schema": "hepta.r2.budget-contract.v1",
+  "status": "UNALLOCATED_NO_EXECUTION_AUTHORIZATION",
+  "primary_estimand": "same_total_budget",
+  "allocation": "same maximum total training+search+selection allowance per complete fit/arm; unused allowance is not charged as spending; actual spend is reported, including all failed and unselected work",
+  "independent_fits": 32,
+  "full_trainable_arm_fits": 96,
+  "00_receipt": "explicit no-gradient/frozen-byte receipt per paired execution block; not 32 newly trained base models",
+  "numeric_caps_requiring_development_measurement": {
+    "total_cpu_seconds_per_fit_arm": null,
+    "total_wall_seconds_per_fit_arm": null,
+    "peak_memory_bytes": null,
+    "data_acquisition_bytes": null,
+    "retained_disk_bytes": null,
+    "total_study_cpu_seconds": null
+  },
+  "inference_candidate_limits": {
+    "decision_horizon": 10,
+    "deadline_seconds": 600.0,
+    "threads": 2,
+    "max_vlm_new_tokens": 80,
+    "image_longest_edge": 512,
+    "image_splitting": false,
+    "image_output_pixels": [
+      256,
+      256
+    ],
+    "diffusion_requested_steps": 12,
+    "cost_of_cap_hits": "Retain incomplete outputs and max-token/timeout reasons; do not relabel as normal terminal success."
+  },
+  "deadline_scope": "existing synchronous runner checks after provider return; no hard-deadline guarantee. A separately qualified runner is needed to enforce physical process budgets and retain unknown/killed outcomes.",
+  "cpu_tariff": 0.02,
+  "wall_tariff": 0.001,
+  "real_action_service_tariffs": {
+    "perceive": null,
+    "text": null,
+    "draft": null,
+    "revise": null,
+    "refine": null,
+    "verify": null,
+    "stop": null,
+    "controller": null,
+    "finalize": null
+  },
+  "tariff_rule": "all explicit values and units must be sealed before training; no inherited zero default is an admissible unknown-cost conversion",
+  "event_categories": [
+    "encoder",
+    "generation",
+    "planner",
+    "critic",
+    "verification",
+    "seal"
+  ],
+  "outer_scopes": [
+    "setup",
+    "training",
+    "analysis",
+    "publication"
+  ],
+  "physical_event_rules": [
+    "event IDs are fixed by an independently retained capture roster",
+    "identical receipt retry counts once; conflicting duplicate fails",
+    "no cross-arm or outer/episode event reuse",
+    "inclusive envelopes are reported separately and never summed with exclusive leaves",
+    "missing/rejected/partial/unselected work cannot be dropped",
+    "unknown cost is null with reason, never zero"
+  ],
+  "required_measurements": [
+    "inclusive parent wall envelope",
+    "exclusive CPU including reaped children",
+    "exclusive wall",
+    "peak RSS bytes",
+    "network payload bytes",
+    "retained disk bytes",
+    "actual metered energy or explicit unknown",
+    "all setup/training/validation/analysis/publication costs"
+  ],
+  "confirmatory_episode_formula": "32 fits * N independently sourced clusters * 2 nested draws * 7 methods",
+  "episode_counts_by_N": {
+    "128": 57344,
+    "256": 114688,
+    "512": 229376,
+    "1024": 458752,
+    "2048": 917504
+  },
+  "upper_envelope_is_not_actual_cost": true,
+  "compute_reserved": false,
+  "native_training_budget_measured": false
+}

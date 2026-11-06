@@ -1,0 +1,197 @@
+{
+  "schema": "hepta.r2.baseline-contract.v1",
+  "status": "algorithms_and_search_sets_declared_implementations_unbound",
+  "method_ids": [
+    "00",
+    "10",
+    "01",
+    "11",
+    "greedy",
+    "planner",
+    "retrieval"
+  ],
+  "fixed_reference_alias": "00",
+  "alias_rule": "fixed is the 00 execution, not a second episode or duplicated physical cost",
+  "fixed": {
+    "candidate_schedules": [
+      [
+        "stop"
+      ],
+      [
+        "text",
+        "draft",
+        "stop"
+      ],
+      [
+        "perceive",
+        "text",
+        "draft",
+        "stop"
+      ],
+      [
+        "perceive",
+        "draft",
+        "text",
+        "stop"
+      ],
+      [
+        "perceive",
+        "text",
+        "draft",
+        "verify",
+        "stop"
+      ],
+      [
+        "perceive",
+        "draft",
+        "text",
+        "verify",
+        "stop"
+      ],
+      [
+        "perceive",
+        "text",
+        "draft",
+        "refine",
+        "verify",
+        "stop"
+      ],
+      [
+        "perceive",
+        "text",
+        "draft",
+        "verify",
+        "refine",
+        "verify",
+        "stop"
+      ],
+      [
+        "perceive",
+        "text",
+        "draft",
+        "verify",
+        "revise",
+        "text",
+        "draft",
+        "verify",
+        "stop"
+      ],
+      [
+        "perceive",
+        "text",
+        "draft",
+        "verify",
+        "revise",
+        "text",
+        "refine",
+        "verify",
+        "stop"
+      ],
+      [
+        "text",
+        "draft",
+        "verify",
+        "revise",
+        "text",
+        "refine",
+        "verify",
+        "stop"
+      ],
+      [
+        "perceive",
+        "text",
+        "draft",
+        "draft",
+        "verify",
+        "stop"
+      ]
+    ],
+    "candidate_ids": [
+      "a57b22dfd5c342557f4b53e44e853c46521f1156b0644c673d2d24de01c552ea",
+      "3fe884259119da8430e9c62ab63ec8d13c0944bb53b876dad789e370da386eb7",
+      "8cd4476528c298e67d1d5aca2ae33205a43789493eb7073026f7e9aabc52b860",
+      "bf661a425d3c6ff53a3cba6cafb69c21cca0ccaed4677b1fe4ca93724806e66f",
+      "60a964a0558e7978f74be5326d1ef6729397b5c2104a5d8114fa092a6b04a69f",
+      "54e803702cd78cf208e32d2c1f092d526c0c36597a7e2d00ed2838ed57fa488e",
+      "c59d795fee0351b01ce2eff394058af5bef833e6d25762e11312aa2b6b873ebe",
+      "d213b55563af4fa9a81586156da380b3ae9e53c916c746cbdc7febb935a36b7e",
+      "c6a7faf0be0b431a9e0efd13de9735c8e401bdb9c2233b8ddf2b10a235a9c25c",
+      "1ff0eb42e01d13d7b3ef111971a5993222ee7c87b7dce916f1b57553563cbbf7",
+      "e1cc4e5412cca1811e7af226263b582f1c10617ad770943a2b0cb2b8d1e6006a",
+      "7cf6cd6de9e62651a0e082ef74aa35cc9dffa9865428016ddab4669231493a11"
+    ],
+    "selection": "highest validation CE; exact tie uses lexicographically smallest schedule digest",
+    "runtime": "existing FixedSchedule.choose; no actor at ordinary fixed/STOP steps",
+    "scope": "best in this 12-schedule library, not an unrestricted optimal fixed policy"
+  },
+  "greedy": {
+    "rule": "For every legal next action, predict one-step incremental independent utility minus its execution and decision cost from the current public View. Choose the highest strictly positive prediction; otherwise STOP. Exact ties use ACTIONS order.",
+    "value_model_training_data": "train-only executed transitions with independent development utility; no test or future executed branch outcome",
+    "regularization_grid": [
+      0.001,
+      0.01,
+      0.1,
+      1.0
+    ],
+    "maximum_predictions_per_decision": 7,
+    "implementation_source_sha": null,
+    "predictor_checkpoint_sha256": null,
+    "rejected_substitute": "historical actor-logit argmax"
+  },
+  "planner": {
+    "rule": "Deterministic bounded beam search through a train-only learned transition/value model over the same legal public-state actions. Predictions remain labelled predictions. No unexecuted provider outcome or test score is available. Execute only the selected first action, then replan from actual public observations.",
+    "depth_grid": [
+      2,
+      3
+    ],
+    "beam_grid": [
+      2,
+      4
+    ],
+    "expansion_cap_grid": [
+      8,
+      16
+    ],
+    "maximum_model_calls_per_decision": 16,
+    "cost_rule": "Charge every prediction/expansion and any actually executed branch; preserve all unselected work and partially generated artifacts.",
+    "implementation_source_sha": null,
+    "transition_checkpoint_sha256": null,
+    "value_checkpoint_sha256": null,
+    "rejected_substitute": "historical mechanism DP supplied with known neural counterfactual outcomes"
+  },
+  "retrieval": {
+    "feature": "mean-pooled frozen pinned VLM vision features",
+    "distance": "cosine similarity; exact tie by source SHA256",
+    "index_population": "train-only clusters and approved output bundles",
+    "top_k_grid": [
+      1,
+      3,
+      5
+    ],
+    "threshold_grid": [
+      0.0,
+      0.25,
+      0.5,
+      0.75
+    ],
+    "return_rule": "Return the top-ranked complete bundle meeting the validation-selected threshold; otherwise abstain. No test-labelled reranker.",
+    "implementation_source_sha": null,
+    "index_sha256": null,
+    "cost_rule": "Index acquisition/build/verification/storage and all query encoding/ranking are recorded; build cost is not zero or charged once per arm."
+  },
+  "selection": {
+    "data": "validation only",
+    "objective": "same gamma-2 CE after declared costs",
+    "strong_reference_candidates": [
+      "00",
+      "greedy",
+      "planner",
+      "retrieval"
+    ],
+    "strong_reference": null,
+    "tie_break": "lexicographic method ID, then immutable configuration digest",
+    "retain": "all candidates, validation scores, failed/rejected trials, physical costs and search order",
+    "test_usage": "all seven methods are reported; the strongest reference identity is fixed before test dispatch"
+  },
+  "implementation_qualification": false
+}
