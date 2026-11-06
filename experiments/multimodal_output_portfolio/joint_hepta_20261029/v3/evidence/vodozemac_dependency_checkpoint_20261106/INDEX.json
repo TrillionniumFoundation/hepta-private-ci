@@ -1,0 +1,878 @@
+{
+  "format": "native-blocker-evidence-v1",
+  "purpose": "Vodozemac strict minimal dependency recipe evidence supplement",
+  "snapshot_utc": "2026-11-06",
+  "original_native_run": {
+    "pull_request": 5073,
+    "head": "eedc9f1094ccf42afe9fdb7ea9af193ac7a10a30",
+    "tree": "276519b00b34bccb15627ea7ba3f28f3fe88abb8",
+    "run_id": 42242535891,
+    "job_id": 127976226702,
+    "conclusion": "failure",
+    "artifact_id": 13520332596,
+    "artifact_sha256": "7c667068738abf1f10022496f7814b9e0edca34f2a26c43e97adf39e5b5c700f"
+  },
+  "local_experiment": {
+    "platform": "Linux x86_64",
+    "cargo": "1.96.0 (30a34c682 2026-05-25)",
+    "source_head": "eedc9f1094ccf42afe9fdb7ea9af193ac7a10a30",
+    "source_tree": "276519b00b34bccb15627ea7ba3f28f3fe88abb8",
+    "six_real_update_commands_passed": true,
+    "unmodified_graph_guard_passed_twice": true,
+    "whole_recipe_repeated_byte_equal": true,
+    "github_workflow_preflight_claimed": false,
+    "bazel_or_cargo_deny_execution_claimed": false
+  },
+  "new_proposal": {
+    "unit": 21,
+    "three_source_files_changed": true,
+    "production_locks_integrated": false,
+    "new_github_qualification_at_snapshot": "PENDING"
+  },
+  "evidence_policy": "Old native failure and local WRONG_EVENT rejection are preserved. Files restore as inert regular files with mode 0644. No archived source is executed. Original native artifact ZIP bytes and every member input are retained without rewriting.",
+  "excluded": [
+    "full repository worktrees",
+    "Cargo and formatter caches",
+    "tool installers",
+    "temporary signed download URLs",
+    "redundant expanded copy of the native ZIP"
+  ],
+  "archive_bytes": 10086400,
+  "archive_sha256": "0f87960ad4c41eaf756e514732b9e608648e56e9d27737ca5619bf533d269a31",
+  "compressed_bytes": 4656068,
+  "compressed_sha256": "4631e173c8f7f5cda6424a3c73a1827d5e30cb8c7b330f0b12a877332e1c4f2e",
+  "parts": [
+    {
+      "name": "native-evidence.tar.xz.part000.gz",
+      "bytes": 439914,
+      "sha256": "8e8ecbb6c95453c051ef098abdd76cd32cf20fb634d2472873f587c99c39f43d",
+      "git_blob": "ba3597ec373e3537d9401c4fb1f2dce47f5531a8",
+      "segment_bytes": 440000,
+      "segment_sha256": "e1520157c9298d50e3046e6edbb6f41836ce2cc40d23f76200b3289c9e022a6f"
+    },
+    {
+      "name": "native-evidence.tar.xz.part001.gz",
+      "bytes": 440153,
+      "sha256": "d2808805b10f6744943c3c0404da59abb896307c928d0a330eb8a9c4fc53b014",
+      "git_blob": "46a03eb7b1405702849e23471bd024719bfb77ad",
+      "segment_bytes": 440000,
+      "segment_sha256": "cd1bc814d4b842b124884baf7aee00905aee22d2ded75ede7a738e3011bd7035"
+    },
+    {
+      "name": "native-evidence.tar.xz.part002.gz",
+      "bytes": 440153,
+      "sha256": "f7a4da1236b5b176004c642090ce38e0fe13ecd0a01f070e2001415e6fbbcecf",
+      "git_blob": "ea3eb791c9ed5de058ce2d921f260485f1c1b1b2",
+      "segment_bytes": 440000,
+      "segment_sha256": "d8873371be3b0fe1b2df7641881c7b591917346d4cdac545924284f88c3fa0b1"
+    },
+    {
+      "name": "native-evidence.tar.xz.part003.gz",
+      "bytes": 440153,
+      "sha256": "e7c44e6714e2938db980e8d40b462d7cc6c36b788c99640ec28acc3ffb90daab",
+      "git_blob": "250ab0804f15a71fa1a28bb67a1c5e35719b5342",
+      "segment_bytes": 440000,
+      "segment_sha256": "4e5b2339f6c5ba713886258064538e1b4a3a9c9b9a5b2486326884dad928e8e0"
+    },
+    {
+      "name": "native-evidence.tar.xz.part004.gz",
+      "bytes": 440153,
+      "sha256": "17351a35e22e065d1c79d6e7f5913f9ee4288e43461b1f246414bcb00e561a91",
+      "git_blob": "583d828a851cecbfe10e5ae9e63c1722d46fccb4",
+      "segment_bytes": 440000,
+      "segment_sha256": "dc28acb1518d00960de59e00cf01aad92b8515fb1fa10ed673677814d43ec179"
+    },
+    {
+      "name": "native-evidence.tar.xz.part005.gz",
+      "bytes": 440153,
+      "sha256": "80d9fd66321c7f90267812e98ad12e01fc15604590cb2852b7005424b8e0b26d",
+      "git_blob": "670bd6a961c229437a23b35d8d765a077a425505",
+      "segment_bytes": 440000,
+      "segment_sha256": "0e6388d8972679a4bb205903a7718e1ca35baf41bd41fa8800ecc7cc732aa40a"
+    },
+    {
+      "name": "native-evidence.tar.xz.part006.gz",
+      "bytes": 440153,
+      "sha256": "9c17dd68884281e6ebde94b3f7c756920503c9baf69d7ecc1f06c0147fdb7e61",
+      "git_blob": "b63914dc1cc3c4beb0f9f8a2867f7d5ccea62ffc",
+      "segment_bytes": 440000,
+      "segment_sha256": "46e4973c035691a5fe5de9320235f86dd8d125eca2d6837df880c8dec4c33b20"
+    },
+    {
+      "name": "native-evidence.tar.xz.part007.gz",
+      "bytes": 440153,
+      "sha256": "d29ff295a4c422289a2141054750d16a41c4cb871bc88172dc519b9ec98cff04",
+      "git_blob": "dcf4b667bc2260c779f22f28664c1ad960191ad4",
+      "segment_bytes": 440000,
+      "segment_sha256": "691680e8deba8cef3ac1d3f2dbcb8080d4d911c9790cfc751a84b94cd82068af"
+    },
+    {
+      "name": "native-evidence.tar.xz.part008.gz",
+      "bytes": 440153,
+      "sha256": "ad35001c9a9cee8b4b1ae6dadd40003cc4c76b2ffd46b1739a8909d97cb7d2b0",
+      "git_blob": "f1d4539a6897688376cce5fc18b7e2e2c4b4ef7d",
+      "segment_bytes": 440000,
+      "segment_sha256": "7853a2d7b056c6cacc5f5e1cb4300e1a0b26e79758a16d855591c92db07c6c2d"
+    },
+    {
+      "name": "native-evidence.tar.xz.part009.gz",
+      "bytes": 440153,
+      "sha256": "54c2ded387a32389a7189c3c1679b78c6dbc81b803371a656d8e134ab4970a89",
+      "git_blob": "e75e143a399296dba5a4067199743ac5e0a7c60e",
+      "segment_bytes": 440000,
+      "segment_sha256": "b7ffe3567ab83463535a951a1f193614b3721db684a90dec3028c97f542df746"
+    },
+    {
+      "name": "native-evidence.tar.xz.part010.gz",
+      "bytes": 256166,
+      "sha256": "9a4d1a6c294b261cc1cbae275683fb93655d3b5ba911b83c9ee9340cfb605645",
+      "git_blob": "0f3e74de49abcb23ccafcd11aca2f9ca93134798",
+      "segment_bytes": 256068,
+      "segment_sha256": "5a471bb60cb1230bdc8a8ec4448a23b4fbfb6b24894c75f9a91123df6a681cbb"
+    }
+  ],
+  "files": [
+    {
+      "path": "round3_ci/18a_vodozemac_fixed_inputs.manifest.json",
+      "bytes": 2419,
+      "sha256": "459a1a50baf8d6e8ad041b107bf5e6c8231f5cb8b3192e420cc366b6a365d4e9",
+      "git_blob": "b327e26bdd6aa0b4e45268932528b7951f6bdbb1",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/18b_vodozemac_graph_guards.manifest.json",
+      "bytes": 2725,
+      "sha256": "f0f35233d5d398975a2d398b375ff353b93eebb6071db0aef7718a8164e917b2",
+      "git_blob": "2ae1a8f8fff75a9f88bfb9f950b0493bac7bd0b5",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/18c_vodozemac_native_proposal.manifest.json",
+      "bytes": 8456,
+      "sha256": "b1d938914e4f14686f3f9e6ab88c7ca832768cb47271606bb68d1f0a5742a0d9",
+      "git_blob": "524ca9b92e4676a2bdaa54ed233cbb69efdf9363",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/21_vodozemac_existing_version_recipe.manifest.json",
+      "bytes": 9770,
+      "sha256": "eedfcb4b05fee126458d3deda1ba1cc00b56cbbd44a394a3f7236766810f608d",
+      "git_blob": "9296e6da6325cb0445d68a6d3b2b0ff6a542c559",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/units/18a_vodozemac_fixed_inputs/.github/scripts/vodozemac-lock-spec.json",
+      "bytes": 10888,
+      "sha256": "a28a379d5f74195ccfe05e3f5af5b668a8e292be884632036009dcfbc7c5b423",
+      "git_blob": "74376db93a746fbdd359e217e2e38d8d50a8fde1",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/units/18b_vodozemac_graph_guards/.github/scripts/vodozemac_lock_guards.py",
+      "bytes": 8383,
+      "sha256": "495c53994147b90ed09e750f8a660fd4fcad87d71568c18fb91ae48b4bff72af",
+      "git_blob": "976dde7034708c37cb972e494640c9ea53afda33",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/units/18c_vodozemac_native_proposal/.github/scripts/propose_vodozemac_lock.py",
+      "bytes": 21854,
+      "sha256": "a81e0f9a131b2c007ac62730f2df7e7a988492a19eeb569d04c6d9e987e8e256",
+      "git_blob": "d22fb8951844c9c179c1798f10479bf187d52b8d",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/units/18c_vodozemac_native_proposal/.github/scripts/vodozemac_proposal_evidence.py",
+      "bytes": 11911,
+      "sha256": "c70c8ff974b699dcd8f752e51af70ba35d95e2bbbfea828c1e0d67c1a3781b52",
+      "git_blob": "fe870f5cacd731c92b6c9c1a1200b4731485ac79",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/units/18c_vodozemac_native_proposal/.github/workflows/hepta-vodozemac-lock-proposal.yml",
+      "bytes": 3330,
+      "sha256": "8b946be5e2750ff8c2af90b7b0d1b935e0ff87fee97519688dcf02a4dcd29eed",
+      "git_blob": "a27dcc4883cc0f646449d352425bd490e03a9123",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/units/21_vodozemac_existing_version_recipe/.github/scripts/propose_vodozemac_lock.py",
+      "bytes": 22601,
+      "sha256": "2ce96e40ee46c78e3568c720b850a4bef889b7f4eac2e36a4bab5fd9aa68e2c9",
+      "git_blob": "bb3a316145e35f98a2aefbc5c44676181abe5d08",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/units/21_vodozemac_existing_version_recipe/.github/scripts/vodozemac_proposal_evidence.py",
+      "bytes": 12083,
+      "sha256": "547f9fb17a42ce21f7171d0de9b0a0303f63d5c2f47692aa2509e9c4ab575d91",
+      "git_blob": "df92074358560c9d439323054cab12c2d0c9c7f6",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/units/21_vodozemac_existing_version_recipe/.github/workflows/hepta-vodozemac-lock-proposal.yml",
+      "bytes": 3329,
+      "sha256": "7b9c4d7e18c781bbe8ca48b7970444a827c15109448a7e4dc9a64e489d653012",
+      "git_blob": "d86b1809aedf33b8b81abc6a84e79c26003627e4",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_local/LOCAL_PREFLIGHT_REJECTION.json",
+      "bytes": 1011,
+      "sha256": "815674eb006d020ab3101d5284aa45158bcd1eea27ea9c0ae7673e26683fd623",
+      "git_blob": "c9dcbd7893145c6efc83251a4f4e3dece5ae7bc6",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_local/LOCAL_TOOL_VERSION_PROBES.json",
+      "bytes": 945,
+      "sha256": "2e89c405d7f94e277b9997dd6caefb8c99f3e01c99ac991192628c9098b6198e",
+      "git_blob": "dc54be114faa94b9ced936931a555545b483936b",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_local/cargo-plus-original.stderr.log",
+      "bytes": 107,
+      "sha256": "27dadac09acce28d193cf5ae06ed3cb0b8e8e65dd537683621e13e2e42d37f83",
+      "git_blob": "a8b81dbe963fd23da4652009b9fe8a22257dcc12",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_local/cargo-plus-original.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_local/local-pr-snapshot.json",
+      "bytes": 24294,
+      "sha256": "d12196abfbaa052d3c02fe250b9cb3e8f9969cfa54ae84b78ffa394b2914eb37",
+      "git_blob": "7db54745c72980563e5d136dc55ab478fd3fb718",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_local/preflight.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_local/preflight.stdout.log",
+      "bytes": 59,
+      "sha256": "a058bed15641fe8624ee089c172484fd3255357484386959cbfc960e360b71e4",
+      "git_blob": "cf621e9e552b5f431366b4f420c4c0677c0e15a6",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_proposal/OFFLINE_VALIDATION.json",
+      "bytes": 9127,
+      "sha256": "99a2566ead185a3b679c2c2a3c76bd93af244cfc9af606327b7fb09b8472d290",
+      "git_blob": "927addf04300ef88f23ffa10ee921997b628ab14",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_proposal/STAGE3_BINDING_VALIDATION.json",
+      "bytes": 4518,
+      "sha256": "49b7ad32bdf88bf9913bca96ea2526e1d2e27023304e69f29ea9a6de8031f961",
+      "git_blob": "5c8b1f983dc46ce50fdbd7a42e92243868b3cda8",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_proposal/resolver_sources/ORIGINAL_UNLOCK_CLOSURE.json",
+      "bytes": 3075,
+      "sha256": "f1ea39ffbf869dc51bd32e4be07e574cd3f9ad4519e713c20bf1683e495f06aa",
+      "git_blob": "2f121e785c9d418517b96dbb1de2f735722d06c1",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_proposal/resolver_sources/PROST_SAME_VERSION_UPDATE_HYPOTHESIS.json",
+      "bytes": 3258,
+      "sha256": "d621d40b87e9d714ec2ab61ac9b6df026c48c47aa411ce1f86fc8806e9d35fa3",
+      "git_blob": "6ca47f1c14b4203803147fadc5437ee398d8713f",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_proposal/resolver_sources/SOURCE_PROOF.json",
+      "bytes": 2646,
+      "sha256": "5364da1ec042554ec8c7ed1447ad81850bb6ac16abfce32450444811f1574d2d",
+      "git_blob": "98c6fbab9e3c5997f197efb2e11a123a3ecdf936",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_proposal/resolver_sources/cargo-update-help.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_proposal/resolver_sources/cargo-update-help.stdout.log",
+      "bytes": 1433,
+      "sha256": "9beef1f64ddba86e6b0e6e01ca42dd6e82636ac6ca6fd1667b1a8f8b41d5e64a",
+      "git_blob": "995feefaef6a0f9ffea812e47a77d26e16464e89",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_proposal/resolver_sources/cargo-verbose.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_proposal/resolver_sources/cargo-verbose.stdout.log",
+      "bytes": 328,
+      "sha256": "450f506a08839d5c2e4a462240ef00d05903a873721b8db7ed11f053ca59d4d2",
+      "git_blob": "83891c44f3b48a171a037ff39abfbed2a5cddede",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_proposal/resolver_sources/cargo_ops_resolve.rs",
+      "bytes": 42665,
+      "sha256": "72a331bad825127ad326c0fa26cef143388012cde9ad2379d0ad3740e53007f6",
+      "git_blob": "722cefe5713c43834c27762485f88e973f3d01eb",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_proposal/resolver_sources/cargo_registry.rs",
+      "bytes": 44217,
+      "sha256": "5c5265feb28a9aa7efaafaceff9bc8066dcd37c22724fda577d2424119ba19e5",
+      "git_blob": "055b3b63ff3ce0b5b5333737c58210fc562f48f4",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_proposal/resolver_sources/cargo_update.rs",
+      "bytes": 44038,
+      "sha256": "e1a35794446d3c553d760b9fd00da6abbb047e2ac2ba88e737dfb87b08b2b821",
+      "git_blob": "0c47dcb3fdfaa022bb85f6a4e576604f6f7fc1ab",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_proposal/resolver_sources/cargo_version_prefs.rs",
+      "bytes": 10988,
+      "sha256": "dea8c02632b1b0b43187a11648644bac8e033bbc65b02b3a3038178923a2e196",
+      "git_blob": "a8512a5f5e22b29ee6f090c896b0a896f54cbc46",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_proposal/resolver_sources/prost-build-0.14.3/.cargo_vcs_info.json",
+      "bytes": 105,
+      "sha256": "6bfdaf367a6192f40aebf6a5a11c59ba8d39e58c211d2355e7ef74c68bbe0a64",
+      "git_blob": "bf2e7ab8189df2c9453ad8f84f9de359998dea7b",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_proposal/resolver_sources/prost-build-0.14.3/Cargo.toml",
+      "bytes": 2275,
+      "sha256": "0c72963d00bdbd2ff5cbad35a6da3cbd4353eb19c834f69f5e3396e666151986",
+      "git_blob": "172e06d392fee836f1181eae2c4ae569dd28e186",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_proposal/resolver_sources/prost-build-0.14.3/Cargo.toml.orig",
+      "bytes": 1509,
+      "sha256": "f2b1e697f0761a7dabdfab405c46f6d395ba5e6d3357bc9ffcb74a21e60c5718",
+      "git_blob": "270286c3d4b697bcb147b336f65377b40e0759e2",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_proposal/resolver_sources/prost-build-0.14.3/archive.crate",
+      "bytes": 48990,
+      "sha256": "343d3bd7056eda839b03204e68deff7d1b13aba7af2b2fd16890697274262ee7",
+      "git_blob": "50ac0a71b0a0187cd39d381de7b2ce571aa78ee1",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_proposal/resolver_sources/prost-derive-0.14.4/.cargo_vcs_info.json",
+      "bytes": 106,
+      "sha256": "1fe87a8d0a47b1402770759a4a233d505ecfe2f4af1f0b8d7c05f25c46d25248",
+      "git_blob": "36976415e77abe44c712af99c68011f9f88418ee",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_proposal/resolver_sources/prost-derive-0.14.4/Cargo.toml",
+      "bytes": 1376,
+      "sha256": "c4f227909783d7f93ef23f91b47b1699b01a6280320119e4ad3963251ca1f600",
+      "git_blob": "fccf9d270fecfbf57e90dba12001b1758af8f9ef",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_proposal/resolver_sources/prost-derive-0.14.4/Cargo.toml.orig",
+      "bytes": 545,
+      "sha256": "43771716b293f4614d464969619b91148bfdb0d7d95a59352cfe803fd8aef18f",
+      "git_blob": "8ec2a95cc9bac86ea65277b42a322eb611508cb4",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_proposal/resolver_sources/prost-derive-0.14.4/archive.crate",
+      "bytes": 21537,
+      "sha256": "b570b25f7617e43d59005d0990ccb79e950a423952cea19671b7a876da390adf",
+      "git_blob": "59f180e5aa31a19fcebf016502e23c87d9f12572",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_proposal/resolver_sources/resolver_mod.rs",
+      "bytes": 48286,
+      "sha256": "0cf88aee3c7393220e1a64d70cac2730d243ef3696a24fdd378b46444927ba9d",
+      "git_blob": "5539d46a9ea12e785b62a8591fe9a899ce1256af",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_proposal/resolver_sources/tempfile-3.27.0/.cargo_vcs_info.json",
+      "bytes": 94,
+      "sha256": "c1d0ac6a64f468f8f2793dbb4a7d8eaf38bd28b903f4ac6cff5aaee1937e1151",
+      "git_blob": "486a8dd798886c6fbdf656d77b704ce05e00f815",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_proposal/resolver_sources/tempfile-3.27.0/Cargo.toml",
+      "bytes": 2321,
+      "sha256": "4ffd8ce684ce8f34075633101c8e627761387b5e66e5efe95010b0aa1414bf1b",
+      "git_blob": "ac096d6ab497c488faf2cc7df835f574384ce575",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_proposal/resolver_sources/tempfile-3.27.0/Cargo.toml.orig",
+      "bytes": 1450,
+      "sha256": "3b87793ff186ce44438fee17a8c69ca7c3b0c82406e77b35c1c6756517883646",
+      "git_blob": "5ab5c0a169940b4a83b9e25832aea8aab5ec2d39",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_proposal/resolver_sources/tempfile-3.27.0/archive.crate",
+      "bytes": 44780,
+      "sha256": "32497e9a4c7b38532efcdebeef879707aa9f794296a4f0244f6f69e9bc8574bd",
+      "git_blob": "356bbb9b112eda7da632cdf283fdbb292d0036e9",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_proposal/runs/42242535891/ACTUAL_CARGO_GRAPH_DIFF.json",
+      "bytes": 7609,
+      "sha256": "514db06fbb1242f979bf4dd11b7e662b12c7f02ac49212350b9e975e9ef479bd",
+      "git_blob": "d624f8879a290f839cf8a0c51c634ab984da4f9c",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_proposal/runs/42242535891/artifact-metadata-api.json",
+      "bytes": 857,
+      "sha256": "380999e32eb6e47e7399f66f7a4c4ef9508b456aca73bd9cef4f5de50e9c149c",
+      "git_blob": "9d037df7e4356ab22665283b5e0e6ad9ca615dec",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_proposal/runs/42242535891/artifact.zip",
+      "bytes": 4913115,
+      "sha256": "7c667068738abf1f10022496f7814b9e0edca34f2a26c43e97adf39e5b5c700f",
+      "git_blob": "4498ea8ab728860b2d066452a2ac8a3d4e9a1cbb",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_proposal/runs/42242535891/job-127976226702.log",
+      "bytes": 1540256,
+      "sha256": "940ae6cf378f0edba68a5eb734fd5fd8c4d7b212bc88ce3c507042538f6bba7d",
+      "git_blob": "4e4a065917aaf64654962c6eda720967ebd6a21e",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_proposal/runs/42242535891/run-metadata-api.json",
+      "bytes": 32432,
+      "sha256": "872e487fa76abaa9b53eb34d2fcf1ee375cbf5f4a3feb11a6f332baf9b1ffd18",
+      "git_blob": "eeebbdda1226bd21014f7ae24c28625f0fe570a2",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/MECHANISM_REVIEW.json",
+      "bytes": 5148,
+      "sha256": "73dc3d7f38804c6f66bbe23ab70dd96c0aeda4f64fafc13fdf9b2b0b04244b17",
+      "git_blob": "d63c8265cf9b898347eb0a966fe989aab0c01161",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/ORIGINAL_JUST_FMT.json",
+      "bytes": 861,
+      "sha256": "fa709e5cb24fb6f68713555594fd7224e9b23aa2010f29716d5f730b42bc8d3d",
+      "git_blob": "5655aa9671c492dfe25abe6202f36e25b8050cea",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/PROPOSAL_VALIDATION.json",
+      "bytes": 5638,
+      "sha256": "e2f8acca8696018f362626c4667d7e3ae5328b6eb7f560096ab0cf4241a253fd",
+      "git_blob": "a57d9b47003cd146037a171cc6ce98f943f72f83",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/build_checkpoint.py",
+      "bytes": 9988,
+      "sha256": "38b1864ff7f4d9c9b2027a8ea2b1af129d948e85456cb277eb4724762001af1b",
+      "git_blob": "7a61fb3acff0dea6d42b0d7f2f1564136e12de32",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/build_proposal.py",
+      "bytes": 2946,
+      "sha256": "91b7290d4b40bbf51854e20c25243fb81ca32ff18da4cf323fc948154986b954",
+      "git_blob": "0367e9accd7c6b28aa3febaae00e2aafcba19ed6",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/check_proposal.py",
+      "bytes": 13056,
+      "sha256": "a6e6a7b36dbae213d64e484a71e58fb2f557654d625614bc52ed41a22cadc15e",
+      "git_blob": "a20ad3e23a3ab242441d77f67024ca4d6074a962",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/codespell.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/codespell.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/evidence/00-original.Cargo.lock",
+      "bytes": 419275,
+      "sha256": "70d1590734ce663b956981e5c3e7253c6b712039ca5e11e090487a371fbece7b",
+      "git_blob": "e774ae5331457117f576e44f16643ccd44684af4",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/evidence/RESULT.json",
+      "bytes": 10849,
+      "sha256": "e644a7c7d65581b32e9215cf011ff3f41791c976fc20164b62a1590f14d39cc0",
+      "git_blob": "922271c9738ab9cb4baff6e0ad7f308243b63002",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/evidence/cargo-version.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/evidence/cargo-version.stdout.log",
+      "bytes": 328,
+      "sha256": "450f506a08839d5c2e4a462240ef00d05903a873721b8db7ed11f053ca59d4d2",
+      "git_blob": "83891c44f3b48a171a037ff39abfbed2a5cddede",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/evidence/cycle-1-step-1-vodozemac.Cargo.lock",
+      "bytes": 419311,
+      "sha256": "6679cc74a9b169f0c4b603938292d1d590ca7b32d05dae9116ba7b848f8fdc47",
+      "git_blob": "4a26ecfb24f41a0ff231bee24e4b541f25ea1527",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/evidence/cycle-1-step-1-vodozemac.graph-delta.json",
+      "bytes": 7609,
+      "sha256": "514db06fbb1242f979bf4dd11b7e662b12c7f02ac49212350b9e975e9ef479bd",
+      "git_blob": "d624f8879a290f839cf8a0c51c634ab984da4f9c",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/evidence/cycle-1-step-1-vodozemac.patch",
+      "bytes": 1505,
+      "sha256": "9545fc52a6868885a8f25c3004b70bda350ca4f98025eaa9ecbe94103931ba25",
+      "git_blob": "af339b2818aa8eb974720c083fdf830e5617866f",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/evidence/cycle-1-step-1-vodozemac.stderr.log",
+      "bytes": 525,
+      "sha256": "a201ed19c0835f9a577ee7ee502f4450a13741d391552b90e0fd2d647ab4ce51",
+      "git_blob": "1b64840d4fbc1b18b015cd8bb28e1ff815480325",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/evidence/cycle-1-step-1-vodozemac.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/evidence/cycle-1-step-2-itertools.Cargo.lock",
+      "bytes": 419311,
+      "sha256": "0b8543adfd72860919403e6951106b666019587fb06a665acad2baba140e9d12",
+      "git_blob": "0e6b9a6973380f0c5131e6d1ce321e487994c37c",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/evidence/cycle-1-step-2-itertools.graph-delta.json",
+      "bytes": 2205,
+      "sha256": "4c206e1f0aff51bcd6d81b67ab743cd602a2ee113078ea72f86eb90ef588acac",
+      "git_blob": "d24249cf9220af24eff985789a579cff6e11b1e1",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/evidence/cycle-1-step-2-itertools.patch",
+      "bytes": 487,
+      "sha256": "e5fbb189593c33497e1a62fec824f1d4296558e45db0612728294c4ddbebdeff",
+      "git_blob": "d273413ee5bbe75a48d047352180dff67ecdf1f7",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/evidence/cycle-1-step-2-itertools.stderr.log",
+      "bytes": 100,
+      "sha256": "615b9e619365512b0154a6350d472d15c5407e89fc0e12710e967d66d1249eb6",
+      "git_blob": "e5a6b63134329a14441805b15343486953218dce",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/evidence/cycle-1-step-2-itertools.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/evidence/cycle-1-step-3-getrandom.Cargo.lock",
+      "bytes": 419311,
+      "sha256": "df62d73836673ec7cfb69d8f232cb81be610cea94e8ce95f81d41235f4a3317f",
+      "git_blob": "4807d7da16d576a6f34830ff1039e3224808c7b4",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/evidence/cycle-1-step-3-getrandom.graph-delta.json",
+      "bytes": 1019,
+      "sha256": "71733eac053c7e582c8539bfe47880f6e91f6476f1a720c9763d2885a684dc97",
+      "git_blob": "8e645800f446d39953f4349d58703ba3248d877c",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/evidence/cycle-1-step-3-getrandom.patch",
+      "bytes": 287,
+      "sha256": "d1f221673c0b6103b65e297963ce4732064292458c23b2021b373b3f6d4e16b2",
+      "git_blob": "ce3f5aab0a2eea1eef8495775c19bbd0fb9dbae4",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/evidence/cycle-1-step-3-getrandom.stderr.log",
+      "bytes": 100,
+      "sha256": "617e8a5c4404d3d24cf8e6e7559fc791d9a5690ea393a4a68421338612ae03d1",
+      "git_blob": "9917d98238f10984f16e07f48929e1d2e21a1e71",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/evidence/cycle-1-step-3-getrandom.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/evidence/cycle-2-step-1-vodozemac.Cargo.lock",
+      "bytes": 419311,
+      "sha256": "6679cc74a9b169f0c4b603938292d1d590ca7b32d05dae9116ba7b848f8fdc47",
+      "git_blob": "4a26ecfb24f41a0ff231bee24e4b541f25ea1527",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/evidence/cycle-2-step-1-vodozemac.graph-delta.json",
+      "bytes": 3170,
+      "sha256": "38b82cd8fa243ddab4ef211a3c86a5e99ac98e981b5f18ed666752c66bdced67",
+      "git_blob": "734ef18fc32d09a173f2ae084eb9a0f9272f5707",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/evidence/cycle-2-step-1-vodozemac.patch",
+      "bytes": 721,
+      "sha256": "df5f0fb50292399ef5de62f805913dd84797172d37a0182364fae32b8b4eea61",
+      "git_blob": "13710d48ad6535be7b7e88663e03bbd738af19f9",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/evidence/cycle-2-step-1-vodozemac.stderr.log",
+      "bytes": 100,
+      "sha256": "617e8a5c4404d3d24cf8e6e7559fc791d9a5690ea393a4a68421338612ae03d1",
+      "git_blob": "9917d98238f10984f16e07f48929e1d2e21a1e71",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/evidence/cycle-2-step-1-vodozemac.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/evidence/cycle-2-step-2-itertools.Cargo.lock",
+      "bytes": 419311,
+      "sha256": "0b8543adfd72860919403e6951106b666019587fb06a665acad2baba140e9d12",
+      "git_blob": "0e6b9a6973380f0c5131e6d1ce321e487994c37c",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/evidence/cycle-2-step-2-itertools.graph-delta.json",
+      "bytes": 2205,
+      "sha256": "4c206e1f0aff51bcd6d81b67ab743cd602a2ee113078ea72f86eb90ef588acac",
+      "git_blob": "d24249cf9220af24eff985789a579cff6e11b1e1",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/evidence/cycle-2-step-2-itertools.patch",
+      "bytes": 487,
+      "sha256": "e5fbb189593c33497e1a62fec824f1d4296558e45db0612728294c4ddbebdeff",
+      "git_blob": "d273413ee5bbe75a48d047352180dff67ecdf1f7",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/evidence/cycle-2-step-2-itertools.stderr.log",
+      "bytes": 100,
+      "sha256": "615b9e619365512b0154a6350d472d15c5407e89fc0e12710e967d66d1249eb6",
+      "git_blob": "e5a6b63134329a14441805b15343486953218dce",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/evidence/cycle-2-step-2-itertools.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/evidence/cycle-2-step-3-getrandom.Cargo.lock",
+      "bytes": 419311,
+      "sha256": "df62d73836673ec7cfb69d8f232cb81be610cea94e8ce95f81d41235f4a3317f",
+      "git_blob": "4807d7da16d576a6f34830ff1039e3224808c7b4",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/evidence/cycle-2-step-3-getrandom.graph-delta.json",
+      "bytes": 1019,
+      "sha256": "71733eac053c7e582c8539bfe47880f6e91f6476f1a720c9763d2885a684dc97",
+      "git_blob": "8e645800f446d39953f4349d58703ba3248d877c",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/evidence/cycle-2-step-3-getrandom.patch",
+      "bytes": 287,
+      "sha256": "d1f221673c0b6103b65e297963ce4732064292458c23b2021b373b3f6d4e16b2",
+      "git_blob": "ce3f5aab0a2eea1eef8495775c19bbd0fb9dbae4",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/evidence/cycle-2-step-3-getrandom.stderr.log",
+      "bytes": 100,
+      "sha256": "617e8a5c4404d3d24cf8e6e7559fc791d9a5690ea393a4a68421338612ae03d1",
+      "git_blob": "9917d98238f10984f16e07f48929e1d2e21a1e71",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/evidence/cycle-2-step-3-getrandom.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/evidence/rustc-version.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/evidence/rustc-version.stdout.log",
+      "bytes": 196,
+      "sha256": "f64c55ed9f210d80a9b248206104a47175faf5ec94a093e4ad132549209089fc",
+      "git_blob": "4b0852244672d9611e81367e960345736b255b8c",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/finalize_proposal.py",
+      "bytes": 7730,
+      "sha256": "45ee8f61960013e76a720a6748b1ba4b1f770db8b19335093d73ad117815c43d",
+      "git_blob": "84cf300d7a7913dbc42446dcad24da4792f7f7ae",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/just-fmt.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/just-fmt.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/prettier.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/prettier.stdout.log",
+      "bytes": 66,
+      "sha256": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20",
+      "git_blob": "4aa0d16e7a0ff5c16269bf45771cebe89cc2e81d",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/repair.patch",
+      "bytes": 3822,
+      "sha256": "71e856fc3cd22daf5bd5970d9e724cb69eb059ab436bbd1ab30066be1152f4cd",
+      "git_blob": "90644a767fcc954cafb104085245e401ae3f0c29",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/ruff-check.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/ruff-check.stdout.log",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "git_blob": "1f5f344d054fae10f39140fb7199c99321d9190a",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/ruff-format.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/ruff-format.stdout.log",
+      "bytes": 26,
+      "sha256": "3bc53bf3e981a98a34a852e175bf9b77af841edea74fca595d9aedcbaf9a4938",
+      "git_blob": "983e5b7d3b8260cd7b6465688368178dddd7e316",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/run_local_recipe.py",
+      "bytes": 7870,
+      "sha256": "fb8529ce5d09a33a6e4da40cc3ad428d7d40b0860eae78a9c52a58148adf7fb3",
+      "git_blob": "5d08432cc45919bfd10568327cd7ba7244d7a0f1",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/vodozemac_recipe_experiment/run_original_fmt.py",
+      "bytes": 2116,
+      "sha256": "f7ae30eedce782f3e994fa25f1dff6d0fd8d818dbc2d8e9d375a6cfbc2ff04ca",
+      "git_blob": "06925483af6dacb5b73474cd92f4e610c9fb6b0a",
+      "original_mode": "0644"
+    }
+  ]
+}
