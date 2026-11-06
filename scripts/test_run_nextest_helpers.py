@@ -43,6 +43,7 @@ class RuntimeHelperTests(unittest.TestCase):
         self.executable.chmod(0o700)
         self.target = self.owner["targets"][0]
         self.expected = {(self.owner["id"], "fixture-helper"): self.target}
+        self.declared_helpers = copy.deepcopy(RUNNER.RUNTIME_TEST_HELPERS)
         helper_map = patch.dict(
             RUNNER.RUNTIME_TEST_HELPERS,
             {"consumer": (("helper-owner", "fixture-helper"),)},
@@ -90,6 +91,39 @@ class RuntimeHelperTests(unittest.TestCase):
                 args, self.metadata, environment={} if environment is None else environment,
             )
         return env, build
+
+    def test_exec_server_receives_repo_bwrap_for_scoped_and_workspace_runs(self):
+        consumer = self.package("codex-exec-server", [])
+        owner = self.package("codex-bwrap", ["bwrap"])
+        windows = self.package("codex-windows-sandbox", [
+            "codex-command-runner", "codex-windows-sandbox-setup",
+        ])
+        packages = [consumer, owner, windows]
+        self.metadata = {
+            "workspace_root": str(self.root),
+            "workspace_members": [package["id"] for package in packages],
+            "workspace_default_members": [consumer["id"]],
+            "packages": packages,
+        }
+        existing = {
+            f"CARGO_BIN_EXE_{name}": str(self.executable)
+            for name in ("codex-command-runner", "codex-windows-sandbox-setup")
+        }
+        output = self.output(self.receipt(
+            package_id=owner["id"], target=owner["targets"][0],
+        ))
+        with patch.dict(RUNNER.RUNTIME_TEST_HELPERS, self.declared_helpers, clear=True):
+            for arguments in (["-p", "codex-exec-server", "--locked"], ["--workspace", "--locked"]):
+                with self.subTest(arguments=arguments):
+                    env, build = self.prepare(arguments, output=output, environment=existing)
+                    self.assertEqual(env, {**existing, "CARGO_BIN_EXE_bwrap": str(self.executable)})
+                    build.assert_called_once()
+                    command = build.call_args.args[0]
+                    self.assertIn(owner["id"], command)
+                    self.assertEqual(
+                        [command[index + 1] for index, value in enumerate(command) if value == "--bin"],
+                        ["bwrap"],
+                    )
 
     def test_exact_artifact_path_is_exposed_without_changing_test_arguments(self):
         args = ["-p", "consumer", "--locked", "--offline", "--retries", "0", "--", "--exact"]

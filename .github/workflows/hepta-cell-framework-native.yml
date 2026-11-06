@@ -46,11 +46,11 @@ jobs:
               -p codex-model-provider-info -p codex-shell-escalation
               -p codex-linux-sandbox -p codex-hepta-memory
               -p codex-exec-server -p codex-hepta-supervisor
-              -p codex-hepta-memory-extension
+              -p codex-hepta-memory-extension -p codex-network-proxy
           - owner: core
-            packages: -p codex-core -p codex-mcp -p core_test_support
+            packages: -p codex-core -p codex-mcp -p core_test_support -p codex-external-agent-migration
           - owner: app-server
-            packages: -p codex-app-server -p codex-app-server-client
+            packages: -p codex-app-server -p codex-app-server-client -p codex-cli
     steps:
       - name: Check out the exact source commit
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd

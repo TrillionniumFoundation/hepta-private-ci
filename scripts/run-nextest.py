@@ -42,6 +42,7 @@ RUNTIME_TEST_HELPERS = {
         ("codex-windows-sandbox", "codex-windows-sandbox-setup"),
     ),
     "codex-exec-server": (
+        ("codex-bwrap", "bwrap"),
         ("codex-windows-sandbox", "codex-command-runner"),
         ("codex-windows-sandbox", "codex-windows-sandbox-setup"),
     ),
