@@ -1,0 +1,135 @@
+{
+  "id": "ndu-learned-stateful-v1-20261106",
+  "status": "freeze_before_confirmation; finite simulated experiment only",
+  "purpose": "Unknown joint likelihood and state-changing paid control; classical plug-in DP, not a new RL algorithm",
+  "worlds": [
+    {
+      "name": "restoring_weak",
+      "effect": "restoring",
+      "signal": 0.6
+    },
+    {
+      "name": "restoring_strong",
+      "effect": "restoring",
+      "signal": 0.9
+    },
+    {
+      "name": "damaging_weak",
+      "effect": "damaging",
+      "signal": 0.6
+    },
+    {
+      "name": "damaging_strong",
+      "effect": "damaging",
+      "signal": 0.9
+    }
+  ],
+  "calibration_seeds": [
+    117,
+    431
+  ],
+  "row_sample_counts": [
+    16,
+    256,
+    8192
+  ],
+  "sampling": "Nested prefixes of one maximum-size bank per world and seed; eight labeled reset rows; all maximum-size data actually collected and charged",
+  "calibration_cost": {
+    "launch": 0.005,
+    "label": 0.003,
+    "state_reset": 0.002,
+    "per_simulated_time": 0.001
+  },
+  "estimator": {
+    "method": "unrestricted multinomial row estimate",
+    "pseudocount": 0.5,
+    "support_size": 12,
+    "rows": 8
+  },
+  "deployment": {
+    "prior_h1": 0.5,
+    "initial_z": 0,
+    "max_steps": 2,
+    "deadlines": [
+      0,
+      1,
+      4
+    ],
+    "launch_fees": [
+      0.025,
+      0.3
+    ],
+    "time_price": 0.02,
+    "quality_by_state": [
+      0.55,
+      1.0
+    ]
+  },
+  "completion": "Joint (label,duration,next_state); completed failures apply next_state; label -1 is failure",
+  "cancellation": "All integer caps from one to remaining deadline are legal. A duration greater than cap yields only timeout,cap,current_state; transition occurs atomically on completion, so timeout leaves state unchanged",
+  "accounting": "Each launched intervention pays its fee once, including failure and timeout; consumed simulated duration is charged once; no unobserved completion label or next_state is disclosed",
+  "policies": [
+    "prior_stop",
+    "myopic",
+    "plugin_dp",
+    "no_duration",
+    "no_state",
+    "known_oracle"
+  ],
+  "policy_meanings": {
+    "plugin_dp": "Same-paid-data exact finite belief planning: proposed method and classical planning baseline are the same policy",
+    "myopic": "Same-data one-step VOI with replanning",
+    "no_duration": "Coarsen posterior likelihood over completed durations but retain consumed time and next_state",
+    "no_state": "Retain observations but plan future value as if current state persisted; actual newly observed state used at next decision",
+    "known_oracle": "True-law diagnostic only; excluded from deployable gate and acquisition cost comparisons"
+  },
+  "confirmation": {
+    "episodes_per_world": 4096,
+    "seeds": [
+      9011,
+      9013,
+      9017,
+      9019
+    ],
+    "paired": "Same H and independent action/state/step uniform array shared across frozen policies; no selection using confirmation",
+    "costs": "Every policy execution is charged its realized launches and duration, plus one label and state reset; sharing random numbers gives no free query"
+  },
+  "statistics": {
+    "total_alpha": 0.05,
+    "kernel_alpha": 0.025,
+    "confirmation_alpha": 0.025,
+    "kernel_family_size": 24,
+    "comparisons_per_cell": 4,
+    "confirmation_family_size": 720,
+    "ci": "One-sided Hoeffding union bound over 144*4 paired policy contrasts and 144 absolute candidate utilities; no optional stopping",
+    "tv": "Weissman row TV bound plus exact deterministic smoothing-mixture bound; union across all 8*24 rows; vacuous bounds retained"
+  },
+  "endpoints": [
+    "exact true utility and fitted utility",
+    "known-law diagnostic regret",
+    "uniform kernel TV error and bound event",
+    "candidate-minus-baseline fitted-value certificate",
+    "paired confirmation mean and confidence lower bound",
+    "quality, launches, failures, timeouts, cost and simulated time",
+    "full realized calibration and confirmation acquisition spend",
+    "amortized lifecycle utility and break-even deployment count"
+  ],
+  "amortization": {
+    "primary_N_deploy": 1000,
+    "secondary_N_deploy": 10000,
+    "primary_training_cost": "Full maximum-size calibration bank actually collected for the world and seed, including unused prefixes; prefix-only expense reported separately as counterfactual",
+    "candidate_validation_cost": "Candidate confirmation receipts; global audit also sums every distinct experiment/policy execution",
+    "comparison": "Same-bank baseline shares the entire calibration expense; STOP baseline has zero acquisition cost. Incremental cost is subtracted before claiming lifecycle improvement",
+    "gate": "Per-cell positive-net-evidence requires absolute lifecycle LCB>0 and lifecycle paired LCB>0 against STOP, myopic, no_duration and no_state at primary N; boundary cells may correctly show ties. There is no aggregate scaling or new-RL gate, because the identical same-data DP is the method and this is a simulator."
+  },
+  "prohibited": [
+    "retuning world or cost parameters after seeing any confirmation",
+    "choosing calibration seed or sample size on confirmation",
+    "calling simulated duration hardware wall time",
+    "calling simulator accounting real provider expenditure",
+    "claiming delta-PAC identification or new RL novelty from this Bayes experiment"
+  ],
+  "runtime": "Hardware perf_counter measured for implementation performance only; not a utility price or LLM execution",
+  "failure_rule": "Retain every negative outcome and inconclusive certificate; parameter changes require a new protocol and untouched new bank",
+  "calibration_seed_derivation": "100000*zero_based_world_index + listed_seed; NumPy default_rng"
+}
