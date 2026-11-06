@@ -19,6 +19,8 @@ mod diagnostics;
 pub(crate) use diagnostics::PtyIoDiagnostics;
 #[cfg(test)]
 use diagnostics::ReaderEvent;
+#[cfg(test)]
+use diagnostics::WriterEvent;
 
 pub(crate) enum StdinCloseBehavior {
     SendEof,
@@ -74,6 +76,8 @@ impl PtyIo {
         let fd = self.fd;
         #[cfg(test)]
         let diagnostics = self.diagnostics;
+        #[cfg(test)]
+        let writer_diagnostics = Arc::clone(&diagnostics);
         let reader = Arc::clone(&fd);
         let reader_handle = tokio::spawn(async move {
             let mut buf = [0u8; 8_192];
@@ -128,11 +132,30 @@ impl PtyIo {
             }
         });
         let writer_handle = tokio::spawn(async move {
+            #[cfg(test)]
+            writer_diagnostics.observe_writer(WriterEvent::WaitingForMessage);
             while let Some(bytes) = writer_rx.recv().await {
-                if write_all(&fd, &bytes).await.is_err() {
+                #[cfg(test)]
+                writer_diagnostics.observe_writer(WriterEvent::MessageReceived(bytes.len()));
+                if write_all(
+                    &fd,
+                    &bytes,
+                    #[cfg(test)]
+                    &writer_diagnostics,
+                )
+                .await
+                .is_err()
+                {
                     return;
                 }
+                #[cfg(test)]
+                {
+                    writer_diagnostics.observe_writer(WriterEvent::MessageComplete);
+                    writer_diagnostics.observe_writer(WriterEvent::WaitingForMessage);
+                }
             }
+            #[cfg(test)]
+            writer_diagnostics.observe_writer(WriterEvent::QueueClosed);
             match stdin_close {
                 StdinCloseBehavior::SendEof => {
                     // Preserve portable-pty's newline + current VEOF on stdin close,
@@ -141,29 +164,81 @@ impl PtyIo {
                     if unsafe { libc::tcgetattr(fd.get_ref().as_raw_fd(), termios.as_mut_ptr()) }
                         == 0
                     {
-                        let eof = unsafe { termios.assume_init() }.c_cc[libc::VEOF];
+                        let termios = unsafe { termios.assume_init() };
+                        let eof = termios.c_cc[libc::VEOF];
+                        #[cfg(test)]
+                        writer_diagnostics.observe_writer(WriterEvent::Termios {
+                            canonical: termios.c_lflag & libc::ICANON != 0,
+                            eof,
+                        });
                         if eof != 0 {
-                            let _ = write_all(&fd, &[b'\n', eof]).await;
+                            #[cfg(test)]
+                            writer_diagnostics.observe_writer(WriterEvent::EofStarted);
+                            let result = write_all(
+                                &fd,
+                                &[b'\n', eof],
+                                #[cfg(test)]
+                                &writer_diagnostics,
+                            )
+                            .await;
+                            #[cfg(test)]
+                            writer_diagnostics.observe_writer(WriterEvent::EofResult(&result));
+                            let _ = result;
+                        } else {
+                            #[cfg(test)]
+                            writer_diagnostics.observe_writer(WriterEvent::EofDisabled);
                         }
+                    } else {
+                        #[cfg(test)]
+                        writer_diagnostics.observe_writer(WriterEvent::TermiosFailed(
+                            &io::Error::last_os_error(),
+                        ));
                     }
                 }
-                StdinCloseBehavior::NoEof => {}
+                StdinCloseBehavior::NoEof => {
+                    #[cfg(test)]
+                    writer_diagnostics.observe_writer(WriterEvent::NoEofRequested);
+                }
             }
+            #[cfg(test)]
+            writer_diagnostics.observe_writer(WriterEvent::Finished);
         });
         (reader_handle, writer_handle)
     }
 }
 
-async fn write_all(fd: &AsyncFd<File>, mut bytes: &[u8]) -> io::Result<()> {
+async fn write_all(
+    fd: &AsyncFd<File>,
+    mut bytes: &[u8],
+    #[cfg(test)] diagnostics: &PtyIoDiagnostics,
+) -> io::Result<()> {
     while !bytes.is_empty() {
+        #[cfg(test)]
+        diagnostics.observe_writer(WriterEvent::WaitingForWrite);
         match fd
             .async_io(Interest::WRITABLE, |mut file| file.write(bytes))
             .await
         {
-            Ok(0) => return Err(io::ErrorKind::WriteZero.into()),
-            Ok(count) => bytes = &bytes[count..],
-            Err(err) if err.kind() == io::ErrorKind::Interrupted => continue,
-            Err(err) => return Err(err),
+            Ok(0) => {
+                #[cfg(test)]
+                diagnostics.observe_writer(WriterEvent::Failed(&io::ErrorKind::WriteZero.into()));
+                return Err(io::ErrorKind::WriteZero.into());
+            }
+            Ok(count) => {
+                #[cfg(test)]
+                diagnostics.observe_writer(WriterEvent::Written(count));
+                bytes = &bytes[count..];
+            }
+            Err(err) if err.kind() == io::ErrorKind::Interrupted => {
+                #[cfg(test)]
+                diagnostics.observe_writer(WriterEvent::Interrupted(&err));
+                continue;
+            }
+            Err(err) => {
+                #[cfg(test)]
+                diagnostics.observe_writer(WriterEvent::Failed(&err));
+                return Err(err);
+            }
         }
     }
     Ok(())

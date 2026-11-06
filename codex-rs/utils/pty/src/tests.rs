@@ -972,7 +972,14 @@ time.sleep(10)
         )
         .await?;
         let (session, mut output_rx, exit_rx) = combine_spawned_output(spawned);
-        let child_pid = wait_for_marker_pid(&mut output_rx, marker, /*timeout_ms*/ 2_000).await?;
+        let child_pid = wait_for_marker_pid(&mut output_rx, marker, /*timeout_ms*/ 2_000)
+            .await
+            .inspect_err(|_| {
+                eprintln!(
+                    "PTY detached shutdown: phase=pid_marker io_snapshot={}",
+                    session.pty_io_diagnostic_snapshot(),
+                );
+            })?;
         let writer = session.writer_sender();
         writer.send(vec![b'x'; 1024 * 1024]).await?;
         writer.send(b"pending".to_vec()).await?;
@@ -983,7 +990,13 @@ time.sleep(10)
             "__codex_input_ready__",
             /*timeout_ms*/ 2_000,
         )
-        .await?;
+        .await
+        .inspect_err(|_| {
+            eprintln!(
+                "PTY detached shutdown: phase=input_ready io_snapshot={}",
+                session.pty_io_diagnostic_snapshot(),
+            );
+        })?;
         assert_eq!(writer.capacity(), writer.max_capacity() - 1);
         drop(writer);
         let session = match shutdown {
@@ -1284,6 +1297,10 @@ print('__complete__', flush=True)
         session.exit_code(),
         output.len(),
     );
+    eprintln!(
+        "PTY close stdin: io_snapshot={}",
+        session.pty_io_diagnostic_snapshot(),
+    );
     assert_eq!(
         (code, String::from_utf8_lossy(&output).trim()),
         (0, "__complete__")
@@ -1536,6 +1553,10 @@ async fn pty_preserving_inherited_fds_keeps_python_repl_running() -> anyhow::Res
         readiness.is_ok(),
         session.has_exited(),
         session.exit_code(),
+    );
+    eprintln!(
+        "PTY preserved-fd REPL: io_snapshot={}",
+        session.pty_io_diagnostic_snapshot(),
     );
     let mut output = readiness?;
     let marker = "__codex_preserved_py_pid:";

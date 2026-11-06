@@ -20,6 +20,27 @@ pub(super) enum ReaderEvent<'a> {
     Failed(&'a io::Error),
 }
 
+pub(super) enum WriterEvent<'a> {
+    WaitingForMessage,
+    MessageReceived(usize),
+    WaitingForWrite,
+    Written(usize),
+    Interrupted(&'a io::Error),
+    Failed(&'a io::Error),
+    MessageComplete,
+    QueueClosed,
+    Termios {
+        canonical: bool,
+        eof: libc::cc_t,
+    },
+    TermiosFailed(&'a io::Error),
+    EofStarted,
+    EofResult(&'a io::Result<()>),
+    EofDisabled,
+    NoEofRequested,
+    Finished,
+}
+
 pub(crate) struct PtyIoDiagnostics {
     fd: Weak<AsyncFd<File>>,
     read_calls: AtomicU64,
@@ -28,6 +49,17 @@ pub(crate) struct PtyIoDiagnostics {
     last_read: AtomicU64,
     terminal_error: AtomicU64,
     wait_state: AtomicU8,
+    writer_messages: AtomicU64,
+    writer_requested_bytes: AtomicU64,
+    writer_completed_messages: AtomicU64,
+    written_bytes: AtomicU64,
+    write_waits: AtomicU64,
+    last_write: AtomicU64,
+    last_write_bytes: AtomicU64,
+    writer_error: AtomicU64,
+    writer_state: AtomicU8,
+    termios: AtomicU64,
+    eof_state: AtomicU8,
 }
 
 impl PtyIoDiagnostics {
@@ -40,6 +72,17 @@ impl PtyIoDiagnostics {
             last_read: AtomicU64::default(),
             terminal_error: AtomicU64::default(),
             wait_state: AtomicU8::default(),
+            writer_messages: AtomicU64::default(),
+            writer_requested_bytes: AtomicU64::default(),
+            writer_completed_messages: AtomicU64::default(),
+            written_bytes: AtomicU64::default(),
+            write_waits: AtomicU64::default(),
+            last_write: AtomicU64::default(),
+            last_write_bytes: AtomicU64::default(),
+            writer_error: AtomicU64::default(),
+            writer_state: AtomicU8::default(),
+            termios: AtomicU64::default(),
+            eof_state: AtomicU8::default(),
         }
     }
 
@@ -80,6 +123,66 @@ impl PtyIoDiagnostics {
         }
     }
 
+    pub(super) fn observe_writer(&self, event: WriterEvent<'_>) {
+        match event {
+            WriterEvent::WaitingForMessage => {
+                self.writer_state.store(/*val*/ 1, Ordering::Relaxed);
+            }
+            WriterEvent::MessageReceived(count) => {
+                self.writer_messages.fetch_add(/*val*/ 1, Ordering::Relaxed);
+                self.writer_requested_bytes
+                    .fetch_add(count as u64, Ordering::Relaxed);
+                self.writer_state.store(/*val*/ 2, Ordering::Relaxed);
+            }
+            WriterEvent::WaitingForWrite => {
+                // Counts awaited async writes, not individual write syscalls.
+                self.write_waits.fetch_add(/*val*/ 1, Ordering::Relaxed);
+                self.writer_state.store(/*val*/ 3, Ordering::Relaxed);
+            }
+            WriterEvent::Written(count) => {
+                // Includes the final newline and VEOF when they are written.
+                self.written_bytes.fetch_add(count as u64, Ordering::Relaxed);
+                self.last_write_bytes.store(count as u64, Ordering::Relaxed);
+                self.last_write.store(1_u64 << 32, Ordering::Relaxed);
+            }
+            WriterEvent::Interrupted(error) => {
+                self.last_write.store(encode_error(error), Ordering::Relaxed);
+            }
+            WriterEvent::Failed(error) => {
+                self.last_write.store(encode_error(error), Ordering::Relaxed);
+                self.writer_error
+                    .store(encode_error(error), Ordering::Relaxed);
+                self.writer_state.store(/*val*/ 7, Ordering::Relaxed);
+            }
+            WriterEvent::MessageComplete => {
+                self.writer_completed_messages
+                    .fetch_add(/*val*/ 1, Ordering::Relaxed);
+                self.writer_state.store(/*val*/ 4, Ordering::Relaxed);
+            }
+            WriterEvent::QueueClosed => {
+                self.writer_state.store(/*val*/ 5, Ordering::Relaxed);
+            }
+            WriterEvent::Termios { canonical, eof } => {
+                self.termios.store(
+                    (1_u64 << 32) | (u64::from(canonical) << 8) | u64::from(eof),
+                    Ordering::Relaxed,
+                );
+            }
+            WriterEvent::TermiosFailed(error) => {
+                self.termios.store(encode_error(error), Ordering::Relaxed);
+                self.eof_state.store(/*val*/ 5, Ordering::Relaxed);
+            }
+            WriterEvent::EofStarted => self.eof_state.store(/*val*/ 1, Ordering::Relaxed),
+            WriterEvent::EofResult(result) => {
+                let state = if result.is_ok() { 2 } else { 3 };
+                self.eof_state.store(state, Ordering::Relaxed);
+            }
+            WriterEvent::EofDisabled => self.eof_state.store(/*val*/ 4, Ordering::Relaxed),
+            WriterEvent::NoEofRequested => self.eof_state.store(/*val*/ 6, Ordering::Relaxed),
+            WriterEvent::Finished => self.writer_state.store(/*val*/ 6, Ordering::Relaxed),
+        }
+    }
+
     pub(crate) fn snapshot(&self) -> String {
         // These independent observations do not form an atomic protocol state.
         let wait_state = match self.wait_state.load(Ordering::Relaxed) {
@@ -90,6 +193,39 @@ impl PtyIoDiagnostics {
             4 => "eof",
             5 => "read_error",
             _ => "unknown",
+        };
+        let writer_state = match self.writer_state.load(Ordering::Relaxed) {
+            0 => "not_started",
+            1 => "waiting_for_message",
+            2 => "message_received",
+            3 => "waiting_for_write",
+            4 => "message_complete",
+            5 => "queue_closed",
+            6 => "finished",
+            7 => "write_error",
+            _ => "unknown",
+        };
+        let eof_state = match self.eof_state.load(Ordering::Relaxed) {
+            0 => "not_attempted",
+            1 => "writing",
+            2 => "written",
+            3 => "write_error",
+            4 => "veof_disabled",
+            5 => "termios_error",
+            6 => "not_requested",
+            _ => "unknown",
+        };
+        let termios = self.termios.load(Ordering::Relaxed);
+        let termios = if termios >> 32 == 1 {
+            format!("icanon={} veof={}", (termios >> 8) & 1, termios & 255)
+        } else {
+            describe_result(termios)
+        };
+        let last_write = self.last_write.load(Ordering::Relaxed);
+        let last_write = if last_write >> 32 == 1 {
+            format!("ok({})", self.last_write_bytes.load(Ordering::Relaxed))
+        } else {
+            describe_result(last_write)
         };
         let descriptor = match self.fd.upgrade() {
             Some(fd) => {
@@ -116,12 +252,18 @@ impl PtyIoDiagnostics {
             None => "descriptor_released".to_string(),
         };
         format!(
-            "state={wait_state} read_calls={} read_bytes={} discarded_bytes={} last_read={} terminal_error={} {descriptor}",
+            "state={wait_state} read_calls={} read_bytes={} discarded_bytes={} last_read={} terminal_error={} {descriptor} writer_state={writer_state} writer_messages={} writer_requested_bytes={} writer_completed_messages={} written_bytes={} write_waits={} last_write={last_write} writer_error={} termios=({termios}) eof_state={eof_state}",
             self.read_calls.load(Ordering::Relaxed),
             self.read_bytes.load(Ordering::Relaxed),
             self.discarded_bytes.load(Ordering::Relaxed),
             describe_result(self.last_read.load(Ordering::Relaxed)),
             describe_result(self.terminal_error.load(Ordering::Relaxed)),
+            self.writer_messages.load(Ordering::Relaxed),
+            self.writer_requested_bytes.load(Ordering::Relaxed),
+            self.writer_completed_messages.load(Ordering::Relaxed),
+            self.written_bytes.load(Ordering::Relaxed),
+            self.write_waits.load(Ordering::Relaxed),
+            describe_result(self.writer_error.load(Ordering::Relaxed)),
         )
     }
 }
