@@ -705,19 +705,19 @@ call_pattern = '(?:\.\s*|RegisteredWriter\s*::\s*)human_text\s*\('
 id = "root_registered_human_text_admission"
 symbol = "DeploymentFinalUseIssuer::registered_writer_human_text"
 definition_path = "codex-rs/hepta-agentd/src/deployment_text_human.rs"
-definition_markers = ["pub(crate) fn registered_writer_human_text(", "self.lease.is_none()", "registration.with_live(leases", "self.retained_writer_authorization(registration)? != *proof", "Some(request.human)"]
+definition_markers = ["pub(crate) fn registered_writer_human_text(", "self.lease.is_none()", "self.with_issuer_writer_readback(registration, leases,", "self.retained_writer_authorization(registration)? != *proof", "Some(request.human)"]
 product_callers = ["codex-rs/hepta-agentd/src/authority_host_writer.rs"]
 caller_markers = ["registered_writer_human_text", "&self.registration", "&self.leases", "&self.proof"]
 call_pattern = '(?:\.\s*|DeploymentFinalUseIssuer\s*::\s*)registered_writer_human_text\s*\('
 
 [[boundary]]
 id = "root_human_text_same_issuer_cas"
-symbol = "DeploymentFinalUseIssuer::text_until"
+symbol = "DeploymentFinalUseIssuer::text_until_checked"
 definition_path = "codex-rs/hepta-agentd/src/deployment_text.rs"
-definition_markers = ["fn text_until(", "human: Option<&TextHumanBinding>", "retained.human_binding.as_ref() != human", "human_binding: human.cloned()", ".compare_and_set(STATE_OWNER, &state, &next)"]
+definition_markers = ["fn text_until_checked(", "human: Option<&TextHumanBinding>", "retained.human_binding.as_ref() != human", "human_binding: human.cloned()", ".compare_and_set(STATE_OWNER, &state, &next)"]
 product_callers = ["codex-rs/hepta-agentd/src/deployment_text_human.rs"]
-caller_markers = ["registration.with_live(leases", "self.retained_writer_authorization(registration)? != *proof", "Some(request.human)"]
-call_pattern = '(?:\.\s*|DeploymentFinalUseIssuer\s*::\s*)text_until\s*\('
+caller_markers = ["self.with_issuer_writer_readback(registration, leases,", "self.retained_writer_authorization(registration)? != *proof", "Some(request.human)"]
+call_pattern = '(?:\.\s*|DeploymentFinalUseIssuer\s*::\s*)text_until_checked\s*\('
 
 [[boundary]]
 id = "root_retained_human_text_lookup"
