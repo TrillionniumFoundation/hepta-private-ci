@@ -1,0 +1,246 @@
+{
+  "schema": "post-audit-execution-update-v2-initial-independent-review-v1",
+  "reviewer": "format_finish",
+  "reviewed_report": {
+    "path": "second-post-audit-documents/POST_AUDIT_EXECUTION_UPDATE_V2.zh-CN.md",
+    "bytes": 14708,
+    "git_blob": "1b5b9b985d72495b681e423b3e0f99cf2427260a",
+    "sha256": "7c38f7455564bfffb17d1518eea2221acd74d2ccf1eb0aa2bf499ef85994a855"
+  },
+  "decision": "TWO_REPORT_WORDING_CORRECTIONS_REQUIRED; NO_PRODUCT_OR_BLOCKER_TRANSITION_GRANTED",
+  "findings": [
+    {
+      "id": "R1",
+      "section": "3. Intel v3失败证据",
+      "severity": "report-evidence-scope",
+      "original_text": "原完整job日志、BEP、compact、源码清单和1,002个log/XML均保留。",
+      "issue": "BEP is a credential-sanitized / opaque-payload-omitted derived representation, not raw full BEP. The current sentence does not preserve that scope explicitly.",
+      "required_change": "State derived BEP, raw BEP not retained, and three omitted opaque payloads; retain every original product failure and collector complete=false.",
+      "evidence": {
+        "path": "b21-collector-v3-native/README.zh-CN.md",
+        "machine_path": "b21-collector-v3-native/verification.stdout.json",
+        "json_selector": "retention.raw_BEP_not_retained",
+        "value": true
+      }
+    },
+    {
+      "id": "R2",
+      "section": "4. 环境恢复",
+      "severity": "report-denominator-and-action-type",
+      "original_text": "它们是新的实际读取，不能称为旧返回重现。",
+      "issue": "The 340 new actual tool returns include 62 materialization responses, 277 successful full GETs, and 1 failed GET; they are not all reads.",
+      "required_change": "Use 恢复后的新实际工具返回 and preserve the 62/277/1 breakdown and the non-reconstruction of 231 lost historical raw returns.",
+      "evidence": {
+        "path": "b21-collector-v3-native-delivery/registration-receipts.manifest.json",
+        "actual_tool_return_count": 340,
+        "actual_new_materialization_returns": 62,
+        "actual_successful_full_GET_returns": 277,
+        "actual_failed_GET_returns": 1
+      }
+    }
+  ],
+  "resolved_questions": [
+    {
+      "id": "Q1",
+      "topic": "B21 290 audit paths",
+      "result": "Confirmed exactly 288 payload paths + actual registry13a9df + actual self receipt6ae1c1; no missing or duplicated path.",
+      "proof": {
+        "payload": 288,
+        "registry": 1,
+        "registry_self_receipt": 1,
+        "plan_exact_map_equal": true,
+        "registry_git_blob": "13a9df668b2744f620bd16ef7d08d6b8fcd107a5",
+        "self_receipt_git_blob": "6ae1c121ce6cd0e6dcaac2e02e41be90e2540d57"
+      }
+    }
+  ],
+  "accepted_current_scope": [
+    "All 23 IDs and literal original exit conditions equal the old ledger; current ledger exact blob ea5ad333 remains the published C1/C2 leaf.",
+    "Sixteen CLOSED_SCOPED, six OPEN, one SCIENTIFIC_HOLD; no new closure transition or product qualification.",
+    "Actual #4936 source/tree/five ordered parents/target/merge match the original publication records.",
+    "230 paths over first parent, 1561 changed files/102 commits against target, and #4797 1335/96 are kept as separate denominators.",
+    "Actual #4931 dual-lock and223 source acceptance is scoped to integration input; old standalone greens do not transfer.",
+    "B21 501 attempts,438 summaries,605 console targets and Rust case counts are distinct; Core retry failures and XML digest limits preserved.",
+    "Source84cc original Intel failure is not reassigned to PTY source8075 or the combined source2d1137.",
+    "07:32 blocking API has three queued jobs; the separate07:37 return has Codespell success and scope/blob queued, to be appended without rewriting history.",
+    "Concurrent50 PR increment and38 updated PRs are not presented as a new whole-repository census or independent scientific acceptance."
+  ],
+  "source_proof": {
+    "reviewed_report": {
+      "bytes": 14708,
+      "git_blob": "1b5b9b985d72495b681e423b3e0f99cf2427260a",
+      "sha256": "7c38f7455564bfffb17d1518eea2221acd74d2ccf1eb0aa2bf499ef85994a855"
+    },
+    "original23_ID_and_literal_exit_exact_equal": true,
+    "ledger_counts": {
+      "CLOSED_SCOPED": 16,
+      "OPEN": 6,
+      "SCIENTIFIC_HOLD": 1
+    },
+    "ledger_declared_counts": {
+      "CLOSED_SCOPED": 16,
+      "OPEN": 6,
+      "SCIENTIFIC_HOLD": 1
+    },
+    "source_identities": [
+      {
+        "path": "documents/continuation-blocker-progress-v8.json",
+        "bytes": 346643,
+        "git_blob": "ea5ad333eacf2f49326a8f80a39e94ad771d818d",
+        "sha256": "cb390154687f42331719202edeafb49f6a735479d3ebe1d0754f74363f71c25a"
+      },
+      {
+        "path": "old/continuation-blocker-progress-v7.json",
+        "bytes": 111721,
+        "git_blob": "081fbfb2fe2c1a2eee35b43258512fd721be6d29",
+        "sha256": "64bf918279cdd67c182f85df62016ba1542b207b57b5c35edac7afa042d50e52"
+      },
+      {
+        "path": "integration-publication/pr.actual.original.json",
+        "bytes": 49445,
+        "git_blob": "57264ce6b186fa85aa1ed9d610dcae27d3732a5d",
+        "sha256": "56ff69a5b1a1d4b5272e5c59db515ec6b1b6465a7b8c448bf034f1bedc75f850"
+      },
+      {
+        "path": "integration-publication/commit.actual.original.json",
+        "bytes": 6907,
+        "git_blob": "8acf98e55b9463a54db5096cc0321f30a4941e68",
+        "sha256": "096221db6cb4c75916a8d98f542f6c5b82aaf269c7f38c7d14831ba83ece356c"
+      },
+      {
+        "path": "integration-publication/merge.actual.original.json",
+        "bytes": 6729,
+        "git_blob": "c1d0974bb4bfed0962b5c38559d7bbce305e9160",
+        "sha256": "2ac24d05c9a4b540d5a0873304ec8c84c3ff7074779248a76e710576b8ed8a7d"
+      },
+      {
+        "path": "integration-publication/ref.actual.original.json",
+        "bytes": 1879,
+        "git_blob": "c02df46f077009ab8f305450199ea7d2498a7d2d",
+        "sha256": "3f527b0c344fb7f57dcd4956a8d98a72e1e34ea47a4d7e302bc5cdfad048110e"
+      },
+      {
+        "path": "integration-publication/primary-pr4797.current.original.json",
+        "bytes": 157309,
+        "git_blob": "2fae069e1120fc9e6f57477b1b08eda96d3ed662",
+        "sha256": "b0f28f99ea61c8fdec2e2aae078a7b4aac2ee291cf2b04e2401bdeb4e4e27e22"
+      },
+      {
+        "path": "integration-publication/publication-verified.json",
+        "bytes": 1317,
+        "git_blob": "a6763588a164204e0f9a7ed413d752a0336be52d",
+        "sha256": "dfbfe67a19044908caab32e2cb7c8264be8b30e8874c1cd74f603b8eb53c91a0"
+      },
+      {
+        "path": "integration-candidate/product-composition.json",
+        "bytes": 152399,
+        "git_blob": "ac48bfb4960ba1f26e60f97112edbce14af9783d",
+        "sha256": "7914e83ee7566985542c9da6a6945d668bc5d747417f936b27fc6c99d6d713a4"
+      },
+      {
+        "path": "integration-composition-independent-review/verification.stdout.json",
+        "bytes": 11534,
+        "git_blob": "545a94c559cba1b051a91d0113881bc23dfe88bf",
+        "sha256": "d9b8dc456643bcc25c097be3e469a6625bedbf09b3d7f56e51f12722973c9f40"
+      },
+      {
+        "path": "integration-composition-independent-delivery/post-publication-ADDENDUM.json",
+        "bytes": 4012,
+        "git_blob": "43810c7883bc901be37c22f5088461c0f8b3d5e8",
+        "sha256": "b0c28f87979508d5d9ecad158f2ac9be8af4e787f49db4378f24407712d4bcaa"
+      },
+      {
+        "path": "pin-utils-proposal-native/verification-02/VERIFICATION.json",
+        "bytes": 6979,
+        "git_blob": "29a56064370dc9ed372dbe5436d9120cbc293288",
+        "sha256": "26e3d6389bb0aa8e469db68c0751ea65bd2956357c0d4fbf75a33a6c1ecef441"
+      },
+      {
+        "path": "pin-utils-proposal-native/delivery/registry.actual.json",
+        "bytes": 69210,
+        "git_blob": "fb3f784db53498bd698c20718e52c91fa0a56742",
+        "sha256": "68c4a3a20c56582744a5f6c382ef03c354211d6094f03c573766c3c499903e9d"
+      },
+      {
+        "path": "pin-utils-product-artifact-independent-20261106/REVIEW.json",
+        "bytes": 18824,
+        "git_blob": "6e4b893e481623a1c56520b05550438e502131a9",
+        "sha256": "42da66745d44159d3b8236f37efbdb548736fc476241280a6c872a2f51c56707"
+      },
+      {
+        "path": "b21-collector-v3-native/README.zh-CN.md",
+        "bytes": 7548,
+        "git_blob": "99a140fee9e90af6aeb77363c7d82be94fca5d12",
+        "sha256": "8a9000d727f609b649657c1016600b76a3a56c7945c31e6c7ae137b72c9a3eab"
+      },
+      {
+        "path": "b21-collector-v3-native/verification.stdout.json",
+        "bytes": 16908,
+        "git_blob": "9b27c21d1be5b60e03ea1457a84c53fa477f5701",
+        "sha256": "4d6c51be532d1042f12fd997591b7855807dcc05e454950c5b3375a8f87a3317"
+      },
+      {
+        "path": "b21-collector-v3-native-delivery/registry.actual.json",
+        "bytes": 349440,
+        "git_blob": "13a9df668b2744f620bd16ef7d08d6b8fcd107a5",
+        "sha256": "7e83802c4b23597178c03947cde5f1d709f0db0c1aef196228597ea403b1465b"
+      },
+      {
+        "path": "b21-collector-v3-native-delivery/registration-receipts.manifest.json",
+        "bytes": 15995,
+        "git_blob": "530a81fcb4e8a2e41307b56782f068690a4bafa7",
+        "sha256": "36c60c4c5164b97319cb127020b802bccefc4b0276775aa76f1b5774a4db0d86"
+      },
+      {
+        "path": "b21-collector-v3-native-delivery/rebuild.identity-proof.json",
+        "bytes": 782,
+        "git_blob": "3d43728a0af0f5c40bfee361d5951ebe33d483dc",
+        "sha256": "7d5040b5655932a03dbeec2f9ee4b52c02d7cbf1d112e741d7c908d37e14ca10"
+      },
+      {
+        "path": "concurrent-pr-increment-20261106T0706/INCREMENT.zh-CN.md",
+        "bytes": 6040,
+        "git_blob": "f7537720c468daa65e59dec0fcc3d42bc300be1c",
+        "sha256": "cf50a5a0bc5e879652a14edb7aec34f1e217fefcdcba1b82c8e9bfb0bda95761"
+      },
+      {
+        "path": "integration-ci-review/blocking-42180997764-jobs-second.original.json",
+        "bytes": 7178,
+        "git_blob": "1dc3d8810f7c2ed940517a1b675d856d69f8d7d5",
+        "sha256": "07f644e45c8b60ae2ad1010c50d6de907d2fc177e2526a258adb33a09c952a6c"
+      },
+      {
+        "path": "integration-ci-review/blocking-42180997764-jobs-third.original.json",
+        "bytes": 10728,
+        "git_blob": "582e096e2dd232119163a253f62ddf3a09dd81c5",
+        "sha256": "9012b375a3ce96aa835067a3cb4c151e3556cc1d1ac00cc29f3ef7b56221b13f"
+      }
+    ],
+    "actions": "Read-only facts and existing receipts; no native/toolchain/CI/API query/ref/PR operation."
+  },
+  "additional_proof": {
+    "B21_290_exact_parts": {
+      "payload": 288,
+      "registry": 1,
+      "registry_self_receipt": 1,
+      "plan_exact_map_equal": true,
+      "registry_git_blob": "13a9df668b2744f620bd16ef7d08d6b8fcd107a5",
+      "self_receipt_git_blob": "6ae1c121ce6cd0e6dcaac2e02e41be90e2540d57"
+    },
+    "B21_plan": {
+      "bytes": 72210,
+      "git_blob": "22cad0e2edfcfa1c91c1d60e76f0d4eb2f61bf06",
+      "sha256": "310d056d365ec9207fbca614ce5362de7be4a6bb2945fa62abff52b77f6f2eab"
+    },
+    "ledger_current_bytes_equal_to_C1_and_C2_tree_leaf": {
+      "bytes": 346643,
+      "git_blob": "ea5ad333eacf2f49326a8f80a39e94ad771d818d",
+      "sha256": "cb390154687f42331719202edeafb49f6a735479d3ebe1d0754f74363f71c25a"
+    }
+  },
+  "followup": "Root accepted both wording corrections and will supply final report bytes; this initial review is retained unchanged and does not accept an unseen final revision.",
+  "excluded": [
+    "No CI/API refresh, native/toolchain execution, large evidence package replay, ref/PR edit, or report edit.",
+    "Pending relative-link target publication/index checks belong to root and are not claimed complete here."
+  ]
+}

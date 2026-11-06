@@ -1,0 +1,148 @@
+{
+  "actual_source_postimages": {
+    ".github/scripts/pin-utils-backport-spec.json": {
+      "bytes": 13898,
+      "git_blob": "4fc7c29d3eeee3c5e35be1e486e066a61f94c360",
+      "sha256": "e2424bab56dda6028939a5e3df94b6866afa68aa0a9a423c6fb01660c30796d5"
+    },
+    ".github/scripts/pin_utils_proposal_evidence.py": {
+      "bytes": 10178,
+      "git_blob": "da511726fca23d6a97519f71a67572b0c1ef7c11",
+      "sha256": "290fc8a1b0eecdcb88b49d1b91a6045da3ee3f432149b5cf34cbb78fb90649f7"
+    },
+    ".github/scripts/propose_pin_utils_backport.py": {
+      "bytes": 24242,
+      "git_blob": "f37126e662fceaa32c02aa364d35af79a0eb92f6",
+      "sha256": "c07f6e1b6ad39e82b7c207ecb2ad1c1cadd926f0b79e8d15d8ac4c35bfc8e8e1"
+    },
+    ".github/workflows/hepta-pin-utils-backport-proposal.yml": {
+      "bytes": 3288,
+      "git_blob": "0d73b96c9bfc9753b1d7e1edee6cf1e54c355c38",
+      "sha256": "5473560ee791ade999ed7d014c3d554c924d9e4e916804e4ae0d82f48b2e758a"
+    }
+  },
+  "all_four_postimages_independently_fresh_full_GET_byte_equal": true,
+  "author_scope": {
+    "frozen_bytes": 16152728,
+    "frozen_files": 81,
+    "manifest": {
+      "bytes": 18955,
+      "git_blob": "ff53d1ee6721a39930e34cc4e2f9999c7f537814",
+      "sha256": "542d8e7d0a782e5844cded6fd8e7617949e66e4e5737c69455d5fde99597cf05"
+    },
+    "root": "v2/final-review",
+    "source_freeze": {
+      "bytes": 1707,
+      "git_blob": "85a74578352699b2882b764cf4cdde6fd353c495",
+      "sha256": "f3bd2b6aaea414eefa775dde7e9b4cc62ff7b2a4355b9b0499b5dae561630cf3"
+    }
+  },
+  "backport_and_lock_semantics": [
+    "Four official archives remain at aws-smithy-http 0.64.1, aws-smithy-runtime 1.16.0, aws-smithy-types 1.8.1 and loom 0.7.2. Exact archive length/checksum comes from fixed original Cargo.lock. All 212 original regular files are retained except 14 explicitly hashed mechanical edits; licenses remain identical and eight provenance files are added.",
+    "Five AWS Rust postimages match the fixed upstream replacement source. aws-smithy-types Inner::collect is a production path; this review does not classify all changes as test-only.",
+    "Loom uses the scoped std::pin::pin! replacement with private MSRV raised from 1.65 to 1.68. Original futures=[\"pin-utils\"] remains and the former implicit pin-utils feature becomes an explicit empty alias. The actual crate dependency is removed. Workspace Rust remains 1.95.0. Compilation/MSRV acceptance is pending.",
+    "Existing workspace patches and other manifest fields remain; four path patches and four exclusions are the only permitted root manifest changes. Actual workspace member metadata must remain equal.",
+    "Actual cargo +1.95.0 update --workspace is required twice. The complete parsed Cargo graph may only remove the unique pin-utils node/four incoming edges and change the four same-version registry packages to path source identities; every other package field, dependency ID and top-level field must match. Lock bytes must repeat exactly.",
+    "Actual just bazel-lock-update and the unchanged scripts/check-module-bazel-lock.sh are required twice, with repeated MODULE.bazel.lock bytes equal. This proves the original generator/error gate and repeatability only; no fieldwise unchanged guarantee for future non-target MODULE lock fields is claimed.",
+    "The original cargo +1.95.0 deny --locked --all-features check --config deny.toml command runs once. No deny policy, ignores or failure exit is relaxed. Full actual generated before/after files and the final patch still require subsequent artifact review before product integration."
+  ],
+  "base_tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+  "blocking_source_findings_remaining": [],
+  "candidate_tree_computed": "cb7f5eaaadd55c1476a8b695c04c70848c603e85",
+  "decision": "ACCEPT_V2_AS_REVIEW_ARTIFACT_GENERATOR_ONLY",
+  "failure_and_upload_semantics": [
+    "The intentionally observational original baseline Bazel-lock check records its original exit; both later original lock checks are mandatory. Original Cargo/Bazel/deny failures keep their recorded exit and fail generation.",
+    "Final source/output capture failure makes proposal_validated false and fails the generator; any unqualified patch is withheld from the public payload. Collection returns validated independently of safe-for-upload. Final workflow gate requires generation, collection and upload success plus validated=true.",
+    "Before Cargo.toml must match the fixed baseline identity and bytes; after Cargo.toml must be baseline or the unique literal workspace transformation. A patch receives the source syntax exception only after exact successful proposal identity binding. All raw logs and generated locks always retain the full bounded credential/URI scan.",
+    "Only seven exact complete URIs from the fixed MODULE lock receive their original fragment allowance. User-info, query and known-credential checks still precede that allowance. No suffix wildcard is accepted.",
+    "Original log bytes are copied only after the whitelist, regular-file/single-link/size/change checks and privacy gate. Known credential values plus bounded syntax, four percent-decoding layers and ANSI normalization are covered. This is not a guarantee of arbitrary unknown-secret or encoding detection."
+  ],
+  "parent": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+  "primary_source_scope": {
+    "bazelisk_version": "v1.28.1",
+    "cargo_document_conclusion": "--workspace restricts the attempted update, but acceptance still requires the actual produced full graph and repeated lock bytes; no successful new lock is inferred from the documentation.",
+    "cargo_document_original": {
+      "bytes": 7750,
+      "git_blob": "2d6540721f69bd1f232a5ceef8ab91119ed5a99c",
+      "sha256": "409baeb9d99303f8f598bc7e7110e55b2e11c497a91e48caf2dec355ba38cb35"
+    },
+    "cargo_update_document": "https://raw.githubusercontent.com/rust-lang/cargo/rust-1.95.0/src/doc/man/cargo-update.md",
+    "primary_preservation": "Complete tool GET envelopes retained; relevant initialization/download paths reviewed. They are source observations, not native executions.",
+    "setup_bazel_commit": "c5acdfb288317d0b5c0bbd7a396a3dc868bb0f86"
+  },
+  "qualification_limits": [
+    "Only the proposal generator source and offline controls are accepted. No real project lock has yet been generated by this candidate.",
+    "Actual Cargo/Bazel/deny, Rust formatting, crate/product compilation, native tests and runtime acceptance remain NOT_RUN here and must be observed from the ordinary PR workflow.",
+    "A future successful proposal artifact must still be reviewed, including both actual locks, before separate product integration. This review closes no product blocker by itself.",
+    "Old cargo-deny failures, previous v1 URI/cold-start control failures, Windows originals and unrelated blocker evidence remain unchanged."
+  ],
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "resolved_independent_finding": {
+    "finding": "Fixed setup-bazel c5acdfb288317d0b5c0bbd7a396a3dc868bb0f86 installs Bazelisk but does not warm Bazel. Fixed Bazelisk v1.28.1 emits a download notice to stderr before executing the requested Bazel version. Merging streams and taking their first two words rejected a correct cold startup.",
+    "fix": "Only two scripts change: separate the five version stderr streams using the existing metadata mechanism, rename the helper option accurately, and add exactly those five stderr paths to the roster. Workflow/spec and strict version values remain byte-identical.",
+    "fixed_main_blob": "f37126e662fceaa32c02aa364d35af79a0eb92f6",
+    "id": "R1_BAZELISK_COLD_VERSION_STDERR",
+    "old_control": "Candidate v1 unchanged; only the independent fake process wrote a public Downloading stderr notice before bazel 9.3.0 stdout. All five version exits were 0 yet the exact TOOLCHAIN_VERSION_MISMATCH guard failed. This was a synthetic control, not a native Bazel failure.",
+    "old_main_blob": "7f603924fe9cdd09fb6900a37daa214d653c32ce",
+    "revalidation": "New cold-start control passes; incorrect bazel 9.3.1 still fails. Raw stderr remains exact and privacy-gated. Original v1 freeze, full primary GETs and independent failure originals are preserved."
+  },
+  "review_method": [
+    "Read the four proposal sources and the complete author offline verifier. Read fixed baseline workflow/actions/check scripts and relevant fixed upstream Rust replacement contexts. Read the complete final README and all v1-to-v2 source/verifier/document deltas.",
+    "Verified every one of 81 frozen member byte counts, Git blob identities and SHA256 digests, exact member inventory and isolated restored copies.",
+    "Independently fetched all four immutable candidate blobs in full and compared their complete returned contents with the frozen files.",
+    "Ran the reviewed fake-only author verifier from an isolated restored directory; no real Cargo, Bazel, Rust, network command, CI, dispatch or remote ref operation occurred.",
+    "Independently replayed the additive four-file source patch forward and reverse against an index holding all 10582 original leaf identities; independently replayed the two-script v1-to-v2 patch in both directions. write-tree --missing-ok was explicit: untouched original blobs were not all re-downloaded."
+  ],
+  "reviewed_at_utc": "2026-11-06T06:32:28.231748+00:00",
+  "reviewer": "/root/windows_env_finish",
+  "schema": "independent-pin-utils-backport-proposal-review-v2",
+  "source_guard_and_execution": [
+    "The only repository changes are four new proposal-tool files. All 10582 existing leaf identities and modes project exactly to base tree 3982ba56dc5a3f1da0c1de7ea57992f88125c359; new total 10586.",
+    "Normal pull_request only, same repository, fixed integration base ref and SHA, exact event head checkout, sole parent 67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed, clean initial worktree, complete original tree projection and 17 baseline blob pins. This source design requires root publication directly on that parent.",
+    "Read-only repository permission and 30-minute proposal budget remain. The candidate has no automatic commit/ref update or manual dispatch route.",
+    "Exact tool-version assertions remain. Version stdout is now parsed independently while all five raw version stderr files remain in the exact upload roster. Original metadata JSON/stderr separation is unchanged."
+  ],
+  "verification": {
+    "actual_source_GET_receipt": {
+      "bytes": 2058,
+      "git_blob": "b6545129c79148be2d90eea9bc30a6116d6c13de",
+      "sha256": "e6b9c3f011eda177b54e47a41c0959d6f2d13f9608a5af3046299ab746188965"
+    },
+    "author_checks_passed": 109,
+    "author_isolated_replay_exit": 0,
+    "author_stderr_bytes": 0,
+    "author_stdout": {
+      "bytes": 39630,
+      "git_blob": "36ee50c0f413adf14af4aa731b79926b0aa8a658",
+      "sha256": "36c7ef4894b4c2d61465769c32e95861ceb15d8d1d9dd2de2e88f52fb70a45d7"
+    },
+    "author_stdout_and_four_derived_files_equal": true,
+    "extra_scope": "Complete original two locks, seven exact URIs and seven near-mutant refusals, normal ANSI raw stderr acceptance/copy, known-value and encoded-ANSI rejection, unsafe stderr prevents public directory and safe output.",
+    "independent_extra_controls": 22,
+    "independent_result": {
+      "bytes": 9238,
+      "git_blob": "a4e20f639c92e99a1391f7297c5a43509c1706e8",
+      "sha256": "4f971f2a98dc4af9cb65f51cc792c9c191718552cee396dae7b107408b1e6732"
+    },
+    "independent_verifier": {
+      "bytes": 10369,
+      "git_blob": "1b38d177e3b434bad4bd5e4f14783168b7d62b74",
+      "sha256": "9cf0ac08aba23dfaa566c17b0039a83ddcfa557ef0db2588c153b8f48e8af0d6"
+    },
+    "source_patch_result": {
+      "bytes": 4954,
+      "git_blob": "1ebc1a2678e91550b66618ce2c9aa43e6beb8e33",
+      "sha256": "3107308b7d562e08a1b505da859a1e0798597d80a9d98c43154fce69ddd2204c"
+    },
+    "v1_baseline_result": {
+      "bytes": 17892,
+      "git_blob": "9c58e06786459141037508586f2dd05e79333f20",
+      "sha256": "876f008a47d58df8e9d38e8c0b63b4523ffeb87f71b19fa49363fd7a5796cd52"
+    },
+    "v1_cold_failure_result": {
+      "bytes": 2306,
+      "git_blob": "144f8443ca8a1a0466a6559e2a9b3585ffbe7447",
+      "sha256": "6163b26aa1fc77c89481a7c16916ac75462628f69f3dee020e2054f973400953"
+    }
+  }
+}

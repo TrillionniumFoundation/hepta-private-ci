@@ -1,0 +1,953 @@
+branch-tip/20260910-r3-34472033101-r1/integration/final-main-tree-followup-20260907-r1
+2026-11-06T06:41:42.2501349Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/integration/hepta-all-blockers-base-20260907 -> archive/final-branch-tip/20260910-r3-34472033101-r1/integration/hepta-all-blockers-base-20260907
+2026-11-06T06:41:42.2501728Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/integration/hepta-all-gap-closure-20260910-r12 -> archive/final-branch-tip/20260910-r3-34472033101-r1/integration/hepta-all-gap-closure-20260910-r12
+2026-11-06T06:41:42.2502105Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/integration/hepta-all-gap-closure-20260910-r6 -> archive/final-branch-tip/20260910-r3-34472033101-r1/integration/hepta-all-gap-closure-20260910-r6
+2026-11-06T06:41:42.2502478Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/integration/hepta-all-gap-closure-20260910-r7 -> archive/final-branch-tip/20260910-r3-34472033101-r1/integration/hepta-all-gap-closure-20260910-r7
+2026-11-06T06:41:42.2502854Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/integration/hepta-all-gap-closure-20260910-r8 -> archive/final-branch-tip/20260910-r3-34472033101-r1/integration/hepta-all-gap-closure-20260910-r8
+2026-11-06T06:41:42.2503227Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/integration/hepta-all-gap-closure-20260910-r9 -> archive/final-branch-tip/20260910-r3-34472033101-r1/integration/hepta-all-gap-closure-20260910-r9
+2026-11-06T06:41:42.2503721Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/integration/hepta-all-gap-closure-20260910-sealed-r10 -> archive/final-branch-tip/20260910-r3-34472033101-r1/integration/hepta-all-gap-closure-20260910-sealed-r10
+2026-11-06T06:41:42.2504136Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/integration/hepta-all-gap-closure-20260910-sealed-r11 -> archive/final-branch-tip/20260910-r3-34472033101-r1/integration/hepta-all-gap-closure-20260910-sealed-r11
+2026-11-06T06:41:42.2504511Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/integration/hepta-global-gap-closure-20260910 -> archive/final-branch-tip/20260910-r3-34472033101-r1/integration/hepta-global-gap-closure-20260910
+2026-11-06T06:41:42.2504893Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/integration/hepta-global-gap-closure-20260910-r2 -> archive/final-branch-tip/20260910-r3-34472033101-r1/integration/hepta-global-gap-closure-20260910-r2
+2026-11-06T06:41:42.2505281Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/integration/hepta-global-gap-closure-20260910-r4 -> archive/final-branch-tip/20260910-r3-34472033101-r1/integration/hepta-global-gap-closure-20260910-r4
+2026-11-06T06:41:42.2505662Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/integration/hepta-w0-internal-closure-20260908 -> archive/final-branch-tip/20260910-r3-34472033101-r1/integration/hepta-w0-internal-closure-20260908
+2026-11-06T06:41:42.2505973Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/integration/vnext-main-20260811 -> archive/final-branch-tip/20260910-r3-34472033101-r1/integration/vnext-main-20260811
+2026-11-06T06:41:42.2506189Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/main -> archive/final-branch-tip/20260910-r3-34472033101-r1/main
+2026-11-06T06:41:42.2506520Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/ci-failure-diagnostic-20260907 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/ci-failure-diagnostic-20260907
+2026-11-06T06:41:42.2506960Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/exact-head-final-candidate-20260908-r5 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/exact-head-final-candidate-20260908-r5
+2026-11-06T06:41:42.2507392Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/exact-head-final-candidate-20260908-r6 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/exact-head-final-candidate-20260908-r6
+2026-11-06T06:41:42.2507753Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/exact-head-final-candidate-20260908-r7 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/exact-head-final-candidate-20260908-r7
+2026-11-06T06:41:42.2508116Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/exact-head-final-candidate-20260908-r8 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/exact-head-final-candidate-20260908-r8
+2026-11-06T06:41:42.2508483Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/exact-head-final-candidate-20260908-r9 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/exact-head-final-candidate-20260908-r9
+2026-11-06T06:41:42.2508836Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/exact-head-final-object-20260908-r10 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/exact-head-final-object-20260908-r10
+2026-11-06T06:41:42.2509189Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/exact-head-final-result-20260908-r7 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/exact-head-final-result-20260908-r7
+2026-11-06T06:41:42.2509513Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/exact-head-repair-20260908-r1 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/exact-head-repair-20260908-r1
+2026-11-06T06:41:42.2509908Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/exact-head-repair-20260908-r2 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/exact-head-repair-20260908-r2
+2026-11-06T06:41:42.2510230Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/exact-head-repair-20260908-r3 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/exact-head-repair-20260908-r3
+2026-11-06T06:41:42.2510555Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/exact-head-repair-20260908-r4 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/exact-head-repair-20260908-r4
+2026-11-06T06:41:42.2510932Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/exact-head-windows-finalizer-20260909-r10 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/exact-head-windows-finalizer-20260909-r10
+2026-11-06T06:41:42.2511255Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/exact-source-export-20260907 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/exact-source-export-20260907
+2026-11-06T06:41:42.2511629Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/final-all-branches-convergence-20260908 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/final-all-branches-convergence-20260908
+2026-11-06T06:41:42.2512009Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/final-all-branches-convergence-r6-20260908 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/final-all-branches-convergence-r6-20260908
+2026-11-06T06:41:42.2512446Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/final-all-branches-convergence-r7-diagnostic-20260908 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/final-all-branches-convergence-r7-diagnostic-20260908
+2026-11-06T06:41:42.2512790Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/final-blocker-closure-v9-20260908 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/final-blocker-closure-v9-20260908
+2026-11-06T06:41:42.2513249Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/final-main-candidate-source-export-20260908 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/final-main-candidate-source-export-20260908
+2026-11-06T06:41:42.2513583Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/final-main-convergence-20260908 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/final-main-convergence-20260908
+2026-11-06T06:41:42.2513932Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/final-main-convergence-v3-20260908 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/final-main-convergence-v3-20260908
+2026-11-06T06:41:42.2514278Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/final-main-convergence-v8-20260908 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/final-main-convergence-v8-20260908
+2026-11-06T06:41:42.2514611Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/final-main-repair-v10-20260908 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/final-main-repair-v10-20260908
+2026-11-06T06:41:42.2514937Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/final-main-repair-v11-20260908 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/final-main-repair-v11-20260908
+2026-11-06T06:41:42.2515301Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/final-main-repair-v11-matrix-20260908 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/final-main-repair-v11-matrix-20260908
+2026-11-06T06:41:42.2515671Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/final-main-repair-v11-targeted-20260908 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/final-main-repair-v11-targeted-20260908
+2026-11-06T06:41:42.2516052Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/final-main-repair-v12-20260908 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/final-main-repair-v12-20260908
+2026-11-06T06:41:42.2516375Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/final-main-repair-v7-20260908 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/final-main-repair-v7-20260908
+2026-11-06T06:41:42.2516702Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/final-main-repair-v9-20260908 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/final-main-repair-v9-20260908
+2026-11-06T06:41:42.2517073Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/final-main-source-slice-export-20260908 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/final-main-source-slice-export-20260908
+2026-11-06T06:41:42.2517475Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-40-module-audit-20260909-r1 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-40-module-audit-20260909-r1
+2026-11-06T06:41:42.2517861Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-agentd-lint-materializer-20260909-r2 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-agentd-lint-materializer-20260909-r2
+2026-11-06T06:41:42.2518248Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-base-format-shear-diagnostic-20260906 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-base-format-shear-diagnostic-20260906
+2026-11-06T06:41:42.2518606Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-base-format-shear-fix-20260906 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-base-format-shear-fix-20260906
+2026-11-06T06:41:42.2518982Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-contracts-runfiles-fix-20260909-r1 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-contracts-runfiles-fix-20260909-r1
+2026-11-06T06:41:42.2519438Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-convergence-materialize-20260910-r3 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-convergence-materialize-20260910-r3
+2026-11-06T06:41:42.2519791Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-default-main-switch-20260907 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-default-main-switch-20260907
+2026-11-06T06:41:42.2520178Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-exact-source-export-4f08144e-20260906 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-exact-source-export-4f08144e-20260906
+2026-11-06T06:41:42.2520547Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-final-closure-render-20260910-r1 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-final-closure-render-20260910-r1
+2026-11-06T06:41:42.2520941Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-final-convergence-auditor-20260910-r13 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-final-convergence-auditor-20260910-r13
+2026-11-06T06:41:42.2521345Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-final-convergence-controller-20260909-r1 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-final-convergence-controller-20260909-r1
+2026-11-06T06:41:42.2521745Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-final-convergence-controller-20260910-r2 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-final-convergence-controller-20260910-r2
+2026-11-06T06:41:42.2522217Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-final-convergence-controller-20260910-r3 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-final-convergence-controller-20260910-r3
+2026-11-06T06:41:42.2522622Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-final-convergence-controller-20260910-r4 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-final-convergence-controller-20260910-r4
+2026-11-06T06:41:42.2523020Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-final-convergence-controller-20260910-r5 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-final-convergence-controller-20260910-r5
+2026-11-06T06:41:42.2523421Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-final-convergence-controller-20260910-r6 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-final-convergence-controller-20260910-r6
+2026-11-06T06:41:42.2523823Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-final-convergence-controller-20260910-r7 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-final-convergence-controller-20260910-r7
+2026-11-06T06:41:42.2524223Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-final-convergence-controller-20260910-r8 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-final-convergence-controller-20260910-r8
+2026-11-06T06:41:42.2524624Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-final-convergence-controller-20260910-r9 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-final-convergence-controller-20260910-r9
+2026-11-06T06:41:42.2525026Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-final-convergence-finalizer-20260910-r13 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-final-convergence-finalizer-20260910-r13
+2026-11-06T06:41:42.2525499Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-final-convergence-reactor-20260910-r13 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-final-convergence-reactor-20260910-r13
+2026-11-06T06:41:42.2525893Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-final-convergence-repair-20260910-r14 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-final-convergence-repair-20260910-r14
+2026-11-06T06:41:42.2526297Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-final-convergence-review-anchor-20260909 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-final-convergence-review-anchor-20260909
+2026-11-06T06:41:42.2526697Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-final-gap-closure-r2-controller-20260908 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-final-gap-closure-r2-controller-20260908
+2026-11-06T06:41:42.2527057Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-final-remediation-r2-20260910 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-final-remediation-r2-20260910
+2026-11-06T06:41:42.2527484Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-final-remediation-r3-20260910 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-final-remediation-r3-20260910
+2026-11-06T06:41:42.2527838Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-final-remediation-r4-20260910 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-final-remediation-r4-20260910
+2026-11-06T06:41:42.2528199Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-final-remediation-r5-20260910 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-final-remediation-r5-20260910
+2026-11-06T06:41:42.2528639Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-final-remediation-r6-20260910 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-final-remediation-r6-20260910
+2026-11-06T06:41:42.2529010Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-final-remediation-r7-20260910 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-final-remediation-r7-20260910
+2026-11-06T06:41:42.2529386Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-final-remediation-r8-20260910 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-final-remediation-r8-20260910
+2026-11-06T06:41:42.2529755Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-final-remediation-r9-20260910 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-final-remediation-r9-20260910
+2026-11-06T06:41:42.2530173Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-gap-closure-materializer-20260907-r3 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-gap-closure-materializer-20260907-r3
+2026-11-06T06:41:42.2530574Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-gap-closure-orchestrator-20260909-r6 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-gap-closure-orchestrator-20260909-r6
+2026-11-06T06:41:42.2530986Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-gap-closure-orchestrator-20260909-r6b -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-gap-closure-orchestrator-20260909-r6b
+2026-11-06T06:41:42.2531413Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-gap-convergence-controller-20260909-r6 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-gap-convergence-controller-20260909-r6
+2026-11-06T06:41:42.2531858Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-gap-convergence-controller-20260909-r6b -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-gap-convergence-controller-20260909-r6b
+2026-11-06T06:41:42.2532381Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-global-gap-closure-controller-20260910-r1 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-global-gap-closure-controller-20260910-r1
+2026-11-06T06:41:42.2532820Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-global-gap-closure-controller-r12-20260910 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-global-gap-closure-controller-r12-20260910
+2026-11-06T06:41:42.2533225Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-lane-e-ruff-materialize-r1-20260910 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-lane-e-ruff-materialize-r1-20260910
+2026-11-06T06:41:42.2533634Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-lane-f-lock-diagnostic-20260910 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-lane-f-lock-diagnostic-20260910
+2026-11-06T06:41:42.2534047Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-lane-f-lock-diagnostic-r2-20260910 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-lane-f-lock-diagnostic-r2-20260910
+2026-11-06T06:41:42.2534449Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-module-shape-discovery-20260906 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-module-shape-discovery-20260906
+2026-11-06T06:41:42.2534856Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-native-mapping-audit-20260908-r1 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-native-mapping-audit-20260908-r1
+2026-11-06T06:41:42.2535303Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-native-mapping-report-20260908-r1 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-native-mapping-report-20260908-r1
+2026-11-06T06:41:42.2535682Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-phase1-source-closure-20260909-r1 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-phase1-source-closure-20260909-r1
+2026-11-06T06:41:42.2536074Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-r13-latest-owner-controller-20260910 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-r13-latest-owner-controller-20260910
+2026-11-06T06:41:42.2536457Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-r19-fixed-point-controller-20260910 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-r19-fixed-point-controller-20260910
+2026-11-06T06:41:42.2536841Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-r19-lock-diagnostic-trigger-20260910 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-r19-lock-diagnostic-trigger-20260910
+2026-11-06T06:41:42.2537283Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-rules-rust-effective-windows-inspect-20260909-r2 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-rules-rust-effective-windows-inspect-20260909-r2
+2026-11-06T06:41:42.2537798Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-rules-rust-windows-effective-inspect-20260909-r2 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-rules-rust-windows-effective-inspect-20260909-r2
+2026-11-06T06:41:42.2538193Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-rules-rust-windows-inspect-20260909-r1 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-rules-rust-windows-inspect-20260909-r1
+2026-11-06T06:41:42.2538605Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-safe-workflow-blob-20260907 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-safe-workflow-blob-20260907
+2026-11-06T06:41:42.2539278Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-single-main-conflict-audit-20260910-r3 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-single-main-conflict-audit-20260910-r3
+2026-11-06T06:41:42.2539883Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-single-main-convergence-20260910-r1 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-single-main-convergence-20260910-r1
+2026-11-06T06:41:42.2540394Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-single-main-convergence-20260910-r2 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-single-main-convergence-20260910-r2
+2026-11-06T06:41:42.2540780Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-single-main-convergence-20260910-r3 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-single-main-convergence-20260910-r3
+2026-11-06T06:41:42.2541145Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-stale-actions-cleanup-20260906 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-stale-actions-cleanup-20260906
+2026-11-06T06:41:42.2541501Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-w2-w3-materializer-20260909-r1 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-w2-w3-materializer-20260909-r1
+2026-11-06T06:41:42.2541920Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-windows-msvc-link-materializer-20260909-r1 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-windows-msvc-link-materializer-20260909-r1
+2026-11-06T06:41:42.2542416Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-windows-msvc-link-materializer-20260909-r2 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-windows-msvc-link-materializer-20260909-r2
+2026-11-06T06:41:42.2542826Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-windows-msvc-link-materializer-20260909-r3 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-windows-msvc-link-materializer-20260909-r3
+2026-11-06T06:41:42.2543237Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-windows-msvc-link-materializer-20260909-r4 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-windows-msvc-link-materializer-20260909-r4
+2026-11-06T06:41:42.2543651Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-windows-msvc-materializer-fixer-20260909-r1 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-windows-msvc-materializer-fixer-20260909-r1
+2026-11-06T06:41:42.2544145Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-windows-msvc-normalized-identity-materializer-20260909-r7 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-windows-msvc-normalized-identity-materializer-20260909-r7
+2026-11-06T06:41:42.2544607Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-windows-msvc-path-identity-materializer-20260909-r6 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-windows-msvc-path-identity-materializer-20260909-r6
+2026-11-06T06:41:42.2545071Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-windows-msvc-schema-oracle-materializer-20260909-r5 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/hepta-windows-msvc-schema-oracle-materializer-20260909-r5
+2026-11-06T06:41:42.2545467Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/heptabao-http-fallback-diagnostic-20260908 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/heptabao-http-fallback-diagnostic-20260908
+2026-11-06T06:41:42.2545877Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/heptabao-v24-integration-r1-20260909 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/heptabao-v24-integration-r1-20260909
+2026-11-06T06:41:42.2546238Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/heptabao-v24-integration-r2-20260909 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/heptabao-v24-integration-r2-20260909
+2026-11-06T06:41:42.2546567Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/lane-b-fast-repair-20260910-r2 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/lane-b-fast-repair-20260910-r2
+2026-11-06T06:41:42.2546891Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/lane-b-format-fix-20260910-r1 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/lane-b-format-fix-20260910-r1
+2026-11-06T06:41:42.2547241Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/lane-b-hardening-staging-20260910 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/lane-b-hardening-staging-20260910
+2026-11-06T06:41:42.2547671Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/lane-b-hardening-trigger-r2-20260910 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/lane-b-hardening-trigger-r2-20260910
+2026-11-06T06:41:42.2548007Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/lane-b-import-format-20260910-r3 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/lane-b-import-format-20260910-r3
+2026-11-06T06:41:42.2548360Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/lane-b-rustfmt-materialize-20260910 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/lane-b-rustfmt-materialize-20260910
+2026-11-06T06:41:42.2548773Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/lane-b-rustfmt-trigger-20260910 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/lane-b-rustfmt-trigger-20260910
+2026-11-06T06:41:42.2549174Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/lane-e-single-parent-materializer-20260910-r1 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/lane-e-single-parent-materializer-20260910-r1
+2026-11-06T06:41:42.2549542Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/lane-e-single-parent-result-20260910-r1 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/lane-e-single-parent-result-20260910-r1
+2026-11-06T06:41:42.2549894Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/lane-f-final-source-export-20260910 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/lane-f-final-source-export-20260910
+2026-11-06T06:41:42.2550225Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/main-tree-convergence-20260908 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/main-tree-convergence-20260908
+2026-11-06T06:41:42.2550585Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/materialize-agentd-source-20260908-r1 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/materialize-agentd-source-20260908-r1
+2026-11-06T06:41:42.2550951Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/materialize-workspace-lint-20260908-r1 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/materialize-workspace-lint-20260908-r1
+2026-11-06T06:41:42.2551318Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/materialized-agentd-source-20260908-r1 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/materialized-agentd-source-20260908-r1
+2026-11-06T06:41:42.2551634Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/merge-all-branches-20260907 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/merge-all-branches-20260907
+2026-11-06T06:41:42.2552071Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/pr328-stale-queue-cleanup-v1-20260906 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/pr328-stale-queue-cleanup-v1-20260906
+2026-11-06T06:41:42.2552376Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/pr451-finalizer-20260907 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/pr451-finalizer-20260907
+2026-11-06T06:41:42.2552729Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/pr456-followup-publisher-20260907-r1 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/pr456-followup-publisher-20260907-r1
+2026-11-06T06:41:42.2553062Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/pr456-gapfix-result-20260907-r2 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/pr456-gapfix-result-20260907-r2
+2026-11-06T06:41:42.2553383Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/pr456-review-fix-r3-20260907 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/pr456-review-fix-r3-20260907
+2026-11-06T06:41:42.2553696Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/pr456-review-fix-r4-20260907 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/pr456-review-fix-r4-20260907
+2026-11-06T06:41:42.2554027Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/pr459-merge-controller-20260908 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/pr459-merge-controller-20260908
+2026-11-06T06:41:42.2554373Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/pr463-expiry-materializer-20260908 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/pr463-expiry-materializer-20260908
+2026-11-06T06:41:42.2554752Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/r12-build-blockers-r1-20260910 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/r12-build-blockers-r1-20260910
+2026-11-06T06:41:42.2555100Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/r12-lane-a-materializer-20260910 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/r12-lane-a-materializer-20260910
+2026-11-06T06:41:42.2555433Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/r12-lane-b-materializer-20260910 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/r12-lane-b-materializer-20260910
+2026-11-06T06:41:42.2555763Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/r12-lane-e-materializer-20260910 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/r12-lane-e-materializer-20260910
+2026-11-06T06:41:42.2556112Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/r12-lane-merge-diagnostic-20260910 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/r12-lane-merge-diagnostic-20260910
+2026-11-06T06:41:42.2556407Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/schema-probe-20260908 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/schema-probe-20260908
+2026-11-06T06:41:42.2556715Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/source-export-v9-20260908 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/source-export-v9-20260908
+2026-11-06T06:41:42.2557041Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/strict-validation-v9-20260908 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/strict-validation-v9-20260908
+2026-11-06T06:41:42.2557468Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/trillionnium-os-runner-probe-20260906 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/trillionnium-os-runner-probe-20260906
+2026-11-06T06:41:42.2557920Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/trillionnium-os-status-snapshot-20260908 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/trillionnium-os-status-snapshot-20260908
+2026-11-06T06:41:42.2558346Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/trillionnium-os-subject-rebind-controller-20260908 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/trillionnium-os-subject-rebind-controller-20260908
+2026-11-06T06:41:42.2558704Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/windows-linker-diagnostic-20260909-r1 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/windows-linker-diagnostic-20260909-r1
+2026-11-06T06:41:42.2559063Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/windows-linker-diagnostic-20260909-r2 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/windows-linker-diagnostic-20260909-r2
+2026-11-06T06:41:42.2559430Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/windows-linker-diagnostic-20260909-r3 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/windows-linker-diagnostic-20260909-r3
+2026-11-06T06:41:42.2559789Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/windows-linker-diagnostic-20260909-r4 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/windows-linker-diagnostic-20260909-r4
+2026-11-06T06:41:42.2560149Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/windows-linker-diagnostic-20260909-r5 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/windows-linker-diagnostic-20260909-r5
+2026-11-06T06:41:42.2560466Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/ops/world-object-probe-20260906 -> archive/final-branch-tip/20260910-r3-34472033101-r1/ops/world-object-probe-20260906
+2026-11-06T06:41:42.2560922Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/reviewer/ci-governance-simplification-20260908 -> archive/final-branch-tip/20260910-r3-34472033101-r1/reviewer/ci-governance-simplification-20260908
+2026-11-06T06:41:42.2561255Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/tmp/hepta-lane-e-doc-sync-20260910 -> archive/final-branch-tip/20260910-r3-34472033101-r1/tmp/hepta-lane-e-doc-sync-20260910
+2026-11-06T06:41:42.2561617Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/tmp/hepta-lane-e-r5-closed-world-20260910 -> archive/final-branch-tip/20260910-r3-34472033101-r1/tmp/hepta-lane-e-r5-closed-world-20260910
+2026-11-06T06:41:42.2561961Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/tmp/hepta-lane-e-r5-hardening-20260910 -> archive/final-branch-tip/20260910-r3-34472033101-r1/tmp/hepta-lane-e-r5-hardening-20260910
+2026-11-06T06:41:42.2562335Z  * [new tag]               archive/final-branch-tip/20260910-r3-34472033101-r1/tmp/hepta-lane-e-readiness-sync-r4-20260910 -> archive/final-branch-tip/20260910-r3-34472033101-r1/tmp/hepta-lane-e-readiness-sync-r4-20260910
+2026-11-06T06:41:42.2562724Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/archive/hepta-all-gap-closure-pre-abi-2dbd518e -> archive/final-branch-tip/20260910-r4-34478302584-r1/archive/hepta-all-gap-closure-pre-abi-2dbd518e
+2026-11-06T06:41:42.2563124Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/archive/hepta-all-gap-closure-pre-abi-fix-2dbd518 -> archive/final-branch-tip/20260910-r4-34478302584-r1/archive/hepta-all-gap-closure-pre-abi-fix-2dbd518
+2026-11-06T06:41:42.2563513Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/archive/hepta-all-gap-closure-pre-msvc-5c54b747 -> archive/final-branch-tip/20260910-r4-34478302584-r1/archive/hepta-all-gap-closure-pre-msvc-5c54b747
+2026-11-06T06:41:42.2563943Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/archive/hepta-all-gap-closure-pre-target-scope-0b5f77d -> archive/final-branch-tip/20260910-r4-34478302584-r1/archive/hepta-all-gap-closure-pre-target-scope-0b5f77d
+2026-11-06T06:41:42.2564446Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/backup/hepta-all-gap-closure-before-ci-fix-20260908-17c9fef6 -> archive/final-branch-tip/20260910-r4-34478302584-r1/backup/hepta-all-gap-closure-before-ci-fix-20260908-17c9fef6
+2026-11-06T06:41:42.2564880Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/backup/integration-vnext-before-final-20260908-1fdd7eeb -> archive/final-branch-tip/20260910-r4-34478302584-r1/backup/integration-vnext-before-final-20260908-1fdd7eeb
+2026-11-06T06:41:42.2565271Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/backup/lane-e-pre-single-parent-20260910-da2c840 -> archive/final-branch-tip/20260910-r4-34478302584-r1/backup/lane-e-pre-single-parent-20260910-da2c840
+2026-11-06T06:41:42.2565630Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/backup/lane-f-gap-closure-20260910-21c8dc7 -> archive/final-branch-tip/20260910-r4-34478302584-r1/backup/lane-f-gap-closure-20260910-21c8dc7
+2026-11-06T06:41:42.2565992Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/backup/lane-f-gap-closure-20260910-c84b9f7 -> archive/final-branch-tip/20260910-r4-34478302584-r1/backup/lane-f-gap-closure-20260910-c84b9f7
+2026-11-06T06:41:42.2566416Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/backup/main-before-all-branches-34080579194-6c9dd12a8593 -> archive/final-branch-tip/20260910-r4-34478302584-r1/backup/main-before-all-branches-34080579194-6c9dd12a8593
+2026-11-06T06:41:42.2566838Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/backup/main-before-all-branches-34080942614-6c9dd12a8593 -> archive/final-branch-tip/20260910-r4-34478302584-r1/backup/main-before-all-branches-34080942614-6c9dd12a8593
+2026-11-06T06:41:42.2567460Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/backup/main-before-all-branches-34081015792-6c9dd12a8593 -> archive/final-branch-tip/20260910-r4-34478302584-r1/backup/main-before-all-branches-34081015792-6c9dd12a8593
+2026-11-06T06:41:42.2567888Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/backup/main-before-all-branches-34098423957-e31df34dd30d -> archive/final-branch-tip/20260910-r4-34478302584-r1/backup/main-before-all-branches-34098423957-e31df34dd30d
+2026-11-06T06:41:42.2568309Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/backup/main-before-all-branches-34107591795-e31df34dd30d -> archive/final-branch-tip/20260910-r4-34478302584-r1/backup/main-before-all-branches-34107591795-e31df34dd30d
+2026-11-06T06:41:42.2568706Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/backup/main-before-all-branches-6c9dd12a-20260907 -> archive/final-branch-tip/20260910-r4-34478302584-r1/backup/main-before-all-branches-6c9dd12a-20260907
+2026-11-06T06:41:42.2569074Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/backup/main-before-final-20260908-b97b856b -> archive/final-branch-tip/20260910-r4-34478302584-r1/backup/main-before-final-20260908-b97b856b
+2026-11-06T06:41:42.2569441Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/backup/pr451-before-squash-065958b2-20260907 -> archive/final-branch-tip/20260910-r4-34478302584-r1/backup/pr451-before-squash-065958b2-20260907
+2026-11-06T06:41:42.2569803Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/backup/pr451-push-before-11cb0363-20260907 -> archive/final-branch-tip/20260910-r4-34478302584-r1/backup/pr451-push-before-11cb0363-20260907
+2026-11-06T06:41:42.2570129Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/candidate/final-main-v10-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/candidate/final-main-v10-20260908
+2026-11-06T06:41:42.2570527Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/candidate/final-main-v11-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/candidate/final-main-v11-20260908
+2026-11-06T06:41:42.2570851Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/candidate/final-main-v6-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/candidate/final-main-v6-20260908
+2026-11-06T06:41:42.2571233Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/candidate/hepta-all-gap-closure-final-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/candidate/hepta-all-gap-closure-final-20260910
+2026-11-06T06:41:42.2571632Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/candidate/hepta-all-gap-closure-final-r13-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/candidate/hepta-all-gap-closure-final-r13-20260910
+2026-11-06T06:41:42.2571978Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/final-gap-closure-20260907 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/final-gap-closure-20260907
+2026-11-06T06:41:42.2572326Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-all-gap-closure-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-all-gap-closure-20260908
+2026-11-06T06:41:42.2572716Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-all-gap-closure-final-r12-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-all-gap-closure-final-r12-20260910
+2026-11-06T06:41:42.2573038Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-bao-connect-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-bao-connect-20260908
+2026-11-06T06:41:42.2573474Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-blocker-autofix-20260907 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-blocker-autofix-20260907
+2026-11-06T06:41:42.2573813Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-blocker-round2-20260907 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-blocker-round2-20260907
+2026-11-06T06:41:42.2574178Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-final-gap-closure-r2-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-final-gap-closure-r2-20260908
+2026-11-06T06:41:42.2574540Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-final-gap-closure-r3-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-final-gap-closure-r3-20260908
+2026-11-06T06:41:42.2574916Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-final-materializer-v2-20260907 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-final-materializer-v2-20260907
+2026-11-06T06:41:42.2575279Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-gap-closure-full-ci-20260907 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-gap-closure-full-ci-20260907
+2026-11-06T06:41:42.2575674Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-gap-closure-materialized-r3-20260907 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-gap-closure-materialized-r3-20260907
+2026-11-06T06:41:42.2576032Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-lane-b-full-closure-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-lane-b-full-closure-20260910
+2026-11-06T06:41:42.2576390Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-lane-b-gap-closure-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-lane-b-gap-closure-20260910
+2026-11-06T06:41:42.2576864Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-lane-b-r13-repository-closure-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-lane-b-r13-repository-closure-20260910
+2026-11-06T06:41:42.2577257Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-lane-d-final-gap-closure-20260910-r2 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-lane-d-final-gap-closure-20260910-r2
+2026-11-06T06:41:42.2577672Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-lane-d-gap-closure-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-lane-d-gap-closure-20260910
+2026-11-06T06:41:42.2578022Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-lane-e-gap-closure-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-lane-e-gap-closure-20260910
+2026-11-06T06:41:42.2578438Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-lane-e-semantic-holdout-closure-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-lane-e-semantic-holdout-closure-20260910
+2026-11-06T06:41:42.2578867Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-lane-e-semantic-holdout-closure-r2-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-lane-e-semantic-holdout-closure-r2-20260910
+2026-11-06T06:41:42.2579290Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-lane-e-semantic-holdout-closure-r3-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-lane-e-semantic-holdout-closure-r3-20260910
+2026-11-06T06:41:42.2579787Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-lane-e-semantic-holdout-closure-r4-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-lane-e-semantic-holdout-closure-r4-20260910
+2026-11-06T06:41:42.2580161Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-live-organ-composition-20260907 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-live-organ-composition-20260907
+2026-11-06T06:41:42.2580502Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-main-convergence-20260909 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-main-convergence-20260909
+2026-11-06T06:41:42.2580839Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-main-tree-final-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-main-tree-final-20260908
+2026-11-06T06:41:42.2581225Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-native-source-closed-world-20260909 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-native-source-closed-world-20260909
+2026-11-06T06:41:42.2581586Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-objective-admission-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-objective-admission-20260908
+2026-11-06T06:41:42.2581942Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-organ-host-20260907 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-organ-host-20260907
+2026-11-06T06:41:42.2582370Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-paper-external-gap-orchestrator-20260909 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-paper-external-gap-orchestrator-20260909
+2026-11-06T06:41:42.2582751Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-pinned-candidate-read-20260907 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-pinned-candidate-read-20260907
+2026-11-06T06:41:42.2583221Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-private-ci-format-baseline-20260907 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-private-ci-format-baseline-20260907
+2026-11-06T06:41:42.2583598Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-scoped-discovery-cli-20260907 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-scoped-discovery-cli-20260907
+2026-11-06T06:41:42.2584058Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-acl-denial-fixture-preconditions-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-acl-denial-fixture-preconditions-20260906
+2026-11-06T06:41:42.2584508Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-agentd-process-bazel-qualification-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-agentd-process-bazel-qualification-20260906
+2026-11-06T06:41:42.2584925Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-agentd-startup-diagnostics-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-agentd-startup-diagnostics-20260906
+2026-11-06T06:41:42.2585347Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-algorithm-authority-regression-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-algorithm-authority-regression-20260906
+2026-11-06T06:41:42.2585745Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-argument-comment-closure-20260907 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-argument-comment-closure-20260907
+2026-11-06T06:41:42.2586285Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-argument-comment-closure-r2-20260907 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-argument-comment-closure-r2-20260907
+2026-11-06T06:41:42.2586710Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-browser-canonical-shadow-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-browser-canonical-shadow-20260906
+2026-11-06T06:41:42.2587114Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-cart-failure-atomicity-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-cart-failure-atomicity-20260906
+2026-11-06T06:41:42.2587589Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-cognitive-read-integrity-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-cognitive-read-integrity-20260906
+2026-11-06T06:41:42.2588070Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-cognitive-read-owner-projection-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-cognitive-read-owner-projection-20260906
+2026-11-06T06:41:42.2588567Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-cognitive-read-owner-projection-tests-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-cognitive-read-owner-projection-tests-20260906
+2026-11-06T06:41:42.2588966Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-cognitive-store-atomicity-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-cognitive-store-atomicity-20260906
+2026-11-06T06:41:42.2589398Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-cognitive-types-citation-binding-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-cognitive-types-citation-binding-20260906
+2026-11-06T06:41:42.2589875Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-context-candidate-binding-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-context-candidate-binding-20260906
+2026-11-06T06:41:42.2590264Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-context-mandatory-groups-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-context-mandatory-groups-20260906
+2026-11-06T06:41:42.2590682Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-contracts-bazel-qualification-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-contracts-bazel-qualification-20260906
+2026-11-06T06:41:42.2591067Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-control-cart-analysis-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-control-cart-analysis-20260906
+2026-11-06T06:41:42.2591458Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-control-graph-validation-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-control-graph-validation-20260906
+2026-11-06T06:41:42.2591840Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-core-argument-comments-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-core-argument-comments-20260906
+2026-11-06T06:41:42.2592243Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-cross-platform-lint-repair-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-cross-platform-lint-repair-20260906
+2026-11-06T06:41:42.2592623Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-diagnostic-assertions-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-diagnostic-assertions-20260906
+2026-11-06T06:41:42.2593090Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-eval-exact-ess-admission-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-eval-exact-ess-admission-20260906
+2026-11-06T06:41:42.2593485Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-eval-threshold-regression-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-eval-threshold-regression-20260906
+2026-11-06T06:41:42.2593888Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-fleet-allocation-calculator-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-fleet-allocation-calculator-20260906
+2026-11-06T06:41:42.2594273Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-fleet-allocation-model-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-fleet-allocation-model-20260906
+2026-11-06T06:41:42.2594659Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-fleet-allocation-tests-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-fleet-allocation-tests-20260906
+2026-11-06T06:41:42.2595028Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-format-prerequisite-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-format-prerequisite-20260906
+2026-11-06T06:41:42.2595366Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-format-probe-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-format-probe-20260906
+2026-11-06T06:41:42.2595734Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-gap-implementation-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-gap-implementation-20260906
+2026-11-06T06:41:42.2596179Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-hepta-argument-comments-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-hepta-argument-comments-20260906
+2026-11-06T06:41:42.2596578Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-heptabao-ci-doc-precision-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-heptabao-ci-doc-precision-20260906
+2026-11-06T06:41:42.2596970Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-heptabao-secret-boundary-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-heptabao-secret-boundary-20260906
+2026-11-06T06:41:42.2597418Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-implementation-contracts-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-implementation-contracts-20260906
+2026-11-06T06:41:42.2597835Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-intelligence-candidate-bound-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-intelligence-candidate-bound-20260906
+2026-11-06T06:41:42.2598229Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-intuition-candidate-bound-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-intuition-candidate-bound-20260906
+2026-11-06T06:41:42.2598599Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-learning-create-only-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-learning-create-only-20260906
+2026-11-06T06:41:42.2598994Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-learning-create-only-docs-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-learning-create-only-docs-20260906
+2026-11-06T06:41:42.2599467Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-llvm-msvc-header-parser-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-llvm-msvc-header-parser-20260906
+2026-11-06T06:41:42.2599867Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-llvm-source-anchored-patch-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-llvm-source-anchored-patch-20260906
+2026-11-06T06:41:42.2600253Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-matrix-atomic-decisions-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-matrix-atomic-decisions-20260906
+2026-11-06T06:41:42.2600677Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-matrix-deletion-capacity-tests-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-matrix-deletion-capacity-tests-20260906
+2026-11-06T06:41:42.2601087Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-matrix-durable-queue-fences-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-matrix-durable-queue-fences-20260906
+2026-11-06T06:41:42.2601502Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-matrix-gap-adversarial-tests-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-matrix-gap-adversarial-tests-20260906
+2026-11-06T06:41:42.2601915Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-matrix-gap-page-qualification-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-matrix-gap-page-qualification-20260906
+2026-11-06T06:41:42.2602302Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-matrix-hostile-fixtures-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-matrix-hostile-fixtures-20260906
+2026-11-06T06:41:42.2602803Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-matrix-idle-journal-binding-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-matrix-idle-journal-binding-20260906
+2026-11-06T06:41:42.2603196Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-matrix-mention-admission-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-matrix-mention-admission-20260906
+2026-11-06T06:41:42.2603571Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-matrix-recovery-scrub-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-matrix-recovery-scrub-20260906
+2026-11-06T06:41:42.2603997Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-matrix-restart-collision-tests-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-matrix-restart-collision-tests-20260906
+2026-11-06T06:41:42.2604397Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-matrix-sync-decision-tests-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-matrix-sync-decision-tests-20260906
+2026-11-06T06:41:42.2604771Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-matrix-sync-identity-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-matrix-sync-identity-20260906
+2026-11-06T06:41:42.2605131Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-matrix-sync-types-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-matrix-sync-types-20260906
+2026-11-06T06:41:42.2605577Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-matrix-tombstone-fences-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-matrix-tombstone-fences-20260906
+2026-11-06T06:41:42.2605962Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-matrix-tombstone-schema-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-matrix-tombstone-schema-20260906
+2026-11-06T06:41:42.2606409Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-matrix-unchanged-owner-observation-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-matrix-unchanged-owner-observation-20260906
+2026-11-06T06:41:42.2606813Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-matrix-v2-adversarial-tests-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-matrix-v2-adversarial-tests-20260906
+2026-11-06T06:41:42.2607177Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-matrix-v2-composer-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-matrix-v2-composer-20260906
+2026-11-06T06:41:42.2607648Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-matrix-v2-startup-binding-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-matrix-v2-startup-binding-20260906
+2026-11-06T06:41:42.2608039Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-memory-argument-comments-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-memory-argument-comments-20260906
+2026-11-06T06:41:42.2608426Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-memory-lint-prerequisite-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-memory-lint-prerequisite-20260906
+2026-11-06T06:41:42.2608833Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-memory-recovery-fail-closed-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-memory-recovery-fail-closed-20260906
+2026-11-06T06:41:42.2609325Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-mock-capture-error-observation-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-mock-capture-error-observation-20260906
+2026-11-06T06:41:42.2609727Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-native-binding-lint-review-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-native-binding-lint-review-20260906
+2026-11-06T06:41:42.2610129Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-native-fixture-portability-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-native-fixture-portability-20260906
+2026-11-06T06:41:42.2610531Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-native-followup-readiness-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-native-followup-readiness-20260906
+2026-11-06T06:41:42.2610923Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-native-observation-review-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-native-observation-review-20260906
+2026-11-06T06:41:42.2611305Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-native-source-bindings-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-native-source-bindings-20260906
+2026-11-06T06:41:42.2611704Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-native-terminal-failclosed-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-native-terminal-failclosed-20260906
+2026-11-06T06:41:42.2612173Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-native-test-prerequisites-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-native-test-prerequisites-20260906
+2026-11-06T06:41:42.2612583Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-native-watcher-peer-fixtures-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-native-watcher-peer-fixtures-20260906
+2026-11-06T06:41:42.2612930Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-ndu-covariance-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-ndu-covariance-20260906
+2026-11-06T06:41:42.2613303Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-ndu-covariance-tests-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-ndu-covariance-tests-20260906
+2026-11-06T06:41:42.2613667Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-ndu-protocol-path-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-ndu-protocol-path-20260906
+2026-11-06T06:41:42.2614066Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-noncanonical-json-fixtures-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-noncanonical-json-fixtures-20260906
+2026-11-06T06:41:42.2614478Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-objective-effective-forbidden-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-objective-effective-forbidden-20260906
+2026-11-06T06:41:42.2614855Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-objective-feasibility-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-objective-feasibility-20260906
+2026-11-06T06:41:42.2615336Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-objective-feasibility-tests-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-objective-feasibility-tests-20260906
+2026-11-06T06:41:42.2615708Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-objective-json-shape-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-objective-json-shape-20260906
+2026-11-06T06:41:42.2616106Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-objective-source-structure-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-objective-source-structure-20260906
+2026-11-06T06:41:42.2616469Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-ope-exact-ceiling-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-ope-exact-ceiling-20260906
+2026-11-06T06:41:42.2616838Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-operations-revision-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-operations-revision-20260906
+2026-11-06T06:41:42.2617260Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-operator-windows-file-identity-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-operator-windows-file-identity-20260906
+2026-11-06T06:41:42.2617737Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-owner-retrieval-observation-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-owner-retrieval-observation-20260906
+2026-11-06T06:41:42.2618095Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-p0-path-ownership-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-p0-path-ownership-20260906
+2026-11-06T06:41:42.2618573Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-path-lease-reconciliation-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-path-lease-reconciliation-20260906
+2026-11-06T06:41:42.2618930Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-plasticity-v2-api-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-plasticity-v2-api-20260906
+2026-11-06T06:41:42.2619299Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-plasticity-v2-core-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-plasticity-v2-core-20260906
+2026-11-06T06:41:42.2619662Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-plasticity-v2-docs-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-plasticity-v2-docs-20260906
+2026-11-06T06:41:42.2620069Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-plasticity-v2-hostile-tests-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-plasticity-v2-hostile-tests-20260906
+2026-11-06T06:41:42.2620451Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-plasticity-v2-registry-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-plasticity-v2-registry-20260906
+2026-11-06T06:41:42.2620818Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-plasticity-v2-types-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-plasticity-v2-types-20260906
+2026-11-06T06:41:42.2621227Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-product-integration-progress-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-product-integration-progress-20260906
+2026-11-06T06:41:42.2621673Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-prompt-local-shadow-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-prompt-local-shadow-20260906
+2026-11-06T06:41:42.2622066Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-prompt-local-shadow-impl-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-prompt-local-shadow-impl-20260906
+2026-11-06T06:41:42.2622462Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-prompt-local-shadow-tests-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-prompt-local-shadow-tests-20260906
+2026-11-06T06:41:42.2622861Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-prompt-registry-preflight-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-prompt-registry-preflight-20260906
+2026-11-06T06:41:42.2623231Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-protocol-hardening-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-protocol-hardening-20260906
+2026-11-06T06:41:42.2623630Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-protocol-recovery-bindings-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-protocol-recovery-bindings-20260906
+2026-11-06T06:41:42.2624014Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-qualification-profiles-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-qualification-profiles-20260906
+2026-11-06T06:41:42.2624401Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-readiness-depth-closure-20260905 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-readiness-depth-closure-20260905
+2026-11-06T06:41:42.2624875Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-recovery-fail-closed-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-recovery-fail-closed-20260906
+2026-11-06T06:41:42.2625269Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-retrieval-input-binding-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-retrieval-input-binding-20260906
+2026-11-06T06:41:42.2625670Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-scalar-compile-determinism-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-scalar-compile-determinism-20260906
+2026-11-06T06:41:42.2626021Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-sequential-eval-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-sequential-eval-20260906
+2026-11-06T06:41:42.2626403Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-sequential-eval-tests-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-sequential-eval-tests-20260906
+2026-11-06T06:41:42.2626797Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-shadow-exec-qualification-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-shadow-exec-qualification-20260906
+2026-11-06T06:41:42.2627180Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-source-canonical-format-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-source-canonical-format-20260906
+2026-11-06T06:41:42.2627626Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-source-closure-progress-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-source-closure-progress-20260906
+2026-11-06T06:41:42.2628052Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-source-identity-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-source-identity-20260906
+2026-11-06T06:41:42.2628438Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-source-identity-workflow-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-source-identity-workflow-20260906
+2026-11-06T06:41:42.2628797Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-sqlite-race-tests-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-sqlite-race-tests-20260906
+2026-11-06T06:41:42.2629210Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-state-recovery-helper-errors-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-state-recovery-helper-errors-20260906
+2026-11-06T06:41:42.2629625Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-supervisor-native-boundaries-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-supervisor-native-boundaries-20260906
+2026-11-06T06:41:42.2630036Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-taskflow-bazel-qualification-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-taskflow-bazel-qualification-20260906
+2026-11-06T06:41:42.2630414Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-taskflow-boundary-api-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-taskflow-boundary-api-20260906
+2026-11-06T06:41:42.2630871Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-taskflow-boundary-tests-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-taskflow-boundary-tests-20260906
+2026-11-06T06:41:42.2631272Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-taskflow-migration-fixture-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-taskflow-migration-fixture-20260906
+2026-11-06T06:41:42.2631633Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-technical-closure-20260905 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-technical-closure-20260905
+2026-11-06T06:41:42.2632005Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-temporal-plan-digest-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-temporal-plan-digest-20260906
+2026-11-06T06:41:42.2632374Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-temporal-plan-docs-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-temporal-plan-docs-20260906
+2026-11-06T06:41:42.2632782Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-terminal-followup-readiness-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-terminal-followup-readiness-20260906
+2026-11-06T06:41:42.2633149Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-ui-canonical-shadow-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-ui-canonical-shadow-20260906
+2026-11-06T06:41:42.2633547Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-unused-dependency-cleanup-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-unused-dependency-cleanup-20260906
+2026-11-06T06:41:42.2633943Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-value-learning-bazel-deps-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-value-learning-bazel-deps-20260906
+2026-11-06T06:41:42.2634372Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-verified-gap-progress-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-verified-gap-progress-20260906
+2026-11-06T06:41:42.2634784Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-windows-bazel-diagnostics-r3-20260907 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-windows-bazel-diagnostics-r3-20260907
+2026-11-06T06:41:42.2635160Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-windows-complete-deny-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-windows-complete-deny-20260906
+2026-11-06T06:41:42.2635516Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-windows-native-cc-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-windows-native-cc-20260906
+2026-11-06T06:41:42.2635924Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-windows-required-acl-errors-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-windows-required-acl-errors-20260906
+2026-11-06T06:41:42.2636347Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-windows-workspace-capabilities-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-windows-workspace-capabilities-20260906
+2026-11-06T06:41:42.2636708Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-witnessed-recovery-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-witnessed-recovery-20260906
+2026-11-06T06:41:42.2637146Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-wrapper-response-files-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v8-wrapper-response-files-20260906
+2026-11-06T06:41:42.2637552Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v9-blocker-closure-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-v9-blocker-closure-20260908
+2026-11-06T06:41:42.2637863Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-w0-lane-a-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-w0-lane-a-20260908
+2026-11-06T06:41:42.2638175Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-w0-lane-b-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-w0-lane-b-20260908
+2026-11-06T06:41:42.2638483Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-w0-lane-c-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-w0-lane-c-20260908
+2026-11-06T06:41:42.2638795Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-w0-lane-d-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-w0-lane-d-20260908
+2026-11-06T06:41:42.2639104Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-w0-lane-e-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-w0-lane-e-20260908
+2026-11-06T06:41:42.2639413Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-w0-lane-f-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-w0-lane-f-20260908
+2026-11-06T06:41:42.2639719Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-w0-lane-g-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-w0-lane-g-20260908
+2026-11-06T06:41:42.2640052Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-w0-review-base-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-w0-review-base-20260908
+2026-11-06T06:41:42.2640503Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-w0-seven-lanes-candidate-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-w0-seven-lanes-candidate-20260908
+2026-11-06T06:41:42.2640874Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-w0-seven-lanes-handoff-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-w0-seven-lanes-handoff-20260908
+2026-11-06T06:41:42.2641233Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-w2-readonly-vertical-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-w2-readonly-vertical-20260908
+2026-11-06T06:41:42.2641638Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-w2-readonly-vertical-result-20260908-r1 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-w2-readonly-vertical-result-20260908-r1
+2026-11-06T06:41:42.2641981Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-w3-shadow-ledger-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-w3-shadow-ledger-20260908
+2026-11-06T06:41:42.2642367Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-w3-shadow-ledger-result-20260908-r1 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/hepta-w3-shadow-ledger-result-20260908-r1
+2026-11-06T06:41:42.2642691Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/lane-a-gap-closure-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/lane-a-gap-closure-20260910
+2026-11-06T06:41:42.2643128Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/lane-a-p1-runtime-closure-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/lane-a-p1-runtime-closure-20260910
+2026-11-06T06:41:42.2643482Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/lane-c-full-gap-closure-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/lane-c-full-gap-closure-20260910
+2026-11-06T06:41:42.2643804Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/lane-f-gap-closure-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/lane-f-gap-closure-20260910
+2026-11-06T06:41:42.2644140Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/lane-f-gap-closure-20260910-r2 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/lane-f-gap-closure-20260910-r2
+2026-11-06T06:41:42.2644480Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/lane-g-bounded-closure-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/lane-g-bounded-closure-20260910
+2026-11-06T06:41:42.2644857Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/lane-g-engineering-closure-v2-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/lane-g-engineering-closure-v2-20260910
+2026-11-06T06:41:42.2645230Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/lane-g-engineering-closure-v3-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/lane-g-engineering-closure-v3-20260910
+2026-11-06T06:41:42.2645602Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/lane-g-engineering-closure-v4-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/lane-g-engineering-closure-v4-20260910
+2026-11-06T06:41:42.2645973Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/lane-g-engineering-closure-v5-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/lane-g-engineering-closure-v5-20260910
+2026-11-06T06:41:42.2646402Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/lane-g-engineering-closure-v6-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/lane-g-engineering-closure-v6-20260910
+2026-11-06T06:41:42.2646773Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/lane-g-engineering-closure-v7-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/lane-g-engineering-closure-v7-20260910
+2026-11-06T06:41:42.2647119Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/lane-g-final-sandbox-v3-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/lane-g-final-sandbox-v3-20260910
+2026-11-06T06:41:42.2647529Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/lane-g-full-closure-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/lane-g-full-closure-20260910
+2026-11-06T06:41:42.2647884Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/lane-g-governance-closure-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/lane-g-governance-closure-20260910
+2026-11-06T06:41:42.2648233Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/lane-g-real-full-closure-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/lane-g-real-full-closure-20260910
+2026-11-06T06:41:42.2648601Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/lane-g-real-full-closure-v2-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/lane-g-real-full-closure-v2-20260910
+2026-11-06T06:41:42.2648923Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/set-default-main-20260907 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/set-default-main-20260907
+2026-11-06T06:41:42.2649404Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/trillionnium-os-admission-hardening-20260907 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/trillionnium-os-admission-hardening-20260907
+2026-11-06T06:41:42.2649805Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/trillionnium-os-external-admission-20260907 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/trillionnium-os-external-admission-20260907
+2026-11-06T06:41:42.2650234Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/trillionnium-os-external-evidence-restore-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/trillionnium-os-external-evidence-restore-20260908
+2026-11-06T06:41:42.2650680Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/trillionnium-os-external-evidence-restore-r2-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/trillionnium-os-external-evidence-restore-r2-20260908
+2026-11-06T06:41:42.2651128Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/trillionnium-os-external-evidence-restore-r3-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/trillionnium-os-external-evidence-restore-r3-20260908
+2026-11-06T06:41:42.2651571Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/trillionnium-os-external-evidence-restore-r4-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/trillionnium-os-external-evidence-restore-r4-20260908
+2026-11-06T06:41:42.2651983Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/trillionnium-os-fixed-target-executor-20260907 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/trillionnium-os-fixed-target-executor-20260907
+2026-11-06T06:41:42.2652422Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/trillionnium-os-pr456-approved-tree-restore-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/trillionnium-os-pr456-approved-tree-restore-20260908
+2026-11-06T06:41:42.2652814Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/codex/uds-clippy-order-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/codex/uds-clippy-order-20260906
+2026-11-06T06:41:42.2653168Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/fix/blocking-ci-pr-concurrency-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/fix/blocking-ci-pr-concurrency-20260906
+2026-11-06T06:41:42.2653532Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/fix/hepta-registry-shape-closure-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/fix/hepta-registry-shape-closure-20260906
+2026-11-06T06:41:42.2653900Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/integration/all-branches-final-seal-20260907 -> archive/final-branch-tip/20260910-r4-34478302584-r1/integration/all-branches-final-seal-20260907
+2026-11-06T06:41:42.2654275Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/integration/all-branches-staging-34080942614 -> archive/final-branch-tip/20260910-r4-34478302584-r1/integration/all-branches-staging-34080942614
+2026-11-06T06:41:42.2654642Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/integration/all-branches-staging-34081015792 -> archive/final-branch-tip/20260910-r4-34478302584-r1/integration/all-branches-staging-34081015792
+2026-11-06T06:41:42.2655006Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/integration/all-branches-staging-34098423957 -> archive/final-branch-tip/20260910-r4-34478302584-r1/integration/all-branches-staging-34098423957
+2026-11-06T06:41:42.2655374Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/integration/all-branches-staging-34107591795 -> archive/final-branch-tip/20260910-r4-34478302584-r1/integration/all-branches-staging-34107591795
+2026-11-06T06:41:42.2655824Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/integration/all-lanes-gap-closure-20260910-r2 -> archive/final-branch-tip/20260910-r4-34478302584-r1/integration/all-lanes-gap-closure-20260910-r2
+2026-11-06T06:41:42.2656161Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/integration/final-main-tree-20260907 -> archive/final-branch-tip/20260910-r4-34478302584-r1/integration/final-main-tree-20260907
+2026-11-06T06:41:42.2656551Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/integration/final-main-tree-followup-20260907-r1 -> archive/final-branch-tip/20260910-r4-34478302584-r1/integration/final-main-tree-followup-20260907-r1
+2026-11-06T06:41:42.2656922Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/integration/hepta-all-blockers-base-20260907 -> archive/final-branch-tip/20260910-r4-34478302584-r1/integration/hepta-all-blockers-base-20260907
+2026-11-06T06:41:42.2657302Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/integration/hepta-all-gap-closure-20260910-r12 -> archive/final-branch-tip/20260910-r4-34478302584-r1/integration/hepta-all-gap-closure-20260910-r12
+2026-11-06T06:41:42.2657760Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/integration/hepta-all-gap-closure-20260910-r13 -> archive/final-branch-tip/20260910-r4-34478302584-r1/integration/hepta-all-gap-closure-20260910-r13
+2026-11-06T06:41:42.2658147Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/integration/hepta-all-gap-closure-20260910-r14 -> archive/final-branch-tip/20260910-r4-34478302584-r1/integration/hepta-all-gap-closure-20260910-r14
+2026-11-06T06:41:42.2658518Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/integration/hepta-all-gap-closure-20260910-r6 -> archive/final-branch-tip/20260910-r4-34478302584-r1/integration/hepta-all-gap-closure-20260910-r6
+2026-11-06T06:41:42.2658986Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/integration/hepta-all-gap-closure-20260910-r7 -> archive/final-branch-tip/20260910-r4-34478302584-r1/integration/hepta-all-gap-closure-20260910-r7
+2026-11-06T06:41:42.2659365Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/integration/hepta-all-gap-closure-20260910-r8 -> archive/final-branch-tip/20260910-r4-34478302584-r1/integration/hepta-all-gap-closure-20260910-r8
+2026-11-06T06:41:42.2659736Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/integration/hepta-all-gap-closure-20260910-r9 -> archive/final-branch-tip/20260910-r4-34478302584-r1/integration/hepta-all-gap-closure-20260910-r9
+2026-11-06T06:41:42.2660144Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/integration/hepta-all-gap-closure-20260910-sealed-r10 -> archive/final-branch-tip/20260910-r4-34478302584-r1/integration/hepta-all-gap-closure-20260910-sealed-r10
+2026-11-06T06:41:42.2660556Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/integration/hepta-all-gap-closure-20260910-sealed-r11 -> archive/final-branch-tip/20260910-r4-34478302584-r1/integration/hepta-all-gap-closure-20260910-sealed-r11
+2026-11-06T06:41:42.2660928Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/integration/hepta-global-gap-closure-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/integration/hepta-global-gap-closure-20260910
+2026-11-06T06:41:42.2661312Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/integration/hepta-global-gap-closure-20260910-r2 -> archive/final-branch-tip/20260910-r4-34478302584-r1/integration/hepta-global-gap-closure-20260910-r2
+2026-11-06T06:41:42.2661696Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/integration/hepta-global-gap-closure-20260910-r4 -> archive/final-branch-tip/20260910-r4-34478302584-r1/integration/hepta-global-gap-closure-20260910-r4
+2026-11-06T06:41:42.2662185Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/integration/hepta-single-main-candidate-34472033101-r1 -> archive/final-branch-tip/20260910-r4-34478302584-r1/integration/hepta-single-main-candidate-34472033101-r1
+2026-11-06T06:41:42.2662601Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/integration/hepta-single-main-candidate-34472796974-r1 -> archive/final-branch-tip/20260910-r4-34478302584-r1/integration/hepta-single-main-candidate-34472796974-r1
+2026-11-06T06:41:42.2663014Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/integration/hepta-single-main-candidate-34474281590-r1 -> archive/final-branch-tip/20260910-r4-34478302584-r1/integration/hepta-single-main-candidate-34474281590-r1
+2026-11-06T06:41:42.2663390Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/integration/hepta-w0-internal-closure-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/integration/hepta-w0-internal-closure-20260908
+2026-11-06T06:41:42.2663789Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/integration/lane-g-final-single-parent-v3-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/integration/lane-g-final-single-parent-v3-20260910
+2026-11-06T06:41:42.2664107Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/integration/vnext-main-20260811 -> archive/final-branch-tip/20260910-r4-34478302584-r1/integration/vnext-main-20260811
+2026-11-06T06:41:42.2664318Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/main -> archive/final-branch-tip/20260910-r4-34478302584-r1/main
+2026-11-06T06:41:42.2664652Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/ci-failure-diagnostic-20260907 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/ci-failure-diagnostic-20260907
+2026-11-06T06:41:42.2665020Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/exact-head-final-candidate-20260908-r5 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/exact-head-final-candidate-20260908-r5
+2026-11-06T06:41:42.2665458Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/exact-head-final-candidate-20260908-r6 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/exact-head-final-candidate-20260908-r6
+2026-11-06T06:41:42.2665822Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/exact-head-final-candidate-20260908-r7 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/exact-head-final-candidate-20260908-r7
+2026-11-06T06:41:42.2666185Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/exact-head-final-candidate-20260908-r8 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/exact-head-final-candidate-20260908-r8
+2026-11-06T06:41:42.2666551Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/exact-head-final-candidate-20260908-r9 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/exact-head-final-candidate-20260908-r9
+2026-11-06T06:41:42.2666910Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/exact-head-final-object-20260908-r10 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/exact-head-final-object-20260908-r10
+2026-11-06T06:41:42.2667257Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/exact-head-final-result-20260908-r7 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/exact-head-final-result-20260908-r7
+2026-11-06T06:41:42.2667646Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/exact-head-repair-20260908-r1 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/exact-head-repair-20260908-r1
+2026-11-06T06:41:42.2668044Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/exact-head-repair-20260908-r2 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/exact-head-repair-20260908-r2
+2026-11-06T06:41:42.2668364Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/exact-head-repair-20260908-r3 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/exact-head-repair-20260908-r3
+2026-11-06T06:41:42.2668687Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/exact-head-repair-20260908-r4 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/exact-head-repair-20260908-r4
+2026-11-06T06:41:42.2669065Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/exact-head-windows-finalizer-20260909-r10 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/exact-head-windows-finalizer-20260909-r10
+2026-11-06T06:41:42.2669385Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/exact-source-export-20260907 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/exact-source-export-20260907
+2026-11-06T06:41:42.2669762Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/final-all-branches-convergence-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/final-all-branches-convergence-20260908
+2026-11-06T06:41:42.2670147Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/final-all-branches-convergence-r6-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/final-all-branches-convergence-r6-20260908
+2026-11-06T06:41:42.2670580Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/final-all-branches-convergence-r7-diagnostic-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/final-all-branches-convergence-r7-diagnostic-20260908
+2026-11-06T06:41:42.2670922Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/final-blocker-closure-v9-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/final-blocker-closure-v9-20260908
+2026-11-06T06:41:42.2671412Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/final-main-candidate-source-export-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/final-main-candidate-source-export-20260908
+2026-11-06T06:41:42.2671744Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/final-main-convergence-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/final-main-convergence-20260908
+2026-11-06T06:41:42.2672107Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/final-main-convergence-v3-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/final-main-convergence-v3-20260908
+2026-11-06T06:41:42.2672455Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/final-main-convergence-v8-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/final-main-convergence-v8-20260908
+2026-11-06T06:41:42.2672785Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/final-main-repair-v10-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/final-main-repair-v10-20260908
+2026-11-06T06:41:42.2673116Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/final-main-repair-v11-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/final-main-repair-v11-20260908
+2026-11-06T06:41:42.2673476Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/final-main-repair-v11-matrix-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/final-main-repair-v11-matrix-20260908
+2026-11-06T06:41:42.2673847Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/final-main-repair-v11-targeted-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/final-main-repair-v11-targeted-20260908
+2026-11-06T06:41:42.2674231Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/final-main-repair-v12-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/final-main-repair-v12-20260908
+2026-11-06T06:41:42.2674552Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/final-main-repair-v7-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/final-main-repair-v7-20260908
+2026-11-06T06:41:42.2674875Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/final-main-repair-v9-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/final-main-repair-v9-20260908
+2026-11-06T06:41:42.2675246Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/final-main-source-slice-export-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/final-main-source-slice-export-20260908
+2026-11-06T06:41:42.2675582Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-40-module-audit-20260909-r1 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-40-module-audit-20260909-r1
+2026-11-06T06:41:42.2675972Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-agentd-lint-materializer-20260909-r2 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-agentd-lint-materializer-20260909-r2
+2026-11-06T06:41:42.2676362Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-base-format-shear-diagnostic-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-base-format-shear-diagnostic-20260906
+2026-11-06T06:41:42.2676716Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-base-format-shear-fix-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-base-format-shear-fix-20260906
+2026-11-06T06:41:42.2677090Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-contracts-runfiles-fix-20260909-r1 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-contracts-runfiles-fix-20260909-r1
+2026-11-06T06:41:42.2677605Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-convergence-materialize-20260910-r3 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-convergence-materialize-20260910-r3
+2026-11-06T06:41:42.2677951Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-default-main-switch-20260907 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-default-main-switch-20260907
+2026-11-06T06:41:42.2678337Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-exact-source-export-4f08144e-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-exact-source-export-4f08144e-20260906
+2026-11-06T06:41:42.2678703Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-final-closure-render-20260910-r1 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-final-closure-render-20260910-r1
+2026-11-06T06:41:42.2679096Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-final-convergence-auditor-20260910-r13 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-final-convergence-auditor-20260910-r13
+2026-11-06T06:41:42.2679504Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-final-convergence-controller-20260909-r1 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-final-convergence-controller-20260909-r1
+2026-11-06T06:41:42.2679912Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-final-convergence-controller-20260910-r2 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-final-convergence-controller-20260910-r2
+2026-11-06T06:41:42.2680313Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-final-convergence-controller-20260910-r3 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-final-convergence-controller-20260910-r3
+2026-11-06T06:41:42.2680793Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-final-convergence-controller-20260910-r4 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-final-convergence-controller-20260910-r4
+2026-11-06T06:41:42.2681195Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-final-convergence-controller-20260910-r5 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-final-convergence-controller-20260910-r5
+2026-11-06T06:41:42.2681594Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-final-convergence-controller-20260910-r6 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-final-convergence-controller-20260910-r6
+2026-11-06T06:41:42.2681997Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-final-convergence-controller-20260910-r7 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-final-convergence-controller-20260910-r7
+2026-11-06T06:41:42.2682401Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-final-convergence-controller-20260910-r8 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-final-convergence-controller-20260910-r8
+2026-11-06T06:41:42.2682800Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-final-convergence-controller-20260910-r9 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-final-convergence-controller-20260910-r9
+2026-11-06T06:41:42.2683201Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-final-convergence-finalizer-20260910-r13 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-final-convergence-finalizer-20260910-r13
+2026-11-06T06:41:42.2683596Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-final-convergence-reactor-20260910-r13 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-final-convergence-reactor-20260910-r13
+2026-11-06T06:41:42.2684035Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-final-convergence-repair-20260910-r14 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-final-convergence-repair-20260910-r14
+2026-11-06T06:41:42.2684437Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-final-convergence-review-anchor-20260909 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-final-convergence-review-anchor-20260909
+2026-11-06T06:41:42.2684838Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-final-gap-closure-r2-controller-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-final-gap-closure-r2-controller-20260908
+2026-11-06T06:41:42.2685190Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-final-remediation-r2-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-final-remediation-r2-20260910
+2026-11-06T06:41:42.2685546Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-final-remediation-r3-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-final-remediation-r3-20260910
+2026-11-06T06:41:42.2685898Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-final-remediation-r4-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-final-remediation-r4-20260910
+2026-11-06T06:41:42.2686249Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-final-remediation-r5-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-final-remediation-r5-20260910
+2026-11-06T06:41:42.2686673Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-final-remediation-r6-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-final-remediation-r6-20260910
+2026-11-06T06:41:42.2687028Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-final-remediation-r7-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-final-remediation-r7-20260910
+2026-11-06T06:41:42.2687450Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-final-remediation-r8-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-final-remediation-r8-20260910
+2026-11-06T06:41:42.2687802Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-final-remediation-r9-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-final-remediation-r9-20260910
+2026-11-06T06:41:42.2688185Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-gap-closure-materializer-20260907-r3 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-gap-closure-materializer-20260907-r3
+2026-11-06T06:41:42.2688572Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-gap-closure-orchestrator-20260909-r6 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-gap-closure-orchestrator-20260909-r6
+2026-11-06T06:41:42.2688960Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-gap-closure-orchestrator-20260909-r6b -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-gap-closure-orchestrator-20260909-r6b
+2026-11-06T06:41:42.2689354Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-gap-convergence-controller-20260909-r6 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-gap-convergence-controller-20260909-r6
+2026-11-06T06:41:42.2689753Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-gap-convergence-controller-20260909-r6b -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-gap-convergence-controller-20260909-r6b
+2026-11-06T06:41:42.2690237Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-global-gap-closure-controller-20260910-r1 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-global-gap-closure-controller-20260910-r1
+2026-11-06T06:41:42.2690645Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-global-gap-closure-controller-r12-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-global-gap-closure-controller-r12-20260910
+2026-11-06T06:41:42.2691022Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-lane-e-ruff-materialize-r1-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-lane-e-ruff-materialize-r1-20260910
+2026-11-06T06:41:42.2691385Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-lane-f-lock-diagnostic-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-lane-f-lock-diagnostic-20260910
+2026-11-06T06:41:42.2691756Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-lane-f-lock-diagnostic-r2-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-lane-f-lock-diagnostic-r2-20260910
+2026-11-06T06:41:42.2692117Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-module-shape-discovery-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-module-shape-discovery-20260906
+2026-11-06T06:41:42.2692483Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-native-mapping-audit-20260908-r1 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-native-mapping-audit-20260908-r1
+2026-11-06T06:41:42.2692852Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-native-mapping-report-20260908-r1 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-native-mapping-report-20260908-r1
+2026-11-06T06:41:42.2693299Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-phase1-source-closure-20260909-r1 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-phase1-source-closure-20260909-r1
+2026-11-06T06:41:42.2693682Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-r13-latest-owner-controller-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-r13-latest-owner-controller-20260910
+2026-11-06T06:41:42.2694042Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-r15-lock-materialize-20260910-r1 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-r15-lock-materialize-20260910-r1
+2026-11-06T06:41:42.2694420Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-r19-fixed-point-controller-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-r19-fixed-point-controller-20260910
+2026-11-06T06:41:42.2694806Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-r19-lock-diagnostic-trigger-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-r19-lock-diagnostic-trigger-20260910
+2026-11-06T06:41:42.2695181Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-r20-fixed-point-controller-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-r20-fixed-point-controller-20260910
+2026-11-06T06:41:42.2695625Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-rules-rust-effective-windows-inspect-20260909-r2 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-rules-rust-effective-windows-inspect-20260909-r2
+2026-11-06T06:41:42.2696068Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-rules-rust-windows-effective-inspect-20260909-r2 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-rules-rust-windows-effective-inspect-20260909-r2
+2026-11-06T06:41:42.2696566Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-rules-rust-windows-inspect-20260909-r1 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-rules-rust-windows-inspect-20260909-r1
+2026-11-06T06:41:42.2696945Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-safe-workflow-blob-20260907 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-safe-workflow-blob-20260907
+2026-11-06T06:41:42.2697415Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-single-main-conflict-audit-20260910-r3 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-single-main-conflict-audit-20260910-r3
+2026-11-06T06:41:42.2697796Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-single-main-convergence-20260910-r1 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-single-main-convergence-20260910-r1
+2026-11-06T06:41:42.2698175Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-single-main-convergence-20260910-r2 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-single-main-convergence-20260910-r2
+2026-11-06T06:41:42.2698554Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-single-main-convergence-20260910-r3 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-single-main-convergence-20260910-r3
+2026-11-06T06:41:42.2698928Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-single-main-convergence-20260910-r4 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-single-main-convergence-20260910-r4
+2026-11-06T06:41:42.2699288Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-stale-actions-cleanup-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-stale-actions-cleanup-20260906
+2026-11-06T06:41:42.2699721Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-w2-w3-materializer-20260909-r1 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-w2-w3-materializer-20260909-r1
+2026-11-06T06:41:42.2700130Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-windows-msvc-link-materializer-20260909-r1 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-windows-msvc-link-materializer-20260909-r1
+2026-11-06T06:41:42.2700541Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-windows-msvc-link-materializer-20260909-r2 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-windows-msvc-link-materializer-20260909-r2
+2026-11-06T06:41:42.2700955Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-windows-msvc-link-materializer-20260909-r3 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-windows-msvc-link-materializer-20260909-r3
+2026-11-06T06:41:42.2701379Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-windows-msvc-link-materializer-20260909-r4 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-windows-msvc-link-materializer-20260909-r4
+2026-11-06T06:41:42.2701795Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-windows-msvc-materializer-fixer-20260909-r1 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-windows-msvc-materializer-fixer-20260909-r1
+2026-11-06T06:41:42.2702282Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-windows-msvc-normalized-identity-materializer-20260909-r7 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-windows-msvc-normalized-identity-materializer-20260909-r7
+2026-11-06T06:41:42.2702739Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-windows-msvc-path-identity-materializer-20260909-r6 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-windows-msvc-path-identity-materializer-20260909-r6
+2026-11-06T06:41:42.2703254Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-windows-msvc-schema-oracle-materializer-20260909-r5 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/hepta-windows-msvc-schema-oracle-materializer-20260909-r5
+2026-11-06T06:41:42.2703649Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/heptabao-http-fallback-diagnostic-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/heptabao-http-fallback-diagnostic-20260908
+2026-11-06T06:41:42.2704004Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/heptabao-v24-integration-r1-20260909 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/heptabao-v24-integration-r1-20260909
+2026-11-06T06:41:42.2704361Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/heptabao-v24-integration-r2-20260909 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/heptabao-v24-integration-r2-20260909
+2026-11-06T06:41:42.2704695Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/lane-b-fast-repair-20260910-r2 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/lane-b-fast-repair-20260910-r2
+2026-11-06T06:41:42.2705015Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/lane-b-format-fix-20260910-r1 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/lane-b-format-fix-20260910-r1
+2026-11-06T06:41:42.2705359Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/lane-b-hardening-staging-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/lane-b-hardening-staging-20260910
+2026-11-06T06:41:42.2705786Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/lane-b-hardening-trigger-r2-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/lane-b-hardening-trigger-r2-20260910
+2026-11-06T06:41:42.2706121Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/lane-b-import-format-20260910-r3 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/lane-b-import-format-20260910-r3
+2026-11-06T06:41:42.2706475Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/lane-b-rustfmt-materialize-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/lane-b-rustfmt-materialize-20260910
+2026-11-06T06:41:42.2706807Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/lane-b-rustfmt-trigger-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/lane-b-rustfmt-trigger-20260910
+2026-11-06T06:41:42.2707204Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/lane-e-single-parent-materializer-20260910-r1 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/lane-e-single-parent-materializer-20260910-r1
+2026-11-06T06:41:42.2707635Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/lane-e-single-parent-result-20260910-r1 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/lane-e-single-parent-result-20260910-r1
+2026-11-06T06:41:42.2707985Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/lane-f-final-source-export-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/lane-f-final-source-export-20260910
+2026-11-06T06:41:42.2708315Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/main-tree-convergence-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/main-tree-convergence-20260908
+2026-11-06T06:41:42.2708679Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/materialize-agentd-source-20260908-r1 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/materialize-agentd-source-20260908-r1
+2026-11-06T06:41:42.2709120Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/materialize-workspace-lint-20260908-r1 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/materialize-workspace-lint-20260908-r1
+2026-11-06T06:41:42.2709486Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/materialized-agentd-source-20260908-r1 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/materialized-agentd-source-20260908-r1
+2026-11-06T06:41:42.2709804Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/merge-all-branches-20260907 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/merge-all-branches-20260907
+2026-11-06T06:41:42.2710163Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/pr328-stale-queue-cleanup-v1-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/pr328-stale-queue-cleanup-v1-20260906
+2026-11-06T06:41:42.2710471Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/pr451-finalizer-20260907 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/pr451-finalizer-20260907
+2026-11-06T06:41:42.2710828Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/pr456-followup-publisher-20260907-r1 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/pr456-followup-publisher-20260907-r1
+2026-11-06T06:41:42.2711157Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/pr456-gapfix-result-20260907-r2 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/pr456-gapfix-result-20260907-r2
+2026-11-06T06:41:42.2711475Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/pr456-review-fix-r3-20260907 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/pr456-review-fix-r3-20260907
+2026-11-06T06:41:42.2711867Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/pr456-review-fix-r4-20260907 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/pr456-review-fix-r4-20260907
+2026-11-06T06:41:42.2712199Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/pr459-merge-controller-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/pr459-merge-controller-20260908
+2026-11-06T06:41:42.2712547Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/pr463-expiry-materializer-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/pr463-expiry-materializer-20260908
+2026-11-06T06:41:42.2712873Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/r12-build-blockers-r1-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/r12-build-blockers-r1-20260910
+2026-11-06T06:41:42.2713209Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/r12-lane-a-materializer-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/r12-lane-a-materializer-20260910
+2026-11-06T06:41:42.2713547Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/r12-lane-b-materializer-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/r12-lane-b-materializer-20260910
+2026-11-06T06:41:42.2713892Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/r12-lane-e-materializer-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/r12-lane-e-materializer-20260910
+2026-11-06T06:41:42.2714234Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/r12-lane-merge-diagnostic-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/r12-lane-merge-diagnostic-20260910
+2026-11-06T06:41:42.2714588Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/r13-lane-b-merge-controller-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/r13-lane-b-merge-controller-20260910
+2026-11-06T06:41:42.2714882Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/schema-probe-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/schema-probe-20260908
+2026-11-06T06:41:42.2715246Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/source-export-v9-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/source-export-v9-20260908
+2026-11-06T06:41:42.2715571Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/strict-validation-v9-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/strict-validation-v9-20260908
+2026-11-06T06:41:42.2715932Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/trillionnium-os-runner-probe-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/trillionnium-os-runner-probe-20260906
+2026-11-06T06:41:42.2716314Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/trillionnium-os-status-snapshot-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/trillionnium-os-status-snapshot-20260908
+2026-11-06T06:41:42.2716745Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/trillionnium-os-subject-rebind-controller-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/trillionnium-os-subject-rebind-controller-20260908
+2026-11-06T06:41:42.2717103Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/windows-linker-diagnostic-20260909-r1 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/windows-linker-diagnostic-20260909-r1
+2026-11-06T06:41:42.2717523Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/windows-linker-diagnostic-20260909-r2 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/windows-linker-diagnostic-20260909-r2
+2026-11-06T06:41:42.2717959Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/windows-linker-diagnostic-20260909-r3 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/windows-linker-diagnostic-20260909-r3
+2026-11-06T06:41:42.2718318Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/windows-linker-diagnostic-20260909-r4 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/windows-linker-diagnostic-20260909-r4
+2026-11-06T06:41:42.2718676Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/windows-linker-diagnostic-20260909-r5 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/windows-linker-diagnostic-20260909-r5
+2026-11-06T06:41:42.2718992Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/ops/world-object-probe-20260906 -> archive/final-branch-tip/20260910-r4-34478302584-r1/ops/world-object-probe-20260906
+2026-11-06T06:41:42.2719374Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/reviewer/ci-governance-simplification-20260908 -> archive/final-branch-tip/20260910-r4-34478302584-r1/reviewer/ci-governance-simplification-20260908
+2026-11-06T06:41:42.2719787Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/staging/lane-g-final-single-parent-v3-base-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/staging/lane-g-final-single-parent-v3-base-20260910
+2026-11-06T06:41:42.2720116Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/tmp/hepta-lane-e-doc-sync-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/tmp/hepta-lane-e-doc-sync-20260910
+2026-11-06T06:41:42.2720473Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/tmp/hepta-lane-e-r5-closed-world-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/tmp/hepta-lane-e-r5-closed-world-20260910
+2026-11-06T06:41:42.2720819Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/tmp/hepta-lane-e-r5-hardening-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/tmp/hepta-lane-e-r5-hardening-20260910
+2026-11-06T06:41:42.2721294Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/tmp/hepta-lane-e-readiness-sync-r4-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/tmp/hepta-lane-e-readiness-sync-r4-20260910
+2026-11-06T06:41:42.2721660Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/tmp/lane-g-final-squash-carrier-v3-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/tmp/lane-g-final-squash-carrier-v3-20260910
+2026-11-06T06:41:42.2722034Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/tmp/lane-g-final-squash-carrier-v3b-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/tmp/lane-g-final-squash-carrier-v3b-20260910
+2026-11-06T06:41:42.2722406Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/tmp/lane-g-final-squash-carrier-v3c-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/tmp/lane-g-final-squash-carrier-v3c-20260910
+2026-11-06T06:41:42.2722780Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/tmp/lane-g-final-squash-carrier-v3d-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/tmp/lane-g-final-squash-carrier-v3d-20260910
+2026-11-06T06:41:42.2723153Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/tmp/lane-g-final-squash-carrier-v3e-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/tmp/lane-g-final-squash-carrier-v3e-20260910
+2026-11-06T06:41:42.2723522Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/tmp/lane-g-final-squash-carrier-v3f-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/tmp/lane-g-final-squash-carrier-v3f-20260910
+2026-11-06T06:41:42.2723889Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/tmp/lane-g-final-squash-carrier-v3g-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/tmp/lane-g-final-squash-carrier-v3g-20260910
+2026-11-06T06:41:42.2724336Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/tmp/lane-g-final-squash-carrier-v3h-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/tmp/lane-g-final-squash-carrier-v3h-20260910
+2026-11-06T06:41:42.2724707Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/tmp/lane-g-final-squash-carrier-v3i-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/tmp/lane-g-final-squash-carrier-v3i-20260910
+2026-11-06T06:41:42.2725086Z  * [new tag]               archive/final-branch-tip/20260910-r4-34478302584-r1/tmp/lane-g-final-squash-carrier-v3j-20260910 -> archive/final-branch-tip/20260910-r4-34478302584-r1/tmp/lane-g-final-squash-carrier-v3j-20260910
+2026-11-06T06:41:42.2725247Z  * [new tag]               candidate/final-main/v10-34218120892-1 -> candidate/final-main/v10-34218120892-1
+2026-11-06T06:41:42.2725399Z  * [new tag]               candidate/final-main/v11-34220247265-1 -> candidate/final-main/v11-34220247265-1
+2026-11-06T06:41:42.2725550Z  * [new tag]               candidate/final-main/v6-34194362240-1 -> candidate/final-main/v6-34194362240-1
+2026-11-06T06:41:42.2725718Z  * [new tag]               cognitive-fleet-r1-5a03acf5fd-20260818 -> cognitive-fleet-r1-5a03acf5fd-20260818
+2026-11-06T06:41:42.2725905Z  * [new tag]               hepta-vnext-acceptance-3110c5aba5-20260811 -> hepta-vnext-acceptance-3110c5aba5-20260811
+2026-11-06T06:41:42.2726085Z  * [new tag]               hepta-vnext-candidate-52ec4b3868-20260813 -> hepta-vnext-candidate-52ec4b3868-20260813
+2026-11-06T06:41:42.2726281Z  * [new tag]               qualification/framework-20260926-0f3eb372da22 -> qualification/framework-20260926-0f3eb372da22
+2026-11-06T06:41:42.2726468Z  * [new tag]               qualification/framework-20260926-2f1d05a1e564 -> qualification/framework-20260926-2f1d05a1e564
+2026-11-06T06:41:42.2726617Z  * [new tag]               vnext-product-3921cdaa1e-20260818 -> vnext-product-3921cdaa1e-20260818
+2026-11-06T06:41:42.2726744Z  * [new tag]               vnext-product-52ec4b-20260818 -> vnext-product-52ec4b-20260818
+2026-11-06T06:41:42.2726965Z  * [new tag]               vnext-product-7ed9c9a85f-20260818 -> vnext-product-7ed9c9a85f-20260818
+2026-11-06T06:41:42.2727104Z  * [new tag]               vnext-product-e274a78647-20260818 -> vnext-product-e274a78647-20260818
+2026-11-06T06:41:42.2727246Z  * [new tag]               vnext-product-f2ff5642f9-20260818 -> vnext-product-f2ff5642f9-20260818
+2026-11-06T06:41:42.2727469Z  * [new tag]               vnext-qualification-ec6b29-20260818 -> vnext-qualification-ec6b29-20260818
+2026-11-06T06:41:42.2728533Z [command]/usr/bin/git rev-parse --verify --quiet ddacfba30b28e86eae9615d7063fff2c7941b1d4^{object}
+2026-11-06T06:41:42.2728611Z ddacfba30b28e86eae9615d7063fff2c7941b1d4
+2026-11-06T06:41:42.2728980Z ##[endgroup]
+2026-11-06T06:41:42.2729133Z ##[group]Determining the checkout info
+2026-11-06T06:41:42.2729267Z ##[endgroup]
+2026-11-06T06:41:42.2729347Z [command]/usr/bin/git sparse-checkout disable
+2026-11-06T06:41:42.2729625Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-06T06:41:42.2729951Z ##[group]Checking out the ref
+2026-11-06T06:41:42.2730103Z [command]/usr/bin/git checkout --progress --force ddacfba30b28e86eae9615d7063fff2c7941b1d4
+2026-11-06T06:41:42.8537833Z Note: switching to 'ddacfba30b28e86eae9615d7063fff2c7941b1d4'.
+2026-11-06T06:41:42.8539587Z 
+2026-11-06T06:41:42.8539753Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-06T06:41:42.8540011Z changes and commit them, and you can discard any commits you make in this
+2026-11-06T06:41:42.8540257Z state without impacting any branches by switching back to a branch.
+2026-11-06T06:41:42.8540401Z 
+2026-11-06T06:41:42.8540503Z If you want to create a new branch to retain commits you create, you may
+2026-11-06T06:41:42.8540748Z do so (now or later) by using -c with the switch command. Example:
+2026-11-06T06:41:42.8541190Z 
+2026-11-06T06:41:42.8541252Z   git switch -c <new-branch-name>
+2026-11-06T06:41:42.8541347Z 
+2026-11-06T06:41:42.8541402Z Or undo this operation with:
+2026-11-06T06:41:42.8541488Z 
+2026-11-06T06:41:42.8541535Z   git switch -
+2026-11-06T06:41:42.8541602Z 
+2026-11-06T06:41:42.8541725Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-06T06:41:42.8541882Z 
+2026-11-06T06:41:42.8542032Z HEAD is now at ddacfba30b ci: propose fixed-version pin-utils backport with actual lock generation
+2026-11-06T06:41:42.8630101Z ##[endgroup]
+2026-11-06T06:41:42.8678776Z [command]/usr/bin/git log -1 --format=%H
+2026-11-06T06:41:42.8711154Z ddacfba30b28e86eae9615d7063fff2c7941b1d4
+2026-11-06T06:41:42.8719929Z ##[group]Removing auth
+2026-11-06T06:41:42.8722402Z Removing SSH command configuration
+2026-11-06T06:41:42.8733480Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-06T06:41:42.8763234Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-06T06:41:42.8967887Z Removing HTTP extra header
+2026-11-06T06:41:42.8971010Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-06T06:41:42.9012103Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-06T06:41:42.9239507Z Removing includeIf entries pointing to credentials config files
+2026-11-06T06:41:42.9240053Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-06T06:41:42.9273251Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-06T06:41:42.9273940Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-06T06:41:42.9274409Z includeif.gitdir:/github/workspace/.git.path
+2026-11-06T06:41:42.9274733Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-06T06:41:42.9282648Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-06T06:41:42.9314548Z /home/runner/work/_temp/git-credentials-41e2927c-3e53-4443-a31b-dff9a5abd4f4.config
+2026-11-06T06:41:42.9324025Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path /home/runner/work/_temp/git-credentials-41e2927c-3e53-4443-a31b-dff9a5abd4f4.config
+2026-11-06T06:41:42.9370335Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-06T06:41:42.9403795Z /home/runner/work/_temp/git-credentials-41e2927c-3e53-4443-a31b-dff9a5abd4f4.config
+2026-11-06T06:41:42.9412215Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-41e2927c-3e53-4443-a31b-dff9a5abd4f4.config
+2026-11-06T06:41:42.9459332Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-06T06:41:42.9492860Z /github/runner_temp/git-credentials-41e2927c-3e53-4443-a31b-dff9a5abd4f4.config
+2026-11-06T06:41:42.9499730Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-41e2927c-3e53-4443-a31b-dff9a5abd4f4.config
+2026-11-06T06:41:42.9543801Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-06T06:41:42.9575321Z /github/runner_temp/git-credentials-41e2927c-3e53-4443-a31b-dff9a5abd4f4.config
+2026-11-06T06:41:42.9581888Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-41e2927c-3e53-4443-a31b-dff9a5abd4f4.config
+2026-11-06T06:41:42.9623011Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-06T06:41:42.9837973Z Removing credentials config '/home/runner/work/_temp/git-credentials-41e2927c-3e53-4443-a31b-dff9a5abd4f4.config'
+2026-11-06T06:41:42.9838847Z ##[endgroup]
+2026-11-06T06:41:43.0019176Z ##[group]Run python3 .github/scripts/propose_pin_utils_backport.py preflight
+2026-11-06T06:41:43.0019543Z [36;1mpython3 .github/scripts/propose_pin_utils_backport.py preflight[0m
+2026-11-06T06:41:43.0038520Z shell: /usr/bin/bash -e {0}
+2026-11-06T06:41:43.0038667Z env:
+2026-11-06T06:41:43.0038815Z   CANDIDATE_SHA: ddacfba30b28e86eae9615d7063fff2c7941b1d4
+2026-11-06T06:41:43.0039003Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-06T06:41:43.0039136Z ##[endgroup]
+2026-11-06T06:41:43.5426684Z {"head": "ddacfba30b28e86eae9615d7063fff2c7941b1d4", "tree": "cb7f5eaaadd55c1476a8b695c04c70848c603e85", "base": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed", "base_tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359", "original_leaves_unchanged": 10582, "added_paths": [".github/scripts/pin-utils-backport-spec.json", ".github/scripts/pin_utils_proposal_evidence.py", ".github/scripts/propose_pin_utils_backport.py", ".github/workflows/hepta-pin-utils-backport-proposal.yml"], "clean": true}
+2026-11-06T06:41:43.5601007Z Prepare all required actions
+2026-11-06T06:41:43.5601377Z Getting action download info
+2026-11-06T06:41:43.8262797Z Download action repository 'actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7' (SHA:668228422ae6a00e4ad889ee87cd7109ec5666a7)
+2026-11-06T06:41:44.1199848Z ##[group]Run ./.github/actions/prepare-bazel-ci
+2026-11-06T06:41:44.1200030Z with:
+2026-11-06T06:41:44.1200155Z   target: x86_64-unknown-linux-gnu
+2026-11-06T06:41:44.1200307Z   cache-scope: pin-utils-lock-proposal
+2026-11-06T06:41:44.1200446Z env:
+2026-11-06T06:41:44.1200580Z   CANDIDATE_SHA: ddacfba30b28e86eae9615d7063fff2c7941b1d4
+2026-11-06T06:41:44.1200776Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-06T06:41:44.1200905Z ##[endgroup]
+2026-11-06T06:41:44.1240292Z ##[start-action display=Set up Bazel CI;id=__self.setup_bazel]
+2026-11-06T06:41:44.1283047Z Prepare all required actions
+2026-11-06T06:41:44.1283322Z Getting action download info
+2026-11-06T06:41:44.2545906Z Download action repository 'bazel-contrib/setup-bazel@c5acdfb288317d0b5c0bbd7a396a3dc868bb0f86' (SHA:c5acdfb288317d0b5c0bbd7a396a3dc868bb0f86)
+2026-11-06T06:41:44.5636931Z ##[group]Run ./.github/actions/setup-bazel-ci
+2026-11-06T06:41:44.5637101Z with:
+2026-11-06T06:41:44.5637222Z   target: x86_64-unknown-linux-gnu
+2026-11-06T06:41:44.5637468Z env:
+2026-11-06T06:41:44.5637604Z   CANDIDATE_SHA: ddacfba30b28e86eae9615d7063fff2c7941b1d4
+2026-11-06T06:41:44.5637788Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-06T06:41:44.5637918Z ##[endgroup]
+2026-11-06T06:41:44.5641378Z ##[start-action display=Run ./.github/actions/setup-ci;id=__self.setup_bazel.setup_ci]
+2026-11-06T06:41:44.5686654Z Prepare all required actions
+2026-11-06T06:41:44.5686918Z Getting action download info
+2026-11-06T06:41:44.7158383Z Download action repository 'facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a' (SHA:1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a)
+2026-11-06T06:41:44.8875312Z ##[group]Run ./.github/actions/setup-ci
+2026-11-06T06:41:44.8875480Z env:
+2026-11-06T06:41:44.8875641Z   CANDIDATE_SHA: ddacfba30b28e86eae9615d7063fff2c7941b1d4
+2026-11-06T06:41:44.8875825Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-06T06:41:44.8875958Z ##[endgroup]
+2026-11-06T06:41:44.8895615Z ##[start-action display=Configure Dev Drive (Windows);id=__self.setup_bazel.setup_ci.__run]
+2026-11-06T06:41:44.8907932Z ##[end-action id=__self.setup_bazel.setup_ci.__run;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-06T06:41:44.8909186Z ##[start-action display=Configure CI build root (Unix);id=__self.setup_bazel.setup_ci.__run_2]
+2026-11-06T06:41:44.8923736Z ##[group]Run echo "CI_BUILD_ROOT=$HOME/.cache/codex-ci" >> "$GITHUB_ENV"
+2026-11-06T06:41:44.8924151Z [36;1mecho "CI_BUILD_ROOT=$HOME/.cache/codex-ci" >> "$GITHUB_ENV"[0m
+2026-11-06T06:41:44.8940729Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-06T06:41:44.8940911Z env:
+2026-11-06T06:41:44.8941051Z   CANDIDATE_SHA: ddacfba30b28e86eae9615d7063fff2c7941b1d4
+2026-11-06T06:41:44.8941236Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-06T06:41:44.8941375Z ##[endgroup]
+2026-11-06T06:41:44.8982164Z ##[end-action id=__self.setup_bazel.setup_ci.__run_2;outcome=success;conclusion=success;duration_ms=7]
+2026-11-06T06:41:44.8983567Z ##[start-action display=Enable unprivileged user namespaces (Linux);id=__self.setup_bazel.setup_ci.__run_3]
+2026-11-06T06:41:44.8996393Z ##[group]Run sudo sysctl -w kernel.unprivileged_userns_clone=1
+2026-11-06T06:41:44.8996633Z [36;1msudo sysctl -w kernel.unprivileged_userns_clone=1[0m
+2026-11-06T06:41:44.8996910Z [36;1mif sudo sysctl -a 2>/dev/null | grep -q '^kernel.apparmor_restrict_unprivileged_userns'; then[0m
+2026-11-06T06:41:44.8997209Z [36;1m  sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0[0m
+2026-11-06T06:41:44.8997642Z [36;1mfi[0m
+2026-11-06T06:41:44.9010777Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-06T06:41:44.9010953Z env:
+2026-11-06T06:41:44.9011093Z   CANDIDATE_SHA: ddacfba30b28e86eae9615d7063fff2c7941b1d4
+2026-11-06T06:41:44.9011273Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-06T06:41:44.9011576Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-06T06:41:44.9011728Z ##[endgroup]
+2026-11-06T06:41:44.9092164Z kernel.unprivileged_userns_clone = 1
+2026-11-06T06:41:44.9525470Z kernel.apparmor_restrict_unprivileged_userns = 0
+2026-11-06T06:41:44.9539628Z ##[end-action id=__self.setup_bazel.setup_ci.__run_3;outcome=success;conclusion=success;duration_ms=55]
+2026-11-06T06:41:44.9541553Z ##[start-action display=Configure CI build paths;id=__self.setup_bazel.setup_ci.configure_ci_build_paths]
+2026-11-06T06:41:44.9556216Z ##[group]Run set -euo pipefail
+2026-11-06T06:41:44.9556494Z [36;1mset -euo pipefail[0m
+2026-11-06T06:41:44.9556690Z [36;1m# setup-bazel passes output_base explicitly, so keep both it and the[0m
+2026-11-06T06:41:44.9556961Z [36;1m# user root under the shared build root. Keep these directory names tiny[0m
+2026-11-06T06:41:44.9557218Z [36;1m# on every platform so Windows Bazel paths do not overflow argv or[0m
+2026-11-06T06:41:44.9557617Z [36;1m# confuse test MANIFEST handling.[0m
+2026-11-06T06:41:44.9557781Z [36;1mbazel_output_base="$CI_BUILD_ROOT/o"[0m
+2026-11-06T06:41:44.9557950Z [36;1mbazel_output_user_root="$CI_BUILD_ROOT/b"[0m
+2026-11-06T06:41:44.9558160Z [36;1mbazel_repository_cache="$CI_BUILD_ROOT/bazel-repository-cache"[0m
+2026-11-06T06:41:44.9558474Z [36;1mbazel_repo_contents_cache="$CI_BUILD_ROOT/bazel-repo-contents-cache-$GITHUB_RUN_ID-$GITHUB_JOB"[0m
+2026-11-06T06:41:44.9558753Z [36;1mcargo_target_dir="$CI_BUILD_ROOT/cargo-target"[0m
+2026-11-06T06:41:44.9558923Z [36;1mtmp="$CI_BUILD_ROOT/tmp"[0m
+2026-11-06T06:41:44.9559054Z [36;1m[0m
+2026-11-06T06:41:44.9559166Z [36;1mbuild_dirs=([0m
+2026-11-06T06:41:44.9559290Z [36;1m  "$bazel_output_base"[0m
+2026-11-06T06:41:44.9559427Z [36;1m  "$bazel_output_user_root"[0m
+2026-11-06T06:41:44.9559570Z [36;1m  "$bazel_repository_cache"[0m
+2026-11-06T06:41:44.9559713Z [36;1m  "$bazel_repo_contents_cache"[0m
+2026-11-06T06:41:44.9559857Z [36;1m  "$cargo_target_dir"[0m
+2026-11-06T06:41:44.9559988Z [36;1m  "$tmp"[0m
+2026-11-06T06:41:44.9560093Z [36;1m)[0m
+2026-11-06T06:41:44.9560205Z [36;1mmkdir -p "${build_dirs[@]}"[0m
+2026-11-06T06:41:44.9560399Z [36;1mecho "bazel-output-base=$bazel_output_base" >> "$GITHUB_OUTPUT"[0m
+2026-11-06T06:41:44.9560645Z [36;1mecho "cargo-target-dir=$cargo_target_dir" >> "$GITHUB_OUTPUT"[0m
+2026-11-06T06:41:44.9560829Z [36;1m[0m
+2026-11-06T06:41:44.9560925Z [36;1m{[0m
+2026-11-06T06:41:44.9561050Z [36;1m  echo "CODEX_REPO_ROOT=$GITHUB_WORKSPACE"[0m
+2026-11-06T06:41:44.9561231Z [36;1m  echo "BAZEL_OUTPUT_BASE=$bazel_output_base"[0m
+2026-11-06T06:41:44.9561551Z [36;1m  echo "BAZEL_OUTPUT_USER_ROOT=$bazel_output_user_root"[0m
+2026-11-06T06:41:44.9561762Z [36;1m  echo "BAZEL_REPOSITORY_CACHE=$bazel_repository_cache"[0m
+2026-11-06T06:41:44.9561976Z [36;1m  echo "BAZEL_REPO_CONTENTS_CACHE=$bazel_repo_contents_cache"[0m
+2026-11-06T06:41:44.9562180Z [36;1m  echo "CARGO_TARGET_DIR=$cargo_target_dir"[0m
+2026-11-06T06:41:44.9562344Z [36;1m  echo "TEMP=$tmp"[0m
+2026-11-06T06:41:44.9562475Z [36;1m  echo "TMP=$tmp"[0m
+2026-11-06T06:41:44.9562601Z [36;1m} >> "$GITHUB_ENV"[0m
+2026-11-06T06:41:44.9577900Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-06T06:41:44.9578077Z env:
+2026-11-06T06:41:44.9578220Z   CANDIDATE_SHA: ddacfba30b28e86eae9615d7063fff2c7941b1d4
+2026-11-06T06:41:44.9578403Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-06T06:41:44.9578547Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-06T06:41:44.9578696Z ##[endgroup]
+2026-11-06T06:41:44.9630194Z ##[end-action id=__self.setup_bazel.setup_ci.configure_ci_build_paths;outcome=success;conclusion=success;duration_ms=8]
+2026-11-06T06:41:44.9631878Z ##[start-action display=Prefer the Git CLI for Cargo git dependencies;id=__self.setup_bazel.setup_ci.__run_4]
+2026-11-06T06:41:44.9644708Z ##[group]Run echo "CARGO_NET_GIT_FETCH_WITH_CLI=true" >> "$GITHUB_ENV"
+2026-11-06T06:41:44.9644955Z [36;1mecho "CARGO_NET_GIT_FETCH_WITH_CLI=true" >> "$GITHUB_ENV"[0m
+2026-11-06T06:41:44.9659204Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-06T06:41:44.9659381Z env:
+2026-11-06T06:41:44.9659524Z   CANDIDATE_SHA: ddacfba30b28e86eae9615d7063fff2c7941b1d4
+2026-11-06T06:41:44.9659705Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-06T06:41:44.9659853Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-06T06:41:44.9660058Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-06T06:41:44.9660271Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-06T06:41:44.9660455Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-06T06:41:44.9660680Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-06T06:41:44.9661017Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-42175704028-lock-proposal
+2026-11-06T06:41:44.9661320Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-06T06:41:44.9661502Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-06T06:41:44.9661658Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-06T06:41:44.9661798Z ##[endgroup]
+2026-11-06T06:41:44.9695568Z ##[end-action id=__self.setup_bazel.setup_ci.__run_4;outcome=success;conclusion=success;duration_ms=6]
+2026-11-06T06:41:44.9697005Z ##[start-action display=Install DotSlash;id=__self.setup_bazel.setup_ci.__facebook_install-dotslash]
+2026-11-06T06:41:44.9732851Z ##[group]Run facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+2026-11-06T06:41:44.9733067Z env:
+2026-11-06T06:41:44.9733205Z   CANDIDATE_SHA: ddacfba30b28e86eae9615d7063fff2c7941b1d4
+2026-11-06T06:41:44.9733381Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-06T06:41:44.9733533Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-06T06:41:44.9733738Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-06T06:41:44.9733945Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-06T06:41:44.9734129Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-06T06:41:44.9734357Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-06T06:41:44.9734683Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-42175704028-lock-proposal
+2026-11-06T06:41:44.9734982Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-06T06:41:44.9735164Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-06T06:41:44.9735313Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-06T06:41:44.9735459Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-06T06:41:44.9735596Z ##[endgroup]
+2026-11-06T06:41:44.9760974Z ##[start-action display=Run echo platform=ubuntu-22.04.x86_64 >> $GITHUB_OUTPUT;id=__self.setup_bazel.setup_ci.__facebook_install-dotslash.configure]
+2026-11-06T06:41:44.9774177Z ##[group]Run echo platform=ubuntu-22.04.x86_64 >> $GITHUB_OUTPUT
+2026-11-06T06:41:44.9774415Z [36;1mecho platform=ubuntu-22.04.x86_64 >> $GITHUB_OUTPUT[0m
+2026-11-06T06:41:44.9776144Z [36;1mecho version=$(curl https://api.github.com/repos/facebook/dotslash/releases/latest --header "authorization: ***" --location --silent --show-error --fail --retry 5 | sed -n 's/^ *"tag_name": *"\(.*\)",$/\1/p') >> $GITHUB_OUTPUT[0m
+2026-11-06T06:41:44.9790766Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-06T06:41:44.9790938Z env:
+2026-11-06T06:41:44.9791080Z   CANDIDATE_SHA: ddacfba30b28e86eae9615d7063fff2c7941b1d4
+2026-11-06T06:41:44.9791261Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-06T06:41:44.9791404Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-06T06:41:44.9791605Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-06T06:41:44.9791815Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-06T06:41:44.9792004Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-06T06:41:44.9792225Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-06T06:41:44.9792546Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-42175704028-lock-proposal
+2026-11-06T06:41:44.9792963Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-06T06:41:44.9793142Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-06T06:41:44.9793290Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-06T06:41:44.9793434Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-06T06:41:44.9793570Z ##[endgroup]
+2026-11-06T06:41:45.5387771Z ##[end-action id=__self.setup_bazel.setup_ci.__facebook_install-dotslash.configure;outcome=success;conclusion=success;duration_ms=562]
+2026-11-06T06:41:45.5392354Z ##[start-action display=Run mkdir -p "/home/runner/work/_temp/install-dotslash/bin";id=__self.setup_bazel.setup_ci.__facebook_install-dotslash.__run]
+2026-11-06T06:41:45.5406548Z ##[group]Run mkdir -p "/home/runner/work/_temp/install-dotslash/bin"
+2026-11-06T06:41:45.5406805Z [36;1mmkdir -p "/home/runner/work/_temp/install-dotslash/bin"[0m
+2026-11-06T06:41:45.5422239Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-06T06:41:45.5422417Z env:
+2026-11-06T06:41:45.5422567Z   CANDIDATE_SHA: ddacfba30b28e86eae9615d7063fff2c7941b1d4
+2026-11-06T06:41:45.5422746Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-06T06:41:45.5422890Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-06T06:41:45.5423094Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-06T06:41:45.5423305Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-06T06:41:45.5423489Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-06T06:41:45.5423711Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-06T06:41:45.5434462Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-42175704028-lock-proposal
+2026-11-06T06:41:45.5434806Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-06T06:41:45.5434990Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-06T06:41:45.5435141Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-06T06:41:45.5435285Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-06T06:41:45.5435421Z ##[endgroup]
+2026-11-06T06:41:45.5482117Z ##[end-action id=__self.setup_bazel.setup_ci.__facebook_install-dotslash.__run;outcome=success;conclusion=success;duration_ms=8]
+2026-11-06T06:41:45.5485420Z ##[start-action display=Run curl https://github.com/facebook/dotslash/releases/download/v0.5.9/dotslash-ubuntu-22.04.x86_64.v0.5.9.tar.gz \;id=__self.setup_bazel.setup_ci.__facebook_install-dotslash.__run_2]
+2026-11-06T06:41:45.5498553Z ##[group]Run curl https://github.com/facebook/dotslash/releases/download/v0.5.9/dotslash-ubuntu-22.04.x86_64.v0.5.9.tar.gz \
+2026-11-06T06:41:45.5499003Z [36;1mcurl https://github.com/facebook/dotslash/releases/download/v0.5.9/dotslash-ubuntu-22.04.x86_64.v0.5.9.tar.gz \[0m
+2026-11-06T06:41:45.5500929Z [36;1m--header "authorization: ***" \[0m
+2026-11-06T06:41:45.5501149Z [36;1m--output "/home/runner/work/_temp/install-dotslash/dotslash.tar.gz" \[0m
+2026-11-06T06:41:45.5501394Z [36;1m--location --silent --show-error --fail --retry 5[0m
+2026-11-06T06:41:45.5514770Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-06T06:41:45.5514946Z env:
+2026-11-06T06:41:45.5515085Z   CANDIDATE_SHA: ddacfba30b28e86eae9615d7063fff2c7941b1d4
+2026-11-06T06:41:45.5515268Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-06T06:41:45.5515415Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-06T06:41:45.5515619Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-06T06:41:45.5515832Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-06T06:41:45.5516018Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-06T06:41:45.5516241Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-06T06:41:45.5516572Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-42175704028-lock-proposal
+2026-11-06T06:41:45.5516877Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-06T06:41:45.5517065Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-06T06:41:45.5517216Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-06T06:41:45.5517631Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-06T06:41:45.5517775Z ##[endgroup]
+2026-11-06T06:41:45.9906662Z ##[end-action id=__self.setup_bazel.setup_ci.__facebook_install-dotslash.__run_2;outcome=success;conclusion=success;duration_ms=442]
+2026-11-06T06:41:45.9910936Z ##[start-action display=Run tar xvf "/home/runner/work/_temp/install-dotslash/dotslash.tar.gz" -C "/home/runner/work/_temp/install-dotslash/bin/";id=__self.setup_bazel.setup_ci.__facebook_install-dotslash.__run_3]
+2026-11-06T06:41:45.9926393Z ##[group]Run tar xvf "/home/runner/work/_temp/install-dotslash/dotslash.tar.gz" -C "/home/runner/work/_temp/install-dotslash/bin/"
+2026-11-06T06:41:45.9926887Z [36;1mtar xvf "/home/runner/work/_temp/install-dotslash/dotslash.tar.gz" -C "/home/runner/work/_temp/install-dotslash/bin/"[0m
+2026-11-06T06:41:45.9943263Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-06T06:41:45.9943448Z env:
+2026-11-06T06:41:45.9943603Z   CANDIDATE_SHA: ddacfba30b28e86eae9615d7063fff2c7941b1d4
+2026-11-06T06:41:45.9943790Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-06T06:41:45.9943942Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-06T06:41:45.9944157Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-06T06:41:45.9944376Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-06T06:41:45.9944567Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-06T06:41:45.9944804Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-06T06:41:45.9945145Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-42175704028-lock-proposal
+2026-11-06T06:41:45.9945463Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-06T06:41:45.9945656Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-06T06:41:45.9945813Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-06T06:41:45.9945967Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-06T06:41:45.9946108Z ##[endgroup]
+2026-11-06T06:41:45.9997520Z dotslash
+2026-11-06T06:41:46.0095209Z ##[end-action id=__self.setup_bazel.setup_ci.__facebook_install-dotslash.__run_3;outcome=success;conclusion=success;duration_ms=18]
+2026-11-06T06:41:46.0098987Z ##[start-action display=Run tar xvf "/home/runner/work/_temp/install-dotslash/dotslash.tar.gz" -O >"/home/runner/work/_temp/install-dotslash/bin/dotslash.exe" --force-local;id=__self.setup_bazel.setup_ci.__facebook_install-dotslash.__run_4]
+2026-11-06T06:41:46.0101763Z ##[end-action id=__self.setup_bazel.setup_ci.__facebook_install-dotslash.__run_4;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-11-06T06:41:46.0103436Z ##[start-action display=Run echo "/home/runner/work/_temp/install-dotslash/bin" >> $GITHUB_PATH;id=__self.setup_bazel.setup_ci.__facebook_install-dotslash.__run_5]
+2026-11-06T06:41:46.0118095Z ##[group]Run echo "/home/runner/work/_temp/install-dotslash/bin" >> $GITHUB_PATH
+2026-11-06T06:41:46.0118400Z [36;1mecho "/home/runner/work/_temp/install-dotslash/bin" >> $GITHUB_PATH[0m
+2026-11-06T06:41:46.0133788Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-06T06:41:46.0133974Z env:
+2026-11-06T06:41:46.0134125Z   CANDIDATE_SHA: ddacfba30b28e86eae9615d7063fff2c7941b1d4
+2026-11-06T06:41:46.0134330Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-06T06:41:46.0134481Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-06T06:41:46.0134692Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-06T06:41:46.0134904Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-06T06:41:46.0135092Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-06T06:41:46.0135327Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-06T06:41:46.0135664Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-42175704028-lock-proposal
+2026-11-06T06:41:46.0135970Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-06T06:41:46.0136158Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-06T06:41:46.0136452Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-06T06:41:46.0136600Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-06T06:41:46.0136739Z ##[endgroup]
+2026-11-06T06:41:46.0173457Z ##[end-action id=__self.setup_bazel.setup_ci.__facebook_install-dotslash.__run_5;outcome=success;conclusion=success;duration_ms=6]
+2026-11-06T06:41:46.0174790Z ##[start-action display=Run dotslash --version;id=__self.setup_bazel.setup_ci.__facebook_install-dotslash.__run_6]
+2026-11-06T06:41:46.0187033Z ##[group]Run dotslash --version
+2026-11-06T06:41:46.0187190Z [36;1mdotslash --version[0m
+2026-11-06T06:41:46.0202301Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-06T06:41:46.0202494Z env:
+2026-11-06T06:41:46.0202635Z   CANDIDATE_SHA: ddacfba30b28e86eae9615d7063fff2c7941b1d4
+2026-11-06T06:41:46.0202819Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-06T06:41:46.0202968Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-06T06:41:46.0203174Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-06T06:41:46.0203394Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-06T06:41:46.0203580Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-06T06:41:46.0203806Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-06T06:41:46.0204138Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-42175704028-lock-proposal
+2026-11-06T06:41:46.0204436Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-06T06:41:46.0204619Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-06T06:41:46.0204769Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-06T06:41:46.0204919Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-06T06:41:46.0205055Z ##[endgroup]
+2026-11-06T06:41:46.0241769Z DotSlash 0.5.9
+2026-11-06T06:41:46.0248419Z ##[end-action id=__self.setup_bazel.setup_ci.__facebook_install-dotslash.__run_6;outcome=success;conclusion=success;duration_ms=7]
+2026-11-06T06:41:46.0256571Z ##[end-action id=__self.setup_bazel.setup_ci.__facebook_install-dotslash;outcome=success;conclusion=success;duration_ms=1055]
+2026-11-06T06:41:46.0258084Z ##[start-action display=Install just;id=__self.setup_bazel.setup_ci.__taiki-e_install-action]
+2026-11-06T06:41:46.0285679Z ##[group]Run taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+2026-11-06T06:41:46.0285888Z with:
+2026-11-06T06:41:46.0285997Z   tool: just@1.51.0
+2026-11-06T06:41:46.0286106Z   checksum: true
+2026-11-06T06:41:46.0286223Z   fallback: cargo-binstall
+2026-11-06T06:41:46.0286348Z env:
+2026-11-06T06:41:46.0286501Z   CANDIDATE_SHA: ddacfba30b28e86eae9615d7063fff2c7941b1d4
+2026-11-06T06:41:46.0286801Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-06T06:41:46.0286945Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci
+2026-11-06T06:41:46.0287148Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-06T06:41:46.0287519Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o
+2026-11-06T06:41:46.0287763Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b
+2026-11-06T06:41:46.0287995Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache
+2026-11-06T06:41:46.0288323Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-42175704028-lock-proposal
+2026-11-06T06:41:46.0288625Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target
+2026-11-06T06:41:46.0288809Z   TEMP: /home/runner/.cache/codex-ci/tmp
+2026-11-06T06:41:46.0288959Z   TMP: /home/runner/.cache/codex-ci/tmp
+2026-11-06T06:41:46.0289105Z   CARGO_NET_GIT_FETCH_WITH_CLI: true
+2026-11-06T06:41:46.0289240Z ##[endgroup]
+2026-11-06T06:41:46.0291455Z ##[start-action display=Run set -eu;id=__self.setup_bazel.setup_ci.__taiki-e_install-action.__run]
+2026-11-06T06:41:46.0303165Z ##[group]Run set -eu
+2026-11-06T06:41:46.0303315Z [36;1mset -eu[0m
+2026-11-06T06:41:46.0303442Z [36;1mif ! command -v bash >/dev/null; then[0m
+2026-11-06T06:41:46.0303629Z [36;1m  if grep -Eq '^ID=alpine' /etc/os-release; then[0m
+2026-11-06T06:41:46.0303997Z [36;1m    printf '::group::Install packages required for install-action (bash)\n'[0m
+2026-11-06T06:41:46.0304230Z [36;1m    # NB: sync with apk_install in main.sh[0m
+2026-11-06T06:41:46.0304400Z [36;1m    if command -v sudo >/dev/null; then[0m
+2026-11-06T06:41:46.0304569Z [36;1m      sudo apk --no-cache add bash[0m
+2026-11-06T06:41:46.0304739Z [36;1m    elif command -v doas >/dev/null; then[0m
+2026-11-06T06:41:46.0304904Z [36;1m      doas apk --no-cache add bash[0m
+2026-11-06T06:41:46.0305049Z [36;1m    else[0m
+2026-11-06T06:41:46.0305164Z [36;1m      apk --no-cache add bash[0m
+2026-11-06T06:41:46.0305299Z [36;1m    fi[0m
+2026-11-06T06:41:46.0305420Z [36;1m    printf '::endgroup::\n'[0m
+2026-11-06T06:41:46.0305555Z [36;1m  else[0m
+2026-11-06T06:41:46.0305699Z [36;1m    printf '::error::install-action requires bash\n'[0m
+2026-1

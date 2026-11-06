@@ -1,0 +1,137 @@
+{
+  "schema": "post-audit-execution-update-v2-final-independent-review-v1",
+  "reviewer": "format_finish",
+  "decision": "ACCEPT_REPORT_FACTS_AND_QUALIFICATION_SCOPE",
+  "remaining_report_findings": 0,
+  "accepted_report": {
+    "path": "second-post-audit-documents/POST_AUDIT_EXECUTION_UPDATE_V2.zh-CN.md",
+    "bytes": 15742,
+    "git_blob": "38b3b47f3308308dcbf324c5b1f9416365285ed0",
+    "sha256": "bcc0dedeba105e92ffc2f138898d7a8b76cb221d65c28b730e71f023c1c574cf"
+  },
+  "prior_findings_actual": {
+    "bytes": 11525,
+    "git_blob": "82825a801bdcec5d11a85048b9478c240a23a365",
+    "sha256": "9f7e01d7bbf534c0c337315254d1656fef468021e971eedb377930672e351e92"
+  },
+  "initial_report_preserved": {
+    "path": "second-post-audit-documents/POST_AUDIT_EXECUTION_UPDATE_V2.zh-CN.md",
+    "bytes": 14708,
+    "git_blob": "1b5b9b985d72495b681e423b3e0f99cf2427260a",
+    "sha256": "7c38f7455564bfffb17d1518eea2221acd74d2ccf1eb0aa2bf499ef85994a855"
+  },
+  "correction_acceptance": [
+    {
+      "id": "R1",
+      "resolved": true,
+      "accepted_change": "The report explicitly identifies credential-sanitized / opaque-payload-omitted derived BEP, all3 opaque omissions, and raw BEP not retained; complete=false and every product failure remain."
+    },
+    {
+      "id": "R2",
+      "resolved": true,
+      "accepted_change": "The report describes340 new actual tool returns and exactly62 create/277 successful full GET/1 failed GET, without claiming reconstruction of231 lost historical returns."
+    },
+    {
+      "id": "Q1",
+      "resolved": true,
+      "accepted_change": "The report now spells out288 payloads + actual registry + separate self receipt =290 paths, matching the complete existing plan path by path."
+    }
+  ],
+  "exact_scope": {
+    "canonical_blocker_counts": {
+      "CLOSED_SCOPED": 16,
+      "OPEN": 6,
+      "SCIENTIFIC_HOLD": 1
+    },
+    "all23_ids_and_original_literal_exit_conditions_equal": true,
+    "machine_ledger_exact_published_blob": "ea5ad333eacf2f49326a8f80a39e94ad771d818d",
+    "new_blocker_transitions": 0,
+    "integration_candidate": {
+      "PR": 4936,
+      "head": "2d1137b1ba39fab0e6a28bac8decc114dfa0138c",
+      "tree": "99a9c0cefa627290c9fc72a9ba90d0485020fe11",
+      "merge": "a0cb0f33661e199674012e3302b0602407c91a8d",
+      "first_parent": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+      "target": "63652be658ebed8d3052eb789b951793384fd5e4",
+      "five_actual_ordered_parents_checked": true
+    },
+    "change_denominators": {
+      "first_parent_product_paths": 230,
+      "PR_target_changed_files": 1561,
+      "PR_target_commits": 102,
+      "prior_PR4797_target_changed_files": 1335,
+      "prior_PR4797_target_commits": 96,
+      "counts_not_added_or_conflated": true
+    },
+    "Cargo": {
+      "actual_double_lock_and223_product_postimages_accepted_for_integration": true,
+      "product_compile_and_platform_qualification_not_granted": true
+    },
+    "B21": {
+      "original_workflow_failure_retained": true,
+      "attempts": 501,
+      "target_summaries": 438,
+      "console_target_roster": 605,
+      "PTY_cases": 31,
+      "Core_retry_XML_digest_limits_preserved": true,
+      "source84cc_not_reassigned_to8075_or_combined2d1137": true
+    },
+    "concurrent_increment": "50 different PR observations /38 updated; historical census3555/5333 kept historical, author reports not converted to independent science/native acceptance."
+  },
+  "final_delta_checks": {
+    "report_diff_restricted_to_reviewed_BEP_wording_B21_path_denominator_new_bounded_CI_cuts_and_recovery_wording": true,
+    "clocks_and_states_verified_from_existing_complete_retained_API_wrappers": [
+      {
+        "file": "integration-ci-review/head-2d1137-runs-second.original.json",
+        "observed_at_utc": "2026-11-06T07:43:03Z",
+        "git_blob": "7eb2a86ca493137ca4b5e25d6317fe88e3b3ad80",
+        "count": 18,
+        "states": {
+          "skipped": 2,
+          "queued": 13,
+          "success": 1,
+          "in_progress": 2
+        }
+      },
+      {
+        "file": "integration-ci-review/blocking-42180997764-jobs-fifth.original.json",
+        "observed_at_utc": "2026-11-06T07:47:10Z",
+        "git_blob": "730b40e43820e79fe30ec943be6ee1d395c4b2d2",
+        "count": 3,
+        "states": [
+          {
+            "id": 127770340918,
+            "status": "queued",
+            "conclusion": null
+          },
+          {
+            "id": 127770341230,
+            "status": "queued",
+            "conclusion": null
+          },
+          {
+            "id": 127770341439,
+            "status": "completed",
+            "conclusion": "success"
+          }
+        ]
+      }
+    ],
+    "third_cut": {
+      "observed_at_utc": "2026-11-06T07:37:14Z",
+      "Codespell": "success",
+      "scope": "queued",
+      "Blob_policy": "queued"
+    },
+    "historical_0732_cut_preserved": true,
+    "fixed_blocking_workflow_needs_scope_for_repo_checks_cargo_deny_rust_ci_Bazel_confirmed": true,
+    "not_yet_created_jobs_not_declared_skipped_or_failed": true,
+    "API_success_not_upgraded_to_full_product_acceptance": true
+  },
+  "review_actions": "Read original retained files and necessary text delta only. No new CI/API queries, native/toolchain execution, product changes, ref/PR writes, or repeated large-packet replay.",
+  "limits": [
+    "This is an independent accuracy/scope review of the exact named report, not a grant of product or scientific qualification.",
+    "Future CI observations require a new cut and do not mutate this accepted report.",
+    "Final relative-link targets and the audit index/commit publication are root-owned follow-up checks; this review does not claim them already published."
+  ]
+}

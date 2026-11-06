@@ -1,0 +1,82 @@
+{
+  "added_regressions_not_executed": [
+    "dropping_store_unlocks_while_a_duplicate_file_remains_open",
+    "failed_create_unlocks_while_a_duplicate_file_remains_open",
+    "failed_recover_unlocks_while_a_duplicate_file_remains_open"
+  ],
+  "all_original_storage_logic_reconstructed_byte_exactly_after_removing_ownership_delta": true,
+  "all_rust_call_search": {
+    "matched_lines": 112,
+    "matched_paths": 11,
+    "scanned": 4832
+  },
+  "candidate": {
+    "actual_postimage_full_GETs": 2,
+    "changed_paths": [
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file.rs",
+        "postimage": {
+          "bytes": 16163,
+          "git_blob": "603d36b01f6f8fe7472c72588e793f8ef169a08b",
+          "sha256": "5d344456e04d4b5972ff5bdcd17adcc08e0570c5742b07584ae1deb9907223a0"
+        },
+        "preimage": {
+          "bytes": 15770,
+          "git_blob": "d496f6865d39e98d7b92ed62ebf130945cd8266c",
+          "sha256": "b9d273b15d8e3f15ae6860dd400f62734ae6afb1d05a62d44e88dcd5bf6048dd"
+        }
+      },
+      {
+        "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file_tests.rs",
+        "postimage": {
+          "bytes": 13010,
+          "git_blob": "2c451a3c110288ca06eb43724329c48c39bb8f1e",
+          "sha256": "0a810adc45251ec8f5e6ffd92bb8126cb239e1c63184f6e54b013b6c6789a215"
+        },
+        "preimage": {
+          "bytes": 10243,
+          "git_blob": "e6cb964c82d7aea02acae338c739ac1e5158dd3a",
+          "sha256": "45a09d23dada6bd3d0c9e424f9552dd538ea929bc3128b830c1361c3bf4fa280"
+        }
+      }
+    ],
+    "computed_tree": "7c18622c5c1b69826f7103dd2b2fec5bf572ae3a",
+    "full_tree_actual_create_and_root_GET": true,
+    "unchanged_leaves": 10580
+  },
+  "decision": "STATIC_CANDIDATE_READY_FOR_INDEPENDENT_REVIEW",
+  "local_os_mechanism": {
+    "cases": 4,
+    "platform": {
+      "machine": "x86_64",
+      "release": "6.18.57",
+      "sysname": "Linux"
+    },
+    "scope": "controlled local OS mechanism only; not project Rust or original Mac ARM execution"
+  },
+  "native_or_ref_mutation": false,
+  "original_mac_cause_proven": false,
+  "original_mac_failure": {
+    "actual": "Busy",
+    "artifact": 13474454125,
+    "cached": false,
+    "expected": "Rollback",
+    "failed": 1,
+    "job": 127679861749,
+    "original_timeout_ms": 300000,
+    "passed": 114,
+    "runner": "darwin-sandbox",
+    "test_exit": 101
+  },
+  "original_three_file_tests_byte_preserved": true,
+  "primary_full_GETs": 8,
+  "project_compile_tests_and_fmt_executed": false,
+  "public_owner_and_into_store_unchanged": true,
+  "source": {
+    "head": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+    "leaves": 10582,
+    "source_files_verified": 49,
+    "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359"
+  },
+  "source_full_GETs": 3
+}

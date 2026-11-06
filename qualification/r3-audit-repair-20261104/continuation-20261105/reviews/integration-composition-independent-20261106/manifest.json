@@ -1,0 +1,169 @@
+{
+  "schema": "integration-composition-independent-portable-packet-v1",
+  "archive": {
+    "path": "review-packet.original.zip",
+    "bytes": 104584,
+    "git_blob": "106781015be42e087f7b7ca5820aa5ed9d78275c",
+    "sha256": "1416c5bbe8da609db49c187002ca1d9e2850326c48363357cde2b3d2e1e70bb7"
+  },
+  "parts": [
+    {
+      "path": "review-packet.zip.part-0001.b64",
+      "bytes": 139448,
+      "git_blob": "26fdc682a680f80c6a41f897f7b112e62f44a85f",
+      "sha256": "62ba4cd1163711768c2629a231fbcfb8907a48b8888d50cc63ce1d31fa7dd796"
+    }
+  ],
+  "members": [
+    {
+      "path": "frozen-review/REVIEW.zh-CN.md",
+      "bytes": 3305,
+      "git_blob": "73ec5b304954a48bae04e79c9b1bee72cd52358c",
+      "sha256": "81057c2e5f8d260060e0227a9a1fd60b45afdb533ddfbef0f97ef8c28362c39a"
+    },
+    {
+      "path": "frozen-review/freeze-manifest.json",
+      "bytes": 3530,
+      "git_blob": "f7ea095f3d8d597993e7732168f77f1481429e5c",
+      "sha256": "662edd9f37c4d5bac60907b9a9fdc686331a3ff2853e3a9791f8fa749ee29e5f"
+    },
+    {
+      "path": "frozen-review/original/arg0.fresh-GET.original.json",
+      "bytes": 3979,
+      "git_blob": "bba50b709c676f84103f0ccfc3fe6b206933bf37",
+      "sha256": "893e96a140e9b46160776a7274747e329a3c849288e231abc5fc6c9dd663bf23"
+    },
+    {
+      "path": "frozen-review/original/base67.fresh-GET.original.json",
+      "bytes": 4939,
+      "git_blob": "991933e5add82bf17f34ffa50382ebc5126335b5",
+      "sha256": "0169e2d1ee77890bf134fcea31562c1442c605d6adad33a2ecb14f1686f0d7b6"
+    },
+    {
+      "path": "frozen-review/original/cargo-registry.fresh-GET.original.json",
+      "bytes": 169156,
+      "git_blob": "387ad09aad5e0cf998fac19a91bd25ce26e4b39c",
+      "sha256": "d9717ee275ff0d66d990cae2c952e4b60e3eb00a7aa14558a42fbde0202707d9"
+    },
+    {
+      "path": "frozen-review/original/default-main-ref.fresh-GET.original.json",
+      "bytes": 1441,
+      "git_blob": "e260093eb4f1732b8e329966cf70de98e5adaa66",
+      "sha256": "bad76df4814bf1827e091e89c0b6637ccec4f5799973c9b63468b6659774f293"
+    },
+    {
+      "path": "frozen-review/original/holdout.fresh-GET.original.json",
+      "bytes": 3995,
+      "git_blob": "832a9beb19a311b3988ffd8542827833c80668be",
+      "sha256": "158d534f0b4290ca6d80fd5c8b92a40b6cef92e8940bf5472b911c397869807b"
+    },
+    {
+      "path": "frozen-review/original/pty.fresh-GET.original.json",
+      "bytes": 3637,
+      "git_blob": "604ead2e148b86d3c1ba29b387fc463b3eae08b7",
+      "sha256": "0e34fd50adae484ca314d7de41eccbaf7fcc3fcfa11fcf8d0271aa6634521734"
+    },
+    {
+      "path": "frozen-review/original/target-ref.fresh-GET.original.json",
+      "bytes": 1879,
+      "git_blob": "e67b43f229cd25c08c866aa2c98160b955e61e42",
+      "sha256": "f5299bffd0b79eaf37c572a92ed3d25bc4238ecfa06fc24bb659f50383187f38"
+    },
+    {
+      "path": "frozen-review/original/windows.fresh-GET.original.json",
+      "bytes": 3961,
+      "git_blob": "bd2964e3ba8ea3428c6b38359dea1b17a93f6991",
+      "sha256": "40c1f5a1a12b9aad87c59fe276da5ec80c48e56e6195a36822b985311e6bfd08"
+    },
+    {
+      "path": "frozen-review/save_recovery_chunk.py",
+      "bytes": 1521,
+      "git_blob": "dbd83e85fce522fd45f1c43b0a02fe7b45c0509c",
+      "sha256": "afa80440d41ea72e2fc39cf84ba18f5be9e83310d9067a867187eccf12006c13"
+    },
+    {
+      "path": "frozen-review/verification.execution.json",
+      "bytes": 193,
+      "git_blob": "f37ad7b339c36a2bc804cd302b184bc616c1e67e",
+      "sha256": "1ac76139701fe5cd1376b105c6bec1c0d5f1f1e6adac430bedc535039decd758"
+    },
+    {
+      "path": "frozen-review/verification.stderr.txt",
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "frozen-review/verification.stdout.json",
+      "bytes": 11534,
+      "git_blob": "545a94c559cba1b051a91d0113881bc23dfe88bf",
+      "sha256": "d9b8dc456643bcc25c097be3e469a6625bedbf09b3d7f56e51f12722973c9f40"
+    },
+    {
+      "path": "frozen-review/verify_composition.py",
+      "bytes": 13220,
+      "git_blob": "4f197962c9b22a8555397af3db3bdf83396e9b9a",
+      "sha256": "ff7f210f8466645edc112256a0970b3961fadcd7f137fd470e598078ffa236a3"
+    },
+    {
+      "path": "post-publication/ADDENDUM.json",
+      "bytes": 4012,
+      "git_blob": "43810c7883bc901be37c22f5088461c0f8b3d5e8",
+      "sha256": "b0c28f87979508d5d9ecad158f2ac9be8af4e787f49db4378f24407712d4bcaa"
+    },
+    {
+      "path": "post-publication/head.fresh-GET.original.json",
+      "bytes": 6907,
+      "git_blob": "8acf98e55b9463a54db5096cc0321f30a4941e68",
+      "sha256": "096221db6cb4c75916a8d98f542f6c5b82aaf269c7f38c7d14831ba83ece356c"
+    },
+    {
+      "path": "post-publication/main-ref.fresh-GET.original.json",
+      "bytes": 1441,
+      "git_blob": "e260093eb4f1732b8e329966cf70de98e5adaa66",
+      "sha256": "bad76df4814bf1827e091e89c0b6637ccec4f5799973c9b63468b6659774f293"
+    },
+    {
+      "path": "post-publication/merge.fresh-GET.original.json",
+      "bytes": 6729,
+      "git_blob": "c1d0974bb4bfed0962b5c38559d7bbce305e9160",
+      "sha256": "2ac24d05c9a4b540d5a0873304ec8c84c3ff7074779248a76e710576b8ed8a7d"
+    },
+    {
+      "path": "post-publication/pr4936.fresh-GET.original.json",
+      "bytes": 49445,
+      "git_blob": "7058956e1bcc8a2dc55c89a01df3c853298f6c7d",
+      "sha256": "21c0a8881fdd52c5267a2a475418416e1b7acf9cda23950c3e88b16e5ccd5ad5"
+    },
+    {
+      "path": "post-publication/primary-pr4797.root-original.json",
+      "bytes": 157309,
+      "git_blob": "2fae069e1120fc9e6f57477b1b08eda96d3ed662",
+      "sha256": "b0f28f99ea61c8fdec2e2aae078a7b4aac2ee291cf2b04e2401bdeb4e4e27e22"
+    },
+    {
+      "path": "post-publication/target-ref.fresh-GET.original.json",
+      "bytes": 1879,
+      "git_blob": "e67b43f229cd25c08c866aa2c98160b955e61e42",
+      "sha256": "f5299bffd0b79eaf37c572a92ed3d25bc4238ecfa06fc24bb659f50383187f38"
+    }
+  ],
+  "prior_review": {
+    "bytes": 3305,
+    "git_blob": "73ec5b304954a48bae04e79c9b1bee72cd52358c",
+    "sha256": "81057c2e5f8d260060e0227a9a1fd60b45afdb533ddfbef0f97ef8c28362c39a"
+  },
+  "prior_freeze": {
+    "bytes": 3530,
+    "git_blob": "f7ea095f3d8d597993e7732168f77f1481429e5c",
+    "sha256": "662edd9f37c4d5bac60907b9a9fdc686331a3ff2853e3a9791f8fa749ee29e5f"
+  },
+  "original_review_members": 14,
+  "original_review_unchanged": true,
+  "separate_addendum": {
+    "bytes": 4012,
+    "git_blob": "43810c7883bc901be37c22f5088461c0f8b3d5e8",
+    "sha256": "b0c28f87979508d5d9ecad158f2ac9be8af4e787f49db4378f24407712d4bcaa"
+  },
+  "scope": "Frozen composition review and separate post-publication identity verification; no native/CI qualification expansion"
+}

@@ -1,0 +1,39 @@
+{
+  "actual_product_locks_generated": false,
+  "base_tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+  "candidate_source_files": {
+    ".github/scripts/pin-utils-backport-spec.json": {
+      "bytes": 13898,
+      "git_blob": "4fc7c29d3eeee3c5e35be1e486e066a61f94c360",
+      "sha256": "e2424bab56dda6028939a5e3df94b6866afa68aa0a9a423c6fb01660c30796d5"
+    },
+    ".github/scripts/pin_utils_proposal_evidence.py": {
+      "bytes": 10178,
+      "git_blob": "da511726fca23d6a97519f71a67572b0c1ef7c11",
+      "sha256": "290fc8a1b0eecdcb88b49d1b91a6045da3ee3f432149b5cf34cbb78fb90649f7"
+    },
+    ".github/scripts/propose_pin_utils_backport.py": {
+      "bytes": 24242,
+      "git_blob": "f37126e662fceaa32c02aa364d35af79a0eb92f6",
+      "sha256": "c07f6e1b6ad39e82b7c207ecb2ad1c1cadd926f0b79e8d15d8ac4c35bfc8e8e1"
+    },
+    ".github/workflows/hepta-pin-utils-backport-proposal.yml": {
+      "bytes": 3288,
+      "git_blob": "0d73b96c9bfc9753b1d7e1edee6cf1e54c355c38",
+      "sha256": "5473560ee791ade999ed7d014c3d554c924d9e4e916804e4ae0d82f48b2e758a"
+    }
+  },
+  "computed_candidate_tree": "cb7f5eaaadd55c1476a8b695c04c70848c603e85",
+  "formal_independent_review": "PENDING at v2 source freeze; append separate immutable receipt",
+  "frozen_at_utc": "2026-11-06T06:26:47.837522+00:00",
+  "original_10582_product_leaves_unchanged": true,
+  "parent": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+  "schema": "fixed-source-proposal-freeze-v2",
+  "source_ref_or_PR_published": false,
+  "v1_cold_start_misparse_confirmed_by_independent_control": true,
+  "v1_preserved": true,
+  "v2_source_delta": [
+    ".github/scripts/pin_utils_proposal_evidence.py",
+    ".github/scripts/propose_pin_utils_backport.py"
+  ]
+}

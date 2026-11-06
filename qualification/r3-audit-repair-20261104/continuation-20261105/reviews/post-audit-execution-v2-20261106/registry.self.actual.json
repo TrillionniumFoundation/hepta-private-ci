@@ -1,0 +1,35 @@
+{
+  "schema": "hepta-root-second-post-audit-registry-self-receipt-v1",
+  "registry_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v2-20261106/registry.actual.json",
+  "registry_identity": {
+    "bytes": 28267,
+    "git_blob": "95b3c0bb9d46688090e2e7558bbc50fc1427d0c5",
+    "sha256": "4f1540db1053d8befebdb533acf2430069b33c5df7f0769e946b3717df91a595"
+  },
+  "actual_created_tree": "893bc9a95abdf0dc14dd20e304f8fd893df9dd20",
+  "actual_full_GET_complete_UTF8_equal": true,
+  "create_original": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "sha": "893bc9a95abdf0dc14dd20e304f8fd893df9dd20"
+    },
+    "isError": false
+  },
+  "full_GET_original_lossless_recipe": {
+    "payload_path": "registry.actual.json",
+    "payload_git_blob": "95b3c0bb9d46688090e2e7558bbc50fc1427d0c5",
+    "marker": "__EXACT_ROOT_V2_PAYLOAD_95b3c0bb9d46688090e2e7558bbc50fc1427d0c5__",
+    "occurrences": 1,
+    "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__EXACT_ROOT_V2_PAYLOAD_95b3c0bb9d46688090e2e7558bbc50fc1427d0c5__\"\n  },\n  \"isError\": false\n}\n",
+    "substitution": "Replace every marker with JSON.stringify(the complete UTF-8 payload).slice(1,-1).",
+    "actual_serialized_original_equals_reconstruction": true
+  },
+  "original_23_exit_conditions_unchanged": true,
+  "actual_product_head": "2d1137b1ba39fab0e6a28bac8decc114dfa0138c",
+  "all_blockers_closed": false
+}

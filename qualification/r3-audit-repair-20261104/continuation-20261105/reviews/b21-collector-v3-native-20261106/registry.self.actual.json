@@ -1,0 +1,43 @@
+{
+  "schema": "b21-v3-native-complete-registry-actual-self-receipt-v1",
+  "registry_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-collector-v3-native-20261106/registry.actual.json",
+  "registry_identity": {
+    "bytes": 349440,
+    "git_blob": "13a9df668b2744f620bd16ef7d08d6b8fcd107a5",
+    "sha256": "7e83802c4b23597178c03947cde5f1d709f0db0c1aef196228597ea403b1465b"
+  },
+  "actual_create_method": "github_create_tree(content); no ref",
+  "actual_created_tree": "85c0f32c072087d88a310a05079977075051ad86",
+  "actual_full_GET_complete_UTF8_equal": true,
+  "create_original": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "sha": "85c0f32c072087d88a310a05079977075051ad86"
+    },
+    "isError": false
+  },
+  "blob_GET_original_lossless_recipe": {
+    "payload_git_blob": "13a9df668b2744f620bd16ef7d08d6b8fcd107a5",
+    "local_body_path": "registry.actual.json",
+    "marker": "__EXACT_REGISTRY_BODY_13a9df668b2744f620bd16ef7d08d6b8fcd107a5__",
+    "occurrences": 1,
+    "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__EXACT_REGISTRY_BODY_13a9df668b2744f620bd16ef7d08d6b8fcd107a5__\"\n  },\n  \"isError\": false\n}\n",
+    "substitution": "JSON.stringify(complete registry body).slice(1,-1); replacing every marker yields the exact serialized actual tool return, not HTTP wire bytes."
+  },
+  "complete_payload_paths": 288,
+  "complete_unique_payload_blobs": 287,
+  "core_archive_parts": 263,
+  "receipt_archive_parts": 2,
+  "old_231_per_batch_raw_returns_not_recovered_or_fabricated": true,
+  "old_154_payloads_current_fresh_GET_equal": true,
+  "product_statuses": {
+    "B21": "OPEN",
+    "B15": "OPEN"
+  },
+  "ledger_transition": "NONE"
+}

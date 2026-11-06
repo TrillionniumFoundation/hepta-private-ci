@@ -1,0 +1,101 @@
+{
+  "schema": "integration-composition-post-publication-independent-addendum-v1",
+  "decision": "PUBLISHED_IDENTITIES_MATCH_REVIEWED_COMPOSITION",
+  "prior_review": {
+    "bytes": 3305,
+    "git_blob": "73ec5b304954a48bae04e79c9b1bee72cd52358c",
+    "sha256": "81057c2e5f8d260060e0227a9a1fd60b45afdb533ddfbef0f97ef8c28362c39a"
+  },
+  "prior_freeze": {
+    "bytes": 3530,
+    "git_blob": "f7ea095f3d8d597993e7732168f77f1481429e5c",
+    "sha256": "662edd9f37c4d5bac60907b9a9fdc686331a3ff2853e3a9791f8fa749ee29e5f"
+  },
+  "prior_frozen_bytes_unchanged": true,
+  "observed_head": {
+    "sha": "2d1137b1ba39fab0e6a28bac8decc114dfa0138c",
+    "tree": "99a9c0cefa627290c9fc72a9ba90d0485020fe11",
+    "ordered_parents": [
+      "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+      "3c9e2bba4e7e84616509d6320a9ae013a274532c",
+      "18bbef4f61c6086f145bdb6f7acbf82127741a14",
+      "8075eb367b6e97546af206b27bbf4a3a867497c8",
+      "4a1410f332e4a34564feafbc4dcb2e808c7f6c5f"
+    ]
+  },
+  "observed_PR_merge": {
+    "sha": "a0cb0f33661e199674012e3302b0602407c91a8d",
+    "tree": "99a9c0cefa627290c9fc72a9ba90d0485020fe11",
+    "ordered_parents": [
+      "63652be658ebed8d3052eb789b951793384fd5e4",
+      "2d1137b1ba39fab0e6a28bac8decc114dfa0138c"
+    ]
+  },
+  "PR": {
+    "number": 4936,
+    "draft": true,
+    "state": "open",
+    "base_ref": "integration/ui-objective-20261103-product",
+    "base_sha": "63652be658ebed8d3052eb789b951793384fd5e4",
+    "head_ref": "integration/r3-repairs-and-locks-20261106",
+    "head_sha": "2d1137b1ba39fab0e6a28bac8decc114dfa0138c",
+    "actual_merge_sha": "a0cb0f33661e199674012e3302b0602407c91a8d"
+  },
+  "distinct_change_denominators": {
+    "reviewed_product_delta_relative_to_first_parent67": 230,
+    "PR4936_API_changed_files_against_its_PR_base": 1561,
+    "primary_PR4797_root_record_changed_files": 1335,
+    "primary_record_head": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+    "primary_record_base": "63652be658ebed8d3052eb789b951793384fd5e4",
+    "counts_not_added_or_treated_as_equal": true,
+    "no_new_claim_of_complete_PR_file_set_audit": true
+  },
+  "target_and_main_refs_unchanged_at_fresh_read": {
+    "target": "63652be658ebed8d3052eb789b951793384fd5e4",
+    "main": "732e934ba496d90fbe042b8d41d479ef901643e5"
+  },
+  "raw_inputs": [
+    {
+      "path": "head.fresh-GET.original.json",
+      "bytes": 6907,
+      "git_blob": "8acf98e55b9463a54db5096cc0321f30a4941e68",
+      "sha256": "096221db6cb4c75916a8d98f542f6c5b82aaf269c7f38c7d14831ba83ece356c"
+    },
+    {
+      "path": "main-ref.fresh-GET.original.json",
+      "bytes": 1441,
+      "git_blob": "e260093eb4f1732b8e329966cf70de98e5adaa66",
+      "sha256": "bad76df4814bf1827e091e89c0b6637ccec4f5799973c9b63468b6659774f293"
+    },
+    {
+      "path": "merge.fresh-GET.original.json",
+      "bytes": 6729,
+      "git_blob": "c1d0974bb4bfed0962b5c38559d7bbce305e9160",
+      "sha256": "2ac24d05c9a4b540d5a0873304ec8c84c3ff7074779248a76e710576b8ed8a7d"
+    },
+    {
+      "path": "pr4936.fresh-GET.original.json",
+      "bytes": 49445,
+      "git_blob": "7058956e1bcc8a2dc55c89a01df3c853298f6c7d",
+      "sha256": "21c0a8881fdd52c5267a2a475418416e1b7acf9cda23950c3e88b16e5ccd5ad5"
+    },
+    {
+      "path": "primary-pr4797.root-original.json",
+      "bytes": 157309,
+      "git_blob": "2fae069e1120fc9e6f57477b1b08eda96d3ed662",
+      "sha256": "b0f28f99ea61c8fdec2e2aae078a7b4aac2ee291cf2b04e2401bdeb4e4e27e22"
+    },
+    {
+      "path": "target-ref.fresh-GET.original.json",
+      "bytes": 1879,
+      "git_blob": "e67b43f229cd25c08c866aa2c98160b955e61e42",
+      "sha256": "f5299bffd0b79eaf37c572a92ed3d25bc4238ecfa06fc24bb659f50383187f38"
+    }
+  ],
+  "limits": [
+    "This addendum verifies published source/merge/parent identities only.",
+    "Original 14-member review and its freeze remain the earlier immutable review stage.",
+    "No component native outcome or combined CI result is inferred from publication.",
+    "No ref, PR, CI, test, source or blocker status was changed by this reviewer."
+  ]
+}

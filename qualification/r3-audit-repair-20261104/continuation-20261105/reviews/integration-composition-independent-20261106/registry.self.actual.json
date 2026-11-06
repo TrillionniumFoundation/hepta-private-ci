@@ -1,0 +1,37 @@
+{
+  "schema": "integration-composition-independent-registry-actual-self-receipt-v1",
+  "registry_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-composition-independent-20261106/registry.actual.json",
+  "registry_identity": {
+    "bytes": 36861,
+    "git_blob": "49f40370e5c8ed606ef727fcbde2e764d805b9df",
+    "sha256": "6513043f7e8e9b0a7ac8eeac448008e2779894686550bc39ef7540d0e89f78f3"
+  },
+  "actual_created_tree": "922deba5db8af28ddf2f098d6abb110e2140fb37",
+  "actual_full_GET_complete_UTF8_equal": true,
+  "create_original": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "sha": "922deba5db8af28ddf2f098d6abb110e2140fb37"
+    },
+    "isError": false
+  },
+  "full_GET_original_lossless_recipe": {
+    "payload_git_blob": "49f40370e5c8ed606ef727fcbde2e764d805b9df",
+    "marker": "__EXACT_COMPOSITION_REGISTRY_49f40370e5c8ed606ef727fcbde2e764d805b9df__",
+    "occurrences": 1,
+    "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__EXACT_COMPOSITION_REGISTRY_49f40370e5c8ed606ef727fcbde2e764d805b9df__\"\n  },\n  \"isError\": false\n}\n",
+    "substitution": "JSON.stringify(complete UTF-8 registry body).slice(1,-1); replace every marker to reproduce the complete serialized actual tool return."
+  },
+  "prior_review_actual_blob": "73ec5b304954a48bae04e79c9b1bee72cd52358c",
+  "prior_freeze_actual_blob": "f7ea095f3d8d597993e7732168f77f1481429e5c",
+  "post_publication_addendum_actual_blob": "43810c7883bc901be37c22f5088461c0f8b3d5e8",
+  "source_head": "2d1137b1ba39fab0e6a28bac8decc114dfa0138c",
+  "source_tree": "99a9c0cefa627290c9fc72a9ba90d0485020fe11",
+  "actual_PR_merge": "a0cb0f33661e199674012e3302b0602407c91a8d",
+  "reviewer_ref_PR_CI_or_source_changed": false
+}

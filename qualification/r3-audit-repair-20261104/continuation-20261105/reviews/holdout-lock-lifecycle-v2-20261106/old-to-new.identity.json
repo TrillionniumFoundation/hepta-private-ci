@@ -1,0 +1,44 @@
+{
+  "old_registry": "6b1f56cdb8a80535a916a7ed23e09d1bd5108824",
+  "old_freeze": "b86d33c1f8f550decc9f15020142880dcf2f9bb7",
+  "old_tree": "7c18622c5c1b69826f7103dd2b2fec5bf572ae3a",
+  "review_blob": "103b7adedab463bc4b63fee4ccded5722644d1bf",
+  "test_path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file_tests.rs",
+  "old_test": {
+    "bytes": 13010,
+    "git_blob": "2c451a3c110288ca06eb43724329c48c39bb8f1e",
+    "sha256": "0a810adc45251ec8f5e6ffd92bb8126cb239e1c63184f6e54b013b6c6789a215"
+  },
+  "new_test": {
+    "bytes": 13046,
+    "git_blob": "c71e4a086dd33514d72bf7acb15d1c7e0f621636",
+    "sha256": "027aa761fd851a1f1f15829330a1edf59240d62fea8d9b4742a1d16c9df28cd8"
+  },
+  "production_path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file.rs",
+  "production_unchanged": {
+    "bytes": 16163,
+    "git_blob": "603d36b01f6f8fe7472c72588e793f8ef169a08b",
+    "sha256": "5d344456e04d4b5972ff5bdcd17adcc08e0570c5742b07584ae1deb9907223a0"
+  },
+  "only_changes": [
+    {
+      "before": "owner(store, None)",
+      "after": "owner(store, /*minimum*/ None)"
+    },
+    {
+      "before": "recover(file, digest(\"binding\"), None)",
+      "after": "recover(file, digest(\"binding\"), /*minimum*/ None)"
+    },
+    {
+      "before": "recover(temp.open(), digest(\"binding\"), None)",
+      "after": "recover(temp.open(), digest(\"binding\"), /*minimum*/ None)"
+    }
+  ],
+  "original_prefix_bytes_unchanged": 10243,
+  "new_bytes_only_comments": 36,
+  "Rust_lint_formatter_native_execution": false,
+  "new_full_tree_computed": "605720504e547296dca1c78914fee5ed6d29844d",
+  "actual_test_blob_full_GET_equal": true,
+  "actual_full_tree_create_and_root_GET_equal": true,
+  "actual_source_reuse": "Production603d and old frozen original inputs retain their original actual full GETs; new tests c71 fresh full GET"
+}

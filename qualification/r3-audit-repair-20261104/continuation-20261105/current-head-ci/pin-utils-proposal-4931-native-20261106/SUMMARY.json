@@ -1,0 +1,203 @@
+{
+  "schema": "pin-utils-actual-artifact-product-mapping-v1",
+  "native_execution_performed_by_replay": false,
+  "original_run": 42175704028,
+  "original_job": 127753541837,
+  "original_artifact": 13482877841,
+  "source_head": "ddacfba30b28e86eae9615d7063fff2c7941b1d4",
+  "source_tree": "cb7f5eaaadd55c1476a8b695c04c70848c603e85",
+  "source_merge": "dac3fcfb14c4686f7af8624a88ac5db93c1120e0",
+  "product_base": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+  "product_base_tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+  "artifact": {
+    "bytes": 2232775,
+    "git_blob": "4598f4ffd44c563e8186951f8c2a81e3ee7746cd",
+    "sha256": "9417426f75e0b56a2796782e8df49d0f1ea4992570dd1a85a04d826dcb041496",
+    "members": 41,
+    "member_bytes": 21038943,
+    "all_40_manifest_entries_full_bytes_equal": true
+  },
+  "actual_api_binding": {
+    "one_completed_success_job": true,
+    "one_official_artifact": true,
+    "source_commit_parent_and_merge_parents_verified": true
+  },
+  "actual_commands": {
+    "count": 15,
+    "all_original_exit_codes_zero": true,
+    "versions": {
+      "cargo": [
+        "cargo",
+        "1.95.0"
+      ],
+      "rustc": [
+        "rustc",
+        "1.95.0"
+      ],
+      "deny": [
+        "cargo-deny",
+        "0.19.0"
+      ],
+      "just": [
+        "just",
+        "1.51.0"
+      ],
+      "bazel": [
+        "bazel",
+        "9.3.0"
+      ]
+    },
+    "two_lock_rounds": "Runtime source byte-equality guards and retained result; no new tool execution in replay.",
+    "original_deny": "advisories/bans/licenses/sources ok; policy blob unchanged.",
+    "cargo_metadata_members": 193,
+    "cold_start_download_stderr_retained": true
+  },
+  "cargo_graph": {
+    "before": 1502,
+    "after": 1501,
+    "only_changed_packages": [
+      "aws-smithy-http",
+      "aws-smithy-runtime",
+      "aws-smithy-types",
+      "loom"
+    ],
+    "removed_node": {
+      "name": "pin-utils",
+      "version": "0.1.1",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "13bee6c73da26345c729282832b60b0363cf3dd9f4bfd81d8551b7a1c889a113"
+    },
+    "all_other_fields_dependency_IDs_and_top_level_equal": true
+  },
+  "product_mapping": {
+    "tree": "c7b9fb4e029dc38034a7dfce10a646ccde3e0bf6",
+    "native_tree": "d0c70513b693ce6d1760a10420084e39f57ca04b",
+    "changed_paths": 223,
+    "new_vendor_paths": 220,
+    "root_paths": [
+      "MODULE.bazel.lock",
+      "codex-rs/Cargo.lock",
+      "codex-rs/Cargo.toml"
+    ],
+    "product_total_leaves": 10802,
+    "unchanged_original_leaves": 10579,
+    "excluded_toolkit_paths": [
+      ".github/scripts/pin-utils-backport-spec.json",
+      ".github/scripts/pin_utils_proposal_evidence.py",
+      ".github/scripts/propose_pin_utils_backport.py",
+      ".github/workflows/hepta-pin-utils-backport-proposal.yml"
+    ],
+    "both_forward_and_reverse_index_roundtrips": true,
+    "full_original_subtree_Merkle_equal": true,
+    "unchanged_blob_bodies_not_fetched": true
+  },
+  "vendor": {
+    "original_members": 212,
+    "changed_original_members": 14,
+    "new_provenance_members": 8,
+    "archives": [
+      {
+        "crate": "aws-smithy-http",
+        "version": "0.64.1",
+        "original_regular_members": 23,
+        "changed_original_members": [
+          "Cargo.toml",
+          "Cargo.toml.orig"
+        ],
+        "archive": {
+          "bytes": 31772,
+          "git_blob": "cdb4e4b3f61f950f82799e4c2b4c08fbbe6bf1e6",
+          "sha256": "639b4d8f8555f24a9be649811c3eb0b4d4616f4d61daf0c32e28873bc1ea9af1"
+        },
+        "licenses_unchanged": true
+      },
+      {
+        "crate": "aws-smithy-runtime",
+        "version": "1.16.0",
+        "original_regular_members": 63,
+        "changed_original_members": [
+          "Cargo.toml",
+          "Cargo.toml.orig",
+          "src/client/orchestrator/http.rs",
+          "tests/stalled_stream_common.rs",
+          "tests/stalled_stream_download.rs",
+          "tests/stalled_stream_upload.rs"
+        ],
+        "archive": {
+          "bytes": 147175,
+          "git_blob": "6d141712b8bd58535dac7497a9097f7b4eaf4ca4",
+          "sha256": "d6e302ac1d88b99652489df31abdec6ac42a2ab2ac3982ad0ac49f64dfaf28ba"
+        },
+        "licenses_unchanged": true
+      },
+      {
+        "crate": "aws-smithy-types",
+        "version": "1.8.1",
+        "original_regular_members": 50,
+        "changed_original_members": [
+          "Cargo.toml",
+          "Cargo.toml.orig",
+          "src/byte_stream.rs"
+        ],
+        "archive": {
+          "bytes": 108689,
+          "git_blob": "fdf9387d3bc69bc3269a95088d19f04a0f2ddb9e",
+          "sha256": "69bb407740a197147da48238ecc94498493c9e85445732360cec180296ca45f1"
+        },
+        "licenses_unchanged": true
+      },
+      {
+        "crate": "loom",
+        "version": "0.7.2",
+        "original_regular_members": 76,
+        "changed_original_members": [
+          "Cargo.toml",
+          "Cargo.toml.orig",
+          "src/future/mod.rs"
+        ],
+        "archive": {
+          "bytes": 73989,
+          "git_blob": "7f1213f735288ea96b8fe52d45c516224b92921a",
+          "sha256": "419e0dc8046cb947daa77eb95ae174acfbddb7673b4151f56d1eed8e93fbfaca"
+        },
+        "licenses_unchanged": true
+      }
+    ],
+    "all_other_archive_bytes_and_modes_equal": true
+  },
+  "module_lock": {
+    "removed_facts": [
+      "aws-smithy-http_0.64.1",
+      "aws-smithy-runtime_1.16.0",
+      "aws-smithy-types_1.8.1",
+      "loom_0.7.2",
+      "pin-utils_0.1.1"
+    ],
+    "added_facts": [
+      "path+crates/third_party/aws-smithy-http-0.64.1_aws-smithy-http",
+      "path+crates/third_party/aws-smithy-runtime-1.16.0_aws-smithy-runtime",
+      "path+crates/third_party/aws-smithy-types-1.8.1_aws-smithy-types",
+      "path+crates/third_party/loom-0.7.2_loom"
+    ],
+    "all_other_fields_and_retained_strings_equal": true,
+    "new_four_facts_exact_manifest_projection": true,
+    "fixed_rules_rs_archive": {
+      "bytes": 827642,
+      "git_blob": "0db831094ba3f67a9ceb6db1534d8793e94d08f9",
+      "sha256": "04781205ae648b0c67bf1108e28b8f780445bef40c721564ec525cab63c475d6"
+    },
+    "source_json": {
+      "bytes": 478,
+      "git_blob": "8217cc6d3e132a3bfd077222d771d78dedb1e35c",
+      "sha256": "2b52d3d209324bd4aaa4896aa0e8b28d0123856b4ade32ebd7bf24b4fded6f12"
+    }
+  },
+  "decision": "ACTUAL_LOCK_PROPOSAL_AND_PRODUCT_ONLY_MAPPING_VERIFIED; awaiting independent product-source review and native product CI.",
+  "limits": [
+    "Original actual CI executed lock generation and original cargo-deny, not product compilation/tests.",
+    "This replay executes Git/standard-library checks only, no Cargo/Bazel/new native run.",
+    "Four tool paths are excluded from product mapping; all other original leaves retain exact hashes/modes.",
+    "Runtime lock-repeat equality is bound to executed source/retained receipts; offline complete graph/field checks are separate.",
+    "Prior unavailable-executor NOT_PRODUCT_ACCEPTED checkpoints remain historical evidence."
+  ]
+}

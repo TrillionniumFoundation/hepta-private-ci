@@ -1,0 +1,406 @@
+{
+  "schema": "pin-utils-native-artifact-independent-final-review-v1",
+  "created_at_utc": "2026-11-06T07:25:03.209970+00:00",
+  "reviewer": "/root/windows_env_finish",
+  "decision": "ACCEPT_ACTUAL_DUAL_LOCK_AND_223_PRODUCT_POSTIMAGES_FOR_INTEGRATION",
+  "remaining_source_blockers_in_this_scope": 0,
+  "summary_zh_CN": "独立接受 #4931 真实自动 CI 生成的双锁与 223 个产品 postimage，作为基于原 67 源的整合输入。完整依赖图、四个 path facts、官方 archive 转换、实际 Git 对象和原执行身份均已核实；本结论不授予产品编译、平台合同或 B02/B15 闭合。",
+  "supersedes_only_incomplete_review_status": {
+    "prior_actual_blob": "d6a7bc95203f2c8d7c7277b4ef43b596c8fceff4",
+    "history_kept": true,
+    "explanation": "The earlier NOT_ACCEPTED checkpoint accurately described the interrupted review. This new decision follows completed resumed verification and does not edit that checkpoint."
+  },
+  "prior_tool_source_review": {
+    "actual_blob": "f22966fd399dccc6719d1546ea16dcae5f0384d4",
+    "qualification": "Generator source/static acceptance only. The actual locks and product artifact are newly and separately reviewed here."
+  },
+  "binding": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "pull_request": 4931,
+    "head": "ddacfba30b28e86eae9615d7063fff2c7941b1d4",
+    "source_tree": "cb7f5eaaadd55c1476a8b695c04c70848c603e85",
+    "sole_parent": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+    "merge": "dac3fcfb14c4686f7af8624a88ac5db93c1120e0",
+    "merge_ordered_parents": [
+      "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+      "ddacfba30b28e86eae9615d7063fff2c7941b1d4"
+    ],
+    "executed_checkout": "ddacfba30b28e86eae9615d7063fff2c7941b1d4",
+    "checkout_note": "The original workflow explicitly checks out the PR head. The PR merge independently has the same tree; it is not misreported as the executed checkout.",
+    "actual_ref_PR_body_root_tree_and_parents_verified": true,
+    "run": {
+      "conclusion": "success",
+      "created_at": "2026-11-06T06:38:19Z",
+      "event": "pull_request",
+      "head_sha": "ddacfba30b28e86eae9615d7063fff2c7941b1d4",
+      "id": 42175704028,
+      "run_attempt": 1,
+      "status": "completed",
+      "updated_at": "2026-11-06T06:43:16Z"
+    },
+    "job": {
+      "completed_at": "2026-11-06T06:43:15Z",
+      "conclusion": "success",
+      "head_sha": "ddacfba30b28e86eae9615d7063fff2c7941b1d4",
+      "id": 127753541837,
+      "run_id": 42175704028,
+      "started_at": "2026-11-06T06:38:22Z",
+      "status": "completed"
+    },
+    "all_actual_steps_success": 13,
+    "official_artifact_id": 13482877841,
+    "official_artifact": {
+      "bytes": 2232775,
+      "git_blob": "4598f4ffd44c563e8186951f8c2a81e3ee7746cd",
+      "sha256": "9417426f75e0b56a2796782e8df49d0f1ea4992570dd1a85a04d826dcb041496"
+    },
+    "original_members": 41,
+    "original_member_bytes": 21038943,
+    "all_member_CRC_and_complete_bytes_and_manifest_entries_verified": true,
+    "complete_job_log": {
+      "bytes": 1512530,
+      "git_blob": "1c146bbd4c3bd2c0176719356e7f523e8cc324ec",
+      "sha256": "bafd4665289d896253067926d3e17028b6ec1dc1fd9298c555c3f582e6d72c88"
+    },
+    "complete_MCP_decoded_content_byte_equal": true,
+    "job_log_CR_bytes": 0,
+    "job_log_LF_bytes": 8938
+  },
+  "actual_native_command_qualification": {
+    "count": 15,
+    "exact_arguments_cwd_original_exit_codes_verified": true,
+    "all_exit_codes": 0,
+    "actual_ordered_console_exit_markers_match_artifact": true,
+    "all_original_log_files": 22,
+    "versions": {
+      "cargo": "1.95.0",
+      "rustc": "1.95.0",
+      "cargo-deny": "0.19.0",
+      "just": "1.51.0",
+      "bazel": "9.3.0"
+    },
+    "Bazelisk_cold_download_stderr_retained_separately": true,
+    "Cargo_generation": [
+      "cargo +1.95.0 update --workspace",
+      "cargo +1.95.0 update --workspace"
+    ],
+    "Bazel_generation": [
+      "just bazel-lock-update",
+      "just bazel-lock-update"
+    ],
+    "original_lock_checks": "Original ./scripts/check-module-bazel-lock.sh baseline and both post-generation checks all exit 0.",
+    "repeat_scope": "Byte-repeat guards in exact executed source plus runtime success/result. Independent full graph/fact comparison is separate.",
+    "original_deny_argv": [
+      "cargo",
+      "+1.95.0",
+      "deny",
+      "--locked",
+      "--all-features",
+      "check",
+      "--config",
+      "deny.toml"
+    ],
+    "original_deny_cwd": "codex-rs",
+    "original_deny_bytes": 12322124,
+    "deny_terminal": "advisories ok, bans ok, licenses ok, sources ok",
+    "deny_warning_counts": {
+      "advisory-not-detected": 3,
+      "duplicate": 99,
+      "license-not-encountered": 1,
+      "unmatched-source": 1,
+      "unused-wrapper": 1,
+      "yanked": 1
+    },
+    "raw_ANSI_preserved": "Only derived classification strips SGR; original logs and uploaded members are unchanged.",
+    "policy_unchanged": true,
+    "no_warning_free_or_compile_success_inference": true
+  },
+  "independent_Cargo_graph": {
+    "before_packages": 1502,
+    "after_packages": 1501,
+    "unchanged_other_package_dicts": 1497,
+    "allowed_package_changes": "Four same versions change registry source/checksum to local path; remove their four pin-utils edges; remove the unique pin-utils 0.1.1 node.",
+    "entire_parsed_lock_equals_exact_transform_including_package_and_dependency_order": true,
+    "all_other_top_level_fields_and_dependency_IDs_unchanged": true,
+    "workspace_manifest": "Exactly four new path patches and four excludes; all previous fields and maintained patches unchanged.",
+    "complete_metadata_before_after_JSON_equal": true,
+    "workspace_members": 193,
+    "aws_config_existing_patch_entry_and_lock_dict_unchanged": true,
+    "aws_config_original_leaves_preserved": 76
+  },
+  "independent_MODULE_graph": {
+    "removed_facts": [
+      "aws-smithy-http_0.64.1",
+      "aws-smithy-runtime_1.16.0",
+      "aws-smithy-types_1.8.1",
+      "loom_0.7.2",
+      "pin-utils_0.1.1"
+    ],
+    "added_facts": [
+      "path+crates/third_party/aws-smithy-http-0.64.1_aws-smithy-http",
+      "path+crates/third_party/aws-smithy-runtime-1.16.0_aws-smithy-runtime",
+      "path+crates/third_party/aws-smithy-types-1.8.1_aws-smithy-types",
+      "path+crates/third_party/loom-0.7.2_loom"
+    ],
+    "all_other_JSON_fields_and_retained_fact_serialized_values_exact": true,
+    "four_new_facts_reconstructed_from_actual_normalized_manifest_complete_fields": true,
+    "per_crate": [
+      {
+        "crate": "aws-smithy-http",
+        "dependency_count": 13,
+        "old_dev_records_omitted_by_original_consumer": 5
+      },
+      {
+        "crate": "aws-smithy-runtime",
+        "dependency_count": 18,
+        "old_dev_records_omitted_by_original_consumer": 11
+      },
+      {
+        "crate": "aws-smithy-types",
+        "dependency_count": 18,
+        "old_dev_records_omitted_by_original_consumer": 11
+      },
+      {
+        "crate": "loom",
+        "dependency_count": 7,
+        "old_dev_records_omitted_by_original_consumer": 1
+      }
+    ],
+    "primary_rules_rs": {
+      "version": "0.0.96",
+      "source_json_SHA256": "2b52d3d209324bd4aaa4896aa0e8b28d0123856b4ade32ebd7bf24b4fded6f12",
+      "archive_SHA256": "04781205ae648b0c67bf1108e28b8f780445bef40c721564ec525cab63c475d6",
+      "binding": "Original MODULE registryFileHashes binds BCR source.json; its integrity binds the complete official 827642-byte archive."
+    },
+    "source_semantics_review": [
+      "extensions.bzl classifies actual non-workspace path patches through Cargo metadata and rereads their normalized Cargo.toml; actual path+crates/third_party keys match that mapping.",
+      "cargo_workspace_graph.bzl projects normal/build/target dependencies with explicit defaults, optional flags, alias/version/target and exact feature map; all four actual fact objects equal those complete projections.",
+      "Old registry dev records were already excluded by prepare_possible_deps. Their omission from path facts is not a new loss of compiled dependencies.",
+      "semver.bzl treats an unprefixed version requirement as caret; old registry caret versus normalized path bare-version serialization does not change the reviewed requirements.",
+      "Local crate_repository rejects a nonempty strip_prefix and links the actual local path entries; all four actual path facts have empty strip_prefix.",
+      "Loom futures=[\"pin-utils\"] is unchanged; explicit pin-utils=[] preserves the former optional-dependency feature name while the real dependency is absent. The resolver sees a no-op compatibility feature."
+    ],
+    "scope": "Complete structural and source-semantic review, not merely two lockfiles repeating equal."
+  },
+  "independent_vendor_and_source": {
+    "crates": {
+      "aws-smithy-http": "0.64.1",
+      "aws-smithy-runtime": "1.16.0",
+      "aws-smithy-types": "1.8.1",
+      "loom": "0.7.2"
+    },
+    "official_archives": "All four original archive bytes/lengths match original Cargo.lock checksums and retained actual HTTP receipts.",
+    "original_regular_members": 212,
+    "exactly_edited_original_members": 14,
+    "new_provenance_members": 8,
+    "total_vendor_paths": 220,
+    "all_actual_postimages_reconstructed_from_fixed_preimage_edit_count_and_postimage_hashes": true,
+    "remaining_original_files_modes_licenses_and_historical_nested_locks_preserved": true,
+    "source_changes": "Five AWS Rust files and one Loom Rust file replace the relevant pin-utils use/re-export with fixed std::pin::pin! changes; eight manifests carry dependency removal and the Loom compatibility/MSRV adjustment.",
+    "production_scope": "AWS runtime body_to_bytes and aws-smithy-types Inner::collect are production paths; they are not described as test-only.",
+    "Loom_feature_and_MSRV": {
+      "futures": [
+        "pin-utils"
+      ],
+      "pin-utils": [],
+      "private_loom_rust_version": "1.68",
+      "workspace_toolchain": "1.95.0"
+    },
+    "historical_nested_lock_note": "Preserved vendored Cargo.lock files may still contain pin-utils; the active workspace Cargo.lock has no pin-utils node or edge."
+  },
+  "exact_product_mapping": {
+    "base_head": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+    "base_tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+    "native_generated_tree_with_four_tools": "d0c70513b693ce6d1760a10420084e39f57ca04b",
+    "product_only_tree": "c7b9fb4e029dc38034a7dfce10a646ccde3e0bf6",
+    "paths": 223,
+    "path_bytes": 4038263,
+    "old_modified_paths": 3,
+    "new_vendor_paths": 220,
+    "old_unchanged_leaves": 10579,
+    "product_total_leaves": 10802,
+    "four_generator_tool_paths_excluded": true,
+    "actual_same_patch_forward_and_reverse_in_both_full_indexes": true,
+    "full_Merkle_matches_both_Git_indexes_and_actual_materialized_tree": true,
+    "method_limit": "Partial object database with all tree objects and all changed pre/postimages. Unchanged blob bodies were not fetched; write-tree --missing-ok preserves their verified SHA/mode identities. No product checkout/compile is implied.",
+    "actual_product_registry": {
+      "bytes": 158432,
+      "git_blob": "5cf849cc78dd2d706aa30f5b20868f941e96b90d",
+      "sha256": "fa3063a368f32ef15514c72a32137ea1dc6e9eec430815a3d949bbacadfef135"
+    },
+    "reviewer_fresh_full_GET_of_registry": true,
+    "actual_complete_product_root_GET_entries": 53,
+    "actual_unique_postimage_blobs_full_GET_verified": 219,
+    "all_223_original_GET_bytes_match_independent_product_reconstruction": true
+  },
+  "independent_execution": {
+    "product_check_count": 393,
+    "API_log_freeze_and_author_replay_check_count": 570,
+    "actual_registration_check_count": 903,
+    "author_script_fully_read_before_execution": true,
+    "author_frozen_manifest": {
+      "bytes": 1876,
+      "git_blob": "09e7678bc6bfe7abe280d17c7c7f82736997af59",
+      "sha256": "693dddf1aa2be55ba93d8dc83a23d3c29a519959833793e91cfb078ac8502eb7"
+    },
+    "author_isolated_inputs": 59,
+    "author_replay_exit": 0,
+    "author_replay_stderr_bytes": 0,
+    "author_replay_stdout": {
+      "bytes": 6979,
+      "git_blob": "29a56064370dc9ed372dbe5436d9120cbc293288",
+      "sha256": "26e3d6389bb0aa8e469db68c0751ea65bd2956357c0d4fbf75a33a6c1ecef441"
+    },
+    "stdout_entire_bytes_equal_to_frozen_original": true,
+    "four_stable_proofs_and_all_223_replayed_postimages_entire_bytes_equal": true,
+    "author_originals_unchanged_after_replay": true,
+    "development_history": "Local reviewer SyntaxError and receipt-transfer argument limit are retained separately. Neither is a native product failure."
+  },
+  "formal_limits": [
+    "Accept exactly the 223 product postimages and both real generated locks for a reviewable integration candidate based on 67. A separately constructed integration tree must retain its own proof and CI binding.",
+    "The original native success covers proposal generation, byte-repeat/source guards and original cargo-deny; it does not compile or run product Rust tests.",
+    "No new product native execution, manual dispatch/rerun, private capacity query, remote ref/PR/commit publication was performed by this reviewer.",
+    "Do not mark B02, B15 or another platform/product blocker closed from this artifact alone.",
+    "Old interruption and initial verifier false-rejection history remain immutable and accurately scoped."
+  ],
+  "review_evidence_files": [
+    {
+      "path": "verify_product.py",
+      "bytes": 25514,
+      "git_blob": "de57f62bb404d52185b06e4ef013f6163d2ea2f2",
+      "sha256": "e2848f5b10d5b82be95d7da380b298c801b3935d127c45ec64d4589f50dd56d2"
+    },
+    {
+      "path": "verify_native_binding.py",
+      "bytes": 17556,
+      "git_blob": "4c0f04b0182d766fb81e75acc0ba8c990519b52a",
+      "sha256": "d19f0fcd243e1e57b80c0161116e48944916355994b2d27a649cac70d856b671"
+    },
+    {
+      "path": "verify_registration.py",
+      "bytes": 5087,
+      "git_blob": "bc13daf846ae03720eef71fd93b9fede532c36fa",
+      "sha256": "6f7c7e9facce3215f75d44088db79f013d9aff6dddb84e12cee5f3b91823b999"
+    },
+    {
+      "path": "product-verification-01/PRODUCT_VERIFICATION.json",
+      "bytes": 53160,
+      "git_blob": "9b8fe288cc7440bf4fba03414aa860a00273d494",
+      "sha256": "12c70a63e40abc93f391ba128d74b7d4bffa00786a4a8bdbaed1afa2cd7840b3"
+    },
+    {
+      "path": "product-verification-01/LOCK_AND_MANIFEST_VERIFICATION.json",
+      "bytes": 45781,
+      "git_blob": "b9c9765080366c6314fdfb328bd60b877b6c71bf",
+      "sha256": "86251268758c40a4da2e217a169951189bff905972c86fe1affbd8af72909fbd"
+    },
+    {
+      "path": "product-verification-01/PRODUCT_MAPPING.json",
+      "bytes": 66748,
+      "git_blob": "29c52c4bb5051da39e21884861999e3a8a95f89c",
+      "sha256": "c1e62e3449b6a8cba6902cf6b31445bd05f7fa40e2b6b969f5204c33739ca8ab"
+    },
+    {
+      "path": "product-verification-01/git-step-results.json",
+      "bytes": 10893,
+      "git_blob": "9ecfd76490fcba7a2c8a13ed82feca890df9e01b",
+      "sha256": "a4fe7a30de18fb8cc58b782bee14192d8072245c99b47536ed62d45ac184f185"
+    },
+    {
+      "path": "product-verification-01.stdout.original.txt",
+      "bytes": 2177,
+      "git_blob": "e22d1fc74b5a43858401c2bc7e8638010ca0c4de",
+      "sha256": "86376a4acb8c40f547635760dc95466afcd50559b5ad3af2cf482ab0a1456285"
+    },
+    {
+      "path": "product-verification-01.stderr.original.txt",
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "native-binding-02/NATIVE_BINDING_VERIFICATION.json",
+      "bytes": 101025,
+      "git_blob": "1316ac86dc3395e0e8dbc0cf1769fc586b6fb640",
+      "sha256": "88e234ec02c199af0dc642c4b8c4985e987f4afc432937ae35629b48dc094c32"
+    },
+    {
+      "path": "native-binding-02/ISOLATED_INPUTS.json",
+      "bytes": 12352,
+      "git_blob": "6a233687e1a9828b4be49b5a610512ff6a4b5053",
+      "sha256": "c42607ac14c57f1e4d34196180d45b338a43913f42dccb3fecf8a4ee2e714b39"
+    },
+    {
+      "path": "native-binding-02/AUTHOR_REPLAY_EXECUTION.json",
+      "bytes": 1072,
+      "git_blob": "06df0ca96b94ad0ea3edce72cce1015591558b7f",
+      "sha256": "b69c6d5764c8357dba27a754d89b4103b0368572ca87834b9d78d4071070bb3f"
+    },
+    {
+      "path": "native-binding-02/author-replay.stdout.original.json",
+      "bytes": 6979,
+      "git_blob": "29a56064370dc9ed372dbe5436d9120cbc293288",
+      "sha256": "26e3d6389bb0aa8e469db68c0751ea65bd2956357c0d4fbf75a33a6c1ecef441"
+    },
+    {
+      "path": "native-binding-02/author-replay.stderr.original.txt",
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "native-binding-02.stdout.original.json",
+      "bytes": 3200,
+      "git_blob": "61e8984588df78a1a0266312dd5ce82fad2f5f5b",
+      "sha256": "f5896fd5d07d5a68940c09988898b5d7e2f5b734147a5fd053f9585e8c156cb2"
+    },
+    {
+      "path": "native-binding-02.stderr.original.txt",
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "REGISTRATION_VERIFICATION.json",
+      "bytes": 117086,
+      "git_blob": "dbdce7cf0892a429acc79ee7c0cf50145636a3d7",
+      "sha256": "002b4357839c4cd1f8a873f54f49c2ae38b41c1bc88d9c080b18a8f9172c5fb7"
+    },
+    {
+      "path": "registration-01.stdout.original.json",
+      "bytes": 581,
+      "git_blob": "4a0129c1b442ebee8fc6e1765f6c6e5fd683ec3e",
+      "sha256": "46027d4038aa5500e2960449df44a3f72d780b1f9fbb8521f8ffe50345dd06cb"
+    },
+    {
+      "path": "registration-01.stderr.original.txt",
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "product-registry.fresh-full-GET.original.json",
+      "bytes": 169156,
+      "git_blob": "387ad09aad5e0cf998fac19a91bd25ce26e4b39c",
+      "sha256": "d9717ee275ff0d66d990cae2c952e4b60e3eb00a7aa14558a42fbde0202707d9"
+    },
+    {
+      "path": "REVIEWER_DEVELOPMENT_HISTORY.json",
+      "bytes": 1918,
+      "git_blob": "db379f2974e1acf1f7baffdf904a95394887fafe",
+      "sha256": "df3579d39274850b15f7603eaede7d6b74066b8c74e1e4443b6194442264f014"
+    },
+    {
+      "path": "INDEPENDENT_EXECUTIONS.json",
+      "bytes": 1351,
+      "git_blob": "eee286eb9b1b6f3e9203133bc5cc84c6fc3b38ca",
+      "sha256": "d80f0ea8a445c52fd0dabf0e5f2fdf3fbadbe901e6c51bc79a2238132f88a9cd"
+    }
+  ],
+  "author_final_README": {
+    "path": "README.zh-CN.md",
+    "bytes": 6134,
+    "git_blob": "6b28eb10c6ccb254175c081fb8dc2bb7e09a017c",
+    "sha256": "d2dbe992823f2de763f551f6a42bdf87a3396157dc82b88a4c5b42e1ed8918fa"
+  }
+}

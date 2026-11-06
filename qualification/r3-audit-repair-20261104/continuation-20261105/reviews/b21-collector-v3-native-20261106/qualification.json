@@ -1,0 +1,380 @@
+{
+  "original_workflow_conclusion": "failure",
+  "actual_run": {
+    "run": 42164663819,
+    "job": 127718214088,
+    "head": "84cc73453eb926d6f2c5b0372c0287b0ab86ed53",
+    "conclusion": "failure",
+    "job_log": {
+      "bytes": 1567240,
+      "sha256": "7e3fb7e806b8051eb8c5f803a70416a26837666f06a63bba029a094a76210e02",
+      "git_blob_sha": "828dce89b16d9a7900f2881037854c5ad48725ec"
+    }
+  },
+  "source": {
+    "checkout_head": "84cc73453eb926d6f2c5b0372c0287b0ab86ed53",
+    "event_merge": "285d5727d01e38a76a77441ab038e109dbab787c",
+    "tree": "45858bc96c0edbc366ec77991646b15971129975",
+    "original_product_tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+    "unchanged_product_leaves": 10582,
+    "actual_archive_leaves_verified": 10583,
+    "source_archive": {
+      "bytes": 65409614,
+      "sha256": "3768639f6442f5f0837332ac31bba393d277dc92f68b1dd684e670f086baa01e",
+      "git_blob_sha": "9576d56191bd14c62cdf6eea3439838ca47234cb"
+    },
+    "before_after_clean": true
+  },
+  "retention": {
+    "original_complete_flag": false,
+    "original_errors": [
+      {
+        "kind": "original_bazel_exit_mismatch"
+      }
+    ],
+    "actual_attempts": 501,
+    "all_log_xml_files": 1002,
+    "all_retained_hashes_verified": true,
+    "test_summaries": 438,
+    "summary_statuses": {
+      "PASSED": 433,
+      "FLAKY": 1,
+      "FAILED": 4
+    },
+    "attempt_statuses": {
+      "PASSED": 495,
+      "FAILED": 5,
+      "TIMEOUT": 1
+    },
+    "original_privacy_gate_safe": true,
+    "raw_BEP_not_retained": true
+  },
+  "exit_phase_observation": {
+    "process_exit": 38,
+    "local_BEP_build_finished_exit": 3,
+    "console_copy_exit": 0,
+    "collector_exit": 1,
+    "BES_upload_failure_in_original_console": true,
+    "fixed_Bazel_commit": "e89755babf3e941bc1e9d8120b1cd48854ab9dfa",
+    "primary": {
+      "ExitCode": {
+        "bytes": 8057,
+        "sha256": "3137b529a72d505e21a1e28855c6b4bf254704030c8f44f9a0ea497bf290536f",
+        "git_blob_sha": "24d51c542379b90b0998867e06a96b442324aff4"
+      },
+      "BuildEventServiceModule": {
+        "bytes": 44228,
+        "sha256": "225656fa5a995cd846b816416b9032ad312ffd5842086f0ec47a8ce48e72cd9a",
+        "git_blob_sha": "4fe944f6093f53f90f4f5f95ff9ffaffc9932776"
+      },
+      "BlazeRuntime": {
+        "bytes": 80602,
+        "sha256": "d56ddae2255ddec1a8ce7adb8fe932302a5e4e92202511dbc16eaeebe3daf092",
+        "git_blob_sha": "5b388de9ae81577a3c4f1930acd3fc4fddea893b"
+      }
+    },
+    "inference": "Bazel can replace a non-infrastructure command result during afterCommand cleanup. The observed retained test failure and later BES upload failure are separate phases; the original collector required unconditional exit equality."
+  },
+  "failed_targets": {
+    "//codex-rs/utils/pty:pty-unit-tests": {
+      "passed": 28,
+      "failed": 3,
+      "ignored": 0,
+      "unique_names": 31,
+      "failed_names": [
+        "tests::pty_close_stdin_preserves_large_input_and_delivers_eof",
+        "tests::pty_dropped_output_receiver_keeps_draining_child",
+        "tests::pty_preserving_inherited_fds_keeps_python_repl_running"
+      ]
+    },
+    "//codex-rs/http-client:http-client-unit-tests": {
+      "passed": 84,
+      "failed": 1,
+      "ignored": 0,
+      "unique_names": 85,
+      "failed_names": [
+        "outbound_proxy::tests::redirect_coverage_tests::route_aware_pool_sanitizes_redirected_failure_logs"
+      ]
+    },
+    "//codex-rs/code-mode-host:code-mode-host-grpc_notifications-test": {
+      "passed": 0,
+      "failed": 4,
+      "ignored": 0,
+      "unique_names": 4,
+      "failed_names": [
+        "completed_cells_drain_pending_notifications_before_completion",
+        "completed_waits_drain_pending_notifications_before_returning",
+        "oversized_notification_text_is_delivered_unchanged",
+        "termination_cancels_pending_notifications"
+      ]
+    },
+    "//codex-rs/code-mode-host:code-mode-host-grpc_tcp-test": {
+      "passed": 0,
+      "failed": 4,
+      "ignored": 0,
+      "unique_names": 4,
+      "failed_names": [
+        "tcp_listener_opens_a_grpc_session",
+        "tcp_listener_rejects_http1_grpc_requests",
+        "tcp_listener_serves_http1_healthz",
+        "tcp_listener_serves_http2_healthz"
+      ]
+    }
+  },
+  "core_original_attempts": [
+    {
+      "shard": 3,
+      "attempt": 1,
+      "status": "PASSED",
+      "log": {
+        "bytes": 26974,
+        "sha256": "cb52ca8e3512c90895e03eb722650be7109dacb0b76d696113769c330c7c4504",
+        "git_blob_sha": "eeb6e134918e54f6c017185c376a9aa70f35dbc1"
+      },
+      "structured_rust_result": {
+        "passed": 282,
+        "failed": 0,
+        "ignored": 0,
+        "scope": "Final parent Rust summary; nested child summaries are not added to its denominator.",
+        "all_original_summary_counts": [
+          [
+            282,
+            0,
+            0
+          ]
+        ]
+      }
+    },
+    {
+      "shard": 1,
+      "attempt": 1,
+      "status": "PASSED",
+      "log": {
+        "bytes": 32223,
+        "sha256": "8b6cbcff84138243f5a8b707922f686d2f1479b2a737918b6fd0d663c739a29e",
+        "git_blob_sha": "13e70a9e4cd54c439a97c06317f347974c555d3c"
+      },
+      "structured_rust_result": {
+        "passed": 321,
+        "failed": 0,
+        "ignored": 0,
+        "scope": "Final parent Rust summary; nested child summaries are not added to its denominator.",
+        "all_original_summary_counts": [
+          [
+            1,
+            0,
+            0
+          ],
+          [
+            321,
+            0,
+            0
+          ]
+        ]
+      }
+    },
+    {
+      "shard": 2,
+      "attempt": 1,
+      "status": "PASSED",
+      "log": {
+        "bytes": 27805,
+        "sha256": "ff1c228a2616eb811a3e54b7093f88e6fa0a046f427d6829e53262d13bb93171",
+        "git_blob_sha": "04d52e2695233f4d2682b2a95a284b236464c220"
+      },
+      "structured_rust_result": {
+        "passed": 294,
+        "failed": 0,
+        "ignored": 0,
+        "scope": "Final parent Rust summary; nested child summaries are not added to its denominator.",
+        "all_original_summary_counts": [
+          [
+            294,
+            0,
+            0
+          ]
+        ]
+      }
+    },
+    {
+      "shard": 5,
+      "attempt": 1,
+      "status": "FAILED",
+      "log": {
+        "bytes": 30094,
+        "sha256": "f20ed474a886345fb271190eee01b2d54e7b3e58d7a15d9954c91708be837200",
+        "git_blob_sha": "f6065bafb3c4d4726c600ebcaca0b8ed284604d1"
+      },
+      "structured_rust_result": {
+        "passed": 308,
+        "failed": 1,
+        "ignored": 0,
+        "unique_names": 309,
+        "failed_names": [
+          "agent::control::tests::spawn_agent_can_fork_parent_thread_history_with_sanitized_items"
+        ]
+      }
+    },
+    {
+      "shard": 6,
+      "attempt": 1,
+      "status": "PASSED",
+      "log": {
+        "bytes": 26583,
+        "sha256": "e5cf7c61d87652369f2352b9d62ce0ed3efe8f518c6d810dac9beed10958e708",
+        "git_blob_sha": "10e3d409aa70d432bee6c42479399d554edff638"
+      },
+      "structured_rust_result": {
+        "passed": 279,
+        "failed": 0,
+        "ignored": 0,
+        "scope": "Final parent Rust summary; nested child summaries are not added to its denominator.",
+        "all_original_summary_counts": [
+          [
+            279,
+            0,
+            0
+          ]
+        ]
+      }
+    },
+    {
+      "shard": 7,
+      "attempt": 1,
+      "status": "PASSED",
+      "log": {
+        "bytes": 32777,
+        "sha256": "2f4d8d82c0a40194bf72c7dfe6d813bfbbdbe055d30f424662af5f7cde8a24f4",
+        "git_blob_sha": "0831a138fbb53735469f486c9983e3f4c52b84f8"
+      },
+      "structured_rust_result": {
+        "passed": 333,
+        "failed": 0,
+        "ignored": 0,
+        "scope": "Final parent Rust summary; nested child summaries are not added to its denominator.",
+        "all_original_summary_counts": [
+          [
+            333,
+            0,
+            0
+          ]
+        ]
+      }
+    },
+    {
+      "shard": 8,
+      "attempt": 1,
+      "status": "PASSED",
+      "log": {
+        "bytes": 27167,
+        "sha256": "83afa5ff19daa4f7be98d92c2305ad47150bdb6d76bea7f983724dcd507a07c3",
+        "git_blob_sha": "4b83e8f1ba2095c729895ba8a16fd925bfc6499d"
+      },
+      "structured_rust_result": {
+        "passed": 291,
+        "failed": 0,
+        "ignored": 0,
+        "scope": "Final parent Rust summary; nested child summaries are not added to its denominator.",
+        "all_original_summary_counts": [
+          [
+            291,
+            0,
+            0
+          ]
+        ]
+      }
+    },
+    {
+      "shard": 4,
+      "attempt": 1,
+      "status": "TIMEOUT",
+      "log": {
+        "bytes": 31725,
+        "sha256": "0aedce8f92c237e175836c57efde65e5e57334081f25cf6342692b8d26836d00",
+        "git_blob_sha": "0292492de8350b1ce8462da8b1daa06eeb449ade"
+      },
+      "structured_rust_result": null
+    },
+    {
+      "shard": 5,
+      "attempt": 2,
+      "status": "PASSED",
+      "log": {
+        "bytes": 29570,
+        "sha256": "7ae3209fcdace9d6acbe247d56dc446ef58a20c01ca5db86060b822b6e58d463",
+        "git_blob_sha": "3ce1cd79340507575644b25670d3ed56427139b4"
+      },
+      "structured_rust_result": {
+        "passed": 309,
+        "failed": 0,
+        "ignored": 0,
+        "scope": "Final parent Rust summary; nested child summaries are not added to its denominator.",
+        "all_original_summary_counts": [
+          [
+            309,
+            0,
+            0
+          ]
+        ]
+      }
+    },
+    {
+      "shard": 4,
+      "attempt": 2,
+      "status": "PASSED",
+      "log": {
+        "bytes": 31749,
+        "sha256": "762eb680b535f0736e034d39b4adfcf8c5b135fb93103f58ac4b7fd7a1ad2b4d",
+        "git_blob_sha": "50c894f2c1820266c1c7839ce84b9cd5fb1855a5"
+      },
+      "structured_rust_result": {
+        "passed": 333,
+        "failed": 0,
+        "ignored": 0,
+        "scope": "Final parent Rust summary; nested child summaries are not added to its denominator.",
+        "all_original_summary_counts": [
+          [
+            333,
+            0,
+            0
+          ]
+        ]
+      }
+    }
+  ],
+  "core_retry_compact_digest_limits": [
+    {
+      "shard": 4,
+      "first_helper_sequence": 161837,
+      "retry_helper_sequence": 162228,
+      "compact_both_outputs_record_first_xml_digest": "caae20c8dbdd023f77ca8328f6bfed90dca38411ef7bbde8926a7f7d8b025d2a",
+      "retained_retry_xml_digest": "39aaec96f3f077cabeb658d66204023106732e724a34f5418c9ce6f8621be7d7",
+      "retry_XML_not_claimed_bound_to_its_compact_output": true
+    },
+    {
+      "shard": 5,
+      "first_helper_sequence": 161101,
+      "retry_helper_sequence": 162224,
+      "compact_both_outputs_record_first_xml_digest": "8d591859594ea92db36495dd72a9c4061542f21316d0e25e907ca7d6418d772b",
+      "retained_retry_xml_digest": "6980c0bd7451408a73ec580ac47fefce07e6dc3bd030796f65904c0403145172",
+      "retry_XML_not_claimed_bound_to_its_compact_output": true
+    }
+  ],
+  "BEP_representation": "credential-sanitized / opaque-payload-omitted derived BEP, not raw original bytes",
+  "product_blocker_statuses": {
+    "B21": "OPEN",
+    "B15": "OPEN"
+  },
+  "ledger_transition": "NONE",
+  "independent_review": "Separate subsequent immutable receipt; frozen input is not rewritten",
+  "product_or_native_execution_by_packager": false,
+  "refs_PRs_or_CI_changed_by_packager": false,
+  "limits": [
+    "This is the original-product collector branch, not PTY candidate 8075eb367b6e97546af206b27bbf4a3a867497c8.",
+    "The collector complete=false result and the failed workflow remain unchanged.",
+    "No independent cause is inferred from duplicate console tails or from non-atomic PTY snapshots.",
+    "Bazel summaries count targets; attempts count shard/retry executions; Rust test cases are separate denominators.",
+    "Core successful retries preserve both original failed attempts; they do not erase the failure history.",
+    "Original 2s/5s PTY tests failed. B21 and B15 remain OPEN."
+  ]
+}

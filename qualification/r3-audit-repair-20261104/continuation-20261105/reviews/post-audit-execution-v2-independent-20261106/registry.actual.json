@@ -1,0 +1,235 @@
+{
+  "schema": "hepta-post-audit-v2-independent-report-actual-registry-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "prefix": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v2-independent-20261106/",
+  "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v2-independent-20261106/registry.actual.json",
+  "decision": "ACCEPT_REPORT_FACTS_AND_QUALIFICATION_SCOPE; no product or blocker qualification added",
+  "accepted_report": {
+    "path": "second-post-audit-documents/POST_AUDIT_EXECUTION_UPDATE_V2.zh-CN.md",
+    "bytes": 15742,
+    "git_blob": "38b3b47f3308308dcbf324c5b1f9416365285ed0",
+    "sha256": "bcc0dedeba105e92ffc2f138898d7a8b76cb221d65c28b730e71f023c1c574cf"
+  },
+  "initial_review_actual": {
+    "bytes": 11525,
+    "git_blob": "82825a801bdcec5d11a85048b9478c240a23a365",
+    "sha256": "9f7e01d7bbf534c0c337315254d1656fef468021e971eedb377930672e351e92"
+  },
+  "final_review_actual": {
+    "bytes": 5672,
+    "git_blob": "e9e00b1ac76eef457692f0904bd8eaaf97d4f48e",
+    "sha256": "cab125f9d9d04a5ea6d96aa29e39619939510e4fc5ef194bfa29ad071e2d8e9a"
+  },
+  "packet": {
+    "archive_computed_identity": {
+      "bytes": 342599,
+      "git_blob": "3446c191a766ed0b911b00b42d72ba4887f2af12",
+      "sha256": "07caf8b9d4b6de3f8c94a95c938f9d62a87dd911baec9f2461b9417f9a1b7d30"
+    },
+    "archive_members": 35,
+    "member_bytes": 2339312,
+    "base64_parts": 2,
+    "read_only_restoration_exit": 0,
+    "stderr_bytes": 0,
+    "native_CI_network_or_ref_actions": false
+  },
+  "counts": {
+    "payload_paths": 9,
+    "distinct_payload_blobs": 9,
+    "payload_path_bytes": 493464,
+    "with_registry": 10,
+    "with_separate_actual_self_receipt": 11
+  },
+  "registry_self_receipt_will_be_a_separate_actual_object": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v2-independent-20261106/registry.self.actual.json",
+  "actual_create_original": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "sha": "20cca7b5663b908762becc9f6bceed539e9f6bf0"
+    },
+    "isError": false
+  },
+  "records": [
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v2-independent-20261106/review-packet.part-000.b64",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v2-independent-20261106/review-packet.part-000.b64",
+      "local_relative_path": "delivery/review-packet.part-000.b64",
+      "bytes": 240001,
+      "git_blob": "16ad30c6af97919535ed3b0ea7b9f68ac711d582",
+      "sha256": "5504f3d0d0b416479c8fb4f08a594c363e5ea83580dc912e2b138c9c38a56307",
+      "actual": {
+        "create_tree_sha": "20cca7b5663b908762becc9f6bceed539e9f6bf0",
+        "full_GET_requested_blob": "16ad30c6af97919535ed3b0ea7b9f68ac711d582",
+        "full_returned_content_identity": {
+          "bytes": 240001,
+          "git_blob": "16ad30c6af97919535ed3b0ea7b9f68ac711d582",
+          "sha256": "5504f3d0d0b416479c8fb4f08a594c363e5ea83580dc912e2b138c9c38a56307"
+        },
+        "full_UTF8_bytes_equal": true,
+        "partial_or_truncated_response_accepted": false
+      }
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v2-independent-20261106/review-packet.part-001.b64",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v2-independent-20261106/review-packet.part-001.b64",
+      "local_relative_path": "delivery/review-packet.part-001.b64",
+      "bytes": 216801,
+      "git_blob": "e6bf8c3ef06487acd580dd4e09cbc4acd44c6c89",
+      "sha256": "bdee722488e18ff2c2cc96f2d29dae9696878b1e8a3c6dfd9ce200eb3d912259",
+      "actual": {
+        "create_tree_sha": "20cca7b5663b908762becc9f6bceed539e9f6bf0",
+        "full_GET_requested_blob": "e6bf8c3ef06487acd580dd4e09cbc4acd44c6c89",
+        "full_returned_content_identity": {
+          "bytes": 216801,
+          "git_blob": "e6bf8c3ef06487acd580dd4e09cbc4acd44c6c89",
+          "sha256": "bdee722488e18ff2c2cc96f2d29dae9696878b1e8a3c6dfd9ce200eb3d912259"
+        },
+        "full_UTF8_bytes_equal": true,
+        "partial_or_truncated_response_accepted": false
+      }
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v2-independent-20261106/manifest.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v2-independent-20261106/manifest.json",
+      "local_relative_path": "delivery/manifest.json",
+      "bytes": 11871,
+      "git_blob": "2cec16b3c86b6415db1f65ed5e42cd0edfe6fa0a",
+      "sha256": "3ebf9262f3cf767f07caf47c588f2ec16a2c0da2274f3e08d4b423399a45fbec",
+      "actual": {
+        "create_tree_sha": "20cca7b5663b908762becc9f6bceed539e9f6bf0",
+        "full_GET_requested_blob": "2cec16b3c86b6415db1f65ed5e42cd0edfe6fa0a",
+        "full_returned_content_identity": {
+          "bytes": 11871,
+          "git_blob": "2cec16b3c86b6415db1f65ed5e42cd0edfe6fa0a",
+          "sha256": "3ebf9262f3cf767f07caf47c588f2ec16a2c0da2274f3e08d4b423399a45fbec"
+        },
+        "full_UTF8_bytes_equal": true,
+        "partial_or_truncated_response_accepted": false
+      }
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v2-independent-20261106/restore_packet.py",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v2-independent-20261106/restore_packet.py",
+      "local_relative_path": "delivery/restore_packet.py",
+      "bytes": 5276,
+      "git_blob": "eabf89903198e2fa29d9e8162057c120422c35b9",
+      "sha256": "849c92a98ac9db29bd5a5165123a02f554b6bca61adf62ebb486285a1842a45d",
+      "actual": {
+        "create_tree_sha": "20cca7b5663b908762becc9f6bceed539e9f6bf0",
+        "full_GET_requested_blob": "eabf89903198e2fa29d9e8162057c120422c35b9",
+        "full_returned_content_identity": {
+          "bytes": 5276,
+          "git_blob": "eabf89903198e2fa29d9e8162057c120422c35b9",
+          "sha256": "849c92a98ac9db29bd5a5165123a02f554b6bca61adf62ebb486285a1842a45d"
+        },
+        "full_UTF8_bytes_equal": true,
+        "partial_or_truncated_response_accepted": false
+      }
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v2-independent-20261106/README.zh-CN.md",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v2-independent-20261106/README.zh-CN.md",
+      "local_relative_path": "delivery/README.zh-CN.md",
+      "bytes": 1836,
+      "git_blob": "071b78059a27f7d8d9ae63e6899064ab28fb9b38",
+      "sha256": "1ec4b7aef664353fcd98cd1a37b653dcea5dcce9921374ac7b58e394f97ebc0c",
+      "actual": {
+        "create_tree_sha": "20cca7b5663b908762becc9f6bceed539e9f6bf0",
+        "full_GET_requested_blob": "071b78059a27f7d8d9ae63e6899064ab28fb9b38",
+        "full_returned_content_identity": {
+          "bytes": 1836,
+          "git_blob": "071b78059a27f7d8d9ae63e6899064ab28fb9b38",
+          "sha256": "1ec4b7aef664353fcd98cd1a37b653dcea5dcce9921374ac7b58e394f97ebc0c"
+        },
+        "full_UTF8_bytes_equal": true,
+        "partial_or_truncated_response_accepted": false
+      }
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v2-independent-20261106/FINDINGS.initial.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v2-independent-20261106/FINDINGS.initial.json",
+      "local_relative_path": "delivery/FINDINGS.initial.json",
+      "bytes": 11525,
+      "git_blob": "82825a801bdcec5d11a85048b9478c240a23a365",
+      "sha256": "9f7e01d7bbf534c0c337315254d1656fef468021e971eedb377930672e351e92",
+      "actual": {
+        "create_tree_sha": "20cca7b5663b908762becc9f6bceed539e9f6bf0",
+        "full_GET_requested_blob": "82825a801bdcec5d11a85048b9478c240a23a365",
+        "full_returned_content_identity": {
+          "bytes": 11525,
+          "git_blob": "82825a801bdcec5d11a85048b9478c240a23a365",
+          "sha256": "9f7e01d7bbf534c0c337315254d1656fef468021e971eedb377930672e351e92"
+        },
+        "full_UTF8_bytes_equal": true,
+        "partial_or_truncated_response_accepted": false
+      }
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v2-independent-20261106/REVIEW.final.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v2-independent-20261106/REVIEW.final.json",
+      "local_relative_path": "delivery/REVIEW.final.json",
+      "bytes": 5672,
+      "git_blob": "e9e00b1ac76eef457692f0904bd8eaaf97d4f48e",
+      "sha256": "cab125f9d9d04a5ea6d96aa29e39619939510e4fc5ef194bfa29ad071e2d8e9a",
+      "actual": {
+        "create_tree_sha": "20cca7b5663b908762becc9f6bceed539e9f6bf0",
+        "full_GET_requested_blob": "e9e00b1ac76eef457692f0904bd8eaaf97d4f48e",
+        "full_returned_content_identity": {
+          "bytes": 5672,
+          "git_blob": "e9e00b1ac76eef457692f0904bd8eaaf97d4f48e",
+          "sha256": "cab125f9d9d04a5ea6d96aa29e39619939510e4fc5ef194bfa29ad071e2d8e9a"
+        },
+        "full_UTF8_bytes_equal": true,
+        "partial_or_truncated_response_accepted": false
+      }
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v2-independent-20261106/restoration.stdout.json",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v2-independent-20261106/restoration.stdout.json",
+      "local_relative_path": "delivery/restoration.stdout.json",
+      "bytes": 482,
+      "git_blob": "1650e692ec2e35b5b4e7ff674eaf327a1b19b694",
+      "sha256": "004c8a9c95ed2835ee5e52ffb01bfe22dd5d0a5cc1003ee263f2d6061e0b0f13",
+      "actual": {
+        "create_tree_sha": "20cca7b5663b908762becc9f6bceed539e9f6bf0",
+        "full_GET_requested_blob": "1650e692ec2e35b5b4e7ff674eaf327a1b19b694",
+        "full_returned_content_identity": {
+          "bytes": 482,
+          "git_blob": "1650e692ec2e35b5b4e7ff674eaf327a1b19b694",
+          "sha256": "004c8a9c95ed2835ee5e52ffb01bfe22dd5d0a5cc1003ee263f2d6061e0b0f13"
+        },
+        "full_UTF8_bytes_equal": true,
+        "partial_or_truncated_response_accepted": false
+      }
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v2-independent-20261106/restoration.stderr.txt",
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v2-independent-20261106/restoration.stderr.txt",
+      "local_relative_path": "delivery/restoration.stderr.txt",
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "actual": {
+        "create_tree_sha": "20cca7b5663b908762becc9f6bceed539e9f6bf0",
+        "full_GET_requested_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "full_returned_content_identity": {
+          "bytes": 0,
+          "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "full_UTF8_bytes_equal": true,
+        "partial_or_truncated_response_accepted": false
+      }
+    }
+  ],
+  "scope_limits": [
+    "Initial findings and original report bytes remain unchanged; final acceptance is a separate immutable object.",
+    "35-member packet includes named preserved original dependencies for report/census denominators, not repeated native archives or toolchain execution.",
+    "All23 literal exits and16/6/1 classification remain; no new blocker closure.",
+    "Root independently verifies final audit relative links, index and commit/ref publication. This review does not pre-claim those actions complete."
+  ]
+}

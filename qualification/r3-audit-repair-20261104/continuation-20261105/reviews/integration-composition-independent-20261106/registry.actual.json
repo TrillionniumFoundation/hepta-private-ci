@@ -1,0 +1,663 @@
+{
+  "schema": "integration-composition-independent-complete-actual-registry-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "prefix": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-composition-independent-20261106/",
+  "decision": "ACCEPT_COMPOSITION_ONLY; PUBLISHED_IDENTITIES_MATCH_REVIEWED_COMPOSITION",
+  "prior_frozen_review": {
+    "bytes": 3305,
+    "git_blob": "73ec5b304954a48bae04e79c9b1bee72cd52358c",
+    "sha256": "81057c2e5f8d260060e0227a9a1fd60b45afdb533ddfbef0f97ef8c28362c39a"
+  },
+  "prior_frozen_manifest": {
+    "bytes": 3530,
+    "git_blob": "f7ea095f3d8d597993e7732168f77f1481429e5c",
+    "sha256": "662edd9f37c4d5bac60907b9a9fdc686331a3ff2853e3a9791f8fa749ee29e5f"
+  },
+  "original_14_members_and_freeze_unchanged": true,
+  "separate_publication_addendum": {
+    "bytes": 4012,
+    "git_blob": "43810c7883bc901be37c22f5088461c0f8b3d5e8",
+    "sha256": "b0c28f87979508d5d9ecad158f2ac9be8af4e787f49db4378f24407712d4bcaa"
+  },
+  "packet": {
+    "archive": {
+      "path": "review-packet.original.zip",
+      "bytes": 104584,
+      "git_blob": "106781015be42e087f7b7ca5820aa5ed9d78275c",
+      "sha256": "1416c5bbe8da609db49c187002ca1d9e2850326c48363357cde2b3d2e1e70bb7"
+    },
+    "members": 22,
+    "parts": 1,
+    "restoration": {
+      "schema": "integration-composition-independent-packet-restoration-v1",
+      "archive": {
+        "path": "review-packet.original.zip",
+        "bytes": 104584,
+        "git_blob": "106781015be42e087f7b7ca5820aa5ed9d78275c",
+        "sha256": "1416c5bbe8da609db49c187002ca1d9e2850326c48363357cde2b3d2e1e70bb7"
+      },
+      "members": 22,
+      "original_review_14_plus_freeze_byte_equal": true,
+      "separate_publication_addendum_and_six_API_originals_byte_equal": true,
+      "actual_head_and_merge_trees_equal_reviewed_99a9": true,
+      "actual_five_parent_order_matches_plan": true,
+      "change_denominators": {
+        "first_parent_commit_delta": 230,
+        "PR4936_overall": 1561,
+        "primary4797_record": 1335
+      },
+      "product_native_CI_or_ref_mutation": false,
+      "original_full_composition_verifier_not_reexecuted_by_this_restorer": true
+    },
+    "restoration_execution": {
+      "exit_code": 0,
+      "stdout_bytes": 805,
+      "stdout_sha256": "63da783eb01a964204cb2dc7ad3f2d0b641df13c3329685a7722492c926d0ba6",
+      "stderr_bytes": 0,
+      "read_only_packet_and_publication_verification": true
+    }
+  },
+  "publication_addendum": {
+    "schema": "integration-composition-post-publication-independent-addendum-v1",
+    "decision": "PUBLISHED_IDENTITIES_MATCH_REVIEWED_COMPOSITION",
+    "prior_review": {
+      "bytes": 3305,
+      "git_blob": "73ec5b304954a48bae04e79c9b1bee72cd52358c",
+      "sha256": "81057c2e5f8d260060e0227a9a1fd60b45afdb533ddfbef0f97ef8c28362c39a"
+    },
+    "prior_freeze": {
+      "bytes": 3530,
+      "git_blob": "f7ea095f3d8d597993e7732168f77f1481429e5c",
+      "sha256": "662edd9f37c4d5bac60907b9a9fdc686331a3ff2853e3a9791f8fa749ee29e5f"
+    },
+    "prior_frozen_bytes_unchanged": true,
+    "observed_head": {
+      "sha": "2d1137b1ba39fab0e6a28bac8decc114dfa0138c",
+      "tree": "99a9c0cefa627290c9fc72a9ba90d0485020fe11",
+      "ordered_parents": [
+        "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "3c9e2bba4e7e84616509d6320a9ae013a274532c",
+        "18bbef4f61c6086f145bdb6f7acbf82127741a14",
+        "8075eb367b6e97546af206b27bbf4a3a867497c8",
+        "4a1410f332e4a34564feafbc4dcb2e808c7f6c5f"
+      ]
+    },
+    "observed_PR_merge": {
+      "sha": "a0cb0f33661e199674012e3302b0602407c91a8d",
+      "tree": "99a9c0cefa627290c9fc72a9ba90d0485020fe11",
+      "ordered_parents": [
+        "63652be658ebed8d3052eb789b951793384fd5e4",
+        "2d1137b1ba39fab0e6a28bac8decc114dfa0138c"
+      ]
+    },
+    "PR": {
+      "number": 4936,
+      "draft": true,
+      "state": "open",
+      "base_ref": "integration/ui-objective-20261103-product",
+      "base_sha": "63652be658ebed8d3052eb789b951793384fd5e4",
+      "head_ref": "integration/r3-repairs-and-locks-20261106",
+      "head_sha": "2d1137b1ba39fab0e6a28bac8decc114dfa0138c",
+      "actual_merge_sha": "a0cb0f33661e199674012e3302b0602407c91a8d"
+    },
+    "distinct_change_denominators": {
+      "reviewed_product_delta_relative_to_first_parent67": 230,
+      "PR4936_API_changed_files_against_its_PR_base": 1561,
+      "primary_PR4797_root_record_changed_files": 1335,
+      "primary_record_head": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+      "primary_record_base": "63652be658ebed8d3052eb789b951793384fd5e4",
+      "counts_not_added_or_treated_as_equal": true,
+      "no_new_claim_of_complete_PR_file_set_audit": true
+    },
+    "target_and_main_refs_unchanged_at_fresh_read": {
+      "target": "63652be658ebed8d3052eb789b951793384fd5e4",
+      "main": "732e934ba496d90fbe042b8d41d479ef901643e5"
+    },
+    "raw_inputs": [
+      {
+        "path": "head.fresh-GET.original.json",
+        "bytes": 6907,
+        "git_blob": "8acf98e55b9463a54db5096cc0321f30a4941e68",
+        "sha256": "096221db6cb4c75916a8d98f542f6c5b82aaf269c7f38c7d14831ba83ece356c"
+      },
+      {
+        "path": "main-ref.fresh-GET.original.json",
+        "bytes": 1441,
+        "git_blob": "e260093eb4f1732b8e329966cf70de98e5adaa66",
+        "sha256": "bad76df4814bf1827e091e89c0b6637ccec4f5799973c9b63468b6659774f293"
+      },
+      {
+        "path": "merge.fresh-GET.original.json",
+        "bytes": 6729,
+        "git_blob": "c1d0974bb4bfed0962b5c38559d7bbce305e9160",
+        "sha256": "2ac24d05c9a4b540d5a0873304ec8c84c3ff7074779248a76e710576b8ed8a7d"
+      },
+      {
+        "path": "pr4936.fresh-GET.original.json",
+        "bytes": 49445,
+        "git_blob": "7058956e1bcc8a2dc55c89a01df3c853298f6c7d",
+        "sha256": "21c0a8881fdd52c5267a2a475418416e1b7acf9cda23950c3e88b16e5ccd5ad5"
+      },
+      {
+        "path": "primary-pr4797.root-original.json",
+        "bytes": 157309,
+        "git_blob": "2fae069e1120fc9e6f57477b1b08eda96d3ed662",
+        "sha256": "b0f28f99ea61c8fdec2e2aae078a7b4aac2ee291cf2b04e2401bdeb4e4e27e22"
+      },
+      {
+        "path": "target-ref.fresh-GET.original.json",
+        "bytes": 1879,
+        "git_blob": "e67b43f229cd25c08c866aa2c98160b955e61e42",
+        "sha256": "f5299bffd0b79eaf37c572a92ed3d25bc4238ecfa06fc24bb659f50383187f38"
+      }
+    ],
+    "limits": [
+      "This addendum verifies published source/merge/parent identities only.",
+      "Original 14-member review and its freeze remain the earlier immutable review stage.",
+      "No component native outcome or combined CI result is inferred from publication.",
+      "No ref, PR, CI, test, source or blocker status was changed by this reviewer."
+    ]
+  },
+  "object_paths": 10,
+  "unique_blobs": 10,
+  "objects": [
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-composition-independent-20261106/review-packet.zip.part-0001.b64",
+      "bytes": 139448,
+      "git_blob": "26fdc682a680f80c6a41f897f7b112e62f44a85f",
+      "sha256": "62ba4cd1163711768c2629a231fbcfb8907a48b8888d50cc63ce1d31fa7dd796",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "f9eb4128141ce16be37d62b01d0306d332f71103",
+      "full_UTF8_bytes_equal": true,
+      "full_blob_get_identity": {
+        "bytes": 139448,
+        "git_blob": "26fdc682a680f80c6a41f897f7b112e62f44a85f",
+        "sha256": "62ba4cd1163711768c2629a231fbcfb8907a48b8888d50cc63ce1d31fa7dd796"
+      },
+      "actual_GET_original": "registration-raw/full-GET-26fdc682a680f80c6a41f897f7b112e62f44a85f.original.json"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-composition-independent-20261106/manifest.json",
+      "bytes": 6671,
+      "git_blob": "096b3881a70f52b458d4429153c20bcf4c032780",
+      "sha256": "a7fa3d316adecdc505c57334a43cc773631cb37af868f53d80fc5245d25ae90a",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "f9eb4128141ce16be37d62b01d0306d332f71103",
+      "full_UTF8_bytes_equal": true,
+      "full_blob_get_identity": {
+        "bytes": 6671,
+        "git_blob": "096b3881a70f52b458d4429153c20bcf4c032780",
+        "sha256": "a7fa3d316adecdc505c57334a43cc773631cb37af868f53d80fc5245d25ae90a"
+      },
+      "actual_GET_original": "registration-raw/full-GET-096b3881a70f52b458d4429153c20bcf4c032780.original.json"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-composition-independent-20261106/restore_packet.py",
+      "bytes": 4761,
+      "git_blob": "8945164447df5f377a2c435e0319d1a98b0e57c4",
+      "sha256": "395ce0706dea2d16c6810586bb18ca3c3c1afc9b9aa7925a068ec7200ca2fc59",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "581f6eb033f4d0f802dc9243e1933ae995281063",
+      "full_UTF8_bytes_equal": true,
+      "full_blob_get_identity": {
+        "bytes": 4761,
+        "git_blob": "8945164447df5f377a2c435e0319d1a98b0e57c4",
+        "sha256": "395ce0706dea2d16c6810586bb18ca3c3c1afc9b9aa7925a068ec7200ca2fc59"
+      },
+      "actual_GET_original": "registration-raw/full-GET-8945164447df5f377a2c435e0319d1a98b0e57c4.original.json"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-composition-independent-20261106/build_packet.py",
+      "bytes": 3225,
+      "git_blob": "23d7fffe462e75c4fa9c6796ad43b44e2efe49bf",
+      "sha256": "edb38c37729431b7c06c9da790e7aedf0908a48ecd24dcd436309f6356ed064b",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "581f6eb033f4d0f802dc9243e1933ae995281063",
+      "full_UTF8_bytes_equal": true,
+      "full_blob_get_identity": {
+        "bytes": 3225,
+        "git_blob": "23d7fffe462e75c4fa9c6796ad43b44e2efe49bf",
+        "sha256": "edb38c37729431b7c06c9da790e7aedf0908a48ecd24dcd436309f6356ed064b"
+      },
+      "actual_GET_original": "registration-raw/full-GET-23d7fffe462e75c4fa9c6796ad43b44e2efe49bf.original.json"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-composition-independent-20261106/README.md",
+      "bytes": 2094,
+      "git_blob": "63d99daabccfb737682069343affbd74cadced6a",
+      "sha256": "f87a3cc568bbfd15ee8266cc1aad7c9596806cf93e09a19e9d673efc50e022c2",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "f7d1fd14828e11a593e0dc2788c29d644169a468",
+      "full_UTF8_bytes_equal": true,
+      "full_blob_get_identity": {
+        "bytes": 2094,
+        "git_blob": "63d99daabccfb737682069343affbd74cadced6a",
+        "sha256": "f87a3cc568bbfd15ee8266cc1aad7c9596806cf93e09a19e9d673efc50e022c2"
+      },
+      "actual_GET_original": "registration-raw/full-GET-63d99daabccfb737682069343affbd74cadced6a.original.json"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-composition-independent-20261106/REVIEW.zh-CN.md",
+      "bytes": 3305,
+      "git_blob": "73ec5b304954a48bae04e79c9b1bee72cd52358c",
+      "sha256": "81057c2e5f8d260060e0227a9a1fd60b45afdb533ddfbef0f97ef8c28362c39a",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "f7d1fd14828e11a593e0dc2788c29d644169a468",
+      "full_UTF8_bytes_equal": true,
+      "full_blob_get_identity": {
+        "bytes": 3305,
+        "git_blob": "73ec5b304954a48bae04e79c9b1bee72cd52358c",
+        "sha256": "81057c2e5f8d260060e0227a9a1fd60b45afdb533ddfbef0f97ef8c28362c39a"
+      },
+      "actual_GET_original": "registration-raw/full-GET-73ec5b304954a48bae04e79c9b1bee72cd52358c.original.json"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-composition-independent-20261106/input-freeze.original.json",
+      "bytes": 3530,
+      "git_blob": "f7ea095f3d8d597993e7732168f77f1481429e5c",
+      "sha256": "662edd9f37c4d5bac60907b9a9fdc686331a3ff2853e3a9791f8fa749ee29e5f",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "ae00b65e3b159bd30b9d3e0ed8079ab248a0d376",
+      "full_UTF8_bytes_equal": true,
+      "full_blob_get_identity": {
+        "bytes": 3530,
+        "git_blob": "f7ea095f3d8d597993e7732168f77f1481429e5c",
+        "sha256": "662edd9f37c4d5bac60907b9a9fdc686331a3ff2853e3a9791f8fa749ee29e5f"
+      },
+      "actual_GET_original": "registration-raw/full-GET-f7ea095f3d8d597993e7732168f77f1481429e5c.original.json"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-composition-independent-20261106/post-publication-ADDENDUM.json",
+      "bytes": 4012,
+      "git_blob": "43810c7883bc901be37c22f5088461c0f8b3d5e8",
+      "sha256": "b0c28f87979508d5d9ecad158f2ac9be8af4e787f49db4378f24407712d4bcaa",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "ae00b65e3b159bd30b9d3e0ed8079ab248a0d376",
+      "full_UTF8_bytes_equal": true,
+      "full_blob_get_identity": {
+        "bytes": 4012,
+        "git_blob": "43810c7883bc901be37c22f5088461c0f8b3d5e8",
+        "sha256": "b0c28f87979508d5d9ecad158f2ac9be8af4e787f49db4378f24407712d4bcaa"
+      },
+      "actual_GET_original": "registration-raw/full-GET-43810c7883bc901be37c22f5088461c0f8b3d5e8.original.json"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-composition-independent-20261106/restoration.stdout.json",
+      "bytes": 805,
+      "git_blob": "80eda42aef92c6ef3b9be7fa36e79b6406bb7346",
+      "sha256": "63da783eb01a964204cb2dc7ad3f2d0b641df13c3329685a7722492c926d0ba6",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "7df3be9159d0c92afbaa0491d4db3c8f7f58e08d",
+      "full_UTF8_bytes_equal": true,
+      "full_blob_get_identity": {
+        "bytes": 805,
+        "git_blob": "80eda42aef92c6ef3b9be7fa36e79b6406bb7346",
+        "sha256": "63da783eb01a964204cb2dc7ad3f2d0b641df13c3329685a7722492c926d0ba6"
+      },
+      "actual_GET_original": "registration-raw/full-GET-80eda42aef92c6ef3b9be7fa36e79b6406bb7346.original.json"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-composition-independent-20261106/restoration.execution.json",
+      "bytes": 209,
+      "git_blob": "59a33d6bd8d011e0c0e01cad97bbf9f2392f4598",
+      "sha256": "da3267c0213dcd0884294284097f93324e15a60e894153eec6f072b64b84f43e",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "7df3be9159d0c92afbaa0491d4db3c8f7f58e08d",
+      "full_UTF8_bytes_equal": true,
+      "full_blob_get_identity": {
+        "bytes": 209,
+        "git_blob": "59a33d6bd8d011e0c0e01cad97bbf9f2392f4598",
+        "sha256": "da3267c0213dcd0884294284097f93324e15a60e894153eec6f072b64b84f43e"
+      },
+      "actual_GET_original": "registration-raw/full-GET-59a33d6bd8d011e0c0e01cad97bbf9f2392f4598.original.json"
+    }
+  ],
+  "complete_actual_registration_returns": {
+    "files": [
+      {
+        "path": "registration-raw/create-0000.original.json",
+        "bytes": 195,
+        "git_blob": "69121e06fb36335e672df1ee8e16c8a6d6f442e3",
+        "sha256": "8c78c543f7403ebb8af2fc3dcd84cef838650fc61c1b3b140903fec00e4d935f",
+        "losslessly_reconstructed_serialized_actual_tool_return": true
+      },
+      {
+        "path": "registration-raw/create-0002.original.json",
+        "bytes": 195,
+        "git_blob": "96937a4e42dc3d9306f825ae580b860a84d8f111",
+        "sha256": "2b3ecd53efec2b1be146cc30fe8db28fd3c0da6462ca597a03952788b15ebc6e",
+        "losslessly_reconstructed_serialized_actual_tool_return": true
+      },
+      {
+        "path": "registration-raw/create-0004.original.json",
+        "bytes": 195,
+        "git_blob": "27eef0553b7aa9b63d5f0172b018ceb090aa3517",
+        "sha256": "129c5e1bcf9529029607fd70a3a155fdc108bd5c32eeb4a984dde051e0ad3486",
+        "losslessly_reconstructed_serialized_actual_tool_return": true
+      },
+      {
+        "path": "registration-raw/create-0006.original.json",
+        "bytes": 195,
+        "git_blob": "6134cf06cbba133a590d0a09884f1783ab2bfcfd",
+        "sha256": "510c21facfc3c0eb525d166efe9e8d2ece8ff94fa2bb48c1b6fbd60e5127096e",
+        "losslessly_reconstructed_serialized_actual_tool_return": true
+      },
+      {
+        "path": "registration-raw/create-0008.original.json",
+        "bytes": 195,
+        "git_blob": "ccde8e34cd0f5f109fedf5d48deda1bfd11bb6ab",
+        "sha256": "4c6ca95030072eb53e9a39c0f29cc1117c0ab6e844a9d06792f6f7630cda33f0",
+        "losslessly_reconstructed_serialized_actual_tool_return": true
+      },
+      {
+        "path": "registration-raw/full-GET-26fdc682a680f80c6a41f897f7b112e62f44a85f.original.json",
+        "bytes": 139607,
+        "git_blob": "fc7895ae01518fddf7c26c3017d56fc430f1c810",
+        "sha256": "d1d8f271b9120ec528867674782597525decd9eae4555ef6f5f4f0ef26fd11c4",
+        "losslessly_reconstructed_serialized_actual_tool_return": true
+      },
+      {
+        "path": "registration-raw/full-GET-096b3881a70f52b458d4429153c20bcf4c032780.original.json",
+        "bytes": 7389,
+        "git_blob": "bf85492494133ab24891ae7740259d0f766a1e2a",
+        "sha256": "930409ff42423778d37b0ca5be202b2d8dee05e76952d4004eb56b036191a57a",
+        "losslessly_reconstructed_serialized_actual_tool_return": true
+      },
+      {
+        "path": "registration-raw/full-GET-8945164447df5f377a2c435e0319d1a98b0e57c4.original.json",
+        "bytes": 5219,
+        "git_blob": "c33b7da6f5c805fd1fc9cd322481657dfce2571f",
+        "sha256": "01905986c888bc8fcadbf2b423984090f67e1fea11ca65e514a3cc521304d9ae",
+        "losslessly_reconstructed_serialized_actual_tool_return": true
+      },
+      {
+        "path": "registration-raw/full-GET-23d7fffe462e75c4fa9c6796ad43b44e2efe49bf.original.json",
+        "bytes": 3565,
+        "git_blob": "682f6dee29b56d14abd772b8a8df500ac7a8f965",
+        "sha256": "f1eaa7c9623829c21e2de3a196d53005201401417c6d207b1d3c7a61a37b028b",
+        "losslessly_reconstructed_serialized_actual_tool_return": true
+      },
+      {
+        "path": "registration-raw/full-GET-63d99daabccfb737682069343affbd74cadced6a.original.json",
+        "bytes": 2264,
+        "git_blob": "e737025b4adb049d353fa101d7a67eca0d7584c7",
+        "sha256": "629b38d05cc14ea583b9e0865ff2cd7ec152de78c75545831e5bef2f7ea786f9",
+        "losslessly_reconstructed_serialized_actual_tool_return": true
+      },
+      {
+        "path": "registration-raw/full-GET-73ec5b304954a48bae04e79c9b1bee72cd52358c.original.json",
+        "bytes": 3495,
+        "git_blob": "d7423f1fae0c1f6f6ac0c9869360fbf72d5edc6d",
+        "sha256": "df7b3842774c1c27d67fd5e10d0227845949a842bfd76cc31d9add456d03f5c4",
+        "losslessly_reconstructed_serialized_actual_tool_return": true
+      },
+      {
+        "path": "registration-raw/full-GET-f7ea095f3d8d597993e7732168f77f1481429e5c.original.json",
+        "bytes": 3999,
+        "git_blob": "5a35a5626fed85567981096230ce453c91503de7",
+        "sha256": "68c118c1dcddda782c456dfa70f663f4844b941300f515554149a5f655ae26d8",
+        "losslessly_reconstructed_serialized_actual_tool_return": true
+      },
+      {
+        "path": "registration-raw/full-GET-43810c7883bc901be37c22f5088461c0f8b3d5e8.original.json",
+        "bytes": 4500,
+        "git_blob": "4f996921fa1f67134cb242628bb0f44cc7b4f902",
+        "sha256": "c2a27fde6332a85b7ee18438c653d5c440eaf428322ca3717d9391a716e37f29",
+        "losslessly_reconstructed_serialized_actual_tool_return": true
+      },
+      {
+        "path": "registration-raw/full-GET-80eda42aef92c6ef3b9be7fa36e79b6406bb7346.original.json",
+        "bytes": 1027,
+        "git_blob": "f5197b0d4eed9f0564ea6a7d779d8b8eec6aada2",
+        "sha256": "47b73d34baafc444db7e206c98733c77d59128da307a3634a1d0dd9ac190819d",
+        "losslessly_reconstructed_serialized_actual_tool_return": true
+      },
+      {
+        "path": "registration-raw/full-GET-59a33d6bd8d011e0c0e01cad97bbf9f2392f4598.original.json",
+        "bytes": 387,
+        "git_blob": "0a5eb5a7e6fc124164f10edf9e7a1587468ace9b",
+        "sha256": "a026cfbf63ee49d1fac8f11adafbb43fad7c7a746f530081ea8dfa222b8b9c87",
+        "losslessly_reconstructed_serialized_actual_tool_return": true
+      }
+    ],
+    "recipes": [
+      {
+        "schema": "b21-v3-native-lossless-tool-return-recipes-v1",
+        "batch_index": 0,
+        "start_index": 0,
+        "end_index": 10,
+        "receipts": [
+          {
+            "filename": "create-0000.original.json",
+            "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"sha\": \"f9eb4128141ce16be37d62b01d0306d332f71103\"\n  },\n  \"isError\": false\n}\n"
+          },
+          {
+            "filename": "create-0002.original.json",
+            "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"sha\": \"581f6eb033f4d0f802dc9243e1933ae995281063\"\n  },\n  \"isError\": false\n}\n"
+          },
+          {
+            "filename": "create-0004.original.json",
+            "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"sha\": \"f7d1fd14828e11a593e0dc2788c29d644169a468\"\n  },\n  \"isError\": false\n}\n"
+          },
+          {
+            "filename": "create-0006.original.json",
+            "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"sha\": \"ae00b65e3b159bd30b9d3e0ed8079ab248a0d376\"\n  },\n  \"isError\": false\n}\n"
+          },
+          {
+            "filename": "create-0008.original.json",
+            "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"sha\": \"7df3be9159d0c92afbaa0491d4db3c8f7f58e08d\"\n  },\n  \"isError\": false\n}\n"
+          },
+          {
+            "filename": "full-GET-26fdc682a680f80c6a41f897f7b112e62f44a85f.original.json",
+            "payload_git_blob": "26fdc682a680f80c6a41f897f7b112e62f44a85f",
+            "marker": "__B21_V3_EXACT_BODY_26fdc682a680f80c6a41f897f7b112e62f44a85f__",
+            "occurrences": 1,
+            "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__B21_V3_EXACT_BODY_26fdc682a680f80c6a41f897f7b112e62f44a85f__\"\n  },\n  \"isError\": false\n}\n"
+          },
+          {
+            "filename": "full-GET-096b3881a70f52b458d4429153c20bcf4c032780.original.json",
+            "payload_git_blob": "096b3881a70f52b458d4429153c20bcf4c032780",
+            "marker": "__B21_V3_EXACT_BODY_096b3881a70f52b458d4429153c20bcf4c032780__",
+            "occurrences": 1,
+            "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__B21_V3_EXACT_BODY_096b3881a70f52b458d4429153c20bcf4c032780__\"\n  },\n  \"isError\": false\n}\n"
+          },
+          {
+            "filename": "full-GET-8945164447df5f377a2c435e0319d1a98b0e57c4.original.json",
+            "payload_git_blob": "8945164447df5f377a2c435e0319d1a98b0e57c4",
+            "marker": "__B21_V3_EXACT_BODY_8945164447df5f377a2c435e0319d1a98b0e57c4__",
+            "occurrences": 1,
+            "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__B21_V3_EXACT_BODY_8945164447df5f377a2c435e0319d1a98b0e57c4__\"\n  },\n  \"isError\": false\n}\n"
+          },
+          {
+            "filename": "full-GET-23d7fffe462e75c4fa9c6796ad43b44e2efe49bf.original.json",
+            "payload_git_blob": "23d7fffe462e75c4fa9c6796ad43b44e2efe49bf",
+            "marker": "__B21_V3_EXACT_BODY_23d7fffe462e75c4fa9c6796ad43b44e2efe49bf__",
+            "occurrences": 1,
+            "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__B21_V3_EXACT_BODY_23d7fffe462e75c4fa9c6796ad43b44e2efe49bf__\"\n  },\n  \"isError\": false\n}\n"
+          },
+          {
+            "filename": "full-GET-63d99daabccfb737682069343affbd74cadced6a.original.json",
+            "payload_git_blob": "63d99daabccfb737682069343affbd74cadced6a",
+            "marker": "__B21_V3_EXACT_BODY_63d99daabccfb737682069343affbd74cadced6a__",
+            "occurrences": 1,
+            "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__B21_V3_EXACT_BODY_63d99daabccfb737682069343affbd74cadced6a__\"\n  },\n  \"isError\": false\n}\n"
+          },
+          {
+            "filename": "full-GET-73ec5b304954a48bae04e79c9b1bee72cd52358c.original.json",
+            "payload_git_blob": "73ec5b304954a48bae04e79c9b1bee72cd52358c",
+            "marker": "__B21_V3_EXACT_BODY_73ec5b304954a48bae04e79c9b1bee72cd52358c__",
+            "occurrences": 1,
+            "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__B21_V3_EXACT_BODY_73ec5b304954a48bae04e79c9b1bee72cd52358c__\"\n  },\n  \"isError\": false\n}\n"
+          },
+          {
+            "filename": "full-GET-f7ea095f3d8d597993e7732168f77f1481429e5c.original.json",
+            "payload_git_blob": "f7ea095f3d8d597993e7732168f77f1481429e5c",
+            "marker": "__B21_V3_EXACT_BODY_f7ea095f3d8d597993e7732168f77f1481429e5c__",
+            "occurrences": 1,
+            "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__B21_V3_EXACT_BODY_f7ea095f3d8d597993e7732168f77f1481429e5c__\"\n  },\n  \"isError\": false\n}\n"
+          },
+          {
+            "filename": "full-GET-43810c7883bc901be37c22f5088461c0f8b3d5e8.original.json",
+            "payload_git_blob": "43810c7883bc901be37c22f5088461c0f8b3d5e8",
+            "marker": "__B21_V3_EXACT_BODY_43810c7883bc901be37c22f5088461c0f8b3d5e8__",
+            "occurrences": 1,
+            "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__B21_V3_EXACT_BODY_43810c7883bc901be37c22f5088461c0f8b3d5e8__\"\n  },\n  \"isError\": false\n}\n"
+          },
+          {
+            "filename": "full-GET-80eda42aef92c6ef3b9be7fa36e79b6406bb7346.original.json",
+            "payload_git_blob": "80eda42aef92c6ef3b9be7fa36e79b6406bb7346",
+            "marker": "__B21_V3_EXACT_BODY_80eda42aef92c6ef3b9be7fa36e79b6406bb7346__",
+            "occurrences": 1,
+            "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__B21_V3_EXACT_BODY_80eda42aef92c6ef3b9be7fa36e79b6406bb7346__\"\n  },\n  \"isError\": false\n}\n"
+          },
+          {
+            "filename": "full-GET-59a33d6bd8d011e0c0e01cad97bbf9f2392f4598.original.json",
+            "payload_git_blob": "59a33d6bd8d011e0c0e01cad97bbf9f2392f4598",
+            "marker": "__B21_V3_EXACT_BODY_59a33d6bd8d011e0c0e01cad97bbf9f2392f4598__",
+            "occurrences": 1,
+            "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__B21_V3_EXACT_BODY_59a33d6bd8d011e0c0e01cad97bbf9f2392f4598__\"\n  },\n  \"isError\": false\n}\n"
+          }
+        ],
+        "completed": [
+          {
+            "git_blob": "26fdc682a680f80c6a41f897f7b112e62f44a85f",
+            "bytes": 139448,
+            "sha256": "62ba4cd1163711768c2629a231fbcfb8907a48b8888d50cc63ce1d31fa7dd796",
+            "repo_paths": [
+              "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-composition-independent-20261106/review-packet.zip.part-0001.b64"
+            ],
+            "actual_materialization_method": "create_tree(content); no ref",
+            "unreferenced_tree_sha": "f9eb4128141ce16be37d62b01d0306d332f71103",
+            "create_original": "registration-raw/create-0000.original.json",
+            "full_GET_original": "registration-raw/full-GET-26fdc682a680f80c6a41f897f7b112e62f44a85f.original.json",
+            "actual_full_GET_UTF8_equal": true
+          },
+          {
+            "git_blob": "096b3881a70f52b458d4429153c20bcf4c032780",
+            "bytes": 6671,
+            "sha256": "a7fa3d316adecdc505c57334a43cc773631cb37af868f53d80fc5245d25ae90a",
+            "repo_paths": [
+              "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-composition-independent-20261106/manifest.json"
+            ],
+            "actual_materialization_method": "create_tree(content); no ref",
+            "unreferenced_tree_sha": "f9eb4128141ce16be37d62b01d0306d332f71103",
+            "create_original": "registration-raw/create-0000.original.json",
+            "full_GET_original": "registration-raw/full-GET-096b3881a70f52b458d4429153c20bcf4c032780.original.json",
+            "actual_full_GET_UTF8_equal": true
+          },
+          {
+            "git_blob": "8945164447df5f377a2c435e0319d1a98b0e57c4",
+            "bytes": 4761,
+            "sha256": "395ce0706dea2d16c6810586bb18ca3c3c1afc9b9aa7925a068ec7200ca2fc59",
+            "repo_paths": [
+              "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-composition-independent-20261106/restore_packet.py"
+            ],
+            "actual_materialization_method": "create_tree(content); no ref",
+            "unreferenced_tree_sha": "581f6eb033f4d0f802dc9243e1933ae995281063",
+            "create_original": "registration-raw/create-0002.original.json",
+            "full_GET_original": "registration-raw/full-GET-8945164447df5f377a2c435e0319d1a98b0e57c4.original.json",
+            "actual_full_GET_UTF8_equal": true
+          },
+          {
+            "git_blob": "23d7fffe462e75c4fa9c6796ad43b44e2efe49bf",
+            "bytes": 3225,
+            "sha256": "edb38c37729431b7c06c9da790e7aedf0908a48ecd24dcd436309f6356ed064b",
+            "repo_paths": [
+              "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-composition-independent-20261106/build_packet.py"
+            ],
+            "actual_materialization_method": "create_tree(content); no ref",
+            "unreferenced_tree_sha": "581f6eb033f4d0f802dc9243e1933ae995281063",
+            "create_original": "registration-raw/create-0002.original.json",
+            "full_GET_original": "registration-raw/full-GET-23d7fffe462e75c4fa9c6796ad43b44e2efe49bf.original.json",
+            "actual_full_GET_UTF8_equal": true
+          },
+          {
+            "git_blob": "63d99daabccfb737682069343affbd74cadced6a",
+            "bytes": 2094,
+            "sha256": "f87a3cc568bbfd15ee8266cc1aad7c9596806cf93e09a19e9d673efc50e022c2",
+            "repo_paths": [
+              "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-composition-independent-20261106/README.md"
+            ],
+            "actual_materialization_method": "create_tree(content); no ref",
+            "unreferenced_tree_sha": "f7d1fd14828e11a593e0dc2788c29d644169a468",
+            "create_original": "registration-raw/create-0004.original.json",
+            "full_GET_original": "registration-raw/full-GET-63d99daabccfb737682069343affbd74cadced6a.original.json",
+            "actual_full_GET_UTF8_equal": true
+          },
+          {
+            "git_blob": "73ec5b304954a48bae04e79c9b1bee72cd52358c",
+            "bytes": 3305,
+            "sha256": "81057c2e5f8d260060e0227a9a1fd60b45afdb533ddfbef0f97ef8c28362c39a",
+            "repo_paths": [
+              "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-composition-independent-20261106/REVIEW.zh-CN.md"
+            ],
+            "actual_materialization_method": "create_tree(content); no ref",
+            "unreferenced_tree_sha": "f7d1fd14828e11a593e0dc2788c29d644169a468",
+            "create_original": "registration-raw/create-0004.original.json",
+            "full_GET_original": "registration-raw/full-GET-73ec5b304954a48bae04e79c9b1bee72cd52358c.original.json",
+            "actual_full_GET_UTF8_equal": true
+          },
+          {
+            "git_blob": "f7ea095f3d8d597993e7732168f77f1481429e5c",
+            "bytes": 3530,
+            "sha256": "662edd9f37c4d5bac60907b9a9fdc686331a3ff2853e3a9791f8fa749ee29e5f",
+            "repo_paths": [
+              "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-composition-independent-20261106/input-freeze.original.json"
+            ],
+            "actual_materialization_method": "create_tree(content); no ref",
+            "unreferenced_tree_sha": "ae00b65e3b159bd30b9d3e0ed8079ab248a0d376",
+            "create_original": "registration-raw/create-0006.original.json",
+            "full_GET_original": "registration-raw/full-GET-f7ea095f3d8d597993e7732168f77f1481429e5c.original.json",
+            "actual_full_GET_UTF8_equal": true
+          },
+          {
+            "git_blob": "43810c7883bc901be37c22f5088461c0f8b3d5e8",
+            "bytes": 4012,
+            "sha256": "b0c28f87979508d5d9ecad158f2ac9be8af4e787f49db4378f24407712d4bcaa",
+            "repo_paths": [
+              "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-composition-independent-20261106/post-publication-ADDENDUM.json"
+            ],
+            "actual_materialization_method": "create_tree(content); no ref",
+            "unreferenced_tree_sha": "ae00b65e3b159bd30b9d3e0ed8079ab248a0d376",
+            "create_original": "registration-raw/create-0006.original.json",
+            "full_GET_original": "registration-raw/full-GET-43810c7883bc901be37c22f5088461c0f8b3d5e8.original.json",
+            "actual_full_GET_UTF8_equal": true
+          },
+          {
+            "git_blob": "80eda42aef92c6ef3b9be7fa36e79b6406bb7346",
+            "bytes": 805,
+            "sha256": "63da783eb01a964204cb2dc7ad3f2d0b641df13c3329685a7722492c926d0ba6",
+            "repo_paths": [
+              "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-composition-independent-20261106/restoration.stdout.json"
+            ],
+            "actual_materialization_method": "create_tree(content); no ref",
+            "unreferenced_tree_sha": "7df3be9159d0c92afbaa0491d4db3c8f7f58e08d",
+            "create_original": "registration-raw/create-0008.original.json",
+            "full_GET_original": "registration-raw/full-GET-80eda42aef92c6ef3b9be7fa36e79b6406bb7346.original.json",
+            "actual_full_GET_UTF8_equal": true
+          },
+          {
+            "git_blob": "59a33d6bd8d011e0c0e01cad97bbf9f2392f4598",
+            "bytes": 209,
+            "sha256": "da3267c0213dcd0884294284097f93324e15a60e894153eec6f072b64b84f43e",
+            "repo_paths": [
+              "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-composition-independent-20261106/restoration.execution.json"
+            ],
+            "actual_materialization_method": "create_tree(content); no ref",
+            "unreferenced_tree_sha": "7df3be9159d0c92afbaa0491d4db3c8f7f58e08d",
+            "create_original": "registration-raw/create-0008.original.json",
+            "full_GET_original": "registration-raw/full-GET-59a33d6bd8d011e0c0e01cad97bbf9f2392f4598.original.json",
+            "actual_full_GET_UTF8_equal": true
+          }
+        ]
+      }
+    ],
+    "encoding": "Lossless exact serialized tool-return templates plus already registered payload bytes. Full GET content is not omitted: replacing markers with JSON-escaped full payload recreates the entire actual return, checked against its indexed bytes/Git/SHA256."
+  },
+  "scope": [
+    "Composition and source publication identity only.",
+    "Prior frozen review not rewritten; no component or combined native qualification expanded.",
+    "230 first-parent delta, 1561 overall PR paths, and primary4797 1335 paths remain separate comparison scopes.",
+    "No reviewer ref/PR/CI/source mutation or blocker status transition."
+  ]
+}

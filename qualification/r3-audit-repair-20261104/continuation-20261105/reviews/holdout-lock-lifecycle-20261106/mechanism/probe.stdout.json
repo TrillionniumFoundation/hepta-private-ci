@@ -1,0 +1,41 @@
+{
+  "case_count": 4,
+  "cases": [
+    {
+      "after_final_close": "Acquired",
+      "kind": "dup",
+      "release": "close_only",
+      "while_duplicate_open": "WouldBlock"
+    },
+    {
+      "after_final_close": "Acquired",
+      "kind": "dup",
+      "release": "explicit_unlock_then_close",
+      "while_duplicate_open": "Acquired"
+    },
+    {
+      "after_child_close": "Acquired",
+      "kind": "fork_before_exec",
+      "owned_child_handshake_confirmed": true,
+      "parent_and_child_fd_cloexec": true,
+      "release": "close_only",
+      "while_child_before_exec": "WouldBlock"
+    },
+    {
+      "after_child_close": "Acquired",
+      "kind": "fork_before_exec",
+      "owned_child_handshake_confirmed": true,
+      "parent_and_child_fd_cloexec": true,
+      "release": "explicit_unlock_then_close",
+      "while_child_before_exec": "Acquired"
+    }
+  ],
+  "original_mac_failure_cause_proven": false,
+  "platform": {
+    "machine": "x86_64",
+    "release": "6.18.57",
+    "sysname": "Linux"
+  },
+  "project_tests_executed": false,
+  "scope": "controlled local OS mechanism only; not project Rust or original Mac ARM execution"
+}

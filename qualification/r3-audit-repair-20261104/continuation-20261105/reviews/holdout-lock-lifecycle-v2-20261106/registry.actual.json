@@ -1,0 +1,397 @@
+{
+  "schema": "hepta-holdout-lock-lifecycle-v2-actual-registry-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "prefix": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/holdout-lock-lifecycle-v2-20261106/",
+  "decision": "NARROW_COMMENT_REVISION_READY_FOR_REVIEW",
+  "author_freeze": "6cb4f87a14147492533fcfe1c60f2f057d7a9ee7",
+  "prior_registry_unchanged": "6b1f56cdb8a80535a916a7ed23e09d1bd5108824",
+  "prior_author_freeze_unchanged": "b86d33c1f8f550decc9f15020142880dcf2f9bb7",
+  "source_head": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+  "source_tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+  "old_candidate_tree": "7c18622c5c1b69826f7103dd2b2fec5bf572ae3a",
+  "candidate_actual_full_tree": "605720504e547296dca1c78914fee5ed6d29844d",
+  "retention": {
+    "data_files": 141,
+    "zip_members": 142,
+    "zip_bytes": 1593344,
+    "zip_sha256": "a5fa375ac164ce3106f7db726adac409cff6bd7426c5e6745c0f0f00631b641c",
+    "base64_parts": 6,
+    "portable_restore_and_static_replay_exit": 0,
+    "static_stdout_bytes": 2347,
+    "static_stdout_blob": "c74c1b82ef2a9afea631453492588e446b2d3ac9",
+    "prior_static_stdout_bytes": 2776,
+    "prior_static_stdout_full_equal": true
+  },
+  "change": {
+    "scope": "Exactly three /*minimum*/ comments in previously appended tests",
+    "bytes_added": 36,
+    "production_blob_unchanged": "603d36b01f6f8fe7472c72588e793f8ef169a08b",
+    "old_tests_blob": "2c451a3c110288ca06eb43724329c48c39bb8f1e",
+    "new_tests_actual_blob": "c71e4a086dd33514d72bf7acb15d1c7e0f621636",
+    "new_tests_bytes": 13046,
+    "original_prefix_bytes_unchanged": 10243,
+    "all_assertions_and_noncomment_bytes_unchanged": true,
+    "leaves_unchanged_from_v1": 10581,
+    "leaves_unchanged_from_main67": 10580
+  },
+  "qualification": {
+    "v1_independent_review_actual_blob": "103b7adedab463bc4b63fee4ccded5722644d1bf",
+    "v1_review_decision": "REQUEST_NARROW_TEST_LINT_REVISION",
+    "v2_independent_review": "PENDING at freeze; v1 review does not automatically accept this new identity",
+    "candidate_compiled": false,
+    "Rust_project_tests_argument_comment_lint_formatter_executed": false,
+    "new_OS_mechanism_execution": false,
+    "original_Mac_actual_lock_holder": "UNKNOWN",
+    "blocker_closed": false,
+    "ref_PR_CI_mutation": false
+  },
+  "object_paths": 23,
+  "unique_blobs": 23,
+  "objects": [
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/holdout-lock-lifecycle-v2-20261106/candidate.zip.part-0001.b64",
+      "bytes": 400000,
+      "git_blob": "5254765f8c4de52393ec07e2e8f07a9879f0afca",
+      "sha256": "d0d43ebabcbdd3e925f6960aed5969c7ac648cd393fae7e87a63b5522edf6449",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "9294c96c03a4c0a63a61816dec7960614ab1cf51",
+      "full_blob_get_identity": {
+        "bytes": 400000,
+        "git_blob": "5254765f8c4de52393ec07e2e8f07a9879f0afca",
+        "sha256": "d0d43ebabcbdd3e925f6960aed5969c7ac648cd393fae7e87a63b5522edf6449"
+      },
+      "full_UTF8_bytes_equal": true,
+      "identity_proof": "Actual fetched entire UTF-8 string equals exact frozen file freshly hashed with Python hashlib"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/holdout-lock-lifecycle-v2-20261106/candidate.zip.part-0002.b64",
+      "bytes": 400000,
+      "git_blob": "db914bdbdc9fb65202dabdc120aaff701a65e21d",
+      "sha256": "5eda5d505209825781f9347cff8a3693224fea865a3dc997cb1271e79af5069a",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "9294c96c03a4c0a63a61816dec7960614ab1cf51",
+      "full_blob_get_identity": {
+        "bytes": 400000,
+        "git_blob": "db914bdbdc9fb65202dabdc120aaff701a65e21d",
+        "sha256": "5eda5d505209825781f9347cff8a3693224fea865a3dc997cb1271e79af5069a"
+      },
+      "full_UTF8_bytes_equal": true,
+      "identity_proof": "Actual fetched entire UTF-8 string equals exact frozen file freshly hashed with Python hashlib"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/holdout-lock-lifecycle-v2-20261106/candidate.zip.part-0003.b64",
+      "bytes": 400000,
+      "git_blob": "70069a3efec550bdb5694b992369f500a90f2045",
+      "sha256": "4f0ab08d35ff616675f72c331d4a983b75fc9481c175f92c505804ec6a5a42e2",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "16678137bfc07634f84a41c5b326552aeaa70efc",
+      "full_blob_get_identity": {
+        "bytes": 400000,
+        "git_blob": "70069a3efec550bdb5694b992369f500a90f2045",
+        "sha256": "4f0ab08d35ff616675f72c331d4a983b75fc9481c175f92c505804ec6a5a42e2"
+      },
+      "full_UTF8_bytes_equal": true,
+      "identity_proof": "Actual fetched entire UTF-8 string equals exact frozen file freshly hashed with Python hashlib"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/holdout-lock-lifecycle-v2-20261106/candidate.zip.part-0004.b64",
+      "bytes": 400000,
+      "git_blob": "d80303d45fa3a3c783e027abe6b65454baa95cae",
+      "sha256": "39e3fc335540b952d6352d76908aaefc1260a950c0e315bb5095e33f134478bc",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "16678137bfc07634f84a41c5b326552aeaa70efc",
+      "full_blob_get_identity": {
+        "bytes": 400000,
+        "git_blob": "d80303d45fa3a3c783e027abe6b65454baa95cae",
+        "sha256": "39e3fc335540b952d6352d76908aaefc1260a950c0e315bb5095e33f134478bc"
+      },
+      "full_UTF8_bytes_equal": true,
+      "identity_proof": "Actual fetched entire UTF-8 string equals exact frozen file freshly hashed with Python hashlib"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/holdout-lock-lifecycle-v2-20261106/candidate.zip.part-0005.b64",
+      "bytes": 400000,
+      "git_blob": "181d3cac735ec630e7f616b59d092879f2812b2a",
+      "sha256": "8f7f686077ecbab64f26924893029a7612785c58e07343d91d8168953d26672f",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "1c0f4efc60b331b42e977bf8579dbc03a18a245a",
+      "full_blob_get_identity": {
+        "bytes": 400000,
+        "git_blob": "181d3cac735ec630e7f616b59d092879f2812b2a",
+        "sha256": "8f7f686077ecbab64f26924893029a7612785c58e07343d91d8168953d26672f"
+      },
+      "full_UTF8_bytes_equal": true,
+      "identity_proof": "Actual fetched entire UTF-8 string equals exact frozen file freshly hashed with Python hashlib"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/holdout-lock-lifecycle-v2-20261106/candidate.zip.part-0006.b64",
+      "bytes": 124460,
+      "git_blob": "d266a6de1b022664bda386de71924cd10d9774ec",
+      "sha256": "7dd1e410c209a10f31632e338891f58e33df127f3ab54ee2c94d6b798261abc6",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "1c0f4efc60b331b42e977bf8579dbc03a18a245a",
+      "full_blob_get_identity": {
+        "bytes": 124460,
+        "git_blob": "d266a6de1b022664bda386de71924cd10d9774ec",
+        "sha256": "7dd1e410c209a10f31632e338891f58e33df127f3ab54ee2c94d6b798261abc6"
+      },
+      "full_UTF8_bytes_equal": true,
+      "identity_proof": "Actual fetched entire UTF-8 string equals exact frozen file freshly hashed with Python hashlib"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/holdout-lock-lifecycle-v2-20261106/manifest.json",
+      "bytes": 37607,
+      "git_blob": "c3171e00d84f3d88295e355049f50c93beea7ab8",
+      "sha256": "d2393a2029169d17b8afc06f52c59a6cdb3bab9ba801e014a748f6eb2d69c216",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "d460a4fbf0e460a032a21a05df6b2f9a1a49a2c0",
+      "full_blob_get_identity": {
+        "bytes": 37607,
+        "git_blob": "c3171e00d84f3d88295e355049f50c93beea7ab8",
+        "sha256": "d2393a2029169d17b8afc06f52c59a6cdb3bab9ba801e014a748f6eb2d69c216"
+      },
+      "full_UTF8_bytes_equal": true,
+      "identity_proof": "Actual fetched entire UTF-8 string equals exact frozen file freshly hashed with Python hashlib"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/holdout-lock-lifecycle-v2-20261106/restore_packet.py",
+      "bytes": 3468,
+      "git_blob": "641ce884eb6a95c573a4dc05cfd99bfe13a78d57",
+      "sha256": "91f3d78af08fc9bc7e323038a48e963e7cf1054b301ce7843a692615ac7a9fdf",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "d460a4fbf0e460a032a21a05df6b2f9a1a49a2c0",
+      "full_blob_get_identity": {
+        "bytes": 3468,
+        "git_blob": "641ce884eb6a95c573a4dc05cfd99bfe13a78d57",
+        "sha256": "91f3d78af08fc9bc7e323038a48e963e7cf1054b301ce7843a692615ac7a9fdf"
+      },
+      "full_UTF8_bytes_equal": true,
+      "identity_proof": "Actual fetched entire UTF-8 string equals exact frozen file freshly hashed with Python hashlib"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/holdout-lock-lifecycle-v2-20261106/README.md",
+      "bytes": 758,
+      "git_blob": "74ee04606954e993267d8e9392ed0f7d3af7c412",
+      "sha256": "8d193420bb1191c41ad82eee13cd1b3eefff12c3783b15edd76924afc96e7105",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "d24aee9a71990c0f9005f25ef09a7b1fed8c76db",
+      "full_blob_get_identity": {
+        "bytes": 758,
+        "git_blob": "74ee04606954e993267d8e9392ed0f7d3af7c412",
+        "sha256": "8d193420bb1191c41ad82eee13cd1b3eefff12c3783b15edd76924afc96e7105"
+      },
+      "full_UTF8_bytes_equal": true,
+      "identity_proof": "Actual fetched entire UTF-8 string equals exact frozen file freshly hashed with Python hashlib"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/holdout-lock-lifecycle-v2-20261106/ASSESSMENT.zh-CN.md",
+      "bytes": 3798,
+      "git_blob": "e9d275e4f9a6664c2746159de061900a7ea746cc",
+      "sha256": "0e8657e2275a682253f19f19d2d8b9110593d1d7a17a30e690b1adf1891b0072",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "d24aee9a71990c0f9005f25ef09a7b1fed8c76db",
+      "full_blob_get_identity": {
+        "bytes": 3798,
+        "git_blob": "e9d275e4f9a6664c2746159de061900a7ea746cc",
+        "sha256": "0e8657e2275a682253f19f19d2d8b9110593d1d7a17a30e690b1adf1891b0072"
+      },
+      "full_UTF8_bytes_equal": true,
+      "identity_proof": "Actual fetched entire UTF-8 string equals exact frozen file freshly hashed with Python hashlib"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/holdout-lock-lifecycle-v2-20261106/restoration.stdout.json",
+      "bytes": 676,
+      "git_blob": "d97b9762bdeb5bd4c9e1f2a94c917b9d0f0a0344",
+      "sha256": "02bda97d333401bd861a67170ad9ed7e46b5946784714a76acaa7d4e656aa240",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "b72d8509e6faaaa73d0776949560748c122e05fc",
+      "full_blob_get_identity": {
+        "bytes": 676,
+        "git_blob": "d97b9762bdeb5bd4c9e1f2a94c917b9d0f0a0344",
+        "sha256": "02bda97d333401bd861a67170ad9ed7e46b5946784714a76acaa7d4e656aa240"
+      },
+      "full_UTF8_bytes_equal": true,
+      "identity_proof": "Actual fetched entire UTF-8 string equals exact frozen file freshly hashed with Python hashlib"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/holdout-lock-lifecycle-v2-20261106/build_packet.py",
+      "bytes": 4214,
+      "git_blob": "2dd6fce18f145c0f00f4babb81d730aad72ded58",
+      "sha256": "389fe679ee65d32f37249a1a2aa360b3064645d163310b3be03d61646da9a943",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "b72d8509e6faaaa73d0776949560748c122e05fc",
+      "full_blob_get_identity": {
+        "bytes": 4214,
+        "git_blob": "2dd6fce18f145c0f00f4babb81d730aad72ded58",
+        "sha256": "389fe679ee65d32f37249a1a2aa360b3064645d163310b3be03d61646da9a943"
+      },
+      "full_UTF8_bytes_equal": true,
+      "identity_proof": "Actual fetched entire UTF-8 string equals exact frozen file freshly hashed with Python hashlib"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/holdout-lock-lifecycle-v2-20261106/freeze-manifest.json",
+      "bytes": 35411,
+      "git_blob": "6cb4f87a14147492533fcfe1c60f2f057d7a9ee7",
+      "sha256": "679287771c7d1ade54a4b7cc47d88754838450086629c3b88757f486b32a4984",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "b90f2ef64a1d7639331d91a5ef78b85bc71c2da2",
+      "full_blob_get_identity": {
+        "bytes": 35411,
+        "git_blob": "6cb4f87a14147492533fcfe1c60f2f057d7a9ee7",
+        "sha256": "679287771c7d1ade54a4b7cc47d88754838450086629c3b88757f486b32a4984"
+      },
+      "full_UTF8_bytes_equal": true,
+      "identity_proof": "Actual fetched entire UTF-8 string equals exact frozen file freshly hashed with Python hashlib"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/holdout-lock-lifecycle-v2-20261106/old-to-new.identity.json",
+      "bytes": 1831,
+      "git_blob": "ec64c0df5863cb5a4f081a669f964e6966b0b168",
+      "sha256": "38b36c64d0e1a0a356d2ec151ebfcaba8adcf82ee73c6960fbe99e2caaa2d902",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "b90f2ef64a1d7639331d91a5ef78b85bc71c2da2",
+      "full_blob_get_identity": {
+        "bytes": 1831,
+        "git_blob": "ec64c0df5863cb5a4f081a669f964e6966b0b168",
+        "sha256": "38b36c64d0e1a0a356d2ec151ebfcaba8adcf82ee73c6960fbe99e2caaa2d902"
+      },
+      "full_UTF8_bytes_equal": true,
+      "identity_proof": "Actual fetched entire UTF-8 string equals exact frozen file freshly hashed with Python hashlib"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/holdout-lock-lifecycle-v2-20261106/source-map.json",
+      "bytes": 746,
+      "git_blob": "0ed7aac7de62c10e7f4141d3aad47bfb177f5e35",
+      "sha256": "21ce42ab6b6d6d0a12d5cd3d3e9f93d29fdcf4971eaf566ab5d4526bdfb20a7d",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "7c2b202285456f34db8cd55b54b7553fbb9aec65",
+      "full_blob_get_identity": {
+        "bytes": 746,
+        "git_blob": "0ed7aac7de62c10e7f4141d3aad47bfb177f5e35",
+        "sha256": "21ce42ab6b6d6d0a12d5cd3d3e9f93d29fdcf4971eaf566ab5d4526bdfb20a7d"
+      },
+      "full_UTF8_bytes_equal": true,
+      "identity_proof": "Actual fetched entire UTF-8 string equals exact frozen file freshly hashed with Python hashlib"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/holdout-lock-lifecycle-v2-20261106/v1-to-v2.patch",
+      "bytes": 1492,
+      "git_blob": "ebcbef94f8364145a79959e6c4102e5cbb41ef3e",
+      "sha256": "d1e62cf4e9bddbc2459f6f25156e2ee97110481c219f2618308c1bd905997d4e",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "7c2b202285456f34db8cd55b54b7553fbb9aec65",
+      "full_blob_get_identity": {
+        "bytes": 1492,
+        "git_blob": "ebcbef94f8364145a79959e6c4102e5cbb41ef3e",
+        "sha256": "d1e62cf4e9bddbc2459f6f25156e2ee97110481c219f2618308c1bd905997d4e"
+      },
+      "full_UTF8_bytes_equal": true,
+      "identity_proof": "Actual fetched entire UTF-8 string equals exact frozen file freshly hashed with Python hashlib"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/holdout-lock-lifecycle-v2-20261106/full.patch",
+      "bytes": 7513,
+      "git_blob": "3b9cffc357203841cb6a2ae2792d338a0e66bf47",
+      "sha256": "15a84fb63e9a3f7f4c10c2111e21b759b022eb4992672accc503c4f66dd6862c",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "4bac8fdab9bf439cbafe466fb132d2a263b08080",
+      "full_blob_get_identity": {
+        "bytes": 7513,
+        "git_blob": "3b9cffc357203841cb6a2ae2792d338a0e66bf47",
+        "sha256": "15a84fb63e9a3f7f4c10c2111e21b759b022eb4992672accc503c4f66dd6862c"
+      },
+      "full_UTF8_bytes_equal": true,
+      "identity_proof": "Actual fetched entire UTF-8 string equals exact frozen file freshly hashed with Python hashlib"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/holdout-lock-lifecycle-v2-20261106/static-v2.stdout.json",
+      "bytes": 2347,
+      "git_blob": "c74c1b82ef2a9afea631453492588e446b2d3ac9",
+      "sha256": "b49404c026c94459d73be8406f164c262347c8d195af43b1c38487515898de57",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "4bac8fdab9bf439cbafe466fb132d2a263b08080",
+      "full_blob_get_identity": {
+        "bytes": 2347,
+        "git_blob": "c74c1b82ef2a9afea631453492588e446b2d3ac9",
+        "sha256": "b49404c026c94459d73be8406f164c262347c8d195af43b1c38487515898de57"
+      },
+      "full_UTF8_bytes_equal": true,
+      "identity_proof": "Actual fetched entire UTF-8 string equals exact frozen file freshly hashed with Python hashlib"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/holdout-lock-lifecycle-v2-20261106/verify_v2.py",
+      "bytes": 9078,
+      "git_blob": "dee12e64c5550fe79fe00554c30968f7c8b9f5a0",
+      "sha256": "03a9794202fa7787403f45e313b23cdf9f095e11ae9b2acbdacf3c06c44e06e0",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "e5ca407091350f21ea77254b6e9aa487b3b125b5",
+      "full_blob_get_identity": {
+        "bytes": 9078,
+        "git_blob": "dee12e64c5550fe79fe00554c30968f7c8b9f5a0",
+        "sha256": "03a9794202fa7787403f45e313b23cdf9f095e11ae9b2acbdacf3c06c44e06e0"
+      },
+      "full_UTF8_bytes_equal": true,
+      "identity_proof": "Actual fetched entire UTF-8 string equals exact frozen file freshly hashed with Python hashlib"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/holdout-lock-lifecycle-v2-20261106/static_helpers.py",
+      "bytes": 1303,
+      "git_blob": "2c809a848d1967f4c5307b7273b59598853657cb",
+      "sha256": "90575b05a13b4e9404b8b65265305fc17f562ac011e5b22cb8f81f626657c43d",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "e5ca407091350f21ea77254b6e9aa487b3b125b5",
+      "full_blob_get_identity": {
+        "bytes": 1303,
+        "git_blob": "2c809a848d1967f4c5307b7273b59598853657cb",
+        "sha256": "90575b05a13b4e9404b8b65265305fc17f562ac011e5b22cb8f81f626657c43d"
+      },
+      "full_UTF8_bytes_equal": true,
+      "identity_proof": "Actual fetched entire UTF-8 string equals exact frozen file freshly hashed with Python hashlib"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/holdout-lock-lifecycle-v2-20261106/candidate/codex-rs/hepta-intelligence-eval/src/fenced_holdout_file.rs",
+      "bytes": 16163,
+      "git_blob": "603d36b01f6f8fe7472c72588e793f8ef169a08b",
+      "sha256": "5d344456e04d4b5972ff5bdcd17adcc08e0570c5742b07584ae1deb9907223a0",
+      "materialization": "reuse already actual create and full GET; complete original receipt retained",
+      "created_unreferenced_tree": "4f67a90fa4a9526910dfc1761df61cd28847c135",
+      "full_blob_get_identity": {
+        "bytes": 16163,
+        "git_blob": "603d36b01f6f8fe7472c72588e793f8ef169a08b",
+        "sha256": "5d344456e04d4b5972ff5bdcd17adcc08e0570c5742b07584ae1deb9907223a0"
+      },
+      "full_UTF8_bytes_equal": true,
+      "identity_proof": "Actual fetched entire UTF-8 string equals exact frozen file freshly hashed with Python hashlib"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/holdout-lock-lifecycle-v2-20261106/candidate/codex-rs/hepta-intelligence-eval/src/fenced_holdout_file_tests.rs",
+      "bytes": 13046,
+      "git_blob": "c71e4a086dd33514d72bf7acb15d1c7e0f621636",
+      "sha256": "027aa761fd851a1f1f15829330a1edf59240d62fea8d9b4742a1d16c9df28cd8",
+      "materialization": "reuse already actual create and full GET; complete original receipt retained",
+      "created_unreferenced_tree": "605720504e547296dca1c78914fee5ed6d29844d",
+      "full_blob_get_identity": {
+        "bytes": 13046,
+        "git_blob": "c71e4a086dd33514d72bf7acb15d1c7e0f621636",
+        "sha256": "027aa761fd851a1f1f15829330a1edf59240d62fea8d9b4742a1d16c9df28cd8"
+      },
+      "full_UTF8_bytes_equal": true,
+      "identity_proof": "Actual fetched entire UTF-8 string equals exact frozen file freshly hashed with Python hashlib"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/holdout-lock-lifecycle-v2-20261106/review-input/REVIEW.md",
+      "bytes": 8096,
+      "git_blob": "103b7adedab463bc4b63fee4ccded5722644d1bf",
+      "sha256": "369b284dcb8334f91e1f841d793488df92cdc0d4e938948baad5fd8d233bd2a5",
+      "materialization": "reuse already actual create and full GET; complete original receipt retained",
+      "created_unreferenced_tree": "c9a03ccadda367c1fa2647644d392c4d40d86f3c",
+      "full_blob_get_identity": {
+        "bytes": 8096,
+        "git_blob": "103b7adedab463bc4b63fee4ccded5722644d1bf",
+        "sha256": "369b284dcb8334f91e1f841d793488df92cdc0d4e938948baad5fd8d233bd2a5"
+      },
+      "full_UTF8_bytes_equal": true,
+      "identity_proof": "Actual fetched entire UTF-8 string equals exact frozen file freshly hashed with Python hashlib"
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "Rust_project_tests_argument_lint_formatter_executed": false,
+  "all_assertions_and_noncomment_bytes_unchanged": true,
+  "both_patches_forward_reverse_exact": true,
+  "bytes_added": 36,
+  "comments_added": 3,
+  "decision": "NARROW_COMMENT_REVISION_READY_FOR_REVIEW",
+  "fixed_lint_source_files_verified": [
+    ".github/actions/run-argument-comment-lint/action.yml",
+    "codex-rs/hepta-intelligence-eval/BUILD.bazel",
+    "codex-rs/rustfmt.toml",
+    "defs.bzl",
+    "tools/argument-comment-lint/lint_aspect.bzl",
+    "tools/argument-comment-lint/list-bazel-targets.sh",
+    "tools/argument-comment-lint/src/lib.rs"
+  ],
+  "independent_v2_review": "PENDING; v1 review is not automatic v2 acceptance",
+  "leaves_unchanged_from_main67": 10580,
+  "leaves_unchanged_from_v1": 10581,
+  "new_OS_mechanism_execution": false,
+  "new_test_actual_full_GET": {
+    "bytes": 13046,
+    "git_blob": "c71e4a086dd33514d72bf7acb15d1c7e0f621636",
+    "sha256": "027aa761fd851a1f1f15829330a1edf59240d62fea8d9b4742a1d16c9df28cd8"
+  },
+  "new_tree_actual_create_full_root_GET": "605720504e547296dca1c78914fee5ed6d29844d",
+  "old_frozen_members_unchanged": 109,
+  "old_registry": {
+    "bytes": 21800,
+    "git_blob": "6b1f56cdb8a80535a916a7ed23e09d1bd5108824",
+    "sha256": "388c7b8ae6e8458046206192069fe53249ef22a87d75d3371c2066a99f8aaaad"
+  },
+  "old_static_replay": {
+    "exit_code": 0,
+    "stderr_bytes": 0,
+    "stdout": {
+      "bytes": 2776,
+      "git_blob": "fbc2e4f75bb22e74a4b3ff8367e8fad711e95541",
+      "sha256": "bc897af35779e56e67f5ae3c5a44c2a2591795a5f47157cc448380fb89aa6cf3"
+    }
+  },
+  "old_test": {
+    "bytes": 13010,
+    "git_blob": "2c451a3c110288ca06eb43724329c48c39bb8f1e",
+    "sha256": "0a810adc45251ec8f5e6ffd92bb8126cb239e1c63184f6e54b013b6c6789a215"
+  },
+  "old_tree": "7c18622c5c1b69826f7103dd2b2fec5bf572ae3a",
+  "original_Mac_cause_proven": false,
+  "original_test_prefix_bytes_unchanged": 10243,
+  "production_unchanged": {
+    "bytes": 16163,
+    "git_blob": "603d36b01f6f8fe7472c72588e793f8ef169a08b",
+    "sha256": "5d344456e04d4b5972ff5bdcd17adcc08e0570c5742b07584ae1deb9907223a0"
+  },
+  "refs_PR_CI_mutated": false,
+  "review_input_actual_full_GET": {
+    "bytes": 8096,
+    "git_blob": "103b7adedab463bc4b63fee4ccded5722644d1bf",
+    "sha256": "369b284dcb8334f91e1f841d793488df92cdc0d4e938948baad5fd8d233bd2a5"
+  }
+}

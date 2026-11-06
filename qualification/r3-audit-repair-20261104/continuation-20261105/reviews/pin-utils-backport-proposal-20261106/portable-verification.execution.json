@@ -1,0 +1,35 @@
+{
+  "actual_Cargo_Bazel_or_native": false,
+  "argv": [
+    "python3",
+    "/tmp/hepta-runtime-recovery-20261106/pin-utils-backport-proposal/delivery/restore_portable.py",
+    "--extract",
+    "/tmp/hepta-runtime-recovery-20261106/pin-utils-backport-proposal/delivery-restored-portable-v2",
+    "--replay"
+  ],
+  "controlled_swapped_AST_pair_matches": true,
+  "controlled_swapped_stdout": {
+    "bytes": 39630,
+    "git_blob": "b785497dc6525ae1b2907f1993720d20908e1186",
+    "sha256": "11e5d275a58c9e81eaef889af8c4c0a5583f897fb37c3bb749f520fcf131ea5a"
+  },
+  "controlled_unrelated_byte_drift_rejected": true,
+  "exit_code": 0,
+  "frozen_original_stdout": {
+    "bytes": 39630,
+    "git_blob": "36ee50c0f413adf14af4aa731b79926b0aa8a658",
+    "sha256": "36c7ef4894b4c2d61465769c32e95861ceb15d8d1d9dd2de2e88f52fb70a45d7"
+  },
+  "schema": "pin-utils-portable-order-only-verification-v1",
+  "source_verifier_not_modified": true,
+  "stderr": {
+    "bytes": 0,
+    "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stdout": {
+    "bytes": 3893,
+    "git_blob": "aafc0143402997cb27d32783ae4642e81b33990e",
+    "sha256": "9293410870f47dc033765c479cc028ed92c660aa3cf6af4b82e987d1520c6266"
+  }
+}
