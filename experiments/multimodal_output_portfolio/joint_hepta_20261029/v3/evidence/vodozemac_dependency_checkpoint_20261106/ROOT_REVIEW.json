@@ -1,0 +1,53 @@
+{
+  "observed_at": "2026-11-06T16:47:14.631257+00:00",
+  "reviewer": "root",
+  "manifest_sha256": "eedfcb4b05fee126458d3deda1ba1cc00b56cbbd44a394a3f7236766810f608d",
+  "original_guard_blob": "976dde7034708c37cb972e494640c9ea53afda33",
+  "old_native_artifact_still_rejected": "UNEXPECTED_LOCK_GRAPH_DRIFT",
+  "first_local_update_exactly_reproduces_old_native_lock": true,
+  "both_final_lock_bytes_identical": true,
+  "original_graph_proof": {
+    "package_count_unchanged": 1528,
+    "only_package_identity_change": {
+      "name": "vodozemac",
+      "before": "0.11.1",
+      "after": "0.11.2"
+    },
+    "added_existing_zeroize_edges": [
+      {
+        "name": "chacha20",
+        "version": "0.10.0",
+        "dependency": "zeroize"
+      },
+      {
+        "name": "chacha20poly1305",
+        "version": "0.11.0",
+        "dependency": "zeroize"
+      },
+      {
+        "name": "cipher",
+        "version": "0.5.2",
+        "dependency": "zeroize"
+      }
+    ],
+    "all_other_versions_sources_checksums_fields_and_edges_identical": true,
+    "workspace_and_vendor_packages_unchanged": true
+  },
+  "source_guard_and_other_top_level_functions_ast_identical": [
+    "write_json",
+    "git",
+    "tree_hash",
+    "source_guard",
+    "private_dir",
+    "CommandFailed",
+    "main"
+  ],
+  "source_changes_reviewed": "exact parent binding; two same-version cargo updates after update and repeat; four exact collector names; workflow exact parent branch",
+  "native_complete_proposal_qualification": "PENDING",
+  "not_run_here": [
+    "Cargo commands",
+    "Bazel",
+    "cargo-deny",
+    "workflow preflight"
+  ]
+}
