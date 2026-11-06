@@ -1,0 +1,72 @@
+{
+  "schema": "hepta.r2.combined-controls.v1",
+  "publication_source_commit": "7044eac0f5132f894da2de93158f9bf07c86e8ad",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-B",
+    "-m",
+    "unittest",
+    "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_transition_capture",
+    "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_observer_admission",
+    "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.test_r2_action_value",
+    "-v"
+  ],
+  "source_files": {
+    "dual_runtime.py": {
+      "sha256": "3a23bd955233b45d1ae15f7a81961111ce9e191bec9dc98ffeb7a4d744fca30d",
+      "bytes": 15093,
+      "git_blob": "bf0c2096fd84a06b6ff7d44174cb22c0c420415b"
+    },
+    "transition_capture.py": {
+      "sha256": "ac8058aca20c251bb619b7a7571ac9bb310debfc76b5f1b931b1174e8dcf9b0e",
+      "bytes": 13634,
+      "git_blob": "7e2ebb3077ccbfd3c18c94ebd03d3c530a68ec12"
+    },
+    "transition_capture_read.py": {
+      "sha256": "d9073798c98dd576ef41872ad80ca3541b0ba221faad0e2b5d795ae5b37388a3",
+      "bytes": 11171,
+      "git_blob": "5fce1f5f1b6b8947f58960bf5770226efa3bdea8"
+    },
+    "test_transition_capture.py": {
+      "sha256": "5f448aee11014d699626c370443b9288faad444852c1ba390989eb9538182190",
+      "bytes": 16128,
+      "git_blob": "9b61076aebbb839f56c648e99800a58c4a5bf880"
+    },
+    "test_observer_admission.py": {
+      "sha256": "47dc51a6afb5b647fafa38b707c25520c10ea3afcd02e49913f27fd79c092caa",
+      "bytes": 7497,
+      "git_blob": "a751dbe5894767fba9f08721953c58871e3ed9aa"
+    },
+    "r2_action_value.py": {
+      "sha256": "0a620b0188fb21432ae530aa3857025b9595a82a7d22747635cacb50754e3945",
+      "bytes": 23942,
+      "git_blob": "3dbf823549ff9eae0a39efb92958227e7fd7e9f3"
+    },
+    "test_r2_action_value.py": {
+      "sha256": "3f48f39e40141e5fd12552e5825695f519c89f9474ea88ce8d88dc2c3203700b",
+      "bytes": 22475,
+      "git_blob": "bbdab8c5f9fcd15b77f9dbe4aa2e0863ae0e3555"
+    },
+    "R2_ACTION_VALUE.md": {
+      "sha256": "a2b76f01769a2497db2d3499376fc83fddc735b64e98f7897285bd44453b7fda",
+      "bytes": 6890,
+      "git_blob": "b2a4e8812583fb6a7715583210947b7a1947eaca"
+    }
+  },
+  "source_unchanged_after": true,
+  "exit_code": 0,
+  "started_utc": "2026-11-06T08:05:50.515130+00:00",
+  "wall_seconds": 1.6135247540005366,
+  "child_cpu_seconds_inclusive_waited_descendants": 5.0817760000000005,
+  "scope": "A recorder, observer admission, and C value trainer same-process tests; controlled synthetic backends and labels only",
+  "tests": 36,
+  "real_provider_calls": 0,
+  "real_independent_evaluations": 0,
+  "r2_training_performed": false,
+  "unknown_costs": [
+    "energy_joules",
+    "physical_disk_bytes",
+    "preexisting_setup_and_code_authoring"
+  ],
+  "python": "3.12.14"
+}

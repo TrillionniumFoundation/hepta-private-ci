@@ -1,0 +1,29 @@
+{
+  "schema": "hepta.r2.action-value-evidence.v1",
+  "archives": [
+    {
+      "path": "controls.tar.gz",
+      "bytes": 13195,
+      "sha256": "36e1f45e52c138c9dcac3377326e9f3a568072c5a6a0b06d6acd22ca640eee84",
+      "git_blob": "01c563314e8b3b9ec3e770cfa52460d05f2c908f",
+      "all_indexed_files_readback_verified": true
+    },
+    {
+      "path": "independent-review.tar.gz",
+      "bytes": 248441,
+      "sha256": "a6d582ba39616bd964d00f69cac1b328d083cea41d2199aba8e3c9de009f82f7",
+      "git_blob": "c316ba7759a24f590eeb148ad06406d50888c8bc",
+      "all_indexed_files_readback_verified": true
+    }
+  ],
+  "scope": "original controlled validation and independently reviewed synthetic failure cases; no real R2 training",
+  "packaging": {
+    "cpu_seconds": 0.036456305999999994,
+    "wall_seconds": 0.04065075100152171,
+    "unknown": [
+      "energy_joules",
+      "physical_disk_bytes",
+      "publication_and_orchestration"
+    ]
+  }
+}
