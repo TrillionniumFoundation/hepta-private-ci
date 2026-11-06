@@ -383,3 +383,6 @@ async fn real_v13_rejection_retains_cost_and_reopens_original_result_without_rep
     drop(handle);
     Ok(())
 }
+
+#[path = "neuron_v13_generation_guarded_tests.rs"]
+mod guarded;
