@@ -457,7 +457,7 @@ class BinaryEvidence(original.Evidence):
         }
 
 
-def source(output):
+def source(output, current_runtime=None):
     root = Path(original.ci.git("rev-parse", "--show-toplevel")).resolve()
     record = dict(
         schema="hepta-neural-complete-source-binary-v2",
@@ -483,9 +483,12 @@ def source(output):
             record["repositories"][name] = item
         except (ValueError, OSError, original.ci.subprocess.SubprocessError) as error:
             record["errors"].append({"repository": name, "error": str(error)})
-    record["valid"] = (
-        not record["errors"] and set(record["repositories"]) == REPOSITORIES
+    original.runtime_evidence.append_runtime(
+        record, root, original.collect_source, current_runtime
     )
+    record["valid"] = not record["errors"] and set(
+        record["repositories"]
+    ) == original.runtime_evidence.names(REPOSITORIES, record)
     original.save(output, record)
     return 0 if record["valid"] else 1
 
@@ -515,15 +518,27 @@ def assess(root):
         require(
             before == after
             and before["valid"] is True
-            and before["schema"] == "hepta-neural-complete-source-binary-v2"
+            and before["schema"]
+            == original.runtime_evidence.schema(
+                "hepta-neural-complete-source-binary-v2", before
+            )
             and before["run"] == original.run_identity()
-            and set(before["repositories"]) == REPOSITORIES
+            and set(before["repositories"])
+            == original.runtime_evidence.names(REPOSITORIES, before)
             and before["repositories"]["chain-binary"]["identity"]["tree"]
             == TRAINING_TREE
             and before["repositories"]["chain-binary"]["identity"]["commit"]
             == os.environ.get("BINARY_TRAINING_CHAIN_SHA")
             and regular(evidence.root / "final-source-diff.patch")["bytes"] == 0,
             "all five complete current-run source snapshots must be identical",
+        )
+        original.runtime_evidence.validate_sources(
+            before,
+            "hepta-neural-complete-source-binary-v2",
+            REPOSITORIES,
+            read(evidence.root / "native-input.json")
+            if original.runtime_evidence.bridged(before)
+            else {},
         )
         return {name: item["identity"] for name, item in before["repositories"].items()}
 
@@ -547,14 +562,16 @@ def main():
     os.umask(0o077)
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
-    commands.add_parser("source").add_argument("--output", type=Path, required=True)
+    source_parser = commands.add_parser("source")
+    source_parser.add_argument("--output", type=Path, required=True)
+    source_parser.add_argument("--current-runtime", type=Path)
     commands.add_parser("assess").add_argument("--root", type=Path, required=True)
     archiver = commands.add_parser("archive")
     archiver.add_argument("--root", type=Path, required=True)
     archiver.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     if args.command == "source":
-        return source(args.output)
+        return source(args.output, args.current_runtime)
     if args.command == "assess":
         return assess(args.root)
     return original.archive(args.root, args.output)

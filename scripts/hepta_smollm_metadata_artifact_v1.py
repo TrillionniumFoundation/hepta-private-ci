@@ -18,6 +18,8 @@ import stat
 MAX_FILE_BYTES = 64 * 1024 * 1024  # Original CI command-log ceiling.
 MAX_EXPORT_BYTES = 1024 * 1024 * 1024
 ROOT_TEXT = {
+    "runtime-chain-source.txt",
+    "runtime-chain-source-after.txt",
     "chain-source.txt",
     "hepta-source.txt",
     "research-chain-source.txt",
@@ -29,6 +31,8 @@ ROOT_TEXT = {
     "final-source-diff.patch",
 }
 ROOT_JSON = {
+    "runtime-execution-source.json",
+    "runtime-execution-source-after.json",
     "integrated-execution-source.json",
     "host.json",
     "model-target.json",
@@ -40,6 +44,10 @@ ROOT_JSON = {
     "evidence-index.json",
 }
 COMMANDS = (
+    "runtime-source-v12-controls",
+    "runtime-forward-v2-controls",
+    "runtime-source-role-controls",
+    "runtime-evidence-role-controls",
     "execution-source-controls",
     "execution-source-v2-controls",
     "execution-source-v3-controls",
@@ -193,6 +201,19 @@ def export(root, output, source_sha):
     require(re.fullmatch(r"[0-9a-f]{40}", source_sha), "exact source SHA required")
     index_raw = read_text(root, "evidence-index.json")
     index = json.loads(index_raw, object_pairs_hook=unique)
+    bridged = index.get("schema") == "hepta-material-runtime-evidence-index-v1"
+    if bridged:
+        require(
+            index["runtime_chain"] == "cad4c18fe146b7d742ac7fa8872044cd4136c22b"
+            and index["runtime_profile"] == "hepta-integrated-chain-execution-v12"
+            and index["chain"]
+            in {
+                "cfa57cd04751427451302b5c10539b3984d7f8db",
+                "c16507147b65285ea94dead22d3b93c5db7295af",
+                "c96022b897c1235fdbdbfcfa32764403511c6aab",
+            },
+            "fixed distinct current and historical runtime roles",
+        )
     require(
         set(index)
         == {
@@ -205,6 +226,7 @@ def export(root, output, source_sha):
             "three_installed_upgrades_proven",
             "held_runtime_closure_proven",
         }
+        | ({"schema", "runtime_chain", "runtime_profile"} if bridged else set())
         and index["source"] == source_sha
         and isinstance(index["files"], dict),
         "original source-bound evidence index required",
@@ -272,6 +294,12 @@ def export(root, output, source_sha):
             independent_payload_replay_available=False,
             product_qualification=False,
         )
+        if bridged:
+            manifest.update(
+                schema="hepta-model-metadata-artifact-material-bridge-v1",
+                runtime_chain=index["runtime_chain"],
+                runtime_profile=index["runtime_profile"],
+            )
         (output / "metadata-export.json").write_text(
             json.dumps(manifest, indent=2) + "\n"
         )
