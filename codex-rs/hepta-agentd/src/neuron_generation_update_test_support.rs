@@ -40,6 +40,8 @@ mod artifacts;
 mod files;
 #[path = "neuron_generation_update_initial_test_support.rs"]
 mod initial_fixture;
+#[path = "neuron_generation_drained_tests.rs"]
+mod drained_tests;
 
 use artifacts::ArtifactFiles;
 use files::FileCas;
