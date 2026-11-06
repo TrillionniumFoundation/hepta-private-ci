@@ -1,0 +1,41 @@
+{
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-model-provider-info",
+    "-p",
+    "codex-shell-escalation",
+    "-p",
+    "codex-linux-sandbox",
+    "-p",
+    "codex-hepta-memory",
+    "-p",
+    "codex-exec-server",
+    "-p",
+    "codex-hepta-supervisor",
+    "-p",
+    "codex-hepta-memory-extension",
+    "--retries",
+    "0"
+  ],
+  "kind": "tests",
+  "staged_tree": "6ec19f0bae87ffc2dc3c5343c3e5ac390c22a6f0",
+  "source_manifest": "native-candidate-r10-source.json",
+  "environment_manifest": "native-inherited-seven-r10-environment.json",
+  "scope_proof": "native-inherited-seven-r10-scope-proof.json",
+  "start_unix": 1793944571.2920094,
+  "end_unix": 1793945081.3705246,
+  "elapsed_seconds": 510.078515291214,
+  "exit_code": 0,
+  "log_sha256": "acb0a4b3f0987b704e793ea354f85ea541982a4f61dfac98ed46a9116b38154a",
+  "summaries": [
+    "     Summary [ 124.813s] 1355 tests run: 1355 passed, 17 skipped"
+  ],
+  "disk_after": {
+    "total": 1966736678912,
+    "used": 1682655363072,
+    "free": 184101064704
+  }
+}

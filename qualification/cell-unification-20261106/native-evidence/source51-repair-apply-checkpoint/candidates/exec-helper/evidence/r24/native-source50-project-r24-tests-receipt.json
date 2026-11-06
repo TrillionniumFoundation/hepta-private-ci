@@ -1,0 +1,69 @@
+{
+  "schema": "hepta.native-gate-receipt.v2",
+  "phase": "tests",
+  "source_tree": "ea48acf562499192a25e05ae28926a32632dee62",
+  "source_commit": "1fdd647b0ecb235530e8b88bbea45b3d3762906f",
+  "source_manifest": "native-candidate-r24-source.json",
+  "source_manifest_sha256": "ba7515c75980451e0b2514bce338b0ada8847daeef5ace5deacf45ca02e940c0",
+  "environment_manifest": "native-source50-project-r24-environment.json",
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-cli",
+    "-p",
+    "codex-exec-server",
+    "-p",
+    "codex-network-proxy",
+    "-p",
+    "codex-external-agent-migration",
+    "--retries",
+    "0"
+  ],
+  "cwd": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs",
+  "start_unix": 1793979481.8941426,
+  "end_unix": 1793979985.6881988,
+  "elapsed_seconds": 503.7940561771393,
+  "exit_code": 100,
+  "effective_exit_code": 100,
+  "raw_process_result": {
+    "path": "native-source50-project-r24-tests-raw-process-result.json",
+    "bytes": 637,
+    "sha256": "052f63cb18e5fb4ff97004286a336ada1437ac7484826895c059497fb139125c",
+    "git_blob": "08f0da46feb91202bd18ab94d6626992c7ecc563"
+  },
+  "log_sha256": "84a5a9053de8be11ad6c1cc0326f5deb3c84907a7255e7c8911034c52fb2f37d",
+  "resources_sha256": "77cea1deeb7b6f99eac6428cbff583fc65fb82a713c88cfca686b6776191ad3a",
+  "source_postguard": {
+    "path": "native-source50-project-r24-tests-source-post-verification.json",
+    "bytes": 633,
+    "sha256": "5188c63a461f0f3f0a11a3c238b2df7aceb97f8f599c48e53dba15514d358728",
+    "git_blob": "46bd35240347a046f9be70a8460c1661611f601b"
+  },
+  "source_guards_pass": true,
+  "packages": [
+    "codex-cli",
+    "codex-exec-server",
+    "codex-network-proxy",
+    "codex-external-agent-migration"
+  ],
+  "retries": 0,
+  "filters": "no_additions",
+  "features": "unchanged_defaults",
+  "acceptance_readback": {
+    "path": "native-source50-project-r24-tests-result-review.json",
+    "bytes": 2762,
+    "sha256": "bfca8c9d49fbcab1bca861e1e28a8a8c4420209c2b70c4078eb079d9afdb7c27",
+    "git_blob": "a376d5fd9ff4d74f70f827cfc164ac3fb4ddd0da"
+  },
+  "issues": [
+    {
+      "stage": "closed_log_acceptance",
+      "error": "required original execution coverage/result not met"
+    }
+  ],
+  "phase_pass": false,
+  "fix_fmt_executed": false,
+  "baseline_used_as_filter": false
+}

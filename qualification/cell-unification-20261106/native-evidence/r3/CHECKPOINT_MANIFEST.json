@@ -1,0 +1,159 @@
+{
+  "manifest_schema": 1,
+  "scope": "Local checkpoint-r3 handoff; all original native r3 artifacts are preserved under evidence/, with separate local repair audits and transfer verification",
+  "original_remote_files": 18,
+  "files_excluding_this_manifest": 30,
+  "bytes_excluding_this_manifest": 191800,
+  "files": [
+    {
+      "path": "VERIFICATION.json",
+      "bytes": 33960,
+      "sha256": "74364b5cef22bb38bb35b83ee207b6c61bbddd247cc4c4c4d23dd7eebb43b2d9"
+    },
+    {
+      "path": "evidence/native-agentd-protocol-r3-source.json",
+      "bytes": 15934,
+      "sha256": "e0bb4bcde023074999a555d7d1a388cc950d2b9969ea3313c3d374662be53a0d"
+    },
+    {
+      "path": "evidence/native-agentd-r3-blocker-dependency-audit.json",
+      "bytes": 13941,
+      "sha256": "5d94290c1b97847cd0e968322448deda1673f14ecd505487f55730945bbbc356"
+    },
+    {
+      "path": "evidence/native-agentd-r3-blocker-input.json",
+      "bytes": 4014,
+      "sha256": "abeeef537e13e0428439f8a6a1e78d641866dfb6f5e9a58d7ad1260ebda9798e"
+    },
+    {
+      "path": "evidence/native-agentd-r3-socket-and-closure-audit.json",
+      "bytes": 19842,
+      "sha256": "b0251cc2ef66b19f431835e4999ffc8c140994a4c38f35031e108a282fb11fb3"
+    },
+    {
+      "path": "evidence/native-agentd-r3-socket-public-callers.txt",
+      "bytes": 3577,
+      "sha256": "8edcb4dab2a18a5a10fbed1bc3df3dd13cc27b232c69135c7a42d1dcdfdf4ae7"
+    },
+    {
+      "path": "evidence/native-agentd-r3-strict-diagnostic-receipt.json",
+      "bytes": 618,
+      "sha256": "c9b606ba913fef7903ae3c52a4da1f49c545ab24e67c4d86ebc321ac8e43e059"
+    },
+    {
+      "path": "evidence/native-agentd-r3-strict-diagnostic-resources.txt",
+      "bytes": 852,
+      "sha256": "6505b0396fd3dfbe5e9935a27d2c405696f0dbfaecd22aa0f94263692d3824a0"
+    },
+    {
+      "path": "evidence/native-agentd-r3-strict-diagnostic.log",
+      "bytes": 6205,
+      "sha256": "6670fa22605d6cabb8191e4e996f545323574582872743773fa2643d29e14f2b"
+    },
+    {
+      "path": "evidence/native-nine-source-equivalence-r3.json",
+      "bytes": 690,
+      "sha256": "4bc4d5006dee2f4c780389794dde802d76eae64e794d3424e53a478611e6e4c1"
+    },
+    {
+      "path": "evidence/native-protocol-r3-strict-diagnostic-receipt.json",
+      "bytes": 626,
+      "sha256": "04f3e7f4d932653a8528462ab1483564976a1ef4a12d792cab05d6879f016da0"
+    },
+    {
+      "path": "evidence/native-protocol-r3-strict-diagnostic-resources.txt",
+      "bytes": 814,
+      "sha256": "b26d2f12c3e8787973482fe066906a2d8b6a05fbc60389e6b3366f7b9951af95"
+    },
+    {
+      "path": "evidence/native-protocol-r3-strict-diagnostic.log",
+      "bytes": 232,
+      "sha256": "acf7f5db87b99337287e4a639e7a61b67ab774fcd373df8df9fca8aa9c8f2400"
+    },
+    {
+      "path": "evidence/native-protocol-r3-strict-receipt.json",
+      "bytes": 602,
+      "sha256": "03fb7df7bcc5f5b5b701d91b48976e4ae61febf7fba13f90c48ea32dd08bc9e0"
+    },
+    {
+      "path": "evidence/native-protocol-r3-strict-resources.txt",
+      "bytes": 785,
+      "sha256": "6aada10dcd2d1d97d66351c7c662b8a998253700ba8af10ac3adccdcc02f66f1"
+    },
+    {
+      "path": "evidence/native-protocol-r3-strict.log",
+      "bytes": 100,
+      "sha256": "a6fae81ba196be17fcdbaa169642b212febb06655268d7a7fbdb00504e49b97e"
+    },
+    {
+      "path": "evidence/native-protocol-r3-tests-receipt.json",
+      "bytes": 587,
+      "sha256": "9cffee044a4c4111111181bfedcb96bcdf8e2d553cf62802eed6971d443f8a26"
+    },
+    {
+      "path": "evidence/native-protocol-r3-tests-resources.txt",
+      "bytes": 801,
+      "sha256": "f50c70594298a568307400665ab7826d6d51ae4f44b7c893ce55be5c202c3037"
+    },
+    {
+      "path": "evidence/native-protocol-r3-tests.log",
+      "bytes": 13078,
+      "sha256": "2a577db0760ec3816115183d18b8356bff991af8a549367b890583cd803f2963"
+    },
+    {
+      "path": "export-manifest.json",
+      "bytes": 6528,
+      "sha256": "c59cd900204d47e05a7701a736c2436f3c32e2f556d9f6a556bfbe9716099bb0"
+    },
+    {
+      "path": "local-repair-audits/audit.json",
+      "bytes": 13941,
+      "sha256": "5d94290c1b97847cd0e968322448deda1673f14ecd505487f55730945bbbc356"
+    },
+    {
+      "path": "local-repair-audits/inventory.json",
+      "bytes": 4014,
+      "sha256": "abeeef537e13e0428439f8a6a1e78d641866dfb6f5e9a58d7ad1260ebda9798e"
+    },
+    {
+      "path": "local-repair-audits/memory-repair-audit.json",
+      "bytes": 2267,
+      "sha256": "a3b37bb0079cc385e613a1ddd04f437f877aff828f4ab31ed8e83f9731523ee1"
+    },
+    {
+      "path": "local-repair-audits/memory-repair.patch",
+      "bytes": 4951,
+      "sha256": "7e30150cdcfed09dcd14ccd3f81d9a8ab9146b4c4f056203c870bb433b20ab03"
+    },
+    {
+      "path": "local-repair-audits/owned-repair-audit.json",
+      "bytes": 599,
+      "sha256": "5ba673fb37897e2d2c92fa4d915ae3c1ce0c17e5f3b36831ba603a0e0122c17d"
+    },
+    {
+      "path": "local-repair-audits/socket-and-closure-audit.json",
+      "bytes": 19842,
+      "sha256": "b0251cc2ef66b19f431835e4999ffc8c140994a4c38f35031e108a282fb11fb3"
+    },
+    {
+      "path": "native-checkpoint-r3.tar.gz",
+      "bytes": 20458,
+      "sha256": "1d16229029f0d3d0899a37ded2d24712b91749354a35427e92fa07eaf58f00cd"
+    },
+    {
+      "path": "transport/archive-download.json",
+      "bytes": 479,
+      "sha256": "5b43d4233cad029778f7f0ddaefac139b9ee056469903a2e293aeb9393a41161"
+    },
+    {
+      "path": "transport/export-job-status.json",
+      "bytes": 730,
+      "sha256": "9b2c2f1d8cde0fe839db02fcc8b087d1c450e48005800281929070fbc4cdd95c"
+    },
+    {
+      "path": "transport/native-r3-job-status.json",
+      "bytes": 733,
+      "sha256": "54d0bed30cbeff7ed07c55f2a1d951fc3d95637933c9c5704947249d6074a193"
+    }
+  ]
+}

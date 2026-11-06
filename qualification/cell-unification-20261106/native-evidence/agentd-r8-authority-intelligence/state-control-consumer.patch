@@ -1,0 +1,11 @@
+--- a/codex-rs/hepta-agentd/src/state_control.rs
++++ b/codex-rs/hepta-agentd/src/state_control.rs
+@@ -669,7 +669,7 @@
+                         receipt,
+                     ) => crate::AutomationEffectReconcileSnapshot {
+                         state: crate::AutomationEffectReconcileState::Terminal,
+-                        effect: Some(effect_snapshot(receipt)?),
++                        effect: Some(effect_snapshot(*receipt)?),
+                     },
+                     crate::automation_effect_host::AgentdAutomationEffectReconcileOutcome::Indeterminate => {
+                         crate::AutomationEffectReconcileSnapshot {

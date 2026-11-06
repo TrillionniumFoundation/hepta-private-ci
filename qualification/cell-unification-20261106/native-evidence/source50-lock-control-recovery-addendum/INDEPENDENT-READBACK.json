@@ -1,0 +1,118 @@
+{
+  "schema": "hepta.source50-lock-control-recovery-independent-readback.v1",
+  "status": "CLOSED_CONTROLLER_INTEGRITY_ADDENDUM_NOT_RUST_QUALIFICATION",
+  "original_files": 18,
+  "original_bytes": 121411,
+  "previous_group": {
+    "path": "../source50-lock-update-checkpoint",
+    "attachment_manifest": {
+      "bytes": 17989,
+      "sha256": "c1d299659f0cb67c7418c05dd1d9d72dc2c8897065b757a4579db4463ecce3e0",
+      "git_blob": "e52cd3aaaf3c85fb9f412ba5acea39c3a75ce254"
+    },
+    "independent_readback": {
+      "bytes": 7718,
+      "sha256": "36d8c43b60afec420af53fdb76de63386692d8e1bff266df0bd2b5a5fc99d85a",
+      "git_blob": "64e2104aa2ab8b95bb0beedf2cc7a18cae0845dc"
+    },
+    "original_file_count": 63,
+    "unchanged": true,
+    "historical_missing_list_not_rewritten": true
+  },
+  "tool_controller_results": {
+    "v1": {
+      "job_id": "1a1b13d4104-fc05-772d",
+      "state": "timed_out",
+      "exit_code": 124,
+      "at_unix_ms": 1793975571017,
+      "timed_out": true,
+      "output_complete": true,
+      "output_durable": true,
+      "automatic_retry": false,
+      "cancelled": false
+    },
+    "v2": {
+      "job_id": "1a1b155b661-fc05-77d1",
+      "state": "failed",
+      "exit_code": 1,
+      "at_unix_ms": 1793976767953,
+      "timed_out": false,
+      "output_complete": true,
+      "output_durable": true,
+      "automatic_retry": false,
+      "cancelled": false
+    },
+    "v3": {
+      "job_id": "1a1b15f7cc1-fc05-781c",
+      "state": "failed",
+      "exit_code": 1,
+      "at_unix_ms": 1793977334645,
+      "timed_out": false,
+      "output_complete": true,
+      "output_durable": true,
+      "automatic_retry": false,
+      "cancelled": false
+    }
+  },
+  "v1_recovery_boundary": {
+    "retrieved_again_utc": "2026-11-06T15:56:41.186696+00:00",
+    "original_terminal_at_unix_ms": 1793975571017,
+    "new_execution": false,
+    "description": "New read of the same original durable controller record. Not a reconstruction of a lost query envelope and not a repeated download or lock invocation."
+  },
+  "v2_v3_stream_reconstruction": {
+    "v2": {
+      "bytes": 3248,
+      "sha256": "12728e538f1cfab43328c75f6cafd0f010480a5b8eb1b48847816990acbb762b",
+      "git_blob": "585f8be83d1d701b8a18e7fe240ef4a6ff91ca05"
+    },
+    "v3": {
+      "bytes": 4788,
+      "sha256": "75ca998ba9a764c366a94b2e618f6ad625dee58c4e0dfcabce9ce3fe7ec6508d",
+      "git_blob": "e88653158ecc69ec0b15a2d95f914b20f69fafe8"
+    }
+  },
+  "failed_preparation_receipts_match_previously_frozen_originals": true,
+  "v1_to_v2_to_v3_to_v4_job_and_terminal_pin_chain": true,
+  "v4_success_reference": {
+    "path": "../source50-lock-update-checkpoint/tool-history/original/evidence/native-r24-bazel-tool-preparation-v4.json",
+    "bytes": 6849,
+    "sha256": "7b2d7d3340353ec424b002d9c212b65ea2a87f02ce56e516c0c4125061df436d",
+    "git_blob": "3502e449eb3756c60fc74d0bd201e0bac3d6f6e0"
+  },
+  "export_v2": {
+    "job_id": "1a1b175f5dc-fc05-78e2",
+    "state": "succeeded",
+    "exit_code": 0,
+    "outer_output_complete": true,
+    "outer_output_durable": true,
+    "archive": {
+      "bytes": 787385,
+      "sha256": "7dbb64599c8986628e494536e0e0af4895e0d78f36ed8ea89153b94371fbb47c",
+      "git_blob": "34e0677615f627ecbc79b87a35ecebfd6f7b9f58"
+    },
+    "members": 29,
+    "full_original_launch_and_read_preserved": true
+  },
+  "resolved_late_original_sets": [
+    "export-v2 controller 6 files",
+    "tool v2/v3 full original captures and recovered records",
+    "tool v1 newly queried old durable terminal/read/empty streams"
+  ],
+  "still_missing_originals": [
+    {
+      "path": "source50-preparation/ROOT-R24-LAUNCH-AUTHORIZATION.json",
+      "historically_observed_bytes": 1100,
+      "historically_observed_sha256": "745751d4ce09bb7034d7ef6bf5b48594dade47bff4549acb22b6286d4ad191bf",
+      "not_recreated": true
+    }
+  ],
+  "qualification_boundary": "This addendum closes custody of tool preparation and lock-export controllers. It does not change the original lock command result, run or qualify Rust, authorize r25, or replace the closed r24 test failure.",
+  "execution": {
+    "offline_standard_library_only": true,
+    "network": false,
+    "native_process": false,
+    "rust": false,
+    "source_mutation": false
+  }
+}

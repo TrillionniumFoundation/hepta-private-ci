@@ -1,0 +1,199 @@
+{
+  "schema": "hepta.cell-scientific-intent-semantic-review.v1",
+  "reviewer": "/root/differentiation_study",
+  "result": "NO_MATERIAL_SCIENTIFIC_OVERCLAIM_FOUND_WITHIN_REVIEWED_SCOPE",
+  "scientific_disposition": "HOLD",
+  "authority": "DENY_ALL",
+  "review_scope": "只读四份文档与既有研究摘要/执行/独立读回。对照字段与语义，不重新训练、运行Rust、重算模型/成本或重新验证全部历史模型原始资产。",
+  "input_pins": [
+    {
+      "path": "MATURITY.zh-CN.md",
+      "bytes": 16228,
+      "sha256": "ab939672d90159d484eac1b328df094d9bf6efdfbf4972f07c4a9670b3dfc631"
+    },
+    {
+      "path": "HISTORICAL_ASSETS.json",
+      "bytes": 33312,
+      "sha256": "86ea0f34f671fba4c676c4640df4b325ee8ee8f0f5d2555ef103900829b1e0e9"
+    },
+    {
+      "path": "README.md",
+      "bytes": 41018,
+      "sha256": "0eb959ae98e8df08e964897718e9e706de9f08579e069383222c5e81aecb81a2"
+    },
+    {
+      "path": "STATUS.json",
+      "bytes": 94587,
+      "sha256": "07f636fbcef2b3194b4a29871e40855e607e8695e427510ff9d3564618570a12"
+    },
+    {
+      "path": "study-evidence/README.md",
+      "bytes": 5959,
+      "sha256": "254f67b18f7b870b44ec5c537e5e96c2acc082e8916257730f97508d4b2d4405"
+    },
+    {
+      "path": "study-evidence/summary.json",
+      "bytes": 8263,
+      "sha256": "8abb20ca4519f5b74192137279060eca725e0ba67ee3bdcf45163ef63b90ab67"
+    },
+    {
+      "path": "study-evidence/independent-replay.json",
+      "bytes": 12192,
+      "sha256": "fd076baf0ebe7f34ed1c739aee95b6acca4ed71c65df83a5494fa5de20596a79"
+    },
+    {
+      "path": "study-evidence/independent-replay-optimized.json",
+      "bytes": 12192,
+      "sha256": "fd076baf0ebe7f34ed1c739aee95b6acca4ed71c65df83a5494fa5de20596a79"
+    },
+    {
+      "path": "study-evidence/executions.json",
+      "bytes": 1431,
+      "sha256": "d80e8c558b75f98356e1cd2bc0190cb9cd927dc1252f37aa4f5ccc7aa9856510"
+    },
+    {
+      "path": "study-evidence/source-binding.json",
+      "bytes": 3182,
+      "sha256": "af370ec243579a5d54df5d882440c25275b5c449e86be67f4952a0ff5fe1ac9d"
+    },
+    {
+      "path": "study-evidence/tests-normal.log",
+      "bytes": 3755,
+      "sha256": "7fc967af161963e9aec44ba0b551d05f1a377b4f7858dd80ebf526d2632f7661"
+    },
+    {
+      "path": "study-evidence/tests-optimized.log",
+      "bytes": 3755,
+      "sha256": "bce5ffc1358d4f9d7b1b58c7728df442c6d8184b2bf10426c925af6f0beb5afe"
+    }
+  ],
+  "source_report_identity_recorded": {
+    "source_commit": "caf06e0d9c78ba2b8e2ab860ec1b37f049e30f1b",
+    "python_source_digest": "19a6a6261d6d832243f394d73f2cbc80f1d063f127da71e3c08bf636c0a485a9",
+    "plan_digest": "3765b36e70afe73d65ad61d03f1e59ac30cf1d92ebbc9480b063f1276d09f090",
+    "canonical_report_sha256": "26c32dfb400ed591b9ee7fe2a0e47713291f0c7e8e9d2dd3ec2293f242b399bd"
+  },
+  "checks": [
+    {
+      "id": "withdraw-enum-only",
+      "result": "PASS_TEXT_SCOPE",
+      "finding_zh": "MATURITY明确撤回“七类都只是enum”；README保留同一纠正，同时把历史功能存在、当前注册和科学收益分成独立结论。",
+      "refs": [
+        "MATURITY.zh-CN.md:开头",
+        "README.md:开头",
+        "HISTORICAL_ASSETS.json#/scope"
+      ]
+    },
+    {
+      "id": "two-seven-taxonomies",
+      "result": "PASS_TEXT_SCOPE",
+      "finding_zh": "功能职责与HNMF记忆组织分列；禁止按序号或一一对应互转，未证明七为最优，也不据此固定七模型/七实例。",
+      "refs": [
+        "MATURITY.zh-CN.md:两套七类必须分开",
+        "HISTORICAL_ASSETS.json#/taxonomy",
+        "STATUS.json#/taxonomy"
+      ]
+    },
+    {
+      "id": "three-replaceable-families",
+      "result": "PASS_TEXT_SCOPE",
+      "finding_zh": "三个家族表达冻结表示+私有Head/Residual、生成模型+Adapter/解码状态、可训练状态/World Model；选择按任务与收益。V14内部encoder LoRA明确family=null并声明非冻结、非生成，不强塞成生成模型证据。",
+      "refs": [
+        "MATURITY.zh-CN.md:后端家族应保留可替换性",
+        "HISTORICAL_ASSETS.json#/backend_families",
+        "HISTORICAL_ASSETS.json#/assets/2",
+        "STATUS.json#/implementation"
+      ]
+    },
+    {
+      "id": "historical-vs-current",
+      "result": "PASS_TEXT_SCOPE",
+      "finding_zh": "六项历史资产都有不可转移当前资格的声明；V13续训、V14分类器、小模型差分、真实LM与固定dynamics readout分别限定范围。本轮冻结研究是实际新执行，历史模型没有被写成复训；阶段测试数没有累加成最终源码/模型资格。",
+      "refs": [
+        "MATURITY.zh-CN.md:三个容易被误读的证据边界",
+        "MATURITY.zh-CN.md:末尾",
+        "HISTORICAL_ASSETS.json#/assets",
+        "README.md:历史资产如何进入统一合约",
+        "STATUS.json#/historical_assets"
+      ]
+    },
+    {
+      "id": "double-hold-and-controls",
+      "result": "PASS_RECEIPT_CONSISTENCY",
+      "finding_zh": "两场景均HOLD。冲突任务相对固定专家的平均增益约0.00006279064223624，低于每种子0.0005门槛且五种子均失败该对照；冗余任务不分化。原六臂和强对照保留，未把比原父模型更好写成全面胜出。",
+      "refs": [
+        "study-evidence/summary.json",
+        "study-evidence/README.md:Six-arm result",
+        "README.md:冻结研究的实际含义",
+        "STATUS.json#/validation/python_reference"
+      ]
+    },
+    {
+      "id": "cost-and-independent-replay",
+      "result": "PASS_RECEIPT_CONSISTENCY",
+      "finding_zh": "文档明确不是六臂严格同总计算预算；655成本事件/49,090,740估算FP操作/37,120路由只按共享工作一次记账，并区分估算操作、时间、累计RSS与物理能耗。30,720记录的独立标量读回不冒充独立数据集、重训、硬件成本计数或跨主机迁移。",
+      "refs": [
+        "study-evidence/README.md:Independent readback and costs",
+        "study-evidence/independent-replay.json",
+        "study-evidence/executions.json",
+        "STATUS.json#/validation/independent_readback"
+      ]
+    },
+    {
+      "id": "retention-and-adoption",
+      "result": "PASS_TEXT_SCOPE",
+      "finding_zh": "构造任务中旧父模型精确保留与V13完整状态续训没有被外推为独立长期retention或正净收益；V13旧技能下降、V14零结构采用、V15回滚反例及生成0/4均保留。独立任务窗口、多代采用、强检索/KV等对照、校准和全部生命周期成本仍是blocker。",
+      "refs": [
+        "MATURITY.zh-CN.md:V13/V14/V15与生成",
+        "README.md:剩余采用blocker",
+        "HISTORICAL_ASSETS.json#/assets",
+        "STATUS.json#/adoption_blockers"
+      ]
+    },
+    {
+      "id": "actual-featurebundle-q24",
+      "result": "PASS_TEXT_SCOPE",
+      "finding_zh": "沿原FeatureBundle.q24_global既有receipt schema与ties-to-even profile，未发明兼容张量格式；独立conversion/bundle/source/row/encoder/scope/frontier pins和当前owner检查明确。本轮原生验证标注fixture，未定位真实Encoder生成的该receipt，未把另一套64×384 native export改名为原receipt。",
+      "refs": [
+        "MATURITY.zh-CN.md:本轮Rust桥",
+        "HISTORICAL_ASSETS.json#/q24_projection_bridge",
+        "README.md:新增的原生能力",
+        "STATUS.json#/implementation"
+      ]
+    },
+    {
+      "id": "eg2-and-multimodal-limits",
+      "result": "PASS_TEXT_SCOPE",
+      "finding_zh": "本轮width1..512明确拒绝EG2的768维；不能截断、改basis或补造pooling，另行降维需独立版本/权重/profile/资格。receipt不携带完整dtype/identity/mask/时空视图，未据全局向量宣称视频、联合AV、token定位、Head parity或优化器续训。",
+      "refs": [
+        "MATURITY.zh-CN.md:本轮Rust桥",
+        "HISTORICAL_ASSETS.json#/q24_projection_bridge",
+        "STATUS.json#/implementation"
+      ]
+    }
+  ],
+  "material_findings": [],
+  "required_scientific_text_changes": [],
+  "engineering_current_status": {
+    "excluded_from_this_scientific_review": true,
+    "owned_by": "/root",
+    "r17_or_r18_pass_granted": false,
+    "note": "README与STATUS的工程进展由root并行维护；以上pins记录本次最终语义抽样版本。未修改文件，也不把阶段/运行中状态视为科学收益。"
+  },
+  "final_chinese_conclusion_points": [
+    "“七类都只是enum”应明确撤回：已有真实历史后端覆盖多种功能，缺口是统一注册、实际组合和同源验收。",
+    "保留一个共同Cell合约和三个可替换后端家族；七类是职责，HNMF七类是记忆组织，不要求恰好七个模型。",
+    "工程新增是有身份绑定、owner/恢复约束的registry及原Q24 receipt窄桥；当前机制测试和fixture不是七类语义模型的完整产品采用。",
+    "冻结研究确已执行，但两场景均HOLD；对强固定专家未达预注册增益门槛，六臂总计算并不严格相等，不能宣布科学胜出。",
+    "历史续训、数值差分、训练合法性与当前模型收益各自保留证据范围；独立长期保留、校准、完整生命周期成本和多代有效采用仍需资格。",
+    "真实Encoder FeatureBundle/Q24→当前owner→实际backend的端到端接线仍待验收；EG2 768维不能进入当前512上限桥，也没有视频/联合AV或完整张量迁移资格。",
+    "最终工程通过情况由root按自然终态和最终源码更新；本次语义复核不授予r17、r18或发布资格，科学HOLD与DENY_ALL不因工程门通过而自动解除。"
+  ],
+  "operations": {
+    "source_or_docs_modified": false,
+    "new_training_runs": 0,
+    "rust_commands_run": 0,
+    "numerical_study_replay_rerun": false,
+    "raw_study_json_decompressed_or_recomputed": false
+  }
+}

@@ -1,0 +1,100 @@
+{
+  "schema": "hepta.r14-root-repair-audit.v1",
+  "base_commit": "b44d4ca4aa0ef9f894eff29e9975938e066a82f5",
+  "base_tree": "d3d2313b838422818bf9448ce5a1b86d89abdf69",
+  "status": "SOURCE_REVIEW_COMPLETE_NATIVE_RESULTS_RECORDED_SEPARATELY",
+  "independent_review": {
+    "path": "../r14-root-candidate-independent-review/INDEPENDENT-REVIEW.json",
+    "sha256": "dae16ebc9337a2ee2f0da188b4ef02d57248e9d383eebcef436daafe05c16a7d"
+  },
+  "rust_execution_by_this_audit": false,
+  "scientific_adoption": "HOLD",
+  "cell_authority": "DENY_ALL",
+  "patch_sha256": "2d8fdd192a0c336acc999895109867bad26e386faa18f9d6636a43dceda5261d",
+  "files": [
+    {
+      "path": "codex-rs/core/src/session/mod.rs",
+      "before_sha256": "269a56946b1083a405e6523a974518c58f88b64d055af6f965c8c39948fce8fd",
+      "after_sha256": "c262bc85649869dcc1eea4096773d577959989c54e264e6f03a341448ac3ad4d",
+      "before_blob": "ae94fa0e68863452764017df404023da22ee2d1c",
+      "after_blob": "f4a925c7deb8d9c939cc2900d160f8f25c352b39",
+      "bytes": 215822,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/token_budget.rs",
+      "before_sha256": "242f51079cdb89c411887b0f45866b6baf44afdc60aad2b4f12eb5e63ece3c5a",
+      "after_sha256": "5dad6405e7363d5804ea8e0983a4933fe991dd91deeb8a43cbe0b1f86ca18cb8",
+      "before_blob": "d609d2b0ff08c687abed5098b4b482b78cd79770",
+      "after_blob": "bbc55eac69d9881db111191d9363a430463146ef",
+      "bytes": 62167,
+      "mode": "100644"
+    }
+  ],
+  "review": {
+    "decision": "PASS",
+    "metadata": "runtime.latest_call_tool forwards its fourth and fifth arguments as arguments and meta to latest_connections.call_tool. The stdio thread_hint schema is an empty object with additionalProperties=false and its handler reads context.meta['threadId']. Passing {} plus canonical threadId metadata corrects the observed missing-hint path.",
+    "guard_retention": "The HeptaGovernance and active-tool-policy no-call guards, token-budget/context-window gates, environment=None, no-wait/default-timeout arguments, latest connection route, .ok() error handling, content extraction and context rendering remain byte-identical outside the three-line argument move/comment.",
+    "finish_owner": "The private helper waits only after TurnComplete, passes that completed.turn_id to the existing observer and awaits its returned future after all registry locks are released. The observer filters TaskTerminalizationKind::Finish plus exact owner turn ID; it neither claims nor retires owners. The task publishes TurnComplete before persistence, marker release, pending work and finish completion. Both parameterized cases use this helper immediately before the next submit_turn.",
+    "coverage_retained": "All existing compaction lifecycle, request count, window lineage, hidden-tool exposure, developer context and regex assertions remain unchanged. No deadline, feature, policy, production terminalizer, or retry changes.",
+    "limits": "The closed compaction failures contain the generic ten-second event timeout, not a per-owner scheduling trace. The omitted finish observation is a source-proven reachable interleaving; native success remains unmeasured."
+  },
+  "mechanical_checks": {
+    "all_candidate_original_sha256_and_git_blobs_match": true,
+    "all_original_blobs_match_exact_base_github": true,
+    "full_patch_forward_exact": true,
+    "full_patch_inverse_exact": true,
+    "token_budget_all_original_assertion_macros_unchanged": true,
+    "token_budget_test_change_confined_to_private_completion_helper": true,
+    "turn_state_change_confined_to_two_named_test_bodies": true,
+    "websocket_records": [
+      {
+        "function": "websocket_turn_state_persists_within_turn_and_resets_after",
+        "original_batch_counts": [
+          4
+        ],
+        "candidate_batch_counts": [
+          1,
+          3
+        ],
+        "original_payload_token_sequences_preserved": true,
+        "new_warm_batch_only": false,
+        "old_assertion_count": 9,
+        "new_assertion_count": 10,
+        "original_assertions_preserved_except_total_handshakes": true,
+        "sampling_connection_close_after_requests": false
+      },
+      {
+        "function": "websocket_turn_state_is_stable_within_turn",
+        "original_batch_counts": [
+          3
+        ],
+        "candidate_batch_counts": [
+          1,
+          3
+        ],
+        "original_payload_token_sequences_preserved": true,
+        "new_warm_batch_only": true,
+        "old_assertion_count": 3,
+        "new_assertion_count": 5,
+        "original_assertions_preserved_except_total_handshakes": true,
+        "sampling_connection_close_after_requests": false
+      }
+    ]
+  },
+  "native_failures": {
+    "source_commit": "b44d4ca4aa0ef9f894eff29e9975938e066a82f5",
+    "source_tree": "d3d2313b838422818bf9448ce5a1b86d89abdf69",
+    "source_log": "../r14-core-checkpoint/native-core-r14-tests.log.gz",
+    "decompressed_log_sha256": "443a58d70c34d76ba9b8141ad7ee32d997a4f16af79e8f5a873770966028952c",
+    "failure_block_count": 3,
+    "blocks": "failure-blocks.json"
+  },
+  "gate_binding": {
+    "source_stage": 44,
+    "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+    "tree": "1646e1656cf6365e74accae19a1225fd2ce6d964",
+    "results_location": "../r15-core-mcp-checkpoint",
+    "note": "This source review is not a test receipt. Tests were still active when the attachment was assembled."
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "command": [
+    "cargo",
+    "nextest",
+    "list",
+    "--locked",
+    "-p",
+    "codex-hepta-agentd",
+    "-p",
+    "codex-hepta-agent-protocol",
+    "-p",
+    "codex-hepta-infer-worker-host",
+    "--message-format",
+    "json"
+  ],
+  "source_tree": "6be3dbb1420c0ac7e0590c6e3c17191a073af9a9",
+  "exit_code": 0,
+  "elapsed_seconds": 30.089999437332153,
+  "stdout_sha256": "94eefeff944b86b44029381e200f0d443d8a7fa6da1e2f639f26fcca2ba35e53",
+  "stderr_sha256": "9c498ffb6e7c4ce7cf4d65c98ed47261c887258a45fa962bf153bb71187fdc05",
+  "resources_sha256": "75a6d5b61e847981058756dbaa1a5799e4cc5bef7c72e087b1a88b916ecc8c4f",
+  "test_execution": false,
+  "ignored_tests_executed": false,
+  "environment_manifest": "native-agentd-composition-r13-environment.json"
+}

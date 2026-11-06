@@ -1,0 +1,138 @@
+{
+  "state": "FROZEN_ROOT_REVIEWED_STAGE45_INPUT",
+  "before_tree": "1646e1656cf6365e74accae19a1225fd2ce6d964",
+  "source_commit": "96dc9232535fedf735e3099ef1391b69477270d4",
+  "expected_after_tree": "3ebd193f213d640e5330a1be4b983bcc4b06617a",
+  "expected_changed_file_count": 180,
+  "files": [
+    {
+      "path": "codex-rs/core/src/session/tests.rs",
+      "before": {
+        "bytes": 504602,
+        "sha256": "29da32a96770cc74df87d09465c9d138dbabc539d038d1641001a0affd29d085",
+        "git_blob": "dce43c7f844f45036a7b58b307de500029f1f001"
+      },
+      "after": {
+        "bytes": 504663,
+        "sha256": "8d06e0e5d0f59b5c06d093ae822aec42f76a212c23b8ac26939345ab2e1c8309",
+        "git_blob": "d9fb57b98d68fc8b548ba312b5f1671f70fd0573"
+      },
+      "mode": "100644",
+      "candidate_directory": "core-managed-proxy-r15-fixture"
+    },
+    {
+      "path": "codex-rs/core/tests/common/streaming_sse.rs",
+      "before": {
+        "bytes": 26206,
+        "sha256": "ed1e35fa973116adf94c8ddbb39bb7e0d2c4c7773b980277921f859ce40d252b",
+        "git_blob": "3766bbd88084f0ba514df52143918450be7d21eb"
+      },
+      "after": {
+        "bytes": 27584,
+        "sha256": "0d8d35afd738823226e0aa9c0636e7337b958de5a66418e49190a231b3dd79c0",
+        "git_blob": "5650fb5d4738ca0442fd2afebd2268e3414e9b1d"
+      },
+      "mode": "100644",
+      "candidate_directory": "core-recovery-r15-repair"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/turn_input_submission.rs",
+      "before": {
+        "bytes": 21096,
+        "sha256": "ae71b734d0b46ce5b285afc827d765d0a4a066bbe825ffd0aba467a4d78e1824",
+        "git_blob": "4ee793ddfc1a9592c933e8b861e76d46bf111c40"
+      },
+      "after": {
+        "bytes": 21320,
+        "sha256": "7dc33fdd6c892deda4b145edbd61a653c1cd3b4eaaae6c635caadaf2fd2e5919",
+        "git_blob": "a3e4ecc296ff71736bac1e2c441d7e7b0762a2a7"
+      },
+      "mode": "100644",
+      "candidate_directory": "core-recovery-r15-repair"
+    },
+    {
+      "path": "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs",
+      "before": {
+        "bytes": 33515,
+        "sha256": "c4dbf8d0c3fdd572e20aacaf9a91a7bc9f75742bd4ff75dd08a685b6d79bbc31",
+        "git_blob": "631bf4c6db2876fe32f653c73e386c253ffc939d"
+      },
+      "after": {
+        "bytes": 33969,
+        "sha256": "4568501da5cf0c5b74be83a41d632f877087d77d128feed2db05d56bb4a3207a",
+        "git_blob": "03f497fb524b187c62325679dcff465663c4f30b"
+      },
+      "mode": "100644",
+      "candidate_directory": "core-zsh-denied-r15-repair"
+    },
+    {
+      "path": ".github/workflows/hepta-cell-framework-native.yml",
+      "before": {
+        "bytes": 8827,
+        "sha256": "9b04365dba53f7bf2b9c5f57bbfb264cddfa63d0509ee1d0401762d52ca46d1c",
+        "git_blob": "e175cee31931f94487a134873465e97987102718"
+      },
+      "after": {
+        "bytes": 8848,
+        "sha256": "4a0cbfa961838f492423e6897d24802c1b456278032a0cedc8c33da385653ed0",
+        "git_blob": "29eb48f017280fee3bbc1efc48ac1e9eb204bc32"
+      },
+      "mode": "100644",
+      "candidate_directory": "core-test-support-ci-r15-repair"
+    }
+  ],
+  "patches": [
+    {
+      "path": "patches/core-managed-proxy-r15-fixture.patch",
+      "candidate_manifest": "core-managed-proxy-r15-fixture/source-manifest.json",
+      "bytes": 702,
+      "sha256": "ce0e594600932842dfd3f6e22b49c810b15ec504add40166e2090f340d3f8389",
+      "git_blob": "5b6404a8f9992d8260507fb646bfe04cd7985a38",
+      "paths": [
+        "codex-rs/core/src/session/tests.rs"
+      ]
+    },
+    {
+      "path": "patches/core-recovery-r15-repair.patch",
+      "candidate_manifest": "core-recovery-r15-repair/source-manifest.json",
+      "bytes": 7039,
+      "sha256": "7fd5e5f0e43ecd80505ca93630ccc9c5ebd29e24b9d16615f9cf0714ca8b55f5",
+      "git_blob": "cf209a91f37031f3cae1fa36fb569f38c7a6dcd7",
+      "paths": [
+        "codex-rs/core/tests/common/streaming_sse.rs",
+        "codex-rs/core/tests/suite/turn_input_submission.rs"
+      ]
+    },
+    {
+      "path": "patches/core-zsh-denied-r15-repair.patch",
+      "candidate_manifest": "core-zsh-denied-r15-repair/source-manifest.json",
+      "bytes": 1360,
+      "sha256": "646926bc7e25b9c45cd4d12ac88cfd348c00c7d08769302ec4afb23cecc933f3",
+      "git_blob": "33c06b18c961562025089e680ffad4c8458255aa",
+      "paths": [
+        "codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs"
+      ]
+    },
+    {
+      "path": "patches/core-test-support-ci-r15-repair.patch",
+      "candidate_manifest": "core-test-support-ci-r15-repair/source-manifest.json",
+      "bytes": 519,
+      "sha256": "4442c64de07334ae60d5187926e1e9faf093b62aa54be44935db907ec19db787",
+      "git_blob": "58fdee12719ea5f21e31460d12fa417d66f63cc7",
+      "paths": [
+        ".github/workflows/hepta-cell-framework-native.yml"
+      ]
+    }
+  ],
+  "combined_patch": {
+    "path": "combined.patch",
+    "bytes": 9620,
+    "sha256": "a4344cd99a6d8aed3a36e5adc42934edbc5fb061492568a2feb2e1b9c12d396f",
+    "git_blob": "fc177b15a983424c1016bd756b3c7621918cdf1f"
+  },
+  "root_publish_manifest_sha256": "ce5772f0884caa85935f066044521eec2dc66ea58415541f1b83bcf378422aee",
+  "root_published_source_sha256": "815c43fa1bb9e2ceddcc0ff6491b310b0a731fd7b26baa50a89345047f16448b",
+  "combined_apply_reverse_bytes_exact": true,
+  "native_source_modified": false,
+  "rust_commands_executed": false
+}

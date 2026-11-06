@@ -1,0 +1,40 @@
+{
+  "source_tree": "3ebd193f213d640e5330a1be4b983bcc4b06617a",
+  "source_commit": "96dc9232535fedf735e3099ef1391b69477270d4",
+  "command": [
+    "rg",
+    "-n",
+    "reserve_v2_residency_slot|touch_loaded_v2_residency|is_v2_resident_session_source|commit_slot\\(|\\.residency_slot",
+    "codex-rs",
+    "--glob",
+    "*.rs"
+  ],
+  "exit_code": 0,
+  "stdout": "codex-rs/core/src/agent/control/spawn.rs:1:use super::residency::is_v2_resident_session_source;\ncodex-rs/core/src/agent/control/spawn.rs:338:            self.touch_loaded_v2_residency(&state, thread_id).await;\ncodex-rs/core/src/agent/control/spawn.rs:386:                self.touch_loaded_v2_residency(&state, thread_id).await;\ncodex-rs/core/src/agent/control/spawn.rs:551:            .reserve_v2_residency_slot(&state, &config, Some(thread_id))\ncodex-rs/core/src/agent/control/spawn.rs:584:                    self.touch_loaded_v2_residency(&state, thread_id).await;\ncodex-rs/core/src/agent/control/spawn.rs:616:                .is_some_and(is_v2_resident_session_source);\ncodex-rs/core/src/agent/control/spawn.rs:619:                self.reserve_v2_residency_slot(&state, &config, /*protected_thread_id*/ None)\ncodex-rs/core/src/agent/control/residency.rs:35:        self.residency.commit_slot(thread_id);\ncodex-rs/core/src/agent/control/residency.rs:49:    pub(super) async fn reserve_v2_residency_slot(\ncodex-rs/core/src/agent/control/residency.rs:63:    pub(super) async fn touch_loaded_v2_residency(\ncodex-rs/core/src/agent/control/residency.rs:201:    fn commit_slot(&self, thread_id: ThreadId) {\ncodex-rs/core/src/agent/control/residency.rs:226:        && is_v2_resident_session_source(&thread.session_source)\ncodex-rs/core/src/agent/control/residency.rs:229:pub(super) fn is_v2_resident_session_source(session_source: &SessionSource) -> bool {\ncodex-rs/core/src/agent/control/residency_tests.rs:44:        .reserve_v2_residency_slot(&state, &config, /*protected_thread_id*/ None)\ncodex-rs/core/src/agent/control/residency_tests.rs:53:        .reserve_v2_residency_slot(&state, &config, /*protected_thread_id*/ None)\ncodex-rs/core/src/agent/control/residency_tests.rs:92:        .reserve_v2_residency_slot(&state, &config, /*protected_thread_id*/ None)\ncodex-rs/core/src/agent/control/residency_tests.rs:101:        .reserve_v2_residency_slot(&state, &config, /*protected_thread_id*/ None)\n",
+  "stderr": "",
+  "source_pins": [
+    {
+      "path": "codex-rs/core/src/agent/control/residency.rs",
+      "bytes": 8225,
+      "sha256": "09708e8b768bc4dfa4546b9cb23afdd7aa14c9090be23b04eef2a85c287b96d0",
+      "git_blob": "e0a34bb97a3775b5e2114544d5a029d9d68e1608",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/src/agent/control/residency_tests.rs",
+      "bytes": 8072,
+      "sha256": "191bb03ad210357e98d69750ddea0a0fda07374745c2441ee11942208081c333",
+      "git_blob": "d5d58b42a1bacf9e09d93cd00db69a05e98e9c32",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/src/agent/control/spawn.rs",
+      "bytes": 53544,
+      "sha256": "866185b265c2fb4bc4eec8a471a12fcc4febcf5a596aa442252ab44063bd6f9f",
+      "git_blob": "b901073f6d1a3e7159bbe6a5b9ab9dd575b6b106",
+      "mode": "100644"
+    }
+  ],
+  "native_source_modified": false,
+  "rust_commands_executed": false
+}

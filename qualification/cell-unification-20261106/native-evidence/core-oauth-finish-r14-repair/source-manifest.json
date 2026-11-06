@@ -1,0 +1,34 @@
+{
+  "schema": "hepta.native-core-r14-fixture-candidate.v1",
+  "status": "FROZEN_SOURCE_REVIEW_PENDING_NATIVE_GATES",
+  "source_tree": "d3d2313b838422818bf9448ce5a1b86d89abdf69",
+  "source_commit": "b44d4ca4aa0ef9f894eff29e9975938e066a82f5",
+  "files": [
+    {
+      "path": "codex-rs/core/tests/suite/rmcp_client.rs",
+      "before": {
+        "bytes": 146845,
+        "sha256": "78fbb2b9cef8a4dd64dab34123e28524c0964ee11058fef8bb2f4fa1dcff04ee",
+        "git_blob": "3897f4396696ba94ce93c7be8f29b3c65a0f5de8"
+      },
+      "after": {
+        "bytes": 147566,
+        "sha256": "11ba2ce26510c4b3edac11351bd83efb879b466a22c9dc1c241dde63890ecb16",
+        "git_blob": "5b7c708647d343820ca5ca1fb0c3a1754d317d25"
+      },
+      "mode": "100644"
+    }
+  ],
+  "patch": {
+    "bytes": 1571,
+    "sha256": "c26eacee91fc8ccd2911e9dcdb7bd315e2a070ec779591d81b9e27760bf4356d",
+    "git_blob": "72d7081535dd4aa20a4a469e47c61349ccb403dd"
+  },
+  "scope": "Two existing raw TurnComplete observations in the OAuth contention fixture wait for that exact normal finish owner within each existing five-second outer timeout.",
+  "native_source_modified": false,
+  "rust_tests_run": false,
+  "formatter_run": false,
+  "original_assertion_macro_entries_preserved": 103,
+  "original_duration_expressions_multiset_unchanged": true,
+  "forward_patch_and_reverse_bytes_exact": true
+}

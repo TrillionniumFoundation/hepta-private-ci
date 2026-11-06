@@ -1,0 +1,55 @@
+{
+  "schema": "hepta.native-gate-receipt.v2",
+  "phase": "python-runner",
+  "source_tree": "ea48acf562499192a25e05ae28926a32632dee62",
+  "source_commit": "1fdd647b0ecb235530e8b88bbea45b3d3762906f",
+  "source_manifest": "native-candidate-r24-source.json",
+  "source_manifest_sha256": "ba7515c75980451e0b2514bce338b0ada8847daeef5ace5deacf45ca02e940c0",
+  "environment_manifest": "native-source50-project-r24-environment.json",
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "scripts",
+    "-p",
+    "test_run_nextest*.py",
+    "-v"
+  ],
+  "cwd": "/home/alex/work/hepta-cell-unified-20261106-a/source",
+  "start_unix": 1793979259.4622374,
+  "end_unix": 1793979263.2815711,
+  "elapsed_seconds": 3.819333791732788,
+  "exit_code": 0,
+  "effective_exit_code": 0,
+  "raw_process_result": {
+    "path": "native-source50-project-r24-python-runner-raw-process-result.json",
+    "bytes": 551,
+    "sha256": "1dfebf4ea2ece760b367b4f0a1a80f05460e894c00dca303c084dd3c4ea5b83b",
+    "git_blob": "1a7a4e682a2f108d6e9fcf1d96ce0225ac9e597f"
+  },
+  "log_sha256": "e6b90bd9070a271a2b38474031896b7c560d911c1937c51791d2f367fb84e63d",
+  "resources_sha256": "1495b803ccc3c6d92840e185f87ae7b55620661083406d19e7302852eb3c3f10",
+  "source_postguard": {
+    "path": "native-source50-project-r24-python-runner-source-post-verification.json",
+    "bytes": 639,
+    "sha256": "facddfcbed912028b2eea340964d0c8d5a5f6f5b8d9fab1024fcd883901f8f0b",
+    "git_blob": "3badecd6ef82c5d3aefca5595f217b257d53c2fd"
+  },
+  "source_guards_pass": true,
+  "packages": [],
+  "retries": null,
+  "filters": "no_additions",
+  "features": "unchanged_defaults",
+  "acceptance_readback": {
+    "path": "native-source50-project-r24-python-runner-result-review.json",
+    "bytes": 573,
+    "sha256": "1c6d23d55fe3426964361193a1169eddab7d78131a08a9d96b42268c74ee3be6",
+    "git_blob": "a4921722853efb19cc23aaedbdb7bf6cc5ea9846"
+  },
+  "issues": [],
+  "phase_pass": true,
+  "fix_fmt_executed": false,
+  "baseline_used_as_filter": false
+}

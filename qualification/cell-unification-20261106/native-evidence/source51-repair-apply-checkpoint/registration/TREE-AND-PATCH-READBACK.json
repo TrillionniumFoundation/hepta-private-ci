@@ -1,0 +1,54 @@
+{
+  "schema": "hepta.source51-offline-tree-patch-readback.v1",
+  "status": "LOCAL_OFFLINE_READBACK_PASS_NO_NATIVE_EXECUTION",
+  "script": {
+    "path": "build_preparation.py",
+    "bytes": 17725,
+    "sha256": "e952354475f62e8bc5eead31281eb290dc806aced5a5c83412fa511cc792aee0",
+    "git_blob": "48710e661617b733bddade780791d12c6ada4c3f"
+  },
+  "base_commit": "1fdd647b0ecb235530e8b88bbea45b3d3762906f",
+  "base_tree": "ea48acf562499192a25e05ae28926a32632dee62",
+  "expected_tree": "763c8d2b4089f6e9806c3bbb68fa247bc2f6af36",
+  "direct_trees_independently_rehashed": 7,
+  "direct_entries_examined": 295,
+  "original_ancestry_edges_verified": 6,
+  "original_tree_sha_checks": {
+    "root": "ea48acf562499192a25e05ae28926a32632dee62",
+    "codex": "6640ff87fe177e3a49c3356c487bee0329d74768",
+    "exec": "9906e97bad73cb14868c42bb56feb038aba9fb00",
+    "exec_tests": "ec4d348841738c5bbf5431877b5eeda495d4443b",
+    "exec_common": "f7e9f755c1e8f20b7c3fc1966ea3230567a6db0e",
+    "network": "37b5d6d529a1632cecc1b1c023fb1c874065fba4",
+    "network_src": "69903c19eeb71b1f28247d5bda82b51e5146d939"
+  },
+  "derived_tree_shas": {
+    "exec_common": "da7d59aed39c7ecfd4af9e8f0e84006f3c2ce786",
+    "exec_tests": "94179d610351f69f859f654f094199270193b2df",
+    "exec": "d9050a2f75322aae7fa79b63937e405004594266",
+    "network_src": "d94dff52406214213a34114eba7693787ca2fd76",
+    "network": "3104ad9922e284d3afdcf0e9b6d023546d151007",
+    "codex": "ce6b60533a26db4f6e52112d88a4b23d9ffbaeb4",
+    "root": "763c8d2b4089f6e9806c3bbb68fa247bc2f6af36"
+  },
+  "tree_algorithm": "Git SHA1 of tree header plus canonical mode, UTF-8 name, NUL, raw 20-byte child SHA; directory-aware byte sorting. All seven original objects must equal their API identities before replacing only two leaf SHAs.",
+  "all_other_directory_entries_unchanged": true,
+  "changed_paths": [
+    "codex-rs/exec-server/tests/common/fake_bwrap.rs",
+    "codex-rs/network-proxy/src/http_proxy.rs"
+  ],
+  "combined_patch": {
+    "path": "combined.patch",
+    "bytes": 1083,
+    "sha256": "55181ee269a2f06d83a04d4326d22f0ebe5e08a3ba387e5691e79f987b3d8d29",
+    "git_blob": "3600118628e4f98de2a90e0be43e650790ca9fdb"
+  },
+  "original_individual_patches_regenerated_exactly": true,
+  "combined_unified_patch_forward_and_reverse_exact": true,
+  "source_manifest_entries": 194,
+  "rust_source_entries": 180,
+  "unchanged_manifest_entries": 192,
+  "full_old_leaf_map_not_used": true,
+  "git_objects_or_commits_created": false,
+  "rust_metadata_fmt_or_tests_executed": false
+}

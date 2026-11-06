@@ -1,0 +1,827 @@
+--- a/scripts/run-nextest.py
++++ b/scripts/run-nextest.py
+@@ -12,6 +12,390 @@
+ import subprocess
+ import sys
+ import tempfile
++
++
++# Cross-package runtime dependencies already declared by these crates' Bazel
++# targets and exercised by their Rust fixtures. Cargo/nextest only exposes a
++# package's own binaries, even when every workspace package was built.
++# Platform-specific targets retain their own Rust cfgs; Cargo, not this runner,
++# chooses the requested target. Do not infer an OS or an output directory here.
++RUNTIME_TEST_HELPERS = {
++    "codex-core": (
++        ("codex-cli", "codex"),
++        ("codex-code-mode-host", "codex-code-mode-host"),
++        ("codex-linux-sandbox", "codex-linux-sandbox"),
++        ("codex-rmcp-client", "test_stdio_server"),
++        ("codex-rmcp-client", "test_streamable_http_server"),
++        ("codex-shell-escalation", "codex-execve-wrapper"),
++        ("codex-windows-sandbox", "codex-command-runner"),
++        ("codex-windows-sandbox", "codex-windows-sandbox-setup"),
++    ),
++    "codex-app-server": (
++        ("codex-cli", "codex"),
++        ("codex-code-mode-host", "codex-code-mode-host"),
++        ("codex-rmcp-client", "test_stdio_server"),
++    ),
++    "codex-rmcp-client": (("codex-cli", "codex"),),
++    "codex-tui": (("codex-cli", "codex"),),
++    "codex-cli": (
++        ("codex-windows-sandbox", "codex-command-runner"),
++        ("codex-windows-sandbox", "codex-windows-sandbox-setup"),
++    ),
++    "codex-exec-server": (
++        ("codex-windows-sandbox", "codex-command-runner"),
++        ("codex-windows-sandbox", "codex-windows-sandbox-setup"),
++    ),
++}
++
++
++class RuntimeHelperError(Exception):
++    def __init__(self, message, status=2):
++        super().__init__(message)
++        self.status = status
++
++
++def runtime_build_options(args):
++    """Separate Cargo build inputs from nextest configuration without guessing."""
++    options = {
++        "packages": [], "exclude": [], "workspace": False,
++        "manifest": None, "cargo": [], "metadata": [], "unsupported": [],
++        "targets": [], "profile": None, "release": False, "bypass": False,
++    }
++    cargo_values = {
++        "--target": "--target", "--target-dir": "--target-dir",
++        "--cargo-profile": "--profile", "--build-jobs": "--jobs",
++        "--features": "--features", "-F": "--features",
++        "--config": "--config", "--manifest-path": "--manifest-path",
++    }
++    test_values = {
++        "-E", "--filterset", "-P", "--profile", "--test", "--bin",
++        "--example", "--bench", "--config-file", "--tool-config-file",
++        "--user-config-file", "--cargo-message-format", "--message-format",
++        "--message-format-version", "--test-threads", "--retries",
++        "--status-level", "--final-status-level", "--failure-output", "-j",
++        "--success-output", "--no-tests", "--partition", "--color",
++    }
++    test_flags = {
++        "--lib", "--bins", "--tests", "--examples", "--benches",
++        "--all-targets", "--no-fail-fast", "--fail-fast", "--no-run",
++        "--no-capture", "--nocapture", "--hide-progress-bar",
++        "--override-version-check", "--ignore-default-filter", "--verbose",
++        "-v", "--quiet", "-q",
++    }
++    reuse_values = {
++        "--archive-file", "--archive-format", "--binaries-metadata",
++        "--cargo-metadata", "--workspace-remap", "--target-dir-remap",
++        "--extract-to",
++    }
++    values = set(cargo_values) | test_values | reuse_values | {
++        "-p", "--package", "--exclude", "--run-ignored",
++    }
++    index = 0
++    while index < len(args) and args[index] != "--":
++        arg = args[index]
++        key, equal, value = arg.partition("=")
++        for short in ("-p", "-F", "-E", "-P", "-j"):
++            if arg.startswith(short) and arg != short:
++                key, equal, value = short, "=", arg[len(short):].removeprefix("=")
++                break
++        if key in values:
++            if not equal:
++                index += 1
++                negative_jobs = (
++                    index < len(args) and key in {"--build-jobs", "--test-threads", "-j"}
++                    and re.fullmatch(r"-\d+", args[index])
++                )
++                if index >= len(args) or (args[index].startswith("-") and not negative_jobs):
++                    # Let nextest report its original malformed CLI diagnostic.
++                    options["bypass"] = True
++                    return options
++                value = args[index]
++            if not value:
++                options["bypass"] = True
++                return options
++            if key in {"-p", "--package"}:
++                options["packages"].append(value)
++            elif key == "--exclude":
++                options["exclude"].append(value)
++            elif key in cargo_values:
++                options["cargo"].extend([cargo_values[key], value])
++                if key in {"--manifest-path", "--config"}:
++                    options["metadata"].extend([key, value])
++                if key == "--manifest-path":
++                    if options["manifest"] is not None:
++                        options["unsupported"].append("multiple --manifest-path values")
++                    options["manifest"] = value
++                elif key == "--target":
++                    options["targets"].append(value)
++                elif key == "--cargo-profile":
++                    if options["profile"] is not None:
++                        options["unsupported"].append("multiple Cargo profiles")
++                    options["profile"] = value
++            elif key in reuse_values:
++                # Reused builds already own their binary metadata and path
++                # remapping. Retain the original runner's pass-through path.
++                options["bypass"] = True
++        elif key in {"--workspace", "--all"} and not equal:
++            options["workspace"] = True
++        elif key in {"--locked", "--offline", "--frozen"} and not equal:
++            options["cargo"].append(key)
++            options["metadata"].append(key)
++        elif key in {"--all-features", "--no-default-features"} and not equal:
++            options["cargo"].append(key)
++        elif key in {"--release", "-r"} and not equal:
++            options["release"] = True
++            options["cargo"].append("--release")
++        elif key == "--timings":
++            options["cargo"].append(arg)
++        elif key in {"--help", "-h", "--version", "-V", "--unit-graph"}:
++            options["bypass"] = True
++        elif key in test_flags and not equal:
++            pass
++        elif arg.startswith("-"):
++            options["unsupported"].append(arg)
++        index += 1
++    if len(options["targets"]) > 1:
++        options["unsupported"].append("multiple target triples")
++    if options["release"] and options["profile"] is not None:
++        options["unsupported"].append("--release with --cargo-profile")
++    if options["workspace"] and options["packages"]:
++        options["bypass"] = True
++    if options["exclude"] and not options["workspace"]:
++        options["bypass"] = True
++    return options
++
++
++def selected_workspace_packages(metadata, options):
++    members = set(metadata["workspace_members"])
++    packages = {p["id"]: p for p in metadata["packages"] if p["id"] in members}
++
++    def resolve(selector):
++        matches = [
++            p["id"] for p in packages.values()
++            if selector in {p["id"], p["name"], f'{p["name"]}@{p["version"]}'}
++        ]
++        # Cargo retains ownership of globs, external packages and other package
++        # ID syntax. Do not narrow those previously supported invocations here.
++        return matches[0] if len(matches) == 1 else None
++
++    if options["workspace"]:
++        selected = members
++    elif options["packages"]:
++        selected = {resolve(selector) for selector in options["packages"]}
++        if None in selected:
++            return packages, None
++    else:
++        manifest = options["manifest"]
++        if manifest is None:
++            manifest = next(
++                (p / "Cargo.toml" for p in (Path.cwd(), *Path.cwd().parents)
++                 if (p / "Cargo.toml").is_file()), None,
++            )
++        manifest = Path(manifest).resolve() if manifest is not None else None
++        if manifest is not None and manifest.parent != Path(metadata["workspace_root"]).resolve():
++            selected = {p["id"] for p in packages.values()
++                        if Path(p["manifest_path"]).resolve() == manifest}
++            if len(selected) != 1:
++                return packages, None
++        else:
++            defaults = metadata.get("workspace_default_members")
++            if defaults is None or not set(defaults) <= members:
++                raise RuntimeHelperError("Cargo metadata lacks valid workspace default members")
++            selected = set(defaults)
++    excluded = {resolve(selector) for selector in options["exclude"]}
++    if None in excluded:
++        return packages, None
++    selected -= excluded
++    return packages, selected
++
++
++def helper_env_keys(name):
++    names = [name] if "-" not in name else [name, name.replace("-", "_")]
++    return [f"{prefix}_{variant}" for prefix in ("CARGO_BIN_EXE", "NEXTEST_BIN_EXE")
++            for variant in names]
++
++
++def helper_executable(value, label):
++    path = Path(value)
++    if not path.is_absolute() or not path.is_file():
++        raise RuntimeHelperError(f"{label} must name an existing absolute executable file: {value!r}")
++    if os.name != "nt" and not os.access(path, os.X_OK):
++        raise RuntimeHelperError(f"{label} is not executable on this host: {value!r}")
++    return str(path)
++
++
++def helper_cargo_arguments(options, packages, selected):
++    """Keep feature selection on the test scope when adding binary owners."""
++    original = [packages[package_id] for package_id in sorted(selected)]
++    by_name = {package["name"]: package for package in original}
++    arguments = []
++    features = set()
++    values = iter(options["cargo"])
++    for value in values:
++        if value == "--all-features":
++            features.update(f'{p["name"]}/{feature}'
++                            for p in original for feature in p["features"])
++        elif value == "--features":
++            for feature in re.split(r"[\s,]+", next(values).strip()):
++                if not feature:
++                    continue
++                if "/" in feature:
++                    owner, _, name = feature.partition("/")
++                    if owner not in by_name or name not in by_name[owner]["features"]:
++                        raise RuntimeHelperError(
++                            "runtime helper features must name a declared feature of an "
++                            f"originally selected workspace package: {feature!r}"
++                        )
++                    features.add(feature)
++                else:
++                    matches = [p for p in original if feature in p["features"]]
++                    if not matches:
++                        raise RuntimeHelperError(f"feature absent from selected test packages: {feature!r}")
++                    features.update(f'{p["name"]}/{feature}' for p in matches)
++        else:
++            arguments.append(value)
++    if features:
++        arguments.extend(["--features", ",".join(sorted(features))])
++    return arguments
++
++
++def helper_artifacts(output, expected):
++    """Accept Cargo's actual non-test executable receipts, bound to their owners."""
++    found = {key: set() for key in expected}
++    finished = []
++    for line in output.splitlines():
++        if not line.strip():
++            continue
++        try:
++            message = json.loads(line)
++        except json.JSONDecodeError as error:
++            raise RuntimeHelperError("Cargo helper build emitted non-JSON artifact output") from error
++        if not isinstance(message, dict):
++            raise RuntimeHelperError("Cargo helper artifact message must be a JSON object")
++        if message.get("reason") == "build-finished":
++            finished.append(message.get("success"))
++        if message.get("reason") != "compiler-artifact":
++            continue
++        target = message.get("target", {})
++        if not isinstance(target, dict) or not isinstance(message.get("profile", {}), dict):
++            raise RuntimeHelperError("Cargo helper artifact has invalid target/profile metadata")
++        key = (message.get("package_id"), target.get("name"))
++        if key not in expected or message.get("profile", {}).get("test") is not False:
++            continue
++        if target.get("kind") != ["bin"] or target.get("src_path") != expected[key]["src_path"]:
++            raise RuntimeHelperError(f"Cargo helper target identity mismatch: {key[1]}")
++        executable = message.get("executable")
++        if not isinstance(executable, str):
++            raise RuntimeHelperError(f"Cargo helper artifact has no executable: {key[1]}")
++        found[key].add(helper_executable(executable, f"Cargo artifact {key[1]}"))
++    if finished != [True]:
++        raise RuntimeHelperError("Cargo helper build lacks one successful build-finished receipt")
++    for key, paths in found.items():
++        if len(paths) != 1:
++            raise RuntimeHelperError(f"Cargo helper executable is missing or ambiguous: {key[1]}")
++    return {key: next(iter(paths)) for key, paths in found.items()}
++
++
++def emit_cargo_diagnostics(output):
++    """Keep Cargo's real errors visible while consuming its artifact stream."""
++    for line in output.splitlines():
++        try:
++            message = json.loads(line)
++        except json.JSONDecodeError:
++            if line.strip():
++                print(line, file=sys.stderr)
++            continue
++        if isinstance(message, dict) and message.get("reason") == "compiler-message":
++            diagnostic = message.get("message", {})
++            rendered = diagnostic.get("rendered") or diagnostic.get("message")
++            if rendered:
++                print(rendered, file=sys.stderr, end="" if rendered.endswith("\n") else "\n")
++
++
++def runtime_helper_environment(args, metadata=None, environment=None):
++    options = runtime_build_options(args)
++    if options["bypass"]:
++        return None
++    environment = dict(os.environ if environment is None else environment)
++    if metadata is None:
++        result = subprocess.run(
++            ["cargo", "metadata", "--no-deps", "--format-version=1", *options["metadata"]],
++            stdout=subprocess.PIPE, text=True, check=False,
++        )
++        if result.returncode:
++            emit_cargo_diagnostics(result.stdout)
++            raise RuntimeHelperError("Cargo could not resolve runtime helper owners", result.returncode)
++        try:
++            metadata = json.loads(result.stdout)
++        except json.JSONDecodeError as error:
++            emit_cargo_diagnostics(result.stdout)
++            raise RuntimeHelperError("Cargo emitted invalid runtime helper metadata") from error
++    members = set(metadata["workspace_members"])
++    if not any(p["name"] in RUNTIME_TEST_HELPERS and p["id"] in members
++               for p in metadata["packages"]):
++        return None
++    packages, selected = selected_workspace_packages(metadata, options)
++    if selected is None:
++        return None
++    required = {helper for package_id in selected
++                for helper in RUNTIME_TEST_HELPERS.get(packages[package_id]["name"], ())}
++    if not required:
++        return None
++    expected = {}
++    for owner, name in sorted(required):
++        declared = [p for p in packages.values() if p["name"] == owner]
++        if len(declared) != 1:
++            raise RuntimeHelperError(f"runtime helper owner missing or ambiguous: {owner}")
++        package = declared[0]
++        targets = [t for t in package["targets"] if t["name"] == name and t["kind"] == ["bin"]]
++        if len(targets) != 1:
++            raise RuntimeHelperError(f"runtime helper target missing or ambiguous: {owner}/{name}")
++        for key in helper_env_keys(name):
++            if key in environment:
++                # Match cargo_bin's precedence, including invalid explicit values.
++                helper_executable(environment[key], key)
++                break
++        else:
++            expected[(package["id"], name)] = targets[0]
++    if not expected:
++        return environment
++    if options["unsupported"]:
++        raise RuntimeHelperError(
++            "runtime helper preparation does not support " + ", ".join(options["unsupported"])
++            + "; use a source-build invocation with exact package/profile/target inputs "
++            "or provide the declared helpers explicitly"
++        )
++    command = ["cargo", "build", *helper_cargo_arguments(options, packages, selected)]
++    if options["profile"] is None and not options["release"]:
++        command.extend(["--profile", "test"])
++    # Retain the original package scope for feature selection; helper owners are
++    # explicit build prerequisites, including when their own tests are excluded.
++    for package_id in sorted(selected | {key[0] for key in expected}):
++        command.extend(["--package", package_id])
++    for name in sorted({key[1] for key in expected}):
++        command.extend(["--bin", name])
++    command.append("--message-format=json-render-diagnostics")
++    print("Preparing declared runtime helpers: " + ", ".join(sorted(key[1] for key in expected)),
++          file=sys.stderr, flush=True)
++    result = subprocess.run(command, stdout=subprocess.PIPE, text=True, check=False, env=environment)
++    emit_cargo_diagnostics(result.stdout)
++    if result.returncode:
++        raise RuntimeHelperError("Cargo runtime helper build failed", result.returncode)
++    for (_, name), executable in helper_artifacts(result.stdout, expected).items():
++        for key in helper_env_keys(name):
++            if key.startswith("CARGO_BIN_EXE_"):
++                environment[key] = executable
++        print(f"Runtime helper {name}: {executable}", file=sys.stderr, flush=True)
++    return environment
++
++
++def run_nextest_command(command, args, metadata=None):
++    try:
++        environment = runtime_helper_environment(args, metadata)
++    except RuntimeHelperError as error:
++        print(f"error: {error}", file=sys.stderr)
++        return error.status
++    return subprocess.call(command, env=environment)
+ 
+ 
+ class GraphFreeFilter:
+@@ -222,7 +606,7 @@
+ def run(args):
+     command = ["cargo", "nextest", "run", "--no-fail-fast", *args]
+     if not use_scoped_metadata(args, Path.cwd()):
+-        return subprocess.call(command)
++        return run_nextest_command(command, args)
+     metadata_command = ["cargo", "metadata", "--no-deps", "--format-version=1"]
+     for index, arg in enumerate(args):
+         if arg == "--":
+@@ -244,7 +628,7 @@
+         if workspace_config.is_file() and re.search(
+             r"\b(?:rdeps|deps)\s*\(", workspace_config.read_text()
+         ):
+-            return subprocess.call(command)
++            return run_nextest_command(command, args, metadata)
+         workspace_members = set(metadata["workspace_members"])
+         names = {
+             p["name"] for p in metadata["packages"] if p["id"] in workspace_members
+@@ -252,7 +636,7 @@
+         # Cargo package IDs, globs and external dependencies retain Cargo's
+         # ordinary selection semantics rather than approximating them here.
+         if not all(package in names for package in scoped_packages(args)):
+-            return subprocess.call(command)
++            return run_nextest_command(command, args, metadata)
+         # Nextest derives its build manifest from the supplied metadata and
+         # rejects combining --manifest-path with --cargo-metadata. Keep the
+         # original arguments for fallback; remove only this resolved selector.
+@@ -269,7 +653,7 @@
+         command = ["cargo", "nextest", "run", "--no-fail-fast", *build_args]
+         separator = command.index("--") if "--" in command else len(command)
+         command[separator:separator] = ["--cargo-metadata", str(metadata_path)]
+-        return subprocess.call(command)
++        return run_nextest_command(command, args, metadata)
+ 
+ 
+ if __name__ == "__main__":
+--- /dev/null
++++ b/scripts/test_run_nextest_helpers.py
+@@ -0,0 +1,395 @@
++"""Runtime fixture receipts and CLI boundaries; no model or network execution."""
++
++import copy
++import contextlib
++import importlib.util
++import io
++import json
++import os
++from pathlib import Path
++import shutil
++import subprocess
++import sys
++import tempfile
++import unittest
++from unittest.mock import patch
++
++
++SPEC = importlib.util.spec_from_file_location(
++    "run_nextest_helpers_under_test", Path(__file__).with_name("run-nextest.py")
++)
++RUNNER = importlib.util.module_from_spec(SPEC)
++SPEC.loader.exec_module(RUNNER)
++
++
++class RuntimeHelperTests(unittest.TestCase):
++    def setUp(self):
++        directory = tempfile.TemporaryDirectory(prefix="nextest-runtime-helpers-")
++        self.addCleanup(directory.cleanup)
++        self.root = Path(directory.name)
++        (self.root / "Cargo.toml").write_text('[workspace]\nmembers = []\n')
++        self.consumer = self.package("consumer", [])
++        self.consumer["features"] = {"negative": [], "default": []}
++        self.owner = self.package("helper-owner", ["fixture-helper"])
++        self.unrelated = self.package("unrelated", [])
++        self.metadata = {
++            "workspace_root": str(self.root),
++            "workspace_members": [p["id"] for p in (self.consumer, self.owner, self.unrelated)],
++            "workspace_default_members": [self.consumer["id"]],
++            "packages": [self.consumer, self.owner, self.unrelated],
++        }
++        self.executable = self.root / "artifact-with-no-assumed-layout"
++        self.executable.write_text("real artifact placeholder for receipt validation\n")
++        self.executable.chmod(0o700)
++        self.target = self.owner["targets"][0]
++        self.expected = {(self.owner["id"], "fixture-helper"): self.target}
++        helper_map = patch.dict(
++            RUNNER.RUNTIME_TEST_HELPERS,
++            {"consumer": (("helper-owner", "fixture-helper"),)},
++            clear=True,
++        )
++        helper_map.start()
++        self.addCleanup(helper_map.stop)
++
++    def package(self, name, bins):
++        root = self.root / name
++        root.mkdir()
++        manifest = root / "Cargo.toml"
++        manifest.write_text(f'[package]\nname="{name}"\nversion="1.0.0"\n')
++        return {
++            "id": f"path+file://{root}#{name}@1.0.0", "name": name, "version": "1.0.0",
++            "manifest_path": str(manifest), "features": {},
++            "targets": [
++                {"name": binary, "kind": ["bin"], "src_path": str(root / f"{binary}.rs")}
++                for binary in bins
++            ],
++        }
++
++    def receipt(self, **changes):
++        message = {
++            "reason": "compiler-artifact", "package_id": self.owner["id"],
++            "target": copy.deepcopy(self.target), "profile": {"test": False},
++            "executable": str(self.executable),
++        }
++        message.update(changes)
++        return message
++
++    def output(self, *messages, finished=True):
++        if not messages:
++            messages = (self.receipt(),)
++        return "\n".join(json.dumps(item) for item in (*messages, {
++            "reason": "build-finished", "success": finished,
++        }))
++
++    def prepare(self, args, output=None, environment=None, status=0):
++        result = subprocess.CompletedProcess(
++            ["cargo", "build"], status, stdout=self.output() if output is None else output,
++        )
++        with patch.object(RUNNER.subprocess, "run", return_value=result) as build:
++            env = RUNNER.runtime_helper_environment(
++                args, self.metadata, environment={} if environment is None else environment,
++            )
++        return env, build
++
++    def test_exact_artifact_path_is_exposed_without_changing_test_arguments(self):
++        args = ["-p", "consumer", "--locked", "--offline", "--retries", "0", "--", "--exact"]
++        command = ["cargo", "nextest", "run", "--no-fail-fast", *args]
++        result = subprocess.CompletedProcess([], 0, stdout=self.output())
++        with patch.object(RUNNER.subprocess, "run", return_value=result) as build:
++            with patch.object(RUNNER.subprocess, "call", return_value=100) as nextest:
++                self.assertEqual(RUNNER.run_nextest_command(command, args, self.metadata), 100)
++        self.assertEqual(nextest.call_args.args[0], command)
++        env = nextest.call_args.kwargs["env"]
++        self.assertEqual(env["CARGO_BIN_EXE_fixture-helper"], str(self.executable))
++        self.assertEqual(env["CARGO_BIN_EXE_fixture_helper"], str(self.executable))
++        built = build.call_args.args[0]
++        self.assertIn("--locked", built)
++        self.assertIn("--offline", built)
++        self.assertNotIn("--retries", built)
++        self.assertEqual(built[built.index("--profile") + 1], "test")
++        self.assertIn(self.consumer["id"], built)
++        self.assertIn(self.owner["id"], built)
++        self.assertNotIn(self.unrelated["id"], built)
++
++    def test_cargo_profile_target_features_and_config_are_forwarded_separately(self):
++        args = [
++            "--package=consumer", "--profile", "local", "--cargo-profile=qualification",
++            "--target", "aarch64-unknown-linux-gnu", "--target-dir", str(self.root / "out"),
++            "--features", "consumer/negative", "--no-default-features", "--all-features",
++            "--build-jobs", "-1", "--config", "build.incremental=false", "--frozen",
++        ]
++        _, build = self.prepare(args)
++        built = build.call_args.args[0]
++        for pair in (
++            ["--profile", "qualification"], ["--target", "aarch64-unknown-linux-gnu"],
++            ["--target-dir", str(self.root / "out")],
++            ["--jobs", "-1"], ["--config", "build.incremental=false"],
++        ):
++            self.assertIn(pair, [built[i:i + 2] for i in range(len(built) - 1)])
++        self.assertNotIn("local", built)
++        self.assertIn("--no-default-features", built)
++        self.assertNotIn("--all-features", built)
++        features = built[built.index("--features") + 1].split(",")
++        self.assertEqual(features, ["consumer/default", "consumer/negative"])
++        self.assertIn("--frozen", built)
++
++    def test_adding_helper_owner_does_not_expand_bare_or_all_feature_selection(self):
++        self.owner["features"] = {"negative": [], "helper-only": []}
++        for feature_args, expected in (
++            (["--features", "negative"], {"consumer/negative"}),
++            (["--all-features"], {"consumer/default", "consumer/negative"}),
++        ):
++            with self.subTest(feature_args=feature_args):
++                _, build = self.prepare(["-p", "consumer", *feature_args])
++                args = build.call_args.args[0]
++                self.assertEqual(set(args[args.index("--features") + 1].split(",")), expected)
++                self.assertNotIn("--all-features", args)
++        with self.assertRaisesRegex(RUNNER.RuntimeHelperError, "originally selected"):
++            self.prepare(["-p", "consumer", "--features", "helper-owner/helper-only"])
++
++    def test_release_does_not_add_test_profile(self):
++        _, build = self.prepare(["-pconsumer", "--release"])
++        self.assertIn("--release", build.call_args.args[0])
++        self.assertNotIn("--profile", build.call_args.args[0])
++
++    def test_short_test_threads_are_not_cargo_build_jobs(self):
++        for args in (["-j", "1"], ["-j1"], ["-j", "-1"]):
++            with self.subTest(args=args):
++                _, build = self.prepare(["-p", "consumer", *args])
++                self.assertNotIn("--jobs", build.call_args.args[0])
++                self.assertNotIn("-j", build.call_args.args[0])
++
++    def test_workspace_and_manifest_selection_respect_excluded_consumers(self):
++        env, build = self.prepare(["--workspace", "--exclude", "consumer"])
++        self.assertIsNone(env)
++        build.assert_not_called()
++        env, build = self.prepare(["--manifest-path", self.consumer["manifest_path"]])
++        self.assertIn("CARGO_BIN_EXE_fixture-helper", env)
++        self.assertIn(self.consumer["manifest_path"], build.call_args.args[0])
++        env, build = self.prepare(["--manifest-path", str(self.root / "Cargo.toml")])
++        self.assertIn("CARGO_BIN_EXE_fixture-helper", env)
++        env, build = self.prepare(["-p", "unrelated"])
++        self.assertIsNone(env)
++        build.assert_not_called()
++
++    def test_excluding_helper_tests_keeps_the_consumers_runtime_dependency(self):
++        env, build = self.prepare(["--workspace", "--exclude=helper-owner"])
++        self.assertIn(self.owner["id"], build.call_args.args[0])
++        self.assertIn("CARGO_BIN_EXE_fixture-helper", env)
++
++    def test_cargo_explicit_value_wins_and_invalid_value_blocks_nextest_fallback(self):
++        supplied = {
++            "CARGO_BIN_EXE_fixture-helper": str(self.executable),
++            "NEXTEST_BIN_EXE_fixture-helper": "/unusable/lower-priority",
++            "UNRELATED": "kept",
++        }
++        before = supplied.copy()
++        env, build = self.prepare(["-p", "consumer"], environment=supplied)
++        self.assertEqual(env, before)
++        self.assertEqual(supplied, before)
++        build.assert_not_called()
++        supplied["CARGO_BIN_EXE_fixture-helper"] = "/missing/higher-priority"
++        supplied["NEXTEST_BIN_EXE_fixture-helper"] = str(self.executable)
++        with patch.object(RUNNER.subprocess, "run") as build:
++            with self.assertRaisesRegex(RUNNER.RuntimeHelperError, "CARGO_BIN_EXE_fixture-helper"):
++                RUNNER.runtime_helper_environment(["-p", "consumer"], self.metadata, supplied)
++            build.assert_not_called()
++
++    def test_underscore_explicit_key_is_preserved_without_inventing_higher_precedence_key(self):
++        supplied = {"CARGO_BIN_EXE_fixture_helper": str(self.executable)}
++        env, build = self.prepare(["-p", "consumer"], environment=supplied)
++        self.assertEqual(env, supplied)
++        self.assertNotIn("CARGO_BIN_EXE_fixture-helper", env)
++        build.assert_not_called()
++
++    @unittest.skipIf(os.name == "nt", "Windows executable access does not use Unix mode bits")
++    def test_existing_unix_file_without_execute_permission_is_rejected(self):
++        self.executable.chmod(0o600)
++        with self.assertRaisesRegex(RUNNER.RuntimeHelperError, "not executable"):
++            self.prepare(["-p", "consumer"], environment={"CARGO_BIN_EXE_fixture-helper": str(self.executable)})
++
++    def test_wrong_package_name_kind_source_or_test_harness_never_supplies_helper(self):
++        variants = [
++            self.receipt(package_id=self.unrelated["id"]),
++            self.receipt(target={**self.target, "name": "different-helper"}),
++            self.receipt(target={**self.target, "kind": ["lib"]}),
++            self.receipt(target={**self.target, "src_path": "/different/source.rs"}),
++            self.receipt(profile={"test": True}),
++            self.receipt(profile={}),
++        ]
++        for message in variants:
++            with self.subTest(message=message):
++                with self.assertRaises(RUNNER.RuntimeHelperError):
++                    RUNNER.helper_artifacts(self.output(message), self.expected)
++
++    def test_missing_relative_or_nonexistent_artifacts_are_rejected(self):
++        for value in (None, "target/debug/fixture-helper", str(self.root / "missing"), str(self.root)):
++            with self.subTest(executable=value):
++                with self.assertRaises(RUNNER.RuntimeHelperError):
++                    RUNNER.helper_artifacts(self.output(self.receipt(executable=value)), self.expected)
++        with self.assertRaisesRegex(RUNNER.RuntimeHelperError, "missing or ambiguous"):
++            RUNNER.helper_artifacts(json.dumps({"reason": "build-finished", "success": True}), self.expected)
++
++    def test_multiple_target_executables_are_rejected_instead_of_selecting_first(self):
++        another = self.root / "another-real-artifact"
++        another.write_text("different target\n")
++        another.chmod(0o700)
++        with self.assertRaisesRegex(RUNNER.RuntimeHelperError, "ambiguous"):
++            RUNNER.helper_artifacts(
++                self.output(self.receipt(), self.receipt(executable=str(another))), self.expected,
++            )
++
++    def test_failed_build_and_missing_completion_never_launch_tests(self):
++        with patch.object(RUNNER.subprocess, "run", return_value=subprocess.CompletedProcess([], 17, stdout=self.output())):
++            with patch.object(RUNNER.subprocess, "call") as nextest:
++                self.assertEqual(RUNNER.run_nextest_command(["cargo", "nextest", "run"], ["-p", "consumer"], self.metadata), 17)
++                nextest.assert_not_called()
++        for output in (json.dumps(self.receipt()), self.output(finished=False), "not artifact JSON"):
++            with self.subTest(output=output):
++                with self.assertRaises(RUNNER.RuntimeHelperError):
++                    RUNNER.helper_artifacts(output, self.expected)
++
++    def test_unsupported_source_build_inputs_fail_only_if_new_helpers_are_needed(self):
++        for args in (
++            ["-p", "consumer", "--future-build-option"],
++            ["-p", "consumer", "--release", "--cargo-profile", "dev"],
++            ["-p", "consumer", "--target", "one", "--target", "two"],
++        ):
++            with self.subTest(args=args):
++                with patch.object(RUNNER.subprocess, "run") as build:
++                    with self.assertRaises(RUNNER.RuntimeHelperError):
++                        RUNNER.runtime_helper_environment(args, self.metadata, {})
++                    build.assert_not_called()
++                env, build = self.prepare(args, environment={"CARGO_BIN_EXE_fixture-helper": str(self.executable)})
++                self.assertEqual(env["CARGO_BIN_EXE_fixture-helper"], str(self.executable))
++                build.assert_not_called()
++
++    def test_reused_builds_and_opaque_package_selection_keep_original_pass_through(self):
++        for args in (
++            ["-p", "cons*"], ["-p", "unknown"],
++            ["-p", "consumer", "--archive-file", "archive.tar.zst"],
++            ["-p", "consumer", "--cargo-metadata", "original.json"],
++            ["--workspace", "--exclude", "unrelated*"],
++        ):
++            with self.subTest(args=args):
++                env, build = self.prepare(args)
++                self.assertIsNone(env)
++                build.assert_not_called()
++                command = ["cargo", "nextest", "run", *args]
++                with patch.object(RUNNER.subprocess, "call", return_value=42) as nextest:
++                    self.assertEqual(RUNNER.run_nextest_command(command, args, self.metadata), 42)
++                    self.assertEqual(nextest.call_args.args[0], command)
++
++    def test_compiler_errors_and_non_json_diagnostics_are_retained(self):
++        diagnostic = json.dumps({"reason": "compiler-message", "message": {
++            "rendered": "error[E0001]: original compiler diagnosis\n",
++        }})
++        for status, output in ((12, diagnostic), (0, "original non-JSON diagnostic\n")):
++            with self.subTest(status=status):
++                stderr = io.StringIO()
++                with patch.object(RUNNER.subprocess, "run", return_value=subprocess.CompletedProcess([], status, stdout=output)):
++                    with patch.object(RUNNER.subprocess, "call") as nextest:
++                        with contextlib.redirect_stderr(stderr):
++                            result = RUNNER.run_nextest_command(["cargo", "nextest", "run"], ["-p", "consumer"], self.metadata)
++                        nextest.assert_not_called()
++                self.assertEqual(result, status if status else 2)
++                self.assertIn("original", stderr.getvalue())
++
++    def test_package_ids_and_version_selectors_bind_the_declared_owner(self):
++        for selector in (self.consumer["id"], "consumer@1.0.0"):
++            with self.subTest(selector=selector):
++                env, _ = self.prepare(["-p", selector])
++                self.assertEqual(env["CARGO_BIN_EXE_fixture-helper"], str(self.executable))
++
++    def test_arguments_after_separator_do_not_change_build_scope(self):
++        env, build = self.prepare(["-p", "consumer", "--", "--target", "not-a-build-target"])
++        self.assertIn("CARGO_BIN_EXE_fixture-helper", env)
++        self.assertNotIn("not-a-build-target", build.call_args.args[0])
++
++    def test_malformed_manifest_and_help_are_left_to_nextest_without_building(self):
++        for args in (["--manifest-path"], ["--manifest-path", "--offline"], ["--help"]):
++            with self.subTest(args=args):
++                env, build = self.prepare(args)
++                self.assertIsNone(env)
++                build.assert_not_called()
++
++
++@unittest.skipUnless(
++    shutil.which("cargo") and shutil.which("cargo-nextest"), "requires Cargo and nextest",
++)
++class RealCrossPackageHelperTests(unittest.TestCase):
++    def test_missing_metadata_fails_then_scoped_and_workspace_runs_launch_the_real_helper(self):
++        with tempfile.TemporaryDirectory(prefix="nextest-cross-package-") as directory:
++            root = Path(directory)
++            (root / "consumer/tests").mkdir(parents=True)
++            (root / "consumer/src").mkdir()
++            (root / "server/src").mkdir(parents=True)
++            (root / "Cargo.toml").write_text(
++                '[workspace]\nresolver="3"\nmembers=["consumer", "server"]\n'
++            )
++            (root / "consumer/Cargo.toml").write_text(
++                '[package]\nname="nextest-helper-consumer"\nversion="0.1.0"\nedition="2024"\n'
++                '[features]\nnegative=[]\n'
++            )
++            (root / "consumer/src/lib.rs").write_text("// Integration-test consumer.\n")
++            (root / "consumer/tests/helper.rs").write_text(
++                '#[test]\nfn launches_declared_helper() {\n'
++                ' assert!(!cfg!(feature="negative"));\n'
++                ' let path=std::env::var("CARGO_BIN_EXE_nextest-runtime-fixture")'
++                '.expect("declared helper metadata missing");\n'
++                ' let output=std::process::Command::new(path).output().expect("real helper spawn");\n'
++                ' assert!(output.status.success());\n'
++                ' assert_eq!(output.stdout, b"fixture-ok\\n");\n}\n'
++            )
++            (root / "server/Cargo.toml").write_text(
++                '[package]\nname="nextest-helper-owner"\nversion="0.1.0"\nedition="2024"\n'
++                '[[bin]]\nname="nextest-runtime-fixture"\npath="src/main.rs"\n'
++            )
++            (root / "server/src/main.rs").write_text('fn main() { println!("fixture-ok"); }\n')
++            (root / "Cargo.lock").write_text(
++                'version = 4\n\n[[package]]\nname="nextest-helper-consumer"\nversion="0.1.0"\n'
++                '\n[[package]]\nname="nextest-helper-owner"\nversion="0.1.0"\n'
++            )
++            environment = os.environ.copy()
++            for key in RUNNER.helper_env_keys("nextest-runtime-fixture"):
++                environment.pop(key, None)
++            environment.update({
++                "CARGO_TARGET_DIR": str(root / "artifacts"), "NEXTEST_PROFILE": "default",
++                "HEPTA_NEXTTEST_FULL_METADATA": "0", "CARGO_NET_OFFLINE": "true",
++            })
++            scoped = ["-p", "nextest-helper-consumer", "--locked", "--offline", "--retries", "0"]
++            baseline = subprocess.run(
++                ["cargo", "nextest", "run", "--no-fail-fast", *scoped], cwd=root,
++                env=environment, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
++                check=False, timeout=120,
++            )
++            self.assertNotEqual(baseline.returncode, 0, baseline.stdout)
++            self.assertIn("declared helper metadata missing", baseline.stdout)
++            runner = Path(__file__).with_name("run-nextest.py")
++            launcher = (
++                "import importlib.util,sys;"
++                f"s=importlib.util.spec_from_file_location('fixture_runner',{str(runner)!r});"
++                "m=importlib.util.module_from_spec(s);s.loader.exec_module(m);"
++                "m.RUNTIME_TEST_HELPERS={'nextest-helper-consumer':"
++                "(('nextest-helper-owner','nextest-runtime-fixture'),)};"
++                "raise SystemExit(m.run(sys.argv[1:]))"
++            )
++            for arguments, successful in (
++                (scoped, True),
++                (["--workspace", "--locked", "--offline", "--retries", "0"], True),
++                ([*scoped, "--features", "negative"], False),
++            ):
++                with self.subTest(arguments=arguments):
++                    result = subprocess.run(
++                        [sys.executable, "-c", launcher, *arguments], cwd=root, env=environment,
++                        stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True,
++                        check=False, timeout=120,
++                    )
++                    self.assertEqual(result.returncode == 0, successful, result.stdout)
++                    self.assertIn("Runtime helper nextest-runtime-fixture:", result.stdout)
++                    self.assertIn("1 test run:", result.stdout)
++                    self.assertIn("1 passed" if successful else "1 failed", result.stdout)
++
++
++if __name__ == "__main__":
++    unittest.main()

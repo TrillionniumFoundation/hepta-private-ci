@@ -1,0 +1,248 @@
+{
+  "state": "FROZEN_PENDING_INDEPENDENT_REVIEW_AND_NATIVE_GATES",
+  "base_commit": "bef6fa7645df9df12b69fda499e97eed25de6c75",
+  "type": "private ResponseEventTelemetry",
+  "grouped_fields": [
+    "session_telemetry",
+    "inference_trace_attempt"
+  ],
+  "public_api_changed": false,
+  "serialization_or_digest_changed": false,
+  "source_files": [
+    {
+      "path": "codex-rs/core/src/client.rs",
+      "baseline_raw_sha256": "61b418fbfc1d5b58e6e261d439f08b76b4a5c0ae3fd9e65de7a7bfdd4f3fa271",
+      "baseline_git_blob": "07be3183706fd2bafcdf1aed11b339b8c07ca609",
+      "frozen_sha256": "60322c97712b9849dea763eb5fa5700a381c7c0e5eded73a5a4171bd51eaba09",
+      "bytes": 162063,
+      "callers": [
+        {
+          "original_line": 3095,
+          "original_arguments": [
+            "upstream_request_id",
+            "api_stream",
+            "session_telemetry",
+            "inference_trace_attempt",
+            "provider",
+            "provider_attempt",
+            "redact_provider_errors",
+            "encoded_request_observer"
+          ],
+          "grouped_argument_indices": [
+            2,
+            3
+          ],
+          "remaining_argument_order_unchanged": true
+        }
+      ],
+      "inverse_identical": true,
+      "existing_assertions_and_arguments_unchanged": true,
+      "production_body_after_destructure_byte_identical": true
+    },
+    {
+      "path": "codex-rs/core/src/client_tests.rs",
+      "baseline_raw_sha256": "e3038a15aee22742e798805caeac92f645089845822df83e3b2380f6fb78aa14",
+      "baseline_git_blob": "e6dbdf2d31fe0a914451fe150ac58a5993164634",
+      "frozen_sha256": "ff42789772f1d4f748b0c154e6b314867c657a30a31020eff2d8b2e6e1e6c9f3",
+      "bytes": 59314,
+      "callers": [
+        {
+          "original_line": 957,
+          "original_arguments": [
+            "/*upstream_request_id*/ None",
+            "api_stream",
+            "test_session_telemetry()",
+            "attempt",
+            "test_model_provider()",
+            "/*provider_attempt*/ None",
+            "/*redact_provider_errors*/ false",
+            "/*encoded_request_observer*/ None"
+          ],
+          "grouped_argument_indices": [
+            2,
+            3
+          ],
+          "remaining_argument_order_unchanged": true
+        },
+        {
+          "original_line": 1010,
+          "original_arguments": [
+            "Some(\"req-123\".to_string())",
+            "api_stream",
+            "test_session_telemetry()",
+            "InferenceTraceAttempt::disabled()",
+            "test_model_provider()",
+            "/*provider_attempt*/ None",
+            "/*redact_provider_errors*/ false",
+            "/*encoded_request_observer*/ None"
+          ],
+          "grouped_argument_indices": [
+            2,
+            3
+          ],
+          "remaining_argument_order_unchanged": true
+        },
+        {
+          "original_line": 1146,
+          "original_arguments": [
+            "/*upstream_request_id*/ None",
+            "api_stream",
+            "test_session_telemetry()",
+            "attempt",
+            "provider",
+            "/*provider_attempt*/ None",
+            "/*redact_provider_errors*/ true",
+            "/*encoded_request_observer*/ None"
+          ],
+          "grouped_argument_indices": [
+            2,
+            3
+          ],
+          "remaining_argument_order_unchanged": true
+        },
+        {
+          "original_line": 1330,
+          "original_arguments": [
+            "/*upstream_request_id*/ None",
+            "api_stream",
+            "test_session_telemetry()",
+            "attempt",
+            "test_model_provider()",
+            "/*provider_attempt*/ None",
+            "/*redact_provider_errors*/ false",
+            "/*encoded_request_observer*/ None"
+          ],
+          "grouped_argument_indices": [
+            2,
+            3
+          ],
+          "remaining_argument_order_unchanged": true
+        }
+      ],
+      "inverse_identical": true,
+      "existing_assertions_and_arguments_unchanged": true,
+      "production_body_after_destructure_byte_identical": null
+    },
+    {
+      "path": "codex-rs/core/src/client_provider_policy_tests.rs",
+      "baseline_raw_sha256": "3caf8f40887bae92a50e44b6a2940039e51b96dcf7e8c41ad9195730a7344002",
+      "baseline_git_blob": "a694f93b8a10905d19b04fa926ab080cd182dcd0",
+      "frozen_sha256": "5966e3176c86280bdca24047735179dd25b1abc441d122ad59cdd4e1374e249d",
+      "bytes": 11469,
+      "callers": [
+        {
+          "original_line": 117,
+          "original_arguments": [
+            "/*upstream_request_id*/ None",
+            "events",
+            "test_telemetry()",
+            "InferenceTraceAttempt::disabled()",
+            "test_provider()",
+            "Some(owner)",
+            "/*redact_provider_errors*/ false",
+            "/*encoded_request_observer*/ None"
+          ],
+          "grouped_argument_indices": [
+            2,
+            3
+          ],
+          "remaining_argument_order_unchanged": true
+        },
+        {
+          "original_line": 169,
+          "original_arguments": [
+            "/*upstream_request_id*/ None",
+            "events",
+            "test_telemetry()",
+            "InferenceTraceAttempt::disabled()",
+            "test_provider()",
+            "Some(owner)",
+            "/*redact_provider_errors*/ false",
+            "/*encoded_request_observer*/ None"
+          ],
+          "grouped_argument_indices": [
+            2,
+            3
+          ],
+          "remaining_argument_order_unchanged": true
+        },
+        {
+          "original_line": 206,
+          "original_arguments": [
+            "/*upstream_request_id*/ None",
+            "events",
+            "test_telemetry()",
+            "InferenceTraceAttempt::disabled()",
+            "test_provider()",
+            "Some(owner)",
+            "/*redact_provider_errors*/ false",
+            "/*encoded_request_observer*/ None"
+          ],
+          "grouped_argument_indices": [
+            2,
+            3
+          ],
+          "remaining_argument_order_unchanged": true
+        },
+        {
+          "original_line": 242,
+          "original_arguments": [
+            "/*upstream_request_id*/ None",
+            "events",
+            "test_telemetry()",
+            "InferenceTraceAttempt::disabled()",
+            "test_provider()",
+            "Some(owner)",
+            "/*redact_provider_errors*/ false",
+            "/*encoded_request_observer*/ None"
+          ],
+          "grouped_argument_indices": [
+            2,
+            3
+          ],
+          "remaining_argument_order_unchanged": true
+        },
+        {
+          "original_line": 271,
+          "original_arguments": [
+            "/*upstream_request_id*/ None",
+            "events",
+            "test_telemetry()",
+            "InferenceTraceAttempt::disabled()",
+            "test_provider()",
+            "Some(owner)",
+            "/*redact_provider_errors*/ false",
+            "/*encoded_request_observer*/ None"
+          ],
+          "grouped_argument_indices": [
+            2,
+            3
+          ],
+          "remaining_argument_order_unchanged": true
+        },
+        {
+          "original_line": 306,
+          "original_arguments": [
+            "/*upstream_request_id*/ None",
+            "events",
+            "test_telemetry()",
+            "InferenceTraceAttempt::disabled()",
+            "test_provider()",
+            "Some(owner)",
+            "/*redact_provider_errors*/ false",
+            "/*encoded_request_observer*/ None"
+          ],
+          "grouped_argument_indices": [
+            2,
+            3
+          ],
+          "remaining_argument_order_unchanged": true
+        }
+      ],
+      "inverse_identical": true,
+      "existing_assertions_and_arguments_unchanged": true,
+      "production_body_after_destructure_byte_identical": null
+    }
+  ],
+  "callsite_count": 11
+}

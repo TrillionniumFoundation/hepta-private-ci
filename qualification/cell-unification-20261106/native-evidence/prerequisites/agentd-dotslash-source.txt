@@ -1,0 +1,25 @@
+codex-rs/core/tests/common/lib.rs:158:pub fn fetch_dotslash_file(
+codex-rs/core/tests/common/lib.rs:159:    dotslash_file: &std::path::Path,
+codex-rs/core/tests/common/lib.rs:160:    dotslash_cache: Option<&std::path::Path>,
+codex-rs/core/tests/common/lib.rs:162:    let mut command = std::process::Command::new("dotslash");
+codex-rs/core/tests/common/lib.rs:163:    command.arg("--").arg("fetch").arg(dotslash_file);
+codex-rs/core/tests/common/lib.rs:164:    if let Some(dotslash_cache) = dotslash_cache {
+codex-rs/core/tests/common/lib.rs:165:        command.env("DOTSLASH_CACHE", dotslash_cache);
+codex-rs/core/tests/common/lib.rs:169:            "failed to run dotslash to fetch resource {}",
+codex-rs/core/tests/common/lib.rs:170:            dotslash_file.display()
+codex-rs/core/tests/common/lib.rs:175:        "dotslash fetch failed for {}: {}",
+codex-rs/core/tests/common/lib.rs:176:        dotslash_file.display(),
+codex-rs/core/tests/common/lib.rs:180:        .context("dotslash fetch output was not utf8")?
+codex-rs/core/tests/common/lib.rs:183:    ensure!(!fetched_path.is_empty(), "dotslash fetch output was empty");
+codex-rs/core/tests/common/lib.rs:187:        "dotslash returned non-file path: {}",
+codex-rs/core/tests/common/zsh_fork.rs:103:    let dotslash_zsh = repo_root.join("codex-rs/app-server/tests/suite/zsh");
+codex-rs/core/tests/common/zsh_fork.rs:104:    if !dotslash_zsh.is_file() {
+codex-rs/core/tests/common/zsh_fork.rs:107:            dotslash_zsh.display()
+codex-rs/core/tests/common/zsh_fork.rs:112:    match crate::fetch_dotslash_file(&dotslash_zsh, /*dotslash_cache*/ None) {
+codex-rs/core/tests/common/zsh_fork.rs:115:            eprintln!("skipping zsh-fork test: failed to fetch zsh via dotslash: {error:#}");
+codex-rs/app-server/tests/suite/v2/turn_start_zsh_fork.rs:6:// `app-server/tests/suite/zsh` via DotSlash on first use, so `dotslash` and
+codex-rs/app-server/tests/suite/v2/turn_start_zsh_fork.rs:790:    let dotslash_zsh = repo_root.join("codex-rs/app-server/tests/suite/zsh");
+codex-rs/app-server/tests/suite/v2/turn_start_zsh_fork.rs:791:    if !dotslash_zsh.is_file() {
+codex-rs/app-server/tests/suite/v2/turn_start_zsh_fork.rs:794:            dotslash_zsh.display()
+codex-rs/app-server/tests/suite/v2/turn_start_zsh_fork.rs:798:    match core_test_support::fetch_dotslash_file(&dotslash_zsh, /*dotslash_cache*/ None) {
+codex-rs/app-server/tests/suite/v2/turn_start_zsh_fork.rs:801:            eprintln!("failed to fetch vendored zsh via dotslash: {error:#}");

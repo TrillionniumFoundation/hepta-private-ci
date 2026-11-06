@@ -1,0 +1,65 @@
+{
+  "schema": "hepta.workspace-start-input-checkpoint.v1",
+  "source_tree": "ffa0a37f4616c5563169c7f0a9305bf6c982d58b",
+  "source_commit": "2d7ad1d60019f35fc13d84138ceb2755d914f434",
+  "workspace_job": "1a1b0205999-fc05-6e4e",
+  "workspace_key": "cell-unified-native-default-workspace-r18-stage46-debug0-20261106",
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "--retries",
+    "0"
+  ],
+  "status": "WORKSPACE_STARTED_RESULT_PENDING",
+  "workspace_members": 193,
+  "workspace_default_members": 193,
+  "active_logs_read": false,
+  "files": [
+    {
+      "path": "native-workspace-r18-command.sh",
+      "bytes": 5468,
+      "sha256": "bbacacf60a84edd91ea9e26dd173e1e3156aef4f5f3017f35cbcd54b6a3cb349"
+    },
+    {
+      "path": "native-workspace-r18-environment.json",
+      "bytes": 1721,
+      "sha256": "cfb884b21d3a872919ba420bbce00e9370ac3b437afaeb013baf61891283c952"
+    },
+    {
+      "path": "native-workspace-r18-scope.json",
+      "bytes": 70399,
+      "sha256": "29c1d743354ee674dd0cf1c248d753362bb648ebe3ddfb7bffc6bf9d7fd9047b"
+    },
+    {
+      "path": "native-workspace-r18-metadata.json",
+      "bytes": 937669,
+      "sha256": "99fdbea678582580ebb373c06e4e91cd547f49d83765c22a59a1dd143510a834"
+    },
+    {
+      "path": "native-candidate-r17-source.json",
+      "bytes": 49538,
+      "sha256": "94290adf5a119d4853147e8e25f3f19f1e3bdd4189b20eeca565413b6906fbcc"
+    },
+    {
+      "path": "native-core-mcp-r17-strict-receipt.json",
+      "bytes": 978,
+      "sha256": "bd5f883e9f856ea75da1609ff544c628f1952a03b7125f14d2997fc44e9c64c7"
+    },
+    {
+      "path": "native-core-mcp-r17-tests-receipt.json",
+      "bytes": 961,
+      "sha256": "2fe9204bd09bfc1b0645a3fd4d8600dd8405866b6cfca60b05d69bfe7c4c15c8"
+    },
+    {
+      "path": "native-core-mcp-r17-strict-source-post-verification.json",
+      "bytes": 390,
+      "sha256": "993b04dd27c94104f04d5a40b6f63533e6fd2bd4de73d2654f0cffc70eb39faa"
+    },
+    {
+      "path": "native-core-mcp-r17-tests-source-post-verification.json",
+      "bytes": 389,
+      "sha256": "8ba5334725439c15c2f41d5cb420da7e9575b201c5412c151270369786ce0bad"
+    }
+  ]
+}

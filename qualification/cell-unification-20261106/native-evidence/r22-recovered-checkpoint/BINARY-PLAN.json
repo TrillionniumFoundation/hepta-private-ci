@@ -1,0 +1,71 @@
+{
+  "schema": "hepta.recovered-evidence-binary-plan.v1",
+  "stage": 22,
+  "binary_path_count": 4,
+  "unique_blob_count": 4,
+  "entries": [
+    {
+      "path": "archive/checkpoint-r22-closed.tar.gz",
+      "bytes": 1145892,
+      "sha256": "c7a770bfa2d17e23c05009862c688ab70fed4b30744df7642fe5d2db75b95e95",
+      "git_blob": "dc38717525e664bb0da982f24a8c2f9b6b451a57",
+      "prefer_existing_git_blob": true,
+      "git_action": "REUSE_ROOT_REGISTERED_BLOB",
+      "uploaded_by_this_audit": false,
+      "gzip_mtime_zero": true,
+      "decompressed": {
+        "bytes": 6778880,
+        "sha256": "83c10dc34755a89c089058b96992a5e35daf8d1aa26304d6bf3c079d48cd9a63",
+        "git_blob": "afed5c6e541423eed60f9a5eba0813de5f62b013"
+      }
+    },
+    {
+      "path": "independent-recovery/input/original-framework-recursive-reserialized.json.gz",
+      "bytes": 514183,
+      "sha256": "744e265a4e5552917b931bd65178589ad6a7b82460be4ba896d58c26f8d07f76",
+      "git_blob": "73327f14034f61fb143ea954998854121b486385",
+      "prefer_existing_git_blob": true,
+      "git_action": "ROOT_RESOLVE_OR_REGISTER_EXACT_BLOB",
+      "uploaded_by_this_audit": false,
+      "gzip_mtime_zero": true,
+      "decompressed": {
+        "bytes": 3516577,
+        "sha256": "273f390b8a37a1e05ef7b3a42036826ec30c5a796fe7172dfdf975d06067c42d",
+        "git_blob": "ee0facf816db2ce23bd63dd1adc6844978d8af3b"
+      }
+    },
+    {
+      "path": "original/input/Cargo.lock.gz",
+      "bytes": 93173,
+      "sha256": "bb41827b6ad258c193d53ebc6eb3ee5d69caea83b53c9fe3dee4f4399937ebf6",
+      "git_blob": "4be162f8e6d725fe1dd26c5304f8085e3c27586c",
+      "prefer_existing_git_blob": true,
+      "git_action": "ROOT_RESOLVE_OR_REGISTER_EXACT_BLOB",
+      "uploaded_by_this_audit": false,
+      "gzip_mtime_zero": true,
+      "decompressed": {
+        "bytes": 417315,
+        "sha256": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c",
+        "git_blob": "b7e710988d6a3377a7e0a1dc68aef49c68dda36e"
+      }
+    },
+    {
+      "path": "original/input/stage49-r22-input.tar.gz",
+      "bytes": 4553,
+      "sha256": "55fc3d52299424d82f1bdaa30e1193223bd5d8428e5dabf4ff4b86a520c7ef53",
+      "git_blob": "3dc9bbf67cb2271fcfb08bf3b38a3c127fa6a840",
+      "prefer_existing_git_blob": true,
+      "git_action": "REUSE_ROOT_REGISTERED_BLOB",
+      "uploaded_by_this_audit": false,
+      "gzip_mtime_zero": true,
+      "decompressed": {
+        "bytes": 30720,
+        "sha256": "f799e5e53c6bcce6a4e9bdf424f5fee61d400d4de8b473eca6042ccc385a17b8",
+        "git_blob": "3c8c318b4d3eca5456c88729cb18a38b53d8a8c2"
+      }
+    }
+  ],
+  "original_archives_copied_unchanged": true,
+  "git_upload_performed": false,
+  "shared_framework_gzip_is_new_recovery_input": "73327f14034f61fb143ea954998854121b486385"
+}

@@ -1,0 +1,379 @@
+[
+  {
+    "path": "codex-rs/core/src/unified_exec/process.rs",
+    "before_lines": [
+      12,
+      12
+    ],
+    "after_lines": [
+      12,
+      13
+    ],
+    "before": "",
+    "after": "use tokio::time::Instant;\n"
+  },
+  {
+    "path": "codex-rs/core/src/unified_exec/process.rs",
+    "before_lines": [
+      42,
+      42
+    ],
+    "after_lines": [
+      43,
+      45
+    ],
+    "before": "",
+    "after": "const TERMINATION_REQUEST_DEADLINE_ELAPSED: &str =\n    \"termination request exceeded the confirmation deadline\";\n"
+  },
+  {
+    "path": "codex-rs/core/src/unified_exec/process.rs",
+    "before_lines": [
+      246,
+      247
+    ],
+    "after_lines": [
+      249,
+      253
+    ],
+    "before": "    pub(super) async fn terminate_confirmed(&self) -> Result<(), UnifiedExecError> {\n",
+    "after": "    pub(super) async fn terminate_confirmed(\n        &self,\n        deadline: Instant,\n    ) -> Result<(), UnifiedExecError> {\n"
+  },
+  {
+    "path": "codex-rs/core/src/unified_exec/process.rs",
+    "before_lines": [
+      251,
+      253
+    ],
+    "after_lines": [
+      257,
+      288
+    ],
+    "before": "        if let Some(message) = self.failure_message() {\n            self.terminate();\n",
+    "after": "        let prior_failure = self.failure_message();\n        // The owner supplies one cooperative budget for both the request and\n        // observation. The existing synchronous local driver is not preemptible.\n        let request_result = if Instant::now() >= deadline {\n            Err(UnifiedExecError::process_failed(\n                TERMINATION_REQUEST_DEADLINE_ELAPSED.to_string(),\n            ))\n        } else {\n            tokio::time::timeout_at(deadline, async {\n                match &self.process_handle {\n                    ProcessHandle::Local(process_handle) => process_handle.terminate(),\n                    ProcessHandle::ExecServer(process_handle) => {\n                        process_handle\n                            .terminate()\n                            .await\n                            .map_err(|err| UnifiedExecError::process_failed(err.to_string()))?;\n                    }\n                }\n                Ok(())\n            })\n            .await\n            .unwrap_or_else(|_| {\n                Err(UnifiedExecError::process_failed(\n                    TERMINATION_REQUEST_DEADLINE_ELAPSED.to_string(),\n                ))\n            })\n        };\n        if let Some(message) = prior_failure {\n            // Cleanup was attempted at most once within this call's budget.\n            // Its result cannot replace an already retained observation failure.\n            self.finish_termination();\n"
+  },
+  {
+    "path": "codex-rs/core/src/unified_exec/process.rs",
+    "before_lines": [
+      255,
+      262
+    ],
+    "after_lines": [
+      290,
+      317
+    ],
+    "before": "        match &self.process_handle {\n            ProcessHandle::Local(process_handle) => process_handle.terminate(),\n            ProcessHandle::ExecServer(process_handle) => {\n                process_handle\n                    .terminate()\n                    .await\n                    .map_err(|err| UnifiedExecError::process_failed(err.to_string()))?;\n",
+    "after": "        // Preserve the original driver-error precedence even if an independent\n        // observer reports exit while the request is returning an error.\n        request_result?;\n\n        let mut state_rx = self.state_rx.clone();\n        // Check the same deadline immediately after the synchronous driver too.\n        if Instant::now() < deadline {\n            let observed = tokio::time::timeout_at(deadline, async {\n                loop {\n                    let state = state_rx.borrow_and_update().clone();\n                    if state.has_exited {\n                        return Ok(());\n                    }\n                    if let Some(message) = state.failure_message {\n                        return Err(UnifiedExecError::process_failed(message));\n                    }\n                    state_rx.changed().await.map_err(|_| {\n                        UnifiedExecError::process_failed(EXIT_OBSERVATION_LOST.to_string())\n                    })?;\n                }\n            })\n            .await;\n            if let Ok(result) = observed {\n                if result.is_ok() {\n                    self.finish_termination();\n                }\n                return result;\n"
+  },
+  {
+    "path": "codex-rs/core/src/unified_exec/process.rs",
+    "before_lines": [
+      264,
+      267
+    ],
+    "after_lines": [
+      319,
+      335
+    ],
+    "before": "        // The existing callers provide no deadline for an additional read RPC\n        // or wait. An ACK confirms the request, not a native process exit.\n        if self.observe_current_exit() {\n",
+    "after": "\n        // Decide under the state writer's lock so a native exit committed at\n        // the deadline cannot be replaced by an indeterminate observation.\n        let mut result = Ok(());\n        self.state_tx.send_modify(|state| {\n            if !state.has_exited {\n                *state = state.observation_failed(TERMINATION_NOT_OBSERVED.to_string());\n                result = Err(UnifiedExecError::process_failed(\n                    state\n                        .failure_message\n                        .clone()\n                        .unwrap_or_else(|| TERMINATION_NOT_OBSERVED.to_string()),\n                ));\n            }\n        });\n        if result.is_ok() {\n"
+  },
+  {
+    "path": "codex-rs/core/src/unified_exec/process.rs",
+    "before_lines": [
+      268,
+      269
+    ],
+    "after_lines": [
+      336,
+      336
+    ],
+    "before": "            Ok(())\n",
+    "after": ""
+  },
+  {
+    "path": "codex-rs/core/src/unified_exec/process.rs",
+    "before_lines": [
+      270,
+      275
+    ],
+    "after_lines": [
+      337,
+      338
+    ],
+    "before": "            self.signal_observation_failure(TERMINATION_NOT_OBSERVED.to_string());\n            Err(UnifiedExecError::process_failed(\n                self.failure_message()\n                    .unwrap_or_else(|| TERMINATION_NOT_OBSERVED.to_string()),\n            ))\n",
+    "after": "            self.output.cancellation_token.cancel();\n"
+  },
+  {
+    "path": "codex-rs/core/src/unified_exec/process.rs",
+    "before_lines": [
+      276,
+      276
+    ],
+    "after_lines": [
+      339,
+      340
+    ],
+    "before": "",
+    "after": "        result\n"
+  },
+  {
+    "path": "codex-rs/core/src/unified_exec/process_manager.rs",
+    "before_lines": [
+      98,
+      98
+    ],
+    "after_lines": [
+      98,
+      101
+    ],
+    "before": "",
+    "after": "// Owner policy for one termination request and its native-exit confirmation.\n// This is a cooperative budget, not a hard deadline for synchronous OS calls.\nconst TERMINATION_CONFIRMATION_BUDGET: Duration = Duration::from_secs(1);\n"
+  },
+  {
+    "path": "codex-rs/core/src/unified_exec/process_manager.rs",
+    "before_lines": [
+      1582,
+      1583
+    ],
+    "after_lines": [
+      1585,
+      1587
+    ],
+    "before": "        if !already_exited && process.terminate_confirmed().await.is_err() {\n",
+    "after": "        let deadline = Instant::now() + TERMINATION_CONFIRMATION_BUDGET;\n        if !already_exited && process.terminate_confirmed(deadline).await.is_err() {\n"
+  },
+  {
+    "path": "codex-rs/core/src/unified_exec/process_tests.rs",
+    "before_lines": [
+      19,
+      19
+    ],
+    "after_lines": [
+      19,
+      21
+    ],
+    "before": "",
+    "after": "use tokio::time::Duration;\nuse tokio::time::Instant;\n"
+  },
+  {
+    "path": "codex-rs/core/src/unified_exec/process_tests.rs",
+    "before_lines": [
+      220,
+      221
+    ],
+    "after_lines": [
+      222,
+      223
+    ],
+    "before": "        .terminate_confirmed()\n",
+    "after": "        .terminate_confirmed(Instant::now() + Duration::from_secs(1))\n"
+  },
+  {
+    "path": "codex-rs/core/src/unified_exec/process_tests.rs",
+    "before_lines": [
+      235,
+      236
+    ],
+    "after_lines": [
+      237,
+      238
+    ],
+    "before": "        .terminate_confirmed()\n",
+    "after": "        .terminate_confirmed(Instant::now() + Duration::from_secs(1))\n"
+  },
+  {
+    "path": "codex-rs/core/src/unified_exec/process_manager_tests.rs",
+    "before_lines": [
+      557,
+      558
+    ],
+    "after_lines": [
+      557,
+      558
+    ],
+    "before": "        .terminate_confirmed()\n",
+    "after": "        .terminate_confirmed(Instant::now() + Duration::from_secs(1))\n"
+  },
+  {
+    "path": "codex-rs/core/src/unified_exec/process_manager_tests.rs",
+    "before_lines": [
+      610,
+      610
+    ],
+    "after_lines": [
+      610,
+      657
+    ],
+    "before": "",
+    "after": "\n#[tokio::test]\nasync fn unconfirmed_termination_retains_the_same_process_owner() -> anyhow::Result<()> {\n    let manager = UnifiedExecProcessManager::default();\n    let process_id = manager.allocate_process_id().await;\n    let process = Arc::new(\n        crate::unified_exec::process_tests::remote_process(\n            codex_exec_server::WriteStatus::Accepted,\n            /*terminate_error*/ None,\n            codex_sandboxing::SandboxType::None,\n        )\n        .await,\n    );\n    manager.process_store.lock().await.processes.insert(\n        process_id,\n        ProcessEntry {\n            process: Arc::clone(&process),\n            plugin_metrics_sidecar: None,\n            call_id: \"unconfirmed-termination\".to_string(),\n            process_id,\n            cwd: PathUri::parse(\"file:///unified-exec-test\")?,\n            initial_exec_command_active: Arc::new(AtomicBool::new(false)),\n            hook_command: \"controlled-process\".to_string(),\n            tty: false,\n            network_approval: None,\n            session: std::sync::Weak::new(),\n            last_used: Instant::now(),\n        },\n    );\n\n    let terminated = tokio::time::timeout(\n        Duration::from_secs(2),\n        manager.terminate_process(process_id),\n    )\n    .await?;\n    assert!(!terminated);\n    assert!(!process.has_exited());\n    assert_eq!(process.exit_code(), None);\n    let store = manager.process_store.lock().await;\n    let retained = store\n        .processes\n        .get(&process_id)\n        .ok_or_else(|| anyhow::anyhow!(\"unconfirmed owner was removed\"))?;\n    assert_eq!(store.processes.len(), 1);\n    assert!(Arc::ptr_eq(&retained.process, &process));\n    Ok(())\n}\n"
+  },
+  {
+    "path": "codex-rs/core/src/unified_exec/process_observation_tests.rs",
+    "before_lines": [
+      2,
+      2
+    ],
+    "after_lines": [
+      2,
+      3
+    ],
+    "before": "",
+    "after": "use super::TERMINATION_NOT_OBSERVED;\n"
+  },
+  {
+    "path": "codex-rs/core/src/unified_exec/process_observation_tests.rs",
+    "before_lines": [
+      4,
+      4
+    ],
+    "after_lines": [
+      5,
+      6
+    ],
+    "before": "",
+    "after": "use crate::unified_exec::process_state::ProcessState;\n"
+  },
+  {
+    "path": "codex-rs/core/src/unified_exec/process_observation_tests.rs",
+    "before_lines": [
+      17,
+      17
+    ],
+    "after_lines": [
+      19,
+      20
+    ],
+    "before": "",
+    "after": "use tokio::time::Instant;\n"
+  },
+  {
+    "path": "codex-rs/core/src/unified_exec/process_observation_tests.rs",
+    "before_lines": [
+      118,
+      119
+    ],
+    "after_lines": [
+      121,
+      122
+    ],
+    "before": "        .terminate_confirmed()\n",
+    "after": "        .terminate_confirmed(Instant::now() + Duration::from_secs(1))\n"
+  },
+  {
+    "path": "codex-rs/core/src/unified_exec/process_observation_tests.rs",
+    "before_lines": [
+      155,
+      155
+    ],
+    "after_lines": [
+      158,
+      241
+    ],
+    "before": "",
+    "after": "\n#[tokio::test]\nasync fn termination_waits_for_the_drivers_later_native_result() -> Result<()> {\n    let fixture = driver_fixture();\n    let process = UnifiedExecProcess::from_spawned(\n        fixture.spawned,\n        SandboxType::None,\n        Box::new(NoopSpawnLifecycle),\n    )\n    .await?;\n    let termination = process.terminate_confirmed(Instant::now() + Duration::from_secs(1));\n    tokio::pin!(termination);\n\n    assert!(futures::poll!(&mut termination).is_pending());\n    assert_eq!(fixture.terminations.load(Ordering::SeqCst), 1);\n    assert_eq!(*process.state_rx.borrow(), ProcessState::default());\n    fixture\n        .exit_tx\n        .send(53)\n        .map_err(|_| anyhow::anyhow!(\"native exit receiver closed during confirmation\"))?;\n    tokio::time::timeout(Duration::from_secs(2), &mut termination).await??;\n\n    assert_eq!(\n        *process.state_rx.borrow(),\n        ProcessState {\n            has_exited: true,\n            exit_code: Some(53),\n            ..ProcessState::default()\n        }\n    );\n    assert_eq!(fixture.terminations.load(Ordering::SeqCst), 1);\n    Ok(())\n}\n\n#[tokio::test]\nasync fn termination_without_a_native_driver_result_remains_indeterminate() -> Result<()> {\n    let fixture = driver_fixture();\n    let process = UnifiedExecProcess::from_spawned(\n        fixture.spawned,\n        SandboxType::None,\n        Box::new(NoopSpawnLifecycle),\n    )\n    .await?;\n    let termination = process.terminate_confirmed(Instant::now() + Duration::from_secs(1));\n    tokio::pin!(termination);\n\n    assert!(futures::poll!(&mut termination).is_pending());\n    assert_eq!(fixture.terminations.load(Ordering::SeqCst), 1);\n    let error = tokio::time::timeout(Duration::from_secs(2), &mut termination)\n        .await?\n        .expect_err(\"requesting termination does not supply the missing native result\");\n    assert!(error.to_string().contains(TERMINATION_NOT_OBSERVED));\n    assert_eq!(\n        *process.state_rx.borrow(),\n        ProcessState {\n            failure_message: Some(TERMINATION_NOT_OBSERVED.to_string()),\n            ..ProcessState::default()\n        }\n    );\n\n    // The deadline must not destroy the original native-result observer.\n    fixture\n        .exit_tx\n        .send(59)\n        .map_err(|_| anyhow::anyhow!(\"native exit receiver closed after the deadline\"))?;\n    let mut state_rx = process.state_rx.clone();\n    tokio::time::timeout(\n        Duration::from_secs(2),\n        state_rx.wait_for(|state| state.has_exited),\n    )\n    .await??;\n    assert_eq!(\n        *process.state_rx.borrow(),\n        ProcessState {\n            has_exited: true,\n            exit_code: Some(59),\n            failure_message: Some(TERMINATION_NOT_OBSERVED.to_string()),\n            ..ProcessState::default()\n        }\n    );\n    assert_eq!(fixture.terminations.load(Ordering::SeqCst), 1);\n    Ok(())\n}\n"
+  },
+  {
+    "path": "codex-rs/core/src/unified_exec/process_remote_observation_tests.rs",
+    "before_lines": [
+      1,
+      1
+    ],
+    "after_lines": [
+      1,
+      2
+    ],
+    "before": "",
+    "after": "use super::TERMINATION_REQUEST_DEADLINE_ELAPSED;\n"
+  },
+  {
+    "path": "codex-rs/core/src/unified_exec/process_remote_observation_tests.rs",
+    "before_lines": [
+      22,
+      22
+    ],
+    "after_lines": [
+      23,
+      24
+    ],
+    "before": "",
+    "after": "use tokio::time::Instant;\n"
+  },
+  {
+    "path": "codex-rs/core/src/unified_exec/process_remote_observation_tests.rs",
+    "before_lines": [
+      178,
+      179
+    ],
+    "after_lines": [
+      180,
+      185
+    ],
+    "before": "        async move { process.terminate_confirmed().await }\n",
+    "after": "        async move {\n            process\n                .terminate_confirmed(Instant::now() + Duration::from_secs(1))\n                .await\n        }\n"
+  },
+  {
+    "path": "codex-rs/core/src/unified_exec/process_remote_observation_tests.rs",
+    "before_lines": [
+      200,
+      201
+    ],
+    "after_lines": [
+      206,
+      211
+    ],
+    "before": "        async move { process.terminate_confirmed().await }\n",
+    "after": "        async move {\n            process\n                .terminate_confirmed(Instant::now() + Duration::from_secs(1))\n                .await\n        }\n"
+  },
+  {
+    "path": "codex-rs/core/src/unified_exec/process_remote_observation_tests.rs",
+    "before_lines": [
+      233,
+      234
+    ],
+    "after_lines": [
+      243,
+      248
+    ],
+    "before": "        async move { process.terminate_confirmed().await }\n",
+    "after": "        async move {\n            process\n                .terminate_confirmed(Instant::now() + Duration::from_secs(1))\n                .await\n        }\n"
+  },
+  {
+    "path": "codex-rs/core/src/unified_exec/process_remote_observation_tests.rs",
+    "before_lines": [
+      275,
+      276
+    ],
+    "after_lines": [
+      289,
+      293
+    ],
+    "before": "    fixture.process.terminate_confirmed().await?;\n",
+    "after": "    fixture\n        .process\n        .terminate_confirmed(Instant::now() + Duration::from_secs(1))\n        .await?;\n"
+  },
+  {
+    "path": "codex-rs/core/src/unified_exec/process_remote_observation_tests.rs",
+    "before_lines": [
+      304,
+      304
+    ],
+    "after_lines": [
+      321,
+      407
+    ],
+    "before": "",
+    "after": "\n#[tokio::test]\nasync fn successful_ack_waits_for_a_later_native_exit() -> Result<()> {\n    let fixture = RemoteFixture::new(WriteStatus::Accepted).await?;\n    let termination = fixture\n        .process\n        .terminate_confirmed(Instant::now() + Duration::from_secs(1));\n    tokio::pin!(termination);\n    assert!(futures::poll!(&mut termination).is_pending());\n    fixture.wait_for_termination().await?;\n\n    fixture.release_ack();\n    // Poll the released ACK through the caller before publishing any exit.\n    assert!(futures::poll!(&mut termination).is_pending());\n    assert_eq!(*fixture.process.state_rx.borrow(), ProcessState::default());\n    fixture.exited(61)?;\n    tokio::time::timeout(Duration::from_secs(2), &mut termination).await??;\n\n    assert_eq!(\n        *fixture.process.state_rx.borrow(),\n        ProcessState {\n            has_exited: true,\n            exit_code: Some(61),\n            ..ProcessState::default()\n        }\n    );\n    assert_eq!(*fixture.remote.termination_started.borrow(), 1);\n    Ok(())\n}\n\n#[tokio::test]\nasync fn termination_request_deadline_keeps_the_native_observer_alive() -> Result<()> {\n    let fixture = RemoteFixture::new(WriteStatus::Accepted).await?;\n    let termination = fixture\n        .process\n        .terminate_confirmed(Instant::now() + Duration::from_secs(1));\n    tokio::pin!(termination);\n    assert!(futures::poll!(&mut termination).is_pending());\n    fixture.wait_for_termination().await?;\n\n    // Keep the original request blocked: no ACK or native exit has arrived.\n    let error = tokio::time::timeout(Duration::from_secs(2), &mut termination)\n        .await?\n        .expect_err(\"the request and exit observation share a finite budget\");\n    assert!(error.to_string().contains(TERMINATION_REQUEST_DEADLINE_ELAPSED));\n    assert!(!fixture.process.has_exited());\n    assert_eq!(fixture.process.exit_code(), None);\n    assert_eq!(*fixture.remote.termination_started.borrow(), 1);\n\n    fixture.exited(67)?;\n    fixture.wait_for_state(|state| state.has_exited).await?;\n    assert_eq!(fixture.process.exit_code(), Some(67));\n    assert_eq!(*fixture.remote.termination_started.borrow(), 1);\n    Ok(())\n}\n\n#[tokio::test]\nasync fn retained_observation_failure_wins_when_cleanup_exceeds_its_deadline() -> Result<()> {\n    let fixture = RemoteFixture::new(WriteStatus::Accepted).await?;\n    fixture.remote.events.send(ExecProcessEvent::Failed(\n        \"original observer failed\".to_string(),\n    ))?;\n    fixture\n        .wait_for_state(|state| state.failure_message.is_some())\n        .await?;\n    let termination = fixture\n        .process\n        .terminate_confirmed(Instant::now() + Duration::from_secs(1));\n    tokio::pin!(termination);\n    assert!(futures::poll!(&mut termination).is_pending());\n    fixture.wait_for_termination().await?;\n\n    let error = tokio::time::timeout(Duration::from_secs(2), &mut termination)\n        .await?\n        .expect_err(\"cleanup must retain the original observation failure\");\n    assert!(error.to_string().contains(\"original observer failed\"));\n    assert_eq!(\n        *fixture.process.state_rx.borrow(),\n        ProcessState {\n            failure_message: Some(\"original observer failed\".to_string()),\n            ..ProcessState::default()\n        }\n    );\n    assert_eq!(*fixture.remote.termination_started.borrow(), 1);\n    Ok(())\n}\n"
+  },
+  {
+    "path": "codex-rs/core/src/unified_exec/mod_tests.rs",
+    "before_lines": [
+      735,
+      736
+    ],
+    "after_lines": [
+      735,
+      738
+    ],
+    "before": "    process.terminate_confirmed().await?;\n",
+    "after": "    process\n        .terminate_confirmed(Instant::now() + Duration::from_secs(1))\n        .await?;\n"
+  }
+]

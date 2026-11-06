@@ -1,0 +1,182 @@
+{
+  "schema": "hepta.root-r18-closed-result-readback.v1",
+  "state": "COMPILATION_FAILED_TEST_EXECUTION_NOT_STARTED_CLOSED_AND_REBUILT",
+  "source_commit": "2d7ad1d60019f35fc13d84138ceb2755d914f434",
+  "source_tree": "ffa0a37f4616c5563169c7f0a9305bf6c982d58b",
+  "root_gitdata_source_reconstruction": "ROOT-SOURCE-ROUNDTRIP.json",
+  "archive_bytes": 1093599,
+  "archive_sha256": "23740da4ca9da3997e2e16de20adf4d97ac0f4c7172fa7a752a625d65a27a06a",
+  "regular_archive_members_verified": 196,
+  "source_files_bytes_git_blobs_and_modes_verified": 180,
+  "original_evidence_files_verified": 15,
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "--retries",
+    "0"
+  ],
+  "exit_code": 101,
+  "elapsed_seconds": 1130.7959480285645,
+  "workspace_members": 193,
+  "workspace_default_members": 193,
+  "test_execution_started": false,
+  "test_terminal_counts": null,
+  "nextest_execution_rows": null,
+  "compiler_error_count": 1,
+  "compiler_error_code": "E0308",
+  "failed_package": "codex-app-server",
+  "failed_target": "test all",
+  "original_error_block_interval": [
+    55680,
+    56205
+  ],
+  "full_log_sha256": "cedada3433e2c782b423857f8abeff744fdf45c3de4523c3c312d2e15586d3ad",
+  "resources_sha256": "d08aca0d5c77bad9110b17598dca99d51787f79bb9c52ce044b2dd0e454dc73f",
+  "terminal_process_status": "native-workspace-r18-terminal-process-status.json",
+  "shared_filesystem_free_bytes_after_gate": 64182534144,
+  "shared_filesystem_free_bytes_at_packaging": 63797923840,
+  "free_space_samples_are_not_exclusive_task_cost": true,
+  "retained_earlier_receipt_readback": "ROOT-TERMINAL-RECEIPT-READBACK.json",
+  "earlier_pending_archive_state_is_superseded_by_this_complete_readback": true,
+  "source_identity_scope": "The staged native tree matches the GitData commit; this does not claim checkout of that created commit. R19/source47 is a distinct later gate.",
+  "closed_original_attachments": [
+    {
+      "original_name": "native-candidate-r17-source.json",
+      "original_bytes": 49538,
+      "original_sha256": "94290adf5a119d4853147e8e25f3f19f1e3bdd4189b20eeca565413b6906fbcc",
+      "attachment": "native-candidate-r17-source.json",
+      "attachment_bytes": 49538,
+      "attachment_sha256": "94290adf5a119d4853147e8e25f3f19f1e3bdd4189b20eeca565413b6906fbcc",
+      "lossless_gzip": false
+    },
+    {
+      "original_name": "native-core-mcp-r17-strict-receipt.json",
+      "original_bytes": 978,
+      "original_sha256": "bd5f883e9f856ea75da1609ff544c628f1952a03b7125f14d2997fc44e9c64c7",
+      "attachment": "native-core-mcp-r17-strict-receipt.json",
+      "attachment_bytes": 978,
+      "attachment_sha256": "bd5f883e9f856ea75da1609ff544c628f1952a03b7125f14d2997fc44e9c64c7",
+      "lossless_gzip": false
+    },
+    {
+      "original_name": "native-core-mcp-r17-tests-receipt.json",
+      "original_bytes": 961,
+      "original_sha256": "2fe9204bd09bfc1b0645a3fd4d8600dd8405866b6cfca60b05d69bfe7c4c15c8",
+      "attachment": "native-core-mcp-r17-tests-receipt.json",
+      "attachment_bytes": 961,
+      "attachment_sha256": "2fe9204bd09bfc1b0645a3fd4d8600dd8405866b6cfca60b05d69bfe7c4c15c8",
+      "lossless_gzip": false
+    },
+    {
+      "original_name": "native-workspace-r18-app-server-blocker-input.json",
+      "original_bytes": 8325,
+      "original_sha256": "4cfe1c080f2c09b4eadb5da65ae212157a10ef064e040dd3dcfa7dfdd735f047",
+      "attachment": "native-workspace-r18-app-server-blocker-input.json",
+      "attachment_bytes": 8325,
+      "attachment_sha256": "4cfe1c080f2c09b4eadb5da65ae212157a10ef064e040dd3dcfa7dfdd735f047",
+      "lossless_gzip": false
+    },
+    {
+      "original_name": "native-workspace-r18-app-server-blocker-input.tar.gz",
+      "original_bytes": 27852,
+      "original_sha256": "ce1740c498636a1158f52acf74b0d5364d2263028a738ea9df2b25c1b0ef6b74",
+      "attachment": "native-workspace-r18-app-server-blocker-input.tar.gz",
+      "attachment_bytes": 27852,
+      "attachment_sha256": "ce1740c498636a1158f52acf74b0d5364d2263028a738ea9df2b25c1b0ef6b74",
+      "lossless_gzip": false
+    },
+    {
+      "original_name": "native-workspace-r18-command.sh",
+      "original_bytes": 5468,
+      "original_sha256": "bbacacf60a84edd91ea9e26dd173e1e3156aef4f5f3017f35cbcd54b6a3cb349",
+      "attachment": "native-workspace-r18-command.sh",
+      "attachment_bytes": 5468,
+      "attachment_sha256": "bbacacf60a84edd91ea9e26dd173e1e3156aef4f5f3017f35cbcd54b6a3cb349",
+      "lossless_gzip": false
+    },
+    {
+      "original_name": "native-workspace-r18-environment.json",
+      "original_bytes": 1721,
+      "original_sha256": "cfb884b21d3a872919ba420bbce00e9370ac3b437afaeb013baf61891283c952",
+      "attachment": "native-workspace-r18-environment.json",
+      "attachment_bytes": 1721,
+      "attachment_sha256": "cfb884b21d3a872919ba420bbce00e9370ac3b437afaeb013baf61891283c952",
+      "lossless_gzip": false
+    },
+    {
+      "original_name": "native-workspace-r18-metadata.json",
+      "original_bytes": 937669,
+      "original_sha256": "99fdbea678582580ebb373c06e4e91cd547f49d83765c22a59a1dd143510a834",
+      "attachment": "native-workspace-r18-metadata.json.gz",
+      "attachment_bytes": 38951,
+      "attachment_sha256": "144e3eb48250a42476062cf7af8e79e321f196b50c394b0921a3d3b4781a6bf5",
+      "lossless_gzip": true
+    },
+    {
+      "original_name": "native-workspace-r18-result-review.json",
+      "original_bytes": 1999,
+      "original_sha256": "11cc5f3d71a11db4957f97b2d8188d0dd6336f3b681d7df7167d18b277bc257b",
+      "attachment": "native-workspace-r18-result-review.json",
+      "attachment_bytes": 1999,
+      "attachment_sha256": "11cc5f3d71a11db4957f97b2d8188d0dd6336f3b681d7df7167d18b277bc257b",
+      "lossless_gzip": false
+    },
+    {
+      "original_name": "native-workspace-r18-scope.json",
+      "original_bytes": 70399,
+      "original_sha256": "29c1d743354ee674dd0cf1c248d753362bb648ebe3ddfb7bffc6bf9d7fd9047b",
+      "attachment": "native-workspace-r18-scope.json",
+      "attachment_bytes": 70399,
+      "attachment_sha256": "29c1d743354ee674dd0cf1c248d753362bb648ebe3ddfb7bffc6bf9d7fd9047b",
+      "lossless_gzip": false
+    },
+    {
+      "original_name": "native-workspace-r18-source-post-verification.json",
+      "original_bytes": 560,
+      "original_sha256": "a4f2abca3ad9f283e0b67e1277316595a2355b54b25f7d1cfd1e05e1b37e1515",
+      "attachment": "native-workspace-r18-source-post-verification.json",
+      "attachment_bytes": 560,
+      "attachment_sha256": "a4f2abca3ad9f283e0b67e1277316595a2355b54b25f7d1cfd1e05e1b37e1515",
+      "lossless_gzip": false
+    },
+    {
+      "original_name": "native-workspace-r18-terminal-process-status.json",
+      "original_bytes": 732,
+      "original_sha256": "282314fcedcf38f1d5cc21530b32ab4dfd8d2071eb8f6e3f51e29aaed26bf54a",
+      "attachment": "native-workspace-r18-terminal-process-status.json",
+      "attachment_bytes": 732,
+      "attachment_sha256": "282314fcedcf38f1d5cc21530b32ab4dfd8d2071eb8f6e3f51e29aaed26bf54a",
+      "lossless_gzip": false
+    },
+    {
+      "original_name": "native-workspace-r18-tests-receipt.json",
+      "original_bytes": 931,
+      "original_sha256": "b5468bc4b36acac96752da1b73d318c7484be723790fa62e3e06bfc5c14012f0",
+      "attachment": "native-workspace-r18-tests-receipt.json",
+      "attachment_bytes": 931,
+      "attachment_sha256": "b5468bc4b36acac96752da1b73d318c7484be723790fa62e3e06bfc5c14012f0",
+      "lossless_gzip": false
+    },
+    {
+      "original_name": "native-workspace-r18-tests-resources.txt",
+      "original_bytes": 831,
+      "original_sha256": "d08aca0d5c77bad9110b17598dca99d51787f79bb9c52ce044b2dd0e454dc73f",
+      "attachment": "native-workspace-r18-tests-resources.txt",
+      "attachment_bytes": 831,
+      "attachment_sha256": "d08aca0d5c77bad9110b17598dca99d51787f79bb9c52ce044b2dd0e454dc73f",
+      "lossless_gzip": false
+    },
+    {
+      "original_name": "native-workspace-r18-tests.log",
+      "original_bytes": 56496,
+      "original_sha256": "cedada3433e2c782b423857f8abeff744fdf45c3de4523c3c312d2e15586d3ad",
+      "attachment": "native-workspace-r18-tests.log.gz",
+      "attachment_bytes": 7524,
+      "attachment_sha256": "d7126db8be522760f0c0bceb8958f9f86e6d09dd0b0ebf8ca309462f733bd9e7",
+      "lossless_gzip": true
+    }
+  ],
+  "final_fix_fmt_ran": false,
+  "scientific_adoption": "HOLD"
+}

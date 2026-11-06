@@ -1,0 +1,23 @@
+{
+  "reviewer": "/root",
+  "review_scope": "Read-only field, producer and owning-consumer changes; raw original/candidate hash independently checked. Runtime qualification awaits integrated gates.",
+  "original_and_candidate_pins_verified": 9,
+  "transitional_state_control": {
+    "path": "codex-rs/hepta-agentd/src/state_control.rs",
+    "before": {
+      "bytes": 58473,
+      "sha256": "129ba6318c1e2536dd27f6bae720ef51b5f119b33f18ecdd479c4653b1dee1e9",
+      "git_blob": "682eefa82c23ced19823c756ba927d6012d70bfd"
+    },
+    "after": {
+      "bytes": 58474,
+      "sha256": "4413b80a7df9827fe0247aeb1f987ea8d3fc0cbd7e134917e475a81b22976756",
+      "git_blob": "a73991624b20977794e1bc98498888587d1e7821"
+    },
+    "only_effect_receipt_dereference_changed": true
+  },
+  "transitional_file_written_to_native_or_local_source": false,
+  "public_rust_payload_changes_recorded": true,
+  "wire_serde_fields_tags_order_unchanged": true,
+  "tests_or_lint_policy_weakened": false
+}

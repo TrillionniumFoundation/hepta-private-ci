@@ -1,0 +1,451 @@
+{
+  "schema": "hepta.r21-task-capacity-readonly.v1",
+  "captured_time_ns": 1793968364890711037,
+  "task_root": "/home/alex/work/hepta-cell-unified-20261106-a",
+  "source_tree": "e65356fc570296b74644967054eaded15b8ed440",
+  "rust_job_terminal": "1a1b0c142d4-fc05-729f",
+  "disk_usage": {
+    "total": 1966736678912,
+    "used": 1857904836608,
+    "free": 8851591168
+  },
+  "mutations": [],
+  "deletions": [],
+  "rust_executed": false,
+  "target_directory_usage": {
+    "command": [
+      "du",
+      "-x",
+      "-B1",
+      "--max-depth=2",
+      "/home/alex/work/hepta-cell-unified-20261106-a/target"
+    ],
+    "exit_code": 0,
+    "stdout": "4096\t/home/alex/work/hepta-cell-unified-20261106-a/target/tmp\n1336057856\t/home/alex/work/hepta-cell-unified-20261106-a/target/debug/build\n141085073408\t/home/alex/work/hepta-cell-unified-20261106-a/target/debug/incremental\n155287552\t/home/alex/work/hepta-cell-unified-20261106-a/target/debug/gn_out\n181284864\t/home/alex/work/hepta-cell-unified-20261106-a/target/debug/.fingerprint\n1303134208\t/home/alex/work/hepta-cell-unified-20261106-a/target/debug/examples\n79538053120\t/home/alex/work/hepta-cell-unified-20261106-a/target/debug/deps\n227661963264\t/home/alex/work/hepta-cell-unified-20261106-a/target/debug\n227661979648\t/home/alex/work/hepta-cell-unified-20261106-a/target\n",
+    "stderr": ""
+  },
+  "largest_60_direct_debug_deps_files": [
+    {
+      "path": "target/debug/deps/codex_core-bfd272078c102043",
+      "bytes": 1141622736,
+      "allocated_bytes": 1136705536,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793942445686541486
+    },
+    {
+      "path": "target/debug/deps/all-b637738318dbd4fd",
+      "bytes": 1048749424,
+      "allocated_bytes": 1043730432,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793942417652606020
+    },
+    {
+      "path": "target/debug/deps/responses_headers-872e8521b57f9825",
+      "bytes": 933403688,
+      "allocated_bytes": 928796672,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793942355245523920
+    },
+    {
+      "path": "target/debug/deps/all-0efeb90418248888",
+      "bytes": 676149752,
+      "allocated_bytes": 675188736,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793941347350055584
+    },
+    {
+      "path": "target/debug/deps/hepta-0f2ec1c93c8ddd36",
+      "bytes": 559843008,
+      "allocated_bytes": 552165376,
+      "hard_link_count": 2,
+      "modified_time_ns": 1793967203105549523
+    },
+    {
+      "path": "target/debug/deps/codex-01863f275e64bfbb",
+      "bytes": 559842944,
+      "allocated_bytes": 552161280,
+      "hard_link_count": 2,
+      "modified_time_ns": 1793967230494569943
+    },
+    {
+      "path": "target/debug/deps/codex-6f5a32a8f6e77c4f",
+      "bytes": 559773736,
+      "allocated_bytes": 552083456,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793966098011593846
+    },
+    {
+      "path": "target/debug/deps/codex-b490e00583a74f1f",
+      "bytes": 559611672,
+      "allocated_bytes": 551923712,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793966905435588010
+    },
+    {
+      "path": "target/debug/deps/all-e259bc7ad8dad107",
+      "bytes": 539164024,
+      "allocated_bytes": 532717568,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793967362748517937
+    },
+    {
+      "path": "target/debug/deps/all-3e78f81b3e5266df",
+      "bytes": 538341056,
+      "allocated_bytes": 531886080,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793966229714508532
+    },
+    {
+      "path": "target/debug/deps/codex_tui-8417896b67660031",
+      "bytes": 533006760,
+      "allocated_bytes": 526802944,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793967203044547253
+    },
+    {
+      "path": "target/debug/deps/codex_hepta_memory_extension-19cdd2c11750fb79",
+      "bytes": 527265016,
+      "allocated_bytes": 526520320,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793941299691488000
+    },
+    {
+      "path": "target/debug/deps/codex_hepta_agentd-5c113e4060571b36",
+      "bytes": 505133880,
+      "allocated_bytes": 498188288,
+      "hard_link_count": 2,
+      "modified_time_ns": 1793967083072098261
+    },
+    {
+      "path": "target/debug/deps/codex_hepta_agentd-891c13fa020e90ee",
+      "bytes": 504628736,
+      "allocated_bytes": 497684480,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793947613539091859
+    },
+    {
+      "path": "target/debug/deps/codex_tui-3806d67e9fd25c70",
+      "bytes": 498692696,
+      "allocated_bytes": 491827200,
+      "hard_link_count": 2,
+      "modified_time_ns": 1793967280957454068
+    },
+    {
+      "path": "target/debug/deps/codex_hepta_infer_worker_host-079603a12d411644",
+      "bytes": 488691312,
+      "allocated_bytes": 482009088,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793967032252225288
+    },
+    {
+      "path": "target/debug/deps/codex_hepta_infer_worker_host-a9bd285f9636f607",
+      "bytes": 488350544,
+      "allocated_bytes": 481669120,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793947612007006186
+    },
+    {
+      "path": "target/debug/deps/codex_exec_server-7e85009bc8e3f970",
+      "bytes": 472179144,
+      "allocated_bytes": 470544384,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793941405699977913
+    },
+    {
+      "path": "target/debug/deps/codex_core-f59a9cdd1c372ce9",
+      "bytes": 454599120,
+      "allocated_bytes": 449679360,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793967166535189631
+    },
+    {
+      "path": "target/debug/deps/codex_core-e82bd2afba589b4f",
+      "bytes": 454554528,
+      "allocated_bytes": 449630208,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793953705252223432
+    },
+    {
+      "path": "target/debug/deps/relay-73058bb78ed4586e",
+      "bytes": 444580352,
+      "allocated_bytes": 442703872,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793941385955327070
+    },
+    {
+      "path": "target/debug/deps/codex_app_server-61742ca29164136b",
+      "bytes": 448348664,
+      "allocated_bytes": 442142720,
+      "hard_link_count": 2,
+      "modified_time_ns": 1793967320213923142
+    },
+    {
+      "path": "target/debug/deps/codex_app_server-a6f6d53c7f4e38fc",
+      "bytes": 448127176,
+      "allocated_bytes": 441913344,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793966218384160659
+    },
+    {
+      "path": "target/debug/deps/codex_app_server-baf67002c8fbcfe5",
+      "bytes": 445022600,
+      "allocated_bytes": 439402496,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793957406979340124
+    },
+    {
+      "path": "target/debug/deps/forward-73567ac9d9b5ca23",
+      "bytes": 440736680,
+      "allocated_bytes": 438919168,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793941398524741354
+    },
+    {
+      "path": "target/debug/deps/codex_app_server-7abc0f3b17634d0e",
+      "bytes": 444470312,
+      "allocated_bytes": 438849536,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793966208570860931
+    },
+    {
+      "path": "target/debug/deps/exec_process-754545388e3e7463",
+      "bytes": 440271128,
+      "allocated_bytes": 438427648,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793941370704824614
+    },
+    {
+      "path": "target/debug/deps/environment-2c610f1f4e4f1dbd",
+      "bytes": 440269600,
+      "allocated_bytes": 438407168,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793941381165169226
+    },
+    {
+      "path": "target/debug/deps/file_system_unix-6ba7c33023b80c27",
+      "bytes": 437912688,
+      "allocated_bytes": 436068352,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793941366508686404
+    },
+    {
+      "path": "target/debug/deps/selected_capability_roots-c5883eed27d8b0b2",
+      "bytes": 435779864,
+      "allocated_bytes": 433930240,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793941401467838379
+    },
+    {
+      "path": "target/debug/deps/environment_config-746d4b1301cbf34a",
+      "bytes": 435759472,
+      "allocated_bytes": 433913856,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793941362463553184
+    },
+    {
+      "path": "target/debug/deps/health-c8ca2f14385c2a60",
+      "bytes": 435667944,
+      "allocated_bytes": 433819648,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793941408030054743
+    },
+    {
+      "path": "target/debug/deps/file_stream-771ef5ac461756c0",
+      "bytes": 435635440,
+      "allocated_bytes": 433790976,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793941354160279777
+    },
+    {
+      "path": "target/debug/deps/authorized_read_rpc-7bd79c5f0d3e9428",
+      "bytes": 431923880,
+      "allocated_bytes": 430137344,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793941359810465816
+    },
+    {
+      "path": "target/debug/deps/http_request-dbedb0552818780a",
+      "bytes": 430240672,
+      "allocated_bytes": 428515328,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793941372972899326
+    },
+    {
+      "path": "target/debug/deps/capability_discovery-3bb317a294e487b9",
+      "bytes": 429427664,
+      "allocated_bytes": 427700224,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793941394233599903
+    },
+    {
+      "path": "target/debug/deps/process-bcf7e22efeaa2323",
+      "bytes": 429247128,
+      "allocated_bytes": 427520000,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793941389015427917
+    },
+    {
+      "path": "target/debug/deps/chatgpt_cloudflare_affinity-05804d1d176b5838",
+      "bytes": 429148592,
+      "allocated_bytes": 427421696,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793941373429914381
+    },
+    {
+      "path": "target/debug/deps/initialize-6147f3adbea2cf25",
+      "bytes": 428648280,
+      "allocated_bytes": 426921984,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793941375667988111
+    },
+    {
+      "path": "target/debug/deps/websocket-bddde905571db7c2",
+      "bytes": 428644304,
+      "allocated_bytes": 426917888,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793941391465508665
+    },
+    {
+      "path": "target/debug/deps/codex_exec-b208c8d4ce3ae474",
+      "bytes": 429574904,
+      "allocated_bytes": 423682048,
+      "hard_link_count": 2,
+      "modified_time_ns": 1793967293382918754
+    },
+    {
+      "path": "target/debug/deps/all-e26e934406c68046",
+      "bytes": 415281512,
+      "allocated_bytes": 410255360,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793955713718528137
+    },
+    {
+      "path": "target/debug/deps/all-45a2478cb2f5e7c3",
+      "bytes": 415249224,
+      "allocated_bytes": 410226688,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793967128662784669
+    },
+    {
+      "path": "target/debug/deps/accepted_websocket-9e393a0b75d7eb8d",
+      "bytes": 367564944,
+      "allocated_bytes": 366723072,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793941405304964889
+    },
+    {
+      "path": "target/debug/deps/codex_mcp_server-26f3144255edeeb9",
+      "bytes": 366602472,
+      "allocated_bytes": 361639936,
+      "hard_link_count": 2,
+      "modified_time_ns": 1793967300954202045
+    },
+    {
+      "path": "target/debug/deps/http_client-4fce53a0fa10067f",
+      "bytes": 361246120,
+      "allocated_bytes": 360534016,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793941357547391298
+    },
+    {
+      "path": "target/debug/deps/deferred_environment-d690fa4805b2290c",
+      "bytes": 358034536,
+      "allocated_bytes": 357265408,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793941377637052982
+    },
+    {
+      "path": "target/debug/deps/http_request_logging-d979dad244742adf",
+      "bytes": 356936912,
+      "allocated_bytes": 356220928,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793941375788992097
+    },
+    {
+      "path": "target/debug/deps/responses_headers-37a0f603ecf3a237",
+      "bytes": 341988264,
+      "allocated_bytes": 337375232,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793953661574982940
+    },
+    {
+      "path": "target/debug/deps/responses_headers-79ac4ddd74f92a90",
+      "bytes": 341538432,
+      "allocated_bytes": 336936960,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793967132715934860
+    },
+    {
+      "path": "target/debug/deps/codex_hepta_memory-7d9c989acaecf6d0",
+      "bytes": 331850448,
+      "allocated_bytes": 331198464,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793941369745793025
+    },
+    {
+      "path": "target/debug/deps/codex_hepta_supervisor-1aadd6470ca29201",
+      "bytes": 323857840,
+      "allocated_bytes": 323252224,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793941313898955060
+    },
+    {
+      "path": "target/debug/deps/codex_hepta_supervisor-8fddf399f6d58f1f",
+      "bytes": 321874704,
+      "allocated_bytes": 321265664,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793939400037263967
+    },
+    {
+      "path": "target/debug/deps/robrix_control_projection-05ee270aea6bdd32",
+      "bytes": 317364784,
+      "allocated_bytes": 316751872,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793941325734344304
+    },
+    {
+      "path": "target/debug/deps/writer_handoff_production-5827cbd931541884",
+      "bytes": 315572328,
+      "allocated_bytes": 314953728,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793941302267572670
+    },
+    {
+      "path": "target/debug/deps/robrix_control_projection-396a6423b8b1bb96",
+      "bytes": 315315216,
+      "allocated_bytes": 314707968,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793939407365461146
+    },
+    {
+      "path": "target/debug/deps/paired_process_product-294c4d78f66022be",
+      "bytes": 313720144,
+      "allocated_bytes": 313118720,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793941318444104524
+    },
+    {
+      "path": "target/debug/deps/writer_handoff_production-da7c833ff8268358",
+      "bytes": 313638120,
+      "allocated_bytes": 313012224,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793939408267485466
+    },
+    {
+      "path": "target/debug/deps/hepta_supervisord-335af44f5143f612",
+      "bytes": 311853992,
+      "allocated_bytes": 311205888,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793941330194491031
+    },
+    {
+      "path": "target/debug/deps/paired_process_product-fb69192cb464f450",
+      "bytes": 311699168,
+      "allocated_bytes": 311099392,
+      "hard_link_count": 1,
+      "modified_time_ns": 1793939405448756853
+    }
+  ],
+  "direct_debug_deps_regular_file_count": 20949,
+  "profile_settings": "635:[profile.dev]\n636-# Keep line tables/backtraces while avoiding expensive full variable debug info\n637-# across local dev builds.\n638-debug = \"limited\"\n639-\n640:[profile.dev-small]\n641-inherits = \"dev\"\n642-opt-level = 0\n643-debug = \"none\"\n644-strip = \"symbols\"\n645-\n646:[profile.release]\n647-lto = \"thin\"\n648-debug = \"line-tables-only\"\n649-split-debuginfo = \"off\"\n650-# Keep release binaries symbolicateable until packaging has archived the\n651-# sidecar symbols and stripped the binaries.\n652-strip = false\n653-\n654-# Balance parallel release code generation against binary size.\n655-codegen-units = 4\n656-\n657:[profile.product-linux]\n658-inherits = \"release\"\n659-# Explicit size candidate for the bounded Linux product archive. Preserve\n660-# thin LTO, unwind semantics, features, and the packaging symbol transform.\n661-opt-level = \"s\"\n662-codegen-units = 1\n663-\n664:[profile.profiling]\n665-inherits = \"release\"\n666-debug = \"full\"\n667-lto = false\n668-strip = false\n669-\n670:[profile.ci-test]\n671-# Reduce binary size to keep multi-platform nextest archives within runner disk budgets.\n672-debug = \"limited\"\n673-strip = \"debuginfo\"\n674-inherits = \"test\"\n675-opt-level = 0\n676-\n677-[patch.crates-io]\n678-# Preserve AWS credentials-login while using the fixed RustCrypto P-256 stack.\n679-# The audited upstream 1.12.0 package and compatibility patch are recorded beside it.\n680-aws-config = { path = \"third_party/aws-config-1.12.0\" }\n681-# Retain the existing encrypted Secret Service backend with maintained zbus 6\n682-# and replace the archived i18n parser without changing its 0.4 public variants.\n683-i18n-config = { path = \"third_party/i18n-config-0.4.8\" }\n684-secret-service = { path = \"third_party/secret-service-6.0.0\" }\n685-zbus-secret-service-keyring-store = { path = \"third_party/zbus-secret-service-keyring-store-1.0.1\" }\n686-# Matrix SDK 0.18 still exposes anymap2 in its event handler API. Keep that\n687-# API stable while replacing the unmaintained implementation with anymap3.\n688-anymap2 = { path = \"third_party/anymap2-compat\" }\n689-# Matrix SDK/eyeball-im still require imbl 6.x. Backport the upstream 7.0.2\n690-# bitmap import and patched chunk dependency without changing their public API.\n691-imbl = { path = \"third_party/imbl-6.1.0\" }\n692-# Matrix SDK 0.18.0 pins rusqlite 0.37/libsqlite3-sys 0.35. Hepta's SQLx 0.9\n"
+}

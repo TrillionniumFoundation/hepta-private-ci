@@ -1,0 +1,46 @@
+{
+  "source_tree": "64ab95198effb0a0de22b0c4a30a1e8d509e2840",
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "bytes": 22519,
+      "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480",
+      "git_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+      "bef_git_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/BUILD.bazel",
+      "bytes": 402,
+      "sha256": "65b5024335a3b2d606cfadea27bf1baadd42991d72ea2f1fe37de4a4a732b302",
+      "git_blob": "8dd5080da683ea8c4c2aaaa7f09a8c46a28d75b8",
+      "bef_git_blob": "8dd5080da683ea8c4c2aaaa7f09a8c46a28d75b8"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/Cargo.toml",
+      "bytes": 1220,
+      "sha256": "e20f4e783adcfa8d82d3394a827e6f4c6d8e5e8e10e9c3be3b20e1c4824aef74",
+      "git_blob": "bffa8bfcb7abffd460886a27b2f63a6a0ecb21df",
+      "bef_git_blob": "bffa8bfcb7abffd460886a27b2f63a6a0ecb21df"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "bytes": 55415,
+      "sha256": "c2f4e7067eba4ece88431c97d6ef6897ae1477fcbefbdce03917d43ff509fe52",
+      "git_blob": "11a3cf83d54cd0cfc3662cc725ff29e28bdd96f9",
+      "bef_git_blob": "11a3cf83d54cd0cfc3662cc725ff29e28bdd96f9"
+    }
+  ],
+  "call_map": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs-409-                codex_revocation_head_sha256: Some(revocation_head_digest.clone()),\ncodex-rs/hepta-infer-worker-host/src/native_app_server.rs-410-                codex_authority_witness_sha256: Some(authority_witness.clone()),\ncodex-rs/hepta-infer-worker-host/src/native_app_server.rs-411-            },\ncodex-rs/hepta-infer-worker-host/src/native_app_server.rs-412-        )?;\ncodex-rs/hepta-infer-worker-host/src/native_app_server.rs:413:        verify_persisted_dispatch_binding(\ncodex-rs/hepta-infer-worker-host/src/native_app_server.rs-414-            control,\ncodex-rs/hepta-infer-worker-host/src/native_app_server.rs-415-            request_id,\ncodex-rs/hepta-infer-worker-host/src/native_app_server.rs-416-            payload_digest,\ncodex-rs/hepta-infer-worker-host/src/native_app_server.rs-417-            request_receipt.request_digest,\n--\ncodex-rs/hepta-infer-worker-host/src/native_app_server.rs-913-        })\ncodex-rs/hepta-infer-worker-host/src/native_app_server.rs-914-        .await\ncodex-rs/hepta-infer-worker-host/src/native_app_server.rs-915-}\ncodex-rs/hepta-infer-worker-host/src/native_app_server.rs-916-\ncodex-rs/hepta-infer-worker-host/src/native_app_server.rs:917:fn verify_persisted_dispatch_binding(\ncodex-rs/hepta-infer-worker-host/src/native_app_server.rs-918-    control: &DurableInferenceControl,\ncodex-rs/hepta-infer-worker-host/src/native_app_server.rs-919-    request_id: &str,\ncodex-rs/hepta-infer-worker-host/src/native_app_server.rs-920-    payload_digest: Digest32,\ncodex-rs/hepta-infer-worker-host/src/native_app_server.rs-921-    request_digest: Digest32,\n",
+  "call_map_command": [
+    "rg",
+    "-n",
+    "-C",
+    "4",
+    "\\bverify_persisted_dispatch_binding\\b",
+    "codex-rs"
+  ],
+  "nearest_instructions": [
+    "AGENTS.md"
+  ],
+  "diagnostic_source": "native-agentd-composition-r9-strict.log"
+}

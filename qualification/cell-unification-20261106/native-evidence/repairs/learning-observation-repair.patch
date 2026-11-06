@@ -1,0 +1,39 @@
+diff --git a/codex-rs/hepta-agentd/src/learning_iteration_runtime_tests.rs b/codex-rs/hepta-agentd/src/learning_iteration_runtime_tests.rs
+index fa64c344f8..8d7961c382 100644
+--- a/codex-rs/hepta-agentd/src/learning_iteration_runtime_tests.rs
++++ b/codex-rs/hepta-agentd/src/learning_iteration_runtime_tests.rs
+@@ -107,7 +107,7 @@ impl LearningIterationOwnerPortsV1 for IterationPorts {
+                     withdrawal_frontier: digest("withdrawals"), rows: 1, bytes: 64,
+                 },
+                 LearningIterationStageV1::Training => LearningIterationObservationV1::Training {
+-                    candidate, steps: 1, milliseconds: 1, artifact_bytes: 64,
++                    candidate: Box::new(candidate), steps: 1, milliseconds: 1, artifact_bytes: 64,
+                 },
+                 LearningIterationStageV1::Evaluation => LearningIterationObservationV1::Evaluation {
+                     candidate_bundle, evaluation_profile: digest("frozen-evaluation"), disposition: self.evaluation,
+diff --git a/codex-rs/hepta-learning-artifacts/src/learning_iteration_test_support.rs b/codex-rs/hepta-learning-artifacts/src/learning_iteration_test_support.rs
+index 9d8322de09..3a2ed78fe6 100644
+--- a/codex-rs/hepta-learning-artifacts/src/learning_iteration_test_support.rs
++++ b/codex-rs/hepta-learning-artifacts/src/learning_iteration_test_support.rs
+@@ -71,7 +71,7 @@ pub(crate) fn receipt(coordinator: &LearningIterationCoordinatorV1) -> LearningI
+             withdrawal_frontier: digest("withdrawals"), rows: 2, bytes: 64,
+         },
+         LearningIterationStageV1::Training => LearningIterationObservationV1::Training {
+-            candidate, steps: 2, milliseconds: 10, artifact_bytes: 64,
++            candidate: Box::new(candidate), steps: 2, milliseconds: 10, artifact_bytes: 64,
+         },
+         LearningIterationStageV1::Evaluation => LearningIterationObservationV1::Evaluation {
+             candidate_bundle, evaluation_profile: digest("evaluation-profile"), disposition: LearningEvaluationDispositionV1::Qualified,
+diff --git a/codex-rs/hepta-learning-artifacts/src/learning_iteration_types.rs b/codex-rs/hepta-learning-artifacts/src/learning_iteration_types.rs
+index f7e19a1634..c07ff99bba 100644
+--- a/codex-rs/hepta-learning-artifacts/src/learning_iteration_types.rs
++++ b/codex-rs/hepta-learning-artifacts/src/learning_iteration_types.rs
+@@ -77,7 +77,7 @@ pub enum LearningIterationObservationV1 {
+         bytes: u64,
+     },
+     Training {
+-        candidate: CellCompatibilityBundleV1,
++        candidate: Box<CellCompatibilityBundleV1>,
+         steps: u64,
+         milliseconds: u64,
+         artifact_bytes: u64,

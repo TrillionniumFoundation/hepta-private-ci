@@ -1,0 +1,28 @@
+{
+  "schema": "hepta.recovery-independent-execution.v1",
+  "new_audit_after_scratch_loss": true,
+  "command": [
+    "python3",
+    "recovery-independent-readback/independent_recovery_readback.py",
+    "--native-results",
+    "native-validation-results"
+  ],
+  "cwd": "/workspace/scratch/08f5efd48967",
+  "exit_code": 0,
+  "stdout": "{\n  \"r20\": {\n    \"report\": {\n      \"path\": \"r20/INDEPENDENT-READBACK.json\",\n      \"bytes\": 6695,\n      \"sha256\": \"2b429a10315624b761bdb51fe8a099a17ad9d60e5d7fb9196064f7f841b237d1\"\n    },\n    \"source_tree\": \"e65356fc570296b74644967054eaded15b8ed440\",\n    \"source_files\": 187,\n    \"outer_exit\": 0\n  },\n  \"r21\": {\n    \"report\": {\n      \"path\": \"r21/INDEPENDENT-READBACK.json\",\n      \"bytes\": 5910,\n      \"sha256\": \"534ca2193597740081e8f42f4c59de00de6f829e28b7a193519173fefae85206\"\n    },\n    \"source_tree\": \"e65356fc570296b74644967054eaded15b8ed440\",\n    \"source_files\": 187,\n    \"outer_exit\": 101\n  },\n  \"r22\": {\n    \"report\": {\n      \"path\": \"r22/INDEPENDENT-READBACK.json\",\n      \"bytes\": 6688,\n      \"sha256\": \"846e614826f26378f37f70044803bec581b118c8e9e5df71aa70b9a5716060b5\"\n    },\n    \"source_tree\": \"be34ab1afe622ad3b8f030c8c5018f4f54fbc304\",\n    \"source_files\": 188,\n    \"outer_exit\": 0\n  }\n}\n",
+  "native_commands_executed": false,
+  "rust_or_tests_executed": false,
+  "reader_schema_adaptations": [
+    {
+      "kind": "closed_receipt_schema",
+      "initial_reader_exit": 1,
+      "observation": "Original strict receipts carry retries:null, while tests carry retries:0; reader was corrected to exactly enforce each original shape.",
+      "native_inputs_modified": false
+    },
+    {
+      "kind": "closed_scope_schema",
+      "observation": "Original scope has id/name objects and command cargo metadata --locked --no-deps --format-version 1; reader compares these exact original objects to original metadata IDs/names.",
+      "native_inputs_modified": false
+    }
+  ]
+}

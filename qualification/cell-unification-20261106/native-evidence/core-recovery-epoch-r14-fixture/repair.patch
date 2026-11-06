@@ -1,0 +1,20 @@
+--- a/codex-rs/core/tests/suite/turn_input_submission.rs
++++ b/codex-rs/core/tests/suite/turn_input_submission.rs
+@@ -121,11 +121,13 @@
+     let (server, _completions) = start_streaming_sse_server(vec![
+         vec![
+             StreamingSseChunk {
++                // Recovery ends when the first provider event reaches the turn
++                // executor, including response.created. Keep that event gated.
++                gate: Some(first_response_gate),
++                body: responses::sse(vec![ev_response_created("resp-interrupted")]),
++            },
++            StreamingSseChunk {
+                 gate: None,
+-                body: responses::sse(vec![ev_response_created("resp-interrupted")]),
+-            },
+-            StreamingSseChunk {
+-                gate: Some(first_response_gate),
+                 body: responses::sse(vec![ev_completed("resp-interrupted")]),
+             },
+         ],

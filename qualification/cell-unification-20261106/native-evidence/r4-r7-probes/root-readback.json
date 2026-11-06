@@ -1,0 +1,44 @@
+{
+  "schema": "hepta.closed-stage-readback.v1",
+  "pairs": [
+    {
+      "receipt": "native-inherited-agentd-r4-strict-diagnostic-receipt.json",
+      "staged_tree": "a4c4a141ec488d8b0f4482b0d47c6ea3c31a8896",
+      "exit_code": 101,
+      "log_sha256": "bccc56f340dec57563cd6945393ed014815b182f3877ee4eab8de3169d22ccdf",
+      "log_verified": true
+    },
+    {
+      "receipt": "native-inherited-r5-strict-receipt.json",
+      "staged_tree": "74ef4ad0ed92355ec58a173fc862b9d500c0c104",
+      "exit_code": 101,
+      "log_sha256": "40b8a752b532cd0979ffda550fd7af86e0f41644df2e17f759de32022abc4be9",
+      "log_verified": true
+    },
+    {
+      "receipt": "native-supervisor-green-r7-receipt.json",
+      "staged_tree": "7a4727b8ffaccf914ccbca2b2c57bbe90409f5e3",
+      "exit_code": 0,
+      "log_sha256": "47402d00593d360d1707f71e27dfea3764332e812ecff6d0a7c49142715cba67",
+      "log_verified": true
+    },
+    {
+      "receipt": "native-supervisor-red-r6-receipt.json",
+      "staged_tree": "9e3978cdcd75cdd5d37b44085c85f03a1397d73b",
+      "exit_code": 101,
+      "log_sha256": "b4d7c8721f5441e5ccf007d7a5bdee701b8ca49824e00c29175f3693e55f249b",
+      "log_verified": true
+    },
+    {
+      "receipt": "native-supervisor-red-r6b-receipt.json",
+      "staged_tree": "e313f4cc49df5c99f32bb7f22a722efd2c3d01bb",
+      "exit_code": 100,
+      "log_sha256": "a5656d36a917486e9a1024897ba6dcc48416f00c1dbc0d26e3cc7f5fbd73aa48",
+      "log_verified": true
+    }
+  ],
+  "supervisor_counterexample_compile_attempt": "No behavior result; compile exit 101 retained",
+  "supervisor_actual_counterexample": "All same four named regressions executed and failed assertions on e313f4cc49df5c99f32bb7f22a722efd2c3d01bb",
+  "supervisor_repaired_probe": "The same four cases passed on 7a4727b8ffaccf914ccbca2b2c57bbe90409f5e3",
+  "focused_filter_excludes_120_other_tests": "Not full-suite ignored policy or full-suite qualification"
+}

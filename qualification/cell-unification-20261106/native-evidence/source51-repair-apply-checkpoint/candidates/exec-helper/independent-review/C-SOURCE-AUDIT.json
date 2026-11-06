@@ -1,0 +1,254 @@
+{
+  "schema": "hepta.bwrap-r24-independent-c-source-audit.v1",
+  "status": "READ_ONLY_SOURCE_FINDINGS_NO_RUNTIME_QUALIFICATION",
+  "source": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "commit": "1fdd647b0ecb235530e8b88bbea45b3d3762906f",
+    "tree": "ea48acf562499192a25e05ae28926a32632dee62"
+  },
+  "scope": "Fixed source50 repository bwrap entry, build definitions, capability and loopback initialization, and existing product launcher selection. No native probe, no Rust, no source edits.",
+  "inputs": [
+    {
+      "path": "codex-rs/bwrap/src/main.rs",
+      "bytes": 1383,
+      "sha256": "1fdfa3549d633f7d260c9bccc896f59a7f32275b9130b72ee796622b639081aa",
+      "git_blob": "09c624aa9e584c76e9bc8a1e154067f83a2cb2ea",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1fdd647b0ecb235530e8b88bbea45b3d3762906f/codex-rs/bwrap/src/main.rs"
+    },
+    {
+      "path": "codex-rs/bwrap/build.rs",
+      "bytes": 3851,
+      "sha256": "3ca3f0c90e075d38215e74ff19049df1ff6fdd80a04711ee05f3acd39dfd7b70",
+      "git_blob": "d9d87932b2db8150e4bdcf663e2de32b7d100f9f",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1fdd647b0ecb235530e8b88bbea45b3d3762906f/codex-rs/bwrap/build.rs"
+    },
+    {
+      "path": "codex-rs/bwrap/config.h",
+      "bytes": 52,
+      "sha256": "55f7dedf5504659f50b6575571eb4a4c884afc0597fa11435a8318e0cccccd1e",
+      "git_blob": "f73932a0f890558e5bda7e4748fa566796965c46",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1fdd647b0ecb235530e8b88bbea45b3d3762906f/codex-rs/bwrap/config.h"
+    },
+    {
+      "path": "codex-rs/bwrap/Cargo.toml",
+      "bytes": 305,
+      "sha256": "5b524ac2c30f4029cae77721c026d3487a6628473b042d26f354ab6075ec4a7c",
+      "git_blob": "ed7010c8fdaea270f028ceb9a053e60c278d2b4c",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1fdd647b0ecb235530e8b88bbea45b3d3762906f/codex-rs/bwrap/Cargo.toml"
+    },
+    {
+      "path": "codex-rs/bwrap/BUILD.bazel",
+      "bytes": 1603,
+      "sha256": "27d1be7161048f34b2fa8f59148d7690426dadd82b7c4323ff87b0a34b0ecac4",
+      "git_blob": "f58d703ef9ec33b1787668dde454164fa3b52f3d",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1fdd647b0ecb235530e8b88bbea45b3d3762906f/codex-rs/bwrap/BUILD.bazel"
+    },
+    {
+      "path": "codex-rs/vendor/bubblewrap/bubblewrap.c",
+      "bytes": 117032,
+      "sha256": "9bc38fb46080b6854e0c414ccb5fbd369d9d7c0230fdfa877283d31aef0c5720",
+      "git_blob": "9039ddfa80aff65d8296a21098bf43befeb00be5",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1fdd647b0ecb235530e8b88bbea45b3d3762906f/codex-rs/vendor/bubblewrap/bubblewrap.c"
+    },
+    {
+      "path": "codex-rs/vendor/bubblewrap/network.c",
+      "bytes": 5429,
+      "sha256": "1cfe04fcc38d33d5197feb96fc503d3fd51d234fb9392699a00bf4780ed6e9f0",
+      "git_blob": "373d606a0abe3435fd5909ba8910e25fab4140be",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1fdd647b0ecb235530e8b88bbea45b3d3762906f/codex-rs/vendor/bubblewrap/network.c"
+    },
+    {
+      "path": "codex-rs/vendor/bubblewrap/utils.c",
+      "bytes": 21879,
+      "sha256": "c99f12bf7f74bb299e102852fb30ff76a6dfee0a2f6bfed5c840beb3249d4ddb",
+      "git_blob": "7b7349ab824c8780597b2abb39f181d0e63702eb",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1fdd647b0ecb235530e8b88bbea45b3d3762906f/codex-rs/vendor/bubblewrap/utils.c"
+    },
+    {
+      "path": "codex-rs/vendor/bubblewrap/utils.h",
+      "bytes": 6435,
+      "sha256": "67f31ade42f56671e770fa3064494c63dcd331f9cd272e01488d55524a99df04",
+      "git_blob": "079fe7c9362e04b952544b1daab0331c2dbe16f1",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1fdd647b0ecb235530e8b88bbea45b3d3762906f/codex-rs/vendor/bubblewrap/utils.h"
+    },
+    {
+      "path": "codex-rs/process-hardening/src/lib.rs",
+      "bytes": 5909,
+      "sha256": "9a9a62f29a3b3f3e6ff6d35bb4015bd97d14b3d83ae3e54502f3e9e953d84fae",
+      "git_blob": "f500e15d41487337fbb67ac35e19f4c9652f50f5",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1fdd647b0ecb235530e8b88bbea45b3d3762906f/codex-rs/process-hardening/src/lib.rs"
+    },
+    {
+      "path": "codex-rs/linux-sandbox/src/launcher.rs",
+      "bytes": 16007,
+      "sha256": "bf1d23f8020d4e73f7a3e235165f0953154170256a92cf0c8254e5ab32578f91",
+      "git_blob": "d4e9b521bf93f0861cf497c3153a9efdc6e3c67b",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1fdd647b0ecb235530e8b88bbea45b3d3762906f/codex-rs/linux-sandbox/src/launcher.rs"
+    },
+    {
+      "path": "codex-rs/linux-sandbox/src/bundled_bwrap.rs",
+      "bytes": 11001,
+      "sha256": "6d57a035029048db8aeabed4a56c18f7fc72017dafb9ce61a53bd1b384e49566",
+      "git_blob": "61d10547d3b3eb499f8b8a06d6444845c4ff7f93",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1fdd647b0ecb235530e8b88bbea45b3d3762906f/codex-rs/linux-sandbox/src/bundled_bwrap.rs"
+    },
+    {
+      "path": "codex-rs/linux-sandbox/Cargo.toml",
+      "bytes": 1187,
+      "sha256": "7af47b8ac3dbc0cf590f9b4e50a51f4e214d6946aa6581991f267450a0ec31f6",
+      "git_blob": "0f7c68a152a75cfc2f0369dc098dcf2b996185f2",
+      "source_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1fdd647b0ecb235530e8b88bbea45b3d3762906f/codex-rs/linux-sandbox/Cargo.toml"
+    }
+  ],
+  "raw_hash_verification": "Every listed full UTF-8 source was fetched at the immutable commit and independently rehashed as SHA256 and Git blob; connector Git blob identity matched.",
+  "findings": [
+    {
+      "id": "rust_entry",
+      "paths": [
+        "codex-rs/bwrap/src/main.rs",
+        "codex-rs/bwrap/Cargo.toml",
+        "codex-rs/process-hardening/src/lib.rs"
+      ],
+      "finding": "The Cargo bwrap executable forwards original argv through CString conversion to bwrap_main and exits with that return code. It does not invoke pre_main_hardening. The separately reviewed Linux hardening helper changes dumpability/core limit/LD_* environment, not capability masks or network setup.",
+      "ranges": {
+        "codex-rs/bwrap/src/main.rs": [
+          1,
+          29
+        ],
+        "codex-rs/process-hardening/src/lib.rs": [
+          12,
+          61
+        ]
+      }
+    },
+    {
+      "id": "build_boundary",
+      "paths": [
+        "codex-rs/bwrap/build.rs",
+        "codex-rs/bwrap/config.h",
+        "codex-rs/bwrap/BUILD.bazel"
+      ],
+      "finding": "The repository Cargo build selects the source directory, compiles bubblewrap.c/network.c/utils.c, and renames main=bwrap_main. Its generated config defines PACKAGE_STRING and does not enable ENABLE_SUPPORT_SETUID. Default source selection is the vendored directory, with an explicit CODEX_BWRAP_SOURCE_DIR override supported. No claim is made that an unobserved native build environment omitted that override.",
+      "ranges": {
+        "codex-rs/bwrap/build.rs": [
+          32,
+          104
+        ]
+      }
+    },
+    {
+      "id": "capability_order",
+      "paths": [
+        "codex-rs/vendor/bubblewrap/bubblewrap.c"
+      ],
+      "finding": "REQUIRED_CAPS_0 includes CAP_NET_ADMIN. For the nonroot, non-setuid route, the code selects a new user namespace and combines user/network namespace flags at clone. switch_to_user_with_privs drops bounding capabilities for a new user namespace but returns without the privileged capset branch when !is_privileged. Loopback setup is then called before the final child drop_privs. This source order does not substantiate a claim that the bundled executable unconditionally dropped effective CAP_NET_ADMIN before loopback. Parent-side drop_privs is in a separate branch.",
+      "ranges": {
+        "required_capabilities": [
+          685,
+          704
+        ],
+        "bounding_set": [
+          763,
+          808
+        ],
+        "privilege_branch": [
+          845,
+          945
+        ],
+        "automatic_user_namespace": [
+          2997,
+          3000
+        ],
+        "clone_namespace_flags": [
+          3090,
+          3096
+        ],
+        "parent_branch": [
+          3168,
+          3238
+        ],
+        "child_loopback": [
+          3285,
+          3296
+        ],
+        "final_child_drop": [
+          3521,
+          3522
+        ]
+      }
+    },
+    {
+      "id": "diagnostic_limit",
+      "paths": [
+        "codex-rs/vendor/bubblewrap/network.c",
+        "codex-rs/vendor/bubblewrap/utils.c"
+      ],
+      "finding": "The observed label is emitted at the RTM_NEWADDR loopback request stage. rtnl_read_reply also returns -1 for mismatched sequence/PID or nonzero NLMSG_ERROR without assigning that netlink error to errno. die_with_error formats the errno already in scope. Therefore the literal Operation not permitted suffix alone is insufficient to identify the actual netlink error value, capability loss, or an LSM denial. No syscall/error-code trace was inspected in this audit.",
+      "ranges": {
+        "codex-rs/vendor/bubblewrap/network.c": [
+          65,
+          111,
+          148,
+          182
+        ],
+        "codex-rs/vendor/bubblewrap/utils.c": [
+          69,
+          81
+        ]
+      }
+    },
+    {
+      "id": "product_selection",
+      "paths": [
+        "codex-rs/linux-sandbox/src/launcher.rs",
+        "codex-rs/linux-sandbox/src/bundled_bwrap.rs"
+      ],
+      "finding": "The product prefers a PATH system bwrap that passes its existing help/capability checks, then falls back to bundled resources. The test helper in actual source50 forced the Cargo bwrap executable. This establishes a different launcher-selection path, but not the host-specific cause of the observed failure. Existing real argv/FD handoff remains necessary.",
+      "ranges": {
+        "codex-rs/linux-sandbox/src/launcher.rs": [
+          126,
+          140,
+          144,
+          211,
+          218,
+          252
+        ],
+        "codex-rs/linux-sandbox/src/bundled_bwrap.rs": [
+          36,
+          73
+        ]
+      }
+    }
+  ],
+  "evidence_excerpts": [
+    {
+      "path": "codex-rs/vendor/bubblewrap/network.c",
+      "first_line": 65,
+      "last_line": 111,
+      "content": "rtnl_read_reply (int          rtnl_fd,\n                 unsigned int seq_nr)\n{\n  char buffer[1024];\n  ssize_t received;\n  struct nlmsghdr *rheader;\n\n  while (1)\n    {\n      received = TEMP_FAILURE_RETRY (recv (rtnl_fd, buffer, sizeof (buffer), 0));\n      if (received < 0)\n        return -1;\n\n      rheader = (struct nlmsghdr *) buffer;\n      while (received >= NLMSG_HDRLEN)\n        {\n          if (rheader->nlmsg_seq != seq_nr)\n            return -1;\n          if ((pid_t)rheader->nlmsg_pid != getpid ())\n            return -1;\n          if (rheader->nlmsg_type == NLMSG_ERROR)\n            {\n              uint32_t *err = NLMSG_DATA (rheader);\n              if (*err == 0)\n                return 0;\n\n              return -1;\n            }\n          if (rheader->nlmsg_type == NLMSG_DONE)\n            return 0;\n\n          rheader = NLMSG_NEXT (rheader, received);\n        }\n    }\n}\n\nstatic int\nrtnl_do_request (int              rtnl_fd,\n                 struct nlmsghdr *header)\n{\n  if (rtnl_send_request (rtnl_fd, header) != 0)\n    return -1;\n\n  if (rtnl_read_reply (rtnl_fd, header->nlmsg_seq) != 0)\n    return -1;\n\n  return 0;"
+    },
+    {
+      "path": "codex-rs/vendor/bubblewrap/network.c",
+      "first_line": 162,
+      "last_line": 182,
+      "content": "  header = rtnl_setup_request (buffer, RTM_NEWADDR,\n                               NLM_F_CREATE | NLM_F_EXCL | NLM_F_ACK,\n                               sizeof (struct ifaddrmsg));\n  addmsg = NLMSG_DATA (header);\n\n  addmsg->ifa_family = AF_INET;\n  addmsg->ifa_prefixlen = 8;\n  addmsg->ifa_flags = IFA_F_PERMANENT;\n  addmsg->ifa_scope = RT_SCOPE_HOST;\n  addmsg->ifa_index = if_loopback;\n\n  ip_addr = add_rta (header, IFA_LOCAL, sizeof (*ip_addr));\n  ip_addr->s_addr = htonl (INADDR_LOOPBACK);\n\n  ip_addr = add_rta (header, IFA_ADDRESS, sizeof (*ip_addr));\n  ip_addr->s_addr = htonl (INADDR_LOOPBACK);\n\n  assert (header->nlmsg_len < sizeof (buffer));\n\n  if (rtnl_do_request (rtnl_fd, header) != 0)\n    die_with_error (\"loopback: Failed RTM_NEWADDR\");"
+    },
+    {
+      "path": "codex-rs/vendor/bubblewrap/utils.c",
+      "first_line": 69,
+      "last_line": 81,
+      "content": "void\ndie_with_error (const char *format, ...)\n{\n  va_list args;\n  int errsv;\n\n  errsv = errno;\n\n  va_start (args, format);\n  bwrap_logv (LOG_ERR, format, args, strerror (errsv));\n  va_end (args);\n\n  exit (1);"
+    },
+    {
+      "path": "codex-rs/linux-sandbox/src/launcher.rs",
+      "first_line": 126,
+      "last_line": 140,
+      "content": "fn preferred_bwrap_launcher() -> BubblewrapLauncher {\n    static LAUNCHER: OnceLock<BubblewrapLauncher> = OnceLock::new();\n    LAUNCHER\n        .get_or_init(|| {\n            if let Some(path) = find_system_bwrap_in_path()\n                && let Some(launcher) = system_bwrap_launcher_for_path(&path)\n            {\n                return BubblewrapLauncher::System(launcher);\n            }\n\n            match bundled_bwrap::launcher() {\n                Some(launcher) => BubblewrapLauncher::Bundled(launcher),\n                None => BubblewrapLauncher::Unavailable,\n            }\n        })"
+    }
+  ],
+  "limits": [
+    "No native binary capability, setuid, policy, AppArmor/SELinux, actual netlink error, or system bwrap source/version identity is inferred from repository source.",
+    "No change to PID1 enforcement, owner pidfd lifetime, network namespace, permission policy, or runtime guards is recommended by this audit.",
+    "Actual probe and subsequent complete native gates belong to the native owner and must be reported separately."
+  ]
+}

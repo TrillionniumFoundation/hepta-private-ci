@@ -1,0 +1,43 @@
+{
+  "schema": "hepta.closed-failure-excerpts.v1",
+  "source_commit": "b44d4ca4aa0ef9f894eff29e9975938e066a82f5",
+  "source_tree": "d3d2313b838422818bf9448ce5a1b86d89abdf69",
+  "log_sha256": "443a58d70c34d76ba9b8141ad7ee32d997a4f16af79e8f5a873770966028952c",
+  "log_bytes": 551526,
+  "byte_ranges_are_utf8_bytes": true,
+  "blocks": [
+    {
+      "status": "FAIL",
+      "elapsed": "0.154s",
+      "binary": "codex-core::all",
+      "name": "suite::token_budget::token_budget_context_injects_plain_thread_hint_text",
+      "log_byte_range": [
+        513171,
+        513923
+      ],
+      "excerpt": "        FAIL [   0.154s] codex-core::all suite::token_budget::token_budget_context_injects_plain_thread_hint_text\n  stdout ───\n\n    running 1 test\n    test suite::token_budget::token_budget_context_injects_plain_thread_hint_text ... FAILED\n\n    failures:\n\n    failures:\n        suite::token_budget::token_budget_context_injects_plain_thread_hint_text\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1425 filtered out; finished in 0.14s\n\n  stderr ───\n\n    thread 'suite::token_budget::token_budget_context_injects_plain_thread_hint_text' (1062728) panicked at core/tests/suite/token_budget.rs:641:20:\n    regex did not match actual value\n    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+    },
+    {
+      "status": "FAIL",
+      "elapsed": "10.172s",
+      "binary": "codex-core::all",
+      "name": "suite::token_budget::token_budget_context_uses_new_window_after_compaction::test_case_1_token_budget_only",
+      "log_byte_range": [
+        514168,
+        515051
+      ],
+      "excerpt": "        FAIL [  10.172s] codex-core::all suite::token_budget::token_budget_context_uses_new_window_after_compaction::test_case_1_token_budget_only\n  stdout ───\n\n    running 1 test\n    test suite::token_budget::token_budget_context_uses_new_window_after_compaction::test_case_1_token_budget_only ... FAILED\n\n    failures:\n\n    failures:\n        suite::token_budget::token_budget_context_uses_new_window_after_compaction::test_case_1_token_budget_only\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1425 filtered out; finished in 10.16s\n\n  stderr ───\n\n    thread 'suite::token_budget::token_budget_context_uses_new_window_after_compaction::test_case_1_token_budget_only' (1062923) panicked at core/tests/common/lib.rs:356:14:\n    timeout waiting for event: Elapsed(())\n    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+    },
+    {
+      "status": "FAIL",
+      "elapsed": "10.182s",
+      "binary": "codex-core::all",
+      "name": "suite::token_budget::token_budget_context_uses_new_window_after_compaction::test_case_2_with_client_developer_retention",
+      "log_byte_range": [
+        515051,
+        515991
+      ],
+      "excerpt": "\n        FAIL [  10.182s] codex-core::all suite::token_budget::token_budget_context_uses_new_window_after_compaction::test_case_2_with_client_developer_retention\n  stdout ───\n\n    running 1 test\n    test suite::token_budget::token_budget_context_uses_new_window_after_compaction::test_case_2_with_client_developer_retention ... FAILED\n\n    failures:\n\n    failures:\n        suite::token_budget::token_budget_context_uses_new_window_after_compaction::test_case_2_with_client_developer_retention\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1425 filtered out; finished in 10.17s\n\n  stderr ───\n\n    thread 'suite::token_budget::token_budget_context_uses_new_window_after_compaction::test_case_2_with_client_developer_retention' (1062984) panicked at core/tests/common/lib.rs:356:14:\n    timeout waiting for event: Elapsed(())\n    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+    }
+  ]
+}
