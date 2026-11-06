@@ -25,6 +25,7 @@ use codex_hepta_cognitive_store::MemoryVerification;
 use codex_hepta_cognitive_store::ProductionAuthorityLease;
 use codex_hepta_cognitive_store::ProductionAuthorityToken;
 use codex_hepta_cognitive_store::ProductionAuthorityVerifier;
+use codex_hepta_cognitive_store::ProductionDurableWriter;
 use codex_hepta_cognitive_store::SourceDraft;
 use codex_hepta_cognitive_store::bind_canonical_event_to_durable_receipt;
 use codex_hepta_cognitive_types::hnmf::ContractDigestV1;
@@ -141,10 +142,6 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
         workspace,
     )?;
 
-    let store = DurableCognitiveStore::open(&config.identity().layout).await?;
-    let expected = store.recovery_anchor().await?;
-    store.close().await;
-
     let authority = ProductionAuthorityLease::from_verified_parts(
         owner.clone(),
         Sha256Digest::for_bytes(b"agentd-product-recovery-test-grant"),
@@ -172,6 +169,21 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
             Ok(())
         },
     );
+
+    let store = DurableCognitiveStore::open(&config.identity().layout).await?;
+    // Retain a cut that already contains the active writer lease. Creating a
+    // lease after recovery is a real state change, while reopening it is not.
+    let writer = ProductionDurableWriter::open_with_live_verifier(
+        store.clone(),
+        authority.clone(),
+        Arc::clone(&verifier),
+        "agentd-product-recovery-test",
+        1,
+    )
+    .await?;
+    let expected = writer.recovery_anchor().await?;
+    drop(writer);
+    store.close().await;
 
     let host = AgentdProductionWriterHost::open_with_recovery(
         &config,
