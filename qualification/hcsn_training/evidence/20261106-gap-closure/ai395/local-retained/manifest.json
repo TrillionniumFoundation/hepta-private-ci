@@ -1,0 +1,166 @@
+{
+  "cuda_campaign_started": false,
+  "files": {
+    "automation-tests.log": {
+      "bytes": 30129,
+      "original_relative_path": "automation-tests.log",
+      "sha256": "e112b6e01f34658152baabcd43980a6c60aab1233f400cbd2513b43a82cfec15"
+    },
+    "independent-hcsn-gap-review.json": {
+      "bytes": 2891,
+      "original_relative_path": "independent-hcsn-gap-review.json",
+      "sha256": "5f5773ed81d500cf3e4d2fdbea6c838b2affa503160ed37db1432153196cfba5"
+    },
+    "native-tests-source.json": {
+      "bytes": 589,
+      "original_relative_path": "native-tests-source.json",
+      "sha256": "0c38ec450396731ffd6fce8c047f0b859a046bacc10e4925287ab6ac9167c4c2"
+    },
+    "native-tests.log": {
+      "bytes": 26384,
+      "original_relative_path": "native-tests.log",
+      "sha256": "09147c6516975524873c841e766758f9c2250684ea5b561b1bb8f16516e9fd72"
+    },
+    "population-age-ctmc-refinement-review.json": {
+      "bytes": 2221,
+      "original_relative_path": "population-age-ctmc-refinement-review.json",
+      "sha256": "39d81ee9969e06cd042f365ec8df17c07d1f0d248526da15f7be7461c81fa674"
+    },
+    "population-age-refinement-review.json": {
+      "bytes": 1891,
+      "original_relative_path": "population-age-refinement-review.json",
+      "sha256": "46401885cb59e180cef1ceef26bfbcca12f4cf819b4663569c779dfef1c48509"
+    },
+    "population-generator-review-attempt-01.log": {
+      "bytes": 2633,
+      "original_relative_path": "population-generator-review-attempt-01.log",
+      "sha256": "08588eb25cc20388467b5a5603ac3b821e7bdb3da796388390baff74a6d7d4d7"
+    },
+    "population-generator-review-attempt-02.log": {
+      "bytes": 1234,
+      "original_relative_path": "population-generator-review-attempt-02.log",
+      "sha256": "2c4b92957df7453dda2ff0fe4d38d18ebe5a903b2b93f182b74f29611e76f28b"
+    },
+    "python-source-freeze-01.json": {
+      "bytes": 5823,
+      "original_relative_path": "python-source-freeze-01.json",
+      "sha256": "518150d115c29f6ef3bdabac0a19811dabe830735b8aa1d051b8140280195637"
+    },
+    "python-tests-01.log": {
+      "bytes": 12732,
+      "original_relative_path": "python-tests-01.log",
+      "sha256": "dd99c9d88d65e4db58e81f71acbe62985916dc463efd4ade7d60bb0877dd54c0"
+    },
+    "resumed-age-derivatives-review.log": {
+      "bytes": 314,
+      "original_relative_path": "resumed-age-derivatives-review.log",
+      "sha256": "2a4eb9e9aadb0fb87a107c0cbd9fb53d0f3c2fb5a8ae1cbfda29fd6f2921e8b4"
+    },
+    "resumed-derivatives-review.log": {
+      "bytes": 511,
+      "original_relative_path": "resumed-derivatives-review.log",
+      "sha256": "4dd5a4ce4fed37d8bd556c8731b4d5eb9fbfe8a009d915a03afb204fd0796536"
+    }
+  },
+  "independent_review_source_comparisons": [
+    {
+      "path": "qualification/hcsn_training/population_generator.py",
+      "recorded_sha256": "3be73849066acc715962d3fee211c4fc49fa0293b5f0480c250ab5483fbae4aa",
+      "snapshot_sha256": "3be73849066acc715962d3fee211c4fc49fa0293b5f0480c250ab5483fbae4aa"
+    },
+    {
+      "path": "qualification/hcsn_training/population_age_graph.py",
+      "recorded_sha256": "a0c6e046b7e760e9eea85288a694f12842916a876796558b45e7899d097c6566",
+      "snapshot_sha256": "a0c6e046b7e760e9eea85288a694f12842916a876796558b45e7899d097c6566"
+    },
+    {
+      "path": "qualification/hcsn_training/joint_graph.py",
+      "recorded_sha256": "2331377229b19ee60a6d02976cb2f02da9d5fa48a9f744ec972b14bd51b0cfa1",
+      "snapshot_sha256": "2331377229b19ee60a6d02976cb2f02da9d5fa48a9f744ec972b14bd51b0cfa1"
+    },
+    {
+      "path": "qualification/hcsn_training/test_population_generator.py",
+      "recorded_sha256": "c411a7cb93dc2ec9f4e8dc4c5956a4b73b97a0500575c48dd229836de1d79b45",
+      "snapshot_sha256": "c411a7cb93dc2ec9f4e8dc4c5956a4b73b97a0500575c48dd229836de1d79b45"
+    },
+    {
+      "path": "qualification/hcsn_training/test_resumed_derivatives.py",
+      "recorded_sha256": "de96a1be168c9a5a761d3bd310799aedbebe525b55d242bc91cc4dee4c8e53bf",
+      "snapshot_sha256": "de96a1be168c9a5a761d3bd310799aedbebe525b55d242bc91cc4dee4c8e53bf"
+    }
+  ],
+  "missing_raw_evidence": {
+    "local_complete_bridge_attempts": [
+      "A a-05",
+      "B b-04",
+      "population_age age-04"
+    ],
+    "local_integrated_summary_file": "original RAM file not recovered; only earlier observed tool records and summary/result hashes remain",
+    "qualification": "do not claim these lost raw trees can be independently rechecked; final exact-head CI must execute three complete bridges and second-block recovery again",
+    "second_block_trees": "not recovered from the lost RAM task directory"
+  },
+  "native_stage": {
+    "log_sha256_matches_original_receipt": true,
+    "qualification": "native neuron and learning-owner stage before final formatting; no full Agentd qualification inferred",
+    "reported_passed": 195,
+    "reported_skipped": 1,
+    "source_comparisons": [
+      {
+        "path": "codex-rs/hepta-neuron/src/continuous_time.rs",
+        "recorded_sha256": "45e028264542fcf6bb8c8c5bbd1daca30984e3c2db8faad0480e7477923c7ec4",
+        "snapshot_sha256": "45e028264542fcf6bb8c8c5bbd1daca30984e3c2db8faad0480e7477923c7ec4"
+      },
+      {
+        "path": "codex-rs/hepta-neuron/src/continuous_time_tests.rs",
+        "recorded_sha256": "b8a1c2792de536c0bf2f84c4855e4629f9f9b448444bde614d948f38187efa62",
+        "snapshot_sha256": "b8a1c2792de536c0bf2f84c4855e4629f9f9b448444bde614d948f38187efa62"
+      },
+      {
+        "path": "codex-rs/Cargo.lock",
+        "recorded_sha256": "8354b4cbdf14389db7aa5508e2ed5b524fc2d4c4ea0ecb475955c933f8bea389",
+        "snapshot_sha256": "8354b4cbdf14389db7aa5508e2ed5b524fc2d4c4ea0ecb475955c933f8bea389"
+      }
+    ]
+  },
+  "not_reused_as_final_build_evidence": {
+    "reason": "different from the final deployed Cargo stream f7130c1078e80dd0a41f73ae4cf67cb71167bbb82fcee5abcc5c54586a41e387; current record reports fresh=true",
+    "signed-worker-artifacts.jsonl_observed_sha256": "7130224a5d52161567c070ad1cadff72a54f52bb26d50ed74844eb93a9d4124e",
+    "signed-worker-strip-receipt.json": "still describes old deployed binary 5f09b89070ce08aa65cdfabb729a9215b4263c0be18078c4b11a1e3f40623de9"
+  },
+  "production": false,
+  "python_stage": {
+    "freeze_file_count": 49,
+    "frozen_files_matching_recovered_snapshot": 47,
+    "post_suite_wrapper_differences": [
+      {
+        "frozen_sha256": "afe73b626d201ad64e5d10b5d113946852efc1095a256f4b96e5b2735004f810",
+        "path": "qualification/hcsn_training/verify_host.py",
+        "snapshot_sha256": "84184dc0ed04c49a7732ff012926b5805181a5f9e8c5355af15d003023d4c53a"
+      },
+      {
+        "frozen_sha256": "dc17af6b6ad41b7a3b2899145bd6a6f46c8e5dfa9c0791af19a87e95279f01dc",
+        "path": "qualification/hcsn_training/verify_supervised_worker.py",
+        "snapshot_sha256": "fc2c4ec0b1ec7a196ec7ece5d0216d63014fc91bbbc74274def459b49c199dc9"
+      }
+    ],
+    "prior_log_sha256_receipt_recovered": false,
+    "qualification": "the log is preserved with a newly recorded recovery hash; it does not establish a full suite run against the later two wrapper edits or the final CI head",
+    "reported_status": "OK",
+    "reported_tests": 56
+  },
+  "recovered_source_snapshot_commit": "e989d51b0da0617aa20a1fccbcbcb4ad01571ff4",
+  "recovered_source_snapshot_tree": "598558012242923551edd17da392bc838b41c6a8",
+  "recovery_date_utc": "2026-11-06",
+  "retained_failures": {
+    "automation-tests.log": "linker terminated with signal 7 Bus error; command exit 101; not a passed automation suite",
+    "population-generator-review-attempt-01.log": "initial semigroup tolerance failed; preserve alongside the subsequent successful independent test attempt"
+  },
+  "schema_version": 1,
+  "scope": "read-only preservation of surviving local evidence; no tests, training, compilation or source mutation executed during recovery",
+  "separately_preserved_physical_evidence": {
+    "archive_sha256": "afbed582ff0d56510085faf82c0c7ae92282dda40611b29ca9ceacacb5789648",
+    "commit": "a30850dd226c625f175ed50c1660bb09f1b77b8a",
+    "scope": "three actual ai395 CPU signed-worker cases and final build/strip receipts; one block and exact complete-state replay per physical case"
+  },
+  "tests_rerun_during_recovery": false
+}

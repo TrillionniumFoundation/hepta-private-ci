@@ -1,0 +1,25 @@
+test_batched_transition_matches_independent_face_flux_and_exponential (qualification.hcsn_training.test_population_generator.PopulationGeneratorTests.test_batched_transition_matches_independent_face_flux_and_exponential) ... ok
+test_drift_parameter_derivative_matches_finite_difference_away_from_upwind_kinks (qualification.hcsn_training.test_population_generator.PopulationGeneratorTests.test_drift_parameter_derivative_matches_finite_difference_away_from_upwind_kinks) ... ok
+test_fixed_generator_semigroup_includes_both_absorbing_accounts (qualification.hcsn_training.test_population_generator.PopulationGeneratorTests.test_fixed_generator_semigroup_includes_both_absorbing_accounts) ... 
+  test_fixed_generator_semigroup_includes_both_absorbing_accounts (qualification.hcsn_training.test_population_generator.PopulationGeneratorTests.test_fixed_generator_semigroup_includes_both_absorbing_accounts) (first=0.001, second=0.031007) ... FAIL
+test_small_time_steps_preserve_nonzero_transport_on_fixed_spatial_grid (qualification.hcsn_training.test_population_generator.PopulationGeneratorTests.test_small_time_steps_preserve_nonzero_transport_on_fixed_spatial_grid) ... ok
+test_zero_drift_mean_exit_time_has_second_order_spatial_error (qualification.hcsn_training.test_population_generator.PopulationGeneratorTests.test_zero_drift_mean_exit_time_has_second_order_spatial_error) ... ok
+
+======================================================================
+FAIL: test_fixed_generator_semigroup_includes_both_absorbing_accounts (qualification.hcsn_training.test_population_generator.PopulationGeneratorTests.test_fixed_generator_semigroup_includes_both_absorbing_accounts) (first=0.001, second=0.031007)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/d216bf53a09d/hepta-hcsn/qualification/hcsn_training/test_population_generator.py", line 71, in test_fixed_generator_semigroup_includes_both_absorbing_accounts
+    torch.testing.assert_close(whole, split, rtol=3e-12, atol=3e-14)
+  File "/workspace/scratch/40d04650905b/generation-work/venv/lib/python3.12/site-packages/torch/testing/_comparison.py", line 1587, in assert_close
+    raise error_metas[0].to_error(msg)
+AssertionError: Tensor-likes are not close!
+
+Mismatched elements: 58 / 1156 (5.0%)
+Greatest absolute difference: 1.923065873210561e-12 at index (31, 29) (up to 3e-14 allowed)
+Greatest relative difference: 9.037688103312131e-10 at index (31, 26) (up to 3e-12 allowed)
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.079s
+
+FAILED (failures=1)
