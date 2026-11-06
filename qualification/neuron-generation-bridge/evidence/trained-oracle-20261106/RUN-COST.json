@@ -1,0 +1,22 @@
+{
+  "child_tree_peak_rss_bytes": 237170688,
+  "command": [
+    "/workspace/scratch/40d04650905b/generation-work/venv/bin/python",
+    "-B",
+    "/workspace/scratch/e5ae6a941e52/trained-oracle/oracle.py",
+    "--output",
+    "/workspace/scratch/e5ae6a941e52/trained-oracle/run-r1"
+  ],
+  "cpu_semantics": "Inclusive CPU of waited oracle process and its waited native/compiler descendants; overlaps the internal oracle cost ledger, do not add both.",
+  "exit_code": 0,
+  "finished_utc": "2026-11-06T07:59:05.355166+00:00",
+  "inclusive_descendant_cpu_seconds": 9.383129,
+  "schema": "hepta.oracle-run-envelope.v1",
+  "started_utc": "2026-11-06T07:58:57.907429+00:00",
+  "unmeasured": [
+    "energy_joules",
+    "physical_disk_bytes",
+    "initial_readonly_discovery_and_code_authoring_cost"
+  ],
+  "wall_seconds": 7.447762378000334
+}

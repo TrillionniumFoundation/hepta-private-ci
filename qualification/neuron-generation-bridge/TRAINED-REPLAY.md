@@ -43,8 +43,8 @@ recovery implementation snapshot; the replay harness does not execute it.
 The input is historical mechanism sample `[3]` from
 `v3-native-implementation`. It is synthetic task input. Real trained parameter
 provenance does not convert this sample into natural language/image/audio/video
-evidence. The emitted text is the symbolic `action=1;sound=2` record, not an
-open-domain language result.
+evidence. The emitted text is symbolic: `action=1;sound=1` in mean mode and
+`action=1;sound=2` in SplitMix mode. Neither is an open-domain language result.
 
 ## What the accepted run checks
 
@@ -73,9 +73,10 @@ executable did not change.
 The fresh-process reload checks do not establish fsync durability, recovery after
 host failure, owner-adoption atomicity, or cancellation while an Agentd request
 is in flight. Those require the existing lifecycle qualification to be rerun
-with this pinned descendant. This run also does not establish quality gains,
-cross-platform bitwise equivalence, or equivalence to an independent PyTorch
-numerical oracle.
+with this pinned descendant. The replay alone does not establish quality gains,
+cross-platform bitwise equivalence, or an independent PyTorch numerical oracle.
+The separate original-Torch follow-up below now supplies the scoped numerical
+oracle; it does not close the remaining lifecycle or natural-quality gates.
 
 ## Costs and evidence
 
@@ -138,3 +139,10 @@ Output directories must be new. The harness checks committed source, matching
 build receipts, executable/library identity, exact pinned assets and the saved
 provenance before executing the action sequences. It uses only Python's standard
 library and the already exported historical artifacts.
+
+
+## Follow-up: independent original Torch oracle
+
+The same trained descendant now has a separate [original Torch oracle report](evidence/trained-oracle-20261106/REPORT.md). Twenty actual helper states match the original historical model in FP64 and FP32 within thresholds fixed before execution; mean-mode outputs, including the committed audio prefix, are byte-identical in both precisions. The follow-up archive preserves the exact executed harness, read-only native inspector and original source snapshots. Earlier replay evidence and native product sources are unchanged.
+
+The follow-up closes only this descendant/input/sequence numeric-oracle gap. Torch and SplitMix still use different sampling laws; no natural quality, optimizer resume, original parent-byte recovery or Agentd cancellation/durable adoption is claimed. The executed harness intentionally retains its exact environment paths; it is an audit snapshot, not a location-independent launcher. All paths and source hashes must be rebound explicitly for a future reproduction.
