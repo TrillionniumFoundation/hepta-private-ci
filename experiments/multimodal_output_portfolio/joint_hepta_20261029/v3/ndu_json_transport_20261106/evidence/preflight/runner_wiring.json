@@ -1,0 +1,228 @@
+{
+  "actual_tool_calls": 0,
+  "freeze_created": false,
+  "model_forwards": 0,
+  "old_response_replays": 0,
+  "planned_task_episodes": [
+    {
+      "arm": "direct",
+      "prompt_sha256": "1566d4e3fd8eb334e92bbaa24c064a97707a14ff9a297a3b293732cc9035a225",
+      "task_id": "chinook/artist_count"
+    },
+    {
+      "arm": "one_model_selected_tool",
+      "prompt_sha256": "f3749e412b26960706620c0ccad4d1c3110566731c0f4e793576fcb3531c04d6",
+      "task_id": "chinook/artist_count"
+    },
+    {
+      "arm": "one_model_selected_tool",
+      "prompt_sha256": "8b159120b9d02f008a4b6260e2f4af8a1b2e2b4d43d4afced5e2420a9a98877c",
+      "task_id": "chinook/genre_top_three"
+    },
+    {
+      "arm": "direct",
+      "prompt_sha256": "2acd9498ccc4d6dae2fc4c5b2d66e5475c1dc270084c3b5162b9dcaca9006ba5",
+      "task_id": "chinook/genre_top_three"
+    },
+    {
+      "arm": "direct",
+      "prompt_sha256": "5552ad3cf935721889bd086848b29c46eabbdd744eec0b67bb1cfb97f8866d53",
+      "task_id": "chinook/invoice_country"
+    },
+    {
+      "arm": "one_model_selected_tool",
+      "prompt_sha256": "5c61a687926978abb73b56ed7ad73328cdadeb6652a5db6aa2bf1321203f2455",
+      "task_id": "chinook/invoice_country"
+    },
+    {
+      "arm": "one_model_selected_tool",
+      "prompt_sha256": "84ea70ac8019534675be3018aa39f0af420aee1f342c779366f2b6accce4097a",
+      "task_id": "chinook/longest_album"
+    },
+    {
+      "arm": "direct",
+      "prompt_sha256": "88d03f086996f9ae581d24e9cfeaa0990f49afbc02b251e389fde532c07fce48",
+      "task_id": "chinook/longest_album"
+    },
+    {
+      "arm": "direct",
+      "prompt_sha256": "629b79150d81a1aee208489b27325b94bd8d70d6be16bbf99d0ee15a3a01f5a3",
+      "task_id": "cpython/quantiles_defaults"
+    },
+    {
+      "arm": "one_model_selected_tool",
+      "prompt_sha256": "190c1c81d7afc931469662c70cc9c7cb4e9d2eca8907fac1d0f18c3f0212e5b3",
+      "task_id": "cpython/quantiles_defaults"
+    },
+    {
+      "arm": "one_model_selected_tool",
+      "prompt_sha256": "06473ce6cb44f56e592be858efceab17cefb0b33f1e319bf1aa7f2aced470b24",
+      "task_id": "cpython/constant_regression_error"
+    },
+    {
+      "arm": "direct",
+      "prompt_sha256": "9f443fadcd204f2fe0b7191b3a2f06500220fdcd5796580673ec4275eb3bd5d8",
+      "task_id": "cpython/constant_regression_error"
+    },
+    {
+      "arm": "direct",
+      "prompt_sha256": "f8c3ebd46f00d4cde6f0cffb22a663dd4ef70186da20efc61c8f5e39c63427ad",
+      "task_id": "cpython/decimal_fallback"
+    },
+    {
+      "arm": "one_model_selected_tool",
+      "prompt_sha256": "fda7ad430e33e93e7d9644fc417e4eb73fd3fa167b0432d623590d9c4044358d",
+      "task_id": "cpython/decimal_fallback"
+    },
+    {
+      "arm": "one_model_selected_tool",
+      "prompt_sha256": "c44a3b6c8f53b2b28ba687476010244a7e061067fba6dcb9954393eb56e03eda",
+      "task_id": "cpython/rank_defaults"
+    },
+    {
+      "arm": "direct",
+      "prompt_sha256": "8c94b73fda21d52e267cafe6a65d7d8faedbcb5278893cec2f3a05950215ec86",
+      "task_id": "cpython/rank_defaults"
+    }
+  ],
+  "required_freeze_inputs": [
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_frozen_lm_followup_20261106/acquire_followup.py",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_frozen_lm_followup_20261106/evidence/acquisition/materialized-model.json",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_frozen_lm_followup_20261106/evidence/acquisition/runtime-manifest.json",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_frozen_lm_followup_20261106/evidence/acquisition/shared-runtime.json",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_frozen_lm_followup_20261106/freeze.json",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_frozen_lm_followup_20261106/model_manifest.json",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_frozen_lm_followup_20261106/prompts.py",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_frozen_lm_followup_20261106/protocol.json",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_frozen_lm_followup_20261106/run.py",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_frozen_lm_followup_20261106/test_prompts.py",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_frozen_lm_followup_20261106/worker.py",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_frozen_lm_pilot_20261106/acquire.py",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_json_transport_20261106/README.md",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_json_transport_20261106/RUNNING.md",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_json_transport_20261106/adapter.py",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_json_transport_20261106/check_wiring.py",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_json_transport_20261106/frozen-source-boundary.json",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_json_transport_20261106/manifest.json",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_json_transport_20261106/prospective-protocol.json",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_json_transport_20261106/protocol.json",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_json_transport_20261106/required-inputs.json",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_json_transport_20261106/run.py",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_json_transport_20261106/test_adapter.py",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_json_transport_20261106/validation.json",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/__init__.py",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/contracts.py",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/external_smoke/__init__.py",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/external_smoke/sources.json",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/external_smoke/sources/chinook.sql.gz",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/external_smoke/sources/statistics.py",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/external_smoke/tasks.json",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/external_smoke/tools.py",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/ledger.py",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/transport.py"
+  ],
+  "schema": "ndu.json-transport-wiring-check.v1",
+  "shared_keys_equal": [
+    "system_prompt",
+    "cpu_threads",
+    "dtype",
+    "sampling",
+    "max_input_tokens",
+    "max_output_tokens",
+    "request_deadline_seconds",
+    "episode_deadline_seconds",
+    "tool_deadline_seconds",
+    "global_deadline_seconds",
+    "maximum_model_requests",
+    "maximum_tool_requests",
+    "task_count",
+    "source_clusters",
+    "arms",
+    "order",
+    "repeats",
+    "model_load_policy"
+  ],
+  "source_sha256": {
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_frozen_lm_followup_20261106/acquire_followup.py": "fe90ec041a787ebce765b4d18bad4e622a2ca7f1aed3494d3836ef3e371c2aff",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_frozen_lm_followup_20261106/evidence/acquisition/materialized-model.json": "d5c1bf2f2399052f2a749ffd33dbae75bf1cd9de7d03e5c0daa4a26feefe6a2a",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_frozen_lm_followup_20261106/evidence/acquisition/runtime-manifest.json": "3eceed7256ec8999ce0628d8e3e1a6ae51cfc1831e5dd051ea1cb06f79bb0e53",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_frozen_lm_followup_20261106/evidence/acquisition/shared-runtime.json": "c827cfdcb23dd7a88d1824e1026e0fbd66ab4881a35b7ca9a59474cd3891e1cc",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_frozen_lm_followup_20261106/freeze.json": "4d32cb6cbfaa1cd175cb331d327f54746df6dcd6eb9f89448636cd9e8c85d543",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_frozen_lm_followup_20261106/model_manifest.json": "1bc324ba4d3f113e6d466255c09b98d89e40f79f58b199aebc4ce881ebef5c2c",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_frozen_lm_followup_20261106/prompts.py": "5611d2e63bf77713c90bfb46ebfba74b59dae5ae8e7420ac655e52c3e6133cf2",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_frozen_lm_followup_20261106/protocol.json": "6e1282162de01a802be924dc7cab07ff2d3c69646deba1908143129c84f87798",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_frozen_lm_followup_20261106/run.py": "9e79826af3da9f125cb266c413d67eb559c0304031acd58e559188e71184d41c",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_frozen_lm_followup_20261106/test_prompts.py": "454e212770199a91e4b8f94bb301e13c739a841d62c28074937006f720d27e35",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_frozen_lm_followup_20261106/worker.py": "92138f1b15dc10926cd34a7334bb1cfb8122f95704835ef5d5c3c4c593965490",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_frozen_lm_pilot_20261106/acquire.py": "b0a941fcde09bbbe7ecaff5217544d403629d3e4d56b27306ffce6c5aaee5299",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_json_transport_20261106/README.md": "323b6036939a03b0a0415057e0a481ea3cff24e4203b2eec6d964dbd460bc94f",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_json_transport_20261106/RUNNING.md": "4d942b89d64b04b5d68f20624b80147ef27678fbb6f31586c7cd38661ea8366b",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_json_transport_20261106/adapter.py": "09ab46f1e3bc84e5c4018268d10d1545ca9f0e3d633480b0e5f536f3c10f06ac",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_json_transport_20261106/check_wiring.py": "a46f0efa7d90ec95e4eb0d4f7950a4e576965fac1903f9e8212b6208e2f27f46",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_json_transport_20261106/frozen-source-boundary.json": "1f68f7a59f912b37c9ea2a444c09958092150a132351d1ef62f3712dd7e1a2d6",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_json_transport_20261106/manifest.json": "f96582ce84e4d978010c201e7698b74f9d5a44b777cfb92006187b44d02e0da4",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_json_transport_20261106/prospective-protocol.json": "45201888295a153c5e16b0ad3f5c42fce57bd8ebf4d1944f671084e2815e9194",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_json_transport_20261106/protocol.json": "a570b542353de610eb57babfc4bcba3669114d07f5f1eb9dc3dbaa2778019ef3",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_json_transport_20261106/required-inputs.json": "cd0a6d47cd68a4ac414060d6e6ce3f324da9854db68df68fec3e82a3e77f3f5c",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_json_transport_20261106/run.py": "b62b9a7795d56dbac00dc285583a02b1558bab90c49b7d20b8a806b8ef2cfe2d",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_json_transport_20261106/test_adapter.py": "dc011389121ced3e81e46bef02025ba9ebaa7b6a50307c0383bea06bc90d3b9d",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_json_transport_20261106/validation.json": "d37f24a7eb2e89e6ea5378ba1e3be02183701e5f439d4cd4a4825d443d60a874",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/__init__.py": "4cce2d0e19921ae9e37a5ad83d59c64b4fd9e2b565270149a1b0af7e4fe9c3df",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/contracts.py": "78e6281a3f100f79cf62ff9aa1d6b2606d374235190c1a1ff8847abd248a3a62",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/external_smoke/__init__.py": "84837ab402e63b346a0f6d035a9d94948d995ad2f671c9f6268f922f4383db6c",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/external_smoke/sources.json": "703e5542986df75f8d46fc804e00d43475c6003b4be27b57848c44cf676d74e5",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/external_smoke/sources/chinook.sql.gz": "8745705f192624bdd586bcafdd531a659dabbc4c423afa6d0a8e3e29d3414fda",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/external_smoke/sources/statistics.py": "b9ef01a757de37e9fbf13d32beeb9530c8271582cabec4998226dcb7e0613cd0",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/external_smoke/tasks.json": "e0582cb02d8f11991194d61cc1895f6b55930d265a179674351b766d2c55f979",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/external_smoke/tools.py": "9821fd2ab36275739009f722e809f3d7fc9b4fa928788a85b21f64cdde43a854",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/ledger.py": "d6402f54c210e3521fe296369272f5a3d9fbed44873f90dddc57bfd9af6d425f",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/transport.py": "183ef2b7137bcb55a3d6fafb8e6587e92cd97c0b4ba51ba5a80c10de2c848584"
+  },
+  "status": "PASS",
+  "synthetic_outcomes": [
+    {
+      "arm": "qualification",
+      "failure_category": null,
+      "family": "sqlite_query",
+      "status": "qualified"
+    },
+    {
+      "arm": "direct",
+      "failure_category": null,
+      "family": "sqlite_query",
+      "status": "delivered"
+    },
+    {
+      "arm": "one_model_selected_tool",
+      "failure_category": null,
+      "family": "sqlite_query",
+      "status": "delivered"
+    },
+    {
+      "arm": "one_model_selected_tool",
+      "failure_category": null,
+      "family": "source_inspection",
+      "status": "delivered"
+    },
+    {
+      "arm": "one_model_selected_tool",
+      "failure_category": "format_failure",
+      "family": "sqlite_query",
+      "status": "not_delivered"
+    },
+    {
+      "arm": "one_model_selected_tool",
+      "failure_category": "parameter_failure",
+      "family": "source_inspection",
+      "status": "not_delivered"
+    },
+    {
+      "arm": "one_model_selected_tool",
+      "failure_category": "tool_failure",
+      "family": "sqlite_query",
+      "status": "not_delivered"
+    }
+  ],
+  "synthetic_scenarios": 10,
+  "worker_protocol_sha256": "6e1282162de01a802be924dc7cab07ff2d3c69646deba1908143129c84f87798"
+}

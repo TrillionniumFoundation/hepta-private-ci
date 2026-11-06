@@ -1,0 +1,47 @@
+{
+  "actual_host_currency_cost": null,
+  "actual_source_read_tool_calls": 0,
+  "actual_sql_tool_calls": 4,
+  "all_34_frozen_inputs_unchanged": true,
+  "all_scientific_blockers_closed": false,
+  "complete_tool_to_verifier_episodes": 0,
+  "completed_task_episode_records": 16,
+  "decision": "TASK_QUALITY_FAILED; KEEP_EXISTING_NO_GO_FOR_LARGE_SCALE_TRAINING",
+  "direct": {
+    "correct": 0,
+    "delivered": 4,
+    "episodes": 8,
+    "verifier_calls": 4
+  },
+  "external_paid_model_api_calls": 0,
+  "extra_model_or_tool_replay": 0,
+  "independent_confirmation": false,
+  "independent_internal_audit": "FIRST_ATTEMPT_PASS",
+  "new_model_responses_including_qualification": 20,
+  "not_established": [
+    "correct tool-assisted delivery",
+    "untouched independent confirmation",
+    "new RL originality",
+    "superiority against qualified strong baselines",
+    "positive lifecycle or monetary net benefit"
+  ],
+  "one_model_selected_tool": {
+    "correct": 0,
+    "delivered": 0,
+    "episodes": 8,
+    "legal_plans": 4,
+    "verifier_calls": 0
+  },
+  "original_and_restored_raw_files": 41,
+  "planned_task_episodes": 16,
+  "prior_plus_current_local_model_responses": 54,
+  "qualification_passed": true,
+  "schema": "ndu.json-transport-development-disposition.v1",
+  "source_freeze_commit": "361c8fb5a2966d7008121ba92c6bc5c4ec128134",
+  "sql_observations_returned": 3,
+  "sql_worker_failures": 1,
+  "task_model_cap": 24,
+  "task_model_requests": 19,
+  "task_tool_cap": 8,
+  "task_verifier_cap": 16
+}
