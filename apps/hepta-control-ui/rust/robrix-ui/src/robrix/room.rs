@@ -439,7 +439,12 @@ impl Widget for RoomScreen {
             }
             if let Some(text) = input.changed(actions) {
                 #[cfg(feature = "ui-fixtures")]
-                let (fixture_text_bytes, fixture_input_composing, fixture_draft_before, fixture_workspace_composing) = (
+                let (
+                    fixture_text_bytes,
+                    fixture_input_composing,
+                    fixture_draft_before,
+                    fixture_workspace_composing,
+                ) = (
                     text.len(),
                     input.is_composing(),
                     workspace.draft().text.len(),
