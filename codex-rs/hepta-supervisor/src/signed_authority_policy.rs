@@ -37,6 +37,21 @@ pub struct ProductionAuthorityPolicyV1 {
 pub(super) fn decode_policy(
     bytes: &[u8],
 ) -> Result<(ProductionAuthorityPolicyV1, Sha256Digest), ProductionAuthorityError> {
+    let decoded = decode_policy_with_keys(bytes)?;
+    Ok((decoded.policy, decoded.policy_sha256))
+}
+
+// These objects only retain this decode's immutable public-key preparation.
+// Every caller still validates the exact policy bytes and verifies each message.
+struct DecodedPolicy {
+    policy: ProductionAuthorityPolicyV1,
+    policy_sha256: Sha256Digest,
+    grant: PqNativeVerifier,
+    artifact: PqNativeVerifier,
+    recovery: PqNativeVerifier,
+}
+
+fn decode_policy_with_keys(bytes: &[u8]) -> Result<DecodedPolicy, ProductionAuthorityError> {
     if bytes.is_empty() || bytes.len() as u64 > MAX_PRODUCTION_AUTHORITY_POLICY_BYTES {
         return Err(ProductionAuthorityError::Invalid(
             "production authority policy exceeds its bound".to_string(),
@@ -54,10 +69,18 @@ pub(super) fn decode_policy(
             "three distinct explicit ML-DSA-65 authority roles are required".to_string(),
         ));
     }
-    for role in [&policy.grant, &policy.artifact, &policy.recovery] {
-        role.verifier()?;
-    }
-    Ok((policy, Sha256Digest::for_bytes(bytes)))
+    // Keep the original validation order and error propagation for all roles,
+    // including keys that a later operation will not use to verify a message.
+    let grant = policy.grant.verifier()?;
+    let artifact = policy.artifact.verifier()?;
+    let recovery = policy.recovery.verifier()?;
+    Ok(DecodedPolicy {
+        policy,
+        policy_sha256: Sha256Digest::for_bytes(bytes),
+        grant,
+        artifact,
+        recovery,
+    })
 }
 
 impl ProductionAuthorityRoleV1 {
@@ -103,8 +126,13 @@ impl H7H89ProductionGrantVerifier {
     /// The raw policy bytes must separately be admitted by the current Fleet
     /// publication owner. This constructor never manufactures that admission.
     pub fn from_pq_policy_bytes(bytes: &[u8]) -> Result<Self, ProductionAuthorityError> {
-        let (policy, policy_sha256) = decode_policy(bytes)?;
-        let artifact = policy.artifact.verifier()?;
+        let DecodedPolicy {
+            policy,
+            policy_sha256,
+            grant,
+            artifact,
+            recovery,
+        } = decode_policy_with_keys(bytes)?;
         let h7_verifier = H7ArtifactVerifier::from_pinned_spki(
             policy.artifact.signer_id.clone(),
             policy.artifact.signer_epoch,
@@ -112,8 +140,6 @@ impl H7H89ProductionGrantVerifier {
             artifact.public_key_id(),
         )
         .map_err(|error| ProductionAuthorityError::H7Binding(error.to_string()))?;
-        let grant = policy.grant.verifier()?;
-        let recovery = policy.recovery.verifier()?;
         Ok(Self {
             signer_id: policy.grant.signer_id,
             signer_epoch: policy.grant.signer_epoch,
