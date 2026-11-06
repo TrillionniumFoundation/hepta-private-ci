@@ -78,8 +78,12 @@ pub(super) fn original(
     let retained = RetainedIntentProposal::capture(attempt.clone(), &old, &proposed)?;
     // Both the committed past and the actual retained proposal are rebuilt
     // with their distinct exact pins. Recovery never promotes the proposal.
-    let state = old.rebuild(&owner.config, expected)?;
-    let _ = proposed.rebuild(&owner.config, attempt.proposed)?;
+    let state = old.rebuild(&owner.config, expected, &owner.initial_root_material)?;
+    let _ = proposed.rebuild(
+        &owner.config,
+        attempt.proposed,
+        &owner.initial_root_material,
+    )?;
     if retained.observed_at < state.time_floor {
         return Err(invalid("original intent proposal clock regressed"));
     }
@@ -121,6 +125,6 @@ pub(super) fn replacement(
     {
         return Err(FleetRegistryError::ReleaseAuthorityRollback);
     }
-    let _ = value.rebuild(&owner.config, update.proposed)?;
+    let _ = value.rebuild(&owner.config, update.proposed, &owner.initial_root_material)?;
     Ok(Some(update))
 }

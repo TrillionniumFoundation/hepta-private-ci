@@ -5,6 +5,7 @@
 use std::fs::File;
 use std::path::Path;
 use std::sync::Arc;
+use std::sync::OnceLock;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
 
@@ -19,6 +20,7 @@ use serde::Deserialize;
 use serde::Serialize;
 use sha2::Digest;
 use sha2::Sha256;
+use trnm_release_bundle::pq_release::PqInitialRootKeyMaterialV1;
 use trnm_release_bundle::pq_release::PqReleaseAuthorityV1;
 use trnm_release_bundle::pq_release::PqReleaseRoleV1;
 use trnm_release_bundle::pq_release::PqReleaseRootV1;
@@ -90,6 +92,9 @@ pub(crate) struct ReleaseAuthority {
     frontier: Arc<dyn AuthorityFrontierStore<Option<ReleaseFrontierV1>>>,
     fenced: AtomicBool,
     intent_reconciliation_only: bool,
+    // Public-key preparation only. Every rebuild still checks the complete
+    // initial root and independently pinned digest, then replays all history.
+    initial_root_material: OnceLock<PqInitialRootKeyMaterialV1>,
 }
 
 impl std::fmt::Debug for ReleaseAuthority {
@@ -222,7 +227,11 @@ impl ReleaseAuthority {
                 if journal.previous_frontier != attempt.expected {
                     return Err(FleetRegistryError::ReleaseAuthorityRollback);
                 }
-                let state = journal.rebuild(&owner.config, attempt.proposed)?;
+                let state = journal.rebuild(
+                    &owner.config,
+                    attempt.proposed,
+                    &owner.initial_root_material,
+                )?;
                 if owner.now()? < state.time_floor {
                     return Err(invalid(
                         "release clock regressed behind the committed proposal",
@@ -252,6 +261,7 @@ impl ReleaseAuthority {
             frontier: Arc::new(frontier),
             fenced: AtomicBool::new(false),
             intent_reconciliation_only: false,
+            initial_root_material: OnceLock::new(),
         })
     }
 
@@ -298,7 +308,7 @@ impl ReleaseAuthority {
         }
         let journal: Journal = serde_json::from_slice(&bytes)
             .map_err(|_| invalid("invalid release authority journal"))?;
-        let state = journal.rebuild(&self.config, external)?;
+        let state = journal.rebuild(&self.config, external, &self.initial_root_material)?;
         let now = self.now()?;
         if now < state.time_floor {
             return Err(invalid("release clock regressed behind committed history"));
@@ -310,3 +320,7 @@ impl ReleaseAuthority {
 pub(crate) fn invalid(message: impl Into<String>) -> FleetRegistryError {
     FleetRegistryError::Invalid(format!("PQ release authority: {}", message.into()))
 }
+
+#[cfg(all(test, unix))]
+#[path = "release_authority_initial_root_tests.rs"]
+mod initial_root_tests;
