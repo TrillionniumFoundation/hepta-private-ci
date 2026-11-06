@@ -200,7 +200,7 @@ fn assert_codex_client_metadata(
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn openai_stateless_responses_requests_preserve_item_turn_metadata_across_turns() {
-    let server = MockServer::start().await;
+    let server = FirstPartyMockServer::start().await.unwrap();
     let assistant_create_time = 1_785_276_138.422709;
     let mut assistant_message = ev_assistant_message("msg-1", "first answer");
     assistant_message["item"]["internal_chat_message_metadata_passthrough"] = json!({
@@ -218,7 +218,7 @@ async fn openai_stateless_responses_requests_preserve_item_turn_metadata_across_
         ],
     )
     .await;
-    let test = test_codex().build(&server).await.unwrap();
+    let test = server.test_codex().build(&server).await.unwrap();
 
     test.submit_turn("turn one").await.unwrap();
     test.submit_turn("turn two").await.unwrap();

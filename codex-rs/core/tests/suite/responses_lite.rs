@@ -93,7 +93,7 @@ fn additional_tools(body: &Value) -> Result<&[Value]> {
 async fn responses_lite_uses_input_items_for_instructions_and_tools() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
-    let server = responses::start_mock_server().await;
+    let server = FirstPartyMockServer::start().await?;
     let response_mock = responses::mount_sse_once(
         &server,
         responses::sse(vec![
@@ -103,7 +103,8 @@ async fn responses_lite_uses_input_items_for_instructions_and_tools() -> Result<
     )
     .await;
 
-    let mut builder = test_codex()
+    let mut builder = server
+        .test_codex()
         .with_model_info_override("gpt-5.4", |model_info| {
             model_info.use_responses_lite = true;
             model_info.tool_mode = Some(ToolMode::CodeMode);

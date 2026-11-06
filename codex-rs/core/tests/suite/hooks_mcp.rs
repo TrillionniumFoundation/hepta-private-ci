@@ -22,6 +22,7 @@ use codex_protocol::protocol::HookEventName;
 use codex_protocol::protocol::HookOutputEntryKind;
 use codex_protocol::protocol::HookRunStatus;
 use codex_protocol::user_input::UserInput;
+use core_test_support::first_party::FirstPartyMockServer;
 use core_test_support::hooks::trust_discovered_hooks;
 use core_test_support::responses::ev_assistant_message;
 use core_test_support::responses::ev_completed;
@@ -911,7 +912,7 @@ async fn pre_tool_use_blocks_mcp_tool_before_execution(
 ) -> Result<()> {
     skip_if_no_network!(Ok(()));
 
-    let server = start_mock_server().await;
+    let server = FirstPartyMockServer::start().await?;
     let call_id = "pretooluse-rmcp-echo";
     let arguments = json!({ "message": RMCP_ECHO_MESSAGE }).to_string();
     let responses = mount_sse_sequence(
@@ -933,7 +934,8 @@ async fn pre_tool_use_blocks_mcp_tool_before_execution(
 
     let block_reason = "blocked mcp pre hook";
     let rmcp_test_server_bin = stdio_server_bin()?;
-    let test = test_codex()
+    let test = server
+        .test_codex()
         .with_pre_build_hook(move |home| {
             write_pre_tool_use_hook(home, block_reason)
                 .expect("failed to write MCP pre tool use hook fixture");
