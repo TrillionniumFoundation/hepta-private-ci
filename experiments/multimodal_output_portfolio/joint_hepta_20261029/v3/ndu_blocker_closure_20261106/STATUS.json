@@ -1,0 +1,112 @@
+{
+  "schema": "ndu.blocker-disposition.v1",
+  "all_scientific_blockers_closed": false,
+  "current_candidate_decision": "NO_GO_FOR_LARGE_SCALE_TRAINING",
+  "real_llm_confirmation": "NOT_RUN",
+  "external_paid_model_calls": 0,
+  "code_qualification": "PASS_SCOPED_150_UNIQUE_UNITTESTS_AND_SOURCE_BOUND_EVIDENCE",
+  "remote_ci": "NOT_GREEN_FAILURES_AND_PENDING_JOBS",
+  "dispositions": [
+    {
+      "id": "target_semantics_and_theory_corrections",
+      "status": "INTERNALLY_CORRECTED_WITH_EXPLICIT_ASSUMPTIONS",
+      "evidence": "https://github.com/TrillionniumFoundation/NDU/pull/1",
+      "limit": "Draft manuscript correction; external mathematical review not obtained."
+    },
+    {
+      "id": "jac_same_data_dp_optimization_gap",
+      "status": "RESOLVED_IN_AUDITED_FINITE_EMPIRICAL_MODELS",
+      "evidence": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4876",
+      "limit": "No true-model or wall-clock superiority claim follows."
+    },
+    {
+      "id": "unknown_stateful_kernel_reference",
+      "status": "CONDITIONAL_FINITE_CONTRACT_AND_BOUNDS_VALIDATED",
+      "evidence": "../ndu_learned_stateful/THEORY.md",
+      "limit": "Requires paid labeled/reset calibration, known support/prior, finite horizon and atomic completion."
+    },
+    {
+      "id": "strong_baseline_superiority",
+      "status": "FAILED_CURRENT_CANDIDATE",
+      "wins_ties_losses_against_same_data_myopic": [
+        0,
+        143,
+        1
+      ],
+      "evidence": "../ndu_learned_stateful/README.md"
+    },
+    {
+      "id": "primary_lifecycle_net_benefit",
+      "status": "FAILED_CURRENT_CANDIDATE",
+      "primary_deployments": 1000,
+      "passing_cells": 0,
+      "total_cells": 144,
+      "absolute_lower_bounds_negative": 144,
+      "evidence": "../ndu_learned_stateful/evidence/registered_v1/storage_manifest.json",
+      "limit": "Declared synthetic prices. Hardware and engineering remain unpriced; failure already holds under this optimistic omission."
+    },
+    {
+      "id": "learned_stateful_information_cost_optimality",
+      "status": "NOT_ESTABLISHED",
+      "limit": "Classical known-law SPRT efficiency and the new scoped transfer bound do not prove near-bound efficiency of a new learned stateful algorithm."
+    },
+    {
+      "id": "actual_external_tool_clock_integration",
+      "status": "SCRIPTED_ENGINEERING_SMOKE_QUALIFIED",
+      "checks": 5,
+      "tasks": 8,
+      "source_clusters": 2,
+      "real_llm_calls": 0,
+      "evidence": "../ndu_llm_confirmation/external_smoke/evidence/qualification-final.json"
+    },
+    {
+      "id": "execution_evidence_contract_defects",
+      "status": "REPAIRED_AND_INTERNALLY_QUALIFIED",
+      "evidence": "../ndu_llm_confirmation/independent_review/manifest.json",
+      "limit": "Trusted local Python callback contract and synthetic engineering fixtures only; real model identity, billing authenticity and scientific gains remain unconfirmed."
+    },
+    {
+      "id": "real_frozen_llm_confirmation",
+      "status": "EXTERNAL_INPUTS_MISSING_NOT_RUN",
+      "evidence": "AVAILABLE_INPUTS.json",
+      "missing": [
+        "Callable authorized frozen model or local weights and verifiable revision",
+        "Actual usage and final cost materials including failures and cancellations",
+        "Enforceable cost cap and complete candidate plus qualified strong baselines",
+        "Untouched independent source clusters and prospectively frozen task/verifier/split/order manifests"
+      ]
+    },
+    {
+      "id": "external_scientific_review",
+      "status": "NOT_OBTAINED",
+      "limit": "Separate agent reviews are internal, including independently written adversarial fixtures."
+    },
+    {
+      "id": "new_rl_originality",
+      "status": "NOT_ESTABLISHED",
+      "evidence": "../ndu_learned_stateful/PRIOR_ART.md"
+    },
+    {
+      "id": "remote_repository_ci",
+      "status": "NOT_GREEN",
+      "evidence": "evidence/remote-stack-audit.json",
+      "limit": "Inspected failures include existing regex/identifier spelling, checkout paths, dependency download, network-isolation setup and legacy contract metadata; other jobs remain pending. No CI policy or baseline evidence was rewritten to manufacture a pass."
+    }
+  ],
+  "decision_rule": "Do not promote software test success to scientific confirmation. Preserve the failed primary endpoint. A new candidate needs a new prospective protocol and fresh confirmation; do not select seeds, increase deployment volume or relabel scripted smoke to rescue this candidate.",
+  "source_and_result_preservation": "Lossless storage packaging changes representation only; all four frozen scientific sources, original data manifests and full reconstructed evidence hashes remain unchanged.",
+  "verification": {
+    "receipt": "evidence/verification-final.json",
+    "sha256": "91dea9c63446fe5c2d63aa1cc11807c0e8b81b0ebfe26d419052f5fb63ecbca3",
+    "unique_unittest_cases": 150,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "separate_math_assertions": 84,
+    "stored_independent_gate_checks": 121,
+    "stored_independent_runtime_checks": 23,
+    "independent_checks_counted_as_unittests": false,
+    "source_and_evidence_unchanged": true,
+    "full_repository_ci_pass": false
+  }
+}
