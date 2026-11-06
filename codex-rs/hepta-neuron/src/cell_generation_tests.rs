@@ -14,6 +14,8 @@ use crate::JournalScope;
 use crate::cell_task_cost::*;
 use crate::cell_test_support::checked;
 
+#[path = "cell_generation_observation_tests.rs"]
+mod observation;
 #[path = "cell_generation_test_support.rs"]
 mod support;
 use support::*;
