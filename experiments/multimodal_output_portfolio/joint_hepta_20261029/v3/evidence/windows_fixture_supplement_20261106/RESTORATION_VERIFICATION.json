@@ -1,0 +1,29 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-O",
+    "/workspace/scratch/3f6a885bb83c/round3_root_native/windows/evidence_supplement_1452/restore.py",
+    "/workspace/scratch/3f6a885bb83c/round3_root_native/windows/evidence_supplement_1452",
+    "/workspace/scratch/3f6a885bb83c/round3_root_native/windows/evidence_supplement_1452_restored"
+  ],
+  "exit_code": 0,
+  "stdout": "{\n  \"kind\": \"actual_read_only_raw_shard_restoration\",\n  \"index_sha256\": \"2939abb1565baa67983559ce38a4cf68e4991213b20e8c78ef2134a6cac8b9c2\",\n  \"archive_sha256\": \"86d7ffcbfb476e7f2744c401b54650a9616b962260089f386a4f12c8c00c4d3c\",\n  \"restored_files\": 12,\n  \"restored_bytes\": 58563,\n  \"exact_unique_regular_member_set\": true,\n  \"all_file_bytes_and_safe_regular_modes_match\": true,\n  \"bundle_files_written\": 0,\n  \"native_tests_executed\": false\n}\n",
+  "stderr": "",
+  "inputs_before": {
+    "INDEX.json": "2939abb1565baa67983559ce38a4cf68e4991213b20e8c78ef2134a6cac8b9c2",
+    "PUBLICATION.json": "315e7d54d9761071ca1d72d00d0e7988fe3578a6194d3f4fa73a35028ddd3970",
+    "README.md": "3bb763bbcf751d5b24ba8526bb5dd221f6113c19fde0b8fee66dfb4ae002c2b1",
+    "restore.py": "394bafe4536d75c20b76b8589aa7602b9aa82a44c859994cfe790c254425686c",
+    "windows-fixture-supplement.tar.xz": "86d7ffcbfb476e7f2744c401b54650a9616b962260089f386a4f12c8c00c4d3c"
+  },
+  "inputs_after": {
+    "INDEX.json": "2939abb1565baa67983559ce38a4cf68e4991213b20e8c78ef2134a6cac8b9c2",
+    "PUBLICATION.json": "315e7d54d9761071ca1d72d00d0e7988fe3578a6194d3f4fa73a35028ddd3970",
+    "README.md": "3bb763bbcf751d5b24ba8526bb5dd221f6113c19fde0b8fee66dfb4ae002c2b1",
+    "restore.py": "394bafe4536d75c20b76b8589aa7602b9aa82a44c859994cfe790c254425686c",
+    "windows-fixture-supplement.tar.xz": "86d7ffcbfb476e7f2744c401b54650a9616b962260089f386a4f12c8c00c4d3c"
+  },
+  "input_bytes_unchanged": true,
+  "all_original_files_byte_equal": true,
+  "all_modes_0644": true
+}

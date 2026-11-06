@@ -1,0 +1,92 @@
+{
+  "kind": "Original review evidence for the Matrix stage diagnostic and TUI child-readiness fixtures",
+  "classification": "SOURCE_AND_STATIC_CHECKS_ONLY_NATIVE_PENDING",
+  "source_files": 12,
+  "source_bytes": 58563,
+  "archive": {
+    "format": "tar.xz",
+    "bytes": 7640,
+    "sha256": "86d7ffcbfb476e7f2744c401b54650a9616b962260089f386a4f12c8c00c4d3c"
+  },
+  "parts": [
+    {
+      "path": "windows-fixture-supplement.tar.xz",
+      "bytes": 7640,
+      "sha256": "86d7ffcbfb476e7f2744c401b54650a9616b962260089f386a4f12c8c00c4d3c"
+    }
+  ],
+  "files": [
+    {
+      "path": "round3_root_native/windows/units/02_matrix_failure_stage/README.md",
+      "bytes": 899,
+      "sha256": "83ce6e7c964f597352a0e8042c75b950afb0b3179bf49c27187f4113fb30454c",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_root_native/windows/units/02_matrix_failure_stage/candidate/codex-rs/hepta-matrix-sdk/src/startup_deadline_tests.rs",
+      "bytes": 4963,
+      "sha256": "e8f2ac638c15bcb129a30dd37f765abf0baccb9b4bdaea4ef097cddd6991ae7c",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_root_native/windows/units/02_matrix_failure_stage/definition.json",
+      "bytes": 365,
+      "sha256": "d999ef8843c4c078324c91bfc5622b6fb526f3cb5e4e539cc027ed721c9d5c67",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_root_native/windows/units/02_matrix_failure_stage/manifest.json",
+      "bytes": 3892,
+      "sha256": "f3bba41b6aac4fc2e176d680440690311d869843e6f1bc98776f2cb6debb46f2",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_root_native/windows/units/02_matrix_failure_stage/original/codex-rs/hepta-matrix-sdk/src/startup_deadline_tests.rs",
+      "bytes": 4706,
+      "sha256": "0fb04da4d28ac84ec52bd338fe466a5593791df3539b9847ab09c9d8d731645a",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_root_native/windows/units/02_matrix_failure_stage/repair.patch",
+      "bytes": 1223,
+      "sha256": "29bf557863eacf844f46a5ccbc658ddcbc6ae6ad49a7faf2bfad26fd4b93b138",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_root_native/windows/units/03_tui_child_readiness/README.md",
+      "bytes": 992,
+      "sha256": "cadb50a15b348b972f04e497d2f8d082408ea12211930a2f7ea9000f7d6e13cc",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_root_native/windows/units/03_tui_child_readiness/candidate/codex-rs/tui/src/app/tests/background_exit_tests.rs",
+      "bytes": 17546,
+      "sha256": "1145272100c44abb20c8e4b376c9e16de33fbe38f195b9ece83adaccce12690c",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_root_native/windows/units/03_tui_child_readiness/definition.json",
+      "bytes": 362,
+      "sha256": "2a16120d5dd5d24d4d034365db1dc99adcd660739a3b15114e4008f20c0ee66e",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_root_native/windows/units/03_tui_child_readiness/manifest.json",
+      "bytes": 3872,
+      "sha256": "623836454952beada265c54965f2551fa2fbc7c998b70f4fd254691174b1009b",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_root_native/windows/units/03_tui_child_readiness/original/codex-rs/tui/src/app/tests/background_exit_tests.rs",
+      "bytes": 15982,
+      "sha256": "d0565fe8491d10624e43e0e8855ff3b18854641a23dadd7ce9ab4c9b3b22873d",
+      "mode": "0o100644"
+    },
+    {
+      "path": "round3_root_native/windows/units/03_tui_child_readiness/repair.patch",
+      "bytes": 3761,
+      "sha256": "b85f9b019b577062d00ea2777a424d60e923fdfee82b9bc885896f520a1a1826",
+      "mode": "0o100644"
+    }
+  ]
+}
