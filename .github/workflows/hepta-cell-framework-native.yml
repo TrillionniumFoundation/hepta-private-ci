@@ -40,7 +40,7 @@ jobs:
               -p codex-utils-pty -p codex-hepta-context-compiler
               -p codex-hepta-intelligence
           - owner: agentd-composition
-            packages: -p codex-hepta-agentd -p codex-hepta-agent-protocol
+            packages: -p codex-hepta-agentd -p codex-hepta-agent-protocol -p codex-hepta-infer-worker-host
           - owner: inherited-dependencies
             packages: >-
               -p codex-model-provider-info -p codex-shell-escalation
