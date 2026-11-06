@@ -1,0 +1,16 @@
+{
+  "schema": "ndu.followup-import-boundary-qualification.v1",
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "unittest",
+    "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_frozen_lm_followup_20261106.test_prompts",
+    "-v"
+  ],
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": "test_exact_json_has_no_repair (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_frozen_lm_followup_20261106.test_prompts.PublicBoundaryTests.test_exact_json_has_no_repair) ... ok\ntest_private_oracle_fields_do_not_enter_prompts (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_frozen_lm_followup_20261106.test_prompts.PublicBoundaryTests.test_private_oracle_fields_do_not_enter_prompts) ... ok\ntest_source_window_has_strict_types_and_caps (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_frozen_lm_followup_20261106.test_prompts.PublicBoundaryTests.test_source_window_has_strict_types_and_caps) ... ok\ntest_sql_payload_cannot_select_another_tool (experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.ndu_frozen_lm_followup_20261106.test_prompts.PublicBoundaryTests.test_sql_payload_cannot_select_another_tool) ... ok\n\n----------------------------------------------------------------------\nRan 4 tests in 0.001s\n\nOK\n",
+  "source_identical_to_previous_pilot": true,
+  "real_model_calls": 0,
+  "statistical_observations": 0
+}
