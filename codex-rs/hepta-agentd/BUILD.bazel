@@ -12,6 +12,7 @@ _UNIT_TEST_DEPENDENCIES = {
 }
 
 _JOINT_TEST_FIXTURE = [
+    "tests/support/neuron_generation.rs",
     "//codex-rs/hepta-neuron:tests/fixtures/joint-synthetic-v1.json",
     "//codex-rs/hepta-neuron:tests/support/joint_synthetic.rs",
 ]
@@ -30,6 +31,7 @@ codex_rust_crate(
     # Match the Agentd Cargo default on both the library and product binaries.
     crate_features = ["production-cognitive-write"],
     crate_name = "codex_hepta_agentd",
+    extra_binaries = ["//codex-rs/hepta-infer-worker-host:hepta-joint-propose"],
     integration_test_timeout = "long",
     # Cargo unifies the qualification-only dev dependency for integration tests.
     # Keep the complete existing test graph without changing product binaries.

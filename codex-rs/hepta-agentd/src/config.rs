@@ -772,6 +772,13 @@ impl AgentdConfig {
         bootstrap: crate::NeuronGenerationRuntimeBootstrapV2,
     ) -> Result<Self, AgentdError> {
         bootstrap.require_identity(&self.identity)?;
+        self.require_neuron_generation_profile()?;
+        self.neuron_generation_bootstrap = Some(bootstrap);
+        Ok(self)
+    }
+
+    /// Check the explicit generation profile before opening its durable owners.
+    pub fn require_neuron_generation_profile(&self) -> Result<(), AgentdError> {
         if self.neuron_generation_bootstrap.is_some()
             || self.notes_objective.is_some()
             || self.desktop_objective.is_some()
@@ -780,8 +787,7 @@ impl AgentdConfig {
                 "generation service requires its own explicit non-finite profile".into(),
             ));
         }
-        self.neuron_generation_bootstrap = Some(bootstrap);
-        Ok(self)
+        Ok(())
     }
 
     pub(crate) fn take_neuron_generation_bootstrap(

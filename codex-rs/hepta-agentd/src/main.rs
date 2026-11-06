@@ -6,6 +6,7 @@ use codex_hepta_agentd::AgentdIntelligenceProductRunnerV1;
 #[cfg(target_os = "linux")]
 use codex_hepta_agentd::AgentdProductionStartup;
 use codex_hepta_agentd::IntelligenceAuthorityVerifierV1;
+use codex_hepta_agentd::load_neuron_generation_process_bootstrap_v1;
 use codex_hepta_agentd::load_plasticity_process_bootstrap_v1;
 use codex_hepta_types::Digest32;
 use codex_utils_absolute_path::AbsolutePathBuf;
@@ -37,6 +38,8 @@ fn main() -> anyhow::Result<()> {
             let mut intelligence_authority_verifying_key = None;
             let mut plasticity_bootstrap_descriptor: Option<PathBuf> = None;
             let mut plasticity_bootstrap_descriptor_digest: Option<Digest32> = None;
+            let mut generation_descriptor: Option<PathBuf> = None;
+            let mut generation_descriptor_digest: Option<Digest32> = None;
             let mut objective_profile = None;
             let mut authbus_checkpoint = None;
             let mut evidence_trust = None;
@@ -67,6 +70,24 @@ fn main() -> anyhow::Result<()> {
                     plasticity_bootstrap_descriptor_digest =
                         Some(value.parse::<Digest32>().map_err(|error| {
                             anyhow::anyhow!("invalid plasticity descriptor digest: {error}")
+                        })?);
+                } else if flag == "--neuron-generation-bootstrap-descriptor" {
+                    anyhow::ensure!(
+                        generation_descriptor.is_none(),
+                        "duplicate --neuron-generation-bootstrap-descriptor"
+                    );
+                    generation_descriptor = Some(path.into());
+                } else if flag == "--neuron-generation-bootstrap-descriptor-digest" {
+                    anyhow::ensure!(
+                        generation_descriptor_digest.is_none(),
+                        "duplicate --neuron-generation-bootstrap-descriptor-digest"
+                    );
+                    let value = path.into_string().map_err(|_| {
+                        anyhow::anyhow!("generation descriptor digest must be UTF-8")
+                    })?;
+                    generation_descriptor_digest =
+                        Some(value.parse::<Digest32>().map_err(|error| {
+                            anyhow::anyhow!("invalid generation descriptor digest: {error}")
                         })?);
                 } else if flag == "--intelligence-authority-file" {
                     anyhow::ensure!(
@@ -192,6 +213,23 @@ fn main() -> anyhow::Result<()> {
                 (None, None) => {}
                 _ => anyhow::bail!(
                     "--plasticity-bootstrap-descriptor and its digest must be supplied together"
+                ),
+            }
+
+            match (generation_descriptor, generation_descriptor_digest) {
+                (Some(path), Some(expected_digest)) => {
+                    config.require_neuron_generation_profile()?;
+                    let (_handle, bootstrap) = load_neuron_generation_process_bootstrap_v1(
+                        &path,
+                        expected_digest,
+                        config.identity(),
+                    )?;
+                    config = config
+                        .with_neuron_generation_bootstrap(bootstrap.with_control_endpoint()?)?;
+                }
+                (None, None) => {}
+                _ => anyhow::bail!(
+                    "--neuron-generation-bootstrap-descriptor and its digest must be supplied together"
                 ),
             }
 
