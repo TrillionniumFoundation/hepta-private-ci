@@ -187,6 +187,24 @@ impl<W: AnchorWitnessStore> CellGenerationJournalV2<W> {
         Ok(&self.state.snapshot)
     }
 
+    /// Identify the exact healthy journal cut without adding persistent bytes.
+    /// The header binds the frozen config and limits; the head binds every
+    /// retained event, including cost, cancellation, drain and delivery ACKs.
+    /// This is a continuity observation, not an adoption or writer grant.
+    pub fn continuity_checkpoint(&self) -> Result<Digest32, CellGenerationErrorV2> {
+        self.require_healthy()?;
+        let (sequence, head) = self.head.map_or((0, Digest32::ZERO), |anchor| {
+            (anchor.sequence, anchor.checkpoint_digest)
+        });
+        Ok(Digest32::of_parts(&[
+            b"hepta.cell.generation-continuity.v2\0",
+            &self.header,
+            &sequence.to_be_bytes(),
+            head.as_array(),
+            &self.length.to_be_bytes(),
+        ]))
+    }
+
     pub fn pending_request(
         &self,
     ) -> Result<Option<&CellGenerationRequestV2>, CellGenerationErrorV2> {

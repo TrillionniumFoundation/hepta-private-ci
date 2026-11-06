@@ -566,6 +566,80 @@ async fn retirement_waits_for_exact_ack_and_only_then_permits_same_owner_success
     );
     drop(handle);
 
+    let retired = fixture.journal();
+    let retired_checkpoint = checked(retired.continuity_checkpoint());
+    let retired_snapshot = checked(retired.snapshot()).clone();
+    assert_eq!(retired_snapshot.prefix, chunk.bytes);
+    drop(retired);
+
+    // This branch has the same full runtime snapshot, config and completed
+    // output as the predecessor. Extra owner events still make it a different
+    // commit cut; matching only scope, manifest or prefix would admit it.
+    for suffix in ["journal", "witness"] {
+        checked(std::fs::copy(
+            fixture
+                .directory
+                .path()
+                .join(format!("generation-{suffix}")),
+            fixture.directory.path().join(format!("branched-{suffix}")),
+        ));
+    }
+    let mut branched = fixture.journal_with("branched", fixture.config.clone());
+    assert_eq!(
+        checked(branched.continuity_checkpoint()),
+        retired_checkpoint
+    );
+    checked(branched.resume());
+    checked(branched.drain());
+    assert_eq!(checked(branched.snapshot()), &retired_snapshot);
+    assert!(checked(branched.is_drained()));
+
+    let mut changed_scope = fixture.config.clone();
+    changed_scope.initial.scope.cell_id = "another-cell".into();
+    let mut changed_manifest = fixture.config.clone();
+    changed_manifest.manifest.bundle_digest = [26; 32];
+    changed_manifest.initial.manifest_digest = checked(changed_manifest.manifest.digest());
+    for (name, journal) in [
+        (
+            "fresh",
+            fixture.journal_with("fresh", fixture.config.clone()),
+        ),
+        ("branched", branched),
+        ("scope", fixture.journal_with("scope", changed_scope)),
+        (
+            "manifest",
+            fixture.journal_with("manifest", changed_manifest),
+        ),
+    ] {
+        assert_ne!(checked(journal.continuity_checkpoint()), retired_checkpoint);
+        let (_rejected, bootstrap) = checked(neuron_generation_channel_v2(
+            &fixture.identity,
+            journal,
+            fixture.control.clone(),
+            fixture.clock(),
+            /*capacity*/ 3,
+        ));
+        let bootstrap =
+            checked(bootstrap.with_service_generation(generation(2), Some(generation(1))));
+        assert!(
+            spawn_neuron_generation_service(
+                &mut tasks,
+                bootstrap,
+                Arc::clone(fixture.state()),
+                lifetime.clone(),
+            )
+            .is_err(),
+            "{name} journal must not replace the retired owner"
+        );
+        // A rejected attachment must retain the acknowledged predecessor and
+        // leave its generation slot available for the exact original journal.
+        assert_eq!(
+            checked(fixture.state().neuron_generation_drain_blockers()),
+            0
+        );
+        assert_eq!(tasks.active_count(), 1);
+    }
+
     let (successor, bootstrap) = checked(neuron_generation_channel_v2(
         &fixture.identity,
         fixture.journal(),

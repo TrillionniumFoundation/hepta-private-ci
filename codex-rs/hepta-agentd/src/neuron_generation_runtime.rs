@@ -230,11 +230,15 @@ where
             "generation journal belongs to another agent".into(),
         ));
     }
+    let opening_checkpoint = journal
+        .continuity_checkpoint()
+        .map_err(|error| AgentdError::Invalid(error.to_string()))?;
     let manifest = journal.manifest();
     let (sender, receiver) = mpsc::channel(capacity);
     let projection = Arc::new(NeuronGenerationProjection::new(
         generation,
-        None,
+        /*predecessor*/ None,
+        opening_checkpoint,
         sender.downgrade(),
     ));
     let handle = NeuronGenerationRuntimeHandleV2 {
@@ -279,6 +283,7 @@ impl NeuronGenerationRuntimeBootstrapV2 {
         self.projection = Arc::new(NeuronGenerationProjection::new(
             generation,
             expected_predecessor,
+            self.projection.opening_checkpoint,
             self.projection.command_sender.clone(),
         ));
         Ok(self)
@@ -295,6 +300,11 @@ impl NeuronGenerationRuntimeBootstrapV2 {
 
     pub(crate) fn attach(&self, state: &AgentdState) -> Result<(), AgentdError> {
         self.require_identity(state.identity())?;
+        if self.owner.continuity_checkpoint()? != self.projection.opening_checkpoint {
+            return Err(AgentdError::Protocol(
+                "generation bootstrap journal changed before attachment".into(),
+            ));
+        }
         state.attach_neuron_generation(Arc::clone(&self.projection))
     }
 }

@@ -9,6 +9,7 @@ use codex_hepta_neuron::CellGenerationControlPortV2;
 use codex_hepta_neuron::CellGenerationErrorV2;
 use codex_hepta_neuron::CellGenerationRequestV2;
 use codex_hepta_neuron::CellOutputChunkV2;
+use codex_hepta_types::Digest32;
 use tokio_util::sync::CancellationToken;
 
 use crate::AgentdError;
@@ -33,6 +34,7 @@ pub(crate) trait GenerationRuntimeOwner: Send {
         state: &AgentdState,
     ) -> Result<(), AgentdError>;
     fn observation(&self) -> Result<(bool, bool), AgentdError>;
+    fn continuity_checkpoint(&self) -> Result<Digest32, AgentdError>;
     fn drain(&mut self, state: &AgentdState) -> Result<bool, AgentdError>;
 }
 
@@ -130,6 +132,13 @@ where
         let clear = journal.pending_request().map_err(owner_error)?.is_none()
             && journal.pending_output().map_err(owner_error)?.is_none();
         Ok((clear, journal.is_drained().map_err(owner_error)?))
+    }
+
+    fn continuity_checkpoint(&self) -> Result<Digest32, AgentdError> {
+        self.owner
+            .journal()
+            .continuity_checkpoint()
+            .map_err(owner_error)
     }
 
     fn drain(&mut self, state: &AgentdState) -> Result<bool, AgentdError> {
@@ -255,7 +264,9 @@ async fn run(
         state.require_neuron_generation_recovery()?;
         bootstrap.projection.observe_owner(clear)?;
         if retiring && drained {
-            bootstrap.projection.prepare_retirement()?;
+            let checkpoint = bootstrap.owner.continuity_checkpoint()?;
+            state.require_neuron_generation_recovery()?;
+            bootstrap.projection.prepare_retirement(checkpoint)?;
             lifetime.retirement_ready = true;
             return Ok(());
         }

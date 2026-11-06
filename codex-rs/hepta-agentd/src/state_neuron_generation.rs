@@ -4,6 +4,7 @@
 use std::sync::Arc;
 use std::sync::Mutex;
 
+use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use tokio::sync::Notify;
 use tokio::sync::mpsc;
@@ -27,13 +28,14 @@ struct Observation {
     host_draining: bool,
     retiring: bool,
     owner_clear: bool,
-    retirement_ready: bool,
+    retirement_checkpoint: Option<Digest32>,
     admission_cancellation: Option<CancellationToken>,
 }
 
 pub(crate) struct NeuronGenerationProjection {
     pub(crate) generation: Generation,
     pub(crate) predecessor: Option<Generation>,
+    pub(crate) opening_checkpoint: Digest32,
     pub(crate) command_sender: mpsc::WeakSender<GenerationCommand>,
     observation: Mutex<Observation>,
     notify: Notify,
@@ -43,18 +45,20 @@ impl NeuronGenerationProjection {
     pub(crate) fn new(
         generation: Generation,
         predecessor: Option<Generation>,
+        opening_checkpoint: Digest32,
         command_sender: mpsc::WeakSender<GenerationCommand>,
     ) -> Self {
         Self {
             generation,
             predecessor,
+            opening_checkpoint,
             command_sender,
             observation: Mutex::new(Observation {
                 phase: Phase::Unstarted,
                 host_draining: false,
                 retiring: false,
                 owner_clear: false,
-                retirement_ready: false,
+                retirement_checkpoint: None,
                 admission_cancellation: None,
             }),
             notify: Notify::new(),
@@ -123,20 +127,20 @@ impl NeuronGenerationProjection {
         Ok(())
     }
 
-    pub(crate) fn prepare_retirement(&self) -> Result<(), AgentdError> {
+    pub(crate) fn prepare_retirement(&self, checkpoint: Digest32) -> Result<(), AgentdError> {
         let mut observed = self.observation.lock().map_err(poisoned_state)?;
         if observed.phase != Phase::Running || !observed.retiring || !observed.owner_clear {
             return Err(AgentdError::Protocol(
                 "generation owner retirement remains unacknowledged".into(),
             ));
         }
-        observed.retirement_ready = true;
+        observed.retirement_checkpoint = Some(checkpoint);
         Ok(())
     }
 
     pub(crate) fn retire(&self) -> Result<(), AgentdError> {
         let mut observed = self.observation.lock().map_err(poisoned_state)?;
-        if !observed.retirement_ready || observed.phase != Phase::Running {
+        if observed.retirement_checkpoint.is_none() || observed.phase != Phase::Running {
             return Err(AgentdError::Protocol(
                 "generation owner was not drained for retirement".into(),
             ));
@@ -151,12 +155,17 @@ impl NeuronGenerationProjection {
         {
             observed.phase = Phase::Quarantined;
             observed.owner_clear = false;
-            observed.retirement_ready = false;
+            observed.retirement_checkpoint = None;
         }
     }
 
-    fn is_retired(&self) -> Result<bool, AgentdError> {
-        Ok(self.observation.lock().map_err(poisoned_state)?.phase == Phase::Retired)
+    fn retired_checkpoint(&self) -> Result<Option<Digest32>, AgentdError> {
+        let observed = self.observation.lock().map_err(poisoned_state)?;
+        Ok(if observed.phase == Phase::Retired {
+            observed.retirement_checkpoint
+        } else {
+            None
+        })
     }
 
     pub(crate) async fn changed(&self) {
@@ -184,12 +193,18 @@ impl AgentdState {
             if Arc::ptr_eq(previous, &projection) {
                 return Ok(());
             }
-            if !previous.is_retired()?
+            let retired_checkpoint = previous.retired_checkpoint()?;
+            if retired_checkpoint.is_none()
                 || projection.predecessor != Some(previous.generation)
                 || projection.generation <= previous.generation
             {
                 return Err(AgentdError::Protocol(
                     "generation service predecessor is not retired".into(),
+                ));
+            }
+            if retired_checkpoint != Some(projection.opening_checkpoint) {
+                return Err(AgentdError::Protocol(
+                    "generation successor journal differs from the retired owner checkpoint".into(),
                 ));
             }
         } else if projection.predecessor.is_some() {

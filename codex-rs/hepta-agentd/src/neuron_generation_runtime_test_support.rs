@@ -290,6 +290,14 @@ impl Fixture {
     }
 
     pub(super) fn journal(&self) -> CellGenerationJournalV2<FileAnchorWitnessStore> {
+        self.journal_with("generation", self.config.clone())
+    }
+
+    pub(super) fn journal_with(
+        &self,
+        stem: &str,
+        config: CellGenerationConfigV2,
+    ) -> CellGenerationJournalV2<FileAnchorWitnessStore> {
         let open = |name: &str| {
             checked(
                 OpenOptions::new()
@@ -301,7 +309,7 @@ impl Fixture {
             )
         };
         let witness = checked(FileAnchorWitnessStore::open(
-            open("generation-witness"),
+            open(&format!("{stem}-witness")),
             JournalScope {
                 scope_digest: Digest32::of_bytes(b"generation-service"),
                 objective_digest: Digest32::of_bytes(b"generation-task"),
@@ -310,9 +318,9 @@ impl Fixture {
             /*max_records*/ 256,
         ));
         checked(CellGenerationJournalV2::open(
-            open("generation-journal"),
+            open(&format!("{stem}-journal")),
             witness,
-            self.config.clone(),
+            config,
             /*max_records*/ 256,
         ))
     }
