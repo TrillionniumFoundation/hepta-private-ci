@@ -21,6 +21,7 @@ from .joint_graph import (GraphSpec, JointCellGraph, digest, interval_seconds,
                           load_training_checkpoint, model_bytes, strict_json, tensor_digest)
 from .native_build import native_libraries
 from .population_graph import PopulationCellGraph, PopulationGraphSpec, population_intervals
+from .population_age_graph import PopulationAgeCellGraph, PopulationAgeGraphSpec, population_age_intervals
 
 REPO = Path(__file__).resolve().parents[2]
 
@@ -45,9 +46,10 @@ def state_digest(state):
     return tensor_digest({f"cell_{i}_slot_{j}": v for i, cell in enumerate(state) for j, v in enumerate(cell)})
 
 
-def run(root, label, command):
+def run(root, label, command, *, env=None):
     start = time.perf_counter()
-    child = subprocess.Popen([str(v) for v in command], cwd=REPO, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    child = subprocess.Popen([str(v) for v in command], cwd=REPO, env=env,
+                             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     try:
         stdout, stderr = child.communicate(timeout=180)
     except BaseException:
@@ -109,7 +111,9 @@ def resume(root):
     # Saved binding records training provenance; current model identity is candidate, never the old base SHA.
     inputs = torch.tensor(read(root/"continuation-input.json"), dtype=next(model.parameters()).dtype)
     with torch.no_grad():
-        intervals = (population_intervals(plan["intervals"], plan["profile"], model.spec)
+        intervals = (population_age_intervals(plan["intervals"], plan["profile"], model.spec)
+                     if isinstance(model, PopulationAgeCellGraph) else
+                     population_intervals(plan["intervals"], plan["profile"], model.spec)
                      if isinstance(model, PopulationCellGraph) else interval_seconds(plan["intervals"], plan["profile"]))
         prediction, final = model(inputs, intervals, state=state)
     if digest(execution_sources()) != admitted["training_code_digest"]:
@@ -120,7 +124,7 @@ def resume(root):
         cpu_seconds=time.process_time()-cpu, cpu_threads=torch.get_num_threads(), production_adoption=False))
 
 
-def execute(root, workspace, rustc, artifacts=None, backend="value_kernel", supervised=False):
+def execute(root, workspace, rustc, artifacts=None, backend="value_kernel", supervised=False, signed_worker=None):
     start, cpu = time.perf_counter(), time.process_time()
     native = build_native(root, workspace, rustc, artifacts)
     torch.manual_seed(31)
@@ -129,14 +133,19 @@ def execute(root, workspace, rustc, artifacts=None, backend="value_kernel", supe
                            [[-.15, .3], [.2, -.4], [.35, -.1], [.25, .7]]], dtype=torch.float64)
     profile = dict(maximum_gap_micros=1_000_000, forecast_horizon_micros=500_000, integration=dict(kind="value_kernel"))
     ends, targets = [100017, 300017, 450017, 750017], [[.4], [-.2]]
-    if backend == "population_grid":
-        model = PopulationCellGraph(PopulationGraphSpec(("encoder", "memory"), 1, 1, 1, 100_000)).double()
+    if backend in ("population_grid", "population_age"):
+        model = (PopulationAgeCellGraph(PopulationAgeGraphSpec(("encoder", "memory"), 1, 1, 1, 100_000, 32))
+                 if backend == "population_age" else
+                 PopulationCellGraph(PopulationGraphSpec(("encoder", "memory"), 1, 1, 1, 100_000))).double()
         with torch.no_grad():
             for name, parameter in model.named_parameters():
                 parameter.fill_(.1 if "bias" in name else .3)
         inputs = torch.tensor([[[.25], [.45], [-.3], [.6], [-.2]]], dtype=torch.float64)
         profile["integration"] = dict(kind="population_grid", step_micros=100_000, max_substeps=10)
         ends, targets = [100017, 200017, 300017, 400017, 500017], [[.4]]
+        if backend == "population_age":
+            profile["integration"] = dict(kind="population_age", max_step_micros=100_000, max_substeps=32)
+            ends = [73_018, 173_017, 243_017, 253_018, 403_017]
     write_new(root/"base.pt", model_bytes(model))
     base = sha(root/"base.pt")
     binding = dict(scope_digest=digest("scope"), generation=1, writer_epoch=1, clock_epoch=digest("clock"), model_digest=base)
@@ -162,9 +171,9 @@ def execute(root, workspace, rustc, artifacts=None, backend="value_kernel", supe
     dispatch = dict(request_file_sha256=sha(root/"request.json"), admitted_file_sha256=sha(root/"admitted.json"),
                     execution_sources=execution_sources(), caller_pid=os.getpid(), admitted_before_dispatch=True)
     write_new(root/"dispatch.json", dispatch)
-    if supervised:
+    if supervised or signed_worker is not None:
         from .verify_supervised_worker import dispatch as supervised_dispatch
-        worker_process = supervised_dispatch(root, workspace, rustc, artifacts)
+        worker_process = supervised_dispatch(root, workspace, rustc, artifacts, signed_worker)
     else:
         worker_process = run(root, "python-worker", [sys.executable, "-m", "qualification.hcsn_training.worker",
             "--request", root/"request.json", "--output", root/"worker"])
@@ -174,9 +183,12 @@ def execute(root, workspace, rustc, artifacts=None, backend="value_kernel", supe
     candidate_sha = sha(root/"worker/candidate.pt")
     candidate, state, metadata = load_training_checkpoint(root/"worker/candidate.pt", candidate_sha)
     continuation = inputs[:, :2]
-    intervals = (population_intervals(request["intervals"], profile, model.spec)
+    intervals = (population_age_intervals(request["intervals"], profile, model.spec)
+                 if isinstance(model, PopulationAgeCellGraph) else
+                 population_intervals(request["intervals"], profile, model.spec)
                  if isinstance(model, PopulationCellGraph) else interval_seconds(request["intervals"], profile))
-    continuation_intervals = (2, 1) if isinstance(model, PopulationCellGraph) else (.2, .1)
+    continuation_intervals = ((200_000, 100_000) if isinstance(model, PopulationAgeCellGraph) else
+                              (2, 1) if isinstance(model, PopulationCellGraph) else (.2, .1))
     with torch.no_grad():
         whole, final = candidate(torch.cat((inputs, continuation), 1), (*intervals, *continuation_intervals))
     write_new(root/"reference.json", dict(prediction=whole[:, -2:].tolist(), state_digest=state_digest(final),
@@ -197,7 +209,8 @@ def execute(root, workspace, rustc, artifacts=None, backend="value_kernel", supe
     second_block = verify_second_block(root, native, candidate, state, continuation, profile)
     run(root, "native-clock-commit", [native, "finish", root])
     result = dict(schema_version=1, status="passed", scope="CPU engineering fixture; no scientific campaign",
-        backend=backend, supervised=supervised, second_training_block=second_block,
+        backend=backend, supervised=supervised or signed_worker is not None,
+        signed_taskflow=signed_worker is not None, second_training_block=second_block,
         operation_id=request["operation_id"], caller_pid=os.getpid(), worker_pid=worker_process["pid"],
         cold_python_pid=cold_process["pid"], optimizer_steps=1, logical_cells=2,
         completed_optimizer_steps=receipt["completed_optimizer_steps"], gradient_cells=receipt["gradient_cells"],
@@ -220,8 +233,9 @@ def main():
     parser.add_argument("--rust-workspace", type=Path, default=REPO/"codex-rs")
     parser.add_argument("--rustc", default=shutil.which("rustc"))
     parser.add_argument("--cargo-artifacts", type=Path)
-    parser.add_argument("--backend", choices=("value_kernel", "population_grid"), default="value_kernel")
+    parser.add_argument("--backend", choices=("value_kernel", "population_grid", "population_age"), default="value_kernel")
     parser.add_argument("--supervised", action="store_true")
+    parser.add_argument("--signed-worker-executable", type=Path)
     parser.add_argument("--output", type=Path)
     parser.add_argument("--resume", type=Path, help=argparse.SUPPRESS)
     args = parser.parse_args()
@@ -234,7 +248,7 @@ def main():
     root.mkdir(parents=True, exist_ok=False)
     try:
         execute(root, args.rust_workspace.resolve(), str(Path(args.rustc).resolve()), args.cargo_artifacts,
-                args.backend, args.supervised)
+                args.backend, args.supervised, args.signed_worker_executable)
     except BaseException as error:
         write_new(root/"failure.json", dict(error=type(error).__name__, message=str(error),
             scope="engineering fixture; preserve this attempt; no automatic retry"))

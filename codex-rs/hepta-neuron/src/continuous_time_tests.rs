@@ -94,6 +94,67 @@ fn population_plan_preserves_the_fixed_refractory_grid_and_bounds_work() {
 }
 
 #[test]
+fn population_age_admits_non_grid_intervals_and_preserves_event_budget() {
+    let (mut profile, identity, _) = fixture();
+    profile.integration = HcsnIntegrationV1::PopulationAge {
+        max_step_micros: 10_000,
+        max_substeps: 4,
+    };
+    let previous = checked(HcsnClockCheckpointV1::initial(
+        &profile,
+        identity,
+        /*last_micros*/ 100,
+        Digest32::of_bytes(b"complete-cohorts-and-integer-expiries"),
+    ));
+    for elapsed in [1, 9_999, 10_001, 39_999, 40_000] {
+        let plan = checked(plan_hcsn_interval_v1(
+            &profile,
+            identity,
+            &previous,
+            previous.last_micros() + elapsed,
+        ));
+        assert_eq!(
+            (plan.elapsed_micros, plan.substep_micros, plan.substeps),
+            (elapsed, 10_000, 4)
+        );
+        let committed = checked(commit_hcsn_interval_v1(
+            &profile,
+            identity,
+            &previous,
+            &plan,
+            Digest32::of_bytes(b"complete-successor-cohorts"),
+        ));
+        assert_eq!(
+            checked(HcsnClockCheckpointV1::restore(
+                &profile,
+                identity,
+                &checked(committed.encode()),
+                committed.digest(),
+            )),
+            committed
+        );
+    }
+    assert_eq!(
+        plan_hcsn_interval_v1(&profile, identity, &previous, /*end_micros*/ 40_101),
+        Err(HcsnTimeError::SubstepLimit)
+    );
+    let mut fixed = profile;
+    fixed.integration = HcsnIntegrationV1::PopulationGrid {
+        step_micros: 10_000,
+        max_substeps: 4,
+    };
+    assert_eq!(
+        HcsnClockCheckpointV1::restore(
+            &fixed,
+            identity,
+            &checked(previous.encode()),
+            previous.digest(),
+        ),
+        Err(HcsnTimeError::ProfileMismatch)
+    );
+}
+
+#[test]
 fn invalid_clock_intervals_never_advance_checkpoint() {
     let (profile, identity, previous) = fixture();
     let snapshot = previous.clone();
