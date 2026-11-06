@@ -1889,7 +1889,16 @@ async fn auto_compact_emits_context_compaction_items() {
                 EventMsg::ContextCompacted(_) => {
                     legacy_event = true;
                 }
-                EventMsg::TurnComplete(_) if !event.id.starts_with("auto-compact-") => {
+                EventMsg::TurnComplete(completed) if !event.id.starts_with("auto-compact-") => {
+                    // Keep raw compaction observations, then wait for this exact finish owner
+                    // before submitting the next sequential user turn.
+                    if let Some(completion) =
+                        codex.pending_normal_turn_finish_completion(&completed.turn_id)
+                    {
+                        tokio::time::timeout(std::time::Duration::from_secs(10), completion)
+                            .await
+                            .expect("observed normal turn finish owner exceeded the event budget");
+                    }
                     break;
                 }
                 _ => {}
@@ -4032,9 +4041,17 @@ async fn auto_compact_allows_multiple_attempts_when_interleaved_with_other_turn_
                 auto_compact_lifecycle_events.push(event);
                 continue;
             }
-            if let EventMsg::TurnComplete(_) = &event.msg
+            if let EventMsg::TurnComplete(completed) = &event.msg
                 && !event.id.starts_with("auto-compact-")
             {
+                // Preserve the lifecycle sequence while observing the normal finish owner.
+                if let Some(completion) =
+                    codex.pending_normal_turn_finish_completion(&completed.turn_id)
+                {
+                    tokio::time::timeout(std::time::Duration::from_secs(10), completion)
+                        .await
+                        .expect("observed normal turn finish owner exceeded the event budget");
+                }
                 break;
             }
         }
