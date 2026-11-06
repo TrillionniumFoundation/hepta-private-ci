@@ -38,6 +38,9 @@ fn workspace_roots_profile() -> PermissionProfile {
 }
 
 async fn workspace_roots_test(server: &MockServer) -> Result<TestCodex> {
+    #[cfg(windows)]
+    super::windows_sandbox::stage_windows_sandbox_helpers()?;
+
     let mut builder = test_codex().with_config(|config| {
         #[cfg(windows)]
         {

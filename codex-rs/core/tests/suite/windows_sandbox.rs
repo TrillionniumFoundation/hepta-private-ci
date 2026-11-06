@@ -86,7 +86,10 @@ fn codex_home_for_windows_sandbox_test(name: &str) -> anyhow::Result<TestCodexHo
     Ok(TestCodexHome::Temporary(TempDir::new()?))
 }
 
-fn stage_windows_sandbox_helpers() -> anyhow::Result<()> {
+#[path = "windows_sandbox_helpers.rs"]
+mod helper_staging;
+
+pub(super) fn stage_windows_sandbox_helpers() -> anyhow::Result<()> {
     let test_exe = std::env::current_exe().context("resolve current Windows test executable")?;
     let test_exe_dir = test_exe
         .parent()
@@ -105,21 +108,13 @@ fn stage_windows_sandbox_helpers() -> anyhow::Result<()> {
         let helper = codex_utils_cargo_bin::cargo_bin(helper_name)?;
         let file_name = Path::new(helper_name).with_extension("exe");
         let destination = resources_dir.join(file_name);
-        if let Err(err) = std::fs::copy(&helper, &destination) {
-            // A sandbox helper can briefly remain alive after the sandboxed
-            // command exits. Bazel may retry the test while that process still
-            // has the staged executable open, so keep the already-staged copy.
-            if err.kind() == std::io::ErrorKind::PermissionDenied && destination.exists() {
-                continue;
-            }
-            return Err(err).with_context(|| {
-                format!(
-                    "stage Windows sandbox helper {} at {}",
-                    helper.display(),
-                    destination.display()
-                )
-            });
-        }
+        helper_staging::stage_helper(&helper, &destination).with_context(|| {
+            format!(
+                "stage Windows sandbox helper {} at {}",
+                helper.display(),
+                destination.display()
+            )
+        })?;
     }
     Ok(())
 }
