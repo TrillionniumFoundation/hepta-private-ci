@@ -1,0 +1,532 @@
+{
+  "schema": "hepta.ui-chat-convergence.qualification.v1",
+  "decision": "HOLD",
+  "decision_basis": "No ordinary trusted user-entry run demonstrated a real provider/tool/device effect, durable terminal, audit receipt and post-restart readback. Scoped green results do not substitute for that product loop.",
+  "code": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "head": "518d0021e29a32e07c14d92b4c4e0cab5c4c4e8e",
+    "tree": "20834ab797f13ece7a89ae954b9505fc076e9be9",
+    "parents": [
+      "768f94ef5457d0dbd0355cfdf3cb125fb966ee9f",
+      "65f266d07e3606ddeb109ef4683e1aecd201334c"
+    ],
+    "base": "67cc5c28",
+    "draft_prs": [
+      4952,
+      4953
+    ],
+    "production_activated": false,
+    "main_merged": false
+  },
+  "earlier_source_results": {
+    "source": "768f94ef5457d0dbd0355cfdf3cb125fb966ee9f",
+    "tree": "8df7e3a8abff4eacbb8d8a61b50daf9d29bea4e9",
+    "runner": {
+      "rust": "1.95.0",
+      "just": "1.58.0",
+      "nextest": "0.9.146"
+    },
+    "scopes": [
+      {
+        "name": "Agentd Objective/UI/sender selectors",
+        "passed": 19,
+        "filter_excluded": 233
+      },
+      {
+        "name": "Memory sender selectors",
+        "passed": 27,
+        "filter_excluded": 309
+      },
+      {
+        "name": "Shared Rust libraries --no-default-features --lib",
+        "passed": 67,
+        "filter_excluded": 0
+      },
+      {
+        "name": "Original SDK headless native presentation",
+        "passed": 28
+      },
+      {
+        "name": "Actual native presentation and TextInput",
+        "passed": 37
+      }
+    ],
+    "actual_retries_observed": 0,
+    "receipt_followups_counted_as_new_coverage": false,
+    "hygiene": "Scoped just fix changed no source; original scoped formatter subsequently split imports in one test. Results remain bound to this earlier source.",
+    "claim_final_head_execution": false,
+    "external_product_effects_executed": 0
+  },
+  "final_source_results": {
+    "source": "518d0021e29a32e07c14d92b4c4e0cab5c4c4e8e",
+    "tree": "20834ab797f13ece7a89ae954b9505fc076e9be9",
+    "gateway": {
+      "build_exit_code": 0,
+      "binary_sha256": "fc011c0d09dca3c7dc814700bd8c7a83bbf316b9b5414cdfcb26b2c00d7ae27a",
+      "source_sidecar_hashes_verified": 16,
+      "selected_passed": 28,
+      "groups": [
+        {
+          "name": "transport",
+          "passed": 9,
+          "minimum": 9,
+          "filter_excluded": 31
+        },
+        {
+          "name": "owner-status",
+          "passed": 5,
+          "minimum": 5,
+          "filter_excluded": 35
+        },
+        {
+          "name": "ui-bundle",
+          "passed": 12,
+          "minimum": 11,
+          "filter_excluded": 28
+        },
+        {
+          "name": "http-origin",
+          "passed": 2,
+          "minimum": 2,
+          "filter_excluded": 38
+        }
+      ],
+      "watchdog_seconds": 600,
+      "new_first_execution_scopes": true
+    },
+    "web": {
+      "strict_csp_assets": 52,
+      "resource_contracts_passed": 5,
+      "bridge_passed": 32,
+      "actual_gateway_browser": {
+        "passed": 7,
+        "failed": 0,
+        "scope": "Actual Rust unavailable/503 gateway, timeout/navigation/background cancellation and pinned SDK stream controls; no authorized task effect."
+      },
+      "http_boundary": {
+        "matrix_passed": 60,
+        "hard_negatives_passed": 36,
+        "failed": 0,
+        "outer_watchdog_seconds": 600,
+        "stall_seconds": 20,
+        "native_observation_milliseconds": 1500,
+        "scope": "Real HTTP and exact shipping SDK methods with synthetic WASM exports; not the complete Rust owner product loop."
+      },
+      "default_renderer": {
+        "chromium_passed": 2,
+        "firefox_passed": 2,
+        "webkit_prelaunch_failed": 2,
+        "overall": "FAIL"
+      },
+      "default_pixel": {
+        "captures_present": 40,
+        "captures_required": 60,
+        "semantics_passed": 92,
+        "semantics_evaluated": 92,
+        "semantics_required": 138,
+        "overall": "FAIL",
+        "semantics_missing_not_executed": 46
+      },
+      "filled_renderer": {
+        "chromium_passed": 3,
+        "firefox_passed": 3,
+        "webkit_prelaunch_failed": 3,
+        "overall": "FAIL",
+        "fixture_message_count": 64,
+        "live_user_task": false
+      },
+      "webkit_blocker": "Original Playwright host dependency check requires /sbin/ldconfig -p and reports missing libx264/gstreamer-libav dependencies. No bypass or browser omission was used.",
+      "filled_pixel": {
+        "captures_present": 52,
+        "captures_required": 78,
+        "semantics_passed": 292,
+        "semantics_evaluated": 292,
+        "semantics_required": 438,
+        "semantics_missing_not_executed": 146,
+        "overall": "FAIL",
+        "raw_log_sha256": "b4dc54aab8f439e80473faf092af329b3b341d99cdb0440f49768982367fd8ed"
+      }
+    },
+    "hosted_native": {
+      "run_id": 42198835533,
+      "job_id": 127834787283,
+      "conclusion": "success",
+      "headless": {
+        "passed": 28,
+        "skipped": 0,
+        "original_minimum": 5,
+        "timeout_seconds": 600
+      },
+      "native": {
+        "passed": 37,
+        "skipped": 0,
+        "original_minimum": 8,
+        "timeout_seconds": 1200
+      },
+      "original_gate_self_tests_passed": 12,
+      "source_before_after_clean": true,
+      "fresh_junit_verified": true,
+      "lock_hash_check": "OK",
+      "raw_log_bytes": 1537844,
+      "raw_log_sha256": "9b7daefb3f06bac35f2c65510d10ef46b681aa0a5abc560ee7a0b9ff72f46359",
+      "scope": "Original hosted source-head workflow, independently executed on the final source. Physical IME/accessibility/device/effect qualification remains open.",
+      "junit_xml_downloaded_in_this_collection": false,
+      "junit_evidence": "Complete original hosted job verifier output retains fresh run UUID and XML hashes/byte counts; archive artifact remains on GitHub.",
+      "github_artifact_id": 13496020022
+    }
+  },
+  "cross_repository": {
+    "reviewed_owner_candidate": "d4a6e26bf7a79879118420db27d10e5e054ca9c8",
+    "desktop_candidates": [
+      {
+        "desktop": "af0e75dcb1e4868606aaf0b818b8b3e993534f10",
+        "hepta": "14e2d89b3367232ec5dbe6187f09feed0f2b68d3"
+      },
+      {
+        "desktop": "1c8b37da8382862b35791044f444396423da4f8d",
+        "hepta": "bfdf51e19efdfd38f6f6825372e81a790ed40c90"
+      }
+    ],
+    "profile_file_count": 194,
+    "af0_profile_vs_14e": {
+      "same": 194,
+      "changed": 0,
+      "missing": 0
+    },
+    "af0_profile_vs_d4": {
+      "same": 147,
+      "changed": 47,
+      "missing": 0
+    },
+    "lock_files_read": 12,
+    "production_adapter_exists": true,
+    "installed_source_profile_verified": false,
+    "ordinary_product_entry_qualified": false,
+    "caution": "The existing NativeChatComposition/TextChatAdapter replaces the older API. It already has send guards and read reconciliation. Do not install a second Objective worker or infer that source-interface equality qualifies the whole paired package."
+  },
+  "deployment_metadata": {
+    "hosts": [
+      "ai395",
+      "desktop"
+    ],
+    "paths": [
+      "/var/lib/trill",
+      "/opt/trill",
+      "/run/trill"
+    ],
+    "read_only": true,
+    "sudo": false,
+    "recursed": false,
+    "profile_or_environment_or_cmdline_read": false,
+    "ai395": "Three specified paths absent; none of selected process names matched the bounded scan.",
+    "desktop": "/var/lib/trill exists with ten root-owned direct subdirectories; two other specified paths absent; none of selected process names matched.",
+    "scope": "Point-in-time bounded metadata only; not proof of current installation, activation, trusted binary/profile or absence of all processes."
+  },
+  "open_acceptance": [
+    "Exact source/profile paired ordinary trusted entry",
+    "User task to independently observed provider/tool/device effect",
+    "Durable terminal and independently checkable effect/audit receipts",
+    "Cross-device state and capability consistency",
+    "Detailed TaskFlow/Memory progress linked to real task effects",
+    "Revocation, uncertain errors, cancellation and recovery on actual owners",
+    "Disconnect and Agentd plus AppServer dual-process or host restart",
+    "Physical IME/CJK and real multi-window focus",
+    "Assistive technology and actual mobile touch",
+    "Product idle/active CPU, RSS, write amplification and device power"
+  ],
+  "rust_only_boundary": "State, business rules, layout/theme and composition remain Rust-owned; the browser necessarily uses pinned Makepad JavaScript/WASM startup/render/input bridges. No parallel JavaScript business UI is introduced.",
+  "evidence_integrity": "Complete originals, first failures, setup corrections, source identities, limits and independent receipts are retained. Filter exclusions, pending and skipped jobs are not passes. Overlapping scopes and repeated receipt runs are not summed into a unique test total.",
+  "ci_snapshot": {
+    "clock_at_start": {
+      "current_time": "2026-11-06 10:39:15 UTC"
+    },
+    "runs": [
+      {
+        "run_id": 42198835533,
+        "role": "ui",
+        "jobs": [
+          {
+            "id": 127834787047,
+            "name": "Rust UI foundation / source-head",
+            "status": "in_progress",
+            "conclusion": null,
+            "completed_at": null
+          },
+          {
+            "id": 127834787283,
+            "name": "Original native presentation / source-head",
+            "status": "completed",
+            "conclusion": "success",
+            "completed_at": "2026-11-06T10:29:54Z"
+          },
+          {
+            "id": 127834787321,
+            "name": "Generate UI dependency lock for review",
+            "status": "completed",
+            "conclusion": "success",
+            "completed_at": "2026-11-06T10:30:17Z"
+          },
+          {
+            "id": 127834787367,
+            "name": "Rust UI foundation / base-merge",
+            "status": "in_progress",
+            "conclusion": null,
+            "completed_at": null
+          },
+          {
+            "id": 127834787720,
+            "name": "Original native presentation / base-merge",
+            "status": "completed",
+            "conclusion": "success",
+            "completed_at": "2026-11-06T10:29:59Z"
+          }
+        ]
+      },
+      {
+        "run_id": 42198835669,
+        "role": "owner",
+        "jobs": [
+          {
+            "id": 127830879434,
+            "name": "Original memory and Agentd libraries (source head)",
+            "status": "in_progress",
+            "conclusion": null,
+            "completed_at": null
+          }
+        ]
+      },
+      {
+        "run_id": 42198835848,
+        "role": "blocking",
+        "jobs": [
+          {
+            "id": 127838489045,
+            "name": "Select blocking CI scope",
+            "status": "completed",
+            "conclusion": "success",
+            "completed_at": "2026-11-06T10:31:48Z"
+          },
+          {
+            "id": 127838489493,
+            "name": "Codespell / Check for spelling errors",
+            "status": "completed",
+            "conclusion": "success",
+            "completed_at": "2026-11-06T10:21:15Z"
+          },
+          {
+            "id": 127838489513,
+            "name": "Blob size policy / Blob size policy",
+            "status": "completed",
+            "conclusion": "success",
+            "completed_at": "2026-11-06T10:30:05Z"
+          },
+          {
+            "id": 127843843698,
+            "name": "Hepta contract gate / Validate canonical branch and contract metadata",
+            "status": "queued",
+            "conclusion": null,
+            "completed_at": null
+          },
+          {
+            "id": 127843843708,
+            "name": "rust-ci / Detect changed areas",
+            "status": "queued",
+            "conclusion": null,
+            "completed_at": null
+          },
+          {
+            "id": 127843843735,
+            "name": "repo-checks / build-test",
+            "status": "completed",
+            "conclusion": "success",
+            "completed_at": "2026-11-06T10:36:39Z"
+          },
+          {
+            "id": 127843843790,
+            "name": "cargo-deny / cargo-deny",
+            "status": "completed",
+            "conclusion": "failure",
+            "completed_at": "2026-11-06T10:34:21Z"
+          },
+          {
+            "id": 127843843836,
+            "name": "repo-checks / Native Hepta paths on ubuntu-24.04",
+            "status": "queued",
+            "conclusion": null,
+            "completed_at": null
+          },
+          {
+            "id": 127843843843,
+            "name": "repo-checks / Native Hepta paths on macos-15",
+            "status": "queued",
+            "conclusion": null,
+            "completed_at": null
+          },
+          {
+            "id": 127843843915,
+            "name": "sdk / python-sdk",
+            "status": "queued",
+            "conclusion": null,
+            "completed_at": null
+          },
+          {
+            "id": 127843843949,
+            "name": "sdk / sdks",
+            "status": "queued",
+            "conclusion": null,
+            "completed_at": null
+          },
+          {
+            "id": 127843844043,
+            "name": "repo-checks / Native Hepta paths on windows-latest",
+            "status": "completed",
+            "conclusion": "success",
+            "completed_at": "2026-11-06T10:39:04Z"
+          },
+          {
+            "id": 127843844238,
+            "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4",
+            "status": "in_progress",
+            "conclusion": null,
+            "completed_at": null
+          },
+          {
+            "id": 127843844245,
+            "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+            "status": "in_progress",
+            "conclusion": null,
+            "completed_at": null
+          },
+          {
+            "id": 127843844251,
+            "name": "Bazel / Bazel clippy on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+            "status": "queued",
+            "conclusion": null,
+            "completed_at": null
+          },
+          {
+            "id": 127843844255,
+            "name": "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+            "status": "queued",
+            "conclusion": null,
+            "completed_at": null
+          },
+          {
+            "id": 127843844259,
+            "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+            "status": "queued",
+            "conclusion": null,
+            "completed_at": null
+          },
+          {
+            "id": 127843844268,
+            "name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc",
+            "status": "in_progress",
+            "conclusion": null,
+            "completed_at": null
+          },
+          {
+            "id": 127843844280,
+            "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+            "status": "queued",
+            "conclusion": null,
+            "completed_at": null
+          },
+          {
+            "id": 127843844300,
+            "name": "Bazel / Verify release build on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+            "status": "queued",
+            "conclusion": null,
+            "completed_at": null
+          },
+          {
+            "id": 127843844305,
+            "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+            "status": "in_progress",
+            "conclusion": null,
+            "completed_at": null
+          },
+          {
+            "id": 127843844317,
+            "name": "Bazel / Verify release build on windows-latest for x86_64-pc-windows-msvc",
+            "status": "in_progress",
+            "conclusion": null,
+            "completed_at": null
+          },
+          {
+            "id": 127843844356,
+            "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+            "status": "in_progress",
+            "conclusion": null,
+            "completed_at": null
+          },
+          {
+            "id": 127843844371,
+            "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+            "status": "in_progress",
+            "conclusion": null,
+            "completed_at": null
+          },
+          {
+            "id": 127843844410,
+            "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-musl",
+            "status": "queued",
+            "conclusion": null,
+            "completed_at": null
+          },
+          {
+            "id": 127843844531,
+            "name": "Bazel / Verify release build on macos-15 for aarch64-apple-darwin",
+            "status": "queued",
+            "conclusion": null,
+            "completed_at": null
+          },
+          {
+            "id": 127843845122,
+            "name": "Lightweight prose and derived checks",
+            "status": "completed",
+            "conclusion": "skipped",
+            "completed_at": "2026-11-06T10:31:48Z"
+          },
+          {
+            "id": 127843845885,
+            "name": "Hepta scoped native checks",
+            "status": "completed",
+            "conclusion": "skipped",
+            "completed_at": "2026-11-06T10:31:48Z"
+          },
+          {
+            "id": 127843846700,
+            "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc (native main)",
+            "status": "completed",
+            "conclusion": "skipped",
+            "completed_at": "2026-11-06T10:31:48Z"
+          }
+        ]
+      }
+    ],
+    "note": "Point-in-time API snapshot. Overall workflow and required-gate status are not inferred from completed individual jobs."
+  },
+  "required_failures": [
+    {
+      "source": "518d0021e29a32e07c14d92b4c4e0cab5c4c4e8e",
+      "run_id": 42198835848,
+      "job_id": 127843843790,
+      "name": "cargo-deny",
+      "conclusion": "failure",
+      "cause": "Unknown: one complete-log fetch attempt returned Transport closed. No advisory/package cause is inferred from an older source.",
+      "fetch_error_sha256": "80a75bcbba5ba102f0f2fd79f3e707ec54032a6399304bb85c8f025c98b3e81b"
+    },
+    {
+      "source": "a43c83afc89fd7fe84025bad66556fae23a6dbb3",
+      "job_id": 127817512273,
+      "name": "Intel Bazel / PTY",
+      "conclusion": "failure",
+      "cause": "pty_dropped_output_receiver_keeps_draining_child: deadline elapsed",
+      "pty_passed": 30,
+      "pty_failed": 1,
+      "final_head_result": false,
+      "waived": false
+    }
+  ]
+}

@@ -1,0 +1,271 @@
+{
+  "clock_at_start": {
+    "current_time": "2026-11-06 10:39:15 UTC"
+  },
+  "runs": [
+    {
+      "run_id": 42198835533,
+      "role": "ui",
+      "jobs": [
+        {
+          "id": 127834787047,
+          "name": "Rust UI foundation / source-head",
+          "status": "in_progress",
+          "conclusion": null,
+          "completed_at": null
+        },
+        {
+          "id": 127834787283,
+          "name": "Original native presentation / source-head",
+          "status": "completed",
+          "conclusion": "success",
+          "completed_at": "2026-11-06T10:29:54Z"
+        },
+        {
+          "id": 127834787321,
+          "name": "Generate UI dependency lock for review",
+          "status": "completed",
+          "conclusion": "success",
+          "completed_at": "2026-11-06T10:30:17Z"
+        },
+        {
+          "id": 127834787367,
+          "name": "Rust UI foundation / base-merge",
+          "status": "in_progress",
+          "conclusion": null,
+          "completed_at": null
+        },
+        {
+          "id": 127834787720,
+          "name": "Original native presentation / base-merge",
+          "status": "completed",
+          "conclusion": "success",
+          "completed_at": "2026-11-06T10:29:59Z"
+        }
+      ]
+    },
+    {
+      "run_id": 42198835669,
+      "role": "owner",
+      "jobs": [
+        {
+          "id": 127830879434,
+          "name": "Original memory and Agentd libraries (source head)",
+          "status": "in_progress",
+          "conclusion": null,
+          "completed_at": null
+        }
+      ]
+    },
+    {
+      "run_id": 42198835848,
+      "role": "blocking",
+      "jobs": [
+        {
+          "id": 127838489045,
+          "name": "Select blocking CI scope",
+          "status": "completed",
+          "conclusion": "success",
+          "completed_at": "2026-11-06T10:31:48Z"
+        },
+        {
+          "id": 127838489493,
+          "name": "Codespell / Check for spelling errors",
+          "status": "completed",
+          "conclusion": "success",
+          "completed_at": "2026-11-06T10:21:15Z"
+        },
+        {
+          "id": 127838489513,
+          "name": "Blob size policy / Blob size policy",
+          "status": "completed",
+          "conclusion": "success",
+          "completed_at": "2026-11-06T10:30:05Z"
+        },
+        {
+          "id": 127843843698,
+          "name": "Hepta contract gate / Validate canonical branch and contract metadata",
+          "status": "queued",
+          "conclusion": null,
+          "completed_at": null
+        },
+        {
+          "id": 127843843708,
+          "name": "rust-ci / Detect changed areas",
+          "status": "queued",
+          "conclusion": null,
+          "completed_at": null
+        },
+        {
+          "id": 127843843735,
+          "name": "repo-checks / build-test",
+          "status": "completed",
+          "conclusion": "success",
+          "completed_at": "2026-11-06T10:36:39Z"
+        },
+        {
+          "id": 127843843790,
+          "name": "cargo-deny / cargo-deny",
+          "status": "completed",
+          "conclusion": "failure",
+          "completed_at": "2026-11-06T10:34:21Z"
+        },
+        {
+          "id": 127843843836,
+          "name": "repo-checks / Native Hepta paths on ubuntu-24.04",
+          "status": "queued",
+          "conclusion": null,
+          "completed_at": null
+        },
+        {
+          "id": 127843843843,
+          "name": "repo-checks / Native Hepta paths on macos-15",
+          "status": "queued",
+          "conclusion": null,
+          "completed_at": null
+        },
+        {
+          "id": 127843843915,
+          "name": "sdk / python-sdk",
+          "status": "queued",
+          "conclusion": null,
+          "completed_at": null
+        },
+        {
+          "id": 127843843949,
+          "name": "sdk / sdks",
+          "status": "queued",
+          "conclusion": null,
+          "completed_at": null
+        },
+        {
+          "id": 127843844043,
+          "name": "repo-checks / Native Hepta paths on windows-latest",
+          "status": "completed",
+          "conclusion": "success",
+          "completed_at": "2026-11-06T10:39:04Z"
+        },
+        {
+          "id": 127843844238,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4",
+          "status": "in_progress",
+          "conclusion": null,
+          "completed_at": null
+        },
+        {
+          "id": 127843844245,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+          "status": "in_progress",
+          "conclusion": null,
+          "completed_at": null
+        },
+        {
+          "id": 127843844251,
+          "name": "Bazel / Bazel clippy on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+          "status": "queued",
+          "conclusion": null,
+          "completed_at": null
+        },
+        {
+          "id": 127843844255,
+          "name": "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+          "status": "queued",
+          "conclusion": null,
+          "completed_at": null
+        },
+        {
+          "id": 127843844259,
+          "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+          "status": "queued",
+          "conclusion": null,
+          "completed_at": null
+        },
+        {
+          "id": 127843844268,
+          "name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc",
+          "status": "in_progress",
+          "conclusion": null,
+          "completed_at": null
+        },
+        {
+          "id": 127843844280,
+          "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+          "status": "queued",
+          "conclusion": null,
+          "completed_at": null
+        },
+        {
+          "id": 127843844300,
+          "name": "Bazel / Verify release build on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+          "status": "queued",
+          "conclusion": null,
+          "completed_at": null
+        },
+        {
+          "id": 127843844305,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+          "status": "in_progress",
+          "conclusion": null,
+          "completed_at": null
+        },
+        {
+          "id": 127843844317,
+          "name": "Bazel / Verify release build on windows-latest for x86_64-pc-windows-msvc",
+          "status": "in_progress",
+          "conclusion": null,
+          "completed_at": null
+        },
+        {
+          "id": 127843844356,
+          "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+          "status": "in_progress",
+          "conclusion": null,
+          "completed_at": null
+        },
+        {
+          "id": 127843844371,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+          "status": "in_progress",
+          "conclusion": null,
+          "completed_at": null
+        },
+        {
+          "id": 127843844410,
+          "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-musl",
+          "status": "queued",
+          "conclusion": null,
+          "completed_at": null
+        },
+        {
+          "id": 127843844531,
+          "name": "Bazel / Verify release build on macos-15 for aarch64-apple-darwin",
+          "status": "queued",
+          "conclusion": null,
+          "completed_at": null
+        },
+        {
+          "id": 127843845122,
+          "name": "Lightweight prose and derived checks",
+          "status": "completed",
+          "conclusion": "skipped",
+          "completed_at": "2026-11-06T10:31:48Z"
+        },
+        {
+          "id": 127843845885,
+          "name": "Hepta scoped native checks",
+          "status": "completed",
+          "conclusion": "skipped",
+          "completed_at": "2026-11-06T10:31:48Z"
+        },
+        {
+          "id": 127843846700,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc (native main)",
+          "status": "completed",
+          "conclusion": "skipped",
+          "completed_at": "2026-11-06T10:31:48Z"
+        }
+      ]
+    }
+  ],
+  "note": "Point-in-time API snapshot. Overall workflow and required-gate status are not inferred from completed individual jobs."
+}
