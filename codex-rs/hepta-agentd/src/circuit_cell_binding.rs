@@ -47,7 +47,8 @@ impl CircuitCellRegistryV1 {
         definition: BoundedCircuitDefinitionV2,
         bindings: Vec<CircuitCellBindingV1>,
     ) -> Result<Self, CircuitCellErrorV1> {
-        let definition_digest = definition.definition_digest()
+        let definition_digest = definition
+            .definition_digest()
             .map_err(|_| CircuitCellErrorV1::InvalidBinding)?;
         if definition.route_policy_digest != circuit_cell_route_policy_digest_v1(&bindings)? {
             return Err(CircuitCellErrorV1::InvalidBinding);
@@ -56,7 +57,8 @@ impl CircuitCellRegistryV1 {
         let mut cells = BTreeMap::new();
         for binding in &bindings {
             let cell_digest = binding.cell.semantic_digest()?;
-            if cells.insert(binding.cell.cell_id.as_str(), cell_digest)
+            if cells
+                .insert(binding.cell.cell_id.as_str(), cell_digest)
                 .is_some_and(|previous| previous != cell_digest)
             {
                 return Err(CircuitCellErrorV1::InvalidBinding);
@@ -64,10 +66,15 @@ impl CircuitCellRegistryV1 {
             if !keys.insert((binding.program_id.as_str(), binding.node_id.as_str())) {
                 return Err(CircuitCellErrorV1::InvalidBinding);
             }
-            let program = definition.programs.iter()
+            let program = definition
+                .programs
+                .iter()
                 .find(|program| program.program_id == binding.program_id)
                 .ok_or(CircuitCellErrorV1::InvalidBinding)?;
-            let node = program.nodes.iter().find(|node| node.node_id == binding.node_id)
+            let node = program
+                .nodes
+                .iter()
+                .find(|node| node.node_id == binding.node_id)
                 .ok_or(CircuitCellErrorV1::InvalidBinding)?;
             let (max_work, decide) = match node.kind {
                 CircuitNodeKindV2::Compute { max_work } => (max_work, false),
@@ -77,14 +84,19 @@ impl CircuitCellRegistryV1 {
             // Work has one explicit unit. Memory and queue metrics remain in
             // the output receipt and are never added to microseconds.
             if max_work < binding.cell.runtime.resource_envelope.p99_latency_micros
-                || definition.parameter_bundle_digest.as_str() != binding.cell.bundle_digest.to_string()
+                || definition.parameter_bundle_digest.as_str()
+                    != binding.cell.bundle_digest.to_string()
                 || node.output_schema != circuit_cell_output_schema_v1()
                 || binding.routes.len() != binding.cell.candidates.len()
             {
                 return Err(CircuitCellErrorV1::InvalidBinding);
             }
-            let edges: Vec<_> = program.edges.iter().filter(|edge| edge.from == node.node_id)
-                .map(|edge| edge.edge_id.clone()).collect();
+            let edges: Vec<_> = program
+                .edges
+                .iter()
+                .filter(|edge| edge.from == node.node_id)
+                .map(|edge| edge.edge_id.clone())
+                .collect();
             for (route, candidate) in binding.routes.iter().zip(&binding.cell.candidates) {
                 if route.candidate_id != candidate.candidate_id
                     || (candidate.kind == CellCandidateKindV1::Abstain
@@ -93,8 +105,9 @@ impl CircuitCellRegistryV1 {
                     return Err(CircuitCellErrorV1::InvalidBinding);
                 }
                 if route.outcome == CircuitExitV2::Succeeded {
-                    if (decide && (route.selected_edges.len() != 1
-                        || !edges.contains(&route.selected_edges[0])))
+                    if (decide
+                        && (route.selected_edges.len() != 1
+                            || !edges.contains(&route.selected_edges[0])))
                         || (!decide && route.selected_edges != edges)
                     {
                         return Err(CircuitCellErrorV1::InvalidBinding);
@@ -104,40 +117,75 @@ impl CircuitCellRegistryV1 {
                 }
             }
         }
-        let computations = definition.programs.iter().flat_map(|program| &program.nodes)
-            .filter(|node| matches!(node.kind,
-                CircuitNodeKindV2::Compute { .. } | CircuitNodeKindV2::Decide { .. })).count();
+        let computations = definition
+            .programs
+            .iter()
+            .flat_map(|program| &program.nodes)
+            .filter(|node| {
+                matches!(
+                    node.kind,
+                    CircuitNodeKindV2::Compute { .. } | CircuitNodeKindV2::Decide { .. }
+                )
+            })
+            .count();
         if computations != bindings.len() {
             return Err(CircuitCellErrorV1::InvalidBinding);
         }
-        Ok(Self { definition, definition_digest, bindings })
+        Ok(Self {
+            definition,
+            definition_digest,
+            bindings,
+        })
     }
 
-    pub fn definition(&self) -> &BoundedCircuitDefinitionV2 { &self.definition }
-    pub fn definition_digest(&self) -> &Sha256Digest { &self.definition_digest }
+    pub fn definition(&self) -> &BoundedCircuitDefinitionV2 {
+        &self.definition
+    }
+    pub fn definition_digest(&self) -> &Sha256Digest {
+        &self.definition_digest
+    }
 
     pub(super) fn bind_input(
         &self,
         dispatch: &CircuitDispatchV2,
         input: &CellStepInputV1,
     ) -> Result<&CircuitCellBindingV1, CircuitCellErrorV1> {
-        let binding = self.bindings.iter().find(|binding|
-            binding.program_id == dispatch.program_id && binding.node_id == dispatch.node_id)
+        let binding = self
+            .bindings
+            .iter()
+            .find(|binding| {
+                binding.program_id == dispatch.program_id && binding.node_id == dispatch.node_id
+            })
             .ok_or(CircuitCellErrorV1::InvalidBinding)?;
-        let program = self.definition.programs.iter().find(|program| program.program_id == dispatch.program_id)
+        let program = self
+            .definition
+            .programs
+            .iter()
+            .find(|program| program.program_id == dispatch.program_id)
             .ok_or(CircuitCellErrorV1::InvalidBinding)?;
-        let node = program.nodes.iter().find(|node| node.node_id == dispatch.node_id)
+        let node = program
+            .nodes
+            .iter()
+            .find(|node| node.node_id == dispatch.node_id)
             .ok_or(CircuitCellErrorV1::InvalidBinding)?;
         let max_work = match node.kind {
-            CircuitNodeKindV2::Compute { max_work } | CircuitNodeKindV2::Decide { max_work } => max_work,
+            CircuitNodeKindV2::Compute { max_work } | CircuitNodeKindV2::Decide { max_work } => {
+                max_work
+            }
             _ => return Err(CircuitCellErrorV1::InvalidBinding),
         };
-        let candidates: Vec<_> = program.edges.iter().filter(|edge| edge.from == node.node_id)
-            .map(|edge| edge.edge_id.clone()).collect();
+        let candidates: Vec<_> = program
+            .edges
+            .iter()
+            .filter(|edge| edge.from == node.node_id)
+            .map(|edge| edge.edge_id.clone())
+            .collect();
         if dispatch.route_policy_digest != self.definition.route_policy_digest
             || dispatch.parameter_bundle_digest != self.definition.parameter_bundle_digest
-            || dispatch.input_schema != node.input_schema || dispatch.output_schema != node.output_schema
-            || dispatch.max_work != max_work || dispatch.candidate_edges != candidates
+            || dispatch.input_schema != node.input_schema
+            || dispatch.output_schema != node.output_schema
+            || dispatch.max_work != max_work
+            || dispatch.candidate_edges != candidates
         {
             return Err(CircuitCellErrorV1::InvalidBinding);
         }
@@ -164,15 +212,18 @@ pub fn circuit_cell_route_policy_digest_v1(
         return Err(CircuitCellErrorV1::InvalidBinding);
     }
     let mut ordered: Vec<_> = bindings.iter().collect();
-    ordered.sort_by(|left, right| (&left.program_id, &left.node_id).cmp(&(&right.program_id, &right.node_id)));
+    ordered.sort_by(|left, right| {
+        (&left.program_id, &left.node_id).cmp(&(&right.program_id, &right.node_id))
+    });
     let mut bytes = b"hepta.circuit.cell-route-policy.v1\0model_latency_micros\0".to_vec();
     bytes.extend_from_slice(&(ordered.len() as u32).to_be_bytes());
     let mut previous = None;
     for binding in ordered {
         let key = (binding.program_id.as_str(), binding.node_id.as_str());
         if previous == Some(key)
-            || [key.0, key.1].iter().any(|value|
-                value.is_empty() || value.len() > 128 || value.chars().any(char::is_control))
+            || [key.0, key.1].iter().any(|value| {
+                value.is_empty() || value.len() > 128 || value.chars().any(char::is_control)
+            })
             || binding.routes.len() != binding.cell.candidates.len()
         {
             return Err(CircuitCellErrorV1::InvalidBinding);
@@ -184,8 +235,9 @@ pub fn circuit_cell_route_policy_digest_v1(
         bytes.extend_from_slice(&(binding.routes.len() as u32).to_be_bytes());
         for route in &binding.routes {
             if route.selected_edges.len() > 256
-                || route.selected_edges.iter().any(|edge|
-                    edge.is_empty() || edge.len() > 128 || edge.chars().any(char::is_control))
+                || route.selected_edges.iter().any(|edge| {
+                    edge.is_empty() || edge.len() > 128 || edge.chars().any(char::is_control)
+                })
             {
                 return Err(CircuitCellErrorV1::InvalidBinding);
             }
@@ -196,7 +248,9 @@ pub fn circuit_cell_route_policy_digest_v1(
                 CircuitExitV2::Abstained => 2,
             });
             bytes.extend_from_slice(&(route.selected_edges.len() as u32).to_be_bytes());
-            for edge in &route.selected_edges { push_text(&mut bytes, edge); }
+            for edge in &route.selected_edges {
+                push_text(&mut bytes, edge);
+            }
         }
     }
     Ok(Sha256Digest::for_bytes(&bytes))
@@ -204,8 +258,12 @@ pub fn circuit_cell_route_policy_digest_v1(
 
 /// A circuit may visit many cells. The run pin binds agent/run/principal; each
 /// node's frozen registry entry separately binds its exact Cell definition.
-pub fn circuit_cell_scope_digest_v1(scope: &CellScopeV1) -> Result<Sha256Digest, CircuitCellErrorV1> {
-    if scope.principal_digest.is_zero() { return Err(CircuitCellErrorV1::ScopeMismatch); }
+pub fn circuit_cell_scope_digest_v1(
+    scope: &CellScopeV1,
+) -> Result<Sha256Digest, CircuitCellErrorV1> {
+    if scope.principal_digest.is_zero() {
+        return Err(CircuitCellErrorV1::ScopeMismatch);
+    }
     let mut bytes = b"hepta.circuit.cell-run-scope.v1\0".to_vec();
     push_text(&mut bytes, scope.agent_id.as_str());
     push_text(&mut bytes, scope.run_id.as_str());
@@ -213,9 +271,14 @@ pub fn circuit_cell_scope_digest_v1(scope: &CellScopeV1) -> Result<Sha256Digest,
     Ok(Sha256Digest::for_bytes(&bytes))
 }
 
-pub fn circuit_cell_operation_id_v1(dispatch: &CircuitDispatchV2) -> Result<StableId, CircuitCellErrorV1> {
-    StableId::new(format!("circuit-cell:{}", dispatch.invocation_digest.as_str()))
-        .map_err(|_| CircuitCellErrorV1::InvalidBinding)
+pub fn circuit_cell_operation_id_v1(
+    dispatch: &CircuitDispatchV2,
+) -> Result<StableId, CircuitCellErrorV1> {
+    StableId::new(format!(
+        "circuit-cell:{}",
+        dispatch.invocation_digest.as_str()
+    ))
+    .map_err(|_| CircuitCellErrorV1::InvalidBinding)
 }
 
 pub(super) fn push_text(bytes: &mut Vec<u8>, value: &str) {

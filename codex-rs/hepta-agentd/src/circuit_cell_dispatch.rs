@@ -25,10 +25,19 @@ impl<'a, P, C> GuardedCellDispatchV1<'a, P, C> {
         circuit_deadline_ms: u64,
         cell_deadline_micros: u64,
     ) -> Self {
-        Self { control, clock, not_before, circuit_deadline_ms, cell_deadline_micros, observed: None }
+        Self {
+            control,
+            clock,
+            not_before,
+            circuit_deadline_ms,
+            cell_deadline_micros,
+            observed: None,
+        }
     }
 
-    pub(super) fn observed_at(&self) -> Option<CircuitCellTimeV1> { self.observed }
+    pub(super) fn observed_at(&self) -> Option<CircuitCellTimeV1> {
+        self.observed
+    }
 }
 
 impl<P, C> NeuronInferenceControlPort for GuardedCellDispatchV1<'_, P, C>
