@@ -1,7 +1,6 @@
 """Bounded Linux CPU acceptance with a separately pinned binary and synthetic test trust."""
 
 import argparse
-from dataclasses import asdict
 import hashlib
 import json
 import os
@@ -13,7 +12,7 @@ import time
 
 import torch
 from .handoff import encode_handoff, execution_sources, runtime_tuple
-from .joint_graph import digest, load_training_checkpoint, sha256
+from .joint_graph import digest, graph_spec_dict, load_training_checkpoint, sha256
 from .supervisor_store import identity, process_identity, validate_outputs
 from .test_joint_graph import fixture as value_fixture
 from .test_population_graph import fixture as grid_fixture
@@ -93,7 +92,7 @@ def execute(root, executable, expected_sha256, backend):
     pinned = {name: sha(root/name) for name in ("base.pt", "request.json", "supervisor-config.json")}
     runtime = runtime_tuple(str(inputs.dtype))
     write_new(root/"dispatch.json", dict(backend=backend, pinned_files=pinned, executable=binary,
-        request_digest=digest(request), graph_digest=digest(asdict(model.spec)), runtime_tuple=runtime,
+        request_digest=digest(request), graph_digest=digest(graph_spec_dict(model.spec)), runtime_tuple=runtime,
         execution_source_digest=digest(before["execution"]), initial_state_digest=state_digest(initial),
         expected_facts_retained_before_dispatch=True, synthetic_test_key_only=True))
     run(root, "supervisor-initialize", [sys.executable, "-I", "-B", script, "--root", store, "--initialize"])

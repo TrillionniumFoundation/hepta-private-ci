@@ -23,10 +23,12 @@ MAX_REFRACTORY_STEPS = 256
 class PopulationGraphSpec(GraphSpec):
     step_micros: int
     backend: str = "population_grid_v1"
+    spatial_bins: int = 32
 
     def __post_init__(self):
         super().__post_init__()
         integer(self.step_micros, maximum=2**53-1)
+        integer(self.spatial_bins, minimum=8, maximum=128)
         if self.backend != "population_grid_v1":
             raise ValueError("unknown population backend")
         # Original B uses 0.24 seconds of refractory residence. Bound allocation
@@ -76,7 +78,7 @@ class PopulationCellGraph(nn.Module):
         self.spec = spec
         self.cells = nn.ModuleList(PopulationFluxEncoder(
             spec.input_size if i == 0 else spec.hidden_size, spec.hidden_size,
-            dt=spec.step_micros/1_000_000) for i in range(len(spec.cell_ids)))
+            dt=spec.step_micros/1_000_000, bins=spec.spatial_bins) for i in range(len(spec.cell_ids)))
         self.readout = nn.Linear(spec.hidden_size, spec.output_size)
 
     def initial_state(self, batch, *, like=None):

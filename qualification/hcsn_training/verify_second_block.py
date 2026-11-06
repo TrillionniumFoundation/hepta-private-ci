@@ -1,12 +1,11 @@
 """A fresh worker trains a second block from the owner's recovered full state."""
 
 import copy
-from dataclasses import asdict
 import sys
 
 import torch
 from .handoff import dataset_digest, execution_sources, runtime_tuple
-from .joint_graph import digest, interval_seconds, load_training_checkpoint, tensor_digest
+from .joint_graph import digest, graph_spec_dict, interval_seconds, load_training_checkpoint, tensor_digest
 from .population_graph import PopulationCellGraph, population_intervals
 from .population_age_graph import PopulationAgeCellGraph, population_age_intervals
 
@@ -44,7 +43,7 @@ def verify(parent, native, model, initial, inputs, profile):
         base_checkpoint=dict(path=str(parent/"readback.pt"), sha256=base))
     admitted = dict(operation_id=request["operation_id"], request_digest=digest(request),
         training_code_digest=digest(execution_sources()), runtime_tuple_digest=digest(runtime_tuple("torch.float64")),
-        graph_digest=digest(asdict(model.spec)), time_profile_digest=binding["profile_digest"],
+        graph_digest=digest(graph_spec_dict(model.spec)), time_profile_digest=binding["profile_digest"],
         base_checkpoint_digest=base, dataset_digest=dataset_digest(request), target_generation=binding["generation"],
         optimizer_steps=2, logical_cells=len(model.cells), trainable_parameters=sum(p.numel() for p in model.parameters()))
     write_new(root/"request.json", request)
