@@ -408,24 +408,73 @@ async fn run_real_synapse_qualification_inner(
     let mut pair_a = fleet.wait_ready(&agent_a, agent_a_generation).await?;
     let peer_b = fleet.wait_ready(&agent_b, agent_b_generation).await?;
     eprintln!("R4_STAGE agent_pair_ready:done");
+    let post_ready_started = Instant::now();
+    eprintln!(
+        "R4_STAGE post_ready_record_a:start elapsed_ms={}",
+        post_ready_started.elapsed().as_millis()
+    );
     fleet.record_release_copy_identity(&agent_a, "initial_pair_ready", Some(&pair_a))?;
+    eprintln!(
+        "R4_STAGE post_ready_record_a:done elapsed_ms={}",
+        post_ready_started.elapsed().as_millis()
+    );
+    eprintln!(
+        "R4_STAGE post_ready_record_b:start elapsed_ms={}",
+        post_ready_started.elapsed().as_millis()
+    );
     fleet.record_release_copy_identity(&agent_b, "initial_pair_ready", Some(&peer_b))?;
+    eprintln!(
+        "R4_STAGE post_ready_record_b:done elapsed_ms={}",
+        post_ready_started.elapsed().as_millis()
+    );
     // Refresh both human crypto clients only after the two distinct product
     // devices are online, so each outbound Megolm session targets the exact
     // product device rather than relying on encrypted-history replay.
+    eprintln!(
+        "R4_STAGE post_ready_sync_a:start elapsed_ms={}",
+        post_ready_started.elapsed().as_millis()
+    );
     encrypted_matrix_a.sync_once(0).await?;
+    eprintln!(
+        "R4_STAGE post_ready_sync_a:done elapsed_ms={}",
+        post_ready_started.elapsed().as_millis()
+    );
+    eprintln!(
+        "R4_STAGE post_ready_sync_b:start elapsed_ms={}",
+        post_ready_started.elapsed().as_millis()
+    );
     encrypted_matrix_b.sync_once(0).await?;
+    eprintln!(
+        "R4_STAGE post_ready_sync_b:done elapsed_ms={}",
+        post_ready_started.elapsed().as_millis()
+    );
     // Synapse may return an empty long-poll without advancing `next_batch`.
     // Surviving multiple idle sync windows proves same-token commits do not
     // fence the product process.
     tokio::time::sleep(Duration::from_millis(2_500)).await;
+    eprintln!(
+        "R4_STAGE idle_ready_a:start elapsed_ms={}",
+        post_ready_started.elapsed().as_millis()
+    );
     ensure!(
         fleet.wait_ready(&agent_a, agent_a_generation).await? == pair_a,
         "Agent A pair changed during idle sync"
     );
+    eprintln!(
+        "R4_STAGE idle_ready_a:done elapsed_ms={}",
+        post_ready_started.elapsed().as_millis()
+    );
+    eprintln!(
+        "R4_STAGE idle_ready_b:start elapsed_ms={}",
+        post_ready_started.elapsed().as_millis()
+    );
     ensure!(
         fleet.wait_ready(&agent_b, agent_b_generation).await? == peer_b,
         "Agent B pair changed during idle sync"
+    );
+    eprintln!(
+        "R4_STAGE idle_ready_b:done elapsed_ms={}",
+        post_ready_started.elapsed().as_millis()
     );
 
     let inbound_a_txn = format!("r4-{run_id}-inbound-a-1");
@@ -3604,7 +3653,26 @@ fn validate_bytes_sha256(bytes: &[u8], expected: &str, label: &str) -> Result<()
 }
 
 fn validate_file_sha256(path: &Path, expected: &str, label: &str) -> Result<()> {
-    validate_bytes_sha256(&std::fs::read(path)?, expected, label)
+    let diagnostic_started = matches!(
+        label,
+        "installed agentd release copy"
+            | "installed matrixd release copy"
+            | "release executable identity"
+            | "executed agentd release copy"
+            | "executed matrixd release copy"
+    )
+    .then(Instant::now);
+    if diagnostic_started.is_some() {
+        eprintln!("R4_HASH_START label={label:?}");
+    }
+    let bytes = std::fs::read(path)?;
+    let result = validate_bytes_sha256(&bytes, expected, label);
+    if let Some(started) = diagnostic_started {
+        let elapsed_ms = started.elapsed().as_millis();
+        let byte_count = bytes.len();
+        eprintln!("R4_HASH_DONE label={label:?} elapsed_ms={elapsed_ms} bytes={byte_count}");
+    }
+    result
 }
 
 fn capture_executable_file_identity(
