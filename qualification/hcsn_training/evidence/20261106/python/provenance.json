@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "evidence_kind": "verbatim_transcription_of_historical_tool_output",
+  "source": "Historical functions.exec / exec_command and write_stdin tool responses retained in conversation state",
+  "exec_session_id": 49988,
+  "initial_exec_chunk_id": "f7bfdc",
+  "final_write_stdin_chunk_id": "bafd77",
+  "argv": [
+    "/workspace/scratch/40d04650905b/generation-work/venv/bin/python",
+    "-m",
+    "unittest",
+    "qualification.hcsn_training.test_joint_graph",
+    "-v"
+  ],
+  "cwd": "/workspace/scratch/c084ba2352cd/hepta-hcsn",
+  "exit_code": 0,
+  "tests_run": 8,
+  "tests_passed": 8,
+  "tests_skipped": 0,
+  "failures": 0,
+  "errors": 0,
+  "unittest_reported_duration_seconds": 8.504,
+  "execution_started_at_utc": null,
+  "execution_ended_at_utc": null,
+  "executed_git_commit": null,
+  "executed_source_snapshot": null,
+  "absolute_time_status": "Unknown; no absolute execution timestamp was retained with the tool output",
+  "source_identity_status": "An evolving uncommitted development tree; no exact source snapshot was captured for this test invocation",
+  "original_process_log_file_found": false,
+  "output_streams_separated": false,
+  "output_stream_note": "The archived text is the tool's combined captured output. It is not represented as a separately captured original stdout file.",
+  "test_rerun_performed_for_archive": false,
+  "final_formatted_head_verified_by_this_test_invocation": false,
+  "scope": "Small CPU shared-graph engineering tests; not the frozen CUDA campaign, research matrix, quality gate or production adoption",
+  "related_later_evidence": {
+    "path": "/workspace/scratch/c084ba2352cd/hcsn-bridge-evidence/attempt-02-formatted/result.json",
+    "relationship": "Independent later bridge acceptance; not part of this historical unittest invocation"
+  }
+}
