@@ -1,0 +1,78 @@
+--- frozen_v1/restore.py
++++ v2/restore.py
+@@ -8,8 +8,10 @@
+ import os
+ import stat
+ import tarfile
++import zlib
+ 
+ INDEX_SHA256 = 'cb5fbd9dc5b56cb475224376364e4d3b9471ecb024cc814a9339451cda98d0c1'
++TRANSPORT_SHA256 = '04f45c7310090d0803c81cca9a21d96a8f371d9410e78cf469e50d560710be19'
+ 
+ 
+ def require(condition, message):
+@@ -68,19 +70,57 @@
+         expected[name] = entry
+     require(len(expected) == index['source_files'], 'Indexed source count differs')
+ 
++    transport_bytes = read_regular(bundle / 'TRANSPORT.json')
++    require(sha(transport_bytes) == TRANSPORT_SHA256, 'TRANSPORT differs from its fixed review seal')
++    transport = json.loads(transport_bytes)
++    require(transport['schema'] == 'core.evidence.gzip-transport.v1', 'Unknown transport schema')
++    require(transport['representation'] == 'one-bounded-gzip-member-per-transport-segment',
++            'Unknown transport representation')
++    require(transport['index_sha256'] == INDEX_SHA256
++            and transport['original_archive_sha256'] == index['archive']['sha256']
++            and transport['original_archive_bytes'] == index['archive']['bytes']
++            and transport['original_part_count'] == len(index['parts']),
++            'Transport changed the original evidence binding')
++    require(transport['segment_limit'] == 440000 and transport['container_limit'] == 450000,
++            'Transport size limits changed')
++    require(len(transport['parts']) == (index['archive']['bytes'] + 439999) // 440000,
++            'Unexpected transport segment count')
+     chunks = []
++    for ordinal, part in enumerate(transport['parts']):
++        name = part['path']
++        require(name == f'core-supplement-06-14.tar.xz.transport-{ordinal:03d}.gz',
++                'Unsafe, duplicate or out-of-order transport segment')
++        data = read_regular(bundle / name)
++        require(len(data) == part['bytes'] and len(data) <= 450000,
++                f'Transport container size differs: {name}')
++        require(sha(data) == part['sha256'], f'Transport container hash differs: {name}')
++        segment_bytes = min(440000, index['archive']['bytes'] - ordinal * 440000)
++        require(part['segment_bytes'] == segment_bytes, f'Transport segment size differs: {name}')
++        inflater = zlib.decompressobj(wbits=31)
++        segment = inflater.decompress(data, segment_bytes + 1)
++        require(inflater.eof and not inflater.unused_data and not inflater.unconsumed_tail,
++                f'Transport is not exactly one bounded gzip member: {name}')
++        require(len(segment) == segment_bytes and sha(segment) == part['segment_sha256'],
++                f'Transport segment bytes differ: {name}')
++        chunks.append(segment)
++    archive_bytes = b''.join(chunks)
++    require(len(archive_bytes) == index['archive']['bytes'], 'Archive size differs')
++    require(sha(archive_bytes) == index['archive']['sha256'], 'Archive hash differs')
++
++    # Keep the original raw-segment identities as an independent integrity layer.
+     seen_parts = set()
++    offset = 0
+     for part in index['parts']:
+         name = part['path']
+         require(Path(name).name == name and name not in seen_parts, 'Unsafe or duplicate shard name')
+         seen_parts.add(name)
+-        data = read_regular(bundle / name)
+-        require(len(data) == part['bytes'] and len(data) <= 450000, f'Shard size differs: {name}')
+-        require(sha(data) == part['sha256'], f'Shard hash differs: {name}')
+-        chunks.append(data)
+-    archive_bytes = b''.join(chunks)
+-    require(len(archive_bytes) == index['archive']['bytes'], 'Archive size differs')
+-    require(sha(archive_bytes) == index['archive']['sha256'], 'Archive hash differs')
++        require(type(part['bytes']) is int and 0 < part['bytes'] <= 450000,
++                f'Original shard size is invalid: {name}')
++        segment = archive_bytes[offset:offset + part['bytes']]
++        require(len(segment) == part['bytes'] and sha(segment) == part['sha256'],
++                f'Original raw shard bytes differ: {name}')
++        offset += part['bytes']
++    require(offset == len(archive_bytes), 'Original raw shard boundaries differ')
+ 
+     verified = {}
+     with tarfile.open(fileobj=io.BytesIO(archive_bytes), mode='r:xz') as archive:
