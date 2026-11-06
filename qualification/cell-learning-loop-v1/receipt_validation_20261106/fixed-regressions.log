@@ -1,0 +1,18 @@
+test_all_verified_phases_complete_without_model_work (loop_tests.ResumeBoundary.test_all_verified_phases_complete_without_model_work) ... ok
+test_boolean_and_unknown_exit_codes_cannot_certify_completion (loop_tests.ResumeBoundary.test_boolean_and_unknown_exit_codes_cannot_certify_completion) ... ok
+test_capture_tampering_or_loss_prevents_resume (loop_tests.ResumeBoundary.test_capture_tampering_or_loss_prevents_resume) ... ok
+test_failed_engineering_result_is_retained_and_cannot_be_resumed (loop_tests.ResumeBoundary.test_failed_engineering_result_is_retained_and_cannot_be_resumed) ... ok
+test_failed_worker_cannot_be_promoted_by_editing_the_summary (loop_tests.ResumeBoundary.test_failed_worker_cannot_be_promoted_by_editing_the_summary) ... ok
+test_incomplete_attempt_is_not_relaunched (loop_tests.ResumeBoundary.test_incomplete_attempt_is_not_relaunched) ... ok
+test_invalid_parent_cost_is_unknown_in_the_failure_aggregate (loop_tests.ResumeBoundary.test_invalid_parent_cost_is_unknown_in_the_failure_aggregate) ... ok
+test_receipt_summary_rechecks_unvisited_phase_outputs (loop_tests.ResumeBoundary.test_receipt_summary_rechecks_unvisited_phase_outputs) ... ok
+test_saved_result_cannot_diverge_from_original_worker_output (loop_tests.ResumeBoundary.test_saved_result_cannot_diverge_from_original_worker_output) ... ok
+test_training_marker_survives_missing_attempt_receipts (loop_tests.ResumeBoundary.test_training_marker_survives_missing_attempt_receipts) ... ok
+test_unreadable_receipt_is_preserved_as_unknown_cost (loop_tests.ResumeBoundary.test_unreadable_receipt_is_preserved_as_unknown_cost) ... ok
+test_verified_resume_skips_the_real_completed_child (loop_tests.ResumeBoundary.test_verified_resume_skips_the_real_completed_child) ... ok
+test_wrong_phase_identity_or_ambiguous_json_is_never_completed (loop_tests.ResumeBoundary.test_wrong_phase_identity_or_ambiguous_json_is_never_completed) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 1.003s
+
+OK
