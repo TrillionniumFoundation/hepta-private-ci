@@ -50,7 +50,10 @@ impl Frontier {
 
 impl AuthorityFrontierStore<FinalUseFrontier> for Frontier {
     fn load(&self, _owner_id: &str) -> Result<FinalUseFrontier, AuthorityTrustError> {
-        let mut file = self.0.lock().map_err(|_| AuthorityTrustError::Unavailable)?;
+        let mut file = self
+            .0
+            .lock()
+            .map_err(|_| AuthorityTrustError::Unavailable)?;
         Self::read(&mut file).map_err(|_| AuthorityTrustError::Unavailable)
     }
 
@@ -60,7 +63,10 @@ impl AuthorityFrontierStore<FinalUseFrontier> for Frontier {
         expected: &FinalUseFrontier,
         next: &FinalUseFrontier,
     ) -> Result<(), AuthorityTrustError> {
-        let mut file = self.0.lock().map_err(|_| AuthorityTrustError::Unavailable)?;
+        let mut file = self
+            .0
+            .lock()
+            .map_err(|_| AuthorityTrustError::Unavailable)?;
         if Self::read(&mut file).map_err(|_| AuthorityTrustError::Unavailable)? != *expected {
             return Err(AuthorityTrustError::Conflict);
         }
@@ -180,10 +186,11 @@ fn retained_entry_rejects_another_owner_unspent_nonce_and_changed_signature() {
     let witness = fixture.enter(&authority).unwrap();
     let other = Fixture::new().unwrap();
     assert_eq!(
-        other
-            .open()
-            .unwrap()
-            .verify_retained_use(&fixture.signed, &fixture.signed.grant.binding, &witness),
+        other.open().unwrap().verify_retained_use(
+            &fixture.signed,
+            &fixture.signed.grant.binding,
+            &witness
+        ),
         Err(FinalUseError::InvalidGrant)
     );
     let mut unsigned_nonce = fixture.signed.clone();
