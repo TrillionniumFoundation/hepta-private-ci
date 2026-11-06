@@ -1,0 +1,106 @@
+name: Selected Core native qualification on the reviewed source
+
+on:
+  pull_request:
+    branches: [research/ndu-core-selected-inputs-20261106]
+    paths:
+      - .github/scripts/hepta_core_selected_guard.py
+      - .github/scripts/hepta_core_selected_evidence.py
+      - .github/scripts/hepta_core_selected_contract.py
+      - .github/scripts/hepta-core-selected-spec.json
+      - .github/scripts/hepta_core_selected.py
+      - .github/workflows/hepta-core-selected-proposal.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  core-selected:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      CANDIDATE_SHA: ${{ github.event.pull_request.head.sha }}
+      PYTHONDONTWRITEBYTECODE: "1"
+      CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+      PROBE_RUNNER_CLASS: ${{ runner.environment }}
+      PROBE_RUNNER_OS: ${{ runner.os }}
+      PROBE_RUNNER_ARCH: ${{ runner.arch }}
+    steps:
+      - name: Check out the exact dedicated side proposal
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ env.CANDIDATE_SHA }}
+          persist-credentials: false
+          fetch-depth: 3
+
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12.10"
+
+      - name: Bind unchanged product source and native runner
+        id: preflight
+        env:
+          EVIDENCE_GITHUB_TOKEN: ${{ github.token }}
+        run: python -B .github/scripts/hepta_core_selected.py preflight
+
+      - name: Install the original Rust toolchain
+        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489 # 1.96.0
+        with:
+          components: rustfmt
+
+      - name: Install the original just and nextest versions
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Require scanner readiness after tool setup and before native execution
+        id: ready
+        env:
+          PROBE_PRIVATE_DIR: ${{ steps.preflight.outputs.private_dir }}
+          EVIDENCE_GITHUB_TOKEN: ${{ github.token }}
+        run: python -B .github/scripts/hepta_core_selected.py ready
+
+      - name: Build and list seven exact cases, then run them through just
+        id: native
+        env:
+          PROBE_PRIVATE_DIR: ${{ steps.preflight.outputs.private_dir }}
+        run: python -B .github/scripts/hepta_core_selected.py run
+
+      - name: Validate and gate the complete original evidence
+        id: collect
+        if: always() && steps.preflight.outcome == 'success'
+        env:
+          PROBE_PRIVATE_DIR: ${{ steps.preflight.outputs.private_dir }}
+          EVIDENCE_GITHUB_TOKEN: ${{ github.token }}
+        run: python -B .github/scripts/hepta_core_selected.py collect
+
+      - name: Upload the gated source and native evidence
+        id: upload
+        if: always() && steps.collect.outcome == 'success' && steps.collect.outputs.safe_for_upload == 'true'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: core-selected-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ steps.collect.outputs.public_dir }}
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Require native execution and complete accepted evidence
+        if: always()
+        env:
+          PREFLIGHT_RESULT: ${{ steps.preflight.outcome }}
+          READINESS_RESULT: ${{ steps.ready.outcome }}
+          NATIVE_RESULT: ${{ steps.native.outcome }}
+          COLLECTION_RESULT: ${{ steps.collect.outcome }}
+          UPLOAD_RESULT: ${{ steps.upload.outcome }}
+          VALIDATED_RESULT: ${{ steps.collect.outputs.validated }}
+        run: |
+          test "$PREFLIGHT_RESULT" = success
+          test "$READINESS_RESULT" = success
+          test "$NATIVE_RESULT" = success
+          test "$COLLECTION_RESULT" = success
+          test "$UPLOAD_RESULT" = success
+          test "$VALIDATED_RESULT" = true
