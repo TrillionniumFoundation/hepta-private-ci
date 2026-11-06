@@ -15,7 +15,6 @@ mod authority_authentication;
 pub mod authority_lease;
 pub mod authority_trust;
 pub mod authority_trust_unix;
-pub mod pq_auth;
 #[cfg(test)]
 mod callers_manifest_tests;
 mod canonical;
@@ -23,6 +22,7 @@ mod final_use;
 mod final_use_control;
 mod identity;
 mod memory;
+pub mod pq_auth;
 mod provider;
 mod provider_effect;
 mod qualification_receipt;

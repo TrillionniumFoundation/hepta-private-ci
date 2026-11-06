@@ -5,7 +5,11 @@ use std::fs::File;
 use std::io::Read;
 use std::path::Path;
 
-pub(super) fn read_bounded(directory: &File, name: &str, maximum: usize) -> Result<Vec<u8>, FinalUseError> {
+pub(super) fn read_bounded(
+    directory: &File,
+    name: &str,
+    maximum: usize,
+) -> Result<Vec<u8>, FinalUseError> {
     let mut bytes = Vec::new();
     open_private(directory, name, Access::Read)?
         .take(u64::try_from(maximum).map_err(|_| FinalUseError::InvalidTrust)? + 1)
@@ -55,7 +59,11 @@ pub(super) fn prepare_directory(root: &Path) -> Result<File, FinalUseError> {
 }
 
 #[cfg(unix)]
-pub(super) fn open_private(directory: &File, name: &str, access: Access) -> Result<File, FinalUseError> {
+pub(super) fn open_private(
+    directory: &File,
+    name: &str,
+    access: Access,
+) -> Result<File, FinalUseError> {
     use rustix::fs::Mode;
     use rustix::fs::OFlags;
     use std::os::unix::fs::MetadataExt;
@@ -84,7 +92,11 @@ pub(super) fn prepare_directory(_root: &Path) -> Result<File, FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
 #[cfg(not(unix))]
-pub(super) fn open_private(_directory: &File, _name: &str, _access: Access) -> Result<File, FinalUseError> {
+pub(super) fn open_private(
+    _directory: &File,
+    _name: &str,
+    _access: Access,
+) -> Result<File, FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
 

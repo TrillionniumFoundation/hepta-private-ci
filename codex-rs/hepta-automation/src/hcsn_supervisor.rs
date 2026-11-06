@@ -46,15 +46,27 @@ pub struct HcsnProcessSupervisorConfig {
 pub struct HcsnProcessSupervisor {
     config: HcsnProcessSupervisorConfig,
     supervisor_script: PathBuf,
+    contact_guard: Box<dyn Fn() -> Result<(), HcsnSupervisorError> + Send + Sync>,
 }
 
 impl HcsnProcessSupervisor {
     pub fn new(config: HcsnProcessSupervisorConfig) -> Result<Self, HcsnSupervisorError> {
+        Self::new_with_contact_guard(config, || Ok(()))
+    }
+
+    /// Adds a denial-only check after transport preparation, immediately before
+    /// spawning the supervisor. Passing this check does not grant dispatch
+    /// authority; the owner must already have admitted the exchange.
+    pub fn new_with_contact_guard(
+        config: HcsnProcessSupervisorConfig,
+        guard: impl Fn() -> Result<(), HcsnSupervisorError> + Send + Sync + 'static,
+    ) -> Result<Self, HcsnSupervisorError> {
         let supervisor = Self {
             supervisor_script: config
                 .repository_root
                 .join("qualification/hcsn_training/supervisor.py"),
             config,
+            contact_guard: Box::new(guard),
         };
         supervisor.validate_config()?;
         Ok(supervisor)
@@ -116,7 +128,8 @@ impl HcsnSupervisor for HcsnProcessSupervisor {
             .output
             .as_mut()
             .ok_or(HcsnSupervisorError::BeforeContact)?;
-        let mut child = Command::new(&self.config.python_executable)
+        let mut process = Command::new(&self.config.python_executable);
+        process
             .args(["-I", "-B"])
             .arg(&self.supervisor_script)
             .arg("--root")
@@ -132,7 +145,9 @@ impl HcsnSupervisor for HcsnProcessSupervisor {
                     .try_clone()
                     .map_err(|_| HcsnSupervisorError::BeforeContact)?,
             ))
-            .stderr(Stdio::null())
+            .stderr(Stdio::null());
+        (self.contact_guard)().map_err(|_| HcsnSupervisorError::BeforeContact)?;
+        let mut child = process
             .spawn()
             .map_err(|_| HcsnSupervisorError::BeforeContact)?;
         // Every error below is ambiguous provider contact. Kill only the RPC

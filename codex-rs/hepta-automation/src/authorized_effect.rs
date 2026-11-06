@@ -23,6 +23,7 @@ use codex_hepta_contracts::ProviderEffectKey;
 use codex_hepta_contracts::ProviderEffectLookup;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_contracts::SignedFinalUseGrant;
+use codex_hepta_contracts::VerifiedUseToken;
 use codex_hepta_operations::OperationIntentV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
@@ -285,11 +286,21 @@ pub struct AuthorizedEffectRequest<'a> {
 }
 
 /// Registered effect-owner adapter. This synchronous boundary is intentional:
-/// `FinalUseAuthority::with_verified_use` holds the current revocation fence
+/// `FinalUseAuthority::with_verified_effect` holds an active-effect fence
 /// through the final check and the actual dispatch call. Drivers must impose
 /// their own bounded I/O deadline and return `Indeterminate` after ambiguous
 /// provider contact.
 pub trait AuthorizedEffectDriver {
+    /// Bind an owner-authenticated presentation to the actual consumed claim.
+    /// This runs after durable store waits and before the final-use
+    /// boundary. Implementations may reject, but cannot replace the claim.
+    fn prepare_claim(
+        &mut self,
+        _token: &VerifiedUseToken,
+    ) -> Result<(), AuthorizedEffectDriverError> {
+        Ok(())
+    }
+
     fn dispatch(
         &mut self,
         request: &AuthorizedEffectRequest<'_>,
@@ -759,9 +770,12 @@ impl AutomationStore {
             wire_payload,
             binding: expected_binding,
         };
-        let provider = match authority
-            .with_verified_effect(token, expected_binding, || driver.dispatch(&request))
-        {
+        let entered = match driver.prepare_claim(&token) {
+            Ok(()) => authority
+                .with_verified_effect(token, expected_binding, || driver.dispatch(&request)),
+            Err(error) => Ok(Err(error)),
+        };
+        let provider = match entered {
             Ok(Ok(receipt)) => receipt,
             Ok(Err(error)) => {
                 let proof = no_contact_digest(&durable, "driver_before_provider_contact");
