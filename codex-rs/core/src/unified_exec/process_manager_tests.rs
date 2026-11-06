@@ -555,7 +555,7 @@ async fn pruning_does_not_evict_live_process_while_exited_process_is_finalizing(
         .expect("fixture must observe the actual Exited event"),
     );
     exited_process
-        .terminate_confirmed()
+        .terminate_confirmed(Instant::now() + Duration::from_secs(1))
         .await
         .expect("exited process should terminate");
     let live_process = Arc::new(
@@ -607,4 +607,51 @@ async fn pruning_does_not_evict_live_process_while_exited_process_is_finalizing(
         (pruned.map(|entry| entry.process_id), store.processes.len()),
         (None, MAX_UNIFIED_EXEC_PROCESSES)
     );
+}
+
+#[tokio::test]
+async fn unconfirmed_termination_retains_the_same_process_owner() -> anyhow::Result<()> {
+    let manager = UnifiedExecProcessManager::default();
+    let process_id = manager.allocate_process_id().await;
+    let process = Arc::new(
+        crate::unified_exec::process_tests::remote_process(
+            codex_exec_server::WriteStatus::Accepted,
+            /*terminate_error*/ None,
+            codex_sandboxing::SandboxType::None,
+        )
+        .await,
+    );
+    manager.process_store.lock().await.processes.insert(
+        process_id,
+        ProcessEntry {
+            process: Arc::clone(&process),
+            plugin_metrics_sidecar: None,
+            call_id: "unconfirmed-termination".to_string(),
+            process_id,
+            cwd: PathUri::parse("file:///unified-exec-test")?,
+            initial_exec_command_active: Arc::new(AtomicBool::new(false)),
+            hook_command: "controlled-process".to_string(),
+            tty: false,
+            network_approval: None,
+            session: std::sync::Weak::new(),
+            last_used: Instant::now(),
+        },
+    );
+
+    let terminated = tokio::time::timeout(
+        Duration::from_secs(2),
+        manager.terminate_process(process_id),
+    )
+    .await?;
+    assert!(!terminated);
+    assert!(!process.has_exited());
+    assert_eq!(process.exit_code(), None);
+    let store = manager.process_store.lock().await;
+    let retained = store
+        .processes
+        .get(&process_id)
+        .ok_or_else(|| anyhow::anyhow!("unconfirmed owner was removed"))?;
+    assert_eq!(store.processes.len(), 1);
+    assert!(Arc::ptr_eq(&retained.process, &process));
+    Ok(())
 }

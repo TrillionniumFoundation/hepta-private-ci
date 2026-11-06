@@ -96,6 +96,9 @@ const UNIFIED_EXEC_ENV: [(&str, &str); 10] = [
 const NETWORK_ACCESS_DENIED_MESSAGE: &str =
     "Network access was denied by the Codex sandbox network proxy.";
 const LATE_NETWORK_DENIAL_GRACE_PERIOD: Duration = Duration::from_millis(100);
+// Owner policy for one termination request and its native-exit confirmation.
+// This is a cooperative budget, not a hard deadline for synchronous OS calls.
+const TERMINATION_CONFIRMATION_BUDGET: Duration = Duration::from_secs(1);
 const INTERRUPT: &str = "\u{3}";
 
 /// Test-only override for deterministic unified exec process IDs.
@@ -1580,7 +1583,8 @@ impl UnifiedExecProcessManager {
             (Arc::clone(&entry.process), entry.process.has_exited())
         };
 
-        if !already_exited && process.terminate_confirmed().await.is_err() {
+        let deadline = Instant::now() + TERMINATION_CONFIRMATION_BUDGET;
+        if !already_exited && process.terminate_confirmed(deadline).await.is_err() {
             return false;
         }
 

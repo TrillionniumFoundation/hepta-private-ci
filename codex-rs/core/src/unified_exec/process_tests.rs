@@ -17,6 +17,8 @@ use std::sync::Arc;
 use tokio::sync::Mutex;
 use tokio::sync::broadcast;
 use tokio::sync::watch;
+use tokio::time::Duration;
+use tokio::time::Instant;
 
 struct MockExecProcess {
     process_id: ProcessId,
@@ -218,7 +220,7 @@ async fn remote_terminate_confirmed_updates_state_on_success_only() -> anyhow::R
     .await;
 
     let err = process
-        .terminate_confirmed()
+        .terminate_confirmed(Instant::now() + Duration::from_secs(1))
         .await
         .expect_err("expected terminate failure");
 
@@ -233,7 +235,7 @@ async fn remote_terminate_confirmed_updates_state_on_success_only() -> anyhow::R
     .await?;
 
     process
-        .terminate_confirmed()
+        .terminate_confirmed(Instant::now() + Duration::from_secs(1))
         .await
         .expect("terminate should succeed");
 
