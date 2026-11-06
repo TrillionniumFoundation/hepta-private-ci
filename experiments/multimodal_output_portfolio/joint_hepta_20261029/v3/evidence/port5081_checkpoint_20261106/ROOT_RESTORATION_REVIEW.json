@@ -1,0 +1,31 @@
+{
+  "observed_at_utc": "2026-11-06T17:55:17.748614+00:00",
+  "packet": "port5081",
+  "bundle": "/workspace/scratch/3f6a885bb83c/round3_ci/port5081_checkpoint_20261106",
+  "index_sha256": "a5fbd0b4b3fc66d70e34235e3fa7c5fbd544a7ff5ec14ae36083f905308426fa",
+  "reader_sha256": "8beaa9f316b55aacf86c0818241f634ed2040eb64c5bdaf5679611927be1cea6",
+  "trusted_template_sha256": "00bf4373739122934a281273de36cc9e4cce84199aa985926419225cad94303b",
+  "reader_difference": "INDEX seal only",
+  "argv": [
+    "python3",
+    "-O",
+    "-B",
+    "/workspace/scratch/3f6a885bb83c/round3_ci/port5081_checkpoint_20261106/restore.py",
+    "/workspace/scratch/3f6a885bb83c/round3_root_restore_1754_port5081"
+  ],
+  "exit_code": 0,
+  "stdout": "{\n  \"files\": 56,\n  \"bytes\": 14555308,\n  \"index_sha256\": \"a5fbd0b4b3fc66d70e34235e3fa7c5fbd544a7ff5ec14ae36083f905308426fa\",\n  \"destination\": \"/workspace/scratch/3f6a885bb83c/round3_root_restore_1754_port5081\",\n  \"restored_permissions\": \"0644 regular files; original modes are evidence only\",\n  \"executed_sources\": false,\n  \"archive_sha256\": \"1cc95fb3c3f7df5611e5b19a6ad92cfa60de5f4c8c43eb80f5fd8bb155bd17f6\"\n}\n",
+  "stderr": "",
+  "destination": "/workspace/scratch/3f6a885bb83c/round3_root_restore_1754_port5081",
+  "source_file_count": 56,
+  "source_bytes": 14555308,
+  "complete_expected_restored_set": true,
+  "every_original_and_restored_byte_hash_size_match": true,
+  "restored_modes": {
+    "0o100644": 56
+  },
+  "all_bundle_bytes_unchanged": true,
+  "no_archived_source_executed": true,
+  "qualification_boundary": "Restoration integrity only; native outcomes and excluded inputs retain the exact limits in INDEX and README.",
+  "full_old_fixture_zip_or_two_large_members_reconstructable": false
+}

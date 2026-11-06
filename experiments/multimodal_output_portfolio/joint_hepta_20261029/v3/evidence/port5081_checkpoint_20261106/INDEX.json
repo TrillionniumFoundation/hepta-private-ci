@@ -1,0 +1,514 @@
+{
+  "format": "native-blocker-evidence-v1",
+  "purpose": "port5081",
+  "snapshot_utc": "2026-11-06 17:44:52 UTC",
+  "qualification": {
+    "source_head": "99e53dc988476d96c1e61354fbb0aeecd4c1cf17",
+    "source_tree": "e368e870e179b0e726189192343f03b151bd1fa4",
+    "run_id": 42247397355,
+    "producer": {
+      "job_id": 127993098036,
+      "artifact_id": 13522042741,
+      "conclusion": "success",
+      "all_payload_files_verified": 352,
+      "transported_source_files_verified": 320,
+      "both_locks_unchanged": true,
+      "source_drift": false,
+      "candidate_patch_bytes": 0
+    },
+    "old_fixture": {
+      "job_id": 127993098480,
+      "artifact_id": 13522043596,
+      "conclusion": "success",
+      "old_source": "6215cb6a87f29623d4beaad24cdf7bcb6bb4fb2c",
+      "matrix_versions": "0.18.0",
+      "testcases_executed": 1,
+      "testcases_passed": 1,
+      "testcases_skipped": 0,
+      "original_archive_members_verified": 40,
+      "selected_members_retained": 38,
+      "operational_fixture_files": 7,
+      "operational_fixture_bytes": 624433,
+      "full_old_fixture_zip_included": false
+    },
+    "old_fixture_excluded_large_files": {
+      "binaries/968afe36fb81f38def30957cc30a9af99448e5ec6dee7e51a7447374f61b50c9": {
+        "bytes": 507938216,
+        "sha256": "968afe36fb81f38def30957cc30a9af99448e5ec6dee7e51a7447374f61b50c9",
+        "git_blob": "f682fbc12f7a6c676bd42a9aacdb12352a4ca4eb",
+        "crc32": "823f02ed",
+        "retained_uncompressed": false,
+        "zip_mode": "0o100644"
+      },
+      "compiled-source.tar.gz": {
+        "bytes": 29787405,
+        "sha256": "c8545d1c43c1a55e793dddc22c32b2f5fc9f819e7c46c367f0164cb4b3e9b371",
+        "git_blob": "6257b55fe2383c2a6051e7b09d6c5f05ae10c39e",
+        "crc32": "234da582",
+        "retained_uncompressed": true,
+        "zip_mode": "0o100644"
+      }
+    },
+    "downstream_jobs_at_snapshot": "all nine queued; see original API snapshot",
+    "current_matrix_reopen_job": 128025906931,
+    "current_matrix_reopen_qualification": "pending; independent of old-version generation",
+    "promotion_allowed": false
+  },
+  "evidence_policy": "Every listed input is retained byte for byte. Restoration produces inert regular 0644 files and never executes archived sources. Complete original ZIP bytes are retained only when expressly listed; the old fixture ZIP and its two largest members are deliberately outside the compact port packet.",
+  "archive_bytes": 14612480,
+  "archive_sha256": "1cc95fb3c3f7df5611e5b19a6ad92cfa60de5f4c8c43eb80f5fd8bb155bd17f6",
+  "compressed_bytes": 2744280,
+  "compressed_sha256": "e7e7492f89edc1fdb3aca1e047ffe915b4227f35c9453c7a189e11d65055fa65",
+  "parts": [
+    {
+      "name": "native-evidence.tar.xz.part000.gz",
+      "bytes": 440119,
+      "sha256": "cabd4bd2dc565194f529fb062c85cb8a32af6f2a00fd6d608f8239328dcbcc7b",
+      "git_blob": "8e9cc46c230e8b4f63d86e8dd496a7b6b75ba535",
+      "segment_bytes": 440000,
+      "segment_sha256": "d8fb676bd682af363c72fb501eb4617afcd5a1f1cb8d38afb5037e9324caf99a"
+    },
+    {
+      "name": "native-evidence.tar.xz.part001.gz",
+      "bytes": 439478,
+      "sha256": "253b173b507e93fe5b1fdd794f7ff3fc45ba076fcd7f5163269e69c24948c674",
+      "git_blob": "0520762558fcc13f805cd9a44009b0b555d9d9e7",
+      "segment_bytes": 440000,
+      "segment_sha256": "74b56478eb869ac1f5847e39f68a7af13528fc1477d92538dd0183a26b6eae40"
+    },
+    {
+      "name": "native-evidence.tar.xz.part002.gz",
+      "bytes": 440153,
+      "sha256": "096782abf10725a93b9fa492bc80e260df7826bea5022582d10023773d56a422",
+      "git_blob": "af5b826007e656104473c53498c2c6d417933a4a",
+      "segment_bytes": 440000,
+      "segment_sha256": "5899e5d56b367cbd9f619761c1bbcae1ed377265e2f5343b4feb6ab8ec810e0d"
+    },
+    {
+      "name": "native-evidence.tar.xz.part003.gz",
+      "bytes": 439976,
+      "sha256": "9f118aec607b4fdb48e1121f4c1525803c702e78224e1715b71d1a872f052846",
+      "git_blob": "021d54a1e9505ff2a8dae77e9e6dbb74c6e22d02",
+      "segment_bytes": 440000,
+      "segment_sha256": "c30563aeb91045d02f132361e2aacdf3e9c5e8dc4aaac9cec917ece09f284061"
+    },
+    {
+      "name": "native-evidence.tar.xz.part004.gz",
+      "bytes": 439694,
+      "sha256": "489ec194b145dafb00ee1846328c2b1c558f12b9231a24b9f23443f999719cdb",
+      "git_blob": "b2a4227e58fa17fd4d7a3e1a8e9c7e8a00245c5d",
+      "segment_bytes": 440000,
+      "segment_sha256": "4f0b971b3ce2566f008d3d62e9df5e882ff71ff0d864accb2079c2e89cbfbe36"
+    },
+    {
+      "name": "native-evidence.tar.xz.part005.gz",
+      "bytes": 440153,
+      "sha256": "996b34d39ac995a4c5663becfaf73497d951cbaafdae621e64fef995ff4bf60e",
+      "git_blob": "471f6a3fe36c8a88642d2f0e1c7e589a4595bb2e",
+      "segment_bytes": 440000,
+      "segment_sha256": "91c8e6009f6ca00232583721dd804b5a7a43cdebfe88c924ee2d21ee780269aa"
+    },
+    {
+      "name": "native-evidence.tar.xz.part006.gz",
+      "bytes": 104333,
+      "sha256": "3579de41510af0c0307b092101b3df2cada9e6ddaaeb4123c3195637ca23fe00",
+      "git_blob": "8f5690762611854ac2ea89fc834fdf240d30fbb2",
+      "segment_bytes": 104280,
+      "segment_sha256": "b9cda140ee21fe320e73948a7d4947c05f89e0e11fbb2434c2b641b87f9ebb6f"
+    }
+  ],
+  "files": [
+    {
+      "path": "round3_ci/build_native_progress_checkpoints.py",
+      "bytes": 16904,
+      "sha256": "d44e5cdc229eff43de2a1445f76f554f2374e66acae0666d3129ebdc09f6b52c",
+      "git_blob": "0b2bab4c2489c61ad2e11d8540032593ea3d4770",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/FIXTURE_COMPACT_SELECTION.json",
+      "bytes": 14392,
+      "sha256": "97e1a78d9517a1dc50c7f38d9c0169412cf10b6f6dfc8fe3192f017f441f2f9a",
+      "git_blob": "1e49caa61f9cc0f8a829949107d54cfe72e8e4a0",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/FIXTURE_COMPILED_SOURCE_LEAVES.json",
+      "bytes": 1459824,
+      "sha256": "04c964f7402979db48d7799b089511a3351eef841392724c89294b41d9e7838f",
+      "git_blob": "cabac043bbe155845f05ad3dd96aa064b2f581c7",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/FIXTURE_COMPLETE_MEMBER_IDENTITIES.json",
+      "bytes": 11946,
+      "sha256": "fb089df70d19a31a8fa4bbb6741a5d01bce19f2c03d1f561d7e2fd2ca8a8d50b",
+      "git_blob": "034de9b36ba9196be631448cae6132473a96b1fc",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/FIXTURE_NATIVE_VALIDATION.json",
+      "bytes": 13804,
+      "sha256": "26453f8826db90233d53894025c912018e3f45063e74894173a5ce4e9f0c59a6",
+      "git_blob": "e9ed3bddf6b11fc53ca7b7fcff9040ed5dbf1279",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/FIXTURE_SOURCE_REPLAY_VALIDATION.json",
+      "bytes": 1488,
+      "sha256": "108794cb81db89dc52647def5e1b4d6d28906c513a68f3c3560afb261d743e80",
+      "git_blob": "265c9c589f9e0c72039093f27278983e0d505573",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/FIXTURE_ZIP_DIRECTORY.json",
+      "bytes": 7472,
+      "sha256": "a94752cdff7f89c1a54816517b4dfaa11dc498c61f0047932672d4b56ca4077b",
+      "git_blob": "9c6a1706b15fe2e8e93906a9f02c9138fdb7b752",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/PRODUCER_NATIVE_VALIDATION.json",
+      "bytes": 4328,
+      "sha256": "7122b5bc114c1c221023dde66660e9bfbba285c91c0c367e2faf9d612f4deef1",
+      "git_blob": "12e927e751fedeb69f3c4a5246bfef19381cdd45",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/artifact-api.json",
+      "bytes": 854,
+      "sha256": "7fdaf2afd04748f925333195194c85afb39478ff551c33e53fe16413388d95c9",
+      "git_blob": "d09b3db4e980eac5653c268370e637a9f10741a0",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/artifact.zip",
+      "bytes": 2446187,
+      "sha256": "054a257a70829c27076a2e7aa0fb159504915ca2c050a210c58086e2e6707a97",
+      "git_blob": "b5512d7b29a4775de9afcfac8c4aeedb28f1f8df",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/fixture-artifact-api.json",
+      "bytes": 1605,
+      "sha256": "97ff0d6bc06c33b221d32e29f68356be9d5cf2bb2bed93ad24f600bf68ab5804",
+      "git_blob": "304d2070e793a589e57ddcd933d4dbbd5abcc3b7",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/fixture-small/00-source-head.log",
+      "bytes": 41,
+      "sha256": "6cd1253832c11b026881bea08a2f0fff3850e34600265eba597f9719c9d4401a",
+      "git_blob": "37c7e515c1392de9ab33ee76388f82d2d0d3c752",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/fixture-small/01-clean-checkout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/fixture-small/02-patch-paths.log",
+      "bytes": 65,
+      "sha256": "ffc814dfff01407b084221e2963cd0af207e3ae72e3aeaf455e175c5a6d9ebbb",
+      "git_blob": "7ce39ec81777313055b669834d921b4cdd34c5e8",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/fixture-small/03-check-fixture-only-patch.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/fixture-small/04-apply-fixture-only-patch.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/fixture-small/05-compiled-source-tree.log",
+      "bytes": 41,
+      "sha256": "933139c4a124c2b2e2bce069211221075793bda6fd168523d17eb91bb5a667b7",
+      "git_blob": "794eadcab79bbbe6ae6320e5661bf2f8b4f3b235",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/fixture-small/06-archive-compiled-source.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/fixture-small/07-bound-rustc-path.log",
+      "bytes": 74,
+      "sha256": "d0193700af7f567877ce9dbc20f915552972e146926733da26ae3fe0e363efcc",
+      "git_blob": "916994710018566f51f89866c74b5fc4767c2f01",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/fixture-small/08-rustc-version.log",
+      "bytes": 196,
+      "sha256": "4fdff2578428e9c5c08ddd7a0d3079c1a106b1cdaa46e73e46f7cd32b0fb9cad",
+      "git_blob": "b246e451c7cb89baf52e49a5c7995e70184fa73d",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/fixture-small/09-cargo-version.log",
+      "bytes": 36,
+      "sha256": "c10ec31b8c6e6e2693cf65fc1971b41edbc3da1ae7db6f9f3f36c4823f8dcab5",
+      "git_blob": "7bd2e87f6aad3217bce2f274a01d37a3b4b4e74a",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/fixture-small/10-just-version.log",
+      "bytes": 12,
+      "sha256": "4e91345369534015fde1a3e2fed862ad938bcfda47b993eb02536f7b3f095b87",
+      "git_blob": "ed47f0841ee2955f1cbf9b1647695870567c694b",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/fixture-small/11-nextest-version.log",
+      "bytes": 171,
+      "sha256": "5c2764053db8c4d8203c610667ee5dbecfeca1af742b15d0324d5c4a727ab012",
+      "git_blob": "5fbc5db337844c9ef5f484f3cc5d30b6cd79746c",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/fixture-small/12-old-metadata.log",
+      "bytes": 44256,
+      "sha256": "e8e11dbb213112bb7288df225a915dc30d99cf1cfcf4d001a9a48409ae1e5d12",
+      "git_blob": "e928f709c5b6d0855c162a84d53443b57496a41c",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/fixture-small/13-prepare_old_version_fixture-binaries.log",
+      "bytes": 23302,
+      "sha256": "b2010d08bec3fc3fffdd1daf7c0dcb4ee9097a614522e7552176591c51d78430",
+      "git_blob": "29a18dd6545aa3bd2163d47564aa6050510d5adf",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/fixture-small/14-prepare_old_version_fixture.log",
+      "bytes": 642,
+      "sha256": "ee90950d58ae2374baf48bcadec3d2d6d55cc3552d3ace7a4ea8afc5ea1f5509",
+      "git_blob": "adb166741568798d0daa2807fd28cddfbe050c01",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/fixture-small/15-changed-paths.log",
+      "bytes": 59,
+      "sha256": "b546fdb6a86f181416390289c6bb9270ee55b1f00b61856a0180ab04a6f77643",
+      "git_blob": "b0cad40d6606297c3490bb937e9ba3e5f393230d",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/fixture-small/16-untracked-paths.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/fixture-small/17-old-source-unstaged.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/fixture-small/RESULT.json",
+      "bytes": 19890,
+      "sha256": "6212a7d916305520efd08087bc578beee0d796d6dfd50aec3e77ab9c69955878",
+      "git_blob": "0c4be277ce40eb2a864c2874731f6e5a5f0d3142",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/fixture-small/driver-context/00-source-head.log",
+      "bytes": 41,
+      "sha256": "2e28410ace9456958f5e949e4f4c61bf7cb33e595251d38b7b5990dcf2738f26",
+      "git_blob": "081186112e07be0993fda6dfb2a541643e00b96c",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/fixture-small/driver-context/01-clean-checkout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/fixture-small/driver-context/RESULT.json",
+      "bytes": 1569,
+      "sha256": "485b38e0472a4c1b0505558834733f90ce85b5f63bcb30a4ca7dc7b8f6b10a4f",
+      "git_blob": "93035b2b6f6c87f41347e24661a23e5c741d90cc",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/fixture-small/fixture-layout.json",
+      "bytes": 2123,
+      "sha256": "171df74e8c277c68ad6db84543d33c7df74035614a218fe98da6088764bf9c36",
+      "git_blob": "921d0acf8c434fdd5dcee27d4b25a8dc432fd73d",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/fixture-small/fixture-only.patch",
+      "bytes": 12233,
+      "sha256": "908b758654240bb5eb89e9e4f682780528712801d81a1806633237923184812f",
+      "git_blob": "a74187d160be04cfb465f0355419c68c0e63e7eb",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/fixture-small/fixture/expected.json",
+      "bytes": 1690,
+      "sha256": "71bef9c6e207f2ad37cdf2a41c298effa75a3e748e8aac1538d33029319b17a0",
+      "git_blob": "4b1c79fa93a92ded0d2c24e76ac23bb580196768",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/fixture-small/fixture/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/cache/matrix-sdk-event-cache.sqlite3",
+      "bytes": 69632,
+      "sha256": "5750007f1a4d7868c85ab70335baf8157768a24f302c19ed08e0beeee3b1925b",
+      "git_blob": "95328da5515bf4dc1949d38e6dcd936eda6824ed",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/fixture-small/fixture/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/cache/matrix-sdk-media.sqlite3",
+      "bytes": 36864,
+      "sha256": "cfa35a47c83ac03d01da5ba8a4d86dc9b0d3505aca97360a24b383bda7829447",
+      "git_blob": "e7f0d4e58d4866299b4de16052c09a687aff1010",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/fixture-small/fixture/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/session.json",
+      "bytes": 151,
+      "sha256": "195167ce802c9630ae49edf1ffe97397c71d33d42273de6a8cb02697877abe17",
+      "git_blob": "6cd52d57d60636d00f8a9da1e89bb9dfe33f8a10",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/fixture-small/fixture/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/state/matrix-sdk-crypto.sqlite3",
+      "bytes": 180224,
+      "sha256": "767b129d99a1f07599f5b6ef79cd850ec0c90aa9460a23a699209c772ef53cc9",
+      "git_blob": "6ec70f286d0ec4336a18422220bfd40ecfeda8e7",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/fixture-small/fixture/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix-sdk-0.18/state/matrix-sdk-state.sqlite3",
+      "bytes": 139264,
+      "sha256": "3cf9fca64bc12c7ddcb0438da5cd48b075c44da2ccf00d856f9b94cb0bde94b0",
+      "git_blob": "371f2ef9d655cd052933383219484c32cbb830bf",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/fixture-small/fixture/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/matrix/matrix_1.sqlite3",
+      "bytes": 196608,
+      "sha256": "f0dc7e43afa47300389943832ab40b6bfea570a2b0bad3295ba65216b0f1fa3c",
+      "git_blob": "83cd2160b1bf0be744f99dcf0e2781012f0a45d7",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/fixture-small/nextest-store.toml",
+      "bytes": 77,
+      "sha256": "3e343cd33ce0f791418c02d67c5f2314ceae0d23a4f6697316659f4762957bcc",
+      "git_blob": "8bf21247208b6852540d7444017ca22b2c616d13",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/fixture-small/nextest-store/default/junit.xml",
+      "bytes": 542,
+      "sha256": "5f4b0e418ba626efae2e1726f53ccbb5ab865bb9b3da4c7b42d4c88dd53c9ff8",
+      "git_blob": "627da38b74cf3ffa0a274be6691d34aedd9a7e5c",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/fixture-small/old-metadata.json",
+      "bytes": 8156559,
+      "sha256": "9f121b49089bb6533c716cc858112548e17fef0e5473890d3ac1a7093982a358",
+      "git_blob": "b5aaff74dd25e6955678540b60c92f7dedc39885",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/fixture-small/original-files/codex-rs/Cargo.lock",
+      "bytes": 418040,
+      "sha256": "56ed52d9789f01abda5bad96f25dd9d48b837108653cb2f3474ee5e0dbc790de",
+      "git_blob": "cce00c581bed8f27508db1769be6c4f0bd4f05fd",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/fixture-small/prepare_old_version_fixture-0-junit.xml",
+      "bytes": 542,
+      "sha256": "5f4b0e418ba626efae2e1726f53ccbb5ab865bb9b3da4c7b42d4c88dd53c9ff8",
+      "git_blob": "627da38b74cf3ffa0a274be6691d34aedd9a7e5c",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/fixture-small/prepare_old_version_fixture-binaries.json",
+      "bytes": 1317,
+      "sha256": "81fb5fa64fc562c9f35ad46d4de6ea6d1870790fc39ec773f546234fdbef7755",
+      "git_blob": "0c371fcf02e76e6798f1b8146055a49961c567bf",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/fixture-small/recipe.json",
+      "bytes": 348278,
+      "sha256": "8c655b7b3c539527e6506869a52d0e98a88ed37e334e9d34d13be83713bce03f",
+      "git_blob": "0c9c640167a9f0745572e683b8a3632a1eba5a32",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/job-127993098036.log",
+      "bytes": 732987,
+      "sha256": "7116f08716f4c71512048c53e5013dd59218b4edf1c0e446880da3d1d259db99",
+      "git_blob": "bcbd989f939e7b254e3711e0322bc055c9094575",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/job-127993098480.log",
+      "bytes": 127963,
+      "sha256": "aae4796c9bc392b0236f012064f7a991c3df22e01c085f27db712e97a2dd5856",
+      "git_blob": "0fcb7ac8f6b174056a6fd7625c118c6d8bd2555e",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/qualification-jobs-at-checkpoint.json",
+      "bytes": 7824,
+      "sha256": "e409bd7214eb4df43be8058916f71d96302bc3496ce43d729a52d578ccb8f9c8",
+      "git_blob": "3aac7b1782aabc8fb6d7cbcac22e44486e78e994",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/run-api.json",
+      "bytes": 32358,
+      "sha256": "7b3029bd051e232d9d5ec940e7e3a02ecd4c1a81852bde19ecc07c9156df581b",
+      "git_blob": "49e1fcddebefab1f134e5171e38b3217c7980e13",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/verify_artifact.py",
+      "bytes": 6940,
+      "sha256": "51632574bfb8613a96e954b09f0b795d8e0782a4cda167aaa38bc4967467d420",
+      "git_blob": "9fd5e30fc014a592358173ad8c7f33756bececd9",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/verify_fixture_artifact.py",
+      "bytes": 9648,
+      "sha256": "2a34e3ac8b9b2f335052328d4dba9a8fec577d764eb745707e9a4eed4a8620df",
+      "git_blob": "26f43bd34580666e1aee09da34098c6c07a0cc6c",
+      "original_mode": "0644"
+    },
+    {
+      "path": "round3_ci/port_diagnosis/producer5081/verify_fixture_source.py",
+      "bytes": 4245,
+      "sha256": "95f26786c4c28a43d0653ce3f4cf2744b62c340692fe9ba7ba66989ae726c7a1",
+      "git_blob": "a8c7b4c0188208c49fce4cf652c7271727001f3a",
+      "original_mode": "0644"
+    }
+  ]
+}

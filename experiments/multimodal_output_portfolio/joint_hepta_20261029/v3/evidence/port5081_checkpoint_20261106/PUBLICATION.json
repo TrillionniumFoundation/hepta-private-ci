@@ -1,0 +1,210 @@
+{
+  "packet": "port5081",
+  "suggested_repository_directory": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/evidence/port5081_checkpoint_20261106",
+  "snapshot_utc": "2026-11-06 17:44:52 UTC",
+  "index": {
+    "bytes": 22481,
+    "sha256": "a5fbd0b4b3fc66d70e34235e3fa7c5fbd544a7ff5ec14ae36083f905308426fa",
+    "git_blob": "a342c1a6d588788d9c2666f7cf80310a1b92b8de"
+  },
+  "source_file_count": 56,
+  "raw_source_bytes": 14555308,
+  "archive_bytes": 14612480,
+  "compressed_bytes": 2744280,
+  "restore_exit_code": 0,
+  "restore_stdout": {
+    "bytes": 415,
+    "sha256": "bfed1db538558e0372901dcd4d069a21695743c16d49d7a74ec6705f040bf54d",
+    "git_blob": "fe383b6d87aa142a1adea4e9179de11c2bfb70ab"
+  },
+  "restore_stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+  },
+  "all_restored_bytes_complete_roster_and_inert_modes_match": true,
+  "reader_template": {
+    "source_file": "/workspace/scratch/3f6a885bb83c/round3_native/restore_checkpoint_template.py",
+    "bytes": 6626,
+    "sha256": "00bf4373739122934a281273de36cc9e4cce84199aa985926419225cad94303b",
+    "git_blob": "27e463e7b9e73a98b3a35e05d4d7414a2ed7b4a0",
+    "only_replacement": "fixed INDEX SHA-256"
+  },
+  "codespell": {
+    "version": "2.4.3",
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "-m",
+      "codespell_lib",
+      "--ignore-words",
+      ".codespellignore",
+      "--skip",
+      "./.git"
+    ],
+    "exit_code": 0,
+    "stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "configuration": {
+      ".codespellrc": {
+        "bytes": 471,
+        "sha256": "80805b9340dbdd76645a25929f56c96606e187db8e9d16b75a4a47dcdd248c04",
+        "git_blob": "663be376c7381108af0a41eafc3dd08f27125d96"
+      },
+      ".codespellignore": {
+        "bytes": 69,
+        "sha256": "9c6cd9dd86c6300ff67edbe64b2e18ed089714151e5c166382c8ea99931bc275",
+        "git_blob": "0da447f000de188776a33e770c2d2d77b37f97ee"
+      },
+      ".codespell-exclude-lines": {
+        "bytes": 20003,
+        "sha256": "5e2119d75aa7cfa61e87b9c3d98863d0b5d6672eeaccc7411695e91e2366d52b",
+        "git_blob": "490e840301fdfae10d6e40c44a566ff16f82e324"
+      }
+    },
+    "new_exclusion_added": false
+  },
+  "files": [
+    {
+      "path": "INDEX.json",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/port5081_checkpoint_20261106/INDEX.json",
+      "mode": "100644",
+      "bytes": 22481,
+      "sha256": "a5fbd0b4b3fc66d70e34235e3fa7c5fbd544a7ff5ec14ae36083f905308426fa",
+      "git_blob": "a342c1a6d588788d9c2666f7cf80310a1b92b8de"
+    },
+    {
+      "path": "README.md",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/port5081_checkpoint_20261106/README.md",
+      "mode": "100644",
+      "bytes": 3475,
+      "sha256": "ecfb61ad37b208a79f0e2df1bcbdccf4755e9815602977ee076a5d7cddb89fb7",
+      "git_blob": "f958941d36cd5c824eee42e6ebb658ec7ff92b21"
+    },
+    {
+      "path": "native-evidence.tar.xz.part000.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/port5081_checkpoint_20261106/native-evidence.tar.xz.part000.gz",
+      "mode": "100644",
+      "bytes": 440119,
+      "sha256": "cabd4bd2dc565194f529fb062c85cb8a32af6f2a00fd6d608f8239328dcbcc7b",
+      "git_blob": "8e9cc46c230e8b4f63d86e8dd496a7b6b75ba535"
+    },
+    {
+      "path": "native-evidence.tar.xz.part001.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/port5081_checkpoint_20261106/native-evidence.tar.xz.part001.gz",
+      "mode": "100644",
+      "bytes": 439478,
+      "sha256": "253b173b507e93fe5b1fdd794f7ff3fc45ba076fcd7f5163269e69c24948c674",
+      "git_blob": "0520762558fcc13f805cd9a44009b0b555d9d9e7"
+    },
+    {
+      "path": "native-evidence.tar.xz.part002.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/port5081_checkpoint_20261106/native-evidence.tar.xz.part002.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "096782abf10725a93b9fa492bc80e260df7826bea5022582d10023773d56a422",
+      "git_blob": "af5b826007e656104473c53498c2c6d417933a4a"
+    },
+    {
+      "path": "native-evidence.tar.xz.part003.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/port5081_checkpoint_20261106/native-evidence.tar.xz.part003.gz",
+      "mode": "100644",
+      "bytes": 439976,
+      "sha256": "9f118aec607b4fdb48e1121f4c1525803c702e78224e1715b71d1a872f052846",
+      "git_blob": "021d54a1e9505ff2a8dae77e9e6dbb74c6e22d02"
+    },
+    {
+      "path": "native-evidence.tar.xz.part004.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/port5081_checkpoint_20261106/native-evidence.tar.xz.part004.gz",
+      "mode": "100644",
+      "bytes": 439694,
+      "sha256": "489ec194b145dafb00ee1846328c2b1c558f12b9231a24b9f23443f999719cdb",
+      "git_blob": "b2a4227e58fa17fd4d7a3e1a8e9c7e8a00245c5d"
+    },
+    {
+      "path": "native-evidence.tar.xz.part005.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/port5081_checkpoint_20261106/native-evidence.tar.xz.part005.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "996b34d39ac995a4c5663becfaf73497d951cbaafdae621e64fef995ff4bf60e",
+      "git_blob": "471f6a3fe36c8a88642d2f0e1c7e589a4595bb2e"
+    },
+    {
+      "path": "native-evidence.tar.xz.part006.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/port5081_checkpoint_20261106/native-evidence.tar.xz.part006.gz",
+      "mode": "100644",
+      "bytes": 104333,
+      "sha256": "3579de41510af0c0307b092101b3df2cada9e6ddaaeb4123c3195637ca23fe00",
+      "git_blob": "8f5690762611854ac2ea89fc834fdf240d30fbb2"
+    },
+    {
+      "path": "restore.py",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/port5081_checkpoint_20261106/restore.py",
+      "mode": "100644",
+      "bytes": 6656,
+      "sha256": "8beaa9f316b55aacf86c0818241f634ed2040eb64c5bdaf5679611927be1cea6",
+      "git_blob": "83b5c41020916f40eab27af5ce8fb3d42f474b24"
+    }
+  ],
+  "qualification_scope": {
+    "source_head": "99e53dc988476d96c1e61354fbb0aeecd4c1cf17",
+    "source_tree": "e368e870e179b0e726189192343f03b151bd1fa4",
+    "run_id": 42247397355,
+    "producer": {
+      "job_id": 127993098036,
+      "artifact_id": 13522042741,
+      "conclusion": "success",
+      "all_payload_files_verified": 352,
+      "transported_source_files_verified": 320,
+      "both_locks_unchanged": true,
+      "source_drift": false,
+      "candidate_patch_bytes": 0
+    },
+    "old_fixture": {
+      "job_id": 127993098480,
+      "artifact_id": 13522043596,
+      "conclusion": "success",
+      "old_source": "6215cb6a87f29623d4beaad24cdf7bcb6bb4fb2c",
+      "matrix_versions": "0.18.0",
+      "testcases_executed": 1,
+      "testcases_passed": 1,
+      "testcases_skipped": 0,
+      "original_archive_members_verified": 40,
+      "selected_members_retained": 38,
+      "operational_fixture_files": 7,
+      "operational_fixture_bytes": 624433,
+      "full_old_fixture_zip_included": false
+    },
+    "old_fixture_excluded_large_files": {
+      "binaries/968afe36fb81f38def30957cc30a9af99448e5ec6dee7e51a7447374f61b50c9": {
+        "bytes": 507938216,
+        "sha256": "968afe36fb81f38def30957cc30a9af99448e5ec6dee7e51a7447374f61b50c9",
+        "git_blob": "f682fbc12f7a6c676bd42a9aacdb12352a4ca4eb",
+        "crc32": "823f02ed",
+        "retained_uncompressed": false,
+        "zip_mode": "0o100644"
+      },
+      "compiled-source.tar.gz": {
+        "bytes": 29787405,
+        "sha256": "c8545d1c43c1a55e793dddc22c32b2f5fc9f819e7c46c367f0164cb4b3e9b371",
+        "git_blob": "6257b55fe2383c2a6051e7b09d6c5f05ae10c39e",
+        "crc32": "234da582",
+        "retained_uncompressed": true,
+        "zip_mode": "0o100644"
+      }
+    },
+    "downstream_jobs_at_snapshot": "all nine queued; see original API snapshot",
+    "current_matrix_reopen_job": 128025906931,
+    "current_matrix_reopen_qualification": "pending; independent of old-version generation",
+    "promotion_allowed": false
+  },
+  "publication_ready": true,
+  "old_packets_modified": false
+}
