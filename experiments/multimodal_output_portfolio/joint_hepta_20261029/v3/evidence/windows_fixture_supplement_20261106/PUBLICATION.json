@@ -1,0 +1,49 @@
+{
+  "schema": "ndu.windows-fixture-publication.v1",
+  "units": [
+    {
+      "name": "02_matrix_failure_stage",
+      "commit": "69286823c7a06fc8e90db03825b329a9bd9af5d2",
+      "tree": "b04381a52d552ff1e52ff9234ac106ae25c4d993",
+      "branch": "research/ndu-matrix-finalization-error-stage-20261106",
+      "pr": 5049,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5049",
+      "readback": {
+        "codex-rs/hepta-matrix-sdk/src/startup_deadline_tests.rs": {
+          "path": "codex-rs/hepta-matrix-sdk/src/startup_deadline_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "22b34073b65118f85b4daedb906912a40bf86309",
+          "size": 4963,
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/22b34073b65118f85b4daedb906912a40bf86309"
+        }
+      }
+    },
+    {
+      "name": "03_tui_child_readiness",
+      "commit": "c066a149edb85ffb3513f60720a2e0461152dbd5",
+      "tree": "ab51b906153e4d848236cff058733d73b3353a7d",
+      "branch": "research/ndu-exit-fixture-child-readiness-20261106",
+      "pr": 5050,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5050",
+      "readback": {
+        "codex-rs/tui/src/app/tests/background_exit_tests.rs": {
+          "path": "codex-rs/tui/src/app/tests/background_exit_tests.rs",
+          "mode": "100644",
+          "type": "blob",
+          "sha": "187d9c76620766fd1f5dea418763f9f98ecc2992",
+          "size": 17546,
+          "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/187d9c76620766fd1f5dea418763f9f98ecc2992"
+        }
+      }
+    }
+  ],
+  "qualification": "Published source and exact Git blob/mode readback; native tests pending.",
+  "frozen_native_checkpoint": {
+    "commit": "df8fb8b31957a07f517fef26bdcf264d1df8a7ff",
+    "tree": "a89ca500b842ab77c305137b7f400296d659912f",
+    "branch": "research/ndu-native-evidence-checkpoint-20261106",
+    "pr": 5051,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5051"
+  }
+}

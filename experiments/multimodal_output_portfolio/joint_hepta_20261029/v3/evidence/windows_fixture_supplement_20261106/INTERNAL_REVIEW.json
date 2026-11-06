@@ -1,0 +1,37 @@
+{
+  "review_kind": "Independent static diff and boundary review only",
+  "baseline_restorer_sha256": "6b7bf1db9d790ca1523b4c9e7b39f71a53643f4979d10e3621d1fa4cb240ca13",
+  "reviewed_restorer_sha256": "394bafe4536d75c20b76b8589aa7602b9aa82a44c859994cfe790c254425686c",
+  "index_sha256": "2939abb1565baa67983559ce38a4cf68e4991213b20e8c78ef2134a6cac8b9c2",
+  "only_changes": [
+    "descriptive title",
+    "pinned INDEX SHA256",
+    "exact allowed archive root"
+  ],
+  "logic_unchanged": true,
+  "member_names_unique": true,
+  "indexed_regular_files": 12,
+  "safe_regular_modes": [
+    "0o100644"
+  ],
+  "security_boundaries_retained": [
+    "explicit errors remain effective under python -O",
+    "exact regular-only archive members and duplicate rejection",
+    "safe relative canonical paths under the one allowed root",
+    "per-shard archive and file hashes plus sizes",
+    "destination must not already exist or lie within bundle",
+    "input bundle not modified; report only to stdout"
+  ],
+  "parent_runtime_receipt_observed": {
+    "path": "/workspace/scratch/3f6a885bb83c/round3_root_native/windows/evidence_supplement_1452_restoration.json",
+    "sha256": "125f58d21767ae0d9ab9992eebbd37aa6ff127b09da0cb224c7d38117ffa73a9",
+    "exit_code": 0,
+    "input_before_equals_after": true,
+    "all_original_files_byte_equal": true
+  },
+  "prior_codespell_import_failure_retained": true,
+  "corrected_codespell_receipt_exit_code": 0,
+  "independent_restore_executed": false,
+  "native_execution_claim": false,
+  "blocking_findings": []
+}
