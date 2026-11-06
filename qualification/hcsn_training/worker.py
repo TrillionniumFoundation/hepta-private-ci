@@ -17,7 +17,7 @@ import re
 import time
 
 import torch
-from .joint_graph import (digest, integer, interval_seconds, load_model, load_training_checkpoint, model_bytes, sha256,
+from .joint_graph import (digest, graph_spec_dict, integer, interval_seconds, load_model, load_training_checkpoint, model_bytes, sha256,
                           strict_json, tensor_digest, time_profile_digest)
 from .population_graph import PopulationCellGraph, population_intervals
 from .population_age_graph import PopulationAgeCellGraph, population_age_intervals, REFRACTORY_MICROS
@@ -145,7 +145,7 @@ def propose(model, request):
                    request_digest=digest(request), base_checkpoint_sha256=checkpoint["sha256"],
                    execution_sources=sources, execution_source_digest=digest(sources),
                    runtime_tuple=runtime, runtime_tuple_digest=digest(runtime), dataset_digest=dataset_digest(request),
-                   graph_digest=digest(asdict(model.spec)),
+                   graph_digest=digest(graph_spec_dict(model.spec)),
                    edge_timing=("previous_event_boundary" if physical_age else
                                 "previous_grid_boundary" if population else "previous_boundary"),
                    base_weights_digest=base, candidate_weights_digest=tensor_digest(candidate.state_dict()),

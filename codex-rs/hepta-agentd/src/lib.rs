@@ -37,8 +37,12 @@ mod plasticity_learning_producer;
 mod plasticity_owner_evidence;
 mod plasticity_process_bootstrap;
 mod plasticity_runtime;
+#[cfg(target_os = "linux")]
+mod pq_final_use;
 mod production_writer_host;
 mod prompt_runtime;
+#[cfg(target_os = "linux")]
+mod protected_file;
 mod qualification_writer;
 mod runtime;
 mod runtime_tasks;

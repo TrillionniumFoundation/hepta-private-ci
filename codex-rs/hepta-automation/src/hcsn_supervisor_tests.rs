@@ -5,6 +5,9 @@
 #![allow(clippy::expect_used, reason = "HCSN transport fault fixtures")]
 
 use std::os::unix::fs::PermissionsExt;
+use std::sync::Arc;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::AtomicUsize;
 
 use super::*;
 use crate::hcsn_job::HCSN_SUPERVISOR_SCHEMA_VERSION;
@@ -88,9 +91,84 @@ fn exact_response_is_validated_and_transport_files_are_removed() {
 }
 
 #[test]
+fn contact_guard_rechecks_after_preparation_without_starting_a_denied_transport() {
+    let fixture = Fixture::new("touch \"$5/contacted\"\nexec cat \"$5/reply.json\"");
+    let observation = HcsnJobObservationV1 {
+        schema_version: HCSN_SUPERVISOR_SCHEMA_VERSION,
+        dispatch: fixture.command.dispatch.clone(),
+        target: fixture.command.target.clone(),
+        state: HcsnJobStateV1::Reserved,
+        process: None,
+        evidence: None,
+    };
+    std::fs::write(
+        fixture.config.durable_root.join("reply.json"),
+        serde_json::to_vec(&observation).expect("response"),
+    )
+    .expect("reply");
+    let permitted = Arc::new(AtomicBool::new(false));
+    let guard_calls = Arc::new(AtomicUsize::new(0));
+    let guard_permitted = Arc::clone(&permitted);
+    let calls = Arc::clone(&guard_calls);
+    let root = fixture.config.durable_root.clone();
+    let request_bytes = serde_json::to_vec(&fixture.command).expect("command bytes");
+    let mut supervisor =
+        HcsnProcessSupervisor::new_with_contact_guard(fixture.config.clone(), move || {
+            let exchanges: Vec<_> = std::fs::read_dir(&root)
+                .expect("prepared exchange directory")
+                .map(|entry| entry.expect("exchange entry").path())
+                .filter(|path| {
+                    path.file_name()
+                        .expect("exchange file name")
+                        .to_string_lossy()
+                        .starts_with(".hcsn-rpc-")
+                })
+                .collect();
+            assert_eq!(exchanges.len(), 2);
+            let input = exchanges
+                .iter()
+                .find(|path| path.extension().is_some_and(|extension| extension == "in"))
+                .expect("prepared request file");
+            assert_eq!(
+                std::fs::read(input).expect("serialized request"),
+                request_bytes
+            );
+            calls.fetch_add(/*val*/ 1, Ordering::SeqCst);
+            if guard_permitted.load(Ordering::SeqCst) {
+                Ok(())
+            } else {
+                // Even a caller's ambiguous error is proven before contact here.
+                Err(HcsnSupervisorError::Unknown)
+            }
+        })
+        .expect("guarded supervisor");
+
+    assert_eq!(
+        supervisor.exchange(&fixture.command),
+        Err(HcsnSupervisorError::BeforeContact)
+    );
+    assert_eq!(guard_calls.load(Ordering::SeqCst), 1);
+    assert!(!fixture.config.durable_root.join("contacted").exists());
+    fixture.assert_no_transport_files();
+
+    permitted.store(/*val*/ true, Ordering::SeqCst);
+    assert_eq!(supervisor.exchange(&fixture.command), Ok(observation));
+    assert_eq!(guard_calls.load(Ordering::SeqCst), 2);
+    assert!(fixture.config.durable_root.join("contacted").is_file());
+    fixture.assert_no_transport_files();
+}
+
+#[test]
 fn source_change_is_rejected_before_contact() {
     let fixture = Fixture::new("touch \"$5/contacted\"");
-    let mut supervisor = HcsnProcessSupervisor::new(fixture.config.clone()).expect("supervisor");
+    let guard_called = Arc::new(AtomicBool::new(false));
+    let called = Arc::clone(&guard_called);
+    let mut supervisor =
+        HcsnProcessSupervisor::new_with_contact_guard(fixture.config.clone(), move || {
+            called.store(/*val*/ true, Ordering::SeqCst);
+            Ok(())
+        })
+        .expect("guarded supervisor");
     std::fs::write(
         fixture
             .config
@@ -103,6 +181,7 @@ fn source_change_is_rejected_before_contact() {
         supervisor.exchange(&fixture.command),
         Err(HcsnSupervisorError::BeforeContact)
     );
+    assert!(!guard_called.load(Ordering::SeqCst));
     assert!(!fixture.config.durable_root.join("contacted").exists());
     fixture.assert_no_transport_files();
 }

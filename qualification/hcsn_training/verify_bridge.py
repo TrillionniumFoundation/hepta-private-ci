@@ -5,7 +5,6 @@ production trust, activation or a CUDA campaign. Output directories are once-onl
 """
 
 import argparse
-from dataclasses import asdict
 import hashlib
 import json
 import os
@@ -17,7 +16,7 @@ import time
 
 import torch
 from .handoff import dataset_digest, execution_sources, runtime_tuple
-from .joint_graph import (GraphSpec, JointCellGraph, digest, interval_seconds,
+from .joint_graph import (GraphSpec, JointCellGraph, digest, graph_spec_dict, interval_seconds,
                           load_training_checkpoint, model_bytes, strict_json, tensor_digest)
 from .native_build import native_libraries
 from .population_graph import PopulationCellGraph, PopulationGraphSpec, population_intervals
@@ -102,7 +101,7 @@ def resume(root):
     admitted, request, plan = (read(root/name) for name in ("admitted.json", "request.json", "continuation-plan.json"))
     candidate = plan["candidate_digest"]
     model, state, metadata = load_training_checkpoint(root/"readback.pt", candidate)
-    if (metadata["binding"] != request["binding"] or digest(asdict(model.spec)) != admitted["graph_digest"]
+    if (metadata["binding"] != request["binding"] or digest(graph_spec_dict(model.spec)) != admitted["graph_digest"]
             or state_digest(state) != plan["initial_state_digest"]
             or metadata["last_end_micros"] != plan["intervals"][0]["start_micros"]
             or digest(execution_sources()) != admitted["training_code_digest"]
@@ -163,7 +162,7 @@ def execute(root, workspace, rustc, artifacts=None, backend="value_kernel", supe
         base_checkpoint=dict(path=str(root/"base.pt"), sha256=base))
     admitted = dict(operation_id=request["operation_id"], request_digest=digest(request),
         training_code_digest=digest(execution_sources()), runtime_tuple_digest=digest(runtime_tuple("torch.float64")),
-        graph_digest=digest(asdict(model.spec)), time_profile_digest=binding["profile_digest"],
+        graph_digest=digest(graph_spec_dict(model.spec)), time_profile_digest=binding["profile_digest"],
         base_checkpoint_digest=base, dataset_digest=dataset_digest(request), target_generation=binding["generation"],
         optimizer_steps=1, logical_cells=2, trainable_parameters=sum(p.numel() for p in model.parameters()))
     write_new(root/"request.json", request)

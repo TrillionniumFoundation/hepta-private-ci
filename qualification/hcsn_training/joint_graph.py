@@ -178,12 +178,20 @@ class JointCellGraph(nn.Module):
         return torch.stack(outputs, dim=1), state
 
 
+def graph_spec_dict(spec):
+    """Canonical graph identity: preserve the historical default-32 wire form."""
+    value = asdict(spec)
+    if value.get("spatial_bins") == 32:
+        del value["spatial_bins"]
+    return value
+
+
 def model_bytes(model, **extra):
     buffer = io.BytesIO()
     from .population_graph import PopulationCellGraph
     from .population_age_graph import PopulationAgeCellGraph
     version = 3 if isinstance(model, PopulationAgeCellGraph) else 2 if isinstance(model, PopulationCellGraph) else 1
-    torch.save(dict(schema_version=version, spec=asdict(model.spec),
+    torch.save(dict(schema_version=version, spec=graph_spec_dict(model.spec),
                     dtype=str(next(model.parameters()).dtype),
                     model_state={n: p.detach().cpu().clone() for n, p in model.state_dict().items()},
                     **extra), buffer)
@@ -212,7 +220,8 @@ def load_training_checkpoint(path, expected_sha256):
         model = PopulationCellGraph(PopulationGraphSpec(**spec))
     else:
         from .population_age_graph import PopulationAgeCellGraph, PopulationAgeGraphSpec
-        if set(spec) != set(PopulationAgeGraphSpec.__dataclass_fields__):
+        required = set(PopulationAgeGraphSpec.__dataclass_fields__) - {"spatial_bins"}
+        if set(spec) not in (required, required | {"spatial_bins"}):
             raise ValueError("population age checkpoint requires explicit kernel and migration fields")
         model = PopulationAgeCellGraph(PopulationAgeGraphSpec(**spec))
     model = model.to(dtype=getattr(torch, saved["dtype"].split(".")[1]))

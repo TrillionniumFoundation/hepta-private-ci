@@ -52,6 +52,14 @@ use crate::AgentdIdentity;
 #[path = "automation_hcsn_host.rs"]
 mod hcsn;
 
+#[cfg(target_os = "linux")]
+#[path = "automation_hcsn_pq.rs"]
+mod hcsn_pq;
+
+#[cfg(target_os = "linux")]
+#[path = "automation_hcsn_source.rs"]
+mod hcsn_source;
+
 #[cfg(all(test, unix))]
 #[path = "automation_effect_recovery_tests.rs"]
 mod recovery_tests;
@@ -67,10 +75,12 @@ enum EffectProvider {
 enum AutomationEffectHostFile {
     Http(AutomationEffectHostFileV1),
     Hcsn(hcsn::HcsnHostFileV2),
+    #[cfg(target_os = "linux")]
+    HcsnPq(hcsn_pq::HcsnPqHostFileV3),
 }
 
 const AUTOMATION_EFFECT_HOST_SCHEMA_VERSION: u32 = 1;
-const MAX_AUTOMATION_EFFECT_HOST_FILE_BYTES: u64 = 64 * 1024;
+const MAX_AUTOMATION_EFFECT_HOST_FILE_BYTES: u64 = 256 * 1024;
 const MAX_AUTOMATION_EFFECT_REVOCATIONS_FILE_BYTES: u64 = 4 * 1024 * 1024;
 const MAX_PROVIDER_HEADERS: usize = 64;
 
@@ -90,6 +100,8 @@ pub(crate) struct AgentdAutomationEffectHost {
     authority: FinalUseAuthority,
     revocations_file: PathBuf,
     revocation_frontier: Arc<Mutex<(u64, u64)>>,
+    #[cfg(target_os = "linux")]
+    pq_gate: Option<Arc<crate::pq_final_use::PqFinalUseGate>>,
     adapter: EffectProvider,
 }
 
@@ -133,6 +145,10 @@ impl AgentdAutomationEffectHost {
         let config = match read_host_file(path)? {
             AutomationEffectHostFile::Http(config) => config,
             AutomationEffectHostFile::Hcsn(config) => return Self::open_hcsn(identity, config),
+            #[cfg(target_os = "linux")]
+            AutomationEffectHostFile::HcsnPq(config) => {
+                return Self::open_hcsn_pq(identity, config);
+            }
         };
         if config.schema_version != AUTOMATION_EFFECT_HOST_SCHEMA_VERSION {
             return Err(AgentdError::Invalid(
@@ -233,6 +249,8 @@ impl AgentdAutomationEffectHost {
             authority,
             revocations_file: config.final_use_revocations_file,
             revocation_frontier: Arc::new(Mutex::new(frontier)),
+            #[cfg(target_os = "linux")]
+            pq_gate: None,
             adapter: EffectProvider::Http(adapter),
         })
     }
@@ -261,7 +279,6 @@ impl AgentdAutomationEffectHost {
         now_ms: u64,
     ) -> Result<TaskFlowStepReceipt, AgentdError> {
         self.validate_intent(intent, wire_payload)?;
-        self.refresh_revocations()?;
         if let Some(receipt) = store
             .read_authorized_taskflow_effect_receipt(intent, command_id)
             .await
@@ -271,6 +288,7 @@ impl AgentdAutomationEffectHost {
         {
             return Ok(receipt);
         }
+        self.refresh_revocations()?;
         let run = store
             .taskflow_run(&intent.run_id)
             .await
@@ -286,6 +304,20 @@ impl AgentdAutomationEffectHost {
             EffectProvider::Http(adapter) => adapter.clone(),
             EffectProvider::Hcsn(provider) => {
                 let mut driver = provider.driver(&intent.operation_id)?;
+                #[cfg(target_os = "linux")]
+                if let Some(gate) = &self.pq_gate {
+                    let lease = gate
+                        .authenticate(&self.authority, &self.revocations_file, signed_grant)
+                        .map_err(|error| AgentdError::GenerationFenced(error.to_string()))?;
+                    driver = provider.driver_with_lease(
+                        &intent.operation_id,
+                        lease,
+                        Arc::clone(gate),
+                        self.authority.clone(),
+                        self.revocations_file.clone(),
+                        signed_grant.clone(),
+                    )?;
+                }
                 return store
                     .execute_authorized_taskflow_effect(
                         &self.authority,
@@ -394,17 +426,35 @@ impl AgentdAutomationEffectHost {
                     ProviderEffectLookup::NotFound | ProviderEffectLookup::Unknown => None,
                 }
             }
-            EffectProvider::Hcsn(provider) => match provider.lookup(&pending) {
-                codex_hepta_automation::AuthorizedProviderEffectLookup::Observed(receipt) => {
-                    Some(receipt)
+            EffectProvider::Hcsn(provider) => {
+                #[cfg(target_os = "linux")]
+                let trust = self
+                    .pq_gate
+                    .clone()
+                    .map(|gate| (gate, self.authority.clone(), self.revocations_file.clone()));
+                let lookup = provider.lookup(&pending, move || {
+                    #[cfg(target_os = "linux")]
+                    if let Some((gate, authority, path)) = &trust {
+                        gate.refresh(authority, path).map_err(|_| {
+                            codex_hepta_automation::HcsnSupervisorError::BeforeContact
+                        })?;
+                    }
+                    Ok(())
+                });
+                match lookup {
+                    codex_hepta_automation::AuthorizedProviderEffectLookup::Observed(receipt) => {
+                        Some(receipt)
+                    }
+                    codex_hepta_automation::AuthorizedProviderEffectLookup::Unresolved => None,
+                    codex_hepta_automation::AuthorizedProviderEffectLookup::ProvenAbsent {
+                        ..
+                    } => {
+                        return Err(AgentdError::Protocol(
+                            "HCSN lookup cannot prove absence".to_string(),
+                        ));
+                    }
                 }
-                codex_hepta_automation::AuthorizedProviderEffectLookup::Unresolved => None,
-                codex_hepta_automation::AuthorizedProviderEffectLookup::ProvenAbsent { .. } => {
-                    return Err(AgentdError::Protocol(
-                        "HCSN lookup cannot prove absence".to_string(),
-                    ));
-                }
-            },
+            }
         };
         let Some(receipt) = terminal else {
             return Ok(AgentdAutomationEffectReconcileOutcome::Indeterminate);
@@ -434,6 +484,12 @@ impl AgentdAutomationEffectHost {
     }
 
     fn refresh_revocations(&self) -> Result<(), AgentdError> {
+        #[cfg(target_os = "linux")]
+        if let Some(gate) = &self.pq_gate {
+            return gate
+                .refresh(&self.authority, &self.revocations_file)
+                .map_err(|error| AgentdError::GenerationFenced(error.to_string()));
+        }
         let head = read_revocations_file(&self.revocations_file)?;
         let mut frontier = self.revocation_frontier.lock().map_err(|_| {
             AgentdError::Protocol(
@@ -646,6 +702,9 @@ fn serialized_observation_digest(domain: &[u8], value: &impl serde::Serialize) -
 }
 
 fn read_host_file(path: &Path) -> Result<AutomationEffectHostFile, AgentdError> {
+    #[cfg(target_os = "linux")]
+    let bytes = crate::protected_file::read(path, MAX_AUTOMATION_EFFECT_HOST_FILE_BYTES)?;
+    #[cfg(not(target_os = "linux"))]
     let bytes = read_protected_file(
         path,
         MAX_AUTOMATION_EFFECT_HOST_FILE_BYTES,

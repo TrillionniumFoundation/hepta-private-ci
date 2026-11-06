@@ -17,17 +17,17 @@ from .training_state import state_digest
 from .worker import task_gradients
 
 
-def model_fixture(step=100_000, maximum=16):
+def model_fixture(step=100_000, maximum=16, *, spatial_bins=32):
     model = PopulationAgeCellGraph(PopulationAgeGraphSpec(("encoder", "memory"), 1, 1, 1,
-                                                         step, maximum)).double()
+                                                         step, maximum, spatial_bins=spatial_bins)).double()
     with torch.no_grad():
         for name, parameter in model.named_parameters():
             parameter.fill_(.1 if "bias" in name else .3)
     return model
 
 
-def fixture(directory):
-    model = model_fixture()
+def fixture(directory, *, spatial_bins=32):
+    model = model_fixture(spatial_bins=spatial_bins)
     profile = dict(maximum_gap_micros=1_000_000, forecast_horizon_micros=500_000,
                    integration=dict(kind="population_age", max_step_micros=100_000, max_substeps=16))
     identity, anchor, start, plans = time_profile_digest(profile), digest("checkpoint"), 17, []

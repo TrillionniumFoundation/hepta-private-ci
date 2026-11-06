@@ -1,6 +1,6 @@
-//! Explicit engineering HCSN registration under the existing Agentd effect owner.
-//! Production registration requires the PQ authority composition and is refused
-//! by this baseline; engineering registration is disabled in ordinary Agentd builds.
+//! Explicit engineering HCSN registration and retained provider observations.
+//! Schema 3 production composition lives in automation_hcsn_pq; this schema 2
+//! engineering path remains disabled in ordinary Agentd builds.
 //! Exact request bytes are retained only inside the verified dispatch boundary;
 //! a reopened host can query the same job without granting another launch.
 
@@ -53,9 +53,11 @@ enum HcsnAuthorityProfile {
 
 #[derive(Clone, Debug)]
 pub(super) struct HcsnProvider {
-    provider_scope: String,
-    config: HcsnProcessSupervisorConfig,
-    requests_root: PathBuf,
+    pub(super) provider_scope: String,
+    pub(super) config: HcsnProcessSupervisorConfig,
+    pub(super) requests_root: PathBuf,
+    #[cfg(target_os = "linux")]
+    pub(super) source_manifest: Option<Arc<super::hcsn_source::HcsnSourceManifest>>,
 }
 
 #[derive(Deserialize, Eq, PartialEq, Serialize)]
@@ -68,6 +70,8 @@ struct RetainedRequest {
 pub(super) struct RetainedDriver {
     provider: HcsnProvider,
     driver: HcsnTaskFlowDriver<HcsnProcessSupervisor>,
+    #[cfg(target_os = "linux")]
+    pub(super) pq_claim: Option<super::hcsn_pq::HcsnClaim>,
 }
 
 impl AgentdAutomationEffectHost {
@@ -77,7 +81,7 @@ impl AgentdAutomationEffectHost {
     ) -> Result<Self, AgentdError> {
         match config.authority_profile {
             HcsnAuthorityProfile::ProductionMlDsa65V2 => return Err(AgentdError::Invalid(
-                "production HCSN registration requires the PQ owner authority, signed revocations, protected clock and external frontier; this baseline cannot register it".to_string(),
+                "production HCSN registration requires the PQ owner authority and a signed schema 3 deployment; schema 2 cannot register it".to_string(),
             )),
             HcsnAuthorityProfile::EngineeringEd25519V1 if !cfg!(test) => {
                 return Err(AgentdError::Invalid(
@@ -129,6 +133,8 @@ impl AgentdAutomationEffectHost {
             provider_scope: config.provider_scope.clone(),
             config: supervisor_config,
             requests_root,
+            #[cfg(target_os = "linux")]
+            source_manifest: None,
         };
         Ok(Self {
             agent_id: identity.agent_id.clone(),
@@ -138,6 +144,8 @@ impl AgentdAutomationEffectHost {
             authority,
             revocations_file: config.final_use_revocations_file,
             revocation_frontier: Arc::new(Mutex::new(frontier)),
+            #[cfg(target_os = "linux")]
+            pq_gate: None,
             adapter: EffectProvider::Hcsn(provider),
         })
     }
@@ -145,21 +153,54 @@ impl AgentdAutomationEffectHost {
 
 impl HcsnProvider {
     pub(super) fn driver(&self, operation: &str) -> Result<RetainedDriver, AgentdError> {
+        self.driver_with_contact_guard(operation, || Ok(()))
+    }
+
+    pub(super) fn driver_with_contact_guard(
+        &self,
+        operation: &str,
+        guard: impl Fn() -> Result<(), codex_hepta_automation::HcsnSupervisorError>
+        + Send
+        + Sync
+        + 'static,
+    ) -> Result<RetainedDriver, AgentdError> {
         let action = action_for_operation(operation)?;
-        let supervisor = HcsnProcessSupervisor::new(self.config.clone()).map_err(|_| {
-            AgentdError::Invalid("HCSN supervisor deployment pins rejected".to_string())
-        })?;
+        #[cfg(target_os = "linux")]
+        let guard = {
+            let source_manifest = self.source_manifest.clone();
+            let repository = self.config.repository_root.clone();
+            move || {
+                if let Some(manifest) = &source_manifest {
+                    manifest
+                        .verify(&repository)
+                        .map_err(|_| codex_hepta_automation::HcsnSupervisorError::BeforeContact)?;
+                }
+                // Authenticate clock/feed/frontier after source IO, as close
+                // as possible to the native supervisor contact boundary.
+                guard()
+            }
+        };
+        let supervisor = HcsnProcessSupervisor::new_with_contact_guard(self.config.clone(), guard)
+            .map_err(|_| {
+                AgentdError::Invalid("HCSN supervisor deployment pins rejected".to_string())
+            })?;
         let driver = HcsnTaskFlowDriver::new(self.provider_scope.clone(), action, supervisor)
             .map_err(|_| AgentdError::Invalid("invalid HCSN provider scope".to_string()))?;
         Ok(RetainedDriver {
             provider: self.clone(),
             driver,
+            #[cfg(target_os = "linux")]
+            pq_claim: None,
         })
     }
 
     pub(super) fn lookup(
         &self,
         pending: &AuthorizedEffectPending,
+        guard: impl Fn() -> Result<(), codex_hepta_automation::HcsnSupervisorError>
+        + Send
+        + Sync
+        + 'static,
     ) -> AuthorizedProviderEffectLookup {
         if validate_private_directory(&self.requests_root).is_err() {
             return AuthorizedProviderEffectLookup::Unresolved;
@@ -183,7 +224,8 @@ impl HcsnProvider {
         {
             return AuthorizedProviderEffectLookup::Unresolved;
         }
-        let Ok(mut driver) = self.driver(&saved.intent.operation_id) else {
+        let Ok(mut driver) = self.driver_with_contact_guard(&saved.intent.operation_id, guard)
+        else {
             return AuthorizedProviderEffectLookup::Unresolved;
         };
         driver.driver.lookup(pending, saved.wire_payload.as_bytes())
@@ -191,6 +233,27 @@ impl HcsnProvider {
 }
 
 impl AuthorizedEffectDriver for RetainedDriver {
+    fn prepare_claim(
+        &mut self,
+        token: &codex_hepta_contracts::VerifiedUseToken,
+    ) -> Result<(), AuthorizedEffectDriverError> {
+        #[cfg(target_os = "linux")]
+        if let Some(claim) = &self.pq_claim {
+            let admitted = claim
+                .lease
+                .clone()
+                .check_claim(token)
+                .map_err(|_| AuthorizedEffectDriverError::BeforeProviderContact)?;
+            claim
+                .admitted
+                .set(admitted)
+                .map_err(|_| AuthorizedEffectDriverError::BeforeProviderContact)?;
+        }
+        #[cfg(not(target_os = "linux"))]
+        let _ = token;
+        Ok(())
+    }
+
     fn dispatch(
         &mut self,
         request: &AuthorizedEffectRequest<'_>,
@@ -248,7 +311,7 @@ fn action_for_operation(operation: &str) -> Result<HcsnTaskFlowActionV1, AgentdE
     }
 }
 
-fn create_private_directory(path: &Path) -> Result<(), AgentdError> {
+pub(super) fn create_private_directory(path: &Path) -> Result<(), AgentdError> {
     let mut builder = fs::DirBuilder::new();
     #[cfg(unix)]
     {
@@ -296,7 +359,17 @@ fn read_retained_request(path: &Path) -> Result<Vec<u8>, AgentdError> {
             ));
         }
     }
-    read_protected_file(path, MAX_RETAINED_REQUEST_BYTES, "retained HCSN request")
+    #[cfg(target_os = "linux")]
+    {
+        Ok(crate::protected_file::read(
+            path,
+            MAX_RETAINED_REQUEST_BYTES,
+        )?)
+    }
+    #[cfg(not(target_os = "linux"))]
+    {
+        read_protected_file(path, MAX_RETAINED_REQUEST_BYTES, "retained HCSN request")
+    }
 }
 
 #[cfg(all(test, unix))]

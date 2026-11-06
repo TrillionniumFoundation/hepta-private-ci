@@ -13,22 +13,38 @@ revocation refresh, and reconciliation APIs. It does not add a second scheduler.
 The existing `hepta-taskflow-runtime` binary remains an unsupported standalone
 host and exits without dispatching.
 
-## Registration status on this baseline
+## Registration and qualification boundary
 
-The HCSN host configuration is schema version 2 with
-`provider: "hcsn_process_v1"`. It requires an explicit `authority_profile`:
+Both HCSN host schemas use `provider: "hcsn_process_v1"` and require an explicit
+`authority_profile`:
 
-| Profile | Admission on this baseline |
-| --- | --- |
-| `engineering_ed25519_v1` | Available only when the Agentd host module is compiled with `cfg(test)`. Ordinary debug and release builds refuse it before creating authority or worker state. |
-| `production_ml_dsa65_v2` | Always refused. The required PQ owner authority, signed revocations, protected clock, and external frontier are not composed into this baseline. |
+| Schema | Profile | Implemented admission |
+| --- | --- | --- |
+| 2 | `engineering_ed25519_v1` | `cfg(test)` only; ordinary debug/release builds refuse before creating authority or worker state. |
+| 2 | `production_ml_dsa65_v2` | Refused; a schema-2 configuration cannot install production trust. |
+| 3 | `production_ml_dsa65_v2` | Linux candidate implementation using the existing owner with a signed deployment contract and externally anchored ML-DSA final-use authority. |
 
-Production deployment remains unqualified. A real signed-grant/worker engineering
-test is not evidence that the production PQ authority profile is available. The
-production owner composition must be completed on the branch that owns that
-authority protocol; the schema-2 engineering configuration cannot downgrade it.
+The [schema 3 loader](../../codex-rs/hepta-agentd/src/automation_hcsn_pq.rs)
+verifies a domain-separated deployment signature covering contract/epoch, provider
+and final-use scopes, executable/source/durable paths and pins, the complete Python
+source inventory under both qualification roots, and RPC deadline.
+Issuer, revocation distributor, deployment attestor, protected clock and external
+frontier have distinct public keys. Trust services must already exist; opening a
+host does not seed them. The native contact guard reauthenticates feed freshness
+and the full external frontier after token entry, immediately before spawn.
+Exact completed receipts can be read without a current feed or unexpired grant.
 
-In the test composition, the host owns the provider scope, final-use scope,
+Candidate validation is pending; no production deployment has been performed.
+The [PQ host fixture](../../codex-rs/hepta-agentd/src/automation_hcsn_pq_tests.rs)
+uses real ML-DSA verification with local test keys/services and a pinned subprocess
+probe. It does not establish independent custody or actual training-worker
+acceptance. Real worker qualifications below have their own authority scope.
+The deployed [AuthBus ingress](../../codex-rs/hepta-agentd/src/authbus_trust.rs)
+still uses classical Ed25519; selecting schema 3 does not migrate that ingress.
+Production authorization, independent service custody and deployed recovery need
+separate qualification.
+
+In either composition, the host owns the provider scope, final-use scope,
 authority/revocation inputs, canonical directories, executable/source pins, and
 bounded supervision deadline. Only `hcsn.training.start` and
 `hcsn.training.cancel` are registered. The host's public control payload limit
@@ -47,7 +63,7 @@ SQLite attempt and only queries the same job.
 
 The supplied Python backend serves one private store on one Linux host. Its
 canonical absolute parent directory must already exist. Initialization prepares
-the engineering backend; it does not enable production Agentd registration.
+the supervisor store; it does not install authority or qualify a deployment.
 Initialize the store once, before accepting jobs:
 
 ```sh
@@ -206,7 +222,8 @@ reported pass. Its durable success output is `signed-taskflow.json`.
 
 ```sh
 HEPTA_HCSN_SIGNED_WORKER_ROOT=/absolute/fresh-fixture \
-  just test -p codex-hepta-automation --test hcsn_signed_worker --run-ignored only
+  "$HCSN_SIGNED_WORKER_EXECUTABLE" --ignored --exact \
+  signed_authority_real_worker_cold_recovery --nocapture
 ```
 
 `verify_bridge.py --supervised --signed-worker-executable <qualified-test-binary>`
@@ -218,10 +235,42 @@ build provenance must be retained. A normal ignored-test build is compilation
 evidence only. A failed fixture remains a retained attempt and must not be
 silently overwritten or restarted.
 
-The [existing signed TaskFlow test](../../codex-rs/hepta-automation/tests/hcsn_taskflow.rs)
-uses a supervisor double for authorization, database recovery, and distinct
-cancellation. The [supervisor tests](test_supervisor.py) exercise actual Linux
-worker cancellation separately. The new combined real-worker fixture covers
-signed **Start and recovery**; it does not claim a combined signed cancellation
-and real-process termination result. All of these fixtures use synthetic trust
-or explicit engineering setup and do not grant production adoption authority.
+The separate `signed_authority_real_worker_cancel_cold_recovery` fixture adds
+signed Start and a distinct signed Cancel against an observed real worker. Its
+[wrapper](verify_cancel.py) prepares a fresh bounded attempt and checks the exact
+original process incarnation, confirmed exit, terminal bytes and both owner
+receipts after a fresh native process and a second SQLite reopen. The original
+Start settles as failed and Cancel as succeeded. Invalid signature, substituted
+payload and a Start grant presented for Cancel must fail before provider contact.
+Lost Start/Cancel replies remain indeterminate history, with separate terminal
+outcomes; a cancellation record alone is insufficient evidence of termination.
+
+Run `python -m qualification.hcsn_training.verify_cancel` with the executable,
+its SHA-256, an explicit backend, and a fresh output directory as shown in
+[INTEGRATION_STATUS.md](INTEGRATION_STATUS.md). Never run both ignored tests
+against one fixture directory. This new combined path awaits exact-source
+acceptance evidence. It uses `synthetic_ed25519_v1`, does not register Agentd,
+and records `optimizer_entry_proven=false`: observing a live worker does not
+prove that it reached training before cancellation. The existing supervisor
+double and Python supervisor tests retain their narrower scopes. None of these
+fixtures authorizes production deployment or model adoption.
+
+The separate [PQ real-worker wrapper](verify_pq_host.py) invokes the ignored
+`automation_effect_host::hcsn_pq::tests::real_worker::pq_host_real_worker_cancel_cold_recovery`
+Agentd library test. It uses the actual schema-3 loader and host execute/reconcile
+APIs with locally signed ML-DSA grants, signed external fixture services and the
+actual pinned supervisor/worker. It retains real initial Start/Cancel responses,
+checks the original worker's exit independently, then reopens the host in a fresh
+native process and verifies exact terminal receipts after SQLite reopen with an
+expired clock and missing feed. It does not inject or relabel lost replies.
+
+Use `--agentd-executable`, `--agentd-sha256`, `--backend` and a fresh `--output`
+directory as documented in [INTEGRATION_STATUS.md](INTEGRATION_STATUS.md).
+Both cancellation wrappers share the same bounded workload preparer: B uses an
+explicit 8-bin grid and longer trace under the existing resource limits, while
+the default numerical qualification remains 32-bin. The retained independent
+one-step preflight proves admission of the changed shape and initialization;
+it does not establish progress inside the cancelled worker.
+This acceptance is pending for the candidate source. Local fixture trust,
+`agentd_daemon_booted=false`, `authbus_ingress_exercised=false`, and
+`optimizer_entry_proven=false` remain explicit even if it passes.

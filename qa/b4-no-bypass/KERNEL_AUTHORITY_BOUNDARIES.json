@@ -42,7 +42,10 @@
         "issuer_key_ids",
         "frontier",
         "capacity",
-        "revocation_head"
+        "revocation_head",
+        "authentication_profile",
+        "shares_owner",
+        "check_unclaimed_grant"
       ]
     },
     {
@@ -272,6 +275,7 @@
       "allowedCallers": [
         "codex-rs/hepta-agentd/src/automation_effect_host.rs",
         "codex-rs/hepta-contracts/src/final_use_control.rs",
+        "codex-rs/hepta-contracts/src/final_use_control_pq.rs",
         "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"
       ]
     },

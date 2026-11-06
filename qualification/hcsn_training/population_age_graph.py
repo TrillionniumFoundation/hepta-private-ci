@@ -26,12 +26,14 @@ class PopulationAgeGraphSpec(GraphSpec):
     backend: str = "population_age_v1"
     kernel: str = "upwind_ctmc_v1"
     legacy_step_micros: int = 0
+    spatial_bins: int = 32
 
     def __post_init__(self):
         super().__post_init__()
         integer(self.max_step_micros, maximum=2**53-1)
         integer(self.max_substeps, maximum=MAX_SUBSTEPS)
         integer(self.legacy_step_micros, 0, maximum=2**53-1)
+        integer(self.spatial_bins, minimum=8, maximum=128)
         if self.backend != "population_age_v1" or self.kernel != "upwind_ctmc_v1":
             raise ValueError("unknown population age backend/kernel")
         if self.maximum_remaining_micros > 2**24:
@@ -89,7 +91,7 @@ class PopulationAgeCellGraph(PopulationCellGraph):
         # buffers. Its fixed-grid forward and refractory queue are never called.
         from .population_graph import PopulationGraphSpec
         bootstrap = PopulationGraphSpec(spec.cell_ids, spec.input_size, spec.hidden_size,
-                                        spec.output_size, REFRACTORY_MICROS)
+                                        spec.output_size, REFRACTORY_MICROS, spatial_bins=spec.spatial_bins)
         super().__init__(bootstrap)
         self.spec = spec
 
@@ -212,7 +214,8 @@ def migrate_fixed_grid(source, state, *, max_step_micros, max_substeps):
     source.validate_state(state, state[0][0].shape[0], parameter.dtype, parameter.device)
     old = source.spec
     spec = PopulationAgeGraphSpec(old.cell_ids, old.input_size, old.hidden_size, old.output_size,
-                                  max_step_micros, max_substeps, legacy_step_micros=old.step_micros)
+                                  max_step_micros, max_substeps, legacy_step_micros=old.step_micros,
+                                  spatial_bins=old.spatial_bins)
     model = PopulationAgeCellGraph(spec).to(dtype=parameter.dtype, device=parameter.device)
     model.load_state_dict({name: value.detach().clone() for name, value in source.state_dict().items()})
     migrated = tuple(tuple(value.detach().clone() for value in values)+(

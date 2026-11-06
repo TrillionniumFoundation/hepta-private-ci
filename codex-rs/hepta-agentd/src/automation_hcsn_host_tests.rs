@@ -75,6 +75,8 @@ fn unregistered_operation_is_rejected_before_supervisor_pin_io() {
     let provider = HcsnProvider {
         provider_scope: "provider:hcsn".to_string(),
         requests_root: root.join("requests"),
+        #[cfg(target_os = "linux")]
+        source_manifest: None,
         config: HcsnProcessSupervisorConfig {
             python_executable: root.join("python"),
             python_sha256: Sha256Digest::for_bytes(b"python"),

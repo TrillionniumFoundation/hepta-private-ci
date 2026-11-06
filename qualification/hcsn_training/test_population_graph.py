@@ -20,9 +20,10 @@ from .handoff import encode_handoff, MAGIC
 from .test_joint_graph import fixture as value_fixture
 
 
-def fixture(directory):
+def fixture(directory, *, spatial_bins=32):
     torch.manual_seed(31)
-    model = PopulationCellGraph(PopulationGraphSpec(("encoder", "memory"), 1, 1, 1, 100_000)).double()
+    model = PopulationCellGraph(PopulationGraphSpec(("encoder", "memory"), 1, 1, 1, 100_000,
+                                                   spatial_bins=spatial_bins)).double()
     with torch.no_grad():
         for name, parameter in model.named_parameters():
             parameter.fill_(.1 if "bias" in name else .3)

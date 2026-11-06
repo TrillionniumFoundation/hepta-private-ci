@@ -9,6 +9,13 @@ on:
       - codex-rs/hepta-learning-artifacts/**
       - codex-rs/hepta-automation/**
       - codex-rs/hepta-agentd/**
+      - codex-rs/hepta-contracts/**
+      - codex-rs/Cargo.toml
+      - codex-rs/Cargo.lock
+      - MODULE.bazel.lock
+      - CALLERS.toml
+      - scripts/verify_hepta_callers.py
+      - scripts/hepta_typed_callers.py
       - .github/workflows/hepta-hcsn-training-bridge.yml
 
 permissions:
@@ -16,7 +23,7 @@ permissions:
 
 jobs:
   source-and-owner:
-    if: github.event_name != 'pull_request' || github.head_ref == 'codex/hcsn-training-bridge-20261106' || github.head_ref == 'codex/hcsn-taskflow-integration-20261106' || github.head_ref == 'codex/hcsn-gap-closure-20261106'
+    if: github.event_name != 'pull_request' || github.head_ref == 'codex/hcsn-training-bridge-20261106' || github.head_ref == 'codex/hcsn-taskflow-integration-20261106' || github.head_ref == 'codex/hcsn-gap-closure-20261106' || github.head_ref == 'codex/hcsn-production-compose-20261106'
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     env:
@@ -69,10 +76,10 @@ jobs:
         run: |
           rustc --version | tee "$HCSN_CI_EVIDENCE/rust-version.txt"
           cargo build --locked --message-format=json -p codex-hepta-neuron -p codex-hepta-learning-artifacts -p codex-hepta-contracts -p codex-hepta-automation -p codex-hepta-types -p serde_json -p ed25519-dalek > "$HCSN_CI_EVIDENCE/cargo-artifacts.jsonl" 2> "$HCSN_CI_EVIDENCE/rust-build.log"
-      - name: Run the two affected native packages
+      - name: Run numerical, artifact and final-use authority packages
         if: ${{ !cancelled() && steps.rust_build.outcome == 'success' }}
         working-directory: codex-rs
-        run: just test --locked -p codex-hepta-neuron -p codex-hepta-learning-artifacts 2>&1 | tee "$HCSN_CI_EVIDENCE/rust-tests.log"
+        run: just test --locked -p codex-hepta-neuron -p codex-hepta-learning-artifacts -p codex-hepta-contracts 2>&1 | tee "$HCSN_CI_EVIDENCE/rust-tests.log"
       - name: Build signed TaskFlow real-worker test executable
         id: signed_worker_build
         if: ${{ !cancelled() && steps.rust_build.outcome == 'success' }}
@@ -109,7 +116,9 @@ jobs:
           suite = unittest.TestSuite()
           expected = {"test_joint_graph": 8, "test_population_graph": 8,
                       "test_training_state": 8, "test_native_build": 5, "test_supervisor": 11,
+                      "test_supervisor_imports": 8,
                       "test_population_age_graph": 8, "test_population_generator": 5,
+                      "test_population_spatial": 5,
                       "test_resumed_derivatives": 3}
           for name, minimum in expected.items():
               module = unittest.defaultTestLoader.loadTestsFromName("qualification.hcsn_training." + name)
@@ -138,6 +147,25 @@ jobs:
         if: ${{ !cancelled() && steps.tools.outcome == 'success' }}
         working-directory: codex-rs
         run: just test --locked -p codex-hepta-automation 2>&1 | tee "$HCSN_CI_EVIDENCE/taskflow-tests.log"
+      - name: Signed cancellation, actual worker exit and fresh-process recovery
+        if: ${{ !cancelled() && steps.python_runtime.outcome == 'success' && steps.signed_worker_build.outcome == 'success' }}
+        run: |
+          HCSN_SIGNED_WORKER_SHA256="$(python -c 'import json,os; from pathlib import Path; print(json.loads((Path(os.environ["HCSN_CI_EVIDENCE"])/"signed-worker-executable.json").read_text())["sha256"])')"
+          HCSN_CANCEL_STATUS=0
+          for backend in value_kernel population_grid population_age; do
+            if python -m qualification.hcsn_training.verify_cancel --signed-worker-executable "$HCSN_SIGNED_WORKER_EXECUTABLE" --signed-worker-sha256 "$HCSN_SIGNED_WORKER_SHA256" --backend "$backend" --output "$HCSN_CI_EVIDENCE/cancel-$backend" 2>&1 | tee "$HCSN_CI_EVIDENCE/cancel-$backend.log"; then
+              HCSN_BACKEND_EXIT=0
+            else
+              HCSN_BACKEND_EXIT=$?
+              HCSN_CANCEL_STATUS=1
+            fi
+            printf '{"backend":"%s","pipeline_exit_code":%s}\n' "$backend" "$HCSN_BACKEND_EXIT" > "$HCSN_CI_EVIDENCE/cancel-$backend-status.json"
+          done
+          exit "$HCSN_CANCEL_STATUS"
+      - name: Run scoped authority and TaskFlow fixes after tests
+        if: ${{ !cancelled() && steps.tools.outcome == 'success' && steps.rust_build.outcome == 'success' }}
+        working-directory: codex-rs
+        run: just fix --locked -p codex-hepta-contracts -p codex-hepta-automation --no-deps 2>&1 | tee "$HCSN_CI_EVIDENCE/rust-fix.log"
       - name: Verify tracked source remained unchanged
         if: always()
         run: |
@@ -148,13 +176,14 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: hcsn-training-bridge-${{ env.HCSN_SOURCE_SHA }}-${{ github.run_attempt }}
+          include-hidden-files: true
           path: |
             ${{ runner.temp }}/hcsn-training-bridge/
             codex-rs/target/nextest/local/
           if-no-files-found: warn
 
   agentd-registration:
-    if: github.event_name == 'pull_request' && github.head_ref == 'codex/hcsn-gap-closure-20261106'
+    if: github.event_name == 'pull_request' && (github.head_ref == 'codex/hcsn-gap-closure-20261106' || github.head_ref == 'codex/hcsn-production-compose-20261106')
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     env:
@@ -174,7 +203,37 @@ jobs:
           mkdir -p "$RUNNER_TEMP/hcsn-agentd"
           git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/hcsn-agentd/source.txt"
       - name: Verify the existing privileged caller closed set
-        run: python3 scripts/verify_hepta_callers.py verify > "$RUNNER_TEMP/hcsn-agentd/callers.json"
+        run: |
+          python3 scripts/verify_hepta_callers.py verify > "$RUNNER_TEMP/hcsn-agentd/callers.json"
+          python3 - <<'PY' > "$RUNNER_TEMP/hcsn-agentd/source-pins.json"
+          import hashlib, json, tomllib
+          from pathlib import Path
+          manifest = tomllib.loads(Path("CALLERS.toml").read_text())
+          required_paths = {
+              "codex-rs/hepta-contracts/src/final_use.rs",
+              "codex-rs/hepta-contracts/src/final_use_control.rs",
+              "codex-rs/hepta-contracts/src/authority_authentication.rs",
+              "codex-rs/hepta-contracts/src/pq_auth.rs",
+              "codex-rs/hepta-contracts/src/final_use_pq.rs",
+              "codex-rs/hepta-contracts/src/final_use_control_pq.rs",
+              "codex-rs/hepta-contracts/src/final_use_live_owner.rs",
+              "codex-rs/hepta-contracts/src/final_use_store.rs",
+              "codex-rs/hepta-agentd/src/pq_final_use.rs",
+              "codex-rs/hepta-agentd/src/automation_hcsn_pq.rs",
+              "codex-rs/hepta-agentd/src/automation_hcsn_source.rs",
+          }
+          observations = []
+          for entry in manifest["protected_file"]:
+              if "source_sha256" not in entry:
+                  continue
+              observed = hashlib.sha256(Path(entry["path"]).read_bytes()).hexdigest()
+              assert observed == entry["source_sha256"], entry["path"]
+              observations.append({"path": entry["path"], "sha256": observed})
+          observed_paths = [item["path"] for item in observations]
+          assert len(observed_paths) == len(set(observed_paths)), "duplicate PQ source pin"
+          assert set(observed_paths) == required_paths, "PQ source pin paths differ from the exact inventory"
+          print(json.dumps(observations, indent=2))
+          PY
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: just@1.51.0,nextest@0.9.103
@@ -183,18 +242,79 @@ jobs:
           CODEX_REPO_ROOT: ${{ github.workspace }}
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
+      - name: Install pinned CPU runtime for actual PQ host worker
+        id: agentd_python_runtime
+        shell: bash
+        run: |
+          python3 -m venv "$RUNNER_TEMP/hcsn-pq-host-venv"
+          HCSN_PYTHON="$RUNNER_TEMP/hcsn-pq-host-venv/bin/python"
+          echo "$RUNNER_TEMP/hcsn-pq-host-venv/bin" >> "$GITHUB_PATH"
+          "$HCSN_PYTHON" -m pip install numpy==2.3.5 scipy==1.17.0 2>&1 | tee "$RUNNER_TEMP/hcsn-agentd/numeric-install.log"
+          "$HCSN_PYTHON" -m pip install torch==2.8.0+cpu --index-url https://download.pytorch.org/whl/cpu 2>&1 | tee "$RUNNER_TEMP/hcsn-agentd/torch-install.log"
+          "$HCSN_PYTHON" -m pip freeze > "$RUNNER_TEMP/hcsn-agentd/python-packages.txt"
+          "$HCSN_PYTHON" -c 'import torch,numpy,scipy; assert (str(torch.__version__),numpy.__version__,scipy.__version__,torch.version.cuda)==("2.8.0+cpu","2.3.5","1.17.0",None)'
       - name: Compile actual Agentd and exercise provider registration and existing HTTP owner
+        id: agentd_tests
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
-          just test --locked --lib -p codex-hepta-agentd automation_effect_host --test-threads=1 2>&1 | tee "$RUNNER_TEMP/hcsn-agentd/tests.log"
-      - name: Check actual Agentd owner lints
+          just test --locked --lib -p codex-hepta-agentd -E 'test(automation_effect_host) | test(pq_final_use) | test(protected_file)' --test-threads=1 2>&1 | tee "$RUNNER_TEMP/hcsn-agentd/tests.log"
+      - name: Check ordinary Agentd library without test registration
+        if: ${{ !cancelled() && steps.agentd_tests.outcome == 'success' }}
+        working-directory: codex-rs
+        shell: bash
+        run: cargo check --locked -p codex-hepta-agentd --lib 2>&1 | tee "$RUNNER_TEMP/hcsn-agentd/ordinary-build-check.log"
+      - name: Bind the exact Agentd lib-test executable
+        id: agentd_executable
+        if: ${{ !cancelled() && steps.agentd_tests.outcome == 'success' }}
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          cargo metadata --locked --no-deps --format-version=1 > "$RUNNER_TEMP/hcsn-agentd/cargo-metadata.json"
+          cargo nextest list --locked --lib -p codex-hepta-agentd --cargo-metadata "$RUNNER_TEMP/hcsn-agentd/cargo-metadata.json" --message-format=json > "$RUNNER_TEMP/hcsn-agentd/nextest-list.json" 2> "$RUNNER_TEMP/hcsn-agentd/nextest-list.log"
+          python3 - <<'PY'
+          import hashlib, json, os
+          from pathlib import Path
+          root = Path(os.environ["RUNNER_TEMP"]) / "hcsn-agentd"
+          suites = json.loads((root/"nextest-list.json").read_text())["rust-suites"]
+          rows = [row for row in suites.values()
+                  if row["package-name"] == "codex-hepta-agentd" and row["kind"] == "lib"]
+          assert len(rows) == 1 and rows[0]["status"] == "listed"
+          name = "automation_effect_host::hcsn_pq::tests::real_worker::pq_host_real_worker_cancel_cold_recovery"
+          assert name in rows[0]["testcases"] and rows[0]["testcases"][name]["ignored"]
+          executable = Path(rows[0]["binary-path"]).resolve(strict=True)
+          digest = hashlib.sha256(executable.read_bytes()).hexdigest()
+          (root/"agentd-executable.json").write_text(json.dumps({"path": str(executable), "sha256": digest}))
+          with open(os.environ["GITHUB_ENV"], "a") as stream:
+              stream.write("HCSN_AGENTD_EXECUTABLE=" + str(executable) + "\n")
+              stream.write("HCSN_AGENTD_SHA256=" + digest + "\n")
+          PY
+      - name: Actual PQ host, real worker cancellation and fresh native recovery
+        if: ${{ !cancelled() && steps.agentd_python_runtime.outcome == 'success' && steps.agentd_executable.outcome == 'success' }}
+        shell: bash
+        env:
+          OMP_NUM_THREADS: "1"
+          MKL_NUM_THREADS: "1"
+        run: |
+          HCSN_PQ_STATUS=0
+          for backend in value_kernel population_grid population_age; do
+            if python -m qualification.hcsn_training.verify_pq_host --agentd-executable "$HCSN_AGENTD_EXECUTABLE" --agentd-sha256 "$HCSN_AGENTD_SHA256" --backend "$backend" --output "$RUNNER_TEMP/hcsn-agentd/pq-host-$backend" 2>&1 | tee "$RUNNER_TEMP/hcsn-agentd/pq-host-$backend.log"; then
+              HCSN_BACKEND_EXIT=0
+            else
+              HCSN_BACKEND_EXIT=$?
+              HCSN_PQ_STATUS=1
+            fi
+            printf '{"backend":"%s","pipeline_exit_code":%s}\n' "$backend" "$HCSN_BACKEND_EXIT" > "$RUNNER_TEMP/hcsn-agentd/pq-host-$backend-status.json"
+          done
+          exit "$HCSN_PQ_STATUS"
+      - name: Run scoped Agentd owner fixes after tests
+        if: ${{ !cancelled() && steps.agentd_tests.outcome == 'success' }}
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
-          cargo clippy --locked -p codex-hepta-agentd --lib --no-deps -- -D clippy::correctness -D clippy::await_holding_lock -D clippy::await_holding_invalid_type 2>&1 | tee "$RUNNER_TEMP/hcsn-agentd/clippy.log"
+          just fix --locked -p codex-hepta-agentd --lib --no-deps -- -D clippy::correctness -D clippy::await_holding_lock -D clippy::await_holding_invalid_type 2>&1 | tee "$RUNNER_TEMP/hcsn-agentd/clippy.log"
       - name: Verify Agentd source remained unchanged
         if: always()
         run: git diff --exit-code > "$RUNNER_TEMP/hcsn-agentd/source-unchanged.log"
@@ -203,6 +323,7 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: hcsn-agentd-${{ env.HCSN_SOURCE_SHA }}-${{ github.run_attempt }}
+          include-hidden-files: true
           path: |
             ${{ runner.temp }}/hcsn-agentd/
             codex-rs/target/nextest/local/
