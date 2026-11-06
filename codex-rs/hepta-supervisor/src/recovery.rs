@@ -206,7 +206,6 @@ impl<D: ProcessDriver> Supervisor<D> {
                 )?;
                 slot.event(generation, SupervisorEventKind::OrphanMissing);
             }
-            self.recover_matrix_companion(agent_id, slot, record, now)?;
             return Ok(());
         };
         validate_lease(
@@ -357,7 +356,6 @@ impl<D: ProcessDriver> Supervisor<D> {
                 slot.event(generation, SupervisorEventKind::OrphanRejected);
             }
         }
-        self.recover_matrix_companion(agent_id, slot, record, now)?;
         Ok(())
     }
 }
