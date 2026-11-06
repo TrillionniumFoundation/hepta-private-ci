@@ -1,11 +1,33 @@
 {
-  "schema_version": 1,
-  "status": "pending_exact_source_hosted_acceptance",
+  "schema_version": 2,
+  "status": "prior_source_hosted_acceptance_passed_final_source_pending",
   "source_pr": 5067,
-  "source_head": "bbe995c43e4eed4bb9c217b52447ba5a32ebb6ca",
-  "source_tree": "e74509e6a2a49bd004b79854b3a6dbc2fe581be0",
+  "source_head": "a20ea6a862e501d8a4993195c7da1ac52ca9a7be",
+  "source_tree": "b8e8b66b957aaf1e5e1cd9db8bb479137cf9fceb",
   "base_head": "44e539313e0c54badb4b9b687425dd87ecba6e67",
-  "dedicated_run": 42240138316,
+  "dedicated_run": 42253531173,
+  "final_source_hosted_acceptance": "pending",
+  "accepted_prior_source": {
+    "source_head": "bbe995c43e4eed4bb9c217b52447ba5a32ebb6ca",
+    "source_tree": "e74509e6a2a49bd004b79854b3a6dbc2fe581be0",
+    "dedicated_run": 42240138316,
+    "conclusion": "success",
+    "python_tests": {
+      "passed": 69,
+      "skipped": 0
+    },
+    "bridges_passed": 3,
+    "classical_real_cancellations_passed": 3,
+    "pq_real_cancellations_passed": 3,
+    "summary": "ci-01-summary.json"
+  },
+  "final_source_change": {
+    "path": "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json",
+    "scope": "exactly three non-authorizing method classifications plus one exact signed PQ wrapper caller",
+    "rust_python_implementation_changes": false,
+    "no_bypass_local_tests_passed": 17,
+    "format_then_no_local_tests": true
+  },
   "local_archive": {
     "path": "local-raw.tgz",
     "sha256": "bc1652742befe0b2fa4c2ce5813841402e26fe494f396a0ade509e804a8b87e1",
@@ -21,14 +43,20 @@
     "distinct_referenced_files": 132
   },
   "claims": {
-    "final_69_tests_passed": false,
-    "extended_classical_cancellation_passes": 0,
-    "pq_host_real_cancellation_passes": 0,
+    "final_source_69_tests_passed": null,
+    "final_source_extended_classical_cancellation_passes": null,
+    "final_source_pq_host_real_cancellation_passes": null,
+    "all_repository_ci_green": false,
     "production_deployment": false,
     "agentd_daemon_booted": false,
     "authbus_ingress_exercised": false,
     "independent_custody": false,
     "optimizer_entry_proven": false,
+    "autograd_graph_persisted": false,
     "desktop_cuda_campaign_touched": false
+  },
+  "unresolved_broader_ci": {
+    "cargo_deny": "Run cargo-deny failed; detailed log unavailable; cause unclassified",
+    "other_failures": "see first-round snapshot and retained readouts; no blanket baseline attribution"
   }
 }

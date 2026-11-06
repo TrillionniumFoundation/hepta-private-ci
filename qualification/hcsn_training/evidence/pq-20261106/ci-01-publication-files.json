@@ -1,0 +1,250 @@
+{
+  "evidence_base_head": "b267c2f0370218aa221ca43ae9b2b5da63f66759",
+  "excluded_from_publication": [
+    {
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/ci-source-42240138316/source-artifact-13518974518.zip",
+      "reason": "Complete original contains the three compiled ELF files; complete ZIP and extraction remain retained outside Git."
+    },
+    {
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/ci-source-42240138316/original-extracted",
+      "reason": "Represented byte-for-byte by filtered package and inventories except named compiled executables."
+    },
+    {
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/prepare-ci-01-summary.py",
+      "reason": "Local offline evidence assembly helper, not a result artifact."
+    },
+    {
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/ci-01-jobs-completed.json",
+      "reason": "Redundant with root-retained ci-01-jobs-final.json."
+    },
+    {
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/ci-01-summary.json",
+      "reason": "Superseded by ci-01-summary-v2.json, published under canonical ci-01-summary.json."
+    },
+    {
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/ci-01-inventory-repair",
+      "reason": "All files retained in ci-01-controls-raw.tgz with exact per-file inventory."
+    },
+    {
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/broader-ci-01",
+      "reason": "All decoded tool responses retained in ci-01-controls-raw.tgz with exact provenance and per-file inventory."
+    }
+  ],
+  "file_count": 34,
+  "files": [
+    {
+      "bytes": 5641,
+      "git_path": "qualification/hcsn_training/evidence/pq-20261106/architecture-source-head-audit.json",
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/architecture-source-head-audit.json",
+      "sha256": "56b4af82758b22e89bf7b62d5eaf264a4568389c097a6e3eab436911790d09f8"
+    },
+    {
+      "bytes": 95298,
+      "git_path": "qualification/hcsn_training/evidence/pq-20261106/architecture-source-head-raw.zip",
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/architecture-source-head-raw.zip",
+      "sha256": "c51e448103e61cb429e6d90a8904f286ff59cd1bae55d41b570df383cdffe9cc"
+    },
+    {
+      "bytes": 1539,
+      "git_path": "qualification/hcsn_training/evidence/pq-20261106/architecture-source-head/browser.json",
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/architecture-source-head/browser.json",
+      "sha256": "6ad8a7271fb0eacfa95afcc6939984c404727fe434addafb0bc1c62aa712ed9c"
+    },
+    {
+      "bytes": 46872,
+      "git_path": "qualification/hcsn_training/evidence/pq-20261106/architecture-source-head/browser.json.54138351d066427a81a00ea0dfc100fd.log",
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/architecture-source-head/browser.json.54138351d066427a81a00ea0dfc100fd.log",
+      "sha256": "c1317adc1c22b6d37d713a2516a36a4739479e9285f342beb7843f1528de50aa"
+    },
+    {
+      "bytes": 1568,
+      "git_path": "qualification/hcsn_training/evidence/pq-20261106/architecture-source-head/final-use.json",
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/architecture-source-head/final-use.json",
+      "sha256": "ae4331e3ee450c08247ccd2cfc455bd65d8c5108d48d9bf8a21a61f42ce83ea8"
+    },
+    {
+      "bytes": 2193,
+      "git_path": "qualification/hcsn_training/evidence/pq-20261106/architecture-source-head/final-use.json.f4ac40dd18d74bc18014b4dd763a4ac1.log",
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/architecture-source-head/final-use.json.f4ac40dd18d74bc18014b4dd763a4ac1.log",
+      "sha256": "0e6dde6b4d8114625bb54eedfb577c757dd5b8ac0943cddbd6b2ec858e6f0c05"
+    },
+    {
+      "bytes": 1636,
+      "git_path": "qualification/hcsn_training/evidence/pq-20261106/architecture-source-head/optional-process-restart.json",
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/architecture-source-head/optional-process-restart.json",
+      "sha256": "a2b77f4d16019f8f7d7a2de90cb9cdb83095bc696c7b93e881755848fb3328ef"
+    },
+    {
+      "bytes": 8510,
+      "git_path": "qualification/hcsn_training/evidence/pq-20261106/architecture-source-head/optional-process-restart.json.7baf2d289e24405bbee469942e2c2549.log",
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/architecture-source-head/optional-process-restart.json.7baf2d289e24405bbee469942e2c2549.log",
+      "sha256": "1cd6360417e8272d88ec162ae5cca3f49767bed9f4e600a2cfb34e82768b65c4"
+    },
+    {
+      "bytes": 1531,
+      "git_path": "qualification/hcsn_training/evidence/pq-20261106/architecture-source-head/runtime-tasks.json",
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/architecture-source-head/runtime-tasks.json",
+      "sha256": "e61943e305c2644bd45c8fa7b180b2b9933be892a0040957ecec69157d3d85ac"
+    },
+    {
+      "bytes": 65910,
+      "git_path": "qualification/hcsn_training/evidence/pq-20261106/architecture-source-head/runtime-tasks.json.9ebc8678c8384a28bd0e836e67be603b.log",
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/architecture-source-head/runtime-tasks.json.9ebc8678c8384a28bd0e836e67be603b.log",
+      "sha256": "8d91a221354f050612f81a2ef10a1d47e408912b47f36561c6a8025bdce3ac6c"
+    },
+    {
+      "bytes": 1620,
+      "git_path": "qualification/hcsn_training/evidence/pq-20261106/architecture-source-head/selected-ranker.json",
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/architecture-source-head/selected-ranker.json",
+      "sha256": "85f5d60ee1a1624e62ded986f1658cb4ec01df506a8f04fc1368ec2bcf3ce9b3"
+    },
+    {
+      "bytes": 12598,
+      "git_path": "qualification/hcsn_training/evidence/pq-20261106/architecture-source-head/selected-ranker.json.b5e71834ab584f849091d692bee798a1.log",
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/architecture-source-head/selected-ranker.json.b5e71834ab584f849091d692bee798a1.log",
+      "sha256": "cac46762b2d34cce733d2da44386e5d5bc816f84ca7aba1a1c207dad3753e291"
+    },
+    {
+      "bytes": 20125,
+      "git_path": "qualification/hcsn_training/evidence/pq-20261106/ci-01-architecture-jobs-observed.json",
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/ci-01-architecture-jobs-observed.json",
+      "sha256": "c04ea4737645a74eae3be6873a0e6fa5e361358481f79556bd5c64b00562e606"
+    },
+    {
+      "bytes": 1844,
+      "git_path": "qualification/hcsn_training/evidence/pq-20261106/ci-01-artifacts.json",
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/ci-01-artifacts.json",
+      "sha256": "cba5b44b28321d340704ca088343ced7545e66a81e160bfba801a81d4863a515"
+    },
+    {
+      "bytes": 4076,
+      "git_path": "qualification/hcsn_training/evidence/pq-20261106/ci-01-broader-snapshot.json",
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/ci-01-broader-snapshot.json",
+      "sha256": "a837bbaa4083f71807b9b493a5306ae44a4c86ad8f00a0c6c8407a2c21fe3846"
+    },
+    {
+      "bytes": 4385,
+      "git_path": "qualification/hcsn_training/evidence/pq-20261106/ci-01-controls-files.json",
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/ci-01-controls-files.json",
+      "sha256": "25f81db5894955ede1b77e10a4211e2d4adafb156e5b8b487edca74a0a8a065b"
+    },
+    {
+      "bytes": 95774,
+      "git_path": "qualification/hcsn_training/evidence/pq-20261106/ci-01-controls-raw.tgz",
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/ci-01-controls-raw.tgz",
+      "sha256": "bcef1cae98d72c7e4e641d2433f24ff1f549774845074c32c400d34682c14c4d"
+    },
+    {
+      "bytes": 4329,
+      "git_path": "qualification/hcsn_training/evidence/pq-20261106/ci-01-independent-inventory-review.json",
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/ci-01-independent-inventory-review.json",
+      "sha256": "0f9133c741f8c07846ec5a89847a23929ca9014a4ea004d1c9836e31e4a95fbd"
+    },
+    {
+      "bytes": 7162,
+      "git_path": "qualification/hcsn_training/evidence/pq-20261106/ci-01-jobs-final.json",
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/ci-01-jobs-final.json",
+      "sha256": "915c87b04f3fdfefafc98250447d487aff28b52dec531bce50797630fb11eb5d"
+    },
+    {
+      "bytes": 16563,
+      "git_path": "qualification/hcsn_training/evidence/pq-20261106/ci-01-run-final.json",
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/ci-01-run-final.json",
+      "sha256": "f81f7aaeda94114fde3f983c2d8e1bf58b500f2a485b72b8c588e087e6edba08"
+    },
+    {
+      "bytes": 39386,
+      "git_path": "qualification/hcsn_training/evidence/pq-20261106/ci-01-summary.json",
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/ci-01-summary-v2.json",
+      "sha256": "c436811488f96af149719166846d0b478b7f87a0779dc5e2afc479f34725c788"
+    },
+    {
+      "bytes": 1727,
+      "git_path": "qualification/hcsn_training/evidence/pq-20261106/ci-02-runs-initial.json",
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/ci-02-runs-initial.json",
+      "sha256": "b6d082201d3e754282ed97544e922a664c54dace2c6f17afa93ca9561ea09744"
+    },
+    {
+      "bytes": 9171,
+      "git_path": "qualification/hcsn_training/evidence/pq-20261106/ci-architecture-base-merge-01.zip",
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/ci-architecture-base-merge-01.zip",
+      "sha256": "8393a5a6ce58c3f97109ed02cea6760fce4adbc9ada64c250af11528a792b4ca"
+    },
+    {
+      "bytes": 118248,
+      "git_path": "qualification/hcsn_training/evidence/pq-20261106/ci-source-42240138316/archive-inventory.json",
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/ci-source-42240138316/archive-inventory.json",
+      "sha256": "48b0c4e2f278ed9f5d29cf0c063c3d75d5a1897626e05d1120a10aa2725afd5b"
+    },
+    {
+      "bytes": 292,
+      "git_path": "qualification/hcsn_training/evidence/pq-20261106/ci-source-42240138316/artifact-identity.json",
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/ci-source-42240138316/artifact-identity.json",
+      "sha256": "575a9562fbe724e5a0e5759627b7210756786387ca610b8a95783ebbcc15138e"
+    },
+    {
+      "bytes": 8803,
+      "git_path": "qualification/hcsn_training/evidence/pq-20261106/ci-source-42240138316/artifact-review.json",
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/ci-source-42240138316/artifact-review.json",
+      "sha256": "ecd560eaa0f8cf09772859531e1b668e903246a8da745a33a0c3778055ae55ec"
+    },
+    {
+      "bytes": 236308,
+      "git_path": "qualification/hcsn_training/evidence/pq-20261106/ci-source-42240138316/job-127967939575.log",
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/ci-source-42240138316/job-127967939575.log",
+      "sha256": "8868b872098ce0628eb0a478beae7de60d377e2a1c744fd33c3206fdc5e3f033"
+    },
+    {
+      "bytes": 195664,
+      "git_path": "qualification/hcsn_training/evidence/pq-20261106/ci-source-42240138316/original-artifact-files.json",
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/ci-source-42240138316/original-artifact-files.json",
+      "sha256": "57da91fdd76c9164fa8656fcc2d6f5e7332e4d09c63c590ff75296bf3181ef41"
+    },
+    {
+      "bytes": 194940,
+      "git_path": "qualification/hcsn_training/evidence/pq-20261106/ci-source-42240138316/source-raw-filtered-files.json",
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/ci-source-42240138316/source-raw-filtered-files.json",
+      "sha256": "cc168bda96a2fc4c93a8ba47fb543d1bcb3633f51f7928d4f1c47e700797e63f"
+    },
+    {
+      "bytes": 969135,
+      "git_path": "qualification/hcsn_training/evidence/pq-20261106/ci-source-42240138316/source-raw-filtered.zip",
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/ci-source-42240138316/source-raw-filtered.zip",
+      "sha256": "7146ee59cf560ab989057f6d69cfbcee74eed5b4d3e1f5030815cbe417c19ae0"
+    },
+    {
+      "bytes": 4086,
+      "git_path": "qualification/hcsn_training/evidence/pq-20261106/ci-source-42240138316/source-raw-provenance.json",
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/ci-source-42240138316/source-raw-provenance.json",
+      "sha256": "59c475f540d5d467f189ede0a9248d95c60baf5e6d45c3e329747c1229454886"
+    },
+    {
+      "bytes": 13261,
+      "git_path": "qualification/hcsn_training/evidence/pq-20261106/pq-host-audit.json",
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/pq-host-audit.json",
+      "sha256": "ca4063cd9a2a25b021fee535fe7925e403c8c7ad4d69041b0d849166bc121cfc"
+    },
+    {
+      "bytes": 434639,
+      "git_path": "qualification/hcsn_training/evidence/pq-20261106/pq-host-raw-filtered.zip",
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/pq-host-raw-filtered.zip",
+      "sha256": "715cd26b57c46bf91a97c4b972854233bfacf6399043f822f676cb49145bfe36"
+    },
+    {
+      "bytes": 42255,
+      "git_path": "qualification/hcsn_training/evidence/pq-20261106/pq-host-raw-inventory.json",
+      "path": "/workspace/scratch/7b4b0c316c52/hcsn-evidence-stage/pq-host-raw-inventory.json",
+      "sha256": "d0726342d04432b2999aa54682bf0c3e904de0eeb225a6e14017fa26a903ade0"
+    }
+  ],
+  "latest_source_sha": "a20ea6a862e501d8a4993195c7da1ac52ca9a7be",
+  "manifest_self_entry_omitted_to_avoid_hash_cycle": true,
+  "publication_performed": false,
+  "repository_base_path": "qualification/hcsn_training/evidence/pq-20261106/",
+  "schema": "hcsn.first-round-publication-files.v1",
+  "suggested_manifest_git_path": "qualification/hcsn_training/evidence/pq-20261106/ci-01-publication-files.json",
+  "supersedes_staging_manifest": "ci-01-publication-files.json",
+  "tested_source_sha": "bbe995c43e4eed4bb9c217b52447ba5a32ebb6ca",
+  "tested_source_tree": "e74509e6a2a49bd004b79854b3a6dbc2fe581be0",
+  "total_bytes": 2667089
+}
