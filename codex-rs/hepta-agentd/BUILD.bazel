@@ -45,6 +45,9 @@ codex_rust_crate(
     ] + _JOINT_TEST_FIXTURE,
     # Match the Agentd Cargo default on both the library and product binaries.
     crate_features = ["production-cognitive-write"],
+    # terminal_learning_tests.rs uses a path module outside src/. Bazel must
+    # declare that real source for the generated unit-test library as Cargo does.
+    crate_srcs = glob(["src/**/*.rs"]) + ["tests/support/terminal_cell_owner.rs"],
     crate_name = "codex_hepta_agentd",
     integration_test_timeout = "long",
     # Cargo unifies the qualification-only dev dependency for integration tests.
@@ -60,7 +63,7 @@ codex_rust_crate(
 rust_library(
     name = "hepta-agentd-cognitive-write-qualification-lib",
     testonly = True,
-    srcs = glob(["src/**/*.rs"]),
+    srcs = glob(["src/**/*.rs"]) + ["tests/support/terminal_cell_owner.rs"],
     compile_data = [
         "tests/fixtures/android-bound-text-v1.json",
         "tests/fixtures/hos2_production_owner.json",
