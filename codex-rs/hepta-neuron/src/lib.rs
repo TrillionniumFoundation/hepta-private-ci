@@ -17,6 +17,7 @@ use codex_hepta_types::StableId;
 
 pub use codex_hepta_infer_core::NeuronFeatureReceiptV1;
 pub use codex_hepta_infer_core::NeuronFeatureRequestV1;
+pub use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 
 mod cell;
 mod cell_batch;
@@ -83,6 +84,8 @@ pub use cell_inference::infer_cell;
 pub use cell_inference::recover_cell_inference;
 #[cfg(target_os = "linux")]
 pub use cell_joint_generation::JointGenerationProcessConfigV1;
+#[cfg(target_os = "linux")]
+pub use cell_joint_generation::JointGenerationProcessFilesV1;
 #[cfg(target_os = "linux")]
 pub use cell_joint_generation::JointGenerationProcessWorkerV1;
 #[cfg(target_os = "linux")]

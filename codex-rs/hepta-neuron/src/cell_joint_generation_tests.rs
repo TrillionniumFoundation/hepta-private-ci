@@ -22,6 +22,17 @@ mod synthetic;
 
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 
+#[test]
+fn invalid_clock_at_native_entry_does_not_create_a_terminal_proposal() -> TestResult {
+    let harness = Harness::new(16, Arc::new(|| 0))?;
+    assert_eq!(
+        harness
+            .worker
+            .execute(&harness.manifest, &harness.request, &AtomicBool::new(false)),
+        Err(CellGenerationErrorV2::Unavailable)
+    );
+    Ok(())
+}
 static NEXT: AtomicU64 = AtomicU64::new(0);
 
 struct Directory(PathBuf);

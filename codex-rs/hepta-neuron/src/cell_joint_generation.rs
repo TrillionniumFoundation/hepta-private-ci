@@ -3,7 +3,6 @@
 
 use std::collections::BTreeMap;
 use std::fs::File;
-use std::io::Read;
 use std::path::Path;
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -31,8 +30,11 @@ use crate::cell_joint_process::ProcessRequest;
 use crate::cell_joint_process::ProcessStatus;
 use crate::cell_joint_protocol;
 use crate::cell_joint_protocol::JointGenerationInputV1;
-use crate::cell_joint_protocol::MAX_PUBLIC_BYTES;
-use crate::cell_joint_protocol::MAX_WEIGHTS_BYTES;
+
+#[path = "cell_joint_assets.rs"]
+mod assets;
+pub use assets::JointGenerationProcessFilesV1;
+use assets::read_bounded;
 
 /// These paths are supplied by the admitted host, never by a generation input.
 /// The source digest is the host's artifact/source binding; executable, weights,
@@ -149,49 +151,9 @@ impl JointGenerationProcessWorkerV1 {
         )
     }
 
-    /// Open and fingerprint the selected artifacts once. The public and weight
-    /// packets are then passed by bytes, so later path replacement cannot change
-    /// a run's assets. The clock must use the same epoch as its Agentd owner.
-    pub fn open(
-        config: JointGenerationProcessConfigV1,
-        clock: Arc<dyn Fn() -> u64 + Send + Sync>,
-    ) -> Result<Self, CellGenerationErrorV2> {
-        if [
-            config.executable_digest,
-            config.source_digest,
-            config.weights_digest,
-            config.public_digest,
-            config.device_digest,
-        ]
-        .contains(&[0; 32])
-        {
-            return Err(CellGenerationErrorV2::InvalidBinding);
-        }
-        let executable =
-            File::open(&config.executable).map_err(|_| CellGenerationErrorV2::Unavailable)?;
-        let weights = read_bounded(&config.weights, MAX_WEIGHTS_BYTES)?;
-        let public = read_bounded(&config.public, MAX_PUBLIC_BYTES)?;
-        if cell_joint_process::executable_digest(&executable)? != config.executable_digest
-            || Digest32::of_bytes(&weights).into_array() != config.weights_digest
-            || Digest32::of_bytes(&public).into_array() != config.public_digest
-            || Self::observed_device_digest()? != config.device_digest
-        {
-            return Err(CellGenerationErrorV2::InvalidBinding);
-        }
-        Ok(Self {
-            executable,
-            executable_digest: config.executable_digest,
-            source_digest: config.source_digest,
-            weights,
-            weights_digest: config.weights_digest,
-            public,
-            public_digest: config.public_digest,
-            device_digest: config.device_digest,
-            clock,
-        })
-    }
-
-    fn validate_manifest(
+    /// Check the selected content, runtime, schema and observed device pins.
+    /// Successful validation grants no adoption or publication authority.
+    pub fn validate_manifest(
         &self,
         manifest: &CellBackendManifestV2,
     ) -> Result<(), CellGenerationErrorV2> {
@@ -425,25 +387,6 @@ impl CellGenerationWorkerV2 for JointGenerationProcessWorkerV1 {
             cost,
         })
     }
-}
-
-fn read_bounded(path: &Path, maximum: usize) -> Result<Vec<u8>, CellGenerationErrorV2> {
-    let file = File::open(path).map_err(|_| CellGenerationErrorV2::Unavailable)?;
-    if !file
-        .metadata()
-        .map_err(|_| CellGenerationErrorV2::Unavailable)?
-        .is_file()
-    {
-        return Err(CellGenerationErrorV2::InvalidBinding);
-    }
-    let mut bytes = Vec::new();
-    file.take(maximum as u64 + 1)
-        .read_to_end(&mut bytes)
-        .map_err(|_| CellGenerationErrorV2::Unavailable)?;
-    if bytes.is_empty() || bytes.len() > maximum {
-        return Err(CellGenerationErrorV2::Capacity);
-    }
-    Ok(bytes)
 }
 
 fn rejected_input(
