@@ -77,7 +77,7 @@ pub enum LearningIterationObservationV1 {
         bytes: u64,
     },
     Training {
-        candidate: CellCompatibilityBundleV1,
+        candidate: Box<CellCompatibilityBundleV1>,
         steps: u64,
         milliseconds: u64,
         artifact_bytes: u64,

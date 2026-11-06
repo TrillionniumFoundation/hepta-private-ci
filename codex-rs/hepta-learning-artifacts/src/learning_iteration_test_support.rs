@@ -71,7 +71,7 @@ pub(crate) fn receipt(coordinator: &LearningIterationCoordinatorV1) -> LearningI
             withdrawal_frontier: digest("withdrawals"), rows: 2, bytes: 64,
         },
         LearningIterationStageV1::Training => LearningIterationObservationV1::Training {
-            candidate, steps: 2, milliseconds: 10, artifact_bytes: 64,
+            candidate: Box::new(candidate), steps: 2, milliseconds: 10, artifact_bytes: 64,
         },
         LearningIterationStageV1::Evaluation => LearningIterationObservationV1::Evaluation {
             candidate_bundle, evaluation_profile: digest("evaluation-profile"), disposition: LearningEvaluationDispositionV1::Qualified,

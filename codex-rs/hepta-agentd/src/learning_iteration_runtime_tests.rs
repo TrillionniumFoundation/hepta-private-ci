@@ -107,7 +107,7 @@ impl LearningIterationOwnerPortsV1 for IterationPorts {
                     withdrawal_frontier: digest("withdrawals"), rows: 1, bytes: 64,
                 },
                 LearningIterationStageV1::Training => LearningIterationObservationV1::Training {
-                    candidate, steps: 1, milliseconds: 1, artifact_bytes: 64,
+                    candidate: Box::new(candidate), steps: 1, milliseconds: 1, artifact_bytes: 64,
                 },
                 LearningIterationStageV1::Evaluation => LearningIterationObservationV1::Evaluation {
                     candidate_bundle, evaluation_profile: digest("frozen-evaluation"), disposition: self.evaluation,
