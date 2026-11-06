@@ -1,0 +1,147 @@
+{
+  "confirmation_eligible": false,
+  "independent_source_clusters": 2,
+  "schema": "ndu.external-tool-smoke-tasks.v1",
+  "selection": "authored without model outputs",
+  "split": "disclosed_engineering_smoke",
+  "tasks": [
+    {
+      "answer_format": "JSON array of rows",
+      "expected": [
+        [
+          275
+        ]
+      ],
+      "family": "sqlite_query",
+      "oracle_action": "sql",
+      "oracle_payload": {
+        "query": "SELECT COUNT(*) AS artist_count FROM Artist"
+      },
+      "question": "Return the total number of artists as one row containing the integer count.",
+      "source_cluster": "chinook-7f677725",
+      "task_id": "chinook/artist_count"
+    },
+    {
+      "answer_format": "JSON array of rows",
+      "expected": [
+        [
+          "Rock",
+          1297
+        ],
+        [
+          "Latin",
+          579
+        ],
+        [
+          "Metal",
+          374
+        ]
+      ],
+      "family": "sqlite_query",
+      "oracle_action": "sql",
+      "oracle_payload": {
+        "query": "SELECT g.Name, COUNT(t.TrackId) AS n FROM Genre g JOIN Track t ON g.GenreId=t.GenreId GROUP BY g.GenreId,g.Name ORDER BY n DESC,g.Name ASC LIMIT 3"
+      },
+      "question": "Return the three genres with most tracks as [genre name, track count] rows, ordered by descending count then ascending genre name.",
+      "source_cluster": "chinook-7f677725",
+      "task_id": "chinook/genre_top_three"
+    },
+    {
+      "answer_format": "JSON array of rows",
+      "expected": [
+        [
+          "USA",
+          "523.06"
+        ]
+      ],
+      "family": "sqlite_query",
+      "oracle_action": "sql",
+      "oracle_payload": {
+        "query": "SELECT BillingCountry, printf('%.2f',SUM(Total)) AS revenue FROM Invoice GROUP BY BillingCountry ORDER BY SUM(Total) DESC,BillingCountry ASC LIMIT 1"
+      },
+      "question": "Return the billing country with highest total invoice revenue and that revenue formatted with two decimal places as a string. Break ties by ascending country name.",
+      "source_cluster": "chinook-7f677725",
+      "task_id": "chinook/invoice_country"
+    },
+    {
+      "answer_format": "JSON array of rows",
+      "expected": [
+        [
+          229,
+          "Lost, Season 3",
+          70665582
+        ]
+      ],
+      "family": "sqlite_query",
+      "oracle_action": "sql",
+      "oracle_payload": {
+        "query": "SELECT a.AlbumId,a.Title,SUM(t.Milliseconds) AS duration FROM Album a JOIN Track t ON a.AlbumId=t.AlbumId GROUP BY a.AlbumId,a.Title ORDER BY duration DESC,a.AlbumId ASC LIMIT 1"
+      },
+      "question": "Return the album ID, title, and total track duration in milliseconds for the longest album. Break ties by ascending album ID.",
+      "source_cluster": "chinook-7f677725",
+      "task_id": "chinook/longest_album"
+    },
+    {
+      "answer_format": "JSON array of strings",
+      "expected": [
+        "4",
+        "exclusive"
+      ],
+      "extract_pattern": "def quantiles\\(data, \\*, n=(\\d+), method='([^']+)'\\)",
+      "family": "source_inspection",
+      "oracle_action": "source",
+      "oracle_payload": {
+        "needle": "def quantiles(data"
+      },
+      "question": "In the pinned statistics.py, return the default n and method for quantiles, each as a string, in that order.",
+      "source_cluster": "cpython-0fb18b02",
+      "task_id": "cpython/quantiles_defaults"
+    },
+    {
+      "answer_format": "JSON array of strings",
+      "expected": [
+        "x is constant"
+      ],
+      "extract_pattern": "raise StatisticsError\\('([^']+)'\\)",
+      "family": "source_inspection",
+      "oracle_action": "source",
+      "oracle_payload": {
+        "needle": "raise StatisticsError('x is constant')"
+      },
+      "question": "In the pinned linear_regression implementation, return the exact StatisticsError message for a constant x input, as a one-element string array.",
+      "source_cluster": "cpython-0fb18b02",
+      "task_id": "cpython/constant_regression_error"
+    },
+    {
+      "answer_format": "JSON array of strings",
+      "expected": [
+        "return T(value.numerator) / T(value.denominator)"
+      ],
+      "extract_pattern": "(return T\\(value.numerator\\) / T\\(value.denominator\\))",
+      "family": "source_inspection",
+      "oracle_action": "source",
+      "oracle_payload": {
+        "needle": "return T(value.numerator)"
+      },
+      "question": "In _convert, after TypeError for a Decimal subtype, return the exact stripped return statement as a one-element string array.",
+      "source_cluster": "cpython-0fb18b02",
+      "task_id": "cpython/decimal_fallback"
+    },
+    {
+      "answer_format": "JSON array of strings",
+      "expected": [
+        "average",
+        "1"
+      ],
+      "extract_pattern": "ties='([^']+)', start=(\\d+)\\)",
+      "family": "source_inspection",
+      "oracle_action": "source",
+      "oracle_payload": {
+        "needle": "def _rank(data"
+      },
+      "question": "In the pinned _rank signature, return the default ties and start values, each as a string, in that order.",
+      "source_cluster": "cpython-0fb18b02",
+      "task_id": "cpython/rank_defaults"
+    }
+  ]
+}
