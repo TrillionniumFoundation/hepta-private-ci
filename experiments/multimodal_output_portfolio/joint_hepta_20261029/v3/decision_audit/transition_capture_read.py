@@ -58,6 +58,8 @@ def read_capture(output):
     start = rows[0]["payload"]
     require(start["schema"] == "hepta.development-transition-capture.v1", "Unknown capture schema")
     source, request, settings = start["declared_source"], start["request"], start["settings"]
+    admission = settings.get("observer_admission")
+    require(admission in (None, "fresh-after-capture-v1"), "Unknown observer admission contract")
     require(source["split"] in ("train", "development"), "Test source cannot be exported as train")
     require((source["source_id"], source["image_sha256"], source["instruction_sha256"]) ==
             (request["source_id"], request["image_sha256"],
@@ -105,6 +107,21 @@ def read_capture(output):
                     and detail["step"] == current["step"], "Choice has no matching public view")
             require(events[-1]["action"] == "controller" and events[-1]["status"] == "ok"
                     and events[-1]["detail"] == {"choice": detail["chosen"]}, "Choice differs from original event")
+            if admission is not None:
+                actual_view = detail.get("controller_view")
+                observed_view = current["before_view"]
+                require(isinstance(actual_view, dict) and set(actual_view) == set(observed_view),
+                        "Actual controller view is missing or has hidden inputs")
+                require(all(actual_view[key] == observed_view[key] for key in observed_view
+                            if key != "remaining_seconds"), "Controller inputs changed during capture")
+                remaining = actual_view["remaining_seconds"]
+                require(type(remaining) in (int, float) and math.isfinite(remaining)
+                        and 0 < remaining <= observed_view["remaining_seconds"],
+                        "Controller was admitted with an expired or extended budget")
+                current["before_capture_view"] = observed_view
+                current["before_view"] = actual_view
+            else:
+                require("controller_view" not in detail, "Unversioned controller-view change")
             current.update(phase=phase, choice=detail["chosen"])
         elif phase in ("before_action", "after_action"):
             expected_phase = "choice" if phase == "before_action" else "before_action"

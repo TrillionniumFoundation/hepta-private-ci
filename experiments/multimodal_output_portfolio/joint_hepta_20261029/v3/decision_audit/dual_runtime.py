@@ -5,7 +5,7 @@ including unselected drafts and failure costs. This is a synchronous CPU pilot;
 the deadline is checked on return, not a preemptive execution guarantee.
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 import hashlib
 import json
 import math
@@ -124,6 +124,7 @@ def run(request, backend, controller, output, *, seed=17, horizon=10,
             recorder.start(request, out, {
                 "seed": seed, "horizon": horizon, "deadline_seconds": deadline_seconds,
                 "cpu_tariff": cpu_tariff, "wall_tariff": wall_tariff,
+                "observer_admission": "fresh-after-capture-v1",
             }, __file__, started)
         if digest_file(request.image_path) != request.image_sha256:
             raise ValueError("Input bytes do not match the frozen request")
@@ -146,9 +147,19 @@ def run(request, backend, controller, output, *, seed=17, horizon=10,
                         critique, tuple(history), horizon - step,
                         deadline_seconds - (time.perf_counter() - started[1]))
             capture("before_controller", step=step, view=vars(view))
+            if recorder is not None:
+                remaining = deadline_seconds - (time.perf_counter() - started[1])
+                if remaining <= 0:
+                    status = "timeout"
+                    record("deadline", status, {"check": "after_before_controller_capture"})
+                    break
+                view = replace(view, remaining_seconds=remaining)
             chosen = controller.choose(view)
             record(action, "ok", {"choice": chosen})
-            capture("choice", step=step, chosen=chosen)
+            if recorder is None:
+                capture("choice", step=step, chosen=chosen)
+            else:
+                capture("choice", step=step, chosen=chosen, controller_view=vars(view))
             if chosen not in ACTIONS:
                 raise ValueError("Controller selected an unknown action")
             action = chosen
@@ -157,6 +168,10 @@ def run(request, backend, controller, output, *, seed=17, horizon=10,
                 record("deadline", status, {"check": "after_controller"})
                 break
             capture("before_action", step=step)
+            if recorder is not None and time.perf_counter() - started[1] >= deadline_seconds:
+                status = "timeout"
+                record("deadline", status, {"check": "after_before_action_capture"})
+                break
             detail = None
             if action == "stop":
                 if text_value is not None and image_path is not None:
