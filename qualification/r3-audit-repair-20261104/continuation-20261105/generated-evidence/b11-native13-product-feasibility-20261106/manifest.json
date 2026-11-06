@@ -1,0 +1,61 @@
+{
+  "schema": "hepta-b11-native13-product-feasibility-manifest-v1",
+  "artifacts": [
+    {
+      "path": "architecture-audit/b11-native13-product-feasibility-20261106/REVIEW.zh-CN.md",
+      "name": "REVIEW.zh-CN.md",
+      "bytes": 11397,
+      "sha256": "2aab605f47daf852cad37743e0ec55e3fb09f6be26c6b44f63e9648bdd388043",
+      "git_blob_sha": "600e48022d5a915f259b44f3b63b01c2e2679c1b"
+    },
+    {
+      "path": "architecture-audit/b11-native13-product-feasibility-20261106/verify_scope.py",
+      "name": "verify_scope.py",
+      "bytes": 8944,
+      "sha256": "9d840731464a974252523ee604760a0f31719c3ad61e072158c0b46803c74081",
+      "git_blob_sha": "fa2f555b94e93c9965c916227d17b642b86d1e2f"
+    },
+    {
+      "path": "architecture-audit/b11-native13-product-feasibility-20261106/MECHANISM_FACTS.json",
+      "name": "MECHANISM_FACTS.json",
+      "bytes": 8205,
+      "sha256": "4ac7edbc054df994a5d1ff1b8bdb0505f724fc76fb7692a31e4fa1a61c9ea7b3",
+      "git_blob_sha": "829eb0b9faefa431b107209d548b07827031d88f"
+    },
+    {
+      "path": "architecture-audit/b11-native13-product-feasibility-20261106/SOURCE_BINDINGS.json",
+      "name": "SOURCE_BINDINGS.json",
+      "bytes": 12506,
+      "sha256": "d63ccf9ebf9eb04e9bf867997c7bae89f0f6fb732b359dee62f9b0883254f82c",
+      "git_blob_sha": "6fd1ae9b799540965da63864b6248b98629320e6"
+    },
+    {
+      "path": "architecture-audit/b11-native13-product-feasibility-20261106/official-primary-01.original.json",
+      "name": "official-primary-01.original.json",
+      "bytes": 34035,
+      "sha256": "a3f6b91eb1d682ee503095ba47201c1bda20cb9bfe9e67a9a310273f3c5c92e9",
+      "git_blob_sha": "ee76e348897b7612fa88c13102f7ec0a144e7a6d"
+    },
+    {
+      "path": "architecture-audit/b11-native13-product-feasibility-20261106/official-primary-02.original.json",
+      "name": "official-primary-02.original.json",
+      "bytes": 29528,
+      "sha256": "5c21ad65ea9ee4f165a17f437616d054ad66d4cd1928e0a49ce11cfd39c0953e",
+      "git_blob_sha": "3ea1191f92b502b8efff5ab116b7ccdebf4733d2"
+    },
+    {
+      "path": "architecture-audit/b11-native13-product-feasibility-20261106/replay-01.stdout.json",
+      "name": "replay-01.stdout.json",
+      "bytes": 750,
+      "sha256": "2b7c829910e84b6f802b9fb43f07f3d6eaf9bc85b872f9c3d744bdc14a21d5c4",
+      "git_blob_sha": "68734ff28c2794fe686bfc9ab37e085db6b352e4"
+    }
+  ],
+  "unchanged_external_dependencies": [
+    "native13 registry 6cd5476632a6e90d930a5f1c8a245c10150ea840",
+    "native13 root actual 93e23f06979ae5879ff07d1be8c45574f98bb262",
+    "prior mechanism custody 37c1d61dd84102158caaa2d5801345639334c8bc",
+    "selected source and full actual tree paths in SOURCE_BINDINGS.json"
+  ],
+  "scope": "Source-bound mechanism feasibility only. B11 OPEN. No new native or product change."
+}

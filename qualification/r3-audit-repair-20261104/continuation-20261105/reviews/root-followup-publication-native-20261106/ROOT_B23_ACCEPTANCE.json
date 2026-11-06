@@ -1,0 +1,110 @@
+{
+  "schema": "hepta-b23-root-original-exit-acceptance-v1",
+  "decision": "CLOSED_SCOPED",
+  "blocker_id": "B23",
+  "unchanged_original_exit_zh": "真实baseline丢信号窗口成立；修后3个单信号父测试与2个原drain用例通过；配置关闭/stdio及平台语义不变，最终原CI验收。",
+  "independent_review": {
+    "bytes": 164684,
+    "git_blob": "2dd76784a199d90906e98a773387fe9fc439ae71",
+    "sha256": "a6a57fd57d92643244f9a9e013503359ab1b823e89bb4d3fcc95d33b7ef30525"
+  },
+  "root_actual_offline_executions": [
+    {
+      "name": "binding",
+      "command": [
+        "python3",
+        "/tmp/hepta-runtime-recovery-20261106/format-review-recovery/b23-native-scope-independent-20261106/bind_b23_compacts.py",
+        "--main",
+        "/tmp/hepta-runtime-recovery-20261106/format-review-recovery/main67-failures-0410",
+        "--diagnostic",
+        "/workspace/scratch/07dd58cc9630/recovery-20261106/diagnostic-terminal-0410",
+        "--decoder",
+        "/tmp/hepta-runtime-recovery-20261106/format-review-recovery/b23-native-scope-independent-20261106/borrowed/decode_compact.py"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "bytes": 108070,
+        "git_blob": "fb8cb0b9a06d6f69ac02029524eda266f13be915",
+        "sha256": "ae60a4c78fb657262d89242b3ae46db652d67e5cc44686bc2d7c39df296bd92e"
+      },
+      "stderr": {
+        "bytes": 0,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "matches_frozen_stdout": true
+    },
+    {
+      "name": "scope",
+      "command": [
+        "python3",
+        "/tmp/hepta-runtime-recovery-20261106/format-review-recovery/b23-native-scope-independent-20261106/verify_original_scope.py",
+        "--main",
+        "/tmp/hepta-runtime-recovery-20261106/format-review-recovery/main67-failures-0410",
+        "--diagnostic",
+        "/workspace/scratch/07dd58cc9630/recovery-20261106/diagnostic-terminal-0410",
+        "--source",
+        "/tmp/hepta-runtime-recovery-20261106/b23-recovery/source",
+        "--binding",
+        "/workspace/scratch/07dd58cc9630/recovery-20261106/b23-closure-root-replay/binding.stdout.original.json"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "bytes": 13052,
+        "git_blob": "e9d1e8f732b161741b3bea479ea4280cf983f13b",
+        "sha256": "af65d9785e6c76b50dce45baa786a3492c121bed08638b5ed06fa64d2455114a"
+      },
+      "stderr": {
+        "bytes": 0,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "matches_frozen_stdout": true
+    }
+  ],
+  "scope": "Original GNU/Linux shutdown signal and drain product contract at product tree 3982ba56dc5a3f1da0c1de7ea57992f88125c359.",
+  "prior_physical_baseline_and_causal_acceptance_retained_not_rerun": true,
+  "fresh_native": {
+    "run": 42155150876,
+    "job": 127687422035,
+    "source_head": "e63ed76c5d8ded046f97caffbdbe2883140e6032",
+    "actual_checkout": "b3bc3dcf5684568dd03f3667ecd2307b8577a0a6",
+    "passed": 307,
+    "failed": 0,
+    "ignored": 1,
+    "original_bazel_exit": 0,
+    "job_overall": "failure"
+  },
+  "original_main_ci": {
+    "run": 42123581385,
+    "job": 127679861926,
+    "actual_checkout": "b7a57dbb61b00e51c05da9cf5c4bc95b365d85ae",
+    "job_overall": "success",
+    "eight_target_shards_cached": true
+  },
+  "separate_result_chains": "All eight log hashes and action digests differ; no claim the main job reused diagnostic outputs. Binary, args/env/platform and recursive input/tool graph match.",
+  "collector_failure_and_eight_missing_XML_remain": true,
+  "no_additional_exit_criterion_created": true,
+  "custody_now_actual": [
+    {
+      "archive_registry": "main92.registry.actual.json",
+      "bytes": 167278,
+      "git_blob": "d59627c444e9c01eaa39fdcdd315060731cd5dd5",
+      "sha256": "dbc01e30d9f59f7ff317bdc8b9eb68c252b2a39103ed21cf649767fcb81a01dd"
+    },
+    {
+      "archive_registry": "diagnostic-terminal.registry.actual.json",
+      "bytes": 341627,
+      "git_blob": "411b8e481be63f1002a6b7b874f0a20f85ea79f5",
+      "sha256": "b7360876b25ad5d5d9e15dab223c527e724784d1673b9615298938358be93f37"
+    }
+  ],
+  "historical_review_pending_custody_text_not_rewritten": true,
+  "other_blockers_unchanged_by_this_acceptance": true,
+  "does_not_qualify": [
+    "whole library B15",
+    "all platforms",
+    "all project",
+    "new collector head"
+  ]
+}

@@ -1,0 +1,205 @@
+{
+  "schema": "windows-setup-error-causes-independent-review-v1",
+  "decision": "ACCEPT_AS_DIAGNOSTIC_REPAIR_STATIC_ONLY",
+  "source_blockers": 0,
+  "reviewer": "/root/windows_env_finish",
+  "reviewed_at_utc": "2026-11-06T03:45:19Z",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_head": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+  "source_tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+  "computed_candidate_tree": "78b817fec87e593e0a0f6357d84f895b8574bde5",
+  "tree_status_at_review": "Computed and independently reconstructed; no claim that reviewer published a tree/ref.",
+  "source_files": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/setup_error.rs",
+      "preimage": {
+        "bytes": 11408,
+        "git_blob": "d9104602bc19af88101fbb5b44f839a1d799c174",
+        "sha256": "0325efd3abefe50de8eef5e7cf59f2572388b1f8f18365431c69b766a4eb1e35"
+      },
+      "postimage": {
+        "bytes": 13725,
+        "git_blob": "37aa38dde9e83ee5f3ce8f267f11afd76fee3400",
+        "sha256": "811769bbcf5136ed75bc666d1c32a6936a288c404be754c7e6d94bc8a3e338b5"
+      }
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs",
+      "preimage": {
+        "bytes": 47955,
+        "git_blob": "1d9340c6db26d6d10c1b3edecb1c9fecc908ef1d",
+        "sha256": "ba3bf6444e72c443575281e192e7b343c7c61180a1a699f4ffb4f87cba7e0ac3"
+      },
+      "postimage": {
+        "bytes": 47638,
+        "git_blob": "505be9299f9580877449740fd235e988f8c93b7b",
+        "sha256": "05b8373471d8a46740eea6e7c7b9f91427d07744e235045b928e280bf27628a2"
+      }
+    }
+  ],
+  "review_scope": "完整审阅两份候选源及移除的旧报告构造，核对固定依赖、调用端、deny-read 同步路径、原测试的失败阶段。只接受诊断信息修补；不接受 ACL、Windows 原生或 B11 闭合。",
+  "independent_evidence": {
+    "full_tree": {
+      "leaves": 10582,
+      "directories_including_root": 1571,
+      "changed_paths": [
+        "codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs",
+        "codex-rs/windows-sandbox-rs/src/setup_error.rs"
+      ],
+      "unchanged_leaves": 10580
+    },
+    "fresh_actual_full_GETs": [
+      {
+        "record": "setup_error.postimage.json",
+        "decoded": {
+          "bytes": 13725,
+          "git_blob": "37aa38dde9e83ee5f3ce8f267f11afd76fee3400",
+          "sha256": "811769bbcf5136ed75bc666d1c32a6936a288c404be754c7e6d94bc8a3e338b5"
+        },
+        "full_bytes_equal": true
+      },
+      {
+        "record": "win.postimage.json",
+        "decoded": {
+          "bytes": 47638,
+          "git_blob": "505be9299f9580877449740fd235e988f8c93b7b",
+          "sha256": "05b8373471d8a46740eea6e7c7b9f91427d07744e235045b928e280bf27628a2"
+        },
+        "full_bytes_equal": true
+      },
+      {
+        "record": "cargo.dependency.json",
+        "decoded": {
+          "bytes": 2438,
+          "git_blob": "aa41ed5f08608c0275785b2f5e27ec5db08f50dd",
+          "sha256": "183a3691be018640668dfb766f29651d8fd75ab08f7fd526f3d378ae2a86469d"
+        },
+        "full_bytes_equal": true
+      },
+      {
+        "record": "build.dependency.json",
+        "decoded": {
+          "bytes": 2556,
+          "git_blob": "8531cb4d664c25de6fbf200c71cb8042d1d8d865",
+          "sha256": "187e93c5a9a244c752dee5ed15202b361d593d9d651f850a1bda5d69969a7702"
+        },
+        "full_bytes_equal": true
+      },
+      {
+        "record": "lock.dependency.json",
+        "decoded": {
+          "bytes": 413768,
+          "git_blob": "71fc8fa78b5afa076835b29790a5e6b0bd772558",
+          "sha256": "4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a"
+        },
+        "full_bytes_equal": true
+      },
+      {
+        "record": "lib.dependency.json",
+        "decoded": {
+          "bytes": 30379,
+          "git_blob": "11778af7beb645b36401807cf3e31a0dd4deddc0",
+          "sha256": "6a656c06930bcf07075db8712292bb8040a33667231783dba177e62230982b38"
+        },
+        "full_bytes_equal": true
+      }
+    ],
+    "full_source_forward_reverse_patch": "All four independent git apply operations exit 0; applied and reverse-applied complete source bytes exactly match frozen postimages/preimages.",
+    "proof_file": "STATIC_VERIFICATION.json",
+    "proof_stdout_bytes": 9326,
+    "proof_stdout_sha256": "6ed034866d5ec9223948da697ae6c6f1bc6c0398df3099e568936f4c855e20c5",
+    "verifier_file": "verify_review.py",
+    "runtime_or_Rust_execution": false
+  },
+  "findings": [
+    {
+      "id": "typed-preservation",
+      "severity": "accepted",
+      "finding": "from_error 使用与旧分支相同的 extract_failure/downcast_ref；匹配 SetupFailure 时原样复制 code 并 clone message。外层 context 不被拼入 typed message。SetupErrorReport 的 JSON 字段与 enum 的 snake_case 表示均未改。"
+    },
+    {
+      "id": "untyped-cause-chain",
+      "severity": "accepted",
+      "finding": "未匹配 SetupFailure 时仍使用 HelperUnknownError，只将顶层 Display 改为 anyhow alternate Display。能保留现有错误链中的 operation/path/OS error；不会重建已经在更早层丢失的原因，也不添加 Debug backtrace。"
+    },
+    {
+      "id": "API-compilation-static",
+      "severity": "accepted-static-only",
+      "finding": "固定 Cargo.lock 为 anyhow 1.0.104；该版本 primary docs 确认 Error::context 为 inherent 方法、context 后可 downcast 到原类型。SetupErrorCode 可 Copy，SetupFailure 已实现 Debug/PartialEq/Eq；tempfile 为既有依赖，pretty_assertions 为既有 dev dependency。win.rs 的 extract_setup_failure 还有三处使用。未发现缺 import、依赖或显见类型问题；没有编译资格。"
+    },
+    {
+      "id": "regressions",
+      "severity": "accepted-source-not-run",
+      "finding": "两个新增测试都创建 TempDir、通过现有 write_setup_error_report 写 JSON 文件、read_setup_error_report 读回，再比较 SetupFailure 两字段。untyped 测试期望独立构造的两层 context 加实际 io error Display；typed 测试在额外 context 下仍要求原 code/message。原三个 sanitizer 测试及 win.rs 全部原测试字节未变。"
+    },
+    {
+      "id": "Windows-gating",
+      "severity": "required-existing-CI",
+      "finding": "lib.rs 对 setup_error 模块使用 cfg(target_os = \"windows\")，两个新增回归测试仅 Windows 构建可覆盖。非 Windows 通过不能给这两个测试原生资格。需既有自动 Windows CI 的实际编译及测试原件。"
+    },
+    {
+      "id": "error-detail-boundary",
+      "severity": "documented-behavior",
+      "finding": "untyped 完整原因会经原有 setup_error.json 和 report_helper_failure 返回到调用端；路径及底层错误文本可能因此出现在已有错误输出中。候选没有新增输出渠道、网络上传、权限或环境读取；原 Debug 日志已保留此链。原 metric_message/sanitize_setup_metric_tag_value 不变；此修补不提供全局秘密净化保证，也不把原始诊断文本视为已脱敏数据。"
+    },
+    {
+      "id": "no-ACL-policy-change",
+      "severity": "accepted",
+      "finding": "win.rs 除报告构造一处替换外与原源全文相同；setup_error.rs 除构造方法及测试外原生产字节相同。ACL 创建/回滚、SID、读写状态、mutex、helper 启动、退出路径、测试断言及预算均未改。"
+    }
+  ],
+  "original_failure_scope": {
+    "actual_checkout": "b7a57dbb61b00e51c05da9cf5c4bc95b365d85ae",
+    "actual_checkout_tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+    "original_job": 127679861687,
+    "target": "//codex-rs/core:core-all-test",
+    "original_shard7": "Three attempts each report 70 passed, 3 failed, 5 ignored. Native evidence custody and complete attempt qualification are owned by /root/b20_finish.",
+    "managed_deny_read_actual_cause": "UNKNOWN. 原结构化报告只保留 apply deny-read ACLs。同步调用内部包括 state read/parse/write 和实际 ACE 操作，不能仅据顶层消息选择某一种根因。",
+    "read_grant_mutex": "同步 deny-read 失败路径在 read_acl_mutex_exists/background read-grant helper 之前；现证据不支持将该 mutex 直接认定为本次早期失败根因。",
+    "protected_metadata": "原测试在 allowed patch 的物理 read_file 返回 os error 2，尚未执行 .git/.agents/.codex 三组拒绝及物理未创建断言。不能称保护元数据发生逸出，也不能称该 gate 已通过。",
+    "helper_first_attempts": "shards 4/6/13 的首败均有 bare codex-windows-sandbox-setup.exe program not found；shard 13 的 hardlink 断言因这种工具输出失败，不能称物理 hardlink 逸出。之后默认重试通过不抹去首次失败。",
+    "relationship_to_B11": "此批 Windows Core setup/precondition 失败与 B11 strict outside-delete 保证未闭合分别记账；该候选不修复后者。"
+  },
+  "limitations": {
+    "author_original_commands": [
+      {
+        "argv": [
+          "just",
+          "fmt"
+        ],
+        "exit": 127,
+        "error": "just: command not found"
+      },
+      {
+        "argv": [
+          "just",
+          "test",
+          "-p",
+          "codex-windows-sandbox"
+        ],
+        "exit": 127,
+        "error": "just: command not found"
+      }
+    ],
+    "rustfmt": "NOT_EXECUTED; tool missing",
+    "Rust_compilation": "NOT_EXECUTED; cargo missing",
+    "new_regression_tests": "NOT_EXECUTED",
+    "native_failure_reproduced_by_reviewer": false,
+    "native_failure_resolved": false,
+    "ACL_semantics_verified": false,
+    "ref_or_PR_written_by_reviewer": false
+  },
+  "review_harness_history": {
+    "first_attempt": "本地独立静态脚本最初从整个 workspace_roots.rs 的第一个相同 assert 字串截取，误选较早测试，导致本地检查 AssertionError。不是产品或原生失败。",
+    "original_preserved": [
+      "history/verify_review.v1.py",
+      "replay-01.stderr.txt",
+      "replay-01.stdout.json",
+      "replay-01.exit-code.txt"
+    ],
+    "correction": "仅将该只读检查先绑定到 workspace_roots_allow_patches_but_protect_metadata_directories 函数；候选源与所有原件不变。",
+    "final_attempt": "replay-02 exit 0, stderr 0, stdout 9,326 bytes; successful source/patch/static proof only."
+  },
+  "primary_sources_file": "primary-sources.json",
+  "next_gate": "Root 可按已授权流程将两个 exact postimages 发表为 reviewable Draft PR；既有自动 CI 决定格式、编译、新回归及原 Windows Core 结果。若同一 setup 失败重现，依据新增实际完整原因选择真实语义修复。"
+}

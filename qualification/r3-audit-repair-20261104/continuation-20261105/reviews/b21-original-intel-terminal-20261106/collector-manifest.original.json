@@ -1,0 +1,121 @@
+{
+  "complete_case_inventory": false,
+  "complete_for_selected_targets": true,
+  "errors": [],
+  "files": [
+    {
+      "archive_relative_path": "targets/0000/test.log",
+      "bytes": 2455,
+      "sha256": "92a3ef68e813bb3567a47f91bebb7c8e9acc303ff4f49a71237c29800b95824f",
+      "source_mtime_ns": 1793925776731719561,
+      "target": "//codex-rs/utils/pty:pty-unit-tests",
+      "testlogs_relative_path": "codex-rs/utils/pty/pty-unit-tests/test.log"
+    },
+    {
+      "archive_relative_path": "targets/0000/test.xml",
+      "bytes": 2868,
+      "sha256": "42c43a730a06a7334f937c8e8fd85e8b7dccf39e8a03a56e7bdfa89badd77271",
+      "source_mtime_ns": 1793925777239498964,
+      "target": "//codex-rs/utils/pty:pty-unit-tests",
+      "testlogs_relative_path": "codex-rs/utils/pty/pty-unit-tests/test.xml"
+    }
+  ],
+  "retention": {
+    "console_bytes": 13567,
+    "console_sha256": "7bd6d265bfa376824c769eb7aabb2c0d9d3cc6391fec1f5b69c0c7eb9bf5fb3f",
+    "limitations": "NOT_REPORTED does not mean filtered or skipped. An absent cached marker does not prove local execution or an independent remote execution. Files are existing local records for a console-reported target; their binding to this invocation is not independently established. Bazel config expansion and per-case filtering must be checked separately. Checkout identity is recorded at collection time, not at test start.",
+    "selection_errors": [],
+    "targets": {
+      "//codex-rs/app-server:app-server-all-test": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/app-server:app-server-all-wine-exec-test": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/app-server:app-server-unit-tests": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/codex-mcp:codex-mcp-unit-tests": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/core:core-all-test": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/core:core-all-wine-exec-test": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/core:core-unit-tests": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/ext/queue:queue-queue_service-test": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/tui:tui-unit-tests": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      },
+      "//codex-rs/utils/pty:pty-unit-tests": {
+        "cached_marker": false,
+        "collect_existing_logs": true,
+        "status": "PASSED",
+        "summary_lines": [
+          "//codex-rs/utils/pty:pty-unit-tests                                      PASSED in 4.0s"
+        ]
+      },
+      "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests": {
+        "cached_marker": null,
+        "collect_existing_logs": false,
+        "status": "NOT_REPORTED",
+        "summary_lines": []
+      }
+    },
+    "wrapper_requested_selection_flags": [
+      "--test_tag_filters=-argument-comment-lint",
+      "--nocache_test_results",
+      "--flaky_test_attempts=1",
+      "--config=ci-macos"
+    ]
+  },
+  "schema": "bazel_selected_target_logs_v1",
+  "scope": "Existing local test.log/test.xml and test_attempts log/XML records for the allowlisted targets reported PASSED or FLAKY in this console; not failed-target-only evidence or a complete case/attempt inventory.",
+  "selected_targets": [
+    "//codex-rs/utils/pty:pty-unit-tests"
+  ],
+  "source": {
+    "commit": "cc65856cc0b20d03db506c19495d53d61162102d",
+    "tracked_worktree_dirty": false,
+    "tree": "eaded1870d080eaa55efae6208354729140e784c"
+  }
+}

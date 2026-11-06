@@ -1,0 +1,148 @@
+--- a/codex-rs/windows-sandbox-rs/src/token_neither_privilege_observation.rs
++++ b/codex-rs/windows-sandbox-rs/src/token_neither_privilege_observation.rs
+@@ -7,12 +7,15 @@
+ use crate::delete_permission_matrix::DeleteMatrix;
+ use crate::delete_permission_matrix::DeleteOutcome;
+ use crate::delete_permission_matrix::DeleteRoute;
+-use crate::process::ConsoleMode;
+-use crate::process::CreatedProcess;
+-use crate::process::create_process_as_user;
++use crate::proc_thread_attr::ProcThreadAttributeList;
++use crate::process::make_env_block;
+ use crate::token::get_current_token_for_restriction;
++use crate::winutil::argv_to_command_line;
++use crate::winutil::to_wide;
++use anyhow::Context;
+ use anyhow::Result;
+ use anyhow::ensure;
++use codex_utils_pty::JobObject;
+ use serde_json::Value;
+ use serde_json::json;
+ use std::collections::HashMap;
+@@ -145,7 +148,7 @@
+ }
+ 
+ struct OwnedChild {
+-    created: CreatedProcess,
++    job: JobObject,
+     process: Handle,
+     _thread: Handle,
+     cleaned: bool,
+@@ -154,12 +157,86 @@
+ impl Drop for OwnedChild {
+     fn drop(&mut self) {
+         if !self.cleaned {
+-            let terminated = self.created.job.terminate();
++            let terminated = self.job.terminate();
+             // SAFETY: this is the original owned process handle, never a PID lookup.
+             let wait = unsafe { threading::WaitForSingleObject(self.process.0, /*dwmilliseconds*/ 5_000) };
+             let _ = observe(format_args!("neither_privileges unwind_cleanup terminate={terminated:?} wait={wait}"));
+         }
+     }
++}
++
++fn spawn_observation_child(
++    token: win::HANDLE,
++    argv: &[String],
++    cwd: &Path,
++    env: &HashMap<String, String>,
++    input: &Handle,
++    output: &fs::File,
++) -> Result<OwnedChild> {
++    // These ordinary and privilege-only subjects deliberately have no restricting
++    // SIDs. The production LaunchDesktop contract remains sandbox-only. Reuse its
++    // process assembly helpers here without changing that production precondition.
++    let job = JobObject::create().context("create observation process job")?;
++    let mut attrs = ProcThreadAttributeList::new(2)?;
++    attrs.set_job(job.as_raw_handle() as win::HANDLE)?;
++    let inherited_handles = vec![input.0, output.as_raw_handle() as win::HANDLE];
++    for &handle in &inherited_handles {
++        // SAFETY: both handles are borrowed from live owned guards; only this
++        // private input reader and output file become inheritable, never the writer.
++        ensure!(unsafe {
++            win::SetHandleInformation(handle, win::HANDLE_FLAG_INHERIT, win::HANDLE_FLAG_INHERIT)
++        } != 0, "observation stdio inheritance: {}", std::io::Error::last_os_error());
++    }
++    attrs.set_handle_list(inherited_handles)?;
++
++    let mut command_line = to_wide(argv_to_command_line(argv));
++    let environment = make_env_block(env);
++    let directory = to_wide(cwd);
++    let mut desktop = to_wide(r"Winsta0\Default");
++    // SAFETY: these Windows records permit zero initialization before fields are set.
++    let mut startup: threading::STARTUPINFOEXW = unsafe { std::mem::zeroed() };
++    startup.StartupInfo.cb = std::mem::size_of::<threading::STARTUPINFOEXW>() as u32;
++    startup.StartupInfo.lpDesktop = desktop.as_mut_ptr();
++    startup.StartupInfo.dwFlags = threading::STARTF_USESTDHANDLES;
++    startup.StartupInfo.hStdInput = input.0;
++    startup.StartupInfo.hStdOutput = output.as_raw_handle() as win::HANDLE;
++    startup.StartupInfo.hStdError = output.as_raw_handle() as win::HANDLE;
++    startup.lpAttributeList = attrs.as_mut_ptr();
++    let creation_flags = threading::CREATE_UNICODE_ENVIRONMENT
++        | threading::EXTENDED_STARTUPINFO_PRESENT
++        | threading::CREATE_NO_WINDOW;
++    let mut process_info: threading::PROCESS_INFORMATION = unsafe { std::mem::zeroed() };
++    // SAFETY: the owned primary token, both stdio guards, job, attribute buffers,
++    // mutable command line, desktop, environment and cwd all outlive this call.
++    // Job assignment and the handle whitelist are part of creation, with no fallback.
++    let created = unsafe {
++        threading::CreateProcessAsUserW(
++            token,
++            std::ptr::null(),
++            command_line.as_mut_ptr(),
++            std::ptr::null(),
++            std::ptr::null(),
++            /*binherithandles*/ 1,
++            creation_flags,
++            environment.as_ptr().cast(),
++            directory.as_ptr(),
++            &startup.StartupInfo,
++            &mut process_info,
++        )
++    };
++    if created == 0 {
++        // Capture the initial native failure before any cleanup can change it.
++        let error = std::io::Error::last_os_error();
++        return Err(error).context("owned observation CreateProcessAsUserW");
++    }
++    // No fallible work separates successful creation from owning both returned
++    // handles and the Job. Every later error therefore reaches OwnedChild::drop.
++    Ok(OwnedChild {
++        job,
++        process: Handle(process_info.hProcess),
++        _thread: Handle(process_info.hThread),
++        cleaned: false,
++    })
+ }
+ 
+ fn cmd_observation(root: &Path, subject: &str, token: win::HANDLE,
+@@ -200,13 +277,9 @@
+         && release_flags & win::HANDLE_FLAG_INHERIT == 0, "release writer must not be inherited");
+     let command = vec![r"C:\Windows\System32\cmd.exe".to_owned(), "/d".to_owned(),
+         "/e:on".to_owned(), "/v:off".to_owned(), "/c".to_owned(), script_path.to_string_lossy().into_owned()];
+-    // The existing backend assigns its real Job at creation and inherits only
+-    // the declared stdio handles. The parent's release writer is not inherited.
+-    let created = unsafe { create_process_as_user(token, &command, root, &env, /*logs_base_dir*/ None,
+-        Some((input.0, output.as_raw_handle() as win::HANDLE, output.as_raw_handle() as win::HANDLE)),
+-        ConsoleMode::NoWindow, /*use_private_desktop*/ false) }?;
+-    let mut child = OwnedChild { process: Handle(created.process_info.hProcess),
+-        _thread: Handle(created.process_info.hThread), created, cleaned: false };
++    // Both subjects use this identical test-only path. The parent's release
++    // writer is absent from its explicit stdio inheritance list.
++    let mut child = spawn_observation_child(token, &command, root, &env, &input, &output)?;
+     drop(input);
+     let work = (|| -> Result<(Value, u32)> {
+         let mut actual_token = 0;
+@@ -233,10 +306,10 @@
+     })();
+     drop(release);
+     // Always finish the owned Job before reading physical outcomes or removing fixtures.
+-    let terminated = child.created.job.terminate();
++    let terminated = child.job.terminate();
+     let cleanup_wait = unsafe { threading::WaitForSingleObject(child.process.0, /*dwmilliseconds*/ 5_000) };
+     let mut accounting: jobs::JOBOBJECT_BASIC_ACCOUNTING_INFORMATION = unsafe { std::mem::zeroed() };
+-    let accounted = unsafe { jobs::QueryInformationJobObject(child.created.job.as_raw_handle() as win::HANDLE,
++    let accounted = unsafe { jobs::QueryInformationJobObject(child.job.as_raw_handle() as win::HANDLE,
+         jobs::JobObjectBasicAccountingInformation, (&mut accounting as *mut jobs::JOBOBJECT_BASIC_ACCOUNTING_INFORMATION).cast(),
+         std::mem::size_of_val(&accounting) as u32, std::ptr::null_mut()) };
+     drop(output);

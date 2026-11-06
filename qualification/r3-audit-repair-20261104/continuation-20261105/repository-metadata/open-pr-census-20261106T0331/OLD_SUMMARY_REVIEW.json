@@ -1,0 +1,131 @@
+{
+  "schema": "hepta-old-inventory-summary-narrow-review-v1",
+  "result": "OLD_SUMMARY_RETRIEVED_AND_COMPARED_DIFFERENCE_CAUSE_UNKNOWN",
+  "actual_source": {
+    "git_blob": "5fac62f2526a56ebc0cdaa8cfe66531c9a33f912",
+    "bytes": 1846885,
+    "sha256": "4adb3a73f03226fd73daba8c5ae2a5644fb84cde7702ddc892abb72d75a810f9",
+    "repository_path": "qualification/r3-audit-repair-20261104/fourth-repository-inventory-20261105.json",
+    "actual_full_GET": true,
+    "window": {
+      "before": {
+        "current_time": "2026-11-06 03:42:19 UTC"
+      },
+      "after": {
+        "current_time": "2026-11-06 03:42:19 UTC"
+      }
+    }
+  },
+  "old_declared_pagination": {
+    "per_page": 100,
+    "requested_pages": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13
+    ],
+    "counts": [
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      3,
+      0
+    ],
+    "first_terminal_empty_page": 13,
+    "extra_empty_guard_pages": [],
+    "started_at_utc": "2026-11-05T03:16:46.083Z",
+    "read_finished_at_utc": "2026-11-05T03:19:02.659Z",
+    "unique_count": 1103,
+    "duplicate_keys": [],
+    "all_pages_contiguous": true,
+    "all_data_before_terminal_empty": true
+  },
+  "comparison": {
+    "old_count": 1103,
+    "old_unique": 1103,
+    "new_count": 3555,
+    "intersection": 1103,
+    "only_in_new": 2452,
+    "only_in_old": [],
+    "only_new_created_after_old_window": 88,
+    "only_new_updated_at_or_before_old_window": 2364,
+    "examples_only_new_old_dates": [
+      {
+        "number": 993,
+        "created_at": "2026-09-24T17:42:07Z",
+        "updated_at": "2026-09-30T14:24:44Z",
+        "base_ref": "main"
+      },
+      {
+        "number": 994,
+        "created_at": "2026-09-24T17:54:52Z",
+        "updated_at": "2026-09-27T00:03:33Z",
+        "base_ref": "main"
+      },
+      {
+        "number": 996,
+        "created_at": "2026-09-24T21:38:56Z",
+        "updated_at": "2026-09-26T15:35:42Z",
+        "base_ref": "main"
+      },
+      {
+        "number": 1001,
+        "created_at": "2026-09-24T23:28:33Z",
+        "updated_at": "2026-10-11T02:50:41Z",
+        "base_ref": "main"
+      },
+      {
+        "number": 1007,
+        "created_at": "2026-09-25T21:50:47Z",
+        "updated_at": "2026-10-03T16:50:26Z",
+        "base_ref": "main"
+      },
+      {
+        "number": 1160,
+        "created_at": "2026-09-28T04:02:43Z",
+        "updated_at": "2026-09-30T07:01:45Z",
+        "base_ref": "main"
+      },
+      {
+        "number": 1284,
+        "created_at": "2026-09-30T19:43:59Z",
+        "updated_at": "2026-09-30T22:30:35Z",
+        "base_ref": "main"
+      },
+      {
+        "number": 1291,
+        "created_at": "2026-09-30T21:27:53Z",
+        "updated_at": "2026-10-01T00:23:02Z",
+        "base_ref": "main"
+      }
+    ],
+    "old_anchor_query_scope": "state=open&sort=created&direction=asc&per_page=100 with page1,12,13 and additional created desc first100",
+    "explicit_filter_or_pagination_gap_proven": false,
+    "cause": "UNKNOWN_FROM_SUMMARY_ALONE",
+    "old_underlying_raw_pagination_bodies_not_reopened_this_review": true
+  },
+  "findings_zh": [
+    "旧实际摘要明确报告连续分页1–13、11×100+3+0以及首/末/空页锚；已见URL无author、base等额外filter。不能从摘要认定旧分页存在机械缺口。",
+    "完整旧摘要1103个PR全部在新3555集中；新独有2452条，其中2364条updated_at早于或等于旧上界，不能解释成当天新开2452条。",
+    "没有重开旧110个原API正文或恢复18part旧归档；旧数据来源差异的原因仍UNKNOWN。未将摘要当重新完成的旧raw分页审计。",
+    "本轮当前PR元数据以新39返回固定切点为准；旧1103及旧5193branches保为历史范围，不改变原23项status、exit或产品资格。"
+  ],
+  "no_new_CI_native_ref_PR_mutations": true
+}

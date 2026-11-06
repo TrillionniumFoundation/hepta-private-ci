@@ -1,0 +1,463 @@
+{
+  "author_verification_stdout_full_bytes_equal": true,
+  "blocking_review_findings": 0,
+  "fresh_GET_all_payloads_claimed": false,
+  "fresh_registry_actual_full_GET_equal": true,
+  "independent_checker": {
+    "identity": {
+      "bytes": 9379,
+      "git_blob": "461a0dfd42b983b97f62a931942ce3d4ccf05537",
+      "sha256": "13b7a70681f141094d1519e0453842086992883381134797b8b8c3462474bec9"
+    },
+    "invocation": "python extracted-verify_semantics.py --packet RESTORED_PACKET_ROOT",
+    "language": "Python 3 standard library",
+    "observed_exit_code": 0,
+    "prerequisite": "Restore the actual c964 packet and run its pinned decode_compact.py in that isolated directory first. No network or product/native tests are run by this checker.",
+    "source_utf8": "\"\"\"Independently reconcile fixed metadata, test/auxiliary actions and XML custody.\"\"\"\nfrom pathlib import Path\nfrom collections import Counter,defaultdict\nimport argparse,hashlib,json,re,xml.etree.ElementTree as ET\np=argparse.ArgumentParser();p.add_argument(\"--packet\",type=Path,required=True);a=p.parse_args();R=a.packet\ndef j(path):return json.loads((R/path).read_bytes())\ndef api(path):\n x=j(path)\n while not any(k in x for k in (\"workflow_runs\",\"jobs\",\"artifacts\")):\n  if \"structuredContent\" in x:x=x[\"structuredContent\"]\n  elif isinstance(x.get(\"content\"),str):x=json.loads(x[\"content\"])\n  else:raise ValueError(\"unsupported API wrapper\")\n return x\ndef identity(b):return {\"bytes\":len(b),\"sha256\":hashlib.sha256(b).hexdigest(),\"git_blob\":hashlib.sha1(b\"blob \"+str(len(b)).encode()+b\"\\0\"+b).hexdigest()}\nruns=api(\"original/run-list.original.json\");assert runs[\"total_count\"]==len(runs[\"workflow_runs\"])==19\njobs=[]\nfor run in runs[\"workflow_runs\"]:\n data=api(\"original/run-%d-jobs.original.json\"%run[\"id\"])\n assert data[\"total_count\"]==len(data[\"jobs\"])<=100\n assert all(x[\"head_sha\"]==\"67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed\" and x[\"run_id\"]==run[\"id\"] for x in data[\"jobs\"])\n jobs.extend(data[\"jobs\"])\ncounts=dict(sorted(Counter(x[\"conclusion\"] or x[\"status\"] for x in jobs).items()))\nassert len(jobs)==len({x[\"id\"] for x in jobs})==85\nassert counts=={\"cancelled\":9,\"failure\":2,\"in_progress\":4,\"queued\":10,\"skipped\":5,\"success\":55}\nfailures=sorted(x[\"id\"] for x in jobs if x[\"conclusion\"]==\"failure\")\nassert failures==[127679861307,127679861687]\nblocking=next(x for x in runs[\"workflow_runs\"] if x[\"id\"]==42123581385);assert blocking[\"status\"]==\"queued\" and blocking[\"conclusion\"] is None\nsource_matches=[]\nfor row in j(\"source-map.json\"):\n b=(R/\"source\"/row[\"path\"]).read_bytes()\n fetched=j(\"source-GET/\"+row[\"git_blob\"]+\".json\")[\"structuredContent\"][\"content\"].encode()\n assert b==fetched and identity(b)=={k:row[k] for k in (\"bytes\",\"git_blob\",\"sha256\")}\n source_matches.append(row[\"path\"])\nassert len(source_matches)==21\nproto=(R/\"primary/spawn.proto\").read_bytes();pg=j(\"primary/spawn.proto.GET-original.json\")\nassert pg[\"structuredContent\"][\"content\"].encode()==proto\nprimary_url=pg[\"structuredContent\"][\"url\"];assert \"9.3.0\" in primary_url and \"spawn.proto\" in primary_url\ncompact=j(\"derived/compact-summary.json\");core=j(\"derived/compact-core-test-runners.json\")\nactual=[s for s in core if s[\"args\"][0].replace(\"\\\\\",\"/\").split(\"/\")[-1]==\"tw.exe\"]\nxml=[s for s in core if s[\"args\"][0].replace(\"\\\\\",\"/\").split(\"/\")[-1]==\"xml.exe\"]\nassert len(core)==42 and len(actual)==len(xml)==21\nassert all(x[\"runner\"]==\"local\" and x[\"cache_hit\"] is False and x[\"timeout_millis\"]==900000 for x in actual)\nassert Counter(x[\"exit_code\"] for x in actual)=={0:15,1:6}\nassert all(x[\"exit_code\"]==0 and x[\"timeout_millis\"]==0 for x in xml)\ndef shard(s):return int({v[\"name\"]:v[\"value\"] for v in s[\"env_vars\"]}[\"TEST_SHARD_INDEX\"])+1\naa=defaultdict(list);xx=defaultdict(list)\nfor s in actual:aa[shard(s)].append(s)\nfor s in xml:xx[shard(s)].append(s)\nassert set(aa)==set(range(1,17)) and {k:len(v) for k,v in aa.items() if len(v)>1}=={4:2,6:2,7:3,13:2}\nbase=R/\"artifacts/windows-shard4-original/failed-test-logs/invocation-jmk8w12b/targets/0000\"\nrx=re.compile(r\"^test (.+) \\.\\.\\. (ok|FAILED|ignored)(?:,.*)?$\",re.M)\nmismatches=[];final_rows=[];attempts=[];failnames=set()\nfor n in range(1,17):\n first_output=None\n for index,(s,x) in enumerate(zip(aa[n],xx[n]),1):\n  assert len(aa[n])==len(xx[n]) and s[\"sequence\"]<x[\"sequence\"]\n  suffix=(\"test_attempts/attempt_%d.log\"%index) if index<len(aa[n]) else \"test.log\"\n  lp=base/(\"shard_%d_of_16\"%n)/suffix;xp=lp.with_suffix(\".xml\")\n  log=lp.read_bytes().decode().replace(\"\\r\\n\",\"\\n\");xb=xp.read_bytes();xt=ET.fromstring(xb)\n  cases=rx.findall(log); assert cases\n  assert rx.findall(xt.find(\".//system-out\").text)==cases\n  assert len(xt.findall(\".//testcase\"))==1\n  assert bool(xt.findall(\".//error\"))==bool(s[\"exit_code\"])\n  assert int(x[\"args\"][-1])==s[\"exit_code\"] and xt.find(\".//testcase\").get(\"time\")==x[\"args\"][-2]\n  out=next(z for z in x[\"outputs\"] if z.get(\"path\",\"\").endswith(\"/test.xml\"))\n  if first_output is None:first_output=out\n  actual_hash=hashlib.sha256(xb).hexdigest();match=out[\"digest\"][\"hash\"]==actual_hash\n  if not match:\n   assert out[\"entry_id\"]==first_output[\"entry_id\"] and out[\"digest\"]==first_output[\"digest\"]\n   first_x=base/(\"shard_%d_of_16\"%n)/\"test_attempts/attempt_1.xml\"\n   assert hashlib.sha256(first_x.read_bytes()).hexdigest()==out[\"digest\"][\"hash\"]\n   mismatches.append({\"shard\":n,\"attempt\":index,\"reused_first_file_entry_id\":out[\"entry_id\"],\"compact_digest\":out[\"digest\"][\"hash\"],\"archived_later_xml_sha256\":actual_hash})\n  failed=[name for name,status in cases if status==\"FAILED\"]\n  assert bool(failed)==bool(s[\"exit_code\"])\n  if n in [4,6,13] and index==1:\n   assert \"program not found\" in log.lower() and \"codex-windows-sandbox-setup.exe\" in log\n  if n==7:\n   assert len(failed)==3 and \"apply deny-read ACLs\" in log\n  attempts.append({\"shard\":n,\"attempt\":index,\"final\":index==len(aa[n]),\"exit\":s[\"exit_code\"],\"xml_digest_matches\":match,\"failed_names\":failed})\n  if index==len(aa[n]):final_rows.extend(cases);failnames.update(failed)\nassert [(x[\"shard\"],x[\"attempt\"]) for x in mismatches]==[(4,2),(6,2),(7,2),(7,3),(13,2)]\nassert Counter(status for name,status in final_rows)=={\"ok\":1038,\"ignored\":90,\"FAILED\":3}\nunique={}\nfor name,status in final_rows:\n assert name not in unique or unique[name]==status\n unique[name]=status\nassert Counter(unique.values())=={\"ok\":1030,\"ignored\":72,\"FAILED\":3}\nall_tests=j(\"derived/compact-all-test-runners.json\")\npty=[s for s in all_tests if s[\"target_label\"]==\"//codex-rs/utils/pty:pty-unit-tests\"]\nassert len(pty)==2 and all(s[\"cache_hit\"] is True and s[\"runner\"]==\"remote cache hit\" for s in pty)\nconsole=(R/\"original/job-127679861687.original.log\").read_bytes().decode()\nassert re.search(r\"//codex-rs/utils/pty:pty-unit-tests[ \\t]+\\(cached\\) PASSED\",console)\nassert \"Executed 51 out of 149 tests: 115 tests pass, 1 fails locally, and 33 were skipped.\" in console\ncargo=next(x for x in jobs if x[\"id\"]==127679861307)\nassert [x[\"name\"] for x in cargo[\"steps\"] if x[\"conclusion\"]==\"failure\"]==[\"Run cargo-deny\"]\nerrors=[]\nfor name in [\"original/cargo-deny-log-tool-error-01.json\",\"original/cargo-deny-log-tool-error-02.json\"]:\n raw=(R/name).read_bytes();error=json.loads(raw);assert error[\"isError\"] and \"Transport closed\" in json.dumps(error)\n errors.append({\"path\":name,\"identity\":identity(raw),\"classification\":\"EVIDENCE_RETRIEVAL_TRANSPORT_ERROR_NOT_PRODUCT_DIAGNOSIS\"})\nart=api(\"original/blocking-run-artifacts.original.json\")\nassert art[\"total_count\"]==len(art[\"artifacts\"])==6\nassert not any(\"deny\" in x[\"name\"].lower() for x in art[\"artifacts\"])\nreport={\"schema\":\"main85-independent-denominator-and-custody-semantics-v1\",\"result\":\"PASS_FIXED_EVIDENCE_SCOPE_WITH_EXPLICIT_LIMITS\",\n \"API\":{\"runs\":19,\"run_counts\":dict(sorted(Counter(x[\"conclusion\"] or x[\"status\"] for x in runs[\"workflow_runs\"]).items())),\"unique_jobs\":85,\"job_counts\":counts,\"failure_job_ids\":failures,\"blocking_run_queued_despite_two_real_failed_jobs\":True},\n \"fixed_sources\":{\"all_21_original_GET_bodies_equal\":True,\"decoder_primary_url\":primary_url,\"proto_identity\":identity(proto),\"decoder_identity\":identity((R/\"decode_compact.py\").read_bytes()),\"verifier_identity\":identity((R/\"verify_packet.py\").read_bytes())},\n \"compact\":{\"record_count\":compact[\"record_count\"],\"decompressed_bytes\":compact[\"decompressed_bytes\"],\"core_TestRunner_entries\":42,\"real_tw_exe_launches\":21,\"auxiliary_XML_generators\":21,\"all_real_launches_local_noncache\":True,\"real_timeout_millis\":900000,\"failed_real_attempts\":6,\"successful_real_attempts\":15,\"XML_generators_all_exit0\":True,\"original_16_shards_with_5_retries\":True},\n \"attempts\":attempts,\"xml_digest_mismatches\":mismatches,\n \"literal_final_rows\":dict(Counter(status for name,status in final_rows)),\"literal_unique_final_names\":dict(Counter(unique.values())),\"final_failed_names\":sorted(failnames),\n \"PTY\":{\"compact_tw_and_XML_both_remote_cache_hits\":True,\"console_explicit_cached\":True,\"fresh_native_qualification\":False},\n \"selected_target_console\":{\"queried_targets\":606,\"selected_targets\":149,\"executed_target_count\":51,\"passed_targets_including_cached\":115,\"failed_local_targets\":1,\"skipped_targets\":33,\"not_per_case_counts\":True,\"all_149_logs_archived\":False},\n \"cargo_deny\":{\"API_failed_step\":\"Run cargo-deny\",\"transport_error_originals\":errors,\"complete_artifact_list_count\":6,\"matching_deny_named_artifacts\":0,\"actual_checkout\":\"UNKNOWN\",\"native_exit_code\":\"UNKNOWN\",\"dependency_advisory_license_or_policy_root_cause\":\"UNKNOWN\"},\n \"limitations\":[\"Five later XML bytes are preserved by the official ZIP and collector manifests; the repeated compact output IDs bind the first XML bytes, not those later files.\",\"The 21 XML wrappers are not 21 additional test executions or individual Rust test definitions.\",\"The 1038 successful literal rows contain repeated names; unique successful names are 1030 within this fixed observed final-attempt log scope, not a complete binary/workspace catalog.\",\"Cargo-deny retrieval transport failures provide no dependency diagnosis.\",\"No new product qualification, source fix, blocker transition, native execution or CI polling is claimed.\"]}\nprint(json.dumps(report,ensure_ascii=False,sort_keys=True,indent=2))\n",
+    "stdout_identity": {
+      "bytes": 10226,
+      "git_blob": "069ee118fe9e9795af9127069495fff56a5cd4a0",
+      "sha256": "53e3f88bc057a60532a8f9ab7ae90253104481e4462ef35a25391405e9300696"
+    }
+  },
+  "independent_semantic_verification": {
+    "API": {
+      "blocking_run_queued_despite_two_real_failed_jobs": true,
+      "failure_job_ids": [
+        127679861307,
+        127679861687
+      ],
+      "job_counts": {
+        "cancelled": 9,
+        "failure": 2,
+        "in_progress": 4,
+        "queued": 10,
+        "skipped": 5,
+        "success": 55
+      },
+      "run_counts": {
+        "failure": 5,
+        "queued": 2,
+        "skipped": 2,
+        "success": 10
+      },
+      "runs": 19,
+      "unique_jobs": 85
+    },
+    "PTY": {
+      "compact_tw_and_XML_both_remote_cache_hits": true,
+      "console_explicit_cached": true,
+      "fresh_native_qualification": false
+    },
+    "attempts": [
+      {
+        "attempt": 1,
+        "exit": 0,
+        "failed_names": [],
+        "final": true,
+        "shard": 1,
+        "xml_digest_matches": true
+      },
+      {
+        "attempt": 1,
+        "exit": 0,
+        "failed_names": [],
+        "final": true,
+        "shard": 2,
+        "xml_digest_matches": true
+      },
+      {
+        "attempt": 1,
+        "exit": 0,
+        "failed_names": [],
+        "final": true,
+        "shard": 3,
+        "xml_digest_matches": true
+      },
+      {
+        "attempt": 1,
+        "exit": 1,
+        "failed_names": [
+          "suite::workspace_roots::workspace_roots_allow_file_and_command_writes"
+        ],
+        "final": false,
+        "shard": 4,
+        "xml_digest_matches": true
+      },
+      {
+        "attempt": 2,
+        "exit": 0,
+        "failed_names": [],
+        "final": true,
+        "shard": 4,
+        "xml_digest_matches": false
+      },
+      {
+        "attempt": 1,
+        "exit": 0,
+        "failed_names": [],
+        "final": true,
+        "shard": 5,
+        "xml_digest_matches": true
+      },
+      {
+        "attempt": 1,
+        "exit": 1,
+        "failed_names": [
+          "suite::workspace_roots::workspace_roots_allow_apply_patch_in_secondary_root"
+        ],
+        "final": false,
+        "shard": 6,
+        "xml_digest_matches": true
+      },
+      {
+        "attempt": 2,
+        "exit": 0,
+        "failed_names": [],
+        "final": true,
+        "shard": 6,
+        "xml_digest_matches": false
+      },
+      {
+        "attempt": 1,
+        "exit": 1,
+        "failed_names": [
+          "suite::windows_sandbox::windows_elevated_enforces_deny_read_and_protects_setup_marker",
+          "suite::windows_sandbox::windows_elevated_unified_exec_enforces_managed_deny_reads",
+          "suite::workspace_roots::workspace_roots_allow_patches_but_protect_metadata_directories"
+        ],
+        "final": false,
+        "shard": 7,
+        "xml_digest_matches": true
+      },
+      {
+        "attempt": 2,
+        "exit": 1,
+        "failed_names": [
+          "suite::windows_sandbox::windows_elevated_enforces_deny_read_and_protects_setup_marker",
+          "suite::workspace_roots::workspace_roots_allow_patches_but_protect_metadata_directories",
+          "suite::windows_sandbox::windows_elevated_unified_exec_enforces_managed_deny_reads"
+        ],
+        "final": false,
+        "shard": 7,
+        "xml_digest_matches": false
+      },
+      {
+        "attempt": 3,
+        "exit": 1,
+        "failed_names": [
+          "suite::windows_sandbox::windows_elevated_enforces_deny_read_and_protects_setup_marker",
+          "suite::workspace_roots::workspace_roots_allow_patches_but_protect_metadata_directories",
+          "suite::windows_sandbox::windows_elevated_unified_exec_enforces_managed_deny_reads"
+        ],
+        "final": true,
+        "shard": 7,
+        "xml_digest_matches": false
+      },
+      {
+        "attempt": 1,
+        "exit": 0,
+        "failed_names": [],
+        "final": true,
+        "shard": 8,
+        "xml_digest_matches": true
+      },
+      {
+        "attempt": 1,
+        "exit": 0,
+        "failed_names": [],
+        "final": true,
+        "shard": 9,
+        "xml_digest_matches": true
+      },
+      {
+        "attempt": 1,
+        "exit": 0,
+        "failed_names": [],
+        "final": true,
+        "shard": 10,
+        "xml_digest_matches": true
+      },
+      {
+        "attempt": 1,
+        "exit": 0,
+        "failed_names": [],
+        "final": true,
+        "shard": 11,
+        "xml_digest_matches": true
+      },
+      {
+        "attempt": 1,
+        "exit": 0,
+        "failed_names": [],
+        "final": true,
+        "shard": 12,
+        "xml_digest_matches": true
+      },
+      {
+        "attempt": 1,
+        "exit": 1,
+        "failed_names": [
+          "suite::apply_patch_cli::apply_patch_cli_preserves_existing_hard_link_outside_workspace"
+        ],
+        "final": false,
+        "shard": 13,
+        "xml_digest_matches": true
+      },
+      {
+        "attempt": 2,
+        "exit": 0,
+        "failed_names": [],
+        "final": true,
+        "shard": 13,
+        "xml_digest_matches": false
+      },
+      {
+        "attempt": 1,
+        "exit": 0,
+        "failed_names": [],
+        "final": true,
+        "shard": 14,
+        "xml_digest_matches": true
+      },
+      {
+        "attempt": 1,
+        "exit": 0,
+        "failed_names": [],
+        "final": true,
+        "shard": 15,
+        "xml_digest_matches": true
+      },
+      {
+        "attempt": 1,
+        "exit": 0,
+        "failed_names": [],
+        "final": true,
+        "shard": 16,
+        "xml_digest_matches": true
+      }
+    ],
+    "cargo_deny": {
+      "API_failed_step": "Run cargo-deny",
+      "actual_checkout": "UNKNOWN",
+      "complete_artifact_list_count": 6,
+      "dependency_advisory_license_or_policy_root_cause": "UNKNOWN",
+      "matching_deny_named_artifacts": 0,
+      "native_exit_code": "UNKNOWN",
+      "transport_error_originals": [
+        {
+          "classification": "EVIDENCE_RETRIEVAL_TRANSPORT_ERROR_NOT_PRODUCT_DIAGNOSIS",
+          "identity": {
+            "bytes": 210,
+            "git_blob": "c701e3d00536096d456f8b2730f755914e32ebeb",
+            "sha256": "94706eab5bc599a6309f59bd5b1923c166c13dc39ca3a08038dbaf0b15c51b01"
+          },
+          "path": "original/cargo-deny-log-tool-error-01.json"
+        },
+        {
+          "classification": "EVIDENCE_RETRIEVAL_TRANSPORT_ERROR_NOT_PRODUCT_DIAGNOSIS",
+          "identity": {
+            "bytes": 210,
+            "git_blob": "c701e3d00536096d456f8b2730f755914e32ebeb",
+            "sha256": "94706eab5bc599a6309f59bd5b1923c166c13dc39ca3a08038dbaf0b15c51b01"
+          },
+          "path": "original/cargo-deny-log-tool-error-02.json"
+        }
+      ]
+    },
+    "compact": {
+      "XML_generators_all_exit0": true,
+      "all_real_launches_local_noncache": true,
+      "auxiliary_XML_generators": 21,
+      "core_TestRunner_entries": 42,
+      "decompressed_bytes": 30375494,
+      "failed_real_attempts": 6,
+      "original_16_shards_with_5_retries": true,
+      "real_timeout_millis": 900000,
+      "real_tw_exe_launches": 21,
+      "record_count": 89920,
+      "successful_real_attempts": 15
+    },
+    "final_failed_names": [
+      "suite::windows_sandbox::windows_elevated_enforces_deny_read_and_protects_setup_marker",
+      "suite::windows_sandbox::windows_elevated_unified_exec_enforces_managed_deny_reads",
+      "suite::workspace_roots::workspace_roots_allow_patches_but_protect_metadata_directories"
+    ],
+    "fixed_sources": {
+      "all_21_original_GET_bodies_equal": true,
+      "decoder_identity": {
+        "bytes": 9864,
+        "git_blob": "bb0957782c73a2a653e101e392da5f0f27ed4459",
+        "sha256": "cade2f309520c16508893b798eb59258fe6a60d3367f64271e989caa33ed66a3"
+      },
+      "decoder_primary_url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/protobuf/spawn.proto",
+      "proto_identity": {
+        "bytes": 15857,
+        "git_blob": "19f68f22a4d62c4fd1aa28fd1c7c0217aa6a7cb0",
+        "sha256": "110f4b5e020b72fe3d51f6aa69d6ecc31d6f20ee57c194827da48a8184675e7a"
+      },
+      "verifier_identity": {
+        "bytes": 15698,
+        "git_blob": "a76bbefcf7d2aee21acdf3455f394f8845648724",
+        "sha256": "32e6ffdc364747fd77875c54a046dbb9ce7b0cb1e08f3881718c92885159d1d4"
+      }
+    },
+    "limitations": [
+      "Five later XML bytes are preserved by the official ZIP and collector manifests; the repeated compact output IDs bind the first XML bytes, not those later files.",
+      "The 21 XML wrappers are not 21 additional test executions or individual Rust test definitions.",
+      "The 1038 successful literal rows contain repeated names; unique successful names are 1030 within this fixed observed final-attempt log scope, not a complete binary/workspace catalog.",
+      "Cargo-deny retrieval transport failures provide no dependency diagnosis.",
+      "No new product qualification, source fix, blocker transition, native execution or CI polling is claimed."
+    ],
+    "literal_final_rows": {
+      "FAILED": 3,
+      "ignored": 90,
+      "ok": 1038
+    },
+    "literal_unique_final_names": {
+      "FAILED": 3,
+      "ignored": 72,
+      "ok": 1030
+    },
+    "result": "PASS_FIXED_EVIDENCE_SCOPE_WITH_EXPLICIT_LIMITS",
+    "schema": "main85-independent-denominator-and-custody-semantics-v1",
+    "selected_target_console": {
+      "all_149_logs_archived": false,
+      "executed_target_count": 51,
+      "failed_local_targets": 1,
+      "not_per_case_counts": true,
+      "passed_targets_including_cached": 115,
+      "queried_targets": 606,
+      "selected_targets": 149,
+      "skipped_targets": 33
+    },
+    "xml_digest_mismatches": [
+      {
+        "archived_later_xml_sha256": "56c6b44fc71d1110b4dcbf560cdd693bae9df82fa54f52b180a9fe4e63e40efa",
+        "attempt": 2,
+        "compact_digest": "33bb45cb9983875361453aec4f91ef1258cad239ece02dde247edc46ec5572b1",
+        "reused_first_file_entry_id": 86683,
+        "shard": 4
+      },
+      {
+        "archived_later_xml_sha256": "9267269dee32cdbfe6a170f9f49f398c7108182e6965f94bbc32ac5043eb2358",
+        "attempt": 2,
+        "compact_digest": "4071f88eab62372315dec5887154720c2d34c00b7d6349dd1e9656c90f7fe215",
+        "reused_first_file_entry_id": 86686,
+        "shard": 6
+      },
+      {
+        "archived_later_xml_sha256": "628553fd42916619b5565bd77c6ef2e98de48b4d287d52b049e4f77ed342d5e6",
+        "attempt": 2,
+        "compact_digest": "e8d98e418d8fad9edf65f916d51a3205b861c09c316e49bf6f373c2c657e1e9d",
+        "reused_first_file_entry_id": 86695,
+        "shard": 7
+      },
+      {
+        "archived_later_xml_sha256": "3c0732c103b09fe4b00cc218dac7475a5592f84c4a37fbaee0a74c3923ae3d1b",
+        "attempt": 3,
+        "compact_digest": "e8d98e418d8fad9edf65f916d51a3205b861c09c316e49bf6f373c2c657e1e9d",
+        "reused_first_file_entry_id": 86695,
+        "shard": 7
+      },
+      {
+        "archived_later_xml_sha256": "1c0bf3686f868aa772fbd18c169836b626b6b13b6e104f7e9eca9cf7f92f7bdf",
+        "attempt": 2,
+        "compact_digest": "3c04c2914e070d5658e5d20833d2b82cb768a5f300a7be4eae6d1707743e3e08",
+        "reused_first_file_entry_id": 86716,
+        "shard": 13
+      }
+    ]
+  },
+  "native_dispatch_retry_cancel": false,
+  "new_live_CI_queries": false,
+  "observation_window": {
+    "end": "2026-11-06T03:19:29.458Z",
+    "start": "2026-11-06T03:18:59.703Z"
+  },
+  "offline_replay": [
+    {
+      "exit_code": 0,
+      "name": "restore",
+      "stderr_bytes": 0,
+      "stdout": {
+        "bytes": 363,
+        "git_blob": "bab04d04b430e991f9ee2801397b3a142feb762c",
+        "sha256": "1c6280bad50a65a20bfec47f305bf7134a524fae7ed82f6edef2ff181aa96099"
+      }
+    },
+    {
+      "exit_code": 0,
+      "name": "decode",
+      "stderr_bytes": 0,
+      "stdout": {
+        "bytes": 1301,
+        "git_blob": "7751622b98101ba555efb9e8d43501e676b045bb",
+        "sha256": "908b7fd12c0e1bf646167ab4522d6d6870f5ec48dd9c1c16e2e3056fe6e94c07"
+      }
+    },
+    {
+      "exit_code": 0,
+      "name": "verify",
+      "stderr_bytes": 0,
+      "stdout": {
+        "bytes": 315070,
+        "git_blob": "357cde174c6b97d9265e469ce75d25849cfe72a5",
+        "sha256": "2ba75ac85d9ba9798162518a537519d02eeecf8fee823484d0c8753b72aa1e03"
+      }
+    }
+  ],
+  "original_payload_full_GET_receipts_independently_checked": 31,
+  "post_decoder_original_and_derived_bytes_unchanged": true,
+  "restored_members": 163,
+  "result": "PASS_FIXED_EVIDENCE_CUSTODY_DENOMINATORS_AND_REPLAY",
+  "retained_original_archive": {
+    "bytes": 6573586,
+    "git_blob": "f59ae4a0346886b6119a7a70e3524b81179549ac",
+    "sha256": "47a00f5414f74b797ea3b714927fddaa47c0d26786d14c6ae6ee1466e9e7ad16"
+  },
+  "review_decisions_zh": [
+    "85为本窗口全部19run中实际唯一job数；旧58为0201完整历史切点，0244仅4run的23job增量，三个分母保持分开。",
+    "5个顶层failure run不是2个failed job；blocking-ci的run-list仍queued，但其jobs已经包含真实Windows Core与cargo-deny失败。",
+    "Windows16shard共21次实际tw.exe启动和21次XML生成；辅助XML进程不能计作额外测试，也不能把一次wrapper XML testcase写成其内部全部Rust定义。",
+    "最终日志字面行1038成功/90ignored/3失败，对应1030成功/72ignored/3失败的不同名字；重复名字、额外attempt、分段libtest summary、过滤和target分母不可相加外推。",
+    "五个后续XML原字节完整保留，但compact的同输出ID/digest复用了首次XML，不能声称后次XML已通过compact哈希绑定。",
+    "官方artifact47成员、Core42文件、PTY2文件及两manifest范围成立；它不是全部149target的完整日志集。",
+    "Windows最终三失败属于Core managed ACL/setup/protected metadata路径，与既有B11宿主outside-delete原断言分开；原首attempt的helper program-not-found不能外推成hard-link实际逃逸。",
+    "PTY实际test wrapper和XML生成均remote cache hit；不提供本轮新原生PTY资格。",
+    "cargo-deny实际API步骤失败与两次Transport closed原错误分别保留；实际checkout、原退出码、advisory/license/dependency原因仍UNKNOWN。",
+    "本审阅只核固定证据；不改变原23项exit/status、不签发主产品全部required通过，也未修复上述两项原失败。"
+  ],
+  "reviewed_code": {
+    "decode_compact.py": {
+      "bytes": 9864,
+      "git_blob": "bb0957782c73a2a653e101e392da5f0f27ed4459",
+      "sha256": "cade2f309520c16508893b798eb59258fe6a60d3367f64271e989caa33ed66a3"
+    },
+    "primary/spawn.proto": {
+      "bytes": 15857,
+      "git_blob": "19f68f22a4d62c4fd1aa28fd1c7c0217aa6a7cb0",
+      "sha256": "110f4b5e020b72fe3d51f6aa69d6ecc31d6f20ee57c194827da48a8184675e7a"
+    },
+    "verify_packet.py": {
+      "bytes": 15698,
+      "git_blob": "a76bbefcf7d2aee21acdf3455f394f8845648724",
+      "sha256": "32e6ffdc364747fd77875c54a046dbb9ce7b0cb1e08f3881718c92885159d1d4"
+    }
+  },
+  "schema": "hepta-main67-0319-independent-evidence-review-v1",
+  "scope": "Independent read of complete decoder/verifier and fixed Bazel primary schema; immutable package restoration and local replay; no new source fix or native/CI acceptance.",
+  "source_authority": {
+    "cargo_deny_actual_checkout": "UNKNOWN",
+    "requested_head": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+    "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+    "windows_actual_checkout": "b7a57dbb61b00e51c05da9cf5c4bc95b365d85ae"
+  },
+  "source_or_ref_or_PR_mutation": false,
+  "source_packet_registry": {
+    "bytes": 34127,
+    "git_blob": "c96451efee87e5b35bd20f8caec352c7b66707d0",
+    "sha256": "ff12423fc9278ca294c8e472ca249077018e43205cf34765d117e234e9474ddf"
+  },
+  "source_packet_repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0319/registry.actual.json"
+}

@@ -1,0 +1,229 @@
+{
+  "schema": "chain254-source-only-verification-v1",
+  "sealed_at_utc": "2026-11-06 02:08:16 UTC",
+  "scope": "Actual V8 offline identity, source-literal and tree checks; source literals are evidence locators, not behavioral tests.",
+  "source_count": 17,
+  "source_total_bytes": 1036049,
+  "all_source_git_sha_match_fixed_directory_or_tree": true,
+  "source_literal_locators": [
+    {
+      "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
+      "git_blob": "1bb0e852d70796ff8910188b8e03870badd4ac19",
+      "literal": "pub const MAX_CONTROL_FRAME_BYTES: u64 = 65_536;",
+      "present": true
+    },
+    {
+      "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
+      "git_blob": "1bb0e852d70796ff8910188b8e03870badd4ac19",
+      "literal": "pub const MAX_AUTOMATION_EFFECT_WIRE_BYTES: usize = 24 * 1024;",
+      "present": true
+    },
+    {
+      "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
+      "git_blob": "1bb0e852d70796ff8910188b8e03870badd4ac19",
+      "literal": "pub const MAX_AUTOMATION_EFFECT_PACKET_V1_BYTES: usize = 64 * 1024;",
+      "present": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/client_effect_packet.rs",
+      "git_blob": "e8330fe8a2fd8032fd2db5931fbc75f0d0b6e2ed",
+      "literal": "writer.write_all(wire_payload).await?;",
+      "present": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/client_effect_packet.rs",
+      "git_blob": "e8330fe8a2fd8032fd2db5931fbc75f0d0b6e2ed",
+      "literal": "writer.shutdown().await?;",
+      "present": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/control.rs",
+      "git_blob": "8026824f5fe86ea828bbc04196f00f3b98695d11",
+      "literal": "let mut reader = BufReader::new(reader);",
+      "present": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/control_packet.rs",
+      "git_blob": "43df162273088fed1cc8905b4d50e21c8bfde06d",
+      "literal": "reader.read_exact(&mut wire_payload).await?;",
+      "present": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/control_packet.rs",
+      "git_blob": "43df162273088fed1cc8905b4d50e21c8bfde06d",
+      "literal": "if reader.read(&mut trailing).await? != 0",
+      "present": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/control_packet.rs",
+      "git_blob": "43df162273088fed1cc8905b4d50e21c8bfde06d",
+      "literal": "pub(crate) const PACKET_CONNECTION_CAPACITY: usize = 2;",
+      "present": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "git_blob": "f425fec0d0b5e0ec3365d6dc86712f890ce3d59b",
+      "literal": ".execute_authorized_taskflow_effect(",
+      "present": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "git_blob": "f425fec0d0b5e0ec3365d6dc86712f890ce3d59b",
+      "literal": "wire_payload.len() > crate::MAX_AUTOMATION_EFFECT_WIRE_BYTES",
+      "present": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "git_blob": "f425fec0d0b5e0ec3365d6dc86712f890ce3d59b",
+      "literal": ".arg(\"--development\")",
+      "present": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "git_blob": "f425fec0d0b5e0ec3365d6dc86712f890ce3d59b",
+      "literal": ".arg(\"--packet-stdin\")",
+      "present": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host_pon_process.rs",
+      "git_blob": "30cec85ce4ec137e72666b46f55dadde771a74bd",
+      "literal": "stdin.write_all(payload).await?;",
+      "present": true
+    },
+    {
+      "path": "trillionnium/crates/trnm-pon-node/src/main.rs",
+      "git_blob": "13ed1b33668335970ffbf98099bb4ee7757dab80",
+      "literal": "let packet = Packet::decode(&packet_input(&args)?)?;",
+      "present": true
+    },
+    {
+      "path": "trillionnium/crates/trnm-pon-node/src/main.rs",
+      "git_blob": "13ed1b33668335970ffbf98099bb4ee7757dab80",
+      "literal": "let id = node.admit(&packet, clock)?;",
+      "present": true
+    },
+    {
+      "path": "trillionnium/crates/trnm-pon-node/src/main.rs",
+      "git_blob": "13ed1b33668335970ffbf98099bb4ee7757dab80",
+      "literal": "node.activate_observed(id, clock)?;",
+      "present": true
+    },
+    {
+      "path": "trillionnium/crates/trnm-protocol/src/pon_wire.rs",
+      "git_blob": "9333ce92c6ba130dd182538bfd8f69ec289acc83",
+      "literal": "pub const HEADER_BYTES: usize = 318;",
+      "present": true
+    },
+    {
+      "path": "trillionnium/crates/trnm-crypto-primitives/src/pon_work.rs",
+      "git_blob": "ce1608248d2ee67ed8f5d82a2c5f15942689139b",
+      "literal": "pub const N: usize = 64;",
+      "present": true
+    },
+    {
+      "path": "trillionnium/crates/trnm-crypto-primitives/src/pon_work.rs",
+      "git_blob": "ce1608248d2ee67ed8f5d82a2c5f15942689139b",
+      "literal": "pub const PROOF_BYTES: usize = 4 + 3 * CELLS * 4 + 32;",
+      "present": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host_pq_packet_chain_tests.rs",
+      "git_blob": "ed6bb55f4ea0187a50236b1345b40e046bf82e56",
+      "literal": "#[ignore = \"requires exact Chain release binary; selected by paired native CI\"]",
+      "present": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host_pq_packet_chain_tests.rs",
+      "git_blob": "ed6bb55f4ea0187a50236b1345b40e046bf82e56",
+      "literal": "assert_eq!(durable.wire_payload.as_deref(), Some(wire.as_slice()));",
+      "present": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host_pq_packet_chain_tests.rs",
+      "git_blob": "ed6bb55f4ea0187a50236b1345b40e046bf82e56",
+      "literal": "assert_eq!(replay, receipt);",
+      "present": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host_pq_packet_chain_tests.rs",
+      "git_blob": "ed6bb55f4ea0187a50236b1345b40e046bf82e56",
+      "literal": "\"app_server_launched\":false",
+      "present": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host_pq_packet_chain_tests.rs",
+      "git_blob": "ed6bb55f4ea0187a50236b1345b40e046bf82e56",
+      "literal": "\"chain_task_profile_is_pq\":false",
+      "present": true
+    }
+  ],
+  "tree": {
+    "scope": "offline source identity and complete Chain recursive-tree reconstruction only",
+    "entries": 11624,
+    "tree_nodes": 1194,
+    "truncated": false,
+    "actual_api_root": "afd521c35d4f342cc6e7c1ca0827405034bd63d5",
+    "computed_root": "afd521c35d4f342cc6e7c1ca0827405034bd63d5",
+    "all_nodes_equal": true,
+    "source_leaves_bound": 17,
+    "hepta_binding": "fixed-09 commit API + four fixed-ref contents directory responses; Hepta recursive-tree requests returned transport errors",
+    "native_executed": false,
+    "product_compilation": false,
+    "portable_python_verifier_generated": false
+  },
+  "known_hash_vectors": {
+    "sha1_empty": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+    "sha1_abc": "a9993e364706816aba3e25717850c26c9cd0d89d",
+    "sha256_empty": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "sha256_abc": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+    "git_empty": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "b64_abc": "YWJj"
+  },
+  "hash_helper": {
+    "path": "executed_hash_functions.js",
+    "bytes": 3670,
+    "git_blob": "0e70e39f4662b1d6e1f2a8b3ad18af7db144f4e5",
+    "sha256": "93f73ad0ae196be5b17fcb92b555a9f0fcc5d7b8e0af572a8aa75d3b370e6d38",
+    "actual_create_sha": "0e70e39f4662b1d6e1f2a8b3ad18af7db144f4e5",
+    "actual_full_get_equal": true,
+    "known_vectors": {
+      "sha1_empty": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+      "sha1_abc": "a9993e364706816aba3e25717850c26c9cd0d89d",
+      "sha256_empty": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sha256_abc": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+      "git_empty": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "b64_abc": "YWJj"
+    },
+    "usage": "utf8(valid Unicode source text), SHA1, SHA256, Git blob SHA, base64. Used on 17 fixed source files and complete Chain recursive-tree nodes. No native/product execution."
+  },
+  "packet_size_derivation": {
+    "header_bytes": 318,
+    "transaction_count_prefix_bytes": 2,
+    "transactions": 0,
+    "proof_bytes": 49188,
+    "wire_bytes": 49508,
+    "hex_characters": 99016,
+    "scope": "Static encoded size for zero transactions and the fixed complete proof; no newly executed packet or native run."
+  },
+  "audit_helper_attempt_records": [
+    {
+      "scope": "offline audit helper selector",
+      "failure": "ambiguous control.rs suffix matched state_control.rs",
+      "product_or_native_failure": false,
+      "correction": "Require slash before the requested suffix.",
+      "recorded": true
+    },
+    {
+      "scope": "offline audit helper literal",
+      "failure": "Exact spelling omitted crate:: qualification in host_original_inline_gate",
+      "product_or_native_failure": false,
+      "correction": "Read actual source and retain its exact qualified constant spelling."
+    }
+  ],
+  "native_executed": false,
+  "compiled": false,
+  "formatted": false,
+  "paired_run_accepted": false,
+  "production_consumer_accepted": false,
+  "unrun_portable_verifier_generated": false
+}

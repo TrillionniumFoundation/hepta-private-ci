@@ -1,0 +1,357 @@
+{
+  "schema": "hepta-main67-92jobs-six-original-artifacts-triage-v1",
+  "head": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+  "actual_product_checkout": "b7a57dbb61b00e51c05da9cf5c4bc95b365d85ae",
+  "product_tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+  "scope": "One fixed non-atomic 19-run/92-job cut plus five failed-job logs/artifacts and one original successful GNU log/artifact addendum. No CI actions were issued.",
+  "api_cut": {
+    "run_count": 19,
+    "run_states": {
+      "failure": 5,
+      "queued": 1,
+      "skipped": 2,
+      "success": 11
+    },
+    "job_count": 92,
+    "job_states": {
+      "cancelled": 10,
+      "failure": 8,
+      "queued": 1,
+      "skipped": 6,
+      "success": 67
+    },
+    "per_run_job_count": [
+      {
+        "run_id": 42123581986,
+        "jobs": 1
+      },
+      {
+        "run_id": 42123581050,
+        "jobs": 2
+      },
+      {
+        "run_id": 42123581231,
+        "jobs": 1
+      },
+      {
+        "run_id": 42123581007,
+        "jobs": 2
+      },
+      {
+        "run_id": 42123581091,
+        "jobs": 1
+      },
+      {
+        "run_id": 42123581410,
+        "jobs": 1
+      },
+      {
+        "run_id": 42123581408,
+        "jobs": 1
+      },
+      {
+        "run_id": 42123581260,
+        "jobs": 15
+      },
+      {
+        "run_id": 42123581031,
+        "jobs": 5
+      },
+      {
+        "run_id": 42123581078,
+        "jobs": 3
+      },
+      {
+        "run_id": 42123581186,
+        "jobs": 6
+      },
+      {
+        "run_id": 42123581393,
+        "jobs": 2
+      },
+      {
+        "run_id": 42123581479,
+        "jobs": 2
+      },
+      {
+        "run_id": 42123581142,
+        "jobs": 3
+      },
+      {
+        "run_id": 42123581385,
+        "jobs": 36
+      },
+      {
+        "run_id": 42123581270,
+        "jobs": 6
+      },
+      {
+        "run_id": 42123581363,
+        "jobs": 3
+      },
+      {
+        "run_id": 42123569559,
+        "jobs": 1
+      },
+      {
+        "run_id": 42123569750,
+        "jobs": 1
+      }
+    ],
+    "job_failures": [
+      {
+        "id": 127679861307,
+        "name": "cargo-deny / cargo-deny",
+        "steps": [
+          "Run cargo-deny"
+        ]
+      },
+      {
+        "id": 127679861660,
+        "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+        "steps": [
+          "bazel test //..."
+        ]
+      },
+      {
+        "id": 127679861687,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+        "steps": [
+          "bazel test shard"
+        ]
+      },
+      {
+        "id": 127679861699,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4",
+        "steps": [
+          "bazel test shard"
+        ]
+      },
+      {
+        "id": 127679861740,
+        "name": "Bazel / Bazel clippy on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+        "steps": [
+          "bazel build --config=clippy lint targets"
+        ]
+      },
+      {
+        "id": 127679861749,
+        "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+        "steps": [
+          "bazel test //..."
+        ]
+      },
+      {
+        "id": 127679861775,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+        "steps": [
+          "bazel test shard"
+        ]
+      },
+      {
+        "id": 127691446306,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc",
+        "steps": [
+          "Confirm Windows Bazel test shards passed"
+        ]
+      }
+    ],
+    "window": {
+      "root_list_and_blocking_jobs": {
+        "before": {
+          "current_time": "2026-11-06 04:10:12 UTC"
+        },
+        "after": {
+          "current_time": "2026-11-06 04:10:14 UTC"
+        },
+        "scope": "Four complete responses: main run list, main blocking jobs, B21 jobs, B23 jobs. Other main run jobs not yet refreshed in this cut."
+      },
+      "other18_jobs": {
+        "before": {
+          "current_time": "2026-11-06 04:13:39 UTC"
+        },
+        "after": {
+          "current_time": "2026-11-06 04:13:40 UTC"
+        },
+        "ids": [
+          42123581986,
+          42123581050,
+          42123581231,
+          42123581007,
+          42123581091,
+          42123581410,
+          42123581408,
+          42123581260,
+          42123581031,
+          42123581078,
+          42123581186,
+          42123581393,
+          42123581479,
+          42123581142,
+          42123581270,
+          42123581363,
+          42123569559,
+          42123569750
+        ],
+        "scope": "Each of 18 other original main67 runs read once via complete jobs collection with per_page=100; blocking36 and run list reused unchanged from root04:10:12-14 original cut. Non-atomic observation window."
+      }
+    },
+    "non_atomic": true,
+    "summary_failure_job_id": 127691446306,
+    "distinct_failed_execution_jobs": 7
+  },
+  "new_failure_triage": [
+    {
+      "job_id": 127679861660,
+      "platform": "macOS 15 Intel/x86_64-apple-darwin",
+      "artifact": 13475811429,
+      "original_bazel_exit": 3,
+      "final_failed_target": "//codex-rs/utils/pty:pty-unit-tests",
+      "test": "tests::pty_dropped_output_receiver_keeps_draining_child",
+      "result": "30P1F0I",
+      "native_actual": "darwin-sandbox/cache_hit=false/exit101",
+      "observed": {
+        "spawn_elapsed": "9.857188ms",
+        "wait_elapsed": "2.228741523s",
+        "state": "waiting_for_read",
+        "read_calls": 6549,
+        "read_bytes": 3358720,
+        "discarded_bytes": 3358720,
+        "last_read": "errno(35)",
+        "queued_bytes": 0,
+        "child_phase": "python_started"
+      },
+      "causal_limit": "The observation establishes a deadline with incomplete drain; it does not alone identify scheduling, child writes or terminal-driver root cause. No budget was increased.",
+      "additional_first_attempt_failure": {
+        "target": "//codex-rs/core:core-unit-tests",
+        "shard": 1,
+        "case": "agent::control::tests::spawn_agent_fork_last_n_turns_drops_parent_startup_prefix_when_under_limit",
+        "first": "320P1F; startup delivery boundary timeout,120.45s; additional owned subtest1P kept",
+        "retry": "321P0F;56.24s plus owned subtest1P; original retry preserved",
+        "no_claim_first_attempt_pass": true
+      }
+    },
+    {
+      "job_id": 127679861699,
+      "platform": "Windows x86_64 shard3/4",
+      "artifact": 13475001412,
+      "original_bazel_exit": 3,
+      "target": "//codex-rs/ext/queue:queue-queue_service-test",
+      "test": "caller_abort_after_core_started_keeps_exact_authority_until_persistence",
+      "result": "35P1F0I",
+      "observed_error": "Timed out waiting for queue_blocking_prompt_hook.entered; deadline has elapsed",
+      "native_actual": "local/cache_hit=false/exit101",
+      "causal_limit": "The log establishes the unobserved hook marker before the test deadline; underlying hook launch or scheduling cause not inferred."
+    },
+    {
+      "job_id": 127679861775,
+      "platform": "Windows x86_64 shard2/4",
+      "artifact": 13475231392,
+      "original_bazel_exit": 3,
+      "target": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+      "native_actual": "local/cache_hit=false/bat exit1",
+      "two_original_libtest_segments": [
+        "89P3F0I,62filtered",
+        "50P10F2I,92filtered"
+      ],
+      "combined_segments": "139P13F2I",
+      "error_groups": {
+        "acl_three": "SetSecurityInfo returns5 twice; ReOpenFile deny repair fails with error5 once",
+        "token_repair": "partial_delete_deny_is_repaired_before_native_workspace_writes ReOpenFile error5",
+        "token_boundaries": "two original assertion failures at token_tests.rs434 and479",
+        "legacy_session_error_chain": "Expected chain text includes SetNamedSecurityInfoW failed..., actual Access is denied.(os error5)",
+        "dependent_poison": 6
+      },
+      "raw_interleaving": "One FAILED status line is interleaved; original complete log and failure-section list remain authority, not repaired output.",
+      "source_limit": "This main67 source has the original host premise/tests. It is distinct from diagnostic native13 source daa/fbaf and its147P7F2I result."
+    },
+    {
+      "job_id": 127679861740,
+      "platform": "Ubuntu24.04/x86_64-unknown-linux-gnu with original remote Clippy executor",
+      "artifact": 13474964431,
+      "original_bazel_exit": 1,
+      "observed_lint": "-D clippy::expect-used",
+      "two_source_sites": [
+        "codex-rs/arg0/src/bin/test_arg0_preflight.rs:108 expect_err",
+        "codex-rs/arg0/src/preflight_tests.rs:101 expect"
+      ],
+      "failed_remote_noncache_actions": [
+        {
+          "sequence": 103206,
+          "target": "//codex-rs/arg0:test_arg0_preflight",
+          "runner": "remote",
+          "cache_hit": false,
+          "exit_code": 1
+        },
+        {
+          "sequence": 103319,
+          "target": "//codex-rs/arg0:test_arg0_preflight-bin-unit-tests-bin",
+          "runner": "remote",
+          "cache_hit": false,
+          "exit_code": 1
+        },
+        {
+          "sequence": 103419,
+          "target": "//codex-rs/arg0:arg0-unit-tests-bin",
+          "runner": "remote",
+          "cache_hit": false,
+          "exit_code": 1
+        }
+      ],
+      "qualification": "Three failed build actions from two source sites, not three Rust test failures."
+    },
+    {
+      "job_id": 127679861749,
+      "platform": "macOS15 ARM/aarch64-apple-darwin",
+      "artifact": 13474454125,
+      "original_bazel_exit": 3,
+      "tests": [
+        {
+          "target": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-unit-tests",
+          "case": "fenced_holdout_file::tests::longer_divergent_history_cannot_skip_the_retained_minimum_prefix",
+          "result": "114P1F0I",
+          "observed": "Some(Busy) returned where Some(Rollback) was asserted at fenced_holdout_file_tests.rs286; two owned child1P segments preserved separately"
+        },
+        {
+          "target": "//codex-rs/http-client:http-client-unit-tests",
+          "case": "outbound_proxy::redirect_integration_tests::route_aware_pool_re_resolves_redirects_and_logs_only_final_outcome",
+          "result": "84P1F0I",
+          "observed": "Server header read WouldBlock/os35 at117; client redirect request then connection-reset/os54 at63"
+        }
+      ],
+      "native_actual": "Both darwin-sandbox/cache_hit=false/exit101",
+      "causal_limit": "No transient-vs-product root cause beyond actual error sequence is assumed."
+    }
+  ],
+  "prior_failed_jobs_not_recollected": [
+    127679861307,
+    127679861687
+  ],
+  "windows_summary_failure_not_extra_root_cause": 127691446306,
+  "compact_failed_target_attempt_custody": {
+    "actual_test_launches_including_retry": 14,
+    "auxiliary_XML_generators": 14,
+    "XML_digest_mismatches": 1,
+    "scope": "Intel Core final shard1 XML reuses first digest; original ZIP/manifest final XML bytes retained independently."
+  },
+  "GNU_addendum": {
+    "job_id": 127679861926,
+    "artifact_id": 13475800550,
+    "original_complete_job_API": "success",
+    "target": "//codex-rs/app-server:app-server-unit-tests",
+    "shards": 8,
+    "native_test_results": "all8 remote cache hit",
+    "original_cached_logs": "307P1I;3signal/2drain ok, retained_signal_child ignored",
+    "fresh_native_from_this_job": false,
+    "separate_B23_independent_acceptance_review_actual": "2dd76784a199d90906e98a773387fe9fc439ae71",
+    "scope": "That review combines separate same-product native diagnostic source/input/platform proof with this original CI cached acceptance, retaining collector failure."
+  },
+  "limits": [
+    "Job/run/target/action/case counts are distinct denominators.",
+    "No new product fix or whole-candidate qualification is asserted by this packet.",
+    "Artifacts retain selected existing testlogs/attempts only; no global case inventory is fabricated.",
+    "Original source17 byte identities and complete10582-leaf tree are retained; actual diagnostic B23 source is a separate one-workflow projection.",
+    "Main GNU cached artifacts are not a fresh native run.",
+    "Original complete decoded log bytes preserve BOM/CRLF; they are the GitHub tool decoded representation, not a captured HTTP wire archive."
+  ]
+}

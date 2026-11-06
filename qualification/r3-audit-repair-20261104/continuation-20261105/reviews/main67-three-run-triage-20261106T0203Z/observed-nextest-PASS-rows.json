@@ -1,0 +1,1946 @@
+{
+  "operator_ubuntu_controls_success": {
+    "counts": {
+      "codex-hepta-operator-acceptance": 33
+    },
+    "cases": [
+      {
+        "line": 433,
+        "elapsed_seconds": 0.006,
+        "package": "codex-hepta-operator-acceptance",
+        "name": "ceremony::tests::v1_paths_are_exact_and_sidecar_is_a_strict_child"
+      },
+      {
+        "line": 434,
+        "elapsed_seconds": 0.026,
+        "package": "codex-hepta-operator-acceptance",
+        "name": "g5_trust::tests::expiry_is_half_open_and_never_creates_acceptance"
+      },
+      {
+        "line": 435,
+        "elapsed_seconds": 0.028,
+        "package": "codex-hepta-operator-acceptance",
+        "name": "g5_trust::tests::exact_head_and_predecessor_binding_is_required"
+      },
+      {
+        "line": 436,
+        "elapsed_seconds": 0.03,
+        "package": "codex-hepta-operator-acceptance",
+        "name": "g5_trust::tests::fresh_head_scoped_challenge_reaches_ready_without_authority"
+      },
+      {
+        "line": 437,
+        "elapsed_seconds": 0.04,
+        "package": "codex-hepta-operator-acceptance",
+        "name": "g5_trust::tests::independently_signed_challenge_is_verified_but_not_accepted"
+      },
+      {
+        "line": 438,
+        "elapsed_seconds": 0.025,
+        "package": "codex-hepta-operator-acceptance",
+        "name": "g5_trust::tests::policy_and_revocation_files_must_be_canonical"
+      },
+      {
+        "line": 439,
+        "elapsed_seconds": 0.022,
+        "package": "codex-hepta-operator-acceptance",
+        "name": "g5_trust::tests::revocation_is_external_and_fail_closed_before_challenge_issuance"
+      },
+      {
+        "line": 440,
+        "elapsed_seconds": 0.005,
+        "package": "codex-hepta-operator-acceptance",
+        "name": "manifest_inventory::tests::manifest_parser_requires_sorted_safe_unique_paths"
+      },
+      {
+        "line": 441,
+        "elapsed_seconds": 0.025,
+        "package": "codex-hepta-operator-acceptance",
+        "name": "g5_trust::tests::revocation_digest_change_invalidates_existing_challenge"
+      },
+      {
+        "line": 442,
+        "elapsed_seconds": 0.004,
+        "package": "codex-hepta-operator-acceptance",
+        "name": "preflight::tests::every_missing_or_wrong_formal_environment_pin_is_rejected"
+      },
+      {
+        "line": 443,
+        "elapsed_seconds": 0.006,
+        "package": "codex-hepta-operator-acceptance",
+        "name": "manifest_inventory::tests::verified_manifest_rejects_extra_files_and_hardlinks"
+      },
+      {
+        "line": 444,
+        "elapsed_seconds": 0.008,
+        "package": "codex-hepta-operator-acceptance",
+        "name": "sshsig::tests::all_truncations_and_untrusted_field_lengths_reject_without_panicking"
+      },
+      {
+        "line": 445,
+        "elapsed_seconds": 0.005,
+        "package": "codex-hepta-operator-acceptance",
+        "name": "sshsig::tests::armor_is_bounded_and_cannot_hide_trailing_packets_or_bad_base64"
+      },
+      {
+        "line": 446,
+        "elapsed_seconds": 0.01,
+        "package": "codex-hepta-operator-acceptance",
+        "name": "manifest_inventory::tests::verified_manifest_rejects_symlinks"
+      },
+      {
+        "line": 447,
+        "elapsed_seconds": 0.005,
+        "package": "codex-hepta-operator-acceptance",
+        "name": "sshsig::tests::malformed_and_malleable_ed25519_signature_records_are_rejected"
+      },
+      {
+        "line": 448,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-operator-acceptance",
+        "name": "sshsig::tests::pinned_malformed_or_weak_public_keys_are_rejected"
+      },
+      {
+        "line": 449,
+        "elapsed_seconds": 0.019,
+        "package": "codex-hepta-operator-acceptance",
+        "name": "sshsig::tests::namespace_and_hash_changes_cannot_reinterpret_a_signature"
+      },
+      {
+        "line": 450,
+        "elapsed_seconds": 0.019,
+        "package": "codex-hepta-operator-acceptance",
+        "name": "sshsig::tests::valid_self_signed_packet_cannot_replace_the_externally_pinned_key"
+      },
+      {
+        "line": 451,
+        "elapsed_seconds": 0.045,
+        "package": "codex-hepta-operator-acceptance",
+        "name": "sshsig::tests::frozen_openssh_sha256_and_sha512_signatures_verify_without_a_child_process"
+      },
+      {
+        "line": 452,
+        "elapsed_seconds": 0.005,
+        "package": "codex-hepta-operator-acceptance",
+        "name": "tests::exact_challenge_boundary_accepts_only_operator_acceptance"
+      },
+      {
+        "line": 453,
+        "elapsed_seconds": 0.016,
+        "package": "codex-hepta-operator-acceptance",
+        "name": "tests::durable_time_watermark_rejects_clock_rollback"
+      },
+      {
+        "line": 454,
+        "elapsed_seconds": 0.03,
+        "package": "codex-hepta-operator-acceptance",
+        "name": "sshsig::tests::version_and_reserved_fields_preserve_openssh_compatibility"
+      },
+      {
+        "line": 455,
+        "elapsed_seconds": 0.004,
+        "package": "codex-hepta-operator-acceptance",
+        "name": "tests::read_only_lock_never_creates_missing_state"
+      },
+      {
+        "line": 456,
+        "elapsed_seconds": 0.008,
+        "package": "codex-hepta-operator-acceptance",
+        "name": "tests::final_consumption_at_expiry_creates_no_claim_or_receipt"
+      },
+      {
+        "line": 457,
+        "elapsed_seconds": 0.013,
+        "package": "codex-hepta-operator-acceptance",
+        "name": "tests::exact_replay_returns_same_receipt_and_conflicting_claim_fails"
+      },
+      {
+        "line": 458,
+        "elapsed_seconds": 0.005,
+        "package": "codex-hepta-operator-acceptance",
+        "name": "tests::receipt_repeated_authority_must_match_exact_boundary"
+      },
+      {
+        "line": 459,
+        "elapsed_seconds": 0.009,
+        "package": "codex-hepta-operator-acceptance",
+        "name": "tests::unknown_or_noncanonical_stored_json_is_rejected"
+      },
+      {
+        "line": 460,
+        "elapsed_seconds": 0.005,
+        "package": "codex-hepta-operator-acceptance",
+        "name": "tests::validity_window_is_half_open_and_policy_bounded"
+      },
+      {
+        "line": 461,
+        "elapsed_seconds": 0.018,
+        "package": "codex-hepta-operator-acceptance",
+        "name": "trust::tests::trust_policy_digest_is_external_and_fail_closed"
+      },
+      {
+        "line": 462,
+        "elapsed_seconds": 0.004,
+        "package": "codex-hepta-operator-acceptance",
+        "name": "trust::tests::weak_ed25519_public_key_is_rejected_before_openssh"
+      },
+      {
+        "line": 463,
+        "elapsed_seconds": 0.047,
+        "package": "codex-hepta-operator-acceptance",
+        "name": "trust::tests::trust_policy_pins_store_principal_fingerprint_and_allowed_signers"
+      },
+      {
+        "line": 464,
+        "elapsed_seconds": 0.053,
+        "package": "codex-hepta-operator-acceptance",
+        "name": "trust::tests::sshsig_verifies_only_exact_namespace_against_pinned_policy"
+      },
+      {
+        "line": 465,
+        "elapsed_seconds": 0.157,
+        "package": "codex-hepta-operator-acceptance",
+        "name": "sshsig::tests::native_version_and_reserved_compatibility_matches_real_openssh"
+      }
+    ],
+    "total_pass_rows": 33
+  },
+  "owner_ubuntu_success": {
+    "counts": {
+      "codex-uds": 15,
+      "codex-hepta-matrixd": 31,
+      "codex-hepta-agentd": 242
+    },
+    "cases": [
+      {
+        "line": 352,
+        "elapsed_seconds": 0.003,
+        "package": "codex-uds",
+        "name": "inherited::tests::adopted_listener_uses_original_socket_and_leaves_owner_paths_intact"
+      },
+      {
+        "line": 353,
+        "elapsed_seconds": 0.003,
+        "package": "codex-uds",
+        "name": "inherited::tests::adoption_rejects_connected_socket_before_using_a_path"
+      },
+      {
+        "line": 354,
+        "elapsed_seconds": 0.003,
+        "package": "codex-uds",
+        "name": "inherited::tests::adoption_rejects_other_path_and_nonprivate_node_without_changing_either"
+      },
+      {
+        "line": 355,
+        "elapsed_seconds": 0.003,
+        "package": "codex-uds",
+        "name": "inherited::tests::adoption_rejects_other_socket_families_and_kinds_before_using_a_path"
+      },
+      {
+        "line": 356,
+        "elapsed_seconds": 0.034,
+        "package": "codex-uds",
+        "name": "inherited::tests::adoption_restores_cloexec_before_child_exec"
+      },
+      {
+        "line": 357,
+        "elapsed_seconds": 0.003,
+        "package": "codex-uds",
+        "name": "lib_tests::bound_listener_path_is_stale_socket_path"
+      },
+      {
+        "line": 358,
+        "elapsed_seconds": 0.003,
+        "package": "codex-uds",
+        "name": "lib_tests::peer_identity_gate_accepts_same_user_on_supported_platforms"
+      },
+      {
+        "line": 359,
+        "elapsed_seconds": 0.003,
+        "package": "codex-uds",
+        "name": "lib_tests::prepare_private_socket_directory_creates_directory"
+      },
+      {
+        "line": 360,
+        "elapsed_seconds": 0.003,
+        "package": "codex-uds",
+        "name": "lib_tests::prepare_private_socket_directory_sets_existing_permissions_to_owner_only"
+      },
+      {
+        "line": 361,
+        "elapsed_seconds": 0.003,
+        "package": "codex-uds",
+        "name": "lib_tests::regular_file_path_is_not_stale_socket_path"
+      },
+      {
+        "line": 362,
+        "elapsed_seconds": 0.003,
+        "package": "codex-uds",
+        "name": "lib_tests::stopped_listener_path_can_be_cleaned_and_rebound"
+      },
+      {
+        "line": 363,
+        "elapsed_seconds": 0.003,
+        "package": "codex-uds",
+        "name": "lib_tests::stream_round_trips_data_between_listener_and_client"
+      },
+      {
+        "line": 364,
+        "elapsed_seconds": 0.003,
+        "package": "codex-uds",
+        "name": "owner_local::tests::authenticated_owner_local_stream_round_trips_application_bytes"
+      },
+      {
+        "line": 365,
+        "elapsed_seconds": 0.003,
+        "package": "codex-uds",
+        "name": "owner_local::tests::live_owner_local_listener_cannot_be_replaced"
+      },
+      {
+        "line": 366,
+        "elapsed_seconds": 0.002,
+        "package": "codex-uds",
+        "name": "platform::tests::peer_uid_gate_accepts_only_the_process_owner"
+      },
+      {
+        "line": 2647,
+        "elapsed_seconds": 0.011,
+        "package": "codex-hepta-matrixd",
+        "name": "config::tests::config_binds_one_running_spawn_generation_without_exposing_secrets"
+      },
+      {
+        "line": 2648,
+        "elapsed_seconds": 0.01,
+        "package": "codex-hepta-matrixd",
+        "name": "config::tests::config_rejects_a_generation_that_does_not_own_the_running_agentd"
+      },
+      {
+        "line": 2649,
+        "elapsed_seconds": 0.021,
+        "package": "codex-hepta-matrixd",
+        "name": "control::tests::authoritative_resolved_event_may_win_local_completion_race"
+      },
+      {
+        "line": 2650,
+        "elapsed_seconds": 0.02,
+        "package": "codex-hepta-matrixd",
+        "name": "control::tests::cancel_requires_active_pair_and_duplicate_is_safe"
+      },
+      {
+        "line": 2651,
+        "elapsed_seconds": 0.019,
+        "package": "codex-hepta-matrixd",
+        "name": "control::tests::health_tracks_real_task_state_and_owner_uds_serves_exact_identity"
+      },
+      {
+        "line": 2652,
+        "elapsed_seconds": 0.023,
+        "package": "codex-hepta-matrixd",
+        "name": "control::tests::persisted_resolving_decision_is_the_only_crash_retry"
+      },
+      {
+        "line": 2653,
+        "elapsed_seconds": 0.019,
+        "package": "codex-hepta-matrixd",
+        "name": "control::tests::stale_fence_never_reaches_mutation_transport"
+      },
+      {
+        "line": 2654,
+        "elapsed_seconds": 0.028,
+        "package": "codex-hepta-matrixd",
+        "name": "runner::startup_tests::initial_sync_redaction_commits_before_resume_and_inbox_recovery"
+      },
+      {
+        "line": 2655,
+        "elapsed_seconds": 0.021,
+        "package": "codex-hepta-matrixd",
+        "name": "runner::startup_tests::pending_or_failed_initial_sync_cannot_resume_or_dispatch_old_inbox"
+      },
+      {
+        "line": 2656,
+        "elapsed_seconds": 0.005,
+        "package": "codex-hepta-matrixd",
+        "name": "runner::tests::command_approval_summary_is_typed_safe_bounded_and_does_not_echo_hidden_fields"
+      },
+      {
+        "line": 2657,
+        "elapsed_seconds": 0.004,
+        "package": "codex-hepta-matrixd",
+        "name": "runner::tests::file_approval_reason_without_a_concrete_scope_is_not_actionable"
+      },
+      {
+        "line": 2658,
+        "elapsed_seconds": 0.005,
+        "package": "codex-hepta-matrixd",
+        "name": "runner::tests::file_approval_summary_bounds_multibyte_and_strips_control_and_bidi"
+      },
+      {
+        "line": 2659,
+        "elapsed_seconds": 0.004,
+        "package": "codex-hepta-matrixd",
+        "name": "runner::tests::product_runner_has_one_durable_sync_authority"
+      },
+      {
+        "line": 2660,
+        "elapsed_seconds": 0.055,
+        "package": "codex-hepta-matrixd",
+        "name": "runtime::tests::crash_restart_and_duplicate_event_admit_core_exactly_once"
+      },
+      {
+        "line": 2661,
+        "elapsed_seconds": 0.778,
+        "package": "codex-hepta-matrixd",
+        "name": "runtime::tests::queued_recovery_never_recreates_a_missing_core_record"
+      },
+      {
+        "line": 2662,
+        "elapsed_seconds": 0.228,
+        "package": "codex-hepta-matrixd",
+        "name": "runtime::tests::sdk_mentioned_text_reaches_core_exactly_once"
+      },
+      {
+        "line": 2663,
+        "elapsed_seconds": 0.029,
+        "package": "codex-hepta-matrixd",
+        "name": "runtime::tests::unsupported_room_messages_fail_closed_without_core_admission"
+      },
+      {
+        "line": 2664,
+        "elapsed_seconds": 0.004,
+        "package": "codex-hepta-matrixd",
+        "name": "send_observer::tests::failed_send_is_terminal_and_only_identical_replay_is_idempotent"
+      },
+      {
+        "line": 2665,
+        "elapsed_seconds": 0.004,
+        "package": "codex-hepta-matrixd",
+        "name": "send_observer::tests::lost_ack_keeps_transaction_and_reconciles_to_server_event"
+      },
+      {
+        "line": 2666,
+        "elapsed_seconds": 0.004,
+        "package": "codex-hepta-matrixd",
+        "name": "send_observer::tests::payload_drift_and_transaction_reuse_are_rejected"
+      },
+      {
+        "line": 2667,
+        "elapsed_seconds": 0.004,
+        "package": "codex-hepta-matrixd",
+        "name": "send_observer::tests::redacted_send_cannot_be_resurrected_by_delayed_observations"
+      },
+      {
+        "line": 2668,
+        "elapsed_seconds": 0.004,
+        "package": "codex-hepta-matrixd",
+        "name": "send_observer::tests::redaction_replay_is_idempotent_without_replacing_original_evidence"
+      },
+      {
+        "line": 2669,
+        "elapsed_seconds": 0.004,
+        "package": "codex-hepta-matrixd",
+        "name": "send_observer::tests::successful_send_replay_binds_outcome_event_and_terminal_observation"
+      },
+      {
+        "line": 2670,
+        "elapsed_seconds": 0.004,
+        "package": "codex-hepta-matrixd",
+        "name": "tests::durable_thread_identity_rejects_a_different_materialized_thread"
+      },
+      {
+        "line": 2671,
+        "elapsed_seconds": 0.004,
+        "package": "codex-hepta-matrixd",
+        "name": "tests::durable_thread_identity_survives_unmaterialized_thread_list"
+      },
+      {
+        "line": 2672,
+        "elapsed_seconds": 0.004,
+        "package": "codex-hepta-matrixd",
+        "name": "tests::first_message_recovers_thread_after_crash_without_second_thread_start"
+      },
+      {
+        "line": 2673,
+        "elapsed_seconds": 0.004,
+        "package": "codex-hepta-matrixd",
+        "name": "tests::queued_and_persisted_reconcile_outcomes_map_without_client_side_scans"
+      },
+      {
+        "line": 2674,
+        "elapsed_seconds": 0.004,
+        "package": "codex-hepta-matrixd",
+        "name": "tests::reconcile_only_is_forwarded_and_missing_or_cancelled_never_resurrects"
+      },
+      {
+        "line": 2675,
+        "elapsed_seconds": 0.004,
+        "package": "codex-hepta-matrixd",
+        "name": "tests::reconcile_response_identity_and_payload_drift_fail_closed"
+      },
+      {
+        "line": 2676,
+        "elapsed_seconds": 0.004,
+        "package": "codex-hepta-matrixd",
+        "name": "tests::remote_reconcile_mapping_preserves_all_typed_outcomes"
+      },
+      {
+        "line": 2677,
+        "elapsed_seconds": 0.004,
+        "package": "codex-hepta-matrixd",
+        "name": "tests::submission_uses_one_atomic_reconcile_rpc_and_revalidates_the_response"
+      },
+      {
+        "line": 3149,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "app_runtime::tests::agentd_forces_explicit_cognitive_write_profile_state"
+      },
+      {
+        "line": 3150,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "app_runtime::tests::agentd_forces_hepta_turn_recovery_on"
+      },
+      {
+        "line": 3151,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "app_runtime::tests::manifest_queue_capacity_reaches_app_server_runtime_options_exactly"
+      },
+      {
+        "line": 3152,
+        "elapsed_seconds": 0.184,
+        "package": "codex-hepta-agentd",
+        "name": "authbus_dispatch::tests::abandoned_first_claim_without_admission_is_quarantined_after_lookup_missing"
+      },
+      {
+        "line": 3153,
+        "elapsed_seconds": 1.308,
+        "package": "codex-hepta-agentd",
+        "name": "authbus_dispatch::tests::lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt"
+      },
+      {
+        "line": 3154,
+        "elapsed_seconds": 0.168,
+        "package": "codex-hepta-agentd",
+        "name": "authbus_dispatch::tests::matching_receipt_metadata_with_different_queue_input_never_acknowledges"
+      },
+      {
+        "line": 3155,
+        "elapsed_seconds": 0.37,
+        "package": "codex-hepta-agentd",
+        "name": "authbus_dispatch::tests::ready_generation_and_owner_private_trust_are_required_before_admission"
+      },
+      {
+        "line": 3156,
+        "elapsed_seconds": 0.167,
+        "package": "codex-hepta-agentd",
+        "name": "authbus_dispatch::tests::revocation_during_queue_request_prevents_success_ack"
+      },
+      {
+        "line": 3157,
+        "elapsed_seconds": 0.161,
+        "package": "codex-hepta-agentd",
+        "name": "automation::service_tests::cancellation_preserves_in_flight_queue_ack_before_scheduler_exit"
+      },
+      {
+        "line": 3158,
+        "elapsed_seconds": 0.045,
+        "package": "codex-hepta-agentd",
+        "name": "automation::service_tests::process_shutdown_does_not_turn_into_durable_timer_retirement"
+      },
+      {
+        "line": 3159,
+        "elapsed_seconds": 2.057,
+        "package": "codex-hepta-agentd",
+        "name": "automation::service_tests::production_constructor_keeps_retired_timer_absent_after_reopen"
+      },
+      {
+        "line": 3160,
+        "elapsed_seconds": 0.049,
+        "package": "codex-hepta-agentd",
+        "name": "automation::service_tests::production_constructor_never_resumes_a_draining_owner"
+      },
+      {
+        "line": 3161,
+        "elapsed_seconds": 0.047,
+        "package": "codex-hepta-agentd",
+        "name": "automation::service_tests::production_constructor_rejects_mismatched_identity_before_spawn"
+      },
+      {
+        "line": 3162,
+        "elapsed_seconds": 2.059,
+        "package": "codex-hepta-agentd",
+        "name": "automation::service_tests::production_service_retirement_drains_owner_then_unpublishes_only_automation"
+      },
+      {
+        "line": 3163,
+        "elapsed_seconds": 2.072,
+        "package": "codex-hepta-agentd",
+        "name": "automation::service_tests::unknown_owner_dispatch_prevents_retirement_and_replacement_after_reopen"
+      },
+      {
+        "line": 3164,
+        "elapsed_seconds": 0.008,
+        "package": "codex-hepta-agentd",
+        "name": "automation::tests::automation_reconcile_payload_uses_stable_client_identity"
+      },
+      {
+        "line": 3165,
+        "elapsed_seconds": 0.017,
+        "package": "codex-hepta-agentd",
+        "name": "automation::tests::dispatch_retry_budget_is_bounded_and_progress_resets_it"
+      },
+      {
+        "line": 3166,
+        "elapsed_seconds": 0.008,
+        "package": "codex-hepta-agentd",
+        "name": "automation::tests::queue_failures_after_admission_seam_are_never_dispatch_retries"
+      },
+      {
+        "line": 3167,
+        "elapsed_seconds": 0.141,
+        "package": "codex-hepta-agentd",
+        "name": "automation_effect_host::tests::host_dispatches_exact_wire_payload_once"
+      },
+      {
+        "line": 3168,
+        "elapsed_seconds": 0.038,
+        "package": "codex-hepta-agentd",
+        "name": "browser_servo::tests::challenge_request_digest_must_match_signed_final_use_binding"
+      },
+      {
+        "line": 3169,
+        "elapsed_seconds": 0.069,
+        "package": "codex-hepta-agentd",
+        "name": "browser_servo::tests::final_use_fence_covers_exactly_the_browser_local_dispatch_boundary"
+      },
+      {
+        "line": 3170,
+        "elapsed_seconds": 0.009,
+        "package": "codex-hepta-agentd",
+        "name": "browser_servo::tests::non_effect_calls_never_enter_final_use_authority"
+      },
+      {
+        "line": 3171,
+        "elapsed_seconds": 0.116,
+        "package": "codex-hepta-agentd",
+        "name": "cognitive_context::tests::budget::byte_cut_cannot_hide_an_unsupported_candidate_from_whole_batch_abstention"
+      },
+      {
+        "line": 3172,
+        "elapsed_seconds": 0.126,
+        "package": "codex-hepta-agentd",
+        "name": "cognitive_context::tests::budget::learned_ranker_can_select_a_candidate_outside_legacy_top_four"
+      },
+      {
+        "line": 3173,
+        "elapsed_seconds": 0.125,
+        "package": "codex-hepta-agentd",
+        "name": "cognitive_context::tests::budget::learned_winner_survives_legacy_byte_cut_and_response_stays_bounded"
+      },
+      {
+        "line": 3174,
+        "elapsed_seconds": 0.115,
+        "package": "codex-hepta-agentd",
+        "name": "cognitive_context::tests::budget::oversized_learned_winner_does_not_consume_the_only_result_slot"
+      },
+      {
+        "line": 3175,
+        "elapsed_seconds": 0.078,
+        "package": "codex-hepta-agentd",
+        "name": "cognitive_context::tests::context_reads_real_owner_content_and_removes_committed_tombstones"
+      },
+      {
+        "line": 3176,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "cognitive_context::tests::encoded_read_budget_unavailability_is_local_not_store_failure"
+      },
+      {
+        "line": 3177,
+        "elapsed_seconds": 0.079,
+        "package": "codex-hepta-agentd",
+        "name": "cognitive_context::tests::final_use_binds_complete_owner_cut_not_only_memory_snapshot"
+      },
+      {
+        "line": 3178,
+        "elapsed_seconds": 0.079,
+        "package": "codex-hepta-agentd",
+        "name": "cognitive_context::tests::hnmf::changed_hnmf_context_before_publication_fails_closed"
+      },
+      {
+        "line": 3179,
+        "elapsed_seconds": 0.08,
+        "package": "codex-hepta-agentd",
+        "name": "cognitive_context::tests::hnmf::current_hnmf_context_filters_owner_candidates_before_delivery"
+      },
+      {
+        "line": 3180,
+        "elapsed_seconds": 0.1,
+        "package": "codex-hepta-agentd",
+        "name": "cognitive_context::tests::hnmf::final_use_revalidation_rejects_changed_hnmf_context"
+      },
+      {
+        "line": 3181,
+        "elapsed_seconds": 0.038,
+        "package": "codex-hepta-agentd",
+        "name": "cognitive_ranker::tests::current_loaded_model_changes_read_order_and_abstains_on_unseen_or_corrected_records"
+      },
+      {
+        "line": 3182,
+        "elapsed_seconds": 0.032,
+        "package": "codex-hepta-agentd",
+        "name": "cognitive_ranker::tests::missing_or_revoked_current_witness_closes_ranker_without_baseline_fallback"
+      },
+      {
+        "line": 3183,
+        "elapsed_seconds": 0.047,
+        "package": "codex-hepta-agentd",
+        "name": "cognitive_ranker::tests::new_generation_candidate_changes_behavior_and_explicit_predecessor_reload_restores_it"
+      },
+      {
+        "line": 3184,
+        "elapsed_seconds": 0.181,
+        "package": "codex-hepta-agentd",
+        "name": "cognitive_ranker::tests::running_socket_uses_launch_bound_model_and_isolates_ranker_revocation"
+      },
+      {
+        "line": 3185,
+        "elapsed_seconds": 0.128,
+        "package": "codex-hepta-agentd",
+        "name": "cognitive_ranker::tests::sqlite_read_consumer_uses_fitted_order_before_limit_and_rechecks_deletion"
+      },
+      {
+        "line": 3186,
+        "elapsed_seconds": 0.018,
+        "package": "codex-hepta-agentd",
+        "name": "cognitive_retrieval_learning::tests::different_rpc_ids_create_distinct_assignment_records"
+      },
+      {
+        "line": 3187,
+        "elapsed_seconds": 0.052,
+        "package": "codex-hepta-agentd",
+        "name": "cognitive_retrieval_learning::tests::historical_assignment_retry_keeps_original_predecessor_after_later_appends"
+      },
+      {
+        "line": 3188,
+        "elapsed_seconds": 0.018,
+        "package": "codex-hepta-agentd",
+        "name": "cognitive_retrieval_learning::tests::indexed_historical_identity_does_not_accept_changed_assignment"
+      },
+      {
+        "line": 3189,
+        "elapsed_seconds": 0.022,
+        "package": "codex-hepta-agentd",
+        "name": "cognitive_retrieval_learning::tests::same_rpc_and_observation_replays_idempotently"
+      },
+      {
+        "line": 3190,
+        "elapsed_seconds": 0.019,
+        "package": "codex-hepta-agentd",
+        "name": "cognitive_retrieval_learning::tests::same_rpc_with_different_assignment_is_identity_conflict"
+      },
+      {
+        "line": 3191,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "config::tests::cognitive_retrieval_process_profile_is_explicit_and_fail_closed"
+      },
+      {
+        "line": 3192,
+        "elapsed_seconds": 0.014,
+        "package": "codex-hepta-agentd",
+        "name": "config::tests::config_binds_exact_registered_agent_roots_and_workspace"
+      },
+      {
+        "line": 3193,
+        "elapsed_seconds": 0.015,
+        "package": "codex-hepta-agentd",
+        "name": "control::native_tests::ordinary_control_preserves_server_identity_and_launch_generation"
+      },
+      {
+        "line": 3194,
+        "elapsed_seconds": 0.016,
+        "package": "codex-hepta-agentd",
+        "name": "control::native_tests::saturated_ordinary_control_returns_original_overload_and_recovers"
+      },
+      {
+        "line": 3195,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "control::peer_auth_tests::accept_path_authenticates_before_consuming_a_permit"
+      },
+      {
+        "line": 3196,
+        "elapsed_seconds": 0.008,
+        "package": "codex-hepta-agentd",
+        "name": "control::peer_auth_tests::control_peer_check_runs_before_control_frames"
+      },
+      {
+        "line": 3197,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "event_buffer::tests::bounded_buffer_reports_cursor_gap_and_resumes"
+      },
+      {
+        "line": 3198,
+        "elapsed_seconds": 0.009,
+        "package": "codex-hepta-agentd",
+        "name": "final_use_issuer::tests::concurrent_requests_do_not_interleave_and_complete_denial_can_be_observed"
+      },
+      {
+        "line": 3199,
+        "elapsed_seconds": 0.009,
+        "package": "codex-hepta-agentd",
+        "name": "final_use_issuer::tests::malformed_or_wrong_binding_responses_fence_the_channel_without_retry"
+      },
+      {
+        "line": 3200,
+        "elapsed_seconds": 0.024,
+        "package": "codex-hepta-agentd",
+        "name": "final_use_issuer::tests::original_authority_verifies_grants_without_trusting_the_provider_head"
+      },
+      {
+        "line": 3201,
+        "elapsed_seconds": 0.008,
+        "package": "codex-hepta-agentd",
+        "name": "final_use_issuer::tests::oversized_and_empty_frames_are_rejected_without_reading_a_body"
+      },
+      {
+        "line": 3202,
+        "elapsed_seconds": 0.068,
+        "package": "codex-hepta-agentd",
+        "name": "final_use_issuer::tests::total_deadline_is_not_extended_by_partial_response_progress"
+      },
+      {
+        "line": 3203,
+        "elapsed_seconds": 0.008,
+        "package": "codex-hepta-agentd",
+        "name": "final_use_issuer::tests::truncated_response_closes_the_channel_and_oversized_binding_writes_nothing"
+      },
+      {
+        "line": 3204,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "final_use_issuer::tests::wrong_peer_and_unbounded_timeouts_fail_before_any_request"
+      },
+      {
+        "line": 3205,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "grant_provider_worker::tests::cancelled_waiter_does_not_release_capacity_held_by_the_original_worker"
+      },
+      {
+        "line": 3206,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "hos2_device::tests::changed_boot_and_inaccessible_history_remain_unavailable"
+      },
+      {
+        "line": 3207,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "hos2_device::tests::conflict_does_not_query_or_commit_the_previous_request_using_the_same_d"
+      },
+      {
+        "line": 3208,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "hos2_device::tests::known_request_refusals_cannot_query_an_older_applied_delivery"
+      },
+      {
+        "line": 3209,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "hos2_device::tests::malformed_success_is_a_contradiction_and_lost_transport_reply_remains_unknown"
+      },
+      {
+        "line": 3210,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "hos2_device::tests::native_usage_requires_an_existing_manager_or_recovery_observe_handle"
+      },
+      {
+        "line": 3211,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "hos2_device::tests::production_owner_request_and_a02_wire_vectors_match"
+      },
+      {
+        "line": 3212,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "hos2_device::tests::read_usage_accepts_boot_origin_and_full_unsigned_observation_range"
+      },
+      {
+        "line": 3213,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "hos2_device::tests::read_usage_correlates_observer_handle_without_consuming_delivery_sequence"
+      },
+      {
+        "line": 3214,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "hos2_device::tests::read_usage_refusal_or_lost_reply_never_becomes_a_snapshot_or_retry"
+      },
+      {
+        "line": 3215,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "hos2_device::tests::read_usage_rejects_foreign_or_malformed_response_headers"
+      },
+      {
+        "line": 3216,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "hos2_device::tests::read_usage_rejects_impossible_single_cpu_snapshots"
+      },
+      {
+        "line": 3217,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "hos2_device::tests::recovery_observes_original_manager_namespace_without_reinstalling_it"
+      },
+      {
+        "line": 3218,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "hos2_device::tests::successful_acknowledgement_matches_all_four_shared_history_values"
+      },
+      {
+        "line": 3219,
+        "elapsed_seconds": 0.072,
+        "package": "codex-hepta-agentd",
+        "name": "intelligence_product::evaluation_tests::evaluator_key_epoch_expiry_and_signed_metrics_are_not_self_asserted"
+      },
+      {
+        "line": 3220,
+        "elapsed_seconds": 0.035,
+        "package": "codex-hepta-agentd",
+        "name": "intelligence_product::evaluation_tests::signed_candidate_passes_only_with_bound_owner_run_context_and_root_trust"
+      },
+      {
+        "line": 3221,
+        "elapsed_seconds": 0.053,
+        "package": "codex-hepta-agentd",
+        "name": "intelligence_product::evaluation_tests::signed_use_rejects_context_snapshot_candidate_set_and_run_substitution"
+      },
+      {
+        "line": 3222,
+        "elapsed_seconds": 0.01,
+        "package": "codex-hepta-agentd",
+        "name": "intelligence_product::tests::aborted_owner_work_retains_its_budget_until_computation_finishes"
+      },
+      {
+        "line": 3223,
+        "elapsed_seconds": 0.031,
+        "package": "codex-hepta-agentd",
+        "name": "intelligence_product::tests::missing_current_owner_fails_before_product_use"
+      },
+      {
+        "line": 3224,
+        "elapsed_seconds": 0.234,
+        "package": "codex-hepta-agentd",
+        "name": "intelligence_product::tests::signed::signed_evaluation_completes_existing_owner_preparation_and_run_admission"
+      },
+      {
+        "line": 3225,
+        "elapsed_seconds": 0.12,
+        "package": "codex-hepta-agentd",
+        "name": "intelligence_product::tests::signed::signed_input_cannot_install_host_trust_or_change_actual_context"
+      },
+      {
+        "line": 3226,
+        "elapsed_seconds": 0.017,
+        "package": "codex-hepta-agentd",
+        "name": "intelligence_product::tests::total_budget_timeout_never_creates_a_dispatch_or_ledger_capability"
+      },
+      {
+        "line": 3227,
+        "elapsed_seconds": 0.018,
+        "package": "codex-hepta-agentd",
+        "name": "intelligence_product::tests::unsigned_currentness_substitution_fails_before_owner_use"
+      },
+      {
+        "line": 3228,
+        "elapsed_seconds": 0.008,
+        "package": "codex-hepta-agentd",
+        "name": "intuition_policy::tests::host_identity_and_owner_pins_fail_closed_before_policy_admission"
+      },
+      {
+        "line": 3229,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "lane_b_runtime::tests::active_run_capacity_is_bound_by_runtime_composition"
+      },
+      {
+        "line": 3230,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "lane_b_runtime::tests::cancellation_preserves_the_dispatch_boundary_and_reason"
+      },
+      {
+        "line": 3231,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "lane_b_runtime::tests::drain_closes_admission_and_preserves_dispatch_uncertainty"
+      },
+      {
+        "line": 3232,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "lane_b_runtime::tests::freezes_the_complete_run_tuple_before_context_attachment"
+      },
+      {
+        "line": 3233,
+        "elapsed_seconds": 0.019,
+        "package": "codex-hepta-agentd",
+        "name": "lane_b_runtime::tests::indeterminate_outcomes_reconcile_without_redispatch_or_leaked_capacity"
+      },
+      {
+        "line": 3234,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "lane_b_runtime::tests::lifecycle_deadline_is_enforced_after_admission"
+      },
+      {
+        "line": 3235,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "lane_b_runtime::tests::operation_identity_is_idempotent_only_for_equal_semantics"
+      },
+      {
+        "line": 3236,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "lane_b_runtime::tests::recovery_rehydrates_only_an_indeterminate_non_redispatchable_run"
+      },
+      {
+        "line": 3237,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "lane_b_runtime::tests::revalidated_durable_explicit_abstain_never_enters_runtime_admission"
+      },
+      {
+        "line": 3238,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "lane_b_runtime::tests::revalidated_durable_run_start_uses_admitted_source_identity_and_exact_fence"
+      },
+      {
+        "line": 3239,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "lane_b_runtime::tests::terminal_observation_is_idempotent_and_only_closed_runs_can_be_removed"
+      },
+      {
+        "line": 3240,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "neuron_runtime::tests::agentd_neuron_owner_is_a_compiled_product_surface"
+      },
+      {
+        "line": 3241,
+        "elapsed_seconds": 0.012,
+        "package": "codex-hepta-agentd",
+        "name": "notes_bootstrap::tests::absent_multiple_and_truncated_descriptor_sets_are_rejected_and_closed"
+      },
+      {
+        "line": 3242,
+        "elapsed_seconds": 0.008,
+        "package": "codex-hepta-agentd",
+        "name": "notes_bootstrap::tests::bootstrap_golden_transfers_two_ordered_cloexec_endpoints_and_correlates_only_registration"
+      },
+      {
+        "line": 3243,
+        "elapsed_seconds": 0.008,
+        "package": "codex-hepta-agentd",
+        "name": "notes_bootstrap::tests::datagram_or_named_effect_descriptor_cannot_be_attached"
+      },
+      {
+        "line": 3244,
+        "elapsed_seconds": 0.008,
+        "package": "codex-hepta-agentd",
+        "name": "notes_bootstrap::tests::duplicate_unknown_wrong_identity_and_oversized_offers_close_received_descriptor"
+      },
+      {
+        "line": 3245,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "notes_bootstrap::tests::expired_deadline_cannot_receive_an_offer_or_emit_an_ack"
+      },
+      {
+        "line": 3246,
+        "elapsed_seconds": 0.008,
+        "package": "codex-hepta-agentd",
+        "name": "notes_channel::tests::independent_recovery_survives_effect_loss_and_filters_late_datagrams"
+      },
+      {
+        "line": 3247,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "notes_channel::tests::inherited_socketpair_preserves_exact_frame_bytes"
+      },
+      {
+        "line": 3248,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "notes_channel::tests::invalid_bound_does_not_write_and_explicit_invalidation_is_permanent"
+      },
+      {
+        "line": 3249,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "notes_channel::tests::lost_reply_permanently_disables_further_effect_entry"
+      },
+      {
+        "line": 3250,
+        "elapsed_seconds": 2.013,
+        "package": "codex-hepta-agentd",
+        "name": "notes_channel::tests::lost_retirement_ack_can_retry_the_exact_datagram_and_cannot_send_effects"
+      },
+      {
+        "line": 3251,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "notes_channel::tests::malformed_reply_prefix_closes_stream_without_accepting_a_later_reply"
+      },
+      {
+        "line": 3252,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "notes_channel::tests::named_socket_is_not_a_bootstrap_channel"
+      },
+      {
+        "line": 3253,
+        "elapsed_seconds": 0.009,
+        "package": "codex-hepta-agentd",
+        "name": "objective_runtime::tests::durable_authentication_frontier_allows_only_exact_replay"
+      },
+      {
+        "line": 3254,
+        "elapsed_seconds": 0.009,
+        "package": "codex-hepta-agentd",
+        "name": "objective_runtime::tests::history::abstention_and_conflict_remain_distinct_historical_publications"
+      },
+      {
+        "line": 3255,
+        "elapsed_seconds": 0.009,
+        "package": "codex-hepta-agentd",
+        "name": "objective_runtime::tests::history::expired_historical_request_matches_after_reopen_without_changing_journal"
+      },
+      {
+        "line": 3256,
+        "elapsed_seconds": 0.009,
+        "package": "codex-hepta-agentd",
+        "name": "objective_runtime::tests::history::history_requires_every_retained_authentication_and_body_field"
+      },
+      {
+        "line": 3257,
+        "elapsed_seconds": 0.009,
+        "package": "codex-hepta-agentd",
+        "name": "objective_runtime::tests::history::trusted_anchor_must_exist_match_and_cover_publication"
+      },
+      {
+        "line": 3258,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "objective_runtime::tests::legacy_record_without_protocol_identity_is_rejected_at_final_use"
+      },
+      {
+        "line": 3259,
+        "elapsed_seconds": 0.025,
+        "package": "codex-hepta-agentd",
+        "name": "objective_runtime::tests::recovered_authentication_rejects_revoked_and_stale_owner_trust"
+      },
+      {
+        "line": 3260,
+        "elapsed_seconds": 0.008,
+        "package": "codex-hepta-agentd",
+        "name": "objective_runtime::tests::runtime_consumes_compiled_record_but_not_explicit_abstain"
+      },
+      {
+        "line": 3261,
+        "elapsed_seconds": 0.008,
+        "package": "codex-hepta-agentd",
+        "name": "plasticity_anchor_journal::tests::journal_never_discards_a_complete_invalid_frame"
+      },
+      {
+        "line": 3262,
+        "elapsed_seconds": 0.008,
+        "package": "codex-hepta-agentd",
+        "name": "plasticity_anchor_journal::tests::journal_preserves_committed_anchor_across_reopen_and_generation_rollover"
+      },
+      {
+        "line": 3263,
+        "elapsed_seconds": 0.008,
+        "package": "codex-hepta-agentd",
+        "name": "plasticity_anchor_journal::tests::journal_repairs_only_an_incomplete_crash_tail"
+      },
+      {
+        "line": 3264,
+        "elapsed_seconds": 0.008,
+        "package": "codex-hepta-agentd",
+        "name": "plasticity_host::tests::anchor_store_fence_is_monotonic_and_reopen_preserves_acknowledged_state"
+      },
+      {
+        "line": 3265,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "plasticity_host::tests::owner_evidence_policy_rejects_authenticated_wrong_owner"
+      },
+      {
+        "line": 3266,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "plasticity_host::tests::owner_evidence_receipt_is_context_bound"
+      },
+      {
+        "line": 3267,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "plasticity_host::tests::owner_evidence_rejects_context_substitution"
+      },
+      {
+        "line": 3268,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "plasticity_host::tests::owner_evidence_rejects_parameter_signal_value_substitution"
+      },
+      {
+        "line": 3269,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "plasticity_host::tests::owner_evidence_set_includes_mutation_policy_and_canonical_kinds"
+      },
+      {
+        "line": 3270,
+        "elapsed_seconds": 0.009,
+        "package": "codex-hepta-agentd",
+        "name": "plasticity_host::tests::real_append_ack_crash_then_registry_rollback_is_rejected_on_restart"
+      },
+      {
+        "line": 3271,
+        "elapsed_seconds": 0.009,
+        "package": "codex-hepta-agentd",
+        "name": "plasticity_host::tests::retained_external_anchor_blocks_rolled_back_registry_reopen"
+      },
+      {
+        "line": 3272,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "plasticity_owner_evidence::tests::concrete_adapters_reject_rollback_frontiers_and_missing_dynamic_owner"
+      },
+      {
+        "line": 3273,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "plasticity_owner_evidence::tests::concrete_dataset_and_policy_adapters_bind_live_frontiers"
+      },
+      {
+        "line": 3274,
+        "elapsed_seconds": 0.008,
+        "package": "codex-hepta-agentd",
+        "name": "plasticity_owner_evidence::tests::dynamic_owner_adapters_bind_ndu_neuron_broadcast_and_exact_signal_values"
+      },
+      {
+        "line": 3275,
+        "elapsed_seconds": 0.009,
+        "package": "codex-hepta-agentd",
+        "name": "plasticity_owner_evidence::tests::dynamic_owner_adapters_reject_ndu_rollback_and_unavailable_neuron_owner"
+      },
+      {
+        "line": 3276,
+        "elapsed_seconds": 0.008,
+        "package": "codex-hepta-agentd",
+        "name": "plasticity_owner_evidence::tests::dynamic_owner_adapters_reject_stale_wrong_owner_and_value_substitution"
+      },
+      {
+        "line": 3277,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "plasticity_process_bootstrap::tests::descriptor_digest_rejects_byte_substitution"
+      },
+      {
+        "line": 3278,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "plasticity_process_bootstrap::tests::mutable_owner_hardlink_alias_is_rejected"
+      },
+      {
+        "line": 3279,
+        "elapsed_seconds": 0.104,
+        "package": "codex-hepta-agentd",
+        "name": "plasticity_runtime::lifetime_tests::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently"
+      },
+      {
+        "line": 3280,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "plasticity_runtime::tests::runtime_queue_capacity_is_bounded"
+      },
+      {
+        "line": 3281,
+        "elapsed_seconds": 0.029,
+        "package": "codex-hepta-agentd",
+        "name": "production_authority::tests::expired_revoked_and_wrong_epoch_grants_never_reach_nonce_admission"
+      },
+      {
+        "line": 3282,
+        "elapsed_seconds": 0.009,
+        "package": "codex-hepta-agentd",
+        "name": "production_authority::tests::external_frontier_mismatch_is_not_repaired_from_the_local_directory"
+      },
+      {
+        "line": 3283,
+        "elapsed_seconds": 0.008,
+        "package": "codex-hepta-agentd",
+        "name": "production_authority::tests::missing_clock_keyring_or_external_frontier_has_no_compatibility_fallback"
+      },
+      {
+        "line": 3284,
+        "elapsed_seconds": 0.022,
+        "package": "codex-hepta-agentd",
+        "name": "production_authority::tests::original_authority_uses_the_injected_clock_keyring_and_external_cas"
+      },
+      {
+        "line": 3285,
+        "elapsed_seconds": 0.023,
+        "package": "codex-hepta-agentd",
+        "name": "production_authority::tests::rejected_keyring_drift_preserves_original_durable_claims"
+      },
+      {
+        "line": 3286,
+        "elapsed_seconds": 0.679,
+        "package": "codex-hepta-agentd",
+        "name": "production_composition::notes_tests::attached_ack_followed_by_live_refusal_returns_no_identity_and_closes_target"
+      },
+      {
+        "line": 3287,
+        "elapsed_seconds": 0.74,
+        "package": "codex-hepta-agentd",
+        "name": "production_composition::notes_tests::attached_notes_ack_then_checkpoint_refusal_publishes_no_host_and_closes_target"
+      },
+      {
+        "line": 3288,
+        "elapsed_seconds": 0.517,
+        "package": "codex-hepta-agentd",
+        "name": "production_composition::notes_tests::malformed_notes_descriptors_or_identity_publish_neither_host"
+      },
+      {
+        "line": 3289,
+        "elapsed_seconds": 0.203,
+        "package": "codex-hepta-agentd",
+        "name": "production_composition::notes_tests::notes_independent_frontier_refusal_does_not_publish_or_read_handoff"
+      },
+      {
+        "line": 3290,
+        "elapsed_seconds": 0.269,
+        "package": "codex-hepta-agentd",
+        "name": "production_composition::notes_tests::original_notes_offer_ack_returns_identity_only_after_both_handles_install"
+      },
+      {
+        "line": 3291,
+        "elapsed_seconds": 0.205,
+        "package": "codex-hepta-agentd",
+        "name": "production_composition::notes_tests::unavailable_original_notes_ack_does_not_publish_or_return_identity"
+      },
+      {
+        "line": 3292,
+        "elapsed_seconds": 0.31,
+        "package": "codex-hepta-agentd",
+        "name": "production_composition::objective_control_tests::a_multiline_original_is_rejected_before_retention_in_the_line_framed_profile"
+      },
+      {
+        "line": 3293,
+        "elapsed_seconds": 0.311,
+        "package": "codex-hepta-agentd",
+        "name": "production_composition::objective_control_tests::actual_kernel_peer_mismatch_cannot_write_a_control_frame"
+      },
+      {
+        "line": 3294,
+        "elapsed_seconds": 0.285,
+        "package": "codex-hepta-agentd",
+        "name": "production_composition::objective_control_tests::closing_original_window_retires_callbacks_before_retention_or_transport"
+      },
+      {
+        "line": 3295,
+        "elapsed_seconds": 0.39,
+        "package": "codex-hepta-agentd",
+        "name": "production_composition::objective_control_tests::local_cancel_recovers_permanent_fence_without_a_network_request"
+      },
+      {
+        "line": 3296,
+        "elapsed_seconds": 0.548,
+        "package": "codex-hepta-agentd",
+        "name": "production_composition::objective_control_tests::original_checkpoint_refusal_prevents_transport_and_recovery_keeps_unknown"
+      },
+      {
+        "line": 3297,
+        "elapsed_seconds": 0.588,
+        "package": "codex-hepta-agentd",
+        "name": "production_composition::objective_control_tests::original_sender_reaches_real_control_admission_history_and_cancellation_once"
+      },
+      {
+        "line": 3298,
+        "elapsed_seconds": 0.401,
+        "package": "codex-hepta-agentd",
+        "name": "production_composition::objective_control_tests::real_control_lost_ack_recovers_exact_admission_without_replaying_submission"
+      },
+      {
+        "line": 3299,
+        "elapsed_seconds": 0.303,
+        "package": "codex-hepta-agentd",
+        "name": "production_composition::objective_sender_tests::installed_original_objective_sender_reuses_same_writer_and_live_verifier"
+      },
+      {
+        "line": 3300,
+        "elapsed_seconds": 0.099,
+        "package": "codex-hepta-agentd",
+        "name": "production_composition::objective_sender_tests::retained_signed_body_hash_matches_original_agentd_wire_projection"
+      },
+      {
+        "line": 3301,
+        "elapsed_seconds": 0.149,
+        "package": "codex-hepta-agentd",
+        "name": "production_composition::objective_sender_tests::uninstalled_original_objective_sender_refuses_without_a_new_owner"
+      },
+      {
+        "line": 3302,
+        "elapsed_seconds": 1.352,
+        "package": "codex-hepta-agentd",
+        "name": "production_composition::tests::checkpoint_failures_and_post_ack_live_refusals_never_install_recovered_hosts"
+      },
+      {
+        "line": 3303,
+        "elapsed_seconds": 0.455,
+        "package": "codex-hepta-agentd",
+        "name": "production_composition::tests::final_metadata_callback_cannot_expire_authority_before_atomic_install"
+      },
+      {
+        "line": 3304,
+        "elapsed_seconds": 0.317,
+        "package": "codex-hepta-agentd",
+        "name": "production_composition::tests::frontier_and_current_cut_refusals_leave_neither_host_registered"
+      },
+      {
+        "line": 3305,
+        "elapsed_seconds": 0.304,
+        "package": "codex-hepta-agentd",
+        "name": "production_composition::tests::installed_original_writer_keeps_the_protected_clock_and_original_verifier_live"
+      },
+      {
+        "line": 3306,
+        "elapsed_seconds": 0.216,
+        "package": "codex-hepta-agentd",
+        "name": "production_composition::tests::invalid_checkpoint_deadline_refuses_before_consulting_external_inputs"
+      },
+      {
+        "line": 3307,
+        "elapsed_seconds": 0.099,
+        "package": "codex-hepta-agentd",
+        "name": "production_composition::tests::issuer_peer_refusal_leaves_neither_host_registered"
+      },
+      {
+        "line": 3308,
+        "elapsed_seconds": 0.301,
+        "package": "codex-hepta-agentd",
+        "name": "production_composition::tests::original_live_verifier_and_protected_clock_failures_during_recovery_do_not_install"
+      },
+      {
+        "line": 3309,
+        "elapsed_seconds": 0.201,
+        "package": "codex-hepta-agentd",
+        "name": "production_composition::tests::revoked_cut_and_initial_expiry_do_not_open_the_protected_owner"
+      },
+      {
+        "line": 3310,
+        "elapsed_seconds": 0.258,
+        "package": "codex-hepta-agentd",
+        "name": "production_composition::tests::success_keeps_one_original_writer_and_repeat_assembly_touches_no_inputs"
+      },
+      {
+        "line": 3311,
+        "elapsed_seconds": 0.016,
+        "package": "codex-hepta-agentd",
+        "name": "prompt_runtime::tests::dispatch_without_terminal_reopens_as_unknown_and_blocks_blind_retry"
+      },
+      {
+        "line": 3312,
+        "elapsed_seconds": 0.008,
+        "package": "codex-hepta-agentd",
+        "name": "prompt_runtime::tests::final_delivered_terminal_releases_staged_turn"
+      },
+      {
+        "line": 3313,
+        "elapsed_seconds": 0.011,
+        "package": "codex-hepta-agentd",
+        "name": "prompt_runtime::tests::indeterminate_terminal_reopens_blocked_and_reconciles_monotonically"
+      },
+      {
+        "line": 3314,
+        "elapsed_seconds": 0.033,
+        "package": "codex-hepta-agentd",
+        "name": "prompt_runtime::tests::named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host"
+      },
+      {
+        "line": 3315,
+        "elapsed_seconds": 0.008,
+        "package": "codex-hepta-agentd",
+        "name": "prompt_runtime::tests::non_dispatch_terminal_is_idempotent_and_retains_stage_for_retry"
+      },
+      {
+        "line": 3316,
+        "elapsed_seconds": 0.012,
+        "package": "codex-hepta-agentd",
+        "name": "prompt_runtime::tests::not_dispatched_retry_then_final_delivery_reopens_without_stale_stage_requirement"
+      },
+      {
+        "line": 3317,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "prompt_runtime::tests::owner_remains_send_sync_with_fault_injection"
+      },
+      {
+        "line": 3318,
+        "elapsed_seconds": 0.01,
+        "package": "codex-hepta-agentd",
+        "name": "prompt_runtime::tests::post_rename_ack_loss_poison_reopens_to_dispatch_claim_not_absent"
+      },
+      {
+        "line": 3319,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "prompt_runtime::tests::staged_attachment_is_bound_to_exact_thread_and_turn"
+      },
+      {
+        "line": 3320,
+        "elapsed_seconds": 5.349,
+        "package": "codex-hepta-agentd",
+        "name": "runtime::hos2_recovery_tests::actual_reconciler_asks_original_issuer_for_same_k_d_and_does_not_resend_unknown"
+      },
+      {
+        "line": 3321,
+        "elapsed_seconds": 2.329,
+        "package": "codex-hepta-agentd",
+        "name": "runtime::hos2_recovery_tests::notes_tests::notes_recovered_writer_persists_lost_reply_and_retires_without_replay"
+      },
+      {
+        "line": 3322,
+        "elapsed_seconds": 0.014,
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::automation_generation_change_during_open_remains_fail_closed"
+      },
+      {
+        "line": 3323,
+        "elapsed_seconds": 0.013,
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::automation_owner_fence_still_terminates_the_runtime_monitor"
+      },
+      {
+        "line": 3324,
+        "elapsed_seconds": 0.013,
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::automation_owner_mismatch_remains_fail_closed"
+      },
+      {
+        "line": 3325,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::compatibility_retrieval_mode_does_not_require_hnmf_context"
+      },
+      {
+        "line": 3326,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::compatibility_retrieval_mode_rejects_hnmf_context_without_explicit_profile"
+      },
+      {
+        "line": 3327,
+        "elapsed_seconds": 0.043,
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::dispatch_uncertain_tick_stays_live_for_durable_reconciliation"
+      },
+      {
+        "line": 3328,
+        "elapsed_seconds": 0.176,
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::drain_runtime_keeps_control_reconciliation_live_until_terminal_observation"
+      },
+      {
+        "line": 3329,
+        "elapsed_seconds": 0.112,
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::duplicate_automation_attachment_does_not_replace_the_live_store"
+      },
+      {
+        "line": 3330,
+        "elapsed_seconds": 0.015,
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::generation_change_during_open_is_fenced_before_serving"
+      },
+      {
+        "line": 3331,
+        "elapsed_seconds": 0.014,
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::generation_monitor_honors_host_cancellation_during_readiness_probe"
+      },
+      {
+        "line": 3332,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::hnmf_required_retrieval_mode_fails_closed_without_current_context"
+      },
+      {
+        "line": 3333,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::product_write_profile_fails_closed_when_cognitive_store_is_unavailable"
+      },
+      {
+        "line": 3334,
+        "elapsed_seconds": 0.604,
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::runtime_automation_store_failure_stops_only_the_scheduler_plane"
+      },
+      {
+        "line": 3335,
+        "elapsed_seconds": 0.017,
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::stale_generation_is_fenced_before_cognitive_store_open"
+      },
+      {
+        "line": 3336,
+        "elapsed_seconds": 0.022,
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::unavailable_automation_store_degrades_without_startup_failure"
+      },
+      {
+        "line": 3337,
+        "elapsed_seconds": 0.013,
+        "package": "codex-hepta-agentd",
+        "name": "runtime::tests::unavailable_cognitive_store_degrades_without_leaking_open_error"
+      },
+      {
+        "line": 3338,
+        "elapsed_seconds": 0.008,
+        "package": "codex-hepta-agentd",
+        "name": "runtime_tasks::failure_latch_tests::observed_required_failure_latches_stop_even_when_caller_handles_error"
+      },
+      {
+        "line": 3339,
+        "elapsed_seconds": 0.008,
+        "package": "codex-hepta-agentd",
+        "name": "runtime_tasks::failure_latch_tests::rejected_or_panicking_retirement_callback_latches_host_failure"
+      },
+      {
+        "line": 3340,
+        "elapsed_seconds": 0.05,
+        "package": "codex-hepta-agentd",
+        "name": "runtime_tasks::failure_latch_tests::retirement_timeout_does_not_masquerade_as_a_shared_fence"
+      },
+      {
+        "line": 3341,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "runtime_tasks::failure_latch_tests::retirement_writer_fence_cancels_siblings_and_blocks_fresh_names"
+      },
+      {
+        "line": 3342,
+        "elapsed_seconds": 0.033,
+        "package": "codex-hepta-agentd",
+        "name": "runtime_tasks::failure_latch_tests::successful_optional_quarantine_does_not_latch_host_failure"
+      },
+      {
+        "line": 3343,
+        "elapsed_seconds": 0.059,
+        "package": "codex-hepta-agentd",
+        "name": "runtime_tasks::outcome_tests::dropped_retirement_wait_does_not_erase_an_unacknowledged_abort"
+      },
+      {
+        "line": 3344,
+        "elapsed_seconds": 0.059,
+        "package": "codex-hepta-agentd",
+        "name": "runtime_tasks::outcome_tests::isolated_optional_failure_does_not_poison_healthy_host"
+      },
+      {
+        "line": 3345,
+        "elapsed_seconds": 0.059,
+        "package": "codex-hepta-agentd",
+        "name": "runtime_tasks::outcome_tests::late_owner_acknowledgement_after_timeout_preserves_clean_shutdown"
+      },
+      {
+        "line": 3346,
+        "elapsed_seconds": 0.008,
+        "package": "codex-hepta-agentd",
+        "name": "runtime_tasks::outcome_tests::observed_required_failure_cannot_become_cancelled_success"
+      },
+      {
+        "line": 3347,
+        "elapsed_seconds": 0.059,
+        "package": "codex-hepta-agentd",
+        "name": "runtime_tasks::outcome_tests::ordinary_host_abort_does_not_invent_a_retirement_request"
+      },
+      {
+        "line": 3348,
+        "elapsed_seconds": 0.008,
+        "package": "codex-hepta-agentd",
+        "name": "runtime_tasks::outcome_tests::rejected_quarantine_cannot_be_reclassified_as_normal_shutdown"
+      },
+      {
+        "line": 3349,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "runtime_tasks::outcome_tests::rejected_retirement_remains_failed_after_cleanup"
+      },
+      {
+        "line": 3350,
+        "elapsed_seconds": 0.059,
+        "package": "codex-hepta-agentd",
+        "name": "runtime_tasks::outcome_tests::shutdown_listener_failure_is_latched_across_reentry"
+      },
+      {
+        "line": 3351,
+        "elapsed_seconds": 0.059,
+        "package": "codex-hepta-agentd",
+        "name": "runtime_tasks::outcome_tests::successful_optional_retirement_preserves_clean_host_outcome"
+      },
+      {
+        "line": 3352,
+        "elapsed_seconds": 0.11,
+        "package": "codex-hepta-agentd",
+        "name": "runtime_tasks::outcome_tests::timed_out_retirement_aborted_by_shutdown_remains_failed"
+      },
+      {
+        "line": 3353,
+        "elapsed_seconds": 0.008,
+        "package": "codex-hepta-agentd",
+        "name": "runtime_tasks::retirement_tests::a_writer_fence_during_retirement_still_propagates"
+      },
+      {
+        "line": 3354,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "runtime_tasks::retirement_tests::failed_drain_is_quarantine_not_retirement"
+      },
+      {
+        "line": 3355,
+        "elapsed_seconds": 0.008,
+        "package": "codex-hepta-agentd",
+        "name": "runtime_tasks::retirement_tests::forty_first_running_service_retires_without_stopping_other_services"
+      },
+      {
+        "line": 3356,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "runtime_tasks::retirement_tests::owner_retirement_rejection_or_panic_never_publishes_success"
+      },
+      {
+        "line": 3357,
+        "elapsed_seconds": 0.029,
+        "package": "codex-hepta-agentd",
+        "name": "runtime_tasks::retirement_tests::rejected_service_factory_is_never_invoked"
+      },
+      {
+        "line": 3358,
+        "elapsed_seconds": 0.029,
+        "package": "codex-hepta-agentd",
+        "name": "runtime_tasks::retirement_tests::retirement_cannot_stop_required_or_legacy_uncontracted_tasks"
+      },
+      {
+        "line": 3359,
+        "elapsed_seconds": 2.01,
+        "package": "codex-hepta-agentd",
+        "name": "runtime_tasks::retirement_tests::retirement_keeps_observing_unrelated_failures"
+      },
+      {
+        "line": 3360,
+        "elapsed_seconds": 0.03,
+        "package": "codex-hepta-agentd",
+        "name": "runtime_tasks::retirement_tests::retirement_timeout_never_acknowledges_unfinished_drain"
+      },
+      {
+        "line": 3361,
+        "elapsed_seconds": 0.016,
+        "package": "codex-hepta-agentd",
+        "name": "runtime_tasks::service_generations::abi_tests::abi_bound_replacements_reuse_one_slot_and_reject_stale_retirement"
+      },
+      {
+        "line": 3362,
+        "elapsed_seconds": 0.008,
+        "package": "codex-hepta-agentd",
+        "name": "runtime_tasks::service_generations::abi_tests::incompatible_abi_never_starts_factory_or_consumes_a_slot"
+      },
+      {
+        "line": 3363,
+        "elapsed_seconds": 0.019,
+        "package": "codex-hepta-agentd",
+        "name": "runtime_tasks::service_generations::tests::a_drain_timeout_does_not_free_the_slot_or_acknowledge_retirement"
+      },
+      {
+        "line": 3364,
+        "elapsed_seconds": 0.008,
+        "package": "codex-hepta-agentd",
+        "name": "runtime_tasks::service_generations::tests::failed_retirement_callback_fences_host_without_releasing_identity"
+      },
+      {
+        "line": 3365,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "runtime_tasks::service_generations::tests::quarantined_failure_is_not_an_acknowledged_retirement"
+      },
+      {
+        "line": 3366,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "runtime_tasks::service_generations::tests::rejected_registration_never_invokes_factory_or_advances_fence"
+      },
+      {
+        "line": 3367,
+        "elapsed_seconds": 0.021,
+        "package": "codex-hepta-agentd",
+        "name": "runtime_tasks::service_generations::tests::replacements_reuse_one_slot_even_at_full_identity_capacity"
+      },
+      {
+        "line": 3368,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "runtime_tasks::service_generations::tests::retired_legacy_name_cannot_bypass_its_single_use_contract"
+      },
+      {
+        "line": 3369,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "runtime_tasks::service_generations::tests::stale_and_unversioned_requests_cannot_stop_or_resurrect_a_successor"
+      },
+      {
+        "line": 3370,
+        "elapsed_seconds": 2.679,
+        "package": "codex-hepta-agentd",
+        "name": "runtime_tasks::service_generations::writer_tests::sqlite_writer_rotates_256_times_without_consuming_new_service_identities"
+      },
+      {
+        "line": 3371,
+        "elapsed_seconds": 0.03,
+        "package": "codex-hepta-agentd",
+        "name": "runtime_tasks::tests::admission_is_bounded_and_rejects_duplicate_or_invalid_names"
+      },
+      {
+        "line": 3372,
+        "elapsed_seconds": 0.01,
+        "package": "codex-hepta-agentd",
+        "name": "runtime_tasks::tests::cancelled_observation_keeps_completion_identity"
+      },
+      {
+        "line": 3373,
+        "elapsed_seconds": 0.008,
+        "package": "codex-hepta-agentd",
+        "name": "runtime_tasks::tests::cooperative_shutdown_precedes_forced_abort"
+      },
+      {
+        "line": 3374,
+        "elapsed_seconds": 0.008,
+        "package": "codex-hepta-agentd",
+        "name": "runtime_tasks::tests::forty_first_service_executes_and_failure_preserves_required_services"
+      },
+      {
+        "line": 3375,
+        "elapsed_seconds": 0.029,
+        "package": "codex-hepta-agentd",
+        "name": "runtime_tasks::tests::generation_fence_cannot_be_downgraded_to_optional_availability"
+      },
+      {
+        "line": 3376,
+        "elapsed_seconds": 0.03,
+        "package": "codex-hepta-agentd",
+        "name": "runtime_tasks::tests::optional_panic_preserves_registered_identity_and_quarantines_once"
+      },
+      {
+        "line": 3377,
+        "elapsed_seconds": 0.029,
+        "package": "codex-hepta-agentd",
+        "name": "runtime_tasks::tests::quarantine_panic_is_fatal_and_still_drains"
+      },
+      {
+        "line": 3378,
+        "elapsed_seconds": 0.029,
+        "package": "codex-hepta-agentd",
+        "name": "runtime_tasks::tests::quarantine_rejection_is_fatal_and_reaps_other_tasks"
+      },
+      {
+        "line": 3379,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "runtime_tasks::tests::required_clean_exit_is_not_misreported_as_success"
+      },
+      {
+        "line": 3380,
+        "elapsed_seconds": 0.007,
+        "package": "codex-hepta-agentd",
+        "name": "runtime_tasks::tests::shutdown_grace_cannot_be_zero_or_unbounded"
+      },
+      {
+        "line": 3381,
+        "elapsed_seconds": 0.029,
+        "package": "codex-hepta-agentd",
+        "name": "runtime_tasks::tests::shutdown_listener_error_does_not_detach_live_tasks"
+      },
+      {
+        "line": 3382,
+        "elapsed_seconds": 0.015,
+        "package": "codex-hepta-agentd",
+        "name": "state::isolation_tests::configured_intelligence_runner_is_not_advertised_without_daemon_ingress"
+      },
+      {
+        "line": 3383,
+        "elapsed_seconds": 0.137,
+        "package": "codex-hepta-agentd",
+        "name": "state::isolation_tests::current_durable_run_start_requires_live_owner_trust"
+      },
+      {
+        "line": 3384,
+        "elapsed_seconds": 0.016,
+        "package": "codex-hepta-agentd",
+        "name": "state::isolation_tests::daemon_control_owns_the_run_lifecycle_and_advertises_it"
+      },
+      {
+        "line": 3385,
+        "elapsed_seconds": 0.014,
+        "package": "codex-hepta-agentd",
+        "name": "state::isolation_tests::final_use_revalidation_rejects_stale_spawn_generation_before_store_access"
+      },
+      {
+        "line": 3386,
+        "elapsed_seconds": 0.014,
+        "package": "codex-hepta-agentd",
+        "name": "state::isolation_tests::missing_local_record_immediately_fences_the_serving_agent"
+      },
+      {
+        "line": 3387,
+        "elapsed_seconds": 0.015,
+        "package": "codex-hepta-agentd",
+        "name": "state::isolation_tests::serving_agent_survives_unrelated_registry_corruption"
+      },
+      {
+        "line": 3388,
+        "elapsed_seconds": 0.021,
+        "package": "codex-hepta-agentd",
+        "name": "state::isolation_tests::targeted_read_preserves_lifecycle_and_resource_fences"
+      },
+      {
+        "line": 3389,
+        "elapsed_seconds": 0.009,
+        "package": "codex-hepta-agentd",
+        "name": "topology_plasticity_host::tests::topology_anchor_store_preserves_fence_and_anchor"
+      },
+      {
+        "line": 3390,
+        "elapsed_seconds": 0.01,
+        "package": "codex-hepta-agentd",
+        "name": "topology_plasticity_host::tests::topology_real_append_ack_crash_then_registry_rollback_is_rejected_on_restart"
+      }
+    ],
+    "total_pass_rows": 288
+  }
+}

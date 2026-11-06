@@ -1,0 +1,30 @@
+{
+  "prior_frozen_files_reverified": {
+    "component-review-v1": 36,
+    "component-review-v2": 38
+  },
+  "previous_component": {
+    "bytes": 18121,
+    "git_blob": "bdc8b4c46616ad9c3840fc41d731be6995378ca5",
+    "sha256": "f19a9d06a0c4e0b708e2148d451bf83dc3811225a4ea4154c0a2c0669fe2debe"
+  },
+  "final_workflow": {
+    "bytes": 60049,
+    "git_blob": "d4b87c924a1dcc795e05aec1dd4e31854dcff687",
+    "sha256": "254826e592d89f0f2432ef769e8fce11c93ca7c62ad480dc282afe9123e98464"
+  },
+  "exact_collector": {
+    "bytes": 34905,
+    "git_blob": "00dc37697adde6154a347963ab19e8a6edebac07",
+    "sha256": "7d8962de05fae508b259c1e16efa1be78a760c4a6a0da8ec239e796f3d1cdd1c"
+  },
+  "workflow_changes": [
+    "replace the explicit unaccepted placeholder with the exact accepted collector",
+    "add command -v zstd and zstd --version before the original Bazel invocation"
+  ],
+  "inverse_two_changes_restores_entire_v2_workflow": true,
+  "source_identity_helper_unchanged_from_accepted_v2": true,
+  "diff_hunks": 2,
+  "native_executed": false,
+  "ref_written": false
+}

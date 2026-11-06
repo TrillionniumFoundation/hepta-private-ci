@@ -1,0 +1,57 @@
+{
+  "schema": "hepta-updated-open-PR-bounded-discovery-v1",
+  "cutoff": "2026-11-05T16:45:44Z",
+  "search_reported_total": 19,
+  "search_pages": 1,
+  "search_unique_returned": 19,
+  "search_incomplete_results": false,
+  "REST_requested_sort": "updated desc",
+  "REST_pages_read": 2,
+  "REST_page_sizes": [
+    25,
+    25
+  ],
+  "REST_unique_read": 50,
+  "observed_qualifying_unique": 22,
+  "qualifying_ids": [
+    4797,
+    4810,
+    4843,
+    4849,
+    4853,
+    4855,
+    4870,
+    4873,
+    4884,
+    4887,
+    4888,
+    4891,
+    4893,
+    4894,
+    4895,
+    4896,
+    4897,
+    4898,
+    4899,
+    4900,
+    4901,
+    4902
+  ],
+  "search_missing_directly_observed_qualifying_ids": [
+    4849,
+    4888,
+    4891
+  ],
+  "search_extra_vs_REST_prefix": [],
+  "first_old_PR": 4892,
+  "second_page_max_updated": "2026-11-05T15:49:09Z",
+  "REST_returned_order_inversions": [
+    {
+      "left": 4902,
+      "left_updated": "2026-11-06T00:39:47Z",
+      "right": 4855,
+      "right_updated": "2026-11-06T00:41:00Z"
+    }
+  ],
+  "scope": "All search-index results and a bounded REST prefix with a complete subsequent old page were retained. Not an atomic repository census; count22 is the observed qualifying union, not a new current open-PR population. No 1103-PR recount or CI polling."
+}

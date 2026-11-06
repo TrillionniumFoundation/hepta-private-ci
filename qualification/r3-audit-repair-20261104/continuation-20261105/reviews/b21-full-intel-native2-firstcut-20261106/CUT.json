@@ -1,0 +1,81 @@
+{
+  "schema": "b21-full-intel-native2-first-api-cut-v1",
+  "window_start": "2026-11-06T03:14:02.467Z",
+  "window_end": "2026-11-06T03:14:07.606Z",
+  "source_head": "ebd31e2b3e38ff72cedaa7b57bee60c1c102da27",
+  "full_runlist_count": 4,
+  "runs": [
+    {
+      "id": 42154464909,
+      "name": "B21 original full Intel Bazel context observations",
+      "status": "in_progress",
+      "conclusion": null,
+      "head_sha": "ebd31e2b3e38ff72cedaa7b57bee60c1c102da27",
+      "event": "pull_request",
+      "run_attempt": 1,
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42154464909"
+    },
+    {
+      "id": 42154464786,
+      "name": "Hepta architecture convergence",
+      "status": "pending",
+      "conclusion": null,
+      "head_sha": "ebd31e2b3e38ff72cedaa7b57bee60c1c102da27",
+      "event": "pull_request",
+      "run_attempt": 1,
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42154464786"
+    },
+    {
+      "id": 42154464975,
+      "name": "blocking-ci",
+      "status": "pending",
+      "conclusion": null,
+      "head_sha": "ebd31e2b3e38ff72cedaa7b57bee60c1c102da27",
+      "event": "pull_request",
+      "run_attempt": 1,
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42154464975"
+    },
+    {
+      "id": 42154464723,
+      "name": "v8-canary",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "ebd31e2b3e38ff72cedaa7b57bee60c1c102da27",
+      "event": "pull_request",
+      "run_attempt": 1,
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42154464723"
+    }
+  ],
+  "diagnostic_run_id": 42154464909,
+  "full_job_count": 1,
+  "diagnostic_job_id": 127685180579,
+  "api_reported_job_status": "in_progress",
+  "api_reported_active_step": "bazel test //...",
+  "active_step_started_at": "2026-11-06T03:08:26Z",
+  "api_reported_completed_steps": [
+    {
+      "name": "Set up job",
+      "conclusion": "success"
+    },
+    {
+      "name": "Checkout exact diagnostic source",
+      "conclusion": "success"
+    },
+    {
+      "name": "Bind original source, full archive and actual Intel platform",
+      "conclusion": "success"
+    },
+    {
+      "name": "Prepare Bazel CI",
+      "conclusion": "success"
+    }
+  ],
+  "terminal_result": false,
+  "raw_logs_fetched": false,
+  "artifact_metadata_or_ZIP_fetched": false,
+  "scope": "API state only; successful preflight step is not a substitute for full original source/platform/log/archive verification.",
+  "native_triggered_by_assistant": false,
+  "dispatch_rerun_cancel": false,
+  "B21": "OPEN",
+  "historical_failure_cause": "UNKNOWN"
+}

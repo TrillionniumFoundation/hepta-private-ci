@@ -1,0 +1,1336 @@
+{
+  "schema": "hepta-final-evidence-merge-independent-review-v1",
+  "state": "PASS_SCOPED_EVIDENCE_CUSTODY_AND_CONSISTENCY_REVIEW",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "reviewer": "/root/format_finish",
+  "scope": "Independent review of immutable main67 bounded CI custody, three failed-run triage, Chain source-only addendum scope, and destination consistency with the frozen 377 projection. No final root report review in this object. No new workflow/job query, executor, native action or ref/PR mutation.",
+  "sources": [
+    {
+      "id": "main_latest_registry",
+      "git_blob": "51542080088163de92f6b6fb4506d22ac327b0a2",
+      "bytes": 36262,
+      "sha256": "e8b063c844e5433b5d42d7eeec3078a802f0ce160dd47657858b6a48fbdf4501"
+    },
+    {
+      "id": "ci_failure_triage",
+      "git_blob": "8bcb712ede74b57c863e3f37031942e02ba759e3",
+      "bytes": 19973,
+      "sha256": "18674ca407574823e9a9ecc07a668e231a88f8677b945dc49b0f4cdfad184ba5"
+    },
+    {
+      "id": "chain_review",
+      "git_blob": "2d6243bb1523b29ac358c22ef99ad0fa47170e07",
+      "bytes": 39651,
+      "sha256": "70d281f7cac2c2882416249e7394e7c47198ca504d4f0b53b2d0836d1ae6b6b1"
+    }
+  ],
+  "main_CI_package": {
+    "registry": "51542080088163de92f6b6fb4506d22ac327b0a2",
+    "object_full_GET_identity_verification": [
+      {
+        "index": 0,
+        "status": "fulfilled",
+        "value": {
+          "index": 0,
+          "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/parts/mainPR.original-tool-return.json.part-000.txt",
+          "bytes": 93750,
+          "sha256": "b5402f04f75163ed733500903006751bbef867a14a70010eea25defba84297f9",
+          "git_blob": "0784217b3e9a2cfbccbe87283a6fdd4c8f68d884",
+          "characters": 90000,
+          "validUnicode": true
+        }
+      },
+      {
+        "index": 1,
+        "status": "fulfilled",
+        "value": {
+          "index": 1,
+          "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/parts/mainPR.original-tool-return.json.part-001.txt",
+          "bytes": 55985,
+          "sha256": "37ae72686a3a24c15400a26759a06de7e1b0221178c2d62f11d93902fc054f3e",
+          "git_blob": "7a8ca4ba4791b65584ee9f1608b7da272a8b85d0",
+          "characters": 55865,
+          "validUnicode": true
+        }
+      },
+      {
+        "index": 2,
+        "status": "fulfilled",
+        "value": {
+          "index": 2,
+          "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/parts/windowsPR.original-tool-return.json.part-000.txt",
+          "bytes": 104014,
+          "sha256": "580ed9d67abfc96513706004b89f06f8a2f43c740e9959988bc98ae14210cd3d",
+          "git_blob": "99f6f9810a38e5428343f079b59365b6b26579e6",
+          "characters": 90000,
+          "validUnicode": true
+        }
+      },
+      {
+        "index": 3,
+        "status": "fulfilled",
+        "value": {
+          "index": 3,
+          "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/parts/windowsPR.original-tool-return.json.part-001.txt",
+          "bytes": 9971,
+          "sha256": "866e53d9274da44a94cdb757641dc6b0c7facb8a5819dd8b59d7a198f1ec6313",
+          "git_blob": "f6ef275492a53d7364677939c57428c64f5e3040",
+          "characters": 9971,
+          "validUnicode": true
+        }
+      },
+      {
+        "index": 4,
+        "status": "fulfilled",
+        "value": {
+          "index": 4,
+          "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/intelPR.original-tool-return.json",
+          "bytes": 45899,
+          "sha256": "2e0c5cff88604e22878745c15598f8c5734f6a77bc1525c5d0244214bdcea6df",
+          "git_blob": "5c213344391c4d17203af88e94f25a28c7b6e0d3",
+          "characters": 43795,
+          "validUnicode": true
+        }
+      },
+      {
+        "index": 5,
+        "status": "fulfilled",
+        "value": {
+          "index": 5,
+          "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/parts/mainRuns.original-tool-return.json.part-000.txt",
+          "bytes": 90000,
+          "sha256": "71ebed54ff0cc8c5052d0346d359103b287ceb5967885d7ae301fc122590314f",
+          "git_blob": "abb42431af3bdd0dbe9a15017f3f3a9e72c3a96e",
+          "characters": 90000,
+          "validUnicode": true
+        }
+      },
+      {
+        "index": 6,
+        "status": "fulfilled",
+        "value": {
+          "index": 6,
+          "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/parts/mainRuns.original-tool-return.json.part-001.txt",
+          "bytes": 90000,
+          "sha256": "71146e525ecfa610480ac9a2f32ffebdf2fe6fa8ef5c3e91b183b4d60f672fc2",
+          "git_blob": "2e01263e13462e72f40f9e5ce21ae6a073828419",
+          "characters": 90000,
+          "validUnicode": true
+        }
+      },
+      {
+        "index": 7,
+        "status": "fulfilled",
+        "value": {
+          "index": 7,
+          "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/parts/mainRuns.original-tool-return.json.part-002.txt",
+          "bytes": 90000,
+          "sha256": "ffeb0cfbd7191a4747bc7bef1abe30b3b04a7b3597e40dfd476f864c1375c329",
+          "git_blob": "8dc327cb15c03fc627230947172cf57a4ef34569",
+          "characters": 90000,
+          "validUnicode": true
+        }
+      },
+      {
+        "index": 8,
+        "status": "fulfilled",
+        "value": {
+          "index": 8,
+          "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/parts/mainRuns.original-tool-return.json.part-003.txt",
+          "bytes": 90000,
+          "sha256": "220cf26c215466a360c9a5492f040163081292c09749db21b820f01090221fc1",
+          "git_blob": "c637d863aa008b3f1f4ca757039d330559889631",
+          "characters": 90000,
+          "validUnicode": true
+        }
+      },
+      {
+        "index": 9,
+        "status": "fulfilled",
+        "value": {
+          "index": 9,
+          "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/parts/mainRuns.original-tool-return.json.part-004.txt",
+          "bytes": 90000,
+          "sha256": "46399d5a5656ac85ba236fcbdca4cf5470fca64d575bab469a22bec7d2c453c3",
+          "git_blob": "df452699207da454542444b90b0f2dd53a4cf07d",
+          "characters": 90000,
+          "validUnicode": true
+        }
+      },
+      {
+        "index": 10,
+        "status": "fulfilled",
+        "value": {
+          "index": 10,
+          "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/parts/mainRuns.original-tool-return.json.part-005.txt",
+          "bytes": 90000,
+          "sha256": "a3fa8954f752741cd435689fe2b6d582f97c67034f1d820b02b550374c4ceee7",
+          "git_blob": "fdf622a5a8af40786cde0ece54ddada28091636b",
+          "characters": 90000,
+          "validUnicode": true
+        }
+      },
+      {
+        "index": 11,
+        "status": "fulfilled",
+        "value": {
+          "index": 11,
+          "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/parts/mainRuns.original-tool-return.json.part-006.txt",
+          "bytes": 90000,
+          "sha256": "24a0bf3be7057958a985aaa346dc29b002cec7bf565dc125cda32dd58f56f8b8",
+          "git_blob": "482d2e16713a652f7e192b78d4fb12759437f9dd",
+          "characters": 90000,
+          "validUnicode": true
+        }
+      },
+      {
+        "index": 12,
+        "status": "fulfilled",
+        "value": {
+          "index": 12,
+          "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/parts/mainRuns.original-tool-return.json.part-007.txt",
+          "bytes": 2972,
+          "sha256": "056ea68a6dc1ad3e82e71dac5ad311443742fd126956f78f8d7b4f036a011d72",
+          "git_blob": "3829d250f7aab2ab809087a54fd5f412db022337",
+          "characters": 2972,
+          "validUnicode": true
+        }
+      },
+      {
+        "index": 13,
+        "status": "fulfilled",
+        "value": {
+          "index": 13,
+          "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/jobs-42123581986.original-tool-return.json",
+          "bytes": 7935,
+          "sha256": "f79c3d1d0a8115f8ac74fae651cc8ebea2eda533acac71d994db2ed561a7f46a",
+          "git_blob": "c3b029071e48ba2ff56e7ad6c5edbe815c5df005",
+          "characters": 7935,
+          "validUnicode": true
+        }
+      },
+      {
+        "index": 14,
+        "status": "fulfilled",
+        "value": {
+          "index": 14,
+          "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/jobs-42123581050.original-tool-return.json",
+          "bytes": 14271,
+          "sha256": "0b1900f05227a34128498365aaf3ec935b9db42a71a31e37f573a119c77250e6",
+          "git_blob": "aa7a2c06813eb1ddd91793de121df25511951bb7",
+          "characters": 14271,
+          "validUnicode": true
+        }
+      },
+      {
+        "index": 15,
+        "status": "fulfilled",
+        "value": {
+          "index": 15,
+          "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/jobs-42123581231.original-tool-return.json",
+          "bytes": 9559,
+          "sha256": "70dfdb4e6d189ceefe989e35279b6625a70830985192363ba68e413a2b5a6a6d",
+          "git_blob": "1e07589dd9884d72836c9b55bdadfc23405ad5f0",
+          "characters": 9559,
+          "validUnicode": true
+        }
+      },
+      {
+        "index": 16,
+        "status": "fulfilled",
+        "value": {
+          "index": 16,
+          "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/jobs-42123581007.original-tool-return.json",
+          "bytes": 12635,
+          "sha256": "5ca5a93253f1247cc3272560613dce11cc2df237813e7e68eadefd4e23302bcf",
+          "git_blob": "11e4c6284e266b3d3bfd801114c74bbfc5ffdaaf",
+          "characters": 12635,
+          "validUnicode": true
+        }
+      },
+      {
+        "index": 17,
+        "status": "fulfilled",
+        "value": {
+          "index": 17,
+          "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/jobs-42123581270.original-tool-return.json",
+          "bytes": 26275,
+          "sha256": "af075ee5ddad851d8afdea2865cc1534eae581bb6140a60a26848ba57fb3e8ea",
+          "git_blob": "175c256a30b1104f7346f701160a212e2fa8dd1c",
+          "characters": 26275,
+          "validUnicode": true
+        }
+      },
+      {
+        "index": 18,
+        "status": "fulfilled",
+        "value": {
+          "index": 18,
+          "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/jobs-42123581091.original-tool-return.json",
+          "bytes": 2959,
+          "sha256": "dab124fa6f3e9ca8bf9095763b633e9a63cbb53866c8cb6d6a616c8e972d1ab3",
+          "git_blob": "3a388c1699b34b46572485025bbaf53ac714d0da",
+          "characters": 2959,
+          "validUnicode": true
+        }
+      },
+      {
+        "index": 19,
+        "status": "fulfilled",
+        "value": {
+          "index": 19,
+          "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/jobs-42123581410.original-tool-return.json",
+          "bytes": 2903,
+          "sha256": "81099802892fee94d923dd27859c228c6a2c9952f9928519b788cda5c9b4a882",
+          "git_blob": "92f3d4390aaf92c497493f54c6e5888aeae7b360",
+          "characters": 2903,
+          "validUnicode": true
+        }
+      },
+      {
+        "index": 20,
+        "status": "fulfilled",
+        "value": {
+          "index": 20,
+          "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/parts/jobs-42123581260.original-tool-return.json.part-000.txt",
+          "bytes": 90000,
+          "sha256": "32675b0ba37cc86a0937d91099a1e958183da58c67e004d7f1a8094939ae5dac",
+          "git_blob": "bef47a341d0ff6b9eb66fba07d2dd2002c22ad19",
+          "characters": 90000,
+          "validUnicode": true
+        }
+      },
+      {
+        "index": 21,
+        "status": "fulfilled",
+        "value": {
+          "index": 21,
+          "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/parts/jobs-42123581260.original-tool-return.json.part-001.txt",
+          "bytes": 13705,
+          "sha256": "26b54a8fcfab5137646ca66097f49e4d85489fd35f458d1f2d5da9014d878c11",
+          "git_blob": "09f19570658f1d23d64d3299cc4260075508bbd4",
+          "characters": 13705,
+          "validUnicode": true
+        }
+      },
+      {
+        "index": 22,
+        "status": "fulfilled",
+        "value": {
+          "index": 22,
+          "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/jobs-42123581385.original-tool-return.json",
+          "bytes": 10495,
+          "sha256": "c2b9b507dab752d2b41ae87cc94473627f7ed03a03722006c4f8b33d852052e7",
+          "git_blob": "16b1219dffa63dc161a3c6f91ae3c7b88e60eeb7",
+          "characters": 10495,
+          "validUnicode": true
+        }
+      },
+      {
+        "index": 23,
+        "status": "fulfilled",
+        "value": {
+          "index": 23,
+          "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/jobs-42123581078.original-tool-return.json",
+          "bytes": 13825,
+          "sha256": "3863683dc72d880a12c7f7ee15f5e2dff1670e00e87c66f82cf2cedaac48cdd7",
+          "git_blob": "a81d76ac8ee4cb1e396d3878b69228060a3646c9",
+          "characters": 13825,
+          "validUnicode": true
+        }
+      },
+      {
+        "index": 24,
+        "status": "fulfilled",
+        "value": {
+          "index": 24,
+          "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/jobs-42123581186.original-tool-return.json",
+          "bytes": 29869,
+          "sha256": "adf5bf38c8048e3ed6039d3ca74b61672abc14c1ddbd5aad60253baa7ae73fdc",
+          "git_blob": "f4a61039b4101772396ab82e6e6a779b2b5dba7d",
+          "characters": 29869,
+          "validUnicode": true
+        }
+      },
+      {
+        "index": 25,
+        "status": "fulfilled",
+        "value": {
+          "index": 25,
+          "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/jobs-42123581408.original-tool-return.json",
+          "bytes": 12765,
+          "sha256": "b314d8e633078fad10f6f4396fa3b24eae7ab3c680062848c3c1985353b052a5",
+          "git_blob": "6ad05ff2014628049252d876120008123308f031",
+          "characters": 12765,
+          "validUnicode": true
+        }
+      },
+      {
+        "index": 26,
+        "status": "fulfilled",
+        "value": {
+          "index": 26,
+          "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/jobs-42123581363.original-tool-return.json",
+          "bytes": 4999,
+          "sha256": "1ec2a1c90c66cc581d8e2641c3b2d291a429a00e3be94379251c34327c135eac",
+          "git_blob": "33b10ca033c77cc8a85ab2679c7d8e9b082d773b",
+          "characters": 4999,
+          "validUnicode": true
+        }
+      },
+      {
+        "index": 27,
+        "status": "fulfilled",
+        "value": {
+          "index": 27,
+          "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/jobs-42123581031.original-tool-return.json",
+          "bytes": 63827,
+          "sha256": "6800d6c1cc15b515045595066ec65c3a9bb84fd4e3a352a6f9a87b5e64ac3ec2",
+          "git_blob": "5cb4d195cbeab24cfdbf0e511a8e42d99c482c22",
+          "characters": 63827,
+          "validUnicode": true
+        }
+      },
+      {
+        "index": 28,
+        "status": "fulfilled",
+        "value": {
+          "index": 28,
+          "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/jobs-42123581393.original-tool-return.json",
+          "bytes": 17037,
+          "sha256": "a577b186e24aebcb148adb1b8227757669661fc9dd3b9586a05c15ba89bf00b4",
+          "git_blob": "d9c5c2a9aa55d388b8fbee24eed43141fce12052",
+          "characters": 17037,
+          "validUnicode": true
+        }
+      },
+      {
+        "index": 29,
+        "status": "fulfilled",
+        "value": {
+          "index": 29,
+          "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/jobs-42123581479.original-tool-return.json",
+          "bytes": 20645,
+          "sha256": "009c9a085df449046fed9ea97c58c0f46d7a77dd8b67e5e31084c9803b00fd9f",
+          "git_blob": "aeaa5302c232849f42c66cda5af91e80df2fc22b",
+          "characters": 20645,
+          "validUnicode": true
+        }
+      },
+      {
+        "index": 30,
+        "status": "fulfilled",
+        "value": {
+          "index": 30,
+          "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/jobs-42123581142.original-tool-return.json",
+          "bytes": 16825,
+          "sha256": "4be0a59795bfbe51898747307dd83b5b4bbca81bc8188d70fabe0a3cc80354e3",
+          "git_blob": "8cbeb933c0e2693ab37f9e64f0ea3f8e3941ab57",
+          "characters": 16825,
+          "validUnicode": true
+        }
+      },
+      {
+        "index": 31,
+        "status": "fulfilled",
+        "value": {
+          "index": 31,
+          "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/jobs-42123569559.original-tool-return.json",
+          "bytes": 7257,
+          "sha256": "ff783f793ed04c4db0d8dc7fcff1b0138a43e6b763eb6f794f3e688f8b1c2686",
+          "git_blob": "011ffaea19c76aaa67b219c3ffb7b22fa4cdd480",
+          "characters": 7257,
+          "validUnicode": true
+        }
+      },
+      {
+        "index": 32,
+        "status": "fulfilled",
+        "value": {
+          "index": 32,
+          "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/jobs-42123569750.original-tool-return.json",
+          "bytes": 9033,
+          "sha256": "b368a61b9c3fd55a8f8a33fe44f9d72e4be20a1c629465224f59d0dff829590d",
+          "git_blob": "68808434a642a1b9192fdbe2591a605e5967f06c",
+          "characters": 9033,
+          "validUnicode": true
+        }
+      },
+      {
+        "index": 33,
+        "status": "fulfilled",
+        "value": {
+          "index": 33,
+          "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/parts/STATUS.json.part-000.txt",
+          "bytes": 90000,
+          "sha256": "8c6a8376880e87656c8adf3c3806c9b0ac3c7097a786da9cd1d50646409d1e53",
+          "git_blob": "fdb1aa494bdc7b70414a4d838459e828daad33f7",
+          "characters": 90000,
+          "validUnicode": true
+        }
+      },
+      {
+        "index": 34,
+        "status": "fulfilled",
+        "value": {
+          "index": 34,
+          "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/parts/STATUS.json.part-001.txt",
+          "bytes": 90000,
+          "sha256": "f3afc76f5dac0743bc20c439bb54dfeedb543a649e759099e1584384d334d501",
+          "git_blob": "633e28351f01b7e818c4cde674f929d8d9392858",
+          "characters": 90000,
+          "validUnicode": true
+        }
+      },
+      {
+        "index": 35,
+        "status": "fulfilled",
+        "value": {
+          "index": 35,
+          "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/parts/STATUS.json.part-002.txt",
+          "bytes": 61425,
+          "sha256": "922e52d1498960102d22dbd77def526d568a137c1d8cbffc4885d299a7e626d2",
+          "git_blob": "66d701ad58cccc24353cba7c6cfe9186aa49df97",
+          "characters": 61425,
+          "validUnicode": true
+        }
+      },
+      {
+        "index": 36,
+        "status": "fulfilled",
+        "value": {
+          "index": 36,
+          "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/manifest.json",
+          "bytes": 25920,
+          "sha256": "80fb66c0ef716811018a68bd31ba60a06cdd6eb7bfce06c20c82beae4917fe84",
+          "git_blob": "f40e3dd3317321bed8c3cee8ad3c69db0a89a4cd",
+          "characters": 25920,
+          "validUnicode": true
+        }
+      },
+      {
+        "index": 37,
+        "status": "fulfilled",
+        "value": {
+          "index": 37,
+          "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/STATUS.summary.json",
+          "bytes": 5314,
+          "sha256": "72144453932acfb342e62dfbb20bf98a2e4073058791f244abad357d202664cd",
+          "git_blob": "738767dce010a1846e37cca2a9539c4ceac4f57a",
+          "characters": 5314,
+          "validUnicode": true
+        }
+      },
+      {
+        "index": 38,
+        "status": "fulfilled",
+        "value": {
+          "index": 38,
+          "path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/README.zh-CN.md",
+          "bytes": 2480,
+          "sha256": "186551ee1e9c6df5355100dba0a8bdc6a989c955b1b29659e327fb53645685b5",
+          "git_blob": "b7f795d5f9df80ca8625656594590162828baf43",
+          "characters": 1388,
+          "validUnicode": true
+        }
+      }
+    ],
+    "reconstruction": {
+      "errors": [],
+      "members": 24,
+      "pieces": 36,
+      "total_logical_UTF8_bytes": 1570835,
+      "outputs": [
+        {
+          "member": "mainPR.original-tool-return.json",
+          "bytes": 149735,
+          "sha256": "aef9cb44f858fa75b67b66a1af94b4ee32d6d9a1db7a0bff6b3df371aa520f03",
+          "git_blob": "1f4bbb712b66beec1d7cf8c044b7d101c0ed0df5",
+          "characters": 145865,
+          "pieces": 2,
+          "full_identity_equal": true,
+          "JSON_parse_success": true
+        },
+        {
+          "member": "windowsPR.original-tool-return.json",
+          "bytes": 113985,
+          "sha256": "d6b51c143e1787b6941ab2b77b80f97df02b26c16b5a299d504ab070ec81d75d",
+          "git_blob": "580d821431060f29f9ad98f9b7951509f29c448a",
+          "characters": 99971,
+          "pieces": 2,
+          "full_identity_equal": true,
+          "JSON_parse_success": true
+        },
+        {
+          "member": "intelPR.original-tool-return.json",
+          "bytes": 45899,
+          "sha256": "2e0c5cff88604e22878745c15598f8c5734f6a77bc1525c5d0244214bdcea6df",
+          "git_blob": "5c213344391c4d17203af88e94f25a28c7b6e0d3",
+          "characters": 43795,
+          "pieces": 1,
+          "full_identity_equal": true,
+          "JSON_parse_success": true
+        },
+        {
+          "member": "mainRuns.original-tool-return.json",
+          "bytes": 632972,
+          "sha256": "e45c257829bfb422603ba782da6cf7f4edbccf17b633cb97d7abac7b5f973273",
+          "git_blob": "ffe583ed60b2f661303b3ddd214977c7246cbf5a",
+          "characters": 632972,
+          "pieces": 8,
+          "full_identity_equal": true,
+          "JSON_parse_success": true
+        },
+        {
+          "member": "jobs-42123581986.original-tool-return.json",
+          "bytes": 7935,
+          "sha256": "f79c3d1d0a8115f8ac74fae651cc8ebea2eda533acac71d994db2ed561a7f46a",
+          "git_blob": "c3b029071e48ba2ff56e7ad6c5edbe815c5df005",
+          "characters": 7935,
+          "pieces": 1,
+          "full_identity_equal": true,
+          "JSON_parse_success": true
+        },
+        {
+          "member": "jobs-42123581050.original-tool-return.json",
+          "bytes": 14271,
+          "sha256": "0b1900f05227a34128498365aaf3ec935b9db42a71a31e37f573a119c77250e6",
+          "git_blob": "aa7a2c06813eb1ddd91793de121df25511951bb7",
+          "characters": 14271,
+          "pieces": 1,
+          "full_identity_equal": true,
+          "JSON_parse_success": true
+        },
+        {
+          "member": "jobs-42123581231.original-tool-return.json",
+          "bytes": 9559,
+          "sha256": "70dfdb4e6d189ceefe989e35279b6625a70830985192363ba68e413a2b5a6a6d",
+          "git_blob": "1e07589dd9884d72836c9b55bdadfc23405ad5f0",
+          "characters": 9559,
+          "pieces": 1,
+          "full_identity_equal": true,
+          "JSON_parse_success": true
+        },
+        {
+          "member": "jobs-42123581007.original-tool-return.json",
+          "bytes": 12635,
+          "sha256": "5ca5a93253f1247cc3272560613dce11cc2df237813e7e68eadefd4e23302bcf",
+          "git_blob": "11e4c6284e266b3d3bfd801114c74bbfc5ffdaaf",
+          "characters": 12635,
+          "pieces": 1,
+          "full_identity_equal": true,
+          "JSON_parse_success": true
+        },
+        {
+          "member": "jobs-42123581270.original-tool-return.json",
+          "bytes": 26275,
+          "sha256": "af075ee5ddad851d8afdea2865cc1534eae581bb6140a60a26848ba57fb3e8ea",
+          "git_blob": "175c256a30b1104f7346f701160a212e2fa8dd1c",
+          "characters": 26275,
+          "pieces": 1,
+          "full_identity_equal": true,
+          "JSON_parse_success": true
+        },
+        {
+          "member": "jobs-42123581091.original-tool-return.json",
+          "bytes": 2959,
+          "sha256": "dab124fa6f3e9ca8bf9095763b633e9a63cbb53866c8cb6d6a616c8e972d1ab3",
+          "git_blob": "3a388c1699b34b46572485025bbaf53ac714d0da",
+          "characters": 2959,
+          "pieces": 1,
+          "full_identity_equal": true,
+          "JSON_parse_success": true
+        },
+        {
+          "member": "jobs-42123581410.original-tool-return.json",
+          "bytes": 2903,
+          "sha256": "81099802892fee94d923dd27859c228c6a2c9952f9928519b788cda5c9b4a882",
+          "git_blob": "92f3d4390aaf92c497493f54c6e5888aeae7b360",
+          "characters": 2903,
+          "pieces": 1,
+          "full_identity_equal": true,
+          "JSON_parse_success": true
+        },
+        {
+          "member": "jobs-42123581260.original-tool-return.json",
+          "bytes": 103705,
+          "sha256": "cf2e8778193ad6a2db4dcb4aad9abd72e994cf842426eb098b4900e73a7aabed",
+          "git_blob": "d4ceecdd48f52f6aec224c0f038c5848023550e2",
+          "characters": 103705,
+          "pieces": 2,
+          "full_identity_equal": true,
+          "JSON_parse_success": true
+        },
+        {
+          "member": "jobs-42123581385.original-tool-return.json",
+          "bytes": 10495,
+          "sha256": "c2b9b507dab752d2b41ae87cc94473627f7ed03a03722006c4f8b33d852052e7",
+          "git_blob": "16b1219dffa63dc161a3c6f91ae3c7b88e60eeb7",
+          "characters": 10495,
+          "pieces": 1,
+          "full_identity_equal": true,
+          "JSON_parse_success": true
+        },
+        {
+          "member": "jobs-42123581078.original-tool-return.json",
+          "bytes": 13825,
+          "sha256": "3863683dc72d880a12c7f7ee15f5e2dff1670e00e87c66f82cf2cedaac48cdd7",
+          "git_blob": "a81d76ac8ee4cb1e396d3878b69228060a3646c9",
+          "characters": 13825,
+          "pieces": 1,
+          "full_identity_equal": true,
+          "JSON_parse_success": true
+        },
+        {
+          "member": "jobs-42123581186.original-tool-return.json",
+          "bytes": 29869,
+          "sha256": "adf5bf38c8048e3ed6039d3ca74b61672abc14c1ddbd5aad60253baa7ae73fdc",
+          "git_blob": "f4a61039b4101772396ab82e6e6a779b2b5dba7d",
+          "characters": 29869,
+          "pieces": 1,
+          "full_identity_equal": true,
+          "JSON_parse_success": true
+        },
+        {
+          "member": "jobs-42123581408.original-tool-return.json",
+          "bytes": 12765,
+          "sha256": "b314d8e633078fad10f6f4396fa3b24eae7ab3c680062848c3c1985353b052a5",
+          "git_blob": "6ad05ff2014628049252d876120008123308f031",
+          "characters": 12765,
+          "pieces": 1,
+          "full_identity_equal": true,
+          "JSON_parse_success": true
+        },
+        {
+          "member": "jobs-42123581363.original-tool-return.json",
+          "bytes": 4999,
+          "sha256": "1ec2a1c90c66cc581d8e2641c3b2d291a429a00e3be94379251c34327c135eac",
+          "git_blob": "33b10ca033c77cc8a85ab2679c7d8e9b082d773b",
+          "characters": 4999,
+          "pieces": 1,
+          "full_identity_equal": true,
+          "JSON_parse_success": true
+        },
+        {
+          "member": "jobs-42123581031.original-tool-return.json",
+          "bytes": 63827,
+          "sha256": "6800d6c1cc15b515045595066ec65c3a9bb84fd4e3a352a6f9a87b5e64ac3ec2",
+          "git_blob": "5cb4d195cbeab24cfdbf0e511a8e42d99c482c22",
+          "characters": 63827,
+          "pieces": 1,
+          "full_identity_equal": true,
+          "JSON_parse_success": true
+        },
+        {
+          "member": "jobs-42123581393.original-tool-return.json",
+          "bytes": 17037,
+          "sha256": "a577b186e24aebcb148adb1b8227757669661fc9dd3b9586a05c15ba89bf00b4",
+          "git_blob": "d9c5c2a9aa55d388b8fbee24eed43141fce12052",
+          "characters": 17037,
+          "pieces": 1,
+          "full_identity_equal": true,
+          "JSON_parse_success": true
+        },
+        {
+          "member": "jobs-42123581479.original-tool-return.json",
+          "bytes": 20645,
+          "sha256": "009c9a085df449046fed9ea97c58c0f46d7a77dd8b67e5e31084c9803b00fd9f",
+          "git_blob": "aeaa5302c232849f42c66cda5af91e80df2fc22b",
+          "characters": 20645,
+          "pieces": 1,
+          "full_identity_equal": true,
+          "JSON_parse_success": true
+        },
+        {
+          "member": "jobs-42123581142.original-tool-return.json",
+          "bytes": 16825,
+          "sha256": "4be0a59795bfbe51898747307dd83b5b4bbca81bc8188d70fabe0a3cc80354e3",
+          "git_blob": "8cbeb933c0e2693ab37f9e64f0ea3f8e3941ab57",
+          "characters": 16825,
+          "pieces": 1,
+          "full_identity_equal": true,
+          "JSON_parse_success": true
+        },
+        {
+          "member": "jobs-42123569559.original-tool-return.json",
+          "bytes": 7257,
+          "sha256": "ff783f793ed04c4db0d8dc7fcff1b0138a43e6b763eb6f794f3e688f8b1c2686",
+          "git_blob": "011ffaea19c76aaa67b219c3ffb7b22fa4cdd480",
+          "characters": 7257,
+          "pieces": 1,
+          "full_identity_equal": true,
+          "JSON_parse_success": true
+        },
+        {
+          "member": "jobs-42123569750.original-tool-return.json",
+          "bytes": 9033,
+          "sha256": "b368a61b9c3fd55a8f8a33fe44f9d72e4be20a1c629465224f59d0dff829590d",
+          "git_blob": "68808434a642a1b9192fdbe2591a605e5967f06c",
+          "characters": 9033,
+          "pieces": 1,
+          "full_identity_equal": true,
+          "JSON_parse_success": true
+        },
+        {
+          "member": "STATUS.json",
+          "bytes": 241425,
+          "sha256": "9996d24145e8f8336ee7f68657fcf42a7275ee0a7e383755e7a79ead3343bd20",
+          "git_blob": "86b95af0274a176707b22cf8352ca9d29e904dea",
+          "characters": 241425,
+          "pieces": 3,
+          "full_identity_equal": true,
+          "JSON_parse_success": true
+        }
+      ]
+    },
+    "census": {
+      "errors": [],
+      "source": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+      "runs": 19,
+      "workflow_counts": {
+        "success": 8,
+        "queued": 4,
+        "skipped": 2,
+        "failure": 3,
+        "in_progress": 2
+      },
+      "jobs": 58,
+      "job_counts": {
+        "success": 35,
+        "cancelled": 9,
+        "queued": 7,
+        "skipped": 2,
+        "in_progress": 5
+      },
+      "job_lists": [
+        {
+          "run": 42123581986,
+          "reported_total": 1,
+          "returned": 1
+        },
+        {
+          "run": 42123581050,
+          "reported_total": 2,
+          "returned": 2
+        },
+        {
+          "run": 42123581231,
+          "reported_total": 1,
+          "returned": 1
+        },
+        {
+          "run": 42123581007,
+          "reported_total": 2,
+          "returned": 2
+        },
+        {
+          "run": 42123581270,
+          "reported_total": 6,
+          "returned": 6
+        },
+        {
+          "run": 42123581091,
+          "reported_total": 1,
+          "returned": 1
+        },
+        {
+          "run": 42123581410,
+          "reported_total": 1,
+          "returned": 1
+        },
+        {
+          "run": 42123581260,
+          "reported_total": 15,
+          "returned": 15
+        },
+        {
+          "run": 42123581385,
+          "reported_total": 3,
+          "returned": 3
+        },
+        {
+          "run": 42123581078,
+          "reported_total": 3,
+          "returned": 3
+        },
+        {
+          "run": 42123581186,
+          "reported_total": 6,
+          "returned": 6
+        },
+        {
+          "run": 42123581408,
+          "reported_total": 1,
+          "returned": 1
+        },
+        {
+          "run": 42123581363,
+          "reported_total": 2,
+          "returned": 2
+        },
+        {
+          "run": 42123581031,
+          "reported_total": 5,
+          "returned": 5
+        },
+        {
+          "run": 42123581393,
+          "reported_total": 2,
+          "returned": 2
+        },
+        {
+          "run": 42123581479,
+          "reported_total": 2,
+          "returned": 2
+        },
+        {
+          "run": 42123581142,
+          "reported_total": 3,
+          "returned": 3
+        },
+        {
+          "run": 42123569559,
+          "reported_total": 1,
+          "returned": 1
+        },
+        {
+          "run": 42123569750,
+          "reported_total": 1,
+          "returned": 1
+        }
+      ],
+      "all_58_unique_jobs_same_source_attempt_1": true,
+      "failure_run_children": {
+        "runs": [
+          {
+            "id": 42123581078,
+            "name": "Hepta Keyring Sync Security Migration (Draft)"
+          },
+          {
+            "id": 42123581186,
+            "name": "Hepta operator acceptance native signature verification"
+          },
+          {
+            "id": 42123581142,
+            "name": "Hepta owner-local Matrixd and Agentd native transport"
+          }
+        ],
+        "jobs": 12,
+        "counts": {
+          "success": 8,
+          "cancelled": 4
+        },
+        "cancelled": [
+          {
+            "id": 127581904379,
+            "run_id": 42123581078,
+            "labels": [
+              "macos-15"
+            ],
+            "runner_id": 0,
+            "steps": [],
+            "completed_at": "2026-11-05T22:57:34Z"
+          },
+          {
+            "id": 127581904887,
+            "run_id": 42123581186,
+            "labels": [
+              "macos-15"
+            ],
+            "runner_id": 0,
+            "steps": [],
+            "completed_at": "2026-11-05T22:59:23Z"
+          },
+          {
+            "id": 127581904964,
+            "run_id": 42123581186,
+            "labels": [
+              "macos-15"
+            ],
+            "runner_id": 0,
+            "steps": [],
+            "completed_at": "2026-11-05T23:01:52Z"
+          },
+          {
+            "id": 127581904089,
+            "run_id": 42123581142,
+            "labels": [
+              "macos-15"
+            ],
+            "runner_id": 0,
+            "steps": [],
+            "completed_at": "2026-11-05T22:59:23Z"
+          }
+        ]
+      },
+      "queued": [
+        {
+          "id": 127581905421,
+          "run_id": 42123581270,
+          "name": "Original recovery and authorized-read scopes (ubuntu-24.04, source-head)",
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "runner_id": 0,
+          "steps": []
+        },
+        {
+          "id": 127581905431,
+          "run_id": 42123581270,
+          "name": "Original recovery and authorized-read scopes (ubuntu-24.04, base-merge)",
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "runner_id": 0,
+          "steps": []
+        },
+        {
+          "id": 127583368742,
+          "run_id": 42123581260,
+          "name": "Build release x86_64-unknown-linux-musl",
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "runner_id": 0,
+          "steps": []
+        },
+        {
+          "id": 127648602373,
+          "run_id": 42123581385,
+          "name": "Select blocking CI scope",
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "runner_id": 0,
+          "steps": []
+        },
+        {
+          "id": 127648603524,
+          "run_id": 42123581385,
+          "name": "Blob size policy / Blob size policy",
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "runner_id": 0,
+          "steps": []
+        },
+        {
+          "id": 127654866519,
+          "run_id": 42123581363,
+          "name": "Architecture convergence (base-merge)",
+          "labels": [
+            "ubuntu-24.04-arm"
+          ],
+          "runner_id": 0,
+          "steps": []
+        },
+        {
+          "id": 127654866844,
+          "run_id": 42123581363,
+          "name": "Architecture convergence (source-head)",
+          "labels": [
+            "ubuntu-24.04-arm"
+          ],
+          "runner_id": 0,
+          "steps": []
+        }
+      ],
+      "PRs": [
+        {
+          "number": 4797,
+          "head": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+          "draft": true
+        },
+        {
+          "number": 4884,
+          "head": "daa21e7a6a9b19e74b61c6bbdc2c813f9fd35a42",
+          "draft": true
+        },
+        {
+          "number": 4902,
+          "head": "cc65856cc0b20d03db506c19495d53d61162102d",
+          "draft": true
+        }
+      ],
+      "bounded_window": [
+        "2026-11-06 01:59:47 UTC",
+        "2026-11-06 02:01:43 UTC"
+      ],
+      "exact_first_jobs_GET_clock_receipt_in_original_members": false,
+      "window_provenance": "Collector-declared bounded read window retained consistently in manifest and derived status; original MCP API bodies do not independently timestamp the collection. No exact first-read timestamp is claimed."
+    },
+    "conclusion": "All 39 registered object bodies and all 24 reconstructed logical UTF-8 files match fixed byte/Git/SHA256 identities. Nineteen workflow statuses and 58 unique job statuses are distinct denominators. Three workflow failures contain eight successful and four cancelled jobs; this does not establish three product test failures.",
+    "time_provenance_limit": "01:59:47–02:01:43 UTC is retained as the collector-declared bounded observation window. The missing exact first jobs-read clock receipt is not reconstructed or fabricated by this independent review. Original MCP API bodies do not independently timestamp collection.",
+    "postprocessing_failure_scope": "The retained full 19 response objects and complete reconstruction show no current custody gap from the documented old.find numeric-count error. They do not independently replay the original collector process ordering.",
+    "original_wire_capture": false,
+    "whole_product_qualified": false,
+    "character_boundaries": {
+      "transport_parts": 36,
+      "all_parts_valid_Unicode": true,
+      "character_offset_verified_as_JavaScript_UTF16_code_units": true,
+      "parts_with_different_scalar_count": 0,
+      "details": []
+    }
+  },
+  "failed_runs_triage": {
+    "registry": "8bcb712ede74b57c863e3f37031942e02ba759e3",
+    "every_24_declared_path_body_identity_verified_via_21_distinct_full_GET": true,
+    "original_API_and_log_checks": {
+      "errors": [],
+      "three_complete_REST_equal_to_main_cut": [
+        {
+          "run": 42123581078,
+          "complete_REST_exact_to_prior_cut": true,
+          "total_count": 3,
+          "job_count": 3
+        },
+        {
+          "run": 42123581186,
+          "complete_REST_exact_to_prior_cut": true,
+          "total_count": 6,
+          "job_count": 6
+        },
+        {
+          "run": 42123581142,
+          "complete_REST_exact_to_prior_cut": true,
+          "total_count": 3,
+          "job_count": 3
+        }
+      ],
+      "cancelled_original_errors": [
+        {
+          "job": 127581904379,
+          "original_error_has_404": true,
+          "original_error_has_BlobNotFound": true,
+          "original_wrapper_isError": true
+        },
+        {
+          "job": 127581904887,
+          "original_error_has_404": true,
+          "original_error_has_BlobNotFound": true,
+          "original_wrapper_isError": true
+        },
+        {
+          "job": 127581904964,
+          "original_error_has_404": true,
+          "original_error_has_BlobNotFound": true,
+          "original_wrapper_isError": true
+        },
+        {
+          "job": 127581904089,
+          "original_error_has_404": true,
+          "original_error_has_BlobNotFound": true,
+          "original_wrapper_isError": true
+        }
+      ],
+      "positive_source_lines": [
+        {
+          "kind": "keyring_ubuntu",
+          "job": 127581903929,
+          "total_lines": 1867,
+          "identity_equal": true,
+          "selected_source_lines": [
+            {
+              "line": 438,
+              "text": "2026-11-06T01:34:48.5809743Z \u001b[36;1mcargo metadata --manifest-path codex-rs/Cargo.toml --format-version 1 > /dev/null\u001b[0m"
+            },
+            {
+              "line": 439,
+              "text": "2026-11-06T01:34:48.5810090Z \u001b[36;1mgit diff --no-ext-diff -- codex-rs/Cargo.lock > \"$RUNNER_TEMP/keyring-cargo-lock.diff\"\u001b[0m"
+            },
+            {
+              "line": 457,
+              "text": "2026-11-06T01:34:48.5814351Z \u001b[36;1mcargo check --manifest-path codex-rs/Cargo.toml --locked -p codex-keyring-store\u001b[0m"
+            },
+            {
+              "line": 458,
+              "text": "2026-11-06T01:34:48.5814586Z \u001b[36;1mgit diff --quiet\u001b[0m"
+            },
+            {
+              "line": 1771,
+              "text": "2026-11-06T01:35:06.3208487Z keyring advisory-targeted packages absent from all-target lock"
+            },
+            {
+              "line": 1821,
+              "text": "2026-11-06T01:35:22.3216016Z \u001b[1m\u001b[92m    Finished\u001b[0m `dev` profile [unoptimized + debuginfo] target(s) in 15.98s"
+            }
+          ]
+        },
+        {
+          "kind": "operator_bazel_gnu",
+          "job": 127581904579,
+          "total_lines": 1144,
+          "identity_equal": true,
+          "selected_source_lines": [
+            {
+              "line": 847,
+              "text": "2026-11-06T01:35:49.0804293Z \u001b[36;1m./.github/scripts/run-bazel-ci.sh \\\u001b[0m"
+            },
+            {
+              "line": 856,
+              "text": "2026-11-06T01:35:49.0805828Z \u001b[36;1m  //codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests\u001b[0m"
+            },
+            {
+              "line": 1024,
+              "text": "2026-11-06T01:36:33.8996510Z //codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests     PASSED in 0.2s"
+            },
+            {
+              "line": 1026,
+              "text": "2026-11-06T01:36:33.8999598Z Executed 1 out of 1 test: 1 test passes."
+            }
+          ]
+        },
+        {
+          "kind": "operator_ubuntu_controls",
+          "job": 127581904974,
+          "total_lines": 536,
+          "identity_equal": true,
+          "selected_source_lines": [
+            {
+              "line": 467,
+              "text": "2026-11-06T01:35:09.5596234Z \u001b[31;1m     Summary [   0.221s] 33 tests run: 33 passed, 0 skipped\u001b[0m"
+            },
+            {
+              "line": 465,
+              "text": "2026-11-06T01:35:09.5592821Z \u001b[31;1m        PASS [   0.157s] codex-hepta-operator-acceptance sshsig::tests::native_version_and_reserved_compatibility_matches_real_openssh\u001b[0m"
+            }
+          ]
+        },
+        {
+          "kind": "owner_ubuntu_controls",
+          "job": 127581904493,
+          "total_lines": 3477,
+          "identity_equal": true,
+          "selected_source_lines": [
+            {
+              "line": 280,
+              "text": "2026-11-06T01:35:01.9794483Z \u001b[36;1mjust test --locked -p codex-uds --lib --test-threads 1 --no-tests fail --retries 0 2>&1 | Tee-Object \"$env:RUNNER_TEMP/owner-local/uds.log\"\u001b[0m"
+            },
+            {
+              "line": 371,
+              "text": "2026-11-06T01:35:16.6608531Z \u001b[36;1mjust test --locked -p codex-hepta-matrixd --lib --test-threads 1 --no-tests fail --retries 0 2>&1 | Tee-Object \"$env:RUNNER_TEMP/owner-local/matrixd.log\"\u001b[0m"
+            },
+            {
+              "line": 2682,
+              "text": "2026-11-06T01:41:51.3871824Z \u001b[36;1mjust test --locked -p codex-hepta-agentd --lib --test-threads 1 --no-tests fail --retries 0 2>&1 | Tee-Object \"$env:RUNNER_TEMP/owner-local/agentd.log\"\u001b[0m"
+            },
+            {
+              "line": 368,
+              "text": "2026-11-06T01:35:16.6123948Z \u001b[31;1m     Summary [   0.074s] 15 tests run: 15 passed, 0 skipped\u001b[0m"
+            },
+            {
+              "line": 2679,
+              "text": "2026-11-06T01:41:51.3294641Z \u001b[31;1m     Summary [   1.341s] 31 tests run: 31 passed, 0 skipped\u001b[0m"
+            },
+            {
+              "line": 3392,
+              "text": "2026-11-06T01:45:42.9938059Z \u001b[31;1m     Summary [  38.359s] 242 tests run: 242 passed, 1 skipped\u001b[0m"
+            }
+          ]
+        }
+      ]
+    },
+    "independent_nextest_PASS_counts": [
+      {
+        "job": 127581904974,
+        "passes": 33,
+        "counts": {
+          "codex-hepta-operator-acceptance": 33
+        }
+      },
+      {
+        "job": 127581904493,
+        "passes": 288,
+        "counts": {
+          "codex-uds": 15,
+          "codex-hepta-matrixd": 31,
+          "codex-hepta-agentd": 242
+        }
+      }
+    ],
+    "full_PASS_inventory_row_order_line_package_case_matches": [
+      {
+        "full_rows_equal": true,
+        "counts_equal": true,
+        "total_equal": true
+      },
+      {
+        "full_rows_equal": true,
+        "counts_equal": true,
+        "total_equal": true
+      }
+    ],
+    "scoped_positive_claims": {
+      "keyring": "Cargo check/advisory predicate only; no test or release qualification.",
+      "operator_bazel": "One target pass; not artifact/compact/TestRunner placement verification.",
+      "operator_nextest": "33 original PASS rows and 0 skipped, including actual OpenSSH compatibility PASS; inner artifact not independently collected.",
+      "owner_nextest": "15 UDS +31 Matrixd +242 Agentd original PASS rows; 1 Agentd skipped retained, skipped case name not exposed in job console."
+    },
+    "four_cancelled_logs_original_404_BlobNotFound_preserved": true,
+    "cancellation_cause": "UNKNOWN",
+    "no_log_does_not_establish_never_executed": true,
+    "ZIP_inner_XML_or_artifact_qualification_granted": false
+  },
+  "chain_addendum": {
+    "registry": "2d6243bb1523b29ac358c22ef99ad0fa47170e07",
+    "review_actual_blob": "3e79afafe1dbf9e9becae5cea9d66904f035e342",
+    "source_bindings_actual_blob": "0d20de9a375ae8b406206e8bec68c0592b12ca6e",
+    "code_mode_verification_actual_blob": "3f7a3542099328751384a63930af07ca77668269",
+    "receipt_field_consistency": {
+      "errors": [],
+      "records": 32,
+      "actual_create_and_full_GET_fields_consistent": true,
+      "whole_payloads_freshly_refetched_by_this_reviewer": false,
+      "freshly_refetched_payloads": [
+        "REVIEW.zh-CN.md",
+        "SOURCE_BINDINGS.json",
+        "VERIFICATION.code-mode.json"
+      ]
+    },
+    "read_scope": "Complete registry and three complete review/binding/verification documents; this reviewer did not re-fetch all 17 source objects or reconstruct the 11-piece original-response archive.",
+    "consistency_assessment": "Review explicitly accepts fixed-source packet-v1 implementation progress only. It preserves the missing exact-pair original native/build/artifact provenance, ignored paired-test status, production consumer limits, and OPEN B16/B19/B18 scope. It does not claim new compiled/native behavior or whole Chain security audit.",
+    "independent_paired_native_acceptance": false
+  },
+  "destination_consistency": {
+    "errors": [],
+    "old_projection_paths": 377,
+    "new_payload_rows": 95,
+    "union_paths_excluding_3_new_registry_selves": 472,
+    "duplicate_same_identity_paths": [],
+    "scope": "Only destination collision and declared identity/receipt consistency against frozen 377 projection and the three new registries. Full audit parent tree remains root-owned."
+  },
+  "frozen_377_projection": {
+    "git_blob": "9955832a1a15ed4cea2b287c41e49b036ce433ed",
+    "unchanged": true
+  },
+  "final_report_review": {
+    "state": "NOT_REVIEWED_SEPARATE_INCREMENT",
+    "reason": "Root requested sealing this completed evidence review immediately; the subsequently frozen final report will receive a separate accurately scoped review."
+  },
+  "preparation_incidents": [
+    {
+      "stage": "supplement_display_only",
+      "error": "TypeError: Cannot read properties of undefined (reading 'endsWith')",
+      "cause": "Display code initially omitted the repo_path alias in triage records.",
+      "effect": "All 24 requested supplemental full GET bodies and identity results had already been stored; corrected display code reused them without new API calls."
+    }
+  ],
+  "actions": {
+    "new_CI_query": false,
+    "executor_used": false,
+    "native_run": false,
+    "dispatch_rerun_cancel": false,
+    "source_ref_PR_mutation": false,
+    "old_frozen_artifact_modified": false,
+    "unreferenced_immutable_review_materialization": "This document is materialized separately by Git create_tree(content), followed by complete tree and blob GET and exact-byte equality. Its actual post-materialization receipt is outside this document to avoid self-recursive identity."
+  },
+  "sealed_at_utc": "2026-11-06T02:27:52.960Z",
+  "decision": {
+    "blocking_findings": 0,
+    "accepted_scope": "Immutable original MCP custody, independent bounded CI census, original three-run triage consistency, Chain addendum qualification limits, and new declared destination non-conflict with the frozen 377 projection.",
+    "product_or_release_qualification_granted": false,
+    "full_parent_tree_publication_approved": false
+  },
+  "action_scope_note": "Shared cwd recovery and collector reconstruction are separate root/owner tasks. This review used only code-mode in-memory processing and immutable GitHub object reads.",
+  "independently_full_GET_verified_unique_source_object_count": 66
+}

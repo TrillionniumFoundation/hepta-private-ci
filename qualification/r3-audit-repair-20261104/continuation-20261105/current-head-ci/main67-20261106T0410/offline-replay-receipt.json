@@ -1,0 +1,127 @@
+{
+  "schema": "main92-lossless-restoration-and-offline-replay-receipt-v2",
+  "archive": {
+    "bytes": 56303646,
+    "sha256": "e2e3420fe5414cb9ff49792c3a8c77c8c65419bb457a6d53dde148ea77f28435",
+    "git_blob": "42d3a815dcca4508347ce7a5e4c00a1fb9fffdfb"
+  },
+  "restored_member_count": 532,
+  "all_restored_files_still_exact_after_replays": true,
+  "replays": [
+    {
+      "name": "decode-five",
+      "command": [
+        "python3",
+        "/tmp/hepta-runtime-recovery-20261106/format-review-recovery/main92-v2-offline-restored/root/main/decode_five_compacts.py"
+      ],
+      "exit_code": 0,
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      "stdout": {
+        "bytes": 1238,
+        "sha256": "c7225076384613c75ea1b330a406f6c74496a7951757c57a1a95b47f9bd56773",
+        "git_blob": "f3d28a1114ecc2c9b39ab43759f3e321a0211e48"
+      },
+      "frozen_stdout_bytes_equal": true
+    },
+    {
+      "name": "decode-GNU",
+      "command": [
+        "python3",
+        "/tmp/hepta-runtime-recovery-20261106/format-review-recovery/main92-v2-offline-restored/root/main/decode_gnu_compact.py"
+      ],
+      "exit_code": 0,
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      "stdout": {
+        "bytes": 255,
+        "sha256": "c6e050ec70b29bc3bf9983c9aad798fc676c732b5436e7520719b83e7b3c2a67",
+        "git_blob": "7dbef6fc1b807bcb0e3c9504fb912b2d302b3ada"
+      },
+      "frozen_stdout_bytes_equal": true
+    },
+    {
+      "name": "verify-main",
+      "command": [
+        "python3",
+        "/tmp/hepta-runtime-recovery-20261106/format-review-recovery/main92-v2-offline-restored/root/main/verify_packet.py"
+      ],
+      "exit_code": 0,
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      "stdout": {
+        "bytes": 48043,
+        "sha256": "c75f5596abe2237da9ec65c752e9bea926cde26b43ec9a6e665c05e7213a799e",
+        "git_blob": "c2043e351005ccf0c09c9dd5bc9253655a5c0ac4"
+      },
+      "frozen_stdout_bytes_equal": true
+    },
+    {
+      "name": "bind-B23",
+      "command": [
+        "python3",
+        "/tmp/hepta-runtime-recovery-20261106/format-review-recovery/main92-v2-offline-restored/root/b23-review/bind_b23_compacts_portable.py",
+        "--main",
+        "/tmp/hepta-runtime-recovery-20261106/format-review-recovery/main92-v2-offline-restored/root/main",
+        "--diagnostic",
+        "/workspace/scratch/07dd58cc9630/recovery-20261106/diagnostic-terminal-0410",
+        "--decoder",
+        "/tmp/hepta-runtime-recovery-20261106/format-review-recovery/main92-v2-offline-restored/root/b23-review/borrowed/decode_compact.py",
+        "--main-display",
+        "/tmp/hepta-runtime-recovery-20261106/format-review-recovery/main67-failures-0410",
+        "--diagnostic-display",
+        "/workspace/scratch/07dd58cc9630/recovery-20261106/diagnostic-terminal-0410"
+      ],
+      "exit_code": 0,
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      "stdout": {
+        "bytes": 108070,
+        "sha256": "ae60a4c78fb657262d89242b3ae46db652d67e5cc44686bc2d7c39df296bd92e",
+        "git_blob": "fb8cb0b9a06d6f69ac02029524eda266f13be915"
+      },
+      "frozen_stdout_bytes_equal": true
+    },
+    {
+      "name": "verify-B23",
+      "command": [
+        "python3",
+        "/tmp/hepta-runtime-recovery-20261106/format-review-recovery/main92-v2-offline-restored/root/b23-review/verify_original_scope.py",
+        "--main",
+        "/tmp/hepta-runtime-recovery-20261106/format-review-recovery/main92-v2-offline-restored/root/main",
+        "--diagnostic",
+        "/workspace/scratch/07dd58cc9630/recovery-20261106/diagnostic-terminal-0410",
+        "--source",
+        "/tmp/hepta-runtime-recovery-20261106/format-review-recovery/main92-v2-offline-restored/root/b23-review/source",
+        "--binding",
+        "/tmp/hepta-runtime-recovery-20261106/format-review-recovery/main92-six-artifacts-delivery-v2/bind-B23.replay.stdout.json"
+      ],
+      "exit_code": 0,
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      "stdout": {
+        "bytes": 13052,
+        "sha256": "af65d9785e6c76b50dce45baa786a3492c121bed08638b5ed06fa64d2455114a",
+        "git_blob": "e9d1e8f732b161741b3bea479ea4280cf983f13b"
+      },
+      "frozen_stdout_bytes_equal": true
+    }
+  ],
+  "external_diagnostic_dependency_scope": "Only already saved original root B23 artifacts/API were read. Their SHA256 identities are in bundle-manifest; no new API/native execution.",
+  "display_path_alias_scope": "B23 portable checker changes only printed historical absolute log path prefix, all actual reads use independent restored main root."
+}

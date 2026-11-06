@@ -1,0 +1,768 @@
+--- component-v2-template
++++ final-workflow
+@@ -222,6 +222,8 @@
+               main()
+           PY
+           python3 "${RUNNER_TEMP}/b23-source-identity.py" before
++          command -v zstd >"${RUNNER_TEMP}/b23-app-server-evidence/zstd-path.txt"
++          zstd --version >"${RUNNER_TEMP}/b23-app-server-evidence/zstd-version.txt"
+ 
+       - name: Prepare Bazel CI
+         id: prepare_bazel
+@@ -301,7 +303,755 @@
+             "${RUNNER_TEMP}/b23-app-server-evidence" \
+             "//codex-rs/app-server:app-server-unit-tests" \
+             "${RUNNER_TEMP}/bazel-execution-logs" <<'PY'
+-          raise SystemExit("collector pending independent acceptance; draft only")
++          #!/usr/bin/env python3
++          """Collect actual Bazel attempts without changing test execution.
++
++          The JSONL retained here is credential-sanitized and opaque-payload-omitted.
++          Raw BEP stays outside both upload roots. Missing evidence is never a pass.
++          This collector qualifies evidence only, not a product or blocker.
++          """
++          import base64
++          import collections
++          import gzip
++          import hashlib
++          import json
++          import os
++          from pathlib import Path
++          import re
++          import selectors
++          import shutil
++          import stat
++          import subprocess
++          import sys
++          import tempfile
++          import time
++          from urllib.parse import parse_qsl, quote, unquote, unquote_to_bytes, urlencode, urlsplit, urlunsplit
++
++          MARK = "CREDENTIAL_REDACTED"
++          OPAQUE_MARK = base64.b64encode(b"OPAQUE_PAYLOAD_OMITTED").decode("ascii")
++          HEADERS = frozenset(("remote_header", "remote_cache_header", "remote_exec_header",
++                               "remote_downloader_header", "bes_header"))
++          HEADER_RE = re.compile(r"--(?:" + "|".join(sorted(HEADERS)) + r")(?=$|[\s=])")
++          URI_RE = re.compile(r"[A-Za-z][A-Za-z0-9+.-]*://[^\s\"'<>]+")
++          DERIVED_NAME = "build-events.sanitized.jsonl"
++          SCHEMA = "bazel-actual-attempt-evidence-rebuilt-v2"
++          CHUNK = 1024 * 1024
++
++
++          class EvidenceError(Exception):
++              """Only fixed error codes; never include untrusted text or payload."""
++
++
++          class SecretPolicy:
++              def __init__(self, secret):
++                  self.secret = secret
++                  self.patterns = []
++                  if secret:
++                      forms = {secret, json.dumps(secret, ensure_ascii=True)[1:-1]}
++                      for value in tuple(forms):
++                          for _ in range(3):
++                              value = quote(value, safe="")
++                              forms.add(value)
++                              forms.add(re.sub(r"%[0-9A-F]{2}", lambda m: m[0].lower(), value))
++                      self.patterns = [x.encode("utf-8") for x in forms]
++                  self.overlap = max([256, len(secret.encode("utf-8")) * (3 ** 4) + 64]
++                                     + [len(x) + 64 for x in self.patterns])
++
++              def sensitive_text(self, value):
++                  if not self.secret:
++                      return False
++                  if any(p.decode("utf-8") in value for p in self.patterns):
++                      return True
++                  for _ in range(4):
++                      value2 = unquote(value)
++                      if self.secret in value2:
++                          return True
++                      if value2 == value:
++                          break
++                      value = value2
++                  return False
++
++              def sensitive_bytes(self, value):
++                  return (any(x in value for x in self.patterns)
++                          or self.sensitive_text(value.decode("utf-8", errors="ignore")))
++
++              def scan_stream(self, stream):
++                  tail = b""
++                  while True:
++                      block = stream.read(CHUNK)
++                      if not block:
++                          return
++                      sample = tail + block
++                      if self.sensitive_bytes(sample):
++                          raise EvidenceError("known_credential_in_bytes")
++                      tail = sample[-self.overlap:]
++
++
++          def dump_json(path, value):
++              path.write_text(json.dumps(value, ensure_ascii=True, indent=2, sort_keys=True) + "\n",
++                              encoding="utf-8")
++
++
++          def canonical(value):
++              return json.dumps(value, ensure_ascii=True, sort_keys=True, separators=(",", ":"))
++
++
++          def pointer(parts):
++              return "/" + "/".join(str(x).replace("~", "~0").replace("/", "~1") for x in parts)
++
++
++          def header_name(value):
++              if not isinstance(value, str):
++                  return None
++              value = value.removeprefix("--")
++              return value if value in HEADERS else None
++
++
++          class Sanitizer:
++              def __init__(self, policy):
++                  self.policy = policy
++                  self.changes = []
++
++              def note(self, parts, kind, count=1, input_bytes=None):
++                  # These paths already contain cleaned keys, never original values.
++                  path = pointer(parts)
++                  if self.policy.sensitive_text(path):
++                      path = "/REDACTED_FIELD_PATH"
++                  row = {"path": path, "kind": kind, "count": count}
++                  if input_bytes is not None:
++                      row["input_bytes"] = input_bytes
++                  self.changes.append(row)
++
++              def text(self, value, parts, allow_bare_header=False):
++                  if self.policy.secret and self.policy.secret in value:
++                      count = value.count(self.policy.secret)
++                      value = value.replace(self.policy.secret, MARK)
++                      self.note(parts, "exact_known_credential", count)
++                  if HEADER_RE.search(value):
++                      if not (allow_bare_header and value.startswith("--") and header_name(value)):
++                          self.note(parts, "unstructured_header_entire_scalar")
++                          return MARK
++
++                  def clean_uri(match):
++                      original = match[0]
++                      uri = urlsplit(original)
++                      # Never attempt to reconstruct an authenticated/encoded local path.
++                      if (self.policy.sensitive_text(uri.path)
++                              or self.policy.sensitive_text(uri.fragment)):
++                          raise EvidenceError("encoded_credential_in_uri_path")
++                      changed = False
++                      netloc = uri.netloc
++                      if "@" in netloc:
++                          netloc = MARK + "@" + netloc.rsplit("@", 1)[1]
++                          self.note(parts, "uri_userinfo")
++                          changed = True
++                      query = uri.query
++                      if query:
++                          pairs = parse_qsl(query, keep_blank_values=True, strict_parsing=False)
++                          # All values are omitted, including unknown/camelCase auth names.
++                          clean_pairs = []
++                          for key, _value in pairs:
++                              if self.policy.sensitive_text(key):
++                                  key = MARK
++                              clean_pairs.append((key, MARK))
++                          query = urlencode(clean_pairs)
++                          self.note(parts, "uri_all_query_values", max(1, len(pairs)))
++                          changed = True
++                      if not changed:
++                          return original
++                      return urlunsplit((uri.scheme, netloc, uri.path, query, uri.fragment))
++
++                  value = URI_RE.sub(clean_uri, value)
++                  if self.policy.sensitive_text(value):
++                      self.note(parts, "encoded_known_credential_entire_scalar")
++                      return MARK
++                  return value
++
++              def clean(self, value, parts=()):
++                  if isinstance(value, str):
++                      return self.text(value, parts)
++                  if isinstance(value, list):
++                      out = []
++                      previous_header = False
++                      for index, item in enumerate(value):
++                          here = parts + (index,)
++                          if previous_header:
++                              self.note(here, "separate_header_argument")
++                              out.append(MARK)
++                          elif isinstance(item, str) and item.startswith("--") and header_name(item):
++                              out.append(self.text(item, here, allow_bare_header=True))
++                          else:
++                              out.append(self.clean(item, here))
++                          previous_header = (isinstance(item, str) and item.startswith("--")
++                                             and header_name(item) is not None
++                                             and not previous_header)
++                      if previous_header:
++                          raise EvidenceError("header_argument_missing_value")
++                      return out
++                  if isinstance(value, dict):
++                      out = {}
++                      option_header = header_name(value.get("optionName"))
++                      has_opaque = "contents" in value
++                      for raw_key, item in value.items():
++                          if not isinstance(raw_key, str):
++                              raise EvidenceError("non_string_json_key")
++                          # Bare header keys remain names; their entire values are omitted.
++                          key = (raw_key if header_name(raw_key)
++                                 else self.text(raw_key, parts + ("KEY",)))
++                          here = parts + (key,)
++                          if key in out:
++                              raise EvidenceError("sanitized_key_collision")
++                          if has_opaque and raw_key == "contents":
++                              if not isinstance(item, str):
++                                  raise EvidenceError("opaque_contents_not_base64_string")
++                              try:
++                                  decoded = base64.b64decode(item, validate=True)
++                              except Exception:
++                                  raise EvidenceError("opaque_contents_invalid_base64") from None
++                              self.note(here, "opaque_payload_omitted", input_bytes=len(decoded))
++                              out[key] = OPAQUE_MARK
++                          elif has_opaque and raw_key == "digest":
++                              self.note(here, "opaque_payload_digest_omitted")
++                              out[key] = MARK
++                          elif header_name(raw_key) or (option_header and raw_key in ("optionValue", "combinedForm")):
++                              self.note(here, "structured_header_value")
++                              out[key] = MARK
++                          else:
++                              out[key] = self.clean(item, here)
++                      return out
++                  if value is None or isinstance(value, (int, float, bool)):
++                      return value
++                  raise EvidenceError("unsupported_json_value")
++
++
++          def sanitize_bep(raw, public, policy):
++              receipt = {
++                  "schema": SCHEMA, "complete": False,
++                  "representation": "credential-sanitized / opaque-payload-omitted derived JSONL",
++                  "raw_bep_retained_in_artifacts": False,
++                  "input_bytes": 0, "output_bytes": 0, "event_count": 0,
++                  "changes": [], "secret_or_raw_payload_fingerprint_recorded": False,
++              }
++              destination = public / DERIVED_NAME
++              destination.unlink(missing_ok=True)
++              sanitizer = Sanitizer(policy)
++              events = []
++              staged = None
++              try:
++                  if raw.is_symlink() or not raw.is_file():
++                      raise EvidenceError("raw_bep_missing_or_linked")
++                  receipt["input_bytes"] = raw.stat().st_size
++                  fd, staged_name = tempfile.mkstemp(prefix="derived-", dir=raw.parent)
++                  staged = Path(staged_name)
++                  with raw.open("r", encoding="utf-8") as incoming, os.fdopen(fd, "wb") as outgoing:
++                      for number, line in enumerate(incoming):
++                          if not line.strip():
++                              raise EvidenceError("blank_bep_record")
++                          # Reject nonstandard JSON numbers and duplicate keys.
++                          def pairs_hook(pairs):
++                              obj = {}
++                              for key, item in pairs:
++                                  if key in obj:
++                                      raise EvidenceError("duplicate_json_key")
++                                  obj[key] = item
++                              return obj
++                          event = json.loads(line, object_pairs_hook=pairs_hook,
++                                             parse_constant=lambda _x: (_ for _ in ()).throw(
++                                                 EvidenceError("nonstandard_json_number")))
++                          if not isinstance(event, dict):
++                              raise EvidenceError("bep_event_not_object")
++                          clean = sanitizer.clean(event, (number,))
++                          encoded = (json.dumps(clean, ensure_ascii=True, separators=(",", ":")) + "\n").encode("utf-8")
++                          if policy.sensitive_bytes(encoded):
++                              raise EvidenceError("sanitized_bep_residual_credential")
++                          outgoing.write(encoded)
++                          events.append(clean)
++                  receipt["output_bytes"] = staged.stat().st_size
++                  receipt["event_count"] = len(events)
++                  if not events:
++                      raise EvidenceError("empty_bep")
++                  os.replace(staged, destination)
++                  staged = None
++                  receipt["complete"] = True
++              except Exception as exc:
++                  destination.unlink(missing_ok=True)
++                  receipt["error_type"] = type(exc).__name__
++                  # Error text can include raw input. Never retain it.
++                  events = []
++              finally:
++                  if staged is not None:
++                      staged.unlink(missing_ok=True)
++              receipt["changes"] = sanitizer.changes
++              receipt["opaque_payload_omission_count"] = sum(
++                  x["count"] for x in sanitizer.changes if x["kind"] == "opaque_payload_omitted")
++              dump_json(public / "bep-redaction-receipt.json", receipt)
++              return events, receipt
++
++
++          def relevant_log(relative):
++              return (relative.name in ("test.log", "test.xml")
++                      or ("test_attempts" in relative.parts and relative.suffix in (".log", ".xml")))
++
++
++          def stable_copy(source, destination, staging, policy):
++              if source.is_symlink():
++                  raise EvidenceError("linked_test_log")
++              descriptor = os.open(source, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0))
++              staged = None
++              try:
++                  with os.fdopen(descriptor, "rb") as incoming:
++                      first = os.fstat(incoming.fileno())
++                      if not stat.S_ISREG(first.st_mode):
++                          raise EvidenceError("nonregular_test_log")
++                      fd, name = tempfile.mkstemp(prefix="log-", dir=staging)
++                      staged = Path(name)
++                      digest, size, tail = hashlib.sha256(), 0, b""
++                      with os.fdopen(fd, "wb") as outgoing:
++                          while True:
++                              block = incoming.read(CHUNK)
++                              if not block:
++                                  break
++                              sample = tail + block
++                              if policy.sensitive_bytes(sample):
++                                  raise EvidenceError("known_credential_in_test_log")
++                              tail = sample[-policy.overlap:]
++                              digest.update(block)
++                              size += len(block)
++                              outgoing.write(block)
++                      last = os.fstat(incoming.fileno())
++                  current = source.lstat()
++                  signature = lambda st: (st.st_dev, st.st_ino, st.st_mode, st.st_size, st.st_mtime_ns)
++                  if signature(first) != signature(last) or signature(last) != signature(current) or size != first.st_size:
++                      raise EvidenceError("test_log_changed_during_copy")
++                  destination.parent.mkdir(parents=True, exist_ok=True)
++                  os.replace(staged, destination)
++                  staged = None
++                  return {"bytes": size, "sha256": digest.hexdigest(), "source_mtime_ns": first.st_mtime_ns}
++              finally:
++                  if staged is not None:
++                      staged.unlink(missing_ok=True)
++
++
++          def collect_local_logs(testlogs, public, private, policy, errors):
++              inventory = {}
++              try:
++                  root = testlogs.resolve(strict=True)
++                  if policy.sensitive_text(str(root)) or not root.is_dir():
++                      raise EvidenceError("invalid_testlogs_root")
++              except Exception:
++                  errors.append({"kind": "testlogs_root_unavailable"})
++                  return None, inventory
++              def walk_error(_exc):
++                  errors.append({"kind": "testlogs_walk_error"})
++              for directory, directories, files in os.walk(root, followlinks=False, onerror=walk_error):
++                  here = Path(directory)
++                  allowed_dirs = []
++                  for name in sorted(directories):
++                      if name in ("test.outputs", "test.outputs_manifest") or name.endswith(".runfiles"):
++                          continue
++                      path = here / name
++                      if path.is_symlink():
++                          errors.append({"kind": "nested_testlogs_directory_link"})
++                      elif policy.sensitive_text(str(path)):
++                          errors.append({"kind": "credential_in_testlogs_directory"})
++                      else:
++                          allowed_dirs.append(name)
++                  directories[:] = allowed_dirs
++                  for name in sorted(files):
++                      path = here / name
++                      relative = path.relative_to(root)
++                      if not relevant_log(relative):
++                          continue
++                      if policy.sensitive_text(str(path)):
++                          errors.append({"kind": "credential_in_test_log_path"})
++                          continue
++                      try:
++                          resolved = path.resolve(strict=True)
++                          resolved.relative_to(root)
++                          if path.is_symlink():
++                              raise EvidenceError("linked_test_log")
++                          target = public / "all-testlogs" / relative
++                          row = stable_copy(path, target, private, policy)
++                          row.update({"relative_path": relative.as_posix(),
++                                      "archive_path": "all-testlogs/" + relative.as_posix()})
++                          inventory[relative.as_posix()] = row
++                      except Exception:
++                          # No digest or original input appears for a withheld file.
++                          errors.append({"kind": "local_test_log_not_retained",
++                                         "path": relative.as_posix()})
++              return root, inventory
++
++
++          def reference(file, root, inventory):
++              record = {"name": file.get("name"), "retained": False}
++              if "contents" in file:
++                  record["availability"] = "UNAVAILABLE_INLINE_PAYLOAD"
++                  return record
++              uri = file.get("uri")
++              record["uri"] = uri
++              if not isinstance(uri, str):
++                  record["availability"] = "UNAVAILABLE_NO_URI"
++                  return record
++              try:
++                  parsed = urlsplit(uri)
++                  if parsed.scheme != "file":
++                      record["availability"] = "UNAVAILABLE_NONLOCAL_URI_NOT_FETCHED"
++                      return record
++                  if parsed.netloc not in ("", "localhost") or parsed.query or parsed.fragment:
++                      raise EvidenceError("unsupported_file_uri")
++                  decoded = unquote_to_bytes(parsed.path).decode("utf-8", errors="strict")
++                  if "\x00" in decoded or not Path(decoded).is_absolute() or root is None:
++                      raise EvidenceError("invalid_file_uri_path")
++                  path = Path(decoded)
++                  # A BEP path may traverse directories, but no nested symlink is authorized.
++                  lexical = path.relative_to(root)
++                  for ancestor in (path, *path.parents):
++                      if ancestor == root:
++                          break
++                      if ancestor.is_symlink():
++                          raise EvidenceError("linked_file_uri")
++                  resolved = path.resolve(strict=True)
++                  relative = resolved.relative_to(root).as_posix()
++                  row = inventory.get(relative)
++                  if row is None:
++                      raise EvidenceError("referenced_log_not_retained")
++                  if "length" in file and int(file["length"]) != row["bytes"]:
++                      raise EvidenceError("length_mismatch")
++                  if file.get("digest") and file["digest"] != row["sha256"]:
++                      raise EvidenceError("digest_mismatch_or_unrecognized_algorithm")
++                  record.update({"retained": True, "availability": "RETAINED_LOCAL",
++                                 "relative_path": relative, "archive_path": row["archive_path"],
++                                 "bytes": row["bytes"], "sha256": row["sha256"]})
++              except Exception:
++                  record["availability"] = "UNAVAILABLE_INVALID_MISSING_OR_MISMATCHED_LOCAL_FILE"
++              return record
++
++
++          def reconcile(events, root, inventory, expected_target, original_exit, errors):
++              attempts, summaries, seen, announced = [], [], set(), set()
++              groups, counts = collections.defaultdict(list), collections.Counter()
++              finished = []
++              for index, event in enumerate(events):
++                  identity = event.get("id")
++                  if not isinstance(identity, dict) or not identity:
++                      errors.append({"kind": "event_id_missing", "event": index})
++                      continue
++                  key = canonical(identity)
++                  if key in seen:
++                      errors.append({"kind": "duplicate_event_id", "event": index})
++                  seen.add(key)
++                  for child in event.get("children", []):
++                      announced.add(canonical(child))
++                  if "finished" in event:
++                      finished.append(event["finished"])
++                  if "testResult" in identity:
++                      ident = identity["testResult"]
++                      payload = event.get("testResult")
++                      if not isinstance(payload, dict):
++                          errors.append({"kind": "test_result_payload_missing", "event": index})
++                          continue
++                      label = ident.get("label")
++                      config = canonical(ident.get("configuration", {}))
++                      group = (label, config, ident.get("run", 0), ident.get("shard", 0))
++                      attempt = ident.get("attempt", 0)
++                      if not isinstance(attempt, int) or isinstance(attempt, bool) or attempt < 1:
++                          errors.append({"kind": "invalid_attempt_number", "event": index})
++                      else:
++                          groups[group].append(attempt)
++                      counts[(label, config)] += 1
++                      outputs, roles = [], set()
++                      for output in payload.get("testActionOutput", []):
++                          if not isinstance(output, dict):
++                              errors.append({"kind": "invalid_test_output", "event": index})
++                              continue
++                          name = output.get("name", "")
++                          suffix = Path(str(name)).suffix
++                          if suffix not in (".log", ".xml"):
++                              # Deliberately outside the log/XML retention contract.
++                              outputs.append({"name": name, "retained": False,
++                                              "availability": "OUTSIDE_LOG_XML_SCOPE"})
++                              continue
++                          roles.add(suffix)
++                          item = reference(output, root, inventory)
++                          outputs.append(item)
++                          if not item["retained"]:
++                              errors.append({"kind": "attempt_reference_unavailable",
++                                             "event": index, "output": len(outputs) - 1})
++                      if not {".log", ".xml"}.issubset(roles):
++                          errors.append({"kind": "attempt_log_or_xml_reference_missing", "event": index})
++                      execution = payload.get("executionInfo", {})
++                      if payload.get("cachedLocally") or execution.get("cachedRemotely"):
++                          errors.append({"kind": "unexpected_cached_test_result", "event": index})
++                      attempts.append({"id": ident, "status": payload.get("status"),
++                                       "cachedLocally": payload.get("cachedLocally", False),
++                                       "executionInfo": execution, "outputs": outputs})
++                  if "testSummary" in identity:
++                      payload = event.get("testSummary", {})
++                      ident = identity["testSummary"]
++                      summaries.append({"id": ident, "payload": payload})
++              if announced - seen:
++                  errors.append({"kind": "advertised_event_ids_missing", "count": len(announced - seen)})
++              if not events or events[-1].get("lastMessage") is not True or sum(
++                      event.get("lastMessage") is True for event in events) != 1:
++                  errors.append({"kind": "last_message_missing_or_not_final"})
++              if len(finished) != 1:
++                  errors.append({"kind": "finished_event_missing_or_duplicated"})
++              else:
++                  code = finished[0].get("exitCode", {}).get("code", 0)
++                  if code != original_exit:
++                      errors.append({"kind": "original_bazel_exit_mismatch"})
++              for numbers in groups.values():
++                  if sorted(numbers) != list(range(1, max(numbers) + 1)):
++                      errors.append({"kind": "attempt_sequence_gap_or_duplicate"})
++              summarized = set()
++              for summary in summaries:
++                  ident, payload = summary["id"], summary["payload"]
++                  key = (ident.get("label"), canonical(ident.get("configuration", {})))
++                  if key in summarized:
++                      errors.append({"kind": "duplicate_test_summary"})
++                  summarized.add(key)
++                  if payload.get("totalRunCount", 0) != counts[key]:
++                      errors.append({"kind": "summary_actual_attempt_count_mismatch"})
++                  if payload.get("totalNumCached", 0):
++                      errors.append({"kind": "unexpected_cached_summary"})
++                  summary["log_references"] = []
++                  for disposition in ("passed", "failed"):
++                      for file in payload.get(disposition, []):
++                          if not isinstance(file, dict):
++                              errors.append({"kind": "invalid_summary_log_reference"})
++                              continue
++                          item = reference(file, root, inventory)
++                          summary["log_references"].append({"disposition": disposition, **item})
++                          if not item["retained"]:
++                              errors.append({"kind": "summary_log_reference_unavailable"})
++              if set(counts) - summarized:
++                  errors.append({"kind": "actual_attempt_summary_missing"})
++              if not attempts:
++                  errors.append({"kind": "no_actual_test_results"})
++              if expected_target not in {row["id"].get("label") for row in attempts}:
++                  errors.append({"kind": "required_target_not_observed"})
++              return attempts, summaries
++
++
++          def read_exit(public, name, errors):
++              try:
++                  text = (public / name).read_text(encoding="ascii")
++                  if re.fullmatch(r"(0|[1-9][0-9]*)\n", text) is None:
++                      raise EvidenceError("invalid_exit_receipt")
++                  value = int(text)
++                  if value > 255:
++                      raise EvidenceError("invalid_exit_range")
++                  return value
++              except Exception:
++                  errors.append({"kind": "exit_receipt_missing_or_invalid", "receipt": name})
++                  return None
++
++
++
++          SAFE_ERROR_CODES = frozenset((
++              "known_credential_in_bytes", "unsafe_upload_directory", "unsafe_upload_file_path",
++              "invalid_upload_root", "upload_walk_error", "nonregular_upload_file",
++              "upload_file_changed_during_scan", "zstd_decoder_missing", "zstd_decoder_metadata_unsafe",
++              "zstd_decoder_version_failed", "zstd_decode_deadline", "zstd_decode_failed_or_incomplete",
++          ))
++
++
++          def safe_error(exc):
++              # Never include exception text; only our fixed whitelist can become a code.
++              result = {"error_type": type(exc).__name__}
++              if isinstance(exc, EvidenceError) and exc.args and exc.args[0] in SAFE_ERROR_CODES:
++                  result["error_code"] = exc.args[0]
++              return result
++
++
++          def inspect_zstd(policy):
++              invoked = shutil.which("zstd")
++              if invoked is None:
++                  raise EvidenceError("zstd_decoder_missing")
++              resolved = str(Path(invoked).resolve(strict=True))
++              if policy.sensitive_text(invoked) or policy.sensitive_text(resolved):
++                  raise EvidenceError("zstd_decoder_metadata_unsafe")
++              result = subprocess.run([invoked, "--version"], stdin=subprocess.DEVNULL,
++                                      stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
++                                      timeout=5, check=False)
++              if result.returncode != 0 or len(result.stdout) > 4096:
++                  raise EvidenceError("zstd_decoder_version_failed")
++              version = result.stdout.decode("utf-8", errors="strict").strip()
++              if not version or policy.sensitive_text(version):
++                  raise EvidenceError("zstd_decoder_metadata_unsafe")
++              return {"invoked_path": invoked, "resolved_path": resolved, "version": version}
++
++
++          def scan_zstd(path, decoder, policy):
++              """Read original compressed bytes, never rewrite; bound only our subprocess."""
++              process = subprocess.Popen([decoder["invoked_path"], "-q", "-d", "-c", "--no-pass-through", "--", str(path)],
++                                         stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
++                                         stderr=subprocess.DEVNULL, close_fds=True)
++              deadline, total, tail = time.monotonic() + 60.0, 0, b""
++              try:
++                  assert process.stdout is not None
++                  os.set_blocking(process.stdout.fileno(), False)
++                  with selectors.DefaultSelector() as selector:
++                      selector.register(process.stdout, selectors.EVENT_READ)
++                      while True:
++                          remaining = deadline - time.monotonic()
++                          if remaining <= 0:
++                              raise EvidenceError("zstd_decode_deadline")
++                          if not selector.select(min(1.0, remaining)):
++                              continue
++                          try:
++                              block = os.read(process.stdout.fileno(), CHUNK)
++                          except BlockingIOError:
++                              continue
++                          if not block:
++                              break
++                          sample = tail + block
++                          if policy.sensitive_bytes(sample):
++                              raise EvidenceError("known_credential_in_bytes")
++                          tail = sample[-policy.overlap:]
++                          total += len(block)
++                  remaining = deadline - time.monotonic()
++                  if remaining <= 0:
++                      raise EvidenceError("zstd_decode_deadline")
++                  if process.wait(timeout=remaining) != 0:
++                      raise EvidenceError("zstd_decode_failed_or_incomplete")
++                  return total
++              finally:
++                  if process.poll() is None:
++                      process.terminate()
++                      try:
++                          process.wait(timeout=2)
++                      except subprocess.TimeoutExpired:
++                          process.kill()
++                          process.wait(timeout=2)
++                  if process.stdout is not None:
++                      process.stdout.close()
++
++
++          def privacy_gate(roots, policy):
++              receipt = {"schema": SCHEMA, "safe_for_upload": False, "files_scanned": 0,
++                         "known_credential_present": bool(policy.secret), "errors": [],
++                         "scope": "All upload paths and regular bytes; source-head.tar.gz and every .zst "
++                                  "are additionally decoded for privacy only, without rewriting originals.",
++                         "zstd_decoder": None, "zstd_files_decoded": 0, "zstd_decoded_bytes_scanned": 0,
++                         "secret_or_secret_fingerprint_recorded": False}
++              for root_index, root in enumerate(roots):
++                  try:
++                      if root.is_symlink() or not root.is_dir() or policy.sensitive_text(str(root)):
++                          raise EvidenceError("invalid_upload_root")
++                      def walk_error(_exc):
++                          raise EvidenceError("upload_walk_error")
++                      for directory, directories, files in os.walk(root, followlinks=False, onerror=walk_error):
++                          for name in sorted(directories):
++                              path = Path(directory) / name
++                              if path.is_symlink() or policy.sensitive_text(str(path)):
++                                  raise EvidenceError("unsafe_upload_directory")
++                          for name in sorted(files):
++                              path = Path(directory) / name
++                              if path.is_symlink() or policy.sensitive_text(str(path)):
++                                  raise EvidenceError("unsafe_upload_file_path")
++                              first = path.lstat()
++                              if not stat.S_ISREG(first.st_mode):
++                                  raise EvidenceError("nonregular_upload_file")
++                              with path.open("rb") as stream:
++                                  policy.scan_stream(stream)
++                              if path.name == "source-head.tar.gz":
++                                  with gzip.open(path, "rb") as stream:
++                                      policy.scan_stream(stream)
++                              if path.suffix == ".zst":
++                                  if receipt["zstd_decoder"] is None:
++                                      receipt["zstd_decoder"] = inspect_zstd(policy)
++                                  receipt["zstd_decoded_bytes_scanned"] += scan_zstd(path, receipt["zstd_decoder"], policy)
++                                  receipt["zstd_files_decoded"] += 1
++                              last = path.lstat()
++                              if (first.st_dev, first.st_ino, first.st_size, first.st_mtime_ns) != (
++                                      last.st_dev, last.st_ino, last.st_size, last.st_mtime_ns):
++                                  raise EvidenceError("upload_file_changed_during_scan")
++                              receipt["files_scanned"] += 1
++                  except Exception as exc:
++                      receipt["errors"].append({"root_index": root_index, **safe_error(exc)})
++              receipt["safe_for_upload"] = not receipt["errors"]
++              return receipt
++
++
++          def collect(raw, public, expected_target, execution_logs, secret="", testlogs=None):
++              policy, errors = SecretPolicy(secret), []
++              raw, public, execution_logs = Path(raw), Path(public), Path(execution_logs)
++              public.mkdir(parents=True, exist_ok=True)
++              # Raw BEP must not be reachable through either artifact root.
++              private = raw.parent.resolve()
++              for exported in (public, execution_logs):
++                  resolved = exported.resolve()
++                  if private == resolved or private.is_relative_to(resolved):
++                      raise EvidenceError("raw_bep_under_upload_root")
++              events, redaction = sanitize_bep(raw, public, policy)
++              if not redaction["complete"]:
++                  errors.append({"kind": "bep_sanitization_incomplete"})
++              original_exit = read_exit(public, "original-bazel-exit-code.txt", errors)
++              copy_exit = read_exit(public, "console-copy-exit-code.txt", errors)
++              if copy_exit != 0:
++                  errors.append({"kind": "console_copy_failed_or_missing"})
++              if not (public / "console.log").is_file():
++                  errors.append({"kind": "original_console_missing"})
++              root, inventory = collect_local_logs(
++                  Path("bazel-testlogs") if testlogs is None else Path(testlogs),
++                  public, private, policy, errors)
++              attempts, summaries = reconcile(events, root, inventory, expected_target, original_exit, errors)
++              try:
++                  compact = [p for p in execution_logs.rglob("*.zst") if p.is_file() and not p.is_symlink()]
++                  if not compact:
++                      raise EvidenceError("original_compact_missing")
++              except Exception:
++                  errors.append({"kind": "original_compact_missing_or_unreadable"})
++              manifest = {
++                  "schema": SCHEMA, "qualification_scope": "evidence_only",
++                  "complete": not errors,
++                  "claim": "Reconciles all actually produced/referenced test-attempt log/XML files; "
++                           "does not claim unexecuted/incompatible targets ran or identify an old failure cause.",
++                  "derived_bep": DERIVED_NAME if redaction["complete"] else None,
++                  "derived_bep_representation": redaction["representation"],
++                  "opaque_payload_omission_count": redaction["opaque_payload_omission_count"],
++                  "expected_target": expected_target,
++                  "original_bazel_exit": original_exit, "console_copy_exit": copy_exit,
++                  "resolved_testlogs_root": str(root) if root else None,
++                  "actual_attempts": attempts, "test_summaries": summaries,
++                  "files": list(inventory.values()), "errors": errors,
++                  "exclusions": ["test.outputs", "test.outputs_manifest", "*.runfiles",
++                                 "other non-log/XML test outputs", "unexecuted or incompatible targets"],
++              }
++              dump_json(public / "attempt-retention-manifest.json", manifest)
++              gate = privacy_gate((public, execution_logs), policy)
++              # This fixed-schema receipt contains no input paths, payload, secret or hash.
++              dump_json(public / "artifact-privacy-gate.json", gate)
++              return manifest, gate
++
++
++          def main():
++              if len(sys.argv) != 5:
++                  return 2
++              output_path = os.environ.get("GITHUB_OUTPUT")
++              try:
++                  manifest, gate = collect(*sys.argv[1:5], secret=os.environ.get("BUILDBUDDY_API_KEY", ""))
++                  safe = gate["safe_for_upload"]
++                  complete = manifest["complete"]
++                  evidence_error_kinds = sorted({item["kind"] for item in manifest["errors"]})
++                  privacy_error_codes = sorted({item.get("error_code", item["error_type"]) for item in gate["errors"]})
++              except Exception as exc:
++                  safe, complete = False, False
++                  evidence_error_kinds, privacy_error_codes = ["collector_exception"], [safe_error(exc).get("error_code", type(exc).__name__)]
++                  print(json.dumps({"qualification_scope": "evidence_only",
++                                    "complete": False, **safe_error(exc)}))
++              if output_path:
++                  with open(output_path, "a", encoding="utf-8") as stream:
++                      stream.write("safe-for-upload=" + ("true" if safe else "false") + "\n")
++              print(json.dumps({"qualification_scope": "evidence_only", "complete": complete,
++                                "safe_for_upload": safe, "evidence_error_kinds": evidence_error_kinds,
++                                "privacy_error_codes": privacy_error_codes}))
++              return 0 if complete and safe else 1
++
++
++          if __name__ == "__main__":
++              sys.exit(main())
+           PY
+ 
+       - name: Upload original AppServer attempt evidence

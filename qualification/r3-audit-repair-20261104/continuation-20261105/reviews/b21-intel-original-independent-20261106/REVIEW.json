@@ -1,0 +1,144 @@
+{
+  "schema": "b21-original-intel-workflow-independent-review",
+  "reviewed_utc": "2026-11-06T00:37:02.343265+00:00",
+  "decision": "STATIC_ACCEPT_EXACT_DIAGNOSTIC_WITH_RUNTIME_EVIDENCE_GATES",
+  "blocking_findings": [],
+  "candidate": {
+    "path": ".github/workflows/b21-intel-original-pty.yml",
+    "bytes": 4755,
+    "sha256": "97ec44a0bde97c03810b013fad9839764deac679cbc2bcf527d5714931051f34",
+    "git_blob": "77387b7a3e8a15efe11cca02bf4185377ff0a86f"
+  },
+  "source_parent": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+  "source_tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+  "expected_candidate_tree": "eaded1870d080eaa55efae6208354729140e784c",
+  "unchanged_original_leaves": 10582,
+  "one_added_workflow_only": true,
+  "same_original_runner_target_environment_and_job_outer_bound": true,
+  "explicit_actual_Darwin_x86_64_RUNNER_ARCH_guard": true,
+  "same_owner_fixed_branch_only": true,
+  "checkout_exact_head_and_parent_diff_guards": true,
+  "full_original_PTY_target_single_test_invocation": true,
+  "no_per_case_filter_or_timeout_override": true,
+  "no_cached_test_result_and_one_flaky_attempt": true,
+  "native_test_strategy": "Existing keyed ci-macos TestRunner=darwin-sandbox,local; existing keyless wrapper chooses local configuration. Actual compact records must corroborate execution locality and cache status.",
+  "original_wrapper_status_preserved_and_console_copy_status_separately_recorded": true,
+  "source_final_status_and_strict_tracked_untracked_clean_action": true,
+  "artifact_upload_is_fatal_if_no_files_but_not_per_target_completeness_proof": true,
+  "original_required_CI_gate_files_unchanged": true,
+  "source_dependencies": [
+    {
+      "path": "AGENTS.md",
+      "bytes": 23303,
+      "sha256": "228165a9ff57b98f101917c4c8086ca76a755bec6c726bb29a4ce74408e2d7f8",
+      "git_blob": "a22ff3bee70261f6061d598c31f0016e785a7a3c",
+      "source": "root original full-GET source"
+    },
+    {
+      "path": ".github/workflows/bazel.yml",
+      "bytes": 20751,
+      "sha256": "a7bf703f31b14fd0925e3db892e4444d2ebd8db0033b69ec47ff44eae65104dd",
+      "git_blob": "9eed8ed8fa46c88d9d89d1499f55cb8c303137af",
+      "source": "root original full-GET source"
+    },
+    {
+      "path": ".github/actions/prepare-bazel-ci/action.yml",
+      "bytes": 3255,
+      "sha256": "a5286f6896c99a71ee247afbad1dc0aa00d967352f33bb24d8cb97e4df5d978b",
+      "git_blob": "f9508a1659e5f2c54a6ae5b263bb9328095438d7",
+      "source": "root original full-GET source"
+    },
+    {
+      "path": ".github/actions/setup-bazel-ci/action.yml",
+      "bytes": 5365,
+      "sha256": "cae76442a9a6d40f2c56c1fbed991fe667f3ca3eef07e5e9806370ecf91afb7d",
+      "git_blob": "ea3f3a6521b970484ac60d1cebf788092753555a",
+      "source": "root original full-GET source"
+    },
+    {
+      "path": ".github/scripts/run-bazel-ci.sh",
+      "bytes": 17448,
+      "sha256": "0136e087ddfac7c01bdacb03357d0353d328dea3b8cd86caf94e64bf10706482",
+      "git_blob": "42b59b6354b5933c8155b992519682c06d024ca1",
+      "source": "root original full-GET source"
+    },
+    {
+      "path": "codex-rs/utils/pty/BUILD.bazel",
+      "bytes": 115,
+      "sha256": "d8ff7e3358ff7e0e1df90274cfa69585231fff351b1efa10b9ba3d4755c9efe8",
+      "git_blob": "4383f014c17582cdeba935131655abe664003b46",
+      "source": "root original full-GET source"
+    },
+    {
+      "path": ".github/scripts/run_bazel_with_buildbuddy.py",
+      "bytes": 14442,
+      "sha256": "656fa9f508bb339da949a359a457f02fa3979449ae1761b0084494cf38e83a0e",
+      "git_blob": "21a5fdf0e7afcde4b6141229e95fcff8f6a7e763",
+      "independent_complete_actual_GET_equal": true
+    },
+    {
+      "path": ".github/actions/check-clean-worktree/action.yml",
+      "bytes": 596,
+      "sha256": "58844cf1afb11d5cdbdfe577e4227ea3361ce495960c2d0cce94ca0da3da82a5",
+      "git_blob": "5a7bdddcf8f560d20fcd6639761a500b7ef12cf3",
+      "independent_complete_actual_GET_equal": true
+    },
+    {
+      "path": ".github/actions/setup-ci/action.yml",
+      "bytes": 4141,
+      "sha256": "6d29a131641a739983b3aea22c0febbf20d1d0ee21b356570f3763ddafced9ba",
+      "git_blob": "8abd2dbd5f09585734f8213011a9ed540a2ee88e",
+      "independent_complete_actual_GET_equal": true
+    },
+    {
+      "path": ".bazelrc",
+      "bytes": 14926,
+      "sha256": "53a5fd4e65e4e9937b826174520fe1eb642adb79cfe7a6335c871d5fa9db57fa",
+      "git_blob": "3d5877b283b887091af507f3672003f84c500687",
+      "independent_complete_actual_GET_equal": true
+    },
+    {
+      "path": ".github/scripts/collect_bazel_failed_test_logs.py",
+      "bytes": 16303,
+      "sha256": "bb25a658988b77ef23517501afb4893a8a5f7960bd7930b6aef6041ba1274c1c",
+      "git_blob": "18701f51e4df1ef6b0fd390d2990114bf971331d",
+      "source": "previous actual main67 source preserved locally"
+    }
+  ],
+  "inline_bash_syntax_only": [
+    {
+      "step": "Bind unchanged product source and actual native platform",
+      "exit_code": 0,
+      "stderr": ""
+    },
+    {
+      "step": "Run the original complete PTY unit target once",
+      "exit_code": 0,
+      "stderr": ""
+    },
+    {
+      "step": "Preserve final source identity",
+      "exit_code": 0,
+      "stderr": ""
+    }
+  ],
+  "manual_review_details": [
+    "Read the complete 4755-byte candidate; reviewed original wrapper, platform configuration, shared setup, PTY BUILD, retained-target collector and clean-worktree action paths.",
+    "The Unix BuildBuddy wrapper ends with os.execvp for the Bazel command and has no retry loop; the later bazel info lookup is log discovery, not another test.",
+    "Source receipts are in RUNNER_TEMP, outside the tracked worktree. The exact main parent and only-workflow-diff checks bind product sources to the prior 3982 tree.",
+    "The workflow contains no workflow_dispatch, rerun/cancel API, required-check rename, skip of original target, or assertion/source changes."
+  ],
+  "runtime_acceptance_limits": [
+    "B21 remains OPEN until complete original target test.log/XML, compact records, exact source/argv and platform identities and original result are collected and independently checked.",
+    "The tee exit code is recorded separately and intentionally does not replace the original wrapper exit. console-copy-exit-code.txt must be 0 for a complete console evidence claim.",
+    "The original collector preserves Bazel status and warns on collection failure. Artifact existence or workflow green alone does not prove a complete target archive; require manifest scope/files/errors completeness.",
+    "The 120-minute outer bound is unchanged. A timeout or cancellation may prevent final artifacts; missing evidence cannot qualify B21.",
+    "This head-only focused diagnostic is separate from original full required CI, including the still-pending blocking-ci; it cannot substitute for that gate."
+  ],
+  "native_execution_performed": false,
+  "resource_queries_performed": false,
+  "product_compilation_performed": false,
+  "manual_dispatch_rerun_cancel_performed": false,
+  "ref_mutation_performed": false,
+  "B21": "OPEN"
+}

@@ -1,0 +1,173 @@
+{
+  "schema": "hepta-main67-0201-status-summary-v1",
+  "source": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+  "run_list_observed_by_utc": "2026-11-06 01:59:47 UTC",
+  "jobs_window": [
+    "2026-11-06 01:59:47 UTC",
+    "2026-11-06 02:01:43 UTC"
+  ],
+  "workflow_count": 19,
+  "workflow_counts": {
+    "success": 8,
+    "queued": 4,
+    "skipped": 2,
+    "failure": 3,
+    "in_progress": 2
+  },
+  "job_count": 58,
+  "job_counts": {
+    "success": 35,
+    "cancelled": 9,
+    "queued": 7,
+    "skipped": 2,
+    "in_progress": 5
+  },
+  "workflow_failure_is_not_claimed_as_test_failure": true,
+  "failure_runs": [
+    {
+      "id": 42123581078,
+      "name": "Hepta Keyring Sync Security Migration (Draft)",
+      "status": "completed",
+      "conclusion": "failure",
+      "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+      "jobs": [
+        {
+          "id": 127581903929,
+          "name": "Encrypted keyring closure (ubuntu-24.04, non-authorizing)",
+          "status": "completed",
+          "conclusion": "success",
+          "runner_id": 1000007048,
+          "step_count": 8
+        },
+        {
+          "id": 127581904379,
+          "name": "Encrypted keyring closure (macos-15, non-authorizing)",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "runner_id": 0,
+          "step_count": 0
+        },
+        {
+          "id": 127581904534,
+          "name": "Encrypted keyring closure (windows-latest, non-authorizing)",
+          "status": "completed",
+          "conclusion": "success",
+          "runner_id": 1000005347,
+          "step_count": 8
+        }
+      ]
+    },
+    {
+      "id": 42123581186,
+      "name": "Hepta operator acceptance native signature verification",
+      "status": "completed",
+      "conclusion": "failure",
+      "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+      "jobs": [
+        {
+          "id": 127581904579,
+          "name": "Original Bazel operator oracle with native placement (x86_64-unknown-linux-gnu)",
+          "status": "completed",
+          "conclusion": "success",
+          "runner_id": 1000007056,
+          "step_count": 10
+        },
+        {
+          "id": 127581904887,
+          "name": "Original operator controls and independent OpenSSH oracle (macos-15)",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "runner_id": 0,
+          "step_count": 0
+        },
+        {
+          "id": 127581904964,
+          "name": "Original Bazel operator oracle with native placement (aarch64-apple-darwin)",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "runner_id": 0,
+          "step_count": 0
+        },
+        {
+          "id": 127581904974,
+          "name": "Original operator controls and independent OpenSSH oracle (ubuntu-24.04)",
+          "status": "completed",
+          "conclusion": "success",
+          "runner_id": 1000007046,
+          "step_count": 9
+        },
+        {
+          "id": 127581905038,
+          "name": "Original Bazel operator oracle with native placement (x86_64-apple-darwin)",
+          "status": "completed",
+          "conclusion": "success",
+          "runner_id": 1000005381,
+          "step_count": 10
+        },
+        {
+          "id": 127581905048,
+          "name": "Original operator controls and independent OpenSSH oracle (windows-2025)",
+          "status": "completed",
+          "conclusion": "success",
+          "runner_id": 1000005333,
+          "step_count": 9
+        }
+      ]
+    },
+    {
+      "id": 42123581142,
+      "name": "Hepta owner-local Matrixd and Agentd native transport",
+      "status": "completed",
+      "conclusion": "failure",
+      "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+      "jobs": [
+        {
+          "id": 127581904089,
+          "name": "Owner-local and original Matrixd/Agentd controls (macos-15)",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "runner_id": 0,
+          "step_count": 0
+        },
+        {
+          "id": 127581904493,
+          "name": "Owner-local and original Matrixd/Agentd controls (ubuntu-24.04)",
+          "status": "completed",
+          "conclusion": "success",
+          "runner_id": 1000007049,
+          "step_count": 11
+        },
+        {
+          "id": 127581904496,
+          "name": "Owner-local and original Matrixd/Agentd controls (windows-2025)",
+          "status": "completed",
+          "conclusion": "success",
+          "runner_id": 1000005329,
+          "step_count": 11
+        }
+      ]
+    }
+  ],
+  "source_PRs": [
+    {
+      "number": 4797,
+      "head": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+      "base": "63652be658ebed8d3052eb789b951793384fd5e4",
+      "draft": true
+    },
+    {
+      "number": 4884,
+      "head": "daa21e7a6a9b19e74b61c6bbdc2c813f9fd35a42",
+      "base": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+      "draft": true
+    },
+    {
+      "number": 4902,
+      "head": "cc65856cc0b20d03db506c19495d53d61162102d",
+      "base": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+      "draft": true
+    }
+  ],
+  "qualification": "Original API/job status only. Successful jobs can be advisory, compile-only or test-scoped; no whole-product or required-CI success is inferred.",
+  "original_file_transport": "manifest.json"
+}

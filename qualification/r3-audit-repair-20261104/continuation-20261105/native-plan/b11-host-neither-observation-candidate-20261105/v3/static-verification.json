@@ -1,0 +1,223 @@
+{
+  "decision": "STATIC_BYTE_REVIEW_ONLY_NO_NATIVE_QUALIFICATION",
+  "before": {
+    "bytes": 23010,
+    "sha256": "441a000d02c7aab203a270bde951dcb6e98e02845e76314782892b87e6a6a835",
+    "git_blob": "b40b49ce772c402c51ddb16bb98ff73dc78cdb41"
+  },
+  "after": {
+    "bytes": 26205,
+    "sha256": "c48d7a3917ca0bd8dda236d3773c0351a39272bbc277b8186bde7467035580ff",
+    "git_blob": "8c16416c185f17871c25139bc16c6fd112b5fd41"
+  },
+  "source_map": {
+    "bytes": 9360,
+    "sha256": "d6dfc6912f1c3380715251c7c9bb0e94cb74e0be697c5e4b5b80f7bc5f4c0f22",
+    "git_blob": "aa8e03a9a7291389ab0dff56f4d56f88217fd93b"
+  },
+  "patch": {
+    "bytes": 7336,
+    "sha256": "d54e553a06aa25ef49ed3d3443e3ac715e5f2c25bf0cbdc324ee9c3a2d10e436",
+    "git_blob": "d002e925ea4218b92189443917f7cdc861a3bfdc"
+  },
+  "published_tree": "9cb7302777ce018dd022086041c2225d1dd5c8dd",
+  "expected_candidate_tree": "9a804c7b6e0dd554cdb435f41e06c5c689fffaaf",
+  "directory_nodes_including_root": 1571,
+  "unchanged_leaf_count": 10588,
+  "changed_paths": [
+    "codex-rs/windows-sandbox-rs/src/token_neither_privilege_observation.rs"
+  ],
+  "source_dependencies_verified_against_actual_tree": 14,
+  "unchanged_production_and_probe_sources": {
+    "codex-rs/utils/pty/src/win/job.rs": "b06035f72d227b4069da677e8104617ae5616283",
+    "codex-rs/windows-sandbox-rs/BUILD.bazel": "8531cb4d664c25de6fbf200c71cb8042d1d8d865",
+    "codex-rs/windows-sandbox-rs/Cargo.toml": "aa41ed5f08608c0275785b2f5e27ec5db08f50dd",
+    "codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs": "6f05793ec6ee043a933073ada3a1bf9122de5a73",
+    "codex-rs/windows-sandbox-rs/src/desktop.rs": "0b01f011119bef623bc9e46e710caa371520380d",
+    "codex-rs/windows-sandbox-rs/src/lib.rs": "11778af7beb645b36401807cf3e31a0dd4deddc0",
+    "codex-rs/windows-sandbox-rs/src/proc_thread_attr.rs": "38110a69239e9707a324f2d4cf4a1fad932b4132",
+    "codex-rs/windows-sandbox-rs/src/process.rs": "4d4f1d9435aad3cf9cd27a82d51b2be5b7659a4c",
+    "codex-rs/windows-sandbox-rs/src/token.rs": "b22acb5556f6af3b4c250a2441f161ee448ea1c1",
+    "codex-rs/windows-sandbox-rs/src/token_integrity_probe_support.rs": "7a7008f9becf09578ca953c849401eda93eb94b2",
+    "codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs": "fc9faa6d47ac5fdefa216affceb51a586f8e6b81",
+    "codex-rs/windows-sandbox-rs/src/winutil.rs": "45378b4bb527ce2b202913ab3b21aad9ef4b1828",
+    "defs.bzl": "6f588ec3057fddfea35170e28e74036162ce6a23"
+  },
+  "same_full_run_function_bytes": true,
+  "same_full_token_record_and_effective_token_bytes": true,
+  "same_cmd_gate_work_cleanup_oracle_bytes_except_launcher_and_job_field": true,
+  "original_probe_and_eight_rows_byte_unchanged": true,
+  "new_test_or_ignore_attributes": 0,
+  "prior_roster_static_preservation_expectation": {
+    "whole": 156,
+    "exact_filter": 155
+  },
+  "all_three_existing_wait_values_ms": [
+    5000,
+    5000,
+    5000
+  ],
+  "patch_roundtrip": [
+    {
+      "argv": [
+        "git",
+        "init",
+        "-q"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/full.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/full.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/full.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/full.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "primary_binding_name_availability_only": {
+    "security": [
+      "CreateRestrictedToken",
+      "DISABLE_MAX_PRIVILEGE",
+      "GetTokenInformation",
+      "IsValidSid",
+      "LUID_AND_ATTRIBUTES",
+      "LookupPrivilegeNameW",
+      "SE_PRIVILEGE_ENABLED",
+      "SID_AND_ATTRIBUTES",
+      "SecurityImpersonation",
+      "TOKEN_GROUPS",
+      "TOKEN_INFORMATION_CLASS",
+      "TOKEN_PRIVILEGES",
+      "TOKEN_QUERY",
+      "TokenGroups",
+      "TokenImpersonation",
+      "TokenImpersonationLevel",
+      "TokenIsAppContainer",
+      "TokenPrimary",
+      "TokenPrivileges",
+      "TokenRestrictedSids",
+      "TokenSessionId",
+      "TokenType",
+      "TokenUser"
+    ],
+    "threading": [
+      "CREATE_NO_WINDOW",
+      "CREATE_UNICODE_ENVIRONMENT",
+      "CreateProcessAsUserW",
+      "EXTENDED_STARTUPINFO_PRESENT",
+      "GetCurrentProcess",
+      "GetCurrentThread",
+      "GetExitCodeProcess",
+      "OpenProcessToken",
+      "OpenThreadToken",
+      "PROCESS_INFORMATION",
+      "STARTF_USESTDHANDLES",
+      "STARTUPINFOEXW",
+      "WaitForSingleObject"
+    ],
+    "jobs": [
+      "JOBOBJECT_BASIC_ACCOUNTING_INFORMATION",
+      "JobObjectBasicAccountingInformation",
+      "QueryInformationJobObject"
+    ],
+    "fswin": [
+      "FILE_FLAG_BACKUP_SEMANTICS",
+      "FILE_FLAG_OPEN_REPARSE_POINT",
+      "FILE_ID_INFO",
+      "FILE_SHARE_DELETE",
+      "FILE_SHARE_READ",
+      "FILE_SHARE_WRITE",
+      "FileIdInfo",
+      "GetFileInformationByHandleEx",
+      "GetVolumeInformationByHandleW",
+      "WriteFile"
+    ]
+  },
+  "initial_failure_original": {
+    "bytes": 509112,
+    "sha256": "29c7b0343a5f8865bd2bf8088e3108e2c3db3b3f89f93c0aaa72b89834d685bc",
+    "git_blob": "b5177aa404bcddc5d4ee0838a5f20582b344dfaf"
+  },
+  "initial_failure_errors": [
+    {
+      "line": 2449,
+      "text": "2026-11-05T23:42:49.7751449Z Error: GetTokenInformation(TokenRestrictedSids) size query failed: 122"
+    },
+    {
+      "line": 2664,
+      "text": "2026-11-05T23:43:21.0454021Z Error: GetTokenInformation(TokenRestrictedSids) size query failed: 122"
+    }
+  ],
+  "initial_failure_summary_lines": [
+    {
+      "line": 1893,
+      "text": "2026-11-05T23:42:49.5133681Z test result: ok. 92 passed; 0 failed; 0 ignored; 0 measured; 64 filtered out; finished in 1.04s"
+    },
+    {
+      "line": 2529,
+      "text": "2026-11-05T23:42:49.8412007Z test result: FAILED. 54 passed; 8 failed; 2 ignored; 0 measured; 92 filtered out; finished in 0.68s"
+    },
+    {
+      "line": 2744,
+      "text": "2026-11-05T23:43:21.0519950Z test result: FAILED. 54 passed; 8 failed; 2 ignored; 0 measured; 92 filtered out; finished in 0.68s"
+    }
+  ],
+  "initial_failure_whole_result": {
+    "passed": 146,
+    "failed": 8,
+    "ignored": 2,
+    "reprinted_failure_subset_counted_once": true
+  },
+  "initial_failure_observation_record_counts": {
+    "filesystem": 1,
+    "subjects": 1,
+    "rust_before": 3,
+    "rust_physical": 3
+  },
+  "initial_failure_cmd_children_observed": 0,
+  "initial_failure_needed_buffer_bytes": null,
+  "native_execution_performed": false,
+  "compilation_performed": false,
+  "formatting_tool_performed": false,
+  "ref_mutation_performed": false,
+  "B11": "OPEN"
+}

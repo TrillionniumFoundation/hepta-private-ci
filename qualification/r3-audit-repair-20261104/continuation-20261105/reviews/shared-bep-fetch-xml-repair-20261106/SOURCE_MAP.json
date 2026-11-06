@@ -1,0 +1,148 @@
+{
+  "base_commit": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+  "base_tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+  "sources": [
+    {
+      "path": ".bazelrc",
+      "mode": "100644",
+      "bytes": 14926,
+      "sha256": "53a5fd4e65e4e9937b826174520fe1eb642adb79cfe7a6335c871d5fa9db57fa",
+      "git_blob": "3d5877b283b887091af507f3672003f84c500687"
+    },
+    {
+      "path": ".bazelversion",
+      "mode": "100644",
+      "bytes": 6,
+      "sha256": "14ebdd5f5d8dfccb0fc574ea9aabecc07d7cdd99d53e4fc01e58f9c3d23d18ef",
+      "git_blob": "b13d146a7b02b96e4c30340e69388d539c9721be"
+    },
+    {
+      "path": ".github/actions/prepare-bazel-ci/action.yml",
+      "mode": "100644",
+      "bytes": 3255,
+      "sha256": "a5286f6896c99a71ee247afbad1dc0aa00d967352f33bb24d8cb97e4df5d978b",
+      "git_blob": "f9508a1659e5f2c54a6ae5b263bb9328095438d7"
+    },
+    {
+      "path": ".github/actions/setup-ci/action.yml",
+      "mode": "100644",
+      "bytes": 4141,
+      "sha256": "6d29a131641a739983b3aea22c0febbf20d1d0ee21b356570f3763ddafced9ba",
+      "git_blob": "8abd2dbd5f09585734f8213011a9ed540a2ee88e"
+    },
+    {
+      "path": ".github/scripts/run-bazel-ci.sh",
+      "mode": "100755",
+      "bytes": 17448,
+      "sha256": "0136e087ddfac7c01bdacb03357d0353d328dea3b8cd86caf94e64bf10706482",
+      "git_blob": "42b59b6354b5933c8155b992519682c06d024ca1"
+    },
+    {
+      "path": ".github/scripts/run_bazel_with_buildbuddy.py",
+      "mode": "100755",
+      "bytes": 14442,
+      "sha256": "656fa9f508bb339da949a359a457f02fa3979449ae1761b0084494cf38e83a0e",
+      "git_blob": "21a5fdf0e7afcde4b6141229e95fcff8f6a7e763"
+    },
+    {
+      "path": ".github/workflows/bazel.yml",
+      "mode": "100644",
+      "bytes": 20751,
+      "sha256": "a7bf703f31b14fd0925e3db892e4444d2ebd8db0033b69ec47ff44eae65104dd",
+      "git_blob": "9eed8ed8fa46c88d9d89d1499f55cb8c303137af"
+    },
+    {
+      "path": "AGENTS.md",
+      "mode": "100644",
+      "bytes": 23303,
+      "sha256": "228165a9ff57b98f101917c4c8086ca76a755bec6c726bb29a4ce74408e2d7f8",
+      "git_blob": "a22ff3bee70261f6061d598c31f0016e785a7a3c"
+    }
+  ],
+  "primary": [
+    {
+      "bytes": 12619,
+      "git_blob": "3d6b9f2d67f99d4c1953a82d3c6ed74790e1b797",
+      "path": "primary/BuildEventIdUtil.java",
+      "sha256": "37812b3e02911d51540a5a7f02db35e21cfd8c09c3e2ed732b734d13f2bf2d45",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/buildeventstream/BuildEventIdUtil.java"
+    },
+    {
+      "bytes": 26301,
+      "git_blob": "bab9d03f33a4b5ad5d463b8f5505128417094f6e",
+      "path": "primary/BuildRequestOptions.java",
+      "sha256": "c4bcd1445c5a2a165bab55f9fa96d0c0bd270974e0d89a9b64d32fc6f8ed1783",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/buildtool/BuildRequestOptions.java"
+    },
+    {
+      "bytes": 3529,
+      "git_blob": "d3c16738ba7e6a51103fe02d1a9eec3113a0756c",
+      "path": "primary/CommonRemoteOptions.java",
+      "sha256": "da21757de4ac7c49adeae3ef8e2baadcf515b0892e73855577fe207105191aac",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/remote/options/CommonRemoteOptions.java"
+    },
+    {
+      "bytes": 1983,
+      "git_blob": "7fd26e9b7f23a50e733123142bc599878a3cd0b6",
+      "path": "primary/FetchEvent.java",
+      "sha256": "ffd3b389320638314838554457976544af6a4f5bfd4d42e3b36e76958ee771b3",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/buildeventstream/FetchEvent.java"
+    },
+    {
+      "bytes": 2597,
+      "git_blob": "2d2812205f9f8925e12bea63186d7fd1e0b568d3",
+      "path": "primary/RegexPatternOption.java",
+      "sha256": "0e4aeea7e778e680f5ae696cd293365b09bef628890417d93e4046001c40ee6d",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/common/options/RegexPatternOption.java"
+    },
+    {
+      "bytes": 88576,
+      "git_blob": "e0f56e64efdaf0b39a3032a4163b74a59b946aad",
+      "path": "primary/RemoteExecutionService.java",
+      "sha256": "0ce8bea8a3b387fd739832ff4f0e9b6aeee1cfa6df558132f92a086274d55111",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/remote/RemoteExecutionService.java"
+    },
+    {
+      "bytes": 61307,
+      "git_blob": "633cae1f61fe7a2e913a68939a9b4e426e0ad5a3",
+      "path": "primary/RemoteModule.java",
+      "sha256": "c0067e3973bb2e6f34b7d3f18d2aabbe881e8eed95757fa943d3ead3a4b748f1",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/remote/RemoteModule.java"
+    },
+    {
+      "bytes": 43451,
+      "git_blob": "cd8b2b554e28d2cce0ecc70f8f4daa29a865c421",
+      "path": "primary/RemoteOptions.java",
+      "sha256": "dfc9a7357db490e29e72cdef56d304dbd64fc5dcfc3c5672eec0589aef6460f0",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/remote/options/RemoteOptions.java"
+    },
+    {
+      "bytes": 15904,
+      "git_blob": "707f681eab1d31593fab49768e68dc9620cce6ad",
+      "path": "primary/RemoteOutputChecker.java",
+      "sha256": "2f002a214f29c25449e6f788572d5fccf9d958b5becf964baf471acb3b4ee24d",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/remote/RemoteOutputChecker.java"
+    },
+    {
+      "bytes": 39413,
+      "git_blob": "0ad50eb7683ec38d20ab66593421fbe57884ce8f",
+      "path": "primary/StandaloneTestStrategy.java",
+      "sha256": "4b8bb3d13de58806197ca29dd2beeeab26a2864ffb2b7e1ec57344b9b467cbaf",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/exec/StandaloneTestStrategy.java"
+    },
+    {
+      "bytes": 54241,
+      "git_blob": "acd558cc2fcf1a6b93bd910d9ee7d3d10d75d5d9",
+      "path": "primary/TestRunnerAction.java",
+      "sha256": "041b0caebf6d6b84118f8365c7c874d5a2573889b2d0f50c2366b65a5e97c6d8",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/analysis/test/TestRunnerAction.java"
+    },
+    {
+      "bytes": 24702,
+      "git_blob": "4dee96225efcdc4ac68aeeabcce9d4deeb31b7a0",
+      "path": "primary/Utils.java",
+      "sha256": "adbade9a30aa07597f54f9fa1d6d1242316961215c11065a762e4db0643c27aa",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/remote/util/Utils.java"
+    }
+  ]
+}

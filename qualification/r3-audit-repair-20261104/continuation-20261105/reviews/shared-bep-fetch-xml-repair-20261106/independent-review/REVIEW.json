@@ -1,0 +1,263 @@
+{
+  "schema": "fetch-xml-independent-review-v1",
+  "decision": "ACCEPT_BOUNDED_FETCH_XML_RETENTION_REVISION_STATIC_OFFLINE_ONLY",
+  "source_blockers": [],
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "collector": {
+    "bytes": 36352,
+    "git_blob": "ee1b82877fbd55a2e3838d768014715617e05ea0",
+    "sha256": "4b9e1a86867bfad3303d0fbd14722f654b74c65f5ef963b87cbef7153da59c52"
+  },
+  "workflows": [
+    {
+      "label": "b21",
+      "parent": "ebd31e2b3e38ff72cedaa7b57bee60c1c102da27",
+      "parent_tree": "46fca3e684217066c260dc10d0dc319a33e0a93c",
+      "postimage": {
+        "bytes": 52706,
+        "git_blob": "17ff1640c21876a08396db6a40f131a26870fe84",
+        "sha256": "1c1baed7253a31705ccf2edbf3b796e22347a8729eb5d0ce6c263dfa551cd42a"
+      },
+      "complete_candidate_tree": "45858bc96c0edbc366ec77991646b15971129975",
+      "directories": 1571,
+      "original_product_leaves_unchanged": 10582,
+      "only_parent_leaf_changed": ".github/workflows/b21-intel-original-pty.yml",
+      "full_inverse_after_only_collector_download_flag_parent_guard_edits": true,
+      "source_guard_substitutions": 6
+    },
+    {
+      "label": "b23",
+      "parent": "e63ed76c5d8ded046f97caffbdbe2883140e6032",
+      "parent_tree": "a6831e2607e718f1343b788e5b8062a171d50a71",
+      "postimage": {
+        "bytes": 61857,
+        "git_blob": "993d7a76a4fc6c2924e45c7ef403cecd6d108d1f",
+        "sha256": "7e70654ad67ad3186d840ccc656d44e783a88edd6788dbfdb0abd3b1624a3c8d"
+      },
+      "complete_candidate_tree": "9a6fd02aa18b2421f6aaec8a5db6ecf82b710c89",
+      "directories": 1571,
+      "original_product_leaves_unchanged": 10582,
+      "only_parent_leaf_changed": ".github/workflows/hepta-b23-linux-app-server-original-gate.yml",
+      "full_inverse_after_only_collector_download_flag_parent_guard_edits": true,
+      "source_guard_substitutions": 0
+    }
+  ],
+  "frozen_author_inputs": {
+    "manifest": {
+      "bytes": 283160,
+      "git_blob": "ca91ce1e0d8616ad17eaeeba83542855214f5d91",
+      "sha256": "e418e6d30f99d890a6ecf9501ba0a18a6c329ebf7e6b667dbe2b8d709bcc0881"
+    },
+    "files": 1010,
+    "bytes": 18136361,
+    "all_local_bytes_and_three_fresh_full_GETs_equal": true,
+    "author_packet_registry_not_required_for_source_acceptance": "The exact three new source blobs already exist and were independently fetched; complete historical input custody remains tied to the frozen manifest and root terminal ZIP evidence."
+  },
+  "review_extent": {
+    "new_collector_full_source_read": true,
+    "both_complete_patches_read": true,
+    "all_unique_workflow_settings_and_script_bodies_read": true,
+    "embedded_collector_exact_same_bytes_in_both_workflows": true,
+    "author_verifier_builder_regression_and_original36_scripts_full_read": true,
+    "original18_other_function_or_class_bodies_exact": true,
+    "independent_full_Merkle_and_twelve_local_git_apply_operations": true,
+    "own_verification": {
+      "bytes": 6673,
+      "git_blob": "1acb26c5416891a12b75656349117f1179c96f6e",
+      "sha256": "7361d6bfb93972176193f010a2b7d24f7cf45283fb2debba69869f2956718161"
+    }
+  },
+  "findings": [
+    {
+      "topic": "Fetch identity and repeated payloads",
+      "finding": "Fixed Bazel9.3 FetchEvent delegates identity to fetchId(url, downloader); success is stored only in its Fetch payload. The exception requires an ID containing only fetch, a dictionary fetch payload and no mixed event payload. A repeated pure Fetch event is retained in original derived-event order and separately records first_event/event/id/first_payload/payload/equality. Different success values are retained, not collapsed. TestResult, TestSummary and all other duplicate IDs still fail. The observed three pairs have the same URL/downloader and are reproduced from preserved derived BEP.",
+      "qualification": "This concerns sanitized metadata identities, not test-attempt acceptance or a claim that every possible Fetch succeeded."
+    },
+    {
+      "topic": "Remote output materialization",
+      "finding": "Only one independent original Bazel argument is added. Bazel9.3 declares remote_download_regex as output-affecting and independent of remote_download_outputs, compiles whole-string predicates, applies them to output execPath and waits for downloads. The regex selects final and retry test log/XML under bazel-out/<configuration>/testlogs, and matches all 998+16 original references. It does not select binaries, cache_status, arbitrary output ZIPs or outside testlogs paths. Original .bazelrc remote_download_minimal remains.",
+      "qualification": "This changes evidence download I/O. Missing remote objects, upstream skip/in-memory/BazelOutputService exceptions and files never produced can still fail; actual next-run local XML materialization is unproven. Original 139 absent XML files remain absent."
+    },
+    {
+      "topic": "Source identity and unchanged execution",
+      "finding": "B21 new source is intended as one direct child of ebd31; fetch-depth4 covers new-head→ebd31→cc658→67, and every parent/tree comparison remains exact. B23 continues actual PR merge checkout with parents[67,event-head], complete projection to3982 and all14 working-source pins. Each candidate changes only its diagnostic workflow leaf, preserves all10582 main67 leaves, original120-minute runner/job configuration, wrapper, targets, default retry/parallelism and assertion source.",
+      "qualification": "These are computed candidate trees and existing parent identities; new branch/commit/merge publication belongs to root and must be verified separately."
+    },
+    {
+      "topic": "Failure propagation and privacy",
+      "finding": "B21 original invocation remains non-continue-on-error and exits its saved original status; collector missing-data/privacy failures remain job failures. B23 retains original outcomes, source checks, both artifact outcomes, privacy flag and exact zero original/tee receipts in its final gate. Private raw BEP remains outside upload roots. New repeated-Fetch metadata is derived only from already-sanitized events and then passes the unchanged whole-upload privacy gate. Existing regular-file/path, credential, gzip/zstd decoding and safe-for-upload logic remains byte-identical.",
+      "qualification": "The privacy scope remains bounded to the existing recognized forms and known credential scanning; this review does not claim universal classification of arbitrary unknown secrets."
+    }
+  ],
+  "independent_replay": {
+    "execution": "Copied exact1010 inputs to independent directory; ran original verifier --replay, then an independently written full-tree/patch/source verifier. No real Bazel, Cargo, Rust test or CI dispatch occurred. Existing local Python/Bash/Git/zstd performed static, archive and synthetic work only.",
+    "author_replay_exit": 0,
+    "stderr_bytes": 0,
+    "stdout": {
+      "bytes": 9089,
+      "git_blob": "5987e2811afe46964538d33f968f46e5a754c66c",
+      "sha256": "24d1318648b23450a8e5f19cc49b55d02d3c5bed4f27f331c0fede98e48ec1bf"
+    },
+    "stdout_full_bytes_equal": true,
+    "original36_stdout": {
+      "bytes": 5461,
+      "git_blob": "c29c4fb46ef5a325cd1e7ea0595506b3e0ae6474",
+      "sha256": "10ecb921c1a88e98eaf53292ec040851668f00c4872ca142662cda162ea76bcd"
+    },
+    "new_controls": 9,
+    "original_privacy_controls": 11,
+    "unknown_header_controls": 5,
+    "all_passed": true
+  },
+  "historical_observations_preserved": [
+    {
+      "source": "b21",
+      "events": 7394,
+      "attempts": 499,
+      "statuses": {
+        "FAILED": 1,
+        "PASSED": 498
+      },
+      "original_bazel_exit": 3,
+      "retained_files": 867,
+      "missing_xml": 131,
+      "complete_after": false,
+      "attempts_and_summaries_full_equal": true,
+      "derived_bep": {
+        "bytes": 5799059,
+        "git_blob": "a54e1cdec67bcd62129fb99d43fa5c137af46ff8",
+        "sha256": "57b4e6b64df4b20fbff9454c90c04538409953fe52482a452aa6b3152d51a145"
+      },
+      "official_zip_sha256_from_source_map": "9a1e9cce3ca46b7b6176f84dd6b064588c93d217d3c3ed8e3a525d96b5fdabb4"
+    },
+    {
+      "source": "b23",
+      "events": 1924,
+      "attempts": 8,
+      "statuses": {
+        "PASSED": 8
+      },
+      "original_bazel_exit": 0,
+      "retained_files": 8,
+      "missing_xml": 8,
+      "complete_after": false,
+      "attempts_and_summaries_full_equal": true,
+      "derived_bep": {
+        "bytes": 578800,
+        "git_blob": "d14096a0af9260680342ae50179ae583b4e082c3",
+        "sha256": "6fc6060b6c09bf1fa0f3d9525981b0d8cb46bc35d6c0b49b5295039416d61d61"
+      },
+      "official_zip_sha256_from_source_map": "43bdccc192f96f95aebf3e7642df04ae0055f5c61970a27a8b03e05a6a9c91e3"
+    }
+  ],
+  "fixed_primary_source_binding": {
+    "relevant_methods_reviewed": [
+      "FetchEvent.getEventId/asStreamProto",
+      "BuildEventIdUtil.fetchId",
+      "CommonRemoteOptions.remote_download_regex",
+      "RemoteModule patternsToDownloadBuilder",
+      "RegexPatternOption.matcher contract",
+      "RemoteOutputChecker.matchesPattern/shouldDownloadOutput/in-memory exception",
+      "RemoteExecutionService.shouldDownload/output scheduling/waitForBulkTransfer",
+      "StandaloneTestStrategy XML spawn and retry rename",
+      "TestRunnerAction.getTestXml"
+    ],
+    "full_frozen_bytes_and_original_GETs_verified": [
+      {
+        "bytes": 12619,
+        "git_blob": "3d6b9f2d67f99d4c1953a82d3c6ed74790e1b797",
+        "path": "primary/BuildEventIdUtil.java",
+        "sha256": "37812b3e02911d51540a5a7f02db35e21cfd8c09c3e2ed732b734d13f2bf2d45",
+        "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/buildeventstream/BuildEventIdUtil.java"
+      },
+      {
+        "bytes": 26301,
+        "git_blob": "bab9d03f33a4b5ad5d463b8f5505128417094f6e",
+        "path": "primary/BuildRequestOptions.java",
+        "sha256": "c4bcd1445c5a2a165bab55f9fa96d0c0bd270974e0d89a9b64d32fc6f8ed1783",
+        "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/buildtool/BuildRequestOptions.java"
+      },
+      {
+        "bytes": 3529,
+        "git_blob": "d3c16738ba7e6a51103fe02d1a9eec3113a0756c",
+        "path": "primary/CommonRemoteOptions.java",
+        "sha256": "da21757de4ac7c49adeae3ef8e2baadcf515b0892e73855577fe207105191aac",
+        "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/remote/options/CommonRemoteOptions.java"
+      },
+      {
+        "bytes": 1983,
+        "git_blob": "7fd26e9b7f23a50e733123142bc599878a3cd0b6",
+        "path": "primary/FetchEvent.java",
+        "sha256": "ffd3b389320638314838554457976544af6a4f5bfd4d42e3b36e76958ee771b3",
+        "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/buildeventstream/FetchEvent.java"
+      },
+      {
+        "bytes": 2597,
+        "git_blob": "2d2812205f9f8925e12bea63186d7fd1e0b568d3",
+        "path": "primary/RegexPatternOption.java",
+        "sha256": "0e4aeea7e778e680f5ae696cd293365b09bef628890417d93e4046001c40ee6d",
+        "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/common/options/RegexPatternOption.java"
+      },
+      {
+        "bytes": 88576,
+        "git_blob": "e0f56e64efdaf0b39a3032a4163b74a59b946aad",
+        "path": "primary/RemoteExecutionService.java",
+        "sha256": "0ce8bea8a3b387fd739832ff4f0e9b6aeee1cfa6df558132f92a086274d55111",
+        "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/remote/RemoteExecutionService.java"
+      },
+      {
+        "bytes": 61307,
+        "git_blob": "633cae1f61fe7a2e913a68939a9b4e426e0ad5a3",
+        "path": "primary/RemoteModule.java",
+        "sha256": "c0067e3973bb2e6f34b7d3f18d2aabbe881e8eed95757fa943d3ead3a4b748f1",
+        "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/remote/RemoteModule.java"
+      },
+      {
+        "bytes": 43451,
+        "git_blob": "cd8b2b554e28d2cce0ecc70f8f4daa29a865c421",
+        "path": "primary/RemoteOptions.java",
+        "sha256": "dfc9a7357db490e29e72cdef56d304dbd64fc5dcfc3c5672eec0589aef6460f0",
+        "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/remote/options/RemoteOptions.java"
+      },
+      {
+        "bytes": 15904,
+        "git_blob": "707f681eab1d31593fab49768e68dc9620cce6ad",
+        "path": "primary/RemoteOutputChecker.java",
+        "sha256": "2f002a214f29c25449e6f788572d5fccf9d958b5becf964baf471acb3b4ee24d",
+        "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/remote/RemoteOutputChecker.java"
+      },
+      {
+        "bytes": 39413,
+        "git_blob": "0ad50eb7683ec38d20ab66593421fbe57884ce8f",
+        "path": "primary/StandaloneTestStrategy.java",
+        "sha256": "4b8bb3d13de58806197ca29dd2beeeab26a2864ffb2b7e1ec57344b9b467cbaf",
+        "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/exec/StandaloneTestStrategy.java"
+      },
+      {
+        "bytes": 54241,
+        "git_blob": "acd558cc2fcf1a6b93bd910d9ee7d3d10d75d5d9",
+        "path": "primary/TestRunnerAction.java",
+        "sha256": "041b0caebf6d6b84118f8365c7c874d5a2573889b2d0f50c2366b65a5e97c6d8",
+        "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/analysis/test/TestRunnerAction.java"
+      },
+      {
+        "bytes": 24702,
+        "git_blob": "4dee96225efcdc4ac68aeeabcce9d4deeb31b7a0",
+        "path": "primary/Utils.java",
+        "sha256": "adbade9a30aa07597f54f9fa1d6d1242316961215c11065a762e4db0643c27aa",
+        "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/remote/util/Utils.java"
+      }
+    ]
+  },
+  "remaining_acceptance": [
+    "Actual root source/commit/ref/merge identity for each publication.",
+    "Next original automatic job must produce physical local XML and complete retained artifacts under unchanged exit gates.",
+    "B21 actual dropped-receiver/product failure remains independent and OPEN; B23 historical missing evidence is not retroactively complete."
+  ],
+  "not_performed": [
+    "No native retry/dispatch/cancellation",
+    "No private capacity or resource query",
+    "No product source, assertion, threshold, thread/retry/timeout or execution-policy change",
+    "No source ref or PR mutation by reviewer"
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "schema": "objective-owner-main67-root-offline-replay-v1",
+  "result": "PASS",
+  "verifier_full_source_read": true,
+  "verifier": {
+    "bytes": 20575,
+    "git_blob": "4e0a12a98f4a02ee6d7af1a75ea8fd1d59cf2acf",
+    "sha256": "09a5d07581cc2e2e9995ab64865cea3e6740e23f2e125808afbb61cf962cfeb0"
+  },
+  "stdout": {
+    "bytes": 116203,
+    "git_blob": "6c37b7f17d067de495192554271daec544e4f740",
+    "sha256": "802b023074004835c847f10742c5e54925b22f6e559b5feb46ff73adbb32c9d4"
+  },
+  "stdout_equals_author_complete_VERIFICATION": true,
+  "exit": 0,
+  "stderr_bytes": 0,
+  "read_scope": "Complete offline verifier and Chinese source-scope review read; entire original ZIP/source-tree/command/test identities re-evaluated by verifier. No assertion that root manually read every source line or each of816 duplicate-inclusive test executions.",
+  "qualification": "327 memory with8 skipped;242 Agentd with1 skip;247 desktop-feature with1 skip; actual fixed owner libraries and scoped fmt/fix only.",
+  "full_workspace_Bazel_private_jobs4_Root_Current_production_qualified": false,
+  "native_executed_by_this_step": false
+}

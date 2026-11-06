@@ -1,0 +1,243 @@
+{
+  "schema": "fetch-xml-independent-source-proof-v1",
+  "freeze": {
+    "bytes": 283160,
+    "git_blob": "ca91ce1e0d8616ad17eaeeba83542855214f5d91",
+    "sha256": "e418e6d30f99d890a6ecf9501ba0a18a6c329ebf7e6b667dbe2b8d709bcc0881"
+  },
+  "all_1010_frozen_files_exact": true,
+  "frozen_bytes": 18136361,
+  "collector": {
+    "bytes": 36352,
+    "git_blob": "ee1b82877fbd55a2e3838d768014715617e05ea0",
+    "sha256": "4b9e1a86867bfad3303d0fbd14722f654b74c65f5ef963b87cbef7153da59c52"
+  },
+  "unchanged_18_function_or_class_bodies": [
+    "EvidenceError",
+    "SecretPolicy",
+    "dump_json",
+    "canonical",
+    "pointer",
+    "header_name",
+    "Sanitizer",
+    "sanitize_bep",
+    "relevant_log",
+    "stable_copy",
+    "collect_local_logs",
+    "reference",
+    "read_exit",
+    "safe_error",
+    "inspect_zstd",
+    "scan_zstd",
+    "privacy_gate",
+    "main"
+  ],
+  "fresh_complete_postimage_GETs": [
+    {
+      "git_blob": "ee1b82877fbd55a2e3838d768014715617e05ea0",
+      "bytes": 36352,
+      "full_GET_equal": true
+    },
+    {
+      "git_blob": "17ff1640c21876a08396db6a40f131a26870fe84",
+      "bytes": 52706,
+      "full_GET_equal": true
+    },
+    {
+      "git_blob": "993d7a76a4fc6c2924e45c7ef403cecd6d108d1f",
+      "bytes": 61857,
+      "full_GET_equal": true
+    }
+  ],
+  "workflows": [
+    {
+      "label": "b21",
+      "parent": "ebd31e2b3e38ff72cedaa7b57bee60c1c102da27",
+      "parent_tree": "46fca3e684217066c260dc10d0dc319a33e0a93c",
+      "postimage": {
+        "bytes": 52706,
+        "git_blob": "17ff1640c21876a08396db6a40f131a26870fe84",
+        "sha256": "1c1baed7253a31705ccf2edbf3b796e22347a8729eb5d0ce6c263dfa551cd42a"
+      },
+      "complete_candidate_tree": "45858bc96c0edbc366ec77991646b15971129975",
+      "directories": 1571,
+      "original_product_leaves_unchanged": 10582,
+      "only_parent_leaf_changed": ".github/workflows/b21-intel-original-pty.yml",
+      "full_inverse_after_only_collector_download_flag_parent_guard_edits": true,
+      "source_guard_substitutions": 6
+    },
+    {
+      "label": "b23",
+      "parent": "e63ed76c5d8ded046f97caffbdbe2883140e6032",
+      "parent_tree": "a6831e2607e718f1343b788e5b8062a171d50a71",
+      "postimage": {
+        "bytes": 61857,
+        "git_blob": "993d7a76a4fc6c2924e45c7ef403cecd6d108d1f",
+        "sha256": "7e70654ad67ad3186d840ccc656d44e783a88edd6788dbfdb0abd3b1624a3c8d"
+      },
+      "complete_candidate_tree": "9a6fd02aa18b2421f6aaec8a5db6ecf82b710c89",
+      "directories": 1571,
+      "original_product_leaves_unchanged": 10582,
+      "only_parent_leaf_changed": ".github/workflows/hepta-b23-linux-app-server-original-gate.yml",
+      "full_inverse_after_only_collector_download_flag_parent_guard_edits": true,
+      "source_guard_substitutions": 0
+    }
+  ],
+  "independent_complete_base_Merkle": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+  "independent_patch_operations": [
+    {
+      "scope": "collector",
+      "patch": {
+        "bytes": 3923,
+        "git_blob": "8f6b4faf4657ca3fa67aa1a73774a6c88bd69c30",
+        "sha256": "ee77d2e82d339914979d7417f09d943311ceb797146235542304aeb68351cb94"
+      },
+      "operations": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--check",
+            "<frozen collector.patch>"
+          ],
+          "exit": 0
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "<frozen collector.patch>"
+          ],
+          "exit": 0
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--reverse",
+            "--check",
+            "<frozen collector.patch>"
+          ],
+          "exit": 0
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--reverse",
+            "<frozen collector.patch>"
+          ],
+          "exit": 0
+        }
+      ],
+      "full_forward_and_reverse_bytes_equal": true
+    },
+    {
+      "scope": "b21",
+      "patch": {
+        "bytes": 7382,
+        "git_blob": "1a13413c4dc248c1e640f90d0a943a9eb51c92c9",
+        "sha256": "5c3508ed58617a737673ec5fb2bf28895e5997223646bbd069910049e533799c"
+      },
+      "operations": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--check",
+            "<frozen b21.patch>"
+          ],
+          "exit": 0
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "<frozen b21.patch>"
+          ],
+          "exit": 0
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--reverse",
+            "--check",
+            "<frozen b21.patch>"
+          ],
+          "exit": 0
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--reverse",
+            "<frozen b21.patch>"
+          ],
+          "exit": 0
+        }
+      ],
+      "full_forward_and_reverse_bytes_equal": true
+    },
+    {
+      "scope": "b23",
+      "patch": {
+        "bytes": 5038,
+        "git_blob": "6c39162bb9635727de733fbc385126b0046f31a5",
+        "sha256": "105f9020ee26a6f21205d95ba165d986ef9727e9abece62ae6f7873340fae91f"
+      },
+      "operations": [
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--check",
+            "<frozen b23.patch>"
+          ],
+          "exit": 0
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "<frozen b23.patch>"
+          ],
+          "exit": 0
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--reverse",
+            "--check",
+            "<frozen b23.patch>"
+          ],
+          "exit": 0
+        },
+        {
+          "argv": [
+            "git",
+            "apply",
+            "--reverse",
+            "<frozen b23.patch>"
+          ],
+          "exit": 0
+        }
+      ],
+      "full_forward_and_reverse_bytes_equal": true
+    }
+  ],
+  "isolated_original_verifier_and_all_offline_controls_exit": 0,
+  "isolated_stdout": {
+    "bytes": 9089,
+    "git_blob": "5987e2811afe46964538d33f968f46e5a754c66c",
+    "sha256": "24d1318648b23450a8e5f19cc49b55d02d3c5bed4f27f331c0fede98e48ec1bf"
+  },
+  "isolated_stdout_complete_bytes_equal": true,
+  "original_native_attempts_in_offline_input": 507,
+  "historical_missing_XML_remains": 139,
+  "test_attempts_summaries_original_exits_preserved": true,
+  "private_raw_BEP_and_unchanged_upload_privacy_scope": "Only existing sanitized derived BEP is replayed; no raw BEP uploaded.",
+  "native_Bazel_Cargo_CI_dispatch_rerun_or_ref_mutation": false,
+  "acceptance": "STATIC_AND_OFFLINE_ONLY; real XML materialization and original product failures remain pending."
+}

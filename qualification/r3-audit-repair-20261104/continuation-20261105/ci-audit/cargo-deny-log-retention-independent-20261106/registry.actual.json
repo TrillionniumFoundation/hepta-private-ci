@@ -1,0 +1,295 @@
+{
+  "schema": "cargo-deny-independent-complete-actual-registry-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "repository_prefix": "ci-audit/cargo-deny-log-retention-independent-20261106/",
+  "scope": "Complete 515-member author source/static/fake freeze plus all independent original GETs, 17 offline replays, 6 ANSI/privacy controls, preserved preliminary defect, and separate actual root Draft4922 publication response binding.",
+  "qualification": "STATIC_AND_FAKE_ONLY; no native cargo-deny, actual upload-artifact execution or blocker closure inferred",
+  "frozen_archive": {
+    "members": 1194,
+    "previous1188_all_bytes_preserved": true,
+    "author_members": 515,
+    "base64_parts": 9,
+    "compressed": {
+      "bytes": 790132,
+      "git_blob": "15f28f6963e515bdabfd5b9ae2a7e8462b1c352b",
+      "sha256": "2632ccc2900e0e97396d2deb25179f8c492891c6aeebdf434fec75331a5aabdf"
+    }
+  },
+  "portable_verification": {
+    "restore_exit": 0,
+    "independent_verifier_exit": 0,
+    "independent_stdout_full_bytes_equal": true,
+    "publication_verifier_exit": 0,
+    "publication_stdout_full_bytes_equal": true
+  },
+  "actual_payload_count": 19,
+  "records": [
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/cargo-deny-independent-review/REVIEW.json",
+      "repository_path": "ci-audit/cargo-deny-log-retention-independent-20261106/REVIEW.json",
+      "bytes": 7295,
+      "git_blob": "875534b774e4e0f403fce5533ebcd07fb5df4122",
+      "sha256": "b2cde18e378e4ebd54bd91518536ed06ed08e3f1ad0a7ad21e33c7fad9d4d65f",
+      "actual_create_sha": "875534b774e4e0f403fce5533ebcd07fb5df4122",
+      "actual_full_GET_equal": true,
+      "source_blockers": 0,
+      "actual_full_GET_identity": {
+        "bytes": 7295,
+        "git_blob": "875534b774e4e0f403fce5533ebcd07fb5df4122",
+        "sha256": "b2cde18e378e4ebd54bd91518536ed06ed08e3f1ad0a7ad21e33c7fad9d4d65f"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/cargo-deny-independent-review/INDEPENDENT_VERIFICATION.json",
+      "repository_path": "ci-audit/cargo-deny-log-retention-independent-20261106/INDEPENDENT_VERIFICATION.json",
+      "bytes": 3478,
+      "git_blob": "c65968fa567cff1ede44090b06db7837d6cc8044",
+      "sha256": "ea18fc35ee3e8f6d2f6ae6f97c28b7b152d93494306e1a0fa3e5f610505b8564",
+      "actual_create_sha": "c65968fa567cff1ede44090b06db7837d6cc8044",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 3478,
+        "git_blob": "c65968fa567cff1ede44090b06db7837d6cc8044",
+        "sha256": "ea18fc35ee3e8f6d2f6ae6f97c28b7b152d93494306e1a0fa3e5f610505b8564"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/cargo-deny-independent-review/ANSI_CORRECTION.json",
+      "repository_path": "ci-audit/cargo-deny-log-retention-independent-20261106/ANSI_CORRECTION.json",
+      "bytes": 3229,
+      "git_blob": "373d5548feeea235992483aad7993ab36b893342",
+      "sha256": "c4445ab191b83167ed89c7fd83b57ce090f0093d7e55f6c010402aa4db8bb940",
+      "actual_create_sha": "373d5548feeea235992483aad7993ab36b893342",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 3229,
+        "git_blob": "373d5548feeea235992483aad7993ab36b893342",
+        "sha256": "c4445ab191b83167ed89c7fd83b57ce090f0093d7e55f6c010402aa4db8bb940"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/cargo-deny-independent-review/verify_independent.py",
+      "repository_path": "ci-audit/cargo-deny-log-retention-independent-20261106/verify_independent.py",
+      "bytes": 9435,
+      "git_blob": "ed19268785ba8b6aac6c752234abee49726bfe6a",
+      "sha256": "84a25f828c4153e3db734012ea6836b1180af918bea3a530e0541e3cdd95630d",
+      "actual_create_sha": "ed19268785ba8b6aac6c752234abee49726bfe6a",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 9435,
+        "git_blob": "ed19268785ba8b6aac6c752234abee49726bfe6a",
+        "sha256": "84a25f828c4153e3db734012ea6836b1180af918bea3a530e0541e3cdd95630d"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/cargo-deny-independent-review/verify_ansi_correction.py",
+      "repository_path": "ci-audit/cargo-deny-log-retention-independent-20261106/verify_ansi_correction.py",
+      "bytes": 5290,
+      "git_blob": "843309aff6b5e82cb1253a8ac139657c69eaf54f",
+      "sha256": "c61933ad84e000700f072da539b309db1b05022a97e2b6062dec41bff90bae10",
+      "actual_create_sha": "843309aff6b5e82cb1253a8ac139657c69eaf54f",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 5290,
+        "git_blob": "843309aff6b5e82cb1253a8ac139657c69eaf54f",
+        "sha256": "c61933ad84e000700f072da539b309db1b05022a97e2b6062dec41bff90bae10"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/cargo-deny-independent-review/restore_bundle.py",
+      "repository_path": "ci-audit/cargo-deny-log-retention-independent-20261106/restore_bundle.py",
+      "bytes": 2469,
+      "git_blob": "7389a055755fc6bb1b26becd62cf40c094f4ac06",
+      "sha256": "93d3c0b2a42196080d02e3bab1b4b3e8e14ef1110e8cc58afcdce03d88aa97ff",
+      "actual_create_sha": "7389a055755fc6bb1b26becd62cf40c094f4ac06",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 2469,
+        "git_blob": "7389a055755fc6bb1b26becd62cf40c094f4ac06",
+        "sha256": "93d3c0b2a42196080d02e3bab1b4b3e8e14ef1110e8cc58afcdce03d88aa97ff"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/cargo-deny-independent-review/PORTABLE_REPLAY-v2.json",
+      "repository_path": "ci-audit/cargo-deny-log-retention-independent-20261106/PORTABLE_REPLAY-v2.json",
+      "bytes": 8348,
+      "git_blob": "f4892c48e9ca5911945b8614c5b0ff068692486c",
+      "sha256": "fe606a76178d20484d9187c959740be75609420c15216e41c654e438f423b6c4",
+      "actual_create_sha": "f4892c48e9ca5911945b8614c5b0ff068692486c",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 8348,
+        "git_blob": "f4892c48e9ca5911945b8614c5b0ff068692486c",
+        "sha256": "fe606a76178d20484d9187c959740be75609420c15216e41c654e438f423b6c4"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/cargo-deny-independent-review/publication/verify_publication.py",
+      "repository_path": "ci-audit/cargo-deny-log-retention-independent-20261106/publication/verify_publication.py",
+      "bytes": 5873,
+      "git_blob": "89ba5f8b0e9872d0a0df36fabead9414ec105cd1",
+      "sha256": "5f06dfc2f749bb0fe2d1ce11632338ee05ed1522c59ec43e8e41682b870b1246",
+      "actual_create_sha": "89ba5f8b0e9872d0a0df36fabead9414ec105cd1",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 5873,
+        "git_blob": "89ba5f8b0e9872d0a0df36fabead9414ec105cd1",
+        "sha256": "5f06dfc2f749bb0fe2d1ce11632338ee05ed1522c59ec43e8e41682b870b1246"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/cargo-deny-independent-review/publication/PUBLICATION_VERIFICATION.json",
+      "repository_path": "ci-audit/cargo-deny-log-retention-independent-20261106/publication/PUBLICATION_VERIFICATION.json",
+      "bytes": 1833,
+      "git_blob": "12f7dc4a236176d062ad69d2e6a41e5844e417ce",
+      "sha256": "c8518f39938a1230e93c7e0dfde5734e37dc6933bbf8fc57a6389ea46ee46828",
+      "actual_create_sha": "12f7dc4a236176d062ad69d2e6a41e5844e417ce",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 1833,
+        "git_blob": "12f7dc4a236176d062ad69d2e6a41e5844e417ce",
+        "sha256": "c8518f39938a1230e93c7e0dfde5734e37dc6933bbf8fc57a6389ea46ee46828"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/cargo-deny-independent-review/bundle-v2/manifest.json",
+      "repository_path": "ci-audit/cargo-deny-log-retention-independent-20261106/bundle-v2/manifest.json",
+      "bytes": 364116,
+      "git_blob": "fb32093da896f6534df710e126f0d07adf03a658",
+      "sha256": "aa98733a900ea06f6d36a7e14e350314e28240bb7f0c3a3f0c2bab1b90e6efc2",
+      "actual_create_sha": "fb32093da896f6534df710e126f0d07adf03a658",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 364116,
+        "git_blob": "fb32093da896f6534df710e126f0d07adf03a658",
+        "sha256": "aa98733a900ea06f6d36a7e14e350314e28240bb7f0c3a3f0c2bab1b90e6efc2"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/cargo-deny-independent-review/bundle-v2/part-000.base64.txt",
+      "repository_path": "ci-audit/cargo-deny-log-retention-independent-20261106/bundle-v2/part-000.base64.txt",
+      "bytes": 120000,
+      "git_blob": "1780b55c28a636b05ffa5ec7a70f6a4e14e3efbf",
+      "sha256": "d2e8d9579709a12572068cf6f49840330398ec0f22447e1e02ca855e11836d5f",
+      "actual_create_sha": "1780b55c28a636b05ffa5ec7a70f6a4e14e3efbf",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 120000,
+        "git_blob": "1780b55c28a636b05ffa5ec7a70f6a4e14e3efbf",
+        "sha256": "d2e8d9579709a12572068cf6f49840330398ec0f22447e1e02ca855e11836d5f"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/cargo-deny-independent-review/bundle-v2/part-001.base64.txt",
+      "repository_path": "ci-audit/cargo-deny-log-retention-independent-20261106/bundle-v2/part-001.base64.txt",
+      "bytes": 120000,
+      "git_blob": "0cc9a8d7b379e8dd238808042dc1b8a9f89c9fb2",
+      "sha256": "e561e3f1a85decb9e2b2e73abe82ab13f9871d0598190a15218f9eee55101e8e",
+      "actual_create_sha": "0cc9a8d7b379e8dd238808042dc1b8a9f89c9fb2",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 120000,
+        "git_blob": "0cc9a8d7b379e8dd238808042dc1b8a9f89c9fb2",
+        "sha256": "e561e3f1a85decb9e2b2e73abe82ab13f9871d0598190a15218f9eee55101e8e"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/cargo-deny-independent-review/bundle-v2/part-002.base64.txt",
+      "repository_path": "ci-audit/cargo-deny-log-retention-independent-20261106/bundle-v2/part-002.base64.txt",
+      "bytes": 120000,
+      "git_blob": "feaed4119a6adca1cdc9bcfc89ab32bdc64a37d9",
+      "sha256": "4f35d6fb1cf9b640b13090a63899ad22624855a620eff6827f6d5235c783cc4c",
+      "actual_create_sha": "feaed4119a6adca1cdc9bcfc89ab32bdc64a37d9",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 120000,
+        "git_blob": "feaed4119a6adca1cdc9bcfc89ab32bdc64a37d9",
+        "sha256": "4f35d6fb1cf9b640b13090a63899ad22624855a620eff6827f6d5235c783cc4c"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/cargo-deny-independent-review/bundle-v2/part-003.base64.txt",
+      "repository_path": "ci-audit/cargo-deny-log-retention-independent-20261106/bundle-v2/part-003.base64.txt",
+      "bytes": 120000,
+      "git_blob": "8a957787c432def351b9fbb5191eb3a8a309986e",
+      "sha256": "fa55afe2ab3ce0a1920491071238b700a5d613cde6c5bd3bc816c452e0b25fca",
+      "actual_create_sha": "8a957787c432def351b9fbb5191eb3a8a309986e",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 120000,
+        "git_blob": "8a957787c432def351b9fbb5191eb3a8a309986e",
+        "sha256": "fa55afe2ab3ce0a1920491071238b700a5d613cde6c5bd3bc816c452e0b25fca"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/cargo-deny-independent-review/bundle-v2/part-004.base64.txt",
+      "repository_path": "ci-audit/cargo-deny-log-retention-independent-20261106/bundle-v2/part-004.base64.txt",
+      "bytes": 120000,
+      "git_blob": "708bae9f6566d5eab68b878adb470084da1ed774",
+      "sha256": "8a8d6f8caf48578b9c6ffd1f9cb8900ddeefd51626990bd253b06bdfd39d9d15",
+      "actual_create_sha": "708bae9f6566d5eab68b878adb470084da1ed774",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 120000,
+        "git_blob": "708bae9f6566d5eab68b878adb470084da1ed774",
+        "sha256": "8a8d6f8caf48578b9c6ffd1f9cb8900ddeefd51626990bd253b06bdfd39d9d15"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/cargo-deny-independent-review/bundle-v2/part-005.base64.txt",
+      "repository_path": "ci-audit/cargo-deny-log-retention-independent-20261106/bundle-v2/part-005.base64.txt",
+      "bytes": 120000,
+      "git_blob": "7ea1eb1896f03c2c93a4dcd6af9139f114c71b68",
+      "sha256": "4c9993c178628698769c3bbee4cb5e61c0c19357047f3e73173ff4c05832718f",
+      "actual_create_sha": "7ea1eb1896f03c2c93a4dcd6af9139f114c71b68",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 120000,
+        "git_blob": "7ea1eb1896f03c2c93a4dcd6af9139f114c71b68",
+        "sha256": "4c9993c178628698769c3bbee4cb5e61c0c19357047f3e73173ff4c05832718f"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/cargo-deny-independent-review/bundle-v2/part-006.base64.txt",
+      "repository_path": "ci-audit/cargo-deny-log-retention-independent-20261106/bundle-v2/part-006.base64.txt",
+      "bytes": 120000,
+      "git_blob": "65b4771868448e70d76a827da8ab0973c1cd785b",
+      "sha256": "8a0578f3919bb5be28a2129f666905933aeaf0fded006f77ce4c68d4fc20b91c",
+      "actual_create_sha": "65b4771868448e70d76a827da8ab0973c1cd785b",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 120000,
+        "git_blob": "65b4771868448e70d76a827da8ab0973c1cd785b",
+        "sha256": "8a0578f3919bb5be28a2129f666905933aeaf0fded006f77ce4c68d4fc20b91c"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/cargo-deny-independent-review/bundle-v2/part-007.base64.txt",
+      "repository_path": "ci-audit/cargo-deny-log-retention-independent-20261106/bundle-v2/part-007.base64.txt",
+      "bytes": 120000,
+      "git_blob": "901c9bb5658c282a466eb4373215f51afba37d93",
+      "sha256": "fbae38ae01ba37b6fdcea1cd0fd6311036c7b1ed9b8ac2bc1fa804de2f04da05",
+      "actual_create_sha": "901c9bb5658c282a466eb4373215f51afba37d93",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 120000,
+        "git_blob": "901c9bb5658c282a466eb4373215f51afba37d93",
+        "sha256": "fbae38ae01ba37b6fdcea1cd0fd6311036c7b1ed9b8ac2bc1fa804de2f04da05"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/cargo-deny-independent-review/bundle-v2/part-008.base64.txt",
+      "repository_path": "ci-audit/cargo-deny-log-retention-independent-20261106/bundle-v2/part-008.base64.txt",
+      "bytes": 93512,
+      "git_blob": "bf1220b868ccf30af4ddff141d6055ed7aef8f56",
+      "sha256": "abb178bd12492e273fc8f05598ac175cf53fcb1914e73faa09bd6f8f64d407bb",
+      "actual_create_sha": "bf1220b868ccf30af4ddff141d6055ed7aef8f56",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 93512,
+        "git_blob": "bf1220b868ccf30af4ddff141d6055ed7aef8f56",
+        "sha256": "abb178bd12492e273fc8f05598ac175cf53fcb1914e73faa09bd6f8f64d407bb"
+      }
+    }
+  ]
+}

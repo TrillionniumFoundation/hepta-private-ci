@@ -1,0 +1,106 @@
+{
+  "schema": "cargo-deny-independent-static-review-v1",
+  "frozen_members": 515,
+  "frozen_total_bytes": 3189214,
+  "author_freeze_identity": {
+    "bytes": 131829,
+    "git_blob": "2f83533d74132de49b6bb16417daef18481807dd",
+    "sha256": "ee7d7e8feca2222ab0aa0520264671d0ca0c035aa9d33304b0ac97cfd520d4c8"
+  },
+  "all_frozen_files_exact": true,
+  "preimage": {
+    "bytes": 965,
+    "git_blob": "88b6308899357e23b4a4058aecd4527b4edcee9b",
+    "sha256": "1cdaf438b2a2c158b046675ee5a8d0f878d9e3e32a30b9fd9dd5a32e5fa9bf9e"
+  },
+  "candidate": {
+    "bytes": 16019,
+    "git_blob": "57f6095d18c5517c9e7cf7d0de05b9645b106152",
+    "sha256": "1a57f41bd71fccd9a219f4295c297c1520bdf92ed1704dbe34b6791b60921ef8"
+  },
+  "fresh_full_GET_equal": true,
+  "base_tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+  "candidate_tree": "06c4e2f80884b169e31d8a5edf04438486a9ee81",
+  "original_leaves": 10582,
+  "unchanged_leaves": 10581,
+  "directories": 1571,
+  "original_settings_and_setup_clean_steps_preserved": true,
+  "exact_original_check_command": "cargo +1.95.0 deny --locked --all-features check --config deny.toml",
+  "one_check_per_offline_fixture": true,
+  "PIPESTATUS_immediate_and_original_exit_prioritized": true,
+  "raw_private_log_and_checked_public_copy": "Every uploaded file is constructed from the already-scanned bytes and read back for complete equality; no raw private directory upload.",
+  "normal_ANSI_environment_preserved": true,
+  "privacy_false_negative_corrected": "ANSI normalization and unsupported-control check are repeated at every decoded view.",
+  "patch": {
+    "bytes": 15791,
+    "git_blob": "27d35a9744b5c0bad0b57058d128cbb1272d5a97",
+    "sha256": "a25084d1a0fbc7ce378e20a48a8f8b926817290d0ef16ee5e2c0dcfa28cac53d"
+  },
+  "real_local_git_patch_operations": [
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "<frozen full.patch>"
+      ],
+      "exit": 0
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "<frozen full.patch>"
+      ],
+      "exit": 0
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "--check",
+        "<frozen full.patch>"
+      ],
+      "exit": 0
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "<frozen full.patch>"
+      ],
+      "exit": 0
+    }
+  ],
+  "isolated_replays": [
+    {
+      "kind": "author-static-replay",
+      "exit": 0,
+      "stderr_bytes": 0,
+      "stdout": {
+        "bytes": 3356,
+        "git_blob": "9f6f931ba3aa047aa437e19079d344b29bcb947f",
+        "sha256": "9adacd2c9b862bb5089932f4eb90d0c48cf9f5b69a6e05b8ed58c47e6da00fbf"
+      },
+      "full_bytes_equal": true
+    },
+    {
+      "kind": "author-fake-replay",
+      "exit": 0,
+      "stderr_bytes": 0,
+      "stdout": {
+        "bytes": 6564,
+        "git_blob": "c9e6729f25758330121e746d4f3bb52a085806b9",
+        "sha256": "5091528c4300dc96ea1ea7693eede8204c8c09c0a97c53b01cf3b555132dced0"
+      },
+      "full_bytes_equal": true
+    }
+  ],
+  "runtime_source_scope": "Records actual HEAD/tree; requires before/after equality and clean. External actual checkout/API binding remains required for native qualification.",
+  "privacy_scope": "Known values and recognized syntax/URI forms with four percent-decoding layers; no universal classifier for arbitrary unmarked unknown secrets.",
+  "actual_cargo_deny_failure_cause": "UNKNOWN",
+  "real_cargo_Rust_build_CI_dispatch_or_rerun": false,
+  "ref_mutation": false
+}

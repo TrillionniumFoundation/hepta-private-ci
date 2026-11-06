@@ -1,0 +1,38 @@
+{
+  "status": "LOSSLESS_COMPLETE_ARCHIVE_AND_BOTH_PORTABLE_VERIFIERS_REPLAYED",
+  "member_count": 87,
+  "archive": {
+    "bytes": 1954409,
+    "sha256": "de71b7d25980b2259aa3f922b2883bb3b4a0613b8eb7ddb0446bc632d69fb6d4",
+    "git_blob": "2c5cba48f509a14b49f62df8c6bd91a5c786ede5"
+  },
+  "original_member_bytes": 11120160,
+  "every_member_full_byte_hash_verified": true,
+  "both_offline_replays": [
+    {
+      "revision": "v1",
+      "exit_code": 0,
+      "stdout": {
+        "bytes": 106546,
+        "sha256": "6d4e315d00c64df25fdaed02a4408ddf2a5aa5af315dcf1e68919b280d840651",
+        "git_blob": "8c47bae5bfd1dc3f9bc9a81143406e4debb7e374"
+      },
+      "stdout_equals_frozen_complete_bytes": true,
+      "stderr_bytes": 0
+    },
+    {
+      "revision": "v2",
+      "exit_code": 0,
+      "stdout": {
+        "bytes": 106616,
+        "sha256": "154869e18a72187e3e93acdd5fc15fe8e9fdab9ceefecdedcfeb7c53ad3881a4",
+        "git_blob": "039e3a7701b371aae23e82c7673810c41fed586e"
+      },
+      "stdout_equals_frozen_complete_bytes": true,
+      "stderr_bytes": 0
+    }
+  ],
+  "native": false,
+  "compiler": false,
+  "ref_mutation": false
+}

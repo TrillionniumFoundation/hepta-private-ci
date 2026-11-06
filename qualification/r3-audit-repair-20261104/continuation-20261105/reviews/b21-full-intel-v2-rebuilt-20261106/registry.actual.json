@@ -1,0 +1,379 @@
+{
+  "schema": "b21-full-intel-v2-rebuilt-immutable-registry-v1",
+  "created_at": "2026-11-06T03:12:59.193Z",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "repo_prefix": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106",
+  "registered_paths": 26,
+  "unique_verified_blob_contents": 26,
+  "snapshot_scope": "Immutable frozen source/static/synthetic packet. Source publication and native run evidence are separate records; frozen historical states are not rewritten.",
+  "source_head_at_base": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+  "candidate_parent": "cc65856cc0b20d03db506c19495d53d61162102d",
+  "candidate_workflow_actual": "fb5881fa310d3548cd604d2827fe9c29aa1b3873",
+  "collector_actual": "00dc37697adde6154a347963ab19e8a6edebac07",
+  "candidate_tree_computed": "46fca3e684217066c260dc10d0dc319a33e0a93c",
+  "frozen_core_manifest": "5dfc323d38cd10e121af36b2f7fcd2e0602275c8",
+  "independent_review_actual": "ecab7af9dc20c8989b9c8c5a4a099f2c91cbf3d0",
+  "author_proof_addendum_actual": "2daeaa86a21ddd58d92f622f6d4b255c37ba9d04",
+  "packet": {
+    "members": 242,
+    "explicit_directories": 84,
+    "unique_bodies": 131,
+    "archive_bytes": 2785872,
+    "archive_sha256": "3e6cb016583a3e59799324bda7aab9d2c24b8b18325f1ca28607b7fa7f8c9e3c",
+    "parts": 10,
+    "restored_all_bytes_equal": true,
+    "core_replay_exit": 0,
+    "core_stdout_exact": "c0785bd9692363021d3b6d6c0178f4774ee520d9",
+    "independent_replay_exit": 0,
+    "independent_stdout_exact": "ecab7af9dc20c8989b9c8c5a4a099f2c91cbf3d0",
+    "restoration_receipt_actual": "d14c7b1ee4adebf2685e1782b7dfa259a2d28237"
+  },
+  "materialization_method": "github_create_tree(content), no base/ref; reused previously actual source/review blobs; complete github_fetch_blob UTF-8 equality for every object",
+  "materializations": [
+    {
+      "kind": "source_previously_materialized",
+      "sha": "17f5f45b5c3ecda848dd99b01316322acbd25cdb",
+      "computed_sha": "17f5f45b5c3ecda848dd99b01316322acbd25cdb"
+    },
+    {
+      "group": 0,
+      "sha": "2c854dd6568962b01292071fbf15c0a95eb24511",
+      "computed_sha": "2c854dd6568962b01292071fbf15c0a95eb24511",
+      "paths": [
+        "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/README.zh-CN.md",
+        "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/freeze-manifest.json",
+        "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/verify_candidate.py",
+        "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/verify_collection_fixtures.py",
+        "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/static-final.stdout.json",
+        "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/fixtures-final.stdout.json",
+        "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/candidate-postimages.actual.json",
+        "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/delivery/delivery-manifest.json",
+        "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/delivery/restore_packet.py",
+        "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/delivery/build_delivery.py",
+        "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/delivery/restore-replay.stdout.json",
+        "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/delivery/restore-replay.stderr.txt",
+        "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/delivery/payload-objects.zip.b64.part-001"
+      ],
+      "original_store_key": "b21-rebuilt-materialize-0-original"
+    },
+    {
+      "group": 1,
+      "sha": "6ace531f7e14226bfce78ca870a3596568cbc3ec",
+      "computed_sha": "6ace531f7e14226bfce78ca870a3596568cbc3ec",
+      "paths": [
+        "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/delivery/payload-objects.zip.b64.part-002",
+        "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/delivery/payload-objects.zip.b64.part-003"
+      ],
+      "original_store_key": "b21-rebuilt-materialize-1-original"
+    },
+    {
+      "group": 2,
+      "sha": "c29c317ca54b68448d7aff1095d733b704845418",
+      "computed_sha": "c29c317ca54b68448d7aff1095d733b704845418",
+      "paths": [
+        "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/delivery/payload-objects.zip.b64.part-004",
+        "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/delivery/payload-objects.zip.b64.part-005"
+      ],
+      "original_store_key": "b21-rebuilt-materialize-2-original"
+    },
+    {
+      "group": 3,
+      "sha": "8d57995cc37294f42901d5aeac9a1629e2735596",
+      "computed_sha": "8d57995cc37294f42901d5aeac9a1629e2735596",
+      "paths": [
+        "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/delivery/payload-objects.zip.b64.part-006",
+        "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/delivery/payload-objects.zip.b64.part-007"
+      ],
+      "original_store_key": "b21-rebuilt-materialize-3-original"
+    },
+    {
+      "group": 4,
+      "sha": "d63578265be8787d7c29a0835ef7c44055d6ed3c",
+      "computed_sha": "d63578265be8787d7c29a0835ef7c44055d6ed3c",
+      "paths": [
+        "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/delivery/payload-objects.zip.b64.part-008",
+        "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/delivery/payload-objects.zip.b64.part-009"
+      ],
+      "original_store_key": "b21-rebuilt-materialize-4-original"
+    },
+    {
+      "group": 5,
+      "sha": "ba75118e3d73007c046a21235f46c8b8cb6d60f9",
+      "computed_sha": "ba75118e3d73007c046a21235f46c8b8cb6d60f9",
+      "paths": [
+        "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/delivery/payload-objects.zip.b64.part-010"
+      ],
+      "original_store_key": "b21-rebuilt-materialize-5-original"
+    }
+  ],
+  "objects": [
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/candidate/.github/workflows/b21-intel-original-pty.yml",
+      "relative_path": "candidate/.github/workflows/b21-intel-original-pty.yml",
+      "bytes": 50740,
+      "sha256": "0c286e0931688c7882c4d35c1d26a1fc019cc37e271a8220b349583cc849d56a",
+      "git_blob": "fb5881fa310d3548cd604d2827fe9c29aa1b3873",
+      "actual_full_GET_equal": true,
+      "full_GET_original_store_key": "b21-rebuilt-source-fb5881fa310d3548cd604d2827fe9c29aa1b3873-GET-original",
+      "materialization_group": "source_previously_materialized"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/collect_attempts.py",
+      "relative_path": "collect_attempts.py",
+      "bytes": 34905,
+      "sha256": "7d8962de05fae508b259c1e16efa1be78a760c4a6a0da8ec239e796f3d1cdd1c",
+      "git_blob": "00dc37697adde6154a347963ab19e8a6edebac07",
+      "actual_full_GET_equal": true,
+      "full_GET_original_store_key": "b21-rebuilt-source-00dc37697adde6154a347963ab19e8a6edebac07-GET-original",
+      "materialization_group": "source_previously_materialized"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/independent-review/REVIEW.json",
+      "relative_path": "independent-review/REVIEW.json",
+      "bytes": 20188,
+      "sha256": "ecb0937bf342926686fc411aa89770a9a5e817129d37ae8611166bedc6e14bf4",
+      "git_blob": "ecab7af9dc20c8989b9c8c5a4a099f2c91cbf3d0",
+      "actual_full_GET_equal": true,
+      "full_GET_original_store_key": "b21-rebuilt-GET-ecab7af9dc20c8989b9c8c5a4a099f2c91cbf3d0-original",
+      "materialization_group": "independent_actual_reused"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/author-proof-addendum/ADDENDUM.json",
+      "relative_path": "author-proof-addendum/ADDENDUM.json",
+      "bytes": 1773,
+      "sha256": "caca86da339a1384d63b7154c4b34d2ca5f175b53f28f456a031775bfea42e41",
+      "git_blob": "2daeaa86a21ddd58d92f622f6d4b255c37ba9d04",
+      "actual_full_GET_equal": true,
+      "full_GET_original_store_key": "b21-rebuilt-GET-2daeaa86a21ddd58d92f622f6d4b255c37ba9d04-original",
+      "materialization_group": "independent_actual_reused"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/README.zh-CN.md",
+      "relative_path": "README.zh-CN.md",
+      "bytes": 13548,
+      "sha256": "974481cd702bcc9c31888dc268f234ef1d227f362ae057e57ff94414b2ef4be4",
+      "git_blob": "565c76fd0c03754c129709d2cf6ce7bcdffac43b",
+      "actual_full_GET_equal": true,
+      "full_GET_original_store_key": "b21-rebuilt-GET-565c76fd0c03754c129709d2cf6ce7bcdffac43b-original",
+      "materialization_group": 0
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/freeze-manifest.json",
+      "relative_path": "freeze-manifest.json",
+      "bytes": 21397,
+      "sha256": "6c92ca3f99731f3ea85fc8cb4bddea9bb6a630a859a3558185b9f1241a6bd27a",
+      "git_blob": "5dfc323d38cd10e121af36b2f7fcd2e0602275c8",
+      "actual_full_GET_equal": true,
+      "full_GET_original_store_key": "b21-rebuilt-GET-5dfc323d38cd10e121af36b2f7fcd2e0602275c8-original",
+      "materialization_group": 0
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/verify_candidate.py",
+      "relative_path": "verify_candidate.py",
+      "bytes": 20141,
+      "sha256": "be575019ec40d3dd2077b929562d68845adf19226835ada294a7f381c095333b",
+      "git_blob": "874d88686e5a96225db34537e3b7f0d0964bb89c",
+      "actual_full_GET_equal": true,
+      "full_GET_original_store_key": "b21-rebuilt-GET-874d88686e5a96225db34537e3b7f0d0964bb89c-original",
+      "materialization_group": 0
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/verify_collection_fixtures.py",
+      "relative_path": "verify_collection_fixtures.py",
+      "bytes": 16762,
+      "sha256": "5ad989d5c25ae60ce7db06ad6389bd92c25e31e1941ff7804e43e9b99c6d49e3",
+      "git_blob": "a98294e560f29cb45a1f232c4a25ed7ecb2db6f7",
+      "actual_full_GET_equal": true,
+      "full_GET_original_store_key": "b21-rebuilt-GET-a98294e560f29cb45a1f232c4a25ed7ecb2db6f7-original",
+      "materialization_group": 0
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/static-final.stdout.json",
+      "relative_path": "static-final.stdout.json",
+      "bytes": 7937,
+      "sha256": "9939d87662fb607db0ca2bf5d9ac63456db8a4aae4a8cb95348f13e32b8c027b",
+      "git_blob": "c0785bd9692363021d3b6d6c0178f4774ee520d9",
+      "actual_full_GET_equal": true,
+      "full_GET_original_store_key": "b21-rebuilt-GET-c0785bd9692363021d3b6d6c0178f4774ee520d9-original",
+      "materialization_group": 0
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/fixtures-final.stdout.json",
+      "relative_path": "fixtures-final.stdout.json",
+      "bytes": 5461,
+      "sha256": "10ecb921c1a88e98eaf53292ec040851668f00c4872ca142662cda162ea76bcd",
+      "git_blob": "c29c4fb46ef5a325cd1e7ea0595506b3e0ae6474",
+      "actual_full_GET_equal": true,
+      "full_GET_original_store_key": "b21-rebuilt-GET-c29c4fb46ef5a325cd1e7ea0595506b3e0ae6474-original",
+      "materialization_group": 0
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/candidate-postimages.actual.json",
+      "relative_path": "candidate-postimages.actual.json",
+      "bytes": 1246,
+      "sha256": "519329eaa55db8675e88df04be980b6ecc4f162de802dffd6d5e08e65ba54d55",
+      "git_blob": "003efe531bd0f2faf41737259398d677903ebea9",
+      "actual_full_GET_equal": true,
+      "full_GET_original_store_key": "b21-rebuilt-GET-003efe531bd0f2faf41737259398d677903ebea9-original",
+      "materialization_group": 0
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/delivery/delivery-manifest.json",
+      "relative_path": "delivery/delivery-manifest.json",
+      "bytes": 71558,
+      "sha256": "4bc310e56c2490d74b214e0e8670b02b90713fb2eb406379b17d6fb9c1c78b2c",
+      "git_blob": "f3509a6f2ef4fc3aa0c1264731c8f5cade3f1e36",
+      "actual_full_GET_equal": true,
+      "full_GET_original_store_key": "b21-rebuilt-GET-f3509a6f2ef4fc3aa0c1264731c8f5cade3f1e36-original",
+      "materialization_group": 0
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/delivery/restore_packet.py",
+      "relative_path": "delivery/restore_packet.py",
+      "bytes": 4932,
+      "sha256": "dd0e89c7da683ef9be2c5db2004f84b89e757ad6fb3e214fa20ab0f4a482d195",
+      "git_blob": "b3e563d4971ec4d4b93331e5caa888b6eb638c42",
+      "actual_full_GET_equal": true,
+      "full_GET_original_store_key": "b21-rebuilt-GET-b3e563d4971ec4d4b93331e5caa888b6eb638c42-original",
+      "materialization_group": 0
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/delivery/build_delivery.py",
+      "relative_path": "delivery/build_delivery.py",
+      "bytes": 4145,
+      "sha256": "fabf0203e978ea5a0e01c6c84f7518d5d765592714578408cfff261d87e1f263",
+      "git_blob": "c59be413e0bc005470d6fa06eb36e4127df27589",
+      "actual_full_GET_equal": true,
+      "full_GET_original_store_key": "b21-rebuilt-GET-c59be413e0bc005470d6fa06eb36e4127df27589-original",
+      "materialization_group": 0
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/delivery/restore-replay.stdout.json",
+      "relative_path": "delivery/restore-replay.stdout.json",
+      "bytes": 1104,
+      "sha256": "0e5e9f79b39c9b1c0f2719e10fec01c045424bdc1d2911be5c2502ca29510c3c",
+      "git_blob": "d14c7b1ee4adebf2685e1782b7dfa259a2d28237",
+      "actual_full_GET_equal": true,
+      "full_GET_original_store_key": "b21-rebuilt-GET-d14c7b1ee4adebf2685e1782b7dfa259a2d28237-original",
+      "materialization_group": 0
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/delivery/restore-replay.stderr.txt",
+      "relative_path": "delivery/restore-replay.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "actual_full_GET_equal": true,
+      "full_GET_original_store_key": "b21-rebuilt-GET-e69de29bb2d1d6434b8b29ae775ad8c2e48c5391-original",
+      "materialization_group": 0
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/delivery/payload-objects.zip.b64.part-001",
+      "relative_path": "delivery/payload-objects.zip.b64.part-001",
+      "bytes": 400000,
+      "sha256": "9f0e6ee598d2dd272f2beca5972a5071ffdfb9efdc593670ee322a381a92bc8e",
+      "git_blob": "d6222ff726eb013f4c374e3c629c573f781fcd84",
+      "actual_full_GET_equal": true,
+      "full_GET_original_store_key": "b21-rebuilt-GET-d6222ff726eb013f4c374e3c629c573f781fcd84-original",
+      "materialization_group": 0
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/delivery/payload-objects.zip.b64.part-002",
+      "relative_path": "delivery/payload-objects.zip.b64.part-002",
+      "bytes": 400000,
+      "sha256": "a488cfdc49ff62326001e0dd28721469d7395d61f4098d9313da837904eb5fa0",
+      "git_blob": "93e15b3b97a3aed96851cd0b3b22b7396ffe5aab",
+      "actual_full_GET_equal": true,
+      "full_GET_original_store_key": "b21-rebuilt-GET-93e15b3b97a3aed96851cd0b3b22b7396ffe5aab-original",
+      "materialization_group": 1
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/delivery/payload-objects.zip.b64.part-003",
+      "relative_path": "delivery/payload-objects.zip.b64.part-003",
+      "bytes": 400000,
+      "sha256": "56b330dac0d0168706f09afbf5ea9f648763d86078e603f622553953a41496ad",
+      "git_blob": "4e47a397e6270433f943c0c2175cc13041f10ed4",
+      "actual_full_GET_equal": true,
+      "full_GET_original_store_key": "b21-rebuilt-GET-4e47a397e6270433f943c0c2175cc13041f10ed4-original",
+      "materialization_group": 1
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/delivery/payload-objects.zip.b64.part-004",
+      "relative_path": "delivery/payload-objects.zip.b64.part-004",
+      "bytes": 400000,
+      "sha256": "99bf5ee85be93fc268df2a30c0b6f7d0f88bb8ed9d7dccc5ca57e2715e3ce053",
+      "git_blob": "cedae7a5c1fefdd7f6c85e33ba1a5d9fe7bd3306",
+      "actual_full_GET_equal": true,
+      "full_GET_original_store_key": "b21-rebuilt-GET-cedae7a5c1fefdd7f6c85e33ba1a5d9fe7bd3306-original",
+      "materialization_group": 2
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/delivery/payload-objects.zip.b64.part-005",
+      "relative_path": "delivery/payload-objects.zip.b64.part-005",
+      "bytes": 400000,
+      "sha256": "d2445fe13e75f8e207512000b62d591c56d293678ef7f8b17de415b5cc200c73",
+      "git_blob": "8adb69e49d5801bb4bed656546cae7134976ad1e",
+      "actual_full_GET_equal": true,
+      "full_GET_original_store_key": "b21-rebuilt-GET-8adb69e49d5801bb4bed656546cae7134976ad1e-original",
+      "materialization_group": 2
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/delivery/payload-objects.zip.b64.part-006",
+      "relative_path": "delivery/payload-objects.zip.b64.part-006",
+      "bytes": 400000,
+      "sha256": "c4a464706b00b6ba1b00ff651cf2b61c849bddb15e332456bb88ebc28a67c31e",
+      "git_blob": "d1ce60666472a8a9a00d1575d4a284c97619dae9",
+      "actual_full_GET_equal": true,
+      "full_GET_original_store_key": "b21-rebuilt-GET-d1ce60666472a8a9a00d1575d4a284c97619dae9-original",
+      "materialization_group": 3
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/delivery/payload-objects.zip.b64.part-007",
+      "relative_path": "delivery/payload-objects.zip.b64.part-007",
+      "bytes": 400000,
+      "sha256": "df94dea8fe5a65bf61472d06d353f96ca78dec5890017337efa8409409b48ece",
+      "git_blob": "d0ffde51eb00aa22d4683be61a338d46ad7d8f69",
+      "actual_full_GET_equal": true,
+      "full_GET_original_store_key": "b21-rebuilt-GET-d0ffde51eb00aa22d4683be61a338d46ad7d8f69-original",
+      "materialization_group": 3
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/delivery/payload-objects.zip.b64.part-008",
+      "relative_path": "delivery/payload-objects.zip.b64.part-008",
+      "bytes": 400000,
+      "sha256": "904b2acac5dd22893c37c116aecb0debd86ffd6facd5315f99bc178593a122a5",
+      "git_blob": "d078b20e67c879866e7b024ac6db9ab23bee58bb",
+      "actual_full_GET_equal": true,
+      "full_GET_original_store_key": "b21-rebuilt-GET-d078b20e67c879866e7b024ac6db9ab23bee58bb-original",
+      "materialization_group": 4
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/delivery/payload-objects.zip.b64.part-009",
+      "relative_path": "delivery/payload-objects.zip.b64.part-009",
+      "bytes": 400000,
+      "sha256": "bf74e127f485c13e6b47c695b78138477f63436ddefd8ac58a4bd24deac40117",
+      "git_blob": "54e4c0d8e78dd6886067d27ba713b2f32ef81b9a",
+      "actual_full_GET_equal": true,
+      "full_GET_original_store_key": "b21-rebuilt-GET-54e4c0d8e78dd6886067d27ba713b2f32ef81b9a-original",
+      "materialization_group": 4
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/delivery/payload-objects.zip.b64.part-010",
+      "relative_path": "delivery/payload-objects.zip.b64.part-010",
+      "bytes": 114496,
+      "sha256": "ea1085f020b04bd38be729fcd66c9e42828a72bc00831be5e9d01a8a934fd92b",
+      "git_blob": "7e3ddec28c12eeab86986a77db2dc05a77ebe6e4",
+      "actual_full_GET_equal": true,
+      "full_GET_original_store_key": "b21-rebuilt-GET-7e3ddec28c12eeab86986a77db2dc05a77ebe6e4-original",
+      "materialization_group": 5
+    }
+  ],
+  "native_execution": false,
+  "ref_or_PR_mutation_by_this_task": false,
+  "B21": "OPEN",
+  "historical_failure_cause": "UNKNOWN",
+  "self_registration": {
+    "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/registry.actual.json",
+    "method": "Materialize this frozen JSON and full-GET; its identity is in the external actual receipt to avoid self-reference"
+  }
+}

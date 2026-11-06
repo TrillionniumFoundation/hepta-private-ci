@@ -1,0 +1,194 @@
+{
+  "schema": "hepta-concurrent-PR-source-review-v1",
+  "scope": "A finite metadata/head/body refresh plus seven exact commit comparisons and ten fully read source files plus one protocol document. This is not a full security audit of the 30 branches and gives no new native qualification.",
+  "selected_sources": [
+    {
+      "pr": 4855,
+      "head": "1a2add869929ef0c1a32f42689359176480b3a1d",
+      "source_path": "codex-rs/hepta-contracts/src/final_use_existing.rs",
+      "source_file": "sources/pr-4855-final_use_existing.rs.source.txt",
+      "full_GET_envelope": "sources/pr-4855-final_use_existing.rs.full-get.original.json",
+      "bytes": 4126,
+      "sha256": "85c53bbd1d637d86477777b3d5a47d64e25ffc66fb21815d7dd6cf570519bdce",
+      "blob": "5dffb18a7a7570477df78666cd586f1978c0c9dc",
+      "full_GET_bytes_equal": true,
+      "exact_head_compare_file_sha_equal": true
+    },
+    {
+      "pr": 4855,
+      "head": "1a2add869929ef0c1a32f42689359176480b3a1d",
+      "source_path": "codex-rs/hepta-agentd/src/worker_root_journal_path.rs",
+      "source_file": "sources/pr-4855-worker_root_journal_path.rs.source.txt",
+      "full_GET_envelope": "sources/pr-4855-worker_root_journal_path.rs.full-get.original.json",
+      "bytes": 7186,
+      "sha256": "23767677a7542bd9ce179b340061ea6e5d3609ea066b9b93d8036a477587e640",
+      "blob": "b9d76da4ad134164425b1b7e330a1f39157054eb",
+      "full_GET_bytes_equal": true,
+      "exact_head_compare_file_sha_equal": true
+    },
+    {
+      "pr": 4873,
+      "head": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+      "source_path": "qualification/hcsn/execution.py",
+      "source_file": "sources/pr-4873-execution.py.source.txt",
+      "full_GET_envelope": "sources/pr-4873-execution.py.full-get.original.json",
+      "bytes": 8683,
+      "sha256": "cec0644b0ae13721a5162eba217c183f2aa69adc73909a2183bd3dd5727abcd7",
+      "blob": "6fae54cfb3e4b73132a1256200c5f93ad4d149d1",
+      "full_GET_bytes_equal": true,
+      "exact_head_compare_file_sha_equal": true
+    },
+    {
+      "pr": 4887,
+      "head": "bef6fa7645df9df12b69fda499e97eed25de6c75",
+      "source_path": "codex-rs/hepta-agentd/src/circuit_cell_dispatch.rs",
+      "source_file": "sources/pr-4887-circuit_cell_dispatch.rs.source.txt",
+      "full_GET_envelope": "sources/pr-4887-circuit_cell_dispatch.rs.full-get.original.json",
+      "bytes": 1814,
+      "sha256": "f18128885f22c51a02cfedb86184bb42c3ec511f449f5d00389ad65c2ee6ff26",
+      "blob": "17e53e2cbecf24ade6387462b047b77a01073028",
+      "full_GET_bytes_equal": true,
+      "exact_head_compare_file_sha_equal": true
+    },
+    {
+      "pr": 4887,
+      "head": "bef6fa7645df9df12b69fda499e97eed25de6c75",
+      "source_path": "codex-rs/hepta-agentd/src/terminal_learning.rs",
+      "source_file": "sources/pr-4887-terminal_learning.rs.source.txt",
+      "full_GET_envelope": "sources/pr-4887-terminal_learning.rs.full-get.original.json",
+      "bytes": 15153,
+      "sha256": "3dcae38c44dfbdf2217c4f142bb6545528eec9b2ac37bfd06be30dcb38ce9ed6",
+      "blob": "1ddd88511872869dc3cb421fc1b134d99ea7a984",
+      "full_GET_bytes_equal": true,
+      "exact_head_compare_file_sha_equal": true
+    },
+    {
+      "pr": 4895,
+      "head": "09de43ba008ad594b31551cdaa928c77da17597a",
+      "source_path": "codex-rs/hepta-agentd/ORDINARY_PQ_EFFECT_PACKET_V1.md",
+      "source_file": "sources/pr-4895-ORDINARY_PQ_EFFECT_PACKET_V1.md.source.txt",
+      "full_GET_envelope": "sources/pr-4895-ORDINARY_PQ_EFFECT_PACKET_V1.md.full-get.original.json",
+      "bytes": 6743,
+      "sha256": "61d5786b595a0262df243b2387c4c17bcd4a446a6dc32a3bd2251a30d32c8160",
+      "blob": "59c618036359b6aac1b9471e8872cc8b58b3dc3d",
+      "full_GET_bytes_equal": true,
+      "exact_head_compare_file_sha_equal": true
+    },
+    {
+      "pr": 4895,
+      "head": "09de43ba008ad594b31551cdaa928c77da17597a",
+      "source_path": "codex-rs/hepta-contracts/src/authority_trust_release.rs",
+      "source_file": "sources/pr-4895-authority_trust_release.rs.source.txt",
+      "full_GET_envelope": "sources/pr-4895-authority_trust_release.rs.full-get.original.json",
+      "bytes": 1355,
+      "sha256": "ac88e116a765eb4a6b19bd44f8e5e97567941019a8ae460cf4ff8de2b5bd69fa",
+      "blob": "d17e250fd0289bbf27bef17b012d96da3d10bddc",
+      "full_GET_bytes_equal": true,
+      "exact_head_compare_file_sha_equal": true
+    },
+    {
+      "pr": 4895,
+      "head": "09de43ba008ad594b31551cdaa928c77da17597a",
+      "source_path": "codex-rs/hepta-agentd/src/automation_effect_host_packet.rs",
+      "source_file": "sources/pr-4895-automation_effect_host_packet.rs.source.txt",
+      "full_GET_envelope": "sources/pr-4895-automation_effect_host_packet.rs.full-get.original.json",
+      "bytes": 5139,
+      "sha256": "cdf73bc9a0a84bbe62d541ab05dea26f3b018f782d7fdff7d905a33e7977845f",
+      "blob": "f2d87f2f0184e08eae195dd5ab711252362c095e",
+      "full_GET_bytes_equal": true,
+      "exact_head_compare_file_sha_equal": true
+    },
+    {
+      "pr": 4895,
+      "head": "09de43ba008ad594b31551cdaa928c77da17597a",
+      "source_path": "codex-rs/hepta-agentd/src/client_effect_packet.rs",
+      "source_file": "sources/pr-4895-client_effect_packet.rs.source.txt",
+      "full_GET_envelope": "sources/pr-4895-client_effect_packet.rs.full-get.original.json",
+      "bytes": 4432,
+      "sha256": "21768dbd26a101932bd6df7d5f77f8e4b1a08345e9dc474f7aa19a53b9b08a88",
+      "blob": "e8330fe8a2fd8032fd2db5931fbc75f0d0b6e2ed",
+      "full_GET_bytes_equal": true,
+      "exact_head_compare_file_sha_equal": true
+    },
+    {
+      "pr": 4895,
+      "head": "09de43ba008ad594b31551cdaa928c77da17597a",
+      "source_path": "codex-rs/hepta-agentd/src/control_packet.rs",
+      "source_file": "sources/pr-4895-control_packet.rs.source.txt",
+      "full_GET_envelope": "sources/pr-4895-control_packet.rs.full-get.original.json",
+      "bytes": 3129,
+      "sha256": "b79fd8def747230b23a3241dc3e5cfde17197a63faf965ad906dacc3b42dbc92",
+      "blob": "43df162273088fed1cc8905b4d50e21c8bfde06d",
+      "full_GET_bytes_equal": true,
+      "exact_head_compare_file_sha_equal": true
+    },
+    {
+      "pr": 4895,
+      "head": "09de43ba008ad594b31551cdaa928c77da17597a",
+      "source_path": "codex-rs/hepta-fleet/src/release_authority_current.rs",
+      "source_file": "sources/pr-4895-release_authority_current.rs.source.txt",
+      "full_GET_envelope": "sources/pr-4895-release_authority_current.rs.full-get.original.json",
+      "bytes": 10898,
+      "sha256": "cd8e5f69cb7db33b09480d58f8f5318314d8dca409baad120872d43be010645b",
+      "blob": "7b087006a5aaf300fd78a0aa982ed65cf0bd8bf7",
+      "full_GET_bytes_equal": true,
+      "exact_head_compare_file_sha_equal": true
+    }
+  ],
+  "observations": [
+    {
+      "pr": 4855,
+      "mechanism": "Fresh initialization and existing-journal reopening are separate APIs. The fresh path requires the original initial frontier; the existing path refuses missing/partial state. Worker journal paths retain directory descriptors and compare UID/GID/mode/device/inode against the sealed Root handoff.",
+      "limits": "These APIs do not create issuer trust or independent custody. Current source-head Root/Session, normal UI caller, actual effect sink and full recovery acceptance remain unqualified."
+    },
+    {
+      "pr": 4895,
+      "mechanism": "The actual client and server both implement packet-v1. The client checks the unchanged 65536-byte JSON header bound then writes the complete raw payload and closes its write side; server read validates bounded length before allocation, reserves an owned semaphore permit, requires exact bytes plus EOF and digest equality. The protocol compare retains the old 24576-byte inline and 65536-byte control-frame constants unchanged, adding an independent 65536-byte raw-body limit. A 49508-byte packet therefore avoids 99016 hexadecimal characters. The packet host requires PoN and ML-DSA-65 profile, and dispatch checks execution and binds the provider deadline to the original execution deadline. ReleaseFrontierV1 is separate from FinalUse nonces; release recheck checks current external frontier, journal hash, clock floor and publication role at dispatch.",
+      "limits": "Only the selected methods were reviewed. The full PR body gives Chain 254033da23faf10f24a62249f40ce2ddb542645a but no external repository URL, so no repository was guessed or fetched. External Chain endpoints, complete packet integration, permit retention through every actual provider path, current complete package/daemon matrix, production external frontier custody and real consumer acceptance were not independently qualified here. The author explicitly marks the final current pair pending."
+    },
+    {
+      "pr": 4887,
+      "mechanism": "Guarded Cell dispatch reads the live clock immediately before actual inference contact. The terminal learning owner reuses the existing ledger and Memory source, serializes native fit with one permit, preserves uncertain work, binds dataset/evidence receipts and emits DENY_ALL.",
+      "limits": "The bounded job cache is process-owner lifetime state; it is not a durable generic learning checkpoint, published model selection or observed next-task use. The PR explicitly reports zero executed newly authored tests."
+    },
+    {
+      "pr": 4873,
+      "mechanism": "The one new commit normalizes complete CUDA/NVML UUIDs and checks actual UUID agreement. Invalid UUID setup returns before training; original allocator and energy-scope limitations are explicit.",
+      "limits": "A UUID binding repair is not completed CUDA training, physical energy availability, convergence evidence or the original predeclared D-minus-B scientific adoption gate."
+    },
+    {
+      "pr": 4897,
+      "mechanism": "The complete two-file inline patch replaces unbounded communicate() with a selector loop that limits combined stdout and stderr during capture and retains the existing caller cleanup path.",
+      "limits": "Inline patch inspection only, no source-exact runtime execution in this refresh. This is not process isolation, escaped-descendant containment or a scientific efficacy result."
+    }
+  ],
+  "B16": {
+    "status": "OPEN",
+    "new_closure_evidence_independently_qualified": false,
+    "useful_donors": [
+      4855,
+      4895,
+      4887,
+      4893
+    ],
+    "remaining": "Same-source actual Root/Session, normal UI/product caller, trusted issuer/FinalUse, current release/frontier custody, provider/target effects, cancel/lost-ACK/restart and Memory receipts."
+  },
+  "B18": {
+    "status": "SCIENTIFIC_HOLD",
+    "new_closure_evidence_independently_qualified": false,
+    "remaining": "Original predeclared 2x2 including D-minus-B, independent data, adequate precision, all failed attempts and full costs. HCSN CUDA/energy and a narrow terminal trainer do not satisfy this gate."
+  },
+  "B19": {
+    "status": "OPEN / HOLD_NO_GO / DENY_ALL",
+    "new_closure_evidence_independently_qualified": false,
+    "useful_donors": [
+      4894,
+      4895
+    ],
+    "remaining": "Pinned external versions/contracts and real product consumer acceptance including authority identity, epoch/revocation, compatibility and physical effects. H4 explicitly retains eight whole joint HOLD gates."
+  },
+  "native_claims_in_PR_bodies": "Author-reported only; no run/job/artifact from those author claims was independently qualified by this refresh.",
+  "native_or_repository_source_commands_executed": false,
+  "refs_comments_messages_dispatch_rerun_cancel_written": false,
+  "all_blockers_closed": false
+}

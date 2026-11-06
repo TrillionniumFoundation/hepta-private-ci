@@ -1,0 +1,324 @@
+{
+  "schema": "hepta-evidence-index-v10-registered",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "repository_prefix": "qualification/r3-audit-repair-20261104/continuation-20261105/",
+  "audit_parent_commit": "46fd74d98c1cef42e1439920f9ca83361481b3d8",
+  "audit_parent_tree": "41d583262bc6ccd794ffb9e8e9ac9d04665ca85d",
+  "last_actual_immutable_evidence_tree": "715f4d446383c29eb26fa5299c422e955ba34d24",
+  "last_actual_tree_evidence_paths": 1536,
+  "counts": {
+    "evidence_paths": 1536,
+    "distinct_blobs": 1431,
+    "path_bytes": 314109425,
+    "new_documents_and_index_files_excluded": true,
+    "inherited_parent_leaves_excluded": true
+  },
+  "parts": [
+    {
+      "path": "evidence-index-v10-parts/part001.json",
+      "entries": 256,
+      "bytes": 114559,
+      "git_blob": "472f98336f871a31560f555c3b685d95a034c1c0",
+      "sha256": "ff6f1f4611f83f2e05ea2455d126055164198032e7c6122ddcc08f7d67f038fb"
+    },
+    {
+      "path": "evidence-index-v10-parts/part002.json",
+      "entries": 256,
+      "bytes": 114497,
+      "git_blob": "db137d2f045353dd5b3183619192c40fede0f7d5",
+      "sha256": "ff35de93a6b244e7fa0f96dffcd621f81e9c703ca230a39c1d1e5a72e7fdf81b"
+    },
+    {
+      "path": "evidence-index-v10-parts/part003.json",
+      "entries": 256,
+      "bytes": 108257,
+      "git_blob": "74ce6404e2479fc3b11a191211d9f90ca0eae8dc",
+      "sha256": "cd154ee1660ee5bedb9f1391db527923cf289c422701aed2eb8c78432f6c357e"
+    },
+    {
+      "path": "evidence-index-v10-parts/part004.json",
+      "entries": 256,
+      "bytes": 104524,
+      "git_blob": "01f508f5eb27c9c4e021fe67db928a8b3768d4ea",
+      "sha256": "3ef034571d50c91cff4cc89fdc9d8600300b5e83cbefb3e537b2abdb12b654c7"
+    },
+    {
+      "path": "evidence-index-v10-parts/part005.json",
+      "entries": 256,
+      "bytes": 105182,
+      "git_blob": "4b0502b79671c3db8c22c3dccc3047ed84101090",
+      "sha256": "29d7f5123970abce77944bc5e68aca464f4361d18f7a2a134b480fa2bb1806e2"
+    },
+    {
+      "path": "evidence-index-v10-parts/part006.json",
+      "entries": 256,
+      "bytes": 106815,
+      "git_blob": "0437a80fa001ed90163707cecd5007c26451f780",
+      "sha256": "306c57d53dcfc2371532f62abb70a22f60efab78bcf51262da67eee762e5cd8f"
+    }
+  ],
+  "packet_counts": {
+    "2d6243bb1523b29ac358c22ef99ad0fa47170e07": 32,
+    "51542080088163de92f6b6fb4506d22ac327b0a2": 39,
+    "8bcb712ede74b57c863e3f37031942e02ba759e3": 24,
+    "9955832a1a15ed4cea2b287c41e49b036ce433ed": 377,
+    "arg0_clippy_candidate": 14,
+    "b21_candidate": 27,
+    "b21_native2_first_cut": 6,
+    "b21_secondcut": 6,
+    "b23_candidate": 130,
+    "b23_initial": 7,
+    "b23_original_scope_independent_closure": 1,
+    "branch_census": 9,
+    "cargo_diagnostic": 20,
+    "diagnostic_root": 20,
+    "diagnostic_terminal": 291,
+    "main67_0244_increment": 12,
+    "main85": 32,
+    "main85_independent_full_replay": 1,
+    "main92": 200,
+    "objective_owner_main67": 23,
+    "pr_census": 73,
+    "pty_discard_candidate": 24,
+    "root-full-GET-2d6243b": 1,
+    "root-full-GET-5154208": 1,
+    "root-full-GET-8a494c6": 1,
+    "root-full-GET-8bcb712": 1,
+    "root-full-GET-9955832": 1,
+    "root-full-GET-d0ed5d0": 1,
+    "root_followup": 16,
+    "root_objective_offline_full_replay": 1,
+    "shared_collector_v3": 46,
+    "windows_causes_native": 70,
+    "windows_ci_initial": 5,
+    "windows_independent": 17,
+    "windows_publication": 7
+  },
+  "additional_registry_sources": [
+    {
+      "key": "b21_candidate",
+      "registry_path": "reviews/b21-full-intel-v2-rebuilt-20261106/registry.actual.json",
+      "identity": {
+        "bytes": 22396,
+        "git_blob": "9cf060c57ad08e456b16a1df49b841ae155a35b2",
+        "sha256": "7aa530c8dc28180f8653796acca54228dd61660c1c38c8ace3ba864859dc414c"
+      }
+    },
+    {
+      "key": "b23_candidate",
+      "registry_path": "ci-audit/b23-linux-full-appserver-candidate-20261106/registry.actual.json",
+      "identity": {
+        "bytes": 117363,
+        "git_blob": "f71be67b8c2ce8d2cfba431f0b0ac617dd7d5ad9",
+        "sha256": "bcea8588627f1f1cb9469023c6dcde42e1d26d4188b3bed7912470023e9d6f9c"
+      }
+    },
+    {
+      "key": "diagnostic_root",
+      "registry_path": "reviews/diagnostic-root-publication-20261106/registry.actual.json",
+      "identity": {
+        "bytes": 10388,
+        "git_blob": "5bbf32ca9efd8868d129c2ec35f7303ab189fab1",
+        "sha256": "e7b4eedd5e5d34b44ce2b7f9514f009d1ccf20919d2954a5842d432f4eda0f97"
+      }
+    },
+    {
+      "key": "b21_native2_first_cut",
+      "registry_path": "reviews/b21-full-intel-native2-firstcut-20261106/registry.actual.json",
+      "identity": {
+        "bytes": 2809,
+        "git_blob": "5c8f99f3f9daf9fb8ceee956091bf45cccd20cf8",
+        "sha256": "290e95393509d0a52b498571617c3f17dd97af065507b562557c83d51188902e"
+      }
+    },
+    {
+      "key": "main67_0244_increment",
+      "registry_path": "current-head-ci/main67-20261106T0244/registry.actual.json",
+      "identity": {
+        "bytes": 11703,
+        "git_blob": "f5fbb9438953c0b4d7607a823f1f8c44995972f1",
+        "sha256": "1535b2b5c1264098275048a500eed6469d04bb59d0356640734daead57b42069"
+      }
+    },
+    {
+      "key": "objective_owner_main67",
+      "registry_path": "ci-audit/objective-owner-main67-terminal-20261106/registry.actual.json",
+      "identity": {
+        "bytes": 21812,
+        "git_blob": "0bdbcc57d82564d8c5c967d8adb2817e5802cade",
+        "sha256": "a9aec01a937765879cec6a224b121d5df12c2303baf391dcf8a535eb1ee4695d"
+      }
+    },
+    {
+      "key": "main85",
+      "registry_path": "current-head-ci/main67-20261106T0319/registry.actual.json",
+      "identity": {
+        "bytes": 34127,
+        "git_blob": "c96451efee87e5b35bd20f8caec352c7b66707d0",
+        "sha256": "ff12423fc9278ca294c8e472ca249077018e43205cf34765d117e234e9474ddf"
+      }
+    },
+    {
+      "key": "b23_initial",
+      "registry_path": "ci-audit/b23-linux-appserver-pr4910-initial-20261106T0327/registry.actual.json",
+      "identity": {
+        "bytes": 2808,
+        "git_blob": "eca00eded0d6017364f230d834ac48ba7ad21989",
+        "sha256": "2c55efbf15311c80bc1ddd8104f7e4a9bcf7b1745d0f9bb2abbe4c052e5161f6"
+      }
+    },
+    {
+      "key": "windows_independent",
+      "registry_path": "ci-audit/windows-setup-error-causes-independent-20261106/registry.actual.json",
+      "identity": {
+        "bytes": 12053,
+        "git_blob": "42748aff2421ab2bee7757158793868f08dd53d9",
+        "sha256": "2fa1d184bd4e30b8158357484d8ce3186b19a63c39b186ee37a51706862e5167"
+      }
+    },
+    {
+      "key": "windows_publication",
+      "registry_path": "ci-audit/windows-setup-error-causes-pr4913-publication-20261106/registry.actual.json",
+      "identity": {
+        "bytes": 5550,
+        "git_blob": "7b56b1ca7d043ff2cefc74cc09854171d775c81d",
+        "sha256": "334b1bd52dcc636edc472cbc17dc5f86fd50741b6fa9a4298c6970bfc6a6e2e6"
+      }
+    },
+    {
+      "key": "windows_ci_initial",
+      "registry_path": "ci-audit/windows-setup-error-causes-pr4913-ci-initial-20261106T0355/registry.actual.json",
+      "identity": {
+        "bytes": 3750,
+        "git_blob": "517459e7a0cf89af7caf36bcf7da92c50dac154d",
+        "sha256": "713a6657c371a1e47e88f77c869820d2163cf1d43e4ecf76e784949c89fdd388"
+      }
+    },
+    {
+      "key": "pr_census",
+      "registry_path": "repository-metadata/open-pr-census-20261106T0331/registry.actual.json",
+      "identity": {
+        "bytes": 101375,
+        "git_blob": "5ece8a122e6afa69439affe570613ebf535c44d8",
+        "sha256": "cb6da9df6dbb1f41291cc110e71872ee9db73bee66aa59da1f6eff8a16e38954"
+      }
+    },
+    {
+      "key": "branch_census",
+      "registry_path": "repository-metadata/branches-census-20261106T0342/registry.actual.json",
+      "identity": {
+        "bytes": 15581,
+        "git_blob": "7a3ecb51257f4441112fcab0411ef88f93ab356e",
+        "sha256": "54e47bedbcc8b506c052f7521726da8a7c55d8f716099bd300abb020272a5b5a"
+      }
+    },
+    {
+      "key": "b21_secondcut",
+      "registry_path": "reviews/b21-full-intel-native2-secondcut-20261106T0344/registry.actual.json",
+      "identity": {
+        "bytes": 3187,
+        "git_blob": "394a0470222057c2e1b1fddea3cb5b6b1148ac1d",
+        "sha256": "620a09745767e53769f0356f2c784a18bdfdf5c0696159f0aaada2c9c6944561"
+      }
+    },
+    {
+      "key": "main92",
+      "registry_path": "current-head-ci/main67-20261106T0410/registry.actual.json",
+      "identity": {
+        "bytes": 167278,
+        "git_blob": "d59627c444e9c01eaa39fdcdd315060731cd5dd5",
+        "sha256": "dbc01e30d9f59f7ff317bdc8b9eb68c252b2a39103ed21cf649767fcb81a01dd"
+      }
+    },
+    {
+      "key": "cargo_diagnostic",
+      "registry_path": "ci-audit/cargo-deny-log-retention-independent-20261106/registry.actual.json",
+      "identity": {
+        "bytes": 15168,
+        "git_blob": "cf2d220211a7ad84e74cfac4161e06b76ba8bcb6",
+        "sha256": "ca1970e19670feabe2ba6e7db941480a88300dff6eca3666c3cf354beb88d1b4"
+      }
+    },
+    {
+      "key": "shared_collector_v3",
+      "registry_path": "reviews/shared-bep-fetch-xml-repair-20261106/registry.actual.json",
+      "identity": {
+        "bytes": 41734,
+        "git_blob": "69b2fb1ea490d997e72c383a7acded67cebe19c3",
+        "sha256": "5a359095f523938b8deb3e647629d598f224ec2bbcf8c34639cb6c855aeda218"
+      }
+    },
+    {
+      "key": "diagnostic_terminal",
+      "registry_path": "current-head-ci/b21-b23-original-terminal-20261106T0410/registry.actual.json",
+      "identity": {
+        "bytes": 341627,
+        "git_blob": "411b8e481be63f1002a6b7b874f0a20f85ea79f5",
+        "sha256": "b7360876b25ad5d5d9e15dab223c527e724784d1673b9615298938358be93f37"
+      }
+    },
+    {
+      "key": "pty_discard_candidate",
+      "registry_path": "reviews/pty-closed-output-discard-20261106/registry.actual.json",
+      "identity": {
+        "bytes": 18213,
+        "git_blob": "e3781f47a42e82720668e6416e5f5ea0997db4f2",
+        "sha256": "ba52f8e3a876d42a38dadcf2782f6a9553229547a177424cfde82d38ec21bd20"
+      }
+    },
+    {
+      "key": "root_followup",
+      "registry_path": "reviews/root-followup-publication-native-20261106/registry.actual.json",
+      "identity": {
+        "bytes": 23584,
+        "git_blob": "4a79e5449b678a1d7706d57c6e388c61ed84efa6",
+        "sha256": "f17f134441ff6e5e4b98e589041341e10e27cbc87688a74832cd8709393333d7"
+      }
+    },
+    {
+      "key": "arg0_clippy_candidate",
+      "registry_path": "ci-audit/arg0-clippy-independent-20261106/registry.actual.json",
+      "identity": {
+        "bytes": 13011,
+        "git_blob": "90ba50c34cfe4b106e638c4c0722d64ce3b21109",
+        "sha256": "677e4c0d7fce03786175c6a2f7a82a653668cc09ed5ac16f362bb9df7ebf0a13"
+      }
+    },
+    {
+      "key": "windows_causes_native",
+      "registry_path": "ci-audit/windows-setup-causes-native-20261106/registry.actual.json",
+      "identity": {
+        "bytes": 60107,
+        "git_blob": "0bc00fd5f9f788e790f248c3c8263aba187c6355",
+        "sha256": "b364eec3f7e4e4b81186b38e01e8ae4f473725257ff5ac5f09f4622c74815a8a"
+      }
+    }
+  ],
+  "authority": {
+    "product_head": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+    "product_tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+    "original_23_ids_and_literal_exit_conditions_unchanged": true,
+    "closure_counts": {
+      "CLOSED_SCOPED": 16,
+      "OPEN": 6,
+      "SCIENTIFIC_HOLD": 1
+    }
+  },
+  "custody_scope": "Each payload identity comes from actual object registration and full byte GET by its author/reviewer, with root complete registry GET. Root directly checked additional standalone identities. This does not claim root freshly GET every payload or reran every native test.",
+  "path_projection": "Paths are losslessly normalized under repository_prefix; source registry original path values and raw payload bytes are unchanged.",
+  "native_qualification": "Native results retain source/platform/attempt/cache/selected/ignored and negative-control scope. Offline transport verification is not a new native pass.",
+  "source_of_current_status": "continuation-blocker-progress-v8.json current_v10 and CONTINUATION_PROGRESS_V9.zh-CN.md",
+  "historical_latest_aliases": [
+    {
+      "path": "history/LATEST.pre-v10.md",
+      "git_blob": "6e7c3793c9b2de434f723f7b6d3c1f927c0bced4"
+    },
+    {
+      "path": "history/LATEST.pre-v10.zh-CN.md",
+      "git_blob": "02a63f15e04b1b3f622abd0987c3323e55b4d6b2"
+    }
+  ],
+  "index_registration_receipts": "Recorded in the root publication verification; the actual commit identifier is not embedded in its own content.",
+  "all_blockers_closed": false,
+  "whole_candidate_qualified": false
+}

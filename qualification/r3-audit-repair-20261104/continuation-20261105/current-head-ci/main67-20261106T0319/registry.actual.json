@@ -1,0 +1,815 @@
+{
+  "schema": "hepta-main67-0319-actual-immutable-registration-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source": {
+    "requested_head": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+    "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+    "windows_actual_checkout": "b7a57dbb61b00e51c05da9cf5c4bc95b365d85ae",
+    "cargo_deny_actual_checkout": "UNKNOWN"
+  },
+  "collection_window_utc": {
+    "start": "2026-11-06T03:18:59.703Z",
+    "end": "2026-11-06T03:19:29.458Z"
+  },
+  "scope": "Complete frozen 19-run/85-job API cut, original Windows failed shard job log and official 47-member ZIP, 21 real Core attempts, 0201 and 0244 baselines, fixed sources and replay tools. Evidence-only; no blocker original exit changed.",
+  "object_count": 31,
+  "package_members": 163,
+  "package_base64_parts": 22,
+  "archive": {
+    "bytes": 6573586,
+    "sha256": "47a00f5414f74b797ea3b714927fddaa47c0d26786d14c6ae6ee1466e9e7ad16",
+    "git_blob": "f59ae4a0346886b6119a7a70e3524b81179549ac"
+  },
+  "restoration": {
+    "all_members_equal": true,
+    "decode_exit_code": 0,
+    "verify_exit_code": 0,
+    "verification_stdout_full_bytes_equal": true
+  },
+  "objects": [
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0319/parts/packet.part-000.base64",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 400000,
+      "sha256": "9fb8235090966444e919b793430a7a8a58fa673992e3efeb654c76a80807b6d9",
+      "git_blob": "36903db2fa51e63ee26866df10ea77dfdeec0fa6",
+      "actual_registered_blob_sha": "36903db2fa51e63ee26866df10ea77dfdeec0fa6",
+      "actual_materialization_method": "create_tree(content)",
+      "actual_create_tree_sha": "0599addd7e8033592369068e53f669a6b77021a6",
+      "actual_create_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "0599addd7e8033592369068e53f669a6b77021a6"
+        },
+        "isError": false
+      },
+      "actual_full_GET_equal": true,
+      "local_full_GET_receipt": "delivery/registration-originals/36903db2fa51e63ee26866df10ea77dfdeec0fa6.full-GET.json"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0319/parts/packet.part-001.base64",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 400000,
+      "sha256": "5a84154b7c6f20cb34cd2885e516fd047279c66fbe81873ae0c6346e464c72e2",
+      "git_blob": "0d2f00948c9d3f8c1c4c7522fdbee922f59a4c41",
+      "actual_registered_blob_sha": "0d2f00948c9d3f8c1c4c7522fdbee922f59a4c41",
+      "actual_materialization_method": "create_tree(content)",
+      "actual_create_tree_sha": "0599addd7e8033592369068e53f669a6b77021a6",
+      "actual_create_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "0599addd7e8033592369068e53f669a6b77021a6"
+        },
+        "isError": false
+      },
+      "actual_full_GET_equal": true,
+      "local_full_GET_receipt": "delivery/registration-originals/0d2f00948c9d3f8c1c4c7522fdbee922f59a4c41.full-GET.json"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0319/parts/packet.part-002.base64",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 400000,
+      "sha256": "10be188af2dd809aa05f73929b7cb032226c369abced98583cfb2faf89ac676e",
+      "git_blob": "b344587c49aec3fd07fb0d9f9327d67335fb7f1f",
+      "actual_registered_blob_sha": "b344587c49aec3fd07fb0d9f9327d67335fb7f1f",
+      "actual_materialization_method": "create_tree(content)",
+      "actual_create_tree_sha": "e32b956bd895bf10985ba27b6cc15be9ff5e8d56",
+      "actual_create_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "e32b956bd895bf10985ba27b6cc15be9ff5e8d56"
+        },
+        "isError": false
+      },
+      "actual_full_GET_equal": true,
+      "local_full_GET_receipt": "delivery/registration-originals/b344587c49aec3fd07fb0d9f9327d67335fb7f1f.full-GET.json"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0319/parts/packet.part-003.base64",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 400000,
+      "sha256": "ff9f4b30999630eca946f7f4a3c0f7f1c5de12d3a4b04e5f2f2ba823de2ffb38",
+      "git_blob": "899471a94c4f51ffce4e6029b9e5ea346bca0495",
+      "actual_registered_blob_sha": "899471a94c4f51ffce4e6029b9e5ea346bca0495",
+      "actual_materialization_method": "create_tree(content)",
+      "actual_create_tree_sha": "e32b956bd895bf10985ba27b6cc15be9ff5e8d56",
+      "actual_create_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "e32b956bd895bf10985ba27b6cc15be9ff5e8d56"
+        },
+        "isError": false
+      },
+      "actual_full_GET_equal": true,
+      "local_full_GET_receipt": "delivery/registration-originals/899471a94c4f51ffce4e6029b9e5ea346bca0495.full-GET.json"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0319/parts/packet.part-004.base64",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 400000,
+      "sha256": "fdd3545fdd8bf9f913f444f044496efe5fd61431aa17e08463f81815e6d2bca4",
+      "git_blob": "4af35ba6c032f8cd12fb7d25086751fa035081d7",
+      "actual_registered_blob_sha": "4af35ba6c032f8cd12fb7d25086751fa035081d7",
+      "actual_materialization_method": "create_tree(content)",
+      "actual_create_tree_sha": "b8ba928be0123323465395d36cba1bfab6f7a09a",
+      "actual_create_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "b8ba928be0123323465395d36cba1bfab6f7a09a"
+        },
+        "isError": false
+      },
+      "actual_full_GET_equal": true,
+      "local_full_GET_receipt": "delivery/registration-originals/4af35ba6c032f8cd12fb7d25086751fa035081d7.full-GET.json"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0319/parts/packet.part-005.base64",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 400000,
+      "sha256": "ad3b391915792bdb40a88977171870fd1ec1d293069ff065b686d337931d60ea",
+      "git_blob": "cf430e1f09667c6a877f0d97ea2d6c072b435fe3",
+      "actual_registered_blob_sha": "cf430e1f09667c6a877f0d97ea2d6c072b435fe3",
+      "actual_materialization_method": "create_tree(content)",
+      "actual_create_tree_sha": "b8ba928be0123323465395d36cba1bfab6f7a09a",
+      "actual_create_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "b8ba928be0123323465395d36cba1bfab6f7a09a"
+        },
+        "isError": false
+      },
+      "actual_full_GET_equal": true,
+      "local_full_GET_receipt": "delivery/registration-originals/cf430e1f09667c6a877f0d97ea2d6c072b435fe3.full-GET.json"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0319/parts/packet.part-006.base64",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 400000,
+      "sha256": "6765f300f9fbe47ff5f9a400833b8d7ac6cff9bdb6ca0362397798a49425beca",
+      "git_blob": "a77f37afbe3607bdbffb35239e1696051009998d",
+      "actual_registered_blob_sha": "a77f37afbe3607bdbffb35239e1696051009998d",
+      "actual_materialization_method": "create_tree(content)",
+      "actual_create_tree_sha": "c43a84cdc71bbffe56e821d6899b6cbf5e5bd7ef",
+      "actual_create_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "c43a84cdc71bbffe56e821d6899b6cbf5e5bd7ef"
+        },
+        "isError": false
+      },
+      "actual_full_GET_equal": true,
+      "local_full_GET_receipt": "delivery/registration-originals/a77f37afbe3607bdbffb35239e1696051009998d.full-GET.json"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0319/parts/packet.part-007.base64",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 400000,
+      "sha256": "46f8843f8864d20113b86b739779e88f888b9824dc11bd94066d3f9d3f7542ef",
+      "git_blob": "1ef99575602296d440f0150058b58d1777d16c56",
+      "actual_registered_blob_sha": "1ef99575602296d440f0150058b58d1777d16c56",
+      "actual_materialization_method": "create_tree(content)",
+      "actual_create_tree_sha": "c43a84cdc71bbffe56e821d6899b6cbf5e5bd7ef",
+      "actual_create_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "c43a84cdc71bbffe56e821d6899b6cbf5e5bd7ef"
+        },
+        "isError": false
+      },
+      "actual_full_GET_equal": true,
+      "local_full_GET_receipt": "delivery/registration-originals/1ef99575602296d440f0150058b58d1777d16c56.full-GET.json"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0319/parts/packet.part-008.base64",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 400000,
+      "sha256": "a6ec2586e83403a654025675f239cd2f09e07a3363e0c230668990355e749ac2",
+      "git_blob": "8b0001650638aea125c51b0d8ea295e359b0ba6d",
+      "actual_registered_blob_sha": "8b0001650638aea125c51b0d8ea295e359b0ba6d",
+      "actual_materialization_method": "create_tree(content)",
+      "actual_create_tree_sha": "83caf0f697e9016a87482392a70a2d9e5637ed72",
+      "actual_create_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "83caf0f697e9016a87482392a70a2d9e5637ed72"
+        },
+        "isError": false
+      },
+      "actual_full_GET_equal": true,
+      "local_full_GET_receipt": "delivery/registration-originals/8b0001650638aea125c51b0d8ea295e359b0ba6d.full-GET.json"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0319/parts/packet.part-009.base64",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 400000,
+      "sha256": "8d7cba99fa4d4d02ec95afbc677a57623ef362e9933f49c828222dcceac10f5f",
+      "git_blob": "2d0a2c2e3cd76510b1ccfee68280377634f2f0e1",
+      "actual_registered_blob_sha": "2d0a2c2e3cd76510b1ccfee68280377634f2f0e1",
+      "actual_materialization_method": "create_tree(content)",
+      "actual_create_tree_sha": "83caf0f697e9016a87482392a70a2d9e5637ed72",
+      "actual_create_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "83caf0f697e9016a87482392a70a2d9e5637ed72"
+        },
+        "isError": false
+      },
+      "actual_full_GET_equal": true,
+      "local_full_GET_receipt": "delivery/registration-originals/2d0a2c2e3cd76510b1ccfee68280377634f2f0e1.full-GET.json"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0319/parts/packet.part-010.base64",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 400000,
+      "sha256": "a1680d2fb4e4948af0fe48b2fb4b1fcaaf3ef056d118597d9ad53d89ec10fb10",
+      "git_blob": "b5dd87fdbb8cc2b3a736943693562fb73fd2e78f",
+      "actual_registered_blob_sha": "b5dd87fdbb8cc2b3a736943693562fb73fd2e78f",
+      "actual_materialization_method": "create_tree(content)",
+      "actual_create_tree_sha": "ce02988713afd2df0b0c85b8e4e413624562a6a1",
+      "actual_create_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "ce02988713afd2df0b0c85b8e4e413624562a6a1"
+        },
+        "isError": false
+      },
+      "actual_full_GET_equal": true,
+      "local_full_GET_receipt": "delivery/registration-originals/b5dd87fdbb8cc2b3a736943693562fb73fd2e78f.full-GET.json"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0319/parts/packet.part-011.base64",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 400000,
+      "sha256": "8e9c9a5733c5cf0e1ab23d3964a10ad13eaceb444377d3e253949902408e1eed",
+      "git_blob": "0f7dcbe0ead3e8d764502cd6cc9d70fa1dfa9fa4",
+      "actual_registered_blob_sha": "0f7dcbe0ead3e8d764502cd6cc9d70fa1dfa9fa4",
+      "actual_materialization_method": "create_tree(content)",
+      "actual_create_tree_sha": "ce02988713afd2df0b0c85b8e4e413624562a6a1",
+      "actual_create_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "ce02988713afd2df0b0c85b8e4e413624562a6a1"
+        },
+        "isError": false
+      },
+      "actual_full_GET_equal": true,
+      "local_full_GET_receipt": "delivery/registration-originals/0f7dcbe0ead3e8d764502cd6cc9d70fa1dfa9fa4.full-GET.json"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0319/parts/packet.part-012.base64",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 400000,
+      "sha256": "20f2411e31506350ff0b7726b9dca70928264f771ce8746309588aa3f9f80e75",
+      "git_blob": "95c9612e09821063c0c058f5abdbf070b6e556c9",
+      "actual_registered_blob_sha": "95c9612e09821063c0c058f5abdbf070b6e556c9",
+      "actual_materialization_method": "create_tree(content)",
+      "actual_create_tree_sha": "ad33cd052f94dc6a36dd9ecbb7e7be221231bd08",
+      "actual_create_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "ad33cd052f94dc6a36dd9ecbb7e7be221231bd08"
+        },
+        "isError": false
+      },
+      "actual_full_GET_equal": true,
+      "local_full_GET_receipt": "delivery/registration-originals/95c9612e09821063c0c058f5abdbf070b6e556c9.full-GET.json"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0319/parts/packet.part-013.base64",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 400000,
+      "sha256": "a6349235409c82a2cc80cadd8c1b2894eab0ca7422666c0ae73f66a2290020fe",
+      "git_blob": "75a358064074410e97588d88cdf08f31eefe8001",
+      "actual_registered_blob_sha": "75a358064074410e97588d88cdf08f31eefe8001",
+      "actual_materialization_method": "create_tree(content)",
+      "actual_create_tree_sha": "ad33cd052f94dc6a36dd9ecbb7e7be221231bd08",
+      "actual_create_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "ad33cd052f94dc6a36dd9ecbb7e7be221231bd08"
+        },
+        "isError": false
+      },
+      "actual_full_GET_equal": true,
+      "local_full_GET_receipt": "delivery/registration-originals/75a358064074410e97588d88cdf08f31eefe8001.full-GET.json"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0319/parts/packet.part-014.base64",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 400000,
+      "sha256": "a034cfaca53ec908972a1e8a82d4d5296cee8eae92e1d5a188cd3a0b030bec88",
+      "git_blob": "a4ab50703d7fa66eaecdce532c860027d7c2f74a",
+      "actual_registered_blob_sha": "a4ab50703d7fa66eaecdce532c860027d7c2f74a",
+      "actual_materialization_method": "create_tree(content)",
+      "actual_create_tree_sha": "8ab967d3b4ece8f3caafaf73b6ca9c9b668f0b1a",
+      "actual_create_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "8ab967d3b4ece8f3caafaf73b6ca9c9b668f0b1a"
+        },
+        "isError": false
+      },
+      "actual_full_GET_equal": true,
+      "local_full_GET_receipt": "delivery/registration-originals/a4ab50703d7fa66eaecdce532c860027d7c2f74a.full-GET.json"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0319/parts/packet.part-015.base64",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 400000,
+      "sha256": "8906e6e906589bd3e08a114d04a9a7de4e97d20ecd1be1d858ef31b04041e1d0",
+      "git_blob": "cca68f26429877805ae82f2542754eb039549857",
+      "actual_registered_blob_sha": "cca68f26429877805ae82f2542754eb039549857",
+      "actual_materialization_method": "create_tree(content)",
+      "actual_create_tree_sha": "8ab967d3b4ece8f3caafaf73b6ca9c9b668f0b1a",
+      "actual_create_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "8ab967d3b4ece8f3caafaf73b6ca9c9b668f0b1a"
+        },
+        "isError": false
+      },
+      "actual_full_GET_equal": true,
+      "local_full_GET_receipt": "delivery/registration-originals/cca68f26429877805ae82f2542754eb039549857.full-GET.json"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0319/parts/packet.part-016.base64",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 400000,
+      "sha256": "28277018cfd4147d3bcb4eb6cedc949f9fcaabfc5c1e7c4e67e92acd92d2ac38",
+      "git_blob": "8db94a9e0a55e3941bc57be94ddb996396b5ada2",
+      "actual_registered_blob_sha": "8db94a9e0a55e3941bc57be94ddb996396b5ada2",
+      "actual_materialization_method": "create_tree(content)",
+      "actual_create_tree_sha": "b598f58a2f2b2e35727c42e56b77a5734aa36d0e",
+      "actual_create_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "b598f58a2f2b2e35727c42e56b77a5734aa36d0e"
+        },
+        "isError": false
+      },
+      "actual_full_GET_equal": true,
+      "local_full_GET_receipt": "delivery/registration-originals/8db94a9e0a55e3941bc57be94ddb996396b5ada2.full-GET.json"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0319/parts/packet.part-017.base64",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 400000,
+      "sha256": "3da47d0910c5c82f27491b095ec59907acac978c8579e373bc9e57477a14ea00",
+      "git_blob": "5fc406d6d41ea6e77789d58525fd70e1518d29ae",
+      "actual_registered_blob_sha": "5fc406d6d41ea6e77789d58525fd70e1518d29ae",
+      "actual_materialization_method": "create_tree(content)",
+      "actual_create_tree_sha": "b598f58a2f2b2e35727c42e56b77a5734aa36d0e",
+      "actual_create_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "b598f58a2f2b2e35727c42e56b77a5734aa36d0e"
+        },
+        "isError": false
+      },
+      "actual_full_GET_equal": true,
+      "local_full_GET_receipt": "delivery/registration-originals/5fc406d6d41ea6e77789d58525fd70e1518d29ae.full-GET.json"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0319/parts/packet.part-018.base64",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 400000,
+      "sha256": "af23d6aa6cbd6f054861307a6688a45ecb93c3786f20f9ab5048b48870b6eeb7",
+      "git_blob": "516c4d8c09f0abce843408efba6ff8c1afa2c24f",
+      "actual_registered_blob_sha": "516c4d8c09f0abce843408efba6ff8c1afa2c24f",
+      "actual_materialization_method": "create_tree(content)",
+      "actual_create_tree_sha": "516df0de6f85363c5faf2e2ce9ed804429575b90",
+      "actual_create_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "516df0de6f85363c5faf2e2ce9ed804429575b90"
+        },
+        "isError": false
+      },
+      "actual_full_GET_equal": true,
+      "local_full_GET_receipt": "delivery/registration-originals/516c4d8c09f0abce843408efba6ff8c1afa2c24f.full-GET.json"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0319/parts/packet.part-019.base64",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 400000,
+      "sha256": "00902de2c2ee32e667054062902f86d1f5a7a9e8788fffc69306279be709eea8",
+      "git_blob": "9d2df2ba8b2083c14616acd0445d49a31160d194",
+      "actual_registered_blob_sha": "9d2df2ba8b2083c14616acd0445d49a31160d194",
+      "actual_materialization_method": "create_tree(content)",
+      "actual_create_tree_sha": "516df0de6f85363c5faf2e2ce9ed804429575b90",
+      "actual_create_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "516df0de6f85363c5faf2e2ce9ed804429575b90"
+        },
+        "isError": false
+      },
+      "actual_full_GET_equal": true,
+      "local_full_GET_receipt": "delivery/registration-originals/9d2df2ba8b2083c14616acd0445d49a31160d194.full-GET.json"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0319/parts/packet.part-020.base64",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 400000,
+      "sha256": "bceb4bcae035ffa84c39e3439d63934fcedb41c6169e994f2e8698f51ac4cc31",
+      "git_blob": "78182805d81f2d10817695a4954eac2d1c53acaa",
+      "actual_registered_blob_sha": "78182805d81f2d10817695a4954eac2d1c53acaa",
+      "actual_materialization_method": "create_tree(content)",
+      "actual_create_tree_sha": "6a4f0d9c17222c1a96ed5d9e8cdf48758a19ce26",
+      "actual_create_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "6a4f0d9c17222c1a96ed5d9e8cdf48758a19ce26"
+        },
+        "isError": false
+      },
+      "actual_full_GET_equal": true,
+      "local_full_GET_receipt": "delivery/registration-originals/78182805d81f2d10817695a4954eac2d1c53acaa.full-GET.json"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0319/parts/packet.part-021.base64",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 364784,
+      "sha256": "19d7d264a644141f0f0a1ee81089ab723aa505dd00da9caf74ec4156920e364b",
+      "git_blob": "bd9942775479d62a2c02fa71321b71489a3b7ec9",
+      "actual_registered_blob_sha": "bd9942775479d62a2c02fa71321b71489a3b7ec9",
+      "actual_materialization_method": "create_tree(content)",
+      "actual_create_tree_sha": "6a4f0d9c17222c1a96ed5d9e8cdf48758a19ce26",
+      "actual_create_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "6a4f0d9c17222c1a96ed5d9e8cdf48758a19ce26"
+        },
+        "isError": false
+      },
+      "actual_full_GET_equal": true,
+      "local_full_GET_receipt": "delivery/registration-originals/bd9942775479d62a2c02fa71321b71489a3b7ec9.full-GET.json"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0319/PACKET_MANIFEST.json",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 54556,
+      "sha256": "0e8dce97fe8f8259c327e1956e1d4434110d1badfae571b2c12023a7b363fba8",
+      "git_blob": "c4020f0e1ede0bb27c34c578f11d642590e39df1",
+      "actual_registered_blob_sha": "c4020f0e1ede0bb27c34c578f11d642590e39df1",
+      "actual_materialization_method": "create_tree(content)",
+      "actual_create_tree_sha": "363a25c7201aebd7977fec06d6fff527ebafc747",
+      "actual_create_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "363a25c7201aebd7977fec06d6fff527ebafc747"
+        },
+        "isError": false
+      },
+      "actual_full_GET_equal": true,
+      "local_full_GET_receipt": "delivery/registration-originals/c4020f0e1ede0bb27c34c578f11d642590e39df1.full-GET.json"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0319/README.zh-CN.md",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 7506,
+      "sha256": "8211df641dff84e0875766ef0f21589513783e7455b52fc8f6c574b8a28b54e1",
+      "git_blob": "51dcb2bce8af36db75b2014038995aeac45658b3",
+      "actual_registered_blob_sha": "51dcb2bce8af36db75b2014038995aeac45658b3",
+      "actual_materialization_method": "create_tree(content)",
+      "actual_create_tree_sha": "363a25c7201aebd7977fec06d6fff527ebafc747",
+      "actual_create_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "363a25c7201aebd7977fec06d6fff527ebafc747"
+        },
+        "isError": false
+      },
+      "actual_full_GET_equal": true,
+      "local_full_GET_receipt": "delivery/registration-originals/51dcb2bce8af36db75b2014038995aeac45658b3.full-GET.json"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0319/SUMMARY.json",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 36929,
+      "sha256": "6c570cd1b2ad9727c671145deb15bfd4564ae5cd5b149e87b382fb81834aa3b2",
+      "git_blob": "9ba36b8b9a3b56902da3a977fb2fcde90811463f",
+      "actual_registered_blob_sha": "9ba36b8b9a3b56902da3a977fb2fcde90811463f",
+      "actual_materialization_method": "create_tree(content)",
+      "actual_create_tree_sha": "f0a5f5f358b850b20de053629fecfcb6c964a182",
+      "actual_create_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "f0a5f5f358b850b20de053629fecfcb6c964a182"
+        },
+        "isError": false
+      },
+      "actual_full_GET_equal": true,
+      "local_full_GET_receipt": "delivery/registration-originals/9ba36b8b9a3b56902da3a977fb2fcde90811463f.full-GET.json"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0319/FROZEN_FILES.json",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 42483,
+      "sha256": "4b177b65e7839d918d555e90b5c7503c37d23e2ad9406d7309237d1abe9c46bd",
+      "git_blob": "1f3a746393b33c2c9911eba56158bdb71640fcc0",
+      "actual_registered_blob_sha": "1f3a746393b33c2c9911eba56158bdb71640fcc0",
+      "actual_materialization_method": "create_tree(content)",
+      "actual_create_tree_sha": "f0a5f5f358b850b20de053629fecfcb6c964a182",
+      "actual_create_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "f0a5f5f358b850b20de053629fecfcb6c964a182"
+        },
+        "isError": false
+      },
+      "actual_full_GET_equal": true,
+      "local_full_GET_receipt": "delivery/registration-originals/1f3a746393b33c2c9911eba56158bdb71640fcc0.full-GET.json"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0319/verify_packet.py",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 15698,
+      "sha256": "32e6ffdc364747fd77875c54a046dbb9ce7b0cb1e08f3881718c92885159d1d4",
+      "git_blob": "a76bbefcf7d2aee21acdf3455f394f8845648724",
+      "actual_registered_blob_sha": "a76bbefcf7d2aee21acdf3455f394f8845648724",
+      "actual_materialization_method": "create_tree(content)",
+      "actual_create_tree_sha": "14cfa2b782b434173a7a6504b55a1752178c9919",
+      "actual_create_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "14cfa2b782b434173a7a6504b55a1752178c9919"
+        },
+        "isError": false
+      },
+      "actual_full_GET_equal": true,
+      "local_full_GET_receipt": "delivery/registration-originals/a76bbefcf7d2aee21acdf3455f394f8845648724.full-GET.json"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0319/decode_compact.py",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 9864,
+      "sha256": "cade2f309520c16508893b798eb59258fe6a60d3367f64271e989caa33ed66a3",
+      "git_blob": "bb0957782c73a2a653e101e392da5f0f27ed4459",
+      "actual_registered_blob_sha": "bb0957782c73a2a653e101e392da5f0f27ed4459",
+      "actual_materialization_method": "create_tree(content)",
+      "actual_create_tree_sha": "14cfa2b782b434173a7a6504b55a1752178c9919",
+      "actual_create_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "14cfa2b782b434173a7a6504b55a1752178c9919"
+        },
+        "isError": false
+      },
+      "actual_full_GET_equal": true,
+      "local_full_GET_receipt": "delivery/registration-originals/bb0957782c73a2a653e101e392da5f0f27ed4459.full-GET.json"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0319/restore_packet.py",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 2561,
+      "sha256": "a5650a840ea0a4a642f21b810f5ba5d06f685eabab63bcc379b8d8958d4b74f3",
+      "git_blob": "45d74567b573537817034a65abb583cabea46526",
+      "actual_registered_blob_sha": "45d74567b573537817034a65abb583cabea46526",
+      "actual_materialization_method": "create_tree(content)",
+      "actual_create_tree_sha": "a50fa9b30a261c4d96f481320c6c5af7e73dbd9f",
+      "actual_create_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "a50fa9b30a261c4d96f481320c6c5af7e73dbd9f"
+        },
+        "isError": false
+      },
+      "actual_full_GET_equal": true,
+      "local_full_GET_receipt": "delivery/registration-originals/45d74567b573537817034a65abb583cabea46526.full-GET.json"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0319/VERIFICATION.json",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 315070,
+      "sha256": "2ba75ac85d9ba9798162518a537519d02eeecf8fee823484d0c8753b72aa1e03",
+      "git_blob": "357cde174c6b97d9265e469ce75d25849cfe72a5",
+      "actual_registered_blob_sha": "357cde174c6b97d9265e469ce75d25849cfe72a5",
+      "actual_materialization_method": "create_tree(content)",
+      "actual_create_tree_sha": "a50fa9b30a261c4d96f481320c6c5af7e73dbd9f",
+      "actual_create_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "a50fa9b30a261c4d96f481320c6c5af7e73dbd9f"
+        },
+        "isError": false
+      },
+      "actual_full_GET_equal": true,
+      "local_full_GET_receipt": "delivery/registration-originals/357cde174c6b97d9265e469ce75d25849cfe72a5.full-GET.json"
+    },
+    {
+      "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0319/RESTORATION_RECEIPT.json",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 846,
+      "sha256": "9cc35eed87a184e7f72fb42fc2a07774bdf2591692a48ce30d77fee4db4beaee",
+      "git_blob": "cdcd64a6ba1059deb00cacca0012434cafb44b47",
+      "actual_registered_blob_sha": "cdcd64a6ba1059deb00cacca0012434cafb44b47",
+      "actual_materialization_method": "create_tree(content)",
+      "actual_create_tree_sha": "95ee61b64630a861c5eed20da630d0eebb40056f",
+      "actual_create_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "95ee61b64630a861c5eed20da630d0eebb40056f"
+        },
+        "isError": false
+      },
+      "actual_full_GET_equal": true,
+      "local_full_GET_receipt": "delivery/registration-originals/cdcd64a6ba1059deb00cacca0012434cafb44b47.full-GET.json"
+    }
+  ],
+  "no_ref_or_PR_or_workflow_or_native_action": true,
+  "qualifications": {
+    "whole_product_qualified": false,
+    "main_required_ci_green": false,
+    "cargo_deny_cause": "UNKNOWN_TRANSPORT_CLOSED_NO_ARTIFACT",
+    "windows_core_target": "FAILED_ORIGINAL_BAZEL_EXIT_3",
+    "cached_pty_is_not_fresh_native": true,
+    "compact_retry_xml_digest_mismatches_retained": 5
+  }
+}

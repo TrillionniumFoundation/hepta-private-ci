@@ -1,0 +1,3367 @@
+{
+  "schema": "hepta-independent-B23-original-scope-acceptance-20261106-v1",
+  "reviewer": "/root/format_finish",
+  "decision": "CLOSED_SCOPED_EVIDENCE_SUFFICIENT_FOR_ORIGINAL_B23_GNU_PRODUCT_CONTRACT",
+  "blocking_review_findings": 0,
+  "root_ledger_publication_authority": "Recommendation only; root alone changes current ledger/publication.",
+  "scope_zh": "原 B23 GNU/Linux App Server Unix 关闭信号生命周期合同。保留既有 baseline 因果负控；本次复核同产品树五原例新实际通过与原 GNU 完整 CI 接受。",
+  "prior_accepted_ledger": {
+    "path": "qualification/r3-audit-repair-20261104/continuation-20261105/continuation-blocker-progress-v7.json",
+    "identity": {
+      "bytes": 111721,
+      "sha256": "64bf918279cdd67c182f85df62016ba1542b207b57b5c35edac7afa042d50e52",
+      "git_blob": "081fbfb2fe2c1a2eee35b43258512fd721be6d29"
+    },
+    "original_B23_row": {
+      "id": "B23",
+      "name": "App Server Unix关闭信号生命周期",
+      "priority": "P0",
+      "status": "IMPLEMENTED_CAUSAL_NEGATIVE_AND_FIVE_NATIVE_PASS",
+      "current_label_zh": "Unix原因果负控及5例通过；最终原平台开放",
+      "evidence_scope_zh": "原3signal/2drain和真实丢订阅负控保留；成功target摘要不补逐casePASS。新source原UnixCI、stdio/disabled与原预算仍必需。",
+      "original_exit_condition_zh": "真实baseline丢信号窗口成立；修后3个单信号父测试与2个原drain用例通过；配置关闭/stdio及平台语义不变，最终原CI验收。",
+      "next_closure_gate_zh": "同最终source原Unix平台验收；原stdio/disabled语义和drain规则保持；首signal注册失败提前报错属已审兼容差异。",
+      "closure_class": "OPEN",
+      "latest_continuation_zh": "新GNU/macOS ARM recovery虽然含AppServer原selected范围通过，但与冻结142交集0，不替代原3signal/2drain及stdio/disabled同源最终门；原物理丢信号负控保持。",
+      "prior_latest_continuation_v4_zh": "新GNU/macOS ARM recovery虽然含AppServer原selected范围通过，但与冻结142交集0，不替代原3signal/2drain及stdio/disabled同源最终门；原物理丢信号负控保持。"
+    },
+    "prior_causal_negative_reexecuted": false
+  },
+  "source_candidate_prior_actual_independent_review": "8c68dc2cca5bcff0eb99614eca5e39809dd616de",
+  "source_candidate_actual_registry": "f71be67b8c2ce8d2cfba431f0b0ac617dd7d5ad9",
+  "new_source_and_native_scope_verification": {
+    "schema": "b23-original-exit-independent-scope-evaluation-v1",
+    "decision": "CLOSED_SCOPED_EVIDENCE_SUFFICIENT_FOR_ORIGINAL_B23_GNU_PRODUCT_CONTRACT",
+    "unchanged_original_exit_zh": "真实baseline丢信号窗口成立；修后3个单信号父测试与2个原drain用例通过；配置关闭/stdio及平台语义不变，最终原CI验收。",
+    "prior_accepted_baseline": "Retain prior accepted physical baseline negative and prior five-case causal acceptance; not re-executed by this review.",
+    "source": {
+      "actual_checkout": "b3bc3dcf5684568dd03f3667ecd2307b8577a0a6",
+      "head": "e63ed76c5d8ded046f97caffbdbe2883140e6032",
+      "checkout_tree": "a6831e2607e718f1343b788e5b8062a171d50a71",
+      "product_projection": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+      "source_before_after_full_ls_tree_bytes_equal": true,
+      "unchanged_product_leaves": 10582,
+      "directory_nodes": 1571,
+      "unchanged_source_pins": [
+        {
+          "bytes": 14926,
+          "git_blob": "3d5877b283b887091af507f3672003f84c500687",
+          "path": ".bazelrc",
+          "sha256": "53a5fd4e65e4e9937b826174520fe1eb642adb79cfe7a6335c871d5fa9db57fa"
+        },
+        {
+          "bytes": 6,
+          "git_blob": "b13d146a7b02b96e4c30340e69388d539c9721be",
+          "path": ".bazelversion",
+          "sha256": "14ebdd5f5d8dfccb0fc574ea9aabecc07d7cdd99d53e4fc01e58f9c3d23d18ef"
+        },
+        {
+          "bytes": 596,
+          "git_blob": "5a7bdddcf8f560d20fcd6639761a500b7ef12cf3",
+          "path": ".github/actions/check-clean-worktree/action.yml",
+          "sha256": "58844cf1afb11d5cdbdfe577e4227ea3361ce495960c2d0cce94ca0da3da82a5"
+        },
+        {
+          "bytes": 3255,
+          "git_blob": "f9508a1659e5f2c54a6ae5b263bb9328095438d7",
+          "path": ".github/actions/prepare-bazel-ci/action.yml",
+          "sha256": "a5286f6896c99a71ee247afbad1dc0aa00d967352f33bb24d8cb97e4df5d978b"
+        },
+        {
+          "bytes": 4141,
+          "git_blob": "8abd2dbd5f09585734f8213011a9ed540a2ee88e",
+          "path": ".github/actions/setup-ci/action.yml",
+          "sha256": "6d29a131641a739983b3aea22c0febbf20d1d0ee21b356570f3763ddafced9ba"
+        },
+        {
+          "bytes": 17448,
+          "git_blob": "42b59b6354b5933c8155b992519682c06d024ca1",
+          "path": ".github/scripts/run-bazel-ci.sh",
+          "sha256": "0136e087ddfac7c01bdacb03357d0353d328dea3b8cd86caf94e64bf10706482"
+        },
+        {
+          "bytes": 14442,
+          "git_blob": "21a5fdf0e7afcde4b6141229e95fcff8f6a7e763",
+          "path": ".github/scripts/run_bazel_with_buildbuddy.py",
+          "sha256": "656fa9f508bb339da949a359a457f02fa3979449ae1761b0084494cf38e83a0e"
+        },
+        {
+          "bytes": 20751,
+          "git_blob": "9eed8ed8fa46c88d9d89d1499f55cb8c303137af",
+          "path": ".github/workflows/bazel.yml",
+          "sha256": "a7bf703f31b14fd0925e3db892e4444d2ebd8db0033b69ec47ff44eae65104dd"
+        },
+        {
+          "bytes": 1448,
+          "git_blob": "a3c8ba463f34b031cc517501f41d67b60f2b9feb",
+          "path": "codex-rs/app-server/BUILD.bazel",
+          "sha256": "9c17d311022594bf97dd08667713a6d4c85ddd245c59b1d9cca57f5787508acd"
+        },
+        {
+          "bytes": 734,
+          "git_blob": "18d30754feae43b4cfa358c96ab4161067935c24",
+          "path": "codex-rs/app-server/src/drain_handle_tests.rs",
+          "sha256": "f5e65db6b1efe74e696cf0eb01d4b76fd7376ac8b1f70dd14f1afe4997c159b0"
+        },
+        {
+          "bytes": 78648,
+          "git_blob": "484970198d5a8c71f0d4bf8e92fa0e8a2780f45e",
+          "path": "codex-rs/app-server/src/lib.rs",
+          "sha256": "0f6371ae5795963a451be0a9e9af7c55898644e817533bbe0597c275a992bdaf"
+        },
+        {
+          "bytes": 1691,
+          "git_blob": "a45eca7491eb9d588a703668c10ab4aadf20b101",
+          "path": "codex-rs/app-server/src/shutdown_signals.rs",
+          "sha256": "aa030d124ee50cf1dabaa6a885846b9eccb4f36dcb2900c4b2df88c103b7ff5a"
+        },
+        {
+          "bytes": 4809,
+          "git_blob": "cf2f370bf35fc7cbb8d3b339f92f7da25b87cb51",
+          "path": "codex-rs/app-server/src/shutdown_signals_tests.rs",
+          "sha256": "c664383fe6d0943e9df9be1ca8acc21b3c9b16e2926e5cb42bf13bb7625d4537"
+        },
+        {
+          "bytes": 34630,
+          "git_blob": "6f588ec3057fddfea35170e28e74036162ce6a23",
+          "path": "defs.bzl",
+          "sha256": "f5638a9189632c8d8524a438bbfc6b365bddf7f23dfd2df06a6de3a2ff3f2cfa"
+        }
+      ],
+      "configuration_disabled_and_stdio_guard_preserved": true,
+      "nonunix_ctrl_c_branch_preserved": true
+    },
+    "original_diagnostic_artifacts": [
+      {
+        "id": 13476180428,
+        "zip": {
+          "bytes": 782208,
+          "sha256": "43bdccc192f96f95aebf3e7642df04ae0055f5c61970a27a8b03e05a6a9c91e3",
+          "git_blob": "696a199916347acc3fd4f664ccb45802b7907f7c"
+        },
+        "members": 21
+      },
+      {
+        "id": 13475294944,
+        "zip": {
+          "bytes": 5119057,
+          "sha256": "cf6546f57f595a26c0058d321c4b80846da4f8ff26628be77b7c4332bffde7e3",
+          "git_blob": "76ffeffc42ac6d1a423507439a7bbec636728149"
+        },
+        "members": 10
+      }
+    ],
+    "native": {
+      "run": 42155150876,
+      "job": 127687422035,
+      "job_overall": "failure",
+      "original_bazel_exit": 0,
+      "stdout_copy_exit": 0,
+      "shards": 8,
+      "passed": 307,
+      "failed": 0,
+      "ignored": 1,
+      "named_signal_pass": [
+        "shutdown_signals::tests::first_sigterm_survives_cancelled_receive",
+        "shutdown_signals::tests::first_sighup_survives_cancelled_receive",
+        "shutdown_signals::tests::first_sigint_survives_cancelled_receive"
+      ],
+      "named_drain_pass": [
+        "drain_handle_tests::requesting_drain_does_not_acknowledge_outstanding_turns",
+        "drain_handle_tests::repeated_drain_requests_preserve_the_real_completion_acknowledgement"
+      ],
+      "ignored_owned_child_entry": [
+        "shutdown_signals::tests::retained_signal_child"
+      ],
+      "rows": [
+        {
+          "shard": 1,
+          "log": {
+            "bytes": 3681,
+            "sha256": "78589478cee7e9e112c306d3504a15e266687063f148131ec22c53609588fcae",
+            "git_blob": "659f13b2a5c322f2e5fc32e571cc5e8bac682938"
+          },
+          "passed": 31,
+          "ignored": 0,
+          "native_action_digest": {
+            "hash": "c5806e9c6a15cedd1f310d0a642b294dc8af0e2a19d0cc4b2f3b1f85e3f58430",
+            "size_bytes": 324,
+            "hash_function_name": ""
+          },
+          "main_cached_log_sha256": "00dc1d0e5a3c679606e6f51441dab14a258a36870a666118c4b06d4399255504",
+          "separate_results": true
+        },
+        {
+          "shard": 2,
+          "log": {
+            "bytes": 4277,
+            "sha256": "1d8922e01778c7e81d5821c6587c8775afc3f6c01338c03577a8a5bf53e6b086",
+            "git_blob": "090b6ceb8bcd4eafcdba4b25790df176ac8940c0"
+          },
+          "passed": 36,
+          "ignored": 0,
+          "native_action_digest": {
+            "hash": "b2bf420653f7b3353eb216d968ab269d1dd724bca9878335fcab0b9539b370d2",
+            "size_bytes": 324,
+            "hash_function_name": ""
+          },
+          "main_cached_log_sha256": "e8b40310c1e8d41fe25473fb7ae5dd451ddf8039fd8043862b436fc6cbe3ca1a",
+          "separate_results": true
+        },
+        {
+          "shard": 3,
+          "log": {
+            "bytes": 3390,
+            "sha256": "8ceb24fdf3587bf4895e7ede48a93dc881d09d32f8791f48ae6b6ca2e5e919df",
+            "git_blob": "4d86122f430416e8ca612c11f85e3516af980ecd"
+          },
+          "passed": 28,
+          "ignored": 1,
+          "native_action_digest": {
+            "hash": "b0c5f48db8cb0922b6df7302151804afcb111cf76a969cfefaabd83e5dfc8bb4",
+            "size_bytes": 324,
+            "hash_function_name": ""
+          },
+          "main_cached_log_sha256": "67cb6657a79104148f2f414c7fe339b552df65c97d4824ee2f6dfd1ccc122418",
+          "separate_results": true
+        },
+        {
+          "shard": 4,
+          "log": {
+            "bytes": 5581,
+            "sha256": "ef7feaad2507ae56957f1a965787e77ae857a66791734b256bca2f6dcf608931",
+            "git_blob": "bda948c06f87ff57758d7d6c453eabf7b043b4f7"
+          },
+          "passed": 49,
+          "ignored": 0,
+          "native_action_digest": {
+            "hash": "7e72886779f93efec58b79ccc21cdb610156991866ca2e66e5f44334c7212ba4",
+            "size_bytes": 324,
+            "hash_function_name": ""
+          },
+          "main_cached_log_sha256": "0dae38d5192b26e0a2fa58c2d8044348935be466be7ce0ef404787ddc6d96a72",
+          "separate_results": true
+        },
+        {
+          "shard": 5,
+          "log": {
+            "bytes": 6088,
+            "sha256": "1dbc2d23aab671d2f20f1f27be346758f6a0afcaf655210912897194b3892505",
+            "git_blob": "bb9f66da3db8e77a33673ea68f744b185c2bc8ab"
+          },
+          "passed": 52,
+          "ignored": 0,
+          "native_action_digest": {
+            "hash": "f88fa612c6d93efab22683efe8d29743ac0b23fa363576a92ad7a9ba3e50785c",
+            "size_bytes": 324,
+            "hash_function_name": ""
+          },
+          "main_cached_log_sha256": "8b8c3245e5ec53b654ade032150e32956f5102cc2e06bcf8df425b60a5d29cdf",
+          "separate_results": true
+        },
+        {
+          "shard": 6,
+          "log": {
+            "bytes": 3567,
+            "sha256": "9034b919c49fe7c5f0c54d921bb5c27f3d0a05612f11f8c5c7ad740cf38822c9",
+            "git_blob": "20c49bd6b1dd9bb5fb640950d9e504bc0c152e31"
+          },
+          "passed": 32,
+          "ignored": 0,
+          "native_action_digest": {
+            "hash": "fd19fa878e5968c8845ee11788205a3392c9ba7705900ab7a70e6f525a11cb56",
+            "size_bytes": 324,
+            "hash_function_name": ""
+          },
+          "main_cached_log_sha256": "9502b9762db8c06b99be7458927845823b8756541132b454b9284a20539dde33",
+          "separate_results": true
+        },
+        {
+          "shard": 7,
+          "log": {
+            "bytes": 4960,
+            "sha256": "9ea467977dd6d4c1b6b72a50fdb4dd3e7322aa58172a37f6d1389b85052121f0",
+            "git_blob": "676e5bedcd677bec91435b2db1d45110915a1117"
+          },
+          "passed": 45,
+          "ignored": 0,
+          "native_action_digest": {
+            "hash": "d40a8cf647847c6053ab114b5679e6c1a1e6d8e14d488efaad60c6f02ea42b45",
+            "size_bytes": 324,
+            "hash_function_name": ""
+          },
+          "main_cached_log_sha256": "1964aeb6e5b4ebaba08f9a5b908248dc8408bac501cafbc4797cd6b1dea65505",
+          "separate_results": true
+        },
+        {
+          "shard": 8,
+          "log": {
+            "bytes": 4326,
+            "sha256": "75625cc687a672372452d6f050a781cfafdc96abd8dfb5aacca571073f7d791a",
+            "git_blob": "dfc32d119c6a9ecb4eda2086c3790e071c729444"
+          },
+          "passed": 34,
+          "ignored": 0,
+          "native_action_digest": {
+            "hash": "a433b72e24b936c449d58207770c7ed9656b58d8510cb940db6005b3b3f8e7f2",
+            "size_bytes": 324,
+            "hash_function_name": ""
+          },
+          "main_cached_log_sha256": "fca3f9e1fe30758ec48808b10e9876648af4b934d002e1b2eb6868dfa7bd2d71",
+          "separate_results": true
+        }
+      ],
+      "test_execution": "remote Linux amd64 fixed original execution platform, actual cache_hit=false"
+    },
+    "original_ci_acceptance": {
+      "run": 42123581385,
+      "job": 127679861926,
+      "job_status": "success",
+      "source": "b7a57dbb61b00e51c05da9cf5c4bc95b365d85ae",
+      "product_tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+      "target": "//codex-rs/app-server:app-server-unit-tests",
+      "shards": 8,
+      "target_results_cached": true,
+      "fresh_native_credit_from_this_main_job": false
+    },
+    "cross_source_and_execution_binding": {
+      "all8_native_args_env_platform_and_recursive_input_tool_graphs_equal": true,
+      "all16_logs_match_own_compact_XML_input_sha256_and_size": true,
+      "main_and_diag_log_bytes_equal": false,
+      "main_and_diag_action_cache_digests_equal": false,
+      "same_compiled_binary_sha256": {
+        "hash": "0d9cd9dca9ef36f001fee7a537aa1326166ead096d7bd594dffeda3f341e536f",
+        "size_bytes": 457661280,
+        "hash_function_name": ""
+      }
+    },
+    "collector_failure_retained": {
+      "job_failure_preserved": true,
+      "errors": {
+        "duplicate_event_id": 2,
+        "attempt_reference_unavailable": 8
+      },
+      "missing_original_XML": 8,
+      "two_duplicate_fetch_events": "Preserved as original collector error, not two product test failures.",
+      "new_collector_rules_are_not_added_to_original_exit": true
+    },
+    "limits": [
+      "Closure recommendation applies only to original B23 GNU/Linux shutdown-signal/drain contract at the verified product source.",
+      "Main cached success is final original CI evidence; fresh native execution comes from the separate same-product diagnostic job.",
+      "The two sets of log hashes and action-cache digests differ; no claim main reused the diagnostic output, no claim common action-cache key.",
+      "Remote execution platform matches original GNU context; no local GitHub-host execution claim.",
+      "Original collector failure and missing XML remain real operational evidence gaps; no XML regenerated or invented here.",
+      "B15 whole-library acceptance, other blockers, all-project completion and macOS/Windows full qualification do not follow from this B23 scope decision.",
+      "No new CI query, rerun, dispatch, assertion, timeout, test filter, skip, production mutation, ref or PR publication was performed by the review."
+    ]
+  },
+  "complete_compact_binding": {
+    "schema": "b23-main-cached-and-diagnostic-native-own-compact-binding-v1",
+    "main": {
+      "compact_bytes": 11887645,
+      "compact_sha256": "365604fee54b42019b700f73e82921cbfd3690c677d79dca5cc02552978a0bc5",
+      "record_count": 214372,
+      "attempts": [
+        {
+          "shard": 1,
+          "native_sequence": 208299,
+          "xml_sequence": 210048,
+          "runner": "remote cache hit",
+          "cache_hit": true,
+          "exit_code": 0,
+          "timeout_millis": 300000,
+          "action_cache_digest": {
+            "hash": "af0d1d723efa0238696aecb1293777a6dbb5142df016807c3667c1b89349c3dd",
+            "size_bytes": 322,
+            "hash_function_name": ""
+          },
+          "args": [
+            "external/bazel_tools/tools/test/test-setup.sh",
+            "codex-rs/app-server/app-server-unit-tests"
+          ],
+          "env": [
+            {
+              "name": "INSTA_SNAPSHOT_PATH",
+              "value": "src"
+            },
+            {
+              "name": "INSTA_WORKSPACE_ROOT",
+              "value": "."
+            },
+            {
+              "name": "JAVA_RUNFILES",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "PATH",
+              "value": "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+            },
+            {
+              "name": "PYTHON_RUNFILES",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "RUNFILES_DIR",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "RUNFILES_MANIFEST_ONLY",
+              "value": "1"
+            },
+            {
+              "name": "RUN_UNDER_RUNFILES",
+              "value": "1"
+            },
+            {
+              "name": "RUST_MIN_STACK",
+              "value": "8388608"
+            },
+            {
+              "name": "TEST_BINARY",
+              "value": "codex-rs/app-server/app-server-unit-tests"
+            },
+            {
+              "name": "TEST_INFRASTRUCTURE_FAILURE_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_1_of_8/test.infrastructure_failure"
+            },
+            {
+              "name": "TEST_LOGSPLITTER_OUTPUT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_1_of_8/test.raw_splitlogs/test.splitlogs"
+            },
+            {
+              "name": "TEST_PREMATURE_EXIT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_1_of_8/test.exited_prematurely"
+            },
+            {
+              "name": "TEST_SHARD_INDEX",
+              "value": "0"
+            },
+            {
+              "name": "TEST_SHARD_STATUS_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_1_of_8/test.shard"
+            },
+            {
+              "name": "TEST_SIZE",
+              "value": "medium"
+            },
+            {
+              "name": "TEST_SRCDIR",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "TEST_TARGET",
+              "value": "//codex-rs/app-server:app-server-unit-tests"
+            },
+            {
+              "name": "TEST_TIMEOUT",
+              "value": "300"
+            },
+            {
+              "name": "TEST_TMPDIR",
+              "value": "_tmp/3bb826cdd5d9ad26c9c8135c0354dd21"
+            },
+            {
+              "name": "TEST_TOTAL_SHARDS",
+              "value": "8"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_ANNOTATIONS",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_1_of_8/test.outputs_manifest/ANNOTATIONS"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_ANNOTATIONS_DIR",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_1_of_8/test.outputs_manifest"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_DIR",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_1_of_8/test.outputs"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_MANIFEST",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_1_of_8/test.outputs_manifest/MANIFEST"
+            },
+            {
+              "name": "TEST_UNUSED_RUNFILES_LOG_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_1_of_8/test.unused_runfiles_log"
+            },
+            {
+              "name": "TEST_WARNINGS_OUTPUT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_1_of_8/test.warnings"
+            },
+            {
+              "name": "TEST_WORKSPACE",
+              "value": "_main"
+            },
+            {
+              "name": "TZ",
+              "value": "UTC"
+            },
+            {
+              "name": "XML_OUTPUT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_1_of_8/test.xml"
+            }
+          ],
+          "platform": [
+            {
+              "name": "Arch",
+              "value": "amd64"
+            },
+            {
+              "name": "OSFamily",
+              "value": "Linux"
+            },
+            {
+              "name": "container-image",
+              "value": "docker://docker.io/mbolin491/codex-bazel@sha256:0a8e56bfaa3b2e5279db0d3bb2d62b44ba5e5d63a37d97eb8790f49da570af70"
+            }
+          ],
+          "semantic_input_graph_sha256": "8631a8aad512b549ebf75f92cd0d6858c70a5ce3f64cb1cbbdebe2d3203e905b",
+          "semantic_tool_graph_sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+          "input_graph_entry_count": 37,
+          "xml_input_log_entry_id": 187898,
+          "log_path": "/tmp/hepta-runtime-recovery-20261106/format-review-recovery/main67-failures-0410/gnu-addendum/artifact-13475800550/selected-target-test-logs/invocation-eqz3vz17/targets/0004/shard_1_of_8/test.log",
+          "log_bytes": 3681,
+          "log_sha256": "00dc1d0e5a3c679606e6f51441dab14a258a36870a666118c4b06d4399255504",
+          "log_digest_matches_own_compact_XML_input": true,
+          "binary_input_records": [
+            {
+              "entry_id": 185603,
+              "type": "file",
+              "path": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests-bin",
+              "digest": {
+                "hash": "0d9cd9dca9ef36f001fee7a537aa1326166ead096d7bd594dffeda3f341e536f",
+                "size_bytes": 457661280,
+                "hash_function_name": ""
+              }
+            }
+          ]
+        },
+        {
+          "shard": 2,
+          "native_sequence": 208297,
+          "xml_sequence": 210052,
+          "runner": "remote cache hit",
+          "cache_hit": true,
+          "exit_code": 0,
+          "timeout_millis": 300000,
+          "action_cache_digest": {
+            "hash": "1bacd4d13b1dbb5c805968e078a1bb982ece724b1f24e1287ef39041acf564fb",
+            "size_bytes": 322,
+            "hash_function_name": ""
+          },
+          "args": [
+            "external/bazel_tools/tools/test/test-setup.sh",
+            "codex-rs/app-server/app-server-unit-tests"
+          ],
+          "env": [
+            {
+              "name": "INSTA_SNAPSHOT_PATH",
+              "value": "src"
+            },
+            {
+              "name": "INSTA_WORKSPACE_ROOT",
+              "value": "."
+            },
+            {
+              "name": "JAVA_RUNFILES",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "PATH",
+              "value": "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+            },
+            {
+              "name": "PYTHON_RUNFILES",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "RUNFILES_DIR",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "RUNFILES_MANIFEST_ONLY",
+              "value": "1"
+            },
+            {
+              "name": "RUN_UNDER_RUNFILES",
+              "value": "1"
+            },
+            {
+              "name": "RUST_MIN_STACK",
+              "value": "8388608"
+            },
+            {
+              "name": "TEST_BINARY",
+              "value": "codex-rs/app-server/app-server-unit-tests"
+            },
+            {
+              "name": "TEST_INFRASTRUCTURE_FAILURE_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_2_of_8/test.infrastructure_failure"
+            },
+            {
+              "name": "TEST_LOGSPLITTER_OUTPUT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_2_of_8/test.raw_splitlogs/test.splitlogs"
+            },
+            {
+              "name": "TEST_PREMATURE_EXIT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_2_of_8/test.exited_prematurely"
+            },
+            {
+              "name": "TEST_SHARD_INDEX",
+              "value": "1"
+            },
+            {
+              "name": "TEST_SHARD_STATUS_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_2_of_8/test.shard"
+            },
+            {
+              "name": "TEST_SIZE",
+              "value": "medium"
+            },
+            {
+              "name": "TEST_SRCDIR",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "TEST_TARGET",
+              "value": "//codex-rs/app-server:app-server-unit-tests"
+            },
+            {
+              "name": "TEST_TIMEOUT",
+              "value": "300"
+            },
+            {
+              "name": "TEST_TMPDIR",
+              "value": "_tmp/10133f10ee84fc2a6f9d6074e5003f8f"
+            },
+            {
+              "name": "TEST_TOTAL_SHARDS",
+              "value": "8"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_ANNOTATIONS",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_2_of_8/test.outputs_manifest/ANNOTATIONS"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_ANNOTATIONS_DIR",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_2_of_8/test.outputs_manifest"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_DIR",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_2_of_8/test.outputs"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_MANIFEST",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_2_of_8/test.outputs_manifest/MANIFEST"
+            },
+            {
+              "name": "TEST_UNUSED_RUNFILES_LOG_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_2_of_8/test.unused_runfiles_log"
+            },
+            {
+              "name": "TEST_WARNINGS_OUTPUT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_2_of_8/test.warnings"
+            },
+            {
+              "name": "TEST_WORKSPACE",
+              "value": "_main"
+            },
+            {
+              "name": "TZ",
+              "value": "UTC"
+            },
+            {
+              "name": "XML_OUTPUT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_2_of_8/test.xml"
+            }
+          ],
+          "platform": [
+            {
+              "name": "Arch",
+              "value": "amd64"
+            },
+            {
+              "name": "OSFamily",
+              "value": "Linux"
+            },
+            {
+              "name": "container-image",
+              "value": "docker://docker.io/mbolin491/codex-bazel@sha256:0a8e56bfaa3b2e5279db0d3bb2d62b44ba5e5d63a37d97eb8790f49da570af70"
+            }
+          ],
+          "semantic_input_graph_sha256": "8631a8aad512b549ebf75f92cd0d6858c70a5ce3f64cb1cbbdebe2d3203e905b",
+          "semantic_tool_graph_sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+          "input_graph_entry_count": 37,
+          "xml_input_log_entry_id": 187901,
+          "log_path": "/tmp/hepta-runtime-recovery-20261106/format-review-recovery/main67-failures-0410/gnu-addendum/artifact-13475800550/selected-target-test-logs/invocation-eqz3vz17/targets/0004/shard_2_of_8/test.log",
+          "log_bytes": 4277,
+          "log_sha256": "e8b40310c1e8d41fe25473fb7ae5dd451ddf8039fd8043862b436fc6cbe3ca1a",
+          "log_digest_matches_own_compact_XML_input": true,
+          "binary_input_records": [
+            {
+              "entry_id": 185603,
+              "type": "file",
+              "path": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests-bin",
+              "digest": {
+                "hash": "0d9cd9dca9ef36f001fee7a537aa1326166ead096d7bd594dffeda3f341e536f",
+                "size_bytes": 457661280,
+                "hash_function_name": ""
+              }
+            }
+          ]
+        },
+        {
+          "shard": 3,
+          "native_sequence": 208304,
+          "xml_sequence": 210044,
+          "runner": "remote cache hit",
+          "cache_hit": true,
+          "exit_code": 0,
+          "timeout_millis": 300000,
+          "action_cache_digest": {
+            "hash": "19a54aaf7df603261f722d09da7b11629f8841371309a113633e1125b3be50ea",
+            "size_bytes": 322,
+            "hash_function_name": ""
+          },
+          "args": [
+            "external/bazel_tools/tools/test/test-setup.sh",
+            "codex-rs/app-server/app-server-unit-tests"
+          ],
+          "env": [
+            {
+              "name": "INSTA_SNAPSHOT_PATH",
+              "value": "src"
+            },
+            {
+              "name": "INSTA_WORKSPACE_ROOT",
+              "value": "."
+            },
+            {
+              "name": "JAVA_RUNFILES",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "PATH",
+              "value": "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+            },
+            {
+              "name": "PYTHON_RUNFILES",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "RUNFILES_DIR",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "RUNFILES_MANIFEST_ONLY",
+              "value": "1"
+            },
+            {
+              "name": "RUN_UNDER_RUNFILES",
+              "value": "1"
+            },
+            {
+              "name": "RUST_MIN_STACK",
+              "value": "8388608"
+            },
+            {
+              "name": "TEST_BINARY",
+              "value": "codex-rs/app-server/app-server-unit-tests"
+            },
+            {
+              "name": "TEST_INFRASTRUCTURE_FAILURE_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_3_of_8/test.infrastructure_failure"
+            },
+            {
+              "name": "TEST_LOGSPLITTER_OUTPUT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_3_of_8/test.raw_splitlogs/test.splitlogs"
+            },
+            {
+              "name": "TEST_PREMATURE_EXIT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_3_of_8/test.exited_prematurely"
+            },
+            {
+              "name": "TEST_SHARD_INDEX",
+              "value": "2"
+            },
+            {
+              "name": "TEST_SHARD_STATUS_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_3_of_8/test.shard"
+            },
+            {
+              "name": "TEST_SIZE",
+              "value": "medium"
+            },
+            {
+              "name": "TEST_SRCDIR",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "TEST_TARGET",
+              "value": "//codex-rs/app-server:app-server-unit-tests"
+            },
+            {
+              "name": "TEST_TIMEOUT",
+              "value": "300"
+            },
+            {
+              "name": "TEST_TMPDIR",
+              "value": "_tmp/82e3ee07d337cb099c483f5d1e40fc54"
+            },
+            {
+              "name": "TEST_TOTAL_SHARDS",
+              "value": "8"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_ANNOTATIONS",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_3_of_8/test.outputs_manifest/ANNOTATIONS"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_ANNOTATIONS_DIR",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_3_of_8/test.outputs_manifest"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_DIR",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_3_of_8/test.outputs"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_MANIFEST",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_3_of_8/test.outputs_manifest/MANIFEST"
+            },
+            {
+              "name": "TEST_UNUSED_RUNFILES_LOG_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_3_of_8/test.unused_runfiles_log"
+            },
+            {
+              "name": "TEST_WARNINGS_OUTPUT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_3_of_8/test.warnings"
+            },
+            {
+              "name": "TEST_WORKSPACE",
+              "value": "_main"
+            },
+            {
+              "name": "TZ",
+              "value": "UTC"
+            },
+            {
+              "name": "XML_OUTPUT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_3_of_8/test.xml"
+            }
+          ],
+          "platform": [
+            {
+              "name": "Arch",
+              "value": "amd64"
+            },
+            {
+              "name": "OSFamily",
+              "value": "Linux"
+            },
+            {
+              "name": "container-image",
+              "value": "docker://docker.io/mbolin491/codex-bazel@sha256:0a8e56bfaa3b2e5279db0d3bb2d62b44ba5e5d63a37d97eb8790f49da570af70"
+            }
+          ],
+          "semantic_input_graph_sha256": "8631a8aad512b549ebf75f92cd0d6858c70a5ce3f64cb1cbbdebe2d3203e905b",
+          "semantic_tool_graph_sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+          "input_graph_entry_count": 37,
+          "xml_input_log_entry_id": 187895,
+          "log_path": "/tmp/hepta-runtime-recovery-20261106/format-review-recovery/main67-failures-0410/gnu-addendum/artifact-13475800550/selected-target-test-logs/invocation-eqz3vz17/targets/0004/shard_3_of_8/test.log",
+          "log_bytes": 3390,
+          "log_sha256": "67cb6657a79104148f2f414c7fe339b552df65c97d4824ee2f6dfd1ccc122418",
+          "log_digest_matches_own_compact_XML_input": true,
+          "binary_input_records": [
+            {
+              "entry_id": 185603,
+              "type": "file",
+              "path": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests-bin",
+              "digest": {
+                "hash": "0d9cd9dca9ef36f001fee7a537aa1326166ead096d7bd594dffeda3f341e536f",
+                "size_bytes": 457661280,
+                "hash_function_name": ""
+              }
+            }
+          ]
+        },
+        {
+          "shard": 4,
+          "native_sequence": 210036,
+          "xml_sequence": 210128,
+          "runner": "remote cache hit",
+          "cache_hit": true,
+          "exit_code": 0,
+          "timeout_millis": 300000,
+          "action_cache_digest": {
+            "hash": "6f243d9ad9ebd9c7c7e91d9c3a40cb23bbae19a2d2f9d90c24ed01ab4bce17ab",
+            "size_bytes": 322,
+            "hash_function_name": ""
+          },
+          "args": [
+            "external/bazel_tools/tools/test/test-setup.sh",
+            "codex-rs/app-server/app-server-unit-tests"
+          ],
+          "env": [
+            {
+              "name": "INSTA_SNAPSHOT_PATH",
+              "value": "src"
+            },
+            {
+              "name": "INSTA_WORKSPACE_ROOT",
+              "value": "."
+            },
+            {
+              "name": "JAVA_RUNFILES",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "PATH",
+              "value": "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+            },
+            {
+              "name": "PYTHON_RUNFILES",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "RUNFILES_DIR",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "RUNFILES_MANIFEST_ONLY",
+              "value": "1"
+            },
+            {
+              "name": "RUN_UNDER_RUNFILES",
+              "value": "1"
+            },
+            {
+              "name": "RUST_MIN_STACK",
+              "value": "8388608"
+            },
+            {
+              "name": "TEST_BINARY",
+              "value": "codex-rs/app-server/app-server-unit-tests"
+            },
+            {
+              "name": "TEST_INFRASTRUCTURE_FAILURE_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_4_of_8/test.infrastructure_failure"
+            },
+            {
+              "name": "TEST_LOGSPLITTER_OUTPUT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_4_of_8/test.raw_splitlogs/test.splitlogs"
+            },
+            {
+              "name": "TEST_PREMATURE_EXIT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_4_of_8/test.exited_prematurely"
+            },
+            {
+              "name": "TEST_SHARD_INDEX",
+              "value": "3"
+            },
+            {
+              "name": "TEST_SHARD_STATUS_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_4_of_8/test.shard"
+            },
+            {
+              "name": "TEST_SIZE",
+              "value": "medium"
+            },
+            {
+              "name": "TEST_SRCDIR",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "TEST_TARGET",
+              "value": "//codex-rs/app-server:app-server-unit-tests"
+            },
+            {
+              "name": "TEST_TIMEOUT",
+              "value": "300"
+            },
+            {
+              "name": "TEST_TMPDIR",
+              "value": "_tmp/03f5c049b9b33889e39c291665cc8232"
+            },
+            {
+              "name": "TEST_TOTAL_SHARDS",
+              "value": "8"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_ANNOTATIONS",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_4_of_8/test.outputs_manifest/ANNOTATIONS"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_ANNOTATIONS_DIR",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_4_of_8/test.outputs_manifest"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_DIR",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_4_of_8/test.outputs"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_MANIFEST",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_4_of_8/test.outputs_manifest/MANIFEST"
+            },
+            {
+              "name": "TEST_UNUSED_RUNFILES_LOG_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_4_of_8/test.unused_runfiles_log"
+            },
+            {
+              "name": "TEST_WARNINGS_OUTPUT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_4_of_8/test.warnings"
+            },
+            {
+              "name": "TEST_WORKSPACE",
+              "value": "_main"
+            },
+            {
+              "name": "TZ",
+              "value": "UTC"
+            },
+            {
+              "name": "XML_OUTPUT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_4_of_8/test.xml"
+            }
+          ],
+          "platform": [
+            {
+              "name": "Arch",
+              "value": "amd64"
+            },
+            {
+              "name": "OSFamily",
+              "value": "Linux"
+            },
+            {
+              "name": "container-image",
+              "value": "docker://docker.io/mbolin491/codex-bazel@sha256:0a8e56bfaa3b2e5279db0d3bb2d62b44ba5e5d63a37d97eb8790f49da570af70"
+            }
+          ],
+          "semantic_input_graph_sha256": "8631a8aad512b549ebf75f92cd0d6858c70a5ce3f64cb1cbbdebe2d3203e905b",
+          "semantic_tool_graph_sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+          "input_graph_entry_count": 37,
+          "xml_input_log_entry_id": 187964,
+          "log_path": "/tmp/hepta-runtime-recovery-20261106/format-review-recovery/main67-failures-0410/gnu-addendum/artifact-13475800550/selected-target-test-logs/invocation-eqz3vz17/targets/0004/shard_4_of_8/test.log",
+          "log_bytes": 5581,
+          "log_sha256": "0dae38d5192b26e0a2fa58c2d8044348935be466be7ce0ef404787ddc6d96a72",
+          "log_digest_matches_own_compact_XML_input": true,
+          "binary_input_records": [
+            {
+              "entry_id": 185603,
+              "type": "file",
+              "path": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests-bin",
+              "digest": {
+                "hash": "0d9cd9dca9ef36f001fee7a537aa1326166ead096d7bd594dffeda3f341e536f",
+                "size_bytes": 457661280,
+                "hash_function_name": ""
+              }
+            }
+          ]
+        },
+        {
+          "shard": 5,
+          "native_sequence": 208312,
+          "xml_sequence": 210082,
+          "runner": "remote cache hit",
+          "cache_hit": true,
+          "exit_code": 0,
+          "timeout_millis": 300000,
+          "action_cache_digest": {
+            "hash": "f94ed5b8cc87cce0df1ddaf3fed0b57bf0e41e515f631e58dab5afe7c8b756ac",
+            "size_bytes": 322,
+            "hash_function_name": ""
+          },
+          "args": [
+            "external/bazel_tools/tools/test/test-setup.sh",
+            "codex-rs/app-server/app-server-unit-tests"
+          ],
+          "env": [
+            {
+              "name": "INSTA_SNAPSHOT_PATH",
+              "value": "src"
+            },
+            {
+              "name": "INSTA_WORKSPACE_ROOT",
+              "value": "."
+            },
+            {
+              "name": "JAVA_RUNFILES",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "PATH",
+              "value": "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+            },
+            {
+              "name": "PYTHON_RUNFILES",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "RUNFILES_DIR",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "RUNFILES_MANIFEST_ONLY",
+              "value": "1"
+            },
+            {
+              "name": "RUN_UNDER_RUNFILES",
+              "value": "1"
+            },
+            {
+              "name": "RUST_MIN_STACK",
+              "value": "8388608"
+            },
+            {
+              "name": "TEST_BINARY",
+              "value": "codex-rs/app-server/app-server-unit-tests"
+            },
+            {
+              "name": "TEST_INFRASTRUCTURE_FAILURE_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_5_of_8/test.infrastructure_failure"
+            },
+            {
+              "name": "TEST_LOGSPLITTER_OUTPUT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_5_of_8/test.raw_splitlogs/test.splitlogs"
+            },
+            {
+              "name": "TEST_PREMATURE_EXIT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_5_of_8/test.exited_prematurely"
+            },
+            {
+              "name": "TEST_SHARD_INDEX",
+              "value": "4"
+            },
+            {
+              "name": "TEST_SHARD_STATUS_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_5_of_8/test.shard"
+            },
+            {
+              "name": "TEST_SIZE",
+              "value": "medium"
+            },
+            {
+              "name": "TEST_SRCDIR",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "TEST_TARGET",
+              "value": "//codex-rs/app-server:app-server-unit-tests"
+            },
+            {
+              "name": "TEST_TIMEOUT",
+              "value": "300"
+            },
+            {
+              "name": "TEST_TMPDIR",
+              "value": "_tmp/2b61746a15ea227867b27a5da58eace5"
+            },
+            {
+              "name": "TEST_TOTAL_SHARDS",
+              "value": "8"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_ANNOTATIONS",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_5_of_8/test.outputs_manifest/ANNOTATIONS"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_ANNOTATIONS_DIR",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_5_of_8/test.outputs_manifest"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_DIR",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_5_of_8/test.outputs"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_MANIFEST",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_5_of_8/test.outputs_manifest/MANIFEST"
+            },
+            {
+              "name": "TEST_UNUSED_RUNFILES_LOG_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_5_of_8/test.unused_runfiles_log"
+            },
+            {
+              "name": "TEST_WARNINGS_OUTPUT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_5_of_8/test.warnings"
+            },
+            {
+              "name": "TEST_WORKSPACE",
+              "value": "_main"
+            },
+            {
+              "name": "TZ",
+              "value": "UTC"
+            },
+            {
+              "name": "XML_OUTPUT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_5_of_8/test.xml"
+            }
+          ],
+          "platform": [
+            {
+              "name": "Arch",
+              "value": "amd64"
+            },
+            {
+              "name": "OSFamily",
+              "value": "Linux"
+            },
+            {
+              "name": "container-image",
+              "value": "docker://docker.io/mbolin491/codex-bazel@sha256:0a8e56bfaa3b2e5279db0d3bb2d62b44ba5e5d63a37d97eb8790f49da570af70"
+            }
+          ],
+          "semantic_input_graph_sha256": "8631a8aad512b549ebf75f92cd0d6858c70a5ce3f64cb1cbbdebe2d3203e905b",
+          "semantic_tool_graph_sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+          "input_graph_entry_count": 37,
+          "xml_input_log_entry_id": 187922,
+          "log_path": "/tmp/hepta-runtime-recovery-20261106/format-review-recovery/main67-failures-0410/gnu-addendum/artifact-13475800550/selected-target-test-logs/invocation-eqz3vz17/targets/0004/shard_5_of_8/test.log",
+          "log_bytes": 6088,
+          "log_sha256": "8b8c3245e5ec53b654ade032150e32956f5102cc2e06bcf8df425b60a5d29cdf",
+          "log_digest_matches_own_compact_XML_input": true,
+          "binary_input_records": [
+            {
+              "entry_id": 185603,
+              "type": "file",
+              "path": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests-bin",
+              "digest": {
+                "hash": "0d9cd9dca9ef36f001fee7a537aa1326166ead096d7bd594dffeda3f341e536f",
+                "size_bytes": 457661280,
+                "hash_function_name": ""
+              }
+            }
+          ]
+        },
+        {
+          "shard": 6,
+          "native_sequence": 208298,
+          "xml_sequence": 210065,
+          "runner": "remote cache hit",
+          "cache_hit": true,
+          "exit_code": 0,
+          "timeout_millis": 300000,
+          "action_cache_digest": {
+            "hash": "76a045578418905afae840d176b2ce9d5662dacff095a8e338a2bcdd8fc2623e",
+            "size_bytes": 322,
+            "hash_function_name": ""
+          },
+          "args": [
+            "external/bazel_tools/tools/test/test-setup.sh",
+            "codex-rs/app-server/app-server-unit-tests"
+          ],
+          "env": [
+            {
+              "name": "INSTA_SNAPSHOT_PATH",
+              "value": "src"
+            },
+            {
+              "name": "INSTA_WORKSPACE_ROOT",
+              "value": "."
+            },
+            {
+              "name": "JAVA_RUNFILES",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "PATH",
+              "value": "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+            },
+            {
+              "name": "PYTHON_RUNFILES",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "RUNFILES_DIR",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "RUNFILES_MANIFEST_ONLY",
+              "value": "1"
+            },
+            {
+              "name": "RUN_UNDER_RUNFILES",
+              "value": "1"
+            },
+            {
+              "name": "RUST_MIN_STACK",
+              "value": "8388608"
+            },
+            {
+              "name": "TEST_BINARY",
+              "value": "codex-rs/app-server/app-server-unit-tests"
+            },
+            {
+              "name": "TEST_INFRASTRUCTURE_FAILURE_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_6_of_8/test.infrastructure_failure"
+            },
+            {
+              "name": "TEST_LOGSPLITTER_OUTPUT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_6_of_8/test.raw_splitlogs/test.splitlogs"
+            },
+            {
+              "name": "TEST_PREMATURE_EXIT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_6_of_8/test.exited_prematurely"
+            },
+            {
+              "name": "TEST_SHARD_INDEX",
+              "value": "5"
+            },
+            {
+              "name": "TEST_SHARD_STATUS_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_6_of_8/test.shard"
+            },
+            {
+              "name": "TEST_SIZE",
+              "value": "medium"
+            },
+            {
+              "name": "TEST_SRCDIR",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "TEST_TARGET",
+              "value": "//codex-rs/app-server:app-server-unit-tests"
+            },
+            {
+              "name": "TEST_TIMEOUT",
+              "value": "300"
+            },
+            {
+              "name": "TEST_TMPDIR",
+              "value": "_tmp/e05417ecbc8d5cf2664eb7e61679cc5c"
+            },
+            {
+              "name": "TEST_TOTAL_SHARDS",
+              "value": "8"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_ANNOTATIONS",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_6_of_8/test.outputs_manifest/ANNOTATIONS"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_ANNOTATIONS_DIR",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_6_of_8/test.outputs_manifest"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_DIR",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_6_of_8/test.outputs"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_MANIFEST",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_6_of_8/test.outputs_manifest/MANIFEST"
+            },
+            {
+              "name": "TEST_UNUSED_RUNFILES_LOG_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_6_of_8/test.unused_runfiles_log"
+            },
+            {
+              "name": "TEST_WARNINGS_OUTPUT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_6_of_8/test.warnings"
+            },
+            {
+              "name": "TEST_WORKSPACE",
+              "value": "_main"
+            },
+            {
+              "name": "TZ",
+              "value": "UTC"
+            },
+            {
+              "name": "XML_OUTPUT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_6_of_8/test.xml"
+            }
+          ],
+          "platform": [
+            {
+              "name": "Arch",
+              "value": "amd64"
+            },
+            {
+              "name": "OSFamily",
+              "value": "Linux"
+            },
+            {
+              "name": "container-image",
+              "value": "docker://docker.io/mbolin491/codex-bazel@sha256:0a8e56bfaa3b2e5279db0d3bb2d62b44ba5e5d63a37d97eb8790f49da570af70"
+            }
+          ],
+          "semantic_input_graph_sha256": "8631a8aad512b549ebf75f92cd0d6858c70a5ce3f64cb1cbbdebe2d3203e905b",
+          "semantic_tool_graph_sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+          "input_graph_entry_count": 37,
+          "xml_input_log_entry_id": 187908,
+          "log_path": "/tmp/hepta-runtime-recovery-20261106/format-review-recovery/main67-failures-0410/gnu-addendum/artifact-13475800550/selected-target-test-logs/invocation-eqz3vz17/targets/0004/shard_6_of_8/test.log",
+          "log_bytes": 3567,
+          "log_sha256": "9502b9762db8c06b99be7458927845823b8756541132b454b9284a20539dde33",
+          "log_digest_matches_own_compact_XML_input": true,
+          "binary_input_records": [
+            {
+              "entry_id": 185603,
+              "type": "file",
+              "path": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests-bin",
+              "digest": {
+                "hash": "0d9cd9dca9ef36f001fee7a537aa1326166ead096d7bd594dffeda3f341e536f",
+                "size_bytes": 457661280,
+                "hash_function_name": ""
+              }
+            }
+          ]
+        },
+        {
+          "shard": 7,
+          "native_sequence": 208300,
+          "xml_sequence": 210040,
+          "runner": "remote cache hit",
+          "cache_hit": true,
+          "exit_code": 0,
+          "timeout_millis": 300000,
+          "action_cache_digest": {
+            "hash": "0d926cb7c4789a57f0775b29c54143e74d0a5f290da10bb462a8c9b1df52715a",
+            "size_bytes": 322,
+            "hash_function_name": ""
+          },
+          "args": [
+            "external/bazel_tools/tools/test/test-setup.sh",
+            "codex-rs/app-server/app-server-unit-tests"
+          ],
+          "env": [
+            {
+              "name": "INSTA_SNAPSHOT_PATH",
+              "value": "src"
+            },
+            {
+              "name": "INSTA_WORKSPACE_ROOT",
+              "value": "."
+            },
+            {
+              "name": "JAVA_RUNFILES",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "PATH",
+              "value": "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+            },
+            {
+              "name": "PYTHON_RUNFILES",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "RUNFILES_DIR",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "RUNFILES_MANIFEST_ONLY",
+              "value": "1"
+            },
+            {
+              "name": "RUN_UNDER_RUNFILES",
+              "value": "1"
+            },
+            {
+              "name": "RUST_MIN_STACK",
+              "value": "8388608"
+            },
+            {
+              "name": "TEST_BINARY",
+              "value": "codex-rs/app-server/app-server-unit-tests"
+            },
+            {
+              "name": "TEST_INFRASTRUCTURE_FAILURE_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_7_of_8/test.infrastructure_failure"
+            },
+            {
+              "name": "TEST_LOGSPLITTER_OUTPUT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_7_of_8/test.raw_splitlogs/test.splitlogs"
+            },
+            {
+              "name": "TEST_PREMATURE_EXIT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_7_of_8/test.exited_prematurely"
+            },
+            {
+              "name": "TEST_SHARD_INDEX",
+              "value": "6"
+            },
+            {
+              "name": "TEST_SHARD_STATUS_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_7_of_8/test.shard"
+            },
+            {
+              "name": "TEST_SIZE",
+              "value": "medium"
+            },
+            {
+              "name": "TEST_SRCDIR",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "TEST_TARGET",
+              "value": "//codex-rs/app-server:app-server-unit-tests"
+            },
+            {
+              "name": "TEST_TIMEOUT",
+              "value": "300"
+            },
+            {
+              "name": "TEST_TMPDIR",
+              "value": "_tmp/d4009197bd5e14a351f497a172735855"
+            },
+            {
+              "name": "TEST_TOTAL_SHARDS",
+              "value": "8"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_ANNOTATIONS",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_7_of_8/test.outputs_manifest/ANNOTATIONS"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_ANNOTATIONS_DIR",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_7_of_8/test.outputs_manifest"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_DIR",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_7_of_8/test.outputs"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_MANIFEST",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_7_of_8/test.outputs_manifest/MANIFEST"
+            },
+            {
+              "name": "TEST_UNUSED_RUNFILES_LOG_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_7_of_8/test.unused_runfiles_log"
+            },
+            {
+              "name": "TEST_WARNINGS_OUTPUT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_7_of_8/test.warnings"
+            },
+            {
+              "name": "TEST_WORKSPACE",
+              "value": "_main"
+            },
+            {
+              "name": "TZ",
+              "value": "UTC"
+            },
+            {
+              "name": "XML_OUTPUT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_7_of_8/test.xml"
+            }
+          ],
+          "platform": [
+            {
+              "name": "Arch",
+              "value": "amd64"
+            },
+            {
+              "name": "OSFamily",
+              "value": "Linux"
+            },
+            {
+              "name": "container-image",
+              "value": "docker://docker.io/mbolin491/codex-bazel@sha256:0a8e56bfaa3b2e5279db0d3bb2d62b44ba5e5d63a37d97eb8790f49da570af70"
+            }
+          ],
+          "semantic_input_graph_sha256": "8631a8aad512b549ebf75f92cd0d6858c70a5ce3f64cb1cbbdebe2d3203e905b",
+          "semantic_tool_graph_sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+          "input_graph_entry_count": 37,
+          "xml_input_log_entry_id": 187892,
+          "log_path": "/tmp/hepta-runtime-recovery-20261106/format-review-recovery/main67-failures-0410/gnu-addendum/artifact-13475800550/selected-target-test-logs/invocation-eqz3vz17/targets/0004/shard_7_of_8/test.log",
+          "log_bytes": 4960,
+          "log_sha256": "1964aeb6e5b4ebaba08f9a5b908248dc8408bac501cafbc4797cd6b1dea65505",
+          "log_digest_matches_own_compact_XML_input": true,
+          "binary_input_records": [
+            {
+              "entry_id": 185603,
+              "type": "file",
+              "path": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests-bin",
+              "digest": {
+                "hash": "0d9cd9dca9ef36f001fee7a537aa1326166ead096d7bd594dffeda3f341e536f",
+                "size_bytes": 457661280,
+                "hash_function_name": ""
+              }
+            }
+          ]
+        },
+        {
+          "shard": 8,
+          "native_sequence": 208308,
+          "xml_sequence": 210032,
+          "runner": "remote cache hit",
+          "cache_hit": true,
+          "exit_code": 0,
+          "timeout_millis": 300000,
+          "action_cache_digest": {
+            "hash": "c8e9f6101c308fafe53d5f9907cac39e4bc0f4d565e664ba17607bdcad888b6c",
+            "size_bytes": 322,
+            "hash_function_name": ""
+          },
+          "args": [
+            "external/bazel_tools/tools/test/test-setup.sh",
+            "codex-rs/app-server/app-server-unit-tests"
+          ],
+          "env": [
+            {
+              "name": "INSTA_SNAPSHOT_PATH",
+              "value": "src"
+            },
+            {
+              "name": "INSTA_WORKSPACE_ROOT",
+              "value": "."
+            },
+            {
+              "name": "JAVA_RUNFILES",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "PATH",
+              "value": "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+            },
+            {
+              "name": "PYTHON_RUNFILES",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "RUNFILES_DIR",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "RUNFILES_MANIFEST_ONLY",
+              "value": "1"
+            },
+            {
+              "name": "RUN_UNDER_RUNFILES",
+              "value": "1"
+            },
+            {
+              "name": "RUST_MIN_STACK",
+              "value": "8388608"
+            },
+            {
+              "name": "TEST_BINARY",
+              "value": "codex-rs/app-server/app-server-unit-tests"
+            },
+            {
+              "name": "TEST_INFRASTRUCTURE_FAILURE_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_8_of_8/test.infrastructure_failure"
+            },
+            {
+              "name": "TEST_LOGSPLITTER_OUTPUT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_8_of_8/test.raw_splitlogs/test.splitlogs"
+            },
+            {
+              "name": "TEST_PREMATURE_EXIT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_8_of_8/test.exited_prematurely"
+            },
+            {
+              "name": "TEST_SHARD_INDEX",
+              "value": "7"
+            },
+            {
+              "name": "TEST_SHARD_STATUS_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_8_of_8/test.shard"
+            },
+            {
+              "name": "TEST_SIZE",
+              "value": "medium"
+            },
+            {
+              "name": "TEST_SRCDIR",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "TEST_TARGET",
+              "value": "//codex-rs/app-server:app-server-unit-tests"
+            },
+            {
+              "name": "TEST_TIMEOUT",
+              "value": "300"
+            },
+            {
+              "name": "TEST_TMPDIR",
+              "value": "_tmp/b9647daaddaa7a79a39dbaccb58e19dc"
+            },
+            {
+              "name": "TEST_TOTAL_SHARDS",
+              "value": "8"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_ANNOTATIONS",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_8_of_8/test.outputs_manifest/ANNOTATIONS"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_ANNOTATIONS_DIR",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_8_of_8/test.outputs_manifest"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_DIR",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_8_of_8/test.outputs"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_MANIFEST",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_8_of_8/test.outputs_manifest/MANIFEST"
+            },
+            {
+              "name": "TEST_UNUSED_RUNFILES_LOG_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_8_of_8/test.unused_runfiles_log"
+            },
+            {
+              "name": "TEST_WARNINGS_OUTPUT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_8_of_8/test.warnings"
+            },
+            {
+              "name": "TEST_WORKSPACE",
+              "value": "_main"
+            },
+            {
+              "name": "TZ",
+              "value": "UTC"
+            },
+            {
+              "name": "XML_OUTPUT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_8_of_8/test.xml"
+            }
+          ],
+          "platform": [
+            {
+              "name": "Arch",
+              "value": "amd64"
+            },
+            {
+              "name": "OSFamily",
+              "value": "Linux"
+            },
+            {
+              "name": "container-image",
+              "value": "docker://docker.io/mbolin491/codex-bazel@sha256:0a8e56bfaa3b2e5279db0d3bb2d62b44ba5e5d63a37d97eb8790f49da570af70"
+            }
+          ],
+          "semantic_input_graph_sha256": "8631a8aad512b549ebf75f92cd0d6858c70a5ce3f64cb1cbbdebe2d3203e905b",
+          "semantic_tool_graph_sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+          "input_graph_entry_count": 37,
+          "xml_input_log_entry_id": 187886,
+          "log_path": "/tmp/hepta-runtime-recovery-20261106/format-review-recovery/main67-failures-0410/gnu-addendum/artifact-13475800550/selected-target-test-logs/invocation-eqz3vz17/targets/0004/shard_8_of_8/test.log",
+          "log_bytes": 4326,
+          "log_sha256": "fca3f9e1fe30758ec48808b10e9876648af4b934d002e1b2eb6868dfa7bd2d71",
+          "log_digest_matches_own_compact_XML_input": true,
+          "binary_input_records": [
+            {
+              "entry_id": 185603,
+              "type": "file",
+              "path": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests-bin",
+              "digest": {
+                "hash": "0d9cd9dca9ef36f001fee7a537aa1326166ead096d7bd594dffeda3f341e536f",
+                "size_bytes": 457661280,
+                "hash_function_name": ""
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "diagnostic": {
+      "compact_bytes": 5105196,
+      "compact_sha256": "7090eeff1c7d6e28c3018df386f0effe2f770f9afd3545ab938a4f383adbad65",
+      "record_count": 93986,
+      "attempts": [
+        {
+          "shard": 1,
+          "native_sequence": 93946,
+          "xml_sequence": 93982,
+          "runner": "remote",
+          "cache_hit": false,
+          "exit_code": 0,
+          "timeout_millis": 300000,
+          "action_cache_digest": {
+            "hash": "c5806e9c6a15cedd1f310d0a642b294dc8af0e2a19d0cc4b2f3b1f85e3f58430",
+            "size_bytes": 324,
+            "hash_function_name": ""
+          },
+          "args": [
+            "external/bazel_tools/tools/test/test-setup.sh",
+            "codex-rs/app-server/app-server-unit-tests"
+          ],
+          "env": [
+            {
+              "name": "INSTA_SNAPSHOT_PATH",
+              "value": "src"
+            },
+            {
+              "name": "INSTA_WORKSPACE_ROOT",
+              "value": "."
+            },
+            {
+              "name": "JAVA_RUNFILES",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "PATH",
+              "value": "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+            },
+            {
+              "name": "PYTHON_RUNFILES",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "RUNFILES_DIR",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "RUNFILES_MANIFEST_ONLY",
+              "value": "1"
+            },
+            {
+              "name": "RUN_UNDER_RUNFILES",
+              "value": "1"
+            },
+            {
+              "name": "RUST_MIN_STACK",
+              "value": "8388608"
+            },
+            {
+              "name": "TEST_BINARY",
+              "value": "codex-rs/app-server/app-server-unit-tests"
+            },
+            {
+              "name": "TEST_INFRASTRUCTURE_FAILURE_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_1_of_8/test.infrastructure_failure"
+            },
+            {
+              "name": "TEST_LOGSPLITTER_OUTPUT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_1_of_8/test.raw_splitlogs/test.splitlogs"
+            },
+            {
+              "name": "TEST_PREMATURE_EXIT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_1_of_8/test.exited_prematurely"
+            },
+            {
+              "name": "TEST_SHARD_INDEX",
+              "value": "0"
+            },
+            {
+              "name": "TEST_SHARD_STATUS_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_1_of_8/test.shard"
+            },
+            {
+              "name": "TEST_SIZE",
+              "value": "medium"
+            },
+            {
+              "name": "TEST_SRCDIR",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "TEST_TARGET",
+              "value": "//codex-rs/app-server:app-server-unit-tests"
+            },
+            {
+              "name": "TEST_TIMEOUT",
+              "value": "300"
+            },
+            {
+              "name": "TEST_TMPDIR",
+              "value": "_tmp/3bb826cdd5d9ad26c9c8135c0354dd21"
+            },
+            {
+              "name": "TEST_TOTAL_SHARDS",
+              "value": "8"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_ANNOTATIONS",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_1_of_8/test.outputs_manifest/ANNOTATIONS"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_ANNOTATIONS_DIR",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_1_of_8/test.outputs_manifest"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_DIR",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_1_of_8/test.outputs"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_MANIFEST",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_1_of_8/test.outputs_manifest/MANIFEST"
+            },
+            {
+              "name": "TEST_UNUSED_RUNFILES_LOG_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_1_of_8/test.unused_runfiles_log"
+            },
+            {
+              "name": "TEST_WARNINGS_OUTPUT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_1_of_8/test.warnings"
+            },
+            {
+              "name": "TEST_WORKSPACE",
+              "value": "_main"
+            },
+            {
+              "name": "TZ",
+              "value": "UTC"
+            },
+            {
+              "name": "XML_OUTPUT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_1_of_8/test.xml"
+            }
+          ],
+          "platform": [
+            {
+              "name": "Arch",
+              "value": "amd64"
+            },
+            {
+              "name": "OSFamily",
+              "value": "Linux"
+            },
+            {
+              "name": "container-image",
+              "value": "docker://docker.io/mbolin491/codex-bazel@sha256:0a8e56bfaa3b2e5279db0d3bb2d62b44ba5e5d63a37d97eb8790f49da570af70"
+            }
+          ],
+          "semantic_input_graph_sha256": "8631a8aad512b549ebf75f92cd0d6858c70a5ce3f64cb1cbbdebe2d3203e905b",
+          "semantic_tool_graph_sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+          "input_graph_entry_count": 37,
+          "xml_input_log_entry_id": 88428,
+          "log_path": "/workspace/scratch/07dd58cc9630/recovery-20261106/diagnostic-terminal-0410/b23/all-testlogs/codex-rs/app-server/app-server-unit-tests/shard_1_of_8/test.log",
+          "log_bytes": 3681,
+          "log_sha256": "78589478cee7e9e112c306d3504a15e266687063f148131ec22c53609588fcae",
+          "log_digest_matches_own_compact_XML_input": true,
+          "binary_input_records": [
+            {
+              "entry_id": 88352,
+              "type": "file",
+              "path": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests-bin",
+              "digest": {
+                "hash": "0d9cd9dca9ef36f001fee7a537aa1326166ead096d7bd594dffeda3f341e536f",
+                "size_bytes": 457661280,
+                "hash_function_name": ""
+              }
+            }
+          ]
+        },
+        {
+          "shard": 2,
+          "native_sequence": 93930,
+          "xml_sequence": 93962,
+          "runner": "remote",
+          "cache_hit": false,
+          "exit_code": 0,
+          "timeout_millis": 300000,
+          "action_cache_digest": {
+            "hash": "b2bf420653f7b3353eb216d968ab269d1dd724bca9878335fcab0b9539b370d2",
+            "size_bytes": 324,
+            "hash_function_name": ""
+          },
+          "args": [
+            "external/bazel_tools/tools/test/test-setup.sh",
+            "codex-rs/app-server/app-server-unit-tests"
+          ],
+          "env": [
+            {
+              "name": "INSTA_SNAPSHOT_PATH",
+              "value": "src"
+            },
+            {
+              "name": "INSTA_WORKSPACE_ROOT",
+              "value": "."
+            },
+            {
+              "name": "JAVA_RUNFILES",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "PATH",
+              "value": "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+            },
+            {
+              "name": "PYTHON_RUNFILES",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "RUNFILES_DIR",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "RUNFILES_MANIFEST_ONLY",
+              "value": "1"
+            },
+            {
+              "name": "RUN_UNDER_RUNFILES",
+              "value": "1"
+            },
+            {
+              "name": "RUST_MIN_STACK",
+              "value": "8388608"
+            },
+            {
+              "name": "TEST_BINARY",
+              "value": "codex-rs/app-server/app-server-unit-tests"
+            },
+            {
+              "name": "TEST_INFRASTRUCTURE_FAILURE_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_2_of_8/test.infrastructure_failure"
+            },
+            {
+              "name": "TEST_LOGSPLITTER_OUTPUT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_2_of_8/test.raw_splitlogs/test.splitlogs"
+            },
+            {
+              "name": "TEST_PREMATURE_EXIT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_2_of_8/test.exited_prematurely"
+            },
+            {
+              "name": "TEST_SHARD_INDEX",
+              "value": "1"
+            },
+            {
+              "name": "TEST_SHARD_STATUS_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_2_of_8/test.shard"
+            },
+            {
+              "name": "TEST_SIZE",
+              "value": "medium"
+            },
+            {
+              "name": "TEST_SRCDIR",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "TEST_TARGET",
+              "value": "//codex-rs/app-server:app-server-unit-tests"
+            },
+            {
+              "name": "TEST_TIMEOUT",
+              "value": "300"
+            },
+            {
+              "name": "TEST_TMPDIR",
+              "value": "_tmp/10133f10ee84fc2a6f9d6074e5003f8f"
+            },
+            {
+              "name": "TEST_TOTAL_SHARDS",
+              "value": "8"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_ANNOTATIONS",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_2_of_8/test.outputs_manifest/ANNOTATIONS"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_ANNOTATIONS_DIR",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_2_of_8/test.outputs_manifest"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_DIR",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_2_of_8/test.outputs"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_MANIFEST",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_2_of_8/test.outputs_manifest/MANIFEST"
+            },
+            {
+              "name": "TEST_UNUSED_RUNFILES_LOG_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_2_of_8/test.unused_runfiles_log"
+            },
+            {
+              "name": "TEST_WARNINGS_OUTPUT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_2_of_8/test.warnings"
+            },
+            {
+              "name": "TEST_WORKSPACE",
+              "value": "_main"
+            },
+            {
+              "name": "TZ",
+              "value": "UTC"
+            },
+            {
+              "name": "XML_OUTPUT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_2_of_8/test.xml"
+            }
+          ],
+          "platform": [
+            {
+              "name": "Arch",
+              "value": "amd64"
+            },
+            {
+              "name": "OSFamily",
+              "value": "Linux"
+            },
+            {
+              "name": "container-image",
+              "value": "docker://docker.io/mbolin491/codex-bazel@sha256:0a8e56bfaa3b2e5279db0d3bb2d62b44ba5e5d63a37d97eb8790f49da570af70"
+            }
+          ],
+          "semantic_input_graph_sha256": "8631a8aad512b549ebf75f92cd0d6858c70a5ce3f64cb1cbbdebe2d3203e905b",
+          "semantic_tool_graph_sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+          "input_graph_entry_count": 37,
+          "xml_input_log_entry_id": 88413,
+          "log_path": "/workspace/scratch/07dd58cc9630/recovery-20261106/diagnostic-terminal-0410/b23/all-testlogs/codex-rs/app-server/app-server-unit-tests/shard_2_of_8/test.log",
+          "log_bytes": 4277,
+          "log_sha256": "1d8922e01778c7e81d5821c6587c8775afc3f6c01338c03577a8a5bf53e6b086",
+          "log_digest_matches_own_compact_XML_input": true,
+          "binary_input_records": [
+            {
+              "entry_id": 88352,
+              "type": "file",
+              "path": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests-bin",
+              "digest": {
+                "hash": "0d9cd9dca9ef36f001fee7a537aa1326166ead096d7bd594dffeda3f341e536f",
+                "size_bytes": 457661280,
+                "hash_function_name": ""
+              }
+            }
+          ]
+        },
+        {
+          "shard": 3,
+          "native_sequence": 93950,
+          "xml_sequence": 93986,
+          "runner": "remote",
+          "cache_hit": false,
+          "exit_code": 0,
+          "timeout_millis": 300000,
+          "action_cache_digest": {
+            "hash": "b0c5f48db8cb0922b6df7302151804afcb111cf76a969cfefaabd83e5dfc8bb4",
+            "size_bytes": 324,
+            "hash_function_name": ""
+          },
+          "args": [
+            "external/bazel_tools/tools/test/test-setup.sh",
+            "codex-rs/app-server/app-server-unit-tests"
+          ],
+          "env": [
+            {
+              "name": "INSTA_SNAPSHOT_PATH",
+              "value": "src"
+            },
+            {
+              "name": "INSTA_WORKSPACE_ROOT",
+              "value": "."
+            },
+            {
+              "name": "JAVA_RUNFILES",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "PATH",
+              "value": "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+            },
+            {
+              "name": "PYTHON_RUNFILES",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "RUNFILES_DIR",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "RUNFILES_MANIFEST_ONLY",
+              "value": "1"
+            },
+            {
+              "name": "RUN_UNDER_RUNFILES",
+              "value": "1"
+            },
+            {
+              "name": "RUST_MIN_STACK",
+              "value": "8388608"
+            },
+            {
+              "name": "TEST_BINARY",
+              "value": "codex-rs/app-server/app-server-unit-tests"
+            },
+            {
+              "name": "TEST_INFRASTRUCTURE_FAILURE_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_3_of_8/test.infrastructure_failure"
+            },
+            {
+              "name": "TEST_LOGSPLITTER_OUTPUT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_3_of_8/test.raw_splitlogs/test.splitlogs"
+            },
+            {
+              "name": "TEST_PREMATURE_EXIT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_3_of_8/test.exited_prematurely"
+            },
+            {
+              "name": "TEST_SHARD_INDEX",
+              "value": "2"
+            },
+            {
+              "name": "TEST_SHARD_STATUS_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_3_of_8/test.shard"
+            },
+            {
+              "name": "TEST_SIZE",
+              "value": "medium"
+            },
+            {
+              "name": "TEST_SRCDIR",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "TEST_TARGET",
+              "value": "//codex-rs/app-server:app-server-unit-tests"
+            },
+            {
+              "name": "TEST_TIMEOUT",
+              "value": "300"
+            },
+            {
+              "name": "TEST_TMPDIR",
+              "value": "_tmp/82e3ee07d337cb099c483f5d1e40fc54"
+            },
+            {
+              "name": "TEST_TOTAL_SHARDS",
+              "value": "8"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_ANNOTATIONS",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_3_of_8/test.outputs_manifest/ANNOTATIONS"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_ANNOTATIONS_DIR",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_3_of_8/test.outputs_manifest"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_DIR",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_3_of_8/test.outputs"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_MANIFEST",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_3_of_8/test.outputs_manifest/MANIFEST"
+            },
+            {
+              "name": "TEST_UNUSED_RUNFILES_LOG_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_3_of_8/test.unused_runfiles_log"
+            },
+            {
+              "name": "TEST_WARNINGS_OUTPUT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_3_of_8/test.warnings"
+            },
+            {
+              "name": "TEST_WORKSPACE",
+              "value": "_main"
+            },
+            {
+              "name": "TZ",
+              "value": "UTC"
+            },
+            {
+              "name": "XML_OUTPUT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_3_of_8/test.xml"
+            }
+          ],
+          "platform": [
+            {
+              "name": "Arch",
+              "value": "amd64"
+            },
+            {
+              "name": "OSFamily",
+              "value": "Linux"
+            },
+            {
+              "name": "container-image",
+              "value": "docker://docker.io/mbolin491/codex-bazel@sha256:0a8e56bfaa3b2e5279db0d3bb2d62b44ba5e5d63a37d97eb8790f49da570af70"
+            }
+          ],
+          "semantic_input_graph_sha256": "8631a8aad512b549ebf75f92cd0d6858c70a5ce3f64cb1cbbdebe2d3203e905b",
+          "semantic_tool_graph_sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+          "input_graph_entry_count": 37,
+          "xml_input_log_entry_id": 88431,
+          "log_path": "/workspace/scratch/07dd58cc9630/recovery-20261106/diagnostic-terminal-0410/b23/all-testlogs/codex-rs/app-server/app-server-unit-tests/shard_3_of_8/test.log",
+          "log_bytes": 3390,
+          "log_sha256": "8ceb24fdf3587bf4895e7ede48a93dc881d09d32f8791f48ae6b6ca2e5e919df",
+          "log_digest_matches_own_compact_XML_input": true,
+          "binary_input_records": [
+            {
+              "entry_id": 88352,
+              "type": "file",
+              "path": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests-bin",
+              "digest": {
+                "hash": "0d9cd9dca9ef36f001fee7a537aa1326166ead096d7bd594dffeda3f341e536f",
+                "size_bytes": 457661280,
+                "hash_function_name": ""
+              }
+            }
+          ]
+        },
+        {
+          "shard": 4,
+          "native_sequence": 93934,
+          "xml_sequence": 93966,
+          "runner": "remote",
+          "cache_hit": false,
+          "exit_code": 0,
+          "timeout_millis": 300000,
+          "action_cache_digest": {
+            "hash": "7e72886779f93efec58b79ccc21cdb610156991866ca2e66e5f44334c7212ba4",
+            "size_bytes": 324,
+            "hash_function_name": ""
+          },
+          "args": [
+            "external/bazel_tools/tools/test/test-setup.sh",
+            "codex-rs/app-server/app-server-unit-tests"
+          ],
+          "env": [
+            {
+              "name": "INSTA_SNAPSHOT_PATH",
+              "value": "src"
+            },
+            {
+              "name": "INSTA_WORKSPACE_ROOT",
+              "value": "."
+            },
+            {
+              "name": "JAVA_RUNFILES",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "PATH",
+              "value": "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+            },
+            {
+              "name": "PYTHON_RUNFILES",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "RUNFILES_DIR",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "RUNFILES_MANIFEST_ONLY",
+              "value": "1"
+            },
+            {
+              "name": "RUN_UNDER_RUNFILES",
+              "value": "1"
+            },
+            {
+              "name": "RUST_MIN_STACK",
+              "value": "8388608"
+            },
+            {
+              "name": "TEST_BINARY",
+              "value": "codex-rs/app-server/app-server-unit-tests"
+            },
+            {
+              "name": "TEST_INFRASTRUCTURE_FAILURE_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_4_of_8/test.infrastructure_failure"
+            },
+            {
+              "name": "TEST_LOGSPLITTER_OUTPUT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_4_of_8/test.raw_splitlogs/test.splitlogs"
+            },
+            {
+              "name": "TEST_PREMATURE_EXIT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_4_of_8/test.exited_prematurely"
+            },
+            {
+              "name": "TEST_SHARD_INDEX",
+              "value": "3"
+            },
+            {
+              "name": "TEST_SHARD_STATUS_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_4_of_8/test.shard"
+            },
+            {
+              "name": "TEST_SIZE",
+              "value": "medium"
+            },
+            {
+              "name": "TEST_SRCDIR",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "TEST_TARGET",
+              "value": "//codex-rs/app-server:app-server-unit-tests"
+            },
+            {
+              "name": "TEST_TIMEOUT",
+              "value": "300"
+            },
+            {
+              "name": "TEST_TMPDIR",
+              "value": "_tmp/03f5c049b9b33889e39c291665cc8232"
+            },
+            {
+              "name": "TEST_TOTAL_SHARDS",
+              "value": "8"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_ANNOTATIONS",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_4_of_8/test.outputs_manifest/ANNOTATIONS"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_ANNOTATIONS_DIR",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_4_of_8/test.outputs_manifest"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_DIR",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_4_of_8/test.outputs"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_MANIFEST",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_4_of_8/test.outputs_manifest/MANIFEST"
+            },
+            {
+              "name": "TEST_UNUSED_RUNFILES_LOG_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_4_of_8/test.unused_runfiles_log"
+            },
+            {
+              "name": "TEST_WARNINGS_OUTPUT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_4_of_8/test.warnings"
+            },
+            {
+              "name": "TEST_WORKSPACE",
+              "value": "_main"
+            },
+            {
+              "name": "TZ",
+              "value": "UTC"
+            },
+            {
+              "name": "XML_OUTPUT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_4_of_8/test.xml"
+            }
+          ],
+          "platform": [
+            {
+              "name": "Arch",
+              "value": "amd64"
+            },
+            {
+              "name": "OSFamily",
+              "value": "Linux"
+            },
+            {
+              "name": "container-image",
+              "value": "docker://docker.io/mbolin491/codex-bazel@sha256:0a8e56bfaa3b2e5279db0d3bb2d62b44ba5e5d63a37d97eb8790f49da570af70"
+            }
+          ],
+          "semantic_input_graph_sha256": "8631a8aad512b549ebf75f92cd0d6858c70a5ce3f64cb1cbbdebe2d3203e905b",
+          "semantic_tool_graph_sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+          "input_graph_entry_count": 37,
+          "xml_input_log_entry_id": 88416,
+          "log_path": "/workspace/scratch/07dd58cc9630/recovery-20261106/diagnostic-terminal-0410/b23/all-testlogs/codex-rs/app-server/app-server-unit-tests/shard_4_of_8/test.log",
+          "log_bytes": 5581,
+          "log_sha256": "ef7feaad2507ae56957f1a965787e77ae857a66791734b256bca2f6dcf608931",
+          "log_digest_matches_own_compact_XML_input": true,
+          "binary_input_records": [
+            {
+              "entry_id": 88352,
+              "type": "file",
+              "path": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests-bin",
+              "digest": {
+                "hash": "0d9cd9dca9ef36f001fee7a537aa1326166ead096d7bd594dffeda3f341e536f",
+                "size_bytes": 457661280,
+                "hash_function_name": ""
+              }
+            }
+          ]
+        },
+        {
+          "shard": 5,
+          "native_sequence": 93954,
+          "xml_sequence": 93978,
+          "runner": "remote",
+          "cache_hit": false,
+          "exit_code": 0,
+          "timeout_millis": 300000,
+          "action_cache_digest": {
+            "hash": "f88fa612c6d93efab22683efe8d29743ac0b23fa363576a92ad7a9ba3e50785c",
+            "size_bytes": 324,
+            "hash_function_name": ""
+          },
+          "args": [
+            "external/bazel_tools/tools/test/test-setup.sh",
+            "codex-rs/app-server/app-server-unit-tests"
+          ],
+          "env": [
+            {
+              "name": "INSTA_SNAPSHOT_PATH",
+              "value": "src"
+            },
+            {
+              "name": "INSTA_WORKSPACE_ROOT",
+              "value": "."
+            },
+            {
+              "name": "JAVA_RUNFILES",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "PATH",
+              "value": "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+            },
+            {
+              "name": "PYTHON_RUNFILES",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "RUNFILES_DIR",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "RUNFILES_MANIFEST_ONLY",
+              "value": "1"
+            },
+            {
+              "name": "RUN_UNDER_RUNFILES",
+              "value": "1"
+            },
+            {
+              "name": "RUST_MIN_STACK",
+              "value": "8388608"
+            },
+            {
+              "name": "TEST_BINARY",
+              "value": "codex-rs/app-server/app-server-unit-tests"
+            },
+            {
+              "name": "TEST_INFRASTRUCTURE_FAILURE_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_5_of_8/test.infrastructure_failure"
+            },
+            {
+              "name": "TEST_LOGSPLITTER_OUTPUT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_5_of_8/test.raw_splitlogs/test.splitlogs"
+            },
+            {
+              "name": "TEST_PREMATURE_EXIT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_5_of_8/test.exited_prematurely"
+            },
+            {
+              "name": "TEST_SHARD_INDEX",
+              "value": "4"
+            },
+            {
+              "name": "TEST_SHARD_STATUS_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_5_of_8/test.shard"
+            },
+            {
+              "name": "TEST_SIZE",
+              "value": "medium"
+            },
+            {
+              "name": "TEST_SRCDIR",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "TEST_TARGET",
+              "value": "//codex-rs/app-server:app-server-unit-tests"
+            },
+            {
+              "name": "TEST_TIMEOUT",
+              "value": "300"
+            },
+            {
+              "name": "TEST_TMPDIR",
+              "value": "_tmp/2b61746a15ea227867b27a5da58eace5"
+            },
+            {
+              "name": "TEST_TOTAL_SHARDS",
+              "value": "8"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_ANNOTATIONS",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_5_of_8/test.outputs_manifest/ANNOTATIONS"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_ANNOTATIONS_DIR",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_5_of_8/test.outputs_manifest"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_DIR",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_5_of_8/test.outputs"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_MANIFEST",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_5_of_8/test.outputs_manifest/MANIFEST"
+            },
+            {
+              "name": "TEST_UNUSED_RUNFILES_LOG_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_5_of_8/test.unused_runfiles_log"
+            },
+            {
+              "name": "TEST_WARNINGS_OUTPUT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_5_of_8/test.warnings"
+            },
+            {
+              "name": "TEST_WORKSPACE",
+              "value": "_main"
+            },
+            {
+              "name": "TZ",
+              "value": "UTC"
+            },
+            {
+              "name": "XML_OUTPUT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_5_of_8/test.xml"
+            }
+          ],
+          "platform": [
+            {
+              "name": "Arch",
+              "value": "amd64"
+            },
+            {
+              "name": "OSFamily",
+              "value": "Linux"
+            },
+            {
+              "name": "container-image",
+              "value": "docker://docker.io/mbolin491/codex-bazel@sha256:0a8e56bfaa3b2e5279db0d3bb2d62b44ba5e5d63a37d97eb8790f49da570af70"
+            }
+          ],
+          "semantic_input_graph_sha256": "8631a8aad512b549ebf75f92cd0d6858c70a5ce3f64cb1cbbdebe2d3203e905b",
+          "semantic_tool_graph_sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+          "input_graph_entry_count": 37,
+          "xml_input_log_entry_id": 88425,
+          "log_path": "/workspace/scratch/07dd58cc9630/recovery-20261106/diagnostic-terminal-0410/b23/all-testlogs/codex-rs/app-server/app-server-unit-tests/shard_5_of_8/test.log",
+          "log_bytes": 6088,
+          "log_sha256": "1dbc2d23aab671d2f20f1f27be346758f6a0afcaf655210912897194b3892505",
+          "log_digest_matches_own_compact_XML_input": true,
+          "binary_input_records": [
+            {
+              "entry_id": 88352,
+              "type": "file",
+              "path": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests-bin",
+              "digest": {
+                "hash": "0d9cd9dca9ef36f001fee7a537aa1326166ead096d7bd594dffeda3f341e536f",
+                "size_bytes": 457661280,
+                "hash_function_name": ""
+              }
+            }
+          ]
+        },
+        {
+          "shard": 6,
+          "native_sequence": 93938,
+          "xml_sequence": 93970,
+          "runner": "remote",
+          "cache_hit": false,
+          "exit_code": 0,
+          "timeout_millis": 300000,
+          "action_cache_digest": {
+            "hash": "fd19fa878e5968c8845ee11788205a3392c9ba7705900ab7a70e6f525a11cb56",
+            "size_bytes": 324,
+            "hash_function_name": ""
+          },
+          "args": [
+            "external/bazel_tools/tools/test/test-setup.sh",
+            "codex-rs/app-server/app-server-unit-tests"
+          ],
+          "env": [
+            {
+              "name": "INSTA_SNAPSHOT_PATH",
+              "value": "src"
+            },
+            {
+              "name": "INSTA_WORKSPACE_ROOT",
+              "value": "."
+            },
+            {
+              "name": "JAVA_RUNFILES",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "PATH",
+              "value": "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+            },
+            {
+              "name": "PYTHON_RUNFILES",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "RUNFILES_DIR",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "RUNFILES_MANIFEST_ONLY",
+              "value": "1"
+            },
+            {
+              "name": "RUN_UNDER_RUNFILES",
+              "value": "1"
+            },
+            {
+              "name": "RUST_MIN_STACK",
+              "value": "8388608"
+            },
+            {
+              "name": "TEST_BINARY",
+              "value": "codex-rs/app-server/app-server-unit-tests"
+            },
+            {
+              "name": "TEST_INFRASTRUCTURE_FAILURE_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_6_of_8/test.infrastructure_failure"
+            },
+            {
+              "name": "TEST_LOGSPLITTER_OUTPUT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_6_of_8/test.raw_splitlogs/test.splitlogs"
+            },
+            {
+              "name": "TEST_PREMATURE_EXIT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_6_of_8/test.exited_prematurely"
+            },
+            {
+              "name": "TEST_SHARD_INDEX",
+              "value": "5"
+            },
+            {
+              "name": "TEST_SHARD_STATUS_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_6_of_8/test.shard"
+            },
+            {
+              "name": "TEST_SIZE",
+              "value": "medium"
+            },
+            {
+              "name": "TEST_SRCDIR",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "TEST_TARGET",
+              "value": "//codex-rs/app-server:app-server-unit-tests"
+            },
+            {
+              "name": "TEST_TIMEOUT",
+              "value": "300"
+            },
+            {
+              "name": "TEST_TMPDIR",
+              "value": "_tmp/e05417ecbc8d5cf2664eb7e61679cc5c"
+            },
+            {
+              "name": "TEST_TOTAL_SHARDS",
+              "value": "8"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_ANNOTATIONS",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_6_of_8/test.outputs_manifest/ANNOTATIONS"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_ANNOTATIONS_DIR",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_6_of_8/test.outputs_manifest"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_DIR",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_6_of_8/test.outputs"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_MANIFEST",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_6_of_8/test.outputs_manifest/MANIFEST"
+            },
+            {
+              "name": "TEST_UNUSED_RUNFILES_LOG_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_6_of_8/test.unused_runfiles_log"
+            },
+            {
+              "name": "TEST_WARNINGS_OUTPUT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_6_of_8/test.warnings"
+            },
+            {
+              "name": "TEST_WORKSPACE",
+              "value": "_main"
+            },
+            {
+              "name": "TZ",
+              "value": "UTC"
+            },
+            {
+              "name": "XML_OUTPUT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_6_of_8/test.xml"
+            }
+          ],
+          "platform": [
+            {
+              "name": "Arch",
+              "value": "amd64"
+            },
+            {
+              "name": "OSFamily",
+              "value": "Linux"
+            },
+            {
+              "name": "container-image",
+              "value": "docker://docker.io/mbolin491/codex-bazel@sha256:0a8e56bfaa3b2e5279db0d3bb2d62b44ba5e5d63a37d97eb8790f49da570af70"
+            }
+          ],
+          "semantic_input_graph_sha256": "8631a8aad512b549ebf75f92cd0d6858c70a5ce3f64cb1cbbdebe2d3203e905b",
+          "semantic_tool_graph_sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+          "input_graph_entry_count": 37,
+          "xml_input_log_entry_id": 88419,
+          "log_path": "/workspace/scratch/07dd58cc9630/recovery-20261106/diagnostic-terminal-0410/b23/all-testlogs/codex-rs/app-server/app-server-unit-tests/shard_6_of_8/test.log",
+          "log_bytes": 3567,
+          "log_sha256": "9034b919c49fe7c5f0c54d921bb5c27f3d0a05612f11f8c5c7ad740cf38822c9",
+          "log_digest_matches_own_compact_XML_input": true,
+          "binary_input_records": [
+            {
+              "entry_id": 88352,
+              "type": "file",
+              "path": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests-bin",
+              "digest": {
+                "hash": "0d9cd9dca9ef36f001fee7a537aa1326166ead096d7bd594dffeda3f341e536f",
+                "size_bytes": 457661280,
+                "hash_function_name": ""
+              }
+            }
+          ]
+        },
+        {
+          "shard": 7,
+          "native_sequence": 93942,
+          "xml_sequence": 93974,
+          "runner": "remote",
+          "cache_hit": false,
+          "exit_code": 0,
+          "timeout_millis": 300000,
+          "action_cache_digest": {
+            "hash": "d40a8cf647847c6053ab114b5679e6c1a1e6d8e14d488efaad60c6f02ea42b45",
+            "size_bytes": 324,
+            "hash_function_name": ""
+          },
+          "args": [
+            "external/bazel_tools/tools/test/test-setup.sh",
+            "codex-rs/app-server/app-server-unit-tests"
+          ],
+          "env": [
+            {
+              "name": "INSTA_SNAPSHOT_PATH",
+              "value": "src"
+            },
+            {
+              "name": "INSTA_WORKSPACE_ROOT",
+              "value": "."
+            },
+            {
+              "name": "JAVA_RUNFILES",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "PATH",
+              "value": "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+            },
+            {
+              "name": "PYTHON_RUNFILES",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "RUNFILES_DIR",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "RUNFILES_MANIFEST_ONLY",
+              "value": "1"
+            },
+            {
+              "name": "RUN_UNDER_RUNFILES",
+              "value": "1"
+            },
+            {
+              "name": "RUST_MIN_STACK",
+              "value": "8388608"
+            },
+            {
+              "name": "TEST_BINARY",
+              "value": "codex-rs/app-server/app-server-unit-tests"
+            },
+            {
+              "name": "TEST_INFRASTRUCTURE_FAILURE_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_7_of_8/test.infrastructure_failure"
+            },
+            {
+              "name": "TEST_LOGSPLITTER_OUTPUT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_7_of_8/test.raw_splitlogs/test.splitlogs"
+            },
+            {
+              "name": "TEST_PREMATURE_EXIT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_7_of_8/test.exited_prematurely"
+            },
+            {
+              "name": "TEST_SHARD_INDEX",
+              "value": "6"
+            },
+            {
+              "name": "TEST_SHARD_STATUS_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_7_of_8/test.shard"
+            },
+            {
+              "name": "TEST_SIZE",
+              "value": "medium"
+            },
+            {
+              "name": "TEST_SRCDIR",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "TEST_TARGET",
+              "value": "//codex-rs/app-server:app-server-unit-tests"
+            },
+            {
+              "name": "TEST_TIMEOUT",
+              "value": "300"
+            },
+            {
+              "name": "TEST_TMPDIR",
+              "value": "_tmp/d4009197bd5e14a351f497a172735855"
+            },
+            {
+              "name": "TEST_TOTAL_SHARDS",
+              "value": "8"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_ANNOTATIONS",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_7_of_8/test.outputs_manifest/ANNOTATIONS"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_ANNOTATIONS_DIR",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_7_of_8/test.outputs_manifest"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_DIR",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_7_of_8/test.outputs"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_MANIFEST",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_7_of_8/test.outputs_manifest/MANIFEST"
+            },
+            {
+              "name": "TEST_UNUSED_RUNFILES_LOG_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_7_of_8/test.unused_runfiles_log"
+            },
+            {
+              "name": "TEST_WARNINGS_OUTPUT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_7_of_8/test.warnings"
+            },
+            {
+              "name": "TEST_WORKSPACE",
+              "value": "_main"
+            },
+            {
+              "name": "TZ",
+              "value": "UTC"
+            },
+            {
+              "name": "XML_OUTPUT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_7_of_8/test.xml"
+            }
+          ],
+          "platform": [
+            {
+              "name": "Arch",
+              "value": "amd64"
+            },
+            {
+              "name": "OSFamily",
+              "value": "Linux"
+            },
+            {
+              "name": "container-image",
+              "value": "docker://docker.io/mbolin491/codex-bazel@sha256:0a8e56bfaa3b2e5279db0d3bb2d62b44ba5e5d63a37d97eb8790f49da570af70"
+            }
+          ],
+          "semantic_input_graph_sha256": "8631a8aad512b549ebf75f92cd0d6858c70a5ce3f64cb1cbbdebe2d3203e905b",
+          "semantic_tool_graph_sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+          "input_graph_entry_count": 37,
+          "xml_input_log_entry_id": 88422,
+          "log_path": "/workspace/scratch/07dd58cc9630/recovery-20261106/diagnostic-terminal-0410/b23/all-testlogs/codex-rs/app-server/app-server-unit-tests/shard_7_of_8/test.log",
+          "log_bytes": 4960,
+          "log_sha256": "9ea467977dd6d4c1b6b72a50fdb4dd3e7322aa58172a37f6d1389b85052121f0",
+          "log_digest_matches_own_compact_XML_input": true,
+          "binary_input_records": [
+            {
+              "entry_id": 88352,
+              "type": "file",
+              "path": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests-bin",
+              "digest": {
+                "hash": "0d9cd9dca9ef36f001fee7a537aa1326166ead096d7bd594dffeda3f341e536f",
+                "size_bytes": 457661280,
+                "hash_function_name": ""
+              }
+            }
+          ]
+        },
+        {
+          "shard": 8,
+          "native_sequence": 93926,
+          "xml_sequence": 93958,
+          "runner": "remote",
+          "cache_hit": false,
+          "exit_code": 0,
+          "timeout_millis": 300000,
+          "action_cache_digest": {
+            "hash": "a433b72e24b936c449d58207770c7ed9656b58d8510cb940db6005b3b3f8e7f2",
+            "size_bytes": 324,
+            "hash_function_name": ""
+          },
+          "args": [
+            "external/bazel_tools/tools/test/test-setup.sh",
+            "codex-rs/app-server/app-server-unit-tests"
+          ],
+          "env": [
+            {
+              "name": "INSTA_SNAPSHOT_PATH",
+              "value": "src"
+            },
+            {
+              "name": "INSTA_WORKSPACE_ROOT",
+              "value": "."
+            },
+            {
+              "name": "JAVA_RUNFILES",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "PATH",
+              "value": "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+            },
+            {
+              "name": "PYTHON_RUNFILES",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "RUNFILES_DIR",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "RUNFILES_MANIFEST_ONLY",
+              "value": "1"
+            },
+            {
+              "name": "RUN_UNDER_RUNFILES",
+              "value": "1"
+            },
+            {
+              "name": "RUST_MIN_STACK",
+              "value": "8388608"
+            },
+            {
+              "name": "TEST_BINARY",
+              "value": "codex-rs/app-server/app-server-unit-tests"
+            },
+            {
+              "name": "TEST_INFRASTRUCTURE_FAILURE_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_8_of_8/test.infrastructure_failure"
+            },
+            {
+              "name": "TEST_LOGSPLITTER_OUTPUT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_8_of_8/test.raw_splitlogs/test.splitlogs"
+            },
+            {
+              "name": "TEST_PREMATURE_EXIT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_8_of_8/test.exited_prematurely"
+            },
+            {
+              "name": "TEST_SHARD_INDEX",
+              "value": "7"
+            },
+            {
+              "name": "TEST_SHARD_STATUS_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_8_of_8/test.shard"
+            },
+            {
+              "name": "TEST_SIZE",
+              "value": "medium"
+            },
+            {
+              "name": "TEST_SRCDIR",
+              "value": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests.runfiles"
+            },
+            {
+              "name": "TEST_TARGET",
+              "value": "//codex-rs/app-server:app-server-unit-tests"
+            },
+            {
+              "name": "TEST_TIMEOUT",
+              "value": "300"
+            },
+            {
+              "name": "TEST_TMPDIR",
+              "value": "_tmp/b9647daaddaa7a79a39dbaccb58e19dc"
+            },
+            {
+              "name": "TEST_TOTAL_SHARDS",
+              "value": "8"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_ANNOTATIONS",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_8_of_8/test.outputs_manifest/ANNOTATIONS"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_ANNOTATIONS_DIR",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_8_of_8/test.outputs_manifest"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_DIR",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_8_of_8/test.outputs"
+            },
+            {
+              "name": "TEST_UNDECLARED_OUTPUTS_MANIFEST",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_8_of_8/test.outputs_manifest/MANIFEST"
+            },
+            {
+              "name": "TEST_UNUSED_RUNFILES_LOG_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_8_of_8/test.unused_runfiles_log"
+            },
+            {
+              "name": "TEST_WARNINGS_OUTPUT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_8_of_8/test.warnings"
+            },
+            {
+              "name": "TEST_WORKSPACE",
+              "value": "_main"
+            },
+            {
+              "name": "TZ",
+              "value": "UTC"
+            },
+            {
+              "name": "XML_OUTPUT_FILE",
+              "value": "bazel-out/rbe-fastbuild/testlogs/codex-rs/app-server/app-server-unit-tests/shard_8_of_8/test.xml"
+            }
+          ],
+          "platform": [
+            {
+              "name": "Arch",
+              "value": "amd64"
+            },
+            {
+              "name": "OSFamily",
+              "value": "Linux"
+            },
+            {
+              "name": "container-image",
+              "value": "docker://docker.io/mbolin491/codex-bazel@sha256:0a8e56bfaa3b2e5279db0d3bb2d62b44ba5e5d63a37d97eb8790f49da570af70"
+            }
+          ],
+          "semantic_input_graph_sha256": "8631a8aad512b549ebf75f92cd0d6858c70a5ce3f64cb1cbbdebe2d3203e905b",
+          "semantic_tool_graph_sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+          "input_graph_entry_count": 37,
+          "xml_input_log_entry_id": 88410,
+          "log_path": "/workspace/scratch/07dd58cc9630/recovery-20261106/diagnostic-terminal-0410/b23/all-testlogs/codex-rs/app-server/app-server-unit-tests/shard_8_of_8/test.log",
+          "log_bytes": 4326,
+          "log_sha256": "75625cc687a672372452d6f050a781cfafdc96abd8dfb5aacca571073f7d791a",
+          "log_digest_matches_own_compact_XML_input": true,
+          "binary_input_records": [
+            {
+              "entry_id": 88352,
+              "type": "file",
+              "path": "bazel-out/rbe-fastbuild/bin/codex-rs/app-server/app-server-unit-tests-bin",
+              "digest": {
+                "hash": "0d9cd9dca9ef36f001fee7a537aa1326166ead096d7bd594dffeda3f341e536f",
+                "size_bytes": 457661280,
+                "hash_function_name": ""
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "comparison": [
+      {
+        "shard": 1,
+        "equalities": {
+          "args": true,
+          "env": true,
+          "platform": true,
+          "semantic_input_graph_sha256": true,
+          "semantic_tool_graph_sha256": true,
+          "log_sha256": false,
+          "action_cache_digest": false
+        }
+      },
+      {
+        "shard": 2,
+        "equalities": {
+          "args": true,
+          "env": true,
+          "platform": true,
+          "semantic_input_graph_sha256": true,
+          "semantic_tool_graph_sha256": true,
+          "log_sha256": false,
+          "action_cache_digest": false
+        }
+      },
+      {
+        "shard": 3,
+        "equalities": {
+          "args": true,
+          "env": true,
+          "platform": true,
+          "semantic_input_graph_sha256": true,
+          "semantic_tool_graph_sha256": true,
+          "log_sha256": false,
+          "action_cache_digest": false
+        }
+      },
+      {
+        "shard": 4,
+        "equalities": {
+          "args": true,
+          "env": true,
+          "platform": true,
+          "semantic_input_graph_sha256": true,
+          "semantic_tool_graph_sha256": true,
+          "log_sha256": false,
+          "action_cache_digest": false
+        }
+      },
+      {
+        "shard": 5,
+        "equalities": {
+          "args": true,
+          "env": true,
+          "platform": true,
+          "semantic_input_graph_sha256": true,
+          "semantic_tool_graph_sha256": true,
+          "log_sha256": false,
+          "action_cache_digest": false
+        }
+      },
+      {
+        "shard": 6,
+        "equalities": {
+          "args": true,
+          "env": true,
+          "platform": true,
+          "semantic_input_graph_sha256": true,
+          "semantic_tool_graph_sha256": true,
+          "log_sha256": false,
+          "action_cache_digest": false
+        }
+      },
+      {
+        "shard": 7,
+        "equalities": {
+          "args": true,
+          "env": true,
+          "platform": true,
+          "semantic_input_graph_sha256": true,
+          "semantic_tool_graph_sha256": true,
+          "log_sha256": false,
+          "action_cache_digest": false
+        }
+      },
+      {
+        "shard": 8,
+        "equalities": {
+          "args": true,
+          "env": true,
+          "platform": true,
+          "semantic_input_graph_sha256": true,
+          "semantic_tool_graph_sha256": true,
+          "log_sha256": false,
+          "action_cache_digest": false
+        }
+      }
+    ],
+    "limits": [
+      "These are two different executions/results. Main logs and action-cache digests are not claimed equal to diagnostic logs/digests.",
+      "Each original log is independently SHA256/size-bound to its own compact XML generator input, even though XML bytes were not materialized.",
+      "All eight actual test commands/env/platform and recursive semantic input/tool graphs compare equal; entry IDs are local to each compact and are normalized by content graph hash.",
+      "Diagnostic native execution is remote Linux/amd64 as the original platform; no claim that these executed inside the GitHub runner host."
+    ]
+  },
+  "original_payload_custody": {
+    "main_GNU": {
+      "job_id": 127679861926,
+      "artifact_id": 13475800550,
+      "zip_bytes": 12247168,
+      "zip_sha256": "da7c1feb1f45ab3ca6b5471ff1036a18e83fd502478e547308f58fdc85b604e5",
+      "included_in_following_main92_packet": true,
+      "packet_actual_registration": "PENDING_AS_OF_THIS_REVIEW"
+    },
+    "diagnostic": {
+      "run_id": 42155150876,
+      "job_id": 127687422035,
+      "artifacts": [
+        {
+          "id": 13476180428,
+          "zip": {
+            "bytes": 782208,
+            "sha256": "43bdccc192f96f95aebf3e7642df04ae0055f5c61970a27a8b03e05a6a9c91e3",
+            "git_blob": "696a199916347acc3fd4f664ccb45802b7907f7c"
+          },
+          "members": 21
+        },
+        {
+          "id": 13475294944,
+          "zip": {
+            "bytes": 5119057,
+            "sha256": "cf6546f57f595a26c0058d321c4b80846da4f8ff26628be77b7c4332bffde7e3",
+            "git_blob": "76ffeffc42ac6d1a423507439a7bbec636728149"
+          },
+          "members": 10
+        }
+      ],
+      "root_owned_packet_actual_registration": "PENDING_AS_OF_THIS_REVIEW",
+      "large_original_ZIPs_not_duplicated_in_review": true
+    }
+  },
+  "review_preparation_read_scope": "One authorized original GNU job-log and artifact retrieval at 04:21:20-22 UTC; subsequent scope check used fixed local bytes only. No status re-poll, native run, workflow dispatch/rerun/cancel, ref or PR write.",
+  "interpretation_zh": "同 source 产品投影、全部输入/工具图、实际命令/环境/执行平台均相等。两次 action-cache digest 和日志原字节不同，明确不是同一运行或缓存来源。新实际执行来自诊断原 target 的 8 个 remote、cache_hit=false 动作；原 GNU CI 是完整原作业 success 和 8 个 cached target 结果。每份日志分别与本组 compact XML 生成动作输入的 SHA256/长度相等。原退出条件未要求新增 XML 上传或新增 collector 全绿，因此缺失 XML 与两个 Fetch 事件误报保留为收件缺陷，不自动扩大产品退出条件。",
+  "offline_replays": {
+    "bind_b23_compacts.py": {
+      "exit_code": 0,
+      "stdout": {
+        "bytes": 108070,
+        "sha256": "ae60a4c78fb657262d89242b3ae46db652d67e5cc44686bc2d7c39df296bd92e",
+        "git_blob": "fb8cb0b9a06d6f69ac02029524eda266f13be915"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      }
+    },
+    "verify_original_scope.py": {
+      "exit_code": 0,
+      "stdout": {
+        "bytes": 13052,
+        "sha256": "af65d9785e6c76b50dce45baa786a3492c121bed08638b5ed06fa64d2455114a",
+        "git_blob": "e9d1e8f732b161741b3bea479ea4280cf983f13b"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      }
+    }
+  },
+  "embedded_replay_sources": [
+    {
+      "name": "bind_b23_compacts.py",
+      "identity": {
+        "bytes": 7160,
+        "sha256": "44e2f58df642668d3f26d1de5e0402216ca6d0ea24ca163b857479d5f406714a",
+        "git_blob": "85883ee75231c249eaa489c8b1425ad5e98ff43a"
+      },
+      "source_utf8": "#!/usr/bin/env python3\n\"\"\"Bind original main cached and diagnostic fresh AppServer attempts to their own compact input digests.\"\"\"\nfrom pathlib import Path\nimport argparse,collections,hashlib,importlib.util,json,subprocess\nP=argparse.ArgumentParser()\nP.add_argument('--main',type=Path,required=True);P.add_argument('--diagnostic',type=Path,required=True);P.add_argument('--decoder',type=Path,required=True)\na=P.parse_args()\nspec=importlib.util.spec_from_file_location('D',a.decoder);D=importlib.util.module_from_spec(spec);spec.loader.exec_module(D)\nTARGET='//codex-rs/app-server:app-server-unit-tests'\ndef canon(d):return json.dumps(d,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode()\ndef sha(b):return hashlib.sha256(b).hexdigest()\ndef decode(compact,logs,cached):\n p=subprocess.run(['zstd','-q','-d','-c','--no-pass-through','--',str(compact)],stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=60)\n assert p.returncode==0\n data=p.stdout;pos=0;count=0;entries={};spawns=[];files={};ids=set()\n while pos<len(data):\n  size,pos=D.varint(data,pos);raw=data[pos:pos+size];pos+=size;assert len(raw)==size\n  f=D.fields(raw);i=D.scalar(f,1);keys=[n for n in f if n!=1];assert len(keys)==1\n  typ=keys[0];g=D.msg(f,typ);count+=1\n  if i:assert i not in ids;ids.add(i)\n  if typ==3:d={'type':'file',**D.file_data(g)}\n  elif typ==4:d={'type':'directory','path':D.string(g,1),'files':[D.file_data(x) for x in D.msgs(g,2)]}\n  elif typ==5:d={'type':'unresolved_symlink','path':D.string(g,1),'target_path':D.string(g,2)}\n  elif typ==6:d={'type':'input_set','input_ids':D.repeated_uint(g,5),'transitive_set_ids':D.repeated_uint(g,4)}\n  elif typ==9:d={'type':'symlink_entry_set','direct_entries':[{'path':D.string(x,1),'entry_id':D.scalar(x,2)} for x in D.msgs(g,1)],'transitive_set_ids':D.repeated_uint(g,2)}\n  elif typ==10:d={'type':'runfiles_tree','path':D.string(g,1),'input_set_id':D.scalar(g,2),'symlinks_id':D.scalar(g,3),'root_symlinks_id':D.scalar(g,4),'empty_files':D.strs(g,5),'repo_mapping_manifest':D.file_data(D.msg(g,6))}\n  elif typ==7:\n   if D.string(g,7)==TARGET:spawns.append({'sequence':count,**D.spawn(g,entries)})\n   d={'type':'spawn_omitted'}\n  elif typ==2:d={'type':'invocation','hash_function_name':D.string(g,1),'invocation_id':D.string(g,4)}\n  elif typ==8:d={'type':'symlink_action','input_path':D.string(g,1),'output_path':D.string(g,2)}\n  else:raise AssertionError(typ)\n  if i:entries[i]=d\n memo={0:sha(b'null')};stack=set()\n def semantic(i):\n  if i in memo:return memo[i]\n  assert i not in stack;stack.add(i);d=entries[i];out={}\n  for k,v in d.items():\n   if k in ('input_ids','transitive_set_ids'):out[k]=[semantic(x) for x in v]\n   elif k in ('input_set_id','symlinks_id','root_symlinks_id'):out[k]=semantic(v)\n   elif k=='direct_entries':out[k]=[{'path':x['path'],'entry_content_sha256':semantic(x['entry_id'])} for x in v]\n   else:out[k]=v\n  stack.remove(i);memo[i]=sha(canon(out));return memo[i]\n def descendants(i,seen=None):\n  seen=set() if seen is None else seen\n  if not i or i in seen:return seen\n  seen.add(i);d=entries[i]\n  for k in ('input_ids','transitive_set_ids'):\n   for x in d.get(k,[]):descendants(x,seen)\n  for k in ('input_set_id','symlinks_id','root_symlinks_id'):descendants(d.get(k,0),seen)\n  for x in d.get('direct_entries',[]):descendants(x['entry_id'],seen)\n  return seen\n actual={};xml={}\n for s in spawns:\n  env={x['name']:x['value'] for x in s['env_vars']};assert env['TEST_TOTAL_SHARDS']=='8'\n  n=int(env['TEST_SHARD_INDEX'])+1;kind=s['args'][0].rsplit('/',1)[-1]\n  dest=xml if kind=='generate-xml.sh' else actual\n  assert kind in ('generate-xml.sh','test-setup.sh') and n not in dest\n  assert s['cache_hit']==cached and s['runner']==('remote cache hit' if cached else 'remote') and s['exit_code']==0\n  dest[n]=s\n assert set(actual)==set(xml)==set(range(1,9))\n rows=[]\n for n in range(1,9):\n  s=actual[n];x=xml[n];assert s['timeout_millis']==300000 and x['timeout_millis']==0\n  relatives=descendants(x['input_set_id'])|descendants(x['tool_set_id'])\n  candidates=[(i,entries[i]) for i in relatives if entries[i]['type']=='file' and entries[i].get('path','').endswith(f'app-server-unit-tests/shard_{n}_of_8/test.log')]\n  assert len(candidates)==1,(n,len(candidates))\n  eid,file=candidates[0];log=logs[n].read_bytes()\n  assert file['digest']['hash']==sha(log) and file['digest']['size_bytes']==len(log)\n  native_inputs=descendants(s['input_set_id'])|descendants(s['tool_set_id'])\n  binaries=[(i,entries[i]) for i in native_inputs if entries[i]['type']=='file' and entries[i].get('path','').endswith('/app-server-unit-tests-bin')]\n  rows.append({'shard':n,'native_sequence':s['sequence'],'xml_sequence':x['sequence'],'runner':s['runner'],'cache_hit':s['cache_hit'],'exit_code':s['exit_code'],\n    'timeout_millis':s['timeout_millis'],'action_cache_digest':s['digest'],'args':s['args'],'env':s['env_vars'],'platform':s['platform'],\n    'semantic_input_graph_sha256':semantic(s['input_set_id']),'semantic_tool_graph_sha256':semantic(s['tool_set_id']),\n    'input_graph_entry_count':len(native_inputs),'xml_input_log_entry_id':eid,'log_path':str(logs[n]),'log_bytes':len(log),'log_sha256':sha(log),\n    'log_digest_matches_own_compact_XML_input':True,'binary_input_records':[{'entry_id':i,**d} for i,d in binaries]})\n return {'compact_bytes':compact.stat().st_size,'compact_sha256':sha(compact.read_bytes()),'record_count':count,'attempts':rows}\nmain_art=a.main/'gnu-addendum/artifact-13475800550'\nmp,=main_art.rglob('manifest.json');m=json.loads(mp.read_bytes())\nmainlogs={}\nfor f in m['files']:\n if f['target']==TARGET and f['testlogs_relative_path'].endswith('.log'):\n  n=int(f['testlogs_relative_path'].split('shard_')[1].split('_')[0]);mainlogs[n]=mp.parent/f['archive_relative_path']\ndiaglogs={n:a.diagnostic/f'b23/all-testlogs/codex-rs/app-server/app-server-unit-tests/shard_{n}_of_8/test.log' for n in range(1,9)}\nmc,=main_art.glob('*.zst');dc,=(a.diagnostic/'b23_compact').glob('*.zst')\nmain=decode(mc,mainlogs,True);diag=decode(dc,diaglogs,False)\ncomp=[]\nfor m,d in zip(main['attempts'],diag['attempts']):\n eq={k:m[k]==d[k] for k in ['args','env','platform','semantic_input_graph_sha256','semantic_tool_graph_sha256','log_sha256','action_cache_digest']}\n comp.append({'shard':m['shard'],'equalities':eq})\n assert all(eq[k] for k in ['args','env','platform','semantic_input_graph_sha256','semantic_tool_graph_sha256'])\nprint(json.dumps({'schema':'b23-main-cached-and-diagnostic-native-own-compact-binding-v1','main':main,'diagnostic':diag,'comparison':comp,\n 'limits':['These are two different executions/results. Main logs and action-cache digests are not claimed equal to diagnostic logs/digests.',\n 'Each original log is independently SHA256/size-bound to its own compact XML generator input, even though XML bytes were not materialized.',\n 'All eight actual test commands/env/platform and recursive semantic input/tool graphs compare equal; entry IDs are local to each compact and are normalized by content graph hash.',\n 'Diagnostic native execution is remote Linux/amd64 as the original platform; no claim that these executed inside the GitHub runner host.']},ensure_ascii=False,indent=2))\n\n"
+    },
+    {
+      "name": "verify_original_scope.py",
+      "identity": {
+        "bytes": 11884,
+        "sha256": "60fbccd7dfa930ba1a0dad116ac403cb74349af218c01c6743c041fc20ad54d0",
+        "git_blob": "89c01c3b83ecaf17f102d219e823d346974327e7"
+      },
+      "source_utf8": "#!/usr/bin/env python3\n\"\"\"Verify the original B23 acceptance scope without treating post-test collector rules as product requirements.\"\"\"\nfrom pathlib import Path\nimport argparse,collections,hashlib,json,re,zipfile\np=argparse.ArgumentParser();p.add_argument('--main',type=Path,required=True);p.add_argument('--diagnostic',type=Path,required=True);p.add_argument('--source',type=Path,required=True);p.add_argument('--binding',type=Path,required=True);a=p.parse_args()\ndef ident(b):return {'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest(),'git_blob':hashlib.sha1(b'blob '+str(len(b)).encode()+b'\\0'+b).hexdigest()}\ndef tree(rows):\n children=collections.defaultdict(list)\n for path,mode,sha in rows:\n  bits=path.split('/')\n  for i in range(1,len(bits)):children['/'.join(bits[:i-1])]\n  children['/'.join(bits[:-1])].append((bits[-1],mode,sha))\n dirs={''}\n for path,mode,sha in rows:\n  bits=path.split('/')\n  for i in range(1,len(bits)):dirs.add('/'.join(bits[:i]))\n for d in dirs:\n  if d:parent,_,name=d.rpartition('/');children[parent].append((name,'40000',None))\n computed={}\n def run(path):\n  entries=[]\n  for name,mode,sha in sorted(children[path],key=lambda x:(x[0]+('/' if x[1]=='40000' else '')).encode()):\n   if mode=='40000':sha=run((path+'/' if path else '')+name)\n   entries.append(mode.encode()+b' '+name.encode()+b'\\0'+bytes.fromhex(sha))\n  b=b''.join(entries);computed[path]=hashlib.sha1(b'tree '+str(len(b)).encode()+b'\\0'+b).hexdigest();return computed[path]\n return run(''),len(dirs)\ndiag=a.diagnostic/'b23';comp=a.diagnostic/'b23_compact'\nartifacts=json.loads((a.diagnostic/'b23.artifacts.tool-return.original.json').read_bytes())['structuredContent']['artifacts']\nzproof=[]\nfor name,dest,aid in [('b23.original.zip',diag,13476180428),('b23_compact.original.zip',comp,13475294944)]:\n b=(a.diagnostic/name).read_bytes();meta=next(x for x in artifacts if x['id']==aid)\n assert len(b)==meta['size_in_bytes'] and 'sha256:'+ident(b)['sha256']==meta['digest']\n with zipfile.ZipFile(a.diagnostic/name) as z:\n  assert z.testzip() is None\n  for n in z.namelist():assert (dest/n).read_bytes()==z.read(n)\n  zproof.append({'id':aid,'zip':ident(b),'members':len(z.namelist())})\nbefore=json.loads((diag/'source-before.json').read_bytes());after=json.loads((diag/'source-after.json').read_bytes())\nassert before['status']==after['status']=='passed'\nassert before['phase']=='before' and after['phase']=='after'\nassert {k:v for k,v in before.items() if k!='phase'}=={k:v for k,v in after.items() if k!='phase'}\nassert before['base_commit']=='67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed'\nassert before['checkout_commit']=='b3bc3dcf5684568dd03f3667ecd2307b8577a0a6'\nassert before['event_head']=='e63ed76c5d8ded046f97caffbdbe2883140e6032'\nassert before['merge_parents']==[before['base_commit'],before['event_head']]\nassert before['workflow_blob']=='d4b87c924a1dcc795e05aec1dd4e31854dcff687'\nraw=(diag/'source-tree-before.ls-tree').read_bytes()\nassert raw==(diag/'source-tree-after.ls-tree').read_bytes()\nrows=[]\nfor entry in raw.split(b'\\0'):\n if not entry:continue\n header,path=entry.split(b'\\t',1);mode,kind,sha=header.decode().split();assert kind in ('blob','commit')\n rows.append((path.decode(),mode,sha))\nassert len(rows)==len({x[0] for x in rows})==10583\ncheckout,dirs=tree(rows)\nassert checkout==before['checkout_tree']=='a6831e2607e718f1343b788e5b8062a171d50a71'\nworkflow='.github/workflows/hepta-b23-linux-app-server-original-gate.yml'\nassert next(x[2] for x in rows if x[0]==workflow)==before['workflow_blob']\nproduct=[x for x in rows if x[0]!=workflow]\nproduct_root,_=tree(product)\nassert product_root==before['base_tree']==before['original_tree_projection']=='3982ba56dc5a3f1da0c1de7ea57992f88125c359'\nbase=json.loads((a.main/'borrowed/authority/main67-full-tree.json').read_bytes())\nassert sorted(product)==sorted((x['path'],x['mode'],x['sha']) for x in base['tree'] if x['type']!='tree')\npins=before['source_files'];assert len(pins)==14\nfor f in pins:\n b=(a.source/f['path']).read_bytes()\n assert ident(b)=={k:f[k] for k in ('bytes','git_blob','sha256')}\n assert next(x[2] for x in product if x[0]==f['path'])==f['git_blob']\nlib=(a.source/'codex-rs/app-server/src/lib.rs').read_text()\nassert 'runtime_options.install_shutdown_signal_handler && !single_client_mode' in lib\nassert 'let single_client_mode = matches!(&transport, AppServerTransport::Stdio);' in lib\nsignals=(a.source/'codex-rs/app-server/src/shutdown_signals.rs').read_text()\nassert '#[cfg(not(unix))]' in signals and 'tokio::signal::ctrl_c()' in signals\nassert 'self.interrupt.recv()' in signals and 'self.terminate.recv()' in signals and 'self.hangup.recv()' in signals\nbind=json.loads(a.binding.read_bytes())\nassert len(bind['main']['attempts'])==len(bind['diagnostic']['attempts'])==8\nfor r in bind['comparison']:\n assert all(r['equalities'][k] for k in ['args','env','platform','semantic_input_graph_sha256','semantic_tool_graph_sha256'])\nrows=[];names=[];pass_count=0;ignored_count=0\nsignal_names=['shutdown_signals::tests::first_sigterm_survives_cancelled_receive','shutdown_signals::tests::first_sighup_survives_cancelled_receive','shutdown_signals::tests::first_sigint_survives_cancelled_receive']\ndrain_names=['drain_handle_tests::requesting_drain_does_not_acknowledge_outstanding_turns','drain_handle_tests::repeated_drain_requests_preserve_the_real_completion_acknowledgement']\nfor n in range(1,9):\n rel=f'all-testlogs/codex-rs/app-server/app-server-unit-tests/shard_{n}_of_8/test.log';b=(diag/rel).read_bytes();s=b.decode('utf-8')\n native=next(r for r in bind['diagnostic']['attempts'] if r['shard']==n);cached=next(r for r in bind['main']['attempts'] if r['shard']==n)\n assert native['runner']=='remote' and native['cache_hit'] is False and cached['runner']=='remote cache hit' and cached['cache_hit'] is True\n assert ident(b)['sha256']==native['log_sha256']\n parsed=re.findall(r'^test result: ok\\. (\\d+) passed; (\\d+) failed; (\\d+) ignored; \\d+ measured; \\d+ filtered out;.*$',s,re.M)\n assert len(parsed)==1 and int(parsed[0][1])==0\n passed,_,ignored=map(int,parsed[0]);pass_count+=passed;ignored_count+=ignored\n cases=re.findall(r'^test (.+) \\.\\.\\. (ok|ignored(?:,.*)?)$',s,re.M);names.extend(cases)\n assert len([x for x in cases if x[1]=='ok'])==passed and len([x for x in cases if x[1].startswith('ignored')])==ignored\n rows.append({'shard':n,'log':ident(b),'passed':passed,'ignored':ignored,'native_action_digest':native['action_cache_digest'],'main_cached_log_sha256':cached['log_sha256'],'separate_results':native['log_sha256']!=cached['log_sha256']})\nassert pass_count==307 and ignored_count==1 and len({x[0] for x in names})==308\nfor name in signal_names+drain_names:assert (name,'ok') in names\nignored=[n for n,s in names if s.startswith('ignored')]\nassert ignored==['shutdown_signals::tests::retained_signal_child']\nassert (diag/'original-bazel-exit-code.txt').read_bytes()==b'0\\n'\nassert (diag/'console-copy-exit-code.txt').read_bytes()==b'0\\n'\nbep=[json.loads(x) for x in (diag/'build-events.sanitized.jsonl').read_bytes().splitlines()]\nassert len(bep)==1924\nresults=[x for x in bep if 'testResult' in x]\nassert len(results)==8 and {x['id']['testResult']['shard'] for x in results}==set(range(1,9))\nassert all(x['testResult']['status']=='PASSED' and x['testResult']['executionInfo']['strategy']=='remote' and not x['testResult'].get('cachedLocally',False) for x in results)\nmanifest=json.loads((diag/'attempt-retention-manifest.json').read_bytes())\nassert manifest['complete'] is False and manifest['original_bazel_exit']==0\nerrors=collections.Counter(x['kind'] for x in manifest['errors'])\nassert errors=={'duplicate_event_id':2,'attempt_reference_unavailable':8}\nfor e in manifest['errors']:\n if e['kind']=='duplicate_event_id':assert 'fetch' in bep[e['event']]['id']\nassert all(not (diag/f'all-testlogs/codex-rs/app-server/app-server-unit-tests/shard_{n}_of_8/test.xml').exists() for n in range(1,9))\njobs=json.loads(json.loads((a.diagnostic/'b23_jobs.tool-return.original.json').read_bytes())['structuredContent']['content'])['jobs']\njob,=jobs;assert job['id']==127687422035 and job['conclusion']=='failure'\nsteps={s['name']:s['conclusion'] for s in job['steps']}\nfor key in ['Run the original full AppServer unit-test target','Verify source after the original invocation','Check for a clean worktree']:assert steps[key]=='success'\nassert steps['Collect every produced attempt and gate artifact privacy']=='failure'\nmainjobs=json.loads(json.loads((a.main/'original/main_blocking_jobs.tool-return.original.json').read_bytes())['structuredContent']['content'])['jobs']\nmainjob=next(j for j in mainjobs if j['id']==127679861926);assert mainjob['conclusion']=='success'\nprint(json.dumps({'schema':'b23-original-exit-independent-scope-evaluation-v1',\n 'decision':'CLOSED_SCOPED_EVIDENCE_SUFFICIENT_FOR_ORIGINAL_B23_GNU_PRODUCT_CONTRACT',\n 'unchanged_original_exit_zh':'真实baseline丢信号窗口成立；修后3个单信号父测试与2个原drain用例通过；配置关闭/stdio及平台语义不变，最终原CI验收。',\n 'prior_accepted_baseline':'Retain prior accepted physical baseline negative and prior five-case causal acceptance; not re-executed by this review.',\n 'source':{'actual_checkout':before['checkout_commit'],'head':before['event_head'],'checkout_tree':checkout,'product_projection':product_root,'source_before_after_full_ls_tree_bytes_equal':True,'unchanged_product_leaves':10582,'directory_nodes':dirs,'unchanged_source_pins':pins,'configuration_disabled_and_stdio_guard_preserved':True,'nonunix_ctrl_c_branch_preserved':True},\n 'original_diagnostic_artifacts':zproof,\n 'native':{'run':42155150876,'job':127687422035,'job_overall':'failure','original_bazel_exit':0,'stdout_copy_exit':0,'shards':8,'passed':307,'failed':0,'ignored':1,'named_signal_pass':signal_names,'named_drain_pass':drain_names,'ignored_owned_child_entry':ignored,'rows':rows,'test_execution':'remote Linux amd64 fixed original execution platform, actual cache_hit=false'},\n 'original_ci_acceptance':{'run':42123581385,'job':127679861926,'job_status':'success','source':'b7a57dbb61b00e51c05da9cf5c4bc95b365d85ae','product_tree':product_root,'target':'//codex-rs/app-server:app-server-unit-tests','shards':8,'target_results_cached':True,'fresh_native_credit_from_this_main_job':False},\n 'cross_source_and_execution_binding':{'all8_native_args_env_platform_and_recursive_input_tool_graphs_equal':True,'all16_logs_match_own_compact_XML_input_sha256_and_size':True,'main_and_diag_log_bytes_equal':False,'main_and_diag_action_cache_digests_equal':False,'same_compiled_binary_sha256':bind['diagnostic']['attempts'][0]['binary_input_records'][0]['digest']},\n 'collector_failure_retained':{'job_failure_preserved':True,'errors':dict(errors),'missing_original_XML':8,'two_duplicate_fetch_events':'Preserved as original collector error, not two product test failures.','new_collector_rules_are_not_added_to_original_exit':True},\n 'limits':['Closure recommendation applies only to original B23 GNU/Linux shutdown-signal/drain contract at the verified product source.',\n 'Main cached success is final original CI evidence; fresh native execution comes from the separate same-product diagnostic job.',\n 'The two sets of log hashes and action-cache digests differ; no claim main reused the diagnostic output, no claim common action-cache key.',\n 'Remote execution platform matches original GNU context; no local GitHub-host execution claim.',\n 'Original collector failure and missing XML remain real operational evidence gaps; no XML regenerated or invented here.',\n 'B15 whole-library acceptance, other blockers, all-project completion and macOS/Windows full qualification do not follow from this B23 scope decision.',\n 'No new CI query, rerun, dispatch, assertion, timeout, test filter, skip, production mutation, ref or PR publication was performed by the review.']},ensure_ascii=False,indent=2))\n\n"
+    },
+    {
+      "name": "borrowed/decode_compact.py",
+      "identity": {
+        "bytes": 9864,
+        "sha256": "cade2f309520c16508893b798eb59258fe6a60d3367f64271e989caa33ed66a3",
+        "git_blob": "bb0957782c73a2a653e101e392da5f0f27ed4459"
+      },
+      "source_utf8": "#!/usr/bin/env python3\n\"\"\"Read-only decoder for the fixed Bazel 9.3.0 compact ExecLogEntry evidence.\n\nThe original compressed artifact is never modified. Field numbers are bound to\nprimary/spawn.proto. This projection retains every Spawn field and every raw\nentry count; source files and original ZIP remain authority.\n\"\"\"\nimport collections, hashlib, json, pathlib, subprocess, sys\n\nROOT = pathlib.Path(__file__).resolve().parent\nCOMPACT = ROOT / \"artifacts/windows-shard4-original/execution-log-test-test-windows-shard-3686.zst\"\n\ndef varint(data, pos=0):\n    n = 0\n    for k in range(10):\n        if pos >= len(data): raise ValueError(\"truncated_varint\")\n        b = data[pos]; pos += 1\n        n |= (b & 127) << (7 * k)\n        if not b & 128: return n, pos\n    raise ValueError(\"varint_overflow\")\n\ndef fields(data):\n    out = collections.defaultdict(list)\n    pos = 0\n    while pos < len(data):\n        tag, pos = varint(data, pos)\n        no, wire = tag >> 3, tag & 7\n        if no == 0: raise ValueError(\"zero_field_number\")\n        if wire == 0: value, pos = varint(data, pos)\n        elif wire == 1:\n            value = data[pos:pos+8]; pos += 8\n            if len(value) != 8: raise ValueError(\"truncated_fixed64\")\n        elif wire == 2:\n            size, pos = varint(data, pos)\n            value = data[pos:pos+size]; pos += size\n            if len(value) != size: raise ValueError(\"truncated_bytes\")\n        elif wire == 5:\n            value = data[pos:pos+4]; pos += 4\n            if len(value) != 4: raise ValueError(\"truncated_fixed32\")\n        else: raise ValueError(\"unsupported_wire_type\")\n        out[no].append((wire, value))\n    return out\n\ndef scalar(f, no, default=0):\n    a = f.get(no)\n    if not a: return default\n    if len(a) != 1 or a[0][0] != 0: raise ValueError(\"scalar_wire_or_repetition\")\n    return a[0][1]\n\ndef strs(f, no):\n    a = f.get(no, [])\n    if any(w != 2 for w, _ in a): raise ValueError(\"string_wire\")\n    return [v.decode(\"utf-8\", \"strict\") for _, v in a]\n\ndef string(f, no, default=\"\"):\n    a = strs(f, no)\n    if len(a) > 1: raise ValueError(\"string_repetition\")\n    return a[0] if a else default\n\ndef msgs(f, no):\n    if any(w != 2 for w, _ in f.get(no, [])): raise ValueError(\"message_wire\")\n    return [fields(v) for _, v in f.get(no, [])]\n\ndef msg(f, no):\n    a=msgs(f,no)\n    if len(a)>1: raise ValueError(\"message_repetition\")\n    return a[0] if a else {}\n\ndef signed(v, bits):\n    return v - (1 << bits) if v & (1 << (bits - 1)) else v\n\ndef digest(f):\n    return {\"hash\":string(f,1), \"size_bytes\":scalar(f,2), \"hash_function_name\":string(f,3)}\n\ndef file_data(f):\n    return {\"path\":string(f,1), \"digest\":digest(msg(f,2))}\n\ndef duration(f):\n    return {\"seconds\":signed(scalar(f,1),64), \"nanos\":signed(scalar(f,2),32)}\n\ndef metrics(f):\n    names={1:\"total_time\",2:\"parse_time\",3:\"network_time\",4:\"fetch_time\",5:\"queue_time\",\n      6:\"setup_time\",7:\"upload_time\",8:\"execution_wall_time\",9:\"process_outputs_time\",\n      10:\"retry_time\",11:\"input_bytes\",12:\"input_files\",13:\"memory_estimate_bytes\",\n      14:\"input_bytes_limit\",15:\"input_files_limit\",16:\"output_bytes_limit\",\n      17:\"output_files_limit\",18:\"memory_bytes_limit\",19:\"time_limit\",20:\"start_time\",\n      21:\"measured_memory_peak_bytes\"}\n    if set(f) - set(names): raise ValueError(\"unknown_metrics_field\")\n    return {names[n]:duration(msg(f,n)) if n<=10 or n in (19,20) else scalar(f,n) for n in f}\n\ndef repeated_uint(f, no):\n    out=[]\n    for wire, value in f.get(no,[]):\n        if wire==0: out.append(value)\n        elif wire==2:\n            pos=0\n            while pos<len(value):\n                n,pos=varint(value,pos);out.append(n)\n        else: raise ValueError(\"packed_wire\")\n    return out\n\ndef output(f, entries):\n    if 5 in f:\n        n=scalar(f,5)\n        if n not in entries: raise ValueError(\"forward_or_missing_output\")\n        return {\"entry_id\":n, **entries[n]}\n    if 4 in f: return {\"invalid_output_path\":string(f,4)}\n    raise ValueError(\"output_type_missing\")\n\ndef spawn(f, entries):\n    if set(f)-set(range(1,19)): raise ValueError(\"unknown_spawn_field\")\n    env=[{\"name\":string(e,1),\"value\":string(e,2)} for e in msgs(f,2)]\n    platform=[{\"name\":string(p,1),\"value\":string(p,2)} for p in msgs(msg(f,3),1)]\n    return {\"args\":strs(f,1),\"env_vars\":env,\"platform\":platform,\n      \"input_set_id\":scalar(f,4),\"tool_set_id\":scalar(f,5),\n      \"outputs\":[output(o,entries) for o in msgs(f,6)],\n      \"target_label\":string(f,7),\"mnemonic\":string(f,8),\n      \"exit_code\":signed(scalar(f,9),32),\"status\":string(f,10),\n      \"runner\":string(f,11),\"cache_hit\":bool(scalar(f,12)),\n      \"remotable\":bool(scalar(f,13)),\"cacheable\":bool(scalar(f,14)),\n      \"remote_cacheable\":bool(scalar(f,15)),\"digest\":digest(msg(f,16)),\n      \"timeout_millis\":scalar(f,17),\"metrics\":metrics(msg(f,18))}\n\ndef decode():\n    p = subprocess.run([\"zstd\",\"-q\",\"-d\",\"-c\",\"--no-pass-through\",\"--\",str(COMPACT)],\n                       stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=60, check=False)\n    if p.returncode != 0: raise ValueError(\"zstd_decompression_failed\")\n    data=p.stdout\n    pos=0; count=0; entries={}; spawns=[]; invocation=[]; types=collections.Counter()\n    while pos<len(data):\n        size,pos=varint(data,pos); raw=data[pos:pos+size]; pos+=size\n        if len(raw)!=size: raise ValueError(\"truncated_delimited_record\")\n        f=fields(raw); entry_id=scalar(f,1)\n        payload=[n for n in f if n!=1]\n        if len(payload)!=1: raise ValueError(\"entry_oneof_count\")\n        typ=payload[0]; types[typ]+=1; g=msg(f,typ); count+=1\n        if typ==2:\n            d={\"type\":\"invocation\",\"hash_function_name\":string(g,1),\n               \"workspace_runfiles_directory\":string(g,2),\n               \"sibling_repository_layout\":bool(scalar(g,3)),\"invocation_id\":string(g,4)}\n            invocation.append(d)\n        elif typ==3: d={\"type\":\"file\",**file_data(g)}\n        elif typ==4:\n            d={\"type\":\"directory\",\"path\":string(g,1),\n               \"files\":[file_data(x) for x in msgs(g,2)]}\n        elif typ==5: d={\"type\":\"unresolved_symlink\",\"path\":string(g,1),\"target_path\":string(g,2)}\n        elif typ==6:\n            d={\"type\":\"input_set\",\"input_ids\":repeated_uint(g,5),\"transitive_set_ids\":repeated_uint(g,4)}\n        elif typ==7:\n            d={\"type\":\"spawn\",\"sequence\":count,**spawn(g,entries)}; spawns.append(d)\n        elif typ==8:\n            d={\"type\":\"symlink_action\",\"input_path\":string(g,1),\"output_path\":string(g,2),\n               \"target_label\":string(g,3),\"mnemonic\":string(g,4)}\n        elif typ==9:\n            d={\"type\":\"symlink_entry_set\",\"direct_entries\":\n               [{\"path\":string(x,1),\"entry_id\":scalar(x,2)} for x in msgs(g,1)],\n               \"transitive_set_ids\":repeated_uint(g,2)}\n        elif typ==10:\n            d={\"type\":\"runfiles_tree\",\"path\":string(g,1),\"input_set_id\":scalar(g,2),\n               \"symlinks_id\":scalar(g,3),\"root_symlinks_id\":scalar(g,4),\n               \"empty_files\":strs(g,5),\"repo_mapping_manifest\":file_data(msg(g,6))}\n        else: raise ValueError(\"unknown_entry_type\")\n        if entry_id:\n            if entry_id in entries: raise ValueError(\"duplicate_nonzero_id\")\n            entries[entry_id]=d\n    if len(invocation)!=1: raise ValueError(\"invocation_count\")\n    test_spawns=[s for s in spawns if s[\"mnemonic\"]==\"TestRunner\"]\n    core=[s for s in test_spawns if s[\"target_label\"]==\"//codex-rs/core:core-all-test\"]\n    summary={\"schema\":\"hepta-compact-9.3.0-read-only-projection-v1\",\n      \"compressed\":{\"bytes\":COMPACT.stat().st_size,\"sha256\":hashlib.sha256(COMPACT.read_bytes()).hexdigest()},\n      \"decompressed_bytes\":len(data),\"record_count\":count,\"type_counts\":dict(sorted(types.items())),\n      \"nonzero_entry_count\":len(entries),\"invocation\":invocation[0],\n      \"spawn_count\":len(spawns),\"test_runner_count\":len(test_spawns),\n      \"test_runner_runner_cache_counts\":dict(collections.Counter(\n        f'{s[\"runner\"]}|cache_hit={s[\"cache_hit\"]}' for s in test_spawns)),\n      \"core_test_runner_count\":len(core),\n      \"core_test_runner_exit_counts\":dict(collections.Counter(s[\"exit_code\"] for s in core)),\n      \"core_test_runner_runner_cache_counts\":dict(collections.Counter(\n        f'{s[\"runner\"]}|cache_hit={s[\"cache_hit\"]}' for s in core)),\n      \"core_timeout_millis\":sorted({s[\"timeout_millis\"] for s in core}),\n      \"limits\":[\"Projection does not turn cached results into native execution.\",\n                \"Absent spawns may reflect persistent action-cache hits; do not infer their execution.\",\n                \"Original ZIP, full compact bytes, fixed proto, and this decoder are retained.\"]}\n    target=ROOT/\"derived\";target.mkdir(exist_ok=True)\n    for name,value in [(\"compact-summary.json\",summary),(\"compact-core-test-runners.json\",core),\n                       (\"compact-all-test-runners.json\",test_spawns)]:\n        (target/name).write_text(json.dumps(value,ensure_ascii=False,indent=2)+\"\\n\",encoding=\"utf-8\")\n    # Keep input relationships needed for an independently replayable runfiles investigation.\n    needed=set()\n    def visit(n):\n        if not n or n in needed:return\n        if n not in entries:raise ValueError(\"missing_input_reference\")\n        needed.add(n); d=entries[n]\n        for key in (\"input_ids\",\"transitive_set_ids\"):\n            for x in d.get(key,[]):visit(x)\n        for key in (\"input_set_id\",\"symlinks_id\",\"root_symlinks_id\"):\n            visit(d.get(key,0))\n        for x in d.get(\"direct_entries\",[]):visit(x[\"entry_id\"])\n    for s in core:\n        visit(s[\"input_set_id\"]);visit(s[\"tool_set_id\"])\n    relationships={str(n):entries[n] for n in sorted(needed)}\n    (target/\"compact-core-input-relationships.json\").write_text(\n        json.dumps(relationships,ensure_ascii=False,indent=2)+\"\\n\",encoding=\"utf-8\")\n    print(json.dumps(summary,ensure_ascii=False,indent=2))\nif __name__==\"__main__\": decode()\n"
+    }
+  ],
+  "limits": [
+    "Closure recommendation applies only to original B23 GNU/Linux shutdown-signal/drain contract at the verified product source.",
+    "Main cached success is final original CI evidence; fresh native execution comes from the separate same-product diagnostic job.",
+    "The two sets of log hashes and action-cache digests differ; no claim main reused the diagnostic output, no claim common action-cache key.",
+    "Remote execution platform matches original GNU context; no local GitHub-host execution claim.",
+    "Original collector failure and missing XML remain real operational evidence gaps; no XML regenerated or invented here.",
+    "B15 whole-library acceptance, other blockers, all-project completion and macOS/Windows full qualification do not follow from this B23 scope decision.",
+    "No new CI query, rerun, dispatch, assertion, timeout, test filter, skip, production mutation, ref or PR publication was performed by the review."
+  ]
+}

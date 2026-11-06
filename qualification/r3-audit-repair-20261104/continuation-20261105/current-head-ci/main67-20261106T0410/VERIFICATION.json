@@ -1,0 +1,1311 @@
+{
+  "schema": "hepta-main67-current-cut-and-five-failures-offline-v1",
+  "scope": "Original fixed 67 source; no new CI/native execution. Full APIs and five original job logs, five original ZIPs; selected failed-target attempt custody only.",
+  "source": {
+    "head": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+    "actual_checkout": "b7a57dbb61b00e51c05da9cf5c4bc95b365d85ae",
+    "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+    "leaves": 10582,
+    "directory_nodes_including_root": 1571,
+    "source_files": 17
+  },
+  "apis": {
+    "run_count": 19,
+    "run_states": {
+      "failure": 5,
+      "queued": 1,
+      "skipped": 2,
+      "success": 11
+    },
+    "job_count": 92,
+    "job_states": {
+      "cancelled": 10,
+      "failure": 8,
+      "queued": 1,
+      "skipped": 6,
+      "success": 67
+    },
+    "per_run_job_count": [
+      {
+        "run_id": 42123581986,
+        "jobs": 1
+      },
+      {
+        "run_id": 42123581050,
+        "jobs": 2
+      },
+      {
+        "run_id": 42123581231,
+        "jobs": 1
+      },
+      {
+        "run_id": 42123581007,
+        "jobs": 2
+      },
+      {
+        "run_id": 42123581091,
+        "jobs": 1
+      },
+      {
+        "run_id": 42123581410,
+        "jobs": 1
+      },
+      {
+        "run_id": 42123581408,
+        "jobs": 1
+      },
+      {
+        "run_id": 42123581260,
+        "jobs": 15
+      },
+      {
+        "run_id": 42123581031,
+        "jobs": 5
+      },
+      {
+        "run_id": 42123581078,
+        "jobs": 3
+      },
+      {
+        "run_id": 42123581186,
+        "jobs": 6
+      },
+      {
+        "run_id": 42123581393,
+        "jobs": 2
+      },
+      {
+        "run_id": 42123581479,
+        "jobs": 2
+      },
+      {
+        "run_id": 42123581142,
+        "jobs": 3
+      },
+      {
+        "run_id": 42123581385,
+        "jobs": 36
+      },
+      {
+        "run_id": 42123581270,
+        "jobs": 6
+      },
+      {
+        "run_id": 42123581363,
+        "jobs": 3
+      },
+      {
+        "run_id": 42123569559,
+        "jobs": 1
+      },
+      {
+        "run_id": 42123569750,
+        "jobs": 1
+      }
+    ],
+    "job_failures": [
+      {
+        "id": 127679861307,
+        "name": "cargo-deny / cargo-deny",
+        "steps": [
+          "Run cargo-deny"
+        ]
+      },
+      {
+        "id": 127679861660,
+        "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+        "steps": [
+          "bazel test //..."
+        ]
+      },
+      {
+        "id": 127679861687,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+        "steps": [
+          "bazel test shard"
+        ]
+      },
+      {
+        "id": 127679861699,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4",
+        "steps": [
+          "bazel test shard"
+        ]
+      },
+      {
+        "id": 127679861740,
+        "name": "Bazel / Bazel clippy on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+        "steps": [
+          "bazel build --config=clippy lint targets"
+        ]
+      },
+      {
+        "id": 127679861749,
+        "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+        "steps": [
+          "bazel test //..."
+        ]
+      },
+      {
+        "id": 127679861775,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+        "steps": [
+          "bazel test shard"
+        ]
+      },
+      {
+        "id": 127691446306,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc",
+        "steps": [
+          "Confirm Windows Bazel test shards passed"
+        ]
+      }
+    ],
+    "window": {
+      "root_list_and_blocking_jobs": {
+        "before": {
+          "current_time": "2026-11-06 04:10:12 UTC"
+        },
+        "after": {
+          "current_time": "2026-11-06 04:10:14 UTC"
+        },
+        "scope": "Four complete responses: main run list, main blocking jobs, B21 jobs, B23 jobs. Other main run jobs not yet refreshed in this cut."
+      },
+      "other18_jobs": {
+        "before": {
+          "current_time": "2026-11-06 04:13:39 UTC"
+        },
+        "after": {
+          "current_time": "2026-11-06 04:13:40 UTC"
+        },
+        "ids": [
+          42123581986,
+          42123581050,
+          42123581231,
+          42123581007,
+          42123581091,
+          42123581410,
+          42123581408,
+          42123581260,
+          42123581031,
+          42123581078,
+          42123581186,
+          42123581393,
+          42123581479,
+          42123581142,
+          42123581270,
+          42123581363,
+          42123569559,
+          42123569750
+        ],
+        "scope": "Each of 18 other original main67 runs read once via complete jobs collection with per_page=100; blocking36 and run list reused unchanged from root04:10:12-14 original cut. Non-atomic observation window."
+      }
+    },
+    "non_atomic": true,
+    "summary_failure_job_id": 127691446306,
+    "distinct_failed_execution_jobs": 7
+  },
+  "logs": [
+    {
+      "job_id": 127679861660,
+      "path": "original/job-127679861660.decoded.original.log",
+      "bytes": 1034652,
+      "sha256": "6753342db48960fbd3f37c4d87e7af5a5c06ed9df551743cdd41488f7b9f4ca8",
+      "git_blob": "c1cae83e1c8f48de1b841c4ac6677e66b84b1df9",
+      "terminal_exit_codes": [
+        "3"
+      ],
+      "newline_preserved": true,
+      "scope": "Complete decoded UTF-8 bytes delivered by GitHub log tool; no HTTP wire-byte claim."
+    },
+    {
+      "job_id": 127679861699,
+      "path": "original/job-127679861699.decoded.original.log",
+      "bytes": 381854,
+      "sha256": "9aee66d8f6974c9aa88544c20fe7debfdbc068505f0c1ccbf3bd6dc195d903cd",
+      "git_blob": "9e882b53fadbdba800a7bc1f725ef7b4a6ab98d6",
+      "terminal_exit_codes": [
+        "3"
+      ],
+      "newline_preserved": true,
+      "scope": "Complete decoded UTF-8 bytes delivered by GitHub log tool; no HTTP wire-byte claim."
+    },
+    {
+      "job_id": 127679861775,
+      "path": "original/job-127679861775.decoded.original.log",
+      "bytes": 451362,
+      "sha256": "6801b5b21e3a0e6d14ac5f39909640d7ebbdc6962dbf75d90a2837561b68b10a",
+      "git_blob": "519807c68b0574261782a2d02398758a9c8921a3",
+      "terminal_exit_codes": [
+        "3"
+      ],
+      "newline_preserved": true,
+      "scope": "Complete decoded UTF-8 bytes delivered by GitHub log tool; no HTTP wire-byte claim."
+    },
+    {
+      "job_id": 127679861740,
+      "path": "original/job-127679861740.decoded.original.log",
+      "bytes": 882977,
+      "sha256": "9478df8fbec0e4f98ad2db431f5cebaa7a828d6d556eb18cf975c1cb57d6f08f",
+      "git_blob": "1e236aac1711138d1b1db9926ce8817ebcbe02a8",
+      "terminal_exit_codes": [
+        "1"
+      ],
+      "newline_preserved": true,
+      "scope": "Complete decoded UTF-8 bytes delivered by GitHub log tool; no HTTP wire-byte claim."
+    },
+    {
+      "job_id": 127679861749,
+      "path": "original/job-127679861749.decoded.original.log",
+      "bytes": 983417,
+      "sha256": "b5f1fd02ed8a83328f500126cced6f23c196f3f69d48b0df5749ab039ddca884",
+      "git_blob": "58d52f33bd767aecb50a4c4b68ee03efb3d738fb",
+      "terminal_exit_codes": [
+        "3"
+      ],
+      "newline_preserved": true,
+      "scope": "Complete decoded UTF-8 bytes delivered by GitHub log tool; no HTTP wire-byte claim."
+    }
+  ],
+  "artifacts": [
+    {
+      "artifact_id": 13475811429,
+      "zip": {
+        "bytes": 9836977,
+        "sha256": "ff2a4f992ed8cbebed63b09c7386d021b0c270fb70d068fe5cae357d63369b8b",
+        "git_blob": "05969fe6959a51109764d7bb5b689a9af4df0adc"
+      },
+      "members": 134,
+      "collector_manifests": [
+        {
+          "path": "failed-test-logs/invocation-_7x39zzy/manifest.json",
+          "files": 20,
+          "targets": [
+            "//codex-rs/core:core-unit-tests",
+            "//codex-rs/utils/pty:pty-unit-tests"
+          ]
+        },
+        {
+          "path": "selected-target-test-logs/invocation-ebro028s/manifest.json",
+          "files": 111,
+          "targets": [
+            "//codex-rs/tui:tui-unit-tests",
+            "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+            "//codex-rs/ext/queue:queue-queue_service-test",
+            "//codex-rs/app-server:app-server-all-test",
+            "//codex-rs/app-server:app-server-unit-tests",
+            "//codex-rs/codex-mcp:codex-mcp-unit-tests",
+            "//codex-rs/core:core-unit-tests",
+            "//codex-rs/core:core-all-test",
+            "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test"
+          ]
+        }
+      ],
+      "compact": {
+        "artifact_id": 13475811429,
+        "compact_path": "artifacts/artifact-13475811429/execution-log-test-test-1763.zst",
+        "compressed_bytes": 9140353,
+        "compressed_sha256": "089543c2e557a39b842ad2ff944eb24d07d97f7752b3c757313faebdcb1a2ec2",
+        "decompressed_bytes": 68688670,
+        "record_count": 162224,
+        "type_counts": {
+          "2": 1,
+          "3": 108868,
+          "4": 1281,
+          "6": 35706,
+          "7": 9917,
+          "8": 5870,
+          "9": 1,
+          "10": 580
+        },
+        "nonzero_ids": 146436,
+        "invocation": {
+          "hash_function_name": "SHA-256",
+          "workspace_runfiles_directory": "_main",
+          "sibling_repository_layout": false,
+          "invocation_id": "aa5b3d3b-e802-4db1-95a7-2f238024db67"
+        },
+        "mnemonic_counts": {
+          "Genrule": 8,
+          "ProtocAuthenticityCheck": 1,
+          "GenProtoDescriptorSet": 1,
+          "TestRunner": 1000,
+          "Action": 4,
+          "RunBinary": 20,
+          "CopyToDirectory": 40,
+          "CppCompile": 6434,
+          "CppArchive": 71,
+          "CppLink": 47,
+          "CcStage0Compile": 35,
+          "CppTransitiveArchive": 22,
+          "CopyFile": 7,
+          "Rustc": 2082,
+          "CargoBuildScriptRun": 139,
+          "RustBindgen": 2,
+          "ProstGenProto": 1,
+          "GenTorqueFiles": 2,
+          "V8Mksnapshot": 1
+        },
+        "test_runner_count": 1000,
+        "test_runner_runner_cache_counts": {
+          "remote cache hit|cache_hit=True": 796,
+          "darwin-sandbox|cache_hit=False": 120,
+          "local|cache_hit=False": 84
+        },
+        "failed_non_test_spawns": 0,
+        "collector_manifests": [
+          {
+            "path": "failed-test-logs/invocation-_7x39zzy/manifest.json",
+            "files": 20,
+            "selected_targets": [
+              "//codex-rs/core:core-unit-tests",
+              "//codex-rs/utils/pty:pty-unit-tests"
+            ],
+            "source": {
+              "commit": "b7a57dbb61b00e51c05da9cf5c4bc95b365d85ae",
+              "tracked_worktree_dirty": false,
+              "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359"
+            },
+            "complete_for_selected_targets": true
+          },
+          {
+            "path": "selected-target-test-logs/invocation-ebro028s/manifest.json",
+            "files": 111,
+            "selected_targets": [
+              "//codex-rs/tui:tui-unit-tests",
+              "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+              "//codex-rs/ext/queue:queue-queue_service-test",
+              "//codex-rs/app-server:app-server-all-test",
+              "//codex-rs/app-server:app-server-unit-tests",
+              "//codex-rs/codex-mcp:codex-mcp-unit-tests",
+              "//codex-rs/core:core-unit-tests",
+              "//codex-rs/core:core-all-test",
+              "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test"
+            ],
+            "source": {
+              "commit": "b7a57dbb61b00e51c05da9cf5c4bc95b365d85ae",
+              "tracked_worktree_dirty": false,
+              "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359"
+            },
+            "complete_for_selected_targets": true
+          }
+        ]
+      }
+    },
+    {
+      "artifact_id": 13475001412,
+      "zip": {
+        "bytes": 5251830,
+        "sha256": "8b50266383ca1cc2ff9064b35d93c87f94f7201c857d9c9f46ca97f71310e957",
+        "git_blob": "f9452161d818d147de6c861f3f8095b135c7517d"
+      },
+      "members": 21,
+      "collector_manifests": [
+        {
+          "path": "failed-test-logs/invocation-hhk8031n/manifest.json",
+          "files": 2,
+          "targets": [
+            "//codex-rs/ext/queue:queue-queue_service-test"
+          ]
+        },
+        {
+          "path": "selected-target-test-logs/invocation-0eh6357g/manifest.json",
+          "files": 16,
+          "targets": [
+            "//codex-rs/tui:tui-unit-tests"
+          ]
+        }
+      ],
+      "compact": {
+        "artifact_id": 13475001412,
+        "compact_path": "artifacts/artifact-13475001412/execution-log-test-test-windows-shard-3520.zst",
+        "compressed_bytes": 5049061,
+        "compressed_sha256": "7cb10c7b76499aa63dd605836cb4651589328d47ce4ae8a77d9e5fc44883bce9",
+        "decompressed_bytes": 29829254,
+        "record_count": 89445,
+        "type_counts": {
+          "2": 1,
+          "3": 68103,
+          "4": 389,
+          "6": 17579,
+          "7": 2702,
+          "8": 433,
+          "10": 238
+        },
+        "nonzero_ids": 86309,
+        "invocation": {
+          "hash_function_name": "SHA-256",
+          "workspace_runfiles_directory": "_main",
+          "sibling_repository_layout": false,
+          "invocation_id": "a49a27f6-844b-4216-9a4a-308c52986da8"
+        },
+        "mnemonic_counts": {
+          "TestRunner": 234,
+          "CppCompile": 594,
+          "CppLink": 2,
+          "RunBinary": 2,
+          "RustBindgen": 2,
+          "CppArchive": 6,
+          "CopyToDirectory": 2,
+          "ProtocAuthenticityCheck": 1,
+          "GenProtoDescriptorSet": 1,
+          "Rustc": 1722,
+          "CargoBuildScriptRun": 135,
+          "ProstGenProto": 1
+        },
+        "test_runner_count": 234,
+        "test_runner_runner_cache_counts": {
+          "remote cache hit|cache_hit=True": 141,
+          "local|cache_hit=False": 93
+        },
+        "failed_non_test_spawns": 0,
+        "collector_manifests": [
+          {
+            "path": "failed-test-logs/invocation-hhk8031n/manifest.json",
+            "files": 2,
+            "selected_targets": [
+              "//codex-rs/ext/queue:queue-queue_service-test"
+            ],
+            "source": {
+              "commit": "b7a57dbb61b00e51c05da9cf5c4bc95b365d85ae",
+              "tracked_worktree_dirty": false,
+              "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359"
+            },
+            "complete_for_selected_targets": true
+          },
+          {
+            "path": "selected-target-test-logs/invocation-0eh6357g/manifest.json",
+            "files": 16,
+            "selected_targets": [
+              "//codex-rs/tui:tui-unit-tests"
+            ],
+            "source": {
+              "commit": "b7a57dbb61b00e51c05da9cf5c4bc95b365d85ae",
+              "tracked_worktree_dirty": false,
+              "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359"
+            },
+            "complete_for_selected_targets": true
+          }
+        ]
+      }
+    },
+    {
+      "artifact_id": 13475231392,
+      "zip": {
+        "bytes": 4977417,
+        "sha256": "d16c2944cc578b767cdc63567adfee03e36047670becf29d297d94f7a69704b2",
+        "git_blob": "8e70d3e2b589bce2aa8c4c7213650f6a6ce6cc61"
+      },
+      "members": 57,
+      "collector_manifests": [
+        {
+          "path": "failed-test-logs/invocation-nb7luky2/manifest.json",
+          "files": 2,
+          "targets": [
+            "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests"
+          ]
+        },
+        {
+          "path": "selected-target-test-logs/invocation-zb4totd6/manifest.json",
+          "files": 52,
+          "targets": [
+            "//codex-rs/app-server:app-server-all-test",
+            "//codex-rs/app-server:app-server-unit-tests",
+            "//codex-rs/codex-mcp:codex-mcp-unit-tests",
+            "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test"
+          ]
+        }
+      ],
+      "compact": {
+        "artifact_id": 13475231392,
+        "compact_path": "artifacts/artifact-13475231392/execution-log-test-test-windows-shard-2989.zst",
+        "compressed_bytes": 4854134,
+        "compressed_sha256": "4d07cde4ec63e7e5da3797fa74da7ffa656df23dded99e2fbb668cce91cfc110",
+        "decompressed_bytes": 29706526,
+        "record_count": 87263,
+        "type_counts": {
+          "2": 1,
+          "3": 66144,
+          "4": 410,
+          "6": 17324,
+          "7": 2711,
+          "8": 433,
+          "10": 240
+        },
+        "nonzero_ids": 84118,
+        "invocation": {
+          "hash_function_name": "SHA-256",
+          "workspace_runfiles_directory": "_main",
+          "sibling_repository_layout": false,
+          "invocation_id": "564f8a53-df9e-45d6-81ed-854401253f4a"
+        },
+        "mnemonic_counts": {
+          "TestRunner": 288,
+          "CppCompile": 594,
+          "CppLink": 2,
+          "RunBinary": 2,
+          "CppArchive": 6,
+          "RustBindgen": 2,
+          "CopyToDirectory": 2,
+          "ProtocAuthenticityCheck": 1,
+          "GenProtoDescriptorSet": 1,
+          "Rustc": 1680,
+          "CargoBuildScriptRun": 132,
+          "ProstGenProto": 1
+        },
+        "test_runner_count": 288,
+        "test_runner_runner_cache_counts": {
+          "remote cache hit|cache_hit=True": 128,
+          "local|cache_hit=False": 160
+        },
+        "failed_non_test_spawns": 0,
+        "collector_manifests": [
+          {
+            "path": "failed-test-logs/invocation-nb7luky2/manifest.json",
+            "files": 2,
+            "selected_targets": [
+              "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests"
+            ],
+            "source": {
+              "commit": "b7a57dbb61b00e51c05da9cf5c4bc95b365d85ae",
+              "tracked_worktree_dirty": false,
+              "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359"
+            },
+            "complete_for_selected_targets": true
+          },
+          {
+            "path": "selected-target-test-logs/invocation-zb4totd6/manifest.json",
+            "files": 52,
+            "selected_targets": [
+              "//codex-rs/app-server:app-server-all-test",
+              "//codex-rs/app-server:app-server-unit-tests",
+              "//codex-rs/codex-mcp:codex-mcp-unit-tests",
+              "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test"
+            ],
+            "source": {
+              "commit": "b7a57dbb61b00e51c05da9cf5c4bc95b365d85ae",
+              "tracked_worktree_dirty": false,
+              "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359"
+            },
+            "complete_for_selected_targets": true
+          }
+        ]
+      }
+    },
+    {
+      "artifact_id": 13474964431,
+      "zip": {
+        "bytes": 11554486,
+        "sha256": "b219551a817c25e3eb3d9c0cfabb10e029f3d95cb3bfbffd4d3fbc8c68920534",
+        "git_blob": "5877114b714ea700bee2148c4464b5d74be43911"
+      },
+      "members": 1,
+      "collector_manifests": [],
+      "compact": {
+        "artifact_id": 13474964431,
+        "compact_path": "artifacts/artifact-13474964431/execution-log-build-clippy-2886.zst",
+        "compressed_bytes": 11559428,
+        "compressed_sha256": "aaa7d7399afaa77e94f1c6c751778bd2017a3ef4c646742f9491eedca503174c",
+        "decompressed_bytes": 89318483,
+        "record_count": 213028,
+        "type_counts": {
+          "2": 1,
+          "3": 132939,
+          "4": 526,
+          "6": 57207,
+          "7": 15803,
+          "8": 6328,
+          "9": 1,
+          "10": 223
+        },
+        "nonzero_ids": 190896,
+        "invocation": {
+          "hash_function_name": "SHA-256",
+          "workspace_runfiles_directory": "_main",
+          "sibling_repository_layout": false,
+          "invocation_id": "580f57fd-fa0c-4288-9eac-b6d48afb564d"
+        },
+        "mnemonic_counts": {
+          "GenProtoDescriptorSet": 1,
+          "Genrule": 11,
+          "ProtocAuthenticityCheck": 1,
+          "CopyFile": 15,
+          "RunBinary": 1409,
+          "Action": 8,
+          "CppCompile": 10135,
+          "CopyToDirectory": 82,
+          "CppArchive": 150,
+          "CcStage0Compile": 65,
+          "CppLink": 87,
+          "CppTransitiveArchive": 45,
+          "Rustc": 2866,
+          "CargoBuildScriptRun": 218,
+          "Clippy": 669,
+          "RustBindgen": 3,
+          "OpenSSLGenerateAssemblyFromPerlScripts": 1,
+          "OpenSSLCopyFilesToDir": 1,
+          "MingwGenerateDef": 32,
+          "GenTorqueFiles": 2,
+          "ProstGenProto": 1,
+          "V8Mksnapshot": 1
+        },
+        "test_runner_count": 0,
+        "test_runner_runner_cache_counts": {},
+        "failed_non_test_spawns": 3,
+        "collector_manifests": []
+      }
+    },
+    {
+      "artifact_id": 13474454125,
+      "zip": {
+        "bytes": 9513207,
+        "sha256": "15f4d85a07e2b135c8ebd6bd05fe32e63ed615e7e5073f9bcd85270af10848f1",
+        "git_blob": "ac2c511d67a92ea8247c5b4537d20c845c1b3156"
+      },
+      "members": 69,
+      "collector_manifests": [
+        {
+          "path": "failed-test-logs/invocation-fw7e1rzb/manifest.json",
+          "files": 4,
+          "targets": [
+            "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-unit-tests",
+            "//codex-rs/http-client:http-client-unit-tests"
+          ]
+        },
+        {
+          "path": "selected-target-test-logs/invocation-z4p8wh0c/manifest.json",
+          "files": 62,
+          "targets": [
+            "//codex-rs/tui:tui-unit-tests",
+            "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+            "//codex-rs/ext/queue:queue-queue_service-test",
+            "//codex-rs/app-server:app-server-unit-tests",
+            "//codex-rs/codex-mcp:codex-mcp-unit-tests",
+            "//codex-rs/core:core-unit-tests",
+            "//codex-rs/core:core-all-test",
+            "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test",
+            "//codex-rs/utils/pty:pty-unit-tests"
+          ]
+        }
+      ],
+      "compact": {
+        "artifact_id": 13474454125,
+        "compact_path": "artifacts/artifact-13474454125/execution-log-test-test-1402.zst",
+        "compressed_bytes": 9213883,
+        "compressed_sha256": "dbaee83aba6a41209831bd822f6b8e6b2e63575a4ca27c2fe8d01f836f2fdab1",
+        "decompressed_bytes": 70567752,
+        "record_count": 166955,
+        "type_counts": {
+          "2": 1,
+          "3": 111250,
+          "4": 1281,
+          "6": 36862,
+          "7": 10488,
+          "8": 6492,
+          "9": 1,
+          "10": 580
+        },
+        "nonzero_ids": 149974,
+        "invocation": {
+          "hash_function_name": "SHA-256",
+          "workspace_runfiles_directory": "_main",
+          "sibling_repository_layout": false,
+          "invocation_id": "27fea83e-1194-4d4d-8613-9688a4dbf399"
+        },
+        "mnemonic_counts": {
+          "Genrule": 8,
+          "GenProtoDescriptorSet": 1,
+          "ProtocAuthenticityCheck": 1,
+          "TestRunner": 998,
+          "Action": 4,
+          "RunBinary": 20,
+          "CopyToDirectory": 40,
+          "CppCompile": 7009,
+          "CppArchive": 71,
+          "CppLink": 47,
+          "CcStage0Compile": 35,
+          "CppTransitiveArchive": 22,
+          "CopyFile": 7,
+          "Rustc": 2080,
+          "CargoBuildScriptRun": 139,
+          "RustBindgen": 2,
+          "GenTorqueFiles": 2,
+          "V8Mksnapshot": 1,
+          "ProstGenProto": 1
+        },
+        "test_runner_count": 998,
+        "test_runner_runner_cache_counts": {
+          "remote cache hit|cache_hit=True": 881,
+          "darwin-sandbox|cache_hit=False": 67,
+          "local|cache_hit=False": 50
+        },
+        "failed_non_test_spawns": 0,
+        "collector_manifests": [
+          {
+            "path": "failed-test-logs/invocation-fw7e1rzb/manifest.json",
+            "files": 4,
+            "selected_targets": [
+              "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-unit-tests",
+              "//codex-rs/http-client:http-client-unit-tests"
+            ],
+            "source": {
+              "commit": "b7a57dbb61b00e51c05da9cf5c4bc95b365d85ae",
+              "tracked_worktree_dirty": false,
+              "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359"
+            },
+            "complete_for_selected_targets": true
+          },
+          {
+            "path": "selected-target-test-logs/invocation-z4p8wh0c/manifest.json",
+            "files": 62,
+            "selected_targets": [
+              "//codex-rs/tui:tui-unit-tests",
+              "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+              "//codex-rs/ext/queue:queue-queue_service-test",
+              "//codex-rs/app-server:app-server-unit-tests",
+              "//codex-rs/codex-mcp:codex-mcp-unit-tests",
+              "//codex-rs/core:core-unit-tests",
+              "//codex-rs/core:core-all-test",
+              "//codex-rs/hepta-agentd:hepta-agentd-cognitive-write-qualification-test",
+              "//codex-rs/utils/pty:pty-unit-tests"
+            ],
+            "source": {
+              "commit": "b7a57dbb61b00e51c05da9cf5c4bc95b365d85ae",
+              "tracked_worktree_dirty": false,
+              "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359"
+            },
+            "complete_for_selected_targets": true
+          }
+        ]
+      }
+    }
+  ],
+  "actual_failed_target_test_launches_and_retry_launches": 14,
+  "auxiliary_xml_generators": 14,
+  "attempts": [
+    {
+      "artifact_id": 13475811429,
+      "target": "//codex-rs/core:core-unit-tests",
+      "shard_one_based": 1,
+      "total_shards": 8,
+      "attempt": 1,
+      "attempts_for_shard": 2,
+      "native_sequence": 161107,
+      "native_runner": "local",
+      "native_cache_hit": false,
+      "native_exit_code": 101,
+      "native_timeout_millis": 900000,
+      "xml_sequence": 161111,
+      "xml_exit_code": 0,
+      "xml_wrapper_testcase_count": 1,
+      "xml_actual_digest_matches_compact": true,
+      "log_path": "artifacts/artifact-13475811429/failed-test-logs/invocation-_7x39zzy/targets/0000/shard_1_of_8/test_attempts/attempt_1.log",
+      "log": {
+        "bytes": 32780,
+        "sha256": "46514a3dbffeacdc1b67d3c995750815f9dbd783d3627793ff4bc3ef94609eea",
+        "git_blob": "43f403d497ac1db3141b167a323e193e5adaac14"
+      },
+      "xml_path": "artifacts/artifact-13475811429/failed-test-logs/invocation-_7x39zzy/targets/0000/shard_1_of_8/test_attempts/attempt_1.xml",
+      "xml": {
+        "bytes": 33261,
+        "sha256": "74e4f2a3133af6bb382f9649c00097aff23b3b0fe78519546c15d8adb61a5ca1",
+        "git_blob": "0a6dcd6da865ce42ff1c2f11702be18c76090820"
+      },
+      "literal_libtest_summaries": [
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2441 filtered out; finished in 0.02s",
+        "test result: FAILED. 320 passed; 1 failed; 0 ignored; 0 measured; 2121 filtered out; finished in 120.45s"
+      ]
+    },
+    {
+      "artifact_id": 13475811429,
+      "target": "//codex-rs/core:core-unit-tests",
+      "shard_one_based": 1,
+      "total_shards": 8,
+      "attempt": 2,
+      "attempts_for_shard": 2,
+      "native_sequence": 162222,
+      "native_runner": "local",
+      "native_cache_hit": false,
+      "native_exit_code": 0,
+      "native_timeout_millis": 900000,
+      "xml_sequence": 162224,
+      "xml_exit_code": 0,
+      "xml_wrapper_testcase_count": 1,
+      "xml_actual_digest_matches_compact": false,
+      "log_path": "artifacts/artifact-13475811429/failed-test-logs/invocation-_7x39zzy/targets/0000/shard_1_of_8/test.log",
+      "log": {
+        "bytes": 32111,
+        "sha256": "42b8f27af79730b6699981cbb6de3ab6d938f1bccd6c0b2be017fa74fd54f3bb",
+        "git_blob": "780a19ec712f07bcded6b997ca33cfcbc12adebe"
+      },
+      "xml_path": "artifacts/artifact-13475811429/failed-test-logs/invocation-_7x39zzy/targets/0000/shard_1_of_8/test.xml",
+      "xml": {
+        "bytes": 32538,
+        "sha256": "aadad8b9b7a90983f5a1547a53a7d3dbd62b0d990b5943d19f22df357babb041",
+        "git_blob": "56ffed7ef50a682610b11d8423092925d75e6600"
+      },
+      "literal_libtest_summaries": [
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2441 filtered out; finished in 0.07s",
+        "test result: ok. 321 passed; 0 failed; 0 ignored; 0 measured; 2121 filtered out; finished in 56.24s"
+      ],
+      "mismatch_scope": "Second XML output reuses first XML entry_id/digest; first digest matches original attempt_1.xml, not final test.xml. ZIP/collector still preserve final XML."
+    },
+    {
+      "artifact_id": 13475811429,
+      "target": "//codex-rs/core:core-unit-tests",
+      "shard_one_based": 2,
+      "total_shards": 8,
+      "attempt": 1,
+      "attempts_for_shard": 1,
+      "native_sequence": 161075,
+      "native_runner": "local",
+      "native_cache_hit": false,
+      "native_exit_code": 0,
+      "native_timeout_millis": 900000,
+      "xml_sequence": 161079,
+      "xml_exit_code": 0,
+      "xml_wrapper_testcase_count": 1,
+      "xml_actual_digest_matches_compact": true,
+      "log_path": "artifacts/artifact-13475811429/failed-test-logs/invocation-_7x39zzy/targets/0000/shard_2_of_8/test.log",
+      "log": {
+        "bytes": 27805,
+        "sha256": "a82c8726b5a47072dc47f1dca6b4b890092de92b9844badcff7cfcd30eb9634a",
+        "git_blob": "2f0410a182e73be6a4915ea9bfb630cebcab6bae"
+      },
+      "xml_path": "artifacts/artifact-13475811429/failed-test-logs/invocation-_7x39zzy/targets/0000/shard_2_of_8/test.xml",
+      "xml": {
+        "bytes": 28232,
+        "sha256": "7bc3b5a019f1191cce3f117d8e18f23c047f43014397c456b627c72d493a1e08",
+        "git_blob": "2a9b5a035d30e198ac4305b48c0f1a3c3822b6ae"
+      },
+      "literal_libtest_summaries": [
+        "test result: ok. 294 passed; 0 failed; 0 ignored; 0 measured; 2148 filtered out; finished in 29.08s"
+      ]
+    },
+    {
+      "artifact_id": 13475811429,
+      "target": "//codex-rs/core:core-unit-tests",
+      "shard_one_based": 3,
+      "total_shards": 8,
+      "attempt": 1,
+      "attempts_for_shard": 1,
+      "native_sequence": 161048,
+      "native_runner": "local",
+      "native_cache_hit": false,
+      "native_exit_code": 0,
+      "native_timeout_millis": 900000,
+      "xml_sequence": 161052,
+      "xml_exit_code": 0,
+      "xml_wrapper_testcase_count": 1,
+      "xml_actual_digest_matches_compact": true,
+      "log_path": "artifacts/artifact-13475811429/failed-test-logs/invocation-_7x39zzy/targets/0000/shard_3_of_8/test.log",
+      "log": {
+        "bytes": 26974,
+        "sha256": "317b5f7da254f4fa29c6ef35ed101f24f8d6cc3e2250a4e3285941b7371f95f4",
+        "git_blob": "33fd32d672e789cace7a9c16af0a7e692f865b7a"
+      },
+      "xml_path": "artifacts/artifact-13475811429/failed-test-logs/invocation-_7x39zzy/targets/0000/shard_3_of_8/test.xml",
+      "xml": {
+        "bytes": 27401,
+        "sha256": "78f96a15aaec145e920c19d71db140f18a6a8c2f2e709e13603c7ca685dc0795",
+        "git_blob": "cc064b6e3f71f45bd25096bc8b5cc59c2c48de27"
+      },
+      "literal_libtest_summaries": [
+        "test result: ok. 282 passed; 0 failed; 0 ignored; 0 measured; 2160 filtered out; finished in 20.41s"
+      ]
+    },
+    {
+      "artifact_id": 13475811429,
+      "target": "//codex-rs/core:core-unit-tests",
+      "shard_one_based": 4,
+      "total_shards": 8,
+      "attempt": 1,
+      "attempts_for_shard": 1,
+      "native_sequence": 161056,
+      "native_runner": "local",
+      "native_cache_hit": false,
+      "native_exit_code": 0,
+      "native_timeout_millis": 900000,
+      "xml_sequence": 161060,
+      "xml_exit_code": 0,
+      "xml_wrapper_testcase_count": 1,
+      "xml_actual_digest_matches_compact": true,
+      "log_path": "artifacts/artifact-13475811429/failed-test-logs/invocation-_7x39zzy/targets/0000/shard_4_of_8/test.log",
+      "log": {
+        "bytes": 31749,
+        "sha256": "7b44261e6a6a245ae724adeff06208bbeccc35d1d2172b93ef0455cd97efb84e",
+        "git_blob": "5fe242376ba4f598b0eb7ffc88266effa4a69a4f"
+      },
+      "xml_path": "artifacts/artifact-13475811429/failed-test-logs/invocation-_7x39zzy/targets/0000/shard_4_of_8/test.xml",
+      "xml": {
+        "bytes": 32176,
+        "sha256": "8d4cffbb9ecad0790a6c62b7a24c6466ccff9a916ea5743d1fa66d969ff44da5",
+        "git_blob": "c89af019f67c03875a6483ee4f22e938d6d163a7"
+      },
+      "literal_libtest_summaries": [
+        "test result: ok. 333 passed; 0 failed; 0 ignored; 0 measured; 2109 filtered out; finished in 44.02s"
+      ]
+    },
+    {
+      "artifact_id": 13475811429,
+      "target": "//codex-rs/core:core-unit-tests",
+      "shard_one_based": 5,
+      "total_shards": 8,
+      "attempt": 1,
+      "attempts_for_shard": 1,
+      "native_sequence": 161099,
+      "native_runner": "local",
+      "native_cache_hit": false,
+      "native_exit_code": 0,
+      "native_timeout_millis": 900000,
+      "xml_sequence": 161103,
+      "xml_exit_code": 0,
+      "xml_wrapper_testcase_count": 1,
+      "xml_actual_digest_matches_compact": true,
+      "log_path": "artifacts/artifact-13475811429/failed-test-logs/invocation-_7x39zzy/targets/0000/shard_5_of_8/test.log",
+      "log": {
+        "bytes": 29570,
+        "sha256": "639f963f12a9e695586ae74c8a014cc195e56b4ff899b8c579fadf61996ba337",
+        "git_blob": "60620669093532ba9528b019202418ed417457e8"
+      },
+      "xml_path": "artifacts/artifact-13475811429/failed-test-logs/invocation-_7x39zzy/targets/0000/shard_5_of_8/test.xml",
+      "xml": {
+        "bytes": 29997,
+        "sha256": "19c6c2c153a3543572b5f009370a52a735985458b69d998c8b320d577f994cbb",
+        "git_blob": "294e0606eab14fcb2835b87b7aa3b0958b77069e"
+      },
+      "literal_libtest_summaries": [
+        "test result: ok. 309 passed; 0 failed; 0 ignored; 0 measured; 2133 filtered out; finished in 65.49s"
+      ]
+    },
+    {
+      "artifact_id": 13475811429,
+      "target": "//codex-rs/core:core-unit-tests",
+      "shard_one_based": 6,
+      "total_shards": 8,
+      "attempt": 1,
+      "attempts_for_shard": 1,
+      "native_sequence": 161083,
+      "native_runner": "local",
+      "native_cache_hit": false,
+      "native_exit_code": 0,
+      "native_timeout_millis": 900000,
+      "xml_sequence": 161087,
+      "xml_exit_code": 0,
+      "xml_wrapper_testcase_count": 1,
+      "xml_actual_digest_matches_compact": true,
+      "log_path": "artifacts/artifact-13475811429/failed-test-logs/invocation-_7x39zzy/targets/0000/shard_6_of_8/test.log",
+      "log": {
+        "bytes": 26583,
+        "sha256": "1a70b5829b440d6d77d62de14e11b3a068255c71b895cd03cab4101e52b10d42",
+        "git_blob": "deb5ac925ea007b787c7ac8281b2800579ac554a"
+      },
+      "xml_path": "artifacts/artifact-13475811429/failed-test-logs/invocation-_7x39zzy/targets/0000/shard_6_of_8/test.xml",
+      "xml": {
+        "bytes": 27010,
+        "sha256": "ea15494ffd5c6c92d9be5015a8bbf6be8cd6974b92a1d860ab24ed2bc8c26cb2",
+        "git_blob": "a568b59a19cd3c166baf866c30c199de0c70f6d6"
+      },
+      "literal_libtest_summaries": [
+        "test result: ok. 279 passed; 0 failed; 0 ignored; 0 measured; 2163 filtered out; finished in 29.55s"
+      ]
+    },
+    {
+      "artifact_id": 13475811429,
+      "target": "//codex-rs/core:core-unit-tests",
+      "shard_one_based": 7,
+      "total_shards": 8,
+      "attempt": 1,
+      "attempts_for_shard": 1,
+      "native_sequence": 160956,
+      "native_runner": "local",
+      "native_cache_hit": false,
+      "native_exit_code": 0,
+      "native_timeout_millis": 900000,
+      "xml_sequence": 160960,
+      "xml_exit_code": 0,
+      "xml_wrapper_testcase_count": 1,
+      "xml_actual_digest_matches_compact": true,
+      "log_path": "artifacts/artifact-13475811429/failed-test-logs/invocation-_7x39zzy/targets/0000/shard_7_of_8/test.log",
+      "log": {
+        "bytes": 32777,
+        "sha256": "38efffc20d1d8a8c3ab1bd78a9e2025be27a01314df4bbc97b31e6660d6ee970",
+        "git_blob": "cf50ea860c6024da514dfc825638d79f3783d376"
+      },
+      "xml_path": "artifacts/artifact-13475811429/failed-test-logs/invocation-_7x39zzy/targets/0000/shard_7_of_8/test.xml",
+      "xml": {
+        "bytes": 33206,
+        "sha256": "6fe0767a64f9e078d028930f87f7d0616295a4a408a4461b580fa2aaa3e276a4",
+        "git_blob": "6c39c8140374f6cd25a27076044ad3dcb1cef9b4"
+      },
+      "literal_libtest_summaries": [
+        "test result: ok. 333 passed; 0 failed; 0 ignored; 0 measured; 2109 filtered out; finished in 65.10s"
+      ]
+    },
+    {
+      "artifact_id": 13475811429,
+      "target": "//codex-rs/core:core-unit-tests",
+      "shard_one_based": 8,
+      "total_shards": 8,
+      "attempt": 1,
+      "attempts_for_shard": 1,
+      "native_sequence": 161091,
+      "native_runner": "local",
+      "native_cache_hit": false,
+      "native_exit_code": 0,
+      "native_timeout_millis": 900000,
+      "xml_sequence": 161095,
+      "xml_exit_code": 0,
+      "xml_wrapper_testcase_count": 1,
+      "xml_actual_digest_matches_compact": true,
+      "log_path": "artifacts/artifact-13475811429/failed-test-logs/invocation-_7x39zzy/targets/0000/shard_8_of_8/test.log",
+      "log": {
+        "bytes": 27167,
+        "sha256": "6920b6d92122aa9d60450c5b136c1e4318df0f0ce5add55a041b0cf3964a4ec0",
+        "git_blob": "c880055d39841fdc32439a01824c80c4e7c1e256"
+      },
+      "xml_path": "artifacts/artifact-13475811429/failed-test-logs/invocation-_7x39zzy/targets/0000/shard_8_of_8/test.xml",
+      "xml": {
+        "bytes": 27594,
+        "sha256": "889199bbfb38c8de2631982d27f5d3a7a6dd5c0f7bc4c0c368ccf5430d62e674",
+        "git_blob": "a203da9412510e73815dd0c5d9f3ec94ea7018d6"
+      },
+      "literal_libtest_summaries": [
+        "test result: ok. 291 passed; 0 failed; 0 ignored; 0 measured; 2151 filtered out; finished in 34.74s"
+      ]
+    },
+    {
+      "artifact_id": 13475811429,
+      "target": "//codex-rs/utils/pty:pty-unit-tests",
+      "shard_one_based": null,
+      "total_shards": 0,
+      "attempt": 1,
+      "attempts_for_shard": 1,
+      "native_sequence": 84618,
+      "native_runner": "darwin-sandbox",
+      "native_cache_hit": false,
+      "native_exit_code": 101,
+      "native_timeout_millis": 300000,
+      "xml_sequence": 84768,
+      "xml_exit_code": 0,
+      "xml_wrapper_testcase_count": 1,
+      "xml_actual_digest_matches_compact": true,
+      "log_path": "artifacts/artifact-13475811429/failed-test-logs/invocation-_7x39zzy/targets/0001/test.log",
+      "log": {
+        "bytes": 3226,
+        "sha256": "b46574d8053bb3fa45db91591c870f5d4241acba6986871c106d201ef1bf8265",
+        "git_blob": "338d462b65e9d0646f7a0a31bf82152d79a0bd4c"
+      },
+      "xml_path": "artifacts/artifact-13475811429/failed-test-logs/invocation-_7x39zzy/targets/0001/test.xml",
+      "xml": {
+        "bytes": 3691,
+        "sha256": "b16ccdb87de70cbcee6213ad763f668f1fc02b097ad293976c40a5a25aae5eb9",
+        "git_blob": "978a4594b982dd7420ee01e6a67b30e10119b012"
+      },
+      "literal_libtest_summaries": [
+        "test result: FAILED. 30 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 6.26s"
+      ]
+    },
+    {
+      "artifact_id": 13475001412,
+      "target": "//codex-rs/ext/queue:queue-queue_service-test",
+      "shard_one_based": null,
+      "total_shards": 0,
+      "attempt": 1,
+      "attempts_for_shard": 1,
+      "native_sequence": 89322,
+      "native_runner": "local",
+      "native_cache_hit": false,
+      "native_exit_code": 101,
+      "native_timeout_millis": 300000,
+      "xml_sequence": 89398,
+      "xml_exit_code": 0,
+      "xml_wrapper_testcase_count": 1,
+      "xml_actual_digest_matches_compact": true,
+      "log_path": "artifacts/artifact-13475001412/failed-test-logs/invocation-hhk8031n/targets/0000/test.log",
+      "log": {
+        "bytes": 3170,
+        "sha256": "33bbf598e5ce4472ed304cdb765c36ac77b0859a2994c57d90f9c32adccb139e",
+        "git_blob": "bdd58fc8c0e2407b2a270be2391ea37309eab925"
+      },
+      "xml_path": "artifacts/artifact-13475001412/failed-test-logs/invocation-hhk8031n/targets/0000/test.xml",
+      "xml": {
+        "bytes": 3567,
+        "sha256": "3a8906668ee8be3e9a4dcb8e54ba7acce7d9e2a80c23064563b9fd27c43c5fa1",
+        "git_blob": "1e0f74684b66eb3b50954f92d0175405301c594f"
+      },
+      "literal_libtest_summaries": [
+        "test result: FAILED. 35 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 61.60s"
+      ]
+    },
+    {
+      "artifact_id": 13475231392,
+      "target": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+      "shard_one_based": null,
+      "total_shards": 0,
+      "attempt": 1,
+      "attempts_for_shard": 1,
+      "native_sequence": 86587,
+      "native_runner": "local",
+      "native_cache_hit": false,
+      "native_exit_code": 1,
+      "native_timeout_millis": 300000,
+      "xml_sequence": 86735,
+      "xml_exit_code": 0,
+      "xml_wrapper_testcase_count": 1,
+      "xml_actual_digest_matches_compact": true,
+      "log_path": "artifacts/artifact-13475231392/failed-test-logs/invocation-nb7luky2/targets/0000/test.log",
+      "log": {
+        "bytes": 38593,
+        "sha256": "a21850f605ddc29f39132a43608b8f7f5736adb423a776dd9ad0b89c8eab589e",
+        "git_blob": "dae4e4e1aed571abd2823b202ffd1436fb6709e4"
+      },
+      "xml_path": "artifacts/artifact-13475231392/failed-test-logs/invocation-nb7luky2/targets/0000/test.xml",
+      "xml": {
+        "bytes": 39016,
+        "sha256": "98748a105c5948c50bcc7071fb66ebf1c34b584c08f4ab90a93b532145c09fac",
+        "git_blob": "e7bea6f94a8b747c5258d7cd77a3d04014f11cab"
+      },
+      "literal_libtest_summaries": [
+        "test result: FAILED. 89 passed; 3 failed; 0 ignored; 0 measured; 62 filtered out; finished in 1.13s",
+        "test result: FAILED. 50 passed; 10 failed; 2 ignored; 0 measured; 92 filtered out; finished in 0.10s"
+      ]
+    },
+    {
+      "artifact_id": 13474454125,
+      "target": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-unit-tests",
+      "shard_one_based": null,
+      "total_shards": 0,
+      "attempt": 1,
+      "attempts_for_shard": 1,
+      "native_sequence": 32540,
+      "native_runner": "darwin-sandbox",
+      "native_cache_hit": false,
+      "native_exit_code": 101,
+      "native_timeout_millis": 300000,
+      "xml_sequence": 32594,
+      "xml_exit_code": 0,
+      "xml_wrapper_testcase_count": 1,
+      "xml_actual_digest_matches_compact": true,
+      "log_path": "artifacts/artifact-13474454125/failed-test-logs/invocation-fw7e1rzb/targets/0000/test.log",
+      "log": {
+        "bytes": 11424,
+        "sha256": "b39df5ed45045d019daf1c006be1f3490fb115df0e7b8b055bd68f2d34cd157e",
+        "git_blob": "7587fbb4887fecb6990a90262b595008b52076f1"
+      },
+      "xml_path": "artifacts/artifact-13474454125/failed-test-logs/invocation-fw7e1rzb/targets/0000/test.xml",
+      "xml": {
+        "bytes": 11957,
+        "sha256": "d1e9df2ad7030acef328ea4d9b983fbd84b88d847d276b84864310d3081978e0",
+        "git_blob": "7090247f8ab9a31f4c0a75885fc8f84e585b8730"
+      },
+      "literal_libtest_summaries": [
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 114 filtered out; finished in 0.00s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 114 filtered out; finished in 0.00s",
+        "test result: FAILED. 114 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.59s"
+      ]
+    },
+    {
+      "artifact_id": 13474454125,
+      "target": "//codex-rs/http-client:http-client-unit-tests",
+      "shard_one_based": null,
+      "total_shards": 0,
+      "attempt": 1,
+      "attempts_for_shard": 1,
+      "native_sequence": 84876,
+      "native_runner": "darwin-sandbox",
+      "native_cache_hit": false,
+      "native_exit_code": 101,
+      "native_timeout_millis": 300000,
+      "xml_sequence": 85907,
+      "xml_exit_code": 0,
+      "xml_wrapper_testcase_count": 1,
+      "xml_actual_digest_matches_compact": true,
+      "log_path": "artifacts/artifact-13474454125/failed-test-logs/invocation-fw7e1rzb/targets/0001/test.log",
+      "log": {
+        "bytes": 9397,
+        "sha256": "85585c4ad2591edf00a9677b8922d11438b21f3111db3c4598013ad6ca6ad22d",
+        "git_blob": "5e475b7ef68be6fe11cf9206933d938d37556705"
+      },
+      "xml_path": "artifacts/artifact-13474454125/failed-test-logs/invocation-fw7e1rzb/targets/0001/test.xml",
+      "xml": {
+        "bytes": 9884,
+        "sha256": "b726b5f6d213105ae4601d67a2e70398bd1fd865fad4426602a69f3843316030",
+        "git_blob": "eddb2992b4cff7d013b3aea809eb15fbeca4e008"
+      },
+      "literal_libtest_summaries": [
+        "test result: FAILED. 84 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 10.03s"
+      ]
+    }
+  ],
+  "compact_XML_mismatch_count": 1,
+  "compact_XML_mismatches": [
+    {
+      "artifact_id": 13475811429,
+      "target": "//codex-rs/core:core-unit-tests",
+      "shard_one_based": 1,
+      "total_shards": 8,
+      "attempt": 2,
+      "attempts_for_shard": 2,
+      "native_sequence": 162222,
+      "native_runner": "local",
+      "native_cache_hit": false,
+      "native_exit_code": 0,
+      "native_timeout_millis": 900000,
+      "xml_sequence": 162224,
+      "xml_exit_code": 0,
+      "xml_wrapper_testcase_count": 1,
+      "xml_actual_digest_matches_compact": false,
+      "log_path": "artifacts/artifact-13475811429/failed-test-logs/invocation-_7x39zzy/targets/0000/shard_1_of_8/test.log",
+      "log": {
+        "bytes": 32111,
+        "sha256": "42b8f27af79730b6699981cbb6de3ab6d938f1bccd6c0b2be017fa74fd54f3bb",
+        "git_blob": "780a19ec712f07bcded6b997ca33cfcbc12adebe"
+      },
+      "xml_path": "artifacts/artifact-13475811429/failed-test-logs/invocation-_7x39zzy/targets/0000/shard_1_of_8/test.xml",
+      "xml": {
+        "bytes": 32538,
+        "sha256": "aadad8b9b7a90983f5a1547a53a7d3dbd62b0d990b5943d19f22df357babb041",
+        "git_blob": "56ffed7ef50a682610b11d8423092925d75e6600"
+      },
+      "literal_libtest_summaries": [
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2441 filtered out; finished in 0.07s",
+        "test result: ok. 321 passed; 0 failed; 0 ignored; 0 measured; 2121 filtered out; finished in 56.24s"
+      ],
+      "mismatch_scope": "Second XML output reuses first XML entry_id/digest; first digest matches original attempt_1.xml, not final test.xml. ZIP/collector still preserve final XML."
+    }
+  ],
+  "clippy_failed_actions": [
+    {
+      "sequence": 103206,
+      "target": "//codex-rs/arg0:test_arg0_preflight",
+      "runner": "remote",
+      "cache_hit": false,
+      "exit_code": 1
+    },
+    {
+      "sequence": 103319,
+      "target": "//codex-rs/arg0:test_arg0_preflight-bin-unit-tests-bin",
+      "runner": "remote",
+      "cache_hit": false,
+      "exit_code": 1
+    },
+    {
+      "sequence": 103419,
+      "target": "//codex-rs/arg0:arg0-unit-tests-bin",
+      "runner": "remote",
+      "cache_hit": false,
+      "exit_code": 1
+    }
+  ],
+  "limits": [
+    "92 jobs are one bounded non-atomic 19-run snapshot; API states are not case qualification.",
+    "The Windows summary job is not an eighth independent failure cause. Seven execution jobs failed; five new original logs collected here, prior cargo-deny/Win4 evidence remains separate.",
+    "An original first failing Core attempt and later successful retry both remain; do not describe retries as no failures.",
+    "One Intel Core final XML compact digest mismatch is explicit; official ZIP and collector manifest bind its actual bytes independently.",
+    "Win2 main67 original sandbox bat two libtest segments sum to139P13F2I, including6 lock-poison failures; this is not native13 diagnostic source/result.",
+    "Stored XML has one wrapper testcase per launch, not one XML per Rust definition. Exact literal libtest summaries are retained separately.",
+    "Selected target archive completeness is not completeness of every target in //..., and cached passed targets cannot become fresh native acceptance.",
+    "No assertions, retry policy, time budgets, production source, ref, required gate, or CI dispatch were changed by this evidence work."
+  ]
+}

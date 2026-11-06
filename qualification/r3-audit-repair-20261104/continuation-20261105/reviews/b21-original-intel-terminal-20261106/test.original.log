@@ -1,0 +1,39 @@
+exec ${PAGER:-/usr/bin/less} "$0" || exit 1
+Executing tests from //codex-rs/utils/pty:pty-unit-tests
+-----------------------------------------------------------------------------
+
+running 31 tests
+test process_group::tests::denied_group_signal_rejects_unsafe_process_group_ids ... ok
+test tests::driver_backed_process_can_expose_split_stdout_and_stderr ... ok
+test tests::output_collector_waits_for_exit_after_output_closes ... ok
+test tests::driver_backed_process_drains_output_that_arrives_after_exit_signal ... ok
+test tests::driver_backed_process_can_resize_via_resizer_hook ... ok
+test tests::pipe_drop_reaps_child ... ok
+test process_group::tests::denied_group_signal_terminates_owned_descendants_and_preserves_escalation ... ok
+test tests::pipe_process_can_expose_split_stdout_and_stderr ... ok
+test tests::pipe_process_round_trips_stdin ... ok
+test tests::pipe_spawn_no_stdin_can_preserve_inherited_fds ... ok
+test tests::pipe_terminate_aborts_detached_readers ... ok
+test tests::pipe_drains_stderr_without_stdout_activity ... ok
+test tests::pipe_and_pty_share_interface ... ok
+test tests::pipe_terminate_reaps_child ... ok
+test tests::pty_drop_allows_runtime_shutdown_with_detached_child ... ok
+test tests::pipe_process_detaches_from_parent_session ... ok
+test tests::pty_preserving_fds_drop_allows_runtime_shutdown_with_detached_child ... ok
+test tests::pty_preserving_fds_terminate_allows_runtime_shutdown_with_detached_child ... ok
+test tests::pty_close_stdin_preserves_large_input_and_delivers_eof ... ok
+test tests::pty_preserving_inherited_fds_keeps_python_repl_running ... ok
+test tests::pty_spawn_can_preserve_inherited_fds ... ok
+test tests::pty_spawn_with_inherited_fds_reports_exec_failures ... ok
+test tests::pty_python_repl_emits_output_and_exits ... ok
+test tests::pty_spawn_without_io_driver_returns_error ... ok
+test tests::pty_spawn_with_inherited_fds_supports_resize ... ok
+test tests::pty_terminate_allows_runtime_shutdown_with_detached_child ... ok
+test tests::pty_terminate_kills_background_children_in_same_process_group ... ok
+test tests::pty_dropped_output_receiver_keeps_draining_child ... ok
+test tests::pty_terminate_reaps_child_when_waiter_is_queued ... ok
+test tests::pty_python_repl_readiness_waits_for_execution_after_input_echo ... ok
+test tests::pty_terminate_allows_runtime_shutdown_with_full_output_channel ... ok
+
+test result: ok. 31 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.65s
+

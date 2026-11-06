@@ -1,0 +1,60 @@
+{
+  "schema": "hepta-source-publication-portable-replay-v1",
+  "status": "LOSSLESS_ARCHIVE_AND_FROZEN_VERIFIER_OUTPUTS_REPRODUCED",
+  "package_kind": "b11",
+  "authority": {
+    "source_commit": "daa21e7a6a9b19e74b61c6bbdc2c813f9fd35a42",
+    "source_tree": "fbaf12d56a9702d927ae6f71cb9f3abc0cf31cae",
+    "parent": "87b8603f21e52063ed54ce89cba26756a3efaab7",
+    "PR": 4884,
+    "merge_commit": "f8e97e161c7ad87bd1e242363901a0852170483c"
+  },
+  "archive": {
+    "bytes": 2043885,
+    "sha256": "61d636a1585e7a6e25513f0c5cddbd43a17ef6a148c6fbd283c7329454ee0d06",
+    "git_blob": "d9b7839e045b7ec6c066cced9b979093b9dca06e"
+  },
+  "member_count": 87,
+  "member_bytes": 11124356,
+  "all_archive_members_verified_before_and_after_replay": true,
+  "verifier": "hepta-audit-fifth/verify_b11_acl_control_v2_publication.py",
+  "verifier_exit_code": 0,
+  "verifier_stderr_bytes": 0,
+  "verifier_stdout": {
+    "bytes": 361,
+    "sha256": "0c720e16af1d117955d01e29ff74cb441b9dbb793cd2465991492cb436922c8f",
+    "git_blob": "08f563be249693dfbb5176d76d313e2b137a5fcf"
+  },
+  "stdout_equals_expected_complete_bytes": true,
+  "expected_stdout_provenance": "Reconstructed from the corresponding frozen root proof fields in the exact order/encoding of the frozen verifier print statement; not a historical stdout capture.",
+  "regenerated_frozen_files": [
+    {
+      "path": "hepta-audit-fifth/b11-acl-control-v2-publication/intended-full-tree.json",
+      "bytes": 2331276,
+      "sha256": "a9ea25ac65708c209597ecac86b6a335f105758c0bbbab3d16c15f9ced8d4624",
+      "git_blob": "ad828a33e2563d413a80226752521d770518e3fe",
+      "equals_complete_frozen_bytes": true
+    },
+    {
+      "path": "hepta-audit-fifth/b11-acl-control-v2-publication/root-tree-proof.json",
+      "bytes": 7975,
+      "sha256": "64fdeee59596182494c77f07ac315b6fd44cdd6201b054086c4abcd216212461",
+      "git_blob": "b3989bde787beb2867c0ef6a2391148c5c9c43ad",
+      "equals_complete_frozen_bytes": true
+    },
+    {
+      "path": "hepta-audit-fifth/b11-acl-control-v2-publication/candidate-static-root-replay.json",
+      "bytes": 106616,
+      "sha256": "154869e18a72187e3e93acdd5fc15fe8e9fdab9ceefecdedcfeb7c53ad3881a4",
+      "git_blob": "039e3a7701b371aae23e82c7673810c41fed586e",
+      "equals_complete_frozen_bytes": true
+    }
+  ],
+  "unexpected_files_created": [],
+  "writes_limited_to_disposable_restoration": true,
+  "native_or_product_compilation": false,
+  "formatter": false,
+  "external_ref_mutation": false,
+  "network": false,
+  "qualification": "SOURCE_PUBLICATION_CUSTODY_ONLY"
+}

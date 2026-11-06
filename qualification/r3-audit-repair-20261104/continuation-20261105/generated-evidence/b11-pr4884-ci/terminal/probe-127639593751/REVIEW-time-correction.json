@@ -1,0 +1,23 @@
+{
+  "schema": "hepta-native13-review-time-correction-v1",
+  "original_frozen_review": {
+    "path": "REVIEW.zh-CN.md",
+    "bytes": 9061,
+    "sha256": "b1fb60adb4458fcc76f2fcd5bff2d76094c891eeab6a58a3d837af7a63d8ba06",
+    "git_blob": "ba3116d0e34187793b712780b66988267bbcc17e"
+  },
+  "corrected_review": {
+    "path": "REVIEW.corrected.zh-CN.md",
+    "bytes": 9157,
+    "sha256": "05079302eb07708ba5233d6533daaf65cff789ee1eb79b44c6be5a37123e5c3c",
+    "git_blob": "9a3e52c03b6e47119801b4ae130e26bdf632b683"
+  },
+  "old_sentence": "第一次实际 API 观察在 01:08:26 UTC，已经是终态，没有虚构运行中的初始快照。",
+  "new_sentence": "第一次 source-filtered run-list API 观察在 01:08:10 UTC；专门 jobs/run/artifacts/head/merge 的单次切点为 01:08:26 UTC；两次均已是终态，没有虚构运行中的初始快照。",
+  "exactly_one_replacement_all_other_bytes_unchanged": true,
+  "source": "terminal-capture-times.json",
+  "run_list_first_observed_utc": "2026-11-06 01:08:10 UTC",
+  "dedicated_terminal_cut_observed_utc": "2026-11-06 01:08:26 UTC",
+  "core_51_registered_objects_unchanged": true,
+  "original_logs_APIs_source_verifier_result_or_qualification_changed": false
+}

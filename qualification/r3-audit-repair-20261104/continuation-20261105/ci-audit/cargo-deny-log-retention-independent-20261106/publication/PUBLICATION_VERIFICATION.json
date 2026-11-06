@@ -1,0 +1,47 @@
+{
+  "schema": "cargo-deny-root-publication-independent-binding-v1",
+  "original_responses": {
+    "bytes": 150280,
+    "git_blob": "be82433cd0ada8e78125b6a1161920a462d4ce32",
+    "sha256": "009ec418f8a3a4153dd74653fc3026b0bb0908b7de000b26a0a834ea8e506f10"
+  },
+  "response_groups": 14,
+  "source": {
+    "bytes": 16019,
+    "git_blob": "57f6095d18c5517c9e7cf7d0de05b9645b106152",
+    "sha256": "1a57f41bd71fccd9a219f4295c297c1520bdf92ed1704dbe34b6791b60921ef8"
+  },
+  "independent_review": {
+    "bytes": 7295,
+    "git_blob": "875534b774e4e0f403fce5533ebcd07fb5df4122",
+    "sha256": "b2cde18e378e4ebd54bd91518536ed06ed08e3f1ad0a7ad21e33c7fad9d4d65f"
+  },
+  "head": "476653f8fe5874849e864ab3fd49c792913450ab",
+  "head_parent": [
+    "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+  ],
+  "tree": "06c4e2f80884b169e31d8a5edf04438486a9ee81",
+  "merge": "825779c5bba92a228f8d3cf6add429592acdc4a7",
+  "merge_parents": [
+    "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+    "476653f8fe5874849e864ab3fd49c792913450ab"
+  ],
+  "base_ref": "fix/r3-original-product-contracts-20261104",
+  "head_ref": "fix/cargo-deny-evidence-retention-20261106",
+  "PR": 4922,
+  "draft": true,
+  "actual_root_entries": 53,
+  "complete_Merkle_leaves": 10582,
+  "directories": 1571,
+  "unchanged_leaves": 10581,
+  "all_root_entries_equal_computed_projection": true,
+  "PR_body_full_bytes_equal_intended": true,
+  "root_static_replay_stdout": {
+    "bytes": 3356,
+    "git_blob": "9f6f931ba3aa047aa437e19079d344b29bcb947f",
+    "sha256": "9adacd2c9b862bb5089932f4eb90d0c48cf9f5b69a6e05b8ed58c47e6da00fbf"
+  },
+  "root_static_full_bytes_equal_author": true,
+  "scope": "Preserved actual API publication response binding only; no CI result, native cargo execution, artifact upload or blocker closure is inferred.",
+  "new_API_or_ref_mutation_by_this_verifier": false
+}

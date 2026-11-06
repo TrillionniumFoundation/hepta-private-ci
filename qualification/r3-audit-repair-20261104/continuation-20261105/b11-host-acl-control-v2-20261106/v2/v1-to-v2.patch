@@ -1,0 +1,24 @@
+--- a/codex-rs/windows-sandbox-rs/src/acl_control_test_support.rs
++++ b/codex-rs/windows-sandbox-rs/src/acl_control_test_support.rs
+@@ -337,9 +337,11 @@
+         // Execute all original matrix bytes after a fail-closed private input gate.
+         // Keep the original file intact and preserve Command's inherited cwd/env.
+         let gated_path = script_path.with_extension("acl-control.cmd");
+-        let mut script = concat!("@echo off\r\n", "set \"B11_RELEASE=\"\r\n", "set /p B11_RELEASE=\r\n",
++        let mut script = concat!("@echo off\r\n",
++            "setlocal EnableExtensions DisableDelayedExpansion\r\n",
++            "set \"B11_RELEASE=\"\r\n", "set /p B11_RELEASE=\r\n",
+             "if not \"%B11_RELEASE%\"==\"release-owned-fixture\" exit /b 87\r\n",
+-            "echo ACL_CONTROL_INPUT_RELEASED\r\n").as_bytes().to_vec();
++            "echo ACL_CONTROL_INPUT_RELEASED\r\n", "endlocal\r\n").as_bytes().to_vec();
+         script.extend(fs::read(script_path)?);
+         fs::OpenOptions::new().create_new(true).write(true).open(&gated_path)?.write_all(&script)?;
+         let cwd = std::env::current_dir()?;
+@@ -349,6 +351,7 @@
+             env.retain(|existing, _| !existing.eq_ignore_ascii_case(name));
+             env.insert(name.clone(), value.clone());
+         }
++        env.retain(|name, _| !name.eq_ignore_ascii_case("B11_RELEASE"));
+         let output = fs::OpenOptions::new().create_new(true).read(true).write(true).open(output_path)?;
+         let (mut input, mut release) = (0, 0);
+         // SAFETY: own both pipe handles immediately after successful creation.

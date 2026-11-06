@@ -1,0 +1,28 @@
+{
+  "kind": "b11",
+  "authority": {
+    "source_commit": "daa21e7a6a9b19e74b61c6bbdc2c813f9fd35a42",
+    "source_tree": "fbaf12d56a9702d927ae6f71cb9f3abc0cf31cae",
+    "parent": "87b8603f21e52063ed54ce89cba26756a3efaab7",
+    "PR": 4884,
+    "merge_commit": "f8e97e161c7ad87bd1e242363901a0852170483c"
+  },
+  "verifier": "hepta-audit-fifth/verify_b11_acl_control_v2_publication.py",
+  "arguments": [
+    "--root",
+    "{root}"
+  ],
+  "verifier_written_frozen_files": [
+    "hepta-audit-fifth/b11-acl-control-v2-publication/intended-full-tree.json",
+    "hepta-audit-fifth/b11-acl-control-v2-publication/root-tree-proof.json",
+    "hepta-audit-fifth/b11-acl-control-v2-publication/candidate-static-root-replay.json"
+  ],
+  "expected_stdout_file": "expected-verifier.stdout.json",
+  "expected_stdout": {
+    "bytes": 361,
+    "sha256": "0c720e16af1d117955d01e29ff74cb441b9dbb793cd2465991492cb436922c8f",
+    "git_blob": "08f563be249693dfbb5176d76d313e2b137a5fcf"
+  },
+  "expected_stdout_provenance": "Reconstructed from the corresponding frozen root proof fields in the exact order/encoding of the frozen verifier print statement; not a historical stdout capture.",
+  "scope": "offline source-publication custody only; native/compile/fmt NOT_RUN"
+}

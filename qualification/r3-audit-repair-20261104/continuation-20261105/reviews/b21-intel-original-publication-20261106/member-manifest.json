@@ -1,0 +1,224 @@
+{
+  "schema": "hepta-publication-members-v1",
+  "kind": "b21",
+  "authority": {
+    "source_commit": "cc65856cc0b20d03db506c19495d53d61162102d",
+    "source_tree": "eaded1870d080eaa55efae6208354729140e784c",
+    "parent": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+    "PR": 4902,
+    "merge_commit": "f0355601e362e2ad4947b40d51215e5c4d075fc3"
+  },
+  "count": 28,
+  "total_bytes": 4393992,
+  "selection": {
+    "directories_complete_except_pycache": [
+      "hepta-audit-fifth/b21-intel-original-gate",
+      "ci-audit/b21-intel-original-independent-20261106"
+    ],
+    "additional_files": [
+      "hepta-audit-fifth/verify_main_format_retention_publication.py",
+      "hepta-audit-fifth/verify_b11_launcher_publication.py",
+      "hepta-audit-fifth/main-format-retention/intended-full-tree.json",
+      "hepta-audit-fifth/main-format-retention/commit-ref-actual.json"
+    ],
+    "original_workspace_relative_paths_preserved_under": "root/"
+  },
+  "members": [
+    {
+      "path": "root/ci-audit/b21-intel-original-independent-20261106/REVIEW.actual.receipt.json",
+      "mode": 420,
+      "bytes": 995,
+      "sha256": "a7ca75801399741024e3b9acc89f33e8bda2ba6762978ebe0512834c680d4d43",
+      "git_blob": "f3552f314eb7de0eb2814baf6fde6c5bf6b4f7a1"
+    },
+    {
+      "path": "root/ci-audit/b21-intel-original-independent-20261106/REVIEW.full-GET.original.json",
+      "mode": 420,
+      "bytes": 7504,
+      "sha256": "304c07a4fd185b3296136790dce3e868e499a2331a3c404c229951908cee8264",
+      "git_blob": "0d5d38b3d8161bf25cece95a9e96c583b8c6403e"
+    },
+    {
+      "path": "root/ci-audit/b21-intel-original-independent-20261106/REVIEW.json",
+      "mode": 420,
+      "bytes": 7014,
+      "sha256": "0bd30fbe2170b38baf870560d7f0f2b7e222c0550b91439535e321221f279fd2",
+      "git_blob": "d8f13d08ab41b42e84e31e344b932bf49c865d53"
+    },
+    {
+      "path": "root/ci-audit/b21-intel-original-independent-20261106/source-full-GET-receipts.json",
+      "mode": 420,
+      "bytes": 1342,
+      "sha256": "2f5a361b30d94fdaa79cf8ec4f5bc2b042f54498da82fd8084a9b366c8a41bca",
+      "git_blob": "b9ba54cfafd6a9eca808753fbf074c400e6ac64f"
+    },
+    {
+      "path": "root/ci-audit/b21-intel-original-independent-20261106/source/.bazelrc",
+      "mode": 420,
+      "bytes": 14926,
+      "sha256": "53a5fd4e65e4e9937b826174520fe1eb642adb79cfe7a6335c871d5fa9db57fa",
+      "git_blob": "3d5877b283b887091af507f3672003f84c500687"
+    },
+    {
+      "path": "root/ci-audit/b21-intel-original-independent-20261106/source/.github/actions/check-clean-worktree/action.yml",
+      "mode": 420,
+      "bytes": 596,
+      "sha256": "58844cf1afb11d5cdbdfe577e4227ea3361ce495960c2d0cce94ca0da3da82a5",
+      "git_blob": "5a7bdddcf8f560d20fcd6639761a500b7ef12cf3"
+    },
+    {
+      "path": "root/ci-audit/b21-intel-original-independent-20261106/source/.github/actions/setup-ci/action.yml",
+      "mode": 420,
+      "bytes": 4141,
+      "sha256": "6d29a131641a739983b3aea22c0febbf20d1d0ee21b356570f3763ddafced9ba",
+      "git_blob": "8abd2dbd5f09585734f8213011a9ed540a2ee88e"
+    },
+    {
+      "path": "root/ci-audit/b21-intel-original-independent-20261106/source/.github/scripts/run_bazel_with_buildbuddy.py",
+      "mode": 420,
+      "bytes": 14442,
+      "sha256": "656fa9f508bb339da949a359a457f02fa3979449ae1761b0084494cf38e83a0e",
+      "git_blob": "21a5fdf0e7afcde4b6141229e95fcff8f6a7e763"
+    },
+    {
+      "path": "root/hepta-audit-fifth/b21-intel-original-gate/actual-merge-commit.json",
+      "mode": 420,
+      "bytes": 3158,
+      "sha256": "4029448ba673563c4d2000bc0000dd71a4e4c7f114d33c3333a2f122ea8b876b",
+      "git_blob": "638665a53169086a5c5ea4c1c163f3de4acdcf81"
+    },
+    {
+      "path": "root/hepta-audit-fifth/b21-intel-original-gate/actual-tree-root.json",
+      "mode": 420,
+      "bytes": 16672,
+      "sha256": "02b7b235ceee8f4a36ebe80f35288b7cbb81772116dd60d4585995aab820d4f9",
+      "git_blob": "2aba334cdf38717ccd6ed543b88c5621d9dca418"
+    },
+    {
+      "path": "root/hepta-audit-fifth/b21-intel-original-gate/candidate-full-get.actual.json",
+      "mode": 420,
+      "bytes": 4964,
+      "sha256": "e634794dbe7f1895d0fc60c7a6c9d67dd5894fbfb96c5d261d57cb8ef16fb7ec",
+      "git_blob": "7dcfed511c047a0367a34cad64fde2fc985d015e"
+    },
+    {
+      "path": "root/hepta-audit-fifth/b21-intel-original-gate/candidate/.github/workflows/b21-intel-original-pty.yml",
+      "mode": 420,
+      "bytes": 4755,
+      "sha256": "97ec44a0bde97c03810b013fad9839764deac679cbc2bcf527d5714931051f34",
+      "git_blob": "77387b7a3e8a15efe11cca02bf4185377ff0a86f"
+    },
+    {
+      "path": "root/hepta-audit-fifth/b21-intel-original-gate/commit-ref-actual.json",
+      "mode": 420,
+      "bytes": 2615,
+      "sha256": "62cd3c527d1b5382a51f6110b1fe29bb5733e7a8eeb7c90b64692025705b368b",
+      "git_blob": "cbfaa48e2c1db5bb32e279d7a53c98b360ea906d"
+    },
+    {
+      "path": "root/hepta-audit-fifth/b21-intel-original-gate/intended-full-tree.json",
+      "mode": 420,
+      "bytes": 2329904,
+      "sha256": "bd1f6d8aa5cb5eff297fb27b8558a8ded9d2fa39112fb352b35eb2bd3645e577",
+      "git_blob": "a5f211e18cdb912f5734d9b67bd88c58a32bfb27"
+    },
+    {
+      "path": "root/hepta-audit-fifth/b21-intel-original-gate/pr4902-create-and-readback.actual.json",
+      "mode": 420,
+      "bytes": 60721,
+      "sha256": "6216c88ba1ec1dbcd3b2f4f59089f5371cf3f5caeef0d2c7d9b19a8937d780fd",
+      "git_blob": "b7077bec0d3374e47529e56e06091c8a905ddd91"
+    },
+    {
+      "path": "root/hepta-audit-fifth/b21-intel-original-gate/prepublication-actual.json",
+      "mode": 420,
+      "bytes": 1309,
+      "sha256": "91ccf00bd1e69aaa6ab2ba7db1660a77e335572a7232e13ef82da41e6a98508f",
+      "git_blob": "dc54a5a254c5aaf180be4ae87fd5d7d9006709d9"
+    },
+    {
+      "path": "root/hepta-audit-fifth/b21-intel-original-gate/source/AGENTS.md",
+      "mode": 420,
+      "bytes": 23303,
+      "sha256": "228165a9ff57b98f101917c4c8086ca76a755bec6c726bb29a4ce74408e2d7f8",
+      "git_blob": "a22ff3bee70261f6061d598c31f0016e785a7a3c"
+    },
+    {
+      "path": "root/hepta-audit-fifth/b21-intel-original-gate/source/bazel.yml",
+      "mode": 420,
+      "bytes": 20751,
+      "sha256": "a7bf703f31b14fd0925e3db892e4444d2ebd8db0033b69ec47ff44eae65104dd",
+      "git_blob": "9eed8ed8fa46c88d9d89d1499f55cb8c303137af"
+    },
+    {
+      "path": "root/hepta-audit-fifth/b21-intel-original-gate/source/prepare-bazel-ci.action.yml",
+      "mode": 420,
+      "bytes": 3255,
+      "sha256": "a5286f6896c99a71ee247afbad1dc0aa00d967352f33bb24d8cb97e4df5d978b",
+      "git_blob": "f9508a1659e5f2c54a6ae5b263bb9328095438d7"
+    },
+    {
+      "path": "root/hepta-audit-fifth/b21-intel-original-gate/source/pty.BUILD.bazel",
+      "mode": 420,
+      "bytes": 115,
+      "sha256": "d8ff7e3358ff7e0e1df90274cfa69585231fff351b1efa10b9ba3d4755c9efe8",
+      "git_blob": "4383f014c17582cdeba935131655abe664003b46"
+    },
+    {
+      "path": "root/hepta-audit-fifth/b21-intel-original-gate/source/run-bazel-ci.sh",
+      "mode": 420,
+      "bytes": 17448,
+      "sha256": "0136e087ddfac7c01bdacb03357d0353d328dea3b8cd86caf94e64bf10706482",
+      "git_blob": "42b59b6354b5933c8155b992519682c06d024ca1"
+    },
+    {
+      "path": "root/hepta-audit-fifth/b21-intel-original-gate/source/setup-bazel-ci.action.yml",
+      "mode": 420,
+      "bytes": 5365,
+      "sha256": "cae76442a9a6d40f2c56c1fbed991fe667f3ca3eef07e5e9806370ecf91afb7d",
+      "git_blob": "ea3f3a6521b970484ac60d1cebf788092753555a"
+    },
+    {
+      "path": "root/hepta-audit-fifth/b21-intel-original-gate/static-verification.json",
+      "mode": 420,
+      "bytes": 3976,
+      "sha256": "ea61a9899aa9af9e4989c3654397747bd7ea84905cb25af0ae61ad63879d7d13",
+      "git_blob": "1b0f049bad5bd7053cc96fe4fd5fe4d6933d25de"
+    },
+    {
+      "path": "root/hepta-audit-fifth/b21-intel-original-gate/verify_candidate.py",
+      "mode": 420,
+      "bytes": 9747,
+      "sha256": "dd15cff142cf86525e443e240a2be49a938096e378d6b47d252a510b99247aa5",
+      "git_blob": "41803e7d3838e29e476103e4632cfc0b56267c86"
+    },
+    {
+      "path": "root/hepta-audit-fifth/main-format-retention/commit-ref-actual.json",
+      "mode": 420,
+      "bytes": 3530,
+      "sha256": "24ff2a7b4f7d1aa6f7012fc3e2d84d4ef2fa826a53e6e536e247bf3f0d9b1b81",
+      "git_blob": "4bd0bb79c986886544a11eae93ade2489e07f7ae"
+    },
+    {
+      "path": "root/hepta-audit-fifth/main-format-retention/intended-full-tree.json",
+      "mode": 420,
+      "bytes": 1819327,
+      "sha256": "da38bd173ac402560d3271b01180781261cc7745ed7060c0b16c8895a31d6ebb",
+      "git_blob": "966ce09ee70a5ca282c35b1cd1b22ce0d1d1bacc"
+    },
+    {
+      "path": "root/hepta-audit-fifth/verify_b11_launcher_publication.py",
+      "mode": 420,
+      "bytes": 4604,
+      "sha256": "2324a6375b4018457b13ebe168fcce34f807a3dfbb14f9a906bfd4f30b0b0cf0",
+      "git_blob": "0263cb0b0589c7b1ba076dd021a9623f3e07d675"
+    },
+    {
+      "path": "root/hepta-audit-fifth/verify_main_format_retention_publication.py",
+      "mode": 420,
+      "bytes": 7513,
+      "sha256": "7d723f3f9909fdb78be4a2d2cdde0efe36ac6efb6b85231e2129bb5ab8071620",
+      "git_blob": "0ba367e80b4070af6693659ee10e2c3bd9e2a7ee"
+    }
+  ]
+}

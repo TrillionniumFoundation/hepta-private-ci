@@ -1,0 +1,220 @@
+{
+  "schema": "windows-setup-error-causes-pr4913-initial-ci-cut-v1",
+  "clock_observation_utc": "2026-11-06 03:55:37 UTC",
+  "pr": 4913,
+  "head": "340fbc0629d27e3a2bda7c6971be25c60b3bf2bc",
+  "source_tree": "78b817fec87e593e0a0f6357d84f895b8574bde5",
+  "publication_dependency_registry": "7b56b1ca7d043ff2cefc74cc09854171d775c81d",
+  "source_review_dependency_registry": "42748aff2421ab2bee7757158793868f08dd53d9",
+  "query_scope": "Only fixed head actions/runs page 1 per_page100 and its blocking-ci run jobs page1 per_page100; no other run jobs/artifacts queried.",
+  "head_run_pagination": {
+    "api_total_count": 5,
+    "returned": 5,
+    "unique": 5,
+    "pages": 1,
+    "complete": true
+  },
+  "runs": [
+    {
+      "id": 42158689002,
+      "name": "Original Objective owner package gates",
+      "path": ".github/workflows/hepta-objective-owner.yml",
+      "event": "pull_request",
+      "head_sha": "340fbc0629d27e3a2bda7c6971be25c60b3bf2bc",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-06T03:47:58Z",
+      "run_started_at": "2026-11-06T03:47:58Z",
+      "run_attempt": 1,
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42158689002"
+    },
+    {
+      "id": 42158689226,
+      "name": "blocking-ci",
+      "path": ".github/workflows/blocking-ci.yml",
+      "event": "pull_request",
+      "head_sha": "340fbc0629d27e3a2bda7c6971be25c60b3bf2bc",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-06T03:47:58Z",
+      "run_started_at": "2026-11-06T03:47:58Z",
+      "run_attempt": 1,
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42158689226"
+    },
+    {
+      "id": 42158688917,
+      "name": "Hepta architecture convergence",
+      "path": ".github/workflows/hepta-architecture-convergence.yml",
+      "event": "pull_request",
+      "head_sha": "340fbc0629d27e3a2bda7c6971be25c60b3bf2bc",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-06T03:47:58Z",
+      "run_started_at": "2026-11-06T03:47:58Z",
+      "run_attempt": 1,
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42158688917"
+    },
+    {
+      "id": 42158688974,
+      "name": "Hepta musl product smoke",
+      "path": ".github/workflows/hepta-musl-product-smoke.yml",
+      "event": "pull_request",
+      "head_sha": "340fbc0629d27e3a2bda7c6971be25c60b3bf2bc",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-06T03:47:58Z",
+      "run_started_at": "2026-11-06T03:47:58Z",
+      "run_attempt": 1,
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42158688974"
+    },
+    {
+      "id": 42158688956,
+      "name": "v8-canary",
+      "path": ".github/workflows/v8-canary.yml",
+      "event": "pull_request",
+      "head_sha": "340fbc0629d27e3a2bda7c6971be25c60b3bf2bc",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-06T03:47:58Z",
+      "run_started_at": "2026-11-06T03:47:58Z",
+      "run_attempt": 1,
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42158688956"
+    }
+  ],
+  "blocking_ci": {
+    "run_id": 42158689226,
+    "status": "queued",
+    "conclusion": null,
+    "pagination": {
+      "api_total_count": 3,
+      "returned": 3,
+      "unique": 3,
+      "pages": 1,
+      "complete": true
+    },
+    "jobs": [
+      {
+        "id": 127698879610,
+        "name": "Select blocking CI scope",
+        "status": "queued",
+        "conclusion": null,
+        "started_at": "2026-11-06T03:47:59Z",
+        "completed_at": null,
+        "step_count": 0,
+        "step_statuses": []
+      },
+      {
+        "id": 127698879846,
+        "name": "Codespell / Check for spelling errors",
+        "status": "completed",
+        "conclusion": "success",
+        "started_at": "2026-11-06T03:48:33Z",
+        "completed_at": "2026-11-06T03:49:21Z",
+        "step_count": 9,
+        "step_statuses": [
+          {
+            "number": 1,
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-06T03:48:34Z",
+            "completed_at": "2026-11-06T03:48:35Z"
+          },
+          {
+            "number": 2,
+            "name": "Build codespell-project/actions-codespell@8f01853be192eb0f849a5c7d721450e7a467c579",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-06T03:48:35Z",
+            "completed_at": "2026-11-06T03:48:46Z"
+          },
+          {
+            "number": 3,
+            "name": "Checkout",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-06T03:48:46Z",
+            "completed_at": "2026-11-06T03:48:52Z"
+          },
+          {
+            "number": 4,
+            "name": "Annotate locations with typos",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-06T03:48:52Z",
+            "completed_at": "2026-11-06T03:48:52Z"
+          },
+          {
+            "number": 5,
+            "name": "Read the repository Codespell exclusions",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-06T03:48:52Z",
+            "completed_at": "2026-11-06T03:48:52Z"
+          },
+          {
+            "number": 6,
+            "name": "Codespell",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-06T03:48:52Z",
+            "completed_at": "2026-11-06T03:49:17Z"
+          },
+          {
+            "number": 7,
+            "name": "Check for a clean worktree",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-06T03:49:17Z",
+            "completed_at": "2026-11-06T03:49:18Z"
+          },
+          {
+            "number": 14,
+            "name": "Post Checkout",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-06T03:49:18Z",
+            "completed_at": "2026-11-06T03:49:18Z"
+          },
+          {
+            "number": 15,
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "started_at": "2026-11-06T03:49:18Z",
+            "completed_at": "2026-11-06T03:49:18Z"
+          }
+        ]
+      },
+      {
+        "id": 127698879849,
+        "name": "Blob size policy / Blob size policy",
+        "status": "queued",
+        "conclusion": null,
+        "started_at": "2026-11-06T03:47:59Z",
+        "completed_at": null,
+        "step_count": 0,
+        "step_statuses": []
+      }
+    ]
+  },
+  "windows_build_or_test_job_observed": false,
+  "new_tests": [
+    {
+      "name": "untyped_setup_report_preserves_context_chain_and_os_error",
+      "gate": "cfg(target_os = \"windows\") module",
+      "actual_execution": "NOT_OBSERVED"
+    },
+    {
+      "name": "typed_setup_report_preserves_code_and_message_through_context",
+      "gate": "cfg(target_os = \"windows\") module",
+      "actual_execution": "NOT_OBSERVED"
+    }
+  ],
+  "qualification": "Pending Windows compilation and actual tests; Codespell success and v8-canary run success are API metadata only and do not substitute for Rust or native results.",
+  "queued_started_at": "Preserved exactly as returned. queued status with empty steps is not proof of process start or native budget consumption.",
+  "unqueried_artifacts": true,
+  "complete_tool_returns_preserved_as_JSON": "Original MCP return objects serialized losslessly as JSON, not claimed as HTTP wire bytes.",
+  "dispatch_rerun_cancel_private_capacity_or_ref_mutation": false,
+  "ACL_cause": "UNKNOWN"
+}

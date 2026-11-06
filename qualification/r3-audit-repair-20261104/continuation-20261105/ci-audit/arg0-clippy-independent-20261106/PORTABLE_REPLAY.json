@@ -1,0 +1,38 @@
+{
+  "schema": "arg0-complete-portable-replay-v1",
+  "members": 26,
+  "restore_exit": 0,
+  "restore_stdout": {
+    "bytes": 245,
+    "git_blob": "133483a8a20de05af50d86be29abe7b38f5c2174",
+    "sha256": "76f4a998cdab5a2019e0db22edba6d06eff042d188bced63f5a85420f17e4be4"
+  },
+  "restore_stderr_bytes": 0,
+  "replays": [
+    {
+      "script": "verify_independent.py",
+      "exit_code": 0,
+      "stderr_bytes": 0,
+      "stdout": {
+        "bytes": 3535,
+        "git_blob": "f4fcb52987c9a0a5a9e03f26153706ee57478307",
+        "sha256": "0768b07607b7590a096277a3bee3f3c2af79d1a89a4cf8281f174b13a1c20b51"
+      },
+      "frozen_output_full_equal": true
+    },
+    {
+      "script": "publication/verify_publication.py",
+      "exit_code": 0,
+      "stderr_bytes": 0,
+      "stdout": {
+        "bytes": 2116,
+        "git_blob": "4134f0576b0dc86e04d7b6479ad9cdfe5755ace2",
+        "sha256": "7f1405cbb7ab33b8f45fc286b183c0cbed82edad12a8c530713726fdd526eba2"
+      },
+      "frozen_output_full_equal": true
+    }
+  ],
+  "native_executed": false,
+  "source_modified": false,
+  "location_independent": true
+}

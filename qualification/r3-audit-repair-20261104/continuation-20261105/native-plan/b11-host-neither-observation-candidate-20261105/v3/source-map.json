@@ -1,0 +1,156 @@
+{
+  "candidate_revision": "v3",
+  "created_utc": "2026-11-06T00:01:49.935941+00:00",
+  "authority_head": "2980fa274c599bd07437a2f5915b86d858f89bcc",
+  "authority_checkout": "53766cb836b198e2f928b949f148d7a2a10c0d21",
+  "authority_tree": "9cb7302777ce018dd022086041c2225d1dd5c8dd",
+  "scope": "test-only observation launcher correction for unrestricted subjects; no production policy modification",
+  "original_sources": [
+    {
+      "repository_path": "codex-rs/utils/pty/src/win/job.rs",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/source/codex-rs/utils/pty/src/win/job.rs",
+      "bytes": 8506,
+      "sha256": "3c904bcd4ac33719bb843639c30be39ca6e9ceda350be311f970aaf3d748a476",
+      "git_blob": "b06035f72d227b4069da677e8104617ae5616283",
+      "verified_against_actual_published_tree": true,
+      "acquisition": "full original Git blob GET, copied byte-exact from frozen v2 source or candidate"
+    },
+    {
+      "repository_path": "codex-rs/windows-sandbox-rs/BUILD.bazel",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/source/codex-rs/windows-sandbox-rs/BUILD.bazel",
+      "bytes": 2556,
+      "sha256": "187e93c5a9a244c752dee5ed15202b361d593d9d651f850a1bda5d69969a7702",
+      "git_blob": "8531cb4d664c25de6fbf200c71cb8042d1d8d865",
+      "verified_against_actual_published_tree": true,
+      "acquisition": "full original Git blob GET, copied byte-exact from frozen v2 source or candidate"
+    },
+    {
+      "repository_path": "codex-rs/windows-sandbox-rs/Cargo.toml",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/source/codex-rs/windows-sandbox-rs/Cargo.toml",
+      "bytes": 2438,
+      "sha256": "183a3691be018640668dfb766f29651d8fd75ab08f7fd526f3d378ae2a86469d",
+      "git_blob": "aa41ed5f08608c0275785b2f5e27ec5db08f50dd",
+      "verified_against_actual_published_tree": true,
+      "acquisition": "full original Git blob GET, copied byte-exact from frozen v2 source or candidate"
+    },
+    {
+      "repository_path": "codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/source/codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs",
+      "bytes": 16679,
+      "sha256": "b701ad01169eb9f64b62ad50099dfcda51b014a5c96dbc2080631fd2e6d7ee75",
+      "git_blob": "6f05793ec6ee043a933073ada3a1bf9122de5a73",
+      "verified_against_actual_published_tree": true,
+      "acquisition": "full original Git blob GET, copied byte-exact from frozen v2 source or candidate"
+    },
+    {
+      "repository_path": "codex-rs/windows-sandbox-rs/src/desktop.rs",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/source/codex-rs/windows-sandbox-rs/src/desktop.rs",
+      "bytes": 9710,
+      "sha256": "4e26ba072fada10f6185d16682274022108ef843f8292d1e7f9ed237f7e1a56f",
+      "git_blob": "0b01f011119bef623bc9e46e710caa371520380d",
+      "verified_against_actual_published_tree": true,
+      "acquisition": "full original Git blob GET, copied byte-exact from frozen v2 source or candidate"
+    },
+    {
+      "repository_path": "codex-rs/windows-sandbox-rs/src/lib.rs",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/source/codex-rs/windows-sandbox-rs/src/lib.rs",
+      "bytes": 30379,
+      "sha256": "6a656c06930bcf07075db8712292bb8040a33667231783dba177e62230982b38",
+      "git_blob": "11778af7beb645b36401807cf3e31a0dd4deddc0",
+      "verified_against_actual_published_tree": true,
+      "acquisition": "full original Git blob GET, copied byte-exact from frozen v2 source or candidate"
+    },
+    {
+      "repository_path": "codex-rs/windows-sandbox-rs/src/proc_thread_attr.rs",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/source/codex-rs/windows-sandbox-rs/src/proc_thread_attr.rs",
+      "bytes": 4086,
+      "sha256": "e42e26ae546bb7e00639a70de5a8609d631d4d6f33976d32de6f4dbf741bcb8f",
+      "git_blob": "38110a69239e9707a324f2d4cf4a1fad932b4132",
+      "verified_against_actual_published_tree": true,
+      "acquisition": "full original Git blob GET, copied byte-exact from frozen v2 source or candidate"
+    },
+    {
+      "repository_path": "codex-rs/windows-sandbox-rs/src/process.rs",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/source/codex-rs/windows-sandbox-rs/src/process.rs",
+      "bytes": 11792,
+      "sha256": "7c7ea19f6fcfa88990cf5582273eede6139a52ccda8212468087276bb50eaca7",
+      "git_blob": "4d4f1d9435aad3cf9cd27a82d51b2be5b7659a4c",
+      "verified_against_actual_published_tree": true,
+      "acquisition": "full original Git blob GET, copied byte-exact from frozen v2 source or candidate"
+    },
+    {
+      "repository_path": "codex-rs/windows-sandbox-rs/src/token.rs",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/source/codex-rs/windows-sandbox-rs/src/token.rs",
+      "bytes": 18437,
+      "sha256": "6d7ddb4a84561b28bc134139226f9be444cb0dc03c73038e7988e21e18339a77",
+      "git_blob": "b22acb5556f6af3b4c250a2441f161ee448ea1c1",
+      "verified_against_actual_published_tree": true,
+      "acquisition": "full original Git blob GET, copied byte-exact from frozen v2 source or candidate"
+    },
+    {
+      "repository_path": "codex-rs/windows-sandbox-rs/src/token_integrity_probe_support.rs",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/source/codex-rs/windows-sandbox-rs/src/token_integrity_probe_support.rs",
+      "bytes": 17560,
+      "sha256": "986fe8864f789e4bfa876553d99f1949be403f5ed10b9c88fdc8e0fd7331c0d1",
+      "git_blob": "7a7008f9becf09578ca953c849401eda93eb94b2",
+      "verified_against_actual_published_tree": true,
+      "acquisition": "full original Git blob GET, copied byte-exact from frozen v2 source or candidate"
+    },
+    {
+      "repository_path": "codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/source/codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs",
+      "bytes": 14736,
+      "sha256": "f5da450f9745cbf65947d15810e9973932264b28dfe21e4f7150b62e5081c2f9",
+      "git_blob": "fc9faa6d47ac5fdefa216affceb51a586f8e6b81",
+      "verified_against_actual_published_tree": true,
+      "acquisition": "full original Git blob GET, copied byte-exact from frozen v2 source or candidate"
+    },
+    {
+      "repository_path": "codex-rs/windows-sandbox-rs/src/token_neither_privilege_observation.rs",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/source/codex-rs/windows-sandbox-rs/src/token_neither_privilege_observation.rs",
+      "bytes": 23010,
+      "sha256": "441a000d02c7aab203a270bde951dcb6e98e02845e76314782892b87e6a6a835",
+      "git_blob": "b40b49ce772c402c51ddb16bb98ff73dc78cdb41",
+      "verified_against_actual_published_tree": true,
+      "acquisition": "full original Git blob GET, copied byte-exact from frozen v2 source or candidate"
+    },
+    {
+      "repository_path": "codex-rs/windows-sandbox-rs/src/winutil.rs",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/source/codex-rs/windows-sandbox-rs/src/winutil.rs",
+      "bytes": 8038,
+      "sha256": "12e2413a588b62ff3cc91c70c626a20801f4f84c0f4ea858ca7eb41e83a92185",
+      "git_blob": "45378b4bb527ce2b202913ab3b21aad9ef4b1828",
+      "verified_against_actual_published_tree": true,
+      "acquisition": "full Git blob GET performed during v3 preparation"
+    },
+    {
+      "repository_path": "defs.bzl",
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/source/defs.bzl",
+      "bytes": 34630,
+      "sha256": "f5638a9189632c8d8524a438bbfc6b365bddf7f23dfd2df06a6de3a2ff3f2cfa",
+      "git_blob": "6f588ec3057fddfea35170e28e74036162ce6a23",
+      "verified_against_actual_published_tree": true,
+      "acquisition": "full original Git blob GET, copied byte-exact from frozen v2 source or candidate"
+    }
+  ],
+  "changes": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token_neither_privilege_observation.rs",
+      "before": {
+        "bytes": 23010,
+        "sha256": "441a000d02c7aab203a270bde951dcb6e98e02845e76314782892b87e6a6a835",
+        "git_blob": "b40b49ce772c402c51ddb16bb98ff73dc78cdb41"
+      },
+      "after": {
+        "bytes": 26205,
+        "sha256": "c48d7a3917ca0bd8dda236d3773c0351a39272bbc277b8186bde7467035580ff",
+        "git_blob": "8c16416c185f17871c25139bc16c6fd112b5fd41"
+      }
+    }
+  ],
+  "native_execution_performed": false,
+  "compilation_performed": false,
+  "formatting_tool_performed": false,
+  "ref_mutation_performed": false,
+  "B11_status": "OPEN"
+}

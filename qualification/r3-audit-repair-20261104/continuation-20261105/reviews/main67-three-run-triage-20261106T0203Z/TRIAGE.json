@@ -1,0 +1,413 @@
+{
+  "schema": "hepta-main67-three-run-failure-triage-v1",
+  "source_head": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+  "source_tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+  "retrieval_windows": {
+    "initial_helper_and_cancelled_log_requests": [
+      {
+        "current_time": "2026-11-06 02:03:58 UTC"
+      },
+      {
+        "current_time": "2026-11-06 02:03:59 UTC"
+      }
+    ],
+    "complete_REST_jobs": [
+      {
+        "current_time": "2026-11-06 02:04:34 UTC"
+      },
+      {
+        "current_time": "2026-11-06 02:04:35 UTC"
+      }
+    ],
+    "positive_full_logs": [
+      {
+        "current_time": "2026-11-06 02:06:28 UTC"
+      },
+      {
+        "current_time": "2026-11-06 02:06:28 UTC"
+      }
+    ]
+  },
+  "scope": "Three specified workflow runs only; not a fresh all-19-run census.",
+  "runs": [
+    {
+      "run_id": 42123581078,
+      "actual_total_count": 3,
+      "complete_returned_job_count": 3,
+      "attempts": [
+        1
+      ],
+      "jobs": [
+        {
+          "job_id": 127581903929,
+          "name": "Encrypted keyring closure (ubuntu-24.04, non-authorizing)",
+          "status": "completed",
+          "conclusion": "success",
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "runner_id": 1000007048,
+          "steps_count": 8,
+          "source_head": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+        },
+        {
+          "job_id": 127581904379,
+          "name": "Encrypted keyring closure (macos-15, non-authorizing)",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "labels": [
+            "macos-15"
+          ],
+          "runner_id": 0,
+          "steps_count": 0,
+          "source_head": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+        },
+        {
+          "job_id": 127581904534,
+          "name": "Encrypted keyring closure (windows-latest, non-authorizing)",
+          "status": "completed",
+          "conclusion": "success",
+          "labels": [
+            "windows-latest"
+          ],
+          "runner_id": 1000005347,
+          "steps_count": 8,
+          "source_head": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+        }
+      ]
+    },
+    {
+      "run_id": 42123581186,
+      "actual_total_count": 6,
+      "complete_returned_job_count": 6,
+      "attempts": [
+        1
+      ],
+      "jobs": [
+        {
+          "job_id": 127581904579,
+          "name": "Original Bazel operator oracle with native placement (x86_64-unknown-linux-gnu)",
+          "status": "completed",
+          "conclusion": "success",
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "runner_id": 1000007056,
+          "steps_count": 10,
+          "source_head": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+        },
+        {
+          "job_id": 127581904887,
+          "name": "Original operator controls and independent OpenSSH oracle (macos-15)",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "labels": [
+            "macos-15"
+          ],
+          "runner_id": 0,
+          "steps_count": 0,
+          "source_head": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+        },
+        {
+          "job_id": 127581904964,
+          "name": "Original Bazel operator oracle with native placement (aarch64-apple-darwin)",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "labels": [
+            "macos-15"
+          ],
+          "runner_id": 0,
+          "steps_count": 0,
+          "source_head": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+        },
+        {
+          "job_id": 127581904974,
+          "name": "Original operator controls and independent OpenSSH oracle (ubuntu-24.04)",
+          "status": "completed",
+          "conclusion": "success",
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "runner_id": 1000007046,
+          "steps_count": 9,
+          "source_head": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+        },
+        {
+          "job_id": 127581905038,
+          "name": "Original Bazel operator oracle with native placement (x86_64-apple-darwin)",
+          "status": "completed",
+          "conclusion": "success",
+          "labels": [
+            "macos-15-intel"
+          ],
+          "runner_id": 1000005381,
+          "steps_count": 10,
+          "source_head": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+        },
+        {
+          "job_id": 127581905048,
+          "name": "Original operator controls and independent OpenSSH oracle (windows-2025)",
+          "status": "completed",
+          "conclusion": "success",
+          "labels": [
+            "windows-2025"
+          ],
+          "runner_id": 1000005333,
+          "steps_count": 9,
+          "source_head": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+        }
+      ]
+    },
+    {
+      "run_id": 42123581142,
+      "actual_total_count": 3,
+      "complete_returned_job_count": 3,
+      "attempts": [
+        1
+      ],
+      "jobs": [
+        {
+          "job_id": 127581904089,
+          "name": "Owner-local and original Matrixd/Agentd controls (macos-15)",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "labels": [
+            "macos-15"
+          ],
+          "runner_id": 0,
+          "steps_count": 0,
+          "source_head": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+        },
+        {
+          "job_id": 127581904493,
+          "name": "Owner-local and original Matrixd/Agentd controls (ubuntu-24.04)",
+          "status": "completed",
+          "conclusion": "success",
+          "labels": [
+            "ubuntu-24.04"
+          ],
+          "runner_id": 1000007049,
+          "steps_count": 11,
+          "source_head": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+        },
+        {
+          "job_id": 127581904496,
+          "name": "Owner-local and original Matrixd/Agentd controls (windows-2025)",
+          "status": "completed",
+          "conclusion": "success",
+          "labels": [
+            "windows-2025"
+          ],
+          "runner_id": 1000005329,
+          "steps_count": 11,
+          "source_head": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+        }
+      ]
+    }
+  ],
+  "actual_job_totals": {
+    "success": 8,
+    "cancelled": 4,
+    "failure": 0
+  },
+  "cancelled_macos": [
+    {
+      "job_id": 127581904379,
+      "run_id": 42123581078,
+      "run_attempt": 1,
+      "name": "Encrypted keyring closure (macos-15, non-authorizing)",
+      "labels": [
+        "macos-15"
+      ],
+      "steps": [],
+      "runner_id": 0,
+      "runner_name": "",
+      "started_at": "2026-11-05T22:41:16Z",
+      "completed_at": "2026-11-05T22:57:34Z",
+      "full_log_request_result": "404 BlobNotFound",
+      "actual_compile_test_execution": "UNKNOWN: no execution steps or log content available",
+      "cancellation_cause": "UNKNOWN",
+      "failure_code_location": null,
+      "missing_log_does_not_prove_never_executed": true
+    },
+    {
+      "job_id": 127581904887,
+      "run_id": 42123581186,
+      "run_attempt": 1,
+      "name": "Original operator controls and independent OpenSSH oracle (macos-15)",
+      "labels": [
+        "macos-15"
+      ],
+      "steps": [],
+      "runner_id": 0,
+      "runner_name": "",
+      "started_at": "2026-11-05T22:41:16Z",
+      "completed_at": "2026-11-05T22:59:23Z",
+      "full_log_request_result": "404 BlobNotFound",
+      "actual_compile_test_execution": "UNKNOWN: no execution steps or log content available",
+      "cancellation_cause": "UNKNOWN",
+      "failure_code_location": null,
+      "missing_log_does_not_prove_never_executed": true
+    },
+    {
+      "job_id": 127581904964,
+      "run_id": 42123581186,
+      "run_attempt": 1,
+      "name": "Original Bazel operator oracle with native placement (aarch64-apple-darwin)",
+      "labels": [
+        "macos-15"
+      ],
+      "steps": [],
+      "runner_id": 0,
+      "runner_name": "",
+      "started_at": "2026-11-05T22:41:16Z",
+      "completed_at": "2026-11-05T23:01:52Z",
+      "full_log_request_result": "404 BlobNotFound",
+      "actual_compile_test_execution": "UNKNOWN: no execution steps or log content available",
+      "cancellation_cause": "UNKNOWN",
+      "failure_code_location": null,
+      "missing_log_does_not_prove_never_executed": true
+    },
+    {
+      "job_id": 127581904089,
+      "run_id": 42123581142,
+      "run_attempt": 1,
+      "name": "Owner-local and original Matrixd/Agentd controls (macos-15)",
+      "labels": [
+        "macos-15"
+      ],
+      "steps": [],
+      "runner_id": 0,
+      "runner_name": "",
+      "started_at": "2026-11-05T22:41:16Z",
+      "completed_at": "2026-11-05T22:59:23Z",
+      "full_log_request_result": "404 BlobNotFound",
+      "actual_compile_test_execution": "UNKNOWN: no execution steps or log content available",
+      "cancellation_cause": "UNKNOWN",
+      "failure_code_location": null,
+      "missing_log_does_not_prove_never_executed": true
+    }
+  ],
+  "positive_log_findings": {
+    "keyring_ubuntu": {
+      "job_id": 127581903929,
+      "log_identity": {
+        "bytes": 144495,
+        "sha256": "726ef7a8a8a7aca5078838c0e1ab59f9d1a09f585f1797e6cc0c62a6f494345e",
+        "git_blob": "e161127d446251ac5effd0ad6d07a714eaeae88c"
+      },
+      "source_line": 464,
+      "command_lines": [
+        438,
+        439,
+        457,
+        458
+      ],
+      "package_absence_output_line": 1771,
+      "cargo_check_finished_line": 1821,
+      "cargo_check_elapsed_seconds": 15.98,
+      "claim": "Cargo metadata did not produce a tracked lockfile diff; the workflow's named advisory-targeted package predicate passed; cargo check --locked -p codex-keyring-store completed.",
+      "unit_or_integration_test_run_proven": false,
+      "security_release_or_all_platform_qualification": false
+    },
+    "operator_bazel_gnu": {
+      "job_id": 127581904579,
+      "log_identity": {
+        "bytes": 94109,
+        "sha256": "4305a1f3d89d4b0995117bf1bc2d2fb963bd62d4bfce294b5cf9691cff9d6b0b",
+        "git_blob": "8ff6738655ca3fe392c66a971c62087d375eb3ee"
+      },
+      "target": "//codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests",
+      "command_lines": [
+        847,
+        856
+      ],
+      "nocache_flag_line": 853,
+      "result_lines": [
+        1024,
+        1026
+      ],
+      "target_passes": 1,
+      "target_seconds": 0.2,
+      "invocation_id": "9f4a5cdc-4373-4a0a-a5ba-d7934caf8ed3",
+      "artifact_inner_test_log_XML_and_compact_verified_here": false,
+      "scope": "Full job log proves the requested nocache flag and one target pass. It does not expose all internal cases or independently bind actual TestRunner placement/cache metadata."
+    },
+    "operator_ubuntu_controls": {
+      "job_id": 127581904974,
+      "log_identity": {
+        "bytes": 48490,
+        "sha256": "1e79ee8d380fc7e1ff4557591fec74cbc9b66334100ec17ab7f655fd4e75d638",
+        "git_blob": "eafe78514bc88897bd9ba5c527d3a0da89b5d997"
+      },
+      "source_head_tree_lines": [
+        268,
+        269
+      ],
+      "actual_toolchain_host_line": 280,
+      "command_line": 285,
+      "actual_PASS_rows": 33,
+      "summary_line": 467,
+      "summary_passed": 33,
+      "summary_skipped": 0,
+      "source_worktree_and_fmt_step_success": true,
+      "original_retry_option": "--retries 0",
+      "openssh_preflight_commands_lines": [
+        254,
+        256
+      ],
+      "explicit_real_openssh_compatibility_PASS_line": 465,
+      "artifact_junit_and_openssh_binary_hash_not_downloaded_here": true
+    },
+    "owner_ubuntu_controls": {
+      "job_id": 127581904493,
+      "log_identity": {
+        "bytes": 336725,
+        "sha256": "af27c678f684b28cbe5b5d1e568a7ab7f1465548365402d1599ea2f2f85d24f8",
+        "git_blob": "453dd70bec9390a285175a1186f070af93ade614"
+      },
+      "observed_package_PASS_rows": {
+        "codex-uds": 15,
+        "codex-hepta-matrixd": 31,
+        "codex-hepta-agentd": 242
+      },
+      "original_commands_lines": [
+        280,
+        371,
+        2682
+      ],
+      "original_threads": 1,
+      "original_retry_option": "--retries 0",
+      "summary_lines": {
+        "uds": 368,
+        "matrixd": 2679,
+        "agentd": 3392
+      },
+      "agentd_skipped": 1,
+      "skipped_case_name_not_exposed_by_this_job_console": true,
+      "worktree_and_fmt_step_success": true,
+      "artifact_inner_JUnit_not_downloaded_here": true
+    }
+  },
+  "limits": {
+    "executor_available": false,
+    "no_executor_retry": true,
+    "ZIP_retrieved_or_verified": false,
+    "new_native_run": false,
+    "dispatch_or_rerun_or_cancel": false,
+    "refs_or_PR_mutated": false,
+    "no_new_product_failure_established": true,
+    "precise_product_fix_proposed": false,
+    "scientific_or_release_qualification_expanded": false,
+    "blocker_ledger_changed": false
+  },
+  "conclusion": "The three run-level failure labels do not establish three new product failures. Four macOS jobs remain cancelled with empty steps, no assigned runner in these records, and unavailable logs; cancellation cause remains UNKNOWN. Linux positives are retained with their exact observed scopes.",
+  "normalized_helper_comparison": {
+    "operator_run_id": 42123581186,
+    "helper_returned_jobs": 6,
+    "complete_REST_returned_jobs": 6,
+    "complete_job_id_rosters_equal": true,
+    "earlier_preview_count_assumption_corrected_before_registration": true,
+    "interpretation": "Complete stored helper and REST records both contain six jobs. An earlier truncated-preview reading was corrected; no connector omission is claimed."
+  }
+}

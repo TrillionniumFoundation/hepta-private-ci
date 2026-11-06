@@ -1,0 +1,122 @@
+"""Prepare lossless native12 archive transport and selected-leaf Merkle proof.
+
+No Git ref, product test, native command, or remote execution is performed.
+"""
+from pathlib import Path, PurePosixPath
+import base64
+import hashlib
+import json
+import shutil
+
+ROOT = Path(__file__).resolve().parents[2]
+AUDIT = Path(__file__).resolve().parent
+P = AUDIT / 'terminal/probe-127623021642'
+PUB = ROOT / 'hepta-audit-fifth/b11-observation-launcher-v3-publication'
+
+
+def identity(body):
+    return {'bytes': len(body), 'sha256': hashlib.sha256(body).hexdigest(),
+            'git_blob': hashlib.sha1(b'blob ' + str(len(body)).encode() + b'\0' + body).hexdigest()}
+
+
+def save(path, body):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if path.exists():
+        assert path.read_bytes() == body, str(path)
+    else:
+        path.write_bytes(body)
+
+
+def write(path, obj):
+    save(path, (json.dumps(obj, ensure_ascii=False, indent=2) + '\n').encode())
+
+
+archive = (P / 'artifact.zip').read_bytes()
+assert identity(archive)['sha256'] == 'b21172467ad92e47439defa6075099cf7ba9fcf56b22221de145f0434bffe4f2'
+parts = []
+for i, offset in enumerate(range(0, len(archive), 131072)):
+    raw = archive[offset:offset + 131072]
+    encoded = base64.b64encode(raw) + b'\n'
+    name = f'archive/artifact.part-{i:03d}.base64.txt'
+    save(P / name, encoded)
+    parts.append({'path': name, 'offset': offset, 'raw': identity(raw), 'encoded': identity(encoded)})
+write(P / 'archive/manifest.json', {
+    'schema': 'hepta-native12-lossless-zip-transport-v1',
+    'artifact_id': 13465596874, 'archive': identity(archive), 'parts': parts,
+    'encoding': 'Each file contains one standard base64 string and one LF; decode in listed order.',
+    'member_manifest': '../artifact-verification.json',
+    'member_git_blob_labels_are_computed_identities_not_separate_actual_Git_registrations': True,
+    'all_original_member_bytes_retained_in_zip': True,
+})
+
+full_raw = (PUB / 'intended-full-tree.json').read_bytes()
+full = json.loads(full_raw)
+assert full['sha'] == '9a804c7b6e0dd554cdb435f41e06c5c689fffaaf' and not full['truncated']
+flat = {entry['path']: entry for entry in full['tree']}
+assert len(flat) == len(full['tree'])
+base = P / 'members/b11-token-mechanism-probe'
+selected = set()
+for line in (base / 'source-leaves.txt').read_bytes().decode().splitlines():
+    meta, path = line.split('\t')
+    mode, kind, sha = meta.split()
+    assert {k: flat[path][k] for k in ['mode', 'type', 'sha']} == {'mode': mode, 'type': kind, 'sha': sha}
+    selected.add(path)
+assert len(selected) == 79
+helper = json.loads((base / 'read-acl-readiness/source-before.json').read_bytes())
+for path, row in helper['pins'].items():
+    assert flat[path]['sha'] == row['canonical_git_blob']
+    selected.add(path)
+needed = {''}
+for path in selected:
+    parent = PurePosixPath(path).parent
+    while parent.as_posix() != '.':
+        needed.add(parent.as_posix())
+        parent = parent.parent
+nodes = []
+for directory in sorted(needed):
+    entries = []
+    for path, entry in flat.items():
+        parent = PurePosixPath(path).parent.as_posix()
+        if ('' if parent == '.' else parent) == directory:
+            entries.append({'name': PurePosixPath(path).name, **{k: entry[k] for k in ['mode', 'type', 'sha']}})
+    entries.sort(key=lambda e: (e['name'] + ('/' if e['type'] == 'tree' else '')).encode())
+    raw = b''.join((('40000' if e['type'] == 'tree' else e['mode']) + ' ' + e['name']).encode() + b'\0' + bytes.fromhex(e['sha']) for e in entries)
+    sha = hashlib.sha1(b'tree ' + str(len(raw)).encode() + b'\0' + raw).hexdigest()
+    assert sha == (flat[directory]['sha'] if directory else full['sha'])
+    nodes.append({'directory': directory, 'sha': sha, 'entries': entries})
+write(P / 'source-merkle-proof.json', {
+    'schema': 'hepta-selected-source-leaves-Merkle-proof-v1', 'tree': full['sha'],
+    'derivation': 'Exact direct children of each necessary ancestor, selected from the root publication full tree; all serialized Git tree hashes recompute to the actual merge tree. Nodes are computed proofs, not claimed independent API GETs.',
+    'source_full_tree_file_identity': identity(full_raw), 'selected_leaves': sorted(selected), 'nodes': nodes,
+})
+save(P / 'actual-tree-root.original.json', (PUB / 'actual-tree-root.json').read_bytes())
+save(P / 'root-publication-source-proof.json', (PUB / 'root-tree-proof.json').read_bytes())
+
+initial = AUDIT / 'native12-snapshot-001'
+initial_files = []
+for name in ['pr.original.json', 'runs.original.json', 'merge.original.json', 'jobs.original.json', 'capture-times.json']:
+    raw = (initial / name).read_bytes()
+    save(P / 'initial-snapshot' / name, raw)
+    initial_files.append({'path': name, **identity(raw)})
+save(P / 'initial-snapshot/manifest.json', (initial / 'manifest.json').read_bytes())
+
+
+module = json.loads((PUB / 'candidate-full-get.actual.json').read_bytes())['content'].encode()
+assert identity(module)['git_blob'] == '8c16416c185f17871c25139bc16c6fd112b5fd41'
+save(P / 'executed-observation-module.rs.source.txt', module)
+matrix = (ROOT / 'architecture-audit/b11-host-neither-observation-candidate-20261105/v2/source/codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs').read_bytes()
+assert identity(matrix)['git_blob'] == '6f05793ec6ee043a933073ada3a1bf9122de5a73'
+save(P / 'delete-permission-matrix.rs.source.txt', matrix)
+
+parser_path = ROOT / 'ci-audit/b20-original-path-inquiry-20261105/windows/upstream-b10-project-originals.py.source.txt'
+parser_raw = parser_path.read_bytes()
+start = parser_raw.index(b'def varint(data, pos):')
+end = parser_raw.index(b'\n\ndef main():', start)
+primitives = parser_raw[start:end]
+save(P / 'compact_wire_parser.py.source.txt', b'"""Exact varint/fields/first helper slice; see compact-parser-provenance.json."""\n' + primitives + b'\n')
+write(P / 'compact-parser-provenance.json', {
+    'upstream_local_file': str(parser_path.relative_to(ROOT)), 'entire_upstream_identity': identity(parser_raw),
+    'slice_start_byte': start, 'slice_end_byte_exclusive': end, 'slice_identity': identity(primitives),
+    'changes_to_three_function_bodies': False, 'scope': 'Only protobuf wire framing helpers are reused. No product/native executable is run.',
+})
+print(json.dumps({'archive_parts': len(parts), 'selected_source_and_pin_paths': len(selected), 'Merkle_nodes': len(nodes), 'ZIP': identity(archive)}))

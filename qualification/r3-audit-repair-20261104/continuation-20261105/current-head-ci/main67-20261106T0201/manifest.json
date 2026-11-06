@@ -1,0 +1,545 @@
+{
+  "schema": "hepta-main67-0201-complete-original-transport-v1",
+  "scope": "Serialized complete original MCP return objects and a clearly identified derived status projection. Not HTTP wire capture; no ZIPs or new product/native execution.",
+  "source": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+  "run_list_observed_by_utc": "2026-11-06 01:59:47 UTC",
+  "jobs_read_window": [
+    "2026-11-06 01:59:47 UTC",
+    "2026-11-06 02:01:43 UTC"
+  ],
+  "window_note": "All 19 complete jobs responses were retained in the preceding read call. Its postprocessing attempted old.find on the prior numeric job count and failed after reads; no response was lost. Exact first-read timestamp was not retained, so only true bounds are stated; no new API reads were needed to assemble this result.",
+  "earlier_postprocessing_error": "TypeError: old.find is not a function; prior summary.jobs is the count 53, not a job array.",
+  "members": [
+    {
+      "name": "mainPR.original-tool-return.json",
+      "bytes": 149735,
+      "git_blob": "1f4bbb712b66beec1d7cf8c044b7d101c0ed0df5",
+      "sha256": "aef9cb44f858fa75b67b66a1af94b4ee32d6d9a1db7a0bff6b3df371aa520f03",
+      "characters": 145865,
+      "whole_member_git_blob_computed_not_necessarily_separately_registered": true,
+      "parts": [
+        {
+          "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/parts/mainPR.original-tool-return.json.part-000.txt",
+          "character_offset": 0,
+          "characters": 90000,
+          "bytes": 93750,
+          "git_blob": "0784217b3e9a2cfbccbe87283a6fdd4c8f68d884",
+          "sha256": "b5402f04f75163ed733500903006751bbef867a14a70010eea25defba84297f9"
+        },
+        {
+          "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/parts/mainPR.original-tool-return.json.part-001.txt",
+          "character_offset": 90000,
+          "characters": 55865,
+          "bytes": 55985,
+          "git_blob": "7a8ca4ba4791b65584ee9f1608b7da272a8b85d0",
+          "sha256": "37ae72686a3a24c15400a26759a06de7e1b0221178c2d62f11d93902fc054f3e"
+        }
+      ]
+    },
+    {
+      "name": "windowsPR.original-tool-return.json",
+      "bytes": 113985,
+      "git_blob": "580d821431060f29f9ad98f9b7951509f29c448a",
+      "sha256": "d6b51c143e1787b6941ab2b77b80f97df02b26c16b5a299d504ab070ec81d75d",
+      "characters": 99971,
+      "whole_member_git_blob_computed_not_necessarily_separately_registered": true,
+      "parts": [
+        {
+          "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/parts/windowsPR.original-tool-return.json.part-000.txt",
+          "character_offset": 0,
+          "characters": 90000,
+          "bytes": 104014,
+          "git_blob": "99f6f9810a38e5428343f079b59365b6b26579e6",
+          "sha256": "580ed9d67abfc96513706004b89f06f8a2f43c740e9959988bc98ae14210cd3d"
+        },
+        {
+          "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/parts/windowsPR.original-tool-return.json.part-001.txt",
+          "character_offset": 90000,
+          "characters": 9971,
+          "bytes": 9971,
+          "git_blob": "f6ef275492a53d7364677939c57428c64f5e3040",
+          "sha256": "866e53d9274da44a94cdb757641dc6b0c7facb8a5819dd8b59d7a198f1ec6313"
+        }
+      ]
+    },
+    {
+      "name": "intelPR.original-tool-return.json",
+      "bytes": 45899,
+      "git_blob": "5c213344391c4d17203af88e94f25a28c7b6e0d3",
+      "sha256": "2e0c5cff88604e22878745c15598f8c5734f6a77bc1525c5d0244214bdcea6df",
+      "characters": 43795,
+      "whole_member_git_blob_computed_not_necessarily_separately_registered": true,
+      "parts": [
+        {
+          "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/intelPR.original-tool-return.json",
+          "character_offset": 0,
+          "characters": 43795,
+          "bytes": 45899,
+          "git_blob": "5c213344391c4d17203af88e94f25a28c7b6e0d3",
+          "sha256": "2e0c5cff88604e22878745c15598f8c5734f6a77bc1525c5d0244214bdcea6df"
+        }
+      ]
+    },
+    {
+      "name": "mainRuns.original-tool-return.json",
+      "bytes": 632972,
+      "git_blob": "ffe583ed60b2f661303b3ddd214977c7246cbf5a",
+      "sha256": "e45c257829bfb422603ba782da6cf7f4edbccf17b633cb97d7abac7b5f973273",
+      "characters": 632972,
+      "whole_member_git_blob_computed_not_necessarily_separately_registered": true,
+      "parts": [
+        {
+          "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/parts/mainRuns.original-tool-return.json.part-000.txt",
+          "character_offset": 0,
+          "characters": 90000,
+          "bytes": 90000,
+          "git_blob": "abb42431af3bdd0dbe9a15017f3f3a9e72c3a96e",
+          "sha256": "71ebed54ff0cc8c5052d0346d359103b287ceb5967885d7ae301fc122590314f"
+        },
+        {
+          "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/parts/mainRuns.original-tool-return.json.part-001.txt",
+          "character_offset": 90000,
+          "characters": 90000,
+          "bytes": 90000,
+          "git_blob": "2e01263e13462e72f40f9e5ce21ae6a073828419",
+          "sha256": "71146e525ecfa610480ac9a2f32ffebdf2fe6fa8ef5c3e91b183b4d60f672fc2"
+        },
+        {
+          "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/parts/mainRuns.original-tool-return.json.part-002.txt",
+          "character_offset": 180000,
+          "characters": 90000,
+          "bytes": 90000,
+          "git_blob": "8dc327cb15c03fc627230947172cf57a4ef34569",
+          "sha256": "ffeb0cfbd7191a4747bc7bef1abe30b3b04a7b3597e40dfd476f864c1375c329"
+        },
+        {
+          "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/parts/mainRuns.original-tool-return.json.part-003.txt",
+          "character_offset": 270000,
+          "characters": 90000,
+          "bytes": 90000,
+          "git_blob": "c637d863aa008b3f1f4ca757039d330559889631",
+          "sha256": "220cf26c215466a360c9a5492f040163081292c09749db21b820f01090221fc1"
+        },
+        {
+          "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/parts/mainRuns.original-tool-return.json.part-004.txt",
+          "character_offset": 360000,
+          "characters": 90000,
+          "bytes": 90000,
+          "git_blob": "df452699207da454542444b90b0f2dd53a4cf07d",
+          "sha256": "46399d5a5656ac85ba236fcbdca4cf5470fca64d575bab469a22bec7d2c453c3"
+        },
+        {
+          "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/parts/mainRuns.original-tool-return.json.part-005.txt",
+          "character_offset": 450000,
+          "characters": 90000,
+          "bytes": 90000,
+          "git_blob": "fdf622a5a8af40786cde0ece54ddada28091636b",
+          "sha256": "a3fa8954f752741cd435689fe2b6d582f97c67034f1d820b02b550374c4ceee7"
+        },
+        {
+          "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/parts/mainRuns.original-tool-return.json.part-006.txt",
+          "character_offset": 540000,
+          "characters": 90000,
+          "bytes": 90000,
+          "git_blob": "482d2e16713a652f7e192b78d4fb12759437f9dd",
+          "sha256": "24a0bf3be7057958a985aaa346dc29b002cec7bf565dc125cda32dd58f56f8b8"
+        },
+        {
+          "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/parts/mainRuns.original-tool-return.json.part-007.txt",
+          "character_offset": 630000,
+          "characters": 2972,
+          "bytes": 2972,
+          "git_blob": "3829d250f7aab2ab809087a54fd5f412db022337",
+          "sha256": "056ea68a6dc1ad3e82e71dac5ad311443742fd126956f78f8d7b4f036a011d72"
+        }
+      ]
+    },
+    {
+      "name": "jobs-42123581986.original-tool-return.json",
+      "bytes": 7935,
+      "git_blob": "c3b029071e48ba2ff56e7ad6c5edbe815c5df005",
+      "sha256": "f79c3d1d0a8115f8ac74fae651cc8ebea2eda533acac71d994db2ed561a7f46a",
+      "characters": 7935,
+      "whole_member_git_blob_computed_not_necessarily_separately_registered": true,
+      "parts": [
+        {
+          "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/jobs-42123581986.original-tool-return.json",
+          "character_offset": 0,
+          "characters": 7935,
+          "bytes": 7935,
+          "git_blob": "c3b029071e48ba2ff56e7ad6c5edbe815c5df005",
+          "sha256": "f79c3d1d0a8115f8ac74fae651cc8ebea2eda533acac71d994db2ed561a7f46a"
+        }
+      ]
+    },
+    {
+      "name": "jobs-42123581050.original-tool-return.json",
+      "bytes": 14271,
+      "git_blob": "aa7a2c06813eb1ddd91793de121df25511951bb7",
+      "sha256": "0b1900f05227a34128498365aaf3ec935b9db42a71a31e37f573a119c77250e6",
+      "characters": 14271,
+      "whole_member_git_blob_computed_not_necessarily_separately_registered": true,
+      "parts": [
+        {
+          "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/jobs-42123581050.original-tool-return.json",
+          "character_offset": 0,
+          "characters": 14271,
+          "bytes": 14271,
+          "git_blob": "aa7a2c06813eb1ddd91793de121df25511951bb7",
+          "sha256": "0b1900f05227a34128498365aaf3ec935b9db42a71a31e37f573a119c77250e6"
+        }
+      ]
+    },
+    {
+      "name": "jobs-42123581231.original-tool-return.json",
+      "bytes": 9559,
+      "git_blob": "1e07589dd9884d72836c9b55bdadfc23405ad5f0",
+      "sha256": "70dfdb4e6d189ceefe989e35279b6625a70830985192363ba68e413a2b5a6a6d",
+      "characters": 9559,
+      "whole_member_git_blob_computed_not_necessarily_separately_registered": true,
+      "parts": [
+        {
+          "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/jobs-42123581231.original-tool-return.json",
+          "character_offset": 0,
+          "characters": 9559,
+          "bytes": 9559,
+          "git_blob": "1e07589dd9884d72836c9b55bdadfc23405ad5f0",
+          "sha256": "70dfdb4e6d189ceefe989e35279b6625a70830985192363ba68e413a2b5a6a6d"
+        }
+      ]
+    },
+    {
+      "name": "jobs-42123581007.original-tool-return.json",
+      "bytes": 12635,
+      "git_blob": "11e4c6284e266b3d3bfd801114c74bbfc5ffdaaf",
+      "sha256": "5ca5a93253f1247cc3272560613dce11cc2df237813e7e68eadefd4e23302bcf",
+      "characters": 12635,
+      "whole_member_git_blob_computed_not_necessarily_separately_registered": true,
+      "parts": [
+        {
+          "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/jobs-42123581007.original-tool-return.json",
+          "character_offset": 0,
+          "characters": 12635,
+          "bytes": 12635,
+          "git_blob": "11e4c6284e266b3d3bfd801114c74bbfc5ffdaaf",
+          "sha256": "5ca5a93253f1247cc3272560613dce11cc2df237813e7e68eadefd4e23302bcf"
+        }
+      ]
+    },
+    {
+      "name": "jobs-42123581270.original-tool-return.json",
+      "bytes": 26275,
+      "git_blob": "175c256a30b1104f7346f701160a212e2fa8dd1c",
+      "sha256": "af075ee5ddad851d8afdea2865cc1534eae581bb6140a60a26848ba57fb3e8ea",
+      "characters": 26275,
+      "whole_member_git_blob_computed_not_necessarily_separately_registered": true,
+      "parts": [
+        {
+          "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/jobs-42123581270.original-tool-return.json",
+          "character_offset": 0,
+          "characters": 26275,
+          "bytes": 26275,
+          "git_blob": "175c256a30b1104f7346f701160a212e2fa8dd1c",
+          "sha256": "af075ee5ddad851d8afdea2865cc1534eae581bb6140a60a26848ba57fb3e8ea"
+        }
+      ]
+    },
+    {
+      "name": "jobs-42123581091.original-tool-return.json",
+      "bytes": 2959,
+      "git_blob": "3a388c1699b34b46572485025bbaf53ac714d0da",
+      "sha256": "dab124fa6f3e9ca8bf9095763b633e9a63cbb53866c8cb6d6a616c8e972d1ab3",
+      "characters": 2959,
+      "whole_member_git_blob_computed_not_necessarily_separately_registered": true,
+      "parts": [
+        {
+          "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/jobs-42123581091.original-tool-return.json",
+          "character_offset": 0,
+          "characters": 2959,
+          "bytes": 2959,
+          "git_blob": "3a388c1699b34b46572485025bbaf53ac714d0da",
+          "sha256": "dab124fa6f3e9ca8bf9095763b633e9a63cbb53866c8cb6d6a616c8e972d1ab3"
+        }
+      ]
+    },
+    {
+      "name": "jobs-42123581410.original-tool-return.json",
+      "bytes": 2903,
+      "git_blob": "92f3d4390aaf92c497493f54c6e5888aeae7b360",
+      "sha256": "81099802892fee94d923dd27859c228c6a2c9952f9928519b788cda5c9b4a882",
+      "characters": 2903,
+      "whole_member_git_blob_computed_not_necessarily_separately_registered": true,
+      "parts": [
+        {
+          "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/jobs-42123581410.original-tool-return.json",
+          "character_offset": 0,
+          "characters": 2903,
+          "bytes": 2903,
+          "git_blob": "92f3d4390aaf92c497493f54c6e5888aeae7b360",
+          "sha256": "81099802892fee94d923dd27859c228c6a2c9952f9928519b788cda5c9b4a882"
+        }
+      ]
+    },
+    {
+      "name": "jobs-42123581260.original-tool-return.json",
+      "bytes": 103705,
+      "git_blob": "d4ceecdd48f52f6aec224c0f038c5848023550e2",
+      "sha256": "cf2e8778193ad6a2db4dcb4aad9abd72e994cf842426eb098b4900e73a7aabed",
+      "characters": 103705,
+      "whole_member_git_blob_computed_not_necessarily_separately_registered": true,
+      "parts": [
+        {
+          "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/parts/jobs-42123581260.original-tool-return.json.part-000.txt",
+          "character_offset": 0,
+          "characters": 90000,
+          "bytes": 90000,
+          "git_blob": "bef47a341d0ff6b9eb66fba07d2dd2002c22ad19",
+          "sha256": "32675b0ba37cc86a0937d91099a1e958183da58c67e004d7f1a8094939ae5dac"
+        },
+        {
+          "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/parts/jobs-42123581260.original-tool-return.json.part-001.txt",
+          "character_offset": 90000,
+          "characters": 13705,
+          "bytes": 13705,
+          "git_blob": "09f19570658f1d23d64d3299cc4260075508bbd4",
+          "sha256": "26b54a8fcfab5137646ca66097f49e4d85489fd35f458d1f2d5da9014d878c11"
+        }
+      ]
+    },
+    {
+      "name": "jobs-42123581385.original-tool-return.json",
+      "bytes": 10495,
+      "git_blob": "16b1219dffa63dc161a3c6f91ae3c7b88e60eeb7",
+      "sha256": "c2b9b507dab752d2b41ae87cc94473627f7ed03a03722006c4f8b33d852052e7",
+      "characters": 10495,
+      "whole_member_git_blob_computed_not_necessarily_separately_registered": true,
+      "parts": [
+        {
+          "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/jobs-42123581385.original-tool-return.json",
+          "character_offset": 0,
+          "characters": 10495,
+          "bytes": 10495,
+          "git_blob": "16b1219dffa63dc161a3c6f91ae3c7b88e60eeb7",
+          "sha256": "c2b9b507dab752d2b41ae87cc94473627f7ed03a03722006c4f8b33d852052e7"
+        }
+      ]
+    },
+    {
+      "name": "jobs-42123581078.original-tool-return.json",
+      "bytes": 13825,
+      "git_blob": "a81d76ac8ee4cb1e396d3878b69228060a3646c9",
+      "sha256": "3863683dc72d880a12c7f7ee15f5e2dff1670e00e87c66f82cf2cedaac48cdd7",
+      "characters": 13825,
+      "whole_member_git_blob_computed_not_necessarily_separately_registered": true,
+      "parts": [
+        {
+          "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/jobs-42123581078.original-tool-return.json",
+          "character_offset": 0,
+          "characters": 13825,
+          "bytes": 13825,
+          "git_blob": "a81d76ac8ee4cb1e396d3878b69228060a3646c9",
+          "sha256": "3863683dc72d880a12c7f7ee15f5e2dff1670e00e87c66f82cf2cedaac48cdd7"
+        }
+      ]
+    },
+    {
+      "name": "jobs-42123581186.original-tool-return.json",
+      "bytes": 29869,
+      "git_blob": "f4a61039b4101772396ab82e6e6a779b2b5dba7d",
+      "sha256": "adf5bf38c8048e3ed6039d3ca74b61672abc14c1ddbd5aad60253baa7ae73fdc",
+      "characters": 29869,
+      "whole_member_git_blob_computed_not_necessarily_separately_registered": true,
+      "parts": [
+        {
+          "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/jobs-42123581186.original-tool-return.json",
+          "character_offset": 0,
+          "characters": 29869,
+          "bytes": 29869,
+          "git_blob": "f4a61039b4101772396ab82e6e6a779b2b5dba7d",
+          "sha256": "adf5bf38c8048e3ed6039d3ca74b61672abc14c1ddbd5aad60253baa7ae73fdc"
+        }
+      ]
+    },
+    {
+      "name": "jobs-42123581408.original-tool-return.json",
+      "bytes": 12765,
+      "git_blob": "6ad05ff2014628049252d876120008123308f031",
+      "sha256": "b314d8e633078fad10f6f4396fa3b24eae7ab3c680062848c3c1985353b052a5",
+      "characters": 12765,
+      "whole_member_git_blob_computed_not_necessarily_separately_registered": true,
+      "parts": [
+        {
+          "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/jobs-42123581408.original-tool-return.json",
+          "character_offset": 0,
+          "characters": 12765,
+          "bytes": 12765,
+          "git_blob": "6ad05ff2014628049252d876120008123308f031",
+          "sha256": "b314d8e633078fad10f6f4396fa3b24eae7ab3c680062848c3c1985353b052a5"
+        }
+      ]
+    },
+    {
+      "name": "jobs-42123581363.original-tool-return.json",
+      "bytes": 4999,
+      "git_blob": "33b10ca033c77cc8a85ab2679c7d8e9b082d773b",
+      "sha256": "1ec2a1c90c66cc581d8e2641c3b2d291a429a00e3be94379251c34327c135eac",
+      "characters": 4999,
+      "whole_member_git_blob_computed_not_necessarily_separately_registered": true,
+      "parts": [
+        {
+          "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/jobs-42123581363.original-tool-return.json",
+          "character_offset": 0,
+          "characters": 4999,
+          "bytes": 4999,
+          "git_blob": "33b10ca033c77cc8a85ab2679c7d8e9b082d773b",
+          "sha256": "1ec2a1c90c66cc581d8e2641c3b2d291a429a00e3be94379251c34327c135eac"
+        }
+      ]
+    },
+    {
+      "name": "jobs-42123581031.original-tool-return.json",
+      "bytes": 63827,
+      "git_blob": "5cb4d195cbeab24cfdbf0e511a8e42d99c482c22",
+      "sha256": "6800d6c1cc15b515045595066ec65c3a9bb84fd4e3a352a6f9a87b5e64ac3ec2",
+      "characters": 63827,
+      "whole_member_git_blob_computed_not_necessarily_separately_registered": true,
+      "parts": [
+        {
+          "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/jobs-42123581031.original-tool-return.json",
+          "character_offset": 0,
+          "characters": 63827,
+          "bytes": 63827,
+          "git_blob": "5cb4d195cbeab24cfdbf0e511a8e42d99c482c22",
+          "sha256": "6800d6c1cc15b515045595066ec65c3a9bb84fd4e3a352a6f9a87b5e64ac3ec2"
+        }
+      ]
+    },
+    {
+      "name": "jobs-42123581393.original-tool-return.json",
+      "bytes": 17037,
+      "git_blob": "d9c5c2a9aa55d388b8fbee24eed43141fce12052",
+      "sha256": "a577b186e24aebcb148adb1b8227757669661fc9dd3b9586a05c15ba89bf00b4",
+      "characters": 17037,
+      "whole_member_git_blob_computed_not_necessarily_separately_registered": true,
+      "parts": [
+        {
+          "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/jobs-42123581393.original-tool-return.json",
+          "character_offset": 0,
+          "characters": 17037,
+          "bytes": 17037,
+          "git_blob": "d9c5c2a9aa55d388b8fbee24eed43141fce12052",
+          "sha256": "a577b186e24aebcb148adb1b8227757669661fc9dd3b9586a05c15ba89bf00b4"
+        }
+      ]
+    },
+    {
+      "name": "jobs-42123581479.original-tool-return.json",
+      "bytes": 20645,
+      "git_blob": "aeaa5302c232849f42c66cda5af91e80df2fc22b",
+      "sha256": "009c9a085df449046fed9ea97c58c0f46d7a77dd8b67e5e31084c9803b00fd9f",
+      "characters": 20645,
+      "whole_member_git_blob_computed_not_necessarily_separately_registered": true,
+      "parts": [
+        {
+          "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/jobs-42123581479.original-tool-return.json",
+          "character_offset": 0,
+          "characters": 20645,
+          "bytes": 20645,
+          "git_blob": "aeaa5302c232849f42c66cda5af91e80df2fc22b",
+          "sha256": "009c9a085df449046fed9ea97c58c0f46d7a77dd8b67e5e31084c9803b00fd9f"
+        }
+      ]
+    },
+    {
+      "name": "jobs-42123581142.original-tool-return.json",
+      "bytes": 16825,
+      "git_blob": "8cbeb933c0e2693ab37f9e64f0ea3f8e3941ab57",
+      "sha256": "4be0a59795bfbe51898747307dd83b5b4bbca81bc8188d70fabe0a3cc80354e3",
+      "characters": 16825,
+      "whole_member_git_blob_computed_not_necessarily_separately_registered": true,
+      "parts": [
+        {
+          "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/jobs-42123581142.original-tool-return.json",
+          "character_offset": 0,
+          "characters": 16825,
+          "bytes": 16825,
+          "git_blob": "8cbeb933c0e2693ab37f9e64f0ea3f8e3941ab57",
+          "sha256": "4be0a59795bfbe51898747307dd83b5b4bbca81bc8188d70fabe0a3cc80354e3"
+        }
+      ]
+    },
+    {
+      "name": "jobs-42123569559.original-tool-return.json",
+      "bytes": 7257,
+      "git_blob": "011ffaea19c76aaa67b219c3ffb7b22fa4cdd480",
+      "sha256": "ff783f793ed04c4db0d8dc7fcff1b0138a43e6b763eb6f794f3e688f8b1c2686",
+      "characters": 7257,
+      "whole_member_git_blob_computed_not_necessarily_separately_registered": true,
+      "parts": [
+        {
+          "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/jobs-42123569559.original-tool-return.json",
+          "character_offset": 0,
+          "characters": 7257,
+          "bytes": 7257,
+          "git_blob": "011ffaea19c76aaa67b219c3ffb7b22fa4cdd480",
+          "sha256": "ff783f793ed04c4db0d8dc7fcff1b0138a43e6b763eb6f794f3e688f8b1c2686"
+        }
+      ]
+    },
+    {
+      "name": "jobs-42123569750.original-tool-return.json",
+      "bytes": 9033,
+      "git_blob": "68808434a642a1b9192fdbe2591a605e5967f06c",
+      "sha256": "b368a61b9c3fd55a8f8a33fe44f9d72e4be20a1c629465224f59d0dff829590d",
+      "characters": 9033,
+      "whole_member_git_blob_computed_not_necessarily_separately_registered": true,
+      "parts": [
+        {
+          "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/jobs-42123569750.original-tool-return.json",
+          "character_offset": 0,
+          "characters": 9033,
+          "bytes": 9033,
+          "git_blob": "68808434a642a1b9192fdbe2591a605e5967f06c",
+          "sha256": "b368a61b9c3fd55a8f8a33fe44f9d72e4be20a1c629465224f59d0dff829590d"
+        }
+      ]
+    },
+    {
+      "name": "STATUS.json",
+      "bytes": 241425,
+      "git_blob": "86b95af0274a176707b22cf8352ca9d29e904dea",
+      "sha256": "9996d24145e8f8336ee7f68657fcf42a7275ee0a7e383755e7a79ead3343bd20",
+      "characters": 241425,
+      "whole_member_git_blob_computed_not_necessarily_separately_registered": true,
+      "parts": [
+        {
+          "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/parts/STATUS.json.part-000.txt",
+          "character_offset": 0,
+          "characters": 90000,
+          "bytes": 90000,
+          "git_blob": "fdb1aa494bdc7b70414a4d838459e828daad33f7",
+          "sha256": "8c6a8376880e87656c8adf3c3806c9b0ac3c7097a786da9cd1d50646409d1e53"
+        },
+        {
+          "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/parts/STATUS.json.part-001.txt",
+          "character_offset": 90000,
+          "characters": 90000,
+          "bytes": 90000,
+          "git_blob": "633e28351f01b7e818c4cde674f929d8d9392858",
+          "sha256": "f3afc76f5dac0743bc20c439bb54dfeedb543a649e759099e1584384d334d501"
+        },
+        {
+          "repository_path": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/main67-20261106T0201/parts/STATUS.json.part-002.txt",
+          "character_offset": 180000,
+          "characters": 61425,
+          "bytes": 61425,
+          "git_blob": "66d701ad58cccc24353cba7c6cfe9186aa49df97",
+          "sha256": "922e52d1498960102d22dbd77def526d568a137c1d8cbffc4885d299a7e626d2"
+        }
+      ]
+    }
+  ],
+  "actual_transport_objects": 36,
+  "all_source_strings_reassembled_exactly": true,
+  "all_parts_actual_create_and_full_GET_equal": true
+}

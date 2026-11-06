@@ -1,0 +1,344 @@
+{
+  "all_checks_passed": true,
+  "candidate_collector": {
+    "bytes": 36352,
+    "git_blob": "ee1b82877fbd55a2e3838d768014715617e05ea0",
+    "sha256": "4b9e1a86867bfad3303d0fbd14722f654b74c65f5ef963b87cbef7153da59c52"
+  },
+  "download_regex_scope_controls_passed": true,
+  "five_unknown_space_bearer_header_controls_passed": true,
+  "new_controls": [
+    {
+      "case": "real_fetch_pair_b21_234_1562",
+      "complete": true,
+      "error_kinds": [],
+      "passed": true,
+      "repeated_fetches": 1,
+      "safe_for_upload": true
+    },
+    {
+      "case": "real_fetch_pair_b23_1368_1387",
+      "complete": true,
+      "error_kinds": [],
+      "passed": true,
+      "repeated_fetches": 1,
+      "safe_for_upload": true
+    },
+    {
+      "case": "real_fetch_pair_b23_28_1802",
+      "complete": true,
+      "error_kinds": [],
+      "passed": true,
+      "repeated_fetches": 1,
+      "safe_for_upload": true
+    },
+    {
+      "case": "same_fetch_id_distinct_payload_both_retained",
+      "complete": true,
+      "error_kinds": [],
+      "passed": true,
+      "repeated_fetches": 1,
+      "safe_for_upload": true
+    },
+    {
+      "case": "fetch_fix_never_waives_missing_xml",
+      "complete": false,
+      "error_kinds": [
+        "attempt_reference_unavailable"
+      ],
+      "passed": true,
+      "repeated_fetches": 1,
+      "safe_for_upload": true
+    },
+    {
+      "case": "duplicate_test_summary_still_fails",
+      "complete": false,
+      "error_kinds": [
+        "duplicate_event_id",
+        "duplicate_test_summary"
+      ],
+      "passed": true,
+      "repeated_fetches": 0,
+      "safe_for_upload": true
+    },
+    {
+      "case": "duplicate_test_result_still_fails",
+      "complete": false,
+      "error_kinds": [
+        "attempt_sequence_gap_or_duplicate",
+        "duplicate_event_id",
+        "summary_actual_attempt_count_mismatch"
+      ],
+      "passed": true,
+      "repeated_fetches": 0,
+      "safe_for_upload": true
+    },
+    {
+      "case": "duplicate_nonfetch_id_still_fails",
+      "complete": false,
+      "error_kinds": [
+        "duplicate_event_id"
+      ],
+      "passed": true,
+      "repeated_fetches": 0,
+      "safe_for_upload": true
+    },
+    {
+      "case": "fetch_with_second_payload_not_exempted",
+      "complete": false,
+      "error_kinds": [
+        "duplicate_event_id"
+      ],
+      "passed": true,
+      "repeated_fetches": 0,
+      "safe_for_upload": true
+    }
+  ],
+  "original_36": {
+    "all_passed": true,
+    "stdout": {
+      "bytes": 5461,
+      "git_blob": "c29c4fb46ef5a325cd1e7ea0595506b3e0ae6474",
+      "sha256": "10ecb921c1a88e98eaf53292ec040851668f00c4872ca142662cda162ea76bcd"
+    },
+    "stdout_byte_equal_to_frozen_baseline": true
+  },
+  "original_privacy_regressions": [
+    {
+      "case": "counterexample-boundary",
+      "inputs": {
+        "public/console.log": {
+          "bytes": 1048587,
+          "git_blob": "9200ef73402b5cae9f56bd49b638ccc16fe2630e",
+          "sha256": "b09e30c0a50eb86d308ec3ae668793588aeb8d4dda23ea42d04c287ce9bfa046"
+        }
+      },
+      "passed": true,
+      "safe": false
+    },
+    {
+      "case": "counterexample-zstd",
+      "inputs": {
+        "execution-logs/execution-log-test.zst": {
+          "bytes": 440,
+          "git_blob": "c13e3d69075542467b5dbe440579f7d87da82797",
+          "sha256": "d13b12d6da34b55b51d2e068ea4b109e9f5340f0362a9d0fc80c69cd6775caba"
+        },
+        "public/console.log": {
+          "bytes": 22,
+          "git_blob": "8370d5c98c5c97e900d125fd3af33829938ba2e8",
+          "sha256": "d029e0297a7b8a0f2f6cfc2c803adc7aea6b9f5e2464df4ed05c3a758ba796a8"
+        }
+      },
+      "passed": true,
+      "safe": false
+    },
+    {
+      "case": "single_frame",
+      "input": {
+        "bytes": 40,
+        "git_blob": "e306d997b1a72a44631a1962eafa5fc316567858",
+        "sha256": "c987909636ff337251031fd478c5197ba4a5f81e04eb9cbffa9a21fd894c9932"
+      },
+      "passed": true,
+      "safe": true
+    },
+    {
+      "case": "two_concatenated_frames",
+      "input": {
+        "bytes": 88,
+        "git_blob": "0dea8eece25624ccdac3f0c51d0c097f18d25293",
+        "sha256": "9a7bf926a4f96f81736eaa56c0c5e50b9dc85b41aa0d4d6f48a6a671b81ad5eb"
+      },
+      "passed": true,
+      "safe": true
+    },
+    {
+      "case": "truncated_single_frame",
+      "input": {
+        "bytes": 39,
+        "git_blob": "6b0ca98214a5fe64092fdb300a6bd824bd10cede",
+        "sha256": "7d742c29140e2b6e10bef1e8a6e0e62d1ed4282c5954e946162ede65abb05806"
+      },
+      "passed": true,
+      "safe": false
+    },
+    {
+      "case": "truncated_second_frame",
+      "input": {
+        "bytes": 45,
+        "git_blob": "acd32f6272e4426291cf341899a022c99eac100b",
+        "sha256": "fed1901f84e67a0cbd204f706f95a91dc2d7d2faccd59a62684c401f5b950f67"
+      },
+      "passed": true,
+      "safe": false
+    },
+    {
+      "case": "trailing_unknown_bytes",
+      "input": {
+        "bytes": 51,
+        "git_blob": "32132f2ead4d12251c696f4effad55e1528d4861",
+        "sha256": "51071e047475e0c5c6ddf9e9cd3e75c789102ed7736ceda7d201ed0baf073949"
+      },
+      "passed": true,
+      "safe": false
+    },
+    {
+      "case": "empty_input",
+      "input": {
+        "bytes": 0,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "passed": true,
+      "safe": false
+    },
+    {
+      "case": "unknown_format",
+      "input": {
+        "bytes": 20,
+        "git_blob": "f0f0782387d486092ad7eed15693f1937e5d8f59",
+        "sha256": "8afb58bda8d8d7508a1a50e26c3d0efc07b63dc621c9d438cee4986b461e7edf"
+      },
+      "passed": true,
+      "safe": false
+    },
+    {
+      "case": "checksum_mismatch",
+      "input": {
+        "bytes": 40,
+        "git_blob": "ba3b1dc5dbcc132a2d30956de0d139370efa4f38",
+        "sha256": "2a2f1fc0d3bbe36cec77423813647c35b42ad543a7d85c365bd1fbf2864ffcdd"
+      },
+      "passed": true,
+      "safe": false
+    },
+    {
+      "case": "decoder_missing",
+      "passed": true,
+      "safe": false
+    }
+  ],
+  "real_bep": [
+    {
+      "actual_attempt_status_counts": {
+        "FAILED": 1,
+        "PASSED": 498
+      },
+      "actual_attempts": 499,
+      "after_errors": {
+        "attempt_reference_unavailable": 131
+      },
+      "all_actual_log_xml_execpaths_match_download_regex": true,
+      "before_errors": {
+        "attempt_reference_unavailable": 131,
+        "duplicate_event_id": 1
+      },
+      "complete_after": false,
+      "every_missing_XML_still_physically_absent": true,
+      "local_uri_rebase_count": 1497,
+      "matched_reference_count": 998,
+      "only_local_URI_location_rebased_in_memory": true,
+      "original_bazel_exit": 3,
+      "original_derived_bep": {
+        "bytes": 5799059,
+        "git_blob": "a54e1cdec67bcd62129fb99d43fa5c137af46ff8",
+        "sha256": "57b4e6b64df4b20fbff9454c90c04538409953fe52482a452aa6b3152d51a145"
+      },
+      "original_events": 7394,
+      "original_zip_sha256": "9a1e9cce3ca46b7b6176f84dd6b064588c93d217d3c3ed8e3a525d96b5fdabb4",
+      "repeated_fetch_events": [
+        {
+          "event": 1562,
+          "first_event": 234,
+          "first_payload": {
+            "success": true
+          },
+          "id": {
+            "fetch": {
+              "downloader": "GRPC",
+              "url": "https://index.crates.io/config.json"
+            }
+          },
+          "payload": {
+            "success": true
+          },
+          "payload_equal_to_first": true
+        }
+      ],
+      "retained_original_files": 867,
+      "source": "b21",
+      "test_attempts_and_summaries_identical": true,
+      "validated_file_bytes": 4163745
+    },
+    {
+      "actual_attempt_status_counts": {
+        "PASSED": 8
+      },
+      "actual_attempts": 8,
+      "after_errors": {
+        "attempt_reference_unavailable": 8
+      },
+      "all_actual_log_xml_execpaths_match_download_regex": true,
+      "before_errors": {
+        "attempt_reference_unavailable": 8,
+        "duplicate_event_id": 2
+      },
+      "complete_after": false,
+      "every_missing_XML_still_physically_absent": true,
+      "local_uri_rebase_count": 24,
+      "matched_reference_count": 16,
+      "only_local_URI_location_rebased_in_memory": true,
+      "original_bazel_exit": 0,
+      "original_derived_bep": {
+        "bytes": 578800,
+        "git_blob": "d14096a0af9260680342ae50179ae583b4e082c3",
+        "sha256": "6fc6060b6c09bf1fa0f3d9525981b0d8cb46bc35d6c0b49b5295039416d61d61"
+      },
+      "original_events": 1924,
+      "original_zip_sha256": "43bdccc192f96f95aebf3e7642df04ae0055f5c61970a27a8b03e05a6a9c91e3",
+      "repeated_fetch_events": [
+        {
+          "event": 1387,
+          "first_event": 1368,
+          "first_payload": {
+            "success": true
+          },
+          "id": {
+            "fetch": {
+              "downloader": "GRPC",
+              "url": "https://static.rust-lang.org/dist/rustc-1.95.0-x86_64-unknown-linux-gnu.tar.xz"
+            }
+          },
+          "payload": {
+            "success": true
+          },
+          "payload_equal_to_first": true
+        },
+        {
+          "event": 1802,
+          "first_event": 28,
+          "first_payload": {
+            "success": true
+          },
+          "id": {
+            "fetch": {
+              "downloader": "GRPC",
+              "url": "https://index.crates.io/config.json"
+            }
+          },
+          "payload": {
+            "success": true
+          },
+          "payload_equal_to_first": true
+        }
+      ],
+      "retained_original_files": 8,
+      "source": "b23",
+      "test_attempts_and_summaries_identical": true,
+      "validated_file_bytes": 35870
+    }
+  ],
+  "schema": "fetch-xml-regression-v1",
+  "scope": "Offline evidence parser/privacy and synthetic controls only; no new native execution."
+}

@@ -1,0 +1,39 @@
+{
+  "schema": "hepta-b21-native2-bounded-api-cut-v1",
+  "window_utc": {
+    "start": "2026-11-06T03:44:56.050Z",
+    "end": "2026-11-06T03:44:56.621Z"
+  },
+  "source_head": "ebd31e2b3e38ff72cedaa7b57bee60c1c102da27",
+  "expected_source_tree": "46fca3e684217066c260dc10d0dc319a33e0a93c",
+  "run_list": {
+    "total_count": 4,
+    "received": 4,
+    "per_page": 100,
+    "page": 1
+  },
+  "diagnostic_run_id": 42154464909,
+  "jobs": {
+    "total_count": 1,
+    "received": 1,
+    "per_page": 100,
+    "page": 1,
+    "filter": "all"
+  },
+  "job_id": 127685180579,
+  "job_status": "in_progress",
+  "job_conclusion": null,
+  "actual_stage": "bazel test //... in_progress",
+  "api_prior_steps_success": [
+    "Set up job",
+    "Checkout exact diagnostic source",
+    "Bind original source, full archive and actual Intel platform",
+    "Prepare Bazel CI"
+  ],
+  "limits": [
+    "API-only intermediate observation; no native log or artifact read requested mid-run.",
+    "No terminal execution qualification, all-attempt completion, runtime source/platform proof, or blocker closure inferred.",
+    "Historical B21 2.023s failure causality remains UNKNOWN.",
+    "No dispatch, rerun, cancel, ref, PR or private native call."
+  ]
+}

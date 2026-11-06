@@ -1,0 +1,112 @@
+{
+  "schema": "hepta-pty-closed-receiver-source-proof-v1",
+  "result": "STATIC_SOURCE_AND_EVIDENCE_VERIFIED",
+  "base_commit": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+  "base_tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+  "candidate_tree": "c1249a173ac346d0f1230fe56451b97d4e13c601",
+  "only_changed_path": "codex-rs/utils/pty/src/unix_io.rs",
+  "postimage": {
+    "bytes": 6503,
+    "git_blob": "c7ad412d04fd3f5505259a4afdcec0d4d8562a88",
+    "sha256": "ec95e99037b0839b4b872f48f5db3126b2e77a9f56a6d8385086cf8792c8dd8b"
+  },
+  "actual_postimage_full_GET": true,
+  "unchanged_leaves": 10581,
+  "verified_original_source_inputs": 26,
+  "inserted_bytes": 406,
+  "git_patch_and_reverse": [
+    {
+      "flags": [
+        "--check"
+      ],
+      "exit_code": 0
+    },
+    {
+      "flags": [],
+      "exit_code": 0
+    },
+    {
+      "flags": [
+        "--reverse",
+        "--check"
+      ],
+      "exit_code": 0
+    },
+    {
+      "flags": [
+        "--reverse"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "fixed_tokio_primary": [
+    {
+      "path": "primary/bounded.rs",
+      "url": "https://github.com/tokio-rs/tokio/blob/tokio-1.53.3/tokio/src/sync/mpsc/bounded.rs",
+      "bytes": 67057,
+      "git_blob": "273e5ae433c35e314dd758a616a0585786e6f147",
+      "sha256": "f229ccaa6711bffb17d8021dade6405d17595d5f64dac2f03107c05a4cc381f2"
+    },
+    {
+      "path": "primary/batch_semaphore.rs",
+      "url": "https://github.com/tokio-rs/tokio/blob/tokio-1.53.3/tokio/src/sync/batch_semaphore.rs",
+      "bytes": 30575,
+      "git_blob": "02d7e3b612dc375f88948fc05917e0cf5c1a2e2d",
+      "sha256": "4b9a14a15b2b37c7015e04d88fa5505409dcff22632b5a20e03f7f051e6c67ee"
+    },
+    {
+      "path": "primary/async_fd.rs",
+      "url": "https://github.com/tokio-rs/tokio/blob/tokio-1.53.3/tokio/src/io/async_fd.rs",
+      "bytes": 62421,
+      "git_blob": "3463439c9987132b95eb218119e7fe1fa93199b3",
+      "sha256": "0d9365deaa40f8d069770308a105aad31fe527ea593acf95c40265407d9f143d"
+    },
+    {
+      "path": "primary/registration.rs",
+      "url": "https://github.com/tokio-rs/tokio/blob/tokio-1.53.3/tokio/src/runtime/io/registration.rs",
+      "bytes": 9078,
+      "git_blob": "63b6a6d78ee59da84c81e968308cf7bc59e118ab",
+      "sha256": "ea9eb6c671ddd5e82dc7b7126776d8a246f1dd25a961852d40f44c420a9d2a63"
+    }
+  ],
+  "observations": [
+    {
+      "job": 127679861660,
+      "run": 42123581385,
+      "actual_checkout": "b7a57dbb61b00e51c05da9cf5c4bc95b365d85ae",
+      "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+      "passed": 30,
+      "failed": 1,
+      "read_calls": 6549,
+      "read_bytes": 3358720,
+      "discarded_bytes": 3358720,
+      "observed_backend": "portable",
+      "preserved_fds_reached": false,
+      "causal_status": "deadline and incomplete drain observed; timeout root cause unproven"
+    },
+    {
+      "job": 127685180579,
+      "run": 42154464909,
+      "actual_checkout": "ebd31e2b3e38ff72cedaa7b57bee60c1c102da27",
+      "tree": "46fca3e684217066c260dc10d0dc319a33e0a93c",
+      "passed": 30,
+      "failed": 1,
+      "read_calls": 3533,
+      "read_bytes": 1827840,
+      "discarded_bytes": 1827840,
+      "observed_backend": "portable",
+      "preserved_fds_reached": false,
+      "causal_status": "deadline and incomplete drain observed; timeout root cause unproven"
+    }
+  ],
+  "original_31_case_roster_identical_between_two_runs": true,
+  "candidate_tests_and_budgets_byte_unchanged": true,
+  "qualification": {
+    "removable_work_proven": true,
+    "timeout_cause_proven": false,
+    "candidate_compiled": false,
+    "candidate_native_executed": false,
+    "canonical_format_verified": false,
+    "B21": "OPEN"
+  }
+}

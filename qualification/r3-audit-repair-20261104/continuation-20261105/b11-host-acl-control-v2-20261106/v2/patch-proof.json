@@ -1,0 +1,59 @@
+{
+  "status": "EXACT_FULL_BYTE_FORWARD_AND_REVERSE_REPLAY",
+  "forward_hunks": 4,
+  "reverse_hunks": 4,
+  "paths": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/acl_control_test_support.rs",
+      "before": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      "after": {
+        "bytes": 23135,
+        "sha256": "03ab81d0e24e67cf1430700da80503bb1eedcdb54173e0f336e99c45dd9e5272",
+        "git_blob": "47baf88cf0a30521c3b2eb033dc3ee65056ed2f6"
+      }
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/lib.rs",
+      "before": {
+        "bytes": 30379,
+        "sha256": "6a656c06930bcf07075db8712292bb8040a33667231783dba177e62230982b38",
+        "git_blob": "11778af7beb645b36401807cf3e31a0dd4deddc0"
+      },
+      "after": {
+        "bytes": 30491,
+        "sha256": "c39de3d3a706cbdc26b7b8c4c4f8bb891323f5972a82e1eef6679cbb240dfa0e",
+        "git_blob": "208e17fcedc894663b5eaa6dc2d2c5d1991967d7"
+      }
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token_tests.rs",
+      "before": {
+        "bytes": 22681,
+        "sha256": "cda729e069f427b9fb197a75391ea30b3427a6b6c98a8ecb60d858328b808af0",
+        "git_blob": "042858ce22b784d7809612e2d80e35d29b559f1a"
+      },
+      "after": {
+        "bytes": 23065,
+        "sha256": "77ab1ebef49fb0cb2894fd07aca5671d08a1ebc5e0b3b819452d4ce52a3ca7bf",
+        "git_blob": "ba51c9e5e30f0e614451c02c54b40a6ea40f9ada"
+      }
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs",
+      "before": {
+        "bytes": 6841,
+        "sha256": "397abb256644d00394b64d0d48cf02b72a32ca835163b1b7aed793617f68dcf3",
+        "git_blob": "d8511f92f9fbd9d58061238dbf3181152c74ccbc"
+      },
+      "after": {
+        "bytes": 6152,
+        "sha256": "5c8e2881cc6d2946f5816e75b93c304d70df5caf8a57b6ba74990a5bad81da07",
+        "git_blob": "14a9cae9a7913ebc53a34ac3e1d3e038bc88d004"
+      }
+    }
+  ]
+}

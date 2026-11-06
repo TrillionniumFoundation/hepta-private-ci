@@ -1,0 +1,1737 @@
+artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "pending",
+          "conclusion": null,
+          "number": 37,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "pending",
+          "conclusion": null,
+          "number": 38,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "pending",
+          "conclusion": null,
+          "number": 39,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "pending",
+          "conclusion": null,
+          "number": 40,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "pending",
+          "conclusion": null,
+          "number": 41,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "pending",
+          "conclusion": null,
+          "number": 42,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "pending",
+          "conclusion": null,
+          "number": 43,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Install hash-pinned diagnostic browser (not acceptance)",
+          "status": "pending",
+          "conclusion": null,
+          "number": 44,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Compare unchanged product assertions and SDK transport (not acceptance)",
+          "status": "pending",
+          "conclusion": null,
+          "number": 45,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Compare Rust fixture font use and pixels (not acceptance)",
+          "status": "pending",
+          "conclusion": null,
+          "number": 46,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Require every diagnostic fixture semantic pixel check (not acceptance)",
+          "status": "pending",
+          "conclusion": null,
+          "number": 47,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Preserve failed and successful font diagnostic arms without changing acceptance",
+          "status": "pending",
+          "conclusion": null,
+          "number": 48,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Post Run actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f",
+          "status": "pending",
+          "conclusion": null,
+          "number": 95,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "status": "pending",
+          "conclusion": null,
+          "number": 96,
+          "started_at": null,
+          "completed_at": null
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/127581904221",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "runner_id": 1000007144,
+      "runner_name": "GitHub Actions 1000007144",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 127581904330,
+      "run_id": 42123581031,
+      "workflow_name": "Rust UI product foundation",
+      "head_branch": "fix/r3-original-product-contracts-20261104",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42123581031",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOTrgxoM8AAAAdtHldyg",
+      "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/127581904330",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42123581031/job/127581904330",
+      "status": "in_progress",
+      "conclusion": null,
+      "created_at": "2026-11-05T22:41:16Z",
+      "started_at": "2026-11-06T01:38:06Z",
+      "completed_at": null,
+      "name": "Rust UI foundation / source-head",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-06T01:38:07Z",
+          "completed_at": "2026-11-06T01:38:08Z"
+        },
+        {
+          "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-06T01:38:09Z",
+          "completed_at": "2026-11-06T01:38:15Z"
+        },
+        {
+          "name": "Fetch only the immutable PR histories",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-06T01:38:15Z",
+          "completed_at": "2026-11-06T01:38:57Z"
+        },
+        {
+          "name": "Construct separately identified product merge",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 4,
+          "started_at": "2026-11-06T01:38:57Z",
+          "completed_at": "2026-11-06T01:38:57Z"
+        },
+        {
+          "name": "Bind exact source and preserve backend toolchain",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-11-06T01:38:57Z",
+          "completed_at": "2026-11-06T01:38:57Z"
+        },
+        {
+          "name": "Verify immutable merge checkout regression",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-11-06T01:38:57Z",
+          "completed_at": "2026-11-06T01:39:22Z"
+        },
+        {
+          "name": "Run actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-11-06T01:39:22Z",
+          "completed_at": "2026-11-06T01:39:23Z"
+        },
+        {
+          "name": "Install and verify official build inputs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-11-06T01:39:23Z",
+          "completed_at": "2026-11-06T01:39:41Z"
+        },
+        {
+          "name": "Run actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-11-06T01:39:41Z",
+          "completed_at": "2026-11-06T01:39:42Z"
+        },
+        {
+          "name": "Install missing pinned official tools",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-11-06T01:39:42Z",
+          "completed_at": "2026-11-06T01:41:13Z"
+        },
+        {
+          "name": "Verify installed tool versions on every cache hit or miss",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-11-06T01:41:13Z",
+          "completed_at": "2026-11-06T01:41:13Z"
+        },
+        {
+          "name": "Run actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-11-06T01:41:13Z",
+          "completed_at": "2026-11-06T01:41:15Z"
+        },
+        {
+          "name": "Verify shared Rust presentation and renderer",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-11-06T01:41:15Z",
+          "completed_at": "2026-11-06T01:42:22Z"
+        },
+        {
+          "name": "Install JavaScript product inputs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14,
+          "started_at": "2026-11-06T01:42:22Z",
+          "completed_at": "2026-11-06T01:42:23Z"
+        },
+        {
+          "name": "Build canonical strict-CSP no-threads artifact",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-11-06T01:42:23Z",
+          "completed_at": "2026-11-06T01:45:40Z"
+        },
+        {
+          "name": "Verify packaged resource and bridge contracts",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-11-06T01:45:40Z",
+          "completed_at": "2026-11-06T01:45:45Z"
+        },
+        {
+          "name": "Install browser and pixel inputs and complete readiness checks",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-11-06T01:45:45Z",
+          "completed_at": "2026-11-06T01:47:16Z"
+        },
+        {
+          "name": "Run actual browser renderer and capture layouts",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-11-06T01:47:16Z",
+          "completed_at": "2026-11-06T01:49:28Z"
+        },
+        {
+          "name": "Require every default screenshot pixel check",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-11-06T01:49:28Z",
+          "completed_at": "2026-11-06T01:50:02Z"
+        },
+        {
+          "name": "Build source-bound actual gateway preview",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 20,
+          "started_at": "2026-11-06T01:50:02Z",
+          "completed_at": "2026-11-06T01:51:50Z"
+        },
+        {
+          "name": "Execute bounded gateway transport and boundary regressions",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 21,
+          "started_at": "2026-11-06T01:51:50Z",
+          "completed_at": "2026-11-06T01:51:56Z"
+        },
+        {
+          "name": "Install hash-pinned browser for strict no-store product transport",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22,
+          "started_at": "2026-11-06T01:51:56Z",
+          "completed_at": "2026-11-06T01:51:59Z"
+        },
+        {
+          "name": "Exercise real gateway unavailable status and cancellation",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-11-06T01:51:59Z",
+          "completed_at": "2026-11-06T01:53:47Z"
+        },
+        {
+          "name": "Preserve actual gateway evidence separately",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 24,
+          "started_at": "2026-11-06T01:53:47Z",
+          "completed_at": "2026-11-06T01:53:49Z"
+        },
+        {
+          "name": "Require unchanged SDK stream limits and native completion on fixed Chromium",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 25,
+          "started_at": "2026-11-06T01:53:49Z",
+          "completed_at": "2026-11-06T01:56:34Z"
+        },
+        {
+          "name": "Preserve every HTTP boundary result and running browser identity",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 26,
+          "started_at": "2026-11-06T01:56:34Z",
+          "completed_at": "2026-11-06T01:56:36Z"
+        },
+        {
+          "name": "Build explicitly labeled owner-fixture through the same renderer",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 27,
+          "started_at": "2026-11-06T01:56:36Z",
+          "completed_at": "2026-11-06T01:57:52Z"
+        },
+        {
+          "name": "Capture populated fixture and responsive transitions",
+          "status": "in_progress",
+          "conclusion": null,
+          "number": 28,
+          "started_at": "2026-11-06T01:57:52Z",
+          "completed_at": null
+        },
+        {
+          "name": "Require every populated screenshot pixel check",
+          "status": "pending",
+          "conclusion": null,
+          "number": 29,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Diagnose WebKit drawing buffer without changing product defaults",
+          "status": "pending",
+          "conclusion": null,
+          "number": 30,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Confirm exact source after build and browser checks",
+          "status": "pending",
+          "conclusion": null,
+          "number": 31,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Inventory every source-bound browser evidence file",
+          "status": "pending",
+          "conclusion": null,
+          "number": 32,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "pending",
+          "conclusion": null,
+          "number": 33,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "pending",
+          "conclusion": null,
+          "number": 34,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "pending",
+          "conclusion": null,
+          "number": 35,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "pending",
+          "conclusion": null,
+          "number": 36,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "pending",
+          "conclusion": null,
+          "number": 37,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "pending",
+          "conclusion": null,
+          "number": 38,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "pending",
+          "conclusion": null,
+          "number": 39,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "pending",
+          "conclusion": null,
+          "number": 40,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "pending",
+          "conclusion": null,
+          "number": 41,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "pending",
+          "conclusion": null,
+          "number": 42,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "status": "pending",
+          "conclusion": null,
+          "number": 43,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Install hash-pinned diagnostic browser (not acceptance)",
+          "status": "pending",
+          "conclusion": null,
+          "number": 44,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Compare unchanged product assertions and SDK transport (not acceptance)",
+          "status": "pending",
+          "conclusion": null,
+          "number": 45,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Compare Rust fixture font use and pixels (not acceptance)",
+          "status": "pending",
+          "conclusion": null,
+          "number": 46,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Require every diagnostic fixture semantic pixel check (not acceptance)",
+          "status": "pending",
+          "conclusion": null,
+          "number": 47,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Preserve failed and successful font diagnostic arms without changing acceptance",
+          "status": "pending",
+          "conclusion": null,
+          "number": 48,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Post Run actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f",
+          "status": "pending",
+          "conclusion": null,
+          "number": 95,
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "status": "pending",
+          "conclusion": null,
+          "number": 96,
+          "started_at": null,
+          "completed_at": null
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/127581904330",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "runner_id": 1000007075,
+      "runner_name": "GitHub Actions 1000007075",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 127581904898,
+      "run_id": 42123581393,
+      "workflow_name": "Hepta Memory P0 native regressions",
+      "head_branch": "fix/r3-original-product-contracts-20261104",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42123581393",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOTrgxoM8AAAAdtHlgAg",
+      "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/127581904898",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42123581393/job/127581904898",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-05T22:41:16Z",
+      "started_at": "2026-11-05T22:46:06Z",
+      "completed_at": "2026-11-05T23:02:22Z",
+      "name": "Memory schema and final-use (windows-latest)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-05T22:46:07Z",
+          "completed_at": "2026-11-05T22:46:08Z"
+        },
+        {
+          "name": "Checkout immutable pull-request source",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-05T22:46:08Z",
+          "completed_at": "2026-11-05T22:48:15Z"
+        },
+        {
+          "name": "Bind source and initialize isolated evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-05T22:48:15Z",
+          "completed_at": "2026-11-05T22:48:16Z"
+        },
+        {
+          "name": "Install repository CI tools",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-11-05T22:48:16Z",
+          "completed_at": "2026-11-05T22:48:31Z"
+        },
+        {
+          "name": "Install pinned nextest",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-11-05T22:48:31Z",
+          "completed_at": "2026-11-05T22:48:33Z"
+        },
+        {
+          "name": "Install pinned Rust 1.95",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-11-05T22:48:33Z",
+          "completed_at": "2026-11-05T22:48:44Z"
+        },
+        {
+          "name": "Install Linux native Secret Service dependencies",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 7,
+          "started_at": "2026-11-05T22:48:44Z",
+          "completed_at": "2026-11-05T22:48:44Z"
+        },
+        {
+          "name": "Execute both original native regressions",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-11-05T22:48:44Z",
+          "completed_at": "2026-11-05T22:58:45Z"
+        },
+        {
+          "name": "Verify unique cases and original JUnit identity",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-11-05T22:58:45Z",
+          "completed_at": "2026-11-05T22:58:45Z"
+        },
+        {
+          "name": "Strict Memory Clippy",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-11-05T22:58:45Z",
+          "completed_at": "2026-11-05T23:02:15Z"
+        },
+        {
+          "name": "Verify canonical Memory Rust format",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-11-05T23:02:15Z",
+          "completed_at": "2026-11-05T23:02:16Z"
+        },
+        {
+          "name": "Preserve native evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-11-05T23:02:17Z",
+          "completed_at": "2026-11-05T23:02:18Z"
+        },
+        {
+          "name": "Ensure the test source remained immutable",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-11-05T23:02:18Z",
+          "completed_at": "2026-11-05T23:02:18Z"
+        },
+        {
+          "name": "Post Checkout immutable pull-request source",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 26,
+          "started_at": "2026-11-05T23:02:18Z",
+          "completed_at": "2026-11-05T23:02:20Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 27,
+          "started_at": "2026-11-05T23:02:20Z",
+          "completed_at": "2026-11-05T23:02:20Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/127581904898",
+      "labels": [
+        "windows-latest"
+      ],
+      "runner_id": 1000005374,
+      "runner_name": "GitHub Actions 1000005374",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 127581905325,
+      "run_id": 42123581393,
+      "workflow_name": "Hepta Memory P0 native regressions",
+      "head_branch": "fix/r3-original-product-contracts-20261104",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42123581393",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOTrgxoM8AAAAdtHlhrQ",
+      "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/127581905325",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42123581393/job/127581905325",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-05T22:41:16Z",
+      "started_at": "2026-11-06T01:33:56Z",
+      "completed_at": "2026-11-06T01:44:58Z",
+      "name": "Memory schema and final-use (ubuntu-24.04)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-06T01:33:57Z",
+          "completed_at": "2026-11-06T01:33:58Z"
+        },
+        {
+          "name": "Checkout immutable pull-request source",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-06T01:33:58Z",
+          "completed_at": "2026-11-06T01:36:01Z"
+        },
+        {
+          "name": "Bind source and initialize isolated evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-06T01:36:01Z",
+          "completed_at": "2026-11-06T01:36:01Z"
+        },
+        {
+          "name": "Install repository CI tools",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-11-06T01:36:01Z",
+          "completed_at": "2026-11-06T01:36:14Z"
+        },
+        {
+          "name": "Install pinned nextest",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-11-06T01:36:14Z",
+          "completed_at": "2026-11-06T01:36:14Z"
+        },
+        {
+          "name": "Install pinned Rust 1.95",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-11-06T01:36:14Z",
+          "completed_at": "2026-11-06T01:36:16Z"
+        },
+        {
+          "name": "Install Linux native Secret Service dependencies",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-11-06T01:36:16Z",
+          "completed_at": "2026-11-06T01:36:31Z"
+        },
+        {
+          "name": "Execute both original native regressions",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-11-06T01:36:31Z",
+          "completed_at": "2026-11-06T01:42:17Z"
+        },
+        {
+          "name": "Verify unique cases and original JUnit identity",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-11-06T01:42:17Z",
+          "completed_at": "2026-11-06T01:42:17Z"
+        },
+        {
+          "name": "Strict Memory Clippy",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-11-06T01:42:17Z",
+          "completed_at": "2026-11-06T01:44:51Z"
+        },
+        {
+          "name": "Verify canonical Memory Rust format",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-11-06T01:44:51Z",
+          "completed_at": "2026-11-06T01:44:52Z"
+        },
+        {
+          "name": "Preserve native evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-11-06T01:44:52Z",
+          "completed_at": "2026-11-06T01:44:54Z"
+        },
+        {
+          "name": "Ensure the test source remained immutable",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-11-06T01:44:54Z",
+          "completed_at": "2026-11-06T01:44:55Z"
+        },
+        {
+          "name": "Post Checkout immutable pull-request source",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 26,
+          "started_at": "2026-11-06T01:44:55Z",
+          "completed_at": "2026-11-06T01:44:55Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 27,
+          "started_at": "2026-11-06T01:44:55Z",
+          "completed_at": "2026-11-06T01:44:55Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/127581905325",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "runner_id": 1000007045,
+      "runner_name": "GitHub Actions 1000007045",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 127581904781,
+      "run_id": 42123581479,
+      "workflow_name": "Hepta Supervisor P0 Cross-Platform Restart Qualification",
+      "head_branch": "fix/r3-original-product-contracts-20261104",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42123581479",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOTrgxoM8AAAAdtHlfjQ",
+      "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/127581904781",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42123581479/job/127581904781",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-05T22:41:16Z",
+      "started_at": "2026-11-05T22:44:21Z",
+      "completed_at": "2026-11-05T23:07:14Z",
+      "name": "Restart and signed recovery (windows-latest)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-05T22:44:22Z",
+          "completed_at": "2026-11-05T22:44:23Z"
+        },
+        {
+          "name": "Checkout exact PR head without write credentials",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-05T22:44:23Z",
+          "completed_at": "2026-11-05T22:50:37Z"
+        },
+        {
+          "name": "Verify exact source identity",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-05T22:50:37Z",
+          "completed_at": "2026-11-05T22:50:38Z"
+        },
+        {
+          "name": "Initialize isolated Cargo target directory",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-11-05T22:50:38Z",
+          "completed_at": "2026-11-05T22:50:38Z"
+        },
+        {
+          "name": "Install repository CI tools",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-11-05T22:50:38Z",
+          "completed_at": "2026-11-05T22:50:50Z"
+        },
+        {
+          "name": "Install pinned nextest",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-11-05T22:50:50Z",
+          "completed_at": "2026-11-05T22:50:52Z"
+        },
+        {
+          "name": "Install pinned Rust 1.95",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-11-05T22:50:52Z",
+          "completed_at": "2026-11-05T22:51:09Z"
+        },
+        {
+          "name": "Execute actual restart budget, repeated recovery and signed intent recovery",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-11-05T22:51:09Z",
+          "completed_at": "2026-11-05T22:59:53Z"
+        },
+        {
+          "name": "Verify named native test evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-11-05T22:59:53Z",
+          "completed_at": "2026-11-05T22:59:54Z"
+        },
+        {
+          "name": "Execute the complete Agentd protocol package",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-11-05T22:59:54Z",
+          "completed_at": "2026-11-05T23:01:22Z"
+        },
+        {
+          "name": "Verify signed protocol wire regression evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-11-05T23:01:22Z",
+          "completed_at": "2026-11-05T23:01:22Z"
+        },
+        {
+          "name": "Strict Supervisor Clippy",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-11-05T23:01:22Z",
+          "completed_at": "2026-11-05T23:07:01Z"
+        },
+        {
+          "name": "Verify full-workspace canonical Rust format on Linux",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 13,
+          "started_at": "2026-11-05T23:07:01Z",
+          "completed_at": "2026-11-05T23:07:01Z"
+        },
+        {
+          "name": "Verify Supervisor canonical Rust format on Windows",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 14,
+          "started_at": "2026-11-05T23:07:01Z",
+          "completed_at": "2026-11-05T23:07:02Z"
+        },
+        {
+          "name": "Preserve native JUnit evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-11-05T23:07:02Z",
+          "completed_at": "2026-11-05T23:07:04Z"
+        },
+        {
+          "name": "Preserve Agentd protocol JUnit evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-11-05T23:07:04Z",
+          "completed_at": "2026-11-05T23:07:06Z"
+        },
+        {
+          "name": "Ensure test checkout remained immutable",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-11-05T23:07:06Z",
+          "completed_at": "2026-11-05T23:07:08Z"
+        },
+        {
+          "name": "Post Checkout exact PR head without write credentials",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 34,
+          "started_at": "2026-11-05T23:07:08Z",
+          "completed_at": "2026-11-05T23:07:10Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 35,
+          "started_at": "2026-11-05T23:07:10Z",
+          "completed_at": "2026-11-05T23:07:10Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/127581904781",
+      "labels": [
+        "windows-latest"
+      ],
+      "runner_id": 1000005356,
+      "runner_name": "GitHub Actions 1000005356",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 127581905245,
+      "run_id": 42123581479,
+      "workflow_name": "Hepta Supervisor P0 Cross-Platform Restart Qualification",
+      "head_branch": "fix/r3-original-product-contracts-20261104",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42123581479",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOTrgxoM8AAAAdtHlhXQ",
+      "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/127581905245",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42123581479/job/127581905245",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-05T22:41:16Z",
+      "started_at": "2026-11-06T01:34:44Z",
+      "completed_at": "2026-11-06T01:45:04Z",
+      "name": "Restart and signed recovery (ubuntu-24.04)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-06T01:34:44Z",
+          "completed_at": "2026-11-06T01:34:46Z"
+        },
+        {
+          "name": "Checkout exact PR head without write credentials",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-06T01:34:46Z",
+          "completed_at": "2026-11-06T01:36:50Z"
+        },
+        {
+          "name": "Verify exact source identity",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-06T01:36:50Z",
+          "completed_at": "2026-11-06T01:36:51Z"
+        },
+        {
+          "name": "Initialize isolated Cargo target directory",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-11-06T01:36:51Z",
+          "completed_at": "2026-11-06T01:36:51Z"
+        },
+        {
+          "name": "Install repository CI tools",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-11-06T01:36:51Z",
+          "completed_at": "2026-11-06T01:36:55Z"
+        },
+        {
+          "name": "Install pinned nextest",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-11-06T01:36:55Z",
+          "completed_at": "2026-11-06T01:36:56Z"
+        },
+        {
+          "name": "Install pinned Rust 1.95",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-11-06T01:36:56Z",
+          "completed_at": "2026-11-06T01:37:06Z"
+        },
+        {
+          "name": "Execute actual restart budget, repeated recovery and signed intent recovery",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-11-06T01:37:06Z",
+          "completed_at": "2026-11-06T01:40:59Z"
+        },
+        {
+          "name": "Verify named native test evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-11-06T01:40:59Z",
+          "completed_at": "2026-11-06T01:40:59Z"
+        },
+        {
+          "name": "Execute the complete Agentd protocol package",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-11-06T01:40:59Z",
+          "completed_at": "2026-11-06T01:41:48Z"
+        },
+        {
+          "name": "Verify signed protocol wire regression evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-11-06T01:41:48Z",
+          "completed_at": "2026-11-06T01:41:48Z"
+        },
+        {
+          "name": "Strict Supervisor Clippy",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-11-06T01:41:48Z",
+          "completed_at": "2026-11-06T01:44:40Z"
+        },
+        {
+          "name": "Verify full-workspace canonical Rust format on Linux",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 13,
+          "started_at": "2026-11-06T01:44:40Z",
+          "completed_at": "2026-11-06T01:44:58Z"
+        },
+        {
+          "name": "Verify Supervisor canonical Rust format on Windows",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 14,
+          "started_at": "2026-11-06T01:44:58Z",
+          "completed_at": "2026-11-06T01:44:58Z"
+        },
+        {
+          "name": "Preserve native JUnit evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 15,
+          "started_at": "2026-11-06T01:44:58Z",
+          "completed_at": "2026-11-06T01:44:59Z"
+        },
+        {
+          "name": "Preserve Agentd protocol JUnit evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-11-06T01:44:59Z",
+          "completed_at": "2026-11-06T01:45:00Z"
+        },
+        {
+          "name": "Ensure test checkout remained immutable",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-11-06T01:45:00Z",
+          "completed_at": "2026-11-06T01:45:01Z"
+        },
+        {
+          "name": "Post Checkout exact PR head without write credentials",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 34,
+          "started_at": "2026-11-06T01:45:01Z",
+          "completed_at": "2026-11-06T01:45:02Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 35,
+          "started_at": "2026-11-06T01:45:02Z",
+          "completed_at": "2026-11-06T01:45:02Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/127581905245",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "runner_id": 1000007051,
+      "runner_name": "GitHub Actions 1000007051",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 127581904089,
+      "run_id": 42123581142,
+      "workflow_name": "Hepta owner-local Matrixd and Agentd native transport",
+      "head_branch": "fix/r3-original-product-contracts-20261104",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42123581142",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOTrgxoM8AAAAdtHlc2Q",
+      "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/127581904089",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42123581142/job/127581904089",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "created_at": "2026-11-05T22:41:16Z",
+      "started_at": "2026-11-05T22:41:16Z",
+      "completed_at": "2026-11-05T22:59:23Z",
+      "name": "Owner-local and original Matrixd/Agentd controls (macos-15)",
+      "steps": [],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/127581904089",
+      "labels": [
+        "macos-15"
+      ],
+      "runner_id": 0,
+      "runner_name": "",
+      "runner_group_id": 0,
+      "runner_group_name": ""
+    },
+    {
+      "id": 127581904493,
+      "run_id": 42123581142,
+      "workflow_name": "Hepta owner-local Matrixd and Agentd native transport",
+      "head_branch": "fix/r3-original-product-contracts-20261104",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42123581142",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOTrgxoM8AAAAdtHlebQ",
+      "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/127581904493",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42123581142/job/127581904493",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-05T22:41:16Z",
+      "started_at": "2026-11-06T01:34:33Z",
+      "completed_at": "2026-11-06T01:45:47Z",
+      "name": "Owner-local and original Matrixd/Agentd controls (ubuntu-24.04)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-06T01:34:34Z",
+          "completed_at": "2026-11-06T01:34:35Z"
+        },
+        {
+          "name": "Checkout exact candidate",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-06T01:34:35Z",
+          "completed_at": "2026-11-06T01:34:42Z"
+        },
+        {
+          "name": "Install original repository runners",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-06T01:34:42Z",
+          "completed_at": "2026-11-06T01:34:45Z"
+        },
+        {
+          "name": "Bind native compiler and source identity",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-11-06T01:34:45Z",
+          "completed_at": "2026-11-06T01:35:01Z"
+        },
+        {
+          "name": "Exercise all original UDS and actual owner-local identity controls",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-11-06T01:35:01Z",
+          "completed_at": "2026-11-06T01:35:16Z"
+        },
+        {
+          "name": "Exercise every original Matrixd library control including real health transport",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-11-06T01:35:16Z",
+          "completed_at": "2026-11-06T01:41:51Z"
+        },
+        {
+          "name": "Exercise every original Agentd library control including actual Windows ranker transport",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-11-06T01:41:51Z",
+          "completed_at": "2026-11-06T01:45:43Z"
+        },
+        {
+          "name": "Check formatting and unchanged tracked source",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-11-06T01:45:43Z",
+          "completed_at": "2026-11-06T01:45:44Z"
+        },
+        {
+          "name": "Preserve native identity and complete test output",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-11-06T01:45:44Z",
+          "completed_at": "2026-11-06T01:45:45Z"
+        },
+        {
+          "name": "Post Checkout exact candidate",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-11-06T01:45:45Z",
+          "completed_at": "2026-11-06T01:45:45Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-11-06T01:45:45Z",
+          "completed_at": "2026-11-06T01:45:45Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/127581904493",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "runner_id": 1000007049,
+      "runner_name": "GitHub Actions 1000007049",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 127581904496,
+      "run_id": 42123581142,
+      "workflow_name": "Hepta owner-local Matrixd and Agentd native transport",
+      "head_branch": "fix/r3-original-product-contracts-20261104",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42123581142",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOTrgxoM8AAAAdtHlecA",
+      "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/127581904496",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42123581142/job/127581904496",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-05T22:41:16Z",
+      "started_at": "2026-11-05T22:41:43Z",
+      "completed_at": "2026-11-05T23:05:08Z",
+      "name": "Owner-local and original Matrixd/Agentd controls (windows-2025)",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-05T22:41:44Z",
+          "completed_at": "2026-11-05T22:41:45Z"
+        },
+        {
+          "name": "Checkout exact candidate",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-05T22:41:45Z",
+          "completed_at": "2026-11-05T22:42:00Z"
+        },
+        {
+          "name": "Install original repository runners",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-05T22:42:00Z",
+          "completed_at": "2026-11-05T22:42:13Z"
+        },
+        {
+          "name": "Bind native compiler and source identity",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-11-05T22:42:13Z",
+          "completed_at": "2026-11-05T22:42:29Z"
+        },
+        {
+          "name": "Exercise all original UDS and actual owner-local identity controls",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-11-05T22:42:29Z",
+          "completed_at": "2026-11-05T22:43:11Z"
+        },
+        {
+          "name": "Exercise every original Matrixd library control including real health transport",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-11-05T22:43:11Z",
+          "completed_at": "2026-11-05T22:57:14Z"
+        },
+        {
+          "name": "Exercise every original Agentd library control including actual Windows ranker transport",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-11-05T22:57:14Z",
+          "completed_at": "2026-11-05T23:04:59Z"
+        },
+        {
+          "name": "Check formatting and unchanged tracked source",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-11-05T23:04:59Z",
+          "completed_at": "2026-11-05T23:05:01Z"
+        },
+        {
+          "name": "Preserve native identity and complete test output",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-11-05T23:05:01Z",
+          "completed_at": "2026-11-05T23:05:03Z"
+        },
+        {
+          "name": "Post Checkout exact candidate",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 18,
+          "started_at": "2026-11-05T23:05:03Z",
+          "completed_at": "2026-11-05T23:05:05Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 19,
+          "started_at": "2026-11-05T23:05:05Z",
+          "completed_at": "2026-11-05T23:05:05Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/127581904496",
+      "labels": [
+        "windows-2025"
+      ],
+      "runner_id": 1000005329,
+      "runner_name": "GitHub Actions 1000005329",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 127581863367,
+      "run_id": 42123569559,
+      "workflow_name": "Native Windows retained recovery and cognitive owner",
+      "head_branch": "fix/r3-original-product-contracts-20261104",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42123569559",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOTrgxoM8AAAAdtHi9xw",
+      "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/127581863367",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42123569559/job/127581863367",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-05T22:41:11Z",
+      "started_at": "2026-11-05T22:42:03Z",
+      "completed_at": "2026-11-05T22:55:34Z",
+      "name": "Original path, state and Memory library controls",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-05T22:42:05Z",
+          "completed_at": "2026-11-05T22:42:06Z"
+        },
+        {
+          "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-05T22:42:06Z",
+          "completed_at": "2026-11-05T22:42:23Z"
+        },
+        {
+          "name": "Run dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-05T22:42:23Z",
+          "completed_at": "2026-11-05T22:42:36Z"
+        },
+        {
+          "name": "Run taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-11-05T22:42:36Z",
+          "completed_at": "2026-11-05T22:42:42Z"
+        },
+        {
+          "name": "Select independent build output at runtime",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-11-05T22:42:42Z",
+          "completed_at": "2026-11-05T22:42:43Z"
+        },
+        {
+          "name": "Run every original library test with fresh evidence",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-11-05T22:42:43Z",
+          "completed_at": "2026-11-05T22:55:28Z"
+        },
+        {
+          "name": "Preserve original results and exact source identity",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-11-05T22:55:28Z",
+          "completed_at": "2026-11-05T22:55:29Z"
+        },
+        {
+          "name": "Check unchanged source",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-11-05T22:55:29Z",
+          "completed_at": "2026-11-05T22:55:30Z"
+        },
+        {
+          "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 16,
+          "started_at": "2026-11-05T22:55:30Z",
+          "completed_at": "2026-11-05T22:55:32Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 17,
+          "started_at": "2026-11-05T22:55:32Z",
+          "completed_at": "2026-11-05T22:55:32Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/127581863367",
+      "labels": [
+        "windows-2025"
+      ],
+      "runner_id": 1000005332,
+      "runner_name": "GitHub Actions 1000005332",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    },
+    {
+      "id": 127581864284,
+      "run_id": 42123569750,
+      "workflow_name": "Native Windows Core lifecycle ordering",
+      "head_branch": "fix/r3-original-product-contracts-20261104",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42123569750",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOTrgxoM8AAAAdtHjBXA",
+      "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/127581864284",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42123569750/job/127581864284",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-05T22:41:11Z",
+      "started_at": "2026-11-05T22:43:57Z",
+      "completed_at": "2026-11-05T22:56:15Z",
+      "name": "core-lifecycle",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1,
+          "started_at": "2026-11-05T22:43:58Z",
+          "completed_at": "2026-11-05T22:43:59Z"
+        },
+        {
+          "name": "Checkout exact source head",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2,
+          "started_at": "2026-11-05T22:43:59Z",
+          "completed_at": "2026-11-05T22:44:11Z"
+        },
+        {
+          "name": "Record source provenance",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3,
+          "started_at": "2026-11-05T22:44:11Z",
+          "completed_at": "2026-11-05T22:44:13Z"
+        },
+        {
+          "name": "Prepare native Windows Bazel",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4,
+          "started_at": "2026-11-05T22:44:13Z",
+          "completed_at": "2026-11-05T22:44:32Z"
+        },
+        {
+          "name": "Run original resume, fork-prefix, and environment controls",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5,
+          "started_at": "2026-11-05T22:44:32Z",
+          "completed_at": "2026-11-05T22:52:17Z"
+        },
+        {
+          "name": "Preserve the original resume results before full Core",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6,
+          "started_at": "2026-11-05T22:52:17Z",
+          "completed_at": "2026-11-05T22:52:20Z"
+        },
+        {
+          "name": "Isolate the sanitized parent-history fork lifecycle",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7,
+          "started_at": "2026-11-05T22:52:20Z",
+          "completed_at": "2026-11-05T22:52:52Z"
+        },
+        {
+          "name": "Exercise runtime ownership and cold-close regressions",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 8,
+          "started_at": "2026-11-05T22:52:52Z",
+          "completed_at": "2026-11-05T22:53:08Z"
+        },
+        {
+          "name": "Exercise the complete Core unit target under normal sharding",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9,
+          "started_at": "2026-11-05T22:53:08Z",
+          "completed_at": "2026-11-05T22:56:08Z"
+        },
+        {
+          "name": "Preserve complete native test logs from every shard",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 10,
+          "started_at": "2026-11-05T22:56:08Z",
+          "completed_at": "2026-11-05T22:56:10Z"
+        },
+        {
+          "name": "Preserve diagnostics even after a failed probe",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 11,
+          "started_at": "2026-11-05T22:56:10Z",
+          "completed_at": "2026-11-05T22:56:11Z"
+        },
+        {
+          "name": "Check unchanged tracked source",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 12,
+          "started_at": "2026-11-05T22:56:11Z",
+          "completed_at": "2026-11-05T22:56:11Z"
+        },
+        {
+          "name": "Post Prepare native Windows Bazel",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23,
+          "started_at": "2026-11-05T22:56:11Z",
+          "completed_at": "2026-11-05T22:56:12Z"
+        },
+        {
+          "name": "Post Checkout exact source head",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 24,
+          "started_at": "2026-11-05T22:56:12Z",
+          "completed_at": "2026-11-05T22:56:13Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 25,
+          "started_at": "2026-11-05T22:56:13Z",
+          "completed_at": "2026-11-05T22:56:13Z"
+        }
+      ],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/127581864284",
+      "labels": [
+        "windows-2025"
+      ],
+      "runner_id": 1000005349,
+      "runner_name": "GitHub Actions 1000005349",
+      "runner_group_id": 0,
+      "runner_group_name": "GitHub Actions"
+    }
+  ],
+  "job_counts": {
+    "success": 35,
+    "cancelled": 9,
+    "queued": 7,
+    "skipped": 2,
+    "in_progress": 5
+  },
+  "previous_0104_job_counts": {
+    "queued": 23,
+    "success": 19,
+    "cancelled": 9,
+    "skipped": 2
+  },
+  "native_execution_started_by_this_read": false,
+  "manual_dispatch_or_rerun_or_cancel": false
+}

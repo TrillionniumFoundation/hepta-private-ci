@@ -1,0 +1,76 @@
+--- a/collect_attempts.py
++++ b/collect_attempts.py
+@@ -29,7 +29,7 @@
+ HEADER_RE = re.compile(r"--(?:" + "|".join(sorted(HEADERS)) + r")(?=$|[\s=])")
+ URI_RE = re.compile(r"[A-Za-z][A-Za-z0-9+.-]*://[^\s\"'<>]+")
+ DERIVED_NAME = "build-events.sanitized.jsonl"
+-SCHEMA = "bazel-actual-attempt-evidence-rebuilt-v2"
++SCHEMA = "bazel-actual-attempt-evidence-fetch-v3"
+ CHUNK = 1024 * 1024
+ 
+ 
+@@ -424,6 +424,7 @@
+ 
+ def reconcile(events, root, inventory, expected_target, original_exit, errors):
+     attempts, summaries, seen, announced = [], [], set(), set()
++    first_fetch_events, repeated_fetch_events = {}, []
+     groups, counts = collections.defaultdict(list), collections.Counter()
+     finished = []
+     for index, event in enumerate(events):
+@@ -432,8 +433,25 @@
+             errors.append({"kind": "event_id_missing", "event": index})
+             continue
+         key = canonical(identity)
++        # Fetch IDs contain URL + downloader, not an occurrence number. Bazel can
++        # emit several fetches with this ID; retain every event and its payload.
++        # No TestResult/TestSummary or other ID gains a duplicate exemption.
++        is_fetch = (set(identity) == {"fetch"}
++                    and isinstance(identity["fetch"], dict)
++                    and isinstance(event.get("fetch"), dict)
++                    and set(event).issubset({"id", "fetch", "children", "lastMessage"}))
+         if key in seen:
+-            errors.append({"kind": "duplicate_event_id", "event": index})
++            if is_fetch and key in first_fetch_events:
++                first = first_fetch_events[key]
++                repeated_fetch_events.append({
++                    "event": index, "first_event": first, "id": identity,
++                    "first_payload": events[first]["fetch"], "payload": event["fetch"],
++                    "payload_equal_to_first": event["fetch"] == events[first]["fetch"],
++                })
++            else:
++                errors.append({"kind": "duplicate_event_id", "event": index})
++        elif is_fetch:
++            first_fetch_events[key] = index
+         seen.add(key)
+         for child in event.get("children", []):
+             announced.add(canonical(child))
+@@ -525,7 +543,7 @@
+         errors.append({"kind": "no_actual_test_results"})
+     if expected_target not in {row["id"].get("label") for row in attempts}:
+         errors.append({"kind": "required_target_not_observed"})
+-    return attempts, summaries
++    return attempts, summaries, repeated_fetch_events
+ 
+ 
+ def read_exit(public, name, errors):
+@@ -691,7 +709,8 @@
+     root, inventory = collect_local_logs(
+         Path("bazel-testlogs") if testlogs is None else Path(testlogs),
+         public, private, policy, errors)
+-    attempts, summaries = reconcile(events, root, inventory, expected_target, original_exit, errors)
++    attempts, summaries, repeated_fetch_events = reconcile(
++        events, root, inventory, expected_target, original_exit, errors)
+     try:
+         compact = [p for p in execution_logs.rglob("*.zst") if p.is_file() and not p.is_symlink()]
+         if not compact:
+@@ -710,6 +729,10 @@
+         "original_bazel_exit": original_exit, "console_copy_exit": copy_exit,
+         "resolved_testlogs_root": str(root) if root else None,
+         "actual_attempts": attempts, "test_summaries": summaries,
++        "repeated_fetch_events": repeated_fetch_events,
++        "fetch_repetition_scope": "Only Fetch IDs may repeat; each derived BEP record and "
++                                  "each repeated payload remains retained. This does not "
++                                  "qualify a test attempt or waive missing log/XML evidence.",
+         "files": list(inventory.values()), "errors": errors,
+         "exclusions": ["test.outputs", "test.outputs_manifest", "*.runfiles",
+                        "other non-log/XML test outputs", "unexecuted or incompatible targets"],

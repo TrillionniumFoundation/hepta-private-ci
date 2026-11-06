@@ -1,0 +1,117 @@
+{
+  "schema": "arg0-clippy-independent-static-v1",
+  "source_head": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+  "source_tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+  "candidate_tree": "e60df9b57046df73cc1af53d8773cff48eafd311",
+  "complete_base_tree": {
+    "bytes": 1819327,
+    "git_blob": "61453b019cc31cd104b70bad323183d028a3f01e",
+    "sha256": "cdca277de2d3da7a3d215973b3b02d0dc92dbdbb7674a4c497ca00034d57567a"
+  },
+  "complete_intended_tree": {
+    "bytes": 2329727,
+    "git_blob": "68a0767d36129db59164226d2c0d0f875df56364",
+    "sha256": "d01e737ad4a877163805c8951aab84b39c31e6e0568b180b7694734371cd3726"
+  },
+  "files": [
+    {
+      "path": "codex-rs/arg0/src/bin/test_arg0_preflight.rs",
+      "preimage": {
+        "bytes": 7323,
+        "git_blob": "be0507472a7277fbb9c22f9c946039b09127355d",
+        "sha256": "ec1f052396f896527f6761bba8f42769983f9db5112c4acd8f739206b6ef9270"
+      },
+      "postimage": {
+        "bytes": 7369,
+        "git_blob": "6fbb88e17c1da7d9533efe6f40eae77e60c3b085",
+        "sha256": "b0cab98d232d451bc61206a85432752211551f8a1ee4d9d54dfbd27bed39590c"
+      },
+      "exact_forward_and_inverse_full_bytes": true,
+      "fresh_full_GET_equal": true,
+      "original_assertion_counts": {
+        "#[test]": 0,
+        "ensure!(": 30,
+        "assert!(": 0,
+        "assert_eq!(": 0
+      }
+    },
+    {
+      "path": "codex-rs/arg0/src/preflight_tests.rs",
+      "preimage": {
+        "bytes": 5833,
+        "git_blob": "7e315f1aa7284b3e0899d31520568c474cbddd0d",
+        "sha256": "9bfd0247502d16929ece4e9fa0eb9178d483b70fe916273e23e7cd09842ed850"
+      },
+      "postimage": {
+        "bytes": 5909,
+        "git_blob": "1947350263edd252723d88c8179f8fe7a3a018aa",
+        "sha256": "caa60c03d82130f060db4e5c3a1747ddbc8d42b14b7d50c15332ac4fa033385a"
+      },
+      "exact_forward_and_inverse_full_bytes": true,
+      "fresh_full_GET_equal": true,
+      "original_assertion_counts": {
+        "#[test]": 3,
+        "ensure!(": 2,
+        "assert!(": 6,
+        "assert_eq!(": 6
+      }
+    }
+  ],
+  "changed_paths": [
+    "codex-rs/arg0/src/bin/test_arg0_preflight.rs",
+    "codex-rs/arg0/src/preflight_tests.rs"
+  ],
+  "original_leaves": 10582,
+  "unchanged_leaves": 10580,
+  "directories": 1571,
+  "patch": {
+    "bytes": 1254,
+    "git_blob": "5bfe66107d2dd58aff9c1acc0383e1520d2df188",
+    "sha256": "ccb7031fd9706f9d93daca1dcc6b0bb34387668ecb4c1ccf833a6d3e492f7dc3"
+  },
+  "git_apply_operations": [
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "<frozen candidate.patch>"
+      ],
+      "exit": 0
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "<frozen candidate.patch>"
+      ],
+      "exit": 0
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "--check",
+        "<frozen candidate.patch>"
+      ],
+      "exit": 0
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "<frozen candidate.patch>"
+      ],
+      "exit": 0
+    }
+  ],
+  "three_original_tests_and_all_assertions_unchanged": true,
+  "original_spawn_argv_environment_10_second_deadline_poll_and_Drop_unchanged": true,
+  "unexpected_state_remains_failure": "Two fixture panic paths become Result errors; neither path can return success.",
+  "ordinary_result_error_paths_unchanged": true,
+  "new_Rust_tests_or_native_runs": false,
+  "Rust_format_compile_clippy_test_executed": false,
+  "scope": "STATIC_SOURCE_ACCEPTANCE_ONLY; automatic original GNU clippy and tests remain pending."
+}

@@ -1,0 +1,32 @@
+{
+  "scope": "Primary API contract notes for test-only launcher; not a native result",
+  "read_utc": "2026-11-06T00:06:38.742158+00:00",
+  "sources": [
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-createprocessasuserw",
+      "retrieval_ref": "turn176view2",
+      "summary": "The primary token selects the child context. Mutable command-line storage is required. Extended startup attributes require EXTENDED_STARTUPINFO_PRESENT. Process and thread handles returned on success must be closed. The caller may need privileges and the API can temporarily enable required privileges; the candidate retains exact actual child-token comparison and does not add a fallback."
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-updateprocthreadattribute",
+      "retrieval_ref": "turn176view0",
+      "summary": "HANDLE_LIST specifies inheritable non-pseudo handles and requires bInheritHandles true. JOB_LIST lists jobs assigned as part of creation. Attribute value buffers must live until the attribute list is destroyed."
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-token_groups",
+      "retrieval_ref": "turn176view1",
+      "summary": "GroupCount describes the number of group entries and Groups is a variable array. The candidate does not change production zero-restricting-SID rejection."
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/securitybaseapi/nf-securitybaseapi-gettokeninformation",
+      "retrieval_ref": "turn175search2",
+      "summary": "ReturnLength reports required buffer bytes; a zero-length query can fail while reporting needed size. Native11 did not log the actual needed value, which remains unknown."
+    }
+  ],
+  "binding_source": {
+    "relative_path": "primary/windows-sys-0.52.0-System-Threading.rs.source.txt",
+    "bytes": 136501,
+    "sha256": "6258ef99d17078002020644540a608a89cdf20436daefa3970a65348e6793c1c",
+    "git_blob": "6ee2c4ad6120e5a3ad34c87e67d6d9187304d9ac"
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "schema": "b21-native2-firstcut-registry-v1",
+  "source_head": "ebd31e2b3e38ff72cedaa7b57bee60c1c102da27",
+  "window_start": "2026-11-06T03:14:02.467Z",
+  "window_end": "2026-11-06T03:14:07.606Z",
+  "materialization_method": "create_tree(content) no ref; full blob GET equality",
+  "materialization_tree": "421c9b53ea4ca54e01a89a09a7ffd98189e914ad",
+  "objects": [
+    {
+      "relative_path": "runlist.original.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-native2-firstcut-20261106/runlist.original.json",
+      "bytes": 61801,
+      "sha256": "cb0c3a4e9cedd92f7107d32525cc18ebe77cf281b79d1dcbf65926788b0866d1",
+      "git_blob": "c5f885dd2c1fe24604a65e4770e97f0c4ae007cc",
+      "actual_full_GET_equal": true
+    },
+    {
+      "relative_path": "diagnostic-jobs.original.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-native2-firstcut-20261106/diagnostic-jobs.original.json",
+      "bytes": 2886,
+      "sha256": "3da35b7dc50dfd9d389a02b553939337c43dfd617a1e1f4c852c319810a028cc",
+      "git_blob": "2dc002f029a6166ed6d3bf08ce88c721dee8802d",
+      "actual_full_GET_equal": true
+    },
+    {
+      "relative_path": "runlist.GET.original.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-native2-firstcut-20261106/runlist.GET.original.json",
+      "bytes": 131351,
+      "sha256": "f7dce42abcb3d08caebfe6a403020f7333111fbe07a8a3fe473e2ea0e27589d6",
+      "git_blob": "2ef63b793f0fa6a6295c687a0e217a0d8c3fff87",
+      "actual_full_GET_equal": true
+    },
+    {
+      "relative_path": "diagnostic-jobs.GET.original.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-native2-firstcut-20261106/diagnostic-jobs.GET.original.json",
+      "bytes": 7131,
+      "sha256": "7ca4a1598cdd929011aef61985007ae366f01160c82c8136ae6b0333369363a1",
+      "git_blob": "74fa5333b1741862900cdbee888f83668d1b591d",
+      "actual_full_GET_equal": true
+    },
+    {
+      "relative_path": "CUT.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-native2-firstcut-20261106/CUT.json",
+      "bytes": 2691,
+      "sha256": "1ea500a1fa8f062ec1f9b0882214b41ae5cab41e4e0e0751bdd3d0c430278d4e",
+      "git_blob": "425402faea57b6ecc4d4f626c896b2b29ed5f66c",
+      "actual_full_GET_equal": true
+    }
+  ],
+  "terminal_result": false,
+  "native_started_dispatched_rerun_or_cancelled_by_this_task": false,
+  "self_registration": {
+    "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-native2-firstcut-20261106/registry.actual.json",
+    "receipt": "external actual receipt"
+  }
+}

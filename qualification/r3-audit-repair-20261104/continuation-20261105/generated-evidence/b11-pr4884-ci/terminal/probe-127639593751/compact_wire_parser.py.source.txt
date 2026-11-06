@@ -1,0 +1,45 @@
+"""Exact varint/fields/first helper slice; see compact-parser-provenance.json."""
+def varint(data, pos):
+    value = 0
+    shift = 0
+    while True:
+        assert pos < len(data) and shift <= 63
+        b = data[pos]
+        pos += 1
+        value |= (b & 127) << shift
+        if not b & 128:
+            return value, pos
+        shift += 7
+
+
+def fields(data):
+    pos = 0
+    result = {}
+    while pos < len(data):
+        key, pos = varint(data, pos)
+        field, wire = key >> 3, key & 7
+        assert field
+        if wire == 0:
+            value, pos = varint(data, pos)
+        elif wire == 2:
+            size, pos = varint(data, pos)
+            assert pos + size <= len(data)
+            value = data[pos:pos + size]
+            pos += size
+        elif wire in (1, 5):
+            size = 8 if wire == 1 else 4
+            assert pos + size <= len(data)
+            value = data[pos:pos + size]
+            pos += size
+        else:
+            raise ValueError(f'unsupported wire type {wire}')
+        result.setdefault(field, []).append(value)
+    assert pos == len(data)
+    return result
+
+
+def first(f, n, default=b''):
+    values = f.get(n, [])
+    assert len(values) <= 1
+    return values[0] if values else default
+

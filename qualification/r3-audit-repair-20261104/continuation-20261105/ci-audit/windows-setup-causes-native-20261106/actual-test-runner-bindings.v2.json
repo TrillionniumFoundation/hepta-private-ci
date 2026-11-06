@@ -1,0 +1,1239 @@
+{
+  "schema": "windows-setup-causes-actual-test-associations-v2",
+  "bindings": [
+    {
+      "artifact": "shard4",
+      "target": "//codex-rs/core:core-all-test",
+      "actual_tw_sequence": 89726,
+      "xml_generator_sequence": 89820,
+      "runner": "local",
+      "cache_hit": false,
+      "timeout_millis": 900000,
+      "original_test_exit": 0,
+      "xml_generator_original_exit_argument": 0,
+      "xml_generator_duration_seconds": 42,
+      "xml_generator_exit": 0,
+      "attempt_ordinal_from_same_target_and_output_path": 1,
+      "attempts_for_this_shard": 1,
+      "log": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/targets/0000/shard_3_of_16/test.log",
+      "log_identity": {
+        "bytes": 6595,
+        "git_blob": "481d74ba2ab44cb963b7903c55bea0358379465a",
+        "sha256": "69ddfa41082091517fdfeb17addc325d834252f6c39e5daa40c57de676443470"
+      },
+      "xml": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/targets/0000/shard_3_of_16/test.xml",
+      "xml_identity": {
+        "bytes": 6930,
+        "git_blob": "a34a2d17c148cf00ebe0ab8a8755b2d4ec00e006",
+        "sha256": "c3ed06d78c5fe5ad9be194e8694cf4e4d303d8552362f700ee10efefd0b2d929"
+      },
+      "retention_manifest": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/manifest.json",
+      "log_input_entry_id": 86657,
+      "recorded_log_input_digest": {
+        "hash": "69ddfa41082091517fdfeb17addc325d834252f6c39e5daa40c57de676443470",
+        "size_bytes": 6595,
+        "hash_function_name": ""
+      },
+      "xml_output_entry_id": 86659,
+      "recorded_xml_output_digest": {
+        "hash": "c3ed06d78c5fe5ad9be194e8694cf4e4d303d8552362f700ee10efefd0b2d929",
+        "size_bytes": 6930,
+        "hash_function_name": ""
+      },
+      "compact_file_digest_equals_this_attempt": true,
+      "original_log_equals_XML_system_out_after_XML_control_filtering": true,
+      "XML_duration_and_status_match_spawn": true,
+      "libtest_batches": [
+        {
+          "status": "ok",
+          "passed": 54,
+          "failed": 0,
+          "ignored": 7,
+          "measured": 0,
+          "filtered_out": 1071,
+          "duration_seconds_text": "40.49"
+        }
+      ],
+      "failure_headers": [],
+      "binding": "Same target/output path and unique sequential tw/XML pair; exact original exit/duration and retained attempt ordinal/name agree. Full XML transcript equals raw log after XML control filtering. Compact file digests are only current for the first attempt; subsequent records reuse path IDs and must not be called fresh per-attempt hash evidence."
+    },
+    {
+      "artifact": "shard4",
+      "target": "//codex-rs/core:core-all-test",
+      "actual_tw_sequence": 89737,
+      "xml_generator_sequence": 89828,
+      "runner": "local",
+      "cache_hit": false,
+      "timeout_millis": 900000,
+      "original_test_exit": 0,
+      "xml_generator_original_exit_argument": 0,
+      "xml_generator_duration_seconds": 46,
+      "xml_generator_exit": 0,
+      "attempt_ordinal_from_same_target_and_output_path": 1,
+      "attempts_for_this_shard": 1,
+      "log": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/targets/0000/shard_9_of_16/test.log",
+      "log_identity": {
+        "bytes": 7910,
+        "git_blob": "b6382ddd4504dc568d8325b4207248a34b063563",
+        "sha256": "bed9ee46806b68c542fb0687bd666c3abe27eb46fc19e8e91b0ea64e6e59baee"
+      },
+      "xml": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/targets/0000/shard_9_of_16/test.xml",
+      "xml_identity": {
+        "bytes": 8245,
+        "git_blob": "cdd6abc2f1580a61cb1d0d113ea7ea355490f894",
+        "sha256": "f75c997a1bada45e47edab4fc0456b92260cc55e878afab82cb487c58e248ade"
+      },
+      "retention_manifest": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/manifest.json",
+      "log_input_entry_id": 86663,
+      "recorded_log_input_digest": {
+        "hash": "bed9ee46806b68c542fb0687bd666c3abe27eb46fc19e8e91b0ea64e6e59baee",
+        "size_bytes": 7910,
+        "hash_function_name": ""
+      },
+      "xml_output_entry_id": 86665,
+      "recorded_xml_output_digest": {
+        "hash": "f75c997a1bada45e47edab4fc0456b92260cc55e878afab82cb487c58e248ade",
+        "size_bytes": 8245,
+        "hash_function_name": ""
+      },
+      "compact_file_digest_equals_this_attempt": true,
+      "original_log_equals_XML_system_out_after_XML_control_filtering": true,
+      "XML_duration_and_status_match_spawn": true,
+      "libtest_batches": [
+        {
+          "status": "ok",
+          "passed": 69,
+          "failed": 0,
+          "ignored": 6,
+          "measured": 0,
+          "filtered_out": 1057,
+          "duration_seconds_text": "44.58"
+        }
+      ],
+      "failure_headers": [],
+      "binding": "Same target/output path and unique sequential tw/XML pair; exact original exit/duration and retained attempt ordinal/name agree. Full XML transcript equals raw log after XML control filtering. Compact file digests are only current for the first attempt; subsequent records reuse path IDs and must not be called fresh per-attempt hash evidence."
+    },
+    {
+      "artifact": "shard4",
+      "target": "//codex-rs/core:core-all-test",
+      "actual_tw_sequence": 89741,
+      "xml_generator_sequence": 89836,
+      "runner": "local",
+      "cache_hit": false,
+      "timeout_millis": 900000,
+      "original_test_exit": 1,
+      "xml_generator_original_exit_argument": 1,
+      "xml_generator_duration_seconds": 47,
+      "xml_generator_exit": 0,
+      "attempt_ordinal_from_same_target_and_output_path": 1,
+      "attempts_for_this_shard": 3,
+      "log": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/targets/0000/shard_7_of_16/test_attempts/attempt_1.log",
+      "log_identity": {
+        "bytes": 377285,
+        "git_blob": "ddedeeb302faaf7a7af14384decc98e599345d61",
+        "sha256": "90f93d6821e3a745ea9e28f32b4eb36fa525b46ad37233cd2a78407c5ccfe85b"
+      },
+      "xml": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/targets/0000/shard_7_of_16/test_attempts/attempt_1.xml",
+      "xml_identity": {
+        "bytes": 377670,
+        "git_blob": "2458a65972fa6c9f9993fe1f9a2e6dbc2347c28f",
+        "sha256": "913f4c24ec53c4e4486f3d61c29f1075301637efd9366d1c07c314db7b4c1b7f"
+      },
+      "retention_manifest": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/manifest.json",
+      "log_input_entry_id": 86669,
+      "recorded_log_input_digest": {
+        "hash": "90f93d6821e3a745ea9e28f32b4eb36fa525b46ad37233cd2a78407c5ccfe85b",
+        "size_bytes": 377285,
+        "hash_function_name": ""
+      },
+      "xml_output_entry_id": 86671,
+      "recorded_xml_output_digest": {
+        "hash": "913f4c24ec53c4e4486f3d61c29f1075301637efd9366d1c07c314db7b4c1b7f",
+        "size_bytes": 377670,
+        "hash_function_name": ""
+      },
+      "compact_file_digest_equals_this_attempt": true,
+      "original_log_equals_XML_system_out_after_XML_control_filtering": true,
+      "XML_duration_and_status_match_spawn": true,
+      "libtest_batches": [
+        {
+          "status": "FAILED",
+          "passed": 69,
+          "failed": 4,
+          "ignored": 5,
+          "measured": 0,
+          "filtered_out": 1054,
+          "duration_seconds_text": "45.70"
+        }
+      ],
+      "failure_headers": [
+        "suite::windows_sandbox::windows_elevated_enforces_deny_read_and_protects_setup_marker",
+        "suite::workspace_roots::workspace_roots_deny_file_and_command_writes_outside_roots",
+        "suite::windows_sandbox::windows_elevated_unified_exec_enforces_managed_deny_reads",
+        "suite::workspace_roots::workspace_roots_allow_patches_but_protect_metadata_directories"
+      ],
+      "binding": "Same target/output path and unique sequential tw/XML pair; exact original exit/duration and retained attempt ordinal/name agree. Full XML transcript equals raw log after XML control filtering. Compact file digests are only current for the first attempt; subsequent records reuse path IDs and must not be called fresh per-attempt hash evidence."
+    },
+    {
+      "artifact": "shard4",
+      "target": "//codex-rs/core:core-all-test",
+      "actual_tw_sequence": 89752,
+      "xml_generator_sequence": 89840,
+      "runner": "local",
+      "cache_hit": false,
+      "timeout_millis": 900000,
+      "original_test_exit": 0,
+      "xml_generator_original_exit_argument": 0,
+      "xml_generator_duration_seconds": 48,
+      "xml_generator_exit": 0,
+      "attempt_ordinal_from_same_target_and_output_path": 1,
+      "attempts_for_this_shard": 1,
+      "log": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/targets/0000/shard_2_of_16/test.log",
+      "log_identity": {
+        "bytes": 8413,
+        "git_blob": "47cc5921387e042e1491e816d3d018544c2c5346",
+        "sha256": "e8152c74d808423adee2ef733610e067e2fd6dacbb9e448e9a20814b425936eb"
+      },
+      "xml": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/targets/0000/shard_2_of_16/test.xml",
+      "xml_identity": {
+        "bytes": 8748,
+        "git_blob": "455ec61e96b025a5e2b0d315d9e81dfc14e10538",
+        "sha256": "b6daf350eff9ac174d1d873fc1cbec84fe6909a9b4823fffb06d36e69ed4168e"
+      },
+      "retention_manifest": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/manifest.json",
+      "log_input_entry_id": 86672,
+      "recorded_log_input_digest": {
+        "hash": "e8152c74d808423adee2ef733610e067e2fd6dacbb9e448e9a20814b425936eb",
+        "size_bytes": 8413,
+        "hash_function_name": ""
+      },
+      "xml_output_entry_id": 86674,
+      "recorded_xml_output_digest": {
+        "hash": "b6daf350eff9ac174d1d873fc1cbec84fe6909a9b4823fffb06d36e69ed4168e",
+        "size_bytes": 8748,
+        "hash_function_name": ""
+      },
+      "compact_file_digest_equals_this_attempt": true,
+      "original_log_equals_XML_system_out_after_XML_control_filtering": true,
+      "XML_duration_and_status_match_spawn": true,
+      "libtest_batches": [
+        {
+          "status": "ok",
+          "passed": 70,
+          "failed": 0,
+          "ignored": 5,
+          "measured": 0,
+          "filtered_out": 1057,
+          "duration_seconds_text": "44.65"
+        },
+        {
+          "status": "ok",
+          "passed": 3,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 1129,
+          "duration_seconds_text": "1.30"
+        }
+      ],
+      "failure_headers": [],
+      "binding": "Same target/output path and unique sequential tw/XML pair; exact original exit/duration and retained attempt ordinal/name agree. Full XML transcript equals raw log after XML control filtering. Compact file digests are only current for the first attempt; subsequent records reuse path IDs and must not be called fresh per-attempt hash evidence."
+    },
+    {
+      "artifact": "shard4",
+      "target": "//codex-rs/core:core-all-test",
+      "actual_tw_sequence": 89756,
+      "xml_generator_sequence": 89844,
+      "runner": "local",
+      "cache_hit": false,
+      "timeout_millis": 900000,
+      "original_test_exit": 0,
+      "xml_generator_original_exit_argument": 0,
+      "xml_generator_duration_seconds": 30,
+      "xml_generator_exit": 0,
+      "attempt_ordinal_from_same_target_and_output_path": 1,
+      "attempts_for_this_shard": 1,
+      "log": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/targets/0000/shard_5_of_16/test.log",
+      "log_identity": {
+        "bytes": 6119,
+        "git_blob": "31f415fc1ba6e79c91f3f82928363a4b3dc7fed0",
+        "sha256": "66851eececa0cb8fafca555cf89f413d1246e80c6c5e9f004e398c9fae6e7ace"
+      },
+      "xml": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/targets/0000/shard_5_of_16/test.xml",
+      "xml_identity": {
+        "bytes": 6454,
+        "git_blob": "b70a6adcb46ac3e33b2bdf0330c01d72165070df",
+        "sha256": "deeef3ddfe58aeac735db8ee21529977f0230d2e9a243041e5253418c84cc308"
+      },
+      "retention_manifest": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/manifest.json",
+      "log_input_entry_id": 86675,
+      "recorded_log_input_digest": {
+        "hash": "66851eececa0cb8fafca555cf89f413d1246e80c6c5e9f004e398c9fae6e7ace",
+        "size_bytes": 6119,
+        "hash_function_name": ""
+      },
+      "xml_output_entry_id": 86677,
+      "recorded_xml_output_digest": {
+        "hash": "deeef3ddfe58aeac735db8ee21529977f0230d2e9a243041e5253418c84cc308",
+        "size_bytes": 6454,
+        "hash_function_name": ""
+      },
+      "compact_file_digest_equals_this_attempt": true,
+      "original_log_equals_XML_system_out_after_XML_control_filtering": true,
+      "XML_duration_and_status_match_spawn": true,
+      "libtest_batches": [
+        {
+          "status": "ok",
+          "passed": 51,
+          "failed": 0,
+          "ignored": 5,
+          "measured": 0,
+          "filtered_out": 1076,
+          "duration_seconds_text": "29.16"
+        }
+      ],
+      "failure_headers": [],
+      "binding": "Same target/output path and unique sequential tw/XML pair; exact original exit/duration and retained attempt ordinal/name agree. Full XML transcript equals raw log after XML control filtering. Compact file digests are only current for the first attempt; subsequent records reuse path IDs and must not be called fresh per-attempt hash evidence."
+    },
+    {
+      "artifact": "shard4",
+      "target": "//codex-rs/core:core-all-test",
+      "actual_tw_sequence": 89760,
+      "xml_generator_sequence": 89848,
+      "runner": "local",
+      "cache_hit": false,
+      "timeout_millis": 900000,
+      "original_test_exit": 0,
+      "xml_generator_original_exit_argument": 0,
+      "xml_generator_duration_seconds": 32,
+      "xml_generator_exit": 0,
+      "attempt_ordinal_from_same_target_and_output_path": 1,
+      "attempts_for_this_shard": 1,
+      "log": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/targets/0000/shard_8_of_16/test.log",
+      "log_identity": {
+        "bytes": 6644,
+        "git_blob": "16e47c8ee36bc487df7881ec51ff28626ebc0137",
+        "sha256": "c49d6b440fa3bbdde3216d912f8d0a285c854157463dd0d9bf533bdb6697529b"
+      },
+      "xml": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/targets/0000/shard_8_of_16/test.xml",
+      "xml_identity": {
+        "bytes": 6979,
+        "git_blob": "bd26a853cc1110941224cf0c2d68f829bc5c87e2",
+        "sha256": "b6695f91599d7de8f795a2918e396051f94fcbdacb0930ae489a129d094a97c2"
+      },
+      "retention_manifest": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/manifest.json",
+      "log_input_entry_id": 86678,
+      "recorded_log_input_digest": {
+        "hash": "c49d6b440fa3bbdde3216d912f8d0a285c854157463dd0d9bf533bdb6697529b",
+        "size_bytes": 6644,
+        "hash_function_name": ""
+      },
+      "xml_output_entry_id": 86680,
+      "recorded_xml_output_digest": {
+        "hash": "b6695f91599d7de8f795a2918e396051f94fcbdacb0930ae489a129d094a97c2",
+        "size_bytes": 6979,
+        "hash_function_name": ""
+      },
+      "compact_file_digest_equals_this_attempt": true,
+      "original_log_equals_XML_system_out_after_XML_control_filtering": true,
+      "XML_duration_and_status_match_spawn": true,
+      "libtest_batches": [
+        {
+          "status": "ok",
+          "passed": 57,
+          "failed": 0,
+          "ignored": 4,
+          "measured": 0,
+          "filtered_out": 1071,
+          "duration_seconds_text": "30.25"
+        }
+      ],
+      "failure_headers": [],
+      "binding": "Same target/output path and unique sequential tw/XML pair; exact original exit/duration and retained attempt ordinal/name agree. Full XML transcript equals raw log after XML control filtering. Compact file digests are only current for the first attempt; subsequent records reuse path IDs and must not be called fresh per-attempt hash evidence."
+    },
+    {
+      "artifact": "shard4",
+      "target": "//codex-rs/core:core-all-test",
+      "actual_tw_sequence": 89764,
+      "xml_generator_sequence": 89852,
+      "runner": "local",
+      "cache_hit": false,
+      "timeout_millis": 900000,
+      "original_test_exit": 0,
+      "xml_generator_original_exit_argument": 0,
+      "xml_generator_duration_seconds": 36,
+      "xml_generator_exit": 0,
+      "attempt_ordinal_from_same_target_and_output_path": 1,
+      "attempts_for_this_shard": 1,
+      "log": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/targets/0000/shard_15_of_16/test.log",
+      "log_identity": {
+        "bytes": 7688,
+        "git_blob": "dbe600ee2e595f93a445d6db5af85ff172281d2f",
+        "sha256": "fd2896096dd9044b3068a9d08184058781c5fa3e03362ca5d7f23b7a6ac23907"
+      },
+      "xml": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/targets/0000/shard_15_of_16/test.xml",
+      "xml_identity": {
+        "bytes": 8025,
+        "git_blob": "aea3d03f241e7693544a1bc2cc3e265e6d955ac6",
+        "sha256": "5d4c3a68744eb137100cd5b11a15516ee704830fbec37819ecd2471874dcfee9"
+      },
+      "retention_manifest": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/manifest.json",
+      "log_input_entry_id": 86681,
+      "recorded_log_input_digest": {
+        "hash": "fd2896096dd9044b3068a9d08184058781c5fa3e03362ca5d7f23b7a6ac23907",
+        "size_bytes": 7688,
+        "hash_function_name": ""
+      },
+      "xml_output_entry_id": 86683,
+      "recorded_xml_output_digest": {
+        "hash": "5d4c3a68744eb137100cd5b11a15516ee704830fbec37819ecd2471874dcfee9",
+        "size_bytes": 8025,
+        "hash_function_name": ""
+      },
+      "compact_file_digest_equals_this_attempt": true,
+      "original_log_equals_XML_system_out_after_XML_control_filtering": true,
+      "XML_duration_and_status_match_spawn": true,
+      "libtest_batches": [
+        {
+          "status": "ok",
+          "passed": 59,
+          "failed": 0,
+          "ignored": 10,
+          "measured": 0,
+          "filtered_out": 1063,
+          "duration_seconds_text": "34.65"
+        }
+      ],
+      "failure_headers": [],
+      "binding": "Same target/output path and unique sequential tw/XML pair; exact original exit/duration and retained attempt ordinal/name agree. Full XML transcript equals raw log after XML control filtering. Compact file digests are only current for the first attempt; subsequent records reuse path IDs and must not be called fresh per-attempt hash evidence."
+    },
+    {
+      "artifact": "shard4",
+      "target": "//codex-rs/core:core-all-test",
+      "actual_tw_sequence": 89768,
+      "xml_generator_sequence": 89856,
+      "runner": "local",
+      "cache_hit": false,
+      "timeout_millis": 900000,
+      "original_test_exit": 0,
+      "xml_generator_original_exit_argument": 0,
+      "xml_generator_duration_seconds": 33,
+      "xml_generator_exit": 0,
+      "attempt_ordinal_from_same_target_and_output_path": 1,
+      "attempts_for_this_shard": 1,
+      "log": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/targets/0000/shard_11_of_16/test.log",
+      "log_identity": {
+        "bytes": 6942,
+        "git_blob": "e1711cae59a964bc3280315cb7780f78f39a9f8f",
+        "sha256": "7b336f944579e6269cba3ae3ca3f9af1782d7444330c7b369a0d51b5370df38f"
+      },
+      "xml": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/targets/0000/shard_11_of_16/test.xml",
+      "xml_identity": {
+        "bytes": 7279,
+        "git_blob": "852509330734043b7ca475f3747582e5cd34de0a",
+        "sha256": "e3c22da84f69ceb06a6458f29a2ccd607dc4cd12aebe015aef4903e84e42919c"
+      },
+      "retention_manifest": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/manifest.json",
+      "log_input_entry_id": 86684,
+      "recorded_log_input_digest": {
+        "hash": "7b336f944579e6269cba3ae3ca3f9af1782d7444330c7b369a0d51b5370df38f",
+        "size_bytes": 6942,
+        "hash_function_name": ""
+      },
+      "xml_output_entry_id": 86686,
+      "recorded_xml_output_digest": {
+        "hash": "e3c22da84f69ceb06a6458f29a2ccd607dc4cd12aebe015aef4903e84e42919c",
+        "size_bytes": 7279,
+        "hash_function_name": ""
+      },
+      "compact_file_digest_equals_this_attempt": true,
+      "original_log_equals_XML_system_out_after_XML_control_filtering": true,
+      "XML_duration_and_status_match_spawn": true,
+      "libtest_batches": [
+        {
+          "status": "ok",
+          "passed": 62,
+          "failed": 0,
+          "ignored": 6,
+          "measured": 0,
+          "filtered_out": 1064,
+          "duration_seconds_text": "32.17"
+        }
+      ],
+      "failure_headers": [],
+      "binding": "Same target/output path and unique sequential tw/XML pair; exact original exit/duration and retained attempt ordinal/name agree. Full XML transcript equals raw log after XML control filtering. Compact file digests are only current for the first attempt; subsequent records reuse path IDs and must not be called fresh per-attempt hash evidence."
+    },
+    {
+      "artifact": "shard4",
+      "target": "//codex-rs/core:core-all-test",
+      "actual_tw_sequence": 89772,
+      "xml_generator_sequence": 89860,
+      "runner": "local",
+      "cache_hit": false,
+      "timeout_millis": 900000,
+      "original_test_exit": 0,
+      "xml_generator_original_exit_argument": 0,
+      "xml_generator_duration_seconds": 46,
+      "xml_generator_exit": 0,
+      "attempt_ordinal_from_same_target_and_output_path": 1,
+      "attempts_for_this_shard": 1,
+      "log": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/targets/0000/shard_10_of_16/test.log",
+      "log_identity": {
+        "bytes": 8620,
+        "git_blob": "ded8dc6999ecb25c4938780bfe88a9b645074827",
+        "sha256": "1b1aa093935db3711ef6d4bf6f76fe490976116f6f4eee8041140353453c56e6"
+      },
+      "xml": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/targets/0000/shard_10_of_16/test.xml",
+      "xml_identity": {
+        "bytes": 8957,
+        "git_blob": "6b554833421cc7aa923208892f4ceb95e33b0f9e",
+        "sha256": "923a20e9a7593a7bd3ce080b4e4e464bce3e92630be4848783c4695bd27fe04e"
+      },
+      "retention_manifest": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/manifest.json",
+      "log_input_entry_id": 86687,
+      "recorded_log_input_digest": {
+        "hash": "1b1aa093935db3711ef6d4bf6f76fe490976116f6f4eee8041140353453c56e6",
+        "size_bytes": 8620,
+        "hash_function_name": ""
+      },
+      "xml_output_entry_id": 86689,
+      "recorded_xml_output_digest": {
+        "hash": "923a20e9a7593a7bd3ce080b4e4e464bce3e92630be4848783c4695bd27fe04e",
+        "size_bytes": 8957,
+        "hash_function_name": ""
+      },
+      "compact_file_digest_equals_this_attempt": true,
+      "original_log_equals_XML_system_out_after_XML_control_filtering": true,
+      "XML_duration_and_status_match_spawn": true,
+      "libtest_batches": [
+        {
+          "status": "ok",
+          "passed": 71,
+          "failed": 0,
+          "ignored": 9,
+          "measured": 0,
+          "filtered_out": 1052,
+          "duration_seconds_text": "42.28"
+        },
+        {
+          "status": "ok",
+          "passed": 3,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 1129,
+          "duration_seconds_text": "2.29"
+        }
+      ],
+      "failure_headers": [],
+      "binding": "Same target/output path and unique sequential tw/XML pair; exact original exit/duration and retained attempt ordinal/name agree. Full XML transcript equals raw log after XML control filtering. Compact file digests are only current for the first attempt; subsequent records reuse path IDs and must not be called fresh per-attempt hash evidence."
+    },
+    {
+      "artifact": "shard4",
+      "target": "//codex-rs/core:core-all-test",
+      "actual_tw_sequence": 89776,
+      "xml_generator_sequence": 89864,
+      "runner": "local",
+      "cache_hit": false,
+      "timeout_millis": 900000,
+      "original_test_exit": 1,
+      "xml_generator_original_exit_argument": 1,
+      "xml_generator_duration_seconds": 30,
+      "xml_generator_exit": 0,
+      "attempt_ordinal_from_same_target_and_output_path": 1,
+      "attempts_for_this_shard": 2,
+      "log": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/targets/0000/shard_1_of_16/test_attempts/attempt_1.log",
+      "log_identity": {
+        "bytes": 6856,
+        "git_blob": "1aa3b70e5b99929b1dce93b5b2580ff5a0cefdef",
+        "sha256": "0faf9435caad3f67d936db2ec58ef38ef9840cfd2c0c491a9fec057326472b52"
+      },
+      "xml": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/targets/0000/shard_1_of_16/test_attempts/attempt_1.xml",
+      "xml_identity": {
+        "bytes": 7241,
+        "git_blob": "1e0d2c239e680631127236fa5d339f203acb4e58",
+        "sha256": "f5e8183c75cbcd95138dbf60234770d78398a16d1557a7f685a80861e125826b"
+      },
+      "retention_manifest": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/manifest.json",
+      "log_input_entry_id": 86690,
+      "recorded_log_input_digest": {
+        "hash": "0faf9435caad3f67d936db2ec58ef38ef9840cfd2c0c491a9fec057326472b52",
+        "size_bytes": 6856,
+        "hash_function_name": ""
+      },
+      "xml_output_entry_id": 86692,
+      "recorded_xml_output_digest": {
+        "hash": "f5e8183c75cbcd95138dbf60234770d78398a16d1557a7f685a80861e125826b",
+        "size_bytes": 7241,
+        "hash_function_name": ""
+      },
+      "compact_file_digest_equals_this_attempt": true,
+      "original_log_equals_XML_system_out_after_XML_control_filtering": true,
+      "XML_duration_and_status_match_spawn": true,
+      "libtest_batches": [
+        {
+          "status": "FAILED",
+          "passed": 61,
+          "failed": 1,
+          "ignored": 3,
+          "measured": 0,
+          "filtered_out": 1067,
+          "duration_seconds_text": "28.85"
+        }
+      ],
+      "failure_headers": [
+        "suite::agent_execution::v2_residency_reload_preserves_inherited_environment_and_tools::test_case_3_owner_preserves_stricter_child"
+      ],
+      "binding": "Same target/output path and unique sequential tw/XML pair; exact original exit/duration and retained attempt ordinal/name agree. Full XML transcript equals raw log after XML control filtering. Compact file digests are only current for the first attempt; subsequent records reuse path IDs and must not be called fresh per-attempt hash evidence."
+    },
+    {
+      "artifact": "shard4",
+      "target": "//codex-rs/core:core-all-test",
+      "actual_tw_sequence": 89780,
+      "xml_generator_sequence": 89868,
+      "runner": "local",
+      "cache_hit": false,
+      "timeout_millis": 900000,
+      "original_test_exit": 0,
+      "xml_generator_original_exit_argument": 0,
+      "xml_generator_duration_seconds": 104,
+      "xml_generator_exit": 0,
+      "attempt_ordinal_from_same_target_and_output_path": 1,
+      "attempts_for_this_shard": 1,
+      "log": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/targets/0000/shard_6_of_16/test.log",
+      "log_identity": {
+        "bytes": 6425,
+        "git_blob": "90d93c9347827348a3ef8c867c3955eb60efcf15",
+        "sha256": "a1f7eafec5078e180d1c47a381d141239497e169094b8a8687a7a7c586fe30d3"
+      },
+      "xml": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/targets/0000/shard_6_of_16/test.xml",
+      "xml_identity": {
+        "bytes": 6762,
+        "git_blob": "d03804aa2e415ab4d0af030e89d60b9c6e32a83d",
+        "sha256": "882577d42d62ccea0a2b6b22c1374350b9adf177ccaf178aa8d776ed0845cf6c"
+      },
+      "retention_manifest": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/manifest.json",
+      "log_input_entry_id": 86693,
+      "recorded_log_input_digest": {
+        "hash": "a1f7eafec5078e180d1c47a381d141239497e169094b8a8687a7a7c586fe30d3",
+        "size_bytes": 6425,
+        "hash_function_name": ""
+      },
+      "xml_output_entry_id": 86695,
+      "recorded_xml_output_digest": {
+        "hash": "882577d42d62ccea0a2b6b22c1374350b9adf177ccaf178aa8d776ed0845cf6c",
+        "size_bytes": 6762,
+        "hash_function_name": ""
+      },
+      "compact_file_digest_equals_this_attempt": true,
+      "original_log_equals_XML_system_out_after_XML_control_filtering": true,
+      "XML_duration_and_status_match_spawn": true,
+      "libtest_batches": [
+        {
+          "status": "ok",
+          "passed": 61,
+          "failed": 0,
+          "ignored": 2,
+          "measured": 0,
+          "filtered_out": 1069,
+          "duration_seconds_text": "101.94"
+        }
+      ],
+      "failure_headers": [],
+      "binding": "Same target/output path and unique sequential tw/XML pair; exact original exit/duration and retained attempt ordinal/name agree. Full XML transcript equals raw log after XML control filtering. Compact file digests are only current for the first attempt; subsequent records reuse path IDs and must not be called fresh per-attempt hash evidence."
+    },
+    {
+      "artifact": "shard4",
+      "target": "//codex-rs/core:core-all-test",
+      "actual_tw_sequence": 89784,
+      "xml_generator_sequence": 89872,
+      "runner": "local",
+      "cache_hit": false,
+      "timeout_millis": 900000,
+      "original_test_exit": 0,
+      "xml_generator_original_exit_argument": 0,
+      "xml_generator_duration_seconds": 31,
+      "xml_generator_exit": 0,
+      "attempt_ordinal_from_same_target_and_output_path": 1,
+      "attempts_for_this_shard": 1,
+      "log": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/targets/0000/shard_4_of_16/test.log",
+      "log_identity": {
+        "bytes": 8361,
+        "git_blob": "c05d2aa9d84ebb01c7e77b9531d902531b3cde1b",
+        "sha256": "3d352ba62cc4932c869bb3bc8c91822932855d375a5a9fdc57440a7f868782ab"
+      },
+      "xml": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/targets/0000/shard_4_of_16/test.xml",
+      "xml_identity": {
+        "bytes": 8696,
+        "git_blob": "b4a48ebdfb4935b1a4a45646f6059694143f99ce",
+        "sha256": "bb021238a218c8a88702c2c637bebdb8a840d56133fa4b7865d1629c0e359c53"
+      },
+      "retention_manifest": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/manifest.json",
+      "log_input_entry_id": 86696,
+      "recorded_log_input_digest": {
+        "hash": "3d352ba62cc4932c869bb3bc8c91822932855d375a5a9fdc57440a7f868782ab",
+        "size_bytes": 8361,
+        "hash_function_name": ""
+      },
+      "xml_output_entry_id": 86698,
+      "recorded_xml_output_digest": {
+        "hash": "bb021238a218c8a88702c2c637bebdb8a840d56133fa4b7865d1629c0e359c53",
+        "size_bytes": 8696,
+        "hash_function_name": ""
+      },
+      "compact_file_digest_equals_this_attempt": true,
+      "original_log_equals_XML_system_out_after_XML_control_filtering": true,
+      "XML_duration_and_status_match_spawn": true,
+      "libtest_batches": [
+        {
+          "status": "ok",
+          "passed": 72,
+          "failed": 0,
+          "ignored": 5,
+          "measured": 0,
+          "filtered_out": 1055,
+          "duration_seconds_text": "25.10"
+        },
+        {
+          "status": "ok",
+          "passed": 2,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 1130,
+          "duration_seconds_text": "4.60"
+        }
+      ],
+      "failure_headers": [],
+      "binding": "Same target/output path and unique sequential tw/XML pair; exact original exit/duration and retained attempt ordinal/name agree. Full XML transcript equals raw log after XML control filtering. Compact file digests are only current for the first attempt; subsequent records reuse path IDs and must not be called fresh per-attempt hash evidence."
+    },
+    {
+      "artifact": "shard4",
+      "target": "//codex-rs/core:core-all-test",
+      "actual_tw_sequence": 89788,
+      "xml_generator_sequence": 89876,
+      "runner": "local",
+      "cache_hit": false,
+      "timeout_millis": 900000,
+      "original_test_exit": 0,
+      "xml_generator_original_exit_argument": 0,
+      "xml_generator_duration_seconds": 32,
+      "xml_generator_exit": 0,
+      "attempt_ordinal_from_same_target_and_output_path": 1,
+      "attempts_for_this_shard": 1,
+      "log": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/targets/0000/shard_12_of_16/test.log",
+      "log_identity": {
+        "bytes": 7521,
+        "git_blob": "d9c3b367b2dd5be1da4b65e4c1e544ef350bfc0e",
+        "sha256": "764801c51c5eee39c834637a94df5e8bc3ec8deb6c9eb51cc31a1333f0b0d1ec"
+      },
+      "xml": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/targets/0000/shard_12_of_16/test.xml",
+      "xml_identity": {
+        "bytes": 7858,
+        "git_blob": "a22fdfe3a5c9b6b0daeb90f88963f5e0ca84db2a",
+        "sha256": "85bc330fc252234b8865da555139b9c44486a182495e95eff49332e5aae9873a"
+      },
+      "retention_manifest": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/manifest.json",
+      "log_input_entry_id": 86699,
+      "recorded_log_input_digest": {
+        "hash": "764801c51c5eee39c834637a94df5e8bc3ec8deb6c9eb51cc31a1333f0b0d1ec",
+        "size_bytes": 7521,
+        "hash_function_name": ""
+      },
+      "xml_output_entry_id": 86701,
+      "recorded_xml_output_digest": {
+        "hash": "85bc330fc252234b8865da555139b9c44486a182495e95eff49332e5aae9873a",
+        "size_bytes": 7858,
+        "hash_function_name": ""
+      },
+      "compact_file_digest_equals_this_attempt": true,
+      "original_log_equals_XML_system_out_after_XML_control_filtering": true,
+      "XML_duration_and_status_match_spawn": true,
+      "libtest_batches": [
+        {
+          "status": "ok",
+          "passed": 65,
+          "failed": 0,
+          "ignored": 7,
+          "measured": 0,
+          "filtered_out": 1060,
+          "duration_seconds_text": "31.27"
+        }
+      ],
+      "failure_headers": [],
+      "binding": "Same target/output path and unique sequential tw/XML pair; exact original exit/duration and retained attempt ordinal/name agree. Full XML transcript equals raw log after XML control filtering. Compact file digests are only current for the first attempt; subsequent records reuse path IDs and must not be called fresh per-attempt hash evidence."
+    },
+    {
+      "artifact": "shard4",
+      "target": "//codex-rs/core:core-all-test",
+      "actual_tw_sequence": 89880,
+      "xml_generator_sequence": 89888,
+      "runner": "local",
+      "cache_hit": false,
+      "timeout_millis": 900000,
+      "original_test_exit": 0,
+      "xml_generator_original_exit_argument": 0,
+      "xml_generator_duration_seconds": 91,
+      "xml_generator_exit": 0,
+      "attempt_ordinal_from_same_target_and_output_path": 1,
+      "attempts_for_this_shard": 1,
+      "log": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/targets/0000/shard_14_of_16/test.log",
+      "log_identity": {
+        "bytes": 6673,
+        "git_blob": "09fb9753817a322df852b922d717f8b988ea5e29",
+        "sha256": "4acc0723a86b79342c4aa80aae906ddc671b4dc81487671042ece57687fe18e4"
+      },
+      "xml": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/targets/0000/shard_14_of_16/test.xml",
+      "xml_identity": {
+        "bytes": 7010,
+        "git_blob": "7723ca813ce6cb3ae57e2ec1c4e543765e5a2bd9",
+        "sha256": "55408d17fe1032fdbd22718b60954679fc8f3858e95e93882ac9d9e489f7c5bb"
+      },
+      "retention_manifest": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/manifest.json",
+      "log_input_entry_id": 86708,
+      "recorded_log_input_digest": {
+        "hash": "4acc0723a86b79342c4aa80aae906ddc671b4dc81487671042ece57687fe18e4",
+        "size_bytes": 6673,
+        "hash_function_name": ""
+      },
+      "xml_output_entry_id": 86710,
+      "recorded_xml_output_digest": {
+        "hash": "55408d17fe1032fdbd22718b60954679fc8f3858e95e93882ac9d9e489f7c5bb",
+        "size_bytes": 7010,
+        "hash_function_name": ""
+      },
+      "compact_file_digest_equals_this_attempt": true,
+      "original_log_equals_XML_system_out_after_XML_control_filtering": true,
+      "XML_duration_and_status_match_spawn": true,
+      "libtest_batches": [
+        {
+          "status": "ok",
+          "passed": 58,
+          "failed": 0,
+          "ignored": 5,
+          "measured": 0,
+          "filtered_out": 1069,
+          "duration_seconds_text": "89.51"
+        }
+      ],
+      "failure_headers": [],
+      "binding": "Same target/output path and unique sequential tw/XML pair; exact original exit/duration and retained attempt ordinal/name agree. Full XML transcript equals raw log after XML control filtering. Compact file digests are only current for the first attempt; subsequent records reuse path IDs and must not be called fresh per-attempt hash evidence."
+    },
+    {
+      "artifact": "shard4",
+      "target": "//codex-rs/core:core-all-test",
+      "actual_tw_sequence": 89884,
+      "xml_generator_sequence": 89892,
+      "runner": "local",
+      "cache_hit": false,
+      "timeout_millis": 900000,
+      "original_test_exit": 0,
+      "xml_generator_original_exit_argument": 0,
+      "xml_generator_duration_seconds": 34,
+      "xml_generator_exit": 0,
+      "attempt_ordinal_from_same_target_and_output_path": 1,
+      "attempts_for_this_shard": 1,
+      "log": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/targets/0000/shard_13_of_16/test.log",
+      "log_identity": {
+        "bytes": 6874,
+        "git_blob": "3963cf3629f4940ca951972a4a66438fc61ea89b",
+        "sha256": "7fc1af13967506507019b0545ae64ee769f89b421b6d175a7e2f896b33c424fb"
+      },
+      "xml": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/targets/0000/shard_13_of_16/test.xml",
+      "xml_identity": {
+        "bytes": 7211,
+        "git_blob": "9d60f3e39b7bcc1efdb6d7784b4180132d169cae",
+        "sha256": "71c847ceb706853a325f6cefc9aac2a1946afbfea19c091871373876985cc776"
+      },
+      "retention_manifest": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/manifest.json",
+      "log_input_entry_id": 86711,
+      "recorded_log_input_digest": {
+        "hash": "7fc1af13967506507019b0545ae64ee769f89b421b6d175a7e2f896b33c424fb",
+        "size_bytes": 6874,
+        "hash_function_name": ""
+      },
+      "xml_output_entry_id": 86713,
+      "recorded_xml_output_digest": {
+        "hash": "71c847ceb706853a325f6cefc9aac2a1946afbfea19c091871373876985cc776",
+        "size_bytes": 7211,
+        "hash_function_name": ""
+      },
+      "compact_file_digest_equals_this_attempt": true,
+      "original_log_equals_XML_system_out_after_XML_control_filtering": true,
+      "XML_duration_and_status_match_spawn": true,
+      "libtest_batches": [
+        {
+          "status": "ok",
+          "passed": 67,
+          "failed": 0,
+          "ignored": 1,
+          "measured": 0,
+          "filtered_out": 1064,
+          "duration_seconds_text": "33.19"
+        }
+      ],
+      "failure_headers": [],
+      "binding": "Same target/output path and unique sequential tw/XML pair; exact original exit/duration and retained attempt ordinal/name agree. Full XML transcript equals raw log after XML control filtering. Compact file digests are only current for the first attempt; subsequent records reuse path IDs and must not be called fresh per-attempt hash evidence."
+    },
+    {
+      "artifact": "shard4",
+      "target": "//codex-rs/core:core-all-test",
+      "actual_tw_sequence": 89896,
+      "xml_generator_sequence": 89900,
+      "runner": "local",
+      "cache_hit": false,
+      "timeout_millis": 900000,
+      "original_test_exit": 0,
+      "xml_generator_original_exit_argument": 0,
+      "xml_generator_duration_seconds": 45,
+      "xml_generator_exit": 0,
+      "attempt_ordinal_from_same_target_and_output_path": 1,
+      "attempts_for_this_shard": 1,
+      "log": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/targets/0000/shard_16_of_16/test.log",
+      "log_identity": {
+        "bytes": 9471,
+        "git_blob": "5149c693c8932b38b71da21a74870e249862f9fa",
+        "sha256": "20af72f6dae159d50440c0da46a8c7090d229c451de6b81fe1fd50ea84c2a54f"
+      },
+      "xml": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/targets/0000/shard_16_of_16/test.xml",
+      "xml_identity": {
+        "bytes": 9808,
+        "git_blob": "319fec7b73be08ff435443b182f5f1df945269e2",
+        "sha256": "18e3b10042a97326e61b80206f071e49e63a7cded8f7592ff2f7aa18f4ad8e09"
+      },
+      "retention_manifest": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/manifest.json",
+      "log_input_entry_id": 86717,
+      "recorded_log_input_digest": {
+        "hash": "20af72f6dae159d50440c0da46a8c7090d229c451de6b81fe1fd50ea84c2a54f",
+        "size_bytes": 9471,
+        "hash_function_name": ""
+      },
+      "xml_output_entry_id": 86719,
+      "recorded_xml_output_digest": {
+        "hash": "18e3b10042a97326e61b80206f071e49e63a7cded8f7592ff2f7aa18f4ad8e09",
+        "size_bytes": 9808,
+        "hash_function_name": ""
+      },
+      "compact_file_digest_equals_this_attempt": true,
+      "original_log_equals_XML_system_out_after_XML_control_filtering": true,
+      "XML_duration_and_status_match_spawn": true,
+      "libtest_batches": [
+        {
+          "status": "ok",
+          "passed": 69,
+          "failed": 0,
+          "ignored": 10,
+          "measured": 0,
+          "filtered_out": 1053,
+          "duration_seconds_text": "35.58"
+        },
+        {
+          "status": "ok",
+          "passed": 13,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 1119,
+          "duration_seconds_text": "8.41"
+        }
+      ],
+      "failure_headers": [],
+      "binding": "Same target/output path and unique sequential tw/XML pair; exact original exit/duration and retained attempt ordinal/name agree. Full XML transcript equals raw log after XML control filtering. Compact file digests are only current for the first attempt; subsequent records reuse path IDs and must not be called fresh per-attempt hash evidence."
+    },
+    {
+      "artifact": "shard4",
+      "target": "//codex-rs/core:core-all-test",
+      "actual_tw_sequence": 89902,
+      "xml_generator_sequence": 89904,
+      "runner": "local",
+      "cache_hit": false,
+      "timeout_millis": 900000,
+      "original_test_exit": 1,
+      "xml_generator_original_exit_argument": 1,
+      "xml_generator_duration_seconds": 37,
+      "xml_generator_exit": 0,
+      "attempt_ordinal_from_same_target_and_output_path": 2,
+      "attempts_for_this_shard": 3,
+      "log": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/targets/0000/shard_7_of_16/test_attempts/attempt_2.log",
+      "log_identity": {
+        "bytes": 178284,
+        "git_blob": "b64d1e1e5d258084967dadb890210b9907b0c98c",
+        "sha256": "cc1c1c18d7999894aa28f1c97ccda0c73b8078ffb2945a310d3c9cd106401170"
+      },
+      "xml": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/targets/0000/shard_7_of_16/test_attempts/attempt_2.xml",
+      "xml_identity": {
+        "bytes": 178669,
+        "git_blob": "43d962ef5633d148fe410ca78069aa2bfe1cd47f",
+        "sha256": "ca0f064ae0e1164effcf4a891430d8476d8fe31b5e9a57d098ca01e2c8f8f900"
+      },
+      "retention_manifest": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/manifest.json",
+      "log_input_entry_id": 86669,
+      "recorded_log_input_digest": {
+        "hash": "90f93d6821e3a745ea9e28f32b4eb36fa525b46ad37233cd2a78407c5ccfe85b",
+        "size_bytes": 377285,
+        "hash_function_name": ""
+      },
+      "xml_output_entry_id": 86671,
+      "recorded_xml_output_digest": {
+        "hash": "913f4c24ec53c4e4486f3d61c29f1075301637efd9366d1c07c314db7b4c1b7f",
+        "size_bytes": 377670,
+        "hash_function_name": ""
+      },
+      "compact_file_digest_equals_this_attempt": false,
+      "original_log_equals_XML_system_out_after_XML_control_filtering": true,
+      "XML_duration_and_status_match_spawn": true,
+      "libtest_batches": [
+        {
+          "status": "FAILED",
+          "passed": 70,
+          "failed": 3,
+          "ignored": 5,
+          "measured": 0,
+          "filtered_out": 1054,
+          "duration_seconds_text": "36.53"
+        }
+      ],
+      "failure_headers": [
+        "suite::windows_sandbox::windows_elevated_enforces_deny_read_and_protects_setup_marker",
+        "suite::windows_sandbox::windows_elevated_unified_exec_enforces_managed_deny_reads",
+        "suite::workspace_roots::workspace_roots_allow_patches_but_protect_metadata_directories"
+      ],
+      "binding": "Same target/output path and unique sequential tw/XML pair; exact original exit/duration and retained attempt ordinal/name agree. Full XML transcript equals raw log after XML control filtering. Compact file digests are only current for the first attempt; subsequent records reuse path IDs and must not be called fresh per-attempt hash evidence."
+    },
+    {
+      "artifact": "shard4",
+      "target": "//codex-rs/core:core-all-test",
+      "actual_tw_sequence": 89906,
+      "xml_generator_sequence": 89908,
+      "runner": "local",
+      "cache_hit": false,
+      "timeout_millis": 900000,
+      "original_test_exit": 0,
+      "xml_generator_original_exit_argument": 0,
+      "xml_generator_duration_seconds": 34,
+      "xml_generator_exit": 0,
+      "attempt_ordinal_from_same_target_and_output_path": 2,
+      "attempts_for_this_shard": 2,
+      "log": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/targets/0000/shard_1_of_16/test.log",
+      "log_identity": {
+        "bytes": 6509,
+        "git_blob": "be0b77814b9efb47fd7051be117ad118fc2453ec",
+        "sha256": "aea04dbe41d1e9bc0c252787e6cb9b35e0336965b3f8d68e34d6a21f8f7ba307"
+      },
+      "xml": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/targets/0000/shard_1_of_16/test.xml",
+      "xml_identity": {
+        "bytes": 6844,
+        "git_blob": "c94c48bc7ae78ca8c31764003335a6346fb57a76",
+        "sha256": "5d57d082828b1831afa36f972804b8f363f90251d4bd5529db18ca94b6780573"
+      },
+      "retention_manifest": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/manifest.json",
+      "log_input_entry_id": 86690,
+      "recorded_log_input_digest": {
+        "hash": "0faf9435caad3f67d936db2ec58ef38ef9840cfd2c0c491a9fec057326472b52",
+        "size_bytes": 6856,
+        "hash_function_name": ""
+      },
+      "xml_output_entry_id": 86692,
+      "recorded_xml_output_digest": {
+        "hash": "f5e8183c75cbcd95138dbf60234770d78398a16d1557a7f685a80861e125826b",
+        "size_bytes": 7241,
+        "hash_function_name": ""
+      },
+      "compact_file_digest_equals_this_attempt": false,
+      "original_log_equals_XML_system_out_after_XML_control_filtering": true,
+      "XML_duration_and_status_match_spawn": true,
+      "libtest_batches": [
+        {
+          "status": "ok",
+          "passed": 62,
+          "failed": 0,
+          "ignored": 3,
+          "measured": 0,
+          "filtered_out": 1067,
+          "duration_seconds_text": "33.46"
+        }
+      ],
+      "failure_headers": [],
+      "binding": "Same target/output path and unique sequential tw/XML pair; exact original exit/duration and retained attempt ordinal/name agree. Full XML transcript equals raw log after XML control filtering. Compact file digests are only current for the first attempt; subsequent records reuse path IDs and must not be called fresh per-attempt hash evidence."
+    },
+    {
+      "artifact": "shard4",
+      "target": "//codex-rs/core:core-all-test",
+      "actual_tw_sequence": 89910,
+      "xml_generator_sequence": 89912,
+      "runner": "local",
+      "cache_hit": false,
+      "timeout_millis": 900000,
+      "original_test_exit": 1,
+      "xml_generator_original_exit_argument": 1,
+      "xml_generator_duration_seconds": 13,
+      "xml_generator_exit": 0,
+      "attempt_ordinal_from_same_target_and_output_path": 3,
+      "attempts_for_this_shard": 3,
+      "log": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/targets/0000/shard_7_of_16/test.log",
+      "log_identity": {
+        "bytes": 376882,
+        "git_blob": "e53599b32047343ad293cbd8621c4803ae199fc1",
+        "sha256": "f4831a3c7a8d8594d320580fc92711007a539c1747f63d113385efd20d54baae"
+      },
+      "xml": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/targets/0000/shard_7_of_16/test.xml",
+      "xml_identity": {
+        "bytes": 377267,
+        "git_blob": "f40fbcc08444ff14ff4acd30f81d1e19b25a0c45",
+        "sha256": "0e79b14f6b0708a627f01866d4a9e2f288629805b423b6caa3790493aa7c8dce"
+      },
+      "retention_manifest": "artifacts/windows-shard4-original/failed-test-logs/invocation-k1rn15zl/manifest.json",
+      "log_input_entry_id": 86669,
+      "recorded_log_input_digest": {
+        "hash": "90f93d6821e3a745ea9e28f32b4eb36fa525b46ad37233cd2a78407c5ccfe85b",
+        "size_bytes": 377285,
+        "hash_function_name": ""
+      },
+      "xml_output_entry_id": 86671,
+      "recorded_xml_output_digest": {
+        "hash": "913f4c24ec53c4e4486f3d61c29f1075301637efd9366d1c07c314db7b4c1b7f",
+        "size_bytes": 377670,
+        "hash_function_name": ""
+      },
+      "compact_file_digest_equals_this_attempt": false,
+      "original_log_equals_XML_system_out_after_XML_control_filtering": true,
+      "XML_duration_and_status_match_spawn": true,
+      "libtest_batches": [
+        {
+          "status": "FAILED",
+          "passed": 69,
+          "failed": 4,
+          "ignored": 5,
+          "measured": 0,
+          "filtered_out": 1054,
+          "duration_seconds_text": "12.50"
+        }
+      ],
+      "failure_headers": [
+        "suite::windows_sandbox::windows_elevated_enforces_deny_read_and_protects_setup_marker",
+        "suite::workspace_roots::workspace_roots_deny_file_and_command_writes_outside_roots",
+        "suite::workspace_roots::workspace_roots_allow_patches_but_protect_metadata_directories",
+        "suite::windows_sandbox::windows_elevated_unified_exec_enforces_managed_deny_reads"
+      ],
+      "binding": "Same target/output path and unique sequential tw/XML pair; exact original exit/duration and retained attempt ordinal/name agree. Full XML transcript equals raw log after XML control filtering. Compact file digests are only current for the first attempt; subsequent records reuse path IDs and must not be called fresh per-attempt hash evidence."
+    },
+    {
+      "artifact": "shard2",
+      "target": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+      "actual_tw_sequence": 83657,
+      "xml_generator_sequence": 83983,
+      "runner": "local",
+      "cache_hit": false,
+      "timeout_millis": 300000,
+      "original_test_exit": 1,
+      "xml_generator_original_exit_argument": 1,
+      "xml_generator_duration_seconds": 111,
+      "xml_generator_exit": 0,
+      "attempt_ordinal_from_same_target_and_output_path": 1,
+      "attempts_for_this_shard": 1,
+      "log": "artifacts/windows-shard2-original/failed-test-logs/invocation-ya7s8ibn/targets/0001/test.log",
+      "log_identity": {
+        "bytes": 38780,
+        "git_blob": "278d7ab969876542a51ebeabacba8be879c1794d",
+        "sha256": "10e0859a9beb93bbb75d153e27fe466cc7f7981855597f64333164a5f8c5e54c"
+      },
+      "xml": "artifacts/windows-shard2-original/failed-test-logs/invocation-ya7s8ibn/targets/0001/test.xml",
+      "xml_identity": {
+        "bytes": 39205,
+        "git_blob": "ba81dcf507701db5a11642c6d77d4ba24a0dd367",
+        "sha256": "47cc530b61df587131535ca004a831ae8d041456e6d093f83afc7743a26bffe8"
+      },
+      "retention_manifest": "artifacts/windows-shard2-original/failed-test-logs/invocation-ya7s8ibn/manifest.json",
+      "log_input_entry_id": 81028,
+      "recorded_log_input_digest": {
+        "hash": "10e0859a9beb93bbb75d153e27fe466cc7f7981855597f64333164a5f8c5e54c",
+        "size_bytes": 38780,
+        "hash_function_name": ""
+      },
+      "xml_output_entry_id": 81030,
+      "recorded_xml_output_digest": {
+        "hash": "47cc530b61df587131535ca004a831ae8d041456e6d093f83afc7743a26bffe8",
+        "size_bytes": 39205,
+        "hash_function_name": ""
+      },
+      "compact_file_digest_equals_this_attempt": true,
+      "original_log_equals_XML_system_out_after_XML_control_filtering": true,
+      "XML_duration_and_status_match_spawn": true,
+      "libtest_batches": [
+        {
+          "status": "FAILED",
+          "passed": 89,
+          "failed": 3,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 64,
+          "duration_seconds_text": "1.07"
+        },
+        {
+          "status": "FAILED",
+          "passed": 52,
+          "failed": 10,
+          "ignored": 2,
+          "measured": 0,
+          "filtered_out": 92,
+          "duration_seconds_text": "0.19"
+        }
+      ],
+      "failure_headers": [
+        "acl::tests::existing_native_deny_does_not_require_write_dac",
+        "acl::tests::native_file_and_directory_repairs_are_idempotent_for_read_and_write",
+        "acl::tests::partial_read_deny_is_repaired_before_native_file_data_access",
+        "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes",
+        "token::tests::workspace_capability_delete_routes_require_the_capability_in_all_four_cells",
+        "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+        "unified_exec::tests::acl_setup_tests::legacy_capture_rejects_deny_acl_setup_failure_before_spawn",
+        "unified_exec::tests::acl_setup_tests::legacy_session_rejects_deny_acl_setup_failure_before_spawn",
+        "unified_exec::tests::delete_permission_tests::legacy_delete_routes_require_workspace_capability_in_all_four_cells",
+        "unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit",
+        "unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides",
+        "unified_exec::tests::legacy_non_tty_cmd_emits_output",
+        "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots"
+      ],
+      "binding": "Same target/output path and unique sequential tw/XML pair; exact original exit/duration and retained attempt ordinal/name agree. Full XML transcript equals raw log after XML control filtering. Compact file digests are only current for the first attempt; subsequent records reuse path IDs and must not be called fresh per-attempt hash evidence."
+    }
+  ],
+  "input_projections": [
+    {
+      "artifact": "shard4",
+      "entries": 36,
+      "file": "compact-shard4/xml-input-relationships.v2.json",
+      "identity": {
+        "bytes": 7548,
+        "git_blob": "f197a092fbd0268ca3beb76b6ee93a5b0fe88c16",
+        "sha256": "32f6a06b9d72daa949f7e6f07e12b9dd41c64f9a6a517011bd7d787632d698d2"
+      }
+    },
+    {
+      "artifact": "shard2",
+      "entries": 3,
+      "file": "compact-shard2/xml-input-relationships.v2.json",
+      "identity": {
+        "bytes": 704,
+        "git_blob": "543c0a2301e512a61486282b1857bfb1ee24caed",
+        "sha256": "5044d35e76c6dcb11253d026def3a3b901065cd76bfc5a91cf2ca2ae8895bfe1"
+      }
+    }
+  ],
+  "decoder_original": {
+    "bytes": 9864,
+    "git_blob": "bb0957782c73a2a653e101e392da5f0f27ed4459",
+    "sha256": "cade2f309520c16508893b798eb59258fe6a60d3367f64271e989caa33ed66a3"
+  },
+  "return_only_adapter": {
+    "bytes": 9841,
+    "git_blob": "b764fd7a1e70b037ce0a1ad3c4955faab93af8bd",
+    "sha256": "fe47acfb15ef15ec7eaf7a57f2d06ae0775073e3e8f2ec4bb2d137163fe6d94f"
+  },
+  "original_parser_and_record_handling_unchanged": true,
+  "test_execution_performed": false,
+  "limits": [
+    "Three retried Core records reuse first-attempt file digest IDs in original compact. No per-retry fresh digest claim.",
+    "Original artifact names, manifest hashes, exact XML transcript/status/duration and ordered spawn records associate all nineteen Core attempts; XML generator spawns are not tests.",
+    "Two new setup error-report cases pass only in the uniquely bound local noncached Windows library execution; its overall target still fails."
+  ]
+}

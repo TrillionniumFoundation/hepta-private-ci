@@ -1,0 +1,49 @@
+{
+  "schema": "hepta-publication-direct-byte-equality-addendum-v1",
+  "kind": "b11",
+  "authority": {
+    "source_commit": "daa21e7a6a9b19e74b61c6bbdc2c813f9fd35a42",
+    "source_tree": "fbaf12d56a9702d927ae6f71cb9f3abc0cf31cae",
+    "parent": "87b8603f21e52063ed54ce89cba26756a3efaab7",
+    "PR": 4884,
+    "merge_commit": "f8e97e161c7ad87bd1e242363901a0852170483c"
+  },
+  "all_original_members_restored_and_compared_as_complete_bytes": 87,
+  "comparison_calls_with_literal_bytes_equality": 186,
+  "regenerated_outputs": [
+    {
+      "path": "hepta-audit-fifth/b11-acl-control-v2-publication/intended-full-tree.json",
+      "bytes": 2331276,
+      "sha256": "a9ea25ac65708c209597ecac86b6a335f105758c0bbbab3d16c15f9ced8d4624",
+      "git_blob": "ad828a33e2563d413a80226752521d770518e3fe",
+      "comparison": "actual_regenerated_bytes == complete_original_archive_member_bytes",
+      "direct_byte_comparison": true
+    },
+    {
+      "path": "hepta-audit-fifth/b11-acl-control-v2-publication/root-tree-proof.json",
+      "bytes": 7975,
+      "sha256": "64fdeee59596182494c77f07ac315b6fd44cdd6201b054086c4abcd216212461",
+      "git_blob": "b3989bde787beb2867c0ef6a2391148c5c9c43ad",
+      "comparison": "actual_regenerated_bytes == complete_original_archive_member_bytes",
+      "direct_byte_comparison": true
+    },
+    {
+      "path": "hepta-audit-fifth/b11-acl-control-v2-publication/candidate-static-root-replay.json",
+      "bytes": 106616,
+      "sha256": "154869e18a72187e3e93acdd5fc15fe8e9fdab9ceefecdedcfeb7c53ad3881a4",
+      "git_blob": "039e3a7701b371aae23e82c7673810c41fed586e",
+      "comparison": "actual_regenerated_bytes == complete_original_archive_member_bytes",
+      "direct_byte_comparison": true
+    }
+  ],
+  "original_restoration_stdout_equals_frozen_receipt_complete_bytes": true,
+  "original_restoration_stdout": {
+    "bytes": 2554,
+    "sha256": "8e53956aff98ae865423cc776842869328790e2e588bd7f103f89c8e6dc1706e",
+    "git_blob": "7a6e48751dd504605dddf41fe3fe701994697d00"
+  },
+  "frozen_verifier_and_archive_unmodified": true,
+  "native_or_product_test_or_compile_or_fmt": false,
+  "network_or_external_ref_action": false,
+  "scope": "Supplement first hash-verified restoration with direct bytes equality; publication custody only"
+}

@@ -1,0 +1,53 @@
+{
+  "schema": "hepta-source-publication-portable-replay-v1",
+  "status": "LOSSLESS_ARCHIVE_AND_FROZEN_VERIFIER_OUTPUTS_REPRODUCED",
+  "package_kind": "b21",
+  "authority": {
+    "source_commit": "cc65856cc0b20d03db506c19495d53d61162102d",
+    "source_tree": "eaded1870d080eaa55efae6208354729140e784c",
+    "parent": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+    "PR": 4902,
+    "merge_commit": "f0355601e362e2ad4947b40d51215e5c4d075fc3"
+  },
+  "archive": {
+    "bytes": 885537,
+    "sha256": "19e59f1c30debb4e89e1e270f3f45406fe4072a3824f8188b322db268d3f9b7a",
+    "git_blob": "fa16bc3d5069f188daaff5fd3052a04d44284b4a"
+  },
+  "member_count": 28,
+  "member_bytes": 4393992,
+  "all_archive_members_verified_before_and_after_replay": true,
+  "verifier": "hepta-audit-fifth/b21-intel-original-gate/verify_candidate.py",
+  "verifier_exit_code": 0,
+  "verifier_stderr_bytes": 0,
+  "verifier_stdout": {
+    "bytes": 267,
+    "sha256": "efcd6562fbd3568a9295f743e51e2ed7378c294796f478045bf4f72d29274af1",
+    "git_blob": "ed7345a04b45120f94745019d22020f427980b07"
+  },
+  "stdout_equals_expected_complete_bytes": true,
+  "expected_stdout_provenance": "Reconstructed from the corresponding frozen root proof fields in the exact order/encoding of the frozen verifier print statement; not a historical stdout capture.",
+  "regenerated_frozen_files": [
+    {
+      "path": "hepta-audit-fifth/b21-intel-original-gate/intended-full-tree.json",
+      "bytes": 2329904,
+      "sha256": "bd1f6d8aa5cb5eff297fb27b8558a8ded9d2fa39112fb352b35eb2bd3645e577",
+      "git_blob": "a5f211e18cdb912f5734d9b67bd88c58a32bfb27",
+      "equals_complete_frozen_bytes": true
+    },
+    {
+      "path": "hepta-audit-fifth/b21-intel-original-gate/static-verification.json",
+      "bytes": 3976,
+      "sha256": "ea61a9899aa9af9e4989c3654397747bd7ea84905cb25af0ae61ad63879d7d13",
+      "git_blob": "1b0f049bad5bd7053cc96fe4fd5fe4d6933d25de",
+      "equals_complete_frozen_bytes": true
+    }
+  ],
+  "unexpected_files_created": [],
+  "writes_limited_to_disposable_restoration": true,
+  "native_or_product_compilation": false,
+  "formatter": false,
+  "external_ref_mutation": false,
+  "network": false,
+  "qualification": "SOURCE_PUBLICATION_CUSTODY_ONLY"
+}

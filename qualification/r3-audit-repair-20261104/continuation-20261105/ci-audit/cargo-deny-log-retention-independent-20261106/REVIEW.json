@@ -1,0 +1,121 @@
+{
+  "schema": "cargo-deny-log-retention-independent-review-v1",
+  "decision": "ACCEPT_AS_LOG_RETENTION_CANDIDATE_STATIC_AND_FAKE_ONLY",
+  "source_blockers": 0,
+  "reviewed_at_utc": "2026-11-06 04:20:34 UTC",
+  "reviewer": "/root/windows_env_finish",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_head": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+  "source_tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+  "changed_path": ".github/workflows/cargo-deny.yml",
+  "preimage": "88b6308899357e23b4a4058aecd4527b4edcee9b",
+  "candidate": {
+    "git_blob": "57f6095d18c5517c9e7cf7d0de05b9645b106152",
+    "bytes": 16019,
+    "sha256": "1a57f41bd71fccd9a219f4295c297c1520bdf92ed1704dbe34b6791b60921ef8"
+  },
+  "candidate_tree": "06c4e2f80884b169e31d8a5edf04438486a9ee81",
+  "author_freeze": {
+    "computed_git_blob": "2f83533d74132de49b6bb16417daef18481807dd",
+    "bytes": 131829,
+    "sha256": "ee7d7e8feca2222ab0aa0520264671d0ca0c035aa9d33304b0ac97cfd520d4c8",
+    "members": 515,
+    "member_bytes": 3189214,
+    "independently_verified_all": true
+  },
+  "review_basis": [
+    "完整阅读原 965 B workflow、唯一 16,019 B 候选、机械嵌入 capture/collect/final 脚本及离线替身程序。",
+    "独立 fresh full GET 原 workflow、最终 workflow、原 build/clean action 和固定 dtolnay action；最终 GET 与冻结源全文相等。",
+    "独立完整 Merkle 核对 10,582 leaves / 1,571 directories，只有 workflow 一项改变，其余 10,581 leaves 不变。",
+    "在独立临时目录实际执行 git apply check/apply/reverse-check/reverse，四次 exit0、无输出，正反完整字节相等。",
+    "把 515 冻件逐个核 Git/SHA256/长度后复制到独立目录。重放作者静态工具和 17 个 fake 控制，均 exit0/stderr0，stdout 分别 3,356 B 与 6,564 B，逐字等于作者冻结原件。",
+    "另独立执行 6 个 collector 反例/正常 ANSI 例，复核原先发现的 percent-ANSI 漏检及四层组合均关闭。没有真实 cargo、Rust 编译、CI 或 native 执行。"
+  ],
+  "behavior_findings": [
+    {
+      "id": "baseline",
+      "result": "ACCEPT",
+      "detail": "workflow_call、contents:read、ubuntu-latest、codex-rs cwd、30min、Rust1.95.0、cargo-deny0.19.0、四个原 setup 步骤及原 clean-worktree 步骤保持。deny.toml、Cargo.lock、全部依赖和拒绝规则未改。"
+    },
+    {
+      "id": "single-original-check",
+      "result": "ACCEPT",
+      "detail": "原 `cargo +1.95.0 deny --locked --all-features check --config deny.toml` 保持完整 argv，17 个离线场景各执行一次。三个版本查询属于独立只读版本捕获，不是第二次检查。"
+    },
+    {
+      "id": "pipeline-exit",
+      "result": "ACCEPT",
+      "detail": "合并 stdout/stderr 后立即保存 PIPESTATUS 两成员，原命令非零优先以原值退出。tee 或后置捕获失败使 run step 失败。没有 continue-on-error。"
+    },
+    {
+      "id": "failed-command-retention",
+      "result": "ACCEPT_FAKE_ONLY",
+      "detail": "原 exit42 与带 ANSI 的 exit42 都允许在日志完整且扫描合格时保留原字节，最终 gate 仍失败；原命令0但 tee17 时禁止上传且最终失败。没有把诊断留存当原检查成功。"
+    },
+    {
+      "id": "private-public-equality",
+      "result": "ACCEPT",
+      "detail": "日志先置于 RUNNER_TEMP 新私有目录；全部10个固定文件经完整读取、稳定性/类型/长度和有界扫描后，使用这些内存原字节创建新的 public 目录，逐文件完整读回相等，再输出 safe_for_upload。唯一上传根是 public，上传须 outcome success 且 safe=true；最后 gate 另要求 upload success。"
+    },
+    {
+      "id": "color",
+      "result": "ACCEPT",
+      "detail": "固定 rust-toolchain action 在 CARGO_TERM_COLOR 未设时写 always；cargo-deny0.19.0 原 CLI 接受该环境变量。候选不修改此变量。正常 ANSI 仅从扫描视图去除，public 原日志完整保留全部控制字节，成功和原失败两类正例均已独立重放。"
+    },
+    {
+      "id": "URI",
+      "result": "ACCEPT_WITH_DECLARED_SCOPE",
+      "detail": "固定 Cargo.lock 的5个 Git URI及明确 package-id/documentation URI正常例通过；认证信息及未识别 query/fragment 拒绝。URI只用于本地文本识别，不访问网络。"
+    },
+    {
+      "id": "source",
+      "result": "ACCEPT_WITH_DECLARED_SCOPE",
+      "detail": "实际 HEAD/tree 和前后 clean/git exits 被记录并要求一致。此代码没有把 HEAD 与 PR API/GITHUB_SHA 强绑定；后续 native 资格必须外部核对 checkout/API，报告已经明确这一点。"
+    }
+  ],
+  "resolved_review_finding": {
+    "original_draft_collector": "3537a5ed6562d22e44f329886396b93372dfe280",
+    "original_observed_defect": "原草稿仅在百分号解码循环外剥离 ANSI。已知假凭据被 percent-encoded SGR 分割时，实际 fake collector 返回 safe=true 并复制原字节到 public。",
+    "original_records_preserved": "preliminary-ansi/",
+    "corrected_collector": "f1dae501e6daa5b6ac8e26c9ed09729301c8e34f",
+    "correction": "每一层扫描都重新进行 ANSI 归一化和未知控制字符检查，原 payload 不改。",
+    "independent_final_cases": {
+      "count": 6,
+      "result": "all pass",
+      "normal_ANSI_exact_copy": true,
+      "raw_known_credential_rejected": true,
+      "literal_ANSI_credential_rejected": true,
+      "percent_ANSI_credential_rejected": true,
+      "four_layer_percent_ANSI_credential_rejected": true,
+      "decoded_unsupported_control_rejected": true
+    },
+    "final_result_file": "ANSI_CORRECTION.json",
+    "final_result_bytes": 3229,
+    "final_result_sha256": "c4445ab191b83167ed89c7fd83b57ce090f0093d7e55f6c010402aa4db8bb940",
+    "published_or_real_credential_leak_observed": false
+  },
+  "independent_static_proof": {
+    "file": "INDEPENDENT_VERIFICATION.json",
+    "bytes": 3478,
+    "sha256": "ea18fc35ee3e8f6d2f6ae6f97c28b7b152d93494306e1a0fa3e5f610505b8564"
+  },
+  "primary": {
+    "rust_toolchain_action_url": "https://github.com/dtolnay/rust-toolchain/blob/e081816240890017053eacbb1bdf337761dc5582/action.yml",
+    "rust_toolchain_action_computed_blob": "cabbec62b5151edf6026228ca868557d7e8bf6bb",
+    "cargo_deny_version": "0.19.0",
+    "cargo_deny_primary_files": [
+      "Cargo.toml",
+      "src/cargo-deny/main.rs"
+    ],
+    "copies": "original/ and author-frozen/primary/"
+  },
+  "limitations": [
+    "只接受日志留存与失败保留候选；原 main67 cargo-deny 失败的 advisory/依赖/license/source 分类和原退出码仍 UNKNOWN。",
+    "真实 pinned tool 输出、GitHub upload-artifact 和整条自动 CI 尚未执行；不能以离线 fake 通过授予原生通过或 blocker 闭合。",
+    "隐私检查有明确边界：已知值、所实现语法/URI与最多四层百分号解码；不声称识别所有任意、无标记、未知秘密。",
+    "64 MiB日志上限及各固定元数据上限会在超限时拒绝收件；原命令预算和参数未改变。",
+    "该审阅未改变任何原 Windows 原件、生产源码、Git ref、PR、依赖规则或测试门。"
+  ],
+  "ref_or_PR_written_by_reviewer": false,
+  "cargo_CI_dispatch_rerun_cancel_or_native_executed": false
+}

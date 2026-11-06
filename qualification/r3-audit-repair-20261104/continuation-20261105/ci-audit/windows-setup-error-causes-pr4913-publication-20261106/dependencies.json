@@ -1,0 +1,16 @@
+{
+  "schema": "windows-setup-error-publication-dependencies-v1",
+  "independent_source_review_registry": {
+    "actual_git_blob": "42748aff2421ab2bee7757158793868f08dd53d9",
+    "repository_path": "ci-audit/windows-setup-error-causes-independent-20261106/registry.actual.json",
+    "member_count": 37
+  },
+  "review_manifest_actual": "fd76389b5c41732bbfe36925d1bae77f95ce261d",
+  "restore_tool_actual": "01924f9fcdb335e6c7b5eab71a7252b452fbc448",
+  "instructions": [
+    "Recover the fixed 37-member review from its registry and manifest.",
+    "Recover this incremental publication bundle with the same exact restore_bundle.py protocol.",
+    "Run python3 verify_publication.py --review-root RESTORED_REVIEW --review-manifest ORIGINAL_REVIEW_MANIFEST."
+  ],
+  "included_scope": "Complete root publication API tool receipts, exact two-source binding to reviewed bytes, actual 53-entry root tree and commit/ref/merge identities. No duplicate full source tree or native artifacts."
+}

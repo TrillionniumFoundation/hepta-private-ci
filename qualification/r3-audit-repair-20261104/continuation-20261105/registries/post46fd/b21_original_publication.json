@@ -1,0 +1,265 @@
+{
+  "schema": "hepta-publication-actual-registry-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "prefix": "reviews/b21-intel-original-publication-20261106/",
+  "authority": {
+    "source_commit": "cc65856cc0b20d03db506c19495d53d61162102d",
+    "source_tree": "eaded1870d080eaa55efae6208354729140e784c",
+    "parent": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+    "PR": 4902,
+    "merge_commit": "f0355601e362e2ad4947b40d51215e5c4d075fc3"
+  },
+  "method": "create_tree(content), actual recursive tree identity verification, full fetch_blob content byte equality; no reference mutation",
+  "objects": [
+    {
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b21-intel-original-publication-20261106/README.zh-CN.md",
+      "repository_path": "reviews/b21-intel-original-publication-20261106/README.zh-CN.md",
+      "bytes": 2442,
+      "sha256": "3889deb39046069082b5bfa4be1fd34debc5a9ad4ca1189b72350619d685de9f",
+      "git_blob": "829d89e2127b5cff159645ed96149cb4dd3f85dc",
+      "actual_git_blob": "829d89e2127b5cff159645ed96149cb4dd3f85dc",
+      "created_tree": "54919ac486609d9eab8cc4833d5adb8810e87e94",
+      "actual_full_GET_equal": true,
+      "complete_UTF8_content_bytes": 2442,
+      "GET_metadata": {}
+    },
+    {
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b21-intel-original-publication-20261106/build_publication_package.py",
+      "repository_path": "reviews/b21-intel-original-publication-20261106/build_publication_package.py",
+      "bytes": 12260,
+      "sha256": "b13c4911e72cc7ae7ad41ee4e101e806168aa8a5e53d1d716027486dc15d18c8",
+      "git_blob": "aa418a22af16360c8226834fab35ab40181b3f66",
+      "actual_git_blob": "aa418a22af16360c8226834fab35ab40181b3f66",
+      "created_tree": "54919ac486609d9eab8cc4833d5adb8810e87e94",
+      "actual_full_GET_equal": true,
+      "complete_UTF8_content_bytes": 12260,
+      "GET_metadata": {}
+    },
+    {
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b21-intel-original-publication-20261106/restore_and_verify.py",
+      "repository_path": "reviews/b21-intel-original-publication-20261106/restore_and_verify.py",
+      "bytes": 5537,
+      "sha256": "839c502a1759ed9afe0194026560d531fc1bb99c15f1f5835f9e1448a36bdee1",
+      "git_blob": "b1cc297a11dcd2fc465d2bb6d7b859dd72183a6c",
+      "actual_git_blob": "b1cc297a11dcd2fc465d2bb6d7b859dd72183a6c",
+      "created_tree": "54919ac486609d9eab8cc4833d5adb8810e87e94",
+      "actual_full_GET_equal": true,
+      "complete_UTF8_content_bytes": 5537,
+      "GET_metadata": {}
+    },
+    {
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b21-intel-original-publication-20261106/member-manifest.json",
+      "repository_path": "reviews/b21-intel-original-publication-20261106/member-manifest.json",
+      "bytes": 9148,
+      "sha256": "fb8f92da39a9afc4777a2775d663e48d09ab549ef6b2cc333be0e90ad2f35c7b",
+      "git_blob": "56e1fc1f152304ad8454bdf04fba3afd58118078",
+      "actual_git_blob": "56e1fc1f152304ad8454bdf04fba3afd58118078",
+      "created_tree": "54919ac486609d9eab8cc4833d5adb8810e87e94",
+      "actual_full_GET_equal": true,
+      "complete_UTF8_content_bytes": 9148,
+      "GET_metadata": {}
+    },
+    {
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b21-intel-original-publication-20261106/archive-transport.json",
+      "repository_path": "reviews/b21-intel-original-publication-20261106/archive-transport.json",
+      "bytes": 980,
+      "sha256": "b04b955d40f805020aae48c371d56ea44cf1d245161dad8d70dd85978d3b5533",
+      "git_blob": "daa0259f119787b378c0417020c5285074a63716",
+      "actual_git_blob": "daa0259f119787b378c0417020c5285074a63716",
+      "created_tree": "54919ac486609d9eab8cc4833d5adb8810e87e94",
+      "actual_full_GET_equal": true,
+      "complete_UTF8_content_bytes": 980,
+      "GET_metadata": {}
+    },
+    {
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b21-intel-original-publication-20261106/replay-spec.json",
+      "repository_path": "reviews/b21-intel-original-publication-20261106/replay-spec.json",
+      "bytes": 1119,
+      "sha256": "20dfbb0a1875816aa47ba2e3c24177ff97c24240c45a24ef65ac3753b376c110",
+      "git_blob": "eb36cc9c7c5039ab9f44ee5c4b5708ba0dff5280",
+      "actual_git_blob": "eb36cc9c7c5039ab9f44ee5c4b5708ba0dff5280",
+      "created_tree": "54919ac486609d9eab8cc4833d5adb8810e87e94",
+      "actual_full_GET_equal": true,
+      "complete_UTF8_content_bytes": 1119,
+      "GET_metadata": {}
+    },
+    {
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b21-intel-original-publication-20261106/expected-verifier.stdout.json",
+      "repository_path": "reviews/b21-intel-original-publication-20261106/expected-verifier.stdout.json",
+      "bytes": 267,
+      "sha256": "efcd6562fbd3568a9295f743e51e2ed7378c294796f478045bf4f72d29274af1",
+      "git_blob": "ed7345a04b45120f94745019d22020f427980b07",
+      "actual_git_blob": "ed7345a04b45120f94745019d22020f427980b07",
+      "created_tree": "54919ac486609d9eab8cc4833d5adb8810e87e94",
+      "actual_full_GET_equal": true,
+      "complete_UTF8_content_bytes": 267,
+      "GET_metadata": {}
+    },
+    {
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b21-intel-original-publication-20261106/offline-roundtrip.stdout.json",
+      "repository_path": "reviews/b21-intel-original-publication-20261106/offline-roundtrip.stdout.json",
+      "bytes": 2220,
+      "sha256": "61ea1738bfe0b460ef8f8a4b109094cccf9ace639965ab08e6de0ff2a719c0d6",
+      "git_blob": "3a9860b684b418ed089a74ebeab224458ae7ad59",
+      "actual_git_blob": "3a9860b684b418ed089a74ebeab224458ae7ad59",
+      "created_tree": "54919ac486609d9eab8cc4833d5adb8810e87e94",
+      "actual_full_GET_equal": true,
+      "complete_UTF8_content_bytes": 2220,
+      "GET_metadata": {}
+    },
+    {
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b21-intel-original-publication-20261106/offline-roundtrip.stderr.txt",
+      "repository_path": "reviews/b21-intel-original-publication-20261106/offline-roundtrip.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "actual_git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "created_tree": "54919ac486609d9eab8cc4833d5adb8810e87e94",
+      "actual_full_GET_equal": true,
+      "complete_UTF8_content_bytes": 0,
+      "GET_metadata": {}
+    },
+    {
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b21-intel-original-publication-20261106/offline-roundtrip.execution.json",
+      "repository_path": "reviews/b21-intel-original-publication-20261106/offline-roundtrip.execution.json",
+      "bytes": 650,
+      "sha256": "d6963d857cfd715496a1bda2e74559e951caf5a14d9a86148e14bffb2bc01d20",
+      "git_blob": "c5f92ba6ac91d649130d11133f028824f952274a",
+      "actual_git_blob": "c5f92ba6ac91d649130d11133f028824f952274a",
+      "created_tree": "54919ac486609d9eab8cc4833d5adb8810e87e94",
+      "actual_full_GET_equal": true,
+      "complete_UTF8_content_bytes": 650,
+      "GET_metadata": {}
+    },
+    {
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b21-intel-original-publication-20261106/archive.b64.part-000.txt",
+      "repository_path": "reviews/b21-intel-original-publication-20261106/archive.b64.part-000.txt",
+      "bytes": 400000,
+      "sha256": "4bf1a8d72bc3c48ff8d94e21219d4c625165b49bd4b0c30617ea5e5496c59c39",
+      "git_blob": "d0b5416a476da5fd421ee629f9b91dd0f9dc2228",
+      "actual_git_blob": "d0b5416a476da5fd421ee629f9b91dd0f9dc2228",
+      "created_tree": "09211746b928f0378c899bffa1b1a4dc3fa628a7",
+      "actual_full_GET_equal": true,
+      "complete_UTF8_content_bytes": 400000,
+      "GET_metadata": {}
+    },
+    {
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b21-intel-original-publication-20261106/archive.b64.part-001.txt",
+      "repository_path": "reviews/b21-intel-original-publication-20261106/archive.b64.part-001.txt",
+      "bytes": 400000,
+      "sha256": "58b984b592a7e4e206c265c3fb5193e8aacfe98495d04a0862393b186d407d6f",
+      "git_blob": "86622e21da1f93eb9810628db160ee015d5cb64d",
+      "actual_git_blob": "86622e21da1f93eb9810628db160ee015d5cb64d",
+      "created_tree": "f50020ccf12d067ca2d1d1ae05a4a1fcc8c9fd03",
+      "actual_full_GET_equal": true,
+      "complete_UTF8_content_bytes": 400000,
+      "GET_metadata": {}
+    },
+    {
+      "local_path": "/workspace/scratch/07dd58cc9630/research-audit/b21-intel-original-publication-20261106/archive.b64.part-002.txt",
+      "repository_path": "reviews/b21-intel-original-publication-20261106/archive.b64.part-002.txt",
+      "bytes": 380716,
+      "sha256": "af6b3850f668abacaa932a7f00469d3b505cb878e86c2964541ded1837be8c6b",
+      "git_blob": "13c05b723c7ec960364c6f55fadfe2a35371a3e6",
+      "actual_git_blob": "13c05b723c7ec960364c6f55fadfe2a35371a3e6",
+      "created_tree": "d89bc01974e00b14e21033bf0d338f12a9d82091",
+      "actual_full_GET_equal": true,
+      "complete_UTF8_content_bytes": 380716,
+      "GET_metadata": {}
+    }
+  ],
+  "object_count": 13,
+  "all_objects_actual_full_GET_equal": true,
+  "archive": {
+    "format": "gzip(tar(PAX)) encoded as concatenated standard base64 text parts",
+    "archive": {
+      "bytes": 885537,
+      "sha256": "19e59f1c30debb4e89e1e270f3f45406fe4072a3824f8188b322db268d3f9b7a",
+      "git_blob": "fa16bc3d5069f188daaff5fd3052a04d44284b4a"
+    },
+    "encoded_bytes": 1180716,
+    "parts": [
+      {
+        "path": "archive.b64.part-000.txt",
+        "bytes": 400000,
+        "sha256": "4bf1a8d72bc3c48ff8d94e21219d4c625165b49bd4b0c30617ea5e5496c59c39",
+        "git_blob": "d0b5416a476da5fd421ee629f9b91dd0f9dc2228"
+      },
+      {
+        "path": "archive.b64.part-001.txt",
+        "bytes": 400000,
+        "sha256": "58b984b592a7e4e206c265c3fb5193e8aacfe98495d04a0862393b186d407d6f",
+        "git_blob": "86622e21da1f93eb9810628db160ee015d5cb64d"
+      },
+      {
+        "path": "archive.b64.part-002.txt",
+        "bytes": 380716,
+        "sha256": "af6b3850f668abacaa932a7f00469d3b505cb878e86c2964541ded1837be8c6b",
+        "git_blob": "13c05b723c7ec960364c6f55fadfe2a35371a3e6"
+      }
+    ]
+  },
+  "original_members": {
+    "count": 28,
+    "bytes": 4393992,
+    "manifest_git_blob": "56e1fc1f152304ad8454bdf04fba3afd58118078",
+    "workspace_relative_hierarchy_under_root_preserved": true
+  },
+  "offline_restoration": {
+    "schema": "hepta-source-publication-portable-replay-v1",
+    "status": "LOSSLESS_ARCHIVE_AND_FROZEN_VERIFIER_OUTPUTS_REPRODUCED",
+    "package_kind": "b21",
+    "authority": {
+      "source_commit": "cc65856cc0b20d03db506c19495d53d61162102d",
+      "source_tree": "eaded1870d080eaa55efae6208354729140e784c",
+      "parent": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+      "PR": 4902,
+      "merge_commit": "f0355601e362e2ad4947b40d51215e5c4d075fc3"
+    },
+    "archive": {
+      "bytes": 885537,
+      "sha256": "19e59f1c30debb4e89e1e270f3f45406fe4072a3824f8188b322db268d3f9b7a",
+      "git_blob": "fa16bc3d5069f188daaff5fd3052a04d44284b4a"
+    },
+    "member_count": 28,
+    "member_bytes": 4393992,
+    "all_archive_members_verified_before_and_after_replay": true,
+    "verifier": "hepta-audit-fifth/b21-intel-original-gate/verify_candidate.py",
+    "verifier_exit_code": 0,
+    "verifier_stderr_bytes": 0,
+    "verifier_stdout": {
+      "bytes": 267,
+      "sha256": "efcd6562fbd3568a9295f743e51e2ed7378c294796f478045bf4f72d29274af1",
+      "git_blob": "ed7345a04b45120f94745019d22020f427980b07"
+    },
+    "stdout_equals_expected_complete_bytes": true,
+    "expected_stdout_provenance": "Reconstructed from the corresponding frozen root proof fields in the exact order/encoding of the frozen verifier print statement; not a historical stdout capture.",
+    "regenerated_frozen_files": [
+      {
+        "path": "hepta-audit-fifth/b21-intel-original-gate/intended-full-tree.json",
+        "bytes": 2329904,
+        "sha256": "bd1f6d8aa5cb5eff297fb27b8558a8ded9d2fa39112fb352b35eb2bd3645e577",
+        "git_blob": "a5f211e18cdb912f5734d9b67bd88c58a32bfb27",
+        "equals_complete_frozen_bytes": true
+      },
+      {
+        "path": "hepta-audit-fifth/b21-intel-original-gate/static-verification.json",
+        "bytes": 3976,
+        "sha256": "ea61a9899aa9af9e4989c3654397747bd7ea84905cb25af0ae61ad63879d7d13",
+        "git_blob": "1b0f049bad5bd7053cc96fe4fd5fe4d6933d25de",
+        "equals_complete_frozen_bytes": true
+      }
+    ],
+    "unexpected_files_created": [],
+    "writes_limited_to_disposable_restoration": true,
+    "native_or_product_compilation": false,
+    "formatter": false,
+    "external_ref_mutation": false,
+    "network": false,
+    "qualification": "SOURCE_PUBLICATION_CUSTODY_ONLY"
+  },
+  "frozen_inputs_unchanged": true,
+  "qualification": "SOURCE_PUBLICATION_CUSTODY_ONLY; no native result or blocker closure claimed",
+  "native_or_product_compile_or_fmt": "NOT_RUN",
+  "registry_self_note": "This registry is registered and full-read separately; see registry-self.actual.json."
+}

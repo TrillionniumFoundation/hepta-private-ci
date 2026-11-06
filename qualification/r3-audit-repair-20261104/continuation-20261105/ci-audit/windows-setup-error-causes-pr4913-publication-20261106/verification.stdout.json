@@ -1,0 +1,82 @@
+{
+  "schema": "windows-setup-error-causes-publication-independent-v1",
+  "actual_pr": 4913,
+  "draft": true,
+  "actual_head": "340fbc0629d27e3a2bda7c6971be25c60b3bf2bc",
+  "actual_parent": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+  "actual_merge": "ff2b873c8b907e1e86b1a728c2c18552edfbd0ed",
+  "actual_merge_parents": [
+    "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+    "340fbc0629d27e3a2bda7c6971be25c60b3bf2bc"
+  ],
+  "actual_tree": "78b817fec87e593e0a0f6357d84f895b8574bde5",
+  "originals": [
+    {
+      "path": "publication-originals.json",
+      "bytes": 381558,
+      "git_blob": "2527ad261497f7d9afc0ced4e39214ef5eae41d2",
+      "sha256": "d9baec72e2cc606586a970b5b6eb492f04342f1f7eb2de1547e754c811f809f5"
+    },
+    {
+      "path": "tree-root-GET.original.json",
+      "bytes": 28677,
+      "git_blob": "da4b2781224d4032885d8063772320e0c9383bb3",
+      "sha256": "b37e69b1588998454f5821c2f1d1165ef0222aad49d788d254f6497ef5f28041"
+    }
+  ],
+  "original_record_groups": 16,
+  "raw_response_projections_equal": true,
+  "source_full_bytes_equal": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/setup_error.rs",
+      "role": "preimage",
+      "bytes": 11408,
+      "git_blob": "d9104602bc19af88101fbb5b44f839a1d799c174",
+      "sha256": "0325efd3abefe50de8eef5e7cf59f2572388b1f8f18365431c69b766a4eb1e35",
+      "full_GET_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/setup_error.rs",
+      "role": "postimage",
+      "bytes": 13725,
+      "git_blob": "37aa38dde9e83ee5f3ce8f267f11afd76fee3400",
+      "sha256": "811769bbcf5136ed75bc666d1c32a6936a288c404be754c7e6d94bc8a3e338b5",
+      "full_GET_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs",
+      "role": "preimage",
+      "bytes": 47955,
+      "git_blob": "1d9340c6db26d6d10c1b3edecb1c9fecc908ef1d",
+      "sha256": "ba3bf6444e72c443575281e192e7b343c7c61180a1a699f4ffb4f87cba7e0ac3",
+      "full_GET_bytes_equal": true
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs",
+      "role": "postimage",
+      "bytes": 47638,
+      "git_blob": "505be9299f9580877449740fd235e988f8c93b7b",
+      "sha256": "05b8373471d8a46740eea6e7c7b9f91427d07744e235045b928e280bf27628a2",
+      "full_GET_bytes_equal": true
+    }
+  ],
+  "actual_root_entry_count": 53,
+  "actual_root_exactly_equals_independent_full_tree_projection": true,
+  "actual_root_git_sha_recomputed": "78b817fec87e593e0a0f6357d84f895b8574bde5",
+  "PR_body_exactly_equals_intended_body": true,
+  "dependency": {
+    "registry_actual": "42748aff2421ab2bee7757158793868f08dd53d9",
+    "member_count": 37,
+    "review_actual": "32b2d5c8a4a0875b92e6e3027d49f09f39e7329e",
+    "static_actual": "338e4fe099156932e9946b0f1a9fa4d44225332c",
+    "manifest_actual": "fd76389b5c41732bbfe36925d1bae77f95ce261d"
+  },
+  "root_published_refs": true,
+  "reviewer_published_refs": false,
+  "CI_or_Rust_or_native_qualification": "PENDING; no execution queried or triggered by this verifier.",
+  "Windows_only_new_tests": [
+    "untyped_setup_report_preserves_context_chain_and_os_error",
+    "typed_setup_report_preserves_code_and_message_through_context"
+  ],
+  "ACL_root_cause": "UNKNOWN; this publication preserves error detail and does not change ACL policy."
+}

@@ -1,0 +1,238 @@
+"""Derive native13 verifier from the frozen native12 verifier; preserve all original gates."""
+from pathlib import Path
+import difflib
+
+A=Path(__file__).resolve().parent
+old_path=A/'terminal/probe-127623021642/verify-native12.py'
+new_path=A/'terminal/probe-127639593751/verify-native13.py'
+old=old_path.read_bytes().decode();s=old
+replacements={
+ 'native12':'native13',
+ '87b8603f21e52063ed54ce89cba26756a3efaab7':'daa21e7a6a9b19e74b61c6bbdc2c813f9fd35a42',
+ '09960fe697c9c181e4a7d624e29b49360877b687':'f8e97e161c7ad87bd1e242363901a0852170483c',
+ '9a804c7b6e0dd554cdb435f41e06c5c689fffaaf':'fbaf12d56a9702d927ae6f71cb9f3abc0cf31cae',
+ '42135663472':'42140578464','127623021642':'127639593751','13465596874':'13468391745',
+ '2302874':'2313119','3000850':'3058949',
+ 'b21172467ad92e47439defa6075099cf7ba9fcf56b22221de145f0434bffe4f2':'19f458b8bfcb54afa14d306ae308343118ac37007896f76c74fb01cf28889309',
+ '27703de357062c1d92632819b2a042fb9750a94819cf645c080bab0128313632':'970bc500ab8b44912f06757eb9df84f148e1684b0b2d0ade3ecc86d6d0a3936f',
+ '511506':'519728','3277':'3371',
+ "original_jobs = load(P / 'jobs.original-cut.json')":"original_jobs = load(P / 'jobs.normalized-cut.json')\n    assert original_jobs['raw'] == load(P / 'jobs.original-cut.json')",
+ "'actual-merge-commit.json'":"'actual-merge-commit.original.json'",
+ "len(proof['selected_leaves']) == 83":"len(proof['selected_leaves']) == 84",
+ 'len(set(selected)) == 79':'len(set(selected)) == 80',
+ 'actual79_source_leaves':'actual80_source_leaves',
+ 'ordinary_host_Rust_Neither_precondition':'strict_restricted_Rust_four_route_assertion',
+ 'ordinary_host_cmd_Neither_precondition':'strict_restricted_legacy_cmd_four_route_assertion',
+}
+for before,after in replacements.items():
+    assert before in s,before;s=s.replace(before,after)
+old_block="""        elif classification == 'strict_restricted_Rust_four_route_assertion':
+            assert 'token_tests.rs:479:5' in block and 'route: Neither, file_deleted: true, directory_deleted: true' in block
+            assert 'host_native_errors=[[None, None], [None, None], [None, None], [None, None]]' in block
+        elif classification == 'strict_restricted_legacy_cmd_four_route_assertion':
+            assert 'delete_permission_tests.rs:69:9' in block and 'host_cmd_status=exit code: 0' in block
+            assert 'route: Neither, file_deleted: true, directory_deleted: true' in block
+"""
+new_block="""        elif classification == 'strict_restricted_Rust_four_route_assertion':
+            assert 'token_tests.rs:573:5' in block
+            assert 'host_native_errors=[[Some((PermissionDenied, Some(5))), Some((PermissionDenied, Some(5)))], [None, None], [None, None], [None, None]]' in block
+            assert 'delete_matrix after-revert after_release=' in block
+        elif classification == 'strict_restricted_legacy_cmd_four_route_assertion':
+            assert 'delete_permission_tests.rs:100:9' in block and 'host_cmd_status=exit code: 0' in block
+            assert 'delete_matrix legacy-child-done after_release=' in block
+"""
+assert s.count(old_block)==1;s=s.replace(old_block,new_block)
+
+# The initial subjects record is physically interleaved in this artifact. Use
+# complete actual-context tokens for cross-context comparisons, and retain the
+# malformed record without reconstructing it or transferring native12 credit.
+before="['filesystem', 'subjects', 'rust_before', 'rust_physical', 'rust_before', 'rust_physical', 'rust_before', 'rust_physical', 'child_before_release', 'child_finished', 'cmd_physical', 'child_before_release', 'child_finished', 'cmd_physical', 'complete']"
+after="['filesystem', 'rust_before', 'rust_physical', 'rust_before', 'rust_physical', 'rust_before', 'rust_physical', 'child_before_release', 'child_finished', 'cmd_physical', 'child_before_release', 'child_finished', 'cmd_physical', 'complete']"
+assert s.count(before)==1;s=s.replace(before,after)
+before="    subjects = records[1]['value']\n    ordinary, disabled = subjects['ordinary'], subjects['disable_max_privilege']"
+after="""    ordinary = records[1]['value']['token']  # Complete actual ordinary-direct process token.
+    disabled = records[10]['value']['token']  # Complete actual disabled primary child token.
+    fragments = [(number, line) for number, line in enumerate(whole.splitlines(), 1)
+                 if 'neither_privileges subjects ' in line]
+    assert len(fragments) == 1
+    subject_line_number, subject_line = fragments[0]
+    assert not subject_line.startswith(prefix + 'subjects ')
+    try:
+        json.loads(subject_line.split('neither_privileges subjects ', 1)[1])
+    except json.JSONDecodeError as error:
+        initial_subject_record = {'parse_status': 'UNPARSED_INTERLEAVED_OR_INCOMPLETE_RAW_PRESERVED',
+            'line': subject_line_number, 'raw_physical_line_utf8': digest(subject_line.encode()),
+            'error': str(error), 'repaired_or_joined': False,
+            'comparison_basis': 'Complete actual ordinary-direct and disabled primary-child tokens, cross-checked against all complete actual impersonated/child tokens. Initial expected-subject JSON was not independently parsed.'}
+    else:
+        raise AssertionError('unexpected complete initial subject record')"""
+assert s.count(before)==1;s=s.replace(before,after)
+s=s.replace("records[2 + 2 * i]['value'], records[3 + 2 * i]['value']","records[1 + 2 * i]['value'], records[2 + 2 * i]['value']")
+s=s.replace('records[8 + 3 * i:11 + 3 * i]','records[7 + 3 * i:10 + 3 * i]')
+s=s.replace("'actual_child_token_matches_entire_expected_record': True,","'actual_child_cross_context_identity_privilege_and_type_comparison': True,\n                             'initial_expected_subject_record_directly_parsed': False,\n                             'runtime_expected_token_gate_basis': 'Fixed executed module guard plus passing original probe and complete marker.',")
+s=s.replace("'complete_JSON_record_count': 14, 'complete_plain_text_record_count': 1,","'complete_JSON_record_count': 13, 'complete_plain_text_record_count': 1,\n            'initial_subject_record': initial_subject_record,")
+
+start=s.index("    snapshot = load(P / 'initial-snapshot/manifest.json')")
+end=s.index("    return {'schema':",start)
+s=s[:start]+"""    first = load(P / 'terminal-capture-times.json')
+    assert first['first_observation_already_terminal'] is True
+    discovery = unwrap(load(P / 'runs.first-observation.original.json'))
+    own = [r for r in discovery['workflow_runs'] if r['id'] == RUN]
+    assert len(own) == 1 and own[0]['head_sha'] == HEAD and own[0]['status'] == 'completed'
+    head = unwrap(load(P / 'actual-head-commit.original.json'))
+    assert head['sha'] == HEAD and head['tree']['sha'] == TREE
+    assert [p['sha'] for p in head['parents']] == ['87b8603f21e52063ed54ce89cba26756a3efaab7']
+"""+s[end:]
+s=s.replace("'initial_snapshot_files_verified': len(snapshot['files'])","'first_observation_already_terminal': True")
+
+controls=r'''
+def acl_control_observations(whole, leaves):
+    routes = ['Neither', 'TargetOnly', 'ParentOnly', 'Both']
+    source_map = load(P / 'new-control-source-map.json')
+    assert source_map['head'] == HEAD and source_map['actual_checkout'] == MERGE and source_map['actual_tree'] == TREE
+    assert source_map['actual_native_source_leaf_count'] == 80
+    assert source_map['deduplicated_Merkle_selected_paths'] == 84 and source_map['helper_pins'] == 11
+    source_bytes = {}
+    for item in source_map['files']:
+        raw = (P / item['local_filename']).read_bytes()
+        assert digest(raw) == {k: item[k] for k in digest(raw)}
+        assert leaves[item['source_path']]['sha'] == item['git_blob']
+        source_bytes[item['local_filename']] = raw
+    assert len(source_bytes) == 4
+    helper = source_bytes['executed-acl-control-helper.rs.source.txt']
+    assert digest(helper)['git_blob'] == '47baf88cf0a30521c3b2eb033dc3ee65056ed2f6'
+    token = source_bytes['executed-token-tests.rs.source.txt'].decode()
+    legacy = source_bytes['executed-delete-permission-tests.rs.source.txt'].decode()
+    assert token.splitlines()[572] == '    assert_eq!('
+    assert legacy.splitlines()[99].lstrip().startswith('assert_eq!(outcomes,')
+    assert token.index('acl_control.ensure_restored()?;') < token.index('host.finish("nonprivileged-acl-control")?')
+    assert token.index('host.finish("nonprivileged-acl-control")?') < token.index('let base = OwnedToken', token.index('fn workspace_capability_delete_routes'))
+    assert 'actual["identity"] == self.expected["identity"]' in helper.decode()
+    assert 'actual["privileges"] == self.expected["privileges"]' in helper.decode()
+    assert 'actual["impersonation_level"] == security::SecurityImpersonation' in helper.decode()
+    assert b'script.extend(fs::read(script_path)?);' in helper
+    assert b'"echo ACL_CONTROL_INPUT_RELEASED\\r\\n", "endlocal\\r\\n"' in helper
+    assert b'let bytes = b"release-owned-fixture\\r\\n";' in helper
+    assert b'self.ensure_restored()?;' in helper
+    lines = whole.splitlines()
+    observed = []
+    for number, line in enumerate(lines, 1):
+        if 'ACL_CONTROL ' not in line:
+            continue
+        phase, raw = line.split('ACL_CONTROL ', 1)[1].split(' ', 1)
+        row = {'phase': phase, 'line': number, 'raw_physical_line_utf8': digest(line.encode())}
+        try:
+            value = json.loads(raw)
+        except json.JSONDecodeError as error:
+            row.update(parse_status='UNPARSED_INTERLEAVED_OR_INCOMPLETE_RAW_PRESERVED', error=str(error))
+        else:
+            row.update(parse_status='COMPLETE_JSON', value=value)
+        observed.append(row)
+    assert [r['phase'] for r in observed] == ['subjects', 'rust_before', 'subjects', 'child_before_release', 'child_finished']
+    assert [r['parse_status'] for r in observed] == ['COMPLETE_JSON', 'UNPARSED_INTERLEAVED_OR_INCOMPLETE_RAW_PRESERVED', 'COMPLETE_JSON', 'COMPLETE_JSON', 'COMPLETE_JSON']
+    first, second = observed[0]['value'], observed[2]['value']
+    assert first == second
+    ordinary, nonprivileged = first['ordinary'], first['nonprivileged_acl']
+    assert ordinary['identity'] == nonprivileged['identity'] and nonprivileged['identity']['restricted_sids'] == []
+    assert ordinary['token_type'] == nonprivileged['token_type'] == 1
+    assert ordinary['impersonation_level'] is None and nonprivileged['impersonation_level'] is None
+    assert [p['name'] for p in ordinary['privileges'] if p['enabled']] == ['SeBackupPrivilege', 'SeRestorePrivilege', 'SeDebugPrivilege', 'SeChangeNotifyPrivilege', 'SeImpersonatePrivilege', 'SeCreateGlobalPrivilege']
+    assert nonprivileged['privileges'] == [{'luid_high':0,'luid_low':23,'attributes':3,'name':'SeChangeNotifyPrivilege','enabled':True}]
+    assert observed[3]['value']['token'] == nonprivileged
+    finished = observed[4]['value']
+    assert finished['work_error'] is None and finished['terminate_error'] is None
+    assert finished['exit'] == finished['cleanup_wait'] == finished['active_processes'] == 0
+    assert finished['accounted'] == 1
+    stdout = bytes(finished['stdout_stderr_bytes'])
+    assert stdout.decode() == finished['stdout_stderr']
+    output_lines = stdout.decode().splitlines()
+    assert output_lines.count('ACL_CONTROL_INPUT_RELEASED') == 1
+    assert [l for l in output_lines if l.startswith('MATRIX_')] == ['MATRIX_ATTEMPT_0','MATRIX_ATTEMPT_1','MATRIX_ATTEMPT_2','MATRIX_ATTEMPT_3','MATRIX_DONE']
+    assert output_lines.count('Access is denied.') == 2
+    assert [l for l in output_lines if re.fullmatch(r'(FILE|DIR)_RC_\d=\d+',l)] == [f'{operation}_RC_{i}=0' for i in range(4) for operation in ['FILE','DIR']]
+    expected_host = [False, True, True, True]
+    expected_strict = [False, False, True, True]
+    labels = ['nonprivileged-acl-control','after-revert','nonprivileged-acl-control-cmd-done','legacy-child-done']
+    outcomes = {}
+    for label in labels:
+        selected = [(n,l) for n,l in enumerate(lines,1) if l.startswith(f'delete_matrix {label} after_release=')]
+        assert len(selected) == 1
+        number, line = selected[0]
+        values = re.findall(r'DeleteOutcome \{ route: (\w+), file_deleted: (true|false), directory_deleted: (true|false) \}',line)
+        assert len(values) == 4 and [v[0] for v in values] == routes
+        expected = expected_host if label.startswith('nonprivileged') else expected_strict
+        actual = [{'route':v[0],'file_deleted':v[1]=='true','directory_deleted':v[2]=='true'} for v in values]
+        assert [v['file_deleted'] for v in actual] == [v['directory_deleted'] for v in actual] == expected
+        outcomes[label] = {'line':number,'raw_physical_line_utf8':digest(line.encode()),'outcomes':actual}
+    assert 'delete_matrix host_native_errors=[[Some((PermissionDenied, Some(5))), Some((PermissionDenied, Some(5)))], [None, None], [None, None], [None, None]]' in lines
+    assert 'delete_matrix restricted_native_errors=[[Some((PermissionDenied, Some(5))), Some((PermissionDenied, Some(5)))], [Some((PermissionDenied, Some(5))), Some((PermissionDenied, Some(5)))], [None, None], [None, None]]' in lines
+    assert 'delete_matrix restricting_membership=[cap_a,cap_b,logon,everyone] values=[true, true, false, false]' in lines
+    pattern = re.compile(r'^delete_matrix (\S+) path=("(?:[^"\\]|\\.)*") identity=\((\d+), (\d+), (\d+)\) directory=([01]) pending=([01]) links=(\d+) acl=\[([0-9a-f, ]+)\]$')
+    dumps = []
+    acl_by_route = {}
+    for number,line in enumerate(lines,1):
+        match = pattern.fullmatch(line)
+        if not match:
+            continue
+        label,path,*rest = match.groups()
+        assert label in labels
+        identity = list(map(int,rest[:3]));directory,pending,links = map(int,rest[3:6])
+        acl = bytes(int(x.strip(),16) for x in rest[6].split(','))
+        path = json.loads(path);windows_path = PureWindowsPath(path)
+        kind = windows_path.name if windows_path.name in ['file','directory'] else 'parent'
+        route = windows_path.parent.name if kind != 'parent' else windows_path.name
+        assert route in routes
+        assert directory == (kind != 'file')
+        key = (route,kind)
+        if key in acl_by_route:assert acl_by_route[key] == acl
+        else:acl_by_route[key] = acl
+        assert acl[0] == 2 and int.from_bytes(acl[2:4],'little') == len(acl)
+        count=int.from_bytes(acl[4:6],'little');pos=8;aces=[]
+        for _ in range(count):
+            width=int.from_bytes(acl[pos+2:pos+4],'little');ace=acl[pos:pos+width]
+            assert width>=8 and ace[1]==0 and ace[8:]==bytes.fromhex('010100000000000100000000')
+            aces.append({'type':ace[0],'mask':int.from_bytes(ace[4:8],'little')});pos+=width
+        assert pos == len(acl)
+        denied=(route in ['Neither','TargetOnly']) if kind=='parent' else (route in ['Neither','ParentOnly'])
+        right=0x40 if kind=='parent' else 0x10000
+        expected_aces=([{'type':1,'mask':right}] if denied else [])+[{'type':0,'mask':0x1f01ff & (~right if denied else 0xffffffff)}]
+        assert aces == expected_aces
+        deleted=False if kind=='parent' else (expected_host if label.startswith('nonprivileged') else expected_strict)[routes.index(route)]
+        assert pending == int(deleted) and links == (0 if deleted else 1)
+        dumps.append({'line':number,'label':label,'path':path,'route':route,'kind':kind,'identity':identity,
+            'directory':directory,'pending':pending,'links':links,'ACL':digest(acl),'ACEs':aces,
+            'raw_physical_line_utf8':digest(line.encode())})
+    assert len(dumps)==48 and len(acl_by_route)==12
+    for label in labels:
+        rows=[r for r in dumps if r['label']==label]
+        assert len(rows)==12 and len({tuple(r['identity']) for r in rows})==12
+        assert {(r['route'],r['kind']) for r in rows}=={(route,kind) for route in routes for kind in ['file','directory','parent']}
+    return {'complete_JSON_records':4,'unparsed_original_JSON_records':1,'records':observed,'parse_repairs':0,
+        'executed_source_map':source_map,'actual_primary_child_entire_token_equals_separately_observed_expected':True,
+        'Rust_effective_token_entire_original_JSON_independently_parsed':False,
+        'Rust_effective_token_guard_basis':'Fixed executed helper checks actual OpenThreadToken identity, privileges, TokenImpersonation/SecurityImpersonation before returning the guard. The original test passed host OS5/physical/restoration assertions and failed later at the preserved restricted assertion. The interleaved rust_before raw record is not repaired or called parsed.',
+        'ordinary_identity_fields_preserved_in_both_complete_subject_records':True,
+        'new_CMD_work_and_normal_owned_Job_cleanup_qualified_for_this_fixed_control_only':True,
+        'CMD_stdout_stderr':digest(stdout),'CMD_operation_RC_zero_is_not_physical_success':True,
+        'physical_after_release_records':outcomes,'all48_original_retained_object_dumps':dumps,
+        'all_four_matrices_actual_DACL_bytes_equal_by_route_and_kind':True,
+        'new_host_preconditions_reached_and_passed_before_original_strict_failures':True,
+        'host_Rust_native_Neither_both_OS5_and_other_routes_success':True,
+        'strict_Rust_actual_restricting_membership':[True,True,False,False],
+        'strict_ambient_reads_and_allowed_deletions_basis':'Source-bound inference: original read-content and allowed-path NotFound assertions occur before native13 token_tests.rs:573 and legacy allowed-path assertions before delete_permission_tests.rs:100; their later failing locations prove these guards completed, without inventing extra raw read receipts.',
+        'remaining_strict_Rust_and_CMD_ParentOnly_and_Both_physical_delete_failures':True,
+        'production_token_or_security_flags_changed':False,
+        'arbitrary_descendants_cancellation_loader_or_full_product_isolation_qualified':False}
+
+'''
+where=s.index('\ndef verify(members, archive, archive_review):')
+s=s[:where]+'\n'+controls+s[where:]
+s=s.replace('    observations = mechanism_observations(whole, leaves)','    observations = mechanism_observations(whole, leaves)\n    acl_controls = acl_control_observations(whole, leaves)')
+s=s.replace("'new_observation_Rust_and_cmd_complete': observations,","'new_observation_Rust_and_cmd_complete': observations,\n            'new_nonprivileged_host_controls': acl_controls,")
+s=s.replace('Whole target is 147/7/2 and failed; three Rust and two owned cmd observations completed, including actual child-token gates and normal owned-Job cleanup.',
+ 'Whole target remains 147/7/2 and failed. Two new host ACL controls passed before the preserved restricted Rust/CMD assertions exposed actual ParentOnly/Both deletions. Complete records and source-bound inference from interleaved records are distinguished; arbitrary product isolation remains open.')
+assert not new_path.exists()
+new_path.write_bytes(s.encode())
+patch=''.join(difflib.unified_diff(old.splitlines(keepends=True),s.splitlines(keepends=True),fromfile='native12/verify-native12.py',tofile='native13/verify-native13.py'))
+(new_path.parent/'native12-to-native13-verifier.patch').write_bytes(patch.encode())
+print(new_path)

@@ -1,0 +1,142 @@
+{
+  "schema": "diagnostic-terminal-root-offline-verification-v1",
+  "archive": {
+    "bytes": 84083653,
+    "git_blob": "96b6cfb4fc7fb03324cbaaa218a87cfa4357b6d3",
+    "sha256": "2e78e6a8b3e595727785c746d9482a0e0a3d629f903065a0596c1ce96b00dfb2"
+  },
+  "payload_members": 13,
+  "official_artifacts": [
+    {
+      "id": 13475799648,
+      "path": "b21.original.zip",
+      "bytes": 77899258,
+      "git_blob": "4ce4b34c77b49be82f8d18691940d6352de95753",
+      "sha256": "9a1e9cce3ca46b7b6176f84dd6b064588c93d217d3c3ed8e3a525d96b5fdabb4",
+      "members": 1017,
+      "official_digest_matches": true
+    },
+    {
+      "id": 13476180428,
+      "path": "b23.original.zip",
+      "bytes": 782208,
+      "git_blob": "696a199916347acc3fd4f664ccb45802b7907f7c",
+      "sha256": "43bdccc192f96f95aebf3e7642df04ae0055f5c61970a27a8b03e05a6a9c91e3",
+      "members": 21,
+      "official_digest_matches": true
+    },
+    {
+      "id": 13475294944,
+      "path": "b23_compact.original.zip",
+      "bytes": 5119057,
+      "git_blob": "76ffeffc42ac6d1a423507439a7bbec636728149",
+      "sha256": "cf6546f57f595a26c0058d321c4b80846da4f8ff26628be77b7c4332bffde7e3",
+      "members": 10,
+      "official_digest_matches": true
+    }
+  ],
+  "original_zip_members": 1048,
+  "scopes": [
+    {
+      "name": "b21",
+      "job_id": 127685180579,
+      "original_bazel_exit": 3,
+      "job_conclusion": "failure",
+      "collector_complete": false,
+      "collector_errors": {
+        "duplicate_event_id": 1,
+        "attempt_reference_unavailable": 131
+      },
+      "derived_bep_events": 7394,
+      "duplicate_fetch_ids": [
+        {
+          "event": 1562,
+          "prior": [
+            234
+          ],
+          "id": {
+            "fetch": {
+              "url": "https://index.crates.io/config.json",
+              "downloader": "GRPC"
+            }
+          }
+        }
+      ],
+      "retained_log_xml_files": 867,
+      "pty": {
+        "passed": 30,
+        "failed": 1,
+        "ignored": 0,
+        "observed_failing_backend": "portable",
+        "wait_seconds": "2.01948407",
+        "read_and_discarded_bytes": 1827840,
+        "preserved_fds_failure_claim": false
+      },
+      "source_archive": {
+        "all_leaf_bytes_and_modes_equal": true,
+        "leaves": 10583,
+        "tree": "46fca3e684217066c260dc10d0dc319a33e0a93c",
+        "directories": 1571,
+        "product_tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359"
+      }
+    },
+    {
+      "name": "b23",
+      "job_id": 127687422035,
+      "original_bazel_exit": 0,
+      "job_conclusion": "failure",
+      "collector_complete": false,
+      "collector_errors": {
+        "duplicate_event_id": 2,
+        "attempt_reference_unavailable": 8
+      },
+      "derived_bep_events": 1924,
+      "duplicate_fetch_ids": [
+        {
+          "event": 1387,
+          "prior": [
+            1368
+          ],
+          "id": {
+            "fetch": {
+              "url": "https://static.rust-lang.org/dist/rustc-1.95.0-x86_64-unknown-linux-gnu.tar.xz",
+              "downloader": "GRPC"
+            }
+          }
+        },
+        {
+          "event": 1802,
+          "prior": [
+            28
+          ],
+          "id": {
+            "fetch": {
+              "url": "https://index.crates.io/config.json",
+              "downloader": "GRPC"
+            }
+          }
+        }
+      ],
+      "retained_log_xml_files": 8,
+      "target_cases": {
+        "passed": 307,
+        "failed": 0,
+        "ignored": 1,
+        "five_original_cases_passed": [
+          "shutdown_signals::tests::first_sigterm_survives_cancelled_receive",
+          "shutdown_signals::tests::first_sighup_survives_cancelled_receive",
+          "shutdown_signals::tests::first_sigint_survives_cancelled_receive",
+          "drain_handle_tests::requesting_drain_does_not_acknowledge_outstanding_turns",
+          "drain_handle_tests::repeated_drain_requests_preserve_the_real_completion_acknowledgement"
+        ]
+      }
+    }
+  ],
+  "limits": [
+    "No product execution or CI dispatch/rerun.",
+    "Offline verification success does not change original job conclusions.",
+    "B23 original-scope closure is decided in its separate independent review.",
+    "Raw BEP was not retained; derived sanitization and opaque omission metadata is preserved.",
+    "Main API subset is not a complete standalone 92-job census."
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "schema": "pty-closed-receiver-independent-proof-v1",
+  "decision": "STATIC_OFFLINE_SOURCE_ACCEPTED_ONLY",
+  "freeze": {
+    "bytes": 16359,
+    "git_blob": "141539d98f058161ad68cb1b9f34123b8b3e51b3",
+    "sha256": "a61f16776b1c69d4e8222abb88fc74a7bece73e5224c7fd49bbf02b3ce821adb"
+  },
+  "frozen_data_files_verified": 69,
+  "frozen_data_bytes": 3370218,
+  "preimage": {
+    "bytes": 6097,
+    "git_blob": "67168dab510c9fd400a1cbcf4b4a6bb905b73c59",
+    "sha256": "b856364355d0e5e7091c8b40ffc686a665c798b9842965f72d0b29aa4740c7d9"
+  },
+  "actual_fresh_full_GET_postimage": {
+    "bytes": 6503,
+    "git_blob": "c7ad412d04fd3f5505259a4afdcec0d4d8562a88",
+    "sha256": "ec95e99037b0839b4b872f48f5db3126b2e77a9f56a6d8385086cf8792c8dd8b"
+  },
+  "exact_single_insertion_bytes": 406,
+  "full_inverse_restores_original": true,
+  "original_tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+  "candidate_tree": "c1249a173ac346d0f1230fe56451b97d4e13c601",
+  "leaf_count": 10582,
+  "directory_count": 1571,
+  "unchanged_leaves": 10581,
+  "fixed_primary_full_GET_matches": [
+    {
+      "path": "primary/bounded.rs",
+      "bytes": 67057,
+      "git_blob": "273e5ae433c35e314dd758a616a0585786e6f147",
+      "sha256": "f229ccaa6711bffb17d8021dade6405d17595d5f64dac2f03107c05a4cc381f2"
+    },
+    {
+      "path": "primary/batch_semaphore.rs",
+      "bytes": 30575,
+      "git_blob": "02d7e3b612dc375f88948fc05917e0cf5c1a2e2d",
+      "sha256": "4b9a14a15b2b37c7015e04d88fa5505409dcff22632b5a20e03f7f051e6c67ee"
+    },
+    {
+      "path": "primary/async_fd.rs",
+      "bytes": 62421,
+      "git_blob": "3463439c9987132b95eb218119e7fe1fa93199b3",
+      "sha256": "0d9365deaa40f8d069770308a105aad31fe527ea593acf95c40265407d9f143d"
+    },
+    {
+      "path": "primary/registration.rs",
+      "bytes": 9078,
+      "git_blob": "63b6a6d78ee59da84c81e968308cf7bc59e118ab",
+      "sha256": "ea9eb6c671ddd5e82dc7b7126776d8a246f1dd25a961852d40f44c420a9d2a63"
+    }
+  ],
+  "isolated_author_replay": {
+    "exit_code": 0,
+    "stderr_bytes": 0,
+    "stdout": {
+      "bytes": 3666,
+      "git_blob": "9f21221d4df81c24bd93dc6dd0b0c7e129b6b10b",
+      "sha256": "ac9cde7a327d39a0bc5a0062b1221039233ddd753325e770d498ca4dc87c8c9e"
+    },
+    "equal_to_frozen_author_output": true
+  },
+  "scope": {
+    "original_tests_and_two_backends_unchanged": true,
+    "original_two_second_budget_unchanged": true,
+    "original_send_race_path_unchanged": true,
+    "AsyncFd_readiness_and_cooperative_await_remain": true,
+    "ordinary_stdout_backpressure_unchanged": true,
+    "product_execution_or_compilation": false,
+    "formatter_executed": false,
+    "timeout_cause_proven": false,
+    "B21_closed": false
+  }
+}

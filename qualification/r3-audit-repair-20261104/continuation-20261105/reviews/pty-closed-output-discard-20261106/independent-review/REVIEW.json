@@ -1,0 +1,68 @@
+{
+  "schema": "pty-closed-receiver-independent-review-v1",
+  "decision": "ACCEPT_SINGLE_INSERTION_STATIC_OFFLINE_ONLY",
+  "source_blockers": 0,
+  "reviewed_source": {
+    "bytes": 6503,
+    "git_blob": "c7ad412d04fd3f5505259a4afdcec0d4d8562a88",
+    "sha256": "ec95e99037b0839b4b872f48f5db3126b2e77a9f56a6d8385086cf8792c8dd8b"
+  },
+  "fixed_source_parent": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+  "fixed_source_tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+  "candidate_tree": "c1249a173ac346d0f1230fe56451b97d4e13c601",
+  "author_freeze": {
+    "bytes": 16359,
+    "git_blob": "141539d98f058161ad68cb1b9f34123b8b3e51b3",
+    "sha256": "a61f16776b1c69d4e8222abb88fc74a7bece73e5224c7fd49bbf02b3ce821adb"
+  },
+  "independent_verification": {
+    "bytes": 2681,
+    "git_blob": "d19495500dce2548ca5b48ba5fd7bd3c87e6aeed",
+    "sha256": "ae89ed2f812e112dd6b354737af782e4a53dcee8167a4e0926f693791a5891e1"
+  },
+  "read_scope": "Full changed unix_io.rs, exact insertion/inverse, original/final wrappers and preservation proof, changed-loop diagnostics, fixed Tokio send/is_closed/reserve/semaphore and AsyncFd registration bodies, author verifier and source/evidence qualification. All 69 frozen members independently hashed; original source-map and full-tree projected, and isolated author proof fully replayed. This is not a claim of independently executing Rust or rereading every unchanged product leaf.",
+  "findings": [
+    {
+      "topic": "Closed receiver",
+      "finding": "The branch runs only after a successful nonzero read. Tokio Sender::is_closed reports permanent receiver close/drop; a new send cannot succeed then. Skipping to_vec and send avoids work while retaining the full read-to-EOF loop."
+    },
+    {
+      "topic": "Check-close race",
+      "finding": "If close races after the false check, the original allocation/send and SendError handling still run unchanged. No optimistic success or new buffer loss is introduced."
+    },
+    {
+      "topic": "Cooperative progress",
+      "finding": "The unchanged AsyncFd::async_io await still reaches readiness and poll_proceed, and successful reads record made_progress in fixed Tokio 1.53.3. Removing failed-send work does not remove the loop's only cooperative boundary. Per-iteration budget use may change; timing improvement under the original load is not quantified."
+    },
+    {
+      "topic": "Original output and lifecycle",
+      "finding": "Open receiver allocation/send/backpressure, 8192-byte buffer, EOF/EIO/Interrupted handling, writer task, stdin EOF, FD ownership, cancellation and both backend callers retain original bytes. In tests the closed branch still records Discarded(count), without recording Sending for a send no longer attempted."
+    },
+    {
+      "topic": "Evidence limits",
+      "finding": "Both original Intel failures observed only portable backend before the unchanged two-second deadline; preserved_fds was not reached. Relaxed diagnostic samples are not atomic protocol state; read_calls are not successful chunks. Neither those observations nor this optimization prove the timeout cause."
+    }
+  ],
+  "preservation": {
+    "single_inserted_bytes": 406,
+    "inverse_full_source_equal": true,
+    "unchanged_product_leaves": 10581,
+    "original_test_roster_and_assertions": true,
+    "original_two_seconds_and_python_ten_seconds_and_four_MiB": true,
+    "default_retries_and_selection_unchanged": true
+  },
+  "actual_validation": {
+    "fresh_postimage_full_GET": true,
+    "all_69_frozen_identity_matches": true,
+    "full_base_and_candidate_Merkle": true,
+    "isolated_author_verifier_exit": 0,
+    "author_stdout_full_byte_equal": true,
+    "author_stdout_bytes": 3666,
+    "own_offline_verifier_exit": 0,
+    "own_stdout_bytes": 2681,
+    "product_compilation": false,
+    "Rust_formatter": false,
+    "native_PTY_test": false
+  },
+  "disposition": "Source acceptable for root-controlled reviewable publication and its existing automatic CI. B21 remains OPEN; full original Intel context, every produced attempt, 31-case roster and original deadlines remain required. A future pass alone is not a causal proof for either previous timeout."
+}

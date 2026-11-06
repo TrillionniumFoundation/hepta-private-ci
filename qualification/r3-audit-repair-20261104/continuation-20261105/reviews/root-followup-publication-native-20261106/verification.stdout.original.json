@@ -1,0 +1,269 @@
+{
+  "schema": "root-followup-offline-verification-v1",
+  "result": "PASS_EVIDENCE_ONLY",
+  "archive": {
+    "bytes": 1682868,
+    "git_blob": "f0b89696acf4f757633e92910d390fc3cea3fb78",
+    "sha256": "a68f741058f79144e1c30cd13b2add5dd24a018ee63994bb3f67ce9217e85a5d"
+  },
+  "original_payload_members": 46,
+  "publications": [
+    {
+      "pr": 4902,
+      "head": "84cc73453eb926d6f2c5b0372c0287b0ab86ed53",
+      "tree": "45858bc96c0edbc366ec77991646b15971129975",
+      "merge": "285d5727d01e38a76a77441ab038e109dbab787c",
+      "body_exact": true,
+      "actual_ref_and_commit_GET": true
+    },
+    {
+      "pr": 4910,
+      "head": "2ac89eaf91306d410ef5e9b548ee9fabd12b71b7",
+      "tree": "9a6fd02aa18b2421f6aaec8a5db6ecf82b710c89",
+      "merge": "652ff4a8a9042d68983a29855bba3e9bfe1ae7b2",
+      "body_exact": true,
+      "actual_ref_and_commit_GET": true
+    },
+    {
+      "pr": 4913,
+      "head": "18bbef4f61c6086f145bdb6f7acbf82127741a14",
+      "tree": "d611fe969ecada41618b8feb19f688565b301063",
+      "merge": "eefd44670b764a49892ecbfefe8c3c7009b12bd5",
+      "body_exact": true,
+      "actual_ref_and_commit_GET": true
+    },
+    {
+      "pr": 4927,
+      "head": "8075eb367b6e97546af206b27bbf4a3a867497c8",
+      "tree": "c1249a173ac346d0f1230fe56451b97d4e13c601",
+      "merge": "b88f625afe17975db80b152283ef2e19cc50e41f",
+      "body_exact": true,
+      "actual_ref_and_commit_GET": true
+    }
+  ],
+  "B23": {
+    "decision": "CLOSED_SCOPED",
+    "original_exit_unchanged": true,
+    "custody_actual": true,
+    "original_collector_failure_preserved": true
+  },
+  "cargo_native": {
+    "run": 42162085830,
+    "job": 127715564317,
+    "artifact": 13478122141,
+    "members": 11,
+    "original_log": {
+      "bytes": 12397460,
+      "git_blob": "778341bbdb48ea9cc8232c2eb8e615623222547e",
+      "sha256": "2307b7ac7a201e0f45775347de9fb610818c28d46dec71ec91886c01c6e6d617"
+    },
+    "original_command_exit": 1,
+    "errors": [
+      "error[unmaintained]: `pin-utils` is unmaintained"
+    ],
+    "reverse_dependencies": [
+      [
+        "aws-smithy-http",
+        "0.64.1"
+      ],
+      [
+        "aws-smithy-runtime",
+        "1.16.0"
+      ],
+      [
+        "aws-smithy-types",
+        "1.8.1"
+      ],
+      [
+        "loom",
+        "0.7.2"
+      ]
+    ],
+    "old_main_job_cause": "UNKNOWN; not retroactively assigned"
+  },
+  "bounded_CI_cuts": [
+    {
+      "source": "cargo",
+      "head": "476653f8fe5874849e864ab3fd49c792913450ab",
+      "runs": 3,
+      "jobs": 34,
+      "job_counts": {
+        "success": 5,
+        "skipped": 5,
+        "queued": 20,
+        "failure": 1,
+        "in_progress": 3
+      },
+      "terminal_failures": [
+        {
+          "id": 127715564317,
+          "name": "cargo-deny / cargo-deny"
+        }
+      ]
+    },
+    {
+      "source": "arg0",
+      "head": "3c9e2bba4e7e84616509d6320a9ae013a274532c",
+      "runs": 5,
+      "jobs": 10,
+      "job_counts": {
+        "queued": 6,
+        "success": 2,
+        "skipped": 2
+      },
+      "terminal_failures": []
+    },
+    {
+      "source": "windows",
+      "head": "340fbc0629d27e3a2bda7c6971be25c60b3bf2bc",
+      "runs": 5,
+      "jobs": 42,
+      "job_counts": {
+        "success": 25,
+        "failure": 6,
+        "skipped": 6,
+        "queued": 4,
+        "in_progress": 1
+      },
+      "terminal_failures": [
+        {
+          "id": 127703396485,
+          "name": "cargo-deny / cargo-deny"
+        },
+        {
+          "id": 127703396530,
+          "name": "repo-checks / build-test"
+        },
+        {
+          "id": 127703396780,
+          "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin"
+        },
+        {
+          "id": 127703396792,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4"
+        },
+        {
+          "id": 127703396812,
+          "name": "Bazel / Bazel clippy on ubuntu-24.04 for x86_64-unknown-linux-gnu"
+        },
+        {
+          "id": 127703396875,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4"
+        }
+      ]
+    }
+  ],
+  "latest_CI_window": {
+    "before": {
+      "current_time": "2026-11-06 05:20:01 UTC"
+    },
+    "after": {
+      "current_time": "2026-11-06 05:21:49 UTC"
+    },
+    "atomic": false,
+    "heads": [
+      {
+        "source": "main",
+        "head": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "runs": 19,
+        "jobs": 93,
+        "counts": {
+          "success": 68,
+          "skipped": 6,
+          "cancelled": 10,
+          "failure": 9
+        }
+      },
+      {
+        "source": "b21collector",
+        "head": "84cc73453eb926d6f2c5b0372c0287b0ab86ed53",
+        "runs": 4,
+        "jobs": 9,
+        "counts": {
+          "in_progress": 2,
+          "success": 3,
+          "skipped": 2,
+          "queued": 2
+        }
+      },
+      {
+        "source": "b23collector",
+        "head": "2ac89eaf91306d410ef5e9b548ee9fabd12b71b7",
+        "runs": 4,
+        "jobs": 9,
+        "counts": {
+          "success": 4,
+          "skipped": 2,
+          "in_progress": 2,
+          "queued": 1
+        }
+      },
+      {
+        "source": "windowsfmt",
+        "head": "18bbef4f61c6086f145bdb6f7acbf82127741a14",
+        "runs": 5,
+        "jobs": 7,
+        "counts": {
+          "success": 3,
+          "queued": 1,
+          "skipped": 2,
+          "in_progress": 1
+        }
+      },
+      {
+        "source": "cargo",
+        "head": "476653f8fe5874849e864ab3fd49c792913450ab",
+        "runs": 3,
+        "jobs": 41,
+        "counts": {
+          "success": 27,
+          "skipped": 6,
+          "failure": 6,
+          "queued": 2
+        }
+      },
+      {
+        "source": "arg0",
+        "head": "3c9e2bba4e7e84616509d6320a9ae013a274532c",
+        "runs": 5,
+        "jobs": 43,
+        "counts": {
+          "success": 29,
+          "skipped": 6,
+          "failure": 4,
+          "queued": 3,
+          "in_progress": 1
+        }
+      },
+      {
+        "source": "pty",
+        "head": "8075eb367b6e97546af206b27bbf4a3a867497c8",
+        "runs": 6,
+        "jobs": 12,
+        "counts": {
+          "queued": 4,
+          "in_progress": 4,
+          "success": 2,
+          "skipped": 2
+        }
+      }
+    ]
+  },
+  "arg0_original_GNU_clippy": {
+    "job": 127717742578,
+    "API_conclusion": "success",
+    "actual_checkout": "65e1ec7164063b139db291562dd6093c3008b403",
+    "full_log": {
+      "bytes": 863099,
+      "git_blob": "fdbb2e5c5f07308daa29af4d211d00d1e1be05b3",
+      "sha256": "ec522bf9a5503eca37b8ed31a9564ef35f943cc519d933526fc911f18ab93517"
+    },
+    "fresh_uncached_execution_claimed": false
+  },
+  "qualification": {
+    "offline_verification_only": true,
+    "new_native_execution": false,
+    "new_heads_inherit_prior_passes": false,
+    "all_blockers_closed": false
+  }
+}

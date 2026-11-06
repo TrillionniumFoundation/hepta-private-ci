@@ -1,0 +1,243 @@
+{
+  "schema": "hepta-b11-native13-product-feasibility-facts-v1",
+  "authority": {
+    "head": "daa21e7a6a9b19e74b61c6bbdc2c813f9fd35a42",
+    "checkout": "f8e97e161c7ad87bd1e242363901a0852170483c",
+    "tree": "fbaf12d56a9702d927ae6f71cb9f3abc0cf31cae",
+    "run": 42140578464,
+    "job": 127639593751
+  },
+  "whole": {
+    "passed": 147,
+    "failed": 7,
+    "ignored": 2,
+    "failures": [
+      {
+        "case": "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+        "classification": "strict_outside_delete_assertion",
+        "start_line": 559,
+        "original_block_utf8": {
+          "bytes": 717,
+          "sha256": "63b19b6a450a052b92dd76c51aa4320aca44631ea1d81ccaad6464f4c9ec2433",
+          "git_blob": "747d2d4d31f8daba707afb0a5610c88b37108889"
+        }
+      },
+      {
+        "case": "token::tests::workspace_capability_delete_routes_require_the_capability_in_all_four_cells",
+        "classification": "strict_restricted_Rust_four_route_assertion",
+        "start_line": 585,
+        "original_block_utf8": {
+          "bytes": 10688,
+          "sha256": "432b88b16e8393b1c8fe98597ca91744afb471c6e285572f4e7c980413369822",
+          "git_blob": "5f92dea217b955a63d44471b59287d596d9c7477"
+        }
+      },
+      {
+        "case": "unified_exec::tests::delete_permission_tests::legacy_delete_routes_require_workspace_capability_in_all_four_cells",
+        "classification": "strict_restricted_legacy_cmd_four_route_assertion",
+        "start_line": 701,
+        "original_block_utf8": {
+          "bytes": 11325,
+          "sha256": "2de10e2d150b064c427da9ad7f7712f46b4826c13899f354e728be31f5836425",
+          "git_blob": "a090ef8deef91671f6c53d7d40d6695241042b00"
+        }
+      },
+      {
+        "case": "unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit",
+        "classification": "downstream_poisoned_test_lock",
+        "start_line": 764,
+        "original_block_utf8": {
+          "bytes": 311,
+          "sha256": "595a6962cc76a3c55d9dbe3501000872af1de235c0efdbb431fd113fd43a3dd2",
+          "git_blob": "ca4ba802e3888e6a32cc2914ea266ba169fb3d10"
+        }
+      },
+      {
+        "case": "unified_exec::tests::legacy_non_tty_cmd_emits_output",
+        "classification": "downstream_poisoned_test_lock",
+        "start_line": 769,
+        "original_block_utf8": {
+          "bytes": 275,
+          "sha256": "8484202822137a9583144274909ab2099d4d843e60412a8727b25df3f06b2ae4",
+          "git_blob": "2fc29318d35a8d2ca0e2288f3d1d800895b1c309"
+        }
+      },
+      {
+        "case": "unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides",
+        "classification": "downstream_poisoned_test_lock",
+        "start_line": 774,
+        "original_block_utf8": {
+          "bytes": 305,
+          "sha256": "1b444e46e8438575ae07c977786b4917a5cb7d5d49a42864813cff8dfcf61770",
+          "git_blob": "017c4c8c116a78f4dc2d539d9e9e210c8f9de4db"
+        }
+      },
+      {
+        "case": "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots",
+        "classification": "downstream_poisoned_test_lock",
+        "start_line": 779,
+        "original_block_utf8": {
+          "bytes": 329,
+          "sha256": "74570575c19ae2944c06d9e5ec6551c76badbd504301b2c45f146e5d8cc86dd2",
+          "git_blob": "c09f0b280af0e0db0f2793eb2df8843c980482f4"
+        }
+      }
+    ]
+  },
+  "complete_physical_matrix_records": {
+    "nonprivileged-acl-control": {
+      "line": 598,
+      "raw_physical_line_utf8": {
+        "bytes": 375,
+        "sha256": "3e6cd856cc8bc882921d5291f01ea74d8394e03c71dfdc8444c47b2a686124a6",
+        "git_blob": "c46f6127597fa8e443f3a4302ca91523b90e0d26"
+      },
+      "outcomes": [
+        {
+          "route": "Neither",
+          "file_deleted": false,
+          "directory_deleted": false
+        },
+        {
+          "route": "TargetOnly",
+          "file_deleted": true,
+          "directory_deleted": true
+        },
+        {
+          "route": "ParentOnly",
+          "file_deleted": true,
+          "directory_deleted": true
+        },
+        {
+          "route": "Both",
+          "file_deleted": true,
+          "directory_deleted": true
+        }
+      ]
+    },
+    "after-revert": {
+      "line": 614,
+      "raw_physical_line_utf8": {
+        "bytes": 364,
+        "sha256": "b4708aea4516105b9592714f59f4afe969185980e12fa853a9dec59d8dc9740a",
+        "git_blob": "3db39afe1648cc44a9e9de7f909e636a9076bff0"
+      },
+      "outcomes": [
+        {
+          "route": "Neither",
+          "file_deleted": false,
+          "directory_deleted": false
+        },
+        {
+          "route": "TargetOnly",
+          "file_deleted": false,
+          "directory_deleted": false
+        },
+        {
+          "route": "ParentOnly",
+          "file_deleted": true,
+          "directory_deleted": true
+        },
+        {
+          "route": "Both",
+          "file_deleted": true,
+          "directory_deleted": true
+        }
+      ]
+    },
+    "nonprivileged-acl-control-cmd-done": {
+      "line": 714,
+      "raw_physical_line_utf8": {
+        "bytes": 384,
+        "sha256": "fcd78ee4f752b67b31f6788a0892025325feebdf8d288732037f9bcd9bca42ae",
+        "git_blob": "added6a2db71039632d8da6a931fb464a0baec31"
+      },
+      "outcomes": [
+        {
+          "route": "Neither",
+          "file_deleted": false,
+          "directory_deleted": false
+        },
+        {
+          "route": "TargetOnly",
+          "file_deleted": true,
+          "directory_deleted": true
+        },
+        {
+          "route": "ParentOnly",
+          "file_deleted": true,
+          "directory_deleted": true
+        },
+        {
+          "route": "Both",
+          "file_deleted": true,
+          "directory_deleted": true
+        }
+      ]
+    },
+    "legacy-child-done": {
+      "line": 728,
+      "raw_physical_line_utf8": {
+        "bytes": 369,
+        "sha256": "517a8c1d2ff3cdc374cc54719bfae44dee0416403ec2d4c584fab471bcd0a377",
+        "git_blob": "061620024db8c9050b141d68ec108aec46a62170"
+      },
+      "outcomes": [
+        {
+          "route": "Neither",
+          "file_deleted": false,
+          "directory_deleted": false
+        },
+        {
+          "route": "TargetOnly",
+          "file_deleted": false,
+          "directory_deleted": false
+        },
+        {
+          "route": "ParentOnly",
+          "file_deleted": true,
+          "directory_deleted": true
+        },
+        {
+          "route": "Both",
+          "file_deleted": true,
+          "directory_deleted": true
+        }
+      ]
+    }
+  },
+  "exact_DACL_bytes_equal_across_four_matrices": true,
+  "membership": [
+    true,
+    true,
+    false,
+    false
+  ],
+  "positive_read_and_inside_IO_basis": "Source-bound inference: original read-content and allowed-path NotFound assertions occur before native13 token_tests.rs:573 and legacy allowed-path assertions before delete_permission_tests.rs:100; their later failing locations prove these guards completed, without inventing extra raw read receipts.",
+  "raw_JSON_limits": {
+    "new_control": 1,
+    "Rust_actual_token_JSON_independently_parsed": false
+  },
+  "production_flags_changed": false,
+  "all_descendants_loader_or_product_isolation_qualified": false,
+  "full_native13_result": {
+    "local_path": "architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127639593751/VERIFICATION.json",
+    "bytes": 269320,
+    "git_blob": "af10ff6664344d3d8825dbdfc6ef3c6646a59a61",
+    "sha256": "ea35bef2f0318f980ec50068da36a8ab0ea80478987f0137c82b4238c219cb19"
+  },
+  "complete_original_target_log": {
+    "local_path": "architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127639593751/members/bazel-execution-logs/failed-test-logs/invocation-b0lnxmpu/targets/0000/test.log",
+    "bytes": 188031,
+    "git_blob": "a0643137c15569b43478052af8c2bf0846e1b539",
+    "sha256": "76869ab8fe898438c1abeccb3d9d0153190ce3be8f53503715cf78446cf9aff6"
+  },
+  "conclusion": "NO_QUALIFIED_LOCAL_PRODUCT_FIX_IDENTIFIED_IN_CURRENT_INTERFACES; B11_OPEN",
+  "exclusions": [
+    "no new native",
+    "no ref changes",
+    "no product or test changes",
+    "no driver or new platform plan",
+    "no private Windows kernel algorithm claim"
+  ]
+}

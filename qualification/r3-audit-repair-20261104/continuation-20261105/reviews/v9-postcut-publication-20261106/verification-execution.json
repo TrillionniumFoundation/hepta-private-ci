@@ -1,0 +1,29 @@
+{
+  "schema": "v9-postcut-readonly-verifier-execution",
+  "observed_utc": "2026-11-06T00:31:22.489550+00:00",
+  "argv": [
+    "python",
+    "/workspace/scratch/07dd58cc9630/ci-audit/v9-postcut-publication-freeze-20261106/verify_postcut_publication.py"
+  ],
+  "exit_code": 0,
+  "stdout": {
+    "bytes": 36789,
+    "sha256": "f9145d8340ebf582572c9962f0b7acd3b109fb5bbaf1a17adb449d2ca11df110",
+    "git_blob": "d3772c60b4c72d8c83b4e48c5effa2d88ca27eb1"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+  },
+  "verifier": {
+    "bytes": 13438,
+    "sha256": "30e03332cb2ae3c3590c167dd0b15a68b3e064076486ecb2c0ed70b2e33e9ad7",
+    "git_blob": "1c1604464d302ec139991dced21ade9c73d6d2db"
+  },
+  "all_frozen_original_bytes_unchanged": true,
+  "network_access": false,
+  "native_execution": false,
+  "resource_queries": false,
+  "ref_mutation": false
+}

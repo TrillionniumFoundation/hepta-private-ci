@@ -1,0 +1,55 @@
+{
+  "schema": "arg0-clippy-publication-independent-binding-v1",
+  "original_responses": {
+    "bytes": 164508,
+    "git_blob": "9668551375aaaf04670e0c3498a4c30bba034fad",
+    "sha256": "835c1165004766d87d454113f410744ad379235ba3aaf3adc6728f2220736d2a"
+  },
+  "response_groups": 16,
+  "sources": [
+    {
+      "path": "codex-rs/arg0/src/bin/test_arg0_preflight.rs",
+      "bytes": 7369,
+      "git_blob": "6fbb88e17c1da7d9533efe6f40eae77e60c3b085",
+      "sha256": "b0cab98d232d451bc61206a85432752211551f8a1ee4d9d54dfbd27bed39590c",
+      "root_actual_create_and_full_GET_equal": true
+    },
+    {
+      "path": "codex-rs/arg0/src/preflight_tests.rs",
+      "bytes": 5909,
+      "git_blob": "1947350263edd252723d88c8179f8fe7a3a018aa",
+      "sha256": "caa60c03d82130f060db4e5c3a1747ddbc8d42b14b7d50c15332ac4fa033385a",
+      "root_actual_create_and_full_GET_equal": true
+    }
+  ],
+  "independent_review": {
+    "bytes": 7324,
+    "git_blob": "f77d29800fa1f5fd9e84bb327da092015c3a5013",
+    "sha256": "7f257253f3327909bd1191810f9d78b1830523f58350b2df511988003e84f148"
+  },
+  "head": "3c9e2bba4e7e84616509d6320a9ae013a274532c",
+  "head_parents": [
+    "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+  ],
+  "tree": "e60df9b57046df73cc1af53d8773cff48eafd311",
+  "merge": "65e1ec7164063b139db291562dd6093c3008b403",
+  "merge_parents": [
+    "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+    "3c9e2bba4e7e84616509d6320a9ae013a274532c"
+  ],
+  "head_ref": "fix/arg0-preflight-clippy-20261106",
+  "base_ref": "fix/r3-original-product-contracts-20261104",
+  "PR": 4923,
+  "draft": true,
+  "actual_root_entries": 53,
+  "full_candidate_tree_input": {
+    "bytes": 2329727,
+    "git_blob": "68a0767d36129db59164226d2c0d0f875df56364",
+    "sha256": "d01e737ad4a877163805c8951aab84b39c31e6e0568b180b7694734371cd3726"
+  },
+  "root_entries_equal_full_Merkle_projection": true,
+  "PR_created_and_full_GET_body_exact": true,
+  "PR_intended_argument_separately_present": false,
+  "scope": "Published immutable source/review/commit/ref/PR/merge binding only. No GNU clippy or Linux fixture pass is inferred.",
+  "new_CI_or_ref_calls": false
+}

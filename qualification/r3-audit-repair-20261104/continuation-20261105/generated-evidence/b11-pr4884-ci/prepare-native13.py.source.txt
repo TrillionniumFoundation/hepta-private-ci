@@ -1,0 +1,135 @@
+"""Freeze native13 original bytes and exact source Merkle proof; no native action."""
+from pathlib import Path, PurePosixPath
+import base64
+import hashlib
+import json
+import stat
+import zipfile
+
+ROOT = Path(__file__).resolve().parents[2]
+AUDIT = Path(__file__).resolve().parent
+P = AUDIT / 'terminal/probe-127639593751'
+PREVIOUS = AUDIT / 'terminal/probe-127623021642'
+PUB = ROOT / 'hepta-audit-fifth/b11-acl-control-v2-publication'
+CANDIDATE = ROOT / 'architecture-audit/b11-nonprivileged-acl-control-candidate-20261106/v2/candidate'
+HEAD = 'daa21e7a6a9b19e74b61c6bbdc2c813f9fd35a42'
+MERGE = 'f8e97e161c7ad87bd1e242363901a0852170483c'
+TREE = 'fbaf12d56a9702d927ae6f71cb9f3abc0cf31cae'
+
+def identity(body):
+    return {'bytes':len(body),'sha256':hashlib.sha256(body).hexdigest(),
+            'git_blob':hashlib.sha1(b'blob '+str(len(body)).encode()+b'\0'+body).hexdigest()}
+
+def save(path, body):
+    path.parent.mkdir(parents=True,exist_ok=True)
+    if path.exists():
+        assert path.read_bytes()==body,str(path)
+    else:
+        path.write_bytes(body)
+
+def write(path, value):
+    save(path,(json.dumps(value,ensure_ascii=False,indent=2)+'\n').encode())
+
+def unwrap(value):
+    assert not value.get('isError',False)
+    obj=value.get('structuredContent') or json.loads(next(x['text'] for x in value['content'] if x['type']=='text'))
+    return json.loads(obj['content']) if isinstance(obj.get('content'),str) else obj
+
+archive=(P/'artifact.zip').read_bytes()
+assert len(archive)==2313119
+assert identity(archive)['sha256']=='19f458b8bfcb54afa14d306ae308343118ac37007896f76c74fb01cf28889309'
+parts=[]
+for i,offset in enumerate(range(0,len(archive),131072)):
+    raw=archive[offset:offset+131072];encoded=base64.b64encode(raw)+b'\n'
+    name=f'archive/artifact.part-{i:03d}.base64.txt'
+    save(P/name,encoded)
+    parts.append({'path':name,'offset':offset,'raw':identity(raw),'encoded':identity(encoded)})
+write(P/'archive/manifest.json',{'schema':'hepta-native13-lossless-zip-transport-v1',
+    'artifact_id':13468391745,'archive':identity(archive),'parts':parts,
+    'encoding':'Each file contains one standard base64 string and one LF; decode in listed order.',
+    'member_manifest':'../artifact-verification.json',
+    'member_git_blob_labels_are_computed_identities_not_separate_actual_Git_registrations':True,
+    'all_original_member_bytes_retained_in_zip':True})
+members=[]
+with zipfile.ZipFile(P/'artifact.zip') as z:
+    assert z.testzip() is None
+    infos=z.infolist();assert len(infos)==len({f.filename for f in infos})==84
+    for item in infos:
+        path=PurePosixPath(item.filename)
+        assert not path.is_absolute() and '..' not in path.parts and not item.is_dir()
+        assert not stat.S_ISLNK(item.external_attr>>16) and '\\' not in item.filename
+        raw=z.read(item.filename)
+        assert (P/'members'/path).read_bytes()==raw
+        members.append({'path':item.filename,**identity(raw),'crc32':f'{item.CRC:08x}'})
+write(P/'artifact-verification.json',{'schema':'hepta-native13-entire-ZIP-verification-v1',
+    'artifact_id':13468391745,'zip_bytes':len(archive),'zip_sha256':identity(archive)['sha256'],
+    'all_members_CRC_verified':True,'member_count':len(members),'uncompressed_bytes':sum(x['bytes'] for x in members),
+    'members':members,'member_Git_blob_ids_are_computed_not_separately_registered':True})
+assert sum(x['bytes'] for x in members)==3058949
+
+full_raw=(PUB/'intended-full-tree.json').read_bytes();full=json.loads(full_raw)
+assert full['sha']==TREE and not full['truncated']
+flat={e['path']:e for e in full['tree']};assert len(flat)==len(full['tree'])
+base=P/'members/b11-token-mechanism-probe';selected=set()
+for line in (base/'source-leaves.txt').read_bytes().decode().splitlines():
+    meta,path=line.split('\t');mode,kind,sha=meta.split()
+    assert {k:flat[path][k] for k in ['mode','type','sha']}=={'mode':mode,'type':kind,'sha':sha}
+    selected.add(path)
+assert len(selected)==80
+helper=json.loads((base/'read-acl-readiness/source-before.json').read_bytes())
+assert len(helper['pins'])==11
+for path,row in helper['pins'].items():
+    assert flat[path]['sha']==row['canonical_git_blob'];selected.add(path)
+needed={''}
+for path in selected:
+    parent=PurePosixPath(path).parent
+    while parent.as_posix()!='.':
+        needed.add(parent.as_posix());parent=parent.parent
+nodes=[]
+for directory in sorted(needed):
+    entries=[]
+    for path,entry in flat.items():
+        parent=PurePosixPath(path).parent.as_posix()
+        if ('' if parent=='.' else parent)==directory:
+            entries.append({'name':PurePosixPath(path).name,**{k:entry[k] for k in ['mode','type','sha']}})
+    entries.sort(key=lambda e:(e['name']+('/' if e['type']=='tree' else '')).encode())
+    raw=b''.join((('40000' if e['type']=='tree' else e['mode'])+' '+e['name']).encode()+b'\0'+bytes.fromhex(e['sha']) for e in entries)
+    sha=hashlib.sha1(b'tree '+str(len(raw)).encode()+b'\0'+raw).hexdigest()
+    assert sha==(flat[directory]['sha'] if directory else TREE)
+    nodes.append({'directory':directory,'sha':sha,'entries':entries})
+write(P/'source-merkle-proof.json',{'schema':'hepta-selected-source-leaves-Merkle-proof-v1','tree':TREE,
+    'derivation':'Exact ancestor direct children from root publication full tree, with all serialized Git tree hashes recomputed. Computed proofs are not claimed independent API GETs.',
+    'source_full_tree_file_identity':identity(full_raw),'selected_leaves':sorted(selected),'nodes':nodes})
+save(P/'actual-tree-root.original.json',(PUB/'actual-tree-root.json').read_bytes())
+save(P/'root-publication-source-proof.json',(PUB/'root-tree-proof.json').read_bytes())
+for name in ['executed-observation-module.rs.source.txt','delete-permission-matrix.rs.source.txt',
+             'compact_wire_parser.py.source.txt','compact-parser-provenance.json']:
+    save(P/name,(PREVIOUS/name).read_bytes())
+source_rows=[]
+for path,name in [
+ ('codex-rs/windows-sandbox-rs/src/acl_control_test_support.rs','executed-acl-control-helper.rs.source.txt'),
+ ('codex-rs/windows-sandbox-rs/src/token_tests.rs','executed-token-tests.rs.source.txt'),
+ ('codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs','executed-delete-permission-tests.rs.source.txt'),
+ ('codex-rs/windows-sandbox-rs/src/lib.rs','executed-lib.rs.source.txt')]:
+    raw=(CANDIDATE/path).read_bytes();assert identity(raw)['git_blob']==flat[path]['sha']
+    assert path in selected;save(P/name,raw)
+    source_rows.append({'source_path':path,'local_filename':name,**identity(raw)})
+write(P/'new-control-source-map.json',{'schema':'hepta-native13-executed-control-source-map-v1',
+    'head':HEAD,'actual_checkout':MERGE,'actual_tree':TREE,'files':source_rows,
+    'actual_native_source_leaf_count':80,'helper_pins':11,'deduplicated_Merkle_selected_paths':len(selected)})
+
+job_raw=(P/'job.log').read_bytes()
+envelope=json.loads((P/'job-log-tool-response.original.json').read_bytes())
+payload=envelope.get('structuredContent') or json.loads(next(x['text'] for x in envelope['content'] if x['type']=='text'))
+assert payload['content'].encode()==job_raw
+assert len(job_raw)==519728 and job_raw.count(b'\r')==3371
+assert identity(job_raw)['sha256']=='970bc500ab8b44912f06757eb9df84f148e1684b0b2d0ade3ecc86d6d0a3936f'
+write(P/'job-log-capture.json',{'schema':'hepta-native13-complete-MCP-decoded-job-capture-v1',
+    'run_id':42140578464,'job_id':127639593751,**identity(job_raw),'characters':len(job_raw.decode()),
+    'CR_preserved':job_raw.count(b'\r'),'entire_MCP_content_UTF8_equals_saved_original':True,
+    'MCP_serialized_object_is_not_HTTP_wire_capture':True})
+jobs_raw=json.loads((P/'jobs.original-cut.json').read_bytes())
+write(P/'jobs.normalized-cut.json',{'schema':'hepta-original-job-API-with-decoded-response-v1',
+    'raw':jobs_raw,'response':unwrap(jobs_raw),'original_envelope_file':'jobs.original-cut.json'})
+print(json.dumps({'source_leaves':80,'deduplicated_paths':len(selected),'Merkle_nodes':len(nodes),
+    'archive_parts':len(parts),'members':len(members),'new_control_sources':source_rows,'job_log':identity(job_raw)},ensure_ascii=False))

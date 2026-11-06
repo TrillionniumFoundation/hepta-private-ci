@@ -1,0 +1,11 @@
+# 原Intel完整上下文与GNU AppServer诊断：根发布验收
+
+B21实际源ebd31e2b、merge01167418同树46fca3e6；B23实际源e63ed76c、mergeb3bc3dcf同树a6831e26。两者均基于主产品67cc5c28/tree3982，只增加各自唯一工作流，原10,582叶和mode保持。B21相对上一诊断cc65856c只替换该工作流；B23新分支创建前完整ref GET为404，创建后完整ref与PR回读相等。
+
+根完整读新增源的控制逻辑、已有接受的精确34905字节collector、完整verifier与反例，实际完成离线重放。B21根重放的7890字节输出属于actualGET计数字段加入前；后来7937字节版本由独立addendum2dae确认，未声称两者逐字相等。B23隔离重放3472字节与作者最终冻结输出逐字相等。所有记录均为静态、身份或收件控制验证，不是产品原生执行。
+
+本包保留实际工具返回、完整源树与MerkeI重算器、根stdout及公开发布结果。B21首次PR读取尚返回旧cc head，也完整保留；没有对已成功的CAS再次写ref。B21旧正文1659字符完整保留为新正文后缀。B23正确base ref是fix/r3-original-product-contracts-20261104；并非literal main。两个完整合并树与对应候选树分别相等。
+
+根读取完整10582叶及全部1571目录，核实际root tree GET53条与计算根子项全相等，固定commit父项、ref、PR正文及merge父项精确相等。verify_diagnostic_publication.py离线恢复后可重复得到ROOT_VERIFICATION.json；它不会执行产品、触发CI或查询私人主机。
+
+独审实际ecab/2dae与8c68在各作者便携包另保留。当前两blocker OPEN；B21旧2.023066511s drain失败原因仍UNKNOWN，B23最终同源GNU完整目标尚待原生。普通pull-request自动CI与本静态封包分别验收；没有manual dispatch/rerun/cancel。

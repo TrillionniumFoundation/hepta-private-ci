@@ -1,0 +1,1192 @@
+{
+  "schema": "windows-setup-causes-native-originals-actual-registry-v2",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "self_repository_path": "ci-audit/windows-setup-causes-native-20261106/registry.actual.json",
+  "actual_PR": 4913,
+  "source_head": "340fbc0629d27e3a2bda7c6971be25c60b3bf2bc",
+  "source_merge": "ff2b873c8b907e1e86b1a728c2c18552edfbd0ed",
+  "source_tree": "78b817fec87e593e0a0f6357d84f895b8574bde5",
+  "run": 42158689226,
+  "job_ids": [
+    127703396792,
+    127703396875
+  ],
+  "dependencies": {
+    "source_review_registry_actual": "42748aff2421ab2bee7757158793868f08dd53d9",
+    "publication_registry_actual": "7b56b1ca7d043ff2cefc74cc09854171d775c81d",
+    "source_review_scope": "Full fixed source/tree and static review already registered; this packet adds original native results and preserves publication API/source bytes.",
+    "formatter_review_actual": "7131b1ffbabdc8a0d0c5090350e61135c6b89fd4",
+    "formatter_scope": "Only 37aa to7918 two original native rustfmt layouts. Old340 native qualification does not transfer to later18bb source."
+  },
+  "payload_registration_count": 69,
+  "entries": [
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-000.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-000.base64.txt",
+      "bytes": 262144,
+      "git_blob": "367cc673422d883d7f46630b95e3c60735504e1d",
+      "sha256": "0b3168ab669edf207527d5cce763ec279d575722947cb92f24a4cfcecbfb4ff5",
+      "actual_create_sha": "367cc673422d883d7f46630b95e3c60735504e1d",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "367cc673422d883d7f46630b95e3c60735504e1d",
+        "sha256": "0b3168ab669edf207527d5cce763ec279d575722947cb92f24a4cfcecbfb4ff5"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-001.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-001.base64.txt",
+      "bytes": 262144,
+      "git_blob": "d3f1f3146f1f2c57f6aff8171147e5332e381725",
+      "sha256": "b0b8050b798c3aeb5e9c87b406f5173392e49afd7f3d46032aae256fed3e34fa",
+      "actual_create_sha": "d3f1f3146f1f2c57f6aff8171147e5332e381725",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "d3f1f3146f1f2c57f6aff8171147e5332e381725",
+        "sha256": "b0b8050b798c3aeb5e9c87b406f5173392e49afd7f3d46032aae256fed3e34fa"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-002.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-002.base64.txt",
+      "bytes": 262144,
+      "git_blob": "a3fc77c747b128c9b0e43600afcff385c987355a",
+      "sha256": "9e2a85dcf5ca20de71edd6e1821a68f7a05ddb5d8ebeca86c12ce95bcf43aff1",
+      "actual_create_sha": "a3fc77c747b128c9b0e43600afcff385c987355a",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "a3fc77c747b128c9b0e43600afcff385c987355a",
+        "sha256": "9e2a85dcf5ca20de71edd6e1821a68f7a05ddb5d8ebeca86c12ce95bcf43aff1"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-003.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-003.base64.txt",
+      "bytes": 262144,
+      "git_blob": "00f172faed55720d3a057b4d104950ba52d78acb",
+      "sha256": "14e046c6e8054b1f7ec4b8c85b7de2abf922f2fee405535ffc7307634f56584a",
+      "actual_create_sha": "00f172faed55720d3a057b4d104950ba52d78acb",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "00f172faed55720d3a057b4d104950ba52d78acb",
+        "sha256": "14e046c6e8054b1f7ec4b8c85b7de2abf922f2fee405535ffc7307634f56584a"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-004.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-004.base64.txt",
+      "bytes": 262144,
+      "git_blob": "cf2434dc2e1593042343c25f9299378303f691d4",
+      "sha256": "09186bdd39828ddc6d8405c456d8069ccfcabda13cc3137caded11b483d2ada9",
+      "actual_create_sha": "cf2434dc2e1593042343c25f9299378303f691d4",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "cf2434dc2e1593042343c25f9299378303f691d4",
+        "sha256": "09186bdd39828ddc6d8405c456d8069ccfcabda13cc3137caded11b483d2ada9"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-005.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-005.base64.txt",
+      "bytes": 262144,
+      "git_blob": "4f8883a6b35f3a420a68b5590f8eee197959b8a0",
+      "sha256": "762d1a27104f168a8653aac1be23177130b83ee16769222b51a32ece5b0aec4b",
+      "actual_create_sha": "4f8883a6b35f3a420a68b5590f8eee197959b8a0",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "4f8883a6b35f3a420a68b5590f8eee197959b8a0",
+        "sha256": "762d1a27104f168a8653aac1be23177130b83ee16769222b51a32ece5b0aec4b"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-006.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-006.base64.txt",
+      "bytes": 262144,
+      "git_blob": "9983a56b176199bfc6f44eaee2ab3180dcccf8d5",
+      "sha256": "f84481677c36d006a2d035eb1700af34b46bf633c73e9e2f795fcd538a1a0bb4",
+      "actual_create_sha": "9983a56b176199bfc6f44eaee2ab3180dcccf8d5",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "9983a56b176199bfc6f44eaee2ab3180dcccf8d5",
+        "sha256": "f84481677c36d006a2d035eb1700af34b46bf633c73e9e2f795fcd538a1a0bb4"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-007.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-007.base64.txt",
+      "bytes": 262144,
+      "git_blob": "369dc44c1e5f2313ea53feb5c33375e9b5aa8fb7",
+      "sha256": "dddc7b575a6bbb1e6bc8ef90bb3fb05b23ca769f7055e3b7c3e614b1c0de8d72",
+      "actual_create_sha": "369dc44c1e5f2313ea53feb5c33375e9b5aa8fb7",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "369dc44c1e5f2313ea53feb5c33375e9b5aa8fb7",
+        "sha256": "dddc7b575a6bbb1e6bc8ef90bb3fb05b23ca769f7055e3b7c3e614b1c0de8d72"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-008.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-008.base64.txt",
+      "bytes": 262144,
+      "git_blob": "2e31aeebe1a603e45e1d9b00fd221fef61545a0e",
+      "sha256": "558859ffd94f6803d4b422bd6fbe96926dcb1c0768ed470c15e939d44a94ab1a",
+      "actual_create_sha": "2e31aeebe1a603e45e1d9b00fd221fef61545a0e",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "2e31aeebe1a603e45e1d9b00fd221fef61545a0e",
+        "sha256": "558859ffd94f6803d4b422bd6fbe96926dcb1c0768ed470c15e939d44a94ab1a"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-009.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-009.base64.txt",
+      "bytes": 262144,
+      "git_blob": "8c7c15d8ac0eed54209aa464887f1412d4bad096",
+      "sha256": "0d6ed758c19dede00f24c476fa9cfb8e511920f86ca944e91532bbcdf7e66deb",
+      "actual_create_sha": "8c7c15d8ac0eed54209aa464887f1412d4bad096",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "8c7c15d8ac0eed54209aa464887f1412d4bad096",
+        "sha256": "0d6ed758c19dede00f24c476fa9cfb8e511920f86ca944e91532bbcdf7e66deb"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-010.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-010.base64.txt",
+      "bytes": 262144,
+      "git_blob": "f8b6ba8dc2ab0c47d71d7183814dbf117d861368",
+      "sha256": "0bbdd483e9f4ab8380e33c041420d23f105322baad93f44ef8e7a54b5034a6dc",
+      "actual_create_sha": "f8b6ba8dc2ab0c47d71d7183814dbf117d861368",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "f8b6ba8dc2ab0c47d71d7183814dbf117d861368",
+        "sha256": "0bbdd483e9f4ab8380e33c041420d23f105322baad93f44ef8e7a54b5034a6dc"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-011.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-011.base64.txt",
+      "bytes": 262144,
+      "git_blob": "4c5c203ae69a41139357a24466d29f871c7b893e",
+      "sha256": "42f803c64eece289ea9d07532e880e882c306f2e292925ea7409be95a67356bf",
+      "actual_create_sha": "4c5c203ae69a41139357a24466d29f871c7b893e",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "4c5c203ae69a41139357a24466d29f871c7b893e",
+        "sha256": "42f803c64eece289ea9d07532e880e882c306f2e292925ea7409be95a67356bf"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-012.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-012.base64.txt",
+      "bytes": 262144,
+      "git_blob": "67669727be7c3dbcd73a163725692f464baa16b8",
+      "sha256": "de7a02419063da5fad11f127b5f677d03a8a4f3dace8ca96ff1651dd0763a5b0",
+      "actual_create_sha": "67669727be7c3dbcd73a163725692f464baa16b8",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "67669727be7c3dbcd73a163725692f464baa16b8",
+        "sha256": "de7a02419063da5fad11f127b5f677d03a8a4f3dace8ca96ff1651dd0763a5b0"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-013.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-013.base64.txt",
+      "bytes": 262144,
+      "git_blob": "b91e4cf56ecfd17cc807abc237dba2153e24e1df",
+      "sha256": "91d9d2a8cfa2b41c8086d64117b720d581dc88ebfe666c7feba47b476d327e00",
+      "actual_create_sha": "b91e4cf56ecfd17cc807abc237dba2153e24e1df",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "b91e4cf56ecfd17cc807abc237dba2153e24e1df",
+        "sha256": "91d9d2a8cfa2b41c8086d64117b720d581dc88ebfe666c7feba47b476d327e00"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-014.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-014.base64.txt",
+      "bytes": 262144,
+      "git_blob": "34273cfff6d6dd9e203faffa07134c4b2d20d4f5",
+      "sha256": "ae8e5bd3217f9ecde8d8c390d08685da6c6e354489bd59957e9af8aba976237a",
+      "actual_create_sha": "34273cfff6d6dd9e203faffa07134c4b2d20d4f5",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "34273cfff6d6dd9e203faffa07134c4b2d20d4f5",
+        "sha256": "ae8e5bd3217f9ecde8d8c390d08685da6c6e354489bd59957e9af8aba976237a"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-015.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-015.base64.txt",
+      "bytes": 262144,
+      "git_blob": "78d527a1be2ad6a14e533200fd6b63e292d8c236",
+      "sha256": "6783f4883e54d82225dc712170ba6fbfd5399a50eb637316244d53d0c49ec045",
+      "actual_create_sha": "78d527a1be2ad6a14e533200fd6b63e292d8c236",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "78d527a1be2ad6a14e533200fd6b63e292d8c236",
+        "sha256": "6783f4883e54d82225dc712170ba6fbfd5399a50eb637316244d53d0c49ec045"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-016.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-016.base64.txt",
+      "bytes": 262144,
+      "git_blob": "a63c0ee7c94b379f9b4b10478389f596ec591a99",
+      "sha256": "cdc3d361946c5754185dbc41711379ca2b8d85c008261639b49ca1c5cd6e2d29",
+      "actual_create_sha": "a63c0ee7c94b379f9b4b10478389f596ec591a99",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "a63c0ee7c94b379f9b4b10478389f596ec591a99",
+        "sha256": "cdc3d361946c5754185dbc41711379ca2b8d85c008261639b49ca1c5cd6e2d29"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-017.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-017.base64.txt",
+      "bytes": 262144,
+      "git_blob": "18b06b5346c87c559f74ad7869d1ae67bf098967",
+      "sha256": "2f94ab321dc912f4e5f16e9b0353600161e2b8e6b7fa421409c292aea57a33da",
+      "actual_create_sha": "18b06b5346c87c559f74ad7869d1ae67bf098967",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "18b06b5346c87c559f74ad7869d1ae67bf098967",
+        "sha256": "2f94ab321dc912f4e5f16e9b0353600161e2b8e6b7fa421409c292aea57a33da"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-018.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-018.base64.txt",
+      "bytes": 262144,
+      "git_blob": "2ed19e592825dd804983b2e6cfa2ac4e0c75285a",
+      "sha256": "1815fc715abab9e5e177ed9f0d01a2a58644ab75e0059a6278dbf347af38298f",
+      "actual_create_sha": "2ed19e592825dd804983b2e6cfa2ac4e0c75285a",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "2ed19e592825dd804983b2e6cfa2ac4e0c75285a",
+        "sha256": "1815fc715abab9e5e177ed9f0d01a2a58644ab75e0059a6278dbf347af38298f"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-019.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-019.base64.txt",
+      "bytes": 262144,
+      "git_blob": "a42586cc5e9cd8dce84b3e1a8a8e031226259997",
+      "sha256": "8e6320d1a36066ff83cd57f3f9e0a4ead39c2a47de30e5c769e34f83652c5930",
+      "actual_create_sha": "a42586cc5e9cd8dce84b3e1a8a8e031226259997",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "a42586cc5e9cd8dce84b3e1a8a8e031226259997",
+        "sha256": "8e6320d1a36066ff83cd57f3f9e0a4ead39c2a47de30e5c769e34f83652c5930"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-020.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-020.base64.txt",
+      "bytes": 262144,
+      "git_blob": "b80f5d2f22662dc496311fc4e6f87fc13f25fd2c",
+      "sha256": "7fd052efcb6dff5950031c3a4f6dc0ea2705576acb47864c9e8adb3577b84a69",
+      "actual_create_sha": "b80f5d2f22662dc496311fc4e6f87fc13f25fd2c",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "b80f5d2f22662dc496311fc4e6f87fc13f25fd2c",
+        "sha256": "7fd052efcb6dff5950031c3a4f6dc0ea2705576acb47864c9e8adb3577b84a69"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-021.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-021.base64.txt",
+      "bytes": 262144,
+      "git_blob": "24667033ecba1dc380b8ebfaca8eda4443f902ae",
+      "sha256": "4ec5f58da0953093c86e63aba0486afbc583bbc648d810fd73f5530d26896ffc",
+      "actual_create_sha": "24667033ecba1dc380b8ebfaca8eda4443f902ae",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "24667033ecba1dc380b8ebfaca8eda4443f902ae",
+        "sha256": "4ec5f58da0953093c86e63aba0486afbc583bbc648d810fd73f5530d26896ffc"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-022.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-022.base64.txt",
+      "bytes": 262144,
+      "git_blob": "bc714e158d544f6cf2c205b7abb0669de108a064",
+      "sha256": "92fdfd1125a3166570c2b67483990bf2d3fad60da5256fb0ed7ef134d6e46918",
+      "actual_create_sha": "bc714e158d544f6cf2c205b7abb0669de108a064",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "bc714e158d544f6cf2c205b7abb0669de108a064",
+        "sha256": "92fdfd1125a3166570c2b67483990bf2d3fad60da5256fb0ed7ef134d6e46918"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-023.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-023.base64.txt",
+      "bytes": 262144,
+      "git_blob": "8b9a80800ae6256afe48819b1abd9f5132939277",
+      "sha256": "11837588d76bd9c5fd77cec595b122d892735f3c417b75af39dead5fe849f511",
+      "actual_create_sha": "8b9a80800ae6256afe48819b1abd9f5132939277",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "8b9a80800ae6256afe48819b1abd9f5132939277",
+        "sha256": "11837588d76bd9c5fd77cec595b122d892735f3c417b75af39dead5fe849f511"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-024.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-024.base64.txt",
+      "bytes": 262144,
+      "git_blob": "9b61df8a15eafcc6329b614dfea3f47d6cf60f68",
+      "sha256": "da3cb1c023d8a1dfdef6e6df3a49a1c27f1902badad5bd6afcc08bfdeb7b7c2a",
+      "actual_create_sha": "9b61df8a15eafcc6329b614dfea3f47d6cf60f68",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "9b61df8a15eafcc6329b614dfea3f47d6cf60f68",
+        "sha256": "da3cb1c023d8a1dfdef6e6df3a49a1c27f1902badad5bd6afcc08bfdeb7b7c2a"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-025.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-025.base64.txt",
+      "bytes": 262144,
+      "git_blob": "42e8aebd3ce4c526b450b6087002acabd3391882",
+      "sha256": "7a29070a42f79d0d8f6a47d91fdc71b327e3195bb5620cae2188a8bbfc2e2b1c",
+      "actual_create_sha": "42e8aebd3ce4c526b450b6087002acabd3391882",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "42e8aebd3ce4c526b450b6087002acabd3391882",
+        "sha256": "7a29070a42f79d0d8f6a47d91fdc71b327e3195bb5620cae2188a8bbfc2e2b1c"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-026.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-026.base64.txt",
+      "bytes": 262144,
+      "git_blob": "c00098dbe0e7a370aeca00287e1125afad09274c",
+      "sha256": "78e6eda37c744ab2c4b80a0c1a504502e407333e0cd67dc31d03ad95a552c554",
+      "actual_create_sha": "c00098dbe0e7a370aeca00287e1125afad09274c",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "c00098dbe0e7a370aeca00287e1125afad09274c",
+        "sha256": "78e6eda37c744ab2c4b80a0c1a504502e407333e0cd67dc31d03ad95a552c554"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-027.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-027.base64.txt",
+      "bytes": 262144,
+      "git_blob": "1e659bf070ac67190cb9fe070fe86ffeb5387a65",
+      "sha256": "afd392b1ab321f971857c7b9ede30fd4d993115488ed5366506d9285b0ae5da5",
+      "actual_create_sha": "1e659bf070ac67190cb9fe070fe86ffeb5387a65",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "1e659bf070ac67190cb9fe070fe86ffeb5387a65",
+        "sha256": "afd392b1ab321f971857c7b9ede30fd4d993115488ed5366506d9285b0ae5da5"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-028.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-028.base64.txt",
+      "bytes": 262144,
+      "git_blob": "bea721d342e0162e3c7a652db59bc0acdcfcb283",
+      "sha256": "8a35c69ab790317fb5e4dfcd6342aa19ce0a69b71ad97afbe40174baf71439ae",
+      "actual_create_sha": "bea721d342e0162e3c7a652db59bc0acdcfcb283",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "bea721d342e0162e3c7a652db59bc0acdcfcb283",
+        "sha256": "8a35c69ab790317fb5e4dfcd6342aa19ce0a69b71ad97afbe40174baf71439ae"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-029.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-029.base64.txt",
+      "bytes": 262144,
+      "git_blob": "75433d2c30f4376edbe42153ef11e4521c9084ef",
+      "sha256": "ddbd9148cc5faff0d9a15761eccaf3a0a8100437277f26a5be4f7b2331ba66eb",
+      "actual_create_sha": "75433d2c30f4376edbe42153ef11e4521c9084ef",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "75433d2c30f4376edbe42153ef11e4521c9084ef",
+        "sha256": "ddbd9148cc5faff0d9a15761eccaf3a0a8100437277f26a5be4f7b2331ba66eb"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-030.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-030.base64.txt",
+      "bytes": 262144,
+      "git_blob": "69ecd3566f3974d516220b9e612e3cc43b300c5c",
+      "sha256": "39594a8b0a8667b88a839affac2f257fecced401ea929584911c2e8043388881",
+      "actual_create_sha": "69ecd3566f3974d516220b9e612e3cc43b300c5c",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "69ecd3566f3974d516220b9e612e3cc43b300c5c",
+        "sha256": "39594a8b0a8667b88a839affac2f257fecced401ea929584911c2e8043388881"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-031.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-031.base64.txt",
+      "bytes": 262144,
+      "git_blob": "2ed0d02848dcad3c741179a7c3d456ef91a8eece",
+      "sha256": "6c7b8681e3772031bf029168c7bbdcb6015ca8d2998153ff38172b13f961e3f1",
+      "actual_create_sha": "2ed0d02848dcad3c741179a7c3d456ef91a8eece",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "2ed0d02848dcad3c741179a7c3d456ef91a8eece",
+        "sha256": "6c7b8681e3772031bf029168c7bbdcb6015ca8d2998153ff38172b13f961e3f1"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-032.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-032.base64.txt",
+      "bytes": 262144,
+      "git_blob": "4d6470764ceae24b46232eae4f8e5bf834d5a6d5",
+      "sha256": "dda40eeacc9e04340fba2d4a1f949848186b2fed5bedb9bf6b03f9e5427726c2",
+      "actual_create_sha": "4d6470764ceae24b46232eae4f8e5bf834d5a6d5",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "4d6470764ceae24b46232eae4f8e5bf834d5a6d5",
+        "sha256": "dda40eeacc9e04340fba2d4a1f949848186b2fed5bedb9bf6b03f9e5427726c2"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-033.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-033.base64.txt",
+      "bytes": 262144,
+      "git_blob": "6f4d02515713cc18dcfe1a3f350f868582289674",
+      "sha256": "34655ac077852ea6eebc672e93e45b275633c3e09c4f9a2521b246e4e4ccbeee",
+      "actual_create_sha": "6f4d02515713cc18dcfe1a3f350f868582289674",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "6f4d02515713cc18dcfe1a3f350f868582289674",
+        "sha256": "34655ac077852ea6eebc672e93e45b275633c3e09c4f9a2521b246e4e4ccbeee"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-034.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-034.base64.txt",
+      "bytes": 262144,
+      "git_blob": "2d8bd87578cdb9408bb9220d142f089bb90fdc1a",
+      "sha256": "f393d20faa268843b8c503e9c225ee5bef2a59159c6434b9955a673ae3fb8608",
+      "actual_create_sha": "2d8bd87578cdb9408bb9220d142f089bb90fdc1a",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "2d8bd87578cdb9408bb9220d142f089bb90fdc1a",
+        "sha256": "f393d20faa268843b8c503e9c225ee5bef2a59159c6434b9955a673ae3fb8608"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-035.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-035.base64.txt",
+      "bytes": 262144,
+      "git_blob": "a2b7621e5e04e4be958da1326233411d7c0d7e75",
+      "sha256": "54732ce5b570f456036279f2bed1b1e920c9a7f2af8805e7f3c271b5d0369b7e",
+      "actual_create_sha": "a2b7621e5e04e4be958da1326233411d7c0d7e75",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "a2b7621e5e04e4be958da1326233411d7c0d7e75",
+        "sha256": "54732ce5b570f456036279f2bed1b1e920c9a7f2af8805e7f3c271b5d0369b7e"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-036.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-036.base64.txt",
+      "bytes": 262144,
+      "git_blob": "5bf39a33d1f33ab6a9481f25837284c672b0cde4",
+      "sha256": "b2347a7ecfad878710fd4defd5b71b51f56bce5cefcf0d0dfb67f9e405928456",
+      "actual_create_sha": "5bf39a33d1f33ab6a9481f25837284c672b0cde4",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "5bf39a33d1f33ab6a9481f25837284c672b0cde4",
+        "sha256": "b2347a7ecfad878710fd4defd5b71b51f56bce5cefcf0d0dfb67f9e405928456"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-037.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-037.base64.txt",
+      "bytes": 262144,
+      "git_blob": "2f2351c099f5527da81108e9e348a73845c5c1f3",
+      "sha256": "d1388bf75e6367f0bf24826e49a775ef0d595016cb0eee1d3e5cfa09866f9fae",
+      "actual_create_sha": "2f2351c099f5527da81108e9e348a73845c5c1f3",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "2f2351c099f5527da81108e9e348a73845c5c1f3",
+        "sha256": "d1388bf75e6367f0bf24826e49a775ef0d595016cb0eee1d3e5cfa09866f9fae"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-038.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-038.base64.txt",
+      "bytes": 262144,
+      "git_blob": "62cccccd9267378f67313dbac49f0b7ac59a6e92",
+      "sha256": "49e8a25712ec6a759d6b355bfedfbd8fb0fc93774fef1c52a7c24e29aadbcd9a",
+      "actual_create_sha": "62cccccd9267378f67313dbac49f0b7ac59a6e92",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "62cccccd9267378f67313dbac49f0b7ac59a6e92",
+        "sha256": "49e8a25712ec6a759d6b355bfedfbd8fb0fc93774fef1c52a7c24e29aadbcd9a"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-039.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-039.base64.txt",
+      "bytes": 262144,
+      "git_blob": "37ee8532c8e4a783f69aa42c3074a49a885b9c83",
+      "sha256": "9fe9f5e401bc3a938be7ce1aeb1c68e77411021be3feeaf17643b8c8fce0f07e",
+      "actual_create_sha": "37ee8532c8e4a783f69aa42c3074a49a885b9c83",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "37ee8532c8e4a783f69aa42c3074a49a885b9c83",
+        "sha256": "9fe9f5e401bc3a938be7ce1aeb1c68e77411021be3feeaf17643b8c8fce0f07e"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-040.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-040.base64.txt",
+      "bytes": 262144,
+      "git_blob": "7dfd370b82e0c38b66f144e7664849e1481cc7df",
+      "sha256": "6d929708edd627e378ba5b0c607339ccedb432cf40cd8c233610cfe390ab0e12",
+      "actual_create_sha": "7dfd370b82e0c38b66f144e7664849e1481cc7df",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "7dfd370b82e0c38b66f144e7664849e1481cc7df",
+        "sha256": "6d929708edd627e378ba5b0c607339ccedb432cf40cd8c233610cfe390ab0e12"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-041.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-041.base64.txt",
+      "bytes": 262144,
+      "git_blob": "ae7bf213f6d9df99b932fd33113cc4e764a334ee",
+      "sha256": "af19cdffccc619616057ab5f6b196129aa4a3f1841197440ed7cecb722376406",
+      "actual_create_sha": "ae7bf213f6d9df99b932fd33113cc4e764a334ee",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "ae7bf213f6d9df99b932fd33113cc4e764a334ee",
+        "sha256": "af19cdffccc619616057ab5f6b196129aa4a3f1841197440ed7cecb722376406"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-042.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-042.base64.txt",
+      "bytes": 262144,
+      "git_blob": "23e51774d3e8667c8d4742e59ec3dc3554051c12",
+      "sha256": "d4c7f4abf6a6157342832b2a1866daf196a47c501514372bb68785607b9f5556",
+      "actual_create_sha": "23e51774d3e8667c8d4742e59ec3dc3554051c12",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "23e51774d3e8667c8d4742e59ec3dc3554051c12",
+        "sha256": "d4c7f4abf6a6157342832b2a1866daf196a47c501514372bb68785607b9f5556"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-043.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-043.base64.txt",
+      "bytes": 262144,
+      "git_blob": "8f6a8e31d34eb31471af376567fa85e6d11833ee",
+      "sha256": "c9f8dde4d09d25ec6b69eac783387b6b6f8c3403ca17f3b46b91393266dce2b2",
+      "actual_create_sha": "8f6a8e31d34eb31471af376567fa85e6d11833ee",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "8f6a8e31d34eb31471af376567fa85e6d11833ee",
+        "sha256": "c9f8dde4d09d25ec6b69eac783387b6b6f8c3403ca17f3b46b91393266dce2b2"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-044.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-044.base64.txt",
+      "bytes": 262144,
+      "git_blob": "eba5fedc3fe0a3f37e97c33f242bee023cc2ddd1",
+      "sha256": "a566896e9793584cef499b0aa6e5f208b7d835efe3b69359a8cbd5ff9092d3c3",
+      "actual_create_sha": "eba5fedc3fe0a3f37e97c33f242bee023cc2ddd1",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "eba5fedc3fe0a3f37e97c33f242bee023cc2ddd1",
+        "sha256": "a566896e9793584cef499b0aa6e5f208b7d835efe3b69359a8cbd5ff9092d3c3"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-045.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-045.base64.txt",
+      "bytes": 262144,
+      "git_blob": "782fd873be3f2512a42ad792719e73af6a69f46c",
+      "sha256": "1ae2e7c8fe722452e2bbf2764da9645dcf3ee391fca5ee1b547002aeadff690c",
+      "actual_create_sha": "782fd873be3f2512a42ad792719e73af6a69f46c",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "782fd873be3f2512a42ad792719e73af6a69f46c",
+        "sha256": "1ae2e7c8fe722452e2bbf2764da9645dcf3ee391fca5ee1b547002aeadff690c"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-046.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-046.base64.txt",
+      "bytes": 262144,
+      "git_blob": "fa121e794e3239a6d0b9625d209d50ed90ff232e",
+      "sha256": "1befe25efbb511d2de9f533e79d0781a446717a19e6e19eb755b7601afce7111",
+      "actual_create_sha": "fa121e794e3239a6d0b9625d209d50ed90ff232e",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "fa121e794e3239a6d0b9625d209d50ed90ff232e",
+        "sha256": "1befe25efbb511d2de9f533e79d0781a446717a19e6e19eb755b7601afce7111"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-047.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-047.base64.txt",
+      "bytes": 262144,
+      "git_blob": "c51dbe294f6361b078e93b294c041e1404000d8e",
+      "sha256": "be9c28d13bc79affc437993df6b2557b0a25e995ee033e0a6c51eb3678f5cd3b",
+      "actual_create_sha": "c51dbe294f6361b078e93b294c041e1404000d8e",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "c51dbe294f6361b078e93b294c041e1404000d8e",
+        "sha256": "be9c28d13bc79affc437993df6b2557b0a25e995ee033e0a6c51eb3678f5cd3b"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-048.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-048.base64.txt",
+      "bytes": 262144,
+      "git_blob": "749f7e209037bd0c1989252e45b6d16ca111b4b7",
+      "sha256": "194d6ac1dd79bdf5ef5c0ebaf303d2769681b544191c1b664454e8218d462fd4",
+      "actual_create_sha": "749f7e209037bd0c1989252e45b6d16ca111b4b7",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "749f7e209037bd0c1989252e45b6d16ca111b4b7",
+        "sha256": "194d6ac1dd79bdf5ef5c0ebaf303d2769681b544191c1b664454e8218d462fd4"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-049.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-049.base64.txt",
+      "bytes": 262144,
+      "git_blob": "94ccd9ac9fe631e1790e1019fe1cae702e676556",
+      "sha256": "383ab00ce33ee400c9d4768c1073f1816bd6782447c8653ac1e0dd22bd064bfe",
+      "actual_create_sha": "94ccd9ac9fe631e1790e1019fe1cae702e676556",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "94ccd9ac9fe631e1790e1019fe1cae702e676556",
+        "sha256": "383ab00ce33ee400c9d4768c1073f1816bd6782447c8653ac1e0dd22bd064bfe"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-050.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-050.base64.txt",
+      "bytes": 262144,
+      "git_blob": "1b3cfe3295f673b633aa09703fc9cdad992f841f",
+      "sha256": "b734e7f7fbffb9f2cd17275a4be24d550abc90174634b68f8a0728b4b6a214fb",
+      "actual_create_sha": "1b3cfe3295f673b633aa09703fc9cdad992f841f",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "1b3cfe3295f673b633aa09703fc9cdad992f841f",
+        "sha256": "b734e7f7fbffb9f2cd17275a4be24d550abc90174634b68f8a0728b4b6a214fb"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-051.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-051.base64.txt",
+      "bytes": 262144,
+      "git_blob": "cfe9346b89faa032d6db764b2839de147c667dde",
+      "sha256": "f192ec9a91122afbd63369f09c7661e4d28ed7077207aebe6bca18eb93690a35",
+      "actual_create_sha": "cfe9346b89faa032d6db764b2839de147c667dde",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "cfe9346b89faa032d6db764b2839de147c667dde",
+        "sha256": "f192ec9a91122afbd63369f09c7661e4d28ed7077207aebe6bca18eb93690a35"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-052.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-052.base64.txt",
+      "bytes": 262144,
+      "git_blob": "d8e162f48222e41e6aa6f4a728ff5844c6ebd158",
+      "sha256": "cd2e0c095b7ab0f9dac114bc05431c0a014d65b6da337010397b55f77fa26e8b",
+      "actual_create_sha": "d8e162f48222e41e6aa6f4a728ff5844c6ebd158",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "d8e162f48222e41e6aa6f4a728ff5844c6ebd158",
+        "sha256": "cd2e0c095b7ab0f9dac114bc05431c0a014d65b6da337010397b55f77fa26e8b"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-053.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-053.base64.txt",
+      "bytes": 262144,
+      "git_blob": "de188c5b32bc03b49d71b1cfb647cffa4b4c81eb",
+      "sha256": "6852922c73f5f8699fc49b8f3d798761f8c201683f20f7f39c14fbc0def02872",
+      "actual_create_sha": "de188c5b32bc03b49d71b1cfb647cffa4b4c81eb",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "de188c5b32bc03b49d71b1cfb647cffa4b4c81eb",
+        "sha256": "6852922c73f5f8699fc49b8f3d798761f8c201683f20f7f39c14fbc0def02872"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-054.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-054.base64.txt",
+      "bytes": 262144,
+      "git_blob": "93a10688cd5335283d635ced7c502154b3a10180",
+      "sha256": "612d655b9fa0bd9825a06a9ba0d25a3ada11a04571d7ceef4d9e3f5fc5a1cb75",
+      "actual_create_sha": "93a10688cd5335283d635ced7c502154b3a10180",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "93a10688cd5335283d635ced7c502154b3a10180",
+        "sha256": "612d655b9fa0bd9825a06a9ba0d25a3ada11a04571d7ceef4d9e3f5fc5a1cb75"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-055.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-055.base64.txt",
+      "bytes": 262144,
+      "git_blob": "3201f9ca839032158d07d15e266a31c75eaebb9f",
+      "sha256": "da92bb57207183d90c224a0aaea2c46c4c9f901c75acb770933e3784e3311e4b",
+      "actual_create_sha": "3201f9ca839032158d07d15e266a31c75eaebb9f",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "3201f9ca839032158d07d15e266a31c75eaebb9f",
+        "sha256": "da92bb57207183d90c224a0aaea2c46c4c9f901c75acb770933e3784e3311e4b"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-056.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-056.base64.txt",
+      "bytes": 262144,
+      "git_blob": "ac1993652e130dcc18c0f33a82df875be68dfd9b",
+      "sha256": "54d4dbaec2a5b8a4b585316b603a521d184a8ff650bc498d3d6c9342defb0c87",
+      "actual_create_sha": "ac1993652e130dcc18c0f33a82df875be68dfd9b",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "ac1993652e130dcc18c0f33a82df875be68dfd9b",
+        "sha256": "54d4dbaec2a5b8a4b585316b603a521d184a8ff650bc498d3d6c9342defb0c87"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-057.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-057.base64.txt",
+      "bytes": 262144,
+      "git_blob": "cc3191b7f82d8a1a794799d7ce030bbe570d6ad4",
+      "sha256": "e403280af5521cf0563b90801b3bfd83bee2af9dce3ca6595aadca7d7b91b30f",
+      "actual_create_sha": "cc3191b7f82d8a1a794799d7ce030bbe570d6ad4",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 262144,
+        "git_blob": "cc3191b7f82d8a1a794799d7ce030bbe570d6ad4",
+        "sha256": "e403280af5521cf0563b90801b3bfd83bee2af9dce3ca6595aadca7d7b91b30f"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/part-058.base64.txt",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/part-058.base64.txt",
+      "bytes": 224452,
+      "git_blob": "1440368c9fd5de55965b5b57236b94bb246a740d",
+      "sha256": "5819657bd3890ae368002e9acc0e8576495212c7d79d846930548132cf9badcf",
+      "actual_create_sha": "1440368c9fd5de55965b5b57236b94bb246a740d",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 224452,
+        "git_blob": "1440368c9fd5de55965b5b57236b94bb246a740d",
+        "sha256": "5819657bd3890ae368002e9acc0e8576495212c7d79d846930548132cf9badcf"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bundle/manifest.json",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bundle/manifest.json",
+      "bytes": 33667,
+      "git_blob": "0a50b93849b227da680be15ee650363b5d3d2f20",
+      "sha256": "5ae6e83c2a5ec2ff57deec60fec4b94a22734726247c73bf2ff9301492a2d5b7",
+      "actual_create_sha": "0a50b93849b227da680be15ee650363b5d3d2f20",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 33667,
+        "git_blob": "0a50b93849b227da680be15ee650363b5d3d2f20",
+        "sha256": "5ae6e83c2a5ec2ff57deec60fec4b94a22734726247c73bf2ff9301492a2d5b7"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/restore_bundle.py",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/restore_bundle.py",
+      "bytes": 2474,
+      "git_blob": "ecd29588fd2d4bd9f6a089a2da46a6e9dcb8c524",
+      "sha256": "2675bf028995e1b0e2103ba7c4ff969aff7c021830b0ca0a67d9bcb9cfeccdaf",
+      "actual_create_sha": "ecd29588fd2d4bd9f6a089a2da46a6e9dcb8c524",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 2474,
+        "git_blob": "ecd29588fd2d4bd9f6a089a2da46a6e9dcb8c524",
+        "sha256": "2675bf028995e1b0e2103ba7c4ff969aff7c021830b0ca0a67d9bcb9cfeccdaf"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/verify_native.py",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/verify_native.py",
+      "bytes": 15557,
+      "git_blob": "2d4a7a145047f05c52bb0ea5246979a1b5b06e54",
+      "sha256": "b6eaaf6293e1658f2e6643e0db3b2ccc8aff2a489caccfc707a83ee2d48e02bd",
+      "actual_create_sha": "2d4a7a145047f05c52bb0ea5246979a1b5b06e54",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 15557,
+        "git_blob": "2d4a7a145047f05c52bb0ea5246979a1b5b06e54",
+        "sha256": "b6eaaf6293e1658f2e6643e0db3b2ccc8aff2a489caccfc707a83ee2d48e02bd"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/bind_test_logs_v2.py",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/bind_test_logs_v2.py",
+      "bytes": 11165,
+      "git_blob": "d7080e6e75279f02afc1d563e91b14770060a78e",
+      "sha256": "3a15e066f62125109c7d83189a00c4317b611fd288db449f96ab27c5dab84bc7",
+      "actual_create_sha": "d7080e6e75279f02afc1d563e91b14770060a78e",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 11165,
+        "git_blob": "d7080e6e75279f02afc1d563e91b14770060a78e",
+        "sha256": "3a15e066f62125109c7d83189a00c4317b611fd288db449f96ab27c5dab84bc7"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/borrowed/decode_compact.py",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/borrowed/decode_compact.py",
+      "bytes": 9864,
+      "git_blob": "bb0957782c73a2a653e101e392da5f0f27ed4459",
+      "sha256": "cade2f309520c16508893b798eb59258fe6a60d3367f64271e989caa33ed66a3",
+      "actual_create_sha": "bb0957782c73a2a653e101e392da5f0f27ed4459",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 9864,
+        "git_blob": "bb0957782c73a2a653e101e392da5f0f27ed4459",
+        "sha256": "cade2f309520c16508893b798eb59258fe6a60d3367f64271e989caa33ed66a3"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/verification-01.stdout.json",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/verification-01.stdout.json",
+      "bytes": 64403,
+      "git_blob": "306fadbb0b568a8826ede8edc91ddfb12f72cef7",
+      "sha256": "4244cb231167f78937735da17b39a57a9652c7ee20fa0c20c9da288ac7f8ee92",
+      "actual_create_sha": "306fadbb0b568a8826ede8edc91ddfb12f72cef7",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 64403,
+        "git_blob": "306fadbb0b568a8826ede8edc91ddfb12f72cef7",
+        "sha256": "4244cb231167f78937735da17b39a57a9652c7ee20fa0c20c9da288ac7f8ee92"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/REVIEW.zh-CN.md",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/REVIEW.zh-CN.md",
+      "bytes": 7380,
+      "git_blob": "810a3e33ac7d743a9b8a34a1ae961d82dd11f3f4",
+      "sha256": "b10911638200bcd28c0db1bfbfd707d6326a276e71b7b414898ea3a1ab519171",
+      "actual_create_sha": "810a3e33ac7d743a9b8a34a1ae961d82dd11f3f4",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 7380,
+        "git_blob": "810a3e33ac7d743a9b8a34a1ae961d82dd11f3f4",
+        "sha256": "b10911638200bcd28c0db1bfbfd707d6326a276e71b7b414898ea3a1ab519171"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/PORTABLE_REPLAY.json",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/PORTABLE_REPLAY.json",
+      "bytes": 742,
+      "git_blob": "aff50b153b96ef139064be32ad284e50dc13d0cd",
+      "sha256": "84b9fb97b8d14db851ee5edb4ad95027f0b78dc069b058df9850dff325d013d9",
+      "actual_create_sha": "aff50b153b96ef139064be32ad284e50dc13d0cd",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 742,
+        "git_blob": "aff50b153b96ef139064be32ad284e50dc13d0cd",
+        "sha256": "84b9fb97b8d14db851ee5edb4ad95027f0b78dc069b058df9850dff325d013d9"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/actual-test-runner-bindings.v2.json",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/actual-test-runner-bindings.v2.json",
+      "bytes": 56477,
+      "git_blob": "ce9111b966cd8f45d5f5bd0a6a01cc64984e555d",
+      "sha256": "adcdffd825417e91256052397e99fbeac6b8f639f4f205ba32a16bab6ba74486",
+      "actual_create_sha": "ce9111b966cd8f45d5f5bd0a6a01cc64984e555d",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 56477,
+        "git_blob": "ce9111b966cd8f45d5f5bd0a6a01cc64984e555d",
+        "sha256": "adcdffd825417e91256052397e99fbeac6b8f639f4f205ba32a16bab6ba74486"
+      }
+    },
+    {
+      "local_path": "/tmp/hepta-runtime-recovery-20261106/windows-setup-causes-native-new/analysis-output-index.json",
+      "repository_path": "ci-audit/windows-setup-causes-native-20261106/analysis-output-index.json",
+      "bytes": 4704,
+      "git_blob": "253f0292d6e92bb869a05a082d6e5828cf3ff76f",
+      "sha256": "64b01738c107143bd7793da6e6f1662f21f28ba060934c2f95044740b3dcc077",
+      "actual_create_sha": "253f0292d6e92bb869a05a082d6e5828cf3ff76f",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 4704,
+        "git_blob": "253f0292d6e92bb869a05a082d6e5828cf3ff76f",
+        "sha256": "64b01738c107143bd7793da6e6f1662f21f28ba060934c2f95044740b3dcc077"
+      }
+    }
+  ],
+  "bundle": {
+    "manifest_actual": "0a50b93849b227da680be15ee650363b5d3d2f20",
+    "members": 66,
+    "parts": 59,
+    "archive": {
+      "bytes": 11571602,
+      "git_blob": "d761fce7d8107d2a2171610a9f5812efad699c48",
+      "sha256": "7da38d584de05738d25065abec0908484e0280b13c07d4165f61b752c52b9aa0"
+    },
+    "tar": {
+      "bytes": 16957440,
+      "git_blob": "9f453ae649a55c58d80dcac51272db195020ccf5",
+      "sha256": "ee5c05e6e79429637c838ca1a2f27f7b7622f948822af3630893b1d8bdc1cd35"
+    },
+    "full_official_ZIP_members": 136,
+    "source_layout": "Archive retains both full official ZIPs and original job/API bytes. Expanded ZIP trees and large deterministic compact projections are regenerated and hash verified by verify_native.py. Both entire official ZIPs are kept byte-for-byte; no case/log/XML omitted."
+  },
+  "qualification": {
+    "source_head": "340fbc0629d27e3a2bda7c6971be25c60b3bf2bc",
+    "source_merge": "ff2b873c8b907e1e86b1a728c2c18552edfbd0ed",
+    "source_tree": "78b817fec87e593e0a0f6357d84f895b8574bde5",
+    "source_actual_postimages": [
+      {
+        "bytes": 13725,
+        "git_blob": "37aa38dde9e83ee5f3ce8f267f11afd76fee3400",
+        "sha256": "811769bbcf5136ed75bc666d1c32a6936a288c404be754c7e6d94bc8a3e338b5"
+      },
+      {
+        "bytes": 47638,
+        "git_blob": "505be9299f9580877449740fd235e988f8c93b7b",
+        "sha256": "05b8373471d8a46740eea6e7c7b9f91427d07744e235045b928e280bf27628a2"
+      }
+    ],
+    "API_cut_records": 6,
+    "API_run_count": 5,
+    "API_job_count": 42,
+    "API_original_parent": {
+      "bytes": 1393234,
+      "git_blob": "c10b5e771f406cc987b8589f3d8cc5ed07aa4c48",
+      "sha256": "595de046960fa076ec75d077c41da77778164222196448b8b31dc47afd81529f"
+    },
+    "jobs": [
+      {
+        "job": 127703396792,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+        "status": "completed",
+        "conclusion": "failure",
+        "started_at": "2026-11-06T04:07:34Z",
+        "completed_at": "2026-11-06T04:24:50Z",
+        "original_log": {
+          "bytes": 1550020,
+          "git_blob": "95189e3633879b3b6ab4d20866131d7d16f208a8",
+          "sha256": "013e041be36414a21e3169dd321350c68a94b1382e79fc6558d36be76f1df471"
+        },
+        "CR_preserved": 4671,
+        "tool_response": {
+          "bytes": 1600874,
+          "git_blob": "e6116691d83cc0f64c7ae56b9f0cb212f0852f8b",
+          "sha256": "aec35d08b3e40af7accda40172c141ff0ac78ec9eeb60e347a6ab59e159b1435"
+        },
+        "actual_checkout_marker": "ff2b873c8b907e1e86b1a728c2c18552edfbd0ed"
+      },
+      {
+        "job": 127703396875,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+        "status": "completed",
+        "conclusion": "failure",
+        "started_at": "2026-11-06T04:08:38Z",
+        "completed_at": "2026-11-06T04:38:56Z",
+        "original_log": {
+          "bytes": 521525,
+          "git_blob": "052358acb141c2cbea9b24558d1f879557060145",
+          "sha256": "95ea1936a6badca36bc529dc708f58b2906f3d36f0813639b36ceb338d929d8a"
+        },
+        "CR_preserved": 4331,
+        "tool_response": {
+          "bytes": 542903,
+          "git_blob": "3dedee114d9b323c45488acaf3a794050df0305c",
+          "sha256": "45e05315794d0e4b4b0a67a5d86d2d228474a78b58a27b5b904f61c90a9408b3"
+        },
+        "actual_checkout_marker": "ff2b873c8b907e1e86b1a728c2c18552edfbd0ed"
+      }
+    ],
+    "native_case_qualification": [
+      {
+        "name": "setup_error::tests::typed_setup_report_preserves_code_and_message_through_context",
+        "original_raw_occurrences_ok": 1,
+        "native_target": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+        "actual_tw_sequence": 83657,
+        "local": true,
+        "cached": false,
+        "actual_budget_ms": 300000,
+        "cfg": "target_os = windows module; cfg(test) cases",
+        "source_head": "340fbc0629d27e3a2bda7c6971be25c60b3bf2bc",
+        "source_merge": "ff2b873c8b907e1e86b1a728c2c18552edfbd0ed"
+      },
+      {
+        "name": "setup_error::tests::untyped_setup_report_preserves_context_chain_and_os_error",
+        "original_raw_occurrences_ok": 1,
+        "native_target": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+        "actual_tw_sequence": 83657,
+        "local": true,
+        "cached": false,
+        "actual_budget_ms": 300000,
+        "cfg": "target_os = windows module; cfg(test) cases",
+        "source_head": "340fbc0629d27e3a2bda7c6971be25c60b3bf2bc",
+        "source_merge": "ff2b873c8b907e1e86b1a728c2c18552edfbd0ed"
+      }
+    ],
+    "library_total": {
+      "passed": 141,
+      "failed": 13,
+      "ignored": 2,
+      "poison_errors_in_original": 6
+    },
+    "core_actual_attempts": 19,
+    "core_failed_attempts": 4,
+    "compact_scope": {
+      "record_counts": [
+        89912,
+        87267
+      ],
+      "tw_executions": 20,
+      "xml_generator_spawns": 20,
+      "all_tw_local_noncached": true,
+      "fresh_first_or_single_attempt_digest_matches": 17,
+      "retry_digest_reuse_records": 3,
+      "retry_association": "Original retention attempt path/order; XML exact duration/exit and full transcript; no new digest claim for repeated compact file path IDs.",
+      "primary": {
+        "bytes": 32678,
+        "git_blob": "62f3884f2c6c94f605a1748d4b1d5da431ea56d8",
+        "sha256": "d046073352a34c59c0a3958495b49bd15f7201b328a0b7e970cb85a00c4c4276"
+      }
+    },
+    "limits": [
+      "Only two new case passes are qualified; whole Windows library and Core targets fail.",
+      "Six lock-poison test failures are retained; not described as six independent product mechanisms.",
+      "EOF appears in one attempt, twice as log and returned error. No writer/PID/timing observation proves its unique cause.",
+      "SetSecurityInfo error 5 is a distinct observed failure class and is not explained by EOF.",
+      "Old 340/ff2 native qualification does not transfer to later formatting commit 18bb or another source.",
+      "Other targets in the complete artifact are preserved without extending this narrow qualification; cached PTY receipt is not native acceptance.",
+      "No native product execution, dispatch, rerun, cancellation, timeout or test assertion changes were performed by this verifier."
+    ],
+    "archives": [
+      {
+        "artifact": 13477083714,
+        "name": "bazel-execution-logs-test-x86_64-pc-windows-msvc-shard-4",
+        "zip": {
+          "bytes": 5531760,
+          "git_blob": "dd8e66c1109c26760681e59a559c6ce0127837a4",
+          "sha256": "70569eff66484a837e89fbe012553bbda2244c11a432d33cdc41308f4b624707"
+        },
+        "official_API_digest_equal": true,
+        "CRC_passed": true,
+        "member_count": 43
+      },
+      {
+        "artifact": 13477309997,
+        "name": "bazel-execution-logs-test-x86_64-pc-windows-msvc-shard-2",
+        "zip": {
+          "bytes": 5084766,
+          "git_blob": "2f037d4d4be01937d1c0c9211f39db08813c74c0",
+          "sha256": "aa4588b3a4a8417f52b13846bb320ddba86aba69f5b060577ca6d017ede7d9f4"
+        },
+        "official_API_digest_equal": true,
+        "CRC_passed": true,
+        "member_count": 93
+      }
+    ]
+  },
+  "portable_replay": {
+    "schema": "windows-native-portable-replay-v2",
+    "restore_exit": 0,
+    "restore_stderr_bytes": 0,
+    "restore_stdout": {
+      "bytes": 247,
+      "git_blob": "24158da7caa858a4f87bf52b5a04fc9fe91f5dc9",
+      "sha256": "5d58c31532c67b95f12c96516588ac102bf7251be3b5130794b5144f49cb1009"
+    },
+    "native_evidence_verifier_exit": 0,
+    "native_evidence_verifier_stderr_bytes": 0,
+    "native_evidence_verifier_stdout": {
+      "bytes": 64403,
+      "git_blob": "306fadbb0b568a8826ede8edc91ddfb12f72cef7",
+      "sha256": "4244cb231167f78937735da17b39a57a9652c7ee20fa0c20c9da288ac7f8ee92"
+    },
+    "full_output_equal_original": true,
+    "official_zip_members_all_restored": 136,
+    "bundle_members": 66,
+    "test_execution": false,
+    "location_independent": true
+  },
+  "source_gate_claims": {
+    "two_new_case_native_local_noncached_passes": true,
+    "whole_library_pass": false,
+    "whole_Core_pass": false,
+    "all_blockers_closed": false,
+    "new_source_fmt_pass_inferred": false,
+    "native_execution_or_CI_mutation_by_verifiers": false
+  },
+  "custody": "Original official ZIPs, full decoded logs with CR, full tool-return envelopes, exact six-record API extraction, fixed primary/source bytes, corrected-v2 proof and superseded failed assumptions all retained. Inner members have computed Git identities anchored by this actual immutable archive; they are not falsely claimed as individually materialized blobs.",
+  "next": "Root independently replays this fixed packet and records any root verification separately. Actual ACL error5 and state EOF remain distinct unresolved issues."
+}

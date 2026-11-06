@@ -1,0 +1,204 @@
+{
+  "accepted_collector": {
+    "bytes": 34905,
+    "git_blob": "00dc37697adde6154a347963ab19e8a6edebac07",
+    "sha256": "7d8962de05fae508b259c1e16efa1be78a760c4a6a0da8ec239e796f3d1cdd1c"
+  },
+  "base": {
+    "commit": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+    "ref": "fix/r3-original-product-contracts-20261104",
+    "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359"
+  },
+  "blocking_findings": [],
+  "computed_candidate_tree": "a6831e2607e718f1343b788e5b8062a171d50a71",
+  "execution_contract": {
+    "case_filter_added": false,
+    "full_target": "//codex-rs/app-server:app-server-unit-tests",
+    "job_minutes": 120,
+    "observation_flags": [
+      "--nocache_test_results",
+      "--build_event_json_file=<private>",
+      "--nobuild_event_json_file_path_conversion"
+    ],
+    "runner": "ubuntu-24.04",
+    "shards": 8,
+    "source_identity": "Actual original PR merge checkout; parents exactly [67cc,event.head]; full tree with new workflow removed equals3982; source before/after and working bytes checked.",
+    "target": "x86_64-unknown-linux-gnu",
+    "threads_retry_test_timeouts_changed": false,
+    "wrapper_prepare_cache_and_original_six_steps_unchanged": true
+  },
+  "failure_and_upload_contract": {
+    "both_actual_artifact_upload_outcomes_required": true,
+    "collector": "Exact00dc; independent review actualecab7af9dc20c8989b9c8c5a4a099f2c91cbf3d0. Allattempt custody, credential-sanitized/opaque-omitted derived BEP, bytestream failclosed, zstd fulldecode privacy and missing/corrupt decoder blocking are reused without source changes.",
+    "original_Bazel_and_tee_exits_separately_saved": true,
+    "original_continue_on_error": "Only retains evidence; final gate uses unmasked .outcome and separately requires both exit receipts exactly zero.",
+    "preparation_clean_and_source_failures": "Final JOB_STATUS plus source before/after outcomes prevent subsequent success hiding a previous failure.",
+    "raw_BEP_outside_two_artifact_roots": true,
+    "source_and_zstd_metadata_written_before_privacy_gate": true
+  },
+  "historical_issue_preserved": "Component v1 used literal main; v2 uses actual base ref. Frozen v1/v2 receipts not rewritten.",
+  "isolated_author_replay": {
+    "Bazel_or_product_execution": false,
+    "bash_syntax_blocks": 7,
+    "controlled_exit_fixtures": [
+      {
+        "final": 0,
+        "original": 0,
+        "tee": 0
+      },
+      {
+        "final": 1,
+        "original": 3,
+        "tee": 0
+      },
+      {
+        "final": 1,
+        "original": 0,
+        "tee": 1
+      }
+    ],
+    "exit": 0,
+    "python_compile_blocks": 3,
+    "stderr_bytes": 0,
+    "stdout": {
+      "bytes": 3472,
+      "git_blob": "2b3e03a3d0ccfe449e06338b2405fc9c6bdabc1a",
+      "sha256": "98e6e19165d4ce56d074291964c3212dec7eba7246a3dcaaa2a23bf6933b8806"
+    },
+    "stdout_frozen_full_bytes_equal": true
+  },
+  "limits": {
+    "B23": "OPEN",
+    "actual_runtime_source_guard": "NOT_RUN",
+    "all_main_required_jobs_passed": false,
+    "local_vs_remote_TestRunner": "No assertion from runner label; actual compact logs required.",
+    "new_native_AppServer_result": "PENDING",
+    "old_f03_summary_status_XML": "Summary retained; old raw status/XML not recovered or re-qualified here.",
+    "ref_PR_native_mutations": false
+  },
+  "portable_verifier_fix": "Final author verifier now resolves original receipt source suffix under its own ROOT/source. Original receipt unchanged. Isolated replay proves restored-path operation.",
+  "result": "PASS_STATIC_FINAL_WORKFLOW_REVIEW",
+  "review_scope": "Final B23 diagnostic workflow composition and evidence gates. Does not close B23 or establish native results.",
+  "schema": "b23-final-original-linux-appserver-workflow-independent-review",
+  "source_checks": {
+    "accepted_collector_fresh_GET_from_B21_review_reused_equal": true,
+    "actual_base_ref_original_API_bound": true,
+    "candidate_merkle_nodes": 1571,
+    "collector_embedded_including_final_LF_equal": true,
+    "final_manifest_members_verified": 45,
+    "fresh_full_workflow_GET_equal": true,
+    "main_merkle_nodes": 1571,
+    "manifest_member_bytes": 774897,
+    "only_added_leaf": ".github/workflows/hepta-b23-linux-app-server-original-gate.yml",
+    "original_main_leaves_unchanged": 10582,
+    "single_added_leaf_projection_restores_original_tree": true,
+    "source_guard_unchanged_from_reviewed_v2": true,
+    "source_original_bytes_verified": [
+      {
+        "bytes": 20751,
+        "git_blob": "9eed8ed8fa46c88d9d89d1499f55cb8c303137af",
+        "path": ".github/workflows/bazel.yml",
+        "sha256": "a7bf703f31b14fd0925e3db892e4444d2ebd8db0033b69ec47ff44eae65104dd"
+      },
+      {
+        "bytes": 34630,
+        "git_blob": "6f588ec3057fddfea35170e28e74036162ce6a23",
+        "path": "defs.bzl",
+        "sha256": "f5638a9189632c8d8524a438bbfc6b365bddf7f23dfd2df06a6de3a2ff3f2cfa"
+      },
+      {
+        "bytes": 1448,
+        "git_blob": "a3c8ba463f34b031cc517501f41d67b60f2b9feb",
+        "path": "codex-rs/app-server/BUILD.bazel",
+        "sha256": "9c17d311022594bf97dd08667713a6d4c85ddd245c59b1d9cca57f5787508acd"
+      },
+      {
+        "bytes": 78648,
+        "git_blob": "484970198d5a8c71f0d4bf8e92fa0e8a2780f45e",
+        "path": "codex-rs/app-server/src/lib.rs",
+        "sha256": "0f6371ae5795963a451be0a9e9af7c55898644e817533bbe0597c275a992bdaf"
+      },
+      {
+        "bytes": 1691,
+        "git_blob": "a45eca7491eb9d588a703668c10ab4aadf20b101",
+        "path": "codex-rs/app-server/src/shutdown_signals.rs",
+        "sha256": "aa030d124ee50cf1dabaa6a885846b9eccb4f36dcb2900c4b2df88c103b7ff5a"
+      },
+      {
+        "bytes": 4809,
+        "git_blob": "cf2f370bf35fc7cbb8d3b339f92f7da25b87cb51",
+        "path": "codex-rs/app-server/src/shutdown_signals_tests.rs",
+        "sha256": "c664383fe6d0943e9df9be1ca8acc21b3c9b16e2926e5cb42bf13bb7625d4537"
+      },
+      {
+        "bytes": 14926,
+        "git_blob": "3d5877b283b887091af507f3672003f84c500687",
+        "path": ".bazelrc",
+        "sha256": "53a5fd4e65e4e9937b826174520fe1eb642adb79cfe7a6335c871d5fa9db57fa"
+      },
+      {
+        "bytes": 14442,
+        "git_blob": "21a5fdf0e7afcde4b6141229e95fcff8f6a7e763",
+        "path": ".github/scripts/run_bazel_with_buildbuddy.py",
+        "sha256": "656fa9f508bb339da949a359a457f02fa3979449ae1761b0084494cf38e83a0e"
+      },
+      {
+        "bytes": 4141,
+        "git_blob": "8abd2dbd5f09585734f8213011a9ed540a2ee88e",
+        "path": ".github/actions/setup-ci/action.yml",
+        "sha256": "6d29a131641a739983b3aea22c0febbf20d1d0ee21b356570f3763ddafced9ba"
+      },
+      {
+        "bytes": 596,
+        "git_blob": "5a7bdddcf8f560d20fcd6639761a500b7ef12cf3",
+        "path": ".github/actions/check-clean-worktree/action.yml",
+        "sha256": "58844cf1afb11d5cdbdfe577e4227ea3361ce495960c2d0cce94ca0da3da82a5"
+      },
+      {
+        "bytes": 6,
+        "git_blob": "b13d146a7b02b96e4c30340e69388d539c9721be",
+        "path": ".bazelversion",
+        "sha256": "14ebdd5f5d8dfccb0fc574ea9aabecc07d7cdd99d53e4fc01e58f9c3d23d18ef"
+      },
+      {
+        "bytes": 3255,
+        "git_blob": "f9508a1659e5f2c54a6ae5b263bb9328095438d7",
+        "path": ".github/actions/prepare-bazel-ci/action.yml",
+        "sha256": "a5286f6896c99a71ee247afbad1dc0aa00d967352f33bb24d8cb97e4df5d978b"
+      },
+      {
+        "bytes": 17448,
+        "git_blob": "42b59b6354b5933c8155b992519682c06d024ca1",
+        "path": ".github/scripts/run-bazel-ci.sh",
+        "sha256": "0136e087ddfac7c01bdacb03357d0353d328dea3b8cd86caf94e64bf10706482"
+      },
+      {
+        "bytes": 734,
+        "git_blob": "18d30754feae43b4cfa358c96ab4161067935c24",
+        "path": "codex-rs/app-server/src/drain_handle_tests.rs",
+        "sha256": "f5e65db6b1efe74e696cf0eb01d4b76fd7376ac8b1f70dd14f1afe4997c159b0"
+      }
+    ]
+  },
+  "v2_to_final": {
+    "all_other_YAML_values_unchanged": true,
+    "changed_step_indices": [
+      1,
+      7
+    ],
+    "changes": [
+      "exact accepted 34905B collector replaces placeholder",
+      "zstd executable path/version precheck after source-before and before original Bazel invocation"
+    ],
+    "diff_hunks": 2,
+    "display_diff_filename_headers_normalized_for_git_apply": true,
+    "forward_reverse_patch_full_bytes_equal": true,
+    "hunk_bodies_unchanged": true
+  },
+  "workflow": {
+    "bytes": 60049,
+    "git_blob": "d4b87c924a1dcc795e05aec1dd4e31854dcff687",
+    "path": ".github/workflows/hepta-b23-linux-app-server-original-gate.yml",
+    "sha256": "254826e592d89f0f2432ef769e8fce11c93ca7c62ad480dc282afe9123e98464"
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "schema": "b11-host-neither-observation-candidate-v3",
+  "created_utc": "2026-11-06T00:06:38.744124+00:00",
+  "role": "TEST_ONLY_LAUNCHER_CORRECTION_PREPARED_FOR_REVIEW",
+  "source_head": "2980fa274c599bd07437a2f5915b86d858f89bcc",
+  "source_checkout": "53766cb836b198e2f928b949f148d7a2a10c0d21",
+  "source_tree": "9cb7302777ce018dd022086041c2225d1dd5c8dd",
+  "expected_candidate_tree": "9a804c7b6e0dd554cdb435f41e06c5c689fffaaf",
+  "changes": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token_neither_privilege_observation.rs",
+      "before": {
+        "bytes": 23010,
+        "sha256": "441a000d02c7aab203a270bde951dcb6e98e02845e76314782892b87e6a6a835",
+        "git_blob": "b40b49ce772c402c51ddb16bb98ff73dc78cdb41"
+      },
+      "after": {
+        "bytes": 26205,
+        "sha256": "c48d7a3917ca0bd8dda236d3773c0351a39272bbc277b8186bde7467035580ff",
+        "git_blob": "8c16416c185f17871c25139bc16c6fd112b5fd41"
+      }
+    }
+  ],
+  "first_failure_preserved": {
+    "relative_path": "evidence/native11-full-job.original.log",
+    "bytes": 509112,
+    "sha256": "29c7b0343a5f8865bd2bf8088e3108e2c3db3b3f89f93c0aaa72b89834d685bc",
+    "git_blob": "b5177aa404bcddc5d4ee0838a5f20582b344dfaf"
+  },
+  "evidence_and_review_files": {
+    "source-map.json": {
+      "bytes": 9360,
+      "sha256": "d6dfc6912f1c3380715251c7c9bb0e94cb74e0be697c5e4b5b80f7bc5f4c0f22",
+      "git_blob": "aa8e03a9a7291389ab0dff56f4d56f88217fd93b"
+    },
+    "v2-to-v3.patch": {
+      "bytes": 7336,
+      "sha256": "d54e553a06aa25ef49ed3d3443e3ac715e5f2c25bf0cbdc324ee9c3a2d10e436",
+      "git_blob": "d002e925ea4218b92189443917f7cdc861a3bfdc"
+    },
+    "full.patch": {
+      "bytes": 7336,
+      "sha256": "d54e553a06aa25ef49ed3d3443e3ac715e5f2c25bf0cbdc324ee9c3a2d10e436",
+      "git_blob": "d002e925ea4218b92189443917f7cdc861a3bfdc"
+    },
+    "static-verification.json": {
+      "bytes": 7350,
+      "sha256": "19eba18dddab7bc0b4ca2d80861abedff7958c1491569654ebb56371920c0280",
+      "git_blob": "e8a2fbc87aad5f9a642e97f551ebacc15a21860c"
+    },
+    "verify_v3_candidate.py": {
+      "bytes": 11094,
+      "sha256": "67795b5e37039d14ec33949b0ac1726ef497a80ff570ce958e08b17bc31cf7cb",
+      "git_blob": "a5970ce98a783f8947625f2d6a902ee5d24cf6ec"
+    },
+    "REVIEW.zh-CN.md": {
+      "bytes": 8326,
+      "sha256": "c61444ff904e15073a06acb556e028bb45f0d5db790e5caf62d9a693bc711315",
+      "git_blob": "ce758dbb8c96ffa5d6bee2ba0980c7f924643170"
+    },
+    "primary/direct-launch-api-contracts.json": {
+      "bytes": 2120,
+      "sha256": "61f083908e0d2121e130cb362bb079a73f4f4dcf8f5245277d7f10124fb640d5",
+      "git_blob": "11fcab10adacb803f68c996156570fe572389a34"
+    }
+  },
+  "independent_review_status": "PENDING",
+  "compilation_performed": false,
+  "formatting_tool_performed": false,
+  "native_execution_performed": false,
+  "ref_mutation_performed": false,
+  "production_source_modified": false,
+  "existing_test_body_and_roster_preserved": true,
+  "B11": "OPEN",
+  "scope_limits": [
+    "The candidate repairs a test-only ordinary-token observation launcher, not production token or desktop policy.",
+    "Initial native11 whole result remains 146 passed / 8 failed / 2 ignored and its incomplete cmd observations remain incomplete.",
+    "No Rust compilation, native execution or canonical fmt success is claimed.",
+    "Actual token mismatch, startup/attribute failure, missing matrix, timeout or cleanup failure remains failure.",
+    "Existing strict assertions, qualification conditions, budgets and retries remain unchanged.",
+    "DISABLE_MAX_PRIVILEGE observations cannot isolate SeRestorePrivilege as a single causal factor."
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "schema": "hepta-native12-initial-api-snapshot-v1",
+  "run_id": 42135663472,
+  "job_id": 127623021642,
+  "attempt": 1,
+  "head": "87b8603f21e52063ed54ce89cba26756a3efaab7",
+  "actual_checkout": "09960fe697c9c181e4a7d624e29b49360877b687",
+  "actual_tree": "9a804c7b6e0dd554cdb435f41e06c5c689fffaaf",
+  "actual_parents": [
+    "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+    "87b8603f21e52063ed54ce89cba26756a3efaab7"
+  ],
+  "job_status_at_capture": "in_progress",
+  "whole_step_started_utc": "2026-11-06T00:17:42Z",
+  "last_capture_utc": "2026-11-06 00:18:26 UTC",
+  "observed_result": null,
+  "B11": "OPEN",
+  "scope": "Original single initial read-only API cut. Capture clocks follow response receipt; they are not request-start times or native-load evidence. No dispatch/rerun/cancel/ref/timeout/native mutation. Terminal results are not claimed.",
+  "files": [
+    {
+      "path": "pr.original.json",
+      "bytes": 102933,
+      "sha256": "1967aae12854dd6aad9f9305a40c6919ca22cebe998285a1d5944875641f13a9",
+      "git_blob": "a70fb49255aa5f1e0a98d4b14b93f716e34f0ffe"
+    },
+    {
+      "path": "runs.original.json",
+      "bytes": 194779,
+      "sha256": "9e25fd61df4083e955d66df59f7761f6eb29182b053dfa7b143494e850a0d700",
+      "git_blob": "a842d907097e007a35582a890738fcf5ad6d4832"
+    },
+    {
+      "path": "merge.original.json",
+      "bytes": 6729,
+      "sha256": "e46c6d77d6a259ea83a1f42af14f78453f671f2f8e054dedf402a96387c97867",
+      "git_blob": "236d0a8c59bc0a5323e9e0a1c6dc309e1601701f"
+    },
+    {
+      "path": "jobs.original.json",
+      "bytes": 6661,
+      "sha256": "84350684b744f107f9fd155b1bde6cd508ca7be646e14fe2197be2e8500387c7",
+      "git_blob": "4eadec56ce8f6cbf1dfa9a00db14e0c57b05a933"
+    },
+    {
+      "path": "capture-times.json",
+      "bytes": 436,
+      "sha256": "fcc88536c9971f775de6415b82b4d679370ed658546d14c2efd1bb7e338616d9",
+      "git_blob": "ed3e2f73f4881300fbbc97563abc7740f6cd4b82"
+    }
+  ]
+}

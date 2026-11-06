@@ -1,0 +1,80 @@
+{
+  "observed_utc": "2026-11-06T00:04:14.113Z",
+  "commit": "46fd74d98c1cef42e1439920f9ca83361481b3d8",
+  "tree": "41d583262bc6ccd794ffb9e8e9ac9d04665ca85d",
+  "parent": "089c13ab39cedb9fea0f9e9bd03d95317936cd65",
+  "new_paths": 205,
+  "registered_evidence_objects": 204,
+  "no_historical_or_source_overwrites": true,
+  "before": {
+    "ref": "refs/heads/audit/r3-evidence-20261105",
+    "node_id": "REF_kwDOTrgxoNoAJXJlZnMvaGVhZHMvYXVkaXQvcjMtZXZpZGVuY2UtMjAyNjExMDU",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/audit/r3-evidence-20261105",
+    "object": {
+      "sha": "089c13ab39cedb9fea0f9e9bd03d95317936cd65",
+      "type": "commit",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/089c13ab39cedb9fea0f9e9bd03d95317936cd65"
+    }
+  },
+  "created": {
+    "sha": "46fd74d98c1cef42e1439920f9ca83361481b3d8"
+  },
+  "actualCommit": {
+    "sha": "46fd74d98c1cef42e1439920f9ca83361481b3d8",
+    "node_id": "C_kwDOTrgxoNoAKDQ2ZmQ3NGQ5OGMxY2VmNDJlMTQzOTkyMGY5Y2E4MzM2MTQ4MWIzZDg",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/46fd74d98c1cef42e1439920f9ca83361481b3d8",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/46fd74d98c1cef42e1439920f9ca83361481b3d8",
+    "author": {
+      "name": "Franksudoman",
+      "email": "273670192+Franksudoman@users.noreply.github.com",
+      "date": "2026-11-06T00:04:11Z"
+    },
+    "committer": {
+      "name": "Franksudoman",
+      "email": "273670192+Franksudoman@users.noreply.github.com",
+      "date": "2026-11-06T00:04:11Z"
+    },
+    "tree": {
+      "sha": "41d583262bc6ccd794ffb9e8e9ac9d04665ca85d",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/41d583262bc6ccd794ffb9e8e9ac9d04665ca85d"
+    },
+    "message": "audit: append original CI cuts, disabled Linux preparation and B11 source review",
+    "parents": [
+      {
+        "sha": "089c13ab39cedb9fea0f9e9bd03d95317936cd65",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/089c13ab39cedb9fea0f9e9bd03d95317936cd65",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/089c13ab39cedb9fea0f9e9bd03d95317936cd65"
+      }
+    ],
+    "verification": {
+      "verified": false,
+      "reason": "unsigned",
+      "signature": null,
+      "payload": null,
+      "verified_at": null
+    }
+  },
+  "update": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "success": true
+    },
+    "isError": false
+  },
+  "after": {
+    "ref": "refs/heads/audit/r3-evidence-20261105",
+    "node_id": "REF_kwDOTrgxoNoAJXJlZnMvaGVhZHMvYXVkaXQvcjMtZXZpZGVuY2UtMjAyNjExMDU",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/audit/r3-evidence-20261105",
+    "object": {
+      "sha": "46fd74d98c1cef42e1439920f9ca83361481b3d8",
+      "type": "commit",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/46fd74d98c1cef42e1439920f9ca83361481b3d8"
+    }
+  },
+  "tree_creation": "Initial160-entry stage returned422 and expected-tree GET404; six40-entry-or-smaller immutable stages then matched the identical final root."
+}

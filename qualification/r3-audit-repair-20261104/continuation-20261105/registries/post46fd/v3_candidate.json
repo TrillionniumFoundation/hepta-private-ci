@@ -1,0 +1,513 @@
+{
+  "schema": "b11-host-neither-v3-candidate-actual-registry",
+  "evidence_only": true,
+  "completed_utc": "2026-11-06T00:20:17.121094+00:00",
+  "files": [
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/candidate/codex-rs/windows-sandbox-rs/src/token_neither_privilege_observation.rs",
+      "bytes": 26205,
+      "sha256": "c48d7a3917ca0bd8dda236d3773c0351a39272bbc277b8186bde7467035580ff",
+      "git_blob": "8c16416c185f17871c25139bc16c6fd112b5fd41",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v3/candidate/codex-rs/windows-sandbox-rs/src/token_neither_privilege_observation.rs",
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v3/candidate/codex-rs/windows-sandbox-rs/src/token_neither_privilege_observation.rs",
+      "actual_create_and_full_GET_byte_equal": true,
+      "actual_materialization_method": "reused actual create_blob(base64), with fresh complete blob GET for this package",
+      "actual_create_response": {
+        "sha": "8c16416c185f17871c25139bc16c6fd112b5fd41"
+      },
+      "actual_create_receipt_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/candidate-postimage.actual.json",
+      "full_GET_original_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/delivery/full-GET-originals/8c16416c185f17871c25139bc16c6fd112b5fd41.json",
+      "full_GET_original_payload_identity": {
+        "bytes": 27067,
+        "sha256": "be4cc1d9dde5a83e9a2681cc16646a6a87c3e24172d3bd98610a3637d11ab123",
+        "git_blob": "f2573ba9d6165085be80e9482a7999ecd703aa8a"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/source-map.json",
+      "bytes": 9360,
+      "sha256": "d6dfc6912f1c3380715251c7c9bb0e94cb74e0be697c5e4b5b80f7bc5f4c0f22",
+      "git_blob": "aa8e03a9a7291389ab0dff56f4d56f88217fd93b",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v3/source-map.json",
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v3/source-map.json",
+      "actual_create_and_full_GET_byte_equal": true,
+      "actual_materialization_method": "create_tree(content) without base tree or ref mutation",
+      "actual_create_tree_response": {
+        "sha": "b77ebd5f3a7a1402a8b89291ae1e4d09d29e8789"
+      },
+      "full_GET_original_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/delivery/full-GET-originals/aa8e03a9a7291389ab0dff56f4d56f88217fd93b.json",
+      "full_GET_original_payload_identity": {
+        "bytes": 9934,
+        "sha256": "6ee2686bc87b9faab50b15debee184a4caa06d9b64d39ef4e25dbe9bdb74538b",
+        "git_blob": "52fb329fdb898765c4b9d582f31705ed172a0ebd"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/full.patch",
+      "bytes": 7336,
+      "sha256": "d54e553a06aa25ef49ed3d3443e3ac715e5f2c25bf0cbdc324ee9c3a2d10e436",
+      "git_blob": "d002e925ea4218b92189443917f7cdc861a3bfdc",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v3/full.patch",
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v3/full.patch",
+      "actual_create_and_full_GET_byte_equal": true,
+      "actual_materialization_method": "create_tree(content) without base tree or ref mutation",
+      "actual_create_tree_response": {
+        "sha": "b77ebd5f3a7a1402a8b89291ae1e4d09d29e8789"
+      },
+      "full_GET_original_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/delivery/full-GET-originals/d002e925ea4218b92189443917f7cdc861a3bfdc.json",
+      "full_GET_original_payload_identity": {
+        "bytes": 7524,
+        "sha256": "16b76b707b71ce1a5d1775a7e5667c6d909dd8dae8cc3ef973766e234a97a7b1",
+        "git_blob": "91387e6372abde528e302c6b65dd5741e4425ad5"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/verify_v3_candidate.py",
+      "bytes": 11094,
+      "sha256": "67795b5e37039d14ec33949b0ac1726ef497a80ff570ce958e08b17bc31cf7cb",
+      "git_blob": "a5970ce98a783f8947625f2d6a902ee5d24cf6ec",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v3/verify_v3_candidate.py",
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v3/verify_v3_candidate.py",
+      "actual_create_and_full_GET_byte_equal": true,
+      "actual_materialization_method": "create_tree(content) without base tree or ref mutation",
+      "actual_create_tree_response": {
+        "sha": "50dd81d7bbc5db5dadb9ef5b8ee5a9253e9b82f1"
+      },
+      "full_GET_original_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/delivery/full-GET-originals/a5970ce98a783f8947625f2d6a902ee5d24cf6ec.json",
+      "full_GET_original_payload_identity": {
+        "bytes": 11746,
+        "sha256": "4ebbc4d4935487b3880b6eb50e836b29ca961222a79d5aa0a5a5b6da0f15ce44",
+        "git_blob": "8cab63ca41f903f73d5e35b537d032f4ad41c1b6"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/static-verification.json",
+      "bytes": 7350,
+      "sha256": "19eba18dddab7bc0b4ca2d80861abedff7958c1491569654ebb56371920c0280",
+      "git_blob": "e8a2fbc87aad5f9a642e97f551ebacc15a21860c",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v3/static-verification.json",
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v3/static-verification.json",
+      "actual_create_and_full_GET_byte_equal": true,
+      "actual_materialization_method": "create_tree(content) without base tree or ref mutation",
+      "actual_create_tree_response": {
+        "sha": "50dd81d7bbc5db5dadb9ef5b8ee5a9253e9b82f1"
+      },
+      "full_GET_original_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/delivery/full-GET-originals/e8a2fbc87aad5f9a642e97f551ebacc15a21860c.json",
+      "full_GET_original_payload_identity": {
+        "bytes": 8019,
+        "sha256": "8ba395e707ee5ae4444cea98f46e6dfeacc3792dce2178d9f1e87ddb2ed62734",
+        "git_blob": "44b601e5ace4c63ba615e5db83cd1af3c06c8172"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/REVIEW.zh-CN.md",
+      "bytes": 8326,
+      "sha256": "c61444ff904e15073a06acb556e028bb45f0d5db790e5caf62d9a693bc711315",
+      "git_blob": "ce758dbb8c96ffa5d6bee2ba0980c7f924643170",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v3/REVIEW.zh-CN.md",
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v3/REVIEW.zh-CN.md",
+      "actual_create_and_full_GET_byte_equal": true,
+      "actual_materialization_method": "create_tree(content) without base tree or ref mutation",
+      "actual_create_tree_response": {
+        "sha": "000619edf6ca05dfc53dcc4fa807ad8ef2c89681"
+      },
+      "full_GET_original_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/delivery/full-GET-originals/ce758dbb8c96ffa5d6bee2ba0980c7f924643170.json",
+      "full_GET_original_payload_identity": {
+        "bytes": 8390,
+        "sha256": "e94b3be9d6c3cf365d604cca8f041da55279391206870ba9cb8e61111ac1fd4a",
+        "git_blob": "d3c9038c1a4a8253096e726a3ce3fb1a2a0c419c"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/manifest.json",
+      "bytes": 3647,
+      "sha256": "3ac2dd181ee929b76bd4c585e82f37b4884aaf5bcb4f20eef01bdc8ad03e4071",
+      "git_blob": "6d4024512b53d79437d750f87d239dbec24fb885",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v3/manifest.json",
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v3/manifest.json",
+      "actual_create_and_full_GET_byte_equal": true,
+      "actual_materialization_method": "create_tree(content) without base tree or ref mutation",
+      "actual_create_tree_response": {
+        "sha": "000619edf6ca05dfc53dcc4fa807ad8ef2c89681"
+      },
+      "full_GET_original_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/delivery/full-GET-originals/6d4024512b53d79437d750f87d239dbec24fb885.json",
+      "full_GET_original_payload_identity": {
+        "bytes": 3938,
+        "sha256": "a00afa56a9fc3c2f345edab4e09fcf25cd3cdb63278d925058f3845007452a5b",
+        "git_blob": "32c2d647cc8a2cf8e5f6010a0b2693f996ae7352"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/candidate-postimage.actual.json",
+      "bytes": 876,
+      "sha256": "de452810773c50395f2a6b0f6d372786b872aa50f943a8554917b0b340b31cde",
+      "git_blob": "97400f81e23c7774961165d067bac9324f3cc888",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v3/candidate-postimage.actual.json",
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v3/candidate-postimage.actual.json",
+      "actual_create_and_full_GET_byte_equal": true,
+      "actual_materialization_method": "create_tree(content) without base tree or ref mutation",
+      "actual_create_tree_response": {
+        "sha": "291c307787f2407e4270087a24d23e8888494ebd"
+      },
+      "full_GET_original_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/delivery/full-GET-originals/97400f81e23c7774961165d067bac9324f3cc888.json",
+      "full_GET_original_payload_identity": {
+        "bytes": 951,
+        "sha256": "e48114a85ac3939ef5eed367c804f541bbf6b53507867c2d081d824990df4541",
+        "git_blob": "8fbd4e871852dda77d7c91d5ed735ea60832f639"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/primary/direct-launch-api-contracts.json",
+      "bytes": 2120,
+      "sha256": "61f083908e0d2121e130cb362bb079a73f4f4dcf8f5245277d7f10124fb640d5",
+      "git_blob": "11fcab10adacb803f68c996156570fe572389a34",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v3/primary/direct-launch-api-contracts.json",
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v3/primary/direct-launch-api-contracts.json",
+      "actual_create_and_full_GET_byte_equal": true,
+      "actual_materialization_method": "create_tree(content) without base tree or ref mutation",
+      "actual_create_tree_response": {
+        "sha": "291c307787f2407e4270087a24d23e8888494ebd"
+      },
+      "full_GET_original_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/delivery/full-GET-originals/11fcab10adacb803f68c996156570fe572389a34.json",
+      "full_GET_original_payload_identity": {
+        "bytes": 2240,
+        "sha256": "09e21b9582fbd16930508e6bab87fe8a20fb47938a693ae313576004ddb6a3aa",
+        "git_blob": "b3f403849ecc5595a6a19a6588389ac328a69e44"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/independent-review/REVIEW.zh-CN.md",
+      "bytes": 5539,
+      "sha256": "d5c255c264d40fe40b0f51cdffd481dab771431f17d358ca470c133865d215e7",
+      "git_blob": "7d707c4315cb29c7d765e5bcf4027d12e52a2f07",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v3/independent-review/REVIEW.zh-CN.md",
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v3/independent-review/REVIEW.zh-CN.md",
+      "actual_create_and_full_GET_byte_equal": true,
+      "actual_materialization_method": "create_tree(content) without base tree or ref mutation",
+      "actual_create_tree_response": {
+        "sha": "5756bd2e5d97ab475d99b506d33e73a73877a4a6"
+      },
+      "full_GET_original_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/delivery/full-GET-originals/7d707c4315cb29c7d765e5bcf4027d12e52a2f07.json",
+      "full_GET_original_payload_identity": {
+        "bytes": 5588,
+        "sha256": "273693c0a272d4dbeb7dd64d52ec820341c8c75aec45e0e8ce5db3586403b769",
+        "git_blob": "2ca933cac8f20372524a1e1e161cce63c80bdf6e"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/independent-review/authority-2980fa274c599bd07437a2f5915b86d858f89bcc.original.json",
+      "bytes": 1650,
+      "sha256": "205da182927671660c371d5ef1d42782018ba0a59f84d81bc82ef3b49689d000",
+      "git_blob": "d597ff8f1070c915602cc6f8729a50bd743992cb",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v3/independent-review/authority-2980fa274c599bd07437a2f5915b86d858f89bcc.original.json",
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v3/independent-review/authority-2980fa274c599bd07437a2f5915b86d858f89bcc.original.json",
+      "actual_create_and_full_GET_byte_equal": true,
+      "actual_materialization_method": "create_tree(content) without base tree or ref mutation",
+      "actual_create_tree_response": {
+        "sha": "5756bd2e5d97ab475d99b506d33e73a73877a4a6"
+      },
+      "full_GET_original_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/delivery/full-GET-originals/d597ff8f1070c915602cc6f8729a50bd743992cb.json",
+      "full_GET_original_payload_identity": {
+        "bytes": 1858,
+        "sha256": "5c1fe3dc6a2542b908a9bfdf8c20deb3bd3b4bde6e4a0c00134f91d0c7d38f79",
+        "git_blob": "b85a5a7292066fa8464b5c7d206462d175423e1c"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/independent-review/authority-53766cb836b198e2f928b949f148d7a2a10c0d21.original.json",
+      "bytes": 3192,
+      "sha256": "867df3afd8be54599743b2a34ed8fad380e4be0b3c0e8e3f230b627d4e0f8043",
+      "git_blob": "140763e981dee2f10b9238e864f15359d485c33f",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v3/independent-review/authority-53766cb836b198e2f928b949f148d7a2a10c0d21.original.json",
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v3/independent-review/authority-53766cb836b198e2f928b949f148d7a2a10c0d21.original.json",
+      "actual_create_and_full_GET_byte_equal": true,
+      "actual_materialization_method": "create_tree(content) without base tree or ref mutation",
+      "actual_create_tree_response": {
+        "sha": "5756bd2e5d97ab475d99b506d33e73a73877a4a6"
+      },
+      "full_GET_original_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/delivery/full-GET-originals/140763e981dee2f10b9238e864f15359d485c33f.json",
+      "full_GET_original_payload_identity": {
+        "bytes": 3482,
+        "sha256": "1b4339c0e6e6880d8a38321e52939f770206e8662b619909194527b474765ef7",
+        "git_blob": "48988fb8624a584cf201b777bf632619f9206ee2"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/independent-review/candidate-postimage-independent-readback.json",
+      "bytes": 511,
+      "sha256": "0fb98e49d54ccad1c88b8033f6765c586c01cb90bb5e0e655147e150ae07ff6e",
+      "git_blob": "409bb6cecb649223482a3ddf96446812d7b0b3fb",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v3/independent-review/candidate-postimage-independent-readback.json",
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v3/independent-review/candidate-postimage-independent-readback.json",
+      "actual_create_and_full_GET_byte_equal": true,
+      "actual_materialization_method": "create_tree(content) without base tree or ref mutation",
+      "actual_create_tree_response": {
+        "sha": "5756bd2e5d97ab475d99b506d33e73a73877a4a6"
+      },
+      "full_GET_original_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/delivery/full-GET-originals/409bb6cecb649223482a3ddf96446812d7b0b3fb.json",
+      "full_GET_original_payload_identity": {
+        "bytes": 569,
+        "sha256": "32d336ae389b117dc4a8c475114e420c30f3fabd4252d2bee0594f2cc288c7f1",
+        "git_blob": "fc926f885dc52f1083d91cd015197688c30555aa"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/independent-review/freeze-manifest.json",
+      "bytes": 2555,
+      "sha256": "93e9b2737b6688dfd06fdbddcbc96ac26631f4af158f67178c6474a326b3987b",
+      "git_blob": "66c5c736ea58777626320acc0b8332fdab85cf41",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v3/independent-review/freeze-manifest.json",
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v3/independent-review/freeze-manifest.json",
+      "actual_create_and_full_GET_byte_equal": true,
+      "actual_materialization_method": "create_tree(content) without base tree or ref mutation",
+      "actual_create_tree_response": {
+        "sha": "82e3d5865d2d5a887b72aa1f28fd3feba6c24bcc"
+      },
+      "full_GET_original_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/delivery/full-GET-originals/66c5c736ea58777626320acc0b8332fdab85cf41.json",
+      "full_GET_original_payload_identity": {
+        "bytes": 2790,
+        "sha256": "14e0d6972b36faef719febe6e461d240ca4d83d833c62504ecdd9156b9c995d8",
+        "git_blob": "6476054f07fedbcaa58bd77be628a8beb8a437d7"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/independent-review/source-readbacks.json",
+      "bytes": 6425,
+      "sha256": "3ac86a5ec9df02257075198581c11a6a4006528bcde412ecb02a2bb29b95d7e1",
+      "git_blob": "61aa21831671ba5392a3d95d8db3bfb76a7ca4c8",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v3/independent-review/source-readbacks.json",
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v3/independent-review/source-readbacks.json",
+      "actual_create_and_full_GET_byte_equal": true,
+      "actual_materialization_method": "create_tree(content) without base tree or ref mutation",
+      "actual_create_tree_response": {
+        "sha": "82e3d5865d2d5a887b72aa1f28fd3feba6c24bcc"
+      },
+      "full_GET_original_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/delivery/full-GET-originals/61aa21831671ba5392a3d95d8db3bfb76a7ca4c8.json",
+      "full_GET_original_payload_identity": {
+        "bytes": 6946,
+        "sha256": "0c036f5c00868e6284772b958d8a8575976485de45862208743b8c30a0885058",
+        "git_blob": "8f76f486e5439198efb451271f6d92a4d5b80001"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/independent-review/verification-execution.json",
+      "bytes": 567,
+      "sha256": "c652f84659d9dde99ec3156d7af65a655dab30ed08abbef02f134bef6fdf12cd",
+      "git_blob": "667b1ae68b0022ad7c6193b086965a1029f4cd91",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v3/independent-review/verification-execution.json",
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v3/independent-review/verification-execution.json",
+      "actual_create_and_full_GET_byte_equal": true,
+      "actual_materialization_method": "create_tree(content) without base tree or ref mutation",
+      "actual_create_tree_response": {
+        "sha": "82e3d5865d2d5a887b72aa1f28fd3feba6c24bcc"
+      },
+      "full_GET_original_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/delivery/full-GET-originals/667b1ae68b0022ad7c6193b086965a1029f4cd91.json",
+      "full_GET_original_payload_identity": {
+        "bytes": 629,
+        "sha256": "bab4b0bd0c2fe77b49c90b39db5b570b7085947a4baa62acd5d9158e07687719",
+        "git_blob": "539ab5636a98c957e8a058db0b06bfdd5a279c3d"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/independent-review/verification.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v3/independent-review/verification.stderr.txt",
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v3/independent-review/verification.stderr.txt",
+      "actual_create_and_full_GET_byte_equal": true,
+      "actual_materialization_method": "create_tree(content) without base tree or ref mutation",
+      "actual_create_tree_response": {
+        "sha": "82e3d5865d2d5a887b72aa1f28fd3feba6c24bcc"
+      },
+      "full_GET_original_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/delivery/full-GET-originals/e69de29bb2d1d6434b8b29ae775ad8c2e48c5391.json",
+      "full_GET_original_payload_identity": {
+        "bytes": 14,
+        "sha256": "48ccd6c4782cb6d3408131d10950321aa7e29efd550e5fdde387e044389c786f",
+        "git_blob": "dc2aa5969b29eb53c51f9b30d4fd29b55fb19848"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/independent-review/verification.stdout.json",
+      "bytes": 3131,
+      "sha256": "33eb239cf21ba770c3090552c2a36bec2ffec782176e7f23bdf93f3c46ed3053",
+      "git_blob": "dd1ca50517754022e47299c6695f70c77f20079b",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v3/independent-review/verification.stdout.json",
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v3/independent-review/verification.stdout.json",
+      "actual_create_and_full_GET_byte_equal": true,
+      "actual_materialization_method": "create_tree(content) without base tree or ref mutation",
+      "actual_create_tree_response": {
+        "sha": "a6458c22d8ed1a3b2ff314a99be099f6765cc1a9"
+      },
+      "full_GET_original_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/delivery/full-GET-originals/dd1ca50517754022e47299c6695f70c77f20079b.json",
+      "full_GET_original_payload_identity": {
+        "bytes": 3375,
+        "sha256": "1bb695ffdf9f3bedd8abd553842c94a4fc5681ce41ed90369d2fd6d651ef6b1c",
+        "git_blob": "9ea46c22df1f2e5ff7ec05cf3e2e91c4d16c8c15"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/independent-review/verify_independent.py",
+      "bytes": 11828,
+      "sha256": "1db2b2c1adbb318feb6e89834c10cf6ae0c9b361e5ed425d4a512aca79e9e3de",
+      "git_blob": "d52b61b92fa2239df3f045d0dad7e848616b3a55",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v3/independent-review/verify_independent.py",
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v3/independent-review/verify_independent.py",
+      "actual_create_and_full_GET_byte_equal": true,
+      "actual_materialization_method": "create_tree(content) without base tree or ref mutation",
+      "actual_create_tree_response": {
+        "sha": "a6458c22d8ed1a3b2ff314a99be099f6765cc1a9"
+      },
+      "full_GET_original_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/delivery/full-GET-originals/d52b61b92fa2239df3f045d0dad7e848616b3a55.json",
+      "full_GET_original_payload_identity": {
+        "bytes": 12474,
+        "sha256": "f8135367dfb5587ce480d4e697f5c4d60dd3f9829ddeb7ca6a183e705bf7e170",
+        "git_blob": "b37c32ca9ed4066f851e5fce754317364e638763"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/review-completion.json",
+      "bytes": 2093,
+      "sha256": "964324739b422afd219a3cbc598972aed6afcf2f707ecb724082bc7179fe2b45",
+      "git_blob": "0a4ba8ee0eed06bcc5fee918748726920c3ee71e",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v3/review-completion.json",
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v3/review-completion.json",
+      "actual_create_and_full_GET_byte_equal": true,
+      "actual_materialization_method": "create_tree(content) without base tree or ref mutation",
+      "actual_create_tree_response": {
+        "sha": "a6458c22d8ed1a3b2ff314a99be099f6765cc1a9"
+      },
+      "full_GET_original_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/delivery/full-GET-originals/0a4ba8ee0eed06bcc5fee918748726920c3ee71e.json",
+      "full_GET_original_payload_identity": {
+        "bytes": 2275,
+        "sha256": "c0671c9c3d48429469365c4c760964c36b63a264d6ee716331cd741e7d0131ec",
+        "git_blob": "2edf05edd16006e7f53d1fa5ae5b37c3eb4c01cc"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/freeze_delivery.py",
+      "bytes": 5193,
+      "sha256": "6bf56019b48cc635457b8139479b315cf89b8c92322755b09ef71e3d42ae1882",
+      "git_blob": "c3eb479287942a073ce062b90a31b5becc277bed",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v3/freeze_delivery.py",
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v3/freeze_delivery.py",
+      "actual_create_and_full_GET_byte_equal": true,
+      "actual_materialization_method": "create_tree(content) without base tree or ref mutation",
+      "actual_create_tree_response": {
+        "sha": "a6458c22d8ed1a3b2ff314a99be099f6765cc1a9"
+      },
+      "full_GET_original_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/delivery/full-GET-originals/c3eb479287942a073ce062b90a31b5becc277bed.json",
+      "full_GET_original_payload_identity": {
+        "bytes": 5473,
+        "sha256": "fe181eca25315754b8fa0d2d14da13489a1a640cb86500c8e6a3d282b712c638",
+        "git_blob": "3bbf642861becd702a173d0fea5a32c79b044018"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/delivery/transport-manifest.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v3/delivery/transport-manifest.json",
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v3/delivery/transport-manifest.json",
+      "bytes": 19614,
+      "sha256": "2cedf1685241945c6426a3f6a1a1d4e552a2ce770c041fb26518ebcabb9e9fe0",
+      "git_blob": "54a60b0840e3a0e62b36915e12e87c24f848628d",
+      "actual_create_and_full_GET_byte_equal": true,
+      "actual_materialization_method": "create_tree(content) without base tree or ref mutation",
+      "actual_create_tree_response": {
+        "sha": "1af6ec6c31b7c2ef91f1fa58a1e2050aa08892f4"
+      },
+      "full_GET_original_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/delivery/full-GET-originals/54a60b0840e3a0e62b36915e12e87c24f848628d.json",
+      "full_GET_original_payload_identity": {
+        "bytes": 21170,
+        "sha256": "d2b3a1db7b262615be621b18782dc3452b41a13cb03d2b977788ba2af25f1ddc",
+        "git_blob": "5adcd6c6c43dc76ee52484a11e93b3ef28e67584"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/delivery/originals.part-000.base64.txt",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v3/delivery/originals.part-000.base64.txt",
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v3/delivery/originals.part-000.base64.txt",
+      "bytes": 400001,
+      "sha256": "c9cef979f951d5481961c122dcdd4434d501f7f45c5f65bae1a876bde3ad8a03",
+      "git_blob": "5285db30c62d940d81f5500b467d27c542fd776b",
+      "actual_create_and_full_GET_byte_equal": true,
+      "actual_materialization_method": "create_tree(content) without base tree or ref mutation",
+      "actual_create_tree_response": {
+        "sha": "1af6ec6c31b7c2ef91f1fa58a1e2050aa08892f4"
+      },
+      "full_GET_original_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/delivery/full-GET-originals/5285db30c62d940d81f5500b467d27c542fd776b.json",
+      "full_GET_original_payload_identity": {
+        "bytes": 400016,
+        "sha256": "823e5679a46cbd2b06ee8399b10638adadb93be4443e7dc23cc79f9bd0690725",
+        "git_blob": "56b2a23edb5f07f1a0354f01aa55d955fc5c2d83"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/delivery/originals.part-001.base64.txt",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v3/delivery/originals.part-001.base64.txt",
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v3/delivery/originals.part-001.base64.txt",
+      "bytes": 400001,
+      "sha256": "f07a1d68fed298f85cb7e4c18d6430230a851f2617cf331881d3240f9b2a5e80",
+      "git_blob": "3b44ee555adc92414161351472c5f49824e95c55",
+      "actual_create_and_full_GET_byte_equal": true,
+      "actual_materialization_method": "create_tree(content) without base tree or ref mutation",
+      "actual_create_tree_response": {
+        "sha": "977fa24c565a1c389be85d25ded7931094371be4"
+      },
+      "full_GET_original_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/delivery/full-GET-originals/3b44ee555adc92414161351472c5f49824e95c55.json",
+      "full_GET_original_payload_identity": {
+        "bytes": 400016,
+        "sha256": "79ce260843cbf224b2fa32cdd4ba3b303fd01283169c4d9229f26a7444b4e1f0",
+        "git_blob": "032f92559d2a74f9b73b173b67ada98fecf53374"
+      }
+    },
+    {
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/delivery/originals.part-002.base64.txt",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v3/delivery/originals.part-002.base64.txt",
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/native-plan/b11-host-neither-observation-candidate-20261105/v3/delivery/originals.part-002.base64.txt",
+      "bytes": 95521,
+      "sha256": "d3c58aba35353b93aa8a8965b9ca7f5fa8368e5ebfbbf4e9b65007d5718c7515",
+      "git_blob": "779de8e901086e9874d635bd8855e886f95236ae",
+      "actual_create_and_full_GET_byte_equal": true,
+      "actual_materialization_method": "create_tree(content) without base tree or ref mutation",
+      "actual_create_tree_response": {
+        "sha": "977fa24c565a1c389be85d25ded7931094371be4"
+      },
+      "full_GET_original_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/delivery/full-GET-originals/779de8e901086e9874d635bd8855e886f95236ae.json",
+      "full_GET_original_payload_identity": {
+        "bytes": 95536,
+        "sha256": "e36b89a9981e1b8f29db6a885c44792a406a182ac31e9ccd4e6d110223e2174f",
+        "git_blob": "ceddc6728d82ce1af37a21e1588061f07f52ed6b"
+      }
+    }
+  ],
+  "listed_objects": 25,
+  "scope": "Exact unexecuted v3 test-only candidate, complete byte/static evidence, independent static review, and lossless archived originals. Publication and later CI are outside this frozen package.",
+  "candidate_actual_git_blob": "8c16416c185f17871c25139bc16c6fd112b5fd41",
+  "expected_candidate_tree": "9a804c7b6e0dd554cdb435f41e06c5c689fffaaf",
+  "independent_review_decision": "STATIC_ACCEPT_EXACT_CANDIDATE_NOT_COMPILE_OR_NATIVE_QUALIFICATION",
+  "independent_review_actual_blob": "7d707c4315cb29c7d765e5bcf4027d12e52a2f07",
+  "independent_owner_replay_exit_code": 0,
+  "independent_owner_replay_stdout_byte_equal": true,
+  "archive": {
+    "path": "originals.tar.gz",
+    "bytes": 671639,
+    "sha256": "4bf8ae10ffea2f083d50092211eaf8d239ad28cfe48652a150f76858f079f8bf",
+    "git_blob": "4ab9d015d5fe202c82fe2636701d641a0eda3686"
+  },
+  "archive_members": 71,
+  "archive_part_count": 3,
+  "maximum_transport_object_bytes": 400001,
+  "reconstructed_from_actual_full_GET_parts": true,
+  "all_archive_members_full_byte_equal_to_manifest": true,
+  "all_nonwitness_archive_members_full_byte_equal_to_frozen_files": true,
+  "original_full_GET_payload_directory": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v3/delivery/full-GET-originals",
+  "original_full_GET_payload_count": 25,
+  "full_GET_payload_scope": "Original structured payloads returned by github_fetch_blob, stored as JSON; no HTTP headers or status are invented. Pre-archive payloads and checkpoint are also preserved inside the lossless archive.",
+  "source_ref_modified": false,
+  "native_execution": false,
+  "host_resource_query": false,
+  "product_compilation": false,
+  "formatting_tool_execution": false,
+  "new_CI_poll_dispatch_rerun_cancel": false,
+  "B11": "OPEN"
+}

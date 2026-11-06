@@ -1,0 +1,84 @@
+{
+  "schema": "windows-setup-error-causes-pr4913-ci-initial-actual-registry-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "self_repository_path": "ci-audit/windows-setup-error-causes-pr4913-ci-initial-20261106T0355/registry.actual.json",
+  "observed_clock_utc": "2026-11-06 03:55:37 UTC",
+  "actual_pr": 4913,
+  "actual_head": "340fbc0629d27e3a2bda7c6971be25c60b3bf2bc",
+  "actual_tree": "78b817fec87e593e0a0f6357d84f895b8574bde5",
+  "publication_dependency": "7b56b1ca7d043ff2cefc74cc09854171d775c81d",
+  "independent_review_dependency": "42748aff2421ab2bee7757158793868f08dd53d9",
+  "head_runs_total_unique": 5,
+  "blocking_run": 42158689226,
+  "blocking_jobs_total_unique": 3,
+  "scope_job": {
+    "id": 127698879610,
+    "status": "queued",
+    "steps": 0
+  },
+  "Windows_test_execution": "NOT_OBSERVED",
+  "Rust_format_compile_native_qualification": "PENDING",
+  "metadata_success_only": [
+    "v8-canary run42158688956",
+    "Codespell job127698879846"
+  ],
+  "originals": "Complete MCP tool return objects serialized as JSON; not HTTP wire bytes.",
+  "records": [
+    {
+      "repository_path": "ci-audit/windows-setup-error-causes-pr4913-ci-initial-20261106T0355/head-runs.original.json",
+      "bytes": 162607,
+      "git_blob": "5036ab69d8850d7f7a57632b111fa8d6d71b1238",
+      "sha256": "f8b0a94bfb6f9a669470e69cc6a1d7e38d4a663a362126fa6362415c3b16f224",
+      "actual_create_sha": "5036ab69d8850d7f7a57632b111fa8d6d71b1238",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 162607,
+        "git_blob": "5036ab69d8850d7f7a57632b111fa8d6d71b1238",
+        "sha256": "f8b0a94bfb6f9a669470e69cc6a1d7e38d4a663a362126fa6362415c3b16f224"
+      }
+    },
+    {
+      "repository_path": "ci-audit/windows-setup-error-causes-pr4913-ci-initial-20261106T0355/blocking-ci-jobs.original.json",
+      "bytes": 10498,
+      "git_blob": "bea2b2c2a913508fd390b907cbc115fa5b213402",
+      "sha256": "21610552b6f88427cdcc4b45f97c4f42a68170b408dbf0a9378479bfb9309c8d",
+      "actual_create_sha": "bea2b2c2a913508fd390b907cbc115fa5b213402",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 10498,
+        "git_blob": "bea2b2c2a913508fd390b907cbc115fa5b213402",
+        "sha256": "21610552b6f88427cdcc4b45f97c4f42a68170b408dbf0a9378479bfb9309c8d"
+      }
+    },
+    {
+      "repository_path": "ci-audit/windows-setup-error-causes-pr4913-ci-initial-20261106T0355/clock.original.json",
+      "bytes": 48,
+      "git_blob": "0a0600d6ef284f50be428e9d66c54d0207e2ec6a",
+      "sha256": "698db0a8064a24facb5b0df998472b5b80207b18b707c9ffebd93f659c11ab56",
+      "actual_create_sha": "0a0600d6ef284f50be428e9d66c54d0207e2ec6a",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 48,
+        "git_blob": "0a0600d6ef284f50be428e9d66c54d0207e2ec6a",
+        "sha256": "698db0a8064a24facb5b0df998472b5b80207b18b707c9ffebd93f659c11ab56"
+      }
+    },
+    {
+      "repository_path": "ci-audit/windows-setup-error-causes-pr4913-ci-initial-20261106T0355/REVIEW.json",
+      "bytes": 7856,
+      "git_blob": "158f0eafe6062cc1fad51de68739313f695b81a3",
+      "sha256": "1631ce509a1b82692ac41e87f52b57d240d3877bc5b0d98d7e8b90c761cf691e",
+      "actual_create_sha": "158f0eafe6062cc1fad51de68739313f695b81a3",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 7856,
+        "git_blob": "158f0eafe6062cc1fad51de68739313f695b81a3",
+        "sha256": "1631ce509a1b82692ac41e87f52b57d240d3877bc5b0d98d7e8b90c761cf691e"
+      }
+    }
+  ],
+  "actual_registered_objects": 4,
+  "all_full_GET_bytes_equal": true,
+  "no_dispatch_rerun_cancel_private_capacity_or_ref_mutation": true,
+  "ACL_cause": "UNKNOWN"
+}

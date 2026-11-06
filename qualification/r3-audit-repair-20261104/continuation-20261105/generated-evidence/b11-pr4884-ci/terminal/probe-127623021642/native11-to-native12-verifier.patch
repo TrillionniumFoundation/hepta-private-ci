@@ -1,0 +1,346 @@
+--- native11/verify-native11.py
++++ native12/verify-native12.py
+@@ -1,6 +1,6 @@
+-"""Verify complete native11 originals without running a product or native command.
+-
+-Usage: python verify-native11.py [--output NEW_RESULT.json]
++"""Verify complete native12 originals without running a product or native command.
++
++Usage: python verify-native12.py [--output NEW_RESULT.json]
+ Run beside the registered transport parts, manifests, API responses and parser.
+ Python 3 and the zstandard package are required. No network access is performed.
+ The ZIP is reconstructed in memory; members are checked and extracted only to a
+@@ -22,12 +22,12 @@
+ import zstandard
+ 
+ P = Path(__file__).resolve().parent
+-HEAD = '2980fa274c599bd07437a2f5915b86d858f89bcc'
+-MERGE = '53766cb836b198e2f928b949f148d7a2a10c0d21'
+-TREE = '9cb7302777ce018dd022086041c2225d1dd5c8dd'
+-RUN = 42130823627
+-JOB = 127606676952
+-ARTIFACT = 13462669785
++HEAD = '87b8603f21e52063ed54ce89cba26756a3efaab7'
++MERGE = '09960fe697c9c181e4a7d624e29b49360877b687'
++TREE = '9a804c7b6e0dd554cdb435f41e06c5c689fffaaf'
++RUN = 42135663472
++JOB = 127623021642
++ARTIFACT = 13465596874
+ TARGET = '//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests'
+ HELPER = '//codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup-bin-unit-tests'
+ CASES = [
+@@ -44,7 +44,6 @@
+     'unified_exec::tests::legacy_non_tty_cmd_emits_output': 'downstream_poisoned_test_lock',
+     'unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides': 'downstream_poisoned_test_lock',
+     'unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots': 'downstream_poisoned_test_lock',
+-    'token::integrity_probe::integrity_mechanism_probe_observation_only': 'new_observation_cmd_launch_precondition_failed_before_child',
+ }
+ 
+ 
+@@ -101,8 +100,8 @@
+         chunks.append(raw)
+     archive = b''.join(chunks)
+     assert len(chunks) == 18 and digest(archive) == manifest['archive']
+-    assert len(archive) == 2302073
+-    assert digest(archive)['sha256'] == 'b67aa17b107136aa1e934065e671e35b99c1a8b74a82ad7edf40f21c58128ca8'
++    assert len(archive) == 2302874
++    assert digest(archive)['sha256'] == 'b21172467ad92e47439defa6075099cf7ba9fcf56b22221de145f0434bffe4f2'
+     if (P / 'artifact.zip').exists():
+         assert (P / 'artifact.zip').read_bytes() == archive
+     return archive
+@@ -131,7 +130,7 @@
+             target.parent.mkdir(parents=True, exist_ok=True)
+             target.write_bytes(raw)
+             total += len(raw)
+-    assert total == 3011303
++    assert total == 3000850
+     return {'member_count': 84, 'uncompressed_bytes': total, 'all_original_CRC_and_bytes_checked': True,
+             'computed_member_git_blob_ids_are_not_claimed_as_separate_actual_Git_objects': True}
+ 
+@@ -168,16 +167,16 @@
+     return leaves
+ 
+ 
+-def rust_observations(whole):
++def mechanism_observations(whole, leaves):
+     prefix = 'PROBE_OBSERVATION_ONLY neither_privileges '
+     records = []
+     for line_number, line in enumerate(whole.splitlines(), 1):
+         if prefix not in line:
+             continue
+         phase, raw = line.split(prefix, 1)[1].split(' ', 1)
+-        obj = json.loads(raw)  # No recovery or repair of a malformed/interleaved line.
++        obj = raw if phase == 'complete' else json.loads(raw)  # The final complete record is intentionally plain text. No line repair.
+         records.append({'phase': phase, 'line': line_number, 'physical_line_utf8': digest(line.encode()), 'value': obj})
+-    assert [r['phase'] for r in records] == ['filesystem', 'subjects', 'rust_before', 'rust_physical', 'rust_before', 'rust_physical', 'rust_before', 'rust_physical']
++    assert [r['phase'] for r in records] == ['filesystem', 'subjects', 'rust_before', 'rust_physical', 'rust_before', 'rust_physical', 'rust_before', 'rust_physical', 'child_before_release', 'child_finished', 'cmd_physical', 'child_before_release', 'child_finished', 'cmd_physical', 'complete']
+     filesystem = records[0]['value']
+     assert filesystem['filesystem'] == 'NTFS'
+     subjects = records[1]['value']
+@@ -210,50 +209,112 @@
+             else:
+                 assert operation['file_error'] is None and operation['directory_error'] is None
+             assert outcome['file_deleted'] is (not denied) and outcome['directory_deleted'] is (not denied)
+-    pattern = re.compile(r'^delete_matrix privilege-observation-rust-(ordinary-direct|ordinary-impersonated|disabled-impersonated) path=("(?:[^"\\]|\\.)*") identity=\((\d+), (\d+), (\d+)\) directory=(\d+) pending=(\d+) links=(\d+) acl=\[([0-9a-f, ]+)\]$', re.M)
+-    acl_rows, per_subject = [], {n: {} for n in names}
+-    for match in pattern.finditer(whole):
+-        name = match[1]
+-        path = json.loads(match[2])
+-        relative = PureWindowsPath(path).relative_to(PureWindowsPath(filesystem['root']) / ('rust-' + name))
+-        key = relative.as_posix()
+-        assert key not in per_subject[name]
+-        acl = bytes(int(part.strip(), 16) for part in match[9].split(','))
+-        row = {'subject': name, 'relative': key, 'identity': [int(match[k]) for k in [3, 4, 5]],
+-               'directory': int(match[6]), 'pending': int(match[7]), 'links': int(match[8]),
+-               'ACL_hex': acl.hex(), 'line': whole.count('\n', 0, match.start()) + 1}
+-        assert row['identity'][0] == filesystem['serial']
+-        per_subject[name][key] = row
+-        acl_rows.append(row)
+-    assert len(acl_rows) == len({tuple(r['identity']) for r in acl_rows}) == 36
+-    expected_keys = {r + suffix for r in routes for suffix in ['', '/file', '/directory']}
+-    assert all(set(per_subject[name]) == expected_keys for name in names)
+-    for key in expected_keys:
+-        assert len({per_subject[name][key]['ACL_hex'] for name in names}) == 1
+-    for name in names:
+-        for suffix in ['/file', '/directory']:
+-            row = per_subject[name]['Neither' + suffix]
+-            assert (row['pending'], row['links']) == ((0, 1) if name == 'disabled-impersonated' else (1, 0))
+-    child_markers = {phase: sum(prefix + phase + ' ' in line for line in whole.splitlines())
+-                     for phase in ['child_before_release', 'child_finished', 'cmd_physical', 'complete']}
+-    assert all(count == 0 for count in child_markers.values())
+-    assert whole.count('Error: GetTokenInformation(TokenRestrictedSids) size query failed: 122') == 1
+-    return {'complete_raw_JSON_records': records, 'parse_repairs': 0, 'full_identity_fields_equal': True,
+-            'ordinary_enabled_privileges': ordinary_enabled, 'disabled_enabled_privileges': disabled_enabled,
+-            'actual_thread_token_pairs_type_2_level_2': True, 'complete_retained_object_rows': acl_rows,
+-            'three_separate_cohorts_have_equal_actual_ACL_bytes_and_distinct_retained_identities': True,
++    cmd_evidence = []
++    for i, name in enumerate(['ordinary', 'disabled']):
++        before, finished, physical = [r['value'] for r in records[8 + 3 * i:11 + 3 * i]]
++        assert before['subject'] == finished['subject'] == physical['subject'] == name
++        expected = ordinary if i == 0 else disabled
++        assert before['token'] == expected and before['token']['token_type'] == 1
++        assert before['token']['impersonation_level'] is None
++        assert finished['work_error'] is None and finished['terminate_error'] is None
++        assert finished['exit'] == finished['cleanup_wait'] == finished['active_processes'] == 0
++        assert finished['accounted'] == 1
++        raw = bytes(finished['stdout_stderr_bytes'])
++        assert raw.decode() == finished['stdout_stderr']
++        lines = raw.decode().splitlines()
++        assert lines.count('NEITHER_INPUT_RELEASED') == 1
++        assert [line for line in lines if line.startswith('MATRIX_')] == ['MATRIX_ATTEMPT_0', 'MATRIX_ATTEMPT_1', 'MATRIX_ATTEMPT_2', 'MATRIX_ATTEMPT_3', 'MATRIX_DONE']
++        parsed_codes = []
++        for index in range(4):
++            codes = []
++            for operation in ['FILE', 'DIR']:
++                code_prefix = f'{operation}_RC_{index}='
++                values = [int(line[len(code_prefix):]) for line in lines if line.startswith(code_prefix)]
++                assert len(values) == 1
++                codes.append(values[0])
++            parsed_codes.append(codes)
++        assert parsed_codes == physical['command_exit_codes'] == [[0, 0]] * 4
++        assert lines.count('Access is denied.') == (2 if i == 1 else 0)
++        if i == 1:
++            assert str(PureWindowsPath(filesystem['root']) / 'cmd-disabled' / 'Neither' / 'file') in lines
++        assert len(physical['outcomes']) == 4
++        for j, outcome in enumerate(physical['outcomes']):
++            assert outcome['route'] == routes[j]
++            deleted = not (i == 1 and j == 0)
++            assert outcome['file_deleted'] is deleted and outcome['directory_deleted'] is deleted
++        cmd_evidence.append({'subject': name, 'exact_stdout_stderr_bytes': digest(raw),
++                             'actual_child_token_matches_entire_expected_record': True,
++                             'gate_release_exactly_once_and_all_four_original_attempts': True,
++                             'normal_terminate_root_wait_and_Job_active_zero': True,
++                             'recorded_operation_exit_codes': parsed_codes,
++                             'exit_code_zero_is_not_used_as_a_delete_success_oracle': True})
++    complete = 'subjects=2 matrices=5 routes=4 rust_contexts=3 cmd_contexts=2 owned_child_processes=2 observation_only=true isolation_qualified=false'
++    assert records[-1]['value'] == complete
++    probe = 'test token::integrity_probe::integrity_mechanism_probe_observation_only ... ok'
++    assert whole.splitlines().count(probe) == 1
++    assert 'GetTokenInformation(TokenRestrictedSids) size query failed: 122' not in whole
++    module_raw = (P / 'executed-observation-module.rs.source.txt').read_bytes()
++    matrix_raw = (P / 'delete-permission-matrix.rs.source.txt').read_bytes()
++    assert digest(module_raw)['git_blob'] == leaves['codex-rs/windows-sandbox-rs/src/token_neither_privilege_observation.rs']['sha'] == '8c16416c185f17871c25139bc16c6fd112b5fd41'
++    assert digest(matrix_raw)['git_blob'] == leaves['codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs']['sha'] == '6f05793ec6ee043a933073ada3a1bf9122de5a73'
++    # The complete fixed sources are hash-bound. This records the narrow inference
++    # from their executed guards and the passing probe; it does not invent missing
++    # raw retained-object diagnostics that Rust's passing-test capture suppressed.
++    assert b'for matrix in &matrices[1..] { matrices[0].assert_same_acls(matrix); }' in module_raw
++    assert b'self.expected_acl = actual.bytes();' in matrix_raw
++    assert b'actual.bytes() == self.expected_acl' in matrix_raw
++    assert b'identity(&self.file)? == self.identity' in matrix_raw
++    assert b'path was replaced after {label}' in matrix_raw
++    assert b'ensure!(effective_record()? == (original, false), "ordinary token changed after observations");' in module_raw
++    assert b'fixture.close()?;' in module_raw
++    retained_dump_rows = sum(line.startswith('delete_matrix privilege-observation-') and ' path=' in line for line in whole.splitlines())
++    assert retained_dump_rows == 0
++    old_marker_rows = []
++    for phase in ['row', 'restoration', 'finalized']:
++        marker = 'PROBE_OBSERVATION_ONLY ' + phase + ' '
++        matched = [(line_number, line, line.split(marker, 1)[1]) for line_number, line in enumerate(whole.splitlines(), 1) if marker in line]
++        assert len(matched) == 8
++        for line_number, line, payload in matched:
++            row = {'phase': phase, 'line': line_number, 'raw_physical_line_utf8': digest(line.encode())}
++            try:
++                parsed = json.loads(payload)
++            except json.JSONDecodeError as error:
++                row.update({'parse_status': 'UNPARSED_INTERLEAVED_OR_INCOMPLETE_RAW_PRESERVED', 'error': str(error)})
++            else:
++                row.update({'parse_status': 'COMPLETE_JSON', 'subject': parsed['subject'], 'outside_level': parsed['outside_level']})
++            old_marker_rows.append(row)
++    old_complete = 'PROBE_OBSERVATION_ONLY complete rows=8 token_subjects=4 descendants_spawned=0 tests_do_not_qualify_isolation=true'
++    assert whole.splitlines().count(old_complete) == 1
++    assert whole.index(old_complete) < whole.index(prefix + 'filesystem ')
++    return {'complete_JSON_record_count': 14, 'complete_plain_text_record_count': 1,
++            'complete_original_records': records, 'parse_repairs': 0,
++            'full_identity_fields_equal': True, 'ordinary_enabled_privileges': ordinary_enabled,
++            'disabled_enabled_privileges': disabled_enabled,
++            'actual_thread_token_pairs_type_2_level_2': True, 'actual_child_token_pairs_primary': True,
+             'Rust_Neither_outcome_changes_with_all_privilege_filter_intervention': True,
+-            'single_SeRestore_causality_demonstrated': False, 'cmd_phase_markers': child_markers,
+-            'cmd_pair_and_owned_Job_cleanup_qualified': False,
+-            'cmd_stop': 'Existing process backend rejects the unrestricted-token launch precondition; Error 122 occurs before child creation. No cmd result is inferred.',
+-            'limits': ['Different ACL-equivalent fixtures, not reuse of one object across subjects.',
+-                       'Only three Rust cohorts completed; full observation test failed.',
++            'cmd_Neither_physical_outcome_changes_with_all_privilege_filter_intervention': True,
++            'single_SeRestore_causality_demonstrated': False, 'cmd_evidence': cmd_evidence,
++            'cmd_reported_neither_RC_zero_even_when_denied': True,
++            'two_owned_cmd_normal_cleanup_qualified_for_this_fixed_observation_only': True,
++            'new_observation_probe_original_test_passed': True,
++            'fixture_ACL_identity_restoration_checks': {
++                'executed_observation_module': digest(module_raw), 'executed_matrix_implementation': digest(matrix_raw),
++                'basis': 'Source-bound inference from the passing original probe and complete record: set_access stores actual read-back DACL bytes; all five matrices compare those bytes; release verifies retained identity, ACL and file content before physical post-release readback. Final ordinary-token equality and fixture.close are required before complete.',
++                'directly_archived_per_object_identity_ACL_dump_rows_for_new_five_cohorts': 0,
++                'no_claim_to_have_independently_reparsed_60_absent_object_dumps': True},
++            'old_eight_row_observations': {'records': old_marker_rows, 'raw_incomplete_lines_preserved_without_repair': True,
++                                         'old_complete_marker': old_complete,
++                                         'old_descendants_spawned_zero_does_not_describe_new_cmd_phase': True},
++            'limits': ['Five different ACL-equivalent fixtures, not reuse of one object across subjects.',
++                       'Source-bound successful runtime guards do not create raw object dump records absent from the artifact.',
+                        'All-privilege filtering does not isolate any one privilege.',
++                       'Cmd operation return code zero is not a physical success oracle.',
++                       'Normal cleanup of two owned cmd roots does not qualify arbitrary descendants or cancellation.',
+                        'Strict sandbox outside-effects assertions remain failures.']}
+ 
+ 
+ def verify(members, archive, archive_review):
+-    original_jobs = load(P / 'jobs.root-original-cut.json')
++    original_jobs = load(P / 'jobs.original-cut.json')
+     api = {'run': load(P / 'run.original.api.json'), 'jobs': original_jobs['raw'],
+            'artifacts': load(P / 'artifacts.original.api.json'),
+            'log': load(P / 'job-log-tool-response.original.json')}
+@@ -273,12 +334,12 @@
+     job_log = (P / 'job.log').read_bytes()
+     log_response = api['log'].get('structuredContent') or json.loads(next(x['text'] for x in api['log']['content'] if x['type'] == 'text'))
+     assert log_response['content'].encode() == job_log
+-    assert digest(job_log)['sha256'] == '29c7b0343a5f8865bd2bf8088e3108e2c3db3b3f89f93c0aaa72b89834d685bc'
+-    assert len(job_log) == 509112 and job_log.count(b'\r') == 3334
+-    capture = load(P / 'job-log-root-capture.json')
++    assert digest(job_log)['sha256'] == '27703de357062c1d92632819b2a042fb9750a94819cf645c080bab0128313632'
++    assert len(job_log) == 511506 and job_log.count(b'\r') == 3277
++    capture = load(P / 'job-log-capture.json')
+     assert capture['run_id'] == RUN and capture['job_id'] == JOB
+     assert {k: capture[k] for k in digest(job_log)} == digest(job_log)
+-    assert capture['CR_preserved'] == 3334 and capture['characters'] == len(job_log.decode())
++    assert capture['CR_preserved'] == 3277 and capture['characters'] == len(job_log.decode())
+     assert b'Starting local Bazel server (9.3.0)' in job_log
+     merge = unwrap(load(P / 'actual-merge-commit.json'))
+     assert merge['sha'] == MERGE and merge['tree']['sha'] == TREE
+@@ -292,7 +353,7 @@
+         assert [mode, kind, sha] == [leaves[path][k] for k in ['mode', 'type', 'sha']]
+         selected.append(path)
+     assert len(selected) == len(set(selected)) == 79
+-    assert leaves['codex-rs/windows-sandbox-rs/src/token_neither_privilege_observation.rs']['sha'] == 'b40b49ce772c402c51ddb16bb98ff73dc78cdb41'
++    assert leaves['codex-rs/windows-sandbox-rs/src/token_neither_privilege_observation.rs']['sha'] == '8c16416c185f17871c25139bc16c6fd112b5fd41'
+     assert leaves['codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs']['sha'] == 'fc9faa6d47ac5fdefa216affceb51a586f8e6b81'
+     assert not (base / 'source-status-before.txt').read_bytes().strip() and not (base / 'source-status-after.txt').read_bytes().strip()
+     assert (base / 'original-bazel-exit-code.txt').read_bytes().strip() == b'3'
+@@ -312,11 +373,11 @@
+     assert len(manifest_proofs) == 9
+     whole, whole_pair = pair(one_log(members, 'failed-test-logs'), members, 'exited with error code 1')
+     batches = summaries(whole)
+-    assert len(batches) == 2 and [sum(int(s[i]) for s in batches) for i in [1, 2, 3]] == [146, 8, 2]
+-    assert [s[1:6] for s in batches] == [('92', '0', '0', '0', '64'), ('54', '8', '2', '0', '92')]
++    assert len(batches) == 2 and [sum(int(s[i]) for s in batches) for i in [1, 2, 3]] == [147, 7, 2]
++    assert [s[1:6] for s in batches] == [('92', '0', '0', '0', '64'), ('55', '7', '2', '0', '92')]
+     assert all(sum(int(s[i]) for i in range(1, 6)) == 156 for s in batches)
+     headers = list(re.finditer(r'^---- (.+) stdout ----$', whole, re.M))
+-    assert len(headers) == 8 and {m[1] for m in headers} == set(FAILURE_CLASSES)
++    assert len(headers) == 7 and {m[1] for m in headers} == set(FAILURE_CLASSES)
+     failures = []
+     for index, match in enumerate(headers):
+         end = headers[index + 1].start() if index + 1 < len(headers) else len(whole)
+@@ -333,10 +394,10 @@
+         elif classification == 'downstream_poisoned_test_lock':
+             assert 'tests.rs:62:10' in block and 'test lock poisoned: PoisonError' in block
+         else:
+-            assert block.rstrip().endswith('Error: GetTokenInformation(TokenRestrictedSids) size query failed: 122')
++            raise AssertionError('unexpected original failure classification')
+         failures.append({'case': match[1], 'classification': classification,
+                          'start_line': whole.count('\n', 0, match.start()) + 1, 'original_block_utf8': digest(block.encode())})
+-    observations = rust_observations(whole)
++    observations = mechanism_observations(whole, leaves)
+     cf = base / 'acl-identity-counterfactual'
+     terminal, entry = load(cf / 'counterfactual-terminal.json'), load(cf / 'source-entry.json')
+     assert terminal['status'] == 'VALID_NEGATIVE_AND_EXACT_RESTORE' and terminal['product_B11'] == 'OPEN'
+@@ -394,7 +455,7 @@
+     helper_cases = re.findall(r'^test (\S+) \.\.\. ok$', helper_raw, re.M)
+     assert len(helper_cases) == len(set(helper_cases)) == 21 and helper_cases == ht['results']['actual_case_names']
+     assert len(summaries(helper_raw)) == 1 and summaries(helper_raw)[0][0:6] == ('ok', '21', '0', '0', '0', '0')
+-    loader = importlib.machinery.SourceFileLoader('native11_compact', str(P / 'compact_wire_parser.py.source.txt'))
++    loader = importlib.machinery.SourceFileLoader('native12_compact', str(P / 'compact_wire_parser.py.source.txt'))
+     parser = importlib.util.module_from_spec(importlib.util.spec_from_loader(loader.name, loader))
+     loader.exec_module(parser)
+     compact_results = []
+@@ -442,14 +503,14 @@
+     for row in snapshot['files']:
+         assert digest((P / 'initial-snapshot' / row['path']).read_bytes()) == {k: row[k] for k in ['bytes', 'sha256', 'git_blob']}
+     assert unwrap(load(P / 'initial-snapshot/merge.original.json'))['sha'] == MERGE
+-    return {'schema': 'hepta-b11-native11-portable-original-verification-v1',
++    return {'schema': 'hepta-b11-native12-portable-original-verification-v1',
+             'run': RUN, 'job': JOB, 'attempt': 1, 'head': HEAD, 'actual_checkout': MERGE, 'actual_tree': TREE,
+             'API_terminal_conclusion': {'run': run['conclusion'], 'job': job['conclusion']}, 'job_steps': job['steps'],
+             'archive': digest(archive), 'archive_verification': archive_review, 'transport_parts': 18,
+-            'job_log': digest(job_log), 'job_log_CR_characters': 3334, 'raw_MCP_envelope_exact_decoded_bytes_equal': True,
++            'job_log': digest(job_log), 'job_log_CR_characters': 3277, 'raw_MCP_envelope_exact_decoded_bytes_equal': True,
+             'actual79_source_leaves_with_Merkle_proof_to_actual_merge_tree': selected,
+-            'whole': {'passed': 146, 'failed': 8, 'ignored': 2, 'batches': batches, 'failures': failures, 'pair': whole_pair, 'original_bazel_exit': 3},
+-            'new_observation_Rust_completed_cmd_not_started': observations,
++            'whole': {'passed': 147, 'failed': 7, 'ignored': 2, 'batches': batches, 'failures': failures, 'pair': whole_pair, 'original_bazel_exit': 3},
++            'new_observation_Rust_and_cmd_complete': observations,
+             'positives': positive_evidence, 'negative_pair': negative_pair, 'physical_negative_marker': marker,
+             'negative_assertion': 'acl_tests.rs:597:9', 'negative_XML_exit': 101, 'negative_Bazel_exit': 3,
+             'counterfactual_terminal': terminal, 'positive_and_negative_entire_original_bytes_checked': True,
+@@ -457,10 +518,10 @@
+             'full_index_and_lock_bytes_not_archived_here': True, 'helper_terminal': ht, 'helper_pair': helper_pair,
+             'helper11_canonical_pins_equal_to_published_merge': hs['pins'], 'complete7_compact_logs': compact_results,
+             'all9_collector_source_bindings': manifest_proofs, 'initial_snapshot_files_verified': len(snapshot['files']),
+-            'decision': 'Four original exact positives, one physical negative and exact source restoration, plus original unfiltered 21-case setup helper qualify only their subgates. Whole target is 146/8/2 and failed; new Rust observations completed but cmd phase did not begin.',
++            'decision': 'Four original exact positives, one physical negative and exact source restoration, plus original unfiltered 21-case setup helper qualify only their subgates. Whole target is 147/7/2 and failed; three Rust and two owned cmd observations completed, including actual child-token gates and normal owned-Job cleanup.',
+             'B11': 'OPEN', 'whole_candidate_qualified': False, 'hard_cancellation_restoration_not_guaranteed': True,
+             'scope_exclusions': ['Single-privilege causality is not established.',
+-                                 'No cmd paired-result or owned-Job final cleanup success is claimed.',
++                                 'The two owned cmd lifetimes qualify only this fixed observation; arbitrary descendants, breakaway, cancellation and product isolation are not qualified.',
+                                  'Full restricting token, ambient reads, loader and descendant lifetime remain unqualified.',
+                                  'Helper INFINITE wait and Command.status were not given new deadlines.',
+                                  'No rustfmt gate was run by this verifier.',
+@@ -472,7 +533,7 @@
+     args.add_argument('--output', type=Path)
+     options = args.parse_args()
+     archive = reconstruct_archive()
+-    with tempfile.TemporaryDirectory(prefix='hepta-native11-originals-') as temporary:
++    with tempfile.TemporaryDirectory(prefix='hepta-native12-originals-') as temporary:
+         members = Path(temporary)
+         archive_review = verify_archive(archive, members)
+         result = verify(members, archive, archive_review)
+@@ -481,9 +542,9 @@
+         assert not options.output.exists(), 'Refusing to overwrite an existing evidence file.'
+         options.output.write_bytes(raw)
+     print(json.dumps({'output': str(options.output) if options.output else None, 'result': digest(raw),
+-                      'whole': [146, 8, 2], 'exact_positive': 4, 'physical_negative': 1, 'helper': 21,
++                      'whole': [147, 7, 2], 'exact_positive': 4, 'physical_negative': 1, 'helper': 21,
+                       'original_ZIP_members': 84, 'compact_logs_fully_parsed': 7, 'Rust_observation_cohorts': 3,
+-                      'cmd_started': False, 'B11': 'OPEN'}))
++                      'cmd_started': True, 'cmd_observation_cohorts': 2, 'B11': 'OPEN'}))
+ 
+ 
+ if __name__ == '__main__':

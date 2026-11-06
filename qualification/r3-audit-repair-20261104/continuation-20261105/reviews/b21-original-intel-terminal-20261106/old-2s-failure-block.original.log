@@ -1,0 +1,48 @@
+2026-11-05T06:52:31.6950690Z ==================== Test output for //codex-rs/utils/pty:pty-unit-tests:
+2026-11-05T06:52:31.7952270Z 
+2026-11-05T06:52:31.8954160Z running 31 tests
+2026-11-05T06:52:31.9990380Z test process_group::tests::denied_group_signal_rejects_unsafe_process_group_ids ... ok
+2026-11-05T06:52:32.0958300Z test tests::driver_backed_process_can_expose_split_stdout_and_stderr ... ok
+2026-11-05T06:52:32.1965460Z test tests::driver_backed_process_can_resize_via_resizer_hook ... ok
+2026-11-05T06:52:32.2970350Z test tests::output_collector_waits_for_exit_after_output_closes ... ok
+2026-11-05T06:52:32.3971740Z test tests::driver_backed_process_drains_output_that_arrives_after_exit_signal ... ok
+2026-11-05T06:52:32.4981160Z test process_group::tests::denied_group_signal_terminates_owned_descendants_and_preserves_escalation ... ok
+2026-11-05T06:52:32.5984500Z test tests::pipe_process_can_expose_split_stdout_and_stderr ... ok
+2026-11-05T06:52:32.6985390Z test tests::pipe_drop_reaps_child ... ok
+2026-11-05T06:52:32.7987290Z test tests::pipe_and_pty_share_interface ... ok
+2026-11-05T06:52:32.8993450Z test tests::pipe_spawn_no_stdin_can_preserve_inherited_fds ... ok
+2026-11-05T06:52:32.9996830Z test tests::pipe_terminate_aborts_detached_readers ... ok
+2026-11-05T06:52:33.1003130Z test tests::pipe_terminate_reaps_child ... ok
+2026-11-05T06:52:33.2005350Z test tests::pipe_process_detaches_from_parent_session ... ok
+2026-11-05T06:52:33.3007760Z test tests::pipe_drains_stderr_without_stdout_activity ... ok
+2026-11-05T06:52:33.4012310Z test tests::pipe_process_round_trips_stdin ... ok
+2026-11-05T06:52:33.5021320Z test tests::pty_preserving_fds_drop_allows_runtime_shutdown_with_detached_child ... ok
+2026-11-05T06:52:33.6024450Z test tests::pty_drop_allows_runtime_shutdown_with_detached_child ... ok
+2026-11-05T06:52:33.7027750Z test tests::pty_preserving_fds_terminate_allows_runtime_shutdown_with_detached_child ... ok
+2026-11-05T06:52:33.8031280Z test tests::pty_dropped_output_receiver_keeps_draining_child ... FAILED
+2026-11-05T06:52:33.9032680Z test tests::pty_python_repl_emits_output_and_exits ... ok
+2026-11-05T06:52:34.0034490Z test tests::pty_spawn_can_preserve_inherited_fds ... ok
+2026-11-05T06:52:34.1037710Z test tests::pty_spawn_with_inherited_fds_reports_exec_failures ... ok
+2026-11-05T06:52:34.2039090Z test tests::pty_spawn_with_inherited_fds_supports_resize ... ok
+2026-11-05T06:52:34.3065750Z test tests::pty_spawn_without_io_driver_returns_error ... ok
+2026-11-05T06:52:34.4047670Z test tests::pty_preserving_inherited_fds_keeps_python_repl_running ... ok
+2026-11-05T06:52:34.5050460Z test tests::pty_terminate_allows_runtime_shutdown_with_detached_child ... ok
+2026-11-05T06:52:34.6054940Z test tests::pty_terminate_kills_background_children_in_same_process_group ... ok
+2026-11-05T06:52:34.7054000Z test tests::pty_terminate_reaps_child_when_waiter_is_queued ... ok
+2026-11-05T06:52:34.8137000Z test tests::pty_close_stdin_preserves_large_input_and_delivers_eof ... ok
+2026-11-05T06:52:34.9073210Z test tests::pty_python_repl_readiness_waits_for_execution_after_input_echo ... ok
+2026-11-05T06:52:35.0237680Z test tests::pty_terminate_allows_runtime_shutdown_with_full_output_channel ... ok
+2026-11-05T06:52:35.1566660Z 
+2026-11-05T06:52:35.2585710Z failures:
+2026-11-05T06:52:35.3592940Z 
+2026-11-05T06:52:35.4596400Z ---- tests::pty_dropped_output_receiver_keeps_draining_child stdout ----
+2026-11-05T06:52:35.5708910Z PTY dropped receiver: starting backend=portable
+2026-11-05T06:52:35.7110890Z PTY dropped receiver: backend=portable spawn_elapsed=5.331807ms wait_elapsed=2.023066511s outcome=deadline_elapsed has_exited=false exit_code=None
+2026-11-05T06:52:35.8228280Z PTY dropped receiver: backend=portable child_phase=Ok("python_started")
+2026-11-05T06:52:35.9229030Z Error: deadline has elapsed
+2026-11-05T06:52:36.0231390Z 
+2026-11-05T06:52:36.1267980Z 
+2026-11-05T06:52:36.2493200Z failures:
+2026-11-05T06:52:36.3523280Z     tests::pty_dropped_output_receiver_keeps_draining_child
+2026-11-05T06:52:36.4525090Z 
+2026-11-05T06:52:36.5531240Z test result: FAILED. 30 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.62s

@@ -1,0 +1,50 @@
+{
+  "new_network_native_CI_or_ref_operations": false,
+  "replays": [
+    {
+      "exit_code": 0,
+      "name": "census",
+      "stderr_bytes": 0,
+      "stdout_equal_frozen_original": true,
+      "stdout_identity": {
+        "bytes": 247394,
+        "git_blob": "118a096dbd5322b130a43f7783daed6ab808e423",
+        "sha256": "de807b2eccbaca9db6e4163ab2118769dd31e882f59ace64d30484b0b0106a5b"
+      }
+    },
+    {
+      "exit_code": 0,
+      "name": "inventory",
+      "stderr_bytes": 0,
+      "stdout_equal_frozen_original": true,
+      "stdout_identity": {
+        "bytes": 3857672,
+        "git_blob": "e93618cb9942e9888a483767f6a5bfd7cdbc2a76",
+        "sha256": "fb0912725570f1c7bdff9a5411d176442e567acf0b925d77e0ca027f080cc7cb"
+      }
+    },
+    {
+      "exit_code": 0,
+      "name": "old-summary",
+      "stderr_bytes": 0,
+      "stdout_equal_frozen_original": true,
+      "stdout_identity": {
+        "bytes": 1753,
+        "git_blob": "7281864fe98391d47c32a04c01ca11be4d24cf26",
+        "sha256": "d39a67efa6c24229f1ed643464eceb4e4f0d369bfb5857ea5b60cac578b25646"
+      }
+    }
+  ],
+  "restoration": {
+    "gzip": {
+      "bytes": 15982695,
+      "git_blob": "a8142058290be142744aa76b2fcf13fe69f9d86a",
+      "sha256": "82bc5bd8afc1b99bccac3db98e49003008c9c37ad4ee5c9751010ca6353fe12f"
+    },
+    "member_bytes": 180609383,
+    "members": 56,
+    "no_network_native_or_ref": true,
+    "result": "EXACT_ARCHIVE_MEMBERS_RESTORED"
+  },
+  "schema": "hepta-open-pr-census-offline-replay-v1"
+}

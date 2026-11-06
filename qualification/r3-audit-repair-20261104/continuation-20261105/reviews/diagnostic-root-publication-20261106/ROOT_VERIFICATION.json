@@ -1,0 +1,59 @@
+{
+  "schema": "hepta-b21-b23-root-publication-verification-v1",
+  "result": "PASS",
+  "source": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+  "source_tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+  "records": [
+    {
+      "head": "ebd31e2b3e38ff72cedaa7b57bee60c1c102da27",
+      "parent": "cc65856cc0b20d03db506c19495d53d61162102d",
+      "tree": "46fca3e684217066c260dc10d0dc319a33e0a93c",
+      "merge": "01167418c3cf2970b156bc23be911b58ced49691",
+      "workflow": ".github/workflows/b21-intel-original-pty.yml",
+      "blob": "fb5881fa310d3548cd604d2827fe9c29aa1b3873",
+      "bytes": 50740,
+      "review": "ecab7af9dc20c8989b9c8c5a4a099f2c91cbf3d0",
+      "pr": 4902,
+      "stdout": 7890,
+      "all_original_10582_leaves_unchanged": true,
+      "directory_nodes_recomputed": 1571,
+      "actual_root_GET_full_equal": true,
+      "actual_ref_and_PR_body_GET_equal": true,
+      "actual_merge_same_tree": true,
+      "root_static_replay_stdout": {
+        "bytes": 7890,
+        "git_blob": "e4d09660d15b9196bacddfe085fc3cc2239353ba",
+        "sha256": "3dd7c7c3db5c5d9222592a8563dd10d9616e65dd1621d78d1dda7bc5946f7f0f"
+      },
+      "native_result_asserted_by_this_receipt": false,
+      "blocker_status": "OPEN"
+    },
+    {
+      "head": "e63ed76c5d8ded046f97caffbdbe2883140e6032",
+      "parent": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+      "tree": "a6831e2607e718f1343b788e5b8062a171d50a71",
+      "merge": "b3bc3dcf5684568dd03f3667ecd2307b8577a0a6",
+      "workflow": ".github/workflows/hepta-b23-linux-app-server-original-gate.yml",
+      "blob": "d4b87c924a1dcc795e05aec1dd4e31854dcff687",
+      "bytes": 60049,
+      "review": "8c68dc2cca5bcff0eb99614eca5e39809dd616de",
+      "pr": 4910,
+      "stdout": 3472,
+      "all_original_10582_leaves_unchanged": true,
+      "directory_nodes_recomputed": 1571,
+      "actual_root_GET_full_equal": true,
+      "actual_ref_and_PR_body_GET_equal": true,
+      "actual_merge_same_tree": true,
+      "root_static_replay_stdout": {
+        "bytes": 3472,
+        "git_blob": "2b3e03a3d0ccfe449e06338b2405fc9c6bdabc1a",
+        "sha256": "98e6e19165d4ce56d074291964c3212dec7eba7246a3dcaaa2a23bf6933b8806"
+      },
+      "native_result_asserted_by_this_receipt": false,
+      "blocker_status": "OPEN"
+    }
+  ],
+  "B21_root_replay_limit": "Root replayed the 7,890-byte pre-actual-GET-metadata verifier output. The later 7,937-byte output adds an actual-full-GET count; independent actual addendum2dae covers that increment. These outputs are not asserted byte-equal.",
+  "native_or_required_qualification_granted": false,
+  "all_blockers_closed": false
+}

@@ -1,0 +1,20 @@
+{
+  "schema": "hepta-main67-0319-independent-location-restore-replay-v1",
+  "restored_to": "/tmp/hepta-runtime-recovery-20261106/main67-newcut-restored-sqdtykx8",
+  "restore_exit_code": 0,
+  "decode_exit_code": 0,
+  "verify_exit_code": 0,
+  "stderr_empty": true,
+  "all_163_original_members_restored_equal": true,
+  "all_compact_projections_replayed_equal": [
+    "compact-all-test-runners.json",
+    "compact-core-input-relationships.json",
+    "compact-core-test-runners.json",
+    "compact-summary.json"
+  ],
+  "verification_stdout_full_bytes_equal": true,
+  "verification_stdout_bytes": 315070,
+  "verification_stdout_sha256": "2ba75ac85d9ba9798162518a537519d02eeecf8fee823484d0c8753b72aa1e03",
+  "packet_manifest_sha256": "0e8dce97fe8f8259c327e1956e1d4434110d1badfae571b2c12023a7b363fba8",
+  "no_network_or_native_or_test_execution": true
+}

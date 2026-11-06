@@ -1,0 +1,2970 @@
+{
+  "custody_limits": {
+    "all_blockers_closed": false,
+    "all_required_CI_passed": false,
+    "included_API_MCP_responses": 5,
+    "included_complete_original_decoded_logs": 3,
+    "included_metadata": 1,
+    "log_MCP_wrapper_included": false,
+    "log_newline_normalized": false,
+    "log_wrapper_note": "Root retained wrappers separately in code-mode; no wrapper member or HTTP-wire-byte claim is made for this package.",
+    "new_artifact_native_or_product_qualification": false,
+    "ref_or_PR_mutation": false,
+    "source_gateway_embedded_log_digests_independently_rebuilt": false,
+    "source_gateway_note": "Complete JSON receipts and preceding actual named PASS rows are parsed; underlying per-gateway artifact files were not fetched or independently rebuilt in this bundle."
+  },
+  "inputs": [
+    {
+      "bytes": 2959,
+      "git_blob": "582d2b5af0866471d8eb6fef097d10f44b889877",
+      "path": "original/collection-metadata.json",
+      "sha256": "5dcf448dc51b9b55bdc1fceed8008dd2fd97cfd3ab1269f28e4492f127eb65bf"
+    },
+    {
+      "bytes": 514320,
+      "git_blob": "b906eae722a7c4919b1c3c8c61765d1a9468f8dc",
+      "path": "original/job-127581904221.original.log",
+      "sha256": "e638aec160465097c2aee37f5fd9b7cf175226efc6bc6e7c043d036cd6783028"
+    },
+    {
+      "bytes": 522388,
+      "git_blob": "9e0070dfba8931b9d8bbfbe299b7ddb7c4bcc5e9",
+      "path": "original/job-127581904330.original.log",
+      "sha256": "6b3fa73fb1758f944d01e8902fb9001923192875e1656f5112b6992018e389c0"
+    },
+    {
+      "bytes": 1606119,
+      "git_blob": "5ca1c1c9543c21ff9647dcb90dfd32ada53e9f22",
+      "path": "original/job-127581904963.original.log",
+      "sha256": "74fbbd060d64f9a1ae18bd91f3a483ca0a8f62fc5e7bab58828d89a5bf33c370"
+    },
+    {
+      "bytes": 69370,
+      "git_blob": "615721d5d86840b26d28dd5f4b469b8c6728b070",
+      "path": "original/run-42123581031-jobs.original.json",
+      "sha256": "673279c1d9849d079c5fd199f5832c07934d2ebc1738a859698b9e07623f774c"
+    },
+    {
+      "bytes": 111876,
+      "git_blob": "669e2ca8a71d0d0fae144e9f334cd5c8619834fd",
+      "path": "original/run-42123581260-jobs.original.json",
+      "sha256": "b7520ef12d76cf6b4a1f64a9cef39b12674b01baed8e0caa589e0cec38923a43"
+    },
+    {
+      "bytes": 28712,
+      "git_blob": "54b15da44ce52369d5bf733252ba606b658a5d05",
+      "path": "original/run-42123581363-jobs.original.json",
+      "sha256": "5a42e1fddbd379f268982b705e082bf24de399eb27de764bf48e5a5c36c73dae"
+    },
+    {
+      "bytes": 14132,
+      "git_blob": "8797f62293e5da03708871265969585e18fa77f4",
+      "path": "original/run-42123581408-jobs.original.json",
+      "sha256": "728c84d38fa353cfcde5919904b8a0dc3ccd931b2529c2e34a998798ef8b20a3"
+    },
+    {
+      "bytes": 633022,
+      "git_blob": "668e91a437ff4c7ba854fca923e572709613ad0c",
+      "path": "original/run-list.original.json",
+      "sha256": "4946fbb43641e7be0c7b622cfce1ca4a03e97bde34d444a8981ddf52a3a8774a"
+    }
+  ],
+  "jobs": {
+    "counts": {
+      "cancelled": 3,
+      "in_progress": 1,
+      "success": 19
+    },
+    "denominator": 23,
+    "new_full_58_job_census_claimed": false,
+    "records": [
+      {
+        "completed_at": "2026-11-06T02:13:38Z",
+        "conclusion": "success",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "id": 127581904963,
+        "name": "Original memory and Agentd libraries (source head)",
+        "run_attempt": 1,
+        "run_id": 42123581408,
+        "runner_id": 1000007078,
+        "started_at": "2026-11-06T01:38:31Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-11-05T22:44:18Z",
+        "conclusion": "success",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "id": 127581904490,
+        "name": "metadata",
+        "run_attempt": 1,
+        "run_id": 42123581260,
+        "runner_id": 1000005335,
+        "started_at": "2026-11-05T22:42:07Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-11-06T00:45:54Z",
+        "conclusion": "cancelled",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "id": 127583368359,
+        "name": "Build ptrcomp-sandbox aarch64-pc-windows-msvc from source",
+        "run_attempt": 1,
+        "run_id": 42123581260,
+        "runner_id": 1000005366,
+        "started_at": "2026-11-05T22:45:08Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-11-06T02:02:30Z",
+        "conclusion": "success",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "id": 127583368465,
+        "name": "Build release x86_64-unknown-linux-gnu",
+        "run_attempt": 1,
+        "run_id": 42123581260,
+        "runner_id": 1000007235,
+        "started_at": "2026-11-06T01:59:23Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-11-06T01:43:02Z",
+        "conclusion": "success",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "id": 127583368476,
+        "name": "Build ptrcomp-sandbox aarch64-unknown-linux-gnu",
+        "run_attempt": 1,
+        "run_id": 42123581260,
+        "runner_id": 1000007085,
+        "started_at": "2026-11-06T01:39:37Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-11-05T23:00:57Z",
+        "conclusion": "cancelled",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "id": 127583368484,
+        "name": "Build release aarch64-apple-darwin",
+        "run_attempt": 1,
+        "run_id": 42123581260,
+        "runner_id": 0,
+        "started_at": "2026-11-05T22:44:18Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-11-05T23:01:25Z",
+        "conclusion": "success",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "id": 127583368499,
+        "name": "Build release x86_64-apple-darwin",
+        "run_attempt": 1,
+        "run_id": 42123581260,
+        "runner_id": 1000005370,
+        "started_at": "2026-11-05T22:47:08Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-11-06T01:42:15Z",
+        "conclusion": "success",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "id": 127583368508,
+        "name": "Build release aarch64-unknown-linux-musl",
+        "run_attempt": 1,
+        "run_id": 42123581260,
+        "runner_id": 1000007086,
+        "started_at": "2026-11-06T01:39:36Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-11-06T00:05:58Z",
+        "conclusion": "success",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "id": 127583368517,
+        "name": "Build ptrcomp-sandbox x86_64-pc-windows-msvc from source",
+        "run_attempt": 1,
+        "run_id": 42123581260,
+        "runner_id": 1000005363,
+        "started_at": "2026-11-05T22:44:52Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-11-05T23:00:37Z",
+        "conclusion": "cancelled",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "id": 127583368519,
+        "name": "Build ptrcomp-sandbox aarch64-apple-darwin",
+        "run_attempt": 1,
+        "run_id": 42123581260,
+        "runner_id": 0,
+        "started_at": "2026-11-05T22:44:18Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-11-06T01:50:50Z",
+        "conclusion": "success",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "id": 127583368525,
+        "name": "Build release aarch64-unknown-linux-gnu",
+        "run_attempt": 1,
+        "run_id": 42123581260,
+        "runner_id": 1000007130,
+        "started_at": "2026-11-06T01:47:24Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-11-05T23:00:36Z",
+        "conclusion": "success",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "id": 127583368613,
+        "name": "Build ptrcomp-sandbox x86_64-apple-darwin",
+        "run_attempt": 1,
+        "run_id": 42123581260,
+        "runner_id": 1000005383,
+        "started_at": "2026-11-05T22:47:27Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-11-06T01:48:38Z",
+        "conclusion": "success",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "id": 127583368621,
+        "name": "Build ptrcomp-sandbox x86_64-unknown-linux-musl",
+        "run_attempt": 1,
+        "run_id": 42123581260,
+        "runner_id": 1000007118,
+        "started_at": "2026-11-06T01:45:44Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-11-06T01:54:03Z",
+        "conclusion": "success",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "id": 127583368668,
+        "name": "Build ptrcomp-sandbox aarch64-unknown-linux-musl",
+        "run_attempt": 1,
+        "run_id": 42123581260,
+        "runner_id": 1000007166,
+        "started_at": "2026-11-06T01:51:34Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-11-06T02:03:14Z",
+        "conclusion": "success",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "id": 127583368724,
+        "name": "Build ptrcomp-sandbox x86_64-unknown-linux-gnu",
+        "run_attempt": 1,
+        "run_id": 42123581260,
+        "runner_id": 1000007234,
+        "started_at": "2026-11-06T01:59:23Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-11-06T02:09:12Z",
+        "conclusion": "success",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "id": 127583368742,
+        "name": "Build release x86_64-unknown-linux-musl",
+        "run_attempt": 1,
+        "run_id": 42123581260,
+        "runner_id": 1000007301,
+        "started_at": "2026-11-06T02:06:38Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-11-06T01:38:08Z",
+        "conclusion": "success",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "id": 127581903721,
+        "name": "Generate UI dependency lock for review",
+        "run_attempt": 1,
+        "run_id": 42123581031,
+        "runner_id": 1000007067,
+        "started_at": "2026-11-06T01:37:07Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-11-06T01:39:36Z",
+        "conclusion": "success",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "id": 127581904009,
+        "name": "Original native presentation / base-merge",
+        "run_attempt": 1,
+        "run_id": 42123581031,
+        "runner_id": 1000007033,
+        "started_at": "2026-11-06T01:31:57Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-11-06T01:52:22Z",
+        "conclusion": "success",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "id": 127581904151,
+        "name": "Original native presentation / source-head",
+        "run_attempt": 1,
+        "run_id": 42123581031,
+        "runner_id": 1000007111,
+        "started_at": "2026-11-06T01:44:21Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-11-06T02:07:13Z",
+        "conclusion": "success",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "id": 127581904221,
+        "name": "Rust UI foundation / base-merge",
+        "run_attempt": 1,
+        "run_id": 42123581031,
+        "runner_id": 1000007144,
+        "started_at": "2026-11-06T01:48:54Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-11-06T02:06:35Z",
+        "conclusion": "success",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "id": 127581904330,
+        "name": "Rust UI foundation / source-head",
+        "run_attempt": 1,
+        "run_id": 42123581031,
+        "runner_id": 1000007075,
+        "started_at": "2026-11-06T01:38:06Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-11-06T02:34:36Z",
+        "conclusion": "success",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "id": 127654866519,
+        "name": "Architecture convergence (base-merge)",
+        "run_attempt": 1,
+        "run_id": 42123581363,
+        "runner_id": 1000007804,
+        "started_at": "2026-11-06T02:34:06Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": null,
+        "conclusion": null,
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "id": 127654866844,
+        "name": "Architecture convergence (source-head)",
+        "run_attempt": 1,
+        "run_id": 42123581363,
+        "runner_id": 1000007809,
+        "started_at": "2026-11-06T02:34:12Z",
+        "status": "in_progress"
+      }
+    ],
+    "runs": [
+      {
+        "counts": {
+          "success": 1
+        },
+        "jobs": 1,
+        "run": 42123581408
+      },
+      {
+        "counts": {
+          "cancelled": 3,
+          "success": 12
+        },
+        "jobs": 15,
+        "run": 42123581260
+      },
+      {
+        "counts": {
+          "success": 5
+        },
+        "jobs": 5,
+        "run": 42123581031
+      },
+      {
+        "counts": {
+          "in_progress": 1,
+          "success": 1
+        },
+        "jobs": 2,
+        "run": 42123581363
+      }
+    ],
+    "scope": "Only four selected changed runs, not a refreshed all-19-run census"
+  },
+  "objective_console": {
+    "API_conclusion": "success",
+    "actual_nextest_or_libtest_summaries_in_console": 0,
+    "actual_start_markers": [
+      {
+        "line": 9572,
+        "name": "native-update"
+      },
+      {
+        "line": 9574,
+        "name": "native-install"
+      },
+      {
+        "line": 9611,
+        "name": "v8"
+      },
+      {
+        "line": 9646,
+        "name": "metadata"
+      },
+      {
+        "line": 9681,
+        "name": "format"
+      },
+      {
+        "line": 9716,
+        "name": "memory"
+      },
+      {
+        "line": 9751,
+        "name": "agentd"
+      },
+      {
+        "line": 9786,
+        "name": "desktop-ui"
+      },
+      {
+        "line": 9821,
+        "name": "fix-memory"
+      },
+      {
+        "line": 9856,
+        "name": "fix-agentd"
+      },
+      {
+        "line": 9891,
+        "name": "fix-desktop-ui"
+      },
+      {
+        "line": 9926,
+        "name": "format-final"
+      }
+    ],
+    "case_counts_from_console": null,
+    "embedded_source_redirection": [
+      {
+        "body": "            completed = subprocess.run(COMMANDS[label], cwd=cwd, stdout=out, stderr=err, check=False)",
+        "line": 7979
+      }
+    ],
+    "job_id": 127581904963,
+    "lines": 10191,
+    "raw_log": {
+      "bytes": 1606119,
+      "git_blob": "5ca1c1c9543c21ff9647dcb90dfd32ada53e9f22",
+      "sha256": "74fbbd060d64f9a1ae18bd91f3a483ca0a8f62fc5e7bab58828d89a5bf33c370"
+    },
+    "run_id": 42123581408,
+    "scope": "Complete decoded console retained. Inner command stdout/stderr are redirected to artifact files; no per-case or JUnit result is inferred from echoed source, counters in source, or API green. Separate 52-member artifact qualification is outside this bundle."
+  },
+  "observations": {
+    "decoded_logs_UTC": [
+      {
+        "job_id": 127581904963,
+        "observed_utc": "2026-11-06 02:53:23 UTC"
+      },
+      {
+        "job_id": 127581904221,
+        "observed_utc": "2026-11-06 02:53:27 UTC"
+      },
+      {
+        "job_id": 127581904330,
+        "observed_utc": "2026-11-06 02:53:29 UTC"
+      }
+    ],
+    "four_jobs_API_UTC": [
+      {
+        "observed_utc": "2026-11-06 02:45:56 UTC",
+        "run": 42123581408
+      },
+      {
+        "observed_utc": "2026-11-06 02:45:56 UTC",
+        "run": 42123581260
+      },
+      {
+        "observed_utc": "2026-11-06 02:45:56 UTC",
+        "run": 42123581031
+      },
+      {
+        "observed_utc": "2026-11-06 02:45:57 UTC",
+        "run": 42123581363
+      }
+    ],
+    "non_atomic": true,
+    "run_list_UTC": "2026-11-06 02:44:37 UTC",
+    "timestamps_source": "Fixed collector metadata; no new queries or recreated read timestamps."
+  },
+  "result": "PASS_FROZEN_INPUT_CUSTODY_AND_BOUNDED_INCREMENT_REVIEW",
+  "run_failure_interpretation": "Four top-level failed runs are not four proven product test failures. This four-run child subset contains zero job failure and three V8 cancellations; cancellation cause is not established here.",
+  "runs": {
+    "complete_original_query": true,
+    "counts": {
+      "failure": 4,
+      "in_progress": 1,
+      "queued": 2,
+      "skipped": 2,
+      "success": 10
+    },
+    "denominator": 19,
+    "records": [
+      {
+        "conclusion": "success",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "id": 42123581986,
+        "name": "Hepta musl product smoke",
+        "run_attempt": 1,
+        "status": "completed",
+        "updated_at": "2026-11-06T01:59:03Z"
+      },
+      {
+        "conclusion": "success",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "id": 42123581050,
+        "name": "Native Windows Bazel process environment",
+        "run_attempt": 1,
+        "status": "completed",
+        "updated_at": "2026-11-05T22:57:53Z"
+      },
+      {
+        "conclusion": "success",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "id": 42123581231,
+        "name": "Hepta Windows private-state native (security qualification only)",
+        "run_attempt": 1,
+        "status": "completed",
+        "updated_at": "2026-11-05T23:00:19Z"
+      },
+      {
+        "conclusion": "success",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "id": 42123581007,
+        "name": "Native Windows ordinary business consumers",
+        "run_attempt": 1,
+        "status": "completed",
+        "updated_at": "2026-11-05T22:54:20Z"
+      },
+      {
+        "conclusion": null,
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "id": 42123581270,
+        "name": "Hepta exec recovery and authorized-read conformance",
+        "run_attempt": 1,
+        "status": "queued",
+        "updated_at": "2026-11-05T22:41:15Z"
+      },
+      {
+        "conclusion": "skipped",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "id": 42123581091,
+        "name": "App-server schema refresh",
+        "run_attempt": 1,
+        "status": "completed",
+        "updated_at": "2026-11-05T22:41:16Z"
+      },
+      {
+        "conclusion": "skipped",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "id": 42123581410,
+        "name": "Production HOS2 owner proposal",
+        "run_attempt": 1,
+        "status": "completed",
+        "updated_at": "2026-11-05T22:41:17Z"
+      },
+      {
+        "conclusion": "failure",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "id": 42123581078,
+        "name": "Hepta Keyring Sync Security Migration (Draft)",
+        "run_attempt": 1,
+        "status": "completed",
+        "updated_at": "2026-11-06T01:35:26Z"
+      },
+      {
+        "conclusion": "failure",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "id": 42123581186,
+        "name": "Hepta operator acceptance native signature verification",
+        "run_attempt": 1,
+        "status": "completed",
+        "updated_at": "2026-11-06T01:36:39Z"
+      },
+      {
+        "conclusion": "success",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "id": 42123581393,
+        "name": "Hepta Memory P0 native regressions",
+        "run_attempt": 1,
+        "status": "completed",
+        "updated_at": "2026-11-06T01:44:58Z"
+      },
+      {
+        "conclusion": "success",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "id": 42123581479,
+        "name": "Hepta Supervisor P0 Cross-Platform Restart Qualification",
+        "run_attempt": 1,
+        "status": "completed",
+        "updated_at": "2026-11-06T01:45:05Z"
+      },
+      {
+        "conclusion": "failure",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "id": 42123581142,
+        "name": "Hepta owner-local Matrixd and Agentd native transport",
+        "run_attempt": 1,
+        "status": "completed",
+        "updated_at": "2026-11-06T01:45:48Z"
+      },
+      {
+        "conclusion": null,
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "id": 42123581385,
+        "name": "blocking-ci",
+        "run_attempt": 1,
+        "status": "queued",
+        "updated_at": "2026-11-06T01:21:30Z"
+      },
+      {
+        "conclusion": "success",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "id": 42123581408,
+        "name": "Original Objective owner package gates",
+        "run_attempt": 1,
+        "status": "completed",
+        "updated_at": "2026-11-06T02:13:39Z"
+      },
+      {
+        "conclusion": "failure",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "id": 42123581260,
+        "name": "v8-canary",
+        "run_attempt": 1,
+        "status": "completed",
+        "updated_at": "2026-11-06T02:09:13Z"
+      },
+      {
+        "conclusion": "success",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "id": 42123581031,
+        "name": "Rust UI product foundation",
+        "run_attempt": 1,
+        "status": "completed",
+        "updated_at": "2026-11-06T02:07:14Z"
+      },
+      {
+        "conclusion": null,
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "id": 42123581363,
+        "name": "Hepta architecture convergence",
+        "run_attempt": 1,
+        "status": "in_progress",
+        "updated_at": "2026-11-06T02:34:13Z"
+      },
+      {
+        "conclusion": "success",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "id": 42123569559,
+        "name": "Native Windows retained recovery and cognitive owner",
+        "run_attempt": 1,
+        "status": "completed",
+        "updated_at": "2026-11-05T22:55:35Z"
+      },
+      {
+        "conclusion": "success",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+        "id": 42123569750,
+        "name": "Native Windows Core lifecycle ordering",
+        "run_attempt": 1,
+        "status": "completed",
+        "updated_at": "2026-11-05T22:56:15Z"
+      }
+    ]
+  },
+  "schema": "main67-20261106T0244-independent-verification",
+  "source": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+  "source_tree_authority": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+  "ui_console_evidence": [
+    {
+      "CRLF_bytes": 0,
+      "LF_bytes": 5747,
+      "browser_groups": [
+        {
+          "elapsed": "1.4m",
+          "line": 4350,
+          "passed": 6
+        },
+        {
+          "elapsed": "1.2m",
+          "line": 4912,
+          "passed": 7
+        },
+        {
+          "elapsed": "2.3m",
+          "line": 5231,
+          "passed": 9
+        },
+        {
+          "elapsed": "24.6s",
+          "line": 5273,
+          "passed": 1
+        }
+      ],
+      "filtered_gateways": "Four explicit -E selections; 31/35/28/38 skipped preserved, not counted as passes. No summed distinct-case or independence claim across groups/lanes.",
+      "gateway_records": [
+        {
+          "line": 4761,
+          "object": {
+            "after": {
+              "commit": "c0f9b518d0b14c32396294cfc88ffe92c98692c5",
+              "dirty": false,
+              "parents": [
+                "63652be658ebed8d3052eb789b951793384fd5e4",
+                "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+              ],
+              "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359"
+            },
+            "base_sha": "63652be658ebed8d3052eb789b951793384fd5e4",
+            "before": {
+              "commit": "c0f9b518d0b14c32396294cfc88ffe92c98692c5",
+              "dirty": false,
+              "parents": [
+                "63652be658ebed8d3052eb789b951793384fd5e4",
+                "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+              ],
+              "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359"
+            },
+            "command": [
+              "just",
+              "test",
+              "--locked",
+              "-p",
+              "codex-hepta-native-gateway",
+              "--lib",
+              "-E",
+              "test(http_transport::tests::)"
+            ],
+            "command_exit_code": 0,
+            "elapsed_seconds": 2.17675017199997,
+            "exit_code": 0,
+            "finished_at": "2026-11-06T01:57:01.621512+00:00",
+            "job": "robrix-host",
+            "lane": "base-merge",
+            "log_bytes": 4712,
+            "log_file": "gateway-transport-base-merge.json.47e83e20c94c4effbfba6aee2a9ddad9.log",
+            "log_sha256": "a5701e6c43418b85cef764d35e3ad987eab1e766bfac72f833d01228caac68ca",
+            "minimum_tests": 9,
+            "observed_failed_tests": 0,
+            "observed_passed_tests": 9,
+            "output_limit_exceeded": false,
+            "recomputed_merge_tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+            "returncode": 0,
+            "run_attempt": "1",
+            "run_id": "42123581031",
+            "schema_version": 1,
+            "source_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+            "started_at": "2026-11-06T01:56:59.443484+00:00",
+            "status": "passed",
+            "tested_sha": "c0f9b518d0b14c32396294cfc88ffe92c98692c5",
+            "timed_out": false,
+            "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+          }
+        },
+        {
+          "line": 4794,
+          "object": {
+            "after": {
+              "commit": "c0f9b518d0b14c32396294cfc88ffe92c98692c5",
+              "dirty": false,
+              "parents": [
+                "63652be658ebed8d3052eb789b951793384fd5e4",
+                "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+              ],
+              "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359"
+            },
+            "base_sha": "63652be658ebed8d3052eb789b951793384fd5e4",
+            "before": {
+              "commit": "c0f9b518d0b14c32396294cfc88ffe92c98692c5",
+              "dirty": false,
+              "parents": [
+                "63652be658ebed8d3052eb789b951793384fd5e4",
+                "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+              ],
+              "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359"
+            },
+            "command": [
+              "just",
+              "test",
+              "--locked",
+              "-p",
+              "codex-hepta-native-gateway",
+              "--lib",
+              "-E",
+              "test(owner_status::tests::)"
+            ],
+            "command_exit_code": 0,
+            "elapsed_seconds": 0.7856228480000027,
+            "exit_code": 0,
+            "finished_at": "2026-11-06T01:57:02.440547+00:00",
+            "job": "robrix-host",
+            "lane": "base-merge",
+            "log_bytes": 4068,
+            "log_file": "gateway-boundary-owner-status-base-merge.json.5b4fb7e6ccef456cae108dbf2e56b431.log",
+            "log_sha256": "cba4304a8aef02333ba6ec4a64c7f2214282496a1a92474410cac0b8c10e4006",
+            "minimum_tests": 5,
+            "observed_failed_tests": 0,
+            "observed_passed_tests": 5,
+            "output_limit_exceeded": false,
+            "recomputed_merge_tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+            "returncode": 0,
+            "run_attempt": "1",
+            "run_id": "42123581031",
+            "schema_version": 1,
+            "source_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+            "started_at": "2026-11-06T01:57:01.654561+00:00",
+            "status": "passed",
+            "tested_sha": "c0f9b518d0b14c32396294cfc88ffe92c98692c5",
+            "timed_out": false,
+            "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+          }
+        },
+        {
+          "line": 4834,
+          "object": {
+            "after": {
+              "commit": "c0f9b518d0b14c32396294cfc88ffe92c98692c5",
+              "dirty": false,
+              "parents": [
+                "63652be658ebed8d3052eb789b951793384fd5e4",
+                "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+              ],
+              "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359"
+            },
+            "base_sha": "63652be658ebed8d3052eb789b951793384fd5e4",
+            "before": {
+              "commit": "c0f9b518d0b14c32396294cfc88ffe92c98692c5",
+              "dirty": false,
+              "parents": [
+                "63652be658ebed8d3052eb789b951793384fd5e4",
+                "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+              ],
+              "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359"
+            },
+            "command": [
+              "just",
+              "test",
+              "--locked",
+              "-p",
+              "codex-hepta-native-gateway",
+              "--lib",
+              "-E",
+              "test(ui_bundle::tests::)"
+            ],
+            "command_exit_code": 0,
+            "elapsed_seconds": 0.6106419270000742,
+            "exit_code": 0,
+            "finished_at": "2026-11-06T01:57:03.084748+00:00",
+            "job": "robrix-host",
+            "lane": "base-merge",
+            "log_bytes": 5049,
+            "log_file": "gateway-boundary-ui-bundle-base-merge.json.8c8b8648d18c4e5fa299765161856118.log",
+            "log_sha256": "0b39ff49223fc2f70353cbc68638ec4f577d334126d8f7486530e580d34904e2",
+            "minimum_tests": 11,
+            "observed_failed_tests": 0,
+            "observed_passed_tests": 12,
+            "output_limit_exceeded": false,
+            "recomputed_merge_tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+            "returncode": 0,
+            "run_attempt": "1",
+            "run_id": "42123581031",
+            "schema_version": 1,
+            "source_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+            "started_at": "2026-11-06T01:57:02.473761+00:00",
+            "status": "passed",
+            "tested_sha": "c0f9b518d0b14c32396294cfc88ffe92c98692c5",
+            "timed_out": false,
+            "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+          }
+        },
+        {
+          "line": 4864,
+          "object": {
+            "after": {
+              "commit": "c0f9b518d0b14c32396294cfc88ffe92c98692c5",
+              "dirty": false,
+              "parents": [
+                "63652be658ebed8d3052eb789b951793384fd5e4",
+                "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+              ],
+              "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359"
+            },
+            "base_sha": "63652be658ebed8d3052eb789b951793384fd5e4",
+            "before": {
+              "commit": "c0f9b518d0b14c32396294cfc88ffe92c98692c5",
+              "dirty": false,
+              "parents": [
+                "63652be658ebed8d3052eb789b951793384fd5e4",
+                "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+              ],
+              "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359"
+            },
+            "command": [
+              "just",
+              "test",
+              "--locked",
+              "-p",
+              "codex-hepta-native-gateway",
+              "--lib",
+              "-E",
+              "test(http_origin::tests::)"
+            ],
+            "command_exit_code": 0,
+            "elapsed_seconds": 0.5619883079999681,
+            "exit_code": 0,
+            "finished_at": "2026-11-06T01:57:03.680425+00:00",
+            "job": "robrix-host",
+            "lane": "base-merge",
+            "log_bytes": 3632,
+            "log_file": "gateway-boundary-http-origin-base-merge.json.0938d01661014d57974ef1cd2a5215b7.log",
+            "log_sha256": "dafc4b3db7d9275b34a0d28b669934b55789281491106ebb75b66b90fad7df42",
+            "minimum_tests": 2,
+            "observed_failed_tests": 0,
+            "observed_passed_tests": 2,
+            "output_limit_exceeded": false,
+            "recomputed_merge_tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+            "returncode": 0,
+            "run_attempt": "1",
+            "run_id": "42123581031",
+            "schema_version": 1,
+            "source_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+            "started_at": "2026-11-06T01:57:03.118037+00:00",
+            "status": "passed",
+            "tested_sha": "c0f9b518d0b14c32396294cfc88ffe92c98692c5",
+            "timed_out": false,
+            "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+          }
+        }
+      ],
+      "job_id": 127581904221,
+      "lane": "base-merge",
+      "libtest_groups": [
+        {
+          "elapsed": "0.00s",
+          "failed": 0,
+          "filtered_out": 0,
+          "ignored": 0,
+          "line": 2705,
+          "measured": 0,
+          "passed": 5
+        }
+      ],
+      "lines": 5747,
+      "negative_controls": [
+        {
+          "actual_passing_negative_control": {
+            "body": "ok 25 - rejects malformed JavaScript without modifying the pristine bridge",
+            "line": 2110,
+            "timestamp": "2026-11-06T01:50:47.3079039Z"
+          },
+          "classified_as_new_failure": false,
+          "diagnostic": {
+            "body": "# SyntaxError: Unexpected token ')'",
+            "line": 2101,
+            "timestamp": "2026-11-06T01:50:47.3066296Z"
+          }
+        }
+      ],
+      "nextest_groups": [
+        {
+          "actual_PASS_rows": [
+            {
+              "binary": "hepta-control-core",
+              "line": 537,
+              "name": "chat::partition_tests::principal_rotation_hides_all_history_and_drafts_without_discarding_them"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 538,
+              "name": "chat::tests::bounded_unicode_drafts_reject_whole_update_without_truncation"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 539,
+              "name": "chat::integration_tests::late_history_and_stream_remain_bound_to_original_room"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 540,
+              "name": "chat::integration_tests::actual_owner_adapter_is_consumed_without_manufacturing_a_message"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 541,
+              "name": "chat::tests::composition_never_submits_switches_or_discards_input"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 542,
+              "name": "chat::tests::drafts_survive_switch_and_unavailable_repeated_submission"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 543,
+              "name": "chat_owner::tests::cross_principal_session_thread_and_hash_observations_are_rejected"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 544,
+              "name": "chat_owner::tests::bounded_capacity_preserves_all_unresolved_identity_without_eviction"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 545,
+              "name": "chat_owner::tests::disconnect_preserves_unknown_and_revocation_cannot_accept_a_late_ack"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 546,
+              "name": "chat_owner::tests::exact_acknowledgement_handoff_reclaims_capacity_without_evicting_unknowns"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 547,
+              "name": "chat_owner::tests::expiry_clock_regression_and_reload_never_authorize_a_new_submission"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 548,
+              "name": "chat_owner::tests::immutable_signed_identity_rejects_same_id_with_changed_payload_or_handle"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 549,
+              "name": "chat_owner::tests::known_delivery_identity_and_terminal_queue_receipt_cannot_drift"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 550,
+              "name": "chat_owner::tests::new_session_can_only_lookup_its_own_known_owner_delivery"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 551,
+              "name": "chat_owner::tests::lost_initial_reply_retries_exact_envelope_and_fences_late_reply"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 552,
+              "name": "chat_owner::tests::quarantine_is_not_unsent_or_model_completion_and_does_not_retry"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 553,
+              "name": "chat_owner::tests::repeated_clicks_share_the_exact_in_flight_submission"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 554,
+              "name": "chat_owner::tests::unavailable_or_read_only_owner_cannot_turn_clicks_into_admission"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 555,
+              "name": "chat_owner::tests::utf8_and_json_escaping_are_bounded_without_truncation_or_secret_debug"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 556,
+              "name": "chat_timeline::tests::oversized_history_and_unknown_delta_are_atomic_rejections"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 557,
+              "name": "chat_timeline::tests::stale_or_cross_owner_history_cannot_replace_observed_transcript"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 558,
+              "name": "confirmation::tests::removal_never_silently_selects_a_different_target"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 559,
+              "name": "chat_timeline::tests::streamed_unicode_is_exact_deduplicated_and_gap_requires_resync"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 560,
+              "name": "owner_view::tests::malformed_private_fields_and_inconsistent_generation_are_rejected"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 561,
+              "name": "confirmation::tests::confirmation_matches_javascript_and_binds_every_context_field"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 562,
+              "name": "owner_view::tests::max_unsigned_wire_generation_renders_exactly_without_implying_sqlite_admission"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 563,
+              "name": "owner_view::tests::not_attached_and_read_failure_never_become_ready_or_write_authority"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 564,
+              "name": "owner_view::tests::ticket_exhaustion_does_not_recycle_request_identity"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 565,
+              "name": "owner_view::tests::refresh_cancel_epoch_and_late_reply_preserve_single_flight_and_clear_old_observation"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 566,
+              "name": "projection::tests::operation_domain_binds_every_field_and_local_proposal_rejects_extras"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 567,
+              "name": "projection::tests::normalization_owns_session_snapshot_and_runtime_content"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 568,
+              "name": "projection::tests::projections_and_hash_domains_match_actual_javascript"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 569,
+              "name": "projection::tests::session_normalization_checks_authentication_expiry_permissions_and_protocol"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 570,
+              "name": "projection::tests::snapshot_transitions_match_javascript_including_observation_retention"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 571,
+              "name": "projection::tests::snapshot_digest_and_generation_declarations_fail_closed"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 572,
+              "name": "runtime_view::tests::malformed_http_schema_and_authority_are_unavailable_without_truncation"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 573,
+              "name": "runtime_view::tests::repeated_start_and_late_reply_cannot_replace_newer_status"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 574,
+              "name": "runtime_view::tests::timeout_and_disconnect_never_leave_old_success_displayed_as_current"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 575,
+              "name": "scheduler::tests::individual_lookup_timeout_backs_off_without_aborting_session"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 576,
+              "name": "runtime_view::tests::request_counter_exhaustion_does_not_reuse_a_ticket"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 577,
+              "name": "runtime_view::tests::long_escaped_path_is_preserved_above_wire_v2_limit_within_json_bound"
+            },
+            {
+              "binary": "hepta-control-core::canonical_differential",
+              "line": 578,
+              "name": "bounded_decoder_rejects_duplicate_escaped_keys_and_deep_oversized_inputs"
+            },
+            {
+              "binary": "hepta-control-core::canonical_differential",
+              "line": 579,
+              "name": "canonical_json_matches_actual_javascript_vectors"
+            },
+            {
+              "binary": "hepta-control-core::controller",
+              "line": 580,
+              "name": "closed_connection_cannot_be_resurrected_by_late_handshake"
+            },
+            {
+              "binary": "hepta-control-core::controller",
+              "line": 581,
+              "name": "combined_capacity_applies_across_principals"
+            },
+            {
+              "binary": "hepta-control-core::controller",
+              "line": 582,
+              "name": "existing_durable_preparation_ambiguity_preserves_local_identity"
+            },
+            {
+              "binary": "hepta-control-core::controller",
+              "line": 583,
+              "name": "confirmation_binds_permission_target_and_reason"
+            },
+            {
+              "binary": "hepta-control-core::controller",
+              "line": 584,
+              "name": "forbidden_lookup_fields_cannot_create_terminal_fact"
+            },
+            {
+              "binary": "hepta-control-core::controller",
+              "line": 585,
+              "name": "identical_refresh_fences_old_observation_tickets"
+            },
+            {
+              "binary": "hepta-control-core::controller",
+              "line": 586,
+              "name": "late_acknowledgement_stays_with_original_principal"
+            },
+            {
+              "binary": "hepta-control-core::controller",
+              "line": 587,
+              "name": "late_lookup_cannot_cross_session_or_disconnected_boundary"
+            },
+            {
+              "binary": "hepta-control-core::controller",
+              "line": 588,
+              "name": "missing_lookup_does_not_retire_ambiguous_identity"
+            },
+            {
+              "binary": "hepta-control-core::controller",
+              "line": 589,
+              "name": "malformed_rejection_object_never_erases_an_unresolved_identity"
+            },
+            {
+              "binary": "hepta-control-core::controller",
+              "line": 590,
+              "name": "missing_or_changed_admission_trace_cannot_create_terminal_fact"
+            },
+            {
+              "binary": "hepta-control-core::controller",
+              "line": 591,
+              "name": "persisted_request_is_revalidated_before_dispatch"
+            },
+            {
+              "binary": "hepta-control-core::controller",
+              "line": 592,
+              "name": "reconnect_cannot_reuse_operation_identity"
+            },
+            {
+              "binary": "hepta-control-core::controller",
+              "line": 593,
+              "name": "recovery_backoff_and_metrics_follow_principal_not_session_reconnect"
+            },
+            {
+              "binary": "hepta-control-core::controller",
+              "line": 594,
+              "name": "recovery_import_rejects_cross_principal_reassignment"
+            },
+            {
+              "binary": "hepta-control-core::controller",
+              "line": 595,
+              "name": "recovery_merge_is_atomic_preserves_live_reservations_and_terminal_history"
+            },
+            {
+              "binary": "hepta-control-core::controller",
+              "line": 596,
+              "name": "recovery_numeric_fields_match_javascript_integer_valued_decimals"
+            },
+            {
+              "binary": "hepta-control-core::controller",
+              "line": 597,
+              "name": "reserve_is_synchronous_and_duplicate_does_not_dispatch"
+            },
+            {
+              "binary": "hepta-control-core::controller",
+              "line": 598,
+              "name": "snapshot_failure_retains_high_watermark_and_disables_mutation"
+            },
+            {
+              "binary": "hepta-robrix-ui",
+              "line": 599,
+              "name": "chat_source::tests::adoption_does_not_replace_an_existing_draft_or_construct_a_second_source"
+            },
+            {
+              "binary": "hepta-control-core::controller",
+              "line": 600,
+              "name": "view_removes_expired_authority_without_erasing_operations"
+            },
+            {
+              "binary": "hepta-robrix-ui",
+              "line": 601,
+              "name": "ime_pointer_gate::tests::capacity_failure_stays_closed_until_platform_reset"
+            },
+            {
+              "binary": "hepta-robrix-ui",
+              "line": 602,
+              "name": "ime_pointer_gate::tests::duplicate_start_does_not_unblock_an_existing_sequence"
+            },
+            {
+              "binary": "hepta-robrix-ui",
+              "line": 603,
+              "name": "ime_pointer_gate::tests::independent_touch_motion_and_release_remain_forwarded"
+            },
+            {
+              "binary": "hepta-robrix-ui",
+              "line": 604,
+              "name": "ime_pointer_gate::tests::mouse_and_touch_identifiers_cannot_alias"
+            },
+            {
+              "binary": "hepta-robrix-ui",
+              "line": 605,
+              "name": "ime_pointer_gate::tests::ordinary_noncomposing_input_is_not_retained"
+            },
+            {
+              "binary": "hepta-robrix-ui",
+              "line": 606,
+              "name": "ime_pointer_gate::tests::outside_release_cannot_blur_preedit_without_a_recorded_start"
+            },
+            {
+              "binary": "hepta-robrix-ui",
+              "line": 607,
+              "name": "ime_pointer_gate::tests::rejected_click_stays_rejected_after_preedit_ends"
+            },
+            {
+              "binary": "hepta-robrix-ui",
+              "line": 608,
+              "name": "presentation::tests::default_workspace_has_one_local_room_and_separate_empty_state"
+            },
+            {
+              "binary": "hepta-robrix-ui",
+              "line": 609,
+              "name": "presentation::tests::edits_and_repeated_unavailable_send_never_insert_optimistic_messages"
+            },
+            {
+              "binary": "hepta-robrix-ui",
+              "line": 610,
+              "name": "presentation::tests::ime_blocks_destructive_actions_without_clearing_draft"
+            },
+            {
+              "binary": "hepta-robrix-ui",
+              "line": 611,
+              "name": "presentation::tests::font_reflow_does_not_replace_user_scroll_intent_and_jump_restores_tail"
+            },
+            {
+              "binary": "hepta-robrix-ui",
+              "line": 612,
+              "name": "presentation::tests::newer_room_selection_rejects_old_composer_callbacks"
+            },
+            {
+              "binary": "hepta-robrix-ui",
+              "line": 613,
+              "name": "presentation::tests::parent_tail_redraw_deduplicates_layout_and_does_not_replace_user_intent"
+            },
+            {
+              "binary": "hepta-robrix-ui",
+              "line": 614,
+              "name": "presentation::tests::observed_outcomes_are_preserved_without_inferred_completion"
+            },
+            {
+              "binary": "hepta-robrix-ui",
+              "line": 615,
+              "name": "presentation::tests::queue_ack_and_lost_reply_are_composer_status_not_synthetic_messages"
+            },
+            {
+              "binary": "hepta-robrix-ui",
+              "line": 616,
+              "name": "presentation::tests::stale_room_and_principal_callbacks_cannot_edit_recycled_widgets"
+            },
+            {
+              "binary": "hepta-robrix-ui",
+              "line": 617,
+              "name": "presentation::tests::room_identity_survives_filtering_without_becoming_a_list_index"
+            },
+            {
+              "binary": "hepta-robrix-ui",
+              "line": 618,
+              "name": "presentation::tests::stream_updates_preserve_ids_and_resync_scroll_semantics"
+            },
+            {
+              "binary": "hepta-robrix-ui",
+              "line": 619,
+              "name": "presentation::tests::successful_room_navigation_returns_to_conversations_but_rejections_do_not"
+            },
+            {
+              "binary": "hepta-robrix-ui",
+              "line": 620,
+              "name": "presentation::tests::tail_anchor_leaves_empty_lists_and_oversized_last_item_offsets_alone"
+            },
+            {
+              "binary": "hepta-robrix-ui",
+              "line": 621,
+              "name": "presentation::tests::tail_reflow_restore_never_overrides_new_user_input_or_scrollback"
+            },
+            {
+              "binary": "hepta-robrix-ui",
+              "line": 622,
+              "name": "presentation::tests::unicode_previews_notes_and_filter_inputs_are_bounded"
+            },
+            {
+              "binary": "hepta-robrix-ui",
+              "line": 623,
+              "name": "presentation::tests::virtualized_windows_are_bounded_and_keep_complete_source_ids"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 624,
+              "name": "projection::tests::full_thousand_module_ceiling_includes_projection_and_snapshot_envelopes"
+            }
+          ],
+          "elapsed": "0.181s",
+          "passed": 88,
+          "skipped": 0,
+          "summary_line": 626,
+          "tests_run": 88
+        },
+        {
+          "actual_PASS_rows": [
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4750,
+              "name": "http_transport::tests::old_five_second_budget_expires_with_exact_partial_count"
+            },
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4751,
+              "name": "http_transport::tests::disconnected_writer_reports_error_without_claiming_delivery"
+            },
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4752,
+              "name": "http_transport::tests::connection_cap_drops_overload_without_polling_or_retaining_it"
+            },
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4753,
+              "name": "http_transport::tests::mid_transfer_writer_error_reports_exact_accepted_bytes"
+            },
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4754,
+              "name": "http_transport::tests::shutdown_and_completed_connections_release_owned_resources"
+            },
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4755,
+              "name": "http_transport::tests::permanent_backpressure_still_expires_at_asset_budget"
+            },
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4756,
+              "name": "http_transport::tests::oversized_headers_fail_before_any_write"
+            },
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4757,
+              "name": "http_transport::tests::ready_writer_still_uses_bounded_chunks_and_exact_bytes"
+            },
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4758,
+              "name": "http_transport::tests::slow_reader_beyond_api_budget_receives_exact_asset"
+            }
+          ],
+          "elapsed": "0.014s",
+          "passed": 9,
+          "skipped": 31,
+          "summary_line": 4760,
+          "tests_run": 9
+        },
+        {
+          "actual_PASS_rows": [
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4787,
+              "name": "owner_status::tests::unsigned_max_is_a_lossless_wire_value_not_a_claim_sqlite_admits_it"
+            },
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4788,
+              "name": "owner_status::tests::inconsistent_missing_generation_is_sanitized"
+            },
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4789,
+              "name": "owner_status::tests::cancelling_a_request_does_not_release_the_single_flight_while_scan_is_alive"
+            },
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4790,
+              "name": "owner_status::tests::weak_provider_neither_creates_nor_retains_an_owner"
+            },
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4791,
+              "name": "owner_status::tests::timeout_does_not_accumulate_detached_reads_and_releases_the_weak_upgrade"
+            }
+          ],
+          "elapsed": "0.026s",
+          "passed": 5,
+          "skipped": 35,
+          "summary_line": 4793,
+          "tests_run": 5
+        },
+        {
+          "actual_PASS_rows": [
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4820,
+              "name": "ui_bundle::tests::bundle_arguments_are_paired_without_changing_api_only_startup"
+            },
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4821,
+              "name": "ui_bundle::tests::anchored_reader_rejects_symlink_ancestors_and_final_files"
+            },
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4822,
+              "name": "ui_bundle::tests::malformed_requests_never_escape_the_selected_asset_map"
+            },
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4823,
+              "name": "ui_bundle::tests::manifest_selection_and_resource_failures_are_closed"
+            },
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4824,
+              "name": "ui_bundle::tests::nonregular_and_oversize_resources_fail_before_unbounded_read"
+            },
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4825,
+              "name": "ui_bundle::tests::pinned_directory_survives_path_rename_and_replacement"
+            },
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4826,
+              "name": "ui_bundle::tests::actual_entry_serves_verified_ui_and_not_attached_without_initializing_legacy_state"
+            },
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4827,
+              "name": "ui_bundle::tests::only_verified_fonts_allow_private_revalidated_storage"
+            },
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4828,
+              "name": "ui_bundle::tests::real_ui_socket_serves_selected_bytes_and_preserves_read_only_apis"
+            },
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4829,
+              "name": "ui_bundle::tests::verified_snapshot_survives_asset_replacement_without_copying_bodies"
+            },
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4830,
+              "name": "ui_bundle::tests::rebinding_and_cross_origin_are_denied_before_ui_or_runtime_dispatch"
+            },
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4831,
+              "name": "ui_bundle::tests::manifest_count_aggregate_and_entry_limits_reject_before_asset_reads"
+            }
+          ],
+          "elapsed": "0.048s",
+          "passed": 12,
+          "skipped": 28,
+          "summary_line": 4833,
+          "tests_run": 12
+        },
+        {
+          "actual_PASS_rows": [
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4860,
+              "name": "http_origin::tests::expected_loopback_host_and_same_origin_are_admitted"
+            },
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4861,
+              "name": "http_origin::tests::rebinding_cross_origin_ambiguous_and_opaque_hosts_are_rejected"
+            }
+          ],
+          "elapsed": "0.004s",
+          "passed": 2,
+          "skipped": 38,
+          "summary_line": 4863,
+          "tests_run": 2
+        }
+      ],
+      "node_TAP_groups": [
+        {
+          "lines": {
+            "cancelled": 802,
+            "fail": 801,
+            "pass": 800,
+            "skipped": 803,
+            "suites": 799,
+            "tests": 798,
+            "todo": 804
+          },
+          "values": {
+            "cancelled": 0,
+            "fail": 0,
+            "pass": 13,
+            "skipped": 0,
+            "suites": 0,
+            "tests": 13,
+            "todo": 0
+          }
+        },
+        {
+          "lines": {
+            "cancelled": 851,
+            "fail": 850,
+            "pass": 849,
+            "skipped": 852,
+            "suites": 848,
+            "tests": 847,
+            "todo": 853
+          },
+          "values": {
+            "cancelled": 0,
+            "fail": 0,
+            "pass": 5,
+            "skipped": 0,
+            "suites": 0,
+            "tests": 5,
+            "todo": 0
+          }
+        },
+        {
+          "lines": {
+            "cancelled": 1815,
+            "fail": 1814,
+            "pass": 1813,
+            "skipped": 1816,
+            "suites": 1812,
+            "tests": 1811,
+            "todo": 1817
+          },
+          "values": {
+            "cancelled": 0,
+            "fail": 0,
+            "pass": 159,
+            "skipped": 0,
+            "suites": 0,
+            "tests": 159,
+            "todo": 0
+          }
+        },
+        {
+          "lines": {
+            "cancelled": 1897,
+            "fail": 1896,
+            "pass": 1895,
+            "skipped": 1898,
+            "suites": 1894,
+            "tests": 1893,
+            "todo": 1899
+          },
+          "values": {
+            "cancelled": 0,
+            "fail": 0,
+            "pass": 12,
+            "skipped": 0,
+            "suites": 0,
+            "tests": 12,
+            "todo": 0
+          }
+        },
+        {
+          "lines": {
+            "cancelled": 1949,
+            "fail": 1948,
+            "pass": 1947,
+            "skipped": 1950,
+            "suites": 1946,
+            "tests": 1945,
+            "todo": 1951
+          },
+          "values": {
+            "cancelled": 0,
+            "fail": 0,
+            "pass": 7,
+            "skipped": 0,
+            "suites": 0,
+            "tests": 7,
+            "todo": 0
+          }
+        },
+        {
+          "lines": {
+            "cancelled": 2162,
+            "fail": 2161,
+            "pass": 2160,
+            "skipped": 2163,
+            "suites": 2159,
+            "tests": 2158,
+            "todo": 2164
+          },
+          "values": {
+            "cancelled": 0,
+            "fail": 0,
+            "pass": 32,
+            "skipped": 0,
+            "suites": 0,
+            "tests": 32,
+            "todo": 0
+          }
+        },
+        {
+          "lines": {
+            "cancelled": 2461,
+            "fail": 2460,
+            "pass": 2459,
+            "skipped": 2462,
+            "suites": 2458,
+            "tests": 2457,
+            "todo": 2463
+          },
+          "values": {
+            "cancelled": 0,
+            "fail": 0,
+            "pass": 1,
+            "skipped": 0,
+            "suites": 0,
+            "tests": 1,
+            "todo": 0
+          }
+        },
+        {
+          "lines": {
+            "cancelled": 2495,
+            "fail": 2494,
+            "pass": 2493,
+            "skipped": 2496,
+            "suites": 2492,
+            "tests": 2491,
+            "todo": 2497
+          },
+          "values": {
+            "cancelled": 0,
+            "fail": 0,
+            "pass": 4,
+            "skipped": 0,
+            "suites": 0,
+            "tests": 4,
+            "todo": 0
+          }
+        },
+        {
+          "lines": {
+            "cancelled": 2693,
+            "fail": 2692,
+            "pass": 2691,
+            "skipped": 2694,
+            "suites": 2690,
+            "tests": 2689,
+            "todo": 2695
+          },
+          "values": {
+            "cancelled": 0,
+            "fail": 0,
+            "pass": 31,
+            "skipped": 0,
+            "suites": 0,
+            "tests": 31,
+            "todo": 0
+          }
+        },
+        {
+          "lines": {
+            "cancelled": 4319,
+            "fail": 4318,
+            "pass": 4317,
+            "skipped": 4320,
+            "suites": 4316,
+            "tests": 4315,
+            "todo": 4321
+          },
+          "values": {
+            "cancelled": 0,
+            "fail": 0,
+            "pass": 41,
+            "skipped": 0,
+            "suites": 0,
+            "tests": 41,
+            "todo": 0
+          }
+        }
+      ],
+      "raw_log": {
+        "bytes": 514320,
+        "git_blob": "b906eae722a7c4919b1c3c8c61765d1a9468f8dc",
+        "sha256": "e638aec160465097c2aee37f5fd9b7cf175226efc6bc6e7c043d036cd6783028"
+      },
+      "run_id": 42123581031,
+      "source_history": [
+        {
+          "line": 185,
+          "object": {
+            "base_sha": "63652be658ebed8d3052eb789b951793384fd5e4",
+            "checkout_unchanged": true,
+            "requested_refs": [
+              "refs/hepta-ui-ci/base",
+              "refs/hepta-ui-ci/source"
+            ],
+            "schema": "hepta.ui-exact-history.v1",
+            "shallow_after": false,
+            "shallow_before": true,
+            "source_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+            "source_tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359"
+          }
+        }
+      ],
+      "tested_sha": "c0f9b518d0b14c32396294cfc88ffe92c98692c5",
+      "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+      "unique_total_claimed": false
+    },
+    {
+      "CRLF_bytes": 0,
+      "LF_bytes": 5896,
+      "browser_groups": [
+        {
+          "elapsed": "2.2m",
+          "line": 4516,
+          "passed": 6
+        },
+        {
+          "elapsed": "1.8m",
+          "line": 5061,
+          "passed": 7
+        },
+        {
+          "elapsed": "3.9m",
+          "line": 5380,
+          "passed": 9
+        },
+        {
+          "elapsed": "36.7s",
+          "line": 5422,
+          "passed": 1
+        }
+      ],
+      "filtered_gateways": "Four explicit -E selections; 31/35/28/38 skipped preserved, not counted as passes. No summed distinct-case or independence claim across groups/lanes.",
+      "gateway_records": [
+        {
+          "line": 4910,
+          "object": {
+            "after": {
+              "commit": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+              "dirty": false,
+              "parents": [
+                "eed4d6bb61b789b19f60facc79f9e031765fa4c9"
+              ],
+              "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359"
+            },
+            "base_sha": "63652be658ebed8d3052eb789b951793384fd5e4",
+            "before": {
+              "commit": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+              "dirty": false,
+              "parents": [
+                "eed4d6bb61b789b19f60facc79f9e031765fa4c9"
+              ],
+              "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359"
+            },
+            "command": [
+              "just",
+              "test",
+              "--locked",
+              "-p",
+              "codex-hepta-native-gateway",
+              "--lib",
+              "-E",
+              "test(http_transport::tests::)"
+            ],
+            "command_exit_code": 0,
+            "elapsed_seconds": 3.670428457000071,
+            "exit_code": 0,
+            "finished_at": "2026-11-06T01:51:53.916927+00:00",
+            "job": "robrix-host",
+            "lane": "source-head",
+            "log_bytes": 4712,
+            "log_file": "gateway-transport-source-head.json.6b98cc30767340258568fe6fa7236641.log",
+            "log_sha256": "61ece2fff32622377539c6122a8dc45828ba468964c6383871ddb819124e2d91",
+            "minimum_tests": 9,
+            "observed_failed_tests": 0,
+            "observed_passed_tests": 9,
+            "output_limit_exceeded": false,
+            "returncode": 0,
+            "run_attempt": "1",
+            "run_id": "42123581031",
+            "schema_version": 1,
+            "source_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+            "started_at": "2026-11-06T01:51:50.245369+00:00",
+            "status": "passed",
+            "tested_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+            "timed_out": false,
+            "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+          }
+        },
+        {
+          "line": 4943,
+          "object": {
+            "after": {
+              "commit": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+              "dirty": false,
+              "parents": [
+                "eed4d6bb61b789b19f60facc79f9e031765fa4c9"
+              ],
+              "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359"
+            },
+            "base_sha": "63652be658ebed8d3052eb789b951793384fd5e4",
+            "before": {
+              "commit": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+              "dirty": false,
+              "parents": [
+                "eed4d6bb61b789b19f60facc79f9e031765fa4c9"
+              ],
+              "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359"
+            },
+            "command": [
+              "just",
+              "test",
+              "--locked",
+              "-p",
+              "codex-hepta-native-gateway",
+              "--lib",
+              "-E",
+              "test(owner_status::tests::)"
+            ],
+            "command_exit_code": 0,
+            "elapsed_seconds": 0.9173169859998325,
+            "exit_code": 0,
+            "finished_at": "2026-11-06T01:51:54.886016+00:00",
+            "job": "robrix-host",
+            "lane": "source-head",
+            "log_bytes": 4068,
+            "log_file": "gateway-boundary-owner-status-source-head.json.5b93fb4d3bcd40ea81e8781594ce8f97.log",
+            "log_sha256": "0fd71c0be72ab30982b0024231fa90c791606cf4eb11c094ab318769c996a88d",
+            "minimum_tests": 5,
+            "observed_failed_tests": 0,
+            "observed_passed_tests": 5,
+            "output_limit_exceeded": false,
+            "returncode": 0,
+            "run_attempt": "1",
+            "run_id": "42123581031",
+            "schema_version": 1,
+            "source_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+            "started_at": "2026-11-06T01:51:53.968202+00:00",
+            "status": "passed",
+            "tested_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+            "timed_out": false,
+            "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+          }
+        },
+        {
+          "line": 4983,
+          "object": {
+            "after": {
+              "commit": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+              "dirty": false,
+              "parents": [
+                "eed4d6bb61b789b19f60facc79f9e031765fa4c9"
+              ],
+              "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359"
+            },
+            "base_sha": "63652be658ebed8d3052eb789b951793384fd5e4",
+            "before": {
+              "commit": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+              "dirty": false,
+              "parents": [
+                "eed4d6bb61b789b19f60facc79f9e031765fa4c9"
+              ],
+              "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359"
+            },
+            "command": [
+              "just",
+              "test",
+              "--locked",
+              "-p",
+              "codex-hepta-native-gateway",
+              "--lib",
+              "-E",
+              "test(ui_bundle::tests::)"
+            ],
+            "command_exit_code": 0,
+            "elapsed_seconds": 0.976528086999906,
+            "exit_code": 0,
+            "finished_at": "2026-11-06T01:51:55.915048+00:00",
+            "job": "robrix-host",
+            "lane": "source-head",
+            "log_bytes": 5049,
+            "log_file": "gateway-boundary-ui-bundle-source-head.json.9db6a9bf4398452d93e36eb58b66864c.log",
+            "log_sha256": "57090bc33fe8f199f98c31f56e26a82585fd12ec263c1dc9d0c1e1e958652b5e",
+            "minimum_tests": 11,
+            "observed_failed_tests": 0,
+            "observed_passed_tests": 12,
+            "output_limit_exceeded": false,
+            "returncode": 0,
+            "run_attempt": "1",
+            "run_id": "42123581031",
+            "schema_version": 1,
+            "source_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+            "started_at": "2026-11-06T01:51:54.937954+00:00",
+            "status": "passed",
+            "tested_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+            "timed_out": false,
+            "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+          }
+        },
+        {
+          "line": 5013,
+          "object": {
+            "after": {
+              "commit": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+              "dirty": false,
+              "parents": [
+                "eed4d6bb61b789b19f60facc79f9e031765fa4c9"
+              ],
+              "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359"
+            },
+            "base_sha": "63652be658ebed8d3052eb789b951793384fd5e4",
+            "before": {
+              "commit": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+              "dirty": false,
+              "parents": [
+                "eed4d6bb61b789b19f60facc79f9e031765fa4c9"
+              ],
+              "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359"
+            },
+            "command": [
+              "just",
+              "test",
+              "--locked",
+              "-p",
+              "codex-hepta-native-gateway",
+              "--lib",
+              "-E",
+              "test(http_origin::tests::)"
+            ],
+            "command_exit_code": 0,
+            "elapsed_seconds": 0.893948822999846,
+            "exit_code": 0,
+            "finished_at": "2026-11-06T01:51:56.859541+00:00",
+            "job": "robrix-host",
+            "lane": "source-head",
+            "log_bytes": 3632,
+            "log_file": "gateway-boundary-http-origin-source-head.json.4fb1b1a43f1d456d8f0ce4925efb847e.log",
+            "log_sha256": "69102fe8eeb4db561900aa24c6e4954901df75f38d68d234f63e520ab1a77c0f",
+            "minimum_tests": 2,
+            "observed_failed_tests": 0,
+            "observed_passed_tests": 2,
+            "output_limit_exceeded": false,
+            "returncode": 0,
+            "run_attempt": "1",
+            "run_id": "42123581031",
+            "schema_version": 1,
+            "source_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+            "started_at": "2026-11-06T01:51:55.965080+00:00",
+            "status": "passed",
+            "tested_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+            "timed_out": false,
+            "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+          }
+        }
+      ],
+      "job_id": 127581904330,
+      "lane": "source-head",
+      "libtest_groups": [
+        {
+          "elapsed": "0.00s",
+          "failed": 0,
+          "filtered_out": 0,
+          "ignored": 0,
+          "line": 2871,
+          "measured": 0,
+          "passed": 5
+        }
+      ],
+      "lines": 5896,
+      "negative_controls": [
+        {
+          "actual_passing_negative_control": {
+            "body": "ok 25 - rejects malformed JavaScript without modifying the pristine bridge",
+            "line": 2277,
+            "timestamp": "2026-11-06T01:42:22.5764569Z"
+          },
+          "classified_as_new_failure": false,
+          "diagnostic": {
+            "body": "# SyntaxError: Unexpected token ')'",
+            "line": 2268,
+            "timestamp": "2026-11-06T01:42:22.5748387Z"
+          }
+        }
+      ],
+      "nextest_groups": [
+        {
+          "actual_PASS_rows": [
+            {
+              "binary": "hepta-control-core",
+              "line": 704,
+              "name": "chat::integration_tests::late_history_and_stream_remain_bound_to_original_room"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 705,
+              "name": "chat::tests::bounded_unicode_drafts_reject_whole_update_without_truncation"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 706,
+              "name": "chat::partition_tests::principal_rotation_hides_all_history_and_drafts_without_discarding_them"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 707,
+              "name": "chat::integration_tests::actual_owner_adapter_is_consumed_without_manufacturing_a_message"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 708,
+              "name": "chat::tests::composition_never_submits_switches_or_discards_input"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 709,
+              "name": "chat::tests::drafts_survive_switch_and_unavailable_repeated_submission"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 710,
+              "name": "chat_owner::tests::cross_principal_session_thread_and_hash_observations_are_rejected"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 711,
+              "name": "chat_owner::tests::bounded_capacity_preserves_all_unresolved_identity_without_eviction"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 712,
+              "name": "chat_owner::tests::disconnect_preserves_unknown_and_revocation_cannot_accept_a_late_ack"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 713,
+              "name": "chat_owner::tests::expiry_clock_regression_and_reload_never_authorize_a_new_submission"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 714,
+              "name": "chat_owner::tests::exact_acknowledgement_handoff_reclaims_capacity_without_evicting_unknowns"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 715,
+              "name": "chat_owner::tests::immutable_signed_identity_rejects_same_id_with_changed_payload_or_handle"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 716,
+              "name": "chat_owner::tests::known_delivery_identity_and_terminal_queue_receipt_cannot_drift"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 717,
+              "name": "chat_owner::tests::lost_initial_reply_retries_exact_envelope_and_fences_late_reply"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 718,
+              "name": "chat_owner::tests::quarantine_is_not_unsent_or_model_completion_and_does_not_retry"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 719,
+              "name": "chat_owner::tests::new_session_can_only_lookup_its_own_known_owner_delivery"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 720,
+              "name": "chat_owner::tests::repeated_clicks_share_the_exact_in_flight_submission"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 721,
+              "name": "chat_owner::tests::unavailable_or_read_only_owner_cannot_turn_clicks_into_admission"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 722,
+              "name": "chat_owner::tests::utf8_and_json_escaping_are_bounded_without_truncation_or_secret_debug"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 723,
+              "name": "chat_timeline::tests::oversized_history_and_unknown_delta_are_atomic_rejections"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 724,
+              "name": "chat_timeline::tests::streamed_unicode_is_exact_deduplicated_and_gap_requires_resync"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 725,
+              "name": "chat_timeline::tests::stale_or_cross_owner_history_cannot_replace_observed_transcript"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 726,
+              "name": "confirmation::tests::removal_never_silently_selects_a_different_target"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 727,
+              "name": "confirmation::tests::confirmation_matches_javascript_and_binds_every_context_field"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 728,
+              "name": "owner_view::tests::max_unsigned_wire_generation_renders_exactly_without_implying_sqlite_admission"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 729,
+              "name": "owner_view::tests::malformed_private_fields_and_inconsistent_generation_are_rejected"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 730,
+              "name": "owner_view::tests::not_attached_and_read_failure_never_become_ready_or_write_authority"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 731,
+              "name": "owner_view::tests::ticket_exhaustion_does_not_recycle_request_identity"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 732,
+              "name": "owner_view::tests::refresh_cancel_epoch_and_late_reply_preserve_single_flight_and_clear_old_observation"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 733,
+              "name": "projection::tests::normalization_owns_session_snapshot_and_runtime_content"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 734,
+              "name": "projection::tests::operation_domain_binds_every_field_and_local_proposal_rejects_extras"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 735,
+              "name": "projection::tests::projections_and_hash_domains_match_actual_javascript"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 736,
+              "name": "projection::tests::session_normalization_checks_authentication_expiry_permissions_and_protocol"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 737,
+              "name": "projection::tests::snapshot_transitions_match_javascript_including_observation_retention"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 738,
+              "name": "projection::tests::snapshot_digest_and_generation_declarations_fail_closed"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 739,
+              "name": "runtime_view::tests::malformed_http_schema_and_authority_are_unavailable_without_truncation"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 740,
+              "name": "runtime_view::tests::repeated_start_and_late_reply_cannot_replace_newer_status"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 741,
+              "name": "runtime_view::tests::request_counter_exhaustion_does_not_reuse_a_ticket"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 742,
+              "name": "runtime_view::tests::timeout_and_disconnect_never_leave_old_success_displayed_as_current"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 743,
+              "name": "scheduler::tests::individual_lookup_timeout_backs_off_without_aborting_session"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 744,
+              "name": "runtime_view::tests::long_escaped_path_is_preserved_above_wire_v2_limit_within_json_bound"
+            },
+            {
+              "binary": "hepta-control-core::canonical_differential",
+              "line": 745,
+              "name": "bounded_decoder_rejects_duplicate_escaped_keys_and_deep_oversized_inputs"
+            },
+            {
+              "binary": "hepta-control-core::controller",
+              "line": 746,
+              "name": "closed_connection_cannot_be_resurrected_by_late_handshake"
+            },
+            {
+              "binary": "hepta-control-core::canonical_differential",
+              "line": 747,
+              "name": "canonical_json_matches_actual_javascript_vectors"
+            },
+            {
+              "binary": "hepta-control-core::controller",
+              "line": 748,
+              "name": "confirmation_binds_permission_target_and_reason"
+            },
+            {
+              "binary": "hepta-control-core::controller",
+              "line": 749,
+              "name": "combined_capacity_applies_across_principals"
+            },
+            {
+              "binary": "hepta-control-core::controller",
+              "line": 750,
+              "name": "existing_durable_preparation_ambiguity_preserves_local_identity"
+            },
+            {
+              "binary": "hepta-control-core::controller",
+              "line": 751,
+              "name": "forbidden_lookup_fields_cannot_create_terminal_fact"
+            },
+            {
+              "binary": "hepta-control-core::controller",
+              "line": 752,
+              "name": "late_acknowledgement_stays_with_original_principal"
+            },
+            {
+              "binary": "hepta-control-core::controller",
+              "line": 753,
+              "name": "identical_refresh_fences_old_observation_tickets"
+            },
+            {
+              "binary": "hepta-control-core::controller",
+              "line": 754,
+              "name": "late_lookup_cannot_cross_session_or_disconnected_boundary"
+            },
+            {
+              "binary": "hepta-control-core::controller",
+              "line": 755,
+              "name": "missing_lookup_does_not_retire_ambiguous_identity"
+            },
+            {
+              "binary": "hepta-control-core::controller",
+              "line": 756,
+              "name": "malformed_rejection_object_never_erases_an_unresolved_identity"
+            },
+            {
+              "binary": "hepta-control-core::controller",
+              "line": 757,
+              "name": "missing_or_changed_admission_trace_cannot_create_terminal_fact"
+            },
+            {
+              "binary": "hepta-control-core::controller",
+              "line": 758,
+              "name": "persisted_request_is_revalidated_before_dispatch"
+            },
+            {
+              "binary": "hepta-control-core::controller",
+              "line": 759,
+              "name": "reconnect_cannot_reuse_operation_identity"
+            },
+            {
+              "binary": "hepta-control-core::controller",
+              "line": 760,
+              "name": "recovery_backoff_and_metrics_follow_principal_not_session_reconnect"
+            },
+            {
+              "binary": "hepta-control-core::controller",
+              "line": 761,
+              "name": "recovery_merge_is_atomic_preserves_live_reservations_and_terminal_history"
+            },
+            {
+              "binary": "hepta-control-core::controller",
+              "line": 762,
+              "name": "recovery_import_rejects_cross_principal_reassignment"
+            },
+            {
+              "binary": "hepta-control-core::controller",
+              "line": 763,
+              "name": "recovery_numeric_fields_match_javascript_integer_valued_decimals"
+            },
+            {
+              "binary": "hepta-control-core::controller",
+              "line": 764,
+              "name": "reserve_is_synchronous_and_duplicate_does_not_dispatch"
+            },
+            {
+              "binary": "hepta-control-core::controller",
+              "line": 765,
+              "name": "snapshot_failure_retains_high_watermark_and_disables_mutation"
+            },
+            {
+              "binary": "hepta-control-core::controller",
+              "line": 766,
+              "name": "view_removes_expired_authority_without_erasing_operations"
+            },
+            {
+              "binary": "hepta-robrix-ui",
+              "line": 767,
+              "name": "chat_source::tests::adoption_does_not_replace_an_existing_draft_or_construct_a_second_source"
+            },
+            {
+              "binary": "hepta-robrix-ui",
+              "line": 768,
+              "name": "ime_pointer_gate::tests::capacity_failure_stays_closed_until_platform_reset"
+            },
+            {
+              "binary": "hepta-robrix-ui",
+              "line": 769,
+              "name": "ime_pointer_gate::tests::independent_touch_motion_and_release_remain_forwarded"
+            },
+            {
+              "binary": "hepta-robrix-ui",
+              "line": 770,
+              "name": "ime_pointer_gate::tests::duplicate_start_does_not_unblock_an_existing_sequence"
+            },
+            {
+              "binary": "hepta-robrix-ui",
+              "line": 771,
+              "name": "ime_pointer_gate::tests::mouse_and_touch_identifiers_cannot_alias"
+            },
+            {
+              "binary": "hepta-robrix-ui",
+              "line": 772,
+              "name": "ime_pointer_gate::tests::outside_release_cannot_blur_preedit_without_a_recorded_start"
+            },
+            {
+              "binary": "hepta-robrix-ui",
+              "line": 773,
+              "name": "ime_pointer_gate::tests::ordinary_noncomposing_input_is_not_retained"
+            },
+            {
+              "binary": "hepta-robrix-ui",
+              "line": 774,
+              "name": "ime_pointer_gate::tests::rejected_click_stays_rejected_after_preedit_ends"
+            },
+            {
+              "binary": "hepta-robrix-ui",
+              "line": 775,
+              "name": "presentation::tests::default_workspace_has_one_local_room_and_separate_empty_state"
+            },
+            {
+              "binary": "hepta-robrix-ui",
+              "line": 776,
+              "name": "presentation::tests::edits_and_repeated_unavailable_send_never_insert_optimistic_messages"
+            },
+            {
+              "binary": "hepta-robrix-ui",
+              "line": 777,
+              "name": "presentation::tests::font_reflow_does_not_replace_user_scroll_intent_and_jump_restores_tail"
+            },
+            {
+              "binary": "hepta-robrix-ui",
+              "line": 778,
+              "name": "presentation::tests::ime_blocks_destructive_actions_without_clearing_draft"
+            },
+            {
+              "binary": "hepta-robrix-ui",
+              "line": 779,
+              "name": "presentation::tests::newer_room_selection_rejects_old_composer_callbacks"
+            },
+            {
+              "binary": "hepta-robrix-ui",
+              "line": 780,
+              "name": "presentation::tests::observed_outcomes_are_preserved_without_inferred_completion"
+            },
+            {
+              "binary": "hepta-robrix-ui",
+              "line": 781,
+              "name": "presentation::tests::parent_tail_redraw_deduplicates_layout_and_does_not_replace_user_intent"
+            },
+            {
+              "binary": "hepta-robrix-ui",
+              "line": 782,
+              "name": "presentation::tests::queue_ack_and_lost_reply_are_composer_status_not_synthetic_messages"
+            },
+            {
+              "binary": "hepta-robrix-ui",
+              "line": 783,
+              "name": "presentation::tests::room_identity_survives_filtering_without_becoming_a_list_index"
+            },
+            {
+              "binary": "hepta-robrix-ui",
+              "line": 784,
+              "name": "presentation::tests::stream_updates_preserve_ids_and_resync_scroll_semantics"
+            },
+            {
+              "binary": "hepta-robrix-ui",
+              "line": 785,
+              "name": "presentation::tests::stale_room_and_principal_callbacks_cannot_edit_recycled_widgets"
+            },
+            {
+              "binary": "hepta-robrix-ui",
+              "line": 786,
+              "name": "presentation::tests::successful_room_navigation_returns_to_conversations_but_rejections_do_not"
+            },
+            {
+              "binary": "hepta-robrix-ui",
+              "line": 787,
+              "name": "presentation::tests::tail_reflow_restore_never_overrides_new_user_input_or_scrollback"
+            },
+            {
+              "binary": "hepta-robrix-ui",
+              "line": 788,
+              "name": "presentation::tests::tail_anchor_leaves_empty_lists_and_oversized_last_item_offsets_alone"
+            },
+            {
+              "binary": "hepta-robrix-ui",
+              "line": 789,
+              "name": "presentation::tests::unicode_previews_notes_and_filter_inputs_are_bounded"
+            },
+            {
+              "binary": "hepta-robrix-ui",
+              "line": 790,
+              "name": "presentation::tests::virtualized_windows_are_bounded_and_keep_complete_source_ids"
+            },
+            {
+              "binary": "hepta-control-core",
+              "line": 791,
+              "name": "projection::tests::full_thousand_module_ceiling_includes_projection_and_snapshot_envelopes"
+            }
+          ],
+          "elapsed": "0.318s",
+          "passed": 88,
+          "skipped": 0,
+          "summary_line": 793,
+          "tests_run": 88
+        },
+        {
+          "actual_PASS_rows": [
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4899,
+              "name": "http_transport::tests::connection_cap_drops_overload_without_polling_or_retaining_it"
+            },
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4900,
+              "name": "http_transport::tests::disconnected_writer_reports_error_without_claiming_delivery"
+            },
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4901,
+              "name": "http_transport::tests::mid_transfer_writer_error_reports_exact_accepted_bytes"
+            },
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4902,
+              "name": "http_transport::tests::old_five_second_budget_expires_with_exact_partial_count"
+            },
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4903,
+              "name": "http_transport::tests::ready_writer_still_uses_bounded_chunks_and_exact_bytes"
+            },
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4904,
+              "name": "http_transport::tests::oversized_headers_fail_before_any_write"
+            },
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4905,
+              "name": "http_transport::tests::shutdown_and_completed_connections_release_owned_resources"
+            },
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4906,
+              "name": "http_transport::tests::permanent_backpressure_still_expires_at_asset_budget"
+            },
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4907,
+              "name": "http_transport::tests::slow_reader_beyond_api_budget_receives_exact_asset"
+            }
+          ],
+          "elapsed": "0.021s",
+          "passed": 9,
+          "skipped": 31,
+          "summary_line": 4909,
+          "tests_run": 9
+        },
+        {
+          "actual_PASS_rows": [
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4936,
+              "name": "owner_status::tests::unsigned_max_is_a_lossless_wire_value_not_a_claim_sqlite_admits_it"
+            },
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4937,
+              "name": "owner_status::tests::inconsistent_missing_generation_is_sanitized"
+            },
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4938,
+              "name": "owner_status::tests::cancelling_a_request_does_not_release_the_single_flight_while_scan_is_alive"
+            },
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4939,
+              "name": "owner_status::tests::weak_provider_neither_creates_nor_retains_an_owner"
+            },
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4940,
+              "name": "owner_status::tests::timeout_does_not_accumulate_detached_reads_and_releases_the_weak_upgrade"
+            }
+          ],
+          "elapsed": "0.030s",
+          "passed": 5,
+          "skipped": 35,
+          "summary_line": 4942,
+          "tests_run": 5
+        },
+        {
+          "actual_PASS_rows": [
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4969,
+              "name": "ui_bundle::tests::bundle_arguments_are_paired_without_changing_api_only_startup"
+            },
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4970,
+              "name": "ui_bundle::tests::anchored_reader_rejects_symlink_ancestors_and_final_files"
+            },
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4971,
+              "name": "ui_bundle::tests::malformed_requests_never_escape_the_selected_asset_map"
+            },
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4972,
+              "name": "ui_bundle::tests::nonregular_and_oversize_resources_fail_before_unbounded_read"
+            },
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4973,
+              "name": "ui_bundle::tests::manifest_selection_and_resource_failures_are_closed"
+            },
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4974,
+              "name": "ui_bundle::tests::actual_entry_serves_verified_ui_and_not_attached_without_initializing_legacy_state"
+            },
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4975,
+              "name": "ui_bundle::tests::only_verified_fonts_allow_private_revalidated_storage"
+            },
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4976,
+              "name": "ui_bundle::tests::pinned_directory_survives_path_rename_and_replacement"
+            },
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4977,
+              "name": "ui_bundle::tests::verified_snapshot_survives_asset_replacement_without_copying_bodies"
+            },
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4978,
+              "name": "ui_bundle::tests::real_ui_socket_serves_selected_bytes_and_preserves_read_only_apis"
+            },
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4979,
+              "name": "ui_bundle::tests::rebinding_and_cross_origin_are_denied_before_ui_or_runtime_dispatch"
+            },
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 4980,
+              "name": "ui_bundle::tests::manifest_count_aggregate_and_entry_limits_reject_before_asset_reads"
+            }
+          ],
+          "elapsed": "0.088s",
+          "passed": 12,
+          "skipped": 28,
+          "summary_line": 4982,
+          "tests_run": 12
+        },
+        {
+          "actual_PASS_rows": [
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 5009,
+              "name": "http_origin::tests::rebinding_cross_origin_ambiguous_and_opaque_hosts_are_rejected"
+            },
+            {
+              "binary": "codex-hepta-native-gateway",
+              "line": 5010,
+              "name": "http_origin::tests::expected_loopback_host_and_same_origin_are_admitted"
+            }
+          ],
+          "elapsed": "0.006s",
+          "passed": 2,
+          "skipped": 38,
+          "summary_line": 5012,
+          "tests_run": 2
+        }
+      ],
+      "node_TAP_groups": [
+        {
+          "lines": {
+            "cancelled": 969,
+            "fail": 968,
+            "pass": 967,
+            "skipped": 970,
+            "suites": 966,
+            "tests": 965,
+            "todo": 971
+          },
+          "values": {
+            "cancelled": 0,
+            "fail": 0,
+            "pass": 13,
+            "skipped": 0,
+            "suites": 0,
+            "tests": 13,
+            "todo": 0
+          }
+        },
+        {
+          "lines": {
+            "cancelled": 1018,
+            "fail": 1017,
+            "pass": 1016,
+            "skipped": 1019,
+            "suites": 1015,
+            "tests": 1014,
+            "todo": 1020
+          },
+          "values": {
+            "cancelled": 0,
+            "fail": 0,
+            "pass": 5,
+            "skipped": 0,
+            "suites": 0,
+            "tests": 5,
+            "todo": 0
+          }
+        },
+        {
+          "lines": {
+            "cancelled": 1982,
+            "fail": 1981,
+            "pass": 1980,
+            "skipped": 1983,
+            "suites": 1979,
+            "tests": 1978,
+            "todo": 1984
+          },
+          "values": {
+            "cancelled": 0,
+            "fail": 0,
+            "pass": 159,
+            "skipped": 0,
+            "suites": 0,
+            "tests": 159,
+            "todo": 0
+          }
+        },
+        {
+          "lines": {
+            "cancelled": 2064,
+            "fail": 2063,
+            "pass": 2062,
+            "skipped": 2065,
+            "suites": 2061,
+            "tests": 2060,
+            "todo": 2066
+          },
+          "values": {
+            "cancelled": 0,
+            "fail": 0,
+            "pass": 12,
+            "skipped": 0,
+            "suites": 0,
+            "tests": 12,
+            "todo": 0
+          }
+        },
+        {
+          "lines": {
+            "cancelled": 2116,
+            "fail": 2115,
+            "pass": 2114,
+            "skipped": 2117,
+            "suites": 2113,
+            "tests": 2112,
+            "todo": 2118
+          },
+          "values": {
+            "cancelled": 0,
+            "fail": 0,
+            "pass": 7,
+            "skipped": 0,
+            "suites": 0,
+            "tests": 7,
+            "todo": 0
+          }
+        },
+        {
+          "lines": {
+            "cancelled": 2329,
+            "fail": 2328,
+            "pass": 2327,
+            "skipped": 2330,
+            "suites": 2326,
+            "tests": 2325,
+            "todo": 2331
+          },
+          "values": {
+            "cancelled": 0,
+            "fail": 0,
+            "pass": 32,
+            "skipped": 0,
+            "suites": 0,
+            "tests": 32,
+            "todo": 0
+          }
+        },
+        {
+          "lines": {
+            "cancelled": 2627,
+            "fail": 2626,
+            "pass": 2625,
+            "skipped": 2628,
+            "suites": 2624,
+            "tests": 2623,
+            "todo": 2629
+          },
+          "values": {
+            "cancelled": 0,
+            "fail": 0,
+            "pass": 1,
+            "skipped": 0,
+            "suites": 0,
+            "tests": 1,
+            "todo": 0
+          }
+        },
+        {
+          "lines": {
+            "cancelled": 2661,
+            "fail": 2660,
+            "pass": 2659,
+            "skipped": 2662,
+            "suites": 2658,
+            "tests": 2657,
+            "todo": 2663
+          },
+          "values": {
+            "cancelled": 0,
+            "fail": 0,
+            "pass": 4,
+            "skipped": 0,
+            "suites": 0,
+            "tests": 4,
+            "todo": 0
+          }
+        },
+        {
+          "lines": {
+            "cancelled": 2859,
+            "fail": 2858,
+            "pass": 2857,
+            "skipped": 2860,
+            "suites": 2856,
+            "tests": 2855,
+            "todo": 2861
+          },
+          "values": {
+            "cancelled": 0,
+            "fail": 0,
+            "pass": 31,
+            "skipped": 0,
+            "suites": 0,
+            "tests": 31,
+            "todo": 0
+          }
+        },
+        {
+          "lines": {
+            "cancelled": 4485,
+            "fail": 4484,
+            "pass": 4483,
+            "skipped": 4486,
+            "suites": 4482,
+            "tests": 4481,
+            "todo": 4487
+          },
+          "values": {
+            "cancelled": 0,
+            "fail": 0,
+            "pass": 41,
+            "skipped": 0,
+            "suites": 0,
+            "tests": 41,
+            "todo": 0
+          }
+        }
+      ],
+      "raw_log": {
+        "bytes": 522388,
+        "git_blob": "9e0070dfba8931b9d8bbfbe299b7ddb7c4bcc5e9",
+        "sha256": "6b3fa73fb1758f944d01e8902fb9001923192875e1656f5112b6992018e389c0"
+      },
+      "run_id": 42123581031,
+      "source_history": [
+        {
+          "line": 185,
+          "object": {
+            "base_sha": "63652be658ebed8d3052eb789b951793384fd5e4",
+            "checkout_unchanged": true,
+            "requested_refs": [
+              "refs/hepta-ui-ci/base",
+              "refs/hepta-ui-ci/source"
+            ],
+            "schema": "hepta.ui-exact-history.v1",
+            "shallow_after": false,
+            "shallow_before": true,
+            "source_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+            "source_tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359"
+          }
+        }
+      ],
+      "tested_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+      "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+      "unique_total_claimed": false
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "schema": "hepta-b11-host-neither-root-source-proof-v1",
+  "parent_commit": "021a59ff05ccd963bc087918db823aa86af31bb8",
+  "parent_tree": "36ca349de7f4c7c5a2914cf1960a81d8621350fa",
+  "base_proof": {
+    "tree": "36ca349de7f4c7c5a2914cf1960a81d8621350fa",
+    "entries": 12158,
+    "leaves": 10588,
+    "directory_nodes": 1571,
+    "all_Merkle_nodes_match": true
+  },
+  "intended_tree": {
+    "tree": "9cb7302777ce018dd022086041c2225d1dd5c8dd",
+    "entries": 12159,
+    "leaves": 10589,
+    "directory_nodes": 1571,
+    "all_Merkle_nodes_match": true
+  },
+  "changed_paths": [
+    "codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs",
+    "codex-rs/windows-sandbox-rs/src/token_neither_privilege_observation.rs"
+  ],
+  "new_paths": [
+    "codex-rs/windows-sandbox-rs/src/token_neither_privilege_observation.rs"
+  ],
+  "removed_paths": [],
+  "all_other_leaves_unchanged": true,
+  "sources": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs",
+      "before": {
+        "path": "codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2a384792e8ba88518c26943716e8c3a39a523f9b"
+      },
+      "after": {
+        "bytes": 14736,
+        "sha256": "f5da450f9745cbf65947d15810e9973932264b28dfe21e4f7150b62e5081c2f9",
+        "git_blob": "fc9faa6d47ac5fdefa216affceb51a586f8e6b81"
+      },
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/candidate/codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/token_neither_privilege_observation.rs",
+      "before": null,
+      "after": {
+        "bytes": 23010,
+        "sha256": "441a000d02c7aab203a270bde951dcb6e98e02845e76314782892b87e6a6a835",
+        "git_blob": "b40b49ce772c402c51ddb16bb98ff73dc78cdb41"
+      },
+      "local_file": "/workspace/scratch/07dd58cc9630/architecture-audit/b11-host-neither-observation-candidate-20261105/v2/candidate/codex-rs/windows-sandbox-rs/src/token_neither_privilege_observation.rs"
+    }
+  ],
+  "original_complete_probe_recovered_by_removing_only_two_insertions": true,
+  "v2_exactly_two_new_observation_environment_and_cmd_flag_replacements": true,
+  "original_assertions_and_workflow_scripts_and_11_helper_pins_unchanged": true,
+  "new_test_or_ignore_attributes": 0,
+  "compiled_roster_156_and_exact_filtered_155": "Static preservation expectation only; candidate not compiled or run.",
+  "root_source_review": "Complete new module and both original probe insertions, paired effective thread-token scopes, actual child token gate, fixture physical readback and original process/Job backend reviewed.",
+  "native_compilation_or_fmt_or_execution": false,
+  "cause_claim": null,
+  "B11": "OPEN",
+  "whole_candidate_qualified": false,
+  "independent_review": {
+    "identity": {
+      "bytes": 11473,
+      "sha256": "abe938d5f596ba1af068a57f9a5fad8ca499fb9376290f5698f9e57b89fbdba6",
+      "git_blob": "a53e8141b1a62532a483f91cc2b7a6d84486f5fb"
+    },
+    "decision": "ACCEPT_V2_AS_OBSERVATION_CANDIDATE_ONLY"
+  },
+  "actual_root_entries_equal": true,
+  "actual_root_sha": "9cb7302777ce018dd022086041c2225d1dd5c8dd",
+  "proof_method": "Complete intended Merkle tree bound to actual root GET, not recursive full-tree GET."
+}

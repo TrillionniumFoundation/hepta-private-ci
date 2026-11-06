@@ -1,0 +1,29 @@
+{
+  "schema": "windows-setup-error-review-primary-v1",
+  "fixed_dependency": {
+    "repository_path": "codex-rs/Cargo.lock",
+    "git_blob": "71fc8fa78b5afa076835b29790a5e6b0bd772558",
+    "name": "anyhow",
+    "version": "1.0.104",
+    "registry_checksum": "330a5ed07fa54e4702c9d6c4174f74427fc0ef6e214bbd677ae50a5099946470"
+  },
+  "sources": [
+    {
+      "url": "https://docs.rs/anyhow/1.0.104/anyhow/struct.Error.html",
+      "consulted_sections": [
+        "Display representations",
+        "Error::context",
+        "Error::downcast_ref"
+      ],
+      "finding": "Alternate Display includes lower-level causes; Error::context is inherent. Display does not add the Debug backtrace representation."
+    },
+    {
+      "url": "https://docs.rs/anyhow/1.0.104/anyhow/trait.Context.html#effect-on-downcasting",
+      "consulted_sections": [
+        "Effect on downcasting"
+      ],
+      "finding": "Wrapping an anyhow error in context preserves downcasting to the underlying typed error."
+    }
+  ],
+  "claim_scope": "Primary API documentation and fixed manifest checks; no Rust compilation or runtime proof."
+}

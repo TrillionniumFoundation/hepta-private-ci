@@ -1,0 +1,24 @@
+{
+  "schema": "b21-terminal-local-verification-execution",
+  "final_verifier": "verify_terminal.py",
+  "final_verifier_identity": {
+    "bytes": 23851,
+    "sha256": "cc492681eadac6046e24550c40da0bdc1a42a9d880d2a20a0d918c3f945c4a82",
+    "git_blob": "65b3cb50f2d6e238901f75d16d7afe95d293d677"
+  },
+  "runs": [
+    {
+      "stdout": "VERIFIED-01.stdout.json",
+      "stderr": "VERIFIED-01.stderr.txt",
+      "exit_code": 0,
+      "scope": "before adding the independent collector-console contiguous-slice check; retained history"
+    },
+    {
+      "stdout": "VERIFIED-02.stdout.json",
+      "stderr": "VERIFIED-02.stderr.txt",
+      "exit_code": 0,
+      "scope": "final complete proof"
+    }
+  ],
+  "no_product_or_native_execution": true
+}

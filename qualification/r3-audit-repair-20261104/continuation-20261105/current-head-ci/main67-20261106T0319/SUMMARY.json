@@ -1,0 +1,1077 @@
+{
+  "schema": "hepta-main67-0319-evidence-verification-v1",
+  "collection": {
+    "schema": "hepta-main67-0319-complete-api-cut-v1",
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+    "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+    "collection_window_utc": {
+      "start": "2026-11-06T03:18:59.703Z",
+      "end": "2026-11-06T03:19:29.458Z"
+    },
+    "run_list": {
+      "per_page": 100,
+      "page": 1,
+      "total_count": 19,
+      "received": 19
+    },
+    "job_lists": {
+      "filter": "all",
+      "per_page": 100,
+      "page": 1,
+      "runs": 19,
+      "total_count": 85,
+      "unique_jobs": 85
+    },
+    "frozen_0201_baseline": "Reconstructed full original tool returns from previously registered immutable parts; original registration included.",
+    "frozen_0244_baseline": "Exact copied bytes of the prior four-run bounded increment; not a complete 19-run snapshot.",
+    "limits": [
+      "Non-atomic bounded API window, not a simultaneous status snapshot.",
+      "Run conclusion is not a substitute for job conclusion; job IDs are the counting denominator.",
+      "No workflow dispatch, rerun, cancel or native/private tool invocation performed.",
+      "Original binary ZIP obtained for Windows failed shard; cargo-deny job log fetch returned Transport closed, with no diagnostic artifact in the complete run artifact list."
+    ]
+  },
+  "api": {
+    "baseline_0201_original_parts_reconstructed_and_hash_checked": 20,
+    "run_count": 19,
+    "unique_job_count": 85,
+    "job_counts": {
+      "cancelled": 9,
+      "failure": 2,
+      "in_progress": 4,
+      "queued": 10,
+      "skipped": 5,
+      "success": 55
+    },
+    "runs": [
+      {
+        "run_id": 42123581986,
+        "name": "Hepta musl product smoke",
+        "run_status": "completed",
+        "run_conclusion": "success",
+        "job_total": 1,
+        "job_counts": {
+          "success": 1
+        }
+      },
+      {
+        "run_id": 42123581050,
+        "name": "Native Windows Bazel process environment",
+        "run_status": "completed",
+        "run_conclusion": "success",
+        "job_total": 2,
+        "job_counts": {
+          "success": 2
+        }
+      },
+      {
+        "run_id": 42123581231,
+        "name": "Hepta Windows private-state native (security qualification only)",
+        "run_status": "completed",
+        "run_conclusion": "success",
+        "job_total": 1,
+        "job_counts": {
+          "success": 1
+        }
+      },
+      {
+        "run_id": 42123581007,
+        "name": "Native Windows ordinary business consumers",
+        "run_status": "completed",
+        "run_conclusion": "success",
+        "job_total": 2,
+        "job_counts": {
+          "success": 2
+        }
+      },
+      {
+        "run_id": 42123581385,
+        "name": "blocking-ci",
+        "run_status": "queued",
+        "run_conclusion": null,
+        "job_total": 29,
+        "job_counts": {
+          "failure": 2,
+          "in_progress": 4,
+          "queued": 9,
+          "skipped": 3,
+          "success": 11
+        }
+      },
+      {
+        "run_id": 42123581091,
+        "name": "App-server schema refresh",
+        "run_status": "completed",
+        "run_conclusion": "skipped",
+        "job_total": 1,
+        "job_counts": {
+          "skipped": 1
+        }
+      },
+      {
+        "run_id": 42123581410,
+        "name": "Production HOS2 owner proposal",
+        "run_status": "completed",
+        "run_conclusion": "skipped",
+        "job_total": 1,
+        "job_counts": {
+          "skipped": 1
+        }
+      },
+      {
+        "run_id": 42123581408,
+        "name": "Original Objective owner package gates",
+        "run_status": "completed",
+        "run_conclusion": "success",
+        "job_total": 1,
+        "job_counts": {
+          "success": 1
+        }
+      },
+      {
+        "run_id": 42123581260,
+        "name": "v8-canary",
+        "run_status": "completed",
+        "run_conclusion": "failure",
+        "job_total": 15,
+        "job_counts": {
+          "cancelled": 3,
+          "success": 12
+        }
+      },
+      {
+        "run_id": 42123581031,
+        "name": "Rust UI product foundation",
+        "run_status": "completed",
+        "run_conclusion": "success",
+        "job_total": 5,
+        "job_counts": {
+          "success": 5
+        }
+      },
+      {
+        "run_id": 42123581078,
+        "name": "Hepta Keyring Sync Security Migration (Draft)",
+        "run_status": "completed",
+        "run_conclusion": "failure",
+        "job_total": 3,
+        "job_counts": {
+          "cancelled": 1,
+          "success": 2
+        }
+      },
+      {
+        "run_id": 42123581186,
+        "name": "Hepta operator acceptance native signature verification",
+        "run_status": "completed",
+        "run_conclusion": "failure",
+        "job_total": 6,
+        "job_counts": {
+          "cancelled": 2,
+          "success": 4
+        }
+      },
+      {
+        "run_id": 42123581393,
+        "name": "Hepta Memory P0 native regressions",
+        "run_status": "completed",
+        "run_conclusion": "success",
+        "job_total": 2,
+        "job_counts": {
+          "success": 2
+        }
+      },
+      {
+        "run_id": 42123581479,
+        "name": "Hepta Supervisor P0 Cross-Platform Restart Qualification",
+        "run_status": "completed",
+        "run_conclusion": "success",
+        "job_total": 2,
+        "job_counts": {
+          "success": 2
+        }
+      },
+      {
+        "run_id": 42123581142,
+        "name": "Hepta owner-local Matrixd and Agentd native transport",
+        "run_status": "completed",
+        "run_conclusion": "failure",
+        "job_total": 3,
+        "job_counts": {
+          "cancelled": 1,
+          "success": 2
+        }
+      },
+      {
+        "run_id": 42123581363,
+        "name": "Hepta architecture convergence",
+        "run_status": "queued",
+        "run_conclusion": null,
+        "job_total": 3,
+        "job_counts": {
+          "queued": 1,
+          "success": 2
+        }
+      },
+      {
+        "run_id": 42123581270,
+        "name": "Hepta exec recovery and authorized-read conformance",
+        "run_status": "completed",
+        "run_conclusion": "failure",
+        "job_total": 6,
+        "job_counts": {
+          "cancelled": 2,
+          "success": 4
+        }
+      },
+      {
+        "run_id": 42123569559,
+        "name": "Native Windows retained recovery and cognitive owner",
+        "run_status": "completed",
+        "run_conclusion": "success",
+        "job_total": 1,
+        "job_counts": {
+          "success": 1
+        }
+      },
+      {
+        "run_id": 42123569750,
+        "name": "Native Windows Core lifecycle ordering",
+        "run_status": "completed",
+        "run_conclusion": "success",
+        "job_total": 1,
+        "job_counts": {
+          "success": 1
+        }
+      }
+    ],
+    "failures": [
+      {
+        "id": 127679861307,
+        "run_id": 42123581385,
+        "name": "cargo-deny / cargo-deny",
+        "status": "completed",
+        "conclusion": "failure",
+        "runner_name": "GitHub Actions 1000008090",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+      },
+      {
+        "id": 127679861687,
+        "run_id": 42123581385,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+        "status": "completed",
+        "conclusion": "failure",
+        "runner_name": "GitHub Actions 1000008150",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+      }
+    ],
+    "pending": [
+      {
+        "id": 127679861257,
+        "run_id": 42123581385,
+        "name": "Hepta contract gate / Validate canonical branch and contract metadata",
+        "status": "queued",
+        "conclusion": null,
+        "runner_name": "",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+      },
+      {
+        "id": 127679861313,
+        "run_id": 42123581385,
+        "name": "sdk / python-sdk",
+        "status": "queued",
+        "conclusion": null,
+        "runner_name": "",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+      },
+      {
+        "id": 127679861349,
+        "run_id": 42123581385,
+        "name": "sdk / sdks",
+        "status": "queued",
+        "conclusion": null,
+        "runner_name": "",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+      },
+      {
+        "id": 127679861464,
+        "run_id": 42123581385,
+        "name": "rust-ci / Detect changed areas",
+        "status": "queued",
+        "conclusion": null,
+        "runner_name": "",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+      },
+      {
+        "id": 127679861481,
+        "run_id": 42123581385,
+        "name": "repo-checks / Native Hepta paths on ubuntu-24.04",
+        "status": "queued",
+        "conclusion": null,
+        "runner_name": "",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+      },
+      {
+        "id": 127679861660,
+        "run_id": 42123581385,
+        "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+        "status": "in_progress",
+        "conclusion": null,
+        "runner_name": "GitHub Actions 1000008099",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+      },
+      {
+        "id": 127679861668,
+        "run_id": 42123581385,
+        "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-musl",
+        "status": "queued",
+        "conclusion": null,
+        "runner_name": "",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+      },
+      {
+        "id": 127679861677,
+        "run_id": 42123581385,
+        "name": "Bazel / Verify release build on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+        "status": "queued",
+        "conclusion": null,
+        "runner_name": "",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+      },
+      {
+        "id": 127679861699,
+        "run_id": 42123581385,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4",
+        "status": "in_progress",
+        "conclusion": null,
+        "runner_name": "GitHub Actions 1000008318",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+      },
+      {
+        "id": 127679861740,
+        "run_id": 42123581385,
+        "name": "Bazel / Bazel clippy on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+        "status": "queued",
+        "conclusion": null,
+        "runner_name": "",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+      },
+      {
+        "id": 127679861749,
+        "run_id": 42123581385,
+        "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+        "status": "in_progress",
+        "conclusion": null,
+        "runner_name": "GitHub Actions 1000008346",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+      },
+      {
+        "id": 127679861775,
+        "run_id": 42123581385,
+        "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+        "status": "in_progress",
+        "conclusion": null,
+        "runner_name": "GitHub Actions 1000008324",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+      },
+      {
+        "id": 127679861926,
+        "run_id": 42123581385,
+        "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+        "status": "queued",
+        "conclusion": null,
+        "runner_name": "",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+      },
+      {
+        "id": 127685010480,
+        "run_id": 42123581363,
+        "name": "Architecture required",
+        "status": "queued",
+        "conclusion": null,
+        "runner_name": "",
+        "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+      }
+    ],
+    "delta_0201": {
+      "previous_total": 58,
+      "current_total": 85,
+      "old_counts": {
+        "cancelled": 9,
+        "in_progress": 5,
+        "queued": 7,
+        "skipped": 2,
+        "success": 35
+      },
+      "new_counts": {
+        "cancelled": 9,
+        "failure": 2,
+        "in_progress": 4,
+        "queued": 10,
+        "skipped": 5,
+        "success": 55
+      },
+      "added": [
+        {
+          "id": 127679861257,
+          "run_id": 42123581385,
+          "name": "Hepta contract gate / Validate canonical branch and contract metadata",
+          "status": "queued",
+          "conclusion": null,
+          "runner_name": "",
+          "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+        },
+        {
+          "id": 127679861307,
+          "run_id": 42123581385,
+          "name": "cargo-deny / cargo-deny",
+          "status": "completed",
+          "conclusion": "failure",
+          "runner_name": "GitHub Actions 1000008090",
+          "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+        },
+        {
+          "id": 127679861313,
+          "run_id": 42123581385,
+          "name": "sdk / python-sdk",
+          "status": "queued",
+          "conclusion": null,
+          "runner_name": "",
+          "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+        },
+        {
+          "id": 127679861334,
+          "run_id": 42123581385,
+          "name": "repo-checks / build-test",
+          "status": "completed",
+          "conclusion": "success",
+          "runner_name": "GitHub Actions 1000008092",
+          "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+        },
+        {
+          "id": 127679861349,
+          "run_id": 42123581385,
+          "name": "sdk / sdks",
+          "status": "queued",
+          "conclusion": null,
+          "runner_name": "",
+          "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+        },
+        {
+          "id": 127679861378,
+          "run_id": 42123581385,
+          "name": "repo-checks / Native Hepta paths on windows-latest",
+          "status": "completed",
+          "conclusion": "success",
+          "runner_name": "GitHub Actions 1000008141",
+          "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+        },
+        {
+          "id": 127679861410,
+          "run_id": 42123581385,
+          "name": "repo-checks / Native Hepta paths on macos-15",
+          "status": "completed",
+          "conclusion": "success",
+          "runner_name": "GitHub Actions 1000008147",
+          "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+        },
+        {
+          "id": 127679861464,
+          "run_id": 42123581385,
+          "name": "rust-ci / Detect changed areas",
+          "status": "queued",
+          "conclusion": null,
+          "runner_name": "",
+          "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+        },
+        {
+          "id": 127679861481,
+          "run_id": 42123581385,
+          "name": "repo-checks / Native Hepta paths on ubuntu-24.04",
+          "status": "queued",
+          "conclusion": null,
+          "runner_name": "",
+          "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+        },
+        {
+          "id": 127679861588,
+          "run_id": 42123581385,
+          "name": "Bazel / Verify release build on macos-15 for aarch64-apple-darwin",
+          "status": "completed",
+          "conclusion": "success",
+          "runner_name": "GitHub Actions 1000008237",
+          "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+        },
+        {
+          "id": 127679861594,
+          "run_id": 42123581385,
+          "name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc",
+          "status": "completed",
+          "conclusion": "success",
+          "runner_name": "GitHub Actions 1000008117",
+          "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+        },
+        {
+          "id": 127679861630,
+          "run_id": 42123581385,
+          "name": "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+          "status": "completed",
+          "conclusion": "success",
+          "runner_name": "GitHub Actions 1000008286",
+          "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+        },
+        {
+          "id": 127679861651,
+          "run_id": 42123581385,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+          "status": "completed",
+          "conclusion": "success",
+          "runner_name": "GitHub Actions 1000008149",
+          "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+        },
+        {
+          "id": 127679861660,
+          "run_id": 42123581385,
+          "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+          "status": "in_progress",
+          "conclusion": null,
+          "runner_name": "GitHub Actions 1000008099",
+          "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+        },
+        {
+          "id": 127679861668,
+          "run_id": 42123581385,
+          "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-musl",
+          "status": "queued",
+          "conclusion": null,
+          "runner_name": "",
+          "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+        },
+        {
+          "id": 127679861677,
+          "run_id": 42123581385,
+          "name": "Bazel / Verify release build on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+          "status": "queued",
+          "conclusion": null,
+          "runner_name": "",
+          "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+        },
+        {
+          "id": 127679861687,
+          "run_id": 42123581385,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+          "status": "completed",
+          "conclusion": "failure",
+          "runner_name": "GitHub Actions 1000008150",
+          "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+        },
+        {
+          "id": 127679861699,
+          "run_id": 42123581385,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4",
+          "status": "in_progress",
+          "conclusion": null,
+          "runner_name": "GitHub Actions 1000008318",
+          "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+        },
+        {
+          "id": 127679861706,
+          "run_id": 42123581385,
+          "name": "Bazel / Verify release build on windows-latest for x86_64-pc-windows-msvc",
+          "status": "completed",
+          "conclusion": "success",
+          "runner_name": "GitHub Actions 1000008316",
+          "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+        },
+        {
+          "id": 127679861740,
+          "run_id": 42123581385,
+          "name": "Bazel / Bazel clippy on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+          "status": "queued",
+          "conclusion": null,
+          "runner_name": "",
+          "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+        },
+        {
+          "id": 127679861749,
+          "run_id": 42123581385,
+          "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+          "status": "in_progress",
+          "conclusion": null,
+          "runner_name": "GitHub Actions 1000008346",
+          "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+        },
+        {
+          "id": 127679861775,
+          "run_id": 42123581385,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+          "status": "in_progress",
+          "conclusion": null,
+          "runner_name": "GitHub Actions 1000008324",
+          "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+        },
+        {
+          "id": 127679861926,
+          "run_id": 42123581385,
+          "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+          "status": "queued",
+          "conclusion": null,
+          "runner_name": "",
+          "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+        },
+        {
+          "id": 127679863291,
+          "run_id": 42123581385,
+          "name": "Hepta scoped native checks",
+          "status": "completed",
+          "conclusion": "skipped",
+          "runner_name": null,
+          "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+        },
+        {
+          "id": 127679863765,
+          "run_id": 42123581385,
+          "name": "Lightweight prose and derived checks",
+          "status": "completed",
+          "conclusion": "skipped",
+          "runner_name": null,
+          "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+        },
+        {
+          "id": 127679863918,
+          "run_id": 42123581385,
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc (native main)",
+          "status": "completed",
+          "conclusion": "skipped",
+          "runner_name": null,
+          "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+        },
+        {
+          "id": 127685010480,
+          "run_id": 42123581363,
+          "name": "Architecture required",
+          "status": "queued",
+          "conclusion": null,
+          "runner_name": "",
+          "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+        }
+      ],
+      "removed": [],
+      "changed": [
+        {
+          "id": 127581904221,
+          "name": "Rust UI foundation / base-merge",
+          "before": {
+            "id": 127581904221,
+            "run_id": 42123581031,
+            "name": "Rust UI foundation / base-merge",
+            "status": "in_progress",
+            "conclusion": null,
+            "runner_name": "GitHub Actions 1000007144",
+            "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+          },
+          "after": {
+            "id": 127581904221,
+            "run_id": 42123581031,
+            "name": "Rust UI foundation / base-merge",
+            "status": "completed",
+            "conclusion": "success",
+            "runner_name": "GitHub Actions 1000007144",
+            "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+          }
+        },
+        {
+          "id": 127581904330,
+          "name": "Rust UI foundation / source-head",
+          "before": {
+            "id": 127581904330,
+            "run_id": 42123581031,
+            "name": "Rust UI foundation / source-head",
+            "status": "in_progress",
+            "conclusion": null,
+            "runner_name": "GitHub Actions 1000007075",
+            "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+          },
+          "after": {
+            "id": 127581904330,
+            "run_id": 42123581031,
+            "name": "Rust UI foundation / source-head",
+            "status": "completed",
+            "conclusion": "success",
+            "runner_name": "GitHub Actions 1000007075",
+            "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+          }
+        },
+        {
+          "id": 127581904963,
+          "name": "Original memory and Agentd libraries (source head)",
+          "before": {
+            "id": 127581904963,
+            "run_id": 42123581408,
+            "name": "Original memory and Agentd libraries (source head)",
+            "status": "in_progress",
+            "conclusion": null,
+            "runner_name": "GitHub Actions 1000007078",
+            "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+          },
+          "after": {
+            "id": 127581904963,
+            "run_id": 42123581408,
+            "name": "Original memory and Agentd libraries (source head)",
+            "status": "completed",
+            "conclusion": "success",
+            "runner_name": "GitHub Actions 1000007078",
+            "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+          }
+        },
+        {
+          "id": 127581905421,
+          "name": "Original recovery and authorized-read scopes (ubuntu-24.04, source-head)",
+          "before": {
+            "id": 127581905421,
+            "run_id": 42123581270,
+            "name": "Original recovery and authorized-read scopes (ubuntu-24.04, source-head)",
+            "status": "queued",
+            "conclusion": null,
+            "runner_name": "",
+            "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+          },
+          "after": {
+            "id": 127581905421,
+            "run_id": 42123581270,
+            "name": "Original recovery and authorized-read scopes (ubuntu-24.04, source-head)",
+            "status": "completed",
+            "conclusion": "success",
+            "runner_name": "GitHub Actions 1000008204",
+            "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+          }
+        },
+        {
+          "id": 127581905431,
+          "name": "Original recovery and authorized-read scopes (ubuntu-24.04, base-merge)",
+          "before": {
+            "id": 127581905431,
+            "run_id": 42123581270,
+            "name": "Original recovery and authorized-read scopes (ubuntu-24.04, base-merge)",
+            "status": "queued",
+            "conclusion": null,
+            "runner_name": "",
+            "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+          },
+          "after": {
+            "id": 127581905431,
+            "run_id": 42123581270,
+            "name": "Original recovery and authorized-read scopes (ubuntu-24.04, base-merge)",
+            "status": "completed",
+            "conclusion": "success",
+            "runner_name": "GitHub Actions 1000008193",
+            "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+          }
+        },
+        {
+          "id": 127583368465,
+          "name": "Build release x86_64-unknown-linux-gnu",
+          "before": {
+            "id": 127583368465,
+            "run_id": 42123581260,
+            "name": "Build release x86_64-unknown-linux-gnu",
+            "status": "in_progress",
+            "conclusion": null,
+            "runner_name": "GitHub Actions 1000007235",
+            "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+          },
+          "after": {
+            "id": 127583368465,
+            "run_id": 42123581260,
+            "name": "Build release x86_64-unknown-linux-gnu",
+            "status": "completed",
+            "conclusion": "success",
+            "runner_name": "GitHub Actions 1000007235",
+            "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+          }
+        },
+        {
+          "id": 127583368724,
+          "name": "Build ptrcomp-sandbox x86_64-unknown-linux-gnu",
+          "before": {
+            "id": 127583368724,
+            "run_id": 42123581260,
+            "name": "Build ptrcomp-sandbox x86_64-unknown-linux-gnu",
+            "status": "in_progress",
+            "conclusion": null,
+            "runner_name": "GitHub Actions 1000007234",
+            "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+          },
+          "after": {
+            "id": 127583368724,
+            "run_id": 42123581260,
+            "name": "Build ptrcomp-sandbox x86_64-unknown-linux-gnu",
+            "status": "completed",
+            "conclusion": "success",
+            "runner_name": "GitHub Actions 1000007234",
+            "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+          }
+        },
+        {
+          "id": 127583368742,
+          "name": "Build release x86_64-unknown-linux-musl",
+          "before": {
+            "id": 127583368742,
+            "run_id": 42123581260,
+            "name": "Build release x86_64-unknown-linux-musl",
+            "status": "queued",
+            "conclusion": null,
+            "runner_name": "",
+            "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+          },
+          "after": {
+            "id": 127583368742,
+            "run_id": 42123581260,
+            "name": "Build release x86_64-unknown-linux-musl",
+            "status": "completed",
+            "conclusion": "success",
+            "runner_name": "GitHub Actions 1000007301",
+            "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+          }
+        },
+        {
+          "id": 127648602373,
+          "name": "Select blocking CI scope",
+          "before": {
+            "id": 127648602373,
+            "run_id": 42123581385,
+            "name": "Select blocking CI scope",
+            "status": "queued",
+            "conclusion": null,
+            "runner_name": "",
+            "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+          },
+          "after": {
+            "id": 127648602373,
+            "run_id": 42123581385,
+            "name": "Select blocking CI scope",
+            "status": "completed",
+            "conclusion": "success",
+            "runner_name": "GitHub Actions 1000008051",
+            "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+          }
+        },
+        {
+          "id": 127648603524,
+          "name": "Blob size policy / Blob size policy",
+          "before": {
+            "id": 127648603524,
+            "run_id": 42123581385,
+            "name": "Blob size policy / Blob size policy",
+            "status": "queued",
+            "conclusion": null,
+            "runner_name": "",
+            "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+          },
+          "after": {
+            "id": 127648603524,
+            "run_id": 42123581385,
+            "name": "Blob size policy / Blob size policy",
+            "status": "completed",
+            "conclusion": "success",
+            "runner_name": "GitHub Actions 1000008103",
+            "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+          }
+        },
+        {
+          "id": 127654866519,
+          "name": "Architecture convergence (base-merge)",
+          "before": {
+            "id": 127654866519,
+            "run_id": 42123581363,
+            "name": "Architecture convergence (base-merge)",
+            "status": "queued",
+            "conclusion": null,
+            "runner_name": "",
+            "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+          },
+          "after": {
+            "id": 127654866519,
+            "run_id": 42123581363,
+            "name": "Architecture convergence (base-merge)",
+            "status": "completed",
+            "conclusion": "success",
+            "runner_name": "GitHub Actions 1000007804",
+            "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+          }
+        },
+        {
+          "id": 127654866844,
+          "name": "Architecture convergence (source-head)",
+          "before": {
+            "id": 127654866844,
+            "run_id": 42123581363,
+            "name": "Architecture convergence (source-head)",
+            "status": "queued",
+            "conclusion": null,
+            "runner_name": "",
+            "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+          },
+          "after": {
+            "id": 127654866844,
+            "run_id": 42123581363,
+            "name": "Architecture convergence (source-head)",
+            "status": "completed",
+            "conclusion": "success",
+            "runner_name": "GitHub Actions 1000007809",
+            "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+          }
+        }
+      ]
+    },
+    "delta_0244_four_runs": {
+      "previous_total": 23,
+      "current_total": 24,
+      "old_counts": {
+        "cancelled": 3,
+        "in_progress": 1,
+        "success": 19
+      },
+      "new_counts": {
+        "cancelled": 3,
+        "queued": 1,
+        "success": 20
+      },
+      "added": [
+        {
+          "id": 127685010480,
+          "run_id": 42123581363,
+          "name": "Architecture required",
+          "status": "queued",
+          "conclusion": null,
+          "runner_name": "",
+          "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+        }
+      ],
+      "removed": [],
+      "changed": [
+        {
+          "id": 127654866844,
+          "name": "Architecture convergence (source-head)",
+          "before": {
+            "id": 127654866844,
+            "run_id": 42123581363,
+            "name": "Architecture convergence (source-head)",
+            "status": "in_progress",
+            "conclusion": null,
+            "runner_name": "GitHub Actions 1000007809",
+            "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+          },
+          "after": {
+            "id": 127654866844,
+            "run_id": 42123581363,
+            "name": "Architecture convergence (source-head)",
+            "status": "completed",
+            "conclusion": "success",
+            "runner_name": "GitHub Actions 1000007809",
+            "head_sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+          }
+        }
+      ]
+    }
+  },
+  "source": {
+    "requested_head": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+    "windows_actual_checkout": "b7a57dbb61b00e51c05da9cf5c4bc95b365d85ae",
+    "actual_checkout_tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+    "complete_original_leaves": 10582,
+    "recomputed_merkle_nodes": 1571,
+    "verified_local_source_files": 21
+  },
+  "windows": {
+    "official_zip_identity": {
+      "bytes": 5410721,
+      "sha256": "9d8f6ffabea065443428305884263ce3f77664174adae4fb83ecf20d034cfdd7",
+      "git_blob": "7a5fca249e8fb4ab2dd1391dc8a02da3ba012c22"
+    },
+    "official_artifact_digest": "sha256:9d8f6ffabea065443428305884263ce3f77664174adae4fb83ecf20d034cfdd7",
+    "zip_members": 47,
+    "failed_target_log_xml_files": 42,
+    "selected_pty_log_xml_files": 2,
+    "failed_target": "//codex-rs/core:core-all-test",
+    "original_bazel_exit_code": 3,
+    "original_selected_test_targets": 149,
+    "original_query_test_targets": 606,
+    "core_actual_test_launches": 21,
+    "core_separate_xml_generators": 21,
+    "core_failed_attempts": 6,
+    "shards": 16,
+    "extra_attempts": 5,
+    "all_launches_local_noncache": true,
+    "original_timeout_millis": 900000,
+    "final_failed_case_names": [
+      "suite::windows_sandbox::windows_elevated_enforces_deny_read_and_protects_setup_marker",
+      "suite::windows_sandbox::windows_elevated_unified_exec_enforces_managed_deny_reads",
+      "suite::workspace_roots::workspace_roots_allow_patches_but_protect_metadata_directories"
+    ],
+    "literal_final_case_row_counts": {
+      "ok": 1038,
+      "ignored": 90,
+      "FAILED": 3
+    },
+    "literal_final_unique_name_counts": {
+      "ok": 1030,
+      "ignored": 72,
+      "FAILED": 3
+    },
+    "compact_xml_digest_mismatches": [
+      {
+        "shard": 4,
+        "attempt": 2,
+        "compact_output_digest": "33bb45cb9983875361453aec4f91ef1258cad239ece02dde247edc46ec5572b1",
+        "archive_xml_sha256": "56c6b44fc71d1110b4dcbf560cdd693bae9df82fa54f52b180a9fe4e63e40efa"
+      },
+      {
+        "shard": 6,
+        "attempt": 2,
+        "compact_output_digest": "4071f88eab62372315dec5887154720c2d34c00b7d6349dd1e9656c90f7fe215",
+        "archive_xml_sha256": "9267269dee32cdbfe6a170f9f49f398c7108182e6965f94bbc32ac5043eb2358"
+      },
+      {
+        "shard": 7,
+        "attempt": 2,
+        "compact_output_digest": "e8d98e418d8fad9edf65f916d51a3205b861c09c316e49bf6f373c2c657e1e9d",
+        "archive_xml_sha256": "628553fd42916619b5565bd77c6ef2e98de48b4d287d52b049e4f77ed342d5e6"
+      },
+      {
+        "shard": 7,
+        "attempt": 3,
+        "compact_output_digest": "e8d98e418d8fad9edf65f916d51a3205b861c09c316e49bf6f373c2c657e1e9d",
+        "archive_xml_sha256": "3c0732c103b09fe4b00cc218dac7475a5592f84c4a37fbaee0a74c3923ae3d1b"
+      },
+      {
+        "shard": 13,
+        "attempt": 2,
+        "compact_output_digest": "3c04c2914e070d5658e5d20833d2b82cb768a5f300a7be4eae6d1707743e3e08",
+        "archive_xml_sha256": "1c0bf3686f868aa772fbd18c169836b626b6b13b6e104f7e9eca9cf7f92f7bdf"
+      }
+    ],
+    "limits": [
+      "The selected PTY result was explicitly cached; it is not fresh native PTY execution.",
+      "Compact TestRunner includes XML generators; only tw.exe entries count as actual test launches.",
+      "Five repeated-path XML output references reuse prior digests; they do not cryptographically bind the later XML bytes. The original ZIP and in-artifact manifest independently retain all 42 exact log/XML files.",
+      "Literal libtest rows include duplicate names. Do not conflate row totals, distinct names, declared full binary inventory, Bazel targets, and attempts.",
+      "Collector scope is selected failed targets and the selected PTY result; this is not a complete test-log archive for all 149 targets."
+    ]
+  },
+  "cargo_deny": {
+    "job_id": 127679861307,
+    "api_failed_step": "Run cargo-deny",
+    "source_declared_command": "cargo +1.95.0 deny --locked --all-features check --config deny.toml",
+    "pinned_tool": "cargo-deny@0.19.0",
+    "toolchain": "1.95.0",
+    "whole_log": "UNAVAILABLE_TRANSPORT_CLOSED",
+    "actual_checkout_commit": "UNKNOWN",
+    "native_exit_code": "UNKNOWN",
+    "failure_cause": "UNKNOWN",
+    "matching_deny_artifacts_in_complete_list": 0,
+    "no_dependency_or_policy_change_inferred": true
+  },
+  "qualification": "EVIDENCE_ONLY; existing blockers and original exit criteria are not changed"
+}

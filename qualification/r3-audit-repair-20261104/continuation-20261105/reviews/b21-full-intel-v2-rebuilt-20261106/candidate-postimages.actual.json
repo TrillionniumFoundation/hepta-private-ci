@@ -1,0 +1,26 @@
+{
+  "schema": "b21-rebuilt-source-actual-postimages-v1",
+  "method": "github_create_tree(content), no base and no ref mutation; followed by full github_fetch_blob equality",
+  "materialization_tree": "17f5f45b5c3ecda848dd99b01316322acbd25cdb",
+  "items": [
+    {
+      "local": "candidate/.github/workflows/b21-intel-original-pty.yml",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/candidate/.github/workflows/b21-intel-original-pty.yml",
+      "bytes": 50740,
+      "sha256": "0c286e0931688c7882c4d35c1d26a1fc019cc37e271a8220b349583cc849d56a",
+      "git_blob": "fb5881fa310d3548cd604d2827fe9c29aa1b3873",
+      "full_GET_equal": true
+    },
+    {
+      "local": "collect_attempts.py",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-full-intel-v2-rebuilt-20261106/collect_attempts.py",
+      "bytes": 34905,
+      "sha256": "7d8962de05fae508b259c1e16efa1be78a760c4a6a0da8ec239e796f3d1cdd1c",
+      "git_blob": "00dc37697adde6154a347963ab19e8a6edebac07",
+      "full_GET_equal": true
+    }
+  ],
+  "candidate_tree_computed": "46fca3e684217066c260dc10d0dc319a33e0a93c",
+  "publication": false,
+  "native_execution": false
+}

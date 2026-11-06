@@ -1,0 +1,41 @@
+{
+  "schema": "hepta-readonly-evidence-portable-replay-v1",
+  "kind": "main67",
+  "authority": {
+    "head": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+    "observation_start": "2026-11-06 01:04:46 UTC",
+    "observation_end": "2026-11-06 01:04:48 UTC",
+    "run_count": 19,
+    "job_count": 53,
+    "job_states": {
+      "cancelled": 9,
+      "queued": 23,
+      "skipped": 2,
+      "success": 19
+    }
+  },
+  "status": "COMPLETE_BYTES_AND_FROZEN_STDOUT_EQUAL",
+  "member_count": 29,
+  "member_bytes": 1995740,
+  "archive": {
+    "bytes": 155730,
+    "sha256": "f5577ada0fc4e1d71ff7d89bbb21ed488b4b0c239ed27e591ea1b9bc818d5402",
+    "git_blob": "fb5afd0a87a2afb9d3744d5178ff08c0a98994f5"
+  },
+  "verifier": "hepta-audit-fifth/main67-ci-cut-20261106T0104/verify_cut.py",
+  "verifier_exit": 0,
+  "verifier_stderr_bytes": 0,
+  "verifier_stdout": {
+    "bytes": 3698,
+    "sha256": "6013fd62490d2b77e51e6ff136875d887d7343ef60020c010aca7ad0f42cca67",
+    "git_blob": "3d4349c8d12d1f093657f31c184ce67d541a5928"
+  },
+  "frozen_stdout": "hepta-audit-fifth/main67-ci-cut-20261106T0104/VERIFICATION.json",
+  "actual_stdout_equals_complete_frozen_stdout_bytes": true,
+  "every_original_member_compared_before_and_after_with_direct_bytes_equality": true,
+  "unexpected_files": [],
+  "new_native_execution_or_capacity_query": false,
+  "product_compile_test_fmt": false,
+  "network_or_ref_mutation": false,
+  "scope": "Frozen current-head metadata and two complete V8 original logs only; not a new native/product/artifact qualification."
+}

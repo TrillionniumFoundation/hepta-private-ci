@@ -1,0 +1,43 @@
+{
+  "schema": "b21-final-author-proof-only-addendum",
+  "previous_review_actual_blob": "ecab7af9dc20c8989b9c8c5a4a099f2c91cbf3d0",
+  "scope": "Verification-tool and derived proof increment only. Existing independent review remains byte-immutable and bound to old 7890B author stdout.",
+  "candidate_source_unchanged": {
+    "workflow": "fb5881fa310d3548cd604d2827fe9c29aa1b3873",
+    "collector": "00dc37697adde6154a347963ab19e8a6edebac07"
+  },
+  "old_verifier": {
+    "bytes": 19116,
+    "git_blob": "7b124ddc51a29723b1066f69f7ba1626a188d370",
+    "sha256": "466ecd4c2abb29ca2608e1eb31cc921e546344340c2a01b4dca7c37880f11412"
+  },
+  "new_verifier": {
+    "bytes": 20141,
+    "git_blob": "874d88686e5a96225db34537e3b7f0d0964bb89c",
+    "sha256": "be575019ec40d3dd2077b929562d68845adf19226835ada294a7f381c095333b"
+  },
+  "old_author_stdout": {
+    "bytes": 7890,
+    "git_blob": "e4d09660d15b9196bacddfe085fc3cc2239353ba",
+    "sha256": "3dd7c7c3db5c5d9222592a8563dd10d9616e65dd1621d78d1dda7bc5946f7f0f"
+  },
+  "new_author_stdout": {
+    "bytes": 7937,
+    "git_blob": "c0785bd9692363021d3b6d6c0178f4774ee520d9",
+    "sha256": "9939d87662fb607db0ca2bf5d9ac63456db8a4aae4a8cb95348f13e32b8c027b"
+  },
+  "only_proof_field_added": {
+    "path": "/source_proof/candidate_postimages_actual_full_GET",
+    "value": 2
+  },
+  "all_prior_proof_values_unchanged": true,
+  "new_replay": {
+    "exit": 0,
+    "stdout_complete_bytes_equal_new_7937B": true,
+    "stderr_bytes": 0
+  },
+  "change_review": "New verifier additionally checks both actual source postimage GET contents/identities and tree materialization receipt. No workflow/collector, execution arguments, native result or conclusion changed.",
+  "blocking_findings": [],
+  "native": "NOT_RUN",
+  "ref_or_PR_mutation": false
+}

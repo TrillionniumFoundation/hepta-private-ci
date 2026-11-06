@@ -1,0 +1,96 @@
+{
+  "schema": "cargo-deny-independent-ANSI-correction-v1",
+  "original_observed_false_negative": {
+    "bytes": 8798,
+    "git_blob": "3537a5ed6562d22e44f329886396b93372dfe280",
+    "sha256": "6c4be4d743d449e29f0e4562e5626bb5c305e2c610acbbe829b831128bd37a15"
+  },
+  "corrected_collector": {
+    "bytes": 8830,
+    "git_blob": "f1dae501e6daa5b6ac8e26c9ed09729301c8e34f",
+    "sha256": "04df38304c2f9b4f759d3743de147b421eb6704f8065fa727f2930428f6a9e57"
+  },
+  "source_workflow": "57f6095d18c5517c9e7cf7d0de05b9645b106152",
+  "cases": [
+    {
+      "case": "benign_ansi",
+      "input_log": {
+        "bytes": 44,
+        "git_blob": "c40a6f5a1fd8214f76021459240058892d083ef1",
+        "sha256": "08dfe2e069e48a33c84ebbb2cfd29547516be0dd83cb2b30e5fc1a3104d21535"
+      },
+      "exit": 0,
+      "safe_for_upload": true,
+      "error_code": null,
+      "private_input_bytes_unchanged": true,
+      "uploaded_original_bytes_equal": true
+    },
+    {
+      "case": "raw_known_credential",
+      "input_log": {
+        "bytes": 39,
+        "git_blob": "70c148f4f192a873103ba0d483b569494fc52cde",
+        "sha256": "d01646f5ca18cb94aceb667eb0e8a4c31c975ae65aa5f59688512b5b10e2fff2"
+      },
+      "exit": 1,
+      "safe_for_upload": false,
+      "error_code": "KNOWN_CREDENTIAL_FOUND",
+      "private_input_bytes_unchanged": true,
+      "uploaded_original_bytes_equal": false
+    },
+    {
+      "case": "literal_ansi_in_known_credential",
+      "input_log": {
+        "bytes": 48,
+        "git_blob": "14bfe99b2df57047dc5f11aee12866d88999e4ad",
+        "sha256": "98239399e92fe9760f431e24536e0ddcb8551db0e6bdee16e0843653cb72a0c6"
+      },
+      "exit": 1,
+      "safe_for_upload": false,
+      "error_code": "KNOWN_CREDENTIAL_FOUND",
+      "private_input_bytes_unchanged": true,
+      "uploaded_original_bytes_equal": false
+    },
+    {
+      "case": "percent_ansi_in_known_credential",
+      "input_log": {
+        "bytes": 52,
+        "git_blob": "b5b4a2e31d88eed87ff8361df2d7c6d70cad9d28",
+        "sha256": "611e9154d4b4e8430e61a604666faef2a55bc058aa5d74272ff216271232ecca"
+      },
+      "exit": 1,
+      "safe_for_upload": false,
+      "error_code": "KNOWN_CREDENTIAL_FOUND",
+      "private_input_bytes_unchanged": true,
+      "uploaded_original_bytes_equal": false
+    },
+    {
+      "case": "four_layer_percent_ansi",
+      "input_log": {
+        "bytes": 64,
+        "git_blob": "332e12a1d602dfac7345412d079ceee460d8dfde",
+        "sha256": "1d739f0c4d72d41b5f6ba6d041334b310276b5fa6a62ba189db959d4133fcdf3"
+      },
+      "exit": 1,
+      "safe_for_upload": false,
+      "error_code": "KNOWN_CREDENTIAL_FOUND",
+      "private_input_bytes_unchanged": true,
+      "uploaded_original_bytes_equal": false
+    },
+    {
+      "case": "decoded_unsupported_control",
+      "input_log": {
+        "bytes": 21,
+        "git_blob": "569b4e76ffefbd1f53ec711b9519fb33f32e0402",
+        "sha256": "d563a374d2f478337a395c919b53e4e8efa050291a3cb45676bdf23932e7bb9f"
+      },
+      "exit": 1,
+      "safe_for_upload": false,
+      "error_code": "UNSUPPORTED_CONTROL_BYTES",
+      "private_input_bytes_unchanged": true,
+      "uploaded_original_bytes_equal": false
+    }
+  ],
+  "all_passed": true,
+  "fake_only_no_cargo_or_CI_execution": true
+}

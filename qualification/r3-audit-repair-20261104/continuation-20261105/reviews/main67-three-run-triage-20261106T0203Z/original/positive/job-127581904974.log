@@ -1,0 +1,535 @@
+﻿2026-11-06T01:34:03.8963928Z Current runner version: '2.338.2'
+2026-11-06T01:34:03.8990982Z ##[group]Runner Image Provisioner
+2026-11-06T01:34:03.8991925Z Hosted Compute Agent
+2026-11-06T01:34:03.8992904Z Version: 20261028.624
+2026-11-06T01:34:03.8993679Z Commit: 54898b74c23fde5556c9b3c3a2290865feef0dfe
+2026-11-06T01:34:03.8994440Z Build Date: 2026-10-28T21:51:42Z
+2026-11-06T01:34:03.8995238Z Worker ID: {ef87d708-490c-40e1-844b-6f2698aace33}
+2026-11-06T01:34:03.8995999Z Region: westcentralus
+2026-11-06T01:34:03.8996590Z Cloud: Azure
+2026-11-06T01:34:03.8997183Z ##[endgroup]
+2026-11-06T01:34:03.8998699Z ##[group]Operating System
+2026-11-06T01:34:03.8999371Z Ubuntu
+2026-11-06T01:34:03.9000037Z 24.04.5
+2026-11-06T01:34:03.9000567Z LTS
+2026-11-06T01:34:03.9001134Z ##[endgroup]
+2026-11-06T01:34:03.9001700Z ##[group]Runner Image
+2026-11-06T01:34:03.9002537Z Image: ubuntu-24.04
+2026-11-06T01:34:03.9003201Z Version: 20261101.360.1
+2026-11-06T01:34:03.9004491Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261101.360/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-06T01:34:03.9006157Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261101.360
+2026-11-06T01:34:03.9007174Z ##[endgroup]
+2026-11-06T01:34:03.9008371Z ##[group]GITHUB_TOKEN Permissions
+2026-11-06T01:34:03.9010250Z Contents: read
+2026-11-06T01:34:03.9010975Z Metadata: read
+2026-11-06T01:34:03.9011596Z ##[endgroup]
+2026-11-06T01:34:03.9013924Z Secret source: Actions
+2026-11-06T01:34:03.9014929Z Cache mode: write
+2026-11-06T01:34:03.9015667Z Prepare workflow directory
+2026-11-06T01:34:03.9483138Z Prepare all required actions
+2026-11-06T01:34:03.9530710Z Getting action download info
+2026-11-06T01:34:04.2464520Z Download action repository 'actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd' (SHA:de0fac2e4500dabe0009e67214ff5f5447ce83dd)
+2026-11-06T01:34:04.3627104Z Download action repository 'taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532' (SHA:44c6d64aa62cd779e873306675c7a58e86d6d532)
+2026-11-06T01:34:04.8595621Z Download action repository 'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-11-06T01:34:05.0717668Z Complete job name: Original operator controls and independent OpenSSH oracle (ubuntu-24.04)
+2026-11-06T01:34:05.1637619Z ##[group]Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+2026-11-06T01:34:05.1638827Z with:
+2026-11-06T01:34:05.1639367Z   ref: 67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed
+2026-11-06T01:34:05.1640053Z   persist-credentials: false
+2026-11-06T01:34:05.1640711Z   repository: TrillionniumFoundation/hepta-private-ci
+2026-11-06T01:34:05.1645149Z   token: ***
+2026-11-06T01:34:05.1645633Z   ssh-strict: true
+2026-11-06T01:34:05.1646113Z   ssh-user: git
+2026-11-06T01:34:05.1646575Z   clean: true
+2026-11-06T01:34:05.1647075Z   sparse-checkout-cone-mode: true
+2026-11-06T01:34:05.1647658Z   fetch-depth: 1
+2026-11-06T01:34:05.1648135Z   fetch-tags: false
+2026-11-06T01:34:05.1648627Z   show-progress: true
+2026-11-06T01:34:05.1649146Z   lfs: false
+2026-11-06T01:34:05.1649605Z   submodules: false
+2026-11-06T01:34:05.1650187Z   set-safe-directory: true
+2026-11-06T01:34:05.1650987Z env:
+2026-11-06T01:34:05.1651530Z   CARGO_INCREMENTAL: 0
+2026-11-06T01:34:05.1652477Z   CARGO_BUILD_JOBS: 2
+2026-11-06T01:34:05.1653211Z   CARGO_PROFILE_TEST_DEBUG: 0
+2026-11-06T01:34:05.1653971Z   CARGO_PROFILE_DEV_DEBUG: 0
+2026-11-06T01:34:05.1654605Z ##[endgroup]
+2026-11-06T01:34:05.4344391Z Syncing repository: TrillionniumFoundation/hepta-private-ci
+2026-11-06T01:34:05.4347578Z ##[group]Getting Git version info
+2026-11-06T01:34:05.4348907Z Working directory is '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-11-06T01:34:05.4351437Z [command]/usr/bin/git version
+2026-11-06T01:34:05.4426493Z git version 2.56.0
+2026-11-06T01:34:05.4456049Z ##[endgroup]
+2026-11-06T01:34:05.4471261Z Temporarily overriding HOME='/home/runner/work/_temp/c504d492-1630-4906-b4d4-df4ac0e45954' before making global git config changes
+2026-11-06T01:34:05.4474715Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-06T01:34:05.4478466Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-06T01:34:05.4529831Z Deleting the contents of '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-11-06T01:34:05.4539536Z ##[group]Initializing the repository
+2026-11-06T01:34:05.4551819Z [command]/usr/bin/git init /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-06T01:34:05.4669764Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-06T01:34:05.4673363Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-06T01:34:05.4676034Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-06T01:34:05.4678199Z hint: call:
+2026-11-06T01:34:05.4679242Z hint:
+2026-11-06T01:34:05.4680478Z hint: 	git config --global init.defaultBranch <name>
+2026-11-06T01:34:05.4681998Z hint:
+2026-11-06T01:34:05.4683729Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-06T01:34:05.4686566Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-06T01:34:05.4688845Z hint:
+2026-11-06T01:34:05.4689801Z hint: 	git branch -m <name>
+2026-11-06T01:34:05.4690937Z hint:
+2026-11-06T01:34:05.4692968Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-06T01:34:05.4696583Z Initialized empty Git repository in /home/runner/work/hepta-private-ci/hepta-private-ci/.git/
+2026-11-06T01:34:05.4702949Z [command]/usr/bin/git remote add origin https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-06T01:34:05.4753596Z ##[endgroup]
+2026-11-06T01:34:05.4755971Z ##[group]Disabling automatic garbage collection
+2026-11-06T01:34:05.4758151Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-06T01:34:05.4796709Z ##[endgroup]
+2026-11-06T01:34:05.4798689Z ##[group]Setting up auth
+2026-11-06T01:34:05.4800303Z Removing SSH command configuration
+2026-11-06T01:34:05.4806080Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-06T01:34:05.4848618Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-06T01:34:05.5235752Z Removing HTTP extra header
+2026-11-06T01:34:05.5244597Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-06T01:34:05.5293625Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-06T01:34:05.5533674Z Removing includeIf entries pointing to credentials config files
+2026-11-06T01:34:05.5541153Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-06T01:34:05.5588246Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-06T01:34:05.5838932Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-3f0bcbd1-04aa-4bd2-8376-3bdd6715243b.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-06T01:34:05.5925417Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path /home/runner/work/_temp/git-credentials-3f0bcbd1-04aa-4bd2-8376-3bdd6715243b.config
+2026-11-06T01:34:05.5967284Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-3f0bcbd1-04aa-4bd2-8376-3bdd6715243b.config
+2026-11-06T01:34:05.6008209Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-3f0bcbd1-04aa-4bd2-8376-3bdd6715243b.config
+2026-11-06T01:34:05.6049289Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-3f0bcbd1-04aa-4bd2-8376-3bdd6715243b.config
+2026-11-06T01:34:05.6085867Z ##[endgroup]
+2026-11-06T01:34:05.6087049Z ##[group]Fetching the repository
+2026-11-06T01:34:05.6095506Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin 67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed
+2026-11-06T01:34:10.9265100Z From https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-06T01:34:10.9267392Z  * branch            67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed -> FETCH_HEAD
+2026-11-06T01:34:10.9269900Z [command]/usr/bin/git rev-parse --verify --quiet 67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed^{object}
+2026-11-06T01:34:10.9270495Z 67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed
+2026-11-06T01:34:10.9271394Z ##[endgroup]
+2026-11-06T01:34:10.9271889Z ##[group]Determining the checkout info
+2026-11-06T01:34:10.9272736Z ##[endgroup]
+2026-11-06T01:34:10.9273133Z [command]/usr/bin/git sparse-checkout disable
+2026-11-06T01:34:10.9314890Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-06T01:34:10.9359868Z ##[group]Checking out the ref
+2026-11-06T01:34:10.9360494Z [command]/usr/bin/git checkout --progress --force 67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed
+2026-11-06T01:34:11.9475741Z Note: switching to '67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed'.
+2026-11-06T01:34:11.9476347Z 
+2026-11-06T01:34:11.9476749Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-06T01:34:11.9477680Z changes and commit them, and you can discard any commits you make in this
+2026-11-06T01:34:11.9478595Z state without impacting any branches by switching back to a branch.
+2026-11-06T01:34:11.9479065Z 
+2026-11-06T01:34:11.9479380Z If you want to create a new branch to retain commits you create, you may
+2026-11-06T01:34:11.9480150Z do so (now or later) by using -c with the switch command. Example:
+2026-11-06T01:34:11.9480626Z 
+2026-11-06T01:34:11.9480878Z   git switch -c <new-branch-name>
+2026-11-06T01:34:11.9481210Z 
+2026-11-06T01:34:11.9481436Z Or undo this operation with:
+2026-11-06T01:34:11.9481709Z 
+2026-11-06T01:34:11.9481879Z   git switch -
+2026-11-06T01:34:11.9482374Z 
+2026-11-06T01:34:11.9483088Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-06T01:34:11.9483652Z 
+2026-11-06T01:34:11.9484069Z HEAD is now at 67cc5c2 fix: apply canonical Rust formatting and retain original PTY logs
+2026-11-06T01:34:11.9514101Z ##[endgroup]
+2026-11-06T01:34:11.9572436Z [command]/usr/bin/git log -1 --format=%H
+2026-11-06T01:34:11.9607823Z 67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed
+2026-11-06T01:34:11.9618540Z ##[group]Removing auth
+2026-11-06T01:34:11.9619071Z Removing SSH command configuration
+2026-11-06T01:34:11.9623623Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-06T01:34:11.9665733Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-06T01:34:11.9925111Z Removing HTTP extra header
+2026-11-06T01:34:11.9925790Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-06T01:34:11.9968919Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-06T01:34:12.0222953Z Removing includeIf entries pointing to credentials config files
+2026-11-06T01:34:12.0227188Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-06T01:34:12.0263297Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-06T01:34:12.0264219Z includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-06T01:34:12.0265225Z includeif.gitdir:/github/workspace/.git.path
+2026-11-06T01:34:12.0266346Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-06T01:34:12.0276512Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path
+2026-11-06T01:34:12.0320801Z /home/runner/work/_temp/git-credentials-3f0bcbd1-04aa-4bd2-8376-3bdd6715243b.config
+2026-11-06T01:34:12.0331647Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git.path /home/runner/work/_temp/git-credentials-3f0bcbd1-04aa-4bd2-8376-3bdd6715243b.config
+2026-11-06T01:34:12.0374893Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path
+2026-11-06T01:34:12.0406232Z /home/runner/work/_temp/git-credentials-3f0bcbd1-04aa-4bd2-8376-3bdd6715243b.config
+2026-11-06T01:34:12.0417327Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/hepta-private-ci/hepta-private-ci/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-3f0bcbd1-04aa-4bd2-8376-3bdd6715243b.config
+2026-11-06T01:34:12.0468031Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-11-06T01:34:12.0500530Z /github/runner_temp/git-credentials-3f0bcbd1-04aa-4bd2-8376-3bdd6715243b.config
+2026-11-06T01:34:12.0508312Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-3f0bcbd1-04aa-4bd2-8376-3bdd6715243b.config
+2026-11-06T01:34:12.0552694Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-11-06T01:34:12.0584130Z /github/runner_temp/git-credentials-3f0bcbd1-04aa-4bd2-8376-3bdd6715243b.config
+2026-11-06T01:34:12.0591913Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-3f0bcbd1-04aa-4bd2-8376-3bdd6715243b.config
+2026-11-06T01:34:12.0633985Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-06T01:34:12.0896109Z Removing credentials config '/home/runner/work/_temp/git-credentials-3f0bcbd1-04aa-4bd2-8376-3bdd6715243b.config'
+2026-11-06T01:34:12.0897350Z ##[endgroup]
+2026-11-06T01:34:12.1200163Z ##[group]Run taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+2026-11-06T01:34:12.1200598Z with:
+2026-11-06T01:34:12.1200803Z   tool: just@1.51.0,nextest@0.9.103
+2026-11-06T01:34:12.1201054Z   checksum: true
+2026-11-06T01:34:12.1201267Z   fallback: cargo-binstall
+2026-11-06T01:34:12.1201490Z env:
+2026-11-06T01:34:12.1201672Z   CARGO_INCREMENTAL: 0
+2026-11-06T01:34:12.1201886Z   CARGO_BUILD_JOBS: 2
+2026-11-06T01:34:12.1202331Z   CARGO_PROFILE_TEST_DEBUG: 0
+2026-11-06T01:34:12.1202584Z   CARGO_PROFILE_DEV_DEBUG: 0
+2026-11-06T01:34:12.1202814Z ##[endgroup]
+2026-11-06T01:34:12.1258745Z ##[start-action display=Run set -eu;id=__taiki-e_install-action.__run]
+2026-11-06T01:34:12.1321031Z ##[group]Run set -eu
+2026-11-06T01:34:12.1321347Z [36;1mset -eu[0m
+2026-11-06T01:34:12.1321608Z [36;1mif ! command -v bash >/dev/null; then[0m
+2026-11-06T01:34:12.1321980Z [36;1m  if grep -Eq '^ID=alpine' /etc/os-release; then[0m
+2026-11-06T01:34:12.1322717Z [36;1m    printf '::group::Install packages required for install-action (bash)\n'[0m
+2026-11-06T01:34:12.1323159Z [36;1m    # NB: sync with apk_install in main.sh[0m
+2026-11-06T01:34:12.1323481Z [36;1m    if command -v sudo >/dev/null; then[0m
+2026-11-06T01:34:12.1323796Z [36;1m      sudo apk --no-cache add bash[0m
+2026-11-06T01:34:12.1324105Z [36;1m    elif command -v doas >/dev/null; then[0m
+2026-11-06T01:34:12.1324406Z [36;1m      doas apk --no-cache add bash[0m
+2026-11-06T01:34:12.1324667Z [36;1m    else[0m
+2026-11-06T01:34:12.1324904Z [36;1m      apk --no-cache add bash[0m
+2026-11-06T01:34:12.1325193Z [36;1m    fi[0m
+2026-11-06T01:34:12.1325401Z [36;1m    printf '::endgroup::\n'[0m
+2026-11-06T01:34:12.1325849Z [36;1m  else[0m
+2026-11-06T01:34:12.1326109Z [36;1m    printf '::error::install-action requires bash\n'[0m
+2026-11-06T01:34:12.1326424Z [36;1m    exit 1[0m
+2026-11-06T01:34:12.1326622Z [36;1m  fi[0m
+2026-11-06T01:34:12.1326811Z [36;1mfi[0m
+2026-11-06T01:34:12.1449306Z shell: /usr/bin/sh -e {0}
+2026-11-06T01:34:12.1449608Z env:
+2026-11-06T01:34:12.1449810Z   CARGO_INCREMENTAL: 0
+2026-11-06T01:34:12.1450038Z   CARGO_BUILD_JOBS: 2
+2026-11-06T01:34:12.1450264Z   CARGO_PROFILE_TEST_DEBUG: 0
+2026-11-06T01:34:12.1450509Z   CARGO_PROFILE_DEV_DEBUG: 0
+2026-11-06T01:34:12.1450742Z ##[endgroup]
+2026-11-06T01:34:12.1542609Z ##[end-action id=__taiki-e_install-action.__run;outcome=success;conclusion=success;duration_ms=28]
+2026-11-06T01:34:12.1565191Z ##[start-action display=Run bash --noprofile --norc "${GITHUB_ACTION_PATH:?}/main.sh";id=__taiki-e_install-action.__run_2]
+2026-11-06T01:34:12.1596110Z ##[group]Run bash --noprofile --norc "${GITHUB_ACTION_PATH:?}/main.sh"
+2026-11-06T01:34:12.1596587Z [36;1mbash --noprofile --norc "${GITHUB_ACTION_PATH:?}/main.sh"[0m
+2026-11-06T01:34:12.1616062Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-06T01:34:12.1616412Z env:
+2026-11-06T01:34:12.1616611Z   CARGO_INCREMENTAL: 0
+2026-11-06T01:34:12.1616863Z   CARGO_BUILD_JOBS: 2
+2026-11-06T01:34:12.1617097Z   CARGO_PROFILE_TEST_DEBUG: 0
+2026-11-06T01:34:12.1617391Z   CARGO_PROFILE_DEV_DEBUG: 0
+2026-11-06T01:34:12.1617641Z   INPUT_TOOL: just@1.51.0,nextest@0.9.103
+2026-11-06T01:34:12.1617907Z   INPUT_CHECKSUM: true
+2026-11-06T01:34:12.1618141Z   INPUT_FALLBACK: cargo-binstall
+2026-11-06T01:34:12.1620891Z   DEFAULT_GITHUB_TOKEN: ***
+2026-11-06T01:34:12.1621290Z   ACTION_USER_AGENT: taiki-e/install-action (44c6d64aa62cd779e873306675c7a58e86d6d532)
+2026-11-06T01:34:12.1621708Z ##[endgroup]
+2026-11-06T01:34:12.1817979Z info: host platform: x86_64_linux
+2026-11-06T01:34:12.1922558Z ##[warning]just@1.51.0 for 'x86_64_linux' is not supported; fallback to cargo-binstall
+2026-11-06T01:34:12.2110547Z info: installing cargo-nextest@0.9.103
+2026-11-06T01:34:12.2309837Z info: downloading https://github.com/nextest-rs/nextest/releases/download/cargo-nextest-0.9.103/cargo-nextest-0.9.103-x86_64-unknown-linux-gnu.tar.gz
+2026-11-06T01:34:12.6825238Z info: verifying sha256 checksum for cargo-nextest-0.9.103-x86_64-unknown-linux-gnu.tar.gz
+2026-11-06T01:34:12.8703861Z info: cargo-nextest installed at /home/runner/.cargo/bin/cargo-nextest
+2026-11-06T01:34:12.8708164Z + cargo-nextest nextest --version
+2026-11-06T01:34:12.8727859Z cargo-nextest 0.9.103 (d2e7b879f 2025-08-25)
+2026-11-06T01:34:12.8728573Z release: 0.9.103
+2026-11-06T01:34:12.8729214Z commit-hash: d2e7b879fb79975e8b47a8e3ce569b651e6381c0
+2026-11-06T01:34:12.8729974Z commit-date: 2025-08-25
+2026-11-06T01:34:12.8730561Z host: x86_64-unknown-linux-gnu
+2026-11-06T01:34:12.8731867Z 
+2026-11-06T01:34:12.8734690Z info: install-action does not support just@1.51.0; fallback to cargo-binstall
+2026-11-06T01:34:12.8779308Z info: installing cargo-binstall@latest (1.15.11)
+2026-11-06T01:34:12.9135280Z info: downloading https://github.com/cargo-bins/cargo-binstall/releases/download/v1.15.11/cargo-binstall-x86_64-unknown-linux-musl.tgz
+2026-11-06T01:34:13.3513744Z info: verifying sha256 checksum for cargo-binstall-x86_64-unknown-linux-musl.tgz
+2026-11-06T01:34:13.4749209Z info: cargo-binstall installed at /home/runner/.cargo/bin/cargo-binstall
+2026-11-06T01:34:13.4753002Z + cargo-binstall binstall -V
+2026-11-06T01:34:13.4762822Z 1.15.11
+2026-11-06T01:34:13.4895464Z  INFO resolve: Resolving package: 'just@=1.51.0'
+2026-11-06T01:34:15.9531349Z  WARN The package just v1.51.0 (x86_64-unknown-linux-musl) has been downloaded from github.com
+2026-11-06T01:34:15.9532546Z  INFO This will install the following binaries:
+2026-11-06T01:34:15.9533163Z  INFO   - just => /home/runner/.cargo/bin/just
+2026-11-06T01:34:15.9533716Z  INFO Installing binaries...
+2026-11-06T01:34:15.9548698Z  INFO Done in 2.477159147s
+2026-11-06T01:34:15.9570374Z ##[end-action id=__taiki-e_install-action.__run_2;outcome=success;conclusion=success;duration_ms=3800]
+2026-11-06T01:34:15.9629810Z ##[group]Run $evidence = "$env:RUNNER_TEMP/operator-native"
+2026-11-06T01:34:15.9630283Z [36;1m$evidence = "$env:RUNNER_TEMP/operator-native"[0m
+2026-11-06T01:34:15.9630687Z [36;1mNew-Item -ItemType Directory -Force $evidence | Out-Null[0m
+2026-11-06T01:34:15.9631063Z [36;1m$actual = (git rev-parse HEAD).Trim()[0m
+2026-11-06T01:34:15.9631572Z [36;1mif ($actual -ne "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed") { throw "source identity mismatch" }[0m
+2026-11-06T01:34:15.9632548Z [36;1mgit rev-parse HEAD "HEAD^{tree}" | Tee-Object "$evidence/source.txt"[0m
+2026-11-06T01:34:15.9633011Z [36;1mif ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }[0m
+2026-11-06T01:34:15.9633570Z [36;1m$oracle = if ($IsWindows) { "$env:SystemRoot/System32/OpenSSH/ssh-keygen.exe" } else { "/usr/bin/ssh-keygen" }[0m
+2026-11-06T01:34:15.9634347Z [36;1mif (-not (Test-Path -LiteralPath $oracle -PathType Leaf)) { throw "independent native OpenSSH oracle is required" }[0m
+2026-11-06T01:34:15.9635184Z [36;1mGet-FileHash -Algorithm SHA256 -LiteralPath $oracle | ConvertTo-Json | Set-Content "$evidence/openssh.json"[0m
+2026-11-06T01:34:15.9635715Z [36;1mSet-Location codex-rs[0m
+2026-11-06T01:34:15.9636063Z [36;1mrustc --version --verbose | Tee-Object "$evidence/toolchain.txt"[0m
+2026-11-06T01:34:15.9636483Z [36;1mif ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }[0m
+2026-11-06T01:34:15.9636986Z [36;1mif (Test-Path target/nextest/local/junit.xml) { Remove-Item target/nextest/local/junit.xml }[0m
+2026-11-06T01:34:15.9658625Z shell: /usr/bin/pwsh -command ". '{0}'"
+2026-11-06T01:34:15.9658899Z env:
+2026-11-06T01:34:15.9659087Z   CARGO_INCREMENTAL: 0
+2026-11-06T01:34:15.9659305Z   CARGO_BUILD_JOBS: 2
+2026-11-06T01:34:15.9659528Z   CARGO_PROFILE_TEST_DEBUG: 0
+2026-11-06T01:34:15.9659764Z   CARGO_PROFILE_DEV_DEBUG: 0
+2026-11-06T01:34:15.9659988Z ##[endgroup]
+2026-11-06T01:34:31.4378343Z 67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed
+2026-11-06T01:34:31.4380015Z 3982ba56dc5a3f1da0c1de7ea57992f88125c359
+2026-11-06T01:34:31.7534308Z info: syncing channel updates for 1.95.0-x86_64-unknown-linux-gnu
+2026-11-06T01:34:32.0360791Z info: latest update on 2026-04-16 for version 1.95.0 (59807616e 2026-04-14)
+2026-11-06T01:34:32.0365551Z info: downloading 6 components
+2026-11-06T01:34:40.9177838Z warn: the missing active toolchain `1.95.0-x86_64-unknown-linux-gnu` has been auto-installed
+2026-11-06T01:34:40.9178933Z warn: this might cause rustup commands to take longer time to finish than expected
+2026-11-06T01:34:40.9179930Z info: you may opt out with `RUSTUP_AUTO_INSTALL=0` or `rustup set auto-install disable`
+2026-11-06T01:34:40.9375170Z rustc 1.95.0 (59807616e 2026-04-14)
+2026-11-06T01:34:40.9375693Z binary: rustc
+2026-11-06T01:34:40.9376453Z commit-hash: 59807616e1fa2540724bfbac14d7976d7e4a3860
+2026-11-06T01:34:40.9377574Z commit-date: 2026-04-14
+2026-11-06T01:34:40.9378673Z host: x86_64-unknown-linux-gnu
+2026-11-06T01:34:40.9379679Z release: 1.95.0
+2026-11-06T01:34:40.9380681Z LLVM version: 22.1.2
+2026-11-06T01:34:41.5963667Z ##[group]Run Set-Location codex-rs
+2026-11-06T01:34:41.5964002Z [36;1mSet-Location codex-rs[0m
+2026-11-06T01:34:41.5964666Z [36;1mjust test --locked -p codex-hepta-operator-acceptance --lib --no-tests fail --retries 0 2>&1 | Tee-Object "$env:RUNNER_TEMP/operator-native/tests.log"[0m
+2026-11-06T01:34:41.5965406Z [36;1mif ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }[0m
+2026-11-06T01:34:41.5986563Z shell: /usr/bin/pwsh -command ". '{0}'"
+2026-11-06T01:34:41.5986841Z env:
+2026-11-06T01:34:41.5987032Z   CARGO_INCREMENTAL: 0
+2026-11-06T01:34:41.5987246Z   CARGO_BUILD_JOBS: 2
+2026-11-06T01:34:41.5987467Z   CARGO_PROFILE_TEST_DEBUG: 0
+2026-11-06T01:34:41.5987702Z   CARGO_PROFILE_DEV_DEBUG: 0
+2026-11-06T01:34:41.5987923Z ##[endgroup]
+2026-11-06T01:34:42.1532700Z [31;1mRUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"[0m
+2026-11-06T01:34:42.2721155Z [31;1m    Updating git repository `https://github.com/openai-oss-forks/crossterm`[0m
+2026-11-06T01:34:44.0369799Z [31;1m    Updating git repository `https://github.com/openai-oss-forks/tokio-tungstenite`[0m
+2026-11-06T01:34:44.5236213Z [31;1m    Updating git repository `https://github.com/openai-oss-forks/tungstenite-rs`[0m
+2026-11-06T01:34:45.4459679Z [31;1m    Updating crates.io index[0m
+2026-11-06T01:34:45.5112907Z [31;1m    Updating git repository `https://github.com/dzbarsky/rules_rust`[0m
+2026-11-06T01:34:51.0118690Z [31;1m    Updating git repository `https://github.com/helix-editor/nucleo.git`[0m
+2026-11-06T01:34:54.2390970Z [31;1m Downloading crates ...[0m
+2026-11-06T01:34:54.4192188Z [31;1m  Downloaded crypto-common v0.1.7[0m
+2026-11-06T01:34:54.4209844Z [31;1m  Downloaded cfg-if v1.0.5[0m
+2026-11-06T01:34:54.4226820Z [31;1m  Downloaded block-buffer v0.10.4[0m
+2026-11-06T01:34:54.4341852Z [31;1m  Downloaded cpufeatures v0.2.17[0m
+2026-11-06T01:34:54.4393059Z [31;1m  Downloaded rustc_version v0.4.1[0m
+2026-11-06T01:34:54.4473763Z [31;1m  Downloaded generic-array v0.14.7[0m
+2026-11-06T01:34:54.4490249Z [31;1m  Downloaded signature v2.2.0[0m
+2026-11-06T01:34:54.4512318Z [31;1m  Downloaded curve25519-dalek-derive v0.1.1[0m
+2026-11-06T01:34:54.4532017Z [31;1m  Downloaded errno v0.3.14[0m
+2026-11-06T01:34:54.4552815Z [31;1m  Downloaded fastrand v2.5.0[0m
+2026-11-06T01:34:54.4577891Z [31;1m  Downloaded zeroize v1.9.1[0m
+2026-11-06T01:34:54.4599311Z [31;1m  Downloaded quote v1.0.47[0m
+2026-11-06T01:34:54.4632918Z [31;1m  Downloaded ed25519 v2.2.3[0m
+2026-11-06T01:34:54.4657473Z [31;1m  Downloaded digest v0.10.7[0m
+2026-11-06T01:34:54.4686759Z [31;1m  Downloaded subtle v2.6.1[0m
+2026-11-06T01:34:54.4704840Z [31;1m  Downloaded diff v0.1.13[0m
+2026-11-06T01:34:54.4740285Z [31;1m  Downloaded itoa v1.0.18[0m
+2026-11-06T01:34:54.4773224Z [31;1m  Downloaded version_check v0.9.5[0m
+2026-11-06T01:34:54.4802991Z [31;1m  Downloaded thiserror v2.0.21[0m
+2026-11-06T01:34:54.4859433Z [31;1m  Downloaded zmij v1.0.23[0m
+2026-11-06T01:34:54.4883177Z [31;1m  Downloaded unicode-ident v1.0.27[0m
+2026-11-06T01:34:54.4918612Z [31;1m  Downloaded serde_core v1.0.229[0m
+2026-11-06T01:34:54.4949735Z [31;1m  Downloaded typenum v1.20.1[0m
+2026-11-06T01:34:54.4989930Z [31;1m  Downloaded yansi v1.0.1[0m
+2026-11-06T01:34:54.5024049Z [31;1m  Downloaded serde v1.0.229[0m
+2026-11-06T01:34:54.5123035Z [31;1m  Downloaded rand v0.9.5[0m
+2026-11-06T01:34:54.5130775Z [31;1m  Downloaded serde_json v1.0.154[0m
+2026-11-06T01:34:54.5325030Z [31;1m  Downloaded pretty_assertions v1.4.1[0m
+2026-11-06T01:34:54.5325758Z [31;1m  Downloaded memchr v2.8.3[0m
+2026-11-06T01:34:54.5391451Z [31;1m  Downloaded proc-macro2 v1.0.107[0m
+2026-11-06T01:34:54.5452970Z [31;1m  Downloaded getrandom v0.3.4[0m
+2026-11-06T01:34:54.5483012Z [31;1m  Downloaded ed25519-dalek v2.2.0[0m
+2026-11-06T01:34:54.5703557Z [31;1m  Downloaded curve25519-dalek v4.1.3[0m
+2026-11-06T01:34:54.5713450Z [31;1m  Downloaded der v0.7.10[0m
+2026-11-06T01:34:54.5714009Z [31;1m  Downloaded syn v2.0.119[0m
+2026-11-06T01:34:54.5779644Z [31;1m  Downloaded syn v3.0.9[0m
+2026-11-06T01:34:54.5935244Z [31;1m  Downloaded zerocopy v0.8.63[0m
+2026-11-06T01:34:54.6206438Z [31;1m  Downloaded semver v1.0.28[0m
+2026-11-06T01:34:54.6229449Z [31;1m  Downloaded getrandom v0.2.17[0m
+2026-11-06T01:34:54.6259605Z [31;1m  Downloaded base64 v0.22.1[0m
+2026-11-06T01:34:54.6297484Z [31;1m  Downloaded tempfile v3.27.0[0m
+2026-11-06T01:34:54.6323910Z [31;1m  Downloaded rand_core v0.9.5[0m
+2026-11-06T01:34:54.6338314Z [31;1m  Downloaded rand_core v0.6.4[0m
+2026-11-06T01:34:54.6352538Z [31;1m  Downloaded pkcs8 v0.10.2[0m
+2026-11-06T01:34:54.6381158Z [31;1m  Downloaded once_cell v1.21.4[0m
+2026-11-06T01:34:54.6407083Z [31;1m  Downloaded getrandom v0.4.3[0m
+2026-11-06T01:34:54.6446623Z [31;1m  Downloaded thiserror-impl v2.0.21[0m
+2026-11-06T01:34:54.6461201Z [31;1m  Downloaded rustix v1.1.5[0m
+2026-11-06T01:34:54.6719701Z [31;1m  Downloaded spki v0.7.3[0m
+2026-11-06T01:34:54.6736886Z [31;1m  Downloaded sha2 v0.10.9[0m
+2026-11-06T01:34:54.6762964Z [31;1m  Downloaded serde_derive v1.0.229[0m
+2026-11-06T01:34:54.6794126Z [31;1m  Downloaded bitflags v2.13.2[0m
+2026-11-06T01:34:54.6841718Z [31;1m  Downloaded ppv-lite86 v0.2.21[0m
+2026-11-06T01:34:54.6856095Z [31;1m  Downloaded const-oid v0.9.6[0m
+2026-11-06T01:34:54.6876438Z [31;1m  Downloaded rand_chacha v0.9.0[0m
+2026-11-06T01:34:54.6890108Z [31;1m  Downloaded base64ct v1.8.3[0m
+2026-11-06T01:34:54.6920027Z [31;1m  Downloaded libc v0.2.191[0m
+2026-11-06T01:34:54.7409751Z [31;1m  Downloaded linux-raw-sys v0.12.1[0m
+2026-11-06T01:34:54.8328008Z [31;1m   Compiling proc-macro2 v1.0.107[0m
+2026-11-06T01:34:54.8328964Z [31;1m   Compiling quote v1.0.47[0m
+2026-11-06T01:34:54.9936035Z [31;1m   Compiling unicode-ident v1.0.27[0m
+2026-11-06T01:34:55.0983394Z [31;1m   Compiling version_check v0.9.5[0m
+2026-11-06T01:34:55.2639006Z [31;1m   Compiling cfg-if v1.0.5[0m
+2026-11-06T01:34:55.2944274Z [31;1m   Compiling generic-array v0.14.7[0m
+2026-11-06T01:34:55.5456823Z [31;1m   Compiling libc v0.2.191[0m
+2026-11-06T01:34:55.5793630Z [31;1m   Compiling typenum v1.20.1[0m
+2026-11-06T01:34:56.4783075Z [31;1m   Compiling zeroize v1.9.1[0m
+2026-11-06T01:34:56.5672590Z [31;1m   Compiling getrandom v0.3.4[0m
+2026-11-06T01:34:56.5983995Z [31;1m   Compiling semver v1.0.28[0m
+2026-11-06T01:34:56.7089730Z [31;1m   Compiling const-oid v0.9.6[0m
+2026-11-06T01:34:56.8040912Z [31;1m   Compiling zerocopy v0.8.63[0m
+2026-11-06T01:34:56.8163332Z [31;1m   Compiling der v0.7.10[0m
+2026-11-06T01:34:57.0053635Z [31;1m   Compiling rustc_version v0.4.1[0m
+2026-11-06T01:34:57.1843426Z [31;1m   Compiling block-buffer v0.10.4[0m
+2026-11-06T01:34:57.2473968Z [31;1m   Compiling crypto-common v0.1.7[0m
+2026-11-06T01:34:57.2997234Z [31;1m   Compiling syn v3.0.9[0m
+2026-11-06T01:34:57.6283655Z [31;1m   Compiling serde_core v1.0.229[0m
+2026-11-06T01:34:57.7773619Z [31;1m   Compiling spki v0.7.3[0m
+2026-11-06T01:34:57.8723871Z [31;1m   Compiling digest v0.10.7[0m
+2026-11-06T01:34:58.1683565Z [31;1m   Compiling curve25519-dalek v4.1.3[0m
+2026-11-06T01:34:58.9187593Z [31;1m   Compiling syn v2.0.119[0m
+2026-11-06T01:35:00.8066218Z [31;1m   Compiling getrandom v0.4.3[0m
+2026-11-06T01:35:00.8920305Z [31;1m   Compiling rustix v1.1.5[0m
+2026-11-06T01:35:01.0424690Z [31;1m   Compiling zmij v1.0.23[0m
+2026-11-06T01:35:01.1435733Z [31;1m   Compiling cpufeatures v0.2.17[0m
+2026-11-06T01:35:01.2607289Z [31;1m   Compiling ppv-lite86 v0.2.21[0m
+2026-11-06T01:35:01.3433632Z [31;1m   Compiling curve25519-dalek-derive v0.1.1[0m
+2026-11-06T01:35:01.5216277Z [31;1m   Compiling rand_core v0.9.5[0m
+2026-11-06T01:35:01.6245024Z [31;1m   Compiling pkcs8 v0.10.2[0m
+2026-11-06T01:35:01.7566001Z [31;1m   Compiling thiserror v2.0.21[0m
+2026-11-06T01:35:01.8963532Z [31;1m   Compiling serde_json v1.0.154[0m
+2026-11-06T01:35:01.9644104Z [31;1m   Compiling serde v1.0.229[0m
+2026-11-06T01:35:02.0906290Z [31;1m   Compiling subtle v2.6.1[0m
+2026-11-06T01:35:02.1640979Z [31;1m   Compiling bitflags v2.13.2[0m
+2026-11-06T01:35:02.2874366Z [31;1m   Compiling signature v2.2.0[0m
+2026-11-06T01:35:02.3463865Z [31;1m   Compiling linux-raw-sys v0.12.1[0m
+2026-11-06T01:35:03.1985135Z [31;1m   Compiling ed25519 v2.2.3[0m
+2026-11-06T01:35:03.9102671Z [31;1m   Compiling rand_chacha v0.9.0[0m
+2026-11-06T01:35:04.2179303Z [31;1m   Compiling sha2 v0.10.9[0m
+2026-11-06T01:35:04.3717137Z [31;1m   Compiling thiserror-impl v2.0.21[0m
+2026-11-06T01:35:04.4322657Z [31;1m   Compiling serde_derive v1.0.229[0m
+2026-11-06T01:35:05.1138814Z [31;1m   Compiling once_cell v1.21.4[0m
+2026-11-06T01:35:05.2214954Z [31;1m   Compiling memchr v2.8.3[0m
+2026-11-06T01:35:05.6480631Z [31;1m   Compiling yansi v1.0.1[0m
+2026-11-06T01:35:05.8303786Z [31;1m   Compiling diff v0.1.13[0m
+2026-11-06T01:35:05.9616360Z [31;1m   Compiling fastrand v2.5.0[0m
+2026-11-06T01:35:06.0793534Z [31;1m   Compiling itoa v1.0.18[0m
+2026-11-06T01:35:06.7002937Z [31;1m   Compiling tempfile v3.27.0[0m
+2026-11-06T01:35:06.8908089Z [31;1m   Compiling pretty_assertions v1.4.1[0m
+2026-11-06T01:35:06.9759964Z [31;1m   Compiling ed25519-dalek v2.2.0[0m
+2026-11-06T01:35:07.0164550Z [31;1m   Compiling rand v0.9.5[0m
+2026-11-06T01:35:07.1306082Z [31;1m   Compiling base64 v0.22.1[0m
+2026-11-06T01:35:07.3989413Z [31;1m   Compiling codex-hepta-operator-acceptance v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-operator-acceptance)[0m
+2026-11-06T01:35:09.1554716Z [31;1m    Finished `test` profile [unoptimized] target(s) in 27.01s[0m
+2026-11-06T01:35:09.3333001Z [31;1mwarning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.107` which wasn't produced by cargo metadata[0m
+2026-11-06T01:35:09.3336434Z [31;1mwarning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.47` which wasn't produced by cargo metadata[0m
+2026-11-06T01:35:09.3339068Z [31;1mwarning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata[0m
+2026-11-06T01:35:09.3341684Z [31;1mwarning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.191` which wasn't produced by cargo metadata[0m
+2026-11-06T01:35:09.3344483Z [31;1mwarning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zerocopy@0.8.63` which wasn't produced by cargo metadata[0m
+2026-11-06T01:35:09.3346904Z [31;1mwarning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.3.4` which wasn't produced by cargo metadata[0m
+2026-11-06T01:35:09.3349695Z [31;1mwarning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata[0m
+2026-11-06T01:35:09.3352452Z [31;1mwarning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.23` which wasn't produced by cargo metadata[0m
+2026-11-06T01:35:09.3354954Z [31;1mwarning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.5` which wasn't produced by cargo metadata[0m
+2026-11-06T01:35:09.3357386Z [31;1mwarning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#getrandom@0.4.3` which wasn't produced by cargo metadata[0m
+2026-11-06T01:35:09.3359677Z [31;1mwarning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#curve25519-dalek@4.1.3` which wasn't produced by cargo metadata[0m
+2026-11-06T01:35:09.3361936Z [31;1mwarning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.229` which wasn't produced by cargo metadata[0m
+2026-11-06T01:35:09.3364566Z [31;1mwarning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.154` which wasn't produced by cargo metadata[0m
+2026-11-06T01:35:09.3367335Z [31;1mwarning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.21` which wasn't produced by cargo metadata[0m
+2026-11-06T01:35:09.3394748Z [31;1m────────────[0m
+2026-11-06T01:35:09.3401362Z [31;1m Nextest run ID 4fe7eac5-e39f-4037-b2b8-a87902f5ee66 with nextest profile: local[0m
+2026-11-06T01:35:09.3402888Z [31;1m    Starting 33 tests across 1 binary[0m
+2026-11-06T01:35:09.3491150Z [31;1m        PASS [   0.006s] codex-hepta-operator-acceptance ceremony::tests::v1_paths_are_exact_and_sidecar_is_a_strict_child[0m
+2026-11-06T01:35:09.3650112Z [31;1m        PASS [   0.026s] codex-hepta-operator-acceptance g5_trust::tests::expiry_is_half_open_and_never_creates_acceptance[0m
+2026-11-06T01:35:09.3668103Z [31;1m        PASS [   0.028s] codex-hepta-operator-acceptance g5_trust::tests::exact_head_and_predecessor_binding_is_required[0m
+2026-11-06T01:35:09.3753858Z [31;1m        PASS [   0.030s] codex-hepta-operator-acceptance g5_trust::tests::fresh_head_scoped_challenge_reaches_ready_without_authority[0m
+2026-11-06T01:35:09.3860449Z [31;1m        PASS [   0.040s] codex-hepta-operator-acceptance g5_trust::tests::independently_signed_challenge_is_verified_but_not_accepted[0m
+2026-11-06T01:35:09.3916493Z [31;1m        PASS [   0.025s] codex-hepta-operator-acceptance g5_trust::tests::policy_and_revocation_files_must_be_canonical[0m
+2026-11-06T01:35:09.3919035Z [31;1m        PASS [   0.022s] codex-hepta-operator-acceptance g5_trust::tests::revocation_is_external_and_fail_closed_before_challenge_issuance[0m
+2026-11-06T01:35:09.3921658Z [31;1m        PASS [   0.005s] codex-hepta-operator-acceptance manifest_inventory::tests::manifest_parser_requires_sorted_safe_unique_paths[0m
+2026-11-06T01:35:09.3924262Z [31;1m        PASS [   0.025s] codex-hepta-operator-acceptance g5_trust::tests::revocation_digest_change_invalidates_existing_challenge[0m
+2026-11-06T01:35:09.3954754Z [31;1m        PASS [   0.004s] codex-hepta-operator-acceptance preflight::tests::every_missing_or_wrong_formal_environment_pin_is_rejected[0m
+2026-11-06T01:35:09.3960305Z [31;1m        PASS [   0.006s] codex-hepta-operator-acceptance manifest_inventory::tests::verified_manifest_rejects_extra_files_and_hardlinks[0m
+2026-11-06T01:35:09.4000526Z [31;1m        PASS [   0.008s] codex-hepta-operator-acceptance sshsig::tests::all_truncations_and_untrusted_field_lengths_reject_without_panicking[0m
+2026-11-06T01:35:09.4008849Z [31;1m        PASS [   0.005s] codex-hepta-operator-acceptance sshsig::tests::armor_is_bounded_and_cannot_hide_trailing_packets_or_bad_base64[0m
+2026-11-06T01:35:09.4016662Z [31;1m        PASS [   0.010s] codex-hepta-operator-acceptance manifest_inventory::tests::verified_manifest_rejects_symlinks[0m
+2026-11-06T01:35:09.4063784Z [31;1m        PASS [   0.005s] codex-hepta-operator-acceptance sshsig::tests::malformed_and_malleable_ed25519_signature_records_are_rejected[0m
+2026-11-06T01:35:09.4133420Z [31;1m        PASS [   0.007s] codex-hepta-operator-acceptance sshsig::tests::pinned_malformed_or_weak_public_keys_are_rejected[0m
+2026-11-06T01:35:09.4233573Z [31;1m        PASS [   0.019s] codex-hepta-operator-acceptance sshsig::tests::namespace_and_hash_changes_cannot_reinterpret_a_signature[0m
+2026-11-06T01:35:09.4333331Z [31;1m        PASS [   0.019s] codex-hepta-operator-acceptance sshsig::tests::valid_self_signed_packet_cannot_replace_the_externally_pinned_key[0m
+2026-11-06T01:35:09.4407087Z [31;1m        PASS [   0.045s] codex-hepta-operator-acceptance sshsig::tests::frozen_openssh_sha256_and_sha512_signatures_verify_without_a_child_process[0m
+2026-11-06T01:35:09.4458833Z [31;1m        PASS [   0.005s] codex-hepta-operator-acceptance tests::exact_challenge_boundary_accepts_only_operator_acceptance[0m
+2026-11-06T01:35:09.4483499Z [31;1m        PASS [   0.016s] codex-hepta-operator-acceptance tests::durable_time_watermark_rejects_clock_rollback[0m
+2026-11-06T01:35:09.4506603Z [31;1m        PASS [   0.030s] codex-hepta-operator-acceptance sshsig::tests::version_and_reserved_fields_preserve_openssh_compatibility[0m
+2026-11-06T01:35:09.4547320Z [31;1m        PASS [   0.004s] codex-hepta-operator-acceptance tests::read_only_lock_never_creates_missing_state[0m
+2026-11-06T01:35:09.4557365Z [31;1m        PASS [   0.008s] codex-hepta-operator-acceptance tests::final_consumption_at_expiry_creates_no_claim_or_receipt[0m
+2026-11-06T01:35:09.4613744Z [31;1m        PASS [   0.013s] codex-hepta-operator-acceptance tests::exact_replay_returns_same_receipt_and_conflicting_claim_fails[0m
+2026-11-06T01:35:09.4619079Z [31;1m        PASS [   0.005s] codex-hepta-operator-acceptance tests::receipt_repeated_authority_must_match_exact_boundary[0m
+2026-11-06T01:35:09.4644079Z [31;1m        PASS [   0.009s] codex-hepta-operator-acceptance tests::unknown_or_noncanonical_stored_json_is_rejected[0m
+2026-11-06T01:35:09.4646131Z [31;1m        PASS [   0.005s] codex-hepta-operator-acceptance tests::validity_window_is_half_open_and_policy_bounded[0m
+2026-11-06T01:35:09.4853598Z [31;1m        PASS [   0.018s] codex-hepta-operator-acceptance trust::tests::trust_policy_digest_is_external_and_fail_closed[0m
+2026-11-06T01:35:09.4903770Z [31;1m        PASS [   0.004s] codex-hepta-operator-acceptance trust::tests::weak_ed25519_public_key_is_rejected_before_openssh[0m
+2026-11-06T01:35:09.5113577Z [31;1m        PASS [   0.047s] codex-hepta-operator-acceptance trust::tests::trust_policy_pins_store_principal_fingerprint_and_allowed_signers[0m
+2026-11-06T01:35:09.5128464Z [31;1m        PASS [   0.053s] codex-hepta-operator-acceptance trust::tests::sshsig_verifies_only_exact_namespace_against_pinned_policy[0m
+2026-11-06T01:35:09.5592821Z [31;1m        PASS [   0.157s] codex-hepta-operator-acceptance sshsig::tests::native_version_and_reserved_compatibility_matches_real_openssh[0m
+2026-11-06T01:35:09.5595698Z [31;1m────────────[0m
+2026-11-06T01:35:09.5596234Z [31;1m     Summary [   0.221s] 33 tests run: 33 passed, 0 skipped[0m
+2026-11-06T01:35:09.6215004Z ##[group]Run $evidence = "$env:RUNNER_TEMP/operator-native"
+2026-11-06T01:35:09.6215470Z [36;1m$evidence = "$env:RUNNER_TEMP/operator-native"[0m
+2026-11-06T01:35:09.6215902Z [36;1mif (Test-Path codex-rs/target/nextest/local/junit.xml) {[0m
+2026-11-06T01:35:09.6216379Z [36;1m  Copy-Item codex-rs/target/nextest/local/junit.xml "$evidence/junit.xml"[0m
+2026-11-06T01:35:09.6217097Z [36;1m  Get-FileHash -Algorithm SHA256 -LiteralPath "$evidence/junit.xml" | ConvertTo-Json | Set-Content "$evidence/junit-sha256.json"[0m
+2026-11-06T01:35:09.6217672Z [36;1m}[0m
+2026-11-06T01:35:09.6217870Z [36;1mgit diff --exit-code[0m
+2026-11-06T01:35:09.6218158Z [36;1mif ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }[0m
+2026-11-06T01:35:09.6218554Z [36;1mgit status --porcelain | Set-Content "$evidence/status.txt"[0m
+2026-11-06T01:35:09.6218909Z [36;1mSet-Location codex-rs[0m
+2026-11-06T01:35:09.6219264Z [36;1mcargo fmt --package codex-hepta-operator-acceptance -- --check[0m
+2026-11-06T01:35:09.6219704Z [36;1mif ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }[0m
+2026-11-06T01:35:09.6240563Z shell: /usr/bin/pwsh -command ". '{0}'"
+2026-11-06T01:35:09.6240851Z env:
+2026-11-06T01:35:09.6241043Z   CARGO_INCREMENTAL: 0
+2026-11-06T01:35:09.6241259Z   CARGO_BUILD_JOBS: 2
+2026-11-06T01:35:09.6241471Z   CARGO_PROFILE_TEST_DEBUG: 0
+2026-11-06T01:35:09.6241704Z   CARGO_PROFILE_DEV_DEBUG: 0
+2026-11-06T01:35:09.6241926Z ##[endgroup]
+2026-11-06T01:35:11.3483306Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-06T01:35:11.3506045Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-06T01:35:11.3995550Z Warning: can't set `imports_granularity = Item`, unstable features are only available in nightly channel.
+2026-11-06T01:35:11.4504720Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+2026-11-06T01:35:11.4505144Z with:
+2026-11-06T01:35:11.4505536Z   name: operator-native-ubuntu-24.04-67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed-42123581186
+2026-11-06T01:35:11.4506053Z   path: /home/runner/work/_temp/operator-native
+2026-11-06T01:35:11.4506376Z   if-no-files-found: error
+2026-11-06T01:35:11.4506607Z   retention-days: 14
+2026-11-06T01:35:11.4506819Z   compression-level: 6
+2026-11-06T01:35:11.4507028Z   overwrite: false
+2026-11-06T01:35:11.4507246Z   include-hidden-files: false
+2026-11-06T01:35:11.4507473Z env:
+2026-11-06T01:35:11.4507650Z   CARGO_INCREMENTAL: 0
+2026-11-06T01:35:11.4507857Z   CARGO_BUILD_JOBS: 2
+2026-11-06T01:35:11.4508065Z   CARGO_PROFILE_TEST_DEBUG: 0
+2026-11-06T01:35:11.4508298Z   CARGO_PROFILE_DEV_DEBUG: 0
+2026-11-06T01:35:11.4508522Z ##[endgroup]
+2026-11-06T01:35:11.6307496Z (node:3838) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-06T01:35:11.6308323Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-06T01:35:11.6352604Z With the provided path, there will be 6 files uploaded
+2026-11-06T01:35:11.6359040Z Artifact name is valid!
+2026-11-06T01:35:11.6359779Z Root directory input is valid!
+2026-11-06T01:35:11.9838497Z Beginning upload of artifact content to blob storage
+2026-11-06T01:35:12.0119960Z (node:3838) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-11-06T01:35:12.2173142Z Uploaded bytes 5090
+2026-11-06T01:35:12.2759783Z Finished uploading artifact content to blob storage!
+2026-11-06T01:35:12.2760927Z SHA256 digest of uploaded artifact zip is 104469b2e854f292d6246810201efe81bacc2e78424196e54b2be711dd5f6aef
+2026-11-06T01:35:12.2763054Z Finalizing artifact upload
+2026-11-06T01:35:12.7200879Z Artifact operator-native-ubuntu-24.04-67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed-42123581186.zip successfully finalized. Artifact ID 13469028749
+2026-11-06T01:35:12.7203257Z Artifact operator-native-ubuntu-24.04-67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed-42123581186 has been successfully uploaded! Final size is 5090 bytes. Artifact ID is 13469028749
+2026-11-06T01:35:12.7204411Z Artifact download URL: https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42123581186/artifacts/13469028749
+2026-11-06T01:35:12.7428372Z Post job cleanup.
+2026-11-06T01:35:12.8316913Z [command]/usr/bin/git version
+2026-11-06T01:35:12.8399502Z git version 2.56.0
+2026-11-06T01:35:12.8441742Z Temporarily overriding HOME='/home/runner/work/_temp/29b60b73-0fff-4601-833f-42f9a631606b' before making global git config changes
+2026-11-06T01:35:12.8443419Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-06T01:35:12.8448099Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-06T01:35:12.8483107Z Removing SSH command configuration
+2026-11-06T01:35:12.8490032Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-06T01:35:12.8528640Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-06T01:35:12.8802019Z Removing HTTP extra header
+2026-11-06T01:35:12.8808583Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-06T01:35:12.8849014Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-06T01:35:12.9135125Z Removing includeIf entries pointing to credentials config files
+2026-11-06T01:35:12.9144446Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-06T01:35:12.9193889Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-06T01:35:13.0199565Z Cleaning up orphan processes
+2026-11-06T01:35:13.0572265Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

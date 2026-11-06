@@ -1,0 +1,23 @@
+{
+  "qualification": "Immutable objects only; no source ref, new workflow run or XML materialization claimed.",
+  "objects": [
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/shared-bep-fetch-xml-repair-20261106/collect_attempts.py",
+      "git_blob": "ee1b82877fbd55a2e3838d768014715617e05ea0",
+      "full_GET_byte_equal": true,
+      "actual_method": "create_tree(content) + github_fetch_blob"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/shared-bep-fetch-xml-repair-20261106/candidate/b21/.github/workflows/b21-intel-original-pty.yml",
+      "git_blob": "17ff1640c21876a08396db6a40f131a26870fe84",
+      "full_GET_byte_equal": true,
+      "actual_method": "create_tree(content) + github_fetch_blob"
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/shared-bep-fetch-xml-repair-20261106/candidate/b23/.github/workflows/hepta-b23-linux-app-server-original-gate.yml",
+      "git_blob": "993d7a76a4fc6c2924e45c7ef403cecd6d108d1f",
+      "full_GET_byte_equal": true,
+      "actual_method": "create_tree(content) + github_fetch_blob"
+    }
+  ]
+}

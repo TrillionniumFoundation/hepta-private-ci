@@ -1,0 +1,119 @@
+{
+  "schema": "windows-setup-error-causes-pr4913-publication-actual-registry-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "self_repository_path": "ci-audit/windows-setup-error-causes-pr4913-publication-20261106/registry.actual.json",
+  "actual_pr": 4913,
+  "actual_head": "340fbc0629d27e3a2bda7c6971be25c60b3bf2bc",
+  "actual_parent": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+  "actual_merge": "ff2b873c8b907e1e86b1a728c2c18552edfbd0ed",
+  "actual_tree": "78b817fec87e593e0a0f6357d84f895b8574bde5",
+  "actual_root_entries": 53,
+  "exact_dependency_registry": "42748aff2421ab2bee7757158793868f08dd53d9",
+  "exact_dependency_members": 37,
+  "published_root_originals": {
+    "member": "original/publication-originals.json",
+    "bytes": 381558,
+    "computed_git_blob": "2527ad261497f7d9afc0ced4e39214ef5eae41d2",
+    "sha256": "d9baec72e2cc606586a970b5b6eb492f04342f1f7eb2de1547e754c811f809f5",
+    "custody": "Losslessly contained in this registered bundle, not separately claimed as a materialized blob."
+  },
+  "bundle": {
+    "member_count": 7,
+    "part_count": 1,
+    "archive_bytes": 61072,
+    "archive_sha256": "62d2cabb982bafd7b5a7f1d80f65b5e1bfec1e8f966eca90d1cc73daa41513ec",
+    "manifest_actual": "ef43d42c6d83c36b42946eb39bb690a95662751d",
+    "part_actual": "34a92d454f4f31c412bcefc9e0cdce36273ccb50",
+    "restore_tool_dependency": "01924f9fcdb335e6c7b5eab71a7252b452fbc448",
+    "restored_both_dependency_and_publication": true,
+    "independent_replay_exit": 0,
+    "independent_replay_stdout_bytes": 3290,
+    "full_stdout_equal": true
+  },
+  "records": [
+    {
+      "repository_path": "ci-audit/windows-setup-error-causes-pr4913-publication-20261106/verify_publication.py",
+      "bytes": 8133,
+      "git_blob": "1c5cbc2be8e2dc5ba43c687522a138853d2c7d39",
+      "sha256": "d828b04fb94a9bf31cde5dda493b4645f1b431639b33a59b0b99270eebb987ed",
+      "actual_create_sha": "1c5cbc2be8e2dc5ba43c687522a138853d2c7d39",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 8133,
+        "git_blob": "1c5cbc2be8e2dc5ba43c687522a138853d2c7d39",
+        "sha256": "d828b04fb94a9bf31cde5dda493b4645f1b431639b33a59b0b99270eebb987ed"
+      }
+    },
+    {
+      "repository_path": "ci-audit/windows-setup-error-causes-pr4913-publication-20261106/verification.stdout.json",
+      "bytes": 3290,
+      "git_blob": "77292fe13a1e48643550d0f0f7d15dec430ba915",
+      "sha256": "e86db8b581ca8680116729779d09c6cbb83d5b6491d2af044435c57515471387",
+      "actual_create_sha": "77292fe13a1e48643550d0f0f7d15dec430ba915",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 3290,
+        "git_blob": "77292fe13a1e48643550d0f0f7d15dec430ba915",
+        "sha256": "e86db8b581ca8680116729779d09c6cbb83d5b6491d2af044435c57515471387"
+      }
+    },
+    {
+      "repository_path": "ci-audit/windows-setup-error-causes-pr4913-publication-20261106/dependencies.json",
+      "bytes": 982,
+      "git_blob": "94c84e861c178c300bfe64402d563524e45df1f2",
+      "sha256": "f2e015a8b9f73c08c4b33d603235a413d4a8eb335d86d287b0bb035a9191e2f0",
+      "actual_create_sha": "94c84e861c178c300bfe64402d563524e45df1f2",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 982,
+        "git_blob": "94c84e861c178c300bfe64402d563524e45df1f2",
+        "sha256": "f2e015a8b9f73c08c4b33d603235a413d4a8eb335d86d287b0bb035a9191e2f0"
+      }
+    },
+    {
+      "repository_path": "ci-audit/windows-setup-error-causes-pr4913-publication-20261106/PORTABLE_REPLAY.json",
+      "bytes": 732,
+      "git_blob": "45db6e2aebbb6698d9f7c1283a593ae9a88cfa53",
+      "sha256": "2f0030c896cd1e15c206223ba244b689c838742fd1134ac6bb04a17d9c1840cf",
+      "actual_create_sha": "45db6e2aebbb6698d9f7c1283a593ae9a88cfa53",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 732,
+        "git_blob": "45db6e2aebbb6698d9f7c1283a593ae9a88cfa53",
+        "sha256": "2f0030c896cd1e15c206223ba244b689c838742fd1134ac6bb04a17d9c1840cf"
+      }
+    },
+    {
+      "repository_path": "ci-audit/windows-setup-error-causes-pr4913-publication-20261106/bundle/manifest.json",
+      "bytes": 2626,
+      "git_blob": "ef43d42c6d83c36b42946eb39bb690a95662751d",
+      "sha256": "80a3bb2f7c8238e075589abf433162940b2c3192b9b7005196c9040f3abf8ef8",
+      "actual_create_sha": "ef43d42c6d83c36b42946eb39bb690a95662751d",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 2626,
+        "git_blob": "ef43d42c6d83c36b42946eb39bb690a95662751d",
+        "sha256": "80a3bb2f7c8238e075589abf433162940b2c3192b9b7005196c9040f3abf8ef8"
+      }
+    },
+    {
+      "repository_path": "ci-audit/windows-setup-error-causes-pr4913-publication-20261106/bundle/part-000.base64.txt",
+      "bytes": 81432,
+      "git_blob": "34a92d454f4f31c412bcefc9e0cdce36273ccb50",
+      "sha256": "c8ea1bb5fc6cf0ae672ad2a8bfb38eb63808e6ab89da4c78dbb4038dda697d6c",
+      "actual_create_sha": "34a92d454f4f31c412bcefc9e0cdce36273ccb50",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 81432,
+        "git_blob": "34a92d454f4f31c412bcefc9e0cdce36273ccb50",
+        "sha256": "c8ea1bb5fc6cf0ae672ad2a8bfb38eb63808e6ab89da4c78dbb4038dda697d6c"
+      }
+    }
+  ],
+  "all_full_GET_bytes_equal": true,
+  "actual_registered_objects": 6,
+  "actual_source_ref_PR_custody_verified": true,
+  "CI_Rust_and_native_qualification": "PENDING",
+  "ACL_cause": "UNKNOWN",
+  "reviewer_ref_or_native_mutation": false
+}

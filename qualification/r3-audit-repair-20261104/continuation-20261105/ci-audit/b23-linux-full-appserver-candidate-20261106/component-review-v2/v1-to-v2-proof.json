@@ -1,0 +1,25 @@
+{
+  "v1_frozen_files_verified": 36,
+  "base_ref": "fix/r3-original-product-contracts-20261104",
+  "base_commit": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+  "source_api_blob": "5c213344391c4d17203af88e94f25a28c7b6e0d3",
+  "code_changes": [
+    {
+      "path": "source_identity.py",
+      "old_bytes": 8149,
+      "new_bytes": 8187,
+      "one_literal_substitution": true,
+      "inverse_recovers_v1_full_bytes": true,
+      "patch": "--- v1/source_identity.py\n+++ v2/source_identity.py\n@@ -106,7 +106,7 @@\n         event = json.loads(Path(os.environ[\"GITHUB_EVENT_PATH\"]).read_text())\n         pr = event[\"pull_request\"]\n         check(pr[\"base\"][\"sha\"] == BASE_COMMIT, \"base commit changed\")\n-        check(pr[\"base\"][\"ref\"] == \"main\", \"unexpected base ref\")\n+        check(pr[\"base\"][\"ref\"] == \"fix/r3-original-product-contracts-20261104\", \"unexpected base ref\")\n         check(pr[\"head\"][\"ref\"] == HEAD_REF, \"unexpected diagnostic ref\")\n         check(pr[\"head\"][\"repo\"][\"full_name\"] == REPOSITORY,\n               \"unexpected head repository\")\n"
+    },
+    {
+      "path": "draft/.github/workflows/hepta-b23-linux-app-server-original-gate.yml.template",
+      "old_bytes": 18083,
+      "new_bytes": 18121,
+      "one_literal_substitution": true,
+      "inverse_recovers_v1_full_bytes": true,
+      "patch": "--- v1/draft/.github/workflows/hepta-b23-linux-app-server-original-gate.yml.template\n+++ v2/draft/.github/workflows/hepta-b23-linux-app-server-original-gate.yml.template\n@@ -148,7 +148,7 @@\n                   event = json.loads(Path(os.environ[\"GITHUB_EVENT_PATH\"]).read_text())\n                   pr = event[\"pull_request\"]\n                   check(pr[\"base\"][\"sha\"] == BASE_COMMIT, \"base commit changed\")\n-                  check(pr[\"base\"][\"ref\"] == \"main\", \"unexpected base ref\")\n+                  check(pr[\"base\"][\"ref\"] == \"fix/r3-original-product-contracts-20261104\", \"unexpected base ref\")\n                   check(pr[\"head\"][\"ref\"] == HEAD_REF, \"unexpected diagnostic ref\")\n                   check(pr[\"head\"][\"repo\"][\"full_name\"] == REPOSITORY,\n                         \"unexpected head repository\")\n"
+    }
+  ],
+  "native_executed": false
+}

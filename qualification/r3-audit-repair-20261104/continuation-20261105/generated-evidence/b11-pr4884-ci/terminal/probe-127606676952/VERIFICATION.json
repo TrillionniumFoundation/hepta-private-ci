@@ -1,0 +1,4614 @@
+{
+  "schema": "hepta-b11-native11-portable-original-verification-v1",
+  "run": 42130823627,
+  "job": 127606676952,
+  "attempt": 1,
+  "head": "2980fa274c599bd07437a2f5915b86d858f89bcc",
+  "actual_checkout": "53766cb836b198e2f928b949f148d7a2a10c0d21",
+  "actual_tree": "9cb7302777ce018dd022086041c2225d1dd5c8dd",
+  "API_terminal_conclusion": {
+    "run": "failure",
+    "job": "failure"
+  },
+  "job_steps": [
+    {
+      "name": "Set up job",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 1,
+      "started_at": "2026-11-05T23:37:54Z",
+      "completed_at": "2026-11-05T23:37:55Z"
+    },
+    {
+      "name": "Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 2,
+      "started_at": "2026-11-05T23:37:55Z",
+      "completed_at": "2026-11-05T23:38:12Z"
+    },
+    {
+      "name": "Prepare original native MSVC Bazel environment",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 3,
+      "started_at": "2026-11-05T23:38:12Z",
+      "completed_at": "2026-11-05T23:38:37Z"
+    },
+    {
+      "name": "Run the original outer Windows sandbox unit target",
+      "status": "completed",
+      "conclusion": "failure",
+      "number": 4,
+      "started_at": "2026-11-05T23:38:37Z",
+      "completed_at": "2026-11-05T23:43:27Z"
+    },
+    {
+      "name": "Check the ACL identity counterfactual and restore its source",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 5,
+      "started_at": "2026-11-05T23:43:27Z",
+      "completed_at": "2026-11-05T23:45:03Z"
+    },
+    {
+      "name": "Run the original setup helper target after exact restoration",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 6,
+      "started_at": "2026-11-05T23:45:03Z",
+      "completed_at": "2026-11-05T23:46:09Z"
+    },
+    {
+      "name": "Upload complete observation and original failure evidence",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 7,
+      "started_at": "2026-11-05T23:46:09Z",
+      "completed_at": "2026-11-05T23:46:11Z"
+    },
+    {
+      "name": "Check for a clean worktree",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 8,
+      "started_at": "2026-11-05T23:46:11Z",
+      "completed_at": "2026-11-05T23:46:11Z"
+    },
+    {
+      "name": "Post Prepare original native MSVC Bazel environment",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 15,
+      "started_at": "2026-11-05T23:46:11Z",
+      "completed_at": "2026-11-05T23:46:11Z"
+    },
+    {
+      "name": "Post Run actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 16,
+      "started_at": "2026-11-05T23:46:11Z",
+      "completed_at": "2026-11-05T23:46:14Z"
+    },
+    {
+      "name": "Complete job",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 17,
+      "started_at": "2026-11-05T23:46:14Z",
+      "completed_at": "2026-11-05T23:46:14Z"
+    }
+  ],
+  "archive": {
+    "bytes": 2302073,
+    "sha256": "b67aa17b107136aa1e934065e671e35b99c1a8b74a82ad7edf40f21c58128ca8",
+    "git_blob": "93ffec8098b924d0a673b85b1e57a1adccb40bd0"
+  },
+  "archive_verification": {
+    "member_count": 84,
+    "uncompressed_bytes": 3011303,
+    "all_original_CRC_and_bytes_checked": true,
+    "computed_member_git_blob_ids_are_not_claimed_as_separate_actual_Git_objects": true
+  },
+  "transport_parts": 18,
+  "job_log": {
+    "bytes": 509112,
+    "sha256": "29c7b0343a5f8865bd2bf8088e3108e2c3db3b3f89f93c0aaa72b89834d685bc",
+    "git_blob": "b5177aa404bcddc5d4ee0838a5f20582b344dfaf"
+  },
+  "job_log_CR_characters": 3334,
+  "raw_MCP_envelope_exact_decoded_bytes_equal": true,
+  "actual79_source_leaves_with_Merkle_proof_to_actual_merge_tree": [
+    ".github/workflows/hepta-windows-token-mechanism-probe.yml",
+    "codex-rs/windows-sandbox-rs/BUILD.bazel",
+    "codex-rs/windows-sandbox-rs/Cargo.toml",
+    "codex-rs/windows-sandbox-rs/build.rs",
+    "codex-rs/windows-sandbox-rs/codex-windows-sandbox-setup.manifest",
+    "codex-rs/windows-sandbox-rs/sandbox_smoketests.py",
+    "codex-rs/windows-sandbox-rs/src/acl.rs",
+    "codex-rs/windows-sandbox-rs/src/acl_deny.rs",
+    "codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+    "codex-rs/windows-sandbox-rs/src/allow.rs",
+    "codex-rs/windows-sandbox-rs/src/audit.rs",
+    "codex-rs/windows-sandbox-rs/src/bin/command_runner/main.rs",
+    "codex-rs/windows-sandbox-rs/src/bin/command_runner/win.rs",
+    "codex-rs/windows-sandbox-rs/src/bin/command_runner/win/cwd_junction.rs",
+    "codex-rs/windows-sandbox-rs/src/bin/setup_main/main.rs",
+    "codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs",
+    "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/firewall.rs",
+    "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/no_reparse_dir.rs",
+    "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/no_reparse_dir_tests.rs",
+    "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex.rs",
+    "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex_tests.rs",
+    "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/sandbox_users.rs",
+    "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/setup_runtime_bin.rs",
+    "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/setup_runtime_bin_tests.rs",
+    "codex-rs/windows-sandbox-rs/src/bin/setup_main/win_acl_tests.rs",
+    "codex-rs/windows-sandbox-rs/src/cap.rs",
+    "codex-rs/windows-sandbox-rs/src/conpty/mod.rs",
+    "codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs",
+    "codex-rs/windows-sandbox-rs/src/deny_read_acl.rs",
+    "codex-rs/windows-sandbox-rs/src/deny_read_resolver.rs",
+    "codex-rs/windows-sandbox-rs/src/deny_read_state.rs",
+    "codex-rs/windows-sandbox-rs/src/desktop.rs",
+    "codex-rs/windows-sandbox-rs/src/desktop_tests.rs",
+    "codex-rs/windows-sandbox-rs/src/dpapi.rs",
+    "codex-rs/windows-sandbox-rs/src/elevated/ipc_framed.rs",
+    "codex-rs/windows-sandbox-rs/src/elevated/mod.rs",
+    "codex-rs/windows-sandbox-rs/src/elevated/runner_client.rs",
+    "codex-rs/windows-sandbox-rs/src/elevated/runner_pipe.rs",
+    "codex-rs/windows-sandbox-rs/src/elevated_impl.rs",
+    "codex-rs/windows-sandbox-rs/src/env.rs",
+    "codex-rs/windows-sandbox-rs/src/helper_materialization.rs",
+    "codex-rs/windows-sandbox-rs/src/hide_users.rs",
+    "codex-rs/windows-sandbox-rs/src/identity.rs",
+    "codex-rs/windows-sandbox-rs/src/lib.rs",
+    "codex-rs/windows-sandbox-rs/src/logging.rs",
+    "codex-rs/windows-sandbox-rs/src/path_normalization.rs",
+    "codex-rs/windows-sandbox-rs/src/proc_thread_attr.rs",
+    "codex-rs/windows-sandbox-rs/src/process.rs",
+    "codex-rs/windows-sandbox-rs/src/resolved_permissions.rs",
+    "codex-rs/windows-sandbox-rs/src/sandbox_utils.rs",
+    "codex-rs/windows-sandbox-rs/src/setup.rs",
+    "codex-rs/windows-sandbox-rs/src/setup_error.rs",
+    "codex-rs/windows-sandbox-rs/src/spawn_prep.rs",
+    "codex-rs/windows-sandbox-rs/src/ssh_config_dependencies.rs",
+    "codex-rs/windows-sandbox-rs/src/stdio_bridge.rs",
+    "codex-rs/windows-sandbox-rs/src/stdio_bridge_tests.rs",
+    "codex-rs/windows-sandbox-rs/src/token.rs",
+    "codex-rs/windows-sandbox-rs/src/token_integrity_probe_support.rs",
+    "codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs",
+    "codex-rs/windows-sandbox-rs/src/token_neither_privilege_observation.rs",
+    "codex-rs/windows-sandbox-rs/src/token_tests.rs",
+    "codex-rs/windows-sandbox-rs/src/unified_exec/acl_setup_tests.rs",
+    "codex-rs/windows-sandbox-rs/src/unified_exec/backend_selection_tests.rs",
+    "codex-rs/windows-sandbox-rs/src/unified_exec/backends/elevated.rs",
+    "codex-rs/windows-sandbox-rs/src/unified_exec/backends/elevated_tests.rs",
+    "codex-rs/windows-sandbox-rs/src/unified_exec/backends/legacy.rs",
+    "codex-rs/windows-sandbox-rs/src/unified_exec/backends/mod.rs",
+    "codex-rs/windows-sandbox-rs/src/unified_exec/backends/windows_common.rs",
+    "codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs",
+    "codex-rs/windows-sandbox-rs/src/unified_exec/mod.rs",
+    "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+    "codex-rs/windows-sandbox-rs/src/wfp.rs",
+    "codex-rs/windows-sandbox-rs/src/wfp/filter_specs.rs",
+    "codex-rs/windows-sandbox-rs/src/wfp_setup.rs",
+    "codex-rs/windows-sandbox-rs/src/winutil.rs",
+    "codex-rs/windows-sandbox-rs/src/workspace_acl.rs",
+    "codex-rs/windows-sandbox-rs/src/wrapper.rs",
+    "codex-rs/windows-sandbox-rs/src/wrapper_tests.rs",
+    "codex-rs/windows-sandbox-rs/tests/helper_manifest.rs"
+  ],
+  "whole": {
+    "passed": 146,
+    "failed": 8,
+    "ignored": 2,
+    "batches": [
+      [
+        "ok",
+        "92",
+        "0",
+        "0",
+        "0",
+        "64",
+        "1.04"
+      ],
+      [
+        "FAILED",
+        "54",
+        "8",
+        "2",
+        "0",
+        "92",
+        "0.68"
+      ]
+    ],
+    "failures": [
+      {
+        "case": "token::tests::workspace_capability_delete_routes_require_the_capability_in_all_four_cells",
+        "classification": "ordinary_host_Rust_Neither_precondition",
+        "start_line": 535,
+        "original_block_utf8": {
+          "bytes": 5160,
+          "sha256": "4825fdd0c95ce06f335dbe96504593331fbbffbd122c6bc33e56a2c73200dbb2",
+          "git_blob": "c67b548bac659a9627ecbeea528e89c26c4be8fc"
+        }
+      },
+      {
+        "case": "token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",
+        "classification": "strict_outside_delete_assertion",
+        "start_line": 593,
+        "original_block_utf8": {
+          "bytes": 639,
+          "sha256": "d7799cbb16eadb913a6cabf9f355e5b0181068e9f245bf290b5ccd5abe45eef5",
+          "git_blob": "68fa2f0f58c5429892bd23bd36f3b6352b787076"
+        }
+      },
+      {
+        "case": "token::integrity_probe::integrity_mechanism_probe_observation_only",
+        "classification": "new_observation_cmd_launch_precondition_failed_before_child",
+        "start_line": 618,
+        "original_block_utf8": {
+          "bytes": 14072,
+          "sha256": "e0d6ba05d4c2edbd0013acf4868ad3d8bdf0c0e7ceadfb9af22eae582ac7f606",
+          "git_blob": "6e8a87d46a4d4fb9d157b038fea35a2f4a3cee7e"
+        }
+      },
+      {
+        "case": "unified_exec::tests::delete_permission_tests::legacy_delete_routes_require_workspace_capability_in_all_four_cells",
+        "classification": "ordinary_host_cmd_Neither_precondition",
+        "start_line": 660,
+        "original_block_utf8": {
+          "bytes": 5887,
+          "sha256": "fe646d8584b6efd1637ff6318fb3656d15e22e418c6b687e731149e3bdf382c1",
+          "git_blob": "dd2151dba328ec495c6c7fe3402cf23707d4c08c"
+        }
+      },
+      {
+        "case": "unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit",
+        "classification": "downstream_poisoned_test_lock",
+        "start_line": 707,
+        "original_block_utf8": {
+          "bytes": 311,
+          "sha256": "81bdb5b7aad8f3c7533c900136eba089c1a03e3f4da91dcebd50381264c953e5",
+          "git_blob": "f5adc7571a66272f1c38b0cdce027d39488db39f"
+        }
+      },
+      {
+        "case": "unified_exec::tests::legacy_non_tty_cmd_emits_output",
+        "classification": "downstream_poisoned_test_lock",
+        "start_line": 712,
+        "original_block_utf8": {
+          "bytes": 275,
+          "sha256": "d75ddebc1960a878cce95f1d64169644d48039582e0fca18cdec1e2070211a5e",
+          "git_blob": "9a9988238a32a19846aa2592c0dd0cd62759abc4"
+        }
+      },
+      {
+        "case": "unified_exec::tests::legacy_non_tty_cmd_rejects_deny_read_overrides",
+        "classification": "downstream_poisoned_test_lock",
+        "start_line": 717,
+        "original_block_utf8": {
+          "bytes": 305,
+          "sha256": "d630213ed99395818140747753560e43b3e1b9c7c84e8c34458dfb97438a91e2",
+          "git_blob": "cf05a94671a1e20bdc433717687ea8a6c4ef9188"
+        }
+      },
+      {
+        "case": "unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots",
+        "classification": "downstream_poisoned_test_lock",
+        "start_line": 722,
+        "original_block_utf8": {
+          "bytes": 329,
+          "sha256": "98e8df736799e155e740c0dc3ee43e0d3a4e4f2c392ede77392a5af78d4ffaac",
+          "git_blob": "dd11a7f9ab0498e5107187cc842c561a75d5eb78"
+        }
+      }
+    ],
+    "pair": {
+      "member": "bazel-execution-logs/failed-test-logs/invocation-_ej45pul/targets/0000/test.log",
+      "raw": {
+        "bytes": 171394,
+        "sha256": "c9c6d7414415e5654ddbd5097539ecb7c643ec3ee8a565fe956b028672ba3fe2",
+        "git_blob": "23c0f85bc23b75b9b8f4dc5e5d09f0fb5efce832"
+      },
+      "XML": {
+        "bytes": 171817,
+        "sha256": "af1d0ca6640281f47929c845a1ae9e4bf9d9e72d040b5d19288aff157ef96a1f",
+        "git_blob": "3dd96a600faf7fb505897efa29503c07951e301a"
+      },
+      "original_ESC_count": 78,
+      "original_CR_count": 0,
+      "XML_entire_system_out_matches_after_only_XML_newline_and_ESC_serialization": true,
+      "XML_outer_case": {
+        "name": "codex-rs\\windows-sandbox-rs\\windows-sandbox-rs-unit-tests.bat",
+        "classname": "",
+        "status": "run",
+        "duration": "67",
+        "time": "67"
+      },
+      "expected_error": "exited with error code 1"
+    },
+    "original_bazel_exit": 3
+  },
+  "new_observation_Rust_completed_cmd_not_started": {
+    "complete_raw_JSON_records": [
+      {
+        "phase": "filesystem",
+        "line": 494,
+        "physical_line_utf8": {
+          "bytes": 291,
+          "sha256": "5fd2a57df26e879d7a3c444baaee833b157a0324e78724e95686ec6b5096b47b",
+          "git_blob": "797ad9c5bb63301d2134779295f6a85e500d80bb"
+        },
+        "value": {
+          "root": "D:\\tmp\\.tmp0sX1UO",
+          "serial": 1723665134,
+          "volume_serial_64": 15305128360590248686,
+          "file_id_128": [
+            211,
+            127,
+            1,
+            0,
+            0,
+            0,
+            38,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "flags": 65482495,
+          "maximum_component": 255,
+          "filesystem": "NTFS",
+          "volume_name": "Temporary Storage"
+        }
+      },
+      {
+        "phase": "subjects",
+        "line": 496,
+        "physical_line_utf8": {
+          "bytes": 4150,
+          "sha256": "7bbf19a65254c7c61af1cac2f5c5d77780aee4e5cf9e9e934c328d7a30604c43",
+          "git_blob": "7b7b2b3b99309d852e4f5d042692cc60c649e2b3"
+        },
+        "value": {
+          "ordinary": {
+            "identity": {
+              "user": [
+                [
+                  1,
+                  5,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  5,
+                  21,
+                  0,
+                  0,
+                  0,
+                  38,
+                  102,
+                  22,
+                  196,
+                  141,
+                  93,
+                  22,
+                  93,
+                  238,
+                  38,
+                  80,
+                  89,
+                  244,
+                  1,
+                  0,
+                  0
+                ],
+                0
+              ],
+              "groups": [
+                [
+                  [
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  7
+                ],
+                [
+                  [
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    2,
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  7
+                ],
+                [
+                  [
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    2,
+                    1,
+                    0,
+                    0,
+                    0
+                  ],
+                  7
+                ],
+                [
+                  [
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    4,
+                    0,
+                    0,
+                    0
+                  ],
+                  7
+                ],
+                [
+                  [
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    11,
+                    0,
+                    0,
+                    0
+                  ],
+                  7
+                ],
+                [
+                  [
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    15,
+                    0,
+                    0,
+                    0
+                  ],
+                  7
+                ],
+                [
+                  [
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    113,
+                    0,
+                    0,
+                    0
+                  ],
+                  7
+                ],
+                [
+                  [
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    114,
+                    0,
+                    0,
+                    0
+                  ],
+                  7
+                ],
+                [
+                  [
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    16,
+                    0,
+                    48,
+                    0,
+                    0
+                  ],
+                  96
+                ],
+                [
+                  [
+                    1,
+                    2,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    32,
+                    0,
+                    0,
+                    0,
+                    32,
+                    2,
+                    0,
+                    0
+                  ],
+                  15
+                ],
+                [
+                  [
+                    1,
+                    2,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    32,
+                    0,
+                    0,
+                    0,
+                    33,
+                    2,
+                    0,
+                    0
+                  ],
+                  7
+                ],
+                [
+                  [
+                    1,
+                    2,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    64,
+                    0,
+                    0,
+                    0,
+                    10,
+                    0,
+                    0,
+                    0
+                  ],
+                  7
+                ],
+                [
+                  [
+                    1,
+                    3,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    5,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    88,
+                    70,
+                    11,
+                    0
+                  ],
+                  3221225479
+                ],
+                [
+                  [
+                    1,
+                    5,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    21,
+                    0,
+                    0,
+                    0,
+                    38,
+                    102,
+                    22,
+                    196,
+                    141,
+                    93,
+                    22,
+                    93,
+                    238,
+                    38,
+                    80,
+                    89,
+                    1,
+                    2,
+                    0,
+                    0
+                  ],
+                  7
+                ]
+              ],
+              "restricted_sids": [],
+              "integrity_and_policy": {
+                "integrity_rid": 12288,
+                "integrity_attributes": 96,
+                "mandatory_policy": 3
+              },
+              "session": 2,
+              "app_container": 0
+            },
+            "token_type": 1,
+            "impersonation_level": null,
+            "privileges": [
+              {
+                "luid_high": 0,
+                "luid_low": 5,
+                "attributes": 0,
+                "name": "SeIncreaseQuotaPrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 8,
+                "attributes": 0,
+                "name": "SeSecurityPrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 9,
+                "attributes": 0,
+                "name": "SeTakeOwnershipPrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 10,
+                "attributes": 0,
+                "name": "SeLoadDriverPrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 11,
+                "attributes": 0,
+                "name": "SeSystemProfilePrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 12,
+                "attributes": 0,
+                "name": "SeSystemtimePrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 13,
+                "attributes": 0,
+                "name": "SeProfileSingleProcessPrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 14,
+                "attributes": 0,
+                "name": "SeIncreaseBasePriorityPrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 15,
+                "attributes": 0,
+                "name": "SeCreatePagefilePrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 17,
+                "attributes": 2,
+                "name": "SeBackupPrivilege",
+                "enabled": true
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 18,
+                "attributes": 2,
+                "name": "SeRestorePrivilege",
+                "enabled": true
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 19,
+                "attributes": 0,
+                "name": "SeShutdownPrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 20,
+                "attributes": 2,
+                "name": "SeDebugPrivilege",
+                "enabled": true
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 22,
+                "attributes": 0,
+                "name": "SeSystemEnvironmentPrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 23,
+                "attributes": 3,
+                "name": "SeChangeNotifyPrivilege",
+                "enabled": true
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 24,
+                "attributes": 0,
+                "name": "SeRemoteShutdownPrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 25,
+                "attributes": 0,
+                "name": "SeUndockPrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 28,
+                "attributes": 0,
+                "name": "SeManageVolumePrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 29,
+                "attributes": 3,
+                "name": "SeImpersonatePrivilege",
+                "enabled": true
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 30,
+                "attributes": 3,
+                "name": "SeCreateGlobalPrivilege",
+                "enabled": true
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 33,
+                "attributes": 0,
+                "name": "SeIncreaseWorkingSetPrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 34,
+                "attributes": 0,
+                "name": "SeTimeZonePrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 35,
+                "attributes": 0,
+                "name": "SeCreateSymbolicLinkPrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 36,
+                "attributes": 0,
+                "name": "SeDelegateSessionUserImpersonatePrivilege",
+                "enabled": false
+              }
+            ]
+          },
+          "disable_max_privilege": {
+            "identity": {
+              "user": [
+                [
+                  1,
+                  5,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  5,
+                  21,
+                  0,
+                  0,
+                  0,
+                  38,
+                  102,
+                  22,
+                  196,
+                  141,
+                  93,
+                  22,
+                  93,
+                  238,
+                  38,
+                  80,
+                  89,
+                  244,
+                  1,
+                  0,
+                  0
+                ],
+                0
+              ],
+              "groups": [
+                [
+                  [
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  7
+                ],
+                [
+                  [
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    2,
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  7
+                ],
+                [
+                  [
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    2,
+                    1,
+                    0,
+                    0,
+                    0
+                  ],
+                  7
+                ],
+                [
+                  [
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    4,
+                    0,
+                    0,
+                    0
+                  ],
+                  7
+                ],
+                [
+                  [
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    11,
+                    0,
+                    0,
+                    0
+                  ],
+                  7
+                ],
+                [
+                  [
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    15,
+                    0,
+                    0,
+                    0
+                  ],
+                  7
+                ],
+                [
+                  [
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    113,
+                    0,
+                    0,
+                    0
+                  ],
+                  7
+                ],
+                [
+                  [
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    114,
+                    0,
+                    0,
+                    0
+                  ],
+                  7
+                ],
+                [
+                  [
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    16,
+                    0,
+                    48,
+                    0,
+                    0
+                  ],
+                  96
+                ],
+                [
+                  [
+                    1,
+                    2,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    32,
+                    0,
+                    0,
+                    0,
+                    32,
+                    2,
+                    0,
+                    0
+                  ],
+                  15
+                ],
+                [
+                  [
+                    1,
+                    2,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    32,
+                    0,
+                    0,
+                    0,
+                    33,
+                    2,
+                    0,
+                    0
+                  ],
+                  7
+                ],
+                [
+                  [
+                    1,
+                    2,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    64,
+                    0,
+                    0,
+                    0,
+                    10,
+                    0,
+                    0,
+                    0
+                  ],
+                  7
+                ],
+                [
+                  [
+                    1,
+                    3,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    5,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    88,
+                    70,
+                    11,
+                    0
+                  ],
+                  3221225479
+                ],
+                [
+                  [
+                    1,
+                    5,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    21,
+                    0,
+                    0,
+                    0,
+                    38,
+                    102,
+                    22,
+                    196,
+                    141,
+                    93,
+                    22,
+                    93,
+                    238,
+                    38,
+                    80,
+                    89,
+                    1,
+                    2,
+                    0,
+                    0
+                  ],
+                  7
+                ]
+              ],
+              "restricted_sids": [],
+              "integrity_and_policy": {
+                "integrity_rid": 12288,
+                "integrity_attributes": 96,
+                "mandatory_policy": 3
+              },
+              "session": 2,
+              "app_container": 0
+            },
+            "token_type": 1,
+            "impersonation_level": null,
+            "privileges": [
+              {
+                "luid_high": 0,
+                "luid_low": 23,
+                "attributes": 3,
+                "name": "SeChangeNotifyPrivilege",
+                "enabled": true
+              }
+            ]
+          }
+        }
+      },
+      {
+        "phase": "rust_before",
+        "line": 498,
+        "physical_line_utf8": {
+          "bytes": 3226,
+          "sha256": "259af0b0723a9e8f833ea341382334dc0e060ce0f0567d997fedbc34d5bcd288",
+          "git_blob": "af00b2f0a0fea5fa9e7239c26d6bf2db8c2b66b0"
+        },
+        "value": {
+          "subject": "ordinary-direct",
+          "token": {
+            "identity": {
+              "user": [
+                [
+                  1,
+                  5,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  5,
+                  21,
+                  0,
+                  0,
+                  0,
+                  38,
+                  102,
+                  22,
+                  196,
+                  141,
+                  93,
+                  22,
+                  93,
+                  238,
+                  38,
+                  80,
+                  89,
+                  244,
+                  1,
+                  0,
+                  0
+                ],
+                0
+              ],
+              "groups": [
+                [
+                  [
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  7
+                ],
+                [
+                  [
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    2,
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  7
+                ],
+                [
+                  [
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    2,
+                    1,
+                    0,
+                    0,
+                    0
+                  ],
+                  7
+                ],
+                [
+                  [
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    4,
+                    0,
+                    0,
+                    0
+                  ],
+                  7
+                ],
+                [
+                  [
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    11,
+                    0,
+                    0,
+                    0
+                  ],
+                  7
+                ],
+                [
+                  [
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    15,
+                    0,
+                    0,
+                    0
+                  ],
+                  7
+                ],
+                [
+                  [
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    113,
+                    0,
+                    0,
+                    0
+                  ],
+                  7
+                ],
+                [
+                  [
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    114,
+                    0,
+                    0,
+                    0
+                  ],
+                  7
+                ],
+                [
+                  [
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    16,
+                    0,
+                    48,
+                    0,
+                    0
+                  ],
+                  96
+                ],
+                [
+                  [
+                    1,
+                    2,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    32,
+                    0,
+                    0,
+                    0,
+                    32,
+                    2,
+                    0,
+                    0
+                  ],
+                  15
+                ],
+                [
+                  [
+                    1,
+                    2,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    32,
+                    0,
+                    0,
+                    0,
+                    33,
+                    2,
+                    0,
+                    0
+                  ],
+                  7
+                ],
+                [
+                  [
+                    1,
+                    2,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    64,
+                    0,
+                    0,
+                    0,
+                    10,
+                    0,
+                    0,
+                    0
+                  ],
+                  7
+                ],
+                [
+                  [
+                    1,
+                    3,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    5,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    88,
+                    70,
+                    11,
+                    0
+                  ],
+                  3221225479
+                ],
+                [
+                  [
+                    1,
+                    5,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    21,
+                    0,
+                    0,
+                    0,
+                    38,
+                    102,
+                    22,
+                    196,
+                    141,
+                    93,
+                    22,
+                    93,
+                    238,
+                    38,
+                    80,
+                    89,
+                    1,
+                    2,
+                    0,
+                    0
+                  ],
+                  7
+                ]
+              ],
+              "restricted_sids": [],
+              "integrity_and_policy": {
+                "integrity_rid": 12288,
+                "integrity_attributes": 96,
+                "mandatory_policy": 3
+              },
+              "session": 2,
+              "app_container": 0
+            },
+            "token_type": 1,
+            "impersonation_level": null,
+            "privileges": [
+              {
+                "luid_high": 0,
+                "luid_low": 5,
+                "attributes": 0,
+                "name": "SeIncreaseQuotaPrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 8,
+                "attributes": 0,
+                "name": "SeSecurityPrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 9,
+                "attributes": 0,
+                "name": "SeTakeOwnershipPrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 10,
+                "attributes": 0,
+                "name": "SeLoadDriverPrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 11,
+                "attributes": 0,
+                "name": "SeSystemProfilePrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 12,
+                "attributes": 0,
+                "name": "SeSystemtimePrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 13,
+                "attributes": 0,
+                "name": "SeProfileSingleProcessPrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 14,
+                "attributes": 0,
+                "name": "SeIncreaseBasePriorityPrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 15,
+                "attributes": 0,
+                "name": "SeCreatePagefilePrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 17,
+                "attributes": 2,
+                "name": "SeBackupPrivilege",
+                "enabled": true
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 18,
+                "attributes": 2,
+                "name": "SeRestorePrivilege",
+                "enabled": true
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 19,
+                "attributes": 0,
+                "name": "SeShutdownPrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 20,
+                "attributes": 2,
+                "name": "SeDebugPrivilege",
+                "enabled": true
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 22,
+                "attributes": 0,
+                "name": "SeSystemEnvironmentPrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 23,
+                "attributes": 3,
+                "name": "SeChangeNotifyPrivilege",
+                "enabled": true
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 24,
+                "attributes": 0,
+                "name": "SeRemoteShutdownPrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 25,
+                "attributes": 0,
+                "name": "SeUndockPrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 28,
+                "attributes": 0,
+                "name": "SeManageVolumePrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 29,
+                "attributes": 3,
+                "name": "SeImpersonatePrivilege",
+                "enabled": true
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 30,
+                "attributes": 3,
+                "name": "SeCreateGlobalPrivilege",
+                "enabled": true
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 33,
+                "attributes": 0,
+                "name": "SeIncreaseWorkingSetPrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 34,
+                "attributes": 0,
+                "name": "SeTimeZonePrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 35,
+                "attributes": 0,
+                "name": "SeCreateSymbolicLinkPrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 36,
+                "attributes": 0,
+                "name": "SeDelegateSessionUserImpersonatePrivilege",
+                "enabled": false
+              }
+            ]
+          },
+          "is_thread": false
+        }
+      },
+      {
+        "phase": "rust_physical",
+        "line": 500,
+        "physical_line_utf8": {
+          "bytes": 720,
+          "sha256": "fa2e4194d3d92c83d9e8305516ff5e2aeec4865daebc1b3b6ecffec9037c725c",
+          "git_blob": "acbea19dadd985a5c07c96c48ff37a4f59199462"
+        },
+        "value": {
+          "subject": "ordinary-direct",
+          "operations": [
+            {
+              "read": "matrix-original",
+              "read_error": null,
+              "file_error": null,
+              "directory_error": null
+            },
+            {
+              "read": "matrix-original",
+              "read_error": null,
+              "file_error": null,
+              "directory_error": null
+            },
+            {
+              "read": "matrix-original",
+              "read_error": null,
+              "file_error": null,
+              "directory_error": null
+            },
+            {
+              "read": "matrix-original",
+              "read_error": null,
+              "file_error": null,
+              "directory_error": null
+            }
+          ],
+          "outcomes": [
+            {
+              "route": "Neither",
+              "file_deleted": true,
+              "directory_deleted": true
+            },
+            {
+              "route": "TargetOnly",
+              "file_deleted": true,
+              "directory_deleted": true
+            },
+            {
+              "route": "ParentOnly",
+              "file_deleted": true,
+              "directory_deleted": true
+            },
+            {
+              "route": "Both",
+              "file_deleted": true,
+              "directory_deleted": true
+            }
+          ]
+        }
+      },
+      {
+        "phase": "rust_before",
+        "line": 502,
+        "physical_line_utf8": {
+          "bytes": 3228,
+          "sha256": "096b7c1ee1a0a38ee4945d967860aa854f7e178c103aa3bc0453e3abe43c998a",
+          "git_blob": "c95042e1fb317eca28c86f1eacfa938874cf45ea"
+        },
+        "value": {
+          "subject": "ordinary-impersonated",
+          "token": {
+            "identity": {
+              "user": [
+                [
+                  1,
+                  5,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  5,
+                  21,
+                  0,
+                  0,
+                  0,
+                  38,
+                  102,
+                  22,
+                  196,
+                  141,
+                  93,
+                  22,
+                  93,
+                  238,
+                  38,
+                  80,
+                  89,
+                  244,
+                  1,
+                  0,
+                  0
+                ],
+                0
+              ],
+              "groups": [
+                [
+                  [
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  7
+                ],
+                [
+                  [
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    2,
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  7
+                ],
+                [
+                  [
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    2,
+                    1,
+                    0,
+                    0,
+                    0
+                  ],
+                  7
+                ],
+                [
+                  [
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    4,
+                    0,
+                    0,
+                    0
+                  ],
+                  7
+                ],
+                [
+                  [
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    11,
+                    0,
+                    0,
+                    0
+                  ],
+                  7
+                ],
+                [
+                  [
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    15,
+                    0,
+                    0,
+                    0
+                  ],
+                  7
+                ],
+                [
+                  [
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    113,
+                    0,
+                    0,
+                    0
+                  ],
+                  7
+                ],
+                [
+                  [
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    114,
+                    0,
+                    0,
+                    0
+                  ],
+                  7
+                ],
+                [
+                  [
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    16,
+                    0,
+                    48,
+                    0,
+                    0
+                  ],
+                  96
+                ],
+                [
+                  [
+                    1,
+                    2,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    32,
+                    0,
+                    0,
+                    0,
+                    32,
+                    2,
+                    0,
+                    0
+                  ],
+                  15
+                ],
+                [
+                  [
+                    1,
+                    2,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    32,
+                    0,
+                    0,
+                    0,
+                    33,
+                    2,
+                    0,
+                    0
+                  ],
+                  7
+                ],
+                [
+                  [
+                    1,
+                    2,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    64,
+                    0,
+                    0,
+                    0,
+                    10,
+                    0,
+                    0,
+                    0
+                  ],
+                  7
+                ],
+                [
+                  [
+                    1,
+                    3,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    5,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    88,
+                    70,
+                    11,
+                    0
+                  ],
+                  3221225479
+                ],
+                [
+                  [
+                    1,
+                    5,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    21,
+                    0,
+                    0,
+                    0,
+                    38,
+                    102,
+                    22,
+                    196,
+                    141,
+                    93,
+                    22,
+                    93,
+                    238,
+                    38,
+                    80,
+                    89,
+                    1,
+                    2,
+                    0,
+                    0
+                  ],
+                  7
+                ]
+              ],
+              "restricted_sids": [],
+              "integrity_and_policy": {
+                "integrity_rid": 12288,
+                "integrity_attributes": 96,
+                "mandatory_policy": 3
+              },
+              "session": 2,
+              "app_container": 0
+            },
+            "token_type": 2,
+            "impersonation_level": 2,
+            "privileges": [
+              {
+                "luid_high": 0,
+                "luid_low": 5,
+                "attributes": 0,
+                "name": "SeIncreaseQuotaPrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 8,
+                "attributes": 0,
+                "name": "SeSecurityPrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 9,
+                "attributes": 0,
+                "name": "SeTakeOwnershipPrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 10,
+                "attributes": 0,
+                "name": "SeLoadDriverPrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 11,
+                "attributes": 0,
+                "name": "SeSystemProfilePrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 12,
+                "attributes": 0,
+                "name": "SeSystemtimePrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 13,
+                "attributes": 0,
+                "name": "SeProfileSingleProcessPrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 14,
+                "attributes": 0,
+                "name": "SeIncreaseBasePriorityPrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 15,
+                "attributes": 0,
+                "name": "SeCreatePagefilePrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 17,
+                "attributes": 2,
+                "name": "SeBackupPrivilege",
+                "enabled": true
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 18,
+                "attributes": 2,
+                "name": "SeRestorePrivilege",
+                "enabled": true
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 19,
+                "attributes": 0,
+                "name": "SeShutdownPrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 20,
+                "attributes": 2,
+                "name": "SeDebugPrivilege",
+                "enabled": true
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 22,
+                "attributes": 0,
+                "name": "SeSystemEnvironmentPrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 23,
+                "attributes": 3,
+                "name": "SeChangeNotifyPrivilege",
+                "enabled": true
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 24,
+                "attributes": 0,
+                "name": "SeRemoteShutdownPrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 25,
+                "attributes": 0,
+                "name": "SeUndockPrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 28,
+                "attributes": 0,
+                "name": "SeManageVolumePrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 29,
+                "attributes": 3,
+                "name": "SeImpersonatePrivilege",
+                "enabled": true
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 30,
+                "attributes": 3,
+                "name": "SeCreateGlobalPrivilege",
+                "enabled": true
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 33,
+                "attributes": 0,
+                "name": "SeIncreaseWorkingSetPrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 34,
+                "attributes": 0,
+                "name": "SeTimeZonePrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 35,
+                "attributes": 0,
+                "name": "SeCreateSymbolicLinkPrivilege",
+                "enabled": false
+              },
+              {
+                "luid_high": 0,
+                "luid_low": 36,
+                "attributes": 0,
+                "name": "SeDelegateSessionUserImpersonatePrivilege",
+                "enabled": false
+              }
+            ]
+          },
+          "is_thread": true
+        }
+      },
+      {
+        "phase": "rust_physical",
+        "line": 504,
+        "physical_line_utf8": {
+          "bytes": 726,
+          "sha256": "ddbcc84eb37ee5d1267e8a97f060cad8daaf8e2d7c9391bdca30720ae7ebaf3a",
+          "git_blob": "f1b677b561f317179e8d5d1337a4fbbfc2d92fb6"
+        },
+        "value": {
+          "subject": "ordinary-impersonated",
+          "operations": [
+            {
+              "read": "matrix-original",
+              "read_error": null,
+              "file_error": null,
+              "directory_error": null
+            },
+            {
+              "read": "matrix-original",
+              "read_error": null,
+              "file_error": null,
+              "directory_error": null
+            },
+            {
+              "read": "matrix-original",
+              "read_error": null,
+              "file_error": null,
+              "directory_error": null
+            },
+            {
+              "read": "matrix-original",
+              "read_error": null,
+              "file_error": null,
+              "directory_error": null
+            }
+          ],
+          "outcomes": [
+            {
+              "route": "Neither",
+              "file_deleted": true,
+              "directory_deleted": true
+            },
+            {
+              "route": "TargetOnly",
+              "file_deleted": true,
+              "directory_deleted": true
+            },
+            {
+              "route": "ParentOnly",
+              "file_deleted": true,
+              "directory_deleted": true
+            },
+            {
+              "route": "Both",
+              "file_deleted": true,
+              "directory_deleted": true
+            }
+          ]
+        }
+      },
+      {
+        "phase": "rust_before",
+        "line": 506,
+        "physical_line_utf8": {
+          "bytes": 1057,
+          "sha256": "41a4f77c06afc57318c45537f3df23eac2c834288622a0477fc62ff45651673c",
+          "git_blob": "79d42d2257dbf131c1e8c3d8a2b471a263fa94c7"
+        },
+        "value": {
+          "subject": "disabled-impersonated",
+          "token": {
+            "identity": {
+              "user": [
+                [
+                  1,
+                  5,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  5,
+                  21,
+                  0,
+                  0,
+                  0,
+                  38,
+                  102,
+                  22,
+                  196,
+                  141,
+                  93,
+                  22,
+                  93,
+                  238,
+                  38,
+                  80,
+                  89,
+                  244,
+                  1,
+                  0,
+                  0
+                ],
+                0
+              ],
+              "groups": [
+                [
+                  [
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  7
+                ],
+                [
+                  [
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    2,
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  7
+                ],
+                [
+                  [
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    2,
+                    1,
+                    0,
+                    0,
+                    0
+                  ],
+                  7
+                ],
+                [
+                  [
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    4,
+                    0,
+                    0,
+                    0
+                  ],
+                  7
+                ],
+                [
+                  [
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    11,
+                    0,
+                    0,
+                    0
+                  ],
+                  7
+                ],
+                [
+                  [
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    15,
+                    0,
+                    0,
+                    0
+                  ],
+                  7
+                ],
+                [
+                  [
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    113,
+                    0,
+                    0,
+                    0
+                  ],
+                  7
+                ],
+                [
+                  [
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    114,
+                    0,
+                    0,
+                    0
+                  ],
+                  7
+                ],
+                [
+                  [
+                    1,
+                    1,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    16,
+                    0,
+                    48,
+                    0,
+                    0
+                  ],
+                  96
+                ],
+                [
+                  [
+                    1,
+                    2,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    32,
+                    0,
+                    0,
+                    0,
+                    32,
+                    2,
+                    0,
+                    0
+                  ],
+                  15
+                ],
+                [
+                  [
+                    1,
+                    2,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    32,
+                    0,
+                    0,
+                    0,
+                    33,
+                    2,
+                    0,
+                    0
+                  ],
+                  7
+                ],
+                [
+                  [
+                    1,
+                    2,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    64,
+                    0,
+                    0,
+                    0,
+                    10,
+                    0,
+                    0,
+                    0
+                  ],
+                  7
+                ],
+                [
+                  [
+                    1,
+                    3,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    5,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    88,
+                    70,
+                    11,
+                    0
+                  ],
+                  3221225479
+                ],
+                [
+                  [
+                    1,
+                    5,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    21,
+                    0,
+                    0,
+                    0,
+                    38,
+                    102,
+                    22,
+                    196,
+                    141,
+                    93,
+                    22,
+                    93,
+                    238,
+                    38,
+                    80,
+                    89,
+                    1,
+                    2,
+                    0,
+                    0
+                  ],
+                  7
+                ]
+              ],
+              "restricted_sids": [],
+              "integrity_and_policy": {
+                "integrity_rid": 12288,
+                "integrity_attributes": 96,
+                "mandatory_policy": 3
+              },
+              "session": 2,
+              "app_container": 0
+            },
+            "token_type": 2,
+            "impersonation_level": 2,
+            "privileges": [
+              {
+                "luid_high": 0,
+                "luid_low": 23,
+                "attributes": 3,
+                "name": "SeChangeNotifyPrivilege",
+                "enabled": true
+              }
+            ]
+          },
+          "is_thread": true
+        }
+      },
+      {
+        "phase": "rust_physical",
+        "line": 508,
+        "physical_line_utf8": {
+          "bytes": 822,
+          "sha256": "3082703511ce34edb14c790a6b019d508dd7a05203669464bbe6a1d0cf062801",
+          "git_blob": "98a754900a0e44de3b34cccf8c1986d310fa58e6"
+        },
+        "value": {
+          "subject": "disabled-impersonated",
+          "operations": [
+            {
+              "read": "matrix-original",
+              "read_error": null,
+              "file_error": {
+                "code": 5,
+                "error": "Access is denied. (os error 5)"
+              },
+              "directory_error": {
+                "code": 5,
+                "error": "Access is denied. (os error 5)"
+              }
+            },
+            {
+              "read": "matrix-original",
+              "read_error": null,
+              "file_error": null,
+              "directory_error": null
+            },
+            {
+              "read": "matrix-original",
+              "read_error": null,
+              "file_error": null,
+              "directory_error": null
+            },
+            {
+              "read": "matrix-original",
+              "read_error": null,
+              "file_error": null,
+              "directory_error": null
+            }
+          ],
+          "outcomes": [
+            {
+              "route": "Neither",
+              "file_deleted": false,
+              "directory_deleted": false
+            },
+            {
+              "route": "TargetOnly",
+              "file_deleted": true,
+              "directory_deleted": true
+            },
+            {
+              "route": "ParentOnly",
+              "file_deleted": true,
+              "directory_deleted": true
+            },
+            {
+              "route": "Both",
+              "file_deleted": true,
+              "directory_deleted": true
+            }
+          ]
+        }
+      }
+    ],
+    "parse_repairs": 0,
+    "full_identity_fields_equal": true,
+    "ordinary_enabled_privileges": [
+      "SeBackupPrivilege",
+      "SeRestorePrivilege",
+      "SeDebugPrivilege",
+      "SeChangeNotifyPrivilege",
+      "SeImpersonatePrivilege",
+      "SeCreateGlobalPrivilege"
+    ],
+    "disabled_enabled_privileges": [
+      "SeChangeNotifyPrivilege"
+    ],
+    "actual_thread_token_pairs_type_2_level_2": true,
+    "complete_retained_object_rows": [
+      {
+        "subject": "ordinary-direct",
+        "relative": "Neither/file",
+        "identity": [
+          1723665134,
+          1638400,
+          98263
+        ],
+        "directory": 0,
+        "pending": 1,
+        "links": 0,
+        "ACL_hex": "0200300002000000010014000000010001010000000000010000000000001400ff011e00010100000000000100000000",
+        "line": 619
+      },
+      {
+        "subject": "ordinary-direct",
+        "relative": "Neither/directory",
+        "identity": [
+          1723665134,
+          2097152,
+          98264
+        ],
+        "directory": 1,
+        "pending": 1,
+        "links": 0,
+        "ACL_hex": "0200300002000000010014000000010001010000000000010000000000001400ff011e00010100000000000100000000",
+        "line": 620
+      },
+      {
+        "subject": "ordinary-direct",
+        "relative": "Neither",
+        "identity": [
+          1723665134,
+          1900544,
+          98261
+        ],
+        "directory": 1,
+        "pending": 0,
+        "links": 1,
+        "ACL_hex": "0200300002000000010014004000000001010000000000010000000000001400bf011f00010100000000000100000000",
+        "line": 621
+      },
+      {
+        "subject": "ordinary-direct",
+        "relative": "TargetOnly/file",
+        "identity": [
+          1723665134,
+          1638400,
+          98266
+        ],
+        "directory": 0,
+        "pending": 1,
+        "links": 0,
+        "ACL_hex": "02001c000100000000001400ff011f00010100000000000100000000",
+        "line": 622
+      },
+      {
+        "subject": "ordinary-direct",
+        "relative": "TargetOnly/directory",
+        "identity": [
+          1723665134,
+          1835008,
+          98267
+        ],
+        "directory": 1,
+        "pending": 1,
+        "links": 0,
+        "ACL_hex": "02001c000100000000001400ff011f00010100000000000100000000",
+        "line": 623
+      },
+      {
+        "subject": "ordinary-direct",
+        "relative": "TargetOnly",
+        "identity": [
+          1723665134,
+          917504,
+          98265
+        ],
+        "directory": 1,
+        "pending": 0,
+        "links": 1,
+        "ACL_hex": "0200300002000000010014004000000001010000000000010000000000001400bf011f00010100000000000100000000",
+        "line": 624
+      },
+      {
+        "subject": "ordinary-direct",
+        "relative": "ParentOnly/file",
+        "identity": [
+          1723665134,
+          983040,
+          98270
+        ],
+        "directory": 0,
+        "pending": 1,
+        "links": 0,
+        "ACL_hex": "0200300002000000010014000000010001010000000000010000000000001400ff011e00010100000000000100000000",
+        "line": 625
+      },
+      {
+        "subject": "ordinary-direct",
+        "relative": "ParentOnly/directory",
+        "identity": [
+          1723665134,
+          917504,
+          98271
+        ],
+        "directory": 1,
+        "pending": 1,
+        "links": 0,
+        "ACL_hex": "0200300002000000010014000000010001010000000000010000000000001400ff011e00010100000000000100000000",
+        "line": 626
+      },
+      {
+        "subject": "ordinary-direct",
+        "relative": "ParentOnly",
+        "identity": [
+          1723665134,
+          1179648,
+          98268
+        ],
+        "directory": 1,
+        "pending": 0,
+        "links": 1,
+        "ACL_hex": "02001c000100000000001400ff011f00010100000000000100000000",
+        "line": 627
+      },
+      {
+        "subject": "ordinary-direct",
+        "relative": "Both/file",
+        "identity": [
+          1723665134,
+          720896,
+          98273
+        ],
+        "directory": 0,
+        "pending": 1,
+        "links": 0,
+        "ACL_hex": "02001c000100000000001400ff011f00010100000000000100000000",
+        "line": 628
+      },
+      {
+        "subject": "ordinary-direct",
+        "relative": "Both/directory",
+        "identity": [
+          1723665134,
+          983040,
+          98274
+        ],
+        "directory": 1,
+        "pending": 1,
+        "links": 0,
+        "ACL_hex": "02001c000100000000001400ff011f00010100000000000100000000",
+        "line": 629
+      },
+      {
+        "subject": "ordinary-direct",
+        "relative": "Both",
+        "identity": [
+          1723665134,
+          851968,
+          98272
+        ],
+        "directory": 1,
+        "pending": 0,
+        "links": 1,
+        "ACL_hex": "02001c000100000000001400ff011f00010100000000000100000000",
+        "line": 630
+      },
+      {
+        "subject": "ordinary-impersonated",
+        "relative": "Neither/file",
+        "identity": [
+          1723665134,
+          393216,
+          98279
+        ],
+        "directory": 0,
+        "pending": 1,
+        "links": 0,
+        "ACL_hex": "0200300002000000010014000000010001010000000000010000000000001400ff011e00010100000000000100000000",
+        "line": 632
+      },
+      {
+        "subject": "ordinary-impersonated",
+        "relative": "Neither/directory",
+        "identity": [
+          1723665134,
+          327680,
+          98280
+        ],
+        "directory": 1,
+        "pending": 1,
+        "links": 0,
+        "ACL_hex": "0200300002000000010014000000010001010000000000010000000000001400ff011e00010100000000000100000000",
+        "line": 633
+      },
+      {
+        "subject": "ordinary-impersonated",
+        "relative": "Neither",
+        "identity": [
+          1723665134,
+          655360,
+          98277
+        ],
+        "directory": 1,
+        "pending": 0,
+        "links": 1,
+        "ACL_hex": "0200300002000000010014004000000001010000000000010000000000001400bf011f00010100000000000100000000",
+        "line": 634
+      },
+      {
+        "subject": "ordinary-impersonated",
+        "relative": "TargetOnly/file",
+        "identity": [
+          1723665134,
+          393216,
+          98282
+        ],
+        "directory": 0,
+        "pending": 1,
+        "links": 0,
+        "ACL_hex": "02001c000100000000001400ff011f00010100000000000100000000",
+        "line": 635
+      },
+      {
+        "subject": "ordinary-impersonated",
+        "relative": "TargetOnly/directory",
+        "identity": [
+          1723665134,
+          262144,
+          98283
+        ],
+        "directory": 1,
+        "pending": 1,
+        "links": 0,
+        "ACL_hex": "02001c000100000000001400ff011f00010100000000000100000000",
+        "line": 636
+      },
+      {
+        "subject": "ordinary-impersonated",
+        "relative": "TargetOnly",
+        "identity": [
+          1723665134,
+          327680,
+          98281
+        ],
+        "directory": 1,
+        "pending": 0,
+        "links": 1,
+        "ACL_hex": "0200300002000000010014004000000001010000000000010000000000001400bf011f00010100000000000100000000",
+        "line": 637
+      },
+      {
+        "subject": "ordinary-impersonated",
+        "relative": "ParentOnly/file",
+        "identity": [
+          1723665134,
+          327680,
+          98285
+        ],
+        "directory": 0,
+        "pending": 1,
+        "links": 0,
+        "ACL_hex": "0200300002000000010014000000010001010000000000010000000000001400ff011e00010100000000000100000000",
+        "line": 638
+      },
+      {
+        "subject": "ordinary-impersonated",
+        "relative": "ParentOnly/directory",
+        "identity": [
+          1723665134,
+          196608,
+          98286
+        ],
+        "directory": 1,
+        "pending": 1,
+        "links": 0,
+        "ACL_hex": "0200300002000000010014000000010001010000000000010000000000001400ff011e00010100000000000100000000",
+        "line": 639
+      },
+      {
+        "subject": "ordinary-impersonated",
+        "relative": "ParentOnly",
+        "identity": [
+          1723665134,
+          393216,
+          98284
+        ],
+        "directory": 1,
+        "pending": 0,
+        "links": 1,
+        "ACL_hex": "02001c000100000000001400ff011f00010100000000000100000000",
+        "line": 640
+      },
+      {
+        "subject": "ordinary-impersonated",
+        "relative": "Both/file",
+        "identity": [
+          1723665134,
+          196608,
+          98288
+        ],
+        "directory": 0,
+        "pending": 1,
+        "links": 0,
+        "ACL_hex": "02001c000100000000001400ff011f00010100000000000100000000",
+        "line": 641
+      },
+      {
+        "subject": "ordinary-impersonated",
+        "relative": "Both/directory",
+        "identity": [
+          1723665134,
+          196608,
+          98317
+        ],
+        "directory": 1,
+        "pending": 1,
+        "links": 0,
+        "ACL_hex": "02001c000100000000001400ff011f00010100000000000100000000",
+        "line": 642
+      },
+      {
+        "subject": "ordinary-impersonated",
+        "relative": "Both",
+        "identity": [
+          1723665134,
+          262144,
+          98287
+        ],
+        "directory": 1,
+        "pending": 0,
+        "links": 1,
+        "ACL_hex": "02001c000100000000001400ff011f00010100000000000100000000",
+        "line": 643
+      },
+      {
+        "subject": "disabled-impersonated",
+        "relative": "Neither/file",
+        "identity": [
+          1723665134,
+          131072,
+          98331
+        ],
+        "directory": 0,
+        "pending": 0,
+        "links": 1,
+        "ACL_hex": "0200300002000000010014000000010001010000000000010000000000001400ff011e00010100000000000100000000",
+        "line": 645
+      },
+      {
+        "subject": "disabled-impersonated",
+        "relative": "Neither/directory",
+        "identity": [
+          1723665134,
+          131072,
+          98332
+        ],
+        "directory": 1,
+        "pending": 0,
+        "links": 1,
+        "ACL_hex": "0200300002000000010014000000010001010000000000010000000000001400ff011e00010100000000000100000000",
+        "line": 646
+      },
+      {
+        "subject": "disabled-impersonated",
+        "relative": "Neither",
+        "identity": [
+          1723665134,
+          131072,
+          98330
+        ],
+        "directory": 1,
+        "pending": 0,
+        "links": 1,
+        "ACL_hex": "0200300002000000010014004000000001010000000000010000000000001400bf011f00010100000000000100000000",
+        "line": 647
+      },
+      {
+        "subject": "disabled-impersonated",
+        "relative": "TargetOnly/file",
+        "identity": [
+          1723665134,
+          196608,
+          98334
+        ],
+        "directory": 0,
+        "pending": 1,
+        "links": 0,
+        "ACL_hex": "02001c000100000000001400ff011f00010100000000000100000000",
+        "line": 648
+      },
+      {
+        "subject": "disabled-impersonated",
+        "relative": "TargetOnly/directory",
+        "identity": [
+          1723665134,
+          131072,
+          98335
+        ],
+        "directory": 1,
+        "pending": 1,
+        "links": 0,
+        "ACL_hex": "02001c000100000000001400ff011f00010100000000000100000000",
+        "line": 649
+      },
+      {
+        "subject": "disabled-impersonated",
+        "relative": "TargetOnly",
+        "identity": [
+          1723665134,
+          196608,
+          98333
+        ],
+        "directory": 1,
+        "pending": 0,
+        "links": 1,
+        "ACL_hex": "0200300002000000010014004000000001010000000000010000000000001400bf011f00010100000000000100000000",
+        "line": 650
+      },
+      {
+        "subject": "disabled-impersonated",
+        "relative": "ParentOnly/file",
+        "identity": [
+          1723665134,
+          131072,
+          98337
+        ],
+        "directory": 0,
+        "pending": 1,
+        "links": 0,
+        "ACL_hex": "0200300002000000010014000000010001010000000000010000000000001400ff011e00010100000000000100000000",
+        "line": 651
+      },
+      {
+        "subject": "disabled-impersonated",
+        "relative": "ParentOnly/directory",
+        "identity": [
+          1723665134,
+          196608,
+          98338
+        ],
+        "directory": 1,
+        "pending": 1,
+        "links": 0,
+        "ACL_hex": "0200300002000000010014000000010001010000000000010000000000001400ff011e00010100000000000100000000",
+        "line": 652
+      },
+      {
+        "subject": "disabled-impersonated",
+        "relative": "ParentOnly",
+        "identity": [
+          1723665134,
+          131072,
+          98336
+        ],
+        "directory": 1,
+        "pending": 0,
+        "links": 1,
+        "ACL_hex": "02001c000100000000001400ff011f00010100000000000100000000",
+        "line": 653
+      },
+      {
+        "subject": "disabled-impersonated",
+        "relative": "Both/file",
+        "identity": [
+          1723665134,
+          131072,
+          98340
+        ],
+        "directory": 0,
+        "pending": 1,
+        "links": 0,
+        "ACL_hex": "02001c000100000000001400ff011f00010100000000000100000000",
+        "line": 654
+      },
+      {
+        "subject": "disabled-impersonated",
+        "relative": "Both/directory",
+        "identity": [
+          1723665134,
+          196608,
+          98341
+        ],
+        "directory": 1,
+        "pending": 1,
+        "links": 0,
+        "ACL_hex": "02001c000100000000001400ff011f00010100000000000100000000",
+        "line": 655
+      },
+      {
+        "subject": "disabled-impersonated",
+        "relative": "Both",
+        "identity": [
+          1723665134,
+          196608,
+          98339
+        ],
+        "directory": 1,
+        "pending": 0,
+        "links": 1,
+        "ACL_hex": "02001c000100000000001400ff011f00010100000000000100000000",
+        "line": 656
+      }
+    ],
+    "three_separate_cohorts_have_equal_actual_ACL_bytes_and_distinct_retained_identities": true,
+    "Rust_Neither_outcome_changes_with_all_privilege_filter_intervention": true,
+    "single_SeRestore_causality_demonstrated": false,
+    "cmd_phase_markers": {
+      "child_before_release": 0,
+      "child_finished": 0,
+      "cmd_physical": 0,
+      "complete": 0
+    },
+    "cmd_pair_and_owned_Job_cleanup_qualified": false,
+    "cmd_stop": "Existing process backend rejects the unrestricted-token launch precondition; Error 122 occurs before child creation. No cmd result is inferred.",
+    "limits": [
+      "Different ACL-equivalent fixtures, not reuse of one object across subjects.",
+      "Only three Rust cohorts completed; full observation test failed.",
+      "All-privilege filtering does not isolate any one privilege.",
+      "Strict sandbox outside-effects assertions remain failures."
+    ]
+  },
+  "positives": [
+    {
+      "case": "acl::tests::deny_repair_rejects_a_replaced_path_before_mutating_either_object",
+      "pair": {
+        "member": "b11-token-mechanism-probe/acl-identity-counterfactual/positive-01/bazel-execution-logs/selected-target-test-logs/invocation-1q_on4o5/targets/0000/test.log",
+        "raw": {
+          "bytes": 574,
+          "sha256": "50293fd5bde99827d63a32d5283c3b26e74645c2dc9a28c46474c57236389162",
+          "git_blob": "c44eece675aa44a0a6fa682413bfbb9de3829d25"
+        },
+        "XML": {
+          "bytes": 945,
+          "sha256": "70cb3dfa6e513573529e4a172d51c070afddac22820fe854d49af195e7ff5dbc",
+          "git_blob": "88efeda2ec83de43a34949212c5bc60221e4fd51"
+        },
+        "original_ESC_count": 0,
+        "original_CR_count": 0,
+        "XML_entire_system_out_matches_after_only_XML_newline_and_ESC_serialization": true,
+        "XML_outer_case": {
+          "name": "codex-rs\\windows-sandbox-rs\\windows-sandbox-rs-unit-tests.bat",
+          "classname": "",
+          "status": "run",
+          "duration": "0",
+          "time": "0"
+        },
+        "expected_error": null
+      },
+      "command": {
+        "argv": [
+          "C:\\Program Files\\Git\\usr\\bin\\bash.exe",
+          "./.github/scripts/run-bazel-ci.sh",
+          "--print-failed-action-summary",
+          "--print-failed-test-logs",
+          "--windows-msvc-host-platform",
+          "--remote-download-toplevel",
+          "--",
+          "test",
+          "--platforms=//:windows_x86_64_msvc",
+          "--skip_incompatible_explicit_targets",
+          "--test_tag_filters=-argument-comment-lint",
+          "--test_verbose_timeout_warnings",
+          "--test_output=all",
+          "--build_metadata=COMMIT_SHA=53766cb836b198e2f928b949f148d7a2a10c0d21",
+          "--build_metadata=TAG_b11_observation_only=true",
+          "--build_metadata=TAG_b11_identity_positive=true",
+          "--nocache_test_results",
+          "--flaky_test_attempts=1",
+          "--test_arg=acl::tests::deny_repair_rejects_a_replaced_path_before_mutating_either_object",
+          "--test_arg=--exact",
+          "--",
+          "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests"
+        ],
+        "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci",
+        "case": "acl::tests::deny_repair_rejects_a_replaced_path_before_mutating_either_object",
+        "source": {
+          "head": "53766cb836b198e2f928b949f148d7a2a10c0d21",
+          "head_tree": "9cb7302777ce018dd022086041c2225d1dd5c8dd",
+          "source": {
+            "bytes": 10467,
+            "sha256": "bf5f2fb50fcabfcc62d3835fd7cd985d62a7574d581a55c150365073c5aa7f81",
+            "git_blob": "567ad0ac13e4ae8f2d6231dd7d94234428eccc8d"
+          },
+          "source_canonical_git_blob": "da5346c220c41cf0c83f62b596132c74c02284d8",
+          "tests": {
+            "bytes": 23872,
+            "sha256": "31ce6a5cb26739f3292d26d1be42929a52af46a505df19ed1a75311e21d760cb",
+            "git_blob": "3061b3f3034eb388f613c44756dbec80a2b3b570"
+          },
+          "status": [],
+          "index_entries": {
+            "bytes": 1184054,
+            "sha256": "e3aa7ea2636573aced0cc24af11c3aa8d88cb9471c13ff7260c89a29ecd17c54",
+            "git_blob": "475bdc189f12c9f0e0ed3baa51ea9cd52ba7f56f"
+          },
+          "locks": {
+            "codex-rs/Cargo.lock": {
+              "bytes": 432254,
+              "sha256": "e0d6c75b8e46cbf3c8df62ca98d653144b796238be165155e1a2796cf372a49e",
+              "git_blob": "5023778e8442419c93b0c80d1e28695556817f5d"
+            },
+            "MODULE.bazel.lock": {
+              "bytes": 1740955,
+              "sha256": "97f844724549757398c7834f5818d6244819b129658bdaa8453008dc694bbfc4",
+              "git_blob": "f8999d38e9add55812237878f9030d1c1e25b59d"
+            }
+          }
+        },
+        "scope": "One exact original positive, once; the whole-target result is retained."
+      },
+      "terminal": {
+        "exit_code": 0,
+        "elapsed_seconds": 25.09400000000005
+      }
+    },
+    {
+      "case": "acl::tests::existing_native_deny_does_not_require_write_dac",
+      "pair": {
+        "member": "b11-token-mechanism-probe/acl-identity-counterfactual/positive-02/bazel-execution-logs/selected-target-test-logs/invocation-czx5nu4c/targets/0000/test.log",
+        "raw": {
+          "bytes": 345,
+          "sha256": "8b956b8090d424edd28f45f57631639363559f80f0e9b58fa8253edcb0a38791",
+          "git_blob": "9768c926f34f6c7130f98e070b7f6b4cb95d55e1"
+        },
+        "XML": {
+          "bytes": 716,
+          "sha256": "cf4e45d14b83db8787f04d501148a1ac813f9d3f90a6531de7bfd1265d1fe5d0",
+          "git_blob": "411b244733894cad3fe812bc419ae65126191d27"
+        },
+        "original_ESC_count": 0,
+        "original_CR_count": 0,
+        "XML_entire_system_out_matches_after_only_XML_newline_and_ESC_serialization": true,
+        "XML_outer_case": {
+          "name": "codex-rs\\windows-sandbox-rs\\windows-sandbox-rs-unit-tests.bat",
+          "classname": "",
+          "status": "run",
+          "duration": "0",
+          "time": "0"
+        },
+        "expected_error": null
+      },
+      "command": {
+        "argv": [
+          "C:\\Program Files\\Git\\usr\\bin\\bash.exe",
+          "./.github/scripts/run-bazel-ci.sh",
+          "--print-failed-action-summary",
+          "--print-failed-test-logs",
+          "--windows-msvc-host-platform",
+          "--remote-download-toplevel",
+          "--",
+          "test",
+          "--platforms=//:windows_x86_64_msvc",
+          "--skip_incompatible_explicit_targets",
+          "--test_tag_filters=-argument-comment-lint",
+          "--test_verbose_timeout_warnings",
+          "--test_output=all",
+          "--build_metadata=COMMIT_SHA=53766cb836b198e2f928b949f148d7a2a10c0d21",
+          "--build_metadata=TAG_b11_observation_only=true",
+          "--build_metadata=TAG_b11_identity_positive=true",
+          "--nocache_test_results",
+          "--flaky_test_attempts=1",
+          "--test_arg=acl::tests::existing_native_deny_does_not_require_write_dac",
+          "--test_arg=--exact",
+          "--",
+          "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests"
+        ],
+        "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci",
+        "case": "acl::tests::existing_native_deny_does_not_require_write_dac",
+        "source": {
+          "head": "53766cb836b198e2f928b949f148d7a2a10c0d21",
+          "head_tree": "9cb7302777ce018dd022086041c2225d1dd5c8dd",
+          "source": {
+            "bytes": 10467,
+            "sha256": "bf5f2fb50fcabfcc62d3835fd7cd985d62a7574d581a55c150365073c5aa7f81",
+            "git_blob": "567ad0ac13e4ae8f2d6231dd7d94234428eccc8d"
+          },
+          "source_canonical_git_blob": "da5346c220c41cf0c83f62b596132c74c02284d8",
+          "tests": {
+            "bytes": 23872,
+            "sha256": "31ce6a5cb26739f3292d26d1be42929a52af46a505df19ed1a75311e21d760cb",
+            "git_blob": "3061b3f3034eb388f613c44756dbec80a2b3b570"
+          },
+          "status": [],
+          "index_entries": {
+            "bytes": 1184054,
+            "sha256": "e3aa7ea2636573aced0cc24af11c3aa8d88cb9471c13ff7260c89a29ecd17c54",
+            "git_blob": "475bdc189f12c9f0e0ed3baa51ea9cd52ba7f56f"
+          },
+          "locks": {
+            "codex-rs/Cargo.lock": {
+              "bytes": 432254,
+              "sha256": "e0d6c75b8e46cbf3c8df62ca98d653144b796238be165155e1a2796cf372a49e",
+              "git_blob": "5023778e8442419c93b0c80d1e28695556817f5d"
+            },
+            "MODULE.bazel.lock": {
+              "bytes": 1740955,
+              "sha256": "97f844724549757398c7834f5818d6244819b129658bdaa8453008dc694bbfc4",
+              "git_blob": "f8999d38e9add55812237878f9030d1c1e25b59d"
+            }
+          }
+        },
+        "scope": "One exact original positive, once; the whole-target result is retained."
+      },
+      "terminal": {
+        "exit_code": 0,
+        "elapsed_seconds": 15.094000000000051
+      }
+    },
+    {
+      "case": "acl::tests::native_file_and_directory_repairs_are_idempotent_for_read_and_write",
+      "pair": {
+        "member": "b11-token-mechanism-probe/acl-identity-counterfactual/positive-03/bazel-execution-logs/selected-target-test-logs/invocation-m2ixp_hw/targets/0000/test.log",
+        "raw": {
+          "bytes": 365,
+          "sha256": "66c15b250e06fd152ccba60dabbf992e2295d2abb32126f625e73da51b96bf78",
+          "git_blob": "b6f2f9e7ca05eba4b58a460a4dacd83bf5353ef0"
+        },
+        "XML": {
+          "bytes": 736,
+          "sha256": "ebab1c23349c04966166b1980e0bb4dcc41ca9f3ee1b7977312a58437f82c4c3",
+          "git_blob": "8f90dceb41c7f99ec351fb00836f19de19306e9c"
+        },
+        "original_ESC_count": 0,
+        "original_CR_count": 0,
+        "XML_entire_system_out_matches_after_only_XML_newline_and_ESC_serialization": true,
+        "XML_outer_case": {
+          "name": "codex-rs\\windows-sandbox-rs\\windows-sandbox-rs-unit-tests.bat",
+          "classname": "",
+          "status": "run",
+          "duration": "0",
+          "time": "0"
+        },
+        "expected_error": null
+      },
+      "command": {
+        "argv": [
+          "C:\\Program Files\\Git\\usr\\bin\\bash.exe",
+          "./.github/scripts/run-bazel-ci.sh",
+          "--print-failed-action-summary",
+          "--print-failed-test-logs",
+          "--windows-msvc-host-platform",
+          "--remote-download-toplevel",
+          "--",
+          "test",
+          "--platforms=//:windows_x86_64_msvc",
+          "--skip_incompatible_explicit_targets",
+          "--test_tag_filters=-argument-comment-lint",
+          "--test_verbose_timeout_warnings",
+          "--test_output=all",
+          "--build_metadata=COMMIT_SHA=53766cb836b198e2f928b949f148d7a2a10c0d21",
+          "--build_metadata=TAG_b11_observation_only=true",
+          "--build_metadata=TAG_b11_identity_positive=true",
+          "--nocache_test_results",
+          "--flaky_test_attempts=1",
+          "--test_arg=acl::tests::native_file_and_directory_repairs_are_idempotent_for_read_and_write",
+          "--test_arg=--exact",
+          "--",
+          "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests"
+        ],
+        "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci",
+        "case": "acl::tests::native_file_and_directory_repairs_are_idempotent_for_read_and_write",
+        "source": {
+          "head": "53766cb836b198e2f928b949f148d7a2a10c0d21",
+          "head_tree": "9cb7302777ce018dd022086041c2225d1dd5c8dd",
+          "source": {
+            "bytes": 10467,
+            "sha256": "bf5f2fb50fcabfcc62d3835fd7cd985d62a7574d581a55c150365073c5aa7f81",
+            "git_blob": "567ad0ac13e4ae8f2d6231dd7d94234428eccc8d"
+          },
+          "source_canonical_git_blob": "da5346c220c41cf0c83f62b596132c74c02284d8",
+          "tests": {
+            "bytes": 23872,
+            "sha256": "31ce6a5cb26739f3292d26d1be42929a52af46a505df19ed1a75311e21d760cb",
+            "git_blob": "3061b3f3034eb388f613c44756dbec80a2b3b570"
+          },
+          "status": [],
+          "index_entries": {
+            "bytes": 1184054,
+            "sha256": "e3aa7ea2636573aced0cc24af11c3aa8d88cb9471c13ff7260c89a29ecd17c54",
+            "git_blob": "475bdc189f12c9f0e0ed3baa51ea9cd52ba7f56f"
+          },
+          "locks": {
+            "codex-rs/Cargo.lock": {
+              "bytes": 432254,
+              "sha256": "e0d6c75b8e46cbf3c8df62ca98d653144b796238be165155e1a2796cf372a49e",
+              "git_blob": "5023778e8442419c93b0c80d1e28695556817f5d"
+            },
+            "MODULE.bazel.lock": {
+              "bytes": 1740955,
+              "sha256": "97f844724549757398c7834f5818d6244819b129658bdaa8453008dc694bbfc4",
+              "git_blob": "f8999d38e9add55812237878f9030d1c1e25b59d"
+            }
+          }
+        },
+        "scope": "One exact original positive, once; the whole-target result is retained."
+      },
+      "terminal": {
+        "exit_code": 0,
+        "elapsed_seconds": 13.452999999999975
+      }
+    },
+    {
+      "case": "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes",
+      "pair": {
+        "member": "b11-token-mechanism-probe/acl-identity-counterfactual/positive-04/bazel-execution-logs/selected-target-test-logs/invocation-ivnv0jri/targets/0000/test.log",
+        "raw": {
+          "bytes": 16871,
+          "sha256": "9b54e484c6563d6228a2765c53adba2db0d3f91639d9445da0d4729c201e120b",
+          "git_blob": "6eb84e80720697daac24b9ae52b9cfd6b8ec4296"
+        },
+        "XML": {
+          "bytes": 17242,
+          "sha256": "708747e252906eadfcfa1208622718cb0fde1eba1fea23f33656f637f846aebe",
+          "git_blob": "ee09c63a3fdd4e8f84d5ef7e338319762b1b09e5"
+        },
+        "original_ESC_count": 0,
+        "original_CR_count": 0,
+        "XML_entire_system_out_matches_after_only_XML_newline_and_ESC_serialization": true,
+        "XML_outer_case": {
+          "name": "codex-rs\\windows-sandbox-rs\\windows-sandbox-rs-unit-tests.bat",
+          "classname": "",
+          "status": "run",
+          "duration": "0",
+          "time": "0"
+        },
+        "expected_error": null
+      },
+      "command": {
+        "argv": [
+          "C:\\Program Files\\Git\\usr\\bin\\bash.exe",
+          "./.github/scripts/run-bazel-ci.sh",
+          "--print-failed-action-summary",
+          "--print-failed-test-logs",
+          "--windows-msvc-host-platform",
+          "--remote-download-toplevel",
+          "--",
+          "test",
+          "--platforms=//:windows_x86_64_msvc",
+          "--skip_incompatible_explicit_targets",
+          "--test_tag_filters=-argument-comment-lint",
+          "--test_verbose_timeout_warnings",
+          "--test_output=all",
+          "--build_metadata=COMMIT_SHA=53766cb836b198e2f928b949f148d7a2a10c0d21",
+          "--build_metadata=TAG_b11_observation_only=true",
+          "--build_metadata=TAG_b11_identity_positive=true",
+          "--nocache_test_results",
+          "--flaky_test_attempts=1",
+          "--test_arg=token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes",
+          "--test_arg=--exact",
+          "--",
+          "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests"
+        ],
+        "cwd": "D:\\a\\hepta-private-ci\\hepta-private-ci",
+        "case": "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes",
+        "source": {
+          "head": "53766cb836b198e2f928b949f148d7a2a10c0d21",
+          "head_tree": "9cb7302777ce018dd022086041c2225d1dd5c8dd",
+          "source": {
+            "bytes": 10467,
+            "sha256": "bf5f2fb50fcabfcc62d3835fd7cd985d62a7574d581a55c150365073c5aa7f81",
+            "git_blob": "567ad0ac13e4ae8f2d6231dd7d94234428eccc8d"
+          },
+          "source_canonical_git_blob": "da5346c220c41cf0c83f62b596132c74c02284d8",
+          "tests": {
+            "bytes": 23872,
+            "sha256": "31ce6a5cb26739f3292d26d1be42929a52af46a505df19ed1a75311e21d760cb",
+            "git_blob": "3061b3f3034eb388f613c44756dbec80a2b3b570"
+          },
+          "status": [],
+          "index_entries": {
+            "bytes": 1184054,
+            "sha256": "e3aa7ea2636573aced0cc24af11c3aa8d88cb9471c13ff7260c89a29ecd17c54",
+            "git_blob": "475bdc189f12c9f0e0ed3baa51ea9cd52ba7f56f"
+          },
+          "locks": {
+            "codex-rs/Cargo.lock": {
+              "bytes": 432254,
+              "sha256": "e0d6c75b8e46cbf3c8df62ca98d653144b796238be165155e1a2796cf372a49e",
+              "git_blob": "5023778e8442419c93b0c80d1e28695556817f5d"
+            },
+            "MODULE.bazel.lock": {
+              "bytes": 1740955,
+              "sha256": "97f844724549757398c7834f5818d6244819b129658bdaa8453008dc694bbfc4",
+              "git_blob": "f8999d38e9add55812237878f9030d1c1e25b59d"
+            }
+          }
+        },
+        "scope": "One exact original positive, once; the whole-target result is retained."
+      },
+      "terminal": {
+        "exit_code": 0,
+        "elapsed_seconds": 13.156000000000063
+      }
+    }
+  ],
+  "negative_pair": {
+    "member": "b11-token-mechanism-probe/acl-identity-counterfactual/bazel-execution-logs/failed-test-logs/invocation-sydr__gm/targets/0000/test.log",
+    "raw": {
+      "bytes": 2793,
+      "sha256": "b820cc7c356302aa2932e749e50c14f20d30fcb9e9b445df0f6f742b0a1709ef",
+      "git_blob": "c5c176473e8db95e93a744af49cbb367ae7076f3"
+    },
+    "XML": {
+      "bytes": 3216,
+      "sha256": "db944437ab22b47fb1647c64c2efaa593bd2eb83f3ae1470d672c1a03bc2cea5",
+      "git_blob": "ea8d876c893b6705abd946cc136e459375414dc0"
+    },
+    "original_ESC_count": 102,
+    "original_CR_count": 0,
+    "XML_entire_system_out_matches_after_only_XML_newline_and_ESC_serialization": true,
+    "XML_outer_case": {
+      "name": "codex-rs\\windows-sandbox-rs\\windows-sandbox-rs-unit-tests.bat",
+      "classname": "",
+      "status": "run",
+      "duration": "0",
+      "time": "0"
+    },
+    "expected_error": "exited with error code 101"
+  },
+  "physical_negative_marker": "deny_repair_identity: directory=false returned_ok=true replacement_changed=true original_changed=false",
+  "negative_assertion": "acl_tests.rs:597:9",
+  "negative_XML_exit": 101,
+  "negative_Bazel_exit": 3,
+  "counterfactual_terminal": {
+    "status": "VALID_NEGATIVE_AND_EXACT_RESTORE",
+    "physical_counterfactual_qualified": true,
+    "physical_oracle_reached": true,
+    "product_B11": "OPEN",
+    "restored_exact_original_bytes": true,
+    "positive_scopes": [
+      {
+        "case": "acl::tests::deny_repair_rejects_a_replaced_path_before_mutating_either_object",
+        "status": "EXACT_POSITIVE_QUALIFIED",
+        "attempts": 1,
+        "target_summary": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests              PASSED in 0.1s",
+        "collector_manifest": {
+          "path": "D:\\a\\_temp\\b11-token-mechanism-probe\\acl-identity-counterfactual\\positive-01\\bazel-execution-logs\\selected-target-test-logs\\invocation-1q_on4o5\\manifest.json",
+          "bytes": 5077,
+          "sha256": "7dec47026daf2b01d98c51720d8d1ef6089a45c0cb807c486252ab6ce33f7903",
+          "git_blob": "7b7b50c3418ca8e3e15b8d942945e17684cd7e64"
+        },
+        "files": {
+          ".log": {
+            "path": "D:\\a\\_temp\\b11-token-mechanism-probe\\acl-identity-counterfactual\\positive-01\\bazel-execution-logs\\selected-target-test-logs\\invocation-1q_on4o5\\targets\\0000\\test.log",
+            "bytes": 574,
+            "sha256": "50293fd5bde99827d63a32d5283c3b26e74645c2dc9a28c46474c57236389162",
+            "git_blob": "c44eece675aa44a0a6fa682413bfbb9de3829d25"
+          },
+          ".xml": {
+            "path": "D:\\a\\_temp\\b11-token-mechanism-probe\\acl-identity-counterfactual\\positive-01\\bazel-execution-logs\\selected-target-test-logs\\invocation-1q_on4o5\\targets\\0000\\test.xml",
+            "bytes": 945,
+            "sha256": "70cb3dfa6e513573529e4a172d51c070afddac22820fe854d49af195e7ff5dbc",
+            "git_blob": "88efeda2ec83de43a34949212c5bc60221e4fd51"
+          }
+        },
+        "source": {
+          "head": "53766cb836b198e2f928b949f148d7a2a10c0d21",
+          "head_tree": "9cb7302777ce018dd022086041c2225d1dd5c8dd",
+          "source": {
+            "bytes": 10467,
+            "sha256": "bf5f2fb50fcabfcc62d3835fd7cd985d62a7574d581a55c150365073c5aa7f81",
+            "git_blob": "567ad0ac13e4ae8f2d6231dd7d94234428eccc8d"
+          },
+          "source_canonical_git_blob": "da5346c220c41cf0c83f62b596132c74c02284d8",
+          "tests": {
+            "bytes": 23872,
+            "sha256": "31ce6a5cb26739f3292d26d1be42929a52af46a505df19ed1a75311e21d760cb",
+            "git_blob": "3061b3f3034eb388f613c44756dbec80a2b3b570"
+          },
+          "status": [],
+          "index_entries": {
+            "bytes": 1184054,
+            "sha256": "e3aa7ea2636573aced0cc24af11c3aa8d88cb9471c13ff7260c89a29ecd17c54",
+            "git_blob": "475bdc189f12c9f0e0ed3baa51ea9cd52ba7f56f"
+          },
+          "locks": {
+            "codex-rs/Cargo.lock": {
+              "bytes": 432254,
+              "sha256": "e0d6c75b8e46cbf3c8df62ca98d653144b796238be165155e1a2796cf372a49e",
+              "git_blob": "5023778e8442419c93b0c80d1e28695556817f5d"
+            },
+            "MODULE.bazel.lock": {
+              "bytes": 1740955,
+              "sha256": "97f844724549757398c7834f5818d6244819b129658bdaa8453008dc694bbfc4",
+              "git_blob": "f8999d38e9add55812237878f9030d1c1e25b59d"
+            }
+          }
+        }
+      },
+      {
+        "case": "acl::tests::existing_native_deny_does_not_require_write_dac",
+        "status": "EXACT_POSITIVE_QUALIFIED",
+        "attempts": 1,
+        "target_summary": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests              PASSED in 0.1s",
+        "collector_manifest": {
+          "path": "D:\\a\\_temp\\b11-token-mechanism-probe\\acl-identity-counterfactual\\positive-02\\bazel-execution-logs\\selected-target-test-logs\\invocation-czx5nu4c\\manifest.json",
+          "bytes": 5077,
+          "sha256": "3ba24fa5ae79cd926eed9c1bf9f889859046a93a77099b76f39561128638852a",
+          "git_blob": "270c93c2491bbd0d5256878cfd85c5f0c9f13555"
+        },
+        "files": {
+          ".log": {
+            "path": "D:\\a\\_temp\\b11-token-mechanism-probe\\acl-identity-counterfactual\\positive-02\\bazel-execution-logs\\selected-target-test-logs\\invocation-czx5nu4c\\targets\\0000\\test.log",
+            "bytes": 345,
+            "sha256": "8b956b8090d424edd28f45f57631639363559f80f0e9b58fa8253edcb0a38791",
+            "git_blob": "9768c926f34f6c7130f98e070b7f6b4cb95d55e1"
+          },
+          ".xml": {
+            "path": "D:\\a\\_temp\\b11-token-mechanism-probe\\acl-identity-counterfactual\\positive-02\\bazel-execution-logs\\selected-target-test-logs\\invocation-czx5nu4c\\targets\\0000\\test.xml",
+            "bytes": 716,
+            "sha256": "cf4e45d14b83db8787f04d501148a1ac813f9d3f90a6531de7bfd1265d1fe5d0",
+            "git_blob": "411b244733894cad3fe812bc419ae65126191d27"
+          }
+        },
+        "source": {
+          "head": "53766cb836b198e2f928b949f148d7a2a10c0d21",
+          "head_tree": "9cb7302777ce018dd022086041c2225d1dd5c8dd",
+          "source": {
+            "bytes": 10467,
+            "sha256": "bf5f2fb50fcabfcc62d3835fd7cd985d62a7574d581a55c150365073c5aa7f81",
+            "git_blob": "567ad0ac13e4ae8f2d6231dd7d94234428eccc8d"
+          },
+          "source_canonical_git_blob": "da5346c220c41cf0c83f62b596132c74c02284d8",
+          "tests": {
+            "bytes": 23872,
+            "sha256": "31ce6a5cb26739f3292d26d1be42929a52af46a505df19ed1a75311e21d760cb",
+            "git_blob": "3061b3f3034eb388f613c44756dbec80a2b3b570"
+          },
+          "status": [],
+          "index_entries": {
+            "bytes": 1184054,
+            "sha256": "e3aa7ea2636573aced0cc24af11c3aa8d88cb9471c13ff7260c89a29ecd17c54",
+            "git_blob": "475bdc189f12c9f0e0ed3baa51ea9cd52ba7f56f"
+          },
+          "locks": {
+            "codex-rs/Cargo.lock": {
+              "bytes": 432254,
+              "sha256": "e0d6c75b8e46cbf3c8df62ca98d653144b796238be165155e1a2796cf372a49e",
+              "git_blob": "5023778e8442419c93b0c80d1e28695556817f5d"
+            },
+            "MODULE.bazel.lock": {
+              "bytes": 1740955,
+              "sha256": "97f844724549757398c7834f5818d6244819b129658bdaa8453008dc694bbfc4",
+              "git_blob": "f8999d38e9add55812237878f9030d1c1e25b59d"
+            }
+          }
+        }
+      },
+      {
+        "case": "acl::tests::native_file_and_directory_repairs_are_idempotent_for_read_and_write",
+        "status": "EXACT_POSITIVE_QUALIFIED",
+        "attempts": 1,
+        "target_summary": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests              PASSED in 0.1s",
+        "collector_manifest": {
+          "path": "D:\\a\\_temp\\b11-token-mechanism-probe\\acl-identity-counterfactual\\positive-03\\bazel-execution-logs\\selected-target-test-logs\\invocation-m2ixp_hw\\manifest.json",
+          "bytes": 5077,
+          "sha256": "3da452853f14ed01064d46f6f51dd89ce7848e6c47c1b97a813f9dff3a560698",
+          "git_blob": "30d48f12ff3c5c2a0e3b54cbafcede568fc6d968"
+        },
+        "files": {
+          ".log": {
+            "path": "D:\\a\\_temp\\b11-token-mechanism-probe\\acl-identity-counterfactual\\positive-03\\bazel-execution-logs\\selected-target-test-logs\\invocation-m2ixp_hw\\targets\\0000\\test.log",
+            "bytes": 365,
+            "sha256": "66c15b250e06fd152ccba60dabbf992e2295d2abb32126f625e73da51b96bf78",
+            "git_blob": "b6f2f9e7ca05eba4b58a460a4dacd83bf5353ef0"
+          },
+          ".xml": {
+            "path": "D:\\a\\_temp\\b11-token-mechanism-probe\\acl-identity-counterfactual\\positive-03\\bazel-execution-logs\\selected-target-test-logs\\invocation-m2ixp_hw\\targets\\0000\\test.xml",
+            "bytes": 736,
+            "sha256": "ebab1c23349c04966166b1980e0bb4dcc41ca9f3ee1b7977312a58437f82c4c3",
+            "git_blob": "8f90dceb41c7f99ec351fb00836f19de19306e9c"
+          }
+        },
+        "source": {
+          "head": "53766cb836b198e2f928b949f148d7a2a10c0d21",
+          "head_tree": "9cb7302777ce018dd022086041c2225d1dd5c8dd",
+          "source": {
+            "bytes": 10467,
+            "sha256": "bf5f2fb50fcabfcc62d3835fd7cd985d62a7574d581a55c150365073c5aa7f81",
+            "git_blob": "567ad0ac13e4ae8f2d6231dd7d94234428eccc8d"
+          },
+          "source_canonical_git_blob": "da5346c220c41cf0c83f62b596132c74c02284d8",
+          "tests": {
+            "bytes": 23872,
+            "sha256": "31ce6a5cb26739f3292d26d1be42929a52af46a505df19ed1a75311e21d760cb",
+            "git_blob": "3061b3f3034eb388f613c44756dbec80a2b3b570"
+          },
+          "status": [],
+          "index_entries": {
+            "bytes": 1184054,
+            "sha256": "e3aa7ea2636573aced0cc24af11c3aa8d88cb9471c13ff7260c89a29ecd17c54",
+            "git_blob": "475bdc189f12c9f0e0ed3baa51ea9cd52ba7f56f"
+          },
+          "locks": {
+            "codex-rs/Cargo.lock": {
+              "bytes": 432254,
+              "sha256": "e0d6c75b8e46cbf3c8df62ca98d653144b796238be165155e1a2796cf372a49e",
+              "git_blob": "5023778e8442419c93b0c80d1e28695556817f5d"
+            },
+            "MODULE.bazel.lock": {
+              "bytes": 1740955,
+              "sha256": "97f844724549757398c7834f5818d6244819b129658bdaa8453008dc694bbfc4",
+              "git_blob": "f8999d38e9add55812237878f9030d1c1e25b59d"
+            }
+          }
+        }
+      },
+      {
+        "case": "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes",
+        "status": "EXACT_POSITIVE_QUALIFIED",
+        "attempts": 1,
+        "target_summary": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests              PASSED in 0.1s",
+        "collector_manifest": {
+          "path": "D:\\a\\_temp\\b11-token-mechanism-probe\\acl-identity-counterfactual\\positive-04\\bazel-execution-logs\\selected-target-test-logs\\invocation-ivnv0jri\\manifest.json",
+          "bytes": 5082,
+          "sha256": "0b8e322628067efb930f1440639c4ee38f9651e7bb42225573a7e2ee7d16e3c4",
+          "git_blob": "1c93c0a2c7f073aa46ed0f60d0cfaacfb7ec9ab0"
+        },
+        "files": {
+          ".log": {
+            "path": "D:\\a\\_temp\\b11-token-mechanism-probe\\acl-identity-counterfactual\\positive-04\\bazel-execution-logs\\selected-target-test-logs\\invocation-ivnv0jri\\targets\\0000\\test.log",
+            "bytes": 16871,
+            "sha256": "9b54e484c6563d6228a2765c53adba2db0d3f91639d9445da0d4729c201e120b",
+            "git_blob": "6eb84e80720697daac24b9ae52b9cfd6b8ec4296"
+          },
+          ".xml": {
+            "path": "D:\\a\\_temp\\b11-token-mechanism-probe\\acl-identity-counterfactual\\positive-04\\bazel-execution-logs\\selected-target-test-logs\\invocation-ivnv0jri\\targets\\0000\\test.xml",
+            "bytes": 17242,
+            "sha256": "708747e252906eadfcfa1208622718cb0fde1eba1fea23f33656f637f846aebe",
+            "git_blob": "ee09c63a3fdd4e8f84d5ef7e338319762b1b09e5"
+          }
+        },
+        "source": {
+          "head": "53766cb836b198e2f928b949f148d7a2a10c0d21",
+          "head_tree": "9cb7302777ce018dd022086041c2225d1dd5c8dd",
+          "source": {
+            "bytes": 10467,
+            "sha256": "bf5f2fb50fcabfcc62d3835fd7cd985d62a7574d581a55c150365073c5aa7f81",
+            "git_blob": "567ad0ac13e4ae8f2d6231dd7d94234428eccc8d"
+          },
+          "source_canonical_git_blob": "da5346c220c41cf0c83f62b596132c74c02284d8",
+          "tests": {
+            "bytes": 23872,
+            "sha256": "31ce6a5cb26739f3292d26d1be42929a52af46a505df19ed1a75311e21d760cb",
+            "git_blob": "3061b3f3034eb388f613c44756dbec80a2b3b570"
+          },
+          "status": [],
+          "index_entries": {
+            "bytes": 1184054,
+            "sha256": "e3aa7ea2636573aced0cc24af11c3aa8d88cb9471c13ff7260c89a29ecd17c54",
+            "git_blob": "475bdc189f12c9f0e0ed3baa51ea9cd52ba7f56f"
+          },
+          "locks": {
+            "codex-rs/Cargo.lock": {
+              "bytes": 432254,
+              "sha256": "e0d6c75b8e46cbf3c8df62ca98d653144b796238be165155e1a2796cf372a49e",
+              "git_blob": "5023778e8442419c93b0c80d1e28695556817f5d"
+            },
+            "MODULE.bazel.lock": {
+              "bytes": 1740955,
+              "sha256": "97f844724549757398c7834f5818d6244819b129658bdaa8453008dc694bbfc4",
+              "git_blob": "f8999d38e9add55812237878f9030d1c1e25b59d"
+            }
+          }
+        }
+      }
+    ],
+    "negative_collector_manifest": {
+      "path": "D:\\a\\_temp\\b11-token-mechanism-probe\\acl-identity-counterfactual\\bazel-execution-logs\\failed-test-logs\\invocation-sydr__gm\\manifest.json",
+      "bytes": 1268,
+      "sha256": "0dc76c1d35cd1982de985fc2d63d7d9443dc205719b399ae7750999292d3d7c1",
+      "git_blob": "f9409523d7c6d10024abbb329f05b66f80da90ee"
+    },
+    "negative_files": {
+      ".log": {
+        "path": "D:\\a\\_temp\\b11-token-mechanism-probe\\acl-identity-counterfactual\\bazel-execution-logs\\failed-test-logs\\invocation-sydr__gm\\targets\\0000\\test.log",
+        "bytes": 2793,
+        "sha256": "b820cc7c356302aa2932e749e50c14f20d30fcb9e9b445df0f6f742b0a1709ef",
+        "git_blob": "c5c176473e8db95e93a744af49cbb367ae7076f3"
+      },
+      ".xml": {
+        "path": "D:\\a\\_temp\\b11-token-mechanism-probe\\acl-identity-counterfactual\\bazel-execution-logs\\failed-test-logs\\invocation-sydr__gm\\targets\\0000\\test.xml",
+        "bytes": 3216,
+        "sha256": "db944437ab22b47fb1647c64c2efaa593bd2eb83f3ae1470d672c1a03bc2cea5",
+        "git_blob": "ea8d876c893b6705abd946cc136e459375414dc0"
+      }
+    },
+    "error": null,
+    "restore_error": null,
+    "source_mutated": true,
+    "source_mutation_attempted": true,
+    "original_target_exit_code_unchanged": true,
+    "hard_cancellation_restore_guaranteed": false
+  },
+  "positive_and_negative_entire_original_bytes_checked": true,
+  "source_index_test_and_lock_metadata_stable_except_exact_owned_mutation_then_restored": true,
+  "full_index_and_lock_bytes_not_archived_here": true,
+  "helper_terminal": {
+    "status": "HELPER_TARGET_PASSED",
+    "command_launch_attempted": true,
+    "command_completed": true,
+    "helper_case_execution_verified": true,
+    "helper_qualified": true,
+    "product_B11": "OPEN",
+    "original_library_result_unchanged": true,
+    "full_read_grants_loader_or_descendants_qualified": false,
+    "target_terminal": "//codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup-bin-unit-tests PASSED in 45.3s",
+    "artifacts": {
+      "manifest": {
+        "path": "D:\\a\\_temp\\b11-token-mechanism-probe\\read-acl-readiness\\bazel-execution-logs\\selected-target-test-logs\\invocation-2pk7r6w7\\manifest.json",
+        "bytes": 5145,
+        "sha256": "96ef0da963d1ba773457c9547ef5e2d24bd178d52eeb42fb79efb608cbe9cf46",
+        "git_blob": "2fe91c781875177436be2fad774c60566dacccc9"
+      },
+      "files": [
+        {
+          "path": "D:\\a\\_temp\\b11-token-mechanism-probe\\read-acl-readiness\\bazel-execution-logs\\selected-target-test-logs\\invocation-2pk7r6w7\\targets\\0000\\test.log",
+          "testlogs_relative_path": "codex-rs/windows-sandbox-rs/codex-windows-sandbox-setup-bin-unit-tests/test.log",
+          "bytes": 1972,
+          "sha256": "b42ee940f59b5eeeb04f1eb7769ef21b40862111e05d3ad577d03873452e7593",
+          "git_blob": "98a7fda051be8a1d0371dcd2a42d360bdaa9281d"
+        },
+        {
+          "path": "D:\\a\\_temp\\b11-token-mechanism-probe\\read-acl-readiness\\bazel-execution-logs\\selected-target-test-logs\\invocation-2pk7r6w7\\targets\\0000\\test.xml",
+          "testlogs_relative_path": "codex-rs/windows-sandbox-rs/codex-windows-sandbox-setup-bin-unit-tests/test.xml",
+          "bytes": 2371,
+          "sha256": "0756e9ba3819ee1ac48da2810c2c55b3454df28a08ab3de537794b85a55a87ff",
+          "git_blob": "1d263eecf4a5be5accc3921a6c8a6fd633e7f06b"
+        }
+      ]
+    },
+    "results": {
+      "actual_case_names": [
+        "win::firewall::tests::local_policy_modify_state_accepts_effective_policy",
+        "win::firewall::tests::local_policy_modify_state_rejects_ineffective_policy",
+        "win::firewall::tests::local_policy_modify_state_rejects_partial_profile_coverage",
+        "win::acl_tests::provision_only_locks_plain_directory_via_handle",
+        "win::no_reparse_dir::tests::creates_and_opens_plain_directory_leaf",
+        "win::firewall::tests::production_firewall_rule_network_scopes_are_accepted_by_firewall_com",
+        "win::firewall::tests::configured_remote_address_literals_are_accepted_by_firewall_com",
+        "win::read_acl_mutex::tests::existing_read_acl_mutex_is_not_a_completion_receipt",
+        "win::setup_runtime_bin::tests::runtime_paths_include_desktop_parent_and_primary_runtime_roots",
+        "win::setup_runtime_bin::tests::primary_runtime_path_does_not_depend_on_local_app_data",
+        "win::tests::deny_path_includes_nested_active_root_sid",
+        "win::no_reparse_dir::tests::rejects_ancestor_directory_junction",
+        "win::tests::payload_accepts_otel_settings",
+        "win::tests::payload_accepts_provision_only_mode",
+        "win::tests::payload_defaults_otel_absent",
+        "win::tests::deny_path_outside_active_roots_falls_back_to_all_active_root_sids",
+        "win::no_reparse_dir::tests::rejects_final_directory_junction",
+        "win::tests::write_root_refresh_replaces_stale_delete_child_grant",
+        "win::tests::write_root_refresh_checks_each_sid",
+        "win::tests::write_root_refresh_ignores_inherited_delete_child_grant",
+        "win::tests::deny_path_under_active_root_uses_only_matching_root_sid"
+      ],
+      "libtest_summaries": [
+        [
+          "ok",
+          "21",
+          "0",
+          "0",
+          "0",
+          "0",
+          "0.03"
+        ]
+      ],
+      "actual_named_pass_count": 21,
+      "complete_compiled_roster_covered": true,
+      "ignored": 0,
+      "outer_xml_cases": 1
+    },
+    "command_exit_code": 0,
+    "error": null,
+    "final_guard_error": null,
+    "hard_cancellation_has_no_terminal_qualification": true
+  },
+  "helper_pair": {
+    "member": "b11-token-mechanism-probe/read-acl-readiness/bazel-execution-logs/selected-target-test-logs/invocation-2pk7r6w7/targets/0000/test.log",
+    "raw": {
+      "bytes": 1972,
+      "sha256": "b42ee940f59b5eeeb04f1eb7769ef21b40862111e05d3ad577d03873452e7593",
+      "git_blob": "98a7fda051be8a1d0371dcd2a42d360bdaa9281d"
+    },
+    "XML": {
+      "bytes": 2371,
+      "sha256": "0756e9ba3819ee1ac48da2810c2c55b3454df28a08ab3de537794b85a55a87ff",
+      "git_blob": "1d263eecf4a5be5accc3921a6c8a6fd633e7f06b"
+    },
+    "original_ESC_count": 0,
+    "original_CR_count": 0,
+    "XML_entire_system_out_matches_after_only_XML_newline_and_ESC_serialization": true,
+    "XML_outer_case": {
+      "name": "codex-rs\\windows-sandbox-rs\\codex-windows-sandbox-setup-bin-unit-tests.bat",
+      "classname": "",
+      "status": "run",
+      "duration": "45",
+      "time": "45"
+    },
+    "expected_error": null
+  },
+  "helper11_canonical_pins_equal_to_published_merge": {
+    "codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs": {
+      "canonical_git_blob": "c39b298b7889dc3669e1ee7e2816f7e77568e955",
+      "raw": {
+        "bytes": 47223,
+        "sha256": "1466b8f2a12bc2f3421f6b31cb43c0cc7d937551dd363b623511c4966e50f84b",
+        "git_blob": "3711041869ae93950edf384dcbbda60b291adbb1"
+      }
+    },
+    "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex.rs": {
+      "canonical_git_blob": "9f9e1aa5a83e72d3ff34eaf7f98f58cc66f7b6b6",
+      "raw": {
+        "bytes": 2016,
+        "sha256": "9c6467b2618884fa05e59df291120f831b4446d75456425f0894bae104673ef1",
+        "git_blob": "8b1d023604cb14ada7f58872f82fa6c9aa7e0ef9"
+      }
+    },
+    "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex_tests.rs": {
+      "canonical_git_blob": "333aefdf9584ef29612ac6f9814ff34308971754",
+      "raw": {
+        "bytes": 2489,
+        "sha256": "3046d8c579748d604dabba7b1c1d5fc0a5503ae08627960c8a07b397a33f7431",
+        "git_blob": "60613f9f6aea40f84d88d7602d4ee2c2e5ff8521"
+      }
+    },
+    "codex-rs/windows-sandbox-rs/src/bin/setup_main/win_acl_tests.rs": {
+      "canonical_git_blob": "e488e2a914b119ecb02cfc1a13a90009bc6120ea",
+      "raw": {
+        "bytes": 957,
+        "sha256": "6538bee442832ebd1a0d9e77f30a73a5d9111963098ea1ea162e9f379051f2b1",
+        "git_blob": "7dcb3b06339acd84d7828a85a3b920454517a29b"
+      }
+    },
+    "codex-rs/windows-sandbox-rs/src/bin/setup_main/main.rs": {
+      "canonical_git_blob": "262460775ef6b5e02f0ba4485f388e1b389cc85f",
+      "raw": {
+        "bytes": 243,
+        "sha256": "fdad18a5f411f2a28cfb6c8148963fffc6b3f40d28805fdcc3531083309098c5",
+        "git_blob": "4a7fe44505b3c52b4322ee051d7c80f1650f7812"
+      }
+    },
+    "codex-rs/windows-sandbox-rs/Cargo.toml": {
+      "canonical_git_blob": "aa41ed5f08608c0275785b2f5e27ec5db08f50dd",
+      "raw": {
+        "bytes": 2534,
+        "sha256": "55a168023f0f03cd64d1767fb1cb03f8d061753558a0656424be0f9f628f2e4e",
+        "git_blob": "efd11cf38d93ce0c084792582dcf39abaabbacdf"
+      }
+    },
+    "codex-rs/windows-sandbox-rs/BUILD.bazel": {
+      "canonical_git_blob": "8531cb4d664c25de6fbf200c71cb8042d1d8d865",
+      "raw": {
+        "bytes": 2614,
+        "sha256": "659ee0c40ba0781920677fd5ba1750e3d5ac8750f279f35d8968c206620ba86a",
+        "git_blob": "31528721a67d519056a1d12939ff378f8e3de4d4"
+      }
+    },
+    "defs.bzl": {
+      "canonical_git_blob": "6f588ec3057fddfea35170e28e74036162ce6a23",
+      "raw": {
+        "bytes": 35386,
+        "sha256": "22eaf0e2f909b007faf90f2b1700a9b3175106d59889cb3dfc65191bf71fb50e",
+        "git_blob": "cf46a9d25894434a80e069fa3514f9226a0ce2b7"
+      }
+    },
+    ".github/scripts/run-bazel-ci.sh": {
+      "canonical_git_blob": "42b59b6354b5933c8155b992519682c06d024ca1",
+      "raw": {
+        "bytes": 17968,
+        "sha256": "be11ab6b34a1378df46c695c9b91a2f572c87b4ed10e2f16840b6b4e951624a6",
+        "git_blob": "516afb2a9db7f34266e529248f9468caeb83b8af"
+      }
+    },
+    ".github/scripts/collect_bazel_failed_test_logs.py": {
+      "canonical_git_blob": "76a183d6a45e4a6c1493de194f8a1f6c422f0892",
+      "raw": {
+        "bytes": 16761,
+        "sha256": "62b4cfd8b2299488c1bcd886f4c15d0b759eae657c766f27b4e3ede2566e6254",
+        "git_blob": "f1025c5e5e48292aeba13b2107173794c02b8425"
+      }
+    },
+    ".github/scripts/run_b11_acl_identity_counterfactual.py": {
+      "canonical_git_blob": "90ae8f030ee405706217d7cb2cdc12f1a7cda443",
+      "raw": {
+        "bytes": 24138,
+        "sha256": "13b456e376127695dbb86e055addbd79cf83430ee95972c1f7da0ec21000c76e",
+        "git_blob": "9bc4086209241117fe2d39b165b7bef07a5cc144"
+      }
+    }
+  },
+  "complete7_compact_logs": [
+    {
+      "member": "b11-token-mechanism-probe/acl-identity-counterfactual/bazel-execution-logs/execution-log-test-token-mechanism-observations-411.zst",
+      "compressed": {
+        "bytes": 78869,
+        "sha256": "6fa4727ec11e16c718f9066902391f0b5c3fc8e983b13bdeff60a1a5066445e1",
+        "git_blob": "abe31d6aa4f527185f566cda03db2d2b98386b46"
+      },
+      "complete_decoded": {
+        "bytes": 249189,
+        "sha256": "193f0d17e160dd8079365e645390cca56d492ba3cfe5acaf989ee83b7761b68d",
+        "git_blob": "63351237b557d32ac7f22a6e0a28124303e3c6f0"
+      },
+      "entries": 1710,
+      "actions": [
+        {
+          "role": "actual_test",
+          "target": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+          "argv": [
+            "external\\bazel_tools\\tools\\test\\tw.exe",
+            "codex-rs/windows-sandbox-rs/windows-sandbox-rs-unit-tests.bat",
+            "acl::tests::deny_repair_rejects_a_replaced_path_before_mutating_either_object",
+            "--exact"
+          ],
+          "runner": "local",
+          "cache_hit": false,
+          "exit_code": 101,
+          "timeout_millis": 300000
+        },
+        {
+          "role": "XML_wrapper",
+          "target": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+          "argv": [
+            "external\\bazel_tools\\tools\\test\\xml.exe",
+            "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/windows-sandbox-rs/windows-sandbox-rs-unit-tests/test.log",
+            "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/windows-sandbox-rs/windows-sandbox-rs-unit-tests/test.xml",
+            "0",
+            "101"
+          ],
+          "runner": "local",
+          "cache_hit": false,
+          "exit_code": 0,
+          "timeout_millis": 0
+        }
+      ]
+    },
+    {
+      "member": "b11-token-mechanism-probe/acl-identity-counterfactual/positive-01/bazel-execution-logs/execution-log-test-token-mechanism-observations-267.zst",
+      "compressed": {
+        "bytes": 3470,
+        "sha256": "fbddb52269072e1d8720aa122b36eab4cab457eb68d95b17dab4010df8e4912c",
+        "git_blob": "ad8e0ccaf83f16bdb57c57a0409fdbf83058b393"
+      },
+      "complete_decoded": {
+        "bytes": 19551,
+        "sha256": "254b569604c15070fdbd7125371f5090f59184b7f03a29dfabc2d14e2fcc091e",
+        "git_blob": "a2ea13584b8469680889fddc53cced8a81b78b91"
+      },
+      "entries": 22,
+      "actions": [
+        {
+          "role": "actual_test",
+          "target": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+          "argv": [
+            "external\\bazel_tools\\tools\\test\\tw.exe",
+            "codex-rs/windows-sandbox-rs/windows-sandbox-rs-unit-tests.bat",
+            "acl::tests::deny_repair_rejects_a_replaced_path_before_mutating_either_object",
+            "--exact"
+          ],
+          "runner": "local",
+          "cache_hit": false,
+          "exit_code": 0,
+          "timeout_millis": 300000
+        },
+        {
+          "role": "XML_wrapper",
+          "target": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+          "argv": [
+            "external\\bazel_tools\\tools\\test\\xml.exe",
+            "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/windows-sandbox-rs/windows-sandbox-rs-unit-tests/test.log",
+            "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/windows-sandbox-rs/windows-sandbox-rs-unit-tests/test.xml",
+            "0",
+            "0"
+          ],
+          "runner": "remote cache hit",
+          "cache_hit": true,
+          "exit_code": 0,
+          "timeout_millis": 0
+        }
+      ]
+    },
+    {
+      "member": "b11-token-mechanism-probe/acl-identity-counterfactual/positive-02/bazel-execution-logs/execution-log-test-token-mechanism-observations-303.zst",
+      "compressed": {
+        "bytes": 3453,
+        "sha256": "213c12c7818e7c88ddf789705e950aed35a004246505eb2ab2e7714a8fe80d25",
+        "git_blob": "a41e7b4428d9d48be74ad0a2fe27b452cb084e92"
+      },
+      "complete_decoded": {
+        "bytes": 19533,
+        "sha256": "47c3bb41ad67803d27013a7baee3854b0fa94d097f523d8801a5c1c88590b250",
+        "git_blob": "61f684dfb9c13db27927b79776a3231497c252cf"
+      },
+      "entries": 22,
+      "actions": [
+        {
+          "role": "actual_test",
+          "target": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+          "argv": [
+            "external\\bazel_tools\\tools\\test\\tw.exe",
+            "codex-rs/windows-sandbox-rs/windows-sandbox-rs-unit-tests.bat",
+            "acl::tests::existing_native_deny_does_not_require_write_dac",
+            "--exact"
+          ],
+          "runner": "local",
+          "cache_hit": false,
+          "exit_code": 0,
+          "timeout_millis": 300000
+        },
+        {
+          "role": "XML_wrapper",
+          "target": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+          "argv": [
+            "external\\bazel_tools\\tools\\test\\xml.exe",
+            "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/windows-sandbox-rs/windows-sandbox-rs-unit-tests/test.log",
+            "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/windows-sandbox-rs/windows-sandbox-rs-unit-tests/test.xml",
+            "0",
+            "0"
+          ],
+          "runner": "remote cache hit",
+          "cache_hit": true,
+          "exit_code": 0,
+          "timeout_millis": 0
+        }
+      ]
+    },
+    {
+      "member": "b11-token-mechanism-probe/acl-identity-counterfactual/positive-03/bazel-execution-logs/execution-log-test-token-mechanism-observations-339.zst",
+      "compressed": {
+        "bytes": 3466,
+        "sha256": "471bd6e10391f6831ff697b645c3eba31e3dae0527b754ea50a8e16db627a3ca",
+        "git_blob": "f19c1de2b8ed2e140a5baa23d623bd65c1caf7f6"
+      },
+      "complete_decoded": {
+        "bytes": 19552,
+        "sha256": "01374fedf2178e30997779a6c8a197789fa2e2b942630be023d963cedeab8d8c",
+        "git_blob": "adda9975c85a4ad1b4da95e9152c52e2161c75af"
+      },
+      "entries": 22,
+      "actions": [
+        {
+          "role": "actual_test",
+          "target": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+          "argv": [
+            "external\\bazel_tools\\tools\\test\\tw.exe",
+            "codex-rs/windows-sandbox-rs/windows-sandbox-rs-unit-tests.bat",
+            "acl::tests::native_file_and_directory_repairs_are_idempotent_for_read_and_write",
+            "--exact"
+          ],
+          "runner": "local",
+          "cache_hit": false,
+          "exit_code": 0,
+          "timeout_millis": 300000
+        },
+        {
+          "role": "XML_wrapper",
+          "target": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+          "argv": [
+            "external\\bazel_tools\\tools\\test\\xml.exe",
+            "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/windows-sandbox-rs/windows-sandbox-rs-unit-tests/test.log",
+            "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/windows-sandbox-rs/windows-sandbox-rs-unit-tests/test.xml",
+            "0",
+            "0"
+          ],
+          "runner": "remote cache hit",
+          "cache_hit": true,
+          "exit_code": 0,
+          "timeout_millis": 0
+        }
+      ]
+    },
+    {
+      "member": "b11-token-mechanism-probe/acl-identity-counterfactual/positive-04/bazel-execution-logs/execution-log-test-token-mechanism-observations-375.zst",
+      "compressed": {
+        "bytes": 3432,
+        "sha256": "ad4d6853d84363a150f2a981ca1b8eb365f97330a43a32b1df351f3da081e47c",
+        "git_blob": "cd348f9d67a57ff74a34eb8b65157b30b75168c0"
+      },
+      "complete_decoded": {
+        "bytes": 19529,
+        "sha256": "115f07f06fb4b1b24d8ee8b514b45155db39d16a93716f1b9ecef7f574c0725c",
+        "git_blob": "288df2c9d90e10e5199675479a1fdbe81abee3e7"
+      },
+      "entries": 22,
+      "actions": [
+        {
+          "role": "actual_test",
+          "target": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+          "argv": [
+            "external\\bazel_tools\\tools\\test\\tw.exe",
+            "codex-rs/windows-sandbox-rs/windows-sandbox-rs-unit-tests.bat",
+            "token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes",
+            "--exact"
+          ],
+          "runner": "local",
+          "cache_hit": false,
+          "exit_code": 0,
+          "timeout_millis": 300000
+        },
+        {
+          "role": "XML_wrapper",
+          "target": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+          "argv": [
+            "external\\bazel_tools\\tools\\test\\xml.exe",
+            "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/windows-sandbox-rs/windows-sandbox-rs-unit-tests/test.log",
+            "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/windows-sandbox-rs/windows-sandbox-rs-unit-tests/test.xml",
+            "0",
+            "0"
+          ],
+          "runner": "local",
+          "cache_hit": false,
+          "exit_code": 0,
+          "timeout_millis": 0
+        }
+      ]
+    },
+    {
+      "member": "b11-token-mechanism-probe/read-acl-readiness/bazel-execution-logs/execution-log-test-token-mechanism-observations-986.zst",
+      "compressed": {
+        "bytes": 78791,
+        "sha256": "327e944d3cacc8f3d72e92b0a73ab738badc8bd53d782c296a7f1d524a457002",
+        "git_blob": "bf82e81a066816ef7d9bd67f3be6d6e37faeba98"
+      },
+      "complete_decoded": {
+        "bytes": 250007,
+        "sha256": "498df6c549abf490558fab03496c0a8e7ce7009be251ca7990c820b5675534d3",
+        "git_blob": "552625af5525ee194390bc467d28e071baa8a952"
+      },
+      "entries": 1710,
+      "actions": [
+        {
+          "role": "actual_test",
+          "target": "//codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup-bin-unit-tests",
+          "argv": [
+            "external\\bazel_tools\\tools\\test\\tw.exe",
+            "codex-rs/windows-sandbox-rs/codex-windows-sandbox-setup-bin-unit-tests.bat"
+          ],
+          "runner": "local",
+          "cache_hit": false,
+          "exit_code": 0,
+          "timeout_millis": 300000
+        },
+        {
+          "role": "XML_wrapper",
+          "target": "//codex-rs/windows-sandbox-rs:codex-windows-sandbox-setup-bin-unit-tests",
+          "argv": [
+            "external\\bazel_tools\\tools\\test\\xml.exe",
+            "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/windows-sandbox-rs/codex-windows-sandbox-setup-bin-unit-tests/test.log",
+            "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/windows-sandbox-rs/codex-windows-sandbox-setup-bin-unit-tests/test.xml",
+            "45",
+            "0"
+          ],
+          "runner": "local",
+          "cache_hit": false,
+          "exit_code": 0,
+          "timeout_millis": 0
+        }
+      ]
+    },
+    {
+      "member": "bazel-execution-logs/execution-log-test-token-mechanism-observations-458.zst",
+      "compressed": {
+        "bytes": 1999242,
+        "sha256": "1e0cb75949ccd3e2fc14ded8bd237cb33e945521bc15fa2cb96b6d9dacd73190",
+        "git_blob": "bf84c1fbe62dc15d51f6419021b1271ff55ded85"
+      },
+      "complete_decoded": {
+        "bytes": 11151813,
+        "sha256": "ea7f48a1820bef010e4d9c43b0ee10ea896723fd77277eec42b7d567ce1b2c2b",
+        "git_blob": "08d9a5c2d416a3bed3c92b82bc79796edf7799d4"
+      },
+      "entries": 36161,
+      "actions": [
+        {
+          "role": "actual_test",
+          "target": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+          "argv": [
+            "external\\bazel_tools\\tools\\test\\tw.exe",
+            "codex-rs/windows-sandbox-rs/windows-sandbox-rs-unit-tests.bat"
+          ],
+          "runner": "local",
+          "cache_hit": false,
+          "exit_code": 1,
+          "timeout_millis": 300000
+        },
+        {
+          "role": "XML_wrapper",
+          "target": "//codex-rs/windows-sandbox-rs:windows-sandbox-rs-unit-tests",
+          "argv": [
+            "external\\bazel_tools\\tools\\test\\xml.exe",
+            "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/windows-sandbox-rs/windows-sandbox-rs-unit-tests/test.log",
+            "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/windows-sandbox-rs/windows-sandbox-rs-unit-tests/test.xml",
+            "67",
+            "1"
+          ],
+          "runner": "local",
+          "cache_hit": false,
+          "exit_code": 0,
+          "timeout_millis": 0
+        }
+      ]
+    }
+  ],
+  "all9_collector_source_bindings": [
+    {
+      "member": "b11-token-mechanism-probe/acl-identity-counterfactual/bazel-execution-logs/failed-test-logs/invocation-sydr__gm/manifest.json",
+      "identity": {
+        "bytes": 1268,
+        "sha256": "0dc76c1d35cd1982de985fc2d63d7d9443dc205719b399ae7750999292d3d7c1",
+        "git_blob": "f9409523d7c6d10024abbb329f05b66f80da90ee"
+      },
+      "source": {
+        "commit": "53766cb836b198e2f928b949f148d7a2a10c0d21",
+        "tracked_worktree_dirty": true,
+        "tree": "9cb7302777ce018dd022086041c2225d1dd5c8dd"
+      },
+      "listed_file_count": 2
+    },
+    {
+      "member": "b11-token-mechanism-probe/acl-identity-counterfactual/bazel-execution-logs/selected-target-test-logs/invocation-4lbj8yu_/manifest.json",
+      "identity": {
+        "bytes": 4189,
+        "sha256": "15c3bcbbb859754ae3417b292aa5b6dea705372989cbe572c270157793eeb835",
+        "git_blob": "4647a563dbf1d9a1f6da3aad7af64881ff00f542"
+      },
+      "source": {
+        "commit": "53766cb836b198e2f928b949f148d7a2a10c0d21",
+        "tracked_worktree_dirty": true,
+        "tree": "9cb7302777ce018dd022086041c2225d1dd5c8dd"
+      },
+      "listed_file_count": 0
+    },
+    {
+      "member": "b11-token-mechanism-probe/acl-identity-counterfactual/positive-01/bazel-execution-logs/selected-target-test-logs/invocation-1q_on4o5/manifest.json",
+      "identity": {
+        "bytes": 5077,
+        "sha256": "7dec47026daf2b01d98c51720d8d1ef6089a45c0cb807c486252ab6ce33f7903",
+        "git_blob": "7b7b50c3418ca8e3e15b8d942945e17684cd7e64"
+      },
+      "source": {
+        "commit": "53766cb836b198e2f928b949f148d7a2a10c0d21",
+        "tracked_worktree_dirty": false,
+        "tree": "9cb7302777ce018dd022086041c2225d1dd5c8dd"
+      },
+      "listed_file_count": 2
+    },
+    {
+      "member": "b11-token-mechanism-probe/acl-identity-counterfactual/positive-02/bazel-execution-logs/selected-target-test-logs/invocation-czx5nu4c/manifest.json",
+      "identity": {
+        "bytes": 5077,
+        "sha256": "3ba24fa5ae79cd926eed9c1bf9f889859046a93a77099b76f39561128638852a",
+        "git_blob": "270c93c2491bbd0d5256878cfd85c5f0c9f13555"
+      },
+      "source": {
+        "commit": "53766cb836b198e2f928b949f148d7a2a10c0d21",
+        "tracked_worktree_dirty": false,
+        "tree": "9cb7302777ce018dd022086041c2225d1dd5c8dd"
+      },
+      "listed_file_count": 2
+    },
+    {
+      "member": "b11-token-mechanism-probe/acl-identity-counterfactual/positive-03/bazel-execution-logs/selected-target-test-logs/invocation-m2ixp_hw/manifest.json",
+      "identity": {
+        "bytes": 5077,
+        "sha256": "3da452853f14ed01064d46f6f51dd89ce7848e6c47c1b97a813f9dff3a560698",
+        "git_blob": "30d48f12ff3c5c2a0e3b54cbafcede568fc6d968"
+      },
+      "source": {
+        "commit": "53766cb836b198e2f928b949f148d7a2a10c0d21",
+        "tracked_worktree_dirty": false,
+        "tree": "9cb7302777ce018dd022086041c2225d1dd5c8dd"
+      },
+      "listed_file_count": 2
+    },
+    {
+      "member": "b11-token-mechanism-probe/acl-identity-counterfactual/positive-04/bazel-execution-logs/selected-target-test-logs/invocation-ivnv0jri/manifest.json",
+      "identity": {
+        "bytes": 5082,
+        "sha256": "0b8e322628067efb930f1440639c4ee38f9651e7bb42225573a7e2ee7d16e3c4",
+        "git_blob": "1c93c0a2c7f073aa46ed0f60d0cfaacfb7ec9ab0"
+      },
+      "source": {
+        "commit": "53766cb836b198e2f928b949f148d7a2a10c0d21",
+        "tracked_worktree_dirty": false,
+        "tree": "9cb7302777ce018dd022086041c2225d1dd5c8dd"
+      },
+      "listed_file_count": 2
+    },
+    {
+      "member": "b11-token-mechanism-probe/read-acl-readiness/bazel-execution-logs/selected-target-test-logs/invocation-2pk7r6w7/manifest.json",
+      "identity": {
+        "bytes": 5145,
+        "sha256": "96ef0da963d1ba773457c9547ef5e2d24bd178d52eeb42fb79efb608cbe9cf46",
+        "git_blob": "2fe91c781875177436be2fad774c60566dacccc9"
+      },
+      "source": {
+        "commit": "53766cb836b198e2f928b949f148d7a2a10c0d21",
+        "tracked_worktree_dirty": false,
+        "tree": "9cb7302777ce018dd022086041c2225d1dd5c8dd"
+      },
+      "listed_file_count": 2
+    },
+    {
+      "member": "bazel-execution-logs/failed-test-logs/invocation-_ej45pul/manifest.json",
+      "identity": {
+        "bytes": 1273,
+        "sha256": "037df14fe1dea0a5390c4d42e684283b1bb5f81fdee946ff72e0fff58335ab3e",
+        "git_blob": "927b378e864021c4e9695f57322b2636515f654e"
+      },
+      "source": {
+        "commit": "53766cb836b198e2f928b949f148d7a2a10c0d21",
+        "tracked_worktree_dirty": false,
+        "tree": "9cb7302777ce018dd022086041c2225d1dd5c8dd"
+      },
+      "listed_file_count": 2
+    },
+    {
+      "member": "bazel-execution-logs/selected-target-test-logs/invocation-r8547v55/manifest.json",
+      "identity": {
+        "bytes": 4126,
+        "sha256": "76c9075f3b0de7b717755f9a9d5be5fbc9c17522fe9170f117a6e40b91df6a68",
+        "git_blob": "de50b1aaa522fbf716885e86cda8822fbd3b8c7f"
+      },
+      "source": {
+        "commit": "53766cb836b198e2f928b949f148d7a2a10c0d21",
+        "tracked_worktree_dirty": false,
+        "tree": "9cb7302777ce018dd022086041c2225d1dd5c8dd"
+      },
+      "listed_file_count": 0
+    }
+  ],
+  "initial_snapshot_files_verified": 5,
+  "decision": "Four original exact positives, one physical negative and exact source restoration, plus original unfiltered 21-case setup helper qualify only their subgates. Whole target is 146/8/2 and failed; new Rust observations completed but cmd phase did not begin.",
+  "B11": "OPEN",
+  "whole_candidate_qualified": false,
+  "hard_cancellation_restoration_not_guaranteed": true,
+  "scope_exclusions": [
+    "Single-privilege causality is not established.",
+    "No cmd paired-result or owned-Job final cleanup success is claimed.",
+    "Full restricting token, ambient reads, loader and descendant lifetime remain unqualified.",
+    "Helper INFINITE wait and Command.status were not given new deadlines.",
+    "No rustfmt gate was run by this verifier.",
+    "This receipt does not convert the original failing target or job into success."
+  ]
+}

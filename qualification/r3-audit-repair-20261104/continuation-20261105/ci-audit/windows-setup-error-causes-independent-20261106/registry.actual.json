@@ -1,0 +1,253 @@
+{
+  "schema": "windows-setup-error-causes-independent-actual-registry-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "self_repository_path": "ci-audit/windows-setup-error-causes-independent-20261106/registry.actual.json",
+  "decision": "ACCEPT_AS_DIAGNOSTIC_REPAIR_STATIC_ONLY",
+  "source_head": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+  "source_tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+  "postimages": {
+    "setup_error": "37aa38dde9e83ee5f3ce8f267f11afd76fee3400",
+    "setup_main_win": "505be9299f9580877449740fd235e988f8c93b7b"
+  },
+  "computed_candidate_tree": "78b817fec87e593e0a0f6357d84f895b8574bde5",
+  "actual_review": "32b2d5c8a4a0875b92e6e3027d49f09f39e7329e",
+  "actual_proof": "338e4fe099156932e9946b0f1a9fa4d44225332c",
+  "actual_verifier": "9aa3b25a2e13bbb9c50614b079d90b4a22f2de47",
+  "portable_bundle": {
+    "member_count": 37,
+    "part_count": 9,
+    "manifest": "fd76389b5c41732bbfe36925d1bae77f95ce261d",
+    "archive_bytes": 1111610,
+    "archive_sha256": "4c95d44a80d5c452481699af8ed29bd3a6f2c87b9e71fbd72af3a17dd420b5f7",
+    "restore_script": "01924f9fcdb335e6c7b5eab71a7252b452fbc448",
+    "isolated_restore_exit": 0,
+    "isolated_static_replay_exit": 0,
+    "restored_static_stdout_bytes": 9326,
+    "restored_static_stdout_equal": true
+  },
+  "qualified_scope": "Independent complete two-file source review, exact patch inversion, full 10,582-leaf / 1,571-directory Git tree computation, six fresh full Git blob GETs, fixed dependency/API checks, portable preservation and static replay.",
+  "unqualified": [
+    "Rust formatting",
+    "Rust compilation",
+    "execution of the two new Windows-only regressions",
+    "native Windows ACL fix",
+    "B11 closure"
+  ],
+  "original_native_custody": "Only the relevant scope is recorded here. Full Windows Core native logs/ZIP/21 attempts are maintained in the separate /root/b20_finish evidence packet; this bundle is not a duplicate native packet.",
+  "review_harness_initial_failure_preserved": true,
+  "source_blockers": 0,
+  "original_acl_cause": "UNKNOWN",
+  "no_native_or_ref_mutation_by_reviewer": true,
+  "records": [
+    {
+      "repository_path": "ci-audit/windows-setup-error-causes-independent-20261106/REVIEW.json",
+      "bytes": 10622,
+      "git_blob": "32b2d5c8a4a0875b92e6e3027d49f09f39e7329e",
+      "sha256": "23f0a410f41e9a0155ba6eec9bf1135370cf86735cc748bd439784b9e5e078f7",
+      "actual_create_sha": "32b2d5c8a4a0875b92e6e3027d49f09f39e7329e",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 10622,
+        "git_blob": "32b2d5c8a4a0875b92e6e3027d49f09f39e7329e",
+        "sha256": "23f0a410f41e9a0155ba6eec9bf1135370cf86735cc748bd439784b9e5e078f7"
+      }
+    },
+    {
+      "repository_path": "ci-audit/windows-setup-error-causes-independent-20261106/STATIC_VERIFICATION.json",
+      "bytes": 9326,
+      "git_blob": "338e4fe099156932e9946b0f1a9fa4d44225332c",
+      "sha256": "6ed034866d5ec9223948da697ae6c6f1bc6c0398df3099e568936f4c855e20c5",
+      "actual_create_sha": "338e4fe099156932e9946b0f1a9fa4d44225332c",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 9326,
+        "git_blob": "338e4fe099156932e9946b0f1a9fa4d44225332c",
+        "sha256": "6ed034866d5ec9223948da697ae6c6f1bc6c0398df3099e568936f4c855e20c5"
+      }
+    },
+    {
+      "repository_path": "ci-audit/windows-setup-error-causes-independent-20261106/verify_review.py",
+      "bytes": 12940,
+      "git_blob": "9aa3b25a2e13bbb9c50614b079d90b4a22f2de47",
+      "sha256": "fa8afca17469ab108e9e86bf3540b42a03b061704203421709560318c9914a43",
+      "actual_create_sha": "9aa3b25a2e13bbb9c50614b079d90b4a22f2de47",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 12940,
+        "git_blob": "9aa3b25a2e13bbb9c50614b079d90b4a22f2de47",
+        "sha256": "fa8afca17469ab108e9e86bf3540b42a03b061704203421709560318c9914a43"
+      }
+    },
+    {
+      "repository_path": "ci-audit/windows-setup-error-causes-independent-20261106/restore_bundle.py",
+      "bytes": 2478,
+      "git_blob": "01924f9fcdb335e6c7b5eab71a7252b452fbc448",
+      "sha256": "8df51b23898bc5c5f8df2fdbeb4383ecefbf7add7f8c13e5f0f5ad70b9bc8053",
+      "actual_create_sha": "01924f9fcdb335e6c7b5eab71a7252b452fbc448",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 2478,
+        "git_blob": "01924f9fcdb335e6c7b5eab71a7252b452fbc448",
+        "sha256": "8df51b23898bc5c5f8df2fdbeb4383ecefbf7add7f8c13e5f0f5ad70b9bc8053"
+      }
+    },
+    {
+      "repository_path": "ci-audit/windows-setup-error-causes-independent-20261106/PORTABLE_REPLAY.json",
+      "bytes": 722,
+      "git_blob": "bdab4e319682ffdb08f8b302b8132da71039fbeb",
+      "sha256": "a00853c402fdea6fe4312a4a6d9d9068d17782a7f56f9a4a5371b13637b400b8",
+      "actual_create_sha": "bdab4e319682ffdb08f8b302b8132da71039fbeb",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 722,
+        "git_blob": "bdab4e319682ffdb08f8b302b8132da71039fbeb",
+        "sha256": "a00853c402fdea6fe4312a4a6d9d9068d17782a7f56f9a4a5371b13637b400b8"
+      }
+    },
+    {
+      "repository_path": "ci-audit/windows-setup-error-causes-independent-20261106/primary-sources.json",
+      "bytes": 1114,
+      "git_blob": "f703717ec2556ae4760c467ea70c420ef4f1a149",
+      "sha256": "2b8dbc3c836f47afcf9b81614fe6ec3e0c27b7e66740f9815097d151706840b0",
+      "actual_create_sha": "f703717ec2556ae4760c467ea70c420ef4f1a149",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 1114,
+        "git_blob": "f703717ec2556ae4760c467ea70c420ef4f1a149",
+        "sha256": "2b8dbc3c836f47afcf9b81614fe6ec3e0c27b7e66740f9815097d151706840b0"
+      }
+    },
+    {
+      "repository_path": "ci-audit/windows-setup-error-causes-independent-20261106/bundle/manifest.json",
+      "bytes": 13081,
+      "git_blob": "fd76389b5c41732bbfe36925d1bae77f95ce261d",
+      "sha256": "c2e8cea9291d2597fd687e9c1ccab1c977a2104e9b9952e4ea82dc2307a43a33",
+      "actual_create_sha": "fd76389b5c41732bbfe36925d1bae77f95ce261d",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 13081,
+        "git_blob": "fd76389b5c41732bbfe36925d1bae77f95ce261d",
+        "sha256": "c2e8cea9291d2597fd687e9c1ccab1c977a2104e9b9952e4ea82dc2307a43a33"
+      }
+    },
+    {
+      "repository_path": "ci-audit/windows-setup-error-causes-independent-20261106/bundle/part-000.base64.txt",
+      "bytes": 180000,
+      "git_blob": "533ae64266e21a12544d7d6b8bf3c12de789f34e",
+      "sha256": "38ffb0fca0488d7d4629824bfdbe60ed3052289618bf326bbb10e0b8e53757ce",
+      "actual_create_sha": "533ae64266e21a12544d7d6b8bf3c12de789f34e",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 180000,
+        "git_blob": "533ae64266e21a12544d7d6b8bf3c12de789f34e",
+        "sha256": "38ffb0fca0488d7d4629824bfdbe60ed3052289618bf326bbb10e0b8e53757ce"
+      }
+    },
+    {
+      "repository_path": "ci-audit/windows-setup-error-causes-independent-20261106/bundle/part-001.base64.txt",
+      "bytes": 180000,
+      "git_blob": "907241421208ddf3fc7dd27639dc12d799dc2033",
+      "sha256": "c14fba894fb3f32e593a5bd2553e5f2caa2e09433f08afec7ca4c0b47a92e4ab",
+      "actual_create_sha": "907241421208ddf3fc7dd27639dc12d799dc2033",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 180000,
+        "git_blob": "907241421208ddf3fc7dd27639dc12d799dc2033",
+        "sha256": "c14fba894fb3f32e593a5bd2553e5f2caa2e09433f08afec7ca4c0b47a92e4ab"
+      }
+    },
+    {
+      "repository_path": "ci-audit/windows-setup-error-causes-independent-20261106/bundle/part-002.base64.txt",
+      "bytes": 180000,
+      "git_blob": "35b13d7200978473086934bbec23b3be931d58c1",
+      "sha256": "1f74c4f5c1ec21e5c253e0e6c672e73aa39af8d74920d10eeb3c45b20e3d1126",
+      "actual_create_sha": "35b13d7200978473086934bbec23b3be931d58c1",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 180000,
+        "git_blob": "35b13d7200978473086934bbec23b3be931d58c1",
+        "sha256": "1f74c4f5c1ec21e5c253e0e6c672e73aa39af8d74920d10eeb3c45b20e3d1126"
+      }
+    },
+    {
+      "repository_path": "ci-audit/windows-setup-error-causes-independent-20261106/bundle/part-003.base64.txt",
+      "bytes": 180000,
+      "git_blob": "de9a90a7a65eb190443e2c68a2a9535cefad6ccf",
+      "sha256": "5fb89ce98d9820a878e43c79e17596bfc3c12e3ad00fda2003cae5dd17a4bb1c",
+      "actual_create_sha": "de9a90a7a65eb190443e2c68a2a9535cefad6ccf",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 180000,
+        "git_blob": "de9a90a7a65eb190443e2c68a2a9535cefad6ccf",
+        "sha256": "5fb89ce98d9820a878e43c79e17596bfc3c12e3ad00fda2003cae5dd17a4bb1c"
+      }
+    },
+    {
+      "repository_path": "ci-audit/windows-setup-error-causes-independent-20261106/bundle/part-004.base64.txt",
+      "bytes": 180000,
+      "git_blob": "6fb32ce6d81cd180b6593e978cc8267e89bc3fac",
+      "sha256": "ae67ca6c41ce16785fca402478a42b44062a9709ac6b320e7f91e387ee72ca20",
+      "actual_create_sha": "6fb32ce6d81cd180b6593e978cc8267e89bc3fac",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 180000,
+        "git_blob": "6fb32ce6d81cd180b6593e978cc8267e89bc3fac",
+        "sha256": "ae67ca6c41ce16785fca402478a42b44062a9709ac6b320e7f91e387ee72ca20"
+      }
+    },
+    {
+      "repository_path": "ci-audit/windows-setup-error-causes-independent-20261106/bundle/part-005.base64.txt",
+      "bytes": 180000,
+      "git_blob": "0c9793a36d7ece5baa86282814bb2a80d18247bc",
+      "sha256": "352ec08d02f2e1042439152453137befe11d96322392003cab52406e96eb89e7",
+      "actual_create_sha": "0c9793a36d7ece5baa86282814bb2a80d18247bc",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 180000,
+        "git_blob": "0c9793a36d7ece5baa86282814bb2a80d18247bc",
+        "sha256": "352ec08d02f2e1042439152453137befe11d96322392003cab52406e96eb89e7"
+      }
+    },
+    {
+      "repository_path": "ci-audit/windows-setup-error-causes-independent-20261106/bundle/part-006.base64.txt",
+      "bytes": 180000,
+      "git_blob": "20db050f6bc30d12739a5b0461df33c4725c9878",
+      "sha256": "7cf2acebed27cf7506f42ae652df73846ec38cf3819c2c80a08f2cc8c062f0b6",
+      "actual_create_sha": "20db050f6bc30d12739a5b0461df33c4725c9878",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 180000,
+        "git_blob": "20db050f6bc30d12739a5b0461df33c4725c9878",
+        "sha256": "7cf2acebed27cf7506f42ae652df73846ec38cf3819c2c80a08f2cc8c062f0b6"
+      }
+    },
+    {
+      "repository_path": "ci-audit/windows-setup-error-causes-independent-20261106/bundle/part-007.base64.txt",
+      "bytes": 180000,
+      "git_blob": "374441281fcbccb1be221906bca2142ca35846e5",
+      "sha256": "b8190bbd8ececf1534a2940f4787d676e9ed1223978034ca0af51f02ec712755",
+      "actual_create_sha": "374441281fcbccb1be221906bca2142ca35846e5",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 180000,
+        "git_blob": "374441281fcbccb1be221906bca2142ca35846e5",
+        "sha256": "b8190bbd8ececf1534a2940f4787d676e9ed1223978034ca0af51f02ec712755"
+      }
+    },
+    {
+      "repository_path": "ci-audit/windows-setup-error-causes-independent-20261106/bundle/part-008.base64.txt",
+      "bytes": 42148,
+      "git_blob": "5cf4c3f1e847759ae520ef3c50e54277e6c5699c",
+      "sha256": "0f03c869b07d180204c1710b500adca2f959eb1cfa149d6f981177a625eda164",
+      "actual_create_sha": "5cf4c3f1e847759ae520ef3c50e54277e6c5699c",
+      "actual_full_GET_equal": true,
+      "actual_full_GET_identity": {
+        "bytes": 42148,
+        "git_blob": "5cf4c3f1e847759ae520ef3c50e54277e6c5699c",
+        "sha256": "0f03c869b07d180204c1710b500adca2f959eb1cfa149d6f981177a625eda164"
+      }
+    }
+  ],
+  "actual_registered_objects": 16,
+  "all_full_GET_bytes_equal": true
+}

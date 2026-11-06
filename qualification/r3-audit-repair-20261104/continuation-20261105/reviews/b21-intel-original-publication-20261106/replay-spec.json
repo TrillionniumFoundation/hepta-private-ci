@@ -1,0 +1,24 @@
+{
+  "kind": "b21",
+  "authority": {
+    "source_commit": "cc65856cc0b20d03db506c19495d53d61162102d",
+    "source_tree": "eaded1870d080eaa55efae6208354729140e784c",
+    "parent": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+    "PR": 4902,
+    "merge_commit": "f0355601e362e2ad4947b40d51215e5c4d075fc3"
+  },
+  "verifier": "hepta-audit-fifth/b21-intel-original-gate/verify_candidate.py",
+  "arguments": [],
+  "verifier_written_frozen_files": [
+    "hepta-audit-fifth/b21-intel-original-gate/intended-full-tree.json",
+    "hepta-audit-fifth/b21-intel-original-gate/static-verification.json"
+  ],
+  "expected_stdout_file": "expected-verifier.stdout.json",
+  "expected_stdout": {
+    "bytes": 267,
+    "sha256": "efcd6562fbd3568a9295f743e51e2ed7378c294796f478045bf4f72d29274af1",
+    "git_blob": "ed7345a04b45120f94745019d22020f427980b07"
+  },
+  "expected_stdout_provenance": "Reconstructed from the corresponding frozen root proof fields in the exact order/encoding of the frozen verifier print statement; not a historical stdout capture.",
+  "scope": "offline source-publication custody only; native/compile/fmt NOT_RUN"
+}

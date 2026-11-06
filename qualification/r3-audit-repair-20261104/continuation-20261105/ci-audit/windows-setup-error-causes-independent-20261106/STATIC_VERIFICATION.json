@@ -1,0 +1,268 @@
+{
+  "schema": "windows-setup-error-causes-independent-static-v1",
+  "source_head": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+  "source_tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+  "computed_candidate_tree": "78b817fec87e593e0a0f6357d84f895b8574bde5",
+  "source_files": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/setup_error.rs",
+      "preimage": {
+        "bytes": 11408,
+        "git_blob": "d9104602bc19af88101fbb5b44f839a1d799c174",
+        "sha256": "0325efd3abefe50de8eef5e7cf59f2572388b1f8f18365431c69b766a4eb1e35"
+      },
+      "postimage": {
+        "bytes": 13725,
+        "git_blob": "37aa38dde9e83ee5f3ce8f267f11afd76fee3400",
+        "sha256": "811769bbcf5136ed75bc666d1c32a6936a288c404be754c7e6d94bc8a3e338b5"
+      }
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs",
+      "preimage": {
+        "bytes": 47955,
+        "git_blob": "1d9340c6db26d6d10c1b3edecb1c9fecc908ef1d",
+        "sha256": "ba3bf6444e72c443575281e192e7b343c7c61180a1a699f4ffb4f87cba7e0ac3"
+      },
+      "postimage": {
+        "bytes": 47638,
+        "git_blob": "505be9299f9580877449740fd235e988f8c93b7b",
+        "sha256": "05b8373471d8a46740eea6e7c7b9f91427d07744e235045b928e280bf27628a2"
+      }
+    }
+  ],
+  "full_tree_verified": {
+    "leaves": 10582,
+    "directories_including_root": 1571,
+    "changed_paths": [
+      "codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs",
+      "codex-rs/windows-sandbox-rs/src/setup_error.rs"
+    ],
+    "unchanged_leaves": 10580
+  },
+  "dependencies": [
+    {
+      "path": "codex-rs/Cargo.lock",
+      "bytes": 413768,
+      "git_blob": "71fc8fa78b5afa076835b29790a5e6b0bd772558",
+      "sha256": "4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/Cargo.toml",
+      "bytes": 2438,
+      "git_blob": "aa41ed5f08608c0275785b2f5e27ec5db08f50dd",
+      "sha256": "183a3691be018640668dfb766f29651d8fd75ab08f7fd526f3d378ae2a86469d"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/BUILD.bazel",
+      "bytes": 2556,
+      "git_blob": "8531cb4d664c25de6fbf200c71cb8042d1d8d865",
+      "sha256": "187e93c5a9a244c752dee5ed15202b361d593d9d651f850a1bda5d69969a7702"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/lib.rs",
+      "bytes": 30379,
+      "git_blob": "11778af7beb645b36401807cf3e31a0dd4deddc0",
+      "sha256": "6a656c06930bcf07075db8712292bb8040a33667231783dba177e62230982b38"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/setup.rs",
+      "bytes": 83794,
+      "git_blob": "890755d01ca24f5ede1960582eacb9714633a0db",
+      "sha256": "1fa3bfafe7eb75d3ff009bc7ed741689ee9cf25595f7a5433538c325b1254b09"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/deny_read_acl.rs",
+      "bytes": 4118,
+      "git_blob": "dd3bc350e48299fe5a99e8d45eba61a239e5a186",
+      "sha256": "80a1f89c6badd8240102d4c50c982a2aa88bf2c5c49e19e672145076e61415c4"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/deny_read_state.rs",
+      "bytes": 2983,
+      "git_blob": "fd073a4d45c781f0441839708f92e32d0831556c",
+      "sha256": "1a277638c3b7a39cf3d9eed32f954a0c3e32110ccbc738c8348b2ba7dabba82a"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/acl_deny.rs",
+      "bytes": 7038,
+      "git_blob": "8f73a1a58176a1a15b3476c008cb3682b24f6579",
+      "sha256": "d5025de042ffe10f8aa1692fbee8858a0178012b62a9cc77fd9152c3f715fb50"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win/read_acl_mutex.rs",
+      "bytes": 1913,
+      "git_blob": "a96b6a502474a8bab3baa7842f36dfa814c9cc37",
+      "sha256": "89d689e0c0a07ff8b68d719f6ffb23df86a22598df37d57f6d70360ca738e695"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/workspace_roots.rs",
+      "bytes": 18181,
+      "git_blob": "0af48c703785999365e8c538e91840c66aae4c28",
+      "sha256": "f5ec26124aef791ebb7f6c7d3f6abad0b8dc8b0d26cb9b3e50c0d2d6469f9f01"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/windows_sandbox.rs",
+      "bytes": 20583,
+      "git_blob": "cd22ea91c61afdf49b669bfd5e664841036551f4",
+      "sha256": "fbd30fe3b8c7d50281ee871714a39e9b6b6890bc9ad1d0f1eb561d79d0943501"
+    }
+  ],
+  "fresh_full_GETs": [
+    {
+      "record": "setup_error.postimage.json",
+      "envelope": {
+        "bytes": 14409,
+        "git_blob": "e64237f1094369e5f954966448fa9477d9380557",
+        "sha256": "ae9e4ee583819c331e04e9fadc626bbcb24c3aacfd0603596cca0c9300bc92a5"
+      },
+      "decoded": {
+        "bytes": 13725,
+        "git_blob": "37aa38dde9e83ee5f3ce8f267f11afd76fee3400",
+        "sha256": "811769bbcf5136ed75bc666d1c32a6936a288c404be754c7e6d94bc8a3e338b5"
+      },
+      "full_bytes_equal": true
+    },
+    {
+      "record": "win.postimage.json",
+      "envelope": {
+        "bytes": 49491,
+        "git_blob": "216e89114915cb0cf06f8c4a6de3535f368e4258",
+        "sha256": "e3ec550d805c1378934049cb8e454f0ee6cbecb73e1151efab91563b0339e8e3"
+      },
+      "decoded": {
+        "bytes": 47638,
+        "git_blob": "505be9299f9580877449740fd235e988f8c93b7b",
+        "sha256": "05b8373471d8a46740eea6e7c7b9f91427d07744e235045b928e280bf27628a2"
+      },
+      "full_bytes_equal": true
+    },
+    {
+      "record": "cargo.dependency.json",
+      "envelope": {
+        "bytes": 2819,
+        "git_blob": "515a4e86a8a12a3e237b861b8a3183941354dd42",
+        "sha256": "229946f5a4af7b494d5eea364ae4eeb22f299e32970e8ab7095a852d3d274ec1"
+      },
+      "decoded": {
+        "bytes": 2438,
+        "git_blob": "aa41ed5f08608c0275785b2f5e27ec5db08f50dd",
+        "sha256": "183a3691be018640668dfb766f29651d8fd75ab08f7fd526f3d378ae2a86469d"
+      },
+      "full_bytes_equal": true
+    },
+    {
+      "record": "build.dependency.json",
+      "envelope": {
+        "bytes": 2851,
+        "git_blob": "cb0666d468ce0db74d242bd01a11b0e18566a68d",
+        "sha256": "71f07223980b4770a18de0b478b53a3715fbd6ffeb7dd57f7e1d32c33795a8dc"
+      },
+      "decoded": {
+        "bytes": 2556,
+        "git_blob": "8531cb4d664c25de6fbf200c71cb8042d1d8d865",
+        "sha256": "187e93c5a9a244c752dee5ed15202b361d593d9d651f850a1bda5d69969a7702"
+      },
+      "full_bytes_equal": true
+    },
+    {
+      "record": "lock.dependency.json",
+      "envelope": {
+        "bytes": 458587,
+        "git_blob": "acfec40543a20b117608e077378033f988d9d294",
+        "sha256": "faf3821f894cfcec0b250775ef3245718e118a04ee7b939a69ad88aaa444a773"
+      },
+      "decoded": {
+        "bytes": 413768,
+        "git_blob": "71fc8fa78b5afa076835b29790a5e6b0bd772558",
+        "sha256": "4a7a5535cf045089458468411e126b5f59bc6bbf34fc0deead9b0c1b8d84000a"
+      },
+      "full_bytes_equal": true
+    },
+    {
+      "record": "lib.dependency.json",
+      "envelope": {
+        "bytes": 31752,
+        "git_blob": "cc188042c27b4eb922b60803ea076d3e66047606",
+        "sha256": "1e2895076063a1fef680d2147be494b58ce56464500189cadac108e1a048d81d"
+      },
+      "decoded": {
+        "bytes": 30379,
+        "git_blob": "11778af7beb645b36401807cf3e31a0dd4deddc0",
+        "sha256": "6a656c06930bcf07075db8712292bb8040a33667231783dba177e62230982b38"
+      },
+      "full_bytes_equal": true
+    }
+  ],
+  "patch_identity": {
+    "bytes": 3743,
+    "git_blob": "0274ac8ec5bf8a629eccecb17888a4dcc31aa1d2",
+    "sha256": "81a25623d05ca8ed31fe60401bb9b0def059d522a20e89503e82756f36691d9c"
+  },
+  "patch_operations": [
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "<frozen candidate.patch>"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "<frozen candidate.patch>"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "--check",
+        "<frozen candidate.patch>"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "<frozen candidate.patch>"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "exact_runtime_delta": "One constructor addition; one report-construction substitution. All remaining production bytes and original test bodies unchanged.",
+  "original_setup_error_tests": [
+    "sanitize_tag_value_redacts_username_segments",
+    "sanitize_tag_value_leaves_unknown_segments",
+    "sanitize_tag_value_redacts_multiple_occurrences"
+  ],
+  "added_setup_error_tests": [
+    "untyped_setup_report_preserves_context_chain_and_os_error",
+    "typed_setup_report_preserves_code_and_message_through_context"
+  ],
+  "new_tests_include_real_file_JSON_roundtrip_in_source": true,
+  "new_tests_target_os": "windows",
+  "tests_executed": false,
+  "Rust_compiled": false,
+  "rustfmt_executed": false,
+  "new_native_started": false,
+  "refs_written": false,
+  "ACL_cause_status": "UNKNOWN: preserved originals expose only apply deny-read ACLs; state read/parse/write and ACE operation remain distinguishable possibilities.",
+  "read_acl_mutex_position": "The failing synchronous deny-read operation precedes the background read-grant mutex check.",
+  "protected_metadata_scope": "The original test fails on allowed-file readback before its three protected-directory refusal/physical assertions; no protected-metadata escape established."
+}

@@ -1,0 +1,231 @@
+{
+  "schema": "b23-linux-original-appserver-resume-checkpoint-v1",
+  "checkpoint_at_utc": "2026-11-06 02:19:13 UTC",
+  "status": "PREPARATION_ONLY_NO_WORKFLOW_CANDIDATE_NO_NATIVE_RUN",
+  "summary_zh": "已绑定固定 main67 原完整 Linux AppServer 门及 14 个输入原件。最终独审 collector 尚未接受，执行器不可用。停止继续读取/轮询；待恢复条件满足后由根统一形成、审阅和发表仅新增工作流的候选。",
+  "source": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "base_commit": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+    "base_tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+    "binding_basis": "Previously verified main67 full tree/publication plus exact full source GETs; all 14 bodies independently recomputed to their fixed Git leaf SHA in code-mode.",
+    "fixed_inputs": [
+      {
+        "path": ".github/workflows/bazel.yml",
+        "bytes": 20751,
+        "git_blob": "9eed8ed8fa46c88d9d89d1499f55cb8c303137af",
+        "sha256": "a7bf703f31b14fd0925e3db892e4444d2ebd8db0033b69ec47ff44eae65104dd",
+        "full_get_read": true
+      },
+      {
+        "path": "defs.bzl",
+        "bytes": 34630,
+        "git_blob": "6f588ec3057fddfea35170e28e74036162ce6a23",
+        "sha256": "f5638a9189632c8d8524a438bbfc6b365bddf7f23dfd2df06a6de3a2ff3f2cfa",
+        "full_get_read": true
+      },
+      {
+        "path": "codex-rs/app-server/BUILD.bazel",
+        "bytes": 1448,
+        "git_blob": "a3c8ba463f34b031cc517501f41d67b60f2b9feb",
+        "sha256": "9c17d311022594bf97dd08667713a6d4c85ddd245c59b1d9cca57f5787508acd",
+        "full_get_read": true
+      },
+      {
+        "path": "codex-rs/app-server/src/lib.rs",
+        "bytes": 78648,
+        "git_blob": "484970198d5a8c71f0d4bf8e92fa0e8a2780f45e",
+        "sha256": "0f6371ae5795963a451be0a9e9af7c55898644e817533bbe0597c275a992bdaf",
+        "full_get_read": true
+      },
+      {
+        "path": "codex-rs/app-server/src/shutdown_signals.rs",
+        "bytes": 1691,
+        "git_blob": "a45eca7491eb9d588a703668c10ab4aadf20b101",
+        "sha256": "aa030d124ee50cf1dabaa6a885846b9eccb4f36dcb2900c4b2df88c103b7ff5a",
+        "full_get_read": true
+      },
+      {
+        "path": "codex-rs/app-server/src/shutdown_signals_tests.rs",
+        "bytes": 4809,
+        "git_blob": "cf2f370bf35fc7cbb8d3b339f92f7da25b87cb51",
+        "sha256": "c664383fe6d0943e9df9be1ca8acc21b3c9b16e2926e5cb42bf13bb7625d4537",
+        "full_get_read": true
+      },
+      {
+        "path": ".bazelrc",
+        "bytes": 14926,
+        "git_blob": "3d5877b283b887091af507f3672003f84c500687",
+        "sha256": "53a5fd4e65e4e9937b826174520fe1eb642adb79cfe7a6335c871d5fa9db57fa",
+        "full_get_read": true
+      },
+      {
+        "path": ".github/scripts/run_bazel_with_buildbuddy.py",
+        "bytes": 14442,
+        "git_blob": "21a5fdf0e7afcde4b6141229e95fcff8f6a7e763",
+        "sha256": "656fa9f508bb339da949a359a457f02fa3979449ae1761b0084494cf38e83a0e",
+        "full_get_read": true
+      },
+      {
+        "path": ".github/actions/setup-ci/action.yml",
+        "bytes": 4141,
+        "git_blob": "8abd2dbd5f09585734f8213011a9ed540a2ee88e",
+        "sha256": "6d29a131641a739983b3aea22c0febbf20d1d0ee21b356570f3763ddafced9ba",
+        "full_get_read": true
+      },
+      {
+        "path": ".github/actions/check-clean-worktree/action.yml",
+        "bytes": 596,
+        "git_blob": "5a7bdddcf8f560d20fcd6639761a500b7ef12cf3",
+        "sha256": "58844cf1afb11d5cdbdfe577e4227ea3361ce495960c2d0cce94ca0da3da82a5",
+        "full_get_read": true
+      },
+      {
+        "path": ".bazelversion",
+        "bytes": 6,
+        "git_blob": "b13d146a7b02b96e4c30340e69388d539c9721be",
+        "sha256": "14ebdd5f5d8dfccb0fc574ea9aabecc07d7cdd99d53e4fc01e58f9c3d23d18ef",
+        "full_get_read": true
+      },
+      {
+        "path": ".github/actions/prepare-bazel-ci/action.yml",
+        "bytes": 3255,
+        "git_blob": "f9508a1659e5f2c54a6ae5b263bb9328095438d7",
+        "sha256": "a5286f6896c99a71ee247afbad1dc0aa00d967352f33bb24d8cb97e4df5d978b",
+        "full_get_read": true
+      },
+      {
+        "path": ".github/scripts/run-bazel-ci.sh",
+        "bytes": 17448,
+        "git_blob": "42b59b6354b5933c8155b992519682c06d024ca1",
+        "sha256": "0136e087ddfac7c01bdacb03357d0353d328dea3b8cd86caf94e64bf10706482",
+        "full_get_read": true
+      },
+      {
+        "path": "codex-rs/app-server/src/drain_handle_tests.rs",
+        "bytes": 734,
+        "git_blob": "18d30754feae43b4cfa358c96ab4161067935c24",
+        "sha256": "f5e65db6b1efe74e696cf0eb01d4b76fd7376ac8b1f70dd14f1afe4997c159b0",
+        "full_get_read": true
+      }
+    ]
+  },
+  "original_gate": {
+    "target": "//codex-rs/app-server:app-server-unit-tests",
+    "runner": "ubuntu-24.04",
+    "target_triple": "x86_64-unknown-linux-gnu",
+    "job_timeout_minutes": 120,
+    "unit_test_shard_count": 8,
+    "runner_scope": "Preserve original GNU workflow, prepare/cache actions, shell/Python wrapper, CI configuration, default flaky retry behavior and test parallelism. GitHub Ubuntu host alone does not prove a local TestRunner: retain actual compact runner/cache/platform evidence.",
+    "linux_only_signal_cases": [
+      "shutdown_signals::tests::first_sigterm_survives_cancelled_receive",
+      "shutdown_signals::tests::first_sighup_survives_cancelled_receive",
+      "shutdown_signals::tests::first_sigint_survives_cancelled_receive"
+    ],
+    "drain_cases": [
+      "drain_handle_tests::repeated_drain_requests_preserve_the_real_completion_acknowledgement",
+      "drain_handle_tests::requesting_drain_does_not_acknowledge_outstanding_turns"
+    ],
+    "case_filter_added": false,
+    "selection_note": "These five case names are later evidence checks within the original full target, not a proposed test filter. Preserve all other target cases and shards.",
+    "source_guards_to_preserve": "Signal fixture is cfg(all(test,target_os=\"linux\")); actual install_shutdown_signal_handler && !stdio condition, disabled path, original child/parent deadlines, drain completion acknowledgement, BUILD/defs and all product leaves remain original."
+  },
+  "planned_candidate_invariants": {
+    "status": "NOT_FORMED_OR_EXECUTED",
+    "only_new_workflow_path": true,
+    "original_base_blob_leaf_count": 10582,
+    "workflow_text_created": false,
+    "git_blob_created_for_workflow": false,
+    "ref_created": false,
+    "pull_request_created": false,
+    "native_dispatches": 0,
+    "reruns": 0,
+    "cancellations": 0,
+    "capacity_queries": 0,
+    "timeout_changes": 0,
+    "test_filter_added": false,
+    "retry_override_added": false,
+    "test_threads_override_added": false,
+    "original_wrapper_args": [
+      "--print-failed-action-summary",
+      "--print-failed-test-logs"
+    ],
+    "original_test_args": [
+      "test",
+      "--test_tag_filters=-argument-comment-lint",
+      "--test_verbose_timeout_warnings",
+      "--build_metadata=COMMIT_SHA=${GITHUB_SHA}"
+    ],
+    "agreed_evidence_flags_only": [
+      "--nocache_test_results",
+      "--build_event_json_file=<private path outside artifact upload directory>",
+      "--nobuild_event_json_file_path_conversion"
+    ],
+    "evidence_plan": "Use only final independently accepted collector; retain every produced attempt, all raw log/XML and compact records; keep raw BEP private outside upload, public sanitized JSONL and safe receipt, preserve real Bazel/tee/collector exit statuses separately.",
+    "qualification_note": "A diagnostic full-target pass does not establish all main required jobs passed. Close the relevant current Linux gate only against actual source/run/attempt/complete artifact bindings and preserved original acceptance evidence."
+  },
+  "historical_negative_control": {
+    "actual_full_summary_read": {
+      "bytes": 343668,
+      "git_blob": "f03ce31c7e39759148577633dad9b36b4e0b3669",
+      "sha256": "cf2e962b3bcf20e2d19d4397d2a1d4d23f11905cf8f76c7c6947b312eda35e18"
+    },
+    "summary_name": "second-batch-qualification.json",
+    "native_phases": [
+      23,
+      24
+    ],
+    "baseline": {
+      "source_tree": "1ebbdf67bfec90c4cb43babc15aa3914367fd269",
+      "execution_id": "6380e6a2-be7f-4846-9c59-37f24a75269e",
+      "selected": 5,
+      "passed": 2,
+      "failed": 3,
+      "ignored": 0,
+      "exit": 100
+    },
+    "fixed": {
+      "source_tree": "57b8d27014ac37bc2ea6262b2c6a52fb6c2e33b0",
+      "execution_id": "ae7138fa-7739-473a-9e0b-74d528a833bd",
+      "selected": 5,
+      "passed": 5,
+      "failed": 0,
+      "ignored": 0,
+      "exit": 0
+    },
+    "summary_causal_statement_only": "Original summary reports all three negative child failures at retained.recv timeout line116 after independent delivered.recv at115 had returned Some. Ignored child helper is not PASS.",
+    "raw_recovered": false,
+    "status_xml_independently_reread_in_this_continuation": false,
+    "indexed_raw_status": {
+      "bytes": 6121,
+      "sha256": "dfa1ad5d70914ebe5370e706950286e158be2125bb29dfd5ac55b4f4b9bda660"
+    },
+    "indexed_negative_xml": {
+      "bytes": 127647,
+      "sha256": "a210d1c06eb36ce51c7b6040a8e4c4e5920dd5baa11cc2ad5add19c57898d930"
+    },
+    "indexed_fixed_xml": {
+      "bytes": 1333,
+      "sha256": "7b6c25beb1f163af2fe8c87343a7f460273f30daf2239fd830ce447184ab90b6"
+    },
+    "indexed_original_fixture": {
+      "bytes": 4809,
+      "sha256": "c664383fe6d0943e9df9be1ca8acc21b3c9b16e2926e5cb42bf13bb7625d4537"
+    },
+    "qualification": "These raw identities and outcome numbers are claims in the actual recovered summary, not recovered raw status/XML or a new native rerun. Do not substitute the summary for raw-custody proof. No negative-control rerun authorized or performed here."
+  },
+  "resume_dependencies": [
+    "Final independent collector review and immutable freeze; current draft is not accepted.",
+    "Executor recovery or an explicitly reviewed alternative sufficient to form and verify the whole source-bound candidate, without guessing workflow bytes.",
+    "Root review of single new workflow leaf, base-tree preservation, original gate/budget/environment and separate exit/evidence checks.",
+    "Root exclusively publishes the reviewed ref/PR; observe only the original automatic workflow if actually created.",
+    "Recover original historical raw status/XML if needed for causal custody; preserve the gap until then."
+  ],
+  "stop_state": {
+    "additional_source_reading": false,
+    "waiting_or_polling": false,
+    "workflow_candidate": false,
+    "native_executed": false,
+    "local_checkpoint_written": false,
+    "checkpoint_persistence": "Only this JSON via immutable Git create + full GET; no executor use."
+  }
+}

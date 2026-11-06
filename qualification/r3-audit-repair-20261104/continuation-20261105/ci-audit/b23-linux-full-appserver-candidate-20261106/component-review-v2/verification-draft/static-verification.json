@@ -1,0 +1,105 @@
+{
+  "scope": "offline workflow/static integrity checks plus controlled shell stand-ins; no native target execution",
+  "draft": true,
+  "workflow_identity": {
+    "bytes": 18121,
+    "git_blob": "bdc8b4c46616ad9c3840fc41d731be6995378ca5",
+    "sha256": "f19a9d06a0c4e0b708e2148d451bf83dc3811225a4ea4154c0a2c0669fe2debe"
+  },
+  "workflow_lines": 379,
+  "original_base_commit": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+  "original_base_tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+  "actual_preimage_tree_objects_recomputed": {
+    "root": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+    "github": "866a60a74167d31e1ad07fda4c3bf07681c990e4",
+    "workflows": "3d094da1a85a6714de9b1562cb94aef17d830392"
+  },
+  "computed_candidate_root_tree": "17bcd0d25dad9886d5a8e2b9871df09da941c14c",
+  "candidate_root_actual_created": false,
+  "reverse_projection_restores_actual_base": true,
+  "extra_original_leaf_is_rejected": true,
+  "forward_reverse_git_apply": "passed",
+  "fixed_original_source_bodies_unchanged": 14,
+  "original_steps_semantically_identical": [
+    "checkout",
+    "Prepare Bazel CI",
+    "Check rusty_v8 MODULE.bazel checksums",
+    "Check MODULE.bazel.lock is up to date",
+    "Save bazel repository cache",
+    "Check for a clean worktree"
+  ],
+  "original_full_target": "//codex-rs/app-server:app-server-unit-tests",
+  "job_timeout_minutes": 120,
+  "runtime_cases_filtered": false,
+  "retry_threads_or_test_budget_overrides": false,
+  "syntax": [
+    {
+      "name": "Bind original source and merge checkout",
+      "bash_syntax": "passed",
+      "python_blocks_compiled": 1
+    },
+    {
+      "name": "Check rusty_v8 MODULE.bazel checksums",
+      "bash_syntax": "passed",
+      "python_blocks_compiled": 0
+    },
+    {
+      "name": "Check MODULE.bazel.lock is up to date",
+      "bash_syntax": "passed",
+      "python_blocks_compiled": 0
+    },
+    {
+      "name": "Run the original full AppServer unit-test target",
+      "bash_syntax": "passed",
+      "python_blocks_compiled": 0
+    },
+    {
+      "name": "Verify source after the original invocation",
+      "bash_syntax": "passed",
+      "python_blocks_compiled": 0
+    },
+    {
+      "name": "Collect every produced attempt and gate artifact privacy",
+      "bash_syntax": "passed",
+      "python_blocks_compiled": 1
+    },
+    {
+      "name": "Preserve the original result and require complete evidence",
+      "bash_syntax": "passed",
+      "python_blocks_compiled": 1
+    }
+  ],
+  "collector_scope": "explicit unaccepted placeholder; not publishable",
+  "controlled_exit_fixtures": [
+    {
+      "case": "pass",
+      "synthetic_wrapper_exit": 0,
+      "saved_original_exit": 0,
+      "saved_console_copy_exit": 0,
+      "final_gate_exit": 0,
+      "exact_argument_sequence": true,
+      "actual_bazel_or_product_execution": false
+    },
+    {
+      "case": "original-failure",
+      "synthetic_wrapper_exit": 3,
+      "saved_original_exit": 3,
+      "saved_console_copy_exit": 0,
+      "final_gate_exit": 1,
+      "exact_argument_sequence": true,
+      "actual_bazel_or_product_execution": false
+    },
+    {
+      "case": "copy-failure",
+      "synthetic_wrapper_exit": 0,
+      "saved_original_exit": 0,
+      "saved_console_copy_exit": 1,
+      "final_gate_exit": 1,
+      "exact_argument_sequence": true,
+      "actual_bazel_or_product_execution": false
+    }
+  ],
+  "actual_source_guard_on_github_checkout": "NOT_RUN",
+  "native_run": "NOT_RUN",
+  "independent_B23_acceptance": "PENDING"
+}

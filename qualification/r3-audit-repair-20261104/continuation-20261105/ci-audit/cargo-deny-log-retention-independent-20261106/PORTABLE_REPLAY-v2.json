@@ -1,0 +1,68 @@
+{
+  "schema": "cargo-deny-portable-review-publication-v2-replay",
+  "manifest": {
+    "bytes": 364116,
+    "git_blob": "fb32093da896f6534df710e126f0d07adf03a658",
+    "sha256": "aa98733a900ea06f6d36a7e14e350314e28240bb7f0c3a3f0c2bab1b90e6efc2"
+  },
+  "restored_members": 1194,
+  "previous1188_bytes_unchanged": true,
+  "all_commands_exit_zero": true,
+  "runs": [
+    {
+      "label": "restore",
+      "argv": [
+        "python",
+        "/tmp/hepta-runtime-recovery-20261106/cargo-deny-independent-review/restore_bundle.py",
+        "/tmp/hepta-runtime-recovery-20261106/cargo-deny-independent-review/bundle-v2/manifest.json",
+        "/tmp/hepta-runtime-recovery-20261106/cargo-deny-independent-restored-v2"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"verified_members\": 1194,\n  \"all_member_bytes_equal\": true,\n  \"archive\": {\n    \"bytes\": 790132,\n    \"git_blob\": \"15f28f6963e515bdabfd5b9ae2a7e8462b1c352b\",\n    \"sha256\": \"2632ccc2900e0e97396d2deb25179f8c492891c6aeebdf434fec75331a5aabdf\"\n  }\n}\n",
+      "stderr": "",
+      "stdout_identity": {
+        "bytes": 247,
+        "git_blob": "28fa4f1fde01c909d80f2ff91a418c9e74a8c055",
+        "sha256": "bdcbde34e98b2cb2b215985416322ac1903dd85905c1a68da549121dea33161f"
+      },
+      "expected_full_bytes_equal": null
+    },
+    {
+      "label": "independent-verifier",
+      "argv": [
+        "python",
+        "/tmp/hepta-runtime-recovery-20261106/cargo-deny-independent-restored-v2/verify_independent.py",
+        "--root",
+        "/tmp/hepta-runtime-recovery-20261106/cargo-deny-independent-restored-v2"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"schema\": \"cargo-deny-independent-static-review-v1\",\n  \"frozen_members\": 515,\n  \"frozen_total_bytes\": 3189214,\n  \"author_freeze_identity\": {\n    \"bytes\": 131829,\n    \"git_blob\": \"2f83533d74132de49b6bb16417daef18481807dd\",\n    \"sha256\": \"ee7d7e8feca2222ab0aa0520264671d0ca0c035aa9d33304b0ac97cfd520d4c8\"\n  },\n  \"all_frozen_files_exact\": true,\n  \"preimage\": {\n    \"bytes\": 965,\n    \"git_blob\": \"88b6308899357e23b4a4058aecd4527b4edcee9b\",\n    \"sha256\": \"1cdaf438b2a2c158b046675ee5a8d0f878d9e3e32a30b9fd9dd5a32e5fa9bf9e\"\n  },\n  \"candidate\": {\n    \"bytes\": 16019,\n    \"git_blob\": \"57f6095d18c5517c9e7cf7d0de05b9645b106152\",\n    \"sha256\": \"1a57f41bd71fccd9a219f4295c297c1520bdf92ed1704dbe34b6791b60921ef8\"\n  },\n  \"fresh_full_GET_equal\": true,\n  \"base_tree\": \"3982ba56dc5a3f1da0c1de7ea57992f88125c359\",\n  \"candidate_tree\": \"06c4e2f80884b169e31d8a5edf04438486a9ee81\",\n  \"original_leaves\": 10582,\n  \"unchanged_leaves\": 10581,\n  \"directories\": 1571,\n  \"original_settings_and_setup_clean_steps_preserved\": true,\n  \"exact_original_check_command\": \"cargo +1.95.0 deny --locked --all-features check --config deny.toml\",\n  \"one_check_per_offline_fixture\": true,\n  \"PIPESTATUS_immediate_and_original_exit_prioritized\": true,\n  \"raw_private_log_and_checked_public_copy\": \"Every uploaded file is constructed from the already-scanned bytes and read back for complete equality; no raw private directory upload.\",\n  \"normal_ANSI_environment_preserved\": true,\n  \"privacy_false_negative_corrected\": \"ANSI normalization and unsupported-control check are repeated at every decoded view.\",\n  \"patch\": {\n    \"bytes\": 15791,\n    \"git_blob\": \"27d35a9744b5c0bad0b57058d128cbb1272d5a97\",\n    \"sha256\": \"a25084d1a0fbc7ce378e20a48a8f8b926817290d0ef16ee5e2c0dcfa28cac53d\"\n  },\n  \"real_local_git_patch_operations\": [\n    {\n      \"argv\": [\n        \"git\",\n        \"apply\",\n        \"--check\",\n        \"<frozen full.patch>\"\n      ],\n      \"exit\": 0\n    },\n    {\n      \"argv\": [\n        \"git\",\n        \"apply\",\n        \"<frozen full.patch>\"\n      ],\n      \"exit\": 0\n    },\n    {\n      \"argv\": [\n        \"git\",\n        \"apply\",\n        \"--reverse\",\n        \"--check\",\n        \"<frozen full.patch>\"\n      ],\n      \"exit\": 0\n    },\n    {\n      \"argv\": [\n        \"git\",\n        \"apply\",\n        \"--reverse\",\n        \"<frozen full.patch>\"\n      ],\n      \"exit\": 0\n    }\n  ],\n  \"isolated_replays\": [\n    {\n      \"kind\": \"author-static-replay\",\n      \"exit\": 0,\n      \"stderr_bytes\": 0,\n      \"stdout\": {\n        \"bytes\": 3356,\n        \"git_blob\": \"9f6f931ba3aa047aa437e19079d344b29bcb947f\",\n        \"sha256\": \"9adacd2c9b862bb5089932f4eb90d0c48cf9f5b69a6e05b8ed58c47e6da00fbf\"\n      },\n      \"full_bytes_equal\": true\n    },\n    {\n      \"kind\": \"author-fake-replay\",\n      \"exit\": 0,\n      \"stderr_bytes\": 0,\n      \"stdout\": {\n        \"bytes\": 6564,\n        \"git_blob\": \"c9e6729f25758330121e746d4f3bb52a085806b9\",\n        \"sha256\": \"5091528c4300dc96ea1ea7693eede8204c8c09c0a97c53b01cf3b555132dced0\"\n      },\n      \"full_bytes_equal\": true\n    }\n  ],\n  \"runtime_source_scope\": \"Records actual HEAD/tree; requires before/after equality and clean. External actual checkout/API binding remains required for native qualification.\",\n  \"privacy_scope\": \"Known values and recognized syntax/URI forms with four percent-decoding layers; no universal classifier for arbitrary unmarked unknown secrets.\",\n  \"actual_cargo_deny_failure_cause\": \"UNKNOWN\",\n  \"real_cargo_Rust_build_CI_dispatch_or_rerun\": false,\n  \"ref_mutation\": false\n}\n",
+      "stderr": "",
+      "stdout_identity": {
+        "bytes": 3478,
+        "git_blob": "c65968fa567cff1ede44090b06db7837d6cc8044",
+        "sha256": "ea18fc35ee3e8f6d2f6ae6f97c28b7b152d93494306e1a0fa3e5f610505b8564"
+      },
+      "expected_full_bytes_equal": true
+    },
+    {
+      "label": "publication-verifier",
+      "argv": [
+        "python",
+        "/tmp/hepta-runtime-recovery-20261106/cargo-deny-independent-restored-v2/publication/verify_publication.py",
+        "--root",
+        "/tmp/hepta-runtime-recovery-20261106/cargo-deny-independent-restored-v2"
+      ],
+      "exit": 0,
+      "stdout": "{\n  \"schema\": \"cargo-deny-root-publication-independent-binding-v1\",\n  \"original_responses\": {\n    \"bytes\": 150280,\n    \"git_blob\": \"be82433cd0ada8e78125b6a1161920a462d4ce32\",\n    \"sha256\": \"009ec418f8a3a4153dd74653fc3026b0bb0908b7de000b26a0a834ea8e506f10\"\n  },\n  \"response_groups\": 14,\n  \"source\": {\n    \"bytes\": 16019,\n    \"git_blob\": \"57f6095d18c5517c9e7cf7d0de05b9645b106152\",\n    \"sha256\": \"1a57f41bd71fccd9a219f4295c297c1520bdf92ed1704dbe34b6791b60921ef8\"\n  },\n  \"independent_review\": {\n    \"bytes\": 7295,\n    \"git_blob\": \"875534b774e4e0f403fce5533ebcd07fb5df4122\",\n    \"sha256\": \"b2cde18e378e4ebd54bd91518536ed06ed08e3f1ad0a7ad21e33c7fad9d4d65f\"\n  },\n  \"head\": \"476653f8fe5874849e864ab3fd49c792913450ab\",\n  \"head_parent\": [\n    \"67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed\"\n  ],\n  \"tree\": \"06c4e2f80884b169e31d8a5edf04438486a9ee81\",\n  \"merge\": \"825779c5bba92a228f8d3cf6add429592acdc4a7\",\n  \"merge_parents\": [\n    \"67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed\",\n    \"476653f8fe5874849e864ab3fd49c792913450ab\"\n  ],\n  \"base_ref\": \"fix/r3-original-product-contracts-20261104\",\n  \"head_ref\": \"fix/cargo-deny-evidence-retention-20261106\",\n  \"PR\": 4922,\n  \"draft\": true,\n  \"actual_root_entries\": 53,\n  \"complete_Merkle_leaves\": 10582,\n  \"directories\": 1571,\n  \"unchanged_leaves\": 10581,\n  \"all_root_entries_equal_computed_projection\": true,\n  \"PR_body_full_bytes_equal_intended\": true,\n  \"root_static_replay_stdout\": {\n    \"bytes\": 3356,\n    \"git_blob\": \"9f6f931ba3aa047aa437e19079d344b29bcb947f\",\n    \"sha256\": \"9adacd2c9b862bb5089932f4eb90d0c48cf9f5b69a6e05b8ed58c47e6da00fbf\"\n  },\n  \"root_static_full_bytes_equal_author\": true,\n  \"scope\": \"Preserved actual API publication response binding only; no CI result, native cargo execution, artifact upload or blocker closure is inferred.\",\n  \"new_API_or_ref_mutation_by_this_verifier\": false\n}\n",
+      "stderr": "",
+      "stdout_identity": {
+        "bytes": 1833,
+        "git_blob": "12f7dc4a236176d062ad69d2e6a41e5844e417ce",
+        "sha256": "c8518f39938a1230e93c7e0dfde5734e37dc6933bbf8fc57a6389ea46ee46828"
+      },
+      "expected_full_bytes_equal": true
+    }
+  ],
+  "native_or_real_cargo_executed": false
+}

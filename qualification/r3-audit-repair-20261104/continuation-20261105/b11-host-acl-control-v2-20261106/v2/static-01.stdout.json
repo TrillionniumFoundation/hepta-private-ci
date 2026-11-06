@@ -1,0 +1,4071 @@
+{
+  "budget_note": "d851 already has a 5000 ms host wait; candidate preserves it and adds v3 owned-Job bounded cleanup. It does not widen original strict 5000 ms / collect 10 s budgets.",
+  "candidate_files": [
+    {
+      "bytes": 23135,
+      "git_blob": "47baf88cf0a30521c3b2eb033dc3ee65056ed2f6",
+      "path": "candidate/codex-rs/windows-sandbox-rs/src/acl_control_test_support.rs",
+      "sha256": "03ab81d0e24e67cf1430700da80503bb1eedcdb54173e0f336e99c45dd9e5272"
+    },
+    {
+      "bytes": 30491,
+      "git_blob": "208e17fcedc894663b5eaa6dc2d2c5d1991967d7",
+      "path": "candidate/codex-rs/windows-sandbox-rs/src/lib.rs",
+      "sha256": "c39de3d3a706cbdc26b7b8c4c4f8bb891323f5972a82e1eef6679cbb240dfa0e"
+    },
+    {
+      "bytes": 23065,
+      "git_blob": "ba51c9e5e30f0e614451c02c54b40a6ea40f9ada",
+      "path": "candidate/codex-rs/windows-sandbox-rs/src/token_tests.rs",
+      "sha256": "77ab1ebef49fb0cb2894fd07aca5671d08a1ebc5e0b3b819452d4ce52a3ca7bf"
+    },
+    {
+      "bytes": 6152,
+      "git_blob": "14a9cae9a7913ebc53a34ac3e1d3e038bc88d004",
+      "path": "candidate/codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs",
+      "sha256": "5c8e2881cc6d2946f5816e75b93c304d70df5caf8a57b6ba74990a5bad81da07"
+    }
+  ],
+  "changed_paths": [
+    "codex-rs/windows-sandbox-rs/src/acl_control_test_support.rs",
+    "codex-rs/windows-sandbox-rs/src/lib.rs",
+    "codex-rs/windows-sandbox-rs/src/token_tests.rs",
+    "codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs"
+  ],
+  "directory_count": 1571,
+  "expected_candidate_tree": "fbaf12d56a9702d927ae6f71cb9f3abc0cf31cae",
+  "leaf_count": 10590,
+  "limits": [
+    "No causal attribution to any single privilege.",
+    "New host premise can expose deeper unchanged strict failures; no prediction that fail count decreases.",
+    "Native12 qualifies the donor observation, not this uncompiled four-path candidate.",
+    "No ref, CI, native, Cargo, rustfmt, just test/fix/fmt operation was performed."
+  ],
+  "native12_donor_evidence": {
+    "applies_to_candidate": false,
+    "completed_observation": {
+      "child_before_release": [
+        {
+          "line": 532,
+          "value": {
+            "subject": "ordinary",
+            "token": {
+              "identity": {
+                "app_container": 0,
+                "groups": [
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      2,
+                      0,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      2,
+                      1,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      4,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      11,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      15,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      113,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      114,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      16,
+                      0,
+                      48,
+                      0,
+                      0
+                    ],
+                    96
+                  ],
+                  [
+                    [
+                      1,
+                      2,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      32,
+                      0,
+                      0,
+                      0,
+                      32,
+                      2,
+                      0,
+                      0
+                    ],
+                    15
+                  ],
+                  [
+                    [
+                      1,
+                      2,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      32,
+                      0,
+                      0,
+                      0,
+                      33,
+                      2,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      2,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      64,
+                      0,
+                      0,
+                      0,
+                      10,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      3,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      5,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      84,
+                      130,
+                      12,
+                      0
+                    ],
+                    3221225479
+                  ],
+                  [
+                    [
+                      1,
+                      5,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      21,
+                      0,
+                      0,
+                      0,
+                      57,
+                      181,
+                      110,
+                      183,
+                      114,
+                      184,
+                      67,
+                      218,
+                      112,
+                      8,
+                      167,
+                      247,
+                      1,
+                      2,
+                      0,
+                      0
+                    ],
+                    7
+                  ]
+                ],
+                "integrity_and_policy": {
+                  "integrity_attributes": 96,
+                  "integrity_rid": 12288,
+                  "mandatory_policy": 3
+                },
+                "restricted_sids": [],
+                "session": 2,
+                "user": [
+                  [
+                    1,
+                    5,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    21,
+                    0,
+                    0,
+                    0,
+                    57,
+                    181,
+                    110,
+                    183,
+                    114,
+                    184,
+                    67,
+                    218,
+                    112,
+                    8,
+                    167,
+                    247,
+                    244,
+                    1,
+                    0,
+                    0
+                  ],
+                  0
+                ]
+              },
+              "impersonation_level": null,
+              "privileges": [
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 5,
+                  "name": "SeIncreaseQuotaPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 8,
+                  "name": "SeSecurityPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 9,
+                  "name": "SeTakeOwnershipPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 10,
+                  "name": "SeLoadDriverPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 11,
+                  "name": "SeSystemProfilePrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 12,
+                  "name": "SeSystemtimePrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 13,
+                  "name": "SeProfileSingleProcessPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 14,
+                  "name": "SeIncreaseBasePriorityPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 15,
+                  "name": "SeCreatePagefilePrivilege"
+                },
+                {
+                  "attributes": 2,
+                  "enabled": true,
+                  "luid_high": 0,
+                  "luid_low": 17,
+                  "name": "SeBackupPrivilege"
+                },
+                {
+                  "attributes": 2,
+                  "enabled": true,
+                  "luid_high": 0,
+                  "luid_low": 18,
+                  "name": "SeRestorePrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 19,
+                  "name": "SeShutdownPrivilege"
+                },
+                {
+                  "attributes": 2,
+                  "enabled": true,
+                  "luid_high": 0,
+                  "luid_low": 20,
+                  "name": "SeDebugPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 22,
+                  "name": "SeSystemEnvironmentPrivilege"
+                },
+                {
+                  "attributes": 3,
+                  "enabled": true,
+                  "luid_high": 0,
+                  "luid_low": 23,
+                  "name": "SeChangeNotifyPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 24,
+                  "name": "SeRemoteShutdownPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 25,
+                  "name": "SeUndockPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 28,
+                  "name": "SeManageVolumePrivilege"
+                },
+                {
+                  "attributes": 3,
+                  "enabled": true,
+                  "luid_high": 0,
+                  "luid_low": 29,
+                  "name": "SeImpersonatePrivilege"
+                },
+                {
+                  "attributes": 3,
+                  "enabled": true,
+                  "luid_high": 0,
+                  "luid_low": 30,
+                  "name": "SeCreateGlobalPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 33,
+                  "name": "SeIncreaseWorkingSetPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 34,
+                  "name": "SeTimeZonePrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 35,
+                  "name": "SeCreateSymbolicLinkPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 36,
+                  "name": "SeDelegateSessionUserImpersonatePrivilege"
+                }
+              ],
+              "token_type": 1
+            }
+          }
+        },
+        {
+          "line": 538,
+          "value": {
+            "subject": "disabled",
+            "token": {
+              "identity": {
+                "app_container": 0,
+                "groups": [
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      2,
+                      0,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      2,
+                      1,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      4,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      11,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      15,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      113,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      114,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      16,
+                      0,
+                      48,
+                      0,
+                      0
+                    ],
+                    96
+                  ],
+                  [
+                    [
+                      1,
+                      2,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      32,
+                      0,
+                      0,
+                      0,
+                      32,
+                      2,
+                      0,
+                      0
+                    ],
+                    15
+                  ],
+                  [
+                    [
+                      1,
+                      2,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      32,
+                      0,
+                      0,
+                      0,
+                      33,
+                      2,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      2,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      64,
+                      0,
+                      0,
+                      0,
+                      10,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      3,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      5,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      84,
+                      130,
+                      12,
+                      0
+                    ],
+                    3221225479
+                  ],
+                  [
+                    [
+                      1,
+                      5,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      21,
+                      0,
+                      0,
+                      0,
+                      57,
+                      181,
+                      110,
+                      183,
+                      114,
+                      184,
+                      67,
+                      218,
+                      112,
+                      8,
+                      167,
+                      247,
+                      1,
+                      2,
+                      0,
+                      0
+                    ],
+                    7
+                  ]
+                ],
+                "integrity_and_policy": {
+                  "integrity_attributes": 96,
+                  "integrity_rid": 12288,
+                  "mandatory_policy": 3
+                },
+                "restricted_sids": [],
+                "session": 2,
+                "user": [
+                  [
+                    1,
+                    5,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    21,
+                    0,
+                    0,
+                    0,
+                    57,
+                    181,
+                    110,
+                    183,
+                    114,
+                    184,
+                    67,
+                    218,
+                    112,
+                    8,
+                    167,
+                    247,
+                    244,
+                    1,
+                    0,
+                    0
+                  ],
+                  0
+                ]
+              },
+              "impersonation_level": null,
+              "privileges": [
+                {
+                  "attributes": 3,
+                  "enabled": true,
+                  "luid_high": 0,
+                  "luid_low": 23,
+                  "name": "SeChangeNotifyPrivilege"
+                }
+              ],
+              "token_type": 1
+            }
+          }
+        }
+      ],
+      "child_finished": [
+        {
+          "line": 534,
+          "value": {
+            "accounted": 1,
+            "active_processes": 0,
+            "cleanup_wait": 0,
+            "exit": 0,
+            "stdout_stderr": "NEITHER_INPUT_RELEASED\r\nMATRIX_ATTEMPT_0\r\nFILE_RC_0=0\r\nDIR_RC_0=0\r\nMATRIX_ATTEMPT_1\r\nFILE_RC_1=0\r\nDIR_RC_1=0\r\nMATRIX_ATTEMPT_2\r\nFILE_RC_2=0\r\nDIR_RC_2=0\r\nMATRIX_ATTEMPT_3\r\nFILE_RC_3=0\r\nDIR_RC_3=0\r\nMATRIX_DONE\r\n",
+            "stdout_stderr_bytes": [
+              78,
+              69,
+              73,
+              84,
+              72,
+              69,
+              82,
+              95,
+              73,
+              78,
+              80,
+              85,
+              84,
+              95,
+              82,
+              69,
+              76,
+              69,
+              65,
+              83,
+              69,
+              68,
+              13,
+              10,
+              77,
+              65,
+              84,
+              82,
+              73,
+              88,
+              95,
+              65,
+              84,
+              84,
+              69,
+              77,
+              80,
+              84,
+              95,
+              48,
+              13,
+              10,
+              70,
+              73,
+              76,
+              69,
+              95,
+              82,
+              67,
+              95,
+              48,
+              61,
+              48,
+              13,
+              10,
+              68,
+              73,
+              82,
+              95,
+              82,
+              67,
+              95,
+              48,
+              61,
+              48,
+              13,
+              10,
+              77,
+              65,
+              84,
+              82,
+              73,
+              88,
+              95,
+              65,
+              84,
+              84,
+              69,
+              77,
+              80,
+              84,
+              95,
+              49,
+              13,
+              10,
+              70,
+              73,
+              76,
+              69,
+              95,
+              82,
+              67,
+              95,
+              49,
+              61,
+              48,
+              13,
+              10,
+              68,
+              73,
+              82,
+              95,
+              82,
+              67,
+              95,
+              49,
+              61,
+              48,
+              13,
+              10,
+              77,
+              65,
+              84,
+              82,
+              73,
+              88,
+              95,
+              65,
+              84,
+              84,
+              69,
+              77,
+              80,
+              84,
+              95,
+              50,
+              13,
+              10,
+              70,
+              73,
+              76,
+              69,
+              95,
+              82,
+              67,
+              95,
+              50,
+              61,
+              48,
+              13,
+              10,
+              68,
+              73,
+              82,
+              95,
+              82,
+              67,
+              95,
+              50,
+              61,
+              48,
+              13,
+              10,
+              77,
+              65,
+              84,
+              82,
+              73,
+              88,
+              95,
+              65,
+              84,
+              84,
+              69,
+              77,
+              80,
+              84,
+              95,
+              51,
+              13,
+              10,
+              70,
+              73,
+              76,
+              69,
+              95,
+              82,
+              67,
+              95,
+              51,
+              61,
+              48,
+              13,
+              10,
+              68,
+              73,
+              82,
+              95,
+              82,
+              67,
+              95,
+              51,
+              61,
+              48,
+              13,
+              10,
+              77,
+              65,
+              84,
+              82,
+              73,
+              88,
+              95,
+              68,
+              79,
+              78,
+              69,
+              13,
+              10
+            ],
+            "subject": "ordinary",
+            "terminate_error": null,
+            "work_error": null
+          }
+        },
+        {
+          "line": 540,
+          "value": {
+            "accounted": 1,
+            "active_processes": 0,
+            "cleanup_wait": 0,
+            "exit": 0,
+            "stdout_stderr": "NEITHER_INPUT_RELEASED\r\nMATRIX_ATTEMPT_0\r\nD:\\tmp\\.tmp0jGpru\\cmd-disabled\\Neither\\file\r\nAccess is denied.\r\nFILE_RC_0=0\r\nAccess is denied.\r\nDIR_RC_0=0\r\nMATRIX_ATTEMPT_1\r\nFILE_RC_1=0\r\nDIR_RC_1=0\r\nMATRIX_ATTEMPT_2\r\nFILE_RC_2=0\r\nDIR_RC_2=0\r\nMATRIX_ATTEMPT_3\r\nFILE_RC_3=0\r\nDIR_RC_3=0\r\nMATRIX_DONE\r\n",
+            "stdout_stderr_bytes": [
+              78,
+              69,
+              73,
+              84,
+              72,
+              69,
+              82,
+              95,
+              73,
+              78,
+              80,
+              85,
+              84,
+              95,
+              82,
+              69,
+              76,
+              69,
+              65,
+              83,
+              69,
+              68,
+              13,
+              10,
+              77,
+              65,
+              84,
+              82,
+              73,
+              88,
+              95,
+              65,
+              84,
+              84,
+              69,
+              77,
+              80,
+              84,
+              95,
+              48,
+              13,
+              10,
+              68,
+              58,
+              92,
+              116,
+              109,
+              112,
+              92,
+              46,
+              116,
+              109,
+              112,
+              48,
+              106,
+              71,
+              112,
+              114,
+              117,
+              92,
+              99,
+              109,
+              100,
+              45,
+              100,
+              105,
+              115,
+              97,
+              98,
+              108,
+              101,
+              100,
+              92,
+              78,
+              101,
+              105,
+              116,
+              104,
+              101,
+              114,
+              92,
+              102,
+              105,
+              108,
+              101,
+              13,
+              10,
+              65,
+              99,
+              99,
+              101,
+              115,
+              115,
+              32,
+              105,
+              115,
+              32,
+              100,
+              101,
+              110,
+              105,
+              101,
+              100,
+              46,
+              13,
+              10,
+              70,
+              73,
+              76,
+              69,
+              95,
+              82,
+              67,
+              95,
+              48,
+              61,
+              48,
+              13,
+              10,
+              65,
+              99,
+              99,
+              101,
+              115,
+              115,
+              32,
+              105,
+              115,
+              32,
+              100,
+              101,
+              110,
+              105,
+              101,
+              100,
+              46,
+              13,
+              10,
+              68,
+              73,
+              82,
+              95,
+              82,
+              67,
+              95,
+              48,
+              61,
+              48,
+              13,
+              10,
+              77,
+              65,
+              84,
+              82,
+              73,
+              88,
+              95,
+              65,
+              84,
+              84,
+              69,
+              77,
+              80,
+              84,
+              95,
+              49,
+              13,
+              10,
+              70,
+              73,
+              76,
+              69,
+              95,
+              82,
+              67,
+              95,
+              49,
+              61,
+              48,
+              13,
+              10,
+              68,
+              73,
+              82,
+              95,
+              82,
+              67,
+              95,
+              49,
+              61,
+              48,
+              13,
+              10,
+              77,
+              65,
+              84,
+              82,
+              73,
+              88,
+              95,
+              65,
+              84,
+              84,
+              69,
+              77,
+              80,
+              84,
+              95,
+              50,
+              13,
+              10,
+              70,
+              73,
+              76,
+              69,
+              95,
+              82,
+              67,
+              95,
+              50,
+              61,
+              48,
+              13,
+              10,
+              68,
+              73,
+              82,
+              95,
+              82,
+              67,
+              95,
+              50,
+              61,
+              48,
+              13,
+              10,
+              77,
+              65,
+              84,
+              82,
+              73,
+              88,
+              95,
+              65,
+              84,
+              84,
+              69,
+              77,
+              80,
+              84,
+              95,
+              51,
+              13,
+              10,
+              70,
+              73,
+              76,
+              69,
+              95,
+              82,
+              67,
+              95,
+              51,
+              61,
+              48,
+              13,
+              10,
+              68,
+              73,
+              82,
+              95,
+              82,
+              67,
+              95,
+              51,
+              61,
+              48,
+              13,
+              10,
+              77,
+              65,
+              84,
+              82,
+              73,
+              88,
+              95,
+              68,
+              79,
+              78,
+              69,
+              13,
+              10
+            ],
+            "subject": "disabled",
+            "terminate_error": null,
+            "work_error": null
+          }
+        }
+      ],
+      "cmd_physical": [
+        {
+          "line": 536,
+          "value": {
+            "command_exit_codes": [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "outcomes": [
+              {
+                "directory_deleted": true,
+                "file_deleted": true,
+                "route": "Neither"
+              },
+              {
+                "directory_deleted": true,
+                "file_deleted": true,
+                "route": "TargetOnly"
+              },
+              {
+                "directory_deleted": true,
+                "file_deleted": true,
+                "route": "ParentOnly"
+              },
+              {
+                "directory_deleted": true,
+                "file_deleted": true,
+                "route": "Both"
+              }
+            ],
+            "subject": "ordinary"
+          }
+        },
+        {
+          "line": 542,
+          "value": {
+            "command_exit_codes": [
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                0
+              ],
+              [
+                0,
+                0
+              ]
+            ],
+            "outcomes": [
+              {
+                "directory_deleted": false,
+                "file_deleted": false,
+                "route": "Neither"
+              },
+              {
+                "directory_deleted": true,
+                "file_deleted": true,
+                "route": "TargetOnly"
+              },
+              {
+                "directory_deleted": true,
+                "file_deleted": true,
+                "route": "ParentOnly"
+              },
+              {
+                "directory_deleted": true,
+                "file_deleted": true,
+                "route": "Both"
+              }
+            ],
+            "subject": "disabled"
+          }
+        }
+      ],
+      "complete": "subjects=2 matrices=5 routes=4 rust_contexts=3 cmd_contexts=2 owned_child_processes=2 observation_only=true isolation_qualified=false",
+      "filesystem": [
+        {
+          "line": 516,
+          "value": {
+            "file_id_128": [
+              196,
+              127,
+              1,
+              0,
+              0,
+              0,
+              34,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "filesystem": "NTFS",
+            "flags": 65482495,
+            "maximum_component": 255,
+            "root": "D:\\tmp\\.tmp0jGpru",
+            "serial": 1812330661,
+            "volume_name": "Temp",
+            "volume_serial_64": 9397893159952185509
+          }
+        }
+      ],
+      "rust_before": [
+        {
+          "line": 520,
+          "value": {
+            "is_thread": false,
+            "subject": "ordinary-direct",
+            "token": {
+              "identity": {
+                "app_container": 0,
+                "groups": [
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      2,
+                      0,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      2,
+                      1,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      4,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      11,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      15,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      113,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      114,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      16,
+                      0,
+                      48,
+                      0,
+                      0
+                    ],
+                    96
+                  ],
+                  [
+                    [
+                      1,
+                      2,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      32,
+                      0,
+                      0,
+                      0,
+                      32,
+                      2,
+                      0,
+                      0
+                    ],
+                    15
+                  ],
+                  [
+                    [
+                      1,
+                      2,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      32,
+                      0,
+                      0,
+                      0,
+                      33,
+                      2,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      2,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      64,
+                      0,
+                      0,
+                      0,
+                      10,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      3,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      5,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      84,
+                      130,
+                      12,
+                      0
+                    ],
+                    3221225479
+                  ],
+                  [
+                    [
+                      1,
+                      5,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      21,
+                      0,
+                      0,
+                      0,
+                      57,
+                      181,
+                      110,
+                      183,
+                      114,
+                      184,
+                      67,
+                      218,
+                      112,
+                      8,
+                      167,
+                      247,
+                      1,
+                      2,
+                      0,
+                      0
+                    ],
+                    7
+                  ]
+                ],
+                "integrity_and_policy": {
+                  "integrity_attributes": 96,
+                  "integrity_rid": 12288,
+                  "mandatory_policy": 3
+                },
+                "restricted_sids": [],
+                "session": 2,
+                "user": [
+                  [
+                    1,
+                    5,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    21,
+                    0,
+                    0,
+                    0,
+                    57,
+                    181,
+                    110,
+                    183,
+                    114,
+                    184,
+                    67,
+                    218,
+                    112,
+                    8,
+                    167,
+                    247,
+                    244,
+                    1,
+                    0,
+                    0
+                  ],
+                  0
+                ]
+              },
+              "impersonation_level": null,
+              "privileges": [
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 5,
+                  "name": "SeIncreaseQuotaPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 8,
+                  "name": "SeSecurityPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 9,
+                  "name": "SeTakeOwnershipPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 10,
+                  "name": "SeLoadDriverPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 11,
+                  "name": "SeSystemProfilePrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 12,
+                  "name": "SeSystemtimePrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 13,
+                  "name": "SeProfileSingleProcessPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 14,
+                  "name": "SeIncreaseBasePriorityPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 15,
+                  "name": "SeCreatePagefilePrivilege"
+                },
+                {
+                  "attributes": 2,
+                  "enabled": true,
+                  "luid_high": 0,
+                  "luid_low": 17,
+                  "name": "SeBackupPrivilege"
+                },
+                {
+                  "attributes": 2,
+                  "enabled": true,
+                  "luid_high": 0,
+                  "luid_low": 18,
+                  "name": "SeRestorePrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 19,
+                  "name": "SeShutdownPrivilege"
+                },
+                {
+                  "attributes": 2,
+                  "enabled": true,
+                  "luid_high": 0,
+                  "luid_low": 20,
+                  "name": "SeDebugPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 22,
+                  "name": "SeSystemEnvironmentPrivilege"
+                },
+                {
+                  "attributes": 3,
+                  "enabled": true,
+                  "luid_high": 0,
+                  "luid_low": 23,
+                  "name": "SeChangeNotifyPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 24,
+                  "name": "SeRemoteShutdownPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 25,
+                  "name": "SeUndockPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 28,
+                  "name": "SeManageVolumePrivilege"
+                },
+                {
+                  "attributes": 3,
+                  "enabled": true,
+                  "luid_high": 0,
+                  "luid_low": 29,
+                  "name": "SeImpersonatePrivilege"
+                },
+                {
+                  "attributes": 3,
+                  "enabled": true,
+                  "luid_high": 0,
+                  "luid_low": 30,
+                  "name": "SeCreateGlobalPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 33,
+                  "name": "SeIncreaseWorkingSetPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 34,
+                  "name": "SeTimeZonePrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 35,
+                  "name": "SeCreateSymbolicLinkPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 36,
+                  "name": "SeDelegateSessionUserImpersonatePrivilege"
+                }
+              ],
+              "token_type": 1
+            }
+          }
+        },
+        {
+          "line": 524,
+          "value": {
+            "is_thread": true,
+            "subject": "ordinary-impersonated",
+            "token": {
+              "identity": {
+                "app_container": 0,
+                "groups": [
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      2,
+                      0,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      2,
+                      1,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      4,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      11,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      15,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      113,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      114,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      16,
+                      0,
+                      48,
+                      0,
+                      0
+                    ],
+                    96
+                  ],
+                  [
+                    [
+                      1,
+                      2,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      32,
+                      0,
+                      0,
+                      0,
+                      32,
+                      2,
+                      0,
+                      0
+                    ],
+                    15
+                  ],
+                  [
+                    [
+                      1,
+                      2,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      32,
+                      0,
+                      0,
+                      0,
+                      33,
+                      2,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      2,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      64,
+                      0,
+                      0,
+                      0,
+                      10,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      3,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      5,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      84,
+                      130,
+                      12,
+                      0
+                    ],
+                    3221225479
+                  ],
+                  [
+                    [
+                      1,
+                      5,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      21,
+                      0,
+                      0,
+                      0,
+                      57,
+                      181,
+                      110,
+                      183,
+                      114,
+                      184,
+                      67,
+                      218,
+                      112,
+                      8,
+                      167,
+                      247,
+                      1,
+                      2,
+                      0,
+                      0
+                    ],
+                    7
+                  ]
+                ],
+                "integrity_and_policy": {
+                  "integrity_attributes": 96,
+                  "integrity_rid": 12288,
+                  "mandatory_policy": 3
+                },
+                "restricted_sids": [],
+                "session": 2,
+                "user": [
+                  [
+                    1,
+                    5,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    21,
+                    0,
+                    0,
+                    0,
+                    57,
+                    181,
+                    110,
+                    183,
+                    114,
+                    184,
+                    67,
+                    218,
+                    112,
+                    8,
+                    167,
+                    247,
+                    244,
+                    1,
+                    0,
+                    0
+                  ],
+                  0
+                ]
+              },
+              "impersonation_level": 2,
+              "privileges": [
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 5,
+                  "name": "SeIncreaseQuotaPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 8,
+                  "name": "SeSecurityPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 9,
+                  "name": "SeTakeOwnershipPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 10,
+                  "name": "SeLoadDriverPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 11,
+                  "name": "SeSystemProfilePrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 12,
+                  "name": "SeSystemtimePrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 13,
+                  "name": "SeProfileSingleProcessPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 14,
+                  "name": "SeIncreaseBasePriorityPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 15,
+                  "name": "SeCreatePagefilePrivilege"
+                },
+                {
+                  "attributes": 2,
+                  "enabled": true,
+                  "luid_high": 0,
+                  "luid_low": 17,
+                  "name": "SeBackupPrivilege"
+                },
+                {
+                  "attributes": 2,
+                  "enabled": true,
+                  "luid_high": 0,
+                  "luid_low": 18,
+                  "name": "SeRestorePrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 19,
+                  "name": "SeShutdownPrivilege"
+                },
+                {
+                  "attributes": 2,
+                  "enabled": true,
+                  "luid_high": 0,
+                  "luid_low": 20,
+                  "name": "SeDebugPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 22,
+                  "name": "SeSystemEnvironmentPrivilege"
+                },
+                {
+                  "attributes": 3,
+                  "enabled": true,
+                  "luid_high": 0,
+                  "luid_low": 23,
+                  "name": "SeChangeNotifyPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 24,
+                  "name": "SeRemoteShutdownPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 25,
+                  "name": "SeUndockPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 28,
+                  "name": "SeManageVolumePrivilege"
+                },
+                {
+                  "attributes": 3,
+                  "enabled": true,
+                  "luid_high": 0,
+                  "luid_low": 29,
+                  "name": "SeImpersonatePrivilege"
+                },
+                {
+                  "attributes": 3,
+                  "enabled": true,
+                  "luid_high": 0,
+                  "luid_low": 30,
+                  "name": "SeCreateGlobalPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 33,
+                  "name": "SeIncreaseWorkingSetPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 34,
+                  "name": "SeTimeZonePrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 35,
+                  "name": "SeCreateSymbolicLinkPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 36,
+                  "name": "SeDelegateSessionUserImpersonatePrivilege"
+                }
+              ],
+              "token_type": 2
+            }
+          }
+        },
+        {
+          "line": 528,
+          "value": {
+            "is_thread": true,
+            "subject": "disabled-impersonated",
+            "token": {
+              "identity": {
+                "app_container": 0,
+                "groups": [
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      2,
+                      0,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      2,
+                      1,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      4,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      11,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      15,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      113,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      114,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      16,
+                      0,
+                      48,
+                      0,
+                      0
+                    ],
+                    96
+                  ],
+                  [
+                    [
+                      1,
+                      2,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      32,
+                      0,
+                      0,
+                      0,
+                      32,
+                      2,
+                      0,
+                      0
+                    ],
+                    15
+                  ],
+                  [
+                    [
+                      1,
+                      2,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      32,
+                      0,
+                      0,
+                      0,
+                      33,
+                      2,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      2,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      64,
+                      0,
+                      0,
+                      0,
+                      10,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      3,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      5,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      84,
+                      130,
+                      12,
+                      0
+                    ],
+                    3221225479
+                  ],
+                  [
+                    [
+                      1,
+                      5,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      21,
+                      0,
+                      0,
+                      0,
+                      57,
+                      181,
+                      110,
+                      183,
+                      114,
+                      184,
+                      67,
+                      218,
+                      112,
+                      8,
+                      167,
+                      247,
+                      1,
+                      2,
+                      0,
+                      0
+                    ],
+                    7
+                  ]
+                ],
+                "integrity_and_policy": {
+                  "integrity_attributes": 96,
+                  "integrity_rid": 12288,
+                  "mandatory_policy": 3
+                },
+                "restricted_sids": [],
+                "session": 2,
+                "user": [
+                  [
+                    1,
+                    5,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    21,
+                    0,
+                    0,
+                    0,
+                    57,
+                    181,
+                    110,
+                    183,
+                    114,
+                    184,
+                    67,
+                    218,
+                    112,
+                    8,
+                    167,
+                    247,
+                    244,
+                    1,
+                    0,
+                    0
+                  ],
+                  0
+                ]
+              },
+              "impersonation_level": 2,
+              "privileges": [
+                {
+                  "attributes": 3,
+                  "enabled": true,
+                  "luid_high": 0,
+                  "luid_low": 23,
+                  "name": "SeChangeNotifyPrivilege"
+                }
+              ],
+              "token_type": 2
+            }
+          }
+        }
+      ],
+      "rust_physical": [
+        {
+          "line": 522,
+          "value": {
+            "operations": [
+              {
+                "directory_error": null,
+                "file_error": null,
+                "read": "matrix-original",
+                "read_error": null
+              },
+              {
+                "directory_error": null,
+                "file_error": null,
+                "read": "matrix-original",
+                "read_error": null
+              },
+              {
+                "directory_error": null,
+                "file_error": null,
+                "read": "matrix-original",
+                "read_error": null
+              },
+              {
+                "directory_error": null,
+                "file_error": null,
+                "read": "matrix-original",
+                "read_error": null
+              }
+            ],
+            "outcomes": [
+              {
+                "directory_deleted": true,
+                "file_deleted": true,
+                "route": "Neither"
+              },
+              {
+                "directory_deleted": true,
+                "file_deleted": true,
+                "route": "TargetOnly"
+              },
+              {
+                "directory_deleted": true,
+                "file_deleted": true,
+                "route": "ParentOnly"
+              },
+              {
+                "directory_deleted": true,
+                "file_deleted": true,
+                "route": "Both"
+              }
+            ],
+            "subject": "ordinary-direct"
+          }
+        },
+        {
+          "line": 526,
+          "value": {
+            "operations": [
+              {
+                "directory_error": null,
+                "file_error": null,
+                "read": "matrix-original",
+                "read_error": null
+              },
+              {
+                "directory_error": null,
+                "file_error": null,
+                "read": "matrix-original",
+                "read_error": null
+              },
+              {
+                "directory_error": null,
+                "file_error": null,
+                "read": "matrix-original",
+                "read_error": null
+              },
+              {
+                "directory_error": null,
+                "file_error": null,
+                "read": "matrix-original",
+                "read_error": null
+              }
+            ],
+            "outcomes": [
+              {
+                "directory_deleted": true,
+                "file_deleted": true,
+                "route": "Neither"
+              },
+              {
+                "directory_deleted": true,
+                "file_deleted": true,
+                "route": "TargetOnly"
+              },
+              {
+                "directory_deleted": true,
+                "file_deleted": true,
+                "route": "ParentOnly"
+              },
+              {
+                "directory_deleted": true,
+                "file_deleted": true,
+                "route": "Both"
+              }
+            ],
+            "subject": "ordinary-impersonated"
+          }
+        },
+        {
+          "line": 530,
+          "value": {
+            "operations": [
+              {
+                "directory_error": {
+                  "code": 5,
+                  "error": "Access is denied. (os error 5)"
+                },
+                "file_error": {
+                  "code": 5,
+                  "error": "Access is denied. (os error 5)"
+                },
+                "read": "matrix-original",
+                "read_error": null
+              },
+              {
+                "directory_error": null,
+                "file_error": null,
+                "read": "matrix-original",
+                "read_error": null
+              },
+              {
+                "directory_error": null,
+                "file_error": null,
+                "read": "matrix-original",
+                "read_error": null
+              },
+              {
+                "directory_error": null,
+                "file_error": null,
+                "read": "matrix-original",
+                "read_error": null
+              }
+            ],
+            "outcomes": [
+              {
+                "directory_deleted": false,
+                "file_deleted": false,
+                "route": "Neither"
+              },
+              {
+                "directory_deleted": true,
+                "file_deleted": true,
+                "route": "TargetOnly"
+              },
+              {
+                "directory_deleted": true,
+                "file_deleted": true,
+                "route": "ParentOnly"
+              },
+              {
+                "directory_deleted": true,
+                "file_deleted": true,
+                "route": "Both"
+              }
+            ],
+            "subject": "disabled-impersonated"
+          }
+        }
+      ],
+      "subjects": [
+        {
+          "line": 518,
+          "value": {
+            "disable_max_privilege": {
+              "identity": {
+                "app_container": 0,
+                "groups": [
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      2,
+                      0,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      2,
+                      1,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      4,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      11,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      15,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      113,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      114,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      16,
+                      0,
+                      48,
+                      0,
+                      0
+                    ],
+                    96
+                  ],
+                  [
+                    [
+                      1,
+                      2,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      32,
+                      0,
+                      0,
+                      0,
+                      32,
+                      2,
+                      0,
+                      0
+                    ],
+                    15
+                  ],
+                  [
+                    [
+                      1,
+                      2,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      32,
+                      0,
+                      0,
+                      0,
+                      33,
+                      2,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      2,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      64,
+                      0,
+                      0,
+                      0,
+                      10,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      3,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      5,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      84,
+                      130,
+                      12,
+                      0
+                    ],
+                    3221225479
+                  ],
+                  [
+                    [
+                      1,
+                      5,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      21,
+                      0,
+                      0,
+                      0,
+                      57,
+                      181,
+                      110,
+                      183,
+                      114,
+                      184,
+                      67,
+                      218,
+                      112,
+                      8,
+                      167,
+                      247,
+                      1,
+                      2,
+                      0,
+                      0
+                    ],
+                    7
+                  ]
+                ],
+                "integrity_and_policy": {
+                  "integrity_attributes": 96,
+                  "integrity_rid": 12288,
+                  "mandatory_policy": 3
+                },
+                "restricted_sids": [],
+                "session": 2,
+                "user": [
+                  [
+                    1,
+                    5,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    21,
+                    0,
+                    0,
+                    0,
+                    57,
+                    181,
+                    110,
+                    183,
+                    114,
+                    184,
+                    67,
+                    218,
+                    112,
+                    8,
+                    167,
+                    247,
+                    244,
+                    1,
+                    0,
+                    0
+                  ],
+                  0
+                ]
+              },
+              "impersonation_level": null,
+              "privileges": [
+                {
+                  "attributes": 3,
+                  "enabled": true,
+                  "luid_high": 0,
+                  "luid_low": 23,
+                  "name": "SeChangeNotifyPrivilege"
+                }
+              ],
+              "token_type": 1
+            },
+            "ordinary": {
+              "identity": {
+                "app_container": 0,
+                "groups": [
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      2,
+                      0,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      2,
+                      1,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      4,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      11,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      15,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      113,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      114,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      1,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      16,
+                      0,
+                      48,
+                      0,
+                      0
+                    ],
+                    96
+                  ],
+                  [
+                    [
+                      1,
+                      2,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      32,
+                      0,
+                      0,
+                      0,
+                      32,
+                      2,
+                      0,
+                      0
+                    ],
+                    15
+                  ],
+                  [
+                    [
+                      1,
+                      2,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      32,
+                      0,
+                      0,
+                      0,
+                      33,
+                      2,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      2,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      64,
+                      0,
+                      0,
+                      0,
+                      10,
+                      0,
+                      0,
+                      0
+                    ],
+                    7
+                  ],
+                  [
+                    [
+                      1,
+                      3,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      5,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      84,
+                      130,
+                      12,
+                      0
+                    ],
+                    3221225479
+                  ],
+                  [
+                    [
+                      1,
+                      5,
+                      0,
+                      0,
+                      0,
+                      0,
+                      0,
+                      5,
+                      21,
+                      0,
+                      0,
+                      0,
+                      57,
+                      181,
+                      110,
+                      183,
+                      114,
+                      184,
+                      67,
+                      218,
+                      112,
+                      8,
+                      167,
+                      247,
+                      1,
+                      2,
+                      0,
+                      0
+                    ],
+                    7
+                  ]
+                ],
+                "integrity_and_policy": {
+                  "integrity_attributes": 96,
+                  "integrity_rid": 12288,
+                  "mandatory_policy": 3
+                },
+                "restricted_sids": [],
+                "session": 2,
+                "user": [
+                  [
+                    1,
+                    5,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    5,
+                    21,
+                    0,
+                    0,
+                    0,
+                    57,
+                    181,
+                    110,
+                    183,
+                    114,
+                    184,
+                    67,
+                    218,
+                    112,
+                    8,
+                    167,
+                    247,
+                    244,
+                    1,
+                    0,
+                    0
+                  ],
+                  0
+                ]
+              },
+              "impersonation_level": null,
+              "privileges": [
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 5,
+                  "name": "SeIncreaseQuotaPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 8,
+                  "name": "SeSecurityPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 9,
+                  "name": "SeTakeOwnershipPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 10,
+                  "name": "SeLoadDriverPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 11,
+                  "name": "SeSystemProfilePrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 12,
+                  "name": "SeSystemtimePrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 13,
+                  "name": "SeProfileSingleProcessPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 14,
+                  "name": "SeIncreaseBasePriorityPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 15,
+                  "name": "SeCreatePagefilePrivilege"
+                },
+                {
+                  "attributes": 2,
+                  "enabled": true,
+                  "luid_high": 0,
+                  "luid_low": 17,
+                  "name": "SeBackupPrivilege"
+                },
+                {
+                  "attributes": 2,
+                  "enabled": true,
+                  "luid_high": 0,
+                  "luid_low": 18,
+                  "name": "SeRestorePrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 19,
+                  "name": "SeShutdownPrivilege"
+                },
+                {
+                  "attributes": 2,
+                  "enabled": true,
+                  "luid_high": 0,
+                  "luid_low": 20,
+                  "name": "SeDebugPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 22,
+                  "name": "SeSystemEnvironmentPrivilege"
+                },
+                {
+                  "attributes": 3,
+                  "enabled": true,
+                  "luid_high": 0,
+                  "luid_low": 23,
+                  "name": "SeChangeNotifyPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 24,
+                  "name": "SeRemoteShutdownPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 25,
+                  "name": "SeUndockPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 28,
+                  "name": "SeManageVolumePrivilege"
+                },
+                {
+                  "attributes": 3,
+                  "enabled": true,
+                  "luid_high": 0,
+                  "luid_low": 29,
+                  "name": "SeImpersonatePrivilege"
+                },
+                {
+                  "attributes": 3,
+                  "enabled": true,
+                  "luid_high": 0,
+                  "luid_low": 30,
+                  "name": "SeCreateGlobalPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 33,
+                  "name": "SeIncreaseWorkingSetPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 34,
+                  "name": "SeTimeZonePrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 35,
+                  "name": "SeCreateSymbolicLinkPrivilege"
+                },
+                {
+                  "attributes": 0,
+                  "enabled": false,
+                  "luid_high": 0,
+                  "luid_low": 36,
+                  "name": "SeDelegateSessionUserImpersonatePrivilege"
+                }
+              ],
+              "token_type": 1
+            }
+          }
+        }
+      ]
+    },
+    "log": {
+      "bytes": 165186,
+      "git_blob": "9c814dc540a97561dcb48c940f54cb0acd960f1e",
+      "path": "evidence/native12-whole.original.log",
+      "sha256": "36c31fd6f11301673685d00f5e6c63d0a797650148d215cd01b4db5f168f397d"
+    },
+    "xml": {
+      "bytes": 165609,
+      "git_blob": "0ea0663390489d41b2b803b651aebcababc3de14",
+      "path": "evidence/native12-whole.original.xml",
+      "sha256": "05a59ac1d727df8f8c3824d2193e3012360173a7e207e913328f077a2b0f8faa"
+    }
+  },
+  "original_byte_preservation": [
+    {
+      "bytes": 18068,
+      "equal": true,
+      "name": "token test complete prefix before modified case",
+      "sha256": "e83db36fbeb4418dd59a4cc4c05db28806d187076576a2c6c42d020cdafb0cda"
+    },
+    {
+      "bytes": 3065,
+      "equal": true,
+      "name": "token complete original strict half",
+      "sha256": "0b63f85c3b7676d797e05eb89a8566aa7057501486ac56a505a309a4ade89700"
+    },
+    {
+      "bytes": 666,
+      "equal": true,
+      "name": "token all original host error and physical assertions",
+      "sha256": "6271f91d7d8d595f85652fa496a046054bf2eb335d5e3771bea94bb4d9566820"
+    },
+    {
+      "bytes": 355,
+      "equal": true,
+      "name": "Rust original host four operation expression (indent adaptation only)",
+      "sha256": "8ea452a0d1717ff86cd27b06de7e6003c7b2d7a8ae6259063488845a645f4e75"
+    },
+    {
+      "bytes": 1140,
+      "equal": true,
+      "name": "complete original matrix_script and imports",
+      "sha256": "f17c82e819cbfc5967b606558bf9e2d3c68ca029efecbf407328740dd355e5df"
+    },
+    {
+      "bytes": 2708,
+      "equal": true,
+      "name": "CMD complete original strict half",
+      "sha256": "2fa0c6656a68e77dd29e8a2a07e6c8177b5664cf2690793228d6ffb7f1ef6e1c"
+    },
+    {
+      "bytes": 625,
+      "equal": true,
+      "name": "CMD all original host status, roster, physical assertions",
+      "sha256": "7fe4aad48153c271eeac30225f1bed97e45b87320fd8ee9c27d4cf6c274979e8"
+    },
+    {
+      "bytes": 2249,
+      "equal": true,
+      "name": "CMD original fixture/guard/script setup",
+      "sha256": "ec8019081efa43096cf8c5ab365c71b53c9ecfb6f4aedf9e1538ff6d48d66d39"
+    },
+    {
+      "bytes": 6313,
+      "equal": true,
+      "name": "8c exact TokenBuffer/token_record/effective_record block",
+      "sha256": "d458a5b44a526c587865e29d43d95e399a73d0c97d673f0d4c57caefa977e59a"
+    },
+    {
+      "bytes": 4051,
+      "equal": true,
+      "name": "8c exact OwnedChild/Drop/atomic launcher block",
+      "sha256": "6810d46eee79e2d0cee86fdae04848191b653f308c6eecff6a016e10d25fc412"
+    },
+    {
+      "bytes": 2001,
+      "equal": true,
+      "name": "fc9 exact TokenState/token_state block",
+      "sha256": "6e32c78c60536c49121491e30638c0cdc8b96682d0e34b4ca27e693c72f31b26"
+    },
+    {
+      "bytes": 201,
+      "equal": true,
+      "name": "handle ownership Drop body after visibility-only adaptation",
+      "sha256": "715fcbe3837829f167d2c5e7a4badb637f64b675b46743ac833b6462328a0e2c"
+    },
+    {
+      "bytes": 30379,
+      "equal": true,
+      "name": "lib only private test/Windows module registration",
+      "sha256": "6a656c06930bcf07075db8712292bb8040a33667231783dba177e62230982b38"
+    },
+    {
+      "bytes": 206,
+      "equal": true,
+      "name": "native12 gate runtime bytes plus local mode scope restored before original script",
+      "sha256": "f3102b000e5332c27412121862a9ca0eef421e313e20163d3d22f4f47c30e313"
+    }
+  ],
+  "original_test_roster_unchanged": true,
+  "original_v3_and_probe_unchanged": true,
+  "production_token_desktop_unchanged": true,
+  "revision": "v2_private_gate_local_modes_and_alias_removal",
+  "source_commit": "87b8603f21e52063ed54ce89cba26756a3efaab7",
+  "source_files": [
+    {
+      "bytes": 23303,
+      "git_blob": "a22ff3bee70261f6061d598c31f0016e785a7a3c",
+      "path": "source/AGENTS.md",
+      "sha256": "228165a9ff57b98f101917c4c8086ca76a755bec6c726bb29a4ce74408e2d7f8"
+    },
+    {
+      "bytes": 9710,
+      "git_blob": "0b01f011119bef623bc9e46e710caa371520380d",
+      "path": "source/codex-rs/windows-sandbox-rs/src/desktop.rs",
+      "sha256": "4e26ba072fada10f6185d16682274022108ef843f8292d1e7f9ed237f7e1a56f"
+    },
+    {
+      "bytes": 30379,
+      "git_blob": "11778af7beb645b36401807cf3e31a0dd4deddc0",
+      "path": "source/codex-rs/windows-sandbox-rs/src/lib.rs",
+      "sha256": "6a656c06930bcf07075db8712292bb8040a33667231783dba177e62230982b38"
+    },
+    {
+      "bytes": 4086,
+      "git_blob": "38110a69239e9707a324f2d4cf4a1fad932b4132",
+      "path": "source/codex-rs/windows-sandbox-rs/src/proc_thread_attr.rs",
+      "sha256": "e42e26ae546bb7e00639a70de5a8609d631d4d6f33976d32de6f4dbf741bcb8f"
+    },
+    {
+      "bytes": 11792,
+      "git_blob": "4d4f1d9435aad3cf9cd27a82d51b2be5b7659a4c",
+      "path": "source/codex-rs/windows-sandbox-rs/src/process.rs",
+      "sha256": "7c7ea19f6fcfa88990cf5582273eede6139a52ccda8212468087276bb50eaca7"
+    },
+    {
+      "bytes": 18437,
+      "git_blob": "b22acb5556f6af3b4c250a2441f161ee448ea1c1",
+      "path": "source/codex-rs/windows-sandbox-rs/src/token.rs",
+      "sha256": "6d7ddb4a84561b28bc134139226f9be444cb0dc03c73038e7988e21e18339a77"
+    },
+    {
+      "bytes": 17560,
+      "git_blob": "7a7008f9becf09578ca953c849401eda93eb94b2",
+      "path": "source/codex-rs/windows-sandbox-rs/src/token_integrity_probe_support.rs",
+      "sha256": "986fe8864f789e4bfa876553d99f1949be403f5ed10b9c88fdc8e0fd7331c0d1"
+    },
+    {
+      "bytes": 14736,
+      "git_blob": "fc9faa6d47ac5fdefa216affceb51a586f8e6b81",
+      "path": "source/codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs",
+      "sha256": "f5da450f9745cbf65947d15810e9973932264b28dfe21e4f7150b62e5081c2f9"
+    },
+    {
+      "bytes": 26205,
+      "git_blob": "8c16416c185f17871c25139bc16c6fd112b5fd41",
+      "path": "source/codex-rs/windows-sandbox-rs/src/token_neither_privilege_observation.rs",
+      "sha256": "c48d7a3917ca0bd8dda236d3773c0351a39272bbc277b8186bde7467035580ff"
+    },
+    {
+      "bytes": 22681,
+      "git_blob": "042858ce22b784d7809612e2d80e35d29b559f1a",
+      "path": "source/codex-rs/windows-sandbox-rs/src/token_tests.rs",
+      "sha256": "cda729e069f427b9fb197a75391ea30b3427a6b6c98a8ecb60d858328b808af0"
+    },
+    {
+      "bytes": 6841,
+      "git_blob": "d8511f92f9fbd9d58061238dbf3181152c74ccbc",
+      "path": "source/codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs",
+      "sha256": "397abb256644d00394b64d0d48cf02b72a32ca835163b1b7aed793617f68dcf3"
+    },
+    {
+      "bytes": 8038,
+      "git_blob": "45378b4bb527ce2b202913ab3b21aad9ef4b1828",
+      "path": "source/codex-rs/windows-sandbox-rs/src/winutil.rs",
+      "sha256": "12e2413a588b62ff3cc91c70c626a20801f4f84c0f4ea858ca7eb41e83a92185"
+    }
+  ],
+  "source_merge": "09960fe697c9c181e4a7d624e29b49360877b687",
+  "source_tree": "9a804c7b6e0dd554cdb435f41e06c5c689fffaaf",
+  "status": "STATIC_CANDIDATE_ONLY_NOT_COMPILED_OR_NATIVE_QUALIFIED"
+}

@@ -1,0 +1,72 @@
+{
+  "B11": "OPEN",
+  "actual_authority_root": "9cb7302777ce018dd022086041c2225d1dd5c8dd",
+  "after": {
+    "bytes": 26205,
+    "git_blob": "8c16416c185f17871c25139bc16c6fd112b5fd41",
+    "sha256": "c48d7a3917ca0bd8dda236d3773c0351a39272bbc277b8186bde7467035580ff"
+  },
+  "all_five_matrix_run_body_exactly_preserved": true,
+  "before": {
+    "bytes": 23010,
+    "git_blob": "b40b49ce772c402c51ddb16bb98ff73dc78cdb41",
+    "sha256": "441a000d02c7aab203a270bde951dcb6e98e02845e76314782892b87e6a6a835"
+  },
+  "cmd_body_preserved_except_launcher_and_job_access": true,
+  "decision": "STATIC_ACCEPT_EXACT_CANDIDATE_NOT_COMPILE_OR_NATIVE_QUALIFICATION",
+  "directory_count_including_root": 1571,
+  "expected_candidate_root": "9a804c7b6e0dd554cdb435f41e06c5c689fffaaf",
+  "formatting_tool_performed": false,
+  "forward_and_reverse_full_bytes_equal": true,
+  "full_tree_evidence": {
+    "bytes": 2331084,
+    "git_blob": "49c7e226fd3ba4e4f1788cc8c49d783218605909",
+    "sha256": "6cbd82c93c37941870b9d09c565621f4f0920d238f6e4152e38311f32f50a548"
+  },
+  "independent_full_GET_candidate": true,
+  "independent_full_GET_originals": 14,
+  "leaf_count": 10589,
+  "manual_FFI_and_cleanup_review": "Passed for the exact after blob. See REVIEW.zh-CN.md for ownership transitions, paired launch assembly, child-token gate, cleanup failure cases and runtime limits.",
+  "native11_cmd_contexts_observed": 0,
+  "native11_needed_TokenRestrictedSids_buffer_bytes": null,
+  "native11_observation_record_counts": {
+    "filesystem": 1,
+    "rust_before": 3,
+    "rust_physical": 3,
+    "subjects": 1
+  },
+  "native11_original": {
+    "bytes": 509112,
+    "git_blob": "b5177aa404bcddc5d4ee0838a5f20582b344dfaf",
+    "sha256": "29c7b0343a5f8865bd2bf8088e3108e2c3db3b3f89f93c0aaa72b89834d685bc"
+  },
+  "native11_v2_omission": "The observation used the production LaunchDesktop path although both ordinary/privilege-only subjects had empty restricting SID lists. The production precondition rejected that input before CreateProcessAsUserW; the earlier v2 review missed this. The guard is retained and only the test observation launcher changes.",
+  "native_execution_performed": false,
+  "new_CI_poll_or_dispatch": false,
+  "new_test_or_ignore_attributes": 0,
+  "original_probe_fc9_unchanged": true,
+  "patch": {
+    "bytes": 7336,
+    "git_blob": "d002e925ea4218b92189443917f7cdc861a3bfdc",
+    "sha256": "d54e553a06aa25ef49ed3d3443e3ac715e5f2c25bf0cbdc324ee9c3a2d10e436"
+  },
+  "patch_hunks": 5,
+  "product_compilation_performed": false,
+  "production_desktop_token_guard_unchanged": true,
+  "ref_mutations": false,
+  "schema": "b11-host-neither-v3-independent-static-review-v1",
+  "single_changed_source_path": "codex-rs/windows-sandbox-rs/src/token_neither_privilege_observation.rs",
+  "source_map": {
+    "bytes": 9360,
+    "git_blob": "aa8e03a9a7291389ab0dff56f4d56f88217fd93b",
+    "sha256": "d6dfc6912f1c3380715251c7c9bb0e94cb74e0be697c5e4b5b80f7bc5f4c0f22"
+  },
+  "test_only_module_guard_preserved": true,
+  "token_record_effective_record_exactly_preserved": true,
+  "unchanged_leaves": 10588,
+  "wait_values_ms": [
+    5000,
+    5000,
+    5000
+  ]
+}

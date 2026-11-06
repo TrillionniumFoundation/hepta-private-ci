@@ -1,0 +1,23 @@
+{
+  "donor": "codex-rs/windows-sandbox-rs/src/token_neither_privilege_observation.rs",
+  "donor_actual_git": "8c16416c185f17871c25139bc16c6fd112b5fd41",
+  "exact_reused_blocks": [
+    {
+      "name": "TokenBuffer/token_record/effective_record",
+      "bytes": 6313,
+      "sha256": "d458a5b44a526c587865e29d43d95e399a73d0c97d673f0d4c57caefa977e59a"
+    },
+    {
+      "name": "OwnedChild/Drop/spawn_observation_child",
+      "bytes": 4051,
+      "sha256": "6810d46eee79e2d0cee86fdae04848191b653f308c6eecff6a016e10d25fc412"
+    },
+    {
+      "name": "TokenState/token_state (fc9 donor)",
+      "bytes": 2001,
+      "sha256": "6e32c78c60536c49121491e30638c0cdc8b96682d0e34b4ca27e693c72f31b26"
+    }
+  ],
+  "handle_change": "pub(super) visibility removed; full Drop body preserved",
+  "source_original_guard": "v3/fc9/production unchanged; four candidate paths only"
+}

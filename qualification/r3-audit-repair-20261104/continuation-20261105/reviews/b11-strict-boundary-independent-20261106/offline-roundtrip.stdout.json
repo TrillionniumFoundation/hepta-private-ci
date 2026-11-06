@@ -1,0 +1,40 @@
+{
+  "schema": "hepta-readonly-evidence-portable-replay-v1",
+  "kind": "strict",
+  "authority": {
+    "checkout": "53766cb836b198e2f928b949f148d7a2a10c0d21",
+    "head": "2980fa274c599bd07437a2f5915b86d858f89bcc",
+    "tree": "9cb7302777ce018dd022086041c2225d1dd5c8dd",
+    "tree_original": {
+      "bytes": 2331084,
+      "git_blob": "49c7e226fd3ba4e4f1788cc8c49d783218605909",
+      "path": "architecture-audit/b11-host-neither-observation-candidate-20261105/v3/evidence/published-intended-full-tree.json",
+      "sha256": "6cbd82c93c37941870b9d09c565621f4f0920d238f6e4152e38311f32f50a548"
+    },
+    "v3_registry_actual": "24dfb6b7f3cd9b9374221390c3337a3d5acb420a"
+  },
+  "status": "COMPLETE_BYTES_AND_FROZEN_STDOUT_EQUAL",
+  "member_count": 41,
+  "member_bytes": 3882455,
+  "archive": {
+    "bytes": 599347,
+    "sha256": "a90cb14087ee364f8f6c0fec1ad40fa442e4434b5598acee52b973a5079e2d21",
+    "git_blob": "43413872588778d574ed34f484e6797eec42c848"
+  },
+  "verifier": "research-audit/b11-strict-boundary-independent-20261106/verify_evidence.py",
+  "verifier_exit": 0,
+  "verifier_stderr_bytes": 0,
+  "verifier_stdout": {
+    "bytes": 182297,
+    "sha256": "ab030aa483ef453442304ace0539cbd80e60229fc8248ed57ac71bb36abb4fb8",
+    "git_blob": "0c99ad02232becb0031a6dba872d180822b9a1ef"
+  },
+  "frozen_stdout": "research-audit/b11-strict-boundary-independent-20261106/replay-01.stdout.json",
+  "actual_stdout_equals_complete_frozen_stdout_bytes": true,
+  "every_original_member_compared_before_and_after_with_direct_bytes_equality": true,
+  "unexpected_files": [],
+  "new_native_execution_or_capacity_query": false,
+  "product_compile_test_fmt": false,
+  "network_or_ref_mutation": false,
+  "scope": "Frozen static strict-boundary mechanism review with existing native10/native11 originals; no native12/native13, new execution, or qualified product repair."
+}

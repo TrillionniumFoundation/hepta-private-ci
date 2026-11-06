@@ -1,0 +1,478 @@
+{
+  "base": {
+    "commit": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+    "tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359"
+  },
+  "blocking_findings": [],
+  "candidate_tree": "46fca3e684217066c260dc10d0dc319a33e0a93c",
+  "collector": {
+    "bytes": 34905,
+    "git_blob": "00dc37697adde6154a347963ab19e8a6edebac07",
+    "sha256": "7d8962de05fae508b259c1e16efa1be78a760c4a6a0da8ec239e796f3d1cdd1c"
+  },
+  "execution_scope": {
+    "full_targets": [
+      "//...",
+      "-//third_party/v8:all",
+      "-//codex-rs/v8-poc:v8-poc-unit-tests"
+    ],
+    "job_id": "test",
+    "metadata_commit": "actual checked-out source head",
+    "minutes": 120,
+    "observation_flags": [
+      "--nocache_test_results",
+      "--build_event_json_file=<private>",
+      "--nobuild_event_json_file_path_conversion"
+    ],
+    "original_wrapper_defaults_parallelism_retry_test_budgets_unchanged": true,
+    "runner": "macos-15-intel",
+    "source_checkout": "exact PR source head; event merge recorded separately",
+    "target": "x86_64-apple-darwin"
+  },
+  "independent_checks": {
+    "actual_author_verifier_isolated_replay_exit": 0,
+    "author_stdout_frozen_full_bytes_equal": true,
+    "author_synthetic_checks": 36,
+    "candidate_merkle_nodes": 1571,
+    "embedded_collector_full_bytes_equal": true,
+    "exact_forward_reverse_patch": true,
+    "fresh_actual_full_GET_source_bodies": 2,
+    "main_merkle_nodes": 1571,
+    "main_original_leaves_unchanged": 10582,
+    "parent_and_candidate_leaves": 10583,
+    "parent_merkle_nodes": 1571,
+    "primary_original_GET_comparisons": 14,
+    "source_dependency_original_GET_comparisons": 15
+  },
+  "independent_privacy_regressions": [
+    {
+      "case": "counterexample-boundary",
+      "gate": {
+        "errors": [
+          {
+            "error_code": "known_credential_in_bytes",
+            "error_type": "EvidenceError",
+            "root_index": 0
+          }
+        ],
+        "files_scanned": 0,
+        "known_credential_present": true,
+        "safe_for_upload": false,
+        "schema": "bazel-actual-attempt-evidence-rebuilt-v2",
+        "scope": "All upload paths and regular bytes; source-head.tar.gz and every .zst are additionally decoded for privacy only, without rewriting originals.",
+        "secret_or_secret_fingerprint_recorded": false,
+        "zstd_decoded_bytes_scanned": 0,
+        "zstd_decoder": null,
+        "zstd_files_decoded": 0
+      },
+      "inputs_unchanged": true
+    },
+    {
+      "case": "counterexample-zstd",
+      "gate": {
+        "errors": [
+          {
+            "error_code": "known_credential_in_bytes",
+            "error_type": "EvidenceError",
+            "root_index": 1
+          }
+        ],
+        "files_scanned": 1,
+        "known_credential_present": true,
+        "safe_for_upload": false,
+        "schema": "bazel-actual-attempt-evidence-rebuilt-v2",
+        "scope": "All upload paths and regular bytes; source-head.tar.gz and every .zst are additionally decoded for privacy only, without rewriting originals.",
+        "secret_or_secret_fingerprint_recorded": false,
+        "zstd_decoded_bytes_scanned": 0,
+        "zstd_decoder": {
+          "invoked_path": "/usr/bin/zstd",
+          "resolved_path": "/usr/bin/zstd",
+          "version": "*** Zstandard CLI (64-bit) v1.5.7, by Yann Collet ***"
+        },
+        "zstd_files_decoded": 0
+      },
+      "inputs_unchanged": true
+    },
+    {
+      "case": "single_frame",
+      "expected_safe": true,
+      "gate": {
+        "errors": [],
+        "files_scanned": 1,
+        "known_credential_present": true,
+        "safe_for_upload": true,
+        "schema": "bazel-actual-attempt-evidence-rebuilt-v2",
+        "scope": "All upload paths and regular bytes; source-head.tar.gz and every .zst are additionally decoded for privacy only, without rewriting originals.",
+        "secret_or_secret_fingerprint_recorded": false,
+        "zstd_decoded_bytes_scanned": 27,
+        "zstd_decoder": {
+          "invoked_path": "/usr/bin/zstd",
+          "resolved_path": "/usr/bin/zstd",
+          "version": "*** Zstandard CLI (64-bit) v1.5.7, by Yann Collet ***"
+        },
+        "zstd_files_decoded": 1
+      },
+      "inputs_unchanged": true
+    },
+    {
+      "case": "two_concatenated_frames",
+      "expected_safe": true,
+      "gate": {
+        "errors": [],
+        "files_scanned": 1,
+        "known_credential_present": true,
+        "safe_for_upload": true,
+        "schema": "bazel-actual-attempt-evidence-rebuilt-v2",
+        "scope": "All upload paths and regular bytes; source-head.tar.gz and every .zst are additionally decoded for privacy only, without rewriting originals.",
+        "secret_or_secret_fingerprint_recorded": false,
+        "zstd_decoded_bytes_scanned": 62,
+        "zstd_decoder": {
+          "invoked_path": "/usr/bin/zstd",
+          "resolved_path": "/usr/bin/zstd",
+          "version": "*** Zstandard CLI (64-bit) v1.5.7, by Yann Collet ***"
+        },
+        "zstd_files_decoded": 1
+      },
+      "inputs_unchanged": true
+    },
+    {
+      "case": "truncated_single_frame",
+      "expected_safe": false,
+      "gate": {
+        "errors": [
+          {
+            "error_code": "zstd_decode_failed_or_incomplete",
+            "error_type": "EvidenceError",
+            "root_index": 1
+          }
+        ],
+        "files_scanned": 0,
+        "known_credential_present": true,
+        "safe_for_upload": false,
+        "schema": "bazel-actual-attempt-evidence-rebuilt-v2",
+        "scope": "All upload paths and regular bytes; source-head.tar.gz and every .zst are additionally decoded for privacy only, without rewriting originals.",
+        "secret_or_secret_fingerprint_recorded": false,
+        "zstd_decoded_bytes_scanned": 0,
+        "zstd_decoder": {
+          "invoked_path": "/usr/bin/zstd",
+          "resolved_path": "/usr/bin/zstd",
+          "version": "*** Zstandard CLI (64-bit) v1.5.7, by Yann Collet ***"
+        },
+        "zstd_files_decoded": 0
+      },
+      "inputs_unchanged": true
+    },
+    {
+      "case": "truncated_second_frame",
+      "expected_safe": false,
+      "gate": {
+        "errors": [
+          {
+            "error_code": "zstd_decode_failed_or_incomplete",
+            "error_type": "EvidenceError",
+            "root_index": 1
+          }
+        ],
+        "files_scanned": 0,
+        "known_credential_present": true,
+        "safe_for_upload": false,
+        "schema": "bazel-actual-attempt-evidence-rebuilt-v2",
+        "scope": "All upload paths and regular bytes; source-head.tar.gz and every .zst are additionally decoded for privacy only, without rewriting originals.",
+        "secret_or_secret_fingerprint_recorded": false,
+        "zstd_decoded_bytes_scanned": 0,
+        "zstd_decoder": {
+          "invoked_path": "/usr/bin/zstd",
+          "resolved_path": "/usr/bin/zstd",
+          "version": "*** Zstandard CLI (64-bit) v1.5.7, by Yann Collet ***"
+        },
+        "zstd_files_decoded": 0
+      },
+      "inputs_unchanged": true
+    },
+    {
+      "case": "trailing_unknown_bytes",
+      "expected_safe": false,
+      "gate": {
+        "errors": [
+          {
+            "error_code": "zstd_decode_failed_or_incomplete",
+            "error_type": "EvidenceError",
+            "root_index": 1
+          }
+        ],
+        "files_scanned": 0,
+        "known_credential_present": true,
+        "safe_for_upload": false,
+        "schema": "bazel-actual-attempt-evidence-rebuilt-v2",
+        "scope": "All upload paths and regular bytes; source-head.tar.gz and every .zst are additionally decoded for privacy only, without rewriting originals.",
+        "secret_or_secret_fingerprint_recorded": false,
+        "zstd_decoded_bytes_scanned": 0,
+        "zstd_decoder": {
+          "invoked_path": "/usr/bin/zstd",
+          "resolved_path": "/usr/bin/zstd",
+          "version": "*** Zstandard CLI (64-bit) v1.5.7, by Yann Collet ***"
+        },
+        "zstd_files_decoded": 0
+      },
+      "inputs_unchanged": true
+    },
+    {
+      "case": "empty_input",
+      "expected_safe": false,
+      "gate": {
+        "errors": [
+          {
+            "error_code": "zstd_decode_failed_or_incomplete",
+            "error_type": "EvidenceError",
+            "root_index": 1
+          }
+        ],
+        "files_scanned": 0,
+        "known_credential_present": true,
+        "safe_for_upload": false,
+        "schema": "bazel-actual-attempt-evidence-rebuilt-v2",
+        "scope": "All upload paths and regular bytes; source-head.tar.gz and every .zst are additionally decoded for privacy only, without rewriting originals.",
+        "secret_or_secret_fingerprint_recorded": false,
+        "zstd_decoded_bytes_scanned": 0,
+        "zstd_decoder": {
+          "invoked_path": "/usr/bin/zstd",
+          "resolved_path": "/usr/bin/zstd",
+          "version": "*** Zstandard CLI (64-bit) v1.5.7, by Yann Collet ***"
+        },
+        "zstd_files_decoded": 0
+      },
+      "inputs_unchanged": true
+    },
+    {
+      "case": "unknown_format",
+      "expected_safe": false,
+      "gate": {
+        "errors": [
+          {
+            "error_code": "zstd_decode_failed_or_incomplete",
+            "error_type": "EvidenceError",
+            "root_index": 1
+          }
+        ],
+        "files_scanned": 0,
+        "known_credential_present": true,
+        "safe_for_upload": false,
+        "schema": "bazel-actual-attempt-evidence-rebuilt-v2",
+        "scope": "All upload paths and regular bytes; source-head.tar.gz and every .zst are additionally decoded for privacy only, without rewriting originals.",
+        "secret_or_secret_fingerprint_recorded": false,
+        "zstd_decoded_bytes_scanned": 0,
+        "zstd_decoder": {
+          "invoked_path": "/usr/bin/zstd",
+          "resolved_path": "/usr/bin/zstd",
+          "version": "*** Zstandard CLI (64-bit) v1.5.7, by Yann Collet ***"
+        },
+        "zstd_files_decoded": 0
+      },
+      "inputs_unchanged": true
+    },
+    {
+      "case": "checksum_mismatch",
+      "expected_safe": false,
+      "gate": {
+        "errors": [
+          {
+            "error_code": "zstd_decode_failed_or_incomplete",
+            "error_type": "EvidenceError",
+            "root_index": 1
+          }
+        ],
+        "files_scanned": 0,
+        "known_credential_present": true,
+        "safe_for_upload": false,
+        "schema": "bazel-actual-attempt-evidence-rebuilt-v2",
+        "scope": "All upload paths and regular bytes; source-head.tar.gz and every .zst are additionally decoded for privacy only, without rewriting originals.",
+        "secret_or_secret_fingerprint_recorded": false,
+        "zstd_decoded_bytes_scanned": 0,
+        "zstd_decoder": {
+          "invoked_path": "/usr/bin/zstd",
+          "resolved_path": "/usr/bin/zstd",
+          "version": "*** Zstandard CLI (64-bit) v1.5.7, by Yann Collet ***"
+        },
+        "zstd_files_decoded": 0
+      },
+      "inputs_unchanged": true
+    },
+    {
+      "case": "decoder_missing",
+      "gate": {
+        "errors": [
+          {
+            "error_code": "zstd_decoder_missing",
+            "error_type": "EvidenceError",
+            "root_index": 1
+          }
+        ],
+        "files_scanned": 0,
+        "known_credential_present": true,
+        "safe_for_upload": false,
+        "schema": "bazel-actual-attempt-evidence-rebuilt-v2",
+        "scope": "All upload paths and regular bytes; source-head.tar.gz and every .zst are additionally decoded for privacy only, without rewriting originals.",
+        "secret_or_secret_fingerprint_recorded": false,
+        "zstd_decoded_bytes_scanned": 0,
+        "zstd_decoder": null,
+        "zstd_files_decoded": 0
+      }
+    }
+  ],
+  "limits": {
+    "B21": "OPEN",
+    "actual_GitHub_runtime_source_guard": "NOT_RUN",
+    "all_main_required_jobs_passed": false,
+    "full_original_Intel_job_result": "PENDING",
+    "historical_2_023_second_failure_cause": "UNKNOWN",
+    "native_execution": "NOT_RUN",
+    "old_863a_body_recovered_or_equivalent": false,
+    "ref_PR_mutation": false,
+    "unknown_credentials": "No claim to detect arbitrary unknown secrets outside explicit header/URI/opaque handling and configured known-key checks."
+  },
+  "parent": {
+    "commit": "cc65856cc0b20d03db506c19495d53d61162102d",
+    "tree": "eaded1870d080eaa55efae6208354729140e784c"
+  },
+  "primary_sources": [
+    {
+      "bytes": 13661,
+      "file": "AuthAndTLSOptions.java",
+      "git_blob": "2ad51cac2c704586885f5e9f2d6c7c1022c60038",
+      "sha256": "35884e3c074bb638aa12d995bf06e09900f675bd36242da8a8e45908cb8e05e3",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/authandtls/AuthAndTLSOptions.java"
+    },
+    {
+      "bytes": 44228,
+      "file": "BuildEventServiceModule.java",
+      "git_blob": "4fe944f6093f53f90f4f5f95ff9ffaffc9932776",
+      "sha256": "225656fa5a995cd846b816416b9032ad312ffd5842086f0ec47a8ce48e72cd9a",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/buildeventservice/BuildEventServiceModule.java"
+    },
+    {
+      "bytes": 10248,
+      "file": "BuildEventServiceOptions.java",
+      "git_blob": "7e08aeb2e4c606f148c36cc69cd56279b73a7e3f",
+      "sha256": "b38ce9c51ff1a4ae62bae6cb8e8c7080a2691abecd6ccf7686df0af0c77aa5a1",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/buildeventservice/BuildEventServiceOptions.java"
+    },
+    {
+      "bytes": 7984,
+      "file": "BuildEventStreamOptions.java",
+      "git_blob": "afb3915fbcd6bd417f7d6e7268285ac06cb0dc06",
+      "sha256": "57c26156654bbc76a1cd092b332c304f4327f37d1bd09c3f35d7a5325bbcad63",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/buildeventstream/transports/BuildEventStreamOptions.java"
+    },
+    {
+      "bytes": 23905,
+      "file": "CommandLineEvent.java",
+      "git_blob": "6a2a81d240995122ccc3e562d4c0fcf7b14cc8bf",
+      "sha256": "785ded27835b16a67554413a8ded20e1509d711d7c136720db9bcee640298ee5",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/runtime/CommandLineEvent.java"
+    },
+    {
+      "bytes": 31027,
+      "file": "ExecutionOptions.java",
+      "git_blob": "d56b2302b64a364a96ebfb74babc77cb0aca419b",
+      "sha256": "161667a18a87dfc25fbcf8aa8abc00ae35d90863815010386fa8de2db2ef2798",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/exec/ExecutionOptions.java"
+    },
+    {
+      "bytes": 13257,
+      "file": "FileTransport.java",
+      "git_blob": "4e98c8d72618dd79d41f18bf88a86ebba3495b99",
+      "sha256": "26af806ba75d482730b4e737802d3b23ee3ee6a0d67c7ce8a52eec210c6c6b0d",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/buildeventstream/transports/FileTransport.java"
+    },
+    {
+      "bytes": 3783,
+      "file": "JsonFormatFileTransport.java",
+      "git_blob": "b6033d8175768a14533cbcc3f83202ee109a15f7",
+      "sha256": "a916c7eeff7783070d7bdee33ac523132bc9dc7a70f34f88fc675518756b30e4",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/buildeventstream/transports/JsonFormatFileTransport.java"
+    },
+    {
+      "bytes": 2620,
+      "file": "LocalFilesArtifactUploader.java",
+      "git_blob": "8a0c837b4ad307db7da1a14a9b070110771100e3",
+      "sha256": "e3f8f031ef3450c13d4b1955b4e3515d1da615b327286974c64bdaf4f6220d6d",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/buildeventstream/LocalFilesArtifactUploader.java"
+    },
+    {
+      "bytes": 8043,
+      "file": "ParsedOptionDescription.java",
+      "git_blob": "5af7ac481d2a7f662dab64bba143055a16d7f4d1",
+      "sha256": "65edf1f6f6d5258b40dc06c0694d122b0abf167d91700ca8c8fcea514fa1e9e6",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/common/options/ParsedOptionDescription.java"
+    },
+    {
+      "bytes": 3459,
+      "file": "PathConverter.java",
+      "git_blob": "524f0ef7ad319dbe85ef81cea404018cbca6e5d1",
+      "sha256": "8590683bb540c774ab25c20a2a05751ef957f2a75918c646cbc5ae70b59424c9",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/buildeventstream/PathConverter.java"
+    },
+    {
+      "bytes": 43451,
+      "file": "RemoteOptions.java",
+      "git_blob": "cd8b2b554e28d2cce0ecc70f8f4daa29a865c421",
+      "sha256": "dfc9a7357db490e29e72cdef56d304dbd64fc5dcfc3c5672eec0589aef6460f0",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/remote/options/RemoteOptions.java"
+    },
+    {
+      "bytes": 39413,
+      "file": "StandaloneTestStrategy.java",
+      "git_blob": "0ad50eb7683ec38d20ab66593421fbe57884ce8f",
+      "sha256": "4b8bb3d13de58806197ca29dd2beeeab26a2864ffb2b7e1ec57344b9b467cbaf",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/exec/StandaloneTestStrategy.java"
+    },
+    {
+      "bytes": 55593,
+      "file": "build_event_stream.proto",
+      "git_blob": "e6875c5bdad3594f670c2e997f6dd006a9f183a4",
+      "sha256": "f15a652c9804e09fabf3a77919ecaf314750e547daabc7572fd0fad058174316",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/buildeventstream/proto/build_event_stream.proto"
+    }
+  ],
+  "privacy_and_custody": {
+    "JSON_keys_URI_userinfo_query_values": "covered by exact sanitizer; encoded known-key paths reject derived publication",
+    "all_attempts": "all actual testResult run/shard/attempt log/XML plus summary references reconciled to full stable local bytes; initial failed attempts retained",
+    "derived_BEP": "credential-sanitized / opaque-payload-omitted JSONL only",
+    "failure_semantics": "original nonzero Bazel remains failed; complete evidence can preserve exit3; incomplete evidence or privacy failure cannot be reported as product pass",
+    "five_header_contexts": "all complete header values omitted; unstructured containing scalar omitted conservatively",
+    "local_file_URI": "only under resolved testlogs root without nested links; length/digest checked when present",
+    "nonlocal_bytestream_or_inline": "not fetched or guessed; incomplete evidence",
+    "opaque_payload_and_digest": "omitted; no raw-BEP/payload fingerprint recorded",
+    "post_gate_metadata": "only sanitized fixed-schema gate and fixed decimal collector exit, no later source archive writes",
+    "raw_BEP_outside_both_upload_roots": true,
+    "receipts": "fixed codes/clean field paths/counts; no exception text or secret-derived fingerprints",
+    "safe_for_upload": "both roots paths/regular bytes; source gzip decoded; all .zst decoded read-only with existing CLI; known configured key and bounded encoded forms checked",
+    "zstd": "no installation; --no-pass-through; 5s version; per-file 60s decode; own subprocess terminate/kill bounded cleanup; full EOF plus successful exit required"
+  },
+  "resolved_draft_findings": [
+    {
+      "finding": "encoded credential crosses raw read boundary",
+      "fixed": "overlap covers configured key UTF8 bytes times 3^4 plus boundary",
+      "old_blob": "ae60303048c9c64ac48467dd2b7c1e3c5e4d794e"
+    },
+    {
+      "finding": "valid zstd hides known key from compressed byte scan",
+      "fixed": "existing CLI full read-only decoded scan, error/deadline/missing decoder blocks upload",
+      "old_blob": "ae60303048c9c64ac48467dd2b7c1e3c5e4d794e"
+    }
+  ],
+  "result": "PASS_STATIC_SOURCE_AND_EVIDENCE_COLLECTION_REVIEW",
+  "schema": "b21-full-intel-rebuilt-v2-independent-review",
+  "workflow": {
+    "bytes": 50740,
+    "git_blob": "fb5881fa310d3548cd604d2827fe9c29aa1b3873",
+    "sha256": "0c286e0931688c7882c4d35c1d26a1fc019cc37e271a8220b349583cc849d56a"
+  },
+  "zstd_primary": {
+    "all_passed": true,
+    "cases": 8,
+    "exact_local_CLI_probe": "../zstd-1.5.7-cli/RESULT.json",
+    "retrieval_reference": "turn194view0",
+    "url": "https://raw.githubusercontent.com/facebook/zstd/v1.5.7/programs/zstd.1.md"
+  }
+}

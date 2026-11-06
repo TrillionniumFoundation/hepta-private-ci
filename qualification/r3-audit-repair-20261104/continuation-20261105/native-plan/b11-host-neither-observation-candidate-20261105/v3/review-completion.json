@@ -1,0 +1,50 @@
+{
+  "schema": "b11-v3-independent-review-completion",
+  "created_utc": "2026-11-06T00:16:34.860305+00:00",
+  "candidate_git_blob": "8c16416c185f17871c25139bc16c6fd112b5fd41",
+  "candidate_actual_materialization": {
+    "bytes": 876,
+    "sha256": "de452810773c50395f2a6b0f6d372786b872aa50f943a8554917b0b340b31cde",
+    "git_blob": "97400f81e23c7774961165d067bac9324f3cc888"
+  },
+  "expected_candidate_tree": "9a804c7b6e0dd554cdb435f41e06c5c689fffaaf",
+  "independent_review_complete": true,
+  "independent_review_decision": "STATIC_ACCEPT_EXACT_CANDIDATE_NOT_COMPILE_OR_NATIVE_QUALIFICATION",
+  "independent_review_original_files_copied_byte_exact": 10,
+  "independent_manifest": {
+    "bytes": 2555,
+    "sha256": "93e9b2737b6688dfd06fdbddcbc96ac26631f4af158f67178c6474a326b3987b",
+    "git_blob": "66c5c736ea58777626320acc0b8332fdab85cf41"
+  },
+  "independent_review": {
+    "bytes": 5539,
+    "sha256": "d5c255c264d40fe40b0f51cdffd481dab771431f17d358ca470c133865d215e7",
+    "git_blob": "7d707c4315cb29c7d765e5bcf4027d12e52a2f07"
+  },
+  "independent_verifier": {
+    "bytes": 11828,
+    "sha256": "1db2b2c1adbb318feb6e89834c10cf6ae0c9b361e5ed425d4a512aca79e9e3de",
+    "git_blob": "d52b61b92fa2239df3f045d0dad7e848616b3a55"
+  },
+  "owner_replay": {
+    "argv": [
+      "python",
+      "independent-review/verify_independent.py",
+      "<v3-root>"
+    ],
+    "exit_code": 0,
+    "stderr": "",
+    "stdout_byte_equal_to_frozen_independent_stdout": true,
+    "stdout": {
+      "bytes": 3131,
+      "sha256": "33eb239cf21ba770c3090552c2a36bec2ffec782176e7f23bdf93f3c46ed3053",
+      "git_blob": "dd1ca50517754022e47299c6695f70c77f20079b"
+    }
+  },
+  "historical_pending_fields": "manifest.json was frozen before independent review; independent-review/freeze-manifest.json was frozen before registration. This append-only completion and the final actual registry record later review and registration without changing originals.",
+  "native_execution_performed": false,
+  "ref_mutation_performed": false,
+  "compilation_performed": false,
+  "formatting_tool_performed": false,
+  "B11": "OPEN"
+}

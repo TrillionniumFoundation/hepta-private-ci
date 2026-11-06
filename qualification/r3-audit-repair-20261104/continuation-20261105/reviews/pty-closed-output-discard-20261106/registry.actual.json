@@ -1,0 +1,354 @@
+{
+  "schema": "hepta-pty-closed-output-discard-actual-registry-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "prefix": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/pty-closed-output-discard-20261106/",
+  "qualification": {
+    "author_scope": "one-leaf source candidate; static source/evidence checks and portable replay only",
+    "independent_review_blob": "0fd8e39465c93375c23dee623580da74c5d872ce",
+    "independent_decision": "STATIC_ACCEPT_ONLY",
+    "candidate_blob": "c7ad412d04fd3f5505259a4afdcec0d4d8562a88",
+    "candidate_tree": "c1249a173ac346d0f1230fe56451b97d4e13c601",
+    "base_commit": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+    "base_tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+    "removable_work_proven": true,
+    "timeout_cause_proven": false,
+    "compile_native_fmt_pass_claim": false,
+    "B21": "OPEN"
+  },
+  "retention": {
+    "author_data_files": 69,
+    "author_ZIP_members": 70,
+    "author_ZIP_bytes": 752646,
+    "author_ZIP_sha256": "f0aa4c215ac148febca238ee54b6c4a4caf5f9fb934af26ed58b173dc0229c7d",
+    "base64_parts": 3,
+    "all_original_independent_files": 10,
+    "portable_author_and_independent_replay_exit_zero": true
+  },
+  "object_paths": 23,
+  "unique_blob_count": 20,
+  "objects": [
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/pty-closed-output-discard-20261106/author-package.zip.part-0001.b64",
+      "bytes": 400000,
+      "git_blob": "b66b6675c82da42eb77323871bc7636e3423e5c3",
+      "sha256": "47fdaf3cc1bcd41cdc9d0cc43e95115ab9e1fcf33b658673cb3a14996de30e13",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "e123f4c14bbee4e55c4c2f6862499931390a69d0",
+      "full_blob_get_identity": {
+        "bytes": 400000,
+        "sha256": "47fdaf3cc1bcd41cdc9d0cc43e95115ab9e1fcf33b658673cb3a14996de30e13",
+        "git_blob": "b66b6675c82da42eb77323871bc7636e3423e5c3"
+      },
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/pty-closed-output-discard-20261106/author-package.zip.part-0002.b64",
+      "bytes": 400000,
+      "git_blob": "5affd540b65f707b2e9c35c2db86cac557fd633e",
+      "sha256": "ef3856c40c04c511e36658729f7919c883ff21f23199fa1a47be1eabad86dbf8",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "e123f4c14bbee4e55c4c2f6862499931390a69d0",
+      "full_blob_get_identity": {
+        "bytes": 400000,
+        "sha256": "ef3856c40c04c511e36658729f7919c883ff21f23199fa1a47be1eabad86dbf8",
+        "git_blob": "5affd540b65f707b2e9c35c2db86cac557fd633e"
+      },
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/pty-closed-output-discard-20261106/author-package.zip.part-0003.b64",
+      "bytes": 203528,
+      "git_blob": "7752a95bab2dd995d80ee21fc9a0314cb44e084b",
+      "sha256": "ff7b947abb66f85799ffa206af77ca5092e15a07b61013cb0d81650dbd17ef68",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "a08e2993ca651cda408dc706288043c41d2cb715",
+      "full_blob_get_identity": {
+        "bytes": 203528,
+        "sha256": "ff7b947abb66f85799ffa206af77ca5092e15a07b61013cb0d81650dbd17ef68",
+        "git_blob": "7752a95bab2dd995d80ee21fc9a0314cb44e084b"
+      },
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/pty-closed-output-discard-20261106/manifest.json",
+      "bytes": 17750,
+      "git_blob": "344410e4288595bfa6459a994fb1b3ee8f7cc008",
+      "sha256": "96ee43bbbce00e8a6f7d802b0f8d0ae18a4e1b3d67d385ba0b262746b308d4ec",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "a08e2993ca651cda408dc706288043c41d2cb715",
+      "full_blob_get_identity": {
+        "bytes": 17750,
+        "sha256": "96ee43bbbce00e8a6f7d802b0f8d0ae18a4e1b3d67d385ba0b262746b308d4ec",
+        "git_blob": "344410e4288595bfa6459a994fb1b3ee8f7cc008"
+      },
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/pty-closed-output-discard-20261106/restore_packet.py",
+      "bytes": 3472,
+      "git_blob": "1cd9a7949c68b3480e2b3348be082f474b57f4cf",
+      "sha256": "e571ef26235908aa5fd11b44f93b05bd8697c64e18a97b8c7ae4830947de3035",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "3a56de8ed72a986ca76ab81a891fd6a89c7d5deb",
+      "full_blob_get_identity": {
+        "bytes": 3472,
+        "sha256": "e571ef26235908aa5fd11b44f93b05bd8697c64e18a97b8c7ae4830947de3035",
+        "git_blob": "1cd9a7949c68b3480e2b3348be082f474b57f4cf"
+      },
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/pty-closed-output-discard-20261106/README.md",
+      "bytes": 1194,
+      "git_blob": "bb711749e3aabf4d1a754db9d2f630c074d496a8",
+      "sha256": "4dad054f29510c617ee54aab7afc9fe77ef72713ff3b1b4f7d0b8d6768591948",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "3a56de8ed72a986ca76ab81a891fd6a89c7d5deb",
+      "full_blob_get_identity": {
+        "bytes": 1194,
+        "sha256": "4dad054f29510c617ee54aab7afc9fe77ef72713ff3b1b4f7d0b8d6768591948",
+        "git_blob": "bb711749e3aabf4d1a754db9d2f630c074d496a8"
+      },
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/pty-closed-output-discard-20261106/restoration.stdout.json",
+      "bytes": 653,
+      "git_blob": "e7d733b602ba546a5174417fbd04941ca5a58335",
+      "sha256": "b720c355d1c2ea4f09ce6be8caaf09e04405ee72b5609412bffaca2ee3de4dc6",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "ef6d39e714a3facbe27fc1d0243c021aadf1cc25",
+      "full_blob_get_identity": {
+        "bytes": 653,
+        "sha256": "b720c355d1c2ea4f09ce6be8caaf09e04405ee72b5609412bffaca2ee3de4dc6",
+        "git_blob": "e7d733b602ba546a5174417fbd04941ca5a58335"
+      },
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/pty-closed-output-discard-20261106/candidate-tree.json",
+      "bytes": 882,
+      "git_blob": "22c12f68920c4b54b24a68c7f6c32be060bfbade",
+      "sha256": "c0d24cc94234bb48c900e5ecd0e22aa6c24ece0f4a03c0168554b90a52305770",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "ef6d39e714a3facbe27fc1d0243c021aadf1cc25",
+      "full_blob_get_identity": {
+        "bytes": 882,
+        "sha256": "c0d24cc94234bb48c900e5ecd0e22aa6c24ece0f4a03c0168554b90a52305770",
+        "git_blob": "22c12f68920c4b54b24a68c7f6c32be060bfbade"
+      },
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/pty-closed-output-discard-20261106/full.patch",
+      "bytes": 795,
+      "git_blob": "187209a3e6c0844579c6784935809336daaf79d2",
+      "sha256": "995a27ddf943667881aa3a5f496785d99b0ba36e1a6ee26b7091630afc03c323",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "a19a4716dcd8b793f8ec9aedeea3a6ee1c99ec6b",
+      "full_blob_get_identity": {
+        "bytes": 795,
+        "sha256": "995a27ddf943667881aa3a5f496785d99b0ba36e1a6ee26b7091630afc03c323",
+        "git_blob": "187209a3e6c0844579c6784935809336daaf79d2"
+      },
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/pty-closed-output-discard-20261106/static-final.stdout.json",
+      "bytes": 3666,
+      "git_blob": "9f21221d4df81c24bd93dc6dd0b0c7e129b6b10b",
+      "sha256": "ac9cde7a327d39a0bc5a0062b1221039233ddd753325e770d498ca4dc87c8c9e",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "a19a4716dcd8b793f8ec9aedeea3a6ee1c99ec6b",
+      "full_blob_get_identity": {
+        "bytes": 3666,
+        "sha256": "ac9cde7a327d39a0bc5a0062b1221039233ddd753325e770d498ca4dc87c8c9e",
+        "git_blob": "9f21221d4df81c24bd93dc6dd0b0c7e129b6b10b"
+      },
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/pty-closed-output-discard-20261106/freeze-manifest.json",
+      "bytes": 16359,
+      "git_blob": "141539d98f058161ad68cb1b9f34123b8b3e51b3",
+      "sha256": "a61f16776b1c69d4e8222abb88fc74a7bece73e5224c7fd49bbf02b3ce821adb",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "60d797da90cc4d8239a9033d880da7eaa4e0c947",
+      "full_blob_get_identity": {
+        "bytes": 16359,
+        "sha256": "a61f16776b1c69d4e8222abb88fc74a7bece73e5224c7fd49bbf02b3ce821adb",
+        "git_blob": "141539d98f058161ad68cb1b9f34123b8b3e51b3"
+      },
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/pty-closed-output-discard-20261106/independent-review/INDEPENDENT_VERIFICATION.json",
+      "bytes": 2681,
+      "git_blob": "d19495500dce2548ca5b48ba5fd7bd3c87e6aeed",
+      "sha256": "ae89ed2f812e112dd6b354737af782e4a53dcee8167a4e0926f693791a5891e1",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "efe952fb2285dfd2b1670563c0180ed0a970a9d0",
+      "full_blob_get_identity": {
+        "bytes": 2681,
+        "sha256": "ae89ed2f812e112dd6b354737af782e4a53dcee8167a4e0926f693791a5891e1",
+        "git_blob": "d19495500dce2548ca5b48ba5fd7bd3c87e6aeed"
+      },
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/pty-closed-output-discard-20261106/independent-review/REVIEW.actual.receipt.json",
+      "bytes": 5142,
+      "git_blob": "b793b124729c48017481c7e3df90e2d10a5097c1",
+      "sha256": "cc56b3a1883fe54cf27f1d3fb3deb9622d27b168f11b490adbf66c76f816766a",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "efe952fb2285dfd2b1670563c0180ed0a970a9d0",
+      "full_blob_get_identity": {
+        "bytes": 5142,
+        "sha256": "cc56b3a1883fe54cf27f1d3fb3deb9622d27b168f11b490adbf66c76f816766a",
+        "git_blob": "b793b124729c48017481c7e3df90e2d10a5097c1"
+      },
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/pty-closed-output-discard-20261106/independent-review/REVIEW.json",
+      "bytes": 4163,
+      "git_blob": "0fd8e39465c93375c23dee623580da74c5d872ce",
+      "sha256": "bce426de93245b59d264da7c6a64e046655c320f6570267621e4b74e6d634b05",
+      "materialization": "Prior independent actual registration; original receipt retained",
+      "created_unreferenced_tree": null,
+      "full_blob_get_identity": {
+        "bytes": 4163,
+        "sha256": "bce426de93245b59d264da7c6a64e046655c320f6570267621e4b74e6d634b05",
+        "git_blob": "0fd8e39465c93375c23dee623580da74c5d872ce"
+      },
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/pty-closed-output-discard-20261106/independent-review/author-replay.exit-code.txt",
+      "bytes": 2,
+      "git_blob": "573541ac9702dd3969c9bc859d2b91ec1f7e6e56",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "efe952fb2285dfd2b1670563c0180ed0a970a9d0",
+      "full_blob_get_identity": {
+        "bytes": 2,
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "git_blob": "573541ac9702dd3969c9bc859d2b91ec1f7e6e56"
+      },
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/pty-closed-output-discard-20261106/independent-review/author-replay.stderr.txt",
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "efe952fb2285dfd2b1670563c0180ed0a970a9d0",
+      "full_blob_get_identity": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/pty-closed-output-discard-20261106/independent-review/author-replay.stdout.json",
+      "bytes": 3666,
+      "git_blob": "9f21221d4df81c24bd93dc6dd0b0c7e129b6b10b",
+      "sha256": "ac9cde7a327d39a0bc5a0062b1221039233ddd753325e770d498ca4dc87c8c9e",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "a19a4716dcd8b793f8ec9aedeea3a6ee1c99ec6b",
+      "full_blob_get_identity": {
+        "bytes": 3666,
+        "sha256": "ac9cde7a327d39a0bc5a0062b1221039233ddd753325e770d498ca4dc87c8c9e",
+        "git_blob": "9f21221d4df81c24bd93dc6dd0b0c7e129b6b10b"
+      },
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/pty-closed-output-discard-20261106/independent-review/original/postimage.fresh-GET.json",
+      "bytes": 6837,
+      "git_blob": "9450abd4dd3cf61f2f04d32cd27089a20a0fbd12",
+      "sha256": "2844129cd30dee4aa79258689a0545ccbbd3c30762fd0d15b0e9d18bdccc93b1",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "efe952fb2285dfd2b1670563c0180ed0a970a9d0",
+      "full_blob_get_identity": {
+        "bytes": 6837,
+        "sha256": "2844129cd30dee4aa79258689a0545ccbbd3c30762fd0d15b0e9d18bdccc93b1",
+        "git_blob": "9450abd4dd3cf61f2f04d32cd27089a20a0fbd12"
+      },
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/pty-closed-output-discard-20261106/independent-review/verification.exit-code.txt",
+      "bytes": 2,
+      "git_blob": "573541ac9702dd3969c9bc859d2b91ec1f7e6e56",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "efe952fb2285dfd2b1670563c0180ed0a970a9d0",
+      "full_blob_get_identity": {
+        "bytes": 2,
+        "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+        "git_blob": "573541ac9702dd3969c9bc859d2b91ec1f7e6e56"
+      },
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/pty-closed-output-discard-20261106/independent-review/verification.stderr.txt",
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "efe952fb2285dfd2b1670563c0180ed0a970a9d0",
+      "full_blob_get_identity": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/pty-closed-output-discard-20261106/independent-review/verify_independent.py",
+      "bytes": 6628,
+      "git_blob": "0ffed3591fe2282b8ce0a8b1e4e01546f7345060",
+      "sha256": "bb39166c0b68840b52febe89be698bb42f319ef3817b33757a3663029731d7a6",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "efe952fb2285dfd2b1670563c0180ed0a970a9d0",
+      "full_blob_get_identity": {
+        "bytes": 6628,
+        "sha256": "bb39166c0b68840b52febe89be698bb42f319ef3817b33757a3663029731d7a6",
+        "git_blob": "0ffed3591fe2282b8ce0a8b1e4e01546f7345060"
+      },
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/pty-closed-output-discard-20261106/independent-portable-replay.json",
+      "bytes": 2774,
+      "git_blob": "5c61216729a0eef4f59811d5c255655ba8312aec",
+      "sha256": "054104fa1a2288ea91fc71628d13c1216bd03c49561bc102b92b2b00aa58f3cc",
+      "materialization": "github_create_tree(content)",
+      "created_unreferenced_tree": "efe952fb2285dfd2b1670563c0180ed0a970a9d0",
+      "full_blob_get_identity": {
+        "bytes": 2774,
+        "sha256": "054104fa1a2288ea91fc71628d13c1216bd03c49561bc102b92b2b00aa58f3cc",
+        "git_blob": "5c61216729a0eef4f59811d5c255655ba8312aec"
+      },
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/pty-closed-output-discard-20261106/candidate/codex-rs/utils/pty/src/unix_io.rs",
+      "bytes": 6503,
+      "git_blob": "c7ad412d04fd3f5505259a4afdcec0d4d8562a88",
+      "sha256": "ec95e99037b0839b4b872f48f5db3126b2e77a9f56a6d8385086cf8792c8dd8b",
+      "materialization": "github_create_tree(content), no base tree or reference",
+      "created_unreferenced_tree": "668b3e4f306ec0925cc1e8a347fb9f6f9ae4160e",
+      "full_blob_get_identity": {
+        "bytes": 6503,
+        "sha256": "ec95e99037b0839b4b872f48f5db3126b2e77a9f56a6d8385086cf8792c8dd8b",
+        "git_blob": "c7ad412d04fd3f5505259a4afdcec0d4d8562a88"
+      },
+      "full_UTF8_bytes_equal": true
+    }
+  ],
+  "registration_note": "Immutable objects and full UTF-8 GET comparisons only. No ref/commit/CI action by this registration. Previously registered exact identities are reused, including independent REVIEW and candidate source."
+}

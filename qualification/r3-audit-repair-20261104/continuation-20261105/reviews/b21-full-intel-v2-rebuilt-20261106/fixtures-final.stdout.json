@@ -1,0 +1,224 @@
+{
+  "case_count": 36,
+  "cases": [
+    {
+      "case": "01_all_actual_attempts_keep_initial_failure",
+      "complete": true,
+      "passed": true,
+      "safe_for_upload": true
+    },
+    {
+      "case": "02_all_five_space_bearer_header_forms",
+      "complete": true,
+      "passed": true,
+      "safe_for_upload": true
+    },
+    {
+      "case": "03_uri_userinfo_and_all_query_values",
+      "complete": true,
+      "passed": true,
+      "safe_for_upload": true
+    },
+    {
+      "case": "04_header_json_keys_and_opaque_payload_digest",
+      "complete": true,
+      "passed": true,
+      "safe_for_upload": true
+    },
+    {
+      "case": "05_inline_attempt_payload_is_incomplete",
+      "complete": false,
+      "passed": true,
+      "safe_for_upload": true
+    },
+    {
+      "case": "06_unselected_secret_filename_not_exported",
+      "complete": true,
+      "passed": true,
+      "safe_for_upload": true
+    },
+    {
+      "case": "07_selected_secret_attempt_filename_is_withheld",
+      "complete": false,
+      "passed": true,
+      "safe_for_upload": true
+    },
+    {
+      "case": "08_bytestream_never_fetched_or_guessed",
+      "complete": false,
+      "passed": true,
+      "safe_for_upload": true
+    },
+    {
+      "case": "09_local_uri_outside_authorized_root",
+      "complete": false,
+      "passed": true,
+      "safe_for_upload": true
+    },
+    {
+      "case": "10_file_uri_nonlocal_authority",
+      "complete": false,
+      "passed": true,
+      "safe_for_upload": true
+    },
+    {
+      "case": "11_percent_encoded_traversal_escape",
+      "complete": false,
+      "passed": true,
+      "safe_for_upload": true
+    },
+    {
+      "case": "12_file_uri_nul_path",
+      "complete": false,
+      "passed": true,
+      "safe_for_upload": true
+    },
+    {
+      "case": "13_missing_initial_failed_attempt_log",
+      "complete": false,
+      "passed": true,
+      "safe_for_upload": true
+    },
+    {
+      "case": "14_nested_log_symlink_escape",
+      "complete": false,
+      "passed": true,
+      "safe_for_upload": true
+    },
+    {
+      "case": "15_xml_digest_mismatch",
+      "complete": false,
+      "passed": true,
+      "safe_for_upload": true
+    },
+    {
+      "case": "16_log_length_mismatch",
+      "complete": false,
+      "passed": true,
+      "safe_for_upload": true
+    },
+    {
+      "case": "17_duplicate_actual_attempt",
+      "complete": false,
+      "passed": true,
+      "safe_for_upload": true
+    },
+    {
+      "case": "18_missing_early_attempt_sequence",
+      "complete": false,
+      "passed": true,
+      "safe_for_upload": true
+    },
+    {
+      "case": "19_summary_attempt_count_mismatch",
+      "complete": false,
+      "passed": true,
+      "safe_for_upload": true
+    },
+    {
+      "case": "20_missing_final_last_message",
+      "complete": false,
+      "passed": true,
+      "safe_for_upload": true
+    },
+    {
+      "case": "21_unexpected_cached_actual_result",
+      "complete": false,
+      "passed": true,
+      "safe_for_upload": true
+    },
+    {
+      "case": "22_original_bazel_exit_mismatch",
+      "complete": false,
+      "passed": true,
+      "safe_for_upload": true
+    },
+    {
+      "case": "23_console_copy_failure_is_independent",
+      "complete": false,
+      "passed": true,
+      "safe_for_upload": true
+    },
+    {
+      "case": "24_complete_evidence_preserves_original_exit_three",
+      "complete": true,
+      "passed": true,
+      "safe_for_upload": true
+    },
+    {
+      "case": "25_truncated_bep_never_publishes_partial_stream",
+      "complete": false,
+      "passed": true,
+      "safe_for_upload": true
+    },
+    {
+      "case": "26_credential_log_withheld_without_digest",
+      "complete": false,
+      "passed": true,
+      "safe_for_upload": true
+    },
+    {
+      "case": "27_percent_encoded_credential_uri_rejects_derived_bep",
+      "complete": false,
+      "passed": true,
+      "safe_for_upload": true
+    },
+    {
+      "case": "28_upload_gate_blocks_plain_console_credential",
+      "complete": true,
+      "passed": true,
+      "safe_for_upload": false
+    },
+    {
+      "case": "29_upload_gate_blocks_percent_encoded_public_path",
+      "complete": true,
+      "passed": true,
+      "safe_for_upload": false
+    },
+    {
+      "case": "30_upload_gate_decodes_source_gzip",
+      "complete": true,
+      "passed": true,
+      "safe_for_upload": false
+    },
+    {
+      "case": "31_upload_gate_blocks_linked_export",
+      "complete": true,
+      "passed": true,
+      "safe_for_upload": false
+    },
+    {
+      "case": "32_four_layer_encoded_credential_crosses_read_boundary",
+      "complete": true,
+      "passed": true,
+      "safe_for_upload": false
+    },
+    {
+      "case": "33_valid_compressed_credential_is_blocked_without_rewrite",
+      "complete": true,
+      "passed": true,
+      "safe_for_upload": false
+    },
+    {
+      "case": "34_truncated_zstd_frame_blocks_upload",
+      "complete": true,
+      "passed": true,
+      "safe_for_upload": false
+    },
+    {
+      "case": "35_unavailable_decoder_blocks_upload",
+      "complete": true,
+      "passed": true,
+      "safe_for_upload": false
+    },
+    {
+      "case": "36_complete_first_but_truncated_second_zstd_frame_blocks_upload",
+      "complete": true,
+      "passed": true,
+      "safe_for_upload": false
+    }
+  ],
+  "input": "Fabricated data only; no Bazel, Rust, product or native execution.",
+  "passed": 36,
+  "schema": "b21-rebuilt-required-synthetic-fixtures-v1"
+}

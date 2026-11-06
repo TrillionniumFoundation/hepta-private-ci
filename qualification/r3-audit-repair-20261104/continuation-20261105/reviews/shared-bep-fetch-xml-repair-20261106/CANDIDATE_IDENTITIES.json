@@ -1,0 +1,74 @@
+{
+  "schema": "attempt-collector-fetch-xml-candidate-v1",
+  "qualification": "STATIC_CANDIDATE_NOT_NATIVE",
+  "preimage_collector": {
+    "bytes": 34905,
+    "sha256": "7d8962de05fae508b259c1e16efa1be78a760c4a6a0da8ec239e796f3d1cdd1c",
+    "git_blob": "00dc37697adde6154a347963ab19e8a6edebac07"
+  },
+  "postimage_collector": {
+    "bytes": 36352,
+    "sha256": "4b9e1a86867bfad3303d0fbd14722f654b74c65f5ef963b87cbef7153da59c52",
+    "git_blob": "ee1b82877fbd55a2e3838d768014715617e05ea0"
+  },
+  "remote_download_regex": "^bazel-out/[^/]+/testlogs/.*/(test\\.(log|xml)|test_attempts/attempt_[1-9][0-9]*\\.(log|xml))$",
+  "workflows": {
+    "b21": {
+      "repository_path": ".github/workflows/b21-intel-original-pty.yml",
+      "parent_commit": "ebd31e2b3e38ff72cedaa7b57bee60c1c102da27",
+      "parent_tree": "46fca3e684217066c260dc10d0dc319a33e0a93c",
+      "source_guard_changes": [
+        [
+          "        fetch-depth: 3\n",
+          "        fetch-depth: 4\n"
+        ],
+        [
+          "test \"$(git show -s --format=%P HEAD)\" = cc65856cc0b20d03db506c19495d53d61162102d",
+          "test \"$(git show -s --format=%P HEAD)\" = ebd31e2b3e38ff72cedaa7b57bee60c1c102da27"
+        ],
+        [
+          "test \"$(git show -s --format=%P HEAD^)\" = 67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+          "test \"$(git show -s --format=%P HEAD^)\" = cc65856cc0b20d03db506c19495d53d61162102d\n        test \"$(git show -s --format=%P HEAD~2)\" = 67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+        ],
+        [
+          "test \"$(git rev-parse 'HEAD^1^{tree}')\" = eaded1870d080eaa55efae6208354729140e784c",
+          "test \"$(git rev-parse 'HEAD^1^{tree}')\" = 46fca3e684217066c260dc10d0dc319a33e0a93c\n        test \"$(git rev-parse 'HEAD~2^{tree}')\" = eaded1870d080eaa55efae6208354729140e784c"
+        ],
+        [
+          "test \"$(git rev-parse 'HEAD~2^{tree}')\" = 3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+          "test \"$(git rev-parse 'HEAD~3^{tree}')\" = 3982ba56dc5a3f1da0c1de7ea57992f88125c359"
+        ],
+        [
+          "git rev-parse HEAD 'HEAD^{tree}' HEAD^ 'HEAD^1^{tree}' HEAD~2 'HEAD~2^{tree}' >",
+          "git rev-parse HEAD 'HEAD^{tree}' HEAD^ 'HEAD^1^{tree}' HEAD~2 'HEAD~2^{tree}' HEAD~3 'HEAD~3^{tree}' >"
+        ]
+      ],
+      "preimage": {
+        "bytes": 50740,
+        "sha256": "0c286e0931688c7882c4d35c1d26a1fc019cc37e271a8220b349583cc849d56a",
+        "git_blob": "fb5881fa310d3548cd604d2827fe9c29aa1b3873"
+      },
+      "postimage": {
+        "bytes": 52706,
+        "sha256": "1c1baed7253a31705ccf2edbf3b796e22347a8729eb5d0ce6c263dfa551cd42a",
+        "git_blob": "17ff1640c21876a08396db6a40f131a26870fe84"
+      }
+    },
+    "b23": {
+      "repository_path": ".github/workflows/hepta-b23-linux-app-server-original-gate.yml",
+      "parent_commit": "e63ed76c5d8ded046f97caffbdbe2883140e6032",
+      "parent_tree": "a6831e2607e718f1343b788e5b8062a171d50a71",
+      "source_guard_changes": [],
+      "preimage": {
+        "bytes": 60049,
+        "sha256": "254826e592d89f0f2432ef769e8fce11c93ca7c62ad480dc282afe9123e98464",
+        "git_blob": "d4b87c924a1dcc795e05aec1dd4e31854dcff687"
+      },
+      "postimage": {
+        "bytes": 61857,
+        "sha256": "7e70654ad67ad3186d840ccc656d44e783a88edd6788dbfdb0abd3b1624a3c8d",
+        "git_blob": "993d7a76a4fc6c2924e45c7ef403cecd6d108d1f"
+      }
+    }
+  }
+}

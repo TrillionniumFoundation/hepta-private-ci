@@ -1,0 +1,194 @@
+{
+  "actual_postimage_full_GET_count": 3,
+  "collector": {
+    "bytes": 36352,
+    "git_blob": "ee1b82877fbd55a2e3838d768014715617e05ea0",
+    "sha256": "4b9e1a86867bfad3303d0fbd14722f654b74c65f5ef963b87cbef7153da59c52"
+  },
+  "complete_source_regeneration_byte_equal": true,
+  "fixed_bazel_9_3_primary_full_GET": [
+    {
+      "bytes": 12619,
+      "git_blob": "3d6b9f2d67f99d4c1953a82d3c6ed74790e1b797",
+      "path": "primary/BuildEventIdUtil.java",
+      "sha256": "37812b3e02911d51540a5a7f02db35e21cfd8c09c3e2ed732b734d13f2bf2d45",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/buildeventstream/BuildEventIdUtil.java"
+    },
+    {
+      "bytes": 26301,
+      "git_blob": "bab9d03f33a4b5ad5d463b8f5505128417094f6e",
+      "path": "primary/BuildRequestOptions.java",
+      "sha256": "c4bcd1445c5a2a165bab55f9fa96d0c0bd270974e0d89a9b64d32fc6f8ed1783",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/buildtool/BuildRequestOptions.java"
+    },
+    {
+      "bytes": 3529,
+      "git_blob": "d3c16738ba7e6a51103fe02d1a9eec3113a0756c",
+      "path": "primary/CommonRemoteOptions.java",
+      "sha256": "da21757de4ac7c49adeae3ef8e2baadcf515b0892e73855577fe207105191aac",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/remote/options/CommonRemoteOptions.java"
+    },
+    {
+      "bytes": 1983,
+      "git_blob": "7fd26e9b7f23a50e733123142bc599878a3cd0b6",
+      "path": "primary/FetchEvent.java",
+      "sha256": "ffd3b389320638314838554457976544af6a4f5bfd4d42e3b36e76958ee771b3",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/buildeventstream/FetchEvent.java"
+    },
+    {
+      "bytes": 2597,
+      "git_blob": "2d2812205f9f8925e12bea63186d7fd1e0b568d3",
+      "path": "primary/RegexPatternOption.java",
+      "sha256": "0e4aeea7e778e680f5ae696cd293365b09bef628890417d93e4046001c40ee6d",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/common/options/RegexPatternOption.java"
+    },
+    {
+      "bytes": 88576,
+      "git_blob": "e0f56e64efdaf0b39a3032a4163b74a59b946aad",
+      "path": "primary/RemoteExecutionService.java",
+      "sha256": "0ce8bea8a3b387fd739832ff4f0e9b6aeee1cfa6df558132f92a086274d55111",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/remote/RemoteExecutionService.java"
+    },
+    {
+      "bytes": 61307,
+      "git_blob": "633cae1f61fe7a2e913a68939a9b4e426e0ad5a3",
+      "path": "primary/RemoteModule.java",
+      "sha256": "c0067e3973bb2e6f34b7d3f18d2aabbe881e8eed95757fa943d3ead3a4b748f1",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/remote/RemoteModule.java"
+    },
+    {
+      "bytes": 43451,
+      "git_blob": "cd8b2b554e28d2cce0ecc70f8f4daa29a865c421",
+      "path": "primary/RemoteOptions.java",
+      "sha256": "dfc9a7357db490e29e72cdef56d304dbd64fc5dcfc3c5672eec0589aef6460f0",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/remote/options/RemoteOptions.java"
+    },
+    {
+      "bytes": 15904,
+      "git_blob": "707f681eab1d31593fab49768e68dc9620cce6ad",
+      "path": "primary/RemoteOutputChecker.java",
+      "sha256": "2f002a214f29c25449e6f788572d5fccf9d958b5becf964baf471acb3b4ee24d",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/remote/RemoteOutputChecker.java"
+    },
+    {
+      "bytes": 39413,
+      "git_blob": "0ad50eb7683ec38d20ab66593421fbe57884ce8f",
+      "path": "primary/StandaloneTestStrategy.java",
+      "sha256": "4b8bb3d13de58806197ca29dd2beeeab26a2864ffb2b7e1ec57344b9b467cbaf",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/exec/StandaloneTestStrategy.java"
+    },
+    {
+      "bytes": 54241,
+      "git_blob": "acd558cc2fcf1a6b93bd910d9ee7d3d10d75d5d9",
+      "path": "primary/TestRunnerAction.java",
+      "sha256": "041b0caebf6d6b84118f8365c7c874d5a2573889b2d0f50c2366b65a5e97c6d8",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/analysis/test/TestRunnerAction.java"
+    },
+    {
+      "bytes": 24702,
+      "git_blob": "4dee96225efcdc4ac68aeeabcce9d4deeb31b7a0",
+      "path": "primary/Utils.java",
+      "sha256": "adbade9a30aa07597f54f9fa1d6d1242316961215c11065a762e4db0643c27aa",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/remote/util/Utils.java"
+    }
+  ],
+  "historical_terminal_evidence_remains_incomplete": {
+    "b21_missing_xml": 131,
+    "b23_missing_xml": 8
+  },
+  "limits": [
+    "The output-download predicate changes evidence I/O; it does not change test parameters or prove future downloads succeed.",
+    "A remote output service or in-memory-output contract can override download behavior; no such new configuration is introduced.",
+    "Original native runs and their failures remain historical evidence; offline URI rebasing is not a new native run.",
+    "B21 dropped-receiver cause and broader product qualification are not resolved by this evidence-only change."
+  ],
+  "main67_tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+  "no_XML_synthesized_or_missing_reference_waived": true,
+  "only_collector_function_changes": [
+    "reconcile",
+    "collect"
+  ],
+  "original_36_and_9_new_and_11_original_privacy_checks_passed": true,
+  "original_leaves": 10582,
+  "regression_stdout": {
+    "bytes": 9825,
+    "git_blob": "663e1954d4c899caafc7c2cf4f0713559cc5078e",
+    "sha256": "9f6caa99830c507a4538787e17272be5ca64d0cbd6b36649df3c2029ba52a6b9"
+  },
+  "remote_materialization_is_future_native_requirement": true,
+  "schema": "shared-fetch-xml-static-proof-v1",
+  "schema_name_changed": true,
+  "status": "STATIC_VERIFIED_NATIVE_PENDING",
+  "unchanged_function_and_class_bodies": [
+    "EvidenceError",
+    "SecretPolicy",
+    "dump_json",
+    "canonical",
+    "pointer",
+    "header_name",
+    "Sanitizer",
+    "sanitize_bep",
+    "relevant_log",
+    "stable_copy",
+    "collect_local_logs",
+    "reference",
+    "read_exit",
+    "safe_error",
+    "inspect_zstd",
+    "scan_zstd",
+    "privacy_gate",
+    "main"
+  ],
+  "workflows": {
+    "b21": {
+      "actual_parent_commit": "ebd31e2b3e38ff72cedaa7b57bee60c1c102da27",
+      "actual_parent_merge": "01167418c3cf2970b156bc23be911b58ced49691",
+      "actual_parent_merge_tree": "46fca3e684217066c260dc10d0dc319a33e0a93c",
+      "actual_parent_tree": "46fca3e684217066c260dc10d0dc319a33e0a93c",
+      "all_other_workflow_bytes_preserved_except_exact_parent_guard_update": true,
+      "bash_n_scripts": 4,
+      "computed_complete_tree": "45858bc96c0edbc366ec77991646b15971129975",
+      "merkle_nodes": 1571,
+      "only_bazel_argv_addition": "--remote_download_regex=^bazel-out/[^/]+/testlogs/.*/(test\\.(log|xml)|test_attempts/attempt_[1-9][0-9]*\\.(log|xml))$",
+      "only_parent_leaf_changed": ".github/workflows/b21-intel-original-pty.yml",
+      "original_main67_leaves_unchanged": 10582,
+      "postimage": {
+        "bytes": 52706,
+        "git_blob": "17ff1640c21876a08396db6a40f131a26870fe84",
+        "sha256": "1c1baed7253a31705ccf2edbf3b796e22347a8729eb5d0ce6c263dfa551cd42a"
+      },
+      "preimage": {
+        "bytes": 50740,
+        "git_blob": "fb5881fa310d3548cd604d2827fe9c29aa1b3873",
+        "sha256": "0c286e0931688c7882c4d35c1d26a1fc019cc37e271a8220b349583cc849d56a"
+      },
+      "total_leaves": 10583,
+      "workflow": ".github/workflows/b21-intel-original-pty.yml"
+    },
+    "b23": {
+      "actual_parent_commit": "e63ed76c5d8ded046f97caffbdbe2883140e6032",
+      "actual_parent_merge": "b3bc3dcf5684568dd03f3667ecd2307b8577a0a6",
+      "actual_parent_merge_tree": "a6831e2607e718f1343b788e5b8062a171d50a71",
+      "actual_parent_tree": "a6831e2607e718f1343b788e5b8062a171d50a71",
+      "all_other_workflow_bytes_preserved_except_exact_parent_guard_update": true,
+      "bash_n_scripts": 7,
+      "computed_complete_tree": "9a6fd02aa18b2421f6aaec8a5db6ecf82b710c89",
+      "merkle_nodes": 1571,
+      "only_bazel_argv_addition": "--remote_download_regex=^bazel-out/[^/]+/testlogs/.*/(test\\.(log|xml)|test_attempts/attempt_[1-9][0-9]*\\.(log|xml))$",
+      "only_parent_leaf_changed": ".github/workflows/hepta-b23-linux-app-server-original-gate.yml",
+      "original_main67_leaves_unchanged": 10582,
+      "postimage": {
+        "bytes": 61857,
+        "git_blob": "993d7a76a4fc6c2924e45c7ef403cecd6d108d1f",
+        "sha256": "7e70654ad67ad3186d840ccc656d44e783a88edd6788dbfdb0abd3b1624a3c8d"
+      },
+      "preimage": {
+        "bytes": 60049,
+        "git_blob": "d4b87c924a1dcc795e05aec1dd4e31854dcff687",
+        "sha256": "254826e592d89f0f2432ef769e8fce11c93ca7c62ad480dc282afe9123e98464"
+      },
+      "total_leaves": 10583,
+      "workflow": ".github/workflows/hepta-b23-linux-app-server-original-gate.yml"
+    }
+  }
+}

@@ -1,0 +1,177 @@
+{
+  "B21": "OPEN",
+  "bash_syntax_blocks": 4,
+  "candidate_tree": "46fca3e684217066c260dc10d0dc319a33e0a93c",
+  "candidate_workflow": {
+    "bytes": 50740,
+    "git_blob": "fb5881fa310d3548cd604d2827fe9c29aa1b3873",
+    "path": ".github/workflows/b21-intel-original-pty.yml",
+    "sha256": "0c286e0931688c7882c4d35c1d26a1fc019cc37e271a8220b349583cc849d56a"
+  },
+  "collector": {
+    "bytes": 34905,
+    "git_blob": "00dc37697adde6154a347963ab19e8a6edebac07",
+    "sha256": "7d8962de05fae508b259c1e16efa1be78a760c4a6a0da8ec239e796f3d1cdd1c"
+  },
+  "evidence_flags_added": [
+    "--nocache_test_results",
+    "--build_event_json_file=${private_bep_dir}/build-events.jsonl",
+    "--nobuild_event_json_file_path_conversion"
+  ],
+  "historical_2_023_second_failure_cause": "UNKNOWN",
+  "main_commit": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+  "main_tree": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+  "metadata_identity_substitution": "COMMIT_SHA uses actual checked-out source HEAD instead of PR event merge",
+  "native_run": false,
+  "old_863a_full_bytes_recovered_or_equivalence_claimed": false,
+  "opaque_payloads_omitted": true,
+  "original_context": {
+    "all_targets": [
+      "//...",
+      "-//third_party/v8:all",
+      "-//codex-rs/v8-poc:v8-poc-unit-tests"
+    ],
+    "cache_scope": "bazel-test",
+    "default_retry_unchanged": true,
+    "job_id": "test",
+    "outer_minutes": 120,
+    "parallelism_and_test_timeouts_unchanged": true,
+    "runner": "macos-15-intel",
+    "target": "x86_64-apple-darwin"
+  },
+  "parent_commit": "cc65856cc0b20d03db506c19495d53d61162102d",
+  "parent_tree": "eaded1870d080eaa55efae6208354729140e784c",
+  "primary_sources": [
+    {
+      "bytes": 13661,
+      "git_blob": "2ad51cac2c704586885f5e9f2d6c7c1022c60038",
+      "path": "AuthAndTLSOptions.java",
+      "sha256": "35884e3c074bb638aa12d995bf06e09900f675bd36242da8a8e45908cb8e05e3",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/authandtls/AuthAndTLSOptions.java"
+    },
+    {
+      "bytes": 44228,
+      "git_blob": "4fe944f6093f53f90f4f5f95ff9ffaffc9932776",
+      "path": "BuildEventServiceModule.java",
+      "sha256": "225656fa5a995cd846b816416b9032ad312ffd5842086f0ec47a8ce48e72cd9a",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/buildeventservice/BuildEventServiceModule.java"
+    },
+    {
+      "bytes": 10248,
+      "git_blob": "7e08aeb2e4c606f148c36cc69cd56279b73a7e3f",
+      "path": "BuildEventServiceOptions.java",
+      "sha256": "b38ce9c51ff1a4ae62bae6cb8e8c7080a2691abecd6ccf7686df0af0c77aa5a1",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/buildeventservice/BuildEventServiceOptions.java"
+    },
+    {
+      "bytes": 7984,
+      "git_blob": "afb3915fbcd6bd417f7d6e7268285ac06cb0dc06",
+      "path": "BuildEventStreamOptions.java",
+      "sha256": "57c26156654bbc76a1cd092b332c304f4327f37d1bd09c3f35d7a5325bbcad63",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/buildeventstream/transports/BuildEventStreamOptions.java"
+    },
+    {
+      "bytes": 23905,
+      "git_blob": "6a2a81d240995122ccc3e562d4c0fcf7b14cc8bf",
+      "path": "CommandLineEvent.java",
+      "sha256": "785ded27835b16a67554413a8ded20e1509d711d7c136720db9bcee640298ee5",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/runtime/CommandLineEvent.java"
+    },
+    {
+      "bytes": 31027,
+      "git_blob": "d56b2302b64a364a96ebfb74babc77cb0aca419b",
+      "path": "ExecutionOptions.java",
+      "sha256": "161667a18a87dfc25fbcf8aa8abc00ae35d90863815010386fa8de2db2ef2798",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/exec/ExecutionOptions.java"
+    },
+    {
+      "bytes": 13257,
+      "git_blob": "4e98c8d72618dd79d41f18bf88a86ebba3495b99",
+      "path": "FileTransport.java",
+      "sha256": "26af806ba75d482730b4e737802d3b23ee3ee6a0d67c7ce8a52eec210c6c6b0d",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/buildeventstream/transports/FileTransport.java"
+    },
+    {
+      "bytes": 3783,
+      "git_blob": "b6033d8175768a14533cbcc3f83202ee109a15f7",
+      "path": "JsonFormatFileTransport.java",
+      "sha256": "a916c7eeff7783070d7bdee33ac523132bc9dc7a70f34f88fc675518756b30e4",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/buildeventstream/transports/JsonFormatFileTransport.java"
+    },
+    {
+      "bytes": 2620,
+      "git_blob": "8a0c837b4ad307db7da1a14a9b070110771100e3",
+      "path": "LocalFilesArtifactUploader.java",
+      "sha256": "e3f8f031ef3450c13d4b1955b4e3515d1da615b327286974c64bdaf4f6220d6d",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/buildeventstream/LocalFilesArtifactUploader.java"
+    },
+    {
+      "bytes": 8043,
+      "git_blob": "5af7ac481d2a7f662dab64bba143055a16d7f4d1",
+      "path": "ParsedOptionDescription.java",
+      "sha256": "65edf1f6f6d5258b40dc06c0694d122b0abf167d91700ca8c8fcea514fa1e9e6",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/common/options/ParsedOptionDescription.java"
+    },
+    {
+      "bytes": 3459,
+      "git_blob": "524f0ef7ad319dbe85ef81cea404018cbca6e5d1",
+      "path": "PathConverter.java",
+      "sha256": "8590683bb540c774ab25c20a2a05751ef957f2a75918c646cbc5ae70b59424c9",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/buildeventstream/PathConverter.java"
+    },
+    {
+      "bytes": 43451,
+      "git_blob": "cd8b2b554e28d2cce0ecc70f8f4daa29a865c421",
+      "path": "RemoteOptions.java",
+      "sha256": "dfc9a7357db490e29e72cdef56d304dbd64fc5dcfc3c5672eec0589aef6460f0",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/remote/options/RemoteOptions.java"
+    },
+    {
+      "bytes": 39413,
+      "git_blob": "0ad50eb7683ec38d20ab66593421fbe57884ce8f",
+      "path": "StandaloneTestStrategy.java",
+      "sha256": "4b8bb3d13de58806197ca29dd2beeeab26a2864ffb2b7e1ec57344b9b467cbaf",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/exec/StandaloneTestStrategy.java"
+    },
+    {
+      "bytes": 55593,
+      "git_blob": "e6875c5bdad3594f670c2e997f6dd006a9f183a4",
+      "path": "build_event_stream.proto",
+      "sha256": "f15a652c9804e09fabf3a77919ecaf314750e547daabc7572fd0fad058174316",
+      "url": "https://github.com/bazelbuild/bazel/blob/9.3.0/src/main/java/com/google/devtools/build/lib/buildeventstream/proto/build_event_stream.proto"
+    }
+  ],
+  "qualification_scope": "static_source_and_synthetic_evidence_only",
+  "raw_bep_uploaded": false,
+  "ref_or_PR_mutation": false,
+  "required_synthetic_cases": 36,
+  "result": "STATIC_VERIFIED",
+  "schema": "b21-rebuilt-full-intel-static-proof-v1",
+  "source_proof": {
+    "candidate_leaves": 10583,
+    "candidate_merkle_nodes": 1571,
+    "candidate_postimages_actual_full_GET": 2,
+    "fixed_primary_full_GET_matches": 14,
+    "main_leaves_unchanged": 10582,
+    "main_merkle_nodes": 1571,
+    "only_changed_path": ".github/workflows/b21-intel-original-pty.yml",
+    "parent_merkle_nodes": 1571,
+    "repository_dependency_full_GET_matches": 15
+  },
+  "synthetic_wrapper_exit_checks": [
+    {
+      "console_copy_exit": 0,
+      "exact_targets_and_argument_vector": true,
+      "preserved_original_exit": true,
+      "synthetic_original_exit": 0,
+      "wrapper_calls": 1
+    },
+    {
+      "console_copy_exit": 0,
+      "exact_targets_and_argument_vector": true,
+      "preserved_original_exit": true,
+      "synthetic_original_exit": 7,
+      "wrapper_calls": 1
+    }
+  ]
+}

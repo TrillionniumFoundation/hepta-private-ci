@@ -1,0 +1,41 @@
+{
+  "schema": "hepta-publication-direct-byte-equality-addendum-v1",
+  "kind": "b21",
+  "authority": {
+    "source_commit": "cc65856cc0b20d03db506c19495d53d61162102d",
+    "source_tree": "eaded1870d080eaa55efae6208354729140e784c",
+    "parent": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed",
+    "PR": 4902,
+    "merge_commit": "f0355601e362e2ad4947b40d51215e5c4d075fc3"
+  },
+  "all_original_members_restored_and_compared_as_complete_bytes": 28,
+  "comparison_calls_with_literal_bytes_equality": 63,
+  "regenerated_outputs": [
+    {
+      "path": "hepta-audit-fifth/b21-intel-original-gate/intended-full-tree.json",
+      "bytes": 2329904,
+      "sha256": "bd1f6d8aa5cb5eff297fb27b8558a8ded9d2fa39112fb352b35eb2bd3645e577",
+      "git_blob": "a5f211e18cdb912f5734d9b67bd88c58a32bfb27",
+      "comparison": "actual_regenerated_bytes == complete_original_archive_member_bytes",
+      "direct_byte_comparison": true
+    },
+    {
+      "path": "hepta-audit-fifth/b21-intel-original-gate/static-verification.json",
+      "bytes": 3976,
+      "sha256": "ea61a9899aa9af9e4989c3654397747bd7ea84905cb25af0ae61ad63879d7d13",
+      "git_blob": "1b0f049bad5bd7053cc96fe4fd5fe4d6933d25de",
+      "comparison": "actual_regenerated_bytes == complete_original_archive_member_bytes",
+      "direct_byte_comparison": true
+    }
+  ],
+  "original_restoration_stdout_equals_frozen_receipt_complete_bytes": true,
+  "original_restoration_stdout": {
+    "bytes": 2220,
+    "sha256": "61ea1738bfe0b460ef8f8a4b109094cccf9ace639965ab08e6de0ff2a719c0d6",
+    "git_blob": "3a9860b684b418ed089a74ebeab224458ae7ad59"
+  },
+  "frozen_verifier_and_archive_unmodified": true,
+  "native_or_product_test_or_compile_or_fmt": false,
+  "network_or_external_ref_action": false,
+  "scope": "Supplement first hash-verified restoration with direct bytes equality; publication custody only"
+}
