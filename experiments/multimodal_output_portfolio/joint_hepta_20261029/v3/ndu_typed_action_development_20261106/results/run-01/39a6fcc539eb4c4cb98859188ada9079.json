@@ -1,0 +1,43 @@
+{
+  "receipt": {
+    "request_id": "39a6fcc539eb4c4cb98859188ada9079",
+    "context": {
+      "task_id": "typed/chinook/invoice",
+      "arm": "literal_router",
+      "stage": "tool"
+    },
+    "argv": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "/workspace/scratch/e5ecafe4ccc8/frozen_work/study.py",
+      "tool-worker"
+    ],
+    "payload": {
+      "label": "E",
+      "tool": "table_count",
+      "argument": "Invoice"
+    },
+    "started_at_utc": "2026-11-06T16:53:13.997480+00:00",
+    "started_monotonic": 60505.983909075,
+    "phase": "terminal",
+    "status": "ok",
+    "returncode": 0,
+    "finished_at_utc": "2026-11-06T16:53:14.225081+00:00",
+    "wall_seconds": 0.22794508899823995,
+    "parent_cpu_seconds": 0.01610178100000001,
+    "child_cpu_seconds": 0.20757799999999804,
+    "stdout_sha256": "263347d3b0cbcbf12adb295e8a261f9b22d121471515472dcc93d84f0effe573",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "external_paid_model_api_calls": 0,
+    "actual_host_currency_cost": null
+  },
+  "response": {
+    "answer": 412,
+    "operation": {
+      "argument": "Invoice",
+      "label": "E",
+      "tool": "table_count"
+    }
+  },
+  "stdout": "{\"answer\": 412, \"operation\": {\"argument\": \"Invoice\", \"label\": \"E\", \"tool\": \"table_count\"}}\n",
+  "stderr": ""
+}

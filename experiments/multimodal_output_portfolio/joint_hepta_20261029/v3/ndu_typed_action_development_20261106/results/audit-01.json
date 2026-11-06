@@ -1,0 +1,764 @@
+{
+  "schema": "ndu.typed-action-receipt-audit.v1",
+  "audit_kind": "separate reconstruction by same implementation author; not external or independent review",
+  "checks": [
+    {
+      "name": "execution source boundary unchanged",
+      "passed": true
+    },
+    {
+      "name": "protocol digest",
+      "passed": true
+    },
+    {
+      "name": "source and input freeze exact",
+      "passed": true
+    },
+    {
+      "name": "all raw artifacts exact",
+      "passed": true
+    },
+    {
+      "name": "24 unique requests and 48 intent/terminal entries",
+      "passed": true
+    },
+    {
+      "name": "intent precedes one terminal: 06ef6f6cd1124978b24d8b9beed04bf7",
+      "passed": true
+    },
+    {
+      "name": "matching successful receipt: 06ef6f6cd1124978b24d8b9beed04bf7",
+      "passed": true
+    },
+    {
+      "name": "exact stdout: 06ef6f6cd1124978b24d8b9beed04bf7",
+      "passed": true
+    },
+    {
+      "name": "intent precedes one terminal: 13c885611d4c47ddad4f1f10dd790845",
+      "passed": true
+    },
+    {
+      "name": "matching successful receipt: 13c885611d4c47ddad4f1f10dd790845",
+      "passed": true
+    },
+    {
+      "name": "exact stdout: 13c885611d4c47ddad4f1f10dd790845",
+      "passed": true
+    },
+    {
+      "name": "intent precedes one terminal: 1fc702b32ed14efdac117b6a85af2871",
+      "passed": true
+    },
+    {
+      "name": "matching successful receipt: 1fc702b32ed14efdac117b6a85af2871",
+      "passed": true
+    },
+    {
+      "name": "exact stdout: 1fc702b32ed14efdac117b6a85af2871",
+      "passed": true
+    },
+    {
+      "name": "intent precedes one terminal: 29000de5580c4c85ada77de5de159406",
+      "passed": true
+    },
+    {
+      "name": "matching successful receipt: 29000de5580c4c85ada77de5de159406",
+      "passed": true
+    },
+    {
+      "name": "exact stdout: 29000de5580c4c85ada77de5de159406",
+      "passed": true
+    },
+    {
+      "name": "intent precedes one terminal: 2e6c4e68d2774ca5839ec7dd0d17edf0",
+      "passed": true
+    },
+    {
+      "name": "matching successful receipt: 2e6c4e68d2774ca5839ec7dd0d17edf0",
+      "passed": true
+    },
+    {
+      "name": "exact stdout: 2e6c4e68d2774ca5839ec7dd0d17edf0",
+      "passed": true
+    },
+    {
+      "name": "intent precedes one terminal: 320d5c9ad9b34a75a6d7dd29ffdea2c5",
+      "passed": true
+    },
+    {
+      "name": "matching successful receipt: 320d5c9ad9b34a75a6d7dd29ffdea2c5",
+      "passed": true
+    },
+    {
+      "name": "exact stdout: 320d5c9ad9b34a75a6d7dd29ffdea2c5",
+      "passed": true
+    },
+    {
+      "name": "intent precedes one terminal: 39a6fcc539eb4c4cb98859188ada9079",
+      "passed": true
+    },
+    {
+      "name": "matching successful receipt: 39a6fcc539eb4c4cb98859188ada9079",
+      "passed": true
+    },
+    {
+      "name": "exact stdout: 39a6fcc539eb4c4cb98859188ada9079",
+      "passed": true
+    },
+    {
+      "name": "intent precedes one terminal: 40041b511ba149ffaa2ee6738acace3d",
+      "passed": true
+    },
+    {
+      "name": "matching successful receipt: 40041b511ba149ffaa2ee6738acace3d",
+      "passed": true
+    },
+    {
+      "name": "exact stdout: 40041b511ba149ffaa2ee6738acace3d",
+      "passed": true
+    },
+    {
+      "name": "intent precedes one terminal: 49b5ed2e6558422aa046ec4343de34f2",
+      "passed": true
+    },
+    {
+      "name": "matching successful receipt: 49b5ed2e6558422aa046ec4343de34f2",
+      "passed": true
+    },
+    {
+      "name": "exact stdout: 49b5ed2e6558422aa046ec4343de34f2",
+      "passed": true
+    },
+    {
+      "name": "intent precedes one terminal: 59e79c989ac04cf3b80e4275606ea1b5",
+      "passed": true
+    },
+    {
+      "name": "matching successful receipt: 59e79c989ac04cf3b80e4275606ea1b5",
+      "passed": true
+    },
+    {
+      "name": "exact stdout: 59e79c989ac04cf3b80e4275606ea1b5",
+      "passed": true
+    },
+    {
+      "name": "intent precedes one terminal: 68502b2aef9f4780a127817e5b806e4d",
+      "passed": true
+    },
+    {
+      "name": "matching successful receipt: 68502b2aef9f4780a127817e5b806e4d",
+      "passed": true
+    },
+    {
+      "name": "exact stdout: 68502b2aef9f4780a127817e5b806e4d",
+      "passed": true
+    },
+    {
+      "name": "intent precedes one terminal: 6cdb5af43e844095abf9902c51b22592",
+      "passed": true
+    },
+    {
+      "name": "matching successful receipt: 6cdb5af43e844095abf9902c51b22592",
+      "passed": true
+    },
+    {
+      "name": "exact stdout: 6cdb5af43e844095abf9902c51b22592",
+      "passed": true
+    },
+    {
+      "name": "intent precedes one terminal: 85b7a2ae57ba4e4eb6ca1cc4e921f46e",
+      "passed": true
+    },
+    {
+      "name": "matching successful receipt: 85b7a2ae57ba4e4eb6ca1cc4e921f46e",
+      "passed": true
+    },
+    {
+      "name": "exact stdout: 85b7a2ae57ba4e4eb6ca1cc4e921f46e",
+      "passed": true
+    },
+    {
+      "name": "intent precedes one terminal: a7682209030944289c8f30fb86b8527e",
+      "passed": true
+    },
+    {
+      "name": "matching successful receipt: a7682209030944289c8f30fb86b8527e",
+      "passed": true
+    },
+    {
+      "name": "exact stdout: a7682209030944289c8f30fb86b8527e",
+      "passed": true
+    },
+    {
+      "name": "intent precedes one terminal: ba38f502f6934545b0ae881149a25e49",
+      "passed": true
+    },
+    {
+      "name": "matching successful receipt: ba38f502f6934545b0ae881149a25e49",
+      "passed": true
+    },
+    {
+      "name": "exact stdout: ba38f502f6934545b0ae881149a25e49",
+      "passed": true
+    },
+    {
+      "name": "intent precedes one terminal: bd514f8c93154291beadf1a41f913973",
+      "passed": true
+    },
+    {
+      "name": "matching successful receipt: bd514f8c93154291beadf1a41f913973",
+      "passed": true
+    },
+    {
+      "name": "exact stdout: bd514f8c93154291beadf1a41f913973",
+      "passed": true
+    },
+    {
+      "name": "intent precedes one terminal: c27c7a49e0e045cc863a8c0012d8e6b0",
+      "passed": true
+    },
+    {
+      "name": "matching successful receipt: c27c7a49e0e045cc863a8c0012d8e6b0",
+      "passed": true
+    },
+    {
+      "name": "exact stdout: c27c7a49e0e045cc863a8c0012d8e6b0",
+      "passed": true
+    },
+    {
+      "name": "intent precedes one terminal: cf1a89d83cf44e03beb21d6bf3e7f25d",
+      "passed": true
+    },
+    {
+      "name": "matching successful receipt: cf1a89d83cf44e03beb21d6bf3e7f25d",
+      "passed": true
+    },
+    {
+      "name": "exact stdout: cf1a89d83cf44e03beb21d6bf3e7f25d",
+      "passed": true
+    },
+    {
+      "name": "intent precedes one terminal: d2b8a28ab6a4467e827ed30481a70e65",
+      "passed": true
+    },
+    {
+      "name": "matching successful receipt: d2b8a28ab6a4467e827ed30481a70e65",
+      "passed": true
+    },
+    {
+      "name": "exact stdout: d2b8a28ab6a4467e827ed30481a70e65",
+      "passed": true
+    },
+    {
+      "name": "intent precedes one terminal: e386fb1dbb3c4266ae83280b06378d8c",
+      "passed": true
+    },
+    {
+      "name": "matching successful receipt: e386fb1dbb3c4266ae83280b06378d8c",
+      "passed": true
+    },
+    {
+      "name": "exact stdout: e386fb1dbb3c4266ae83280b06378d8c",
+      "passed": true
+    },
+    {
+      "name": "intent precedes one terminal: ec5323e2d4be46c98f59a9f6594b880d",
+      "passed": true
+    },
+    {
+      "name": "matching successful receipt: ec5323e2d4be46c98f59a9f6594b880d",
+      "passed": true
+    },
+    {
+      "name": "exact stdout: ec5323e2d4be46c98f59a9f6594b880d",
+      "passed": true
+    },
+    {
+      "name": "intent precedes one terminal: f5f71c8dc2ce43bfb5eba4220bd6ada3",
+      "passed": true
+    },
+    {
+      "name": "matching successful receipt: f5f71c8dc2ce43bfb5eba4220bd6ada3",
+      "passed": true
+    },
+    {
+      "name": "exact stdout: f5f71c8dc2ce43bfb5eba4220bd6ada3",
+      "passed": true
+    },
+    {
+      "name": "intent precedes one terminal: fb448b90ca6d43b2a87e2392b8b9c3c3",
+      "passed": true
+    },
+    {
+      "name": "matching successful receipt: fb448b90ca6d43b2a87e2392b8b9c3c3",
+      "passed": true
+    },
+    {
+      "name": "exact stdout: fb448b90ca6d43b2a87e2392b8b9c3c3",
+      "passed": true
+    },
+    {
+      "name": "intent precedes one terminal: fc15144bb7714e03a680dc3d4344a002",
+      "passed": true
+    },
+    {
+      "name": "matching successful receipt: fc15144bb7714e03a680dc3d4344a002",
+      "passed": true
+    },
+    {
+      "name": "exact stdout: fc15144bb7714e03a680dc3d4344a002",
+      "passed": true
+    },
+    {
+      "name": "selected legal argmax: ec5323e2d4be46c98f59a9f6594b880d",
+      "passed": true
+    },
+    {
+      "name": "parameters frozen: ec5323e2d4be46c98f59a9f6594b880d",
+      "passed": true
+    },
+    {
+      "name": "exact public model: ec5323e2d4be46c98f59a9f6594b880d",
+      "passed": true
+    },
+    {
+      "name": "public question only: ec5323e2d4be46c98f59a9f6594b880d",
+      "passed": true
+    },
+    {
+      "name": "one declared model forward: ec5323e2d4be46c98f59a9f6594b880d",
+      "passed": true
+    },
+    {
+      "name": "selected legal argmax: 06ef6f6cd1124978b24d8b9beed04bf7",
+      "passed": true
+    },
+    {
+      "name": "parameters frozen: 06ef6f6cd1124978b24d8b9beed04bf7",
+      "passed": true
+    },
+    {
+      "name": "exact public model: 06ef6f6cd1124978b24d8b9beed04bf7",
+      "passed": true
+    },
+    {
+      "name": "public question only: 06ef6f6cd1124978b24d8b9beed04bf7",
+      "passed": true
+    },
+    {
+      "name": "one declared model forward: 06ef6f6cd1124978b24d8b9beed04bf7",
+      "passed": true
+    },
+    {
+      "name": "selected legal argmax: fc15144bb7714e03a680dc3d4344a002",
+      "passed": true
+    },
+    {
+      "name": "parameters frozen: fc15144bb7714e03a680dc3d4344a002",
+      "passed": true
+    },
+    {
+      "name": "exact public model: fc15144bb7714e03a680dc3d4344a002",
+      "passed": true
+    },
+    {
+      "name": "public question only: fc15144bb7714e03a680dc3d4344a002",
+      "passed": true
+    },
+    {
+      "name": "one declared model forward: fc15144bb7714e03a680dc3d4344a002",
+      "passed": true
+    },
+    {
+      "name": "selected legal argmax: ba38f502f6934545b0ae881149a25e49",
+      "passed": true
+    },
+    {
+      "name": "parameters frozen: ba38f502f6934545b0ae881149a25e49",
+      "passed": true
+    },
+    {
+      "name": "exact public model: ba38f502f6934545b0ae881149a25e49",
+      "passed": true
+    },
+    {
+      "name": "public question only: ba38f502f6934545b0ae881149a25e49",
+      "passed": true
+    },
+    {
+      "name": "one declared model forward: ba38f502f6934545b0ae881149a25e49",
+      "passed": true
+    },
+    {
+      "name": "selected legal argmax: 40041b511ba149ffaa2ee6738acace3d",
+      "passed": true
+    },
+    {
+      "name": "parameters frozen: 40041b511ba149ffaa2ee6738acace3d",
+      "passed": true
+    },
+    {
+      "name": "exact public model: 40041b511ba149ffaa2ee6738acace3d",
+      "passed": true
+    },
+    {
+      "name": "public question only: 40041b511ba149ffaa2ee6738acace3d",
+      "passed": true
+    },
+    {
+      "name": "one declared model forward: 40041b511ba149ffaa2ee6738acace3d",
+      "passed": true
+    },
+    {
+      "name": "selected legal argmax: 320d5c9ad9b34a75a6d7dd29ffdea2c5",
+      "passed": true
+    },
+    {
+      "name": "parameters frozen: 320d5c9ad9b34a75a6d7dd29ffdea2c5",
+      "passed": true
+    },
+    {
+      "name": "exact public model: 320d5c9ad9b34a75a6d7dd29ffdea2c5",
+      "passed": true
+    },
+    {
+      "name": "public question only: 320d5c9ad9b34a75a6d7dd29ffdea2c5",
+      "passed": true
+    },
+    {
+      "name": "one declared model forward: 320d5c9ad9b34a75a6d7dd29ffdea2c5",
+      "passed": true
+    },
+    {
+      "name": "selected legal argmax: f5f71c8dc2ce43bfb5eba4220bd6ada3",
+      "passed": true
+    },
+    {
+      "name": "parameters frozen: f5f71c8dc2ce43bfb5eba4220bd6ada3",
+      "passed": true
+    },
+    {
+      "name": "exact public model: f5f71c8dc2ce43bfb5eba4220bd6ada3",
+      "passed": true
+    },
+    {
+      "name": "public question only: f5f71c8dc2ce43bfb5eba4220bd6ada3",
+      "passed": true
+    },
+    {
+      "name": "one declared model forward: f5f71c8dc2ce43bfb5eba4220bd6ada3",
+      "passed": true
+    },
+    {
+      "name": "selected legal argmax: a7682209030944289c8f30fb86b8527e",
+      "passed": true
+    },
+    {
+      "name": "parameters frozen: a7682209030944289c8f30fb86b8527e",
+      "passed": true
+    },
+    {
+      "name": "exact public model: a7682209030944289c8f30fb86b8527e",
+      "passed": true
+    },
+    {
+      "name": "public question only: a7682209030944289c8f30fb86b8527e",
+      "passed": true
+    },
+    {
+      "name": "one declared model forward: a7682209030944289c8f30fb86b8527e",
+      "passed": true
+    },
+    {
+      "name": "same parameters as prior Qwen development",
+      "passed": true
+    },
+    {
+      "name": "unique reference source declaration: mean",
+      "passed": true
+    },
+    {
+      "name": "unique reference source declaration: median",
+      "passed": true
+    },
+    {
+      "name": "unique reference source declaration: quantiles",
+      "passed": true
+    },
+    {
+      "name": "unique reference source declaration: linear_regression",
+      "passed": true
+    },
+    {
+      "name": "complete three-arm eight-task schedule",
+      "passed": true
+    },
+    {
+      "name": "each prespecified task-arm once",
+      "passed": true
+    },
+    {
+      "name": "independent answer reconciliation: typed/chinook/artist/frozen_lm_selector",
+      "passed": true
+    },
+    {
+      "name": "recorded episode completed within deadline: typed/chinook/artist/frozen_lm_selector",
+      "passed": true
+    },
+    {
+      "name": "independent answer reconciliation: typed/chinook/artist/literal_router",
+      "passed": true
+    },
+    {
+      "name": "recorded episode completed within deadline: typed/chinook/artist/literal_router",
+      "passed": true
+    },
+    {
+      "name": "independent answer reconciliation: typed/chinook/artist/stop",
+      "passed": true
+    },
+    {
+      "name": "recorded episode completed within deadline: typed/chinook/artist/stop",
+      "passed": true
+    },
+    {
+      "name": "independent answer reconciliation: typed/chinook/album/literal_router",
+      "passed": true
+    },
+    {
+      "name": "recorded episode completed within deadline: typed/chinook/album/literal_router",
+      "passed": true
+    },
+    {
+      "name": "independent answer reconciliation: typed/chinook/album/stop",
+      "passed": true
+    },
+    {
+      "name": "recorded episode completed within deadline: typed/chinook/album/stop",
+      "passed": true
+    },
+    {
+      "name": "independent answer reconciliation: typed/chinook/album/frozen_lm_selector",
+      "passed": true
+    },
+    {
+      "name": "recorded episode completed within deadline: typed/chinook/album/frozen_lm_selector",
+      "passed": true
+    },
+    {
+      "name": "independent answer reconciliation: typed/chinook/genre/stop",
+      "passed": true
+    },
+    {
+      "name": "recorded episode completed within deadline: typed/chinook/genre/stop",
+      "passed": true
+    },
+    {
+      "name": "independent answer reconciliation: typed/chinook/genre/frozen_lm_selector",
+      "passed": true
+    },
+    {
+      "name": "recorded episode completed within deadline: typed/chinook/genre/frozen_lm_selector",
+      "passed": true
+    },
+    {
+      "name": "independent answer reconciliation: typed/chinook/genre/literal_router",
+      "passed": true
+    },
+    {
+      "name": "recorded episode completed within deadline: typed/chinook/genre/literal_router",
+      "passed": true
+    },
+    {
+      "name": "independent answer reconciliation: typed/chinook/invoice/frozen_lm_selector",
+      "passed": true
+    },
+    {
+      "name": "recorded episode completed within deadline: typed/chinook/invoice/frozen_lm_selector",
+      "passed": true
+    },
+    {
+      "name": "independent answer reconciliation: typed/chinook/invoice/literal_router",
+      "passed": true
+    },
+    {
+      "name": "recorded episode completed within deadline: typed/chinook/invoice/literal_router",
+      "passed": true
+    },
+    {
+      "name": "independent answer reconciliation: typed/chinook/invoice/stop",
+      "passed": true
+    },
+    {
+      "name": "recorded episode completed within deadline: typed/chinook/invoice/stop",
+      "passed": true
+    },
+    {
+      "name": "independent answer reconciliation: typed/cpython/mean/literal_router",
+      "passed": true
+    },
+    {
+      "name": "recorded episode completed within deadline: typed/cpython/mean/literal_router",
+      "passed": true
+    },
+    {
+      "name": "independent answer reconciliation: typed/cpython/mean/stop",
+      "passed": true
+    },
+    {
+      "name": "recorded episode completed within deadline: typed/cpython/mean/stop",
+      "passed": true
+    },
+    {
+      "name": "independent answer reconciliation: typed/cpython/mean/frozen_lm_selector",
+      "passed": true
+    },
+    {
+      "name": "recorded episode completed within deadline: typed/cpython/mean/frozen_lm_selector",
+      "passed": true
+    },
+    {
+      "name": "independent answer reconciliation: typed/cpython/median/stop",
+      "passed": true
+    },
+    {
+      "name": "recorded episode completed within deadline: typed/cpython/median/stop",
+      "passed": true
+    },
+    {
+      "name": "independent answer reconciliation: typed/cpython/median/frozen_lm_selector",
+      "passed": true
+    },
+    {
+      "name": "recorded episode completed within deadline: typed/cpython/median/frozen_lm_selector",
+      "passed": true
+    },
+    {
+      "name": "independent answer reconciliation: typed/cpython/median/literal_router",
+      "passed": true
+    },
+    {
+      "name": "recorded episode completed within deadline: typed/cpython/median/literal_router",
+      "passed": true
+    },
+    {
+      "name": "independent answer reconciliation: typed/cpython/quantiles/frozen_lm_selector",
+      "passed": true
+    },
+    {
+      "name": "recorded episode completed within deadline: typed/cpython/quantiles/frozen_lm_selector",
+      "passed": true
+    },
+    {
+      "name": "independent answer reconciliation: typed/cpython/quantiles/literal_router",
+      "passed": true
+    },
+    {
+      "name": "recorded episode completed within deadline: typed/cpython/quantiles/literal_router",
+      "passed": true
+    },
+    {
+      "name": "independent answer reconciliation: typed/cpython/quantiles/stop",
+      "passed": true
+    },
+    {
+      "name": "recorded episode completed within deadline: typed/cpython/quantiles/stop",
+      "passed": true
+    },
+    {
+      "name": "independent answer reconciliation: typed/cpython/linear_regression/literal_router",
+      "passed": true
+    },
+    {
+      "name": "recorded episode completed within deadline: typed/cpython/linear_regression/literal_router",
+      "passed": true
+    },
+    {
+      "name": "independent answer reconciliation: typed/cpython/linear_regression/stop",
+      "passed": true
+    },
+    {
+      "name": "recorded episode completed within deadline: typed/cpython/linear_regression/stop",
+      "passed": true
+    },
+    {
+      "name": "independent answer reconciliation: typed/cpython/linear_regression/frozen_lm_selector",
+      "passed": true
+    },
+    {
+      "name": "recorded episode completed within deadline: typed/cpython/linear_regression/frozen_lm_selector",
+      "passed": true
+    },
+    {
+      "name": "literal router weakly dominates quality and strictly dominates measured elapsed time on every task",
+      "passed": true
+    }
+  ],
+  "all_checks_pass": true,
+  "model_forwards_during_audit": 0,
+  "task_tool_calls_during_audit": 0,
+  "evaluation_database_reads_during_audit": true,
+  "task_schema_compatible_deliveries": {
+    "frozen_lm_selector": 4,
+    "literal_router": 8,
+    "stop": 0
+  },
+  "paired_descriptive_comparisons": [
+    {
+      "task_id": "typed/chinook/artist",
+      "quality_difference": 0,
+      "extra_elapsed_seconds": 25.458663549994526,
+      "same_task_tool_count": true
+    },
+    {
+      "task_id": "typed/chinook/album",
+      "quality_difference": -1,
+      "extra_elapsed_seconds": 14.61838594400615,
+      "same_task_tool_count": true
+    },
+    {
+      "task_id": "typed/chinook/genre",
+      "quality_difference": 0,
+      "extra_elapsed_seconds": 13.571603076008614,
+      "same_task_tool_count": true
+    },
+    {
+      "task_id": "typed/chinook/invoice",
+      "quality_difference": -1,
+      "extra_elapsed_seconds": 13.273749378997309,
+      "same_task_tool_count": true
+    },
+    {
+      "task_id": "typed/cpython/mean",
+      "quality_difference": -1,
+      "extra_elapsed_seconds": 13.49808868800028,
+      "same_task_tool_count": true
+    },
+    {
+      "task_id": "typed/cpython/median",
+      "quality_difference": -1,
+      "extra_elapsed_seconds": 14.271356688994274,
+      "same_task_tool_count": true
+    },
+    {
+      "task_id": "typed/cpython/quantiles",
+      "quality_difference": -1,
+      "extra_elapsed_seconds": 13.120063962989661,
+      "same_task_tool_count": true
+    },
+    {
+      "task_id": "typed/cpython/linear_regression",
+      "quality_difference": 0,
+      "extra_elapsed_seconds": 13.42944766000437,
+      "same_task_tool_count": true
+    }
+  ],
+  "total_input_tokens": 1110,
+  "decision_output_tokens": 8,
+  "model_forward_seconds": 11.569322290008131,
+  "same_fixed_model_parameter_sha256": "815634c0b4c921ad07b4a32437ff872342e745b15a386f6ca8f5a2d4974e0c13",
+  "independent_confirmation": false,
+  "actual_host_currency_cost": null,
+  "scale_decision": "HOLD"
+}

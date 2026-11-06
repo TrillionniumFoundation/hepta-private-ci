@@ -1,0 +1,43 @@
+{
+  "receipt": {
+    "request_id": "29000de5580c4c85ada77de5de159406",
+    "context": {
+      "task_id": "typed/chinook/genre",
+      "arm": "literal_router",
+      "stage": "tool"
+    },
+    "argv": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "/workspace/scratch/e5ecafe4ccc8/frozen_work/study.py",
+      "tool-worker"
+    ],
+    "payload": {
+      "label": "C",
+      "tool": "table_count",
+      "argument": "Genre"
+    },
+    "started_at_utc": "2026-11-06T16:53:00.415050+00:00",
+    "started_monotonic": 60492.401480162,
+    "phase": "terminal",
+    "status": "ok",
+    "returncode": 0,
+    "finished_at_utc": "2026-11-06T16:53:00.480085+00:00",
+    "wall_seconds": 0.06505716199899325,
+    "parent_cpu_seconds": 0.0005696389999999968,
+    "child_cpu_seconds": 0.06438600000000605,
+    "stdout_sha256": "8d91714733a20a456d3bc4fced44342a57f6210245c3155d60d8c2382c57036f",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "external_paid_model_api_calls": 0,
+    "actual_host_currency_cost": null
+  },
+  "response": {
+    "answer": 25,
+    "operation": {
+      "argument": "Genre",
+      "label": "C",
+      "tool": "table_count"
+    }
+  },
+  "stdout": "{\"answer\": 25, \"operation\": {\"argument\": \"Genre\", \"label\": \"C\", \"tool\": \"table_count\"}}\n",
+  "stderr": ""
+}

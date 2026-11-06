@@ -1,0 +1,43 @@
+{
+  "receipt": {
+    "request_id": "2e6c4e68d2774ca5839ec7dd0d17edf0",
+    "context": {
+      "task_id": "typed/cpython/mean",
+      "arm": "literal_router",
+      "stage": "tool"
+    },
+    "argv": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "/workspace/scratch/e5ecafe4ccc8/frozen_work/study.py",
+      "tool-worker"
+    ],
+    "payload": {
+      "label": "F",
+      "tool": "function_signature",
+      "argument": "mean"
+    },
+    "started_at_utc": "2026-11-06T16:53:14.243878+00:00",
+    "started_monotonic": 60506.230303659,
+    "phase": "terminal",
+    "status": "ok",
+    "returncode": 0,
+    "finished_at_utc": "2026-11-06T16:53:14.343084+00:00",
+    "wall_seconds": 0.0992298419951112,
+    "parent_cpu_seconds": 0.0029000079999999817,
+    "child_cpu_seconds": 0.09681899999999644,
+    "stdout_sha256": "95b73ae7299508618c68bde8614d954ccaa711d3801795baffc6b5d342b3b46a",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "external_paid_model_api_calls": 0,
+    "actual_host_currency_cost": null
+  },
+  "response": {
+    "answer": "def mean(data):",
+    "operation": {
+      "argument": "mean",
+      "label": "F",
+      "tool": "function_signature"
+    }
+  },
+  "stdout": "{\"answer\": \"def mean(data):\", \"operation\": {\"argument\": \"mean\", \"label\": \"F\", \"tool\": \"function_signature\"}}\n",
+  "stderr": ""
+}

@@ -1,0 +1,43 @@
+{
+  "receipt": {
+    "request_id": "d2b8a28ab6a4467e827ed30481a70e65",
+    "context": {
+      "task_id": "typed/cpython/quantiles",
+      "arm": "literal_router",
+      "stage": "tool"
+    },
+    "argv": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "/workspace/scratch/e5ecafe4ccc8/frozen_work/study.py",
+      "tool-worker"
+    ],
+    "payload": {
+      "label": "H",
+      "tool": "function_signature",
+      "argument": "quantiles"
+    },
+    "started_at_utc": "2026-11-06T16:53:55.552747+00:00",
+    "started_monotonic": 60547.53917805,
+    "phase": "terminal",
+    "status": "ok",
+    "returncode": 0,
+    "finished_at_utc": "2026-11-06T16:53:55.600261+00:00",
+    "wall_seconds": 0.047531374999380205,
+    "parent_cpu_seconds": 0.0014698979999999973,
+    "child_cpu_seconds": 0.04667500000000757,
+    "stdout_sha256": "26d157b3143cec1ab1234a9cac078c97843b2feb99fb84d4997158091107c1a8",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "external_paid_model_api_calls": 0,
+    "actual_host_currency_cost": null
+  },
+  "response": {
+    "answer": "def quantiles(data, *, n=4, method='exclusive'):",
+    "operation": {
+      "argument": "quantiles",
+      "label": "H",
+      "tool": "function_signature"
+    }
+  },
+  "stdout": "{\"answer\": \"def quantiles(data, *, n=4, method='exclusive'):\", \"operation\": {\"argument\": \"quantiles\", \"label\": \"H\", \"tool\": \"function_signature\"}}\n",
+  "stderr": ""
+}
