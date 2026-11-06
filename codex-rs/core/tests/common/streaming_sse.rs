@@ -59,6 +59,18 @@ impl StreamingSseServer {
 pub async fn start_streaming_sse_server(
     responses: Vec<Vec<StreamingSseChunk>>,
 ) -> (StreamingSseServer, Vec<oneshot::Receiver<i64>>) {
+    let header_gates = (0..responses.len()).map(|_| None).collect();
+    start_streaming_sse_server_with_header_gates(responses, header_gates).await
+}
+
+/// Records each complete request before waiting for its optional response-header
+/// gate. This can hold the provider boundary before header-derived events, while
+/// the ordinary helper retains its immediate-header and per-body-chunk behavior.
+pub async fn start_streaming_sse_server_with_header_gates(
+    responses: Vec<Vec<StreamingSseChunk>>,
+    header_gates: Vec<Option<oneshot::Receiver<()>>>,
+) -> (StreamingSseServer, Vec<oneshot::Receiver<i64>>) {
+    assert_eq!(responses.len(), header_gates.len());
     let listener = TcpListener::bind("127.0.0.1:0")
         .await
         .expect("bind streaming SSE server");
@@ -76,6 +88,7 @@ pub async fn start_streaming_sse_server(
     let state = Arc::new(TokioMutex::new(StreamingSseState {
         responses: VecDeque::from(responses),
         completions: VecDeque::from(completion_senders),
+        header_gates: VecDeque::from(header_gates),
     }));
     let requests = Arc::new(TokioMutex::new(Vec::new()));
     let request_notify = Arc::new(Notify::new());
@@ -128,11 +141,15 @@ pub async fn start_streaming_sse_server(
                             };
                             requests.lock().await.push(body);
                             request_notify.notify_one();
-                            let Some((chunks, completion)) = take_next_stream(&state).await else {
+                            let Some((chunks, completion, header_gate)) = take_next_stream(&state).await else {
                                 let _ = write_http_response(&mut stream, /*status*/ 500, "no responses queued", "text/plain").await;
                                 return;
                             };
 
+                            if let Some(gate) = header_gate
+                                && gate.await.is_err() {
+                                    return;
+                                }
                             if write_sse_headers(&mut stream).await.is_err() {
                                 return;
                             }
@@ -175,15 +192,21 @@ pub async fn start_streaming_sse_server(
 struct StreamingSseState {
     responses: VecDeque<Vec<StreamingSseChunk>>,
     completions: VecDeque<oneshot::Sender<i64>>,
+    header_gates: VecDeque<Option<oneshot::Receiver<()>>>,
 }
 
 async fn take_next_stream(
     state: &TokioMutex<StreamingSseState>,
-) -> Option<(Vec<StreamingSseChunk>, oneshot::Sender<i64>)> {
+) -> Option<(
+    Vec<StreamingSseChunk>,
+    oneshot::Sender<i64>,
+    Option<oneshot::Receiver<()>>,
+)> {
     let mut guard = state.lock().await;
     let chunks = guard.responses.pop_front()?;
     let completion = guard.completions.pop_front()?;
-    Some((chunks, completion))
+    let header_gate = guard.header_gates.pop_front()?;
+    Some((chunks, completion, header_gate))
 }
 
 async fn read_http_request(stream: &mut tokio::net::TcpStream) -> (String, Vec<u8>) {
@@ -687,17 +710,20 @@ data: {"type":"response.completed","response":{"id":"resp-1"}}
                 }],
             ]),
             completions: VecDeque::from(vec![first_tx, second_tx]),
+            header_gates: VecDeque::from(vec![None, None]),
         });
 
-        let (first_chunks, first_completion) =
+        let (first_chunks, first_completion, first_gate) =
             take_next_stream(&state).await.expect("first stream");
         assert_eq!(first_chunks[0].body, "first");
+        assert!(first_gate.is_none());
         let _ = first_completion.send(11);
         assert_eq!(first_rx.await.expect("first completion"), 11);
 
-        let (second_chunks, second_completion) =
+        let (second_chunks, second_completion, second_gate) =
             take_next_stream(&state).await.expect("second stream");
         assert_eq!(second_chunks[0].body, "second");
+        assert!(second_gate.is_none());
         let _ = second_completion.send(22);
         assert_eq!(second_rx.await.expect("second completion"), 22);
 
