@@ -1,7 +1,7 @@
 mod common;
 
 use std::collections::HashMap;
-#[cfg(target_os = "linux")]
+#[cfg(unix)]
 use std::os::unix::fs::PermissionsExt;
 use std::sync::Arc;
 
@@ -381,6 +381,20 @@ async fn shell_snapshot_v2_capture_failure_falls_back_and_retries(
         "bash" => ("/bin/bash", ".bashrc"),
         "zsh" => ("/bin/zsh", ".zshrc"),
         name => anyhow::bail!("unsupported test shell {name}"),
+    };
+    // Capture explicitly sources this test's .bashrc. Preserve the -lc request
+    // shape while excluding machine-wide login profiles from this fixture.
+    let shell_wrapper = if shell_name == "bash" {
+        let path = home.path().join("snapshot-bash");
+        std::fs::write(&path, "#!/bin/sh\nexec /bin/bash --noprofile \"$@\"\n")?;
+        std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o755))?;
+        Some(path)
+    } else {
+        None
+    };
+    let shell_path = match shell_wrapper.as_ref() {
+        Some(path) => path.to_str().context("snapshot shell fixture path must be UTF-8")?,
+        None => shell_path,
     };
     std::fs::write(
         home.path().join(profile_name),
