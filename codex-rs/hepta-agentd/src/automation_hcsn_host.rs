@@ -119,15 +119,12 @@ impl AgentdAutomationEffectHost {
             .automation_root()
             .join("final-use-authority");
         create_private_directory(&authority_root)?;
-        let authority = FinalUseAuthority::open_state_dir(
+        let authority = Self::open_final_use_authority(
             &authority_root,
             config.final_use_signer_id,
             verifying_key,
             revocations,
-        )
-        .map_err(|error| {
-            AgentdError::Protocol(format!("open HCSN final-use authority: {error}"))
-        })?;
+        )?;
         let provider = HcsnProvider {
             provider_scope: config.provider_scope.clone(),
             config: supervisor_config,
