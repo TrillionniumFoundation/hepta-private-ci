@@ -1113,5 +1113,41 @@ class RetainedHumanTextLookupCallerPatternTests(unittest.TestCase):
         self.assertFalse(consistent(wrong_caller))
 
 
+
+class OriginalWriterRotationBoundaryMarkerTests(unittest.TestCase):
+    def test_rotation_manifest_marker_matches_the_pinned_predecessor_call(self):
+        manifest = tomllib.loads(
+            (ROOT / "CALLERS.toml").read_text(encoding="utf-8")
+        )
+        boundary = next(
+            row for row in manifest["boundary"]
+            if row["id"] == "root_original_issuer_writer_rotation"
+        )
+        source_path = "codex-rs/hepta-agentd/src/deployment_writer_rotate.rs"
+        source = (ROOT / source_path).read_text(encoding="utf-8")
+        marker = ".with_retired_predecessor_for_pinned_issuer_boundary("
+
+        def consistent(row):
+            return (
+                row["symbol"]
+                == "DeploymentFinalUseIssuer::rotate_writer_authorization"
+                and row["definition_path"] == source_path
+                and marker in row["definition_markers"]
+                and ".with_retired_predecessor_boundary("
+                not in row["definition_markers"]
+                and marker in source
+            )
+
+        self.assertTrue(consistent(boundary))
+        wrong_marker = dict(
+            boundary,
+            definition_markers=[
+                item.replace(marker, ".with_retired_predecessor_boundary(")
+                for item in boundary["definition_markers"]
+            ],
+        )
+        self.assertFalse(consistent(wrong_marker))
+
+
 if __name__ == "__main__":
     unittest.main()
