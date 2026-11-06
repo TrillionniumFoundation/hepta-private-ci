@@ -1,5 +1,6 @@
 //! Pure replay reducer for the versioned state backend of the Cell owner.
 
+use codex_hepta_types::Digest32;
 use serde::Deserialize;
 use serde::Serialize;
 
@@ -50,6 +51,7 @@ pub(crate) enum GenerationEvent {
 #[derive(Clone)]
 pub(crate) struct GenerationState {
     pub(crate) snapshot: CellRuntimeSnapshotV2,
+    pub(crate) first_advance_input_digest: Option<[u8; 32]>,
     pub(crate) pending: Option<CellGenerationRequestV2>,
     pub(crate) cancelled: bool,
     pub(crate) draining: bool,
@@ -81,6 +83,7 @@ impl GenerationState {
         .map_err(|_| CellGenerationErrorV2::InvalidBinding)?;
         Ok(Self {
             snapshot: config.initial.clone(),
+            first_advance_input_digest: None,
             pending: None,
             cancelled: false,
             draining: false,
@@ -324,6 +327,8 @@ impl GenerationState {
                     bytes: proposal.output_delta.clone(),
                 });
             }
+            self.first_advance_input_digest
+                .get_or_insert_with(|| Digest32::of_bytes(&request.input).into_array());
             self.snapshot.state = proposal.successor_state.clone();
             self.snapshot
                 .prefix

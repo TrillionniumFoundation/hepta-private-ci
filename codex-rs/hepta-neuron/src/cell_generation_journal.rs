@@ -12,6 +12,7 @@ use codex_hepta_types::Digest32;
 
 use crate::AnchorWitnessStore;
 use crate::JournalAnchor;
+use crate::cell_generation_observation::CellGenerationObservationV1;
 use crate::cell_generation_state::CellGenerationConfigV2;
 use crate::cell_generation_state::GenerationEvent;
 use crate::cell_generation_state::GenerationState;
@@ -187,12 +188,26 @@ impl<W: AnchorWitnessStore> CellGenerationJournalV2<W> {
         Ok(&self.state.snapshot)
     }
 
+    /// Capture state, cost, unresolved work and delivery at one healthy owner
+    /// cut. This read adds no events and cannot dispatch or settle work.
+    pub fn observe_generation(&self) -> Result<CellGenerationObservationV1, CellGenerationErrorV2> {
+        CellGenerationObservationV1::capture(
+            &self.config,
+            &self.state,
+            self.continuity_checkpoint()?,
+        )
+    }
+
     /// Project the current owner, including unresolved work and delivery, while
     /// preserving its original manifest schemas and complete learning binding.
-    pub fn observe_inventory(&self) -> Result<crate::CellOwnerInventoryV1<'_>, CellGenerationErrorV2> {
+    pub fn observe_inventory(
+        &self,
+    ) -> Result<crate::CellOwnerInventoryV1<'_>, CellGenerationErrorV2> {
         self.require_healthy()?;
         crate::CellOwnerInventoryV1::generation(
-            &self.config, &self.state, self.continuity_checkpoint()?,
+            &self.config,
+            &self.state,
+            self.continuity_checkpoint()?,
             self.state.reserved_records() * (MAX_FRAME as u64 + 36),
         )
     }
@@ -227,6 +242,7 @@ impl<W: AnchorWitnessStore> CellGenerationJournalV2<W> {
         Ok(self.state.outbox.as_ref())
     }
 
+    /// Recorded cost only; use `observe_generation` for episode completeness.
     pub fn task_cost(&self) -> Result<&CellTaskCostV2, CellGenerationErrorV2> {
         self.require_healthy()?;
         Ok(&self.state.cost)
