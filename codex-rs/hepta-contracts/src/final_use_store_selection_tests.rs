@@ -43,7 +43,7 @@ fn existing_selection_never_creates_a_missing_directory_or_empty_store() {
     assert!(!missing.exists());
     let empty = private_directory().unwrap();
     assert!(Store::open_key_ring_existing(empty.path(), "original", [7; 32], head()).is_err());
-    assert!(inventory(empty.path()).is_empty());
+    assert!(inventory(empty.path()).unwrap().is_empty());
 }
 
 #[test]
@@ -51,20 +51,20 @@ fn fresh_selection_creates_consumer_owned_v3_once_and_existing_preserves_nonce()
     let root = private_directory().unwrap();
     let (store, mut state) = Store::initialize_key_ring_fresh(root.path(), "original", [7; 32], head()).unwrap();
     let uid = rustix::process::geteuid().as_raw();
-    for (_, _, owner, _, mode, _) in inventory(root.path()) {
+    for (_, _, owner, _, mode, _) in inventory(root.path()).unwrap() {
         assert_eq!(owner, uid);
         assert_eq!(mode & 0o077, 0);
     }
     store.append_claim(4, [9; 32]).unwrap();
     state.used_nonces.insert([9; 32]);
     drop(store);
-    let before = inventory(root.path());
+    let before = inventory(root.path()).unwrap();
     assert!(Store::initialize_key_ring_fresh(root.path(), "original", [7; 32], head()).is_err());
-    assert_eq!(inventory(root.path()), before);
+    assert_eq!(inventory(root.path()).unwrap(), before);
     let (opened, observed) = Store::open_key_ring_existing(root.path(), "original", [7; 32], head()).unwrap();
     assert_eq!(observed.head, state.head);
     assert_eq!(observed.used_nonces, state.used_nonces);
-    assert_eq!(inventory(root.path()), before);
+    assert_eq!(inventory(root.path()).unwrap(), before);
     assert!(matches!(Store::open_key_ring_existing(root.path(), "original", [7; 32], head()), Err(FinalUseError::StateLocked)));
     drop(opened);
 }
@@ -76,11 +76,11 @@ fn missing_any_required_entry_is_not_recreated_by_existing_or_fresh() {
         let (store, _) = Store::initialize_key_ring_fresh(root.path(), "original", [7; 32], head()).unwrap();
         drop(store);
         std::fs::remove_file(root.path().join(missing)).unwrap();
-        let before = inventory(root.path());
+        let before = inventory(root.path()).unwrap();
         assert!(Store::open_key_ring_existing(root.path(), "original", [7; 32], head()).is_err(), "missing {missing}");
-        assert_eq!(inventory(root.path()), before);
+        assert_eq!(inventory(root.path()).unwrap(), before);
         assert!(Store::initialize_key_ring_fresh(root.path(), "original", [7; 32], head()).is_err(), "partial {missing}");
-        assert_eq!(inventory(root.path()), before);
+        assert_eq!(inventory(root.path()).unwrap(), before);
     }
 }
 
@@ -92,9 +92,9 @@ fn incomplete_staging_is_not_completed_by_runtime_open() {
         drop(store);
         std::fs::write(root.path().join(stale), b"incomplete original write").unwrap();
         std::fs::set_permissions(root.path().join(stale), std::fs::Permissions::from_mode(0o600)).unwrap();
-        let before = inventory(root.path());
+        let before = inventory(root.path()).unwrap();
         assert!(Store::open_key_ring_existing(root.path(), "original", [7; 32], head()).is_err());
-        assert_eq!(inventory(root.path()), before);
+        assert_eq!(inventory(root.path()).unwrap(), before);
     }
 }
 
@@ -112,9 +112,9 @@ fn legacy_key_ring_snapshot_is_not_migrated_by_runtime_open() {
         "state": { "head": head(), "used_nonces": nonces }
     })).unwrap();
     std::fs::write(root.path().join("authority.json"), bytes).unwrap();
-    let before = inventory(root.path());
+    let before = inventory(root.path()).unwrap();
     assert!(matches!(Store::open_key_ring_existing(root.path(), "original", [7; 32], head()), Err(FinalUseError::InvalidTrust)));
-    assert_eq!(inventory(root.path()), before);
+    assert_eq!(inventory(root.path()).unwrap(), before);
 }
 
 #[test]
@@ -123,9 +123,9 @@ fn fresh_selection_does_not_take_over_a_preexisting_lock_or_partial_claims() {
         let root = private_directory().unwrap();
         std::fs::write(root.path().join(prior), b"preserve failed attempt").unwrap();
         std::fs::set_permissions(root.path().join(prior), std::fs::Permissions::from_mode(0o600)).unwrap();
-        let before = inventory(root.path());
+        let before = inventory(root.path()).unwrap();
         assert!(Store::initialize_key_ring_fresh(root.path(), "original", [7; 32], head()).is_err());
-        assert_eq!(inventory(root.path()), before);
+        assert_eq!(inventory(root.path()).unwrap(), before);
     }
 }
 
