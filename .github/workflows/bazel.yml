@@ -116,6 +116,12 @@ jobs:
             bazel_test_args+=(
               '--strategy_regexp=^Testing //codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests( |$)=sandboxed'
             )
+            # This close/reopen regression exercises the host OS's exclusive file-lock
+            # lifecycle. Keep the same test binary and assertions, but run its target
+            # in the runner's sandbox instead of the remote executor.
+            bazel_test_args+=(
+              '--strategy_regexp=^Testing //codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-unit-tests( |$)=sandboxed'
+            )
           fi
           ./.github/scripts/run-bazel-ci.sh \
             "${bazel_wrapper_args[@]}" \
