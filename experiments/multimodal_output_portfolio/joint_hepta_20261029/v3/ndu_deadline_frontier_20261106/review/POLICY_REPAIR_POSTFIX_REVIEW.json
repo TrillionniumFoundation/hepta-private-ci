@@ -1,0 +1,25 @@
+{
+  "scope": "Independent rerun of previously failing exact budget/policy receipt; no broad experiment rerun",
+  "source_sha256": "50e2dca0fc76c9dc254bd20d27d47556f03334df840c44033b4828f642792a6c",
+  "budget": "5928486/1000000007",
+  "mix": "1167398181655056199102600/1167398181655056214382883",
+  "errors": [
+    "6525721169/14000000098",
+    "6525721169/14000000098"
+  ],
+  "resources": [
+    "5928486/1000000007",
+    "5928486/1000000007"
+  ],
+  "lower": "6525721169/14000000098",
+  "upper": "6525721169/14000000098",
+  "checks": {
+    "mix_triggered": true,
+    "error_roundtrip": true,
+    "resource_roundtrip": true,
+    "budget_feasible": true,
+    "mass_conserved": true,
+    "exact_bound_order": true,
+    "root_normalized": true
+  }
+}
