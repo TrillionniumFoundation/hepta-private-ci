@@ -305,6 +305,8 @@ mod learning_iteration_auth;
 mod learning_iteration_ports;
 mod learning_iteration_proposal;
 mod neuron_generation;
+mod neuron_generation_runtime;
+mod neuron_generation_service;
 mod neuron_runtime;
 #[cfg(target_os = "linux")]
 mod notes_bootstrap;
@@ -616,6 +618,9 @@ pub use learning_iteration_ports::LearningIterationOwnerPortsV1;
 pub use learning_iteration_ports::LearningIterationProposalPayloadV1;
 pub use learning_iteration_ports::PreparedLearningIterationProposalV1;
 pub use neuron_generation::AgentdNeuronGenerationOwnerV2;
+pub use neuron_generation_runtime::NeuronGenerationRuntimeBootstrapV2;
+pub use neuron_generation_runtime::NeuronGenerationRuntimeHandleV2;
+pub use neuron_generation_runtime::neuron_generation_channel_v2;
 pub use neuron_runtime::AgentdNeuronOwner;
 #[cfg(target_os = "linux")]
 pub use notes_bootstrap::AgentdNotesStartupRelease;

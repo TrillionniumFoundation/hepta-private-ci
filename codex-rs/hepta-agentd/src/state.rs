@@ -41,6 +41,9 @@ mod control;
 #[path = "notes_organ_state.rs"]
 mod notes_organ;
 
+#[path = "state_neuron_generation.rs"]
+pub(crate) mod neuron_generation;
+
 pub(crate) struct AgentdState {
     #[cfg(target_os = "linux")]
     pub(crate) notes_organ_root: std::sync::OnceLock<Arc<crate::AgentdRootAuthoritySession>>,
@@ -66,6 +69,7 @@ pub(crate) struct AgentdState {
     plasticity_runtime: std::sync::OnceLock<
         crate::plasticity_learning_producer::AgentdLearningPlasticityProducerV1,
     >,
+    neuron_generation: Mutex<Option<Arc<neuron_generation::NeuronGenerationProjection>>>,
     identity: AgentdIdentity,
     registry: FleetRegistry,
     runtime: Mutex<RuntimeState>,
@@ -160,6 +164,7 @@ impl AgentdState {
             cognitive_retrieval_context: std::sync::OnceLock::new(),
             cognitive_retrieval_learning: std::sync::OnceLock::new(),
             plasticity_runtime: std::sync::OnceLock::new(),
+            neuron_generation: Mutex::new(None),
             intuition_policy: std::sync::OnceLock::new(),
             runtime: Mutex::new(RuntimeState {
                 current_generation: identity.spawn_generation,
@@ -419,6 +424,11 @@ impl AgentdState {
                     .map_err(run_error)?;
             }
         }
+        let draining = runtime.lifecycle == AgentLifecycle::Draining;
+        drop(runtime);
+        if draining {
+            self.close_neuron_generation_admission()?;
+        }
         Ok(())
     }
 
@@ -513,6 +523,7 @@ impl AgentdState {
             .map_err(poisoned_state)?
             .push(AgentdEventKind::Draining);
         drop(runtime);
+        self.close_neuron_generation_admission()?;
         self.runs
             .lock()
             .map_err(poisoned_state)?
@@ -552,6 +563,7 @@ impl AgentdState {
         automation_blockers: u32,
     ) -> Result<DrainSnapshot, AgentdError> {
         self.refresh_generation()?;
+        let generation_blockers = self.neuron_generation_drain_blockers()?;
         let runtime = self.runtime.lock().map_err(poisoned_state)?;
         let running_turns = u32::try_from(self.app_server_drain.running_turns()).map_err(|_| {
             AgentdError::Protocol("running assistant turn count exceeds u32".to_string())
@@ -565,7 +577,8 @@ impl AgentdState {
                 && !runtime.fenced
                 && self.app_server_drain.drained()
                 && running_turns == 0
-                && automation_blockers == 0,
+                && automation_blockers == 0
+                && generation_blockers == 0,
             lifecycle: runtime.lifecycle,
             fenced: runtime.fenced,
         })

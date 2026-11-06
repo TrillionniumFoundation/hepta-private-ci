@@ -120,6 +120,7 @@ pub struct AgentdConfig {
     plasticity_bootstrap: Option<crate::PlasticityRuntimeBootstrapV1>,
     learning_iteration_bootstrap: Option<crate::LearningIterationRuntimeBootstrapV1>,
     terminal_learning_bootstrap: Option<crate::TerminalLearningRuntimeBootstrapV1>,
+    neuron_generation_bootstrap: Option<crate::NeuronGenerationRuntimeBootstrapV2>,
     intuition_policy_host: Option<std::sync::Arc<crate::AgentdIntuitionPolicyHostV1>>,
     intelligence_product_runner: Option<std::sync::Arc<crate::AgentdIntelligenceProductRunnerV1>>,
     intelligence_invocation_provider:
@@ -283,6 +284,7 @@ impl AgentdConfig {
             plasticity_bootstrap: None,
             learning_iteration_bootstrap: None,
             terminal_learning_bootstrap: None,
+            neuron_generation_bootstrap: None,
             intuition_policy_host: None,
             intelligence_product_runner: None,
             intelligence_invocation_provider: None,
@@ -727,13 +729,17 @@ impl AgentdConfig {
     ) -> Result<Self, AgentdError> {
         bootstrap.require_identity(&self.identity)?;
         if self.learning_iteration_bootstrap.is_some() {
-            return Err(AgentdError::Invalid("learning iteration owner already configured".into()));
+            return Err(AgentdError::Invalid(
+                "learning iteration owner already configured".into(),
+            ));
         }
         self.learning_iteration_bootstrap = Some(bootstrap);
         Ok(self)
     }
 
-    pub(crate) fn take_learning_iteration_bootstrap(&mut self) -> Option<crate::LearningIterationRuntimeBootstrapV1> {
+    pub(crate) fn take_learning_iteration_bootstrap(
+        &mut self,
+    ) -> Option<crate::LearningIterationRuntimeBootstrapV1> {
         self.learning_iteration_bootstrap.take()
     }
 
@@ -745,14 +751,43 @@ impl AgentdConfig {
     ) -> Result<Self, AgentdError> {
         bootstrap.require_identity(&self.identity)?;
         if self.terminal_learning_bootstrap.is_some() {
-            return Err(AgentdError::Invalid("terminal learning owner already configured".into()));
+            return Err(AgentdError::Invalid(
+                "terminal learning owner already configured".into(),
+            ));
         }
         self.terminal_learning_bootstrap = Some(bootstrap);
         Ok(self)
     }
 
-    pub(crate) fn take_terminal_learning_bootstrap(&mut self) -> Option<crate::TerminalLearningRuntimeBootstrapV1> {
+    pub(crate) fn take_terminal_learning_bootstrap(
+        &mut self,
+    ) -> Option<crate::TerminalLearningRuntimeBootstrapV1> {
         self.terminal_learning_bootstrap.take()
+    }
+
+    /// Attach an already admitted stateful control adapter and its exclusive
+    /// journal. Ordinary process configuration leaves this service absent.
+    pub fn with_neuron_generation_bootstrap(
+        mut self,
+        bootstrap: crate::NeuronGenerationRuntimeBootstrapV2,
+    ) -> Result<Self, AgentdError> {
+        bootstrap.require_identity(&self.identity)?;
+        if self.neuron_generation_bootstrap.is_some()
+            || self.notes_objective.is_some()
+            || self.desktop_objective.is_some()
+        {
+            return Err(AgentdError::Invalid(
+                "generation service requires its own explicit non-finite profile".into(),
+            ));
+        }
+        self.neuron_generation_bootstrap = Some(bootstrap);
+        Ok(self)
+    }
+
+    pub(crate) fn take_neuron_generation_bootstrap(
+        &mut self,
+    ) -> Option<crate::NeuronGenerationRuntimeBootstrapV2> {
+        self.neuron_generation_bootstrap.take()
     }
 
     /// Attach the authenticated current intuition-policy product caller.
@@ -828,7 +863,10 @@ impl AgentdConfig {
         config: crate::AgentdNotesObjectiveConfig,
     ) -> Result<Self, AgentdError> {
         config.validate()?;
-        if self.notes_objective.is_some() || self.desktop_objective.is_some() {
+        if self.notes_objective.is_some()
+            || self.desktop_objective.is_some()
+            || self.neuron_generation_bootstrap.is_some()
+        {
             return Err(AgentdError::Invalid(
                 "Notes Objective adapter already configured".into(),
             ));
@@ -856,6 +894,7 @@ impl AgentdConfig {
             || self.plasticity_bootstrap.is_some()
             || self.learning_iteration_bootstrap.is_some()
             || self.terminal_learning_bootstrap.is_some()
+            || self.neuron_generation_bootstrap.is_some()
             || self.intuition_policy_host.is_some()
             || self.intelligence_product_runner.is_some()
             || self.intelligence_invocation_provider.is_some()

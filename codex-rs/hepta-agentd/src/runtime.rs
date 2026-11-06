@@ -60,8 +60,11 @@ pub async fn run(
     let plasticity_bootstrap = config.take_plasticity_runtime_bootstrap();
     let learning_iteration = config.take_learning_iteration_bootstrap();
     let terminal_learning = config.take_terminal_learning_bootstrap();
+    let neuron_generation = config.take_neuron_generation_bootstrap();
     if learning_iteration.is_some() && plasticity_bootstrap.is_none() {
-        return Err(AgentdError::Invalid("learning iteration requires the governed plasticity owner".into()));
+        return Err(AgentdError::Invalid(
+            "learning iteration requires the governed plasticity owner".into(),
+        ));
     }
     let trust_file = config
         .authbus_trust_file()
@@ -111,7 +114,8 @@ pub async fn run(
     if (notes_objective.is_some() || desktop_objective.is_some())
         && (production_writer_host.is_none()
             || intelligence_product.is_some()
-            || intelligence_invocation.is_some())
+            || intelligence_invocation.is_some()
+            || neuron_generation.is_some())
     {
         return Err(AgentdError::Invalid(
             "Notes Objective requires original operations and a dedicated finite profile".into(),
@@ -131,6 +135,9 @@ pub async fn run(
         registry,
         EVENT_CAPACITY,
     )?);
+    if let Some(bootstrap) = &neuron_generation {
+        bootstrap.attach(&state)?;
+    }
     if let Some(notes) = notes_objective {
         state
             .notes_objective
@@ -408,6 +415,14 @@ pub async fn run(
                 owner.run(Arc::clone(&state), cancellation.clone()),
             )?;
         }
+        if let Some(bootstrap) = neuron_generation {
+            crate::neuron_generation_service::spawn_neuron_generation_service(
+                &mut tasks,
+                bootstrap,
+                Arc::clone(&state),
+                cancellation.clone(),
+            )?;
+        }
         spawn_automation_service(
             &mut tasks,
             automation_store,
@@ -669,7 +684,7 @@ pub(crate) async fn drain_runtime(state: Arc<AgentdState>) -> Result<(), AgentdE
     let drain_deadline = Instant::now() + RUN_DRAIN_GRACE;
     loop {
         state.expire_run_deadlines()?;
-        if state.active_run_count()? == 0 {
+        if state.active_run_count()? == 0 && state.neuron_generation_drain_blockers()? == 0 {
             return Ok(());
         }
         if Instant::now() >= drain_deadline {
@@ -681,7 +696,7 @@ pub(crate) async fn drain_runtime(state: Arc<AgentdState>) -> Result<(), AgentdE
     state.mark_unresolved_runs_indeterminate("shutdown_drain_timeout")?;
     let reconcile_deadline = Instant::now() + RUN_RECONCILE_GRACE;
     loop {
-        if state.unresolved_run_count()? == 0 {
+        if state.unresolved_run_count()? == 0 && state.neuron_generation_drain_blockers()? == 0 {
             return Ok(());
         }
         if Instant::now() >= reconcile_deadline {
@@ -691,11 +706,12 @@ pub(crate) async fn drain_runtime(state: Arc<AgentdState>) -> Result<(), AgentdE
     }
 
     let unresolved = state.unresolved_run_count()?;
-    if unresolved == 0 {
+    let generation_blockers = state.neuron_generation_drain_blockers()?;
+    if unresolved == 0 && generation_blockers == 0 {
         Ok(())
     } else {
         Err(AgentdError::Protocol(format!(
-            "agentd shutdown left {unresolved} indeterminate run(s); owner recovery is required"
+            "agentd shutdown left {unresolved} indeterminate run(s) and {generation_blockers} generation service blocker(s); owner recovery is required"
         )))
     }
 }
