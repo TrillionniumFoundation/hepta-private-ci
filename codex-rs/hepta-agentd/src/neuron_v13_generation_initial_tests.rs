@@ -14,6 +14,8 @@ use crate::neuron_generation_update_forward::AgentdGenerationForwardRecoveryV1;
 use crate::neuron_v13_generation_initial::prepare_agentd_v13_generation_initial_forward_recovery_v1;
 use crate::neuron_v13_generation_initial::recover_agentd_v13_generation_initial_v1;
 
+#[path = "neuron_v13_generation_initial_runtime_tests.rs"]
+mod runtime;
 #[path = "neuron_v13_generation_initial_test_support.rs"]
 mod support;
 
