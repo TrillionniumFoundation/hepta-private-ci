@@ -302,3 +302,28 @@ async fn logical_failure_before_native_exit_preserves_first_failure() -> Result<
     );
     Ok(())
 }
+
+#[tokio::test]
+async fn termination_ack_waits_for_later_native_exit() -> Result<()> {
+    let fixture = RemoteFixture::new(WriteStatus::Accepted).await?;
+    let mut task = tokio::spawn({
+        let process = Arc::clone(&fixture.process);
+        async move { process.terminate_confirmed().await }
+    });
+    fixture.wait_for_termination().await?;
+    fixture.release_ack();
+    assert!(
+        tokio::time::timeout(Duration::from_millis(/*millis*/ 25), &mut task)
+            .await
+            .is_err(),
+        "an ACK must leave the existing native observation pending"
+    );
+    assert!(!fixture.process.has_exited());
+    assert_eq!(fixture.process.exit_code(), None);
+    fixture.exited(/*code*/ 53)?;
+    tokio::time::timeout(Duration::from_secs(/*secs*/ 2), task).await???;
+    assert!(fixture.process.has_exited());
+    assert_eq!(fixture.process.exit_code(), Some(53));
+    assert_eq!(fixture.process.failure_message(), None);
+    Ok(())
+}
