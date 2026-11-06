@@ -243,3 +243,13 @@ OAuth fixture 在第一轮 contention 的**原 5 秒 block 内**等其真实完�
 新增 `hepta_ci_junit.py` 在每次 scoped/full 命令后保留真实 XML并核验：对应执行记录的干净 source/tree/argv、命令时间窗内的新文件、实际字节摘要、非空 case、逐 case 的 failure/error，以及与原 runner 终态计数的一致性。命令失败、缺失/陈旧 XML 或计数矛盾均不能通过；失败报告仍保留，输出使用独占创建，不覆盖旧证据。脚本的合成回执测试只验证这项收集逻辑，不计入 Rust 执行或模型资格。
 
 新的 workflow 同时对 attempt helper 副本做 scoped/full 后验字节硬核对。上传内容包括日志、执行回执、XML、manifest 和复核记录，**不包括 `helpers/bin` 中的 executable 副本**；实际副本的路径、模式、字节数和 SHA-256 保留在 manifest 中。不能把该 artifact 描述成包含运行主机所有文件的镜像。
+
+## 19. da55 原生 fix：命令返回 0 仍须拒绝残留错误和源码变化
+
+固定组合源码 `da55adb7dcbbb1eef7a1f73c713c261eca28befe`、tree `77f4a784d9b58d79ef31277f54e54281e93dd4a0` 的 ai395 job `1a1aff8a406-fc05-6d27` 于 2026-11-06 08:35:56 UTC 终态失败。正式 fmt 已通过且源码干净；21 包 scoped fix 命令虽然返回 0，日志明确含 `errors present after applying fixes`，并留下三个 Contracts 测试文件的自动修改。runner 因而返回 3，**独立 strict、helper 准备、scoped tests、完整默认 workspace 均未开始**，没有新 JUnit 或 Rust 测试通过计数。
+
+失败不是同一个问题的重复描述：两个 generation frame 测试的 `n + 1 <= limit` 触发 `int_plus_one`，Clippy 自动改成 `n as u64 < limit` 后，Rust 把 `<` 当成泛型参数，自动修改被回滚。本后继显式写 `(n as u64) < limit`，仍为 frame 尾部预留一个字节。另将两个单元测试共用的 synthetic fixture 在同一个 Linux test-only 模块装载一次，消除 `duplicate_mod`；CLI 集成 target 继续使用原文件及原固定人工张量，不增加训练模型资格。
+
+Contracts 修复只涉及测试：保留实际三处自动去除多余 clone／使用 `cloned()` 的差异；用 lexical scope 结束 ancillary buffer 与 borrowed descriptors，再在原位置关闭 offered FD；两个单元素签名切片使用 `std::slice::from_ref`。原权限、签名、时间、错误、实际 peer EOF 及输出断言均保留，没有 lint 豁免。原生自动差异为 2,160 字节，SHA-256 `b775c2df46a3b59b1197bf766f3c14c86a74020727c3c27a30f858ac51a4f214`。
+
+这些修复经过独立源码复核，新的执行资格仍须绑定后继提交。可以复用本任务独占的 Cargo 依赖缓存，但必须记录缓存来源、检查前任务终态与实际占用，重新执行全部门顺序、生成本轮 helper 副本并隔离旧 JUnit；缓存目录名或旧编译结果不能代替新源码资格。

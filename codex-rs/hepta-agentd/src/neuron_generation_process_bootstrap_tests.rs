@@ -23,8 +23,7 @@ use crate::AgentdState;
 use crate::RuntimeTasks;
 use crate::neuron_generation_service::spawn_neuron_generation_service;
 
-#[path = "../tests/support/neuron_generation.rs"]
-mod fixture;
+use crate::neuron_generation_test_support as fixture;
 
 struct Fixture {
     directory: tempfile::TempDir,

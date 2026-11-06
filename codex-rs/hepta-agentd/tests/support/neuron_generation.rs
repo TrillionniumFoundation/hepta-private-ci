@@ -15,7 +15,7 @@ use serde_json::Value;
 use serde_json::json;
 
 #[path = "../../../hepta-neuron/tests/support/joint_synthetic.rs"]
-mod synthetic;
+pub(crate) mod synthetic;
 
 pub(crate) struct FixtureAssets(synthetic::Assets);
 

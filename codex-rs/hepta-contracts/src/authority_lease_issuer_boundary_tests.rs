@@ -292,7 +292,7 @@ fn administrative_recovery_rejects_future_issuer_with_live_successor() {
             operation_class: "root_issuer".into(),
             ..f.old.binding.clone()
         },
-        ..f.old.clone()
+        ..f.old
     };
     // The original registry intentionally permits advance registration.
     f.registry.put_lease(parent.clone(), 0).unwrap();

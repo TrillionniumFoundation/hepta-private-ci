@@ -27,7 +27,7 @@ fn maximum_generation_pages_and_inputs_roundtrip_within_existing_frame() {
         },
     };
     let encoded = serde_json::to_vec(&request).expect("encode maximum request");
-    assert!(encoded.len() as u64 + 1 <= MAX_CONTROL_FRAME_BYTES);
+    assert!((encoded.len() as u64) < MAX_CONTROL_FRAME_BYTES);
     assert_eq!(
         serde_json::from_slice::<AgentdRequest>(&encoded).expect("decode request"),
         request
@@ -54,7 +54,7 @@ fn maximum_generation_pages_and_inputs_roundtrip_within_existing_frame() {
         }),
     };
     let encoded = serde_json::to_vec(&response).expect("encode maximum page");
-    assert!(encoded.len() as u64 + 1 <= MAX_CONTROL_FRAME_BYTES);
+    assert!((encoded.len() as u64) < MAX_CONTROL_FRAME_BYTES);
     assert_eq!(
         serde_json::from_slice::<AgentdResponse>(&encoded).expect("decode page"),
         response

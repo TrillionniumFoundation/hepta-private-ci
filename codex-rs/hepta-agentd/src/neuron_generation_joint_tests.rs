@@ -24,8 +24,7 @@ use crate::RuntimeTasks;
 use crate::neuron_generation_channel_v2;
 use crate::neuron_generation_service::spawn_neuron_generation_service;
 
-#[path = "../../hepta-neuron/tests/support/joint_synthetic.rs"]
-mod synthetic;
+use crate::neuron_generation_test_support::synthetic;
 
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 type Clock = Arc<dyn Fn() -> u64 + Send + Sync>;

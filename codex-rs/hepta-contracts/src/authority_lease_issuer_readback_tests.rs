@@ -57,7 +57,7 @@ fn readback_preserves_each_invalid_parent_as_error_with_the_original_live_writer
             |actual_parent, writer, revision| {
                 assert_eq!(writer, &f.old);
                 assert_eq!(revision, before.store_revision);
-                actual_parent.map(|parent| parent.clone())
+                actual_parent.cloned()
             },
         );
         assert_eq!(result, Ok(Err(expected)));

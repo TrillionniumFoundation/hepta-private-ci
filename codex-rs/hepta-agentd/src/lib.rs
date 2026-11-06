@@ -308,6 +308,9 @@ mod neuron_generation;
 mod neuron_generation_process_bootstrap;
 mod neuron_generation_runtime;
 mod neuron_generation_service;
+#[cfg(all(test, target_os = "linux"))]
+#[path = "../tests/support/neuron_generation.rs"]
+mod neuron_generation_test_support;
 mod neuron_runtime;
 #[cfg(target_os = "linux")]
 mod notes_bootstrap;
