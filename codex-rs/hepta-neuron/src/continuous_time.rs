@@ -23,7 +23,16 @@ const MAX_CHECKPOINT_BYTES: usize = 4_096;
 #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
 pub enum HcsnIntegrationV1 {
     ValueKernel,
-    PopulationGrid { step_micros: u64, max_substeps: u32 },
+    PopulationGrid {
+        step_micros: u64,
+        max_substeps: u32,
+    },
+    /// B with physical-time refractory cohorts. `max_substeps` bounds event
+    /// steps, including releases whose times come from the complete state.
+    PopulationAge {
+        max_step_micros: u64,
+        max_substeps: u32,
+    },
 }
 
 /// Separate opt-in profile; existing sparse Q24 profiles retain their semantics.
@@ -60,6 +69,19 @@ impl HcsnTimeProfileV1 {
                 }
                 bytes.push(1);
                 bytes.extend_from_slice(&step_micros.to_be_bytes());
+                bytes.extend_from_slice(&max_substeps.to_be_bytes());
+            }
+            HcsnIntegrationV1::PopulationAge {
+                max_step_micros,
+                max_substeps,
+            } => {
+                if !(1..=self.maximum_gap_micros).contains(&max_step_micros)
+                    || !(1..=MAX_SUBSTEPS).contains(&max_substeps)
+                {
+                    return Err(HcsnTimeError::InvalidProfile);
+                }
+                bytes.push(2);
+                bytes.extend_from_slice(&max_step_micros.to_be_bytes());
                 bytes.extend_from_slice(&max_substeps.to_be_bytes());
             }
         }
@@ -254,6 +276,8 @@ impl HcsnClockCheckpointV1 {
 
 /// Integer wire plan. A backend must verify its bindings before executing; a
 /// deserialized plan alone provides neither execution evidence nor authority.
+/// For `PopulationAge`, `substep_micros` is a maximum and `substeps` is an event
+/// budget. The worker must validate the actual schedule against the full state.
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct HcsnIntervalPlanV1 {
@@ -349,6 +373,18 @@ fn plan_interval_from_start(
                 return Err(HcsnTimeError::SubstepLimit);
             }
             (step_micros, steps as u32)
+        }
+        HcsnIntegrationV1::PopulationAge {
+            max_step_micros,
+            max_substeps,
+        } => {
+            // Cohort releases can add further boundaries. The native clock
+            // rejects an already impossible budget; the worker performs the
+            // complete state-dependent admission before building the graph.
+            if elapsed.div_ceil(max_step_micros) > u64::from(max_substeps) {
+                return Err(HcsnTimeError::SubstepLimit);
+            }
+            (max_step_micros, max_substeps)
         }
     };
     Ok(HcsnIntervalPlanV1 {

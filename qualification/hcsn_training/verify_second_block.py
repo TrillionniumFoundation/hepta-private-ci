@@ -8,6 +8,7 @@ import torch
 from .handoff import dataset_digest, execution_sources, runtime_tuple
 from .joint_graph import digest, interval_seconds, load_training_checkpoint, tensor_digest
 from .population_graph import PopulationCellGraph, population_intervals
+from .population_age_graph import PopulationAgeCellGraph, population_age_intervals
 
 
 def verify(parent, native, model, initial, inputs, profile):
@@ -19,6 +20,10 @@ def verify(parent, native, model, initial, inputs, profile):
     binding = dict(read(parent/"request.json")["binding"], model_digest=base)
     start = clock["last_micros"]
     offsets = [200_000, 300_000]
+    if isinstance(model, PopulationAgeCellGraph):
+        # The restored cohort schedule can add event steps. Keep this small
+        # derivative/recovery fixture inside the unchanged tensor-work budget.
+        offsets = [70_003, 110_010]
     if not isinstance(model, PopulationCellGraph):
         # A has one delayed boundary per state transition. Four intervals are
         # needed for every parameter of this two-cell graph to reach final loss.
@@ -45,7 +50,8 @@ def verify(parent, native, model, initial, inputs, profile):
     write_new(root/"request.json", request)
     write_new(root/"admitted.json", admitted)
     inputs_hash, expected = state_digest(initial), copy.deepcopy(model)
-    intervals = (population_intervals(plans, profile, model.spec) if isinstance(model, PopulationCellGraph)
+    intervals = (population_age_intervals(plans, profile, model.spec) if isinstance(model, PopulationAgeCellGraph) else
+                 population_intervals(plans, profile, model.spec) if isinstance(model, PopulationCellGraph)
                  else interval_seconds(plans, profile))
     targets = torch.tensor(request["targets"], dtype=inputs.dtype)
     for _ in range(2):
