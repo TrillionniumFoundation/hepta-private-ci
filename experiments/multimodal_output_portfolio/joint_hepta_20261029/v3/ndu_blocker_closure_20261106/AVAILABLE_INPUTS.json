@@ -1,0 +1,46 @@
+{
+  "checked_at_utc": "2026-11-06T03:19:39.087053+00:00",
+  "confirmation_status": "NOT_RUN_EXTERNAL_INPUTS_MISSING",
+  "environment_values_disclosed": false,
+  "external_paid_model_calls_in_this_work": 0,
+  "known_model_directory_presence": {
+    "/data/models": false,
+    "/home/agent/.cache/huggingface": false,
+    "/home/agent/.ollama/models": false,
+    "/mnt/models": false,
+    "/models": false
+  },
+  "local_executable_presence": {
+    "llama-cli": false,
+    "llama-server": false,
+    "ollama": false,
+    "text-generation-launcher": false,
+    "vllm": false
+  },
+  "named_configuration_presence": {
+    "ANTHROPIC_API_KEY": false,
+    "ANTHROPIC_BASE_URL": false,
+    "AZURE_OPENAI_API_KEY": false,
+    "AZURE_OPENAI_ENDPOINT": false,
+    "HF_TOKEN": false,
+    "HUGGINGFACEHUB_API_TOKEN": false,
+    "NDU_MODEL_ENDPOINT": false,
+    "NDU_MODEL_PATH": false,
+    "OPENAI_API_KEY": false,
+    "OPENAI_BASE_URL": false,
+    "OPENROUTER_API_KEY": false
+  },
+  "python_module_presence": {
+    "llama_cpp": false,
+    "numpy": true,
+    "onnxruntime": false,
+    "openai": false,
+    "scipy": true,
+    "tokenizers": false,
+    "torch": false,
+    "transformers": false
+  },
+  "real_llm_calls_in_this_work": 0,
+  "schema": "ndu.local-input-availability.v1",
+  "scope": "Checks only the named local configuration, executables, packages and directories. This is not proof that all possible external resources are absent. No endpoint probe, credentials, paid API call or model inference is performed. Prior connector discovery found no callable text-inference integration; it is not a provider authorization receipt."
+}

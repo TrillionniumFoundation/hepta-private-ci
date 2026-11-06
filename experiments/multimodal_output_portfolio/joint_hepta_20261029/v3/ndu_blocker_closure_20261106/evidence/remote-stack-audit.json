@@ -1,0 +1,1318 @@
+{
+  "schema": "ndu.remote-stack-audit.v1",
+  "observed_at_utc": "2026-11-06T04:01:36+00:00",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "range_base": "5c0093cb62ca4b5007df733f470fc8922ffdafc8",
+  "range_tip": "b427fd08449fdf2a6007a3377e3268bdc2317431",
+  "scope": "Read-only pre-publication snapshot of 13 draft PRs; this is not a CI pass. The following closure PR is not part of this snapshot.",
+  "all_heads_trees_bases_match": true,
+  "all_open_draft_not_merged": true,
+  "all_scientific_blockers_closed": false,
+  "remote_ci": "NOT_GREEN",
+  "pull_requests": [
+    {
+      "pr": 4905,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4905",
+      "expected_head": "1163ad98b197b3e812b7056a67de10560c9baf94",
+      "head": "1163ad98b197b3e812b7056a67de10560c9baf94",
+      "head_branch": "research/ndu-stateful-prior-art-20261106",
+      "base": "research/ndu-walltime-contract-20261105",
+      "base_sha": "5c0093cb62ca4b5007df733f470fc8922ffdafc8",
+      "draft": true,
+      "state": "open",
+      "merged": false,
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "tree": "7f43aac223d15e3090fb56800e7bebc5aec3861c",
+      "parents": [
+        "5c0093cb62ca4b5007df733f470fc8922ffdafc8"
+      ],
+      "head_matches": true,
+      "tree_matches": true,
+      "base_matches": true,
+      "checks": [
+        {
+          "name": "rust-ci / Rust benchmark smoke",
+          "status": "completed",
+          "conclusion": "skipped",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42152878692/job/127701664499"
+        },
+        {
+          "name": "rust-ci / cargo shear",
+          "status": "completed",
+          "conclusion": "skipped",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42152878692/job/127701664393"
+        },
+        {
+          "name": "rust-ci / Rust format",
+          "status": "completed",
+          "conclusion": "skipped",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42152878692/job/127701664242"
+        },
+        {
+          "name": "rust-ci / Cargo manifest preflight",
+          "status": "completed",
+          "conclusion": "skipped",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42152878692/job/127701663812"
+        },
+        {
+          "name": "rust-ci / Argument comment lint package",
+          "status": "completed",
+          "conclusion": "skipped",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42152878692/job/127701663811"
+        },
+        {
+          "name": "rust-ci / CI results (required)",
+          "status": "queued",
+          "conclusion": null,
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42152878692/job/127701663295"
+        },
+        {
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc",
+          "status": "queued",
+          "conclusion": null,
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42152878692/job/127700967743"
+        },
+        {
+          "name": "Architecture required",
+          "status": "queued",
+          "conclusion": null,
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42152878782/job/127698083183"
+        },
+        {
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc (native main)",
+          "status": "completed",
+          "conclusion": "skipped",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42152878692/job/127691693660"
+        },
+        {
+          "name": "Hepta scoped native checks",
+          "status": "completed",
+          "conclusion": "skipped",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42152878692/job/127691693582"
+        },
+        {
+          "name": "Lightweight prose and derived checks",
+          "status": "completed",
+          "conclusion": "skipped",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42152878692/job/127691693244"
+        },
+        {
+          "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+          "status": "completed",
+          "conclusion": "failure",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42152878692/job/127691692651"
+        },
+        {
+          "name": "NDU v6 neural rollout smoke / Unified profile and executed-policy regressions / Objective, continuation, and selected-policy invariants",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42152878692/job/127691692485"
+        },
+        {
+          "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-musl",
+          "status": "queued",
+          "conclusion": null,
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42152878692/job/127691692337"
+        },
+        {
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4",
+          "status": "completed",
+          "conclusion": "failure",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42152878692/job/127691692336"
+        },
+        {
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+          "status": "completed",
+          "conclusion": "failure",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42152878692/job/127691692310"
+        },
+        {
+          "name": "Bazel / Verify release build on windows-latest for x86_64-pc-windows-msvc",
+          "status": "completed",
+          "conclusion": "failure",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42152878692/job/127691692298"
+        },
+        {
+          "name": "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+          "status": "completed",
+          "conclusion": "failure",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42152878692/job/127691692297"
+        },
+        {
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+          "status": "completed",
+          "conclusion": "failure",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42152878692/job/127691692280"
+        },
+        {
+          "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+          "status": "completed",
+          "conclusion": "failure",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42152878692/job/127691692279"
+        },
+        {
+          "name": "Bazel / Verify release build on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+          "status": "queued",
+          "conclusion": null,
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42152878692/job/127691692251"
+        },
+        {
+          "name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc",
+          "status": "completed",
+          "conclusion": "failure",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42152878692/job/127691692249"
+        },
+        {
+          "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+          "status": "in_progress",
+          "conclusion": null,
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42152878692/job/127691692248"
+        },
+        {
+          "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+          "status": "completed",
+          "conclusion": "failure",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42152878692/job/127691692239"
+        },
+        {
+          "name": "Bazel / Verify release build on macos-15 for aarch64-apple-darwin",
+          "status": "completed",
+          "conclusion": "failure",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42152878692/job/127691692169"
+        },
+        {
+          "name": "Bazel / Bazel clippy on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+          "status": "queued",
+          "conclusion": null,
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42152878692/job/127691692154"
+        },
+        {
+          "name": "NDU v6 neural rollout smoke / Python, native NDU, and real rollout",
+          "status": "in_progress",
+          "conclusion": null,
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42152878692/job/127691691944"
+        },
+        {
+          "name": "repo-checks / Native Hepta paths on windows-latest",
+          "status": "completed",
+          "conclusion": "failure",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42152878692/job/127691691892"
+        },
+        {
+          "name": "rust-ci / Detect changed areas",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42152878692/job/127691691828"
+        },
+        {
+          "name": "repo-checks / Native Hepta paths on macos-15",
+          "status": "completed",
+          "conclusion": "failure",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42152878692/job/127691691824"
+        },
+        {
+          "name": "repo-checks / Native Hepta paths on ubuntu-24.04",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42152878692/job/127691691785"
+        },
+        {
+          "name": "sdk / sdks",
+          "status": "completed",
+          "conclusion": "failure",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42152878692/job/127691691770"
+        },
+        {
+          "name": "sdk / python-sdk",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42152878692/job/127691691753"
+        },
+        {
+          "name": "repo-checks / build-test",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42152878692/job/127691691725"
+        },
+        {
+          "name": "Hepta contract gate / Validate canonical branch and contract metadata",
+          "status": "completed",
+          "conclusion": "failure",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42152878692/job/127691691663"
+        },
+        {
+          "name": "cargo-deny / cargo-deny",
+          "status": "completed",
+          "conclusion": "failure",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42152878692/job/127691691616"
+        },
+        {
+          "name": "Build ptrcomp-sandbox ${{ matrix.target }} from source",
+          "status": "completed",
+          "conclusion": "skipped",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42152878849/job/127682883527"
+        },
+        {
+          "name": "Build ${{ matrix.variant }} ${{ matrix.target }}",
+          "status": "completed",
+          "conclusion": "skipped",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42152878849/job/127682883263"
+        },
+        {
+          "name": "metadata",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42152878849/job/127680052614"
+        },
+        {
+          "name": "Codespell / Check for spelling errors",
+          "status": "completed",
+          "conclusion": "failure",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42152878692/job/127680039643"
+        },
+        {
+          "name": "Architecture convergence (source-head)",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42152878782/job/127680039558"
+        },
+        {
+          "name": "Blob size policy / Blob size policy",
+          "status": "completed",
+          "conclusion": "failure",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42152878692/job/127680039424"
+        },
+        {
+          "name": "Architecture convergence (base-merge)",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42152878782/job/127680039239"
+        },
+        {
+          "name": "Select blocking CI scope",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42152878692/job/127680039214"
+        }
+      ],
+      "commit_status": "pending",
+      "status_count": 0,
+      "checks_total_count": 44,
+      "fully_green": false
+    },
+    {
+      "pr": 4906,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4906",
+      "expected_head": "667828065713992b69041721b8753d7ddad57fed",
+      "head": "667828065713992b69041721b8753d7ddad57fed",
+      "head_branch": "research/ndu-actual-tool-smoke-20261106",
+      "base": "research/ndu-stateful-prior-art-20261106",
+      "base_sha": "1163ad98b197b3e812b7056a67de10560c9baf94",
+      "draft": true,
+      "state": "open",
+      "merged": false,
+      "mergeable": true,
+      "mergeable_state": "clean",
+      "tree": "222e7b31ac5dd1f2ad39de16b630be7a2e8578ee",
+      "parents": [
+        "209ed32ab15c5728ed57acb6cb8caa7847fccd72"
+      ],
+      "head_matches": true,
+      "tree_matches": true,
+      "base_matches": true,
+      "checks": [
+        {
+          "name": "Build ${{ matrix.variant }} ${{ matrix.target }}",
+          "status": "completed",
+          "conclusion": "skipped",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42157702154/job/127701023431"
+        },
+        {
+          "name": "Build ptrcomp-sandbox ${{ matrix.target }} from source",
+          "status": "completed",
+          "conclusion": "skipped",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42157702154/job/127701023057"
+        },
+        {
+          "name": "metadata",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42157702154/job/127695677921"
+        }
+      ],
+      "commit_status": "pending",
+      "status_count": 0,
+      "checks_total_count": 3,
+      "fully_green": false
+    },
+    {
+      "pr": 4908,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4908",
+      "expected_head": "d6b605fd8788d58172f4c947185e368c70bf37d8",
+      "head": "d6b605fd8788d58172f4c947185e368c70bf37d8",
+      "head_branch": "research/ndu-stateful-theory-20261106",
+      "base": "research/ndu-actual-tool-smoke-20261106",
+      "base_sha": "667828065713992b69041721b8753d7ddad57fed",
+      "draft": true,
+      "state": "open",
+      "merged": false,
+      "mergeable": true,
+      "mergeable_state": "clean",
+      "tree": "f1b977027fe24291fac20fc0c3184fe1f0fc6296",
+      "parents": [
+        "24defec84bc6a9dbe34a41c389f98bdd13e94e59",
+        "667828065713992b69041721b8753d7ddad57fed"
+      ],
+      "head_matches": true,
+      "tree_matches": true,
+      "base_matches": true,
+      "checks": [
+        {
+          "name": "Build ${{ matrix.variant }} ${{ matrix.target }}",
+          "status": "completed",
+          "conclusion": "skipped",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42157753964/job/127699521068"
+        },
+        {
+          "name": "Build ptrcomp-sandbox ${{ matrix.target }} from source",
+          "status": "completed",
+          "conclusion": "skipped",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42157753964/job/127699520192"
+        },
+        {
+          "name": "metadata",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42157753964/job/127695847940"
+        }
+      ],
+      "commit_status": "pending",
+      "status_count": 0,
+      "checks_total_count": 3,
+      "fully_green": false
+    },
+    {
+      "pr": 4909,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4909",
+      "expected_head": "53983b37daa249b299084297d99a3baef0982c5b",
+      "head": "53983b37daa249b299084297d99a3baef0982c5b",
+      "head_branch": "research/ndu-stateful-reference-20261106",
+      "base": "research/ndu-stateful-theory-20261106",
+      "base_sha": "d6b605fd8788d58172f4c947185e368c70bf37d8",
+      "draft": true,
+      "state": "open",
+      "merged": false,
+      "mergeable": true,
+      "mergeable_state": "clean",
+      "tree": "e02446af13ea828396df687bccd35191ade78135",
+      "parents": [
+        "6ff15bf07b4912c6073f5379a25c96bf8d55e07d",
+        "d6b605fd8788d58172f4c947185e368c70bf37d8"
+      ],
+      "head_matches": true,
+      "tree_matches": true,
+      "base_matches": true,
+      "checks": [
+        {
+          "name": "Build ptrcomp-sandbox ${{ matrix.target }} from source",
+          "status": "completed",
+          "conclusion": "skipped",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42157760453/job/127699721586"
+        },
+        {
+          "name": "Build ${{ matrix.variant }} ${{ matrix.target }}",
+          "status": "completed",
+          "conclusion": "skipped",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42157760453/job/127699721561"
+        },
+        {
+          "name": "metadata",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42157760453/job/127695867955"
+        }
+      ],
+      "commit_status": "pending",
+      "status_count": 0,
+      "checks_total_count": 3,
+      "fully_green": false
+    },
+    {
+      "pr": 4911,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4911",
+      "expected_head": "7ebe8ef955803cc4ce136bf536d3bed0fb792db2",
+      "head": "7ebe8ef955803cc4ce136bf536d3bed0fb792db2",
+      "head_branch": "research/ndu-stateful-negative-evidence-20261106",
+      "base": "research/ndu-stateful-reference-20261106",
+      "base_sha": "53983b37daa249b299084297d99a3baef0982c5b",
+      "draft": true,
+      "state": "open",
+      "merged": false,
+      "mergeable": true,
+      "mergeable_state": "clean",
+      "tree": "82a97cedff3b163bc59cb744a6cabfc63644ff41",
+      "parents": [
+        "5200534b55aee0fc6f6a5cfe757ed40594ed744b",
+        "53983b37daa249b299084297d99a3baef0982c5b"
+      ],
+      "head_matches": true,
+      "tree_matches": true,
+      "base_matches": true,
+      "checks": [
+        {
+          "name": "Build ptrcomp-sandbox ${{ matrix.target }} from source",
+          "status": "completed",
+          "conclusion": "skipped",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42157812410/job/127699942354"
+        },
+        {
+          "name": "Build ${{ matrix.variant }} ${{ matrix.target }}",
+          "status": "completed",
+          "conclusion": "skipped",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42157812410/job/127699941989"
+        },
+        {
+          "name": "metadata",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42157812410/job/127696039604"
+        }
+      ],
+      "commit_status": "pending",
+      "status_count": 0,
+      "checks_total_count": 3,
+      "fully_green": false
+    },
+    {
+      "pr": 4912,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4912",
+      "expected_head": "7dda698e20c7c6a4716709807a17849212f20ed6",
+      "head": "7dda698e20c7c6a4716709807a17849212f20ed6",
+      "head_branch": "research/ndu-runtime-evidence-binding-20261106",
+      "base": "research/ndu-stateful-negative-evidence-20261106",
+      "base_sha": "7ebe8ef955803cc4ce136bf536d3bed0fb792db2",
+      "draft": true,
+      "state": "open",
+      "merged": false,
+      "mergeable": true,
+      "mergeable_state": "clean",
+      "tree": "2423458e8639d9003a670c46c2c1858d7f85a9b0",
+      "parents": [
+        "8ec57fb908a4fd453bdd3bcd4da0bf869e0a8b09",
+        "7ebe8ef955803cc4ce136bf536d3bed0fb792db2"
+      ],
+      "head_matches": true,
+      "tree_matches": true,
+      "base_matches": true,
+      "checks": [
+        {
+          "name": "Build ptrcomp-sandbox ${{ matrix.target }} from source",
+          "status": "completed",
+          "conclusion": "skipped",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42157865109/job/127700767845"
+        },
+        {
+          "name": "Build ${{ matrix.variant }} ${{ matrix.target }}",
+          "status": "completed",
+          "conclusion": "skipped",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42157865109/job/127700767807"
+        },
+        {
+          "name": "metadata",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42157865109/job/127696215962"
+        }
+      ],
+      "commit_status": "pending",
+      "status_count": 0,
+      "checks_total_count": 3,
+      "fully_green": false
+    },
+    {
+      "pr": 4914,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4914",
+      "expected_head": "d9143df90d397ae9f45f24ba1b92a796036c4148",
+      "head": "d9143df90d397ae9f45f24ba1b92a796036c4148",
+      "head_branch": "research/ndu-evidence-contracts-20261106",
+      "base": "research/ndu-runtime-evidence-binding-20261106",
+      "base_sha": "7dda698e20c7c6a4716709807a17849212f20ed6",
+      "draft": true,
+      "state": "open",
+      "merged": false,
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "tree": "654e7519ff76d65e131e06e2bd1511679725f73f",
+      "parents": [
+        "7dda698e20c7c6a4716709807a17849212f20ed6"
+      ],
+      "head_matches": true,
+      "tree_matches": true,
+      "base_matches": true,
+      "checks": [
+        {
+          "name": "Build ${{ matrix.variant }} ${{ matrix.target }}",
+          "status": "completed",
+          "conclusion": "skipped",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42158907049/job/127700583645"
+        },
+        {
+          "name": "Build ptrcomp-sandbox ${{ matrix.target }} from source",
+          "status": "completed",
+          "conclusion": "skipped",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42158907049/job/127700583583"
+        },
+        {
+          "name": "Codespell / Check for spelling errors",
+          "status": "completed",
+          "conclusion": "failure",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42158906964/job/127699587657"
+        },
+        {
+          "name": "Blob size policy / Blob size policy",
+          "status": "queued",
+          "conclusion": null,
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42158906964/job/127699587646"
+        },
+        {
+          "name": "metadata",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42158907049/job/127699587520"
+        },
+        {
+          "name": "Select blocking CI scope",
+          "status": "queued",
+          "conclusion": null,
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42158906964/job/127699587254"
+        },
+        {
+          "name": "Architecture convergence (base-merge)",
+          "status": "in_progress",
+          "conclusion": null,
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42158906929/job/127699586917"
+        },
+        {
+          "name": "Architecture convergence (source-head)",
+          "status": "queued",
+          "conclusion": null,
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42158906929/job/127699586810"
+        }
+      ],
+      "commit_status": "pending",
+      "status_count": 0,
+      "checks_total_count": 8,
+      "fully_green": false
+    },
+    {
+      "pr": 4915,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4915",
+      "expected_head": "fd2441ba5ea096fe2ca82809b1c3e93d6a8083ea",
+      "head": "fd2441ba5ea096fe2ca82809b1c3e93d6a8083ea",
+      "head_branch": "research/ndu-provider-ledger-20261106",
+      "base": "research/ndu-evidence-contracts-20261106",
+      "base_sha": "d9143df90d397ae9f45f24ba1b92a796036c4148",
+      "draft": true,
+      "state": "open",
+      "merged": false,
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "tree": "9311596f141c97a4a708817ffd13226b7cd7cae2",
+      "parents": [
+        "d9143df90d397ae9f45f24ba1b92a796036c4148"
+      ],
+      "head_matches": true,
+      "tree_matches": true,
+      "base_matches": true,
+      "checks": [
+        {
+          "name": "Build ptrcomp-sandbox ${{ matrix.target }} from source",
+          "status": "completed",
+          "conclusion": "skipped",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42158918782/job/127700672306"
+        },
+        {
+          "name": "Build ${{ matrix.variant }} ${{ matrix.target }}",
+          "status": "completed",
+          "conclusion": "skipped",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42158918782/job/127700671346"
+        },
+        {
+          "name": "Blob size policy / Blob size policy",
+          "status": "queued",
+          "conclusion": null,
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42158918885/job/127699623965"
+        },
+        {
+          "name": "Codespell / Check for spelling errors",
+          "status": "completed",
+          "conclusion": "failure",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42158918885/job/127699623897"
+        },
+        {
+          "name": "Select blocking CI scope",
+          "status": "queued",
+          "conclusion": null,
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42158918885/job/127699623661"
+        },
+        {
+          "name": "metadata",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42158918782/job/127699622747"
+        },
+        {
+          "name": "Architecture convergence (base-merge)",
+          "status": "queued",
+          "conclusion": null,
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42158918653/job/127699622704"
+        },
+        {
+          "name": "Architecture convergence (source-head)",
+          "status": "queued",
+          "conclusion": null,
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42158918653/job/127699622414"
+        }
+      ],
+      "commit_status": "pending",
+      "status_count": 0,
+      "checks_total_count": 8,
+      "fully_green": false
+    },
+    {
+      "pr": 4916,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4916",
+      "expected_head": "b7d4ef15a86870e3e3b973b808882d19b3da97a5",
+      "head": "b7d4ef15a86870e3e3b973b808882d19b3da97a5",
+      "head_branch": "research/ndu-confirmation-gate-20261106",
+      "base": "research/ndu-provider-ledger-20261106",
+      "base_sha": "fd2441ba5ea096fe2ca82809b1c3e93d6a8083ea",
+      "draft": true,
+      "state": "open",
+      "merged": false,
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "tree": "bb35cd53549e4e2624c0e5bcf5c555ee460ff03a",
+      "parents": [
+        "fd2441ba5ea096fe2ca82809b1c3e93d6a8083ea"
+      ],
+      "head_matches": true,
+      "tree_matches": true,
+      "base_matches": true,
+      "checks": [
+        {
+          "name": "Build ptrcomp-sandbox ${{ matrix.target }} from source",
+          "status": "completed",
+          "conclusion": "skipped",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42158930119/job/127700405203"
+        },
+        {
+          "name": "Build ${{ matrix.variant }} ${{ matrix.target }}",
+          "status": "completed",
+          "conclusion": "skipped",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42158930119/job/127700405122"
+        },
+        {
+          "name": "Codespell / Check for spelling errors",
+          "status": "completed",
+          "conclusion": "failure",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42158930298/job/127699659679"
+        },
+        {
+          "name": "Blob size policy / Blob size policy",
+          "status": "queued",
+          "conclusion": null,
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42158930298/job/127699659498"
+        },
+        {
+          "name": "Select blocking CI scope",
+          "status": "queued",
+          "conclusion": null,
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42158930298/job/127699659160"
+        },
+        {
+          "name": "Architecture convergence (base-merge)",
+          "status": "queued",
+          "conclusion": null,
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42158930396/job/127699658790"
+        },
+        {
+          "name": "Architecture convergence (source-head)",
+          "status": "in_progress",
+          "conclusion": null,
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42158930396/job/127699658539"
+        },
+        {
+          "name": "metadata",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42158930119/job/127699658013"
+        }
+      ],
+      "commit_status": "pending",
+      "status_count": 0,
+      "checks_total_count": 8,
+      "fully_green": false
+    },
+    {
+      "pr": 4917,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4917",
+      "expected_head": "a3fb872d0a23d9fcff6e2fe2267d989040f78e88",
+      "head": "a3fb872d0a23d9fcff6e2fe2267d989040f78e88",
+      "head_branch": "research/ndu-tool-baselines-20261106",
+      "base": "research/ndu-confirmation-gate-20261106",
+      "base_sha": "b7d4ef15a86870e3e3b973b808882d19b3da97a5",
+      "draft": true,
+      "state": "open",
+      "merged": false,
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "tree": "4d4de4cb709463ab04f0b2f25a9814fbf4dfdda7",
+      "parents": [
+        "b7d4ef15a86870e3e3b973b808882d19b3da97a5"
+      ],
+      "head_matches": true,
+      "tree_matches": true,
+      "base_matches": true,
+      "checks": [
+        {
+          "name": "Build ${{ matrix.variant }} ${{ matrix.target }}",
+          "status": "completed",
+          "conclusion": "skipped",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42158942783/job/127700487738"
+        },
+        {
+          "name": "Build ptrcomp-sandbox ${{ matrix.target }} from source",
+          "status": "completed",
+          "conclusion": "skipped",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42158942783/job/127700486845"
+        },
+        {
+          "name": "Codespell / Check for spelling errors",
+          "status": "completed",
+          "conclusion": "failure",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42158943133/job/127699702289"
+        },
+        {
+          "name": "Blob size policy / Blob size policy",
+          "status": "queued",
+          "conclusion": null,
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42158943133/job/127699702260"
+        },
+        {
+          "name": "Select blocking CI scope",
+          "status": "queued",
+          "conclusion": null,
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42158943133/job/127699701876"
+        },
+        {
+          "name": "Architecture convergence (source-head)",
+          "status": "queued",
+          "conclusion": null,
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42158942868/job/127699700696"
+        },
+        {
+          "name": "Architecture convergence (base-merge)",
+          "status": "queued",
+          "conclusion": null,
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42158942868/job/127699700467"
+        },
+        {
+          "name": "metadata",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42158942783/job/127699699502"
+        }
+      ],
+      "commit_status": "pending",
+      "status_count": 0,
+      "checks_total_count": 8,
+      "fully_green": false
+    },
+    {
+      "pr": 4918,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4918",
+      "expected_head": "cc97d1d4a376f5da7e59d687a51cb1a70b908022",
+      "head": "cc97d1d4a376f5da7e59d687a51cb1a70b908022",
+      "head_branch": "research/ndu-confirmation-qualification-20261106",
+      "base": "research/ndu-tool-baselines-20261106",
+      "base_sha": "a3fb872d0a23d9fcff6e2fe2267d989040f78e88",
+      "draft": true,
+      "state": "open",
+      "merged": false,
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "tree": "5fca91514a57d988842cf1454b3bb58cb80107e8",
+      "parents": [
+        "a3fb872d0a23d9fcff6e2fe2267d989040f78e88"
+      ],
+      "head_matches": true,
+      "tree_matches": true,
+      "base_matches": true,
+      "checks": [
+        {
+          "name": "Build ${{ matrix.variant }} ${{ matrix.target }}",
+          "status": "completed",
+          "conclusion": "skipped",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42158958791/job/127701503747"
+        },
+        {
+          "name": "Build ptrcomp-sandbox ${{ matrix.target }} from source",
+          "status": "completed",
+          "conclusion": "skipped",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42158958791/job/127701503584"
+        },
+        {
+          "name": "metadata",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42158958791/job/127699754472"
+        },
+        {
+          "name": "Architecture convergence (source-head)",
+          "status": "queued",
+          "conclusion": null,
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42158958778/job/127699754391"
+        },
+        {
+          "name": "Codespell / Check for spelling errors",
+          "status": "completed",
+          "conclusion": "failure",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42158958692/job/127699754212"
+        },
+        {
+          "name": "Blob size policy / Blob size policy",
+          "status": "queued",
+          "conclusion": null,
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42158958692/job/127699754185"
+        },
+        {
+          "name": "Architecture convergence (base-merge)",
+          "status": "queued",
+          "conclusion": null,
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42158958778/job/127699754136"
+        },
+        {
+          "name": "Select blocking CI scope",
+          "status": "queued",
+          "conclusion": null,
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42158958692/job/127699753917"
+        }
+      ],
+      "commit_status": "pending",
+      "status_count": 0,
+      "checks_total_count": 8,
+      "fully_green": false
+    },
+    {
+      "pr": 4919,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4919",
+      "expected_head": "940c4a351eefe47a8014551452979ee227f5831c",
+      "head": "940c4a351eefe47a8014551452979ee227f5831c",
+      "head_branch": "research/ndu-independent-gate-review-20261106",
+      "base": "research/ndu-confirmation-qualification-20261106",
+      "base_sha": "cc97d1d4a376f5da7e59d687a51cb1a70b908022",
+      "draft": true,
+      "state": "open",
+      "merged": false,
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "tree": "e2d53b889fdc41780cb7ae291b0085586d82688a",
+      "parents": [
+        "cc97d1d4a376f5da7e59d687a51cb1a70b908022"
+      ],
+      "head_matches": true,
+      "tree_matches": true,
+      "base_matches": true,
+      "checks": [
+        {
+          "name": "Build ${{ matrix.variant }} ${{ matrix.target }}",
+          "status": "completed",
+          "conclusion": "skipped",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42159145556/job/127701480525"
+        },
+        {
+          "name": "Build ptrcomp-sandbox ${{ matrix.target }} from source",
+          "status": "completed",
+          "conclusion": "skipped",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42159145556/job/127701480259"
+        },
+        {
+          "name": "Select blocking CI scope",
+          "status": "queued",
+          "conclusion": null,
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42159145642/job/127700365230"
+        },
+        {
+          "name": "Codespell / Check for spelling errors",
+          "status": "completed",
+          "conclusion": "failure",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42159145642/job/127700365204"
+        },
+        {
+          "name": "Blob size policy / Blob size policy",
+          "status": "queued",
+          "conclusion": null,
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42159145642/job/127700365008"
+        },
+        {
+          "name": "metadata",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42159145556/job/127700364607"
+        },
+        {
+          "name": "Architecture convergence (source-head)",
+          "status": "queued",
+          "conclusion": null,
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42159145533/job/127700364499"
+        },
+        {
+          "name": "Architecture convergence (base-merge)",
+          "status": "queued",
+          "conclusion": null,
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42159145533/job/127700364188"
+        }
+      ],
+      "commit_status": "pending",
+      "status_count": 0,
+      "checks_total_count": 8,
+      "fully_green": false
+    },
+    {
+      "pr": 4920,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4920",
+      "expected_head": "b427fd08449fdf2a6007a3377e3268bdc2317431",
+      "head": "b427fd08449fdf2a6007a3377e3268bdc2317431",
+      "head_branch": "research/ndu-independent-runtime-review-20261106",
+      "base": "research/ndu-independent-gate-review-20261106",
+      "base_sha": "940c4a351eefe47a8014551452979ee227f5831c",
+      "draft": true,
+      "state": "open",
+      "merged": false,
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "tree": "7cf1f4486db1f97460a4ff40c045b33893d200d1",
+      "parents": [
+        "055c9dcfdd8af7d14fe524043767c2b84710ec16"
+      ],
+      "head_matches": true,
+      "tree_matches": true,
+      "base_matches": true,
+      "checks": [
+        {
+          "name": "metadata",
+          "status": "queued",
+          "conclusion": null,
+          "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42159261769/job/127700749907"
+        }
+      ],
+      "commit_status": "pending",
+      "status_count": 0,
+      "checks_total_count": 1,
+      "fully_green": false
+    }
+  ],
+  "readback": {
+    "source": "immutable range tip",
+    "file_count": 33,
+    "all_byte_exact": true,
+    "files": [
+      {
+        "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/README.md",
+        "sha256": "fa5b94d715d9d780dd82e06f36f6182686e0acb067b9f13de59cabf8654c55e1",
+        "git_blob": "a58a7613cb6394ac78e3d808366632e1b0f624de",
+        "remote_blob": "a58a7613cb6394ac78e3d808366632e1b0f624de",
+        "byte_exact": true
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/__init__.py",
+        "sha256": "4cce2d0e19921ae9e37a5ad83d59c64b4fd9e2b565270149a1b0af7e4fe9c3df",
+        "git_blob": "b549b1a19af43084d8ab883dd7ef30c8b72193ad",
+        "remote_blob": "b549b1a19af43084d8ab883dd7ef30c8b72193ad",
+        "byte_exact": true
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/confirmation.py",
+        "sha256": "caf50c4e45f8542a0ba89b6f079863b68311bda84d235dbc4f4e988cfce178b5",
+        "git_blob": "e4ab9fadcff3fc92a79072b3748a317a20e1164a",
+        "remote_blob": "e4ab9fadcff3fc92a79072b3748a317a20e1164a",
+        "byte_exact": true
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/contracts.py",
+        "sha256": "78e6281a3f100f79cf62ff9aa1d6b2606d374235190c1a1ff8847abd248a3a62",
+        "git_blob": "956286af09572915a0481f631c2463fcf20e1cc9",
+        "remote_blob": "956286af09572915a0481f631c2463fcf20e1cc9",
+        "byte_exact": true
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/ledger.py",
+        "sha256": "d6402f54c210e3521fe296369272f5a3d9fbed44873f90dddc57bfd9af6d425f",
+        "git_blob": "5ec0eb89b64015f0d462c8f991743d30cd45e7b6",
+        "remote_blob": "5ec0eb89b64015f0d462c8f991743d30cd45e7b6",
+        "byte_exact": true
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/policy.py",
+        "sha256": "1856ac2671cae4e1891b0056ae5eee7895088dc74aca0c6996c1c8b6e2e33c20",
+        "git_blob": "73779fba26b30e6a571fa8444a57db4323c571b8",
+        "remote_blob": "73779fba26b30e6a571fa8444a57db4323c571b8",
+        "byte_exact": true
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/protocol.template.json",
+        "sha256": "b200ed0a07ba32fe530753ba8cd0185ae9f2c0692bb56c8853cc7c766f59413f",
+        "git_blob": "644942217963380a01160530ddcb2f04d4d1922a",
+        "remote_blob": "644942217963380a01160530ddcb2f04d4d1922a",
+        "byte_exact": true
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/provider.example.json",
+        "sha256": "098eac0b1c1257658964b3914acdd26ef2c57d545b296f60beeddbe378cfb420",
+        "git_blob": "7e2413a8c5d0f1366a9bccc4bf272006cfb75a61",
+        "remote_blob": "7e2413a8c5d0f1366a9bccc4bf272006cfb75a61",
+        "byte_exact": true
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/qualify.py",
+        "sha256": "2e4bf03b77aeefecf41ca587731252b8c01fc9709ce84e3e0ef5baa3d7c3eb98",
+        "git_blob": "11c3150baaf9881718b03a4af573121d6c21558b",
+        "remote_blob": "11c3150baaf9881718b03a4af573121d6c21558b",
+        "byte_exact": true
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/schema.json",
+        "sha256": "bb12f95c5a5ce743a3be67f2bc194bc3b2a0af14a9c9fbcb18ce18a42ebfe2cf",
+        "git_blob": "3f7dd4b3aafa287e5f0a918466e530d1639b69a6",
+        "remote_blob": "3f7dd4b3aafa287e5f0a918466e530d1639b69a6",
+        "byte_exact": true
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/status.json",
+        "sha256": "9d77fe7992ed2c06c44fa578ee57fe178a83555c230ebfaf7ed0cf2cc1a17261",
+        "git_blob": "da926e6ef9e8ff24f3ede3f09068e8f9d8a93207",
+        "remote_blob": "da926e6ef9e8ff24f3ede3f09068e8f9d8a93207",
+        "byte_exact": true
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/tasks.py",
+        "sha256": "88206ed5df40f53b645d9bca6e0195a8d41bfa51874ec4d001bc8a503d287338",
+        "git_blob": "ebe2223ca087fc77c049a7723b5887dff5503b79",
+        "remote_blob": "ebe2223ca087fc77c049a7723b5887dff5503b79",
+        "byte_exact": true
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/test_confirmation.py",
+        "sha256": "adc64fcd14cb7406117f543697242943f802e4473bcf8fa2870cd875c535a422",
+        "git_blob": "a987659b9462a5c4dce3fa32aad1ae294fc9b09e",
+        "remote_blob": "a987659b9462a5c4dce3fa32aad1ae294fc9b09e",
+        "byte_exact": true
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/test_gate_contracts.py",
+        "sha256": "919f98fd471c4f277fecf168f07b1346d76b15a04cd26a4808117d12f892b2f4",
+        "git_blob": "402a3951e61ad398a5a177249cf134007e996f71",
+        "remote_blob": "402a3951e61ad398a5a177249cf134007e996f71",
+        "byte_exact": true
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/test_ledger.py",
+        "sha256": "5b0fefb9a88ac8bb38089ba04ff454320225398e50789bcb60402923b7c79a24",
+        "git_blob": "26ea8c88950fb65c41fd8f84d5f3fc21e26a6f80",
+        "remote_blob": "26ea8c88950fb65c41fd8f84d5f3fc21e26a6f80",
+        "byte_exact": true
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/test_policy.py",
+        "sha256": "e2e18677a461173075e91ef2cc21dcc85fd7823e88b264db09b8de6ecca4ac36",
+        "git_blob": "30d7b7ef22aea5894cd83fb7acd777472a46d28a",
+        "remote_blob": "30d7b7ef22aea5894cd83fb7acd777472a46d28a",
+        "byte_exact": true
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/test_tasks.py",
+        "sha256": "52b6ce1575453bae6d879cff13cf0cbd375dec7c78995ebc7c5d8711bb8e43cb",
+        "git_blob": "1cee15382f9cf30905d93ae2fd73e341648e04b2",
+        "remote_blob": "1cee15382f9cf30905d93ae2fd73e341648e04b2",
+        "byte_exact": true
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/test_transport.py",
+        "sha256": "654404b0b9f3cdda4acb0324ae5807992a9c82c3a80afeba05fd8c2771561686",
+        "git_blob": "92fb18ac82c7e2a619daaf0b60ef3f6da761bbd1",
+        "remote_blob": "92fb18ac82c7e2a619daaf0b60ef3f6da761bbd1",
+        "byte_exact": true
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/transport.py",
+        "sha256": "183ef2b7137bcb55a3d6fafb8e6587e92cd97c0b4ba51ba5a80c10de2c848584",
+        "git_blob": "bc16c65b3ecf7698108668c036736df050cf4dd7",
+        "remote_blob": "bc16c65b3ecf7698108668c036736df050cf4dd7",
+        "byte_exact": true
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/evidence/current_gate.json",
+        "sha256": "b4874ec4b60ebc852b21ccf6589f6333261fe1474aa6043cd547864e1b47de31",
+        "git_blob": "09b6397678fd8782d9173223c7071e6c6cde60c8",
+        "remote_blob": "09b6397678fd8782d9173223c7071e6c6cde60c8",
+        "byte_exact": true
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/evidence/qualification.json",
+        "sha256": "27ed8be3d350344bdb57306d576d47f05df48a74dcc33924f8205ee0db9ceb9b",
+        "git_blob": "4dc871ccd1339b0b0f3cd8f98d20f52c85d95681",
+        "remote_blob": "4dc871ccd1339b0b0f3cd8f98d20f52c85d95681",
+        "byte_exact": true
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/evidence/qualification-original.json",
+        "sha256": "d9af64b97a57b483a76ebc37f15148eea9465186321400d1049be6df18d2a661",
+        "git_blob": "a584df3305a86bbe7df383b1c0a0c5a7e63b3d84",
+        "remote_blob": "a584df3305a86bbe7df383b1c0a0c5a7e63b3d84",
+        "byte_exact": true
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/evidence/qualification-before-clock-review.json",
+        "sha256": "2053300f9ace7a6a16d51fedaf6d2e23d2847afbc24033c59a5bdd780b47f1d4",
+        "git_blob": "beef5547f9dca168a8a73ad810570727b02bcd67",
+        "remote_blob": "beef5547f9dca168a8a73ad810570727b02bcd67",
+        "byte_exact": true
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/independent_review/CHECKLIST.md",
+        "sha256": "7768fea43756e748118dfec302e6ac8a25465c7efea14b5bd36a1331f604036d",
+        "git_blob": "066f3f070b59a3dfd4d518864ab9f004ab5c501c",
+        "remote_blob": "066f3f070b59a3dfd4d518864ab9f004ab5c501c",
+        "byte_exact": true
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/independent_review/README.md",
+        "sha256": "08c3eb2ff2211b5cd7adeece4a11d1af30510a0f32fd997dd601843748d741b6",
+        "git_blob": "8bfa60c02a5402c3fe99b523fbf50c51984a2aea",
+        "remote_blob": "8bfa60c02a5402c3fe99b523fbf50c51984a2aea",
+        "byte_exact": true
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/independent_review/REVIEW.md",
+        "sha256": "f36561cd7071f177b25161f2c6f2ad849f1bfb0a2af49e03d3a4c8e014f9c0f1",
+        "git_blob": "77127037aebd605d1b9c3211b37d9bf94cca4c48",
+        "remote_blob": "77127037aebd605d1b9c3211b37d9bf94cca4c48",
+        "byte_exact": true
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/independent_review/manifest.json",
+        "sha256": "8078697dc2290ca9131038a6ec75c8a29d7c125fab62f5486946473a461de1f1",
+        "git_blob": "cf20acbcd2631e24f51d9b00f3c82373e2be7707",
+        "remote_blob": "cf20acbcd2631e24f51d9b00f3c82373e2be7707",
+        "byte_exact": true
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/independent_review/review_gate.py",
+        "sha256": "3ebc63954ccaa69a9a12c4c5abdb9effb0f9128f853e2ba111997745f71b14e8",
+        "git_blob": "5fd633ed6fb8191a6887ba9cabcec70086c16ff7",
+        "remote_blob": "5fd633ed6fb8191a6887ba9cabcec70086c16ff7",
+        "byte_exact": true
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/independent_review/review_gate_v2_clock_fixed.json",
+        "sha256": "8653c9e899cb550e94c9cefc86d14a776cff5088c4b61b3c660177e81464c4bf",
+        "git_blob": "9423f2161fbb94c180a166feab50ba3e0665c84e",
+        "remote_blob": "9423f2161fbb94c180a166feab50ba3e0665c84e",
+        "byte_exact": true
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/independent_review/review_gate_v2_initial.json",
+        "sha256": "166f8b69d3732c48307d54f48051ef9f7fbdb97630c8f09cb659c8227ad70ce5",
+        "git_blob": "4f8cfee9a1ec06768ea007f130648a7d79626b28",
+        "remote_blob": "4f8cfee9a1ec06768ea007f130648a7d79626b28",
+        "byte_exact": true
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/independent_review/review_runtime.py",
+        "sha256": "1f82c3db858ce9fa26334d46f36505cda53e5fa7ab1980bf3d06fbdc8ec0457e",
+        "git_blob": "cd2d02233078cb4602040c96bee8df6712dfd9c4",
+        "remote_blob": "cd2d02233078cb4602040c96bee8df6712dfd9c4",
+        "byte_exact": true
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/independent_review/review_runtime_v2_clock_fixed.json",
+        "sha256": "51c56364a4a78a86ad7a97e660f78889a00654ff9523035f06ca7cd1a755cd16",
+        "git_blob": "380117e2a26828153c43f10b10680e7500c2fc51",
+        "remote_blob": "380117e2a26828153c43f10b10680e7500c2fc51",
+        "byte_exact": true
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/independent_review/preparation.json",
+        "sha256": "1db8f939cd0c19a8d64f02be41e99dc622a6d235a38c9b31fa468640a0967512",
+        "git_blob": "f28c71963faaac4c2bcb21322b8d45ff4953eb31",
+        "remote_blob": "f28c71963faaac4c2bcb21322b8d45ff4953eb31",
+        "byte_exact": true
+      }
+    ]
+  },
+  "earlier_storage_readback": {
+    "files": 25,
+    "allByteExact": true
+  },
+  "inspected_failures": [
+    {
+      "category": "codespell",
+      "job_urls": [
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42158906964/job/127699587657",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42158958692/job/127699754212"
+      ],
+      "finding_count": 6,
+      "disposition": "One mathematical product in NDU prose is clarified in the closure commit without changing its formula. Other findings are regex fragments in existing source/frozen protocols and local Rust identifiers; original files and scanning policy are preserved.",
+      "paths": [
+        "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/open_domain.py",
+        "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/evidence/open_text_20261030/protocol.json",
+        "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/evidence/open_text_frozen_20261030/protocol.json",
+        "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_identification/BINARY_SPRT.md",
+        "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/native_generation/codec.rs"
+      ]
+    },
+    {
+      "category": "windows_checkout",
+      "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42152878692/job/127691691892",
+      "observed_error": "Filename too long",
+      "exit_code": 128,
+      "test_steps": "skipped",
+      "scope": "Existing evidence/v2/runs paths; the inspected PR adds only PRIOR_ART.md."
+    },
+    {
+      "category": "macos_dependency_fetch",
+      "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42152878692/job/127691691824",
+      "dependency": "rama-http-types",
+      "observed_error": "Error in the HTTP2 framing layer",
+      "exit_code": 101,
+      "scope": "Dependency download failed; the log does not establish whether this is transient or indicate a native test assertion failure."
+    },
+    {
+      "category": "blob_policy_setup",
+      "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42152878692/job/127680039424",
+      "observed_error": "unsupported_resolver_layout",
+      "size_check": "skipped",
+      "scope": "Fence setup failed before checkout. No oversized NDU blob was reported; local size inventory is separate."
+    },
+    {
+      "category": "shared_document_contract",
+      "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42152878692/job/127691691663",
+      "command": "python3 scripts/hepta-docs.py verify --profile development",
+      "branch_policy": "passed",
+      "observed_error": "FAIL_HEPTA_DEVELOPMENT_DOCS_V8: legacy paths",
+      "paths": [
+        "experiments/multimodal_output_portfolio/joint_hepta_20261029/development_plan_distillation_v2.json",
+        "experiments/multimodal_output_portfolio/joint_hepta_20261029/development_plan_v2.json"
+      ],
+      "base_head_file_contents_equal": true,
+      "scope": "Shared baseline paths outside the NDU directories; legal migration and reference maintenance remain required."
+    }
+  ],
+  "limits": [
+    "Only the named failure logs were diagnosed; other queued, running and failed jobs are not inferred to pass.",
+    "No workflow policy, size allowlist or historical frozen evidence was changed to bypass a gate.",
+    "Local tests and remote byte identity do not establish model performance, real provider costs or external scientific review."
+  ]
+}
