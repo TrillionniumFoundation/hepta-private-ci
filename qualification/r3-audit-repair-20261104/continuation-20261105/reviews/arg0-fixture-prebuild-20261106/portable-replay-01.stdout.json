@@ -1,0 +1,44 @@
+{
+  "all_member_identities_equal": true,
+  "archive": {
+    "bytes": 3441415,
+    "git_blob": "b9cbd9927c11d89cb321a7b24a1cdc2e89434215",
+    "sha256": "92210b9001e6a24502815229860f5b4d2b094c2309d3bfcb84e4bdc588d651e4"
+  },
+  "author_replay": {
+    "exit_code": 0,
+    "four_derived_files_exact_equal": true,
+    "stderr_bytes": 0,
+    "stdout": {
+      "bytes": 4565,
+      "git_blob": "5c14f2b2dd225a7f73287ef052dff7c03e4c27e4",
+      "sha256": "c03a463a96da7c5a1ef3229049ef681cbd44078a12ede821cbfe908ac54c5f06"
+    },
+    "stdout_exact_equal": true
+  },
+  "bytes": 18021283,
+  "historical_applicability": {
+    "exit_code": 0,
+    "registry_actual": "23e67ce20a439e2968eb63ae4e9a74a214ccd081",
+    "status": "REPLAYED_EXISTING_EVIDENCE_ONLY",
+    "stdout": {
+      "bytes": 37509,
+      "git_blob": "be39a3f98df97b86934e0881170d6d95fd966d29",
+      "sha256": "abb58969331d9dae855c143e3551e0a89ebb9817eb8965a13435cc28fc1064c6"
+    },
+    "stdout_exact_equal": true
+  },
+  "independent_static_replay": {
+    "exit_code": 0,
+    "stderr_bytes": 0,
+    "stdout": {
+      "bytes": 2765,
+      "git_blob": "ff0a225d12dc22fb8e9545e6a48ded2406cc50e9",
+      "sha256": "93c298ac3007fdcfd3d97c46e8606b46828b21d06bb099439146a730b74185c9"
+    },
+    "stdout_exact_equal": true
+  },
+  "members": 294,
+  "schema": "arg0-fixture-prebuild-portable-replay-v1",
+  "scope": "Offline synthetic controls and existing evidence replay; no new Cargo/Rust/native/CI/ref/PR action"
+}

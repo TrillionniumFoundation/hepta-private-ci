@@ -1,0 +1,16 @@
+{
+  "schema": "hepta-C4-native17-P0-machine-update-v1",
+  "before": {
+    "bytes": 18497,
+    "git_blob": "8f109d15448e0ec1a046aae96f2c57a8507401ad",
+    "sha256": "59df3cf4268324e53ed669c739496e3fe632d8d2df00c5012be1f2f99e283dbe"
+  },
+  "after": {
+    "bytes": 19033,
+    "git_blob": "5408d63d3f9b47382cd29ae0fdbe038a9e4f630e",
+    "sha256": "3a580e21bfafb125eae96eae705c9ccff40ba60bb27d5698199dea497bd50c36"
+  },
+  "scope": "Include the later actual current-head P0 formatter/Clippy/selected-test success while retaining whole-CI false and every earlier source/time denominator.",
+  "patch": "--- before.py\n+++ after.py\n@@ -48,6 +48,11 @@\n     ci = read(sys.argv[2])\n     assert ci[\"current_product_head\"] == current[\"head\"]\n     assert ci[\"whole_candidate_qualified\"] is False\n+    current_p0 = ci[\"later_Supervisor_P0_terminal\"][\"observation\"]\n+    assert current_p0[\"current_product_head\"] == current[\"head\"]\n+    assert current_p0[\"current_product_tree\"] == current[\"tree\"]\n+    assert current_p0[\"scope\"][\"native_formatter_qualification_for_current_17\"] is True\n+    assert current_p0[\"scope\"][\"whole_candidate_qualified\"] is False\n     initial = read(\"second-post-audit-documents/post-audit-execution-v2.json\")\n     arg0 = read(\"integration-arg0-fixture-publication/publication-verified.json\")\n     observation = read(\"integration-pty-supervisor-publication/publication-verified.json\")\n@@ -199,7 +204,9 @@\n             \"selected_cases_skipped\": 0,\n             \"strict_Supervisor_Clippy_step_success\": True,\n             \"six_new_Unix_tests_or_original_paired_selected_by_this_run\": False,\n-            \"current_successor_qualification\": \"PENDING_OWN_ORIGINAL_CI\",\n+            \"current_successor_P0_formatter_Clippy_and_selected_tests_passed\": True,\n+            \"current_successor_all_required_CI_qualified\": False,\n+            \"current_successor_P0_source_summary\": ci[\"later_Supervisor_P0_terminal\"][\"input_identity\"],\n         },\n         \"B11_boundary_reassessment\": {\n             \"registry\": \"59a15073eef10c61e2b3731611c4c41342deb1cd\",\n",
+  "original23_transitions": []
+}

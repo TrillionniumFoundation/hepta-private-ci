@@ -1,0 +1,86 @@
+{
+  "schema": "hepta-pr4930-fa-readonly-review-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pull_request": 4930,
+  "old_head": "dd1adf3defc5f1b1bcf3358419e23490e24b9a6a",
+  "old_tree": "3665c40aec7040b9db2122082f99adeb61fa93e3",
+  "new_head": "fa1c0592e7d1dea60cd8d8459a4e2b18fdfbab61",
+  "new_tree": "512c5d1e919fb6e0888c2aa528e8f9389a4f388b",
+  "scope": "Read-only increment review of actual GitHub source and retained execution receipts; no new CI/model/qualification execution or ref/PR writes.",
+  "conclusion": "MECHANICAL_EVIDENCE_INCREMENT_NO_B16_OR_B18_ACCEPTANCE",
+  "compare": {
+    "ahead_by": 1,
+    "behind_by": 0,
+    "commits": 1,
+    "paths": 60,
+    "statuses": {
+      "added": 57,
+      "modified": 3
+    }
+  },
+  "pr_observation": {
+    "draft": true,
+    "merged": false,
+    "updated_at": "2026-11-06T07:48:22Z",
+    "base": "2f0ee748017522f39ef40c26b5c8801fa3441fda",
+    "cumulative_commits": 2,
+    "cumulative_changed_files": 69
+  },
+  "retained_unit_tests": {
+    "initial": {
+      "run": 16,
+      "errors": 1
+    },
+    "final": {
+      "run": 25,
+      "passed": 25
+    }
+  },
+  "campaign_statuses": {
+    "VERIFIED": 1,
+    "REJECTED": 8,
+    "HOLD": 2
+  },
+  "cost_scope": "Exact parent invocation and child wait4 costs; model acquisition and caller persistence excluded; energy unknown.",
+  "campaign_total_cpu_seconds": 10.434924409999999,
+  "campaign_total_wall_seconds": 10.348413256997446,
+  "all_19_execution_source_sha256_equal_actual_fa_bodies": true,
+  "native_candidate_commit": null,
+  "full_repository_native_qualification": false,
+  "authority": "DENY_ALL",
+  "original_blocker_contracts_unchanged": [
+    {
+      "id": "B16",
+      "name": "可信产品入口及外部效果",
+      "status": "OPEN_CODE_WIRING_AND_REAL_ACCEPTANCE",
+      "closure_class": "OPEN",
+      "original_exit_condition_zh": "先完整迁移并验收Root handoff、Registry/arg0、protected checkpoint/verifier、FinalUse/issuer、listener custody和一个真实正常UI caller；再由同源实际Root/Session、原signed objective、provider/target完成任务/取消/丢ACK/重启，保留物理效果、authority、evidence、Memory一致性回执。"
+    },
+    {
+      "id": "B18",
+      "name": "解析核心 / 参数记忆科学采用",
+      "status": "SCIENTIFIC_HOLD_NOT_ENGINEERING_DEFECT",
+      "closure_class": "SCIENTIFIC_HOLD",
+      "original_exit_condition_zh": "新的事前冻结 2×2 比较，重点 D−B；独立数据、充分精度、全部失败尝试与完整成本；未通过就保留强普通默认而非追求事后绿色。"
+    }
+  ],
+  "closure_transitions": [],
+  "review": {
+    "path": "DELTA_REVIEW.zh-CN.md",
+    "bytes": 7306,
+    "git_blob": "24096ed2bd26dfa31580f8dacc3c13b4fad5f7b5",
+    "sha256": "a8bf4d4aaa16db76f2794778b7a8129eb7018dc280052ab32f1badcd58f547f7"
+  },
+  "verification": {
+    "path": "verification-01.stdout.json",
+    "bytes": 26077,
+    "git_blob": "f9e9c5d8108d7f80edc4e1d19adbaf6d5c36facd",
+    "sha256": "eb9e5c89a950ca07451cc5eb781b80c50935ee5e376421878c72f0c7a08dd160"
+  },
+  "raw_tool_returns": {
+    "path": "github-raw-inputs.original.json",
+    "bytes": 2229966,
+    "git_blob": "cfded7ffa05f92d9f834a185ac7bd3e5892cd74d",
+    "sha256": "8d07c53ab66bb3264bcafdefe00c00100ae90865fc6f4b2b5de90652b72c9d3a"
+  }
+}

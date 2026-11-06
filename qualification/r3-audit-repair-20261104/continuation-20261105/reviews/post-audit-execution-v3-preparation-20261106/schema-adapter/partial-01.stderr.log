@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/workspace/scratch/07dd58cc9630/recovery-20261106/final-registry-adapter-review-20261106/verify_partial.py", line 42, in <module>
+    assert len({row["git_blob"] for row in builder.evidence.values()}) == 349
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

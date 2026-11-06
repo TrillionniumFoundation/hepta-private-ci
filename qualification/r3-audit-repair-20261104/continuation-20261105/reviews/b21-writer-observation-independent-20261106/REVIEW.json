@@ -1,0 +1,173 @@
+{
+  "actual_candidate_tree": "c24f6910e0af5a3ebf809c29f1fb06dafbd94146",
+  "actual_postimages": [
+    {
+      "mode": "100644",
+      "path": "codex-rs/utils/pty/src/tests.rs",
+      "postimage": {
+        "bytes": 64257,
+        "git_blob": "8ea4216322449d3b8ddb1c5380bd665944a820ee",
+        "sha256": "bb2d840e70d6923d0367416fdd53348c6d85b5fc3d5f22b40df92cf474d6fd5d"
+      },
+      "preimage": {
+        "bytes": 63583,
+        "git_blob": "25836a08f9ff9a90b14204059d2544749a0f5461",
+        "sha256": "c8bdfdad51c9f7ab5cddf3bc43c392e4eed2bb4e3516d037a4c78d19ac1c32d9"
+      }
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/utils/pty/src/unix_io.rs",
+      "postimage": {
+        "bytes": 9549,
+        "git_blob": "710ad71d597ee643fe69485c7731e7a1576cba40",
+        "sha256": "f8be53c9927c12a0c25e0007d88610428b7167824b093625007ae6318886c865"
+      },
+      "preimage": {
+        "bytes": 6503,
+        "git_blob": "c7ad412d04fd3f5505259a4afdcec0d4d8562a88",
+        "sha256": "ec95e99037b0839b4b872f48f5db3126b2e77a9f56a6d8385086cf8792c8dd8b"
+      }
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/utils/pty/src/unix_io_diagnostics.rs",
+      "postimage": {
+        "bytes": 11599,
+        "git_blob": "e2722294383ac1787193c6b83a16a7b225d178fc",
+        "sha256": "6fc2d08973d7904499d8c095cbb20176ee2bb0df957ed6d596d380cb39d26c59"
+      },
+      "preimage": {
+        "bytes": 5409,
+        "git_blob": "3c9f68d86fb47d19d7baf549dfe6b6d5974c8070",
+        "sha256": "0e401527c4fec016f94e2a41082f390dcd6d4a33fa7ff887b7703148585a6e95"
+      }
+    }
+  ],
+  "author_freeze": {
+    "bytes": 7316,
+    "git_blob": "0ed38777566ca0b3992531c670593e3186475817",
+    "sha256": "d370d6bd8cbffae8e6314c0dced6117ea45f64cb227cb67bce18f06626312d1b"
+  },
+  "author_frozen_bytes": 5117370,
+  "author_frozen_files": 23,
+  "base_head": "aaf86881da0b3a7651b4a6a56be49515b9aa9f2e",
+  "base_tree": "66552bda88637403f4f1d72a5be8592e07a8a308",
+  "blockers_found": 0,
+  "decision": "ACCEPT_FROZEN_THREE_PATH_TEST_OBSERVATION_CANDIDATE_ONLY",
+  "evidence": {
+    "INDEPENDENT_VERIFICATION.stderr.txt": {
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "INDEPENDENT_VERIFICATION.stdout.json": {
+      "bytes": 3250,
+      "git_blob": "a5070b8b395937bb752b8ec6d85510623dd78516",
+      "sha256": "f37efb292a8a852372be69ad918578dbece890fa06ce05f6df0058db45a0e4ed"
+    },
+    "candidate-root-full-GET.original.json": {
+      "bytes": 28677,
+      "git_blob": "75208396eb205b05925af24dab65e26cbd3c4e32",
+      "sha256": "b5bc259b4c49aaf73e91ac2bfec0d628ed30b68181797e82ff88071411da07af"
+    },
+    "context/SOURCE-MAP.json": {
+      "bytes": 560,
+      "git_blob": "a223365433d1f9e68b193113cc4fe8697c2d0339",
+      "sha256": "0e40c268be3f9b172e3b994edc9f8cdf87033c549604c7c7502403245004b823"
+    },
+    "context/lib.rs": {
+      "bytes": 1882,
+      "git_blob": "1200c1143803145682180c4b351d9e8f96b74c3e",
+      "sha256": "92475acd26e972bad0f9e0010fe970f19529ed968e12f305393d39082cfe8310"
+    },
+    "context/process.rs": {
+      "bytes": 16217,
+      "git_blob": "4ef1f9cd35043437c93bededa867ebf473f4d474",
+      "sha256": "6d3178644b2c4c9601c118d2b84a355e7ebdaeecdc52558b2edf945133b64ea7"
+    },
+    "primary/rust-clippy-1.95.0-needless-else.original.json": {
+      "bytes": 4711,
+      "git_blob": "8b233430980794619f96ea06eb79a6befe141af9",
+      "sha256": "7b6f47fd0a3ff413e421b0df35f620dd3757b11bd84e389323221decfc93f247"
+    },
+    "primary/web-fixed-primary-unavailable.original.json": {
+      "bytes": 1181,
+      "git_blob": "370ffa67da6a67c876770e673255cf4e97f08c53",
+      "sha256": "f7d9049e7f8a495d9899769712650821ad0faa7ce68aec3e8db54b92e7e22df9"
+    },
+    "replay-01.execution.json": {
+      "bytes": 184,
+      "git_blob": "c8fe1002b2b7429551c85049ab927cba6fc7b34f",
+      "sha256": "69a49488fdc7c3560bc19e4900454a2466fb250c1d62cd03eb640697919e6148"
+    },
+    "replay-01.stderr.txt": {
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "replay-01.stdout.json": {
+      "bytes": 3181,
+      "git_blob": "c08a68b29a8aaffb1d7b21ecb93863751ecf58d3",
+      "sha256": "6fa6fc8eab7f5d8e3958047147388bef641df846c5a3a8d44c74bacc5c7b1077"
+    },
+    "source-full-GET.original.json": {
+      "bytes": 89303,
+      "git_blob": "7acbe3d38aeaa7fa16d487a69578a22b22bd4e64",
+      "sha256": "626ab7b7e96b2014bc2e83aa12ee367b74bff7821dce72b6185c8dd5c36c9c4b"
+    },
+    "verify_independent.py": {
+      "bytes": 6860,
+      "git_blob": "5c2b384e59ff01bfcae4ec7cfcd3a0a145bae1db",
+      "sha256": "1f5ec26f33f795e15e16f56c29785c9af46bdfcd243f4ed189a42668b135ca55"
+    }
+  },
+  "independent_checks": [
+    "全部23冻件逐项bytes/Git blob/SHA256核对后复制到独立frozen-author；3候选与预读快照逐字一致。",
+    "完整阅读作者README及verifier、完整unix_io和diagnostics、全部改动测试上下文；完整tests文件由四个限定诊断擦除后的token/注释/raw程序字节等同性检查覆盖，未把词法检查称为Rust编译。",
+    "异目录实际执行作者verifier，exit0/空stderr/3181B输出，与作者冻结stdout全字节相等；VERIFICATION、patch、完整候选tree三派生件均全等。",
+    "独立fresh fullGET三个actual源逐字节等，另fresh fullGET实际c24f根53项。自写只读verifier独立重算10802叶及所有目录Merkle，验证三个变更与其他10799叶不变，并核actual根children。",
+    "完整读process.rs和lib.rs，实际aaf完整树叶绑定4ef1f9cd35043437c93bededa867ebf473f4d474及1200c1143803145682180c4b351d9e8f96b74c3e，确认原snapshot可用cfg和既有Drop/terminate/handle生命周期。",
+    "只读获取固定rust-clippy rust-1.95.0 needless_else.rs原全文；其lint明确忽略含注释或#[cfg]的else源码，未将此源码分析当作已执行Clippy。"
+  ],
+  "limitations": [
+    "没有运行真实Rust编译、Rustfmt、Clippy、Cargo、Bazel或平台native。自写/作者lexer均不是Rust解析器、type checker或一般程序等价证明。",
+    "新增Atomic和失败日志有测试运行开销，原时间预算不变，是否满足原Intel31例/相关原scope及全量CI仍必须由此后继自己的原自动CI证明。",
+    "未证明Intel超时根因，未发布产品修复保证；不扩展FD/EOF协议、不改变guard/assert/skip/timeout/retry。",
+    "没有触发/重试/取消任何CI或查询私有容量；没有移动ref或更新PR。B21仍OPEN，没有任何blocker迁移。"
+  ],
+  "primary_reference": "https://github.com/rust-lang/rust-clippy/blob/rust-1.95.0/clippy_lints/src/needless_else.rs",
+  "prior_failures_custody": [
+    "23e67ce20a439e2968eb63ae4e9a74a214ccd081",
+    "f9af6bdaf3cc61204cd45525605e67b81b4c955a"
+  ],
+  "schema": "hepta.b21-writer-observation.independent-review.v1",
+  "semantic_review": [
+    {
+      "finding": "diagnostics模块仍由unix_io中的原cfg(test)加载；该unix_io模块本身由lib cfg(unix)加载。新WriterEvent import、writer diagnostics Arc clone、两处write_all调用附加参数和函数参数、全部observe_writer调用都由cfg(test)限制。涉及snapshot的三个测试/辅助函数均cfg(unix)，而ProcessHandle方法是cfg(all(test,unix))；没有向Windows生产代码引入不可用方法。",
+      "topic": "Conditional compilation"
+    },
+    {
+      "finding": "新Arc克隆指向PtyIoDiagnostics，其fd字段仍Weak<AsyncFd<File>>；没有新增持久master-FD或child owner、线程、通道、join或timer。原reader完整字节不变，writer仍拥有原fd Arc，write_all只借用原AsyncFd。snapshot复用原两非消费查询；原Weak临时upgrade会在查询时短暂pin住该FD，不将其误说成完全没有临时strong引用。新测试调用会有观察开销。",
+      "topic": "Ownership and lifetime"
+    },
+    {
+      "finding": "recv每条原消息后先完成原write_all，队列耗尽后才走原tcgetattr/当前VEOF；payload不变，EOF仍仅原换行加当前VEOF，VEOF零与NoEof行为不变。写零、Interrupted、其它Error分支保持原返回/继续顺序。非test只多等价的termios/result临时绑定与match/empty cfg分支括号；通过逐处源码判断未见行为改变，但没有声称预处理文本全等或Rust代码生成等价。",
+      "topic": "I/O and non-test path"
+    },
+    {
+      "finding": "仅两个已有detached等待点在原错误传播前inspect_err打印phase，另在原large-input collector返回及preserved-FD readiness返回后打印snapshot。原错误仍传播，原名称、属性、所有断言、2s/5s预算、Python脚本、发送字节、drain/child/FD操作完全保留。原先失败发生在显式Drop之前这一限制保持。",
+      "topic": "Original test contract"
+    },
+    {
+      "finding": "新增9个AtomicU64和2个AtomicU8字段，固定存储，不保存payload或逐次打印。writer的计数/状态只观察原事件，不消费channel或流。write_waits记录await次数，不是syscall次数；written_bytes包含成功写出的newline/VEOF。Relaxed多字段可来自不同观察时刻，没有原子快照或happens-before证明；状态finished也须与独立writer_error/eof_state合读。",
+      "topic": "Bounded observations"
+    },
+    {
+      "finding": "该候选提供区分writer等待、错误、queue关闭、termios与EOF阶段的信息。旧8075零read及更早2050048-byte discarded记录仍各自保源，不据其中一条替换另一条，也不据新观测准备完成关闭B21。",
+      "topic": "Diagnostics vs acceptance"
+    }
+  ],
+  "total_leaves": 10802,
+  "unchanged_leaves": 10799
+}

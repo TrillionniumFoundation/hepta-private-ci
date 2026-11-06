@@ -1,0 +1,91 @@
+{
+  "schema": "immutable-evidence-registration-originals/v1",
+  "packet": "b21writer",
+  "materialization_tree": "5dfb70db88a37e904694e15820b3b198c6e28576",
+  "records": [
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-writer-observation-independent-20261106/restore_verify.py",
+      "expected": {
+        "bytes": 2774,
+        "git_blob": "a51078f414cb1d00a4a5c4a99494c7b8e04765f8",
+        "sha256": "46795c10b27ad63bab0ccc7dba88a4ce000d0720cb2655cb77824c92ef32c7ec"
+      },
+      "full_GET": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "content": "#!/usr/bin/env python3\n\"\"\"Restore the immutable evidence and rerun only its Python API verifier.\"\"\"\nimport argparse\nimport base64\nimport hashlib\nimport io\nimport json\nfrom pathlib import Path, PurePosixPath\nimport subprocess\nimport tarfile\n\n\ndef identity(raw):\n    return {\"bytes\": len(raw), \"git_blob\": hashlib.sha1(b\"blob \" + str(len(raw)).encode() + b\"\\0\" + raw).hexdigest(), \"sha256\": hashlib.sha256(raw).hexdigest()}\n\n\ndef main():\n    parser = argparse.ArgumentParser()\n    parser.add_argument(\"--root\", type=Path, required=True)\n    parser.add_argument(\"--output\", type=Path, required=True)\n    args = parser.parse_args()\n    assert not args.output.exists(), \"restore output must not exist\"\n    manifest = json.loads((args.root / \"member-manifest.json\").read_bytes())\n    metadata = json.loads((args.root / \"archive.json\").read_bytes())\n    pieces = []\n    for part in metadata[\"parts\"]:\n        encoded = (args.root / part[\"path\"]).read_bytes()\n        assert identity(encoded) == {k: part[k] for k in [\"bytes\", \"git_blob\", \"sha256\"]}\n        pieces.append(encoded.strip())\n    raw = base64.b64decode(b\"\".join(pieces), validate=True)\n    assert identity(raw) == metadata[\"archive\"]\n    expected = {m[\"path\"]: m for m in manifest[\"members\"]}\n    assert len(expected) == len(manifest[\"members\"])\n    args.output.mkdir(parents=True)\n    with tarfile.open(fileobj=io.BytesIO(raw), mode=\"r:xz\") as tar:\n        members = tar.getmembers()\n        assert len(members) == len(expected)\n        assert {m.name for m in members} == set(expected)\n        for member in members:\n            name = PurePosixPath(member.name)\n            assert member.isfile() and not name.is_absolute() and \"..\" not in name.parts\n            data = tar.extractfile(member).read()\n            assert identity(data) == {k: expected[member.name][k] for k in [\"bytes\", \"git_blob\", \"sha256\"]}\n            target = args.output.joinpath(*name.parts)\n            target.parent.mkdir(parents=True, exist_ok=True)\n            target.write_bytes(data)\n    run = subprocess.run([\"python3\", str(args.output / \"verify_bundle.py\"), \"--root\", str(args.output)], capture_output=True)\n    assert run.returncode == 0 and run.stderr == b\"\", {\"exit\": run.returncode, \"stderr\": run.stderr.decode(errors=\"replace\")}\n    assert run.stdout == (args.output / \"verification-bundle.stdout.json\").read_bytes()\n    print(json.dumps({\"archive\": identity(raw), \"members\": len(expected), \"member_bytes\": sum(x[\"bytes\"] for x in expected.values()), \"verification_exit\": run.returncode, \"verification_stdout\": identity(run.stdout), \"verification_stderr_bytes\": len(run.stderr), \"originals_unchanged\": True, \"network_calls\": 0, \"native_product_execution\": False}, sort_keys=True, indent=2))\n\n\nif __name__ == \"__main__\":\n    main()\n"
+        },
+        "isError": false
+      },
+      "complete_decoded_UTF8_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-writer-observation-independent-20261106/verification-bundle.stdout.json",
+      "expected": {
+        "bytes": 649,
+        "git_blob": "b8edb7ddb6e02cdf030454476f6375023778905f",
+        "sha256": "b1dd02b140b5f2f8185a43f8e62e8c27043f79d94c68f85779dc558237b6d9ac"
+      },
+      "full_GET": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "content": "{\n  \"author_exit\": 0,\n  \"author_stderr_bytes\": 0,\n  \"author_stdout\": {\n    \"bytes\": 3181,\n    \"git_blob\": \"c08a68b29a8aaffb1d7b21ecb93863751ecf58d3\",\n    \"sha256\": \"6fa6fc8eab7f5d8e3958047147388bef641df846c5a3a8d44c74bacc5c7b1077\"\n  },\n  \"independent_exit\": 0,\n  \"independent_stderr_bytes\": 0,\n  \"independent_stdout\": {\n    \"bytes\": 3250,\n    \"git_blob\": \"a5070b8b395937bb752b8ec6d85510623dd78516\",\n    \"sha256\": \"f37efb292a8a852372be69ad918578dbece890fa06ce05f6df0058db45a0e4ed\"\n  },\n  \"network_or_Rust_or_native_operations\": 0,\n  \"qualification\": \"Test-observation source review only; B21 remains OPEN.\",\n  \"three_replayed_products_equal\": true\n}\n"
+        },
+        "isError": false
+      },
+      "complete_decoded_UTF8_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-writer-observation-independent-20261106/verify_bundle.py",
+      "expected": {
+        "bytes": 2024,
+        "git_blob": "d9994b8cb4e1cb09f432ed57e469898fde8349ca",
+        "sha256": "eaad2749622b1d13abdfa884d18a783204bc41055d5045a6a6329f4062575363"
+      },
+      "full_GET": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "content": "#!/usr/bin/env python3\n\"\"\"Replay only the two fixed Python evidence verifiers in fresh storage.\"\"\"\nimport argparse\nimport hashlib\nimport json\nimport os\nfrom pathlib import Path\nimport subprocess\nimport sys\n\n\ndef identity(b):\n    return {\"bytes\": len(b), \"git_blob\": hashlib.sha1(b\"blob \" + str(len(b)).encode() + b\"\\0\" + b).hexdigest(), \"sha256\": hashlib.sha256(b).hexdigest()}\n\n\ndef main():\n    p = argparse.ArgumentParser(description=__doc__)\n    p.add_argument(\"--root\", type=Path, default=Path(__file__).resolve().parent)\n    p.add_argument(\"--output\", type=Path)\n    args = p.parse_args()\n    r = args.root.resolve()\n    out = args.output.resolve() if args.output else r / \"new-offline-replay\"\n    assert not out.exists()\n    a = r / \"frozen-author\"\n    env = {**os.environ, \"PYTHONDONTWRITEBYTECODE\": \"1\"}\n    author = subprocess.run([sys.executable, str(a / \"verify_candidate.py\"), \"--root\", str(a), \"--output\", str(out)], capture_output=True, env=env)\n    assert author.returncode == 0 and author.stderr == b\"\", author.stderr\n    assert author.stdout == (r / \"replay-01.stdout.json\").read_bytes()\n    for name in (\"VERIFICATION.json\", \"candidate.patch\", \"intended-full-tree.json\"):\n        assert (out / name).read_bytes() == (r / \"replay-01\" / name).read_bytes()\n    independent = subprocess.run([sys.executable, str(r / \"verify_independent.py\"), \"--root\", str(r)], capture_output=True, env=env)\n    assert independent.returncode == 0 and independent.stderr == b\"\", independent.stderr\n    assert independent.stdout == (r / \"INDEPENDENT_VERIFICATION.stdout.json\").read_bytes()\n    print(json.dumps({\"author_exit\": 0, \"author_stderr_bytes\": 0, \"author_stdout\": identity(author.stdout), \"independent_exit\": 0, \"independent_stderr_bytes\": 0, \"independent_stdout\": identity(independent.stdout), \"three_replayed_products_equal\": True, \"network_or_Rust_or_native_operations\": 0, \"qualification\": \"Test-observation source review only; B21 remains OPEN.\"}, indent=2, sort_keys=True))\n\n\nif __name__ == \"__main__\":\n    main()\n"
+        },
+        "isError": false
+      },
+      "complete_decoded_UTF8_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-writer-observation-independent-20261106/verify_independent.py",
+      "expected": {
+        "bytes": 6860,
+        "git_blob": "5c2b384e59ff01bfcae4ec7cfcd3a0a145bae1db",
+        "sha256": "1f5ec26f33f795e15e16f56c29785c9af46bdfcd243f4ed189a42668b135ca55"
+      },
+      "full_GET": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "content": "#!/usr/bin/env python3\n\"\"\"Verify fixed evidence and the recorded offline replay; never run Rust or CI.\"\"\"\nfrom pathlib import Path\nimport argparse\nimport hashlib\nimport json\n\n\ndef identity(data):\n    return {\"bytes\": len(data), \"git_blob\": hashlib.sha1(b\"blob \" + str(len(data)).encode() + b\"\\0\" + data).hexdigest(), \"sha256\": hashlib.sha256(data).hexdigest()}\n\n\ndef merkle(leaves):\n    root = {}\n    for path, entry in leaves.items():\n        parts = path.split(\"/\")\n        node = root\n        for part in parts[:-1]:\n            node = node.setdefault(part, {})\n        assert parts[-1] not in node\n        node[parts[-1]] = (entry[\"mode\"].lstrip(\"0\"), entry[\"sha\"])\n    result = {}\n    def visit(node, prefix):\n        raw = b\"\"\n        for name, value in sorted(node.items(), key=lambda x: (x[0] + (\"/\" if isinstance(x[1], dict) else \"\")).encode()):\n            mode, sha = (\"40000\", visit(value, prefix + name + \"/\")) if isinstance(value, dict) else value\n            raw += mode.encode() + b\" \" + name.encode() + b\"\\0\" + bytes.fromhex(sha)\n        result[prefix.rstrip(\"/\")] = hashlib.sha1(b\"tree \" + str(len(raw)).encode() + b\"\\0\" + raw).hexdigest()\n        return result[prefix.rstrip(\"/\")]\n    visit(root, \"\")\n    return result\n\n\ndef main():\n    p = argparse.ArgumentParser(description=__doc__)\n    p.add_argument(\"--root\", type=Path, default=Path(__file__).resolve().parent)\n    r = p.parse_args().root.resolve()\n    a = r / \"frozen-author\"\n    freeze = json.loads((a / \"FREEZE.json\").read_bytes())\n    assert len(freeze[\"files\"]) == len({x[\"path\"] for x in freeze[\"files\"]}) == 23\n    for item in freeze[\"files\"]:\n        assert identity((a / item[\"path\"]).read_bytes()) == {k: item[k] for k in (\"bytes\", \"git_blob\", \"sha256\")}\n    assert sum(x[\"bytes\"] for x in freeze[\"files\"]) == 5117370\n    base = json.loads((a / \"authority/base-full-tree.json\").read_bytes())\n    leaves = {x[\"path\"]: {k: x[k] for k in (\"path\", \"mode\", \"type\", \"sha\")} for x in base[\"tree\"] if x[\"type\"] != \"tree\"}\n    assert len(leaves) == 10802 and not base[\"truncated\"]\n    old = merkle(leaves)\n    assert old[\"\"] == base[\"sha\"] == freeze[\"base_tree\"] == \"66552bda88637403f4f1d72a5be8592e07a8a308\"\n    assert all(old[x[\"path\"]] == x[\"sha\"] for x in base[\"tree\"] if x[\"type\"] == \"tree\")\n    observed = json.loads((r / \"replay-01.stdout.json\").read_bytes())\n    assert (r / \"replay-01.stderr.txt\").read_bytes() == b\"\"\n    assert (r / \"replay-01.stdout.json\").read_bytes() == (a / \"verification-01.stdout.json\").read_bytes()\n    for name in (\"VERIFICATION.json\", \"candidate.patch\", \"intended-full-tree.json\"):\n        assert (r / \"replay-01\" / name).read_bytes() == (a / \"verification-01\" / name).read_bytes()\n    sources = json.loads((r / \"source-full-GET.original.json\").read_bytes())\n    by_sha = {x[\"sha\"]: x[\"raw\"] for x in sources}\n    assert len(by_sha) == 3\n    for item in observed[\"changed_paths\"]:\n        path = item[\"path\"]\n        before = (a / \"preimage\" / path).read_bytes()\n        after = (a / \"candidate\" / path).read_bytes()\n        assert identity(before) == item[\"preimage\"] and identity(after) == item[\"postimage\"]\n        assert leaves[path][\"sha\"] == item[\"preimage\"][\"git_blob\"]\n        raw = by_sha[item[\"postimage\"][\"git_blob\"]]\n        assert not raw.get(\"isError\") and raw[\"structuredContent\"][\"content\"].encode() == after\n        leaves[path] = {**leaves[path], \"sha\": item[\"postimage\"][\"git_blob\"]}\n    new = merkle(leaves)\n    assert new[\"\"] == observed[\"expected_tree\"] == freeze[\"actual_candidate_tree\"] == \"c24f6910e0af5a3ebf809c29f1fb06dafbd94146\"\n    intended = json.loads((r / \"replay-01/intended-full-tree.json\").read_bytes())\n    assert {x[\"path\"]: x for x in intended[\"tree\"] if x[\"type\"] != \"tree\"} == leaves\n    assert all(new[x[\"path\"]] == x[\"sha\"] for x in intended[\"tree\"] if x[\"type\"] == \"tree\")\n    actual = json.loads((r / \"candidate-root-full-GET.original.json\").read_bytes())\n    assert not actual.get(\"isError\")\n    actual = json.loads(actual[\"structuredContent\"][\"content\"])\n    assert actual[\"sha\"] == new[\"\"] and not actual[\"truncated\"] and len(actual[\"tree\"]) == 53\n    assert {x[\"path\"]: (x[\"mode\"], x[\"type\"], x[\"sha\"]) for x in actual[\"tree\"]} == {x[\"path\"]: (x[\"mode\"], x[\"type\"], x[\"sha\"]) for x in intended[\"tree\"] if \"/\" not in x[\"path\"]}\n    context = json.loads((r / \"context/SOURCE-MAP.json\").read_bytes())\n    for item in context:\n        raw = (r / \"context\" / Path(item[\"path\"]).name).read_bytes()\n        assert identity(raw) == {k: item[k] for k in (\"bytes\", \"git_blob\", \"sha256\")}\n        assert item[\"bound_tree\"] == base[\"sha\"] and item[\"git_blob\"] == leaves[item[\"path\"]][\"sha\"]\n    lib = (r / \"context/lib.rs\").read_text()\n    process = (r / \"context/process.rs\").read_text()\n    io = (a / \"candidate/codex-rs/utils/pty/src/unix_io.rs\").read_text()\n    diag = (a / \"candidate/codex-rs/utils/pty/src/unix_io_diagnostics.rs\").read_text()\n    assert '#[cfg(unix)]\\nmod unix_io;' in lib\n    assert '#[cfg(test)]\\n#[path = \"unix_io_diagnostics.rs\"]\\nmod diagnostics;' in io\n    assert '#[cfg(all(test, unix))]\\n    pub(crate) fn pty_io_diagnostic_snapshot' in process\n    assert '#[cfg(test)]\\n        let writer_diagnostics = Arc::clone(&diagnostics);' in io\n    assert '#[cfg(test)] diagnostics: &PtyIoDiagnostics' in io\n    assert 'fd: Weak<AsyncFd<File>>' in diag and 'Arc<AsyncFd<File>>' not in diag\n    assert diag.count('writer_diagnostics') == 0\n    assert observed[\"test_source\"][\"complete_original_token_sequence_equal_after_erasing_only_four_logs_and_two_error_inspections\"]\n    assert observed[\"io_source\"][\"reader_task_full_bytes_equal\"]\n    primary = json.loads((r / \"primary/rust-clippy-1.95.0-needless-else.original.json\").read_bytes())\n    assert not primary.get(\"isError\")\n    text = primary[\"structuredContent\"][\"content\"]\n    assert 'Ignore else blocks that contain comments or #[cfg]s' in text\n    assert \"!src.contains(['/', '#'])\" in text\n    print(json.dumps({\"decision\": \"ACCEPT_AS_TEST_OBSERVATION_CANDIDATE_ONLY\", \"base_head\": freeze[\"base_head\"], \"base_tree\": base[\"sha\"], \"actual_candidate_tree\": new[\"\"], \"freeze\": identity((a / \"FREEZE.json\").read_bytes()), \"frozen_files\": 23, \"frozen_bytes\": 5117370, \"full_tree_leaves\": len(leaves), \"unchanged_leaves\": 10799, \"changed_paths\": observed[\"changed_paths\"], \"actual_three_source_GET_full_bytes_equal\": True, \"fresh_root_full_GET_53_entries_equal\": True, \"independent_recorded_replay_stdout\": identity((r / \"replay-01.stdout.json\").read_bytes()), \"replay_matches_all_three_author_products\": True, \"context_sources_bound_to_base\": context, \"qualification\": \"Source and lexical/offline checks only; no Rust parsing/typecheck/codegen equivalence, formatter/Clippy run or native Intel success. Relaxed observations do not establish root cause or B21 closure.\"}, indent=2, sort_keys=True))\n\n\nif __name__ == \"__main__\":\n    main()\n"
+        },
+        "isError": false
+      },
+      "complete_decoded_UTF8_equal": true
+    }
+  ]
+}

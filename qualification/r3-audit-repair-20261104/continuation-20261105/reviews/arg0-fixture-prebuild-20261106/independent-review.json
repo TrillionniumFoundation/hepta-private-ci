@@ -1,0 +1,165 @@
+{
+  "actual_candidate_tree": "66552bda88637403f4f1d72a5be8592e07a8a308",
+  "actual_postimages": [
+    {
+      "mode": "100644",
+      "path": ".github/workflows/rust-ci-full-nextest-platform.yml",
+      "postimage": {
+        "bytes": 18226,
+        "git_blob": "ac975501df7c4515142d03621ba1dcf761ac9a90",
+        "sha256": "e20e88b4fd023c6c59975f3836803998ef3be6a1c529739b7a782d3ade338abb"
+      },
+      "preimage": {
+        "bytes": 17668,
+        "git_blob": "0ea9d5dcd5ffd622c2d25f3d808ab5738142a851",
+        "sha256": "fe2804bc8003b797f691f27edd2105ad78ef0c6460deb28f6da120d86e684505"
+      }
+    },
+    {
+      "mode": "100644",
+      "path": "scripts/hepta_ci_dependencies.py",
+      "postimage": {
+        "bytes": 30388,
+        "git_blob": "bdd45c82c259238cdecf26c7bfa7acdbb9dfe9f2",
+        "sha256": "97319e257537fccda154ea2d4498cad52a15c7fc8f14471b834cf61ca33f769b"
+      },
+      "preimage": {
+        "bytes": 27406,
+        "git_blob": "2403d7a16f14e919952db597dad3ffdc0825cc31",
+        "sha256": "1df49649a3e82b84903026bea8220edc4049f129e674198edb6d8c12cd37fbc8"
+      }
+    },
+    {
+      "mode": "100644",
+      "path": "scripts/tests/test_hepta_ci_dependencies.py",
+      "postimage": {
+        "bytes": 23658,
+        "git_blob": "f2b2e2c35f4713e63ddd9a0bff83f3ef797a3ea0",
+        "sha256": "667339946082dc9326cebee3ac9e435f4be3949fa840b175073ab40c814b4c48"
+      },
+      "preimage": {
+        "bytes": 15338,
+        "git_blob": "8e547a867e7c31d694b90f759be60af5c92da2a4",
+        "sha256": "511b552023676a72d917b7c7834d21d534b3d6e0908b448e2c29bce0c8dbcea6"
+      }
+    }
+  ],
+  "author_freeze": {
+    "bytes": 10553,
+    "git_blob": "fc2126a0534de4422cf3ea824eda5462d9d628e2",
+    "sha256": "f2ba235ac171839d6e73cdd4a7f1c37b644244a603c489422587a9d76bf9cad1"
+  },
+  "author_frozen_bytes": 5449160,
+  "author_frozen_files": 44,
+  "blockers_found": 0,
+  "decision": "ACCEPT_FROZEN_THREE_PATH_CANDIDATE_AS_STATIC_AND_OFFLINE_REVIEWED",
+  "evidence": {
+    "INDEPENDENT_VERIFICATION.stderr.txt": {
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "INDEPENDENT_VERIFICATION.stdout.json": {
+      "bytes": 2765,
+      "git_blob": "ff0a225d12dc22fb8e9545e6a48ded2406cc50e9",
+      "sha256": "93c298ac3007fdcfd3d97c46e8606b46828b21d06bb099439146a730b74185c9"
+    },
+    "prep-symlink-control-01/RESULT.json": {
+      "bytes": 309,
+      "git_blob": "35a3281fc0447a7bc43d26e1b57725173cda6724",
+      "sha256": "a627bed19f6a2727d8e151a811bebc9eadc2ca2969d3ab0fdea7c9ae9e085c9c"
+    },
+    "prep-symlink-control-01/stderr.original.txt": {
+      "bytes": 207,
+      "git_blob": "92cf2ad9b5426d04ed82744755f137fd6f70e737",
+      "sha256": "2c265d614ba0dad3c340af5b3b3896c779b29f3d93e0d426153b85ba950cbbd8"
+    },
+    "prep-symlink-control-01/stdout.original.txt": {
+      "bytes": 1422,
+      "git_blob": "cef3de05c335576f167bf0e7d49e3e30c776c8a0",
+      "sha256": "3eacfa3f9b56c625df102659bc2fee728ecdb43563e85d481cd89cb73a819730"
+    },
+    "replay-01.execution.json": {
+      "bytes": 325,
+      "git_blob": "b200ab3f0ae9f7e90c04815b8b161bdea446a877",
+      "sha256": "1b7c58c1741b7503284f2adba4e6bc4b841b4421e7eeb5a2f52a18e85fb043ea"
+    },
+    "replay-01.stderr.txt": {
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "replay-01.stdout.json": {
+      "bytes": 4565,
+      "git_blob": "5c14f2b2dd225a7f73287ef052dff7c03e4c27e4",
+      "sha256": "c03a463a96da7c5a1ef3229049ef681cbd44078a12ede821cbfe908ac54c5f06"
+    },
+    "source-full-GET.original.json": {
+      "bytes": 76770,
+      "git_blob": "178fe4b4b0a59c79420a93d324f9565cdd4bbcd9",
+      "sha256": "9785373c82bf0681aa17d91d889caf0550bf2229438ef18f40989a4cbd9f97b8"
+    },
+    "verify_independent.py": {
+      "bytes": 8679,
+      "git_blob": "ce7619ecb4adf401b9b6acfeb4e9160bb2656c26",
+      "sha256": "79e4cda3f4d255698d634c082de3baa943e7d7ee97a58a1a4d4dd80ae900b0a5"
+    }
+  },
+  "independent_work": [
+    "完整读取三候选正文、完整 author verifier 和 README，并核实原 planner、原 recorder、Cargo binary resolver、just/nextest 与两个 workflow 入口。",
+    "44 个冻结文件逐项 bytes/Git blob/SHA256 相等后复制到独立目录；独立 fresh full GET 三实际 postimage，与复制字节完全相等。",
+    "独立脚本重算全部 10802 叶和所有目录的 Git Merkle，三叶改动、10799 叶不变；实际 create/root GET 与完整预期根相等；绑定原 commit/ref/PR/merge 及其 parents。",
+    "独立异目录执行已全文审读的 author verifier，exit 0、stderr 0、stdout 4565 B，与 author 冻结结果逐字相等；生成 full.patch、source-map、intended-full-tree、VERIFICATION 四件亦逐字相等。",
+    "上述实际重放包含原29加新7共36 Python regressions、11 个原 hepta_ci_exec 配合假 cargo/just 的控制，以及3个候选原 Bash 段配合假 cargo 的控制；不是 Rust 产品用例数。",
+    "独立自写 read-only verifier 进一步核44件、实际源 GET、完整树、反向删新增函数/调用/测试后的原字节、三处 Linux workflow 插入以及记录别名控制，exit 0、空stderr。"
+  ],
+  "limits": [
+    "本地没有运行真实 cargo build、Rust、nextest、Rust formatter、Ruff 或平台 native；本次成功仅为 Python/Git/Bash 和固定假命令验证。",
+    "原显式 recorder 的每命令默认限制未变；scoped CI 现有外层3600秒仍覆盖整个dependencies命令。普通无recorder CLI沿原调用者边界。没有修改项目test timeout或retry。",
+    "hepta_ci_exec 既有 POSIX 限制保持；新准备仅在 Linux 生效，未授予Windows record模式新支持。",
+    "新的运行仍需绑定实际后继source、适用入口与原始完整输出；当前ac18的fmt成功不能转授这三新路径。",
+    "原4a六holdout Linux通过、Supervisor timeout及旧PTY失败都保持各自源作用域；本次不关闭任何blocker。"
+  ],
+  "operations": "No refs/PR mutations, CI dispatch/rerun/cancel, capacity queries or real native/product execution.",
+  "original_failure": {
+    "custody_registry": "23e67ce20a439e2968eb63ae4e9a74a214ccd081",
+    "job_id": 127755476318,
+    "run_id": 42176273058,
+    "scope": "Three arg0 cases failed on first and retry attempts while locating the absent normal-main test_arg0_preflight binary, before its spawn or behavioral assertions. Other failures, including the Supervisor timeout, remain separate.",
+    "source_head": "4a1410f332e4a34564feafbc4dcb2e808c7f6c5f"
+  },
+  "prior_history": "preread-01 preserves the originally accepted counterexample and two local import-harness failures; source snapshots and author historical outcomes were not rewritten.",
+  "schema": "hepta.arg0-fixture-prebuild.independent-review.v1",
+  "semantic_findings": [
+    {
+      "finding": "仅 Linux host、action=test（含原 --run 别名）且原完整 plan.packages 包含 codex-arg0 时准备 normal-main helper。原 full fallback/--full 的 packages 由原 planner 给出；未用 changed_packages 或人工筛选替换 suite。",
+      "topic": "Actual selection"
+    },
+    {
+      "finding": "删除新增函数及其调用并逆转 action 局部变量后，执行器全文恢复原2403d7a；删除新7测试方法所在class和3个imports后恢复原8e547a8。原 just test --locked、全部 -p/--workspace、原29测试保持。",
+      "topic": "Original suite preservation"
+    },
+    {
+      "finding": "prep 非零、signal、派发失败、source 查询失败或 tracked dirty 均停止 suite；先前构建非零不会被dirty覆盖。原 suite 非零与signal映射不变。记录模式的 phase returncode 表示原 recorder 进程退出码；其独立完整receipt保留实际Cargo command_exit_code和source guard信息。",
+      "topic": "Failure propagation"
+    },
+    {
+      "finding": "显式 record 模式使用原 exclusive recorder，prep使用 resolved suite basename 后缀，suite保留原解析输出路径；普通模式只追加 running/final JSON到原stdout，既有外层 recorder真实保全这两行与输出。未把不存在的独立文件声称为上传artifact。",
+      "topic": "Record ownership"
+    },
+    {
+      "finding": "旧 preread 的 suite dangling symlink 碰撞反例保留，正式候选使用 resolved_output.name 修复，真实 recorder/假命令控制确认两文件与两日志分别保留。独立额外检查 prep路径自身指向absent suite的dangling symlink，原lexical open(x) EEXIST拒绝：exit2、0 Cargo/just调用、没有创建suite记录；不需要进一步改源。",
+      "topic": "Symlink correction"
+    },
+    {
+      "finding": "仅原Linux helper分支增加 cargo build --locked -p codex-arg0 --bin test_arg0_preflight，沿原target/profile产出、既有helper artifact传输、consumer chmod及CARGO_BIN_EXE环境显式绑定。原archive与nextest argv、四shard、threads、runner、60分钟、权限及Mac/Windows分支保持。",
+      "topic": "Full-nextest transport"
+    },
+    {
+      "finding": "blocking full_repo调用原fast rust-ci.yml，不是全量Cargo just test。新增archive路径用于原postmerge/opt-in rust-ci-full。直接手工just test未因此自动准备helper；没有宣称修复任意Cargo入口。",
+      "topic": "Caller boundary"
+    }
+  ],
+  "source_head": "ac18b623c7a6cb953b4660979e9b620fe7176bb2",
+  "source_tree": "c3e9ddc1799f470ac7c80e117ee953a7232847e0"
+}

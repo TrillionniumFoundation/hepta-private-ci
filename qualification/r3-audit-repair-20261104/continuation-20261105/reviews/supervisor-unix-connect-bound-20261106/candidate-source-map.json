@@ -1,0 +1,81 @@
+{
+  "schema": "hepta-supervisor-unix-connect-static-verification-v1",
+  "result": "STATIC_SOURCE_AND_PRESERVATION_CHECKS_PASS",
+  "scope": "Python source/identity/Merkle/patch checks only; no Rust compilation, fmt, native socket or CI execution.",
+  "base": {
+    "head": "ac18b623c7a6cb953b4660979e9b620fe7176bb2",
+    "tree": "c3e9ddc1799f470ac7c80e117ee953a7232847e0",
+    "merge": "c9baaf38b95da145fb4f9d371b8d134169d313cc",
+    "leaves": 10802
+  },
+  "candidate": {
+    "tree": "44e8f7176037a5455476c068ad6ad8d692868769",
+    "leaves": 10804,
+    "changed_paths": [
+      "codex-rs/hepta-supervisor/src/unix.rs",
+      "codex-rs/hepta-supervisor/src/unix_connect.rs",
+      "codex-rs/hepta-supervisor/src/unix_connect_tests.rs"
+    ],
+    "unchanged_original_leaves": 10801
+  },
+  "postimages": [
+    {
+      "path": "codex-rs/hepta-supervisor/src/unix.rs",
+      "bytes": 32163,
+      "git_blob": "84e4d339172fd49e527ae0317b9c127a09f8ad1d",
+      "sha256": "b80db353af7b666203cfe83a0a53c8c995a35bc548911f52abaa958af557f1ca"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/unix_connect.rs",
+      "bytes": 7469,
+      "git_blob": "9fbca2e7048c6d7af0a2ebad9eeacd1808862c95",
+      "sha256": "311569a904f767d1fec99d72008225d51832702da0b6087f5d66f2b29f8ece87"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/unix_connect_tests.rs",
+      "bytes": 5936,
+      "git_blob": "b4a71f89805fa28226d74ef399ca65653759e0f5",
+      "sha256": "13fd7083a7e4226b1e2957db4383763f10bf7d51224fbee48948aad6d14e99a2"
+    }
+  ],
+  "fixed_source_inputs": 21,
+  "primary_fullGET_equal": 7,
+  "original_unix_fresh_fullGET_equal": true,
+  "candidate_actual_fullGET_equal": 3,
+  "candidate_actual_tree_GET_equal": true,
+  "connect_calls_replaced": 3,
+  "original_read_timeout_calls": 3,
+  "original_write_timeout_calls": 3,
+  "adoption_attempts": 3,
+  "adoption_retry_interval_ms": 50,
+  "new_connect_stage_timeout_ms": 200,
+  "original_read_write_timeout_ms": 200,
+  "new_total_handshake_timeout": false,
+  "unchanged_original_tests": {
+    "codex-rs/hepta-supervisor/src/unix_tests.rs": {
+      "bytes": 14330,
+      "git_blob": "eb88a374cf9497fc794bba5b62b7c596a4a2200a",
+      "sha256": "d9f4468eb3cc26fd6045e0a61300e00f86cf05cf8841db57116f75706299598d"
+    },
+    "codex-rs/hepta-supervisor/src/unix_drain_tests.rs": {
+      "bytes": 6580,
+      "git_blob": "0067065f35d21a5aed15595446277c27691c29f7",
+      "sha256": "6ad31f5fccd0dd5fcee66e610fef3dfec91ceb55f85e5576d6b4db5ffdff1c74"
+    },
+    "codex-rs/hepta-supervisor/tests/paired_process_product.rs": {
+      "bytes": 25589,
+      "git_blob": "c03bdba974ea48281cd839b9161eb0ccdc38b892",
+      "sha256": "a920827ad1a0d0ffe20c6329c43dd1864844878796c3d9c442a5a52c8d78e172"
+    }
+  },
+  "added_tests_not_executed": [
+    "connects_to_owned_listener_with_blocking_cloexec_stream",
+    "refused_owned_listener_preserves_connection_refused",
+    "full_owned_listener_backlog_returns_eagain_without_fake_connection",
+    "expired_connect_deadline_does_not_enqueue_a_connection",
+    "pathname_validation_matches_std_and_rejects_abstract_entry",
+    "poll_uses_the_existing_deadline_when_owned_socket_stays_unwritable"
+  ],
+  "forward_and_reverse_patch_replayed": true,
+  "source_coverage_limits": "The original 4a 60-second timeout remains CAUSAL_UNKNOWN. No blocker transition."
+}

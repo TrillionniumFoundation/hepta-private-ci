@@ -1,0 +1,414 @@
+{
+  "schema": "supervisor-unix-connect-independent-static-verification-v1",
+  "result": "PASS_STATIC_ONLY",
+  "scope": "Read-only frozen bytes, full Git index/Merkle and exact original log slices; no Rust/native/socket/CI execution.",
+  "freeze": {
+    "bytes": 18861,
+    "git_blob": "79031a80b8b095fbffda0215aa67ddd7c6f0634f",
+    "sha256": "ab92d5bb56b381048a18c47d0c62f9a48a2505f3826a3e9395b875d785f3a073"
+  },
+  "frozen_members": 77,
+  "frozen_member_bytes": 7211701,
+  "base_tree": "c3e9ddc1799f470ac7c80e117ee953a7232847e0",
+  "candidate_tree": "44e8f7176037a5455476c068ad6ad8d692868769",
+  "base_leaf_count": 10802,
+  "candidate_leaf_count": 10804,
+  "unchanged_original_leaves": 10801,
+  "base_directory_count_including_root": 1617,
+  "candidate_directory_count_including_root": 1617,
+  "actual_root_all_53_entries_equal": true,
+  "postimages_fresh_full_GET_equal": [
+    {
+      "path": "codex-rs/hepta-supervisor/src/unix.rs",
+      "bytes": 32163,
+      "git_blob": "84e4d339172fd49e527ae0317b9c127a09f8ad1d",
+      "sha256": "b80db353af7b666203cfe83a0a53c8c995a35bc548911f52abaa958af557f1ca",
+      "independent_fresh_full_GET_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/unix_connect.rs",
+      "bytes": 7469,
+      "git_blob": "9fbca2e7048c6d7af0a2ebad9eeacd1808862c95",
+      "sha256": "311569a904f767d1fec99d72008225d51832702da0b6087f5d66f2b29f8ece87",
+      "independent_fresh_full_GET_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/unix_connect_tests.rs",
+      "bytes": 5936,
+      "git_blob": "b4a71f89805fa28226d74ef399ca65653759e0f5",
+      "sha256": "13fd7083a7e4226b1e2957db4383763f10bf7d51224fbee48948aad6d14e99a2",
+      "independent_fresh_full_GET_equal": true
+    }
+  ],
+  "modified_unix_exact_inverse_equal": true,
+  "original_three_test_sources_unchanged": [
+    "codex-rs/hepta-supervisor/src/unix_drain_tests.rs",
+    "codex-rs/hepta-supervisor/src/unix_tests.rs",
+    "codex-rs/hepta-supervisor/tests/paired_process_product.rs"
+  ],
+  "all_fixed_source_bindings": [
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/hepta-fleet/src/model.rs",
+    "codex-rs/hepta-fleet/src/registry.rs",
+    "codex-rs/hepta-fleet/src/release.rs",
+    "codex-rs/hepta-supervisor/BUILD.bazel",
+    "codex-rs/hepta-supervisor/Cargo.toml",
+    "codex-rs/hepta-supervisor/src/driver.rs",
+    "codex-rs/hepta-supervisor/src/error.rs",
+    "codex-rs/hepta-supervisor/src/lease.rs",
+    "codex-rs/hepta-supervisor/src/matrix.rs",
+    "codex-rs/hepta-supervisor/src/model.rs",
+    "codex-rs/hepta-supervisor/src/recovery.rs",
+    "codex-rs/hepta-supervisor/src/release.rs",
+    "codex-rs/hepta-supervisor/src/runtime.rs",
+    "codex-rs/hepta-supervisor/src/supervisor.rs",
+    "codex-rs/hepta-supervisor/src/unix.rs",
+    "codex-rs/hepta-supervisor/src/unix_drain_tests.rs",
+    "codex-rs/hepta-supervisor/src/unix_tests.rs",
+    "codex-rs/hepta-supervisor/tests/paired_process_product.rs",
+    "defs.bzl"
+  ],
+  "unix_parent_cfg_fixed_source": {
+    "bytes": 7671,
+    "git_blob": "9765bcbbf6cda8009f8a8938c5a8779aaaa0d67e",
+    "sha256": "dbcb6eb231b58a3c6c88a64e7d22f19ba68360c3a8f1ea9ec1d01748e30e15ff"
+  },
+  "fixed_primary_gets": [
+    {
+      "path": "libc-0.2.191-apple.GET.json",
+      "url": "https://github.com/rust-lang/libc/blob/0.2.191/src/unix/bsd/apple/mod.rs",
+      "bytes": 198052,
+      "git_blob": "88c6d9b491111f8d58031291cb577bc86277c6d8",
+      "sha256": "f0396f459f815cbbe7662acafdf009df65c060fe6c43ea1873291bcf2154318c"
+    },
+    {
+      "path": "libc-0.2.191-linux-like.GET.json",
+      "url": "https://github.com/rust-lang/libc/blob/0.2.191/src/unix/linux_like/mod.rs",
+      "bytes": 83988,
+      "git_blob": "7fcc9a09aa50fbd7e5dfd3e04d4fe8e68bf0c9e5",
+      "sha256": "39afa8f72bdb7f6afa0dc9bed7e35ae0e78015dcbe520809a6324b8e58f3ca3c"
+    },
+    {
+      "path": "libc-0.2.191-unix.GET.json",
+      "url": "https://github.com/rust-lang/libc/blob/0.2.191/src/unix/mod.rs",
+      "bytes": 92881,
+      "git_blob": "62d48c9eb8692ee69d38e29a1e9f4b829a22072a",
+      "sha256": "5983e1f99a999167c43249a3961a6db10290f6fb15b65ef285796dd05a034c2d"
+    },
+    {
+      "path": "linux-v6.8-af_unix.GET.json",
+      "url": "https://github.com/torvalds/linux/blob/v6.8/net/unix/af_unix.c",
+      "bytes": 88711,
+      "git_blob": "0748e7ea5210e7d597acf87fc6caf1ea2156562e",
+      "sha256": "a5ecafbd6a071f271687bfffd0b2976a0788b3cc463397afbe2f780c97db67e9"
+    },
+    {
+      "path": "rust-1.95.0-socket-unix.GET.json",
+      "url": "https://github.com/rust-lang/rust/blob/1.95.0/library/std/src/sys/net/connection/socket/unix.rs",
+      "bytes": 25222,
+      "git_blob": "5e20c0ffdfa6aa814305ca4eb50f72635d181c15",
+      "sha256": "0a196515a392a124277b9d5f13e7585e8d3a79beb223f10192d901440c118fd0"
+    },
+    {
+      "path": "rust-1.95.0-unix-addr.GET.json",
+      "url": "https://github.com/rust-lang/rust/blob/1.95.0/library/std/src/os/unix/net/addr.rs",
+      "bytes": 9966,
+      "git_blob": "0748f6984a82580c2197314bfb28a8f9969ab415",
+      "sha256": "07465ce60fb1d6b646d638b9d2645907197914042140359d7532a3d2d9dd00c2"
+    },
+    {
+      "path": "rust-1.95.0-unix-stream.GET.json",
+      "url": "https://github.com/rust-lang/rust/blob/1.95.0/library/std/src/os/unix/net/stream.rs",
+      "bytes": 23983,
+      "git_blob": "30124d96951eb9531703d3de19656c7ca6081960",
+      "sha256": "aaeb8a11bc9ad71cca92fe33717795198beb58b0ccd27544482605fb8b678dcd"
+    }
+  ],
+  "historical_native_registry": "23e67ce20a439e2968eb63ae4e9a74a214ccd081",
+  "historical_full_log": {
+    "bytes": 2284485,
+    "git_blob": "207342b4d00698e5b898935d71c5b617099ada41",
+    "sha256": "11c564a3fe25e105ad4ac775eed9b6b189278615d00eb2e67c0c9ff974c9c0af"
+  },
+  "exact_historical_segments": [
+    {
+      "attempt": 1,
+      "bytes": 476,
+      "git_blob": "6304bb16b155187ae46bedb3e1289232bb08a5ee",
+      "sha256": "3ab8d828ecd1a79bf745b46f50f6de9cea4fe436a620b3086dae0052032fa801"
+    },
+    {
+      "attempt": 2,
+      "bytes": 608,
+      "git_blob": "358ba68f739de83696b0de5a501eaea6a7e03bd3",
+      "sha256": "7fe95989ee4dafe5c49de03897b3ac1278354ea527050fcc44a22dff73cd2ccc"
+    }
+  ],
+  "historical_60_second_cause": "UNKNOWN; stage clock begins after PairFleet::new, so 60 minus stage time does not bound recover.",
+  "git_index_forward_reverse": [
+    {
+      "arguments": [
+        "init",
+        "--quiet"
+      ],
+      "exit": 0,
+      "stdout": {
+        "bytes": 0,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "bytes": 0,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "arguments": [
+        "hash-object",
+        "-w",
+        "--stdin"
+      ],
+      "exit": 0,
+      "stdout": {
+        "bytes": 41,
+        "git_blob": "53f3fdac9c32202bee63a4a9c7bddadb162daf35",
+        "sha256": "f6203915764552af08bb361fa5126335cadc41be0413b1cc7b2388c0262cde9a"
+      },
+      "stderr": {
+        "bytes": 0,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "arguments": [
+        "hash-object",
+        "-w",
+        "--stdin"
+      ],
+      "exit": 0,
+      "stdout": {
+        "bytes": 41,
+        "git_blob": "165f6710b1c21971d9597f306352078cb2fed7eb",
+        "sha256": "511ace4507110aba6675c4065f77eb0806e8996aaf8fa7c7f5fac471fa68f316"
+      },
+      "stderr": {
+        "bytes": 0,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "arguments": [
+        "hash-object",
+        "-w",
+        "--stdin"
+      ],
+      "exit": 0,
+      "stdout": {
+        "bytes": 41,
+        "git_blob": "a2251ee2086081bcd88071517093bdb74247e172",
+        "sha256": "32daba02184da420f95a40911d6eeba8c19c05a2def113d79bd0e5583aaff943"
+      },
+      "stderr": {
+        "bytes": 0,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "arguments": [
+        "hash-object",
+        "-w",
+        "--stdin"
+      ],
+      "exit": 0,
+      "stdout": {
+        "bytes": 41,
+        "git_blob": "e9d4f9dc5e10bf06dc3ba85f7c87778dc729862d",
+        "sha256": "64e18dfe97b66c57f8b9c3b964e8262626fbda63f3c7cbe1f82b04e44f2c26ac"
+      },
+      "stderr": {
+        "bytes": 0,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "arguments": [
+        "update-index",
+        "--index-info"
+      ],
+      "exit": 0,
+      "stdout": {
+        "bytes": 0,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "bytes": 0,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "arguments": [
+        "write-tree",
+        "--missing-ok"
+      ],
+      "exit": 0,
+      "stdout": {
+        "bytes": 41,
+        "git_blob": "4a7ace675dcb6a3ffdc29635ac4c01280b28c3c5",
+        "sha256": "83e450f9a155faf8a28617e869bf20c181157e63517c442c2ab5a2f1c15eda35"
+      },
+      "stderr": {
+        "bytes": 0,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "arguments": [
+        "apply",
+        "--cached",
+        "--check",
+        "--whitespace=error-all",
+        "/workspace/scratch/07dd58cc9630/recovery-20261106/supervisor-unix-connect-bound-independent-20261106/frozen-author/full.patch"
+      ],
+      "exit": 0,
+      "stdout": {
+        "bytes": 0,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "bytes": 0,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "arguments": [
+        "apply",
+        "--cached",
+        "--whitespace=error-all",
+        "/workspace/scratch/07dd58cc9630/recovery-20261106/supervisor-unix-connect-bound-independent-20261106/frozen-author/full.patch"
+      ],
+      "exit": 0,
+      "stdout": {
+        "bytes": 0,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "bytes": 0,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "arguments": [
+        "write-tree",
+        "--missing-ok"
+      ],
+      "exit": 0,
+      "stdout": {
+        "bytes": 41,
+        "git_blob": "624b5e40497f7c1b3276c5f658f1d463553f9ee4",
+        "sha256": "071f8ab8f49980c3e256ef08a0e93f4c46fc3d8ece1c94b47687dd00bd2a5c5a"
+      },
+      "stderr": {
+        "bytes": 0,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "arguments": [
+        "diff-tree",
+        "--no-commit-id",
+        "--name-only",
+        "-r",
+        "c3e9ddc1799f470ac7c80e117ee953a7232847e0",
+        "44e8f7176037a5455476c068ad6ad8d692868769"
+      ],
+      "exit": 0,
+      "stdout": {
+        "bytes": 136,
+        "git_blob": "af15069f693824513062167b80e176505dd71389",
+        "sha256": "98c5fe6e7aae2214c99a3b945dc27e52774e5e3ebda97843c116219efdd56f21"
+      },
+      "stderr": {
+        "bytes": 0,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "arguments": [
+        "apply",
+        "--cached",
+        "--check",
+        "--whitespace=error-all",
+        "/workspace/scratch/07dd58cc9630/recovery-20261106/supervisor-unix-connect-bound-independent-20261106/frozen-author/reverse.patch"
+      ],
+      "exit": 0,
+      "stdout": {
+        "bytes": 0,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "bytes": 0,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "arguments": [
+        "apply",
+        "--cached",
+        "--whitespace=error-all",
+        "/workspace/scratch/07dd58cc9630/recovery-20261106/supervisor-unix-connect-bound-independent-20261106/frozen-author/reverse.patch"
+      ],
+      "exit": 0,
+      "stdout": {
+        "bytes": 0,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "bytes": 0,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "arguments": [
+        "write-tree",
+        "--missing-ok"
+      ],
+      "exit": 0,
+      "stdout": {
+        "bytes": 41,
+        "git_blob": "4a7ace675dcb6a3ffdc29635ac4c01280b28c3c5",
+        "sha256": "83e450f9a155faf8a28617e869bf20c181157e63517c442c2ab5a2f1c15eda35"
+      },
+      "stderr": {
+        "bytes": 0,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "qualification_limits": {
+    "compile": "NOT_RUN",
+    "fmt": "NOT_RUN",
+    "rust_tests": "NOT_RUN",
+    "native": "NOT_RUN",
+    "blocker_status_change": false
+  }
+}

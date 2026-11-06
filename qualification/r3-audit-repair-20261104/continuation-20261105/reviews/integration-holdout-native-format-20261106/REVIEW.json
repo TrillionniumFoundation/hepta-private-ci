@@ -1,0 +1,107 @@
+{
+  "author_freeze": {
+    "bytes": 5206,
+    "git_blob": "74dd38ae82a63b94cef7f8980fee2bf14cbe6def",
+    "sha256": "ef35a15eb70a6a114d1bcd1fd2fdf895a6b83e3929c3a236b8d7d1037ab4d9ff"
+  },
+  "blocking_findings": [],
+  "candidate_tree": {
+    "directories": 1617,
+    "leaves": 10802,
+    "root": "c3e9ddc1799f470ac7c80e117ee953a7232847e0"
+  },
+  "decision": "ACCEPT_EXACT_NATIVE_FORMATTER_WHITESPACE_CANDIDATE",
+  "files": [
+    {
+      "complete_file_exact_native_replacements": true,
+      "exact_inverse": true,
+      "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file.rs",
+      "postimage": {
+        "bytes": 16189,
+        "git_blob": "772977fbe746125ac8e269f93dc80391cfcd7e3d",
+        "sha256": "6c67265f30ae3046c40e30fd9d1bdbd7d93bf25dd955ae92c727b40b5d6da224"
+      },
+      "preimage": {
+        "bytes": 16163,
+        "git_blob": "603d36b01f6f8fe7472c72588e793f8ef169a08b",
+        "sha256": "5d344456e04d4b5972ff5bdcd17adcc08e0570c5742b07584ae1deb9907223a0"
+      }
+    },
+    {
+      "complete_file_exact_native_replacements": true,
+      "exact_inverse": true,
+      "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file_tests.rs",
+      "postimage": {
+        "bytes": 13101,
+        "git_blob": "c9af70342d9c27a0ff5d94a8fc597bafe9c31177",
+        "sha256": "ede6efa1d53a0f93ab9442c6844d195cd4e41b5f03871e8b01eca20c88463df9"
+      },
+      "preimage": {
+        "bytes": 13046,
+        "git_blob": "c71e4a086dd33514d72bf7acb15d1c7e0f621636",
+        "sha256": "027aa761fd851a1f1f15829330a1edf59240d62fea8d9b4742a1d16c9df28cd8"
+      }
+    }
+  ],
+  "independent_verification": {
+    "all_nonwhitespace_bytes_equal": true,
+    "entire_tree_merkle_recomputed": true,
+    "exit_code": 0,
+    "frozen_file_bytes": 5390191,
+    "frozen_files": 21,
+    "isolated_git_index_apply_forward_reverse_exit": 0,
+    "native_log_full_MCP_content_equal": true,
+    "original_formatter_diff_blocks": 3,
+    "stderr": {
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stdout": {
+      "bytes": 6767,
+      "git_blob": "f6d35f9f2f7a6c55ad9bce399558bed4d816b25f",
+      "sha256": "e64c9ef1b342770e684afb4eb90166de30479089e4911934890de3c99de33f3e"
+    },
+    "unchanged_leaves": 10800,
+    "verifier": {
+      "bytes": 10531,
+      "git_blob": "5a22ee788b04536bf8ff8b76e52fa6ff181c7615",
+      "sha256": "eb6db3c47cd0b2628910bb58a443234e480d6ec4e9937ba13204c459320b73c1"
+    },
+    "whole_file_exact_replacements_and_inverse": true
+  },
+  "limitations": [
+    "No local Rust, rustfmt, Cargo, Bazel, native or product test executed.",
+    "Acceptance is source-only compliance with the original formatter output; the successor has not acquired a new formatting/native PASS through this review.",
+    "No workflow/ref/PR/source mutation or CI polling. B15 and B11 status and all 23 literal exits remain unchanged.",
+    "Preimage full-GET receipts were independently replayed from the frozen author packet, not re-queried over network. Candidate source blob identities are computed here; source publication belongs to root."
+  ],
+  "manual_semantic_review_zh": [
+    "两个生产变化只把 file.0 与 .write_all/.sync_all 分行；seek→write_all→sync_all及 validate_minimum→sync_all 的顺序、返回错误分类、锁 guard 和全部其它字节保持。",
+    "测试变化只把 recover(temp.open(), digest(\"binding\"), /*minimum*/ None).err() 分行，字符串、minimum注释、None参数、Busy断言和drop顺序保持；没有新增逗号、调用或过滤。",
+    "原完整日志恰3个 Diff in 记录，原fmt-check exit1保留；没有把其它安装日志内被echo的error字样误判为新的执行失败。"
+  ],
+  "original_source": {
+    "PR": 4936,
+    "clean_worktree_step": "success",
+    "executed_merge": "a0cb0f33661e199674012e3302b0602407c91a8d",
+    "head": "2d1137b1ba39fab0e6a28bac8decc114dfa0138c",
+    "job_conclusion": "failure",
+    "job_id": 127779715942,
+    "log": {
+      "bytes": 178931,
+      "git_blob": "a4fac26628af1c06092849bfa4c57551aa28cdb2",
+      "sha256": "4aefac200b17377240602377395448de3fceb2bb588c2b9c56affdbb76c880d1"
+    },
+    "only_failed_step": "Check formatting (run `just fmt` to fix)",
+    "run_id": 42180997764,
+    "tree": "99a9c0cefa627290c9fc72a9ba90d0485020fe11"
+  },
+  "review_files": [
+    "verify_candidate.py",
+    "replay-01.stdout.json",
+    "replay-01.stderr.txt",
+    "REVIEW.json"
+  ],
+  "schema": "hepta-independent-holdout-format-source-review-v1"
+}

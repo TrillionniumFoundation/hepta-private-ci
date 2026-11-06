@@ -1,0 +1,114 @@
+{
+  "archive": {
+    "bytes": 2128825,
+    "git_blob": "105a3603de6138c3ff4fa295f836298a1ebd8500",
+    "sha256": "9fe2729333aab5ed0a0c558422468491b9eabc345b2d55030f828f988f78c51c"
+  },
+  "archive_member_count_including_manifest": 135,
+  "manifest": {
+    "bytes": 35944,
+    "git_blob": "08d861c1814f567b1b9bc92adb8c51c4d640bc37",
+    "sha256": "3cd6a33bdda0bf22715852cfb166d401d80e6cf7aac1b115d00e8f3d7f769c2b"
+  },
+  "native_or_product_tool_execution": false,
+  "parts": [
+    {
+      "bytes": 320001,
+      "decoded_bytes": 240000,
+      "decoded_sha256": "7f87430f8c6916495ab1f52611b5bb9f35d412653108a8f08e73f105226b3b05",
+      "git_blob": "183cd40677c6bf2c3b19047cf77152d02c75cb8e",
+      "path": "packet.part-001.base64.txt",
+      "sha256": "d53cfb5ead2b818a5d6a4b2fe19b9b0ae068da0dd57a07cecb5af1a8c0ea237d"
+    },
+    {
+      "bytes": 320001,
+      "decoded_bytes": 240000,
+      "decoded_sha256": "e899839a8d6d1f94342f0f39f1a281d70739969e21e7ca143dfe75a95875e89b",
+      "git_blob": "7737c3c1042dffdd80bd8cd5d248c9b7fd39d478",
+      "path": "packet.part-002.base64.txt",
+      "sha256": "958ddda7926a2b213f3f52fab76b5511c11837cd8dad02201dadffa73cd08f0f"
+    },
+    {
+      "bytes": 320001,
+      "decoded_bytes": 240000,
+      "decoded_sha256": "d190e20c2ba10fd02972e4b57687c27b5522e3b36244cfeb143bf42b8b8c37ba",
+      "git_blob": "75798b4514d90d9d1ccb6a80801db8688977f178",
+      "path": "packet.part-003.base64.txt",
+      "sha256": "a0195f16c054964ac9b2065be765fd1b6f6a5f139306e298be1209b1708e3dcf"
+    },
+    {
+      "bytes": 320001,
+      "decoded_bytes": 240000,
+      "decoded_sha256": "96372ba4b9220c013788f1611fda26887d68636eae117a924c95ea6d45cadef6",
+      "git_blob": "0f0d652c68d30f4b0209f7a7dda1b228a2fe6d52",
+      "path": "packet.part-004.base64.txt",
+      "sha256": "720f543b1750c32ccdb69029f862dcf614f25f783778a1e336d64d22f642ace7"
+    },
+    {
+      "bytes": 320001,
+      "decoded_bytes": 240000,
+      "decoded_sha256": "ab301c0c4f9608d5127617066e11c1e6a2f4ce915f1899b4d21a0e4552cd1d69",
+      "git_blob": "7c2f26803a39c1110dd78e2e41e53ef0c775d6b6",
+      "path": "packet.part-005.base64.txt",
+      "sha256": "d8b6e7f745ad9c4c5e45ccebbe7a89c3d84b9e43125ef19887c0cadeab440e0b"
+    },
+    {
+      "bytes": 320001,
+      "decoded_bytes": 240000,
+      "decoded_sha256": "a6f53100d650c5d43f3e792d31bb17c67f2f8e0ee2403ed636443bfad3c40f1f",
+      "git_blob": "db71ef8e773e6c1053ea9db6b9a611bdbb7021b0",
+      "path": "packet.part-006.base64.txt",
+      "sha256": "0216904cef57f3732dbfb9caa8d4350f5a267fd759c51d08516b4c2e6837300e"
+    },
+    {
+      "bytes": 320001,
+      "decoded_bytes": 240000,
+      "decoded_sha256": "52b29c6c730bfa3cc0563ab966617f0883fa20004534dfd619d28b0b2491b038",
+      "git_blob": "1f018b5705371d811cbd539f045a4658c5cc798e",
+      "path": "packet.part-007.base64.txt",
+      "sha256": "2743318a3ad3c23a06745ae7f90bdcfb720deba68025d6fdc9bae6d1336fa286"
+    },
+    {
+      "bytes": 320001,
+      "decoded_bytes": 240000,
+      "decoded_sha256": "8f838e6dfca52c906d828f494f7770c6cd7d6c4c3e65e2742f232cc183aa77a5",
+      "git_blob": "b9f254ae093da0b80cecd39c81a4668a091ea474",
+      "path": "packet.part-008.base64.txt",
+      "sha256": "672bcc0195122bc409d18df35caac75180010a19415dff10dc4ec54dcebdeb62"
+    },
+    {
+      "bytes": 278437,
+      "decoded_bytes": 208825,
+      "decoded_sha256": "aae449895fc9f03094d8f5d288e9f2c18f34152866bfaa6c322d1ca5318c5578",
+      "git_blob": "8f2bd4c0eecddae68dff2ca28a461d0663ce74df",
+      "path": "packet.part-009.base64.txt",
+      "sha256": "1f224dec35950c3d12f498b1a7173d4dda9bba9c094c18f4a80c2dbdf5656745"
+    }
+  ],
+  "read_only_replays": [
+    {
+      "expected_exit": 0,
+      "frozen_stdout": "verification-01.stdout.json",
+      "name": "fixed-source",
+      "script": "verify_scope.py",
+      "stdout": {
+        "bytes": 6367,
+        "git_blob": "b7c23fd0b7d5f9a42cee6f05406a1b0b2c95fcdf",
+        "sha256": "97dbe6f43d30a759a6cefc89307a54375490fdc149146dfb67fe046dcd770740"
+      }
+    },
+    {
+      "expected_exit": 0,
+      "frozen_stdout": "mic-addendum/verification-02.stdout.json",
+      "name": "historical-mic",
+      "script": "mic-addendum/verify_mic.py",
+      "stdout": {
+        "bytes": 94084,
+        "git_blob": "a81d7c524db9e6a848893e207681c3d48645480d",
+        "sha256": "bcdba4775b4c6f2e784d5ca813ceedc578114b22696c7a4db8d688bd83b7ddd1"
+      }
+    }
+  ],
+  "schema": "hepta-b11-reassessment-v2-portable-index",
+  "source_or_ref_mutation": false
+}

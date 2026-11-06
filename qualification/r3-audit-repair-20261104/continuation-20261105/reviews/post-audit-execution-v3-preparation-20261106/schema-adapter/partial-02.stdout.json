@@ -1,0 +1,89 @@
+{
+  "schema": "hepta-final-registry-adapter-independent-partial-verification-v1",
+  "base": {
+    "bytes": 31606,
+    "git_blob": "35b9f129e6a2b582e41c83f5db62b49ae688bb66",
+    "sha256": "1fd9fa803e5cdc5344fd17eaf766c85d6344a8df3d76c151b64b5283b445d289"
+  },
+  "candidate": {
+    "bytes": 40614,
+    "git_blob": "2782624228f94b9ff693811cab418d205a37cf5e",
+    "sha256": "f1cc95248e52289b4c8001aca07cf238f4d03bb1d3a7a85a33c7569e8b270651"
+  },
+  "original_source_exactly_recovered_after_reversing_only_adapter_changes": true,
+  "root_preparer_unchanged": true,
+  "actual_components": 15,
+  "actual_evidence_paths": 366,
+  "actual_unique_blobs": 347,
+  "input_files_rehashed_before_after": 435,
+  "groups": {
+    "root-publications": 19,
+    "native-format": 25,
+    "ci-0829": 10,
+    "b11-reassessment-v2": 27,
+    "b21-causal": 11,
+    "old-donor-terminal": 37,
+    "arg0-fixture": 32,
+    "supervisor-connect": 21,
+    "supervisor-connect-review": 17,
+    "ci-0930": 23,
+    "b21-writer-observation": 26,
+    "root-successor-publications": 40,
+    "final-appendix": 23,
+    "fmt840-native": 39,
+    "final17-ci-cuts": 16
+  },
+  "appendix_adapter": "standard_recipe",
+  "new_packet_adapter": "evidence_packet",
+  "materialization_qualification": "Complete cumulative leaf Merkle equals each actual create_tree SHA; no separate tree GET exists or is claimed.",
+  "packet_receipt_chains": [
+    {
+      "directory": "integration-ci-review/840e8b5-native-format-delivery",
+      "payload": 30,
+      "registration_receipts": 8,
+      "append_paths": 39
+    },
+    {
+      "directory": "integration-ci-review/17c6b903-ci-cuts-delivery",
+      "payload": 12,
+      "registration_receipts": 3,
+      "append_paths": 16
+    }
+  ],
+  "negative_controls": [
+    {
+      "case": "receipt_GET_bytes_changed",
+      "decision": "REJECTED",
+      "reason": "packet receipt original full GET differs",
+      "mutations": "in-memory synthetic sidecar only"
+    },
+    {
+      "case": "receipt_create_tree_changed",
+      "decision": "REJECTED",
+      "reason": "packet receipt original create differs",
+      "mutations": "in-memory synthetic sidecar only"
+    },
+    {
+      "case": "receipt_coverage_missing",
+      "decision": "REJECTED",
+      "reason": "incomplete packet receipt-sidecar coverage",
+      "mutations": "in-memory synthetic sidecar only"
+    },
+    {
+      "case": "registry_GET_bytes_changed",
+      "decision": "REJECTED",
+      "reason": "packet original registry full GET differs",
+      "mutations": "in-memory synthetic sidecar only"
+    },
+    {
+      "case": "registry_cumulative_tree_changed_consistently",
+      "decision": "REJECTED",
+      "reason": "packet cumulative registry Merkle differs",
+      "mutations": "in-memory synthetic sidecar only"
+    }
+  ],
+  "root_config_or_preparer_modified": false,
+  "frozen_package_modified": false,
+  "whole_C4_prepare_executed": false,
+  "native_CI_network_ref_PR_operations": false
+}

@@ -1,0 +1,109 @@
+{
+  "schema": "supervisor-unix-connect-independent-increment-manifest-v1",
+  "status": "FROZEN_INDEPENDENT_REVIEW_INCREMENT",
+  "review_actual_blob": "35b07140231fa056026ca00088930873a4812b55",
+  "author_freeze": "79031a80b8b095fbffda0215aa67ddd7c6f0634f",
+  "file_count": 16,
+  "total_member_bytes": 132058,
+  "files": [
+    {
+      "path": "AUTHOR_REPLAY.json",
+      "bytes": 1267,
+      "git_blob": "f7b0cb1fd97048fea9ea2c979c6de2a3142bb7a1",
+      "sha256": "0a014326bc23399e5841fc77cba9bd0d6747180a6003a49f85f597ce2a4ca378"
+    },
+    {
+      "path": "README.zh-CN.md",
+      "bytes": 2528,
+      "git_blob": "d8ec8b1b2eb1c72ff1366277a13b504b05f39524",
+      "sha256": "86d4c00e3772e8b4b59f18325615b647189934eb271dfb93be953e56948b296c"
+    },
+    {
+      "path": "REVIEW.actual.receipt.json",
+      "bytes": 14337,
+      "git_blob": "ae1ce992701b9f22f7ec2104b372f164a931e345",
+      "sha256": "c76b2a705e850e50e7ea9eb778c5e259197626a7bdea6cca52e0a2c6d613c979"
+    },
+    {
+      "path": "REVIEW.json",
+      "bytes": 12649,
+      "git_blob": "35b07140231fa056026ca00088930873a4812b55",
+      "sha256": "7a4c1720d5b95d07edb02aea01ec5f4d2ac55ac8bdf056c7c1589b37dacee45a"
+    },
+    {
+      "path": "actual-get-0.json",
+      "bytes": 33302,
+      "git_blob": "e81ba481e91d78247754c96d6426f0e82fe5158d",
+      "sha256": "37459874d309669f74b7a74170b7cbc0afc6e60adb0b41b7469badd4261af9fc"
+    },
+    {
+      "path": "actual-get-1.json",
+      "bytes": 7871,
+      "git_blob": "24bf8bc8d6a08c402ea917cca237002952655e22",
+      "sha256": "da54275a25e446e7b1e7024808ef1fb15a9cf7e1304e816b49daef1050a58d8b"
+    },
+    {
+      "path": "actual-get-2.json",
+      "bytes": 6316,
+      "git_blob": "ed2a83cd373ce6048ed07e511307fe7abc118822",
+      "sha256": "09b7aa487439ae522e400c5d18aa548439d398481242a6546e7e71028cd76b92"
+    },
+    {
+      "path": "author-replay-01.stderr.txt",
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "author-replay-01.stdout.json",
+      "bytes": 3332,
+      "git_blob": "6cce1bc325661dcbc08476a2a59144f24453d15f",
+      "sha256": "535985ed20e7cb56d74f630ec016e8288fb5ce8fa0de2be149f4da6a5429309e"
+    },
+    {
+      "path": "independent-01.execution.json",
+      "bytes": 836,
+      "git_blob": "12ca5e0101fee18d0b4e48bb921a667e5142b0c8",
+      "sha256": "d900f6e0e5d9c1c716ef4b087c25b37d820225bd446d2672da81a69c2ca01205"
+    },
+    {
+      "path": "independent-01.stderr.txt",
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "independent-01.stdout.json",
+      "bytes": 14319,
+      "git_blob": "2a05e4d29d96c909f25b13693219d3675eb84141",
+      "sha256": "82c02c33692f9a2702903ab16790a8346edfe8c37c5952bcd579bb0c1ef21254"
+    },
+    {
+      "path": "independent-01/VERIFICATION.json",
+      "bytes": 14319,
+      "git_blob": "2a05e4d29d96c909f25b13693219d3675eb84141",
+      "sha256": "82c02c33692f9a2702903ab16790a8346edfe8c37c5952bcd579bb0c1ef21254"
+    },
+    {
+      "path": "initial-review-helper-failure.json",
+      "bytes": 432,
+      "git_blob": "53eb0373dea90080717ade37ff4e4efd1e04080d",
+      "sha256": "30b64cd76e19cc1d959a4d8c5a6e59e6299cf7133741e28d6ec5cfe470865de6"
+    },
+    {
+      "path": "references/supervisor-lib.rs",
+      "bytes": 7671,
+      "git_blob": "9765bcbbf6cda8009f8a8938c5a8779aaaa0d67e",
+      "sha256": "dbcb6eb231b58a3c6c88a64e7d22f19ba68360c3a8f1ea9ec1d01748e30e15ff"
+    },
+    {
+      "path": "verify_independent.py",
+      "bytes": 12879,
+      "git_blob": "a619241103cbe7290e708dfdcf6cf3fecfd8ee5e",
+      "sha256": "edfc132a5f3d2c254e4ec4b4ca7bde37d3d456368e216c0cf3d1b6c5f5b4acfa"
+    }
+  ],
+  "copy_instructions": "Copy exact listed files plus this manifest. Exclude frozen-author/, independent-01/partial-index/, and all unlisted generated files. Author77 and old native registry23e67 remain external full inputs required for portable verifier.",
+  "native_executed": false,
+  "qualification": "STATIC_ACCEPTANCE_ONLY"
+}

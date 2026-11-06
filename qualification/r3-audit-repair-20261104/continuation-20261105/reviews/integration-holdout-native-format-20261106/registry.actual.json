@@ -1,0 +1,316 @@
+{
+  "schema": "integration-holdout-native-format-evidence-actual-registry-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "prefix": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-holdout-native-format-20261106/",
+  "decision": "COMPLETE_ORIGINAL_FAILURE_EVIDENCE_AND_ACCEPTED_EXACT_FORMATTER_CANDIDATE; NO_NEW_NATIVE_PASS",
+  "original_source": {
+    "head": "2d1137b1ba39fab0e6a28bac8decc114dfa0138c",
+    "executed_checkout": "a0cb0f33661e199674012e3302b0602407c91a8d",
+    "tree": "99a9c0cefa627290c9fc72a9ba90d0485020fe11",
+    "run": 42180997764,
+    "job": 127779715942,
+    "job_conclusion": "failure",
+    "failed_step": "just fmt-check",
+    "original_exit": 1
+  },
+  "candidate": {
+    "tree": "c3e9ddc1799f470ac7c80e117ee953a7232847e0",
+    "changed_paths": 2,
+    "native_formatter_blocks": 3,
+    "unchanged_leaves": 10800,
+    "nonwhitespace_bytes_equal": true,
+    "independent_review_actual_blob": "7ea9cb737a8c57a215cbf473b2ad100c25ab668b",
+    "new_native_execution": false
+  },
+  "archive": {
+    "bytes": 479696,
+    "git_blob": "aa21b0b81617010c6302863edd574f954ab9b07b",
+    "sha256": "b17f78a5565f93b1e54e90a031cd1a4c4367d93f4bb7791d93b76ba7400e0ac4",
+    "format": "tar.xz; XZ CRC64",
+    "parts": 11,
+    "members": 34,
+    "member_bytes": 6140248
+  },
+  "portable": {
+    "entry": "restore_evidence.py --root <packet> --output <new directory>",
+    "observed_exit": 0,
+    "stderr_bytes": 0,
+    "independent_stdout_bytes": 6767,
+    "independent_stdout_git_blob": "f6d35f9f2f7a6c55ad9bce399558bed4d816b25f",
+    "all_original_member_bytes_and_stdout_equal": true
+  },
+  "files": [
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-holdout-native-format-20261106/PORTABLE_VERIFICATION.json",
+      "path": "PORTABLE_VERIFICATION.json",
+      "bytes": 809,
+      "git_blob": "dae7c87adf4eb690a5607cd8e50b86ea0ab62eef",
+      "sha256": "2ed4cb856776a84ecbe971988c5c17c899905d8840862b3bc00492b13b6ffd62",
+      "actual_create_blob_sha": "dae7c87adf4eb690a5607cd8e50b86ea0ab62eef",
+      "actual_full_GET_content_bytes_equal": true,
+      "receipt_file": "registration-raw.original.json",
+      "receipt_selector": "records[path=PORTABLE_VERIFICATION.json]"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-holdout-native-format-20261106/README.zh-CN.md",
+      "path": "README.zh-CN.md",
+      "bytes": 1336,
+      "git_blob": "7856ea4387f77579ca99ff6f6347ff1b9cc4a156",
+      "sha256": "8c61ee6bdb5df51ccdaa5c32da5ca9a8b69adff82424f77011785298ab511419",
+      "actual_create_blob_sha": "7856ea4387f77579ca99ff6f6347ff1b9cc4a156",
+      "actual_full_GET_content_bytes_equal": true,
+      "receipt_file": "registration-raw.original.json",
+      "receipt_selector": "records[path=README.zh-CN.md]"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-holdout-native-format-20261106/REVIEW.json",
+      "path": "REVIEW.json",
+      "bytes": 4587,
+      "git_blob": "7ea9cb737a8c57a215cbf473b2ad100c25ab668b",
+      "sha256": "a56669508e285ab9a3419262ef91de5b07ceb26d1cd1b31b64fe54f493c4d7f3",
+      "actual_create_blob_sha": "7ea9cb737a8c57a215cbf473b2ad100c25ab668b",
+      "actual_full_GET_content_bytes_equal": true,
+      "receipt_file": "registration-raw.original.json",
+      "receipt_selector": "records[path=REVIEW.json]"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-holdout-native-format-20261106/archive-manifest.json",
+      "path": "archive-manifest.json",
+      "bytes": 11815,
+      "git_blob": "9fa240baffec945957635ae69571fb59bf2afdb5",
+      "sha256": "4ee130089d52a7751fa8cf58f92d9c65a454e5c746946543b1939bf76657a198",
+      "actual_create_blob_sha": "9fa240baffec945957635ae69571fb59bf2afdb5",
+      "actual_full_GET_content_bytes_equal": true,
+      "receipt_file": "registration-raw.original.json",
+      "receipt_selector": "records[path=archive-manifest.json]"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-holdout-native-format-20261106/package-01.stderr.txt",
+      "path": "package-01.stderr.txt",
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "actual_create_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "actual_full_GET_content_bytes_equal": true,
+      "receipt_file": "registration-raw.original.json",
+      "receipt_selector": "records[path=package-01.stderr.txt]"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-holdout-native-format-20261106/package-01.stdout.json",
+      "path": "package-01.stdout.json",
+      "bytes": 1419,
+      "git_blob": "cba1bebf611dd1b56c9ec07d766ff4c07ad3376e",
+      "sha256": "fa8066206a3e6302a9ee306dabb3432b3fd0905d12a9bf296b7a229ff25b64de",
+      "actual_create_blob_sha": "cba1bebf611dd1b56c9ec07d766ff4c07ad3376e",
+      "actual_full_GET_content_bytes_equal": true,
+      "receipt_file": "registration-raw.original.json",
+      "receipt_selector": "records[path=package-01.stdout.json]"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-holdout-native-format-20261106/package_fmt_evidence.py",
+      "path": "package_fmt_evidence.py",
+      "bytes": 4688,
+      "git_blob": "0244b438ec764059cae5c9412d7824d6ede35777",
+      "sha256": "83e9c13ac0f9e493cc161e5a72cfc9fc725bf1a4dcc580d9db6e9f59c8359911",
+      "actual_create_blob_sha": "0244b438ec764059cae5c9412d7824d6ede35777",
+      "actual_full_GET_content_bytes_equal": true,
+      "receipt_file": "registration-raw.original.json",
+      "receipt_selector": "records[path=package_fmt_evidence.py]"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-holdout-native-format-20261106/parts/archive.part-000.base64.txt",
+      "path": "parts/archive.part-000.base64.txt",
+      "bytes": 60001,
+      "git_blob": "fe9e8edacb753aa2f80464c2a79f48d7e7fe89d6",
+      "sha256": "642aa28340ee6ff8cfdf4cf9e001371dc44e50514624593a149f82e0fb2779ea",
+      "actual_create_blob_sha": "fe9e8edacb753aa2f80464c2a79f48d7e7fe89d6",
+      "actual_full_GET_content_bytes_equal": true,
+      "receipt_file": "registration-raw.original.json",
+      "receipt_selector": "records[path=parts/archive.part-000.base64.txt]"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-holdout-native-format-20261106/parts/archive.part-001.base64.txt",
+      "path": "parts/archive.part-001.base64.txt",
+      "bytes": 60001,
+      "git_blob": "4b9c6609ea9686443039a01a83b0addf251fed07",
+      "sha256": "362ce547a6468ac36a411d15e80b960c21b22b17d8f131c7f79d66b731903845",
+      "actual_create_blob_sha": "4b9c6609ea9686443039a01a83b0addf251fed07",
+      "actual_full_GET_content_bytes_equal": true,
+      "receipt_file": "registration-raw.original.json",
+      "receipt_selector": "records[path=parts/archive.part-001.base64.txt]"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-holdout-native-format-20261106/parts/archive.part-002.base64.txt",
+      "path": "parts/archive.part-002.base64.txt",
+      "bytes": 60001,
+      "git_blob": "6707ae4fe8af142104bc5ad73cae209926e04522",
+      "sha256": "1e7ef9ee204cb05b387cea17511d77d9b2b0549b5d105e1e429cb7ca4cec4720",
+      "actual_create_blob_sha": "6707ae4fe8af142104bc5ad73cae209926e04522",
+      "actual_full_GET_content_bytes_equal": true,
+      "receipt_file": "registration-raw.original.json",
+      "receipt_selector": "records[path=parts/archive.part-002.base64.txt]"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-holdout-native-format-20261106/parts/archive.part-003.base64.txt",
+      "path": "parts/archive.part-003.base64.txt",
+      "bytes": 60001,
+      "git_blob": "ae0498e64224486ab3c123b914ea6a97294e3eb6",
+      "sha256": "aba042e7c350123197ed7efb599630f68f2ab3f25979b9cce98a86feed969936",
+      "actual_create_blob_sha": "ae0498e64224486ab3c123b914ea6a97294e3eb6",
+      "actual_full_GET_content_bytes_equal": true,
+      "receipt_file": "registration-raw.original.json",
+      "receipt_selector": "records[path=parts/archive.part-003.base64.txt]"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-holdout-native-format-20261106/parts/archive.part-004.base64.txt",
+      "path": "parts/archive.part-004.base64.txt",
+      "bytes": 60001,
+      "git_blob": "ed76ad80ec3969d2eb80ad573eb2682d41dde839",
+      "sha256": "349f1547b66d446b8db70ed5c8dfac7f72b50fca439a5ba56ee71912604fef9c",
+      "actual_create_blob_sha": "ed76ad80ec3969d2eb80ad573eb2682d41dde839",
+      "actual_full_GET_content_bytes_equal": true,
+      "receipt_file": "registration-raw.original.json",
+      "receipt_selector": "records[path=parts/archive.part-004.base64.txt]"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-holdout-native-format-20261106/parts/archive.part-005.base64.txt",
+      "path": "parts/archive.part-005.base64.txt",
+      "bytes": 60001,
+      "git_blob": "f4b8fb8c3f990b4670921777c39f8bb39b0028fe",
+      "sha256": "2091d51f31cce4b2d5e9ec7d08af91d74fd38310b78618c7661727cde7b94014",
+      "actual_create_blob_sha": "f4b8fb8c3f990b4670921777c39f8bb39b0028fe",
+      "actual_full_GET_content_bytes_equal": true,
+      "receipt_file": "registration-raw.original.json",
+      "receipt_selector": "records[path=parts/archive.part-005.base64.txt]"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-holdout-native-format-20261106/parts/archive.part-006.base64.txt",
+      "path": "parts/archive.part-006.base64.txt",
+      "bytes": 60001,
+      "git_blob": "109c461fef31dee0e9d9553c060d3a45cf64d949",
+      "sha256": "b3049a05c49e0ae780ca5c5ed24b327f4f2a073e042f8356ef446e8804e491d9",
+      "actual_create_blob_sha": "109c461fef31dee0e9d9553c060d3a45cf64d949",
+      "actual_full_GET_content_bytes_equal": true,
+      "receipt_file": "registration-raw.original.json",
+      "receipt_selector": "records[path=parts/archive.part-006.base64.txt]"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-holdout-native-format-20261106/parts/archive.part-007.base64.txt",
+      "path": "parts/archive.part-007.base64.txt",
+      "bytes": 60001,
+      "git_blob": "bb7caa465673259b156fc61b98bd69a5b65b741e",
+      "sha256": "e1401859bc635d0367a5f92acaeb3cf242c43b6573290f9fa46f8cc13882ddd6",
+      "actual_create_blob_sha": "bb7caa465673259b156fc61b98bd69a5b65b741e",
+      "actual_full_GET_content_bytes_equal": true,
+      "receipt_file": "registration-raw.original.json",
+      "receipt_selector": "records[path=parts/archive.part-007.base64.txt]"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-holdout-native-format-20261106/parts/archive.part-008.base64.txt",
+      "path": "parts/archive.part-008.base64.txt",
+      "bytes": 60001,
+      "git_blob": "8909306d410c1ac18ae156f59c80bf387f1c21c1",
+      "sha256": "40504b83c80573848a4dfb19f7a084514d81791b0b4a5f9e833d80b0991545b4",
+      "actual_create_blob_sha": "8909306d410c1ac18ae156f59c80bf387f1c21c1",
+      "actual_full_GET_content_bytes_equal": true,
+      "receipt_file": "registration-raw.original.json",
+      "receipt_selector": "records[path=parts/archive.part-008.base64.txt]"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-holdout-native-format-20261106/parts/archive.part-009.base64.txt",
+      "path": "parts/archive.part-009.base64.txt",
+      "bytes": 60001,
+      "git_blob": "50034ac28aaa7636913742e4dc27f1aaeb6c66fb",
+      "sha256": "9186640b0c5171ad1fca296784efa0c9a0686d0a8bfc1f58e70fa7271bbdf9ff",
+      "actual_create_blob_sha": "50034ac28aaa7636913742e4dc27f1aaeb6c66fb",
+      "actual_full_GET_content_bytes_equal": true,
+      "receipt_file": "registration-raw.original.json",
+      "receipt_selector": "records[path=parts/archive.part-009.base64.txt]"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-holdout-native-format-20261106/parts/archive.part-010.base64.txt",
+      "path": "parts/archive.part-010.base64.txt",
+      "bytes": 39597,
+      "git_blob": "b55c6580adf036a96c62c243b52c14a809135062",
+      "sha256": "22e8e78dcc94f49c83e392f0023de8a87408ccc70f1827d79c67cc793357f612",
+      "actual_create_blob_sha": "b55c6580adf036a96c62c243b52c14a809135062",
+      "actual_full_GET_content_bytes_equal": true,
+      "receipt_file": "registration-raw.original.json",
+      "receipt_selector": "records[path=parts/archive.part-010.base64.txt]"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-holdout-native-format-20261106/portable-replay.stderr.txt",
+      "path": "portable-replay.stderr.txt",
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "actual_create_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "actual_full_GET_content_bytes_equal": true,
+      "receipt_file": "registration-raw.original.json",
+      "receipt_selector": "records[path=portable-replay.stderr.txt] -> first matching git_blob record"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-holdout-native-format-20261106/portable-replay.stdout.json",
+      "path": "portable-replay.stdout.json",
+      "bytes": 6767,
+      "git_blob": "f6d35f9f2f7a6c55ad9bce399558bed4d816b25f",
+      "sha256": "e64c9ef1b342770e684afb4eb90166de30479089e4911934890de3c99de33f3e",
+      "actual_create_blob_sha": "f6d35f9f2f7a6c55ad9bce399558bed4d816b25f",
+      "actual_full_GET_content_bytes_equal": true,
+      "receipt_file": "registration-raw.original.json",
+      "receipt_selector": "records[path=portable-replay.stdout.json]"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-holdout-native-format-20261106/restoration-01.stderr.txt",
+      "path": "restoration-01.stderr.txt",
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "actual_create_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "actual_full_GET_content_bytes_equal": true,
+      "receipt_file": "registration-raw.original.json",
+      "receipt_selector": "records[path=restoration-01.stderr.txt] -> first matching git_blob record"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-holdout-native-format-20261106/restoration-01.stdout.json",
+      "path": "restoration-01.stdout.json",
+      "bytes": 895,
+      "git_blob": "d0f23dac8ccfdb67714c9172c304f98365e554b3",
+      "sha256": "2e60684e13cf99ce9e4fa65f2236b6d89b66dab81d4e7a3b9ed06b77c1367634",
+      "actual_create_blob_sha": "d0f23dac8ccfdb67714c9172c304f98365e554b3",
+      "actual_full_GET_content_bytes_equal": true,
+      "receipt_file": "registration-raw.original.json",
+      "receipt_selector": "records[path=restoration-01.stdout.json]"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-holdout-native-format-20261106/restore_evidence.py",
+      "path": "restore_evidence.py",
+      "bytes": 3052,
+      "git_blob": "1e14abaed7d60340c3ab7164376da8bf1bfd062d",
+      "sha256": "c378cff62d1eef01cb10134036a932b52361d8c082a13335dc8645411f4bef51",
+      "actual_create_blob_sha": "1e14abaed7d60340c3ab7164376da8bf1bfd062d",
+      "actual_full_GET_content_bytes_equal": true,
+      "receipt_file": "registration-raw.original.json",
+      "receipt_selector": "records[path=restore_evidence.py]"
+    },
+    {
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-holdout-native-format-20261106/registration-raw.original.json",
+      "path": "registration-raw.original.json",
+      "bytes": 694427,
+      "git_blob": "c3fa483835b05cce66d3c9e22fff46938fd6b351",
+      "sha256": "1cabbc410e45c8679dad8ba0c23b16500b832afbf66bd28e8e957d5c0d888bef",
+      "actual_create_blob_sha": "c3fa483835b05cce66d3c9e22fff46938fd6b351",
+      "actual_full_GET_content_bytes_equal": true
+    }
+  ],
+  "counts": {
+    "payload_paths_including_original_registration_receipts": 24,
+    "unique_payload_blobs": 22
+  },
+  "limits": [
+    "Original a0cb/tree99a formatter failure remains failure.",
+    "Candidate only reproduces three actual formatter whitespace blocks; original assertions/arguments/comments/order remain.",
+    "No Rust/rustfmt/Cargo/Bazel/product/native/CI/ref operation is executed by packet restoration.",
+    "Any published successor and its actual CI are separate evidence; this frozen package is not retroactively updated."
+  ]
+}

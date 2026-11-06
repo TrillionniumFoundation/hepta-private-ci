@@ -1,0 +1,38 @@
+{
+  "schema": "hepta-fourth-audit-final-appendix-registry-self-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "registry_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v3-final-appendix-20261106/registry.actual.json",
+  "registry_identity": {
+    "bytes": 39157,
+    "git_blob": "fce896fa8807a0e378bf654c3c29756c9ae21ed9",
+    "sha256": "fcd8e1f3b1cdd23e433c6e5f5a180878d8b9c8f4294c0ccddf4042800ee6919e"
+  },
+  "method": "actual create_tree(content) and complete fetch_blob UTF-8 equality",
+  "actual_create_original": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "sha": "29f6dbc623871a9b1e754458be20eb18a0b98e74"
+    },
+    "isError": false
+  },
+  "actual_complete_full_GET_equal": true,
+  "full_GET_original_lossless_recipe": {
+    "payload_path": "registry.actual.json",
+    "payload_git_blob": "fce896fa8807a0e378bf654c3c29756c9ae21ed9",
+    "marker": "__C4_FINAL_APPENDIX_REGISTRY_fce896fa8807a0e378bf654c3c29756c9ae21ed9__",
+    "occurrences": 1,
+    "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__C4_FINAL_APPENDIX_REGISTRY_fce896fa8807a0e378bf654c3c29756c9ae21ed9__\"\n  },\n  \"isError\": false\n}\n",
+    "substitution": "Replace the single marker with JSON.stringify(complete UTF-8 registry payload).slice(1,-1).",
+    "actual_serialized_original_equals_reconstruction": true
+  },
+  "payload_paths": 21,
+  "original_members": 136,
+  "qualification": "EVIDENCE_CUSTODY_AND_PUBLICATION_IDENTITY_ONLY",
+  "native_or_CI_executed": false,
+  "ledger_transitions": []
+}

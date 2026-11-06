@@ -1,0 +1,804 @@
+{
+  "schema": "hepta-source17-native-Windows-business-libraries-offline-verification-v1",
+  "current_product_head": "17c6b903a5d5d470b72035f95bb6e087291d7e04",
+  "current_product_tree": "25020dc30888fa3ffa6f6e8d1073d91edded1756",
+  "actual_PR_merge": "26cfdcaa70cbd2daecd165137e3b84d2ad1a7284",
+  "latest_API_observation_utc": "2026-11-06T10:43:51Z",
+  "original_files_checked": 40,
+  "full_tree_leaves_checked": 10804,
+  "blocking_cut": {
+    "observed_before_utc": "2026-11-06T10:43:30Z",
+    "run_id": 42201989815,
+    "complete_jobs": 0
+  },
+  "Supervisor_cut": {
+    "observed_before_utc": "2026-11-06T10:43:30Z",
+    "run_id": 42201989809,
+    "complete_jobs": 2,
+    "in_progress": 2
+  },
+  "ordinary_business_results": [
+    {
+      "artifact_id": 13495625588,
+      "job_id": 127839242912,
+      "checkout_kind": "base-merge",
+      "actual_checkout": "26cfdcaa70cbd2daecd165137e3b84d2ad1a7284",
+      "tree": "25020dc30888fa3ffa6f6e8d1073d91edded1756",
+      "ordered_parents": [
+        "63652be658ebed8d3052eb789b951793384fd5e4",
+        "17c6b903a5d5d470b72035f95bb6e087291d7e04"
+      ],
+      "official_ZIP": {
+        "bytes": 3604185,
+        "git_blob": "6f562cb80e84b390509ab1b83ac21a695dac96e6",
+        "sha256": "b5da4d45ec9c6f81e747596df79922c45ce118c39a9b51de3d113897295b0036"
+      },
+      "all_10_member_CRC_and_hashes_equal": true,
+      "full_original_job_log": {
+        "bytes": 195444,
+        "git_blob": "eaaa846e57b0426c12cfb530fa39c56992979104",
+        "sha256": "639ae299c13e109203192fe7469ea9b2a6f4d1fc95f4084e9761502a1d28f7d2"
+      },
+      "job_log_CR_count": 1755,
+      "captured_9_worktree_input_bindings": [
+        {
+          "path": ".bazelrc",
+          "fixed_git_blob": "3d5877b283b887091af507f3672003f84c500687",
+          "worktree_sha256": "0a5924ef90c0df166fb23744c650e1721106a7af0717c4f693f814208657c822",
+          "exact_byte_transform": "LF_to_CRLF"
+        },
+        {
+          "path": "MODULE.bazel.lock",
+          "fixed_git_blob": "fd8c9d7c1f823cb2cc4d0f248e4f04ac03e99606",
+          "worktree_sha256": "4c8ed5a498230cdd66139d72701c1cfaf535db95b12fd259f87d2dcf6e4a6928",
+          "exact_byte_transform": "LF_to_CRLF"
+        },
+        {
+          "path": "codex-rs/Cargo.lock",
+          "fixed_git_blob": "bb9d285e0a4402657fb40412a0a2dc35b7aed64a",
+          "worktree_sha256": "f368a1dc52f57a225ef79a4344417d461e0cde22bb0a41b7fc7185a576cf7e2d",
+          "exact_byte_transform": "LF_to_CRLF"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs",
+          "fixed_git_blob": "b6e83e523821ff8de1fc4016940c6b174d563fa0",
+          "worktree_sha256": "0f13782689c4bca856b81854ea1a69fa919fe02def4d2a38c402f8cc353cce47",
+          "exact_byte_transform": "LF_to_CRLF"
+        },
+        {
+          "path": "codex-rs/hepta-bao-adapter/src/lease_lifecycle.rs",
+          "fixed_git_blob": "453768525b1f691206658042be46e70aefe95f17",
+          "worktree_sha256": "405cbe3fdb2494a3e0bd74f77d89f23f2a13836b396664c1c4b6651fabcbae3d",
+          "exact_byte_transform": "LF_to_CRLF"
+        },
+        {
+          "path": "codex-rs/hepta-bao-adapter/src/lease_lifecycle_tests.rs",
+          "fixed_git_blob": "d48c24ec00130cf9b28c748cde2e7b99dcecabf8",
+          "worktree_sha256": "ca028a1ea7d845a727a9114854326673fd83812e7e5ba23b5fd9a96c07d1a3bf",
+          "exact_byte_transform": "LF_to_CRLF"
+        },
+        {
+          "path": "codex-rs/hepta-codex-adapter/src/lib_tests.rs",
+          "fixed_git_blob": "802a1d3fa441d9c257a62b4c034d226ff8077db9",
+          "worktree_sha256": "00d13167b1eae5393c6fc20f567c4fa199d54f20e0f07038200d4e9e2089f012",
+          "exact_byte_transform": "LF_to_CRLF"
+        },
+        {
+          "path": "codex-rs/utils/path-utils/src/private_state_windows.rs",
+          "fixed_git_blob": "b8a81904fd7574f9e8429a04d070bd1031d5d981",
+          "worktree_sha256": "90046ec8e865bbc17cce7d64b7bfd9ee4881b02056103eb04950c73052a40b0b",
+          "exact_byte_transform": "LF_to_CRLF"
+        },
+        {
+          "path": ".github/workflows/windows-ordinary-consumers.yml",
+          "fixed_git_blob": "6d3cbfe5532260cd8c6084b39d28f54916153484",
+          "worktree_sha256": "774afa27d472d70c43f9c0d79fecb88d6967262a8355666f7501b92ad5605005",
+          "exact_byte_transform": "LF_to_CRLF"
+        }
+      ],
+      "original_command": [
+        "C:\\Program Files\\Git\\usr\\bin\\bash.exe",
+        ".github/scripts/run-bazel-ci.sh",
+        "--print-failed-action-summary",
+        "--print-failed-test-logs",
+        "--windows-msvc-host-platform",
+        "--",
+        "test",
+        "--platforms=//:windows_x86_64_msvc",
+        "--nocache_test_results",
+        "--flaky_test_attempts=1",
+        "--test_output=all",
+        "--build_metadata=COMMIT_SHA=26cfdcaa70cbd2daecd165137e3b84d2ad1a7284",
+        "--",
+        "//codex-rs/hepta-intelligence:hepta-intelligence-unit-tests",
+        "//codex-rs/hepta-bao-adapter:hepta-bao-adapter-unit-tests",
+        "//codex-rs/hepta-codex-adapter:hepta-codex-adapter-unit-tests"
+      ],
+      "full_compact_records": 64893,
+      "full_compact_bytes": 21316045,
+      "compact_invocation": {
+        "type": "invocation",
+        "id": "01d0b774-3ed3-4e96-9148-0e8000d49791"
+      },
+      "product_test_processes": 3,
+      "XML_helper_processes": 3,
+      "targets": [
+        {
+          "target": "//codex-rs/hepta-intelligence:hepta-intelligence-unit-tests",
+          "rust_cases_passed": 78,
+          "rust_cases_failed": 0,
+          "rust_cases_ignored": 0,
+          "filtered": 0,
+          "required_original_controls": [
+            "durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes",
+            "invalid_authentication_artifact_or_dataset_never_calls_any_port",
+            "ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded",
+            "old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch"
+          ],
+          "test_case_names": [
+            "canonical::tests::abstention_stops_before_context_and_evaluation",
+            "canonical::tests::canonical_selected_path_has_first_class_ndu_and_all_seven_owners",
+            "canonical::tests::key_rotation_and_wrong_owner_receipt_fail_closed",
+            "canonical::tests::legal_candidate_set_rejects_replay_identity_with_duplicate_semantics",
+            "canonical::tests::owner_generation_change_between_call_and_publication_fails_closed",
+            "capability_snapshot::tests::absent_optional_capability_composes_without_neural_or_model_artifact",
+            "capability_snapshot::tests::declaration_reordering_is_stable_but_replacement_changes_actual_plan",
+            "capability_snapshot::tests::duplicate_unknown_and_wrong_owner_are_not_admitted",
+            "capability_snapshot::tests::optional_absence_keeps_existing_selection_and_hard_veto_semantics",
+            "capability_snapshot::tests::optional_add_remove_is_explicit_and_does_not_weaken_requirements",
+            "capability_snapshot::tests::required_missing_and_fabricated_zero_artifact_reject",
+            "capability_snapshot::tests::snapshot_binds_core_freshness_and_bounded_unique_requirements",
+            "evaluated_shadow::tests::abstention_and_slow_path_are_real_decisions_without_dispatch_or_outcome",
+            "evaluated_shadow::tests::durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes",
+            "evaluated_shadow::tests::host_failure_or_substituted_intuition_never_reaches_the_durable_stage",
+            "evaluated_shadow::tests::invalid_authentication_artifact_or_dataset_never_calls_any_port",
+            "evaluated_shadow::tests::ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded",
+            "evaluated_shadow::tests::old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch",
+            "evaluated_shadow::tests::segmented::bad_evaluator_signature_does_not_enter_ports_or_modify_a_segmented_journal",
+            "evaluated_shadow::tests::segmented::existing_consumer_continues_after_rotation_and_replays_old_run_after_recovery",
+            "evaluated_shadow::tests::tampered_product_receipt_or_expired_candidate_evidence_refuses_all_ports",
+            "neuron_runtime::tests::named_product_caller_runs_through_runtime_without_extra_authority",
+            "objective_run::tests::authenticated_objective_is_durable_before_product_receipt_returns",
+            "objective_run::tests::compiler_conflict_is_durably_published_without_runtime_snapshot",
+            "objective_run::tests::exact_product_retry_is_idempotent_and_semantic_drift_conflicts",
+            "outcome_credit_v2::tests::credit_failure_preserves_outcome_for_exact_reconciliation",
+            "outcome_credit_v2::tests::product_path_records_outcome_correction_then_conserved_credit",
+            "outcome_credit_v2::tests::run_episode_mismatch_rejects_before_any_outcome_append",
+            "pipeline::tests::full_shadow_path_is_ordered_and_authority_free",
+            "pipeline::tests::invalid_budget_fails_before_any_port_call",
+            "pipeline::tests::ledger_failure_overrides_advisory_decision",
+            "pipeline::tests::mixed_snapshot_rejects_before_next_stage",
+            "pipeline::tests::non_intuition_stage_cannot_report_an_advisory_decision",
+            "pipeline::tests::optional_neuron_outage_uses_bounded_fallback",
+            "pipeline::tests::persisted_receipt_rejects_dispatch_without_required_stages",
+            "pipeline::tests::persisted_receipt_rejects_trace_mutation",
+            "pipeline::tests::raw_port_authority_widening_rejects_before_trusted_receipt",
+            "pipeline::tests::recomputed_digest_cannot_hide_a_missing_required_stage",
+            "pipeline::tests::required_objective_failure_is_terminal_and_receipted",
+            "pipeline::tests::slow_path_skips_context_and_dispatch_but_records_decision",
+            "pipeline::tests::trace_digest_is_deterministic_for_equal_port_receipts",
+            "pipeline_v2::tests::absent_core_is_rejected_even_when_manifest_omits_its_requirement",
+            "pipeline_v2::tests::abstention_does_not_dispatch_but_preserves_learning_stage",
+            "pipeline_v2::tests::existing_stage_engine_runs_without_neural_or_model_artifacts",
+            "pipeline_v2::tests::mixed_snapshot_receipt_still_fails_existing_engine_validation",
+            "pipeline_v2::tests::optional_add_remove_changes_routing_and_versioned_receipt",
+            "pipeline_v2::tests::self_consistent_wrong_owner_is_rejected_before_any_stage_call",
+            "plasticity_product::tests::admission_payload_binds_current_frontiers_and_generator",
+            "plasticity_product::tests::product_writer_refuses_unanchored_nonempty_bootstrap",
+            "plasticity_product_tests::anchor_commit_failure_poison_writer_after_durable_append",
+            "plasticity_product_tests::authenticated_product_path_generates_evaluates_appends_and_commits_anchor",
+            "plasticity_product_tests::durable_v2_evaluation_digest_binds_governed_admission_context",
+            "plasticity_product_tests::no_admissible_update_is_independently_attested_and_durably_recorded",
+            "plasticity_product_tests::product_path_rejects_generator_evaluator_controller_collision",
+            "plasticity_product_tests::product_path_rejects_observer_evaluator_controller_collision",
+            "plasticity_product_tests::product_path_rejects_tampered_frontier_witness",
+            "prompt_delivery::tests::compiler_rejects_registry_and_context_model_drift",
+            "prompt_delivery::tests::exercised_registry_payload_is_the_exact_context_attachment_input",
+            "prompt_delivery::tests::revocation_after_exercise_prevents_delivery_of_the_selected_realization",
+            "prompt_pipeline::tests::exercised_portfolio_compiles_attaches_and_observes_exact_delivery",
+            "prompt_pipeline::tests::materialization_drift_after_compilation_blocks_attachment_preparation",
+            "prompt_pipeline::tests::revocation_after_compilation_blocks_attachment_preparation",
+            "prompt_pipeline::tests::serialization_without_selected_prompt_bytes_fails_closed",
+            "tests::canonical_candidate_limit_is_enforced",
+            "tests::duplicate_candidate_is_rejected",
+            "tests::hard_veto_is_never_overridden",
+            "tests::highest_eligible_candidate_is_selected_without_effect_authority",
+            "tests::maximum_candidate_receipt_is_canonical_and_digest_complete",
+            "tests::no_eligible_candidate_abstains",
+            "topology_canary_product::tests::payload_binds_every_caller_asserted_canary_fact",
+            "topology_product::tests::authenticated_topology_path_verifies_three_roles_and_persists_governed_record",
+            "vertical_tests::candidate_outside_compiled_legal_actions_fails_closed",
+            "vertical_tests::objective_soft_dimensions_must_bind_the_ndu_profile",
+            "vertical_tests::omitted_cognitive_read_evidence_fails_closed",
+            "vertical_tests::selected_objective_profile_digest_cannot_be_replaced",
+            "vertical_tests::tampered_read_evidence_binding_fails_before_context_compilation",
+            "vertical_tests::vertical_facade_selects_only_a_legal_objective_action_without_authority",
+            "vertical_tests::vertical_receipt_is_stable_under_canonical_input_reordering"
+          ],
+          "Bazel_XML_wrapper_cases": 1,
+          "product_TestRunner": {
+            "sequence": 64889,
+            "args": [
+              "external\\bazel_tools\\tools\\test\\tw.exe",
+              "codex-rs/hepta-intelligence/hepta-intelligence-unit-tests.bat"
+            ],
+            "runner": "local",
+            "cache_hit": false,
+            "exit_code": 0,
+            "timeout_millis": 300000
+          },
+          "XML_helper": {
+            "sequence": 64893,
+            "args": [
+              "external\\bazel_tools\\tools\\test\\xml.exe",
+              "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/hepta-intelligence/hepta-intelligence-unit-tests/test.log",
+              "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/hepta-intelligence/hepta-intelligence-unit-tests/test.xml",
+              "88",
+              "0"
+            ],
+            "runner": "local",
+            "cache_hit": false,
+            "exit_code": 0,
+            "timeout_millis": 0
+          },
+          "XML_helper_own_input_test_log": {
+            "hash": "de93f20bf203dc3ee84f52a110352b3dbcecd97a854c18c0de982c856f93fe49",
+            "size_bytes": 7458,
+            "hash_function_name": ""
+          },
+          "XML_helper_own_output_XML": {
+            "hash": "b396ada09d7a647c0be8bcaea38edfcfda914f0d263494d7409da206773b9393",
+            "size_bytes": 7831,
+            "hash_function_name": ""
+          }
+        },
+        {
+          "target": "//codex-rs/hepta-bao-adapter:hepta-bao-adapter-unit-tests",
+          "rust_cases_passed": 19,
+          "rust_cases_failed": 0,
+          "rust_cases_ignored": 0,
+          "filtered": 0,
+          "required_original_controls": [
+            "expiry_is_durable_and_terminal_for_renewal",
+            "issue_rejects_non_active_provider_observations_without_durable_mutation",
+            "issue_unknown_reconciles_without_duplicate_issue",
+            "provider_not_applied_restores_active_lease_after_unknown",
+            "renew_unknown_blocks_fabricated_success_until_reconciled",
+            "reused_operation_id_with_changed_semantics_conflicts",
+            "revoke_unknown_stays_nonterminal_until_provider_observation",
+            "unavailable_storage_never_publishes_a_prepared_operation"
+          ],
+          "test_case_names": [
+            "lease_lifecycle::tests::expiry_is_durable_and_terminal_for_renewal",
+            "lease_lifecycle::tests::issue_rejects_non_active_provider_observations_without_durable_mutation",
+            "lease_lifecycle::tests::issue_unknown_reconciles_without_duplicate_issue",
+            "lease_lifecycle::tests::provider_not_applied_restores_active_lease_after_unknown",
+            "lease_lifecycle::tests::renew_unknown_blocks_fabricated_success_until_reconciled",
+            "lease_lifecycle::tests::reused_operation_id_with_changed_semantics_conflicts",
+            "lease_lifecycle::tests::revoke_unknown_stays_nonterminal_until_provider_observation",
+            "lease_lifecycle::tests::unavailable_storage_never_publishes_a_prepared_operation",
+            "tests::bounded_reference_parser_rejects_hostile_components",
+            "tests::current_permission_still_cannot_self_mint_provider_authority",
+            "tests::denied_unavailable_and_indeterminate_remain_distinct",
+            "tests::exact_reference_returns_only_opaque_digest",
+            "tests::incomplete_or_overlong_grant_metadata_never_degrades_to_success",
+            "tests::producer_principal_and_payload_bindings_are_exact",
+            "tests::revoked_and_stale_grants_fail_before_any_effect",
+            "tests::revoked_lease_is_rejected",
+            "tests::scope_drift_is_rejected",
+            "tests::unknown_schema_and_expired_request_are_rejected",
+            "tests::version_drift_is_rejected"
+          ],
+          "Bazel_XML_wrapper_cases": 1,
+          "product_TestRunner": {
+            "sequence": 64877,
+            "args": [
+              "external\\bazel_tools\\tools\\test\\tw.exe",
+              "codex-rs/hepta-bao-adapter/hepta-bao-adapter-unit-tests.bat"
+            ],
+            "runner": "local",
+            "cache_hit": false,
+            "exit_code": 0,
+            "timeout_millis": 300000
+          },
+          "XML_helper": {
+            "sequence": 64881,
+            "args": [
+              "external\\bazel_tools\\tools\\test\\xml.exe",
+              "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/hepta-bao-adapter/hepta-bao-adapter-unit-tests/test.log",
+              "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/hepta-bao-adapter/hepta-bao-adapter-unit-tests/test.xml",
+              "82",
+              "0"
+            ],
+            "runner": "local",
+            "cache_hit": false,
+            "exit_code": 0,
+            "timeout_millis": 0
+          },
+          "XML_helper_own_input_test_log": {
+            "hash": "030489ae9bde8a9cba00cc6d941df399c9807f0833ebc128251870c98b01227d",
+            "size_bytes": 1712,
+            "hash_function_name": ""
+          },
+          "XML_helper_own_output_XML": {
+            "hash": "8a899a4b4dd6685428939e1320902c48a8648f47f3260e931b466321da3eeb20",
+            "size_bytes": 2081,
+            "hash_function_name": ""
+          }
+        },
+        {
+          "target": "//codex-rs/hepta-codex-adapter:hepta-codex-adapter-unit-tests",
+          "rust_cases_passed": 21,
+          "rust_cases_failed": 0,
+          "rust_cases_ignored": 0,
+          "filtered": 0,
+          "required_original_controls": [
+            "thread_read_recovery_keeps_in_progress_indeterminate",
+            "thread_read_recovery_rejects_session_drift_and_duplicate_turns",
+            "thread_read_recovery_requires_exact_stable_message_and_input"
+          ],
+          "test_case_names": [
+            "deadline_digest_tests::deadline_is_bound_and_exclusive",
+            "deadline_digest_tests::exact_request_retry_is_stable",
+            "deadline_digest_tests::observed_terminal_evidence_is_not_erased_by_later_wall_clock",
+            "tests::exact_prompt_delivery_observation_binds_submitted_bytes",
+            "tests::only_observed_overload_is_retry_safe",
+            "tests::payload_drift_fails_closed",
+            "tests::prompt_delivery_rejection_and_positions_fail_closed",
+            "tests::prompt_delivery_rejects_payload_drift_and_nonterminal_claims",
+            "tests::prompt_delivery_v1_rejection_requires_bounded_reason_and_canonical_positions",
+            "tests::prompt_delivery_v1_rejects_digest_drift_and_nonterminal_claims",
+            "tests::prompt_delivery_v1_requires_exact_terminal_provider_request",
+            "tests::request_digest_binds_source_generation_and_transport_connection",
+            "tests::terminal_outcomes_remain_distinct_and_authority_free",
+            "tests::terminal_witness_binds_connection_server_home_and_turn",
+            "tests::thread_read_recovery_keeps_in_progress_indeterminate",
+            "tests::thread_read_recovery_rejects_session_drift_and_duplicate_turns",
+            "tests::thread_read_recovery_requires_exact_stable_message_and_input",
+            "tests::unbound_wire_intent_cannot_consume_terminal_witness",
+            "wire::tests::wire_v2_can_only_produce_indeterminate_authority_free_request",
+            "wire::tests::wire_v2_refuses_to_drop_product_binding",
+            "wire::tests::wire_v2_rejects_unknown_fields_and_payload_drift"
+          ],
+          "Bazel_XML_wrapper_cases": 1,
+          "product_TestRunner": {
+            "sequence": 64865,
+            "args": [
+              "external\\bazel_tools\\tools\\test\\tw.exe",
+              "codex-rs/hepta-codex-adapter/hepta-codex-adapter-unit-tests.bat"
+            ],
+            "runner": "local",
+            "cache_hit": false,
+            "exit_code": 0,
+            "timeout_millis": 300000
+          },
+          "XML_helper": {
+            "sequence": 64869,
+            "args": [
+              "external\\bazel_tools\\tools\\test\\xml.exe",
+              "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/hepta-codex-adapter/hepta-codex-adapter-unit-tests/test.log",
+              "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/hepta-codex-adapter/hepta-codex-adapter-unit-tests/test.xml",
+              "66",
+              "0"
+            ],
+            "runner": "local",
+            "cache_hit": false,
+            "exit_code": 0,
+            "timeout_millis": 0
+          },
+          "XML_helper_own_input_test_log": {
+            "hash": "2eca1a152dd539e45581ee8a39152bd42330f0ee81802665b7363c47b61b3c11",
+            "size_bytes": 1849,
+            "hash_function_name": ""
+          },
+          "XML_helper_own_output_XML": {
+            "hash": "7c66fecb0983cfda4e60302b8515e11e01c8cd4c7847e85525f1179243574e9a",
+            "size_bytes": 2226,
+            "hash_function_name": ""
+          }
+        }
+      ],
+      "per_checkout_rust_total": {
+        "passed": 118,
+        "failed": 0,
+        "ignored": 0,
+        "filtered": 0
+      }
+    },
+    {
+      "artifact_id": 13494647856,
+      "job_id": 127839243318,
+      "checkout_kind": "source-head",
+      "actual_checkout": "17c6b903a5d5d470b72035f95bb6e087291d7e04",
+      "tree": "25020dc30888fa3ffa6f6e8d1073d91edded1756",
+      "ordered_parents": [
+        "840e8b5dbffca017753cdf87482ce325938f313c"
+      ],
+      "official_ZIP": {
+        "bytes": 3609526,
+        "git_blob": "311ef5102a2f7d657205973cfab234f73c516837",
+        "sha256": "f098f8860662a07b6bbfb741a1d5a717a7db45f75fbd486a68ecd12ee311b660"
+      },
+      "all_10_member_CRC_and_hashes_equal": true,
+      "full_original_job_log": {
+        "bytes": 195221,
+        "git_blob": "321d2fe442e8402aa28e92ff17e4d3910d64102d",
+        "sha256": "941bc0c77e72d7e69474af888d1cf50b90ab7abbb65cd610675c27c05eec6d41"
+      },
+      "job_log_CR_count": 1751,
+      "captured_9_worktree_input_bindings": [
+        {
+          "path": ".bazelrc",
+          "fixed_git_blob": "3d5877b283b887091af507f3672003f84c500687",
+          "worktree_sha256": "0a5924ef90c0df166fb23744c650e1721106a7af0717c4f693f814208657c822",
+          "exact_byte_transform": "LF_to_CRLF"
+        },
+        {
+          "path": "MODULE.bazel.lock",
+          "fixed_git_blob": "fd8c9d7c1f823cb2cc4d0f248e4f04ac03e99606",
+          "worktree_sha256": "4c8ed5a498230cdd66139d72701c1cfaf535db95b12fd259f87d2dcf6e4a6928",
+          "exact_byte_transform": "LF_to_CRLF"
+        },
+        {
+          "path": "codex-rs/Cargo.lock",
+          "fixed_git_blob": "bb9d285e0a4402657fb40412a0a2dc35b7aed64a",
+          "worktree_sha256": "f368a1dc52f57a225ef79a4344417d461e0cde22bb0a41b7fc7185a576cf7e2d",
+          "exact_byte_transform": "LF_to_CRLF"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs",
+          "fixed_git_blob": "b6e83e523821ff8de1fc4016940c6b174d563fa0",
+          "worktree_sha256": "0f13782689c4bca856b81854ea1a69fa919fe02def4d2a38c402f8cc353cce47",
+          "exact_byte_transform": "LF_to_CRLF"
+        },
+        {
+          "path": "codex-rs/hepta-bao-adapter/src/lease_lifecycle.rs",
+          "fixed_git_blob": "453768525b1f691206658042be46e70aefe95f17",
+          "worktree_sha256": "405cbe3fdb2494a3e0bd74f77d89f23f2a13836b396664c1c4b6651fabcbae3d",
+          "exact_byte_transform": "LF_to_CRLF"
+        },
+        {
+          "path": "codex-rs/hepta-bao-adapter/src/lease_lifecycle_tests.rs",
+          "fixed_git_blob": "d48c24ec00130cf9b28c748cde2e7b99dcecabf8",
+          "worktree_sha256": "ca028a1ea7d845a727a9114854326673fd83812e7e5ba23b5fd9a96c07d1a3bf",
+          "exact_byte_transform": "LF_to_CRLF"
+        },
+        {
+          "path": "codex-rs/hepta-codex-adapter/src/lib_tests.rs",
+          "fixed_git_blob": "802a1d3fa441d9c257a62b4c034d226ff8077db9",
+          "worktree_sha256": "00d13167b1eae5393c6fc20f567c4fa199d54f20e0f07038200d4e9e2089f012",
+          "exact_byte_transform": "LF_to_CRLF"
+        },
+        {
+          "path": "codex-rs/utils/path-utils/src/private_state_windows.rs",
+          "fixed_git_blob": "b8a81904fd7574f9e8429a04d070bd1031d5d981",
+          "worktree_sha256": "90046ec8e865bbc17cce7d64b7bfd9ee4881b02056103eb04950c73052a40b0b",
+          "exact_byte_transform": "LF_to_CRLF"
+        },
+        {
+          "path": ".github/workflows/windows-ordinary-consumers.yml",
+          "fixed_git_blob": "6d3cbfe5532260cd8c6084b39d28f54916153484",
+          "worktree_sha256": "774afa27d472d70c43f9c0d79fecb88d6967262a8355666f7501b92ad5605005",
+          "exact_byte_transform": "LF_to_CRLF"
+        }
+      ],
+      "original_command": [
+        "C:\\Program Files\\Git\\usr\\bin\\bash.exe",
+        ".github/scripts/run-bazel-ci.sh",
+        "--print-failed-action-summary",
+        "--print-failed-test-logs",
+        "--windows-msvc-host-platform",
+        "--",
+        "test",
+        "--platforms=//:windows_x86_64_msvc",
+        "--nocache_test_results",
+        "--flaky_test_attempts=1",
+        "--test_output=all",
+        "--build_metadata=COMMIT_SHA=17c6b903a5d5d470b72035f95bb6e087291d7e04",
+        "--",
+        "//codex-rs/hepta-intelligence:hepta-intelligence-unit-tests",
+        "//codex-rs/hepta-bao-adapter:hepta-bao-adapter-unit-tests",
+        "//codex-rs/hepta-codex-adapter:hepta-codex-adapter-unit-tests"
+      ],
+      "full_compact_records": 64893,
+      "full_compact_bytes": 21317469,
+      "compact_invocation": {
+        "type": "invocation",
+        "id": "c472dff2-515e-4899-813a-ba9d9db9f462"
+      },
+      "product_test_processes": 3,
+      "XML_helper_processes": 3,
+      "targets": [
+        {
+          "target": "//codex-rs/hepta-intelligence:hepta-intelligence-unit-tests",
+          "rust_cases_passed": 78,
+          "rust_cases_failed": 0,
+          "rust_cases_ignored": 0,
+          "filtered": 0,
+          "required_original_controls": [
+            "durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes",
+            "invalid_authentication_artifact_or_dataset_never_calls_any_port",
+            "ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded",
+            "old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch"
+          ],
+          "test_case_names": [
+            "canonical::tests::abstention_stops_before_context_and_evaluation",
+            "canonical::tests::canonical_selected_path_has_first_class_ndu_and_all_seven_owners",
+            "canonical::tests::key_rotation_and_wrong_owner_receipt_fail_closed",
+            "canonical::tests::legal_candidate_set_rejects_replay_identity_with_duplicate_semantics",
+            "canonical::tests::owner_generation_change_between_call_and_publication_fails_closed",
+            "capability_snapshot::tests::absent_optional_capability_composes_without_neural_or_model_artifact",
+            "capability_snapshot::tests::declaration_reordering_is_stable_but_replacement_changes_actual_plan",
+            "capability_snapshot::tests::duplicate_unknown_and_wrong_owner_are_not_admitted",
+            "capability_snapshot::tests::optional_absence_keeps_existing_selection_and_hard_veto_semantics",
+            "capability_snapshot::tests::optional_add_remove_is_explicit_and_does_not_weaken_requirements",
+            "capability_snapshot::tests::required_missing_and_fabricated_zero_artifact_reject",
+            "capability_snapshot::tests::snapshot_binds_core_freshness_and_bounded_unique_requirements",
+            "evaluated_shadow::tests::abstention_and_slow_path_are_real_decisions_without_dispatch_or_outcome",
+            "evaluated_shadow::tests::durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes",
+            "evaluated_shadow::tests::host_failure_or_substituted_intuition_never_reaches_the_durable_stage",
+            "evaluated_shadow::tests::invalid_authentication_artifact_or_dataset_never_calls_any_port",
+            "evaluated_shadow::tests::ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded",
+            "evaluated_shadow::tests::old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch",
+            "evaluated_shadow::tests::segmented::bad_evaluator_signature_does_not_enter_ports_or_modify_a_segmented_journal",
+            "evaluated_shadow::tests::segmented::existing_consumer_continues_after_rotation_and_replays_old_run_after_recovery",
+            "evaluated_shadow::tests::tampered_product_receipt_or_expired_candidate_evidence_refuses_all_ports",
+            "neuron_runtime::tests::named_product_caller_runs_through_runtime_without_extra_authority",
+            "objective_run::tests::authenticated_objective_is_durable_before_product_receipt_returns",
+            "objective_run::tests::compiler_conflict_is_durably_published_without_runtime_snapshot",
+            "objective_run::tests::exact_product_retry_is_idempotent_and_semantic_drift_conflicts",
+            "outcome_credit_v2::tests::credit_failure_preserves_outcome_for_exact_reconciliation",
+            "outcome_credit_v2::tests::product_path_records_outcome_correction_then_conserved_credit",
+            "outcome_credit_v2::tests::run_episode_mismatch_rejects_before_any_outcome_append",
+            "pipeline::tests::full_shadow_path_is_ordered_and_authority_free",
+            "pipeline::tests::invalid_budget_fails_before_any_port_call",
+            "pipeline::tests::ledger_failure_overrides_advisory_decision",
+            "pipeline::tests::mixed_snapshot_rejects_before_next_stage",
+            "pipeline::tests::non_intuition_stage_cannot_report_an_advisory_decision",
+            "pipeline::tests::optional_neuron_outage_uses_bounded_fallback",
+            "pipeline::tests::persisted_receipt_rejects_dispatch_without_required_stages",
+            "pipeline::tests::persisted_receipt_rejects_trace_mutation",
+            "pipeline::tests::raw_port_authority_widening_rejects_before_trusted_receipt",
+            "pipeline::tests::recomputed_digest_cannot_hide_a_missing_required_stage",
+            "pipeline::tests::required_objective_failure_is_terminal_and_receipted",
+            "pipeline::tests::slow_path_skips_context_and_dispatch_but_records_decision",
+            "pipeline::tests::trace_digest_is_deterministic_for_equal_port_receipts",
+            "pipeline_v2::tests::absent_core_is_rejected_even_when_manifest_omits_its_requirement",
+            "pipeline_v2::tests::abstention_does_not_dispatch_but_preserves_learning_stage",
+            "pipeline_v2::tests::existing_stage_engine_runs_without_neural_or_model_artifacts",
+            "pipeline_v2::tests::mixed_snapshot_receipt_still_fails_existing_engine_validation",
+            "pipeline_v2::tests::optional_add_remove_changes_routing_and_versioned_receipt",
+            "pipeline_v2::tests::self_consistent_wrong_owner_is_rejected_before_any_stage_call",
+            "plasticity_product::tests::admission_payload_binds_current_frontiers_and_generator",
+            "plasticity_product::tests::product_writer_refuses_unanchored_nonempty_bootstrap",
+            "plasticity_product_tests::anchor_commit_failure_poison_writer_after_durable_append",
+            "plasticity_product_tests::authenticated_product_path_generates_evaluates_appends_and_commits_anchor",
+            "plasticity_product_tests::durable_v2_evaluation_digest_binds_governed_admission_context",
+            "plasticity_product_tests::no_admissible_update_is_independently_attested_and_durably_recorded",
+            "plasticity_product_tests::product_path_rejects_generator_evaluator_controller_collision",
+            "plasticity_product_tests::product_path_rejects_observer_evaluator_controller_collision",
+            "plasticity_product_tests::product_path_rejects_tampered_frontier_witness",
+            "prompt_delivery::tests::compiler_rejects_registry_and_context_model_drift",
+            "prompt_delivery::tests::exercised_registry_payload_is_the_exact_context_attachment_input",
+            "prompt_delivery::tests::revocation_after_exercise_prevents_delivery_of_the_selected_realization",
+            "prompt_pipeline::tests::exercised_portfolio_compiles_attaches_and_observes_exact_delivery",
+            "prompt_pipeline::tests::materialization_drift_after_compilation_blocks_attachment_preparation",
+            "prompt_pipeline::tests::revocation_after_compilation_blocks_attachment_preparation",
+            "prompt_pipeline::tests::serialization_without_selected_prompt_bytes_fails_closed",
+            "tests::canonical_candidate_limit_is_enforced",
+            "tests::duplicate_candidate_is_rejected",
+            "tests::hard_veto_is_never_overridden",
+            "tests::highest_eligible_candidate_is_selected_without_effect_authority",
+            "tests::maximum_candidate_receipt_is_canonical_and_digest_complete",
+            "tests::no_eligible_candidate_abstains",
+            "topology_canary_product::tests::payload_binds_every_caller_asserted_canary_fact",
+            "topology_product::tests::authenticated_topology_path_verifies_three_roles_and_persists_governed_record",
+            "vertical_tests::candidate_outside_compiled_legal_actions_fails_closed",
+            "vertical_tests::objective_soft_dimensions_must_bind_the_ndu_profile",
+            "vertical_tests::omitted_cognitive_read_evidence_fails_closed",
+            "vertical_tests::selected_objective_profile_digest_cannot_be_replaced",
+            "vertical_tests::tampered_read_evidence_binding_fails_before_context_compilation",
+            "vertical_tests::vertical_facade_selects_only_a_legal_objective_action_without_authority",
+            "vertical_tests::vertical_receipt_is_stable_under_canonical_input_reordering"
+          ],
+          "Bazel_XML_wrapper_cases": 1,
+          "product_TestRunner": {
+            "sequence": 64889,
+            "args": [
+              "external\\bazel_tools\\tools\\test\\tw.exe",
+              "codex-rs/hepta-intelligence/hepta-intelligence-unit-tests.bat"
+            ],
+            "runner": "local",
+            "cache_hit": false,
+            "exit_code": 0,
+            "timeout_millis": 300000
+          },
+          "XML_helper": {
+            "sequence": 64893,
+            "args": [
+              "external\\bazel_tools\\tools\\test\\xml.exe",
+              "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/hepta-intelligence/hepta-intelligence-unit-tests/test.log",
+              "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/hepta-intelligence/hepta-intelligence-unit-tests/test.xml",
+              "88",
+              "0"
+            ],
+            "runner": "local",
+            "cache_hit": false,
+            "exit_code": 0,
+            "timeout_millis": 0
+          },
+          "XML_helper_own_input_test_log": {
+            "hash": "e71ef2c92a27038ead068c8a8fe2db50677c6db561801b3d1b3ed8e02cf1f10d",
+            "size_bytes": 7458,
+            "hash_function_name": ""
+          },
+          "XML_helper_own_output_XML": {
+            "hash": "98ad34e1bad2ef7aa4057edd239b513d3c3eb1888d0b5631f6fa296e6b0c544f",
+            "size_bytes": 7831,
+            "hash_function_name": ""
+          }
+        },
+        {
+          "target": "//codex-rs/hepta-bao-adapter:hepta-bao-adapter-unit-tests",
+          "rust_cases_passed": 19,
+          "rust_cases_failed": 0,
+          "rust_cases_ignored": 0,
+          "filtered": 0,
+          "required_original_controls": [
+            "expiry_is_durable_and_terminal_for_renewal",
+            "issue_rejects_non_active_provider_observations_without_durable_mutation",
+            "issue_unknown_reconciles_without_duplicate_issue",
+            "provider_not_applied_restores_active_lease_after_unknown",
+            "renew_unknown_blocks_fabricated_success_until_reconciled",
+            "reused_operation_id_with_changed_semantics_conflicts",
+            "revoke_unknown_stays_nonterminal_until_provider_observation",
+            "unavailable_storage_never_publishes_a_prepared_operation"
+          ],
+          "test_case_names": [
+            "lease_lifecycle::tests::expiry_is_durable_and_terminal_for_renewal",
+            "lease_lifecycle::tests::issue_rejects_non_active_provider_observations_without_durable_mutation",
+            "lease_lifecycle::tests::issue_unknown_reconciles_without_duplicate_issue",
+            "lease_lifecycle::tests::provider_not_applied_restores_active_lease_after_unknown",
+            "lease_lifecycle::tests::renew_unknown_blocks_fabricated_success_until_reconciled",
+            "lease_lifecycle::tests::reused_operation_id_with_changed_semantics_conflicts",
+            "lease_lifecycle::tests::revoke_unknown_stays_nonterminal_until_provider_observation",
+            "lease_lifecycle::tests::unavailable_storage_never_publishes_a_prepared_operation",
+            "tests::bounded_reference_parser_rejects_hostile_components",
+            "tests::current_permission_still_cannot_self_mint_provider_authority",
+            "tests::denied_unavailable_and_indeterminate_remain_distinct",
+            "tests::exact_reference_returns_only_opaque_digest",
+            "tests::incomplete_or_overlong_grant_metadata_never_degrades_to_success",
+            "tests::producer_principal_and_payload_bindings_are_exact",
+            "tests::revoked_and_stale_grants_fail_before_any_effect",
+            "tests::revoked_lease_is_rejected",
+            "tests::scope_drift_is_rejected",
+            "tests::unknown_schema_and_expired_request_are_rejected",
+            "tests::version_drift_is_rejected"
+          ],
+          "Bazel_XML_wrapper_cases": 1,
+          "product_TestRunner": {
+            "sequence": 64864,
+            "args": [
+              "external\\bazel_tools\\tools\\test\\tw.exe",
+              "codex-rs/hepta-bao-adapter/hepta-bao-adapter-unit-tests.bat"
+            ],
+            "runner": "local",
+            "cache_hit": false,
+            "exit_code": 0,
+            "timeout_millis": 300000
+          },
+          "XML_helper": {
+            "sequence": 64868,
+            "args": [
+              "external\\bazel_tools\\tools\\test\\xml.exe",
+              "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/hepta-bao-adapter/hepta-bao-adapter-unit-tests/test.log",
+              "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/hepta-bao-adapter/hepta-bao-adapter-unit-tests/test.xml",
+              "84",
+              "0"
+            ],
+            "runner": "local",
+            "cache_hit": false,
+            "exit_code": 0,
+            "timeout_millis": 0
+          },
+          "XML_helper_own_input_test_log": {
+            "hash": "89532d6513b6df1f4ea4f69cffdfbdad9babc8b2c9c5b3d062f783f28db848d2",
+            "size_bytes": 1712,
+            "hash_function_name": ""
+          },
+          "XML_helper_own_output_XML": {
+            "hash": "3b8a9d31e9c3cef3176c23e80ac9bfcc4dc941318090b355184144d562058dfa",
+            "size_bytes": 2081,
+            "hash_function_name": ""
+          }
+        },
+        {
+          "target": "//codex-rs/hepta-codex-adapter:hepta-codex-adapter-unit-tests",
+          "rust_cases_passed": 21,
+          "rust_cases_failed": 0,
+          "rust_cases_ignored": 0,
+          "filtered": 0,
+          "required_original_controls": [
+            "thread_read_recovery_keeps_in_progress_indeterminate",
+            "thread_read_recovery_rejects_session_drift_and_duplicate_turns",
+            "thread_read_recovery_requires_exact_stable_message_and_input"
+          ],
+          "test_case_names": [
+            "deadline_digest_tests::deadline_is_bound_and_exclusive",
+            "deadline_digest_tests::exact_request_retry_is_stable",
+            "deadline_digest_tests::observed_terminal_evidence_is_not_erased_by_later_wall_clock",
+            "tests::exact_prompt_delivery_observation_binds_submitted_bytes",
+            "tests::only_observed_overload_is_retry_safe",
+            "tests::payload_drift_fails_closed",
+            "tests::prompt_delivery_rejection_and_positions_fail_closed",
+            "tests::prompt_delivery_rejects_payload_drift_and_nonterminal_claims",
+            "tests::prompt_delivery_v1_rejection_requires_bounded_reason_and_canonical_positions",
+            "tests::prompt_delivery_v1_rejects_digest_drift_and_nonterminal_claims",
+            "tests::prompt_delivery_v1_requires_exact_terminal_provider_request",
+            "tests::request_digest_binds_source_generation_and_transport_connection",
+            "tests::terminal_outcomes_remain_distinct_and_authority_free",
+            "tests::terminal_witness_binds_connection_server_home_and_turn",
+            "tests::thread_read_recovery_keeps_in_progress_indeterminate",
+            "tests::thread_read_recovery_rejects_session_drift_and_duplicate_turns",
+            "tests::thread_read_recovery_requires_exact_stable_message_and_input",
+            "tests::unbound_wire_intent_cannot_consume_terminal_witness",
+            "wire::tests::wire_v2_can_only_produce_indeterminate_authority_free_request",
+            "wire::tests::wire_v2_refuses_to_drop_product_binding",
+            "wire::tests::wire_v2_rejects_unknown_fields_and_payload_drift"
+          ],
+          "Bazel_XML_wrapper_cases": 1,
+          "product_TestRunner": {
+            "sequence": 64877,
+            "args": [
+              "external\\bazel_tools\\tools\\test\\tw.exe",
+              "codex-rs/hepta-codex-adapter/hepta-codex-adapter-unit-tests.bat"
+            ],
+            "runner": "local",
+            "cache_hit": false,
+            "exit_code": 0,
+            "timeout_millis": 300000
+          },
+          "XML_helper": {
+            "sequence": 64881,
+            "args": [
+              "external\\bazel_tools\\tools\\test\\xml.exe",
+              "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/hepta-codex-adapter/hepta-codex-adapter-unit-tests/test.log",
+              "bazel-out/windows_x86_64_msvc-fastbuild/testlogs/codex-rs/hepta-codex-adapter/hepta-codex-adapter-unit-tests/test.xml",
+              "75",
+              "0"
+            ],
+            "runner": "local",
+            "cache_hit": false,
+            "exit_code": 0,
+            "timeout_millis": 0
+          },
+          "XML_helper_own_input_test_log": {
+            "hash": "47c3ceae8a2b542d7d610da88e39b8ad5359f14752a9bcb434a7115d69ba32d1",
+            "size_bytes": 1849,
+            "hash_function_name": ""
+          },
+          "XML_helper_own_output_XML": {
+            "hash": "c5c22b226753a3cbcd31836be069330d54d124498b8f711a402bc56518274107",
+            "size_bytes": 2226,
+            "hash_function_name": ""
+          }
+        }
+      ],
+      "per_checkout_rust_total": {
+        "passed": 118,
+        "failed": 0,
+        "ignored": 0,
+        "filtered": 0
+      }
+    }
+  ],
+  "denominators": "118 original Rust cases per distinct checkout, not 236 distinct cases; three Bazel XML wrapper cases per checkout; three XML helpers are not test retries",
+  "whole_candidate_qualified": false,
+  "newly_closed_blockers": [],
+  "limitations": [
+    "These original library BUILD targets retain their existing qualification/test dependency replacements; this is not external producer acceptance.",
+    "No B11 strict outside-delete or full-platform qualification follows from these three library targets.",
+    "No result from old840 was transferred; this packet binds head17 and merge26cf directly.",
+    "Offline replay runs only Python and zstd decoding, not Rust/Cargo/Bazel/native tests or CI."
+  ]
+}

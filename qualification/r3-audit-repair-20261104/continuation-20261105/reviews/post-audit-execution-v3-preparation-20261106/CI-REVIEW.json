@@ -1,0 +1,820 @@
+{
+  "schema": "hepta-latest-product-17-distinct-bounded-CI-observations-v3",
+  "current_product_head": "17c6b903a5d5d470b72035f95bb6e087291d7e04",
+  "current_product_tree": "25020dc30888fa3ffa6f6e8d1073d91edded1756",
+  "actual_PR_merge": "26cfdcaa70cbd2daecd165137e3b84d2ad1a7284",
+  "latest_observation_utc": "2026-11-06T11:11:30Z",
+  "non_atomic": true,
+  "latest_time_is_not_a_new_whole_run_census": true,
+  "prior_complete_lists_and_library_evidence": {
+    "input_identity": {
+      "bytes": 24508,
+      "git_blob": "f1eb237de0cecf3d72792ae2d83d07931b2253ec",
+      "sha256": "3675c2a2b925296c2657212e70ff3f4b198779f2225bb6a681c48ec59fc89ded"
+    },
+    "observation": {
+      "schema": "hepta-latest-product-17-distinct-bounded-CI-observations-v2",
+      "current_product_head": "17c6b903a5d5d470b72035f95bb6e087291d7e04",
+      "current_product_tree": "25020dc30888fa3ffa6f6e8d1073d91edded1756",
+      "actual_PR_merge": "26cfdcaa70cbd2daecd165137e3b84d2ad1a7284",
+      "latest_observation_utc": "2026-11-06T10:43:51Z",
+      "non_atomic": true,
+      "latest_time_is_not_a_new_whole_run_census": true,
+      "earlier_complete_run_list_cut": {
+        "input_identity": {
+          "bytes": 9240,
+          "git_blob": "1a20005133c3d17ddccf7cf6c432adbdd85a4f35",
+          "sha256": "21694e4daee926b43d97a3aa60afb9d6237c14d7ae2c00499c967653f1a2b176"
+        },
+        "observation": {
+          "schema": "hepta-latest-product-17-automatic-CI-bounded-observation-v1",
+          "current_product_head": "17c6b903a5d5d470b72035f95bb6e087291d7e04",
+          "current_product_tree": "25020dc30888fa3ffa6f6e8d1073d91edded1756",
+          "actual_PR_merge": "26cfdcaa70cbd2daecd165137e3b84d2ad1a7284",
+          "latest_observation_utc": "2026-11-06 10:32:44 UTC",
+          "non_atomic": true,
+          "run_list": {
+            "head": "17c6b903a5d5d470b72035f95bb6e087291d7e04",
+            "original_fetch_completed_before_UTC": "2026-11-06 10:31:19 UTC",
+            "local_save_first_attempt": "exec-server transport disconnected; complete raw tool return retained in V8",
+            "total_count": 18,
+            "status_counts": {
+              "queued": 11,
+              "pending": 3,
+              "skipped": 2,
+              "success": 1,
+              "in_progress": 1
+            },
+            "runs": [
+              {
+                "id": 42201989551,
+                "name": "Hepta Keyring Sync Security Migration (Draft)",
+                "path": ".github/workflows/hepta-keyring-sync-advisory.yml",
+                "status": "queued",
+                "conclusion": null,
+                "attempt": 1,
+                "created_at": "2026-11-06T10:21:03Z",
+                "updated_at": "2026-11-06T10:21:03Z",
+                "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42201989551"
+              },
+              {
+                "id": 42201989568,
+                "name": "Hepta Memory P0 native regressions",
+                "path": ".github/workflows/hepta-windows-federation-revoke.yml",
+                "status": "queued",
+                "conclusion": null,
+                "attempt": 1,
+                "created_at": "2026-11-06T10:21:03Z",
+                "updated_at": "2026-11-06T10:21:03Z",
+                "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42201989568"
+              },
+              {
+                "id": 42201989807,
+                "name": "Hepta musl product smoke",
+                "path": ".github/workflows/hepta-musl-product-smoke.yml",
+                "status": "queued",
+                "conclusion": null,
+                "attempt": 1,
+                "created_at": "2026-11-06T10:21:03Z",
+                "updated_at": "2026-11-06T10:21:03Z",
+                "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42201989807"
+              },
+              {
+                "id": 42201989809,
+                "name": "Hepta Supervisor P0 Cross-Platform Restart Qualification",
+                "path": ".github/workflows/hepta-supervisor-p0-crossplatform.yml",
+                "status": "queued",
+                "conclusion": null,
+                "attempt": 1,
+                "created_at": "2026-11-06T10:21:03Z",
+                "updated_at": "2026-11-06T10:21:03Z",
+                "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42201989809"
+              },
+              {
+                "id": 42201989915,
+                "name": "Hepta Windows private-state native (security qualification only)",
+                "path": ".github/workflows/hepta-windows-private-state-native.yml",
+                "status": "queued",
+                "conclusion": null,
+                "attempt": 1,
+                "created_at": "2026-11-06T10:21:03Z",
+                "updated_at": "2026-11-06T10:21:03Z",
+                "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42201989915"
+              },
+              {
+                "id": 42201989751,
+                "name": "Rust UI product foundation",
+                "path": ".github/workflows/ui-product-foundation.yml",
+                "status": "pending",
+                "conclusion": null,
+                "attempt": 1,
+                "created_at": "2026-11-06T10:21:03Z",
+                "updated_at": "2026-11-06T10:21:04Z",
+                "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42201989751"
+              },
+              {
+                "id": 42201989351,
+                "name": "Hepta architecture convergence",
+                "path": ".github/workflows/hepta-architecture-convergence.yml",
+                "status": "pending",
+                "conclusion": null,
+                "attempt": 1,
+                "created_at": "2026-11-06T10:21:03Z",
+                "updated_at": "2026-11-06T10:21:04Z",
+                "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42201989351"
+              },
+              {
+                "id": 42201989435,
+                "name": "Native Windows Bazel process environment",
+                "path": ".github/workflows/windows-bazel-process-native.yml",
+                "status": "queued",
+                "conclusion": null,
+                "attempt": 1,
+                "created_at": "2026-11-06T10:21:03Z",
+                "updated_at": "2026-11-06T10:21:03Z",
+                "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42201989435"
+              },
+              {
+                "id": 42201989959,
+                "name": "Production HOS2 owner proposal",
+                "path": ".github/workflows/hepta-production-hos2-proposal.yml",
+                "status": "completed",
+                "conclusion": "skipped",
+                "attempt": 1,
+                "created_at": "2026-11-06T10:21:03Z",
+                "updated_at": "2026-11-06T10:21:05Z",
+                "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42201989959"
+              },
+              {
+                "id": 42201989855,
+                "name": "App-server schema refresh",
+                "path": ".github/workflows/hepta-app-server-schema-refresh.yml",
+                "status": "completed",
+                "conclusion": "skipped",
+                "attempt": 1,
+                "created_at": "2026-11-06T10:21:03Z",
+                "updated_at": "2026-11-06T10:21:04Z",
+                "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42201989855"
+              },
+              {
+                "id": 42201989789,
+                "name": "Hepta owner-local Matrixd and Agentd native transport",
+                "path": ".github/workflows/hepta-owner-local-native.yml",
+                "status": "queued",
+                "conclusion": null,
+                "attempt": 1,
+                "created_at": "2026-11-06T10:21:03Z",
+                "updated_at": "2026-11-06T10:21:05Z",
+                "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42201989789"
+              },
+              {
+                "id": 42201989815,
+                "name": "blocking-ci",
+                "path": ".github/workflows/blocking-ci.yml",
+                "status": "pending",
+                "conclusion": null,
+                "attempt": 1,
+                "created_at": "2026-11-06T10:21:03Z",
+                "updated_at": "2026-11-06T10:21:05Z",
+                "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42201989815"
+              },
+              {
+                "id": 42201989582,
+                "name": "Hepta operator acceptance native signature verification",
+                "path": ".github/workflows/hepta-operator-acceptance-native.yml",
+                "status": "queued",
+                "conclusion": null,
+                "attempt": 1,
+                "created_at": "2026-11-06T10:21:03Z",
+                "updated_at": "2026-11-06T10:21:05Z",
+                "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42201989582"
+              },
+              {
+                "id": 42201989547,
+                "name": "Hepta exec recovery and authorized-read conformance",
+                "path": ".github/workflows/hepta-exec-authorized-read-compat.yml",
+                "status": "queued",
+                "conclusion": null,
+                "attempt": 1,
+                "created_at": "2026-11-06T10:21:03Z",
+                "updated_at": "2026-11-06T10:22:24Z",
+                "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42201989547"
+              },
+              {
+                "id": 42201989845,
+                "name": "Original Objective owner package gates",
+                "path": ".github/workflows/hepta-objective-owner.yml",
+                "status": "queued",
+                "conclusion": null,
+                "attempt": 1,
+                "created_at": "2026-11-06T10:21:03Z",
+                "updated_at": "2026-11-06T10:26:05Z",
+                "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42201989845"
+              },
+              {
+                "id": 42201989602,
+                "name": "v8-canary",
+                "path": ".github/workflows/v8-canary.yml",
+                "status": "queued",
+                "conclusion": null,
+                "attempt": 1,
+                "created_at": "2026-11-06T10:21:03Z",
+                "updated_at": "2026-11-06T10:24:45Z",
+                "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42201989602"
+              },
+              {
+                "id": 42201989580,
+                "name": "Native Windows ordinary business consumers",
+                "path": ".github/workflows/windows-ordinary-consumers.yml",
+                "status": "completed",
+                "conclusion": "success",
+                "attempt": 1,
+                "created_at": "2026-11-06T10:21:03Z",
+                "updated_at": "2026-11-06T10:27:19Z",
+                "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42201989580"
+              },
+              {
+                "id": 42201989530,
+                "name": "Bazel stable lock proposal",
+                "path": ".github/workflows/hepta-bazel-stable-lock-proposal.yml",
+                "status": "in_progress",
+                "conclusion": null,
+                "attempt": 1,
+                "created_at": "2026-11-06T10:21:03Z",
+                "updated_at": "2026-11-06T10:30:04Z",
+                "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42201989530"
+              }
+            ]
+          },
+          "blocking": {
+            "run": 42201989815,
+            "observed_utc": "2026-11-06 10:32:44 UTC",
+            "complete_job_count": 0,
+            "status_counts": {},
+            "jobs": []
+          },
+          "whole_candidate_qualified": false,
+          "required_original_CI_all_success": false,
+          "original_platform_test_acceptance_inferred_from_run_summary": false,
+          "pending_scope_dependent_jobs_are_not_declared_skipped_or_failed": true,
+          "manual_CI_dispatch_rerun_cancel": false,
+          "private_capacity_query": false,
+          "B16_replay": false
+        }
+      },
+      "later_selected_jobs_and_native_business": {
+        "input_identity": {
+          "bytes": 11963,
+          "git_blob": "1122949f7e01344d7ca914320e27a98e779d258c",
+          "sha256": "358ff2e61219f211a1edc6b59b12e9cbff84087e14c828f2e8efeb41f7ccde03"
+        },
+        "observation": {
+          "schema": "hepta-current-product-native-followup-summary-v1",
+          "current_product_head": "17c6b903a5d5d470b72035f95bb6e087291d7e04",
+          "current_product_tree": "25020dc30888fa3ffa6f6e8d1073d91edded1756",
+          "actual_PR_merge": "26cfdcaa70cbd2daecd165137e3b84d2ad1a7284",
+          "latest_observation_utc": "2026-11-06T10:43:51Z",
+          "whole_candidate_qualified": false,
+          "blocking": {
+            "observed_before_utc": "2026-11-06T10:43:30Z",
+            "run_id": 42201989815,
+            "complete_jobs": 0
+          },
+          "Supervisor": {
+            "observed_before_utc": "2026-11-06T10:43:30Z",
+            "run_id": 42201989809,
+            "complete_jobs": 2,
+            "in_progress": 2
+          },
+          "ordinary_business_run": 42201989580,
+          "ordinary_business_scope": "original full Windows library unit targets; existing qualification/test dependency replacements retained",
+          "ordinary_business_results": [
+            {
+              "job_id": 127839242912,
+              "artifact_id": 13495625588,
+              "checkout_kind": "base-merge",
+              "actual_checkout": "26cfdcaa70cbd2daecd165137e3b84d2ad1a7284",
+              "tree": "25020dc30888fa3ffa6f6e8d1073d91edded1756",
+              "ordered_parents": [
+                "63652be658ebed8d3052eb789b951793384fd5e4",
+                "17c6b903a5d5d470b72035f95bb6e087291d7e04"
+              ],
+              "job_conclusion": "success",
+              "official_ZIP": {
+                "bytes": 3604185,
+                "git_blob": "6f562cb80e84b390509ab1b83ac21a695dac96e6",
+                "sha256": "b5da4d45ec9c6f81e747596df79922c45ce118c39a9b51de3d113897295b0036"
+              },
+              "all_10_member_CRC_and_hashes_equal": true,
+              "original_full_library_targets": [
+                {
+                  "target": "//codex-rs/hepta-intelligence:hepta-intelligence-unit-tests",
+                  "rust_cases_passed": 78,
+                  "rust_cases_failed": 0,
+                  "rust_cases_ignored": 0,
+                  "filtered": 0,
+                  "required_original_controls": [
+                    "durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes",
+                    "invalid_authentication_artifact_or_dataset_never_calls_any_port",
+                    "ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded",
+                    "old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch"
+                  ],
+                  "all_required_controls_passed": true,
+                  "Bazel_XML_wrapper_cases": 1,
+                  "product_TestRunner": {
+                    "sequence": 64889,
+                    "args": [
+                      "external\\bazel_tools\\tools\\test\\tw.exe",
+                      "codex-rs/hepta-intelligence/hepta-intelligence-unit-tests.bat"
+                    ],
+                    "runner": "local",
+                    "cache_hit": false,
+                    "exit_code": 0,
+                    "timeout_millis": 300000
+                  },
+                  "XML_helper_own_input_log_and_own_output_XML_hashes_equal": true
+                },
+                {
+                  "target": "//codex-rs/hepta-bao-adapter:hepta-bao-adapter-unit-tests",
+                  "rust_cases_passed": 19,
+                  "rust_cases_failed": 0,
+                  "rust_cases_ignored": 0,
+                  "filtered": 0,
+                  "required_original_controls": [
+                    "expiry_is_durable_and_terminal_for_renewal",
+                    "issue_rejects_non_active_provider_observations_without_durable_mutation",
+                    "issue_unknown_reconciles_without_duplicate_issue",
+                    "provider_not_applied_restores_active_lease_after_unknown",
+                    "renew_unknown_blocks_fabricated_success_until_reconciled",
+                    "reused_operation_id_with_changed_semantics_conflicts",
+                    "revoke_unknown_stays_nonterminal_until_provider_observation",
+                    "unavailable_storage_never_publishes_a_prepared_operation"
+                  ],
+                  "all_required_controls_passed": true,
+                  "Bazel_XML_wrapper_cases": 1,
+                  "product_TestRunner": {
+                    "sequence": 64877,
+                    "args": [
+                      "external\\bazel_tools\\tools\\test\\tw.exe",
+                      "codex-rs/hepta-bao-adapter/hepta-bao-adapter-unit-tests.bat"
+                    ],
+                    "runner": "local",
+                    "cache_hit": false,
+                    "exit_code": 0,
+                    "timeout_millis": 300000
+                  },
+                  "XML_helper_own_input_log_and_own_output_XML_hashes_equal": true
+                },
+                {
+                  "target": "//codex-rs/hepta-codex-adapter:hepta-codex-adapter-unit-tests",
+                  "rust_cases_passed": 21,
+                  "rust_cases_failed": 0,
+                  "rust_cases_ignored": 0,
+                  "filtered": 0,
+                  "required_original_controls": [
+                    "thread_read_recovery_keeps_in_progress_indeterminate",
+                    "thread_read_recovery_rejects_session_drift_and_duplicate_turns",
+                    "thread_read_recovery_requires_exact_stable_message_and_input"
+                  ],
+                  "all_required_controls_passed": true,
+                  "Bazel_XML_wrapper_cases": 1,
+                  "product_TestRunner": {
+                    "sequence": 64865,
+                    "args": [
+                      "external\\bazel_tools\\tools\\test\\tw.exe",
+                      "codex-rs/hepta-codex-adapter/hepta-codex-adapter-unit-tests.bat"
+                    ],
+                    "runner": "local",
+                    "cache_hit": false,
+                    "exit_code": 0,
+                    "timeout_millis": 300000
+                  },
+                  "XML_helper_own_input_log_and_own_output_XML_hashes_equal": true
+                }
+              ],
+              "per_checkout_rust_total": {
+                "passed": 118,
+                "failed": 0,
+                "ignored": 0,
+                "filtered": 0
+              },
+              "full_compact_records": 64893,
+              "compact_invocation": {
+                "type": "invocation",
+                "id": "01d0b774-3ed3-4e96-9148-0e8000d49791"
+              },
+              "product_processes": 3,
+              "XML_helper_processes": 3,
+              "captured_inputs": 9,
+              "all_fixed_Git_bytes_LF_to_CRLF_match_captured_input_hashes": true
+            },
+            {
+              "job_id": 127839243318,
+              "artifact_id": 13494647856,
+              "checkout_kind": "source-head",
+              "actual_checkout": "17c6b903a5d5d470b72035f95bb6e087291d7e04",
+              "tree": "25020dc30888fa3ffa6f6e8d1073d91edded1756",
+              "ordered_parents": [
+                "840e8b5dbffca017753cdf87482ce325938f313c"
+              ],
+              "job_conclusion": "success",
+              "official_ZIP": {
+                "bytes": 3609526,
+                "git_blob": "311ef5102a2f7d657205973cfab234f73c516837",
+                "sha256": "f098f8860662a07b6bbfb741a1d5a717a7db45f75fbd486a68ecd12ee311b660"
+              },
+              "all_10_member_CRC_and_hashes_equal": true,
+              "original_full_library_targets": [
+                {
+                  "target": "//codex-rs/hepta-intelligence:hepta-intelligence-unit-tests",
+                  "rust_cases_passed": 78,
+                  "rust_cases_failed": 0,
+                  "rust_cases_ignored": 0,
+                  "filtered": 0,
+                  "required_original_controls": [
+                    "durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes",
+                    "invalid_authentication_artifact_or_dataset_never_calls_any_port",
+                    "ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded",
+                    "old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch"
+                  ],
+                  "all_required_controls_passed": true,
+                  "Bazel_XML_wrapper_cases": 1,
+                  "product_TestRunner": {
+                    "sequence": 64889,
+                    "args": [
+                      "external\\bazel_tools\\tools\\test\\tw.exe",
+                      "codex-rs/hepta-intelligence/hepta-intelligence-unit-tests.bat"
+                    ],
+                    "runner": "local",
+                    "cache_hit": false,
+                    "exit_code": 0,
+                    "timeout_millis": 300000
+                  },
+                  "XML_helper_own_input_log_and_own_output_XML_hashes_equal": true
+                },
+                {
+                  "target": "//codex-rs/hepta-bao-adapter:hepta-bao-adapter-unit-tests",
+                  "rust_cases_passed": 19,
+                  "rust_cases_failed": 0,
+                  "rust_cases_ignored": 0,
+                  "filtered": 0,
+                  "required_original_controls": [
+                    "expiry_is_durable_and_terminal_for_renewal",
+                    "issue_rejects_non_active_provider_observations_without_durable_mutation",
+                    "issue_unknown_reconciles_without_duplicate_issue",
+                    "provider_not_applied_restores_active_lease_after_unknown",
+                    "renew_unknown_blocks_fabricated_success_until_reconciled",
+                    "reused_operation_id_with_changed_semantics_conflicts",
+                    "revoke_unknown_stays_nonterminal_until_provider_observation",
+                    "unavailable_storage_never_publishes_a_prepared_operation"
+                  ],
+                  "all_required_controls_passed": true,
+                  "Bazel_XML_wrapper_cases": 1,
+                  "product_TestRunner": {
+                    "sequence": 64864,
+                    "args": [
+                      "external\\bazel_tools\\tools\\test\\tw.exe",
+                      "codex-rs/hepta-bao-adapter/hepta-bao-adapter-unit-tests.bat"
+                    ],
+                    "runner": "local",
+                    "cache_hit": false,
+                    "exit_code": 0,
+                    "timeout_millis": 300000
+                  },
+                  "XML_helper_own_input_log_and_own_output_XML_hashes_equal": true
+                },
+                {
+                  "target": "//codex-rs/hepta-codex-adapter:hepta-codex-adapter-unit-tests",
+                  "rust_cases_passed": 21,
+                  "rust_cases_failed": 0,
+                  "rust_cases_ignored": 0,
+                  "filtered": 0,
+                  "required_original_controls": [
+                    "thread_read_recovery_keeps_in_progress_indeterminate",
+                    "thread_read_recovery_rejects_session_drift_and_duplicate_turns",
+                    "thread_read_recovery_requires_exact_stable_message_and_input"
+                  ],
+                  "all_required_controls_passed": true,
+                  "Bazel_XML_wrapper_cases": 1,
+                  "product_TestRunner": {
+                    "sequence": 64877,
+                    "args": [
+                      "external\\bazel_tools\\tools\\test\\tw.exe",
+                      "codex-rs/hepta-codex-adapter/hepta-codex-adapter-unit-tests.bat"
+                    ],
+                    "runner": "local",
+                    "cache_hit": false,
+                    "exit_code": 0,
+                    "timeout_millis": 300000
+                  },
+                  "XML_helper_own_input_log_and_own_output_XML_hashes_equal": true
+                }
+              ],
+              "per_checkout_rust_total": {
+                "passed": 118,
+                "failed": 0,
+                "ignored": 0,
+                "filtered": 0
+              },
+              "full_compact_records": 64893,
+              "compact_invocation": {
+                "type": "invocation",
+                "id": "c472dff2-515e-4899-813a-ba9d9db9f462"
+              },
+              "product_processes": 3,
+              "XML_helper_processes": 3,
+              "captured_inputs": 9,
+              "all_fixed_Git_bytes_LF_to_CRLF_match_captured_input_hashes": true
+            }
+          ],
+          "denominators": "118 original Rust cases per distinct checkout, not 236 distinct cases; three Bazel XML wrapper cases per checkout; three XML helpers are not test retries",
+          "source_full_tree_leaves_verified": 10804,
+          "unchanged_original_workflow_budget_minutes": 120,
+          "no_test_filter": true,
+          "actual_flaky_test_attempts": 1,
+          "test_cache_disabled_and_product_spawn_noncache_verified": true,
+          "offline_verifier": {
+            "exit_code": 0,
+            "stdout_bytes": 44951,
+            "stdout_git_blob": "a7825a0ebb2cc330a13df03a4cf83348a65ffb05",
+            "stdout_sha256": "87571d6eff183438d28eec08763634319f1fa79eff322e4756682e1174270abe",
+            "stderr_bytes": 0
+          },
+          "local_verifier_development_failures": [
+            "verification-01: comparison did not normalize CRLF in artifact JSON against normalized console; originals unchanged",
+            "verification-02: computed int protobuf type-count keys compared against JSON string keys; originals unchanged"
+          ],
+          "new_product_failures_in_this_observation": [],
+          "newly_closed_blockers": [],
+          "manual_CI_operations": [],
+          "private_capacity_query": false,
+          "limitations": [
+            "These original library BUILD targets retain their existing qualification/test dependency replacements; this is not external producer acceptance.",
+            "No B11 strict outside-delete or full-platform qualification follows from these three library targets.",
+            "No result from old840 was transferred; this packet binds head17 and merge26cf directly.",
+            "Offline replay runs only Python and zstd decoding, not Rust/Cargo/Bazel/native tests or CI."
+          ]
+        }
+      },
+      "whole_candidate_qualified": false,
+      "required_original_CI_all_success": false,
+      "original_platform_test_acceptance_inferred_from_run_summary": false,
+      "manual_CI_dispatch_rerun_cancel": false,
+      "private_capacity_query": false,
+      "B16_replay": false,
+      "newly_closed_blockers": []
+    }
+  },
+  "later_Supervisor_P0_terminal": {
+    "input_identity": {
+      "bytes": 9148,
+      "git_blob": "36e8bd63849b034495e1ded5d19e4ce26eb85a88",
+      "sha256": "01bde4122497a7bf23ac7a0aeb08b14c4f70500a27a84f4f7eb39f75aae6c0a7"
+    },
+    "observation": {
+      "schema": "hepta-source17-supervisor-native-success-summary-v1",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "current_product_head": "17c6b903a5d5d470b72035f95bb6e087291d7e04",
+      "current_product_tree": "25020dc30888fa3ffa6f6e8d1073d91edded1756",
+      "source_parent": "840e8b5dbffca017753cdf87482ce325938f313c",
+      "actual_PR_merge": "26cfdcaa70cbd2daecd165137e3b84d2ad1a7284",
+      "target_base": "63652be658ebed8d3052eb789b951793384fd5e4",
+      "actual_jobs_checkout_HEAD_not_merge": true,
+      "workflow_run_id": 42201989809,
+      "event": "pull_request",
+      "jobs_API_observed_before_utc": "2026-11-06 11:11:02 UTC",
+      "artifact_API_observed_before_utc": "2026-11-06 11:11:30 UTC",
+      "complete_jobs": 2,
+      "complete_artifacts": 4,
+      "complete_product_leaves": 10804,
+      "workflow_path": ".github/workflows/hepta-supervisor-p0-crossplatform.yml",
+      "workflow_blob": "fdeb340099f9f720a353aa8b69372e75a335387e",
+      "workflow_original_timeout_minutes": 45,
+      "workflow_original_CARGO_BUILD_JOBS": 2,
+      "workflow_original_commands": {
+        "supervisor": "just test --locked -p codex-hepta-supervisor --test restart_budget --test restart_budget_recovery --test signed_intent_recovery --no-tests fail --retries 0 --status-level all --final-status-level all",
+        "protocol": "just test --locked -p codex-hepta-agent-protocol --profile default --test-threads 2 --no-tests fail --retries 0 --status-level all --final-status-level all",
+        "clippy": "cargo +1.95.0 clippy --locked -p codex-hepta-supervisor --all-targets -- -D warnings",
+        "Linux_format": "cargo +1.95.0 fmt --all -- --check",
+        "Windows_format": "cargo +1.95.0 fmt -p codex-hepta-supervisor -- --check"
+      },
+      "scope": {
+        "native_formatter_qualification_for_current_17": true,
+        "selected_supervisor_integration_cases_per_platform": 3,
+        "complete_agent_protocol_cases_per_platform": 14,
+        "new_six_Unix_unit_tests": "NOT_SELECTED",
+        "original_paired_process_product": "NOT_SELECTED",
+        "Clippy_all_targets_is_not_test_execution": true,
+        "build_or_test_uncached_qualification": false,
+        "old_840_formatter_failures_preserved_in_previous_packet": true,
+        "results_transferred_from_old_head": false,
+        "all_required_original_CI_passed": false,
+        "whole_candidate_qualified": false,
+        "newly_closed_blockers": []
+      },
+      "operations": {
+        "manual_CI": [],
+        "private_capacity_query": false,
+        "Rust_Cargo_Bazel_or_native_execution_during_offline_replay": false,
+        "source_or_ref_mutations": []
+      },
+      "latest_observation_utc": "2026-11-06T11:11:30Z",
+      "whole_candidate_qualified": false,
+      "source_of_current_terminal_status": "2026-11-06T11:11:02Z complete jobs API",
+      "old_cuts_rewritten": false,
+      "other_run_queries_in_this_increment": false,
+      "observations_non_atomic": true,
+      "denominators_combined_with_earlier_full_head_lists": false,
+      "jobs": [
+        {
+          "job_id": 127839244015,
+          "runner": "ubuntu-24.04",
+          "platform": "Linux",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T10:35:40Z",
+          "completed_at": "2026-11-06T10:47:06Z",
+          "run_attempt": 1,
+          "actual_checkout": "17c6b903a5d5d470b72035f95bb6e087291d7e04",
+          "actual_tree": "25020dc30888fa3ffa6f6e8d1073d91edded1756",
+          "actual_parents": [
+            "840e8b5dbffca017753cdf87482ce325938f313c"
+          ],
+          "actual_source_line": 7808,
+          "full_log": {
+            "bytes": 1671508,
+            "git_blob": "3f58e0592f319ef16dce5c953ba1d0ebe0b8bff7",
+            "sha256": "6d4eb692bfb2ef431b415775902626dc5702334046f73151421ddb447c1f1b7d"
+          },
+          "full_log_CR_count": 0,
+          "full_MCP_decoded_bytes_equal": true,
+          "strict_clippy": {
+            "command": "cargo +1.95.0 clippy --locked -p codex-hepta-supervisor --all-targets -- -D warnings",
+            "status": "success",
+            "Finished_dev_in_actual_command_section": true,
+            "all_targets_is_not_test_execution": true
+          },
+          "formatter": {
+            "command": "cargo +1.95.0 fmt --all -- --check",
+            "status": "success",
+            "actual_diff_blocks": 0,
+            "scope": "full_workspace"
+          },
+          "checkout_immutable_step": "success",
+          "JUnit_scopes": [
+            {
+              "scope": "supervisor",
+              "artifact_id": 13496027607,
+              "zip": {
+                "bytes": 532,
+                "git_blob": "1d1bc6f539109947aef8145eb221e838ae5d3747",
+                "sha256": "ba8113d8a7bcea66edcbd4a50d0a173b58ee981f0e08215d34f56debe74915f5"
+              },
+              "official_digest_equal": true,
+              "CRC_all_members_valid": true,
+              "XML": {
+                "bytes": 1282,
+                "git_blob": "3870ac797d5fd332d11b371fc2fbb6a1b0da2d76",
+                "sha256": "fb183d40965e16f02d4aa4808e9a6c7f415d0f0e504d9c21a3251aba5386d42c"
+              },
+              "passed": 3,
+              "failed": 0,
+              "errors": 0,
+              "skipped": 0
+            },
+            {
+              "scope": "protocol",
+              "artifact_id": 13496491391,
+              "zip": {
+                "bytes": 804,
+                "git_blob": "e0d1ec0eee99b19540fe393ee2f7fecc7bad0123",
+                "sha256": "d1a016ce3bcf6051a77ed85fbcf4a29c8596bf70d3699a077b02aaa8a735a3fd"
+              },
+              "official_digest_equal": true,
+              "CRC_all_members_valid": true,
+              "XML": {
+                "bytes": 3239,
+                "git_blob": "64ec100dcf49357dfc35dd53a0655486abf953a3",
+                "sha256": "aed4d2a38d1d6532e18e934e971e8017f29a7ae64caf13c3dc82cf59aa42ccc5"
+              },
+              "passed": 14,
+              "failed": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          ]
+        },
+        {
+          "job_id": 127839244401,
+          "runner": "windows-latest",
+          "platform": "Windows",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-11-06T10:35:12Z",
+          "completed_at": "2026-11-06T10:48:21Z",
+          "run_attempt": 1,
+          "actual_checkout": "17c6b903a5d5d470b72035f95bb6e087291d7e04",
+          "actual_tree": "25020dc30888fa3ffa6f6e8d1073d91edded1756",
+          "actual_parents": [
+            "840e8b5dbffca017753cdf87482ce325938f313c"
+          ],
+          "actual_source_line": 7833,
+          "full_log": {
+            "bytes": 1631248,
+            "git_blob": "3c5322ebef3288129fd8355f816e76177f6bfc39",
+            "sha256": "a461b729f696076e036dbef63dd05663be7b454207d6726dca48616c28e282bb"
+          },
+          "full_log_CR_count": 10417,
+          "full_MCP_decoded_bytes_equal": true,
+          "strict_clippy": {
+            "command": "cargo +1.95.0 clippy --locked -p codex-hepta-supervisor --all-targets -- -D warnings",
+            "status": "success",
+            "Finished_dev_in_actual_command_section": true,
+            "all_targets_is_not_test_execution": true
+          },
+          "formatter": {
+            "command": "cargo +1.95.0 fmt -p codex-hepta-supervisor -- --check",
+            "status": "success",
+            "actual_diff_blocks": 0,
+            "scope": "Supervisor_package"
+          },
+          "checkout_immutable_step": "success",
+          "JUnit_scopes": [
+            {
+              "scope": "supervisor",
+              "artifact_id": 13495024668,
+              "zip": {
+                "bytes": 533,
+                "git_blob": "e42b661170567d876b6ca5ee8f45c93e79f4355e",
+                "sha256": "c5c9570485600a2cff8ed55a284b70bfe285478249e62343afc5ab3d6fd08852"
+              },
+              "official_digest_equal": true,
+              "CRC_all_members_valid": true,
+              "XML": {
+                "bytes": 1282,
+                "git_blob": "297e9ff00ca3e8f68cdc2fb47efb6cbe2e3e5449",
+                "sha256": "1d41f9bb7505cfd944796ce2e91e30f460f6d383e39e8dbcf478a9fbf6d71bc0"
+              },
+              "passed": 3,
+              "failed": 0,
+              "errors": 0,
+              "skipped": 0
+            },
+            {
+              "scope": "protocol",
+              "artifact_id": 13495728233,
+              "zip": {
+                "bytes": 797,
+                "git_blob": "0f443bfce70a26ff8398a4a9ad4769052193bbf1",
+                "sha256": "fe8bf19a20a28a96becbf995ae91f941056fbd1b7f7ea3d74ac8da6fe68760fd"
+              },
+              "official_digest_equal": true,
+              "CRC_all_members_valid": true,
+              "XML": {
+                "bytes": 3239,
+                "git_blob": "f4cce41cf6609a1359629ed7853bfd2259341f76",
+                "sha256": "04714f2530121d135e3ba86aef2d3e1b783d57e0f3b0ebe1a4c55265d1e6ab2d"
+              },
+              "passed": 14,
+              "failed": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          ]
+        }
+      ],
+      "offline_verification": {
+        "exit_code": 0,
+        "stdout": {
+          "bytes": 22571,
+          "git_blob": "63732fd009f75564e39c9486a0a649c38fd05134",
+          "sha256": "6f03c75240803c51dc6698bc4e3082d1f2e7026e5a4f595f0c62531f1870c313"
+        },
+        "stderr": {
+          "bytes": 0,
+          "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "offline_only": true,
+        "command": [
+          "python3",
+          "verify_packet.py",
+          "--root",
+          "<restored-root>"
+        ]
+      },
+      "previous_frozen_packet_scope_unchanged": [
+        "840 original formatter failures and exact mechanical followup",
+        "17 first two head-list cuts",
+        "17 10:43 ordinary consumers and then-running Supervisor cut"
+      ]
+    }
+  },
+  "formatter_failure_840_to_fixed_17_chain_native_accepted": true,
+  "whole_candidate_qualified": false,
+  "required_original_CI_all_success": false,
+  "manual_CI_dispatch_rerun_cancel": false,
+  "private_capacity_query": false,
+  "B16_replay": false,
+  "newly_closed_original_23_blockers": []
+}

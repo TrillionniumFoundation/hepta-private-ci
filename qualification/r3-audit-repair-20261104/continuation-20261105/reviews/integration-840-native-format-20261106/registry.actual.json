@@ -1,0 +1,738 @@
+{
+  "schema": "hepta-evidence-packet-actual-registry-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "audit_prefix": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-840-native-format-20261106/",
+  "scope": "840 automatic CI original evidence, exact formatter-derived 3-source successor, and independent static review",
+  "source_head": "840e8b5dbffca017753cdf87482ce325938f313c",
+  "source_tree": "b38cc55050c74f8765bdee397a24066c100a179a",
+  "source_merge": "e0993cb056c30ae4b694f5c0a187759f0edeefe1",
+  "actual_job_checkout": "840e8b5dbffca017753cdf87482ce325938f313c",
+  "candidate_tree": "25020dc30888fa3ffa6f6e8d1073d91edded1756",
+  "candidate_changed_paths": 3,
+  "candidate_unchanged_leaves": 10801,
+  "candidate_optional_punctuation_deletions": {
+    "map_err_single_expression_block_braces": 2,
+    "Termios_final_field_optional_comma": 1
+  },
+  "pure_whitespace_only": false,
+  "independent_formal_review_actual_blob": "ef03d24a5f8a16c598f0dab38044436810d0a562",
+  "native_scope": {
+    "workflow_run_id": 42197896368,
+    "jobs": [
+      {
+        "id": 127825647336,
+        "platform": "Ubuntu",
+        "conclusion": "failure",
+        "failed_step": "formatter",
+        "supervisor_selected_integration_cases": {
+          "passed": 3,
+          "failed": 0,
+          "skipped": 0
+        },
+        "agent_protocol_cases": {
+          "passed": 14,
+          "failed": 0,
+          "skipped": 0
+        },
+        "supervisor_clippy": "success"
+      },
+      {
+        "id": 127825647542,
+        "platform": "Windows",
+        "conclusion": "failure",
+        "failed_step": "formatter",
+        "supervisor_selected_integration_cases": {
+          "passed": 3,
+          "failed": 0,
+          "skipped": 0
+        },
+        "agent_protocol_cases": {
+          "passed": 14,
+          "failed": 0,
+          "skipped": 0
+        },
+        "supervisor_clippy": "success"
+      }
+    ],
+    "exact_official_artifacts": [
+      13493637703,
+      13493467276,
+      13493168627,
+      13493122898
+    ],
+    "newly_added_six_Unix_unit_tests": "NOT_SELECTED",
+    "original_paired_process_product": "NOT_SELECTED",
+    "uncached_execution_qualification": false,
+    "later_successor_qualification_transferred": false,
+    "whole_candidate_qualified": false,
+    "newly_closed_blockers": []
+  },
+  "archive": {
+    "schema": "hepta-split-xz-archive-v1",
+    "compression": "XZ/CRC64",
+    "encoding": "base64",
+    "archive_identity": {
+      "bytes": 1113220,
+      "git_blob": "1413034cc91ede6e5b84f6135ac95abbd7024355",
+      "sha256": "93dc68b3b4bcafd281444ffb681aeaa8092ad24f391df1fad359b60ad9d470ed"
+    },
+    "computed_archive_git_is_not_standalone_actual_blob": true,
+    "manifest": {
+      "bytes": 18856,
+      "git_blob": "51c593ba885cb864fcaf6fd8bad732767d64e362",
+      "sha256": "389be85ad3f66d920b08312a72b69f8ecac621506a2cad9b0ae7bfb227651788"
+    },
+    "members": 79,
+    "member_bytes": 17928190,
+    "parts": [
+      {
+        "path": "archive-part-000.b64",
+        "bytes": 76001,
+        "git_blob": "b26151f1c46935832ab9d8c0f6add2218cbc3d96",
+        "sha256": "8bea895b4163904de437c5a657dfd35419adf9e07b996b91fc6c7a662d802105"
+      },
+      {
+        "path": "archive-part-001.b64",
+        "bytes": 76001,
+        "git_blob": "33196e2e88c5d326e856cb35ca8c5e5ddea0c3b3",
+        "sha256": "2b882a9aca9a509989ff8a461e4f2bc098e18702c8558a215f0636eed779a34e"
+      },
+      {
+        "path": "archive-part-002.b64",
+        "bytes": 76001,
+        "git_blob": "5cefc46c430ce23c4918341da164b469d075312f",
+        "sha256": "149fe9d6cdc9c9295f97b427be3c4f78fd041e50d1ad5fe26dffaeaba8953a4f"
+      },
+      {
+        "path": "archive-part-003.b64",
+        "bytes": 76001,
+        "git_blob": "8f343d7bc37f02bc857e839efcd3d877ef301588",
+        "sha256": "faf6839a479f4e280a570355ff9b8e4ff1259397504f85b8f61867e2679f50d5"
+      },
+      {
+        "path": "archive-part-004.b64",
+        "bytes": 76001,
+        "git_blob": "7d8c18d943930a8a03a53fb68638cde9eacd602b",
+        "sha256": "46869572604d96d35c01a2badbfe9f1dc8215d0c6e33fc6b3bab39812e8c4c54"
+      },
+      {
+        "path": "archive-part-005.b64",
+        "bytes": 76001,
+        "git_blob": "3cffb11731049d351e3fc8d8f103152149a8a081",
+        "sha256": "5a775e9cdd48a122043602fbe673ba0c52c8acf4e661257c5ae476086edea8b5"
+      },
+      {
+        "path": "archive-part-006.b64",
+        "bytes": 76001,
+        "git_blob": "3042906010d6e16d410d7632826ccd1d0a92c69f",
+        "sha256": "328708153d67b2044af1820f9fee0184a52f4fa07823311d911601f9883178c3"
+      },
+      {
+        "path": "archive-part-007.b64",
+        "bytes": 76001,
+        "git_blob": "c4a9dad8aa831ffad43c873537b1786fa3d20b74",
+        "sha256": "ec7078ee84bd629562c6c33ca168979f69ca491a0dd2a5e64d23b75fc6c5b59d"
+      },
+      {
+        "path": "archive-part-008.b64",
+        "bytes": 76001,
+        "git_blob": "b3a3c68f402cd9b1ae376d599d6e5c021009abf7",
+        "sha256": "90e7be03e6ede0d01cc1a60073a391d0629b34f53b63f0cc02a8ad677be6b57b"
+      },
+      {
+        "path": "archive-part-009.b64",
+        "bytes": 76001,
+        "git_blob": "0d3f06aa3b0eb7b8af11869384cf93acb8968e7a",
+        "sha256": "bb7151c6289400e5e5eb57b4a0d95c2c8b396b82036e290818fb67c56a70f1d3"
+      },
+      {
+        "path": "archive-part-010.b64",
+        "bytes": 76001,
+        "git_blob": "aa011e3cf7a6bedbce15f2c058e01658e55acc13",
+        "sha256": "ea5df3e401d87b7fcaf514394dc28f50442cdf6dc6a90131cc2e2546d8de9ce9"
+      },
+      {
+        "path": "archive-part-011.b64",
+        "bytes": 76001,
+        "git_blob": "19bf6eb34c73915005e1d26d73bcc3988903ca62",
+        "sha256": "040c0c98c73be627ae1c96a2f14e2968669c4f4142f87cd9a659bfdf0d2bfe37"
+      },
+      {
+        "path": "archive-part-012.b64",
+        "bytes": 76001,
+        "git_blob": "f0e8741fe908227946ace69a73f956776e0856f7",
+        "sha256": "56a7a105232e9abd4b83a79e93b49b4dd1c6d4775f414cb9cec968aa15e2731e"
+      },
+      {
+        "path": "archive-part-013.b64",
+        "bytes": 76001,
+        "git_blob": "c022a6e236b4656d53ac5a2eade5734e4ef3de7c",
+        "sha256": "44e7ad977675beed7f9615a0c3064366e6599e75b4e12846a5f35ae0c86c4828"
+      },
+      {
+        "path": "archive-part-014.b64",
+        "bytes": 76001,
+        "git_blob": "27664bb748672eb937c4ae7eb9928637c211d212",
+        "sha256": "e07c9dfe9867121f38cdb5b6b7a03cabc6506398a6f13110fbccd58808335a5c"
+      },
+      {
+        "path": "archive-part-015.b64",
+        "bytes": 76001,
+        "git_blob": "b037749b748a9816f9c6b6b5e405537b1fbf62e4",
+        "sha256": "fc5c3dd2e4ecde9f5fef82d3788979bbdd7337270acc272af19adc322f755af5"
+      },
+      {
+        "path": "archive-part-016.b64",
+        "bytes": 76001,
+        "git_blob": "10f4cc7fde5f0476e118c8475622227f25984306",
+        "sha256": "4c55fc092ef06370e555f72b9bd171b9ec088510eb98e2bf05edfc7902cdb27a"
+      },
+      {
+        "path": "archive-part-017.b64",
+        "bytes": 76001,
+        "git_blob": "c063b20060de20938f5f5b828814135dd5637beb",
+        "sha256": "51d31ae33f96328b8db8e56ca991b62c2bfde4ecf5bcc2d2416cc2b28e7911a5"
+      },
+      {
+        "path": "archive-part-018.b64",
+        "bytes": 76001,
+        "git_blob": "3c6382118ee4f044f1ead6ed3ae40149aa0b8191",
+        "sha256": "848c52deeba231ae7290527afdbb3465be6aab03c58e5c51399fdb7a8474bcc9"
+      },
+      {
+        "path": "archive-part-019.b64",
+        "bytes": 40297,
+        "git_blob": "80449d9144452e9cb218fdf37fe9293446ca4bdc",
+        "sha256": "b7ef807b0a55edb8421c0aad815adb2f6162eedafeb93ed2b262a957a0a68b6a"
+      }
+    ]
+  },
+  "archive_members_include": {
+    "author_frozen_files": 42,
+    "author_FREEZE": 1,
+    "independent_increment_files": 15,
+    "independent_DELIVERY_MANIFEST": 1,
+    "original_API_console_MCP_ZIP_XML": "Full bytes; complete per-member identities in member-manifest.json"
+  },
+  "offline_verification": {
+    "packet_verifier_exit_code": 0,
+    "packet_verifier_stdout": {
+      "bytes": 24704,
+      "git_blob_sha": "9973975c41a68159c0e148c08b9704cf34f07414",
+      "sha256": "e19be31215cb897741e4a0a098ccefc1ada70dcc8c8b73c27996156af807d1c1"
+    },
+    "packet_verifier_stderr_bytes": 0,
+    "author_verifier_stdout_bytes": 4376,
+    "independent_verifier_stdout_bytes": 18170,
+    "both_replayed_from_restored_archive_and_stdout_byte_equal": true,
+    "portable_restore_exit_code": 0,
+    "portable_restore_stdout": {
+      "bytes": 623,
+      "git_blob_sha": "9a4f691175be10d0359c82f86d8ae616ca865571",
+      "sha256": "277016c0b7f4cf150d53e3859da5855e30dde253446471b515f48d4f7ebf9fa0"
+    },
+    "portable_restore_stderr_bytes": 0,
+    "Rust_Cargo_Bazel_or_native_invocation": false,
+    "manual_CI_operations": [],
+    "private_capacity_query": false
+  },
+  "counts": {
+    "payload_paths": 30,
+    "registration_receipt_paths": 8,
+    "listed_paths": 38,
+    "append_paths_including_registry": 39
+  },
+  "files": [
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-840-native-format-20261106/archive-part-000.b64",
+      "local_member": "archive-part-000.b64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b26151f1c46935832ab9d8c0f6add2218cbc3d96",
+      "bytes": 76001,
+      "sha256": "8bea895b4163904de437c5a657dfd35419adf9e07b996b91fc6c7a662d802105",
+      "role": "payload",
+      "actual_materialization_tree": "3497b871ec587a04cebdaf10d179d74d55614f5c",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-840-native-format-20261106/archive-part-001.b64",
+      "local_member": "archive-part-001.b64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "33196e2e88c5d326e856cb35ca8c5e5ddea0c3b3",
+      "bytes": 76001,
+      "sha256": "2b882a9aca9a509989ff8a461e4f2bc098e18702c8558a215f0636eed779a34e",
+      "role": "payload",
+      "actual_materialization_tree": "3497b871ec587a04cebdaf10d179d74d55614f5c",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-840-native-format-20261106/archive-part-002.b64",
+      "local_member": "archive-part-002.b64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5cefc46c430ce23c4918341da164b469d075312f",
+      "bytes": 76001,
+      "sha256": "149fe9d6cdc9c9295f97b427be3c4f78fd041e50d1ad5fe26dffaeaba8953a4f",
+      "role": "payload",
+      "actual_materialization_tree": "3497b871ec587a04cebdaf10d179d74d55614f5c",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-840-native-format-20261106/archive-part-003.b64",
+      "local_member": "archive-part-003.b64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8f343d7bc37f02bc857e839efcd3d877ef301588",
+      "bytes": 76001,
+      "sha256": "faf6839a479f4e280a570355ff9b8e4ff1259397504f85b8f61867e2679f50d5",
+      "role": "payload",
+      "actual_materialization_tree": "3497b871ec587a04cebdaf10d179d74d55614f5c",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-840-native-format-20261106/archive-part-004.b64",
+      "local_member": "archive-part-004.b64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7d8c18d943930a8a03a53fb68638cde9eacd602b",
+      "bytes": 76001,
+      "sha256": "46869572604d96d35c01a2badbfe9f1dc8215d0c6e33fc6b3bab39812e8c4c54",
+      "role": "payload",
+      "actual_materialization_tree": "3497b871ec587a04cebdaf10d179d74d55614f5c",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-840-native-format-20261106/archive-part-005.b64",
+      "local_member": "archive-part-005.b64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3cffb11731049d351e3fc8d8f103152149a8a081",
+      "bytes": 76001,
+      "sha256": "5a775e9cdd48a122043602fbe673ba0c52c8acf4e661257c5ae476086edea8b5",
+      "role": "payload",
+      "actual_materialization_tree": "3497b871ec587a04cebdaf10d179d74d55614f5c",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-840-native-format-20261106/archive-part-006.b64",
+      "local_member": "archive-part-006.b64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3042906010d6e16d410d7632826ccd1d0a92c69f",
+      "bytes": 76001,
+      "sha256": "328708153d67b2044af1820f9fee0184a52f4fa07823311d911601f9883178c3",
+      "role": "payload",
+      "actual_materialization_tree": "3497b871ec587a04cebdaf10d179d74d55614f5c",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-840-native-format-20261106/archive-part-007.b64",
+      "local_member": "archive-part-007.b64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c4a9dad8aa831ffad43c873537b1786fa3d20b74",
+      "bytes": 76001,
+      "sha256": "ec7078ee84bd629562c6c33ca168979f69ca491a0dd2a5e64d23b75fc6c5b59d",
+      "role": "payload",
+      "actual_materialization_tree": "3497b871ec587a04cebdaf10d179d74d55614f5c",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-840-native-format-20261106/archive-part-008.b64",
+      "local_member": "archive-part-008.b64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b3a3c68f402cd9b1ae376d599d6e5c021009abf7",
+      "bytes": 76001,
+      "sha256": "90e7be03e6ede0d01cc1a60073a391d0629b34f53b63f0cc02a8ad677be6b57b",
+      "role": "payload",
+      "actual_materialization_tree": "3497b871ec587a04cebdaf10d179d74d55614f5c",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-840-native-format-20261106/archive-part-009.b64",
+      "local_member": "archive-part-009.b64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0d3f06aa3b0eb7b8af11869384cf93acb8968e7a",
+      "bytes": 76001,
+      "sha256": "bb7151c6289400e5e5eb57b4a0d95c2c8b396b82036e290818fb67c56a70f1d3",
+      "role": "payload",
+      "actual_materialization_tree": "3497b871ec587a04cebdaf10d179d74d55614f5c",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-840-native-format-20261106/archive-part-010.b64",
+      "local_member": "archive-part-010.b64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "aa011e3cf7a6bedbce15f2c058e01658e55acc13",
+      "bytes": 76001,
+      "sha256": "ea5df3e401d87b7fcaf514394dc28f50442cdf6dc6a90131cc2e2546d8de9ce9",
+      "role": "payload",
+      "actual_materialization_tree": "3497b871ec587a04cebdaf10d179d74d55614f5c",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-840-native-format-20261106/archive-part-011.b64",
+      "local_member": "archive-part-011.b64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "19bf6eb34c73915005e1d26d73bcc3988903ca62",
+      "bytes": 76001,
+      "sha256": "040c0c98c73be627ae1c96a2f14e2968669c4f4142f87cd9a659bfdf0d2bfe37",
+      "role": "payload",
+      "actual_materialization_tree": "3497b871ec587a04cebdaf10d179d74d55614f5c",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-840-native-format-20261106/archive-part-012.b64",
+      "local_member": "archive-part-012.b64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f0e8741fe908227946ace69a73f956776e0856f7",
+      "bytes": 76001,
+      "sha256": "56a7a105232e9abd4b83a79e93b49b4dd1c6d4775f414cb9cec968aa15e2731e",
+      "role": "payload",
+      "actual_materialization_tree": "3497b871ec587a04cebdaf10d179d74d55614f5c",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-840-native-format-20261106/archive-part-013.b64",
+      "local_member": "archive-part-013.b64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c022a6e236b4656d53ac5a2eade5734e4ef3de7c",
+      "bytes": 76001,
+      "sha256": "44e7ad977675beed7f9615a0c3064366e6599e75b4e12846a5f35ae0c86c4828",
+      "role": "payload",
+      "actual_materialization_tree": "3497b871ec587a04cebdaf10d179d74d55614f5c",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-840-native-format-20261106/archive-part-014.b64",
+      "local_member": "archive-part-014.b64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "27664bb748672eb937c4ae7eb9928637c211d212",
+      "bytes": 76001,
+      "sha256": "e07c9dfe9867121f38cdb5b6b7a03cabc6506398a6f13110fbccd58808335a5c",
+      "role": "payload",
+      "actual_materialization_tree": "3497b871ec587a04cebdaf10d179d74d55614f5c",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-840-native-format-20261106/archive-part-015.b64",
+      "local_member": "archive-part-015.b64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b037749b748a9816f9c6b6b5e405537b1fbf62e4",
+      "bytes": 76001,
+      "sha256": "fc5c3dd2e4ecde9f5fef82d3788979bbdd7337270acc272af19adc322f755af5",
+      "role": "payload",
+      "actual_materialization_tree": "3497b871ec587a04cebdaf10d179d74d55614f5c",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-840-native-format-20261106/archive-part-016.b64",
+      "local_member": "archive-part-016.b64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "10f4cc7fde5f0476e118c8475622227f25984306",
+      "bytes": 76001,
+      "sha256": "4c55fc092ef06370e555f72b9bd171b9ec088510eb98e2bf05edfc7902cdb27a",
+      "role": "payload",
+      "actual_materialization_tree": "3497b871ec587a04cebdaf10d179d74d55614f5c",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-840-native-format-20261106/archive-part-017.b64",
+      "local_member": "archive-part-017.b64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c063b20060de20938f5f5b828814135dd5637beb",
+      "bytes": 76001,
+      "sha256": "51d31ae33f96328b8db8e56ca991b62c2bfde4ecf5bcc2d2416cc2b28e7911a5",
+      "role": "payload",
+      "actual_materialization_tree": "3497b871ec587a04cebdaf10d179d74d55614f5c",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-840-native-format-20261106/archive-part-018.b64",
+      "local_member": "archive-part-018.b64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3c6382118ee4f044f1ead6ed3ae40149aa0b8191",
+      "bytes": 76001,
+      "sha256": "848c52deeba231ae7290527afdbb3465be6aab03c58e5c51399fdb7a8474bcc9",
+      "role": "payload",
+      "actual_materialization_tree": "3497b871ec587a04cebdaf10d179d74d55614f5c",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-840-native-format-20261106/archive-part-019.b64",
+      "local_member": "archive-part-019.b64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "80449d9144452e9cb218fdf37fe9293446ca4bdc",
+      "bytes": 40297,
+      "sha256": "b7ef807b0a55edb8421c0aad815adb2f6162eedafeb93ed2b262a957a0a68b6a",
+      "role": "payload",
+      "actual_materialization_tree": "3497b871ec587a04cebdaf10d179d74d55614f5c",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-840-native-format-20261106/archive.json",
+      "local_member": "archive.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "456f04b19e4830347c8019ac6f0dd0567442a22f",
+      "bytes": 4955,
+      "sha256": "c734d4cb2a7055c14a55e78be2a7813f3b2548a35a1c63e8c29920887ec29b0a",
+      "role": "payload",
+      "actual_materialization_tree": "3497b871ec587a04cebdaf10d179d74d55614f5c",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-840-native-format-20261106/member-manifest.json",
+      "local_member": "member-manifest.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "51c593ba885cb864fcaf6fd8bad732767d64e362",
+      "bytes": 18856,
+      "sha256": "389be85ad3f66d920b08312a72b69f8ecac621506a2cad9b0ae7bfb227651788",
+      "role": "payload",
+      "actual_materialization_tree": "3497b871ec587a04cebdaf10d179d74d55614f5c",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-840-native-format-20261106/restore_verify.py",
+      "local_member": "restore_verify.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b6a25202fae9ab6e67c022ae7feaf6c29f20eb40",
+      "bytes": 3503,
+      "sha256": "9fdf40797985dd880ed2977377a10938d3db08fa0045e6040ea107f1537b2bd9",
+      "role": "payload",
+      "actual_materialization_tree": "3497b871ec587a04cebdaf10d179d74d55614f5c",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-840-native-format-20261106/README.zh-CN.md",
+      "local_member": "README.zh-CN.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2eb02ba6e5ab2242c891b40377a9d8aea55dde73",
+      "bytes": 1692,
+      "sha256": "775858e90e4e1b77a95009a172d3bec5fd4751b046d3f2f6cedcb41abd9be964",
+      "role": "payload",
+      "actual_materialization_tree": "3497b871ec587a04cebdaf10d179d74d55614f5c",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-840-native-format-20261106/verify_packet.py",
+      "local_member": "verify_packet.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6bb1e565698e1b71322e4a76b748e8c2ff105cc6",
+      "bytes": 12279,
+      "sha256": "c397e6af5968f4f0dd8e18686baa59a512768a66c9f971673f907a05e4bb7aaf",
+      "role": "payload",
+      "actual_materialization_tree": "3497b871ec587a04cebdaf10d179d74d55614f5c",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-840-native-format-20261106/verification-01.stdout.json",
+      "local_member": "verification-01.stdout.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9973975c41a68159c0e148c08b9704cf34f07414",
+      "bytes": 24704,
+      "sha256": "e19be31215cb897741e4a0a098ccefc1ada70dcc8c8b73c27996156af807d1c1",
+      "role": "payload",
+      "actual_materialization_tree": "3497b871ec587a04cebdaf10d179d74d55614f5c",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-840-native-format-20261106/REVIEW.json",
+      "local_member": "REVIEW.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ef03d24a5f8a16c598f0dab38044436810d0a562",
+      "bytes": 11184,
+      "sha256": "3b8bc3352f57f54fb59dd96246f85ab64625cc6a41fa69cf08b4fabe8e01189e",
+      "role": "payload",
+      "actual_materialization_tree": "3497b871ec587a04cebdaf10d179d74d55614f5c",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-840-native-format-20261106/portable-replay.stdout.json",
+      "local_member": "portable-replay.stdout.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9a4f691175be10d0359c82f86d8ae616ca865571",
+      "bytes": 623,
+      "sha256": "277016c0b7f4cf150d53e3859da5855e30dde253446471b515f48d4f7ebf9fa0",
+      "role": "payload",
+      "actual_materialization_tree": "3497b871ec587a04cebdaf10d179d74d55614f5c",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-840-native-format-20261106/portable-replay.stderr.txt",
+      "local_member": "portable-replay.stderr.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "role": "payload",
+      "actual_materialization_tree": "3497b871ec587a04cebdaf10d179d74d55614f5c",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-840-native-format-20261106/portable-replay.execution.sidecar.json",
+      "local_member": "portable-replay.execution.sidecar.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "adffe0f68167eb6cff278b11a1090eeaf69a83c6",
+      "bytes": 651,
+      "sha256": "6010371d460f8379c45e0e98d5490fcf9718161b16a80920fecfa9eea8c5e9bd",
+      "role": "payload",
+      "actual_materialization_tree": "3497b871ec587a04cebdaf10d179d74d55614f5c",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-840-native-format-20261106/registration-payloads-000.actual.json",
+      "local_member": "registration-payloads-000.actual.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "dc57571f26020b207d6c3664faaf3d79d1350e09",
+      "bytes": 307179,
+      "sha256": "c2b45c41a5783a6bd574d9e933174aaf5f868a68fce6d0cab5f9e63c68cb93c1",
+      "role": "registration_receipt",
+      "actual_materialization_tree": "8ae13659b1f9cc4402b2d5f19f825e5bb2e29da5",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-840-native-format-20261106/registration-payloads-001.actual.json",
+      "local_member": "registration-payloads-001.actual.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "869827ef83d2db2d7b665836a41030cec00e3bef",
+      "bytes": 306935,
+      "sha256": "ffa3aa1d31041feda4d6012e7821a8da2271899062abea8892ee4b0de78a513d",
+      "role": "registration_receipt",
+      "actual_materialization_tree": "8ae13659b1f9cc4402b2d5f19f825e5bb2e29da5",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-840-native-format-20261106/registration-payloads-002.actual.json",
+      "local_member": "registration-payloads-002.actual.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "77ec1f228ae6094dd17b1e09d8aba75b5b5afb1a",
+      "bytes": 306935,
+      "sha256": "768b8ead8ba3cc57db650acae5908bddfbe44430b3cc1e1083dcfbf56946a781",
+      "role": "registration_receipt",
+      "actual_materialization_tree": "8ae13659b1f9cc4402b2d5f19f825e5bb2e29da5",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-840-native-format-20261106/registration-payloads-003.actual.json",
+      "local_member": "registration-payloads-003.actual.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f949d51a4717612f9ef31b3e13014f076c5fee5b",
+      "bytes": 306935,
+      "sha256": "0d53f49bcb8c86565b6e01579ee4ffaff12d2dd9d86e4953c7c5dcf7dbc0f935",
+      "role": "registration_receipt",
+      "actual_materialization_tree": "8ae13659b1f9cc4402b2d5f19f825e5bb2e29da5",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-840-native-format-20261106/registration-payloads-004.actual.json",
+      "local_member": "registration-payloads-004.actual.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2f9c47b6d93d4e87c6907e510ae6d7e064e91913",
+      "bytes": 271231,
+      "sha256": "87676fc7f17270c0af629bebd84c2e2fd10be3285ad363aaea8071113922ebfb",
+      "role": "registration_receipt",
+      "actual_materialization_tree": "8ae13659b1f9cc4402b2d5f19f825e5bb2e29da5",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-840-native-format-20261106/registration-payloads-005.actual.json",
+      "local_member": "registration-payloads-005.actual.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3504a5448f7535b2b6d6840be3f98675f0f00115",
+      "bytes": 34184,
+      "sha256": "bb9bfa5bdf746e1733cc9ab7435fbe9325c5f4d3a198f309124f66409d700816",
+      "role": "registration_receipt",
+      "actual_materialization_tree": "8ae13659b1f9cc4402b2d5f19f825e5bb2e29da5",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-840-native-format-20261106/registration-payloads-006.actual.json",
+      "local_member": "registration-payloads-006.actual.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c0e50e0bda9c2e14d671f05d3d4a0e8c794ab711",
+      "bytes": 55599,
+      "sha256": "2fb0f06b43e3f2d5b47fe2a3cb413a11ad660dce91788b465d67e9f3c80bf502",
+      "role": "registration_receipt",
+      "actual_materialization_tree": "8ae13659b1f9cc4402b2d5f19f825e5bb2e29da5",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-840-native-format-20261106/registration-payloads-007.actual.json",
+      "local_member": "registration-payloads-007.actual.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5cacafca978a89ada9e1766d981de4d56e77a953",
+      "bytes": 2293,
+      "sha256": "bcbbae6734dbe20cf9e1c560216302f8f46033c9795a9cf27fde7d799d1dd4d3",
+      "role": "registration_receipt",
+      "actual_materialization_tree": "8ae13659b1f9cc4402b2d5f19f825e5bb2e29da5",
+      "full_GET_utf8_bytes_equal": true
+    }
+  ],
+  "materialization_originals": {
+    "payload_create_tree": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Action completed."
+        }
+      ],
+      "structuredContent": {
+        "sha": "3497b871ec587a04cebdaf10d179d74d55614f5c"
+      },
+      "isError": false
+    },
+    "receipt_create_tree": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Action completed."
+        }
+      ],
+      "structuredContent": {
+        "sha": "8ae13659b1f9cc4402b2d5f19f825e5bb2e29da5"
+      },
+      "isError": false
+    }
+  },
+  "ref_mutations": [],
+  "local_sidecars_excluded_from_append": [
+    "archive.original.tar.xz",
+    "registry-self.actual.json",
+    "tree-elements.actual.json",
+    "registration-receipts-GET-000.local-sidecar.json",
+    "registration-receipts-GET-001.local-sidecar.json"
+  ],
+  "temporary_download_URLs_archived": false
+}

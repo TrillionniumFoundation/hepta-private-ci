@@ -1,0 +1,240 @@
+{
+  "schema": "hepta-fmt840-independent-review-v1",
+  "decision": "ACCEPT_STATIC_FORMATTER_SUCCESSOR",
+  "source_blockers": 0,
+  "reviewed_at_UTC": "2026-11-06T10:19:13.083672+00:00",
+  "reviewer": "/root/format_finish",
+  "qualification": "独立只读静态审查；仅确认真实 formatter 机械后继可由 root 正常发布。不是后继原生通过或 blocker 闭合。",
+  "author_freeze": {
+    "bytes": 10377,
+    "git_blob": "cd38b06348332655f41d07470b5ef01085bd6ac5",
+    "sha256": "a9b215caef6e35bd0281a67face5728a38d11c525ca4be14ba5dc51dfbe2a4e9"
+  },
+  "frozen_member_count": 42,
+  "frozen_member_bytes": 16519800,
+  "baseline": {
+    "sha": "840e8b5dbffca017753cdf87482ce325938f313c",
+    "tree": "b38cc55050c74f8765bdee397a24066c100a179a",
+    "parents": [
+      "875b774885c002bbe157fd2919fcb590ee1e0131"
+    ]
+  },
+  "baseline_PR_merge": {
+    "sha": "e0993cb056c30ae4b694f5c0a187759f0edeefe1",
+    "tree": "b38cc55050c74f8765bdee397a24066c100a179a",
+    "parents": [
+      "63652be658ebed8d3052eb789b951793384fd5e4",
+      "840e8b5dbffca017753cdf87482ce325938f313c"
+    ]
+  },
+  "candidate_tree": "25020dc30888fa3ffa6f6e8d1073d91edded1756",
+  "candidate_tree_actual_root_entries": 53,
+  "candidate_source_map": [
+    {
+      "path": "codex-rs/hepta-supervisor/src/unix_connect.rs",
+      "mode": "100644",
+      "preimage": {
+        "bytes": 7469,
+        "git_blob": "9fbca2e7048c6d7af0a2ebad9eeacd1808862c95",
+        "sha256": "311569a904f767d1fec99d72008225d51832702da0b6087f5d66f2b29f8ece87"
+      },
+      "postimage": {
+        "bytes": 7474,
+        "git_blob": "93605dfd586a1fd1f8263cc8d853d5d59ad82775",
+        "sha256": "55d2cad344a817a48b69e90dbc36e97f1c65e1e2119d72fa224b879ab7d2e9a5"
+      },
+      "native_formatter_lines": [
+        36,
+        136
+      ],
+      "preservation": {
+        "explicit_punctuation_removals": [
+          "single-expression closure block opening brace",
+          "single-expression closure block closing brace"
+        ],
+        "all_other_compact_characters_equal": true,
+        "quoted_literals_and_comments_exact_equal": true,
+        "is_whitespace_only": false
+      }
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/unix_connect_tests.rs",
+      "mode": "100644",
+      "preimage": {
+        "bytes": 5936,
+        "git_blob": "b4a71f89805fa28226d74ef399ca65653759e0f5",
+        "sha256": "13fd7083a7e4226b1e2957db4383763f10bf7d51224fbee48948aad6d14e99a2"
+      },
+      "postimage": {
+        "bytes": 6013,
+        "git_blob": "442047abdf0b37efa43efbdbf4fba23599c990f6",
+        "sha256": "7d93d4e421530c32ef8bf273fb9d64f7820a4b76919072b875eac21056f50581"
+      },
+      "native_formatter_lines": [
+        79,
+        105,
+        152
+      ],
+      "preservation": {
+        "explicit_punctuation_removals": [],
+        "all_other_compact_characters_equal": true,
+        "quoted_literals_and_comments_exact_equal": true,
+        "is_whitespace_only": true
+      }
+    },
+    {
+      "path": "codex-rs/utils/pty/src/unix_io_diagnostics.rs",
+      "mode": "100644",
+      "preimage": {
+        "bytes": 11599,
+        "git_blob": "e2722294383ac1787193c6b83a16a7b225d178fc",
+        "sha256": "6fc2d08973d7904499d8c095cbb20176ee2bb0df957ed6d596d380cb39d26c59"
+      },
+      "postimage": {
+        "bytes": 11641,
+        "git_blob": "a6f9865bbb4171058a00cd75574466c9c9cdf269",
+        "sha256": "6b112f903f976706f1634e197ac888c90ae229d486dedba00cad73e174a426b5"
+      },
+      "native_formatter_lines": [
+        29,
+        141,
+        148
+      ],
+      "preservation": {
+        "explicit_punctuation_removals": [
+          "optional trailing comma after final Termios variant field"
+        ],
+        "all_other_compact_characters_equal": true,
+        "quoted_literals_and_comments_exact_equal": true,
+        "is_whitespace_only": false
+      }
+    }
+  ],
+  "checks": {
+    "all_42_frozen_members_bytes_Git_SHA256_equal": true,
+    "separate_frozen_copy_complete": true,
+    "entire_three_candidate_source_files_and_full_patch_read": true,
+    "entire_original_author_verifier_and_final_1049_byte_addendum_read": true,
+    "entire_README_and_fixed_workflow_read": true,
+    "author_isolated_replay": {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "/workspace/scratch/07dd58cc9630/recovery-20261106/fmt-840-independent-review-20261106/frozen-author/verify_candidate.py",
+        "--root",
+        "/workspace/scratch/07dd58cc9630/recovery-20261106/fmt-840-independent-review-20261106/frozen-author",
+        "--output",
+        "/workspace/scratch/07dd58cc9630/recovery-20261106/fmt-840-independent-review-20261106/author-replay-01"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "bytes": 4376,
+        "git_blob": "7c23194a70547da62f945a456dead9e71be09b81",
+        "sha256": "eeb619b5cf21f804a7f9181c6e791b9cbe38f5204d440aace0479f9646e7cc5b"
+      },
+      "stderr": {
+        "bytes": 0,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stdout_equal_final_frozen": true,
+      "native_execution": false
+    },
+    "independent_replay": {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "/workspace/scratch/07dd58cc9630/recovery-20261106/fmt-840-independent-review-20261106/verify_independent.py",
+        "--source",
+        "/workspace/scratch/07dd58cc9630/recovery-20261106/fmt-840-independent-review-20261106/frozen-author",
+        "--review",
+        "/workspace/scratch/07dd58cc9630/recovery-20261106/fmt-840-independent-review-20261106",
+        "--output",
+        "/workspace/scratch/07dd58cc9630/recovery-20261106/fmt-840-independent-review-20261106/independent-01"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "bytes": 18170,
+        "git_blob": "ff57ebe32cf1a089a70061e5a94fa6bc02552240",
+        "sha256": "4698d67376aeb6363671faf8f31ae2cba87d71c92f1dcdcf8fd920ec7a2cc3c7"
+      },
+      "stderr": {
+        "bytes": 0,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "native_execution": false
+    },
+    "three_source_blobs_independent_fresh_complete_GET_equal": true,
+    "original_logs_raw_wrapper_UTF8_equal": true,
+    "Linux_eight_real_diff_blocks_rebuild_all_three_postimages": true,
+    "Windows_five_real_blocks_equal_Linux_first_five": true,
+    "full_Merkle_base_and_candidate_all_directories_recomputed": true,
+    "actual_candidate_root_53_entries_equal_projection": true,
+    "whole_10804_leaf_index_forward_reverse_and_changed_blob_bytes_equal": true,
+    "unchanged_leaf_count": 10801,
+    "changed_leaf_count": 3,
+    "Git_patch_hunk_count": 7,
+    "native_formatter_block_count_Linux": 8,
+    "native_formatter_block_count_Windows": 5
+  },
+  "semantic_findings": [
+    {
+      "path": "codex-rs/hepta-supervisor/src/unix_connect.rs",
+      "finding": "真实 formatter 删除 map_err 闭包的两个冗余外层花括号。原 block 只含无分号的 io::Error::new 尾表达式，没有局部变量、语句、分支、提前返回或其它待 drop 的临时局部值。后像仍求值并返回完全相同的表达式；调用、参数、错误传播、socket ownership、cfg、超时与控制流保持。unsafe socket block 仅换行。",
+      "punctuation_deleted": [
+        "{",
+        "}"
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/unix_connect_tests.rs",
+      "finding": "三处实际 formatter 排版调整。全部非空白字符、字符串和注释按原顺序完整相等；六个测试的名称、cfg、断言、参数及预算保持。",
+      "punctuation_deleted": []
+    },
+    {
+      "path": "codex-rs/utils/pty/src/unix_io_diagnostics.rs",
+      "finding": "Termios 最后 eof 字段后的一枚可选逗号删除；variant 名、两个字段名称/类型/顺序和 variant 外部逗号保持。另三处方法链仅换行；所有原子计数与 store 的调用顺序、Ordering::Relaxed 和参数保持。",
+      "punctuation_deleted": [
+        ","
+      ]
+    }
+  ],
+  "nonwhitespace_scope": "只对白名单中精确闭包和精确 variant 删除合计3枚标点；禁止概括为纯空白或普遍删除标点。除此之外完整非空白字符、quoted literals 与 comments 相等。逐原生块重建再比完整候选字节，因此不依赖紧缩比较掩盖字符串内空白变化。",
+  "evidence": {
+    "official_run": 42197896368,
+    "executed_HEAD_in_both_jobs": "840e8b5dbffca017753cdf87482ce325938f313c",
+    "logs": [
+      {
+        "job": 127825647336,
+        "bytes": 1677608,
+        "git_blob": "b534ab2e495ab1d0569807ccccac58543db64fd2",
+        "sha256": "b7535ebe4e59e583f213721651885053ff796dd0e1fb8e1a08326dd3c26ee2c0",
+        "CR": 0,
+        "native_diff_blocks": 8,
+        "actual_checkout_source_guard": "source=840e8b5dbffca017753cdf87482ce325938f313c tree=b38cc55050c74f8765bdee397a24066c100a179a parents=875b774885c002bbe157fd2919fcb590ee1e0131",
+        "raw_wrapper_content_exact_equal": true
+      },
+      {
+        "job": 127825647542,
+        "bytes": 1636168,
+        "git_blob": "82937dcd981031a9894d7c00265a22c45ff4a271",
+        "sha256": "87217af9bf69142505453249847d04e7d3fd5fd9df0d416e4304927dc5db4de8",
+        "CR": 10482,
+        "native_diff_blocks": 5,
+        "actual_checkout_source_guard": "source=840e8b5dbffca017753cdf87482ce325938f313c tree=b38cc55050c74f8765bdee397a24066c100a179a parents=875b774885c002bbe157fd2919fcb590ee1e0131",
+        "raw_wrapper_content_exact_equal": true
+      }
+    ],
+    "full_raw_Windows_CR_preserved": 10482,
+    "raw_diff_views_only": "去时间戳、ANSI、splitlines 仅为派生解析；完整原日志保持原字节，nightly-import warnings 未作为源码差异。",
+    "source_artifact_and_test_qualification": "这里引用完整日志/API和固定 workflow，不新下载/审授 JUnit 或全产品测试资格。两 job 最终均 failure，原局部通过不覆盖失败。"
+  },
+  "limits": [
+    "未运行 Rust、Rustfmt、Clippy、Cargo、Bazel、native sockets 或产品测试；未 dispatch/rerun/cancel/ref/PR。",
+    "原 workflow 只运行三个指定 Supervisor integration test binaries 与 Agentd protocol；六个新 Unix unit tests 和 paired_process_product 没有由这两个 job 执行。原 --all-targets Clippy 不是测试执行回执。",
+    "完整树 proof 只证明所有未变叶的 mode/SHA 保持；未声称逐行审查或本地下载全部 10,804 个产品文件。Git write-tree --missing-ok 的 partial object database 范围保留。",
+    "旧840局部原生结果不得转授格式后继；B21、旧 Supervisor 60 秒 timeout 因果及 B02/B15 整合验收仍未因本审阅闭合。",
+    "最初把修改描述成纯空白的目标已由真实 diff 纠正；本审查保留三标点事实，不改原失败历史。"
+  ],
+  "blocker_statuses_changed": false,
+  "pending": "root 正常发布后，依原 CI 门验收对应最新 source/merge；不新增退出条件。"
+}

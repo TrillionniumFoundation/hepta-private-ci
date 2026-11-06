@@ -1,0 +1,20 @@
+{
+  "chunks": [
+    {
+      "chunk_id": "6ddbbf",
+      "wall_time_seconds": 1.0018836,
+      "session_id": 89332,
+      "original_token_count": 0,
+      "output": ""
+    },
+    {
+      "chunk_id": "57e499",
+      "wall_time_seconds": 1.2988758009999999,
+      "exit_code": 1,
+      "original_token_count": 271,
+      "output": "Traceback (most recent call last):\n  File \"/workspace/scratch/07dd58cc9630/recovery-20261106/prepare_third_post_audit_delta.py\", line 701, in <module>\n    main()\n  File \"/workspace/scratch/07dd58cc9630/recovery-20261106/prepare_third_post_audit_delta.py\", line 695, in main\n    verification = builder.prepare()\n                   ^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/07dd58cc9630/recovery-20261106/prepare_third_post_audit_delta.py\", line 567, in prepare\n    self.import_component(component)\n  File \"/workspace/scratch/07dd58cc9630/recovery-20261106/prepare_third_post_audit_delta.py\", line 381, in import_component\n    receipts = self.verify_evidence_packet(component, registry, prefix, rows, body)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/07dd58cc9630/recovery-20261106/prepare_third_post_audit_delta.py\", line 355, in verify_evidence_packet\n    and registry_receipt[\"ref_mutations\"] == [], \"packet registry sidecar binding differs\")\n        ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\nKeyError: 'ref_mutations'\n"
+    }
+  ],
+  "exit_code": 1,
+  "complete_output": "Traceback (most recent call last):\n  File \"/workspace/scratch/07dd58cc9630/recovery-20261106/prepare_third_post_audit_delta.py\", line 701, in <module>\n    main()\n  File \"/workspace/scratch/07dd58cc9630/recovery-20261106/prepare_third_post_audit_delta.py\", line 695, in main\n    verification = builder.prepare()\n                   ^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/07dd58cc9630/recovery-20261106/prepare_third_post_audit_delta.py\", line 567, in prepare\n    self.import_component(component)\n  File \"/workspace/scratch/07dd58cc9630/recovery-20261106/prepare_third_post_audit_delta.py\", line 381, in import_component\n    receipts = self.verify_evidence_packet(component, registry, prefix, rows, body)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/07dd58cc9630/recovery-20261106/prepare_third_post_audit_delta.py\", line 355, in verify_evidence_packet\n    and registry_receipt[\"ref_mutations\"] == [], \"packet registry sidecar binding differs\")\n        ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\nKeyError: 'ref_mutations'\n"
+}

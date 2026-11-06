@@ -1,0 +1,22 @@
+{
+  "schema": "hepta-C4-explicit-registry-self-mutation-claim-origin-v1",
+  "before": {
+    "bytes": 45976,
+    "git_blob": "d4bf4311702edf691c30165b0a32eaee4a272f5a",
+    "sha256": "6c560cbd4aef2ee4ba91296187b66636f150abda5d10a6ba611251ec49e6f70d"
+  },
+  "after": {
+    "bytes": 46490,
+    "git_blob": "6bd307d58d43978134d98e97c7e727a42c6283e5",
+    "sha256": "6bf25de13fd0dc6f1221d4ec4b0f720cfb86bec45dffa373e5fba4acafcebfa4"
+  },
+  "reason": "Actual last packet self receipt omits duplicate ref_mutations; actual pinned registry5b4 explicitly records []; represent the source of that declaration, without inventing a missing sidecar field.",
+  "selector": "registry_self_ref_mutations_source",
+  "default": "sidecar",
+  "last_packet_value": "registry",
+  "unknown_values_rejected": true,
+  "registry_mode_requires_sidecar_field_absent_and_actual_registry_empty_list": true,
+  "patch": "--- before.py\n+++ after.py\n@@ -347,12 +347,20 @@\n                 \"wrong unappended registry sidecar\")\n         registry_receipt, _ = self.read_json(component[\"directory\"] + \"/\" + sidecar_name)\n         registry_path = prefix + \"registry.actual.json\"\n+        mutation_claim_source = component.get(\"registry_self_ref_mutations_source\", \"sidecar\")\n+        if mutation_claim_source == \"sidecar\":\n+            require(registry_receipt[\"ref_mutations\"] == [], \"packet self ref-mutation claim differs\")\n+        elif mutation_claim_source == \"registry\":\n+            require(\"ref_mutations\" not in registry_receipt and registry[\"ref_mutations\"] == [],\n+                    \"packet registry-only ref-mutation claim differs\")\n+        else:\n+            raise ValueError(\"unreviewed packet self ref-mutation claim source\")\n         require(registry_receipt[\"schema\"] == \"hepta-registry-self-actual-receipt-v1\"\n                 and registry_receipt[\"path\"] == registry_path\n                 and packet_fields(registry_receipt, \"git_blob_sha\") == identity(registry_body)\n                 and registry_receipt[\"all_local_files_verified\"] == len(rows)\n-                and registry_receipt[\"full_GET_utf8_bytes_equal\"] is True\n-                and registry_receipt[\"ref_mutations\"] == [], \"packet registry sidecar binding differs\")\n+                and registry_receipt[\"full_GET_utf8_bytes_equal\"] is True,\n+                \"packet registry sidecar binding differs\")\n         require(original_content(registry_receipt[\"full_GET_original\"]) == registry_body,\n                 \"packet original registry full GET differs\")\n         final_tree = created_tree(registry_receipt[\"create_tree_original\"])\n",
+  "frozen_packets_unchanged": true,
+  "native_or_original_blocker_requirements_changed": false
+}

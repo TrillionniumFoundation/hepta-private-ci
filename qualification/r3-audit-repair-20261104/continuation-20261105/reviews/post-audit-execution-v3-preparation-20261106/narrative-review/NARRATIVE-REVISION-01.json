@@ -1,0 +1,14 @@
+{
+  "schema": "hepta-C4-narrative-precision-correction-v1",
+  "old_report_git_blob": "de797c9befb0e4a5795a8f0d06b29c3dfe091b2f",
+  "old_report_history_path": "/workspace/scratch/07dd58cc9630/recovery-20261106/third-post-audit-review-inputs/final-narrative-v1/POST_AUDIT_EXECUTION_UPDATE_V3.zh-CN.md",
+  "new_report_git_blob": "5625b9babc2286db7b423e438e04912b85a56cdf",
+  "new_report_bytes": 37242,
+  "reason": "B15 table conflated the fixed target base with the product head and merge trees. Only head17 and merge26cf share tree25020; target base636 is fixed but has a different tree.",
+  "replacement": {
+    "old": "当前head/base/merge同树",
+    "new": "当前head/base已固定，head与merge同树"
+  },
+  "two_latest_bytes_unchanged": true,
+  "original_23_contracts_or_product_sources_changed": false
+}

@@ -1,0 +1,20 @@
+{
+  "chunks": [
+    {
+      "chunk_id": "551de7",
+      "wall_time_seconds": 1.001021465,
+      "session_id": 90057,
+      "original_token_count": 0,
+      "output": ""
+    },
+    {
+      "chunk_id": "9b4357",
+      "wall_time_seconds": 1.305969821,
+      "exit_code": 1,
+      "original_token_count": 296,
+      "output": "Traceback (most recent call last):\n  File \"/workspace/scratch/07dd58cc9630/recovery-20261106/prepare_third_post_audit_delta.py\", line 623, in <module>\n    main()\n  File \"/workspace/scratch/07dd58cc9630/recovery-20261106/prepare_third_post_audit_delta.py\", line 617, in main\n    verification = builder.prepare()\n                   ^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/07dd58cc9630/recovery-20261106/prepare_third_post_audit_delta.py\", line 489, in prepare\n    self.import_component(component)\n  File \"/workspace/scratch/07dd58cc9630/recovery-20261106/prepare_third_post_audit_delta.py\", line 303, in import_component\n    receipts = self.verify_evidence_packet(component, registry, prefix, rows, body)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/07dd58cc9630/recovery-20261106/prepare_third_post_audit_delta.py\", line 239, in verify_evidence_packet\n    require(sidecars and len(sidecars) == len(set(sidecars)),\n  File \"/workspace/scratch/07dd58cc9630/recovery-20261106/prepare_third_post_audit_delta.py\", line 34, in require\n    raise ValueError(message)\nValueError: packet receipt-sidecar selection differs\n"
+    }
+  ],
+  "exit_code": 1,
+  "complete_output": "Traceback (most recent call last):\n  File \"/workspace/scratch/07dd58cc9630/recovery-20261106/prepare_third_post_audit_delta.py\", line 623, in <module>\n    main()\n  File \"/workspace/scratch/07dd58cc9630/recovery-20261106/prepare_third_post_audit_delta.py\", line 617, in main\n    verification = builder.prepare()\n                   ^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/07dd58cc9630/recovery-20261106/prepare_third_post_audit_delta.py\", line 489, in prepare\n    self.import_component(component)\n  File \"/workspace/scratch/07dd58cc9630/recovery-20261106/prepare_third_post_audit_delta.py\", line 303, in import_component\n    receipts = self.verify_evidence_packet(component, registry, prefix, rows, body)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/07dd58cc9630/recovery-20261106/prepare_third_post_audit_delta.py\", line 239, in verify_evidence_packet\n    require(sidecars and len(sidecars) == len(set(sidecars)),\n  File \"/workspace/scratch/07dd58cc9630/recovery-20261106/prepare_third_post_audit_delta.py\", line 34, in require\n    raise ValueError(message)\nValueError: packet receipt-sidecar selection differs\n"
+}

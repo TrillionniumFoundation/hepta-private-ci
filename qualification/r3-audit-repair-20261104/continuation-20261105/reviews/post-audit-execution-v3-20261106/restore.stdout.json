@@ -1,0 +1,79 @@
+{
+  "archive": {
+    "bytes": 1540477,
+    "git_blob": "039bc4c67aa588b5408beabf7d6d3d13efae4e1e",
+    "sha256": "af5a5da3b498651fccdb942059a06aeacfeba528800474f77c784dfbcee99ec2"
+  },
+  "parts": 6,
+  "members": 66,
+  "all_original_bytes_equal": true,
+  "verification": {
+    "C2_tree": "8b9bfcacea9c3ff40b0d58ca78209e2b7537a753",
+    "C3_tree": "d7716cca653bf7795307b052352e8671cd9fd944",
+    "old_leaves_retained": 14723,
+    "delta_paths": 509,
+    "final_leaves": 15232,
+    "original_contracts_equal": 23,
+    "counts": {
+      "CLOSED_SCOPED": 16,
+      "OPEN": 6,
+      "SCIENTIFIC_HOLD": 1
+    },
+    "C3_builder_first_failure_and_final_success_retained": true,
+    "publication": {
+      "C3": {
+        "commit": "f7bb5019d311dacc142f20cacdcf19889109b4ba",
+        "tree": "d7716cca653bf7795307b052352e8671cd9fd944",
+        "ordered_parents": [
+          "9ad1f5902f3a2b0b2c712e718a39c2ad2a6c791f"
+        ],
+        "actual_commit_files": [
+          "commit.actual.original.json"
+        ],
+        "actual_ref_files": [
+          "ref.actual.original.json"
+        ]
+      },
+      "fmt": {
+        "commit": "ac18b623c7a6cb953b4660979e9b620fe7176bb2",
+        "tree": "c3e9ddc1799f470ac7c80e117ee953a7232847e0",
+        "ordered_parents": [
+          "2d1137b1ba39fab0e6a28bac8decc114dfa0138c"
+        ],
+        "actual_commit_files": [
+          "commit.actual.original.json"
+        ],
+        "actual_ref_files": [
+          "ref.after.original.json"
+        ],
+        "PR": 4936,
+        "actual_final_PR_files": [
+          "pr.final.original.json",
+          "pr.second.original.json"
+        ],
+        "all_PR_observations_preserved": [
+          {
+            "file": "pr.after.original.json",
+            "observed_merge_field": "a0cb0f33661e199674012e3302b0602407c91a8d"
+          },
+          {
+            "file": "pr.final.original.json",
+            "observed_merge_field": "c9baaf38b95da145fb4f9d371b8d134169d313cc"
+          },
+          {
+            "file": "pr.second.original.json",
+            "observed_merge_field": "c9baaf38b95da145fb4f9d371b8d134169d313cc"
+          }
+        ],
+        "historical_stale_merge_fields_are_not_promoted_to_final_identity": true,
+        "merge": "c9baaf38b95da145fb4f9d371b8d134169d313cc",
+        "actual_merge_files": [
+          "merge.actual.original.json"
+        ]
+      }
+    },
+    "full_C3_builder_executed": false,
+    "restored_product_or_CI_executed": false,
+    "limits": "The full C3 builder needs its separately registered external packets/411 original inputs. This packet verifies only integrity, fixed tree/delta/contracts and publication readback identities; it does not repeat component/native qualification."
+  }
+}

@@ -1,0 +1,174 @@
+{
+  "schema": "hepta-integration-ci-after-format-0829-actual-registry-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "prefix": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-ci-after-format-20261106T0829/",
+  "scope": "Complete bounded API original custody and counts, not new-head native qualification.",
+  "new_head": "ac18b623c7a6cb953b4660979e9b620fe7176bb2",
+  "old_head": "2d1137b1ba39fab0e6a28bac8decc114dfa0138c",
+  "captured_new_runs": {
+    "count": 18,
+    "pending": 4,
+    "queued": 12,
+    "skipped": 2
+  },
+  "captured_new_blocking_jobs": [
+    {
+      "completed_before_utc": "2026-11-06T08:23:03Z",
+      "count": 0
+    },
+    {
+      "completed_before_utc": "2026-11-06T08:29:43Z",
+      "count": 0
+    }
+  ],
+  "old_jobs": {
+    "count": 36,
+    "success": 8,
+    "cancelled": 21,
+    "failure": 1,
+    "skipped": 4,
+    "queued": 2
+  },
+  "old_cargo_deny": {
+    "job": 127779715991,
+    "api_conclusion": "success",
+    "full_log_obtained": false,
+    "tool_transport_errors": 2,
+    "success_transferred_to_new_head": false
+  },
+  "previous_fmt_package_registry": "9c783f6a6b9a83b4d6e0128b2d5b5fc09684112a",
+  "archive": {
+    "original_members": 16,
+    "member_bytes": 786473,
+    "compressed_bytes": 14176,
+    "sha256": "043776fa54585beb59721e3ca1b34d95a9e3b66460481053739a25902f909f1e",
+    "raw_API_originals": 4,
+    "complete_tool_errors": 2
+  },
+  "portable_verification": {
+    "exit": 0,
+    "stderr_bytes": 0,
+    "original_verification_stdout_bytes": 13280,
+    "original_verification_stdout_git": "b568064db62c7b85c35a7a0ddd5285b9d7b01f2f",
+    "all_members_full_bytes_equal": true
+  },
+  "files": [
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-ci-after-format-20261106T0829/README.zh-CN.md",
+      "source_file": "README.zh-CN.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e3b01b2086b1260a97cef13be9f337b63a885382",
+      "bytes": 2593,
+      "git_blob": "e3b01b2086b1260a97cef13be9f337b63a885382",
+      "sha256": "b4ceab5534347eed937065d61718e2517182105ca7fb935609589690f5d2fdaa",
+      "actual_create_sha": "e3b01b2086b1260a97cef13be9f337b63a885382",
+      "full_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-ci-after-format-20261106T0829/archive.json",
+      "source_file": "archive.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1102b118080556c3c389536e47e6e5e3bcfd9d52",
+      "bytes": 522,
+      "git_blob": "1102b118080556c3c389536e47e6e5e3bcfd9d52",
+      "sha256": "62e5d7dc8e4b50bfa7cad312878f4d9d8b8647e26f76e78bd6aaf5db137e4406",
+      "actual_create_sha": "1102b118080556c3c389536e47e6e5e3bcfd9d52",
+      "full_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-ci-after-format-20261106T0829/evidence.original.tar.xz.b64",
+      "source_file": "evidence.original.tar.xz.b64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b78368d0e1428308e8808070790e07a91ea7afe2",
+      "bytes": 18905,
+      "git_blob": "b78368d0e1428308e8808070790e07a91ea7afe2",
+      "sha256": "f1b2e54618eede23c06bdf98a80a8934312d1be7122505c7d7561a6529a94dbe",
+      "actual_create_sha": "b78368d0e1428308e8808070790e07a91ea7afe2",
+      "full_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-ci-after-format-20261106T0829/member-manifest.json",
+      "source_file": "member-manifest.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3cc39a5a9b43ef84da6509417df8130e70f4d24b",
+      "bytes": 3836,
+      "git_blob": "3cc39a5a9b43ef84da6509417df8130e70f4d24b",
+      "sha256": "b5498676323317cef8c0199989590eeec04551d01c993cd213cbf2a3e1d8a914",
+      "actual_create_sha": "3cc39a5a9b43ef84da6509417df8130e70f4d24b",
+      "full_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-ci-after-format-20261106T0829/portable-replay.execution.json",
+      "source_file": "portable-replay.execution.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9de1c1264e011672c9f54fcdae1d9b313974b855",
+      "bytes": 394,
+      "git_blob": "9de1c1264e011672c9f54fcdae1d9b313974b855",
+      "sha256": "43e0ec5292c7d8544e113d1836009207a6c434cb083d28b5c92b856a13a8761b",
+      "actual_create_sha": "9de1c1264e011672c9f54fcdae1d9b313974b855",
+      "full_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-ci-after-format-20261106T0829/portable-replay.stderr.txt",
+      "source_file": "portable-replay.stderr.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "actual_create_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "full_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-ci-after-format-20261106T0829/portable-replay.stdout.json",
+      "source_file": "portable-replay.stdout.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "32dcfbec702aba7fff47bb7c8619e6080e6cef01",
+      "bytes": 570,
+      "git_blob": "32dcfbec702aba7fff47bb7c8619e6080e6cef01",
+      "sha256": "e2325186695f0e1f9a30192acb4393f22415526ac8dc47a720f05452867205df",
+      "actual_create_sha": "32dcfbec702aba7fff47bb7c8619e6080e6cef01",
+      "full_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-ci-after-format-20261106T0829/restore_verify.py",
+      "source_file": "restore_verify.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c7ecfb65455618b742907fd4c6465cb2aed330a0",
+      "bytes": 2655,
+      "git_blob": "c7ecfb65455618b742907fd4c6465cb2aed330a0",
+      "sha256": "7cc6d1aff8a31d79db8fe181a9c18b8bc1f9b7467e4cc77ca9f283d9ba0ac866",
+      "actual_create_sha": "c7ecfb65455618b742907fd4c6465cb2aed330a0",
+      "full_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-ci-after-format-20261106T0829/registration-originals.json",
+      "source_file": "registration-originals.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9b67e88c4803e032378f6edf3a873b47d70c3aee",
+      "bytes": 37030,
+      "git_blob": "9b67e88c4803e032378f6edf3a873b47d70c3aee",
+      "sha256": "f1c716fce168c00bf8dc2feecf5a8c56161e73a986c371696180482449683cc7",
+      "actual_create_sha": "9b67e88c4803e032378f6edf3a873b47d70c3aee",
+      "full_utf8_bytes_equal": true
+    }
+  ],
+  "counts": {
+    "payload_paths": 9,
+    "payload_unique_blobs": 9,
+    "registry_paths": 1,
+    "append_paths": 10
+  },
+  "additional_blockers_closed": 0,
+  "ref_mutations": [],
+  "manual_CI_operations": []
+}

@@ -1,0 +1,75 @@
+{
+  "schema": "hepta-staged-adapter-frozen-source-and-proof-v1",
+  "files": [
+    {
+      "path": "prepare_original.py",
+      "bytes": 40614,
+      "git_blob": "2782624228f94b9ff693811cab418d205a37cf5e",
+      "sha256": "f1cc95248e52289b4c8001aca07cf238f4d03bb1d3a7a85a33c7569e8b270651"
+    },
+    {
+      "path": "prepare_candidate.py",
+      "bytes": 45976,
+      "git_blob": "d4bf4311702edf691c30165b0a32eaee4a272f5a",
+      "sha256": "6c560cbd4aef2ee4ba91296187b66636f150abda5d10a6ba611251ec49e6f70d"
+    },
+    {
+      "path": "candidate.patch",
+      "bytes": 8894,
+      "git_blob": "048803a272d8c77fd8597973b2e6034376a292cf",
+      "sha256": "a97e48fede3341cf81fbdb77935f091a73c977dd7d4ab4256ff2168728c77d25"
+    },
+    {
+      "path": "components.original.json",
+      "bytes": 29227,
+      "git_blob": "469382b549feace3b3cfbf2083bcc8ebe5c83bb1",
+      "sha256": "29e79761861b7e00b79a30599b8743e1498cc1fed03fe4ce5688ea563d1708bb"
+    },
+    {
+      "path": "components.partial.json",
+      "bytes": 29683,
+      "git_blob": "5ff12f89b2974f1350f6f49e85531bc662b37cda",
+      "sha256": "5d8f35df17eff3f352f82cfffc5221824c3027a6ed310c7e7f8edbc6e8ada678"
+    },
+    {
+      "path": "component-staged-fields.json",
+      "bytes": 470,
+      "git_blob": "a21a29c0dccf012b637c1a845a97c29cff608b0b",
+      "sha256": "7712a3fe03141c23685ac2721d6045f62799925d9ccf448edacb414563cae4a8"
+    },
+    {
+      "path": "verify_partial.py",
+      "bytes": 8831,
+      "git_blob": "e98ac88057dd9398a6e0047399d14260a2c9cd8a",
+      "sha256": "2d6df0882206c62060d4d1e2b52b994d69176a6b82e49a06da74f64b3069181a"
+    },
+    {
+      "path": "partial-01.stdout.json",
+      "bytes": 7462,
+      "git_blob": "951a20d302e8b25cf32a39b7215c0121f9df0f3a",
+      "sha256": "6678b2b58e632adc5f3f4e3e4de86d17cec151b12ca23f358bec1f3378a54ecd"
+    },
+    {
+      "path": "partial-01.stderr.txt",
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "partial-01.execution.json",
+      "bytes": 458,
+      "git_blob": "5217cc614c097d399d76c1166dde026950763885",
+      "sha256": "7c7e45d9731b2942549b643c7acd1ac7f9c7d009ea53897eece047d4dfe5f1d8"
+    },
+    {
+      "path": "SCHEMA_REVIEW.json",
+      "bytes": 6511,
+      "git_blob": "9dae6a2c86e9461977b30c80896805c5f2508e9a",
+      "sha256": "2abbda1d01a46eba1bbe49de54c6e97cdd04a2a452a093b96a9729d49fa37879"
+    }
+  ],
+  "excluded": [
+    "patch-check/"
+  ],
+  "root_and_frozen_inputs_unchanged": true
+}

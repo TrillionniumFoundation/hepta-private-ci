@@ -1,0 +1,28 @@
+{
+  "schema": "C4-root-packet-isolated-restore-execution-v1",
+  "started_utc": "2026-11-06T08:23:46.102110+00:00",
+  "finished_utc": "2026-11-06T08:23:46.613592+00:00",
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "/workspace/scratch/07dd58cc9630/recovery-20261106/fourth-audit-root-delivery/restore_packet.py",
+    "--output",
+    "/workspace/scratch/07dd58cc9630/recovery-20261106/fourth-audit-root-restored"
+  ],
+  "exit_code": 0,
+  "restorer": {
+    "bytes": 13594,
+    "git_blob": "e0dfdcce8b2019df572f6c98fbc8b8fdae8cb3d0",
+    "sha256": "1d6ab63398424eff2b6adbc3d2b82757b8a396e4b10e2b85eafa44a64875a0ba"
+  },
+  "stdout": {
+    "bytes": 2711,
+    "git_blob": "f7dd16290efe421b407b07159e7df6115a4ef280",
+    "sha256": "b2b2778882255746a0d5ef7db07d8c1487e937af2c104b325e3faf411d524ca5"
+  },
+  "stderr": {
+    "bytes": 0,
+    "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "scope": "Exact member restore and bounded C3 tree/delta/contracts/publication readback check; no full C3 builder, restored product, CI or network execution"
+}

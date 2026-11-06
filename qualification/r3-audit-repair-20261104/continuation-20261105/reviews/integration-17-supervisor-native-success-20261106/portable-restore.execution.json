@@ -1,0 +1,23 @@
+{
+  "schema": "hepta-portable-archive-replay-execution-v1",
+  "exit_code": 0,
+  "stdout": {
+    "bytes": 632,
+    "git_blob": "d450c1325ae9d8145ee5f2eb9eee77c7d528faeb",
+    "sha256": "df02bceceaf4022fb2623f352ab118c3739c1759ee1531d8cc7c65c41e777b19"
+  },
+  "stderr": {
+    "bytes": 0,
+    "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "command": [
+    "python3",
+    "restore_verify.py",
+    "--root",
+    "<delivery-root>",
+    "--output",
+    "<new-empty-directory>"
+  ],
+  "offline_only": true
+}

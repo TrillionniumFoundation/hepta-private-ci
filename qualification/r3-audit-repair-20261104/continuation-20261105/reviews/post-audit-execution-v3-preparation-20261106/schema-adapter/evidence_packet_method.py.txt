@@ -1,0 +1,130 @@
+    def verify_evidence_packet(self, component, registry, prefix, rows, registry_body):
+        """Verify the explicit packet schema, including both receipt layers."""
+        require(registry["schema"] == "hepta-evidence-packet-actual-registry-v1"
+                and component["rows"] == "files", "wrong evidence-packet schema")
+        require(not component.get("self_file"), "packet registry sidecar is not an append payload")
+        require(registry["ref_mutations"] == [], "packet contains ref mutations")
+
+        def packet_fields(value, sha_key="sha"):
+            return {"bytes": value["bytes"], "git_blob": value[sha_key], "sha256": value["sha256"]}
+
+        def created_tree(raw):
+            require(raw.get("isError") is False, "packet tree creation failed")
+            sha = raw["structuredContent"]["sha"]
+            require(re.fullmatch(r"[0-9a-f]{40}", sha) is not None, "invalid packet tree")
+            return sha
+
+        creates = registry["materialization_originals"]
+        payload_tree = created_tree(creates["payload_create_tree"])
+        receipt_tree = created_tree(creates["receipt_create_tree"])
+        groups = {"payload": {}, "registration_receipt": {}}
+        identities = {}
+        leaves = {}
+        for row in rows:
+            path = safe_path(row["path"], audit=True)
+            require(path.startswith(prefix), "packet path escaped prefix")
+            suffix = path.removeprefix(prefix)
+            require(safe_path(row["local_member"]) == suffix, "packet local member differs")
+            require(row["role"] in groups and path not in leaves, "invalid or duplicate packet role/path")
+            leaf = tree_row(row)
+            require((leaf["mode"], leaf["type"]) == ("100644", "blob"), "nonregular packet blob")
+            payload = self.read(component["directory"] + "/" + suffix)
+            require(packet_fields(row) == identity(payload), "packet local identity differs")
+            require(row["full_GET_utf8_bytes_equal"] is True, "packet row lacks full GET")
+            expected_tree = payload_tree if row["role"] == "payload" else receipt_tree
+            require(row["actual_materialization_tree"] == expected_tree, "packet materialization differs")
+            groups[row["role"]][path] = row
+            leaves[path] = leaf
+            identities[path] = identity(payload)
+        counts = registry["counts"]
+        require(counts["payload_paths"] == len(groups["payload"]) > 0
+                and counts["registration_receipt_paths"] == len(groups["registration_receipt"]) > 0
+                and counts["listed_paths"] == len(rows)
+                and counts["append_paths_including_registry"] == len(rows) + 1,
+                "packet role counts differ")
+        payload_leaves = {path: leaves[path] for path in groups["payload"]}
+        require(merkle(payload_leaves)["sha"] == payload_tree, "packet payload full-tree Merkle differs")
+        require(merkle(leaves)["sha"] == receipt_tree, "packet cumulative receipt Merkle differs")
+
+        payload_receipts = {}
+        payload_create_seen = False
+        for path, row in groups["registration_receipt"].items():
+            collection, _ = self.read_json(component["directory"] + "/" + row["local_member"])
+            require(collection["schema"] == "hepta-immutable-blob-registration-receipts-v1"
+                    and collection["repository"] == REPOSITORY
+                    and collection["materialization_tree"] == payload_tree
+                    and collection["ref_mutations"] == [], "wrong packet payload-receipt collection")
+            if "create_tree_original" in collection:
+                require(collection["create_tree_original"] == creates["payload_create_tree"],
+                        "packet payload original create differs")
+                payload_create_seen = True
+            require(collection["records"], "empty packet payload-receipt collection")
+            for record in collection["records"]:
+                name = record["path"]
+                require(name in groups["payload"] and name not in payload_receipts,
+                        "duplicate or foreign packet payload receipt")
+                require(tree_row(record) == leaves[name]
+                        and packet_fields(record) == identities[name]
+                        and record["create_then_full_GET_utf8_bytes_equal"] is True,
+                        "packet payload receipt identity differs")
+                actual = original_content(record["full_GET_original"])
+                require(identity(actual) == identities[name]
+                        and actual == self.read(component["directory"] + "/" + groups["payload"][name]["local_member"]),
+                        "packet original payload full GET differs")
+                payload_receipts[name] = record
+        require(payload_create_seen and set(payload_receipts) == set(groups["payload"]),
+                "incomplete packet payload receipt coverage")
+
+        sidecars = [name for name in registry["local_sidecars_excluded_from_append"]
+                    if re.fullmatch(r"registration-receipts-GET(?:-[0-9]+)?\.local-sidecar\.json", name)]
+        require(sidecars and len(sidecars) == len(set(sidecars)),
+                "packet receipt-sidecar selection differs")
+        receipt_receipts = {}
+        receipt_create_seen = False
+        for name in sidecars:
+            sidecar, _ = self.read_json(component["directory"] + "/" + safe_path(name))
+            require(sidecar["schema"] == "hepta-receipt-registration-originals-local-sidecar-v1",
+                    "wrong packet receipt sidecar schema")
+            if "create_tree_original" in sidecar:
+                require(sidecar["create_tree_original"] == creates["receipt_create_tree"],
+                        "packet receipt original create differs")
+                receipt_create_seen = True
+            require(sidecar["records"], "empty packet receipt sidecar")
+            for record in sidecar["records"]:
+                path = prefix + safe_path(record["name"])
+                require(path in groups["registration_receipt"] and path not in receipt_receipts,
+                        "duplicate or foreign receipt-of-receipt")
+                require(packet_fields(record, "git_blob_sha") == identities[path]
+                        and record["full_GET_utf8_bytes_equal"] is True,
+                        "packet receipt-sidecar identity differs")
+                actual = original_content(record["full_GET_original"])
+                require(identity(actual) == identities[path]
+                        and actual == self.read(component["directory"] + "/" + groups["registration_receipt"][path]["local_member"]),
+                        "packet receipt original full GET differs")
+                receipt_receipts[path] = record
+        require(receipt_create_seen and set(receipt_receipts) == set(groups["registration_receipt"]),
+                "incomplete packet receipt-sidecar coverage")
+
+        sidecar_name = "registry-self.actual.json"
+        require(sidecar_name in registry["local_sidecars_excluded_from_append"],
+                "wrong unappended registry sidecar")
+        registry_receipt, _ = self.read_json(component["directory"] + "/" + sidecar_name)
+        registry_path = prefix + "registry.actual.json"
+        require(registry_receipt["schema"] == "hepta-registry-self-actual-receipt-v1"
+                and registry_receipt["path"] == registry_path
+                and packet_fields(registry_receipt, "git_blob_sha") == identity(registry_body)
+                and registry_receipt["all_local_files_verified"] == len(rows)
+                and registry_receipt["full_GET_utf8_bytes_equal"] is True
+                and registry_receipt["ref_mutations"] == [], "packet registry sidecar binding differs")
+        require(original_content(registry_receipt["full_GET_original"]) == registry_body,
+                "packet original registry full GET differs")
+        final_tree = created_tree(registry_receipt["create_tree_original"])
+        require(final_tree == registry_receipt["actual_materialization_tree"],
+                "packet registry creation differs")
+        final_leaves = dict(leaves)
+        require(registry_path not in final_leaves, "packet registry collides with listed payload")
+        final_leaves[registry_path] = {"path": registry_path, "mode": "100644", "type": "blob",
+                                      "sha": identity(registry_body)["git_blob"]}
+        require(merkle(final_leaves)["sha"] == final_tree, "packet cumulative registry Merkle differs")
+        return identities
+

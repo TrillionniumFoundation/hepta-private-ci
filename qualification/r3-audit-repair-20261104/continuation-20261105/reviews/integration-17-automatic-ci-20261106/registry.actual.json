@@ -1,0 +1,324 @@
+{
+  "schema": "hepta-evidence-packet-actual-registry-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "audit_prefix": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-automatic-ci-20261106/",
+  "scope": "Two separate complete ordinary automatic CI API cuts for product17, plus actual source publication binding",
+  "current_product_head": "17c6b903a5d5d470b72035f95bb6e087291d7e04",
+  "current_product_tree": "25020dc30888fa3ffa6f6e8d1073d91edded1756",
+  "actual_PR_merge": "26cfdcaa70cbd2daecd165137e3b84d2ad1a7284",
+  "source_parent": "840e8b5dbffca017753cdf87482ce325938f313c",
+  "target_base": "63652be658ebed8d3052eb789b951793384fd5e4",
+  "latest_observation_utc": "2026-11-06T10:32:44Z",
+  "whole_candidate_qualified": false,
+  "actual_job_checkout": null,
+  "observations_non_atomic": true,
+  "observations_merged_as_one_denominator": false,
+  "separate_observations": [
+    {
+      "run_list_observed_before_utc": "2026-11-06T10:29:19Z",
+      "complete_runs": 18,
+      "run_status_counts": {
+        "queued": 12,
+        "pending": 3,
+        "skipped": 2,
+        "success": 1
+      },
+      "blocking_run": 42201989815,
+      "blocking_jobs_observed_before_utc": "2026-11-06T10:30:14Z",
+      "complete_blocking_jobs": 0,
+      "source_member": "root/SUMMARY.json"
+    },
+    {
+      "run_list_observed_before_utc": "2026-11-06T10:31:19Z",
+      "complete_runs": 18,
+      "run_status_counts": {
+        "queued": 11,
+        "pending": 3,
+        "skipped": 2,
+        "success": 1,
+        "in_progress": 1
+      },
+      "blocking_run": 42201989815,
+      "blocking_jobs_observed_before_utc": "2026-11-06T10:32:44Z",
+      "complete_blocking_jobs": 0,
+      "source_member": "root/root-next-cut/CI-REVIEW.json"
+    }
+  ],
+  "native_scope": {
+    "API_success_is_native_case_qualification": false,
+    "native_case_counts_accepted": null,
+    "old_840_or_other_old_results_transferred": false,
+    "required_original_CI_all_success": false,
+    "whole_candidate_qualified": false,
+    "newly_closed_blockers": []
+  },
+  "archive": {
+    "schema": "hepta-split-xz-archive-v1",
+    "compression": "XZ/CRC64",
+    "encoding": "base64",
+    "archive_identity": {
+      "bytes": 19400,
+      "git_blob": "d76ff6d154e1c8edf294c11208771c5140fc15d6",
+      "sha256": "8f71e0c7c4d4da41c9693fce04013c7e91e8761e1e8e7f12bf2c603c4ae2ddb3"
+    },
+    "computed_archive_git_is_not_standalone_actual_blob": true,
+    "manifest": {
+      "bytes": 4888,
+      "git_blob": "9bfaedd4c6977aa848964c29554f67fca148b461",
+      "sha256": "5f9abbc1c2043278d7cf42ed46c4b4a18588394b1699c78dfe867a31df8170a3"
+    },
+    "members": 21,
+    "member_bytes": 1341049,
+    "parts": [
+      {
+        "path": "archive-part-000.b64",
+        "bytes": 25869,
+        "git_blob": "6b8067abf49c2984eeb6c5cb690e973b329b40a9",
+        "sha256": "9b5aa8fa7918121990d4bc292b5b710e7c437758deb6cf3ae482b814aaaf4947"
+      }
+    ]
+  },
+  "archive_members_include": {
+    "earlier_cut_originals_and_actual_summary_receipt": 9,
+    "root_later_cut_whole_directory_originals": 5,
+    "offline_proof_and_FREEZE": 7
+  },
+  "offline_verification": {
+    "exit_code": 0,
+    "stdout_bytes": 4658,
+    "stdout_git_blob": "ab2d3d18b4ad6344f7fc33dd7c41d0db952881c4",
+    "stdout_sha256": "4b7a45d9236d593b67eff47ae2342c3ebe4eeb8f485e2849bc902121b1f3651b",
+    "stderr_bytes": 0,
+    "portable_restore_exit_code": 0,
+    "portable_restore_stdout_bytes": 616,
+    "portable_restore_stdout_sha256": "c9c111b3b4d9f31c7a3995e7a52a6c9a7df5df74b1322723d2f5d7c24f2c4657",
+    "restored_internal_stdout_full_equal": true,
+    "all_archive_member_identities_equal": true,
+    "native_or_network_invocation": false,
+    "B16_replay": false
+  },
+  "counts": {
+    "payload_paths": 12,
+    "registration_receipt_paths": 3,
+    "listed_paths": 15,
+    "append_paths_including_registry": 16
+  },
+  "files": [
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-automatic-ci-20261106/CI-REVIEW.latest.json",
+      "local_member": "CI-REVIEW.latest.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1a20005133c3d17ddccf7cf6c432adbdd85a4f35",
+      "bytes": 9240,
+      "sha256": "21694e4daee926b43d97a3aa60afb9d6237c14d7ae2c00499c967653f1a2b176",
+      "role": "payload",
+      "actual_materialization_tree": "8089e2c8de06b6d0fcec34c6e4b8d33dcad8cf88",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-automatic-ci-20261106/README.zh-CN.md",
+      "local_member": "README.zh-CN.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "db2dba1c86cdda761605a392ba5e9338ac95251c",
+      "bytes": 1339,
+      "sha256": "f882c82440f5874f6a7c510b2d822202509ddf9bf6a9a81dd8c33d90c7185068",
+      "role": "payload",
+      "actual_materialization_tree": "8089e2c8de06b6d0fcec34c6e4b8d33dcad8cf88",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-automatic-ci-20261106/SUMMARY.earlier.json",
+      "local_member": "SUMMARY.earlier.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a80a8cd05c6569ccd291ea2e686961d8c942fd54",
+      "bytes": 7012,
+      "sha256": "0bcffbe4f05d350700d8474bb11f3764709b8e441661ef89c97e90d4873cc5ea",
+      "role": "payload",
+      "actual_materialization_tree": "8089e2c8de06b6d0fcec34c6e4b8d33dcad8cf88",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-automatic-ci-20261106/archive-part-000.b64",
+      "local_member": "archive-part-000.b64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6b8067abf49c2984eeb6c5cb690e973b329b40a9",
+      "bytes": 25869,
+      "sha256": "9b5aa8fa7918121990d4bc292b5b710e7c437758deb6cf3ae482b814aaaf4947",
+      "role": "payload",
+      "actual_materialization_tree": "8089e2c8de06b6d0fcec34c6e4b8d33dcad8cf88",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-automatic-ci-20261106/archive.json",
+      "local_member": "archive.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ebab6ac7cb4b7d40f6aafa4be5cc84a26be820a4",
+      "bytes": 809,
+      "sha256": "508210d0f00d40b1f86639623b4212212e75efdd6d1d9caee92bb03650393004",
+      "role": "payload",
+      "actual_materialization_tree": "8089e2c8de06b6d0fcec34c6e4b8d33dcad8cf88",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-automatic-ci-20261106/member-manifest.json",
+      "local_member": "member-manifest.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9bfaedd4c6977aa848964c29554f67fca148b461",
+      "bytes": 4888,
+      "sha256": "5f9abbc1c2043278d7cf42ed46c4b4a18588394b1699c78dfe867a31df8170a3",
+      "role": "payload",
+      "actual_materialization_tree": "8089e2c8de06b6d0fcec34c6e4b8d33dcad8cf88",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-automatic-ci-20261106/portable-replay.execution.json",
+      "local_member": "portable-replay.execution.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "cc8831d2bdf350a683c1bab55c203bfe6215651f",
+      "bytes": 772,
+      "sha256": "6ae158738f0e7ad727ff8385a4b7fbdfc90973ef70c8b0b950d945c7c20fa287",
+      "role": "payload",
+      "actual_materialization_tree": "8089e2c8de06b6d0fcec34c6e4b8d33dcad8cf88",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-automatic-ci-20261106/portable-replay.stderr.txt",
+      "local_member": "portable-replay.stderr.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "role": "payload",
+      "actual_materialization_tree": "8089e2c8de06b6d0fcec34c6e4b8d33dcad8cf88",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-automatic-ci-20261106/portable-replay.stdout.json",
+      "local_member": "portable-replay.stdout.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "36bddd5b78ef87c84040b53a69303388ce2ddfc3",
+      "bytes": 616,
+      "sha256": "c9c111b3b4d9f31c7a3995e7a52a6c9a7df5df74b1322723d2f5d7c24f2c4657",
+      "role": "payload",
+      "actual_materialization_tree": "8089e2c8de06b6d0fcec34c6e4b8d33dcad8cf88",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-automatic-ci-20261106/restore_verify.py",
+      "local_member": "restore_verify.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9471b27895da565c76a3506bf11e129c39c701b2",
+      "bytes": 3459,
+      "sha256": "c8d796e17c5f3838211b4dd4197ca760f998dce661a95d2a44eb28f53f508c79",
+      "role": "payload",
+      "actual_materialization_tree": "8089e2c8de06b6d0fcec34c6e4b8d33dcad8cf88",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-automatic-ci-20261106/verification-01.stdout.json",
+      "local_member": "verification-01.stdout.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ab2d3d18b4ad6344f7fc33dd7c41d0db952881c4",
+      "bytes": 4658,
+      "sha256": "4b7a45d9236d593b67eff47ae2342c3ebe4eeb8f485e2849bc902121b1f3651b",
+      "role": "payload",
+      "actual_materialization_tree": "8089e2c8de06b6d0fcec34c6e4b8d33dcad8cf88",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-automatic-ci-20261106/verify_packet.py",
+      "local_member": "verify_packet.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e48c13fd6a6d79c56b19e01cdaf984529cdaffb7",
+      "bytes": 9281,
+      "sha256": "fbbed27f299c75b86dd1229cb2c47bf71bcab341150abc1f43abb7213c558ac1",
+      "role": "payload",
+      "actual_materialization_tree": "8089e2c8de06b6d0fcec34c6e4b8d33dcad8cf88",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-automatic-ci-20261106/registration-payloads-000.actual.json",
+      "local_member": "registration-payloads-000.actual.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "855cf55f98d660d0ede6f50ca681bc675f907d62",
+      "bytes": 48209,
+      "sha256": "0787367c2058d4e0a72521d75a0f9d5962bd72d44850ade6a20a8ce73909dc3e",
+      "role": "registration_receipt",
+      "actual_materialization_tree": "229aebd687b8651b266781db39ab674e73397563",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-automatic-ci-20261106/registration-payloads-001.actual.json",
+      "local_member": "registration-payloads-001.actual.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "76aab9f73d53689317b1bd29eac382b08b7919af",
+      "bytes": 9969,
+      "sha256": "9013be9b6050427b22ee154964ee815faf291f8402899db94a7e32a4d37b1ea8",
+      "role": "registration_receipt",
+      "actual_materialization_tree": "229aebd687b8651b266781db39ab674e73397563",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-automatic-ci-20261106/registration-payloads-002.actual.json",
+      "local_member": "registration-payloads-002.actual.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "be3c6cb968af252d109c1a53a5273934cdcfa97e",
+      "bytes": 22228,
+      "sha256": "06ed7df45acf4a1a60098259df17cd31621d803da0dcf668f890a5f36c4e1a75",
+      "role": "registration_receipt",
+      "actual_materialization_tree": "229aebd687b8651b266781db39ab674e73397563",
+      "full_GET_utf8_bytes_equal": true
+    }
+  ],
+  "materialization_originals": {
+    "payload_create_tree": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Action completed."
+        }
+      ],
+      "structuredContent": {
+        "sha": "8089e2c8de06b6d0fcec34c6e4b8d33dcad8cf88"
+      },
+      "isError": false
+    },
+    "receipt_create_tree": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Action completed."
+        }
+      ],
+      "structuredContent": {
+        "sha": "229aebd687b8651b266781db39ab674e73397563"
+      },
+      "isError": false
+    }
+  },
+  "manual_CI_operations": [],
+  "private_capacity_query": false,
+  "ref_mutations": [],
+  "local_sidecars_excluded_from_append": [
+    "archive.original.tar.xz",
+    "registry-self.actual.json",
+    "tree-elements.actual.json",
+    "registration-receipts-GET.local-sidecar.json"
+  ],
+  "schema_adapter": "Use files[].{path,mode,type,sha,bytes,sha256}; tree-elements.actual.json is the complete plain Git tree_elements array including registry itself. Registry self is a separate non-recursive local receipt."
+}

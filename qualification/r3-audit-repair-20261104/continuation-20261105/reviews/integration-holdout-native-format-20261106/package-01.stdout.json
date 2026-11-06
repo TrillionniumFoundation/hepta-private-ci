@@ -1,0 +1,36 @@
+{
+  "schema": "holdout-native-fmt-complete-evidence-archive-v1",
+  "archive": {
+    "bytes": 479696,
+    "git_blob": "aa21b0b81617010c6302863edd574f954ab9b07b",
+    "sha256": "b17f78a5565f93b1e54e90a031cd1a4c4367d93f4bb7791d93b76ba7400e0ac4"
+  },
+  "tar": {
+    "bytes": 6174720,
+    "git_blob": "7697be51f8b2b982c3c738205aa41b2175c10934",
+    "sha256": "c97fa5308d7bd83fd459540340321a4af152c3f3f81ea74f9acc785874ecbb98"
+  },
+  "format": "tar.xz, lossless XZ CRC64; deterministic tar headers",
+  "member_count": 34,
+  "member_bytes": 6140248,
+  "independent_review_actual_blob": "7ea9cb737a8c57a215cbf473b2ad100c25ab668b",
+  "candidate_tree": "c3e9ddc1799f470ac7c80e117ee953a7232847e0",
+  "original_failed_source": "a0cb0f33661e199674012e3302b0602407c91a8d",
+  "original_job": 127779715942,
+  "original_job_conclusion": "failure",
+  "portable_replay": {
+    "exit": 0,
+    "stdout": {
+      "bytes": 6767,
+      "git_blob": "f6d35f9f2f7a6c55ad9bce399558bed4d816b25f",
+      "sha256": "e64c9ef1b342770e684afb4eb90166de30479089e4911934890de3c99de33f3e"
+    },
+    "stderr": {
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "all_stdout_bytes_equal": true
+  },
+  "qualification": "Only exact original formatter whitespace candidate accepted. No product/Rust/native/format success transferred."
+}

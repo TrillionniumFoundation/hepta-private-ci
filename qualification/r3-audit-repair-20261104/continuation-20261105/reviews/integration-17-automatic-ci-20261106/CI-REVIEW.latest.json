@@ -1,0 +1,235 @@
+{
+  "schema": "hepta-latest-product-17-automatic-CI-bounded-observation-v1",
+  "current_product_head": "17c6b903a5d5d470b72035f95bb6e087291d7e04",
+  "current_product_tree": "25020dc30888fa3ffa6f6e8d1073d91edded1756",
+  "actual_PR_merge": "26cfdcaa70cbd2daecd165137e3b84d2ad1a7284",
+  "latest_observation_utc": "2026-11-06 10:32:44 UTC",
+  "non_atomic": true,
+  "run_list": {
+    "head": "17c6b903a5d5d470b72035f95bb6e087291d7e04",
+    "original_fetch_completed_before_UTC": "2026-11-06 10:31:19 UTC",
+    "local_save_first_attempt": "exec-server transport disconnected; complete raw tool return retained in V8",
+    "total_count": 18,
+    "status_counts": {
+      "queued": 11,
+      "pending": 3,
+      "skipped": 2,
+      "success": 1,
+      "in_progress": 1
+    },
+    "runs": [
+      {
+        "id": 42201989551,
+        "name": "Hepta Keyring Sync Security Migration (Draft)",
+        "path": ".github/workflows/hepta-keyring-sync-advisory.yml",
+        "status": "queued",
+        "conclusion": null,
+        "attempt": 1,
+        "created_at": "2026-11-06T10:21:03Z",
+        "updated_at": "2026-11-06T10:21:03Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42201989551"
+      },
+      {
+        "id": 42201989568,
+        "name": "Hepta Memory P0 native regressions",
+        "path": ".github/workflows/hepta-windows-federation-revoke.yml",
+        "status": "queued",
+        "conclusion": null,
+        "attempt": 1,
+        "created_at": "2026-11-06T10:21:03Z",
+        "updated_at": "2026-11-06T10:21:03Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42201989568"
+      },
+      {
+        "id": 42201989807,
+        "name": "Hepta musl product smoke",
+        "path": ".github/workflows/hepta-musl-product-smoke.yml",
+        "status": "queued",
+        "conclusion": null,
+        "attempt": 1,
+        "created_at": "2026-11-06T10:21:03Z",
+        "updated_at": "2026-11-06T10:21:03Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42201989807"
+      },
+      {
+        "id": 42201989809,
+        "name": "Hepta Supervisor P0 Cross-Platform Restart Qualification",
+        "path": ".github/workflows/hepta-supervisor-p0-crossplatform.yml",
+        "status": "queued",
+        "conclusion": null,
+        "attempt": 1,
+        "created_at": "2026-11-06T10:21:03Z",
+        "updated_at": "2026-11-06T10:21:03Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42201989809"
+      },
+      {
+        "id": 42201989915,
+        "name": "Hepta Windows private-state native (security qualification only)",
+        "path": ".github/workflows/hepta-windows-private-state-native.yml",
+        "status": "queued",
+        "conclusion": null,
+        "attempt": 1,
+        "created_at": "2026-11-06T10:21:03Z",
+        "updated_at": "2026-11-06T10:21:03Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42201989915"
+      },
+      {
+        "id": 42201989751,
+        "name": "Rust UI product foundation",
+        "path": ".github/workflows/ui-product-foundation.yml",
+        "status": "pending",
+        "conclusion": null,
+        "attempt": 1,
+        "created_at": "2026-11-06T10:21:03Z",
+        "updated_at": "2026-11-06T10:21:04Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42201989751"
+      },
+      {
+        "id": 42201989351,
+        "name": "Hepta architecture convergence",
+        "path": ".github/workflows/hepta-architecture-convergence.yml",
+        "status": "pending",
+        "conclusion": null,
+        "attempt": 1,
+        "created_at": "2026-11-06T10:21:03Z",
+        "updated_at": "2026-11-06T10:21:04Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42201989351"
+      },
+      {
+        "id": 42201989435,
+        "name": "Native Windows Bazel process environment",
+        "path": ".github/workflows/windows-bazel-process-native.yml",
+        "status": "queued",
+        "conclusion": null,
+        "attempt": 1,
+        "created_at": "2026-11-06T10:21:03Z",
+        "updated_at": "2026-11-06T10:21:03Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42201989435"
+      },
+      {
+        "id": 42201989959,
+        "name": "Production HOS2 owner proposal",
+        "path": ".github/workflows/hepta-production-hos2-proposal.yml",
+        "status": "completed",
+        "conclusion": "skipped",
+        "attempt": 1,
+        "created_at": "2026-11-06T10:21:03Z",
+        "updated_at": "2026-11-06T10:21:05Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42201989959"
+      },
+      {
+        "id": 42201989855,
+        "name": "App-server schema refresh",
+        "path": ".github/workflows/hepta-app-server-schema-refresh.yml",
+        "status": "completed",
+        "conclusion": "skipped",
+        "attempt": 1,
+        "created_at": "2026-11-06T10:21:03Z",
+        "updated_at": "2026-11-06T10:21:04Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42201989855"
+      },
+      {
+        "id": 42201989789,
+        "name": "Hepta owner-local Matrixd and Agentd native transport",
+        "path": ".github/workflows/hepta-owner-local-native.yml",
+        "status": "queued",
+        "conclusion": null,
+        "attempt": 1,
+        "created_at": "2026-11-06T10:21:03Z",
+        "updated_at": "2026-11-06T10:21:05Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42201989789"
+      },
+      {
+        "id": 42201989815,
+        "name": "blocking-ci",
+        "path": ".github/workflows/blocking-ci.yml",
+        "status": "pending",
+        "conclusion": null,
+        "attempt": 1,
+        "created_at": "2026-11-06T10:21:03Z",
+        "updated_at": "2026-11-06T10:21:05Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42201989815"
+      },
+      {
+        "id": 42201989582,
+        "name": "Hepta operator acceptance native signature verification",
+        "path": ".github/workflows/hepta-operator-acceptance-native.yml",
+        "status": "queued",
+        "conclusion": null,
+        "attempt": 1,
+        "created_at": "2026-11-06T10:21:03Z",
+        "updated_at": "2026-11-06T10:21:05Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42201989582"
+      },
+      {
+        "id": 42201989547,
+        "name": "Hepta exec recovery and authorized-read conformance",
+        "path": ".github/workflows/hepta-exec-authorized-read-compat.yml",
+        "status": "queued",
+        "conclusion": null,
+        "attempt": 1,
+        "created_at": "2026-11-06T10:21:03Z",
+        "updated_at": "2026-11-06T10:22:24Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42201989547"
+      },
+      {
+        "id": 42201989845,
+        "name": "Original Objective owner package gates",
+        "path": ".github/workflows/hepta-objective-owner.yml",
+        "status": "queued",
+        "conclusion": null,
+        "attempt": 1,
+        "created_at": "2026-11-06T10:21:03Z",
+        "updated_at": "2026-11-06T10:26:05Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42201989845"
+      },
+      {
+        "id": 42201989602,
+        "name": "v8-canary",
+        "path": ".github/workflows/v8-canary.yml",
+        "status": "queued",
+        "conclusion": null,
+        "attempt": 1,
+        "created_at": "2026-11-06T10:21:03Z",
+        "updated_at": "2026-11-06T10:24:45Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42201989602"
+      },
+      {
+        "id": 42201989580,
+        "name": "Native Windows ordinary business consumers",
+        "path": ".github/workflows/windows-ordinary-consumers.yml",
+        "status": "completed",
+        "conclusion": "success",
+        "attempt": 1,
+        "created_at": "2026-11-06T10:21:03Z",
+        "updated_at": "2026-11-06T10:27:19Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42201989580"
+      },
+      {
+        "id": 42201989530,
+        "name": "Bazel stable lock proposal",
+        "path": ".github/workflows/hepta-bazel-stable-lock-proposal.yml",
+        "status": "in_progress",
+        "conclusion": null,
+        "attempt": 1,
+        "created_at": "2026-11-06T10:21:03Z",
+        "updated_at": "2026-11-06T10:30:04Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42201989530"
+      }
+    ]
+  },
+  "blocking": {
+    "run": 42201989815,
+    "observed_utc": "2026-11-06 10:32:44 UTC",
+    "complete_job_count": 0,
+    "status_counts": {},
+    "jobs": []
+  },
+  "whole_candidate_qualified": false,
+  "required_original_CI_all_success": false,
+  "original_platform_test_acceptance_inferred_from_run_summary": false,
+  "pending_scope_dependent_jobs_are_not_declared_skipped_or_failed": true,
+  "manual_CI_dispatch_rerun_cancel": false,
+  "private_capacity_query": false,
+  "B16_replay": false
+}

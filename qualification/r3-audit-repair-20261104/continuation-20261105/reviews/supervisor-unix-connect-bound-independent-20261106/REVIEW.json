@@ -1,0 +1,238 @@
+{
+  "schema": "hepta-supervisor-unix-connect-bound-independent-review-v1",
+  "created_at": "2026-11-06T09:45:52.319082+00:00",
+  "reviewer": "root/format_finish",
+  "decision": "ACCEPT_STATIC_SOURCE_CANDIDATE",
+  "source_blockers": 0,
+  "base": {
+    "head": "ac18b623c7a6cb953b4660979e9b620fe7176bb2",
+    "tree": "c3e9ddc1799f470ac7c80e117ee953a7232847e0",
+    "merge": "c9baaf38b95da145fb4f9d371b8d134169d313cc",
+    "leaves": 10802
+  },
+  "candidate": {
+    "tree": "44e8f7176037a5455476c068ad6ad8d692868769",
+    "leaves": 10804,
+    "changed_paths": [
+      "codex-rs/hepta-supervisor/src/unix.rs",
+      "codex-rs/hepta-supervisor/src/unix_connect.rs",
+      "codex-rs/hepta-supervisor/src/unix_connect_tests.rs"
+    ],
+    "unchanged_original_leaves": 10801
+  },
+  "author_freeze": {
+    "bytes": 18861,
+    "git_blob": "79031a80b8b095fbffda0215aa67ddd7c6f0634f",
+    "sha256": "ab92d5bb56b381048a18c47d0c62f9a48a2505f3826a3e9395b875d785f3a073"
+  },
+  "postimages": [
+    {
+      "path": "codex-rs/hepta-supervisor/src/unix.rs",
+      "bytes": 32163,
+      "git_blob": "84e4d339172fd49e527ae0317b9c127a09f8ad1d",
+      "sha256": "b80db353af7b666203cfe83a0a53c8c995a35bc548911f52abaa958af557f1ca",
+      "independent_fresh_full_GET_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/unix_connect.rs",
+      "bytes": 7469,
+      "git_blob": "9fbca2e7048c6d7af0a2ebad9eeacd1808862c95",
+      "sha256": "311569a904f767d1fec99d72008225d51832702da0b6087f5d66f2b29f8ece87",
+      "independent_fresh_full_GET_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/unix_connect_tests.rs",
+      "bytes": 5936,
+      "git_blob": "b4a71f89805fa28226d74ef399ca65653759e0f5",
+      "sha256": "13fd7083a7e4226b1e2957db4383763f10bf7d51224fbee48948aad6d14e99a2",
+      "independent_fresh_full_GET_equal": true
+    }
+  ],
+  "qualification": "Independent source, source custody, fixed primary semantics, full-tree Git patch and exact historical evidence review only. Not a Rust compile/fmt/test/native PASS and not a blocker closure.",
+  "read_scope": {
+    "new_module_and_six_tests": "Full 201-line private module and 161-line test source, full 3-path patch and reverse patch.",
+    "old_production": "Entire old unix.rs; ProcessDriver/ManagedProcess contract and error conversion; Supervisor recover/snapshot; full recovery.rs/runtime.rs; Matrix companion recovery; original paired process test and stage clock; relevant fixed Fleet/release and lease context bound by source map.",
+    "frozen_custody": "All 77 members (7,211,701 bytes), plus exact FREEZE; 21 fixed source inputs independently bound to base tree.",
+    "primary_semantics": "Relevant full Rust1.95 Unix pathname/stream/socket functions, libc0.2.191 Unix/Linux/Apple types and FFI declarations, Linuxv6.8 AF_UNIX connect and backlog branch; all seven primary files match complete stored GETs.",
+    "explicit_read_limit": "This review does not claim full semantic review of all 10,802 repository leaves or all 86 historical dependency source files. Unchanged leaves are proven by tree identity."
+  },
+  "findings": [
+    {
+      "id": "SC01",
+      "result": "PASS",
+      "claim": "The private module declaration and exactly three synchronous connect expressions are the only edits to the old unix.rs. Reversing those replacements reproduces all 32,095 original bytes.",
+      "evidence": [
+        "full.patch",
+        "source/codex-rs/hepta-supervisor/src/unix.rs",
+        "independent-01/VERIFICATION.json"
+      ]
+    },
+    {
+      "id": "SC02",
+      "result": "PASS",
+      "claim": "200ms is a newly bounded connection stage derived from the existing constant. Original read/write per-operation 200ms, three adoption attempts, 50ms retry spacing, request/response bounds, exact identity and drain ACK rules remain byte-identical. No shared 200ms handshake or recovery deadline is claimed.",
+      "evidence": [
+        "candidate/codex-rs/hepta-supervisor/src/unix.rs",
+        "candidate/codex-rs/hepta-supervisor/src/unix_connect.rs"
+      ]
+    },
+    {
+      "id": "SC03",
+      "result": "PASS",
+      "claim": "A newly returned descriptor immediately enters OwnedFd before any fallible fd configuration. Each error exits through owner Drop; successful conversion transfers ownership into UnixStream and restores blocking mode before returning. No raw descriptor escapes, clones or connection worker threads are introduced.",
+      "evidence": [
+        "candidate/codex-rs/hepta-supervisor/src/unix_connect.rs",
+        "primary/rust-1.95.0-unix-stream.rs"
+      ]
+    },
+    {
+      "id": "SC04",
+      "result": "PASS",
+      "claim": "SOCK_CLOEXEC target list and fallback FD_CLOEXEC behavior preserve fixed std creation policy. Apple/DragonFly/FreeBSD/NetBSD SO_NOSIGPIPE is retained; returned UnixStream preserves its std write implementation, including MSG_NOSIGNAL where defined.",
+      "evidence": [
+        "primary/rust-1.95.0-socket-unix.rs",
+        "primary/rust-1.95.0-unix-stream.rs",
+        "candidate/codex-rs/hepta-supervisor/src/unix_connect.rs"
+      ]
+    },
+    {
+      "id": "SC05",
+      "result": "PASS",
+      "claim": "Path encoding matches fixed std semantics: reject any NUL and length at least sun_path capacity; zero initialize sockaddr_un, set family, copy bytes, calculate offset+length+nonempty terminator. Empty path and BSD/Darwin zero sun_len follow that exact std source. No new abstract address contract is introduced.",
+      "evidence": [
+        "primary/rust-1.95.0-unix-addr.rs",
+        "candidate/codex-rs/hepta-supervisor/src/unix_connect.rs"
+      ]
+    },
+    {
+      "id": "SC06",
+      "result": "PASS",
+      "claim": "Only EINPROGRESS/EALREADY/EINTR enter bounded poll. Poll interruptions and short returns recompute from the same monotonic deadline. POLLNVAL and SO_ERROR fail; peer_addr is required before accepting connection success, and the caller checks deadline again before returning the blocking stream.",
+      "evidence": [
+        "candidate/codex-rs/hepta-supervisor/src/unix_connect.rs"
+      ]
+    },
+    {
+      "id": "SC07",
+      "result": "PASS",
+      "claim": "Linux AF_UNIX EAGAIN on a full listener backlog is not treated as an enqueued pending connection. The errno returns immediately to existing caller policy. Original adoption failure cannot grant signal authority; original WouldBlock/TimedOut drain errors remain no-ACK.",
+      "evidence": [
+        "primary/linux-v6.8-af_unix.c",
+        "candidate/codex-rs/hepta-supervisor/src/unix_connect.rs",
+        "source/codex-rs/hepta-supervisor/src/unix.rs"
+      ]
+    },
+    {
+      "id": "SC08",
+      "result": "PASS_STATIC_ONLY",
+      "claim": "Six new test sources exercise owned listener success and flags, refused listener, Linux-only backlog saturation, expired-before-connect, pathname validation, and poll on a full owned socket. No ignore, assertion relaxation, product child spawning, process environment mutation or existing test replacement. Their runtime outcomes remain NOT_RUN.",
+      "evidence": [
+        "candidate/codex-rs/hepta-supervisor/src/unix_connect_tests.rs"
+      ]
+    },
+    {
+      "id": "SC09",
+      "result": "PASS",
+      "claim": "Original unix_tests.rs, unix_drain_tests.rs and full paired_process_product.rs retain exact original identities. New files are covered by original Bazel src/**/*.rs glob; dependencies, manifests and locks unchanged. Parent module remains cfg(unix), so no Windows API surface is introduced.",
+      "evidence": [
+        "source/defs.bzl",
+        "references/supervisor-lib.rs",
+        "candidate-source-map.json"
+      ]
+    },
+    {
+      "id": "SC10",
+      "result": "PASS_STATIC_ONLY",
+      "claim": "Independent Git index forward/check and reverse/check operations restore full base c3e9 and candidate44e8 exactly. Independent Merkle calculation and all 53 actual root entries agree. 10,801 original leaves are unchanged; one old leaf modified and two added.",
+      "evidence": [
+        "independent-01/VERIFICATION.json"
+      ]
+    },
+    {
+      "id": "SC11",
+      "result": "CAUSAL_UNKNOWN_PRESERVED",
+      "claim": "Old job127755476318 on source4a has two complete exact trace segments ending after ten_children_ready and before ten_children_adopted. PIDs/snapshot, drop(old), new driver and recover lie in the uninstrumented interval. The stage Instant begins after PairFleet::new; subtracting stage time from nextest60s would misattribute initialization. These records do not prove connect caused either timeout.",
+      "evidence": [
+        "historical-review/original-trace-binding.json",
+        "historical-review/old-attempt-1.derived-exact-segment.log",
+        "historical-review/old-attempt-2.derived-exact-segment.log",
+        "source/codex-rs/hepta-supervisor/tests/paired_process_product.rs"
+      ]
+    }
+  ],
+  "material_limits": [
+    "No Rust compilation, rustfmt, Clippy, argument-comment lint or execution of new Rust tests was performed locally.",
+    "The 200ms connect-stage timer does not bound filesystem pathname lookup, uninterruptible syscalls, OS scheduling delay, complete per-frame read/write progress or the entire recovery call in hard real time.",
+    "Linuxv6.8 is a fixed primary mechanism source, not proof of the original runner kernel version. No native Mac/Linux behavioral qualification is transferred from std source inspection.",
+    "Original two nextest60s failures remain separate historical failures. This independently identified code gap is not a proved root cause or proof that the paired test now passes.",
+    "The reviewed actual tree is based on ac18/c3e9. Composing it on newer aaf requires root to check ancestry and unchanged paths again; this review does not mutate aaf, refs or PRs.",
+    "No blocker exit condition, status, permission boundary, signal authority, lifecycle acknowledgement or protected setting is modified by this review."
+  ],
+  "verification": {
+    "author_verifier_isolated": {
+      "exit": 0,
+      "stderr_bytes": 0,
+      "stdout": {
+        "bytes": 3332,
+        "git_blob": "6cce1bc325661dcbc08476a2a59144f24453d15f",
+        "sha256": "535985ed20e7cb56d74f630ec016e8288fb5ce8fa0de2be149f4da6a5429309e"
+      },
+      "exact_equal_to_frozen_static_02": true
+    },
+    "independent_verifier": {
+      "exit": 0,
+      "stderr_bytes": 0,
+      "stdout": {
+        "bytes": 14319,
+        "git_blob": "2a05e4d29d96c909f25b13693219d3675eb84141",
+        "sha256": "82c02c33692f9a2702903ab16790a8346edfe8c37c5952bcd579bb0c1ef21254"
+      },
+      "verifier": {
+        "bytes": 12879,
+        "git_blob": "a619241103cbe7290e708dfdcf6cf3fecfd8ee5e",
+        "sha256": "edfc132a5f3d2c254e4ec4b4ca7bde37d3d456368e216c0cf3d1b6c5f5b4acfa"
+      },
+      "proof": {
+        "bytes": 14319,
+        "git_blob": "2a05e4d29d96c909f25b13693219d3675eb84141",
+        "sha256": "82c02c33692f9a2702903ab16790a8346edfe8c37c5952bcd579bb0c1ef21254"
+      }
+    },
+    "fresh_gets": 3,
+    "frozen_member_bytes": 7211701,
+    "fixed_source_inputs": 21,
+    "fixed_primary_full_GETs": 7,
+    "actual_root_entries": 53,
+    "git_index_roundtrip": true
+  },
+  "historical_external_custody": {
+    "registry": "23e67ce20a439e2968eb63ae4e9a74a214ccd081",
+    "complete_log": {
+      "bytes": 2284485,
+      "git_blob": "207342b4d00698e5b898935d71c5b617099ada41",
+      "sha256": "11c564a3fe25e105ad4ac775eed9b6b189278615d00eb2e67c0c9ff974c9c0af"
+    },
+    "segments": [
+      {
+        "attempt": 1,
+        "bytes": 476,
+        "git_blob": "6304bb16b155187ae46bedb3e1289232bb08a5ee",
+        "sha256": "3ab8d828ecd1a79bf745b46f50f6de9cea4fe436a620b3086dae0052032fa801"
+      },
+      {
+        "attempt": 2,
+        "bytes": 608,
+        "git_blob": "358ba68f739de83696b0de5a501eaea6a7e03bd3",
+        "sha256": "7fe95989ee4dafe5c49de03897b3ac1278354ea527050fcc44a22dff73cd2ccc"
+      }
+    ],
+    "duplication": "Only exact small trace slices are in author packet; complete registered native log/ZIP remain in that external packet."
+  },
+  "review_tool_history": {
+    "initial_copy_helper": "initial-review-helper-failure.json records our initial files-vs-members KeyError before author verifier execution. Correct schema replay passed; no product failure or frozen source change."
+  },
+  "next_gate": "Root may publish only the reviewed three-path delta through normal PR checks after its current-parent composition verification. Preserve original paired/product tests, all budgets and platform checks; actual CI outcomes decide native qualification.",
+  "blocker_status_change": false,
+  "native_or_CI_actions": [],
+  "ref_or_PR_mutations": []
+}

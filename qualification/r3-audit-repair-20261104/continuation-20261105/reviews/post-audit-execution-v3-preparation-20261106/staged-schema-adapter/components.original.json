@@ -1,0 +1,509 @@
+{
+  "schema": "hepta-C4-complete-pre-review-source-config-v1",
+  "parent_commit": "f7bb5019d311dacc142f20cacdcf19889109b4ba",
+  "base_tree": "d7716cca653bf7795307b052352e8671cd9fd944",
+  "components": [
+    {
+      "name": "root-publications",
+      "directory": "fourth-audit-root-delivery",
+      "registry_blob": "90aebb9657ef7d879f5222b9a3333cd39e95f398",
+      "schema": "hepta-root-fourth-audit-actual-registry-v1",
+      "prefix": "reviews/post-audit-execution-v3-20261106/",
+      "adapter": "standard",
+      "rows": "objects",
+      "payload_paths": 17,
+      "elements_file": "C4-complete-19-tree-elements.json",
+      "root_full_GET": "fourth-audit-inputs/c4-root-registry.actual.original.json",
+      "self_file": "registry.self.actual.json",
+      "self_blob": "9dabc69f52b3728d255a6bc81b57e6652821e27f",
+      "self_root_full_GET": "fourth-audit-inputs/c4-root-self.actual.original.json"
+    },
+    {
+      "name": "native-format",
+      "directory": "integration-ci-review/fmt-evidence-delivery",
+      "registry_blob": "9c783f6a6b9a83b4d6e0128b2d5b5fc09684112a",
+      "schema": "integration-holdout-native-format-evidence-actual-registry-v1",
+      "prefix": "reviews/integration-holdout-native-format-20261106/",
+      "adapter": "fmt",
+      "rows": "files",
+      "payload_paths": 24,
+      "elements_file": "tree-elements.actual.json",
+      "root_full_GET": "fourth-audit-inputs/fmt-registry.actual.original.json",
+      "receipt_collections": [
+        "registration-raw.original.json"
+      ],
+      "receipt_self_files": {
+        "registration-raw.original.json": "registration-raw-self.actual.json"
+      }
+    },
+    {
+      "name": "ci-0829",
+      "directory": "integration-ci-review/ci-increment-20261106T0829-delivery",
+      "registry_blob": "c425db96529df31d905b72da9c42bf64cbabb90e",
+      "schema": "hepta-integration-ci-after-format-0829-actual-registry-v1",
+      "prefix": "reviews/integration-ci-after-format-20261106T0829/",
+      "adapter": "ci",
+      "rows": "files",
+      "payload_paths": 9,
+      "elements_file": "tree-elements.actual.json",
+      "root_full_GET": "fourth-audit-inputs/ci-0829-registry.actual.original.json",
+      "receipt_collections": [
+        "registration-originals.json"
+      ],
+      "receipt_self_files": {
+        "registration-originals.json": "registration-originals-self.actual.json"
+      }
+    },
+    {
+      "name": "b11-reassessment-v2",
+      "directory": "b11-minimal-repair-reassessment-20261106/delivery-v2",
+      "registry_blob": "59a15073eef10c61e2b3731611c4c41342deb1cd",
+      "schema": "hepta-b11-reassessment-v2-actual-evidence-registry",
+      "prefix": "reviews/b11-minimal-repair-reassessment-20261106/",
+      "adapter": "b11",
+      "rows": "objects",
+      "payload_paths": 25,
+      "elements_file": "tree-elements.json",
+      "root_full_GET": "fourth-audit-inputs/b11-v2-registry.actual.original.json",
+      "self_file": "registry.self.actual.json",
+      "self_blob": "86ade0ac7fdbc7ded2fa781d7a46bb0042589fb9",
+      "self_root_full_GET": "fourth-audit-inputs/b11-v2-self.actual.original.json"
+    },
+    {
+      "name": "b21-causal",
+      "directory": "b21-repl-lifecycle-causal-delivery",
+      "registry_blob": "f9af6bdaf3cc61204cd45525605e67b81b4c955a",
+      "schema": "hepta-b21-repl-lifecycle-causal-actual-registry-v1",
+      "prefix": "reviews/b21-repl-lifecycle-causal-20261106/",
+      "adapter": "standard",
+      "rows": "objects",
+      "payload_paths": 9,
+      "elements_file": "C4-complete-11-tree-elements.json",
+      "root_full_GET": "fourth-audit-inputs/b21-causal-registry.actual.original.json",
+      "self_file": "registry.self.actual.json",
+      "self_blob": "5a61cad60c5418add7450d65db224fa0d0b18dbe",
+      "self_root_full_GET": "fourth-audit-inputs/b21-causal-self.actual.original.json"
+    },
+    {
+      "name": "old-donor-terminal",
+      "directory": "integration-ci-review/old-donor-terminal-20261106T0840-delivery",
+      "registry_blob": "23e67ce20a439e2968eb63ae4e9a74a214ccd081",
+      "schema": "hepta-integration-old-donors-terminal-actual-registry-v1",
+      "prefix": "reviews/integration-old-donors-terminal-20261106T0840/",
+      "adapter": "ci",
+      "rows": "files",
+      "payload_paths": 36,
+      "elements_file": "tree-elements.actual.json",
+      "root_full_GET": "fourth-audit-inputs/old-donor-terminal-registry.actual.original.json",
+      "receipt_collections": [
+        "registration-chunk-000.original.json",
+        "registration-chunk-001.original.json",
+        "registration-chunk-002.original.json",
+        "registration-chunk-003.original.json",
+        "registration-chunk-004.original.json",
+        "registration-chunk-005.original.json"
+      ],
+      "receipt_self_files": {
+        "registration-chunk-000.original.json": "registration-chunk-000-self.actual.json",
+        "registration-chunk-001.original.json": "registration-chunk-001-self.actual.json",
+        "registration-chunk-002.original.json": "registration-chunk-002-self.actual.json",
+        "registration-chunk-003.original.json": "registration-chunk-003-self.actual.json",
+        "registration-chunk-004.original.json": "registration-chunk-004-self.actual.json",
+        "registration-chunk-005.original.json": "registration-chunk-005-self.actual.json"
+      }
+    },
+    {
+      "name": "arg0-fixture",
+      "directory": "arg0-fixture-prebuild-candidate-20261106/delivery",
+      "registry_blob": "08e8e7ea26909d95392a0eddc157f75e308e2e9c",
+      "schema": "hepta-arg0-fixture-prebuild-complete-registration-v1",
+      "prefix": "reviews/arg0-fixture-prebuild-20261106/",
+      "adapter": "batch_tree",
+      "rows": "files",
+      "payload_paths": 30,
+      "elements_file": "tree-elements.json",
+      "root_full_GET": "fourth-audit-inputs/arg0-fixture-registry.actual.original.json",
+      "self_file": "registry.self.actual.json",
+      "self_blob": "6624db3ad8f0306b144f4db6fd30ae8c35082ad4",
+      "self_root_full_GET": "fourth-audit-inputs/arg0-fixture-self.actual.original.json",
+      "receipt_batches": [
+        "registration-originals/batch-00.original.json",
+        "registration-originals/batch-01.original.json",
+        "registration-originals/batch-02.original.json",
+        "registration-originals/batch-03.original.json"
+      ]
+    },
+    {
+      "name": "supervisor-connect",
+      "directory": "supervisor-unix-connect-bound-delivery",
+      "registry_blob": "b336a8470de7111b0bb037a3c1d801bcadaba0d2",
+      "schema": "hepta-supervisor-unix-connect-bound-actual-registry-v1",
+      "prefix": "reviews/supervisor-unix-connect-bound-20261106/",
+      "adapter": "standard",
+      "rows": "objects",
+      "payload_paths": 19,
+      "elements_file": "complete-21-tree-elements.actual.json",
+      "root_full_GET": "fourth-audit-inputs/supervisor-author-registry.actual.original.json",
+      "self_file": "registry.self.actual.json",
+      "self_blob": "d63b0ebf6819eae8adf27ad22031320afc27c058",
+      "self_root_full_GET": "fourth-audit-inputs/supervisor-author-self.actual.original.json"
+    },
+    {
+      "name": "supervisor-connect-review",
+      "directory": "supervisor-unix-connect-bound-independent-delivery",
+      "registry_blob": "286bae42fa543ba26a60f2206a1709a67d5e5176",
+      "schema": "hepta-supervisor-unix-connect-independent-actual-registry-v1",
+      "prefix": "reviews/supervisor-unix-connect-bound-independent-20261106/",
+      "adapter": "standard_recipe",
+      "rows": "objects",
+      "payload_paths": 15,
+      "elements_file": "complete-17-tree-elements.actual.json",
+      "root_full_GET": "fourth-audit-inputs/supervisor-independent-registry.actual.original.json",
+      "self_file": "registry.self.actual.json",
+      "self_blob": "d0297eea99c096f01e34da359e6612c8983acd19",
+      "self_root_full_GET": "fourth-audit-inputs/supervisor-independent-self.actual.original.json"
+    },
+    {
+      "name": "ci-0930",
+      "directory": "integration-ci-review/ci-increment-20261106T0930-delivery",
+      "registry_blob": "5229e45b3547f41e9f8260c81ceb6a03c75368a0",
+      "schema": "hepta-ci0930-actual-registry-v1",
+      "prefix": "reviews/integration-ci-after-format-20261106T0930/",
+      "adapter": "materialized",
+      "rows": "files",
+      "payload_paths": 22,
+      "elements_file": "tree-elements.actual.json",
+      "root_full_GET": "fourth-audit-inputs/ci-0930-registry.actual.original.json",
+      "receipt_collections": [
+        "registration-chunk-000.original.json",
+        "registration-chunk-001.original.json",
+        "registration-chunk-002.original.json",
+        "registration-chunk-003.original.json",
+        "registration-chunk-004.original.json"
+      ],
+      "receipt_sidecar": "registration-receipts.actual.sidecar.json",
+      "materialized_trees": {
+        "5dfb70db88a37e904694e15820b3b198c6e28576": "fourth-audit-inputs/materialized-tree.5dfb70db88a37e904694e15820b3b198c6e28576.actual.original.json",
+        "78f829f0c8a1f50ff1a579d55e34c4212c7fd3b4": "fourth-audit-inputs/materialized-tree.78f829f0c8a1f50ff1a579d55e34c4212c7fd3b4.actual.original.json"
+      }
+    },
+    {
+      "name": "b21-writer-observation",
+      "directory": "b21-writer-observation-review-delivery",
+      "registry_blob": "875b7cbfb6755d7d01fe34c298411b6da780d36d",
+      "schema": "hepta-b21writer-actual-registry-v1",
+      "prefix": "reviews/b21-writer-observation-independent-20261106/",
+      "adapter": "materialized",
+      "rows": "files",
+      "payload_paths": 25,
+      "elements_file": "tree-elements.actual.json",
+      "root_full_GET": "fourth-audit-inputs/b21-writer-registry.actual.original.json",
+      "receipt_collections": [
+        "registration-chunk-000.original.json",
+        "registration-chunk-001.original.json",
+        "registration-chunk-002.original.json",
+        "registration-chunk-003.original.json",
+        "registration-chunk-004.original.json"
+      ],
+      "receipt_sidecar": "registration-receipts.actual.sidecar.json",
+      "materialized_trees": {
+        "5dfb70db88a37e904694e15820b3b198c6e28576": "fourth-audit-inputs/materialized-tree.5dfb70db88a37e904694e15820b3b198c6e28576.actual.original.json",
+        "78f829f0c8a1f50ff1a579d55e34c4212c7fd3b4": "fourth-audit-inputs/materialized-tree.78f829f0c8a1f50ff1a579d55e34c4212c7fd3b4.actual.original.json"
+      }
+    },
+    {
+      "name": "root-successor-publications",
+      "directory": "integration-successor-publication-delivery",
+      "registry_blob": "6206d5aeb92d3d489e2ffa851e202ee5d3b0bc95",
+      "schema": "hepta-root-integration-successor-publication-actual-registry-v1",
+      "prefix": "reviews/integration-successor-publication-20261106/",
+      "adapter": "standard",
+      "rows": "objects",
+      "payload_paths": 38,
+      "elements_file": "complete-40-tree-elements.actual.json",
+      "root_full_GET": "fourth-audit-inputs/root-successor-registry.actual.original.json",
+      "self_file": "registry.self.actual.json",
+      "self_blob": "72cbf0ecca82cf7dae2ae196f852cd82cb7bf717",
+      "self_root_full_GET": "fourth-audit-inputs/root-successor-self.actual.original.json"
+    },
+    {
+      "name": "final-appendix",
+      "directory": "fourth-audit-final-appendix-delivery",
+      "registry_blob": "fce896fa8807a0e378bf654c3c29756c9ae21ed9",
+      "schema": "hepta-fourth-audit-final-appendix-actual-registry-v1",
+      "prefix": "reviews/post-audit-execution-v3-final-appendix-20261106/",
+      "adapter": "standard_recipe",
+      "rows": "objects",
+      "payload_paths": 21,
+      "elements_file": "complete-23-tree-elements.actual.json",
+      "root_full_GET": "fourth-audit-inputs/final-appendix-registry.actual.original.json",
+      "self_file": "registry.self.actual.json",
+      "self_blob": "f5f44f5407dcbaf575c9f4fe74f39431e825a441",
+      "self_root_full_GET": "fourth-audit-inputs/final-appendix-self.actual.original.json"
+    },
+    {
+      "name": "fmt840-native",
+      "directory": "integration-ci-review/840e8b5-native-format-delivery",
+      "registry_blob": "c1cc1f481bdcc6bb21f5db1462b4606526bf1631",
+      "schema": "hepta-evidence-packet-actual-registry-v1",
+      "prefix": "reviews/integration-840-native-format-20261106/",
+      "adapter": "evidence_packet",
+      "rows": "files",
+      "payload_paths": 38,
+      "elements_file": "tree-elements.actual.json",
+      "root_full_GET": "fourth-audit-inputs/fmt840-registry.actual.original.json"
+    },
+    {
+      "name": "final17-ci-cuts",
+      "directory": "integration-ci-review/17c6b903-ci-cuts-delivery",
+      "registry_blob": "95c5d271d491ae58cc35de89eeb5f1d3f53497f9",
+      "schema": "hepta-evidence-packet-actual-registry-v1",
+      "prefix": "reviews/integration-17-automatic-ci-20261106/",
+      "adapter": "evidence_packet",
+      "rows": "files",
+      "payload_paths": 15,
+      "elements_file": "tree-elements.actual.json",
+      "root_full_GET": "fourth-audit-inputs/final17-ci-registry.actual.original.json"
+    },
+    {
+      "name": "final17-native-followup",
+      "directory": "integration-ci-review/17c6b903-native-followup-delivery",
+      "registry_blob": "f7d49f26f20355b829f4b83b6fe2043a24bad6b7",
+      "schema": "hepta-evidence-packet-actual-registry-v1",
+      "prefix": "reviews/integration-17-native-followup-20261106/",
+      "adapter": "evidence_packet",
+      "rows": "files",
+      "payload_paths": 108,
+      "elements_file": "tree-elements.actual.json",
+      "root_full_GET": "fourth-audit-inputs/final17-native-registry.actual.original.json"
+    }
+  ],
+  "document_blobs": {
+    "POST_AUDIT_EXECUTION_UPDATE_V3.zh-CN.md": "caf1810f5c3c92b402e5fac3493754345fd22ed5",
+    "post-audit-execution-v3.json": "62a964a4cfce2833f60783969e22f4bddc55ec58",
+    "LATEST.md": "4784eea938e9db1bb3913bb7793e3766fdeef615",
+    "LATEST.zh-CN.md": "4784eea938e9db1bb3913bb7793e3766fdeef615"
+  },
+  "auxiliary_sources": [
+    {
+      "local_path": "final-registry-adapter-review-20261106/README.zh-CN.md",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v3-preparation-20261106/schema-adapter/README.zh-CN.md",
+      "git_blob": "d20edcf287cae8ba108052e8324a5fd849790693"
+    },
+    {
+      "local_path": "final-registry-adapter-review-20261106/SCHEMA_REVIEW.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v3-preparation-20261106/schema-adapter/SCHEMA_REVIEW.json",
+      "git_blob": "65ae071b659f1ef376fddb2212eeb7c628106733"
+    },
+    {
+      "local_path": "final-registry-adapter-review-20261106/candidate.patch",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v3-preparation-20261106/schema-adapter/candidate.patch",
+      "git_blob": "f051465a9e6b9569f07bddcc49413508d7e9098b"
+    },
+    {
+      "local_path": "final-registry-adapter-review-20261106/components.ready-07.original.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v3-preparation-20261106/schema-adapter/components.ready-07.original.json",
+      "git_blob": "e813b0a9c38fb9fda72aedc1aedbe2d4822e15d9"
+    },
+    {
+      "local_path": "final-registry-adapter-review-20261106/evidence_packet_method.py.txt",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v3-preparation-20261106/schema-adapter/evidence_packet_method.py.txt",
+      "git_blob": "e4028e1d7121a892a81b1eeafb1642d66fd45a3f"
+    },
+    {
+      "local_path": "final-registry-adapter-review-20261106/partial-01.execution.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v3-preparation-20261106/schema-adapter/partial-01.execution.json",
+      "git_blob": "d28c7c146b169dc11eeb9a33371234aa6e7d5799"
+    },
+    {
+      "local_path": "final-registry-adapter-review-20261106/partial-01.stderr.log",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v3-preparation-20261106/schema-adapter/partial-01.stderr.log",
+      "git_blob": "8aa645d239fa100edcd8bfe937a9db4f40b2e886"
+    },
+    {
+      "local_path": "final-registry-adapter-review-20261106/partial-01.stdout.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v3-preparation-20261106/schema-adapter/partial-01.stdout.json",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "local_path": "final-registry-adapter-review-20261106/partial-02.execution.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v3-preparation-20261106/schema-adapter/partial-02.execution.json",
+      "git_blob": "0e7ab4e7bd691d402b715a40c37289bb6fb29a1d"
+    },
+    {
+      "local_path": "final-registry-adapter-review-20261106/partial-02.stderr.log",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v3-preparation-20261106/schema-adapter/partial-02.stderr.log",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "local_path": "final-registry-adapter-review-20261106/partial-02.stdout.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v3-preparation-20261106/schema-adapter/partial-02.stdout.json",
+      "git_blob": "1aaf8674a32bd22d496cc95e24c6f6a914015e1c"
+    },
+    {
+      "local_path": "final-registry-adapter-review-20261106/prepare_candidate.py",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v3-preparation-20261106/schema-adapter/prepare_candidate.py",
+      "git_blob": "2782624228f94b9ff693811cab418d205a37cf5e"
+    },
+    {
+      "local_path": "final-registry-adapter-review-20261106/prepare_original.py",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v3-preparation-20261106/schema-adapter/prepare_original.py",
+      "git_blob": "35b9f129e6a2b582e41c83f5db62b49ae688bb66"
+    },
+    {
+      "local_path": "final-registry-adapter-review-20261106/verify_partial.at_attempt01.py",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v3-preparation-20261106/schema-adapter/verify_partial.at_attempt01.py",
+      "git_blob": "ca022c3ad3b2b3931925c2ca69af535126c9e30a"
+    },
+    {
+      "local_path": "final-registry-adapter-review-20261106/verify_partial.py",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v3-preparation-20261106/schema-adapter/verify_partial.py",
+      "git_blob": "6df82b3a9a4465da22394e24fa8ec559de71855a"
+    },
+    {
+      "local_path": "final-registry-adapter-review-20261106/FREEZE.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v3-preparation-20261106/schema-adapter/FREEZE.json",
+      "git_blob": "d53a6b1a94b885b631548b47e0a5c2240344a271"
+    },
+    {
+      "local_path": "prepare_third_post_audit_delta.py",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v3-preparation-20261106/prepare_third_post_audit_delta.py",
+      "git_blob": "2782624228f94b9ff693811cab418d205a37cf5e"
+    },
+    {
+      "local_path": "third-post-audit-inputs/write_post_audit_execution_v3.pre_arg0_schema.py",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v3-preparation-20261106/serializer-history/write_post_audit_execution_v3.before.py",
+      "git_blob": "dccdf6ce5ef642064eacb01809b7e00e619ab071"
+    },
+    {
+      "local_path": "third-post-audit-inputs/evidence-packet-adapter.root-application.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v3-preparation-20261106/schema-adapter/root-application.json",
+      "git_blob": "6b83f36ae03e44fdbc56ee26ab39ffd17dafe41e"
+    },
+    {
+      "local_path": "third-post-audit-inputs/evidence-packet-adapter.root-application.exec.original.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v3-preparation-20261106/schema-adapter/root-application.exec.original.json",
+      "git_blob": "35700e38abdf404783bcfa96cf830190c075e749"
+    },
+    {
+      "local_path": "17c6b903-library-success-independent-20261106/REVIEW.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v3-preparation-20261106/native17-independent/REVIEW.json",
+      "git_blob": "980636cbf095b06d9cce02f7e8871aa2820373ea"
+    },
+    {
+      "local_path": "17c6b903-library-success-independent-20261106/verify_independent.py",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v3-preparation-20261106/native17-independent/verify_independent.py",
+      "git_blob": "8f0e2af95679483cede0671dea08c87d17f003b4"
+    },
+    {
+      "local_path": "17c6b903-library-success-independent-20261106/verify-01.stdout.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v3-preparation-20261106/native17-independent/verify-01.stdout.json",
+      "git_blob": "148acf2fa88cc1d410be01bf8b5d2ec802bfd705"
+    },
+    {
+      "local_path": "17c6b903-library-success-independent-20261106/verify-01.stderr.txt",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v3-preparation-20261106/native17-independent/verify-01.stderr.txt",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "local_path": "17c6b903-library-success-independent-20261106/verify-01.execution.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v3-preparation-20261106/native17-independent/verify-01.execution.json",
+      "git_blob": "0e25b1c70d7ff04844c6391ccd3f72be2c165c92"
+    },
+    {
+      "local_path": "17c6b903-library-success-independent-20261106/FREEZE.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v3-preparation-20261106/native17-independent/FREEZE.json",
+      "git_blob": "925f2fee251f8daee4b70280d35a96932e6cb25c"
+    },
+    {
+      "local_path": "integration-final-ci-review-v2/CI-REVIEW.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v3-preparation-20261106/CI-REVIEW.json",
+      "git_blob": "f1eb237de0cecf3d72792ae2d83d07931b2253ec"
+    },
+    {
+      "local_path": "fourth-audit-inputs/final17-native-summary.actual.original.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v3-preparation-20261106/native17-summary.root-full-GET.original.json",
+      "git_blob": "7ae0896710b31a235f12d1a5792d76ac3e27f9ab"
+    },
+    {
+      "local_path": "fourth-audit-inputs/final17-native-readme.actual.original.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v3-preparation-20261106/native17-readme.root-full-GET.original.json",
+      "git_blob": "e419ea72475cca19bda83df0c33136faa15592b0"
+    },
+    {
+      "local_path": "third-post-audit-review-inputs/FINAL-NARRATIVE-FREEZE-V2.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v3-preparation-20261106/narrative-review/FINAL-NARRATIVE-FREEZE-V2.json",
+      "git_blob": "f546db526ae2c5206d503402f784f8aacc55e7e4"
+    },
+    {
+      "local_path": "third-post-audit-review-inputs/final-narrative-v1/FREEZE.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v3-preparation-20261106/narrative-review/FINAL-NARRATIVE-FREEZE-V1.json",
+      "git_blob": "cf9e08b72a7cd28084458806d2c62910780b1a78"
+    },
+    {
+      "local_path": "third-post-audit-review-inputs/final-narrative-v1/POST_AUDIT_EXECUTION_UPDATE_V3.zh-CN.md",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v3-preparation-20261106/narrative-review/POST_AUDIT_EXECUTION_UPDATE_V3.V1.original.txt",
+      "git_blob": "de797c9befb0e4a5795a8f0d06b29c3dfe091b2f"
+    },
+    {
+      "local_path": "third-post-audit-review-inputs/final-narrative-v1/LATEST.md",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v3-preparation-20261106/narrative-review/LATEST.V1.original.txt",
+      "git_blob": "4784eea938e9db1bb3913bb7793e3766fdeef615"
+    },
+    {
+      "local_path": "third-post-audit-review-inputs/final-narrative-v1/LATEST.zh-CN.md",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v3-preparation-20261106/narrative-review/LATEST.zh-CN.V1.original.txt",
+      "git_blob": "4784eea938e9db1bb3913bb7793e3766fdeef615"
+    },
+    {
+      "local_path": "third-post-audit-review-inputs/NARRATIVE-REVISION-01.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v3-preparation-20261106/narrative-review/NARRATIVE-REVISION-01.json",
+      "git_blob": "161061f10beebda9b19929626c438114db072602"
+    },
+    {
+      "local_path": "write_post_audit_execution_v3.py",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v3-preparation-20261106/write_post_audit_execution_v3.py",
+      "git_blob": "8f109d15448e0ec1a046aae96f2c57a8507401ad"
+    },
+    {
+      "local_path": "third-post-audit-inputs/serializer-schema-correction.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v3-preparation-20261106/serializer-history/correction.json",
+      "git_blob": "0c910d1194c5938af3b1d50b8d1c3bdb559c50ba"
+    },
+    {
+      "local_path": "third-post-audit-inputs/machine.creation.exec.original.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v3-preparation-20261106/serializer-history/execution-01.original.json",
+      "git_blob": "61fdf55a212e8798daa731159a0a18304b9f03f3"
+    },
+    {
+      "local_path": "third-post-audit-inputs/machine.creation-02.exec.original.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v3-preparation-20261106/serializer-history/execution-02.original.json",
+      "git_blob": "0cd0b4b7a094d63ccc54196062f631cf789157f4"
+    },
+    {
+      "local_path": "third-post-audit-review-inputs/FINAL-NARRATIVE-FREEZE-V3.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v3-preparation-20261106/narrative-review/FINAL-NARRATIVE-FREEZE-V3.json",
+      "git_blob": "791cea42b3b6d285d8372759fd284767ea204d6f"
+    },
+    {
+      "local_path": "third-post-audit-inputs/components.ready-08.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v3-preparation-20261106/source-components.json",
+      "git_blob": "102cbd95546dfb3627a87ba011910e6da72956c4"
+    },
+    {
+      "local_path": "fourth-audit-inputs/final17-native-registry.actual.original.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v3-preparation-20261106/native17-registry.root-full-GET.original.json",
+      "git_blob": "2cf11eb34807a0350b47a7ff250ccb7acb12e15a"
+    }
+  ],
+  "qualification_limits": [
+    "The original23 literal exits and classes remain16 CLOSED_SCOPED /6 OPEN /1 SCIENTIFIC_HOLD; no new closure in this increment.",
+    "Current product head17 and actual PR merge26cf share tree25020; fixed target base636 has its own different tree.",
+    "Older native results are bound to their recorded source and original scope, including failures, retries, cancellation, omitted payloads and missing logs.",
+    "Current17 original Windows library targets passed118 same Rust cases per checkout with existing qualification/test dependencies; no whole-candidate, B11, external producer or real-service acceptance follows.",
+    "CI lists and selected-job observations are non-atomic and separately timestamped; current-source all-required CI is not established.",
+    "Offline verification is not native execution; no manual CI dispatch/rerun/cancel, private capacity query/run or B16 replay occurred.",
+    "Current document links resolve at their actual paths; byte-preserved historical LATEST internal links are checked in original context, not guaranteed clickable at relocated history paths.",
+    "Absolute original local paths in preparation outputs are provenance; moving a replay root does not preserve all output bytes unless explicitly accounted for."
+  ]
+}

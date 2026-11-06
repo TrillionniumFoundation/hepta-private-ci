@@ -1,0 +1,45 @@
+{
+  "schema": "hepta-root-fourth-audit-registry-self-receipt-v1",
+  "registry_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v3-20261106/registry.actual.json",
+  "registry_identity": {
+    "bytes": 35588,
+    "git_blob": "90aebb9657ef7d879f5222b9a3333cd39e95f398",
+    "sha256": "ede4be57e3478d670e76bf3a2d942427c3e6f43f7da8baa5baa4c9aba9999688"
+  },
+  "actual_created_tree": "d396ae23ec7df28b53bef9e501c47aedcd41b816",
+  "actual_full_GET_complete_UTF8_equal": true,
+  "create_original": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "sha": "d396ae23ec7df28b53bef9e501c47aedcd41b816"
+    },
+    "isError": false
+  },
+  "full_GET_original_lossless_recipe": {
+    "payload_path": "registry.actual.json",
+    "payload_git_blob": "90aebb9657ef7d879f5222b9a3333cd39e95f398",
+    "marker": "__C4_ACTUAL_REGISTRY_90aebb9657ef7d879f5222b9a3333cd39e95f398__",
+    "occurrences": 1,
+    "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__C4_ACTUAL_REGISTRY_90aebb9657ef7d879f5222b9a3333cd39e95f398__\"\n  },\n  \"isError\": false\n}\n",
+    "substitution": "Replace the single marker with JSON.stringify(complete UTF-8 registry).slice(1,-1).",
+    "actual_serialized_original_equals_reconstruction": true
+  },
+  "actual_payload_paths": 17,
+  "core_members": 66,
+  "archive_parts": 6,
+  "isolated_restore_exit_code": 0,
+  "original_23_contracts_unchanged": true,
+  "blocker_counts": {
+    "CLOSED_SCOPED": 16,
+    "OPEN": 6,
+    "SCIENTIFIC_HOLD": 1
+  },
+  "all_blockers_closed": false,
+  "full_C3_builder_or_product_or_CI_executed": false,
+  "ref_PR_changes": false
+}

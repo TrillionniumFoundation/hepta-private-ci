@@ -1,0 +1,136 @@
+--- a/prepare_third_post_audit_delta.py
++++ b/prepare_third_post_audit_delta.py
+@@ -174,6 +174,10 @@
+             return sha
+ 
+         creates = registry["materialization_originals"]
++        batch_keys = ("payload_create_tree_batches", "receipt_create_tree_batches")
++        staged = any(key in creates for key in batch_keys)
++        require(not staged or all(key in creates for key in batch_keys),
++                "incomplete packet materialization batch lists")
+         payload_tree = created_tree(creates["payload_create_tree"])
+         receipt_tree = created_tree(creates["receipt_create_tree"])
+         groups = {"payload": {}, "registration_receipt": {}}
+@@ -205,8 +209,56 @@
+         require(merkle(payload_leaves)["sha"] == payload_tree, "packet payload full-tree Merkle differs")
+         require(merkle(leaves)["sha"] == receipt_tree, "packet cumulative receipt Merkle differs")
+ 
++        if staged:
++            phases = []
++
++            def verify_batches(key, role, phase, initial, previous, final_raw):
++                batches = creates[key]
++                require(isinstance(batches, list) and batches, "empty packet materialization batches")
++                accumulated, seen = dict(initial), set()
++                for number, batch in enumerate(batches, 1):
++                    require(set(batch) == {"batch", "base_tree_sha", "paths", "entry_count", "full_tool_return"},
++                            "unexpected packet batch fields")
++                    paths = batch["paths"]
++                    require(type(batch["batch"]) is int and batch["batch"] == number
++                            and batch["base_tree_sha"] == previous, "packet batch order/base differs")
++                    require(isinstance(paths, list) and type(batch["entry_count"]) is int
++                            and batch["entry_count"] == len(paths) and 0 < len(paths) <= 64
++                            and len(set(paths)) == len(paths), "invalid packet batch paths/count")
++                    require(all(path in groups[role] and path not in accumulated for path in paths),
++                            "duplicate or foreign packet batch path")
++                    accumulated.update({path: leaves[path] for path in paths})
++                    seen.update(paths)
++                    actual = created_tree(batch["full_tool_return"])
++                    computed = merkle(accumulated)["sha"]
++                    require(computed == actual, "packet batch cumulative Merkle differs")
++                    phases.append({"phase": phase, "batch": number, "new_paths": len(paths),
++                                   "complete_paths": len(accumulated), "base_tree_sha": previous,
++                                   "actual_create_tree_sha": actual, "complete_Merkle_sha": computed,
++                                   "equal": True})
++                    previous = actual
++                require(seen == set(groups[role]) and batches[-1]["full_tool_return"] == final_raw,
++                        "incomplete packet batch coverage or final original differs")
++                return previous
++
++            require(verify_batches(batch_keys[0], "payload", "payload", {}, None,
++                                   creates["payload_create_tree"]) == payload_tree,
++                    "packet payload batch endpoint differs")
++            require(verify_batches(batch_keys[1], "registration_receipt", "receipt", payload_leaves,
++                                   payload_tree, creates["receipt_create_tree"]) == receipt_tree,
++                    "packet receipt batch endpoint differs")
++            require(registry["materialization_Merkle_proof"] == {
++                "schema": "hepta-complete-materialization-Merkle-proof-v1", "phases": phases,
++                "final_payload_tree": payload_tree, "final_payload_paths": len(payload_leaves),
++                "final_payload_and_receipt_tree": receipt_tree,
++                "final_payload_and_receipt_paths": len(leaves),
++                "maximum_create_entries": max(p["new_paths"] for p in phases),
++                "tree_full_GET_performed": False, "all_created_blob_full_GETs_recorded_separately": True,
++            }, "packet staged Merkle proof differs")
++
+         payload_receipts = {}
+         payload_create_seen = False
++        payload_batches_seen = not staged
+         for path, row in groups["registration_receipt"].items():
+             collection, _ = self.read_json(component["directory"] + "/" + row["local_member"])
+             require(collection["schema"] == "hepta-immutable-blob-registration-receipts-v1"
+@@ -217,6 +269,10 @@
+                 require(collection["create_tree_original"] == creates["payload_create_tree"],
+                         "packet payload original create differs")
+                 payload_create_seen = True
++            if "all_payload_create_batches_original" in collection:
++                require(staged and collection["all_payload_create_batches_original"] == creates[batch_keys[0]],
++                        "packet payload original batches differ")
++                payload_batches_seen = True
+             require(collection["records"], "empty packet payload-receipt collection")
+             for record in collection["records"]:
+                 name = record["path"]
+@@ -231,15 +287,31 @@
+                         and actual == self.read(component["directory"] + "/" + groups["payload"][name]["local_member"]),
+                         "packet original payload full GET differs")
+                 payload_receipts[name] = record
+-        require(payload_create_seen and set(payload_receipts) == set(groups["payload"]),
++        require(payload_create_seen and payload_batches_seen and set(payload_receipts) == set(groups["payload"]),
+                 "incomplete packet payload receipt coverage")
+ 
+         sidecars = [name for name in registry["local_sidecars_excluded_from_append"]
+                     if re.fullmatch(r"registration-receipts-GET(?:-[0-9]+)?\.local-sidecar\.json", name)]
++        pattern = "registration-receipts-GET-*.local-sidecar.json"
++        if staged:
++            declared = registry["local_sidecars_excluded_from_append"]
++            require(not sidecars and declared.count(pattern) == 1
++                    and all("*" not in name or name == pattern for name in declared),
++                    "packet staged sidecar declaration differs")
++            sidecars = component.get("receipt_sidecars")
++            require(isinstance(sidecars, list) and 0 < len(sidecars) <= len(groups["registration_receipt"])
++                    and sidecars == [f"registration-receipts-GET-{number:03d}.local-sidecar.json"
++                                     for number in range(len(sidecars))],
++                    "packet staged sidecars must be explicit contiguous numbered names")
++        else:
++            require(not component.get("receipt_sidecars")
++                    and pattern not in registry["local_sidecars_excluded_from_append"],
++                    "packet unbatched sidecar selection differs")
+         require(sidecars and len(sidecars) == len(set(sidecars)),
+                 "packet receipt-sidecar selection differs")
+         receipt_receipts = {}
+         receipt_create_seen = False
++        receipt_batches_seen = not staged
+         for name in sidecars:
+             sidecar, _ = self.read_json(component["directory"] + "/" + safe_path(name))
+             require(sidecar["schema"] == "hepta-receipt-registration-originals-local-sidecar-v1",
+@@ -248,6 +320,11 @@
+                 require(sidecar["create_tree_original"] == creates["receipt_create_tree"],
+                         "packet receipt original create differs")
+                 receipt_create_seen = True
++            if "all_receipt_create_batches_original" in sidecar:
++                require(staged and sidecar["all_receipt_create_batches_original"] == creates[batch_keys[1]],
++                        "packet receipt original batches differ")
++                receipt_create_seen = True
++                receipt_batches_seen = True
+             require(sidecar["records"], "empty packet receipt sidecar")
+             for record in sidecar["records"]:
+                 path = prefix + safe_path(record["name"])
+@@ -261,7 +338,8 @@
+                         and actual == self.read(component["directory"] + "/" + groups["registration_receipt"][path]["local_member"]),
+                         "packet receipt original full GET differs")
+                 receipt_receipts[path] = record
+-        require(receipt_create_seen and set(receipt_receipts) == set(groups["registration_receipt"]),
++        require(receipt_create_seen and receipt_batches_seen
++                and set(receipt_receipts) == set(groups["registration_receipt"]),
+                 "incomplete packet receipt-sidecar coverage")
+ 
+         sidecar_name = "registry-self.actual.json"

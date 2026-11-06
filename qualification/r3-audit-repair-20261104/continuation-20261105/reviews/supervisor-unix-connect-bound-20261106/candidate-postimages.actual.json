@@ -1,0 +1,28 @@
+{
+  "schema": "hepta-supervisor-unix-connect-actual-postimages-v1",
+  "method": "github_create_tree with fixed ac18 base; no commit/ref/PR mutation",
+  "base_tree": "c3e9ddc1799f470ac7c80e117ee953a7232847e0",
+  "expected_tree": "44e8f7176037a5455476c068ad6ad8d692868769",
+  "actual_tree": "44e8f7176037a5455476c068ad6ad8d692868769",
+  "objects": [
+    {
+      "path": "codex-rs/hepta-supervisor/src/unix.rs",
+      "sha": "84e4d339172fd49e527ae0317b9c127a09f8ad1d",
+      "characters": 32163,
+      "fullGET_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/unix_connect.rs",
+      "sha": "9fbca2e7048c6d7af0a2ebad9eeacd1808862c95",
+      "characters": 7469,
+      "fullGET_equal": true
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/unix_connect_tests.rs",
+      "sha": "b4a71f89805fa28226d74ef399ca65653759e0f5",
+      "characters": 5936,
+      "fullGET_equal": true
+    }
+  ],
+  "limits": "Only immutable source materialization and complete UTF-8 blob retrieval; no Rust/fmt/native/CI qualification."
+}

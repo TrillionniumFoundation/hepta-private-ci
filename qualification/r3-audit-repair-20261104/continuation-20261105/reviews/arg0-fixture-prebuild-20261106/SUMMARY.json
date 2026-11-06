@@ -1,0 +1,164 @@
+{
+  "actual_workflow_bash_with_fake_cargo": [
+    {
+      "build_exit": 0,
+      "control": "linux_transport_success",
+      "original_target_profile_and_nextest_argv_preserved": true,
+      "passed": true,
+      "producer_and_consumer_paths_with_spaces": true,
+      "suite_exit": 0
+    },
+    {
+      "build_exit": 101,
+      "control": "linux_build_failure",
+      "passed": true,
+      "suite_dispatched": false
+    },
+    {
+      "build_exit": 0,
+      "control": "linux_suite_failure",
+      "original_target_profile_and_nextest_argv_preserved": true,
+      "passed": true,
+      "producer_and_consumer_paths_with_spaces": true,
+      "suite_exit": 73
+    }
+  ],
+  "base_head": "ac18b623c7a6cb953b4660979e9b620fe7176bb2",
+  "base_leaves": 10802,
+  "base_tree": "c3e9ddc1799f470ac7c80e117ee953a7232847e0",
+  "bound_source_count": 24,
+  "candidate_tree": "66552bda88637403f4f1d72a5be8592e07a8a308",
+  "changed_paths": [
+    {
+      "mode": "100644",
+      "path": ".github/workflows/rust-ci-full-nextest-platform.yml",
+      "postimage": {
+        "bytes": 18226,
+        "git_blob": "ac975501df7c4515142d03621ba1dcf761ac9a90",
+        "sha256": "e20e88b4fd023c6c59975f3836803998ef3be6a1c529739b7a782d3ade338abb"
+      },
+      "preimage": {
+        "bytes": 17668,
+        "git_blob": "0ea9d5dcd5ffd622c2d25f3d808ab5738142a851",
+        "sha256": "fe2804bc8003b797f691f27edd2105ad78ef0c6460deb28f6da120d86e684505"
+      }
+    },
+    {
+      "mode": "100644",
+      "path": "scripts/hepta_ci_dependencies.py",
+      "postimage": {
+        "bytes": 30388,
+        "git_blob": "bdd45c82c259238cdecf26c7bfa7acdbb9dfe9f2",
+        "sha256": "97319e257537fccda154ea2d4498cad52a15c7fc8f14471b834cf61ca33f769b"
+      },
+      "preimage": {
+        "bytes": 27406,
+        "git_blob": "2403d7a16f14e919952db597dad3ffdc0825cc31",
+        "sha256": "1df49649a3e82b84903026bea8220edc4049f129e674198edb6d8c12cd37fbc8"
+      }
+    },
+    {
+      "mode": "100644",
+      "path": "scripts/tests/test_hepta_ci_dependencies.py",
+      "postimage": {
+        "bytes": 23658,
+        "git_blob": "f2b2e2c35f4713e63ddd9a0bff83f3ef797a3ea0",
+        "sha256": "667339946082dc9326cebee3ac9e435f4be3949fa840b175073ab40c814b4c48"
+      },
+      "preimage": {
+        "bytes": 15338,
+        "git_blob": "8e547a867e7c31d694b90f759be60af5c92da2a4",
+        "sha256": "511b552023676a72d917b7c7834d21d534b3d6e0908b448e2c29bce0c8dbcea6"
+      }
+    }
+  ],
+  "full_index_forward_and_reverse": true,
+  "original_planner_suite_and_existing_tests_preserved": true,
+  "original_workflow_except_three_Linux_helper_additions_preserved": true,
+  "python_unit_regressions": {
+    "exit_code": 0,
+    "original_tests_plus_new_behavioral_cases": true,
+    "tests": 36
+  },
+  "real_recorder_with_fake_commands": [
+    {
+      "build_calls": 1,
+      "control": "recorded_success",
+      "exit_code": 0,
+      "passed": true,
+      "suite_calls": 1
+    },
+    {
+      "build_calls": 1,
+      "control": "build_failure",
+      "exit_code": 101,
+      "passed": true,
+      "suite_calls": 0
+    },
+    {
+      "build_calls": 1,
+      "control": "build_signal",
+      "exit_code": 143,
+      "passed": true,
+      "suite_calls": 0
+    },
+    {
+      "build_calls": 1,
+      "control": "dirty_success",
+      "exit_code": 1,
+      "passed": true,
+      "suite_calls": 0
+    },
+    {
+      "build_calls": 1,
+      "control": "dirty_failure",
+      "exit_code": 7,
+      "passed": true,
+      "suite_calls": 0
+    },
+    {
+      "build_calls": 1,
+      "control": "suite_failure",
+      "exit_code": 73,
+      "passed": true,
+      "suite_calls": 1
+    },
+    {
+      "build_calls": 0,
+      "control": "existing_prep_receipt",
+      "exit_code": 2,
+      "passed": true,
+      "suite_calls": 0
+    },
+    {
+      "build_calls": 1,
+      "control": "existing_suite_receipt",
+      "exit_code": 2,
+      "passed": true,
+      "suite_calls": 0
+    },
+    {
+      "build_calls": 1,
+      "control": "dangling_suite_symlink",
+      "exit_code": 0,
+      "passed": true,
+      "suite_calls": 1
+    },
+    {
+      "build_calls": 1,
+      "control": "outer_recorded_plain_mode",
+      "exit_code": 0,
+      "passed": true,
+      "suite_calls": 1
+    },
+    {
+      "build_calls": 1,
+      "control": "outer_recorded_build_failure",
+      "exit_code": 101,
+      "passed": true,
+      "suite_calls": 0
+    }
+  ],
+  "scope": "Offline Git/AST/Python/Bash and synthetic command controls only; no Cargo, Rust, nextest, platform-native suite, private host, CI dispatch, ref or PR mutation.",
+  "unchanged_leaves": 10799
+}

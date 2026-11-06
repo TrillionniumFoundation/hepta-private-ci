@@ -1,0 +1,220 @@
+{
+  "schema": "hepta-current-product-CI-observation-v1",
+  "current_product_head": "17c6b903a5d5d470b72035f95bb6e087291d7e04",
+  "current_product_tree": "25020dc30888fa3ffa6f6e8d1073d91edded1756",
+  "current_product_merge": "26cfdcaa70cbd2daecd165137e3b84d2ad1a7284",
+  "target_base": "63652be658ebed8d3052eb789b951793384fd5e4",
+  "latest_observation_utc": "2026-11-06T10:30:14Z",
+  "whole_candidate_qualified": false,
+  "run_count": 18,
+  "run_status_counts": {
+    "pending": 3,
+    "queued": 12,
+    "skipped": 2,
+    "success": 1
+  },
+  "runs": [
+    {
+      "id": 42201989551,
+      "name": "Hepta Keyring Sync Security Migration (Draft)",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "17c6b903a5d5d470b72035f95bb6e087291d7e04",
+      "run_attempt": 1
+    },
+    {
+      "id": 42201989568,
+      "name": "Hepta Memory P0 native regressions",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "17c6b903a5d5d470b72035f95bb6e087291d7e04",
+      "run_attempt": 1
+    },
+    {
+      "id": 42201989807,
+      "name": "Hepta musl product smoke",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "17c6b903a5d5d470b72035f95bb6e087291d7e04",
+      "run_attempt": 1
+    },
+    {
+      "id": 42201989809,
+      "name": "Hepta Supervisor P0 Cross-Platform Restart Qualification",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "17c6b903a5d5d470b72035f95bb6e087291d7e04",
+      "run_attempt": 1
+    },
+    {
+      "id": 42201989915,
+      "name": "Hepta Windows private-state native (security qualification only)",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "17c6b903a5d5d470b72035f95bb6e087291d7e04",
+      "run_attempt": 1
+    },
+    {
+      "id": 42201989751,
+      "name": "Rust UI product foundation",
+      "status": "pending",
+      "conclusion": null,
+      "head_sha": "17c6b903a5d5d470b72035f95bb6e087291d7e04",
+      "run_attempt": 1
+    },
+    {
+      "id": 42201989351,
+      "name": "Hepta architecture convergence",
+      "status": "pending",
+      "conclusion": null,
+      "head_sha": "17c6b903a5d5d470b72035f95bb6e087291d7e04",
+      "run_attempt": 1
+    },
+    {
+      "id": 42201989435,
+      "name": "Native Windows Bazel process environment",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "17c6b903a5d5d470b72035f95bb6e087291d7e04",
+      "run_attempt": 1
+    },
+    {
+      "id": 42201989959,
+      "name": "Production HOS2 owner proposal",
+      "status": "completed",
+      "conclusion": "skipped",
+      "head_sha": "17c6b903a5d5d470b72035f95bb6e087291d7e04",
+      "run_attempt": 1
+    },
+    {
+      "id": 42201989530,
+      "name": "Bazel stable lock proposal",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "17c6b903a5d5d470b72035f95bb6e087291d7e04",
+      "run_attempt": 1
+    },
+    {
+      "id": 42201989855,
+      "name": "App-server schema refresh",
+      "status": "completed",
+      "conclusion": "skipped",
+      "head_sha": "17c6b903a5d5d470b72035f95bb6e087291d7e04",
+      "run_attempt": 1
+    },
+    {
+      "id": 42201989789,
+      "name": "Hepta owner-local Matrixd and Agentd native transport",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "17c6b903a5d5d470b72035f95bb6e087291d7e04",
+      "run_attempt": 1
+    },
+    {
+      "id": 42201989815,
+      "name": "blocking-ci",
+      "status": "pending",
+      "conclusion": null,
+      "head_sha": "17c6b903a5d5d470b72035f95bb6e087291d7e04",
+      "run_attempt": 1
+    },
+    {
+      "id": 42201989582,
+      "name": "Hepta operator acceptance native signature verification",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "17c6b903a5d5d470b72035f95bb6e087291d7e04",
+      "run_attempt": 1
+    },
+    {
+      "id": 42201989547,
+      "name": "Hepta exec recovery and authorized-read conformance",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "17c6b903a5d5d470b72035f95bb6e087291d7e04",
+      "run_attempt": 1
+    },
+    {
+      "id": 42201989845,
+      "name": "Original Objective owner package gates",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "17c6b903a5d5d470b72035f95bb6e087291d7e04",
+      "run_attempt": 1
+    },
+    {
+      "id": 42201989602,
+      "name": "v8-canary",
+      "status": "queued",
+      "conclusion": null,
+      "head_sha": "17c6b903a5d5d470b72035f95bb6e087291d7e04",
+      "run_attempt": 1
+    },
+    {
+      "id": 42201989580,
+      "name": "Native Windows ordinary business consumers",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "17c6b903a5d5d470b72035f95bb6e087291d7e04",
+      "run_attempt": 1
+    }
+  ],
+  "blocking_run_id": 42201989815,
+  "blocking_jobs_count": 0,
+  "blocking_job_status_counts": {},
+  "blocking_jobs": [],
+  "API_observation_files": [
+    {
+      "path": "runs-full.original.json",
+      "capture_completed_before_utc": "2026-11-06T10:29:19Z",
+      "bytes": 601080,
+      "git_blob": "2bdcd341bdc985cccd23a878e0d4ab9cc2c6b631",
+      "sha256": "b56acf71fb52d019f8fce31f58f14ad7e1344ec2d022e50af18e69dc81b2c3f6"
+    },
+    {
+      "path": "blocking-jobs-full.original.json",
+      "capture_completed_before_utc": "2026-11-06T10:30:14Z",
+      "bytes": 947,
+      "git_blob": "f74e4ddb7b9e11319afdb44287ac287df9a4fc9b",
+      "sha256": "906ce019228152f4a4b42747c9f20a616a12c9d7511249f7e55b090e4f0c91c1"
+    }
+  ],
+  "publication_source_files": [
+    {
+      "path": "authority/commit.actual.original.json",
+      "bytes": 5021,
+      "git_blob": "f8e54dcc6778269e7ad874692a9ce3eacb49b433",
+      "sha256": "3fc4a0012acb2b2e98f84de9acc72cded6e5e1cff9a423cbd04aa02c41e85a29"
+    },
+    {
+      "path": "authority/merge.actual.original.json",
+      "bytes": 6729,
+      "git_blob": "8e7dbbc4c44c0082671e0934513f61c5bf69921c",
+      "sha256": "defec4cdaf5412a083259e3a337d1adb6bf43f10ef75dc205afe4dac90b814e9"
+    },
+    {
+      "path": "authority/ref.after.original.json",
+      "bytes": 1879,
+      "git_blob": "fbf10839bdd514467c5d2cd18b05fcd41061bd2c",
+      "sha256": "5ee099bd15b50e7964501ba1d6904a4d2b1f64cb21934faeb6c9e3736b6e0aef"
+    },
+    {
+      "path": "authority/pr.after.original.json",
+      "bytes": 64289,
+      "git_blob": "1f55299870b5cfa5e0f8d53ce4d1b9430d57ac85",
+      "sha256": "3ef73e73e9d16a98c088e4ee319e33c19204a3450d5a406be895f4c50c69f851"
+    },
+    {
+      "path": "authority/publication-verified.json",
+      "bytes": 1859,
+      "git_blob": "eb114b8bb6365594b99090a935f06ea4a80b857e",
+      "sha256": "70dda8ecba42be4527f00b2bae4816596165964e1e5d753a4f9a210b231e9ad9"
+    }
+  ],
+  "source_binding": "Complete original commit/ref/PR/merge responses checked; head and merge have same tree and fixed ordered parents. Actual job checkout is not inferred from API.",
+  "native_case_counts_accepted_for_this_head": null,
+  "old_840_results_transferred": false,
+  "manual_CI_operations": [],
+  "private_capacity_query": false,
+  "all_blockers_closed": false
+}

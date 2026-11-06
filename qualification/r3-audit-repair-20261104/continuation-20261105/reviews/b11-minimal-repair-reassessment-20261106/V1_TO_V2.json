@@ -1,0 +1,32 @@
+{
+  "schema": "hepta-b11-reassessment-v1-to-v2-custody-v1",
+  "v1_review": {
+    "bytes": 15803,
+    "git_blob": "b59ec6f26c7b2ed6e4d8a725cc0bc52a38401673",
+    "sha256": "84254e020090a9684fba06fc5b842be6b70a968d0f8c4455ab746f1c16f4f1d2"
+  },
+  "v1_portable_archive": {
+    "bytes": 1343352,
+    "sha256": "97e2991bd3d47899c68dc4e4ed0c1c1467d46933510fb31710e090565b191903"
+  },
+  "v1_original_files_unchanged": true,
+  "v2_review": {
+    "bytes": 28314,
+    "git_blob": "c213af9c4c96836eb926cfd1dcda4eaa095e4046",
+    "sha256": "bf40b05cbe7ae750c23c3ccd4fd64f2ba8acd22665aa266aed5d2f9c331e7c95"
+  },
+  "mic_addendum": {
+    "bytes": 11282,
+    "git_blob": "9b51d855e8f1f06409d52c9514655150c3aaeb3a",
+    "sha256": "89d1ffa46cd02c1db37ecc474c54967e7ef8b014084405bd8a58d1e7832fcfc4"
+  },
+  "mic_final_verifier_stdout": {
+    "bytes": 94084,
+    "git_blob": "a81d7c524db9e6a848893e207681c3d48645480d",
+    "sha256": "bcdba4775b4c6f2e784d5ca813ceedc578114b22696c7a4db8d688bd83b7ddd1"
+  },
+  "v2_delta": "Adds existing native10/11 MIC raw-log and fixed-source recovery/analysis; preserves V1 originals. No product changes, new native or blocker closure.",
+  "frozen_source_comparison_anchor": "99a9c0cefa627290c9fc72a9ba90d0485020fe11; not a latest-current-head claim",
+  "comment_candidate_action": "Retained only; not inserted into ac18 or any ref",
+  "approval_scope": "Ordinary reversible comment correction requires no extra approval. Any actual expansion must be identified against the original B11 literal exit; no such change approved or implemented here."
+}

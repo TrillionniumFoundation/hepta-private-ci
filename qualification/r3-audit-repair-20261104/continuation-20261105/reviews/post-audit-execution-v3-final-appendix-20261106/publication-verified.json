@@ -1,0 +1,50 @@
+{
+  "schema": "hepta-840-native-formatter-normal-publication-verified-v1",
+  "observed_at_UTC": "2026-11-06 10:21:42 UTC",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pr": 4936,
+  "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4936",
+  "branch": "integration/r3-repairs-and-locks-20261106",
+  "head": "17c6b903a5d5d470b72035f95bb6e087291d7e04",
+  "tree": "25020dc30888fa3ffa6f6e8d1073d91edded1756",
+  "parents": [
+    "840e8b5dbffca017753cdf87482ce325938f313c"
+  ],
+  "target_base": "63652be658ebed8d3052eb789b951793384fd5e4",
+  "merge_commit": "26cfdcaa70cbd2daecd165137e3b84d2ad1a7284",
+  "merge_tree": "25020dc30888fa3ffa6f6e8d1073d91edded1756",
+  "merge_ordered_parents": [
+    "63652be658ebed8d3052eb789b951793384fd5e4",
+    "17c6b903a5d5d470b72035f95bb6e087291d7e04"
+  ],
+  "source_and_merge_trees_equal": true,
+  "ref_after": "17c6b903a5d5d470b72035f95bb6e087291d7e04",
+  "state": "open",
+  "draft": true,
+  "changed_files_against_target_base": 1566,
+  "commits_against_target_base": 107,
+  "maintainer_can_modify": false,
+  "body_exact_equal": true,
+  "prior_body_suffix_preserved": true,
+  "changed_paths": [
+    "codex-rs/hepta-supervisor/src/unix_connect.rs",
+    "codex-rs/hepta-supervisor/src/unix_connect_tests.rs",
+    "codex-rs/utils/pty/src/unix_io_diagnostics.rs"
+  ],
+  "unchanged_old_leaves": 10801,
+  "total_leaves": 10804,
+  "whitespace_only_claimed": false,
+  "explicit_punctuation_removals": 3,
+  "independent_review": "ef03d24a5f8a16c598f0dab38044436810d0a562",
+  "author_freeze": "cd38b06348332655f41d07470b5ef01085bd6ac5",
+  "native_qualification": "PENDING_OWN_ORIGINAL_CI",
+  "all_blockers_closed": false,
+  "blocker_counts": {
+    "CLOSED_SCOPED": 16,
+    "OPEN": 6,
+    "SCIENTIFIC_HOLD": 1
+  },
+  "manual_CI_operations": [],
+  "private_capacity_query": false,
+  "B16_replay": false
+}

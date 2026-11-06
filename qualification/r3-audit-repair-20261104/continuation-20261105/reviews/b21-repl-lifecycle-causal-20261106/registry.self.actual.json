@@ -1,0 +1,33 @@
+{
+  "schema": "hepta-b21-repl-lifecycle-causal-registry-self-receipt-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "registry_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-repl-lifecycle-causal-20261106/registry.actual.json",
+  "registry": {
+    "bytes": 21113,
+    "git_blob": "f9af6bdaf3cc61204cd45525605e67b81b4c955a",
+    "sha256": "8dc9184396f18b65504ad365913729d1ef27813a66080bf0bb70e9aef6a29a0b"
+  },
+  "actual_create_original": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "sha": "62e3c2e5e23f7de0f5feca1d7065da51875fe6a7"
+    },
+    "isError": false
+  },
+  "actual_full_GET_complete_UTF8_equal": true,
+  "full_GET_original_lossless_recipe": {
+    "payload_path": "registry.actual.json",
+    "marker": "__B21_REPL_REGISTRY_EXACT_PAYLOAD__",
+    "occurrences": 1,
+    "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__B21_REPL_REGISTRY_EXACT_PAYLOAD__\"\n  },\n  \"isError\": false\n}\n",
+    "substitution": "Replace the single marker with JSON.stringify(complete UTF-8 payload).slice(1,-1).",
+    "actual_serialized_original_equals_reconstruction": true
+  },
+  "payload_objects_registered_and_full_GET_verified": 9,
+  "scope": "Immutable evidence only. B21 remains OPEN; source/CI/ref/PR unchanged. This receipt records registry registration; its own actual object identity is recorded in the append list after registration."
+}

@@ -1,0 +1,39 @@
+{
+  "schema": "hepta-supervisor-unix-connect-independent-registry-self-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "registry_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/supervisor-unix-connect-bound-independent-20261106/registry.actual.json",
+  "registry_identity": {
+    "bytes": 28090,
+    "git_blob": "286bae42fa543ba26a60f2206a1709a67d5e5176",
+    "sha256": "55168e3aec586ff9f6a08be798a392708abd07a4b683e9ba97c7191adb850a61"
+  },
+  "method": "actual create_tree(content) and complete fetch_blob UTF-8 equality",
+  "actual_create_original": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "sha": "2d40b2cea91f17af2581459b420b50b60274d759"
+    },
+    "isError": false
+  },
+  "actual_complete_full_GET_equal": true,
+  "full_GET_original_lossless_recipe": {
+    "payload_path": "registry.actual.json",
+    "payload_git_blob": "286bae42fa543ba26a60f2206a1709a67d5e5176",
+    "marker": "__SUPERVISOR_REVIEW_REGISTRY_286bae42fa543ba26a60f2206a1709a67d5e5176__",
+    "occurrences": 1,
+    "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__SUPERVISOR_REVIEW_REGISTRY_286bae42fa543ba26a60f2206a1709a67d5e5176__\"\n  },\n  \"isError\": false\n}\n",
+    "substitution": "Replace the single marker with JSON.stringify(complete UTF-8 registry payload).slice(1,-1).",
+    "actual_serialized_original_equals_reconstruction": true
+  },
+  "payload_paths": 15,
+  "original_members": 17,
+  "review_actual_blob": "35b07140231fa056026ca00088930873a4812b55",
+  "qualification": "STATIC_ACCEPTANCE_ONLY",
+  "native_or_CI_executed": false,
+  "ledger_transitions": []
+}

@@ -1,0 +1,20 @@
+{
+  "schema": "hepta-C4-machine-serializer-actual-schema-correction-v1",
+  "before": {
+    "bytes": 18478,
+    "git_blob": "dccdf6ce5ef642064eacb01809b7e00e619ab071",
+    "sha256": "b92f35f41452cf9f437e292609541b1d2894f4cfe51ea769de43e2af82defe99"
+  },
+  "after": {
+    "bytes": 18497,
+    "git_blob": "8f109d15448e0ec1a046aae96f2c57a8507401ad",
+    "sha256": "59df3cf4268324e53ed669c739496e3fe632d8d2df00c5012be1f2f99e283dbe"
+  },
+  "actual_publication_schema": "hepta-arg0-fixture-successor-publication-verified-v1",
+  "correction": "Read arg0 commit.sha and commit.tree from the immutable actual publication receipt; do not invent top-level head/tree.",
+  "patch": "--- before.py\n+++ after.py\n@@ -128,7 +128,7 @@\n             \"latest_head_native_acceptance_transferred\": False,\n         },\n         \"arg0_fixture_repair\": {\n-            \"actual_commit\": arg0[\"head\"], \"actual_tree\": arg0[\"tree\"],\n+            \"actual_commit\": arg0[\"commit\"][\"sha\"], \"actual_tree\": arg0[\"commit\"][\"tree\"],\n             \"independent_review\": \"cd7ed2f2a033882671a24258e1d360863039e5d0\",\n             \"Linux_only\": True, \"changed_paths\": 3,\n             \"prebuild_command\": [\"cargo\", \"build\", \"--locked\", \"-p\", \"codex-arg0\", \"--bin\", \"test_arg0_preflight\"],\n",
+  "first_execution_exit": 1,
+  "first_failure": "KeyError: head before any machine output written",
+  "second_execution_exit": 0,
+  "product_sources_or_original_contracts_changed": false
+}

@@ -1,0 +1,36 @@
+{
+  "all_member_identities_equal": true,
+  "archive": {
+    "bytes": 2128825,
+    "git_blob": "105a3603de6138c3ff4fa295f836298a1ebd8500",
+    "sha256": "9fe2729333aab5ed0a0c558422468491b9eabc345b2d55030f828f988f78c51c"
+  },
+  "read_only_replays": [
+    {
+      "exit_code": 0,
+      "name": "fixed-source",
+      "stderr_bytes": 0,
+      "stdout": {
+        "bytes": 6367,
+        "git_blob": "b7c23fd0b7d5f9a42cee6f05406a1b0b2c95fcdf",
+        "sha256": "97dbe6f43d30a759a6cefc89307a54375490fdc149146dfb67fe046dcd770740"
+      },
+      "stdout_exact_equal": true
+    },
+    {
+      "exit_code": 0,
+      "name": "historical-mic",
+      "stderr_bytes": 0,
+      "stdout": {
+        "bytes": 94084,
+        "git_blob": "a81d7c524db9e6a848893e207681c3d48645480d",
+        "sha256": "bcdba4775b4c6f2e784d5ca813ceedc578114b22696c7a4db8d688bd83b7ddd1"
+      },
+      "stdout_exact_equal": true
+    }
+  ],
+  "restored_member_bytes": 8901276,
+  "restored_original_members": 134,
+  "schema": "hepta-b11-reassessment-v2-portable-replay",
+  "scope": "Historical evidence/source replay only, not new native or CI. No product source/ref changes."
+}

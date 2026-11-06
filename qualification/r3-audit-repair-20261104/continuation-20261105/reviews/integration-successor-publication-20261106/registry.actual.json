@@ -1,0 +1,2114 @@
+{
+  "schema": "hepta-root-integration-successor-publication-actual-registry-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "prefix": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-successor-publication-20261106/",
+  "recorded_utc": "2026-11-06T10:03:12.577806+00:00",
+  "objects": [
+    {
+      "payload_path": "README.zh-CN.md",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-successor-publication-20261106/README.zh-CN.md",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 5071,
+      "git_blob": "3b462047111fba3682cfb9fc9c43bc5c802aac43",
+      "sha256": "90d60e028bc98411555f0b31d18839091e76f8e01ee0126cea88095382bdd504",
+      "created_unreferenced_tree": "cc88c1ad101c759c92c06a194df3404fde9f3c69",
+      "actual_create_original": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "cc88c1ad101c759c92c06a194df3404fde9f3c69"
+        },
+        "isError": false
+      },
+      "actual_full_GET_complete_UTF8_equal": true,
+      "full_blob_get_identity": {
+        "bytes": 5071,
+        "git_blob": "3b462047111fba3682cfb9fc9c43bc5c802aac43",
+        "sha256": "90d60e028bc98411555f0b31d18839091e76f8e01ee0126cea88095382bdd504"
+      },
+      "full_GET_original_lossless_recipe": {
+        "payload_path": "README.zh-CN.md",
+        "payload_git_blob": "3b462047111fba3682cfb9fc9c43bc5c802aac43",
+        "marker": "__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_3b462047111fba3682cfb9fc9c43bc5c802aac43__",
+        "occurrences": 1,
+        "json_paths": [
+          "$.structuredContent.content"
+        ],
+        "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_3b462047111fba3682cfb9fc9c43bc5c802aac43__\"\n  },\n  \"isError\": false\n}\n",
+        "substitution": "Replace every exact marker occurrence with JSON.stringify(complete UTF-8 payload).slice(1,-1).",
+        "actual_serialized_original_equals_reconstruction": true,
+        "serialized_original_identity": {
+          "bytes": 5268,
+          "git_blob": "738078cba4e6cce4bd6fe19b0aa9212903c83ff6",
+          "sha256": "5f151f9b4d2cc413dba8117df9e8bb723e49b5d227804fb48054686ad4a5cca0"
+        }
+      },
+      "materialization": "github_create_tree(content); no ref",
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "payload_path": "MANIFEST.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-successor-publication-20261106/MANIFEST.json",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 24047,
+      "git_blob": "7523055f6b05a97bd02d4472d514d2636b6a33dc",
+      "sha256": "1bea505c75883c92aff7ac069599505640dc443e712cf734e765f6d68f34ac80",
+      "created_unreferenced_tree": "cc88c1ad101c759c92c06a194df3404fde9f3c69",
+      "actual_create_original": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "cc88c1ad101c759c92c06a194df3404fde9f3c69"
+        },
+        "isError": false
+      },
+      "actual_full_GET_complete_UTF8_equal": true,
+      "full_blob_get_identity": {
+        "bytes": 24047,
+        "git_blob": "7523055f6b05a97bd02d4472d514d2636b6a33dc",
+        "sha256": "1bea505c75883c92aff7ac069599505640dc443e712cf734e765f6d68f34ac80"
+      },
+      "full_GET_original_lossless_recipe": {
+        "payload_path": "MANIFEST.json",
+        "payload_git_blob": "7523055f6b05a97bd02d4472d514d2636b6a33dc",
+        "marker": "__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_7523055f6b05a97bd02d4472d514d2636b6a33dc__",
+        "occurrences": 1,
+        "json_paths": [
+          "$.structuredContent.content"
+        ],
+        "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_7523055f6b05a97bd02d4472d514d2636b6a33dc__\"\n  },\n  \"isError\": false\n}\n",
+        "substitution": "Replace every exact marker occurrence with JSON.stringify(complete UTF-8 payload).slice(1,-1).",
+        "actual_serialized_original_equals_reconstruction": true,
+        "serialized_original_identity": {
+          "bytes": 26228,
+          "git_blob": "ba5f1ba366bde214997bb6950805530a8807fddf",
+          "sha256": "b482211646368f4d10022c2f137fbd9fff80bceead7d6b1e7e656c9359d7e7d3"
+        }
+      },
+      "materialization": "github_create_tree(content); no ref",
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "payload_path": "ORIGINALS-MANIFEST.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-successor-publication-20261106/ORIGINALS-MANIFEST.json",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 20670,
+      "git_blob": "4f8ddc1a3da52e4cdaaad2ae1a41629faaf1349d",
+      "sha256": "66e35bcbd9b83d5f114fa799989113fade982314330a96977b9cd0cf9281ad7b",
+      "created_unreferenced_tree": "cc88c1ad101c759c92c06a194df3404fde9f3c69",
+      "actual_create_original": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "cc88c1ad101c759c92c06a194df3404fde9f3c69"
+        },
+        "isError": false
+      },
+      "actual_full_GET_complete_UTF8_equal": true,
+      "full_blob_get_identity": {
+        "bytes": 20670,
+        "git_blob": "4f8ddc1a3da52e4cdaaad2ae1a41629faaf1349d",
+        "sha256": "66e35bcbd9b83d5f114fa799989113fade982314330a96977b9cd0cf9281ad7b"
+      },
+      "full_GET_original_lossless_recipe": {
+        "payload_path": "ORIGINALS-MANIFEST.json",
+        "payload_git_blob": "4f8ddc1a3da52e4cdaaad2ae1a41629faaf1349d",
+        "marker": "__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_4f8ddc1a3da52e4cdaaad2ae1a41629faaf1349d__",
+        "occurrences": 1,
+        "json_paths": [
+          "$.structuredContent.content"
+        ],
+        "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_4f8ddc1a3da52e4cdaaad2ae1a41629faaf1349d__\"\n  },\n  \"isError\": false\n}\n",
+        "substitution": "Replace every exact marker occurrence with JSON.stringify(complete UTF-8 payload).slice(1,-1).",
+        "actual_serialized_original_equals_reconstruction": true,
+        "serialized_original_identity": {
+          "bytes": 22363,
+          "git_blob": "8fb0f59b644e1f250240a2dff3ab28a811d244ed",
+          "sha256": "ea437fee810762e5fd15bef5e85b373931fd21a111d1ba97213dab94d51012a9"
+        }
+      },
+      "materialization": "github_create_tree(content); no ref",
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "payload_path": "archive.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-successor-publication-20261106/archive.json",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 10376,
+      "git_blob": "18abd7ec8a27067a636b3c17c317563b1b90b08e",
+      "sha256": "38aa02fbeab5fddc422b67e34c2c3393bf081f9fe6bba0ad420ca227319d1b97",
+      "created_unreferenced_tree": "cc88c1ad101c759c92c06a194df3404fde9f3c69",
+      "actual_create_original": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "cc88c1ad101c759c92c06a194df3404fde9f3c69"
+        },
+        "isError": false
+      },
+      "actual_full_GET_complete_UTF8_equal": true,
+      "full_blob_get_identity": {
+        "bytes": 10376,
+        "git_blob": "18abd7ec8a27067a636b3c17c317563b1b90b08e",
+        "sha256": "38aa02fbeab5fddc422b67e34c2c3393bf081f9fe6bba0ad420ca227319d1b97"
+      },
+      "full_GET_original_lossless_recipe": {
+        "payload_path": "archive.json",
+        "payload_git_blob": "18abd7ec8a27067a636b3c17c317563b1b90b08e",
+        "marker": "__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_18abd7ec8a27067a636b3c17c317563b1b90b08e__",
+        "occurrences": 1,
+        "json_paths": [
+          "$.structuredContent.content"
+        ],
+        "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_18abd7ec8a27067a636b3c17c317563b1b90b08e__\"\n  },\n  \"isError\": false\n}\n",
+        "substitution": "Replace every exact marker occurrence with JSON.stringify(complete UTF-8 payload).slice(1,-1).",
+        "actual_serialized_original_equals_reconstruction": true,
+        "serialized_original_identity": {
+          "bytes": 11394,
+          "git_blob": "453f6207ba12eb97b40974e592ce49098314f1c4",
+          "sha256": "70e0e5434da61cc63586df0bca7df329af1cbf55b20513e63d95bd27b53a4ec2"
+        }
+      },
+      "materialization": "github_create_tree(content); no ref",
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "payload_path": "verify_packet.py",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-successor-publication-20261106/verify_packet.py",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 4770,
+      "git_blob": "9a3e5b0acc9de051fd50aca4ce7093586ee57373",
+      "sha256": "fc2d1a83576679175b7b7493b06ea0e231d68564ce40b9f90bf6fdcc6d812e33",
+      "created_unreferenced_tree": "cc88c1ad101c759c92c06a194df3404fde9f3c69",
+      "actual_create_original": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "cc88c1ad101c759c92c06a194df3404fde9f3c69"
+        },
+        "isError": false
+      },
+      "actual_full_GET_complete_UTF8_equal": true,
+      "full_blob_get_identity": {
+        "bytes": 4770,
+        "git_blob": "9a3e5b0acc9de051fd50aca4ce7093586ee57373",
+        "sha256": "fc2d1a83576679175b7b7493b06ea0e231d68564ce40b9f90bf6fdcc6d812e33"
+      },
+      "full_GET_original_lossless_recipe": {
+        "payload_path": "verify_packet.py",
+        "payload_git_blob": "9a3e5b0acc9de051fd50aca4ce7093586ee57373",
+        "marker": "__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_9a3e5b0acc9de051fd50aca4ce7093586ee57373__",
+        "occurrences": 1,
+        "json_paths": [
+          "$.structuredContent.content"
+        ],
+        "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_9a3e5b0acc9de051fd50aca4ce7093586ee57373__\"\n  },\n  \"isError\": false\n}\n",
+        "substitution": "Replace every exact marker occurrence with JSON.stringify(complete UTF-8 payload).slice(1,-1).",
+        "actual_serialized_original_equals_reconstruction": true,
+        "serialized_original_identity": {
+          "bytes": 5175,
+          "git_blob": "99eeb3dcf1b523dafe072a90b1f41573c8204608",
+          "sha256": "408d79b37abd4621f37b105acbbd4fb1d7a25e63092e401e97ef4220bd74e0f6"
+        }
+      },
+      "materialization": "github_create_tree(content); no ref",
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "payload_path": "verify_publications.py",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-successor-publication-20261106/verify_publications.py",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 15494,
+      "git_blob": "05a4b924fc30ac2cd1b59d421eb22ce9b847a492",
+      "sha256": "055bcf0636b58a07aebb0e47ac3c90fa57236daa9fc7d002d9f92ffefeb16253",
+      "created_unreferenced_tree": "cc88c1ad101c759c92c06a194df3404fde9f3c69",
+      "actual_create_original": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "cc88c1ad101c759c92c06a194df3404fde9f3c69"
+        },
+        "isError": false
+      },
+      "actual_full_GET_complete_UTF8_equal": true,
+      "full_blob_get_identity": {
+        "bytes": 15494,
+        "git_blob": "05a4b924fc30ac2cd1b59d421eb22ce9b847a492",
+        "sha256": "055bcf0636b58a07aebb0e47ac3c90fa57236daa9fc7d002d9f92ffefeb16253"
+      },
+      "full_GET_original_lossless_recipe": {
+        "payload_path": "verify_publications.py",
+        "payload_git_blob": "05a4b924fc30ac2cd1b59d421eb22ce9b847a492",
+        "marker": "__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_05a4b924fc30ac2cd1b59d421eb22ce9b847a492__",
+        "occurrences": 1,
+        "json_paths": [
+          "$.structuredContent.content"
+        ],
+        "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_05a4b924fc30ac2cd1b59d421eb22ce9b847a492__\"\n  },\n  \"isError\": false\n}\n",
+        "substitution": "Replace every exact marker occurrence with JSON.stringify(complete UTF-8 payload).slice(1,-1).",
+        "actual_serialized_original_equals_reconstruction": true,
+        "serialized_original_identity": {
+          "bytes": 16590,
+          "git_blob": "605548af82ccdf95141b8c3c952d6476fb8068d6",
+          "sha256": "2ea6673314721bf643c7f282b2270f846a604f4ec7b72b3cbcdfeff1fa11c1b4"
+        }
+      },
+      "materialization": "github_create_tree(content); no ref",
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "payload_path": "VERIFICATION.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-successor-publication-20261106/VERIFICATION.json",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 9321,
+      "git_blob": "12fca920f89c5cbc27ed5769e0ba0e2bcef4f431",
+      "sha256": "7556a917565366f5c75755f866bc68cd84ba92f6a093b5b5034412df04ea150c",
+      "created_unreferenced_tree": "14e9e3708d398130701d19a82a9e9a1b64120b39",
+      "actual_create_original": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "14e9e3708d398130701d19a82a9e9a1b64120b39"
+        },
+        "isError": false
+      },
+      "actual_full_GET_complete_UTF8_equal": true,
+      "full_blob_get_identity": {
+        "bytes": 9321,
+        "git_blob": "12fca920f89c5cbc27ed5769e0ba0e2bcef4f431",
+        "sha256": "7556a917565366f5c75755f866bc68cd84ba92f6a093b5b5034412df04ea150c"
+      },
+      "full_GET_original_lossless_recipe": {
+        "payload_path": "VERIFICATION.json",
+        "payload_git_blob": "12fca920f89c5cbc27ed5769e0ba0e2bcef4f431",
+        "marker": "__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_12fca920f89c5cbc27ed5769e0ba0e2bcef4f431__",
+        "occurrences": 1,
+        "json_paths": [
+          "$.structuredContent.content"
+        ],
+        "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_12fca920f89c5cbc27ed5769e0ba0e2bcef4f431__\"\n  },\n  \"isError\": false\n}\n",
+        "substitution": "Replace every exact marker occurrence with JSON.stringify(complete UTF-8 payload).slice(1,-1).",
+        "actual_serialized_original_equals_reconstruction": true,
+        "serialized_original_identity": {
+          "bytes": 10199,
+          "git_blob": "3c2dfdbb35d7f177fa8f478805d908179e53e465",
+          "sha256": "5d8bf48b890e18452a49269bcad61f09deaf582befb5a1990bc674b764101f5c"
+        }
+      },
+      "materialization": "github_create_tree(content); no ref",
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "payload_path": "portable-replay-01.stdout.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-successor-publication-20261106/portable-replay-01.stdout.json",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 2213,
+      "git_blob": "b8f3056d27ab5f358bd74d95e0bef6953c07bf46",
+      "sha256": "c3a8e1258041f148b6edd897bfc4a001f370185ef6340182697a6d2482b867c0",
+      "created_unreferenced_tree": "14e9e3708d398130701d19a82a9e9a1b64120b39",
+      "actual_create_original": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "14e9e3708d398130701d19a82a9e9a1b64120b39"
+        },
+        "isError": false
+      },
+      "actual_full_GET_complete_UTF8_equal": true,
+      "full_blob_get_identity": {
+        "bytes": 2213,
+        "git_blob": "b8f3056d27ab5f358bd74d95e0bef6953c07bf46",
+        "sha256": "c3a8e1258041f148b6edd897bfc4a001f370185ef6340182697a6d2482b867c0"
+      },
+      "full_GET_original_lossless_recipe": {
+        "payload_path": "portable-replay-01.stdout.json",
+        "payload_git_blob": "b8f3056d27ab5f358bd74d95e0bef6953c07bf46",
+        "marker": "__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_b8f3056d27ab5f358bd74d95e0bef6953c07bf46__",
+        "occurrences": 1,
+        "json_paths": [
+          "$.structuredContent.content"
+        ],
+        "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_b8f3056d27ab5f358bd74d95e0bef6953c07bf46__\"\n  },\n  \"isError\": false\n}\n",
+        "substitution": "Replace every exact marker occurrence with JSON.stringify(complete UTF-8 payload).slice(1,-1).",
+        "actual_serialized_original_equals_reconstruction": true,
+        "serialized_original_identity": {
+          "bytes": 2542,
+          "git_blob": "5a6607123511ecd245fb8a9dd23e6d53692b1cbd",
+          "sha256": "2af6361240ffc8564f0beac7f0872305c93048231ecfafcdf75d06fefd40a1c5"
+        }
+      },
+      "materialization": "github_create_tree(content); no ref",
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "payload_path": "portable-replay-01.stderr.txt",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-successor-publication-20261106/portable-replay-01.stderr.txt",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "created_unreferenced_tree": "14e9e3708d398130701d19a82a9e9a1b64120b39",
+      "actual_create_original": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "14e9e3708d398130701d19a82a9e9a1b64120b39"
+        },
+        "isError": false
+      },
+      "actual_full_GET_complete_UTF8_equal": true,
+      "full_blob_get_identity": {
+        "bytes": 0,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "full_GET_original_lossless_recipe": {
+        "payload_path": "portable-replay-01.stderr.txt",
+        "payload_git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "marker": "__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_e69de29bb2d1d6434b8b29ae775ad8c2e48c5391__",
+        "occurrences": 1,
+        "json_paths": [
+          "$.structuredContent.content"
+        ],
+        "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_e69de29bb2d1d6434b8b29ae775ad8c2e48c5391__\"\n  },\n  \"isError\": false\n}\n",
+        "substitution": "Replace every exact marker occurrence with JSON.stringify(complete UTF-8 payload).slice(1,-1).",
+        "actual_serialized_original_equals_reconstruction": true,
+        "serialized_original_identity": {
+          "bytes": 159,
+          "git_blob": "057869c39a49a846680dac04c8959ee70d52e272",
+          "sha256": "7173bab0464503075b9e0b24c826aa70bc826da3263edde1dabbc8833deaeceb"
+        }
+      },
+      "materialization": "github_create_tree(content); no ref",
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "payload_path": "portable-replay-01.execution.json",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-successor-publication-20261106/portable-replay-01.execution.json",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 1055,
+      "git_blob": "b68c895e86a0f8db104abf6e3390d56d032103e2",
+      "sha256": "1de992147d4994b91514fea5a583e988b5b046ca4d22f19a18737421e79da8fb",
+      "created_unreferenced_tree": "14e9e3708d398130701d19a82a9e9a1b64120b39",
+      "actual_create_original": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "14e9e3708d398130701d19a82a9e9a1b64120b39"
+        },
+        "isError": false
+      },
+      "actual_full_GET_complete_UTF8_equal": true,
+      "full_blob_get_identity": {
+        "bytes": 1055,
+        "git_blob": "b68c895e86a0f8db104abf6e3390d56d032103e2",
+        "sha256": "1de992147d4994b91514fea5a583e988b5b046ca4d22f19a18737421e79da8fb"
+      },
+      "full_GET_original_lossless_recipe": {
+        "payload_path": "portable-replay-01.execution.json",
+        "payload_git_blob": "b68c895e86a0f8db104abf6e3390d56d032103e2",
+        "marker": "__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_b68c895e86a0f8db104abf6e3390d56d032103e2__",
+        "occurrences": 1,
+        "json_paths": [
+          "$.structuredContent.content"
+        ],
+        "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_b68c895e86a0f8db104abf6e3390d56d032103e2__\"\n  },\n  \"isError\": false\n}\n",
+        "substitution": "Replace every exact marker occurrence with JSON.stringify(complete UTF-8 payload).slice(1,-1).",
+        "actual_serialized_original_equals_reconstruction": true,
+        "serialized_original_identity": {
+          "bytes": 1292,
+          "git_blob": "c45d55dedebd24097b3d168d69680cbbb57dcaf8",
+          "sha256": "e1896172fef16ac9538e95bf8460a0dd323778bb2f0eecce078c563b4d21954a"
+        }
+      },
+      "materialization": "github_create_tree(content); no ref",
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "payload_path": "archive.part-000.b64",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-successor-publication-20261106/archive.part-000.b64",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 240001,
+      "git_blob": "5134d32ea5e131d2af19af11f0e01b3d98661e52",
+      "sha256": "db8774282319635e100686930328c7be73644333f5cf13db054e322bc457ed06",
+      "created_unreferenced_tree": "14e9e3708d398130701d19a82a9e9a1b64120b39",
+      "actual_create_original": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "14e9e3708d398130701d19a82a9e9a1b64120b39"
+        },
+        "isError": false
+      },
+      "actual_full_GET_complete_UTF8_equal": true,
+      "full_blob_get_identity": {
+        "bytes": 240001,
+        "git_blob": "5134d32ea5e131d2af19af11f0e01b3d98661e52",
+        "sha256": "db8774282319635e100686930328c7be73644333f5cf13db054e322bc457ed06"
+      },
+      "full_GET_original_lossless_recipe": {
+        "payload_path": "archive.part-000.b64",
+        "payload_git_blob": "5134d32ea5e131d2af19af11f0e01b3d98661e52",
+        "marker": "__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_5134d32ea5e131d2af19af11f0e01b3d98661e52__",
+        "occurrences": 1,
+        "json_paths": [
+          "$.structuredContent.content"
+        ],
+        "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_5134d32ea5e131d2af19af11f0e01b3d98661e52__\"\n  },\n  \"isError\": false\n}\n",
+        "substitution": "Replace every exact marker occurrence with JSON.stringify(complete UTF-8 payload).slice(1,-1).",
+        "actual_serialized_original_equals_reconstruction": true,
+        "serialized_original_identity": {
+          "bytes": 240161,
+          "git_blob": "1e9159bee28b3160682a7d3c9b07fbe7f601d007",
+          "sha256": "b1da6ba07adc48affed55517fa7c1b2d55a0e1cdc6cea0ccaad73606506e8672"
+        }
+      },
+      "materialization": "github_create_tree(content); no ref",
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "payload_path": "archive.part-001.b64",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-successor-publication-20261106/archive.part-001.b64",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 240001,
+      "git_blob": "777e8cdbf631506e09578a92cd3d56dc6eb291bd",
+      "sha256": "1d20adb6219958dd84445e54038a5b1b2999e3b66aac0504d505afc86ef3b970",
+      "created_unreferenced_tree": "14e9e3708d398130701d19a82a9e9a1b64120b39",
+      "actual_create_original": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "14e9e3708d398130701d19a82a9e9a1b64120b39"
+        },
+        "isError": false
+      },
+      "actual_full_GET_complete_UTF8_equal": true,
+      "full_blob_get_identity": {
+        "bytes": 240001,
+        "git_blob": "777e8cdbf631506e09578a92cd3d56dc6eb291bd",
+        "sha256": "1d20adb6219958dd84445e54038a5b1b2999e3b66aac0504d505afc86ef3b970"
+      },
+      "full_GET_original_lossless_recipe": {
+        "payload_path": "archive.part-001.b64",
+        "payload_git_blob": "777e8cdbf631506e09578a92cd3d56dc6eb291bd",
+        "marker": "__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_777e8cdbf631506e09578a92cd3d56dc6eb291bd__",
+        "occurrences": 1,
+        "json_paths": [
+          "$.structuredContent.content"
+        ],
+        "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_777e8cdbf631506e09578a92cd3d56dc6eb291bd__\"\n  },\n  \"isError\": false\n}\n",
+        "substitution": "Replace every exact marker occurrence with JSON.stringify(complete UTF-8 payload).slice(1,-1).",
+        "actual_serialized_original_equals_reconstruction": true,
+        "serialized_original_identity": {
+          "bytes": 240161,
+          "git_blob": "5072667e8714ec7f11f44d3c0efc7a1a024b1933",
+          "sha256": "14d9d79b31e9a7f2b941be3921f7051feb156ac7ab285310a0d8a9088d60ce29"
+        }
+      },
+      "materialization": "github_create_tree(content); no ref",
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "payload_path": "archive.part-002.b64",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-successor-publication-20261106/archive.part-002.b64",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 240001,
+      "git_blob": "0a8b581de366407dbbc87d14df7e23564b8f18f9",
+      "sha256": "4d57e4086b7598b5a9b7b8771bf93457edb2aa7079d5ad7072d1cdef5e477b5f",
+      "created_unreferenced_tree": "73da821b444bf3ce4bc4192739b8d0d3737aceb0",
+      "actual_create_original": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "73da821b444bf3ce4bc4192739b8d0d3737aceb0"
+        },
+        "isError": false
+      },
+      "actual_full_GET_complete_UTF8_equal": true,
+      "full_blob_get_identity": {
+        "bytes": 240001,
+        "git_blob": "0a8b581de366407dbbc87d14df7e23564b8f18f9",
+        "sha256": "4d57e4086b7598b5a9b7b8771bf93457edb2aa7079d5ad7072d1cdef5e477b5f"
+      },
+      "full_GET_original_lossless_recipe": {
+        "payload_path": "archive.part-002.b64",
+        "payload_git_blob": "0a8b581de366407dbbc87d14df7e23564b8f18f9",
+        "marker": "__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_0a8b581de366407dbbc87d14df7e23564b8f18f9__",
+        "occurrences": 1,
+        "json_paths": [
+          "$.structuredContent.content"
+        ],
+        "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_0a8b581de366407dbbc87d14df7e23564b8f18f9__\"\n  },\n  \"isError\": false\n}\n",
+        "substitution": "Replace every exact marker occurrence with JSON.stringify(complete UTF-8 payload).slice(1,-1).",
+        "actual_serialized_original_equals_reconstruction": true,
+        "serialized_original_identity": {
+          "bytes": 240161,
+          "git_blob": "7d82687d08f2bfcce6fa6071318eb618d83899e4",
+          "sha256": "46fa31e0bea2c015222dd462ef11c8b842d782f54f5653efe68a235bfd6803ec"
+        }
+      },
+      "materialization": "github_create_tree(content); no ref",
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "payload_path": "archive.part-003.b64",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-successor-publication-20261106/archive.part-003.b64",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 240001,
+      "git_blob": "c19f7f37eea83f8394636992024640ffd5f6c783",
+      "sha256": "df26ddbc275d0fc1f19b3e574efe0d3301ee21164dfec387eec51689fb8cae68",
+      "created_unreferenced_tree": "73da821b444bf3ce4bc4192739b8d0d3737aceb0",
+      "actual_create_original": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "73da821b444bf3ce4bc4192739b8d0d3737aceb0"
+        },
+        "isError": false
+      },
+      "actual_full_GET_complete_UTF8_equal": true,
+      "full_blob_get_identity": {
+        "bytes": 240001,
+        "git_blob": "c19f7f37eea83f8394636992024640ffd5f6c783",
+        "sha256": "df26ddbc275d0fc1f19b3e574efe0d3301ee21164dfec387eec51689fb8cae68"
+      },
+      "full_GET_original_lossless_recipe": {
+        "payload_path": "archive.part-003.b64",
+        "payload_git_blob": "c19f7f37eea83f8394636992024640ffd5f6c783",
+        "marker": "__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_c19f7f37eea83f8394636992024640ffd5f6c783__",
+        "occurrences": 1,
+        "json_paths": [
+          "$.structuredContent.content"
+        ],
+        "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_c19f7f37eea83f8394636992024640ffd5f6c783__\"\n  },\n  \"isError\": false\n}\n",
+        "substitution": "Replace every exact marker occurrence with JSON.stringify(complete UTF-8 payload).slice(1,-1).",
+        "actual_serialized_original_equals_reconstruction": true,
+        "serialized_original_identity": {
+          "bytes": 240161,
+          "git_blob": "b769d35ea6380942e1e48aa8b6c9dc800f9eda4e",
+          "sha256": "128f367619297951d9fad1e4a2bec0ba867e906ff80de7be3c313b8e78d1659a"
+        }
+      },
+      "materialization": "github_create_tree(content); no ref",
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "payload_path": "archive.part-004.b64",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-successor-publication-20261106/archive.part-004.b64",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 240001,
+      "git_blob": "ad6b7bc1e38b08af9db161e86e5fe38e38318cdd",
+      "sha256": "fbaf33b75b70c2fff80f17516e239bb8024a573ae3975f5bccfde16df53915e0",
+      "created_unreferenced_tree": "73da821b444bf3ce4bc4192739b8d0d3737aceb0",
+      "actual_create_original": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "73da821b444bf3ce4bc4192739b8d0d3737aceb0"
+        },
+        "isError": false
+      },
+      "actual_full_GET_complete_UTF8_equal": true,
+      "full_blob_get_identity": {
+        "bytes": 240001,
+        "git_blob": "ad6b7bc1e38b08af9db161e86e5fe38e38318cdd",
+        "sha256": "fbaf33b75b70c2fff80f17516e239bb8024a573ae3975f5bccfde16df53915e0"
+      },
+      "full_GET_original_lossless_recipe": {
+        "payload_path": "archive.part-004.b64",
+        "payload_git_blob": "ad6b7bc1e38b08af9db161e86e5fe38e38318cdd",
+        "marker": "__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_ad6b7bc1e38b08af9db161e86e5fe38e38318cdd__",
+        "occurrences": 1,
+        "json_paths": [
+          "$.structuredContent.content"
+        ],
+        "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_ad6b7bc1e38b08af9db161e86e5fe38e38318cdd__\"\n  },\n  \"isError\": false\n}\n",
+        "substitution": "Replace every exact marker occurrence with JSON.stringify(complete UTF-8 payload).slice(1,-1).",
+        "actual_serialized_original_equals_reconstruction": true,
+        "serialized_original_identity": {
+          "bytes": 240161,
+          "git_blob": "f71760f5c4e09cb0b84181a839e2474a17d30f55",
+          "sha256": "0f059a495db4a557294a479d8055e655b670e9947f82616724319798f90cda60"
+        }
+      },
+      "materialization": "github_create_tree(content); no ref",
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "payload_path": "archive.part-005.b64",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-successor-publication-20261106/archive.part-005.b64",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 240001,
+      "git_blob": "f820b9f5a3fe8eadb0b64a2b7fb95492a44888c0",
+      "sha256": "79aa7da5faadd15f4fde7a0ef05c9d366bf07c8a2a22d332c19ffb96c3af3cda",
+      "created_unreferenced_tree": "73da821b444bf3ce4bc4192739b8d0d3737aceb0",
+      "actual_create_original": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "73da821b444bf3ce4bc4192739b8d0d3737aceb0"
+        },
+        "isError": false
+      },
+      "actual_full_GET_complete_UTF8_equal": true,
+      "full_blob_get_identity": {
+        "bytes": 240001,
+        "git_blob": "f820b9f5a3fe8eadb0b64a2b7fb95492a44888c0",
+        "sha256": "79aa7da5faadd15f4fde7a0ef05c9d366bf07c8a2a22d332c19ffb96c3af3cda"
+      },
+      "full_GET_original_lossless_recipe": {
+        "payload_path": "archive.part-005.b64",
+        "payload_git_blob": "f820b9f5a3fe8eadb0b64a2b7fb95492a44888c0",
+        "marker": "__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_f820b9f5a3fe8eadb0b64a2b7fb95492a44888c0__",
+        "occurrences": 1,
+        "json_paths": [
+          "$.structuredContent.content"
+        ],
+        "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_f820b9f5a3fe8eadb0b64a2b7fb95492a44888c0__\"\n  },\n  \"isError\": false\n}\n",
+        "substitution": "Replace every exact marker occurrence with JSON.stringify(complete UTF-8 payload).slice(1,-1).",
+        "actual_serialized_original_equals_reconstruction": true,
+        "serialized_original_identity": {
+          "bytes": 240161,
+          "git_blob": "1483de340b0901b99f8e2d03cdde0035c7c76301",
+          "sha256": "92d1bddb440ec4f55afda4ee92c095dcb26115773717dffff6b976822d29e767"
+        }
+      },
+      "materialization": "github_create_tree(content); no ref",
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "payload_path": "archive.part-006.b64",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-successor-publication-20261106/archive.part-006.b64",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 240001,
+      "git_blob": "9082fa99e280c6c589c27da1c86d7b981cd932ec",
+      "sha256": "593827567b10bc8fe5f33447e0e13dc905691e8156659b8a49eb765f8501c44d",
+      "created_unreferenced_tree": "73da821b444bf3ce4bc4192739b8d0d3737aceb0",
+      "actual_create_original": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "73da821b444bf3ce4bc4192739b8d0d3737aceb0"
+        },
+        "isError": false
+      },
+      "actual_full_GET_complete_UTF8_equal": true,
+      "full_blob_get_identity": {
+        "bytes": 240001,
+        "git_blob": "9082fa99e280c6c589c27da1c86d7b981cd932ec",
+        "sha256": "593827567b10bc8fe5f33447e0e13dc905691e8156659b8a49eb765f8501c44d"
+      },
+      "full_GET_original_lossless_recipe": {
+        "payload_path": "archive.part-006.b64",
+        "payload_git_blob": "9082fa99e280c6c589c27da1c86d7b981cd932ec",
+        "marker": "__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_9082fa99e280c6c589c27da1c86d7b981cd932ec__",
+        "occurrences": 1,
+        "json_paths": [
+          "$.structuredContent.content"
+        ],
+        "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_9082fa99e280c6c589c27da1c86d7b981cd932ec__\"\n  },\n  \"isError\": false\n}\n",
+        "substitution": "Replace every exact marker occurrence with JSON.stringify(complete UTF-8 payload).slice(1,-1).",
+        "actual_serialized_original_equals_reconstruction": true,
+        "serialized_original_identity": {
+          "bytes": 240161,
+          "git_blob": "bb62c2026e62479e2b59bd96670ad0d91516f8fb",
+          "sha256": "60a5ba28f132841351ddd10185017bd81159a6904a75d8e5227abf702336f76c"
+        }
+      },
+      "materialization": "github_create_tree(content); no ref",
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "payload_path": "archive.part-007.b64",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-successor-publication-20261106/archive.part-007.b64",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 240001,
+      "git_blob": "2be42eb40ec8dfa4a4488f1b10a2588387ab366f",
+      "sha256": "7163ff644fcbb802d40727a460a5e63fae273fe0245399cda1b4ca78b2c594a4",
+      "created_unreferenced_tree": "73da821b444bf3ce4bc4192739b8d0d3737aceb0",
+      "actual_create_original": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "73da821b444bf3ce4bc4192739b8d0d3737aceb0"
+        },
+        "isError": false
+      },
+      "actual_full_GET_complete_UTF8_equal": true,
+      "full_blob_get_identity": {
+        "bytes": 240001,
+        "git_blob": "2be42eb40ec8dfa4a4488f1b10a2588387ab366f",
+        "sha256": "7163ff644fcbb802d40727a460a5e63fae273fe0245399cda1b4ca78b2c594a4"
+      },
+      "full_GET_original_lossless_recipe": {
+        "payload_path": "archive.part-007.b64",
+        "payload_git_blob": "2be42eb40ec8dfa4a4488f1b10a2588387ab366f",
+        "marker": "__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_2be42eb40ec8dfa4a4488f1b10a2588387ab366f__",
+        "occurrences": 1,
+        "json_paths": [
+          "$.structuredContent.content"
+        ],
+        "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_2be42eb40ec8dfa4a4488f1b10a2588387ab366f__\"\n  },\n  \"isError\": false\n}\n",
+        "substitution": "Replace every exact marker occurrence with JSON.stringify(complete UTF-8 payload).slice(1,-1).",
+        "actual_serialized_original_equals_reconstruction": true,
+        "serialized_original_identity": {
+          "bytes": 240161,
+          "git_blob": "95632472acc7235fbd18623549889798ac797eca",
+          "sha256": "c631891b0ed42ab2d0682c225f527c5504ba1d8806dd14f9ee81a0b28e779953"
+        }
+      },
+      "materialization": "github_create_tree(content); no ref",
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "payload_path": "archive.part-008.b64",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-successor-publication-20261106/archive.part-008.b64",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 240001,
+      "git_blob": "4db1c8c40777dc91cf3e25ec8c473240396e3ed4",
+      "sha256": "b9f22df92b4871b07ece08f798cfa9193c26019b8ebd32fd0d5097aa6b817e8f",
+      "created_unreferenced_tree": "fa3f743a89c58587ee73894661455120ec29c2fc",
+      "actual_create_original": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "fa3f743a89c58587ee73894661455120ec29c2fc"
+        },
+        "isError": false
+      },
+      "actual_full_GET_complete_UTF8_equal": true,
+      "full_blob_get_identity": {
+        "bytes": 240001,
+        "git_blob": "4db1c8c40777dc91cf3e25ec8c473240396e3ed4",
+        "sha256": "b9f22df92b4871b07ece08f798cfa9193c26019b8ebd32fd0d5097aa6b817e8f"
+      },
+      "full_GET_original_lossless_recipe": {
+        "payload_path": "archive.part-008.b64",
+        "payload_git_blob": "4db1c8c40777dc91cf3e25ec8c473240396e3ed4",
+        "marker": "__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_4db1c8c40777dc91cf3e25ec8c473240396e3ed4__",
+        "occurrences": 1,
+        "json_paths": [
+          "$.structuredContent.content"
+        ],
+        "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_4db1c8c40777dc91cf3e25ec8c473240396e3ed4__\"\n  },\n  \"isError\": false\n}\n",
+        "substitution": "Replace every exact marker occurrence with JSON.stringify(complete UTF-8 payload).slice(1,-1).",
+        "actual_serialized_original_equals_reconstruction": true,
+        "serialized_original_identity": {
+          "bytes": 240161,
+          "git_blob": "3a4fd7105e1d74908a6326c43782611d51b1f897",
+          "sha256": "625e84fd45a9f738ce31c5be40e07b91c37461b51f3d67255bb302adaee8ff47"
+        }
+      },
+      "materialization": "github_create_tree(content); no ref",
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "payload_path": "archive.part-009.b64",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-successor-publication-20261106/archive.part-009.b64",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 240001,
+      "git_blob": "b56b7dff4afea70c815b7de6c1c1e8a64820d4d6",
+      "sha256": "c28f07f58fb3f5fc73b89c99de383f3997f7c562a9436c478c8f931bf5c65615",
+      "created_unreferenced_tree": "fa3f743a89c58587ee73894661455120ec29c2fc",
+      "actual_create_original": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "fa3f743a89c58587ee73894661455120ec29c2fc"
+        },
+        "isError": false
+      },
+      "actual_full_GET_complete_UTF8_equal": true,
+      "full_blob_get_identity": {
+        "bytes": 240001,
+        "git_blob": "b56b7dff4afea70c815b7de6c1c1e8a64820d4d6",
+        "sha256": "c28f07f58fb3f5fc73b89c99de383f3997f7c562a9436c478c8f931bf5c65615"
+      },
+      "full_GET_original_lossless_recipe": {
+        "payload_path": "archive.part-009.b64",
+        "payload_git_blob": "b56b7dff4afea70c815b7de6c1c1e8a64820d4d6",
+        "marker": "__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_b56b7dff4afea70c815b7de6c1c1e8a64820d4d6__",
+        "occurrences": 1,
+        "json_paths": [
+          "$.structuredContent.content"
+        ],
+        "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_b56b7dff4afea70c815b7de6c1c1e8a64820d4d6__\"\n  },\n  \"isError\": false\n}\n",
+        "substitution": "Replace every exact marker occurrence with JSON.stringify(complete UTF-8 payload).slice(1,-1).",
+        "actual_serialized_original_equals_reconstruction": true,
+        "serialized_original_identity": {
+          "bytes": 240161,
+          "git_blob": "25cbbbf35adfaaae067a25470586f17c7ccb6061",
+          "sha256": "414e45ccff6b4153535df576979af2699853d68b8348b76fdf6cb6eacd81042a"
+        }
+      },
+      "materialization": "github_create_tree(content); no ref",
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "payload_path": "archive.part-010.b64",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-successor-publication-20261106/archive.part-010.b64",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 240001,
+      "git_blob": "256f1bbfb46fd32186ce4b1733236fc07629378e",
+      "sha256": "a1808ce105541651774ca8779aae455612734300e12b7708325849e4a902bbd8",
+      "created_unreferenced_tree": "fa3f743a89c58587ee73894661455120ec29c2fc",
+      "actual_create_original": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "fa3f743a89c58587ee73894661455120ec29c2fc"
+        },
+        "isError": false
+      },
+      "actual_full_GET_complete_UTF8_equal": true,
+      "full_blob_get_identity": {
+        "bytes": 240001,
+        "git_blob": "256f1bbfb46fd32186ce4b1733236fc07629378e",
+        "sha256": "a1808ce105541651774ca8779aae455612734300e12b7708325849e4a902bbd8"
+      },
+      "full_GET_original_lossless_recipe": {
+        "payload_path": "archive.part-010.b64",
+        "payload_git_blob": "256f1bbfb46fd32186ce4b1733236fc07629378e",
+        "marker": "__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_256f1bbfb46fd32186ce4b1733236fc07629378e__",
+        "occurrences": 1,
+        "json_paths": [
+          "$.structuredContent.content"
+        ],
+        "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_256f1bbfb46fd32186ce4b1733236fc07629378e__\"\n  },\n  \"isError\": false\n}\n",
+        "substitution": "Replace every exact marker occurrence with JSON.stringify(complete UTF-8 payload).slice(1,-1).",
+        "actual_serialized_original_equals_reconstruction": true,
+        "serialized_original_identity": {
+          "bytes": 240161,
+          "git_blob": "8337cc6ba9ab6648582fb886caecbc49ddb4a877",
+          "sha256": "cb5dd5a1a95b442f794c76382e7cc9a34ae1a8034770cdf8d6c085838a298cd3"
+        }
+      },
+      "materialization": "github_create_tree(content); no ref",
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "payload_path": "archive.part-011.b64",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-successor-publication-20261106/archive.part-011.b64",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 240001,
+      "git_blob": "185e1ea7e6c817604886cc238cd83d46af530c5a",
+      "sha256": "ef59f01729744dadfb931d3982d6c2c3e62b4bc0a5ea86f10ce3c6591a6b1bf2",
+      "created_unreferenced_tree": "fa3f743a89c58587ee73894661455120ec29c2fc",
+      "actual_create_original": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "fa3f743a89c58587ee73894661455120ec29c2fc"
+        },
+        "isError": false
+      },
+      "actual_full_GET_complete_UTF8_equal": true,
+      "full_blob_get_identity": {
+        "bytes": 240001,
+        "git_blob": "185e1ea7e6c817604886cc238cd83d46af530c5a",
+        "sha256": "ef59f01729744dadfb931d3982d6c2c3e62b4bc0a5ea86f10ce3c6591a6b1bf2"
+      },
+      "full_GET_original_lossless_recipe": {
+        "payload_path": "archive.part-011.b64",
+        "payload_git_blob": "185e1ea7e6c817604886cc238cd83d46af530c5a",
+        "marker": "__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_185e1ea7e6c817604886cc238cd83d46af530c5a__",
+        "occurrences": 1,
+        "json_paths": [
+          "$.structuredContent.content"
+        ],
+        "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_185e1ea7e6c817604886cc238cd83d46af530c5a__\"\n  },\n  \"isError\": false\n}\n",
+        "substitution": "Replace every exact marker occurrence with JSON.stringify(complete UTF-8 payload).slice(1,-1).",
+        "actual_serialized_original_equals_reconstruction": true,
+        "serialized_original_identity": {
+          "bytes": 240161,
+          "git_blob": "5c47803dc5bafa6403e331502eef360735eb1ba3",
+          "sha256": "95ba8389e9e9b09c259c972e89d7ad0b6bf9819aedb262a6bbe81f9a52ed82e9"
+        }
+      },
+      "materialization": "github_create_tree(content); no ref",
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "payload_path": "archive.part-012.b64",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-successor-publication-20261106/archive.part-012.b64",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 240001,
+      "git_blob": "fbc1a8a18c5f06597cf9c76cb15abc8db5b546cf",
+      "sha256": "6e84ff82e97deaadfbeca5b27aaebbad427f2c2e07ad555d22c1b3d97500fa85",
+      "created_unreferenced_tree": "fa3f743a89c58587ee73894661455120ec29c2fc",
+      "actual_create_original": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "fa3f743a89c58587ee73894661455120ec29c2fc"
+        },
+        "isError": false
+      },
+      "actual_full_GET_complete_UTF8_equal": true,
+      "full_blob_get_identity": {
+        "bytes": 240001,
+        "git_blob": "fbc1a8a18c5f06597cf9c76cb15abc8db5b546cf",
+        "sha256": "6e84ff82e97deaadfbeca5b27aaebbad427f2c2e07ad555d22c1b3d97500fa85"
+      },
+      "full_GET_original_lossless_recipe": {
+        "payload_path": "archive.part-012.b64",
+        "payload_git_blob": "fbc1a8a18c5f06597cf9c76cb15abc8db5b546cf",
+        "marker": "__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_fbc1a8a18c5f06597cf9c76cb15abc8db5b546cf__",
+        "occurrences": 1,
+        "json_paths": [
+          "$.structuredContent.content"
+        ],
+        "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_fbc1a8a18c5f06597cf9c76cb15abc8db5b546cf__\"\n  },\n  \"isError\": false\n}\n",
+        "substitution": "Replace every exact marker occurrence with JSON.stringify(complete UTF-8 payload).slice(1,-1).",
+        "actual_serialized_original_equals_reconstruction": true,
+        "serialized_original_identity": {
+          "bytes": 240161,
+          "git_blob": "b7bfc5a3196d60bde31bc28f21212b9d82973189",
+          "sha256": "ef4ac715d66f5183ca7a3c178b4808046168a3f30b8452d2241607f4f1256f0c"
+        }
+      },
+      "materialization": "github_create_tree(content); no ref",
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "payload_path": "archive.part-013.b64",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-successor-publication-20261106/archive.part-013.b64",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 240001,
+      "git_blob": "12af4c24bd39c297f27bc20650ab686eb6caf4c8",
+      "sha256": "8f81d915f7837ded19884e78a657806f9493b513db1f7ee0cc204ec58a7d680b",
+      "created_unreferenced_tree": "fa3f743a89c58587ee73894661455120ec29c2fc",
+      "actual_create_original": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "fa3f743a89c58587ee73894661455120ec29c2fc"
+        },
+        "isError": false
+      },
+      "actual_full_GET_complete_UTF8_equal": true,
+      "full_blob_get_identity": {
+        "bytes": 240001,
+        "git_blob": "12af4c24bd39c297f27bc20650ab686eb6caf4c8",
+        "sha256": "8f81d915f7837ded19884e78a657806f9493b513db1f7ee0cc204ec58a7d680b"
+      },
+      "full_GET_original_lossless_recipe": {
+        "payload_path": "archive.part-013.b64",
+        "payload_git_blob": "12af4c24bd39c297f27bc20650ab686eb6caf4c8",
+        "marker": "__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_12af4c24bd39c297f27bc20650ab686eb6caf4c8__",
+        "occurrences": 1,
+        "json_paths": [
+          "$.structuredContent.content"
+        ],
+        "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_12af4c24bd39c297f27bc20650ab686eb6caf4c8__\"\n  },\n  \"isError\": false\n}\n",
+        "substitution": "Replace every exact marker occurrence with JSON.stringify(complete UTF-8 payload).slice(1,-1).",
+        "actual_serialized_original_equals_reconstruction": true,
+        "serialized_original_identity": {
+          "bytes": 240161,
+          "git_blob": "7a2513019fccfff7bb659fa620f0836597b34910",
+          "sha256": "49695e7dc21bee571ccb279e94b6ec2daf157cbcd735bd0fd72ddde06e0fe7c7"
+        }
+      },
+      "materialization": "github_create_tree(content); no ref",
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "payload_path": "archive.part-014.b64",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-successor-publication-20261106/archive.part-014.b64",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 240001,
+      "git_blob": "dd934a414378d971acf033692cbac79df3f4740e",
+      "sha256": "7eb0f2535230c7fecd4df42a2615c0ae2a5fbe76ef6a7d08a9d8427ec60b0c23",
+      "created_unreferenced_tree": "1f1084805a49262dd7093715d1450689dbfed6c3",
+      "actual_create_original": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "1f1084805a49262dd7093715d1450689dbfed6c3"
+        },
+        "isError": false
+      },
+      "actual_full_GET_complete_UTF8_equal": true,
+      "full_blob_get_identity": {
+        "bytes": 240001,
+        "git_blob": "dd934a414378d971acf033692cbac79df3f4740e",
+        "sha256": "7eb0f2535230c7fecd4df42a2615c0ae2a5fbe76ef6a7d08a9d8427ec60b0c23"
+      },
+      "full_GET_original_lossless_recipe": {
+        "payload_path": "archive.part-014.b64",
+        "payload_git_blob": "dd934a414378d971acf033692cbac79df3f4740e",
+        "marker": "__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_dd934a414378d971acf033692cbac79df3f4740e__",
+        "occurrences": 1,
+        "json_paths": [
+          "$.structuredContent.content"
+        ],
+        "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_dd934a414378d971acf033692cbac79df3f4740e__\"\n  },\n  \"isError\": false\n}\n",
+        "substitution": "Replace every exact marker occurrence with JSON.stringify(complete UTF-8 payload).slice(1,-1).",
+        "actual_serialized_original_equals_reconstruction": true,
+        "serialized_original_identity": {
+          "bytes": 240161,
+          "git_blob": "88694bb7e71eb400d022cbf717101be8c6787eab",
+          "sha256": "38ff388918e627a71c97065a077b72ecdf5b6738d743e4f704102816951abd9c"
+        }
+      },
+      "materialization": "github_create_tree(content); no ref",
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "payload_path": "archive.part-015.b64",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-successor-publication-20261106/archive.part-015.b64",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 240001,
+      "git_blob": "382ce848535292a388377a3f0e35c611b4ae21dd",
+      "sha256": "83d5fbb406af837e9770b2a5bdfa10f1965267f98eeca65433c083f2fd38456c",
+      "created_unreferenced_tree": "1f1084805a49262dd7093715d1450689dbfed6c3",
+      "actual_create_original": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "1f1084805a49262dd7093715d1450689dbfed6c3"
+        },
+        "isError": false
+      },
+      "actual_full_GET_complete_UTF8_equal": true,
+      "full_blob_get_identity": {
+        "bytes": 240001,
+        "git_blob": "382ce848535292a388377a3f0e35c611b4ae21dd",
+        "sha256": "83d5fbb406af837e9770b2a5bdfa10f1965267f98eeca65433c083f2fd38456c"
+      },
+      "full_GET_original_lossless_recipe": {
+        "payload_path": "archive.part-015.b64",
+        "payload_git_blob": "382ce848535292a388377a3f0e35c611b4ae21dd",
+        "marker": "__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_382ce848535292a388377a3f0e35c611b4ae21dd__",
+        "occurrences": 1,
+        "json_paths": [
+          "$.structuredContent.content"
+        ],
+        "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_382ce848535292a388377a3f0e35c611b4ae21dd__\"\n  },\n  \"isError\": false\n}\n",
+        "substitution": "Replace every exact marker occurrence with JSON.stringify(complete UTF-8 payload).slice(1,-1).",
+        "actual_serialized_original_equals_reconstruction": true,
+        "serialized_original_identity": {
+          "bytes": 240161,
+          "git_blob": "fd01834661a5693c8b227b2fc9b13b33e7b42f61",
+          "sha256": "dc608fbf91881af660299b35b7c4a303b4d01e8ee1da7a3e883aa7bddada43ef"
+        }
+      },
+      "materialization": "github_create_tree(content); no ref",
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "payload_path": "archive.part-016.b64",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-successor-publication-20261106/archive.part-016.b64",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 240001,
+      "git_blob": "7844ae3bfb73fca75d66937385cdcabc081c48c8",
+      "sha256": "67675e2705535183a1a96c7255cd372ade40573e12fbe9c03ac5785ba1f1946e",
+      "created_unreferenced_tree": "1f1084805a49262dd7093715d1450689dbfed6c3",
+      "actual_create_original": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "1f1084805a49262dd7093715d1450689dbfed6c3"
+        },
+        "isError": false
+      },
+      "actual_full_GET_complete_UTF8_equal": true,
+      "full_blob_get_identity": {
+        "bytes": 240001,
+        "git_blob": "7844ae3bfb73fca75d66937385cdcabc081c48c8",
+        "sha256": "67675e2705535183a1a96c7255cd372ade40573e12fbe9c03ac5785ba1f1946e"
+      },
+      "full_GET_original_lossless_recipe": {
+        "payload_path": "archive.part-016.b64",
+        "payload_git_blob": "7844ae3bfb73fca75d66937385cdcabc081c48c8",
+        "marker": "__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_7844ae3bfb73fca75d66937385cdcabc081c48c8__",
+        "occurrences": 1,
+        "json_paths": [
+          "$.structuredContent.content"
+        ],
+        "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_7844ae3bfb73fca75d66937385cdcabc081c48c8__\"\n  },\n  \"isError\": false\n}\n",
+        "substitution": "Replace every exact marker occurrence with JSON.stringify(complete UTF-8 payload).slice(1,-1).",
+        "actual_serialized_original_equals_reconstruction": true,
+        "serialized_original_identity": {
+          "bytes": 240161,
+          "git_blob": "15d54a29c7908b21fac0d0d973efd377e1385c60",
+          "sha256": "e78a3d1de91605800e7e9d794e6235b32bedd37293b8decf98fbf157256b58d7"
+        }
+      },
+      "materialization": "github_create_tree(content); no ref",
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "payload_path": "archive.part-017.b64",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-successor-publication-20261106/archive.part-017.b64",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 240001,
+      "git_blob": "4ac0ff88d00a72c854b96636aa77c38553a6da40",
+      "sha256": "ea8d2faa98dc687e7170bb4124935d1c300535687403c52537234fc617b84790",
+      "created_unreferenced_tree": "1f1084805a49262dd7093715d1450689dbfed6c3",
+      "actual_create_original": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "1f1084805a49262dd7093715d1450689dbfed6c3"
+        },
+        "isError": false
+      },
+      "actual_full_GET_complete_UTF8_equal": true,
+      "full_blob_get_identity": {
+        "bytes": 240001,
+        "git_blob": "4ac0ff88d00a72c854b96636aa77c38553a6da40",
+        "sha256": "ea8d2faa98dc687e7170bb4124935d1c300535687403c52537234fc617b84790"
+      },
+      "full_GET_original_lossless_recipe": {
+        "payload_path": "archive.part-017.b64",
+        "payload_git_blob": "4ac0ff88d00a72c854b96636aa77c38553a6da40",
+        "marker": "__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_4ac0ff88d00a72c854b96636aa77c38553a6da40__",
+        "occurrences": 1,
+        "json_paths": [
+          "$.structuredContent.content"
+        ],
+        "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_4ac0ff88d00a72c854b96636aa77c38553a6da40__\"\n  },\n  \"isError\": false\n}\n",
+        "substitution": "Replace every exact marker occurrence with JSON.stringify(complete UTF-8 payload).slice(1,-1).",
+        "actual_serialized_original_equals_reconstruction": true,
+        "serialized_original_identity": {
+          "bytes": 240161,
+          "git_blob": "12bdf86262628302f844403d2e3fe96429e8b833",
+          "sha256": "9aa3a875d1f793d2e94c1304f219ae7cd433e9bfc3e5a2819a6061faf3905f0a"
+        }
+      },
+      "materialization": "github_create_tree(content); no ref",
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "payload_path": "archive.part-018.b64",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-successor-publication-20261106/archive.part-018.b64",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 240001,
+      "git_blob": "9b245b1dd84c3a2de7955cc1e66c7433b96b6b4a",
+      "sha256": "f65ae3ed9e1efdff69b2d13e60ea485896a9f36177e9111cd91658d4025d5431",
+      "created_unreferenced_tree": "1f1084805a49262dd7093715d1450689dbfed6c3",
+      "actual_create_original": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "1f1084805a49262dd7093715d1450689dbfed6c3"
+        },
+        "isError": false
+      },
+      "actual_full_GET_complete_UTF8_equal": true,
+      "full_blob_get_identity": {
+        "bytes": 240001,
+        "git_blob": "9b245b1dd84c3a2de7955cc1e66c7433b96b6b4a",
+        "sha256": "f65ae3ed9e1efdff69b2d13e60ea485896a9f36177e9111cd91658d4025d5431"
+      },
+      "full_GET_original_lossless_recipe": {
+        "payload_path": "archive.part-018.b64",
+        "payload_git_blob": "9b245b1dd84c3a2de7955cc1e66c7433b96b6b4a",
+        "marker": "__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_9b245b1dd84c3a2de7955cc1e66c7433b96b6b4a__",
+        "occurrences": 1,
+        "json_paths": [
+          "$.structuredContent.content"
+        ],
+        "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_9b245b1dd84c3a2de7955cc1e66c7433b96b6b4a__\"\n  },\n  \"isError\": false\n}\n",
+        "substitution": "Replace every exact marker occurrence with JSON.stringify(complete UTF-8 payload).slice(1,-1).",
+        "actual_serialized_original_equals_reconstruction": true,
+        "serialized_original_identity": {
+          "bytes": 240161,
+          "git_blob": "c4f6c85d2a8d7747e4defa9401c66799e34ac2e6",
+          "sha256": "dd90ac115412d6eb1a1a3cd76820615cc942b48413182fd47897927f13e8fd49"
+        }
+      },
+      "materialization": "github_create_tree(content); no ref",
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "payload_path": "archive.part-019.b64",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-successor-publication-20261106/archive.part-019.b64",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 240001,
+      "git_blob": "4beb4eedceaf6e860d6f5620a30b073b0da153e2",
+      "sha256": "2ed5eb78d8756058710dbcdad88f0e81400807770757fe429db63f937fd1e032",
+      "created_unreferenced_tree": "1f1084805a49262dd7093715d1450689dbfed6c3",
+      "actual_create_original": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "1f1084805a49262dd7093715d1450689dbfed6c3"
+        },
+        "isError": false
+      },
+      "actual_full_GET_complete_UTF8_equal": true,
+      "full_blob_get_identity": {
+        "bytes": 240001,
+        "git_blob": "4beb4eedceaf6e860d6f5620a30b073b0da153e2",
+        "sha256": "2ed5eb78d8756058710dbcdad88f0e81400807770757fe429db63f937fd1e032"
+      },
+      "full_GET_original_lossless_recipe": {
+        "payload_path": "archive.part-019.b64",
+        "payload_git_blob": "4beb4eedceaf6e860d6f5620a30b073b0da153e2",
+        "marker": "__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_4beb4eedceaf6e860d6f5620a30b073b0da153e2__",
+        "occurrences": 1,
+        "json_paths": [
+          "$.structuredContent.content"
+        ],
+        "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_4beb4eedceaf6e860d6f5620a30b073b0da153e2__\"\n  },\n  \"isError\": false\n}\n",
+        "substitution": "Replace every exact marker occurrence with JSON.stringify(complete UTF-8 payload).slice(1,-1).",
+        "actual_serialized_original_equals_reconstruction": true,
+        "serialized_original_identity": {
+          "bytes": 240161,
+          "git_blob": "ffce4d1592f6e721e5435efbd6247c10040212a1",
+          "sha256": "336c46c3e20b55f8812bc7d1a2e93066fac95ecdb2a28429e599c05c7823eae5"
+        }
+      },
+      "materialization": "github_create_tree(content); no ref",
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "payload_path": "archive.part-020.b64",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-successor-publication-20261106/archive.part-020.b64",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 240001,
+      "git_blob": "2622a4087de03dc646d2352146e7d5d72e99bdfa",
+      "sha256": "4850fdf35ea4222d8feee4c43c4600b340d31b1786cf0701a05dedd1f73fdc19",
+      "created_unreferenced_tree": "9b91efd00bedf085382bff1a41e016becd377191",
+      "actual_create_original": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "9b91efd00bedf085382bff1a41e016becd377191"
+        },
+        "isError": false
+      },
+      "actual_full_GET_complete_UTF8_equal": true,
+      "full_blob_get_identity": {
+        "bytes": 240001,
+        "git_blob": "2622a4087de03dc646d2352146e7d5d72e99bdfa",
+        "sha256": "4850fdf35ea4222d8feee4c43c4600b340d31b1786cf0701a05dedd1f73fdc19"
+      },
+      "full_GET_original_lossless_recipe": {
+        "payload_path": "archive.part-020.b64",
+        "payload_git_blob": "2622a4087de03dc646d2352146e7d5d72e99bdfa",
+        "marker": "__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_2622a4087de03dc646d2352146e7d5d72e99bdfa__",
+        "occurrences": 1,
+        "json_paths": [
+          "$.structuredContent.content"
+        ],
+        "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_2622a4087de03dc646d2352146e7d5d72e99bdfa__\"\n  },\n  \"isError\": false\n}\n",
+        "substitution": "Replace every exact marker occurrence with JSON.stringify(complete UTF-8 payload).slice(1,-1).",
+        "actual_serialized_original_equals_reconstruction": true,
+        "serialized_original_identity": {
+          "bytes": 240161,
+          "git_blob": "ad9f074d24d8e8e45e519548ede5e402c5c31285",
+          "sha256": "e778cbbd83e9f058ab03beec8b9ae18b3b8f47f8f1c149bfc45b53f51afc0e86"
+        }
+      },
+      "materialization": "github_create_tree(content); no ref",
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "payload_path": "archive.part-021.b64",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-successor-publication-20261106/archive.part-021.b64",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 240001,
+      "git_blob": "94078964e27f0ae503498fa6f430b1091006f0cc",
+      "sha256": "1a937f054058a177e80004b97062b23196c5011964100498c25e14f42bff986a",
+      "created_unreferenced_tree": "9b91efd00bedf085382bff1a41e016becd377191",
+      "actual_create_original": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "9b91efd00bedf085382bff1a41e016becd377191"
+        },
+        "isError": false
+      },
+      "actual_full_GET_complete_UTF8_equal": true,
+      "full_blob_get_identity": {
+        "bytes": 240001,
+        "git_blob": "94078964e27f0ae503498fa6f430b1091006f0cc",
+        "sha256": "1a937f054058a177e80004b97062b23196c5011964100498c25e14f42bff986a"
+      },
+      "full_GET_original_lossless_recipe": {
+        "payload_path": "archive.part-021.b64",
+        "payload_git_blob": "94078964e27f0ae503498fa6f430b1091006f0cc",
+        "marker": "__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_94078964e27f0ae503498fa6f430b1091006f0cc__",
+        "occurrences": 1,
+        "json_paths": [
+          "$.structuredContent.content"
+        ],
+        "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_94078964e27f0ae503498fa6f430b1091006f0cc__\"\n  },\n  \"isError\": false\n}\n",
+        "substitution": "Replace every exact marker occurrence with JSON.stringify(complete UTF-8 payload).slice(1,-1).",
+        "actual_serialized_original_equals_reconstruction": true,
+        "serialized_original_identity": {
+          "bytes": 240161,
+          "git_blob": "a48cfa4ab9afadd498d04178e36553f8941a072f",
+          "sha256": "d723af4c8d7285ded611c1bec60c9cc7ce2079200839f2d07f46c28b6f9dbf02"
+        }
+      },
+      "materialization": "github_create_tree(content); no ref",
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "payload_path": "archive.part-022.b64",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-successor-publication-20261106/archive.part-022.b64",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 240001,
+      "git_blob": "209b3483ee862bfcab50a4537392e0f9e5564dfa",
+      "sha256": "3fb45e0746be0989dfebcd398e4190ca085b835da2fe20bd30bde4fde4a06236",
+      "created_unreferenced_tree": "9b91efd00bedf085382bff1a41e016becd377191",
+      "actual_create_original": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "9b91efd00bedf085382bff1a41e016becd377191"
+        },
+        "isError": false
+      },
+      "actual_full_GET_complete_UTF8_equal": true,
+      "full_blob_get_identity": {
+        "bytes": 240001,
+        "git_blob": "209b3483ee862bfcab50a4537392e0f9e5564dfa",
+        "sha256": "3fb45e0746be0989dfebcd398e4190ca085b835da2fe20bd30bde4fde4a06236"
+      },
+      "full_GET_original_lossless_recipe": {
+        "payload_path": "archive.part-022.b64",
+        "payload_git_blob": "209b3483ee862bfcab50a4537392e0f9e5564dfa",
+        "marker": "__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_209b3483ee862bfcab50a4537392e0f9e5564dfa__",
+        "occurrences": 1,
+        "json_paths": [
+          "$.structuredContent.content"
+        ],
+        "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_209b3483ee862bfcab50a4537392e0f9e5564dfa__\"\n  },\n  \"isError\": false\n}\n",
+        "substitution": "Replace every exact marker occurrence with JSON.stringify(complete UTF-8 payload).slice(1,-1).",
+        "actual_serialized_original_equals_reconstruction": true,
+        "serialized_original_identity": {
+          "bytes": 240161,
+          "git_blob": "c21be672d151cd58bc0857c7b648bfd27b9faee7",
+          "sha256": "9649a161d114ec39fb0f85427f28eab1ada4bf7ba685ad2176d2a7bd41676259"
+        }
+      },
+      "materialization": "github_create_tree(content); no ref",
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "payload_path": "archive.part-023.b64",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-successor-publication-20261106/archive.part-023.b64",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 240001,
+      "git_blob": "d7ce12c6f5c5f656b16b0f91904f8ae14e184bce",
+      "sha256": "50d894912e203381910f67f1898e205433a4861f7f505fbd18903d04376f2c0b",
+      "created_unreferenced_tree": "9b91efd00bedf085382bff1a41e016becd377191",
+      "actual_create_original": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "9b91efd00bedf085382bff1a41e016becd377191"
+        },
+        "isError": false
+      },
+      "actual_full_GET_complete_UTF8_equal": true,
+      "full_blob_get_identity": {
+        "bytes": 240001,
+        "git_blob": "d7ce12c6f5c5f656b16b0f91904f8ae14e184bce",
+        "sha256": "50d894912e203381910f67f1898e205433a4861f7f505fbd18903d04376f2c0b"
+      },
+      "full_GET_original_lossless_recipe": {
+        "payload_path": "archive.part-023.b64",
+        "payload_git_blob": "d7ce12c6f5c5f656b16b0f91904f8ae14e184bce",
+        "marker": "__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_d7ce12c6f5c5f656b16b0f91904f8ae14e184bce__",
+        "occurrences": 1,
+        "json_paths": [
+          "$.structuredContent.content"
+        ],
+        "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_d7ce12c6f5c5f656b16b0f91904f8ae14e184bce__\"\n  },\n  \"isError\": false\n}\n",
+        "substitution": "Replace every exact marker occurrence with JSON.stringify(complete UTF-8 payload).slice(1,-1).",
+        "actual_serialized_original_equals_reconstruction": true,
+        "serialized_original_identity": {
+          "bytes": 240161,
+          "git_blob": "6ec062204d749229e1dc69db6ef99aa664440360",
+          "sha256": "b9ca7b4a0e7048a503f6971347161a059c93e1176bfbe1c471c81bb6eeb447c7"
+        }
+      },
+      "materialization": "github_create_tree(content); no ref",
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "payload_path": "archive.part-024.b64",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-successor-publication-20261106/archive.part-024.b64",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 240001,
+      "git_blob": "3cd3135f28d17de08a9f21a0af37c90555d5106e",
+      "sha256": "80d99904f04f3ad35f511900ddb443e89c40aa40e58d689c4940fbdfc8871146",
+      "created_unreferenced_tree": "9b91efd00bedf085382bff1a41e016becd377191",
+      "actual_create_original": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "9b91efd00bedf085382bff1a41e016becd377191"
+        },
+        "isError": false
+      },
+      "actual_full_GET_complete_UTF8_equal": true,
+      "full_blob_get_identity": {
+        "bytes": 240001,
+        "git_blob": "3cd3135f28d17de08a9f21a0af37c90555d5106e",
+        "sha256": "80d99904f04f3ad35f511900ddb443e89c40aa40e58d689c4940fbdfc8871146"
+      },
+      "full_GET_original_lossless_recipe": {
+        "payload_path": "archive.part-024.b64",
+        "payload_git_blob": "3cd3135f28d17de08a9f21a0af37c90555d5106e",
+        "marker": "__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_3cd3135f28d17de08a9f21a0af37c90555d5106e__",
+        "occurrences": 1,
+        "json_paths": [
+          "$.structuredContent.content"
+        ],
+        "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_3cd3135f28d17de08a9f21a0af37c90555d5106e__\"\n  },\n  \"isError\": false\n}\n",
+        "substitution": "Replace every exact marker occurrence with JSON.stringify(complete UTF-8 payload).slice(1,-1).",
+        "actual_serialized_original_equals_reconstruction": true,
+        "serialized_original_identity": {
+          "bytes": 240161,
+          "git_blob": "db6d795515a7ac5d55efe92a9680de6ceec87191",
+          "sha256": "ef49d05b49e0a0f90e9d79fecc3c132c9622acc1bc40b2fdeb23c45a66210bef"
+        }
+      },
+      "materialization": "github_create_tree(content); no ref",
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "payload_path": "archive.part-025.b64",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-successor-publication-20261106/archive.part-025.b64",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 240001,
+      "git_blob": "0de3127f6278ea383c8f977cd838c5a94a1dd25d",
+      "sha256": "3033192a0cf064e1f54720aa2a9da55e30833668a16f238cbceb49b65cb79328",
+      "created_unreferenced_tree": "9b91efd00bedf085382bff1a41e016becd377191",
+      "actual_create_original": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "9b91efd00bedf085382bff1a41e016becd377191"
+        },
+        "isError": false
+      },
+      "actual_full_GET_complete_UTF8_equal": true,
+      "full_blob_get_identity": {
+        "bytes": 240001,
+        "git_blob": "0de3127f6278ea383c8f977cd838c5a94a1dd25d",
+        "sha256": "3033192a0cf064e1f54720aa2a9da55e30833668a16f238cbceb49b65cb79328"
+      },
+      "full_GET_original_lossless_recipe": {
+        "payload_path": "archive.part-025.b64",
+        "payload_git_blob": "0de3127f6278ea383c8f977cd838c5a94a1dd25d",
+        "marker": "__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_0de3127f6278ea383c8f977cd838c5a94a1dd25d__",
+        "occurrences": 1,
+        "json_paths": [
+          "$.structuredContent.content"
+        ],
+        "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_0de3127f6278ea383c8f977cd838c5a94a1dd25d__\"\n  },\n  \"isError\": false\n}\n",
+        "substitution": "Replace every exact marker occurrence with JSON.stringify(complete UTF-8 payload).slice(1,-1).",
+        "actual_serialized_original_equals_reconstruction": true,
+        "serialized_original_identity": {
+          "bytes": 240161,
+          "git_blob": "707ee687605d585fdd467008b4089e08b9e960b5",
+          "sha256": "cf215b4185227dff566115a1edf967d600b8ad61d3fff8b8bc09bee6e646c623"
+        }
+      },
+      "materialization": "github_create_tree(content); no ref",
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "payload_path": "archive.part-026.b64",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-successor-publication-20261106/archive.part-026.b64",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 240001,
+      "git_blob": "0375cce3d5f7ec93606811ff76d419ee419da214",
+      "sha256": "a442764e13bfa213a6cdf7444ebc4027d96b13ad53e89a296d440cb558ffa5e6",
+      "created_unreferenced_tree": "0e20bcae9aa89c3ac3572ec96b82307f452f4252",
+      "actual_create_original": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "0e20bcae9aa89c3ac3572ec96b82307f452f4252"
+        },
+        "isError": false
+      },
+      "actual_full_GET_complete_UTF8_equal": true,
+      "full_blob_get_identity": {
+        "bytes": 240001,
+        "git_blob": "0375cce3d5f7ec93606811ff76d419ee419da214",
+        "sha256": "a442764e13bfa213a6cdf7444ebc4027d96b13ad53e89a296d440cb558ffa5e6"
+      },
+      "full_GET_original_lossless_recipe": {
+        "payload_path": "archive.part-026.b64",
+        "payload_git_blob": "0375cce3d5f7ec93606811ff76d419ee419da214",
+        "marker": "__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_0375cce3d5f7ec93606811ff76d419ee419da214__",
+        "occurrences": 1,
+        "json_paths": [
+          "$.structuredContent.content"
+        ],
+        "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_0375cce3d5f7ec93606811ff76d419ee419da214__\"\n  },\n  \"isError\": false\n}\n",
+        "substitution": "Replace every exact marker occurrence with JSON.stringify(complete UTF-8 payload).slice(1,-1).",
+        "actual_serialized_original_equals_reconstruction": true,
+        "serialized_original_identity": {
+          "bytes": 240161,
+          "git_blob": "4ab14af19487d633e6a07f9784ecce50d8a0d715",
+          "sha256": "a07ebabcf766ef072399966faba8e9eede3504d25280a42c926c0510322e5187"
+        }
+      },
+      "materialization": "github_create_tree(content); no ref",
+      "full_UTF8_bytes_equal": true
+    },
+    {
+      "payload_path": "archive.part-027.b64",
+      "repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-successor-publication-20261106/archive.part-027.b64",
+      "mode": "100644",
+      "type": "blob",
+      "bytes": 104149,
+      "git_blob": "1ae9186513e986d5d5d6b1c4c21ae54747e3a372",
+      "sha256": "f070f6b5fa16c04b421075dd7676d1e282cf59280dbf9079cc3f6f2f7816c136",
+      "created_unreferenced_tree": "0e20bcae9aa89c3ac3572ec96b82307f452f4252",
+      "actual_create_original": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "0e20bcae9aa89c3ac3572ec96b82307f452f4252"
+        },
+        "isError": false
+      },
+      "actual_full_GET_complete_UTF8_equal": true,
+      "full_blob_get_identity": {
+        "bytes": 104149,
+        "git_blob": "1ae9186513e986d5d5d6b1c4c21ae54747e3a372",
+        "sha256": "f070f6b5fa16c04b421075dd7676d1e282cf59280dbf9079cc3f6f2f7816c136"
+      },
+      "full_GET_original_lossless_recipe": {
+        "payload_path": "archive.part-027.b64",
+        "payload_git_blob": "1ae9186513e986d5d5d6b1c4c21ae54747e3a372",
+        "marker": "__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_1ae9186513e986d5d5d6b1c4c21ae54747e3a372__",
+        "occurrences": 1,
+        "json_paths": [
+          "$.structuredContent.content"
+        ],
+        "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__INTEGRATION_SUCCESSOR_EXACT_PAYLOAD_1ae9186513e986d5d5d6b1c4c21ae54747e3a372__\"\n  },\n  \"isError\": false\n}\n",
+        "substitution": "Replace every exact marker occurrence with JSON.stringify(complete UTF-8 payload).slice(1,-1).",
+        "actual_serialized_original_equals_reconstruction": true,
+        "serialized_original_identity": {
+          "bytes": 104309,
+          "git_blob": "5799986a0c60eb8862bc3bb833a52f0b9b473a33",
+          "sha256": "4fbe76d4b9765026cb41b9fa9e42234f60f967302d1185f49c54c851c32b394f"
+        }
+      },
+      "materialization": "github_create_tree(content); no ref",
+      "full_UTF8_bytes_equal": true
+    }
+  ],
+  "object_paths": 38,
+  "unique_blobs": 38,
+  "archive": {
+    "bytes": 4938111,
+    "git_blob": "0e1facdd994ffe4ea7f5075c87ffd6fdf97e227e",
+    "sha256": "64c9917956870e54637aab8a82f5d4030b9572610a10e7aa203d7581748caa09"
+  },
+  "archive_parts": 28,
+  "exact_archive_payload_members": 80,
+  "frozen_original_input_members": 74,
+  "original_input_bytes": 12875033,
+  "original_payload_bytes": 12925993,
+  "root_isolated_restore": {
+    "schema": "hepta-integration-successor-isolated-replay-execution-v1",
+    "started_utc": "2026-11-06T09:58:57.152962+00:00",
+    "finished_utc": "2026-11-06T09:58:58.413232+00:00",
+    "argv": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "-B",
+      "/workspace/scratch/07dd58cc9630/recovery-20261106/integration-successor-publication-delivery/verify_packet.py",
+      "/workspace/scratch/07dd58cc9630/recovery-20261106/integration-successor-publication-delivery",
+      "/workspace/scratch/07dd58cc9630/recovery-20261106/integration-successor-publication-portable-01"
+    ],
+    "exit": 0,
+    "stdout": {
+      "bytes": 2213,
+      "git_blob": "b8f3056d27ab5f358bd74d95e0bef6953c07bf46",
+      "sha256": "c3a8e1258041f148b6edd897bfc4a001f370185ef6340182697a6d2482b867c0"
+    },
+    "stderr": {
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "scope": "Portable byte restoration and limited publication verifier only."
+  },
+  "publication_expectations": {
+    "arg0_head": "aaf86881da0b3a7651b4a6a56be49515b9aa9f2e",
+    "arg0_tree": "66552bda88637403f4f1d72a5be8592e07a8a308",
+    "arg0_merge": "8ca7a5b30bf6abfaf3ad7bb538d00f505d0847f8",
+    "final_head": "840e8b5dbffca017753cdf87482ce325938f313c",
+    "final_tree": "b38cc55050c74f8765bdee397a24066c100a179a",
+    "final_merge": "e0993cb056c30ae4b694f5c0a187759f0edeefe1",
+    "target_base": "63652be658ebed8d3052eb789b951793384fd5e4"
+  },
+  "offline_verification": {
+    "schema": "hepta-integration-successor-publication-offline-verification-v1",
+    "result": "PASS_ORIGINAL_CUSTODY_AND_PUBLICATION_IDENTITIES_ONLY",
+    "original_members": 74,
+    "original_bytes": 12875033,
+    "originals_manifest": {
+      "bytes": 20670,
+      "git_blob": "4f8ddc1a3da52e4cdaaad2ae1a41629faaf1349d",
+      "sha256": "66e35bcbd9b83d5f114fa799989113fade982314330a96977b9cd0cf9281ad7b"
+    },
+    "actual_commit_and_merge_API_relations": [
+      {
+        "sha": "aaf86881da0b3a7651b4a6a56be49515b9aa9f2e",
+        "tree": "66552bda88637403f4f1d72a5be8592e07a8a308",
+        "parents": [
+          "ac18b623c7a6cb953b4660979e9b620fe7176bb2"
+        ],
+        "original_API": "integration-arg0-fixture-publication/commit.actual.original.json",
+        "signature_verification_reexecuted": false
+      },
+      {
+        "sha": "8ca7a5b30bf6abfaf3ad7bb538d00f505d0847f8",
+        "tree": "66552bda88637403f4f1d72a5be8592e07a8a308",
+        "parents": [
+          "63652be658ebed8d3052eb789b951793384fd5e4",
+          "aaf86881da0b3a7651b4a6a56be49515b9aa9f2e"
+        ],
+        "original_API": "integration-arg0-fixture-publication/merge.actual.original.json",
+        "signature_verification_reexecuted": false
+      },
+      {
+        "sha": "875b774885c002bbe157fd2919fcb590ee1e0131",
+        "tree": "c24f6910e0af5a3ebf809c29f1fb06dafbd94146",
+        "parents": [
+          "aaf86881da0b3a7651b4a6a56be49515b9aa9f2e"
+        ],
+        "original_API": "integration-pty-supervisor-publication/first.commit.actual.original.json",
+        "signature_verification_reexecuted": false
+      },
+      {
+        "sha": "840e8b5dbffca017753cdf87482ce325938f313c",
+        "tree": "b38cc55050c74f8765bdee397a24066c100a179a",
+        "parents": [
+          "875b774885c002bbe157fd2919fcb590ee1e0131"
+        ],
+        "original_API": "integration-pty-supervisor-publication/final.commit.actual.original.json",
+        "signature_verification_reexecuted": false
+      },
+      {
+        "sha": "e0993cb056c30ae4b694f5c0a187759f0edeefe1",
+        "tree": "b38cc55050c74f8765bdee397a24066c100a179a",
+        "parents": [
+          "63652be658ebed8d3052eb789b951793384fd5e4",
+          "840e8b5dbffca017753cdf87482ce325938f313c"
+        ],
+        "original_API": "integration-pty-supervisor-publication/merge.actual.original.json",
+        "signature_verification_reexecuted": false
+      }
+    ],
+    "actual_PR_and_body_binding": [
+      {
+        "head": "aaf86881da0b3a7651b4a6a56be49515b9aa9f2e",
+        "merge": "8ca7a5b30bf6abfaf3ad7bb538d00f505d0847f8",
+        "body_chars": 7940,
+        "prior_body_exact_suffix_preserved": true,
+        "base": "63652be658ebed8d3052eb789b951793384fd5e4",
+        "changed_files_against_target_base": 1564,
+        "commits_against_target_base": 104
+      },
+      {
+        "head": "840e8b5dbffca017753cdf87482ce325938f313c",
+        "merge": "e0993cb056c30ae4b694f5c0a187759f0edeefe1",
+        "body_chars": 10032,
+        "prior_body_exact_suffix_preserved": true,
+        "base": "63652be658ebed8d3052eb789b951793384fd5e4",
+        "changed_files_against_target_base": 1566,
+        "commits_against_target_base": 106
+      }
+    ],
+    "tree_reconstruction": {
+      "arg0_before": "c3e9ddc1799f470ac7c80e117ee953a7232847e0",
+      "arg0_after": "66552bda88637403f4f1d72a5be8592e07a8a308",
+      "PTY_intermediate": "c24f6910e0af5a3ebf809c29f1fb06dafbd94146",
+      "final": "b38cc55050c74f8765bdee397a24066c100a179a",
+      "arg0_changed_paths": [
+        ".github/workflows/rust-ci-full-nextest-platform.yml",
+        "scripts/hepta_ci_dependencies.py",
+        "scripts/tests/test_hepta_ci_dependencies.py"
+      ],
+      "final_changed_paths_against_aaf": [
+        "codex-rs/hepta-supervisor/src/unix.rs",
+        "codex-rs/hepta-supervisor/src/unix_connect.rs",
+        "codex-rs/hepta-supervisor/src/unix_connect_tests.rs",
+        "codex-rs/utils/pty/src/tests.rs",
+        "codex-rs/utils/pty/src/unix_io.rs",
+        "codex-rs/utils/pty/src/unix_io_diagnostics.rs"
+      ],
+      "aaf_leaves": 10802,
+      "final_leaves": 10804,
+      "unchanged_aaf_leaves": 10798,
+      "all_53_actual_root_entries_equal": true,
+      "original_paired_test_unchanged": true
+    },
+    "original_arg0_registration_receipts": {
+      "registry_actual": "08e8e7ea26909d95392a0eddc157f75e308e2e9c",
+      "batch_count": 4,
+      "complete_GET_payloads": 30,
+      "GET_payload_bytes": 4716332,
+      "batches": [
+        {
+          "path": "arg0-fixture-prebuild-candidate-20261106/delivery/registration-originals/batch-00.original.json",
+          "bytes": 1000315,
+          "git_blob": "6e324d50b09e52e1c20cd29b8e0f6a88edebd174",
+          "sha256": "2197cdba6a01510e95ba2f9a26feb3e02a50614e58b0a6f93f817f5c70750cc4",
+          "full_GET_payloads": 8,
+          "payload_bytes": 985487,
+          "actual_create_tree": "513d340176c492440ba89c69d83f3a200d572bac",
+          "complete_original_tool_return_preserved": true
+        },
+        {
+          "path": "arg0-fixture-prebuild-candidate-20261106/delivery/registration-originals/batch-01.original.json",
+          "bytes": 1933427,
+          "git_blob": "4b37080bdfd63cd9d1c18de7d8895695ceb8ba54",
+          "sha256": "976c3dea13f4bab4e5d788a9a1c28334935778cb5bab2c3bdb31dc06e9d18be6",
+          "full_GET_payloads": 8,
+          "payload_bytes": 1920008,
+          "actual_create_tree": "b257e1bcba5d69866823f7a1da55d0db796c229d",
+          "complete_original_tool_return_preserved": true
+        },
+        {
+          "path": "arg0-fixture-prebuild-candidate-20261106/delivery/registration-originals/batch-02.original.json",
+          "bytes": 1721981,
+          "git_blob": "f1518aecc505295b3011c8be67804c1de13c9c41",
+          "sha256": "34233f988db8fe11fbb4c257150418abe5d1ee0864db24397942fe771da5e448",
+          "full_GET_payloads": 8,
+          "payload_bytes": 1708564,
+          "actual_create_tree": "9f4b712b42174d68626cd49597e1feee7e31c2c7",
+          "complete_original_tool_return_preserved": true
+        },
+        {
+          "path": "arg0-fixture-prebuild-candidate-20261106/delivery/registration-originals/batch-03.original.json",
+          "bytes": 121019,
+          "git_blob": "9be5dc6e4619533c680803f14decaa6317c62e96",
+          "sha256": "3c062aa7d1efac9b43694a06d18c30a074dd94b8d8206b15c24d837b44559377",
+          "full_GET_payloads": 6,
+          "payload_bytes": 102273,
+          "actual_create_tree": "b8ea75ae2a50e6e04e8dd280019855469d8e7ab8",
+          "complete_original_tool_return_preserved": true
+        }
+      ],
+      "retention": "Complete original serialized JSON files, not a partial projection or synthesized replacement."
+    },
+    "preparation_history": {
+      "composition_first_failure_and_next_success_retained": true,
+      "third_preparer_frozen_snapshot": "170ed6f6b22184a9e8fe759342c2942e1e6690eb",
+      "component_snapshots": [
+        {
+          "snapshot": 1,
+          "parent_commit": "f7bb5019d311dacc142f20cacdcf19889109b4ba",
+          "base_tree": "d7716cca653bf7795307b052352e8671cd9fd944",
+          "component_count": 6,
+          "final_C4_status": "NOT_FINAL; frozen preparation snapshot only"
+        },
+        {
+          "snapshot": 2,
+          "parent_commit": "f7bb5019d311dacc142f20cacdcf19889109b4ba",
+          "base_tree": "d7716cca653bf7795307b052352e8671cd9fd944",
+          "component_count": 7,
+          "final_C4_status": "NOT_FINAL; frozen preparation snapshot only"
+        }
+      ],
+      "original_exec_records": [
+        {
+          "path": "c3-merkle-check.exec.original.json",
+          "observed_exit": 0,
+          "bytes": 787,
+          "git_blob": "17ad3bdb66bc90bcfae36134a6c2ff80c31a8c5f",
+          "sha256": "cb3fe8b2a5c63f750458b77ca62fa86116118006d031e90e13480de1a4baa081",
+          "reexecuted_by_this_packet": false
+        },
+        {
+          "path": "components.validation-01.exec.original.json",
+          "observed_exit": 1,
+          "bytes": 483,
+          "git_blob": "024605b05265a18148e297e529203bfe5596ee50",
+          "sha256": "cc39006e5338b9621e2c8023b790e8f7676bdd5b623858c2005ef26fcac1069e",
+          "reexecuted_by_this_packet": false
+        },
+        {
+          "path": "components.validation-02.exec.original.json",
+          "observed_exit": 1,
+          "bytes": 707,
+          "git_blob": "561b7a670f3255a16cb6f73a3a8a018de978dd0d",
+          "sha256": "b64b85f50f08f383cec6a540391fd504e286e28246103da6b89720ac6b5ea34d",
+          "reexecuted_by_this_packet": false
+        },
+        {
+          "path": "components.validation-03.exec.original.json",
+          "observed_exit": 0,
+          "bytes": 532,
+          "git_blob": "aac7ae6f9e89675b502ba9ab9ee5b81b1a96973a",
+          "sha256": "596ed02a81134ce1ad5476158177eee7f4f15f14fcb16467d0ecf3eb063d0dd0",
+          "reexecuted_by_this_packet": false
+        },
+        {
+          "path": "components.validation-04.exec.original.json",
+          "observed_exit": 0,
+          "bytes": 758,
+          "git_blob": "b1e4aa8314d1da9562fb1d7b413703f642962415",
+          "sha256": "75e5d45709d0d57c150a8cb0921beba04ceb8cf4b4f625504d70095a3fecc0d5",
+          "reexecuted_by_this_packet": false
+        }
+      ]
+    },
+    "scope": {
+      "external_author_or_independent_verifiers_reexecuted": false,
+      "full_C4_builder_executed": false,
+      "all_external_preparer_inputs_reexecuted": false,
+      "native_or_CI_executed": false,
+      "new_ref_or_PR_mutations": false,
+      "final_C4_documents_included": false,
+      "new_native_qualification": false,
+      "all_blockers_closed": false,
+      "original_23_exit_conditions_modified": false,
+      "blocker_counts": {
+        "CLOSED_SCOPED": 16,
+        "OPEN": 6,
+        "SCIENTIFIC_HOLD": 1
+      }
+    }
+  },
+  "qualification_scope": "OFFLINE_PRESERVATION_AND_PUBLICATION_IDENTITY_ONLY",
+  "original_23_blocker_exit_conditions_unchanged_by_this_packet": true,
+  "blocker_counts": {
+    "CLOSED_SCOPED": 16,
+    "OPEN": 6,
+    "SCIENTIFIC_HOLD": 1
+  },
+  "ledger_transition": [],
+  "all_blockers_closed": false,
+  "whole_candidate_qualified": false,
+  "original_failure_history": {
+    "composition_initial_leaf_only_adapter_failure_preserved": true,
+    "original_preparer_validation01_02_failures_and03_04_success_preserved": true,
+    "registration_local_read_error": {
+      "schema": "registration-local-read-error-history-v1",
+      "operation": "Reading six textual payload files through one exec_command return before JSON parsing",
+      "observed_error": "SyntaxError: Bad control character in string literal in JSON at position 524288 (line 1 column 524289)",
+      "completed_payload_actual_create_and_full_GET_before_error": 12,
+      "source_or_native_failure": false,
+      "full_failed_exec_return_preserved": false,
+      "original_error_preserved": "Exact functions error text from preceding failed call; payload source files were not changed.",
+      "recovery": "Read each payload independently below 240,001 bytes, continue from 12 completed objects without recreating them."
+    }
+  },
+  "retention_scope": {
+    "two_completed_source_publication_directories_complete": true,
+    "full_prior_arg0_four_batch_original_JSONs_compressed_without_modification": true,
+    "prior_arg0_registry": "08e8e7ea26909d95392a0eddc157f75e308e2e9c",
+    "prior_arg0_complete_GET_payloads": 30,
+    "prior_arg0_payload_bytes": 4716332,
+    "B21_23_and_Supervisor77_author_packets_not_repackaged": true,
+    "third_preparer_fixed_snapshot": "170ed6f6b22184a9e8fe759342c2942e1e6690eb",
+    "final_C4_report_index_config_plan_excluded": true,
+    "root_preparer_and_external_verifiers_not_executed": true
+  },
+  "original_tool_return_custody": {
+    "prior_arg0_create_tree_and_GET_raw_originals": "Four complete original JSON files are inside lossless archive; no summary replacement.",
+    "new_payload_full_GET_originals": "Each object stores a lossless template referencing its complete actual UTF8 payload. Before registration the template reconstruction was compared with actual JSON.stringify(raw,null,2)+LF; serialized original identity is recorded.",
+    "HTTP_wire_bytes_claimed": false,
+    "raw_originals_fabricated": false
+  },
+  "actual_payload_registration_complete": true,
+  "ref_PR_CI_product_or_original_evidence_changed_by_packager": false,
+  "registry_self_registration": "Separate actual registry.self.actual.json; no circular self hash."
+}

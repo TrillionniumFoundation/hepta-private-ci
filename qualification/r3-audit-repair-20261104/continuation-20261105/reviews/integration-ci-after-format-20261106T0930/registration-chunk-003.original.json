@@ -1,0 +1,91 @@
+{
+  "schema": "immutable-evidence-registration-originals/v1",
+  "packet": "ci0930",
+  "materialization_tree": "5dfb70db88a37e904694e15820b3b198c6e28576",
+  "records": [
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-ci-after-format-20261106T0930/portable-replay.stderr.txt",
+      "expected": {
+        "bytes": 0,
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "full_GET": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "content": ""
+        },
+        "isError": false
+      },
+      "complete_decoded_UTF8_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-ci-after-format-20261106T0930/portable-replay.stdout.json",
+      "expected": {
+        "bytes": 571,
+        "git_blob": "73e3594cb6499ee8a2dd06c4012d43dbc322a75c",
+        "sha256": "fd99cbf8f6a612bbaa551d9cd49cfdb858583cdcae5c2343403804b95749b55f"
+      },
+      "full_GET": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "content": "{\n  \"archive\": {\n    \"bytes\": 449560,\n    \"git_blob\": \"e472f21daa98fdb350b99c54b636c8d851a56e45\",\n    \"sha256\": \"be54225d1805c6dd4f13d0fb25b1f4522a274e33a2606b826b41fe81ea4d7697\"\n  },\n  \"member_bytes\": 3925621,\n  \"members\": 31,\n  \"native_product_execution\": false,\n  \"network_calls\": 0,\n  \"originals_unchanged\": true,\n  \"verification_exit\": 0,\n  \"verification_stderr_bytes\": 0,\n  \"verification_stdout\": {\n    \"bytes\": 3416,\n    \"git_blob\": \"0bccf6f7e3775bd855995ad02a7b8e59180d933d\",\n    \"sha256\": \"263df47c24aae99f6bf8479c55c12bc1c7b12428ebf2871c7b4bd0bafd1ac8b8\"\n  }\n}\n"
+        },
+        "isError": false
+      },
+      "complete_decoded_UTF8_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-ci-after-format-20261106T0930/restore_verify.py",
+      "expected": {
+        "bytes": 2766,
+        "git_blob": "335171f3444225bdc4dedfb73f21039678fa36e6",
+        "sha256": "8450c144f57b98d858a0a11b55bf72ea3fc7c05f5a1035f5a1fec4e7ee0f6c5f"
+      },
+      "full_GET": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "content": "#!/usr/bin/env python3\n\"\"\"Restore the immutable evidence and rerun only its Python API verifier.\"\"\"\nimport argparse\nimport base64\nimport hashlib\nimport io\nimport json\nfrom pathlib import Path, PurePosixPath\nimport subprocess\nimport tarfile\n\n\ndef identity(raw):\n    return {\"bytes\": len(raw), \"git_blob\": hashlib.sha1(b\"blob \" + str(len(raw)).encode() + b\"\\0\" + raw).hexdigest(), \"sha256\": hashlib.sha256(raw).hexdigest()}\n\n\ndef main():\n    parser = argparse.ArgumentParser()\n    parser.add_argument(\"--root\", type=Path, required=True)\n    parser.add_argument(\"--output\", type=Path, required=True)\n    args = parser.parse_args()\n    assert not args.output.exists(), \"restore output must not exist\"\n    manifest = json.loads((args.root / \"member-manifest.json\").read_bytes())\n    metadata = json.loads((args.root / \"archive.json\").read_bytes())\n    pieces = []\n    for part in metadata[\"parts\"]:\n        encoded = (args.root / part[\"path\"]).read_bytes()\n        assert identity(encoded) == {k: part[k] for k in [\"bytes\", \"git_blob\", \"sha256\"]}\n        pieces.append(encoded.strip())\n    raw = base64.b64decode(b\"\".join(pieces), validate=True)\n    assert identity(raw) == metadata[\"archive\"]\n    expected = {m[\"path\"]: m for m in manifest[\"members\"]}\n    assert len(expected) == len(manifest[\"members\"])\n    args.output.mkdir(parents=True)\n    with tarfile.open(fileobj=io.BytesIO(raw), mode=\"r:xz\") as tar:\n        members = tar.getmembers()\n        assert len(members) == len(expected)\n        assert {m.name for m in members} == set(expected)\n        for member in members:\n            name = PurePosixPath(member.name)\n            assert member.isfile() and not name.is_absolute() and \"..\" not in name.parts\n            data = tar.extractfile(member).read()\n            assert identity(data) == {k: expected[member.name][k] for k in [\"bytes\", \"git_blob\", \"sha256\"]}\n            target = args.output.joinpath(*name.parts)\n            target.parent.mkdir(parents=True, exist_ok=True)\n            target.write_bytes(data)\n    run = subprocess.run([\"python3\", str(args.output / \"verify_ci.py\"), \"--root\", str(args.output)], capture_output=True)\n    assert run.returncode == 0 and run.stderr == b\"\", {\"exit\": run.returncode, \"stderr\": run.stderr.decode(errors=\"replace\")}\n    assert run.stdout == (args.output / \"verification-02.stdout.json\").read_bytes()\n    print(json.dumps({\"archive\": identity(raw), \"members\": len(expected), \"member_bytes\": sum(x[\"bytes\"] for x in expected.values()), \"verification_exit\": run.returncode, \"verification_stdout\": identity(run.stdout), \"verification_stderr_bytes\": len(run.stderr), \"originals_unchanged\": True, \"network_calls\": 0, \"native_product_execution\": False}, sort_keys=True, indent=2))\n\n\nif __name__ == \"__main__\":\n    main()\n"
+        },
+        "isError": false
+      },
+      "complete_decoded_UTF8_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-ci-after-format-20261106T0930/verification-02.stdout.json",
+      "expected": {
+        "bytes": 3416,
+        "git_blob": "0bccf6f7e3775bd855995ad02a7b8e59180d933d",
+        "sha256": "263df47c24aae99f6bf8479c55c12bc1c7b12428ebf2871c7b4bd0bafd1ac8b8"
+      },
+      "full_GET": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "content": "{\n  \"aaf_initial_run_list\": {\n    \"blocking_run_id\": 42195225682,\n    \"count\": 18,\n    \"native_results\": null,\n    \"status\": {\n      \"pending\": 4,\n      \"queued\": 12,\n      \"skipped\": 2\n    }\n  },\n  \"ac18_blocking_cuts\": [\n    {\n      \"count\": 3,\n      \"source\": \"sixth\",\n      \"status\": {\n        \"in_progress\": 1,\n        \"queued\": 2\n      }\n    },\n    {\n      \"count\": 3,\n      \"source\": \"seventh\",\n      \"status\": {\n        \"queued\": 2,\n        \"success\": 1\n      }\n    },\n    {\n      \"count\": 29,\n      \"source\": \"eighth\",\n      \"status\": {\n        \"in_progress\": 4,\n        \"queued\": 16,\n        \"skipped\": 3,\n        \"success\": 6\n      }\n    }\n  ],\n  \"ac18_cargo_deny\": {\n    \"API_conclusion\": \"success\",\n    \"full_log_captured\": false,\n    \"job_id\": 127809329246,\n    \"tool_capture_error\": \"Transport closed; no retry, no native failure inferred.\"\n  },\n  \"ac18_formatter\": {\n    \"completed\": \"2026-11-06T09:15:24Z\",\n    \"conclusion\": \"success\",\n    \"job_id\": 127809329291,\n    \"qualification\": \"Original just fmt-check, Prettier and clean-worktree succeeded at c9ba/ac18 only; not product tests or successor aaf qualification.\",\n    \"run_id\": 42186354218,\n    \"started\": \"2026-11-06T09:12:52Z\"\n  },\n  \"ac18_full_tree_leaves\": 10802,\n  \"ac18_scope\": {\n    \"base\": \"63652be658ebed8d3052eb789b951793384fd5e4\",\n    \"paths\": 1561,\n    \"scope\": {\n      \"derived\": true,\n      \"effects\": true,\n      \"full_repo\": true,\n      \"inference\": true,\n      \"learning\": true,\n      \"lifecycle\": true,\n      \"native\": true,\n      \"objective\": true\n    },\n    \"source_head\": \"ac18b623c7a6cb953b4660979e9b620fe7176bb2\"\n  },\n  \"complete_log_checks\": [\n    {\n      \"checkout\": \"ac18b623c7a6cb953b4660979e9b620fe7176bb2\",\n      \"complete_original\": {\n        \"bytes\": 182891,\n        \"git_blob\": \"c25b46cf39b03a79bfbe04313107b14d06be5893\",\n        \"sha256\": \"27d36b81324ed3fdeccc0214dcc99f5b7dd676640bc1e335606bd43ae85be1c8\"\n      },\n      \"git_log_checkouts\": [\n        \"63652be658ebed8d3052eb789b951793384fd5e4\",\n        \"ac18b623c7a6cb953b4660979e9b620fe7176bb2\"\n      ],\n      \"job_id\": 127802986289\n    },\n    {\n      \"checkout\": \"c9baaf38b95da145fb4f9d371b8d134169d313cc\",\n      \"complete_original\": {\n        \"bytes\": 122199,\n        \"git_blob\": \"27e1a9d04cd538b3f4159181ceb7d10c5baff51c\",\n        \"sha256\": \"032777d87a8cd49c154ec51c40c1ca1d769122ca56ac7a9a38330e9b2d77864c\"\n      },\n      \"git_log_checkouts\": [\n        \"c9baaf38b95da145fb4f9d371b8d134169d313cc\"\n      ],\n      \"job_id\": 127809329291\n    }\n  ],\n  \"originals_verified\": 22,\n  \"publications\": {\n    \"aaf\": {\n      \"PR_changed_paths\": 1564,\n      \"head\": \"aaf86881da0b3a7651b4a6a56be49515b9aa9f2e\",\n      \"merge\": \"8ca7a5b30bf6abfaf3ad7bb538d00f505d0847f8\",\n      \"parent\": \"ac18b623c7a6cb953b4660979e9b620fe7176bb2\",\n      \"tree\": \"66552bda88637403f4f1d72a5be8592e07a8a308\"\n    },\n    \"ac18\": {\n      \"PR_changed_paths\": 1561,\n      \"head\": \"ac18b623c7a6cb953b4660979e9b620fe7176bb2\",\n      \"merge\": \"c9baaf38b95da145fb4f9d371b8d134169d313cc\",\n      \"parent\": \"2d1137b1ba39fab0e6a28bac8decc114dfa0138c\",\n      \"tree\": \"c3e9ddc1799f470ac7c80e117ee953a7232847e0\"\n    }\n  },\n  \"schema\": \"hepta.integration-ci-0930.verified.v1\",\n  \"scope_limit\": \"Full-repo selects fast rust-ci.yml; scoped skipped. This packet does not certify full Cargo nextest, uncached execution, other jobs, or any blocker closure. Earlier failed/cancelled evidence remains unchanged.\"\n}\n"
+        },
+        "isError": false
+      },
+      "complete_decoded_UTF8_equal": true
+    }
+  ]
+}

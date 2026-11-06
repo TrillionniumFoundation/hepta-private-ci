@@ -1,0 +1,277 @@
+{
+  "schema": "hepta-independent-Windows-original-library-scoped-review-v1",
+  "conclusion": "ACCEPT_SCOPED_EVIDENCE",
+  "confirmed_evidence_blockers": [],
+  "author_directory": "integration-ci-review/17c6b903-followup-20261106T1043",
+  "originals_freeze": {
+    "path": "ORIGINALS-FREEZE.json",
+    "bytes": 9777,
+    "git_blob": "71018f247ef99839762f63ba96d02a079eb213be",
+    "sha256": "79ce150bbae6a2320b97b11efdc173c3a7d90c815582c546bcec7b7437f04e2b",
+    "members": 40,
+    "member_bytes": 15822843,
+    "all_member_bytes_verified": true
+  },
+  "final_author_freeze": {
+    "path": "FREEZE.json",
+    "bytes": 13048,
+    "git_blob": "c20d96ac7612a2b92f8463ecf651a2cd8779a28b",
+    "sha256": "0bf042bd7a3c52bbcd8f22323e4cc6f4cd0f95c84a266c14ba6aab4ad333172b",
+    "members": 55,
+    "member_bytes": 15941013,
+    "all_member_bytes_verified": true
+  },
+  "method": "仅在本地读取冻结原件，独立交叉核对完整API/完整日志/ZIP/固定源码及全部compact；未查询CI、运行Rust产品、修改原件或发布ref。",
+  "source_identity": {
+    "head": "17c6b903a5d5d470b72035f95bb6e087291d7e04",
+    "head_parents": [
+      "840e8b5dbffca017753cdf87482ce325938f313c"
+    ],
+    "merge": "26cfdcaa70cbd2daecd165137e3b84d2ad1a7284",
+    "merge_parents": [
+      "63652be658ebed8d3052eb789b951793384fd5e4",
+      "17c6b903a5d5d470b72035f95bb6e087291d7e04"
+    ],
+    "same_tree": "25020dc30888fa3ffa6f6e8d1073d91edded1756",
+    "Merkle": {
+      "root": "25020dc30888fa3ffa6f6e8d1073d91edded1756",
+      "leaves": 10804,
+      "all_directory_trees_recomputed": 1617
+    },
+    "fixed_source_full_GET_count": 13,
+    "all_full_GET_exact_bytes_and_tree_blobs": true,
+    "captured_input_count_per_side": 9,
+    "captured_input_reconciliation": "全部9个工作区SHA256精确等于固定Git LF字节逐LF转CRLF后的SHA256。两边一致；不是源码漂移，也不将CRLF工作区与LF Git字节声称为逐字相等。"
+  },
+  "run_id": 42201989580,
+  "jobs_API_capture_cut": "2026-11-06 10:43:51 UTC",
+  "artifacts_API_capture_cut": "2026-11-06 10:43:51 UTC",
+  "sides": [
+    {
+      "checkout_kind": "source-head",
+      "actual_checkout": "17c6b903a5d5d470b72035f95bb6e087291d7e04",
+      "job_id": 127839243318,
+      "job_conclusion": "success",
+      "started_at": "2026-11-06T10:22:18Z",
+      "completed_at": "2026-11-06T10:27:18Z",
+      "full_log_identity": {
+        "bytes": 195221,
+        "git_blob": "321d2fe442e8402aa28e92ff17e4d3910d64102d",
+        "sha256": "941bc0c77e72d7e69474af888d1cf50b90ab7abbb65cd610675c27c05eec6d41"
+      },
+      "MCP_UTF8_full_equality": true,
+      "artifact_id": 13494647856,
+      "ZIP_identity": {
+        "bytes": 3609526,
+        "git_blob": "311ef5102a2f7d657205973cfab234f73c516837",
+        "sha256": "f098f8860662a07b6bbfb741a1d5a717a7db45f75fbd486a68ecd12ee311b660"
+      },
+      "API_digest_CRC_all_ten_members": true,
+      "per_library_Rust_counts": [
+        {
+          "name": "hepta-intelligence",
+          "passed": 78,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 0,
+          "named_controls": 4
+        },
+        {
+          "name": "hepta-bao-adapter",
+          "passed": 19,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 0,
+          "named_controls": 8
+        },
+        {
+          "name": "hepta-codex-adapter",
+          "passed": 21,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 0,
+          "named_controls": 3
+        }
+      ],
+      "compact_invocation": "c472dff2-515e-4899-813a-ba9d9db9f462",
+      "compact_records": 64893,
+      "TestRunner_product_XML_helper": [
+        3,
+        3
+      ]
+    },
+    {
+      "checkout_kind": "base-merge",
+      "actual_checkout": "26cfdcaa70cbd2daecd165137e3b84d2ad1a7284",
+      "job_id": 127839242912,
+      "job_conclusion": "success",
+      "started_at": "2026-11-06T10:21:48Z",
+      "completed_at": "2026-11-06T10:26:37Z",
+      "full_log_identity": {
+        "bytes": 195444,
+        "git_blob": "eaaa846e57b0426c12cfb530fa39c56992979104",
+        "sha256": "639ae299c13e109203192fe7469ea9b2a6f4d1fc95f4084e9761502a1d28f7d2"
+      },
+      "MCP_UTF8_full_equality": true,
+      "artifact_id": 13495625588,
+      "ZIP_identity": {
+        "bytes": 3604185,
+        "git_blob": "6f562cb80e84b390509ab1b83ac21a695dac96e6",
+        "sha256": "b5da4d45ec9c6f81e747596df79922c45ce118c39a9b51de3d113897295b0036"
+      },
+      "API_digest_CRC_all_ten_members": true,
+      "per_library_Rust_counts": [
+        {
+          "name": "hepta-intelligence",
+          "passed": 78,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 0,
+          "named_controls": 4
+        },
+        {
+          "name": "hepta-bao-adapter",
+          "passed": 19,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 0,
+          "named_controls": 8
+        },
+        {
+          "name": "hepta-codex-adapter",
+          "passed": 21,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered_out": 0,
+          "named_controls": 3
+        }
+      ],
+      "compact_invocation": "01d0b774-3ed3-4e96-9148-0e8000d49791",
+      "compact_records": 64893,
+      "TestRunner_product_XML_helper": [
+        3,
+        3
+      ]
+    }
+  ],
+  "original_named_controls": {
+    "hepta-intelligence": [
+      "durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes",
+      "invalid_authentication_artifact_or_dataset_never_calls_any_port",
+      "ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded",
+      "old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch"
+    ],
+    "hepta-bao-adapter": [
+      "expiry_is_durable_and_terminal_for_renewal",
+      "issue_rejects_non_active_provider_observations_without_durable_mutation",
+      "issue_unknown_reconciles_without_duplicate_issue",
+      "provider_not_applied_restores_active_lease_after_unknown",
+      "renew_unknown_blocks_fabricated_success_until_reconciled",
+      "reused_operation_id_with_changed_semantics_conflicts",
+      "revoke_unknown_stays_nonterminal_until_provider_observation",
+      "unavailable_storage_never_publishes_a_prepared_operation"
+    ],
+    "hepta-codex-adapter": [
+      "thread_read_recovery_keeps_in_progress_indeterminate",
+      "thread_read_recovery_rejects_session_drift_and_duplicate_turns",
+      "thread_read_recovery_requires_exact_stable_message_and_input"
+    ]
+  },
+  "denominators": {
+    "unique_Rust_cases": 118,
+    "passed_case_executions_per_checkout": 118,
+    "successful_case_executions_across_two_checkouts": 236,
+    "named_original_controls_per_checkout": [
+      4,
+      8,
+      3
+    ],
+    "Bazel_wrapper_testcases_per_checkout": 3,
+    "compact_TestRunner_records_per_checkout": 6,
+    "product_TestRunner_records_per_checkout": 3,
+    "XML_helper_records_per_checkout": 3,
+    "all_Rust_rosters_equal_between_checkouts": true
+  },
+  "checked_execution_contract": {
+    "runner": "windows-2025 / windows-2025-vs2026 image 20261030.294.1",
+    "outer_timeout_minutes": 120,
+    "targets": "原三个完整library targets；没有test-name filter",
+    "wrapper": ".github/scripts/run-bazel-ci.sh",
+    "flags": [
+      "--windows-msvc-host-platform",
+      "--platforms=//:windows_x86_64_msvc",
+      "--nocache_test_results",
+      "--flaky_test_attempts=1",
+      "--test_output=all"
+    ],
+    "product_spawn_timeout_millis": 300000,
+    "each_checkout_single_original_command_exit": 0,
+    "source_before_after_inputs_unchanged": true
+  },
+  "interpretation": [
+    "每边3个库分别78/19/21个原Rust用例全通过；118个唯一用例在两个checkout合计执行236次，不能称236个不同用例。每库0 failed/ignored/measured/filtered；原4+8+3命名控制全部逐名在固定源码和原日志中存在。",
+    "每库XML只有1个Bazel wrapper testcase，system-out完整逐字符等于该库Rust原test.log；因此XML层每边是3，不冒充118个XML testcase。",
+    "每边compact完整解码64,893条record。全体TestRunner恰6条：3次真实产品tw与3次独立XML helper，均local/noncached/exit0。产品连接到原target，timeout300000ms；helper没有产品测试预算语义。",
+    "每个XML helper自己的input-set中的test.log与保留原log digest/size相同，它自己的output XML也与官方ZIP逐digest/size相同。产品spawn的invalid_output_path test.xml由后续helper真实物化，不能误记为XML缺件。",
+    "其它build action有remote cache hit；本次3次产品测试非缓存，不等于全编译过程非缓存。",
+    "其它两个run API仍是历史cut：一个2jobs in_progress、一个0jobs；不据此声称其后终态，也不融合到本次2成功jobs分母。"
+  ],
+  "acceptance_limits": {
+    "whole_candidate_accepted": false,
+    "whole_repository_CI_accepted": false,
+    "B11_privilege_or_ACL_accepted": false,
+    "ledger_transition": null
+  },
+  "replay": {
+    "script": "verify_independent.py",
+    "script_identity": {
+      "bytes": 21954,
+      "git_blob": "8f0e2af95679483cede0671dea08c87d17f003b4",
+      "sha256": "199b8931fcea74794d4d95fd5f32941d300a0b1847333788f9b997043ea0039d"
+    },
+    "command": "python -B verify_independent.py <frozen-author-directory>",
+    "proof": "verify-01.stdout.json",
+    "proof_identity": {
+      "bytes": 23083,
+      "git_blob": "148acf2fa88cc1d410be01bf8b5d2ec802bfd705",
+      "sha256": "d8f12749b899e20deee20988aaf08de006052d5ab69183fecb8ebcbe2b2d6e76"
+    },
+    "exit_code": 0,
+    "stderr_bytes": 0,
+    "execution_receipt": "verify-01.execution.json",
+    "uses_fixed_compact_byte_decoder": "project_compact.py / borrowed/decode_compact.py; independent checks do not execute author verify_packet.py"
+  },
+  "other_retained_job_cuts": [
+    {
+      "run_id": 42201989809,
+      "total_count": 2,
+      "jobs": [
+        {
+          "id": 127839244015,
+          "head_sha": "17c6b903a5d5d470b72035f95bb6e087291d7e04",
+          "status": "in_progress",
+          "conclusion": null
+        },
+        {
+          "id": 127839244401,
+          "head_sha": "17c6b903a5d5d470b72035f95bb6e087291d7e04",
+          "status": "in_progress",
+          "conclusion": null
+        }
+      ],
+      "not_granted_acceptance_by_this_review": true
+    },
+    {
+      "run_id": 42201989815,
+      "total_count": 0,
+      "jobs": [],
+      "not_granted_acceptance_by_this_review": true
+    }
+  ]
+}

@@ -1,0 +1,261 @@
+{
+  "schema": "hepta-original-git-create-and-full-get-receipts-v1",
+  "records": [
+    {
+      "path": "README.zh-CN.md",
+      "bytes": 2593,
+      "git_blob": "e3b01b2086b1260a97cef13be9f337b63a885382",
+      "sha256": "b4ceab5534347eed937065d61718e2517182105ca7fb935609589690f5d2fdaa",
+      "actual_create_sha": "e3b01b2086b1260a97cef13be9f337b63a885382",
+      "full_utf8_bytes_equal": true,
+      "create_blob": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "e3b01b2086b1260a97cef13be9f337b63a885382"
+        },
+        "isError": false
+      },
+      "full_GET": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "content": "# #4936 格式后继的首个有界 CI 增量\n\n本包只接受完整 API 收件、身份绑定和状态计数，不授予新提交原生通过资格。\n\n新 head `ac18b623c7a6cb953b4660979e9b620fe7176bb2` 的首次列表包含全部 18 个唯一 pull_request run，均为 attempt 1。08:18:13 UTC 之前取得的状态为 12 queued、4 pending、2 skipped；pending 与 queued 分列。blocking run `42186354218` 的 08:23:03 和 08:29:43 两次完整 jobs 响应均为 total_count=0。这里的时间是调用完成之后取得的上界，不是各 API 请求同时发生的时间。\n\n旧 head `2d1137b1ba39fab0e6a28bac8decc114dfa0138c` 的 blocking run `42180997764` 在 08:23:03 之前取得完整 36-job 列表：8 success、21 cancelled、1 failure、4 skipped、2 queued。唯一失败是 `repo-checks / build-test` 的格式检查；其完整日志、三处原生 formatter 差异、两个最小后继 postimage 已在独立旧格式包中固定，registry 为 `9c783f6a6b9a83b4d6e0128b2d5b5fc09684112a`。本包不覆盖它。\n\n旧 cargo-deny job `127779715991` 的 API 表明原 cargo-deny 步骤和 clean-worktree 步骤成功，运行窗口 08:02:06–08:02:51。完整日志连续两次收件均返回工具 `Transport closed`；两份完整错误原件均保留。没有取得该日志的完整 stdout、实际 checkout 行、缓存或逐项警告证据，故这里只记录 API 成功，不把另一 run 的日志替代本 run。工具传输错误不会把该 native job 改记失败，其底层原因未知。\n\n旧 GNU Clippy job `127779716340` 为 cancelled 且 steps 为空；API 的 started_at 不作为真实编译启动证明。cancelled 与 skipped 均不算通过。API 没有证明取消的操作者或因果关系，本包不据时间相邻推断。旧提交的任何成功均不转授新 ac18。\n\n原件是 MCP 完整返回对象的 JSON 序列化，不是 HTTP wire capture。所有 6 个原件有独立 bytes/Git/SHA256；`verify_packet.py` 完整解析 API，总数与唯一 ID 相等，核全部 head/run/attempt、精确 URL、失败步骤和两次原工具错误。第一版本地 verifier 把带 `filter=latest` 的两个原始 URL 误写成不带参数的字面量，因此本地重放失败；初版脚本及完整 stdout/stderr/exit 原样保存。第二版只纠正这两个 URL 绑定，未改任何 API 或 native 结果，离线重放 exit 0、stderr 0。\n\n未启动、重跑或取消任何 CI，未查询私有容量，未改产品源码或 refs。本包不额外关闭 blocker。新 ac18 的后续切点、终态与日志另行追加，不改本包。\n"
+        },
+        "isError": false
+      }
+    },
+    {
+      "path": "archive.json",
+      "bytes": 522,
+      "git_blob": "1102b118080556c3c389536e47e6e5e3bcfd9d52",
+      "sha256": "62e5d7dc8e4b50bfa7cad312878f4d9d8b8647e26f76e78bd6aaf5db137e4406",
+      "actual_create_sha": "1102b118080556c3c389536e47e6e5e3bcfd9d52",
+      "full_utf8_bytes_equal": true,
+      "create_blob": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "1102b118080556c3c389536e47e6e5e3bcfd9d52"
+        },
+        "isError": false
+      },
+      "full_GET": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "content": "{\n  \"schema\": \"hepta-ci-increment-full-xz-archive-v1\",\n  \"archive\": {\n    \"bytes\": 14176,\n    \"git_blob\": \"ff10bf9257bf20d736f86abdb444ea75e24dc20a\",\n    \"sha256\": \"043776fa54585beb59721e3ca1b34d95a9e3b66460481053739a25902f909f1e\"\n  },\n  \"encoded\": {\n    \"bytes\": 18905,\n    \"git_blob\": \"b78368d0e1428308e8808070790e07a91ea7afe2\",\n    \"sha256\": \"f1b2e54618eede23c06bdf98a80a8934312d1be7122505c7d7561a6529a94dbe\"\n  },\n  \"encoding\": \"base64+LF\",\n  \"compression\": \"xz\",\n  \"original_members\": 16,\n  \"original_bytes\": 786473\n}\n"
+        },
+        "isError": false
+      }
+    },
+    {
+      "path": "evidence.original.tar.xz.b64",
+      "bytes": 18905,
+      "git_blob": "b78368d0e1428308e8808070790e07a91ea7afe2",
+      "sha256": "f1b2e54618eede23c06bdf98a80a8934312d1be7122505c7d7561a6529a94dbe",
+      "actual_create_sha": "b78368d0e1428308e8808070790e07a91ea7afe2",
+      "full_utf8_bytes_equal": true,
+      "create_blob": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "b78368d0e1428308e8808070790e07a91ea7afe2"
+        },
+        "isError": false
+      },
+      "full_GET": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "content": "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\n"
+        },
+        "isError": false
+      }
+    },
+    {
+      "path": "member-manifest.json",
+      "bytes": 3836,
+      "git_blob": "3cc39a5a9b43ef84da6509417df8130e70f4d24b",
+      "sha256": "b5498676323317cef8c0199989590eeec04551d01c993cd213cbf2a3e1d8a914",
+      "actual_create_sha": "3cc39a5a9b43ef84da6509417df8130e70f4d24b",
+      "full_utf8_bytes_equal": true,
+      "create_blob": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "3cc39a5a9b43ef84da6509417df8130e70f4d24b"
+        },
+        "isError": false
+      },
+      "full_GET": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "content": "{\n  \"schema\": \"hepta-ci-increment-full-member-manifest-v1\",\n  \"members\": [\n    {\n      \"path\": \"README.zh-CN.md\",\n      \"bytes\": 2593,\n      \"git_blob\": \"e3b01b2086b1260a97cef13be9f337b63a885382\",\n      \"sha256\": \"b4ceab5534347eed937065d61718e2517182105ca7fb935609589690f5d2fdaa\"\n    },\n    {\n      \"path\": \"development-history/correction.json\",\n      \"bytes\": 277,\n      \"git_blob\": \"a753357e8124fb09ef9914a1d6803b13749f3a0a\",\n      \"sha256\": \"f63866638cb271b64668ebd1ecad491504f4ab9323f87b12fd536c9e21506b56\"\n    },\n    {\n      \"path\": \"development-history/verify_packet.initial.py\",\n      \"bytes\": 6482,\n      \"git_blob\": \"c5abc8f30253cd9ed1c1d495c319f9bc37372a17\",\n      \"sha256\": \"4ef7ab7b37ffd51b0a2e4a5e483aa412f45afaab7d96e70d2bdb716496cdbb7d\"\n    },\n    {\n      \"path\": \"original/blocking-42180997764-jobs-after-successor.original.json\",\n      \"bytes\": 163917,\n      \"git_blob\": \"984108649b0c89be61a689bdba206eb0ee67f58c\",\n      \"sha256\": \"52709dba46add2507db92035edacc81c583abe07ee50756cb20690c6b1bb2f32\"\n    },\n    {\n      \"path\": \"original/blocking-42186354218-jobs-first.original.json\",\n      \"bytes\": 947,\n      \"git_blob\": \"2ceb70562f243e48e4fe42350900920ea6789e3e\",\n      \"sha256\": \"b442396275f17e26e3632e5d60c317a736da33679957a582930b1c99b61e7696\"\n    },\n    {\n      \"path\": \"original/blocking-42186354218-jobs-second.original.json\",\n      \"bytes\": 905,\n      \"git_blob\": \"941f1eff1b293dd00615934b4ff986bed62c8747\",\n      \"sha256\": \"ebcbf309ec658b0cceec40434b3e3f6c85433470759280c9fa80adeaa2ed2dec\"\n    },\n    {\n      \"path\": \"original/head-ac18-runs-first.original.json\",\n      \"bytes\": 589815,\n      \"git_blob\": \"7e355d5dcb0c7e99cf2446c4c68c83b88820707a\",\n      \"sha256\": \"92578634fe366fffe16f25f6d81d4c769bed7eaa71f5332a14779586b236f7fc\"\n    },\n    {\n      \"path\": \"original/job-127779715991-log-tool-error-first.original.json\",\n      \"bytes\": 210,\n      \"git_blob\": \"c701e3d00536096d456f8b2730f755914e32ebeb\",\n      \"sha256\": \"94706eab5bc599a6309f59bd5b1923c166c13dc39ca3a08038dbaf0b15c51b01\"\n    },\n    {\n      \"path\": \"original/job-127779715991-log-tool-error-second.original.json\",\n      \"bytes\": 210,\n      \"git_blob\": \"c701e3d00536096d456f8b2730f755914e32ebeb\",\n      \"sha256\": \"94706eab5bc599a6309f59bd5b1923c166c13dc39ca3a08038dbaf0b15c51b01\"\n    },\n    {\n      \"path\": \"verification-01.execution.json\",\n      \"bytes\": 209,\n      \"git_blob\": \"0d33617590a66d49709ea7f70adc36bdef9676c0\",\n      \"sha256\": \"a1a92222e9e59884002c3cf823681d3437f3a4c61b9013617fea97f8d2540c48\"\n    },\n    {\n      \"path\": \"verification-01.stderr.txt\",\n      \"bytes\": 871,\n      \"git_blob\": \"aedf8f32f2d2d39daba7330eaf85f83ad8d1569c\",\n      \"sha256\": \"1cc6ca25868d4e39297208c09336ade08206470ef502e4097e04118601065fb9\"\n    },\n    {\n      \"path\": \"verification-01.stdout.json\",\n      \"bytes\": 0,\n      \"git_blob\": \"e69de29bb2d1d6434b8b29ae775ad8c2e48c5391\",\n      \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n    },\n    {\n      \"path\": \"verification-02.execution.json\",\n      \"bytes\": 211,\n      \"git_blob\": \"553eeaffb584e6b1699cad847773dbb1854a8a2e\",\n      \"sha256\": \"821f2fafabac5d564cf9ed145a3f8c0d0e29f8251d9ce63ab30a6dc079185dc3\"\n    },\n    {\n      \"path\": \"verification-02.stderr.txt\",\n      \"bytes\": 0,\n      \"git_blob\": \"e69de29bb2d1d6434b8b29ae775ad8c2e48c5391\",\n      \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n    },\n    {\n      \"path\": \"verification-02.stdout.json\",\n      \"bytes\": 13280,\n      \"git_blob\": \"b568064db62c7b85c35a7a0ddd5285b9d7b01f2f\",\n      \"sha256\": \"8046f54994034e38819b32de2962960a7b5357082d7c840646d1042d81d9d3df\"\n    },\n    {\n      \"path\": \"verify_packet.py\",\n      \"bytes\": 6546,\n      \"git_blob\": \"99e01bc0fa59eba1fe1dcc6aca5b858f8a07d95b\",\n      \"sha256\": \"02f86e06c6021a0eef91bb56dfd62b40d59e4afcf3508b33257d4a3a9560ea7d\"\n    }\n  ]\n}\n"
+        },
+        "isError": false
+      }
+    },
+    {
+      "path": "portable-replay.execution.json",
+      "bytes": 394,
+      "git_blob": "9de1c1264e011672c9f54fcdae1d9b313974b855",
+      "sha256": "43e0ec5292c7d8544e113d1836009207a6c434cb083d28b5c92b856a13a8761b",
+      "actual_create_sha": "9de1c1264e011672c9f54fcdae1d9b313974b855",
+      "full_utf8_bytes_equal": true,
+      "create_blob": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "9de1c1264e011672c9f54fcdae1d9b313974b855"
+        },
+        "isError": false
+      },
+      "full_GET": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "content": "{\n  \"exit\": 0,\n  \"stdout\": {\n    \"bytes\": 570,\n    \"git_blob\": \"32dcfbec702aba7fff47bb7c8619e6080e6cef01\",\n    \"sha256\": \"e2325186695f0e1f9a30192acb4393f22415526ac8dc47a720f05452867205df\"\n  },\n  \"stderr\": {\n    \"bytes\": 0,\n    \"git_blob\": \"e69de29bb2d1d6434b8b29ae775ad8c2e48c5391\",\n    \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n  },\n  \"offline_only\": true\n}\n"
+        },
+        "isError": false
+      }
+    },
+    {
+      "path": "portable-replay.stderr.txt",
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "actual_create_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "full_utf8_bytes_equal": true,
+      "create_blob": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+        },
+        "isError": false
+      },
+      "full_GET": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "content": ""
+        },
+        "isError": false
+      }
+    },
+    {
+      "path": "portable-replay.stdout.json",
+      "bytes": 570,
+      "git_blob": "32dcfbec702aba7fff47bb7c8619e6080e6cef01",
+      "sha256": "e2325186695f0e1f9a30192acb4393f22415526ac8dc47a720f05452867205df",
+      "actual_create_sha": "32dcfbec702aba7fff47bb7c8619e6080e6cef01",
+      "full_utf8_bytes_equal": true,
+      "create_blob": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "32dcfbec702aba7fff47bb7c8619e6080e6cef01"
+        },
+        "isError": false
+      },
+      "full_GET": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "content": "{\n  \"archive\": {\n    \"bytes\": 14176,\n    \"git_blob\": \"ff10bf9257bf20d736f86abdb444ea75e24dc20a\",\n    \"sha256\": \"043776fa54585beb59721e3ca1b34d95a9e3b66460481053739a25902f909f1e\"\n  },\n  \"member_bytes\": 786473,\n  \"members\": 16,\n  \"native_product_execution\": false,\n  \"network_calls\": 0,\n  \"originals_unchanged\": true,\n  \"verification_exit\": 0,\n  \"verification_stderr_bytes\": 0,\n  \"verification_stdout\": {\n    \"bytes\": 13280,\n    \"git_blob\": \"b568064db62c7b85c35a7a0ddd5285b9d7b01f2f\",\n    \"sha256\": \"8046f54994034e38819b32de2962960a7b5357082d7c840646d1042d81d9d3df\"\n  }\n}\n"
+        },
+        "isError": false
+      }
+    },
+    {
+      "path": "restore_verify.py",
+      "bytes": 2655,
+      "git_blob": "c7ecfb65455618b742907fd4c6465cb2aed330a0",
+      "sha256": "7cc6d1aff8a31d79db8fe181a9c18b8bc1f9b7467e4cc77ca9f283d9ba0ac866",
+      "actual_create_sha": "c7ecfb65455618b742907fd4c6465cb2aed330a0",
+      "full_utf8_bytes_equal": true,
+      "create_blob": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "c7ecfb65455618b742907fd4c6465cb2aed330a0"
+        },
+        "isError": false
+      },
+      "full_GET": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "content": "#!/usr/bin/env python3\n\"\"\"Restore the immutable evidence and rerun only its Python API verifier.\"\"\"\nimport argparse\nimport base64\nimport hashlib\nimport io\nimport json\nfrom pathlib import Path, PurePosixPath\nimport subprocess\nimport tarfile\n\n\ndef identity(raw):\n    return {\"bytes\": len(raw), \"git_blob\": hashlib.sha1(b\"blob \" + str(len(raw)).encode() + b\"\\0\" + raw).hexdigest(), \"sha256\": hashlib.sha256(raw).hexdigest()}\n\n\ndef main():\n    parser = argparse.ArgumentParser()\n    parser.add_argument(\"--root\", type=Path, required=True)\n    parser.add_argument(\"--output\", type=Path, required=True)\n    args = parser.parse_args()\n    assert not args.output.exists(), \"restore output must not exist\"\n    manifest = json.loads((args.root / \"member-manifest.json\").read_bytes())\n    metadata = json.loads((args.root / \"archive.json\").read_bytes())\n    encoded = (args.root / \"evidence.original.tar.xz.b64\").read_bytes()\n    assert identity(encoded) == metadata[\"encoded\"]\n    raw = base64.b64decode(encoded.strip(), validate=True)\n    assert identity(raw) == metadata[\"archive\"]\n    expected = {m[\"path\"]: m for m in manifest[\"members\"]}\n    assert len(expected) == len(manifest[\"members\"])\n    args.output.mkdir(parents=True)\n    with tarfile.open(fileobj=io.BytesIO(raw), mode=\"r:xz\") as tar:\n        members = tar.getmembers()\n        assert len(members) == len(expected)\n        assert {m.name for m in members} == set(expected)\n        for member in members:\n            name = PurePosixPath(member.name)\n            assert member.isfile() and not name.is_absolute() and \"..\" not in name.parts\n            data = tar.extractfile(member).read()\n            assert identity(data) == {k: expected[member.name][k] for k in [\"bytes\", \"git_blob\", \"sha256\"]}\n            target = args.output.joinpath(*name.parts)\n            target.parent.mkdir(parents=True, exist_ok=True)\n            target.write_bytes(data)\n    run = subprocess.run([\"python3\", str(args.output / \"verify_packet.py\"), \"--root\", str(args.output)], capture_output=True)\n    assert run.returncode == 0 and run.stderr == b\"\", {\"exit\": run.returncode, \"stderr\": run.stderr.decode(errors=\"replace\")}\n    assert run.stdout == (args.output / \"verification-02.stdout.json\").read_bytes()\n    print(json.dumps({\"archive\": identity(raw), \"members\": len(expected), \"member_bytes\": sum(x[\"bytes\"] for x in expected.values()), \"verification_exit\": run.returncode, \"verification_stdout\": identity(run.stdout), \"verification_stderr_bytes\": len(run.stderr), \"originals_unchanged\": True, \"network_calls\": 0, \"native_product_execution\": False}, sort_keys=True, indent=2))\n\n\nif __name__ == \"__main__\":\n    main()\n"
+        },
+        "isError": false
+      }
+    }
+  ]
+}

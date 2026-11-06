@@ -1,0 +1,18 @@
+{
+  "path": "codex-rs/windows-sandbox-rs/src/unified_exec/mod.rs",
+  "source_anchor_tree": "99a9c0cefa627290c9fc72a9ba90d0485020fe11",
+  "preimage": {
+    "bytes": 8588,
+    "git_blob": "c98f3e5d217ada48732e1686129806d0dd52169e",
+    "sha256": "6de412ae0a3102084a0b28fc57a276dfc58e5113ffbd0e2d39df4931863e3a72"
+  },
+  "postimage": {
+    "bytes": 8754,
+    "git_blob": "389258c039f38c40dc2f0cfd9c3722a4381206c6",
+    "sha256": "ee69819f0a6c68320c474dc6130ba0b66ca0bf7f62a63e83006a607b60ed30f8"
+  },
+  "scope": "Proposed source-comment correction only. No production source, ref or current PR is changed. This does not fix B11.",
+  "old_comment": "/// Select the only backend that can enforce the requested filesystem policy.\n///\n/// A `WRITE_RESTRICTED` token limits ordinary write access through restricting\n/// SIDs, but Windows can authorize deletion through a parent directory's\n/// `FILE_DELETE_CHILD` right. That alternate authorization path means the\n/// restricted-token backend cannot prove that deletion stays inside the\n/// declared writable roots. Explicit filesystem overrides have the same\n/// problem because their effective parent ACLs are not part of the token.\n///\n/// Therefore the direct token backend is intentionally limited to an\n/// unrestricted-read, no-write, no-override profile. Every write-capable or\n/// path-restricted request is delegated to the elevated broker, which owns the\n/// authoritative filesystem mediation boundary. If that broker is unavailable,\n/// launch fails closed rather than falling back to the weaker backend.\n",
+  "new_comment": "/// Select the backend required to prepare the requested filesystem policy.\n///\n/// A `WRITE_RESTRICTED` token limits ordinary write access through restricting\n/// SIDs, but Windows can authorize deletion through a parent directory's\n/// `FILE_DELETE_CHILD` right. That alternate authorization path means the\n/// restricted-token backend cannot prove that deletion stays inside the\n/// declared writable roots. Explicit filesystem overrides have the same\n/// problem because their effective parent ACLs are not part of the token.\n///\n/// At this selector, the direct token backend is limited to an unrestricted-read,\n/// no-write, no-override profile. Every write-capable or path-restricted request\n/// uses elevated setup and the dedicated-account runner. The child still relies\n/// on token and ACL enforcement: runner IPC handles launch and process I/O, not\n/// each filesystem operation. This routing alone does not prove that every\n/// deletion stays inside the writable roots. If elevated setup or runner startup\n/// fails, launch returns an error without a legacy fallback.\n",
+  "all_bytes_outside_single_comment_equal": true
+}

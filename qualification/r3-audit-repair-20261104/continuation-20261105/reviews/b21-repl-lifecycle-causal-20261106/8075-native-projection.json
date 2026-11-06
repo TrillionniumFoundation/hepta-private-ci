@@ -1,0 +1,214 @@
+{
+  "schema": "hepta-b21-8075-observed-native-projection-v1",
+  "run_id": 42167168039,
+  "job_id": 127729084043,
+  "source_head": "8075eb367b6e97546af206b27bbf4a3a867497c8",
+  "actual_checkout": "b88f625afe17975db80b152283ef2e19cc50e41f",
+  "actual_tree": "c1249a173ac346d0f1230fe56451b97d4e13c601",
+  "whole_job": {
+    "path": "/workspace/scratch/07dd58cc9630/recovery-20261106/integration-ci-review/old-donor-terminal-20261106T0840/job-127729084043.original.log",
+    "bytes": 1093592,
+    "git_blob": "45ebf709bb26caf683357ac980e79686c5939d82",
+    "sha256": "04a0203600c464102794b28e0ec0ab1479ef601026f896ad5390ea29ceaf5433"
+  },
+  "whole_tool_return": {
+    "path": "/workspace/scratch/07dd58cc9630/recovery-20261106/integration-ci-review/old-donor-terminal-20261106T0840/job-127729084043-tool-return.original.json",
+    "bytes": 1105179,
+    "git_blob": "1193874e1f517d0d4b27b2875748e8257df332f8",
+    "sha256": "99d10dee40ab0a6610d0f8d5b226ed3762737cee18dbb38e9d3acbe25182d023"
+  },
+  "whole_UTF8_log_equals_actual_tool_content": true,
+  "excerpt": {
+    "path": "8075-pty-31cases.excerpt.original.log",
+    "first_original_line_one_based": 1821,
+    "last_original_line_one_based": 1894,
+    "byte_start": 171717,
+    "byte_end_exclusive": 177958,
+    "bytes": 6241,
+    "git_blob": "c957810fa501ffad04108331bab503ee0eec493a",
+    "sha256": "d88e513997129878f514d01958d1f511b545431f5329b0568c1097208b636511"
+  },
+  "checkout_lines": [
+    {
+      "line": 33,
+      "exact": "2026-11-06T05:23:04.3041640Z Uses: TrillionniumFoundation/hepta-private-ci/.github/workflows/bazel.yml@refs/pull/4927/merge (b88f625afe17975db80b152283ef2e19cc50e41f)"
+    },
+    {
+      "line": 100,
+      "exact": "2026-11-06T05:23:07.5820050Z [command]/usr/local/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +b88f625afe17975db80b152283ef2e19cc50e41f:refs/remotes/pull/4927/merge"
+    },
+    {
+      "line": 102,
+      "exact": "2026-11-06T05:23:14.8864500Z  * [new ref]         b88f625afe17975db80b152283ef2e19cc50e41f -> pull/4927/merge"
+    },
+    {
+      "line": 217,
+      "exact": "2026-11-06T05:23:32.1201980Z HEAD is now at b88f625 Merge 8075eb367b6e97546af206b27bbf4a3a867497c8 into 67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+    },
+    {
+      "line": 220,
+      "exact": "2026-11-06T05:23:32.2586900Z b88f625afe17975db80b152283ef2e19cc50e41f"
+    },
+    {
+      "line": 10172,
+      "exact": "2026-11-06T07:23:20.5799940Z ##[error]The operation was canceled."
+    }
+  ],
+  "cases": [
+    {
+      "name": "process_group::tests::denied_group_signal_rejects_unsafe_process_group_ids",
+      "status": "PASSED"
+    },
+    {
+      "name": "tests::driver_backed_process_can_resize_via_resizer_hook",
+      "status": "PASSED"
+    },
+    {
+      "name": "tests::driver_backed_process_can_expose_split_stdout_and_stderr",
+      "status": "PASSED"
+    },
+    {
+      "name": "tests::output_collector_waits_for_exit_after_output_closes",
+      "status": "PASSED"
+    },
+    {
+      "name": "tests::driver_backed_process_drains_output_that_arrives_after_exit_signal",
+      "status": "PASSED"
+    },
+    {
+      "name": "tests::pipe_and_pty_share_interface",
+      "status": "PASSED"
+    },
+    {
+      "name": "process_group::tests::denied_group_signal_terminates_owned_descendants_and_preserves_escalation",
+      "status": "PASSED"
+    },
+    {
+      "name": "tests::pipe_process_can_expose_split_stdout_and_stderr",
+      "status": "PASSED"
+    },
+    {
+      "name": "tests::pipe_drop_reaps_child",
+      "status": "PASSED"
+    },
+    {
+      "name": "tests::pipe_spawn_no_stdin_can_preserve_inherited_fds",
+      "status": "PASSED"
+    },
+    {
+      "name": "tests::pipe_terminate_aborts_detached_readers",
+      "status": "PASSED"
+    },
+    {
+      "name": "tests::pipe_process_detaches_from_parent_session",
+      "status": "PASSED"
+    },
+    {
+      "name": "tests::pipe_terminate_reaps_child",
+      "status": "PASSED"
+    },
+    {
+      "name": "tests::pipe_process_round_trips_stdin",
+      "status": "PASSED"
+    },
+    {
+      "name": "tests::pipe_drains_stderr_without_stdout_activity",
+      "status": "PASSED"
+    },
+    {
+      "name": "tests::pty_drop_allows_runtime_shutdown_with_detached_child",
+      "status": "FAILED"
+    },
+    {
+      "name": "tests::pty_dropped_output_receiver_keeps_draining_child",
+      "status": "FAILED"
+    },
+    {
+      "name": "tests::pty_preserving_fds_drop_allows_runtime_shutdown_with_detached_child",
+      "status": "FAILED"
+    },
+    {
+      "name": "tests::pty_preserving_fds_terminate_allows_runtime_shutdown_with_detached_child",
+      "status": "PASSED"
+    },
+    {
+      "name": "tests::pty_close_stdin_preserves_large_input_and_delivers_eof",
+      "status": "FAILED"
+    },
+    {
+      "name": "tests::pty_spawn_can_preserve_inherited_fds",
+      "status": "PASSED"
+    },
+    {
+      "name": "tests::pty_spawn_with_inherited_fds_reports_exec_failures",
+      "status": "PASSED"
+    },
+    {
+      "name": "tests::pty_spawn_with_inherited_fds_supports_resize",
+      "status": "PASSED"
+    },
+    {
+      "name": "tests::pty_spawn_without_io_driver_returns_error",
+      "status": "PASSED"
+    },
+    {
+      "name": "tests::pty_terminate_allows_runtime_shutdown_with_detached_child",
+      "status": "PASSED"
+    },
+    {
+      "name": "tests::pty_python_repl_emits_output_and_exits",
+      "status": "PASSED"
+    },
+    {
+      "name": "tests::pty_python_repl_readiness_waits_for_execution_after_input_echo",
+      "status": "PASSED"
+    },
+    {
+      "name": "tests::pty_terminate_reaps_child_when_waiter_is_queued",
+      "status": "PASSED"
+    },
+    {
+      "name": "tests::pty_preserving_inherited_fds_keeps_python_repl_running",
+      "status": "PASSED"
+    },
+    {
+      "name": "tests::pty_terminate_kills_background_children_in_same_process_group",
+      "status": "PASSED"
+    },
+    {
+      "name": "tests::pty_terminate_allows_runtime_shutdown_with_full_output_channel",
+      "status": "PASSED"
+    }
+  ],
+  "counts": {
+    "passed": 27,
+    "failed": 4,
+    "ignored": 0,
+    "filtered": 0
+  },
+  "whole_job_conclusion": "CANCELLED",
+  "cancellation_cause": "UNKNOWN",
+  "cancellation_scope": "The log reports operation canceled; elapsed wall time is not evidence of the cancellation actor or reason.",
+  "dropped_receiver": {
+    "backend": "portable",
+    "spawn_elapsed_ms": 651.527851,
+    "wait_elapsed_seconds": 2.004870616,
+    "read_calls": 0,
+    "read_bytes": 0,
+    "discarded_bytes": 0,
+    "reader_state": "waiting_for_read",
+    "queued_bytes": 0,
+    "child_phase": "python_started"
+  },
+  "large_input_after_ready": {
+    "collector_elapsed_seconds": 5.001346858,
+    "output_bytes": 0,
+    "collected_exit_code": -1,
+    "session_has_exited": false
+  },
+  "limits": [
+    "Target failure is a complete 31-case observation inside a cancelled whole job.",
+    "Zero reads means no positive-read optimization branch was reached before this snapshot; it does not identify why the child/PTY reader made no read progress.",
+    "Passing preserved-FD REPL and forced-flush control do not transfer qualification to any failed case or whole job."
+  ]
+}

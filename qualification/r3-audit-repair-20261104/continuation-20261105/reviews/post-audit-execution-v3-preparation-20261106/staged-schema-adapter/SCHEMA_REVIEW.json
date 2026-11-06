@@ -1,0 +1,153 @@
+{
+  "schema": "hepta-staged-evidence-packet-minimal-adapter-review-v1",
+  "result": "READY_FOR_ROOT_REVIEW",
+  "original_preparer": {
+    "bytes": 40614,
+    "git_blob": "2782624228f94b9ff693811cab418d205a37cf5e",
+    "sha256": "f1cc95248e52289b4c8001aca07cf238f4d03bb1d3a7a85a33c7569e8b270651"
+  },
+  "candidate_preparer": {
+    "bytes": 45976,
+    "git_blob": "d4bf4311702edf691c30165b0a32eaee4a272f5a",
+    "sha256": "6c560cbd4aef2ee4ba91296187b66636f150abda5d10a6ba611251ec49e6f70d"
+  },
+  "unified_patch": {
+    "bytes": 8894,
+    "git_blob": "048803a272d8c77fd8597973b2e6034376a292cf",
+    "sha256": "a97e48fede3341cf81fbdb77935f091a73c977dd7d4ab4256ff2168728c77d25"
+  },
+  "only_changed_AST_method": "Builder.verify_evidence_packet",
+  "other_methods_and_logic_unchanged": true,
+  "actual_registry": {
+    "path": "integration-ci-review/17c6b903-native-followup-delivery/registry.actual.json",
+    "git_blob": "f7d49f26f20355b829f4b83b6fe2043a24bad6b7",
+    "schema": "hepta-evidence-packet-actual-registry-v1",
+    "append_paths": 109,
+    "files": 108,
+    "payloads": 81,
+    "registration_receipts": 27
+  },
+  "original_failure_boundary": "prepare-complete-01 停于未支持的 staged receipt-sidecar 选择；这是准备器格式适配失败，没有新增 native 失败或台账变化。根原始执行回执保持在 third-post-audit-inputs/prepare-complete-01.exec.original.json。",
+  "new_contract": [
+    "只有同时出现 payload_create_tree_batches 与 receipt_create_tree_batches 才进入 staged 分支；只有一组就拒绝。旧单次物化包继续走既有分支。",
+    "逐批要求明确的5字段、连续整数序号、前一实际树作为base、1至64个唯一新增且属于正确role的路径。每批将之前完整叶与新叶合并，重算Git Merkle并等于实际create返回SHA。",
+    "payload从空集合/null base开始；receipt从最终payload完整81叶开始。必须覆盖该role全部路径，最终批的完整原create对象必须等于兼容字段payload_create_tree/receipt_create_tree。全部7阶段证明对象逐字段复算。",
+    "payload第000收据的完整3批create数组和receipt第000旁车的完整4批create数组，必须与registry数组逐对象相等；缺失或不同均拒绝。",
+    "新增receipt_sidecars配置明确列出000至006七个名称。仅接受registry中唯一的字面registration-receipts-GET-*.local-sidecar.json对应的连续三位编号选择，不执行任意glob，不猜旁车。",
+    "所有81个payload、27个receipt和registry自身原完整UTF8 GET、大小、Git/SHA256、role/mode/path、最终累计Merkle及append tree-elements的原校验全部保留。未发生独立tree GET，代码与说明不声称有。"
+  ],
+  "config_addition": {
+    "component": "final17-native-followup",
+    "receipt_sidecars": [
+      "registration-receipts-GET-000.local-sidecar.json",
+      "registration-receipts-GET-001.local-sidecar.json",
+      "registration-receipts-GET-002.local-sidecar.json",
+      "registration-receipts-GET-003.local-sidecar.json",
+      "registration-receipts-GET-004.local-sidecar.json",
+      "registration-receipts-GET-005.local-sidecar.json",
+      "registration-receipts-GET-006.local-sidecar.json"
+    ]
+  },
+  "stages": {
+    "new_paths": [
+      34,
+      24,
+      23,
+      8,
+      8,
+      8,
+      3
+    ],
+    "complete_paths": [
+      34,
+      58,
+      81,
+      89,
+      97,
+      105,
+      108
+    ],
+    "maximum_batch_entries": 34,
+    "payload_tree": "6e61883a8891ea6d889176e63e1631d40bee31d7",
+    "payload_plus_receipt_tree": "3434ce13993d82802b711ac38019c6b1b50607e1",
+    "plus_registry_tree": "2c6efc2c4d2f4c59a69a013ef2ee614fb54b9e38"
+  },
+  "validation": {
+    "components": 16,
+    "evidence_paths": 475,
+    "unique_evidence_blobs": 455,
+    "read_and_rehashed_inputs": 554,
+    "stdout": {
+      "bytes": 7462,
+      "git_blob": "951a20d302e8b25cf32a39b7215c0121f9df0f3a",
+      "sha256": "6678b2b58e632adc5f3f4e3e4de86d17cec151b12ca23f358bec1f3378a54ecd"
+    },
+    "exit_code": 0,
+    "stderr_bytes": 0,
+    "forward_check_apply_reverse_check_reverse_all_zero": true,
+    "malformed_metadata_controls": [
+      {
+        "case": "payload_batch_disconnected_base",
+        "rejected": true,
+        "exception": "ValueError",
+        "reason": "packet batch order/base differs"
+      },
+      {
+        "case": "payload_batch_duplicate_path",
+        "rejected": true,
+        "exception": "ValueError",
+        "reason": "invalid packet batch paths/count"
+      },
+      {
+        "case": "payload_batch_wrong_actual_Merkle",
+        "rejected": true,
+        "exception": "ValueError",
+        "reason": "packet batch cumulative Merkle differs"
+      },
+      {
+        "case": "receipt_first_batch_wrong_payload_parent",
+        "rejected": true,
+        "exception": "ValueError",
+        "reason": "packet batch order/base differs"
+      },
+      {
+        "case": "payload_full_GET_record_missing",
+        "rejected": true,
+        "exception": "ValueError",
+        "reason": "incomplete packet payload receipt coverage"
+      },
+      {
+        "case": "receipt_batch_original_array_not_equal",
+        "rejected": true,
+        "exception": "ValueError",
+        "reason": "packet receipt original batches differ"
+      },
+      {
+        "case": "last_receipt_sidecar_omitted",
+        "rejected": true,
+        "exception": "ValueError",
+        "reason": "incomplete packet receipt-sidecar coverage"
+      },
+      {
+        "case": "arbitrary_glob_selector",
+        "rejected": true,
+        "exception": "ValueError",
+        "reason": "packet staged sidecars must be explicit contiguous numbered names"
+      }
+    ],
+    "source_and_root_config_unchanged": true
+  },
+  "qualification": {
+    "native_or_CI_rerun": false,
+    "external_network": false,
+    "root_preparer_changed_by_author": false,
+    "frozen_package_changed": false,
+    "C4_documents_or_outputs_written": false,
+    "ledger_transition": null
+  },
+  "replay_boundary": "verify_partial.py 是采用前的原根preparer 278262 与原config不变核验，包含16组件内存导入；不调用prepare()。根采用新候选后，独审可直接用固定candidate的Builder导入最终config，不应将历史baseline不变断言的失败算作包失败。",
+  "delivery_excludes": [
+    "patch-check/"
+  ],
+  "preservation": "prepare_original.py、components.original.json和所有partial-01 stdout/stderr/执行回执保留；不覆写旧adapter审阅包。"
+}

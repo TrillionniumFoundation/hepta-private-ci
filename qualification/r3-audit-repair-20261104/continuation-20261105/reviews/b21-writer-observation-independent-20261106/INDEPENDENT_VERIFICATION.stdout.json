@@ -1,0 +1,84 @@
+{
+  "actual_candidate_tree": "c24f6910e0af5a3ebf809c29f1fb06dafbd94146",
+  "actual_three_source_GET_full_bytes_equal": true,
+  "base_head": "aaf86881da0b3a7651b4a6a56be49515b9aa9f2e",
+  "base_tree": "66552bda88637403f4f1d72a5be8592e07a8a308",
+  "changed_paths": [
+    {
+      "mode": "100644",
+      "path": "codex-rs/utils/pty/src/tests.rs",
+      "postimage": {
+        "bytes": 64257,
+        "git_blob": "8ea4216322449d3b8ddb1c5380bd665944a820ee",
+        "sha256": "bb2d840e70d6923d0367416fdd53348c6d85b5fc3d5f22b40df92cf474d6fd5d"
+      },
+      "preimage": {
+        "bytes": 63583,
+        "git_blob": "25836a08f9ff9a90b14204059d2544749a0f5461",
+        "sha256": "c8bdfdad51c9f7ab5cddf3bc43c392e4eed2bb4e3516d037a4c78d19ac1c32d9"
+      }
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/utils/pty/src/unix_io.rs",
+      "postimage": {
+        "bytes": 9549,
+        "git_blob": "710ad71d597ee643fe69485c7731e7a1576cba40",
+        "sha256": "f8be53c9927c12a0c25e0007d88610428b7167824b093625007ae6318886c865"
+      },
+      "preimage": {
+        "bytes": 6503,
+        "git_blob": "c7ad412d04fd3f5505259a4afdcec0d4d8562a88",
+        "sha256": "ec95e99037b0839b4b872f48f5db3126b2e77a9f56a6d8385086cf8792c8dd8b"
+      }
+    },
+    {
+      "mode": "100644",
+      "path": "codex-rs/utils/pty/src/unix_io_diagnostics.rs",
+      "postimage": {
+        "bytes": 11599,
+        "git_blob": "e2722294383ac1787193c6b83a16a7b225d178fc",
+        "sha256": "6fc2d08973d7904499d8c095cbb20176ee2bb0df957ed6d596d380cb39d26c59"
+      },
+      "preimage": {
+        "bytes": 5409,
+        "git_blob": "3c9f68d86fb47d19d7baf549dfe6b6d5974c8070",
+        "sha256": "0e401527c4fec016f94e2a41082f390dcd6d4a33fa7ff887b7703148585a6e95"
+      }
+    }
+  ],
+  "context_sources_bound_to_base": [
+    {
+      "bound_tree": "66552bda88637403f4f1d72a5be8592e07a8a308",
+      "bytes": 16217,
+      "git_blob": "4ef1f9cd35043437c93bededa867ebf473f4d474",
+      "path": "codex-rs/utils/pty/src/process.rs",
+      "sha256": "6d3178644b2c4c9601c118d2b84a355e7ebdaeecdc52558b2edf945133b64ea7"
+    },
+    {
+      "bound_tree": "66552bda88637403f4f1d72a5be8592e07a8a308",
+      "bytes": 1882,
+      "git_blob": "1200c1143803145682180c4b351d9e8f96b74c3e",
+      "path": "codex-rs/utils/pty/src/lib.rs",
+      "sha256": "92475acd26e972bad0f9e0010fe970f19529ed968e12f305393d39082cfe8310"
+    }
+  ],
+  "decision": "ACCEPT_AS_TEST_OBSERVATION_CANDIDATE_ONLY",
+  "freeze": {
+    "bytes": 7316,
+    "git_blob": "0ed38777566ca0b3992531c670593e3186475817",
+    "sha256": "d370d6bd8cbffae8e6314c0dced6117ea45f64cb227cb67bce18f06626312d1b"
+  },
+  "fresh_root_full_GET_53_entries_equal": true,
+  "frozen_bytes": 5117370,
+  "frozen_files": 23,
+  "full_tree_leaves": 10802,
+  "independent_recorded_replay_stdout": {
+    "bytes": 3181,
+    "git_blob": "c08a68b29a8aaffb1d7b21ecb93863751ecf58d3",
+    "sha256": "6fa6fc8eab7f5d8e3958047147388bef641df846c5a3a8d44c74bacc5c7b1077"
+  },
+  "qualification": "Source and lexical/offline checks only; no Rust parsing/typecheck/codegen equivalence, formatter/Clippy run or native Intel success. Relaxed observations do not establish root cause or B21 closure.",
+  "replay_matches_all_three_author_products": true,
+  "unchanged_leaves": 10799
+}

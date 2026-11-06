@@ -1,0 +1,50 @@
+{
+  "schema": "hepta-immutable-blob-registration-receipts-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "materialization_tree": "3497b871ec587a04cebdaf10d179d74d55614f5c",
+  "ref_mutations": [],
+  "records": [
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-840-native-format-20261106/portable-replay.stderr.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "create_then_full_GET_utf8_bytes_equal": true,
+      "full_GET_original": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "content": ""
+        },
+        "isError": false
+      }
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-840-native-format-20261106/portable-replay.execution.sidecar.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "adffe0f68167eb6cff278b11a1090eeaf69a83c6",
+      "bytes": 651,
+      "sha256": "6010371d460f8379c45e0e98d5490fcf9718161b16a80920fecfa9eea8c5e9bd",
+      "create_then_full_GET_utf8_bytes_equal": true,
+      "full_GET_original": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "content": "{\n  \"argv\": [\n    \"python3\",\n    \"/workspace/scratch/07dd58cc9630/recovery-20261106/integration-ci-review/840e8b5-native-format-delivery/restore_verify.py\",\n    \"--root\",\n    \"/workspace/scratch/07dd58cc9630/recovery-20261106/integration-ci-review/840e8b5-native-format-delivery\",\n    \"--output\",\n    \"/workspace/scratch/07dd58cc9630/recovery-20261106/integration-ci-review/840e8b5-native-format-restored-01\"\n  ],\n  \"exit_code\": 0,\n  \"stdout_bytes\": 623,\n  \"stdout_sha256\": \"277016c0b7f4cf150d53e3859da5855e30dde253446471b515f48d4f7ebf9fa0\",\n  \"stderr_bytes\": 0,\n  \"stderr_sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n}\n"
+        },
+        "isError": false
+      }
+    }
+  ]
+}

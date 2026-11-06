@@ -1,0 +1,116 @@
+{
+  "aaf_initial_run_list": {
+    "blocking_run_id": 42195225682,
+    "count": 18,
+    "native_results": null,
+    "status": {
+      "pending": 4,
+      "queued": 12,
+      "skipped": 2
+    }
+  },
+  "ac18_blocking_cuts": [
+    {
+      "count": 3,
+      "source": "sixth",
+      "status": {
+        "in_progress": 1,
+        "queued": 2
+      }
+    },
+    {
+      "count": 3,
+      "source": "seventh",
+      "status": {
+        "queued": 2,
+        "success": 1
+      }
+    },
+    {
+      "count": 29,
+      "source": "eighth",
+      "status": {
+        "in_progress": 4,
+        "queued": 16,
+        "skipped": 3,
+        "success": 6
+      }
+    }
+  ],
+  "ac18_cargo_deny": {
+    "API_conclusion": "success",
+    "full_log_captured": false,
+    "job_id": 127809329246,
+    "tool_capture_error": "Transport closed; no retry, no native failure inferred."
+  },
+  "ac18_formatter": {
+    "completed": "2026-11-06T09:15:24Z",
+    "conclusion": "success",
+    "job_id": 127809329291,
+    "qualification": "Original just fmt-check, Prettier and clean-worktree succeeded at c9ba/ac18 only; not product tests or successor aaf qualification.",
+    "run_id": 42186354218,
+    "started": "2026-11-06T09:12:52Z"
+  },
+  "ac18_full_tree_leaves": 10802,
+  "ac18_scope": {
+    "base": "63652be658ebed8d3052eb789b951793384fd5e4",
+    "paths": 1561,
+    "scope": {
+      "derived": true,
+      "effects": true,
+      "full_repo": true,
+      "inference": true,
+      "learning": true,
+      "lifecycle": true,
+      "native": true,
+      "objective": true
+    },
+    "source_head": "ac18b623c7a6cb953b4660979e9b620fe7176bb2"
+  },
+  "complete_log_checks": [
+    {
+      "checkout": "ac18b623c7a6cb953b4660979e9b620fe7176bb2",
+      "complete_original": {
+        "bytes": 182891,
+        "git_blob": "c25b46cf39b03a79bfbe04313107b14d06be5893",
+        "sha256": "27d36b81324ed3fdeccc0214dcc99f5b7dd676640bc1e335606bd43ae85be1c8"
+      },
+      "git_log_checkouts": [
+        "63652be658ebed8d3052eb789b951793384fd5e4",
+        "ac18b623c7a6cb953b4660979e9b620fe7176bb2"
+      ],
+      "job_id": 127802986289
+    },
+    {
+      "checkout": "c9baaf38b95da145fb4f9d371b8d134169d313cc",
+      "complete_original": {
+        "bytes": 122199,
+        "git_blob": "27e1a9d04cd538b3f4159181ceb7d10c5baff51c",
+        "sha256": "032777d87a8cd49c154ec51c40c1ca1d769122ca56ac7a9a38330e9b2d77864c"
+      },
+      "git_log_checkouts": [
+        "c9baaf38b95da145fb4f9d371b8d134169d313cc"
+      ],
+      "job_id": 127809329291
+    }
+  ],
+  "originals_verified": 22,
+  "publications": {
+    "aaf": {
+      "PR_changed_paths": 1564,
+      "head": "aaf86881da0b3a7651b4a6a56be49515b9aa9f2e",
+      "merge": "8ca7a5b30bf6abfaf3ad7bb538d00f505d0847f8",
+      "parent": "ac18b623c7a6cb953b4660979e9b620fe7176bb2",
+      "tree": "66552bda88637403f4f1d72a5be8592e07a8a308"
+    },
+    "ac18": {
+      "PR_changed_paths": 1561,
+      "head": "ac18b623c7a6cb953b4660979e9b620fe7176bb2",
+      "merge": "c9baaf38b95da145fb4f9d371b8d134169d313cc",
+      "parent": "2d1137b1ba39fab0e6a28bac8decc114dfa0138c",
+      "tree": "c3e9ddc1799f470ac7c80e117ee953a7232847e0"
+    }
+  },
+  "schema": "hepta.integration-ci-0930.verified.v1",
+  "scope_limit": "Full-repo selects fast rust-ci.yml; scoped skipped. This packet does not certify full Cargo nextest, uncached execution, other jobs, or any blocker closure. Earlier failed/cancelled evidence remains unchanged."
+}

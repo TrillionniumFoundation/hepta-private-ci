@@ -1,0 +1,287 @@
+{
+  "schema": "hepta-current-product-native-followup-summary-v1",
+  "current_product_head": "17c6b903a5d5d470b72035f95bb6e087291d7e04",
+  "current_product_tree": "25020dc30888fa3ffa6f6e8d1073d91edded1756",
+  "actual_PR_merge": "26cfdcaa70cbd2daecd165137e3b84d2ad1a7284",
+  "latest_observation_utc": "2026-11-06T10:43:51Z",
+  "whole_candidate_qualified": false,
+  "blocking": {
+    "observed_before_utc": "2026-11-06T10:43:30Z",
+    "run_id": 42201989815,
+    "complete_jobs": 0
+  },
+  "Supervisor": {
+    "observed_before_utc": "2026-11-06T10:43:30Z",
+    "run_id": 42201989809,
+    "complete_jobs": 2,
+    "in_progress": 2
+  },
+  "ordinary_business_run": 42201989580,
+  "ordinary_business_scope": "original full Windows library unit targets; existing qualification/test dependency replacements retained",
+  "ordinary_business_results": [
+    {
+      "job_id": 127839242912,
+      "artifact_id": 13495625588,
+      "checkout_kind": "base-merge",
+      "actual_checkout": "26cfdcaa70cbd2daecd165137e3b84d2ad1a7284",
+      "tree": "25020dc30888fa3ffa6f6e8d1073d91edded1756",
+      "ordered_parents": [
+        "63652be658ebed8d3052eb789b951793384fd5e4",
+        "17c6b903a5d5d470b72035f95bb6e087291d7e04"
+      ],
+      "job_conclusion": "success",
+      "official_ZIP": {
+        "bytes": 3604185,
+        "git_blob": "6f562cb80e84b390509ab1b83ac21a695dac96e6",
+        "sha256": "b5da4d45ec9c6f81e747596df79922c45ce118c39a9b51de3d113897295b0036"
+      },
+      "all_10_member_CRC_and_hashes_equal": true,
+      "original_full_library_targets": [
+        {
+          "target": "//codex-rs/hepta-intelligence:hepta-intelligence-unit-tests",
+          "rust_cases_passed": 78,
+          "rust_cases_failed": 0,
+          "rust_cases_ignored": 0,
+          "filtered": 0,
+          "required_original_controls": [
+            "durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes",
+            "invalid_authentication_artifact_or_dataset_never_calls_any_port",
+            "ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded",
+            "old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch"
+          ],
+          "all_required_controls_passed": true,
+          "Bazel_XML_wrapper_cases": 1,
+          "product_TestRunner": {
+            "sequence": 64889,
+            "args": [
+              "external\\bazel_tools\\tools\\test\\tw.exe",
+              "codex-rs/hepta-intelligence/hepta-intelligence-unit-tests.bat"
+            ],
+            "runner": "local",
+            "cache_hit": false,
+            "exit_code": 0,
+            "timeout_millis": 300000
+          },
+          "XML_helper_own_input_log_and_own_output_XML_hashes_equal": true
+        },
+        {
+          "target": "//codex-rs/hepta-bao-adapter:hepta-bao-adapter-unit-tests",
+          "rust_cases_passed": 19,
+          "rust_cases_failed": 0,
+          "rust_cases_ignored": 0,
+          "filtered": 0,
+          "required_original_controls": [
+            "expiry_is_durable_and_terminal_for_renewal",
+            "issue_rejects_non_active_provider_observations_without_durable_mutation",
+            "issue_unknown_reconciles_without_duplicate_issue",
+            "provider_not_applied_restores_active_lease_after_unknown",
+            "renew_unknown_blocks_fabricated_success_until_reconciled",
+            "reused_operation_id_with_changed_semantics_conflicts",
+            "revoke_unknown_stays_nonterminal_until_provider_observation",
+            "unavailable_storage_never_publishes_a_prepared_operation"
+          ],
+          "all_required_controls_passed": true,
+          "Bazel_XML_wrapper_cases": 1,
+          "product_TestRunner": {
+            "sequence": 64877,
+            "args": [
+              "external\\bazel_tools\\tools\\test\\tw.exe",
+              "codex-rs/hepta-bao-adapter/hepta-bao-adapter-unit-tests.bat"
+            ],
+            "runner": "local",
+            "cache_hit": false,
+            "exit_code": 0,
+            "timeout_millis": 300000
+          },
+          "XML_helper_own_input_log_and_own_output_XML_hashes_equal": true
+        },
+        {
+          "target": "//codex-rs/hepta-codex-adapter:hepta-codex-adapter-unit-tests",
+          "rust_cases_passed": 21,
+          "rust_cases_failed": 0,
+          "rust_cases_ignored": 0,
+          "filtered": 0,
+          "required_original_controls": [
+            "thread_read_recovery_keeps_in_progress_indeterminate",
+            "thread_read_recovery_rejects_session_drift_and_duplicate_turns",
+            "thread_read_recovery_requires_exact_stable_message_and_input"
+          ],
+          "all_required_controls_passed": true,
+          "Bazel_XML_wrapper_cases": 1,
+          "product_TestRunner": {
+            "sequence": 64865,
+            "args": [
+              "external\\bazel_tools\\tools\\test\\tw.exe",
+              "codex-rs/hepta-codex-adapter/hepta-codex-adapter-unit-tests.bat"
+            ],
+            "runner": "local",
+            "cache_hit": false,
+            "exit_code": 0,
+            "timeout_millis": 300000
+          },
+          "XML_helper_own_input_log_and_own_output_XML_hashes_equal": true
+        }
+      ],
+      "per_checkout_rust_total": {
+        "passed": 118,
+        "failed": 0,
+        "ignored": 0,
+        "filtered": 0
+      },
+      "full_compact_records": 64893,
+      "compact_invocation": {
+        "type": "invocation",
+        "id": "01d0b774-3ed3-4e96-9148-0e8000d49791"
+      },
+      "product_processes": 3,
+      "XML_helper_processes": 3,
+      "captured_inputs": 9,
+      "all_fixed_Git_bytes_LF_to_CRLF_match_captured_input_hashes": true
+    },
+    {
+      "job_id": 127839243318,
+      "artifact_id": 13494647856,
+      "checkout_kind": "source-head",
+      "actual_checkout": "17c6b903a5d5d470b72035f95bb6e087291d7e04",
+      "tree": "25020dc30888fa3ffa6f6e8d1073d91edded1756",
+      "ordered_parents": [
+        "840e8b5dbffca017753cdf87482ce325938f313c"
+      ],
+      "job_conclusion": "success",
+      "official_ZIP": {
+        "bytes": 3609526,
+        "git_blob": "311ef5102a2f7d657205973cfab234f73c516837",
+        "sha256": "f098f8860662a07b6bbfb741a1d5a717a7db45f75fbd486a68ecd12ee311b660"
+      },
+      "all_10_member_CRC_and_hashes_equal": true,
+      "original_full_library_targets": [
+        {
+          "target": "//codex-rs/hepta-intelligence:hepta-intelligence-unit-tests",
+          "rust_cases_passed": 78,
+          "rust_cases_failed": 0,
+          "rust_cases_ignored": 0,
+          "filtered": 0,
+          "required_original_controls": [
+            "durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes",
+            "invalid_authentication_artifact_or_dataset_never_calls_any_port",
+            "ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded",
+            "old_signed_evidence_cannot_enter_a_recomputed_new_authority_epoch"
+          ],
+          "all_required_controls_passed": true,
+          "Bazel_XML_wrapper_cases": 1,
+          "product_TestRunner": {
+            "sequence": 64889,
+            "args": [
+              "external\\bazel_tools\\tools\\test\\tw.exe",
+              "codex-rs/hepta-intelligence/hepta-intelligence-unit-tests.bat"
+            ],
+            "runner": "local",
+            "cache_hit": false,
+            "exit_code": 0,
+            "timeout_millis": 300000
+          },
+          "XML_helper_own_input_log_and_own_output_XML_hashes_equal": true
+        },
+        {
+          "target": "//codex-rs/hepta-bao-adapter:hepta-bao-adapter-unit-tests",
+          "rust_cases_passed": 19,
+          "rust_cases_failed": 0,
+          "rust_cases_ignored": 0,
+          "filtered": 0,
+          "required_original_controls": [
+            "expiry_is_durable_and_terminal_for_renewal",
+            "issue_rejects_non_active_provider_observations_without_durable_mutation",
+            "issue_unknown_reconciles_without_duplicate_issue",
+            "provider_not_applied_restores_active_lease_after_unknown",
+            "renew_unknown_blocks_fabricated_success_until_reconciled",
+            "reused_operation_id_with_changed_semantics_conflicts",
+            "revoke_unknown_stays_nonterminal_until_provider_observation",
+            "unavailable_storage_never_publishes_a_prepared_operation"
+          ],
+          "all_required_controls_passed": true,
+          "Bazel_XML_wrapper_cases": 1,
+          "product_TestRunner": {
+            "sequence": 64864,
+            "args": [
+              "external\\bazel_tools\\tools\\test\\tw.exe",
+              "codex-rs/hepta-bao-adapter/hepta-bao-adapter-unit-tests.bat"
+            ],
+            "runner": "local",
+            "cache_hit": false,
+            "exit_code": 0,
+            "timeout_millis": 300000
+          },
+          "XML_helper_own_input_log_and_own_output_XML_hashes_equal": true
+        },
+        {
+          "target": "//codex-rs/hepta-codex-adapter:hepta-codex-adapter-unit-tests",
+          "rust_cases_passed": 21,
+          "rust_cases_failed": 0,
+          "rust_cases_ignored": 0,
+          "filtered": 0,
+          "required_original_controls": [
+            "thread_read_recovery_keeps_in_progress_indeterminate",
+            "thread_read_recovery_rejects_session_drift_and_duplicate_turns",
+            "thread_read_recovery_requires_exact_stable_message_and_input"
+          ],
+          "all_required_controls_passed": true,
+          "Bazel_XML_wrapper_cases": 1,
+          "product_TestRunner": {
+            "sequence": 64877,
+            "args": [
+              "external\\bazel_tools\\tools\\test\\tw.exe",
+              "codex-rs/hepta-codex-adapter/hepta-codex-adapter-unit-tests.bat"
+            ],
+            "runner": "local",
+            "cache_hit": false,
+            "exit_code": 0,
+            "timeout_millis": 300000
+          },
+          "XML_helper_own_input_log_and_own_output_XML_hashes_equal": true
+        }
+      ],
+      "per_checkout_rust_total": {
+        "passed": 118,
+        "failed": 0,
+        "ignored": 0,
+        "filtered": 0
+      },
+      "full_compact_records": 64893,
+      "compact_invocation": {
+        "type": "invocation",
+        "id": "c472dff2-515e-4899-813a-ba9d9db9f462"
+      },
+      "product_processes": 3,
+      "XML_helper_processes": 3,
+      "captured_inputs": 9,
+      "all_fixed_Git_bytes_LF_to_CRLF_match_captured_input_hashes": true
+    }
+  ],
+  "denominators": "118 original Rust cases per distinct checkout, not 236 distinct cases; three Bazel XML wrapper cases per checkout; three XML helpers are not test retries",
+  "source_full_tree_leaves_verified": 10804,
+  "unchanged_original_workflow_budget_minutes": 120,
+  "no_test_filter": true,
+  "actual_flaky_test_attempts": 1,
+  "test_cache_disabled_and_product_spawn_noncache_verified": true,
+  "offline_verifier": {
+    "exit_code": 0,
+    "stdout_bytes": 44951,
+    "stdout_git_blob": "a7825a0ebb2cc330a13df03a4cf83348a65ffb05",
+    "stdout_sha256": "87571d6eff183438d28eec08763634319f1fa79eff322e4756682e1174270abe",
+    "stderr_bytes": 0
+  },
+  "local_verifier_development_failures": [
+    "verification-01: comparison did not normalize CRLF in artifact JSON against normalized console; originals unchanged",
+    "verification-02: computed int protobuf type-count keys compared against JSON string keys; originals unchanged"
+  ],
+  "new_product_failures_in_this_observation": [],
+  "newly_closed_blockers": [],
+  "manual_CI_operations": [],
+  "private_capacity_query": false,
+  "limitations": [
+    "These original library BUILD targets retain their existing qualification/test dependency replacements; this is not external producer acceptance.",
+    "No B11 strict outside-delete or full-platform qualification follows from these three library targets.",
+    "No result from old840 was transferred; this packet binds head17 and merge26cf directly.",
+    "Offline replay runs only Python and zstd decoding, not Rust/Cargo/Bazel/native tests or CI."
+  ]
+}

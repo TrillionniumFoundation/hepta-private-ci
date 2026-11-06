@@ -1,0 +1,38 @@
+{
+  "schema": "hepta-supervisor-unix-connect-registry-self-receipt-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "registry_repo_path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/supervisor-unix-connect-bound-20261106/registry.actual.json",
+  "registry_identity": {
+    "bytes": 39807,
+    "git_blob": "b336a8470de7111b0bb037a3c1d801bcadaba0d2",
+    "sha256": "0def006242afcb9ee6f8140e15361d783d33d5c77c640bf78a9e309c4f766280"
+  },
+  "method": "actual create_tree(content) followed by complete fetch_blob UTF-8 equality",
+  "actual_create_original": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "sha": "d9bc84b8f4d126ae135b94c9ce2de35106b654f0"
+    },
+    "isError": false
+  },
+  "actual_complete_full_GET_equal": true,
+  "full_GET_original_lossless_recipe": {
+    "payload_path": "registry.actual.json",
+    "payload_git_blob": "b336a8470de7111b0bb037a3c1d801bcadaba0d2",
+    "marker": "__SUPERVISOR_CONNECT_REGISTRY_EXACT_PAYLOAD_b336a8470de7111b0bb037a3c1d801bcadaba0d2__",
+    "occurrences": 1,
+    "template": "{\n  \"content\": [\n    {\n      \"type\": \"text\",\n      \"text\": \"Action completed.\"\n    }\n  ],\n  \"structuredContent\": {\n    \"content\": \"__SUPERVISOR_CONNECT_REGISTRY_EXACT_PAYLOAD_b336a8470de7111b0bb037a3c1d801bcadaba0d2__\"\n  },\n  \"isError\": false\n}\n",
+    "substitution": "Replace the single marker with JSON.stringify(complete UTF-8 registry payload).slice(1,-1).",
+    "actual_serialized_original_equals_reconstruction": true
+  },
+  "payload_paths": 19,
+  "source_postimages_actual": 3,
+  "source_candidate_tree": "44e8f7176037a5455476c068ad6ad8d692868769",
+  "native_or_CI_executed": false,
+  "ledger_transitions": []
+}

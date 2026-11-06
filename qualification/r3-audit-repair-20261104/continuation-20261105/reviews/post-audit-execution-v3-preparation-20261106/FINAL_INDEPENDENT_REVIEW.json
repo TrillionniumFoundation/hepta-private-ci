@@ -1,0 +1,878 @@
+{
+  "schema": "hepta-C4-final-independent-prepublication-review-v1",
+  "decision": "ACCEPT_FROZEN_C4_AUDIT_INCREMENT_FOR_ROOT_PUBLICATION_WITH_SCOPED_LIMITS",
+  "reviewer": "format_finish",
+  "blocking_review_findings": [],
+  "scope_zh": "接受本次固定审计增量的事实、来源、机器账、证据索引及预审树。不是产品发布接受，不宣布所有 blocker 闭合；实际出版仍由 root 完成。",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "audit_parent_commit": "f7bb5019d311dacc142f20cacdcf19889109b4ba",
+  "audit_parent_tree": "d7716cca653bf7795307b052352e8671cd9fd944",
+  "pre_review_tree": "ff1fce16a2056267ae4a15f4661f87a8c647c35a",
+  "this_review_is_not_part_of_pre_review_tree": true,
+  "four_documents_must_remain_exactly_frozen": [
+    {
+      "path": "POST_AUDIT_EXECUTION_UPDATE_V3.zh-CN.md",
+      "bytes": 39122,
+      "git_blob": "a9cee67409ab7b1f5ec0052c5495fccbf9f34890",
+      "sha256": "fa8b8844dca05dbbfd29b9d42248868b6d429042c3176169d58f18ee90ea495f"
+    },
+    {
+      "path": "post-audit-execution-v3.json",
+      "bytes": 97490,
+      "git_blob": "44c6213c41fd0f9028b713d3b846da1b7dd70b07",
+      "sha256": "f6c87ef7b7bfcc39bead11ce28abbcdff73234b5d5a9e88a2f50e699e4d58526"
+    },
+    {
+      "path": "LATEST.md",
+      "bytes": 3600,
+      "git_blob": "feee34e2711dd80362908d222ca898040c1f5c7e",
+      "sha256": "1802b1d2600f16cc604e4eb3169602a765679c8e37bfd0cf3262774a3098c979"
+    },
+    {
+      "path": "LATEST.zh-CN.md",
+      "bytes": 3600,
+      "git_blob": "feee34e2711dd80362908d222ca898040c1f5c7e",
+      "sha256": "1802b1d2600f16cc604e4eb3169602a765679c8e37bfd0cf3262774a3098c979"
+    }
+  ],
+  "frozen_input_manifest": {
+    "path": "third-post-audit-review-inputs/COMPLETE-PRE-REVIEW-FREEZE.json",
+    "bytes": 3069,
+    "git_blob": "10042c228d5bff43daf00dad740579a8d1e51239",
+    "sha256": "83f8d45d2062012789cee148b7febe35d967d32276a50619712749d3ef8f5c8d",
+    "contents": {
+      "schema": "hepta-C4-complete-pre-review-frozen-inputs-v1",
+      "expected_tree": "ff1fce16a2056267ae4a15f4661f87a8c647c35a",
+      "source_components": 17,
+      "evidence_paths": 508,
+      "evidence_unique_blobs": 486,
+      "auxiliary_sources": 76,
+      "four_documents_frozen_for_publication": true,
+      "formal_review_will_be_only_final_aux_addition": true,
+      "files": [
+        {
+          "path": "third-post-audit-inputs/components.final-pre-review-03.json",
+          "bytes": 42310,
+          "git_blob": "a2f23726bbb5cdec5a471a5854d348f49e898331",
+          "sha256": "a3a367917b65fa2311477fc6cb9a6ae312b61b53be4f26826d26774fe390c5b0"
+        },
+        {
+          "path": "third-post-audit-documents/POST_AUDIT_EXECUTION_UPDATE_V3.zh-CN.md",
+          "bytes": 39122,
+          "git_blob": "a9cee67409ab7b1f5ec0052c5495fccbf9f34890",
+          "sha256": "fa8b8844dca05dbbfd29b9d42248868b6d429042c3176169d58f18ee90ea495f"
+        },
+        {
+          "path": "third-post-audit-documents/post-audit-execution-v3.json",
+          "bytes": 97490,
+          "git_blob": "44c6213c41fd0f9028b713d3b846da1b7dd70b07",
+          "sha256": "f6c87ef7b7bfcc39bead11ce28abbcdff73234b5d5a9e88a2f50e699e4d58526"
+        },
+        {
+          "path": "third-post-audit-documents/LATEST.md",
+          "bytes": 3600,
+          "git_blob": "feee34e2711dd80362908d222ca898040c1f5c7e",
+          "sha256": "1802b1d2600f16cc604e4eb3169602a765679c8e37bfd0cf3262774a3098c979"
+        },
+        {
+          "path": "third-post-audit-documents/LATEST.zh-CN.md",
+          "bytes": 3600,
+          "git_blob": "feee34e2711dd80362908d222ca898040c1f5c7e",
+          "sha256": "1802b1d2600f16cc604e4eb3169602a765679c8e37bfd0cf3262774a3098c979"
+        },
+        {
+          "path": "third-post-audit-documents/evidence-index-v13-addendum.json",
+          "bytes": 326365,
+          "git_blob": "30bbf80b5a8ae430fa162be98bea9d09fdfb720f",
+          "sha256": "2a787e0725c83290e5adf00f50fa017d53abc1f2462691bbd503feeaa6dcf362"
+        },
+        {
+          "path": "publication/third-post-audit-delta.plan.json",
+          "bytes": 236823,
+          "git_blob": "cd916ceab317c4972d7982903f5cad81d6c1bcd3",
+          "sha256": "7d9a5bcdf206fe552c2fc9db8564643fb3c24b7a8c91d4c06839feae279e7ded"
+        },
+        {
+          "path": "publication/third-post-audit-final-full-tree.json",
+          "bytes": 3936162,
+          "git_blob": "317e7b435284158150aa395ca75648878f055edd",
+          "sha256": "42099059a8d581580bc7a163d3edbfe4ea16382fed28900608de226e4d418f08"
+        },
+        {
+          "path": "publication/third-post-audit-delta.verification.json",
+          "bytes": 185193,
+          "git_blob": "19ab03342ac357ca2a58f644e8ce9dffa3f7f6c5",
+          "sha256": "a455d1decc1d4aa41e19be829cd5a40b54c8aa7023fb8f67ba80d7b211eaa38d"
+        },
+        {
+          "path": "prepare_third_post_audit_delta.py",
+          "bytes": 46490,
+          "git_blob": "6bd307d58d43978134d98e97c7e727a42c6283e5",
+          "sha256": "6bf25de13fd0dc6f1221d4ec4b0f720cfb86bec45dffa373e5fba4acafcebfa4"
+        },
+        {
+          "path": "write_post_audit_execution_v3.py",
+          "bytes": 19033,
+          "git_blob": "5408d63d3f9b47382cd29ae0fdbe038a9e4f630e",
+          "sha256": "3a580e21bfafb125eae96eae705c9ccff40ba60bb27d5698199dea497bd50c36"
+        }
+      ]
+    }
+  },
+  "reviewed_source_scope": {
+    "narrative": "Original complete narrative and both LATEST files read; all subsequent exact deltas read, including corrected base/head/merge wording, original-position historical links and source17 P0 terminal subsection.",
+    "machine": "Complete historical 62a964 machine read; final44c621 changed fields independently compared and read. All unchanged fields remain structurally identical. Final machine embeds exact frozen CI wrapper1c87.",
+    "preparer": {
+      "initial_complete_source": "2782624228f94b9ff693811cab418d205a37cf5e",
+      "staged_adapter": "d4bf4311702edf691c30165b0a32eaee4a272f5a",
+      "final": {
+        "bytes": 46490,
+        "git_blob": "6bd307d58d43978134d98e97c7e727a42c6283e5",
+        "sha256": "6bf25de13fd0dc6f1221d4ec4b0f720cfb86bec45dffa373e5fba4acafcebfa4"
+      },
+      "read": "Full initial module and complete changed method/deltas; only verify_evidence_packet AST changed in staged adapter, subsequently explicit self-claim origin branch.",
+      "staged_guards": "Paired role arrays, contiguous batch numbers/base chain, 1..64 unique paths, role membership, every cumulative Merkle, exact final raw originals, complete full GET coverage, explicit numbered sidecars, registry self full GET. No wildcard execution or invented independent tree GET.",
+      "last_packet_claim_origin": "Only configured registry source permits an absent duplicate self ref_mutations field; the pinned actual registry must declare []. Default sidecar claim stays strict. Unknown selectors reject."
+    },
+    "serializer": {
+      "initial_complete_source": "dccdf6ce5ef642064eacb01809b7e00e619ab071",
+      "actual_arg0_shape_fix": "8f109d15448e0ec1a046aae96f2c57a8507401ad",
+      "final": {
+        "bytes": 19033,
+        "git_blob": "5408d63d3f9b47382cd29ae0fdbe038a9e4f630e",
+        "sha256": "3a580e21bfafb125eae96eae705c9ccff40ba60bb27d5698199dea497bd50c36"
+      },
+      "read": "Initial full module plus both exact deltas. Arg0 resolves real commit.sha/commit.tree. Final P0 summary asserts current head/tree and narrow native scope; original contracts unchanged."
+    },
+    "actual_object_custody": "All17 fixed registries and their payload/receipt/self provenance were checked through reviewed adapters against complete local bytes and complete preserved actual tool returns. This is not a claim of freshly downloading every historical payload in this review.",
+    "fresh_complete_blob_GET_subset": [
+      {
+        "blob": "1122949f7e01344d7ca914320e27a98e779d258c",
+        "scope": "17 library native summary; 11963 bytes exactly equal to frozen wrapper input"
+      },
+      {
+        "blob": "36e8bd63849b034495e1ded5d19e4ce26eb85a88",
+        "scope": "17 P0 terminal summary;9148 bytes exactly equal to frozen original"
+      },
+      {
+        "blob": "5b4b8d822f1383bcfd5daf994c1befd2351960e5",
+        "scope": "17 P0 actual registry;29503 bytes exactly equal to frozen original"
+      }
+    ],
+    "independent_native_library_review": "B20 full read-only review980636 and its source/native/compact bindings were read; no library-target evidence is extended to external providers or whole product.",
+    "independent_P0_increment": {
+      "schema": "hepta-source17-P0-final-audit-independent-increment-review-v1",
+      "decision": "ACCEPT_FROZEN_NATIVE_FORMATTER_AND_SELECTED_CASES_SCOPE",
+      "freeze": {
+        "bytes": 7138,
+        "git_blob": "48fca94716d1b90501cd1dc675d59c25a5ea5e10",
+        "sha256": "724fd10e2773e76e2fa425940c676bcde463b101e38ef9c78bc5f82085c35f3c"
+      },
+      "summary": {
+        "bytes": 9148,
+        "git_blob": "36e8bd63849b034495e1ded5d19e4ce26eb85a88",
+        "sha256": "01bde4122497a7bf23ac7a0aeb08b14c4f70500a27a84f4f7eb39f75aae6c0a7"
+      },
+      "readme": {
+        "bytes": 3437,
+        "git_blob": "f18fddefb597c2c1f8c81f695cd853d04ddf243d",
+        "sha256": "b8adb27b6d5f011c4a2b801ed567b4bbe104a199380a261af593162e32b30ea8"
+      },
+      "verifier": {
+        "bytes": 16520,
+        "git_blob": "d0a83dc0e425520713d65ba672f567d4abe96abf",
+        "sha256": "5ebc8512f99eee5faa4a20c4f029ebdb94f23072cb50910ffc9a2ec72ffb1ea8"
+      },
+      "frozen_members_all_identity_equal": 30,
+      "full_workflow_and_verifier_read": true,
+      "author_verifier_independent_replay": {
+        "command": [
+          "python",
+          "/workspace/scratch/07dd58cc9630/recovery-20261106/integration-ci-review/17c6b903-supervisor-followup-20261106T1111/verify_packet.py",
+          "--root",
+          "/workspace/scratch/07dd58cc9630/recovery-20261106/integration-ci-review/17c6b903-supervisor-followup-20261106T1111"
+        ],
+        "exit_code": 0,
+        "stdout": {
+          "bytes": 22571,
+          "git_blob": "63732fd009f75564e39c9486a0a649c38fd05134",
+          "sha256": "6f03c75240803c51dc6698bc4e3082d1f2e7026e5a4f595f0c62531f1870c313"
+        },
+        "stderr": {
+          "bytes": 0,
+          "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "equals_author_stdout": true
+      },
+      "independent_summary_XML_log_CR_reconciliation": true,
+      "actual_checkouts": [
+        "17c6b903a5d5d470b72035f95bb6e087291d7e04",
+        "17c6b903a5d5d470b72035f95bb6e087291d7e04"
+      ],
+      "separate_platform_cases": [
+        {
+          "job": 127839244015,
+          "platform": "Linux",
+          "Supervisor": 3,
+          "protocol": 14,
+          "failed": 0,
+          "skipped": 0,
+          "format_scope": "full_workspace",
+          "strict_Clippy": "success"
+        },
+        {
+          "job": 127839244401,
+          "platform": "Windows",
+          "Supervisor": 3,
+          "protocol": 14,
+          "failed": 0,
+          "skipped": 0,
+          "format_scope": "Supervisor_package",
+          "strict_Clippy": "success"
+        }
+      ],
+      "formatter_failure_chain": "840 original formatter failures remain historical. Current17 itself passes original Linux all-workspace and Windows Supervisor-package Rust1.95 canonical format gates.",
+      "new_six_Unix_unit_tests": "NOT_SELECTED",
+      "original_paired_process_product": "NOT_SELECTED",
+      "scope_limits": [
+        "Clippy all-targets does not execute these tests",
+        "No claim of uncached build/tests",
+        "Not a fresh18-run census",
+        "Does not close any original23 blocker",
+        "No native/CI/network/ref/source action performed by this review"
+      ],
+      "actual_registration": "PENDING_PACKET_OWNER_REGISTRY; this record only verifies frozen local evidence."
+    },
+    "independent_P0_registration_now_complete": {
+      "registry": "5b4b8d822f1383bcfd5daf994c1befd2351960e5",
+      "summary": "36e8bd63849b034495e1ded5d19e4ce26eb85a88",
+      "earlier_local_review_PENDING_custody_is_historical": true
+    }
+  },
+  "review_execution": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "/workspace/scratch/07dd58cc9630/recovery-20261106/c4-v3-independent-review-20261106/formal-01/verify_final_inputs.py",
+      "--root",
+      "/workspace/scratch/07dd58cc9630/recovery-20261106",
+      "--config",
+      "third-post-audit-inputs/components.final-pre-review-03.json",
+      "--output",
+      "/workspace/scratch/07dd58cc9630/recovery-20261106/c4-v3-independent-review-20261106/formal-01/final-17-replay-01/proof"
+    ],
+    "exit_code": 0,
+    "stdout": {
+      "bytes": 18602,
+      "git_blob": "9e21af183d743ede410df5033216c4faf3909492",
+      "sha256": "e68ed6f83ee3623e96dd5da4b3c58dd637bb7bb2032588c0eb486fa7b8d73001"
+    },
+    "stderr": {
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "independent_verification": {
+    "schema": "hepta-C4-independent-prepublication-input-review-verification-v1",
+    "decision": "INPUT_REPLAY_AND_INDEPENDENT_TREE_CONTRACT_LINK_CHECKS_PASSED",
+    "root_location": "/workspace/scratch/07dd58cc9630/recovery-20261106",
+    "fixed_preparer": {
+      "bytes": 46490,
+      "git_blob": "6bd307d58d43978134d98e97c7e727a42c6283e5",
+      "sha256": "6bf25de13fd0dc6f1221d4ec4b0f720cfb86bec45dffa373e5fba4acafcebfa4"
+    },
+    "fixed_serializer": {
+      "bytes": 19033,
+      "git_blob": "5408d63d3f9b47382cd29ae0fdbe038a9e4f630e",
+      "sha256": "3a580e21bfafb125eae96eae705c9ccff40ba60bb27d5698199dea497bd50c36"
+    },
+    "config": {
+      "path": "third-post-audit-inputs/components.final-pre-review-03.json",
+      "bytes": 42310,
+      "git_blob": "a2f23726bbb5cdec5a471a5854d348f49e898331",
+      "sha256": "a3a367917b65fa2311477fc6cb9a6ae312b61b53be4f26826d26774fe390c5b0"
+    },
+    "narrative_freeze": {
+      "path": "third-post-audit-review-inputs/COMPLETE-PRE-REVIEW-FREEZE.json",
+      "bytes": 3069,
+      "git_blob": "10042c228d5bff43daf00dad740579a8d1e51239",
+      "sha256": "83f8d45d2062012789cee148b7febe35d967d32276a50619712749d3ef8f5c8d"
+    },
+    "four_documents": [
+      {
+        "path": "POST_AUDIT_EXECUTION_UPDATE_V3.zh-CN.md",
+        "bytes": 39122,
+        "git_blob": "a9cee67409ab7b1f5ec0052c5495fccbf9f34890",
+        "sha256": "fa8b8844dca05dbbfd29b9d42248868b6d429042c3176169d58f18ee90ea495f"
+      },
+      {
+        "path": "post-audit-execution-v3.json",
+        "bytes": 97490,
+        "git_blob": "44c6213c41fd0f9028b713d3b846da1b7dd70b07",
+        "sha256": "f6c87ef7b7bfcc39bead11ce28abbcdff73234b5d5a9e88a2f50e699e4d58526"
+      },
+      {
+        "path": "LATEST.md",
+        "bytes": 3600,
+        "git_blob": "feee34e2711dd80362908d222ca898040c1f5c7e",
+        "sha256": "1802b1d2600f16cc604e4eb3169602a765679c8e37bfd0cf3262774a3098c979"
+      },
+      {
+        "path": "LATEST.zh-CN.md",
+        "bytes": 3600,
+        "git_blob": "feee34e2711dd80362908d222ca898040c1f5c7e",
+        "sha256": "1802b1d2600f16cc604e4eb3169602a765679c8e37bfd0cf3262774a3098c979"
+      }
+    ],
+    "builder_read_only_output_replay": [
+      {
+        "path": "publication/third-post-audit-delta.plan.json",
+        "bytes": 236823,
+        "git_blob": "cd916ceab317c4972d7982903f5cad81d6c1bcd3",
+        "sha256": "7d9a5bcdf206fe552c2fc9db8564643fb3c24b7a8c91d4c06839feae279e7ded",
+        "read_only_recomputed_bytes_equal": true
+      },
+      {
+        "path": "publication/third-post-audit-delta.verification.json",
+        "bytes": 185193,
+        "git_blob": "19ab03342ac357ca2a58f644e8ce9dffa3f7f6c5",
+        "sha256": "a455d1decc1d4aa41e19be829cd5a40b54c8aa7023fb8f67ba80d7b211eaa38d",
+        "read_only_recomputed_bytes_equal": true
+      },
+      {
+        "path": "publication/third-post-audit-final-full-tree.json",
+        "bytes": 3936162,
+        "git_blob": "317e7b435284158150aa395ca75648878f055edd",
+        "sha256": "42099059a8d581580bc7a163d3edbfe4ea16382fed28900608de226e4d418f08",
+        "read_only_recomputed_bytes_equal": true
+      },
+      {
+        "path": "third-post-audit-documents/evidence-index-v13-addendum.json",
+        "bytes": 326365,
+        "git_blob": "30bbf80b5a8ae430fa162be98bea9d09fdfb720f",
+        "sha256": "2a787e0725c83290e5adf00f50fa017d53abc1f2462691bbd503feeaa6dcf362",
+        "read_only_recomputed_bytes_equal": true
+      }
+    ],
+    "builder_frozen_input_files_rehashed": 675,
+    "component_count": 17,
+    "registered_evidence_paths": 508,
+    "registered_evidence_unique_blobs": 486,
+    "full_parent_tree": "d7716cca653bf7795307b052352e8671cd9fd944",
+    "base_leaves": 15232,
+    "base_directory_hashes_including_root": 2303,
+    "pre_review_tree": "ff1fce16a2056267ae4a15f4661f87a8c647c35a",
+    "planned_leaves": 15821,
+    "planned_directory_hashes_including_root": 2337,
+    "new_leaves": 589,
+    "changed_old_paths": [
+      "qualification/r3-audit-repair-20261104/continuation-20261105/LATEST.md",
+      "qualification/r3-audit-repair-20261104/continuation-20261105/LATEST.zh-CN.md"
+    ],
+    "unchanged_old_leaves": 15230,
+    "history_aliases": [
+      {
+        "original_path": "qualification/r3-audit-repair-20261104/continuation-20261105/LATEST.md",
+        "history_path": "qualification/r3-audit-repair-20261104/continuation-20261105/history/c3-f7bb5019-LATEST.md",
+        "bytes": 2805,
+        "git_blob": "6cf9e7e4cad5c9c87277508f067280378b08511d",
+        "sha256": "80579cddb569b569cda42da65fb3b04e3e202efd20bb57091ef685f3db538568"
+      },
+      {
+        "original_path": "qualification/r3-audit-repair-20261104/continuation-20261105/LATEST.zh-CN.md",
+        "history_path": "qualification/r3-audit-repair-20261104/continuation-20261105/history/c3-f7bb5019-LATEST.zh-CN.md",
+        "bytes": 2805,
+        "git_blob": "6cf9e7e4cad5c9c87277508f067280378b08511d",
+        "sha256": "80579cddb569b569cda42da65fb3b04e3e202efd20bb57091ef685f3db538568"
+      }
+    ],
+    "original_contracts_compared": 23,
+    "contract_fields_compared": [
+      "id",
+      "name",
+      "status",
+      "closure_class",
+      "original_exit_condition_zh"
+    ],
+    "closure_counts": {
+      "CLOSED_SCOPED": 16,
+      "OPEN": 6,
+      "SCIENTIFIC_HOLD": 1
+    },
+    "closure_transitions": [],
+    "current_document_links": [
+      {
+        "document": "qualification/r3-audit-repair-20261104/continuation-20261105/POST_AUDIT_EXECUTION_UPDATE_V3.zh-CN.md",
+        "href": "PROJECT_DIRECTION_AND_EXECUTION_PLAN_V7.zh-CN.md",
+        "target": "qualification/r3-audit-repair-20261104/continuation-20261105/PROJECT_DIRECTION_AND_EXECUTION_PLAN_V7.zh-CN.md"
+      },
+      {
+        "document": "qualification/r3-audit-repair-20261104/continuation-20261105/POST_AUDIT_EXECUTION_UPDATE_V3.zh-CN.md",
+        "href": "current-head-ci/pin-utils-proposal-4931-native-20261106/registry.actual.json",
+        "target": "qualification/r3-audit-repair-20261104/continuation-20261105/current-head-ci/pin-utils-proposal-4931-native-20261106/registry.actual.json"
+      },
+      {
+        "document": "qualification/r3-audit-repair-20261104/continuation-20261105/POST_AUDIT_EXECUTION_UPDATE_V3.zh-CN.md",
+        "href": "reviews/integration-holdout-native-format-20261106/registry.actual.json",
+        "target": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-holdout-native-format-20261106/registry.actual.json"
+      },
+      {
+        "document": "qualification/r3-audit-repair-20261104/continuation-20261105/POST_AUDIT_EXECUTION_UPDATE_V3.zh-CN.md",
+        "href": "reviews/integration-ci-after-format-20261106T0930/registry.actual.json",
+        "target": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-ci-after-format-20261106T0930/registry.actual.json"
+      },
+      {
+        "document": "qualification/r3-audit-repair-20261104/continuation-20261105/POST_AUDIT_EXECUTION_UPDATE_V3.zh-CN.md",
+        "href": "reviews/integration-old-donors-terminal-20261106T0840/registry.actual.json",
+        "target": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-old-donors-terminal-20261106T0840/registry.actual.json"
+      },
+      {
+        "document": "qualification/r3-audit-repair-20261104/continuation-20261105/POST_AUDIT_EXECUTION_UPDATE_V3.zh-CN.md",
+        "href": "reviews/arg0-fixture-prebuild-20261106/registry.actual.json",
+        "target": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/arg0-fixture-prebuild-20261106/registry.actual.json"
+      },
+      {
+        "document": "qualification/r3-audit-repair-20261104/continuation-20261105/POST_AUDIT_EXECUTION_UPDATE_V3.zh-CN.md",
+        "href": "reviews/supervisor-unix-connect-bound-20261106/registry.actual.json",
+        "target": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/supervisor-unix-connect-bound-20261106/registry.actual.json"
+      },
+      {
+        "document": "qualification/r3-audit-repair-20261104/continuation-20261105/POST_AUDIT_EXECUTION_UPDATE_V3.zh-CN.md",
+        "href": "reviews/integration-840-native-format-20261106/registry.actual.json",
+        "target": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-840-native-format-20261106/registry.actual.json"
+      },
+      {
+        "document": "qualification/r3-audit-repair-20261104/continuation-20261105/POST_AUDIT_EXECUTION_UPDATE_V3.zh-CN.md",
+        "href": "reviews/integration-17-automatic-ci-20261106/registry.actual.json",
+        "target": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-automatic-ci-20261106/registry.actual.json"
+      },
+      {
+        "document": "qualification/r3-audit-repair-20261104/continuation-20261105/POST_AUDIT_EXECUTION_UPDATE_V3.zh-CN.md",
+        "href": "reviews/integration-17-native-followup-20261106/registry.actual.json",
+        "target": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-native-followup-20261106/registry.actual.json"
+      },
+      {
+        "document": "qualification/r3-audit-repair-20261104/continuation-20261105/POST_AUDIT_EXECUTION_UPDATE_V3.zh-CN.md",
+        "href": "reviews/integration-17-supervisor-native-success-20261106/registry.actual.json",
+        "target": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-supervisor-native-success-20261106/registry.actual.json"
+      },
+      {
+        "document": "qualification/r3-audit-repair-20261104/continuation-20261105/POST_AUDIT_EXECUTION_UPDATE_V3.zh-CN.md",
+        "href": "reviews/b21-collector-v3-native-20261106/registry.actual.json",
+        "target": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-collector-v3-native-20261106/registry.actual.json"
+      },
+      {
+        "document": "qualification/r3-audit-repair-20261104/continuation-20261105/POST_AUDIT_EXECUTION_UPDATE_V3.zh-CN.md",
+        "href": "reviews/b21-repl-lifecycle-causal-20261106/registry.actual.json",
+        "target": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-repl-lifecycle-causal-20261106/registry.actual.json"
+      },
+      {
+        "document": "qualification/r3-audit-repair-20261104/continuation-20261105/POST_AUDIT_EXECUTION_UPDATE_V3.zh-CN.md",
+        "href": "reviews/b21-writer-observation-independent-20261106/registry.actual.json",
+        "target": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b21-writer-observation-independent-20261106/registry.actual.json"
+      },
+      {
+        "document": "qualification/r3-audit-repair-20261104/continuation-20261105/POST_AUDIT_EXECUTION_UPDATE_V3.zh-CN.md",
+        "href": "reviews/b11-minimal-repair-reassessment-20261106/registry.actual.json",
+        "target": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/b11-minimal-repair-reassessment-20261106/registry.actual.json"
+      },
+      {
+        "document": "qualification/r3-audit-repair-20261104/continuation-20261105/POST_AUDIT_EXECUTION_UPDATE_V3.zh-CN.md",
+        "href": "continuation-blocker-progress-v8.json",
+        "target": "qualification/r3-audit-repair-20261104/continuation-20261105/continuation-blocker-progress-v8.json"
+      },
+      {
+        "document": "qualification/r3-audit-repair-20261104/continuation-20261105/POST_AUDIT_EXECUTION_UPDATE_V3.zh-CN.md",
+        "href": "post-audit-execution-v3.json",
+        "target": "qualification/r3-audit-repair-20261104/continuation-20261105/post-audit-execution-v3.json"
+      },
+      {
+        "document": "qualification/r3-audit-repair-20261104/continuation-20261105/POST_AUDIT_EXECUTION_UPDATE_V3.zh-CN.md",
+        "href": "evidence-index-v13-addendum.json",
+        "target": "qualification/r3-audit-repair-20261104/continuation-20261105/evidence-index-v13-addendum.json"
+      },
+      {
+        "document": "qualification/r3-audit-repair-20261104/continuation-20261105/POST_AUDIT_EXECUTION_UPDATE_V3.zh-CN.md",
+        "href": "reviews/post-audit-execution-v3-final-appendix-20261106/registry.actual.json",
+        "target": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/post-audit-execution-v3-final-appendix-20261106/registry.actual.json"
+      },
+      {
+        "document": "qualification/r3-audit-repair-20261104/continuation-20261105/POST_AUDIT_EXECUTION_UPDATE_V3.zh-CN.md",
+        "href": "POST_AUDIT_EXECUTION_UPDATE_V2.zh-CN.md",
+        "target": "qualification/r3-audit-repair-20261104/continuation-20261105/POST_AUDIT_EXECUTION_UPDATE_V2.zh-CN.md"
+      },
+      {
+        "document": "qualification/r3-audit-repair-20261104/continuation-20261105/POST_AUDIT_EXECUTION_UPDATE_V3.zh-CN.md",
+        "href": "PROJECT_DIRECTION_AND_EXECUTION_PLAN_V7.zh-CN.md",
+        "target": "qualification/r3-audit-repair-20261104/continuation-20261105/PROJECT_DIRECTION_AND_EXECUTION_PLAN_V7.zh-CN.md"
+      },
+      {
+        "document": "qualification/r3-audit-repair-20261104/continuation-20261105/LATEST.md",
+        "href": "POST_AUDIT_EXECUTION_UPDATE_V3.zh-CN.md",
+        "target": "qualification/r3-audit-repair-20261104/continuation-20261105/POST_AUDIT_EXECUTION_UPDATE_V3.zh-CN.md"
+      },
+      {
+        "document": "qualification/r3-audit-repair-20261104/continuation-20261105/LATEST.md",
+        "href": "post-audit-execution-v3.json",
+        "target": "qualification/r3-audit-repair-20261104/continuation-20261105/post-audit-execution-v3.json"
+      },
+      {
+        "document": "qualification/r3-audit-repair-20261104/continuation-20261105/LATEST.md",
+        "href": "evidence-index-v13-addendum.json",
+        "target": "qualification/r3-audit-repair-20261104/continuation-20261105/evidence-index-v13-addendum.json"
+      },
+      {
+        "document": "qualification/r3-audit-repair-20261104/continuation-20261105/LATEST.md",
+        "href": "PROJECT_DIRECTION_AND_EXECUTION_PLAN_V7.zh-CN.md",
+        "target": "qualification/r3-audit-repair-20261104/continuation-20261105/PROJECT_DIRECTION_AND_EXECUTION_PLAN_V7.zh-CN.md"
+      },
+      {
+        "document": "qualification/r3-audit-repair-20261104/continuation-20261105/LATEST.md",
+        "href": "continuation-blocker-progress-v8.json",
+        "target": "qualification/r3-audit-repair-20261104/continuation-20261105/continuation-blocker-progress-v8.json"
+      },
+      {
+        "document": "qualification/r3-audit-repair-20261104/continuation-20261105/LATEST.md",
+        "href": "POST_AUDIT_EXECUTION_UPDATE_V2.zh-CN.md",
+        "target": "qualification/r3-audit-repair-20261104/continuation-20261105/POST_AUDIT_EXECUTION_UPDATE_V2.zh-CN.md"
+      },
+      {
+        "document": "qualification/r3-audit-repair-20261104/continuation-20261105/LATEST.md",
+        "href": "history/c3-f7bb5019-LATEST.zh-CN.md",
+        "target": "qualification/r3-audit-repair-20261104/continuation-20261105/history/c3-f7bb5019-LATEST.zh-CN.md"
+      },
+      {
+        "document": "qualification/r3-audit-repair-20261104/continuation-20261105/LATEST.zh-CN.md",
+        "href": "POST_AUDIT_EXECUTION_UPDATE_V3.zh-CN.md",
+        "target": "qualification/r3-audit-repair-20261104/continuation-20261105/POST_AUDIT_EXECUTION_UPDATE_V3.zh-CN.md"
+      },
+      {
+        "document": "qualification/r3-audit-repair-20261104/continuation-20261105/LATEST.zh-CN.md",
+        "href": "post-audit-execution-v3.json",
+        "target": "qualification/r3-audit-repair-20261104/continuation-20261105/post-audit-execution-v3.json"
+      },
+      {
+        "document": "qualification/r3-audit-repair-20261104/continuation-20261105/LATEST.zh-CN.md",
+        "href": "evidence-index-v13-addendum.json",
+        "target": "qualification/r3-audit-repair-20261104/continuation-20261105/evidence-index-v13-addendum.json"
+      },
+      {
+        "document": "qualification/r3-audit-repair-20261104/continuation-20261105/LATEST.zh-CN.md",
+        "href": "PROJECT_DIRECTION_AND_EXECUTION_PLAN_V7.zh-CN.md",
+        "target": "qualification/r3-audit-repair-20261104/continuation-20261105/PROJECT_DIRECTION_AND_EXECUTION_PLAN_V7.zh-CN.md"
+      },
+      {
+        "document": "qualification/r3-audit-repair-20261104/continuation-20261105/LATEST.zh-CN.md",
+        "href": "continuation-blocker-progress-v8.json",
+        "target": "qualification/r3-audit-repair-20261104/continuation-20261105/continuation-blocker-progress-v8.json"
+      },
+      {
+        "document": "qualification/r3-audit-repair-20261104/continuation-20261105/LATEST.zh-CN.md",
+        "href": "POST_AUDIT_EXECUTION_UPDATE_V2.zh-CN.md",
+        "target": "qualification/r3-audit-repair-20261104/continuation-20261105/POST_AUDIT_EXECUTION_UPDATE_V2.zh-CN.md"
+      },
+      {
+        "document": "qualification/r3-audit-repair-20261104/continuation-20261105/LATEST.zh-CN.md",
+        "href": "history/c3-f7bb5019-LATEST.zh-CN.md",
+        "target": "qualification/r3-audit-repair-20261104/continuation-20261105/history/c3-f7bb5019-LATEST.zh-CN.md"
+      }
+    ],
+    "native_business_qualified_scope_from_fixed_evidence": [
+      {
+        "checkout": "26cfdcaa70cbd2daecd165137e3b84d2ad1a7284",
+        "job": 127839242912,
+        "Rust_cases": 118,
+        "library_counts": [
+          78,
+          19,
+          21
+        ],
+        "product_TestRunner": 3,
+        "XML_helpers": 3
+      },
+      {
+        "checkout": "17c6b903a5d5d470b72035f95bb6e087291d7e04",
+        "job": 127839243318,
+        "Rust_cases": 118,
+        "library_counts": [
+          78,
+          19,
+          21
+        ],
+        "product_TestRunner": 3,
+        "XML_helpers": 3
+      }
+    ],
+    "current_source_P0_native_scope_from_fixed_evidence": [
+      {
+        "job": 127839244015,
+        "actual_checkout": "17c6b903a5d5d470b72035f95bb6e087291d7e04",
+        "platform": "Linux",
+        "Supervisor_integration": 3,
+        "protocol": 14,
+        "formatter": "full_workspace",
+        "strict_Clippy": "success",
+        "new_six_Unix_unit_tests": "NOT_SELECTED",
+        "original_paired_process_product": "NOT_SELECTED"
+      },
+      {
+        "job": 127839244401,
+        "actual_checkout": "17c6b903a5d5d470b72035f95bb6e087291d7e04",
+        "platform": "Windows",
+        "Supervisor_integration": 3,
+        "protocol": 14,
+        "formatter": "Supervisor_package",
+        "strict_Clippy": "success",
+        "new_six_Unix_unit_tests": "NOT_SELECTED",
+        "original_paired_process_product": "NOT_SELECTED"
+      }
+    ],
+    "all_blockers_closed": false,
+    "whole_candidate_qualified": false,
+    "operations": "Only read frozen evidence, execute reviewed preparation logic in memory, and independently hash/recompute trees and contracts. Builder.write_outputs was NOT called; no product/native/network/ref/PR operation.",
+    "review_self_cycle": "This is the pre-review index/tree. The formal review will be added later as one auxiliary object. Its final-only delta must be checked separately.",
+    "portability_limit": "The reviewed builder records absolute local_path strings inside index/plan. This exact-byte replay is for the recorded root_location. Relocated verification must preserve those original bytes or explicitly normalize only those provenance locations; do not claim arbitrary-root stdout equality."
+  },
+  "replay_tool": {
+    "suggested_restored_name": "verify_final_inputs.py",
+    "bytes": 14976,
+    "git_blob": "7fcf8a641e58b7e2b107803cb6ff5ebb10967e3f",
+    "sha256": "c0021b7480a19ba0a3eaff7736d3bc05628b04a6ac6475b0e0f63064df302fac",
+    "complete_source_utf8": "#!/usr/bin/env python3\n\"\"\"Review fixed C4 prepublication inputs without writing the builder's outputs.\"\"\"\nfrom __future__ import annotations\nimport argparse\nimport collections\nimport hashlib\nimport json\nfrom pathlib import Path\nimport posixpath\nimport re\nimport types\nfrom urllib.parse import unquote, urlsplit\n\nBASE_COMMIT=\"f7bb5019d311dacc142f20cacdcf19889109b4ba\"\nBASE_TREE=\"d7716cca653bf7795307b052352e8671cd9fd944\"\nPREFIX=\"qualification/r3-audit-repair-20261104/continuation-20261105/\"\nBUILDER=\"6bd307d58d43978134d98e97c7e727a42c6283e5\"\nSERIALIZER=\"5408d63d3f9b47382cd29ae0fdbe038a9e4f630e\"\nLEDGER=\"ea5ad333eacf2f49326a8f80a39e94ad771d818d\"\nREPORT=\"a9cee67409ab7b1f5ec0052c5495fccbf9f34890\"\nLATEST=\"feee34e2711dd80362908d222ca898040c1f5c7e\"\nCOUNTS={\"CLOSED_SCOPED\":16,\"OPEN\":6,\"SCIENTIFIC_HOLD\":1}\nFIELDS=(\"id\",\"name\",\"status\",\"closure_class\",\"original_exit_condition_zh\")\nDOCS=(\"POST_AUDIT_EXECUTION_UPDATE_V3.zh-CN.md\",\"post-audit-execution-v3.json\",\"LATEST.md\",\"LATEST.zh-CN.md\")\n\ndef ident(b):\n return {\"bytes\":len(b),\"git_blob\":hashlib.sha1(b\"blob \"+str(len(b)).encode()+b\"\\0\"+b).hexdigest(),\n         \"sha256\":hashlib.sha256(b).hexdigest()}\ndef serialized(value):return (json.dumps(value,ensure_ascii=False,indent=2)+\"\\n\").encode()\ndef read_json(path):return json.loads(path.read_bytes())\ndef triple(row):return row[\"mode\"],row[\"type\"],row[\"sha\"]\n\ndef full_merkle(tree):\n assert tree[\"truncated\"] is False\n entries=tree[\"tree\"];assert len(entries)==len({x[\"path\"] for x in entries})\n leaves={x[\"path\"]:x for x in entries if x[\"type\"]!=\"tree\"};dirs={}\n for path,x in leaves.items():\n  assert not path.startswith(\"/\") and \"\\\\\" not in path and all(part not in (\"\",\".\",\"..\") for part in path.split(\"/\"))\n  assert (x[\"type\"],x[\"mode\"]) in {(\"blob\",\"100644\"),(\"blob\",\"100755\"),(\"blob\",\"120000\")}\n  parent,_,name=path.rpartition(\"/\")\n  dirs.setdefault(parent,[]).append((name,x[\"mode\"],x[\"sha\"],False))\n  cur=parent\n  while cur:\n   cur=cur.rpartition(\"/\")[0];dirs.setdefault(cur,[])\n hashes={}\n for parent in sorted(dirs,key=lambda s:(-s.count(\"/\"),-len(s))):\n  children=dirs[parent];assert len(children)==len({x[0] for x in children})\n  raw=b\"\".join(mode.encode()+b\" \"+name.encode()+b\"\\0\"+bytes.fromhex(sha)\n              for name,mode,sha,isdir in sorted(children,key=lambda x:x[0].encode()+(b\"/\" if x[3] else b\"\")))\n  sha=hashlib.sha1(b\"tree \"+str(len(raw)).encode()+b\"\\0\"+raw).hexdigest();hashes[parent]=sha\n  if parent:\n   up,_,name=parent.rpartition(\"/\");dirs[up].append((name,\"40000\",sha,True))\n assert hashes[\"\"]==tree[\"sha\"]\n expected_dirs={p:s for p,s in hashes.items() if p}\n actual_dirs={x[\"path\"]:x[\"sha\"] for x in entries if x[\"type\"]==\"tree\"}\n assert actual_dirs==expected_dirs\n return leaves,hashes\n\ndef main():\n ap=argparse.ArgumentParser()\n ap.add_argument(\"--root\",type=Path,required=True);ap.add_argument(\"--config\",required=True)\n ap.add_argument(\"--output\",type=Path,required=True)\n args=ap.parse_args();root=args.root.resolve()\n args.output.mkdir(parents=True,exist_ok=False)\n freeze_name=\"third-post-audit-review-inputs/COMPLETE-PRE-REVIEW-FREEZE.json\"\n freeze=read_json(root/freeze_name)\n assert freeze[\"expected_tree\"]==\"ff1fce16a2056267ae4a15f4661f87a8c647c35a\"\n assert freeze[\"source_components\"]==17 and freeze[\"evidence_paths\"]==508 and freeze[\"evidence_unique_blobs\"]==486 and freeze[\"auxiliary_sources\"]==76\n frozen=[]\n for item in freeze[\"files\"]:\n  body=(root/item[\"path\"]).read_bytes();actual=ident(body)\n  assert all(actual[k]==item[k] for k in actual),(item[\"path\"],actual)\n  frozen.append(item)\n script=(root/\"prepare_third_post_audit_delta.py\").read_bytes()\n assert ident(script)[\"git_blob\"]==BUILDER\n assert ident((root/\"write_post_audit_execution_v3.py\").read_bytes())[\"git_blob\"]==SERIALIZER\n config=read_json(root/args.config)\n assert config[\"parent_commit\"]==BASE_COMMIT and config[\"base_tree\"]==BASE_TREE\n assert len(config[\"components\"])==17\n assert len({x[\"name\"] for x in config[\"components\"]})==17\n module=types.ModuleType(\"reviewed_c4_builder\")\n module.__file__=str(root/\"prepare_third_post_audit_delta.py\")\n exec(compile(script,module.__file__,\"exec\"),module.__dict__)\n builder=module.Builder(root,args.config)\n # prepare() reads and stages in memory. write_outputs() is deliberately never called.\n native_verification=builder.prepare()\n output_matches=[]\n for name,body in sorted(builder.outputs.items()):\n  actual=(root/name).read_bytes()\n  assert actual==body,(\"read-only builder replay differs\",name,ident(actual),ident(body))\n  output_matches.append({\"path\":name,**ident(body),\"read_only_recomputed_bytes_equal\":True})\n for name,identity in builder.inputs.items():\n  assert ident((root/name).read_bytes())==identity,(\"frozen input changed\",name)\n plan=read_json(root/\"publication/third-post-audit-delta.plan.json\")\n final=read_json(root/\"publication/third-post-audit-final-full-tree.json\")\n base=read_json(root/\"publication/second-post-audit-final-full-tree.json\")\n assert base[\"sha\"]==BASE_TREE\n old,old_dirs=full_merkle(base);new,new_dirs=full_merkle(final)\n assert len(old)==15232 and old.keys()<=new.keys()\n changed=sorted(p for p in old if triple(old[p])!=triple(new[p]))\n allowed=sorted([PREFIX+\"LATEST.md\",PREFIX+\"LATEST.zh-CN.md\"])\n assert changed==allowed\n assert sum(triple(new[p])==triple(x) for p,x in old.items())==15230\n delta=[x for p,x in sorted(new.items()) if p not in old or triple(x)!=triple(old[p])]\n assert delta==plan[\"tree_elements\"]\n assert plan[\"expected_tree\"]==final[\"sha\"]==native_verification[\"expected_tree\"]\n assert plan[\"parent_commit\"]==BASE_COMMIT and plan[\"base_tree\"]==BASE_TREE\n assert plan[\"old_leaves_retained\"]==15230 and plan[\"changed_old_leaf_paths\"]==2\n assert plan[\"new_leaf_paths\"]==len(new)-len(old)\n assert plan[\"delta_paths\"]==len(delta)\n assert all(x[\"path\"].startswith(PREFIX) for x in delta)\n index=read_json(root/\"third-post-audit-documents/evidence-index-v13-addendum.json\")\n assert index[\"fixed_parent_commit\"]==BASE_COMMIT and index[\"fixed_parent_tree\"]==BASE_TREE\n items=index[\"items\"];assert len(items)==len({x[\"path\"] for x in items})==index[\"paths\"]\n assert index[\"unique_blobs\"]==len({x[\"git_blob\"] for x in items})\n assert not {x[\"path\"] for x in items}&old.keys()\n assert {x[\"path\"]:x for x in items}==builder.evidence\n for item in items:\n  assert triple(new[item[\"path\"]])==(\"100644\",\"blob\",item[\"git_blob\"])\n assert len(index[\"registry_sources\"])==17\n assert {x[\"name\"]:x for x in index[\"registry_sources\"]}=={x[\"name\"]:x for x in builder.origins}\n for c in config[\"components\"]:\n  rec=next(x for x in index[\"registry_sources\"] if x[\"name\"]==c[\"name\"])\n  assert rec[\"schema\"]==c[\"schema\"] and rec[\"prefix\"]==PREFIX+c[\"prefix\"]\n  assert rec[\"registry\"][\"git_blob\"]==c[\"registry_blob\"]\n history=[]\n for name in (\"LATEST.md\",\"LATEST.zh-CN.md\"):\n  original=(root/\"second-post-audit-documents\"/name).read_bytes()\n  oldsha=old[PREFIX+name][\"sha\"];assert ident(original)[\"git_blob\"]==oldsha\n  alias=PREFIX+\"history/c3-f7bb5019-\"+name\n  assert triple(new[alias])==(\"100644\",\"blob\",oldsha)\n  history.append({\"original_path\":PREFIX+name,\"history_path\":alias,**ident(original)})\n docs=[]\n for name in DOCS:\n  body=(root/\"third-post-audit-documents\"/name).read_bytes();i=ident(body)\n  assert i[\"git_blob\"]==config[\"document_blobs\"][name]==new[PREFIX+name][\"sha\"]\n  docs.append({\"path\":name,**i})\n assert next(x[\"git_blob\"] for x in docs if x[\"path\"].startswith(\"POST_\"))==REPORT\n assert all(x[\"git_blob\"]==LATEST for x in docs if x[\"path\"].startswith(\"LATEST\"))\n machine=read_json(root/\"third-post-audit-documents/post-audit-execution-v3.json\")\n original_body=(root/\"documents/continuation-blocker-progress-v8.json\").read_bytes()\n assert ident(original_body)[\"git_blob\"]==LEDGER==old[PREFIX+\"continuation-blocker-progress-v8.json\"][\"sha\"]\n rows=json.loads(original_body)[\"items\"];contracts=[{k:x[k] for k in FIELDS} for x in rows]\n assert [x[\"id\"] for x in contracts]==[f\"B{i:02}\" for i in range(1,24)]\n assert machine[\"original_blocker_contracts\"]==contracts\n assert dict(collections.Counter(x[\"closure_class\"] for x in contracts))==machine[\"counts\"]==COUNTS\n assert machine[\"closure_transitions_in_this_increment\"]==[]\n assert machine[\"all_blockers_closed\"] is machine[\"whole_candidate_qualified\"] is False\n assert machine[\"report\"][\"git_blob\"]==REPORT\n report=(root/\"third-post-audit-documents/POST_AUDIT_EXECUTION_UPDATE_V3.zh-CN.md\").read_bytes()\n assert {k:machine[\"report\"][k] for k in (\"bytes\",\"git_blob\",\"sha256\")}==ident(report)\n assert \"当前head/base/merge同树\" not in report.decode()\n ci=read_json(root/\"integration-final-ci-review-v3/CI-REVIEW.json\")\n assert machine[\"same_source_automatic_CI\"]==ci\n assert ci[\"current_product_head\"]==\"17c6b903a5d5d470b72035f95bb6e087291d7e04\"\n assert ci[\"current_product_tree\"]==\"25020dc30888fa3ffa6f6e8d1073d91edded1756\"\n assert ci[\"actual_PR_merge\"]==\"26cfdcaa70cbd2daecd165137e3b84d2ad1a7284\"\n assert ci[\"latest_time_is_not_a_new_whole_run_census\"] is True\n prior_ci=ci[\"prior_complete_lists_and_library_evidence\"][\"observation\"]\n assert prior_ci==read_json(root/\"integration-final-ci-review-v2/CI-REVIEW.json\")\n latest=prior_ci[\"later_selected_jobs_and_native_business\"][\"observation\"]\n assert latest[\"whole_candidate_qualified\"] is False and latest[\"newly_closed_blockers\"]==[]\n assert len(latest[\"ordinary_business_results\"])==2\n scopes=[]\n for row in latest[\"ordinary_business_results\"]:\n  assert row[\"tree\"]==ci[\"current_product_tree\"] and row[\"job_conclusion\"]==\"success\"\n  assert row[\"actual_checkout\"] in (ci[\"current_product_head\"],ci[\"actual_PR_merge\"])\n  libraries=row[\"original_full_library_targets\"]\n  assert [x[\"rust_cases_passed\"] for x in libraries]==[78,19,21]\n  assert all(x[\"rust_cases_failed\"]==x[\"rust_cases_ignored\"]==x[\"filtered\"]==0 for x in libraries)\n  assert row[\"per_checkout_rust_total\"]=={\"passed\":118,\"failed\":0,\"ignored\":0,\"filtered\":0}\n  assert row[\"full_compact_records\"]==64893 and row[\"product_processes\"]==row[\"XML_helper_processes\"]==3\n  for lib in libraries:\n   proc=lib[\"product_TestRunner\"]\n   assert proc[\"runner\"]==\"local\" and proc[\"cache_hit\"] is False and proc[\"exit_code\"]==0\n   assert proc[\"timeout_millis\"]==300000 and lib[\"Bazel_XML_wrapper_cases\"]==1\n  scopes.append({\"checkout\":row[\"actual_checkout\"],\"job\":row[\"job_id\"],\"Rust_cases\":118,\n                 \"library_counts\":[78,19,21],\"product_TestRunner\":3,\"XML_helpers\":3})\n p0=ci[\"later_Supervisor_P0_terminal\"][\"observation\"]\n assert p0==read_json(root/\"integration-ci-review/17c6b903-supervisor-followup-20261106T1111/SUMMARY.json\")\n assert ci[\"latest_observation_utc\"]==p0[\"latest_observation_utc\"]==\"2026-11-06T11:11:30Z\"\n assert ci[\"formatter_failure_840_to_fixed_17_chain_native_accepted\"] is True\n assert ci[\"newly_closed_original_23_blockers\"]==[]\n assert p0[\"scope\"][\"new_six_Unix_unit_tests\"]==p0[\"scope\"][\"original_paired_process_product\"]==\"NOT_SELECTED\"\n assert p0[\"scope\"][\"all_required_original_CI_passed\"] is p0[\"whole_candidate_qualified\"] is False\n assert p0[\"complete_jobs\"]==2 and p0[\"complete_artifacts\"]==4\n assert p0[\"workflow_original_timeout_minutes\"]==45 and p0[\"workflow_original_CARGO_BUILD_JOBS\"]==2\n assert p0[\"scope\"][\"build_or_test_uncached_qualification\"] is False\n assert [j[\"job_id\"] for j in p0[\"jobs\"]]==[127839244015,127839244401]\n assert [j[\"formatter\"][\"scope\"] for j in p0[\"jobs\"]]==[\"full_workspace\",\"Supervisor_package\"]\n p0_scope=[]\n for j in p0[\"jobs\"]:\n  assert j[\"actual_checkout\"]==ci[\"current_product_head\"] and j[\"actual_tree\"]==ci[\"current_product_tree\"]\n  assert j[\"actual_parents\"]==[\"840e8b5dbffca017753cdf87482ce325938f313c\"]\n  assert j[\"conclusion\"]==j[\"formatter\"][\"status\"]==j[\"strict_clippy\"][\"status\"]==\"success\"\n  assert [q[\"passed\"] for q in j[\"JUnit_scopes\"]]==[3,14]\n  assert all(q[\"failed\"]==q[\"errors\"]==q[\"skipped\"]==0 for q in j[\"JUnit_scopes\"])\n  p0_scope.append({\"job\":j[\"job_id\"],\"actual_checkout\":j[\"actual_checkout\"],\"platform\":j[\"platform\"],\"Supervisor_integration\":3,\"protocol\":14,\"formatter\":j[\"formatter\"][\"scope\"],\"strict_Clippy\":\"success\",\"new_six_Unix_unit_tests\":\"NOT_SELECTED\",\"original_paired_process_product\":\"NOT_SELECTED\"})\n assert machine[\"evidence_registries\"]==[\n  {k:c[k] for k in (\"name\",\"schema\",\"prefix\",\"registry_blob\")} for c in config[\"components\"]]\n links=[]\n for name in DOCS:\n  if not name.endswith(\".md\"):continue\n  text=(root/\"third-post-audit-documents\"/name).read_text()\n  for href in re.findall(r\"!?\\[[^\\]]*\\]\\(([^)]+)\\)\",text):\n   parsed=urlsplit(href)\n   if parsed.scheme or parsed.netloc or not parsed.path:continue\n   target=posixpath.normpath(posixpath.join(PREFIX,unquote(parsed.path)))\n   assert target in new or target in new_dirs,(name,href,target)\n   links.append({\"document\":PREFIX+name,\"href\":href,\"target\":target})\n result={\"schema\":\"hepta-C4-independent-prepublication-input-review-verification-v1\",\n  \"decision\":\"INPUT_REPLAY_AND_INDEPENDENT_TREE_CONTRACT_LINK_CHECKS_PASSED\",\n  \"root_location\":str(root),\"fixed_preparer\":ident(script),\n  \"fixed_serializer\":ident((root/\"write_post_audit_execution_v3.py\").read_bytes()),\n  \"config\":{\"path\":args.config,**ident((root/args.config).read_bytes())},\n  \"narrative_freeze\":{\"path\":freeze_name,**ident((root/freeze_name).read_bytes())},\n  \"four_documents\":docs,\"builder_read_only_output_replay\":output_matches,\n  \"builder_frozen_input_files_rehashed\":len(builder.inputs),\n  \"component_count\":17,\"registered_evidence_paths\":len(items),\n  \"registered_evidence_unique_blobs\":index[\"unique_blobs\"],\n  \"full_parent_tree\":BASE_TREE,\"base_leaves\":len(old),\"base_directory_hashes_including_root\":len(old_dirs),\n  \"pre_review_tree\":final[\"sha\"],\"planned_leaves\":len(new),\"planned_directory_hashes_including_root\":len(new_dirs),\n  \"new_leaves\":len(new)-len(old),\"changed_old_paths\":changed,\"unchanged_old_leaves\":15230,\n  \"history_aliases\":history,\"original_contracts_compared\":23,\"contract_fields_compared\":list(FIELDS),\n  \"closure_counts\":COUNTS,\"closure_transitions\":[],\"current_document_links\":links,\n  \"native_business_qualified_scope_from_fixed_evidence\":scopes,\n  \"current_source_P0_native_scope_from_fixed_evidence\":p0_scope,\n  \"all_blockers_closed\":False,\"whole_candidate_qualified\":False,\n  \"operations\":\"Only read frozen evidence, execute reviewed preparation logic in memory, and independently hash/recompute trees and contracts. Builder.write_outputs was NOT called; no product/native/network/ref/PR operation.\",\n  \"review_self_cycle\":\"This is the pre-review index/tree. The formal review will be added later as one auxiliary object. Its final-only delta must be checked separately.\",\n  \"portability_limit\":\"The reviewed builder records absolute local_path strings inside index/plan. This exact-byte replay is for the recorded root_location. Relocated verification must preserve those original bytes or explicitly normalize only those provenance locations; do not claim arbitrary-root stdout equality.\"}\n body=serialized(result);(args.output/\"VERIFICATION.json\").write_bytes(body);print(body.decode(),end=\"\")\nif __name__==\"__main__\":main()\n\n",
+    "replay_scope": "The exact pre-review config/output files are required. This tool calls Builder.prepare only in memory and never write_outputs. Final after-review config is a distinct input and is checked separately."
+  },
+  "evidence_registries": [
+    {
+      "name": "root-publications",
+      "schema": "hepta-root-fourth-audit-actual-registry-v1",
+      "prefix": "reviews/post-audit-execution-v3-20261106/",
+      "registry_blob": "90aebb9657ef7d879f5222b9a3333cd39e95f398"
+    },
+    {
+      "name": "native-format",
+      "schema": "integration-holdout-native-format-evidence-actual-registry-v1",
+      "prefix": "reviews/integration-holdout-native-format-20261106/",
+      "registry_blob": "9c783f6a6b9a83b4d6e0128b2d5b5fc09684112a"
+    },
+    {
+      "name": "ci-0829",
+      "schema": "hepta-integration-ci-after-format-0829-actual-registry-v1",
+      "prefix": "reviews/integration-ci-after-format-20261106T0829/",
+      "registry_blob": "c425db96529df31d905b72da9c42bf64cbabb90e"
+    },
+    {
+      "name": "b11-reassessment-v2",
+      "schema": "hepta-b11-reassessment-v2-actual-evidence-registry",
+      "prefix": "reviews/b11-minimal-repair-reassessment-20261106/",
+      "registry_blob": "59a15073eef10c61e2b3731611c4c41342deb1cd"
+    },
+    {
+      "name": "b21-causal",
+      "schema": "hepta-b21-repl-lifecycle-causal-actual-registry-v1",
+      "prefix": "reviews/b21-repl-lifecycle-causal-20261106/",
+      "registry_blob": "f9af6bdaf3cc61204cd45525605e67b81b4c955a"
+    },
+    {
+      "name": "old-donor-terminal",
+      "schema": "hepta-integration-old-donors-terminal-actual-registry-v1",
+      "prefix": "reviews/integration-old-donors-terminal-20261106T0840/",
+      "registry_blob": "23e67ce20a439e2968eb63ae4e9a74a214ccd081"
+    },
+    {
+      "name": "arg0-fixture",
+      "schema": "hepta-arg0-fixture-prebuild-complete-registration-v1",
+      "prefix": "reviews/arg0-fixture-prebuild-20261106/",
+      "registry_blob": "08e8e7ea26909d95392a0eddc157f75e308e2e9c"
+    },
+    {
+      "name": "supervisor-connect",
+      "schema": "hepta-supervisor-unix-connect-bound-actual-registry-v1",
+      "prefix": "reviews/supervisor-unix-connect-bound-20261106/",
+      "registry_blob": "b336a8470de7111b0bb037a3c1d801bcadaba0d2"
+    },
+    {
+      "name": "supervisor-connect-review",
+      "schema": "hepta-supervisor-unix-connect-independent-actual-registry-v1",
+      "prefix": "reviews/supervisor-unix-connect-bound-independent-20261106/",
+      "registry_blob": "286bae42fa543ba26a60f2206a1709a67d5e5176"
+    },
+    {
+      "name": "ci-0930",
+      "schema": "hepta-ci0930-actual-registry-v1",
+      "prefix": "reviews/integration-ci-after-format-20261106T0930/",
+      "registry_blob": "5229e45b3547f41e9f8260c81ceb6a03c75368a0"
+    },
+    {
+      "name": "b21-writer-observation",
+      "schema": "hepta-b21writer-actual-registry-v1",
+      "prefix": "reviews/b21-writer-observation-independent-20261106/",
+      "registry_blob": "875b7cbfb6755d7d01fe34c298411b6da780d36d"
+    },
+    {
+      "name": "root-successor-publications",
+      "schema": "hepta-root-integration-successor-publication-actual-registry-v1",
+      "prefix": "reviews/integration-successor-publication-20261106/",
+      "registry_blob": "6206d5aeb92d3d489e2ffa851e202ee5d3b0bc95"
+    },
+    {
+      "name": "final-appendix",
+      "schema": "hepta-fourth-audit-final-appendix-actual-registry-v1",
+      "prefix": "reviews/post-audit-execution-v3-final-appendix-20261106/",
+      "registry_blob": "fce896fa8807a0e378bf654c3c29756c9ae21ed9"
+    },
+    {
+      "name": "fmt840-native",
+      "schema": "hepta-evidence-packet-actual-registry-v1",
+      "prefix": "reviews/integration-840-native-format-20261106/",
+      "registry_blob": "c1cc1f481bdcc6bb21f5db1462b4606526bf1631"
+    },
+    {
+      "name": "final17-ci-cuts",
+      "schema": "hepta-evidence-packet-actual-registry-v1",
+      "prefix": "reviews/integration-17-automatic-ci-20261106/",
+      "registry_blob": "95c5d271d491ae58cc35de89eeb5f1d3f53497f9"
+    },
+    {
+      "name": "final17-native-followup",
+      "schema": "hepta-evidence-packet-actual-registry-v1",
+      "prefix": "reviews/integration-17-native-followup-20261106/",
+      "registry_blob": "f7d49f26f20355b829f4b83b6fe2043a24bad6b7"
+    },
+    {
+      "name": "final17-supervisor-P0-native",
+      "schema": "hepta-evidence-packet-actual-registry-v1",
+      "prefix": "reviews/integration-17-supervisor-native-success-20261106/",
+      "registry_blob": "5b4b8d822f1383bcfd5daf994c1befd2351960e5"
+    }
+  ],
+  "preservation_and_denominators": {
+    "source_packets": 17,
+    "actual_evidence_paths": 508,
+    "actual_evidence_unique_blobs": 486,
+    "pre_review_auxiliary_sources": 76,
+    "frozen_input_files_rehashed": 675,
+    "base_total_leaves": 15232,
+    "base_leaves_unchanged": 15230,
+    "old_changed_paths_only": [
+      "LATEST.md",
+      "LATEST.zh-CN.md"
+    ],
+    "old_latest_exact_history_aliases": [
+      {
+        "original_path": "qualification/r3-audit-repair-20261104/continuation-20261105/LATEST.md",
+        "history_path": "qualification/r3-audit-repair-20261104/continuation-20261105/history/c3-f7bb5019-LATEST.md",
+        "bytes": 2805,
+        "git_blob": "6cf9e7e4cad5c9c87277508f067280378b08511d",
+        "sha256": "80579cddb569b569cda42da65fb3b04e3e202efd20bb57091ef685f3db538568"
+      },
+      {
+        "original_path": "qualification/r3-audit-repair-20261104/continuation-20261105/LATEST.zh-CN.md",
+        "history_path": "qualification/r3-audit-repair-20261104/continuation-20261105/history/c3-f7bb5019-LATEST.zh-CN.md",
+        "bytes": 2805,
+        "git_blob": "6cf9e7e4cad5c9c87277508f067280378b08511d",
+        "sha256": "80579cddb569b569cda42da65fb3b04e3e202efd20bb57091ef685f3db538568"
+      }
+    ],
+    "pre_review_final_leaves": 15821,
+    "new_leaves": 589,
+    "delta_paths_including_two_old_latest_updates": 591,
+    "four_preparer_outputs_complete_bytes_equal": true,
+    "independent_complete_parent_and_planned_tree_Merkle": true,
+    "relative_links": "Current Markdown links checked at planned repository positions. Historical LATEST internal links resolve in their original positions; original-byte history preservation does not promise relocated clickability. External URL liveness/fragments are outside this link check.",
+    "pre_review_index_unique_blobs_is_not_case_or_completion_count": true
+  },
+  "scope_decisions_zh": [
+    "17 head和merge26cf同tree25020，base636独立固定，不能说base也同树。实际P0两个job都checkout head17；Windows三个library targets分别有head和merge两条独立执行链。",
+    "当前17的library目标每次78/19/21，共118原Rust用例，两个checkout不算236个不同用例；每次3个Bazel XML wrapper与3个XML helper不是Rust case/重试分母。产品TestRunner是local/noncache，但不推导所有编译动作无缓存。原qualification/test依赖替换保持。",
+    "840格式原失败、机械三文件后继、17自身Linux全workspace/Windows Supervisor fmt通过已形成限定闭环；两平台严格Clippy与各3+14原用例通过。6个新增Unix tests和原paired未被该P0工作流选择，Clippy all-targets不是执行证明。",
+    "原23项id/name/status/closure_class/literal exit全部不变，16/6/1、零新增闭合。B02/B15仍缺当前候选全部必需CI及完整产品验收；剩余授权工作在报告中保留，不能以本审阅替代。",
+    "Cargo原真实双锁与223产品路径、1497其它包、四path facts、220vendor、76旧维护叶保留，其生成/deny结果不等于整个当前产品编译测试。",
+    "旧4a 17800执行=17796P（含2flaky）/3F/1T，49skip，fixture找不到与paired60秒是分开的故障链；6holdout Linux4a PASS不转授所有后继平台。arg036+11+3属于静态/离线控制，原suite/断言/预算保持。",
+    "Supervisor私有connect200ms、read/write200ms、3次与50ms重试保留；不声明整个握手/恢复被一个期限覆盖，也不声明旧60秒单因已证。",
+    "B21 501 attempts与438 summaries分母分开；旧exit38、BEP3、collector1/completefalse以及失败/重试原件保留。BEP是credential-sanitized、opaque-payload-omitted派生，3opaque省略、raw未保留。8075的31例与原合同30例字面不互改。",
+    "B11 Low到Medium四操作拒绝与Low到另一Low cohort真实删除分开；仅3个token字段相等、八行阶段descendants=0不授予后续child/loader/IPC完整兼容。未找到当前合同内合格局部修复，不是证明所有Windows token机制不可能。",
+    "B16 Foundation限定正反控不等于正常UI/Root/Session/issuer/provider四场景物理接受；旧3次未知driver超时不变成原生反例或允许第4次猜测重放。",
+    "B18保留NO_GO与新独立2x2 D−B科学门；PR4930的机械训练回执、有限cost和DENY_ALL不换成科学/产品授权。B19双源和样本边界不替代外部binary provenance与实际consumer接受。",
+    "仓库PR/branches为历史固定元数据普查；完整覆盖元数据不声称逐行源码审完。各run/job观察按原时间分层，11:11P0终态不合并重算旧18run列表。"
+  ],
+  "resolved_review_findings_and_preserved_history": [
+    {
+      "finding": "Ambiguous six-dependency wording in B16",
+      "resolution": "Removed the ambiguous count; explicit existing migration scopes retained. Earlier preread bytes preserved."
+    },
+    {
+      "finding": "Overbroad global statement that new Unix/paired tests had never executed",
+      "resolution": "Narrowed to NOT_SELECTED by the specific840/17 P0 workflows; unknown external execution not claimed."
+    },
+    {
+      "finding": "Original final narrative said head/base/merge same tree",
+      "resolution": "Corrected head/base fixed and head/merge same tree; de797 entire original narrative/freeze preserved."
+    },
+    {
+      "finding": "Relocated historic Markdown links",
+      "resolution": "Document now distinguishes current-position link checks and original-position historical links, retaining history bytes."
+    },
+    {
+      "finding": "Serializer actual arg0 publication nested shape",
+      "resolution": "Only commit.sha/tree lookup corrected; first KeyError preserved as local tooling failure."
+    },
+    {
+      "finding": "Actual staged registry receipts and final redundant self-field omission",
+      "resolution": "Explicit reviewed adapters; complete old failures preserved, no frozen evidence modified or missing field invented."
+    }
+  ],
+  "product_and_blocker_status": {
+    "counts": {
+      "CLOSED_SCOPED": 16,
+      "OPEN": 6,
+      "SCIENTIFIC_HOLD": 1
+    },
+    "closure_transitions": [],
+    "open": [
+      "B02",
+      "B11",
+      "B15",
+      "B16",
+      "B19",
+      "B21"
+    ],
+    "scientific_hold": [
+      "B18"
+    ],
+    "all_blockers_closed": false,
+    "whole_candidate_qualified": false,
+    "literal_next_gates_zh": {
+      "B02": "逐路径决定保留/合入/延期；manifest、vendor、Cargo 与 Bazel 锁同步；固定候选 head、目标 base 与执行 merge tree；原始必需 CI 全通过。",
+      "B11": "在获准的修复范围内提供原生 helper 与原严格 token 契约，原攻击/权限/文件系统用例全部通过；需要超出已允许边界时明确升级审批。",
+      "B15": "最新候选所有必需工作流终态成功；目标 main 基线重新核实；合成 merge 与发布 commit 树一致；保留原失败和修复回执。",
+      "B16": "先完整迁移并验收Root handoff、Registry/arg0、protected checkpoint/verifier、FinalUse/issuer、listener custody和一个真实正常UI caller；再由同源实际Root/Session、原signed objective、provider/target完成任务/取消/丢ACK/重启，保留物理效果、authority、evidence、Memory一致性回执。",
+      "B18": "新的事前冻结 2×2 比较，重点 D−B；独立数据、充分精度、全部失败尝试与完整成本；未通过就保留强普通默认而非追求事后绿色。",
+      "B19": "固定外部版本、接口与契约、兼容/故障/安全回执，以及本产品真实调用者的独立接受。",
+      "B21": "保持原2秒/5秒预算、完整drain与child退出/FD断言；修复源在原macOS Intel的30例与相关原CI通过，并解释实际Intel drain失败原因。"
+    }
+  },
+  "final_append_contract": {
+    "permitted_next_step": "Root may append this one review as the final auxiliary source, regenerate index/plan/tree and publish normally after checking the limited difference.",
+    "must_not_change": "All4 frozen documents,17 source packets,prior76 auxiliary sources,508 registered evidence mappings,all23 original literal contracts and old C3 preservation.",
+    "expected_scope_of_next_delta": "One new review leaf plus the recomputed evidence index leaf; plan/full-tree/verification and config are derivations. The resulting final root differs from this pre-review tree and is not accepted by falsely citing this tree as identical.",
+    "review_self_hash_or_final_tree_inside_review": false,
+    "separate_final_delta_check_required": true
+  },
+  "reviewer_operations": {
+    "product_native_execution": false,
+    "CI_queries_dispatch_rerun_cancel": false,
+    "private_capacity_query": false,
+    "source_changes": false,
+    "ref_or_PR_mutations": false,
+    "root_output_mutations": false,
+    "immutable_review_object_registration_permitted": true
+  },
+  "limitations": [
+    "This review accepts the audit increment and the stated evidence scopes, not completed delivery of all original blockers.",
+    "Historical preserved original GETs were replayed from frozen bytes; only the explicitly listed blob subset was fetched afresh in this final review phase.",
+    "Exact index/plan output replay uses the recorded workspace root because provenance local_path fields are absolute. Arbitrary relocation does not imply identical output bytes.",
+    "The complete index/plan/hash proofs are pre-review inputs. Final review append requires its own narrowly scoped tree-difference check.",
+    "No claim of new native execution is made for Python/Git/XML/hash/decompression checks."
+  ]
+}

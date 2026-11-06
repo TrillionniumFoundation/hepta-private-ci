@@ -1,0 +1,71 @@
+{
+  "schema": "hepta-immutable-blob-registration-receipts-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "materialization_tree": "6e61883a8891ea6d889176e63e1631d40bee31d7",
+  "ref_mutations": [],
+  "records": [
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-native-followup-20261106/portable-replay.execution.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b4b2d6a6bcf421d477f9b016df0fe142a82d286d",
+      "bytes": 796,
+      "sha256": "5073e8860c2f351c1e9c359baa52500c50e3f8c5ffa41a75a1e27a8265204d2e",
+      "create_then_full_GET_utf8_bytes_equal": true,
+      "full_GET_original": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "content": "{\n  \"argv\": [\n    \"python3\",\n    \"/workspace/scratch/07dd58cc9630/recovery-20261106/integration-ci-review/17c6b903-native-followup-delivery/restore_verify.py\",\n    \"--root\",\n    \"/workspace/scratch/07dd58cc9630/recovery-20261106/integration-ci-review/17c6b903-native-followup-delivery\",\n    \"--output\",\n    \"/workspace/scratch/07dd58cc9630/recovery-20261106/integration-ci-review/17c6b903-native-followup-restored-01\"\n  ],\n  \"exit_code\": 0,\n  \"stdout\": {\n    \"bytes\": 624,\n    \"git_blob\": \"47737c05f4cd90f98c4cd2594942b6d5d5cd7881\",\n    \"sha256\": \"2b2823ebf7c38e791446adb3cf0afa4184621ff391425ba050618042cc0099e3\"\n  },\n  \"stderr\": {\n    \"bytes\": 0,\n    \"git_blob\": \"e69de29bb2d1d6434b8b29ae775ad8c2e48c5391\",\n    \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n  }\n}\n"
+        },
+        "isError": false
+      }
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-native-followup-20261106/portable-replay.stderr.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "create_then_full_GET_utf8_bytes_equal": true,
+      "full_GET_original": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "content": ""
+        },
+        "isError": false
+      }
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-native-followup-20261106/portable-replay.stdout.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "47737c05f4cd90f98c4cd2594942b6d5d5cd7881",
+      "bytes": 624,
+      "sha256": "2b2823ebf7c38e791446adb3cf0afa4184621ff391425ba050618042cc0099e3",
+      "create_then_full_GET_utf8_bytes_equal": true,
+      "full_GET_original": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "content": "{\n  \"schema\": \"hepta-portable-17-native-followup-replay-v1\",\n  \"members\": 56,\n  \"member_bytes\": 15954061,\n  \"archive\": {\n    \"bytes\": 8083968,\n    \"git_blob\": \"0f3f264ea12867b0ce6f66e68b381736d0b4258d\",\n    \"sha256\": \"36ca8541e6572fbfaae4fc8f61245ab33123a683a77850e7d483f8b164524135\"\n  },\n  \"offline_replay_exit\": 0,\n  \"offline_replay_stderr_bytes\": 0,\n  \"offline_replay_stdout\": {\n    \"bytes\": 44951,\n    \"git_blob\": \"a7825a0ebb2cc330a13df03a4cf83348a65ffb05\",\n    \"sha256\": \"87571d6eff183438d28eec08763634319f1fa79eff322e4756682e1174270abe\"\n  },\n  \"all_member_identities_equal\": true,\n  \"replay_stdout_full_equal\": true\n}\n"
+        },
+        "isError": false
+      }
+    }
+  ]
+}

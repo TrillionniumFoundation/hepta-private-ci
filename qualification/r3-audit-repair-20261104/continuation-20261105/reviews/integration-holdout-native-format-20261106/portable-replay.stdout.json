@@ -1,0 +1,129 @@
+{
+  "actual_checkout": "a0cb0f33661e199674012e3302b0602407c91a8d",
+  "all_frozen_file_bytes": 5390191,
+  "all_frozen_files_verified": 21,
+  "author_freeze": {
+    "bytes": 5206,
+    "git_blob": "74dd38ae82a63b94cef7f8980fee2bf14cbe6def",
+    "sha256": "ef35a15eb70a6a114d1bcd1fd2fdf895a6b83e3929c3a236b8d7d1037ab4d9ff"
+  },
+  "base_tree": {
+    "directories": 1617,
+    "leaves": 10802,
+    "root": "99a9c0cefa627290c9fc72a9ba90d0485020fe11"
+  },
+  "blocking_findings": [],
+  "candidate_tree": {
+    "directories": 1617,
+    "leaves": 10802,
+    "root": "c3e9ddc1799f470ac7c80e117ee953a7232847e0"
+  },
+  "decision": "ACCEPT_EXACT_NATIVE_FORMATTER_WHITESPACE_CANDIDATE",
+  "files": [
+    {
+      "complete_file_exact_native_replacements": true,
+      "exact_inverse": true,
+      "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file.rs",
+      "postimage": {
+        "bytes": 16189,
+        "git_blob": "772977fbe746125ac8e269f93dc80391cfcd7e3d",
+        "sha256": "6c67265f30ae3046c40e30fd9d1bdbd7d93bf25dd955ae92c727b40b5d6da224"
+      },
+      "preimage": {
+        "bytes": 16163,
+        "git_blob": "603d36b01f6f8fe7472c72588e793f8ef169a08b",
+        "sha256": "5d344456e04d4b5972ff5bdcd17adcc08e0570c5742b07584ae1deb9907223a0"
+      }
+    },
+    {
+      "complete_file_exact_native_replacements": true,
+      "exact_inverse": true,
+      "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file_tests.rs",
+      "postimage": {
+        "bytes": 13101,
+        "git_blob": "c9af70342d9c27a0ff5d94a8fc597bafe9c31177",
+        "sha256": "ede6efa1d53a0f93ab9442c6844d195cd4e41b5f03871e8b01eca20c88463df9"
+      },
+      "preimage": {
+        "bytes": 13046,
+        "git_blob": "c71e4a086dd33514d72bf7acb15d1c7e0f621636",
+        "sha256": "027aa761fd851a1f1f15829330a1edf59240d62fea8d9b4742a1d16c9df28cd8"
+      }
+    }
+  ],
+  "full_log": {
+    "bytes": 178931,
+    "git_blob": "a4fac26628af1c06092849bfa4c57551aa28cdb2",
+    "sha256": "4aefac200b17377240602377395448de3fceb2bb588c2b9c56affdbb76c880d1"
+  },
+  "full_log_lines": 2005,
+  "head": "2d1137b1ba39fab0e6a28bac8decc114dfa0138c",
+  "job_id": 127779715942,
+  "native_formatter_blocks": [
+    {
+      "formatter_header_line": 84,
+      "native_log_line": 1714,
+      "new": "        header.extend_from_slice(binding.as_array());\n        header.extend_from_slice(Digest32::of_bytes(&header).as_array());\n        file.0.seek(SeekFrom::Start(0)).map_err(io_error)?;\n        file.0\n            .write_all(&header)\n            .and_then(|()| file.0.sync_all())\n            .map_err(|_| LockedFileCasErrorV1::Indeterminate)?;\n        Ok(Self {\n",
+      "old": "        header.extend_from_slice(binding.as_array());\n        header.extend_from_slice(Digest32::of_bytes(&header).as_array());\n        file.0.seek(SeekFrom::Start(0)).map_err(io_error)?;\n        file.0.write_all(&header)\n            .and_then(|()| file.0.sync_all())\n            .map_err(|_| LockedFileCasErrorV1::Indeterminate)?;\n        Ok(Self {\n",
+      "original_diff_lines": [
+        "         header.extend_from_slice(binding.as_array());",
+        "         header.extend_from_slice(Digest32::of_bytes(&header).as_array());",
+        "         file.0.seek(SeekFrom::Start(0)).map_err(io_error)?;",
+        "-        file.0.write_all(&header)",
+        "+        file.0",
+        "+            .write_all(&header)",
+        "             .and_then(|()| file.0.sync_all())",
+        "             .map_err(|_| LockedFileCasErrorV1::Indeterminate)?;",
+        "         Ok(Self {"
+      ],
+      "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file.rs"
+    },
+    {
+      "formatter_header_line": 158,
+      "native_log_line": 1724,
+      "new": "            }\n        }\n        validate_minimum(state.as_ref(), minimum, minimum_witnessed)?;\n        file.0\n            .sync_all()\n            .map_err(|_| LockedFileCasErrorV1::Indeterminate)?;\n        Ok(Self {\n            file,\n",
+      "old": "            }\n        }\n        validate_minimum(state.as_ref(), minimum, minimum_witnessed)?;\n        file.0.sync_all()\n            .map_err(|_| LockedFileCasErrorV1::Indeterminate)?;\n        Ok(Self {\n            file,\n",
+      "original_diff_lines": [
+        "             }",
+        "         }",
+        "         validate_minimum(state.as_ref(), minimum, minimum_witnessed)?;",
+        "-        file.0.sync_all()",
+        "+        file.0",
+        "+            .sync_all()",
+        "             .map_err(|_| LockedFileCasErrorV1::Indeterminate)?;",
+        "         Ok(Self {",
+        "             file,"
+      ],
+      "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file.rs"
+    },
+    {
+      "formatter_header_line": 356,
+      "native_log_line": 1734,
+      "new": "        .unwrap_or_else(|error| panic!(\"create after rejected recovery: {error}\"));\n    drop(duplicate);\n    pretty_assertions::assert_eq!(\n        LockedFileFinalHoldoutCasStoreV1::recover(\n            temp.open(),\n            digest(\"binding\"),\n            /*minimum*/ None\n        )\n        .err(),\n        Some(LockedFileCasErrorV1::Busy)\n    );\n    drop(store);\n",
+      "old": "        .unwrap_or_else(|error| panic!(\"create after rejected recovery: {error}\"));\n    drop(duplicate);\n    pretty_assertions::assert_eq!(\n        LockedFileFinalHoldoutCasStoreV1::recover(temp.open(), digest(\"binding\"), /*minimum*/ None).err(),\n        Some(LockedFileCasErrorV1::Busy)\n    );\n    drop(store);\n",
+      "original_diff_lines": [
+        "         .unwrap_or_else(|error| panic!(\"create after rejected recovery: {error}\"));",
+        "     drop(duplicate);",
+        "     pretty_assertions::assert_eq!(",
+        "-        LockedFileFinalHoldoutCasStoreV1::recover(temp.open(), digest(\"binding\"), /*minimum*/ None).err(),",
+        "+        LockedFileFinalHoldoutCasStoreV1::recover(",
+        "+            temp.open(),",
+        "+            digest(\"binding\"),",
+        "+            /*minimum*/ None",
+        "+        )",
+        "+        .err(),",
+        "         Some(LockedFileCasErrorV1::Busy)",
+        "     );",
+        "     drop(store);"
+      ],
+      "path": "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file_tests.rs"
+    }
+  ],
+  "old_job_conclusion": "failure",
+  "only_failed_step": "Check formatting (run `just fmt` to fix)",
+  "run_id": 42180997764,
+  "schema": "hepta-independent-holdout-native-format-review-proof-v1",
+  "scope": "Three exact native formatter whitespace replacements only; all other bytes unchanged. No local Rust/rustfmt/native/product tests run; no source/ref/PR changes. Not a new formatting pass or B15 closure.",
+  "separate_git_index_forward_reverse": true,
+  "unchanged_leaves": 10800
+}

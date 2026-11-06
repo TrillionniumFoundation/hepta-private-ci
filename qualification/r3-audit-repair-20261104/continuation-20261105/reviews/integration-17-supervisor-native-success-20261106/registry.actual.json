@@ -1,0 +1,674 @@
+{
+  "schema": "hepta-evidence-packet-actual-registry-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "audit_prefix": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-supervisor-native-success-20261106/",
+  "scope": "Source17 own automatic Supervisor P0 native success, two complete original jobs, four official JUnit archives, exact HEAD/ref/PR/merge/workflow binding",
+  "current_product_head": "17c6b903a5d5d470b72035f95bb6e087291d7e04",
+  "current_product_tree": "25020dc30888fa3ffa6f6e8d1073d91edded1756",
+  "source_parent": "840e8b5dbffca017753cdf87482ce325938f313c",
+  "actual_PR_merge": "26cfdcaa70cbd2daecd165137e3b84d2ad1a7284",
+  "target_base": "63652be658ebed8d3052eb789b951793384fd5e4",
+  "actual_job_checkout": "17c6b903a5d5d470b72035f95bb6e087291d7e04",
+  "latest_observation_utc": "2026-11-06T11:11:30Z",
+  "whole_candidate_qualified": false,
+  "observations_non_atomic": true,
+  "observations_merged_with_earlier_denominators": false,
+  "native_scope": {
+    "workflow_run_id": 42201989809,
+    "event": "pull_request",
+    "jobs_API_observed_before_utc": "2026-11-06 11:11:02 UTC",
+    "artifact_API_observed_before_utc": "2026-11-06 11:11:30 UTC",
+    "complete_jobs": 2,
+    "complete_artifacts": 4,
+    "jobs": [
+      {
+        "id": 127839244015,
+        "platform": "Linux",
+        "runner": "ubuntu-24.04",
+        "conclusion": "success",
+        "actual_checkout": "17c6b903a5d5d470b72035f95bb6e087291d7e04",
+        "actual_tree": "25020dc30888fa3ffa6f6e8d1073d91edded1756",
+        "actual_parents": [
+          "840e8b5dbffca017753cdf87482ce325938f313c"
+        ],
+        "completed_at": "2026-11-06T10:47:06Z",
+        "supervisor_selected_integration_cases": {
+          "passed": 3,
+          "failed": 0,
+          "skipped": 0
+        },
+        "agent_protocol_cases": {
+          "passed": 14,
+          "failed": 0,
+          "skipped": 0
+        },
+        "strict_clippy": {
+          "command": "cargo +1.95.0 clippy --locked -p codex-hepta-supervisor --all-targets -- -D warnings",
+          "status": "success",
+          "Finished_dev_in_actual_command_section": true,
+          "all_targets_is_not_test_execution": true
+        },
+        "formatter": {
+          "command": "cargo +1.95.0 fmt --all -- --check",
+          "status": "success",
+          "actual_diff_blocks": 0,
+          "scope": "full_workspace"
+        },
+        "official_artifacts": [
+          13496027607,
+          13496491391
+        ]
+      },
+      {
+        "id": 127839244401,
+        "platform": "Windows",
+        "runner": "windows-latest",
+        "conclusion": "success",
+        "actual_checkout": "17c6b903a5d5d470b72035f95bb6e087291d7e04",
+        "actual_tree": "25020dc30888fa3ffa6f6e8d1073d91edded1756",
+        "actual_parents": [
+          "840e8b5dbffca017753cdf87482ce325938f313c"
+        ],
+        "completed_at": "2026-11-06T10:48:21Z",
+        "supervisor_selected_integration_cases": {
+          "passed": 3,
+          "failed": 0,
+          "skipped": 0
+        },
+        "agent_protocol_cases": {
+          "passed": 14,
+          "failed": 0,
+          "skipped": 0
+        },
+        "strict_clippy": {
+          "command": "cargo +1.95.0 clippy --locked -p codex-hepta-supervisor --all-targets -- -D warnings",
+          "status": "success",
+          "Finished_dev_in_actual_command_section": true,
+          "all_targets_is_not_test_execution": true
+        },
+        "formatter": {
+          "command": "cargo +1.95.0 fmt -p codex-hepta-supervisor -- --check",
+          "status": "success",
+          "actual_diff_blocks": 0,
+          "scope": "Supervisor_package"
+        },
+        "official_artifacts": [
+          13495024668,
+          13495728233
+        ]
+      }
+    ],
+    "native_formatter_qualification_for_current_17": true,
+    "selected_supervisor_integration_cases_per_platform": 3,
+    "complete_agent_protocol_cases_per_platform": 14,
+    "new_six_Unix_unit_tests": "NOT_SELECTED",
+    "original_paired_process_product": "NOT_SELECTED",
+    "Clippy_all_targets_is_not_test_execution": true,
+    "build_or_test_uncached_qualification": false,
+    "old_840_formatter_failures_preserved_in_previous_packet": true,
+    "results_transferred_from_old_head": false,
+    "all_required_original_CI_passed": false,
+    "whole_candidate_qualified": false,
+    "newly_closed_blockers": []
+  },
+  "archive": {
+    "schema": "hepta-split-xz-archive-v1",
+    "compression": "XZ/CRC64",
+    "encoding": "base64",
+    "archive_identity": {
+      "bytes": 705504,
+      "git_blob": "ef3c9b70a4ac07c95c6ca084aa93e6ded54f28a2",
+      "sha256": "3bcef995f697f6a1f84b80802f7695fba7a562f18439316f4b2f560b92078428"
+    },
+    "computed_archive_git_is_not_standalone_actual_blob": true,
+    "manifest": {
+      "bytes": 7241,
+      "git_blob": "a2dbe0201075ab393df275793352ebdf2a938460",
+      "sha256": "5e3d38762609248b247cd12723e7b7cc4a7ede368f715575f235d9da6fde2302"
+    },
+    "members": 31,
+    "member_bytes": 9824329,
+    "parts": [
+      {
+        "path": "archive-part-000.b64",
+        "bytes": 76001,
+        "git_blob": "a8f2dcd3633d4b8cf9ded408b044cdbeccfaaff2",
+        "sha256": "92325ce6943bf0d7a0dbbab77bf12d3265d4294229cb49cf0a5f954de49c33bb"
+      },
+      {
+        "path": "archive-part-001.b64",
+        "bytes": 76001,
+        "git_blob": "212a979fe1808acf290a09457b26bd963883a261",
+        "sha256": "54be0ed68a0a71024f262ffb8a3cecd183b369da78b6742dd141c497fb460287"
+      },
+      {
+        "path": "archive-part-002.b64",
+        "bytes": 76001,
+        "git_blob": "e9012badb1b839f1f10187e8c0e11717f866b7dd",
+        "sha256": "8c65fa0e46aa8639ffcf8ba9a7ebb547476bea9f306e8bde104f9a5848214d2e"
+      },
+      {
+        "path": "archive-part-003.b64",
+        "bytes": 76001,
+        "git_blob": "1c5e5e3a796332b7feb81d7c79fe6f4f26e4cc62",
+        "sha256": "1bc64795293b7d5736b7a135e7378cd3697b95d78e2a49dae803c9a0aa762843"
+      },
+      {
+        "path": "archive-part-004.b64",
+        "bytes": 76001,
+        "git_blob": "9d879e5a3b817e29325401ce1e1a8123816ef62c",
+        "sha256": "e457499f395759c49f1027bc11e55fdfdb48a72b861f785b4eeda6d5c48a730f"
+      },
+      {
+        "path": "archive-part-005.b64",
+        "bytes": 76001,
+        "git_blob": "2f87de9096633eaa465f4a0e50a3d98ff1a1c236",
+        "sha256": "f0e37ec17c2e5f6216ee529eb82ea5400934e6e1e002d89bfeda0903e57ee531"
+      },
+      {
+        "path": "archive-part-006.b64",
+        "bytes": 76001,
+        "git_blob": "bf80599b4ea452c1b1b15d1ccf68debbe776ea09",
+        "sha256": "02e4c73815161eb77434bb355490284a0f0b81d73e6955163e2609f6736c4b34"
+      },
+      {
+        "path": "archive-part-007.b64",
+        "bytes": 76001,
+        "git_blob": "da00195b312531cfbcb974948156ff30de8205f5",
+        "sha256": "3c75c97b08218e8862e5469d322096554cbcbe62348569cf9b5a1e6a72868b0d"
+      },
+      {
+        "path": "archive-part-008.b64",
+        "bytes": 76001,
+        "git_blob": "e2b935f9dd972c56ec1c73fd9ed571a9b2c96e30",
+        "sha256": "76e6ed64327ccb257c1d1a092fcf3e08eea8d9c1641c4988f410e7631b581112"
+      },
+      {
+        "path": "archive-part-009.b64",
+        "bytes": 76001,
+        "git_blob": "4a403cffbf7e90d8c74f852b45148a88e502f4c8",
+        "sha256": "c8c57fba8c39603ff02f4c0defd1a729b8af2be4de3d8c5c4a50e86bd26ec4af"
+      },
+      {
+        "path": "archive-part-010.b64",
+        "bytes": 76001,
+        "git_blob": "8f76ac77a952a35e60c1c3100009dc331aaf2571",
+        "sha256": "14ae9413f272476c29e45609a6bb50c9256b1d70fd0a45330f239ddae5eb5a8a"
+      },
+      {
+        "path": "archive-part-011.b64",
+        "bytes": 76001,
+        "git_blob": "3bb694011109b3f3109cd68c9ebc0fc18945f787",
+        "sha256": "e915fe3fca6bb9b0c45243f6b7b50d9d07be5e27da66745427faa37107b80de2"
+      },
+      {
+        "path": "archive-part-012.b64",
+        "bytes": 28673,
+        "git_blob": "62907644596cf3a9efb6523cde4450c3c089432e",
+        "sha256": "f7ffcd34a9885993a91695c936752678f6df11948dddd5589a42caa908cb3dd3"
+      }
+    ]
+  },
+  "archive_members_include": {
+    "all_members": 31,
+    "original_frozen_files_and_fixed_source_authorities": 23,
+    "remaining_freeze_verifier_actual_offline_results_SUMMARY_README": 8,
+    "complete_raw_logs_MCP_API_official_ZIP_and_XML": true
+  },
+  "offline_verification": {
+    "packet_verifier_exit_code": 0,
+    "packet_verifier_stdout": {
+      "bytes": 22571,
+      "git_blob": "63732fd009f75564e39c9486a0a649c38fd05134",
+      "sha256": "6f03c75240803c51dc6698bc4e3082d1f2e7026e5a4f595f0c62531f1870c313"
+    },
+    "packet_verifier_stderr_bytes": 0,
+    "portable_restore_exit_code": 0,
+    "portable_restore_stdout": {
+      "bytes": 632,
+      "git_blob": "d450c1325ae9d8145ee5f2eb9eee77c7d528faeb",
+      "sha256": "df02bceceaf4022fb2623f352ab118c3739c1759ee1531d8cc7c65c41e777b19"
+    },
+    "portable_restore_stderr_bytes": 0,
+    "all_restored_member_bytes_and_offline_stdout_equal": true,
+    "Rust_Cargo_Bazel_or_native_invocation": false
+  },
+  "counts": {
+    "payload_paths": 25,
+    "registration_receipt_paths": 7,
+    "listed_paths": 32,
+    "append_paths_including_registry": 33
+  },
+  "files": [
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-supervisor-native-success-20261106/README.zh-CN.md",
+      "local_member": "README.zh-CN.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f18fddefb597c2c1f8c81f695cd853d04ddf243d",
+      "bytes": 3437,
+      "sha256": "b8adb27b6d5f011c4a2b801ed567b4bbe104a199380a261af593162e32b30ea8",
+      "role": "payload",
+      "actual_materialization_tree": "447106bd06d7a247d605a04c7dcef07501ff6370",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-supervisor-native-success-20261106/SUMMARY.json",
+      "local_member": "SUMMARY.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "36e8bd63849b034495e1ded5d19e4ce26eb85a88",
+      "bytes": 9148,
+      "sha256": "01bde4122497a7bf23ac7a0aeb08b14c4f70500a27a84f4f7eb39f75aae6c0a7",
+      "role": "payload",
+      "actual_materialization_tree": "447106bd06d7a247d605a04c7dcef07501ff6370",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-supervisor-native-success-20261106/archive-part-000.b64",
+      "local_member": "archive-part-000.b64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a8f2dcd3633d4b8cf9ded408b044cdbeccfaaff2",
+      "bytes": 76001,
+      "sha256": "92325ce6943bf0d7a0dbbab77bf12d3265d4294229cb49cf0a5f954de49c33bb",
+      "role": "payload",
+      "actual_materialization_tree": "447106bd06d7a247d605a04c7dcef07501ff6370",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-supervisor-native-success-20261106/archive-part-001.b64",
+      "local_member": "archive-part-001.b64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "212a979fe1808acf290a09457b26bd963883a261",
+      "bytes": 76001,
+      "sha256": "54be0ed68a0a71024f262ffb8a3cecd183b369da78b6742dd141c497fb460287",
+      "role": "payload",
+      "actual_materialization_tree": "447106bd06d7a247d605a04c7dcef07501ff6370",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-supervisor-native-success-20261106/archive-part-002.b64",
+      "local_member": "archive-part-002.b64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e9012badb1b839f1f10187e8c0e11717f866b7dd",
+      "bytes": 76001,
+      "sha256": "8c65fa0e46aa8639ffcf8ba9a7ebb547476bea9f306e8bde104f9a5848214d2e",
+      "role": "payload",
+      "actual_materialization_tree": "447106bd06d7a247d605a04c7dcef07501ff6370",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-supervisor-native-success-20261106/archive-part-003.b64",
+      "local_member": "archive-part-003.b64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1c5e5e3a796332b7feb81d7c79fe6f4f26e4cc62",
+      "bytes": 76001,
+      "sha256": "1bc64795293b7d5736b7a135e7378cd3697b95d78e2a49dae803c9a0aa762843",
+      "role": "payload",
+      "actual_materialization_tree": "447106bd06d7a247d605a04c7dcef07501ff6370",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-supervisor-native-success-20261106/archive-part-004.b64",
+      "local_member": "archive-part-004.b64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9d879e5a3b817e29325401ce1e1a8123816ef62c",
+      "bytes": 76001,
+      "sha256": "e457499f395759c49f1027bc11e55fdfdb48a72b861f785b4eeda6d5c48a730f",
+      "role": "payload",
+      "actual_materialization_tree": "447106bd06d7a247d605a04c7dcef07501ff6370",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-supervisor-native-success-20261106/archive-part-005.b64",
+      "local_member": "archive-part-005.b64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2f87de9096633eaa465f4a0e50a3d98ff1a1c236",
+      "bytes": 76001,
+      "sha256": "f0e37ec17c2e5f6216ee529eb82ea5400934e6e1e002d89bfeda0903e57ee531",
+      "role": "payload",
+      "actual_materialization_tree": "447106bd06d7a247d605a04c7dcef07501ff6370",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-supervisor-native-success-20261106/archive-part-006.b64",
+      "local_member": "archive-part-006.b64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bf80599b4ea452c1b1b15d1ccf68debbe776ea09",
+      "bytes": 76001,
+      "sha256": "02e4c73815161eb77434bb355490284a0f0b81d73e6955163e2609f6736c4b34",
+      "role": "payload",
+      "actual_materialization_tree": "447106bd06d7a247d605a04c7dcef07501ff6370",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-supervisor-native-success-20261106/archive-part-007.b64",
+      "local_member": "archive-part-007.b64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "da00195b312531cfbcb974948156ff30de8205f5",
+      "bytes": 76001,
+      "sha256": "3c75c97b08218e8862e5469d322096554cbcbe62348569cf9b5a1e6a72868b0d",
+      "role": "payload",
+      "actual_materialization_tree": "447106bd06d7a247d605a04c7dcef07501ff6370",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-supervisor-native-success-20261106/archive-part-008.b64",
+      "local_member": "archive-part-008.b64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e2b935f9dd972c56ec1c73fd9ed571a9b2c96e30",
+      "bytes": 76001,
+      "sha256": "76e6ed64327ccb257c1d1a092fcf3e08eea8d9c1641c4988f410e7631b581112",
+      "role": "payload",
+      "actual_materialization_tree": "447106bd06d7a247d605a04c7dcef07501ff6370",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-supervisor-native-success-20261106/archive-part-009.b64",
+      "local_member": "archive-part-009.b64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4a403cffbf7e90d8c74f852b45148a88e502f4c8",
+      "bytes": 76001,
+      "sha256": "c8c57fba8c39603ff02f4c0defd1a729b8af2be4de3d8c5c4a50e86bd26ec4af",
+      "role": "payload",
+      "actual_materialization_tree": "447106bd06d7a247d605a04c7dcef07501ff6370",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-supervisor-native-success-20261106/archive-part-010.b64",
+      "local_member": "archive-part-010.b64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8f76ac77a952a35e60c1c3100009dc331aaf2571",
+      "bytes": 76001,
+      "sha256": "14ae9413f272476c29e45609a6bb50c9256b1d70fd0a45330f239ddae5eb5a8a",
+      "role": "payload",
+      "actual_materialization_tree": "447106bd06d7a247d605a04c7dcef07501ff6370",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-supervisor-native-success-20261106/archive-part-011.b64",
+      "local_member": "archive-part-011.b64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3bb694011109b3f3109cd68c9ebc0fc18945f787",
+      "bytes": 76001,
+      "sha256": "e915fe3fca6bb9b0c45243f6b7b50d9d07be5e27da66745427faa37107b80de2",
+      "role": "payload",
+      "actual_materialization_tree": "447106bd06d7a247d605a04c7dcef07501ff6370",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-supervisor-native-success-20261106/archive-part-012.b64",
+      "local_member": "archive-part-012.b64",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "62907644596cf3a9efb6523cde4450c3c089432e",
+      "bytes": 28673,
+      "sha256": "f7ffcd34a9885993a91695c936752678f6df11948dddd5589a42caa908cb3dd3",
+      "role": "payload",
+      "actual_materialization_tree": "447106bd06d7a247d605a04c7dcef07501ff6370",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-supervisor-native-success-20261106/archive.json",
+      "local_member": "archive.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8d46a595a355a0367222bc55e1cf76fb42f226a9",
+      "bytes": 3426,
+      "sha256": "727c9cddee8e2bccf94963331673ef6a7b293fdada8eb385b7881a08b6ee4e5a",
+      "role": "payload",
+      "actual_materialization_tree": "447106bd06d7a247d605a04c7dcef07501ff6370",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-supervisor-native-success-20261106/member-manifest.json",
+      "local_member": "member-manifest.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a2dbe0201075ab393df275793352ebdf2a938460",
+      "bytes": 7241,
+      "sha256": "5e3d38762609248b247cd12723e7b7cc4a7ede368f715575f235d9da6fde2302",
+      "role": "payload",
+      "actual_materialization_tree": "447106bd06d7a247d605a04c7dcef07501ff6370",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-supervisor-native-success-20261106/portable-restore.execution.json",
+      "local_member": "portable-restore.execution.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "91cf1e18cc7f8d90509a29dd548cbd0b07b675ac",
+      "bytes": 598,
+      "sha256": "0069b457fc5db56d4cd221269f2045a5b09359170dc9478392e1d743fa52a687",
+      "role": "payload",
+      "actual_materialization_tree": "447106bd06d7a247d605a04c7dcef07501ff6370",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-supervisor-native-success-20261106/portable-restore.stderr.txt",
+      "local_member": "portable-restore.stderr.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "role": "payload",
+      "actual_materialization_tree": "447106bd06d7a247d605a04c7dcef07501ff6370",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-supervisor-native-success-20261106/portable-restore.stdout.json",
+      "local_member": "portable-restore.stdout.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d450c1325ae9d8145ee5f2eb9eee77c7d528faeb",
+      "bytes": 632,
+      "sha256": "df02bceceaf4022fb2623f352ab118c3739c1759ee1531d8cc7c65c41e777b19",
+      "role": "payload",
+      "actual_materialization_tree": "447106bd06d7a247d605a04c7dcef07501ff6370",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-supervisor-native-success-20261106/restore_verify.py",
+      "local_member": "restore_verify.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "70d6acb1ce1a322d9e14a5f31ef6abf715dbeae3",
+      "bytes": 3473,
+      "sha256": "38f262be1d3755602c6cbbc35a2a43fc887f5e582cca492ea4251d4ac2e8c24a",
+      "role": "payload",
+      "actual_materialization_tree": "447106bd06d7a247d605a04c7dcef07501ff6370",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-supervisor-native-success-20261106/verification-01.execution.json",
+      "local_member": "verification-01.execution.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5b934c73e795783a9cfbe19d7ecbcf559c33be80",
+      "bytes": 496,
+      "sha256": "7ffd6852d8f2e193bb49234cae836e2d8e51e45d17f706db5064a0b30c90f8d1",
+      "role": "payload",
+      "actual_materialization_tree": "447106bd06d7a247d605a04c7dcef07501ff6370",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-supervisor-native-success-20261106/verification-01.stderr.txt",
+      "local_member": "verification-01.stderr.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "role": "payload",
+      "actual_materialization_tree": "447106bd06d7a247d605a04c7dcef07501ff6370",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-supervisor-native-success-20261106/verification-01.stdout.json",
+      "local_member": "verification-01.stdout.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "63732fd009f75564e39c9486a0a649c38fd05134",
+      "bytes": 22571,
+      "sha256": "6f03c75240803c51dc6698bc4e3082d1f2e7026e5a4f595f0c62531f1870c313",
+      "role": "payload",
+      "actual_materialization_tree": "447106bd06d7a247d605a04c7dcef07501ff6370",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-supervisor-native-success-20261106/verify_packet.py",
+      "local_member": "verify_packet.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d0a83dc0e425520713d65ba672f567d4abe96abf",
+      "bytes": 16520,
+      "sha256": "5ebc8512f99eee5faa4a20c4f029ebdb94f23072cb50910ffc9a2ec72ffb1ea8",
+      "role": "payload",
+      "actual_materialization_tree": "447106bd06d7a247d605a04c7dcef07501ff6370",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-supervisor-native-success-20261106/registration-payloads-000.actual.json",
+      "local_member": "registration-payloads-000.actual.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0dcbf717c5881cdce3969caaaacc822524d72894",
+      "bytes": 168597,
+      "sha256": "d196e14d3509dad1a33c11b649394e00146b001ba059d00b167284d1104bde05",
+      "role": "registration_receipt",
+      "actual_materialization_tree": "a9464d152ab53063fd3ad276ce633415a3814d4f",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-supervisor-native-success-20261106/registration-payloads-001.actual.json",
+      "local_member": "registration-payloads-001.actual.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "80251fe9a904ea0b8d6adb3c77d5d64e8b287a4d",
+      "bytes": 306979,
+      "sha256": "af3ff1e6bc9e7044a7f2558792f5942cca50f91805c5d887b462d35252664bb1",
+      "role": "registration_receipt",
+      "actual_materialization_tree": "a9464d152ab53063fd3ad276ce633415a3814d4f",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-supervisor-native-success-20261106/registration-payloads-002.actual.json",
+      "local_member": "registration-payloads-002.actual.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e4c9935a0e398448f643d2e69ba91351dda8b05e",
+      "bytes": 306979,
+      "sha256": "f5d518f6335285e1db024b9e89e9897d446c80b4a70c87f52321ac7efcd5d20b",
+      "role": "registration_receipt",
+      "actual_materialization_tree": "a9464d152ab53063fd3ad276ce633415a3814d4f",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-supervisor-native-success-20261106/registration-payloads-003.actual.json",
+      "local_member": "registration-payloads-003.actual.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f5404923757e336d3b6cac1f6a44f39e0937e390",
+      "bytes": 187390,
+      "sha256": "511ee734d796aa924e29b21057ed0216751660a754e87aeaf9ef4fed6bc29e34",
+      "role": "registration_receipt",
+      "actual_materialization_tree": "a9464d152ab53063fd3ad276ce633415a3814d4f",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-supervisor-native-success-20261106/registration-payloads-004.actual.json",
+      "local_member": "registration-payloads-004.actual.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "65738489d047a1ce733ab6682c06ec5c5f423d81",
+      "bytes": 12224,
+      "sha256": "27371fcf74a762b7a4f65efdd5c644be5e00e2767d98f4afeae489b99ab4d015",
+      "role": "registration_receipt",
+      "actual_materialization_tree": "a9464d152ab53063fd3ad276ce633415a3814d4f",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-supervisor-native-success-20261106/registration-payloads-005.actual.json",
+      "local_member": "registration-payloads-005.actual.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d8493379198905abe3a376aa0ff3fadb0781287b",
+      "bytes": 31745,
+      "sha256": "fdddc8d1c57146d4b4f046380ef5996eb4eb0a4eff239574b5cd5c06b4723271",
+      "role": "registration_receipt",
+      "actual_materialization_tree": "a9464d152ab53063fd3ad276ce633415a3814d4f",
+      "full_GET_utf8_bytes_equal": true
+    },
+    {
+      "path": "qualification/r3-audit-repair-20261104/continuation-20261105/reviews/integration-17-supervisor-native-success-20261106/registration-payloads-006.actual.json",
+      "local_member": "registration-payloads-006.actual.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "80fbcc09cced701af6dad6b0658d025bfbbfacbd",
+      "bytes": 18453,
+      "sha256": "c82f49ba77bb146204a0870bae3703e2187bda045cf16eed232b8139908f7b24",
+      "role": "registration_receipt",
+      "actual_materialization_tree": "a9464d152ab53063fd3ad276ce633415a3814d4f",
+      "full_GET_utf8_bytes_equal": true
+    }
+  ],
+  "materialization_originals": {
+    "payload_create_tree": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Action completed."
+        }
+      ],
+      "structuredContent": {
+        "sha": "447106bd06d7a247d605a04c7dcef07501ff6370"
+      },
+      "isError": false
+    },
+    "receipt_create_tree": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Action completed."
+        }
+      ],
+      "structuredContent": {
+        "sha": "a9464d152ab53063fd3ad276ce633415a3814d4f"
+      },
+      "isError": false
+    }
+  },
+  "materialization_Merkle_proofs": {
+    "payload_complete_leaf_count": 25,
+    "payload_computed_root": "447106bd06d7a247d605a04c7dcef07501ff6370",
+    "payload_plus_receipts_complete_leaf_count": 32,
+    "payload_plus_receipts_computed_root": "a9464d152ab53063fd3ad276ce633415a3814d4f",
+    "both_computed_roots_equal_actual_create_tree_SHA": true,
+    "actual_full_materialization_tree_GET_claimed": false
+  },
+  "manual_CI_operations": [],
+  "private_capacity_query": false,
+  "ref_mutations": [],
+  "local_sidecars_excluded_from_append": [
+    "archive.original.tar.xz",
+    "registry-self.actual.json",
+    "tree-elements.actual.json",
+    "registration-receipts-GET-000.local-sidecar.json",
+    "registration-receipts-GET-001.local-sidecar.json"
+  ],
+  "temporary_download_URLs_archived": false,
+  "schema_adapter": "Same single-payload-tree/single-receipt-tree evidence_packet schema as the frozen840 packet. files[] contains exact path/mode/type/sha/bytes/sha256; tree-elements.actual.json is the complete plain array including registry. Self receipt and two explicitly named local GET sidecars are not append paths."
+}

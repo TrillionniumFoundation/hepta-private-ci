@@ -1,0 +1,2570 @@
+{
+  "all_archive_member_bytes_verified": 3882455,
+  "all_archive_members_verified": 41,
+  "archive": {
+    "bytes": 599347,
+    "git_blob": "43413872588778d574ed34f484e6797eec42c848",
+    "sha256": "a90cb14087ee364f8f6c0fec1ad40fa442e4434b5598acee52b973a5079e2d21"
+  },
+  "assessment": {
+    "B11": "OPEN",
+    "inside_normal_unrelabelled_root_compatibility": "UNKNOWN; observed inside fixture was explicitly labelled Low",
+    "low_only_satisfies_all_original_outside_mutation_contracts": false,
+    "lower_than_Low_or_other_mandatory_policy_or_combined_mechanism": "UNKNOWN; no such new execution or universal impossibility proof",
+    "pipes_desktop_ConPTY_loader_inherited_handles_token_copies_and_descendants_at_Low": "UNKNOWN; original eight-row phase spawned zero descendants",
+    "raw_thread_path_observed": true,
+    "reason": "Recorded same-Low different-capability-cohort file and directory deletions persist after handle closure."
+  },
+  "episodes": [
+    {
+      "archived_log_path": "root/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127584591851/members/bazel-execution-logs/failed-test-logs/invocation-dp0tyrq_/targets/0000/test.log",
+      "complete_marker_counts": {
+        "finalized": 6,
+        "restoration": 5,
+        "row": 7
+      },
+      "complete_selected_records": [
+        {
+          "kind": "row",
+          "line": 408,
+          "raw_line_including_terminator": {
+            "bytes": 4059,
+            "git_blob": "cc657c15f154793d21ddab9a7a089db4cecb124e",
+            "sha256": "3e3c73e200ba7a0e174cc2040c5a913327303f6c3af73bfc6fd8f1d6cf407e21"
+          },
+          "value": {
+            "access_checks": [
+              {
+                "access_sd": "O:LAG:S-1-5-21-3077485881-3661871218-4154919024-513D:AI(A;OICI;0x1200a9;;;S-1-5-21-131-242-353-464)(A;OICI;0x1301bf;;;S-1-5-21-121-232-343-454)(A;OICIID;FA;;;S-1-5-5-0-719168)(A;OICIID;FA;;;WD)(A;OICIID;FA;;;BA)(A;OICIID;FA;;;SY)(A;ID;FA;;;LA)(A;OICIIOID;GA;;;CO)(A;OICIID;0x1200a9;;;BU)(A;CIID;LC;;;BU)(A;CIID;DC;;;BU)",
+                "checks": [
+                  {
+                    "allowed": true,
+                    "granted": 64,
+                    "last_error": 0,
+                    "subject": "host"
+                  },
+                  {
+                    "allowed": true,
+                    "granted": 64,
+                    "last_error": 0,
+                    "subject": "current_strict"
+                  },
+                  {
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5,
+                    "subject": "current_strict_low"
+                  },
+                  {
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5,
+                    "subject": "full_restricting_explicit_read"
+                  }
+                ],
+                "desired": 64,
+                "identity": [
+                  2954875997,
+                  65536,
+                  98343
+                ],
+                "path": "D:\\tmp\\.tmpey99OA\\current_strict_low-medium\\outside",
+                "sd": "O:LAG:S-1-5-21-3077485881-3661871218-4154919024-513D:AI(A;OICI;0x1200a9;;;S-1-5-21-131-242-353-464)(A;OICI;0x1301bf;;;S-1-5-21-121-232-343-454)(A;OICIID;FA;;;S-1-5-5-0-719168)(A;OICIID;FA;;;WD)(A;OICIID;FA;;;BA)(A;OICIID;FA;;;SY)(A;ID;FA;;;LA)(A;OICIIOID;GA;;;CO)(A;OICIID;0x1200a9;;;BU)(A;CIID;LC;;;BU)(A;CIID;DC;;;BU)S:AI(ML;;NW;;;ME)"
+              },
+              {
+                "access_sd": "O:LAG:S-1-5-21-3077485881-3661871218-4154919024-513D:AI(A;ID;0x1200a9;;;S-1-5-21-131-242-353-464)(A;ID;0x1301bf;;;S-1-5-21-121-232-343-454)(A;ID;FA;;;S-1-5-5-0-719168)(A;ID;FA;;;WD)(A;ID;FA;;;BA)(A;ID;FA;;;SY)(A;ID;FA;;;LA)(A;ID;0x1200a9;;;BU)",
+                "checks": [
+                  {
+                    "allowed": true,
+                    "granted": 65536,
+                    "last_error": 0,
+                    "subject": "host"
+                  },
+                  {
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5,
+                    "subject": "current_strict"
+                  },
+                  {
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5,
+                    "subject": "current_strict_low"
+                  },
+                  {
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5,
+                    "subject": "full_restricting_explicit_read"
+                  }
+                ],
+                "desired": 65536,
+                "identity": [
+                  2954875997,
+                  65536,
+                  98346
+                ],
+                "path": "D:\\tmp\\.tmpey99OA\\current_strict_low-medium\\outside\\delete.txt",
+                "sd": "O:LAG:S-1-5-21-3077485881-3661871218-4154919024-513D:AI(A;ID;0x1200a9;;;S-1-5-21-131-242-353-464)(A;ID;0x1301bf;;;S-1-5-21-121-232-343-454)(A;ID;FA;;;S-1-5-5-0-719168)(A;ID;FA;;;WD)(A;ID;FA;;;BA)(A;ID;FA;;;SY)(A;ID;FA;;;LA)(A;ID;0x1200a9;;;BU)S:AI(ML;;NW;;;ME)"
+              },
+              {
+                "access_sd": "O:LAG:S-1-5-21-3077485881-3661871218-4154919024-513D:AI(A;OICIID;0x1200a9;;;S-1-5-21-131-242-353-464)(A;OICIID;0x1301bf;;;S-1-5-21-121-232-343-454)(A;OICIID;FA;;;S-1-5-5-0-719168)(A;OICIID;FA;;;WD)(A;OICIID;FA;;;BA)(A;OICIID;FA;;;SY)(A;ID;FA;;;LA)(A;OICIIOID;GA;;;CO)(A;OICIID;0x1200a9;;;BU)(A;CIID;LC;;;BU)(A;CIID;DC;;;BU)",
+                "checks": [
+                  {
+                    "allowed": true,
+                    "granted": 65536,
+                    "last_error": 0,
+                    "subject": "host"
+                  },
+                  {
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5,
+                    "subject": "current_strict"
+                  },
+                  {
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5,
+                    "subject": "current_strict_low"
+                  },
+                  {
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5,
+                    "subject": "full_restricting_explicit_read"
+                  }
+                ],
+                "desired": 65536,
+                "identity": [
+                  2954875997,
+                  65536,
+                  98347
+                ],
+                "path": "D:\\tmp\\.tmpey99OA\\current_strict_low-medium\\outside\\delete-dir",
+                "sd": "O:LAG:S-1-5-21-3077485881-3661871218-4154919024-513D:AI(A;OICIID;0x1200a9;;;S-1-5-21-131-242-353-464)(A;OICIID;0x1301bf;;;S-1-5-21-121-232-343-454)(A;OICIID;FA;;;S-1-5-5-0-719168)(A;OICIID;FA;;;WD)(A;OICIID;FA;;;BA)(A;OICIID;FA;;;SY)(A;ID;FA;;;LA)(A;OICIIOID;GA;;;CO)(A;OICIID;0x1200a9;;;BU)(A;CIID;LC;;;BU)(A;CIID;DC;;;BU)S:AI(ML;;NW;;;ME)"
+              }
+            ],
+            "effective_thread_token": {
+              "integrity_attributes": 96,
+              "integrity_rid": 4096,
+              "mandatory_policy": 3
+            },
+            "expected_token": {
+              "integrity_attributes": 96,
+              "integrity_rid": 4096,
+              "mandatory_policy": 3
+            },
+            "inside": {
+              "errors": [
+                null,
+                null,
+                null,
+                null
+              ],
+              "order": [
+                "overwrite",
+                "create",
+                "remove_file",
+                "remove_dir"
+              ],
+              "read": "original",
+              "read_error": null
+            },
+            "outside": {
+              "errors": [
+                {
+                  "code": 5,
+                  "kind": "PermissionDenied",
+                  "message": "Access is denied. (os error 5)"
+                },
+                {
+                  "code": 5,
+                  "kind": "PermissionDenied",
+                  "message": "Access is denied. (os error 5)"
+                },
+                {
+                  "code": 5,
+                  "kind": "PermissionDenied",
+                  "message": "Access is denied. (os error 5)"
+                },
+                {
+                  "code": 5,
+                  "kind": "PermissionDenied",
+                  "message": "Access is denied. (os error 5)"
+                }
+              ],
+              "order": [
+                "overwrite",
+                "create",
+                "remove_file",
+                "remove_dir"
+              ],
+              "read": "original",
+              "read_error": null
+            },
+            "outside_level": "medium",
+            "subject": "current_strict_low"
+          }
+        },
+        {
+          "kind": "finalized",
+          "line": 433,
+          "raw_line_including_terminator": {
+            "bytes": 2788,
+            "git_blob": "09c0a24a7780bc4076b657f116c994869719cd9e",
+            "sha256": "e25159b3ae2b4102ef3598d17ef7ff438730036ea3bf2ee25e46a6bdeb3ae3e6"
+          },
+          "value": {
+            "objects": [
+              {
+                "identity": [
+                  2954875997,
+                  131072,
+                  98332
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 1,
+                "path": "D:\\tmp\\.tmpey99OA\\current_strict_low-medium\\inside",
+                "pending": 0,
+                "restored_survivor": true
+              },
+              {
+                "identity": [
+                  2954875997,
+                  131072,
+                  98338
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 1,
+                "path": "D:\\tmp\\.tmpey99OA\\current_strict_low-medium\\inside\\read.txt",
+                "pending": 0,
+                "restored_survivor": true
+              },
+              {
+                "identity": [
+                  2954875997,
+                  131072,
+                  98339
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 1,
+                "path": "D:\\tmp\\.tmpey99OA\\current_strict_low-medium\\inside\\overwrite.txt",
+                "pending": 0,
+                "restored_survivor": true
+              },
+              {
+                "identity": [
+                  2954875997,
+                  65536,
+                  98341
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 0,
+                "path": "D:\\tmp\\.tmpey99OA\\current_strict_low-medium\\inside\\delete.txt",
+                "pending": 1,
+                "restored_survivor": false
+              },
+              {
+                "identity": [
+                  2954875997,
+                  65536,
+                  98342
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 0,
+                "path": "D:\\tmp\\.tmpey99OA\\current_strict_low-medium\\inside\\delete-dir",
+                "pending": 1,
+                "restored_survivor": false
+              },
+              {
+                "identity": [
+                  2954875997,
+                  65536,
+                  98343
+                ],
+                "label": "S:(ML;;NW;;;ME)",
+                "links": 1,
+                "path": "D:\\tmp\\.tmpey99OA\\current_strict_low-medium\\outside",
+                "pending": 0,
+                "restored_survivor": true
+              },
+              {
+                "identity": [
+                  2954875997,
+                  65536,
+                  98344
+                ],
+                "label": "S:(ML;;NW;;;ME)",
+                "links": 1,
+                "path": "D:\\tmp\\.tmpey99OA\\current_strict_low-medium\\outside\\read.txt",
+                "pending": 0,
+                "restored_survivor": true
+              },
+              {
+                "identity": [
+                  2954875997,
+                  65536,
+                  98345
+                ],
+                "label": "S:(ML;;NW;;;ME)",
+                "links": 1,
+                "path": "D:\\tmp\\.tmpey99OA\\current_strict_low-medium\\outside\\overwrite.txt",
+                "pending": 0,
+                "restored_survivor": true
+              },
+              {
+                "identity": [
+                  2954875997,
+                  65536,
+                  98346
+                ],
+                "label": "S:(ML;;NW;;;ME)",
+                "links": 1,
+                "path": "D:\\tmp\\.tmpey99OA\\current_strict_low-medium\\outside\\delete.txt",
+                "pending": 0,
+                "restored_survivor": true
+              },
+              {
+                "identity": [
+                  2954875997,
+                  65536,
+                  98347
+                ],
+                "label": "S:(ML;;NW;;;ME)",
+                "links": 1,
+                "path": "D:\\tmp\\.tmpey99OA\\current_strict_low-medium\\outside\\delete-dir",
+                "pending": 0,
+                "restored_survivor": true
+              }
+            ],
+            "outside_level": "medium",
+            "physical_post_state": [
+              {
+                "created": "created",
+                "created_error": null,
+                "deleted_directory_still_named": false,
+                "deleted_file_still_named": false,
+                "directory_error": {
+                  "code": 2,
+                  "kind": "NotFound",
+                  "message": "The system cannot find the file specified. (os error 2)"
+                },
+                "file_error": {
+                  "code": 2,
+                  "kind": "NotFound",
+                  "message": "The system cannot find the file specified. (os error 2)"
+                },
+                "overwrite": "overwritten",
+                "overwrite_error": null,
+                "root": "D:\\tmp\\.tmpey99OA\\current_strict_low-medium\\inside"
+              },
+              {
+                "created": null,
+                "created_error": {
+                  "code": 2,
+                  "kind": "NotFound",
+                  "message": "The system cannot find the file specified. (os error 2)"
+                },
+                "deleted_directory_still_named": true,
+                "deleted_file_still_named": true,
+                "directory_error": null,
+                "file_error": null,
+                "overwrite": "original",
+                "overwrite_error": null,
+                "root": "D:\\tmp\\.tmpey99OA\\current_strict_low-medium\\outside"
+              }
+            ],
+            "subject": "current_strict_low"
+          }
+        },
+        {
+          "kind": "row",
+          "line": 456,
+          "raw_line_including_terminator": {
+            "bytes": 3953,
+            "git_blob": "3e9a8883ba09c1e4d72ef9d2d373dd54098bd0f7",
+            "sha256": "0c56c8af6b57a23de7ff4bf3139ef6773831062114d16bd6926f218c963dfa2b"
+          },
+          "value": {
+            "access_checks": [
+              {
+                "access_sd": "O:LAG:S-1-5-21-3077485881-3661871218-4154919024-513D:AI(A;OICI;0x1200a9;;;S-1-5-21-131-242-353-464)(A;OICI;0x1301bf;;;S-1-5-21-121-232-343-454)(A;OICIID;FA;;;S-1-5-5-0-719168)(A;OICIID;FA;;;WD)(A;OICIID;FA;;;BA)(A;OICIID;FA;;;SY)(A;ID;FA;;;LA)(A;OICIIOID;GA;;;CO)(A;OICIID;0x1200a9;;;BU)(A;CIID;LC;;;BU)(A;CIID;DC;;;BU)",
+                "checks": [
+                  {
+                    "allowed": true,
+                    "granted": 64,
+                    "last_error": 0,
+                    "subject": "host"
+                  },
+                  {
+                    "allowed": true,
+                    "granted": 64,
+                    "last_error": 0,
+                    "subject": "current_strict"
+                  },
+                  {
+                    "allowed": true,
+                    "granted": 64,
+                    "last_error": 0,
+                    "subject": "current_strict_low"
+                  },
+                  {
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5,
+                    "subject": "full_restricting_explicit_read"
+                  }
+                ],
+                "desired": 64,
+                "identity": [
+                  2954875997,
+                  1900544,
+                  98269
+                ],
+                "path": "D:\\tmp\\.tmpey99OA\\current_strict_low-low_other_cohort\\outside",
+                "sd": "O:LAG:S-1-5-21-3077485881-3661871218-4154919024-513D:AI(A;OICI;0x1200a9;;;S-1-5-21-131-242-353-464)(A;OICI;0x1301bf;;;S-1-5-21-121-232-343-454)(A;OICIID;FA;;;S-1-5-5-0-719168)(A;OICIID;FA;;;WD)(A;OICIID;FA;;;BA)(A;OICIID;FA;;;SY)(A;ID;FA;;;LA)(A;OICIIOID;GA;;;CO)(A;OICIID;0x1200a9;;;BU)(A;CIID;LC;;;BU)(A;CIID;DC;;;BU)S:AI(ML;;NW;;;LW)"
+              },
+              {
+                "access_sd": "O:LAG:S-1-5-21-3077485881-3661871218-4154919024-513D:AI(A;ID;0x1200a9;;;S-1-5-21-131-242-353-464)(A;ID;0x1301bf;;;S-1-5-21-121-232-343-454)(A;ID;FA;;;S-1-5-5-0-719168)(A;ID;FA;;;WD)(A;ID;FA;;;BA)(A;ID;FA;;;SY)(A;ID;FA;;;LA)(A;ID;0x1200a9;;;BU)",
+                "checks": [
+                  {
+                    "allowed": true,
+                    "granted": 65536,
+                    "last_error": 0,
+                    "subject": "host"
+                  },
+                  {
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5,
+                    "subject": "current_strict"
+                  },
+                  {
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5,
+                    "subject": "current_strict_low"
+                  },
+                  {
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5,
+                    "subject": "full_restricting_explicit_read"
+                  }
+                ],
+                "desired": 65536,
+                "identity": [
+                  2954875997,
+                  196608,
+                  98305
+                ],
+                "path": "D:\\tmp\\.tmpey99OA\\current_strict_low-low_other_cohort\\outside\\delete.txt",
+                "sd": "O:LAG:S-1-5-21-3077485881-3661871218-4154919024-513D:AI(A;ID;0x1200a9;;;S-1-5-21-131-242-353-464)(A;ID;0x1301bf;;;S-1-5-21-121-232-343-454)(A;ID;FA;;;S-1-5-5-0-719168)(A;ID;FA;;;WD)(A;ID;FA;;;BA)(A;ID;FA;;;SY)(A;ID;FA;;;LA)(A;ID;0x1200a9;;;BU)S:AI(ML;;NW;;;LW)"
+              },
+              {
+                "access_sd": "O:LAG:S-1-5-21-3077485881-3661871218-4154919024-513D:AI(A;OICIID;0x1200a9;;;S-1-5-21-131-242-353-464)(A;OICIID;0x1301bf;;;S-1-5-21-121-232-343-454)(A;OICIID;FA;;;S-1-5-5-0-719168)(A;OICIID;FA;;;WD)(A;OICIID;FA;;;BA)(A;OICIID;FA;;;SY)(A;ID;FA;;;LA)(A;OICIIOID;GA;;;CO)(A;OICIID;0x1200a9;;;BU)(A;CIID;LC;;;BU)(A;CIID;DC;;;BU)",
+                "checks": [
+                  {
+                    "allowed": true,
+                    "granted": 65536,
+                    "last_error": 0,
+                    "subject": "host"
+                  },
+                  {
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5,
+                    "subject": "current_strict"
+                  },
+                  {
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5,
+                    "subject": "current_strict_low"
+                  },
+                  {
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5,
+                    "subject": "full_restricting_explicit_read"
+                  }
+                ],
+                "desired": 65536,
+                "identity": [
+                  2954875997,
+                  196608,
+                  98306
+                ],
+                "path": "D:\\tmp\\.tmpey99OA\\current_strict_low-low_other_cohort\\outside\\delete-dir",
+                "sd": "O:LAG:S-1-5-21-3077485881-3661871218-4154919024-513D:AI(A;OICIID;0x1200a9;;;S-1-5-21-131-242-353-464)(A;OICIID;0x1301bf;;;S-1-5-21-121-232-343-454)(A;OICIID;FA;;;S-1-5-5-0-719168)(A;OICIID;FA;;;WD)(A;OICIID;FA;;;BA)(A;OICIID;FA;;;SY)(A;ID;FA;;;LA)(A;OICIIOID;GA;;;CO)(A;OICIID;0x1200a9;;;BU)(A;CIID;LC;;;BU)(A;CIID;DC;;;BU)S:AI(ML;;NW;;;LW)"
+              }
+            ],
+            "effective_thread_token": {
+              "integrity_attributes": 96,
+              "integrity_rid": 4096,
+              "mandatory_policy": 3
+            },
+            "expected_token": {
+              "integrity_attributes": 96,
+              "integrity_rid": 4096,
+              "mandatory_policy": 3
+            },
+            "inside": {
+              "errors": [
+                null,
+                null,
+                null,
+                null
+              ],
+              "order": [
+                "overwrite",
+                "create",
+                "remove_file",
+                "remove_dir"
+              ],
+              "read": "original",
+              "read_error": null
+            },
+            "outside": {
+              "errors": [
+                {
+                  "code": 5,
+                  "kind": "PermissionDenied",
+                  "message": "Access is denied. (os error 5)"
+                },
+                {
+                  "code": 5,
+                  "kind": "PermissionDenied",
+                  "message": "Access is denied. (os error 5)"
+                },
+                null,
+                null
+              ],
+              "order": [
+                "overwrite",
+                "create",
+                "remove_file",
+                "remove_dir"
+              ],
+              "read": "original",
+              "read_error": null
+            },
+            "outside_level": "low_other_cohort",
+            "subject": "current_strict_low"
+          }
+        },
+        {
+          "kind": "restoration",
+          "line": 458,
+          "raw_line_including_terminator": {
+            "bytes": 2085,
+            "git_blob": "229534333d52f590b0a98f2dfa7fe238aff2062f",
+            "sha256": "1ca25126f36244677cb82eccdc25673cc4c47e8fcce1fc38c48fca0aa1d589df"
+          },
+          "value": {
+            "outside_level": "low_other_cohort",
+            "results": [
+              {
+                "identity": [
+                  2954875997,
+                  1376256,
+                  98268
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 1,
+                "path": "D:\\tmp\\.tmpey99OA\\current_strict_low-low_other_cohort\\inside",
+                "pending": 0,
+                "restored_survivor": true
+              },
+              {
+                "identity": [
+                  2954875997,
+                  393216,
+                  98287
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 1,
+                "path": "D:\\tmp\\.tmpey99OA\\current_strict_low-low_other_cohort\\inside\\read.txt",
+                "pending": 0,
+                "restored_survivor": true
+              },
+              {
+                "identity": [
+                  2954875997,
+                  327680,
+                  98288
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 1,
+                "path": "D:\\tmp\\.tmpey99OA\\current_strict_low-low_other_cohort\\inside\\overwrite.txt",
+                "pending": 0,
+                "restored_survivor": true
+              },
+              {
+                "identity": [
+                  2954875997,
+                  262144,
+                  98301
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 0,
+                "path": "D:\\tmp\\.tmpey99OA\\current_strict_low-low_other_cohort\\inside\\delete.txt",
+                "pending": 1,
+                "restored_survivor": false
+              },
+              {
+                "identity": [
+                  2954875997,
+                  262144,
+                  98302
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 0,
+                "path": "D:\\tmp\\.tmpey99OA\\current_strict_low-low_other_cohort\\inside\\delete-dir",
+                "pending": 1,
+                "restored_survivor": false
+              },
+              {
+                "identity": [
+                  2954875997,
+                  1900544,
+                  98269
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 1,
+                "path": "D:\\tmp\\.tmpey99OA\\current_strict_low-low_other_cohort\\outside",
+                "pending": 0,
+                "restored_survivor": true
+              },
+              {
+                "identity": [
+                  2954875997,
+                  1245184,
+                  98271
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 1,
+                "path": "D:\\tmp\\.tmpey99OA\\current_strict_low-low_other_cohort\\outside\\read.txt",
+                "pending": 0,
+                "restored_survivor": true
+              },
+              {
+                "identity": [
+                  2954875997,
+                  196608,
+                  98304
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 1,
+                "path": "D:\\tmp\\.tmpey99OA\\current_strict_low-low_other_cohort\\outside\\overwrite.txt",
+                "pending": 0,
+                "restored_survivor": true
+              },
+              {
+                "identity": [
+                  2954875997,
+                  196608,
+                  98305
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 0,
+                "path": "D:\\tmp\\.tmpey99OA\\current_strict_low-low_other_cohort\\outside\\delete.txt",
+                "pending": 1,
+                "restored_survivor": false
+              },
+              {
+                "identity": [
+                  2954875997,
+                  196608,
+                  98306
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 0,
+                "path": "D:\\tmp\\.tmpey99OA\\current_strict_low-low_other_cohort\\outside\\delete-dir",
+                "pending": 1,
+                "restored_survivor": false
+              }
+            ],
+            "subject": "current_strict_low"
+          }
+        },
+        {
+          "kind": "finalized",
+          "line": 460,
+          "raw_line_including_terminator": {
+            "bytes": 3116,
+            "git_blob": "60196b29b8edcda9bf995c9d3811be0e752d732b",
+            "sha256": "7ada0db47ef103d0dcb3ff517a589634a159516ce183969c9f530f6415583d08"
+          },
+          "value": {
+            "objects": [
+              {
+                "identity": [
+                  2954875997,
+                  1376256,
+                  98268
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 1,
+                "path": "D:\\tmp\\.tmpey99OA\\current_strict_low-low_other_cohort\\inside",
+                "pending": 0,
+                "restored_survivor": true
+              },
+              {
+                "identity": [
+                  2954875997,
+                  393216,
+                  98287
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 1,
+                "path": "D:\\tmp\\.tmpey99OA\\current_strict_low-low_other_cohort\\inside\\read.txt",
+                "pending": 0,
+                "restored_survivor": true
+              },
+              {
+                "identity": [
+                  2954875997,
+                  327680,
+                  98288
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 1,
+                "path": "D:\\tmp\\.tmpey99OA\\current_strict_low-low_other_cohort\\inside\\overwrite.txt",
+                "pending": 0,
+                "restored_survivor": true
+              },
+              {
+                "identity": [
+                  2954875997,
+                  262144,
+                  98301
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 0,
+                "path": "D:\\tmp\\.tmpey99OA\\current_strict_low-low_other_cohort\\inside\\delete.txt",
+                "pending": 1,
+                "restored_survivor": false
+              },
+              {
+                "identity": [
+                  2954875997,
+                  262144,
+                  98302
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 0,
+                "path": "D:\\tmp\\.tmpey99OA\\current_strict_low-low_other_cohort\\inside\\delete-dir",
+                "pending": 1,
+                "restored_survivor": false
+              },
+              {
+                "identity": [
+                  2954875997,
+                  1900544,
+                  98269
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 1,
+                "path": "D:\\tmp\\.tmpey99OA\\current_strict_low-low_other_cohort\\outside",
+                "pending": 0,
+                "restored_survivor": true
+              },
+              {
+                "identity": [
+                  2954875997,
+                  1245184,
+                  98271
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 1,
+                "path": "D:\\tmp\\.tmpey99OA\\current_strict_low-low_other_cohort\\outside\\read.txt",
+                "pending": 0,
+                "restored_survivor": true
+              },
+              {
+                "identity": [
+                  2954875997,
+                  196608,
+                  98304
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 1,
+                "path": "D:\\tmp\\.tmpey99OA\\current_strict_low-low_other_cohort\\outside\\overwrite.txt",
+                "pending": 0,
+                "restored_survivor": true
+              },
+              {
+                "identity": [
+                  2954875997,
+                  196608,
+                  98305
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 0,
+                "path": "D:\\tmp\\.tmpey99OA\\current_strict_low-low_other_cohort\\outside\\delete.txt",
+                "pending": 1,
+                "restored_survivor": false
+              },
+              {
+                "identity": [
+                  2954875997,
+                  196608,
+                  98306
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 0,
+                "path": "D:\\tmp\\.tmpey99OA\\current_strict_low-low_other_cohort\\outside\\delete-dir",
+                "pending": 1,
+                "restored_survivor": false
+              }
+            ],
+            "outside_level": "low_other_cohort",
+            "physical_post_state": [
+              {
+                "created": "created",
+                "created_error": null,
+                "deleted_directory_still_named": false,
+                "deleted_file_still_named": false,
+                "directory_error": {
+                  "code": 2,
+                  "kind": "NotFound",
+                  "message": "The system cannot find the file specified. (os error 2)"
+                },
+                "file_error": {
+                  "code": 2,
+                  "kind": "NotFound",
+                  "message": "The system cannot find the file specified. (os error 2)"
+                },
+                "overwrite": "overwritten",
+                "overwrite_error": null,
+                "root": "D:\\tmp\\.tmpey99OA\\current_strict_low-low_other_cohort\\inside"
+              },
+              {
+                "created": null,
+                "created_error": {
+                  "code": 2,
+                  "kind": "NotFound",
+                  "message": "The system cannot find the file specified. (os error 2)"
+                },
+                "deleted_directory_still_named": false,
+                "deleted_file_still_named": false,
+                "directory_error": {
+                  "code": 2,
+                  "kind": "NotFound",
+                  "message": "The system cannot find the file specified. (os error 2)"
+                },
+                "file_error": {
+                  "code": 2,
+                  "kind": "NotFound",
+                  "message": "The system cannot find the file specified. (os error 2)"
+                },
+                "overwrite": "original",
+                "overwrite_error": null,
+                "root": "D:\\tmp\\.tmpey99OA\\current_strict_low-low_other_cohort\\outside"
+              }
+            ],
+            "subject": "current_strict_low"
+          }
+        }
+      ],
+      "episode": "native10",
+      "full_log": {
+        "bytes": 143080,
+        "git_blob": "6ff9144d7eb0acf3816499a7a86b39b54b589260",
+        "sha256": "04aa1193f2fa3b76fe49df686b9117cce0929f6600524a923cbd664a3ac7b1fb"
+      },
+      "full_xml": {
+        "bytes": 143503,
+        "git_blob": "b3abefc6130a1c7dc99533961f90a8d87ecc671a",
+        "sha256": "e19d038b1d5a51d7276788f1a0691a0c8512ec4cd46d4f963cf42dd2dabb708a"
+      },
+      "job": "127584591851",
+      "original_eight_row_completion": [
+        {
+          "line": 514,
+          "raw_line_including_terminator": {
+            "bytes": 114,
+            "git_blob": "f51b1410fb639ec6c041913af872c28291b6130e",
+            "sha256": "c73f178590d45800b90f2e8069515c95aade7f5205891d443927959b016775bf"
+          }
+        }
+      ],
+      "parsing_rule": "Only entire anchored marker lines; no interleaving repair; raw-line identities include original terminator.",
+      "selected_low_rows": [
+        {
+          "expected_and_effective_thread_token": {
+            "integrity_attributes": 96,
+            "integrity_rid": 4096,
+            "mandatory_policy": 3
+          },
+          "finalized_line": 433,
+          "inside_explicitly_low_fixture_only": true,
+          "outside_directory_still_named": true,
+          "outside_file_still_named": true,
+          "outside_level": "medium",
+          "outside_objects_after_handle_close": [
+            {
+              "identity": [
+                2954875997,
+                65536,
+                98343
+              ],
+              "label": "S:(ML;;NW;;;ME)",
+              "links": 1,
+              "path": "D:\\tmp\\.tmpey99OA\\current_strict_low-medium\\outside",
+              "pending": 0,
+              "restored_survivor": true
+            },
+            {
+              "identity": [
+                2954875997,
+                65536,
+                98344
+              ],
+              "label": "S:(ML;;NW;;;ME)",
+              "links": 1,
+              "path": "D:\\tmp\\.tmpey99OA\\current_strict_low-medium\\outside\\read.txt",
+              "pending": 0,
+              "restored_survivor": true
+            },
+            {
+              "identity": [
+                2954875997,
+                65536,
+                98345
+              ],
+              "label": "S:(ML;;NW;;;ME)",
+              "links": 1,
+              "path": "D:\\tmp\\.tmpey99OA\\current_strict_low-medium\\outside\\overwrite.txt",
+              "pending": 0,
+              "restored_survivor": true
+            },
+            {
+              "identity": [
+                2954875997,
+                65536,
+                98346
+              ],
+              "label": "S:(ML;;NW;;;ME)",
+              "links": 1,
+              "path": "D:\\tmp\\.tmpey99OA\\current_strict_low-medium\\outside\\delete.txt",
+              "pending": 0,
+              "restored_survivor": true
+            },
+            {
+              "identity": [
+                2954875997,
+                65536,
+                98347
+              ],
+              "label": "S:(ML;;NW;;;ME)",
+              "links": 1,
+              "path": "D:\\tmp\\.tmpey99OA\\current_strict_low-medium\\outside\\delete-dir",
+              "pending": 0,
+              "restored_survivor": true
+            }
+          ],
+          "outside_operation_error_codes": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "row_line": 408
+        },
+        {
+          "expected_and_effective_thread_token": {
+            "integrity_attributes": 96,
+            "integrity_rid": 4096,
+            "mandatory_policy": 3
+          },
+          "finalized_line": 460,
+          "inside_explicitly_low_fixture_only": true,
+          "outside_directory_still_named": false,
+          "outside_file_still_named": false,
+          "outside_level": "low_other_cohort",
+          "outside_objects_after_handle_close": [
+            {
+              "identity": [
+                2954875997,
+                1900544,
+                98269
+              ],
+              "label": "S:(ML;;NW;;;LW)",
+              "links": 1,
+              "path": "D:\\tmp\\.tmpey99OA\\current_strict_low-low_other_cohort\\outside",
+              "pending": 0,
+              "restored_survivor": true
+            },
+            {
+              "identity": [
+                2954875997,
+                1245184,
+                98271
+              ],
+              "label": "S:(ML;;NW;;;LW)",
+              "links": 1,
+              "path": "D:\\tmp\\.tmpey99OA\\current_strict_low-low_other_cohort\\outside\\read.txt",
+              "pending": 0,
+              "restored_survivor": true
+            },
+            {
+              "identity": [
+                2954875997,
+                196608,
+                98304
+              ],
+              "label": "S:(ML;;NW;;;LW)",
+              "links": 1,
+              "path": "D:\\tmp\\.tmpey99OA\\current_strict_low-low_other_cohort\\outside\\overwrite.txt",
+              "pending": 0,
+              "restored_survivor": true
+            },
+            {
+              "identity": [
+                2954875997,
+                196608,
+                98305
+              ],
+              "label": "S:(ML;;NW;;;LW)",
+              "links": 0,
+              "path": "D:\\tmp\\.tmpey99OA\\current_strict_low-low_other_cohort\\outside\\delete.txt",
+              "pending": 1,
+              "restored_survivor": false
+            },
+            {
+              "identity": [
+                2954875997,
+                196608,
+                98306
+              ],
+              "label": "S:(ML;;NW;;;LW)",
+              "links": 0,
+              "path": "D:\\tmp\\.tmpey99OA\\current_strict_low-low_other_cohort\\outside\\delete-dir",
+              "pending": 1,
+              "restored_survivor": false
+            }
+          ],
+          "outside_operation_error_codes": [
+            5,
+            5,
+            null,
+            null
+          ],
+          "row_line": 456
+        }
+      ],
+      "token_records": [
+        {
+          "line": 131,
+          "raw_line_including_terminator": {
+            "bytes": 105,
+            "git_blob": "20de5360e88fe594317cb9682ec95df43a15e23a",
+            "sha256": "4e9827d701688a375b12cc936d22e21efac65df834e046029ba016436c0a0092"
+          },
+          "subject": "host",
+          "value": {
+            "integrity_attributes": 96,
+            "integrity_rid": 12288,
+            "mandatory_policy": 3
+          }
+        },
+        {
+          "line": 133,
+          "raw_line_including_terminator": {
+            "bytes": 115,
+            "git_blob": "9e4a076471eaeb159498dd5d3edb527d1dd58dc0",
+            "sha256": "e079da8f68590171df6e71d859d3a745739287a1a8cc3fe359e12b81a9b0118e"
+          },
+          "subject": "current_strict",
+          "value": {
+            "integrity_attributes": 96,
+            "integrity_rid": 12288,
+            "mandatory_policy": 3
+          }
+        },
+        {
+          "line": 135,
+          "raw_line_including_terminator": {
+            "bytes": 118,
+            "git_blob": "71349dc3df3b5a3aa376aeae9ff25839e750c21c",
+            "sha256": "2b18fe4323160fcf7407ac8997c76c63f9ea946872be483477c6d178e5e4eb94"
+          },
+          "subject": "current_strict_low",
+          "value": {
+            "integrity_attributes": 96,
+            "integrity_rid": 4096,
+            "mandatory_policy": 3
+          }
+        },
+        {
+          "line": 137,
+          "raw_line_including_terminator": {
+            "bytes": 131,
+            "git_blob": "efaca0d6558795641ff66444d53243646f3b04f8",
+            "sha256": "2adad704ba788ad8b49a1980d4dfce08109f6fbf1e8be48dcd4bdbdebbcd516f"
+          },
+          "subject": "full_restricting_explicit_read",
+          "value": {
+            "integrity_attributes": 96,
+            "integrity_rid": 12288,
+            "mandatory_policy": 3
+          }
+        }
+      ],
+      "unusable_markers_retained": [
+        {
+          "kind": "row",
+          "line": 274,
+          "raw_line_including_terminator": {
+            "bytes": 710,
+            "git_blob": "df356309d913372ec7762e6ae263b000e5b83c91",
+            "sha256": "1ed9a93dd6c2c85f7cf7d691787893408c26f702cb4b86ebad6d3f375a9ededa"
+          },
+          "reason": "whole_line_is_not_complete_JSON_not_repaired"
+        },
+        {
+          "kind": "restoration",
+          "line": 293,
+          "raw_line_including_terminator": {
+            "bytes": 1560,
+            "git_blob": "e221790e0183827f5f387dcd57b4e9cefac4794b",
+            "sha256": "d5b2f9ec8c945e255e6414932890a86f8e24c3c8d3e5f99c3fb6e12bd5fb676e"
+          },
+          "reason": "whole_line_is_not_complete_JSON_not_repaired"
+        },
+        {
+          "kind": "finalized",
+          "line": 300,
+          "raw_line_including_terminator": {
+            "bytes": 614,
+            "git_blob": "4827e34c60716e97e87e45259f4f4056e88648c5",
+            "sha256": "5d1183012db803873110a165b51096875bca05c27e6c31d552f44d5d2a4ee401"
+          },
+          "reason": "whole_line_is_not_complete_JSON_not_repaired"
+        },
+        {
+          "kind": "finalized",
+          "line": 328,
+          "raw_line_including_terminator": {
+            "bytes": 590,
+            "git_blob": "9e09d237d79e91adf26a2f2edeb00e56bb1152d1",
+            "sha256": "f053b1ced561cb2cef89d23141b315c6844d062d52ec6224eecf9d10d2bbcaf9"
+          },
+          "reason": "whole_line_is_not_complete_JSON_not_repaired"
+        },
+        {
+          "kind": "restoration",
+          "line": 354,
+          "raw_line_including_terminator": {
+            "bytes": 172,
+            "git_blob": "08c78ad999f32e83d5e8fbf44e4c3970dc590a5a",
+            "sha256": "2f6b08a514fe0e95d976868fff3de1e218417b5ae0bca6285d1ead5ebe6dcd69"
+          },
+          "reason": "whole_line_is_not_complete_JSON_not_repaired"
+        },
+        {
+          "kind": "restoration",
+          "line": 420,
+          "raw_line_including_terminator": {
+            "bytes": 364,
+            "git_blob": "6692f5817db744e07bfb90ad8b60017648d35e66",
+            "sha256": "9c272c0663241d171bf1ef66f768c1ae5fdc03bee05a4a93a95450848832612e"
+          },
+          "reason": "whole_line_is_not_complete_JSON_not_repaired"
+        }
+      ]
+    },
+    {
+      "archived_log_path": "root/architecture-audit/b11-pr4884-ci-20261105/terminal/probe-127606676952/members/bazel-execution-logs/failed-test-logs/invocation-_ej45pul/targets/0000/test.log",
+      "complete_marker_counts": {
+        "finalized": 8,
+        "restoration": 8,
+        "row": 7
+      },
+      "complete_selected_records": [
+        {
+          "kind": "row",
+          "line": 408,
+          "raw_line_including_terminator": {
+            "bytes": 4059,
+            "git_blob": "3faace2b9fa04d0a2d68a2570d8436407768e55e",
+            "sha256": "ad9664cafaa88738f6cd548d2b85d8778bbe496b492ae210eb0f2481daf0b057"
+          },
+          "value": {
+            "access_checks": [
+              {
+                "access_sd": "O:LAG:S-1-5-21-3289802278-1561746829-1498425070-513D:AI(A;OICI;0x1200a9;;;S-1-5-21-131-242-353-464)(A;OICI;0x1301bf;;;S-1-5-21-121-232-343-454)(A;OICIID;FA;;;S-1-5-5-0-738904)(A;OICIID;FA;;;WD)(A;OICIID;FA;;;BA)(A;OICIID;FA;;;SY)(A;ID;FA;;;LA)(A;OICIIOID;GA;;;CO)(A;OICIID;0x1200a9;;;BU)(A;CIID;LC;;;BU)(A;CIID;DC;;;BU)",
+                "checks": [
+                  {
+                    "allowed": true,
+                    "granted": 64,
+                    "last_error": 0,
+                    "subject": "host"
+                  },
+                  {
+                    "allowed": true,
+                    "granted": 64,
+                    "last_error": 0,
+                    "subject": "current_strict"
+                  },
+                  {
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5,
+                    "subject": "current_strict_low"
+                  },
+                  {
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5,
+                    "subject": "full_restricting_explicit_read"
+                  }
+                ],
+                "desired": 64,
+                "identity": [
+                  1723665134,
+                  65536,
+                  98343
+                ],
+                "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-medium\\outside",
+                "sd": "O:LAG:S-1-5-21-3289802278-1561746829-1498425070-513D:AI(A;OICI;0x1200a9;;;S-1-5-21-131-242-353-464)(A;OICI;0x1301bf;;;S-1-5-21-121-232-343-454)(A;OICIID;FA;;;S-1-5-5-0-738904)(A;OICIID;FA;;;WD)(A;OICIID;FA;;;BA)(A;OICIID;FA;;;SY)(A;ID;FA;;;LA)(A;OICIIOID;GA;;;CO)(A;OICIID;0x1200a9;;;BU)(A;CIID;LC;;;BU)(A;CIID;DC;;;BU)S:AI(ML;;NW;;;ME)"
+              },
+              {
+                "access_sd": "O:LAG:S-1-5-21-3289802278-1561746829-1498425070-513D:AI(A;ID;0x1200a9;;;S-1-5-21-131-242-353-464)(A;ID;0x1301bf;;;S-1-5-21-121-232-343-454)(A;ID;FA;;;S-1-5-5-0-738904)(A;ID;FA;;;WD)(A;ID;FA;;;BA)(A;ID;FA;;;SY)(A;ID;FA;;;LA)(A;ID;0x1200a9;;;BU)",
+                "checks": [
+                  {
+                    "allowed": true,
+                    "granted": 65536,
+                    "last_error": 0,
+                    "subject": "host"
+                  },
+                  {
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5,
+                    "subject": "current_strict"
+                  },
+                  {
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5,
+                    "subject": "current_strict_low"
+                  },
+                  {
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5,
+                    "subject": "full_restricting_explicit_read"
+                  }
+                ],
+                "desired": 65536,
+                "identity": [
+                  1723665134,
+                  65536,
+                  98346
+                ],
+                "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-medium\\outside\\delete.txt",
+                "sd": "O:LAG:S-1-5-21-3289802278-1561746829-1498425070-513D:AI(A;ID;0x1200a9;;;S-1-5-21-131-242-353-464)(A;ID;0x1301bf;;;S-1-5-21-121-232-343-454)(A;ID;FA;;;S-1-5-5-0-738904)(A;ID;FA;;;WD)(A;ID;FA;;;BA)(A;ID;FA;;;SY)(A;ID;FA;;;LA)(A;ID;0x1200a9;;;BU)S:AI(ML;;NW;;;ME)"
+              },
+              {
+                "access_sd": "O:LAG:S-1-5-21-3289802278-1561746829-1498425070-513D:AI(A;OICIID;0x1200a9;;;S-1-5-21-131-242-353-464)(A;OICIID;0x1301bf;;;S-1-5-21-121-232-343-454)(A;OICIID;FA;;;S-1-5-5-0-738904)(A;OICIID;FA;;;WD)(A;OICIID;FA;;;BA)(A;OICIID;FA;;;SY)(A;ID;FA;;;LA)(A;OICIIOID;GA;;;CO)(A;OICIID;0x1200a9;;;BU)(A;CIID;LC;;;BU)(A;CIID;DC;;;BU)",
+                "checks": [
+                  {
+                    "allowed": true,
+                    "granted": 65536,
+                    "last_error": 0,
+                    "subject": "host"
+                  },
+                  {
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5,
+                    "subject": "current_strict"
+                  },
+                  {
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5,
+                    "subject": "current_strict_low"
+                  },
+                  {
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5,
+                    "subject": "full_restricting_explicit_read"
+                  }
+                ],
+                "desired": 65536,
+                "identity": [
+                  1723665134,
+                  65536,
+                  98347
+                ],
+                "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-medium\\outside\\delete-dir",
+                "sd": "O:LAG:S-1-5-21-3289802278-1561746829-1498425070-513D:AI(A;OICIID;0x1200a9;;;S-1-5-21-131-242-353-464)(A;OICIID;0x1301bf;;;S-1-5-21-121-232-343-454)(A;OICIID;FA;;;S-1-5-5-0-738904)(A;OICIID;FA;;;WD)(A;OICIID;FA;;;BA)(A;OICIID;FA;;;SY)(A;ID;FA;;;LA)(A;OICIIOID;GA;;;CO)(A;OICIID;0x1200a9;;;BU)(A;CIID;LC;;;BU)(A;CIID;DC;;;BU)S:AI(ML;;NW;;;ME)"
+              }
+            ],
+            "effective_thread_token": {
+              "integrity_attributes": 96,
+              "integrity_rid": 4096,
+              "mandatory_policy": 3
+            },
+            "expected_token": {
+              "integrity_attributes": 96,
+              "integrity_rid": 4096,
+              "mandatory_policy": 3
+            },
+            "inside": {
+              "errors": [
+                null,
+                null,
+                null,
+                null
+              ],
+              "order": [
+                "overwrite",
+                "create",
+                "remove_file",
+                "remove_dir"
+              ],
+              "read": "original",
+              "read_error": null
+            },
+            "outside": {
+              "errors": [
+                {
+                  "code": 5,
+                  "kind": "PermissionDenied",
+                  "message": "Access is denied. (os error 5)"
+                },
+                {
+                  "code": 5,
+                  "kind": "PermissionDenied",
+                  "message": "Access is denied. (os error 5)"
+                },
+                {
+                  "code": 5,
+                  "kind": "PermissionDenied",
+                  "message": "Access is denied. (os error 5)"
+                },
+                {
+                  "code": 5,
+                  "kind": "PermissionDenied",
+                  "message": "Access is denied. (os error 5)"
+                }
+              ],
+              "order": [
+                "overwrite",
+                "create",
+                "remove_file",
+                "remove_dir"
+              ],
+              "read": "original",
+              "read_error": null
+            },
+            "outside_level": "medium",
+            "subject": "current_strict_low"
+          }
+        },
+        {
+          "kind": "restoration",
+          "line": 410,
+          "raw_line_including_terminator": {
+            "bytes": 1963,
+            "git_blob": "ade5d098e275425ffc643d7974ec50de3d893a17",
+            "sha256": "850890172b00dd66bbedccac55bfc014e7948b1052353578bc6db54948573d9a"
+          },
+          "value": {
+            "outside_level": "medium",
+            "results": [
+              {
+                "identity": [
+                  1723665134,
+                  131072,
+                  98334
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 1,
+                "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-medium\\inside",
+                "pending": 0,
+                "restored_survivor": true
+              },
+              {
+                "identity": [
+                  1723665134,
+                  131072,
+                  98338
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 1,
+                "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-medium\\inside\\read.txt",
+                "pending": 0,
+                "restored_survivor": true
+              },
+              {
+                "identity": [
+                  1723665134,
+                  131072,
+                  98339
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 1,
+                "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-medium\\inside\\overwrite.txt",
+                "pending": 0,
+                "restored_survivor": true
+              },
+              {
+                "identity": [
+                  1723665134,
+                  65536,
+                  98341
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 0,
+                "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-medium\\inside\\delete.txt",
+                "pending": 1,
+                "restored_survivor": false
+              },
+              {
+                "identity": [
+                  1723665134,
+                  65536,
+                  98342
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 0,
+                "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-medium\\inside\\delete-dir",
+                "pending": 1,
+                "restored_survivor": false
+              },
+              {
+                "identity": [
+                  1723665134,
+                  65536,
+                  98343
+                ],
+                "label": "S:(ML;;NW;;;ME)",
+                "links": 1,
+                "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-medium\\outside",
+                "pending": 0,
+                "restored_survivor": true
+              },
+              {
+                "identity": [
+                  1723665134,
+                  65536,
+                  98344
+                ],
+                "label": "S:(ML;;NW;;;ME)",
+                "links": 1,
+                "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-medium\\outside\\read.txt",
+                "pending": 0,
+                "restored_survivor": true
+              },
+              {
+                "identity": [
+                  1723665134,
+                  65536,
+                  98345
+                ],
+                "label": "S:(ML;;NW;;;ME)",
+                "links": 1,
+                "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-medium\\outside\\overwrite.txt",
+                "pending": 0,
+                "restored_survivor": true
+              },
+              {
+                "identity": [
+                  1723665134,
+                  65536,
+                  98346
+                ],
+                "label": "S:(ML;;NW;;;ME)",
+                "links": 1,
+                "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-medium\\outside\\delete.txt",
+                "pending": 0,
+                "restored_survivor": true
+              },
+              {
+                "identity": [
+                  1723665134,
+                  65536,
+                  98347
+                ],
+                "label": "S:(ML;;NW;;;ME)",
+                "links": 1,
+                "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-medium\\outside\\delete-dir",
+                "pending": 0,
+                "restored_survivor": true
+              }
+            ],
+            "subject": "current_strict_low"
+          }
+        },
+        {
+          "kind": "finalized",
+          "line": 412,
+          "raw_line_including_terminator": {
+            "bytes": 2788,
+            "git_blob": "3990338f179762fecced5b68ba7f747536753a4b",
+            "sha256": "b65b275b489177e807d3c8c9428b8afcf06da48f3f0739b8db3eb26ab1b7f445"
+          },
+          "value": {
+            "objects": [
+              {
+                "identity": [
+                  1723665134,
+                  131072,
+                  98334
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 1,
+                "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-medium\\inside",
+                "pending": 0,
+                "restored_survivor": true
+              },
+              {
+                "identity": [
+                  1723665134,
+                  131072,
+                  98338
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 1,
+                "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-medium\\inside\\read.txt",
+                "pending": 0,
+                "restored_survivor": true
+              },
+              {
+                "identity": [
+                  1723665134,
+                  131072,
+                  98339
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 1,
+                "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-medium\\inside\\overwrite.txt",
+                "pending": 0,
+                "restored_survivor": true
+              },
+              {
+                "identity": [
+                  1723665134,
+                  65536,
+                  98341
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 0,
+                "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-medium\\inside\\delete.txt",
+                "pending": 1,
+                "restored_survivor": false
+              },
+              {
+                "identity": [
+                  1723665134,
+                  65536,
+                  98342
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 0,
+                "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-medium\\inside\\delete-dir",
+                "pending": 1,
+                "restored_survivor": false
+              },
+              {
+                "identity": [
+                  1723665134,
+                  65536,
+                  98343
+                ],
+                "label": "S:(ML;;NW;;;ME)",
+                "links": 1,
+                "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-medium\\outside",
+                "pending": 0,
+                "restored_survivor": true
+              },
+              {
+                "identity": [
+                  1723665134,
+                  65536,
+                  98344
+                ],
+                "label": "S:(ML;;NW;;;ME)",
+                "links": 1,
+                "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-medium\\outside\\read.txt",
+                "pending": 0,
+                "restored_survivor": true
+              },
+              {
+                "identity": [
+                  1723665134,
+                  65536,
+                  98345
+                ],
+                "label": "S:(ML;;NW;;;ME)",
+                "links": 1,
+                "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-medium\\outside\\overwrite.txt",
+                "pending": 0,
+                "restored_survivor": true
+              },
+              {
+                "identity": [
+                  1723665134,
+                  65536,
+                  98346
+                ],
+                "label": "S:(ML;;NW;;;ME)",
+                "links": 1,
+                "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-medium\\outside\\delete.txt",
+                "pending": 0,
+                "restored_survivor": true
+              },
+              {
+                "identity": [
+                  1723665134,
+                  65536,
+                  98347
+                ],
+                "label": "S:(ML;;NW;;;ME)",
+                "links": 1,
+                "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-medium\\outside\\delete-dir",
+                "pending": 0,
+                "restored_survivor": true
+              }
+            ],
+            "outside_level": "medium",
+            "physical_post_state": [
+              {
+                "created": "created",
+                "created_error": null,
+                "deleted_directory_still_named": false,
+                "deleted_file_still_named": false,
+                "directory_error": {
+                  "code": 2,
+                  "kind": "NotFound",
+                  "message": "The system cannot find the file specified. (os error 2)"
+                },
+                "file_error": {
+                  "code": 2,
+                  "kind": "NotFound",
+                  "message": "The system cannot find the file specified. (os error 2)"
+                },
+                "overwrite": "overwritten",
+                "overwrite_error": null,
+                "root": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-medium\\inside"
+              },
+              {
+                "created": null,
+                "created_error": {
+                  "code": 2,
+                  "kind": "NotFound",
+                  "message": "The system cannot find the file specified. (os error 2)"
+                },
+                "deleted_directory_still_named": true,
+                "deleted_file_still_named": true,
+                "directory_error": null,
+                "file_error": null,
+                "overwrite": "original",
+                "overwrite_error": null,
+                "root": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-medium\\outside"
+              }
+            ],
+            "subject": "current_strict_low"
+          }
+        },
+        {
+          "kind": "row",
+          "line": 434,
+          "raw_line_including_terminator": {
+            "bytes": 3949,
+            "git_blob": "9f30fdd7161cbb8e8d6f69a92ebb4a14a3ba20c5",
+            "sha256": "4b65c860399c97d56acea2a2a854d32b88557374f8de115d09871c2151eb64fc"
+          },
+          "value": {
+            "access_checks": [
+              {
+                "access_sd": "O:LAG:S-1-5-21-3289802278-1561746829-1498425070-513D:AI(A;OICI;0x1200a9;;;S-1-5-21-131-242-353-464)(A;OICI;0x1301bf;;;S-1-5-21-121-232-343-454)(A;OICIID;FA;;;S-1-5-5-0-738904)(A;OICIID;FA;;;WD)(A;OICIID;FA;;;BA)(A;OICIID;FA;;;SY)(A;ID;FA;;;LA)(A;OICIIOID;GA;;;CO)(A;OICIID;0x1200a9;;;BU)(A;CIID;LC;;;BU)(A;CIID;DC;;;BU)",
+                "checks": [
+                  {
+                    "allowed": true,
+                    "granted": 64,
+                    "last_error": 0,
+                    "subject": "host"
+                  },
+                  {
+                    "allowed": true,
+                    "granted": 64,
+                    "last_error": 0,
+                    "subject": "current_strict"
+                  },
+                  {
+                    "allowed": true,
+                    "granted": 64,
+                    "last_error": 0,
+                    "subject": "current_strict_low"
+                  },
+                  {
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5,
+                    "subject": "full_restricting_explicit_read"
+                  }
+                ],
+                "desired": 64,
+                "identity": [
+                  1723665134,
+                  65536,
+                  98353
+                ],
+                "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-low_other_cohort\\outside",
+                "sd": "O:LAG:S-1-5-21-3289802278-1561746829-1498425070-513D:AI(A;OICI;0x1200a9;;;S-1-5-21-131-242-353-464)(A;OICI;0x1301bf;;;S-1-5-21-121-232-343-454)(A;OICIID;FA;;;S-1-5-5-0-738904)(A;OICIID;FA;;;WD)(A;OICIID;FA;;;BA)(A;OICIID;FA;;;SY)(A;ID;FA;;;LA)(A;OICIIOID;GA;;;CO)(A;OICIID;0x1200a9;;;BU)(A;CIID;LC;;;BU)(A;CIID;DC;;;BU)S:AI(ML;;NW;;;LW)"
+              },
+              {
+                "access_sd": "O:LAG:S-1-5-21-3289802278-1561746829-1498425070-513D:AI(A;ID;0x1200a9;;;S-1-5-21-131-242-353-464)(A;ID;0x1301bf;;;S-1-5-21-121-232-343-454)(A;ID;FA;;;S-1-5-5-0-738904)(A;ID;FA;;;WD)(A;ID;FA;;;BA)(A;ID;FA;;;SY)(A;ID;FA;;;LA)(A;ID;0x1200a9;;;BU)",
+                "checks": [
+                  {
+                    "allowed": true,
+                    "granted": 65536,
+                    "last_error": 0,
+                    "subject": "host"
+                  },
+                  {
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5,
+                    "subject": "current_strict"
+                  },
+                  {
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5,
+                    "subject": "current_strict_low"
+                  },
+                  {
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5,
+                    "subject": "full_restricting_explicit_read"
+                  }
+                ],
+                "desired": 65536,
+                "identity": [
+                  1723665134,
+                  65536,
+                  98356
+                ],
+                "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-low_other_cohort\\outside\\delete.txt",
+                "sd": "O:LAG:S-1-5-21-3289802278-1561746829-1498425070-513D:AI(A;ID;0x1200a9;;;S-1-5-21-131-242-353-464)(A;ID;0x1301bf;;;S-1-5-21-121-232-343-454)(A;ID;FA;;;S-1-5-5-0-738904)(A;ID;FA;;;WD)(A;ID;FA;;;BA)(A;ID;FA;;;SY)(A;ID;FA;;;LA)(A;ID;0x1200a9;;;BU)S:AI(ML;;NW;;;LW)"
+              },
+              {
+                "access_sd": "O:LAG:S-1-5-21-3289802278-1561746829-1498425070-513D:AI(A;OICIID;0x1200a9;;;S-1-5-21-131-242-353-464)(A;OICIID;0x1301bf;;;S-1-5-21-121-232-343-454)(A;OICIID;FA;;;S-1-5-5-0-738904)(A;OICIID;FA;;;WD)(A;OICIID;FA;;;BA)(A;OICIID;FA;;;SY)(A;ID;FA;;;LA)(A;OICIIOID;GA;;;CO)(A;OICIID;0x1200a9;;;BU)(A;CIID;LC;;;BU)(A;CIID;DC;;;BU)",
+                "checks": [
+                  {
+                    "allowed": true,
+                    "granted": 65536,
+                    "last_error": 0,
+                    "subject": "host"
+                  },
+                  {
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5,
+                    "subject": "current_strict"
+                  },
+                  {
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5,
+                    "subject": "current_strict_low"
+                  },
+                  {
+                    "allowed": false,
+                    "granted": 0,
+                    "last_error": 5,
+                    "subject": "full_restricting_explicit_read"
+                  }
+                ],
+                "desired": 65536,
+                "identity": [
+                  1723665134,
+                  65536,
+                  98357
+                ],
+                "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-low_other_cohort\\outside\\delete-dir",
+                "sd": "O:LAG:S-1-5-21-3289802278-1561746829-1498425070-513D:AI(A;OICIID;0x1200a9;;;S-1-5-21-131-242-353-464)(A;OICIID;0x1301bf;;;S-1-5-21-121-232-343-454)(A;OICIID;FA;;;S-1-5-5-0-738904)(A;OICIID;FA;;;WD)(A;OICIID;FA;;;BA)(A;OICIID;FA;;;SY)(A;ID;FA;;;LA)(A;OICIIOID;GA;;;CO)(A;OICIID;0x1200a9;;;BU)(A;CIID;LC;;;BU)(A;CIID;DC;;;BU)S:AI(ML;;NW;;;LW)"
+              }
+            ],
+            "effective_thread_token": {
+              "integrity_attributes": 96,
+              "integrity_rid": 4096,
+              "mandatory_policy": 3
+            },
+            "expected_token": {
+              "integrity_attributes": 96,
+              "integrity_rid": 4096,
+              "mandatory_policy": 3
+            },
+            "inside": {
+              "errors": [
+                null,
+                null,
+                null,
+                null
+              ],
+              "order": [
+                "overwrite",
+                "create",
+                "remove_file",
+                "remove_dir"
+              ],
+              "read": "original",
+              "read_error": null
+            },
+            "outside": {
+              "errors": [
+                {
+                  "code": 5,
+                  "kind": "PermissionDenied",
+                  "message": "Access is denied. (os error 5)"
+                },
+                {
+                  "code": 5,
+                  "kind": "PermissionDenied",
+                  "message": "Access is denied. (os error 5)"
+                },
+                null,
+                null
+              ],
+              "order": [
+                "overwrite",
+                "create",
+                "remove_file",
+                "remove_dir"
+              ],
+              "read": "original",
+              "read_error": null
+            },
+            "outside_level": "low_other_cohort",
+            "subject": "current_strict_low"
+          }
+        },
+        {
+          "kind": "restoration",
+          "line": 436,
+          "raw_line_including_terminator": {
+            "bytes": 2073,
+            "git_blob": "f1bf1b97df75c55745d5db4ec13595e58704e26f",
+            "sha256": "c6dddf49ab7ee406d9bac84551fdd7cadc5142f26617c7806a949e35ebb2751d"
+          },
+          "value": {
+            "outside_level": "low_other_cohort",
+            "results": [
+              {
+                "identity": [
+                  1723665134,
+                  131072,
+                  98342
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 1,
+                "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-low_other_cohort\\inside",
+                "pending": 0,
+                "restored_survivor": true
+              },
+              {
+                "identity": [
+                  1723665134,
+                  65536,
+                  98349
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 1,
+                "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-low_other_cohort\\inside\\read.txt",
+                "pending": 0,
+                "restored_survivor": true
+              },
+              {
+                "identity": [
+                  1723665134,
+                  65536,
+                  98350
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 1,
+                "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-low_other_cohort\\inside\\overwrite.txt",
+                "pending": 0,
+                "restored_survivor": true
+              },
+              {
+                "identity": [
+                  1723665134,
+                  65536,
+                  98351
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 0,
+                "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-low_other_cohort\\inside\\delete.txt",
+                "pending": 1,
+                "restored_survivor": false
+              },
+              {
+                "identity": [
+                  1723665134,
+                  65536,
+                  98352
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 0,
+                "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-low_other_cohort\\inside\\delete-dir",
+                "pending": 1,
+                "restored_survivor": false
+              },
+              {
+                "identity": [
+                  1723665134,
+                  65536,
+                  98353
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 1,
+                "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-low_other_cohort\\outside",
+                "pending": 0,
+                "restored_survivor": true
+              },
+              {
+                "identity": [
+                  1723665134,
+                  65536,
+                  98354
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 1,
+                "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-low_other_cohort\\outside\\read.txt",
+                "pending": 0,
+                "restored_survivor": true
+              },
+              {
+                "identity": [
+                  1723665134,
+                  65536,
+                  98355
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 1,
+                "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-low_other_cohort\\outside\\overwrite.txt",
+                "pending": 0,
+                "restored_survivor": true
+              },
+              {
+                "identity": [
+                  1723665134,
+                  65536,
+                  98356
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 0,
+                "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-low_other_cohort\\outside\\delete.txt",
+                "pending": 1,
+                "restored_survivor": false
+              },
+              {
+                "identity": [
+                  1723665134,
+                  65536,
+                  98357
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 0,
+                "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-low_other_cohort\\outside\\delete-dir",
+                "pending": 1,
+                "restored_survivor": false
+              }
+            ],
+            "subject": "current_strict_low"
+          }
+        },
+        {
+          "kind": "finalized",
+          "line": 438,
+          "raw_line_including_terminator": {
+            "bytes": 3104,
+            "git_blob": "813bf19b7211cd5ff1bc6fde124deaa63e213a38",
+            "sha256": "0b4392668cd7e85c994461d8afe04a48db804e00becbe50a5384fdcaeaf09244"
+          },
+          "value": {
+            "objects": [
+              {
+                "identity": [
+                  1723665134,
+                  131072,
+                  98342
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 1,
+                "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-low_other_cohort\\inside",
+                "pending": 0,
+                "restored_survivor": true
+              },
+              {
+                "identity": [
+                  1723665134,
+                  65536,
+                  98349
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 1,
+                "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-low_other_cohort\\inside\\read.txt",
+                "pending": 0,
+                "restored_survivor": true
+              },
+              {
+                "identity": [
+                  1723665134,
+                  65536,
+                  98350
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 1,
+                "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-low_other_cohort\\inside\\overwrite.txt",
+                "pending": 0,
+                "restored_survivor": true
+              },
+              {
+                "identity": [
+                  1723665134,
+                  65536,
+                  98351
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 0,
+                "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-low_other_cohort\\inside\\delete.txt",
+                "pending": 1,
+                "restored_survivor": false
+              },
+              {
+                "identity": [
+                  1723665134,
+                  65536,
+                  98352
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 0,
+                "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-low_other_cohort\\inside\\delete-dir",
+                "pending": 1,
+                "restored_survivor": false
+              },
+              {
+                "identity": [
+                  1723665134,
+                  65536,
+                  98353
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 1,
+                "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-low_other_cohort\\outside",
+                "pending": 0,
+                "restored_survivor": true
+              },
+              {
+                "identity": [
+                  1723665134,
+                  65536,
+                  98354
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 1,
+                "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-low_other_cohort\\outside\\read.txt",
+                "pending": 0,
+                "restored_survivor": true
+              },
+              {
+                "identity": [
+                  1723665134,
+                  65536,
+                  98355
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 1,
+                "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-low_other_cohort\\outside\\overwrite.txt",
+                "pending": 0,
+                "restored_survivor": true
+              },
+              {
+                "identity": [
+                  1723665134,
+                  65536,
+                  98356
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 0,
+                "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-low_other_cohort\\outside\\delete.txt",
+                "pending": 1,
+                "restored_survivor": false
+              },
+              {
+                "identity": [
+                  1723665134,
+                  65536,
+                  98357
+                ],
+                "label": "S:(ML;;NW;;;LW)",
+                "links": 0,
+                "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-low_other_cohort\\outside\\delete-dir",
+                "pending": 1,
+                "restored_survivor": false
+              }
+            ],
+            "outside_level": "low_other_cohort",
+            "physical_post_state": [
+              {
+                "created": "created",
+                "created_error": null,
+                "deleted_directory_still_named": false,
+                "deleted_file_still_named": false,
+                "directory_error": {
+                  "code": 2,
+                  "kind": "NotFound",
+                  "message": "The system cannot find the file specified. (os error 2)"
+                },
+                "file_error": {
+                  "code": 2,
+                  "kind": "NotFound",
+                  "message": "The system cannot find the file specified. (os error 2)"
+                },
+                "overwrite": "overwritten",
+                "overwrite_error": null,
+                "root": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-low_other_cohort\\inside"
+              },
+              {
+                "created": null,
+                "created_error": {
+                  "code": 2,
+                  "kind": "NotFound",
+                  "message": "The system cannot find the file specified. (os error 2)"
+                },
+                "deleted_directory_still_named": false,
+                "deleted_file_still_named": false,
+                "directory_error": {
+                  "code": 2,
+                  "kind": "NotFound",
+                  "message": "The system cannot find the file specified. (os error 2)"
+                },
+                "file_error": {
+                  "code": 2,
+                  "kind": "NotFound",
+                  "message": "The system cannot find the file specified. (os error 2)"
+                },
+                "overwrite": "original",
+                "overwrite_error": null,
+                "root": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-low_other_cohort\\outside"
+              }
+            ],
+            "subject": "current_strict_low"
+          }
+        }
+      ],
+      "episode": "native11",
+      "full_log": {
+        "bytes": 171394,
+        "git_blob": "23c0f85bc23b75b9b8f4dc5e5d09f0fb5efce832",
+        "sha256": "c9c6d7414415e5654ddbd5097539ecb7c643ec3ee8a565fe956b028672ba3fe2"
+      },
+      "full_xml": {
+        "bytes": 171817,
+        "git_blob": "3dd96a600faf7fb505897efa29503c07951e301a",
+        "sha256": "af1d0ca6640281f47929c845a1ae9e4bf9d9e72d040b5d19288aff157ef96a1f"
+      },
+      "job": "127606676952",
+      "original_eight_row_completion": [
+        {
+          "line": 492,
+          "raw_line_including_terminator": {
+            "bytes": 114,
+            "git_blob": "f51b1410fb639ec6c041913af872c28291b6130e",
+            "sha256": "c73f178590d45800b90f2e8069515c95aade7f5205891d443927959b016775bf"
+          }
+        }
+      ],
+      "parsing_rule": "Only entire anchored marker lines; no interleaving repair; raw-line identities include original terminator.",
+      "selected_low_rows": [
+        {
+          "expected_and_effective_thread_token": {
+            "integrity_attributes": 96,
+            "integrity_rid": 4096,
+            "mandatory_policy": 3
+          },
+          "finalized_line": 412,
+          "inside_explicitly_low_fixture_only": true,
+          "outside_directory_still_named": true,
+          "outside_file_still_named": true,
+          "outside_level": "medium",
+          "outside_objects_after_handle_close": [
+            {
+              "identity": [
+                1723665134,
+                65536,
+                98343
+              ],
+              "label": "S:(ML;;NW;;;ME)",
+              "links": 1,
+              "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-medium\\outside",
+              "pending": 0,
+              "restored_survivor": true
+            },
+            {
+              "identity": [
+                1723665134,
+                65536,
+                98344
+              ],
+              "label": "S:(ML;;NW;;;ME)",
+              "links": 1,
+              "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-medium\\outside\\read.txt",
+              "pending": 0,
+              "restored_survivor": true
+            },
+            {
+              "identity": [
+                1723665134,
+                65536,
+                98345
+              ],
+              "label": "S:(ML;;NW;;;ME)",
+              "links": 1,
+              "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-medium\\outside\\overwrite.txt",
+              "pending": 0,
+              "restored_survivor": true
+            },
+            {
+              "identity": [
+                1723665134,
+                65536,
+                98346
+              ],
+              "label": "S:(ML;;NW;;;ME)",
+              "links": 1,
+              "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-medium\\outside\\delete.txt",
+              "pending": 0,
+              "restored_survivor": true
+            },
+            {
+              "identity": [
+                1723665134,
+                65536,
+                98347
+              ],
+              "label": "S:(ML;;NW;;;ME)",
+              "links": 1,
+              "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-medium\\outside\\delete-dir",
+              "pending": 0,
+              "restored_survivor": true
+            }
+          ],
+          "outside_operation_error_codes": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "row_line": 408
+        },
+        {
+          "expected_and_effective_thread_token": {
+            "integrity_attributes": 96,
+            "integrity_rid": 4096,
+            "mandatory_policy": 3
+          },
+          "finalized_line": 438,
+          "inside_explicitly_low_fixture_only": true,
+          "outside_directory_still_named": false,
+          "outside_file_still_named": false,
+          "outside_level": "low_other_cohort",
+          "outside_objects_after_handle_close": [
+            {
+              "identity": [
+                1723665134,
+                65536,
+                98353
+              ],
+              "label": "S:(ML;;NW;;;LW)",
+              "links": 1,
+              "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-low_other_cohort\\outside",
+              "pending": 0,
+              "restored_survivor": true
+            },
+            {
+              "identity": [
+                1723665134,
+                65536,
+                98354
+              ],
+              "label": "S:(ML;;NW;;;LW)",
+              "links": 1,
+              "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-low_other_cohort\\outside\\read.txt",
+              "pending": 0,
+              "restored_survivor": true
+            },
+            {
+              "identity": [
+                1723665134,
+                65536,
+                98355
+              ],
+              "label": "S:(ML;;NW;;;LW)",
+              "links": 1,
+              "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-low_other_cohort\\outside\\overwrite.txt",
+              "pending": 0,
+              "restored_survivor": true
+            },
+            {
+              "identity": [
+                1723665134,
+                65536,
+                98356
+              ],
+              "label": "S:(ML;;NW;;;LW)",
+              "links": 0,
+              "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-low_other_cohort\\outside\\delete.txt",
+              "pending": 1,
+              "restored_survivor": false
+            },
+            {
+              "identity": [
+                1723665134,
+                65536,
+                98357
+              ],
+              "label": "S:(ML;;NW;;;LW)",
+              "links": 0,
+              "path": "D:\\tmp\\.tmpYEWsHx\\current_strict_low-low_other_cohort\\outside\\delete-dir",
+              "pending": 1,
+              "restored_survivor": false
+            }
+          ],
+          "outside_operation_error_codes": [
+            5,
+            5,
+            null,
+            null
+          ],
+          "row_line": 434
+        }
+      ],
+      "token_records": [
+        {
+          "line": 131,
+          "raw_line_including_terminator": {
+            "bytes": 105,
+            "git_blob": "20de5360e88fe594317cb9682ec95df43a15e23a",
+            "sha256": "4e9827d701688a375b12cc936d22e21efac65df834e046029ba016436c0a0092"
+          },
+          "subject": "host",
+          "value": {
+            "integrity_attributes": 96,
+            "integrity_rid": 12288,
+            "mandatory_policy": 3
+          }
+        },
+        {
+          "line": 133,
+          "raw_line_including_terminator": {
+            "bytes": 115,
+            "git_blob": "9e4a076471eaeb159498dd5d3edb527d1dd58dc0",
+            "sha256": "e079da8f68590171df6e71d859d3a745739287a1a8cc3fe359e12b81a9b0118e"
+          },
+          "subject": "current_strict",
+          "value": {
+            "integrity_attributes": 96,
+            "integrity_rid": 12288,
+            "mandatory_policy": 3
+          }
+        },
+        {
+          "line": 135,
+          "raw_line_including_terminator": {
+            "bytes": 118,
+            "git_blob": "71349dc3df3b5a3aa376aeae9ff25839e750c21c",
+            "sha256": "2b18fe4323160fcf7407ac8997c76c63f9ea946872be483477c6d178e5e4eb94"
+          },
+          "subject": "current_strict_low",
+          "value": {
+            "integrity_attributes": 96,
+            "integrity_rid": 4096,
+            "mandatory_policy": 3
+          }
+        },
+        {
+          "line": 137,
+          "raw_line_including_terminator": {
+            "bytes": 131,
+            "git_blob": "efaca0d6558795641ff66444d53243646f3b04f8",
+            "sha256": "2adad704ba788ad8b49a1980d4dfce08109f6fbf1e8be48dcd4bdbdebbcd516f"
+          },
+          "subject": "full_restricting_explicit_read",
+          "value": {
+            "integrity_attributes": 96,
+            "integrity_rid": 12288,
+            "mandatory_policy": 3
+          }
+        }
+      ],
+      "unusable_markers_retained": [
+        {
+          "kind": "row",
+          "line": 292,
+          "raw_line_including_terminator": {
+            "bytes": 336,
+            "git_blob": "22e41c20ee2a0e279383bf30951d8ff8d4336cc9",
+            "sha256": "9a71a52bb8e92b61049e1b15274e14b1fe675ab05d94ecbd28a882bb0918a9aa"
+          },
+          "reason": "whole_line_is_not_complete_JSON_not_repaired"
+        }
+      ]
+    }
+  ],
+  "fixed_windows_source_scan": {
+    "codex-rs/windows-sandbox-rs/src/token.rs": {
+      "SetTokenInformation(": 2
+    }
+  },
+  "native11_fixed_source_authority": {
+    "checkout": "53766cb836b198e2f928b949f148d7a2a10c0d21",
+    "head": "2980fa274c599bd07437a2f5915b86d858f89bcc",
+    "tree": "9cb7302777ce018dd022086041c2225d1dd5c8dd",
+    "tree_original": {
+      "bytes": 2331084,
+      "git_blob": "49c7e226fd3ba4e4f1788cc8c49d783218605909",
+      "path": "architecture-audit/b11-host-neither-observation-candidate-20261105/v3/evidence/published-intended-full-tree.json",
+      "sha256": "6cbd82c93c37941870b9d09c565621f4f0920d238f6e4152e38311f32f50a548"
+    },
+    "v3_registry_actual": "24dfb6b7f3cd9b9374221390c3337a3d5acb420a"
+  },
+  "positive_source_anchors_checked": 14,
+  "preserved_failed_lookup": [
+    {
+      "name": "native13-target-log",
+      "requested_sha": "a0643137c15569b43478052af8c2bf0846e1b539",
+      "scope": "Failed lookup of archive-member identity as standalone Git blob; not used as a fetched raw log."
+    }
+  ],
+  "prior_actual_registry": {
+    "bytes": 11605,
+    "git_blob": "37c1d61dd84102158caaa2d5801345639334c8bc",
+    "sha256": "1ec67387ad7021b629792682f01486826bb8f911e1d0dfcee26bdbfd1b2d426e"
+  },
+  "probe_source": {
+    "bytes": 14736,
+    "git_blob": "fc9faa6d47ac5fdefa216affceb51a586f8e6b81",
+    "sha256": "f5da450f9745cbf65947d15810e9973932264b28dfe21e4f7150b62e5081c2f9"
+  },
+  "probe_support": {
+    "bytes": 17560,
+    "git_blob": "7a7008f9becf09578ca953c849401eda93eb94b2",
+    "sha256": "986fe8864f789e4bfa876553d99f1949be403f5ed10b9c88fdc8e0fd7331c0d1"
+  },
+  "production_token_has_no_explicit_IL_or_mandatory_policy_setter": true,
+  "schema": "hepta-b11-mic-historical-evidence-replay-v1",
+  "scope": "Offline custody/source/physical-post-state verification only; no new native, CI, source/ref/PR action.",
+  "source_map_full_files_verified": [
+    {
+      "bytes": 8506,
+      "git_blob": "b06035f72d227b4069da677e8104617ae5616283",
+      "path": "codex-rs/utils/pty/src/win/job.rs",
+      "sha256": "3c904bcd4ac33719bb843639c30be39ca6e9ceda350be311f970aaf3d748a476"
+    },
+    {
+      "bytes": 2556,
+      "git_blob": "8531cb4d664c25de6fbf200c71cb8042d1d8d865",
+      "path": "codex-rs/windows-sandbox-rs/BUILD.bazel",
+      "sha256": "187e93c5a9a244c752dee5ed15202b361d593d9d651f850a1bda5d69969a7702"
+    },
+    {
+      "bytes": 2438,
+      "git_blob": "aa41ed5f08608c0275785b2f5e27ec5db08f50dd",
+      "path": "codex-rs/windows-sandbox-rs/Cargo.toml",
+      "sha256": "183a3691be018640668dfb766f29651d8fd75ab08f7fd526f3d378ae2a86469d"
+    },
+    {
+      "bytes": 16679,
+      "git_blob": "6f05793ec6ee043a933073ada3a1bf9122de5a73",
+      "path": "codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs",
+      "sha256": "b701ad01169eb9f64b62ad50099dfcda51b014a5c96dbc2080631fd2e6d7ee75"
+    },
+    {
+      "bytes": 9710,
+      "git_blob": "0b01f011119bef623bc9e46e710caa371520380d",
+      "path": "codex-rs/windows-sandbox-rs/src/desktop.rs",
+      "sha256": "4e26ba072fada10f6185d16682274022108ef843f8292d1e7f9ed237f7e1a56f"
+    },
+    {
+      "bytes": 30379,
+      "git_blob": "11778af7beb645b36401807cf3e31a0dd4deddc0",
+      "path": "codex-rs/windows-sandbox-rs/src/lib.rs",
+      "sha256": "6a656c06930bcf07075db8712292bb8040a33667231783dba177e62230982b38"
+    },
+    {
+      "bytes": 4086,
+      "git_blob": "38110a69239e9707a324f2d4cf4a1fad932b4132",
+      "path": "codex-rs/windows-sandbox-rs/src/proc_thread_attr.rs",
+      "sha256": "e42e26ae546bb7e00639a70de5a8609d631d4d6f33976d32de6f4dbf741bcb8f"
+    },
+    {
+      "bytes": 11792,
+      "git_blob": "4d4f1d9435aad3cf9cd27a82d51b2be5b7659a4c",
+      "path": "codex-rs/windows-sandbox-rs/src/process.rs",
+      "sha256": "7c7ea19f6fcfa88990cf5582273eede6139a52ccda8212468087276bb50eaca7"
+    },
+    {
+      "bytes": 18437,
+      "git_blob": "b22acb5556f6af3b4c250a2441f161ee448ea1c1",
+      "path": "codex-rs/windows-sandbox-rs/src/token.rs",
+      "sha256": "6d7ddb4a84561b28bc134139226f9be444cb0dc03c73038e7988e21e18339a77"
+    },
+    {
+      "bytes": 17560,
+      "git_blob": "7a7008f9becf09578ca953c849401eda93eb94b2",
+      "path": "codex-rs/windows-sandbox-rs/src/token_integrity_probe_support.rs",
+      "sha256": "986fe8864f789e4bfa876553d99f1949be403f5ed10b9c88fdc8e0fd7331c0d1"
+    },
+    {
+      "bytes": 14736,
+      "git_blob": "fc9faa6d47ac5fdefa216affceb51a586f8e6b81",
+      "path": "codex-rs/windows-sandbox-rs/src/token_integrity_probe_tests.rs",
+      "sha256": "f5da450f9745cbf65947d15810e9973932264b28dfe21e4f7150b62e5081c2f9"
+    },
+    {
+      "bytes": 23010,
+      "git_blob": "b40b49ce772c402c51ddb16bb98ff73dc78cdb41",
+      "path": "codex-rs/windows-sandbox-rs/src/token_neither_privilege_observation.rs",
+      "sha256": "441a000d02c7aab203a270bde951dcb6e98e02845e76314782892b87e6a6a835"
+    },
+    {
+      "bytes": 8038,
+      "git_blob": "45378b4bb527ce2b202913ab3b21aad9ef4b1828",
+      "path": "codex-rs/windows-sandbox-rs/src/winutil.rs",
+      "sha256": "12e2413a588b62ff3cc91c70c626a20801f4f84c0f4ea858ca7eb41e83a92185"
+    },
+    {
+      "bytes": 34630,
+      "git_blob": "6f588ec3057fddfea35170e28e74036162ce6a23",
+      "path": "defs.bzl",
+      "sha256": "f5638a9189632c8d8524a438bbfc6b365bddf7f23dfd2df06a6de3a2ff3f2cfa"
+    }
+  ],
+  "source_tree_recomputed": {
+    "directories": 1571,
+    "leaves": 10589,
+    "tree": "9cb7302777ce018dd022086041c2225d1dd5c8dd"
+  },
+  "support_handle_and_physical_post_close_anchors_checked": 5,
+  "token_state_equality_fields": [
+    "integrity_rid",
+    "integrity_attributes",
+    "mandatory_policy"
+  ],
+  "token_state_equality_is_not_full_user_groups_privileges_identity_proof": true
+}

@@ -1,0 +1,7 @@
+{
+  "chunk_id": "47a79d",
+  "wall_time_seconds": 7.644152656,
+  "exit_code": 0,
+  "original_token_count": 316,
+  "output": "{\"schema\": \"hepta-root-staged-packet-adapter-application-v1\", \"old\": {\"bytes\": 40614, \"git_blob\": \"2782624228f94b9ff693811cab418d205a37cf5e\", \"sha256\": \"f1cc95248e52289b4c8001aca07cf238f4d03bb1d3a7a85a33c7569e8b270651\"}, \"new\": {\"bytes\": 45976, \"git_blob\": \"d4bf4311702edf691c30165b0a32eaee4a272f5a\", \"sha256\": \"6c560cbd4aef2ee4ba91296187b66636f150abda5d10a6ba611251ec49e6f70d\"}, \"patch\": {\"bytes\": 8894, \"git_blob\": \"048803a272d8c77fd8597973b2e6034376a292cf\", \"sha256\": \"a97e48fede3341cf81fbdb77935f091a73c977dd7d4ab4256ff2168728c77d25\"}, \"root_full_patch_read\": true, \"actual_steps\": [{\"argv\": [\"git\", \"apply\", \"--check\", \"/workspace/scratch/07dd58cc9630/recovery-20261106/final-staged-registry-adapter-review-20261106/candidate.patch\"], \"exit\": 0, \"stdout\": \"\", \"stderr\": \"\"}, {\"argv\": [\"git\", \"apply\", \"/workspace/scratch/07dd58cc9630/recovery-20261106/final-staged-registry-adapter-review-20261106/candidate.patch\"], \"exit\": 0, \"stdout\": \"\", \"stderr\": \"\"}, {\"argv\": [\"git\", \"apply\", \"--reverse\", \"--check\", \"/workspace/scratch/07dd58cc9630/recovery-20261106/final-staged-registry-adapter-review-20261106/candidate.patch\"], \"exit\": 0, \"stdout\": \"\", \"stderr\": \"\"}], \"new_bytes_exact\": true, \"AST_parse\": true, \"source_or_native_qualification_granted\": false}\n"
+}

@@ -1,0 +1,257 @@
+{
+  "schema": "hepta-staged-evidence-packet-adapter-partial-verification-v1",
+  "result": "PASS",
+  "scope": "Import 16 actual components only; no prepare(), C4 output, network, CI, ref or native operation.",
+  "baseline": {
+    "bytes": 40614,
+    "git_blob": "2782624228f94b9ff693811cab418d205a37cf5e",
+    "sha256": "f1cc95248e52289b4c8001aca07cf238f4d03bb1d3a7a85a33c7569e8b270651"
+  },
+  "candidate": {
+    "bytes": 45976,
+    "git_blob": "d4bf4311702edf691c30165b0a32eaee4a272f5a",
+    "sha256": "6c560cbd4aef2ee4ba91296187b66636f150abda5d10a6ba611251ec49e6f70d"
+  },
+  "patch": {
+    "bytes": 8894,
+    "git_blob": "048803a272d8c77fd8597973b2e6034376a292cf",
+    "sha256": "a97e48fede3341cf81fbdb77935f091a73c977dd7d4ab4256ff2168728c77d25"
+  },
+  "only_changed_AST_method": "Builder.verify_evidence_packet",
+  "all_other_methods_and_module_logic_unchanged": true,
+  "forward_reverse_patch_commands": [
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/recovery-20261106/final-staged-registry-adapter-review-20261106/candidate.patch"
+      ],
+      "exit_code": 0,
+      "stdout_bytes": 0,
+      "stderr_bytes": 0
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/07dd58cc9630/recovery-20261106/final-staged-registry-adapter-review-20261106/candidate.patch"
+      ],
+      "exit_code": 0,
+      "stdout_bytes": 0,
+      "stderr_bytes": 0
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "--check",
+        "/workspace/scratch/07dd58cc9630/recovery-20261106/final-staged-registry-adapter-review-20261106/candidate.patch"
+      ],
+      "exit_code": 0,
+      "stdout_bytes": 0,
+      "stderr_bytes": 0
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse",
+        "/workspace/scratch/07dd58cc9630/recovery-20261106/final-staged-registry-adapter-review-20261106/candidate.patch"
+      ],
+      "exit_code": 0,
+      "stdout_bytes": 0,
+      "stderr_bytes": 0
+    }
+  ],
+  "original_config": {
+    "bytes": 29227,
+    "git_blob": "469382b549feace3b3cfbf2083bcc8ebe5c83bb1",
+    "sha256": "29e79761861b7e00b79a30599b8743e1498cc1fed03fe4ce5688ea563d1708bb"
+  },
+  "candidate_config": {
+    "bytes": 29683,
+    "git_blob": "5ff12f89b2974f1350f6f49e85531bc662b37cda",
+    "sha256": "5d8f35df17eff3f352f82cfffc5221824c3027a6ed310c7e7f8edbc6e8ada678"
+  },
+  "only_config_addition": {
+    "component": "final17-native-followup",
+    "receipt_sidecars": [
+      "registration-receipts-GET-000.local-sidecar.json",
+      "registration-receipts-GET-001.local-sidecar.json",
+      "registration-receipts-GET-002.local-sidecar.json",
+      "registration-receipts-GET-003.local-sidecar.json",
+      "registration-receipts-GET-004.local-sidecar.json",
+      "registration-receipts-GET-005.local-sidecar.json",
+      "registration-receipts-GET-006.local-sidecar.json"
+    ]
+  },
+  "component_results": [
+    {
+      "name": "root-publications",
+      "paths": 19,
+      "adapter": "standard",
+      "registry": "90aebb9657ef7d879f5222b9a3333cd39e95f398"
+    },
+    {
+      "name": "native-format",
+      "paths": 25,
+      "adapter": "fmt",
+      "registry": "9c783f6a6b9a83b4d6e0128b2d5b5fc09684112a"
+    },
+    {
+      "name": "ci-0829",
+      "paths": 10,
+      "adapter": "ci",
+      "registry": "c425db96529df31d905b72da9c42bf64cbabb90e"
+    },
+    {
+      "name": "b11-reassessment-v2",
+      "paths": 27,
+      "adapter": "b11",
+      "registry": "59a15073eef10c61e2b3731611c4c41342deb1cd"
+    },
+    {
+      "name": "b21-causal",
+      "paths": 11,
+      "adapter": "standard",
+      "registry": "f9af6bdaf3cc61204cd45525605e67b81b4c955a"
+    },
+    {
+      "name": "old-donor-terminal",
+      "paths": 37,
+      "adapter": "ci",
+      "registry": "23e67ce20a439e2968eb63ae4e9a74a214ccd081"
+    },
+    {
+      "name": "arg0-fixture",
+      "paths": 32,
+      "adapter": "batch_tree",
+      "registry": "08e8e7ea26909d95392a0eddc157f75e308e2e9c"
+    },
+    {
+      "name": "supervisor-connect",
+      "paths": 21,
+      "adapter": "standard",
+      "registry": "b336a8470de7111b0bb037a3c1d801bcadaba0d2"
+    },
+    {
+      "name": "supervisor-connect-review",
+      "paths": 17,
+      "adapter": "standard_recipe",
+      "registry": "286bae42fa543ba26a60f2206a1709a67d5e5176"
+    },
+    {
+      "name": "ci-0930",
+      "paths": 23,
+      "adapter": "materialized",
+      "registry": "5229e45b3547f41e9f8260c81ceb6a03c75368a0"
+    },
+    {
+      "name": "b21-writer-observation",
+      "paths": 26,
+      "adapter": "materialized",
+      "registry": "875b7cbfb6755d7d01fe34c298411b6da780d36d"
+    },
+    {
+      "name": "root-successor-publications",
+      "paths": 40,
+      "adapter": "standard",
+      "registry": "6206d5aeb92d3d489e2ffa851e202ee5d3b0bc95"
+    },
+    {
+      "name": "final-appendix",
+      "paths": 23,
+      "adapter": "standard_recipe",
+      "registry": "fce896fa8807a0e378bf654c3c29756c9ae21ed9"
+    },
+    {
+      "name": "fmt840-native",
+      "paths": 39,
+      "adapter": "evidence_packet",
+      "registry": "c1cc1f481bdcc6bb21f5db1462b4606526bf1631"
+    },
+    {
+      "name": "final17-ci-cuts",
+      "paths": 16,
+      "adapter": "evidence_packet",
+      "registry": "95c5d271d491ae58cc35de89eeb5f1d3f53497f9"
+    },
+    {
+      "name": "final17-native-followup",
+      "paths": 109,
+      "adapter": "evidence_packet",
+      "registry": "f7d49f26f20355b829f4b83b6fe2043a24bad6b7"
+    }
+  ],
+  "components": 16,
+  "evidence_paths": 475,
+  "unique_evidence_blobs": 455,
+  "read_and_rehashed_inputs": 554,
+  "payload_tree": "6e61883a8891ea6d889176e63e1631d40bee31d7",
+  "payload_and_receipt_tree": "3434ce13993d82802b711ac38019c6b1b50607e1",
+  "staged_phase_counts": [
+    34,
+    24,
+    23,
+    8,
+    8,
+    8,
+    3
+  ],
+  "negative_controls": [
+    {
+      "case": "payload_batch_disconnected_base",
+      "rejected": true,
+      "exception": "ValueError",
+      "reason": "packet batch order/base differs"
+    },
+    {
+      "case": "payload_batch_duplicate_path",
+      "rejected": true,
+      "exception": "ValueError",
+      "reason": "invalid packet batch paths/count"
+    },
+    {
+      "case": "payload_batch_wrong_actual_Merkle",
+      "rejected": true,
+      "exception": "ValueError",
+      "reason": "packet batch cumulative Merkle differs"
+    },
+    {
+      "case": "receipt_first_batch_wrong_payload_parent",
+      "rejected": true,
+      "exception": "ValueError",
+      "reason": "packet batch order/base differs"
+    },
+    {
+      "case": "payload_full_GET_record_missing",
+      "rejected": true,
+      "exception": "ValueError",
+      "reason": "incomplete packet payload receipt coverage"
+    },
+    {
+      "case": "receipt_batch_original_array_not_equal",
+      "rejected": true,
+      "exception": "ValueError",
+      "reason": "packet receipt original batches differ"
+    },
+    {
+      "case": "last_receipt_sidecar_omitted",
+      "rejected": true,
+      "exception": "ValueError",
+      "reason": "incomplete packet receipt-sidecar coverage"
+    },
+    {
+      "case": "arbitrary_glob_selector",
+      "rejected": true,
+      "exception": "ValueError",
+      "reason": "packet staged sidecars must be explicit contiguous numbered names"
+    }
+  ],
+  "root_preparer_and_config_unchanged": true,
+  "all_read_inputs_rehashed_unchanged": true,
+  "tree_full_GET_claimed": false,
+  "whole_candidate_or_native_acceptance_granted": false
+}

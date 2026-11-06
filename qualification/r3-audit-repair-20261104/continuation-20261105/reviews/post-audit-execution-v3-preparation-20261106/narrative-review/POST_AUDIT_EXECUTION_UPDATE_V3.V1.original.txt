@@ -1,0 +1,239 @@
+# 全量项目审计与 blocker 执行增量 V3
+
+**当前原23项台账为16项限定闭合、6项开放、1项科学保留；全部 blocker 尚未闭合，整个产品候选尚未取得最终资格。** 本轮已实际继续修代码、发布候选、收取原生失败和成功回执。新结果追加在审计提交 `f7bb5019d311dacc142f20cacdcf19889109b4ba` / tree `d7716cca653bf7795307b052352e8671cd9fd944` 之后；历史原件、原23项退出条件和先前失败保持。本文的 source、tree、run 和统计分母分别绑定，不把旧支线成功转授新候选。
+
+## 1. 审计范围与总体判断
+
+完整元数据普查的固定窗口为2026-11-06 03:31:39–03:35:10 UTC：3,555个开放PR，包含3,506个Draft和49个非Draft；360个以main为base，3,195个以其他分支为base，涉及2,220个不同base ref。36页之后读取空页，分页完整。03:42:06–03:43:26 UTC的分支普查为5,333个名字、4,946个不同commit，54页之后读取空页。此前1,103个PR的清单是较小历史集合；新增可见的2,452项不等于当天新建量，其中2,364项的更新时间早于那个旧切点，差异原因仍UNKNOWN。
+
+全量元数据盘点覆盖仓库的项目面；源码审计深度集中在原23项blocker、当前产品主线、关键架构契约、被选中的修复差异、构建依赖和原始验收证据。未宣称逐行审阅3,555个PR的全部源码。07:06的50个PR更新窗口与本轮的关键PR刷新都是有界增量，不能替代新的完整实时普查。
+
+当前判断是：基础组件和多个原产品契约已有真实实现及局部验收，工程重心已进入**单一候选收敛、跨平台原CI、真实产品入口和外部效果验收**。可信入口、Windows权限边界、Intel PTY因果与验收、外部consumer以及科学采用仍各有未满足的条件。文件数量、分支数量、离线检查数和某个成功job都不能单独证明整个项目可发布。
+
+规划源保持40个模块、205条契约、58个协议、67个域、91个工作包。91项的原分类为25项source_implemented、20项execution_pending、2项semantic_pending、43项planned、1项external；这些是工作状态标签，不是完成率。完整长期方向以[方向与执行计划V7](PROJECT_DIRECTION_AND_EXECUTION_PLAN_V7.zh-CN.md)为准，本增量细化当前阻塞和先后顺序。
+
+## 2. 单一候选的实际发布链
+
+[Draft PR #4936](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/4936) 是本轮修复组合的具体审查入口。2026-11-06 10:21:42 UTC完成最新commit/ref/PR/merge回读：
+
+| 身份 | 实际值 |
+|---|---|
+| 当前head | `17c6b903a5d5d470b72035f95bb6e087291d7e04` |
+| 当前产品tree | `25020dc30888fa3ffa6f6e8d1073d91edded1756` |
+| 直接parent | `840e8b5dbffca017753cdf87482ce325938f313c` |
+| target分支 | `integration/ui-objective-20261103-product` |
+| 固定target base | `63652be658ebed8d3052eb789b951793384fd5e4` |
+| 实际merge commit | `26cfdcaa70cbd2daecd165137e3b84d2ad1a7284` |
+| merge tree | 与head同为 `25020dc30888fa3ffa6f6e8d1073d91edded1756` |
+| merge有序parents | `63652…`、`17c6b…` |
+| PR相对target | 1,566 changed files、107 commits |
+| PR状态 | open、Draft、maintainer_can_modify=false |
+| 默认main的本轮fresh GET | `732e934ba496d90fbe042b8d41d479ef901643e5` |
+
+PR仍处于候选状态，尚未合入main。发布使用正常fast-forward及expected SHA校验，没有force、手动dispatch、rerun或cancel。原PR正文作为完整后缀保留，每轮在前部追加最新范围和限制。
+
+本轮另外取得[main732到840的实际比较](https://github.com/TrillionniumFoundation/hepta-private-ci/compare/732e934ba496d90fbe042b8d41d479ef901643e5...840e8b5dbffca017753cdf87482ce325938f313c)：ahead512、behind0，merge-base正是main732，证明该切点的默认main为840祖先。API只返回300条文件记录，这个文件列表不用于声称完整main差异源码审阅；祖先关系也不等于main发布资格。
+
+| 顺序 | commit / tree | 已落实的改动 |
+|---|---|---|
+| 初次整合 | `2d1137b…` / `99a9c0c…` | 相对67基线230路径：3个Cargo/Bazel根文件、220个vendor文件、7个既有修复文件；真实保留四个修复donor parents |
+| 原生formatter后继 | `ac18b62…` / `c3e9ddc…` | 严格按原job输出改两份holdout源码的三个格式块，全部非空白字节保持 |
+| arg0夹具准备 | `aaf8688…` / `66552bd…` | Linux原普通main helper的构建前置及既有full-nextest helper artifact传输，三个路径 |
+| PTY观测 | `875b774…` / `c24f691…` | 三路径测试观测，保持原读写、EOF和测试契约 |
+| Supervisor连接期限 | `840e8b5…` / `b38cc55…` | 三处连接入口和两个私有源码文件，共三路径 |
+| 最新原生formatter机械后继 | `17c6b90…` / `25020dc…` | 原Linux八块、Windows相同五块子集，三文件；明确三枚标点及排版变化 |
+
+875和840两个提交相对aaf严格为六路径：四个既有文件修改、两个新文件，其他10,798个原叶的mode/blob不变，最终10,804叶。17格式后继只再修改这六条中的三条，相对840有10,801叶保持；当前相对aaf仍为六路径。根重新计算各基线/候选的完整Git树、核对交叠路径及实际53个根项；Supervisor原ac18候选没有被暗中改写成aaf历史。相对aaf的六路径、初次相对67的230路径、当前PR相对636的1,566路径分别保留。
+
+## 3. 原生失败驱动的实际修复
+
+### 3.1 真实双锁与vendor已经进入产品候选
+
+前一轮[依赖生成run42175704028](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42175704028)的15条原命令全部exit0，完整官方artifact、原deny日志和两轮Cargo/Bazel生成回执均已收齐。193个workspace member保持；Cargo从1,502包变为1,501包，只将四个固定版本从registry转为path，删去四条pin-utils边和唯一pin-utils节点，其余1,497包记录不变。MODULE相应四个path fact与固定rules_rs0.0.96的字段语义逐项核实。
+
+220个vendor文件来自固定官方archive，保留许可证及上游未改字节；aws-config既有76叶保持。纯产品223路径已排除四个proposal工具文件，进入初次2d组合。该原生成job证明双锁生成及deny范围，未运行产品编译与测试；B02/B15还须最新组合自己的原门通过。[完整依赖证据登记](current-head-ci/pin-utils-proposal-4931-native-20261106/registry.actual.json)。
+
+### 3.2 holdout格式问题已有原生通过，适用源明确
+
+初次2d的repo-check job127779715942失败于 `just fmt-check`。完整178,931 B原日志实际checkout为merge `a0cb0f3…`，其中三个formatter块涉及两个holdout文件。修复只改变空白，未改断言、句柄所有权或lock逻辑，独立审阅接受后发布ac18。
+
+ac18的[run42186354218](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42186354218) / repo-check job127809329291随后实际成功。完整122,199 B日志绑定执行merge `c9baaf38b95da145fb4f9d371b8d134169d313cc`，`just fmt-check`及干净工作树检查成功。scope job127802986289的完整182,891 B日志绑定base636/headac18，选出1,561路径并设full_repo=true、native=true；依赖选包的scoped任务因此按原规则跳过。
+
+这项格式门的原失败、精确修复和后续原生通过已连通。结果适用于ac18/c9ba，不能据此宣布新增arg0、PTY和Supervisor源码已经通过formatter或Clippy。ac18 cargo-deny的API结论为success，但完整job日志获取发生Transport closed；该完整stdout及实际checkout仍未从该次日志取得。[格式证据](reviews/integration-holdout-native-format-20261106/registry.actual.json)与[09:30 CI增量](reviews/integration-ci-after-format-20261106T0930/registry.actual.json)分别保留。
+
+### 3.3 原holdout支线暴露的两个后续问题
+
+原holdout源4a的[run42176273058](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42176273058) / job127755476318最终失败，官方artifact13486100626完整ZIP为379,045 B，SHA256 `e7d981ea110d109c40b5e290ba23e6f5c9262c01debacd5b728d94c5d4a45813`，3个成员的CRC与摘要均核实。实际checkout为head4a、tree `605720504e547296dca1c78914fee5ed6d29844d`；原执行前后dirty均false。完整控制台4,329,523 B，内层测试日志2,284,485 B。
+
+原依赖计划从20个changed packages派生127个selected packages，full_workspace=false。17,800个执行结果为17,796 PASS（含2个flaky）、3 FAIL、1 TIMEOUT，另49 skip，exit100。外层timed_out=false、truncated=false，不能将内部nextest超时改写为外层收集器超时。
+
+六个holdout相关测试在这个Linux源通过。三个arg0测试在原首次和自动retry中均于启动child之前找不到 `test_arg0_preflight`；另一个Supervisor五对进程恢复测试在原两次尝试分别60.005/60.008秒超时。六个holdout PASS只属于源4a/Linux；旧Mac holder因果及最新整合资格没有因此取得。[原日志与官方artifact登记](reviews/integration-old-donors-terminal-20261106T0840/registry.actual.json)。
+
+### 3.4 arg0缺失helper：已修复原入口准备链
+
+`test_arg0_preflight`是原Cargo已声明、normal-main、test=false的Linux测试helper。原Clippy修复未解决测试执行入口缺少预构建的问题。aaf后继保持helper源码、Cargo/Bazel声明、锁及三个Rust测试逻辑不变，修改三个已审路径：
+
+- 原依赖执行器在Linux、action=test且原计划选择codex-arg0时，先执行 `cargo build --locked -p codex-arg0 --bin test_arg0_preflight`，再执行原suite。原planner、full fallback、suite参数及时间守卫保持。
+- 显式使用 `--record-output` 时，由原执行记录器分别保存准备与suite文件；普通模式向原stdout追加独立running/final JSON，由原scoped外层记录器保全。准备失败、信号终止、source读取失败或工作树变脏即停止，不把失败改为套件成功。原exclusive记录语义保留，独立控制还覆盖dangling symlink冲突。
+- 原Linux full-nextest archive helper步骤按原target/profile构建并携带同一binary，分片恢复到既有helper位置并设置原测试可识别的变量。Mac/Windows分支、分片数、并行数、原测试命令及预算保持。
+
+作者和独立审阅完成36个Python回归（保留原29个）、11个真实记录器配fake命令的控制、3个Bash/fake-Cargo控制。这里的命令替身检查不等于Rust helper真实构建或原平台测试通过。任意手写 `just test`也不会自动获得这一准备链，仍应遵守原fixture准备要求。
+
+正式独审blob `cd7ed2f2a033882671a24258e1d360863039e5d0` 为0源码阻断；实际候选3个postimage和10,802叶树均完成完整GET与身份核对。完整可恢复包包含原失败、旧适用性审查、44件作者freeze、独审及控制结果。[arg0证据登记](reviews/arg0-fixture-prebuild-20261106/registry.actual.json)。
+
+### 3.5 Supervisor：连接阶段的真实缺口已修复，旧超时因果仍未解决
+
+原agent health、Matrix health和agent drain的三个同步 `UnixStream::connect`没有调用者期限；read/write各200ms是在connect返回之后才设置。新增私有模块采用nonblocking connect及同一单调deadline的poll，连接阶段使用原常量的200ms值。原read/write限时、三次adoption、50ms间隔、身份核对、ACK与signal权限规则保持。
+
+新descriptor立即进入OwnedFd，错误退出由所有者关闭；保留固定Rust1.95的CLOEXEC、Apple/BSD SO_NOSIGPIPE及pathname编码。Linux/Android监听队列满的EAGAIN表示尚未入队，原样返回给既有调用者策略；不会把POLLOUT/SO_ERROR=0当作虚假连接成功。成功前仍要求peer_addr和期限成立，再恢复blocking。
+
+新增六个测试源码覆盖自有listener成功、拒绝连接、Linux backlog EAGAIN、已过期期限、不合法路径及自有socket持续不可写。原 `unix_tests.rs`、`unix_drain_tests.rs` 和完整 `paired_process_product.rs`保持原blob。本轮尚未取得这六个新测试的原生执行回执；已收取的840两平台P0 job明确未选择它们或原paired测试。Python/Merkle/Git index正反回放只验证源码、组成和原件身份。
+
+两次旧timeout的最后阶段均为ten_children_ready，还没有ten_children_adopted。原stage计时从 `PairFleet::new(5)`之后开始，不能用60秒减去25.7314/23.1048秒来声称recover独占剩余时间。pids()是内存读取；相关Drop没有已发现的blocking join。初始化中的binary复制、fsync与完整hash，以及warm/start/recover中的重复完整hash都保留完整性含义；原日志没有binary大小或逐阶段耗时，不据此跳过校验或认定hash为根因。
+
+新连接阶段上限解决独立确认的源码缺口，不建立整个handshake/recover的总deadline；OS调度和不可抢占系统调用也不构成硬实时保证。正式独审 `35b07140231fa056026ca00088930873a4812b55`为0源码阻断，77件作者freeze、三份fresh源码GET和完整Git index正反回放成立。旧60秒因果仍UNKNOWN。[Supervisor作者证据](reviews/supervisor-unix-connect-bound-20261106/registry.actual.json)。
+
+### 3.6 840的后续原生失败与17机械后继
+
+09:54前的完整head列表包含18个不同run，全部为840源的pull_request、attempt1：7 queued、4 pending、5 in_progress、2 skipped。09:54:37读取[blocking run42197896439](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42197896439)的完整jobs API，结果为0 jobs。这是该时刻的排队/调度观察，未取得实际执行checkout或原生通过证明；依赖scope的后续任务尚未生成，也不据此记成跳过或失败。后续自然变化另记独立切点，保留初始原件。
+
+随后[run42197896368](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42197896368)的Ubuntu job127825647336、Windows job127825647542均终态failure，实际失败步骤为formatter。完整原日志分别1,677,608 B和1,636,168 B，Windows的10,482个CR保留。两日志均明确执行head840/treeb38/parent875，执行源不是同树PR merge。
+
+原三个指定Supervisor integration binary `restart_budget`、`restart_budget_recovery`、`signed_intent_recovery`在两平台各3P/0skip，Agentd protocol在两平台各14P/0skip；Strict Supervisor `--all-targets` Clippy也通过。四个官方JUnit ZIP（13493168627、13493122898、13493637703、13493467276）完整摘要及CRC相等，均只有一个junit.xml、没有failure/error/skipped。**六个新Unix unit tests与原paired_process_product均未被这次命令选择**，Clippy编译检查不代替它们执行。两job最终仍失败，局部成功不改写整体结论。
+
+Linux formatter给出八块差异，Windows给出相同Supervisor子集五块，合计涉及 `unix_connect.rs`、`unix_connect_tests.rs`、`unix_io_diagnostics.rs`三个文件。机械后继精确应用原输出：除排版外，删除单表达式map_err闭包的两个冗余花括号及Termios最后字段的一个可选逗号；其余非空白字符、全部字符串和注释按原顺序相同。原表达式、字段类型/顺序、调用、断言、错误传播与时间预算保持。这轮不是“纯空白”变更，Git统一patch七个hunk与原formatter八个block的分母也分别保留。
+
+42件作者freeze及完整原日志、三个实际postimage、10,804叶、53个根项和Git index正反回放均已复核。正式独审 `ef03d24a5f8a16c598f0dab38044436810d0a562`为0源码阻断。根已发布17后继、核对同树merge和PR全文回读；该后继仍须自己的原自动CI，旧840测试结果不转授它。原Intel原因与两次60秒超时原因仍UNKNOWN。[本轮原生日志、四份官方JUnit、格式源和独审完整登记](reviews/integration-840-native-format-20261106/registry.actual.json)。
+
+### 3.7 最新17的自动CI：保留观察时间和未完成状态
+
+较早的10:29–10:30 UTC切点包含18个不同run：12 queued、3 pending、2 skipped、1 success，blocking run为0 jobs。根稍后的独立完整head列表仍为18个run、均为17源的pull_request、attempt1，状态为11 queued、3 pending、2 skipped、1 success、1 in_progress；10:32:44 UTC再次完整读取[blocking run42201989815](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42201989815)的jobs API，仍为0 jobs。两次列表分别计数，没有合并成一个原子切面。
+
+唯一success是[Native Windows ordinary business consumers run42201989580](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42201989580)，此处只取得API状态，尚未由完整实际job日志核实checkout、case和原生适用范围。in_progress为[Bazel stable lock proposal run42201989530](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42201989530)；[Supervisor P0 run42201989809](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42201989809)仍queued。待scope展开的jobs不被提前判为skip或failure，任何run状态都没有据此转为整候选资格。
+
+本轮没有手动触发、重跑或取消CI，没有新的私有容量查询/执行，也没有B16第四次重放。排队期间完成的源码、证据和规划工作不替代原生接受。最新切点和完整原API由[17自动CI增量登记](reviews/integration-17-automatic-ci-20261106/registry.actual.json)保全。
+
+### 3.8 17普通Windows业务：两个实际checkout均取得限定原生成功
+
+随后完整收件确认，[run42201989580](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42201989580)的base-merge job127839242912与source-head job127839243318均成功。完整原日志及官方artifact中的source.json分别绑定实际merge `26cfdcaa70cbd2daecd165137e3b84d2ad1a7284`和head `17c6b903a5d5d470b72035f95bb6e087291d7e04`，两者tree均为 `25020dc30888fa3ffa6f6e8d1073d91edded1756`，原parents相符。这补齐了上一切点只有API success的证据限制。
+
+每个checkout原三个完整library target的Rust结果分别为intelligence 78 PASS、bao 19 PASS、codex 21 PASS，合计118 PASS、0 FAIL、0 ignored、0 filtered。原4+8+3个命名控制均在对应原日志中出现PASS；这些控制是上述118例的子集，不另相加。两个checkout重执行同一组范围，也不记作236个不同用例。官方两个ZIP均通过API摘要和全成员CRC校验，各10个成员；每个library的XML只报告一个Bazel wrapper，Rust case数取完整原test.log。
+
+这些原library unit targets的BUILD保留既有qualification/test依赖替换；接受范围是该原库测试契约，外部producer和真实服务集成仍须独立验证。完整compact中XML助手各自的输入test.log、输出XML与对应checkout原件的字节及摘要一致；九份捕获输入与固定Git源LF到CRLF的字节变换逐项相等，没有据run名称推断实际执行源。
+
+完整compact execution记录各64,893条，产品TestRunner与xml helper分别分析。每边三个tw.exe产品执行均为local、非cache、exit0，原timeout为300,000ms；三次xml.exe调用属于独立helper。固定workflow保留原三target、无新增filter、`--nocache_test_results`、`--flaky_test_attempts=1`及原wrapper/prepare/120分钟作业政策。这一成功覆盖正常业务consumer；B11原strict token及真实删除攻击套件仍须自己的接受，B16真实authority/provider与整候选B02/B15也没有因此闭合。
+
+后续10:43:30 UTC的有界读取显示blocking run仍完整0 jobs，Supervisor P0的Ubuntu job127839244015和Windows job127839244401均in_progress，已返回步骤中无failure。这次没有重新做全18-run普查，不把这两个job的进展与旧列表合成为新的完整run状态统计。[普通业务原日志、官方artifact与后续观察登记](reviews/integration-17-native-followup-20261106/registry.actual.json)。
+
+## 4. B21：完整Intel失败、有限优化与新观测
+
+此前v3诊断源84cc的原Intel job127718214088失败，其完整官方包已在上一增量登记。501个唯一testResult attempt为495P/5F/1T；438个testSummary为433P/1FLAKY/4F；两种统计不混合。原进程exit38、BEP TESTS_FAILED/3、collector exit1和manifest complete=false均保留。BEP为credential-sanitized、opaque-payload-omitted派生件，省略3个opaque payload；raw BEP未保留，没有把它称为完整原始BEP。[完整v3原失败证据](reviews/b21-collector-v3-native-20261106/registry.actual.json)。
+
+后续receiver关闭后减少无用分配/发送的8075源，其[run42167168039](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42167168039)最终37jobs为26成功、6失败、1取消、4跳过；Intel job127729084043被取消，取消原因UNKNOWN。完整1,093,592 B日志实际执行merge `b88f625afe17975db80b152283ef2e19cc50e41f` / tree `c1249a173ac346d0f1230fe56451b97d4e13c601`，31例为27P/4F。
+
+保留FD的REPL和强制flush负控通过；两个Drop测试在显式Drop之前的PID/input就绪等待失败，大输入及dropped-receiver仍失败。新记录中dropped-receiver read=0、phase=python_started；更早源有read/discard=2,050,048 B。它们是不同执行的真实观察，不能用其中一条覆盖另一条，也不能据观察改变就证明优化有效或无效的完整因果。
+
+固定CPython3.14.7源码审查确认：交互prepare使用TCSADRAIN；特定isearch结束分支才使用TCIFLUSH；prompt配色包裹完整literal `>>>`。原Rust写入按FIFO先drain消息，再发送一次原换行加当前VEOF，没有源码证明它在队列前发送EOF。queue enqueue也不等于child已经读到全部1,212,416 B。原执行缺少writer实际进度、termios和EOF错误信息。[只读因果评估](reviews/b21-repl-lifecycle-causal-20261106/registry.actual.json)。
+
+因此本次875提交增加有界测试观测：接收/完成消息数、请求/已写字节、write await次数、错误、ICANON/VEOF和EOF阶段，并在四个原等待结果处打印snapshot。所有观测由cfg(test)限制；诊断保持Weak FD，无新增持久FD owner、child、线程或队列。原reader字节、FIFO、单次换行/VEOF、NoEof、Python程序、断言及2秒/5秒预算保持。Relaxed字段是不同瞬间的独立观察，snapshot查询可短暂pin FD并有运行开销。
+
+独审 `4f14ab769aa1d95a4e46249f345323beaeeaf68c`逐项核23件freeze、三个实际postimage、aaf上下文和异目录重放，0源码阻断。词法比较保留原测试token及脚本，不是Rust编译器或一般程序等价证明。non-test临时绑定经源码审查未见行为改变，仍须真实编译与平台CI。
+
+**B21仍OPEN。** 原退出文本写30例，当前日志报告31例；两个口径保留，新增控制不能替换原合同。闭合仍要求原macOS Intel范围、相关原CI及实际失败原因解释，单纯增加观测不满足这些条件。[观测候选与独审完整登记](reviews/b21-writer-observation-independent-20261106/registry.actual.json)。
+
+## 5. B11：Windows权限缺口的范围已经更清楚
+
+Windows错误原因链修复已整合，但没有改变token/ACL授权机制。原native13为147P/7F/2I，7个失败包含3个strict失败和4个随后poison失败。strict和legacy控制中，ParentOnly/Both可真实删除外部目标；Neither/TargetOnly拒绝，故不能把问题继续归为宿主假阳性。源码中确有SandboxedFs→helper Remove→DirectFs的no-follow原生操作，但显式helper请求不是任意原始thread token或native child的强制文件系统边界。[完整源码与原生反例评估](reviews/b11-minimal-repair-reassessment-20261106/registry.actual.json)。
+
+本轮进一步核实旧native11的完整实际源与MIC对照。Low token面对Medium对象时四项外部写均Denied/5、名字保留；面对另一Low cohort对象时overwrite/create拒绝，但文件/目录delete成功。观察句柄尚未关闭时记录DeletePending=1、links=0；随后关闭观察句柄，名字消失，具有真实物理效果。实际thread token观测包含RID4096、attrs96和policy3三个字段，这三个字段不能替代完整token身份。
+
+生产token使用DISABLE_MAX_PRIVILEGE、LUA_TOKEN、WRITE_RESTRICTED，已有default DACL和ChangeNotify处理，没有显式integrity-level/MandatoryPolicy setter。简单调整到Low并没有在已测Low→Low删除场景建立原要求边界；未测的Untrusted或其他组合仍UNKNOWN。测试中inside对象被显式标Low，不代表未重标记的allowed root、loader、IPC、ConPTY及后代进程兼容性已通过。该MIC八行阶段的descendants_spawned=0；后续Neither child模块属于另一阶段，不合并为这组MIC的后代接受。
+
+下一步实现必须使对象和操作授权覆盖DELETE、父目录DELETE_CHILD、实际effective token，以及继承/复制句柄和合法后代的完整生命周期，同时保留正常读写、加载和恢复能力。仅改变日志、helper是否存在、Job/desktop/lifecycle或某个MIC标量均不够。原合同要求在已允许范围内修复；确实超边界的具体方案须按原审批要求升级，不能通过放宽攻击断言或改退出条件获得闭合。本轮没有提交未经证明的权限策略改写。
+
+## 6. 其余产品与科学门
+
+### B16：真实入口和authority的完整闭环
+
+Foundation已存在24个不同正向控制/27次通过、9个不同有效负向控制/10次预期失败及4次恢复记录，均保留各自固定源。它们不代替同源真实Root/Session、原signed objective、issuer、provider/target与正常UI caller的任务、取消、丢ACK和重启验收。
+
+Root handoff、Registry/arg0、protected checkpoint/verifier、FinalUse/issuer和listener custody须全部迁移并由实际caller接受。并行PR中的caller清单及桥接工作能形成源码输入，内容hash、synthetic receipt、reopen或离线测试不自行授予Current/FinalUse authority。
+
+原台账把迁移分为R1–R6：arg0基础 → trust/Current与inherited合同 → Agentd装配 → joint consumer → normal producer与paired pin → 原真实接受。按这一顺序分别形成可审源码闭包与接受证据；此前R0的102项决策/474净差仍不是已验证的编译最小闭包，不据文件清单直接整批导入。
+
+旧driver同一key的三次工具Timeout没有可验收job ID，2,463条只含有限字段的元数据不足以确定实际job，身份仍UNKNOWN。本轮没有进行第四次重放、换key、猜PID或将未知执行判为成功/失败。
+
+### B19：外部版本和真实consumer
+
+先前已完整核固定Hepta `09de43ba…` × Chain `254033da…`的双端源码、传输上限和签名路径。固定大型样本49,508 raw bytes、99,016 hex bytes，原raw上限65,536；旧inline/JSON上限保持，采用有界stdin路径。40位commit身份不是外部binary构建来源证明，dev fixture也没有production authority。
+
+原paired native因所需external binary缺失而未取得接受。闭合还需要精确external binary/build来源、两端兼容及故障/安全回执、以及Bao、Chain、HIA各自真实产品调用者的独立接受。并行dd32后继须另核适用性，不能把旧双端静态审查转授它。
+
+### B18：保留科学未接受状态
+
+原缺失报告问题B17已限定闭合；科学采用B18保持SCIENTIFIC_HOLD。新的NDU作者报告为NO_GO，144个cell中0 wins、143 ties、1 loss；工程测试和有限数学检查不构成M1000生命周期或真实LLM接受，不能据此宣布新范式已优于强普通默认。
+
+下一有效科学门仍是事前冻结的新2×2，重点D−B，使用独立未来数据、足够精度、完整失败尝试和完整成本。未测能耗不能计0；旧J−C、重复旧数据、事后挑选绿色子集或给出更多实现文件都不满足这一门。V13内容验证与Joint提案执行分别是工程能力，不能替代质量、因果收益和采用授权。
+
+## 7. 并行项目观察与当前主线
+
+本轮fresh GET确认原主PR #4797仍为67cc源、base636、1,335路径/96commits。#4855实际head仍为 `ef0cf55a747ee1fa966ede6804b3652792c9961f`，最新API相对默认main732显示2,858路径/942commits；前一报告中“35commits/57paths”比较的是正文旧1a2源到ef0源，两个分母不同，不能混用。
+
+#4929 Joint桥接当前head7391保持。已读设计将proposal worker、durable control、Cell journal与ACK分开；durable token、result/outbox和成本先于ACK，未决重开不允许重新派发造成双重效果。DENY_ALL的synthetic权重和有限资源边界仍不构成训练质量或产品采用资格。
+
+#4930实际head已从此前已读的dd1ad推进到fa1c。本轮独立只读复核确认ahead1/behind0、60路径（57新增/3修改），全部限于资格目录；完整60文件身份、三份修改的正反patch、19个执行源SHA256和46份inventory payload均对账。新增120×384真实MiniLM特征重放、1次Adapter及120次纯executor输出，属于机械执行进展，120个输出不是120个独立质量测试通过。
+
+原11次材料campaign为1 VERIFIED、8 REJECTED、2 HOLD；初始16项/1 error与最终25项/0 error日志均保留。所有尝试CPU合计10.434924410秒、wall合计10.348413257秒只涵盖该调用范围，未观测能耗及模型获取、外层receipt保存成本不被计作0。19个实际执行源码摘要与fa全文相等，但原运行仍是component partial projection、native_candidate_commit=null，不能改称完整仓库exact-head验收。
+
+五成员内容身份、MiniLM残差分类器的质量、Joint生成能力及产品采用分别评估。该源仍只接受train rows，未做独立quality evaluation、2×2/D−B、真实Cell/Agentd/live SourceOwner或下一任务采用；receipt全部DENY_ALL，external_operations=0。冷读回的零新计算证明它读取既存receipt，不证明更新模型被下一任务采用。B16/B18均无闭合转换。[该源原接受说明](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/fa1c0592e7d1dea60cd8d8459a4e2b18fdfbab61/qualification/neuron-learning-closure-v13/ACCEPTANCE_20261106.md)。
+
+#4932仍为caller清单一提交；#4934仍为基于ef0的Command/Stdio导入修复。这些支线未因本报告引用而自动纳入#4936或取得原生资格。
+
+当前产品建设顺序保持：正常UI/API请求 → 受保护的Root与signed Objective/FinalUse → 有界Memory/Context → Agentd组织生命周期 → Codex负责Session/thread/turn/model/tools → 可观察、可取消、可恢复的真实效果。优化器和shadow worker提供候选，不拥有独立授权捷径。源码组成、authority、安全边界、运行结果和科学收益各有接受条件。
+
+## 8. 下一阶段工作计划
+
+| 优先级 | 工作范围 | 具体交付 | 完成依据与依赖 |
+|---|---|---|---|
+| P0-A | B02/B15候选与原CI | 保持单一固定候选；原失败逐项定位、最小修复、独审、普通PR后继；保留所有原回执 | 最新head的全部原必需workflow终态成功；实际merge与发布同树；重新核main。旧支线绿色不转授 |
+| P0-B | B21 Intel | 用新writer/EOF观测区分enqueue、实际写入、termios、EOF、child启动与退出阶段；依据实际失败完成修复 | 原2秒/5秒与drain/child/FD不变，原Intel范围和相关CI通过，给出可复核因果 |
+| P0-C | B11 Windows | 实施具有强制对象/操作授权的可审最小方案，覆盖删除、句柄及后代生命周期，同时保全正常功能 | 原strict token、攻击、权限和文件系统套件全通过；具体超范围变更按原合同升级审批 |
+| P0-D | 私有Linux全门 | 原候选、原目录与冻结命令保持；仅在新的独立容量证据满足原门后执行 | 原清单19,563项（19,506 eligible、57 ignored）、64GB磁盘/32GiB内存及jobs4等原约束；原25GB准备失败保留 |
+| P1 | B16真实产品闭环 | 先完整迁移原合同列明的入口与authority依赖，并提供一个正常UI caller，再在同源真实Root/Session/provider/target完成四类场景 | 任务、取消、丢ACK、重启均保物理效果、authority、evidence和Memory一致性；不重复未知旧driver |
+| P2 | 实际规模测量 | 以64/256/1024/4096逻辑slot分层测量，记录实际并发、CPU/RSS、队列年龄、p50/p95/p99、质量、tokens及全成本 | 逻辑slot不等于同时活跃进程；原正确性、取消与恢复契约先成立 |
+| P3 | 固定预算shadow | 强普通默认和新方案按事前冻结预算比较，分开质量、成本与失败 | B18的新2×2和D−B满足独立数据、充分精度及全成本；未达标保留默认 |
+| P4–P5 | 因果与长期学习 | 先只读因果诊断，再验长期学习、forget、revoke和rollback | 观察不改变权限；内容身份、长期收益和撤回物理效果分别证明 |
+| P6–P7 | 工程演化与实体效果 | 受约束的代码/工具演进及真实目标落地，保留可回滚版本和效果记录 | 继承前述authority、资源、取消与独立验收，不从研究worker旁路授权 |
+| P8 | B19外部生态 | 固定Bao/Chain/HIA接口、external binary来源、双端故障/安全及真实consumer | 各外部产品独立接受；协议fixture或本仓单测不替代外部接受 |
+
+优先级代表依赖次序，不是未经资源核实的日历承诺。Windows设计、Intel诊断和外部接口准备可以并行；发布资格、真实入口和科学采用各自以原退出条件决定。
+
+## 9. 原23项台账与本轮结论
+
+已限定闭合的16项为B01、B03、B04、B05、B06、B07、B08、B09、B10、B12、B13、B14、B17、B20、B22、B23。具体名称、原范围、status和closure_class完整保留在[原台账V8](continuation-blocker-progress-v8.json)。其中B23先前已有原native307P/0F/1I及限定范围接受，本轮没有另造其关闭条件。局部已闭合不会自动授予整产品main资格。
+
+| ID | 当前分类 | 本轮实际推进 | 尚未满足的原接受门 |
+|---|---|---|---|
+| B02 | OPEN | 双锁/vendor及后续源码修复均已实际组成和发布 | 最新单一候选原始必需CI全部通过 |
+| B11 | OPEN | 完整源码链、实际删除反例和MIC Low→Low限制独立复核 | 原生helper与原strict token契约、原攻击/权限/文件系统全验收 |
+| B15 | OPEN | 原formatter失败→修复→ac18原生通过；840新formatter失败后已发布17机械后继；当前head/base/merge同树 | 最新17候选全必需workflow终态成功及原完整产品接受 |
+| B16 | OPEN | Foundation限定原生进展与入口依赖已梳理；旧未知driver保持 | 真实正常UI及同源Root/Session/signed objective/provider四场景物理验收 |
+| B18 | SCIENTIFIC_HOLD | 完整负结果和工程/科学边界保留 | 事前冻结新2×2、D−B、独立数据、全失败及全成本 |
+| B19 | OPEN | 固定双端源码、传输边界、外部依赖及后继适用性已梳理 | 实际external binary、兼容/故障/安全与真实consumer独立接受 |
+| B21 | OPEN | 完整Intel原失败、CPython/EOF因果审查、已发布测试观测 | 原Intel用例与原预算通过，并解释实际失败原因 |
+
+这轮没有新增闭合转换。原23条字面退出条件由机器增量从V8逐字段复制并比较，未因实现、证据收齐、排队、跳过或局部PASS而重写。
+
+## 10. 证据与可恢复性
+
+本轮保留完整官方artifact、原日志和API快照、每个候选的freeze、完整postimage GET、作者及独立重放、真实commit/ref/PR/merge返回。09:19–09:24前后的工具Transport closed/disconnected按原工具错误保留；工作区原件仍在。早期验证脚本的字段适配失败和后续成功分别保留，不改写成产品native失败或通过。
+
+审计追加只修改两个LATEST入口，并把旧C3入口原字节保存在history；其余15,230个旧叶保持。新索引覆盖实际登记的证据路径，新报告/机器账和索引自身另行物化；历史源、旧失败和原台账不倒写。全文链接和整树身份在发布前验证，证据包可恢复并重放其声明范围内的离线检查。
+
+- [本轮机器增量V3](post-audit-execution-v3.json)：原23项合同、候选身份、native适用范围和剩余门。
+- [本轮实际证据索引V13](evidence-index-v13-addendum.json)：各包与实际对象映射，保留旧V10/V11/V12。
+- [最终来源与发布附录](reviews/post-audit-execution-v3-final-appendix-20261106/registry.actual.json)：关键PR/main的本轮快照、PR4930完整只读增量、17实际发布回执及准备阶段失败/修复历史。
+- [上一轮执行增量V2](POST_AUDIT_EXECUTION_UPDATE_V2.zh-CN.md)：初次组合、完整Cargo与Intel v3证据。
+- [完整方向与执行计划V7](PROJECT_DIRECTION_AND_EXECUTION_PLAN_V7.zh-CN.md)：长期架构与阶段退出条件。
+
+当前能确认的是可审修复已经落到真实候选、若干原失败链已补齐，剩余门已明确到具体实现与接受证据。原CI、真实authority/provider、外部consumer和科学比较尚未完成的部分，继续保持其真实未完成状态。

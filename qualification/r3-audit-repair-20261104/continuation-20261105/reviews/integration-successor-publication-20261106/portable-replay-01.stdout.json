@@ -1,0 +1,56 @@
+{
+  "schema": "hepta-integration-successor-portable-restore-verification-v1",
+  "result": "PASS_LOSSLESS_RESTORE_AND_LIMITED_OFFLINE_PUBLICATION_VERIFICATION",
+  "archive": {
+    "bytes": 4938111,
+    "git_blob": "0e1facdd994ffe4ea7f5075c87ffd6fdf97e227e",
+    "sha256": "64c9917956870e54637aab8a82f5d4030b9572610a10e7aa203d7581748caa09"
+  },
+  "parts": 28,
+  "exact_preserved_members": 80,
+  "member_bytes": 12925993,
+  "complete_arg0_batch_receipts": 4,
+  "complete_original_arg0_GET_payloads": 30,
+  "publication_verifier_exit": 0,
+  "publication_stdout": {
+    "bytes": 9321,
+    "git_blob": "12fca920f89c5cbc27ed5769e0ba0e2bcef4f431",
+    "sha256": "7556a917565366f5c75755f866bc68cd84ba92f6a093b5b5034412df04ea150c"
+  },
+  "publication_stderr": {
+    "bytes": 0,
+    "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "publication_stdout_original_bytes_equal": true,
+  "actual_original_API_publication_heads": [
+    "aaf86881da0b3a7651b4a6a56be49515b9aa9f2e",
+    "840e8b5dbffca017753cdf87482ce325938f313c"
+  ],
+  "final_composed_tree": "b38cc55050c74f8765bdee397a24066c100a179a",
+  "changed_paths_against_aaf": [
+    "codex-rs/hepta-supervisor/src/unix.rs",
+    "codex-rs/hepta-supervisor/src/unix_connect.rs",
+    "codex-rs/hepta-supervisor/src/unix_connect_tests.rs",
+    "codex-rs/utils/pty/src/tests.rs",
+    "codex-rs/utils/pty/src/unix_io.rs",
+    "codex-rs/utils/pty/src/unix_io_diagnostics.rs"
+  ],
+  "qualification_scope": {
+    "external_author_or_independent_verifiers_reexecuted": false,
+    "full_C4_builder_executed": false,
+    "all_external_preparer_inputs_reexecuted": false,
+    "native_or_CI_executed": false,
+    "new_ref_or_PR_mutations": false,
+    "final_C4_documents_included": false,
+    "new_native_qualification": false,
+    "all_blockers_closed": false,
+    "original_23_exit_conditions_modified": false,
+    "blocker_counts": {
+      "CLOSED_SCOPED": 16,
+      "OPEN": 6,
+      "SCIENTIFIC_HOLD": 1
+    }
+  },
+  "scope": "Fresh isolated restoration and limited offline evidence verifier only; no original product/native/CI/externally dependent verifier rerun, no ref or PR changes."
+}

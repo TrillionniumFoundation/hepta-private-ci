@@ -1,0 +1,303 @@
+{
+  "schema": "c4-ready-components-10",
+  "parent_commit": "f7bb5019d311dacc142f20cacdcf19889109b4ba",
+  "base_tree": "d7716cca653bf7795307b052352e8671cd9fd944",
+  "components": [
+    {
+      "name": "root-publications",
+      "directory": "fourth-audit-root-delivery",
+      "registry_blob": "90aebb9657ef7d879f5222b9a3333cd39e95f398",
+      "schema": "hepta-root-fourth-audit-actual-registry-v1",
+      "prefix": "reviews/post-audit-execution-v3-20261106/",
+      "adapter": "standard",
+      "rows": "objects",
+      "payload_paths": 17,
+      "elements_file": "C4-complete-19-tree-elements.json",
+      "root_full_GET": "fourth-audit-inputs/c4-root-registry.actual.original.json",
+      "self_file": "registry.self.actual.json",
+      "self_blob": "9dabc69f52b3728d255a6bc81b57e6652821e27f",
+      "self_root_full_GET": "fourth-audit-inputs/c4-root-self.actual.original.json"
+    },
+    {
+      "name": "native-format",
+      "directory": "integration-ci-review/fmt-evidence-delivery",
+      "registry_blob": "9c783f6a6b9a83b4d6e0128b2d5b5fc09684112a",
+      "schema": "integration-holdout-native-format-evidence-actual-registry-v1",
+      "prefix": "reviews/integration-holdout-native-format-20261106/",
+      "adapter": "fmt",
+      "rows": "files",
+      "payload_paths": 24,
+      "elements_file": "tree-elements.actual.json",
+      "root_full_GET": "fourth-audit-inputs/fmt-registry.actual.original.json",
+      "receipt_collections": [
+        "registration-raw.original.json"
+      ],
+      "receipt_self_files": {
+        "registration-raw.original.json": "registration-raw-self.actual.json"
+      }
+    },
+    {
+      "name": "ci-0829",
+      "directory": "integration-ci-review/ci-increment-20261106T0829-delivery",
+      "registry_blob": "c425db96529df31d905b72da9c42bf64cbabb90e",
+      "schema": "hepta-integration-ci-after-format-0829-actual-registry-v1",
+      "prefix": "reviews/integration-ci-after-format-20261106T0829/",
+      "adapter": "ci",
+      "rows": "files",
+      "payload_paths": 9,
+      "elements_file": "tree-elements.actual.json",
+      "root_full_GET": "fourth-audit-inputs/ci-0829-registry.actual.original.json",
+      "receipt_collections": [
+        "registration-originals.json"
+      ],
+      "receipt_self_files": {
+        "registration-originals.json": "registration-originals-self.actual.json"
+      }
+    },
+    {
+      "name": "b11-reassessment-v2",
+      "directory": "b11-minimal-repair-reassessment-20261106/delivery-v2",
+      "registry_blob": "59a15073eef10c61e2b3731611c4c41342deb1cd",
+      "schema": "hepta-b11-reassessment-v2-actual-evidence-registry",
+      "prefix": "reviews/b11-minimal-repair-reassessment-20261106/",
+      "adapter": "b11",
+      "rows": "objects",
+      "payload_paths": 25,
+      "elements_file": "tree-elements.json",
+      "root_full_GET": "fourth-audit-inputs/b11-v2-registry.actual.original.json",
+      "self_file": "registry.self.actual.json",
+      "self_blob": "86ade0ac7fdbc7ded2fa781d7a46bb0042589fb9",
+      "self_root_full_GET": "fourth-audit-inputs/b11-v2-self.actual.original.json"
+    },
+    {
+      "name": "b21-causal",
+      "directory": "b21-repl-lifecycle-causal-delivery",
+      "registry_blob": "f9af6bdaf3cc61204cd45525605e67b81b4c955a",
+      "schema": "hepta-b21-repl-lifecycle-causal-actual-registry-v1",
+      "prefix": "reviews/b21-repl-lifecycle-causal-20261106/",
+      "adapter": "standard",
+      "rows": "objects",
+      "payload_paths": 9,
+      "elements_file": "C4-complete-11-tree-elements.json",
+      "root_full_GET": "fourth-audit-inputs/b21-causal-registry.actual.original.json",
+      "self_file": "registry.self.actual.json",
+      "self_blob": "5a61cad60c5418add7450d65db224fa0d0b18dbe",
+      "self_root_full_GET": "fourth-audit-inputs/b21-causal-self.actual.original.json"
+    },
+    {
+      "name": "old-donor-terminal",
+      "directory": "integration-ci-review/old-donor-terminal-20261106T0840-delivery",
+      "registry_blob": "23e67ce20a439e2968eb63ae4e9a74a214ccd081",
+      "schema": "hepta-integration-old-donors-terminal-actual-registry-v1",
+      "prefix": "reviews/integration-old-donors-terminal-20261106T0840/",
+      "adapter": "ci",
+      "rows": "files",
+      "payload_paths": 36,
+      "elements_file": "tree-elements.actual.json",
+      "root_full_GET": "fourth-audit-inputs/old-donor-terminal-registry.actual.original.json",
+      "receipt_collections": [
+        "registration-chunk-000.original.json",
+        "registration-chunk-001.original.json",
+        "registration-chunk-002.original.json",
+        "registration-chunk-003.original.json",
+        "registration-chunk-004.original.json",
+        "registration-chunk-005.original.json"
+      ],
+      "receipt_self_files": {
+        "registration-chunk-000.original.json": "registration-chunk-000-self.actual.json",
+        "registration-chunk-001.original.json": "registration-chunk-001-self.actual.json",
+        "registration-chunk-002.original.json": "registration-chunk-002-self.actual.json",
+        "registration-chunk-003.original.json": "registration-chunk-003-self.actual.json",
+        "registration-chunk-004.original.json": "registration-chunk-004-self.actual.json",
+        "registration-chunk-005.original.json": "registration-chunk-005-self.actual.json"
+      }
+    },
+    {
+      "name": "arg0-fixture",
+      "directory": "arg0-fixture-prebuild-candidate-20261106/delivery",
+      "registry_blob": "08e8e7ea26909d95392a0eddc157f75e308e2e9c",
+      "schema": "hepta-arg0-fixture-prebuild-complete-registration-v1",
+      "prefix": "reviews/arg0-fixture-prebuild-20261106/",
+      "adapter": "batch_tree",
+      "rows": "files",
+      "payload_paths": 30,
+      "elements_file": "tree-elements.json",
+      "root_full_GET": "fourth-audit-inputs/arg0-fixture-registry.actual.original.json",
+      "self_file": "registry.self.actual.json",
+      "self_blob": "6624db3ad8f0306b144f4db6fd30ae8c35082ad4",
+      "self_root_full_GET": "fourth-audit-inputs/arg0-fixture-self.actual.original.json",
+      "receipt_batches": [
+        "registration-originals/batch-00.original.json",
+        "registration-originals/batch-01.original.json",
+        "registration-originals/batch-02.original.json",
+        "registration-originals/batch-03.original.json"
+      ]
+    },
+    {
+      "name": "supervisor-connect",
+      "directory": "supervisor-unix-connect-bound-delivery",
+      "registry_blob": "b336a8470de7111b0bb037a3c1d801bcadaba0d2",
+      "schema": "hepta-supervisor-unix-connect-bound-actual-registry-v1",
+      "prefix": "reviews/supervisor-unix-connect-bound-20261106/",
+      "adapter": "standard",
+      "rows": "objects",
+      "payload_paths": 19,
+      "elements_file": "complete-21-tree-elements.actual.json",
+      "root_full_GET": "fourth-audit-inputs/supervisor-author-registry.actual.original.json",
+      "self_file": "registry.self.actual.json",
+      "self_blob": "d63b0ebf6819eae8adf27ad22031320afc27c058",
+      "self_root_full_GET": "fourth-audit-inputs/supervisor-author-self.actual.original.json"
+    },
+    {
+      "name": "supervisor-connect-review",
+      "directory": "supervisor-unix-connect-bound-independent-delivery",
+      "registry_blob": "286bae42fa543ba26a60f2206a1709a67d5e5176",
+      "schema": "hepta-supervisor-unix-connect-independent-actual-registry-v1",
+      "prefix": "reviews/supervisor-unix-connect-bound-independent-20261106/",
+      "adapter": "standard_recipe",
+      "rows": "objects",
+      "payload_paths": 15,
+      "elements_file": "complete-17-tree-elements.actual.json",
+      "root_full_GET": "fourth-audit-inputs/supervisor-independent-registry.actual.original.json",
+      "self_file": "registry.self.actual.json",
+      "self_blob": "d0297eea99c096f01e34da359e6612c8983acd19",
+      "self_root_full_GET": "fourth-audit-inputs/supervisor-independent-self.actual.original.json"
+    },
+    {
+      "name": "ci-0930",
+      "directory": "integration-ci-review/ci-increment-20261106T0930-delivery",
+      "registry_blob": "5229e45b3547f41e9f8260c81ceb6a03c75368a0",
+      "schema": "hepta-ci0930-actual-registry-v1",
+      "prefix": "reviews/integration-ci-after-format-20261106T0930/",
+      "adapter": "materialized",
+      "rows": "files",
+      "payload_paths": 22,
+      "elements_file": "tree-elements.actual.json",
+      "root_full_GET": "fourth-audit-inputs/ci-0930-registry.actual.original.json",
+      "receipt_collections": [
+        "registration-chunk-000.original.json",
+        "registration-chunk-001.original.json",
+        "registration-chunk-002.original.json",
+        "registration-chunk-003.original.json",
+        "registration-chunk-004.original.json"
+      ],
+      "receipt_sidecar": "registration-receipts.actual.sidecar.json",
+      "materialized_trees": {
+        "5dfb70db88a37e904694e15820b3b198c6e28576": "fourth-audit-inputs/materialized-tree.5dfb70db88a37e904694e15820b3b198c6e28576.actual.original.json",
+        "78f829f0c8a1f50ff1a579d55e34c4212c7fd3b4": "fourth-audit-inputs/materialized-tree.78f829f0c8a1f50ff1a579d55e34c4212c7fd3b4.actual.original.json"
+      }
+    },
+    {
+      "name": "b21-writer-observation",
+      "directory": "b21-writer-observation-review-delivery",
+      "registry_blob": "875b7cbfb6755d7d01fe34c298411b6da780d36d",
+      "schema": "hepta-b21writer-actual-registry-v1",
+      "prefix": "reviews/b21-writer-observation-independent-20261106/",
+      "adapter": "materialized",
+      "rows": "files",
+      "payload_paths": 25,
+      "elements_file": "tree-elements.actual.json",
+      "root_full_GET": "fourth-audit-inputs/b21-writer-registry.actual.original.json",
+      "receipt_collections": [
+        "registration-chunk-000.original.json",
+        "registration-chunk-001.original.json",
+        "registration-chunk-002.original.json",
+        "registration-chunk-003.original.json",
+        "registration-chunk-004.original.json"
+      ],
+      "receipt_sidecar": "registration-receipts.actual.sidecar.json",
+      "materialized_trees": {
+        "5dfb70db88a37e904694e15820b3b198c6e28576": "fourth-audit-inputs/materialized-tree.5dfb70db88a37e904694e15820b3b198c6e28576.actual.original.json",
+        "78f829f0c8a1f50ff1a579d55e34c4212c7fd3b4": "fourth-audit-inputs/materialized-tree.78f829f0c8a1f50ff1a579d55e34c4212c7fd3b4.actual.original.json"
+      }
+    },
+    {
+      "name": "root-successor-publications",
+      "directory": "integration-successor-publication-delivery",
+      "registry_blob": "6206d5aeb92d3d489e2ffa851e202ee5d3b0bc95",
+      "schema": "hepta-root-integration-successor-publication-actual-registry-v1",
+      "prefix": "reviews/integration-successor-publication-20261106/",
+      "adapter": "standard",
+      "rows": "objects",
+      "payload_paths": 38,
+      "elements_file": "complete-40-tree-elements.actual.json",
+      "root_full_GET": "fourth-audit-inputs/root-successor-registry.actual.original.json",
+      "self_file": "registry.self.actual.json",
+      "self_blob": "72cbf0ecca82cf7dae2ae196f852cd82cb7bf717",
+      "self_root_full_GET": "fourth-audit-inputs/root-successor-self.actual.original.json"
+    },
+    {
+      "name": "final-appendix",
+      "directory": "fourth-audit-final-appendix-delivery",
+      "registry_blob": "fce896fa8807a0e378bf654c3c29756c9ae21ed9",
+      "schema": "hepta-fourth-audit-final-appendix-actual-registry-v1",
+      "prefix": "reviews/post-audit-execution-v3-final-appendix-20261106/",
+      "adapter": "standard_recipe",
+      "rows": "objects",
+      "payload_paths": 21,
+      "elements_file": "complete-23-tree-elements.actual.json",
+      "root_full_GET": "fourth-audit-inputs/final-appendix-registry.actual.original.json",
+      "self_file": "registry.self.actual.json",
+      "self_blob": "f5f44f5407dcbaf575c9f4fe74f39431e825a441",
+      "self_root_full_GET": "fourth-audit-inputs/final-appendix-self.actual.original.json"
+    },
+    {
+      "name": "fmt840-native",
+      "directory": "integration-ci-review/840e8b5-native-format-delivery",
+      "registry_blob": "c1cc1f481bdcc6bb21f5db1462b4606526bf1631",
+      "schema": "hepta-evidence-packet-actual-registry-v1",
+      "prefix": "reviews/integration-840-native-format-20261106/",
+      "adapter": "evidence_packet",
+      "rows": "files",
+      "payload_paths": 38,
+      "elements_file": "tree-elements.actual.json",
+      "root_full_GET": "fourth-audit-inputs/fmt840-registry.actual.original.json"
+    },
+    {
+      "name": "final17-ci-cuts",
+      "directory": "integration-ci-review/17c6b903-ci-cuts-delivery",
+      "registry_blob": "95c5d271d491ae58cc35de89eeb5f1d3f53497f9",
+      "schema": "hepta-evidence-packet-actual-registry-v1",
+      "prefix": "reviews/integration-17-automatic-ci-20261106/",
+      "adapter": "evidence_packet",
+      "rows": "files",
+      "payload_paths": 15,
+      "elements_file": "tree-elements.actual.json",
+      "root_full_GET": "fourth-audit-inputs/final17-ci-registry.actual.original.json"
+    },
+    {
+      "name": "final17-native-followup",
+      "directory": "integration-ci-review/17c6b903-native-followup-delivery",
+      "registry_blob": "f7d49f26f20355b829f4b83b6fe2043a24bad6b7",
+      "schema": "hepta-evidence-packet-actual-registry-v1",
+      "prefix": "reviews/integration-17-native-followup-20261106/",
+      "adapter": "evidence_packet",
+      "rows": "files",
+      "payload_paths": 108,
+      "elements_file": "tree-elements.actual.json",
+      "root_full_GET": "fourth-audit-inputs/final17-native-registry.actual.original.json",
+      "receipt_sidecars": [
+        "registration-receipts-GET-000.local-sidecar.json",
+        "registration-receipts-GET-001.local-sidecar.json",
+        "registration-receipts-GET-002.local-sidecar.json",
+        "registration-receipts-GET-003.local-sidecar.json",
+        "registration-receipts-GET-004.local-sidecar.json",
+        "registration-receipts-GET-005.local-sidecar.json",
+        "registration-receipts-GET-006.local-sidecar.json"
+      ]
+    },
+    {
+      "name": "final17-supervisor-P0-native",
+      "directory": "integration-ci-review/17c6b903-supervisor-native-delivery",
+      "registry_blob": "5b4b8d822f1383bcfd5daf994c1befd2351960e5",
+      "schema": "hepta-evidence-packet-actual-registry-v1",
+      "prefix": "reviews/integration-17-supervisor-native-success-20261106/",
+      "adapter": "evidence_packet",
+      "rows": "files",
+      "payload_paths": 32,
+      "elements_file": "tree-elements.actual.json",
+      "root_full_GET": "fourth-audit-inputs/final17-P0-registry.actual.original.json",
+      "registry_self_ref_mutations_source": "registry"
+    }
+  ]
+}

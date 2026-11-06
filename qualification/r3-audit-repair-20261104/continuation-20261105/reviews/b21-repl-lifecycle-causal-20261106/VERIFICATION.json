@@ -1,0 +1,30 @@
+{
+  "schema": "hepta-b21-readonly-causal-verification-v1",
+  "decision": "CAUSAL_UNKNOWN",
+  "product_postimage_proposed": false,
+  "B21": "OPEN",
+  "ledger_transitions": [],
+  "product_baseline_files_verified": 10,
+  "single_leaf_insertion_bytes": 406,
+  "compact_ancestor_Merkle_root_before": "3982ba56dc5a3f1da0c1de7ea57992f88125c359",
+  "compact_ancestor_Merkle_root_after": "c1249a173ac346d0f1230fe56451b97d4e13c601",
+  "original_84cc_cases": {
+    "passed": 28,
+    "failed": 3
+  },
+  "original_8075_cases": {
+    "passed": 27,
+    "failed": 4
+  },
+  "original_8075_actual_checkout": "b88f625afe17975db80b152283ef2e19cc50e41f",
+  "primary_full_GET_source_bytes_verified": 10,
+  "original_assertions_and_budgets_unchanged": true,
+  "native_or_CI_executions": 0,
+  "ref_or_PR_mutations": 0,
+  "limits": [
+    "No claim that upstream CPython tag is runner binary attestation.",
+    "8075 whole-job log/ZIP remain in the separate original donor packet; this verifies its exact retained excerpt and declared source identity, not all artifact attempts.",
+    "Independent relaxed diagnostic counters are not an atomic protocol snapshot.",
+    "Offline facts and source ordering do not establish the original timeout cause."
+  ]
+}
