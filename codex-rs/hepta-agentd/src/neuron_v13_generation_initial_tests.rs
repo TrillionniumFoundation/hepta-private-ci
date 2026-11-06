@@ -28,10 +28,17 @@ fn initial_unsigned_bad_signature_wrong_binding_and_changed_current_never_activa
     for change in ["unsigned", "signature", "binding", "current"] {
         let f = Fixture::new()?;
         let binding = CellGenerationOwnerBindingV1::new(
-            &f.host.config.generation, f.host.config.max_records,
+            &f.host.config.generation,
+            f.host.config.max_records,
         )?;
-        assert_eq!(f.current.current.check_open(&binding)?, CellGenerationOpenModeV1::Preparing);
-        assert_eq!(f.current.current.check_current(&binding), Err(CellGenerationErrorV2::Pending));
+        assert_eq!(
+            f.current.current.check_open(&binding)?,
+            CellGenerationOpenModeV1::Preparing
+        );
+        assert_eq!(
+            f.current.current.check_current(&binding),
+            Err(CellGenerationErrorV2::Pending)
+        );
         let prepared = f.prepare()?;
         let intent_digest = prepared.intent_digest();
         let before = f.bytes()?;
@@ -56,8 +63,14 @@ fn initial_unsigned_bad_signature_wrong_binding_and_changed_current_never_activa
         }
         let current = f.current.reopen_current()?;
         let original = current.recover_initial_operation(OPERATION, intent_digest)?;
-        assert_eq!(current.read_initial_operation(&original)?, NeuronGenerationInitialReadbackV1::Prepared);
-        assert_eq!(current.check_current(&binding), Err(CellGenerationErrorV2::Pending));
+        assert_eq!(
+            current.read_initial_operation(&original)?,
+            NeuronGenerationInitialReadbackV1::Prepared
+        );
+        assert_eq!(
+            current.check_current(&binding),
+            Err(CellGenerationErrorV2::Pending)
+        );
         if change != "current" {
             assert!(matches!(recover_agentd_v13_generation_initial_v1(
                 current, f.current.authorities()?, f.current.selection()?, f.inputs()?,
@@ -85,13 +98,22 @@ fn initial_lost_publication_ack_reopens_original_signed_result_without_new_claim
     let claims = f.current.bytes("final-use/authority.claims")?;
     let current = f.current.reopen_current()?;
     let original = current.recover_initial_operation(OPERATION, intent_digest)?;
-    let NeuronGenerationInitialReadbackV1::Published(actual) = current.read_initial_operation(&original)?
-    else { anyhow::bail!("actual initial CAS was mistaken for not applied") };
+    let NeuronGenerationInitialReadbackV1::Published(actual) =
+        current.read_initial_operation(&original)?
+    else {
+        anyhow::bail!("actual initial CAS was mistaken for not applied")
+    };
     assert_eq!(actual.signed_grant(), &signed);
     assert_eq!(actual.intent_digest(), intent_digest);
     let ready = recover_agentd_v13_generation_initial_v1(
-        current, f.current.authorities()?, f.current.selection()?, f.inputs()?,
-        AgentdGenerationUpdateRecoveryV1 { operation_id: OPERATION.into(), intent_digest },
+        current,
+        f.current.authorities()?,
+        f.current.selection()?,
+        f.inputs()?,
+        AgentdGenerationUpdateRecoveryV1 {
+            operation_id: OPERATION.into(),
+            intent_digest,
+        },
     )?;
     assert_eq!(f.host.owner_bytes()?, target_before);
     assert_eq!(f.bytes()?, before);
@@ -122,9 +144,13 @@ fn uncertain_initial_claim_remains_pending_until_new_signed_forward_publication(
     assert_eq!(f.bytes()?, before);
     let target_before = f.host.owner_bytes()?;
     let forward = prepare_agentd_v13_generation_initial_forward_recovery_v1(
-        f.current.reopen_current()?, f.current.authorities()?, f.current.selection()?,
-        f.inputs()?, AgentdGenerationForwardRecoveryV1 {
-            original_operation_id: OPERATION.into(), original_intent_digest: intent_digest,
+        f.current.reopen_current()?,
+        f.current.authorities()?,
+        f.current.selection()?,
+        f.inputs()?,
+        AgentdGenerationForwardRecoveryV1 {
+            original_operation_id: OPERATION.into(),
+            original_intent_digest: intent_digest,
             new_operation_id: "initial-v13-forward".into(),
         },
     )?;

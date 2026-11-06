@@ -126,11 +126,13 @@ pub fn bootstrap_agentd_v13_generation_v1(
     let generation = opened.backend.configuration().generation.clone();
     let max_records = opened.backend.configuration().max_records;
     let queue_capacity = opened.backend.configuration().queue_capacity;
-    let mut journal = CellGenerationJournalV2::open(
-        opened.journal, opened.witness, generation, max_records,
-    ).map_err(invalid)?;
+    let mut journal =
+        CellGenerationJournalV2::open(opened.journal, opened.witness, generation, max_records)
+            .map_err(invalid)?;
     // One prepared worker retains the same observation on an exact reopen.
-    journal.record_cost(opened.backend.preparation_cost()?).map_err(invalid)?;
+    journal
+        .record_cost(opened.backend.preparation_cost()?)
+        .map_err(invalid)?;
     let (port, clock) = opened.backend.spawn()?;
     neuron_generation_channel_v2(identity, journal, port, move || clock(), queue_capacity)
 }
@@ -142,4 +144,3 @@ fn invalid(error: impl std::fmt::Display) -> AgentdError {
 #[cfg(test)]
 #[path = "neuron_v13_generation_bootstrap_tests.rs"]
 mod tests;
-

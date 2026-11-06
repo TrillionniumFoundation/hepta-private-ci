@@ -55,7 +55,12 @@ where
     New: AnchorWitnessStore,
 {
     prepare_cold_with_completion(
-        current, authorities, predecessor, selected, target, request,
+        current,
+        authorities,
+        predecessor,
+        selected,
+        target,
+        request,
         NeuronGenerationPredecessorCompletionV1::ModelStopped,
     )
 }
@@ -75,7 +80,12 @@ where
     New: AnchorWitnessStore,
 {
     prepare_cold_with_completion(
-        current, authorities, predecessor, selected, target, request,
+        current,
+        authorities,
+        predecessor,
+        selected,
+        target,
+        request,
         NeuronGenerationPredecessorCompletionV1::OwnerDrained,
     )
 }
@@ -114,17 +124,35 @@ where
             && !observation.is_terminal())
     {
         return Err(invalid(match completion {
-            NeuronGenerationPredecessorCompletionV1::ModelStopped =>
-                "cold predecessor requires STOP, exact output ACK and drain",
-            NeuronGenerationPredecessorCompletionV1::OwnerDrained =>
-                "cold predecessor requires exact output ACK and durable drain",
+            NeuronGenerationPredecessorCompletionV1::ModelStopped => {
+                "cold predecessor requires STOP, exact output ACK and drain"
+            }
+            NeuronGenerationPredecessorCompletionV1::OwnerDrained => {
+                "cold predecessor requires exact output ACK and durable drain"
+            }
         }));
     }
     match completion {
-        NeuronGenerationPredecessorCompletionV1::ModelStopped =>
-            prepare_agentd_generation_update_v1(current, authorities, old, selected, target, request),
-        NeuronGenerationPredecessorCompletionV1::OwnerDrained =>
-            prepare_agentd_generation_drained_update_v1(current, authorities, old, selected, target, request),
+        NeuronGenerationPredecessorCompletionV1::ModelStopped => {
+            prepare_agentd_generation_update_v1(
+                current,
+                authorities,
+                old,
+                selected,
+                target,
+                request,
+            )
+        }
+        NeuronGenerationPredecessorCompletionV1::OwnerDrained => {
+            prepare_agentd_generation_drained_update_v1(
+                current,
+                authorities,
+                old,
+                selected,
+                target,
+                request,
+            )
+        }
     }
 }
 

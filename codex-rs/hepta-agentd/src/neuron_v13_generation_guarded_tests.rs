@@ -49,27 +49,42 @@ fn guarded_preflight_rejects_identity_epoch_binding_and_actual_fd_aliases_before
             4 => inputs.files.journal = File::open(&f.host.paths[0])?,
             5 => {
                 inputs.files.control = OpenOptions::new()
-                    .read(true).write(true).open(&f.host.paths[2])?;
+                    .read(true)
+                    .write(true)
+                    .open(&f.host.paths[2])?;
             }
             6 => {
                 inputs.files.witness = OpenOptions::new()
-                    .read(true).write(true).open(&f.host.paths[0])?;
+                    .read(true)
+                    .write(true)
+                    .open(&f.host.paths[0])?;
             }
             7 => {
-                inputs.files.journal = OpenOptions::new()
-                    .read(true).write(true).open(&alias)?;
+                inputs.files.journal = OpenOptions::new().read(true).write(true).open(&alias)?;
             }
             _ => unreachable!("fixed preflight cases"),
         }
         inputs.identity = &identity;
         let result = prepare_agentd_v13_generation_update_v1(
-            f.update.current.clone(), f.update.authorities()?, f.update.old_journal()?,
-            f.update.selection()?, inputs,
-            AgentdGenerationUpdateRequestV1 { operation_id: "rejected-preflight".into() },
+            f.update.current.clone(),
+            f.update.authorities()?,
+            f.update.old_journal()?,
+            f.update.selection()?,
+            inputs,
+            AgentdGenerationUpdateRequestV1 {
+                operation_id: "rejected-preflight".into(),
+            },
         );
-        let Err(error) = result else { anyhow::bail!("preflight case {case} was accepted") };
+        let Err(error) = result else {
+            anyhow::bail!("preflight case {case} was accepted")
+        };
         if case >= 4 {
-            assert!(error.to_string().contains("distinct regular read/write files"), "{error}");
+            assert!(
+                error
+                    .to_string()
+                    .contains("distinct regular read/write files"),
+                "{error}"
+            );
         }
         assert_eq!(f.bytes()?, before, "case {case}");
         assert_eq!(fs::read(&f.host.model_path)?, asset_before);
@@ -88,13 +103,18 @@ fn guarded_preflight_rejects_identity_epoch_binding_and_actual_fd_aliases_before
 }
 
 #[test]
-fn guarded_control_lock_failure_keeps_preparation_bound_to_its_original_task()
--> anyhow::Result<()> {
+fn guarded_control_lock_failure_keeps_preparation_bound_to_its_original_task() -> anyhow::Result<()>
+{
     let f = Fixture::new()?;
     let before = f.bytes()?;
-    let locked = OpenOptions::new().read(true).append(true).open(&f.host.paths[2])?;
+    let locked = OpenOptions::new()
+        .read(true)
+        .append(true)
+        .open(&f.host.paths[2])?;
     locked.try_lock()?;
-    let error = f.prepare("locked-control").err()
+    let error = f
+        .prepare("locked-control")
+        .err()
         .ok_or_else(|| anyhow::anyhow!("a second writer was admitted"))?;
     assert!(error.to_string().contains("WriterUnavailable"));
     assert_eq!(f.bytes()?, before);
@@ -135,8 +155,12 @@ fn typed_forward_reopens_original_prepared_files_and_requires_a_distinct_signed_
     assert_eq!(f.bytes()?, pending);
     let target_before = f.host.owner_bytes()?;
     let forward = prepare_agentd_v13_generation_forward_recovery_v1(
-        f.update.reopen_current()?, f.update.authorities()?, f.update.old_journal()?,
-        f.update.selection()?, f.inputs()?, AgentdGenerationForwardRecoveryV1 {
+        f.update.reopen_current()?,
+        f.update.authorities()?,
+        f.update.old_journal()?,
+        f.update.selection()?,
+        f.inputs()?,
+        AgentdGenerationForwardRecoveryV1 {
             original_operation_id: "pending-v13-update".into(),
             original_intent_digest: intent_digest,
             new_operation_id: "operator-forward-v13".into(),
@@ -155,9 +179,13 @@ fn typed_forward_reopens_original_prepared_files_and_requires_a_distinct_signed_
     let published = f.bytes()?;
     let claims = f.update.bytes("final-use/authority.claims")?;
     let ready = recover_agentd_v13_generation_update_v1(
-        f.update.reopen_current()?, f.update.authorities()?, f.update.selection()?,
-        f.inputs()?, AgentdGenerationUpdateRecoveryV1 {
-            operation_id: "operator-forward-v13".into(), intent_digest: forward_intent,
+        f.update.reopen_current()?,
+        f.update.authorities()?,
+        f.update.selection()?,
+        f.inputs()?,
+        AgentdGenerationUpdateRecoveryV1 {
+            operation_id: "operator-forward-v13".into(),
+            intent_digest: forward_intent,
         },
     )?;
     assert_eq!(f.bytes()?, published);
@@ -184,7 +212,9 @@ fn ready_rechecks_actual_runtime_identity_queue_and_live_authority_before_chargi
             None
         };
         let config = support::runtime_config(
-            other.as_ref().map_or(&f.host.identity, |other| &other.identity),
+            other
+                .as_ref()
+                .map_or(&f.host.identity, |other| &other.identity),
         )?;
         match change {
             "queue" => options.queue_capacity += 1,
@@ -204,7 +234,10 @@ fn ready_rechecks_actual_runtime_identity_queue_and_live_authority_before_chargi
         assert_eq!(f.bytes()?, before, "{change}");
         assert_eq!(f.update.authority.capacity()?.used_nonces, 1);
         // No actor owns a delayed lower lock after this pre-spawn rejection.
-        let control = OpenOptions::new().read(true).append(true).open(&f.host.paths[2])?;
+        let control = OpenOptions::new()
+            .read(true)
+            .append(true)
+            .open(&f.host.paths[2])?;
         control.try_lock()?;
         assert_eq!(control.metadata()?.len(), 0);
     }

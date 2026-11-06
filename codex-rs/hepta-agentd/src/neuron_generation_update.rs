@@ -69,7 +69,12 @@ where
     New: AnchorWitnessStore,
 {
     prepare_with_completion(
-        current, authorities, old, selected, target, request,
+        current,
+        authorities,
+        old,
+        selected,
+        target,
+        request,
         NeuronGenerationPredecessorCompletionV1::ModelStopped,
     )
 }
@@ -89,7 +94,12 @@ where
     New: AnchorWitnessStore,
 {
     prepare_with_completion(
-        current, authorities, old, selected, target, request,
+        current,
+        authorities,
+        old,
+        selected,
+        target,
+        request,
         NeuronGenerationPredecessorCompletionV1::OwnerDrained,
     )
 }
@@ -125,10 +135,12 @@ where
     let artifacts = authorities.artifacts.lock().map_err(invalid)?;
     selected.revalidate(&artifacts, authorities.now()?)?;
     let prepared = match completion {
-        NeuronGenerationPredecessorCompletionV1::ModelStopped =>
-            current.prepare(&old, request.operation_id, binding, &selected)?,
-        NeuronGenerationPredecessorCompletionV1::OwnerDrained =>
-            current.prepare_drained_retirement(&old, request.operation_id, binding, &selected)?,
+        NeuronGenerationPredecessorCompletionV1::ModelStopped => {
+            current.prepare(&old, request.operation_id, binding, &selected)?
+        }
+        NeuronGenerationPredecessorCompletionV1::OwnerDrained => {
+            current.prepare_drained_retirement(&old, request.operation_id, binding, &selected)?
+        }
     };
     let guard: Arc<dyn CellGenerationCurrentV1> = current.clone();
     let new = CellGenerationJournalV2::open_guarded(
@@ -305,10 +317,12 @@ pub(super) fn validate_reset<Old: AnchorWitnessStore, New: AnchorWitnessStore>(
             && !observation.is_terminal())
     {
         return Err(invalid(match completion {
-            NeuronGenerationPredecessorCompletionV1::ModelStopped =>
-                "predecessor requires STOP, exact output ACK and drain",
-            NeuronGenerationPredecessorCompletionV1::OwnerDrained =>
-                "predecessor requires exact output ACK and durable drain",
+            NeuronGenerationPredecessorCompletionV1::ModelStopped => {
+                "predecessor requires STOP, exact output ACK and drain"
+            }
+            NeuronGenerationPredecessorCompletionV1::OwnerDrained => {
+                "predecessor requires exact output ACK and durable drain"
+            }
         }));
     }
     let predecessor = observation.snapshot();

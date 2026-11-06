@@ -20,12 +20,12 @@ use crate::neuron_generation_update::AgentdGenerationUpdateRecoveryV1;
 use crate::neuron_generation_update::AgentdGenerationUpdateRequestV1;
 use crate::neuron_generation_update::AgentdGenerationUpdateTargetV1;
 use crate::neuron_generation_update::PreparedAgentdGenerationUpdateV1;
-use crate::neuron_generation_update::prepare_agentd_generation_update_v1;
 use crate::neuron_generation_update::prepare_agentd_generation_drained_update_v1;
+use crate::neuron_generation_update::prepare_agentd_generation_update_v1;
 use crate::neuron_generation_update::recover_agentd_generation_update_v1;
 use crate::neuron_generation_update_cold::AgentdGenerationUpdatePredecessorFilesV1;
-use crate::neuron_generation_update_cold::prepare_agentd_generation_cold_update_v1;
 use crate::neuron_generation_update_cold::prepare_agentd_generation_cold_drained_update_v1;
+use crate::neuron_generation_update_cold::prepare_agentd_generation_cold_update_v1;
 use crate::neuron_generation_update_forward::AgentdGenerationForwardRecoveryV1;
 use crate::neuron_generation_update_forward::prepare_agentd_generation_forward_recovery_v1;
 use crate::neuron_generation_update_live::AgentdGenerationUpdateAuthoritiesV1;
@@ -51,10 +51,15 @@ impl AgentdV13GenerationUpdateInputsV1<'_> {
     pub(crate) fn open(
         self,
         mode: V13GenerationOwnerModeV1,
-    ) -> Result<(AgentdGenerationUpdateTargetV1<FileAnchorWitnessStore>, V13BackendOwner), AgentdError> {
-        let opened = owners::open_owners(
-            self.identity, self.config, self.files, mode, self.prepared,
-        )?;
+    ) -> Result<
+        (
+            AgentdGenerationUpdateTargetV1<FileAnchorWitnessStore>,
+            V13BackendOwner,
+        ),
+        AgentdError,
+    > {
+        let opened =
+            owners::open_owners(self.identity, self.config, self.files, mode, self.prepared)?;
         let target = AgentdGenerationUpdateTargetV1 {
             file: opened.journal,
             witness: opened.witness,
@@ -74,9 +79,10 @@ impl AgentdV13GenerationUpdateInputsV1<'_> {
                 "V13 selection differs from the requested successor manifest".into(),
             ));
         }
-        let artifacts = authorities.artifacts.lock().map_err(|error| {
-            AgentdError::Invalid(error.to_string())
-        })?;
+        let artifacts = authorities
+            .artifacts
+            .lock()
+            .map_err(|error| AgentdError::Invalid(error.to_string()))?;
         selected.revalidate(&artifacts, authorities.now()?)
     }
 }
@@ -120,9 +126,8 @@ pub fn prepare_agentd_v13_generation_update_v1<Old: AnchorWitnessStore>(
 ) -> Result<PreparedAgentdV13GenerationUpdateV1<Old>, AgentdError> {
     inputs.revalidate_selection(&authorities, &mut selected)?;
     let (target, backend) = inputs.open(V13GenerationOwnerModeV1::InitializeEmpty)?;
-    let update = prepare_agentd_generation_update_v1(
-        current, authorities, old, selected, target, request,
-    )?;
+    let update =
+        prepare_agentd_generation_update_v1(current, authorities, old, selected, target, request)?;
     Ok(PreparedAgentdV13GenerationUpdateV1 { update, backend })
 }
 
@@ -139,7 +144,12 @@ pub fn prepare_agentd_v13_generation_cold_update_v1<Old: AnchorWitnessStore>(
     inputs.revalidate_selection(&authorities, &mut selected)?;
     let (target, backend) = inputs.open(V13GenerationOwnerModeV1::InitializeEmpty)?;
     let update = prepare_agentd_generation_cold_update_v1(
-        current, authorities, predecessor, selected, target, request,
+        current,
+        authorities,
+        predecessor,
+        selected,
+        target,
+        request,
     )?;
     Ok(PreparedAgentdV13GenerationUpdateV1 { update, backend })
 }
@@ -158,7 +168,12 @@ pub fn prepare_agentd_v13_generation_forward_recovery_v1<Old: AnchorWitnessStore
     inputs.revalidate_selection(&authorities, &mut selected)?;
     let (target, backend) = inputs.open(V13GenerationOwnerModeV1::Reopen)?;
     let update = prepare_agentd_generation_forward_recovery_v1(
-        current, authorities, old, selected, target, request,
+        current,
+        authorities,
+        old,
+        selected,
+        target,
+        request,
     )?;
     Ok(PreparedAgentdV13GenerationUpdateV1 { update, backend })
 }
@@ -175,12 +190,10 @@ pub fn recover_agentd_v13_generation_update_v1(
 ) -> Result<ReadyAgentdV13GenerationUpdateV1, AgentdError> {
     inputs.revalidate_selection(&authorities, &mut selected)?;
     let (target, backend) = inputs.open(V13GenerationOwnerModeV1::Reopen)?;
-    let ready = recover_agentd_generation_update_v1(
-        current, authorities, selected, target, expected,
-    )?;
+    let ready =
+        recover_agentd_generation_update_v1(current, authorities, selected, target, expected)?;
     Ok(ReadyAgentdV13GenerationUpdateV1::new(ready, backend))
 }
-
 
 /// Explicitly retire a task whose owner has durably drained and whose output
 /// is fully acknowledged. The old snapshot remains unchanged, including its
@@ -196,7 +209,12 @@ pub fn prepare_agentd_v13_generation_drained_update_v1<Old: AnchorWitnessStore>(
     inputs.revalidate_selection(&authorities, &mut selected)?;
     let (target, backend) = inputs.open(V13GenerationOwnerModeV1::InitializeEmpty)?;
     let update = prepare_agentd_generation_drained_update_v1(
-        current, authorities, old, selected, target, request,
+        current,
+        authorities,
+        old,
+        selected,
+        target,
+        request,
     )?;
     Ok(PreparedAgentdV13GenerationUpdateV1 { update, backend })
 }
@@ -214,7 +232,12 @@ pub fn prepare_agentd_v13_generation_cold_drained_update_v1<Old: AnchorWitnessSt
     inputs.revalidate_selection(&authorities, &mut selected)?;
     let (target, backend) = inputs.open(V13GenerationOwnerModeV1::InitializeEmpty)?;
     let update = prepare_agentd_generation_cold_drained_update_v1(
-        current, authorities, predecessor, selected, target, request,
+        current,
+        authorities,
+        predecessor,
+        selected,
+        target,
+        request,
     )?;
     Ok(PreparedAgentdV13GenerationUpdateV1 { update, backend })
 }

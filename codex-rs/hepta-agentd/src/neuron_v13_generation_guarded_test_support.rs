@@ -16,12 +16,12 @@ use crate::AgentdIdentity;
 use crate::AgentdState;
 use crate::RuntimeTasks;
 use crate::neuron_generation_current::test_support::Fixture as CurrentFixture;
+use crate::neuron_generation_process_identity_digest_v1;
 use crate::neuron_generation_service::spawn_neuron_generation_service;
 use crate::neuron_generation_update::AgentdGenerationUpdateRequestV1;
 use crate::neuron_generation_update_bootstrap::AgentdGenerationUpdateRuntimeOptionsV1;
 use crate::neuron_generation_update_bootstrap::AgentdGenerationUpdateRuntimeV1;
 use crate::neuron_generation_update_cold::AgentdGenerationUpdatePredecessorFilesV1;
-use crate::neuron_generation_process_identity_digest_v1;
 use crate::neuron_v13_generation_update::AgentdV13GenerationUpdateInputsV1;
 use crate::neuron_v13_generation_update::PreparedAgentdV13GenerationUpdateV1;
 use crate::neuron_v13_generation_update::prepare_agentd_v13_generation_update_v1;
@@ -76,7 +76,9 @@ impl Fixture {
     ) -> anyhow::Result<AgentdGenerationUpdatePredecessorFilesV1<FileAnchorWitnessStore>> {
         Ok(AgentdGenerationUpdatePredecessorFilesV1 {
             file: self.update.file("old-journal")?,
-            witness: self.update.witness("old-witness", &self.update.old_config)?,
+            witness: self
+                .update
+                .witness("old-witness", &self.update.old_config)?,
             config: self.update.old_config.clone(),
             max_records: self.host.config.max_records,
         })
@@ -114,7 +116,9 @@ impl Fixture {
         let state = self.host.state().await?;
         let cancellation = CancellationToken::new();
         let mut tasks = RuntimeTasks::new(cancellation.clone(), Duration::from_secs(2))?;
-        let bootstrap = runtime.config.take_neuron_generation_bootstrap()
+        let bootstrap = runtime
+            .config
+            .take_neuron_generation_bootstrap()
             .ok_or_else(|| anyhow::anyhow!("typed update omitted its ordinary service"))?;
         spawn_neuron_generation_service(&mut tasks, bootstrap, state.clone(), cancellation)?;
         Ok((tasks, state))
@@ -128,7 +132,9 @@ impl Fixture {
             (3, AgentLifecycle::Starting),
         ] {
             self.host.registry.compare_and_transition(
-                &self.host.identity.agent_id, starting + offset, lifecycle,
+                &self.host.identity.agent_id,
+                starting + offset,
+                lifecycle,
             )?;
         }
         self.host.identity.spawn_generation = starting + 4;

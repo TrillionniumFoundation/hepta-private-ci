@@ -47,7 +47,9 @@ pub fn prepare_agentd_generation_initial_forward_recovery_v1<W: AnchorWitnessSto
     }
     let metadata = target.file.metadata()?;
     if !metadata.is_file() || metadata.len() == 0 {
-        return Err(invalid("initial forward recovery requires retained genesis"));
+        return Err(invalid(
+            "initial forward recovery requires retained genesis",
+        ));
     }
     let guard: Arc<dyn CellGenerationCurrentV1> = current.clone();
     let journal = CellGenerationJournalV2::open_guarded(
@@ -61,11 +63,8 @@ pub fn prepare_agentd_generation_initial_forward_recovery_v1<W: AnchorWitnessSto
     journal.prepared_checkpoint().map_err(invalid)?;
     let artifacts = authorities.artifacts.lock().map_err(invalid)?;
     selected.revalidate(&artifacts, authorities.now()?)?;
-    let prepared = current.prepare_initial_forward_recovery(
-        &original,
-        &journal,
-        request.new_operation_id,
-    )?;
+    let prepared =
+        current.prepare_initial_forward_recovery(&original, &journal, request.new_operation_id)?;
     drop(artifacts);
     Ok(PreparedAgentdGenerationInitialV1::from_parts(
         current,

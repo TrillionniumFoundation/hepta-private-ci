@@ -84,7 +84,12 @@ impl InitialPublished {
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
-#[serde(tag = "state", content = "record", rename_all = "snake_case", deny_unknown_fields)]
+#[serde(
+    tag = "state",
+    content = "record",
+    rename_all = "snake_case",
+    deny_unknown_fields
+)]
 pub(super) enum InitialState {
     Prepared(Box<InitialIntent>),
     Published(Box<InitialPublished>),
@@ -100,14 +105,18 @@ impl CurrentHead {
                     || self.prepared.is_some()
                     || self.published.is_some()
                 {
-                    return Err(invalid("initial preparation is not the sole Control record"));
+                    return Err(invalid(
+                        "initial preparation is not the sole Control record",
+                    ));
                 }
                 Ok(())
             }
             Some(InitialState::Published(record)) => {
                 record.validate()?;
                 if self.current != record.intent.target || self.published.is_some() {
-                    return Err(invalid("initial publication differs from current generation"));
+                    return Err(invalid(
+                        "initial publication differs from current generation",
+                    ));
                 }
                 Ok(())
             }

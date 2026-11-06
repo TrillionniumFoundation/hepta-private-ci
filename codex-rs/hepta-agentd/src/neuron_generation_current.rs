@@ -34,17 +34,17 @@ mod store;
 #[path = "neuron_generation_current_types.rs"]
 mod types;
 
-use types::CurrentHead;
-pub use types::NeuronGenerationUpdateReadbackV1;
-pub use types::NeuronGenerationPredecessorCompletionV1;
-pub use types::PreparedNeuronGenerationUpdateV1;
-use types::Published;
-pub use types::PublishedNeuronGenerationUpdateV1;
-use types::invalid;
 use initial_types::InitialState;
 pub use initial_types::NeuronGenerationInitialReadbackV1;
 pub use initial_types::PreparedNeuronGenerationInitialV1;
 pub use initial_types::PublishedNeuronGenerationInitialV1;
+use types::CurrentHead;
+pub use types::NeuronGenerationPredecessorCompletionV1;
+pub use types::NeuronGenerationUpdateReadbackV1;
+pub use types::PreparedNeuronGenerationUpdateV1;
+use types::Published;
+pub use types::PublishedNeuronGenerationUpdateV1;
+use types::invalid;
 
 /// Concrete root custody. Construction requires the existing validated root
 /// directory; there is no generic production store, permissive default, root
@@ -97,7 +97,10 @@ impl NeuronGenerationCurrentOwnerV1 {
         selected: &AgentdSelectedGenerationV1,
     ) -> Result<PreparedNeuronGenerationUpdateV1, AgentdError> {
         self.prepare_with_completion(
-            old, operation_id, target, selected,
+            old,
+            operation_id,
+            target,
+            selected,
             NeuronGenerationPredecessorCompletionV1::ModelStopped,
         )
     }

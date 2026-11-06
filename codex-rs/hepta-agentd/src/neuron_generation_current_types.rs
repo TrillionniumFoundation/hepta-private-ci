@@ -9,8 +9,8 @@ use codex_hepta_types::Digest32;
 use serde::Deserialize;
 use serde::Serialize;
 
-use crate::AgentdError;
 use super::initial_types::InitialState;
+use crate::AgentdError;
 
 /// The explicitly authorized boundary for replacing the prior task owner.
 /// OwnerDrained is not a model STOP or terminal learning evidence.
@@ -39,7 +39,10 @@ pub(super) struct UpdateIntent {
     pub(super) target: CellGenerationOwnerBindingV1,
     pub(super) genesis_checkpoint: [u8; 32],
     pub(super) selection: [u8; 32],
-    #[serde(default, skip_serializing_if = "NeuronGenerationPredecessorCompletionV1::is_model_stopped")]
+    #[serde(
+        default,
+        skip_serializing_if = "NeuronGenerationPredecessorCompletionV1::is_model_stopped"
+    )]
     pub(super) completion: NeuronGenerationPredecessorCompletionV1,
 }
 
@@ -56,11 +59,14 @@ impl UpdateIntent {
         Ok(FinalUseBinding {
             subject_id: self.previous.scope().agent_id.clone(),
             destination_id: match self.completion {
-                NeuronGenerationPredecessorCompletionV1::ModelStopped =>
-                    "agentd.cell-generation.replace",
-                NeuronGenerationPredecessorCompletionV1::OwnerDrained =>
-                    "agentd.cell-generation.replace-drained",
-            }.into(),
+                NeuronGenerationPredecessorCompletionV1::ModelStopped => {
+                    "agentd.cell-generation.replace"
+                }
+                NeuronGenerationPredecessorCompletionV1::OwnerDrained => {
+                    "agentd.cell-generation.replace-drained"
+                }
+            }
+            .into(),
             request_sha256: self.digest()?.into_array(),
             scope_sha256: scope_digest(self.previous.scope())?.into_array(),
             payload_sha256: self.target.digest().map_err(invalid)?,

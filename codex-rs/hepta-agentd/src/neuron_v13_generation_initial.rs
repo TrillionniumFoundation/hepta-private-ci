@@ -110,14 +110,11 @@ pub fn prepare_agentd_v13_generation_initial_v1(
 ) -> Result<PreparedAgentdV13GenerationInitialV1, AgentdError> {
     inputs.revalidate_selection(&authorities, &mut selected)?;
     let (target, backend) = inputs.open(V13GenerationOwnerModeV1::InitializeEmpty)?;
-    let initial = prepare_agentd_generation_initial_v1(
-        root,
-        authorities,
-        selected,
-        target,
-        request,
-    )?;
-    Ok(PreparedAgentdV13GenerationInitialV1::from_parts(initial, backend))
+    let initial =
+        prepare_agentd_generation_initial_v1(root, authorities, selected, target, request)?;
+    Ok(PreparedAgentdV13GenerationInitialV1::from_parts(
+        initial, backend,
+    ))
 }
 
 /// Reopen an actual signed initial publication without claiming its grant again.
@@ -130,13 +127,8 @@ pub fn recover_agentd_v13_generation_initial_v1(
 ) -> Result<ReadyAgentdV13GenerationInitialV1, AgentdError> {
     inputs.revalidate_selection(&authorities, &mut selected)?;
     let (target, backend) = inputs.open(V13GenerationOwnerModeV1::Reopen)?;
-    let ready = recover_agentd_generation_initial_v1(
-        current,
-        authorities,
-        selected,
-        target,
-        expected,
-    )?;
+    let ready =
+        recover_agentd_generation_initial_v1(current, authorities, selected, target, expected)?;
     Ok(ReadyAgentdV13GenerationInitialV1 { ready, backend })
 }
 
@@ -158,5 +150,7 @@ pub fn prepare_agentd_v13_generation_initial_forward_recovery_v1(
         target,
         request,
     )?;
-    Ok(PreparedAgentdV13GenerationInitialV1::from_parts(initial, backend))
+    Ok(PreparedAgentdV13GenerationInitialV1::from_parts(
+        initial, backend,
+    ))
 }

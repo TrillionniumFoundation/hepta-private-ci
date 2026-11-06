@@ -39,17 +39,17 @@ impl ReadyAgentdV13GenerationUpdateV1 {
         let binding = CellGenerationOwnerBindingV1::new(
             &self.backend.configuration().generation,
             self.backend.configuration().max_records,
-        ).map_err(|error| AgentdError::Invalid(error.to_string()))?;
+        )
+        .map_err(|error| AgentdError::Invalid(error.to_string()))?;
         if options.queue_capacity != self.backend.configuration().queue_capacity {
             return Err(AgentdError::Invalid(
                 "V13 runtime queue differs from its preflighted configuration".into(),
             ));
         }
-        self.ready.record_backend_preparation(
-            &binding, self.backend.preparation_cost()?,
-        )?;
+        self.ready
+            .record_backend_preparation(&binding, self.backend.preparation_cost()?)?;
         let (port, clock) = self.backend.spawn()?;
-        self.ready.into_runtime(config, port, move || clock(), options)
+        self.ready
+            .into_runtime(config, port, move || clock(), options)
     }
 }
-

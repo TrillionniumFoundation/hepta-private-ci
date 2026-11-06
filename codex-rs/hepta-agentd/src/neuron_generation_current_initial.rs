@@ -37,7 +37,9 @@ impl NeuronGenerationCurrentOwnerV1 {
         selected: &AgentdSelectedGenerationV1,
     ) -> Result<(Self, PreparedNeuronGenerationInitialV1), AgentdError> {
         let (head, prepared) = initial_head_and_prepared(operation_id, target, selected)?;
-        let owner = Self { store: CurrentStore::initialize(root, head.clone())? };
+        let owner = Self {
+            store: CurrentStore::initialize(root, head.clone())?,
+        };
         if owner.store.load()? != head {
             return Err(invalid("initial generation preparation readback differs"));
         }
@@ -51,7 +53,10 @@ impl NeuronGenerationCurrentOwnerV1 {
         selected: &mut AgentdSelectedGenerationV1,
         publication: NeuronGenerationUpdatePublicationV1<'_>,
     ) -> Result<PublishedNeuronGenerationInitialV1, AgentdError> {
-        publication.authority.current_external_frontier().map_err(invalid)?;
+        publication
+            .authority
+            .current_external_frontier()
+            .map_err(invalid)?;
         selected.revalidate(
             publication.artifacts,
             publication.clock.now_unix_ms().map_err(invalid)?,
@@ -96,7 +101,9 @@ impl NeuronGenerationCurrentOwnerV1 {
                         signed_grant_digest: signed_grant_digest(publication.signed)?.into_array(),
                     }))),
                 };
-                let expected = prepared.head.as_ref()
+                let expected = prepared
+                    .head
+                    .as_ref()
                     .ok_or_else(|| invalid("published initial operation cannot dispatch again"))?;
                 self.store.replace(expected, &next)?;
                 match self.read_initial_operation(prepared)? {
@@ -106,7 +113,8 @@ impl NeuronGenerationCurrentOwnerV1 {
                     }
                 }
             },
-        ).map_err(invalid)?;
+        )
+        .map_err(invalid)?;
         result
     }
 
@@ -132,7 +140,9 @@ impl NeuronGenerationCurrentOwnerV1 {
                 },
             ));
         }
-        Err(invalid("original initial generation operation is unavailable"))
+        Err(invalid(
+            "original initial generation operation is unavailable",
+        ))
     }
 
     pub fn recover_initial_operation(
@@ -147,8 +157,10 @@ impl NeuronGenerationCurrentOwnerV1 {
                 if intent.operation_id == operation_id && intent.digest()? == expected_intent =>
             {
                 Ok(PreparedNeuronGenerationInitialV1 {
-                    intent: intent.as_ref().clone(), binding: intent.binding()?,
-                    digest: expected_intent, head: Some(head),
+                    intent: intent.as_ref().clone(),
+                    binding: intent.binding()?,
+                    digest: expected_intent,
+                    head: Some(head),
                 })
             }
             Some(InitialState::Published(record))
@@ -157,11 +169,15 @@ impl NeuronGenerationCurrentOwnerV1 {
             {
                 record.validate()?;
                 Ok(PreparedNeuronGenerationInitialV1 {
-                    binding: record.intent.binding()?, intent: record.intent.clone(),
-                    digest: expected_intent, head: None,
+                    binding: record.intent.binding()?,
+                    intent: record.intent.clone(),
+                    digest: expected_intent,
+                    head: None,
                 })
             }
-            _ => Err(invalid("original initial generation operation cannot be recovered")),
+            _ => Err(invalid(
+                "original initial generation operation cannot be recovered",
+            )),
         }
     }
 
@@ -175,10 +191,14 @@ impl NeuronGenerationCurrentOwnerV1 {
     ) -> Result<PreparedNeuronGenerationInitialV1, AgentdError> {
         StableId::new(&new_operation_id).map_err(invalid)?;
         if new_operation_id == original.intent.operation_id {
-            return Err(invalid("initial forward recovery requires a new operation identity"));
+            return Err(invalid(
+                "initial forward recovery requires a new operation identity",
+            ));
         }
         self.require_initial_genesis(original, new)?;
-        let expected = original.head.as_ref()
+        let expected = original
+            .head
+            .as_ref()
             .ok_or_else(|| invalid("published initial operation cannot be prepared again"))?;
         let mut intent = original.intent.clone();
         intent.operation_id = new_operation_id;
@@ -190,8 +210,10 @@ impl NeuronGenerationCurrentOwnerV1 {
             return Err(invalid("initial forward preparation remains uncertain"));
         }
         Ok(PreparedNeuronGenerationInitialV1 {
-            binding: intent.binding()?, digest: intent.digest()?,
-            head: Some(head), intent,
+            binding: intent.binding()?,
+            digest: intent.digest()?,
+            head: Some(head),
+            intent,
         })
     }
 
@@ -205,7 +227,9 @@ impl NeuronGenerationCurrentOwnerV1 {
             || genesis.checkpoint().as_array() != &prepared.intent.genesis_checkpoint
             || Some(self.store.load()?) != prepared.head
         {
-            return Err(invalid("initial genesis or Control cut changed before publication"));
+            return Err(invalid(
+                "initial genesis or Control cut changed before publication",
+            ));
         }
         Ok(())
     }
@@ -223,18 +247,25 @@ pub(super) fn initial_head_and_prepared(
         return Err(invalid("initial generation selection differs"));
     }
     let intent = InitialIntent {
-        operation_id, supersedes: None,
+        operation_id,
+        supersedes: None,
         genesis_checkpoint: target.genesis_checkpoint().into_array(),
-        target: target.clone(), selection: selected.observation().digest().into_array(),
+        target: target.clone(),
+        selection: selected.observation().digest().into_array(),
     };
     let head = CurrentHead {
-        schema_version: 1, current: target, prepared: None, published: None,
+        schema_version: 1,
+        current: target,
+        prepared: None,
+        published: None,
         initial: Some(InitialState::Prepared(Box::new(intent.clone()))),
     };
     head.validate_initial()?;
     let prepared = PreparedNeuronGenerationInitialV1 {
-        binding: intent.binding()?, digest: intent.digest()?,
-        head: Some(head.clone()), intent,
+        binding: intent.binding()?,
+        digest: intent.digest()?,
+        head: Some(head.clone()),
+        intent,
     };
     Ok((head, prepared))
 }

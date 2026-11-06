@@ -8,10 +8,10 @@ use std::sync::Arc;
 
 use codex_hepta_neuron::AnchorWitnessStore;
 use codex_hepta_neuron::CellCostEntryV2;
-use codex_hepta_neuron::CellGenerationOwnerBindingV1;
 use codex_hepta_neuron::CellGenerationControlPortV2;
 use codex_hepta_neuron::CellGenerationCurrentV1;
 use codex_hepta_neuron::CellGenerationJournalV2;
+use codex_hepta_neuron::CellGenerationOwnerBindingV1;
 
 use crate::AgentdConfig;
 use crate::AgentdError;
@@ -50,14 +50,13 @@ impl<W: AnchorWitnessStore> ReadyAgentdGenerationUpdateV1<W> {
         expected: &CellGenerationOwnerBindingV1,
         entry: CellCostEntryV2,
     ) -> Result<(), AgentdError> {
-        if self.journal.owner_binding() != Some(expected)
-            || self.publication.target() != expected
-        {
+        if self.journal.owner_binding() != Some(expected) || self.publication.target() != expected {
             return Err(AgentdError::GenerationFenced(
                 "prepared backend differs from its published guarded owner".into(),
             ));
         }
-        self.journal.record_cost(entry)
+        self.journal
+            .record_cost(entry)
             .map_err(|error| AgentdError::Invalid(error.to_string()))
     }
 

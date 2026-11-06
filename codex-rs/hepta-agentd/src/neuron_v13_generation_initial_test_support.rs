@@ -23,11 +23,11 @@ use crate::RuntimeTasks;
 use crate::neuron_generation_current::test_support::Fixture as CurrentFixture;
 use crate::neuron_generation_initial::PreparedAgentdGenerationInitialV1;
 use crate::neuron_generation_initial::validate_initial_target;
-use crate::neuron_generation_service::spawn_neuron_generation_service;
-use crate::neuron_generation_update_bootstrap::AgentdGenerationUpdateRuntimeOptionsV1;
-use crate::neuron_generation_update::AgentdGenerationUpdateRecoveryV1;
-use crate::neuron_generation_update_cold::AgentdGenerationUpdatePredecessorFilesV1;
 use crate::neuron_generation_process_identity_digest_v1;
+use crate::neuron_generation_service::spawn_neuron_generation_service;
+use crate::neuron_generation_update::AgentdGenerationUpdateRecoveryV1;
+use crate::neuron_generation_update_bootstrap::AgentdGenerationUpdateRuntimeOptionsV1;
+use crate::neuron_generation_update_cold::AgentdGenerationUpdatePredecessorFilesV1;
 use crate::neuron_v13_generation_bootstrap::V13GenerationOwnerModeV1;
 use crate::neuron_v13_generation_initial::PreparedAgentdV13GenerationInitialV1;
 use crate::neuron_v13_generation_initial::ReadyAgentdV13GenerationInitialV1;
@@ -65,21 +65,40 @@ impl Fixture {
         let (target, backend) = inputs.open(V13GenerationOwnerModeV1::InitializeEmpty)?;
         let binding = validate_initial_target(&selected, &target)?;
         let prepared = self.current.initial_prepared(OPERATION)?;
-        anyhow::ensure!(&binding == prepared.target(), "actual initial file binding differs");
-        anyhow::ensure!(target.file.metadata()?.len() == 0, "initial target is not empty");
-        anyhow::ensure!(target.witness.current()?.is_none(), "initial witness is not empty");
+        anyhow::ensure!(
+            &binding == prepared.target(),
+            "actual initial file binding differs"
+        );
+        anyhow::ensure!(
+            target.file.metadata()?.len() == 0,
+            "initial target is not empty"
+        );
+        anyhow::ensure!(
+            target.witness.current()?.is_none(),
+            "initial witness is not empty"
+        );
         let guard: Arc<dyn CellGenerationCurrentV1> = self.current.current.clone();
         let journal = CellGenerationJournalV2::open_guarded(
-            target.file, target.witness, target.config, target.max_records, guard,
+            target.file,
+            target.witness,
+            target.config,
+            target.max_records,
+            guard,
         )?;
         journal.prepared_checkpoint()?;
         // Only RootAuthorityDirectory construction is replaced by the private
         // fixture's create-only FileCAS; these are the same sealed assembly
         // constructors used after the production root initializer succeeds.
         let initial = PreparedAgentdGenerationInitialV1::from_parts(
-            self.current.current.clone(), authorities, prepared, journal, selected,
+            self.current.current.clone(),
+            authorities,
+            prepared,
+            journal,
+            selected,
         );
-        Ok(PreparedAgentdV13GenerationInitialV1::from_parts(initial, backend))
+        Ok(PreparedAgentdV13GenerationInitialV1::from_parts(
+            initial, backend,
+        ))
     }
 
     pub(super) fn bytes(&self) -> anyhow::Result<Vec<Vec<u8>>> {
@@ -103,10 +122,13 @@ impl Fixture {
         timeout(Duration::from_secs(5), async {
             loop {
                 match recover_agentd_v13_generation_initial_v1(
-                    self.current.reopen_current()?, self.current.authorities()?,
-                    self.current.selection()?, self.inputs()?,
+                    self.current.reopen_current()?,
+                    self.current.authorities()?,
+                    self.current.selection()?,
+                    self.inputs()?,
                     AgentdGenerationUpdateRecoveryV1 {
-                        operation_id: OPERATION.into(), intent_digest,
+                        operation_id: OPERATION.into(),
+                        intent_digest,
                     },
                 ) {
                     Ok(ready) => return Ok(ready),
@@ -116,7 +138,8 @@ impl Fixture {
                     Err(error) => return Err(error.into()),
                 }
             }
-        }).await?
+        })
+        .await?
     }
 
     pub(super) async fn predecessor(
@@ -132,7 +155,8 @@ impl Fixture {
                     Err(error) => return Err(error.into()),
                 }
             }
-        }).await??;
+        })
+        .await??;
         // Reuse the actual predecessor's V13 witness/boot contract, never the
         // generic fixture's different witness namespace. No cost or actor is
         // produced by reopening these capabilities for terminal takeover.
@@ -154,7 +178,9 @@ pub(super) fn next_spawn(host: &mut HostFixture) -> anyhow::Result<()> {
         (3, AgentLifecycle::Starting),
     ] {
         host.registry.compare_and_transition(
-            &host.identity.agent_id, starting + offset, lifecycle,
+            &host.identity.agent_id,
+            starting + offset,
+            lifecycle,
         )?;
     }
     host.identity.spawn_generation = starting + 4;
@@ -168,12 +194,15 @@ pub(super) async fn start(
     config: &mut AgentdConfig,
 ) -> anyhow::Result<(RuntimeTasks, Arc<AgentdState>)> {
     host.registry.compare_and_transition(
-        &host.identity.agent_id, host.identity.spawn_generation, AgentLifecycle::Running,
+        &host.identity.agent_id,
+        host.identity.spawn_generation,
+        AgentLifecycle::Running,
     )?;
     let state = host.state().await?;
     let cancellation = CancellationToken::new();
     let mut tasks = RuntimeTasks::new(cancellation.clone(), Duration::from_secs(2))?;
-    let bootstrap = config.take_neuron_generation_bootstrap()
+    let bootstrap = config
+        .take_neuron_generation_bootstrap()
         .ok_or_else(|| anyhow::anyhow!("typed initial runtime omitted the ordinary service"))?;
     spawn_neuron_generation_service(&mut tasks, bootstrap, state.clone(), cancellation)?;
     Ok((tasks, state))

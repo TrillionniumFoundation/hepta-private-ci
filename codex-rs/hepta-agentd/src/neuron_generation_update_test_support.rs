@@ -36,12 +36,12 @@ use crate::neuron_generation_update_selection::AgentdSelectedGenerationV1;
 
 #[path = "neuron_generation_update_test_artifacts.rs"]
 mod artifacts;
+#[path = "neuron_generation_drained_tests.rs"]
+mod drained_tests;
 #[path = "neuron_generation_update_test_store.rs"]
 mod files;
 #[path = "neuron_generation_update_initial_test_support.rs"]
 mod initial_fixture;
-#[path = "neuron_generation_drained_tests.rs"]
-mod drained_tests;
 
 use artifacts::ArtifactFiles;
 use files::FileCas;
@@ -121,7 +121,10 @@ impl Fixture {
             ArtifactFiles::new(&directory.path().join("artifacts"), &target_config.manifest)?;
         let artifacts = artifact_files.owner.clone();
         let head = initial_fixture::current_head(
-            &old_config, &target_config, &artifact_files, initial_operation,
+            &old_config,
+            &target_config,
+            &artifact_files,
+            initial_operation,
         )?;
         let current_file = Arc::new(FileCas::create(
             &directory.path().join("current.json"),

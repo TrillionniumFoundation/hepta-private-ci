@@ -63,10 +63,12 @@ impl V13BackendOwner {
     }
 
     pub(crate) fn preparation_cost(&self) -> Result<CellCostEntryV2, AgentdError> {
-        self.worker.preparation_cost(CellTaskCostIdentityV2 {
-            task_digest: self.config.generation.task_digest,
-            source_digest: self.config.generation.manifest.source_digest,
-        }).map_err(invalid)
+        self.worker
+            .preparation_cost(CellTaskCostIdentityV2 {
+                task_digest: self.config.generation.task_digest,
+                source_digest: self.config.generation.manifest.source_digest,
+            })
+            .map_err(invalid)
     }
 
     pub(crate) fn spawn(self) -> Result<(ControlledCellGenerationPortV2, V13Clock), AgentdError> {
@@ -82,7 +84,8 @@ impl V13BackendOwner {
             },
             self.worker,
             Arc::clone(&clock),
-        ).map_err(invalid)?;
+        )
+        .map_err(invalid)?;
         Ok((port, clock))
     }
 }
@@ -139,9 +142,8 @@ pub(crate) fn open_owners(
     mode: V13GenerationOwnerModeV1,
     prepared: &AgentdV13GenerationWorkerV1,
 ) -> Result<OpenedV13Owners, AgentdError> {
-    let worker_generation = validate_configuration(
-        identity, &config, prepared.boot_id_digest, &prepared.worker,
-    )?;
+    let worker_generation =
+        validate_configuration(identity, &config, prepared.boot_id_digest, &prepared.worker)?;
     let generation = &config.generation;
     let worker = &prepared.worker;
     validate_files(
@@ -242,5 +244,3 @@ fn validate_files(
     }
     Ok(())
 }
-
-

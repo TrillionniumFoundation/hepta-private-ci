@@ -5,13 +5,13 @@
 use codex_hepta_neuron::CellGenerationConfigV2;
 use codex_hepta_neuron::CellGenerationOwnerBindingV1;
 
+use super::super::PreparedNeuronGenerationInitialV1;
+use super::super::initial::initial_head_and_prepared;
 use super::ArtifactFiles;
 use super::CurrentHead;
 use super::Fixture;
 use super::NOW;
 use super::RECORDS;
-use super::super::PreparedNeuronGenerationInitialV1;
-use super::super::initial::initial_head_and_prepared;
 
 impl Fixture {
     pub(crate) fn new_initial(
@@ -28,7 +28,9 @@ impl Fixture {
         let selected = self.selection()?;
         let binding = CellGenerationOwnerBindingV1::new(&self.target_config, RECORDS)?;
         let (_, expected) = initial_head_and_prepared(operation_id.into(), binding, &selected)?;
-        Ok(self.current.recover_initial_operation(operation_id, expected.intent_digest())?)
+        Ok(self
+            .current
+            .recover_initial_operation(operation_id, expected.intent_digest())?)
     }
 }
 

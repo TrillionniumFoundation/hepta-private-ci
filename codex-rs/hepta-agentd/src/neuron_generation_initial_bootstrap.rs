@@ -50,9 +50,7 @@ impl<W: AnchorWitnessStore> ReadyAgentdGenerationInitialV1<W> {
         expected: &CellGenerationOwnerBindingV1,
         entry: CellCostEntryV2,
     ) -> Result<(), AgentdError> {
-        if self.journal.owner_binding() != Some(expected)
-            || self.publication.target() != expected
-        {
+        if self.journal.owner_binding() != Some(expected) || self.publication.target() != expected {
             return Err(AgentdError::GenerationFenced(
                 "prepared backend differs from its initial publication".into(),
             ));

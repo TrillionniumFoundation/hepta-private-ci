@@ -27,7 +27,10 @@ impl NeuronGenerationCurrentOwnerV1 {
         selected: &AgentdSelectedGenerationV1,
     ) -> Result<PreparedNeuronGenerationUpdateV1, AgentdError> {
         self.prepare_with_completion(
-            old, operation_id, target, selected,
+            old,
+            operation_id,
+            target,
+            selected,
             NeuronGenerationPredecessorCompletionV1::OwnerDrained,
         )
     }
@@ -50,10 +53,12 @@ impl NeuronGenerationCurrentOwnerV1 {
             || (completion.is_model_stopped() && !observation.is_terminal())
         {
             return Err(invalid(match completion {
-                NeuronGenerationPredecessorCompletionV1::ModelStopped =>
-                    "generation update requires STOP, ACK and drain",
-                NeuronGenerationPredecessorCompletionV1::OwnerDrained =>
-                    "generation retirement requires exact output ACK and durable drain",
+                NeuronGenerationPredecessorCompletionV1::ModelStopped => {
+                    "generation update requires STOP, ACK and drain"
+                }
+                NeuronGenerationPredecessorCompletionV1::OwnerDrained => {
+                    "generation retirement requires exact output ACK and durable drain"
+                }
             }));
         }
         target.digest().map_err(invalid)?;

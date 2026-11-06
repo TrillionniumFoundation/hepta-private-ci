@@ -52,29 +52,50 @@ impl Case {
         let selected = fixture.selection()?;
         let binding = CellGenerationOwnerBindingV1::new(&fixture.target_config, RECORDS)?;
         let prepared = match completion {
-            NeuronGenerationPredecessorCompletionV1::ModelStopped => fixture.current.prepare(
-                &old, "replace-completion".into(), binding, &selected,
-            )?,
+            NeuronGenerationPredecessorCompletionV1::ModelStopped => {
+                fixture
+                    .current
+                    .prepare(&old, "replace-completion".into(), binding, &selected)?
+            }
             NeuronGenerationPredecessorCompletionV1::OwnerDrained => {
                 fixture.current.prepare_drained_retirement(
-                    &old, "replace-completion".into(), binding, &selected,
+                    &old,
+                    "replace-completion".into(),
+                    binding,
+                    &selected,
                 )?
             }
         };
         let target = fixture.target_create()?;
         let new = CellGenerationJournalV2::open_guarded(
-            target.file, target.witness, target.config, target.max_records,
+            target.file,
+            target.witness,
+            target.config,
+            target.max_records,
             fixture.current.clone(),
         )?;
         let signed = fixture.sign(prepared.final_use_binding())?;
-        Ok(Self { fixture, old, new, selected, prepared, signed })
+        Ok(Self {
+            fixture,
+            old,
+            new,
+            selected,
+            prepared,
+            signed,
+        })
     }
 
     pub(super) fn publish(&mut self) -> Result<PublishedNeuronGenerationUpdateV1, AgentdError> {
-        let mut artifacts = self.fixture.artifacts.lock()
+        let mut artifacts = self
+            .fixture
+            .artifacts
+            .lock()
             .map_err(|_| AgentdError::Invalid("artifact lock poisoned".into()))?;
         self.fixture.current.publish(
-            &self.prepared, &self.old, &self.new, &mut self.selected,
+            &self.prepared,
+            &self.old,
+            &self.new,
+            &mut self.selected,
             NeuronGenerationUpdatePublicationV1 {
                 artifacts: &mut artifacts,
                 authority: &self.fixture.authority,
@@ -105,16 +126,24 @@ pub(super) fn append_advanced(fixture: &Fixture, old: &mut Journal) -> anyhow::R
 }
 
 pub(super) fn deliver(fixture: &Fixture, old: &mut Journal) -> anyhow::Result<()> {
-    let chunk = old.pending_output()?.cloned()
+    let chunk = old
+        .pending_output()?
+        .cloned()
         .ok_or_else(|| anyhow::anyhow!("missing actual unacknowledged output"))?;
-    let mut receiver = OpenOptions::new().create_new(true).write(true)
+    let mut receiver = OpenOptions::new()
+        .create_new(true)
+        .write(true)
         .open(fixture.directory.path().join("advanced-delivery"))?;
     receiver.write_all(&chunk.bytes)?;
     receiver.sync_all()?;
     old.acknowledge(
         chunk,
         Digest32::of_bytes(b"advanced-receiver-ack").into_array(),
-        cost(&fixture.old_config, "advanced-ack", CellCostStageV2::Communication)?,
+        cost(
+            &fixture.old_config,
+            "advanced-ack",
+            CellCostStageV2::Communication,
+        )?,
     )?;
     Ok(())
 }

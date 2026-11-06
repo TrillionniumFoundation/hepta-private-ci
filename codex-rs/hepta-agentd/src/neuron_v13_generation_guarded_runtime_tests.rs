@@ -25,10 +25,17 @@ use crate::neuron_v13_generation_update::recover_agentd_v13_generation_update_v1
 async fn cold_typed_publication_recovery_charges_preparation_once_and_replays_real_v13_rejection()
 -> anyhow::Result<()> {
     let mut f = Fixture::new()?;
-    let old_bytes = (f.update.bytes("old-journal")?, f.update.bytes("old-witness")?);
+    let old_bytes = (
+        f.update.bytes("old-journal")?,
+        f.update.bytes("old-witness")?,
+    );
     let prepared = prepare_agentd_v13_generation_cold_update_v1(
-        f.update.current.clone(), f.update.authorities()?, f.predecessor()?,
-        f.update.selection()?, f.inputs()?, AgentdGenerationUpdateRequestV1 {
+        f.update.current.clone(),
+        f.update.authorities()?,
+        f.predecessor()?,
+        f.update.selection()?,
+        f.inputs()?,
+        AgentdGenerationUpdateRequestV1 {
             operation_id: "cold-v13-publication".into(),
         },
     )?;
@@ -48,14 +55,24 @@ async fn cold_typed_publication_recovery_charges_preparation_once_and_replays_re
     let mut runtime = ready.into_runtime(runtime_config(&f.host.identity)?, f.options())?;
     assert_eq!(runtime.publication.authority(), AuthorityPosture::DENY_ALL);
     let (mut tasks, state) = f.start(&mut runtime).await?;
-    assert_eq!(runtime.handle.snapshot().await?, f.host.config.generation.initial);
-    let preparation = f.host.prepared.worker().preparation_cost(CellTaskCostIdentityV2 {
-        task_digest: f.host.config.generation.task_digest,
-        source_digest: f.host.config.generation.manifest.source_digest,
-    })?;
+    assert_eq!(
+        runtime.handle.snapshot().await?,
+        f.host.config.generation.initial
+    );
+    let preparation = f
+        .host
+        .prepared
+        .worker()
+        .preparation_cost(CellTaskCostIdentityV2 {
+            task_digest: f.host.config.generation.task_digest,
+            source_digest: f.host.config.generation.manifest.source_digest,
+        })?;
     assert!(preparation.metrics.wall_micros.is_some());
     assert!(preparation.metrics.cpu_micros.is_none());
-    assert_eq!(runtime.handle.task_cost().await?.entries(), std::slice::from_ref(&preparation));
+    assert_eq!(
+        runtime.handle.task_cost().await?.entries(),
+        std::slice::from_ref(&preparation)
+    );
     let now = (f.host.prepared.worker().clock())();
     let request = CellGenerationRequestV2 {
         operation_id: "guarded-real-v13-rejection".into(),
@@ -66,24 +83,41 @@ async fn cold_typed_publication_recovery_charges_preparation_once_and_replays_re
             schema: "hepta.v13.task-input.v1".into(),
             text: "Sort this new task payload".into(),
             payload: serde_json::json!([3, 1, 2]),
-        }.encode()?,
+        }
+        .encode()?,
         admitted_at_micros: now,
         deadline_micros: now + 15_000_000,
     };
     let receipt = super::super::settle(&runtime.handle, request.clone()).await?;
     assert_eq!(receipt.disposition, CellGenerationDispositionV2::Rejected);
-    assert!(receipt.cost.entries().iter()
-        .any(|entry| entry.metrics.communication_bytes.is_some_and(|bytes| bytes > 0)));
-    assert!(receipt.cost.entries().iter()
-        .all(|entry| entry.metrics.energy_microjoules.is_none()));
+    assert!(receipt.cost.entries().iter().any(|entry| {
+        entry
+            .metrics
+            .communication_bytes
+            .is_some_and(|bytes| bytes > 0)
+    }));
+    assert!(
+        receipt
+            .cost
+            .entries()
+            .iter()
+            .all(|entry| entry.metrics.energy_microjoules.is_none())
+    );
     assert_eq!(runtime.handle.pending_request().await?, None);
     assert_eq!(runtime.handle.pending_output().await?, None);
     assert!(runtime.handle.drain().await?);
     let observation = runtime.handle.observe_generation().await?;
     assert!(observation.snapshot().state.is_empty());
     assert!(observation.snapshot().prefix.is_empty());
-    assert_eq!(observation.cost().entries().iter()
-        .filter(|entry| entry.event_id == preparation.event_id).count(), 1);
+    assert_eq!(
+        observation
+            .cost()
+            .entries()
+            .iter()
+            .filter(|entry| entry.event_id == preparation.event_id)
+            .count(),
+        1
+    );
     assert!(!fs::read(&f.host.paths[2])?.is_empty());
     tasks.shutdown().await;
     assert!(tasks.failures().is_empty());
@@ -98,9 +132,13 @@ async fn cold_typed_publication_recovery_charges_preparation_once_and_replays_re
     let ready = timeout(Duration::from_secs(5), async {
         loop {
             match recover_agentd_v13_generation_update_v1(
-                f.update.reopen_current()?, f.update.authorities()?, f.update.selection()?,
-                f.inputs()?, AgentdGenerationUpdateRecoveryV1 {
-                    operation_id: "cold-v13-publication".into(), intent_digest,
+                f.update.reopen_current()?,
+                f.update.authorities()?,
+                f.update.selection()?,
+                f.inputs()?,
+                AgentdGenerationUpdateRecoveryV1 {
+                    operation_id: "cold-v13-publication".into(),
+                    intent_digest,
                 },
             ) {
                 Ok(ready) => return Ok::<_, anyhow::Error>(ready),
@@ -110,7 +148,8 @@ async fn cold_typed_publication_recovery_charges_preparation_once_and_replays_re
                 Err(error) => return Err(error.into()),
             }
         }
-    }).await??;
+    })
+    .await??;
     assert_eq!(f.host.owner_bytes()?, retained);
     let mut runtime = ready.into_runtime(runtime_config(&f.host.identity)?, f.options())?;
     assert_eq!(f.host.owner_bytes()?, retained);
@@ -121,7 +160,13 @@ async fn cold_typed_publication_recovery_charges_preparation_once_and_replays_re
     assert_eq!(f.update.bytes("current.json")?, current_bytes);
     assert_eq!(f.update.bytes("final-use/authority.claims")?, claims);
     assert_eq!(f.update.authority.capacity()?.used_nonces, 1);
-    assert_eq!((f.update.bytes("old-journal")?, f.update.bytes("old-witness")?), old_bytes);
+    assert_eq!(
+        (
+            f.update.bytes("old-journal")?,
+            f.update.bytes("old-witness")?
+        ),
+        old_bytes
+    );
     assert!(runtime.handle.drain().await?);
     tasks.shutdown().await;
     assert!(tasks.failures().is_empty());
