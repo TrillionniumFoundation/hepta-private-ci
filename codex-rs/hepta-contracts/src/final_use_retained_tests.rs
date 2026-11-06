@@ -50,8 +50,8 @@ impl Frontier {
 
 impl AuthorityFrontierStore<FinalUseFrontier> for Frontier {
     fn load(&self, _owner_id: &str) -> Result<FinalUseFrontier, AuthorityTrustError> {
-        Self::read(&mut self.0.lock().expect("lock test frontier for read"))
-            .map_err(|_| AuthorityTrustError::Unavailable)
+        let mut file = self.0.lock().map_err(|_| AuthorityTrustError::Unavailable)?;
+        Self::read(&mut file).map_err(|_| AuthorityTrustError::Unavailable)
     }
 
     fn compare_and_set(
@@ -60,10 +60,7 @@ impl AuthorityFrontierStore<FinalUseFrontier> for Frontier {
         expected: &FinalUseFrontier,
         next: &FinalUseFrontier,
     ) -> Result<(), AuthorityTrustError> {
-        let mut file = self
-            .0
-            .lock()
-            .expect("lock test frontier for compare-and-set");
+        let mut file = self.0.lock().map_err(|_| AuthorityTrustError::Unavailable)?;
         if Self::read(&mut file).map_err(|_| AuthorityTrustError::Unavailable)? != *expected {
             return Err(AuthorityTrustError::Conflict);
         }
@@ -81,7 +78,7 @@ struct Fixture {
 }
 
 impl Fixture {
-    fn new() -> Self {
+    fn new() -> Result<Self, FinalUseError> {
         let issuer = SigningKey::from_bytes(&[71; 32]);
         let head = FinalUseRevocations {
             authority_epoch: 4,
@@ -105,36 +102,26 @@ impl Fixture {
             expires_at_unix_ms: 3_000,
         };
         let signed = SignedFinalUseGrant {
-            signature: issuer
-                .sign(
-                    &grant
-                        .signing_bytes()
-                        .expect("encode fixture grant signing bytes"),
-                )
-                .to_bytes()
-                .to_vec(),
+            signature: issuer.sign(&grant.signing_bytes()?).to_bytes().to_vec(),
             grant,
         };
-        let directory = tempfile::tempdir().expect("create retained authority test directory");
+        let directory = tempfile::tempdir().map_err(|_| FinalUseError::Unavailable)?;
         std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))
-            .expect("restrict retained authority test directory permissions");
-        let mut file = tempfile::tempfile().expect("create independent test frontier file");
-        Frontier::write(
-            &mut file,
-            &FinalUseFrontier::for_initial_head(&head).expect("derive initial test frontier"),
-        )
-        .expect("persist initial test frontier");
-        Self {
+            .map_err(|_| FinalUseError::Unavailable)?;
+        let mut file = tempfile::tempfile().map_err(|_| FinalUseError::Unavailable)?;
+        Frontier::write(&mut file, &FinalUseFrontier::for_initial_head(&head)?)
+            .map_err(|_| FinalUseError::Unavailable)?;
+        Ok(Self {
             directory,
             frontier: Arc::new(Frontier(Mutex::new(file))),
             clock: Arc::new(Clock(AtomicU64::new(2_000))),
             issuer,
             head,
             signed,
-        }
+        })
     }
 
-    fn open(&self) -> FinalUseAuthority {
+    fn open(&self) -> Result<FinalUseAuthority, FinalUseError> {
         FinalUseAuthority::open_state_dir_with_trust(
             self.directory.path(),
             "retained-owner".into(),
@@ -143,24 +130,24 @@ impl Fixture {
             self.clock.clone(),
             self.frontier.clone(),
         )
-        .expect("open retained authority with independent test frontier")
     }
 
-    fn enter(&self, authority: &FinalUseAuthority) -> VerifiedUseTokenWitnessV1 {
-        let token = claim_final_use(authority, &self.signed, &self.signed.grant.binding)
-            .expect("claim fixture final-use grant");
+    fn enter(
+        &self,
+        authority: &FinalUseAuthority,
+    ) -> Result<VerifiedUseTokenWitnessV1, FinalUseError> {
+        let token = claim_final_use(authority, &self.signed, &self.signed.grant.binding)?;
         let ((), witness) =
-            dispatch_final_use_with_witness(authority, token, &self.signed.grant.binding, |_| ())
-                .expect("enter fixture final-use dispatch");
-        witness
+            dispatch_final_use_with_witness(authority, token, &self.signed.grant.binding, |_| ())?;
+        Ok(witness)
     }
 }
 
 #[test]
 fn retained_entry_survives_grant_expiry_and_cold_owner_reopen_without_claiming_again() {
-    let fixture = Fixture::new();
-    let authority = fixture.open();
-    let witness = fixture.enter(&authority);
+    let fixture = Fixture::new().unwrap();
+    let authority = fixture.open().unwrap();
+    let witness = fixture.enter(&authority).unwrap();
     let before = authority.current_external_frontier().unwrap();
     let claims = std::fs::read(fixture.directory.path().join("authority.claims")).unwrap();
     fixture.clock.0.store(9_000, Ordering::SeqCst);
@@ -170,7 +157,7 @@ fn retained_entry_survives_grant_expiry_and_cold_owner_reopen_without_claiming_a
     );
     assert_eq!(authority.current_external_frontier().unwrap(), before);
     drop(authority);
-    let reopened = fixture.open();
+    let reopened = fixture.open().unwrap();
     assert_eq!(
         reopened.verify_retained_use(&fixture.signed, &fixture.signed.grant.binding, &witness),
         Ok(fixture.head.clone())
@@ -188,13 +175,14 @@ fn retained_entry_survives_grant_expiry_and_cold_owner_reopen_without_claiming_a
 
 #[test]
 fn retained_entry_rejects_another_owner_unspent_nonce_and_changed_signature() {
-    let fixture = Fixture::new();
-    let authority = fixture.open();
-    let witness = fixture.enter(&authority);
-    let other = Fixture::new();
+    let fixture = Fixture::new().unwrap();
+    let authority = fixture.open().unwrap();
+    let witness = fixture.enter(&authority).unwrap();
+    let other = Fixture::new().unwrap();
     assert_eq!(
         other
             .open()
+            .unwrap()
             .verify_retained_use(&fixture.signed, &fixture.signed.grant.binding, &witness),
         Err(FinalUseError::InvalidGrant)
     );
@@ -220,9 +208,9 @@ fn retained_entry_rejects_another_owner_unspent_nonce_and_changed_signature() {
 
 #[test]
 fn retained_witness_must_match_original_dispatch_binding_and_entry_window() {
-    let fixture = Fixture::new();
-    let authority = fixture.open();
-    let witness = fixture.enter(&authority);
+    let fixture = Fixture::new().unwrap();
+    let authority = fixture.open().unwrap();
+    let witness = fixture.enter(&authority).unwrap();
     let mut changed = witness.clone();
     changed.boundary = VerifiedUseBoundaryV1::ConsumerEntry;
     assert_eq!(
@@ -245,9 +233,9 @@ fn retained_witness_must_match_original_dispatch_binding_and_entry_window() {
 
 #[test]
 fn actual_revocation_and_epoch_rollover_deny_retained_use() {
-    let fixture = Fixture::new();
-    let authority = fixture.open();
-    let witness = fixture.enter(&authority);
+    let fixture = Fixture::new().unwrap();
+    let authority = fixture.open().unwrap();
+    let witness = fixture.enter(&authority).unwrap();
     authority
         .update_revocations(FinalUseRevocations {
             authority_epoch: 4,
@@ -274,10 +262,10 @@ fn actual_revocation_and_epoch_rollover_deny_retained_use() {
 
 #[test]
 fn independent_frontier_rollback_fences_readers_and_all_owner_clones() {
-    let fixture = Fixture::new();
-    let authority = fixture.open();
+    let fixture = Fixture::new().unwrap();
+    let authority = fixture.open().unwrap();
     let before = authority.current_external_frontier().unwrap();
-    let witness = fixture.enter(&authority);
+    let witness = fixture.enter(&authority).unwrap();
     let clone = authority.clone();
     let after = authority.current_external_frontier().unwrap();
     Frontier::write(&mut fixture.frontier.0.lock().unwrap(), &before).unwrap();
@@ -294,7 +282,7 @@ fn independent_frontier_rollback_fences_readers_and_all_owner_clones() {
 
 #[test]
 fn compatibility_owner_cannot_substitute_for_external_frontier_custody() {
-    let fixture = Fixture::new();
+    let fixture = Fixture::new().unwrap();
     let authority = FinalUseAuthority::open_state_dir_with_clock(
         fixture.directory.path(),
         "retained-owner".into(),
@@ -303,7 +291,7 @@ fn compatibility_owner_cannot_substitute_for_external_frontier_custody() {
         fixture.clock.clone(),
     )
     .unwrap();
-    let witness = fixture.enter(&authority);
+    let witness = fixture.enter(&authority).unwrap();
     assert_eq!(
         authority.current_external_frontier(),
         Err(FinalUseError::InvalidTrust)
