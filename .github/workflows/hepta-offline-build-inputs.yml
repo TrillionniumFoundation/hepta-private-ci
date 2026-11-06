@@ -195,7 +195,7 @@ jobs:
           if-no-files-found: error
 
   ui-inputs:
-    name: Generate UI lock and public dependency inputs for review
+    name: Verify committed UI lock and public dependency inputs
     if: inputs.input_set == 'ui-inputs'
     runs-on: ubuntu-24.04
     timeout-minutes: 25
@@ -205,7 +205,7 @@ jobs:
           ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
           fetch-depth: 1
-      - name: Resolve the pinned UI source and generate the minimal lock for review
+      - name: Verify locked UI dependencies and export complete pinned source
         timeout-minutes: 20
         env:
           HEPTA_INPUT_SET: ${{ inputs.input_set }}

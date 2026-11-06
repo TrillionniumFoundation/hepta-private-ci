@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate review-only UI dependency inputs; execute no product tests."""
+"""Verify committed UI dependency inputs; execute no product tests."""
 
 import hashlib
 import json
@@ -40,31 +40,6 @@ def blob(data, kind="blob"):
     return hashlib.sha1(kind.encode() + b" " + str(len(data)).encode() + b"\0" + data).hexdigest()
 
 
-def validate_lock(before, after):
-    require({k: v for k, v in before.items() if k != "package"} ==
-            {k: v for k, v in after.items() if k != "package"}, "lock metadata changed")
-    key = lambda item: (item["name"], item["version"], item.get("source"))
-    old = {key(item): item for item in before["package"]}
-    new = {key(item): item for item in after["package"]}
-    require(len(old) == len(before["package"]) and len(new) == len(after["package"]), "duplicate package identity")
-    require(old.keys() <= new.keys(), "existing locked package removed or changed version")
-    for identity, original in old.items():
-        expected = dict(original)
-        actual = dict(new[identity])
-        if identity == ("hepta-robrix-ui", "0.1.0", None):
-            expected["dependencies"] = sorted([*original.get("dependencies", []), "pretty_assertions"])
-            actual["dependencies"] = sorted(actual.get("dependencies", []))
-        require(actual == expected, f"unrelated package change: {identity}")
-    added = [new[key] for key in new.keys() - old.keys()]
-    require(len(added) == 3 and {p["name"] for p in added} == {"pretty_assertions", "diff", "yansi"}, "unexpected new packages")
-    require(all(p.get("source") == REGISTRY and re.fullmatch("[0-9a-f]{64}", p.get("checksum", "")) for p in added), "unexpected new source")
-    pretty = next(p for p in added if p["name"] == "pretty_assertions")
-    require(pretty["version"] == "1.4.1" and pretty["checksum"] == "3ae130e2f271fbc2ac3a40fb1d07180839cdbbe443c7a27e1e3c13c5cac0116d", "pretty_assertions identity changed")
-    require(pretty.get("dependencies") == ["diff", "yansi"], "pretty_assertions dependency edges changed")
-    require(all(not p.get("dependencies") for p in added if p["name"] != "pretty_assertions"), "unexpected new dependency edges")
-    return sorted(added, key=lambda p: p["name"])
-
-
 def main():
     require(platform.system() == "Linux" and os.environ.get("GITHUB_ACTIONS") == "true", "hosted Linux scope required")
     event_name = os.environ.get("GITHUB_EVENT_NAME")
@@ -95,9 +70,9 @@ def main():
     cargo_home.mkdir(mode=0o700)
     rustup_home.mkdir(mode=0o700)
     env = os.environ.copy()
-    env.update({"CARGO_HOME": str(cargo_home), "RUSTUP_HOME": str(rustup_home), "RUSTUP_TOOLCHAIN": "1.95.0", "CARGO_TARGET_DIR": str(own / "target"), "CARGO_BUILD_JOBS": "1", "GIT_TERMINAL_PROMPT": "0", "GIT_OPTIONAL_LOCKS": "0", "GIT_NO_LAZY_FETCH": "1"})
+    env.update({"CARGO_HOME": str(cargo_home), "RUSTUP_HOME": str(rustup_home), "RUSTUP_TOOLCHAIN": "1.95.0", "CARGO_TARGET_DIR": str(own / "target"), "CARGO_BUILD_JOBS": "1", "GIT_TERMINAL_PROMPT": "0", "GIT_OPTIONAL_LOCKS": "0", "GIT_NO_LAZY_FETCH": "1", "GIT_ATTR_NOSYSTEM": "1"})
     require(not any(env.get(key) for key in ("GIT_DIR", "GIT_WORK_TREE", "GIT_OBJECT_DIRECTORY", "GIT_ALTERNATE_OBJECT_DIRECTORIES", "GIT_INDEX_FILE")), "unexpected inherited Git object override")
-    receipt = {"schema": "hepta.ui-public-inputs.v3", "status": "PREPARING", "authorityGranted": False, "productTestsExecuted": False, "commands": [], "runId": os.environ["GITHUB_RUN_ID"], "runAttempt": os.environ["GITHUB_RUN_ATTEMPT"], "started": time.time(), "postErrors": []}
+    receipt = {"schema": "hepta.ui-public-inputs.v5", "status": "PREPARING", "authorityGranted": False, "productTestsExecuted": False, "commands": [], "runId": os.environ["GITHUB_RUN_ID"], "runAttempt": os.environ["GITHUB_RUN_ATTEMPT"], "started": time.time(), "postErrors": []}
 
     def save():
         temporary = out / "receipt.tmp"
@@ -125,7 +100,12 @@ def main():
     def git(name, args, cwd=repo):
         return run(name, ["git", "--no-lazy-fetch", *args], cwd)
 
-    def tracked(name, cwd, revision, allowed=()):
+    def tracked(name, cwd, revision, allow_text_crlf=False):
+        if allow_text_crlf:
+            common = Path(git(name + "-git-common-dir", ["rev-parse", "--path-format=absolute", "--git-common-dir"], cwd).decode().strip()).resolve(strict=True)
+            require(cwd == checkout and common == git_dir == (cwd / ".git").resolve(strict=True), "Makepad common directory differs from confirmed own checkout")
+            info_attributes = common / "info/attributes"
+            require(not info_attributes.exists() and not info_attributes.is_symlink(), "untracked Makepad info attributes are not admitted")
         records = git(name + "-ls-tree", ["ls-tree", "-rz", "--full-tree", revision], cwd)
         rows = []
         for raw in records.split(b"\0"):
@@ -144,8 +124,28 @@ def main():
             else:
                 require(stat.S_ISREG(info.st_mode) and info.st_nlink == 1 and bool(info.st_mode & stat.S_IXUSR) == (mode == "100755"), relative)
                 data = actual.read_bytes()
-            require(relative in allowed or blob(data) == oid, f"tracked bytes differ: {relative}")
-            rows.append({"path": relative, "mode": mode, "gitBlob": oid, "actualBlob": blob(data), "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest()})
+            canonical = data
+            normalization = "identity"
+            if blob(data) != oid:
+                label = f"{name}-difference-{len(rows):05d}"
+                # Preserve the actual failed bytes even when normalization is refused.
+                (out / f"{label}.working").write_bytes(data)
+                require(allow_text_crlf and mode == "100644", f"tracked bytes differ: {relative}")
+                canonical = git(label + "-canonical", ["cat-file", "blob", oid], cwd)
+                raw_attributes = git(label + "-attributes", ["-c", "core.attributesFile=/dev/null", "check-attr", "--source=" + revision, "-z", "--all", "--", relative], cwd)
+                fields = raw_attributes.split(b"\0")
+                require(fields[-1] == b"" and (len(fields) - 1) % 3 == 0, "malformed Git attributes")
+                attributes = {}
+                for offset in range(0, len(fields) - 1, 3):
+                    attr_path, key, value = fields[offset:offset + 3]
+                    require(os.fsdecode(attr_path) == relative and key not in attributes, "attribute identity mismatch")
+                    attributes[key] = value
+                require(attributes.get(b"text") == b"set" and attributes.get(b"eol") == b"crlf", "undeclared CRLF checkout")
+                require(all(attributes.get(key, b"unspecified") in (b"unset", b"unspecified") for key in (b"filter", b"ident", b"working-tree-encoding")), "additional checkout transformation")
+                require(blob(canonical) == oid and b"\r\n" not in canonical, "canonical Git object mismatch")
+                require(data == canonical.replace(b"\n", b"\r\n"), f"non-EOL tracked change: {relative}")
+                normalization = "declared-text-eol-crlf"
+            rows.append({"path": relative, "mode": mode, "gitBlob": oid, "actualBlob": blob(data), "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest(), "normalization": normalization, "canonicalBytes": len(canonical), "canonicalSha256": hashlib.sha256(canonical).hexdigest()})
         (out / f"{name}-index.json").write_text(json.dumps(rows, indent=2) + "\n")
         return rows
 
@@ -203,10 +203,10 @@ def main():
         before = tracked("source-before", repo, "HEAD")
         original_manifest = (repo / UI_MANIFEST).read_bytes()
         original_lock = (repo / UI_LOCK).read_bytes()
-        require(hashlib.sha256(original_manifest).hexdigest() == "533a4af9311e5688b2bb9cec96e859c936a1c6c3564715afe692c4bcee965be4", "UI manifest preimage changed")
-        require(hashlib.sha256(original_lock).hexdigest() == "99d22c4031512530e66b1e1cbec256d069e6e613e158f37d247d9307de265734", "UI lock preimage changed")
-        old_lock = tomllib.loads(original_lock.decode())
-        require({p.get("source") for p in old_lock["package"] if p.get("source")} == {REGISTRY, GIT_SOURCE}, "unapproved dependency source")
+        require(hashlib.sha256(original_manifest).hexdigest() == "c9dfe8c84739132f73f74d54f18c95d62ce732e6d5ebd71bf73da00ea2145a4d", "UI manifest preimage changed")
+        require(hashlib.sha256(original_lock).hexdigest() == "d5cbdbb222b56771d7c719518136c88a87be373969a231bc1aec1e067c79a53a", "UI lock preimage changed")
+        locked = tomllib.loads(original_lock.decode())
+        require({p.get("source") for p in locked["package"] if p.get("source")} == {REGISTRY, GIT_SOURCE}, "unapproved dependency source")
         (out / "Cargo.toml.before").write_bytes(original_manifest)
         (out / "Cargo.lock.before").write_bytes(original_lock)
         rustup = shutil.which("rustup")
@@ -222,17 +222,15 @@ def main():
         env["RUSTC"] = str(rustc)
         run("baseline-locked-fetch", [cargo, "fetch", "--locked", "--manifest-path", UI_ROOT])
         require((repo / UI_LOCK).read_bytes() == original_lock, "baseline fetch changed the lock")
-        post_manifest = original_manifest + b'\n[dev-dependencies]\npretty_assertions = "=1.4.1"\n'
-        require(hashlib.sha256(post_manifest).hexdigest() == "c9dfe8c84739132f73f74d54f18c95d62ce732e6d5ebd71bf73da00ea2145a4d", "unexpected manifest postimage")
-        (repo / UI_MANIFEST).write_bytes(post_manifest)
-        metadata = json.loads(run("full-metadata-generate", [cargo, "metadata", "--format-version", "1", "--manifest-path", UI_ROOT]))
+        full_metadata = run("full-locked-metadata", [cargo, "metadata", "--locked", "--format-version", "1", "--manifest-path", UI_ROOT])
+        metadata = json.loads(full_metadata)
         require(isinstance(metadata.get("resolve"), dict) and metadata["resolve"].get("nodes"), "full resolution missing")
-        generated_lock = (repo / UI_LOCK).read_bytes()
-        after = tomllib.loads(generated_lock.decode())
-        receipt["addedPackages"] = validate_lock(old_lock, after)
-        run("locked-offline-metadata", [cargo, "metadata", "--locked", "--offline", "--format-version", "1", "--manifest-path", UI_ROOT])
-        require((repo / UI_LOCK).read_bytes() == generated_lock, "locked metadata changed generated bytes")
-        export_registry(after["package"])
+        offline_metadata = run("locked-offline-metadata", [cargo, "metadata", "--locked", "--offline", "--format-version", "1", "--manifest-path", UI_ROOT])
+        require(offline_metadata == full_metadata, "full and offline metadata differ")
+        require((repo / UI_MANIFEST).read_bytes() == original_manifest and (repo / UI_LOCK).read_bytes() == original_lock, "locked resolution changed committed inputs")
+        receipt["lockedPackages"] = len(locked["package"])
+        receipt["metadataSha256"] = hashlib.sha256(full_metadata).hexdigest()
+        export_registry(locked["package"])
         checkouts = list((cargo_home / "git/checkouts").glob("*/*/.git"))
         require(len(checkouts) == 1, "ambiguous Makepad checkout")
         checkout = checkouts[0].parent
@@ -252,7 +250,11 @@ def main():
         require(blob(raw, "commit") == MAKEPAD, "Makepad commit bytes differ")
         tree = raw.splitlines()[0].split()[1].decode()
         require(git("makepad-tree", ["rev-parse", "HEAD^{tree}"], checkout).decode().strip() == tree, "wrong Makepad tree")
-        receipt["makepad"] = {"commit": MAKEPAD, "tree": tree, "trackedFiles": len(tracked("makepad", checkout, MAKEPAD)), "gitDir": str(git_dir), "alternates": alternates}
+        receipt["makepad"] = {"commit": MAKEPAD, "tree": tree, "gitDir": str(git_dir), "alternates": alternates}
+        save()
+        makepad_rows = tracked("makepad", checkout, MAKEPAD, allow_text_crlf=True)
+        receipt["makepad"]["trackedFiles"] = len(makepad_rows)
+        receipt["makepad"]["normalizedPaths"] = [row["path"] for row in makepad_rows if row["normalization"] != "identity"]
         bundle = out / "makepad-source.bundle"
         git("makepad-bundle", ["bundle", "create", str(bundle), "HEAD"], checkout)
         git("makepad-bundle-verify", ["bundle", "verify", str(bundle)], checkout)
@@ -264,7 +266,10 @@ def main():
         git("bundle-local-import", ["fetch", "--no-tags", str(bundle), "HEAD:refs/heads/pinned-makepad"], verification)
         require(git("bundle-import-head", ["rev-parse", "refs/heads/pinned-makepad"], verification).decode().strip() == MAKEPAD, "imported bundle revision differs")
         git("bundle-import-fsck", ["fsck", "--strict", "--full"], verification)
-        receipt["status"] = "MINIMAL_UI_LOCK_AND_PUBLIC_INPUTS_GENERATED_REVIEW_REQUIRED"
+        require(git("bundle-import-tree", ["rev-parse", "refs/heads/pinned-makepad^{tree}"], verification).decode().strip() == tree, "imported tree differs")
+        imported_index = git("bundle-import-ls-tree", ["ls-tree", "-rz", "--full-tree", "refs/heads/pinned-makepad"], verification)
+        require(imported_index == (out / "makepad-ls-tree.stdout").read_bytes(), "bundle omitted tracked source objects")
+        receipt["status"] = "COMMITTED_UI_LOCK_AND_PUBLIC_INPUTS_VERIFIED_REVIEW_REQUIRED"
         code = 0
     except Exception:
         receipt["error"] = traceback.format_exc()
@@ -273,17 +278,17 @@ def main():
         try:
             git("all-tracked-diff", ["diff", "--binary", "--no-ext-diff", "HEAD", "--"])
             changed = git("changed-paths", ["diff", "--name-only", "HEAD", "--"]).decode().splitlines()
-            require(set(changed) <= {UI_MANIFEST, UI_LOCK}, "unrelated tracked changes")
+            require(not changed, "committed source changed during input verification")
             require(not git("staged-diff", ["diff", "--cached", "--name-only"]).strip(), "staged changes")
             require(git("source-head-after", ["rev-parse", "HEAD"]).decode().strip() == receipt.get("head"), "source HEAD moved")
             if before is not None:
-                rows = tracked("source-after", repo, "HEAD", {UI_MANIFEST, UI_LOCK})
-                require(len(rows) == len(before), "tracked source count changed")
-            for relative, name in [(UI_MANIFEST, "Cargo.toml.generated"), (UI_LOCK, "Cargo.lock.generated")]:
+                rows = tracked("source-after", repo, "HEAD")
+                require(rows == before, "tracked source bytes or modes changed")
+            for relative, name in [(UI_MANIFEST, "Cargo.toml.locked"), (UI_LOCK, "Cargo.lock.locked")]:
                 shutil.copyfile(repo / relative, out / name)
             receipt["actualLockSha256"] = sha(repo / UI_LOCK)
             if code == 0:
-                require((repo / UI_MANIFEST).read_bytes() == post_manifest and (repo / UI_LOCK).read_bytes() == generated_lock, "generated UI inputs changed after resolution")
+                require((repo / UI_MANIFEST).read_bytes() == original_manifest and (repo / UI_LOCK).read_bytes() == original_lock, "committed UI inputs changed after verification")
         except Exception:
             receipt["postErrors"].append(traceback.format_exc())
             receipt["status"] = "POST_OBSERVATION_FAILED"
