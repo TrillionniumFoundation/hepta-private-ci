@@ -1,0 +1,454 @@
+{
+  "schema": "ndu.decision-cost-verification.v1",
+  "status": "PASS",
+  "started_at_utc": "2026-11-06T11:49:11.489092+00:00",
+  "scope": "Deterministic exact finite enumeration and floating-point LP audits; no new confirmation data, actual LLM, provider bill, external proof review or general RL claim.",
+  "runtime": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0"
+  },
+  "source_sha256_before": {
+    "DECISION_COST_THEORY.md": "85a324c6a9f55e9f4e085483f56b9032daf5e2e491df4b1f78b587becdd1b1be",
+    "verify_decision_cost.py": "ff196db8766e171fd4df5028e2df27ee8968607a8e115c49a0b097e7c9156fed"
+  },
+  "checks": [
+    "adaptive_joint_KL_0",
+    "outcome_dependent_cost_0",
+    "adaptive_joint_KL_1",
+    "outcome_dependent_cost_1",
+    "allocation_primal_dual_0",
+    "allocation_analytic_match_0",
+    "allocation_primal_dual_1",
+    "allocation_analytic_match_1",
+    "allocation_primal_dual_2",
+    "allocation_analytic_match_2",
+    "observationally_identical_opposite_answers_infeasible",
+    "likelihood_prefix_1/5_0",
+    "likelihood_prefix_1/5_1",
+    "likelihood_prefix_1/5_2",
+    "likelihood_prefix_1/10_0",
+    "likelihood_prefix_1/10_1",
+    "likelihood_prefix_1/10_2",
+    "likelihood_prefix_1/20_0",
+    "likelihood_prefix_1/20_1",
+    "likelihood_prefix_1/20_2",
+    "flow_feasibility_(1, 0)",
+    "flow_feasibility_(1, 1)",
+    "flow_feasibility_(2, 0)",
+    "flow_feasibility_(2, 1)",
+    "flow_feasibility_(8, 0)",
+    "flow_feasibility_(8, 1)",
+    "flow_feasibility_(20, 0)",
+    "flow_feasibility_(20, 1)",
+    "flow_feasibility_(40, 0)",
+    "flow_cost_boundary_(40, 0)",
+    "flow_feasibility_(40, 1)",
+    "flow_cost_boundary_(40, 1)",
+    "flow_feasibility_(80, 0)",
+    "flow_cost_boundary_(80, 0)",
+    "flow_feasibility_(80, 1)",
+    "flow_cost_boundary_(80, 1)",
+    "KL_feasibility_is_not_sufficient",
+    "nuisance_cancels_for_answer_(0.1, 0)",
+    "nuisance_cancels_for_answer_(0.1, 1)",
+    "nuisance_cancels_for_answer_(0.03, 0)",
+    "nuisance_cancels_for_answer_(0.03, 1)",
+    "nuisance_cancels_for_answer_(0.01, 0)",
+    "nuisance_cancels_for_answer_(0.01, 1)",
+    "nuisance_cancels_for_answer_(0.003, 0)",
+    "nuisance_cancels_for_answer_(0.003, 1)"
+  ],
+  "check_count": 45,
+  "evidence": {
+    "adaptive_transcript": [
+      {
+        "theta": 0,
+        "KL": 0.41493159961539694,
+        "expected_cost": "8/3",
+        "expected_counts": [
+          "1",
+          "1/2"
+        ]
+      },
+      {
+        "theta": 1,
+        "KL": 0.26534282680362054,
+        "expected_cost": "47/20",
+        "expected_counts": [
+          "1",
+          "1/5"
+        ]
+      }
+    ],
+    "cost_allocation": [
+      {
+        "theta": 0,
+        "analytic_cost": 5.872845566913653,
+        "feasible": true,
+        "cost": 5.872845566913652,
+        "allocation": [
+          1.9576151889712174,
+          1.9576151889712174
+        ],
+        "dual": [
+          1.9576151889712174,
+          3.915230377942435
+        ],
+        "primal_min_slack": 0.0,
+        "dual_min_slack": 0.0,
+        "duality_gap": 0.0
+      },
+      {
+        "theta": 1,
+        "analytic_cost": 2.716917267486994,
+        "feasible": true,
+        "cost": 2.716917267486994,
+        "allocation": [
+          2.716917267486994,
+          0.0
+        ],
+        "dual": [
+          2.716917267486994
+        ],
+        "primal_min_slack": -1.1102230246251565e-16,
+        "dual_min_slack": 1.1102230246251565e-16,
+        "duality_gap": 0.0
+      },
+      {
+        "theta": 2,
+        "analytic_cost": 5.433834534973988,
+        "feasible": true,
+        "cost": 5.433834534973988,
+        "allocation": [
+          0.0,
+          2.716917267486994
+        ],
+        "dual": [
+          5.433834534973988
+        ],
+        "primal_min_slack": -1.1102230246251565e-16,
+        "dual_min_slack": 2.220446049250313e-16,
+        "duality_gap": 0.0
+      }
+    ],
+    "likelihood_prefix": [
+      {
+        "delta": "1/5",
+        "cap": 12,
+        "models": [
+          {
+            "correct": "415/1024",
+            "wrong": "109/1024",
+            "unresolved": "125/256",
+            "wrong_float": 0.1064453125
+          },
+          {
+            "correct": "251253169/400000000",
+            "wrong": "139786739/10000000000",
+            "unresolved": "894721009/2500000000",
+            "wrong_float": 0.0139786739
+          },
+          {
+            "correct": "228849541/400000000",
+            "wrong": "6895781/400000000",
+            "unresolved": "82127339/200000000",
+            "wrong_float": 0.0172394525
+          }
+        ]
+      },
+      {
+        "delta": "1/10",
+        "cap": 12,
+        "models": [
+          {
+            "correct": "1247/4096",
+            "wrong": "33/4096",
+            "unresolved": "11/16",
+            "wrong_float": 0.008056640625
+          },
+          {
+            "correct": "11193553/64000000",
+            "wrong": "237109231/40000000000",
+            "unresolved": "2047932509/2500000000",
+            "wrong_float": 0.005927730775
+          },
+          {
+            "correct": "7004017/64000000",
+            "wrong": "12942151/1600000000",
+            "unresolved": "88247339/100000000",
+            "wrong_float": 0.008088844375
+          }
+        ]
+      },
+      {
+        "delta": "1/20",
+        "cap": 12,
+        "models": [
+          {
+            "correct": "319/2048",
+            "wrong": "0",
+            "unresolved": "1729/2048",
+            "wrong_float": 0.0
+          },
+          {
+            "correct": "0",
+            "wrong": "5023383/4000000000",
+            "unresolved": "3994976617/4000000000",
+            "wrong_float": 0.00125584575
+          },
+          {
+            "correct": "0",
+            "wrong": "5766843/4000000000",
+            "unresolved": "3994233157/4000000000",
+            "wrong_float": 0.00144171075
+          }
+        ]
+      }
+    ],
+    "paid_state_time_flow": [
+      {
+        "deadline": 1,
+        "theta": 0,
+        "feasible": false,
+        "status": 2,
+        "cost": null,
+        "completed_probe_cap": 0
+      },
+      {
+        "deadline": 1,
+        "theta": 1,
+        "feasible": false,
+        "status": 2,
+        "cost": null,
+        "completed_probe_cap": 0
+      },
+      {
+        "deadline": 2,
+        "theta": 0,
+        "feasible": false,
+        "status": 2,
+        "cost": null,
+        "completed_probe_cap": 1
+      },
+      {
+        "deadline": 2,
+        "theta": 1,
+        "feasible": false,
+        "status": 2,
+        "cost": null,
+        "completed_probe_cap": 1
+      },
+      {
+        "deadline": 8,
+        "theta": 0,
+        "feasible": false,
+        "status": 2,
+        "cost": null,
+        "completed_probe_cap": 3
+      },
+      {
+        "deadline": 8,
+        "theta": 1,
+        "feasible": false,
+        "status": 2,
+        "cost": null,
+        "completed_probe_cap": 3
+      },
+      {
+        "deadline": 20,
+        "theta": 0,
+        "feasible": false,
+        "status": 2,
+        "cost": null,
+        "completed_probe_cap": 7
+      },
+      {
+        "deadline": 20,
+        "theta": 1,
+        "feasible": false,
+        "status": 2,
+        "cost": null,
+        "completed_probe_cap": 7
+      },
+      {
+        "deadline": 40,
+        "theta": 0,
+        "feasible": true,
+        "status": 0,
+        "cost": 2.878253614440164,
+        "completed_probe_cap": 13
+      },
+      {
+        "deadline": 40,
+        "theta": 1,
+        "feasible": true,
+        "status": 0,
+        "cost": 3.7134092012676305,
+        "completed_probe_cap": 13
+      },
+      {
+        "deadline": 80,
+        "theta": 0,
+        "feasible": true,
+        "status": 0,
+        "cost": 2.878253614440163,
+        "completed_probe_cap": 27
+      },
+      {
+        "deadline": 80,
+        "theta": 1,
+        "feasible": true,
+        "status": 0,
+        "cost": 3.7134092012676305,
+        "completed_probe_cap": 27
+      }
+    ],
+    "deadline_counterexample": {
+      "delta": ".05",
+      "probe_cap": 13,
+      "minimum_time_for_cap": 38,
+      "full_probe_Bayes_error_exact": "98486781024154212843089/1000000000000000000000000",
+      "full_probe_Bayes_error": 0.09848678102415422,
+      "inference": "Bayes error already exceeds delta, so no rule can have both conditional errors at most delta."
+    },
+    "nuisance_separation": [
+      {
+        "epsilon": 0.1,
+        "theta": 0,
+        "answer_constant": 1.0974562311521607,
+        "full_model_constant": 3.69945519356465,
+        "ratio": 3.370936433319796
+      },
+      {
+        "epsilon": 0.1,
+        "theta": 1,
+        "answer_constant": 1.412609867751964,
+        "full_model_constant": 3.69945519356465,
+        "ratio": 2.6188796199278896
+      },
+      {
+        "epsilon": 0.03,
+        "theta": 0,
+        "answer_constant": 1.0974562311521607,
+        "full_model_constant": 41.61661857594025,
+        "ratio": 37.92098253635973
+      },
+      {
+        "epsilon": 0.03,
+        "theta": 1,
+        "answer_constant": 1.412609867751964,
+        "full_model_constant": 41.61661857594025,
+        "ratio": 29.460801262962427
+      },
+      {
+        "epsilon": 0.01,
+        "theta": 0,
+        "answer_constant": 1.0974562311521607,
+        "full_model_constant": 374.94999466555873,
+        "ratio": 341.6537115761954
+      },
+      {
+        "epsilon": 0.01,
+        "theta": 1,
+        "answer_constant": 1.412609867751964,
+        "full_model_constant": 374.94999466555873,
+        "ratio": 265.43067780084
+      },
+      {
+        "epsilon": 0.003,
+        "theta": 0,
+        "answer_constant": 1.0974562311521607,
+        "full_model_constant": 4166.616666185593,
+        "ratio": 3796.613065663024
+      },
+      {
+        "epsilon": 0.003,
+        "theta": 1,
+        "answer_constant": 1.412609867751964,
+        "full_model_constant": 4166.616666185593,
+        "ratio": 2949.587682561196
+      }
+    ],
+    "binary_cost_bounds": [
+      {
+        "delta": 0.05,
+        "theta": 0,
+        "lower_cost": 2.908253614440165,
+        "upper_cost": 4.60051789911769,
+        "upper_to_lower_ratio": 1.5818833255377156
+      },
+      {
+        "delta": 0.05,
+        "theta": 1,
+        "lower_cost": 3.74340920126763,
+        "upper_cost": 5.921636596149722,
+        "upper_to_lower_ratio": 1.5818833255377156
+      },
+      {
+        "delta": 0.001,
+        "theta": 0,
+        "lower_cost": 7.564701346730083,
+        "upper_cost": 8.893791922835414,
+        "upper_to_lower_ratio": 1.175696371236102
+      },
+      {
+        "delta": 0.001,
+        "theta": 1,
+        "lower_cost": 9.737036854553057,
+        "upper_cost": 11.447798896490218,
+        "upper_to_lower_ratio": 1.175696371236102
+      },
+      {
+        "delta": 1e-06,
+        "theta": 0,
+        "lower_cost": 15.161886727095478,
+        "upper_cost": 16.474750997028593,
+        "upper_to_lower_ratio": 1.0865897690415351
+      },
+      {
+        "delta": 1e-06,
+        "theta": 1,
+        "lower_cost": 19.515886097750947,
+        "upper_cost": 21.205762167596106,
+        "upper_to_lower_ratio": 1.0865897690415351
+      }
+    ],
+    "gating_values": {
+      "prior_stop": 0.5,
+      "negative_member_forced_deploy": 0.35,
+      "negative_member_optimal_stop": 0.5,
+      "positive_member_deploy": 0.65,
+      "calibration_cycle_resource": 0.3
+    },
+    "amortization_bounds": [
+      {
+        "delta": 0.05,
+        "gain": 0.15,
+        "necessary_volume_strictly_greater_than": 24.9560613417842,
+        "sufficient_volume_strictly_greater_than": 41.55534453438402,
+        "scope": "Analytic finite-catalog expected-cost bounds under declared synthetic prices, not a confirmation result."
+      },
+      {
+        "delta": 0.001,
+        "gain": 0.15,
+        "necessary_volume_strictly_greater_than": 64.91357903035372,
+        "sufficient_volume_strictly_greater_than": 76.3950543642991,
+        "scope": "Analytic finite-catalog expected-cost bounds under declared synthetic prices, not a confirmation result."
+      },
+      {
+        "delta": 1e-06,
+        "gain": 0.15,
+        "necessary_volume_strictly_greater_than": 130.10590731833966,
+        "sufficient_volume_strictly_greater_than": 141.37188915586322,
+        "scope": "Analytic finite-catalog expected-cost bounds under declared synthetic prices, not a confirmation result."
+      }
+    ]
+  },
+  "source_sha256_after": {
+    "DECISION_COST_THEORY.md": "85a324c6a9f55e9f4e085483f56b9032daf5e2e491df4b1f78b587becdd1b1be",
+    "verify_decision_cost.py": "ff196db8766e171fd4df5028e2df27ee8968607a8e115c49a0b097e7c9156fed"
+  },
+  "elapsed_compute_seconds": 0.23253919099806808,
+  "finished_at_utc": "2026-11-06T11:49:11.721278+00:00"
+}
