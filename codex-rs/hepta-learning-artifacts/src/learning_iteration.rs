@@ -21,9 +21,12 @@ const MAX_TRAINING_STEPS: u64 = 1_000_000;
 const MAX_TRAINING_MILLISECONDS: u64 = 86_400_000;
 const MAX_ARTIFACT_BYTES: u64 = 16 << 30;
 const STAGES: [LearningIterationStageV1; 7] = [
-    LearningIterationStageV1::Experience, LearningIterationStageV1::Dataset,
-    LearningIterationStageV1::Training, LearningIterationStageV1::Evaluation,
-    LearningIterationStageV1::Proposal, LearningIterationStageV1::Selection,
+    LearningIterationStageV1::Experience,
+    LearningIterationStageV1::Dataset,
+    LearningIterationStageV1::Training,
+    LearningIterationStageV1::Evaluation,
+    LearningIterationStageV1::Proposal,
+    LearningIterationStageV1::Selection,
     LearningIterationStageV1::NextUse,
 ];
 
@@ -45,88 +48,172 @@ pub enum LearningIterationError {
     SnapshotMismatch,
 }
 impl fmt::Display for LearningIterationError {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result { write!(formatter, "{self:?}") }
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(formatter, "{self:?}")
+    }
 }
 impl Error for LearningIterationError {}
 impl From<CellBundleError> for LearningIterationError {
-    fn from(error: CellBundleError) -> Self { Self::Bundle(error) }
+    fn from(error: CellBundleError) -> Self {
+        Self::Bundle(error)
+    }
 }
 
 #[derive(Clone, Debug)]
-pub struct LearningIterationCoordinatorV1 { snapshot: LearningIterationSnapshotV1 }
+pub struct LearningIterationCoordinatorV1 {
+    snapshot: LearningIterationSnapshotV1,
+}
 
 impl LearningIterationCoordinatorV1 {
-    pub fn new(request: LearningIterationRequestV1, owners: LearningIterationOwnersV1) -> Result<Self, LearningIterationError> {
-        request.envelope.validate().map_err(LearningIterationError::InvalidEnvelope)?;
+    pub fn new(
+        request: LearningIterationRequestV1,
+        owners: LearningIterationOwnersV1,
+    ) -> Result<Self, LearningIterationError> {
+        request
+            .envelope
+            .validate()
+            .map_err(LearningIterationError::InvalidEnvelope)?;
         request.selected_bundle.digest()?;
-        if request.completed_task_receipt.is_zero() || request.selected_artifact_digest.is_zero()
+        if request.completed_task_receipt.is_zero()
+            || request.selected_artifact_digest.is_zero()
             || owners.evidence_trust_digest.is_zero()
-        { return Err(LearningIterationError::EmptyEvidence); }
+        {
+            return Err(LearningIterationError::EmptyEvidence);
+        }
         let b = &request.budget;
         if !(1..=MAX_DATASET_ROWS).contains(&b.maximum_dataset_rows)
             || !(1..=MAX_DATASET_BYTES).contains(&b.maximum_dataset_bytes)
             || !(1..=MAX_TRAINING_STEPS).contains(&b.maximum_training_steps)
             || !(1..=MAX_TRAINING_MILLISECONDS).contains(&b.maximum_training_milliseconds)
             || !(1..=MAX_ARTIFACT_BYTES).contains(&b.maximum_artifact_bytes)
-        { return Err(LearningIterationError::InvalidBudget); }
-        if owners.trainer == owners.evaluator || owners.trainer == owners.selector
-            || owners.evaluator == owners.selector || owners.next_use_observer == owners.trainer
+        {
+            return Err(LearningIterationError::InvalidBudget);
+        }
+        if owners.trainer == owners.evaluator
+            || owners.trainer == owners.selector
+            || owners.evaluator == owners.selector
+            || owners.next_use_observer == owners.trainer
             || owners.next_use_observer == owners.selector
-        { return Err(LearningIterationError::OwnerConflict); }
+        {
+            return Err(LearningIterationError::OwnerConflict);
+        }
         let head_digest = initial_digest(&request, &owners)?;
-        Ok(Self { snapshot: LearningIterationSnapshotV1 { request, owners, receipts: Vec::new(), head_digest } })
+        Ok(Self {
+            snapshot: LearningIterationSnapshotV1 {
+                request,
+                owners,
+                receipts: Vec::new(),
+                head_digest,
+            },
+        })
     }
 
     /// The durable owner must additionally authenticate the current head in
     /// its independent rollback domain; replay alone cannot detect truncation.
-    pub fn from_snapshot(snapshot: LearningIterationSnapshotV1) -> Result<Self, LearningIterationError> {
-        if snapshot.receipts.len() > STAGES.len() { return Err(LearningIterationError::CapacityExceeded); }
+    pub fn from_snapshot(
+        snapshot: LearningIterationSnapshotV1,
+    ) -> Result<Self, LearningIterationError> {
+        if snapshot.receipts.len() > STAGES.len() {
+            return Err(LearningIterationError::CapacityExceeded);
+        }
         let mut coordinator = Self::new(snapshot.request.clone(), snapshot.owners.clone())?;
         for receipt in &snapshot.receipts {
             coordinator.record(receipt.clone(), receipt.observed_unix_seconds)?;
         }
-        if coordinator.snapshot != snapshot { return Err(LearningIterationError::SnapshotMismatch); }
+        if coordinator.snapshot != snapshot {
+            return Err(LearningIterationError::SnapshotMismatch);
+        }
         Ok(coordinator)
     }
 
-    pub fn snapshot(&self) -> &LearningIterationSnapshotV1 { &self.snapshot }
+    pub fn snapshot(&self) -> &LearningIterationSnapshotV1 {
+        &self.snapshot
+    }
 
     pub fn disposition(&self) -> LearningIterationDispositionV1 {
-        match self.snapshot.receipts.last().map(|receipt| &receipt.observation) {
-            Some(LearningIterationObservationV1::Evaluation { disposition: LearningEvaluationDispositionV1::NoUpdate, .. })
-            | Some(LearningIterationObservationV1::Proposal { disposition: LearningProposalDispositionV1::NoAdmissibleUpdate, .. })
-                => LearningIterationDispositionV1::NoUpdate,
-            Some(LearningIterationObservationV1::NextUse { .. }) => LearningIterationDispositionV1::UsedByNextTask,
+        match self
+            .snapshot
+            .receipts
+            .last()
+            .map(|receipt| &receipt.observation)
+        {
+            Some(LearningIterationObservationV1::Evaluation {
+                disposition: LearningEvaluationDispositionV1::NoUpdate,
+                ..
+            })
+            | Some(LearningIterationObservationV1::Proposal {
+                disposition: LearningProposalDispositionV1::NoAdmissibleUpdate,
+                ..
+            }) => LearningIterationDispositionV1::NoUpdate,
+            Some(LearningIterationObservationV1::NextUse { .. }) => {
+                LearningIterationDispositionV1::UsedByNextTask
+            }
             Some(_) | None => LearningIterationDispositionV1::InProgress,
         }
     }
 
     pub fn next_stage(&self) -> Option<LearningIterationStageV1> {
-        if self.disposition() != LearningIterationDispositionV1::InProgress { return None; }
+        if self.disposition() != LearningIterationDispositionV1::InProgress {
+            return None;
+        }
         STAGES.get(self.snapshot.receipts.len()).copied()
     }
 
     pub fn candidate(&self) -> Option<&CellCompatibilityBundleV1> {
-        match self.snapshot.receipts.get(2).map(|receipt| &receipt.observation) {
-            Some(LearningIterationObservationV1::Training { candidate, .. }) => Some(candidate),
+        match self
+            .snapshot
+            .receipts
+            .get(2)
+            .map(|receipt| &receipt.observation)
+        {
+            Some(LearningIterationObservationV1::Training { candidate, .. }) => {
+                Some(candidate.as_ref())
+            }
             _ => None,
         }
     }
 
     /// Failure leaves the entire checkpoint unchanged. Exact replay emits no
     /// new work and stays readable after expiry.
-    pub fn record(&mut self, receipt: LearningIterationReceiptV1, now_unix_seconds: u64) -> Result<Digest32, LearningIterationError> {
-        if self.snapshot.receipts.last() == Some(&receipt) { return Ok(self.snapshot.head_digest); }
-        let stage = self.next_stage().ok_or(LearningIterationError::WrongStage)?;
-        if stage != receipt.observation.stage() { return Err(LearningIterationError::WrongStage); }
-        if receipt.operation_id != self.snapshot.request.operation_id { return Err(LearningIterationError::WrongOperation); }
-        if &receipt.actor_id != self.snapshot.owners.owner(stage) { return Err(LearningIterationError::WrongOwner); }
-        if receipt.predecessor != self.snapshot.head_digest { return Err(LearningIterationError::StalePredecessor); }
-        if now_unix_seconds >= self.snapshot.request.envelope.expiry_unix_seconds { return Err(LearningIterationError::DeadlineExceeded); }
-        if receipt.observed_unix_seconds == 0 || receipt.observed_unix_seconds > now_unix_seconds
-            || self.snapshot.receipts.last().is_some_and(|last| last.observed_unix_seconds > receipt.observed_unix_seconds)
-        { return Err(LearningIterationError::InvalidTimestamp); }
-        if receipt.evidence_digest.is_zero() { return Err(LearningIterationError::EmptyEvidence); }
+    pub fn record(
+        &mut self,
+        receipt: LearningIterationReceiptV1,
+        now_unix_seconds: u64,
+    ) -> Result<Digest32, LearningIterationError> {
+        if self.snapshot.receipts.last() == Some(&receipt) {
+            return Ok(self.snapshot.head_digest);
+        }
+        let stage = self
+            .next_stage()
+            .ok_or(LearningIterationError::WrongStage)?;
+        if stage != receipt.observation.stage() {
+            return Err(LearningIterationError::WrongStage);
+        }
+        if receipt.operation_id != self.snapshot.request.operation_id {
+            return Err(LearningIterationError::WrongOperation);
+        }
+        if &receipt.actor_id != self.snapshot.owners.owner(stage) {
+            return Err(LearningIterationError::WrongOwner);
+        }
+        if receipt.predecessor != self.snapshot.head_digest {
+            return Err(LearningIterationError::StalePredecessor);
+        }
+        if now_unix_seconds >= self.snapshot.request.envelope.expiry_unix_seconds {
+            return Err(LearningIterationError::DeadlineExceeded);
+        }
+        if receipt.observed_unix_seconds == 0
+            || receipt.observed_unix_seconds > now_unix_seconds
+            || self
+                .snapshot
+                .receipts
+                .last()
+                .is_some_and(|last| last.observed_unix_seconds > receipt.observed_unix_seconds)
+        {
+            return Err(LearningIterationError::InvalidTimestamp);
+        }
+        if receipt.evidence_digest.is_zero() {
+            return Err(LearningIterationError::EmptyEvidence);
+        }
         self.validate_observation(&receipt.observation)?;
         let next_head = receipt_digest(&receipt)?;
         self.snapshot.receipts.push(receipt);
@@ -134,22 +221,54 @@ impl LearningIterationCoordinatorV1 {
         Ok(next_head)
     }
 
-    fn validate_observation(&self, observation: &LearningIterationObservationV1) -> Result<(), LearningIterationError> {
+    fn validate_observation(
+        &self,
+        observation: &LearningIterationObservationV1,
+    ) -> Result<(), LearningIterationError> {
         let request = &self.snapshot.request;
         let b = &request.budget;
-        let candidate_digest = self.candidate().map(CellCompatibilityBundleV1::digest).transpose()?;
+        let candidate_digest = self
+            .candidate()
+            .map(CellCompatibilityBundleV1::digest)
+            .transpose()?;
         let valid = match observation {
-            LearningIterationObservationV1::Experience { episode_digest, completed_task_receipt } =>
-                !episode_digest.is_zero() && *completed_task_receipt == request.completed_task_receipt,
-            LearningIterationObservationV1::Dataset { snapshot_digest, episode_digest, withdrawal_frontier, rows, bytes } => {
-                let source = self.snapshot.receipts.first().map(|receipt| &receipt.observation);
-                !snapshot_digest.is_zero() && !withdrawal_frontier.is_zero()
-                    && (1..=b.maximum_dataset_rows).contains(rows) && (1..=b.maximum_dataset_bytes).contains(bytes)
+            LearningIterationObservationV1::Experience {
+                episode_digest,
+                completed_task_receipt,
+            } => {
+                !episode_digest.is_zero()
+                    && *completed_task_receipt == request.completed_task_receipt
+            }
+            LearningIterationObservationV1::Dataset {
+                snapshot_digest,
+                episode_digest,
+                withdrawal_frontier,
+                rows,
+                bytes,
+            } => {
+                let source = self
+                    .snapshot
+                    .receipts
+                    .first()
+                    .map(|receipt| &receipt.observation);
+                !snapshot_digest.is_zero()
+                    && !withdrawal_frontier.is_zero()
+                    && (1..=b.maximum_dataset_rows).contains(rows)
+                    && (1..=b.maximum_dataset_bytes).contains(bytes)
                     && matches!(source, Some(LearningIterationObservationV1::Experience { episode_digest: expected, .. }) if episode_digest == expected)
             }
-            LearningIterationObservationV1::Training { candidate, steps, milliseconds, artifact_bytes } => {
+            LearningIterationObservationV1::Training {
+                candidate,
+                steps,
+                milliseconds,
+                artifact_bytes,
+            } => {
                 candidate.digest()?;
-                let source = self.snapshot.receipts.get(1).map(|receipt| &receipt.observation);
+                let source = self
+                    .snapshot
+                    .receipts
+                    .get(1)
+                    .map(|receipt| &receipt.observation);
                 let selected = request.selected_bundle.digest()?;
                 candidate.artifact_id != request.selected_bundle.artifact_id
                     && request.selected_bundle.generation.next().ok() == Some(candidate.generation)
@@ -162,24 +281,54 @@ impl LearningIterationCoordinatorV1 {
                     && (1..=b.maximum_training_milliseconds).contains(milliseconds)
                     && (1..=b.maximum_artifact_bytes).contains(artifact_bytes)
             }
-            LearningIterationObservationV1::Evaluation { candidate_bundle, evaluation_profile, .. } =>
+            LearningIterationObservationV1::Evaluation {
+                candidate_bundle,
+                evaluation_profile,
+                ..
+            } => {
                 candidate_digest == Some(*candidate_bundle)
-                    && self.candidate().and_then(|candidate| candidate.training_lineage.as_ref())
-                        .is_some_and(|lineage| lineage.evaluation_profile == *evaluation_profile),
-            LearningIterationObservationV1::Proposal { candidate_bundle, proposal_id, composition_digest, .. } =>
-                candidate_digest == Some(*candidate_bundle) && proposal_id == &request.operation_id && !composition_digest.is_zero(),
-            LearningIterationObservationV1::Selection { candidate_bundle, selection_digest } =>
-                candidate_digest == Some(*candidate_bundle) && !selection_digest.is_zero(),
-            LearningIterationObservationV1::NextUse { candidate_bundle, state_partition, checkpoint_digest, selection_digest, committed_step_receipt, state_cutover_receipt } =>
+                    && self
+                        .candidate()
+                        .and_then(|candidate| candidate.training_lineage.as_ref())
+                        .is_some_and(|lineage| lineage.evaluation_profile == *evaluation_profile)
+            }
+            LearningIterationObservationV1::Proposal {
+                candidate_bundle,
+                proposal_id,
+                composition_digest,
+                ..
+            } => {
+                candidate_digest == Some(*candidate_bundle)
+                    && proposal_id == &request.operation_id
+                    && !composition_digest.is_zero()
+            }
+            LearningIterationObservationV1::Selection {
+                candidate_bundle,
+                selection_digest,
+            } => candidate_digest == Some(*candidate_bundle) && !selection_digest.is_zero(),
+            LearningIterationObservationV1::NextUse {
+                candidate_bundle,
+                state_partition,
+                checkpoint_digest,
+                selection_digest,
+                committed_step_receipt,
+                state_cutover_receipt,
+            } => {
                 candidate_digest == Some(*candidate_bundle)
                     && state_partition.principal_id == request.principal_id
-                    && state_partition.agent_id == request.agent_id && state_partition.cell_id == request.cell_id
-                    && state_partition.run_id != request.source_run_id && !checkpoint_digest.is_zero()
+                    && state_partition.agent_id == request.agent_id
+                    && state_partition.cell_id == request.cell_id
+                    && state_partition.run_id != request.source_run_id
+                    && !checkpoint_digest.is_zero()
                     && matches!(self.snapshot.receipts.get(5).map(|receipt| &receipt.observation),
                         Some(LearningIterationObservationV1::Selection { selection_digest: expected, .. }) if selection_digest == expected)
-                    && !committed_step_receipt.is_zero() && !state_cutover_receipt.is_zero(),
+                    && !committed_step_receipt.is_zero()
+                    && !state_cutover_receipt.is_zero()
+            }
         };
-        if !valid { return Err(LearningIterationError::ContextMismatch); }
+        if !valid {
+            return Err(LearningIterationError::ContextMismatch);
+        }
         Ok(())
     }
 }
