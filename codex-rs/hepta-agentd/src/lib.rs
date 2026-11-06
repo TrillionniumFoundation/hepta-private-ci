@@ -310,6 +310,8 @@ mod neuron_generation_episode;
 mod neuron_generation_process_bootstrap;
 mod neuron_generation_runtime;
 mod neuron_generation_service;
+#[cfg(unix)]
+mod neuron_generation_update_selection;
 #[cfg(all(test, target_os = "linux"))]
 #[path = "../tests/support/neuron_generation.rs"]
 mod neuron_generation_test_support;
@@ -651,6 +653,12 @@ pub use neuron_generation_process_bootstrap::neuron_generation_process_identity_
 pub use neuron_generation_runtime::NeuronGenerationRuntimeBootstrapV2;
 pub use neuron_generation_runtime::NeuronGenerationRuntimeHandleV2;
 pub use neuron_generation_runtime::neuron_generation_channel_v2;
+#[cfg(unix)]
+pub use neuron_generation_update_selection::AgentdGenerationSelectionFilesV1;
+#[cfg(unix)]
+pub use neuron_generation_update_selection::AgentdGenerationSelectionObservationV1;
+#[cfg(unix)]
+pub use neuron_generation_update_selection::AgentdSelectedGenerationV1;
 pub use neuron_runtime::AgentdNeuronOwner;
 #[cfg(target_os = "linux")]
 pub use neuron_v13_generation_bootstrap::AgentdV13GenerationBootstrapConfigV1;
