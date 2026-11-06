@@ -19,7 +19,8 @@ import time
 
 # The native transport uses -I and a pinned absolute script, never PYTHONPATH.
 REPO = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(REPO))
+
+
 class _RepositorySourceLoader(importlib.machinery.SourceFileLoader):
     def get_code(self, fullname):
         return self.source_to_code(self.get_data(self.path), self.path)
@@ -30,17 +31,46 @@ class _RepositorySourceFinder:
     def find_spec(fullname, path=None, target=None):
         if fullname != "qualification" and not fullname.startswith("qualification."):
             return None
-        spec = importlib.machinery.PathFinder.find_spec(fullname, path, target)
-        if spec is not None and isinstance(spec.loader, importlib.machinery.SourceFileLoader):
-            if not Path(spec.origin).resolve().is_relative_to(REPO/"qualification"):
-                raise ImportError("pinned repository module redirected")
-            spec.loader = _RepositorySourceLoader(fullname, spec.origin)
+        parts = fullname.split(".")
+        if (any(not part.isascii() or not part.isidentifier() for part in parts)
+                or (len(parts) > 1 and parts[1] not in ("hcsn", "hcsn_training"))):
+            raise ImportError("import outside repository source bundle")
+        parent = REPO.joinpath(*parts[:-1])
+        if not parent.is_dir() or parent.resolve() != parent:
+            raise ImportError("repository package directory redirected")
+        if path is not None and list(path) != [str(parent)]:
+            raise ImportError("repository namespace path changed")
+        # Resolve only this canonical parent, without adding the checkout root
+        # to global sys.path where it could shadow installed runtime modules.
+        spec = importlib.machinery.PathFinder.find_spec(fullname, [str(parent)], target)
+        if spec is None:
+            raise ImportError("repository source module missing")
+        package = parent/parts[-1]
+        locations = spec.submodule_search_locations
+        if len(parts) <= 2 and locations is None:
+            raise ImportError("repository source roots must be packages")
+        if locations is not None and (list(locations) != [str(package)] or package.resolve() != package):
+            raise ImportError("repository namespace path changed")
+        if spec.loader is None:
+            if locations is None or spec.origin is not None or not package.is_dir():
+                raise ImportError("invalid repository namespace package")
+            # Freeze the namespace to the same directory; never merge another
+            # sys.path contribution during later child imports.
+            spec.submodule_search_locations = [str(package)]
+            return spec
+        if type(spec.loader) is not importlib.machinery.SourceFileLoader:
+            raise ImportError("repository modules require Python source")
+        source = package/"__init__.py" if locations is not None else parent/(parts[-1]+".py")
+        if spec.origin != str(source) or source.resolve() != source:
+            raise ImportError("repository source path redirected")
+        spec.loader = _RepositorySourceLoader(fullname, str(source))
         return spec
 
 
 if __name__ == "__main__":
-    # -B still reads cached bytecode. Compile pinned repository modules from
-    # their source, while retaining caches for the installed Python runtime.
+    # -B still reads cached bytecode. Compile only bundled repository sources;
+    # sourceless/extension loaders and unrelated qualification packages fail.
+    # Installed runtime modules retain their ordinary import/cache behavior.
     sys.meta_path.insert(0, _RepositorySourceFinder())
 from qualification.hcsn_training.supervisor_store import (MAX_REQUEST, decode, dispatch_lock, encoded, identity,
     initialize, job_path, observe, open_store, process_identity, read_bytes, retained_cancellation, sha, sources,
