@@ -21,6 +21,7 @@ use crate::cell_joint_protocol::JointGenerationSamplerV1;
 mod synthetic;
 
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
+
 static NEXT: AtomicU64 = AtomicU64::new(0);
 
 struct Directory(PathBuf);
@@ -63,13 +64,21 @@ impl Harness {
         clock: Arc<dyn Fn() -> u64 + Send + Sync>,
     ) -> TestResult<Self> {
         let directory = Directory::new()?;
-        // The qualification helper manifest and Bazel runfiles launcher both
-        // supply this exact compiler-reported binary. Never guess target paths.
-        let binary = PathBuf::from(
-            std::env::var_os("CARGO_BIN_EXE_hepta-joint-propose").ok_or_else(|| {
-                std::io::Error::other("missing actual hepta-joint-propose helper metadata")
-            })?,
-        );
+        // The qualification helper manifest supplies compiler-reported paths.
+        // The repository's /bin/sh entry preserves the underscore alias; some
+        // shells remove hyphenated environment names. Never guess target paths.
+        let binary = [
+            "CARGO_BIN_EXE_hepta-joint-propose",
+            "CARGO_BIN_EXE_hepta_joint_propose",
+            "NEXTEST_BIN_EXE_hepta-joint-propose",
+            "NEXTEST_BIN_EXE_hepta_joint_propose",
+        ]
+        .into_iter()
+        .find_map(std::env::var_os)
+        .map(PathBuf::from)
+        .ok_or_else(|| {
+            std::io::Error::other("missing actual hepta-joint-propose helper metadata")
+        })?;
         if !binary.is_absolute() {
             return Err(std::io::Error::other("helper path must be absolute").into());
         }
