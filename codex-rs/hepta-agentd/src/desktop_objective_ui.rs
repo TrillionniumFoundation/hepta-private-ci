@@ -24,11 +24,16 @@ use hepta_control_core::objective_ui::ObjectiveUiPhase;
 use hepta_control_core::objective_ui::ObjectiveUiPort;
 use hepta_control_core::objective_ui::ObjectiveUiPublication;
 use hepta_control_core::objective_ui::ObjectiveUiRequest;
+use std::time::Duration;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 use tokio::runtime::Handle;
 use tokio::sync::mpsc;
 use tokio::sync::watch;
+use tokio::time::Instant;
+
+const OBSERVATION_INTERVAL: Duration = Duration::from_secs(1);
+const UNKNOWN_OBSERVATION_BACKOFF: Duration = Duration::from_secs(5);
 
 /// The authenticated embedding supplies an existing production attachment and
 /// already-signed request. Its run ID must bind the complete current UI scope;
@@ -247,24 +252,49 @@ async fn run_owner<C: ObjectiveSenderCheckpoint + 'static>(
     let mut started = !initial;
     let mut cancelled = false;
     let mut view = observations.borrow().clone();
+    let mut delay = OBSERVATION_INTERVAL;
+    let mut next_observation = Instant::now() + delay;
     loop {
+        let Some(remaining) = now_ms()
+            .and_then(|now| view.binding.owner_expires_at_ms.checked_sub(now))
+            .filter(|remaining| *remaining > 0)
+        else {
+            window.close();
+            break;
+        };
+        let expires = Instant::now() + Duration::from_millis(remaining);
+        let follow = (started || cancelled)
+            && matches!(
+                view.phase,
+                ObjectiveUiPhase::Unknown
+                    | ObjectiveUiPhase::Published
+                    | ObjectiveUiPhase::Cancelling
+            );
         let command = tokio::select! {
             biased;
             _ = window.cancelled() => break,
+            _ = tokio::time::sleep_until(expires) => {
+                window.close();
+                break;
+            },
             command = commands.recv() => match command { Some(command) => command, None => break },
+            _ = tokio::time::sleep_until(next_observation), if follow => ObjectiveUiCommand::Refresh,
         };
         if now_ms().is_none_or(|now| now >= view.binding.owner_expires_at_ms) {
             window.close();
             break;
         }
-        view.phase = match command {
-            ObjectiveUiCommand::Submit => ObjectiveUiPhase::Submitting,
-            ObjectiveUiCommand::Cancel => ObjectiveUiPhase::Cancelling,
-            ObjectiveUiCommand::Refresh => view.phase,
-        };
-        view.can_cancel = false;
-        view.can_refresh = false;
-        publish(&observations, &mut view);
+        if command != ObjectiveUiCommand::Refresh {
+            view.phase = match command {
+                ObjectiveUiCommand::Submit => ObjectiveUiPhase::Submitting,
+                ObjectiveUiCommand::Cancel => ObjectiveUiPhase::Cancelling,
+                ObjectiveUiCommand::Refresh => view.phase,
+            };
+            view.can_cancel = false;
+            view.can_refresh = false;
+            publish(&observations, &mut view);
+        }
+        let before = view.clone();
         let operation = async {
             match command {
                 ObjectiveUiCommand::Submit => {
@@ -301,6 +331,10 @@ async fn run_owner<C: ObjectiveSenderCheckpoint + 'static>(
         let result = tokio::select! {
             biased;
             _ = window.cancelled() => break,
+            _ = tokio::time::sleep_until(expires) => {
+                window.close();
+                break;
+            },
             result = operation => result,
         };
         if result.is_err() {
@@ -308,7 +342,19 @@ async fn run_owner<C: ObjectiveSenderCheckpoint + 'static>(
         }
         view.can_refresh = true;
         view.can_cancel = !cancelled && matches!(view.phase, ObjectiveUiPhase::Published);
-        publish(&observations, &mut view);
+        if view != before {
+            publish(&observations, &mut view);
+        }
+        // This one worker only observes the retained original request. A lost
+        // submit/cancel ACK never creates another effectful command. Delay from
+        // completion prevents catch-up bursts after slow I/O; unchanged reads do
+        // not redraw, and terminal phases stop automatic polling altogether.
+        delay = if view.phase == ObjectiveUiPhase::Unknown {
+            delay.saturating_mul(2).min(UNKNOWN_OBSERVATION_BACKOFF)
+        } else {
+            OBSERVATION_INTERVAL
+        };
+        next_observation = Instant::now() + delay;
     }
 }
 

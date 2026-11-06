@@ -7,6 +7,10 @@ use super::objective_control_fixture::TestResult;
 use crate::AgentdObjectiveUiInputs;
 use crate::ObjectiveClientMode;
 use crate::install_original_objective_ui;
+use codex_hepta_memory::CognitiveRecoveryAnchor;
+use codex_hepta_memory::ObjectiveSenderCheckpoint;
+use codex_hepta_memory::ObjectiveSenderCheckpointError;
+use codex_hepta_memory::ObjectiveSenderWriterFence;
 use codex_hepta_types::Digest32;
 use hepta_control_core::chat::ChatWorkspace;
 use hepta_control_core::chat_owner::CHAT_OWNER_PROTOCOL;
@@ -14,10 +18,33 @@ use hepta_control_core::chat_owner::OwnerScope;
 use hepta_control_core::chat_owner::OwnerSession;
 use hepta_control_core::objective_ui::ObjectiveUiBinding;
 use pretty_assertions::assert_eq;
+use std::sync::Arc;
+use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
 use std::time::Duration;
 
 const DRAFT: &str = "Read the current task";
+
+struct LostLocalCancellationAck {
+    original: Arc<super::fixture::Checkpoint>,
+    acknowledgements: AtomicUsize,
+}
+
+impl ObjectiveSenderCheckpoint for LostLocalCancellationAck {
+    async fn acknowledge_current(
+        &self,
+        current: &CognitiveRecoveryAnchor,
+        writer: &ObjectiveSenderWriterFence,
+    ) -> Result<CognitiveRecoveryAnchor, ObjectiveSenderCheckpointError> {
+        let acknowledgement = self.original.acknowledge_current(current, writer).await?;
+        if self.acknowledgements.fetch_add(1, Ordering::SeqCst) == 1 {
+            // The retained request's first ACK succeeds. Lose the subsequent
+            // local-cancellation ACK after the real commit and checkpoint.
+            return Err(ObjectiveSenderCheckpointError::Unavailable);
+        }
+        Ok(acknowledgement)
+    }
+}
 
 fn presentation() -> TestResult<(ChatWorkspace, ObjectiveUiBinding, OwnerSession)> {
     let now = crate::authbus_ingress::now_ms()?;
@@ -190,7 +217,6 @@ async fn real_workspace_lost_ack_and_recovered_window_never_send_a_second_reques
     )?;
     assert!(!recovered.objective_can_submit());
     assert!(recovered.request_send());
-    assert!(recovered.request_objective_refresh());
     wait_status(
         &mut recovered,
         "Request admitted; no completed response has been observed.",
@@ -199,6 +225,136 @@ async fn real_workspace_lost_ack_and_recovered_window_never_send_a_second_reques
     assert_eq!(fixture.starts.load(Ordering::SeqCst), 1);
     assert_eq!(fixture.probes.target.effects.load(Ordering::SeqCst), 0);
     drop(recovered);
+    fixture.finish().await
+}
+
+#[tokio::test]
+async fn real_workspace_observes_late_terminal_without_a_refresh_click_and_stops_polling()
+-> TestResult {
+    let (mut workspace, binding, _) = presentation()?;
+    let mut fixture =
+        ControlFixture::new(&binding.original_run_id(), DRAFT, ReplyDelivery::Complete).await?;
+    install(
+        &mut workspace,
+        &mut fixture,
+        binding,
+        ObjectiveClientMode::Initial,
+    )?;
+    assert!(workspace.request_send());
+    wait_status(
+        &mut workspace,
+        "Request admitted; no completed response has been observed.",
+    )
+    .await?;
+    // The real control owner acknowledges a later pre-dispatch cancellation.
+    // This exercises delivery to the UI, not model execution or device effects.
+    let transport = fixture.transport()?;
+    let run_id = fixture.original.identity().run_id.clone();
+    let current = transport
+        .run_status(run_id.clone())
+        .await?
+        .ok_or("run missing")?;
+    transport
+        .run_cancel(
+            run_id,
+            current.revision,
+            "Independent owner cancellation".to_string(),
+        )
+        .await?;
+    wait_status(&mut workspace, "The runtime reported cancellation.").await?;
+    insta::assert_snapshot!(workspace.owner_status(crate::authbus_ingress::now_ms()?), @"The runtime reported cancellation.");
+    let lookups = fixture.lookups.load(Ordering::SeqCst);
+    tokio::time::sleep(Duration::from_millis(1_100)).await;
+    assert_eq!(fixture.lookups.load(Ordering::SeqCst), lookups);
+    assert_eq!(fixture.starts.load(Ordering::SeqCst), 1);
+    assert!(!workspace.objective_can_cancel());
+    drop(workspace);
+    fixture.finish().await
+}
+
+#[tokio::test]
+async fn real_workspace_lost_cancel_ack_automatically_observes_without_replaying_cancel()
+-> TestResult {
+    let (mut workspace, binding, _) = presentation()?;
+    let mut fixture = ControlFixture::new(
+        &binding.original_run_id(),
+        DRAFT,
+        ReplyDelivery::DropFirstCancellationAck,
+    )
+    .await?;
+    install(
+        &mut workspace,
+        &mut fixture,
+        binding,
+        ObjectiveClientMode::Initial,
+    )?;
+    assert!(workspace.request_send());
+    wait_status(
+        &mut workspace,
+        "Request admitted; no completed response has been observed.",
+    )
+    .await?;
+    assert!(workspace.request_objective_cancel());
+    wait_status(
+        &mut workspace,
+        "The request was admitted; its current runtime outcome is unknown.",
+    )
+    .await?;
+    wait_status(&mut workspace, "The runtime reported cancellation.").await?;
+    assert_eq!(fixture.cancellations.load(Ordering::SeqCst), 1);
+    assert_eq!(fixture.starts.load(Ordering::SeqCst), 1);
+    assert_eq!(fixture.probes.target.effects.load(Ordering::SeqCst), 0);
+    drop(workspace);
+    fixture.finish().await
+}
+
+#[tokio::test]
+async fn real_workspace_lost_local_cancel_checkpoint_ack_recovers_without_dispatch() -> TestResult {
+    let (mut workspace, binding, _) = presentation()?;
+    let fixture =
+        ControlFixture::new(&binding.original_run_id(), DRAFT, ReplyDelivery::Complete).await?;
+    let checkpoint = Arc::new(LostLocalCancellationAck {
+        original: Arc::clone(&fixture.probes.checkpoint),
+        acknowledgements: AtomicUsize::new(0),
+    });
+    install_original_objective_ui(
+        &mut workspace,
+        AgentdObjectiveUiInputs {
+            attachment: crate::AgentdProductionHostAttachment {
+                notes_identity: None,
+                original_sender: fixture
+                    .host
+                    .writer()
+                    .objective_sender(Arc::clone(&checkpoint), Duration::from_secs(1))?,
+            },
+            client: fixture.transport()?,
+            original: fixture.original.clone(),
+            peer: fixture.peer(),
+            binding,
+            mode: ObjectiveClientMode::Initial,
+            runtime: tokio::runtime::Handle::current(),
+        },
+    )?;
+    assert!(workspace.request_objective_cancel());
+    wait_status(
+        &mut workspace,
+        "The outcome is unknown. Refresh the original request without sending again.",
+    )
+    .await?;
+    assert!(!workspace.objective_can_submit());
+    assert!(!workspace.objective_can_cancel());
+    wait_status(
+        &mut workspace,
+        "Cancelled before the original request was dispatched.",
+    )
+    .await?;
+    assert_eq!(checkpoint.acknowledgements.load(Ordering::SeqCst), 3);
+    assert_eq!(fixture.starts.load(Ordering::SeqCst), 0);
+    assert_eq!(fixture.cancellations.load(Ordering::SeqCst), 0);
+    assert_eq!(fixture.lookups.load(Ordering::SeqCst), 0);
+    assert_eq!(fixture.probes.target.effects.load(Ordering::SeqCst), 0);
+    assert_eq!(workspace.draft().text, DRAFT);
+    drop(workspace);
     fixture.finish().await
 }
 

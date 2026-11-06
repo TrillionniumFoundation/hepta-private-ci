@@ -11,6 +11,69 @@ use pretty_assertions::assert_eq;
 use std::sync::atomic::Ordering;
 
 #[tokio::test]
+async fn repeated_status_reads_preserve_capacity_and_terminal_bytes_across_client_recovery()
+-> TestResult {
+    let mut fixture = ControlFixture::new(
+        "desktop.control.polling",
+        "Observe one original request",
+        ReplyDelivery::Complete,
+    )
+    .await?;
+    let mut client = fixture.client(ObjectiveClientMode::Initial)?;
+    client.submit_once().await?;
+    let first = client.observe_current().await?.1.ok_or("run missing")?;
+    let sender = fixture.take_attachment()?.original_sender;
+    let ticket = sender.recover_pending(fixture.original.clone()).await?;
+    let before = fixture.host.writer().recovery_anchor().await?;
+    for _ in 0..70 {
+        assert_eq!(client.observe_current().await?.1, Some(first.clone()));
+    }
+    assert_eq!(fixture.host.writer().recovery_anchor().await?, before);
+    drop(client);
+    let mut recovered = fixture.client(ObjectiveClientMode::Recovered)?;
+    assert_eq!(recovered.observe_current().await?.1, Some(first));
+    assert_eq!(fixture.host.writer().recovery_anchor().await?, before);
+    recovered
+        .cancel_current("Owner cancellation".to_string())
+        .await?;
+    let terminal = recovered
+        .observe_current()
+        .await?
+        .1
+        .ok_or("terminal missing")?;
+    assert_eq!(terminal.phase, crate::AgentRunPhase::Cancelled);
+    assert!(terminal.terminal_observed);
+    let retained = sender.snapshot_acknowledged(&ticket).await?;
+    let retained_replies: Vec<crate::AgentdResponse> = retained
+        .observations
+        .iter()
+        .map(|value| serde_json::from_slice(value.exact_original()))
+        .collect::<Result<_, _>>()?;
+    assert_eq!(retained_replies.len(), 5);
+    assert!(retained_replies.iter().any(|response| {
+        response.payload
+            == crate::AgentdPayload::RunStatus {
+                run: Some(terminal.clone()),
+            }
+    }));
+    let terminal_cut = fixture.host.writer().recovery_anchor().await?;
+    drop(recovered);
+    let mut reopened = fixture.client(ObjectiveClientMode::Recovered)?;
+    assert_eq!(reopened.observe_current().await?.1, Some(terminal));
+    assert_eq!(fixture.host.writer().recovery_anchor().await?, terminal_cut);
+    assert!(matches!(
+        reopened.submit_once().await,
+        Err(AgentdObjectiveClientError::AlreadyAttempted)
+    ));
+    assert_eq!(fixture.starts.load(Ordering::SeqCst), 1);
+    assert_eq!(fixture.cancellations.load(Ordering::SeqCst), 1);
+    assert_eq!(fixture.probes.target.effects.load(Ordering::SeqCst), 0);
+    drop(reopened);
+    drop(sender);
+    fixture.finish().await
+}
+
+#[tokio::test]
 async fn original_sender_reaches_real_control_admission_history_and_cancellation_once() -> TestResult
 {
     let mut fixture = ControlFixture::new(

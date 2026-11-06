@@ -12,6 +12,8 @@ use codex_hepta_memory::ObjectiveSenderTicket;
 use codex_hepta_memory::ProductionObjectiveSender;
 use tokio_util::sync::CancellationToken;
 
+#[path = "objective_client_observation.rs"]
+mod observation;
 #[path = "objective_client_transport.rs"]
 mod transport;
 
@@ -300,9 +302,9 @@ impl<C: ObjectiveSenderCheckpoint> AgentdObjectiveClient<C> {
             .send_method(crate::AgentdMethod::ObjectiveAdmission { query })
             .await?;
         let current_generation = response.current_generation;
-        let latest = match response.payload {
-            AgentdPayload::ObjectiveAdmission { outcome } => outcome,
-            payload => return unexpected(payload).map_err(Into::into),
+        let latest = match &response.payload {
+            AgentdPayload::ObjectiveAdmission { outcome } => outcome.clone(),
+            payload => return unexpected(payload.clone()).map_err(Into::into),
         };
         if let crate::ObjectiveAdmissionOutcome::Published { publication: value } = &latest {
             validate_publication(value, &self.original)
@@ -314,23 +316,7 @@ impl<C: ObjectiveSenderCheckpoint> AgentdObjectiveClient<C> {
             }
             crate::ObjectiveAdmissionOutcome::Unknown { .. } => retained,
         };
-        self.sender
-            .retain_observation_checked(
-                ticket,
-                &ObjectiveSenderObservation::from_original(
-                    ObjectiveSenderObservationKind::History,
-                    raw,
-                )
-                .map_err(ObjectiveSenderError::from)?,
-                |current| {
-                    if let Some(before) = publication(current, &self.original)?
-                        && next.as_ref() != Some(&before)
-                    {
-                        return Err(ObjectiveSenderError::ObservationConflict);
-                    }
-                    Ok(())
-                },
-            )
+        self.retain_current_response(ticket, &response, raw, next.as_ref())
             .await?;
         self.require_live()?;
         Ok(AgentdObjectiveHistory {
@@ -365,25 +351,39 @@ impl<C: ObjectiveSenderCheckpoint> AgentdObjectiveClient<C> {
         {
             return Err(AgentdObjectiveClientError::Observation);
         }
-        let (response, _) = self
+        let (response, raw) = self
             .send_method(crate::AgentdMethod::RunStatus {
                 run_id: self.original.identity().run_id.clone(),
             })
             .await?;
-        match response.payload {
+        match &response.payload {
             AgentdPayload::RunStatus { run: Some(receipt) }
                 if receipt.run_id == self.original.identity().run_id
                     && receipt.generation == history.current_generation
                     && response.current_generation == history.current_generation =>
             {
-                Ok(receipt)
+                let ticket = self
+                    .ticket
+                    .as_ref()
+                    .ok_or(AgentdObjectiveClientError::Observation)?;
+                self.retain_current_response(
+                    ticket,
+                    &response,
+                    raw,
+                    history.retained_publication.as_ref(),
+                )
+                .await?;
+                self.require_live()?;
+                Ok(receipt.clone())
             }
-            payload => unexpected(payload).map_err(Into::into),
+            payload => unexpected(payload.clone()).map_err(Into::into),
         }
     }
 
     /// Read admission and, when available in the same generation, the runtime.
-    /// No polling task or retry is created, and one refresh retains one history row.
+    /// No polling task or retry is created. Distinct complete replies, including
+    /// terminal run receipts, are retained and acknowledged before returning.
+    /// Identical states with new correlation IDs re-acknowledge existing bytes.
     pub async fn observe_current(
         &mut self,
     ) -> Result<(AgentdObjectiveHistory, Option<AgentRunReceipt>), AgentdObjectiveClientError> {

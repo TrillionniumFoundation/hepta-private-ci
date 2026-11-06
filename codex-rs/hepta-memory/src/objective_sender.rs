@@ -42,6 +42,15 @@ const CANCELLED: u8 = 3;
 const RECOVERED: u8 = 4;
 const MAX_CHECKPOINT_DEADLINE: Duration = Duration::from_secs(5);
 
+/// A trusted protocol adapter's decision under the original owner's write lock.
+/// Reacknowledge is valid only when an equivalent original observation is already
+/// retained. It never replaces that observation's bytes or renews authority.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum ObjectiveSenderObservationAction {
+    Append,
+    Reacknowledge,
+}
+
 /// Independent protected host acknowledgement, not a SQLite or journal anchor
 /// constructor. An implementation must durably authenticate and retain the exact
 /// CURRENT owner/schema/state cut and fence stale publishers. There is no default
@@ -331,6 +340,31 @@ impl<C: ObjectiveSenderCheckpoint> ProductionObjectiveSender<C> {
     where
         F: FnOnce(&ObjectiveSenderSnapshot) -> Result<(), ObjectiveSenderError> + Send,
     {
+        self.retain_distinct_observation(ticket, observation, |snapshot| {
+            check(snapshot)?;
+            Ok(ObjectiveSenderObservationAction::Append)
+        })
+        .await
+    }
+
+    /// Compare a fresh reply with retained evidence inside the same original
+    /// transaction. The trusted adapter must validate the complete protocol
+    /// identity and choose Reacknowledge only for an equivalent retained reply.
+    /// This avoids consuming a history slot for each status poll. Both choices
+    /// revalidate the live writer and independently acknowledge the current cut;
+    /// no stored bytes, capacity limits or sending permissions are changed.
+    pub async fn retain_distinct_observation<F>(
+        &self,
+        ticket: &ObjectiveSenderTicket,
+        observation: &ObjectiveSenderObservation,
+        check: F,
+    ) -> Result<(), ObjectiveSenderError>
+    where
+        F: FnOnce(
+                &ObjectiveSenderSnapshot,
+            ) -> Result<ObjectiveSenderObservationAction, ObjectiveSenderError>
+            + Send,
+    {
         self.require_ticket_owner(ticket)?;
         match ticket
             .local
@@ -423,7 +457,12 @@ impl<C: ObjectiveSenderCheckpoint> ProductionObjectiveSender<C> {
             kind,
             observation,
             /*check*/
-            None::<fn(&ObjectiveSenderSnapshot) -> Result<(), ObjectiveSenderError>>,
+            None::<
+                fn(
+                    &ObjectiveSenderSnapshot,
+                )
+                    -> Result<ObjectiveSenderObservationAction, ObjectiveSenderError>,
+            >,
         )
         .await
     }
@@ -436,7 +475,10 @@ impl<C: ObjectiveSenderCheckpoint> ProductionObjectiveSender<C> {
         check: Option<F>,
     ) -> Result<(), ObjectiveSenderError>
     where
-        F: FnOnce(&ObjectiveSenderSnapshot) -> Result<(), ObjectiveSenderError> + Send,
+        F: FnOnce(
+                &ObjectiveSenderSnapshot,
+            ) -> Result<ObjectiveSenderObservationAction, ObjectiveSenderError>
+            + Send,
     {
         self.writer.verify_current_authority().await?;
         if ticket.request.origin.agent_id != *self.writer.owner_agent_id() {
@@ -451,11 +493,21 @@ impl<C: ObjectiveSenderCheckpoint> ProductionObjectiveSender<C> {
             .map_err(unavailable)?;
         let fence = self.writer.current_fence(&mut transaction).await?;
         store::require_request(&mut transaction, &ticket.request).await?;
-        if let Some(check) = check {
+        let action = if let Some(check) = check {
             let snapshot = store::snapshot(&mut transaction, &ticket.request).await?;
-            check(&snapshot)?;
+            let action = check(&snapshot)?;
+            if action == ObjectiveSenderObservationAction::Reacknowledge
+                && snapshot.observations.is_empty()
+            {
+                return Err(ObjectiveSenderError::ObservationConflict);
+            }
+            action
+        } else {
+            ObjectiveSenderObservationAction::Append
+        };
+        if action == ObjectiveSenderObservationAction::Append {
+            store::append(&mut transaction, &ticket.request, &fence, kind, observation).await?;
         }
-        store::append(&mut transaction, &ticket.request, &fence, kind, observation).await?;
         self.writer.sender_live_check()?;
         transaction
             .commit()
@@ -483,6 +535,10 @@ mod test_support;
 #[cfg(test)]
 #[path = "objective_sender_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "objective_sender_observation_tests.rs"]
+mod observation_tests;
 
 #[cfg(all(test, unix))]
 #[path = "objective_sender_crash_tests.rs"]
