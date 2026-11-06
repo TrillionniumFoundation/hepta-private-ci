@@ -157,7 +157,9 @@ fn failed_cancelled_rejected_and_unknown_work_remains_charged() {
                 CellCostStageV2::Queue,
                 CellCostStageV2::Persistence,
                 CellCostStageV2::Communication,
-                CellCostStageV2::Evaluation
+                CellCostStageV2::Evaluation,
+                CellCostStageV2::ModelAcquisition,
+                CellCostStageV2::Migration
             ],
             exclusive_entries: 4,
             inclusive_envelopes: 0,
@@ -202,7 +204,7 @@ fn missing_stage_and_unknown_measurement_are_not_measured_zero() {
     );
     let encoded = checked(serde_json::to_value(&costs));
     assert_eq!(
-        encoded["entries"][12]["metrics"]["cpu_micros"],
+        encoded["entries"][STAGES.len()]["metrics"]["cpu_micros"],
         serde_json::Value::Null
     );
 }

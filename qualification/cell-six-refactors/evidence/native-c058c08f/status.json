@@ -1,0 +1,124 @@
+{
+  "schema": "hepta.cell-six-refactors.native-gate.v1",
+  "source_sha": "c058c08fcf188d66b9d378ccc97630b3bc9dbade",
+  "source_tree": "22751eaede7f4f5a636653d2caba343bba7ef0b4",
+  "mode": "all",
+  "started_unix_ns": 1793950951261179711,
+  "state": "failed",
+  "phases": [
+    {
+      "name": "scoped-fix",
+      "command": [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-hepta-neuron",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-infer-worker-host"
+      ],
+      "started_unix_ns": 1793950951316842232,
+      "exit_code": 0,
+      "ended_unix_ns": 1793950979493655051,
+      "log": {
+        "file": "scoped-fix.log",
+        "bytes": 2427,
+        "sha256": "43cb3b108ab5dd7fbf690ce73e11d6474db05e3d26dc26553d9038ec12a66369"
+      }
+    },
+    {
+      "name": "scoped-strict",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--tests",
+        "-p",
+        "codex-hepta-neuron",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "started_unix_ns": 1793950979523225994,
+      "exit_code": 0,
+      "ended_unix_ns": 1793951092552440743,
+      "log": {
+        "file": "scoped-strict.log",
+        "bytes": 19929,
+        "sha256": "ff414a5f4b8b9af3072aea58414f601f8c5bcff972fcce41dc6234fe31ee828c"
+      }
+    },
+    {
+      "name": "helpers",
+      "command": [
+        "/usr/bin/python3",
+        "/home/qq/work/hepta-cell-six-371753-20261106/source/scripts/hepta_cell_test_helpers.py",
+        "--output-dir",
+        "/home/qq/work/hepta-cell-six-371753-20261106/records/gate-c058c08f/helpers"
+      ],
+      "started_unix_ns": 1793951092710499857,
+      "exit_code": 0,
+      "ended_unix_ns": 1793951666610371447,
+      "log": {
+        "file": "helpers.log",
+        "bytes": 473,
+        "sha256": "a8dfd2787becb3777a738596e204156d8fdd0cbc9bf7249b1b2501e4a1d9e4e5"
+      }
+    },
+    {
+      "name": "scoped-test",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-neuron",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-infer-worker-host",
+        "-p",
+        "codex-hepta-infer-core",
+        "--test-threads",
+        "2"
+      ],
+      "started_unix_ns": 1793951666638278037,
+      "exit_code": 100,
+      "ended_unix_ns": 1793951884177806034,
+      "log": {
+        "file": "scoped-test.log",
+        "bytes": 166457,
+        "sha256": "06de1339c3ff6a854b6ad351c1dbae5578a4b797a4adcd37cfb509ea7414a2db"
+      }
+    }
+  ],
+  "packages": [
+    "codex-hepta-neuron",
+    "codex-hepta-agentd",
+    "codex-hepta-infer-worker-host",
+    "codex-hepta-infer-core"
+  ],
+  "whole_workspace_tested": false,
+  "qualification_authority": "DENY_ALL",
+  "platform": [
+    "Linux",
+    "ai395",
+    "7.0.0-38-generic",
+    "#38-Ubuntu SMP PREEMPT_DYNAMIC Fri Sep  4 09:10:14 UTC 2026",
+    "x86_64"
+  ],
+  "initial_free_bytes": 54637453312,
+  "rustc": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: x86_64-unknown-linux-gnu\nrelease: 1.96.0\nLLVM version: 22.1.2",
+  "cargo": "cargo 1.96.0 (30a34c682 2026-05-25)",
+  "nextest": "cargo-nextest 0.9.146 (8af696ddc 2026-09-21)\nrelease: 0.9.146\ncommit-hash: 8af696ddcce8fff2962d6a5168b6d138b8616a35\ncommit-date: 2026-09-21\nhost: x86_64-unknown-linux-gnu",
+  "error": "RuntimeError: scoped native tests failed; retain full logs and individual failures",
+  "exit_code": 100,
+  "ended_unix_ns": 1793951884337301821,
+  "final_free_bytes": 22209933312
+}

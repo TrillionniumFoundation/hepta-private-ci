@@ -1,5 +1,5 @@
 //! Pure proposal process for the explicitly selected Linux FP64 JointGenerator.
-//! It reads one bounded request and writes one unpublished result to stdout.
+//! It writes only unpublished proposals; the admitted host retains every Cell owner.
 
 #[cfg(target_os = "linux")]
 #[path = "../joint_generation/bridge_state.rs"]
@@ -23,12 +23,19 @@ mod proposal;
 #[path = "../joint_generation/protocol.rs"]
 mod protocol;
 #[cfg(target_os = "linux")]
+#[path = "../joint_generation/resident.rs"]
+mod resident;
+#[cfg(target_os = "linux")]
 #[path = "../joint_generation/state.rs"]
 pub mod state;
 
 fn main() {
     #[cfg(target_os = "linux")]
-    let result = proposal::run_stdio();
+    let result = match std::env::args_os().skip(1).collect::<Vec<_>>().as_slice() {
+        [] => proposal::run_stdio(),
+        [argument] if argument == "--resident-v1" => resident::run_stdio(),
+        _ => Err("unknown proposal transport arguments".into()),
+    };
     #[cfg(not(target_os = "linux"))]
     let result: Result<(), String> = Err("fp64-linux-libm-v1 requires Linux".into());
     if let Err(error) = result {
@@ -36,6 +43,10 @@ fn main() {
         std::process::exit(2);
     }
 }
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "../joint_generation/proposal_test_support.rs"]
+mod test_support;
 
 #[cfg(all(test, target_os = "linux"))]
 #[path = "../joint_generation/proposal_tests.rs"]

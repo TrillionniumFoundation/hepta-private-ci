@@ -31,13 +31,28 @@ mod synthetic;
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 type Clock = Arc<dyn Fn() -> u64 + Send + Sync>;
 
+#[derive(Clone, Copy)]
+enum Transport {
+    OneShot,
+    Resident,
+}
+
+struct ExpectedIpc {
+    transport: Transport,
+    asset_bytes: usize,
+}
+
 fn install_model(
     fixture: &mut Fixture,
     clock: Clock,
+    transport: Transport,
 ) -> TestResult<(Arc<JointGenerationProcessWorkerV1>, synthetic::Assets)> {
     let assets = synthetic::assets()?;
     let executable = PathBuf::from(
-        std::env::var_os("CARGO_BIN_EXE_hepta-joint-propose")
+        std::env::var_os("NEXTEST_BIN_EXE_hepta-joint-propose")
+            .or_else(|| std::env::var_os("NEXTEST_BIN_EXE_hepta_joint_propose"))
+            .or_else(|| std::env::var_os("CARGO_BIN_EXE_hepta-joint-propose"))
+            .or_else(|| std::env::var_os("CARGO_BIN_EXE_hepta_joint_propose"))
             .ok_or_else(|| std::io::Error::other("missing actual Joint compiler artifact"))?,
     );
     if !executable.is_absolute() {
@@ -53,7 +68,11 @@ fn install_model(
     let public = fixture.directory.path().join("synthetic-public.hps");
     fs::write(&weights, &assets.weights)?;
     fs::write(&public, &assets.public)?;
-    let worker = Arc::new(JointGenerationProcessWorkerV1::open(
+    let open = match transport {
+        Transport::OneShot => JointGenerationProcessWorkerV1::open,
+        Transport::Resident => JointGenerationProcessWorkerV1::open_resident,
+    };
+    let worker = Arc::new(open(
         JointGenerationProcessConfigV1 {
             executable,
             executable_digest,
@@ -67,7 +86,7 @@ fn install_model(
         clock,
     )?);
     let manifest = &mut fixture.config.manifest;
-    manifest.profile = JointGenerationProcessWorkerV1::PROFILE.into();
+    manifest.profile = worker.profile().into();
     manifest.source_digest = source_digest;
     manifest.encoder = Some(worker.encoder_digest());
     manifest.head = Some(worker.head_digest());
@@ -143,7 +162,14 @@ async fn execute(
     public_digest: [u8; 32],
     operation: &str,
     command: JointGenerationCommandV1,
+    ipc: &ExpectedIpc,
 ) -> TestResult<(CellGenerationRequestV2, CellGenerationReceiptV2)> {
+    let command_bytes = match &command {
+        JointGenerationCommandV1::Init { .. } => 10,
+        JointGenerationCommandV1::Advance { .. } => 2,
+        JointGenerationCommandV1::Auto { .. } => 5,
+        JointGenerationCommandV1::Commit { .. } => 6,
+    };
     let mut original = request(operation, handle.snapshot().await?);
     original.input = serde_json::to_vec(&JointGenerationInputV1 {
         public_digest,
@@ -192,12 +218,45 @@ async fn execute(
                 .any(|entry| entry.stage == stage)
         );
     }
-    assert!(receipt.cost.entries().iter().any(|entry| {
-        entry
-            .metrics
-            .communication_bytes
-            .is_some_and(|bytes| bytes > 4_778_904)
-    }));
+    let measured_bytes = receipt
+        .cost
+        .entries()
+        .iter()
+        .find(|entry| entry.stage == CellCostStageV2::Communication)
+        .and_then(|entry| entry.metrics.communication_bytes)
+        .ok_or_else(|| std::io::Error::other("missing actual Joint IPC bytes"))?;
+    let successor = handle.snapshot().await?;
+    let delta_bytes = successor
+        .prefix
+        .len()
+        .checked_sub(original.predecessor.prefix.len())
+        .ok_or_else(|| std::io::Error::other("committed prefix shrank"))?;
+    // This fixture creates one fresh worker for this Cell's revision-zero init.
+    // Every later resident operation must omit both already-loaded asset packets.
+    let (asset_bytes, framing_bytes) = match ipc.transport {
+        Transport::OneShot => (ipc.asset_bytes, 0),
+        Transport::Resident if original.predecessor.revision == 0 => (ipc.asset_bytes, 8),
+        Transport::Resident => (0, 8),
+    };
+    // Independently count the bounded request/response ABI: magic, request
+    // digest, four input lengths; stopped flag, phase timers, two output lengths
+    // and the checksum. Only the actual state/prefix/delta bytes vary here.
+    let request_envelope_bytes = 8 + 32 + 4 * 4;
+    let response_envelope_bytes = 8 + 32 + 1 + 4 * 8 + 2 * 4 + 64;
+    let expected_bytes = request_envelope_bytes
+        + response_envelope_bytes
+        + command_bytes
+        + asset_bytes
+        + framing_bytes
+        + original.predecessor.state.len()
+        + original.predecessor.prefix.len()
+        + successor.state.len()
+        + delta_bytes;
+    assert_eq!(measured_bytes, u64::try_from(expected_bytes)?);
+    assert!(measured_bytes > u64::try_from(framing_bytes)?);
+    if matches!(ipc.transport, Transport::Resident) && original.predecessor.revision > 0 {
+        assert!(measured_bytes < u64::try_from(ipc.asset_bytes)?);
+    }
     Ok((original, receipt))
 }
 
@@ -241,13 +300,29 @@ async fn deliver(
 #[tokio::test]
 async fn synthetic_joint_control_service_preserves_real_output_cost_and_owner_on_reopen()
 -> TestResult {
+    control_service_preserves_real_output_cost_and_owner_on_reopen(Transport::OneShot).await
+}
+
+#[tokio::test]
+async fn resident_joint_control_service_preserves_real_output_cost_and_owner_on_reopen()
+-> TestResult {
+    control_service_preserves_real_output_cost_and_owner_on_reopen(Transport::Resident).await
+}
+
+async fn control_service_preserves_real_output_cost_and_owner_on_reopen(
+    transport: Transport,
+) -> TestResult {
     let mut fixture = Fixture::new().await;
     let epoch = Instant::now();
     // One real monotonic epoch is shared by owner, actor and process worker.
     let clock: Clock =
         Arc::new(move || u64::try_from(epoch.elapsed().as_micros()).unwrap_or(u64::MAX - 1) + 1);
-    let (worker, assets) = install_model(&mut fixture, Arc::clone(&clock))?;
+    let (worker, assets) = install_model(&mut fixture, Arc::clone(&clock), transport)?;
     let public_digest = Digest32::of_bytes(&assets.public).into_array();
+    let ipc = ExpectedIpc {
+        transport,
+        asset_bytes: assets.weights.len() + assets.public.len(),
+    };
     let (handle, mut tasks) =
         start_service(&fixture, Arc::clone(&worker), Arc::clone(&clock)).await?;
     assert_eq!(handle.snapshot().await?, fixture.config.initial);
@@ -260,6 +335,7 @@ async fn synthetic_joint_control_service_preserves_real_output_cost_and_owner_on
             seed: 17,
             sampler: JointGenerationSamplerV1::Mean,
         },
+        &ipc,
     )
     .await?;
     assert_eq!(
@@ -278,6 +354,7 @@ async fn synthetic_joint_control_service_preserves_real_output_cost_and_owner_on
         JointGenerationCommandV1::Advance {
             action: JointGenerationActionV1::Shared,
         },
+        &ipc,
     )
     .await?;
     assert_eq!(advanced.disposition, CellGenerationDispositionV2::Advanced);
@@ -291,6 +368,7 @@ async fn synthetic_joint_control_service_preserves_real_output_cost_and_owner_on
             modality: JointGenerationModalityV1::Audio,
             units: 16,
         },
+        &ipc,
     )
     .await?;
     assert_eq!(committed.disposition, CellGenerationDispositionV2::Advanced);
@@ -313,6 +391,7 @@ async fn synthetic_joint_control_service_preserves_real_output_cost_and_owner_on
         JointGenerationCommandV1::Advance {
             action: JointGenerationActionV1::Stop,
         },
+        &ipc,
     )
     .await?;
     assert_eq!(stopped.disposition, CellGenerationDispositionV2::Stopped);
