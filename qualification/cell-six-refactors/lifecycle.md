@@ -53,7 +53,7 @@ The new lifecycle and migration suites contain 14 tests covering:
 - Stale-consumer refusal; pending/outbox, incompatible configuration, withdrawal/stale source view and oversized converted-state refusal.
 - Keeping the verifier's live-source barrier held through the independent witness switch, including lost acknowledgement.
 
-At the time of this note, these tests are implemented and await the coordinated native gate; no native pass is claimed here. The qualification run must record the exact revision, commands and outcomes before changing this status.
+The coordinated native gate at `cb6f0a4a180677213988f6a4cc25c8431dfe5805` passed all 959 executed tests in four scoped packages, including these 14 lifecycle/migration tests. See [the exact source, commands and raw records](verification.md). The migration verifier in this suite is a host-view fixture; this pass does not establish production model adoption or a qualified Joint state conversion.
 
 ## Remaining capacity and lifecycle requirements
 

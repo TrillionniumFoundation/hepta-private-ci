@@ -1,0 +1,112 @@
+{
+  "source_sha": "cb6f0a4a180677213988f6a4cc25c8431dfe5805",
+  "source_tree": "d28638c3c38228891b2016758d795b787bb8e6d3",
+  "state": "passed",
+  "exit_code": 0,
+  "whole_workspace_tested": false,
+  "packages": {
+    "codex-hepta-agentd": {
+      "testcases": 658,
+      "failures": 0,
+      "errors": 0,
+      "skipped_nodes": 0,
+      "flaky_failures": 0,
+      "rerun_failures": 0
+    },
+    "codex-hepta-infer-core": {
+      "testcases": 35,
+      "failures": 0,
+      "errors": 0,
+      "skipped_nodes": 0,
+      "flaky_failures": 0,
+      "rerun_failures": 0
+    },
+    "codex-hepta-infer-worker-host": {
+      "testcases": 57,
+      "failures": 0,
+      "errors": 0,
+      "skipped_nodes": 0,
+      "flaky_failures": 0,
+      "rerun_failures": 0
+    },
+    "codex-hepta-neuron": {
+      "testcases": 209,
+      "failures": 0,
+      "errors": 0,
+      "skipped_nodes": 0,
+      "flaky_failures": 0,
+      "rerun_failures": 0
+    }
+  },
+  "junit_identity": {
+    "bytes": 203635,
+    "sha256": "6438071ad4e807aaadee50943f16041ef412ccce6fe08519d83984d33b19e35f"
+  },
+  "runner_summary": [
+    "    Starting 959 tests across 23 binaries (67 tests skipped)",
+    "     Summary [ 111.810s] 959 tests run: 959 passed (1 slow), 67 skipped"
+  ],
+  "helper_artifacts_after_test": {
+    "codex": {
+      "bytes": 1420246384,
+      "sha256": "8c958c4231bd2237d494bfb5693745cc3b7c18eda98c1abbe87832160fc95bfc",
+      "path": "/home/qq/work/hepta-neuron-framework-734df8eaf8dc-20261106/target/debug/codex",
+      "matches_pre_test": true
+    },
+    "codex-exec": {
+      "bytes": 1131254592,
+      "sha256": "f6030eadbe20f4a25172e78675b1ffd4e74a453dbf8133691da335cda87bb426",
+      "path": "/home/qq/work/hepta-neuron-framework-734df8eaf8dc-20261106/target/debug/codex-exec",
+      "matches_pre_test": true
+    },
+    "exec-server": {
+      "bytes": 411816352,
+      "sha256": "bb3976b0515514797ef3de0bd2a1cfda2a1cd51258036f76b35ae3014581ac8d",
+      "path": "/home/qq/work/hepta-neuron-framework-734df8eaf8dc-20261106/target/debug/exec-server",
+      "matches_pre_test": true
+    },
+    "codex-app-server": {
+      "bytes": 1145480272,
+      "sha256": "505d3d2041afe0aaec8957f1c5f570a52ec77559c83e7adfc6e194455f10002d",
+      "path": "/home/qq/work/hepta-neuron-framework-734df8eaf8dc-20261106/target/debug/codex-app-server",
+      "matches_pre_test": true
+    },
+    "codex-code-mode-host": {
+      "bytes": 328668928,
+      "sha256": "99bf79a1f514c72618a2bd1ea15d3125073b112104ab2d0f8d838a10cdf9f351",
+      "path": "/home/qq/work/hepta-neuron-framework-734df8eaf8dc-20261106/target/debug/codex-code-mode-host",
+      "matches_pre_test": true
+    },
+    "test_stdio_server": {
+      "bytes": 63579320,
+      "sha256": "c0da17d3e4672fe6db2982ad8e6bcf17ec8daa7dd1138fff0cc9f4eae1283e39",
+      "path": "/home/qq/work/hepta-neuron-framework-734df8eaf8dc-20261106/target/debug/test_stdio_server",
+      "matches_pre_test": true
+    },
+    "test_streamable_http_server": {
+      "bytes": 81269792,
+      "sha256": "bd9046bcf2728da397efc1a53160e0213783213c086677da855fc8726f97dba8",
+      "path": "/home/qq/work/hepta-neuron-framework-734df8eaf8dc-20261106/target/debug/test_streamable_http_server",
+      "matches_pre_test": true
+    },
+    "codex-linux-sandbox": {
+      "bytes": 242942752,
+      "sha256": "741ed99b6e574606075ceac8c06170639703fe8314462bcc95f3f300e1fc6dc1",
+      "path": "/home/qq/work/hepta-neuron-framework-734df8eaf8dc-20261106/target/debug/codex-linux-sandbox",
+      "matches_pre_test": true
+    },
+    "codex-execve-wrapper": {
+      "bytes": 232685752,
+      "sha256": "8bfe38a46b12299693419593208a48256ee9dabcac4e28178c38697807dd4149",
+      "path": "/home/qq/work/hepta-neuron-framework-734df8eaf8dc-20261106/target/debug/codex-execve-wrapper",
+      "matches_pre_test": true
+    },
+    "hepta-joint-propose": {
+      "bytes": 6100536,
+      "sha256": "b01b1ae908d5c39562a0448f6e25b443aebb619f6a9fece38dc21b2bdf8a1966",
+      "path": "/home/qq/work/hepta-neuron-framework-734df8eaf8dc-20261106/target/debug/hepta-joint-propose",
+      "matches_pre_test": true
+    }
+  },
+  "helper_artifacts_unchanged": true
+}

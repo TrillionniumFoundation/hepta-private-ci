@@ -1,0 +1,55 @@
+{
+  "schema": "hepta.cell-six-refactors.native-gate.v1",
+  "source_sha": "75c90ebaee64f95ae03644d0b250f118ad676b0c",
+  "source_tree": "94ee22a62963ceb7a6ba60bdbbab83feb234f90d",
+  "mode": "all",
+  "started_unix_ns": 1793950715955368290,
+  "state": "failed",
+  "phases": [
+    {
+      "name": "scoped-fix",
+      "command": [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-hepta-neuron",
+        "-p",
+        "codex-hepta-agentd",
+        "-p",
+        "codex-hepta-infer-worker-host"
+      ],
+      "started_unix_ns": 1793950716173375724,
+      "exit_code": 101,
+      "ended_unix_ns": 1793950802687969294,
+      "log": {
+        "file": "scoped-fix.log",
+        "bytes": 37721,
+        "sha256": "6d55ed80985f8e670dd883c8f2969c835c6c5ffbb5304bd17092866e5902dbc2"
+      }
+    }
+  ],
+  "packages": [
+    "codex-hepta-neuron",
+    "codex-hepta-agentd",
+    "codex-hepta-infer-worker-host",
+    "codex-hepta-infer-core"
+  ],
+  "whole_workspace_tested": false,
+  "qualification_authority": "DENY_ALL",
+  "platform": [
+    "Linux",
+    "ai395",
+    "7.0.0-38-generic",
+    "#38-Ubuntu SMP PREEMPT_DYNAMIC Fri Sep  4 09:10:14 UTC 2026",
+    "x86_64"
+  ],
+  "initial_free_bytes": 55202603008,
+  "rustc": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: x86_64-unknown-linux-gnu\nrelease: 1.96.0\nLLVM version: 22.1.2",
+  "cargo": "cargo 1.96.0 (30a34c682 2026-05-25)",
+  "nextest": "cargo-nextest 0.9.146 (8af696ddc 2026-09-21)\nrelease: 0.9.146\ncommit-hash: 8af696ddcce8fff2962d6a5168b6d138b8616a35\ncommit-date: 2026-09-21\nhost: x86_64-unknown-linux-gnu",
+  "error": "RuntimeError: scoped fix failed",
+  "exit_code": 101,
+  "ended_unix_ns": 1793950802703499208,
+  "final_free_bytes": 55005855744
+}

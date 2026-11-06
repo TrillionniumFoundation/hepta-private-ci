@@ -40,8 +40,8 @@ agent/run 的人口统计 namespace 使用长度前缀，避免字符串连接�
 state/output schemas 及 encoder/head 核对。绑定后的既有 `step`/`step_checked` 在任何模型联系前
 执行角色和人口统计检查；`step_with_population` 将其他当前 owner 的观察送入同一准入路径。
 host 原有 scheduler 必须串行化这些观察和准入；目标 owner 的过期观察会被重新比对并拒绝。
-这些绑定/聚合入口当前由测试显式调用；产品 host 自动取得 artifact 声明、登记角色和提交
-跨 owner 完整观察集合的接线尚未实现。未绑定的兼容调用路径不会自动获得七角色准入。
+仓内普通产品启动尚未从 artifact owner 自动取得声明并启用此绑定；真实 host 仍需显式
+登记角色和提交跨 owner 完整观察集合。未绑定的兼容调用路径不会自动获得七角色准入。
 
 现有异步 bootstrap 可通过 `with_population` 在服务挂接前完成同一 owner 的绑定；
 handle 的 `population_observation` 读取当前封闭观察，`step_with_population` 将有界 peer
@@ -103,7 +103,7 @@ elapsed 分开比较。差值为 candidate−baseline；负值只表示该量较
 
 原生范围为 `codex-hepta-neuron`、`codex-hepta-agentd`、`codex-hepta-infer-worker-host`，
 以及与未知结果/派发持久性直接相关的 `codex-hepta-infer-core`。本次没有改 core/common/protocol
-生产代码；这个范围不能写成整个继承工作区测试通过。最终实测结果见随附验证记录。
+生产代码；这个范围不能写成整个继承工作区测试通过。最终实测结果见 [验证记录](verification.md)。
 
 审查已补回归：checkpoint header transplant、读回跨 deadline、resident 校验后过期、
 学习验证后换版/撤回、checkpoint 二次无界读取、预测类别张量放大、Unknown 包络被忽略。
