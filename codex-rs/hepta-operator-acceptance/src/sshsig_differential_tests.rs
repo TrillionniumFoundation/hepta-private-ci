@@ -1,7 +1,7 @@
 //! Real original OpenSSH bytes/oracle; no mocked cryptographic verdicts.
 use super::*;
 use crate::sshsig_strict::verify_ed25519_sshsig;
-use std::process::Stdio;
+use std::process::{Command, Stdio};
 
 #[test]
 fn original_openssh_sha256_sha512_and_every_packet_binding_are_preserved() -> std::io::Result<()> {
