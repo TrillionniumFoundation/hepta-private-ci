@@ -13,6 +13,7 @@ use codex_hepta_types::Generation;
 use pretty_assertions::assert_eq;
 
 use super::AgentdNeuronGenerationOwnerV2;
+use super::GenerationOwnerBoundary;
 
 fn checked<T, E: std::fmt::Debug>(value: Result<T, E>) -> T {
     match value {
@@ -272,15 +273,95 @@ fn expiration_during_admission_settles_known_no_contact_without_calling_model() 
     let mut owner = fixture.owner(model.clone());
     let req = request(&owner);
     let mut times = [11, 100].into_iter();
-    let receipt = checked(owner.step(req, || times.next().unwrap_or(100)));
+    let receipt = checked(owner.step(req.clone(), || {
+        let value = times.next().unwrap_or(100);
+        if value == 100 {
+            // Give the real host meter an observable interval after admission.
+            std::thread::sleep(std::time::Duration::from_millis(2));
+        }
+        value
+    }));
     assert_eq!(
         receipt.disposition,
         CellGenerationDispositionV2::DeadlineExceeded
     );
     assert_eq!(model.calls.load(Ordering::SeqCst), 0);
     assert_eq!(checked(owner.journal().pending_request()), None);
+    let [entry] = receipt.cost.entries() else {
+        panic!("one observed host interval");
+    };
+    let Some(wall) = entry.metrics.wall_micros else {
+        panic!("host wall was measured");
+    };
+    assert!(wall >= 1_000);
+    assert_eq!(entry.stage, CellCostStageV2::Queue);
+    assert_eq!(entry.outcome, CellCostOutcomeV2::Failed);
+    assert_eq!(entry.accounting, CellCostAccountingV2::Exclusive);
+    assert_eq!(
+        entry.metrics,
+        CellCostMetricsV2 {
+            wall_micros: Some(wall),
+            ..CellCostMetricsV2::default()
+        }
+    );
     assert_eq!(checked(receipt.cost.summary()).complete_metrics(), None);
+    assert_eq!(checked(owner.journal().task_cost()), &receipt.cost);
+    let journal_bytes = checked(fs::read(fixture.0.join("journal")));
+    assert_eq!(
+        checked(owner.step(req.clone(), || panic!(
+            "exact replay must not sample a clock"
+        ))),
+        receipt
+    );
+    assert_eq!(checked(fs::read(fixture.0.join("journal"))), journal_bytes);
     assert!(checked(owner.drain()));
+    drop(owner);
+    let mut owner = fixture.owner(model.clone());
+    let journal_bytes = checked(fs::read(fixture.0.join("journal")));
+    assert_eq!(
+        checked(owner.step(req, || panic!("cold receipt must not sample a clock"))),
+        receipt
+    );
+    assert_eq!(checked(owner.journal().task_cost()), &receipt.cost);
+    assert_eq!(checked(fs::read(fixture.0.join("journal"))), journal_bytes);
+    assert_eq!(model.calls.load(Ordering::SeqCst), 0);
+}
+
+#[test]
+fn fence_at_final_no_contact_settlement_keeps_admission_unresolved() {
+    for before_contact in [11, 100] {
+        let fixture = Fixture::new();
+        let model = Model::default();
+        let mut owner = fixture.owner(model.clone());
+        let req = request(&owner);
+        let mut times = [11, before_contact].into_iter();
+        let mut settlements = 0;
+        let result = owner.step_checked(
+            req.clone(),
+            || times.next().unwrap_or(before_contact),
+            |boundary| match boundary {
+                GenerationOwnerBoundary::Admission => Ok(()),
+                GenerationOwnerBoundary::Dispatch => Err(CellGenerationErrorV2::Draining),
+                GenerationOwnerBoundary::Settlement => {
+                    settlements += 1;
+                    if settlements == 2 {
+                        Err(CellGenerationErrorV2::Unavailable)
+                    } else {
+                        Ok(())
+                    }
+                }
+            },
+        );
+        assert_eq!(result, Err(CellGenerationErrorV2::Unavailable));
+        assert_eq!(settlements, 2);
+        assert_eq!(model.calls.load(Ordering::SeqCst), 0);
+        drop(owner);
+        let owner = fixture.owner(model);
+        assert_eq!(checked(owner.journal().pending_request()), Some(&req));
+        assert_eq!(checked(owner.journal().lookup(&req)), None);
+        assert_eq!(checked(owner.journal().snapshot()), &req.predecessor);
+        assert!(checked(owner.journal().task_cost()).entries().is_empty());
+    }
 }
 
 #[test]

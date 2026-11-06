@@ -96,6 +96,7 @@ pub struct AgentdV13GenerationBootstrapConfigV1 {
 
 /// Already opened owner capabilities. Callers must retain the witness
 /// independently and must not retain writers or alter shared descriptor flags.
+/// The host syncs the real containing directories for newly created entries.
 /// No pathname is reopened and no failed recovery falls back to initialization.
 pub struct V13GenerationOwnerFilesV1 {
     pub journal: File,

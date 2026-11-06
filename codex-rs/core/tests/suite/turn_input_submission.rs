@@ -155,12 +155,32 @@ async fn recover_turn_if_idle_preserves_id_and_resumes_plan_mode() {
         .await
         .expect("build recovered turn session");
 
-    let initial_submission = submit_user_message(&test.codex, "recoverable user input")
+    // Recovery restores the interrupted settings; it is not a fresh mode
+    // change. Start the original user turn in Plan mode before persisting Ready.
+    let initial_submission = test
+        .codex
+        .start_or_steer_turn(
+            user_message_request("recoverable user input").with_thread_settings(
+                ThreadSettingsOverrides {
+                    collaboration_mode: Some(CollaborationMode {
+                        mode: ModeKind::Plan,
+                        settings: Settings {
+                            model: test.session_configured.model.clone(),
+                            reasoning_effort: None,
+                            developer_instructions: None,
+                        },
+                    }),
+                    ..Default::default()
+                },
+            ),
+        )
         .await
         .expect("initial turn should start");
     let TurnInputSubmission::Started { turn_id } = initial_submission else {
         panic!("initial recovery fixture turn must start: {initial_submission:?}");
     };
+    let original_mode = test.codex.config_snapshot().await.collaboration_mode;
+    assert_eq!(original_mode.mode, ModeKind::Plan);
     timeout(Duration::from_secs(5), server.wait_for_request_count(1))
         .await
         .expect("initial turn should reach the model");
@@ -205,10 +225,13 @@ async fn recover_turn_if_idle_preserves_id_and_resumes_plan_mode() {
         "Ready must follow the durable original input"
     );
     assert!(
-        rollout_items[..ready_index]
-            .iter()
-            .any(|item| matches!(item, codex_rollout::RolloutItem::TurnContext(_))),
-        "Ready must follow the durable TurnContext"
+        rollout_items[..ready_index].iter().any(|item| matches!(
+            item,
+            codex_rollout::RolloutItem::TurnContext(context)
+                if context.turn_id.as_deref() == Some(turn_id.as_str())
+                    && context.collaboration_mode.as_ref() == Some(&original_mode)
+        )),
+        "Ready must follow the original durable Plan TurnContext"
     );
     test.codex
         .submit(Op::Interrupt)
@@ -235,17 +258,7 @@ async fn recover_turn_if_idle_preserves_id_and_resumes_plan_mode() {
         .recover_turn_if_idle(RecoverTurnRequest {
             turn_id: turn_id.clone(),
             expected_epoch,
-            thread_settings: ThreadSettingsOverrides {
-                collaboration_mode: Some(CollaborationMode {
-                    mode: ModeKind::Plan,
-                    settings: Settings {
-                        model: test.session_configured.model.clone(),
-                        reasoning_effort: None,
-                        developer_instructions: None,
-                    },
-                }),
-                ..Default::default()
-            },
+            thread_settings: ThreadSettingsOverrides::default(),
             trace: None,
         })
         .await
@@ -265,6 +278,11 @@ async fn recover_turn_if_idle_preserves_id_and_resumes_plan_mode() {
         unreachable!("wait_for_event returned unexpected event");
     };
     assert_eq!(started.turn_id, turn_id);
+    assert_eq!(started.collaboration_mode_kind, ModeKind::Plan);
+    assert_eq!(
+        test.codex.config_snapshot().await.collaboration_mode,
+        original_mode
+    );
     wait_for_event(&test.codex, |event| {
         matches!(event, EventMsg::TurnComplete(_))
     })

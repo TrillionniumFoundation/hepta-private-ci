@@ -18,6 +18,8 @@ mod support;
 
 #[path = "neuron_generation_control_tests.rs"]
 mod control;
+#[path = "neuron_generation_no_contact_tests.rs"]
+mod no_contact;
 use support::Fixture;
 use support::checked;
 use support::cost;
