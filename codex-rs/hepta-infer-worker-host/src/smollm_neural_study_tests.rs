@@ -356,6 +356,16 @@ async fn run_study(profile: StudyProfile) -> TestResult<()> {
         std::env::var_os("HEPTA_NEURAL_STUDY_RUNNER").ok_or("explicit study runner required")?,
     )
     .canonicalize()?;
+    // Current inference sources do not relabel the historical trainer pair.
+    let training_runtime_chain = if input.material_runtime_bridge.is_some() {
+        PathBuf::from(
+            std::env::var_os("HEPTA_NEURAL_STUDY_TRAINING_RUNTIME_CHAIN")
+                .ok_or("explicit historical training runtime required")?,
+        )
+        .canonicalize()?
+    } else {
+        input.chain.clone()
+    };
     let action_ids: [StableId; 2] = actions
         .keys()
         .cloned()
@@ -438,7 +448,7 @@ async fn run_study(profile: StudyProfile) -> TestResult<()> {
         &input,
         &script,
         &json!({"schema":match profile { StudyProfile::OriginalV1 => "hepta-neural-study-v1", StudyProfile::BinaryAnswerV2 => "hepta-neural-study-binary-v2", StudyProfile::BinaryDiverse60V3 => "hepta-neural-study-diverse-v3" },"operation":"train",
-        "training_chain":training_chain,"runtime_chain":input.chain,"materials":input.materials,
+        "training_chain":training_chain,"runtime_chain":training_runtime_chain,"materials":input.materials,
         "parent":pin(&input.parent)?,"ordinary":pin(&effects.join("ordinary-session-result.json"))?,
         "study":study,"training_data":training_data,"output":training_output}),
         &root.join("train-launch"),
