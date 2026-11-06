@@ -1,0 +1,61 @@
+{
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_head": "0a98b8ca2c68e6d75db9c6fd0f392ce6181b7e16",
+  "base_tree": "66ae67e8c148cce2baec88cb3c23c3f8aef822c3",
+  "base_ref": "research/ndu-single-guardian-failure-context-20261106",
+  "inputs_ref": "research/ndu-core-selected-inputs-20261106",
+  "proposal_ref": "research/ndu-core-selected-proposal-20261106",
+  "inputs_head": null,
+  "inputs_tree": null,
+  "added_paths": [
+    ".github/scripts/hepta_core_selected_guard.py",
+    ".github/scripts/hepta_core_selected_evidence.py",
+    ".github/scripts/hepta_core_selected_contract.py",
+    ".github/scripts/hepta-core-selected-spec.json",
+    ".github/scripts/hepta_core_selected.py",
+    ".github/workflows/hepta-core-selected-proposal.yml"
+  ],
+  "inputs_paths": [
+    ".github/scripts/hepta_core_selected_guard.py",
+    ".github/scripts/hepta_core_selected_evidence.py",
+    ".github/scripts/hepta_core_selected_contract.py",
+    ".github/scripts/hepta-core-selected-spec.json"
+  ],
+  "baseline_blobs": {
+    "AGENTS.md": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+    "justfile": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+    "scripts/just-shell.py": "bb2db6ebc4312a301ee39d2793fde16289d046d8",
+    "scripts/run-nextest.py": "1ed63abe84267b320cbfb0123a70aac5507f4595",
+    "codex-rs/Cargo.lock": "e774ae5331457117f576e44f16643ccd44684af4",
+    "codex-rs/Cargo.toml": "b21f7ffc0ee52722ddf82e5a996ff9d82ae0fbb0",
+    "codex-rs/rust-toolchain.toml": "917d2492264a35bc9c0feaef41878d8825870866",
+    "codex-rs/.config/nextest.toml": "f0430497b34b5335929e24b9e19745f467362641",
+    "codex-rs/core/Cargo.toml": "df43645d3ca5e18e4ba526479a4c59cb103d3a5d",
+    "codex-rs/core/tests/common/lib.rs": "1443c0aa42e467a0b6ab5881b94c15343b97115e",
+    "codex-rs/core/tests/common/responses.rs": "1f99eb45d8e96f6f74d035226d4458e383b164d3",
+    "codex-rs/core/tests/common/streaming_sse.rs": "f225be2464f803dc6bd51b436aaa32d84eae6226",
+    "codex-rs/core/tests/suite/network_approval.rs": "c2d07e0601d4e1aabfcf573d907b56d8c615864e",
+    "codex-rs/core/tests/suite/retry_after.rs": "780964d791c5746a2e476a1044ff7c06b89d5170",
+    "codex-rs/core/tests/suite/retry_after_capture_tests.rs": "96519fa61e8169a1e3aa87775ef7040434da7a49",
+    "codex-rs/core/tests/suite/terminal_event_cleanup.rs": "7e0d38da3ac6d9c380076375660d8492f172a2a0"
+  },
+  "cases": [
+    "suite::network_approval::background_network_approval_uses_active_turn_after_original_turn_completes",
+    "suite::network_approval::guardian_receives_exact_trigger_for_single_network_request",
+    "suite::retry_after::capture_tests::registration_anchor_drops_with_capture",
+    "suite::retry_after::capture_tests::retry_capture_registration_is_thread_local",
+    "suite::retry_after::compact_v2_rate_limit_message_without_retry_after_uses_server_advised_delay",
+    "suite::retry_after::responses_http_overload_without_retry_after_exhausts_request_retries",
+    "suite::terminal_event_cleanup::public_completion_survives_cancel_and_waits_for_real_idle_cleanup"
+  ],
+  "binary_id": "codex-core::all",
+  "native_target": "x86_64-unknown-linux-gnu",
+  "python_version": "3.12.10",
+  "original_policy": {
+    "nextest_profile": "local",
+    "retries": 1,
+    "slow_timeout": "30s",
+    "terminate_after": 2,
+    "test_threads": "repository default; no CLI override"
+  }
+}
