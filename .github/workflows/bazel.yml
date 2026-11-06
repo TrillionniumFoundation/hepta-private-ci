@@ -192,6 +192,7 @@ jobs:
         run: python .github/scripts/llvm_header_parser_smoke.py --bazel-msvc
 
       - name: bazel test shard
+        id: original_windows_shard
         env:
           BAZEL_TEST_SHARD: ${{ matrix.shard }}
           BAZEL_TEST_SHARD_COUNT: 4
@@ -235,6 +236,17 @@ jobs:
             --build_metadata=TAG_windows_test_shard=${BAZEL_TEST_SHARD}
           )
 
+          if [[ "${BAZEL_TEST_SHARD}" == "4" ]]; then
+            # Evidence only: preserve this invocation before the diagnostic
+            # list/run overwrites this target's ordinary Bazel test logs.
+            original_bep="$(cygpath -m "${RUNNER_TEMP}")/openssh-original-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-4.jsonl"
+            test ! -e "${original_bep}"
+            bazel_test_args+=(
+              "--build_event_json_file=${original_bep}"
+              --nobuild_event_json_file_path_conversion
+            )
+          fi
+
           ./.github/scripts/run-bazel-ci.sh \
             --print-failed-action-summary \
             --print-failed-test-logs \
@@ -244,6 +256,26 @@ jobs:
             "${bazel_test_args[@]}" \
             -- \
             "${selected_targets[@]}"
+
+      - name: Collect the independent OpenSSH diagnostic
+        id: openssh_diagnostic
+        if: always() && !cancelled() && matrix.shard == 4 && (steps.original_windows_shard.outcome == 'success' || steps.original_windows_shard.outcome == 'failure')
+        env:
+          BAZEL_TEST_SHARD: ${{ matrix.shard }}
+          ORIGINAL_WINDOWS_SHARD_OUTCOME: ${{ steps.original_windows_shard.outcome }}
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          python .github/scripts/run_openssh_diagnostic_ci.py \
+            --bash "$(cygpath -w "$(command -v bash)")"
+
+      - name: Upload the independent OpenSSH diagnostic
+        if: always() && !cancelled() && matrix.shard == 4 && (steps.openssh_diagnostic.outcome == 'success' || steps.openssh_diagnostic.outcome == 'failure')
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: windows-openssh-diagnostic-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/openssh-diagnostic-${{ github.run_id }}-${{ github.run_attempt }}
+          if-no-files-found: error
 
       - name: Upload Bazel execution logs
         if: always() && !cancelled()
