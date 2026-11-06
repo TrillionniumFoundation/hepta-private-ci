@@ -8,10 +8,8 @@ use serde::Serialize;
 use trnm_release_bundle::pq_release::MAX_RECOVERY_EVENTS_V1;
 use trnm_release_bundle::pq_release::PqReleaseAuthorityV1;
 use trnm_release_bundle::pq_release::PqReleaseEventV1;
-use trnm_release_bundle::pq_release::PqReleaseMetadataV1;
 use trnm_release_bundle::pq_release::PqReleaseRoleV1;
 use trnm_release_bundle::pq_release::PqReleaseRootV1;
-use trnm_release_bundle::pq_release::PqReleaseSignatureV1;
 
 use crate::FleetRegistryError;
 use crate::ReleaseId;
@@ -148,13 +146,25 @@ impl Journal {
         }
         let root = PqReleaseRootV1::try_from(&self.initial_root)?;
         let mut authority = PqReleaseAuthorityV1::bootstrap_pinned(
-            root.clone(),
+            root,
             config.initial_root_sha256,
             self.initialized_at,
         )
         .map_err(|error| invalid(format!("M15 recovery root rejected: {error}")))?;
         let mut native = Vec::new();
-        let mut latest_set = None;
+        let latest_set = self.entries.iter().rposition(|entry| {
+            matches!(
+                entry,
+                JournalEntry::Authority {
+                    event: AuthorityEventRecord::ReleaseSet { .. }
+                }
+            )
+        });
+        if self.current_set.is_some() != latest_set.is_some() {
+            return Err(invalid(
+                "release set and signed publication history disagree",
+            ));
+        }
         let mut admissions = BTreeMap::new();
         let mut intent_anchors = BTreeMap::new();
         let mut previous_closed_intents = BTreeMap::new();
@@ -168,14 +178,6 @@ impl Journal {
             time_floor = entry.observed_at();
             match entry {
                 JournalEntry::Authority { event } => {
-                    if let AuthorityEventRecord::ReleaseSet {
-                        metadata,
-                        signatures,
-                        observed_at,
-                    } = event
-                    {
-                        latest_set = Some((native.len(), metadata, signatures, *observed_at));
-                    }
                     let event = PqReleaseEventV1::try_from(event)?;
                     match &event {
                         PqReleaseEventV1::RootRotation {
@@ -200,11 +202,35 @@ impl Journal {
                             signatures,
                             observed_at,
                         } => {
-                            authority
-                                .accept(metadata, signatures, *observed_at)
-                                .map_err(|error| {
-                                    invalid(format!("M15 recovery publication rejected: {error}"))
+                            if Some(entry_index) == latest_set {
+                                let set = self.current_set.as_ref().ok_or_else(|| {
+                                    invalid("release set and signed publication history disagree")
                                 })?;
+                                let binding = set.bind(config.platform_sha256)?;
+                                // Verify the retained bundle at its actual signed
+                                // event prefix before advancing the same authority.
+                                // Later rotations and configuration events still
+                                // replay normally; no authorization is cached.
+                                authority
+                                    .accept_bundle(
+                                        &binding.bundle,
+                                        &binding.required_packages,
+                                        metadata,
+                                        signatures,
+                                        *observed_at,
+                                    )
+                                    .map_err(|error| {
+                                        invalid(format!("M15 retained bundle rejected: {error}"))
+                                    })?;
+                            } else {
+                                authority
+                                    .accept(metadata, signatures, *observed_at)
+                                    .map_err(|error| {
+                                        invalid(format!(
+                                            "M15 recovery publication rejected: {error}"
+                                        ))
+                                    })?;
+                            }
                         }
                     }
                     native.push(event);
@@ -332,42 +358,6 @@ impl Journal {
             || authority.checkpoint() != frontier.checkpoint_sha256
         {
             return Err(FleetRegistryError::ReleaseAuthorityRollback);
-        }
-        match (&self.current_set, latest_set) {
-            (None, None) => {}
-            (Some(set), Some((index, metadata, signatures, observed_at))) => {
-                let binding = set.bind(config.platform_sha256)?;
-                // This second reconstruction is solely a historical verifier of
-                // the exact current set's bundle/provenance. Its prefix checkpoint
-                // is the signed event input, never the current recovery frontier.
-                // Actual recovery above and every use below require the independent
-                // fresh full frontier and the current M15 publication generation.
-                let mut prefix = PqReleaseAuthorityV1::recover_pinned(
-                    root,
-                    config.initial_root_sha256,
-                    self.initialized_at,
-                    &native[..index],
-                    metadata.expected_checkpoint,
-                )
-                .map_err(|error| invalid(format!("M15 publication prefix rejected: {error}")))?;
-                prefix
-                    .accept_bundle(
-                        &binding.bundle,
-                        &binding.required_packages,
-                        &PqReleaseMetadataV1::from(metadata),
-                        &signatures
-                            .iter()
-                            .map(PqReleaseSignatureV1::from)
-                            .collect::<Vec<_>>(),
-                        observed_at,
-                    )
-                    .map_err(|error| invalid(format!("M15 retained bundle rejected: {error}")))?;
-            }
-            _ => {
-                return Err(invalid(
-                    "release set and signed publication history disagree",
-                ));
-            }
         }
         Ok(LoadedState {
             journal: self,
