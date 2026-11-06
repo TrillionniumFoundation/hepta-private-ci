@@ -1,0 +1,74 @@
+{
+  "scope": "One real -O -B restoration and full original byte/mode/path comparison; no embedded code or tests executed.",
+  "argv": [
+    "python",
+    "-O",
+    "-B",
+    "/workspace/scratch/3f6a885bb83c/round3_core_evidence_supplement_partial_v4_v1/restore.py",
+    "/workspace/scratch/3f6a885bb83c/round3_core_evidence_supplement_partial_v4_v1",
+    "/workspace/scratch/3f6a885bb83c/round3_core_evidence_supplement_partial_v4_v1_verification/restored"
+  ],
+  "exit_code": 0,
+  "stdout_sha256": "7c06f9681ae49abf2bc2271a2fe5520f5e740ed7f37603687682f36f3618ffbf",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "restored_files": 101,
+  "restored_bytes": 1029716,
+  "all_original_bytes_modes_source_paths_identical": true,
+  "exact_member_set": true,
+  "reader_equal_except_two_seals": true,
+  "bundle_before": {
+    "TRANSPORT.json": {
+      "bytes": 744,
+      "sha256": "d53dc79f547e8eb67238af93a618f3b0bed7383fdc00daf0cd424aac3d56e423",
+      "mode": "0o100644"
+    },
+    "INDEX.json": {
+      "bytes": 37108,
+      "sha256": "50325af62cbbcb0a9114ec73db3cd0f1e945dc1986e722255adc9ebf19fc2bac",
+      "mode": "0o100644"
+    },
+    "restore.py": {
+      "bytes": 8203,
+      "sha256": "95a7aa34511773ca13a9fe4dac0a1d0c4577e25ccaad3aa8a6a0f6a9529eccdd",
+      "mode": "0o100644"
+    },
+    "core-supplement-06-14.tar.xz.transport-000.gz": {
+      "bytes": 117025,
+      "sha256": "ec9cb75a2943527587504edad242ca8840ac2e5f5aeae01e77c1c8e7eaab84fe",
+      "mode": "0o100644"
+    },
+    "README.md": {
+      "bytes": 3699,
+      "sha256": "c7a4cb52926bbca0af7e63a2bb33641985beaad2bb4f13fe242fd76af1f70763",
+      "mode": "0o100644"
+    }
+  },
+  "bundle_after": {
+    "TRANSPORT.json": {
+      "bytes": 744,
+      "sha256": "d53dc79f547e8eb67238af93a618f3b0bed7383fdc00daf0cd424aac3d56e423",
+      "mode": "0o100644"
+    },
+    "INDEX.json": {
+      "bytes": 37108,
+      "sha256": "50325af62cbbcb0a9114ec73db3cd0f1e945dc1986e722255adc9ebf19fc2bac",
+      "mode": "0o100644"
+    },
+    "restore.py": {
+      "bytes": 8203,
+      "sha256": "95a7aa34511773ca13a9fe4dac0a1d0c4577e25ccaad3aa8a6a0f6a9529eccdd",
+      "mode": "0o100644"
+    },
+    "core-supplement-06-14.tar.xz.transport-000.gz": {
+      "bytes": 117025,
+      "sha256": "ec9cb75a2943527587504edad242ca8840ac2e5f5aeae01e77c1c8e7eaab84fe",
+      "mode": "0o100644"
+    },
+    "README.md": {
+      "bytes": 3699,
+      "sha256": "c7a4cb52926bbca0af7e63a2bb33641985beaad2bb4f13fe242fd76af1f70763",
+      "mode": "0o100644"
+    }
+  },
+  "bundle_unchanged": true
+}
