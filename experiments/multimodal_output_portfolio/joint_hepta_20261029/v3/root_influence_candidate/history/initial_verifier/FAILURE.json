@@ -1,0 +1,14 @@
+{
+  "explanation": "The fixed economic contract did not produce an optimistic selected graph with merging in the enumerated caches. This is a verification-coverage gap, not a candidate advantage or a data failure. Add a separate exact diamond-DAG fixture; keep economic parameters and algorithms unchanged.",
+  "observed_exception": "AssertionError: No shared-DAG witness exercised",
+  "observed_exit_code": 1,
+  "recorded_utc": "2026-11-06T17:57:00.735683+00:00",
+  "source_sha256": {
+    "__init__.py": "4ee9976fb4031a96e9b760385b8a423078c9fc57628bc828bed6b27e8c031014",
+    "anytime.py": "991bf08d960c3b4a535b6cf1b6eb7c670cab17247f2ba89a9b53a86e965d8a3a",
+    "contract.py": "6810f0bed987605e25f7ddec599796fa3a672d797692e79bf8ca2eae32193da6",
+    "exact_solver.py": "377130b50d4d8095bd1fa3003e8d4a2f21581fe25fe6f6b592169feda1f23de5",
+    "verify.py": "01a84ccf4def869ab3adc99a11b69647064ef5a79b1f8e0485ce8ad22d4168af"
+  },
+  "status": "INITIAL_AUDIT_STOPPED_ON_MISSING_SHARED_SELECTED_DAG_WITNESS"
+}
