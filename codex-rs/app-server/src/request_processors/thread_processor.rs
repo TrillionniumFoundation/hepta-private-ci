@@ -4050,7 +4050,16 @@ impl ThreadRequestProcessor {
         }
         let has_explicit_model_resume_override =
             has_model_resume_override(request_overrides.as_ref(), &typesafe_overrides);
-        let (persisted_metadata, persisted_runtime_environment) = self
+        let inherits_workspace_roots = typesafe_overrides.workspace_roots.is_none()
+            && !request_overrides
+                .as_ref()
+                .is_some_and(|overrides| overrides.contains_key("workspace_roots"));
+        let persisted_permission_profile = match &thread_history {
+            InitialHistory::Resumed(resumed) => latest_persisted_resume_settings(&resumed.history)
+                .and_then(|settings| settings.active_permission_profile),
+            _ => None,
+        };
+        let (persisted_metadata, mut persisted_runtime_environment) = self
             .load_and_apply_persisted_resume_metadata(
                 &thread_history,
                 &mut request_overrides,
@@ -4061,7 +4070,11 @@ impl ThreadRequestProcessor {
         // Derive a Config using the same logic as new conversation, honoring overrides if provided.
         let mut config = match self
             .config_manager
-            .load_for_cwd(request_overrides, typesafe_overrides, history_cwd)
+            .load_for_cwd(
+                request_overrides.clone(),
+                typesafe_overrides.clone(),
+                history_cwd.clone(),
+            )
             .await
         {
             Ok(config) => config,
@@ -4071,6 +4084,34 @@ impl ThreadRequestProcessor {
                 return Ok(());
             }
         };
+        if inherits_workspace_roots
+            && persisted_permission_profile
+                .as_ref()
+                .is_some_and(|persisted| {
+                    config.permissions.active_permission_profile().as_ref() != Some(persisted)
+                })
+        {
+            // The old runtime roots belonged to a different named profile. Resolve
+            // defaults again without promoting those roots to explicit overrides.
+            typesafe_overrides.workspace_roots = None;
+            config = match self
+                .config_manager
+                .load_for_cwd(request_overrides, typesafe_overrides, history_cwd)
+                .await
+            {
+                Ok(config) => config,
+                Err(err) => {
+                    let error = config_load_error(&err);
+                    self.outgoing.send_error(request_id, error).await;
+                    return Ok(());
+                }
+            };
+            if let Some((_, workspace_roots)) = persisted_runtime_environment.as_mut() {
+                // Keep the latest runtime cwd while replacing the inherited roots
+                // in the environment selection with the newly resolved defaults.
+                *workspace_roots = config.workspace_roots.clone();
+            }
+        }
         if !has_explicit_model_resume_override
             && persisted_metadata
                 .as_ref()
