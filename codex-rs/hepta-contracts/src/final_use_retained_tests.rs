@@ -50,7 +50,8 @@ impl Frontier {
 
 impl AuthorityFrontierStore<FinalUseFrontier> for Frontier {
     fn load(&self, _owner_id: &str) -> Result<FinalUseFrontier, AuthorityTrustError> {
-        Self::read(&mut self.0.lock().unwrap()).map_err(|_| AuthorityTrustError::Unavailable)
+        Self::read(&mut self.0.lock().expect("lock test frontier for read"))
+            .map_err(|_| AuthorityTrustError::Unavailable)
     }
 
     fn compare_and_set(
@@ -59,7 +60,10 @@ impl AuthorityFrontierStore<FinalUseFrontier> for Frontier {
         expected: &FinalUseFrontier,
         next: &FinalUseFrontier,
     ) -> Result<(), AuthorityTrustError> {
-        let mut file = self.0.lock().unwrap();
+        let mut file = self
+            .0
+            .lock()
+            .expect("lock test frontier for compare-and-set");
         if Self::read(&mut file).map_err(|_| AuthorityTrustError::Unavailable)? != *expected {
             return Err(AuthorityTrustError::Conflict);
         }
@@ -102,19 +106,24 @@ impl Fixture {
         };
         let signed = SignedFinalUseGrant {
             signature: issuer
-                .sign(&grant.signing_bytes().unwrap())
+                .sign(
+                    &grant
+                        .signing_bytes()
+                        .expect("encode fixture grant signing bytes"),
+                )
                 .to_bytes()
                 .to_vec(),
             grant,
         };
-        let directory = tempfile::tempdir().unwrap();
-        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
-        let mut file = tempfile::tempfile().unwrap();
+        let directory = tempfile::tempdir().expect("create retained authority test directory");
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))
+            .expect("restrict retained authority test directory permissions");
+        let mut file = tempfile::tempfile().expect("create independent test frontier file");
         Frontier::write(
             &mut file,
-            &FinalUseFrontier::for_initial_head(&head).unwrap(),
+            &FinalUseFrontier::for_initial_head(&head).expect("derive initial test frontier"),
         )
-        .unwrap();
+        .expect("persist initial test frontier");
         Self {
             directory,
             frontier: Arc::new(Frontier(Mutex::new(file))),
@@ -134,14 +143,15 @@ impl Fixture {
             self.clock.clone(),
             self.frontier.clone(),
         )
-        .unwrap()
+        .expect("open retained authority with independent test frontier")
     }
 
     fn enter(&self, authority: &FinalUseAuthority) -> VerifiedUseTokenWitnessV1 {
-        let token = claim_final_use(authority, &self.signed, &self.signed.grant.binding).unwrap();
+        let token = claim_final_use(authority, &self.signed, &self.signed.grant.binding)
+            .expect("claim fixture final-use grant");
         let ((), witness) =
             dispatch_final_use_with_witness(authority, token, &self.signed.grant.binding, |_| ())
-                .unwrap();
+                .expect("enter fixture final-use dispatch");
         witness
     }
 }

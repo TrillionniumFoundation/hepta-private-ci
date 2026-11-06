@@ -23,6 +23,10 @@ pub enum NeuronGenerationPredecessorCompletionV1 {
 }
 
 impl NeuronGenerationPredecessorCompletionV1 {
+    #[expect(
+        clippy::trivially_copy_pass_by_ref,
+        reason = "Serde skip_serializing_if requires a borrowed field callback"
+    )]
     pub(super) fn is_model_stopped(&self) -> bool {
         matches!(self, Self::ModelStopped)
     }
