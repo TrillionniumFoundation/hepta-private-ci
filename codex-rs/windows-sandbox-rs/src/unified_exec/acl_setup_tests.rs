@@ -50,6 +50,10 @@ use windows_sys::Win32::Security::RevertToSelf;
 use windows_sys::Win32::Security::TOKEN_DUPLICATE;
 use windows_sys::Win32::Security::TOKEN_IMPERSONATE;
 use windows_sys::Win32::Security::TOKEN_QUERY;
+use windows_sys::Win32::Storage::FileSystem::FILE_FLAG_BACKUP_SEMANTICS;
+use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_DELETE;
+use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ;
+use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_WRITE;
 use windows_sys::Win32::Storage::FileSystem::READ_CONTROL;
 use windows_sys::Win32::Storage::FileSystem::WRITE_DAC;
 use windows_sys::Win32::System::Threading::GetCurrentProcess;
@@ -276,7 +280,7 @@ impl AclSetupFailureFixture {
                 updated_dacl,
                 ptr::null_mut(),
             );
-            // Exercise the same pathname-based native API as sandbox setup.
+            // Independently verify that the native named ACL setter is denied.
             // Reapplying this DACL cannot expand access on unexpected success.
             let named_result = (result == ERROR_SUCCESS).then(|| {
                 SetNamedSecurityInfoW(
@@ -297,6 +301,19 @@ impl AclSetupFailureFixture {
             named_result,
             Some(ERROR_ACCESS_DENIED),
             "fixture must reject the named ACL setter before testing spawn",
+        );
+        let open_error = OpenOptions::new()
+            .access_mode(READ_CONTROL | WRITE_DAC)
+            .share_mode(FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE)
+            .custom_flags(FILE_FLAG_BACKUP_SEMANTICS)
+            .open(&protected_path)
+            .expect_err("fixture must reject a fresh ACL repair handle");
+        assert_eq!(
+            (open_error.kind(), open_error.raw_os_error()),
+            (
+                std::io::ErrorKind::PermissionDenied,
+                Some(ERROR_ACCESS_DENIED as i32),
+            ),
         );
         let write_dac_error = match OpenOptions::new()
             .access_mode(WRITE_DAC)
@@ -346,7 +363,10 @@ impl AclSetupFailureFixture {
         assert_eq!(
             (
                 error.to_string(),
-                error.root_cause().to_string(),
+                error.chain().nth(/*n*/ 1).map(ToString::to_string),
+                error
+                    .downcast_ref::<std::io::Error>()
+                    .map(|error| (error.kind(), error.raw_os_error())),
                 self.marker.try_exists().expect("inspect process marker"),
             ),
             (
@@ -354,10 +374,14 @@ impl AclSetupFailureFixture {
                     "apply legacy deny-write ACL to {}",
                     self.protected_file.display()
                 ),
-                format!(
-                    "SetNamedSecurityInfoW failed for {}: {ERROR_ACCESS_DENIED}",
+                Some(format!(
+                    "open ACL repair handle for {}",
                     self.protected_file.display(),
-                ),
+                )),
+                Some((
+                    std::io::ErrorKind::PermissionDenied,
+                    Some(ERROR_ACCESS_DENIED as i32),
+                )),
                 false,
             ),
         );

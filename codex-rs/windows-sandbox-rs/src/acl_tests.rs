@@ -354,3 +354,49 @@ fn native_normalized_directory_and_file_denies_repeat_without_any_acl_change() -
     }
     Ok(())
 }
+
+#[test]
+fn acl_repair_rejects_replaced_path_with_different_object_type() -> Result<()> {
+    for original_is_directory in [false, true] {
+        let fixture = tempfile::tempdir()?;
+        let path = fixture.path().join("target");
+        let moved = fixture.path().join("held-original");
+        if original_is_directory {
+            std::fs::create_dir(&path)?;
+        } else {
+            std::fs::write(&path, b"original data")?;
+        }
+        let pinned = File::options()
+            .access_mode(READ_CONTROL)
+            .share_mode(FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE)
+            .custom_flags(FILE_FLAG_BACKUP_SEMANTICS)
+            .open(&path)?;
+        let original_dacl = actual_dacl_bytes(&path)?;
+        // Ordinary file and directory handles can establish the same identity.
+        drop(deny::open_acl_repair_handle(&pinned, &path)?);
+        std::fs::rename(&path, &moved)?;
+        if original_is_directory {
+            std::fs::write(&path, b"replacement data")?;
+        } else {
+            std::fs::create_dir(&path)?;
+        }
+        let replacement_dacl = actual_dacl_bytes(&path)?;
+        let error = deny::open_acl_repair_handle(&pinned, &path)
+            .expect_err("replacement must not receive an ACL repair for the held object");
+        assert_eq!(
+            error.to_string(),
+            format!("ACL repair target changed for {}", path.display()),
+        );
+        assert_eq!(
+            (actual_dacl_bytes(&moved)?, actual_dacl_bytes(&path)?),
+            (original_dacl, replacement_dacl),
+        );
+        let (data_path, expected) = if original_is_directory {
+            (&path, b"replacement data".as_slice())
+        } else {
+            (&moved, b"original data".as_slice())
+        };
+        assert_eq!(std::fs::read(data_path)?, expected);
+    }
+    Ok(())
+}

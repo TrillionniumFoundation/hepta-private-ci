@@ -7,17 +7,16 @@ use super::INHERIT_ONLY_ACE;
 use super::INHERITED_ACE;
 use super::OBJECT_INHERIT_ACE;
 use super::acl_api_result;
+use anyhow::Context;
 use anyhow::Result;
 use anyhow::anyhow;
 use std::ffi::c_void;
 use std::fs::File;
 use std::os::windows::fs::OpenOptionsExt;
 use std::os::windows::io::AsRawHandle;
-use std::os::windows::io::FromRawHandle;
 use std::path::Path;
 use windows_sys::Win32::Foundation::HANDLE;
 use windows_sys::Win32::Foundation::HLOCAL;
-use windows_sys::Win32::Foundation::INVALID_HANDLE_VALUE;
 use windows_sys::Win32::Foundation::LocalFree;
 use windows_sys::Win32::Security::ACCESS_DENIED_ACE;
 use windows_sys::Win32::Security::ACE_HEADER;
@@ -45,12 +44,14 @@ use windows_sys::Win32::Storage::FileSystem::FILE_FLAG_BACKUP_SEMANTICS;
 use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_EXECUTE;
 use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_READ;
 use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_WRITE;
+use windows_sys::Win32::Storage::FileSystem::FILE_ID_INFO;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_DELETE;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_WRITE;
+use windows_sys::Win32::Storage::FileSystem::FileIdInfo;
 use windows_sys::Win32::Storage::FileSystem::GetFileInformationByHandle;
+use windows_sys::Win32::Storage::FileSystem::GetFileInformationByHandleEx;
 use windows_sys::Win32::Storage::FileSystem::READ_CONTROL;
-use windows_sys::Win32::Storage::FileSystem::ReOpenFile;
 use windows_sys::Win32::Storage::FileSystem::WRITE_DAC;
 
 #[derive(Clone, Copy)]
@@ -170,6 +171,53 @@ unsafe fn read_dacl(file: &File, path: &Path) -> Result<(LocalAllocation, *mut A
     Ok((allocation, dacl))
 }
 
+fn file_identity(file: &File, path: &Path) -> Result<(u64, [u8; 16])> {
+    // SAFETY: the live file owns the handle and the output has the exact API layout.
+    let mut information: FILE_ID_INFO = unsafe { std::mem::zeroed() };
+    if unsafe {
+        GetFileInformationByHandleEx(
+            file.as_raw_handle() as HANDLE,
+            FileIdInfo,
+            std::ptr::addr_of_mut!(information).cast(),
+            std::mem::size_of::<FILE_ID_INFO>() as u32,
+        )
+    } == 0
+    {
+        return Err(std::io::Error::last_os_error()).with_context(|| {
+            format!(
+                "GetFileInformationByHandleEx(FileIdInfo) failed for {}",
+                path.display()
+            )
+        });
+    }
+    let id = information.FileId.Identifier;
+    // MS-FSCC defines zero and all-one IDs as unsupported or non-unique.
+    // Neither sentinel can establish identity, even when both handles agree.
+    if id == [0; 16] || id == [u8::MAX; 16] {
+        return Err(anyhow!(
+            "ACL repair requires a unique 128-bit file ID for {}",
+            path.display()
+        ));
+    }
+    Ok((information.VolumeSerialNumber, id))
+}
+
+pub(super) fn open_acl_repair_handle(pinned: &File, path: &Path) -> Result<File> {
+    let expected = file_identity(pinned, path)?;
+    let writable = File::options()
+        .access_mode(READ_CONTROL | WRITE_DAC)
+        .share_mode(FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE)
+        .custom_flags(FILE_FLAG_BACKUP_SEMANTICS)
+        .open(path)
+        .with_context(|| format!("open ACL repair handle for {}", path.display()))?;
+    // Both handles remain live. A rename or replacement must not pair the
+    // original type/ACL with another object. Do not fall back to 64-bit IDs.
+    if file_identity(&writable, path)? != expected {
+        return Err(anyhow!("ACL repair target changed for {}", path.display()));
+    }
+    Ok(writable)
+}
+
 pub(super) unsafe fn add_deny_ace(
     path: &Path,
     sid: *mut c_void,
@@ -198,22 +246,9 @@ pub(super) unsafe fn add_deny_ace(
     if target.already_present(dacl, sid, kind) {
         return Ok(false);
     }
-    // Obtain WRITE_DAC only for a real repair, on the same object used for its
-    // type and ACL query. Reopening by path could pair a file scope with a directory.
-    let raw = ReOpenFile(
-        file.as_raw_handle() as HANDLE,
-        READ_CONTROL | WRITE_DAC,
-        sharing,
-        FILE_FLAG_BACKUP_SEMANTICS,
-    );
-    if raw == INVALID_HANDLE_VALUE {
-        return Err(anyhow!(
-            "ReOpenFile for ACL repair failed for {}: {}",
-            path.display(),
-            std::io::Error::last_os_error()
-        ));
-    }
-    let writable = File::from_raw_handle(raw as *mut c_void);
+    // The no-op path above needs neither WRITE_DAC nor file-ID support.
+    // Every repair uses the same object that supplied its type and first ACL.
+    let writable = open_acl_repair_handle(&file, path)?;
     let (_current_descriptor, current_dacl) = read_dacl(&writable, path)?;
     if target.already_present(current_dacl, sid, kind) {
         return Ok(false);
