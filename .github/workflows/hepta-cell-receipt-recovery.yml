@@ -1,0 +1,59 @@
+name: Hepta Cell receipt recovery
+
+on:
+  pull_request:
+    paths:
+      - qualification/cell-learning-loop-v1/**
+      - .github/workflows/hepta-cell-receipt-recovery.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  recovery:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Check out the exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - name: Bind source and preserve original evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+          mkdir -p "$RUNNER_TEMP/cell-receipt-recovery"
+          git show --no-patch --format=fuller > "$RUNNER_TEMP/cell-receipt-recovery/source.txt"
+          git rev-parse HEAD^{tree} >> "$RUNNER_TEMP/cell-receipt-recovery/source.txt"
+      - name: Verify captured receipts and refusal to repeat unknown work
+        working-directory: qualification/cell-learning-loop-v1
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B -m unittest -v loop_tests 2>&1 | tee "$RUNNER_TEMP/cell-receipt-recovery/receipts.log"
+      - name: Verify bounded phase waits and failure accounting
+        working-directory: qualification/cell-learning-loop-v1/decision_replay
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B -m unittest -v test_phase_process test_replay_dispatch 2>&1 | tee "$RUNNER_TEMP/cell-receipt-recovery/phase-process.log"
+      - name: Verify tracked source and historical evidence remain unchanged
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --exit-code
+          test -z "$(git status --porcelain)"
+      - name: Retain exact-source test logs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cell-receipt-recovery-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cell-receipt-recovery
+          if-no-files-found: error

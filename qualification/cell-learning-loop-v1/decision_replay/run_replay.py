@@ -8,15 +8,14 @@ import os
 from pathlib import Path
 import resource
 import shutil
-import subprocess
 import sys
-import time
 
 HERE = Path(__file__).resolve().parent
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(HERE.parent))
 from loop_common import canonical, frozen, identity, read, runtime, sha, write
 from quality import assess, publication_decision, require
+from phase_process import complete_cpu_total, run_phase
 
 
 def prepare(origin, output):
@@ -61,7 +60,8 @@ def prepare(origin, output):
             "data_ids": {"parent": old["parent_data_id"], "candidate": trained["data_id"]},
             "quality_rule": "corrected-task strict improvement AND no aggregate historical loss",
             "authority_rule": "fixed formal/cost HOLD; no caller-provided authorization Boolean",
-            "optimizer_updates": 0, "phases": ["decision", "cold_check"]}
+            "optimizer_updates": 0, "phases": ["decision", "cold_check"],
+            "child_wall_seconds": 60, "child_cleanup_seconds": 5}
     write(output / "PROTOCOL.json", plan)
     inventory = {str(p.relative_to(output)): {"identity": identity(p)} for p in sorted(output.rglob("*")) if p.is_file()}
     require(all(x["identity"]["bytes"] <= 512000 for x in inventory.values()), "input exceeds blob bound")
@@ -166,25 +166,35 @@ def main(args):
     try:
         prepare(origin, output)
         for phase in ("decision", "cold_check"):
-            frozen(output)
+            plan = frozen(output)
             command = [sys.executable, "-B", str(output / "EXECUTED_SOURCE/run_replay.py"),
                        "--origin", str(origin), "--output", str(output), "--worker", phase]
-            started = time.perf_counter()
-            with (output / (phase + ".log")).open("xb") as stream:
-                process = subprocess.Popen(command, stdout=stream, stderr=subprocess.STDOUT,
-                    env={**os.environ, "OPENBLAS_NUM_THREADS": "1", "OMP_NUM_THREADS": "1"})
-                pid, status, usage = os.wait4(process.pid, 0)
-                process.returncode = os.waitstatus_to_exitcode(status)
-            metrics = {"pid": pid, "exit_code": process.returncode, "wall_seconds": time.perf_counter() - started,
-                       "cpu_user_seconds": usage.ru_utime, "cpu_system_seconds": usage.ru_stime,
-                       "peak_rss_bytes": usage.ru_maxrss * 1024}
+            record = {"phase": phase, "result": {"engineering_passed": False},
+                      "process_metrics": {"pid": None, "exit_code": None,
+                          "direct_child_reaped": False, "cpu_user_seconds": None,
+                          "cpu_system_seconds": None, "peak_rss_bytes": None,
+                          "dispatch_outcome": "unknown until a complete process observation returns"}}
+            records.append(record)
             try:
+                metrics = run_phase(command, output / (phase + ".log"),
+                    {**os.environ, "OPENBLAS_NUM_THREADS": "1", "OMP_NUM_THREADS": "1"},
+                    wall_seconds=plan["child_wall_seconds"], cleanup_seconds=plan["child_cleanup_seconds"])
+                record["process_metrics"] = metrics
+            except BaseException as error:
+                record["result"]["error"] = {"type": type(error).__name__, "message": str(error)}
+                write(output / (phase + ".json"), record)
+                raise
+            try:
+                require(metrics["direct_child_reaped"], "worker completion remains unknown")
                 result = read(output / (phase + ".log"))
-            except ValueError:
+            except (OSError, ValueError):
                 result = {"engineering_passed": False, "error": "incomplete worker receipt"}
-            records.append({"phase": phase, "result": result, "process_metrics": metrics})
-            write(output / (phase + ".json"), records[-1])
-            require(process.returncode == 0 and result.get("engineering_passed") is True, "replay phase failed")
+            record["result"] = result
+            write(output / (phase + ".json"), record)
+            require(not metrics["timed_out"] and metrics["direct_child_reaped"]
+                    and metrics["wait_error"] is None and metrics["termination_error"] is None and metrics["log_error"] is None
+                    and type(metrics["exit_code"]) is int and metrics["exit_code"] == 0
+                    and result.get("engineering_passed") is True, "replay phase failed")
     except BaseException as error:
         failure = {"type": type(error).__name__, "message": str(error)}
     original_unchanged = False
@@ -198,8 +208,8 @@ def main(args):
             failure = {"type": type(error).__name__, "message": str(error)}
     summary = {"post_run_replay": True, "engineering_passed": failure is None and original_unchanged,
                "failure": failure, "original_delivery_files_unchanged": original_unchanged, "optimizer_updates": 0,
-               "child_process_cpu": {"user_seconds": sum(x["process_metrics"]["cpu_user_seconds"] for x in records),
-                                     "system_seconds": sum(x["process_metrics"]["cpu_system_seconds"] for x in records)},
+               "child_process_cpu": {"user_seconds": complete_cpu_total(records, "cpu_user_seconds"),
+                                     "system_seconds": complete_cpu_total(records, "cpu_system_seconds")},
                "energy_joules": None, "billed_usd": None, "historical_acquisition": None,
                "retained_byte_seconds": None, "host_network_bytes": None, "p99_seconds": None,
                "full_cost_qualified": False, "positive_candidate_adoption_qualified": False,

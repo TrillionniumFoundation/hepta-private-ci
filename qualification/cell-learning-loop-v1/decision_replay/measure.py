@@ -28,8 +28,10 @@ if __name__ == "__main__":
               "measurement_source": identity(Path(__file__)), "log": identity(output / "driver.log")}
     if (run / "SUMMARY.json").exists():
         children = read(run / "SUMMARY.json")["child_process_cpu"]
-        result["driver_cpu_user_seconds"] = usage.ru_utime - children["user_seconds"]
-        result["driver_cpu_system_seconds"] = usage.ru_stime - children["system_seconds"]
+        result["driver_cpu_user_seconds"] = (None if children["user_seconds"] is None
+                                              else usage.ru_utime - children["user_seconds"])
+        result["driver_cpu_system_seconds"] = (None if children["system_seconds"] is None
+                                                else usage.ru_stime - children["system_seconds"])
     write(output / "FULL_PROCESS.json", result)
     print(result)
     sys.exit(process.returncode)

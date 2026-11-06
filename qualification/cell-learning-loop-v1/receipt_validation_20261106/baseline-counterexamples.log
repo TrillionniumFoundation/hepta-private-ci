@@ -1,0 +1,52 @@
+test_boolean_and_unknown_exit_codes_cannot_certify_completion (loop_tests.ResumeBoundary.test_boolean_and_unknown_exit_codes_cannot_certify_completion) ... 
+  test_boolean_and_unknown_exit_codes_cannot_certify_completion (loop_tests.ResumeBoundary.test_boolean_and_unknown_exit_codes_cannot_certify_completion) (exit_code=False) ... FAIL
+  test_boolean_and_unknown_exit_codes_cannot_certify_completion (loop_tests.ResumeBoundary.test_boolean_and_unknown_exit_codes_cannot_certify_completion) (exit_code=0.0) ... FAIL
+test_failed_worker_cannot_be_promoted_by_editing_the_summary (loop_tests.ResumeBoundary.test_failed_worker_cannot_be_promoted_by_editing_the_summary) ... FAIL
+test_receipt_summary_rechecks_unvisited_phase_outputs (loop_tests.ResumeBoundary.test_receipt_summary_rechecks_unvisited_phase_outputs) ... FAIL
+
+======================================================================
+FAIL: test_boolean_and_unknown_exit_codes_cannot_certify_completion (loop_tests.ResumeBoundary.test_boolean_and_unknown_exit_codes_cannot_certify_completion) (exit_code=False)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/cbdaff2355d2/memory-receipt-fix/counterexample/qualification/cell-learning-loop-v1/loop_tests.py", line 134, in test_boolean_and_unknown_exit_codes_cannot_certify_completion
+    self.refused_resume(run, args)
+  File "/workspace/scratch/cbdaff2355d2/memory-receipt-fix/counterexample/qualification/cell-learning-loop-v1/loop_tests.py", line 60, in refused_resume
+    with self.assertRaisesRegex(ValueError, "no implicit retry"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_boolean_and_unknown_exit_codes_cannot_certify_completion (loop_tests.ResumeBoundary.test_boolean_and_unknown_exit_codes_cannot_certify_completion) (exit_code=0.0)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/cbdaff2355d2/memory-receipt-fix/counterexample/qualification/cell-learning-loop-v1/loop_tests.py", line 134, in test_boolean_and_unknown_exit_codes_cannot_certify_completion
+    self.refused_resume(run, args)
+  File "/workspace/scratch/cbdaff2355d2/memory-receipt-fix/counterexample/qualification/cell-learning-loop-v1/loop_tests.py", line 60, in refused_resume
+    with self.assertRaisesRegex(ValueError, "no implicit retry"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_failed_worker_cannot_be_promoted_by_editing_the_summary (loop_tests.ResumeBoundary.test_failed_worker_cannot_be_promoted_by_editing_the_summary)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/cbdaff2355d2/memory-receipt-fix/counterexample/qualification/cell-learning-loop-v1/loop_tests.py", line 127, in test_failed_worker_cannot_be_promoted_by_editing_the_summary
+    self.refused_resume(run, args)
+  File "/workspace/scratch/cbdaff2355d2/memory-receipt-fix/counterexample/qualification/cell-learning-loop-v1/loop_tests.py", line 60, in refused_resume
+    with self.assertRaisesRegex(ValueError, "no implicit retry"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_receipt_summary_rechecks_unvisited_phase_outputs (loop_tests.ResumeBoundary.test_receipt_summary_rechecks_unvisited_phase_outputs)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/cbdaff2355d2/memory-receipt-fix/counterexample/qualification/cell-learning-loop-v1/loop_tests.py", line 187, in test_receipt_summary_rechecks_unvisited_phase_outputs
+    with self.assertRaisesRegex(ValueError, "no implicit retry"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.208s
+
+FAILED (failures=4)
