@@ -2,7 +2,6 @@
 //! Fixture identities are signed by the real ML-DSA/M15 test publishers; no
 //! private worker or independently provisioned deployment is qualified here.
 use super::release_authority_process_tests::pq_fleet;
-use super::release_authority_process_tests::publish;
 use super::*;
 use crate::daemon_protocol::MAX_SUPERVISORD_CONTROL_FRAME_BYTES;
 use crate::daemon_protocol::ProductionMutationCursorV1;
@@ -193,20 +192,24 @@ impl RunningDaemon {
 async fn ordinary_pq_daemon_recovers_and_pages_all_32_real_unknown_records_after_cold_reopen()
 -> QualificationResult<()> {
     let (mut publisher, mut fleet) = pq_fleet()?;
-    let source = publish(
-        &mut publisher,
-        &fleet,
-        "paged-source",
-        /*matrix*/ false,
-    )?;
+    let source = ReleaseId::parse("paged-source")?;
     let mut targets = Vec::new();
     for index in 0..crate::MAX_UNKNOWN_EFFECT_DISPOSITIONS {
-        targets.push(publish(
-            &mut publisher,
-            &fleet,
-            &format!("paged-target-{index}"),
-            /*matrix*/ false,
-        )?);
+        targets.push(ReleaseId::parse(format!("paged-target-{index}"))?);
+    }
+    let mut release_ids = vec![source.clone()];
+    release_ids.extend(targets.iter().cloned());
+    // One real signed publication authorizes all distinct target releases.
+    // The 31 real owner recoveries and final daemon recovery below remain
+    // sequential; publication-history growth is covered by the Fleet tests.
+    publisher.install_releases(
+        &fleet.registry,
+        &release_ids,
+        &fleet.write_release_source()?,
+        Vec::new(),
+    )?;
+    for id in &release_ids {
+        fleet.registry.allow_release(&fleet.first, id)?;
     }
     let original = record(&fleet)?;
     fleet.registry.compare_and_set_release_state(

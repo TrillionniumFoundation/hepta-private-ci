@@ -140,6 +140,41 @@ impl PqReleaseQualification {
         Ok(registry.install_release_bundle(id, agentd, args, matrixd, matrix_args)?)
     }
 
+    /// Installs qualification agentd members from one actual signed rolling
+    /// set. Every member still crosses the ordinary catalog admission owner;
+    /// this helper does not construct or reuse Supervisor recovery proofs.
+    pub fn install_releases(
+        &mut self,
+        registry: &FleetRegistry,
+        ids: &[ReleaseId],
+        agentd: &Path,
+        args: Vec<String>,
+    ) -> QualificationResult<Vec<RegisteredRelease>> {
+        if ids.is_empty() {
+            return Err("empty qualification release set".into());
+        }
+        let mut members = self.members.clone();
+        for id in ids {
+            if members.iter().any(|item| &item.release.release_id == id) {
+                return Err("duplicate qualification release".into());
+            }
+            members.push(release_qualification_bundle::member(
+                id.clone(),
+                agentd,
+                args.clone(),
+                /*matrixd*/ None,
+                Vec::new(),
+            )?);
+        }
+        self.publish_members(registry, members.clone(), NOW + 3600)?;
+        self.members = members;
+        let mut installed = Vec::with_capacity(ids.len());
+        for id in ids {
+            installed.push(registry.install_release(id.clone(), agentd, args.clone())?);
+        }
+        Ok(installed)
+    }
+
     /// Publishes a new, explicitly signed rolling set. Local allow markers
     /// cannot keep an omitted member authorized.
     pub fn publish_member_ids(
