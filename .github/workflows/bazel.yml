@@ -102,6 +102,21 @@ jobs:
             --test_verbose_timeout_warnings
             --build_metadata=COMMIT_SHA=${GITHUB_SHA}
           )
+          if [[ "${RUNNER_OS}" == "Linux" ]]; then
+            # These fixtures use the OS OpenSSH signer. The pinned RBE image
+            # does not expose it; execute this test on the
+            # runner with Bazel's sandbox and retain remote compilation.
+            if [[ ! -x /usr/bin/ssh-keygen ]]; then
+              sudo apt-get update
+              sudo apt-get install -y --no-install-recommends openssh-client
+            fi
+            test -x /usr/bin/ssh-keygen
+            dpkg-query -W -f='${Package} ${Version}\n' openssh-client
+            sha256sum /usr/bin/ssh-keygen
+            bazel_test_args+=(
+              '--strategy_regexp=^Testing //codex-rs/hepta-operator-acceptance:hepta-operator-acceptance-tests( |$)=sandboxed'
+            )
+          fi
           ./.github/scripts/run-bazel-ci.sh \
             "${bazel_wrapper_args[@]}" \
             -- \
