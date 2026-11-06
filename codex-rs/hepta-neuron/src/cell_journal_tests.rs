@@ -138,7 +138,7 @@ fn lost_witness_ack_fences_new_work_until_original_log_is_read_back() {
         &expected.scope, &expected.operation_id, expected.semantic_request_digest,
     )), Some(expected.clone()));
     match checked(enter_cell_step(&definition(), &journal, &Encoder, input("run1"), /*now_micros*/15)) {
-        CellStepEntryV1::Replayed(receipt) => assert_eq!(receipt, expected),
+        CellStepEntryV1::Replayed(receipt) => assert_eq!(*receipt, expected),
         CellStepEntryV1::Ready(_) => panic!("lost-ack commit was executed again"),
     }
     drop(journal);

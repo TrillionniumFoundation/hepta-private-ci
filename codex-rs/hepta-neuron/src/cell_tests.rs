@@ -416,7 +416,7 @@ impl CellUpdatePortV1 for Learner {
         &mut self,
         r: &CellUpdateRequestV1,
     ) -> Result<CellUpdateOutcomeV1, CellExecutionError> {
-        Ok(CellUpdateOutcomeV1::Candidate(CellUpdateCandidateV1 {
+        Ok(CellUpdateOutcomeV1::Candidate(Box::new(CellUpdateCandidateV1 {
             proposal_id: r.proposal_id.clone(),
             base_bundle_digest: r.base_bundle_digest,
             dataset_digest: r.dataset_digest,
@@ -433,7 +433,7 @@ impl CellUpdatePortV1 for Learner {
             elapsed_micros: 100,
             peak_working_bytes: 4096,
             authority: AuthorityPosture::DENY_ALL,
-        }))
+        })))
     }
 }
 
@@ -510,7 +510,7 @@ fn entry_replays_before_encoding_and_new_snapshot_cannot_reidentify_an_operation
         input("run1"),
         /*now_micros*/ 500,
     )) {
-        CellStepEntryV1::Replayed(actual) => assert_eq!(actual, receipt),
+        CellStepEntryV1::Replayed(actual) => assert_eq!(*actual, receipt),
         CellStepEntryV1::Ready(_) => panic!("committed operation prepared twice"),
     }
     assert!(matches!(

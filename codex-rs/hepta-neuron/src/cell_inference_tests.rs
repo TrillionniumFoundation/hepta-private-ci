@@ -42,7 +42,7 @@ fn output_lost_before_commit_is_recovered_by_reading_the_original_request_only()
     assert_eq!((control.executions, control.reads), (1, 1));
     assert_eq!(checked(owner.pending_inference(&scope("run1"))), None);
     match checked(enter_cell_step(&definition(), &owner, &Encoder, input("run1"), /*now_micros*/15)) {
-        CellStepEntryV1::Replayed(replayed) => assert_eq!(replayed, receipt),
+        CellStepEntryV1::Replayed(replayed) => assert_eq!(*replayed, receipt),
         CellStepEntryV1::Ready(_) => panic!("settled request must replay"),
     }
 }

@@ -149,11 +149,11 @@ where
                             &mut self.inference_control, &mut clock, before_infer,
                             admission_deadline, input.deadline_micros,
                         );
-                        let inferred = infer_cell(prepared, &mut self.state_owner, &mut guarded, before_infer.cell_micros)?;
+                        let inferred = infer_cell(*prepared, &mut self.state_owner, &mut guarded, before_infer.cell_micros)?;
                         last_time = guarded.observed_at().ok_or(CircuitCellErrorV1::ReconciliationRequired)?;
                         inferred
                     }
-                    CellStepEntryV1::Replayed(receipt) => return finish(binding, dispatch, &input, receipt),
+                    CellStepEntryV1::Replayed(receipt) => return finish(binding, dispatch, &input, *receipt),
                 }
             };
             let decided_at = clock();

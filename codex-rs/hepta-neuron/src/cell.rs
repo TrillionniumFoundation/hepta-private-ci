@@ -124,9 +124,9 @@ pub fn enter_cell_step(
 ) -> Result<CellStepEntryV1, CellExecutionError> {
     let digest = semantic_request_digest(definition.semantic_digest()?, &input);
     if let Some(receipt) = owner.lookup(&input.scope, &input.operation_id, digest)? {
-        return Ok(CellStepEntryV1::Replayed(receipt));
+        return Ok(CellStepEntryV1::Replayed(Box::new(receipt)));
     }
-    prepare_cell_step(definition, owner, encoder, input, now_micros).map(CellStepEntryV1::Ready)
+    prepare_cell_step(definition, owner, encoder, input, now_micros).map(Box::new).map(CellStepEntryV1::Ready)
 }
 
 pub fn decide_cell(

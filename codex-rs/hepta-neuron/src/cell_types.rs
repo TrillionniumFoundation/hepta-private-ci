@@ -160,8 +160,8 @@ pub struct CellInferenceAdmissionV1 {
 
 #[derive(Debug)]
 pub enum CellStepEntryV1 {
-    Ready(PreparedCellStepV1),
-    Replayed(CellDecisionReceiptV1),
+    Ready(Box<PreparedCellStepV1>),
+    Replayed(Box<CellDecisionReceiptV1>),
 }
 
 #[derive(Debug)]

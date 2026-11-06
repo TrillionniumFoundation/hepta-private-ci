@@ -53,7 +53,7 @@ pub struct CellUpdateCandidateV1 {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum CellUpdateOutcomeV1 {
     NoUpdate,
-    Candidate(CellUpdateCandidateV1),
+    Candidate(Box<CellUpdateCandidateV1>),
 }
 
 /// The learning owner consumes admitted immutable datasets and training budgets.
