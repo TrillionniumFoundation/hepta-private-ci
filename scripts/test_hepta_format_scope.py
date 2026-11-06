@@ -98,6 +98,50 @@ class FormatterScopeTests(unittest.TestCase):
             (),
         )
 
+    def test_full_and_scoped_starlark_discovery_preserve_sources_and_templates(self):
+        sources = [
+            "BUILD",
+            "BUILD.bazel",
+            "WORKSPACE",
+            "WORKSPACE.bazel",
+            "MODULE.bazel",
+            "third_party/example.BUILD.bazel",
+            "modules/example.MODULE.bazel",
+            "rules/example.bzl",
+            "rules/example.bzl.template",
+            "rules/example.sky",
+            "rules/example.sky.in",
+            "nested directory/BUILD.bazel",
+        ]
+        documents = [
+            "verification/BUILD.json",
+            "reports/WORKSPACE.json",
+            "docs/BUILD.md",
+            "docs/WORKSPACE.txt",
+        ]
+        for path in sources:
+            self.write(path, 'filegroup(name = "example")\n')
+        for path in documents:
+            self.write(path, '{"verified": true, "error": null}\n')
+        originals = {path: (self.root / path).read_bytes() for path in documents}
+        full = FMT.buildifier_formatter_group(check=True)
+        (scoped,) = FMT.scoped_formatter_groups(sources + documents, check=True)
+        self.assertEqual(full, scoped)
+        self.assertEqual(full.commands[0].args[4:], tuple(sorted(sources)))
+        self.assertEqual(full.commands[0].args[2:4], ("-mode=check", "-lint=off"))
+        self.assertEqual(
+            {path: (self.root / path).read_bytes() for path in documents}, originals
+        )
+
+    def test_document_prefixes_do_not_start_starlark_formatting(self):
+        self.assertEqual(
+            FMT.scoped_formatter_groups(
+                ["BUILD.json", "BUILD.md", "WORKSPACE.json", "WORKSPACE.lock"],
+                check=True,
+            ),
+            (),
+        )
+
     def test_explicit_full_python_scope_includes_github_helpers(self):
         group = FMT.python_scripts_formatter_group(check=True)
         self.assertEqual(group.commands[0].args[-2:], ("scripts", ".github"))

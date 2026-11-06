@@ -54,6 +54,16 @@ def rust_formatter_group(*, check: bool) -> FormatterGroup:
     return FormatterGroup("Rust", (command,))
 
 
+def is_starlark_path(path: str | Path) -> bool:
+    name = Path(path).name
+    return (
+        name in {"BUILD", "BUILD.bazel", "WORKSPACE", "WORKSPACE.bazel", "MODULE.bazel"}
+        or name.endswith((".BUILD.bazel", ".MODULE.bazel", ".bzl", ".sky"))
+        or ".bzl." in name
+        or ".sky." in name
+    )
+
+
 def buildifier_formatter_group(
     *, check: bool, paths: list[str] | None = None
 ) -> FormatterGroup:
@@ -70,14 +80,7 @@ def buildifier_formatter_group(
         if not encoded_path:
             continue
         path = Path(os.fsdecode(encoded_path))
-        name = path.name
-        if (
-            name in {"BUILD", "WORKSPACE", "MODULE.bazel"}
-            or name.startswith(("BUILD.", "WORKSPACE."))
-            or name.endswith((".BUILD.bazel", ".MODULE.bazel", ".bzl", ".sky"))
-            or ".bzl." in name
-            or ".sky." in name
-        ):
+        if is_starlark_path(path):
             buildifier_files.append(path.as_posix())
     buildifier_files.sort()
 
@@ -406,15 +409,7 @@ def scoped_formatter_groups(
                 "Rust", tuple(rust_file_command(path, check=check) for path in rust)
             )
         )
-    build = [
-        path
-        for path in paths
-        if Path(path).name in {"BUILD", "WORKSPACE", "MODULE.bazel"}
-        or Path(path).name.startswith(("BUILD.", "WORKSPACE."))
-        or path.endswith((".BUILD.bazel", ".MODULE.bazel", ".bzl", ".sky"))
-        or ".bzl." in Path(path).name
-        or ".sky." in Path(path).name
-    ]
+    build = [path for path in paths if is_starlark_path(path)]
     if build:
         groups.append(buildifier_formatter_group(check=check, paths=build))
     for roots, factory in (
