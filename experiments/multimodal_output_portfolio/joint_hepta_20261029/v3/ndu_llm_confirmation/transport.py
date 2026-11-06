@@ -30,11 +30,17 @@ class OutputLimitExceeded(ValueError):
         self.observed_bytes = observed_bytes
         self.prefix_sha256 = prefix_sha256
 
+class InputDeliveryIncomplete(ValueError):
+    """The worker closed stdin before the complete request was delivered."""
+    pass
 
-def _communicate_stdout_bounded(process, payload, timeout, output_limit):
+
+def _communicate_stdout_bounded(process, payload, timeout, output_limit, delivery=None):
     """Capture stdout while enforcing the byte budget, never after communicate()."""
     if type(output_limit) is not int or output_limit < 1:
         raise ValueError("A positive integer output limit is required")
+    if delivery is not None:
+        delivery.update(total=len(payload), sent=0)
     deadline = time.monotonic() + timeout
     output = bytearray()
     sent = 0
@@ -60,10 +66,16 @@ def _communicate_stdout_bounded(process, payload, timeout, output_limit):
                         written = os.write(stream.fileno(), payload[sent:sent + 65536])
                     except BlockingIOError:
                         continue
-                    except BrokenPipeError:
+                    except BrokenPipeError as exc:
+                        if sent < len(payload):
+                            raise InputDeliveryIncomplete(
+                                "Worker closed stdin before the complete request was delivered"
+                            ) from exc
                         sent = len(payload)
                     else:
                         sent += written
+                        if delivery is not None:
+                            delivery["sent"] = sent
                     if sent >= len(payload):
                         watched.unregister(stream)
                         stream.close()
@@ -96,14 +108,20 @@ def invoke(argv, payload, timeout, limit=1048576, deadline_monotonic=None):
              "status": "failure", "error_type": None, "dispatched": False,
              "response_received": False, "response_complete": False,
              "response_bytes_observed": 0, "response_prefix_sha256": None,
-             "dispatch_monotonic": None}
+             "request_bytes_total": 0, "request_bytes_sent": 0,
+             "request_complete": False, "request_bytes_sha256": None,
+             "request_prefix_sha256": None, "dispatch_monotonic": None}
     process = None
+    encoded, delivery = None, None
     response, valid_response = None, False
     try:
         if os.name != "posix" or not number(timeout) or timeout <= 0:
             raise ValueError("POSIX and a positive timeout are required")
         deadline = min(start+timeout, deadline_monotonic if deadline_monotonic is not None else start+timeout)
         encoded = canonical(payload).encode()
+        delivery = {"total": len(encoded), "sent": 0}
+        event.update(request_bytes_total=len(encoded),
+                     request_bytes_sha256=hashlib.sha256(encoded).hexdigest())
         if time.perf_counter() >= deadline:
             raise TimeoutError("Admission deadline expired")
         event["dispatch_monotonic"] = time.perf_counter()
@@ -111,7 +129,7 @@ def invoke(argv, payload, timeout, limit=1048576, deadline_monotonic=None):
                                    stderr=subprocess.DEVNULL, start_new_session=True)
         event["dispatched"] = True
         out = _communicate_stdout_bounded(
-            process, encoded, max(0.000001, deadline-time.perf_counter()), limit
+            process, encoded, max(0.000001, deadline-time.perf_counter()), limit, delivery=delivery
         )
         event["returncode"] = process.returncode
         event["response_received"] = bool(out)
@@ -126,6 +144,8 @@ def invoke(argv, payload, timeout, limit=1048576, deadline_monotonic=None):
             raise ValueError("Invalid provider envelope")
         valid_response = True
         event["status"] = "ok"
+    except InputDeliveryIncomplete:
+        event.update(status="incomplete_request", error_type="InputDeliveryIncomplete")
     except OutputLimitExceeded as exc:
         event.update(status="oversized_output", error_type="OutputLimitExceeded",
                      response_received=True, response_complete=False,
@@ -150,6 +170,12 @@ def invoke(argv, payload, timeout, limit=1048576, deadline_monotonic=None):
             process.wait()
             process.stdin.close()
             process.stdout.close()
+        if delivery is not None:
+            sent, total = delivery["sent"], delivery["total"]
+            event.update(request_bytes_total=total, request_bytes_sent=sent,
+                         request_complete=(sent == total))
+            if sent < total and sent > 0:
+                event["request_prefix_sha256"] = hashlib.sha256(encoded[:sent]).hexdigest()
         if not event["dispatched"]:
             event["dispatch_monotonic"] = None
         finish = time.perf_counter()
