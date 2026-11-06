@@ -1,0 +1,106 @@
+{
+  "schema": "hepta-private-pin-backport-v1",
+  "crate": {
+    "name": "aws-smithy-runtime",
+    "version": "1.16.0",
+    "archive_bytes": 147175,
+    "checksum": "d6e302ac1d88b99652489df31abdec6ac42a2ab2ac3982ad0ac49f64dfaf28ba",
+    "url": "https://static.crates.io/crates/aws-smithy-runtime/aws-smithy-runtime-1.16.0.crate",
+    "vendor": "codex-rs/third_party/aws-smithy-runtime-1.16.0",
+    "archive_regular_files": 63,
+    "licenses": {
+      "LICENSE": {
+        "bytes": 10142,
+        "sha256": "09e8a9bcec8067104652c168685ab0931e7868f9c8284b66f5ae6edae5f1130b",
+        "git_blob": "67db8588217f266eb561f75fae738656325deac9"
+      }
+    },
+    "edits": [
+      {
+        "path": "src/client/orchestrator/http.rs",
+        "before_sha256": "301ede6c67e6c7fe303f3fe67574926e3508c2349c5e9345f8c48e37952b4b65",
+        "after_sha256": "e544ed1b5705f1584d11b8e003ef8940525faa8721b9e8eb4fa9a83c689fde30",
+        "replace": [
+          [
+            "use pin_utils::pin_mut;\n",
+            "",
+            1
+          ],
+          [
+            "    pin_mut!(body);",
+            "    let body = std::pin::pin!(body);",
+            1
+          ]
+        ]
+      },
+      {
+        "path": "tests/stalled_stream_common.rs",
+        "before_sha256": "75e3e2bd51ff0646224b8ba322d8426f18493ca7788ee50522201e080b4130e3",
+        "after_sha256": "8a70b698ce901da43499446055c2603a2d124eba68cf7cfe4650bfb24baa27af",
+        "replace": [
+          [
+            "pub use pin_utils::pin_mut;\n",
+            "",
+            1
+          ]
+        ]
+      },
+      {
+        "path": "tests/stalled_stream_download.rs",
+        "before_sha256": "0e1b6e63a64abc5480ef7e3710b8268112c62559fe7b04c9ccff91e2bf5ea510",
+        "after_sha256": "57d5d8447dd146d5f4a9342144040b73aa90b0e8092b6c3f076df8bd2327e18a",
+        "replace": [
+          [
+            "        pin_mut!(body);",
+            "        let mut body = std::pin::pin!(body);",
+            3
+          ]
+        ]
+      },
+      {
+        "path": "tests/stalled_stream_upload.rs",
+        "before_sha256": "bbc989028f97e942fce1cda766f1b74c12f3817162cef723b3dc4aa678f79f53",
+        "after_sha256": "d03e435c6b0ada2e892d937be728f05ea90bcf6db2101144c5129cd7f9fcb22b",
+        "replace": [
+          [
+            "                            pin_mut!(body);",
+            "                            let body = std::pin::pin!(body);",
+            1
+          ]
+        ]
+      },
+      {
+        "path": "Cargo.toml",
+        "before_sha256": "540a2b03a14b4c6ff49ecd895fde9b38d3bafe4b91d5abb8310b9e9189a9f443",
+        "after_sha256": "d3c2f4bde65caccfdc2abecb932848e6b34b04123aa162f5f8c0f56c113937af",
+        "replace": [
+          [
+            "[dependencies.pin-utils]\nversion = \"0.1.0\"\n\n",
+            "",
+            1
+          ]
+        ]
+      },
+      {
+        "path": "Cargo.toml.orig",
+        "before_sha256": "c67eff730723034494a40911c851e44b276672a7170a7479d7063d75d84dd66c",
+        "after_sha256": "4b4588d965a1299405632b8265fc8a36cca482c1ed988c40c68bd1b927c841bb",
+        "replace": [
+          [
+            "pin-utils = \"0.1.0\"\n",
+            "",
+            1
+          ]
+        ]
+      }
+    ],
+    "source_scope": "Exact upstream pin-only Rust changes from aws-sdk-rust b3bdfffc to b964fc77; all other source and dependency versions retained."
+  },
+  "upstream": {
+    "aws_before_commit": "b3bdfffc8dbbaf115b572079d7f170ec78ec939c",
+    "aws_after_commit": "b964fc77de60b0a492ff788c40bb66524fd26a44",
+    "loom_before_commit": "a7033ee06a97c52eb2f8131c095fbea6c6eecba3",
+    "rust_pin_macro_stable_since": "1.68.0",
+    "source_note": "AWS full compatibility-line upgrade is deliberately not proposed; existing local aws-config crypto maintenance patch and all other original leaves must remain unchanged."
+  }
+}
