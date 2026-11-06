@@ -1,0 +1,21 @@
+{
+  "schema": "ndu.clock-semantics.audit-protocol.v1",
+  "purpose": "Fix the next candidate's externally timed risk contract before algorithm comparisons",
+  "study_kind": "Deterministic semantic development after an analytic counterexample; no statistical confirmation or claimed new RL method",
+  "eta_values": [".5", "1", "2"],
+  "gamma_values": [".5", ".8", "1"],
+  "success_probabilities": [".1", ".5", ".9"],
+  "durations": [1, 2, 3],
+  "safe_reward_at_time_zero": ".16",
+  "probe_launch_charge": ".01",
+  "decimal_precision": 110,
+  "equality_tolerance": "1e-95",
+  "all_laws_supplied": true,
+  "primary_baseline": "Independent exhaustive terminal-payoff evaluation of the same deterministic policy class under the same time-zero trajectory CE",
+  "original_recursive_objective_replaced": false,
+  "clock_units": "Model ticks, not measured seconds",
+  "new_calibration_observations": 0,
+  "new_model_calls": 0,
+  "independent_real_task_confirmation": false,
+  "entry_gate": "Positive headroom against STOP alone is insufficient; a difference against the correctly matched classical planner is also required"
+}

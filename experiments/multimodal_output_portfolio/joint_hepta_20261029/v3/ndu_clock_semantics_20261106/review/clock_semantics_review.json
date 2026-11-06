@@ -1,0 +1,1746 @@
+{
+  "schema": "ndu.clock-semantics.independent-internal-review.v1",
+  "created_at_utc": "2026-11-06T17:53:56.349651+00:00",
+  "reviewer": "/root/frozen_llm",
+  "author_of_reviewed_unit": false,
+  "review_scope": "Existing 81 cells, existing random-duration and random-action checks, retained-core handbuilt representative, plus explicit assumption witnesses outside the primary grid",
+  "imports_target_semantics": false,
+  "calls_target_graph_or_computation_functions": false,
+  "model_calls": 0,
+  "real_task_tool_calls": 0,
+  "new_random_samples": 0,
+  "primary_grid_expanded": false,
+  "source_sha256": {
+    "/workspace/scratch/e5ecafe4ccc8/next_root_work/ndu_clock_semantics_20261106/__init__.py": "f01dca55763cf9cc6fd55cf5b18f434bbf00c51f4c0c7b2c5503f45c56f2c494",
+    "/workspace/scratch/e5ecafe4ccc8/next_root_work/ndu_clock_semantics_20261106/semantics.py": "faa9ffe0bdce971d2ab16296f4dc68c8e0fb26fe1947ee697585d27cfa70f821",
+    "/workspace/scratch/e5ecafe4ccc8/next_root_work/ndu_clock_semantics_20261106/study.py": "43e02e8784070cfce5de0297ce1f27ec872a8079060bee9a38a5751f9daf88ea",
+    "/workspace/scratch/e5ecafe4ccc8/next_root_work/ndu_clock_semantics_20261106/protocol.json": "acce872ea374a394b88402e33c33adb26bf6329be11247e21273ab8b99761b6b",
+    "/workspace/scratch/e5ecafe4ccc8/next_root_work/ndu_clock_semantics_20261106/freeze.json": "dc648780b82499471396f9d4339b631ad28fd3be333c4145887c126a9cb17d41",
+    "/workspace/scratch/e5ecafe4ccc8/next_root_work/ndu_clock_semantics_20261106/THEORY.md": "02dff6042f044baa607050073855011db2466b5005cf27a1d80cbb3409c66772",
+    "/workspace/scratch/e5ecafe4ccc8/next_root_work/ndu_clock_semantics_20261106/evidence/run-01/result.json": "83d10a03c60c5fba7a3edfe39277cde96b113a5c07337b431f8979e0ef5995ac",
+    "/workspace/scratch/e5ecafe4ccc8/hepta-research/experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_jac/core.py": "a04d3a1cc038448e9a2f7fc5f5336c60a80f06171833517f045e90cf7a1b6578"
+  },
+  "checks": [
+    {
+      "name": "frozen_python_and_protocol_hashes_match",
+      "passed": true
+    },
+    {
+      "name": "original_run_bound_to_same_source",
+      "passed": true
+    },
+    {
+      "name": "original_run_bound_to_freeze",
+      "passed": true
+    },
+    {
+      "name": "original_protocol_retained",
+      "passed": true
+    },
+    {
+      "name": "registered_safe_and_fee_match_current_builder_defaults",
+      "passed": true
+    },
+    {
+      "name": "coarse_policy_evaluator_agrees_with_optimal_Q_for_probe",
+      "passed": true
+    },
+    {
+      "name": "refined_policy_evaluator_agrees_with_optimal_Q_for_probe",
+      "passed": true
+    },
+    {
+      "name": "retained_core_coarse_probe_value",
+      "passed": true
+    },
+    {
+      "name": "retained_core_refined_probe_value",
+      "passed": true
+    },
+    {
+      "name": "retained_core_root_action_flip",
+      "passed": true
+    },
+    {
+      "name": "complete_timed_cashflows_and_X_observations_match_STOP",
+      "passed": true
+    },
+    {
+      "name": "complete_timed_cashflows_and_X_observations_match_probe",
+      "passed": true
+    },
+    {
+      "name": "manual_pair_has_unique_clock_per_reachable_named_state",
+      "passed": true
+    },
+    {
+      "name": "retained_core_random_actions_mixed_outside_CE",
+      "passed": true
+    },
+    {
+      "name": "random_action_trajectory_CE_differs_from_retained_core",
+      "passed": true
+    },
+    {
+      "name": "exactly_existing_81_grid_cells_no_omission_duplicate_or_extension",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=0.5,gamma=0.5,p=0.1,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=0.5,gamma=0.5,p=0.1,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=0.5,gamma=0.5,p=0.1,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=0.5,gamma=0.5,p=0.1,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=0.5,gamma=0.5,p=0.1,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=0.5,gamma=0.5,p=0.1,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=0.5,gamma=0.5,p=0.1,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=0.5,gamma=0.5,p=0.1,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=0.5,gamma=0.5,p=0.1,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=0.5,gamma=0.5,p=0.5,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=0.5,gamma=0.5,p=0.5,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=0.5,gamma=0.5,p=0.5,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=0.5,gamma=0.5,p=0.5,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=0.5,gamma=0.5,p=0.5,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=0.5,gamma=0.5,p=0.5,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=0.5,gamma=0.5,p=0.5,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=0.5,gamma=0.5,p=0.5,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=0.5,gamma=0.5,p=0.5,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=0.5,gamma=0.5,p=0.9,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=0.5,gamma=0.5,p=0.9,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=0.5,gamma=0.5,p=0.9,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=0.5,gamma=0.5,p=0.9,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=0.5,gamma=0.5,p=0.9,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=0.5,gamma=0.5,p=0.9,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=0.5,gamma=0.5,p=0.9,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=0.5,gamma=0.5,p=0.9,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=0.5,gamma=0.5,p=0.9,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=0.5,gamma=0.8,p=0.1,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=0.5,gamma=0.8,p=0.1,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=0.5,gamma=0.8,p=0.1,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=0.5,gamma=0.8,p=0.1,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=0.5,gamma=0.8,p=0.1,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=0.5,gamma=0.8,p=0.1,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=0.5,gamma=0.8,p=0.1,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=0.5,gamma=0.8,p=0.1,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=0.5,gamma=0.8,p=0.1,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=0.5,gamma=0.8,p=0.5,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=0.5,gamma=0.8,p=0.5,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=0.5,gamma=0.8,p=0.5,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=0.5,gamma=0.8,p=0.5,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=0.5,gamma=0.8,p=0.5,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=0.5,gamma=0.8,p=0.5,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=0.5,gamma=0.8,p=0.5,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=0.5,gamma=0.8,p=0.5,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=0.5,gamma=0.8,p=0.5,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=0.5,gamma=0.8,p=0.9,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=0.5,gamma=0.8,p=0.9,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=0.5,gamma=0.8,p=0.9,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=0.5,gamma=0.8,p=0.9,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=0.5,gamma=0.8,p=0.9,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=0.5,gamma=0.8,p=0.9,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=0.5,gamma=0.8,p=0.9,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=0.5,gamma=0.8,p=0.9,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=0.5,gamma=0.8,p=0.9,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=0.5,gamma=1,p=0.1,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=0.5,gamma=1,p=0.1,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=0.5,gamma=1,p=0.1,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=0.5,gamma=1,p=0.1,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=0.5,gamma=1,p=0.1,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=0.5,gamma=1,p=0.1,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=0.5,gamma=1,p=0.1,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=0.5,gamma=1,p=0.1,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=0.5,gamma=1,p=0.1,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=0.5,gamma=1,p=0.5,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=0.5,gamma=1,p=0.5,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=0.5,gamma=1,p=0.5,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=0.5,gamma=1,p=0.5,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=0.5,gamma=1,p=0.5,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=0.5,gamma=1,p=0.5,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=0.5,gamma=1,p=0.5,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=0.5,gamma=1,p=0.5,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=0.5,gamma=1,p=0.5,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=0.5,gamma=1,p=0.9,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=0.5,gamma=1,p=0.9,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=0.5,gamma=1,p=0.9,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=0.5,gamma=1,p=0.9,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=0.5,gamma=1,p=0.9,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=0.5,gamma=1,p=0.9,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=0.5,gamma=1,p=0.9,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=0.5,gamma=1,p=0.9,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=0.5,gamma=1,p=0.9,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=1,gamma=0.5,p=0.1,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=1,gamma=0.5,p=0.1,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=1,gamma=0.5,p=0.1,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=1,gamma=0.5,p=0.1,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=1,gamma=0.5,p=0.1,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=1,gamma=0.5,p=0.1,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=1,gamma=0.5,p=0.1,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=1,gamma=0.5,p=0.1,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=1,gamma=0.5,p=0.1,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=1,gamma=0.5,p=0.5,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=1,gamma=0.5,p=0.5,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=1,gamma=0.5,p=0.5,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=1,gamma=0.5,p=0.5,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=1,gamma=0.5,p=0.5,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=1,gamma=0.5,p=0.5,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=1,gamma=0.5,p=0.5,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=1,gamma=0.5,p=0.5,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=1,gamma=0.5,p=0.5,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=1,gamma=0.5,p=0.9,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=1,gamma=0.5,p=0.9,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=1,gamma=0.5,p=0.9,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=1,gamma=0.5,p=0.9,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=1,gamma=0.5,p=0.9,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=1,gamma=0.5,p=0.9,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=1,gamma=0.5,p=0.9,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=1,gamma=0.5,p=0.9,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=1,gamma=0.5,p=0.9,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=1,gamma=0.8,p=0.1,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=1,gamma=0.8,p=0.1,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=1,gamma=0.8,p=0.1,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=1,gamma=0.8,p=0.1,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=1,gamma=0.8,p=0.1,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=1,gamma=0.8,p=0.1,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=1,gamma=0.8,p=0.1,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=1,gamma=0.8,p=0.1,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=1,gamma=0.8,p=0.1,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=1,gamma=0.8,p=0.5,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=1,gamma=0.8,p=0.5,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=1,gamma=0.8,p=0.5,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=1,gamma=0.8,p=0.5,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=1,gamma=0.8,p=0.5,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=1,gamma=0.8,p=0.5,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=1,gamma=0.8,p=0.5,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=1,gamma=0.8,p=0.5,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=1,gamma=0.8,p=0.5,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=1,gamma=0.8,p=0.9,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=1,gamma=0.8,p=0.9,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=1,gamma=0.8,p=0.9,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=1,gamma=0.8,p=0.9,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=1,gamma=0.8,p=0.9,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=1,gamma=0.8,p=0.9,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=1,gamma=0.8,p=0.9,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=1,gamma=0.8,p=0.9,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=1,gamma=0.8,p=0.9,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=1,gamma=1,p=0.1,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=1,gamma=1,p=0.1,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=1,gamma=1,p=0.1,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=1,gamma=1,p=0.1,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=1,gamma=1,p=0.1,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=1,gamma=1,p=0.1,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=1,gamma=1,p=0.1,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=1,gamma=1,p=0.1,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=1,gamma=1,p=0.1,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=1,gamma=1,p=0.5,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=1,gamma=1,p=0.5,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=1,gamma=1,p=0.5,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=1,gamma=1,p=0.5,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=1,gamma=1,p=0.5,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=1,gamma=1,p=0.5,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=1,gamma=1,p=0.5,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=1,gamma=1,p=0.5,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=1,gamma=1,p=0.5,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=1,gamma=1,p=0.9,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=1,gamma=1,p=0.9,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=1,gamma=1,p=0.9,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=1,gamma=1,p=0.9,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=1,gamma=1,p=0.9,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=1,gamma=1,p=0.9,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=1,gamma=1,p=0.9,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=1,gamma=1,p=0.9,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=1,gamma=1,p=0.9,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=2,gamma=0.5,p=0.1,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=2,gamma=0.5,p=0.1,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=2,gamma=0.5,p=0.1,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=2,gamma=0.5,p=0.1,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=2,gamma=0.5,p=0.1,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=2,gamma=0.5,p=0.1,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=2,gamma=0.5,p=0.1,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=2,gamma=0.5,p=0.1,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=2,gamma=0.5,p=0.1,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=2,gamma=0.5,p=0.5,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=2,gamma=0.5,p=0.5,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=2,gamma=0.5,p=0.5,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=2,gamma=0.5,p=0.5,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=2,gamma=0.5,p=0.5,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=2,gamma=0.5,p=0.5,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=2,gamma=0.5,p=0.5,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=2,gamma=0.5,p=0.5,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=2,gamma=0.5,p=0.5,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=2,gamma=0.5,p=0.9,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=2,gamma=0.5,p=0.9,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=2,gamma=0.5,p=0.9,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=2,gamma=0.5,p=0.9,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=2,gamma=0.5,p=0.9,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=2,gamma=0.5,p=0.9,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=2,gamma=0.5,p=0.9,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=2,gamma=0.5,p=0.9,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=2,gamma=0.5,p=0.9,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=2,gamma=0.8,p=0.1,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=2,gamma=0.8,p=0.1,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=2,gamma=0.8,p=0.1,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=2,gamma=0.8,p=0.1,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=2,gamma=0.8,p=0.1,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=2,gamma=0.8,p=0.1,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=2,gamma=0.8,p=0.1,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=2,gamma=0.8,p=0.1,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=2,gamma=0.8,p=0.1,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=2,gamma=0.8,p=0.5,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=2,gamma=0.8,p=0.5,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=2,gamma=0.8,p=0.5,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=2,gamma=0.8,p=0.5,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=2,gamma=0.8,p=0.5,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=2,gamma=0.8,p=0.5,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=2,gamma=0.8,p=0.5,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=2,gamma=0.8,p=0.5,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=2,gamma=0.8,p=0.5,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=2,gamma=0.8,p=0.9,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=2,gamma=0.8,p=0.9,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=2,gamma=0.8,p=0.9,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=2,gamma=0.8,p=0.9,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=2,gamma=0.8,p=0.9,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=2,gamma=0.8,p=0.9,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=2,gamma=0.8,p=0.9,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=2,gamma=0.8,p=0.9,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=2,gamma=0.8,p=0.9,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=2,gamma=1,p=0.1,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=2,gamma=1,p=0.1,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=2,gamma=1,p=0.1,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=2,gamma=1,p=0.1,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=2,gamma=1,p=0.1,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=2,gamma=1,p=0.1,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=2,gamma=1,p=0.1,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=2,gamma=1,p=0.1,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=2,gamma=1,p=0.1,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=2,gamma=1,p=0.5,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=2,gamma=1,p=0.5,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=2,gamma=1,p=0.5,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=2,gamma=1,p=0.5,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=2,gamma=1,p=0.5,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=2,gamma=1,p=0.5,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=2,gamma=1,p=0.5,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=2,gamma=1,p=0.5,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=2,gamma=1,p=0.5,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=2,gamma=1,p=0.9,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=2,gamma=1,p=0.9,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=2,gamma=1,p=0.9,duration=1",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=2,gamma=1,p=0.9,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=2,gamma=1,p=0.9,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=2,gamma=1,p=0.9,duration=2",
+      "passed": true
+    },
+    {
+      "name": "independent_closed_form_all_values_eta=2,gamma=1,p=0.9,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_root_choices_eta=2,gamma=1,p=0.9,duration=3",
+      "passed": true
+    },
+    {
+      "name": "independent_terminal_payoff_time_law_eta=2,gamma=1,p=0.9,duration=3",
+      "passed": true
+    },
+    {
+      "name": "two_fixed_local_flips_reproduced",
+      "passed": true
+    },
+    {
+      "name": "zero_matched_strong_baseline_difference_claim_agrees_with_closed_form",
+      "passed": true
+    },
+    {
+      "name": "518_original_checks_have_correct_declared_accounting",
+      "passed": true
+    },
+    {
+      "name": "existing_random_duration_probe_matches_direct_moment",
+      "passed": true
+    },
+    {
+      "name": "unique_clock_precondition_matters_for_policy_enumeration",
+      "passed": true
+    },
+    {
+      "name": "hidden_past_cashflow_requires_additional_conditional_sufficiency",
+      "passed": true
+    },
+    {
+      "name": "reviewed_sources_and_evidence_not_modified",
+      "passed": true
+    }
+  ],
+  "check_count": 266,
+  "all_checks_pass": true,
+  "retained_core_reproduction": [
+    {
+      "representation": "coarse",
+      "probe_value": 0.17994274652086123,
+      "forced_probe_policy_value": 0.17994274652086123,
+      "optimal_value": 0.17994274652086123,
+      "root_policy": {
+        "STOP": 0.0,
+        "probe": 1.0
+      },
+      "clock_sets": {
+        "root": [
+          "0"
+        ],
+        "zero": [
+          "1"
+        ],
+        "one": [
+          "1"
+        ]
+      }
+    },
+    {
+      "representation": "refined",
+      "probe_value": 0.13155479237924317,
+      "forced_probe_policy_value": 0.13155479237924317,
+      "optimal_value": 0.16,
+      "root_policy": {
+        "STOP": 1.0,
+        "probe": 0.0
+      },
+      "clock_sets": {
+        "root": [
+          "0"
+        ],
+        "resolve": [
+          "1"
+        ],
+        "zero": [
+          "1"
+        ],
+        "one": [
+          "1"
+        ]
+      }
+    }
+  ],
+  "physical_transcript_reconstruction": {
+    "STOP": [
+      {
+        "probability": "1",
+        "cashflows": [
+          [
+            "0",
+            "4/25"
+          ]
+        ],
+        "observations": [],
+        "terminal_time": "0"
+      }
+    ],
+    "probe": [
+      {
+        "probability": "1/2",
+        "cashflows": [
+          [
+            "0",
+            "-1/100"
+          ]
+        ],
+        "observations": [
+          [
+            "1",
+            0
+          ]
+        ],
+        "terminal_time": "1"
+      },
+      {
+        "probability": "1/2",
+        "cashflows": [
+          [
+            "0",
+            "-1/100"
+          ],
+          [
+            "1",
+            "1"
+          ]
+        ],
+        "observations": [
+          [
+            "1",
+            1
+          ]
+        ],
+        "terminal_time": "1"
+      }
+    ]
+  },
+  "action_randomization": {
+    "retained_outside_CE": 0.5,
+    "terminal_inside_CE": "0.283109584758486406486752657549936068320583535775948448285269396352710171156468145933170384611842850604292506762510403877026348639072412"
+  },
+  "independent_closed_form_rows": [
+    {
+      "cell": "eta=0.5,gamma=0.5,p=0.1,duration=1",
+      "maximum_decimal_discrepancy": "5.5966139226318406341929728E-111",
+      "trajectory_probe": "0.0347364715670702788056760881453562049162043002176921095060649682032620074496774450819876842128401644125514462884033860773681593658070274",
+      "fixed_refined_probe": "0.0301419487504051885478784971688772255437512805408931709155917748534078609224268557353133077359084164980726296780115495579479722558884858"
+    },
+    {
+      "cell": "eta=0.5,gamma=0.5,p=0.1,duration=2",
+      "maximum_decimal_discrepancy": "3.0394200080163947381314374E-111",
+      "trajectory_probe": "0.0136397804593339543594809808174567450626644929540071843703105938474847152293839333545109131672720502700679151209605799919836052618685626",
+      "fixed_refined_probe": "0.0100709743752025942739392485844386127718756402704465854577958874267039304612134278676566538679542082490363148390057747789739861279442428"
+    },
+    {
+      "cell": "eta=0.5,gamma=0.5,p=0.1,duration=3",
+      "maximum_decimal_discrepancy": "3.4137211236857864788807904E-111",
+      "trajectory_probe": "0.0021542441513155403753771105982973267794494765702723625823647953086986485089150212560992725176512306750590335764137211236857864788807904",
+      "fixed_refined_probe": "0.0000354871876012971369696242922193063859378201352232927288979437133519652306067139338283269339771041245181574195028873894869930639721214"
+    },
+    {
+      "cell": "eta=0.5,gamma=0.5,p=0.5,duration=1",
+      "maximum_decimal_discrepancy": "1.037103604184785892073166E-111",
+      "trajectory_probe": "0.224415521362203494418791979599717251970650089853861859794325813836847327763756638545686059806717616653067120558962896395815214107926834",
+      "fixed_refined_probe": "0.20907019637983862854423476637700581831990393969239241291986473439420008923019874079041813322480277946759610985060701056025100379542279"
+    },
+    {
+      "cell": "eta=0.5,gamma=0.5,p=0.5,duration=2",
+      "maximum_decimal_discrepancy": "7.758812961501313918852786E-111",
+      "trajectory_probe": "0.111096290485552486347235411617875133401887981101307638458894843997168168046854646393572239503708604543001388637758812961501313918852786",
+      "fixed_refined_probe": "0.099535098189919314272117383188502909159951969846196206459932367197100044615099370395209066612401389733798054925303505280125501897711395"
+    },
+    {
+      "cell": "eta=0.5,gamma=0.5,p=0.5,duration=3",
+      "maximum_decimal_discrepancy": "2.4184569622550847208726285E-111",
+      "trajectory_probe": "0.0515235964043395536910533655138502130286096791180298165109000841511821902446331990737509790018289397398906307475815430377449152791273716",
+      "fixed_refined_probe": "0.0447675490949596571360586915942514545799759849230981032299661835985500223075496851976045333062006948668990274626517526400627509488556976"
+    },
+    {
+      "cell": "eta=0.5,gamma=0.5,p=0.9,duration=1",
+      "maximum_decimal_discrepancy": "9.129630673902823147534222E-111",
+      "trajectory_probe": "0.43398666422935970040715705917879782166094318715220709814646969278801334194066629829226976951515603261925720945631554751804333043402282",
+      "fixed_refined_probe": "0.427145276526269618241081991764020977443485192691671557387983460029592556900360711527370872941673737981322687170870369326097176852465778"
+    },
+    {
+      "cell": "eta=0.5,gamma=0.5,p=0.9,duration=2",
+      "maximum_decimal_discrepancy": "2.3086504876391837049537826E-110",
+      "trajectory_probe": "0.213546036359118434020967290969579648658354527407594723547288352935253654896147742657857450400640783645641211363086504876391837049537826",
+      "fixed_refined_probe": "0.208572638263134809120540995882010488721742596345835778693991730014796278450180355763685436470836868990661343585435184663048588426232888"
+    },
+    {
+      "cell": "eta=0.5,gamma=0.5,p=0.9,duration=3",
+      "maximum_decimal_discrepancy": "7.282407668475705786883556E-111",
+      "trajectory_probe": "0.102142525584736862372950870756374116129675004328803802599848253787047219169250062274239624656092914684324770112761911116176242548521487",
+      "fixed_refined_probe": "0.099286319131567404560270497941005244360871298172917889346995865007398139225090177881842718235418434495330671792717592331524294213116444"
+    },
+    {
+      "cell": "eta=0.5,gamma=0.8,p=0.1,duration=1",
+      "maximum_decimal_discrepancy": "4.098057231330089889124919E-111",
+      "trajectory_probe": "0.057047374557270420985168859045425585296179242278456365058181553654591214279494794823995729874484716702816171443901942768669910110875081",
+      "fixed_refined_probe": "0.0542271180006483016766055954702035608700020488654290734649468397654525774758829691765012923774534663969162074848184792927167556094215772"
+    },
+    {
+      "cell": "eta=0.5,gamma=0.8,p=0.1,duration=2",
+      "maximum_decimal_discrepancy": "4.2041237981505744131186732E-111",
+      "trajectory_probe": "0.0455341151131590066693783002692711493520609734161638594515718279714950744217556772201529060390242707870903858237958762018494255868813268",
+      "fixed_refined_probe": "0.0413816944005186413412844763761628486960016390923432587719574718123620619807063753412010339019627731175329659878547834341734044875372618"
+    },
+    {
+      "cell": "eta=0.5,gamma=0.8,p=0.1,duration=3",
+      "maximum_decimal_discrepancy": "6.4993977964696446468299158E-111",
+      "trajectory_probe": "0.0356895382080237101116586511167089934663594035949949409836307004122962627862075351188577295569214437019754736855006022035303553531700842",
+      "fixed_refined_probe": "0.0311053555204149130730275811009302789568013112738746070175659774498896495845651002729608271215702184940263727902838267473387235900298094"
+    },
+    {
+      "cell": "eta=0.5,gamma=0.8,p=0.5,duration=1",
+      "maximum_decimal_discrepancy": "1.5860823806123286904240705E-110",
+      "trajectory_probe": "0.350263856319985371497720341224528149613693938708538187519159906083475090009707690321291197826174053404434582815860823806123286904240704",
+      "fixed_refined_probe": "0.340512314207741805670775626203209309311846303507827860671783575030720142768317985264669013159684447148153775760971216896401606072676464"
+    },
+    {
+      "cell": "eta=0.5,gamma=0.8,p=0.5,duration=2",
+      "maximum_decimal_discrepancy": "7.547453696593401263567182E-111",
+      "trajectory_probe": "0.284508486759739985790166956689472810415693106743788289417150561068373384523367884464051113770840984852931160392452546303406598736432818",
+      "fixed_refined_probe": "0.270409851366193444536620500962567447449477042806262288537426860024576114214654388211735210527747557718523020608776973517121284858141172"
+    },
+    {
+      "cell": "eta=0.5,gamma=0.8,p=0.5,duration=3",
+      "maximum_decimal_discrepancy": "4.644062018801626652622148E-111",
+      "trajectory_probe": "0.229660544741003098314409959538914198360641583382156986849174252540618354850098468881832321236742277669589632635355937981198373347377852",
+      "fixed_refined_probe": "0.214327881092954755629296400770053957959581634245009830829941488019660891371723510569388168422198046174818416487021578813697027886512936"
+    },
+    {
+      "cell": "eta=0.5,gamma=0.8,p=0.9,duration=1",
+      "maximum_decimal_discrepancy": "1.6607409078244517036054756E-110",
+      "trajectory_probe": "0.693977478643579321969251801114765424519189442720194026135126355688030959090064363765355791861286611378429486515233820822341962662586684",
+      "fixed_refined_probe": "0.689432442442031389185731186822433563909576308306674491820773536047348091040577138443793396706677980770116299473392590921755482963945244"
+    },
+    {
+      "cell": "eta=0.5,gamma=0.8,p=0.9,duration=2",
+      "maximum_decimal_discrepancy": "1.1285927262595613628843804E-110",
+      "trajectory_probe": "0.555961924370713040630830621436524925253602618261793526165822825803664979424512177662002277863874338035221805626008087645818385648017324",
+      "fixed_refined_probe": "0.549545953953625111348584949457946851127661046645339593456618828837878472832461710755034717365342384616093039578714072737404386371156196"
+    },
+    {
+      "cell": "eta=0.5,gamma=0.8,p=0.9,duration=3",
+      "maximum_decimal_discrepancy": "1.0773465201215878191910556E-110",
+      "trajectory_probe": "0.444484449040036517416482882956070708288323576154275390934014987750596764898727282138596315314919975520686953110773465201215878191910556",
+      "fixed_refined_probe": "0.437636763162900089078867959566357480902128837316271674765295063070302778265969368604027773892273907692874431662971258189923509096924956"
+    },
+    {
+      "cell": "eta=0.5,gamma=1,p=0.1,duration=1",
+      "maximum_decimal_discrepancy": "2.0230991158959445117769716E-111",
+      "trajectory_probe": "0.0702838975008103770957569943377544510875025610817863418311835497068157218448537114706266154718168329961452593560230991158959445117769716",
+      "fixed_refined_probe": "0.0702838975008103770957569943377544510875025610817863418311835497068157218448537114706266154718168329961452593560230991158959445117769716"
+    },
+    {
+      "cell": "eta=0.5,gamma=1,p=0.1,duration=2",
+      "maximum_decimal_discrepancy": "2.0230991158959445117769716E-111",
+      "trajectory_probe": "0.0702838975008103770957569943377544510875025610817863418311835497068157218448537114706266154718168329961452593560230991158959445117769716",
+      "fixed_refined_probe": "0.0702838975008103770957569943377544510875025610817863418311835497068157218448537114706266154718168329961452593560230991158959445117769716"
+    },
+    {
+      "cell": "eta=0.5,gamma=1,p=0.1,duration=3",
+      "maximum_decimal_discrepancy": "2.0230991158959445117769716E-111",
+      "trajectory_probe": "0.0702838975008103770957569943377544510875025610817863418311835497068157218448537114706266154718168329961452593560230991158959445117769716",
+      "fixed_refined_probe": "0.0702838975008103770957569943377544510875025610817863418311835497068157218448537114706266154718168329961452593560230991158959445117769716"
+    },
+    {
+      "cell": "eta=0.5,gamma=1,p=0.5,duration=1",
+      "maximum_decimal_discrepancy": "1.21402112050200759084558E-111",
+      "trajectory_probe": "0.42814039275967725708846953275401163663980787938478482583972946878840017846039748158083626644960555893519221970121402112050200759084558",
+      "fixed_refined_probe": "0.42814039275967725708846953275401163663980787938478482583972946878840017846039748158083626644960555893519221970121402112050200759084558"
+    },
+    {
+      "cell": "eta=0.5,gamma=1,p=0.5,duration=2",
+      "maximum_decimal_discrepancy": "1.21402112050200759084558E-111",
+      "trajectory_probe": "0.42814039275967725708846953275401163663980787938478482583972946878840017846039748158083626644960555893519221970121402112050200759084558",
+      "fixed_refined_probe": "0.42814039275967725708846953275401163663980787938478482583972946878840017846039748158083626644960555893519221970121402112050200759084558"
+    },
+    {
+      "cell": "eta=0.5,gamma=1,p=0.5,duration=3",
+      "maximum_decimal_discrepancy": "1.21402112050200759084558E-111",
+      "trajectory_probe": "0.42814039275967725708846953275401163663980787938478482583972946878840017846039748158083626644960555893519221970121402112050200759084558",
+      "fixed_refined_probe": "0.42814039275967725708846953275401163663980787938478482583972946878840017846039748158083626644960555893519221970121402112050200759084558"
+    },
+    {
+      "cell": "eta=0.5,gamma=1,p=0.9,duration=1",
+      "maximum_decimal_discrepancy": "1.8259261347805646295068444E-110",
+      "trajectory_probe": "0.864290553052539236482163983528041954886970385383343114775966920059185113800721423054741745883347475962645374341740738652194353704931556",
+      "fixed_refined_probe": "0.864290553052539236482163983528041954886970385383343114775966920059185113800721423054741745883347475962645374341740738652194353704931556"
+    },
+    {
+      "cell": "eta=0.5,gamma=1,p=0.9,duration=2",
+      "maximum_decimal_discrepancy": "1.8259261347805646295068444E-110",
+      "trajectory_probe": "0.864290553052539236482163983528041954886970385383343114775966920059185113800721423054741745883347475962645374341740738652194353704931556",
+      "fixed_refined_probe": "0.864290553052539236482163983528041954886970385383343114775966920059185113800721423054741745883347475962645374341740738652194353704931556"
+    },
+    {
+      "cell": "eta=0.5,gamma=1,p=0.9,duration=3",
+      "maximum_decimal_discrepancy": "1.8259261347805646295068444E-110",
+      "trajectory_probe": "0.864290553052539236482163983528041954886970385383343114775966920059185113800721423054741745883347475962645374341740738652194353704931556",
+      "fixed_refined_probe": "0.864290553052539236482163983528041954886970385383343114775966920059185113800721423054741745883347475962645374341740738652194353704931556"
+    },
+    {
+      "cell": "eta=1,gamma=0.5,p=0.1,duration=1",
+      "maximum_decimal_discrepancy": "1.8960463668326069703305060E-111",
+      "trajectory_probe": "0.0301419487504051885478784971688772255437512805408931709155917748534078609224268557353133077359084164980726296780115495579479722558884858",
+      "fixed_refined_probe": "0.0226491679994168476815817520804113713013259244495482415641084227088725592760946904166651931269534602104132653898960463668326069703305060"
+    },
+    {
+      "cell": "eta=1,gamma=0.5,p=0.1,duration=2",
+      "maximum_decimal_discrepancy": "2.7983069613159203170964863E-111",
+      "trajectory_probe": "0.0123682357835351394028380440726781024581021501088460547530324841016310037248387225409938421064200822062757231442016930386840796829035137",
+      "fixed_refined_probe": "0.0063245839997084238407908760402056856506629622247741207820542113544362796380473452083325965634767301052066326949480231834163034851652530"
+    },
+    {
+      "cell": "eta=1,gamma=0.5,p=0.1,duration=3",
+      "maximum_decimal_discrepancy": "1.5197100040081973690657187E-111",
+      "trajectory_probe": "0.0018198902296669771797404904087283725313322464770035921851552969237423576146919666772554565836360251350339575604802899959918026309342813",
+      "fixed_refined_probe": "-0.00183770800014578807960456197989715717466851888761293960897289432278186018097632739583370171826163494739668365252598840829184825741737350"
+    },
+    {
+      "cell": "eta=1,gamma=0.5,p=0.5,duration=1",
+      "maximum_decimal_discrepancy": "2.553166105865130264839828E-111",
+      "trajectory_probe": "0.209070196379838628544234766377005818319903939692392412919864734394200089230198740790418133224802779467596109850607010560251003795422790",
+      "fixed_refined_probe": "0.179942746520861237684118313245160463080110024344953439700808247328099360230253747334831460359563148076490217102553166105865130264839828"
+    },
+    {
+      "cell": "eta=1,gamma=0.5,p=0.5,duration=2",
+      "maximum_decimal_discrepancy": "1.2765830529325651324199138E-111",
+      "trajectory_probe": "0.107207760681101747209395989799858625985325044926930929897162906918423663881878319272843029903358808326533560279481448197907607053963417",
+      "fixed_refined_probe": "0.0849713732604306188420591566225802315400550121724767198504041236640496801151268736674157301797815740382451085512765830529325651324199138"
+    },
+    {
+      "cell": "eta=1,gamma=0.5,p=0.5,duration=3",
+      "maximum_decimal_discrepancy": "1.8794064807506569594263928E-111",
+      "trajectory_probe": "0.0505481452427762431736177058089375667009439905506538192294474219985840840234273231967861197518543022715006943188794064807506569594263928",
+      "fixed_refined_probe": "0.0374856866302153094210295783112901157700275060862383599252020618320248400575634368337078650898907870191225542756382915264662825662099569"
+    },
+    {
+      "cell": "eta=1,gamma=0.5,p=0.9,duration=1",
+      "maximum_decimal_discrepancy": "9.129630673902823147534222E-111",
+      "trajectory_probe": "0.427145276526269618241081991764020977443485192691671557387983460029592556900360711527370872941673737981322687170870369326097176852465778",
+      "fixed_refined_probe": "0.410717460629785444499523959140211260425914436792093350378799443430626941043288955929589250842558342545382512057753886912262063131565519"
+    },
+    {
+      "cell": "eta=1,gamma=0.5,p=0.9,duration=2",
+      "maximum_decimal_discrepancy": "1.842226240978334782988590E-111",
+      "trajectory_probe": "0.211993332114679850203578529589398910830471593576103549073234846394006670970333149146134884757578016309628604728157773759021665217011410",
+      "fixed_refined_probe": "0.200358730314892722249761979570105630212957218396046675189399721715313470521644477964794625421279171272691256028876943456131031565782760"
+    },
+    {
+      "cell": "eta=1,gamma=0.5,p=0.9,duration=3",
+      "maximum_decimal_discrepancy": "1.1543252438195918524768913E-110",
+      "trajectory_probe": "0.101773018179559217010483645484789824329177263703797361773644176467626827448073871328928725200320391822820605681543252438195918524768913",
+      "fixed_refined_probe": "0.095179365157446361124880989785052815106478609198023337594699860857656735260822238982397312710639585636345628014438471728065515782891380"
+    },
+    {
+      "cell": "eta=1,gamma=0.8,p=0.1,duration=1",
+      "maximum_decimal_discrepancy": "4.8819160280863922085334743E-111",
+      "trajectory_probe": "0.0466413630977836514746518396913783896443135249848010102175284659208760091956946217237485738017659468492021976771180839719136077914665257",
+      "fixed_refined_probe": "0.0422386687990669562905308033286581940821214791192771865025734763341960948417515046666643090031255363366612246238336741869321711525288096"
+    },
+    {
+      "cell": "eta=1,gamma=0.8,p=0.1,duration=2",
+      "maximum_decimal_discrepancy": "2.4208987856871870569611550E-111",
+      "trajectory_probe": "0.0384245264985129188341816354625299612105999306441656237826964674254660037968975733521674334427678395802502656714208987856871870569611550",
+      "fixed_refined_probe": "0.0317909350392535650324246426629265552656971832954217492020587810673568758734012037333314472025004290693289796990669393495457369220230477"
+    },
+    {
+      "cell": "eta=1,gamma=0.8,p=0.1,duration=3",
+      "maximum_decimal_discrepancy": "2.1508552449339150969596277E-111",
+      "trajectory_probe": "0.0308953526436528830306203726018879872059263865001294095170762033050098475916277460832310216942996552530182989958491447550660849030403723",
+      "fixed_refined_probe": "0.0234327480314028520259397141303412442125577466363373993616470248538855006987209629866651577620003432554631837592535514796365895376184381"
+    },
+    {
+      "cell": "eta=1,gamma=0.8,p=0.5,duration=1",
+      "maximum_decimal_discrepancy": "4.085065769384208423743724E-111",
+      "trajectory_probe": "0.312046514612167583411093206543445798593863044479952946365442998031191054443427676356719947233495275996279461010270821919827845675077581",
+      "fixed_refined_probe": "0.293908394433377980294589301192256740928176038951925503521293195724958976368405995735730336575301036922384347364085065769384208423743724"
+    },
+    {
+      "cell": "eta=1,gamma=0.8,p=0.5,duration=2",
+      "maximum_decimal_discrepancy": "4.016734472220487715900966E-111",
+      "trajectory_probe": "0.259650670337411044802418718108977392886116033206389229396824797228941518789532638924269008426670661341841082304016734472220487715900966",
+      "fixed_refined_probe": "0.233126715546702384235671440953805392742540831161540402817034556579967181094724796588584269260240829537907477891268052615507366738994979"
+    },
+    {
+      "cell": "eta=1,gamma=0.8,p=0.5,duration=3",
+      "maximum_decimal_discrepancy": "3.014442092405893391195983E-111",
+      "trajectory_probe": "0.213583780797529232304317897111990383905847579795333071511567791075375896299458498523989175532424013992422007191990687638540506309667456",
+      "fixed_refined_probe": "0.184501372437361907388537152763044314194032664929232322253627645263973744875779837270867415408192663630325982313014442092405893391195983"
+    },
+    {
+      "cell": "eta=1,gamma=0.8,p=0.9,duration=1",
+      "maximum_decimal_discrepancy": "2.406219059619301010504830E-111",
+      "trajectory_probe": "0.674393470906100355557187534295394006248626668171924930550334684637168996445910259476899024518790852002969148209802196231926489544100586",
+      "fixed_refined_probe": "0.663147937007656711199238334624338016681463098867349360606079109489003105669262329487342801348093348072612019292406219059619301010504830"
+    },
+    {
+      "cell": "eta=1,gamma=0.8,p=0.9,duration=2",
+      "maximum_decimal_discrepancy": "3.924975247695440808403864E-111",
+      "trajectory_probe": "0.544145210997516430833157349474715734121086603382637042447106326281677743275358548619251679585386611067760494418543582140182084944868149",
+      "fixed_refined_probe": "0.528518349606125368959390667699470413345170479093879488484863287591202484535409863589874241078474678458089615433924975247695440808403864"
+    },
+    {
+      "cell": "eta=1,gamma=0.8,p=0.9,duration=3",
+      "maximum_decimal_discrepancy": "7.139980198156352646723091E-111",
+      "trajectory_probe": "0.437277891640000504800419531409650359376738348773120007759812965208855928202724476402910695342665791691933948669531529580635410500695486",
+      "fixed_refined_probe": "0.420814679684900295167512534159576330676136383275103590787890630072961987628327890871899392862779742766471692347139980198156352646723091"
+    },
+    {
+      "cell": "eta=1,gamma=1,p=0.1,duration=1",
+      "maximum_decimal_discrepancy": "2.7920927336652139406610120E-111",
+      "trajectory_probe": "0.0552983359988336953631635041608227426026518488990964831282168454177451185521893808333303862539069204208265307797920927336652139406610120",
+      "fixed_refined_probe": "0.0552983359988336953631635041608227426026518488990964831282168454177451185521893808333303862539069204208265307797920927336652139406610120"
+    },
+    {
+      "cell": "eta=1,gamma=1,p=0.1,duration=2",
+      "maximum_decimal_discrepancy": "2.7920927336652139406610120E-111",
+      "trajectory_probe": "0.0552983359988336953631635041608227426026518488990964831282168454177451185521893808333303862539069204208265307797920927336652139406610120",
+      "fixed_refined_probe": "0.0552983359988336953631635041608227426026518488990964831282168454177451185521893808333303862539069204208265307797920927336652139406610120"
+    },
+    {
+      "cell": "eta=1,gamma=1,p=0.1,duration=3",
+      "maximum_decimal_discrepancy": "2.7920927336652139406610120E-111",
+      "trajectory_probe": "0.0552983359988336953631635041608227426026518488990964831282168454177451185521893808333303862539069204208265307797920927336652139406610120",
+      "fixed_refined_probe": "0.0552983359988336953631635041608227426026518488990964831282168454177451185521893808333303862539069204208265307797920927336652139406610120"
+    },
+    {
+      "cell": "eta=1,gamma=1,p=0.5,duration=1",
+      "maximum_decimal_discrepancy": "5.106332211730260529679655E-111",
+      "trajectory_probe": "0.369885493041722475368236626490320926160220048689906879401616494656198720460507494669662920719126296152980434205106332211730260529679655",
+      "fixed_refined_probe": "0.369885493041722475368236626490320926160220048689906879401616494656198720460507494669662920719126296152980434205106332211730260529679655"
+    },
+    {
+      "cell": "eta=1,gamma=1,p=0.5,duration=2",
+      "maximum_decimal_discrepancy": "5.106332211730260529679655E-111",
+      "trajectory_probe": "0.369885493041722475368236626490320926160220048689906879401616494656198720460507494669662920719126296152980434205106332211730260529679655",
+      "fixed_refined_probe": "0.369885493041722475368236626490320926160220048689906879401616494656198720460507494669662920719126296152980434205106332211730260529679655"
+    },
+    {
+      "cell": "eta=1,gamma=1,p=0.5,duration=3",
+      "maximum_decimal_discrepancy": "5.106332211730260529679655E-111",
+      "trajectory_probe": "0.369885493041722475368236626490320926160220048689906879401616494656198720460507494669662920719126296152980434205106332211730260529679655",
+      "fixed_refined_probe": "0.369885493041722475368236626490320926160220048689906879401616494656198720460507494669662920719126296152980434205106332211730260529679655"
+    },
+    {
+      "cell": "eta=1,gamma=1,p=0.9,duration=1",
+      "maximum_decimal_discrepancy": "5.507773824524126263131038E-111",
+      "trajectory_probe": "0.831434921259570888999047918280422520851828873584186700757598886861253882086577911859178501685116685090765024115507773824524126263131038",
+      "fixed_refined_probe": "0.831434921259570888999047918280422520851828873584186700757598886861253882086577911859178501685116685090765024115507773824524126263131038"
+    },
+    {
+      "cell": "eta=1,gamma=1,p=0.9,duration=2",
+      "maximum_decimal_discrepancy": "5.507773824524126263131038E-111",
+      "trajectory_probe": "0.831434921259570888999047918280422520851828873584186700757598886861253882086577911859178501685116685090765024115507773824524126263131038",
+      "fixed_refined_probe": "0.831434921259570888999047918280422520851828873584186700757598886861253882086577911859178501685116685090765024115507773824524126263131038"
+    },
+    {
+      "cell": "eta=1,gamma=1,p=0.9,duration=3",
+      "maximum_decimal_discrepancy": "5.507773824524126263131038E-111",
+      "trajectory_probe": "0.831434921259570888999047918280422520851828873584186700757598886861253882086577911859178501685116685090765024115507773824524126263131038",
+      "fixed_refined_probe": "0.831434921259570888999047918280422520851828873584186700757598886861253882086577911859178501685116685090765024115507773824524126263131038"
+    },
+    {
+      "cell": "eta=2,gamma=0.5,p=0.1,duration=1",
+      "maximum_decimal_discrepancy": "1.8960463668326069703305060E-111",
+      "trajectory_probe": "0.0226491679994168476815817520804113713013259244495482415641084227088725592760946904166651931269534602104132653898960463668326069703305060",
+      "fixed_refined_probe": "0.0126088001729623026885881002149826384884263993477874738300052115653916832292710755247024834044978795009177984414648793681375240984978952"
+    },
+    {
+      "cell": "eta=2,gamma=0.5,p=0.1,duration=2",
+      "maximum_decimal_discrepancy": "1.0057747789739861279442429E-111",
+      "trajectory_probe": "0.0100709743752025942739392485844386127718756402704465854577958874267039304612134278676566538679542082490363148390057747789739861279442429",
+      "fixed_refined_probe": "0.0013044000864811513442940501074913192442131996738937369150026057826958416146355377623512417022489397504588992207324396840687620492489476"
+    },
+    {
+      "cell": "eta=2,gamma=0.5,p=0.1,duration=3",
+      "maximum_decimal_discrepancy": "1.8991534806579601585482432E-111",
+      "trajectory_probe": "0.0011841178917675697014190220363390512290510750544230273765162420508155018624193612704969210532100411031378615721008465193420398414517568",
+      "fixed_refined_probe": "-0.0043477999567594243278529749462543403778934001630531315424986971086520791926822311188243791488755301247705503896337801579656189753755262"
+    },
+    {
+      "cell": "eta=2,gamma=0.5,p=0.5,duration=1",
+      "maximum_decimal_discrepancy": "2.553166105865130264839828E-111",
+      "trajectory_probe": "0.179942746520861237684118313245160463080110024344953439700808247328099360230253747334831460359563148076490217102553166105865130264839828",
+      "fixed_refined_probe": "0.131554792379243203243376328774968034160291767887974224142634698176355085578234072966585192305921425302146253381255201938513174319536206"
+    },
+    {
+      "cell": "eta=2,gamma=0.5,p=0.5,duration=2",
+      "maximum_decimal_discrepancy": "5.303505280125501897711395E-111",
+      "trajectory_probe": "0.099535098189919314272117383188502909159951969846196206459932367197100044615099370395209066612401389733798054925303505280125501897711395",
+      "fixed_refined_probe": "0.060777396189621601621688164387484017080145883943987112071317349088177542789117036483292596152960712651073126690627600969256587159768103"
+    },
+    {
+      "cell": "eta=2,gamma=0.5,p=0.5,duration=3",
+      "maximum_decimal_discrepancy": "3.138004846282935798840516E-112",
+      "trajectory_probe": "0.0486038803405508736046979948999293129926625224634654649485814534592118319409391596364215149516794041632667801397407240989538035269817085",
+      "fixed_refined_probe": "0.0253886980948108008108440821937420085400729419719935560356586745440887713945585182416462980764803563255365633453138004846282935798840516"
+    },
+    {
+      "cell": "eta=2,gamma=0.5,p=0.9,duration=1",
+      "maximum_decimal_discrepancy": "1.0772847837769303778166502E-110",
+      "trajectory_probe": "0.410717460629785444499523959140211260425914436792093350378799443430626941043288955929589250842558342545382512057753886912262063131565519",
+      "fixed_refined_probe": "0.366492822988955312479207111498617294873131926357627302632635438286168534710157558634548699436680179606466973960772847837769303778166502"
+    },
+    {
+      "cell": "eta=2,gamma=0.5,p=0.9,duration=2",
+      "maximum_decimal_discrepancy": "4.564815336951411573767112E-111",
+      "trajectory_probe": "0.208572638263134809120540995882010488721742596345835778693991730014796278450180355763685436470836868990661343585435184663048588426232889",
+      "fixed_refined_probe": "0.178246411494477656239603555749308647436565963178813651316317719143084267355078779317274349718340089803233486980386423918884651889083251"
+    },
+    {
+      "cell": "eta=2,gamma=0.5,p=0.9,duration=3",
+      "maximum_decimal_discrepancy": "4.078886879510832608505705E-111",
+      "trajectory_probe": "0.100996666057339925101789264794699455415235796788051774536617423197003335485166574573067442378789008154814302364078886879510832608505705",
+      "fixed_refined_probe": "0.0841232057472388281198017778746543237182829815894068256581588595715421336775393896586371748591700449016167434901932119594423259445416255"
+    },
+    {
+      "cell": "eta=2,gamma=0.8,p=0.1,duration=1",
+      "maximum_decimal_discrepancy": "1.9972574602537099589819166E-111",
+      "trajectory_probe": "0.0315877434616823686722694198346572771406721181216127870454435895177041381913877423580554064032097295637987071369972574602537099589819166",
+      "fixed_refined_probe": "0.0261740802767396843017409603439722215814822389564599581280083385046266931668337208395239734471966072014684775063438069890200385575966323"
+    },
+    {
+      "cell": "eta=2,gamma=0.8,p=0.1,duration=2",
+      "maximum_decimal_discrepancy": "1.8276834258201089703581446E-111",
+      "trajectory_probe": "0.0274675331803706847417081012276994474663370849366163761251371488007370937096437421115483581750531238130434146908276834258201089703581446",
+      "fixed_refined_probe": "0.0189392642213917474413927682751777772651857911651679665024066708037013545334669766716191787577572857611747820050750455912160308460773058"
+    },
+    {
+      "cell": "eta=2,gamma=0.8,p=0.1,duration=3",
+      "maximum_decimal_discrepancy": "1.0328607422999055568276981E-111",
+      "trajectory_probe": "0.0231150186013866494157924946004995681502031155283641230714801211957687288499262267844470149985047552961200547919671392577000944431723019",
+      "fixed_refined_probe": "0.0131514113771133979531142146201422218121486329321343732019253366429610836267735813372953430062058286089398256040600364729728246768618446"
+    },
+    {
+      "cell": "eta=2,gamma=0.8,p=0.5,duration=1",
+      "maximum_decimal_discrepancy": "1.778100003015324242080489E-111",
+      "trajectory_probe": "0.244623219835803239854868454764665612755298804892521090709352312885426086954365230370470099487523698200379095621778100003015324242080488",
+      "fixed_refined_probe": "0.216487667806789125189402126039948854656466828620758758628215517082168136925174516746536307689474280483434005410008323101621078911257930"
+    },
+    {
+      "cell": "eta=2,gamma=0.8,p=0.5,duration=2",
+      "maximum_decimal_discrepancy": "1.1764897067420463155437450E-110",
+      "trajectory_probe": "0.213910819223714138358085927722503350876229917198139980036201560028952188828281623262474059565959244451034039391764897067420463155437450",
+      "fixed_refined_probe": "0.171190134245431300151521700831959083725173462896607006902572413665734509540139613397229046151579424386747204328006658481296863129006344"
+    },
+    {
+      "cell": "eta=2,gamma=0.8,p=0.5,duration=3",
+      "maximum_decimal_discrepancy": "2.405326785037490503205075E-111",
+      "trajectory_probe": "0.183141836367119378262073917911747528305939468197673155331888604277125296506615069148629347516718107832984955911405671815456678018998229",
+      "fixed_refined_probe": "0.134952107396345040121217360665567266980138770317285605522057930932587607632111690717783236921263539509397763462405326785037490503205075"
+    },
+    {
+      "cell": "eta=2,gamma=0.8,p=0.9,duration=1",
+      "maximum_decimal_discrepancy": "1.7236556540430886045066405E-110",
+      "trajectory_probe": "0.62344411512851275996208374408854134119481982316256921680048843078875976343903414438546578825614767006925523229091519841863625319230626",
+      "fixed_refined_probe": "0.592388516782328499966731378397787671797011082172203684212216701257869655536252093815277919098688287370347158337236556540430886045066405"
+    },
+    {
+      "cell": "eta=2,gamma=0.8,p=0.9,duration=2",
+      "maximum_decimal_discrepancy": "1.2534976695175307893711045E-110",
+      "trajectory_probe": "0.514577501525591723050356488010545937813038012519635281614775388614702603477349361421531396271963293925854876537465023304824692106288955",
+      "fixed_refined_probe": "0.471910813425862799973385102718230137437608865737762947369773361006295724429001675052222335278950629896277726669789245232344708836053123"
+    },
+    {
+      "cell": "eta=2,gamma=0.8,p=0.9,duration=3",
+      "maximum_decimal_discrepancy": "1.5831396185875767068842498E-110",
+      "trajectory_probe": "0.419908063921377839490449139112386383186153048838134875325751479825693350595749639886844782853173498280264690401034097778800749982114203",
+      "fixed_refined_probe": "0.375528650740690239978708082174584109950087092590210357895818688805036579543201340041777868223160503917022181335831396185875767068842498"
+    },
+    {
+      "cell": "eta=2,gamma=1,p=0.1,duration=1",
+      "maximum_decimal_discrepancy": "9.297587362750481969957904E-112",
+      "trajectory_probe": "0.0352176003459246053771762004299652769768527986955749476600104231307833664585421510494049668089957590018355968829297587362750481969957904",
+      "fixed_refined_probe": "0.0352176003459246053771762004299652769768527986955749476600104231307833664585421510494049668089957590018355968829297587362750481969957904"
+    },
+    {
+      "cell": "eta=2,gamma=1,p=0.1,duration=2",
+      "maximum_decimal_discrepancy": "9.297587362750481969957904E-112",
+      "trajectory_probe": "0.0352176003459246053771762004299652769768527986955749476600104231307833664585421510494049668089957590018355968829297587362750481969957904",
+      "fixed_refined_probe": "0.0352176003459246053771762004299652769768527986955749476600104231307833664585421510494049668089957590018355968829297587362750481969957904"
+    },
+    {
+      "cell": "eta=2,gamma=1,p=0.1,duration=3",
+      "maximum_decimal_discrepancy": "9.297587362750481969957904E-112",
+      "trajectory_probe": "0.0352176003459246053771762004299652769768527986955749476600104231307833664585421510494049668089957590018355968829297587362750481969957904",
+      "fixed_refined_probe": "0.0352176003459246053771762004299652769768527986955749476600104231307833664585421510494049668089957590018355968829297587362750481969957904"
+    },
+    {
+      "cell": "eta=2,gamma=1,p=0.5,duration=1",
+      "maximum_decimal_discrepancy": "2.510403877026348639072412E-111",
+      "trajectory_probe": "0.273109584758486406486752657549936068320583535775948448285269396352710171156468145933170384611842850604292506762510403877026348639072412",
+      "fixed_refined_probe": "0.273109584758486406486752657549936068320583535775948448285269396352710171156468145933170384611842850604292506762510403877026348639072412"
+    },
+    {
+      "cell": "eta=2,gamma=1,p=0.5,duration=2",
+      "maximum_decimal_discrepancy": "2.510403877026348639072412E-111",
+      "trajectory_probe": "0.273109584758486406486752657549936068320583535775948448285269396352710171156468145933170384611842850604292506762510403877026348639072412",
+      "fixed_refined_probe": "0.273109584758486406486752657549936068320583535775948448285269396352710171156468145933170384611842850604292506762510403877026348639072412"
+    },
+    {
+      "cell": "eta=2,gamma=1,p=0.5,duration=3",
+      "maximum_decimal_discrepancy": "2.510403877026348639072412E-111",
+      "trajectory_probe": "0.273109584758486406486752657549936068320583535775948448285269396352710171156468145933170384611842850604292506762510403877026348639072412",
+      "fixed_refined_probe": "0.273109584758486406486752657549936068320583535775948448285269396352710171156468145933170384611842850604292506762510403877026348639072412"
+    },
+    {
+      "cell": "eta=2,gamma=1,p=0.9,duration=1",
+      "maximum_decimal_discrepancy": "2.1545695675538607556333005E-110",
+      "trajectory_probe": "0.742985645977910624958414222997234589746263852715254605265270876572337069420315117269097398873360359212933947921545695675538607556333005",
+      "fixed_refined_probe": "0.742985645977910624958414222997234589746263852715254605265270876572337069420315117269097398873360359212933947921545695675538607556333005"
+    },
+    {
+      "cell": "eta=2,gamma=1,p=0.9,duration=2",
+      "maximum_decimal_discrepancy": "2.1545695675538607556333005E-110",
+      "trajectory_probe": "0.742985645977910624958414222997234589746263852715254605265270876572337069420315117269097398873360359212933947921545695675538607556333005",
+      "fixed_refined_probe": "0.742985645977910624958414222997234589746263852715254605265270876572337069420315117269097398873360359212933947921545695675538607556333005"
+    },
+    {
+      "cell": "eta=2,gamma=1,p=0.9,duration=3",
+      "maximum_decimal_discrepancy": "2.1545695675538607556333005E-110",
+      "trajectory_probe": "0.742985645977910624958414222997234589746263852715254605265270876572337069420315117269097398873360359212933947921545695675538607556333005",
+      "fixed_refined_probe": "0.742985645977910624958414222997234589746263852715254605265270876572337069420315117269097398873360359212933947921545695675538607556333005"
+    }
+  ],
+  "reproduced_fixed_local_flips": [
+    {
+      "eta": "2",
+      "gamma": "0.5",
+      "p": "0.5",
+      "duration": 1
+    },
+    {
+      "eta": "2",
+      "gamma": "0.8",
+      "p": "0.5",
+      "duration": 3
+    }
+  ],
+  "unique_clock_policy_scope_witness": {
+    "classification": "out_of_contract_analytic_scope_witness; not a new grid cell",
+    "eta": "2",
+    "gamma": ".5",
+    "safe_reward": ".35",
+    "arrival_clocks_at_same_named_state": [
+      0,
+      1
+    ],
+    "policy_values": {
+      "safe/safe": "0.254882512570584138643589211657910009621888031650201859613769571175723044901756301870630059644772280087316907666890836399005036291616022",
+      "safe/risk": "0.263593952562090672874945111326855609571182189014981906510746575138388238435157956614167409639928546377463156385250367323197462153293854",
+      "risk/safe": "0.226138545869810393423339619792815209899966144395448872676399055893348078756090132016377831091308724532357338083816109448718901983248808",
+      "risk/risk": "0.234359282765346513080394290082795727102499978978641294811917864683750836520658293166665415225649498236674545974302745820060913615727662"
+    },
+    "best_state_only": "0.254882512570584138643589211657910009621888031650201859613769571175723044901756301870630059644772280087316907666890836399005036291616022",
+    "best_clock_conditioned": "0.263593952562090672874945111326855609571182189014981906510746575138388238435157956614167409639928546377463156385250367323197462153293854"
+  },
+  "unobserved_cashflow_assumption_witness": {
+    "classification": "assumption witness, not a claim about the registered fully observed graphs",
+    "X": "Bernoulli(1/2)",
+    "Y": "X",
+    "duration": 0,
+    "eta": 2,
+    "actual_CE_of_X_plus_Y": "0.337498626321067784531124401585211341656675630198337039221572767201172708266985870384452901025001434779392915484396251259085952569286276",
+    "incorrect_sum_of_marginal_CEs": "0.566219169516972812973505315099872136641167071551896896570538792705420342312936291866340769223685701208585013525020807754052697278144824",
+    "needed_condition": "r and d are measurable in child history, or future payoff is conditionally independent of their omitted components given child history"
+  },
+  "findings": [
+    {
+      "severity": "required_theory_scope_clarification",
+      "finding": "Bellman factorization needs observed/child-history-measurable interim cash flows and duration, or the corresponding conditional sufficiency. Full observable history alone does not cover omitted hidden cash flows correlated with future payoff. Registered examples satisfy the needed condition."
+    },
+    {
+      "severity": "scope_boundary_not_current_result_failure",
+      "finding": "exhaustive uses policy[state], whereas backward uses state and elapsed time. Its documented unique-clock precondition is necessary, not an automatic property of validate. All registered graph families satisfy it."
+    },
+    {
+      "severity": "configuration_coupling_not_current_result_failure",
+      "finding": "study.py invokes pair(p,duration) without passing the safe/launch protocol fields. The frozen values equal the builder defaults; future protocol changes must not silently leave defaults unchanged."
+    },
+    {
+      "severity": "evidence_scope",
+      "finding": "Equal terminal payoff/time alone is insufficient for general adaptive-policy process equivalence. The explicit forced-wait pair does preserve timed cashflows, observation timing, and opportunities, as independently reconstructed for both root choices."
+    }
+  ],
+  "disposition": "PASS_REGISTERED_SEMANTIC_RESULT; clarify conditional sufficiency before any broader Bellman claim; no new RL advantage",
+  "external_review": false,
+  "formal_outward_rounding_claimed": false
+}
