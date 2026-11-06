@@ -11,6 +11,7 @@ use codex_hepta_neuron::CellTaskCostV2;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 use serde::Serialize;
+use serde::Serializer;
 
 use super::CellEvaluationErrorV1;
 
@@ -45,6 +46,7 @@ pub struct CellSelectiveUpdateV1 {
 /// training history. A nonzero receipt reference alone proves no such history.
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct CellTrainingObservationV1 {
+    #[serde(serialize_with = "serialize_stable_id")]
     pub participant_id: StableId,
     pub capacity: CellParameterCapacityV1,
     pub cumulative: CellTrainingBudgetV1,
@@ -168,9 +170,21 @@ impl CellComparisonContractV1 {
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct CellEvaluationArmRecordV1 {
     pub manifest: CellBackendManifestV2,
+    #[serde(serialize_with = "serialize_digest")]
     pub journal_cut: Digest32,
     pub snapshot_digest: [u8; 32],
     pub cost: CellTaskCostV2,
+}
+
+fn serialize_stable_id<S: Serializer>(value: &StableId, serializer: S) -> Result<S::Ok, S::Error> {
+    value.as_str().serialize(serializer)
+}
+
+pub(super) fn serialize_digest<S: Serializer>(
+    value: &Digest32,
+    serializer: S,
+) -> Result<S::Ok, S::Error> {
+    value.as_array().serialize(serializer)
 }
 
 impl CellEvaluationArmRecordV1 {

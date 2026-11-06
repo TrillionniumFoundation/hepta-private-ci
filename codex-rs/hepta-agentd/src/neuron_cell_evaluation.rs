@@ -53,6 +53,7 @@ pub struct CellEvaluationRecordV1 {
     /// The new holdout estimator, signature verification and publication happen
     /// after this cut. Their unmeasured overhead is not claimed by these totals.
     pub cost_scope: CellEvaluationCostScopeV1,
+    #[serde(serialize_with = "contract::serialize_digest")]
     pub original_estimand: Digest32,
     pub comparison: CellComparisonContractV1,
     pub candidate: CellEvaluationArmRecordV1,
