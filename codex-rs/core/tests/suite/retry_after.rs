@@ -160,10 +160,18 @@ struct RetryTelemetryCapture {
     events: mpsc::UnboundedReceiver<RetryTelemetryEvent>,
     resumptions: mpsc::UnboundedReceiver<Duration>,
     _subscriber: DefaultGuard,
+    // Drop the thread-local guard before releasing the second live dispatch.
+    registration_anchor: tracing::Dispatch,
 }
 
 impl RetryTelemetryCapture {
     fn install() -> Self {
+        // With only one live dispatch, tracing-core registers new callsites using
+        // the registering thread's default. An unsubscribed thread can cache
+        // Interest::never before this capture emits its first retry. Keep an
+        // inert second dispatch alive so registration considers every dispatch.
+        let registration_anchor =
+            tracing::Dispatch::new(tracing::subscriber::NoSubscriber::default());
         let (sender, events) = mpsc::unbounded_channel();
         let (resumptions_sender, resumptions) = mpsc::unbounded_channel();
         let subscriber = tracing_subscriber::registry()
@@ -178,6 +186,7 @@ impl RetryTelemetryCapture {
             events,
             resumptions,
             _subscriber: subscriber,
+            registration_anchor,
         }
     }
 
@@ -1726,3 +1735,7 @@ async fn websocket_overload_without_retry_after_is_terminal() -> Result<()> {
 
     Ok(())
 }
+
+#[cfg(test)]
+#[path = "retry_after_capture_tests.rs"]
+mod capture_tests;
