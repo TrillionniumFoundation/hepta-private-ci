@@ -226,6 +226,16 @@ fn native_child_fixture() {
             let _child = fixture_command("hold", &root).spawn().expect("spawn actual descendant");
             wait_for(|| root.join("release").exists());
         }
+        #[cfg(target_os = "macos")]
+        "two-descendants" => {
+            for name in ["first", "second"] {
+                let child_root = root.join(name);
+                std::fs::create_dir(&child_root).expect("create descendant fixture root");
+                let _child = fixture_command("hold", &child_root).spawn()
+                    .expect("spawn an actual group member");
+            }
+            wait_for(|| root.join("release").exists());
+        }
         #[cfg(unix)]
         "moved-direct" => {
             let parent_group = std::env::var(PARENT_GROUP).unwrap().parse::<libc::pid_t>().unwrap();
@@ -239,3 +249,7 @@ fn native_child_fixture() {
         role => panic!("unknown fixture role: {role}"),
     }
 }
+
+#[cfg(target_os = "macos")]
+#[path = "std_child_custody_macos_tests.rs"]
+mod macos_tests;
