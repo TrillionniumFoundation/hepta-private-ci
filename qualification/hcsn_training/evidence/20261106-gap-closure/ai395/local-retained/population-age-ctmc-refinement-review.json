@@ -1,0 +1,70 @@
+{
+  "scope": "read-only fixed-spatial nonlinear/renewal discretization diagnostic; no optimizer or scientific campaign",
+  "kernel": "upwind_ctmc_v1",
+  "spatial_bins": 32,
+  "results": [
+    {
+      "max_step_micros": 100000,
+      "numerical_steps": 10,
+      "readout": 0.43099545928510985,
+      "first_cell_trace": 1.059229782582455,
+      "second_cell_trace": 1.1033181976170328,
+      "active_mass": 0.7475306335451606,
+      "refractory_mass": 0.25246936645484225
+    },
+    {
+      "max_step_micros": 50000,
+      "numerical_steps": 17,
+      "readout": 0.4333401363350119,
+      "first_cell_trace": 1.0685964990623704,
+      "second_cell_trace": 1.1111337877833731,
+      "active_mass": 0.7292358083492131,
+      "refractory_mass": 0.27076419165079857
+    },
+    {
+      "max_step_micros": 25000,
+      "numerical_steps": 34,
+      "readout": 0.4376351377364467,
+      "first_cell_trace": 1.0795137046331418,
+      "second_cell_trace": 1.125450459121489,
+      "active_mass": 0.7752786765905482,
+      "refractory_mass": 0.22472132340945544
+    },
+    {
+      "max_step_micros": 10000,
+      "numerical_steps": 80,
+      "readout": 0.44110165772744014,
+      "first_cell_trace": 1.0876816667529587,
+      "second_cell_trace": 1.137005525758134,
+      "active_mass": 0.7811888883150704,
+      "refractory_mass": 0.21881111168493073
+    },
+    {
+      "max_step_micros": 5000,
+      "numerical_steps": 160,
+      "readout": 0.44246420475345816,
+      "first_cell_trace": 1.090848229716133,
+      "second_cell_trace": 1.1415473491781938,
+      "active_mass": 0.7800464550531576,
+      "refractory_mass": 0.2199535449468446
+    },
+    {
+      "max_step_micros": 1000,
+      "numerical_steps": 800,
+      "readout": 0.4436185153882575,
+      "first_cell_trace": 1.0934932522476075,
+      "second_cell_trace": 1.1453950512941917,
+      "active_mass": 0.7790622072733765,
+      "refractory_mass": 0.2209377927266515
+    },
+    {
+      "max_step_micros": 500,
+      "numerical_steps": 1600,
+      "readout": 0.44376690977622735,
+      "first_cell_trace": 1.0938309686189887,
+      "second_cell_trace": 1.145889699254091,
+      "active_mass": 0.7789347000136583,
+      "refractory_mass": 0.22106529998640376
+    }
+  ]
+}
