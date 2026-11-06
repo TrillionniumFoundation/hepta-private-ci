@@ -1,7 +1,12 @@
 """Synthetic contract boundaries only; no pilot outputs, models, or tools read."""
 import hashlib
 import json
+import sys
+from pathlib import Path
 import unittest
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from ndu_llm_confirmation.transport import invoke
 
 from adapter import DecodeError, Decoded, Schema, decode
 
@@ -128,6 +133,23 @@ class SchemaTests(unittest.TestCase):
             self.assertEqual(decode(json.dumps(value), schema=Schema.STRINGS_ANSWER).value, value)
         for value in ([1], 'x', {'answer': ['x']}, [['x']], [None]):
             self.reject(value, Schema.STRINGS_ANSWER)
+
+
+class TransportOutputBudgetTests(unittest.TestCase):
+    def test_stdout_flood_is_stopped_at_limit_plus_one(self):
+        code = 'import sys; sys.stdout.buffer.write(b"X" * 131072)'
+        event, response = invoke([sys.executable, "-c", code], {}, timeout=3, limit=1024)
+        self.assertEqual(event.get("status"), "oversized_output")
+        self.assertEqual(event.get("error_type"), "OutputLimitExceeded")
+        self.assertEqual(event.get("response_bytes_observed"), 1025)
+        self.assertIs(event.get("response_complete"), False)
+        self.assertIsNone(response)
+
+    def test_small_json_worker_response_still_passes(self):
+        code = 'import sys; sys.stdin.read(); print("{\\"ok\\": true}")'
+        event, response = invoke([sys.executable, "-c", code], {}, timeout=3, limit=1024)
+        self.assertEqual(event["status"], "ok")
+        self.assertEqual(response, {"ok": True})
 
 
 if __name__ == '__main__':

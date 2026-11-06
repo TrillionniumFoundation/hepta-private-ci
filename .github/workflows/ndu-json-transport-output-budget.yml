@@ -1,0 +1,33 @@
+name: NDU JSON transport output-budget regression
+
+on:
+  push:
+    branches:
+      - fix/ndu-json-transport-output-cap-20261106-gpt6-run10
+    paths:
+      - 'experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_json_transport_20261106/test_adapter.py'
+      - 'experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_json_transport_20261106/freeze.json'
+      - 'experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/transport.py'
+      - '.github/workflows/ndu-json-transport-output-budget.yml'
+  pull_request:
+    paths:
+      - 'experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_json_transport_20261106/test_adapter.py'
+      - 'experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_json_transport_20261106/freeze.json'
+      - 'experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_llm_confirmation/transport.py'
+      - '.github/workflows/ndu-json-transport-output-budget.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  output-budget:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run adapter and real-process output-budget regressions
+        working-directory: experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/ndu_json_transport_20261106/
+        run: python -B -m unittest -v test_adapter
