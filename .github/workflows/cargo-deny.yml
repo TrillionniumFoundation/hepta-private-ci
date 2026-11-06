@@ -30,8 +30,280 @@ jobs:
           tool: cargo-deny@0.19.0
 
       - name: Run cargo-deny
-        run: cargo +1.95.0 deny --locked --all-features check --config deny.toml
+        id: cargo_deny
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence_dir="$(mktemp -d "${RUNNER_TEMP}/cargo-deny-evidence.XXXXXX")"
+          printf 'private_dir=%s\n' "${evidence_dir}" >> "${GITHUB_OUTPUT}"
+          export CARGO_DENY_EVIDENCE_DIR="${evidence_dir}"
+          cat > "${evidence_dir}/capture.py" <<'PY'
+          import json
+          import os
+          import pathlib
+          import subprocess
+          import sys
+
+          root = pathlib.Path(os.environ["CARGO_DENY_EVIDENCE_DIR"])
+          phase = sys.argv[1]
+          if phase not in ("before", "after"):
+              raise SystemExit("INVALID_CAPTURE_PHASE")
+
+          def call(argv):
+              try:
+                  result = subprocess.run(argv, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
+                                          stderr=subprocess.STDOUT, timeout=5, check=False)
+                  return result.returncode, result.stdout
+              except subprocess.TimeoutExpired:
+                  return 124, b"CAPTURE_TIMEOUT\n"
+              except Exception:
+                  return 125, b"CAPTURE_UNAVAILABLE\n"
+
+          head_rc, head = call(["git", "rev-parse", "HEAD"])
+          tree_rc, tree = call(["git", "rev-parse", "HEAD^{tree}"])
+          status_rc, status = call(["git", "status", "--porcelain=v1",
+                                    "--untracked-files=normal", "--ignore-submodules=none"])
+          source = {"phase": phase, "head": head.decode("ascii", "replace").strip(),
+                    "tree": tree.decode("ascii", "replace").strip(),
+                    "clean": status_rc == 0 and not status,
+                    "git_exit_codes": [head_rc, tree_rc, status_rc]}
+          (root / ("source-" + phase + ".json")).write_text(
+              json.dumps(source, sort_keys=True) + "\n", encoding="utf-8")
+          if phase == "after":
+              versions = {}
+              for name, argv in (
+                  ("cargo", ["cargo", "+1.95.0", "--version"]),
+                  ("rustc", ["rustc", "+1.95.0", "--version"]),
+                  ("cargo-deny", ["cargo", "+1.95.0", "deny", "--version"]),
+              ):
+                  code, output = call(argv)
+                  (root / (name + "-version.txt")).write_bytes(output)
+                  versions[name] = code
+              (root / "version-exits.json").write_text(
+                  json.dumps(versions, sort_keys=True) + "\n", encoding="utf-8")
+          PY
+          python3 "${evidence_dir}/capture.py" before
+          set +e
+          cargo +1.95.0 deny --locked --all-features check --config deny.toml 2>&1 | tee "${evidence_dir}/cargo-deny.log"
+          pipeline_status=("${PIPESTATUS[@]}")
+          printf '%s\n' "${pipeline_status[0]}" > "${evidence_dir}/command-exit-code.txt"
+          printf '%s\n' "${pipeline_status[1]}" > "${evidence_dir}/console-copy-exit-code.txt"
+          python3 "${evidence_dir}/capture.py" after
+          capture_status=$?
+          printf '%s\n' "${capture_status}" > "${evidence_dir}/after-capture-exit-code.txt"
+          set -e
+          if [[ "${pipeline_status[0]}" -ne 0 ]]; then
+            exit "${pipeline_status[0]}"
+          fi
+          if [[ "${pipeline_status[1]}" -ne 0 || "${capture_status}" -ne 0 ]]; then
+            exit 1
+          fi
 
       - name: Check for a clean worktree
         if: always() && !cancelled()
         uses: ./.github/actions/check-clean-worktree
+
+      - name: Check and retain original cargo-deny evidence
+        id: collect_evidence
+        if: always()
+        shell: bash
+        env:
+          PRIVATE_EVIDENCE_DIR: ${{ steps.cargo_deny.outputs.private_dir }}
+          EVIDENCE_GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          python3 - <<'PY'
+          import base64
+          import json
+          import os
+          import pathlib
+          import re
+          import stat
+          import sys
+          import urllib.parse
+
+          class EvidenceError(Exception):
+              pass
+
+          def require(condition, code):
+              if not condition:
+                  raise EvidenceError(code)
+
+          def main():
+              root_text = os.environ.get("PRIVATE_EVIDENCE_DIR", "")
+              require(bool(root_text), "MISSING_EVIDENCE_DIRECTORY")
+              root = pathlib.Path(root_text)
+              temp = pathlib.Path(os.environ["RUNNER_TEMP"]).resolve(strict=True)
+              require(not root.is_symlink() and root.parent.resolve(strict=True) == temp
+                      and root.name.startswith("cargo-deny-evidence."),
+                      "INVALID_EVIDENCE_DIRECTORY")
+              root = root.resolve(strict=True)
+              secret_name = re.compile(r"token|password|passwd|secret|credential|api.?key|access.?key|auth", re.I)
+              secrets = {value for key, value in os.environ.items() if value and secret_name.search(key)}
+              require(all(len(value) >= 8 for value in secrets), "AMBIGUOUS_SHORT_CREDENTIAL")
+              needles = set(secrets)
+              for value in secrets:
+                  needles.add(base64.b64encode(value.encode()).decode())
+                  needles.add(json.dumps(value, ensure_ascii=True)[1:-1])
+              syntax = re.compile(
+                  r"(?i)\b(?:authorization|proxy[-_ ]?authorization|cookie|set[-_ ]?cookie|"
+                  r"password|passwd|access[-_ ]?token|refresh[-_ ]?token|token|"
+                  r"api[-_ ]?key|client[-_ ]?secret|secret)\b[\"']?\s*[:=]\s*\S|"
+                  r"\b(?:Bearer|Basic)\s+[A-Za-z0-9._~+/=-]{8,}|"
+                  r"-----BEGIN (?:[A-Z]+ )*PRIVATE KEY-----|"
+                  r"\b(?:gh[pousr]_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}|(?:AKIA|ASIA)[A-Z0-9]{16})\b")
+              uri = re.compile(r"[A-Za-z][A-Za-z0-9+.-]*://[^\s<>\"']+")
+              ansi = re.compile(r"\x1b\[[0-?]*[ -/]*[@-~]")
+
+              def scan(raw):
+                  try:
+                      text = raw.decode("utf-8", "strict")
+                  except UnicodeError:
+                      raise EvidenceError("NON_UTF8_EVIDENCE") from None
+                  view = text
+                  for _ in range(5):
+                      view = ansi.sub("", view)
+                      require(all((ord(c) >= 32 and not 127 <= ord(c) <= 159) or c in "\n\r\t" for c in view),
+                              "UNSUPPORTED_CONTROL_BYTES")
+                      require(not any(value in view for value in needles), "KNOWN_CREDENTIAL_FOUND")
+                      require(not syntax.search(view), "CREDENTIAL_SYNTAX_FOUND")
+                      for match in uri.finditer(view):
+                          try:
+                              parsed = urllib.parse.urlsplit(match.group().rstrip(".,);]}"))
+                          except ValueError:
+                              raise EvidenceError("UNPARSEABLE_URI") from None
+                          require(not parsed.username and not parsed.password, "URI_CREDENTIALS")
+                          if parsed.query:
+                              try:
+                                  query = urllib.parse.parse_qsl(parsed.query, strict_parsing=True)
+                              except ValueError:
+                                  raise EvidenceError("URI_UNRECOGNIZED_QUERY") from None
+                              require(len(query) == 1 and query[0][0] in ("branch", "tag", "rev")
+                                      and re.fullmatch(r"[A-Za-z0-9._/+~^-]{1,256}", query[0][1]),
+                                      "URI_UNRECOGNIZED_QUERY")
+                          if parsed.fragment:
+                              cargo_fragment = re.fullmatch(
+                                  r"(?:[0-9a-fA-F]{40}|(?:[A-Za-z0-9_-]+[@:])?"
+                                  r"[0-9]+(?:\.[0-9]+){0,2}(?:[-+][A-Za-z0-9.+-]+)?)",
+                                  parsed.fragment)
+                              docs_anchor = (
+                                  (parsed.hostname == "embarkstudios.github.io"
+                                   and parsed.path.startswith("/cargo-deny/"))
+                                  or (parsed.hostname == "doc.rust-lang.org"
+                                      and parsed.path.startswith("/cargo/"))
+                              ) and re.fullmatch(r"[A-Za-z0-9_.-]{1,128}", parsed.fragment)
+                              require(cargo_fragment or docs_anchor, "URI_UNRECOGNIZED_FRAGMENT")
+                      if _ == 4:
+                          break
+                      try:
+                          decoded = urllib.parse.unquote(view, encoding="utf-8", errors="strict")
+                      except UnicodeError:
+                          raise EvidenceError("UNPARSEABLE_PERCENT_ENCODING") from None
+                      if decoded == view:
+                          break
+                      view = decoded
+
+              limits = {"cargo-deny.log": 64 * 1024 * 1024,
+                        "command-exit-code.txt": 64, "console-copy-exit-code.txt": 64,
+                        "after-capture-exit-code.txt": 64,
+                        "source-before.json": 4096, "source-after.json": 4096,
+                        "cargo-version.txt": 16384, "rustc-version.txt": 16384,
+                        "cargo-deny-version.txt": 16384, "version-exits.json": 2048}
+              files = {}
+              for name, limit in limits.items():
+                  path = root / name
+                  try:
+                      with os.fdopen(os.open(path, os.O_RDONLY | os.O_NOFOLLOW), "rb") as stream:
+                          before = os.fstat(stream.fileno())
+                          require(stat.S_ISREG(before.st_mode) and before.st_nlink == 1,
+                                  "NON_REGULAR_EVIDENCE_FILE")
+                          require(before.st_size <= limit, "EVIDENCE_SIZE_LIMIT")
+                          raw = stream.read(limit + 1)
+                          after = os.fstat(stream.fileno())
+                          require(len(raw) == before.st_size == after.st_size
+                                  and before.st_mtime_ns == after.st_mtime_ns, "EVIDENCE_CHANGED_DURING_READ")
+                  except OSError:
+                      raise EvidenceError("MISSING_OR_UNREADABLE_EVIDENCE") from None
+                  scan(raw)
+                  files[name] = raw
+
+              codes = {}
+              for name in ("command", "console-copy", "after-capture"):
+                  raw = files[name + "-exit-code.txt"]
+                  require(re.fullmatch(rb"(0|[1-9][0-9]{0,2})\n", raw) is not None,
+                          "INVALID_EXIT_METADATA")
+                  codes[name] = int(raw)
+                  require(codes[name] <= 255, "INVALID_EXIT_METADATA")
+              require(codes["console-copy"] == 0, "CONSOLE_COPY_FAILED")
+              require(codes["after-capture"] == 0, "AFTER_CAPTURE_FAILED")
+              before = json.loads(files["source-before.json"])
+              after = json.loads(files["source-after.json"])
+              for phase, source in (("before", before), ("after", after)):
+                  require(source.get("phase") == phase and source.get("clean") is True
+                          and source.get("git_exit_codes") == [0, 0, 0], "SOURCE_CAPTURE_OR_CLEAN_FAILED")
+                  require(all(re.fullmatch(r"[0-9a-f]{40}", source.get(key, "")) for key in ("head", "tree")),
+                          "INVALID_SOURCE_IDENTITY")
+              require((before["head"], before["tree"]) == (after["head"], after["tree"]),
+                      "SOURCE_IDENTITY_CHANGED")
+              require(json.loads(files["version-exits.json"]) == {"cargo": 0, "rustc": 0, "cargo-deny": 0},
+                      "VERSION_CAPTURE_FAILED")
+              for name, version in (("cargo", "1.95.0"), ("rustc", "1.95.0"), ("cargo-deny", "0.19.0")):
+                  text = files[name + "-version.txt"].decode().strip()
+                  require(re.fullmatch(re.escape(name + " " + version) + r"(?: \([^\r\n]+\))?", text) is not None,
+                          "VERSION_IDENTITY_MISMATCH")
+              receipt = {"schema": "cargo-deny-original-evidence-v1", "safe_for_upload": True,
+                         "source_head": after["head"], "source_tree": after["tree"],
+                         "before_and_after_clean": True, "original_command_exit_code": codes["command"],
+                         "console_copy_exit_code": codes["console-copy"],
+                         "files": [{"name": name, "bytes": len(raw)} for name, raw in files.items()],
+                         "privacy_scope": "Known credential values, four percent-decoding layers, authorization syntax and credential URI forms. No universal detection claim for arbitrary unmarked unknown secrets.",
+                         "original_payloads_rewritten": False}
+              files["evidence-receipt.json"] = (json.dumps(receipt, sort_keys=True, indent=2) + "\n").encode()
+              public = root / "public"
+              scan(str(public).encode())
+              for name, raw in files.items():
+                  scan(name.encode())
+                  scan(raw)
+              public.mkdir(mode=0o700)
+              for name, raw in files.items():
+                  path = public / name
+                  with path.open("xb") as stream:
+                      stream.write(raw)
+                  require(path.read_bytes() == raw, "PUBLIC_COPY_MISMATCH")
+              require({p.name for p in public.iterdir()} == set(files), "PUBLIC_INVENTORY_MISMATCH")
+              with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as output:
+                  output.write("safe_for_upload=true\n")
+                  output.write("public_dir=" + str(public) + "\n")
+              print(json.dumps({"safe_for_upload": True, "files": len(files),
+                                "original_command_exit_code": codes["command"]}))
+
+          try:
+              main()
+          except EvidenceError as error:
+              print(json.dumps({"safe_for_upload": False, "error_code": str(error)}))
+              raise SystemExit(1) from None
+          except Exception:
+              print(json.dumps({"safe_for_upload": False, "error_code": "COLLECTOR_FAILURE"}))
+              raise SystemExit(1) from None
+          PY
+
+      - name: Upload credential-checked cargo-deny evidence
+        id: upload_evidence
+        if: always() && steps.collect_evidence.outcome == 'success' && steps.collect_evidence.outputs.safe_for_upload == 'true'
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: cargo-deny-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ steps.collect_evidence.outputs.public_dir }}
+          if-no-files-found: error
+
+      - name: Preserve original failure and require complete evidence
+        if: always()
+        shell: bash
+        env:
+          COMMAND_OUTCOME: ${{ steps.cargo_deny.outcome }}
+          COLLECTION_OUTCOME: ${{ steps.collect_evidence.outcome }}
+          UPLOAD_OUTCOME: ${{ steps.upload_evidence.outcome }}
+        run: |
+          set -euo pipefail
+          test "${COMMAND_OUTCOME}" = success
+          test "${COLLECTION_OUTCOME}" = success
+          test "${UPLOAD_OUTCOME}" = success
