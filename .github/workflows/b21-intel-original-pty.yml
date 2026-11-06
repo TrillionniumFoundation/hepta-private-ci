@@ -1,0 +1,120 @@
+name: B21 original Intel PTY observations
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/b21-intel-original-pty.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: b21-original-intel-pty-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  original-pty:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'diag/b21-intel-original-pty-20261106'
+    name: Original PTY target on macOS Intel
+    runs-on: macos-15-intel
+    # Preserve the original Bazel job's cold-build bound. Unit-test deadlines
+    # and the Bazel target's own timeout are not overridden.
+    timeout-minutes: 120
+    environment:
+      name: bazel
+      deployment: false
+    steps:
+      - name: Checkout exact diagnostic source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 2
+          persist-credentials: false
+
+      - name: Bind unchanged product source and actual native platform
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence_dir="${RUNNER_TEMP}/b21-original-intel-pty"
+          mkdir -p "$evidence_dir"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          test "$(git rev-parse HEAD^)" = 67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed
+          git diff --name-only --no-renames HEAD^ HEAD > "$evidence_dir/changed-paths.txt"
+          test "$(cat "$evidence_dir/changed-paths.txt")" = .github/workflows/b21-intel-original-pty.yml
+          git diff --quiet
+          git diff --cached --quiet
+          git rev-parse HEAD 'HEAD^{tree}' HEAD^ 'HEAD^1^{tree}' > "$evidence_dir/source-head-tree.txt"
+          git ls-tree -r HEAD > "$evidence_dir/source-leaves.txt"
+          git status --porcelain=v1 > "$evidence_dir/source-status-before.txt"
+          uname -a > "$evidence_dir/uname.txt"
+          sw_vers > "$evidence_dir/macos-version.txt"
+          sysctl -n machdep.cpu.brand_string > "$evidence_dir/cpu-brand.txt"
+          test "$(uname -s)" = Darwin
+          test "$(uname -m)" = x86_64
+          test "$RUNNER_ARCH" = X64
+
+      - name: Prepare original Bazel CI
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-apple-darwin
+          cache-scope: b21-original-intel-pty
+
+      - name: Run the original complete PTY unit target once
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+          TESTED_SHA: ${{ github.event.pull_request.head.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence_dir="${RUNNER_TEMP}/b21-original-intel-pty"
+          args=(
+            ./.github/scripts/run-bazel-ci.sh
+            --print-failed-action-summary
+            --print-failed-test-logs
+            --
+            test
+            --test_tag_filters=-argument-comment-lint
+            --test_verbose_timeout_warnings
+            --nocache_test_results
+            --flaky_test_attempts=1
+            "--build_metadata=COMMIT_SHA=${TESTED_SHA}"
+            --
+            //codex-rs/utils/pty:pty-unit-tests
+          )
+          printf '%s\0' "${args[@]}" > "$evidence_dir/command.argv0"
+          set +e
+          "${args[@]}" 2>&1 | tee "$evidence_dir/console.log"
+          statuses=("${PIPESTATUS[@]}")
+          set -e
+          printf '%s\n' "${statuses[0]}" > "$evidence_dir/original-bazel-exit-code.txt"
+          printf '%s\n' "${statuses[1]}" > "$evidence_dir/console-copy-exit-code.txt"
+          exit "${statuses[0]}"
+
+      - name: Preserve final source identity
+        if: always() && !cancelled()
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence_dir="${RUNNER_TEMP}/b21-original-intel-pty"
+          mkdir -p "$evidence_dir"
+          git rev-parse HEAD 'HEAD^{tree}' > "$evidence_dir/source-final-head-tree.txt"
+          git status --porcelain=v1 > "$evidence_dir/source-status-after.txt"
+          git diff --quiet
+          git diff --cached --quiet
+
+      - name: Retain complete original logs and source receipts
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: b21-original-intel-pty-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/b21-original-intel-pty
+            ${{ runner.temp }}/bazel-execution-logs
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Check for a clean worktree
+        if: always() && !cancelled()
+        uses: ./.github/actions/check-clean-worktree
