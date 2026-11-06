@@ -1,0 +1,294 @@
+--- a/codex-rs/utils/path-utils/src/lib.rs
++++ b/codex-rs/utils/path-utils/src/lib.rs
+@@ -1,6 +1,8 @@
+ //! Path normalization, symlink resolution, and atomic writes shared across Codex crates.
+ 
++mod durable_publish;
+ pub(crate) mod env;
++pub use durable_publish::publish_synced_file;
+ pub use env::is_wsl;
+ 
+ use codex_utils_absolute_path::AbsolutePathBuf;
+--- a/codex-rs/utils/path-utils/Cargo.toml
++++ b/codex-rs/utils/path-utils/Cargo.toml
+@@ -18,3 +18,6 @@
+ 
+ [lib]
+ doctest = false
++
++[target.'cfg(windows)'.dependencies]
++windows-sys = { version = "=0.52.0", features = ["Win32_Foundation", "Win32_Storage_FileSystem"] }
+--- a/codex-rs/hepta-matrix-sdk/src/sdk.rs
++++ b/codex-rs/hepta-matrix-sdk/src/sdk.rs
+@@ -583,9 +583,7 @@
+     TemporaryCreate,
+     TemporaryWrite,
+     TemporarySync,
+-    PublishRename,
+-    ParentOpen,
+-    ParentSync,
++    PublishSyncedFile,
+ }
+ 
+ fn session_persist_io_error(stage: PersistSessionIoStage, error: std::io::Error) -> MatrixSdkError {
+@@ -649,13 +647,9 @@
+             session_persist_io_error(PersistSessionIoStage::TemporarySync, error)
+         })?;
+         drop(output);
+-        std::fs::rename(&temporary, path).map_err(|error| {
+-            session_persist_io_error(PersistSessionIoStage::PublishRename, error)
++        codex_utils_path::publish_synced_file(&temporary, path).map_err(|error| {
++            session_persist_io_error(PersistSessionIoStage::PublishSyncedFile, error)
+         })?;
+-        std::fs::File::open(parent)
+-            .map_err(|error| session_persist_io_error(PersistSessionIoStage::ParentOpen, error))?
+-            .sync_all()
+-            .map_err(|error| session_persist_io_error(PersistSessionIoStage::ParentSync, error))?;
+         Ok(())
+     })();
+     if result.is_err() {
+--- a/codex-rs/hepta-matrix-sdk/Cargo.toml
++++ b/codex-rs/hepta-matrix-sdk/Cargo.toml
+@@ -22,6 +22,7 @@
+ codex-hepta-matrix-protocol = { workspace = true }
+ codex-hepta-matrix-store = { workspace = true }
+ codex-hepta-paths = { workspace = true }
++codex-utils-path = { workspace = true }
+ matrix-sdk = { workspace = true }
+ serde_json = { workspace = true }
+ thiserror = { workspace = true }
+--- /dev/null
++++ b/codex-rs/utils/path-utils/src/durable_publish.rs
+@@ -0,0 +1,121 @@
++//! Same-directory durable publication for callers that own their staging files.
++
++use std::io;
++use std::path::Path;
++
++/// Publish a closed, already-synchronized staging file in its current directory.
++///
++/// The caller owns the parent and entries and is responsible for permission,
++/// identity and authorization checks. This function grants no such authority.
++/// Unix renames then synchronizes the parent; Windows requests write-through
++/// replacement. No cross-volume copy or delayed publication fallback is used.
++/// An I/O error can occur after replacement; it must not be acknowledged as a
++/// durable commit or treated as proof that the previous destination survived.
++pub fn publish_synced_file(staging: &Path, destination: &Path) -> io::Result<()> {
++    let parent = staging.parent().ok_or_else(|| {
++        io::Error::new(io::ErrorKind::InvalidInput, "durable staging has no parent")
++    })?;
++    if destination.parent() != Some(parent) {
++        return Err(io::Error::new(
++            io::ErrorKind::InvalidInput,
++            "durable replacement must remain in the staging directory",
++        ));
++    }
++    publish_same_directory(staging, destination)
++}
++
++#[cfg(unix)]
++fn publish_same_directory(staging: &Path, destination: &Path) -> io::Result<()> {
++    std::fs::rename(staging, destination)?;
++    let parent = destination.parent().ok_or_else(|| {
++        io::Error::new(
++            io::ErrorKind::InvalidInput,
++            "durable destination has no parent",
++        )
++    })?;
++    let parent = if parent.as_os_str().is_empty() {
++        Path::new(".")
++    } else {
++        parent
++    };
++    std::fs::File::open(parent)?.sync_all()
++}
++
++#[cfg(windows)]
++fn publish_same_directory(staging: &Path, destination: &Path) -> io::Result<()> {
++    use windows_sys::Win32::Storage::FileSystem::MOVEFILE_REPLACE_EXISTING;
++    use windows_sys::Win32::Storage::FileSystem::MOVEFILE_WRITE_THROUGH;
++    use windows_sys::Win32::Storage::FileSystem::MoveFileExW;
++
++    // Canonicalizing the existing common parent supplies the OS verbatim
++    // prefix, preserving std::fs::rename's support for paths above MAX_PATH.
++    // The destination itself need not exist on the initial publication.
++    let parent = staging.parent().ok_or_else(|| {
++        io::Error::new(io::ErrorKind::InvalidInput, "durable staging has no parent")
++    })?;
++    let parent = if parent.as_os_str().is_empty() {
++        Path::new(".")
++    } else {
++        parent
++    };
++    let parent = parent.canonicalize()?;
++    let staging_name = staging.file_name().ok_or_else(|| {
++        io::Error::new(
++            io::ErrorKind::InvalidInput,
++            "durable staging has no file name",
++        )
++    })?;
++    let destination_name = destination.file_name().ok_or_else(|| {
++        io::Error::new(
++            io::ErrorKind::InvalidInput,
++            "durable destination has no file name",
++        )
++    })?;
++    let staging = wide_path(&parent.join(staging_name))?;
++    let destination = wide_path(&parent.join(destination_name))?;
++    // SAFETY: Both buffers are NUL-terminated UTF-16 paths with no interior NUL,
++    // and remain alive for the synchronous call. No delayed or copy fallback is
++    // allowed. WRITE_THROUGH waits for the move to reach disk before success:
++    // https://learn.microsoft.com/windows/win32/api/winbase/nf-winbase-movefileexw
++    let result = unsafe {
++        MoveFileExW(
++            staging.as_ptr(),
++            destination.as_ptr(),
++            MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH,
++        )
++    };
++    if result == 0 {
++        return Err(io::Error::last_os_error());
++    }
++    Ok(())
++}
++
++#[cfg(windows)]
++fn wide_path(path: &Path) -> io::Result<Vec<u16>> {
++    use std::os::windows::ffi::OsStrExt;
++
++    let mut wide = Vec::new();
++    for unit in path.as_os_str().encode_wide() {
++        if unit == 0 || wide.len() >= 32_766 {
++            return Err(io::Error::new(
++                io::ErrorKind::InvalidInput,
++                "durable path contains NUL or exceeds the Windows path limit",
++            ));
++        }
++        wide.push(unit);
++    }
++    wide.push(/*value*/ 0);
++    Ok(wide)
++}
++
++#[cfg(not(any(unix, windows)))]
++fn publish_same_directory(_staging: &Path, _destination: &Path) -> io::Result<()> {
++    Err(io::Error::new(
++        io::ErrorKind::Unsupported,
++        "durable publication is unsupported on this platform",
++    ))
++}
++
++#[cfg(test)]
++#[path = "durable_publish_tests.rs"]
++mod tests;
+--- /dev/null
++++ b/codex-rs/utils/path-utils/src/durable_publish_tests.rs
+@@ -0,0 +1,108 @@
++use super::*;
++use pretty_assertions::assert_eq;
++
++#[test]
++fn cross_directory_publish_rejects_without_changing_either_file() -> io::Result<()> {
++    let temporary = tempfile::tempdir()?;
++    let staging = temporary.path().join("staged");
++    let other = temporary.path().join("other");
++    std::fs::create_dir(&other)?;
++    let destination = other.join("intent");
++    std::fs::write(&staging, b"new intent")?;
++    std::fs::write(&destination, b"old intent")?;
++    assert_eq!(
++        publish_synced_file(&staging, &destination)
++            .err()
++            .map(|error| error.kind()),
++        Some(io::ErrorKind::InvalidInput)
++    );
++    assert_eq!(std::fs::read(&staging)?, b"new intent");
++    assert_eq!(std::fs::read(&destination)?, b"old intent");
++    Ok(())
++}
++
++#[cfg(windows)]
++#[test]
++fn windows_locked_destination_rejects_then_write_through_replacement_succeeds() -> io::Result<()> {
++    use std::fs::OpenOptions;
++    use std::io::Write;
++    use std::os::windows::fs::OpenOptionsExt;
++
++    let temporary = tempfile::tempdir()?;
++    let parent = temporary
++        .path()
++        .join("long-parent-".repeat(/*n*/ 12))
++        .join("nested-parent-".repeat(/*n*/ 12));
++    std::fs::create_dir_all(&parent)?;
++    let staging = parent.join("staged");
++    let destination = parent.join("intent");
++    let mut writer = OpenOptions::new()
++        .write(true)
++        .create_new(true)
++        .open(&staging)?;
++    writer.write_all(b"new intent")?;
++    writer.sync_all()?;
++    drop(writer);
++    std::fs::write(&destination, b"old intent")?;
++    let denied = OpenOptions::new()
++        .read(true)
++        .share_mode(/*val*/ 0)
++        .open(&destination)?;
++    assert!(publish_synced_file(&staging, &destination).is_err());
++    drop(denied);
++    assert_eq!(std::fs::read(&staging)?, b"new intent");
++    assert_eq!(std::fs::read(&destination)?, b"old intent");
++    publish_synced_file(&staging, &destination)?;
++    assert_eq!(std::fs::read(&destination)?, b"new intent");
++    assert!(!staging.exists());
++    Ok(())
++}
++
++#[cfg(windows)]
++#[test]
++fn windows_rejects_interior_nul_before_calling_the_os() {
++    assert_eq!(
++        wide_path(Path::new("intent\0suffix"))
++            .err()
++            .map(|error| error.kind()),
++        Some(io::ErrorKind::InvalidInput)
++    );
++}
++
++#[cfg(any(unix, windows))]
++#[test]
++fn synchronized_file_is_created_then_replaced() -> io::Result<()> {
++    use std::io::Write;
++
++    let temporary = tempfile::tempdir()?;
++    let destination = temporary.path().join("session");
++    for contents in [
++        b"first session".as_slice(),
++        b"replacement session".as_slice(),
++    ] {
++        let staging = temporary.path().join("staged");
++        let mut options = std::fs::OpenOptions::new();
++        options.write(true).create_new(true);
++        #[cfg(unix)]
++        {
++            use std::os::unix::fs::OpenOptionsExt;
++            options.mode(0o600);
++        }
++        let mut writer = options.open(&staging)?;
++        writer.write_all(contents)?;
++        writer.sync_all()?;
++        drop(writer);
++        publish_synced_file(&staging, &destination)?;
++        assert_eq!(std::fs::read(&destination)?, contents);
++        assert!(!staging.exists());
++        #[cfg(unix)]
++        {
++            use std::os::unix::fs::PermissionsExt;
++            assert_eq!(
++                std::fs::metadata(&destination)?.permissions().mode() & 0o777,
++                0o600
++            );
++        }
++    }
++    Ok(())
++}
