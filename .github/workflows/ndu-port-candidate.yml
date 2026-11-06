@@ -10,6 +10,7 @@ on:
       - scripts/ndu_port_integration_test_support.py
       - experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/**
       - scripts/ndu_synapse_diagnostics.py
+      - scripts/ndu_synapse_projection.py
       - scripts/ndu_port_matrix_fixture.py
       - scripts/ndu_port_fixture_layout.py
       - scripts/ndu_port_aws_upstream.py
@@ -562,25 +563,31 @@ jobs:
               --output "$RUNNER_TEMP/ndu-native-synapse" --docker-socket /var/run/docker.sock
           fi
 
-      - name: Package complete diagnostics separately from large build inputs
+      - name: Package the declared diagnostic view alongside the full artifact
         id: synapse-diagnostics
         if: always()
+        env:
+          EXPECTED_SOURCE: ${{ needs.generate-reviewable-candidate.outputs.source_commit }}
         run: >-
-          python3 scripts/ndu_synapse_diagnostics.py
+          python3 scripts/ndu_synapse_projection.py
           --source "$RUNNER_TEMP/ndu-native-synapse"
           --output "$RUNNER_TEMP/ndu-native-synapse-diagnostics"
+          --source-commit "$EXPECTED_SOURCE"
 
-      - name: Retain diagnostic inventory and exact failed-command paths
+      - name: Retain diagnostic view policy and inventories
         if: always()
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
         with:
           name: ndu-native-synapse-diagnostics-arm64-${{ github.run_id }}-${{ github.run_attempt }}-manifest
-          path: ${{ runner.temp }}/ndu-native-synapse-diagnostics/DIAGNOSTICS.json
+          path: |
+            ${{ runner.temp }}/ndu-native-synapse-diagnostics/DIAGNOSTICS.json
+            ${{ runner.temp }}/ndu-native-synapse-diagnostics/PROJECTION.json
+            ${{ runner.temp }}/ndu-native-synapse-diagnostics/SOURCE_DIRECTORY.json
           if-no-files-found: error
           retention-days: 21
           compression-level: 0
 
-      - name: Retain complete diagnostic part 1
+      - name: Retain diagnostic view part 1
         if: always() && fromJSON(steps.synapse-diagnostics.outputs.part_count || '0') >= 1
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
         with:
@@ -590,7 +597,7 @@ jobs:
           retention-days: 21
           compression-level: 0
 
-      - name: Retain complete diagnostic part 2
+      - name: Retain diagnostic view part 2
         if: always() && fromJSON(steps.synapse-diagnostics.outputs.part_count || '0') >= 2
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
         with:
@@ -600,7 +607,7 @@ jobs:
           retention-days: 21
           compression-level: 0
 
-      - name: Retain complete diagnostic part 3
+      - name: Retain diagnostic view part 3
         if: always() && fromJSON(steps.synapse-diagnostics.outputs.part_count || '0') >= 3
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
         with:
@@ -610,7 +617,7 @@ jobs:
           retention-days: 21
           compression-level: 0
 
-      - name: Retain complete diagnostic part 4
+      - name: Retain diagnostic view part 4
         if: always() && fromJSON(steps.synapse-diagnostics.outputs.part_count || '0') >= 4
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
         with:
@@ -620,7 +627,7 @@ jobs:
           retention-days: 21
           compression-level: 0
 
-      - name: Retain complete diagnostic part 5
+      - name: Retain diagnostic view part 5
         if: always() && fromJSON(steps.synapse-diagnostics.outputs.part_count || '0') >= 5
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
         with:
@@ -630,7 +637,7 @@ jobs:
           retention-days: 21
           compression-level: 0
 
-      - name: Retain complete diagnostic part 6
+      - name: Retain diagnostic view part 6
         if: always() && fromJSON(steps.synapse-diagnostics.outputs.part_count || '0') >= 6
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
         with:
@@ -640,7 +647,7 @@ jobs:
           retention-days: 21
           compression-level: 0
 
-      - name: Retain complete diagnostic part 7
+      - name: Retain diagnostic view part 7
         if: always() && fromJSON(steps.synapse-diagnostics.outputs.part_count || '0') >= 7
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
         with:
@@ -650,7 +657,7 @@ jobs:
           retention-days: 21
           compression-level: 0
 
-      - name: Retain complete diagnostic part 8
+      - name: Retain diagnostic view part 8
         if: always() && fromJSON(steps.synapse-diagnostics.outputs.part_count || '0') >= 8
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
         with:
