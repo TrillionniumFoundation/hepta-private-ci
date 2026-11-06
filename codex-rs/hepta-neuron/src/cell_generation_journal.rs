@@ -182,6 +182,12 @@ impl<W: AnchorWitnessStore> CellGenerationJournalV2<W> {
         &self.config.manifest
     }
 
+    /// The source frontier bound to this owner configuration. Observation alone
+    /// does not establish that the source remains authorized at a later use.
+    pub fn source_frontier(&self) -> [u8; 32] {
+        self.config.source_frontier
+    }
+
     pub fn snapshot(&self) -> Result<&CellRuntimeSnapshotV2, CellGenerationErrorV2> {
         self.require_healthy()?;
         Ok(&self.state.snapshot)
