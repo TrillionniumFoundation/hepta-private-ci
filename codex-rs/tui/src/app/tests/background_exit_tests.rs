@@ -148,11 +148,14 @@ async fn exit_interrupts_before_requesting_shutdown() -> Result<()> {
     prepare_running_local_daemon(&mut app)?;
     app.chat_widget
         .set_feature_enabled(Feature::Goals, /*enabled*/ true);
-    let (mut app_server, mut tui) =
-        prepare_background_exit_test(&app, &mut app_event_rx, &mut op_rx).await?;
-    let started = app_server
-        .start_thread(app.chat_widget.config_ref())
-        .await?;
+    let workspace = tempfile::tempdir()?;
+    let mut config = app.chat_widget.config_ref().clone();
+    config.cwd = workspace.path().abs();
+    while app_event_rx.try_recv().is_ok() {}
+    while op_rx.try_recv().is_ok() {}
+    let mut app_server = crate::start_embedded_app_server_for_picker(&config).await?;
+    let mut tui = crate::tui::test_support::make_test_tui()?;
+    let started = app_server.start_thread(&config).await?;
     let thread_id = started.session.thread_id;
     app.active_thread_id = Some(thread_id);
     app.chat_widget
@@ -180,23 +183,53 @@ async fn exit_interrupts_before_requesting_shutdown() -> Result<()> {
         /*replay_kind*/ None,
     );
     let command = if cfg!(windows) {
-        "Start-Sleep -Seconds 30"
+        "Write-Output 'exit-fixture-ready'; Start-Sleep -Seconds 30"
     } else {
-        "sleep 30"
+        "printf 'exit-fixture-ready\\n'; sleep 30"
     };
     app_server
         .thread_shell_command(thread_id, command.to_string())
         .await?;
+    // A turn-start notification precedes process creation. Require output
+    // from the real child before interrupting it, with an owned, existing cwd.
+    let mut started_turn_id = None;
+    let mut shell_output = String::new();
     let turn_id = loop {
         let event = time::timeout(Duration::from_secs(/*secs*/ 5), app_server.next_event())
             .await
-            .expect("app-server should emit a turn/start event")
+            .expect("shell fixture should emit readiness output")
             .expect("app-server event stream should remain open");
-        if let codex_app_server_client::AppServerEvent::ServerNotification(notification) = event
-            && let ServerNotification::TurnStarted(notification) = notification.as_ref()
-            && notification.thread_id == thread_id.to_string()
+        if let codex_app_server_client::AppServerEvent::ServerNotification(notification) = event {
+            match notification.as_ref() {
+                ServerNotification::TurnStarted(notification)
+                    if notification.thread_id == thread_id.to_string() =>
+                {
+                    started_turn_id = Some(notification.turn.id.clone());
+                }
+                ServerNotification::CommandExecutionOutputDelta(notification)
+                    if notification.thread_id == thread_id.to_string() =>
+                {
+                    shell_output.push_str(&notification.delta);
+                    assert!(
+                        shell_output.len() <= 4_096,
+                        "unexpected shell fixture output"
+                    );
+                }
+                ServerNotification::TurnCompleted(notification)
+                    if notification.thread_id == thread_id.to_string() =>
+                {
+                    panic!(
+                        "shell fixture completed before interruption: {:?}",
+                        notification.turn
+                    );
+                }
+                _ => {}
+            }
+        }
+        if shell_output.contains("exit-fixture-ready")
+            && let Some(turn_id) = started_turn_id.as_ref()
         {
-            break notification.turn.id.clone();
+            break turn_id.clone();
         }
     };
     app.thread_event_channels.insert(
