@@ -425,7 +425,7 @@ def check_toolchain(runner, version):
 
 def validate_graph(root, recipe, metadata):
     locked = tomllib.loads((root / LOCKS[0]).read_text())["package"]
-    verify_dependency_graph(root, recipe, metadata, locked)
+    reviewed_paths = verify_dependency_graph(root, recipe, metadata, locked)
     forbidden = set(recipe["forbidden_packages"])
     if forbidden & {package["name"] for package in locked}:
         raise ValueError("A forbidden package remains in the resolved lock")
@@ -448,12 +448,21 @@ def validate_graph(root, recipe, metadata):
             raise ValueError(
                 f"Expected one exact package: {expected['name']} {expected['version']}"
             )
+        # Only the already-verified fixed amendment can refine a historical
+        # registry expectation. All original version and feature checks remain.
+        reviewed_path = reviewed_paths.get((expected["name"], expected["version"]))
+        source_kind = "path" if reviewed_path is not None else expected["source"]
+        allowed_paths = (
+            {reviewed_path}
+            if reviewed_path is not None
+            else {directory + "/Cargo.toml" for directory in recipe["vendor_dirs"]}
+        )
         sources = [found[0].get("source"), details[0].get("source")]
-        if expected["source"] == "path" and any(sources):
+        if source_kind == "path" and any(sources):
             raise ValueError(
                 f"Reviewed path source was not selected: {expected['name']}"
             )
-        if expected["source"] == "path":
+        if source_kind == "path":
             producer_root = Path(metadata["workspace_root"]).parent
             try:
                 selected_path = (
@@ -465,13 +474,11 @@ def validate_graph(root, recipe, metadata):
                 raise ValueError(
                     "Selected path package lies outside the producing workspace"
                 ) from error
-            if selected_path not in {
-                directory + "/Cargo.toml" for directory in recipe["vendor_dirs"]
-            }:
+            if selected_path not in allowed_paths:
                 raise ValueError(
                     f"Selected path package is outside the sealed vendor set: {expected['name']}"
                 )
-        if expected["source"] == "registry" and not all(
+        if source_kind == "registry" and not all(
             isinstance(x, str) and x.startswith("registry+") for x in sources
         ):
             raise ValueError(f"Registry source was not selected: {expected['name']}")
@@ -974,7 +981,7 @@ def verify_dependency_graph(root, recipe, metadata, locked):
     """Require the five actual path selections and the preserved supervisor edge."""
     amendment = load_dependency_amendment(root, recipe)
     if amendment is None:
-        return
+        return {}
     if any(p["name"] == "pin-utils" for p in [*locked, *metadata["packages"]]):
         raise ValueError("Dependency product graph still contains pin-utils")
     producer_root = Path(metadata["workspace_root"]).parent
@@ -1017,6 +1024,11 @@ def verify_dependency_graph(root, recipe, metadata, locked):
     supervisor = [p for p in locked if p["name"] == edge["package"]]
     if len(supervisor) != 1 or edge["dependency"] not in supervisor[0]["dependencies"]:
         raise ValueError("Dependency graph dropped the current supervisor edge")
+
+    return {
+        (p["name"], p["version"]): p["manifest_path"]
+        for p in amendment["path_packages"]
+    }
 
 
 BUILD_AMENDMENT = "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/BUILD_AMENDMENT.v7.3.json"
