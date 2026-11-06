@@ -34,11 +34,12 @@ fn command(script: &str) -> Result<Command> {
     let shell = std::path::PathBuf::from(std::env::var_os("SystemRoot").context("SystemRoot")?)
         .join("System32/cmd.exe");
     let mut command = Command::new(shell);
-    // The command tail is one fixed shell program. Use the Windows Command
-    // implementation's normal argument quoting; the scripts use interactive
-    // `exit N` (not batch-only `exit /b N`) and are never untrusted input.
+    // Keep the /C tail a compound command. The original bare `exit N`
+    // form is parsed inconsistently by the real Windows cmd.exe runner here;
+    // an inert echo prefix preserves the tested interactive exit code while
+    // avoiding batch-only `exit /b N`. These fixed test strings are not input.
     command.args(["/D", "/C"]);
-    command.arg(script);
+    command.arg(format!("echo. & {script}"));
     // Run the original real cmd.exe child in a redirected headless test worker.
     // Keep its actual exit-status, owned-handle and pending-state assertions.
     command.creation_flags(CREATE_NO_WINDOW);
