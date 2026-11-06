@@ -8,6 +8,9 @@ import json
 from pathlib import Path
 import re
 
+from closure_io import ClosureError as ClosureError
+from closure_io import read_capped as read_capped
+
 
 REFERENCE_COMMIT = "aeedeee98a5f7472f11b88ef7b869fc5a6d3d8e1"
 REFERENCE_HASHES = {
@@ -16,10 +19,6 @@ REFERENCE_HASHES = {
     "lifecycle.py": "0cb9ce6a732f5fa3156ebc5c28776e3eb241153f7ade3286938965317b9c50eb",
     "download_model.py": "fd0a7e1ba831c4f2929ee8d29d22495c61ecfdbf7ceee3daec9f5110ff09c0f7",
 }
-
-
-class ClosureError(ValueError):
-    """A bounded content or identity check failed; no binding was produced."""
 
 
 @dataclass(frozen=True)
@@ -87,19 +86,6 @@ def digest_text(value, label):
     if not isinstance(value, str) or not re.fullmatch(r"[0-9a-f]{64}", value):
         raise ClosureError(f"Invalid {label} digest")
     return value
-
-
-def read_capped(path, maximum):
-    path = Path(path)
-    if path.is_symlink() or not path.is_file() or path.stat().st_size > maximum:
-        raise ClosureError(
-            f"Missing, linked, nonregular or oversized input: {path.name}"
-        )
-    with path.open("rb") as stream:
-        raw = stream.read(maximum + 1)
-    if len(raw) > maximum:
-        raise ClosureError(f"Input grew beyond its bound: {path.name}")
-    return raw
 
 
 def strict_json(raw):

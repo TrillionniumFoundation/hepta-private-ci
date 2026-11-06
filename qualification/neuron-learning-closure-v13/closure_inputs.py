@@ -8,6 +8,7 @@ from pathlib import Path, PurePosixPath
 import numpy as np
 
 from bounded_npz import inspect_npz
+from closure_io import open_regular
 from closure_common import (
     ClosureError,
     canonical,
@@ -124,20 +125,8 @@ def _encoder_file(root, name, identity, limits):
         original = hashlib.sha1(f"blob {size}\0".encode(), usedforsecurity=False)
     else:
         raise ClosureError("Unsupported encoder digest kind")
-    path = root.joinpath(*path_name.parts)
-    parents = [
-        path,
-        root,
-        *[parent for parent in path.parents if parent.is_relative_to(root)],
-    ]
-    if (
-        any(parent.is_symlink() for parent in parents)
-        or not path.is_file()
-        or not path.resolve().is_relative_to(root.resolve())
-    ):
-        raise ClosureError("Missing or linked encoder member")
     measured, count = hashlib.sha256(), 0
-    with path.open("rb") as stream:
+    with open_regular(name, size, root=root) as stream:
         while block := stream.read(min(1024 * 1024, size - count + 1)):
             count += len(block)
             if count > size:

@@ -1,0 +1,28 @@
+{
+  "schema": "hepta.v13.original-encoder.replay.observation.v1",
+  "rows": 120,
+  "shape": [
+    120,
+    384
+  ],
+  "dtype": "float32",
+  "bitwise_equal": true,
+  "maximum_absolute_error": 0.0,
+  "features_sha256": "7b137c45933666ece0b4bd4680a39ee57345d6023b0baacfb3f66cc3de492724",
+  "original_features_sha256": "7b137c45933666ece0b4bd4680a39ee57345d6023b0baacfb3f66cc3de492724",
+  "encoder_hash": "8b8d070f392fd30181f217daa4de166dfe785897b5d4d64f2244bc6fcb5f42aa",
+  "stats": {
+    "calls": 1,
+    "examples": 120,
+    "input_tokens": 1652,
+    "encoded_tokens": 1652,
+    "padded_tokens": 2248,
+    "truncated_examples": 0,
+    "encode_seconds": 1.4574749690000317,
+    "load_seconds": 1.4109695670013025
+  },
+  "wall_seconds": 2.878326845999254,
+  "cpu_seconds": 1.4350739149999998,
+  "peak_rss_kib_linux": 208476,
+  "scope": "Actual pinned MiniLM CPU features; not Cell runtime, adoption or independent quality qualification"
+}

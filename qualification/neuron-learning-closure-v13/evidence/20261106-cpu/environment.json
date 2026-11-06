@@ -1,0 +1,17 @@
+{
+  "python": "3.12.14",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "machine": "x86_64",
+  "cpu_count": 9,
+  "packages": {
+    "numpy": "2.3.5",
+    "onnxruntime": "1.23.2",
+    "tokenizers": "0.21.4",
+    "ruff": "0.15.13"
+  },
+  "just": "just 1.43.0",
+  "tool_source": "just 1.43.0 installed with cargo install --version 1.43.0 --locked from crates.io, official casey/just package",
+  "limits_scope": "V13 CPU qualification; not Chain consensus/service original budget",
+  "cgroup_cpu.max": "800000 100000",
+  "cgroup_memory.max": "8589934592"
+}

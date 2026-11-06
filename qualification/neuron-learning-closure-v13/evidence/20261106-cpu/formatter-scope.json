@@ -1,0 +1,24 @@
+{
+  "changed_tracked": [
+    "qualification/neuron-learning-closure-v13/README.md",
+    "qualification/neuron-learning-closure-v13/closure_common.py",
+    "qualification/neuron-learning-closure-v13/closure_inputs.py"
+  ],
+  "new_component_files": [
+    "qualification/neuron-learning-closure-v13/FEATURE_PROVENANCE.json",
+    "qualification/neuron-learning-closure-v13/FEATURE_REPLAY.md",
+    "qualification/neuron-learning-closure-v13/closure_io.py",
+    "qualification/neuron-learning-closure-v13/closure_io_tests.py",
+    "qualification/neuron-learning-closure-v13/feature_replay.py",
+    "qualification/neuron-learning-closure-v13/feature_replay_tests.py",
+    "qualification/neuron-learning-closure-v13/feature_worker.py",
+    "qualification/neuron-learning-closure-v13/reference/provenance_run.py.source",
+    "qualification/neuron-learning-closure-v13/reference/tasks.py.source"
+  ],
+  "repository_formatter_exit": 0,
+  "repository_formatter_groups_for_component": [],
+  "reason": "Exact upstream scripts/format.py scopes Python to sdk/python, scripts and .github. Qualification Python is not covered; the actual nonempty component diff was also checked with standalone Ruff 0.15.13.",
+  "ruff_format_check_exit": 0,
+  "ruff_check_exit": 0,
+  "partial_projection_not_full_repository": true
+}

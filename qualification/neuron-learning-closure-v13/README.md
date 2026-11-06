@@ -1,8 +1,15 @@
 # V13 学习状态内容闭包 → CellLearningBindingV2
 
-这个适配模块读取固定 V13 checkpoint，验证实际内容后生成现有
+原 `verify_closure.py` 读取固定 V13 checkpoint，验证实际内容后生成现有
 `CellLearningBindingV2::Resumable` 的五个成员摘要。它复用 V13 的原始
 `Adapter.load`；不运行训练、预测、encoder、下载、发布或采用操作。
+
+新增 [`feature_replay.py` 的执行规范](FEATURE_REPLAY.md) 是独立的 POSIX CPU
+资格入口：从实际 source body 和原始 rows 重跑固定 MiniLM，逐字节核对原 float32
+特征，再调用原 Adapter 与有限纯函数 skill executor。它保留真实失败成本与只读冷回执，
+仍不产生普通 Cell 运行时、独立质量评测或下一任务采用资格。`verify_closure.py` 的
+内容验证职责不变；底层文件读取现在使用 POSIX 非阻塞、不跟随链接的已打开 descriptor，
+不具备该原语的主机明确拒绝，不能以先检查路径再打开的方式回退。
 
 所有结果都标记 `authority: "DENY_ALL"`。内容一致性不能证明来源仍处于有效前沿、
 模型质量达标或模型已被产品采用。V13 是冻结 MiniLM embedding 上的残差分类器；
