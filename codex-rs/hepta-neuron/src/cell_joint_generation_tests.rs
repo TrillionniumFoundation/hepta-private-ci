@@ -63,10 +63,11 @@ impl Harness {
         clock: Arc<dyn Fn() -> u64 + Send + Sync>,
     ) -> TestResult<Self> {
         let directory = Directory::new()?;
-        // The qualification helper manifest and Bazel runfiles launcher both
-        // supply this exact compiler-reported binary. Never guess target paths.
+        // The workflow's Nextest helper metadata and Bazel runfiles launcher both
+        // supply this exact built binary. Never infer target paths.
         let binary = PathBuf::from(
-            std::env::var_os("CARGO_BIN_EXE_hepta-joint-propose")
+            std::env::var_os("NEXTEST_BIN_EXE_hepta-joint-propose")
+                .or_else(|| std::env::var_os("CARGO_BIN_EXE_hepta-joint-propose"))
                 // `just test` crosses a POSIX shell, which can remove names
                 // containing hyphens. The helper manifest emits both aliases
                 // from the same compiler artifact; no target path is inferred.
