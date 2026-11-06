@@ -179,6 +179,12 @@ fn publish(root: &Path) -> Result<()> {
     let diagnostics = fs::read(root.join("worker/receipt.json"))?;
     let payload = fs::read(root.join("worker/candidate.pt"))?;
     let outcome = decode_hcsn_handoff_v1(&expected.operation_id, &handoff)?;
+    let clock_input = read(root, "clock-input.json")?;
+    let schema_profile = match clock_input["profile"]["integration"]["kind"].as_str() {
+        Some("value_kernel") => "fixture-value-kernel-tensor-checkpoint-v1",
+        Some("population_grid") => "fixture-population-grid-tensor-checkpoint-v2",
+        _ => return Err("unsupported fixture tensor schema profile".into()),
+    };
     let (config, key) = config(root);
     fs::create_dir(&config.root)?;
     let manifest = LearningArtifactManifestV2 {
@@ -205,7 +211,7 @@ fn publish(root: &Path) -> Result<()> {
         device_profile_digest: digest("fixture-cpu"),
         objective_class_digest: digest("fixture-task-mse"),
         compatibility_digest: expected.graph_digest,
-        schema_profile_digest: digest("fixture-tensor-checkpoint-v1"),
+        schema_profile_digest: digest(schema_profile),
         normalization_digest: digest("identity"),
         producer_id: id("fixture-worker"),
         created_at: 1,

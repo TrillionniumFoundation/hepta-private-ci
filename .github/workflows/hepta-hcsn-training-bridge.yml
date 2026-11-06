@@ -7,6 +7,7 @@ on:
       - qualification/hcsn_training/**
       - codex-rs/hepta-neuron/**
       - codex-rs/hepta-learning-artifacts/**
+      - codex-rs/hepta-automation/**
       - .github/workflows/hepta-hcsn-training-bridge.yml
 
 permissions:
@@ -14,9 +15,9 @@ permissions:
 
 jobs:
   source-and-owner:
-    if: github.event_name != 'pull_request' || github.head_ref == 'codex/hcsn-training-bridge-20261106'
+    if: github.event_name != 'pull_request' || github.head_ref == 'codex/hcsn-training-bridge-20261106' || github.head_ref == 'codex/hcsn-taskflow-integration-20261106'
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    timeout-minutes: 60
     env:
       HCSN_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
       OMP_NUM_THREADS: "1"
@@ -62,7 +63,7 @@ jobs:
         working-directory: codex-rs
         run: |
           rustc --version | tee "$HCSN_CI_EVIDENCE/rust-version.txt"
-          cargo build --locked -p codex-hepta-neuron -p codex-hepta-learning-artifacts 2>&1 | tee "$HCSN_CI_EVIDENCE/rust-build.log"
+          cargo build --locked --message-format=json -p codex-hepta-neuron -p codex-hepta-learning-artifacts -p codex-hepta-contracts -p codex-hepta-automation -p codex-hepta-types -p serde_json -p ed25519-dalek > "$HCSN_CI_EVIDENCE/cargo-artifacts.jsonl" 2> "$HCSN_CI_EVIDENCE/rust-build.log"
       - name: Run the two affected native packages
         if: ${{ !cancelled() && steps.rust_build.outcome == 'success' }}
         working-directory: codex-rs
@@ -70,17 +71,34 @@ jobs:
       - name: Strict shared-graph CPU derivative and recovery fixtures
         if: ${{ !cancelled() && steps.python_runtime.outcome == 'success' }}
         run: |
+          export HCSN_SUPERVISOR_TEST_ARTIFACTS="$HCSN_CI_EVIDENCE/supervisor-cases"
           python - <<'PY' 2>&1 | tee "$HCSN_CI_EVIDENCE/python-tests.log"
           import sys, unittest
-          suite = unittest.defaultTestLoader.loadTestsFromName("qualification.hcsn_training.test_joint_graph")
+          suite = unittest.TestSuite()
+          expected = {"test_joint_graph": 8, "test_population_graph": 8,
+                      "test_training_state": 8, "test_native_build": 5, "test_supervisor": 11}
+          for name, minimum in expected.items():
+              module = unittest.defaultTestLoader.loadTestsFromName("qualification.hcsn_training." + name)
+              if module.countTestCases() < minimum:
+                  raise RuntimeError("Missing required fixture coverage: " + name)
+              suite.addTests(module)
           result = unittest.TextTestRunner(verbosity=2).run(suite)
-          sys.exit(0 if result.testsRun >= 8 and not result.skipped and result.wasSuccessful() else 1)
+          sys.exit(0 if result.testsRun >= sum(expected.values()) and not result.skipped and result.wasSuccessful() else 1)
           PY
-      - name: Real Python to Rust owner and fresh-process recovery
+      - name: A graph through native supervisor, owner and second training block
         if: ${{ !cancelled() && steps.python_runtime.outcome == 'success' && steps.rust_build.outcome == 'success' }}
         run: |
           HCSN_RUSTC="$(cd codex-rs && rustup which rustc)"
-          python -m qualification.hcsn_training.verify_bridge --rust-workspace codex-rs --rustc "$HCSN_RUSTC" --output "$HCSN_CI_EVIDENCE/bridge" 2>&1 | tee "$HCSN_CI_EVIDENCE/bridge.log"
+          python -m qualification.hcsn_training.verify_bridge --rust-workspace codex-rs --rustc "$HCSN_RUSTC" --cargo-artifacts "$HCSN_CI_EVIDENCE/cargo-artifacts.jsonl" --supervised --backend value_kernel --output "$HCSN_CI_EVIDENCE/bridge-a" 2>&1 | tee "$HCSN_CI_EVIDENCE/bridge-a.log"
+      - name: B graph through native supervisor, owner and second training block
+        if: ${{ !cancelled() && steps.python_runtime.outcome == 'success' && steps.rust_build.outcome == 'success' }}
+        run: |
+          HCSN_RUSTC="$(cd codex-rs && rustup which rustc)"
+          python -m qualification.hcsn_training.verify_bridge --rust-workspace codex-rs --rustc "$HCSN_RUSTC" --cargo-artifacts "$HCSN_CI_EVIDENCE/cargo-artifacts.jsonl" --supervised --backend population_grid --output "$HCSN_CI_EVIDENCE/bridge-b" 2>&1 | tee "$HCSN_CI_EVIDENCE/bridge-b.log"
+      - name: Full authorized TaskFlow package tests
+        if: ${{ !cancelled() && steps.tools.outcome == 'success' }}
+        working-directory: codex-rs
+        run: just test --locked -p codex-hepta-automation 2>&1 | tee "$HCSN_CI_EVIDENCE/taskflow-tests.log"
       - name: Verify tracked source remained unchanged
         if: always()
         run: |
