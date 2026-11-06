@@ -2,6 +2,7 @@
 use crate::desktop::DesktopCapability;
 use crate::desktop::LaunchDesktop;
 use crate::prepared_filesystem::PreparedFilesystemAclContext;
+use crate::prepared_filesystem::PreparedProcessRootPins;
 use crate::token::PreparedFilesystemToken;
 use crate::token::create_full_filesystem_token_from;
 use anyhow::Context;
@@ -24,6 +25,8 @@ pub(crate) struct PreparedFilesystemOwners {
     token: PreparedFilesystemToken,
     filesystem: PreparedFilesystemAclContext,
     capability: DesktopCapability,
+    // These non-inheritable pins keep the exact validated roots from being renamed.
+    _root_pins: PreparedProcessRootPins,
 }
 
 impl PreparedFilesystemOwners {
@@ -61,11 +64,13 @@ impl PreparedProcessContext {
     ) -> Result<Self> {
         // Refuse source/ACL drift before creating a private desktop or Job. The
         // token retains its own query/duplicate source handle before base may close.
+        let root_pins = filesystem.pin_process_roots(base)?;
         let token = create_full_filesystem_token_from(base, &mut filesystem, &capability)?;
         let mut owners = PreparedFilesystemOwners {
             token,
             filesystem,
             capability,
+            _root_pins: root_pins,
         };
         owners.revalidate()?;
         let raw = owners.token.as_handle().as_raw_handle() as HANDLE;
@@ -128,3 +133,7 @@ fn token_version(token: HANDLE) -> Result<[u32; 4]> {
 #[cfg(test)]
 #[path = "prepared_process_context_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "prepared_process_root_pins_tests.rs"]
+mod root_pins_tests;
