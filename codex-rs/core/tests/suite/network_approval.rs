@@ -1779,7 +1779,35 @@ async fn guardian_receives_exact_trigger_for_single_network_request() -> Result<
 
     assert_eq!(
         guardian_network_triggers(&[&responses])?,
-        vec![("exec-network-single".to_string(), command)]
+        vec![("exec-network-single".to_string(), command)],
+        "recorded request order, roles, and triggering call outputs: {:#?}",
+        responses
+            .requests()
+            .iter()
+            .enumerate()
+            .map(|(request_index, request)| {
+                let body = request.body_json();
+                let call_outputs = body
+                    .get("input")
+                    .and_then(Value::as_array)
+                    .into_iter()
+                    .flatten()
+                    .filter(|item| {
+                        item.get("type").and_then(Value::as_str) == Some("function_call_output")
+                            && item.get("call_id").and_then(Value::as_str)
+                                == Some("exec-network-single")
+                    })
+                    .cloned()
+                    .collect::<Vec<_>>();
+                json!({
+                    "request_index": request_index,
+                    "model": body["model"],
+                    "body_subagent": body["client_metadata"]["x-openai-subagent"],
+                    "header_subagent": request.header("x-openai-subagent"),
+                    "triggering_call_outputs": call_outputs,
+                })
+            })
+            .collect::<Vec<_>>()
     );
 
     Ok(())
