@@ -60,22 +60,29 @@ SQL mutation, prohibited file access, VM exhaustion, oversized single values,
 source-window validation and omission of private answers from the public task.
 The existing bounded-execution test also verifies gzip integrity, zero mtime,
 original-content identity, and reading in a temporary tree with no raw SQL file.
-All eight scripted episodes delivered the expected answers. This storage stage
-uses the original runner: its receipt binds worker, task, builder and source
-manifest hashes and preserves timing and paid attempt events. It does not yet
-include the separate runtime-source binding added by the downstream runner.
-All results remain explicitly `real_llm_calls: 0`.
+All eight scripted episodes delivered the expected answers. The receipt binds
+the worker, task, builder, source manifest and actually imported measured-clock
+runtime hashes, preserves timing and paid attempt events, and states
+`real_llm_calls: 0`. Keys in `source_sha256` resolve relative to this directory;
+`../../ndu_walltime/runtime.py` identifies the imported runtime implementation.
 
-The pre-storage published receipt is preserved byte-for-byte as
-[qualification-original.json](evidence/qualification-original.json). The current
-final receipt is a fresh five-check/eight-episode run using compressed SQL and
-the original runner. A separate downstream stage has its own runtime-bound
-runner and freshly executed receipt; those results must not be substituted into
-this stage's source manifest. New timings are rerun measurements, not a
-performance comparison or scientific confirmation.
+Storage publication used two actual execution stages. Stage 1 used the original
+runner with compressed SQL and produced a separate five-check/eight-episode
+receipt for that source tree. Stage 2 restored the runtime-bound runner and
+executed the same checks and episodes again. Its result is the current
+[qualification-final.json](evidence/qualification-final.json); only this final
+receipt matches all executable-source hashes in the current tree.
 
-Earlier development receipts are historical engineering runs. Only the final
-receipt in this stage is the accepted record for this stage's source hashes.
+Two pre-storage receipts are preserved byte-for-byte:
+[qualification-original.json](evidence/qualification-original.json) is the
+original runner's published record, and
+[qualification-runtime-bound.json](evidence/qualification-runtime-bound.json)
+is the earlier runtime-bound record before SQL compression. Their source hashes
+are historical, not claims about current source. New timings are rerun
+measurements, not a performance comparison or scientific confirmation.
+
+Earlier development receipts are likewise historical engineering runs. No stage
+runs an LLM or turns the two-source smoke bank into scientific confirmation.
 
 ## Reproduce
 
