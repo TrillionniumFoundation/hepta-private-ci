@@ -442,3 +442,6 @@ fn next_anchor(
     })
 }
 
+#[cfg(test)]
+#[path = "cell_generation_tests.rs"]
+mod tests;
