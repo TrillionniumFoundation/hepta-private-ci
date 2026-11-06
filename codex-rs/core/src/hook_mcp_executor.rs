@@ -39,25 +39,36 @@ impl HookMcpExecutor for CoreHookMcpExecutor {
                 );
             }
 
-            let binding = self.runtime.current_binding().await.ok_or_else(|| {
-                anyhow::anyhow!(
-                    "MCP server `{}` or tool `{}` is not connected and available",
+            let prepared_call = self
+                .runtime
+                .prepare_call_if_connected(&call.server, &call.tool)
+                .await
+                .with_context(|| {
+                    format!(
+                        "MCP server `{}` or tool `{}` is not connected and available",
+                        call.server, call.tool
+                    )
+                })?;
+            if let Some(environment_id) = call.environment_id.as_deref()
+                && prepared_call.server_environment_id() != environment_id
+            {
+                bail!(
+                    "MCP server `{}` is running in environment `{}`, expected `{environment_id}`",
                     call.server,
-                    call.tool
-                )
-            })?;
-            let prepared_call = binding.prepare_call(&call.server, &call.tool).ok_or_else(|| {
-                anyhow::anyhow!(
-                    "MCP server `{}` or tool `{}` is not connected and available",
-                    call.server,
-                    call.tool
-                )
-            })?;
+                    prepared_call.server_environment_id()
+                );
+            }
+
+            let mut metadata = call.metadata.unwrap_or_default();
+            metadata.insert(
+                "threadId".to_string(),
+                Value::String(self.thread_id.to_string()),
+            );
 
             let result = prepared_call
                 .call(
                     Some(Value::Object(call.input)),
-                    Some(serde_json::json!({ "threadId": self.thread_id.to_string() })),
+                    Some(Value::Object(metadata)),
                     Some(call.timeout),
                 )
                 .await?;
