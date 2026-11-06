@@ -302,3 +302,6 @@ fn read_retained_request(path: &Path) -> Result<Vec<u8>, AgentdError> {
     read_protected_file(path, MAX_RETAINED_REQUEST_BYTES, "retained HCSN request")
 }
 
+#[cfg(all(test, unix))]
+#[path = "automation_hcsn_host_tests.rs"]
+mod tests;
