@@ -205,7 +205,7 @@ fn reduced(process: BorrowedHandle<'_>, rights: u32) -> io::Result<OwnedHandle> 
 #[test]
 fn original_signalled_exit_zero_seven_and_259_require_successful_query() -> Result<()> {
     for code in [0, 7, 259] {
-        with_child(command(&format!("exit /b {code}"))?, |child, deadline| {
+        with_child(command(&format!("exit {code}"))?, |child, deadline| {
             assert_eq!(
                 observe_process(child.as_handle(), remaining(deadline)?)?,
                 ProcessObservation::Exited(code)
@@ -218,7 +218,7 @@ fn original_signalled_exit_zero_seven_and_259_require_successful_query() -> Resu
 
 #[test]
 fn actual_wait_and_query_rights_failures_do_not_publish_exit() -> Result<()> {
-    with_child(command("exit /b 7")?, |child, deadline| {
+    with_child(command("exit 7")?, |child, deadline| {
         assert_eq!(
             observe_process(child.as_handle(), remaining(deadline)?)?,
             ProcessObservation::Exited(7)
@@ -239,7 +239,7 @@ fn actual_wait_and_query_rights_failures_do_not_publish_exit() -> Result<()> {
 
 #[test]
 fn actual_live_child_is_pending_until_original_stdin_closes() -> Result<()> {
-    with_child(command("set /p value= & exit /b 0")?, |child, deadline| {
+    with_child(command("set /p value= & exit 0")?, |child, deadline| {
         assert_eq!(
             observe_process(child.as_handle(), /*timeout_ms*/ 0)?,
             ProcessObservation::Pending
