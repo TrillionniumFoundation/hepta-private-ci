@@ -1,4 +1,5 @@
 use assert_matches::assert_matches;
+use codex_app_server_protocol::ThreadHistoryBuilder;
 use codex_core::StartThreadOptions;
 use codex_core::SuspendTurnOutcome;
 use codex_core::TurnInputRequest;
@@ -77,7 +78,7 @@ async fn root_turn_suspension_preserves_unfinished_turn_history() {
     let server = start_mock_server().await;
     // Waiting on the mocked response keeps the turn active on local and remote executors
     // without requiring an OS-specific command or a working sandboxed child process.
-    mount_response_once(
+    let pending_response = mount_response_once(
         &server,
         sse_response(sse(vec![
             ev_response_created("suspended_response"),
@@ -120,6 +121,16 @@ async fn root_turn_suspension_preserves_unfinished_turn_history() {
         panic!("expected a started root turn");
     };
     wait_for_event(&codex, |event| matches!(event, EventMsg::TurnStarted(_))).await;
+    // TurnStarted precedes the durable Ready boundary. Suspend only once the
+    // original request has passed its recovery checkpoint and reached the provider.
+    tokio::time::timeout(Duration::from_secs(10), async {
+        while pending_response.requests().is_empty() {
+            tokio::time::sleep(Duration::from_millis(10)).await;
+        }
+    })
+    .await
+    .expect("original turn should reach the provider before suspension");
+    let original_environments = codex.environment_selections().await;
 
     assert_eq!(
         codex
@@ -165,35 +176,97 @@ async fn root_turn_suspension_preserves_unfinished_turn_history() {
         item,
         RolloutItem::EventMsg(EventMsg::TurnAborted(_) | EventMsg::TurnComplete(_))
     )));
+    let mut history_builder = ThreadHistoryBuilder::new();
+    for item in &items {
+        history_builder.handle_rollout_item(item);
+    }
+    assert_eq!(
+        history_builder.recovery_candidate_turn_id(),
+        Some(turn_id.as_str()),
+        "the closed rollout must retain the original bound recovery candidate"
+    );
     test.thread_manager
         .remove_thread(&test.session_configured.thread_id)
         .await
         .expect("unload the suspended root");
-    let recovery_server = start_mock_server().await;
+    // Cold recovery binds the original provider deployment as well as the
+    // execution context. A different mock port or temporary cwd is a new request.
     mount_sse_once(
-        &recovery_server,
+        &server,
         sse(vec![
             ev_response_created("recovered_response"),
             ev_completed("recovered_response"),
         ]),
     )
     .await;
-    let resumed = test_codex()
-        .with_config(|config| {
-            let _ = config.features.enable(Feature::HeptaTurnRecovery);
-        })
-        .with_model("gpt-5.4")
-        .resume(&recovery_server, Arc::clone(&test.home), rollout_path)
+    // Retain the original executor owner and path convention when rebuilding
+    // the thread manager for cold recovery.
+    let original_config = test.config.clone();
+    let auth_manager = test.thread_manager.auth_manager();
+    let state_db = codex_core::init_state_db(&original_config).await;
+    let thread_store = codex_core::thread_store_from_config(&original_config, state_db.clone());
+    let resumed_manager = codex_core::ThreadManager::new(
+        &original_config,
+        Arc::clone(&auth_manager),
+        codex_core::build_models_manager(&original_config, Arc::clone(&auth_manager)),
+        codex_core::CodexAppsToolsCache::default(),
+        SessionSource::Exec,
+        test.thread_manager.environment_manager(),
+        codex_extension_api::empty_extension_registry(),
+        Arc::new(codex_home::CodexHomeUserInstructionsProvider::new(
+            original_config.codex_home.clone(),
+        )),
+        /*analytics_events_client*/ None,
+        thread_store,
+        codex_core::local_agent_graph_store_from_state_db(state_db.as_ref()),
+        codex_core::resolve_installation_id(&original_config.codex_home)
+            .await
+            .expect("reuse the persisted installation identity"),
+        /*attestation_provider*/ None,
+        /*external_time_provider*/ None,
+    );
+    let resumed_manager = if original_config.features.enabled(Feature::CodeModeHost)
+        && let Ok(host_program) = codex_utils_cargo_bin::cargo_bin("codex-code-mode-host")
+    {
+        codex_core::test_support::with_code_mode_host_program(
+            resumed_manager,
+            host_program,
+            &original_config,
+        )
+    } else {
+        resumed_manager
+    };
+    // Rebuild the thread registry and history while retaining the actual executor.
+    // The original selections keep remote paths in their executor's convention.
+    let initial_history = codex_rollout::RolloutRecorder::get_rollout_history(&rollout_path)
+        .await
+        .expect("load the suspended root's durable history");
+    let resumed = resumed_manager
+        .resume_thread_with_history_and_environments(
+            original_config,
+            initial_history,
+            auth_manager,
+            /*parent_trace*/ None,
+            codex_protocol::mcp::ClientMcpExtensions::default(),
+            Some(original_environments.clone()),
+        )
         .await
         .expect("resume the suspended root on a replacement runtime");
     assert_eq!(
+        resumed.thread.environment_selections().await,
+        original_environments
+    );
+    let expected_epoch = resumed
+        .thread
+        .recovery_epoch_if_idle(&turn_id)
+        .await
+        .expect("the replacement runtime must expose the original idle recovery candidate");
+    assert_eq!(
         resumed
-            .codex
+            .thread
             .recover_turn_if_idle(codex_core::RecoverTurnRequest {
                 turn_id: turn_id.clone(),
-                // The suspended rollout is the initial recovery generation;
-                // no in-memory epoch is exposed until admission succeeds.
-                expected_epoch: 0,
+                expected_epoch,
                 thread_settings: Default::default(),
                 trace: None,
             })
@@ -203,7 +276,7 @@ async fn root_turn_suspension_preserves_unfinished_turn_history() {
             turn_id: turn_id.clone(),
         },
     );
-    let completed = wait_for_event(&resumed.codex, |event| {
+    let completed = wait_for_event(&resumed.thread, |event| {
         matches!(event, EventMsg::TurnComplete(_))
     })
     .await;
