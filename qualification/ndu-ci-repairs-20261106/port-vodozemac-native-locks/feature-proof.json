@@ -1,0 +1,55 @@
+{
+  "native_cargo_tree_features": {
+    "aes@0.9.3": [
+      [
+        "zeroize"
+      ]
+    ],
+    "cbc@0.2.1": [
+      [
+        "block-padding",
+        "default",
+        "zeroize"
+      ]
+    ],
+    "chacha20@0.10.0": [
+      [
+        "cipher",
+        "rng",
+        "xchacha",
+        "zeroize"
+      ]
+    ],
+    "chacha20poly1305@0.11.0": [
+      [
+        "alloc",
+        "default",
+        "getrandom",
+        "zeroize"
+      ]
+    ],
+    "cipher@0.5.2": [
+      [
+        "alloc",
+        "block-buffer",
+        "block-padding",
+        "stream-wrapper",
+        "zeroize"
+      ]
+    ],
+    "hmac@0.13.0": [
+      [
+        "zeroize"
+      ]
+    ],
+    "sha2@0.11.0": [
+      [
+        "alloc",
+        "default",
+        "oid",
+        "zeroize"
+      ]
+    ]
+  },
+  "scope": "Declared Cargo tree resolution; not a substitute for complete-head native compilation and tests."
+}
