@@ -716,6 +716,14 @@ async fn unavailable_deferred_runtime_keeps_only_read_tools_visible_without_a_wi
     assert!(error.contains("hepta_cognitive_unavailable"));
     assert!(error.contains("storage_unavailable"));
     assert!(!error.contains('/') && !error.contains("sqlite"));
+    let typed: serde_json::Value = serde_json::from_str(&error)
+        .unwrap_or_else(|error| panic!("typed unavailable error: {error}"));
+    assert_eq!(typed["error"]["code"], "hepta_cognitive_unavailable");
+    assert!(
+        typed["error"]["message"]
+            .as_str()
+            .is_some_and(|message| message.contains("storage_unavailable"))
+    );
 }
 
 #[test]
