@@ -188,3 +188,7 @@ struct BridgedReady {
     material_runtime_bridge: BridgeObservation,
     runtime_source_set_sha256: String,
 }
+
+#[cfg(test)]
+#[path = "smollm_material_runtime_bridge_tests.rs"]
+mod tests;
