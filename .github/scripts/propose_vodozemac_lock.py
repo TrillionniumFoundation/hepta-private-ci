@@ -31,9 +31,9 @@ ADDITIONS = {
 CHANGED = {"codex-rs/Cargo.lock", "MODULE.bazel.lock"}
 CAPTURED = CHANGED | {"codex-rs/Cargo.toml"}
 PROPOSAL_PARENT = {
-    "head": "d58f60309cdb15b33a62e4865f0555dd91f85913",
-    "tree": "b9947778f2d8c98c9067534a4f7c69f28880b5aa",
-    "ref": "research/ndu-vodozemac-reviewed-graph-guards-20261106",
+    "head": "eedc9f1094ccf42afe9fdb7ea9af193ac7a10a30",
+    "tree": "276519b00b34bccb15627ea7ba3f28f3fe88abb8",
+    "ref": "research/ndu-vodozemac-native-lock-proposal-20261106",
     "inherited_files": {
         ".github/scripts/vodozemac-lock-spec.json": (
             "100644",
@@ -253,6 +253,24 @@ def generate(root, private):
             raise CommandFailed(proc.returncode if 0 < proc.returncode < 256 else 1)
         return logfile.read_bytes()
 
+    def resolve_existing_versions(stage):
+        # Updating vodozemac unlocks its dependency closure. Resolve the two
+        # already present alternatives again, then require the original graph.
+        for package, version in (("itertools", "0.14.0"), ("getrandom", "0.3.4")):
+            run(
+                f"cargo-existing-{package}-{stage}",
+                [
+                    "cargo",
+                    "+1.96.0",
+                    "update",
+                    "-p",
+                    f"{package}@{version}",
+                    "--precise",
+                    version,
+                ],
+                root / "codex-rs",
+            )
+
     try:
         for name, argv, expected in [
             ("cargo-version", ["cargo", "+1.96.0", "--version"], [b"cargo", b"1.96.0"]),
@@ -335,6 +353,7 @@ def generate(root, private):
             "0.11.2",
         ]
         run("cargo-lock-update", cargo, root / "codex-rs")
+        resolve_existing_versions("update")
         new_lock = (root / "codex-rs/Cargo.lock").read_bytes()
         write_json(
             payload / "lock-graph-proof.json", graph_guard(old_lock, new_lock, SPEC)
@@ -349,6 +368,7 @@ def generate(root, private):
             "0.11.2",
         ]
         run("cargo-lock-repeat", repeat, root / "codex-rs")
+        resolve_existing_versions("repeat")
         require(
             (root / "codex-rs/Cargo.lock").read_bytes() == new_lock,
             "CARGO_LOCK_NOT_REPEATABLE",
