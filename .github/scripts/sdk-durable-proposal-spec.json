@@ -1,0 +1,126 @@
+{
+  "schema": "sdk-durable-three-layer-proposal-v2",
+  "binding_status": "BOUND_REVIEWED_PARENT",
+  "base_head": "7c8c11d1feee3b48edcc43151dfdb698360e2255",
+  "base_tree": "bae605da14265a4ba9797d0db6b594f89d7baefc",
+  "base_ref": "research/ndu-native-lock-amendment-guards-20261106",
+  "original_product_leaves": 14976,
+  "baseline_blobs": {
+    ".bazelversion": "f7ee06693c17a06e2a0f51ef7eb2a61866e77b8e",
+    ".github/actions/prepare-bazel-ci/action.yml": "f9508a1659e5f2c54a6ae5b263bb9328095438d7",
+    ".github/actions/setup-bazel-ci/action.yml": "ea3f3a6521b970484ac60d1cebf788092753555a",
+    ".github/actions/setup-ci/action.yml": "8abd2dbd5f09585734f8213011a9ed540a2ee88e",
+    "MODULE.bazel": "cc1b7f627cff8cfccf6d386b25aa01ab758a270c",
+    "MODULE.bazel.lock": "7d77e06d95a3e4d014870990031d5920bc779939",
+    "codex-rs/Cargo.lock": "4807d7da16d576a6f34830ff1039e3224808c7b4",
+    "codex-rs/Cargo.toml": "b21f7ffc0ee52722ddf82e5a996ff9d82ae0fbb0",
+    "codex-rs/deny.toml": "677f941360b2d82ab96aa4d419d97f4616cc2194",
+    "codex-rs/hepta-matrix-sdk/Cargo.toml": "9108e65772a71b9b015dba60f354382f5e0dfa8d",
+    "codex-rs/hepta-matrix-sdk/src/sdk.rs": "7551dce984a48e750e90e5c4c4aace6b987591d4",
+    "codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/source.py": "a5d1670a3bdafa13b1e5cc7f8b5b312acaaea6ca",
+    "codex-rs/rust-toolchain.toml": "917d2492264a35bc9c0feaef41878d8825870866",
+    "codex-rs/utils/path-utils/Cargo.toml": "d1503fd060c960845b2f514cbe69f824291eff07",
+    "codex-rs/utils/path-utils/src/lib.rs": "e09042ba01233b924b862ee08121d3473faa0b91",
+    "defs.bzl": "e920b1ed75161a7afdb93b69e79e173627833952",
+    "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/LOCK_AMENDMENT.v7.5.json": "162df973f45cc48b00743ed89799bceeee7a0725",
+    "justfile": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+    "scripts/check-module-bazel-lock.sh": "49ddaaef2bfc9a3c568bcd2ab3818cd968ccf6dd",
+    "scripts/ndu_port_candidate_common.py": "6b0c17697417090adb55df1433f21ddc5ef076e5",
+    "scripts/ndu_port_integrated.py": "4d0df594e3278793065fb87fcba39229aaaf73ad"
+  },
+  "source_patch_sha256": "22986e3a3fb7339fa5d52c31b256e45684f48f999dcc086eb124ed024834557a",
+  "source_files": [
+    {
+      "path": "codex-rs/utils/path-utils/src/lib.rs",
+      "before_blob": "e09042ba01233b924b862ee08121d3473faa0b91",
+      "after_blob": "a2e0ab56d325bf41247bd1f4ceb2d4ba99bf5f3c",
+      "after_sha256": "0049b261fff065975c8d91cbc0940a342fe1ce0ac3f3d118dc7c0802df8a0797",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/utils/path-utils/Cargo.toml",
+      "before_blob": "d1503fd060c960845b2f514cbe69f824291eff07",
+      "after_blob": "5ce0cb56df1cc568f78fe8960fafd99c352e1fc6",
+      "after_sha256": "fc49b7138af920f7239da1e5888a11468355f57d7a6975657fe8ca10c2e846a5",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-matrix-sdk/src/sdk.rs",
+      "before_blob": "7551dce984a48e750e90e5c4c4aace6b987591d4",
+      "after_blob": "82c7e2a7151dfbc9590502feb780511727d73f7d",
+      "after_sha256": "9462a09f15bf7130413669dba1c29cd737c9421740c7307d2218782fd5d68848",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-matrix-sdk/Cargo.toml",
+      "before_blob": "9108e65772a71b9b015dba60f354382f5e0dfa8d",
+      "after_blob": "04a1a80d07b8a18c6058de452532c0a3ef5d6bcb",
+      "after_sha256": "fd265d32a4af33bf30f85d3fb741b9e8e97230aeb71dffacad63342bf49deefa",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/durable_publish.rs",
+      "before_blob": null,
+      "after_blob": "76e545fdc1743b7d168a98b5dd5e94566a6c53d1",
+      "after_sha256": "6a855aef91aebff1bd1d1f374a87a0dfb85c130e6e421a8302e8870379213dc1",
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/utils/path-utils/src/durable_publish_tests.rs",
+      "before_blob": null,
+      "after_blob": "38412bd4a4379824686dec799c5011c9446fe9e6",
+      "after_sha256": "7ada1e2cfc05f6bd964dba2a91be2bd144da5c5d2e6aa5f04f5cd696dce8992a",
+      "mode": "100644"
+    }
+  ],
+  "locks": ["codex-rs/Cargo.lock", "MODULE.bazel.lock"],
+  "cargo_added_edges": {
+    "codex-hepta-matrix-sdk": "codex-utils-path",
+    "codex-utils-path": "windows-sys 0.52.0"
+  },
+  "module_policy": "byte_identical",
+  "metadata_policy": "two_manifest_and_resolved_edges_only_all_other_fields_equal",
+  "fixed_bazel_source_uris": [
+    "git+https://github.com/dzbarsky/rules_rust?rev=b56cbaa8465e74127f1ea216f813cd377295ad81#b56cbaa8465e74127f1ea216f813cd377295ad81_runfiles",
+    "git+https://github.com/helix-editor/nucleo.git?rev=4253de9faabb4e5c6d81d946a5e35a90f87347ee#4253de9faabb4e5c6d81d946a5e35a90f87347ee_nucleo",
+    "git+https://github.com/helix-editor/nucleo.git?rev=4253de9faabb4e5c6d81d946a5e35a90f87347ee#4253de9faabb4e5c6d81d946a5e35a90f87347ee_nucleo-matcher",
+    "git+https://github.com/openai-oss-forks/crossterm?rev=45fecb9508105988f42fe6ff0441783ed3717f92#45fecb9508105988f42fe6ff0441783ed3717f92_crossterm",
+    "git+https://github.com/openai-oss-forks/tokio-tungstenite?rev=0e5b2d73aa18dd9f0a50ee9ff199d5aef7594186#0e5b2d73aa18dd9f0a50ee9ff199d5aef7594186_tokio-tungstenite",
+    "git+https://github.com/openai-oss-forks/tungstenite-rs?rev=4fffad30fe373adbdcffab9545e9e9bf4f2fc19f#4fffad30fe373adbdcffab9545e9e9bf4f2fc19f_tungstenite",
+    "git+https://github.com/rust-lang/rust-clippy?rev=20ce69b9a63bcd2756cd906fe0964d1e901e042a#20ce69b9a63bcd2756cd906fe0964d1e901e042a_clippy_utils"
+  ],
+  "vodozemac_native_artifact_approval": {
+    "scope": "Qualified #5108 native two-lock artifact, root-published in #5115 and bound to unchanged #5119 lock blobs; not SDK native qualification",
+    "source_head": "f11cc0a1c46f4a1a49e21580a80a9306b42f5dfa",
+    "source_tree": "c01815f9a8aac7116747a2d6895060b8c646deb3",
+    "run_id": 42269231206,
+    "job_id": 128069141553,
+    "artifact_id": 13532386250,
+    "archive_sha256": "47ac0b11330212d9836fda483369173365eb3729c131367c618450761884eaa5",
+    "audit_sha256": "e53b48da6c300c5d2193c6583efe65888648ab32d67c535bb8a2e9e04acfff70",
+    "locks": {
+      "MODULE.bazel.lock": {
+        "bytes": 1725951,
+        "sha256": "90225dce14839069862401db906babcee1d1f19349f2da87024740e97747adaf",
+        "git_blob": "7d77e06d95a3e4d014870990031d5920bc779939"
+      },
+      "codex-rs/Cargo.lock": {
+        "bytes": 419311,
+        "sha256": "df62d73836673ec7cfb69d8f232cb81be610cea94e8ce95f81d41235f4a3317f",
+        "git_blob": "4807d7da16d576a6f34830ff1039e3224808c7b4"
+      }
+    }
+  },
+  "guards_head": "f18d0df386513b57642dc6383b81c0c3f99cb8b3",
+  "guards_tree": "9ac6f8eb502bf6c9b345467bd50d112f6c0521d1",
+  "guards_ref": "research/ndu-sdk-durable-guards-20261106",
+  "inputs_head": null,
+  "inputs_tree": null,
+  "inputs_ref": "research/ndu-sdk-durable-inputs-20261106",
+  "proposal_ref": "research/ndu-sdk-durable-proposal-20261106",
+  "passive_input_blobs": {
+    ".github/scripts/sdk_durable_lock_guards.py": "76f2ef44064092f889872ee9564d8a3d00a86f01",
+    ".github/scripts/sdk_durable_proposal_evidence.py": "ce67acf50582dc901806217047b8a557a39060a5",
+    ".github/scripts/sdk-durable-source.patch": "dc38074ef06875736893bf71fd016ba315961b99"
+  }
+}
