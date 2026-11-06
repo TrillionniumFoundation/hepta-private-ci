@@ -14,11 +14,9 @@ use crate::protocol::Reader;
 use crate::protocol::Sampler;
 use crate::protocol::parse;
 
-#[path = "proposal_test_support.rs"]
-mod support;
-use support::Fixture;
-use support::raw_frame;
-use support::request;
+use crate::test_support::Fixture;
+use crate::test_support::raw_frame;
+use crate::test_support::request;
 
 fn init() -> Command {
     Command::Init(EmissionLaw {
@@ -119,7 +117,7 @@ fn auto_uses_real_actor_mask_and_critic_computation() -> Result<()> {
     let stopped = fixture.run(&auto.state, &[], Command::Auto(500_000))?;
     assert!(stopped.stopped);
     assert_eq!(Prefixes::read(&stopped.delta)?.cursors, TOTAL_UNITS);
-    let mut weights = support::weights();
+    let mut weights = crate::test_support::weights();
     weights
         .tensors
         .get_mut("critic.0.bias")

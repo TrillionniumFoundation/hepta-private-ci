@@ -45,5 +45,9 @@ fn main() {
 }
 
 #[cfg(all(test, target_os = "linux"))]
+#[path = "../joint_generation/proposal_test_support.rs"]
+mod test_support;
+
+#[cfg(all(test, target_os = "linux"))]
 #[path = "../joint_generation/proposal_tests.rs"]
 mod tests;

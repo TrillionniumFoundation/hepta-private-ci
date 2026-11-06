@@ -9,10 +9,8 @@ use crate::protocol::EmissionLaw;
 use crate::protocol::Response;
 use crate::protocol::Sampler;
 
-#[path = "proposal_test_support.rs"]
-mod support;
-use support::Fixture;
-use support::request;
+use crate::test_support::Fixture;
+use crate::test_support::request;
 
 fn init(seed: u64) -> Command {
     Command::Init(EmissionLaw {
@@ -108,7 +106,13 @@ fn resident_refuses_asset_replacement_and_missing_initial_assets() -> Result<()>
     assert!(read_frame(&mut output)?.is_none());
     assert!(
         serve(
-            Cursor::new(framed(&support::request(&[], &[], &[], &[], init(17)))),
+            Cursor::new(framed(&crate::test_support::request(
+                &[],
+                &[],
+                &[],
+                &[],
+                init(17)
+            ))),
             Vec::new()
         )
         .is_err()

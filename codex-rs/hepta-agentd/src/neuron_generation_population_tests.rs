@@ -2,6 +2,8 @@ use codex_hepta_learning_artifacts::CellBundleComponentsV1;
 use codex_hepta_learning_artifacts::CellCompatibilityBundleV1;
 use codex_hepta_types::StableId;
 
+use pretty_assertions::assert_eq;
+
 use super::*;
 
 fn artifact() -> CellCompatibilityBundleV1 {
