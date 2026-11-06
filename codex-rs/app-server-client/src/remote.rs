@@ -1562,3 +1562,7 @@ mod tests {
 #[cfg(test)]
 #[path = "remote_process_indeterminate_tests.rs"]
 mod process_indeterminate_tests;
+
+#[cfg(test)]
+#[path = "remote_request_cancellation_tests.rs"]
+mod request_cancellation_tests;
