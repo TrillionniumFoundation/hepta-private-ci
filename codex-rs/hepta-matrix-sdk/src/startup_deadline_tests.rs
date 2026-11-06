@@ -104,7 +104,8 @@ async fn expired_finalization_rejects_success_without_erasing_a_written_session(
         Some("full-strength human passphrase"),
         tokio::time::Instant::now() + MATRIX_STARTUP_TIMEOUT,
     )
-    .await?;
+    .await
+    .map_err(|error| format!("build finalization fixture: {error}"))?;
     let session = MatrixSession {
         meta: SessionMeta {
             user_id: "@deadline:example.test".try_into()?,
@@ -116,12 +117,17 @@ async fn expired_finalization_rejects_success_without_erasing_a_written_session(
         },
     };
     let startup_deadline = tokio::time::Instant::now();
-    persist_session(sidecar.paths.session(), &session)?;
+    persist_session(sidecar.paths.session(), &session)
+        .map_err(|error| format!("persist session before finalization: {error}"))?;
     assert_eq!(
         sidecar.finish_startup(startup_deadline),
         Err(MatrixSdkError::Initialization)
     );
-    assert_eq!(load_session(sidecar.paths.session())?, Some(session));
+    assert_eq!(
+        load_session(sidecar.paths.session())
+            .map_err(|error| format!("reload session after finalization: {error}"))?,
+        Some(session)
+    );
     assert!(sidecar.client.user_id().is_none());
     Ok(())
 }
