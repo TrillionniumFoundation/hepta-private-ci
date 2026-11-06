@@ -1,0 +1,89 @@
+name: Fixed-five-version NDU pin-utils backport lock proposal
+
+on:
+  pull_request:
+    branches: [research/ndu-i18n-bazel-alias-20261106]
+    paths:
+      - .github/workflows/hepta-pin-utils-backport-proposal.yml
+      - .github/scripts/propose_pin_utils_backport.py
+      - .github/scripts/pin_utils_proposal_evidence.py
+      - .github/scripts/pin-utils-backport-spec.json
+      - .github/scripts/pin_utils_lock_guards.py
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  lock-proposal:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      CANDIDATE_SHA: ${{ github.event.pull_request.head.sha }}
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Checkout exact proposal source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ env.CANDIDATE_SHA }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Bind the fixed parent and all original product leaves
+        id: preflight
+        run: python3 .github/scripts/propose_pin_utils_backport.py preflight
+
+      - name: Prepare original Bazel environment
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: pin-utils-lock-proposal
+
+      - name: Install original Rust toolchain
+        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489 # 1.96.0
+
+      - name: Install original cargo-deny
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
+        with:
+          tool: cargo-deny@0.19.0
+
+      - name: Generate and check the proposal without committing it
+        id: generate
+        env:
+          PRIVATE_EVIDENCE_DIR: ${{ steps.preflight.outputs.private_dir }}
+        run: python3 .github/scripts/propose_pin_utils_backport.py generate
+
+      - name: Check original logs and proposal before upload
+        id: collect
+        if: always() && steps.preflight.outcome == 'success'
+        env:
+          PRIVATE_EVIDENCE_DIR: ${{ steps.preflight.outputs.private_dir }}
+          EVIDENCE_GITHUB_TOKEN: ${{ github.token }}
+        run: python3 .github/scripts/propose_pin_utils_backport.py collect
+
+      - name: Upload the review artifact
+        id: upload
+        if: always() && steps.collect.outcome == 'success' && steps.collect.outputs.safe_for_upload == 'true'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: pin-utils-lock-proposal-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ steps.collect.outputs.public_dir }}
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Require actual generation and complete retained evidence
+        if: always()
+        env:
+          GENERATION: ${{ steps.generate.outcome }}
+          COLLECTION: ${{ steps.collect.outcome }}
+          UPLOAD: ${{ steps.upload.outcome }}
+          VALIDATED: ${{ steps.collect.outputs.proposal_validated }}
+        run: |
+          test "$GENERATION" = success
+          test "$COLLECTION" = success
+          test "$UPLOAD" = success
+          test "$VALIDATED" = true
