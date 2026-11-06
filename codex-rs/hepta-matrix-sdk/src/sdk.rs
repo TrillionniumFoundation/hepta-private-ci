@@ -577,10 +577,34 @@ fn load_session(path: &std::path::Path) -> Result<Option<MatrixSession>, MatrixS
         .map_err(|_| MatrixSdkError::Initialization)
 }
 
+#[derive(Debug)]
+enum PersistSessionIoStage {
+    ParentMetadata,
+    TemporaryCreate,
+    TemporaryWrite,
+    TemporarySync,
+    PublishRename,
+    ParentOpen,
+    ParentSync,
+}
+
+fn session_persist_io_error(stage: PersistSessionIoStage, error: std::io::Error) -> MatrixSdkError {
+    // Unit-test diagnostics must not include paths, session data, or error text.
+    #[cfg(test)]
+    eprintln!(
+        "matrix_session_persist_io stage={stage:?} kind={:?} raw_os_error={:?}",
+        error.kind(),
+        error.raw_os_error(),
+    );
+    #[cfg(not(test))]
+    let _ = (stage, error);
+    MatrixSdkError::Initialization
+}
+
 fn persist_session(path: &std::path::Path, session: &MatrixSession) -> Result<(), MatrixSdkError> {
     let parent = path.parent().ok_or(MatrixSdkError::Initialization)?;
-    let parent_metadata =
-        std::fs::symlink_metadata(parent).map_err(|_| MatrixSdkError::Initialization)?;
+    let parent_metadata = std::fs::symlink_metadata(parent)
+        .map_err(|error| session_persist_io_error(PersistSessionIoStage::ParentMetadata, error))?;
     if !parent_metadata.file_type().is_dir() {
         return Err(MatrixSdkError::Initialization);
     }
@@ -615,20 +639,23 @@ fn persist_session(path: &std::path::Path, session: &MatrixSession) -> Result<()
             use std::os::unix::fs::OpenOptionsExt;
             options.mode(0o600);
         }
-        let mut output = options
-            .open(&temporary)
-            .map_err(|_| MatrixSdkError::Initialization)?;
-        output
-            .write_all(&bytes)
-            .map_err(|_| MatrixSdkError::Initialization)?;
-        output
-            .sync_all()
-            .map_err(|_| MatrixSdkError::Initialization)?;
+        let mut output = options.open(&temporary).map_err(|error| {
+            session_persist_io_error(PersistSessionIoStage::TemporaryCreate, error)
+        })?;
+        output.write_all(&bytes).map_err(|error| {
+            session_persist_io_error(PersistSessionIoStage::TemporaryWrite, error)
+        })?;
+        output.sync_all().map_err(|error| {
+            session_persist_io_error(PersistSessionIoStage::TemporarySync, error)
+        })?;
         drop(output);
-        std::fs::rename(&temporary, path).map_err(|_| MatrixSdkError::Initialization)?;
+        std::fs::rename(&temporary, path).map_err(|error| {
+            session_persist_io_error(PersistSessionIoStage::PublishRename, error)
+        })?;
         std::fs::File::open(parent)
-            .and_then(|directory| directory.sync_all())
-            .map_err(|_| MatrixSdkError::Initialization)?;
+            .map_err(|error| session_persist_io_error(PersistSessionIoStage::ParentOpen, error))?
+            .sync_all()
+            .map_err(|error| session_persist_io_error(PersistSessionIoStage::ParentSync, error))?;
         Ok(())
     })();
     if result.is_err() {
