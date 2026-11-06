@@ -1149,5 +1149,62 @@ class OriginalWriterRotationBoundaryMarkerTests(unittest.TestCase):
         self.assertFalse(consistent(wrong_marker))
 
 
+
+class PhysicalCurrentRetiredAdoptionBoundaryMarkerTests(unittest.TestCase):
+    def test_adoption_manifest_and_protected_file_match_boxed_profile(self):
+        manifest = tomllib.loads(
+            (ROOT / "CALLERS.toml").read_text(encoding="utf-8")
+        )
+        boundary = next(
+            row for row in manifest["boundary"]
+            if row["id"] == "root_physical_current_retired_adoption"
+        )
+        source_path = (
+            "codex-rs/hepta-agentd/src/authority_host_checkpoint_adoption.rs"
+        )
+        source = (ROOT / source_path).read_text(encoding="utf-8")
+        protected = next(
+            row for row in manifest["protected_file"]
+            if row["path"] == source_path
+        )
+        marker = "AdoptMaterial::Physical(Box::new(profile))"
+
+        def consistent(row):
+            return (
+                row["symbol"]
+                == "HostCognitiveCheckpoint::adopt_current_after_root_restart_with_material"
+                and row["definition_path"] == source_path
+                and marker in row["definition_markers"]
+                and "AdoptMaterial::Physical(profile)" not in row["definition_markers"]
+                and marker in source
+                and marker in protected["required"]
+                and "AdoptMaterial::Physical(profile)" not in protected["required"]
+            )
+
+        self.assertTrue(consistent(boundary))
+        wrong_boundary = dict(
+            boundary,
+            definition_markers=[
+                item.replace(marker, "AdoptMaterial::Physical(profile)")
+                for item in boundary["definition_markers"]
+            ],
+        )
+        self.assertFalse(consistent(wrong_boundary))
+
+        wrong_protected = dict(
+            protected,
+            required=[
+                item.replace(marker, "AdoptMaterial::Physical(profile)")
+                for item in protected["required"]
+            ],
+        )
+        original_protected = protected
+        protected = wrong_protected
+        try:
+            self.assertFalse(consistent(boundary))
+        finally:
+            protected = original_protected
+
+
 if __name__ == "__main__":
     unittest.main()
