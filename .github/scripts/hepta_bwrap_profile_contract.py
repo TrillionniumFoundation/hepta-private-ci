@@ -17,16 +17,16 @@ from hepta_bwrap_readonly_contract import PROBE, journal_argv
 from hepta_core_selected_evidence import identity, read_regular, require
 
 ROOT = Path(__file__).resolve().parents[2]
-PARENT = "006a70913f3b18221cfa4f9181e50fd2fe47238b"
-PARENT_TREE = "616facf910af229b0ecd52fec2afafe6bc126b8e"
-INPUTS_HEAD = "ef85c0f60ae650757cfc567663ff33a5f39496c2"
-INPUTS_TREE = "aa923f723ed14b4be3acaef28635255614a3b87f"
-CHECKS_HEAD = "e47922d492694e9474a79fc12d3b68eb3536348c"
-CHECKS_TREE = "e7afca9dcdacf2a4428b0c2d82e480dbe5ea45c2"
+PARENT = "41de48b07af5941e3a647ff7b47d78fc21d11c3d"
+PARENT_TREE = "ebbd7de87f7e3fdff26f220fbf5feae7ba7083cb"
+INPUTS_HEAD = None
+INPUTS_TREE = None
+CHECKS_HEAD = None
+CHECKS_TREE = None
 REPOSITORY = "TrillionniumFoundation/hepta-private-ci"
-INPUTS_REF = "research/ndu-bwrap-names-inputs-20261107"
-CHECKS_REF = "research/ndu-bwrap-names-checks-20261107"
-PROPOSAL_REF = "research/ndu-bwrap-names-probe-20261107"
+INPUTS_REF = "research/ndu-core-profile-inputs-20261107"
+CHECKS_REF = "research/ndu-core-profile-checks-20261107"
+PROPOSAL_REF = "research/ndu-core-profile-probe-20261107"
 CONTRACT = ".github/scripts/hepta_bwrap_profile_contract.py"
 PROFILE_PACKAGE = (
     ".github/scripts/apparmor-profiles_4.0.1really4.0.1-0ubuntu0.24.04.9_all.deb"
@@ -36,12 +36,13 @@ SHARE_HELPER = ".github/scripts/hepta_bwrap_share_mode.py"
 SHARE_HELPER_SHA = "eafff9d38967761e9af63a9bf12193d19ff29cd628e6d0b2ddb953e47834d542"
 SHARE_PYTHON = "/usr/bin/python3.12"
 BASELINE_BLOBS = {
-    ".github/scripts/hepta_bwrap_profile_contract.py": "c35133ecf6f3f932fce1079659f90a896e16f630",
-    ".github/workflows/hepta-bwrap-profile-probe.yml": "519c9ed6a22acb36b6e993a73e48887f08f147ba",
+    ".github/scripts/hepta_bwrap_profile_contract.py": "86fb2cc5fe2d0170e52abf7be9a721b1d74f60ac",
+    ".github/scripts/hepta-core-selected-spec.json": "400efda8ab322f8ca25ee773d2fbf2456c6d41a4",
+    ".github/scripts/hepta_core_selected_guard.py": "6d5119c3dc446ae891d983b118c9fa36d1a1befa",
 }
-INPUT_PATHS = {CONTRACT}
-CHECK_PATHS = set()
-EXECUTOR_PATHS = {".github/workflows/hepta-bwrap-profile-probe.yml"}
+INPUT_PATHS = {CONTRACT, ".github/scripts/hepta-core-selected-spec.json"}
+CHECK_PATHS = {".github/scripts/hepta_core_selected_guard.py"}
+EXECUTOR_PATHS = {".github/workflows/hepta-core-profile-proposal.yml"}
 DECLARED_PATHS = INPUT_PATHS | CHECK_PATHS | EXECUTOR_PATHS
 SCANNER_PATH = ".github/scripts/hepta_core_selected_evidence.py"
 SCANNER_BLOB = "f18f5d0ce06cead0817513814da96f129523cf8c"
