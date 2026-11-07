@@ -1,9 +1,9 @@
 {
   "schema": "hepta.integrated-validation-summary.v1",
-  "current_code_commit": "be596c37135c3b62760f79c368454ccaf70487dc",
-  "unique_current_test_coverage": 303,
+  "current_code_commit": "93703d7f6f3216afcfa0303ed55876f1489d883a",
+  "unique_current_test_coverage": 309,
   "counts": {
-    "portfolio": 171,
+    "portfolio": 177,
     "semantic": 49,
     "decision_audit": 83
   },
@@ -24,6 +24,12 @@
       "tests": 83,
       "errors": 0,
       "reason": "Both unchanged inherited reference modules were restored from the pinned runtime source; only the affected group was repeated."
+    },
+    {
+      "path": "attempt-003-cloud/RESULT.json",
+      "tests": 6,
+      "errors": 0,
+      "reason": "New cloud orchestration checked on the integrated tree with real bounded child processes and source/transfer/export fixtures."
     }
   ],
   "unchanged_successful_sources": [
@@ -44,5 +50,5 @@
     "ast_equivalent": true,
     "file_bytes_changed": false
   },
-  "interpretation": "303 distinct tests are covered by these two receipts; executed attempts total 386, not 386 independent tests or scientific observations."
+  "interpretation": "309 distinct tests are covered by three receipts; the 83 repeated tests are not counted again. No cloud/GPU/model execution is inferred from unit tests."
 }

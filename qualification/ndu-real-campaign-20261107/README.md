@@ -72,11 +72,19 @@ remain binding during any transfer. Worker copies can carry only the nine select
 reference records and retrieve their exact images; original acquisition receipts
 remain historical evidence and are never rewritten as new-transfer receipts.
 
+The cloud entry point additionally binds the exact source-file manifest and executes
+one Kaggle worker budget of at most 1740 seconds inside the provider's 1800-second
+cap. CUDA failure stops model acquisition. Failed commands, unstarted phases,
+model-acquisition records, and lossless output path/hash mappings are exported.
+A transport-level zero exit exists only because the existing Kaggle artifact API
+requires COMPLETE; `experiment_status` is authoritative and scientific acceptance
+remains false. This provider profile does not alter Colab's limits.
+
 ## Validation and review
 
 `LOCAL_VALIDATION.json` and `local-validation.zip` preserve the integrated attempt,
 the missing-reference failure, the focused repair, and exact source hashes.
-Current coverage is 171 portfolio, 49 semantic, and 83 generator/runtime tests,
+Current coverage is 177 portfolio, 49 semantic, and 83 generator/runtime tests,
 with no runtime skips. These are local engineering tests, not hosted CI or real
 model benefit measurements. Required CI also runs the source admission checks and
 bounded runtime regressions with their needed dependencies.
