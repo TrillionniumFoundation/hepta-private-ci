@@ -60,15 +60,33 @@ pub struct CircuitComputationAdmissionV2 {
 }
 
 impl CircuitComputationAdmissionV2 {
-    pub fn dispatch(&self) -> &CircuitDispatchV2 { &self.dispatch }
-    pub fn owner_agent_id(&self) -> &AgentId { &self.owner_agent_id }
-    pub fn definition_digest(&self) -> &Sha256Digest { &self.definition_digest }
-    pub fn execution_request_digest(&self) -> Option<&Sha256Digest> { self.execution_request_digest.as_ref() }
-    pub fn observed_revision(&self) -> u64 { self.observed_revision }
-    pub fn observed_at_ms(&self) -> u64 { self.observed_at_ms }
-    pub fn lease_expires_at_ms(&self) -> u64 { self.lease_expires_at_ms }
-    pub fn run_deadline_ms(&self) -> u64 { self.run_deadline_ms }
-    pub fn reconciliation_only(&self) -> bool { matches!(self.mode, AdmissionMode::ReconciliationOnly) }
+    pub fn dispatch(&self) -> &CircuitDispatchV2 {
+        &self.dispatch
+    }
+    pub fn owner_agent_id(&self) -> &AgentId {
+        &self.owner_agent_id
+    }
+    pub fn definition_digest(&self) -> &Sha256Digest {
+        &self.definition_digest
+    }
+    pub fn execution_request_digest(&self) -> Option<&Sha256Digest> {
+        self.execution_request_digest.as_ref()
+    }
+    pub fn observed_revision(&self) -> u64 {
+        self.observed_revision
+    }
+    pub fn observed_at_ms(&self) -> u64 {
+        self.observed_at_ms
+    }
+    pub fn lease_expires_at_ms(&self) -> u64 {
+        self.lease_expires_at_ms
+    }
+    pub fn run_deadline_ms(&self) -> u64 {
+        self.run_deadline_ms
+    }
+    pub fn reconciliation_only(&self) -> bool {
+        matches!(self.mode, AdmissionMode::ReconciliationOnly)
+    }
 }
 
 impl AutomationStore {
@@ -90,24 +108,53 @@ impl AutomationStore {
             activation_id: claim.activation_id,
             execution_request_digest: claim.execution_request_digest.clone(),
         };
-        let mut tx = self.taskflow_pool().begin_with("BEGIN IMMEDIATE").await.map_err(unavailable)?;
-        let mut history = circuit_journal::load(&mut tx, self.owner_agent_id(), &claim.run_id).await?
+        let mut tx = self
+            .taskflow_pool()
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(unavailable)?;
+        let mut history = circuit_journal::load(&mut tx, self.owner_agent_id(), &claim.run_id)
+            .await?
             .ok_or_else(|| TaskFlowError::Conflict("unknown circuit run".to_string()))?;
-        validate_pending(&history, self.owner_agent_id(), &claim.fence, claim.activation_id, claim.now_ms)?;
+        validate_pending(
+            &history,
+            self.owner_agent_id(),
+            &claim.fence,
+            claim.activation_id,
+            claim.now_ms,
+        )?;
         let command_digest = hash("hepta.circuit.command.v2", &event)?;
-        if history.commands.get(&claim.command_id).is_some_and(|digest| digest != &command_digest) {
-            return Err(TaskFlowError::Conflict("computation command ID has different bytes".to_string()));
+        if history
+            .commands
+            .get(&claim.command_id)
+            .is_some_and(|digest| digest != &command_digest)
+        {
+            return Err(TaskFlowError::Conflict(
+                "computation command ID has different bytes".to_string(),
+            ));
         }
         let activation = &history.run.activations[&claim.activation_id];
-        if activation.execution_request_digest.as_ref().is_some_and(|digest| digest != &claim.execution_request_digest) {
-            return Err(TaskFlowError::Conflict("computation claim changes the downstream request".to_string()));
+        if activation
+            .execution_request_digest
+            .as_ref()
+            .is_some_and(|digest| digest != &claim.execution_request_digest)
+        {
+            return Err(TaskFlowError::Conflict(
+                "computation claim changes the downstream request".to_string(),
+            ));
         }
         let may_claim = activation.status == CircuitActivationStatusV2::InFlight
-            && !activation.cancel_requested && activation.execution_request_digest.is_none();
+            && !activation.cancel_requested
+            && activation.execution_request_digest.is_none();
         let mode = if may_claim {
             let receipt = circuit_journal::persist_transition(
-                &mut tx, &history, self.owner_agent_id(), &claim.command_id, &event,
-            ).await?;
+                &mut tx,
+                &history,
+                self.owner_agent_id(),
+                &claim.command_id,
+                &event,
+            )
+            .await?;
             history.run = receipt.run;
             if receipt.status == CircuitCommandStatusV2::Applied {
                 AdmissionMode::Execute
@@ -117,7 +164,13 @@ impl AutomationStore {
         } else {
             AdmissionMode::ReconciliationOnly
         };
-        let admission = admission(&history, self.owner_agent_id(), claim.activation_id, claim.now_ms, mode)?;
+        let admission = admission(
+            &history,
+            self.owner_agent_id(),
+            claim.activation_id,
+            claim.now_ms,
+            mode,
+        )?;
         tx.commit().await.map_err(unavailable)?;
         Ok(admission)
     }
@@ -133,10 +186,23 @@ impl AutomationStore {
     ) -> Result<CircuitComputationAdmissionV2, TaskFlowError> {
         text(run_id)?;
         let mut tx = self.taskflow_pool().begin().await.map_err(unavailable)?;
-        let history = circuit_journal::load(&mut tx, self.owner_agent_id(), run_id).await?
+        let history = circuit_journal::load(&mut tx, self.owner_agent_id(), run_id)
+            .await?
             .ok_or_else(|| TaskFlowError::Conflict("unknown circuit run".to_string()))?;
-        validate_pending(&history, self.owner_agent_id(), fence, activation_id, now_ms)?;
-        let admission = admission(&history, self.owner_agent_id(), activation_id, now_ms, AdmissionMode::ReconciliationOnly)?;
+        validate_pending(
+            &history,
+            self.owner_agent_id(),
+            fence,
+            activation_id,
+            now_ms,
+        )?;
+        let admission = admission(
+            &history,
+            self.owner_agent_id(),
+            activation_id,
+            now_ms,
+            AdmissionMode::ReconciliationOnly,
+        )?;
         tx.commit().await.map_err(unavailable)?;
         Ok(admission)
     }
@@ -150,16 +216,26 @@ fn validate_pending(
     now_ms: u64,
 ) -> Result<(), TaskFlowError> {
     let identity = CircuitFenceIdentityV2::from_fence(fence)?;
-    if fence.owner_agent_id != *owner || !identity.matches(&history.run.writer)
-        || now_ms >= history.run.writer.expires_at_ms || now_ms < history.run.last_observed_ms
+    if fence.owner_agent_id != *owner
+        || !identity.matches(&history.run.writer)
+        || now_ms >= history.run.writer.expires_at_ms
+        || now_ms < history.run.last_observed_ms
     {
         return Err(TaskFlowError::StaleFence);
     }
-    let activation = history.run.activations.get(&activation_id).ok_or_else(|| invalid("unknown computation"))?;
-    if !matches!(activation.status, CircuitActivationStatusV2::InFlight | CircuitActivationStatusV2::Indeterminate)
-        || history.run.outcome().is_some()
+    let activation = history
+        .run
+        .activations
+        .get(&activation_id)
+        .ok_or_else(|| invalid("unknown computation"))?;
+    if !matches!(
+        activation.status,
+        CircuitActivationStatusV2::InFlight | CircuitActivationStatusV2::Indeterminate
+    ) || history.run.outcome().is_some()
     {
-        return Err(invalid("activation has no pending computation to admit or reconcile"));
+        return Err(invalid(
+            "activation has no pending computation to admit or reconcile",
+        ));
     }
     history.run.dispatch(&history.definition, activation_id)?;
     Ok(())
@@ -176,11 +252,16 @@ fn admission(
         dispatch: history.run.dispatch(&history.definition, activation_id)?,
         owner_agent_id: owner.clone(),
         definition_digest: history.run.definition_digest.clone(),
-        execution_request_digest: history.run.activations[&activation_id].execution_request_digest.clone(),
+        execution_request_digest: history.run.activations[&activation_id]
+            .execution_request_digest
+            .clone(),
         observed_revision: history.run.revision,
         observed_at_ms,
         lease_expires_at_ms: history.run.writer.expires_at_ms,
-        run_deadline_ms: history.run.created_at_ms.checked_add(history.definition.limits.max_elapsed_ms)
+        run_deadline_ms: history
+            .run
+            .created_at_ms
+            .checked_add(history.definition.limits.max_elapsed_ms)
             .ok_or_else(|| invalid("circuit deadline overflow"))?,
         mode,
     })
