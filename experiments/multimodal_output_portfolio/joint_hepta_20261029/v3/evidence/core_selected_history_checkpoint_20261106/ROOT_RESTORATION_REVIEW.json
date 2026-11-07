@@ -1,0 +1,76 @@
+{
+  "observed_at_utc": "2026-11-06T23:59:50.178722+00:00",
+  "packet": "core_selected_history_checkpoint_20261106",
+  "publication": {
+    "bytes": 4021,
+    "sha256": "37af101468388d8217d8c35fb5e3232804614c94faa3ec08266a12815d3719b5"
+  },
+  "index_sha256": "f22d6e1b4571034da2716fcbf6d28e9817294374f485551537f891cd9a5c8d0b",
+  "reader": {
+    "bytes": 6899,
+    "sha256": "a22149b909c84e0b09a9da0134326561628938be3aa752a72ef57ae660f91cde"
+  },
+  "reader_parent": {
+    "bytes": 6899,
+    "sha256": "af61744d776034fb41dac291fbca63d30082c6ec15df821824b49df4678c8d3d"
+  },
+  "reader_only_fixed_seal_changes": 1,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-O",
+    "-B",
+    "/workspace/scratch/3f6a885bb83c/round3_native/core_selected_history_evidence_20261106/restore.py",
+    "/workspace/scratch/3f6a885bb83c/round3_root_restore_core299_0000"
+  ],
+  "exit_code": 0,
+  "files": 299,
+  "raw_bytes": 2746107,
+  "exact_member_roster_bytes_originals_and_modes": true,
+  "original_permission_counts": {
+    "0644": 246,
+    "0600": 53
+  },
+  "restored_permissions": "0644 regular files",
+  "bundle_before_and_after_unchanged": true,
+  "bundle_identities": {
+    "round3_native/core_selected_history_evidence_20261106/CODESPELL.json": {
+      "bytes": 297,
+      "sha256": "23af724bd433624533fc265be8771ad2338fa7133758204c1a6a4b72cdf0a67e"
+    },
+    "round3_native/core_selected_history_evidence_20261106/INDEX.json": {
+      "bytes": 88906,
+      "sha256": "f22d6e1b4571034da2716fcbf6d28e9817294374f485551537f891cd9a5c8d0b"
+    },
+    "round3_native/core_selected_history_evidence_20261106/READER_CHECK.json": {
+      "bytes": 1129,
+      "sha256": "fcc19302209cd580f2518da5d7cfb83407c0e0b93cb40c5fa050592d0ec926a3"
+    },
+    "round3_native/core_selected_history_evidence_20261106/README.md": {
+      "bytes": 1523,
+      "sha256": "9a13d37ec3e5ec203f957141278aca05725d888582773067ccdcd91ccddceb69"
+    },
+    "round3_native/core_selected_history_evidence_20261106/ROUNDTRIP.json": {
+      "bytes": 1339,
+      "sha256": "40a634304da584ec25fcba6602509f945296068135e1a4b13247502b68d3823d"
+    },
+    "round3_native/core_selected_history_evidence_20261106/native-evidence.tar.xz.part000.gz": {
+      "bytes": 261890,
+      "sha256": "64ca0b05120f92e142a178b5b9507c2588951e7f82206923b0e9f2cc6fee6a99"
+    },
+    "round3_native/core_selected_history_evidence_20261106/restore.py": {
+      "bytes": 6899,
+      "sha256": "a22149b909c84e0b09a9da0134326561628938be3aa752a72ef57ae660f91cde"
+    }
+  },
+  "destination": "/workspace/scratch/3f6a885bb83c/round3_root_restore_core299_0000",
+  "archived_sources_executed": false,
+  "native_tests_or_scanner_or_models_executed": false,
+  "qualification": "EXACT_SELECTED_BYTES_ROUNDTRIP; THREE_NATIVE_RUNS_RETAINED; ALL_THREE_FULL_NINETEEN_SLOT_GATES_FALSE",
+  "limits": [
+    "All three private administrative job consoles and any private transfer payload or signed download URL; original safe fixed classifications and hashes in audit receipts remain.",
+    "All rejected list.stderr streams; no rejected bytes are reconstructed, filtered, encoded or obtained from another workflow.",
+    "Patch-check Git directories, repeated patch replay workspaces, formatter staging copies, bytecode, compiler products and caches.",
+    "Unrelated Guardian, AppArmor, MIC and other native work; this is a finite historical Core checkpoint."
+  ],
+  "initial_inspection_note": "The actual packet manifest and reader schemas were inspected before this independent restoration. No native execution or scanner replay was performed."
+}
