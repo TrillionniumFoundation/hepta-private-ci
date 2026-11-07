@@ -1,0 +1,175 @@
+{
+  "artifact_carrier": {
+    "archive": {
+      "bytes": 585492,
+      "sha256": "9ec88b996749732155d4c31e7830b297a668fbf648a3f849aff6aa8cab334661"
+    },
+    "logical_artifacts_require_materialization": true,
+    "manifest": "artifacts/MANIFEST.json",
+    "materializer": "materialize_qualification.py",
+    "max_part_bytes": 65536,
+    "members": 47,
+    "parts": 9,
+    "prior_unpublished_candidate_commit": "bce57ec488133b9f8be59a1ccf8ca9ab7f0f10da",
+    "schema": "hcsn-qualified-artifact-multipart-v1",
+    "scientific_bytes_unchanged": true
+  },
+  "artifacts": {
+    "operators-s81.json": {
+      "bytes": 312796,
+      "sha256": "bbfb5372e8642f05d19bd54bfba69ba7404d8d90b057cc6380eb08bd40505f64"
+    },
+    "operators-s81.npz": {
+      "bytes": 2211490,
+      "sha256": "a1d7168201def0ec0503ab753fe431fc66de12adde22be5c984da0a3e5eaef8a"
+    },
+    "qualification/budget-cuda.json": {
+      "bytes": 14662,
+      "sha256": "05afeaa9218e1dac026dc6079f793885db5115250443e71257866cf156668059"
+    },
+    "qualification/execution.json": {
+      "bytes": 35183,
+      "sha256": "0263ae14179c7c194d4086e53bd4eac4396e20f1fb9e304136b7dbe6997a454f"
+    },
+    "qualification/fixed-renewal.json": {
+      "bytes": 5418,
+      "sha256": "573abff801d893228c4aab58969db888261df495e4d05f62c3b032f4b379e809"
+    },
+    "qualification/fv-audit-cpu.json": {
+      "bytes": 51460,
+      "sha256": "8810f22e3b14fc630a5b6d923575005819cd94d24b1237dd59617ac0511ba98b"
+    },
+    "qualification/fv-audit-cuda.json": {
+      "bytes": 51360,
+      "sha256": "c0a31b7b62070aa8a9040d44ad2dde30dde5904a5babdcdbd0eafa814adcf55d"
+    },
+    "qualification/fv-unit-observation.json": {
+      "bytes": 4447,
+      "sha256": "04df2c2cb312d8c05879abf9239350faabe38f954f844e05e170dbaef0307fde"
+    },
+    "qualification/graph-cpu.json": {
+      "bytes": 38202,
+      "sha256": "433a637dbf576ed50bc3ffed3a88239ea6e5a3ba28fd4e5b91fec4c1dcf642ff"
+    },
+    "qualification/graph-cuda.json": {
+      "bytes": 38167,
+      "sha256": "c97fa586e090f77db88dae034f0b75a69139c31e56286e483604f7268b2931b5"
+    },
+    "qualification/mechanism-unit-observation.json": {
+      "bytes": 4448,
+      "sha256": "40f2b15f4582f1bc0fc0919587267b481d681bb67394b372747cb9614acf8030"
+    },
+    "qualification/sequence-cpu.json": {
+      "bytes": 129118,
+      "sha256": "4f998b8e22b1365b3503e88d0e32df2780b1b7bb27d72df8a3f0fcaff7363d5d"
+    },
+    "qualification/sequence-cuda.json": {
+      "bytes": 123646,
+      "sha256": "71aca1684d7829053822783175db8b6ade55b8a462d347b96686667eccf89cd2"
+    },
+    "qualification/source-manifest.json": {
+      "bytes": 15776,
+      "sha256": "c813007ec8fc02060f7e2c1657bfb822c87ea1513c362af8f1d171b068ae0047"
+    },
+    "qualification/suite-artifacts.zip": {
+      "bytes": 585492,
+      "sha256": "9ec88b996749732155d4c31e7830b297a668fbf648a3f849aff6aa8cab334661"
+    },
+    "qualification/unit.json": {
+      "bytes": 5694,
+      "sha256": "f38f0ec5338df1820cdd976205460341fa24c354ad0f4fbaf24cf18e5a9fd991"
+    }
+  },
+  "checks": {
+    "fixed_renewal_direct_convolution_cases": 36,
+    "fixed_renewal_unit_methods": 6,
+    "fresh_process_recovery_actual_optimizer_updates_per_device": 3,
+    "fv_cpu_cases": 12,
+    "fv_cuda_cases": 12,
+    "fv_unit_methods": 8,
+    "graph_cpu_cases": 47,
+    "graph_cuda_cases": 47,
+    "mechanism_unit_methods": 13,
+    "mechanism_unit_skipped": 0,
+    "non_task_budget_optimizer_updates": 400,
+    "non_task_budget_wall_seconds": 80.99728586699996,
+    "sequence_cpu_cases": 42,
+    "sequence_cuda_cases": 42
+  },
+  "execution_environment": {
+    "cpu_threads": 1,
+    "cuda_build": "13.0",
+    "deterministic_algorithms": true,
+    "device": "cuda",
+    "gpu": {
+      "compute_capability": [
+        7,
+        5
+      ],
+      "name": "Tesla T4",
+      "total_memory": 15636037632
+    },
+    "gpu_uuid_policy": "same_model_new_lease",
+    "numpy": "2.1.3",
+    "python": "3.13.16",
+    "torch": "2.11.0+cu130"
+  },
+  "expansion_admission": "HOLD",
+  "external_retention_status": "unmeasured",
+  "external_task_gain_established": false,
+  "formal_training_fits_before_freeze": 0,
+  "frozen_at": "2026-11-07T16:14:56.958080+00:00",
+  "full_physical_energy_joules": null,
+  "hepta_ndu_completion_credit": 0,
+  "limits": [
+    "Bounded qualification and numerical resolution; no global continuum or arbitrary-posterior error guarantee.",
+    "The non-task runtime probe does not guarantee future task fit completion.",
+    "Fresh-process mechanism recovery uses independent episodes; it is not production mid-fit resume.",
+    "This synthetic pilot cannot authorize external-task, retention, complete-cost or expansion claims.",
+    "Earlier failed S25 and historical failures/unknown attempts remain separate retained evidence."
+  ],
+  "monetary_cost": null,
+  "ordered_fit_roster_sha256": "fcce78273b9eaab029840546bf41da3a568580b7a777c06b978986b42884da5b",
+  "original_campaign_completion_credit": 0,
+  "plan_sha256": "cc2fe01594bd77721eda1f2a3130257ba5dbfa61c498a9f469f91195598c2550",
+  "prospective_parent_commit": "2725a19b357b1e3b4afabd412aaa67f818969295",
+  "provider_file_size_disagreements": {
+    "count": 4,
+    "independent_verification": "Actual HTTP lengths, execution manifest sizes/SHA256, full ZIP SHA/CRC, exact source pins",
+    "retained": true
+  },
+  "qualification_gpu_counter_scope": "Each actual GPU device interval, includes idle/unattributed activity; not model-exclusive or full physical energy",
+  "qualification_gpu_device_intervals": [
+    {
+      "device_interval_joules": 4719.457,
+      "index": 0,
+      "uuid": "GPU-90865b55-9a4f-af1a-ebea-73b04bba612a"
+    },
+    {
+      "device_interval_joules": 2666.498,
+      "index": 1,
+      "uuid": "GPU-32137967-24b5-bb54-d627-8cf6c2ebf71a"
+    }
+  ],
+  "qualification_provider": "kaggle",
+  "qualification_suite_wall_seconds": 241.62125012500002,
+  "qualified_source_file_count": 32,
+  "qualified_source_set_sha256": "731f883bf55e28abdfc02c7e650e1c8108877fa6d99fd9fe82b349ef67c87a39",
+  "registered_formal_budget": {
+    "fits": 160,
+    "fits_per_selection_group": 20,
+    "independent_training_seeds": 4,
+    "selected_fit_evaluations": 80,
+    "sequence_positions": 262144000,
+    "state_count": 81,
+    "statistical_selection_groups": 8,
+    "test_episode_seeds": 2,
+    "total_updates": 64000,
+    "trainable_parameters_per_arm": 2890,
+    "updates_per_fit": 400
+  },
+  "request_id": "hcsn-s81-kaggle-qual-v1-20261107-1631115f163f",
+  "schema": "hcsn-s81-qualified-frozen-plan-publication-v1",
+  "status": "QUALIFIED_PLAN_FROZEN_BEFORE_FORMAL_FITS",
+  "study_id": "hcsn-regenerative-mechanisms-fv-pilot-20261107-1631115f163f-v1"
+}
