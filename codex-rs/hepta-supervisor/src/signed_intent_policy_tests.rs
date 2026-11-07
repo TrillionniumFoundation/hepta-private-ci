@@ -45,7 +45,12 @@ fn retained_proof_rechecks_both_actual_signatures_after_successful_verification(
     let intent = retained_intent();
     let proof = intent.pq_authority.as_ref().unwrap();
     let original = serde_json::to_vec(&intent).unwrap();
+    let prepared =
+        H7H89ProductionGrantVerifier::from_pq_policy_bytes(proof.policy_json.as_bytes()).unwrap();
     proof.verify_at(&intent, /*now*/ 200).unwrap();
+    proof
+        .verify_at_with_prepared(&intent, /*now*/ 200, Some(&prepared))
+        .unwrap();
     #[derive(Debug)]
     enum SignatureRole {
         Grant,
@@ -67,8 +72,17 @@ fn retained_proof_rechecks_both_actual_signatures_after_successful_verification(
             changed.verify_at(&intent, /*now*/ 200).is_err(),
             "{field:?}"
         );
+        assert!(
+            changed
+                .verify_at_with_prepared(&intent, /*now*/ 200, Some(&prepared))
+                .is_err(),
+            "prepared {field:?}"
+        );
     }
     proof.verify_at(&intent, /*now*/ 200).unwrap();
+    proof
+        .verify_at_with_prepared(&intent, /*now*/ 200, Some(&prepared))
+        .unwrap();
     assert_eq!(serde_json::to_vec(&intent).unwrap(), original);
 }
 
@@ -76,13 +90,69 @@ fn retained_proof_rechecks_both_actual_signatures_after_successful_verification(
 fn retained_proof_rechecks_exact_policy_bytes_and_the_supplied_time() {
     let intent = retained_intent();
     let proof = intent.pq_authority.as_ref().unwrap();
+    let prepared =
+        H7H89ProductionGrantVerifier::from_pq_policy_bytes(proof.policy_json.as_bytes()).unwrap();
     proof.verify_at(&intent, /*now*/ 200).unwrap();
+    proof
+        .verify_at_with_prepared(&intent, /*now*/ 200, Some(&prepared))
+        .unwrap();
+    for now in [99, 400] {
+        assert!(
+            proof
+                .verify_at_with_prepared(&intent, now, Some(&prepared))
+                .is_err()
+        );
+    }
     assert!(proof.verify_at(&intent, /*now*/ 99).is_err());
     assert!(proof.verify_at(&intent, /*now*/ 400).is_err());
     let mut changed = proof.clone();
     changed.policy_json.push(' ');
     assert!(changed.verify_at(&intent, /*now*/ 200).is_err());
+    assert!(
+        changed
+            .verify_at_with_prepared(&intent, /*now*/ 200, Some(&prepared))
+            .is_err()
+    );
     // Historical verification uses its original signed window only; it does
     // not confer live authority or replace the separate current owner checks.
     proof.verify_historical_for(&intent).unwrap();
+}
+
+#[test]
+fn retained_proof_prepared_keys_preserve_different_policy_history() {
+    let intent = retained_intent();
+    let proof = intent.pq_authority.as_ref().unwrap();
+    let mut whitespace_bytes = proof.policy_json.as_bytes().to_vec();
+    whitespace_bytes.push(b' ');
+    let whitespace_prepared =
+        H7H89ProductionGrantVerifier::from_pq_policy_bytes(&whitespace_bytes).unwrap();
+    assert_ne!(
+        whitespace_prepared.policy_bytes(),
+        Some(proof.policy_json.as_bytes())
+    );
+    // Equal parsed roles do not make different raw policy bytes reusable.
+    proof
+        .verify_historical_for_with_prepared(&intent, &whitespace_prepared)
+        .unwrap();
+    let mut different: crate::signed_authority::ProductionAuthorityPolicyV1 =
+        serde_json::from_str(&proof.policy_json).unwrap();
+    std::mem::swap(&mut different.grant, &mut different.recovery);
+    let bytes = serde_json::to_vec(&different).unwrap();
+    let prepared = H7H89ProductionGrantVerifier::from_pq_policy_bytes(&bytes).unwrap();
+    assert_ne!(prepared.policy_bytes(), Some(proof.policy_json.as_bytes()));
+    // Current recovery roles may differ from retained grant roles. A mismatch
+    // must use the historical keys, not substitute or reject the current ones.
+    proof
+        .verify_historical_for_with_prepared(&intent, &prepared)
+        .unwrap();
+    let classical = H7H89ProductionGrantVerifier::new(
+        "classical-qualification-only",
+        /*signer_epoch*/ 1,
+        ed25519_dalek::SigningKey::from_bytes(&[93; 32]).verifying_key(),
+    )
+    .unwrap();
+    assert!(classical.policy_bytes().is_none());
+    proof
+        .verify_historical_for_with_prepared(&intent, &classical)
+        .unwrap();
 }

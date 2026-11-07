@@ -1,6 +1,7 @@
 //! H7 snapshots use the existing Fleet publication journal and external CAS.
 //! These helpers bind local bytes to that history; hashes alone do not attest
 //! that an operation completed. Cold recovery never promotes a local outcome.
+use crate::H7H89ProductionGrantVerifier;
 use crate::SupervisorError;
 use crate::release_transaction::read_release_transaction;
 use crate::signed_intent::SignedIntentStatus;
@@ -55,11 +56,27 @@ pub(crate) fn check_previous(
     previous: Option<&SignedSupervisorIntent>,
     record: &AgentRecord,
 ) -> Result<(), SupervisorError> {
+    check_previous_with_prepared(anchor, previous, record, /*prepared*/ None)
+}
+
+/// An already-held verifier can supply only immutable public-key preparation.
+/// Every historical signature and original terminal-owner check still runs.
+pub(crate) fn check_previous_with_prepared(
+    anchor: Option<&ReleaseIntentAnchorV1>,
+    previous: Option<&SignedSupervisorIntent>,
+    record: &AgentRecord,
+    prepared: Option<&H7H89ProductionGrantVerifier>,
+) -> Result<(), SupervisorError> {
     match (anchor, previous) {
         (None, None) => Ok(()),
         (Some(anchor), Some(intent)) if snapshot_matches(anchor, intent)? => {
             if let Some(proof) = &intent.pq_authority {
-                proof.verify_historical_for(intent)?;
+                match prepared {
+                    Some(prepared) => {
+                        proof.verify_historical_for_with_prepared(intent, prepared)?;
+                    }
+                    None => proof.verify_historical_for(intent)?,
+                }
             }
             if anchor.is_closed_history()
                 && anchor.terminal_witness != terminal_witness(intent, record)?

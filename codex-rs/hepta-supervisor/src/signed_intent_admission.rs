@@ -7,6 +7,8 @@ use codex_hepta_fleet::FleetRegistry;
 /// entering the existing NodeSoftware owner, whose file lock is not reentrant.
 pub(crate) struct MutationPolicyAdmission {
     guard: Option<CurrentProtocolConfigurationAdmission>,
+    // Public-key preparation only; the guard supplies all current authority.
+    verifier: H7H89ProductionGrantVerifier,
     qualification_now_seconds: u64,
 }
 
@@ -28,6 +30,7 @@ impl MutationPolicyAdmission {
         };
         Ok(Self {
             guard,
+            verifier: verifier.clone(),
             qualification_now_seconds,
         })
     }
@@ -71,13 +74,18 @@ impl MutationPolicyAdmission {
                 "ordinary publication requires the complete PQ grant proof".to_string(),
             )
         })?;
-        proof.verify_at(next, guard.revalidate()? / 1000)?;
+        proof.verify_at_with_prepared(next, guard.revalidate()? / 1000, Some(&self.verifier))?;
         let guard = guard.with_verified_decision_window(
             authority_milliseconds(proof.issued_at_unix_seconds)?,
             authority_milliseconds(proof.expires_at_unix_seconds)?,
         )?;
         let old = guard.intent_anchor(&record.release_state.agent_id)?;
-        crate::signed_intent_anchor::check_previous(old.as_ref(), previous, record)?;
+        crate::signed_intent_anchor::check_previous_with_prepared(
+            old.as_ref(),
+            previous,
+            record,
+            Some(&self.verifier),
+        )?;
         if crate::signed_intent::read_intent(record.layout.run_root())
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?
             .as_ref()
@@ -99,6 +107,7 @@ impl MutationPolicyAdmission {
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         Ok(Self {
             guard: Some(guard),
+            verifier: self.verifier,
             qualification_now_seconds: self.qualification_now_seconds,
         })
     }
@@ -121,7 +130,12 @@ impl MutationPolicyAdmission {
         )?;
         let old = guard.intent_anchor(&record.release_state.agent_id)?;
         if old.is_some() {
-            crate::signed_intent_anchor::check_previous(old.as_ref(), Some(previous), record)?;
+            crate::signed_intent_anchor::check_previous_with_prepared(
+                old.as_ref(),
+                Some(previous),
+                record,
+                Some(&self.verifier),
+            )?;
         } else if !previous.requires_recovery() {
             // Old unanchored terminal labels never bootstrap current authority.
             return Err(SupervisorError::SignedIntentRecoveryRequired(
@@ -150,6 +164,7 @@ impl MutationPolicyAdmission {
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         Ok(Self {
             guard: Some(guard),
+            verifier: self.verifier,
             qualification_now_seconds: self.qualification_now_seconds,
         })
     }

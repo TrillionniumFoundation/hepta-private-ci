@@ -62,7 +62,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             return Err(denied());
         }
         let proof = intent.pq_authority.as_ref().ok_or_else(denied)?;
-        proof.verify_historical_for(intent)?;
+        proof.verify_historical_for_with_prepared(intent, verifier)?;
         let admission = CurrentRecoveryAdmission::acquire(&self.registry, verifier)?;
         if admission.replacement().is_some() {
             return Err(denied());
