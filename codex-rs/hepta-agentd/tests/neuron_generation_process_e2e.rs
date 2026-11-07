@@ -31,6 +31,7 @@ use pretty_assertions::assert_eq;
 use tokio::time::sleep;
 use tokio::time::timeout;
 
+use support::fleet::AgentFixture;
 use support::fleet::FleetHarness;
 use support::fleet::agentd_binary;
 
@@ -185,8 +186,42 @@ fn last_committed_state(path: &Path) -> Result<Vec<u8>> {
     state.ok_or_else(|| anyhow::anyhow!("missing actual committed proposal"))
 }
 
+async fn stop_agent(harness: &mut FleetHarness, agent: &AgentFixture) -> Result<()> {
+    harness.supervisor.stop(&agent.agent_id, Instant::now())?;
+    timeout(Duration::from_secs(15), async {
+        loop {
+            let report = harness.supervisor.tick(Instant::now());
+            ensure!(
+                report.faults.is_empty(),
+                "shutdown faults: {:?}",
+                report.faults
+            );
+            if harness
+                .supervisor
+                .snapshot(&agent.agent_id)
+                .is_some_and(|s| !s.active)
+            {
+                break;
+            }
+            sleep(Duration::from_millis(25)).await;
+        }
+        Ok::<_, anyhow::Error>(())
+    })
+    .await??;
+    Ok(())
+}
+
 #[tokio::test]
 async fn ordinary_cli_runs_joint_over_bounded_control_and_retains_delivered_state() -> Result<()> {
+    profile_lifecycle(JointGenerationProcessWorkerV1::PROFILE).await
+}
+
+#[tokio::test]
+async fn ordinary_cli_runs_resident_joint_and_reopens_original_receipt_and_cost() -> Result<()> {
+    profile_lifecycle(JointGenerationProcessWorkerV1::RESIDENT_PROFILE).await
+}
+
+async fn profile_lifecycle(profile: &str) -> Result<()> {
     let mut harness = FleetHarness::new()?;
     let agent = harness.register("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12", "joint-normal-entry")?;
     let record = harness
@@ -195,7 +230,7 @@ async fn ordinary_cli_runs_joint_over_bounded_control_and_retains_delivered_stat
         .agent(&agent.agent_id)
         .cloned()
         .ok_or_else(|| anyhow::anyhow!("registered agent missing"))?;
-    let identity = AgentdIdentity {
+    let mut identity = AgentdIdentity {
         agent_id: agent.agent_id.clone(),
         layout: agent.layout.clone(),
         spawn_generation: 1,
@@ -214,10 +249,13 @@ async fn ordinary_cli_runs_joint_over_bounded_control_and_retains_delivered_stat
     };
     let directory = tempfile::tempdir()?;
     let root = directory.path().canonicalize()?;
-    let (descriptor, assets) = fixture::descriptor(&root, &identity)?;
+    let (mut descriptor, assets) = fixture::descriptor(&root, &identity)?;
+    let mut config: CellGenerationConfigV2 = serde_json::from_value(descriptor["config"].clone())?;
+    config.manifest.profile = profile.to_owned();
+    config.initial.manifest_digest = config.manifest.digest()?;
+    descriptor["config"] = serde_json::to_value(&config)?;
     let path = root.join("generation-bootstrap.json");
     let digest = fixture::write_descriptor(&path, &descriptor)?;
-    let config: CellGenerationConfigV2 = serde_json::from_value(descriptor["config"].clone())?;
     let public_digest = descriptor["public"]["digest"]
         .as_str()
         .ok_or_else(|| anyhow::anyhow!("public digest"))?
@@ -229,7 +267,7 @@ async fn ordinary_cli_runs_joint_over_bounded_control_and_retains_delivered_stat
             agentd_binary()?,
             vec![
                 "--neuron-generation-bootstrap-descriptor".into(),
-                path.into_os_string(),
+                path.as_os_str().to_owned(),
                 "--neuron-generation-bootstrap-descriptor-digest".into(),
                 digest.to_string().into(),
             ],
@@ -282,7 +320,7 @@ async fn ordinary_cli_runs_joint_over_bounded_control_and_retains_delivered_stat
     .await?;
     let destination = root.join("delivered-prefix.bin");
     deliver(&client, &destination).await?;
-    let (_, stopped) = compute(
+    let (stop_request, stopped) = compute(
         &client,
         &config,
         public_digest,
@@ -304,7 +342,8 @@ async fn ordinary_cli_runs_joint_over_bounded_control_and_retains_delivered_stat
         client.generation(Request::Drain {}).await?,
         Response::Drain { complete: true }
     );
-    match client.generation(Request::Cost {}).await? {
+    let cost = client.generation(Request::Cost {}).await?;
+    match &cost {
         Response::Cost(cost) => {
             assert_eq!(cost.task_digest, config.task_digest);
             assert!(cost.wall_work_micros.known_sum > 0);
@@ -314,28 +353,9 @@ async fn ordinary_cli_runs_joint_over_bounded_control_and_retains_delivered_stat
         }
         other => bail!("expected actual cost summary: {other:?}"),
     }
-    harness.supervisor.stop(&agent.agent_id, Instant::now())?;
-    timeout(Duration::from_secs(15), async {
-        loop {
-            let report = harness.supervisor.tick(Instant::now());
-            ensure!(
-                report.faults.is_empty(),
-                "shutdown faults: {:?}",
-                report.faults
-            );
-            if harness
-                .supervisor
-                .snapshot(&agent.agent_id)
-                .is_some_and(|s| !s.active)
-            {
-                break;
-            }
-            sleep(Duration::from_millis(25)).await;
-        }
-        Ok::<_, anyhow::Error>(())
-    })
-    .await??;
-    let delivered = fs::read(destination)?;
+    let retained = status(&client).await?;
+    stop_agent(&mut harness, &agent).await?;
+    let delivered = fs::read(&destination)?;
     assert_eq!(delivered.len(), snapshot.prefix_bytes as usize);
     fixture::verify_stopped(
         &last_committed_state(&root.join("cell.journal"))?,
@@ -346,5 +366,58 @@ async fn ordinary_cli_runs_joint_over_bounded_control_and_retains_delivered_stat
         fs::metadata(root.join("independent.witness"))?.len() > 0,
         "missing separate witness"
     );
+
+    // Only the host spawn changes. Reopen the exact Cell, control and witness
+    // files under the same boot clock and manifest; no fresh work is admitted.
+    let control_before = fs::read(root.join("control.journal"))?;
+    let record = harness
+        .registry
+        .load()?
+        .agent(&agent.agent_id)
+        .cloned()
+        .ok_or_else(|| anyhow::anyhow!("stopped agent missing"))?;
+    identity.spawn_generation = record
+        .lifecycle
+        .generation
+        .checked_add(1)
+        .ok_or_else(|| anyhow::anyhow!("host generation overflow"))?;
+    descriptor["mode"] = serde_json::Value::String("reopen".into());
+    descriptor["identity_digest"] = serde_json::Value::String(
+        neuron_generation_process_identity_digest_v1(&identity)?.to_string(),
+    );
+    let digest = fixture::write_descriptor(&path, &descriptor)?;
+    harness.start_command(
+        &agent,
+        AgentCommand::new(
+            agentd_binary()?,
+            vec![
+                "--neuron-generation-bootstrap-descriptor".into(),
+                path.as_os_str().to_owned(),
+                "--neuron-generation-bootstrap-descriptor-digest".into(),
+                digest.to_string().into(),
+            ],
+        )?,
+    )?;
+    let (reopened, health) = harness
+        .wait_ready(&agent, identity.spawn_generation)
+        .await?;
+    assert!(health.ready && !health.fenced);
+    assert!(client.generation(Request::Status {}).await.is_err());
+    let mut observed = status(&reopened).await?;
+    assert!(observed.observed_at_micros >= retained.observed_at_micros);
+    observed.observed_at_micros = retained.observed_at_micros;
+    assert_eq!(observed, retained);
+    assert_eq!(
+        reopened
+            .generation(Request::Step {
+                request: Box::new(stop_request),
+            })
+            .await?,
+        Response::Receipt(stopped)
+    );
+    assert_eq!(reopened.generation(Request::Cost {}).await?, cost);
+    assert_eq!(fs::read(root.join("control.journal"))?, control_before);
+    assert_eq!(fs::read(&destination)?, delivered);
+    stop_agent(&mut harness, &agent).await?;
     Ok(())
 }
