@@ -1,0 +1,111 @@
+{
+  "key": "6d861d10696a35e46c8c8fcbda126adfeec52577e1efb71976cc3be8194718e9",
+  "source_sha256": "7e89657ae4bd9444d0ed53b27cadaa70de1fa09027205cf2a0b8ca78891774bc",
+  "config": {
+    "profile": "research",
+    "device": "cuda:0",
+    "tasks": [
+      "delayed_recall",
+      "adding"
+    ],
+    "models": [
+      "hx_dual",
+      "hx_fixed",
+      "hx_call",
+      "hx_risk",
+      "no_rollover",
+      "softplus",
+      "no_recovery",
+      "hx_attention",
+      "population_flux",
+      "population_flux_no_recovery",
+      "gru",
+      "lif",
+      "adaptive_lif",
+      "pif",
+      "transformer",
+      "cfc",
+      "mamba2"
+    ],
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "data_seed": 271828,
+    "train_count": 4096,
+    "validation_count": 512,
+    "test_count": 1024,
+    "length": 64,
+    "hidden_size": 64,
+    "batch_size": 64,
+    "train_steps": 400,
+    "learning_rate": 0.001,
+    "dt": 0.1,
+    "latency_repeats": 100,
+    "cpu_threads": 2,
+    "population_checkpoint_steps": 1,
+    "cuda_memory_fraction": 0.5
+  },
+  "dataset": {
+    "split_sha256": [
+      "967e91b0779e87b62f396e812dc25ebf395f8107104edea154a2ee1b06a440fb",
+      "922aed89819c90a27a75d264979e77afa27c207da2fa45d61830ecaa595a55d9",
+      "536bc7546964eec2744a6b6af5dd63a9a1648724cbce4f95e13e2ecd28667a7c"
+    ],
+    "constant_predictor_test_mse": 0.3302898406982422
+  },
+  "hardware": {
+    "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+    "machine": "x86_64",
+    "cpu_model": "x86_64",
+    "logical_cpu_count": 48,
+    "python": "3.12.3",
+    "numpy": "2.3.5",
+    "torch": "2.8.0+cu128",
+    "device": "cuda:0",
+    "device_name": "NVIDIA GeForce RTX 4060",
+    "cuda_execution": {
+      "uuid": "GPU-a33875b7-7eb7-679e-df08-19227d3decee",
+      "uuid_raw": "a33875b7-7eb7-679e-df08-19227d3decee",
+      "nvidia_smi_uuid_raw": "GPU-a33875b7-7eb7-679e-df08-19227d3decee",
+      "nvidia_smi_uuid": "GPU-a33875b7-7eb7-679e-df08-19227d3decee",
+      "nvidia_smi_uuid_matches": true,
+      "name": "NVIDIA GeForce RTX 4060",
+      "driver_version": "580.178.04",
+      "compute_capability": [
+        8,
+        9
+      ],
+      "total_memory_bytes": 8184135680,
+      "requested_memory_fraction": 0.5,
+      "memory_fraction_set": true,
+      "memory_fraction_readback": 0.5,
+      "allocator_limit_bytes": 4092067840,
+      "setup_error": null,
+      "metadata_missing_reasons": {},
+      "memory_limit_scope": "PyTorch process allocator; not a GPU reservation or external-allocation limit"
+    },
+    "cpu_threads": 2,
+    "deterministic_requested": true,
+    "cuda_runtime": "12.8",
+    "cuda_available": true
+  },
+  "software": {
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "torch": "2.8.0+cu128",
+    "ncps": "1.0.1",
+    "mamba-ssm": "2.3.1",
+    "triton": "3.4.0",
+    "causal-conv1d": "1.5.4",
+    "nvidia-ml-py": "13.610.43"
+  },
+  "task": "delayed_recall",
+  "model": "hx_call",
+  "seed": 0,
+  "attempt_id": "b7777506025a4d498884f62b558b9d03",
+  "started_utc": "2026-11-06T23:59:50.463797+00:00"
+}

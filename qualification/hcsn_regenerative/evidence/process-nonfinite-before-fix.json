@@ -1,0 +1,63 @@
+{
+  "schema": "hcsn-nonfinite-before-fix.v1",
+  "timestamp_utc": "2026-11-07T00:08:34.251845+00:00",
+  "source_sha256": "71d8038149af518290808a92928909d4fa9735c7ce111d5eb4bc184fd743895f",
+  "cases": [
+    {
+      "case": "transition_finite_extreme",
+      "returned_repr": "Transition(survivor_bins=(nan, nan), hit=nan, upper_tail=nan)",
+      "finite_fields": {
+        "survivor_bins": false,
+        "hit": false,
+        "upper_tail": false
+      },
+      "warnings": [
+        {
+          "category": "RuntimeWarning",
+          "message": "overflow encountered in multiply"
+        },
+        {
+          "category": "RuntimeWarning",
+          "message": "invalid value encountered in add"
+        },
+        {
+          "category": "RuntimeWarning",
+          "message": "invalid value encountered in add"
+        },
+        {
+          "category": "RuntimeWarning",
+          "message": "invalid value encountered in add"
+        }
+      ]
+    },
+    {
+      "case": "finite_value_reward_overflow",
+      "returned_repr": "ValueReceipt(single_cycle=9.999994206278307e+307, regenerative=inf, expected_discounted_hits=9.699999995612373, active_probability=1.0, active_time=1, renewal_tail_bound=9.193592202914224e-11, value_tail_bound=9.193592202914224e+297, quadrature_error=9.80634283012458e-11, terms=269)",
+      "finite_fields": {
+        "single_cycle": true,
+        "regenerative": false,
+        "expected_discounted_hits": true,
+        "active_probability": true,
+        "active_time": true,
+        "renewal_tail_bound": true,
+        "value_tail_bound": true,
+        "quadrature_error": true,
+        "terms": true
+      },
+      "warnings": []
+    },
+    {
+      "case": "stationary_value_reward_overflow",
+      "returned_repr": "StationaryHXValue(single_cycle=61.5485769816071, regenerative=inf, reset_single_cycle=20.720791227117356, reset_regenerative=inf, discounted_reset_probability=0.6859118130866454, renewal_multiplier=3.183819200038438)",
+      "finite_fields": {
+        "single_cycle": true,
+        "regenerative": false,
+        "reset_single_cycle": true,
+        "reset_regenerative": false,
+        "discounted_reset_probability": true,
+        "renewal_multiplier": true
+      },
+      "warnings": []
+    }
+  ]
+}

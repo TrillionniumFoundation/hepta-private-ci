@@ -1,0 +1,180 @@
+{
+  "key": "e41cbd25f832c0d76fc2494f0bc53d7b0c968e0be310710fff463c50c9e6b23d",
+  "source_sha256": "7e89657ae4bd9444d0ed53b27cadaa70de1fa09027205cf2a0b8ca78891774bc",
+  "config": {
+    "profile": "research",
+    "device": "cuda:0",
+    "tasks": [
+      "delayed_recall",
+      "adding"
+    ],
+    "models": [
+      "hx_dual",
+      "hx_fixed",
+      "hx_call",
+      "hx_risk",
+      "no_rollover",
+      "softplus",
+      "no_recovery",
+      "hx_attention",
+      "population_flux",
+      "population_flux_no_recovery",
+      "gru",
+      "lif",
+      "adaptive_lif",
+      "pif",
+      "transformer",
+      "cfc",
+      "mamba2"
+    ],
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "data_seed": 271828,
+    "train_count": 4096,
+    "validation_count": 512,
+    "test_count": 1024,
+    "length": 64,
+    "hidden_size": 64,
+    "batch_size": 64,
+    "train_steps": 400,
+    "learning_rate": 0.001,
+    "dt": 0.1,
+    "latency_repeats": 100,
+    "cpu_threads": 2,
+    "population_checkpoint_steps": 1,
+    "cuda_memory_fraction": 0.5
+  },
+  "dataset": {
+    "split_sha256": [
+      "967e91b0779e87b62f396e812dc25ebf395f8107104edea154a2ee1b06a440fb",
+      "922aed89819c90a27a75d264979e77afa27c207da2fa45d61830ecaa595a55d9",
+      "536bc7546964eec2744a6b6af5dd63a9a1648724cbce4f95e13e2ecd28667a7c"
+    ],
+    "constant_predictor_test_mse": 0.3302898406982422
+  },
+  "hardware": {
+    "platform": "Linux-7.0.0-38-generic-x86_64-with-glibc2.39",
+    "machine": "x86_64",
+    "cpu_model": "x86_64",
+    "logical_cpu_count": 48,
+    "python": "3.12.3",
+    "numpy": "2.3.5",
+    "torch": "2.8.0+cu128",
+    "device": "cuda:0",
+    "device_name": "NVIDIA GeForce RTX 4060",
+    "cuda_execution": {
+      "uuid": "GPU-a33875b7-7eb7-679e-df08-19227d3decee",
+      "uuid_raw": "a33875b7-7eb7-679e-df08-19227d3decee",
+      "nvidia_smi_uuid_raw": "GPU-a33875b7-7eb7-679e-df08-19227d3decee",
+      "nvidia_smi_uuid": "GPU-a33875b7-7eb7-679e-df08-19227d3decee",
+      "nvidia_smi_uuid_matches": true,
+      "name": "NVIDIA GeForce RTX 4060",
+      "driver_version": "580.178.04",
+      "compute_capability": [
+        8,
+        9
+      ],
+      "total_memory_bytes": 8184135680,
+      "requested_memory_fraction": 0.5,
+      "memory_fraction_set": true,
+      "memory_fraction_readback": 0.5,
+      "allocator_limit_bytes": 4092067840,
+      "setup_error": null,
+      "metadata_missing_reasons": {},
+      "memory_limit_scope": "PyTorch process allocator; not a GPU reservation or external-allocation limit"
+    },
+    "cpu_threads": 2,
+    "deterministic_requested": true,
+    "cuda_runtime": "12.8",
+    "cuda_available": true
+  },
+  "software": {
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "torch": "2.8.0+cu128",
+    "ncps": "1.0.1",
+    "mamba-ssm": "2.3.1",
+    "triton": "3.4.0",
+    "causal-conv1d": "1.5.4",
+    "nvidia-ml-py": "13.610.43"
+  },
+  "task": "delayed_recall",
+  "model": "hx_dual",
+  "seed": 0,
+  "attempt_id": "3242847bfb844a46b56d4f3f78f903bb",
+  "started_utc": "2026-11-06T08:08:59.999037+00:00",
+  "result": {
+    "task": "delayed_recall",
+    "model": "hx_dual",
+    "seed": 0,
+    "status": "completed",
+    "execution_policy": {
+      "population_checkpoint_steps": 1,
+      "cuda_memory_fraction": 0.5
+    },
+    "encoder_class": "ValueKernelCell",
+    "implementation": {
+      "encoder_class": "ValueKernelCell",
+      "population_checkpoint_steps": 0,
+      "use_reentrant": null,
+      "preserve_rng_state": null,
+      "gradient_horizon": "full sequence",
+      "training_cost_includes_recomputation": false
+    },
+    "training_status": "completed",
+    "training_examples_seen": 25600,
+    "training_tokens_seen": 1638400,
+    "training_steps_completed": 400,
+    "budget_measurement_scope": "examples/tokens submitted to training forward; optimizer steps counted separately",
+    "energy": {
+      "joules_by_physical_counter": null,
+      "gpu_device_identity": {
+        "cuda_uuid_raw": "a33875b7-7eb7-679e-df08-19227d3decee",
+        "cuda_uuid": "GPU-a33875b7-7eb7-679e-df08-19227d3decee",
+        "nvml_uuid_raw": "GPU-a33875b7-7eb7-679e-df08-19227d3decee",
+        "nvml_uuid": "GPU-a33875b7-7eb7-679e-df08-19227d3decee",
+        "mapping_verified": true
+      },
+      "scope": "training wall interval; device/package, not process attribution",
+      "sampling_interval_seconds": 1.0,
+      "partial_unavailable_reasons": [
+        "RAPL inaccessible: PermissionError",
+        "RAPL inaccessible: PermissionError",
+        "NVML unavailable: NVMLError_NotSupported: Not Supported"
+      ],
+      "missing_reason": "RAPL inaccessible: PermissionError; RAPL inaccessible: PermissionError; NVML unavailable: NVMLError_NotSupported: Not Supported",
+      "terminal_cuda_synchronized": true,
+      "terminal_cuda_sync_error": null,
+      "interval_complete": true,
+      "interval_completion": "synchronized"
+    },
+    "parameters": 5633,
+    "trainable_parameters": 5633,
+    "peak_gpu_allocated_bytes": 779019776,
+    "peak_gpu_reserved_bytes": 799014912,
+    "peak_gpu_missing_reason": null,
+    "peak_gpu_measurement_status": "measured",
+    "peak_gpu_scope": "PyTorch allocator since reset after model/datasets; training and validation interval",
+    "peak_gpu_interval_complete": true,
+    "training_wall_seconds_including_validation": 5227.080032530939,
+    "training_examples_per_second": 4.897571845213272,
+    "best_checkpoint": "/data/hcsn-cuda-170run-20261105-r1/campaigns/full-v2/full.runs/e41cbd25f832c0d76fc2494f0bc53d7b0c968e0be310710fff463c50c9e6b23d.attempts/3242847bfb844a46b56d4f3f78f903bb.pt",
+    "best_checkpoint_sha256": "e1e2269e9491ecc230965a2faa0c8727a56eb139166550bbf320ff1ec77dab1b",
+    "test_mse": 0.04104330763220787,
+    "best_validation_mse": 0.03883013129234314,
+    "initial_training_mse": 0.36484915018081665,
+    "final_training_mse": 0.07533042132854462,
+    "inference_batch_size": 64,
+    "inference_examples_per_second": 14.767357456347234,
+    "latency_p50_ms": 3990.6007135286927,
+    "latency_p95_ms": 5741.459388443036,
+    "terminal_cuda_synchronized": true,
+    "best_checkpoint_relative": "e41cbd25f832c0d76fc2494f0bc53d7b0c968e0be310710fff463c50c9e6b23d.attempts/3242847bfb844a46b56d4f3f78f903bb.pt"
+  },
+  "finished_utc": "2026-11-06T09:44:43.065571+00:00"
+}

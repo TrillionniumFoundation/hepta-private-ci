@@ -1,0 +1,22 @@
+{
+  "schema": "hcsn-nonfinite-after-fix.v1",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "unittest",
+    "qualification.hcsn_regenerative.tests.test_process.NonfiniteResultTests",
+    "-v"
+  ],
+  "started_utc": "2026-11-07T00:10:28.513031+00:00",
+  "wall_seconds": 0.661116495000897,
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": "test_finite_extreme_inputs_cannot_return_nan_transition (qualification.hcsn_regenerative.tests.test_process.NonfiniteResultTests.test_finite_extreme_inputs_cannot_return_nan_transition) ... ok\ntest_finite_rewards_cannot_return_infinite_finite_horizon_value (qualification.hcsn_regenerative.tests.test_process.NonfiniteResultTests.test_finite_rewards_cannot_return_infinite_finite_horizon_value) ... ok\ntest_finite_rewards_cannot_return_infinite_stationary_value (qualification.hcsn_regenerative.tests.test_process.NonfiniteResultTests.test_finite_rewards_cannot_return_infinite_stationary_value) ... ok\n\n----------------------------------------------------------------------\nRan 3 tests in 0.057s\n\nOK\n",
+  "only_new_counterexample_tests_executed": true,
+  "process_suite_defined_tests": 20,
+  "previous_17_test_results_retained": true,
+  "source_sha256": {
+    "qualification/hcsn_regenerative/process.py": "e7a7b6b8eed0c22c4ca61237db8729408eb2e23938d71716ecdce69714a6be67",
+    "qualification/hcsn_regenerative/tests/test_process.py": "f1cb36d7e037af664be27e501f2b2de1607cb826689c672e7668c24433b41710"
+  }
+}
