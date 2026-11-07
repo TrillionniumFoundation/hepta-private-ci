@@ -2,12 +2,22 @@
 
 ## Current executable contract
 
-The current candidate has two deliberately separate surfaces:
+The product truth matrix records two deliberately separate surfaces:
 
-1. `codex-rs/hepta-operations` is the deterministic bounded reference oracle.
+1. `OperationLedger` and `Outbox` in `codex-rs/hepta-operations` are deterministic bounded reference oracles.
 2. The production-shaped durable owner reuses the existing per-Agent CognitiveStore SQLite owner in `codex-rs/hepta-memory`; it does not create a second operation database or execution spine.
 
 The canonical authority-free contract is `OperationIntentV1`. Its semantic digest binds operation id, subject id, destination id, exact payload digest, scope digest, policy generation and optional expected predecessor. Exact semantic replay is idempotent; reusing an operation id with changed semantics conflicts.
+
+The checkout also exports a standalone `DurableOperationStore`,
+`DurableDispatcher`, `DestinationDedupeStore` and the distinct
+`DurableOperationIntentV1` alias from `codex-rs/hepta-operations`. Its five-entry
+`CAPABILITY_EVIDENCE_V2.json` is an independently checked source evidence layer.
+It retains its own SQLite transactional durability and host-composition-required
+activation state. It is outside the 42-entry product coverage and does not
+replace the integrated CognitiveStore owner or obtain product qualification.
+The protocol registry preserves both durable surfaces with distinct owner and
+scope fields. Neither source surface establishes selected-host execution.
 
 ## Public symbols and source bindings
 
@@ -28,6 +38,15 @@ The canonical authority-free contract is `OperationIntentV1`. Its semantic diges
 - Agentd product host: `codex-rs/hepta-agentd/src/production_writer_host.rs`;
 - Agentd daemon composition: `codex-rs/hepta-agentd/src/config.rs`, `runtime.rs`, and `state.rs`;
 - second producer-owned canonical operation consumer: `codex-rs/hepta-automation/src/authorized_effect.rs` and `effect_dispatch_ledger.rs`.
+
+### Standalone source evidence
+
+The standalone owner's bindings remain in
+`codex-rs/hepta-operations/src/durable_store.rs`, `durable_dispatch.rs`,
+`dispatcher.rs` and `destination_dedupe.rs`, with their separate migrations and
+source test identities. Its final-use entry uses the current
+`durable_dispatch.rs` transaction boundary. Evidence for this owner and for the
+integrated owner is validated separately and cannot be substituted across them.
 
 ## Durability and activation
 

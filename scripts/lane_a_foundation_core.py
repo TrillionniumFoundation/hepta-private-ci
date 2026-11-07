@@ -19,6 +19,8 @@ from native_source_bindings import BindingError, observe_native_bindings
 LANE = ROOT / "docs/lane-a-foundation"
 MATRIX_PATH = LANE / "MODULE_TRUTH_MATRIX.json"
 CAPABILITY_MAP_PATH = LANE / "CAPABILITY_EVIDENCE_MAP.json"
+OPS_CAPABILITY_MAP_PATH = LANE / "kernel.operations/CAPABILITY_EVIDENCE_V2.json"
+PROTOCOL_REGISTRY_PATH = LANE / "PROTOCOL_REGISTRY_V1.json"
 BOUNDARY_POLICY_PATH = LANE / "BOUNDARY_POLICY.md"
 NATIVE_BINDINGS_PATH = (
     ROOT / "qualification/module-execution-dossiers/NATIVE_BINDINGS_LANE_A.json"
@@ -72,6 +74,37 @@ PACKAGES = [
     "codex-hepta-authbus",
     "codex-hepta-bao-adapter",
 ]
+OPERATIONS_PRODUCT_SOURCES = {
+    "kernel.operations.bounded-state-model.v1": "codex-rs/hepta-operations/src/ledger.rs",
+    "kernel.operations.bounded-outbox-model.v1": "codex-rs/hepta-operations/src/outbox.rs",
+    "kernel.operations.fenced-terminal-model.v1": "codex-rs/hepta-operations/src/ledger.rs",
+    "kernel.operations.durable-owner.v1": "codex-rs/hepta-memory/src/production_writer.rs",
+    "kernel.operations.durable-claim-lease.v1": "codex-rs/hepta-memory/src/operation_claims.rs",
+    "kernel.operations.final-use-cas-reconcile.v1": "codex-rs/hepta-memory/src/production_cognitive_source_target.rs",
+    "kernel.operations.agentd-daemon-composition.v1": "codex-rs/hepta-agentd/src/runtime.rs",
+}
+OPS_SOURCE_CAPABILITIES = {
+    "kernel.operations.atomic-durable-ledger-outbox.v1":
+        "atomic durable operation ledger and source outbox co-commit",
+    "kernel.operations.leased-fenced-outbox.v1":
+        "bounded leased outbox claims with generation fencing and crash-reopen takeover",
+    "kernel.operations.final-use-reconciliation.v1":
+        "final-use authority dispatch admission with indeterminate recovery and terminal reconciliation",
+    "kernel.operations.destination-transaction-dedupe.v1":
+        "destination-owner transaction dedupe primitive with immutable apply receipts",
+    "kernel.operations.retention-observability.v1":
+        "bounded retention tombstones and backlog metrics",
+}
+PROTOCOL_IDENTITIES = [
+    ("platform.types", "hepta.platform.types.primitives.v1"),
+    ("platform.wire", "hepta.platform.wire.versioned-envelope.v2"),
+    ("kernel.authority", "hepta.kernel.authority.final-use.v1"),
+    ("kernel.operations", "hepta.kernel.operations.durable-ledger-outbox.v1"),
+    ("kernel.operations", "hepta.kernel.operations.durable-owner.v1"),
+    ("kernel.evidence", "hepta.kernel.evidence.sqlite-lineage.v1"),
+    ("auth.authbus", "hepta.authbus.signed-message.v1"),
+    ("secrets.heptabao", "hepta.secrets.heptabao.kv-v2-read.v1"),
+]
 
 
 class VerificationError(RuntimeError):
@@ -121,7 +154,9 @@ def validate_capability_map(
         value.get("schemaVersion") != 1
         or value.get("lane") != "LANE-A-FOUNDATION"
         or value.get("closureScope") != "current executable capabilities only"
+        or value.get("coverageScope") != "product_current_capabilities"
         or not isinstance(entries, list)
+        or value.get("entryCount") != 42
         or value.get("entryCount") != len(entries)
     ):
         raise VerificationError("capability evidence-map header mismatch")
@@ -189,10 +224,89 @@ def validate_capability_map(
                 raise VerificationError(f"{capability_id}: {field} required")
             for anchor in anchors:
                 validate_anchor(f"{capability_id}/{field}", anchor, root)
+        if module == "kernel.operations":
+            source = OPERATIONS_PRODUCT_SOURCES.get(capability_id)
+            if source is None or not any(
+                anchor["path"] == source and anchor.get("mustContain")
+                for anchor in row["sourceEvidence"]
+            ):
+                raise VerificationError(f"{capability_id}: product evidence owner mismatch")
     if observed != expected:
         raise VerificationError(
             "capability map does not exactly cover ordered current capabilities"
         )
+
+
+def validate_operations_source_evidence(value: dict[str, Any], root: Path = ROOT) -> None:
+    """Check the standalone owner without adding it to product coverage."""
+    entries = value.get("entries")
+    if (
+        value.get("schemaVersion") != 1
+        or value.get("module") != "kernel.operations"
+        or value.get("role") != "standalone_source_evidence"
+        or value.get("owner") != "codex-rs/hepta-operations"
+        or value.get("productCapabilityCoverageContribution") != 0
+        or value.get("productQualification") != "not_granted"
+        or value.get("entryCount") != 5
+        or not isinstance(entries, list)
+        or any(not isinstance(row, dict) for row in entries)
+        or [(row.get("capabilityId"), row.get("summary")) for row in entries]
+        != list(OPS_SOURCE_CAPABILITIES.items())
+    ):
+        raise VerificationError("standalone operations evidence scope/ordered coverage mismatch")
+    owner = (root / value["owner"]).resolve()
+    for row in entries:
+        capability_id = row["capabilityId"]
+        if (
+            row.get("durability") != "sqlite_wal_full_transactional"
+            or row.get("activation") != "host_composition_required"
+            or row.get("productionCaller") is not None
+            or row.get("receiptStatus") != "native_workflow_required"
+            or not isinstance(row.get("publicSymbols"), list)
+            or not row["publicSymbols"]
+            or any(not isinstance(symbol, str) or not symbol for symbol in row["publicSymbols"])
+        ):
+            raise VerificationError(f"{capability_id}: standalone owner state mismatch")
+        for field in ("sourceEvidence", "positiveTests", "negativeTests"):
+            anchors = row.get(field)
+            if not isinstance(anchors, list) or not anchors:
+                raise VerificationError(f"{capability_id}: {field} required")
+            for anchor in anchors:
+                validate_anchor(f"{capability_id}/{field}", anchor, root)
+                if not (root / anchor["path"]).resolve().is_relative_to(owner):
+                    raise VerificationError(f"{capability_id}: standalone evidence owner mismatch")
+
+
+def validate_protocol_registry(value: dict[str, Any], root: Path = ROOT) -> None:
+    rows = value.get("protocols")
+    if (
+        value.get("schemaVersion") != 1
+        or value.get("lane") != "LANE-A-FOUNDATION"
+        or value.get("role") != "current_executable_protocol_index"
+        or value.get("authority") != "none"
+        or not isinstance(rows, list)
+        or any(not isinstance(row, dict) for row in rows)
+        or [(row.get("module"), row.get("protocolId")) for row in rows]
+        != PROTOCOL_IDENTITIES
+    ):
+        raise VerificationError("protocol registry ordered identity mismatch")
+    for row in rows:
+        for field in ("source", "invariants"):
+            items = row.get(field)
+            if not isinstance(items, list) or not items or any(
+                not isinstance(item, str) or not item for item in items
+            ):
+                raise VerificationError(f"{row['protocolId']}: {field} required")
+        if any(not (root / path).exists() for path in row["source"]):
+            raise VerificationError(f"{row['protocolId']}: protocol source missing")
+    for row, owner, scope, source in (
+        (rows[3], "codex-rs/hepta-operations", "standalone_source_evidence", "src/durable_store.rs"),
+        (rows[4], "codex-rs/hepta-memory", "product_current_contract", "src/production_writer.rs"),
+    ):
+        if row.get("owner") != owner or row.get("scope") != scope or f"{owner}/{source}" not in row["source"]:
+            raise VerificationError(f"{row['protocolId']}: protocol owner/scope mismatch")
+    if rows[3].get("legacyProtocolId") != "hepta.kernel.operations.reference-model.v1":
+        raise VerificationError("standalone operations legacy protocol drift")
 
 
 def git_blob_sha(data: bytes) -> str:
@@ -309,8 +423,8 @@ def validate_source_specific(root: Path = ROOT) -> None:
         "codex-rs/hepta-types/src/lib.rs": ["pub use identity::IdentityError;"],
         "codex-rs/hepta-wire/src/envelope.rs": ["const WIRE_VERSION: u16 = 1;"],
         "codex-rs/hepta-operations/src/lib.rs": [
-            "In-memory reference model",
-            "does not provide durable storage",
+            "deterministic in-memory reference",
+            "pub use durable_store::DurableOperationStore;",
         ],
         "codex-rs/hepta-operations/src/model.rs": [
             "pub struct ReferenceAuthorityWitness",
@@ -318,6 +432,8 @@ def validate_source_specific(root: Path = ROOT) -> None:
         ],
         "codex-rs/hepta-operations/src/ledger.rs": [
             "MAX_MODEL_OPERATION_RECORDS",
+            "In-memory deterministic reference model",
+            "persistence test.",
             'InvalidDigest("dispatch")',
             "terminal_matches",
         ],

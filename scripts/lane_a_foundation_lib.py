@@ -24,6 +24,8 @@ def validate_matrix(matrix: dict[str, Any], root: Path = ROOT) -> dict[str, Any]
         or matrix.get("nativeBindingOverride")
         != "qualification/module-execution-dossiers/NATIVE_BINDINGS_LANE_A.json"
         or matrix.get("moduleCoverage") != 7
+        or matrix.get("coverageScope") != "product_current_capabilities"
+        or matrix.get("productOperationsOwner") != "codex-rs/hepta-memory"
         or matrix.get("statusAxes") != AXES
     ):
         raise VerificationError("truth-matrix header mismatch")
@@ -115,6 +117,13 @@ def validate_matrix(matrix: dict[str, Any], root: Path = ROOT) -> dict[str, Any]
             raise VerificationError(f"{module}: {axis} drift")
     capability = read_json(root / "docs/lane-a-foundation/CAPABILITY_EVIDENCE_MAP.json")
     validate_capability_map(matrix, capability, root)
+    validate_operations_source_evidence(
+        read_json(root / "docs/lane-a-foundation/kernel.operations/CAPABILITY_EVIDENCE_V2.json"),
+        root,
+    )
+    validate_protocol_registry(
+        read_json(root / "docs/lane-a-foundation/PROTOCOL_REGISTRY_V1.json"), root
+    )
     native = validate_native_bindings(root)
     validate_wire_vector(root)
     validate_source_specific(root)
@@ -191,6 +200,7 @@ def write_receipt(output: Path, expected: str | None, native: bool) -> None:
     else:
         capabilities = read_json(CAPABILITY_MAP_PATH)
         bindings = read_json(NATIVE_BINDINGS_PATH)
+        operations_source = read_json(OPS_CAPABILITY_MAP_PATH)
         receipt = {
             "schemaVersion": 2,
             "lane": "LANE-A-FOUNDATION",
@@ -211,6 +221,19 @@ def write_receipt(output: Path, expected: str | None, native: bool) -> None:
             },
             "moduleCoverage": 7,
             "capabilityCoverage": capabilities["entryCount"],
+            "coverageScope": "product_current_capabilities",
+            "productOperationsOwner": matrix["productOperationsOwner"],
+            "standaloneOperationsSourceEvidence": {
+                "path": str(OPS_CAPABILITY_MAP_PATH.relative_to(ROOT)),
+                "sha256": hashlib.sha256(canonical(operations_source)).hexdigest(),
+                "entryCount": operations_source["entryCount"],
+                "owner": operations_source["owner"],
+                "productCapabilityCoverageContribution": 0,
+                "productQualification": "not_granted",
+            },
+            "protocolRegistrySha256": hashlib.sha256(
+                canonical(read_json(PROTOCOL_REGISTRY_PATH))
+            ).hexdigest(),
             "repositoryControlledDocumentationGaps": "closed",
             "currentImplementationTruth": "source_and_test_anchored",
             "nativeQualification": "separate_exact_candidate_receipt_required",

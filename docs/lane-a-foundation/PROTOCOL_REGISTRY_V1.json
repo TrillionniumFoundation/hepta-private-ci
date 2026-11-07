@@ -92,7 +92,9 @@
         "the retained in-memory reference model is an oracle and grants no production authority",
         "source implementation does not grant product activation operator acceptance promotion or release"
       ],
-      "legacyProtocolId": "hepta.kernel.operations.reference-model.v1"
+      "legacyProtocolId": "hepta.kernel.operations.reference-model.v1",
+      "owner": "codex-rs/hepta-operations",
+      "scope": "standalone_source_evidence"
     },
     {
       "protocolId": "hepta.kernel.operations.durable-owner.v1",
@@ -113,7 +115,9 @@
         "final-use authority is consumed immediately before destination entry",
         "destination predecessor mismatch is deterministic not-applied inside the destination transaction",
         "transport acknowledgement is not terminality and lost acknowledgement reconciles through an independent destination observer"
-      ]
+      ],
+      "owner": "codex-rs/hepta-memory",
+      "scope": "product_current_contract"
     },
     {
       "protocolId": "hepta.kernel.evidence.sqlite-lineage.v1",
@@ -125,7 +129,7 @@
         "docs/lane-a-foundation/kernel.evidence/STORE_V1.md"
       ],
       "invariants": [
-        "migration lineage is exactly 0001 through 0009",
+        "migration lineage is exactly 0001 through 0012",
         "unknown incomplete failed or checksum-mismatched migration rows fail closed",
         "same identity and equal content is idempotent",
         "same identity and different content conflicts",
