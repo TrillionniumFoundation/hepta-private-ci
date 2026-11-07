@@ -17,16 +17,16 @@ from hepta_bwrap_readonly_contract import PROBE, journal_argv
 from hepta_core_selected_evidence import identity, read_regular, require
 
 ROOT = Path(__file__).resolve().parents[2]
-PARENT = "25d940b9b768b9117a020fe350fd134198a2efcf"
-PARENT_TREE = "26277e2bebd9e9f5a7cd04869c955dfd2fa7ddd2"
-INPUTS_HEAD = "1a48ab2f96c66ec7c13399a2bdee293562256bd9"
-INPUTS_TREE = "2575889ef1354f67c8c73547702a36f3eb2a277e"
-CHECKS_HEAD = "c5a8846bf3bcb46f78b885e94620201fc7831227"
-CHECKS_TREE = "b3f83ca1190c3edf67b15c250c9ffb3f46e3384b"
+PARENT = "006a70913f3b18221cfa4f9181e50fd2fe47238b"
+PARENT_TREE = "616facf910af229b0ecd52fec2afafe6bc126b8e"
+INPUTS_HEAD = None
+INPUTS_TREE = None
+CHECKS_HEAD = None
+CHECKS_TREE = None
 REPOSITORY = "TrillionniumFoundation/hepta-private-ci"
-INPUTS_REF = "research/ndu-bwrap-default-inputs-20261107"
-CHECKS_REF = "research/ndu-bwrap-default-checks-20261107"
-PROPOSAL_REF = "research/ndu-bwrap-default-probe-20261107"
+INPUTS_REF = "research/ndu-bwrap-names-inputs-20261107"
+CHECKS_REF = "research/ndu-bwrap-names-checks-20261107"
+PROPOSAL_REF = "research/ndu-bwrap-names-probe-20261107"
 CONTRACT = ".github/scripts/hepta_bwrap_profile_contract.py"
 PROFILE_PACKAGE = (
     ".github/scripts/apparmor-profiles_4.0.1really4.0.1-0ubuntu0.24.04.9_all.deb"
@@ -36,21 +36,12 @@ SHARE_HELPER = ".github/scripts/hepta_bwrap_share_mode.py"
 SHARE_HELPER_SHA = "eafff9d38967761e9af63a9bf12193d19ff29cd628e6d0b2ddb953e47834d542"
 SHARE_PYTHON = "/usr/bin/python3.12"
 BASELINE_BLOBS = {
-    ".github/scripts/hepta-bwrap-profile-dependencies.json": "5937fe0631024016c746b46f4a71f54ec124b48b",
-    ".github/scripts/hepta_bwrap_profile.py": "5c42f13ba4bd91b0000a81d9716c5975e02dad16",
-    ".github/scripts/hepta_bwrap_profile_contract.py": "947d24e58a849b8f6ab9103fd8ed94b37d1b33f6",
-    ".github/scripts/hepta_bwrap_profile_evidence.py": "8e7174fda44ba76180168162ccd98988d1c344da",
-    ".github/workflows/hepta-bwrap-profile-probe.yml": "f1faac01495487c2f253021db2cb3815331c82fd",
+    ".github/scripts/hepta_bwrap_profile_contract.py": "c35133ecf6f3f932fce1079659f90a896e16f630",
+    ".github/workflows/hepta-bwrap-profile-probe.yml": "519c9ed6a22acb36b6e993a73e48887f08f147ba",
 }
-INPUT_PATHS = {CONTRACT, DEPENDENCIES, SHARE_HELPER}
-CHECK_PATHS = {
-    ".github/scripts/hepta_bwrap_share_checks.py",
-    ".github/scripts/hepta_bwrap_profile_evidence.py",
-}
-EXECUTOR_PATHS = {
-    ".github/scripts/hepta_bwrap_profile.py",
-    ".github/workflows/hepta-bwrap-profile-probe.yml",
-}
+INPUT_PATHS = {CONTRACT}
+CHECK_PATHS = set()
+EXECUTOR_PATHS = {".github/workflows/hepta-bwrap-profile-probe.yml"}
 DECLARED_PATHS = INPUT_PATHS | CHECK_PATHS | EXECUTOR_PATHS
 SCANNER_PATH = ".github/scripts/hepta_core_selected_evidence.py"
 SCANNER_BLOB = "f18f5d0ce06cead0817513814da96f129523cf8c"
@@ -115,7 +106,13 @@ PARSER_COMMON = [
     "--base=/etc/apparmor.d",
 ]
 PARSER_COMMANDS = {
-    "parser_names": [PARSER, *PARSER_COMMON, "--print-config-file", "--names"],
+    "parser_names": [
+        PARSER,
+        *PARSER_COMMON,
+        "--jobs=0",
+        "--print-config-file",
+        "--names",
+    ],
     "parser_preprocess": [PARSER, *PARSER_COMMON, "--preprocess"],
     "parser_compile": [PARSER, *PARSER_COMMON],
     "profile_add": [
