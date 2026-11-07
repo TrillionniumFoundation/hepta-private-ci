@@ -27,7 +27,6 @@ use super::support;
 use crate::AgentdGenerationUpdateRuntimeOptionsV1;
 use crate::AgentdLearningNoUpdateInputsV1;
 use crate::LearningIterationOwnerPortsV1;
-use crate::learning_iteration_channel_v1;
 use crate::neuron_generation_current::NeuronGenerationPredecessorCompletionV1;
 use crate::neuron_generation_current::test_support::Fixture;
 use crate::neuron_generation_current::test_support::RECORDS;
@@ -40,9 +39,22 @@ use crate::recover_agentd_generation_update_v1;
 #[path = "neuron_generation_no_update_test_model.rs"]
 mod model;
 
+#[path = "neuron_generation_no_update_test_support.rs"]
+mod checks;
+
 #[tokio::test]
 async fn evaluated_no_update_runs_incumbent_recovers_and_obeys_revocation() -> anyhow::Result<()> {
+    run_no_update_case(checks::LiveInvalidation::FinalUseRevocation).await
+}
+
+#[tokio::test]
+async fn evaluated_no_update_runs_incumbent_and_obeys_current_change() -> anyhow::Result<()> {
+    run_no_update_case(checks::LiveInvalidation::ArtifactCurrent).await
+}
+
+async fn run_no_update_case(change: checks::LiveInvalidation) -> anyhow::Result<()> {
     let mut host = host::Fixture::new().await;
+    let mut request = iteration_request(&host.identity);
     let weights: Vec<u8> = [0.5_f32, -0.25_f32]
         .into_iter()
         .flat_map(f32::to_le_bytes)
@@ -51,6 +63,7 @@ async fn evaluated_no_update_runs_incumbent_recovers_and_obeys_revocation() -> a
     host.config.manifest.learning = CellLearningBindingV2::Frozen {
         weights: Digest32::of_bytes(&weights).into_array(),
     };
+    host.config.manifest.bundle_digest = request.selected_bundle.digest()?.into_array();
     host.config.initial.manifest_digest = host.config.manifest.digest()?;
     let mut next = host.config.clone();
     next.initial.scope.run_id.push_str("-after-no-update");
@@ -68,22 +81,11 @@ async fn evaluated_no_update_runs_incumbent_recovers_and_obeys_revocation() -> a
         LearningEvaluationDispositionV1::NoUpdate,
     ));
     let owners = ports.owners();
-    let (_, learning_owner) = learning_iteration_channel_v1(
-        host.identity.agent_id.clone(),
-        host.identity.spawn_generation,
-        owners.clone(),
-        ports.clone(),
-        ports.verifier.clone(),
-        /*capacity*/ 2,
-    )?;
-    let mut request = iteration_request(&host.identity);
     request.cell_id = StableId::new(&f.old_config.initial.scope.cell_id)?;
     request.source_run_id = StableId::new(&f.old_config.initial.scope.run_id)?;
     request.completed_task_receipt = source.owner_checkpoint();
     request.selected_artifact_digest = selected.observation().payload_digest();
-    let learning = learning_owner
-        .process(host.state(), request.clone(), || Ok(50))
-        .await?;
+    let learning = checks::submit_retained(&host, &ports, request.clone()).await?;
     assert_eq!(
         LearningIterationCoordinatorV1::from_snapshot(learning.clone())?.disposition(),
         LearningIterationDispositionV1::NoUpdate
@@ -103,6 +105,7 @@ async fn evaluated_no_update_runs_incumbent_recovers_and_obeys_revocation() -> a
         f.bytes("old-journal")?,
         f.bytes("target-journal")?,
     );
+    let witnesses_before = (f.bytes("old-witness")?, f.bytes("target-witness")?);
     for bad in [
         AgentdLearningNoUpdateInputsV1 {
             expected_head: Digest32::ZERO,
@@ -152,6 +155,22 @@ async fn evaluated_no_update_runs_incumbent_recovers_and_obeys_revocation() -> a
     ports
         .corrupt_signature
         .store(/*val*/ false, Ordering::SeqCst);
+    // This is a separate fully signed four-stage NoUpdate, not a corrupted
+    // snapshot. Only the complete bundle's heads component differs.
+    let mut mismatched = request.clone();
+    mismatched.selected_bundle.components.heads = Digest32::of_bytes(b"different model heads");
+    let wrong_bundle = checks::SignedLearning::new(&host, mismatched).await?;
+    checks::require_bundle_error(
+        prepare_agentd_generation_evaluated_no_update_task_v1(
+            wrong_bundle.inputs(),
+            f.current.clone(),
+            f.authorities()?,
+            f.old_journal()?,
+            f.selection()?,
+            f.target_reopen()?,
+        )
+        .await,
+    )?;
     assert_eq!(
         (
             f.bytes("current.json")?,
@@ -159,6 +178,10 @@ async fn evaluated_no_update_runs_incumbent_recovers_and_obeys_revocation() -> a
             f.bytes("target-journal")?
         ),
         before
+    );
+    assert_eq!(
+        (f.bytes("old-witness")?, f.bytes("target-witness")?),
+        witnesses_before
     );
     assert_eq!(f.authority.capacity()?.used_nonces, 0);
 
@@ -247,6 +270,39 @@ async fn evaluated_no_update_runs_incumbent_recovers_and_obeys_revocation() -> a
         f.bytes("target-journal")?,
         f.bytes("target-witness")?,
         f.bytes("final-use/authority.claims")?,
+        f.bytes("current.json")?,
+    );
+    checks::require_bundle_error(
+        observe_next_use(
+            wrong_bundle.inputs(),
+            &selection,
+            &runtime.publication,
+            &complete,
+        )
+        .await,
+    )?;
+    // A different genuine signed learning head cannot claim this publication.
+    let mut other_request = request.clone();
+    other_request.operation_id = StableId::new("learning:other-completed-operation")?;
+    let other_learning = checks::SignedLearning::new(&host, other_request).await?;
+    assert_ne!(other_learning.inputs().expected_head, learning.head_digest);
+    checks::require_publication_error(
+        observe_next_use(
+            other_learning.inputs(),
+            &selection,
+            &runtime.publication,
+            &complete,
+        )
+        .await,
+    )?;
+    assert_eq!(
+        (
+            f.bytes("target-journal")?,
+            f.bytes("target-witness")?,
+            f.bytes("final-use/authority.claims")?,
+            f.bytes("current.json")?,
+        ),
+        retained
     );
     tasks.shutdown().await;
     drop(runtime);
@@ -295,7 +351,8 @@ async fn evaluated_no_update_runs_incumbent_recovers_and_obeys_revocation() -> a
         (
             f.bytes("target-journal")?,
             f.bytes("target-witness")?,
-            f.bytes("final-use/authority.claims")?
+            f.bytes("final-use/authority.claims")?,
+            f.bytes("current.json")?,
         ),
         retained
     );
@@ -316,7 +373,7 @@ async fn evaluated_no_update_runs_incumbent_recovers_and_obeys_revocation() -> a
     // Export original bytes only when explicitly requested by the test runner.
     // There is no learning checkpoint decoder or external certification here.
     if let Some(path) = std::env::var_os("HEPTA_NO_UPDATE_EVIDENCE_DIR") {
-        let path = std::path::PathBuf::from(path).join("evaluated-no-update");
+        let path = std::path::PathBuf::from(path).join(change.directory());
         fs::create_dir_all(&path)?;
         for name in [
             "current.json",
@@ -373,14 +430,10 @@ async fn evaluated_no_update_runs_incumbent_recovers_and_obeys_revocation() -> a
             }))?,
         )?;
     }
-    // A historical readback cannot bypass a later FinalUse revocation.
+    // Each case starts from independent owners, so CURRENT invalidation cannot
+    // mask the FinalUse revocation assertion or vice versa.
     let stale = f.selection()?;
-    let mut revocations = f.authority.revocation_head()?;
-    revocations.revision += 1;
-    revocations
-        .revoked_grant_ids
-        .insert(signed.grant.grant_id.clone());
-    f.authority.update_revocations(revocations)?;
+    change.apply(&f, &signed)?;
     assert!(runtime.handle.step(next_request).await.is_err());
     tasks.shutdown().await;
     drop(runtime);
@@ -398,14 +451,15 @@ async fn evaluated_no_update_runs_incumbent_recovers_and_obeys_revocation() -> a
     assert_eq!(control.executions.load(Ordering::SeqCst), 1);
     assert_eq!(f.bytes("target-journal")?, retained.0);
     if let Some(path) = std::env::var_os("HEPTA_NO_UPDATE_EVIDENCE_DIR") {
-        let path = std::path::PathBuf::from(path).join("evaluated-no-update");
+        let path = std::path::PathBuf::from(path).join(change.directory());
         fs::write(
-            path.join("revoked-final-use-frontier.json"),
+            path.join("final-use-frontier-after-invalidation.json"),
             f.bytes("final-use-frontier.json")?,
         )?;
         fs::write(
-            path.join("revocation-result.json"),
+            path.join("live-invalidation-result.json"),
             serde_json::to_vec_pretty(&serde_json::json!({
+                "case": change.directory(),
                 "dispatch_refused": true, "cold_recovery_refused": true,
                 "model_executions": control.executions.load(Ordering::SeqCst),
                 "target_journal_unchanged": true, "final_use_nonces": f.authority.capacity()?.used_nonces
