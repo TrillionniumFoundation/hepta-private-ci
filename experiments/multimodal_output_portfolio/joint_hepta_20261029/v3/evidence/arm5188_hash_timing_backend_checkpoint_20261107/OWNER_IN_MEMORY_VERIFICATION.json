@@ -1,0 +1,76 @@
+{
+  "snapshot_utc": "2026-11-07 01:40:04 UTC",
+  "index": {
+    "bytes": 91537,
+    "sha256": "d778f5e8990f2abdcfaf304740018cd627c62a98df474b3d2277b01ce244c57b",
+    "git_blob": "fec4804bee3bce405b15f77f357ecf88200df036"
+  },
+  "original_freeze": {
+    "bytes": 49387,
+    "sha256": "9fef493ab90f11d29ca56fae62f7914c1c770868b5650bb5cf0449933fd683cd",
+    "git_blob": "7a55c23566cb05efd5421c59b69b731263321026"
+  },
+  "all_185_original_identities_and_modes_verified": true,
+  "selected_frozen_originals": 183,
+  "all_packet_input_files": 236,
+  "all_packet_input_bytes": 106266595,
+  "canonical_reader_read_package_succeeded": true,
+  "complete_member_set_and_every_byte_equal": true,
+  "original_input_modes_rechecked_unchanged": true,
+  "outer_tar_regular_0644_modes_verified": true,
+  "disk_restore_executed": false,
+  "native_execution": false,
+  "scanner_qualification_claimed": false,
+  "reader_template": {
+    "source_file": "/workspace/scratch/3f6a885bb83c/round3_native/restore_checkpoint_template.py",
+    "bytes": 6626,
+    "sha256": "00bf4373739122934a281273de36cc9e4cce84199aa985926419225cad94303b",
+    "git_blob": "27e463e7b9e73a98b3a35e05d4d7414a2ed7b4a0",
+    "only_replacement": "fixed INDEX SHA-256"
+  },
+  "archive_bytes": 106516480,
+  "compressed_bytes": 11788972,
+  "part_count": 27,
+  "fixed_reader_limits_changed": false,
+  "codespell": {
+    "version": "2.4.3",
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "-m",
+      "codespell_lib",
+      "--ignore-words",
+      ".codespellignore",
+      "--skip",
+      "./.git"
+    ],
+    "exit_code": 0,
+    "stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "configuration": {
+      ".codespellrc": {
+        "bytes": 471,
+        "sha256": "80805b9340dbdd76645a25929f56c96606e187db8e9d16b75a4a47dcdd248c04",
+        "git_blob": "663be376c7381108af0a41eafc3dd08f27125d96"
+      },
+      ".codespellignore": {
+        "bytes": 69,
+        "sha256": "9c6cd9dd86c6300ff67edbe64b2e18ed089714151e5c166382c8ea99931bc275",
+        "git_blob": "0da447f000de188776a33e770c2d2d77b37f97ee"
+      },
+      ".codespell-exclude-lines": {
+        "bytes": 20003,
+        "sha256": "5e2119d75aa7cfa61e87b9c3d98863d0b5d6672eeaccc7411695e91e2366d52b",
+        "git_blob": "490e840301fdfae10d6e40c44a566ff16f82e324"
+      }
+    },
+    "new_exclusion_added": false
+  }
+}

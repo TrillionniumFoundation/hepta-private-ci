@@ -1,0 +1,26 @@
+{
+  "observed_at_utc": "2026-11-07T01:44:17.367913+00:00",
+  "scope": "Actual root style check of the first frozen packet reader, before publication",
+  "argv": [
+    "round3_ci/ruff_tooling/ruff",
+    "format",
+    "--check",
+    "--config",
+    "round3_ci/ruff_tooling/pyproject.toml",
+    "round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/restore.py"
+  ],
+  "exit_code": 1,
+  "reader": {
+    "bytes": 6656,
+    "sha256": "6f0de4ed81d8fb04242d58c29c2b2d866cf3903f76695c8bcca003d40be60a7c"
+  },
+  "publication": {
+    "bytes": 21152,
+    "sha256": "2ce9c38ff826e30061ee926776aee32866eeff83d0976150bdc16dffedd7fcd4"
+  },
+  "native_execution": false,
+  "archive_or_index_modified": false,
+  "requested_successor": "Use the already published formatted SDK reader with only this fixed INDEX seal, keeping first reader, publication and original archive bytes unchanged.",
+  "tool_output": "Would reformat: round3_ci/arm5188_hash_timing_backend_checkpoint_20261107/restore.py\n1 file would be reformatted\n",
+  "output_scope": "Merged output returned by exec_command; stdout and stderr were not captured separately in this invocation."
+}
