@@ -95,13 +95,15 @@ async fn source_drift_after_claim_blocks_native_dispatch_and_status_contact() ->
         .execute_authorized_taskflow_effect(
             &host.authority,
             &mut driver,
-            &intent,
-            WIRE,
-            &fence,
-            &grant,
-            &intent.final_use_binding()?,
-            COMMAND,
-            NOW,
+            AuthorizedEffectDispatchRequest {
+                intent: &intent,
+                wire_payload: WIRE,
+                fence: &fence,
+                signed_grant: &grant,
+                expected_binding: &intent.final_use_binding()?,
+                command_id: COMMAND,
+                now_ms: NOW,
+            },
         )
         .await;
     assert!(

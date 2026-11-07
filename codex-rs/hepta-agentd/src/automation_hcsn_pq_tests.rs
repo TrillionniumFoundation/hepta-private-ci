@@ -7,6 +7,7 @@ use std::os::unix::fs::PermissionsExt;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 
+use codex_hepta_automation::AuthorizedEffectDispatchRequest;
 use codex_hepta_automation::AuthorizedEffectError;
 use codex_hepta_automation::HcsnJobIdentityV1;
 use codex_hepta_automation::HcsnSupervisorCommandV1;
@@ -298,13 +299,15 @@ async fn authenticated_old_head_cannot_bind_a_newer_final_use_claim() -> anyhow:
         .execute_authorized_taskflow_effect(
             &host.authority,
             &mut driver,
-            &intent,
-            WIRE,
-            &fence,
-            &grant,
-            &intent.final_use_binding()?,
-            COMMAND,
-            NOW,
+            AuthorizedEffectDispatchRequest {
+                intent: &intent,
+                wire_payload: WIRE,
+                fence: &fence,
+                signed_grant: &grant,
+                expected_binding: &intent.final_use_binding()?,
+                command_id: COMMAND,
+                now_ms: NOW,
+            },
         )
         .await;
     assert!(matches!(
@@ -407,13 +410,15 @@ async fn pq_hcsn_rechecks_clock_frontier_and_signed_feed_after_token_entry_befor
             .execute_authorized_taskflow_effect(
                 &host.authority,
                 &mut driver,
-                &intent,
-                WIRE,
-                &fence,
-                &grant,
-                &intent.final_use_binding()?,
-                COMMAND,
-                NOW,
+                AuthorizedEffectDispatchRequest {
+                    intent: &intent,
+                    wire_payload: WIRE,
+                    fence: &fence,
+                    signed_grant: &grant,
+                    expected_binding: &intent.final_use_binding()?,
+                    command_id: COMMAND,
+                    now_ms: NOW,
+                },
             )
             .await;
         assert!(

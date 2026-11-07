@@ -408,7 +408,7 @@ async fn setup_turn_one_with_spawned_child(
         }),
         child_response_delay,
         /*wait_for_parent_notification*/ true,
-        |builder| builder.with_internal_metadata_for_mock(),
+        core_test_support::test_codex::TestCodexBuilder::with_internal_metadata_for_mock,
     )
     .await?;
     Ok((test, spawned_id))

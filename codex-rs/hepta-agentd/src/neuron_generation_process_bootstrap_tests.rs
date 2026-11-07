@@ -227,16 +227,34 @@ fn actual_opened_files_reject_raced_aliases_and_non_regular_assets() -> Result<(
     }
     fixture::write_descriptor(&f.path, &f.descriptor)?;
     let descriptor: linux::Descriptor = serde_json::from_value(f.descriptor.clone())?;
-    files::validate_paths(&f.path, &descriptor)?;
+    let immutable_paths = [
+        f.path.as_path(),
+        descriptor.executable.path.as_path(),
+        descriptor.weights.path.as_path(),
+        descriptor.public.path.as_path(),
+    ];
+    let owner_paths = [
+        descriptor.journal_path.as_path(),
+        descriptor.witness_path.as_path(),
+        descriptor.control_path.as_path(),
+    ];
+    files::validate_paths(descriptor.mode, &immutable_paths, owner_paths)?;
     let (_, descriptor_file) = files::read_bounded(&f.path, 262_144)?;
     let assets = files::open_assets(&descriptor)?;
     let public_before = fs::read(&descriptor.public.path)?;
     fs::remove_file(&descriptor.control_path)?;
     fs::hard_link(&descriptor.public.path, &descriptor.control_path)?;
     assert!(matches!(
-        files::open_owners(&descriptor, &[
-            &descriptor_file, &assets.executable, &assets.weights, &assets.public,
-        ]),
+        files::open_owners(
+            descriptor.mode,
+            owner_paths,
+            &[
+                &descriptor_file,
+                &assets.executable,
+                &assets.weights,
+                &assets.public,
+            ],
+        ),
         Err(AgentdError::Invalid(message)) if message.contains("alias the same inode")
     ));
     assert_eq!(fs::read(&descriptor.public.path)?, public_before);
@@ -245,7 +263,7 @@ fn actual_opened_files_reject_raced_aliases_and_non_regular_assets() -> Result<(
 
     fs::remove_file(&descriptor.control_path)?;
     fs::write(&descriptor.control_path, b"existing owner bytes")?;
-    files::validate_paths(&f.path, &descriptor)?;
+    files::validate_paths(descriptor.mode, &immutable_paths, owner_paths)?;
     fs::remove_file(&descriptor.weights.path)?;
     let fifo = std::ffi::CString::new(descriptor.weights.path.as_os_str().as_bytes())?;
     // SAFETY: fifo owns a NUL-terminated path for the entire call; the mode has

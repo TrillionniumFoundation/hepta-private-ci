@@ -84,8 +84,14 @@ def file_identity(metadata):
 
 
 def verify_helpers(
-    root, output, requested_packages, *, target=None, cargo_profile=None,
-    transported=False, require_runtime_env=False,
+    root,
+    output,
+    requested_packages,
+    *,
+    target=None,
+    cargo_profile=None,
+    transported=False,
+    require_runtime_env=False,
 ):
     """Observe existing preparation evidence without building or rewriting it."""
     report = {
@@ -147,7 +153,8 @@ def verify_helpers(
             for key in ("workspace", "output_dir"):
                 value = manifest.get(key)
                 require(
-                    isinstance(value, str) and Path(value).is_absolute()
+                    isinstance(value, str)
+                    and Path(value).is_absolute()
                     and not any(c in value for c in "\r\n\0"),
                     "invalid original helper directory: " + key,
                 )
@@ -191,7 +198,8 @@ def verify_helpers(
             require(
                 build.get("package") == package
                 and build.get("binaries") == list(HELPERS[package])
-                and build.get("command") == build_command(package, target, cargo_profile)
+                and build.get("command")
+                == build_command(package, target, cargo_profile)
                 and build.get("complete") is True
                 and build.get("cargo_finished") is True
                 and type(build.get("exit_code")) is int
@@ -220,7 +228,9 @@ def verify_helpers(
                 f"invalid compiler or pinned executable path: {binary}",
             )
             suffix = ".exe" if Path(compiler_path).suffix == ".exe" else ""
-            require(not transported or not suffix, "Linux helper cannot have an EXE suffix")
+            require(
+                not transported or not suffix, "Linux helper cannot have an EXE suffix"
+            )
             pinned = output / "bin" / f"{binary}{suffix}"
             require(
                 executable == str(original_output / "bin" / f"{binary}{suffix}")
@@ -317,7 +327,8 @@ def main():
         parser.error("a helper package may be selected only once")
     for value in (args.target, args.cargo_profile):
         if value is not None and (
-            not value or value.startswith("-")
+            not value
+            or value.startswith("-")
             or any(not (c.isascii() and (c.isalnum() or c in "-_.")) for c in value)
         ):
             parser.error("target and Cargo profile must be explicit names")
@@ -332,8 +343,12 @@ def main():
         if args.github_env is not None:
             parser.error("--github-env cannot be written in --verify-only mode")
         report = verify_helpers(
-            root, output, selected_packages, target=args.target,
-            cargo_profile=args.cargo_profile, transported=args.transported,
+            root,
+            output,
+            selected_packages,
+            target=args.target,
+            cargo_profile=args.cargo_profile,
+            transported=args.transported,
             require_runtime_env=args.require_runtime_env,
         )
         print(json.dumps(report, indent=2), flush=True)

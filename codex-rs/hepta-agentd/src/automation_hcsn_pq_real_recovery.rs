@@ -245,7 +245,7 @@ pub(super) async fn recover(
             reopened
                 .read_authorized_taskflow_effect_receipt(&effect.intent, &effect.command())
                 .await?,
-            Some(expected.clone())
+            Some(expected.as_ref().clone())
         );
         assert_eq!(
             host.execute(
@@ -257,7 +257,7 @@ pub(super) async fn recover(
                 NOW + 120_000
             )
             .await?,
-            *expected
+            **expected
         );
     }
     reopened.close().await;

@@ -8,6 +8,7 @@ use std::sync::Mutex;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+use codex_hepta_automation::AuthorizedEffectDispatchRequest;
 use codex_hepta_automation::AuthorizedEffectError;
 use codex_hepta_automation::AuthorizedEffectIntent;
 use codex_hepta_automation::AuthorizedEffectOutcome;
@@ -301,13 +302,15 @@ async fn signed_dispatch_reopens_without_relaunch_and_distinct_cancel_reconciles
             .execute_authorized_taskflow_effect(
                 &fixture.authority,
                 &mut training,
-                &effect,
-                PAYLOAD,
-                &fixture.owner,
-                &invalid,
-                &binding,
-                "training-dispatch",
-                30,
+                AuthorizedEffectDispatchRequest {
+                    intent: &effect,
+                    wire_payload: PAYLOAD,
+                    fence: &fixture.owner,
+                    signed_grant: &invalid,
+                    expected_binding: &binding,
+                    command_id: "training-dispatch",
+                    now_ms: 30,
+                },
             )
             .await,
         Err(AuthorizedEffectError::FinalUse(_))
@@ -318,13 +321,15 @@ async fn signed_dispatch_reopens_without_relaunch_and_distinct_cancel_reconciles
         .execute_authorized_taskflow_effect(
             &fixture.authority,
             &mut training,
-            &effect,
-            PAYLOAD,
-            &fixture.owner,
-            &signed,
-            &binding,
-            "training-dispatch",
-            30,
+            AuthorizedEffectDispatchRequest {
+                intent: &effect,
+                wire_payload: PAYLOAD,
+                fence: &fixture.owner,
+                signed_grant: &signed,
+                expected_binding: &binding,
+                command_id: "training-dispatch",
+                now_ms: 30,
+            },
         )
         .await
         .expect("authorized dispatch");
@@ -347,13 +352,15 @@ async fn signed_dispatch_reopens_without_relaunch_and_distinct_cancel_reconciles
             .execute_authorized_taskflow_effect(
                 &fixture.authority,
                 &mut training,
-                &effect,
-                PAYLOAD,
-                &fixture.owner,
-                &signed,
-                &binding,
-                "training-dispatch",
-                31,
+                AuthorizedEffectDispatchRequest {
+                    intent: &effect,
+                    wire_payload: PAYLOAD,
+                    fence: &fixture.owner,
+                    signed_grant: &signed,
+                    expected_binding: &binding,
+                    command_id: "training-dispatch",
+                    now_ms: 31,
+                },
             )
             .await
             .is_err()
@@ -391,13 +398,15 @@ async fn signed_dispatch_reopens_without_relaunch_and_distinct_cancel_reconciles
         .execute_authorized_taskflow_effect(
             &fixture.authority,
             &mut cancellation,
-            &cancel_effect,
-            &cancel_payload,
-            &fixture.owner,
-            &cancel_grant,
-            &cancel_effect.final_use_binding().expect("cancel binding"),
-            "cancel-dispatch",
-            32,
+            AuthorizedEffectDispatchRequest {
+                intent: &cancel_effect,
+                wire_payload: &cancel_payload,
+                fence: &fixture.owner,
+                signed_grant: &cancel_grant,
+                expected_binding: &cancel_effect.final_use_binding().expect("cancel binding"),
+                command_id: "cancel-dispatch",
+                now_ms: 32,
+            },
         )
         .await
         .expect("authorized cancellation");

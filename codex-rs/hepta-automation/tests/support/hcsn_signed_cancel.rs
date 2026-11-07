@@ -61,13 +61,15 @@ async fn execute(
         .execute_authorized_taskflow_effect(
             &fixture.authority,
             driver,
-            &record.intent,
-            payload,
-            &fixture.owner,
-            signed,
-            &record.intent.final_use_binding().expect("binding"),
-            &dispatch_command(record),
-            now_ms(),
+            AuthorizedEffectDispatchRequest {
+                intent: &record.intent,
+                wire_payload: payload,
+                fence: &fixture.owner,
+                signed_grant: signed,
+                expected_binding: &record.intent.final_use_binding().expect("binding"),
+                command_id: &dispatch_command(record),
+                now_ms: now_ms(),
+            },
         )
         .await
 }

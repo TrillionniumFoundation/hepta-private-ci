@@ -279,9 +279,7 @@ class IdentityBoundaryTests(unittest.TestCase):
     def test_changed_copy_bytes_and_lengths_are_rejected(self):
         artifact = self.add("fixture", payload=b"original executable bytes")
         other = self.root / "prepared-copy"
-        for payload in (
-            b"X" + artifact.read_bytes()[1:], artifact.read_bytes() + b"X"
-        ):
+        for payload in (b"X" + artifact.read_bytes()[1:], artifact.read_bytes() + b"X"):
             with self.subTest(payload=payload):
                 other.write_bytes(payload)
                 other.chmod(0o700)

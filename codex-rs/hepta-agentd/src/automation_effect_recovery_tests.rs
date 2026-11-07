@@ -245,7 +245,7 @@ async fn local_terminal_recovery_preserves_uncertain_history_without_provider_lo
             .read_authorized_taskflow_effect_receipt(&intent, command_id)
             .await
             .expect("owner terminal readback"),
-        Some(receipt.clone())
+        Some(receipt.as_ref().clone())
     );
     assert_eq!(
         reopened
@@ -279,7 +279,7 @@ async fn local_terminal_recovery_preserves_uncertain_history_without_provider_lo
             .read_authorized_taskflow_effect_receipt(&intent, command_id)
             .await
             .expect("cold complete receipt"),
-        Some(receipt)
+        Some(*receipt)
     );
     settled.close().await;
     assert_eq!(
