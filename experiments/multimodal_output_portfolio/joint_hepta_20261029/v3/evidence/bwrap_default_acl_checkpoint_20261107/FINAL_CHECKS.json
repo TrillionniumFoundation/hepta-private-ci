@@ -1,0 +1,55 @@
+{
+  "scope": "Full final publication set with original Codespell configuration; sealed qualified reader memory roundtrip only",
+  "codespell": {
+    "argv": [
+      "python",
+      "-B",
+      "-m",
+      "codespell_lib",
+      "--ignore-words",
+      ".codespellignore",
+      "--skip",
+      "./.git"
+    ],
+    "cwd": "/workspace/scratch/3f6a885bb83c/round3_core_ci/bwrap33_checkpoint_checks/codespell_stage",
+    "exit_code": 0,
+    "stdout": {
+      "path": "/workspace/scratch/3f6a885bb83c/round3_core_ci/bwrap33_checkpoint_checks/final_codespell.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "stderr": {
+      "path": "/workspace/scratch/3f6a885bb83c/round3_core_ci/bwrap33_checkpoint_checks/final_codespell.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    }
+  },
+  "reader_ruff": {
+    "argv": [
+      "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/ruff",
+      "check",
+      "--config",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/pyproject.toml",
+      "/workspace/scratch/3f6a885bb83c/round3_core_ci/bwrap33_evidence_checkpoint/restore.py"
+    ],
+    "cwd": "/workspace/scratch/3f6a885bb83c/round3_core_ci/bwrap33_checkpoint_checks",
+    "exit_code": 0,
+    "stdout": {
+      "path": "/workspace/scratch/3f6a885bb83c/round3_core_ci/bwrap33_checkpoint_checks/ruff.stdout",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "git_blob": "1f5f344d054fae10f39140fb7199c99321d9190a"
+    },
+    "stderr": {
+      "path": "/workspace/scratch/3f6a885bb83c/round3_core_ci/bwrap33_checkpoint_checks/ruff.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    }
+  },
+  "file_count": 14,
+  "all_files_match_spelling_stage": true,
+  "originals_remain_unchanged": true
+}
