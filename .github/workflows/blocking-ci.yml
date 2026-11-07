@@ -241,10 +241,41 @@ jobs:
         with:
           tool: just@1.51.0,nextest@0.9.103
 
+      - name: Build the actual Joint helper and publish Cargo/Nextest metadata
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          target_dir="$(cargo metadata --locked --no-deps --format-version 1 | python3 -c 'import json, sys; print(json.load(sys.stdin)["target_directory"])')"
+          cargo build --locked -p codex-hepta-infer-worker-host --bin hepta-joint-propose
+          helper="$target_dir/debug/hepta-joint-propose"
+          test -x "$helper"
+          printf '%s\n' "$helper" > "$RUNNER_TEMP/cell-cost-evidence/joint-helper-path.txt"
+          sha256sum "$helper" > "$RUNNER_TEMP/cell-cost-evidence/joint-helper.sha256"
+          printf 'NEXTEST_BIN_EXE_hepta-joint-propose=%s\n' "$helper" >> "$GITHUB_ENV"
+          printf 'CARGO_BIN_EXE_hepta-joint-propose=%s\n' "$helper" >> "$GITHUB_ENV"
+          printf 'CARGO_BIN_EXE_hepta_joint_propose=%s\n' "$helper" >> "$GITHUB_ENV"
+          grep -Fx "NEXTEST_BIN_EXE_hepta-joint-propose=$helper" "$GITHUB_ENV"
+          grep -Fx "CARGO_BIN_EXE_hepta-joint-propose=$helper" "$GITHUB_ENV"
+          grep -Fx "CARGO_BIN_EXE_hepta_joint_propose=$helper" "$GITHUB_ENV"
+
       - name: Run complete Hepta neuron and plasticity test suites
         shell: bash
         run: |
           set -euo pipefail
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          helper = os.environ.get("NEXTEST_BIN_EXE_hepta-joint-propose", "")
+          cargo_hyphen = os.environ.get("CARGO_BIN_EXE_hepta-joint-propose", "")
+          cargo_underscore = os.environ.get("CARGO_BIN_EXE_hepta_joint_propose", "")
+          assert (
+              helper
+              and helper == cargo_hyphen == cargo_underscore
+              and Path(helper).is_file()
+              and os.access(helper, os.X_OK)
+          ), (helper, cargo_hyphen, cargo_underscore)
+          PY
           just test --locked -p codex-hepta-neuron -p codex-hepta-plasticity 2>&1 | tee "$RUNNER_TEMP/cell-cost-evidence/tests.log"
 
       - name: Upload exact Cell test evidence
