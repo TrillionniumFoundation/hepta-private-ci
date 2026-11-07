@@ -1,0 +1,29 @@
+{
+  "archive_format": "USTAR members sorted by POSIX name; mode 0644; uid/gid/mtime 0; gzip mtime 0, empty name",
+  "archive_sha256": "c7d9d905e450bd2f21700f0be3a456b86b0613e714d3be9a04585b575ae27a42",
+  "base_source_commit": "9bbf4bb4d1b5466f62d75d6b70dad4d26ec75d55",
+  "compressed_bytes": 414823,
+  "cost_population_complete": false,
+  "member_count": 44,
+  "members_sha256": "13c9567be6105ac1de43b1ec2cd0942fd20ebb13a627114698a5c8401a82ab77",
+  "new_model_attempt_after_repair": false,
+  "original_model_attempts": 1,
+  "original_protocol_digest": "ee74cf2ec61b97636b0eabadf1066161562b88de38293fd0d3bdb0e1153f41c3",
+  "readback_source_files": {
+    "run_study.py": "417855fedcd46dc8de2f920e3f270e3233a06f03d7d38b172449bf0b09a341c6",
+    "strong_control.py": "99b5363bf0805d94b11df2f7c7f8482faed35a62a1c0a8ff8529927a96bd6039",
+    "strong_control_archive.py": "bdc3f5f559259ec9a6cfe4e56e5ae9c3f5bf970abe73e934f7e64b1449eaf893",
+    "strong_control_audit.py": "a29c031d896de874edfeaab49611316991a013cea40d9553379026adf6a3b171",
+    "study_cost.py": "d4cf26fd27fef65203786d70b3ff1d097aa82db1521242d26ab87a40d001cefd",
+    "study_data.py": "ffa701aace20d69cdee66fd3b8a723719dfd4956e48780ed933f4d3c3ee6ed6f",
+    "study_evidence.py": "644cfeb651c430837a596db019dfe474ad6cb9344d92ec54fd13b40c2b457db3",
+    "study_gate.py": "7301e22dffc93e03521f7e651a86d37681bbbc47bea1a9891f27eda192e6e316",
+    "study_model.py": "a4e24975c9561fa08452ba9e250aafaed9b1cbccb5049ddf5b6a9ff9637ac704",
+    "test_strong_control.py": "be3527335446db1d9fc7e226f43e6336043eeb489ade5940aaf282b834da2031",
+    "test_strong_control_archive.py": "e72dac456711799477203fb55f19b8f8800b2c8f43a29b39493eeb9acfb3c9e4"
+  },
+  "schema_version": 1,
+  "scientific_decision": "HOLD",
+  "scope": "Original bytes only; no reconstruction of the four missing numerical payloads; no training in archive audit.",
+  "uncompressed_bytes": 2172807
+}
