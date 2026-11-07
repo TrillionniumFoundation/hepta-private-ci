@@ -1,0 +1,170 @@
+{
+  "cost": {
+    "additional_unit_fixture_updates_not_relabelled_formal": true,
+    "cloud_suite_body_wall_seconds": 207.60703803599995,
+    "cloud_suite_with_export_wall_seconds": 207.73533604199997,
+    "full_physical_energy_joules": null,
+    "gpu_device_interval": {
+      "attributable_task_energy_joules": null,
+      "counter_end_millijoules": 17947681,
+      "counter_start_millijoules": 13114904,
+      "measured_interval_joules": 4832.777,
+      "measurement": "NVML device cumulative energy counter difference on one verified identical device",
+      "scope": "Qualification device interval, including idle and any unattributed activity; excludes native orchestration, other devices, infrastructure, prior failures, and end-to-end campaign energy."
+    },
+    "interval_relationship": "Probe is inside suite; suite is inside export interval, which is inside native qualification phase. These intervals must not be added.",
+    "monetary_cost": null,
+    "native_qualification_phase_wall_seconds": 236.5797833649558,
+    "non_task_probe_stage_wall_seconds": 82.05771359800019,
+    "non_task_probe_training_seconds": 72.99146159899988,
+    "non_task_probe_updates": 400,
+    "non_task_probe_wall_seconds": 80.89687929499996,
+    "recovery_updates_by_device": {
+      "cpu": 3,
+      "cuda": 3
+    },
+    "total_campaign_cost_established": false
+  },
+  "fresh_process_next_block": {
+    "cpu": {
+      "actual_optimizer_updates": 3,
+      "child_execution_stopped": true,
+      "child_exit_code": 0,
+      "child_updates_unknown": false,
+      "exact_next_block": true,
+      "status": "pass"
+    },
+    "cuda": {
+      "actual_optimizer_updates": 3,
+      "child_execution_stopped": true,
+      "child_exit_code": 0,
+      "child_updates_unknown": false,
+      "exact_next_block": true,
+      "status": "pass"
+    }
+  },
+  "fv_audit_checks_per_device": 12,
+  "fv_unit_methods": 8,
+  "limits": [
+    "This qualifies the frozen bounded model, tensor implementation and registered execution budget; it does not establish task benefit.",
+    "The twelve resolution rows retain four failed S25 cases; S81 is the fixed inherited candidate, not reselected from task outcomes.",
+    "The conditional boundary is the registered exogenous conditioning rule, not a newly solved QVI free boundary.",
+    "The non-task probe does not guarantee every formal fit completes before its unchanged 480-second cap.",
+    "Full physical energy, monetary cost, external retention and deployability remain unresolved."
+  ],
+  "plan_sha256": "8d06c97c1bd13fce531ca7e913ab2b099edfce9388523716e7565b1295221085",
+  "qualification_finished_utc": "2026-11-07T20:05:28.475588+00:00",
+  "qualified_environment": {
+    "cpu_threads": 1,
+    "cuda_build": "13.0",
+    "deterministic_algorithms": true,
+    "device": "cuda",
+    "gpu": {
+      "compute_capability": [
+        7,
+        5
+      ],
+      "name": "Tesla T4",
+      "total_memory": 15637086208
+    },
+    "numpy": "2.4.6",
+    "physical_energy_joules": null,
+    "python": "3.13.16",
+    "torch": "2.14.1+cu130"
+  },
+  "result_slots": {
+    "budget": {
+      "formal_fit_budget_guaranteed": false,
+      "member": "evidence/budget-cuda/result.json",
+      "peak_gpu_allocated_bytes": 190542848,
+      "sha256": "08ab53a65cce1cc38ce7660840a85d4333d6a846758645f63500770c631d883e",
+      "stage_wall_seconds": 82.05771359800019,
+      "training_wall_seconds": 72.99146159899988,
+      "update_seconds": {
+        "max": 0.5403615519999221,
+        "p50": 0.17112103249996835,
+        "p95": 0.239887911700157,
+        "p99": 0.2722783150499661
+      },
+      "updates": 400,
+      "wall_seconds": 80.89687929499996,
+      "within_450_admission": true
+    },
+    "fixed_renewal": {
+      "member": "evidence/fixed-renewal-audit-s81.json",
+      "sha256": "71464faa0a6aaddd6a6d03245905043553f17a9656e7c061acd41bea586c0cf4",
+      "status": "BOUNDED_FP64_CONSTRUCTION_CHECKS_PASS",
+      "unit_methods": 6
+    },
+    "graph_cpu": {
+      "checks": 47,
+      "member": "evidence/mechanism-graph-cpu.json",
+      "sha256": "c7b5027953c02a024fa76a69e9b349627791d943c5a6d4a93877f287fb2b69e3",
+      "status": "pass"
+    },
+    "graph_cuda": {
+      "checks": 47,
+      "member": "evidence/mechanism-graph-cuda.json",
+      "sha256": "e61c1f15e7bbee2f4263a20978236c28525dd9a847c00b8c56c83b216b4a2f1a",
+      "status": "pass"
+    },
+    "resolution": {
+      "S25_failed_rows_retained": 4,
+      "fixed_S81_passed_rows": 4,
+      "grid_reselected": false,
+      "max_hit_relative": 0.011865987551714372,
+      "max_state_l1": 0.01584776135754201,
+      "member": "evidence/resolution-s81-fixed.json",
+      "rows": 12,
+      "sha256": "6bf0ca8212d462f8114ceabbdcd1aa5abaaa8e4c4bf6ed3038b4df7543d1fe11"
+    },
+    "sequence_cpu": {
+      "checks": 42,
+      "member": "evidence/sequence-cpu/receipt.json",
+      "sha256": "a9c6255a5ef83a191ae2ba3efd0c0e972cc5b42428b491ac4b6661eb1d48db2e",
+      "status": "pass"
+    },
+    "sequence_cuda": {
+      "checks": 42,
+      "member": "evidence/sequence-cuda/receipt.json",
+      "sha256": "15c52595df5bf9ea008da463a72570d47bce84b30e79e22cd88f090d11369770",
+      "status": "pass"
+    },
+    "unit": {
+      "errors": 0,
+      "failures": 0,
+      "member": "evidence/mechanism-unit-result.json",
+      "methods": 13,
+      "sha256": "8964ba3bce4e63405ee468119c4c4970e7248c312cc50c00b9ecb33032c7b82e",
+      "skipped": 0
+    }
+  },
+  "schema": "hcsn-colab-v3-public-qualification-summary-v1",
+  "scientific_credit": {
+    "expansion_admission": "HOLD",
+    "external_retention": "unmeasured",
+    "formal_task_optimizer_updates": 0,
+    "formal_training_fits": 0,
+    "hepta_ndu_completion_credit": 0,
+    "original170_completion_credit": 0,
+    "task_gain_established": false
+  },
+  "source_scope": {
+    "all_sixty_claimed_as_cloud_executed": false,
+    "cloud_qualification_helper_files": 5,
+    "cloud_qualification_numerical_files": 35,
+    "historical_qualification_completion_credit": 0,
+    "original_bundle_reused_as_input_only": true,
+    "original_scientific_files_preserved": 42,
+    "public_study_identity_files": 60
+  },
+  "status": "FRESH_QUALIFICATION_PASS_PLAN_FROZEN",
+  "study_id": "hcsn-regenerative-mechanisms-fv-pilot-20261107-1631115f163f-v3",
+  "twelve_stages": {
+    "all_owned_children_stopped": true,
+    "all_return_codes_zero": true,
+    "all_semantic_gates_passed": true,
+    "executed": 12,
+    "skipped": 0
+  }
+}
