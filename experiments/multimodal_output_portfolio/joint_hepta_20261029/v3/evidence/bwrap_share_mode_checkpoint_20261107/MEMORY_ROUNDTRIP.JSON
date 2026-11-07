@@ -1,0 +1,23 @@
+{
+  "argv": [
+    "python",
+    "-O",
+    "-B",
+    "-c",
+    "import json, pathlib, runpy, stat; package=pathlib.Path('/workspace/scratch/3f6a885bb83c/round3_core_ci/bwrap31_evidence_checkpoint'); workspace=pathlib.Path('/workspace/scratch/3f6a885bb83c'); reader=runpy.run_path(str(package/'restore.py')); index, files=reader['read_package'](package); expected={row['path']:row for row in index['files']}; \nif set(files)!=set(expected): raise RuntimeError('member set')\nfor name,data in files.items():\n p=workspace/name; row=expected[name]; value=p.lstat()\n if not stat.S_ISREG(value.st_mode) or p.is_symlink() or p.read_bytes()!=data: raise RuntimeError('original bytes')\n if f'{stat.S_IMODE(value.st_mode):04o}'!=row['source_permission_bits'] or f'{value.st_mode:o}'!=row['source_stat_mode']: raise RuntimeError('source modes')\nprint(json.dumps({'files':len(files),'bytes':sum(map(len,files.values())),'exact_members_and_bytes':True,'source_modes_match_index':True,'on_disk_extraction':False,'embedded_source_executed':False}))"
+  ],
+  "cwd": "/workspace/scratch/3f6a885bb83c/round3_core_ci/bwrap31_checkpoint_checks",
+  "exit_code": 0,
+  "stdout": {
+    "path": "/workspace/scratch/3f6a885bb83c/round3_core_ci/bwrap31_checkpoint_checks/memory_roundtrip.stdout",
+    "bytes": 164,
+    "sha256": "49b65f91e13dc3f01df9c62fe854983f4c213c50c04d3ba3a9c9fda26c7275ae",
+    "git_blob": "607083c0acb9e35522d5bd5b3f4be38c4aab508e"
+  },
+  "stderr": {
+    "path": "/workspace/scratch/3f6a885bb83c/round3_core_ci/bwrap31_checkpoint_checks/memory_roundtrip.stderr",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+  }
+}

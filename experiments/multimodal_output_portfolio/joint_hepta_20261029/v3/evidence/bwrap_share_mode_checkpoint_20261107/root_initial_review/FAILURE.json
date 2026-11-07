@@ -1,0 +1,15 @@
+{
+  "argv": [
+    "python",
+    "-B",
+    "-O",
+    "round3_local_qualification/review_native_packets_313940.py",
+    "bwrap31"
+  ],
+  "exit_code": 1,
+  "stage": "in-memory original mode review",
+  "error": "sole accepted original artifact exception",
+  "cause": "Root generic checker included only ASM official ZIP in the exact 0600 allowlist; the separately qualified AppArmor official ZIP must have its own exact path and digest entry.",
+  "packet_or_original_bytes_changed": false,
+  "expanded_restore_written": false
+}
