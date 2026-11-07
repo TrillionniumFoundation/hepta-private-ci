@@ -1,0 +1,108 @@
+{
+  "cost_scope": "declared algorithmic kernels and recorded wall time; physical energy/GPU/network/billing unmeasured",
+  "evidence_archive_sha256": "c7d9d905e450bd2f21700f0be3a456b86b0613e714d3be9a04585b575ae27a42",
+  "failed_original_trials": 4,
+  "failure_costs_known": false,
+  "final_implementation_model_qualified": false,
+  "full_campaign_cost_measured": false,
+  "integrity": "PASS",
+  "new_training_updates": 0,
+  "new_trial_executions": 0,
+  "original_protocol_digest": "ee74cf2ec61b97636b0eabadf1066161562b88de38293fd0d3bdb0e1153f41c3",
+  "p3_qualified": false,
+  "p4_qualified": false,
+  "p5_qualified": false,
+  "planned_test_predictions": 5760,
+  "planned_trials": 10,
+  "production_authority": false,
+  "readback": {
+    "checks": [
+      {
+        "file": "helpful_specialization-101.json",
+        "original_status": "completed",
+        "production_authority": false,
+        "scientific_decision": "HOLD",
+        "sha256": "68bc83bee2fa9088eb0082161f49854e800c8a2d796f17a68066f4ec8ff38ae9",
+        "verified_requests": 960
+      },
+      {
+        "file": "helpful_specialization-211.json",
+        "original_status": "completed",
+        "production_authority": false,
+        "scientific_decision": "HOLD",
+        "sha256": "d8c11ac0824941e90577a9a23bb4a9fd2152b7cccb95c4bfb2aaf0af282fb381",
+        "verified_requests": 960
+      },
+      {
+        "file": "helpful_specialization-307.json",
+        "original_status": "failed",
+        "readback": "unavailable_original_numerical_payload",
+        "reason": "ValueError: request value differs from the saved model/data",
+        "sha256": "4ce8c0e43bd182e0aa5cb7c47219cd985330127ac30288589253e5884b06153f"
+      },
+      {
+        "file": "helpful_specialization-401.json",
+        "original_status": "failed",
+        "readback": "unavailable_original_numerical_payload",
+        "reason": "ValueError: request value differs from the saved model/data",
+        "sha256": "240d825eb2ea2274bbf863c2a701ef4c3675991a3f9efde06ea735d84cf6b244"
+      },
+      {
+        "file": "helpful_specialization-503.json",
+        "original_status": "completed",
+        "production_authority": false,
+        "scientific_decision": "HOLD",
+        "sha256": "c285f99ea68882e2f9f96be9d03fae02efc53b90c89c6197f9afd9afc4ab3c14",
+        "verified_requests": 960
+      },
+      {
+        "file": "redundant_specialization-101.json",
+        "original_status": "completed",
+        "production_authority": false,
+        "scientific_decision": "HOLD",
+        "sha256": "57e8a186987883f246b647829b1abd4a680249370ff6afd90d5716e90190d33b",
+        "verified_requests": 960
+      },
+      {
+        "file": "redundant_specialization-211.json",
+        "original_status": "completed",
+        "production_authority": false,
+        "scientific_decision": "HOLD",
+        "sha256": "f7ba64bafbb26bbc2e1ee6883421c4d05db65d4a3aef27821297a7d61c6ac210",
+        "verified_requests": 960
+      },
+      {
+        "file": "redundant_specialization-307.json",
+        "original_status": "failed",
+        "readback": "unavailable_original_numerical_payload",
+        "reason": "ValueError: request value differs from the saved model/data",
+        "sha256": "88d7fbe63706386048bd19059ab583867f542303eeecc2405bdf155bb0ae5c57"
+      },
+      {
+        "file": "redundant_specialization-401.json",
+        "original_status": "failed",
+        "readback": "unavailable_original_numerical_payload",
+        "reason": "ValueError: request value differs from the saved model/data",
+        "sha256": "813fdb9336aafb998cea64b09f7c3ccd97eb0f9342bfc73e7657291c0c6b7384"
+      },
+      {
+        "file": "redundant_specialization-503.json",
+        "original_status": "completed",
+        "production_authority": false,
+        "scientific_decision": "HOLD",
+        "sha256": "fb5a2aca20b68473a4b78ec571b3fd588681993b3fb97908f17056c46ea9d51c",
+        "verified_requests": 960
+      }
+    ],
+    "decision": "HOLD",
+    "kind": "read_only_reaudit_of_retained_original_results",
+    "new_training_updates": 0,
+    "new_trial_executions": 0,
+    "planned_trials": 10,
+    "unrecoverable_original_trials": 4,
+    "verified_original_trials": 6
+  },
+  "scientific_decision": "HOLD",
+  "verified_original_trials": 6,
+  "verified_test_predictions": 3456
+}
