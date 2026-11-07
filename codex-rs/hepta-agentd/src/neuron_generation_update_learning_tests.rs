@@ -322,10 +322,24 @@ fn actual_same_model_use_cold_reopens_without_new_nonce_or_journal_work() -> any
     );
     assert_eq!(f.authority.capacity()?.used_nonces, 1);
     coordinator.record(observed(&coordinator, first), 20)?;
+    let completed = LearningIterationCoordinatorV1::from_snapshot(coordinator.snapshot().clone())?;
     assert_eq!(
-        LearningIterationCoordinatorV1::from_snapshot(coordinator.snapshot().clone())?
-            .disposition(),
+        completed.disposition(),
         LearningIterationDispositionV1::UsedByNextTask
+    );
+    assert_eq!(
+        learning_retained_task_operation_id_v1(&coordinator)?,
+        operation
+    );
+    assert_eq!(
+        learning_retained_task_operation_id_v1(&completed)?,
+        operation
+    );
+    assert!(ready.read_learning_selection(&completed).is_err());
+    assert!(
+        ready
+            .read_learning_next_use(&completed, &request.intent()?)
+            .is_err()
     );
     Ok(())
 }

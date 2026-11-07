@@ -22,6 +22,8 @@ use crate::NeuronGenerationPredecessorCompletionV1;
 /// Deterministic identity for the original same-model task operation. This
 /// binds the complete evaluated decision cut without changing CURRENT's wire
 /// schema or authorizing a grant. The issuer still authenticates that cut.
+/// Completed retained-use snapshots recover the same decision predecessor;
+/// this identity read cannot reopen a completed iteration stage.
 pub fn learning_retained_task_operation_id_v1(
     coordinator: &LearningIterationCoordinatorV1,
 ) -> Result<StableId, AgentdError> {
@@ -40,9 +42,21 @@ pub fn learning_retained_task_operation_id_v1(
                 .ok_or_else(|| invalid("retained task selection is missing"))?
                 .predecessor
         }
+        None if matches!(
+            snapshot.receipts.last().map(|receipt| &receipt.observation),
+            Some(LearningIterationObservationV1::RetainedModelNextUse { .. })
+        ) =>
+        {
+            snapshot
+                .receipts
+                .iter()
+                .find(|receipt| receipt.observation.stage() == LearningIterationStageV1::Selection)
+                .ok_or_else(|| invalid("completed retained task selection is missing"))?
+                .predecessor
+        }
         _ => {
             return Err(invalid(
-                "retained task decision is not awaiting selection or use",
+                "retained task decision is not awaiting or completing baseline use",
             ));
         }
     };
