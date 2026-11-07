@@ -14,10 +14,11 @@ class UnresolvedTypedReceiver(ValueError):
     pass
 
 
-class AuthorityFields(dict[tuple[str, str], str]):
+class AuthorityFields(dict[tuple[str, str], str | None]):
     def __init__(self, aliases: frozenset[str]):
         super().__init__()
         self.aliases = aliases
+        self.owners: frozenset[str] = frozenset()
 
 
 def _end(code: str, start: int, opening: str, closing: str) -> int:
@@ -50,7 +51,7 @@ def _normalize_aliases(
 
 
 def authority_fields(source_index: dict[str, str], target: str) -> AuthorityFields:
-    """Keep typed fields across split impl modules; no variable-name allowlist."""
+    """Keep declared owner chains across split modules; no receiver-name allowlist."""
     aliases = {target}
     while True:
         discovered = {
@@ -63,18 +64,34 @@ def authority_fields(source_index: dict[str, str], target: str) -> AuthorityFiel
             break
         aliases.update(discovered)
     fields = AuthorityFields(frozenset(aliases - {target}))
+    declarations: dict[tuple[str, str], set[str]] = {}
     for code in source_index.values():
         code = _normalize_aliases(code, target, fields.aliases)
-        if target not in code:
-            continue
         for declaration in re.finditer(r"\bstruct\s+(\w+)(?:\s*<[^{};]*>)?\s*\{", code):
             end = _end(code, declaration.end() - 1, "{", "}")
             for field in re.finditer(
                 r"\b(\w+)\s*:\s*([^,;{}]+)", code[declaration.end() : end]
             ):
                 type_name = _type(field.group(2), target)
-                if type_name == target:
-                    fields[declaration.group(1), field.group(1)] = target
+                if type_name:
+                    key = (declaration.group(1), field.group(1))
+                    declarations.setdefault(key, set()).add(type_name)
+    reachable = {target}
+    while True:
+        owners = {
+            owner
+            for (owner, _), types in declarations.items()
+            if types & reachable
+        }
+        if owners <= reachable:
+            break
+        reachable.update(owners)
+    fields.owners = frozenset(reachable - {target})
+    for key, types in declarations.items():
+        if key[0] in reachable:
+            # Same short owner/field names in different modules must not let
+            # an unrelated declaration overwrite a possible authority origin.
+            fields[key] = next(iter(types)) if len(types) == 1 else None
     return fields
 
 
@@ -121,7 +138,7 @@ def _receiver_type(
     receiver: str,
     bindings: dict[str, str | None],
     owner: str | None,
-    fields: dict[tuple[str, str], str],
+    fields: dict[tuple[str, str], str | None],
 ) -> str | None:
     parts = re.sub(r"\s+", "", receiver).split(".")
     current = owner if parts[0] == "self" else bindings.get(parts[0])
@@ -130,21 +147,91 @@ def _receiver_type(
     return current
 
 
+def _field_alias_type(
+    expression: str,
+    bindings: dict[str, str | None],
+    owner: str | None,
+    fields: dict[tuple[str, str], str | None],
+) -> str | None:
+    """Resolve fields through fixed borrow/clone and fallible error adapters.
+
+    A transform/factory is never inferred from its receiver's type. The error
+    adapters only preserve their success value and must propagate the error;
+    fallback, map and arbitrary method bodies remain unresolved.
+    """
+    start = re.match(r"\s*&?\s*(?:mut\s+)?([A-Za-z_]\w*)", expression)
+    if start is None:
+        return None
+    current = _receiver_type(start.group(1), bindings, owner, fields)
+    position = start.end()
+    while position < len(expression):
+        if expression[position].isspace():
+            position += 1
+            continue
+        field = re.match(r"\.\s*([A-Za-z_]\w*)\s*", expression[position:])
+        if field is None:
+            return None
+        name = field.group(1)
+        position += field.end()
+        if position >= len(expression) or expression[position] != "(":
+            current = fields.get((current, name)) if current else None
+            continue
+        end = _end(expression, position, "(", ")")
+        arguments = expression[position + 1 : end]
+        position = end + 1
+        if name in {"clone", "as_ref", "borrow", "deref"} and not arguments.strip():
+            continue
+        if name in {"ok_or", "ok_or_else", "map_err"} and arguments.strip():
+            while position < len(expression) and expression[position].isspace():
+                position += 1
+            if position < len(expression) and expression[position] == "?":
+                position += 1
+                continue
+        return None
+    return current
+
+
+def _initializers(scope: str):
+    """Yield completed let initializers without splitting nested expressions.
+
+    The current authority call can itself be inside an initializer. That new
+    binding is not in scope yet, and its unfinished prefix must not be parsed
+    as a field alias. Semicolons in method arguments and closure/block bodies
+    likewise do not finish the containing let statement.
+    """
+    declaration = re.compile(
+        r"\blet\s+(?:mut\s+)?(\w+)(?:\s*:\s*([^=;]+))?\s*=\s*"
+    )
+    cursor = 0
+    while assignment := declaration.search(scope, cursor):
+        stack = []
+        cursor = assignment.end()
+        for position in range(cursor, len(scope)):
+            char = scope[position]
+            if char in "([{":
+                stack.append({"(": ")", "[": "]", "{": "}"}[char])
+            elif char in ")]}" and (not stack or stack.pop() != char):
+                break
+            elif char == ";" and not stack:
+                yield (*assignment.groups(), scope[cursor:position])
+                # Declarations inside a completed initializer belong to its
+                # nested scopes, not to the subsequent authority call.
+                cursor = position + 1
+                break
+
+
 def _bindings(
     code: str,
     position: int,
     target: str,
     owner: str | None,
-    fields: dict[tuple[str, str], str],
+    fields: dict[tuple[str, str], str | None],
 ) -> dict[str, str | None]:
     scope = code[_function_start(code, position) : position]
     bindings = {}
     for parameter in re.finditer(r"\b(\w+)\s*:\s*([^,;={}]+)", scope):
         bindings[parameter.group(1)] = _type(parameter.group(2), target)
-    for assignment in re.finditer(
-        r"\blet\s+(?:mut\s+)?(\w+)(?:\s*:\s*([^=;]+))?\s*=\s*([^;]+)", scope
-    ):
-        name, annotation, expression = assignment.groups()
+    for name, annotation, expression in _initializers(scope):
         if annotation:
             bindings[name] = _type(annotation, target)
             continue
@@ -172,13 +259,7 @@ def _bindings(
         if constructor:
             bindings[name] = constructor.group(1)
             continue
-        alias = re.fullmatch(
-            r"\s*&?\s*(?:mut\s+)?((?:[A-Za-z_]\w*)(?:\s*\.\s*\w+)*?)(?:\s*\.\s*(?:clone|as_ref|borrow|deref)\s*\(\s*\))?\s*",
-            expression,
-        )
-        bindings[name] = (
-            _receiver_type(alias.group(1), bindings, owner, fields) if alias else None
-        )
+        bindings[name] = _field_alias_type(expression, bindings, owner, fields)
     return bindings
 
 
@@ -189,7 +270,7 @@ def has_authority_call(
     # The field index is derived from type declarations, including declarations
     # in a parent module. A typed variable/impl must name either the authority
     # or an indexed field owner. Avoid parsing unrelated crates' homonyms.
-    type_names = {target, *(owner for owner, _ in fields)}
+    type_names = {target, *fields.owners}
     if not any(re.search(rf"\b{re.escape(name)}\b", code) for name in type_names):
         return False
     qualified = rf"\b{re.escape(target)}\s*::\s*{re.escape(method)}\s*\("

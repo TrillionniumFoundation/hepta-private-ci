@@ -591,7 +591,7 @@ def _verify_function_order(row: dict[str, Any], code: str, relative: str) -> Non
         function = item.get("function")
         sequence = item.get("sequence")
         if not isinstance(function, str) or not re.fullmatch(
-            r"fn [A-Za-z_]\w*\(", function
+            r"fn [A-Za-z_]\w*(?:<[A-Za-z_]\w*>)?\(", function
         ):
             raise VerificationFailure(f"{relative}: exact function marker required")
         if code.count(function) != 1:
@@ -728,6 +728,28 @@ def main() -> int:
             or "authority.claim(y)" not in cfg_code
         ):
             raise VerificationFailure("cfg-test stripping self-test failed")
+        generic = {"required_function_order": [{
+            "function": "fn guarded<T>(",
+            "sequence": ["pair()", "lock()", "live()", "dispatch()"],
+        }]}
+        _verify_function_order(
+            generic,
+            "fn guarded<T>() { pair(); lock(); live(); dispatch(); }",
+            "generic.rs",
+        )
+        for invalid in (
+            "fn guarded<T>() { pair(); lock(); dispatch(); live(); }",
+            "fn guarded<T>() { pair(); } fn other() { lock(); live(); dispatch(); }",
+            "fn guarded<T>() { fn nested() { pair(); lock(); live(); } dispatch(); }",
+            'fn guarded<T>() { /* pair(); lock(); live(); */ let s = "pair(); lock(); live();"; dispatch(); }',
+            "fn guarded<T>() { pair(); lock(); live(); dispatch(); } fn guarded<T>() {}",
+        ):
+            try:
+                _verify_function_order(generic, _strip_rust_non_code(invalid), "generic.rs")
+            except VerificationFailure:
+                pass
+            else:
+                raise VerificationFailure("generic function boundary self-test failed")
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             protected = root / "protected.rs"

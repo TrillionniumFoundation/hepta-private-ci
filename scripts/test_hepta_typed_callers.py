@@ -95,6 +95,122 @@ class TypedAuthorityCallTests(unittest.TestCase):
             )
         )
 
+    def test_transitive_field_origin_survives_split_module_and_error_propagation(self):
+        parent = "struct Service { lease: Option<Pinned> }"
+        pin = "struct Pinned { verifier: Gate }"
+        child = (
+            "fn f(service: &Service) { let arbitrary = &service.lease.as_ref()"
+            ".ok_or_else(|| denied())?.verifier; arbitrary.enter(); }"
+        )
+        self.assertTrue(
+            self.match(child, {"parent": parent, "pin": pin, "child": child})
+        )
+
+    def test_transitive_field_origin_in_split_impl_keeps_local_aliases(self):
+        parent = "struct Service { lease: Option<Pinned> } struct Pinned { verifier: Gate }"
+        child = (
+            "impl Service { fn f(&self) { let held = self.lease.as_ref()"
+            ".ok_or(missing())?; let renamed = &held.verifier; renamed.enter(); } }"
+        )
+        self.assertTrue(self.match(child, {"parent": parent, "child": child}))
+
+    def test_error_adapter_only_preserves_success_through_propagation(self):
+        parent = "struct Service { gate: Result<Gate, Failure> }"
+        child = (
+            "fn f(service: &Service) { let held = service.gate.as_ref()"
+            ".map_err(|error| convert(error))?; held.enter(); }"
+        )
+        self.assertTrue(self.match(child, {"parent": parent, "child": child}))
+        no_propagation = child.replace("))?;", "));")
+        with self.assertRaises(UnresolvedTypedReceiver):
+            self.match(no_propagation, {"parent": parent, "child": no_propagation})
+
+    def test_authority_argument_inside_an_unfinished_method_initializer(self):
+        self.assertTrue(
+            self.match(
+                "fn f(original: &Gate, service: &Other) { "
+                "let prepared = service.prepare(original.enter())?; }"
+            )
+        )
+
+    def test_initializer_keeps_the_previous_binding_until_its_statement_ends(self):
+        self.assertTrue(
+            self.match(
+                "fn f(original: &Gate, service: &Other) { "
+                "let original = service.prepare(original.enter())?; }"
+            )
+        )
+
+    def test_unrelated_argument_inside_an_unfinished_method_initializer(self):
+        self.assertFalse(
+            self.match(
+                "fn f(original: &Gate, service: &Other) { "
+                "let prepared = service.prepare(service.enter())?; }"
+            )
+        )
+
+    def test_error_adapter_closure_semicolons_keep_the_complete_field_chain(self):
+        parent = "struct Service { lease: Option<Pinned> } struct Pinned { verifier: Gate }"
+        child = (
+            "fn f(service: &Service) { let held = service.lease.as_ref()"
+            ".ok_or_else(|| { record_failure(); denied() })?.verifier; held.enter(); }"
+        )
+        self.assertTrue(self.match(child, {"parent": parent, "child": child}))
+
+    def test_nested_method_expression_does_not_skip_opaque_receiver_rejection(self):
+        with self.assertRaises(UnresolvedTypedReceiver):
+            self.match(
+                "fn f(original: &Gate, service: &Other) { "
+                "let opaque = original.map(|value| { audit(); transform(value) }); "
+                "let prepared = service.prepare(opaque.enter())?; }"
+            )
+
+    def test_closure_fallback_remains_unresolved_after_complete_statement_scan(self):
+        parent = "struct Service { gate: Option<Gate> }"
+        child = (
+            "fn f(service: &Service) { let held = service.gate.as_ref()"
+            ".or_else(|| { audit(); replacement() }); held.enter(); }"
+        )
+        with self.assertRaises(UnresolvedTypedReceiver):
+            self.match(child, {"parent": parent, "child": child})
+
+    def test_explicit_unrelated_field_in_an_authority_owner_remains_unrelated(self):
+        parent = (
+            "struct Service { lease: Option<Pinned>, other: Other }"
+            "struct Pinned { verifier: Gate }"
+        )
+        child = (
+            "fn f(service: &Service) { let unrelated = &service.other; unrelated.enter(); }"
+        )
+        self.assertFalse(self.match(child, {"parent": parent, "child": child}))
+
+    def test_opaque_transform_in_transitive_field_chain_refuses_closed(self):
+        parent = "struct Service { lease: Option<Pinned> } struct Pinned { verifier: Gate }"
+        for transform in ("map(|pin| opaque(pin))", "or_else(|| opaque())", "factory()"):
+            with self.subTest(transform=transform):
+                child = (
+                    "fn f(service: &Service) { let held = service.lease.as_ref()."
+                    + transform
+                    + ".verifier; held.enter(); }"
+                )
+                with self.assertRaises(UnresolvedTypedReceiver):
+                    self.match(child, {"parent": parent, "child": child})
+
+    def test_opaque_factory_cannot_hide_a_transitive_authority_owner(self):
+        parent = "struct Service { lease: Option<Pinned> } struct Pinned { verifier: Gate }"
+        child = "fn f(service: &Service) { let held = opaque_factory(service); held.enter(); }"
+        with self.assertRaises(UnresolvedTypedReceiver):
+            self.match(child, {"parent": parent, "child": child})
+
+    def test_ambiguous_field_declaration_cannot_overwrite_authority_origin(self):
+        authority = "struct Service { gate: Gate }"
+        unrelated = "struct Service { gate: Other }"
+        child = "fn f(service: &Service) { service.gate.enter(); }"
+        with self.assertRaises(UnresolvedTypedReceiver):
+            self.match(
+                child, {"authority": authority, "unrelated": unrelated, "child": child}
+            )
+
 
 if __name__ == "__main__":
     unittest.main()
