@@ -1,0 +1,31 @@
+{
+  "ordinary_memory_roundtrip_exact": true,
+  "optimized": {
+    "argv": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "-B",
+      "-O",
+      "/dev/shm/ndu_windows44_checkpoint_20261107/build_windows44_checkpoint_v2.py",
+      "--verify-only"
+    ],
+    "exit_code": 0,
+    "stdout": {
+      "files": 183,
+      "bytes": 1895194,
+      "optimized_python": true,
+      "exact_members_bytes_and_source_modes": true,
+      "disk_extraction": false,
+      "archived_source_executed": false,
+      "native_execution": false
+    },
+    "stderr": ""
+  },
+  "files": 183,
+  "bytes": 1895194,
+  "index_sha256": "ddd08c1d7e7d81dd1ce02228b9f94808d56dbf53ab529a0a03c751b77105d4e4",
+  "bundle_inputs_unchanged": true,
+  "source_path_and_modes_compared": true,
+  "on_disk_extraction": false,
+  "restored_on_disk_modes_tested": false,
+  "archived_source_or_native_executed": false
+}

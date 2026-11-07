@@ -1,0 +1,122 @@
+{
+  "checks": [
+    {
+      "argv": [
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/ruff",
+        "format",
+        "--config",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/pyproject.toml",
+        "/dev/shm/ndu_root_continuation_20261107/review_windows45_sources.py"
+      ],
+      "cwd": "/workspace/scratch/3f6a885bb83c",
+      "exit_code": 0,
+      "wall_seconds": 0.009163871000055224,
+      "stdout": {
+        "path": "/dev/shm/ndu_root_continuation_20261107/windows45_source_root_checks/00.stdout",
+        "bytes": 19,
+        "sha256": "413a709001976657cb743636fd34e48fc41d8d302d665460d3f874b3313da127"
+      },
+      "stderr": {
+        "path": "/dev/shm/ndu_root_continuation_20261107/windows45_source_root_checks/00.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/ruff",
+        "check",
+        "--config",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/pyproject.toml",
+        "/dev/shm/ndu_root_continuation_20261107/review_windows45_sources.py"
+      ],
+      "cwd": "/workspace/scratch/3f6a885bb83c",
+      "exit_code": 0,
+      "wall_seconds": 0.008283622999442741,
+      "stdout": {
+        "path": "/dev/shm/ndu_root_continuation_20261107/windows45_source_root_checks/01.stdout",
+        "bytes": 19,
+        "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+      },
+      "stderr": {
+        "path": "/dev/shm/ndu_root_continuation_20261107/windows45_source_root_checks/01.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/ruff",
+        "format",
+        "--check",
+        "--config",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/pyproject.toml",
+        "/dev/shm/ndu_root_continuation_20261107/review_windows45_sources.py"
+      ],
+      "cwd": "/workspace/scratch/3f6a885bb83c",
+      "exit_code": 0,
+      "wall_seconds": 0.006378575009875931,
+      "stdout": {
+        "path": "/dev/shm/ndu_root_continuation_20261107/windows45_source_root_checks/02.stdout",
+        "bytes": 25,
+        "sha256": "fd2299c9f1c6dc869070883e281051bfe93aacf66c1a3b0069f45b4aa410ca50"
+      },
+      "stderr": {
+        "path": "/dev/shm/ndu_root_continuation_20261107/windows45_source_root_checks/02.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "-O",
+        "/dev/shm/ndu_root_continuation_20261107/review_windows45_sources.py"
+      ],
+      "cwd": "/workspace/scratch/3f6a885bb83c",
+      "exit_code": 0,
+      "wall_seconds": 0.09361419700144324,
+      "stdout": {
+        "path": "/dev/shm/ndu_root_continuation_20261107/windows45_source_root_checks/03.stdout",
+        "bytes": 188,
+        "sha256": "5169c8747e492d5e4f0ac885f30bdef4d985a4b37c200d8b25b2cf49c1b681b9"
+      },
+      "stderr": {
+        "path": "/dev/shm/ndu_root_continuation_20261107/windows45_source_root_checks/03.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "-m",
+        "codespell_lib",
+        "--ignore-words",
+        ".codespellignore",
+        "--skip",
+        "./.git",
+        "/dev/shm/ndu_root_continuation_20261107/review_windows45_sources.py",
+        "/dev/shm/ndu_root_continuation_20261107/windows45_call_chain_root/ROOT_REVIEW.json"
+      ],
+      "cwd": "/workspace/scratch/3f6a885bb83c/hepta-complete-5083",
+      "exit_code": 0,
+      "wall_seconds": 0.08711554999172222,
+      "stdout": {
+        "path": "/dev/shm/ndu_root_continuation_20261107/windows45_source_root_checks/04.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/dev/shm/ndu_root_continuation_20261107/windows45_source_root_checks/04.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "audit_only_PYTHONPATH": "/workspace/scratch/3f6a885bb83c/tooling/codespell-2.4.3"
+    }
+  ],
+  "HOME_inherited": true,
+  "native_execution": false
+}

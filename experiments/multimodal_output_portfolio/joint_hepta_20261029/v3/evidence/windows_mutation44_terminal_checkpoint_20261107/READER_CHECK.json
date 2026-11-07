@@ -1,0 +1,37 @@
+{
+  "template": "/workspace/scratch/3f6a885bb83c/round3_native/access_terminal_checkpoint_inputs/reviewed_restore.py",
+  "template_sha256": "af61744d776034fb41dac291fbca63d30082c6ec15df821824b49df4678c8d3d",
+  "reader": {
+    "bytes": 6899,
+    "sha256": "7facc1befe1ec45387bf732439438bf6f1c7c4a9980e4c52fc25601398108f86",
+    "git_blob_sha": "daa5f00607c3b3685914070ce3a3aa9c789eb90c"
+  },
+  "only_index_seal_changed": true,
+  "checks": [
+    {
+      "argv": [
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/ruff",
+        "format",
+        "--check",
+        "--config",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/pyproject.toml",
+        "/dev/shm/ndu_windows44_checkpoint_20261107/packet_v2/restore.py"
+      ],
+      "exit_code": 0,
+      "stdout": "1 file already formatted\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/ruff",
+        "check",
+        "--config",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/pyproject.toml",
+        "/dev/shm/ndu_windows44_checkpoint_20261107/packet_v2/restore.py"
+      ],
+      "exit_code": 0,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    }
+  ]
+}
