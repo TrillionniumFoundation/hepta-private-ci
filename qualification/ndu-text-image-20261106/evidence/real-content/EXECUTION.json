@@ -1,0 +1,106 @@
+{
+  "energy_joules": null,
+  "scope": "Explicit CPU content-gradient qualification only; no controller experiment or adoption.",
+  "source_after": {
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/hepta_core.py": "54c2e9724f6cb924582451bea907d671fe510963879117dd5f00cf4e95f1e978",
+    "scripts/ndu_portfolio/real_content.py": "644fc070820a0cada57a10f721c947058b32b01bdba628bf136a4850e1ef9fbf",
+    "scripts/ndu_semantic_state/__init__.py": "2cccdd8dc5070a644d86e522f336d407e5b5502a687e655f6e865ad1dca2ab5d",
+    "scripts/ndu_semantic_state/materials.py": "d8fd69e6e56436a18408c2adf8a04387067507c4fe2cae60f7a437787500fa49",
+    "scripts/ndu_semantic_state/state.py": "d02c89bff8d506fd006613da5638bc14aaa0604006961caa812b567b3d619058",
+    "scripts/ndu_semantic_state/test_materials.py": "05c7450aa1bf9e139fe4e54fe1c20889657f150896771a221fd3fb21499886b4",
+    "scripts/ndu_semantic_state/test_state.py": "3c5b1f4ac339503310fb82ac86525150b61388d6b82ff25adb6d09fa256b27be",
+    "scripts/ndu_semantic_state/test_torch_adapter.py": "f4be6622c29af2111a1417a8e1504221fa6839ec8688574f5fe5301d73e2e8bd",
+    "scripts/ndu_semantic_state/torch_adapter.py": "6249118df6cdee0a6bf9dd3a13546e48bb8776b4a4b2e1c61d1139cc3bcca955"
+  },
+  "source_before": {
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/hepta_core.py": "54c2e9724f6cb924582451bea907d671fe510963879117dd5f00cf4e95f1e978",
+    "scripts/ndu_portfolio/real_content.py": "644fc070820a0cada57a10f721c947058b32b01bdba628bf136a4850e1ef9fbf",
+    "scripts/ndu_semantic_state/__init__.py": "2cccdd8dc5070a644d86e522f336d407e5b5502a687e655f6e865ad1dca2ab5d",
+    "scripts/ndu_semantic_state/materials.py": "d8fd69e6e56436a18408c2adf8a04387067507c4fe2cae60f7a437787500fa49",
+    "scripts/ndu_semantic_state/state.py": "d02c89bff8d506fd006613da5638bc14aaa0604006961caa812b567b3d619058",
+    "scripts/ndu_semantic_state/test_materials.py": "05c7450aa1bf9e139fe4e54fe1c20889657f150896771a221fd3fb21499886b4",
+    "scripts/ndu_semantic_state/test_state.py": "3c5b1f4ac339503310fb82ac86525150b61388d6b82ff25adb6d09fa256b27be",
+    "scripts/ndu_semantic_state/test_torch_adapter.py": "f4be6622c29af2111a1417a8e1504221fa6839ec8688574f5fe5301d73e2e8bd",
+    "scripts/ndu_semantic_state/torch_adapter.py": "6249118df6cdee0a6bf9dd3a13546e48bb8776b4a4b2e1c61d1139cc3bcca955"
+  },
+  "stages": [
+    {
+      "argv": [
+        "/home/qq/work/hepta-r1-4835-20261105-w0-r1/venv/bin/python",
+        "-m",
+        "unittest",
+        "ndu_semantic_state.test_torch_adapter",
+        "-v"
+      ],
+      "child_cpu_seconds": 0.749446,
+      "label": "torch-contracts",
+      "returncode": 0,
+      "source_after": {
+        "experiments/multimodal_output_portfolio/joint_hepta_20261029/hepta_core.py": "54c2e9724f6cb924582451bea907d671fe510963879117dd5f00cf4e95f1e978",
+        "scripts/ndu_portfolio/real_content.py": "644fc070820a0cada57a10f721c947058b32b01bdba628bf136a4850e1ef9fbf",
+        "scripts/ndu_semantic_state/__init__.py": "2cccdd8dc5070a644d86e522f336d407e5b5502a687e655f6e865ad1dca2ab5d",
+        "scripts/ndu_semantic_state/materials.py": "d8fd69e6e56436a18408c2adf8a04387067507c4fe2cae60f7a437787500fa49",
+        "scripts/ndu_semantic_state/state.py": "d02c89bff8d506fd006613da5638bc14aaa0604006961caa812b567b3d619058",
+        "scripts/ndu_semantic_state/test_materials.py": "05c7450aa1bf9e139fe4e54fe1c20889657f150896771a221fd3fb21499886b4",
+        "scripts/ndu_semantic_state/test_state.py": "3c5b1f4ac339503310fb82ac86525150b61388d6b82ff25adb6d09fa256b27be",
+        "scripts/ndu_semantic_state/test_torch_adapter.py": "f4be6622c29af2111a1417a8e1504221fa6839ec8688574f5fe5301d73e2e8bd",
+        "scripts/ndu_semantic_state/torch_adapter.py": "6249118df6cdee0a6bf9dd3a13546e48bb8776b4a4b2e1c61d1139cc3bcca955"
+      },
+      "source_before": {
+        "experiments/multimodal_output_portfolio/joint_hepta_20261029/hepta_core.py": "54c2e9724f6cb924582451bea907d671fe510963879117dd5f00cf4e95f1e978",
+        "scripts/ndu_portfolio/real_content.py": "644fc070820a0cada57a10f721c947058b32b01bdba628bf136a4850e1ef9fbf",
+        "scripts/ndu_semantic_state/__init__.py": "2cccdd8dc5070a644d86e522f336d407e5b5502a687e655f6e865ad1dca2ab5d",
+        "scripts/ndu_semantic_state/materials.py": "d8fd69e6e56436a18408c2adf8a04387067507c4fe2cae60f7a437787500fa49",
+        "scripts/ndu_semantic_state/state.py": "d02c89bff8d506fd006613da5638bc14aaa0604006961caa812b567b3d619058",
+        "scripts/ndu_semantic_state/test_materials.py": "05c7450aa1bf9e139fe4e54fe1c20889657f150896771a221fd3fb21499886b4",
+        "scripts/ndu_semantic_state/test_state.py": "3c5b1f4ac339503310fb82ac86525150b61388d6b82ff25adb6d09fa256b27be",
+        "scripts/ndu_semantic_state/test_torch_adapter.py": "f4be6622c29af2111a1417a8e1504221fa6839ec8688574f5fe5301d73e2e8bd",
+        "scripts/ndu_semantic_state/torch_adapter.py": "6249118df6cdee0a6bf9dd3a13546e48bb8776b4a4b2e1c61d1139cc3bcca955"
+      },
+      "source_unchanged": true,
+      "wall_seconds": 0.7157596750184894
+    },
+    {
+      "argv": [
+        "/home/qq/work/hepta-r1-4835-20261105-w0-r1/venv/bin/python",
+        "-m",
+        "ndu_portfolio.real_content",
+        "--model-dir",
+        "/home/qq/work/hepta-r1-4835-20261105-w0-r1/models/vlm",
+        "--image",
+        "/home/qq/work/hepta-r1-4835-20261105-w0-r1/models/task/input.jpg",
+        "--output",
+        "/home/qq/work/hepta-ndu-text-image-20261106-de511/probe"
+      ],
+      "child_cpu_seconds": 9.804742,
+      "label": "real-content",
+      "returncode": 0,
+      "source_after": {
+        "experiments/multimodal_output_portfolio/joint_hepta_20261029/hepta_core.py": "54c2e9724f6cb924582451bea907d671fe510963879117dd5f00cf4e95f1e978",
+        "scripts/ndu_portfolio/real_content.py": "644fc070820a0cada57a10f721c947058b32b01bdba628bf136a4850e1ef9fbf",
+        "scripts/ndu_semantic_state/__init__.py": "2cccdd8dc5070a644d86e522f336d407e5b5502a687e655f6e865ad1dca2ab5d",
+        "scripts/ndu_semantic_state/materials.py": "d8fd69e6e56436a18408c2adf8a04387067507c4fe2cae60f7a437787500fa49",
+        "scripts/ndu_semantic_state/state.py": "d02c89bff8d506fd006613da5638bc14aaa0604006961caa812b567b3d619058",
+        "scripts/ndu_semantic_state/test_materials.py": "05c7450aa1bf9e139fe4e54fe1c20889657f150896771a221fd3fb21499886b4",
+        "scripts/ndu_semantic_state/test_state.py": "3c5b1f4ac339503310fb82ac86525150b61388d6b82ff25adb6d09fa256b27be",
+        "scripts/ndu_semantic_state/test_torch_adapter.py": "f4be6622c29af2111a1417a8e1504221fa6839ec8688574f5fe5301d73e2e8bd",
+        "scripts/ndu_semantic_state/torch_adapter.py": "6249118df6cdee0a6bf9dd3a13546e48bb8776b4a4b2e1c61d1139cc3bcca955"
+      },
+      "source_before": {
+        "experiments/multimodal_output_portfolio/joint_hepta_20261029/hepta_core.py": "54c2e9724f6cb924582451bea907d671fe510963879117dd5f00cf4e95f1e978",
+        "scripts/ndu_portfolio/real_content.py": "644fc070820a0cada57a10f721c947058b32b01bdba628bf136a4850e1ef9fbf",
+        "scripts/ndu_semantic_state/__init__.py": "2cccdd8dc5070a644d86e522f336d407e5b5502a687e655f6e865ad1dca2ab5d",
+        "scripts/ndu_semantic_state/materials.py": "d8fd69e6e56436a18408c2adf8a04387067507c4fe2cae60f7a437787500fa49",
+        "scripts/ndu_semantic_state/state.py": "d02c89bff8d506fd006613da5638bc14aaa0604006961caa812b567b3d619058",
+        "scripts/ndu_semantic_state/test_materials.py": "05c7450aa1bf9e139fe4e54fe1c20889657f150896771a221fd3fb21499886b4",
+        "scripts/ndu_semantic_state/test_state.py": "3c5b1f4ac339503310fb82ac86525150b61388d6b82ff25adb6d09fa256b27be",
+        "scripts/ndu_semantic_state/test_torch_adapter.py": "f4be6622c29af2111a1417a8e1504221fa6839ec8688574f5fe5301d73e2e8bd",
+        "scripts/ndu_semantic_state/torch_adapter.py": "6249118df6cdee0a6bf9dd3a13546e48bb8776b4a4b2e1c61d1139cc3bcca955"
+      },
+      "source_unchanged": true,
+      "wall_seconds": 7.72618767991662
+    }
+  ],
+  "status": "SUCCEEDED",
+  "wall_seconds": 8.443446503020823
+}

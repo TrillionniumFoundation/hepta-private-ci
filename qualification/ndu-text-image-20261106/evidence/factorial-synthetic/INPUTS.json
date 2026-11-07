@@ -1,0 +1,20 @@
+{
+  "scope": "Synthetic fixture only; no real task results",
+  "reproduce": "PYTHONPATH=scripts python -m ndu_portfolio.example_factorial /tmp/ndu-factorial-example",
+  "generator_sha256": "d1e731518276b6175c98c28d6028db94fa7834def3dcc94c43b0e1c946ea20fc",
+  "inputs": {
+    "protocol.json": {
+      "bytes": 44432,
+      "sha256": "a4d6e4b8708b4832349245e4fd69ff9a968d6b475b9a84ce485cb02cc08ab3d5"
+    },
+    "episodes.json": {
+      "bytes": 3462883,
+      "sha256": "0bc30614a1f6b86e05284f092182b7b5804a8fbbc3411ec1585e9ad17b437324"
+    },
+    "comparator-lock.json": {
+      "bytes": 4720,
+      "sha256": "33e29763035db78f26f8da484f5e415b9fb2e92bb5446b4ef763b5614b62283a"
+    }
+  },
+  "json_schema_validation": "Three generated input artifacts passed jsonschema validation"
+}

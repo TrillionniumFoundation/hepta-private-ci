@@ -1,0 +1,50 @@
+{
+  "schema": "hepta.ndu-portfolio.gradient-saturation-regression.v1",
+  "baseline_commit": "0ea61fb707fbcc399ea2318238652efe411c6535",
+  "label": "passed-after",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "unittest",
+    "ndu_portfolio.test_core",
+    "ndu_portfolio.test_gradient_saturation",
+    "-v"
+  ],
+  "cwd": "/workspace/scratch/de5111cc50c6/reference-work",
+  "pythonpath": "/workspace/scratch/de5111cc50c6/reference-work/scripts",
+  "python_version": "3.12.14",
+  "numpy_version": "2.3.5",
+  "started_utc": "2026-11-06T23:57:23.188610+00:00",
+  "finished_utc": "2026-11-06T23:57:25.600066+00:00",
+  "wall_seconds": 2.4114820809991215,
+  "child_cpu_user_seconds": 2.977604,
+  "child_cpu_system_seconds": 0.033999999999999996,
+  "exit_code": 0,
+  "source_before": {
+    "__init__.py": "497c712d16f89190f41c7807e8af92bf273afcc3e33250053214bff8251f6e4f",
+    "core.py": "606824c95a8226d2345e88eebaf799a530a3fbc933fd8ed757b4961b7975b570",
+    "gradients.py": "58133b8bce17b95bbcb560baf140f546989514001098b2a940b2fc3029879736",
+    "test_core.py": "1db02427d4a893e9a96c0110de7b672f4df1c4ec36d01d68c4bce76018b98f4c",
+    "test_gradient_saturation.py": "3cd0407d0c2fa0d0351a1b2bc536b967875c5095247e65d36c151ecb34867496"
+  },
+  "source_after": {
+    "__init__.py": "497c712d16f89190f41c7807e8af92bf273afcc3e33250053214bff8251f6e4f",
+    "core.py": "606824c95a8226d2345e88eebaf799a530a3fbc933fd8ed757b4961b7975b570",
+    "gradients.py": "58133b8bce17b95bbcb560baf140f546989514001098b2a940b2fc3029879736",
+    "test_core.py": "1db02427d4a893e9a96c0110de7b672f4df1c4ec36d01d68c4bce76018b98f4c",
+    "test_gradient_saturation.py": "3cd0407d0c2fa0d0351a1b2bc536b967875c5095247e65d36c151ecb34867496"
+  },
+  "logs": {
+    "stdout.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "stderr.log": {
+      "sha256": "09c4761908f0f1e15b570a0f8f784494fc6ec9f794192f316a13ffe122dad3da",
+      "bytes": 2819
+    }
+  },
+  "scope": "Original 11 finite-control tests plus five saturation regressions; no real model experiment.",
+  "formal_training_started": false,
+  "source_unchanged_during_run": true
+}

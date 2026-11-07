@@ -1,0 +1,642 @@
+{
+  "arms": [
+    {
+      "bridge_zero_step_token_ce": 11.481715202331543,
+      "checkpoint_exact_replay": true,
+      "checkpoint_sha256": "28f4359dca318c4d5f5752060bbc705dcf039276f44e2a5533511ebc6b97ed85",
+      "control_policy_executed": false,
+      "core": "ordinary",
+      "core_gradient_norm_sum": 0.1900954629595617,
+      "frozen_parameter_sha256": "af62df30be4bac7110a8215a0f9a73060a4ca06f549825eef4fe5fee9b548492",
+      "frozen_token_ce": 11.438033103942871,
+      "frozen_unchanged": true,
+      "gradients": {
+        "condition.weight": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.8009231686592102
+        },
+        "core.layers.0.channel_gates.bias": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.00018231678404845297
+        },
+        "core.layers.0.channel_gates.weight": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.0007123917457647622
+        },
+        "core.layers.0.content_input.bias": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.01485731266438961
+        },
+        "core.layers.0.content_input.weight": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.051949989050626755
+        },
+        "core.layers.0.content_state.weight": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.011762013658881187
+        },
+        "core.layers.0.drift_bias": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.005404466763138771
+        },
+        "core.layers.0.drift_input.weight": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.013995879329741001
+        },
+        "core.layers.0.norm.bias": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.010138196870684624
+        },
+        "core.layers.0.norm.weight": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.00776011124253273
+        },
+        "core.layers.0.output.weight": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.06435245275497437
+        },
+        "core.layers.0.raw_adaptation": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.0001609813771210611
+        },
+        "core.layers.0.raw_adaptation_decay": {
+          "connected": true,
+          "finite": true,
+          "norm": 5.029905423725722e-06
+        },
+        "core.layers.0.raw_boundary": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.0045264349319040775
+        },
+        "core.layers.0.raw_content_rate": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.0014196671545505524
+        },
+        "core.layers.0.raw_diffusion": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.0025002327747642994
+        },
+        "core.layers.0.raw_recovery": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.00017448158178012818
+        },
+        "core.layers.0.raw_regeneration": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.00019350436923559755
+        },
+        "fusion.bias": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.04865821823477745
+        },
+        "fusion.weight": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.15593308210372925
+        },
+        "image.bias": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.030004918575286865
+        },
+        "image.weight": {
+          "connected": true,
+          "finite": true,
+          "norm": 3.3766369819641113
+        },
+        "image_update.bias": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.025370649993419647
+        },
+        "image_update.weight": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.083954356610775
+        },
+        "text.bias": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.06611573696136475
+        },
+        "text.weight": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.050587911158800125
+        },
+        "text_update.bias": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.03883368894457817
+        },
+        "text_update.weight": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.03704363480210304
+        }
+      },
+      "initial_parameter_sha256": "af62df30be4bac7110a8215a0f9a73060a4ca06f549825eef4fe5fee9b548492",
+      "initial_stop_owner_check": "NOT_EXECUTED",
+      "joint_changed": true,
+      "joint_parameter_sha256": "0cfd9b204b8a288d26c2885568ba1bfb72574fae269f6e5a05ccf3133f70c1a5",
+      "joint_token_ce": 11.436823844909668,
+      "old_ability_retention": "NOT_EVALUATED",
+      "parameters": 61472,
+      "state_binding": {
+        "features": [
+          "shared.0",
+          "shared.1",
+          "shared.2",
+          "shared.3",
+          "shared.4",
+          "shared.5",
+          "shared.6",
+          "shared.7",
+          "shared.8",
+          "shared.9",
+          "shared.10",
+          "shared.11",
+          "shared.12",
+          "shared.13",
+          "shared.14",
+          "shared.15",
+          "text.encoding.0",
+          "text.encoding.1",
+          "text.encoding.2",
+          "text.encoding.3",
+          "text.encoding.4",
+          "text.encoding.5",
+          "text.encoding.6",
+          "text.encoding.7",
+          "text.encoding.8",
+          "text.encoding.9",
+          "text.encoding.10",
+          "text.encoding.11",
+          "text.encoding.12",
+          "text.encoding.13",
+          "text.encoding.14",
+          "text.encoding.15",
+          "text.available",
+          "text.progress",
+          "text.preparation.not_required",
+          "text.preparation.pending",
+          "text.preparation.ready",
+          "text.log1p_version",
+          "text.log1p_prefix_bytes",
+          "text.log1p_prefix_version",
+          "text.has_committed_prefix",
+          "image.encoding.0",
+          "image.encoding.1",
+          "image.encoding.2",
+          "image.encoding.3",
+          "image.encoding.4",
+          "image.encoding.5",
+          "image.encoding.6",
+          "image.encoding.7",
+          "image.encoding.8",
+          "image.encoding.9",
+          "image.encoding.10",
+          "image.encoding.11",
+          "image.encoding.12",
+          "image.encoding.13",
+          "image.encoding.14",
+          "image.encoding.15",
+          "image.available",
+          "image.progress",
+          "image.preparation.not_required",
+          "image.preparation.pending",
+          "image.preparation.ready",
+          "image.log1p_version",
+          "image.log1p_prefix_bytes",
+          "image.log1p_prefix_version",
+          "image.has_committed_prefix",
+          "log1p_remaining_budget",
+          "log1p_elapsed_seconds"
+        ],
+        "features_schema": "hepta.named-output-features.v1",
+        "representation": "joint_content_latent",
+        "sha256": "d4ac7ba992a38a94ac295894649348a58d53a87b2890102f2a04b6da96bdbb72",
+        "slot_order": [
+          "text",
+          "image"
+        ],
+        "state_schema": "hepta.public-text-image-state.v1"
+      },
+      "state_gradients": {
+        "image": 0.037469860166311264,
+        "shared": 0.030645832419395447,
+        "text": 0.051463570445775986
+      }
+    },
+    {
+      "bridge_zero_step_token_ce": 11.481715202331543,
+      "checkpoint_exact_replay": true,
+      "checkpoint_sha256": "6be5d8c9f0f73cccd6542af7cddb4dc12b81451658aa171261d4b37250cfcbd4",
+      "control_policy_executed": false,
+      "core": "dual",
+      "core_gradient_norm_sum": 0.19432998049751404,
+      "frozen_parameter_sha256": "af62df30be4bac7110a8215a0f9a73060a4ca06f549825eef4fe5fee9b548492",
+      "frozen_token_ce": 11.43957805633545,
+      "frozen_unchanged": true,
+      "gradients": {
+        "condition.weight": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.7944657802581787
+        },
+        "core.layers.0.channel_gates.bias": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.0001794911950128153
+        },
+        "core.layers.0.channel_gates.weight": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.0007115101907402277
+        },
+        "core.layers.0.content_input.bias": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.01351175270974636
+        },
+        "core.layers.0.content_input.weight": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.048212699592113495
+        },
+        "core.layers.0.content_state.weight": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.010626004077494144
+        },
+        "core.layers.0.drift_bias": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.008140744641423225
+        },
+        "core.layers.0.drift_input.weight": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.020905030891299248
+        },
+        "core.layers.0.norm.bias": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.009974540211260319
+        },
+        "core.layers.0.norm.weight": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.007707522716373205
+        },
+        "core.layers.0.output.weight": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.06177978962659836
+        },
+        "core.layers.0.raw_adaptation": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.00016996012709569186
+        },
+        "core.layers.0.raw_adaptation_decay": {
+          "connected": true,
+          "finite": true,
+          "norm": 4.648360572900856e-06
+        },
+        "core.layers.0.raw_boundary": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.00679392646998167
+        },
+        "core.layers.0.raw_content_rate": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.0017384509555995464
+        },
+        "core.layers.0.raw_diffusion": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.0034982862416654825
+        },
+        "core.layers.0.raw_recovery": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.00016121205408126116
+        },
+        "core.layers.0.raw_regeneration": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.0002144104364560917
+        },
+        "fusion.bias": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.04868128523230553
+        },
+        "fusion.weight": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.15600699186325073
+        },
+        "image.bias": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.030602507293224335
+        },
+        "image.weight": {
+          "connected": true,
+          "finite": true,
+          "norm": 3.443887710571289
+        },
+        "image_update.bias": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.025198183953762054
+        },
+        "image_update.weight": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.08314037322998047
+        },
+        "text.bias": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.0653989389538765
+        },
+        "text.weight": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.05003945156931877
+        },
+        "text_update.bias": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.038815323263406754
+        },
+        "text_update.weight": {
+          "connected": true,
+          "finite": true,
+          "norm": 0.0356651172041893
+        }
+      },
+      "initial_parameter_sha256": "af62df30be4bac7110a8215a0f9a73060a4ca06f549825eef4fe5fee9b548492",
+      "initial_stop_owner_check": "NOT_EXECUTED",
+      "joint_changed": true,
+      "joint_parameter_sha256": "a83ebf729f53a8afe047b6efe928b7f56ac0802bdec043d29f224fe3f838f48c",
+      "joint_token_ce": 11.438328742980957,
+      "old_ability_retention": "NOT_EVALUATED",
+      "parameters": 61472,
+      "state_binding": {
+        "features": [
+          "shared.0",
+          "shared.1",
+          "shared.2",
+          "shared.3",
+          "shared.4",
+          "shared.5",
+          "shared.6",
+          "shared.7",
+          "shared.8",
+          "shared.9",
+          "shared.10",
+          "shared.11",
+          "shared.12",
+          "shared.13",
+          "shared.14",
+          "shared.15",
+          "text.encoding.0",
+          "text.encoding.1",
+          "text.encoding.2",
+          "text.encoding.3",
+          "text.encoding.4",
+          "text.encoding.5",
+          "text.encoding.6",
+          "text.encoding.7",
+          "text.encoding.8",
+          "text.encoding.9",
+          "text.encoding.10",
+          "text.encoding.11",
+          "text.encoding.12",
+          "text.encoding.13",
+          "text.encoding.14",
+          "text.encoding.15",
+          "text.available",
+          "text.progress",
+          "text.preparation.not_required",
+          "text.preparation.pending",
+          "text.preparation.ready",
+          "text.log1p_version",
+          "text.log1p_prefix_bytes",
+          "text.log1p_prefix_version",
+          "text.has_committed_prefix",
+          "image.encoding.0",
+          "image.encoding.1",
+          "image.encoding.2",
+          "image.encoding.3",
+          "image.encoding.4",
+          "image.encoding.5",
+          "image.encoding.6",
+          "image.encoding.7",
+          "image.encoding.8",
+          "image.encoding.9",
+          "image.encoding.10",
+          "image.encoding.11",
+          "image.encoding.12",
+          "image.encoding.13",
+          "image.encoding.14",
+          "image.encoding.15",
+          "image.available",
+          "image.progress",
+          "image.preparation.not_required",
+          "image.preparation.pending",
+          "image.preparation.ready",
+          "image.log1p_version",
+          "image.log1p_prefix_bytes",
+          "image.log1p_prefix_version",
+          "image.has_committed_prefix",
+          "log1p_remaining_budget",
+          "log1p_elapsed_seconds"
+        ],
+        "features_schema": "hepta.named-output-features.v1",
+        "representation": "joint_content_latent",
+        "sha256": "d4ac7ba992a38a94ac295894649348a58d53a87b2890102f2a04b6da96bdbb72",
+        "slot_order": [
+          "text",
+          "image"
+        ],
+        "state_schema": "hepta.public-text-image-state.v1"
+      },
+      "state_gradients": {
+        "image": 0.03727580979466438,
+        "shared": 0.030266722664237022,
+        "text": 0.05134761705994606
+      }
+    }
+  ],
+  "checkpoint_scope": "weights_only_same_process_recomputation",
+  "cold_process_replay": false,
+  "confirmatory_gain_experiment": false,
+  "content_scope": "two_modality_named_pooled_latent_slots_not_full_token_or_spatial_addressing",
+  "core_steps": 3,
+  "cost_scope": "Internal envelope excludes startup record and final report write/exit; supervisor measures whole child. Stages are nested, not additive to that envelope. Energy, tool dispatch, transfer and prior acquisition remain unknown.",
+  "deployment_net_benefit": null,
+  "dtype": "float32",
+  "energy_joules": null,
+  "frozen_backbone_gradients_absent": true,
+  "full_controller_2x2_executed": false,
+  "generalization": "NOT_EVALUATED",
+  "independent_semantic_evaluation": false,
+  "initial_delivery": {
+    "new_token_limit": 8,
+    "sha256": "1ab3d3fc377ff70c5cab4d1f08be78627497c73f8df73b7453335db132c785fd",
+    "task_correctness_claim": false,
+    "text": "The insect shown on the flower is a"
+  },
+  "input_image": {
+    "original_size": [
+      5184,
+      3456
+    ],
+    "sha256": "8b21ba78250f852ca5990063866b1ace6432521d0251bde7f8de783b22c99a6d"
+  },
+  "joint_updates_per_core": 1,
+  "loss_scope": "first_target_token_cross_entropy",
+  "max_rss_kib_linux": 1468584,
+  "metered_stages": [
+    {
+      "cpu_seconds": 0.6383628439999998,
+      "stage": "identity_and_input_codec",
+      "status": "completed",
+      "wall_seconds": 1.6403787180315703
+    },
+    {
+      "cpu_seconds": 0.27777239499999995,
+      "stage": "frozen_model_load",
+      "status": "completed",
+      "wall_seconds": 0.30817958794068545
+    },
+    {
+      "cpu_seconds": 2.653206759,
+      "stage": "real_text_image_encoder",
+      "status": "completed",
+      "wall_seconds": 1.3926710420055315
+    },
+    {
+      "cpu_seconds": 0.6596243230000001,
+      "stage": "initial_actual_text_decode",
+      "status": "completed",
+      "wall_seconds": 0.34615693206433207
+    },
+    {
+      "cpu_seconds": 0.6533413960000001,
+      "stage": "ordinary.initial_and_frozen_replay",
+      "status": "completed",
+      "wall_seconds": 0.3758129980415106
+    },
+    {
+      "cpu_seconds": 0.49675364099999975,
+      "stage": "ordinary.real_decoder_backward_and_one_update",
+      "status": "completed",
+      "wall_seconds": 0.2839236360741779
+    },
+    {
+      "cpu_seconds": 0.4420823760000001,
+      "stage": "ordinary.joint_checkpoint_readback",
+      "status": "completed",
+      "wall_seconds": 0.22740365599747747
+    },
+    {
+      "cpu_seconds": 0.6532313350000001,
+      "stage": "dual.initial_and_frozen_replay",
+      "status": "completed",
+      "wall_seconds": 0.3445363970240578
+    },
+    {
+      "cpu_seconds": 0.4857955140000003,
+      "stage": "dual.real_decoder_backward_and_one_update",
+      "status": "completed",
+      "wall_seconds": 0.24538056191522628
+    },
+    {
+      "cpu_seconds": 0.43922359399999955,
+      "stage": "dual.joint_checkpoint_readback",
+      "status": "completed",
+      "wall_seconds": 0.22373207099735737
+    },
+    {
+      "cpu_seconds": 0.4508338209999998,
+      "stage": "postrun_model_identity",
+      "status": "completed",
+      "wall_seconds": 0.4475963379954919
+    }
+  ],
+  "model": {
+    "manifest_sha256": "432a086810f32ba90ef34dc210fcb2f0f56fe8b27595266725d1846b5dad0e6c",
+    "model": "HuggingFaceTB/SmolVLM2-256M-Video-Instruct",
+    "revision": "067788b187b95ebe7b2e040b3e4299e342e5b8fd",
+    "verified_files": 13,
+    "weights_sha256": "dcc8f4c00d30d70bb3028a1bfc373e1b1972e25919f8788183cae4ae72431ce2"
+  },
+  "native_cell_owner_path_executed": false,
+  "production_candidate_adopted": false,
+  "public_input": {
+    "fused_embedding_sha256": "adfe400cb668e0118b9c0f6cdef094d04bd8d417838cca6d46f2f3dc68076e9e",
+    "fused_shape": [
+      1,
+      90,
+      576
+    ],
+    "image_embedding_sha256": "8ce4d844062e450a25426ed1c7ce007460caf39e42bedabdccc4b62a2f3b9e3d",
+    "image_features_shape": [
+      1,
+      64,
+      576
+    ],
+    "prompt": "Identify the insect shown on the flower. Reply with one English word.",
+    "prompt_sha256": "c5b2d61477380532d2b65e29cb1bd08a41b9b554cec0649aaf9f08fe7b3e667a",
+    "target_first_token": 20728,
+    "target_ids": [
+      20728
+    ],
+    "target_text": "bee",
+    "target_used_only_in_loss": true,
+    "text_embedding_sha256": "ec17d80eacb0f6783be345164ffd784e805a9a15232fce445ba39d3eafb5787f"
+  },
+  "qualification_scope": "frozen_real_vlm_decoder_to_named_content_and_core_gradient",
+  "run_cpu_seconds_through_report_preparation": 9.317475975999999,
+  "run_wall_seconds_through_report_preparation": 7.209729712922126,
+  "runtime_state_restored": false,
+  "schema": "hepta.real-text-image-content-qualification.v1",
+  "seed": 17,
+  "started_unix": 1794010159.7910237,
+  "state_clock_and_budget": "logical_core_time_and_remaining_update_count_not_physical_resource_meters",
+  "status": "PASS_SCOPED_REAL_CONTENT_GRADIENT",
+  "threads": 2,
+  "tool_dispatch_and_transfer_cost": null,
+  "uses_disclosed_development_image": true,
+  "versions": {
+    "Pillow": "13.0.0",
+    "numpy": "2.3.5",
+    "torch": "2.8.0+cpu",
+    "transformers": "4.57.3"
+  },
+  "width": 16
+}
