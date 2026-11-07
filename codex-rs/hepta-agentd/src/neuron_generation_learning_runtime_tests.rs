@@ -102,7 +102,11 @@ async fn ordinary_actor_reads_actual_use_and_cold_recovery_without_reexecution()
             change,
         )?;
         assert!(
-            f.runtime.handle.read_learning_selection(&other).await.is_err(),
+            f.runtime
+                .handle
+                .read_learning_selection(&other)
+                .await
+                .is_err(),
             "{change}"
         );
     }
@@ -169,7 +173,8 @@ async fn ordinary_actor_reads_actual_use_and_cold_recovery_without_reexecution()
     tasks.shutdown().await;
     drop(f.runtime);
     drop(tasks);
-    f.coordinator = LearningIterationCoordinatorV1::from_snapshot(f.coordinator.snapshot().clone())?;
+    f.coordinator =
+        LearningIterationCoordinatorV1::from_snapshot(f.coordinator.snapshot().clone())?;
     let ready = recover_agentd_generation_update_v1(
         f.publication.reopen_current()?,
         f.publication.authorities()?,
@@ -286,12 +291,7 @@ async fn unpublished_actor_refuses_learning_readback_and_keeps_transport_errors(
         ))
     ));
     let (mut tasks, lifetime) = host::host();
-    spawn_neuron_generation_service(
-        &mut tasks,
-        bootstrap,
-        Arc::clone(f.host.state()),
-        lifetime,
-    )?;
+    spawn_neuron_generation_service(&mut tasks, bootstrap, Arc::clone(f.host.state()), lifetime)?;
     assert!(matches!(
         first.await,
         Err(NeuronGenerationLearningReadErrorV1::Observation(
