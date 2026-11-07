@@ -1,0 +1,15 @@
+{
+  "schema": "hepta.material-software-checks.v1",
+  "command": "PYTHONPATH=scripts python -m unittest ndu_semantic_state.test_source_pool ndu_semantic_state.test_acquire_vizwiz ndu_semantic_state.test_materials -v",
+  "tests": 31,
+  "passed": 31,
+  "skipped": 0,
+  "test_seconds": 0.468,
+  "new_boundary_cases": 13,
+  "existing_material_cases": 18,
+  "fixtures_only": true,
+  "external_model_execution": false,
+  "source_snapshot": "runtime-extension pins describe actual acquisition; final source received mechanical repository formatting after tests",
+  "lint": "ruff check passed before repository formatter",
+  "formatter": "just fmt passed after supplying existing Python venv and creating sparse worktree codex-rs working directory; no semantic tests rerun afterward"
+}

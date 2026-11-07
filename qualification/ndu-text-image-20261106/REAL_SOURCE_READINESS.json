@@ -1,0 +1,132 @@
+{
+  "schema": "hepta.real-source-readiness.v1",
+  "status": "REAL_PILOT_TRAIN_DEVELOPMENT_CANDIDATES_ACQUIRED_SCIENTIFIC_HOLD",
+  "protocol": "PROTOCOL.md",
+  "externally_preregistered": false,
+  "scientific_admission": false,
+  "current_acquisition": {
+    "bundle_name": "vizwiz-pilot-pool-20261107",
+    "upstream_split": "train",
+    "project_counts": {
+      "train": 6,
+      "development": 3
+    },
+    "selected_images": 9,
+    "independent_cluster_count": null,
+    "cumulative_body_bytes_read": 11064483,
+    "body_byte_cap": 26214400,
+    "new_requests": 23,
+    "total_acquisition_requests": 40,
+    "preliminary_head_requests": 3,
+    "model_execution": false,
+    "candidate_manifest_sha256": "bfdc06b75f8c0f1fbefd2aa1c868dcf214dbc093554e21a067d470a7dfe1add0",
+    "local_history_sha256": "7247a0d306aee50204e9c15cc5daa841191fd5ea8f520cbe8159474f04af39e5",
+    "plan_sha256": "19b32d821e871eb81ba54da6e7b9904c4e3471b8e6ba1d1914ba6039694397aa",
+    "acquisition_receipt_sha256": "28636cb042765de42f801060ea3ce6040e479ac2cee07ebf06ecd009a1d29f03",
+    "annotation_exposure_sha256": "5308d6360c4117079f371b406e130e2d6c36fed9f8c86f33bb3de431918df6e0",
+    "all_train_annotation_records_parsed": 20523,
+    "owner_registry_authenticated": false
+  },
+  "sources": [
+    {
+      "id": "vizwiz",
+      "primary_url": "https://vizwiz.org/tasks-and-datasets/vqa/",
+      "license": "CC-BY-4.0",
+      "acquisition": "NINE_OFFICIAL_TRAIN_RECORDS_ALLOCATED_SIX_PILOT_TRAIN_THREE_DEVELOPMENT",
+      "request_origin": "provider-documented natural blind-user photo and question",
+      "external_references": "ten human answers per acquired question",
+      "can_measure_now": [
+        "fixed text-answer reference metric under explicit normalization"
+      ],
+      "does_not_establish": [
+        "image-output quality",
+        "session-independent clusters",
+        "fresh confirmation",
+        "five mechanism families",
+        "retention contract"
+      ]
+    },
+    {
+      "id": "natural_questions",
+      "primary_url": "https://ai.google.com/research/NaturalQuestions/download",
+      "license": "CC-BY-SA-3.0",
+      "acquisition": "NOT_ACQUIRED",
+      "request_origin": "actual search queries with externally annotated document answers",
+      "candidate_use": "prospective text-sufficient endpoint with canonical document grouping",
+      "blocks": [
+        "separate acquisition plan and source allocation",
+        "real text-only observation support",
+        "independent task suitability registration"
+      ]
+    },
+    {
+      "id": "realedit",
+      "primary_url": "https://huggingface.co/datasets/peter-sushko/RealEdit/blob/76928c1fa1d3f09f9a5e4b4fd2ea75ed1f9903d6/README.md",
+      "provider_declared_license": "CC-BY-4.0",
+      "acquisition": "NOT_ACQUIRED",
+      "request_fields": [
+        "title",
+        "selftext"
+      ],
+      "excluded_as_original_request": [
+        "instruction"
+      ],
+      "exclusion_reason": "provider explicitly describes instruction as LLM-generated",
+      "blocks": [
+        "source/post and derivative grouping",
+        "source and target reuse evidence",
+        "working original URLs",
+        "blind initial-state and output evaluation"
+      ]
+    },
+    {
+      "id": "gier",
+      "primary_url": "https://sites.google.com/view/gierdataset/home",
+      "license": "UNVERIFIED_FOR_DATA",
+      "acquisition": "NOT_ACQUIRED",
+      "candidate_use": "original editing requests with operation and mask annotations",
+      "blocks": [
+        "separate original and augmented requests",
+        "verify data reuse terms",
+        "external grouping",
+        "independently score preparation and final output"
+      ]
+    }
+  ],
+  "required_before_full_confirmation": [
+    "owner-registered full historical source and episode/derivative groups",
+    "prospective five-family task and rubric assignments independent of candidate effects",
+    "registered incumbent capability panel with retention validation/confirmation splits and margins",
+    "independent blind output scoring appropriate to text and image obligations",
+    "owner-frozen utility, cost conversion, risk profile and minimum useful effects",
+    "sample-size plan using effect, variance, cluster structure and multiplicity",
+    "real worker access isolation and native owner/meter reconciliation",
+    "matched training/tuning opportunities and independent training-fit identities",
+    "complete A/B/C/D and deployable comparator matrices in frozen and joint"
+  ],
+  "unavailable_family_labels": [
+    "text_sufficient",
+    "text_image_complementary",
+    "selective_refinement",
+    "preparation_required",
+    "continuation_not_worthwhile"
+  ],
+  "retention_panel_registered": false,
+  "initial_development_acquisition": {
+    "bundle_name": "vizwiz-materials-20261107",
+    "upstream_split": "train",
+    "project_split": "development",
+    "selected_images": 3,
+    "independent_cluster_count": null,
+    "body_bytes_read": 6219434,
+    "body_byte_cap": 26214400,
+    "model_execution": false,
+    "candidate_manifest_sha256": "d0f0f69385e56dc156ca1bfd1847509388eef6c6e60f0ef3e20ee80e18ce7350",
+    "local_history_sha256": "7f0ea4f10f1e679d534c905d9b4e3e7bc82d6eadd85c1cc287eca38cea325b8a",
+    "plan_sha256": "4f645cc385aa0ebb4c5b4edc60086924f66179c8228cd0d2162a23c48fa99409",
+    "acquisition_receipt_sha256": "715b9e282dab82bed785c53cbe12d4c8fb804cedc67b6287222124dc6cb7f7f0",
+    "original_annotation_archive_sha256": "dbc32fc1e3f1b1039aea906030d569d6c238b4ddb2eea5e3453a6a565c829ec9",
+    "runtime_pin_note": "Initial acquisition source snapshot captured after execution before edits; later code pins runtime before acquisition. No rerun claimed.",
+    "owner_registry_authenticated": false
+  }
+}
