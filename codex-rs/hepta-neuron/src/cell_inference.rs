@@ -59,6 +59,24 @@ pub fn infer_cell(
     control: &mut impl NeuronInferenceControlPort,
     now_micros: u64,
 ) -> Result<InferredCellStepV1, CellExecutionError> {
+    if prepared.representation.is_some()
+        || crate::CellNativeRepresentationInputV1::is_representation_observation(
+            &prepared.input.observation,
+        )
+    {
+        return Err(CellExecutionError::EncodingMismatch);
+    }
+    infer_admitted_cell(prepared, owner, control, now_micros)
+}
+
+/// Internal dispatch primitive. Representation callers must use their sealed
+/// context and current-owner guard; no public flag bypasses that requirement.
+pub(crate) fn infer_admitted_cell(
+    prepared: PreparedCellStepV1,
+    owner: &mut impl CellStateOwnerV1,
+    control: &mut impl NeuronInferenceControlPort,
+    now_micros: u64,
+) -> Result<InferredCellStepV1, CellExecutionError> {
     owner.admit_inference(admission_for_step(&prepared, now_micros)?)?;
     let output = InferenceControlModelPort::new(control)
         .execute(&prepared.model_request)

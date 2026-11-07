@@ -132,6 +132,15 @@ impl CellBatchQueueV1 {
         mut prepared: PreparedCellStepV1,
         now_micros: u64,
     ) -> Result<(), CellExecutionError> {
+        // This batch API has no per-member current-owner resolver. Refuse the
+        // representation protocol instead of retaining a stale prepared input.
+        if prepared.representation.is_some()
+            || crate::CellNativeRepresentationInputV1::is_representation_observation(
+                &prepared.input.observation,
+            )
+        {
+            return Err(CellExecutionError::EncodingMismatch);
+        }
         if now_micros < prepared.input.monotonic_micros
             || now_micros >= prepared.input.deadline_micros
         {

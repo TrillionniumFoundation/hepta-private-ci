@@ -21,6 +21,17 @@ pub fn prepare_cell_step(
     input: CellStepInputV1,
     now_micros: u64,
 ) -> Result<PreparedCellStepV1, CellExecutionError> {
+    refuse_representation_input(&input)?;
+    prepare_cell_step_inner(definition, owner, encoder, input, now_micros)
+}
+
+fn prepare_cell_step_inner(
+    definition: &CellDefinitionV1,
+    owner: &impl CellStateOwnerV1,
+    encoder: &impl CellInputEncoderV1,
+    input: CellStepInputV1,
+    now_micros: u64,
+) -> Result<PreparedCellStepV1, CellExecutionError> {
     let definition_digest = definition.semantic_digest()?;
     let request_digest = semantic_request_digest(definition_digest, &input);
     if owner
@@ -128,6 +139,7 @@ pub(crate) fn prepare_from_snapshot(
         input,
         encoded,
         model_request,
+        representation: None,
     })
 }
 
@@ -140,11 +152,46 @@ pub fn enter_cell_step(
     input: CellStepInputV1,
     now_micros: u64,
 ) -> Result<CellStepEntryV1, CellExecutionError> {
+    refuse_representation_input(&input)?;
+    enter_cell_step_inner(definition, owner, encoder, input, now_micros)
+}
+
+/// Only the representation entry can supply the private frozen context. The
+/// ordinary public entry cannot turn a sealed encoder into fresh permission.
+pub(crate) fn enter_representation_step(
+    definition: &CellDefinitionV1,
+    owner: &impl CellStateOwnerV1,
+    encoder: &impl CellInputEncoderV1,
+    input: CellStepInputV1,
+    now_micros: u64,
+    context: crate::cell_representation_dispatch::CellRepresentationPreparedV1,
+) -> Result<CellStepEntryV1, CellExecutionError> {
+    let mut entry = enter_cell_step_inner(definition, owner, encoder, input, now_micros)?;
+    if let CellStepEntryV1::Ready(prepared) = &mut entry {
+        prepared.representation = Some(context);
+    }
+    Ok(entry)
+}
+
+fn refuse_representation_input(input: &CellStepInputV1) -> Result<(), CellExecutionError> {
+    if crate::CellNativeRepresentationInputV1::is_representation_observation(&input.observation) {
+        return Err(CellExecutionError::EncodingMismatch);
+    }
+    Ok(())
+}
+
+fn enter_cell_step_inner(
+    definition: &CellDefinitionV1,
+    owner: &impl CellStateOwnerV1,
+    encoder: &impl CellInputEncoderV1,
+    input: CellStepInputV1,
+    now_micros: u64,
+) -> Result<CellStepEntryV1, CellExecutionError> {
     let digest = semantic_request_digest(definition.semantic_digest()?, &input);
     if let Some(receipt) = owner.lookup(&input.scope, &input.operation_id, digest)? {
         return Ok(CellStepEntryV1::Replayed(Box::new(receipt)));
     }
-    prepare_cell_step(definition, owner, encoder, input, now_micros)
+    prepare_cell_step_inner(definition, owner, encoder, input, now_micros)
         .map(Box::new)
         .map(CellStepEntryV1::Ready)
 }
@@ -164,6 +211,7 @@ pub fn decide_cell(
         input,
         encoded,
         model_request,
+        representation: _,
     } = prepared;
     if now_micros < input.monotonic_micros || now_micros < not_before_micros {
         return Err(CellExecutionError::DeadlineExceeded);

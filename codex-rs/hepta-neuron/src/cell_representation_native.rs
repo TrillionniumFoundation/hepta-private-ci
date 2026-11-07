@@ -21,6 +21,7 @@ use crate::RegisteredCellBackendV1;
 use crate::canonical_cell_step_request_digest_v1;
 use crate::canonical_feature_vector_digest_v1;
 use crate::cell::CellPreparationModeV1;
+use crate::cell::enter_representation_step;
 use crate::cell::prepare_from_snapshot;
 use crate::cell_global_feature_schema_digest_v1;
 use crate::cell_representation::CellRepresentationV1;
@@ -31,7 +32,6 @@ use crate::cell_representation_negotiation::CellRepresentationUseV1;
 use crate::cell_representation_profile::CellRepresentationErrorV1;
 use crate::cell_representation_profile::CellRepresentationKindV1;
 use crate::cell_representation_profile::CellTensorDtypeV1;
-use crate::enter_cell_step;
 use crate::recover_cell_inference;
 
 const PREFIX: &[u8] = b"hepta.cell.negotiated-native-input.v1\0";
@@ -368,7 +368,7 @@ impl CellNativeRepresentationInputV1 {
         Ok(())
     }
 
-    fn validate_request(
+    pub(crate) fn validate_request(
         &self,
         request: &CellEncodingRequestV1<'_>,
     ) -> Result<(), CellExecutionError> {
@@ -387,6 +387,9 @@ impl CellNativeRepresentationInputV1 {
 }
 
 impl CellInputEncoderV1 for CellNativeRepresentationInputV1 {
+    // Frozen encoding also serves historical readback. The public generic
+    // fresh entry/inference APIs refuse this protocol; fresh execution requires
+    // the typed prepared context and current-owner resolver at dispatch.
     fn encode(
         &self,
         request: &CellEncodingRequestV1<'_>,
@@ -428,12 +431,13 @@ impl RegisteredCellBackendV1 {
         if snapshot.source_frontier != input.source_frontier {
             return Err(CellExecutionError::StaleSource);
         }
-        enter_cell_step(
+        enter_representation_step(
             &self.registration().definition,
             owner,
             representation,
             input,
             now_micros,
+            representation.prepared_context(self),
         )
     }
 
