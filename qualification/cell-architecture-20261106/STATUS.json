@@ -195,7 +195,14 @@
     "classification": "Cargo metadata dependency-index TLS transport failure before tests",
     "product_tests": "skipped",
     "initial_targeted_rerun_request": "rejected because containing workflow was already running",
-    "all_current_hosted_ci_green_claimed": false
+    "all_current_hosted_ci_green_claimed": false,
+    "later_targeted_rerun_request": "accepted after containing workflow completed; ci/4ce-rerun-request.json",
+    "later_attempt": {
+      "job_id": 128286366849,
+      "status": "success",
+      "receipt": "ci/4ce-three-owner-retry.json",
+      "original_failure_unchanged": true
+    }
   },
   "native_evidence": {
     "index": "native-v2/index.json",
@@ -209,5 +216,65 @@
     "independently_verified_before_publication": true,
     "tests_log_sha256": "be7cb119b5ed389a430e2544e0ee7dad22c05d17b1563a046d2d9d66d39efdec",
     "clippy_log_sha256": "337d289653bc16a27be1b48ad8e6dac2ec2bc3b51bdf4d12e499410812b9c301"
+  },
+  "hosted_product": {
+    "source": "4ce8808d8b48624a17d247fdf47c7fbdaaab80a4",
+    "tree": "0b668cec797c009c7ba710607931f011f4338e52",
+    "run_id": 42331671861,
+    "agentd": {
+      "job_id": 128279386888,
+      "attempt": 1,
+      "status": "success",
+      "passed": 639,
+      "failed": 0,
+      "skipped": 66,
+      "binaries": 17,
+      "strict_clippy": "passed",
+      "format_and_clean_source": "passed",
+      "receipt": "ci/4ce-agentd.json"
+    },
+    "three_owner": {
+      "job_id": 128286366849,
+      "attempt": 2,
+      "status": "success",
+      "passed": 351,
+      "failed": 0,
+      "skipped": 0,
+      "binaries": 14,
+      "strict_clippy": "passed",
+      "format_and_clean_source": "passed",
+      "receipt": "ci/4ce-three-owner-retry.json"
+    },
+    "test_retries": 0,
+    "interpretation": "Independent hosted executions of the same four packages. Native and hosted overlapping tests are not added as distinct coverage; original failures remain unchanged. This does not qualify all repository workflows or later whole heads."
+  },
+  "final_text_closure": {
+    "job_id": "1a1b40b1a4e-fc05-85f6",
+    "source": "e585b90d09a2565e04394d47e1576092b0e9be70",
+    "tree": "81ff0f7e2ed7a06f677168c9cd4ccc6ec133073a",
+    "status": "passed",
+    "exit_code": 0,
+    "original_codespell_cli": "passed",
+    "architecture_prefix_budget": {
+      "status": "passed",
+      "files": 75
+    },
+    "unification_prefix_budget": {
+      "status": "passed",
+      "files": 157
+    },
+    "actual_changed_text_whitespace": "passed",
+    "clean_source_unchanged": true,
+    "rust_tree_unchanged": true,
+    "eight_audit_inputs_unchanged": true,
+    "changed_qualification_files": 28,
+    "rust_or_caller_or_ast_or_prettier_rerun": false,
+    "manifest": "final-text/manifest.json",
+    "archive": "final-text/closure.tar.gz",
+    "archive_sha256": "bea26ce5cb39f7d755a031b3af6049abe94d2f854889d67ffb73fd2ee6e5bd4f",
+    "archive_bytes": 33739,
+    "members": 55,
+    "member_bytes": 160187,
+    "independently_verified_before_publication": true
   }
 }

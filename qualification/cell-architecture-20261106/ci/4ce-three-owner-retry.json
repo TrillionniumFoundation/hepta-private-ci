@@ -1,0 +1,245 @@
+{
+  "schema_version": 1,
+  "source_commit": "4ce8808d8b48624a17d247fdf47c7fbdaaab80a4",
+  "job": {
+    "id": 128286366849,
+    "name": "Exact Cell candidate (representation-circuit-lifecycle)",
+    "status": "completed",
+    "conclusion": "success",
+    "run_id": 42331671861,
+    "logs_url": null,
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1
+      },
+      {
+        "name": "Check out the exact candidate",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2
+      },
+      {
+        "name": "Bind source identity",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3
+      },
+      {
+        "name": "Install native prerequisites",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4
+      },
+      {
+        "name": "Run taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 5
+      },
+      {
+        "name": "Run facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 6
+      },
+      {
+        "name": "Expose DotSlash to the original owner fixtures",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 7
+      },
+      {
+        "name": "Resolve repository-verified V8 artifacts",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 8
+      },
+      {
+        "name": "Record pinned toolchain",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 9
+      },
+      {
+        "name": "Run the affected owner suites",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 10
+      },
+      {
+        "name": "Check the same owners with strict lint",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 11
+      },
+      {
+        "name": "Check formatting and immutable tested source",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 12
+      },
+      {
+        "name": "Preserve every observed result",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 13
+      },
+      {
+        "name": "Post Check out the exact candidate",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 26
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 27
+      }
+    ]
+  },
+  "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42331671861/job/128286366849",
+  "classification": "Hosted three-owner product tests, strict Clippy, scoped format and clean-source checks passed on the targeted second attempt",
+  "tests": {
+    "passed": 351,
+    "failed": 0,
+    "skipped": 0,
+    "binaries": 14,
+    "test_execution_seconds": 6.809,
+    "retries": 0,
+    "passed_by_package_from_raw_pass_lines": {
+      "codex-hepta-neuron": 177,
+      "codex-hepta-automation": 143,
+      "codex-hepta-runtime": 31
+    }
+  },
+  "original_helper_receipts": [
+    {
+      "after": {
+        "commit": "4ce8808d8b48624a17d247fdf47c7fbdaaab80a4",
+        "dirty": false,
+        "parents": [
+          "151dfe3d97fbe186269a2d6333ec04dbf665bde9"
+        ],
+        "tree": "0b668cec797c009c7ba710607931f011f4338e52"
+      },
+      "base_sha": "e01c860f9b43a88555dfe9120a86f7f451e760fd",
+      "before": {
+        "commit": "4ce8808d8b48624a17d247fdf47c7fbdaaab80a4",
+        "dirty": false,
+        "parents": [
+          "151dfe3d97fbe186269a2d6333ec04dbf665bde9"
+        ],
+        "tree": "0b668cec797c009c7ba710607931f011f4338e52"
+      },
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "-p",
+        "codex-hepta-neuron",
+        "-p",
+        "codex-hepta-automation",
+        "-p",
+        "codex-hepta-runtime",
+        "--retries",
+        "0"
+      ],
+      "command_exit_code": 0,
+      "elapsed_seconds": 198.69999908699998,
+      "exit_code": 0,
+      "finished_at": "2026-11-07T03:30:06.821344+00:00",
+      "job": "native",
+      "lane": "source-head",
+      "log_bytes": 79748,
+      "log_file": "tests.json.877a43ca005d47e0aed4ddc9d6c36dcd.log",
+      "log_sha256": "c6b05609ec697038348a0b10f2b950dcf259e5a46c07ab6ac9133cbafa43cc31",
+      "minimum_tests": 1,
+      "observed_failed_tests": 0,
+      "observed_passed_tests": 351,
+      "output_limit_exceeded": false,
+      "returncode": 0,
+      "run_attempt": "2",
+      "run_id": "42331671861",
+      "schema_version": 1,
+      "source_sha": "4ce8808d8b48624a17d247fdf47c7fbdaaab80a4",
+      "started_at": "2026-11-07T03:26:47.919173+00:00",
+      "status": "passed",
+      "tested_sha": "4ce8808d8b48624a17d247fdf47c7fbdaaab80a4",
+      "timed_out": false,
+      "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+    },
+    {
+      "after": {
+        "commit": "4ce8808d8b48624a17d247fdf47c7fbdaaab80a4",
+        "dirty": false,
+        "parents": [
+          "151dfe3d97fbe186269a2d6333ec04dbf665bde9"
+        ],
+        "tree": "0b668cec797c009c7ba710607931f011f4338e52"
+      },
+      "base_sha": "e01c860f9b43a88555dfe9120a86f7f451e760fd",
+      "before": {
+        "commit": "4ce8808d8b48624a17d247fdf47c7fbdaaab80a4",
+        "dirty": false,
+        "parents": [
+          "151dfe3d97fbe186269a2d6333ec04dbf665bde9"
+        ],
+        "tree": "0b668cec797c009c7ba710607931f011f4338e52"
+      },
+      "command": [
+        "just",
+        "clippy",
+        "--locked",
+        "-p",
+        "codex-hepta-neuron",
+        "-p",
+        "codex-hepta-automation",
+        "-p",
+        "codex-hepta-runtime",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "command_exit_code": 0,
+      "elapsed_seconds": 85.67314680599998,
+      "exit_code": 0,
+      "finished_at": "2026-11-07T03:31:32.538954+00:00",
+      "job": "native",
+      "lane": "source-head",
+      "log_bytes": 20031,
+      "log_file": "clippy.json.09e74ea51e294e99bcf4da17138ac5b9.log",
+      "log_sha256": "036271756ec66d2f4657bb1999044c0ad1ace7b3924d2e7da07d2cdc28af0fdf",
+      "minimum_tests": 0,
+      "observed_failed_tests": 0,
+      "observed_passed_tests": 0,
+      "output_limit_exceeded": false,
+      "returncode": 0,
+      "run_attempt": "2",
+      "run_id": "42331671861",
+      "schema_version": 1,
+      "source_sha": "4ce8808d8b48624a17d247fdf47c7fbdaaab80a4",
+      "started_at": "2026-11-07T03:30:06.865344+00:00",
+      "status": "passed",
+      "tested_sha": "4ce8808d8b48624a17d247fdf47c7fbdaaab80a4",
+      "timed_out": false,
+      "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+    }
+  ],
+  "original_log": {
+    "path": "4ce-three-owner-retry.log.gz",
+    "decoded_bytes": 295366,
+    "decoded_characters": 295316,
+    "decoded_sha256": "506e16d166b71d24ab8137e465d4d699a7d51bdaa15642522895cfa8f490e105",
+    "compressed_bytes": 64674,
+    "compressed_sha256": "1efc87da2202bc89b772ebff3c586d7a3da40fd8c7b8b7b73687a64409ba8ec8",
+    "encoding": "Exact UTF-8 decoded GitHub job log including original BOM, other Unicode and LF"
+  },
+  "record_created_at": "2026-11-07T03:32:52.862340+00:00",
+  "original_failure": "4ce-native-preparation.json",
+  "accepted_rerun_request": "4ce-rerun-request.json",
+  "qualification_boundary": "The second attempt is a distinct successful execution on 4ce. The original dependency-preparation failure remains failed; no dependency, TLS, test gate or test retry policy was changed. Overlap with native87cc results is not added as distinct coverage; later whole heads and production adoption are not qualified."
+}

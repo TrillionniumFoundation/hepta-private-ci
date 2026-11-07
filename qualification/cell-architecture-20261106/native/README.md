@@ -52,6 +52,24 @@ The [independent root verification](../native-v2/verification.json) is a separat
 record outside the payload. It includes the original product commands and
 before/after identities read directly from the archived receipts.
 
+## Final text closure
+
+The later [text manifest](../final-text/manifest.json) and
+[closure archive](../final-text/closure.tar.gz) preserve job
+`1a1b40b1a4e-fc05-85f6` separately from the v2 cutoff. Its original codespell
+2.4.3 CLI, two evidence-prefix checkout budgets and changed-text whitespace
+check all passed on clean `e585b90d09a2565e04394d47e1576092b0e9be70`, complete
+tree `81ff0f7e2ed7a06f677168c9cd4ccc6ec133073a`. The original source identities,
+unchanged Rust subtree and eight audit inputs were checked before and after.
+It did not rerun the Rust, caller, AST or Prettier gates.
+
+The archive is 33,739 bytes, with 55 members totaling 160,187 decoded bytes and
+SHA-256 `bea26ce5cb39f7d755a031b3af6049abe94d2f854889d67ffb73fd2ee6e5bd4f`.
+Every member was independently checked. Later source-bound hosted results are
+indexed separately in [the validation report](../VALIDATION.md), including the
+successful `4ce8808d` Agentd and three-owner executions and the original failed
+dependency preparation.
+
 ## Earlier source preparation
 
 `source-stage1.tar.gz` preserves 127 original files (3,171,678 decoded bytes) from the completed source preparation stages on the configured native `desktop` host. Its SHA-256 is `d17ea73df84263cbf9a6791001d5fb4f22f009815a0f51167c27011762e18fa8`; the compressed archive is 337,930 bytes. `source-stage1.json` is the original per-member manifest and records the native paths, lengths and SHA-256 values.

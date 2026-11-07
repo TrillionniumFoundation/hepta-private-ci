@@ -6,6 +6,13 @@ passed independently. These results qualify the stated code paths and source
 identities; they do not enable production lifecycle authority, complete missing
 workers, or establish model quality and service-cost gains.
 
+The later `4ce8808d` GitHub architecture lanes also completed successfully:
+Neuron/Automation/Runtime passed 351 tests with zero skipped on the targeted
+second attempt, and Agentd passed 639 with 66 skipped on its original attempt.
+Both lanes passed strict Clippy, scoped formatting and clean-source checks.
+These executions provide independent confirmation of the same four packages;
+their overlapping tests are not counted as additional distinct coverage.
+
 The six requirements, existing baseline mechanisms, new implementation and
 remaining integration work are mapped in [ARCHITECTURE.md](ARCHITECTURE.md).
 Original failed, superseded and preparation-only executions remain separate from
@@ -174,6 +181,8 @@ required PR-scoped formatting check.
 | [Three-owner Rust CI 128252597941](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42323275303/job/128252597941) | `b4afdbad` | Compile exit 101: 14 ambiguous `assert_eq` diagnostics; zero product tests executed |
 | [Agentd Rust CI 128252598332](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42323275303/job/128252598332) | `b4afdbad` | Compile exit 101: 18 ambiguous `assert_eq` diagnostics; zero product tests executed |
 | [Three-owner preparation 128279386660](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42331671861/job/128279386660) | `4ce8808d` | `cargo metadata` exited 101 after a crates.io TLS transport failure; product test, lint and format steps skipped |
+| [Agentd Rust CI 128279386888](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42331671861/job/128279386888) | `4ce8808d` | Original attempt: 639 passed, 66 skipped across 17 binaries; strict Clippy, scoped format and source checks passed |
+| [Three-owner Rust retry 128286366849](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42331671861/job/128286366849) | `4ce8808d` | Second attempt: 351 passed, zero skipped across 14 binaries; strict Clippy, scoped format and source checks passed |
 
 The macro imports were repaired before the successful `87cce806` run. The earlier
 CI jobs' skipped strict-lint steps remain skipped for those jobs. Their complete
@@ -189,9 +198,21 @@ logs. The `4ce8808d` [native preparation failure](ci/4ce-native-preparation.json
 records a `percent-encoding` sparse-index transfer failure with curl error 55 and
 `SSL_ERROR_SYSCALL`. It occurred before product tests. A targeted rerun request
 was rejected because another job in the same workflow was still running; that
-request did not start a rerun. No dependency source, TLS verification, test gate
-or test retry policy was weakened in response. Later hosted attempts must be
-read independently; this report does not claim all current hosted CI is green.
+request did not start a rerun. After the workflow completed, a second
+[single-job rerun request](ci/4ce-rerun-request.json) was accepted. Its
+[three-owner execution](ci/4ce-three-owner-retry.json) passed 351 tests
+(Neuron 177, Automation 143, Runtime 31), with zero skipped, in 198.700 seconds
+including compilation; nextest execution took 6.809 seconds. Strict Clippy took
+85.673 seconds and passed. The separate original
+[Agentd execution](ci/4ce-agentd.json) passed 639 tests with 66 skipped in
+533.570 seconds including compilation; nextest execution took 114.052 seconds.
+Its strict Clippy passed in 201.684 seconds. Both retain clean before/after
+`4ce8808d` source and complete tree `0b668cec797c009c7ba710607931f011f4338e52`.
+Every command used zero test retries. No dependency source, TLS verification,
+test gate or test retry policy was weakened. The original preparation failure
+and rejected request remain their original outcomes. This confirms these
+architecture lanes; it does not claim every repository workflow or later head
+is green.
 
 The native evidence additionally preserves the initial V8 resolver input error,
 first pre-compiler preparation failure, actual ambiguous-macro compilation
@@ -209,6 +230,26 @@ archive-relative repository path is 84 UTF-16 units; each archive file is at mos
 and [restore instructions](../cell-unification-20261106/README.md). Historical
 failure paths remain original facts even though those members now live inside
 the archive.
+
+## Final evidence and text closure
+
+Native job `1a1b40b1a4e-fc05-85f6` checked the published evidence head
+`e585b90d09a2565e04394d47e1576092b0e9be70`, complete tree
+`81ff0f7e2ed7a06f677168c9cd4ccc6ec133073a`. The original codespell 2.4.3 CLI,
+both evidence-prefix checkout budgets and actual `git diff --check` from
+`4ce8808d` all passed. The architecture prefix contained 75 files and the
+unification prefix 157 at that source. Only 28 qualification files changed;
+the clean before/after source, Rust subtree and eight audit inputs were equal.
+
+The [final text manifest](final-text/manifest.json) and
+[complete closure archive](final-text/closure.tar.gz) preserve 55 original
+command/controller/readback records, totaling 160,187 decoded bytes. The archive
+is 33,739 bytes with SHA-256
+`bea26ce5cb39f7d755a031b3af6049abe94d2f854889d67ffb73fd2ee6e5bd4f`.
+The archive and every member were independently verified before publication.
+This is a text and evidence check on `e585b90d`; no Rust, caller, AST or Prettier
+execution is attributed to this job. Later receipt and prose publication does
+not change the identity of these completed executions.
 
 ## Adoption remains separate
 
