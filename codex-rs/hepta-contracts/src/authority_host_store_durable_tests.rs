@@ -38,9 +38,9 @@ fn a_visible_rename_cannot_be_read_as_current_before_publication_finishes() {
     });
     let entered = match observed.recv_timeout(Duration::from_secs(10)) {
         Ok(PublicationEvent::VisibleRename) => Ok(()),
-        Ok(PublicationEvent::Completed(result)) => {
-            Err(format!("publisher completed before the rename barrier: {result:?}"))
-        }
+        Ok(PublicationEvent::Completed(result)) => Err(format!(
+            "publisher completed before the rename barrier: {result:?}"
+        )),
         Err(error) => Err(format!("rename barrier was not observed: {error:?}")),
     };
     if let Err(error) = entered {

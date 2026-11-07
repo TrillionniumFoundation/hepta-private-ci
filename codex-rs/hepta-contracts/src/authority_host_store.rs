@@ -124,7 +124,8 @@ impl RootAuthorityDirectory {
         let lock = AuthorityFileLock { file, owner_pid };
         let path = rustix::fs::statat(&self.directory, name, AtFlags::SYMLINK_NOFOLLOW)
             .map_err(|_| AuthorityTrustError::Unavailable)?;
-        let descriptor = rustix::fs::fstat(&lock.file).map_err(|_| AuthorityTrustError::Unavailable)?;
+        let descriptor =
+            rustix::fs::fstat(&lock.file).map_err(|_| AuthorityTrustError::Unavailable)?;
         if path.st_dev != descriptor.st_dev || path.st_ino != descriptor.st_ino {
             return Err(AuthorityTrustError::Invalid);
         }
