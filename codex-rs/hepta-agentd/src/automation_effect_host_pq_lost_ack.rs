@@ -64,7 +64,7 @@ impl LostAckProvider {
                 };
                 let headers = std::str::from_utf8(&request[..header_end])?;
                 let mut lines = headers.split("\r\n");
-                let request_line = lines.next().unwrap().to_string();
+                let request_line = lines.next().ok_or_else(|| anyhow::anyhow!("provider request line missing"))?.to_string();
                 let values: BTreeMap<String, String> = lines
                     .filter_map(|line| line.split_once(':'))
                     .map(|(k, v)| (k.to_ascii_lowercase(), v.trim().to_string()))
@@ -116,7 +116,8 @@ impl LostAckProvider {
                             .open(&record)?;
                         file.write_all(&serde_json::to_vec(&body)?)?;
                         file.sync_all()?;
-                        fs::File::open(record.parent().unwrap())?.sync_all()?;
+                        let parent = record.parent().ok_or_else(|| anyhow::anyhow!("provider record has no parent"))?;
+                        fs::File::open(parent)?.sync_all()?;
                         apply_count.fetch_add(1, Ordering::SeqCst);
                     }
                     // The side effect is durable. Deliberately send no HTTP
