@@ -20,6 +20,28 @@ from ndu_port_integration_test_support import git
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def restore_pre_asm_source(root, output, paths):
+    """Keep prior fixture bytes; the ASM suite applies the complete new successor."""
+    source = ROOT / common.ASM_AMENDMENT
+    if not source.exists():
+        return
+    amendment = json.loads(source.read_bytes())
+    proof = next(
+        name
+        for name in amendment["proofs"]
+        if name.endswith("original-native.patch.gz")
+    )
+    patch = output / "original-asm-native.patch"
+    patch.write_bytes(gzip.decompress((ROOT / proof).read_bytes()))
+    git(
+        root,
+        "apply",
+        "--reverse",
+        *["--include=" + name for name in sorted(paths)],
+        str(patch),
+    )
+
+
 class DependencyAmendmentTests(unittest.TestCase):
     def setUp(self):
         temporary = tempfile.TemporaryDirectory()
@@ -63,6 +85,7 @@ class DependencyAmendmentTests(unittest.TestCase):
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(ROOT / name, target)
         git(self.root, "init", "-q")
+        restore_pre_asm_source(self.root, self.base, common.LOCKS)
         sdk_path = ROOT / common.SDK_AMENDMENT
         if sdk_path.exists():
             # Keep this historical 320-file fixture at its exact v7.5 source.
