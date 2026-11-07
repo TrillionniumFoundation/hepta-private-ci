@@ -92,7 +92,9 @@ def score_world(ctx, sample, fit, protocol, budget, claim, record):
             if arm == "J":
                 compiled, planning, _ = p.compile_own(ctx, fit["policy"], public,
                     protocol["state_caps"]["markov_per_world"])
+            initialization_start = time.process_time()
             policy = ControlPolicy(ctx, public, fit["policy"], compiled, arm)
+            initialization_cpu = time.process_time() - initialization_start
             result = p.evaluate(ctx, public, policy, fit["arms"][arm], "J" if arm == "J" else "head", truth)
             if arm == "C":
                 common_states = list(policy.visited.values())
@@ -106,7 +108,8 @@ def score_world(ctx, sample, fit, protocol, budget, claim, record):
                 max_belief = max(max_belief, abs(belief - base_belief))
                 mask = np.asarray(ctx.legal(public, state))
                 agrees.append(int(np.where(mask, q, -np.inf).argmax()) == int(np.where(mask, base_q, -np.inf).argmax()))
-            result.update(planning=planning, common_C_state_count=len(common_states),
+            result.update(planning=planning, policy_initialization_cpu_seconds=initialization_cpu,
+                common_C_state_count=len(common_states),
                 common_C_state_belief_max_change=max_belief,
                 common_C_state_action_agreement=float(np.mean(agrees)),
                 preservation_cpu_seconds=time.process_time() - preservation_start,

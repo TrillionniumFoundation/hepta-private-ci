@@ -39,7 +39,8 @@ def summarize(protocol, records):
                 for row in rows:
                     cpu.append(row[arm]["full_arm_cpu_seconds"])
                     planning = row[arm]["planning"]
-                    latency.append(row[arm]["policy_cpu_seconds"] + (planning["full_cold_preparation_cpu_seconds"] if planning else 0.))
+                    latency.append(row[arm]["policy_initialization_cpu_seconds"] + row[arm]["policy_cpu_seconds"]
+                        + (planning["full_cold_preparation_cpu_seconds"] if planning else 0.))
                     calibrations.append(row[arm]["posterior_probability_mse"])
                     tails.append(row[arm]["utility"])
             delta = np.asarray(per_fit) - per_fit_baseline
