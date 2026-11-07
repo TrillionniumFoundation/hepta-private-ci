@@ -323,3 +323,318 @@ def retain_critical(evidence, output):
             }
         )
     return retained
+
+
+def run(args):
+    started = time.process_time(), time.perf_counter()
+    valid_budget = (
+        type(args.budget_seconds) in (int, float)
+        and math.isfinite(args.budget_seconds)
+        and 60 <= args.budget_seconds <= 1740
+    )
+    deadline = started[1] + (args.budget_seconds if valid_budget else 5)
+    output, work, source, pool = map(
+        Path, (args.output, args.workspace, args.source_root, args.pool)
+    )
+    output.mkdir(parents=True, exist_ok=False)
+    evidence = work / "evidence"
+    models = work / "models"
+    report = {
+        "request_id": args.request_id,
+        "source_sha": args.source_sha,
+        "provider": PROVIDER,
+        "experiment_status": "Failed",
+        "scientific_acceptance": False,
+        "native_owner_verified": False,
+        "gpu_execution_verified": False,
+        "worker_budget_seconds": args.budget_seconds if valid_budget else None,
+        "declared_resources": {"cpu_quota_percent": 200, "memory_max_bytes": MEMORY},
+        "artifact_complete": False,
+        "stages": [
+            {"name": name, "wall_cap_seconds": cap, "status": "not_started"}
+            for name, cap in STAGES.items()
+        ],
+        "unknown_costs": [
+            "energy",
+            "prior_acquisition_excluded",
+            "source_and_pool_transfer_before_worker",
+            "final_export_write",
+        ],
+    }
+    previous = {
+        s: signal.getsignal(s) for s in (signal.SIGALRM, signal.SIGTERM, signal.SIGINT)
+    }
+    affinity = os.sched_getaffinity(0)
+
+    def expired(_signal, _frame):
+        raise TimeoutError("Total desktop CPU pilot wall deadline reached")
+
+    def cancelled(signum, _frame):
+        report["cancellation_signal"] = signum
+        raise KeyboardInterrupt("Desktop CPU pilot cancellation")
+
+    armed = False
+    try:
+        work.mkdir(parents=True, exist_ok=False)
+        evidence.mkdir()
+        if not valid_budget:
+            raise ValueError(
+                "CPU fallback budget must be finite and in [60,1740] seconds"
+            )
+        signal.signal(signal.SIGALRM, expired)
+        signal.setitimer(signal.ITIMER_REAL, args.budget_seconds)
+        armed = True
+        signal.signal(signal.SIGTERM, cancelled)
+        signal.signal(signal.SIGINT, cancelled)
+        verify_source(
+            source, args.source_manifest, args.source_manifest_sha256, args.source_sha
+        )
+        report["fallback_evidence"] = fallback_evidence(
+            args.kaggle_artifacts,
+            args.kaggle_manifest,
+            args.kaggle_manifest_sha256,
+            args.kaggle_request_id,
+            args.kaggle_source_sha,
+            args.request_id,
+            args.kaggle_result_path,
+            args.kaggle_probe_path,
+        )
+        for src, name in (
+            (args.source_manifest, "SOURCE_MANIFEST.json"),
+            (args.profile, "CPU_PROFILE.json"),
+            (args.kaggle_manifest, "KAGGLE_ARTIFACT_MANIFEST.json"),
+        ):
+            shutil.copyfile(src, evidence / name)
+        if (
+            sha(evidence / "KAGGLE_ARTIFACT_MANIFEST.json")
+            != args.kaggle_manifest_sha256
+        ):
+            raise ValueError("Kaggle manifest changed after admission")
+        originals = evidence / "kaggle-original"
+        originals.mkdir()
+        for name, digest_key, stored_name in (
+            (args.kaggle_result_path, "result_sha256", "BOOTSTRAP_RESULT.json"),
+            (args.kaggle_probe_path, "probe_sha256", "ACTUAL_PREINSTALLED_DEVICE.json"),
+        ):
+            target = originals / stored_name
+            shutil.copyfile(Path(args.kaggle_artifacts) / name, target)
+            if sha(target) != report["fallback_evidence"][digest_key]:
+                raise ValueError("Kaggle proof bytes changed after admission")
+        report["fallback_evidence"]["original_paths"] = {
+            "result": args.kaggle_result_path,
+            "probe": args.kaggle_probe_path,
+        }
+        write(evidence / "FALLBACK_EVIDENCE.json", report["fallback_evidence"])
+        profile = json.loads(Path(args.profile).read_text())
+        check_profile(profile)
+        report["resources_before"] = resource_snapshot()
+        if len(affinity) < 2:
+            raise ValueError("The declared two-CPU affinity opportunity is unavailable")
+        os.sched_setaffinity(0, set(sorted(affinity)[:2]))
+        os.environ.update(
+            PYTHONPATH=str(source / "scripts") + os.pathsep + str(source),
+            PYTHONDONTWRITEBYTECODE="1",
+            HF_HOME=str(work / "hf-cache"),
+            OMP_NUM_THREADS="2",
+            MKL_NUM_THREADS="2",
+            OPENBLAS_NUM_THREADS="2",
+        )
+        commands = Commands(evidence, report, deadline)
+        python = args.python
+        worker = [python, "-B", "-m", "ndu_portfolio.local_cpu_pilot"]
+        commands.execute(
+            "cpu_preflight",
+            worker + ["preflight", "--output", str(evidence / "CPU_PREFLIGHT.json")],
+        )
+        commands.execute(
+            "verify_existing_pool",
+            worker
+            + [
+                "verify-pool",
+                "--pool",
+                str(pool),
+                "--output",
+                str(evidence / "POOL_REUSE.json"),
+            ],
+        )
+        plan = evidence / "PLAN.json"
+        cli = [python, "-B", "-m", "ndu_portfolio.pilot_cli"]
+        commands.execute(
+            "plan",
+            cli
+            + [
+                "plan",
+                "--pool",
+                str(pool),
+                "--profile",
+                args.profile,
+                "--source-sha",
+                args.source_sha,
+                "--output",
+                str(plan),
+            ],
+        )
+        commands.execute(
+            "models",
+            [python, "-B", "-m", NATIVE + "acquire_models", "--root", str(models)],
+        )
+        smoke = evidence / "cpu-smoke"
+        commands.execute(
+            "cpu_generator_smoke",
+            [
+                python,
+                "-B",
+                "-m",
+                NATIVE + "device_smoke",
+                "--models",
+                str(models),
+                "--image",
+                str(pool / "data/VizWiz_train_00000000/input.jpg"),
+                "--output",
+                str(smoke),
+                "--source-sha",
+                args.source_sha,
+                "--device",
+                "cpu",
+                "--dtype",
+                "bfloat16",
+            ],
+        )
+        smoke_result = json.loads((smoke / "DEVICE_SMOKE.json").read_text())
+        if (
+            smoke_result["gpu_execution_verified"] is not False
+            or smoke_result["backend"]["device"] != "cpu"
+            or smoke_result["backend"]["dtype"] != "bfloat16"
+        ):
+            raise ValueError(
+                "CPU smoke cannot be replaced by another numerical/device profile"
+            )
+        common = ["--pool", str(pool), "--plan", str(plan), "--plan-sha256", sha(plan)]
+        for name, stage, prior in (
+            ("collect", "collect", None),
+            ("score_collect", "score", "collect"),
+            ("fit", "fit", "score_collect"),
+            ("evaluate", "evaluate", "fit"),
+            ("score_evaluate", "score", "evaluate"),
+        ):
+            command = cli + [stage] + common + ["--output", str(evidence / name)]
+            if stage in ("collect", "evaluate"):
+                command += ["--models", str(models)]
+            if prior:
+                path = evidence / prior / "PHASE.json"
+                command += ["--input", str(path), "--input-sha256", sha(path)]
+            if stage == "score":
+                command += ["--input-phase", prior]
+            commands.execute(name, command)
+        report["resources_after"] = resource_snapshot()
+        report["experiment_status"] = "CompletedCpuEngineeringPilot"
+    except BaseException as error:
+        report["error"] = {"type": type(error).__name__, "message": str(error)}
+    finally:
+        try:
+            for path in models.rglob("*.json*"):
+                if path.name in (
+                    "MANIFEST.json",
+                    "ACQUISITION.json",
+                    "ACQUISITION_ATTEMPTS.jsonl",
+                    "INPUT_MANIFEST.json",
+                ):
+                    target = evidence / "model-records" / path.relative_to(models)
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    shutil.copyfile(path, target)
+            if (evidence / "CPU_PREFLIGHT.json").exists():
+                report["actual_cpu_runtime"] = json.loads(
+                    (evidence / "CPU_PREFLIGHT.json").read_text()
+                )
+            report["critical_receipts"] = retain_critical(evidence, output)
+            report.update(
+                launcher_cpu_seconds=time.process_time() - started[0],
+                elapsed_wall_seconds=time.perf_counter() - started[1],
+            )
+            write(evidence / "CAMPAIGN.json", report)
+            archive_cap = (
+                LIMIT
+                - sum(row["bytes"] for row in report["critical_receipts"])
+                - 1024**2
+            )
+            report["evidence_pack"] = pack_evidence(
+                {"execution": evidence, "reused_materials": pool},
+                output / "evidence.tar.gz",
+                deadline,
+                cap=archive_cap,
+            )
+            report["artifact_complete"] = True
+        except BaseException as error:
+            report.update(
+                experiment_status="Failed",
+                artifact_complete=False,
+                packaging_error={"type": type(error).__name__, "message": str(error)},
+            )
+            pack = output / "evidence.tar.gz"
+            if pack.exists():
+                if (
+                    sum(p.stat().st_size for p in output.rglob("*") if p.is_file())
+                    > LIMIT - 1024**2
+                ):
+                    pack.unlink()
+                else:
+                    pack.rename(output / "evidence.partial.tar.gz")
+        finally:
+            if armed:
+                signal.setitimer(signal.ITIMER_REAL, 0)
+            for signum, handler in previous.items():
+                signal.signal(signum, handler)
+            os.sched_setaffinity(0, affinity)
+            report.update(
+                launcher_cpu_seconds=time.process_time() - started[0],
+                elapsed_wall_seconds=time.perf_counter() - started[1],
+            )
+            write(output / "CPU_RESULT.json", report)
+            artifact_manifest(output, args.request_id)
+    return 0 if report["experiment_status"] == "CompletedCpuEngineeringPilot" else 1
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    sub = parser.add_subparsers(dest="command", required=True)
+    execute = sub.add_parser("run")
+    for field in (
+        "source-root",
+        "source-sha",
+        "source-manifest",
+        "source-manifest-sha256",
+        "pool",
+        "profile",
+        "workspace",
+        "output",
+        "request-id",
+        "kaggle-artifacts",
+        "kaggle-manifest",
+        "kaggle-manifest-sha256",
+        "kaggle-request-id",
+        "kaggle-source-sha",
+    ):
+        execute.add_argument("--" + field, required=True)
+    execute.add_argument("--python", default=DEFAULT_PYTHON)
+    execute.add_argument("--budget-seconds", type=float, default=1740)
+    execute.add_argument("--kaggle-result-path", default="BOOTSTRAP_RESULT.json")
+    execute.add_argument(
+        "--kaggle-probe-path", default="ACTUAL_PREINSTALLED_DEVICE.json"
+    )
+    preflight = sub.add_parser("preflight")
+    preflight.add_argument("--output", required=True)
+    pool = sub.add_parser("verify-pool")
+    pool.add_argument("--pool", required=True)
+    pool.add_argument("--output", required=True)
+    args = parser.parse_args()
+    if args.command == "run":
+        return run(args)
+    if args.command == "preflight":
+        cpu_preflight(args.output)
+    else:
+        verify_pool(args.pool, args.output)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
