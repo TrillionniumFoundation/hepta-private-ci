@@ -43,7 +43,7 @@ fn existing(path: &Path) -> Result<Metadata, AgentdError> {
     Ok(metadata)
 }
 
-fn open_immutable(path: &Path) -> Result<File, AgentdError> {
+pub(super) fn open_immutable(path: &Path) -> Result<File, AgentdError> {
     let file = OpenOptions::new()
         .read(true)
         .custom_flags(libc::O_NOFOLLOW | libc::O_NONBLOCK)
@@ -79,17 +79,19 @@ pub(super) fn open_assets(d: &Descriptor) -> Result<JointGenerationProcessFilesV
     })
 }
 
-pub(super) fn validate_paths(path: &Path, d: &Descriptor) -> Result<(), AgentdError> {
-    let immutable = [path, &d.executable.path, &d.weights.path, &d.public.path];
-    let mutable = [&d.journal_path, &d.witness_path, &d.control_path];
+pub(super) fn validate_paths(
+    mode: OpenMode,
+    immutable: &[&Path],
+    mutable: [&Path; 3],
+) -> Result<(), AgentdError> {
     let mut seen = Vec::new();
-    for item in immutable {
+    for &item in immutable {
         let meta = existing(item)?;
         seen.push((item, Some((meta.dev(), meta.ino()))));
     }
     for item in mutable {
         check_path(item)?;
-        let metadata = match d.mode {
+        let metadata = match mode {
             OpenMode::Create => match std::fs::symlink_metadata(item) {
                 Err(error) if error.kind() == std::io::ErrorKind::NotFound => None,
                 Err(error) => return Err(error.into()),
@@ -101,13 +103,13 @@ pub(super) fn validate_paths(path: &Path, d: &Descriptor) -> Result<(), AgentdEr
             },
             OpenMode::Reopen => {
                 let meta = existing(item)?;
-                if item != &d.control_path && meta.len() == 0 {
+                if item != mutable[2] && meta.len() == 0 {
                     return Err(invalid("reopen refuses an empty journal or witness"));
                 }
                 Some((meta.dev(), meta.ino()))
             }
         };
-        seen.push((item.as_path(), metadata));
+        seen.push((item, metadata));
     }
     for (i, (left, inode)) in seen.iter().enumerate() {
         for (right, other) in seen.iter().skip(i + 1) {
@@ -146,7 +148,11 @@ fn open_owner(path: &Path, mode: OpenMode, access: Access) -> Result<File, Agent
     Ok(file)
 }
 
-pub(super) fn open_owners(d: &Descriptor, immutable: &[&File]) -> Result<OwnerFiles, AgentdError> {
+pub(super) fn open_owners(
+    mode: OpenMode,
+    paths: [&Path; 3],
+    immutable: &[&File],
+) -> Result<OwnerFiles, AgentdError> {
     let mut inodes = Vec::new();
     for file in immutable {
         let meta = file.metadata()?;
@@ -158,9 +164,9 @@ pub(super) fn open_owners(d: &Descriptor, immutable: &[&File]) -> Result<OwnerFi
         }
         inodes.push(inode);
     }
-    let journal = open_owner(&d.journal_path, d.mode, Access::ReadWrite)?;
-    let witness = open_owner(&d.witness_path, d.mode, Access::ReadWrite)?;
-    let control = open_owner(&d.control_path, d.mode, Access::Append)?;
+    let journal = open_owner(paths[0], mode, Access::ReadWrite)?;
+    let witness = open_owner(paths[1], mode, Access::ReadWrite)?;
+    let control = open_owner(paths[2], mode, Access::Append)?;
     let files = [&journal, &witness, &control];
     for file in files {
         let meta = file.metadata()?;
@@ -172,13 +178,13 @@ pub(super) fn open_owners(d: &Descriptor, immutable: &[&File]) -> Result<OwnerFi
         }
         inodes.push(inode);
     }
-    if matches!(d.mode, OpenMode::Reopen)
+    if matches!(mode, OpenMode::Reopen)
         && (journal.metadata()?.len() == 0 || witness.metadata()?.len() == 0)
     {
         return Err(invalid("reopen refuses empty opened journal or witness"));
     }
-    if matches!(d.mode, OpenMode::Create) {
-        for path in [&d.journal_path, &d.witness_path, &d.control_path] {
+    if matches!(mode, OpenMode::Create) {
+        for path in paths {
             File::open(
                 path.parent()
                     .ok_or_else(|| invalid("owner path parent missing"))?,

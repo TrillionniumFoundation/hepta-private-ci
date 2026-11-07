@@ -50,6 +50,7 @@ codex_rust_crate(
     crate_features = ["production-cognitive-write"],
     crate_name = "codex_hepta_agentd",
     extra_binaries = ["//codex-rs/hepta-infer-worker-host:hepta-joint-propose"],
+    integration_compile_data_extra = _GENERATION_TEST_FIXTURE,
     integration_test_timeout = "long",
     # Cargo unifies the qualification-only dev dependency for integration tests.
     # Keep the complete existing test graph without changing product binaries.

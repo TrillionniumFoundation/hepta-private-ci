@@ -114,7 +114,7 @@ pub enum V13GenerationOwnerModeV1 {
 
 /// Assemble the existing exclusive owners, preserving their original bytes.
 /// All descriptor identity and mode checks precede owner locking or decoding.
-/// The returned endpoint is typed only; ordinary CLI selection is unchanged.
+/// The ordinary descriptor loader uses this same owner and control boundary.
 pub fn bootstrap_agentd_v13_generation_v1(
     identity: &AgentdIdentity,
     config: AgentdV13GenerationBootstrapConfigV1,
@@ -128,43 +128,9 @@ pub fn bootstrap_agentd_v13_generation_v1(
     ),
     AgentdError,
 > {
+    let worker_generation = validate_bootstrap(identity, &config, prepared)?;
     let generation = &config.generation;
     let worker = &prepared.worker;
-    if identity.spawn_generation == 0
-        || config.expected_identity_digest
-            != neuron_generation_process_identity_digest_v1(identity)?
-        || config.expected_boot_id_digest != prepared.boot_id_digest
-        || prepared.boot_id_digest
-            != Digest32::of_parts(&[
-                b"hepta.agentd.v13-generation-clock.v1\0",
-                boot_id()?.as_bytes(),
-            ])
-        || generation.initial.scope.agent_id != identity.agent_id.as_str()
-    {
-        return Err(AgentdError::GenerationFenced(
-            "V13 host identity or Linux boot epoch differs".into(),
-        ));
-    }
-    generation.initial.digest().map_err(invalid)?;
-    worker
-        .validate_manifest(&generation.manifest)
-        .map_err(invalid)?;
-    if !(8..=4096).contains(&config.max_records)
-        || !(1..=16_384).contains(&config.control_capacity)
-        || !(1..=64).contains(&config.queue_capacity)
-        || !(Duration::from_millis(10)..=Duration::from_secs(5)).contains(&config.rpc_timeout)
-        || generation.initial.manifest_digest != generation.manifest.digest().map_err(invalid)?
-        || generation.initial.revision != 0
-        || !generation.initial.state.is_empty()
-        || !generation.initial.prefix.is_empty()
-        || generation.initial.stopped
-        || generation.task_digest == [0; 32]
-        || generation.source_frontier != worker.learning_closure().source_version
-    {
-        return Err(invalid("invalid V13 limits or genesis/learning binding"));
-    }
-    let worker_generation = Generation::new(generation.initial.writer_epoch).map_err(invalid)?;
-    boottime_micros()?;
     validate_files(
         &files,
         mode,
@@ -254,6 +220,53 @@ pub fn bootstrap_agentd_v13_generation_v1(
         move || clock(),
         config.queue_capacity,
     )
+}
+
+/// Shared preflight for typed capabilities and ordinary descriptor loading.
+/// The pathname loader must call this before creating any writable owner file.
+pub(crate) fn validate_bootstrap(
+    identity: &AgentdIdentity,
+    config: &AgentdV13GenerationBootstrapConfigV1,
+    prepared: &AgentdV13GenerationWorkerV1,
+) -> Result<Generation, AgentdError> {
+    let generation = &config.generation;
+    let worker = &prepared.worker;
+    if identity.spawn_generation == 0
+        || config.expected_identity_digest
+            != neuron_generation_process_identity_digest_v1(identity)?
+        || config.expected_boot_id_digest != prepared.boot_id_digest
+        || prepared.boot_id_digest
+            != Digest32::of_parts(&[
+                b"hepta.agentd.v13-generation-clock.v1\0",
+                boot_id()?.as_bytes(),
+            ])
+        || generation.initial.scope.agent_id != identity.agent_id.as_str()
+    {
+        return Err(AgentdError::GenerationFenced(
+            "V13 host identity or Linux boot epoch differs".into(),
+        ));
+    }
+    generation.initial.digest().map_err(invalid)?;
+    worker
+        .validate_manifest(&generation.manifest)
+        .map_err(invalid)?;
+    if !(8..=4096).contains(&config.max_records)
+        || !(1..=16_384).contains(&config.control_capacity)
+        || !(1..=64).contains(&config.queue_capacity)
+        || !(Duration::from_millis(10)..=Duration::from_secs(5)).contains(&config.rpc_timeout)
+        || generation.initial.manifest_digest != generation.manifest.digest().map_err(invalid)?
+        || generation.initial.revision != 0
+        || !generation.initial.state.is_empty()
+        || !generation.initial.prefix.is_empty()
+        || generation.initial.stopped
+        || generation.task_digest == [0; 32]
+        || generation.source_frontier != worker.learning_closure().source_version
+    {
+        return Err(invalid("invalid V13 limits or genesis/learning binding"));
+    }
+    let worker_generation = Generation::new(generation.initial.writer_epoch).map_err(invalid)?;
+    boottime_micros()?;
+    Ok(worker_generation)
 }
 
 fn validate_files(

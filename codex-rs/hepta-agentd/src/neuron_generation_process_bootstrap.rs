@@ -1,4 +1,4 @@
-//! Explicit process assembly for the existing Joint generation owner. A pinned
+//! Explicit process assembly for the existing Joint and V13 generation owners. A pinned
 //! descriptor is host configuration, not an artifact adoption/signing authority.
 //! Reopen never falls back to fresh files or a new clock epoch.
 
@@ -14,6 +14,10 @@ use crate::NeuronGenerationRuntimeHandleV2;
 #[cfg(target_os = "linux")]
 #[path = "neuron_generation_process_bootstrap_files.rs"]
 mod files;
+
+#[cfg(target_os = "linux")]
+#[path = "neuron_v13_generation_process_bootstrap.rs"]
+mod v13;
 
 /// Bind every field of the host's actual identity, including the complete path
 /// layout and resource budget. This content digest is not an authority grant.
@@ -67,7 +71,7 @@ pub(crate) fn identity_context_digest(identity: &AgentdIdentity) -> Result<Diges
     ]))
 }
 
-/// Reconstruct a host-selected Joint worker, the existing durable control,
+/// Reconstruct an explicitly selected Joint or V13 worker, the existing durable control,
 /// exclusive Cell journal and separately retained witness. No model is run by
 /// this loader. The handle must remain live until the caller enables the
 /// bootstrap's explicit control endpoint or otherwise retains the typed handle.
@@ -90,7 +94,7 @@ pub fn load_neuron_generation_process_bootstrap_v1(
     {
         let _ = (path, expected_descriptor_digest, identity);
         Err(AgentdError::Invalid(
-            "Joint generation process bootstrap requires Linux".into(),
+            "generation process bootstrap requires Linux".into(),
         ))
     }
 }
@@ -120,6 +124,11 @@ pub(crate) mod linux {
 
     const SCHEMA: &str = "hepta.agentd.neuron-generation-bootstrap.v1";
     const MAX_DESCRIPTOR_BYTES: u64 = 262_144;
+
+    #[derive(Deserialize)]
+    struct Schema {
+        schema: String,
+    }
 
     #[derive(Clone, Copy, Deserialize)]
     #[serde(rename_all = "snake_case")]
@@ -171,6 +180,14 @@ pub(crate) mod linux {
         if expected_digest.is_zero() || Digest32::of_bytes(&bytes) != expected_digest {
             return Err(invalid("generation bootstrap descriptor digest mismatch"));
         }
+        // Dispatch only after pinning the original bounded bytes. Each branch
+        // then decodes its entire strict descriptor; unknown schemas never fall back.
+        let header: Schema = serde_json::from_slice(&bytes)?;
+        match header.schema.as_str() {
+            SCHEMA => {}
+            v13::SCHEMA => return v13::load(path, &bytes, descriptor_file, identity),
+            _ => return Err(invalid("unsupported generation bootstrap schema")),
+        }
         let d: Descriptor = serde_json::from_slice(&bytes)?;
         if identity.spawn_generation == 0
             || d.schema != SCHEMA
@@ -201,7 +218,12 @@ pub(crate) mod linux {
                 "invalid generation bootstrap limits or genesis binding",
             ));
         }
-        files::validate_paths(path, &d)?;
+        let owner_paths = [d.journal_path.as_path(), &d.witness_path, &d.control_path];
+        files::validate_paths(
+            d.mode,
+            &[path, &d.executable.path, &d.weights.path, &d.public.path],
+            owner_paths,
+        )?;
         boottime_micros()?;
         // Zero is an invalid clock sample, never an invented successful time.
         // Admission rejects it and the native process refuses zero before spawn.
@@ -251,7 +273,8 @@ pub(crate) mod linux {
             &d.control_path,
         ))?;
         let owners = files::open_owners(
-            &d,
+            d.mode,
+            owner_paths,
             &[
                 &descriptor_file,
                 &assets.executable,
@@ -331,7 +354,7 @@ pub(crate) mod linux {
             .ok_or_else(|| invalid("generation boot clock overflow"))
     }
 
-    fn parse_digest(value: &str) -> Result<Digest32, AgentdError> {
+    pub(super) fn parse_digest(value: &str) -> Result<Digest32, AgentdError> {
         let digest = value.parse::<Digest32>().map_err(invalid)?;
         if digest.is_zero() {
             return Err(invalid("zero generation descriptor digest"));
