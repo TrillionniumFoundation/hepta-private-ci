@@ -1,0 +1,14 @@
+{
+  "schema": "ndu-replication-qualification-v1",
+  "baseline_commit": "006e744fbb10a6ee393166eed2e5d1e91f2fab1f",
+  "test_command": "PYTHONPATH=scripts python -m unittest -v ndu_portfolio.test_replication",
+  "tests": 19,
+  "failures": 0,
+  "skipped": 0,
+  "source_sha256": {
+    "scripts/ndu_portfolio/replication.py": "d8a1552ddace5a341b768df0085cf44b06de62df3047cbbb7fa31129e1bb2298",
+    "scripts/ndu_portfolio/test_replication.py": "76934e35834a30ae65c7550095ba5a9750d24cd4001000bc50c2b560b1662742"
+  },
+  "tests_log_sha256": "e2d3df3545460254d952989d268a2cb65ec1a443daf1ec50554a25414fd5d6da",
+  "scope": "Synthetic accounting/statistical regression tests only. No real training or learning conclusion."
+}

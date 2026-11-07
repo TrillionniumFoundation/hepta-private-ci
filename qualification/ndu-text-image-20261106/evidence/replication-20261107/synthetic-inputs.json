@@ -1,0 +1,56 @@
+{
+  "evidence_kind": "synthetic",
+  "generator": "ndu_portfolio.test_replication.replicated_example",
+  "plan": {
+    "bootstrap_samples": 10000,
+    "bootstrap_seed": 551,
+    "design_digest": "8ee225729dd39a8b6da6bc500a67901df921b4631e590432a5406509a6462df4",
+    "fits": [
+      {
+        "fit_id": "fit-0",
+        "training_seed": 100
+      },
+      {
+        "fit_id": "fit-1",
+        "training_seed": 101
+      },
+      {
+        "fit_id": "fit-2",
+        "training_seed": 102
+      },
+      {
+        "fit_id": "fit-3",
+        "training_seed": 103
+      }
+    ],
+    "power": {
+      "alpha": 0.05,
+      "effect_above_margin": 0.1,
+      "family_size": 20,
+      "fit_variance": 0.0001,
+      "interaction_variance": 0.0001,
+      "method": "crossed-normal-planning-v1",
+      "pilot_fit_run_ids": [
+        "synthetic-pilot-fit"
+      ],
+      "pilot_frozen_at": "2026-10-31T00:00:00Z",
+      "pilot_sha256": "e36e0b5bb4ebe8e88d8d1237a4778eb1a78cb90b8e0a06b2834a00ceff481d3e",
+      "pilot_source_groups": [
+        "synthetic-pilot-only"
+      ],
+      "power": 0.8,
+      "source_variance": 0.0001
+    },
+    "registered_at": "2026-11-01T00:00:00Z",
+    "schema": "ndu-replicated-factorial-v1"
+  },
+  "real_training_executed": false,
+  "records_digest": "e9d4d2f2351e8e640f4b9c005bf9cea406abe41a9e393705ec2d14a978b0347e",
+  "research_attempts": 192,
+  "scientific_admission": "HOLD",
+  "source_sha256": {
+    "scripts/ndu_portfolio/replication.py": "d8a1552ddace5a341b768df0085cf44b06de62df3047cbbb7fa31129e1bb2298",
+    "scripts/ndu_portfolio/test_replication.py": "76934e35834a30ae65c7550095ba5a9750d24cd4001000bc50c2b560b1662742"
+  },
+  "terminal_rows": 10240
+}
