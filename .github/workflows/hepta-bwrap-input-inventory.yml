@@ -1,0 +1,103 @@
+name: Readonly AppArmor include input inventory
+
+on:
+  pull_request:
+    branches: [research/ndu-bwrap-inventory-inputs-20261106]
+    paths:
+      - .github/scripts/hepta_bwrap_inventory_contract.py
+      - .github/scripts/hepta_bwrap_inventory_evidence.py
+      - .github/scripts/hepta_bwrap_inventory.py
+      - .github/workflows/hepta-bwrap-input-inventory.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  bwrap-inventory:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      CANDIDATE_SHA: ${{ github.event.pull_request.head.sha }}
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Check out the exact readonly proposal
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ env.CANDIDATE_SHA }}
+          persist-credentials: false
+          fetch-depth: 3
+
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12.10"
+
+      - name: Bind the unchanged parent source and readonly host
+        id: preflight
+        env:
+          PROBE_RUNNER_CLASS: ${{ runner.environment }}
+          PROBE_RUNNER_OS: ${{ runner.os }}
+          PROBE_RUNNER_ARCH: ${{ runner.arch }}
+          EVIDENCE_GITHUB_TOKEN: ${{ github.token }}
+        run: python -B .github/scripts/hepta_bwrap_inventory.py preflight
+
+      - name: Check the original scanner after tool setup
+        id: ready
+        env:
+          PROBE_RUNNER_CLASS: ${{ runner.environment }}
+          PROBE_RUNNER_OS: ${{ runner.os }}
+          PROBE_RUNNER_ARCH: ${{ runner.arch }}
+          PROBE_PRIVATE_DIR: ${{ steps.preflight.outputs.private_dir }}
+          EVIDENCE_GITHUB_TOKEN: ${{ github.token }}
+        run: python -B .github/scripts/hepta_bwrap_inventory.py ready
+
+      - name: Read only the two fixed include files and path identities
+        id: observe
+        env:
+          PROBE_RUNNER_CLASS: ${{ runner.environment }}
+          PROBE_RUNNER_OS: ${{ runner.os }}
+          PROBE_RUNNER_ARCH: ${{ runner.arch }}
+          PROBE_PRIVATE_DIR: ${{ steps.preflight.outputs.private_dir }}
+          EVIDENCE_GITHUB_TOKEN: ${{ github.token }}
+        run: python -B .github/scripts/hepta_bwrap_inventory.py observe
+
+      - name: Gate captured original bytes with the unchanged scanner
+        id: collect
+        if: always() && steps.preflight.outcome == 'success'
+        env:
+          PROBE_RUNNER_CLASS: ${{ runner.environment }}
+          PROBE_RUNNER_OS: ${{ runner.os }}
+          PROBE_RUNNER_ARCH: ${{ runner.arch }}
+          PROBE_PRIVATE_DIR: ${{ steps.preflight.outputs.private_dir }}
+          EVIDENCE_GITHUB_TOKEN: ${{ github.token }}
+        run: python -B .github/scripts/hepta_bwrap_inventory.py collect
+
+      - name: Upload only original bytes accepted by the scanner
+        id: upload
+        if: always() && steps.collect.outcome == 'success' && steps.collect.outputs.safe_for_upload == 'true'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: bwrap-input-inventory-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ steps.collect.outputs.public_dir }}
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Require complete input evidence without qualifying profile setup
+        if: always()
+        env:
+          PREFLIGHT_RESULT: ${{ steps.preflight.outcome }}
+          READINESS_RESULT: ${{ steps.ready.outcome }}
+          OBSERVATION_RESULT: ${{ steps.observe.outcome }}
+          COLLECTION_RESULT: ${{ steps.collect.outcome }}
+          UPLOAD_RESULT: ${{ steps.upload.outcome }}
+          EVIDENCE_RESULT: ${{ steps.collect.outputs.diagnostic_evidence_complete }}
+        run: |
+          test "$PREFLIGHT_RESULT" = success
+          test "$READINESS_RESULT" = success
+          test "$OBSERVATION_RESULT" = success
+          test "$COLLECTION_RESULT" = success
+          test "$UPLOAD_RESULT" = success
+          test "$EVIDENCE_RESULT" = true

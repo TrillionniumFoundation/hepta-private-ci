@@ -14,8 +14,8 @@ from hepta_core_selected_evidence import identity, read_regular, require
 ROOT = Path(__file__).resolve().parents[2]
 PARENT = "25d940b9b768b9117a020fe350fd134198a2efcf"
 PARENT_TREE = "26277e2bebd9e9f5a7cd04869c955dfd2fa7ddd2"
-INPUTS_HEAD = None
-INPUTS_TREE = None
+INPUTS_HEAD = "937c7a87099496aabbf59dcc28570a61e4c984b7"
+INPUTS_TREE = "0d2e86e3d826f8e1e41c4ce2a4101e91e57542ab"
 REPOSITORY = "TrillionniumFoundation/hepta-private-ci"
 INPUTS_REF = "research/ndu-bwrap-inventory-inputs-20261106"
 PROPOSAL_REF = "research/ndu-bwrap-inventory-probe-20261106"
