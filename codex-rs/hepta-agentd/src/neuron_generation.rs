@@ -13,6 +13,7 @@ use codex_hepta_neuron::CellCostStageV2;
 use codex_hepta_neuron::CellGenerationControlPortV2;
 use codex_hepta_neuron::CellGenerationDispositionV2;
 use codex_hepta_neuron::CellGenerationErrorV2;
+use codex_hepta_neuron::CellGenerationExpectedContextV1;
 use codex_hepta_neuron::CellGenerationJournalV2;
 use codex_hepta_neuron::CellGenerationProposalV2;
 use codex_hepta_neuron::CellGenerationReceiptV2;
@@ -35,6 +36,14 @@ pub(crate) enum GenerationOwnerBoundary {
 enum NoContactReason {
     Draining,
     Deadline,
+}
+
+// Guarded owners must sample their own durable admission. The legacy
+// unguarded profile remains explicit; a failed guarded sample never falls
+// back to it. Neither variant verifies the worker's numerical computation.
+enum GenerationPendingContext {
+    Guarded(Box<CellGenerationExpectedContextV1>),
+    Unguarded,
 }
 
 impl<W: AnchorWitnessStore, P: CellGenerationControlPortV2> AgentdNeuronGenerationOwnerV2<W, P> {
@@ -113,7 +122,7 @@ impl<W: AnchorWitnessStore, P: CellGenerationControlPortV2> AgentdNeuronGenerati
             }
             Err(error) => return Err(error),
         }
-        self.journal.require_current()?;
+        let expected = self.pending_context()?;
         let proposal = self
             .inference_control
             .execute_generation(self.journal.manifest(), &request)?;
@@ -122,7 +131,7 @@ impl<W: AnchorWitnessStore, P: CellGenerationControlPortV2> AgentdNeuronGenerati
             return Err(CellGenerationErrorV2::Deadline);
         }
         check(GenerationOwnerBoundary::Settlement)?;
-        self.journal.commit(proposal, after_contact)
+        self.commit_expected(expected, proposal, after_contact)
     }
 
     fn settle_no_contact(
@@ -145,6 +154,7 @@ impl<W: AnchorWitnessStore, P: CellGenerationControlPortV2> AgentdNeuronGenerati
                 CellCostOutcomeV2::Failed,
             ),
         };
+        let expected = self.pending_context()?;
         let request_digest = request.digest()?;
         let manifest = self.journal.manifest();
         let mut cost = CellTaskCostV2::new(CellTaskCostIdentityV2 {
@@ -187,7 +197,7 @@ impl<W: AnchorWitnessStore, P: CellGenerationControlPortV2> AgentdNeuronGenerati
             cost,
         };
         check()?;
-        self.journal.commit(proposal, observed_at)
+        self.commit_expected(expected, proposal, observed_at)
     }
 
     pub fn reconcile(
@@ -208,13 +218,40 @@ impl<W: AnchorWitnessStore, P: CellGenerationControlPortV2> AgentdNeuronGenerati
             .cloned()
             .ok_or(CellGenerationErrorV2::Conflict)?;
         check()?;
+        let expected = self.pending_context()?;
         let proposal = self
             .inference_control
             .read_generation(&request)?
             .ok_or(CellGenerationErrorV2::Pending)?;
         let settled = clock();
         check()?;
-        self.journal.commit(proposal, settled)
+        self.commit_expected(expected, proposal, settled)
+    }
+
+    fn pending_context(&self) -> Result<GenerationPendingContext, CellGenerationErrorV2> {
+        self.journal.require_current()?;
+        match self.journal.owner_binding() {
+            Some(_) => self
+                .journal
+                .pending_expected_context()
+                .map(Box::new)
+                .map(GenerationPendingContext::Guarded),
+            None => Ok(GenerationPendingContext::Unguarded),
+        }
+    }
+
+    fn commit_expected(
+        &mut self,
+        expected: GenerationPendingContext,
+        proposal: CellGenerationProposalV2,
+        now_micros: u64,
+    ) -> Result<CellGenerationReceiptV2, CellGenerationErrorV2> {
+        match expected {
+            GenerationPendingContext::Guarded(expected) => self
+                .journal
+                .commit_with_expected_context(&expected, proposal, now_micros),
+            GenerationPendingContext::Unguarded => self.journal.commit(proposal, now_micros),
+        }
     }
 
     pub fn cancel_pending(&mut self) -> Result<(), CellGenerationErrorV2> {
