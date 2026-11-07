@@ -32,10 +32,20 @@ class ConfirmationBoundaryTests(unittest.TestCase):
 
     def test_failed_attempt_cannot_be_retried(self):
         self.ledger.reserve("protocol", "cohort", self.samples)
+        self.ledger.claim("protocol", "new", 11, "E")
         self.ledger.record("protocol", "new", 11, "E", {"failure": "timeout"}, .1, .2, failed=True)
         with self.assertRaises(ValueError):
             self.ledger.record("protocol", "new", 11, "E", {"gain": 10}, .1, .2)
         self.assertEqual(self.ledger.counts("protocol"), {"FAILED": 1, "RESERVED": len(ARMS) - 1})
+
+    def test_lost_execution_receipt_never_reexecutes(self):
+        self.ledger.reserve("protocol", "cohort", self.samples)
+        self.ledger.claim("protocol", "new", 11, "E")
+        self.ledger.close()
+        self.ledger = Ledger(self.path)
+        with self.assertRaises(ValueError):
+            self.ledger.claim("protocol", "new", 11, "E")
+        self.assertEqual(self.ledger.counts("protocol"), {"STARTED": 1, "RESERVED": len(ARMS)-1})
 
     def test_historical_collision_rolls_back_complete_reservation(self):
         samples = copy.deepcopy(self.samples) + [{"sha256": "old-test", "fit": 11, "domain": "ood"}]
@@ -56,9 +66,15 @@ class ConfirmationBoundaryTests(unittest.TestCase):
             self.ledger.reserve("another", "cohort2", self.samples)
 
     def test_unmeasured_energy_cannot_qualify_production(self):
-        gate = quality_gate([{"familywise_interval": [.1, .3]}], {"task": True}, ["energy_joules"])
+        contrasts = [{"contrast": "E-C " + d, "n_fits": 5, "familywise_interval": [.1, .3]} for d in ("iid", "ood")]
+        gate = quality_gate(contrasts, {"task": True}, ["energy_joules"])
         self.assertTrue(gate["task_benefit_pass"])
         self.assertFalse(gate["production_eligible"])
+
+    def test_incomplete_or_nonfinite_contrasts_cannot_qualify(self):
+        for rows in ([], [{"contrast": "E-C iid", "n_fits": 5, "familywise_interval": [.1, .2]}],
+                     [{"contrast": "E-C " + d, "n_fits": 5, "familywise_interval": [.1, float('inf')]} for d in ('iid', 'ood')]):
+            self.assertFalse(quality_gate(rows, {}, [])["task_benefit_pass"])
 
     def test_random_control_matches_two_norms_and_is_seeded(self):
         delta = np.arange(147, dtype=float).reshape(3, 49) / 147

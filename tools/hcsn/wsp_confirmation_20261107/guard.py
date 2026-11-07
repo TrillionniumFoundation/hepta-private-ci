@@ -13,7 +13,7 @@ import time
 import numpy as np
 
 
-ARMS = ("C", "L", "E", "R", "A", "G", "EG", "J", "M")
+ARMS = ("C", "L", "E", "R", "A", "G", "EG", "J", "MYOPIC")
 FITS = (11, 23, 37, 53, 71)
 
 
@@ -133,12 +133,20 @@ class Ledger:
             self.db.execute("ROLLBACK")
             raise
 
+    def claim(self, protocol, sample, fit, arm):
+        """Persist STARTED before inference; a lost receipt must never be retried."""
+        cursor = self.db.execute("""UPDATE attempts SET state='STARTED'
+            WHERE run=? AND sample=? AND fit=? AND arm=? AND state='RESERVED'""",
+            (protocol, sample, fit, arm))
+        if cursor.rowcount != 1:
+            raise ValueError("attempt is unreserved or has already started")
+
     def record(self, protocol, sample, fit, arm, result, cpu, wall, failed=False):
         if not all(math.isfinite(x) and x >= 0 for x in (cpu, wall)):
             raise ValueError("invalid measured cost")
         result_digest = digest(result)
         cursor = self.db.execute("""UPDATE attempts SET state=?,result=?,cpu=?,wall=?
-            WHERE run=? AND sample=? AND fit=? AND arm=? AND state='RESERVED'""",
+            WHERE run=? AND sample=? AND fit=? AND arm=? AND state='STARTED'""",
             ("FAILED" if failed else "COMPLETE", result_digest, cpu, wall, protocol, sample, fit, arm))
         if cursor.rowcount != 1:
             raise ValueError("unreserved or already consumed evaluation; retries are forbidden")
@@ -153,10 +161,18 @@ class Ledger:
 
 def quality_gate(contrasts, coverage, unknown_costs):
     """Missing capabilities/costs remain explicit holds, never numerical zeros."""
-    benefits = bool(contrasts) and all(row["familywise_interval"][0] > .005 for row in contrasts)
-    required = {"main_task", "preservation", "ood", "calibration", "latency", "failures"}
+    expected = {"E-C iid", "E-C ood"}
+    valid = len(contrasts) == 2 and {row.get("contrast") for row in contrasts} == expected
+    for row in contrasts:
+        interval = row.get("familywise_interval", [])
+        valid = valid and row.get("n_fits") == 5 and len(interval) == 2
+        valid = valid and all(isinstance(x, (int, float)) and math.isfinite(x) for x in interval)
+        valid = valid and interval[0] <= interval[1]
+    benefits = valid and all(row["familywise_interval"][0] > .005 for row in contrasts)
+    required = {"main_task", "preservation", "ood", "calibration", "latency", "failures",
+                "data_freshness", "source_coverage", "independent_confirmation", "owner_recovery"}
     complete_quality = required.issubset(coverage) and all(coverage.values())
-    return {"task_benefit_pass": benefits,
+    return {"contrast_contract_valid": valid, "task_benefit_pass": benefits,
             "complete_quality_pass": complete_quality,
             "full_cost_qualified": not unknown_costs,
             "production_eligible": benefits and complete_quality and not unknown_costs,
