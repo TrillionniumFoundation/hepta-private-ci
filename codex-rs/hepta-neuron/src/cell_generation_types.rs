@@ -104,7 +104,8 @@ pub struct CellGenerationRequestV2 {
 /// Bounded intent retained from the original durable request. It supports
 /// content-exact retries without transmitting full predecessor state/prefix.
 /// Host admission time remains in the original request and its digest.
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct CellGenerationIntentV2 {
     pub operation_id: String,
     pub task_digest: [u8; 32],

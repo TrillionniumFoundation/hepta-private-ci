@@ -105,6 +105,7 @@ fn append<W: AnchorWitnessStore>(
     byte: u8,
 ) -> (CellGenerationRequestV2, CellGenerationReceiptV2) {
     let mut request = request(owner, operation);
+    request.input = vec![byte];
     request.admitted_at_micros = admitted_at;
     request.deadline_micros = admitted_at + 100;
     checked(owner.admit(request.clone(), admitted_at));
@@ -129,6 +130,8 @@ fn upgrade_new_write_and_rollback_keep_latest_prefix_receipts_and_cost() {
     let mut owner = fixture.open();
     let (first_request, first_receipt) =
         append(&mut owner, "before", /*admitted_at*/ 10, b'A');
+    let first_input_digest = Some(Digest32::of_bytes(&first_request.input).into_array());
+    let first_intent = checked(first_request.intent());
     let mut stale_consumer = request(&owner, "stale-consumer");
     stale_consumer.admitted_at_micros = 40;
     checked(owner.drain());
@@ -156,6 +159,11 @@ fn upgrade_new_write_and_rollback_keep_latest_prefix_receipts_and_cost() {
         (2, 2, 1)
     );
     assert_eq!(checked(owner.is_drained()), true);
+    let upgraded_observation = checked(owner.observe_generation());
+    assert_eq!(
+        upgraded_observation.first_advance_input_digest(),
+        first_input_digest
+    );
     drop(owner);
     assert_eq!(
         CellGenerationJournalV2::open(
@@ -174,6 +182,11 @@ fn upgrade_new_write_and_rollback_keep_latest_prefix_receipts_and_cost() {
         /*max_records*/ 128,
     ));
     assert_eq!(owner.state, expected);
+    assert_eq!(owner.observe_generation(), Ok(upgraded_observation));
+    assert_eq!(
+        owner.receipt_for_intent(&first_intent),
+        Ok(Some(first_receipt.clone()))
+    );
     checked(owner.resume());
     assert_eq!(
         owner.admit(stale_consumer, /*now_micros*/ 40),
@@ -181,6 +194,8 @@ fn upgrade_new_write_and_rollback_keep_latest_prefix_receipts_and_cost() {
     );
     let (second_request, second_receipt) =
         append(&mut owner, "after-upgrade", /*admitted_at*/ 50, b'B');
+    let second_intent = checked(second_request.intent());
+    assert_ne!(first_intent.input_digest, second_intent.input_digest);
     checked(owner.drain());
     let latest = owner.state.clone();
     let target_v3 = target(&owner, config().manifest);
@@ -203,9 +218,20 @@ fn upgrade_new_write_and_rollback_keep_latest_prefix_receipts_and_cost() {
     assert_eq!(owner.state, expected);
     assert_eq!(checked(owner.snapshot()).prefix, b"AB");
     assert_eq!(checked(owner.snapshot()).state, vec![1, b'A', 9, b'B', 9]);
-    assert_eq!(checked(owner.lookup(&first_request)), Some(first_receipt));
-    assert_eq!(checked(owner.lookup(&second_request)), Some(second_receipt));
+    assert_eq!(
+        checked(owner.lookup(&first_request)),
+        Some(first_receipt.clone())
+    );
+    assert_eq!(
+        checked(owner.lookup(&second_request)),
+        Some(second_receipt.clone())
+    );
     assert_eq!(checked(owner.task_cost()).entries().len(), 4);
+    let rollback_observation = checked(owner.observe_generation());
+    assert_eq!(
+        rollback_observation.first_advance_input_digest(),
+        first_input_digest
+    );
     drop(owner);
     let mut owner = checked(CellGenerationJournalV2::open(
         fixture.file("rollback"),
@@ -214,9 +240,22 @@ fn upgrade_new_write_and_rollback_keep_latest_prefix_receipts_and_cost() {
         /*max_records*/ 128,
     ));
     assert_eq!(owner.state, expected);
+    assert_eq!(owner.observe_generation(), Ok(rollback_observation));
+    assert_eq!(
+        owner.receipt_for_intent(&first_intent),
+        Ok(Some(first_receipt))
+    );
+    assert_eq!(
+        owner.receipt_for_intent(&second_intent),
+        Ok(Some(second_receipt))
+    );
     checked(owner.resume());
     append(&mut owner, "after-rollback", /*admitted_at*/ 80, b'C');
     assert_eq!(checked(owner.snapshot()).prefix, b"ABC");
+    assert_eq!(
+        checked(owner.observe_generation()).first_advance_input_digest(),
+        first_input_digest
+    );
 }
 
 #[test]

@@ -277,7 +277,34 @@ pub(super) fn recover_checkpoint(
         || checkpoint.state.cost.identity().source_digest != config.manifest.source_digest
         || checkpoint.state.receipts.len() > 256
         || checkpoint.state.acknowledgements.len() > 256
+        || checkpoint.state.intents.len() != checkpoint.state.receipts.len()
     {
+        return Err(CellGenerationErrorV2::Corrupt);
+    }
+    // Compaction replaces event replay, which normally derives these facts
+    // together. Retain the same receipt/intent order and first adopted input;
+    // cancelled or failed work cannot become initialization evidence on reopen.
+    let mut first_advance_input_digest = None;
+    for (receipt, intent) in checkpoint
+        .state
+        .receipts
+        .iter()
+        .zip(&checkpoint.state.intents)
+    {
+        if intent.operation_id != receipt.operation_id
+            || intent.task_digest != config.task_digest
+            || intent.source_frontier != config.source_frontier
+        {
+            return Err(CellGenerationErrorV2::Corrupt);
+        }
+        if matches!(
+            receipt.disposition,
+            CellGenerationDispositionV2::Advanced | CellGenerationDispositionV2::Stopped
+        ) {
+            first_advance_input_digest.get_or_insert(intent.input_digest);
+        }
+    }
+    if checkpoint.state.first_advance_input_digest != first_advance_input_digest {
         return Err(CellGenerationErrorV2::Corrupt);
     }
     Ok((checkpoint.state, end, Some(anchor)))
@@ -286,3 +313,7 @@ pub(super) fn recover_checkpoint(
 #[cfg(test)]
 #[path = "cell_generation_lifecycle_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "cell_generation_checkpoint_recovery_tests.rs"]
+mod checkpoint_recovery_tests;
