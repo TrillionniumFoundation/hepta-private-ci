@@ -276,11 +276,12 @@ impl LearningIterationRuntimeBootstrapV1 {
                     call.await?
                 };
                 crate::learning_iteration_auth::authenticate_iteration_receipt_v1(
+                    state,
                     self.ports.as_ref(),
                     &self.verifier,
                     &coordinator,
                     &receipt,
-                    clock()?,
+                    &clock,
                 )
                 .await?;
                 receipt

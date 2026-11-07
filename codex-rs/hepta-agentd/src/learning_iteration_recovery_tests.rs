@@ -20,6 +20,11 @@ enum Trust {
     RevokedEvaluator,
 }
 
+enum WhileWaiting {
+    Drain,
+    Expire,
+}
+
 fn recovery_ports(decision: Decision, trust: Trust) -> IterationPorts {
     let evaluation = match decision {
         Decision::EvaluatedNoUpdate => LearningEvaluationDispositionV1::NoUpdate,
@@ -329,10 +334,6 @@ async fn partial_and_completed_recovery_preserve_deadlines_and_only_resume_after
 
 #[tokio::test]
 async fn completed_recovery_checks_ready_and_clock_after_awaiting_owner_attestation() {
-    enum WhileWaiting {
-        Drain,
-        Expire,
-    }
     for change in [WhileWaiting::Drain, WhileWaiting::Expire] {
         let daemon = AgentdFixture::new();
         let state = daemon.state();
@@ -372,6 +373,56 @@ async fn completed_recovery_checks_ready_and_clock_after_awaiting_owner_attestat
             }
         }
         assert_no_work_or_checkpoint(&ports, &snapshot);
+        assert_eq!(ok(ports.attested.lock()).as_slice(), &[LearningIterationStageV1::Experience]);
+    }
+}
+
+#[tokio::test]
+async fn fresh_receipt_wait_rechecks_time_and_ready_before_checkpointing() {
+    for change in [WhileWaiting::Drain, WhileWaiting::Expire] {
+        let daemon = AgentdFixture::new();
+        let state = daemon.state();
+        let ports = Arc::new(recovery_ports(Decision::EvaluatedNoUpdate, Trust::Independent));
+        let mut request = iteration_request(&daemon);
+        // Keep the task deadline live while the original signature expires.
+        request.envelope.expiry_unix_seconds = 120;
+        let initial = ok(LearningIterationCoordinatorV1::new(request.clone(), ports.owners()))
+            .snapshot()
+            .clone();
+        let (entered, receive_entered) = tokio::sync::oneshot::channel();
+        let (resume, receive_resume) = tokio::sync::oneshot::channel();
+        *ok(ports.attestation_barrier.lock()) = Some(AttestationBarrier {
+            entered,
+            resume: receive_resume,
+        });
+        const CURRENT_TIME: u64 = 60;
+        let now = Mutex::new(CURRENT_TIME);
+        let owner = runtime(&daemon, &ports);
+        let process = owner.process(&state, request, || Ok(*ok(now.lock())));
+        tokio::pin!(process);
+        tokio::select! {
+            result = &mut process => panic!("returned before the original owner read: {result:?}"),
+            entered = receive_entered => ok(entered),
+        }
+        match change {
+            WhileWaiting::Drain => ok(state.mark_draining()),
+            WhileWaiting::Expire => *ok(now.lock()) = 95,
+        }
+        ok(resume.send(()));
+        let result = process.await;
+        match change {
+            WhileWaiting::Drain => {
+                assert!(matches!(result, Err(LearningIterationRuntimeErrorV1::Unavailable)));
+            }
+            WhileWaiting::Expire => {
+                assert!(matches!(result, Err(LearningIterationRuntimeErrorV1::Evidence(
+                    SignedEvidenceError::ValidityWindow
+                ))));
+            }
+        }
+        assert_eq!(ok(ports.checkpoint.lock()).as_ref(), Some(&initial));
+        assert_eq!(ok(ports.checkpoint_calls.lock()).as_slice(), &[Digest32::ZERO]);
+        assert_eq!(ok(ports.executed.lock()).as_slice(), &[LearningIterationStageV1::Experience]);
         assert_eq!(ok(ports.attested.lock()).as_slice(), &[LearningIterationStageV1::Experience]);
     }
 }

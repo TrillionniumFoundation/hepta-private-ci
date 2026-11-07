@@ -30,18 +30,15 @@ pub(super) async fn authenticate_restored_iteration_v1(
     let snapshot = coordinator.snapshot();
     let mut predecessor =
         LearningIterationCoordinatorV1::new(snapshot.request.clone(), snapshot.owners.clone())?;
-    let current_time = || {
-        require_ready(state)?;
-        clock()
-    };
     for receipt in &snapshot.receipts {
         if receipt.observation.stage() != LearningIterationStageV1::Proposal {
-            authenticate_iteration_receipt_at_clock_v1(
+            authenticate_iteration_receipt_v1(
+                state,
                 ports,
                 verifier,
                 &predecessor,
                 receipt,
-                &current_time,
+                clock,
             )
             .await?;
         }
@@ -54,13 +51,18 @@ pub(super) async fn authenticate_restored_iteration_v1(
 }
 
 pub(super) async fn authenticate_iteration_receipt_v1(
+    state: &AgentdState,
     ports: &dyn LearningIterationOwnerPortsV1,
     verifier: &LearningEvidenceVerifierV1,
     coordinator: &LearningIterationCoordinatorV1,
     receipt: &LearningIterationReceiptV1,
-    now: u64,
+    clock: &(impl Fn() -> Result<u64, LearningIterationRuntimeErrorV1> + Send + Sync),
 ) -> Result<(), LearningIterationRuntimeErrorV1> {
-    authenticate_iteration_receipt_at_clock_v1(ports, verifier, coordinator, receipt, &|| Ok(now))
+    let current_time = || {
+        require_ready(state)?;
+        clock()
+    };
+    authenticate_iteration_receipt_at_clock_v1(ports, verifier, coordinator, receipt, &current_time)
         .await
 }
 

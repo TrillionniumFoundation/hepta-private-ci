@@ -702,11 +702,12 @@ async fn no_update_next_use_checks_actual_selection_stage_and_controller() {
             },
         };
         let verified = crate::learning_iteration_auth::authenticate_iteration_receipt_v1(
+            &daemon.state(),
             &ports,
             &ports.verifier,
             &coordinator,
             &next_use,
-            50,
+            &|| Ok(50),
         )
         .await;
         if colliding_controller {
