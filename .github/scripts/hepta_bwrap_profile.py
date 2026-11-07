@@ -37,6 +37,11 @@ from hepta_bwrap_profile_checks import (
     validate_precompile,
 )
 from hepta_bwrap_profile_evidence import collect, encoded, save
+from hepta_bwrap_share_checks import (
+    capture_caller,
+    capture_runtime,
+    validate_share_mode,
+)
 from hepta_core_selected_evidence import (
     ProposalError,
     identity,
@@ -49,7 +54,7 @@ from hepta_core_selected_evidence import (
 def diagnostic(stage, status, code, exit_code=None):
     require(
         stage
-        in "entry preflight ready before baseline precompile preload load loaded post after source_after probe collect".split(),
+        in "entry preflight ready share_mode before baseline precompile preload load loaded post after source_after probe collect".split(),
         "UNSAFE_STAGE",
     )
     require(
@@ -102,12 +107,12 @@ def now():
     return datetime.datetime.now(datetime.timezone.utc).isoformat()
 
 
-def command(payload, result, name, profile):
+def command(payload, result, name, profile, *, caller_uid=None):
     require(
         name not in result["commands"] and name in COMMAND_IDS,
         "REPEATED_OR_UNKNOWN_COMMAND",
     )
-    argv = expected_argv(name, result["commands"])
+    argv = expected_argv(name, result["commands"], caller_uid=caller_uid)
     paths = [payload / f"logs/{name}.{stream}.log" for stream in ("stdout", "stderr")]
     paths[0].parent.mkdir(mode=0o700, exist_ok=True)
     stdin = profile if name in PARSER_COMMANDS else None
@@ -271,7 +276,14 @@ def execute():
         "files": {"profile.raw": identity(profile)},
         "checks": {
             name: False
-            for name in ("before", "baseline", "precompile", "loaded", "after")
+            for name in (
+                "share_mode",
+                "before",
+                "baseline",
+                "precompile",
+                "loaded",
+                "after",
+            )
         },
         "baseline_association": None,
         "child_observation": None,
@@ -281,12 +293,34 @@ def execute():
         "mechanism_verified": False,
         "policy_lifetime": "DISPOSABLE_HOSTED_VM_TEARDOWN_NOT_OBSERVED",
         "profile_add_status": "NOT_STARTED",
+        "share_mode_status": "NOT_STARTED",
         "product_qualification": False,
         "host_read_chunk_bytes": 4096,
         "host_read_limit_bytes": 4 * 1024 * 1024,
     }
-    stage = "before"
+    stage = "share_mode"
     try:
+        diagnostic(stage, "START", "BEGIN")
+        raw = encoded(capture_runtime())
+        save(payload / "share-runtime.before.json", raw)
+        result["files"]["share-runtime.before.json"] = identity(raw)
+        caller = capture_caller()
+        raw = encoded(caller)
+        save(payload / "share-caller.before.json", raw)
+        result["files"]["share-caller.before.json"] = identity(raw)
+        result["share_mode_status"] = "FAILED_OR_UNKNOWN"
+        command(payload, result, "share_mode", profile, caller_uid=caller["uid"])
+        raw = encoded(capture_caller())
+        save(payload / "share-caller.after.json", raw)
+        result["files"]["share-caller.after.json"] = identity(raw)
+        raw = encoded(capture_runtime())
+        save(payload / "share-runtime.after.json", raw)
+        result["files"]["share-runtime.after.json"] = identity(raw)
+        result["share_mode_status"] = validate_share_mode(
+            captured(payload, result), result["commands"]
+        )
+        result["checks"]["share_mode"] = True
+        stage = "before"
         diagnostic(stage, "START", "BEGIN")
         snapshot(payload, result, stage)
         for name in HOST_COMMANDS:
@@ -345,15 +379,16 @@ def execute():
         )
     finally:
         try:
-            diagnostic("after", "START", "BEGIN")
-            snapshot(payload, result, "after")
-            for name in HOST_COMMANDS:
-                command(payload, result, f"after.{name}", profile)
-            if result["checks"]["loaded"]:
-                result["child_observation"] = validate_after(
-                    captured(payload, result), result["commands"]
-                )
-                result["checks"]["after"] = True
+            if result["checks"]["share_mode"]:
+                diagnostic("after", "START", "BEGIN")
+                snapshot(payload, result, "after")
+                for name in HOST_COMMANDS:
+                    command(payload, result, f"after.{name}", profile)
+                if result["checks"]["loaded"]:
+                    result["child_observation"] = validate_after(
+                        captured(payload, result), result["commands"]
+                    )
+                    result["checks"]["after"] = True
         except Exception as error:
             if result["failure_stage"] is None:
                 result["failure_stage"] = "after"

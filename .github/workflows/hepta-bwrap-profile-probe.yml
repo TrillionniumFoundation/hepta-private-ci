@@ -2,9 +2,11 @@ name: Official Ubuntu Bubblewrap profile mechanism
 
 on:
   pull_request:
-    branches: [research/ndu-bwrap-profile-checks-20261106]
+    branches: [research/ndu-bwrap-default-checks-20261107]
     paths:
       - .github/scripts/hepta_bwrap_profile_contract.py
+      - .github/scripts/hepta_bwrap_share_mode.py
+      - .github/scripts/hepta_bwrap_share_checks.py
       - .github/scripts/apparmor-profiles_4.0.1really4.0.1-0ubuntu0.24.04.9_all.deb
       - .github/scripts/hepta-bwrap-profile-dependencies.json
       - .github/scripts/hepta_bwrap_profile_checks.py
