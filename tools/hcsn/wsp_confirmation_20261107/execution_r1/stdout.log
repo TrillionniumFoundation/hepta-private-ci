@@ -1,0 +1,16 @@
+{"stage": "candidate_construction", "fit": 11, "alphas": {"E": 0.75, "G": 0.75, "A": 0.25, "EG": 0.75}, "cpu": 21.015682095}
+{"stage": "candidate_construction", "fit": 23, "alphas": {"E": 0.75, "G": 0.75, "A": 0.5, "EG": 0.5}, "cpu": 41.160866463}
+{"stage": "candidate_construction", "fit": 37, "alphas": {"E": 0.25, "G": 0.25, "A": 0.0, "EG": 0.25}, "cpu": 61.199213523}
+{"stage": "candidate_construction", "fit": 53, "alphas": {"E": 0.75, "G": 0.75, "A": 0.25, "EG": 0.75}, "cpu": 83.522394038}
+{"stage": "candidate_construction", "fit": 71, "alphas": {"E": 0.75, "G": 0.75, "A": 0.75, "EG": 0.75}, "cpu": 105.512490576}
+{"stage": "confirmation", "fit": 11, "domain": "iid", "cpu": 115.982643057}
+{"stage": "confirmation", "fit": 11, "domain": "ood", "cpu": 124.896398116}
+{"stage": "confirmation", "fit": 23, "domain": "iid", "cpu": 136.261395322}
+{"stage": "confirmation", "fit": 23, "domain": "ood", "cpu": 146.29245352799998}
+{"stage": "confirmation", "fit": 37, "domain": "iid", "cpu": 157.632494563}
+{"stage": "confirmation", "fit": 37, "domain": "ood", "cpu": 166.962261448}
+{"stage": "confirmation", "fit": 53, "domain": "iid", "cpu": 178.209162722}
+{"stage": "confirmation", "fit": 53, "domain": "ood", "cpu": 186.204210018}
+{"stage": "confirmation", "fit": 71, "domain": "iid", "cpu": 196.898221964}
+{"stage": "confirmation", "fit": 71, "domain": "ood", "cpu": 205.328293699}
+{"stage": "complete", "contrasts": [{"contrast": "E-C iid", "n_fits": 5, "delta": 0.003753596475664772, "familywise_interval": [-0.03392889812663114, 0.04143609107796068]}, {"contrast": "E-C ood", "n_fits": 5, "delta": 0.0041999451205657675, "familywise_interval": [-0.03120644147255968, 0.03960633171369122]}], "production_eligible": false}
