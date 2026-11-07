@@ -216,3 +216,7 @@ mod circuit_runtime_tests;
 #[cfg(test)]
 #[path = "circuit_store_tests.rs"]
 mod circuit_store_tests;
+
+#[cfg(test)]
+#[path = "circuit_recovery_tests.rs"]
+mod circuit_recovery_tests;
