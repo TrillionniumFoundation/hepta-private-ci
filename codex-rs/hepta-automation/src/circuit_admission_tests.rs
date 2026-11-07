@@ -6,6 +6,9 @@ use crate::circuit_runtime_tests::definition;
 use crate::circuit_runtime_tests::digest;
 use crate::circuit_runtime_tests::fence;
 use crate::circuit_runtime_tests::start;
+
+#[path = "circuit_input_tests.rs"]
+mod retained_input;
 use crate::*;
 
 async fn pending() -> (tempfile::TempDir, AutomationStore, CircuitCommandReceiptV2) {

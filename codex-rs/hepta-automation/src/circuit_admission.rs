@@ -11,9 +11,11 @@ use codex_hepta_contracts::Sha256Digest;
 use crate::AutomationStore;
 use crate::CircuitActivationStatusV2;
 use crate::CircuitCommandStatusV2;
+use crate::CircuitComputationInputV1;
 use crate::CircuitDispatchV2;
 use crate::TaskFlowError;
 use crate::TaskFlowFence;
+use crate::circuit_computation_input;
 use crate::circuit_history::CircuitFenceIdentityV2;
 use crate::circuit_history::CircuitLedgerEventV2;
 use crate::circuit_journal;
@@ -52,6 +54,7 @@ pub struct CircuitComputationAdmissionV2 {
     owner_agent_id: AgentId,
     definition_digest: Sha256Digest,
     execution_request_digest: Option<Sha256Digest>,
+    input: Option<CircuitComputationInputV1>,
     observed_revision: u64,
     observed_at_ms: u64,
     lease_expires_at_ms: u64,
@@ -71,6 +74,11 @@ impl CircuitComputationAdmissionV2 {
     }
     pub fn execution_request_digest(&self) -> Option<&Sha256Digest> {
         self.execution_request_digest.as_ref()
+    }
+    /// Exact bytes committed with this claim, if its caller selected the
+    /// retained-input entry. Legacy claims never synthesize missing payloads.
+    pub fn input(&self) -> Option<&CircuitComputationInputV1> {
+        self.input.as_ref()
     }
     pub fn observed_revision(&self) -> u64 {
         self.observed_revision
@@ -97,16 +105,48 @@ impl AutomationStore {
         &self,
         claim: &CircuitComputationClaimV2,
     ) -> Result<CircuitComputationAdmissionV2, TaskFlowError> {
+        self.claim_circuit_computation_inner(claim, /*input*/ None)
+            .await
+    }
+
+    /// Commit the bounded original input and its claim in the same owner
+    /// transaction before returning execution authority. Changed bytes and
+    /// attempts to attach input after a legacy claim are rejected. A duplicate
+    /// or recovered claim remains readback-only even when no worker was called.
+    pub async fn claim_circuit_computation_with_input(
+        &self,
+        claim: &CircuitComputationClaimV2,
+        input: &CircuitComputationInputV1,
+    ) -> Result<CircuitComputationAdmissionV2, TaskFlowError> {
+        self.claim_circuit_computation_inner(claim, Some(input))
+            .await
+    }
+
+    async fn claim_circuit_computation_inner(
+        &self,
+        claim: &CircuitComputationClaimV2,
+        input: Option<&CircuitComputationInputV1>,
+    ) -> Result<CircuitComputationAdmissionV2, TaskFlowError> {
         text(&claim.run_id)?;
         text(&claim.command_id)?;
         digest(&claim.execution_request_digest)?;
         let identity = CircuitFenceIdentityV2::from_fence(&claim.fence)?;
-        let event = CircuitLedgerEventV2::ComputationClaimed {
-            fence: identity,
-            expected_revision: claim.expected_revision,
-            now_ms: claim.now_ms,
-            activation_id: claim.activation_id,
-            execution_request_digest: claim.execution_request_digest.clone(),
+        let event = match input {
+            Some(input) => CircuitLedgerEventV2::ComputationClaimedWithInputV1 {
+                fence: identity,
+                expected_revision: claim.expected_revision,
+                now_ms: claim.now_ms,
+                activation_id: claim.activation_id,
+                execution_request_digest: claim.execution_request_digest.clone(),
+                input_digest: input.digest()?,
+            },
+            None => CircuitLedgerEventV2::ComputationClaimed {
+                fence: identity,
+                expected_revision: claim.expected_revision,
+                now_ms: claim.now_ms,
+                activation_id: claim.activation_id,
+                execution_request_digest: claim.execution_request_digest.clone(),
+            },
         };
         let mut tx = self
             .taskflow_pool()
@@ -146,7 +186,33 @@ impl AutomationStore {
         let may_claim = activation.status == CircuitActivationStatusV2::InFlight
             && !activation.cancel_requested
             && activation.execution_request_digest.is_none();
+        let mut retained = circuit_computation_input::load(
+            &mut tx,
+            self.owner_agent_id(),
+            &claim.run_id,
+            claim.activation_id,
+            history.input_digests.get(&claim.activation_id),
+        )
+        .await?;
+        if let Some(input) = input
+            && (retained.as_ref().is_some_and(|original| original != input)
+                || (retained.is_none() && !may_claim))
+        {
+            return Err(TaskFlowError::Conflict(
+                "computation input changed or was not retained before its claim".into(),
+            ));
+        }
         let mode = if may_claim {
+            if let Some(input) = input {
+                circuit_computation_input::retain(
+                    &mut tx,
+                    self.owner_agent_id(),
+                    &claim.run_id,
+                    claim.activation_id,
+                    input,
+                )
+                .await?;
+            }
             let receipt = circuit_journal::persist_transition(
                 &mut tx,
                 &history,
@@ -157,7 +223,24 @@ impl AutomationStore {
             .await?;
             history.run = receipt.run;
             if receipt.status == CircuitCommandStatusV2::Applied {
+                if let Some(input) = input {
+                    history
+                        .input_digests
+                        .insert(claim.activation_id, input.digest()?);
+                    retained = circuit_computation_input::load(
+                        &mut tx,
+                        self.owner_agent_id(),
+                        &claim.run_id,
+                        claim.activation_id,
+                        history.input_digests.get(&claim.activation_id),
+                    )
+                    .await?;
+                }
                 AdmissionMode::Execute
+            } else if input.is_some() {
+                return Err(TaskFlowError::Corrupt(
+                    "retained computation input was not bound by its claim".into(),
+                ));
             } else {
                 AdmissionMode::ReconciliationOnly
             }
@@ -170,6 +253,7 @@ impl AutomationStore {
             claim.activation_id,
             claim.now_ms,
             mode,
+            retained,
         )?;
         tx.commit().await.map_err(unavailable)?;
         Ok(admission)
@@ -196,12 +280,21 @@ impl AutomationStore {
             activation_id,
             now_ms,
         )?;
+        let input = circuit_computation_input::load(
+            &mut tx,
+            self.owner_agent_id(),
+            run_id,
+            activation_id,
+            history.input_digests.get(&activation_id),
+        )
+        .await?;
         let admission = admission(
             &history,
             self.owner_agent_id(),
             activation_id,
             now_ms,
             AdmissionMode::ReconciliationOnly,
+            input,
         )?;
         tx.commit().await.map_err(unavailable)?;
         Ok(admission)
@@ -247,6 +340,7 @@ fn admission(
     activation_id: u64,
     observed_at_ms: u64,
     mode: AdmissionMode,
+    input: Option<CircuitComputationInputV1>,
 ) -> Result<CircuitComputationAdmissionV2, TaskFlowError> {
     Ok(CircuitComputationAdmissionV2 {
         dispatch: history.run.dispatch(&history.definition, activation_id)?,
@@ -255,6 +349,7 @@ fn admission(
         execution_request_digest: history.run.activations[&activation_id]
             .execution_request_digest
             .clone(),
+        input,
         observed_revision: history.run.revision,
         observed_at_ms,
         lease_expires_at_ms: history.run.writer.expires_at_ms,

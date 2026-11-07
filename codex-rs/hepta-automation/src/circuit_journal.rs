@@ -23,6 +23,7 @@ pub(crate) struct CircuitHistoryV2 {
     pub definition: BoundedCircuitDefinitionV2,
     pub run: CircuitRunV2,
     pub commands: BTreeMap<String, Sha256Digest>,
+    pub input_digests: BTreeMap<u64, Sha256Digest>,
     pub last_digest: Sha256Digest,
 }
 
@@ -199,6 +200,7 @@ pub(crate) async fn load(
         + 64;
     let mut run = None;
     let mut commands = BTreeMap::new();
+    let mut input_digests = BTreeMap::new();
     let mut previous = Sha256Digest::for_bytes(b"hepta.circuit.genesis.v2");
     let mut expected_seq = 0_u64;
     loop {
@@ -259,6 +261,15 @@ pub(crate) async fn load(
             if stored_event != digest.as_str() || stored_state != next.state_digest()?.as_str() {
                 return Err(corrupt("circuit event or state digest mismatch"));
             }
+            if let CircuitLedgerEventV2::ComputationClaimedWithInputV1 {
+                activation_id,
+                input_digest,
+                ..
+            } = payload
+                && input_digests.insert(activation_id, input_digest).is_some()
+            {
+                return Err(corrupt("circuit computation input repeats"));
+            }
             previous = digest;
             run = Some(next);
             expected_seq += 1;
@@ -283,6 +294,7 @@ pub(crate) async fn load(
         definition,
         run,
         commands,
+        input_digests,
         last_digest: previous,
     }))
 }

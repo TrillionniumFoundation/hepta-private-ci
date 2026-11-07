@@ -56,7 +56,7 @@ fn actual_file_owners_compute_sign_and_publish_only_bound_comparison() {
             summary.unsuccessful_entries,
             summary.energy_microjoules.unknown_entries
         ),
-        (120, 60, 1, 12)
+        (140, 70, 1, 14)
     );
     assert_eq!(summary.complete_metrics(), None);
     assert_eq!(receipt.authority(), AuthorityPosture::DENY_ALL);
@@ -172,7 +172,9 @@ fn unfair_or_missing_training_declarations_never_consume_holdout() {
 fn missing_or_unknown_costs_refuse_gain_while_unrequested_energy_stays_unknown() {
     for profile in [
         Costs::Empty,
-        Costs::MissingStage,
+        Costs::MissingStage(CellCostStageV2::Evaluation),
+        Costs::MissingStage(CellCostStageV2::ModelAcquisition),
+        Costs::MissingStage(CellCostStageV2::Migration),
         Costs::UnknownCpu,
         Costs::UnknownOutcome,
         Costs::UnknownEnvelope,

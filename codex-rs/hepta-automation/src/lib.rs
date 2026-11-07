@@ -16,6 +16,7 @@ mod authorized_effect;
 mod automation_taskflow;
 mod circuit_admission;
 mod circuit_budget;
+mod circuit_computation_input;
 mod circuit_compute;
 mod circuit_history;
 mod circuit_join;
@@ -67,6 +68,7 @@ pub use automation_taskflow::admission_receipt_digest;
 pub use circuit_admission::CircuitComputationAdmissionV2;
 pub use circuit_admission::CircuitComputationClaimV2;
 pub use circuit_budget::CircuitBudgetV2;
+pub use circuit_computation_input::CircuitComputationInputV1;
 pub use circuit_history::CircuitLeaseClaimV2;
 pub use circuit_join::CircuitJoinEnvelopeV2;
 pub use circuit_join::circuit_join_output_schema_v2;
@@ -207,7 +209,7 @@ pub use taskflow_step::TaskFlowStepState;
 pub use timer_lifecycle::TimerDrainStatus;
 pub use timer_lifecycle::TimerPhase;
 
-pub const AUTOMATION_SCHEMA_VERSION: u32 = 20;
+pub const AUTOMATION_SCHEMA_VERSION: u32 = 21;
 
 #[cfg(test)]
 #[path = "circuit_runtime_tests.rs"]

@@ -82,6 +82,15 @@ pub(crate) enum CircuitLedgerEventV2 {
         activation_id: u64,
         execution_request_digest: Sha256Digest,
     },
+    #[serde(rename = "computation_claimed_with_input_v1")]
+    ComputationClaimedWithInputV1 {
+        fence: CircuitFenceIdentityV2,
+        expected_revision: u64,
+        now_ms: u64,
+        activation_id: u64,
+        execution_request_digest: Sha256Digest,
+        input_digest: Sha256Digest,
+    },
 }
 
 impl CircuitLedgerEventV2 {
@@ -117,6 +126,24 @@ impl CircuitLedgerEventV2 {
                     return Err(TaskFlowError::StaleFence);
                 }
                 run.reduce(definition, event, *now_ms)
+            }
+            Self::ComputationClaimedWithInputV1 {
+                fence,
+                expected_revision,
+                now_ms,
+                activation_id,
+                execution_request_digest,
+                input_digest,
+            } => {
+                digest(input_digest)?;
+                Self::ComputationClaimed {
+                    fence: fence.clone(),
+                    expected_revision: *expected_revision,
+                    now_ms: *now_ms,
+                    activation_id: *activation_id,
+                    execution_request_digest: execution_request_digest.clone(),
+                }
+                .replay(previous, definition, owner)
             }
             Self::ComputationClaimed {
                 fence,

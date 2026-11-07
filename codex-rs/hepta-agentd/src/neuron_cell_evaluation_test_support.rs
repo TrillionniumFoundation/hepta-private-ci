@@ -48,7 +48,7 @@ pub(super) type Journal = CellGenerationJournalV2<FileAnchorWitnessStore>;
 pub(super) enum Costs {
     Complete,
     Empty,
-    MissingStage,
+    MissingStage(CellCostStageV2),
     UnknownCpu,
     UnknownOutcome,
     UnknownEnvelope,
@@ -133,11 +133,13 @@ pub(super) fn journal(path: &Path, name: &str, costs: Costs, task_digest: [u8; 3
             CellCostStageV2::Recovery,
             CellCostStageV2::Communication,
             CellCostStageV2::Evaluation,
+            CellCostStageV2::ModelAcquisition,
+            CellCostStageV2::Migration,
         ]
         .into_iter()
         .enumerate()
         {
-            if index == 11 && matches!(costs, Costs::MissingStage) {
+            if matches!(costs, Costs::MissingStage(missing) if missing == stage) {
                 continue;
             }
             checked(journal.record_cost(CellCostEntryV2 {

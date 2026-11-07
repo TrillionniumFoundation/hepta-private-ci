@@ -57,6 +57,8 @@ fn pending_cancel_reopen_stop_and_ack_gate_complete_task_cost() {
         CellCostStageV2::Recovery,
         CellCostStageV2::Communication,
         CellCostStageV2::Evaluation,
+        CellCostStageV2::ModelAcquisition,
+        CellCostStageV2::Migration,
     ]
     .into_iter()
     .enumerate()
@@ -68,7 +70,7 @@ fn pending_cancel_reopen_stop_and_ack_gate_complete_task_cost() {
     let before = checked(owner.observe_generation());
     assert_eq!(
         checked(before.cost().summary()).complete_metrics(),
-        Some(measured(12))
+        Some(measured(14))
     );
     assert_eq!(before.complete_metrics(), None);
     assert_eq!(
@@ -119,7 +121,7 @@ fn pending_cancel_reopen_stop_and_ack_gate_complete_task_cost() {
     assert_eq!(settled.snapshot().prefix, before.snapshot().prefix);
     assert_eq!(
         checked(settled.cost().summary()).complete_metrics(),
-        Some(measured(15))
+        Some(measured(17))
     );
     assert_eq!(settled.complete_metrics(), None);
 
@@ -144,7 +146,7 @@ fn pending_cancel_reopen_stop_and_ack_gate_complete_task_cost() {
     checked(owner.acknowledge(chunk.clone(), [1; 32], delivery_cost.clone()));
     let terminal = checked(owner.observe_generation());
     assert!(terminal.is_terminal());
-    assert_eq!(terminal.complete_metrics(), Some(measured(20)));
+    assert_eq!(terminal.complete_metrics(), Some(measured(22)));
     assert_eq!(terminal.snapshot(), stopped.snapshot());
     assert_ne!(terminal.digest(), stopped.digest());
     checked(owner.acknowledge(chunk, [1; 32], delivery_cost));
@@ -159,12 +161,12 @@ fn pending_cancel_reopen_stop_and_ack_gate_complete_task_cost() {
     let incomplete = checked(owner.observe_generation());
     assert!(incomplete.is_terminal());
     assert_eq!(incomplete.complete_metrics(), None);
-    assert_eq!(terminal.complete_metrics(), Some(measured(20)));
+    assert_eq!(terminal.complete_metrics(), Some(measured(22)));
     assert_eq!(incomplete.snapshot(), terminal.snapshot());
     assert_ne!(incomplete.digest(), terminal.digest());
     assert_eq!(
         checked(incomplete.cost().summary()).cpu_micros.known_sum,
-        20
+        22
     );
     assert_eq!(
         checked(incomplete.cost().summary())
