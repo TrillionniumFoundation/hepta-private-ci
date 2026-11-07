@@ -307,7 +307,7 @@ jobs:
         uses: ./.github/actions/check-clean-worktree
 
   recovery-owner-replay:
-    name: Agentd recovery Bazel \${{ matrix.lane }} replay
+    name: Agentd recovery Bazel ${{ matrix.lane }} replay
     needs: scope
     if: github.event_name == 'pull_request' && needs.scope.outputs.full_repo == 'true'
     runs-on: ubuntu-24.04
@@ -320,18 +320,18 @@ jobs:
       matrix:
         lane: [source-head, prospective-merge]
     steps:
-      - name: Checkout exact \${{ matrix.lane }} commit
+      - name: Checkout exact ${{ matrix.lane }} commit
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          ref: \${{ matrix.lane == 'source-head' && github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ matrix.lane == 'source-head' && github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
           persist-credentials: false
 
       - name: Verify exact tested commit
         env:
-          LANE: \${{ matrix.lane }}
-          TESTED_SHA: \${{ matrix.lane == 'source-head' && github.event.pull_request.head.sha || github.sha }}
-          SOURCE_SHA: \${{ github.event.pull_request.head.sha }}
+          LANE: ${{ matrix.lane }}
+          TESTED_SHA: ${{ matrix.lane == 'source-head' && github.event.pull_request.head.sha || github.sha }}
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
         shell: bash
         run: |
           set -euo pipefail
@@ -346,7 +346,7 @@ jobs:
         uses: ./.github/actions/prepare-bazel-ci
         with:
           target: x86_64-unknown-linux-gnu
-          cache-scope: bazel-recovery-\${{ matrix.lane }}
+          cache-scope: bazel-recovery-${{ matrix.lane }}
 
       - name: Check rusty_v8 MODULE.bazel checksums
         shell: bash
@@ -360,9 +360,9 @@ jobs:
 
       - name: Run uncached Agentd exact-cut recovery target
         env:
-          BUILDBUDDY_API_KEY: \${{ secrets.BUILDBUDDY_API_KEY }}
-          TESTED_SHA: \${{ matrix.lane == 'source-head' && github.event.pull_request.head.sha || github.sha }}
-          CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: \${{ runner.temp }}/bazel-execution-logs/\${{ matrix.lane }}
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+          TESTED_SHA: ${{ matrix.lane == 'source-head' && github.event.pull_request.head.sha || github.sha }}
+          CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: ${{ runner.temp }}/bazel-execution-logs/${{ matrix.lane }}
         shell: bash
         run: |
           set -euo pipefail
@@ -385,8 +385,8 @@ jobs:
         continue-on-error: true
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
-          name: bazel-execution-logs-recovery-\${{ matrix.lane }}
-          path: \${{ runner.temp }}/bazel-execution-logs/\${{ matrix.lane }}
+          name: bazel-execution-logs-recovery-${{ matrix.lane }}
+          path: ${{ runner.temp }}/bazel-execution-logs/${{ matrix.lane }}
           if-no-files-found: ignore
 
       - name: Save Bazel repository cache
@@ -394,8 +394,8 @@ jobs:
         continue-on-error: true
         uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
         with:
-          path: \${{ steps.prepare_bazel.outputs.repository-cache-path }}
-          key: \${{ steps.prepare_bazel.outputs.repository-cache-key }}
+          path: ${{ steps.prepare_bazel.outputs.repository-cache-path }}
+          key: ${{ steps.prepare_bazel.outputs.repository-cache-key }}
 
       - name: Check for a clean worktree
         if: always() && !cancelled()
