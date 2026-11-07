@@ -14,6 +14,18 @@ from scipy.sparse import diags
 from scipy.sparse.linalg import splu
 
 
+def _finite_scalars(*, allow_positive_infinity=(), **values):
+    for name, value in values.items():
+        try:
+            valid = (np.isscalar(value) and not isinstance(value, (str, bytes, complex))
+                     and (math.isfinite(value)
+                          or (name in allow_positive_infinity and value == math.inf)))
+        except (TypeError, ValueError, OverflowError):
+            valid = False
+        if not valid:
+            raise ValueError(f"{name} must be a finite real scalar")
+
+
 @dataclass(frozen=True)
 class IntegralResult:
     value: float
@@ -28,6 +40,7 @@ def hit_integral(x, horizon, mu, sigma, discount=0.0, derivative=None):
     relative tail precision. Parameter derivatives integrate the density score
     at fixed physical time, rather than differentiating a candidate CDF.
     """
+    _finite_scalars(x=x, horizon=horizon, mu=mu, sigma=sigma, discount=discount)
     if x < 0 or horizon < 0 or sigma <= 0 or discount < 0:
         raise ValueError("invalid first-passage domain")
     if derivative not in (None, "x", "mu", "sigma", "discount"):
@@ -82,6 +95,8 @@ def hit_integral(x, horizon, mu, sigma, discount=0.0, derivative=None):
 
 def survivor_integral(x, horizon, mu, sigma, lower=0.0, upper=math.inf):
     """Integrate the positive killed density; do not subtract two CDFs."""
+    _finite_scalars(x=x, horizon=horizon, mu=mu, sigma=sigma, lower=lower, upper=upper,
+                    allow_positive_infinity=("upper",))
     if x < 0 or horizon < 0 or sigma <= 0 or lower < 0 or upper <= lower:
         raise ValueError("invalid survivor interval")
     if x == 0:
@@ -114,7 +129,7 @@ class PDEResult:
     time_intervals: int
     domain: float
     drift_scheme: str
-    upper_boundary_hit_probability: float
+    lower_hit_probability_from_upper_boundary: float
 
 
 def pde_value(x, horizon, mu, sigma, discount, margin, refractory=0.0,
@@ -125,7 +140,13 @@ def pde_value(x, horizon, mu, sigma, discount, margin, refractory=0.0,
     U(T,0)=h+exp(-q*d) U(T-d,margin) for T>=d; otherwise U(T,0)=h.
     Terminal payoff is paid only in active states, including exact release time.
     Space refinement and domain expansion remain necessary even when it solves.
+    The returned lower-hit probability starts at the artificial upper boundary;
+    it is neither upper escape probability from x nor a truncation-error bound.
     """
+    _finite_scalars(x=x, horizon=horizon, mu=mu, sigma=sigma, discount=discount,
+                    margin=margin, refractory=refractory, hit_reward=hit_reward,
+                    active_reward=active_reward, terminal_reward=terminal_reward,
+                    space_step=space_step, time_step=time_step, domain=domain)
     if not (0 <= x <= domain and horizon >= 0 and sigma > 0 and discount >= 0
             and margin > 0 and refractory >= 0 and space_step > 0 and time_step > 0):
         raise ValueError("invalid PDE domain")
@@ -204,6 +225,7 @@ def pde_value(x, horizon, mu, sigma, discount, margin, refractory=0.0,
 
 def five_point_derivative(function, point, step):
     """Function sensitivity; this does not certify an autodiff implementation."""
+    _finite_scalars(point=point, step=step)
     if step <= 0:
         raise ValueError("step must be positive")
     return (function(point - 2*step) - 8*function(point - step)
@@ -229,6 +251,10 @@ def stationary_hx_pde(par, boundary, margin, refractory, hit_reward, x,
     is subtracted analytically to leave a bounded source and stable far boundary.
     This audits value at the supplied boundary, not regenerative optimal stopping.
     """
+    _finite_scalars(x=x, boundary=boundary, margin=margin, refractory=refractory,
+                    hit_reward=hit_reward, space_step=space_step, domain=domain,
+                    **{key: getattr(par, key) for key in ("r", "delta", "sigma", "coupon",
+                       "principal", "maturity", "tax", "recovery", "ell")})
     if not (0 <= x <= domain and par.r > 0 and boundary > 0 and refractory >= 0
             and par.sigma > 0 and space_step > 0):
         raise ValueError("invalid stationary audit domain")

@@ -13,6 +13,24 @@ from qualification.hcsn_regenerative.process import (
 
 
 class RegenerativeAuditTests(unittest.TestCase):
+    def test_invalid_domains_are_rejected_before_atom_shortcuts(self):
+        invalid_calls = [
+            lambda: hit_integral(0, 0, math.nan, .2),
+            lambda: hit_integral(0, 1, -.1, math.inf),
+            lambda: hit_integral(.1, math.inf, -.1, .2),
+            lambda: survivor_integral(0, 0, math.nan, .2),
+            lambda: survivor_integral(.1, 1, -.1, .2, upper=math.nan),
+            lambda: survivor_integral(.1, 1, -.1, .2, upper=-math.inf),
+            lambda: pde_value(0, 0, math.inf, .2, .1, .25),
+            lambda: pde_value(.1, 1, -.1, .2, math.nan, .25),
+            lambda: pde_value(.1, 1, -.1, .2, .1, .25, active_reward=math.nan),
+            lambda: pde_value(.1, 1, -.1, .2, .1, .25, space_step=math.inf),
+        ]
+        for index, call in enumerate(invalid_calls):
+            with self.subTest(index=index), self.assertRaises(ValueError):
+                call()
+        self.assertEqual(survivor_integral(.1, 0, -.1, .2, upper=math.inf), 1)
+
     def test_positive_integral_in_tail_and_at_low_noise(self):
         for args in [(4, .5, .2, .2, .1), (.12, .8, -.2, .015, .1),
                      (1e-5, 1e-5, -.2, .2, .1)]:
@@ -110,6 +128,15 @@ class RegenerativeAuditTests(unittest.TestCase):
                             time_step=.0005).regenerative for m in [.245, .255]]
         oracle = (values[1] - values[0]) / .01
         self.assertLess(abs(expected - oracle), .001)
+
+    def test_instant_reset_nonlocal_boundary_at_positive_deadline(self):
+        for x in [0, .35]:
+            expected = finite_horizon_value(KilledDiffusion(-.1, .3, .15), ResetRule(.25),
+                                            x, 1.4, active_reward=.4, terminal_reward=.2)
+            oracle = pde_value(x, 1.4, -.1, .3, .15, .25, active_reward=.4,
+                               terminal_reward=.2, space_step=.0025, time_step=.0005)
+            self.assertLess(abs(oracle.regenerative - expected.regenerative), .00015)
+            self.assertLess(abs(oracle.single_cycle - expected.single_cycle), .00015)
 
     def test_stationary_hx_resolvent_and_regenerative_slope(self):
         par, reset = HXParams(), ResetRule(.25, .11, .3)
