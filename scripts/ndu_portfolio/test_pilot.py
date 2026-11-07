@@ -213,9 +213,26 @@ class PilotContracts(unittest.TestCase):
                 read_plan(root / "PLAN.json", pin)
             with self.assertRaisesRegex(ValueError, "roster changed"):
                 read_plan(root / "PLAN.json", _sha(root / "PLAN.json"))
-            row = {"status": "not_started"}
-            self.assertFalse(pilot_cli.before_task(plan, 0.0, row, 10.0))
-            self.assertEqual(row["status"], "not_started_budget_exhausted")
+            # perf_counter has an arbitrary origin, including on fresh CI hosts.
+            # Exercise the registered 120-second boundary with a 10-second reserve.
+            for origin in (0.0, 1_000_000.0):
+                for elapsed, allowed in ((109.0, True), (110.0, False), (111.0, False)):
+                    with self.subTest(origin=origin, elapsed=elapsed):
+                        row = {"status": "not_started"}
+                        with patch.object(
+                            pilot_cli.time,
+                            "perf_counter",
+                            return_value=origin + elapsed,
+                        ):
+                            self.assertEqual(
+                                pilot_cli.before_task(plan, origin, row, 10.0), allowed
+                            )
+                        self.assertEqual(
+                            row["status"],
+                            "not_started"
+                            if allowed
+                            else "not_started_budget_exhausted",
+                        )
 
 
 if __name__ == "__main__":
