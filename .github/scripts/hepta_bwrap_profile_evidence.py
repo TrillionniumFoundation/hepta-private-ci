@@ -23,6 +23,7 @@ from hepta_bwrap_profile_checks import (
     validate_precompile,
 )
 from hepta_core_selected_evidence import ProposalError, identity, read_regular, require
+from hepta_bwrap_share_checks import validate_share_mode
 
 
 def save(path, raw):
@@ -86,6 +87,7 @@ def collect():
             "mechanism_verified",
             "policy_lifetime",
             "profile_add_status",
+            "share_mode_status",
             "product_qualification",
             "host_read_chunk_bytes",
             "host_read_limit_bytes",
@@ -118,9 +120,20 @@ def collect():
         "LIFETIME_OR_PRODUCT_CLAIM",
     )
     require(
+        result["share_mode_status"]
+        in {"NOT_STARTED", "FAILED_OR_UNKNOWN", "TIGHTENED_VERIFIED", "ALREADY_0755"},
+        "SHARE_STATE",
+    )
+    require(
+        (result["share_mode_status"] in {"TIGHTENED_VERIFIED", "ALREADY_0755"})
+        == result["checks"]["share_mode"],
+        "SHARE_STATE_CHECK",
+    )
+    require(
         result["failure_stage"] is None
         or result["failure_stage"]
         in {
+            "share_mode",
             "before",
             "baseline",
             "precompile",
@@ -146,7 +159,8 @@ def collect():
     checks = result["checks"]
     require(
         type(checks) is dict
-        and set(checks) == {"before", "baseline", "precompile", "loaded", "after"}
+        and set(checks)
+        == {"share_mode", "before", "baseline", "precompile", "loaded", "after"}
         and all(type(value) is bool for value in checks.values()),
         "CHECK_SCHEMA",
     )
@@ -242,6 +256,7 @@ def collect():
         "READ_INVENTORY",
     )
     validators = {
+        "share_mode": lambda: validate_share_mode(originals, result["commands"]),
         "before": lambda: validate_before(originals, result["commands"]),
         "baseline": lambda: baseline_observation(originals, result["commands"]),
         "precompile": lambda: validate_precompile(originals, result["commands"]),
@@ -259,6 +274,15 @@ def collect():
         result["baseline_association"] == values.get("baseline")
         and result["child_observation"] == values.get("after"),
         "OBSERVATION_CHANGED",
+    )
+    require(
+        not checks["share_mode"] or result["share_mode_status"] == values["share_mode"],
+        "SHARE_VERIFICATION_CHANGED",
+    )
+    require(
+        result["share_mode_status"] != "NOT_STARTED"
+        or "share_mode" not in result["commands"],
+        "SHARE_COMMAND_STATE",
     )
     load = result["commands"].get("profile_add")
     expected_load = (
@@ -320,6 +344,7 @@ def collect():
         "mechanism_observed": verified,
         "mechanism_evidence_complete": complete and verified,
         "profile_add_status": expected_load,
+        "share_mode_status": result["share_mode_status"],
         "product_qualification": False,
         "raw_logs_rewritten": False,
         "raw_rejected_bytes_encoded_or_uploaded": False,
@@ -328,6 +353,8 @@ def collect():
             "The baseline child PID relation is inferred from reviewed bwrap source, not a captured parent-PID trace.",
             "No profiles are replaced or removed. In-memory policy lifetime ends with provider VM teardown, which is not observed here.",
             "A partial or unknown add is never described as leaving the host unchanged.",
+            "The fixed directory is kept at 0755 until VM disposal; existing subtree and runtime trust are not proved by that change.",
+            "The new sudo/Python helper invocation does not alter the original parser arguments or the ambient scanner.",
         ],
     }
     raw_manifest = encoded(manifest)
