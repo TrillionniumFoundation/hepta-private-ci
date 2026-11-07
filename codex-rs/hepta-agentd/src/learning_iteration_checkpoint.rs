@@ -63,8 +63,8 @@ impl LearningIterationCheckpointRecordV1 {
         request: LearningIterationRequestV1,
         owners: LearningIterationOwnersV1,
     ) -> Result<Self, Error> {
-        let initial = LearningIterationCoordinatorV1::new(request, owners)
-            .map_err(Error::Snapshot)?;
+        let initial =
+            LearningIterationCoordinatorV1::new(request, owners).map_err(Error::Snapshot)?;
         Ok(Self {
             schema: 1,
             binding: initial.snapshot().head_digest.to_string(),
@@ -99,8 +99,8 @@ impl LearningIterationCheckpointOwnerV1 {
         request: LearningIterationRequestV1,
         owners: LearningIterationOwnersV1,
     ) -> Result<Self, Error> {
-        let initial = LearningIterationCoordinatorV1::new(request, owners)
-            .map_err(Error::Snapshot)?;
+        let initial =
+            LearningIterationCoordinatorV1::new(request, owners).map_err(Error::Snapshot)?;
         let owner = Self {
             owner_id: original_owner_id,
             store: Store::Host(store),
@@ -118,7 +118,9 @@ impl LearningIterationCheckpointOwnerV1 {
         &self,
         request: &LearningIterationRequestV1,
     ) -> Result<Option<LearningIterationSnapshotV1>, Error> {
-        if request != &self.initial.request { return Err(Error::WrongScope); }
+        if request != &self.initial.request {
+            return Err(Error::WrongScope);
+        }
         self.load().map(|(_, snapshot)| snapshot)
     }
 
@@ -130,13 +132,20 @@ impl LearningIterationCheckpointOwnerV1 {
         expected_head: Digest32,
         next: &LearningIterationSnapshotV1,
     ) -> Result<Digest32, Error> {
-        if next.receipts.len() > codec::MAX_RECEIPTS { return Err(Error::Capacity); }
+        if next.receipts.len() > codec::MAX_RECEIPTS {
+            return Err(Error::Capacity);
+        }
         if next.request != self.initial.request || next.owners != self.initial.owners {
             return Err(Error::WrongScope);
         }
         LearningIterationCoordinatorV1::from_snapshot(next.clone()).map_err(Error::Snapshot)?;
-        let predecessor = next.receipts.last().map_or(Digest32::ZERO, |receipt| receipt.predecessor);
-        if predecessor != expected_head { return Err(Error::Conflict); }
+        let predecessor = next
+            .receipts
+            .last()
+            .map_or(Digest32::ZERO, |receipt| receipt.predecessor);
+        if predecessor != expected_head {
+            return Err(Error::Conflict);
+        }
         let record = LearningIterationCheckpointRecordV1 {
             schema: 1,
             binding: self.initial.head_digest.to_string(),
@@ -144,12 +153,20 @@ impl LearningIterationCheckpointOwnerV1 {
             snapshot: Some(STANDARD_NO_PAD.encode(codec::encode(next)?)),
         };
         let (current, snapshot) = self.load()?;
-        if current == record { return Ok(next.head_digest); }
+        if current == record {
+            return Ok(next.head_digest);
+        }
         match snapshot {
-            None if !expected_head.is_zero() || next != &self.initial => return Err(Error::Conflict),
-            Some(previous) if previous.head_digest != expected_head
-                || next.receipts.len() != previous.receipts.len() + 1
-                || !next.receipts.starts_with(&previous.receipts) => return Err(Error::Conflict),
+            None if !expected_head.is_zero() || next != &self.initial => {
+                return Err(Error::Conflict);
+            }
+            Some(previous)
+                if previous.head_digest != expected_head
+                    || next.receipts.len() != previous.receipts.len() + 1
+                    || !next.receipts.starts_with(&previous.receipts) =>
+            {
+                return Err(Error::Conflict);
+            }
             None | Some(_) => {}
         }
         // The existing backend serializes and bounds the complete outer Root
@@ -166,31 +183,52 @@ impl LearningIterationCheckpointOwnerV1 {
         }
     }
 
-    fn load(&self) -> Result<(LearningIterationCheckpointRecordV1, Option<LearningIterationSnapshotV1>), Error> {
+    fn load(
+        &self,
+    ) -> Result<
+        (
+            LearningIterationCheckpointRecordV1,
+            Option<LearningIterationSnapshotV1>,
+        ),
+        Error,
+    > {
         let record = match &self.store {
             Store::Host(store) => store.load(&self.owner_id),
             #[cfg(test)]
             Store::Test(store) => store.load(&self.owner_id),
-        }.map_err(Error::Store)?;
+        }
+        .map_err(Error::Store)?;
         if record.schema != 1 || record.binding != self.initial.head_digest.to_string() {
             return Err(Error::WrongScope);
         }
         let Some(encoded) = &record.snapshot else {
-            if record.predecessor != Digest32::ZERO.to_string() { return Err(Error::InvalidRecord); }
+            if record.predecessor != Digest32::ZERO.to_string() {
+                return Err(Error::InvalidRecord);
+            }
             return Ok((record, None));
         };
-        if encoded.len() > codec::MAX_BYTES.div_ceil(3) * 4 { return Err(Error::Capacity); }
+        if encoded.len() > codec::MAX_BYTES.div_ceil(3) * 4 {
+            return Err(Error::Capacity);
+        }
         let mut bytes = [0_u8; codec::MAX_BYTES];
-        let length = STANDARD_NO_PAD.decode_slice(encoded, &mut bytes)
+        let length = STANDARD_NO_PAD
+            .decode_slice(encoded, &mut bytes)
             .map_err(|_| Error::InvalidRecord)?;
         let bytes = &bytes[..length];
-        if STANDARD_NO_PAD.encode(bytes) != *encoded { return Err(Error::InvalidRecord); }
+        if STANDARD_NO_PAD.encode(bytes) != *encoded {
+            return Err(Error::InvalidRecord);
+        }
         let snapshot = codec::decode(bytes)?;
         if snapshot.request != self.initial.request || snapshot.owners != self.initial.owners {
             return Err(Error::WrongScope);
         }
-        let predecessor = snapshot.receipts.last().map_or(Digest32::ZERO, |receipt| receipt.predecessor);
-        if record.predecessor != predecessor.to_string() { return Err(Error::InvalidRecord); }
+        let predecessor = snapshot
+            .receipts
+            .last()
+            .map_or(Digest32::ZERO, |receipt| receipt.predecessor);
+        if record.predecessor != predecessor.to_string() {
+            return Err(Error::InvalidRecord);
+        }
         Ok((record, Some(snapshot)))
     }
 }
