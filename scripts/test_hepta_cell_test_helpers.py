@@ -1,14 +1,18 @@
 #!/usr/bin/env python3
 """Exercise read-only helper verification with real Git and synthetic file copies."""
 
+import contextlib
 import hashlib
+import io
 import json
 from pathlib import Path
+import runpy
 import shutil
 import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 
 SCRIPT = Path(__file__).resolve().with_name("hepta_cell_test_helpers.py")
@@ -61,6 +65,7 @@ class PinnedHelperVerificationTests(unittest.TestCase):
             }
             for name in {binary, binary.replace("-", "_")}:
                 self.environment[f"CARGO_BIN_EXE_{name}"] = str(pinned)
+                self.environment[f"NEXTEST_BIN_EXE_{name}"] = str(pinned)
         self.manifest = {
             "schema_version": 1,
             "source_sha": self.head,
@@ -169,6 +174,102 @@ class PinnedHelperVerificationTests(unittest.TestCase):
             },
         )
 
+    def test_build_exports_both_prefixes_and_verifies_the_exact_copies(self):
+        output = self.output.parent / "built-attempt"
+        real_run = subprocess.run
+
+        def cargo_build(command, **kwargs):
+            if command[0] != "cargo":
+                return real_run(command, **kwargs)
+            self.assertEqual(command, self.manifest["builds"][0]["command"])
+            self.assertEqual(kwargs["cwd"], self.workspace)
+            # Supply controlled Cargo metadata for these synthetic file copies;
+            # the real builder still pins, hashes and exports each executable.
+            for binary, artifact in self.manifest["artifacts"].items():
+                message = {
+                    "reason": "compiler-artifact",
+                    "package_id": artifact["package_id"],
+                    "target": {"name": binary, "kind": ["bin"]},
+                    "executable": artifact["compiler_executable"],
+                    "profile": artifact["profile"],
+                }
+                kwargs["stdout"].write((json.dumps(message) + "\n").encode())
+            kwargs["stdout"].write(b'{"reason":"build-finished","success":true}\n')
+            return subprocess.CompletedProcess(command, 0)
+
+        namespace = runpy.run_path(str(self.script))
+        arguments = [
+            str(self.script),
+            "--output-dir",
+            str(output),
+            "--package",
+            "codex-app-server",
+        ]
+        with (
+            mock.patch.object(sys, "argv", arguments),
+            mock.patch.object(subprocess, "run", side_effect=cargo_build),
+            contextlib.redirect_stdout(io.StringIO()),
+        ):
+            self.assertEqual(namespace["main"](), 0)
+        self.assertEqual(
+            json.loads((output / "env.json").read_text(encoding="utf-8")),
+            {
+                key: str(output / "bin" / Path(value).name)
+                for key, value in self.environment.items()
+            },
+        )
+        report = self.verify(output)
+        self.assertTrue(report["complete"], report)
+        self.assertEqual(report["exit_code"], 0)
+
+    def test_environment_requires_both_prefixes_and_every_binary_alias(self):
+        original = self.environment.copy()
+        cases = []
+        for prefix in ("CARGO_BIN_EXE", "NEXTEST_BIN_EXE"):
+            cases.append(
+                (
+                    prefix,
+                    {
+                        key: value
+                        for key, value in original.items()
+                        if not key.startswith(prefix + "_")
+                    },
+                )
+            )
+        for missing in original:
+            cases.append(
+                (
+                    missing,
+                    {key: value for key, value in original.items() if key != missing},
+                )
+            )
+        for missing, environment in cases:
+            with self.subTest(missing=missing):
+                self.environment = environment
+                self.save_evidence()
+                before = (self.output / "env.json").read_bytes()
+                report = self.verify()
+                self.assertFalse(report["complete"])
+                self.assertIn("environment differs", report["error"])
+                self.assertEqual((self.output / "env.json").read_bytes(), before)
+
+    def test_environment_rejects_extra_keys_even_with_an_existing_pinned_path(self):
+        original = self.environment.copy()
+        pinned = self.manifest["artifacts"]["codex-app-server"]["executable"]
+        for extra in (
+            "CARGO_BIN_EXE_unprepared-helper",
+            "NEXTEST_BIN_EXE_unprepared_helper",
+            "UNRELATED_HELPER_SETTING",
+        ):
+            with self.subTest(extra=extra):
+                self.environment = {**original, extra: pinned}
+                self.save_evidence()
+                before = (self.output / "env.json").read_bytes()
+                report = self.verify()
+                self.assertFalse(report["complete"])
+                self.assertIn("environment differs", report["error"])
+                self.assertEqual((self.output / "env.json").read_bytes(), before)
+
     def test_clean_different_source_commit_is_rejected(self):
         self.git("commit", "--allow-empty", "-qm", "different source")
         report = self.verify()
@@ -213,13 +314,17 @@ class PinnedHelperVerificationTests(unittest.TestCase):
 
     def test_environment_cannot_redirect_to_mutable_cargo_path(self):
         artifact = self.manifest["artifacts"]["codex-app-server"]
-        self.environment["CARGO_BIN_EXE_codex-app-server"] = artifact[
-            "compiler_executable"
-        ]
-        self.save_evidence()
-        report = self.verify()
-        self.assertFalse(report["complete"])
-        self.assertIn("environment differs", report["error"])
+        original = self.environment.copy()
+        for key in (
+            "CARGO_BIN_EXE_codex-app-server",
+            "NEXTEST_BIN_EXE_codex_app_server",
+        ):
+            with self.subTest(key=key):
+                self.environment = {**original, key: artifact["compiler_executable"]}
+                self.save_evidence()
+                report = self.verify()
+                self.assertFalse(report["complete"])
+                self.assertIn("environment differs", report["error"])
 
     def test_complete_subset_does_not_qualify_as_default_full_helper_set(self):
         report = self.verify(packages=())

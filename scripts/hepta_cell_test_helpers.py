@@ -43,6 +43,14 @@ def build_command(package):
     return command
 
 
+def helper_environment(binary, executable):
+    return {
+        f"{prefix}_{name}": str(executable)
+        for name in sorted({binary, binary.replace("-", "_")})
+        for prefix in ("CARGO_BIN_EXE", "NEXTEST_BIN_EXE")
+    }
+
+
 def source_snapshot(root):
     def git(*arguments):
         return subprocess.check_output(
@@ -222,8 +230,7 @@ def verify_helpers(root, output, requested_packages):
                 not stat.S_IMODE(after.st_mode) & 0o222 and os.access(pinned, os.X_OK),
                 f"pinned helper is writable or not executable: {binary}",
             )
-            for name in sorted({binary, binary.replace("-", "_")}):
-                expected_environment[f"CARGO_BIN_EXE_{name}"] = str(pinned)
+            expected_environment.update(helper_environment(binary, pinned))
             observed["match"] = True
         require(
             isinstance(environment, dict) and environment == expected_environment,
@@ -413,11 +420,11 @@ def main():
                     f"{package} missing executable metadata: {sorted(set(binaries) - found)}"
                 )
             for binary in binaries:
-                for name in sorted({binary, binary.replace("-", "_")}):
-                    for prefix in ("CARGO_BIN_EXE", "NEXTEST_BIN_EXE"):
-                        environment[f"{prefix}_{name}"] = manifest["artifacts"][binary][
-                            "executable"
-                        ]
+                environment.update(
+                    helper_environment(
+                        binary, manifest["artifacts"][binary]["executable"]
+                    )
+                )
             build["complete"] = True
             checkpoint()
         manifest["source_sha_after"] = git("rev-parse", "HEAD")
