@@ -1,0 +1,70 @@
+{
+  "name": "sha2-asm",
+  "version": "0.6.4",
+  "id": "registry+https://github.com/rust-lang/crates.io-index#sha2-asm@0.6.4",
+  "license": "MIT",
+  "license_file": null,
+  "description": "Assembly implementation of SHA-2 compression functions",
+  "source": "registry+https://github.com/rust-lang/crates.io-index",
+  "dependencies": [
+    {
+      "name": "cc",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "req": "^1.0",
+      "kind": "build",
+      "rename": null,
+      "optional": false,
+      "uses_default_features": true,
+      "features": [],
+      "target": null,
+      "registry": null
+    }
+  ],
+  "targets": [
+    {
+      "kind": ["lib"],
+      "crate_types": ["lib"],
+      "name": "sha2_asm",
+      "src_path": "__SHA2_ASM_ROOT__/src/lib.rs",
+      "edition": "2018",
+      "doc": true,
+      "doctest": true,
+      "test": true
+    },
+    {
+      "kind": ["bench"],
+      "crate_types": ["bin"],
+      "name": "lib",
+      "src_path": "__SHA2_ASM_ROOT__/benches/lib.rs",
+      "edition": "2018",
+      "doc": false,
+      "doctest": false,
+      "test": false
+    },
+    {
+      "kind": ["custom-build"],
+      "crate_types": ["bin"],
+      "name": "build-script-build",
+      "src_path": "__SHA2_ASM_ROOT__/build.rs",
+      "edition": "2018",
+      "doc": false,
+      "doctest": false,
+      "test": false
+    }
+  ],
+  "features": {},
+  "manifest_path": "__SHA2_ASM_ROOT__/Cargo.toml",
+  "metadata": null,
+  "publish": null,
+  "authors": ["RustCrypto Developers"],
+  "categories": ["cryptography", "no-std"],
+  "keywords": ["crypto", "sha2", "asm"],
+  "readme": null,
+  "repository": "https://github.com/RustCrypto/asm-hashes",
+  "homepage": null,
+  "documentation": "https://docs.rs/sha2-asm",
+  "edition": "2018",
+  "links": null,
+  "default_run": null,
+  "rust_version": null
+}
