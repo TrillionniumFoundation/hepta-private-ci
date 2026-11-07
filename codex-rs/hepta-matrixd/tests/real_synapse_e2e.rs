@@ -322,7 +322,7 @@ async fn run_real_synapse_qualification_inner(
     .context("Agent B encrypted DM setup exceeded its bounded deadline")??;
     let room_a = encrypted_matrix_a.room_id().to_string();
     let room_b = encrypted_matrix_b.room_id().to_string();
-    for (label, mxid, password, device_id, room_id) in [
+    for (label, mxid, _password, _device_id, room_id) in [
         (
             "a",
             AGENT_A_MXID,
@@ -342,16 +342,38 @@ async fn run_real_synapse_qualification_inner(
         // This raw fixture establishes only membership and logs out
         // immediately. Product matrixd must still decrypt and send through a
         // distinct persistent Matrix SDK crypto store below.
-        timeout(
-            MATRIX_MEMBERSHIP_TIMEOUT,
-            join_room_with_password(
-                &environment.homeserver,
-                mxid,
-                password,
-                &format!("{device_id}-JOIN"),
-                room_id,
-            ),
-        )
+        timeout(MATRIX_MEMBERSHIP_TIMEOUT, async {
+            #[cfg(target_os = "linux")]
+            {
+                environment
+                    .registration_sessions
+                    .as_ref()
+                    .context("Linux registration sessions are required")?
+                    .join(
+                        &environment.homeserver,
+                        mxid,
+                        room_id,
+                        &[
+                            &human_a_device_id,
+                            &human_b_device_id,
+                            &agent_a_device_id,
+                            &agent_b_device_id,
+                        ],
+                    )
+                    .await
+            }
+            #[cfg(not(target_os = "linux"))]
+            {
+                join_room_with_password(
+                    &environment.homeserver,
+                    mxid,
+                    _password,
+                    &format!("{_device_id}-JOIN"),
+                    room_id,
+                )
+                .await
+            }
+        })
         .await
         .with_context(|| format!("Agent {label} encrypted room join timed out"))??;
         eprintln!("R4_STAGE agent_{label}_join:done");
@@ -1667,6 +1689,8 @@ struct E2eEnvironment {
     agent_a_password: String,
     agent_b_password: String,
     human_password: String,
+    #[cfg(target_os = "linux")]
+    registration_sessions: Option<linux_qualification::RegistrationSessions>,
     completion: QualificationCompletionAuthority,
 }
 
@@ -2915,6 +2939,8 @@ impl E2eEnvironment {
             agent_a_password,
             agent_b_password,
             human_password,
+            #[cfg(target_os = "linux")]
+            registration_sessions: None,
             completion,
         })
     }
@@ -6013,6 +6039,7 @@ impl EncryptedMatrixClient {
     }
 }
 
+#[cfg(not(target_os = "linux"))]
 async fn join_room_with_password(
     homeserver: &str,
     mxid: &str,
