@@ -119,7 +119,44 @@ where
         &mut self,
         admission: CircuitComputationAdmissionV2,
         input: CellStepInputV1,
+        clock: impl FnMut() -> CircuitCellTimeV1,
+    ) -> Result<CircuitCellExecutionV1, CircuitCellErrorV1> {
+        // Reserved negotiated input must use the typed entry and its live
+        // endpoint checks, even when E happens to accept arbitrary bytes.
+        if codex_hepta_neuron::CellNativeRepresentationInputV1::is_representation_observation(
+            &input.observation,
+        ) {
+            return Err(CircuitCellErrorV1::InputMismatch);
+        }
+        CircuitCellExecutionOwnersV1 {
+            registry: &self.registry,
+            state_owner: &mut self.state_owner,
+            inference_control: &mut self.inference_control,
+            encoder: &self.encoder,
+        }
+        .execute(admission, input, clock, || Ok(()))
+    }
+}
+
+struct CircuitCellExecutionOwnersV1<'a, O, P, E> {
+    registry: &'a CircuitCellRegistryV1,
+    state_owner: &'a mut O,
+    inference_control: &'a mut P,
+    encoder: &'a E,
+}
+
+impl<O, P, E> CircuitCellExecutionOwnersV1<'_, O, P, E>
+where
+    O: CellStateOwnerV1,
+    P: NeuronInferenceControlPort + CellInferenceReadbackPortV1,
+    E: CellInputEncoderV1,
+{
+    fn execute(
+        self,
+        admission: CircuitComputationAdmissionV2,
+        input: CellStepInputV1,
         mut clock: impl FnMut() -> CircuitCellTimeV1,
+        mut validate_new_use: impl FnMut() -> Result<(), CellExecutionError>,
     ) -> Result<CircuitCellExecutionV1, CircuitCellErrorV1> {
         let dispatch = admission.dispatch();
         let binding = self.registry.bind_input(dispatch, &input)?;
@@ -158,20 +195,21 @@ where
             let inferred = if pending.is_some() {
                 recover_cell_inference(
                     &binding.cell,
-                    &self.state_owner,
-                    &self.encoder,
+                    self.state_owner,
+                    self.encoder,
                     input.clone(),
-                    &mut self.inference_control,
+                    self.inference_control,
                     time.cell_micros,
                 )?
             } else {
                 if read_only {
                     return Err(CircuitCellErrorV1::ReconciliationRequired);
                 }
+                validate_new_use()?;
                 match enter_cell_step(
                     &binding.cell,
-                    &self.state_owner,
-                    &self.encoder,
+                    self.state_owner,
+                    self.encoder,
                     input.clone(),
                     time.cell_micros,
                 )? {
@@ -184,15 +222,16 @@ where
                             return Err(CircuitCellErrorV1::ReconciliationRequired);
                         }
                         let mut guarded = GuardedCellDispatchV1::new(
-                            &mut self.inference_control,
+                            self.inference_control,
                             &mut clock,
                             before_infer,
                             admission_deadline,
                             input.deadline_micros,
+                            &mut validate_new_use,
                         );
                         let inferred = infer_cell(
                             *prepared,
-                            &mut self.state_owner,
+                            self.state_owner,
                             &mut guarded,
                             before_infer.cell_micros,
                         )?;
@@ -219,7 +258,7 @@ where
             {
                 return Err(CircuitCellErrorV1::ReconciliationRequired);
             }
-            commit_cell_step(&mut self.state_owner, proposal, committed_at.cell_micros)?
+            commit_cell_step(self.state_owner, proposal, committed_at.cell_micros)?
         };
         finish(binding, dispatch, &input, decision)
     }
@@ -301,6 +340,11 @@ fn finish(
         output,
     })
 }
+
+#[path = "circuit_cell_representation.rs"]
+mod representation;
+pub use representation::CircuitCellRepresentationResolverV1;
+pub use representation::CircuitCellRepresentationUseV1;
 
 #[cfg(test)]
 #[path = "circuit_cell_tests.rs"]

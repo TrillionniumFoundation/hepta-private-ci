@@ -1,6 +1,7 @@
 //! Final live clock check after durable Cell admission and before model contact.
 //! Refusal leaves the original pending record intact; it never permits redispatch.
 
+use codex_hepta_neuron::CellExecutionError;
 use codex_hepta_neuron::NeuronFeatureReceiptV1;
 use codex_hepta_neuron::NeuronFeatureRequestV1;
 use codex_hepta_neuron::NeuronInferenceControlPort;
@@ -15,6 +16,7 @@ pub(super) struct GuardedCellDispatchV1<'a, P, C> {
     circuit_deadline_ms: u64,
     cell_deadline_micros: u64,
     observed: Option<CircuitCellTimeV1>,
+    validate_new_use: &'a mut dyn FnMut() -> Result<(), CellExecutionError>,
 }
 
 impl<'a, P, C> GuardedCellDispatchV1<'a, P, C> {
@@ -24,8 +26,9 @@ impl<'a, P, C> GuardedCellDispatchV1<'a, P, C> {
         not_before: CircuitCellTimeV1,
         circuit_deadline_ms: u64,
         cell_deadline_micros: u64,
+        validate_new_use: &'a mut dyn FnMut() -> Result<(), CellExecutionError>,
     ) -> Self {
-        Self { control, clock, not_before, circuit_deadline_ms, cell_deadline_micros, observed: None }
+        Self { control, clock, not_before, circuit_deadline_ms, cell_deadline_micros, observed: None, validate_new_use }
     }
 
     pub(super) fn observed_at(&self) -> Option<CircuitCellTimeV1> { self.observed }
@@ -40,6 +43,7 @@ where
         &mut self,
         request: &NeuronFeatureRequestV1,
     ) -> Result<NeuronFeatureReceiptV1, NeuronModelError> {
+        (self.validate_new_use)().map_err(|_| NeuronModelError::Rejected)?;
         let now = (self.clock)();
         if now.circuit_millis < self.not_before.circuit_millis
             || now.cell_micros < self.not_before.cell_micros
