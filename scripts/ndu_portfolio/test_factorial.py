@@ -4,7 +4,13 @@ import copy
 import unittest
 
 from .example_factorial import example
-from .factorial import TIMING_TOLERANCE_SECONDS, InvalidEvidence, audit, select_comparators, validate_protocol
+from .factorial import (
+    TIMING_TOLERANCE_SECONDS,
+    InvalidEvidence,
+    audit,
+    select_comparators,
+    validate_protocol,
+)
 
 
 class FactorialGates(unittest.TestCase):
@@ -12,8 +18,11 @@ class FactorialGates(unittest.TestCase):
         self.p, self.rows, self.lock = example()
 
     def relock(self):
-        self.lock = select_comparators(self.p,
-            [row for row in self.rows if row["split"] == "validation"], "2026-11-03T00:00:00Z")
+        self.lock = select_comparators(
+            self.p,
+            [row for row in self.rows if row["split"] == "validation"],
+            "2026-11-03T00:00:00Z",
+        )
 
     def test_synthetic_stays_hold_with_positive_arithmetic(self):
         out = audit(self.p, self.rows, self.lock)
@@ -29,10 +38,14 @@ class FactorialGates(unittest.TestCase):
         self.p["native_receipts_verified"] = True
         self.relock()
         out = audit(self.p, self.rows, self.lock)
-        self.assertEqual(out["conditional_gates_on_verified_receipts"]["hepta_increment"], "PASS")
+        self.assertEqual(
+            out["conditional_gates_on_verified_receipts"]["hepta_increment"], "PASS"
+        )
         self.assertEqual(set(out["scientific_gates"].values()), {"HOLD"})
         self.assertFalse(out["native_receipt_verification"]["verified"])
-        self.assertEqual(out["native_receipt_verification"]["status"], "NOT_IMPLEMENTED")
+        self.assertEqual(
+            out["native_receipt_verification"]["status"], "NOT_IMPLEMENTED"
+        )
         self.assertTrue(all(c["gate"] == "HOLD" for c in out["contrasts"].values()))
         self.assertFalse(out["adoption_authorized"])
 
@@ -56,7 +69,9 @@ class FactorialGates(unittest.TestCase):
         self.assertEqual(lock, self.lock)
         out = audit(self.p, self.rows, lock)
         self.assertIsNone(out["research_costs"]["joint:D"]["total"])
-        self.assertIsNone(out["D_minus_strongest_amortized_at_deployments"]["joint"]["100"])
+        self.assertIsNone(
+            out["D_minus_strongest_amortized_at_deployments"]["joint"]["100"]
+        )
 
     def test_observed_training_usage_is_frozen_in_selection(self):
         self.p["profiles"]["joint:D"]["training_actual"]["train_compute"] += 1
@@ -72,16 +87,26 @@ class FactorialGates(unittest.TestCase):
                     audit(protocol, self.rows, self.lock)
 
     def test_null_pre_evaluation_receipts_cannot_be_filled_after_selection(self):
-        for category, field in (("training_actual", "train_compute"), ("research_costs", "training"),
-                                ("research_costs", "search")):
+        for category, field in (
+            ("training_actual", "train_compute"),
+            ("research_costs", "training"),
+            ("research_costs", "search"),
+        ):
             with self.subTest(category=category, field=field):
                 protocol = copy.deepcopy(self.p)
                 original = protocol["profiles"]["joint:D"][category][field]
                 protocol["profiles"]["joint:D"][category][field] = None
-                lock = select_comparators(protocol, self.rows[:1280], "2026-11-03T00:00:00Z")
-                self.assertIsNone(lock["pre_evaluation_receipts"]["joint:D"][category][field])
+                lock = select_comparators(
+                    protocol, self.rows[:1280], "2026-11-03T00:00:00Z"
+                )
+                self.assertIsNone(
+                    lock["pre_evaluation_receipts"]["joint:D"][category][field]
+                )
                 out = audit(protocol, self.rows, lock)
-                self.assertEqual(set(out["conditional_gates_on_verified_receipts"].values()), {"HOLD"})
+                self.assertEqual(
+                    set(out["conditional_gates_on_verified_receipts"].values()),
+                    {"HOLD"},
+                )
                 protocol["profiles"]["joint:D"][category][field] = original
                 with self.assertRaisesRegex(InvalidEvidence, "lock does not match"):
                     audit(protocol, self.rows, lock)
@@ -163,7 +188,10 @@ class FactorialGates(unittest.TestCase):
             audit(self.p, self.rows, lock)
 
     def test_strongest_validation_comparator_is_mpc(self):
-        self.assertEqual(self.lock["choices"], {r: {"ordinary": "mpc", "complete": "mpc"} for r in ("frozen", "joint")})
+        self.assertEqual(
+            self.lock["choices"],
+            {r: {"ordinary": "mpc", "complete": "mpc"} for r in ("frozen", "joint")},
+        )
         for row in self.rows:
             if row["split"] == "test" and row["arm"] == "initial":
                 row["external_score"] = 1.0
@@ -171,7 +199,7 @@ class FactorialGates(unittest.TestCase):
         self.assertEqual(out["comparators"], self.lock["choices"])
 
     def test_failed_score_must_use_fixed_penalty(self):
-        self.rows[-1].update(status="failed", failed_attempts=1, external_score=.9)
+        self.rows[-1].update(status="failed", failed_attempts=1, external_score=0.9)
         with self.assertRaisesRegex(InvalidEvidence, "fixed failure score"):
             audit(self.p, self.rows, self.lock)
 
@@ -179,22 +207,32 @@ class FactorialGates(unittest.TestCase):
         self.p["evidence_kind"] = "real"
         self.relock()
         row = self.rows[-1]
-        row.update(status="failed", failed_attempts=1, external_score=0,
-                   latency_seconds=11, peak_bytes=1048577, finished_at="2026-11-04T01:00:11Z")
+        row.update(
+            status="failed",
+            failed_attempts=1,
+            external_score=0,
+            latency_seconds=11,
+            peak_bytes=1048577,
+            finished_at="2026-11-04T01:00:11Z",
+        )
         row["costs"]["planning"] = 101
         out = audit(self.p, self.rows, self.lock)
         self.assertTrue(out["matrix_complete"])
         self.assertEqual(out["episode_count"], 2560)
         self.assertEqual(out["failed_episodes"], 1)
-        self.assertEqual({v["metric"] for v in out["budget_violations"]},
-                         {"episode_cost", "latency_seconds", "peak_bytes", "timestamp_span_seconds"})
+        self.assertEqual(
+            {v["metric"] for v in out["budget_violations"]},
+            {"episode_cost", "latency_seconds", "peak_bytes", "timestamp_span_seconds"},
+        )
         self.assertEqual(out["integrity_violations"], [])
         ledger = out["inference_cost_ledger"]["all_observed_episodes"]
         self.assertEqual(ledger["episodes"], 2560)
         self.assertEqual(ledger["failed_episodes"], 1)
         self.assertAlmostEqual(ledger["total"], 2404.9, places=6)
         self.assertEqual(out["contrasts"]["joint:D-B"]["statistical_gate"], "PASS")
-        self.assertEqual(set(out["conditional_gates_on_verified_receipts"].values()), {"HOLD"})
+        self.assertEqual(
+            set(out["conditional_gates_on_verified_receipts"].values()), {"HOLD"}
+        )
         self.assertEqual(set(out["scientific_gates"].values()), {"HOLD"})
 
     def test_validation_overrun_is_retained_and_blocks_conditional_admission(self):
@@ -204,7 +242,9 @@ class FactorialGates(unittest.TestCase):
         out = audit(self.p, self.rows, self.lock)
         self.assertEqual(out["episode_count"], 2560)
         self.assertEqual(out["budget_violations"][0]["run_id"], self.rows[0]["run_id"])
-        self.assertEqual(set(out["conditional_gates_on_verified_receipts"].values()), {"HOLD"})
+        self.assertEqual(
+            set(out["conditional_gates_on_verified_receipts"].values()), {"HOLD"}
+        )
 
     def test_training_usage_overruns_retain_observed_values(self):
         self.p["evidence_kind"] = "real"
@@ -215,18 +255,27 @@ class FactorialGates(unittest.TestCase):
         out = audit(self.p, self.rows, self.lock)
         violations = out["budget_violations"]
         self.assertEqual(len(violations), 3)
-        self.assertTrue(all(v["scope"] == "training" and v["profile"] == "joint:D" for v in violations))
+        self.assertTrue(
+            all(
+                v["scope"] == "training" and v["profile"] == "joint:D"
+                for v in violations
+            )
+        )
         self.assertTrue(all(v["observed"] == v["limit"] + 1 for v in violations))
         self.assertEqual(out["episode_count"], 2560)
         self.assertEqual(out["research_costs"]["joint:D"]["total"], 120)
         self.assertEqual(out["contrasts"]["joint:D-B"]["statistical_gate"], "PASS")
-        self.assertEqual(set(out["conditional_gates_on_verified_receipts"].values()), {"HOLD"})
+        self.assertEqual(
+            set(out["conditional_gates_on_verified_receipts"].values()), {"HOLD"}
+        )
 
     def test_partial_cost_overrun_remains_explicit_lower_bound_and_null_total(self):
         self.rows[-1]["costs"].update(planning=101, sync=None)
         out = audit(self.p, self.rows, self.lock)
         self.assertTrue(out["budget_violations"][0]["observed_is_lower_bound"])
-        self.assertIsNone(out["inference_cost_ledger"]["all_observed_episodes"]["total"])
+        self.assertIsNone(
+            out["inference_cost_ledger"]["all_observed_episodes"]["total"]
+        )
         self.assertEqual(out["episode_count"], 2560)
 
     def test_hour_timestamp_cannot_be_reported_as_one_second(self):
@@ -239,26 +288,42 @@ class FactorialGates(unittest.TestCase):
         self.assertEqual(violation["declared_latency_seconds"], 1)
         self.assertEqual(violation["timestamp_span_seconds"], 3600)
         self.assertEqual(violation["tolerance_seconds"], TIMING_TOLERANCE_SECONDS)
-        self.assertEqual(out["budget_violations"][0]["metric"], "timestamp_span_seconds")
+        self.assertEqual(
+            out["budget_violations"][0]["metric"], "timestamp_span_seconds"
+        )
         self.assertEqual(out["episode_count"], 2560)
-        self.assertAlmostEqual(out["inference_cost_ledger"]["all_observed_episodes"]["total"], 2304, places=6)
-        self.assertEqual(set(out["conditional_gates_on_verified_receipts"].values()), {"HOLD"})
+        self.assertAlmostEqual(
+            out["inference_cost_ledger"]["all_observed_episodes"]["total"],
+            2304,
+            places=6,
+        )
+        self.assertEqual(
+            set(out["conditional_gates_on_verified_receipts"].values()), {"HOLD"}
+        )
 
     def test_timing_tolerance_is_fixed_absolute_one_millisecond(self):
-        for difference, expected_count in ((.0005, 0), (.002, 1)):
+        for difference, expected_count in ((0.0005, 0), (0.002, 1)):
             with self.subTest(difference=difference):
                 self.rows[-1]["latency_seconds"] = 1 + difference
                 out = audit(self.p, self.rows, self.lock)
                 self.assertEqual(len(out["integrity_violations"]), expected_count)
-                self.assertEqual(out["timing_check"]["absolute_tolerance_seconds"], .001)
+                self.assertEqual(
+                    out["timing_check"]["absolute_tolerance_seconds"], 0.001
+                )
                 self.assertEqual(out["timing_check"]["relative_tolerance"], 0)
 
     def test_reversed_timing_keeps_the_episode_and_costs(self):
         self.rows[-1]["finished_at"] = "2026-11-04T00:59:59Z"
         out = audit(self.p, self.rows, self.lock)
-        self.assertEqual(out["integrity_violations"][0]["code"], "reversed_episode_time")
+        self.assertEqual(
+            out["integrity_violations"][0]["code"], "reversed_episode_time"
+        )
         self.assertEqual(out["episode_count"], 2560)
-        self.assertAlmostEqual(out["inference_cost_ledger"]["all_observed_episodes"]["total"], 2304, places=6)
+        self.assertAlmostEqual(
+            out["inference_cost_ledger"]["all_observed_episodes"]["total"],
+            2304,
+            places=6,
+        )
 
     def test_unmeasured_failure_and_retry_charges_are_never_zero_filled(self):
         row = self.rows[-1]
@@ -270,7 +335,9 @@ class FactorialGates(unittest.TestCase):
         self.assertIsNone(ledger["components"]["failure"]["total"])
         self.assertIsNone(ledger["components"]["retry"]["total"])
         self.assertIsNone(ledger["total"])
-        self.assertEqual(set(out["conditional_gates_on_verified_receipts"].values()), {"HOLD"})
+        self.assertEqual(
+            set(out["conditional_gates_on_verified_receipts"].values()), {"HOLD"}
+        )
 
     def test_nan_cost_rejected(self):
         self.rows[-1]["costs"]["encoder"] = float("nan")
@@ -287,8 +354,8 @@ class FactorialGates(unittest.TestCase):
         out = audit(self.p, self.rows, self.lock)
         self.assertEqual(out["episode_count"], 2560)
         self.assertEqual(out["contrasts"]["joint:D-B"]["clusters"], 20)
-        self.assertAlmostEqual(out["contrasts"]["frozen:D-B"]["estimate"], .2)
-        self.assertAlmostEqual(out["contrasts"]["joint:interaction"]["estimate"], .24)
+        self.assertAlmostEqual(out["contrasts"]["frozen:D-B"]["estimate"], 0.2)
+        self.assertAlmostEqual(out["contrasts"]["joint:interaction"]["estimate"], 0.24)
 
 
 if __name__ == "__main__":

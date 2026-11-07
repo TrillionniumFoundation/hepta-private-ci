@@ -49,14 +49,22 @@ class FrozenBundle:
             value = np.asarray(getattr(self, field.name), dtype=np.float64)
             if value.ndim != 2 or not np.all(np.isfinite(value)):
                 raise ValueError("parameter tensors must be finite matrices")
-            immutable = np.frombuffer(value.tobytes(), dtype=np.float64).reshape(value.shape)
+            immutable = np.frombuffer(value.tobytes(), dtype=np.float64).reshape(
+                value.shape
+            )
             object.__setattr__(self, field.name, immutable)
         d, h = self.base_cell.shape
         if self.base_generator.shape != (h, 2) or self.control_base.shape != (h, 2):
             raise ValueError("reference requires two modality outputs")
-        if self.cell_down.shape[0] != d or self.cell_up.shape != (self.cell_down.shape[1], h):
+        if self.cell_down.shape[0] != d or self.cell_up.shape != (
+            self.cell_down.shape[1],
+            h,
+        ):
             raise ValueError("incompatible Cell adapter")
-        if self.generator_down.shape[0] != h or self.generator_up.shape != (self.generator_down.shape[1], 2):
+        if self.generator_down.shape[0] != h or self.generator_up.shape != (
+            self.generator_down.shape[1],
+            2,
+        ):
             raise ValueError("incompatible generator adapter")
         if self.control_delta.shape != self.control_base.shape:
             raise ValueError("incompatible control head")
@@ -70,17 +78,25 @@ class FrozenBundle:
         return digest.hexdigest()
 
     def effective(self):
-        return (self.base_cell + self.cell_down @ self.cell_up,
-                self.base_generator + self.generator_down @ self.generator_up,
-                self.control_base + self.control_delta)
+        return (
+            self.base_cell + self.cell_down @ self.cell_up,
+            self.base_generator + self.generator_down @ self.generator_up,
+            self.control_base + self.control_delta,
+        )
 
 
 def make_bundle(seed=11):
     rng = np.random.default_rng(seed)
-    return FrozenBundle(rng.normal(0, 0.35, (5, 6)), rng.normal(0, 0.35, (6, 2)),
-                        rng.normal(0, 0.15, (6, 2)), rng.normal(0, 0.2, (5, 2)),
-                        np.zeros((2, 6)), rng.normal(0, 0.2, (6, 2)),
-                        np.zeros((2, 2)), np.zeros((6, 2)))
+    return FrozenBundle(
+        rng.normal(0, 0.35, (5, 6)),
+        rng.normal(0, 0.35, (6, 2)),
+        rng.normal(0, 0.15, (6, 2)),
+        rng.normal(0, 0.2, (5, 2)),
+        np.zeros((2, 6)),
+        rng.normal(0, 0.2, (6, 2)),
+        np.zeros((2, 2)),
+        np.zeros((6, 2)),
+    )
 
 
 def _softmax(values):
@@ -90,7 +106,12 @@ def _softmax(values):
 
 def _forward(bundle, features):
     x = np.asarray(features, dtype=np.float64)
-    if x.ndim != 2 or x.shape[0] == 0 or x.shape[1] != bundle.base_cell.shape[0] or not np.all(np.isfinite(x)):
+    if (
+        x.ndim != 2
+        or x.shape[0] == 0
+        or x.shape[1] != bundle.base_cell.shape[0]
+        or not np.all(np.isfinite(x))
+    ):
         raise ValueError("features must be a nonempty compatible finite matrix")
     wc, wg, wa = bundle.effective()
     hidden = np.tanh(x @ wc)
@@ -108,22 +129,32 @@ def predict(bundle, features):
     return probability, allocation
 
 
-def objective_and_gradient(bundle, features, targets, preferences, profile=AdapterProfile()):
+def objective_and_gradient(
+    bundle, features, targets, preferences, profile=AdapterProfile()
+):
     """Return the exact finite-scenario objective and analytic ascent gradients."""
     x, hidden, raw, allocation, probability, (_, wg, wa) = _forward(bundle, features)
     target = np.asarray(targets, dtype=np.float64)
     pref = np.asarray(preferences, dtype=np.float64)
     if target.shape != probability.shape or pref.shape != target.shape:
-        raise ValueError("targets/preferences must match sample and modality dimensions")
+        raise ValueError(
+            "targets/preferences must match sample and modality dimensions"
+        )
     if not np.all(np.isfinite(target)) or not np.all((target >= 0) & (target <= 1)):
         raise ValueError("targets must be independently supplied values in [0,1]")
-    if not np.all(np.isfinite(pref)) or np.any(pref < 0) or not np.allclose(pref.sum(axis=1), 1, atol=1e-12, rtol=0):
+    if (
+        not np.all(np.isfinite(pref))
+        or np.any(pref < 0)
+        or not np.allclose(pref.sum(axis=1), 1, atol=1e-12, rtol=0)
+    ):
         raise ValueError("preferences must be finite simplex rows")
     error = probability - target
     difference = error[:, 0] - error[:, 1]
     terminal = -np.sum(pref * error**2, axis=1) - profile.interaction * difference**2
     discount = math.exp(-profile.discount_rate * profile.duration)
-    utility = -profile.compute_cost * np.sum(allocation**2, axis=1) + discount * terminal
+    utility = (
+        -profile.compute_cost * np.sum(allocation**2, axis=1) + discount * terminal
+    )
     if profile.risk_aversion == 0:
         value, sensitivity = float(np.mean(utility)), np.full(len(x), 1 / len(x))
     else:
@@ -131,10 +162,17 @@ def objective_and_gradient(bundle, features, targets, preferences, profile=Adapt
         centered = -profile.risk_aversion * (utility - mean)
         if np.max(np.abs(centered)) < 1.0:
             # log1p/expm1 preserve the continuous risk-neutral limit.
-            value = mean - float(np.log1p(np.mean(np.expm1(centered)))) / profile.risk_aversion
+            value = (
+                mean
+                - float(np.log1p(np.mean(np.expm1(centered)))) / profile.risk_aversion
+            )
         else:
             anchor = np.max(centered)
-            value = mean - float(anchor + np.log(np.mean(np.exp(centered-anchor)))) / profile.risk_aversion
+            value = (
+                mean
+                - float(anchor + np.log(np.mean(np.exp(centered - anchor))))
+                / profile.risk_aversion
+            )
         sensitivity = _softmax(centered[None, :])[0]
     dprob = -2 * pref * error
     dprob[:, 0] -= 2 * profile.interaction * difference
@@ -145,23 +183,34 @@ def objective_and_gradient(bundle, features, targets, preferences, profile=Adapt
     dcontrol = allocation * (da - np.sum(da * allocation, axis=1, keepdims=True))
     dhidden = (draw @ wg.T + dcontrol @ wa.T) * (1 - hidden**2)
     dwc, dwg = x.T @ dhidden, hidden.T @ draw
-    gradients = {"cell_down": dwc @ bundle.cell_up.T,
-                 "cell_up": bundle.cell_down.T @ dwc,
-                 "generator_down": dwg @ bundle.generator_up.T,
-                 "generator_up": bundle.generator_down.T @ dwg,
-                 "control_delta": hidden.T @ dcontrol}
+    gradients = {
+        "cell_down": dwc @ bundle.cell_up.T,
+        "cell_up": bundle.cell_down.T @ dwc,
+        "generator_down": dwg @ bundle.generator_up.T,
+        "generator_up": bundle.generator_down.T @ dwg,
+        "control_delta": hidden.T @ dcontrol,
+    }
     return value, gradients
 
 
 def _with_parameters(bundle, parameters):
-    return FrozenBundle(**{f.name: parameters.get(f.name, getattr(bundle, f.name)) for f in fields(bundle)})
+    return FrozenBundle(
+        **{
+            f.name: parameters.get(f.name, getattr(bundle, f.name))
+            for f in fields(bundle)
+        }
+    )
 
 
-def check_gradients(bundle, features, targets, preferences, profile=AdapterProfile(), epsilon=1e-5):
+def check_gradients(
+    bundle, features, targets, preferences, profile=AdapterProfile(), epsilon=1e-5
+):
     """Central differences independently verify every trainable scalar."""
     if not math.isfinite(epsilon) or epsilon <= 0:
         raise ValueError("positive finite difference step required")
-    _, analytic = objective_and_gradient(bundle, features, targets, preferences, profile)
+    _, analytic = objective_and_gradient(
+        bundle, features, targets, preferences, profile
+    )
     result = {}
     for name in TRAINABLE:
         measured = np.zeros_like(getattr(bundle, name))
@@ -169,38 +218,88 @@ def check_gradients(bundle, features, targets, preferences, profile=AdapterProfi
             plus, minus = getattr(bundle, name).copy(), getattr(bundle, name).copy()
             plus[index] += epsilon
             minus[index] -= epsilon
-            upper = objective_and_gradient(_with_parameters(bundle, {name: plus}), features, targets, preferences, profile)[0]
-            lower = objective_and_gradient(_with_parameters(bundle, {name: minus}), features, targets, preferences, profile)[0]
+            upper = objective_and_gradient(
+                _with_parameters(bundle, {name: plus}),
+                features,
+                targets,
+                preferences,
+                profile,
+            )[0]
+            lower = objective_and_gradient(
+                _with_parameters(bundle, {name: minus}),
+                features,
+                targets,
+                preferences,
+                profile,
+            )[0]
             measured[index] = (upper - lower) / (2 * epsilon)
         result[name] = float(np.max(np.abs(measured - analytic[name])))
-    return {"max_absolute_error": max(result.values()), "per_tensor_absolute_error": result}
+    return {
+        "max_absolute_error": max(result.values()),
+        "per_tensor_absolute_error": result,
+    }
 
 
-def train_candidate(selected, features, targets, preferences, *, steps=200, learning_rate=1.0,
-                    trust_radius=1.5, profile=AdapterProfile()):
+def train_candidate(
+    selected,
+    features,
+    targets,
+    preferences,
+    *,
+    steps=200,
+    learning_rate=1.0,
+    trust_radius=1.5,
+    profile=AdapterProfile(),
+):
     """Create an immutable candidate; never promote or mutate selected weights.
 
     The trust region measures effective matrices, not gauge-dependent low-rank
     factor norms. Backtracking preserves both this bound and ascent of the fixed
     training objective. This reference uses full-batch gradient ascent, not AdamW.
     """
-    if not isinstance(steps, int) or steps < 0 or not all(math.isfinite(v) and v > 0 for v in (learning_rate, trust_radius)):
+    if (
+        not isinstance(steps, int)
+        or steps < 0
+        or not all(math.isfinite(v) and v > 0 for v in (learning_rate, trust_radius))
+    ):
         raise ValueError("invalid training limits")
     selected_digest, anchor = selected.digest(), selected.effective()
     candidate, trace = selected, []
     for step in range(steps):
-        value, gradient = objective_and_gradient(candidate, features, targets, preferences, profile)
-        norm = math.sqrt(sum(float(np.sum(g*g)) for g in gradient.values()))
+        value, gradient = objective_and_gradient(
+            candidate, features, targets, preferences, profile
+        )
+        norm = math.sqrt(sum(float(np.sum(g * g)) for g in gradient.values()))
         rate, accepted = learning_rate / max(norm, 1.0), False
         for _ in range(24):
-            proposal = _with_parameters(candidate, {name: getattr(candidate, name) + rate * gradient[name] for name in TRAINABLE})
-            distance = math.sqrt(sum(float(np.sum((a-b)**2)) for a, b in zip(proposal.effective(), anchor)))
-            next_value = objective_and_gradient(proposal, features, targets, preferences, profile)[0]
+            proposal = _with_parameters(
+                candidate,
+                {
+                    name: getattr(candidate, name) + rate * gradient[name]
+                    for name in TRAINABLE
+                },
+            )
+            distance = math.sqrt(
+                sum(
+                    float(np.sum((a - b) ** 2))
+                    for a, b in zip(proposal.effective(), anchor)
+                )
+            )
+            next_value = objective_and_gradient(
+                proposal, features, targets, preferences, profile
+            )[0]
             if distance <= trust_radius and next_value >= value:
                 candidate, accepted = proposal, True
                 break
             rate *= 0.5
-        trace.append({"step": step, "objective": value, "gradient_norm": norm, "accepted": accepted})
+        trace.append(
+            {
+                "step": step,
+                "objective": value,
+                "gradient_norm": norm,
+                "accepted": accepted,
+            }
+        )
         if not accepted or norm < 1e-10:
             break
     if selected.digest() != selected_digest:
@@ -216,16 +315,18 @@ def run_adapter_experiment(seed=17):
     truth = np.exp(-np.logaddexp(0.0, -(x @ teacher)))
     target = (rng.random(truth.shape) < truth).astype(float)
     preferences = np.tile([0.55, 0.45], (len(x), 1))
-    candidate, trace = train_candidate(selected, x[:192], target[:192], preferences[:192])
+    candidate, trace = train_candidate(
+        selected, x[:192], target[:192], preferences[:192]
+    )
     # These are disjoint synthetic rows. Neither their target nor metrics enter updates.
     before, routes_before = predict(selected, x[192:])
     after, routes_after = predict(candidate, x[192:])
-    per_before = np.mean((before - target[192:])**2, axis=0)
-    per_after = np.mean((after - target[192:])**2, axis=0)
+    per_before = np.mean((before - target[192:]) ** 2, axis=0)
+    per_after = np.mean((after - target[192:]) ** 2, axis=0)
     old_x = rng.normal(size=(128, 5))
     old_targets = predict(selected, old_x)[0]
     old_after = predict(candidate, old_x)[0]
-    retention_drift = float(np.mean((old_after-old_targets)**2))
+    retention_drift = float(np.mean((old_after - old_targets) ** 2))
     calibration = {}
     for name, forecast in (("before", before), ("after", after)):
         # Fixed bins are predeclared; calibration labels do not enter training.
@@ -234,31 +335,67 @@ def run_adapter_experiment(seed=17):
         for group in range(10):
             mask = bins == group
             if np.any(mask):
-                total += np.mean(mask) * abs(float(np.mean(flat[mask])-np.mean(label[mask])))
+                total += np.mean(mask) * abs(
+                    float(np.mean(flat[mask]) - np.mean(label[mask]))
+                )
         calibration[name] = float(total)
-    initial = objective_and_gradient(selected, x[:192], target[:192], preferences[:192])[0]
-    final = objective_and_gradient(candidate, x[:192], target[:192], preferences[:192])[0]
-    check = check_gradients(candidate, x[192:196], target[192:196], preferences[192:196])
-    gates = {"heldout_brier_improved": bool(np.mean(per_after) < np.mean(per_before)),
-             "old_probe_brier_drift_at_most_0_02": retention_drift <= 0.02,
-             "heldout_ece_degradation_at_most_0_02": calibration["after"] <= calibration["before"] + 0.02,
-             "prediction_spread_retained": bool(np.mean(np.std(after, axis=0)) >= 0.8*np.mean(np.std(before, axis=0)))}
-    return {"profile": "portfolio-adapter-synthetic-entropic-v1", "evidence_kind": "synthetic_differentiation_only",
-            "real_stage_3": "HOLD", "real_stage_3_reason": "No real Cell/generator model, independently judged generation dataset or future-window retention trial.",
-            "seed": seed, "train_rows": 192, "heldout_rows": 192, "old_probe_rows": 128,
-            "selected_digest": selected.digest(), "candidate_digest": candidate.digest(),
-            "selected_unchanged": True, "candidate_selected": False, "optimizer_steps": len(trace),
-            "train_objective_before": initial, "train_objective_after": final,
-            "heldout_brier_before": per_before.tolist(), "heldout_brier_after": per_after.tolist(),
-            "old_probe_brier_drift": retention_drift, "synthetic_gates": gates,
-            "synthetic_candidate_admission": "PASS" if all(gates.values()) else "REJECTED",
-            "heldout_expected_calibration_error": calibration,
-            "retention_check_kind": "old_base_prediction_drift_not_real_task_retention",
-            "diversity_check_kind": "prediction_spread_proxy_not_semantic_diversity",
-            "prediction_spread_before": np.std(before, axis=0).tolist(),
-            "prediction_spread_after": np.std(after, axis=0).tolist(),
-            "routing_entropy_before": float(np.mean(-np.sum(routes_before*np.log(routes_before), axis=1))),
-            "routing_entropy_after": float(np.mean(-np.sum(routes_after*np.log(routes_after), axis=1))),
-            "trainable_parameters": sum(getattr(selected, name).size for name in TRAINABLE),
-            "gradient_check": check,
-            "non_claims": ["text/image generation quality", "critic calibration", "semantic diversity", "real old-task retention", "production parameter selection"]}
+    initial = objective_and_gradient(
+        selected, x[:192], target[:192], preferences[:192]
+    )[0]
+    final = objective_and_gradient(candidate, x[:192], target[:192], preferences[:192])[
+        0
+    ]
+    check = check_gradients(
+        candidate, x[192:196], target[192:196], preferences[192:196]
+    )
+    gates = {
+        "heldout_brier_improved": bool(np.mean(per_after) < np.mean(per_before)),
+        "old_probe_brier_drift_at_most_0_02": retention_drift <= 0.02,
+        "heldout_ece_degradation_at_most_0_02": calibration["after"]
+        <= calibration["before"] + 0.02,
+        "prediction_spread_retained": bool(
+            np.mean(np.std(after, axis=0)) >= 0.8 * np.mean(np.std(before, axis=0))
+        ),
+    }
+    return {
+        "profile": "portfolio-adapter-synthetic-entropic-v1",
+        "evidence_kind": "synthetic_differentiation_only",
+        "real_stage_3": "HOLD",
+        "real_stage_3_reason": "No real Cell/generator model, independently judged generation dataset or future-window retention trial.",
+        "seed": seed,
+        "train_rows": 192,
+        "heldout_rows": 192,
+        "old_probe_rows": 128,
+        "selected_digest": selected.digest(),
+        "candidate_digest": candidate.digest(),
+        "selected_unchanged": True,
+        "candidate_selected": False,
+        "optimizer_steps": len(trace),
+        "train_objective_before": initial,
+        "train_objective_after": final,
+        "heldout_brier_before": per_before.tolist(),
+        "heldout_brier_after": per_after.tolist(),
+        "old_probe_brier_drift": retention_drift,
+        "synthetic_gates": gates,
+        "synthetic_candidate_admission": "PASS" if all(gates.values()) else "REJECTED",
+        "heldout_expected_calibration_error": calibration,
+        "retention_check_kind": "old_base_prediction_drift_not_real_task_retention",
+        "diversity_check_kind": "prediction_spread_proxy_not_semantic_diversity",
+        "prediction_spread_before": np.std(before, axis=0).tolist(),
+        "prediction_spread_after": np.std(after, axis=0).tolist(),
+        "routing_entropy_before": float(
+            np.mean(-np.sum(routes_before * np.log(routes_before), axis=1))
+        ),
+        "routing_entropy_after": float(
+            np.mean(-np.sum(routes_after * np.log(routes_after), axis=1))
+        ),
+        "trainable_parameters": sum(getattr(selected, name).size for name in TRAINABLE),
+        "gradient_check": check,
+        "non_claims": [
+            "text/image generation quality",
+            "critic calibration",
+            "semantic diversity",
+            "real old-task retention",
+            "production parameter selection",
+        ],
+    }
