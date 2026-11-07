@@ -1,0 +1,75 @@
+{
+  "observed_at_utc": "2026-11-07T00:02:54.478138+00:00",
+  "packet": "mic_s2_checkpoint_20261107",
+  "publication": {
+    "bytes": 3794,
+    "sha256": "14b1f17a62f1254d3b77ef0b4fed0651ec179686e440a3739027ebdf814c1528"
+  },
+  "index_sha256": "0c5e15510d38c2fd6b8bc490173278854806904b815c7c5d40cff17d898242d7",
+  "reader": {
+    "bytes": 6899,
+    "sha256": "fc31ee7861e81f18574ae1af6b168c34ff370fd37132f8d258548381631df852"
+  },
+  "reader_parent": {
+    "bytes": 6899,
+    "sha256": "af61744d776034fb41dac291fbca63d30082c6ec15df821824b49df4678c8d3d"
+  },
+  "reader_only_fixed_seal_changes": 1,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-O",
+    "-B",
+    "/workspace/scratch/3f6a885bb83c/round3_native/mic_s2_evidence_20261107/restore.py",
+    "/workspace/scratch/3f6a885bb83c/round3_root_restore_mic_s2_0006"
+  ],
+  "exit_code": 0,
+  "files": 75,
+  "raw_bytes": 1417958,
+  "exact_member_roster_bytes_originals_and_modes": true,
+  "original_permission_counts": {
+    "0644": 75
+  },
+  "restored_permissions": "0644 regular files",
+  "bundle_before_and_after_unchanged": true,
+  "bundle_identities": {
+    "round3_native/mic_s2_evidence_20261107/CODESPELL.json": {
+      "bytes": 297,
+      "sha256": "23af724bd433624533fc265be8771ad2338fa7133758204c1a6a4b72cdf0a67e"
+    },
+    "round3_native/mic_s2_evidence_20261107/INDEX.json": {
+      "bytes": 22203,
+      "sha256": "0c5e15510d38c2fd6b8bc490173278854806904b815c7c5d40cff17d898242d7"
+    },
+    "round3_native/mic_s2_evidence_20261107/READER_CHECK.json": {
+      "bytes": 1093,
+      "sha256": "6cb34ef308848a122309c321118bb7d5a8d3282724759a85bb89d21a49c34210"
+    },
+    "round3_native/mic_s2_evidence_20261107/README.md": {
+      "bytes": 1534,
+      "sha256": "b901d3a932c8631a198c10a49d42e43d0c73190d7ea46352b56bc34957068373"
+    },
+    "round3_native/mic_s2_evidence_20261107/ROUNDTRIP.json": {
+      "bytes": 1338,
+      "sha256": "93c3a7043c85f390e001870aaf00c0e91f7c6f1ebab8edd77fb143950968150e"
+    },
+    "round3_native/mic_s2_evidence_20261107/native-evidence.tar.xz.part000.gz": {
+      "bytes": 78919,
+      "sha256": "21e05a1b66e0eeb8cb8c01eb0f853773e27164b69750f9168bf59c45ca8bda0f"
+    },
+    "round3_native/mic_s2_evidence_20261107/restore.py": {
+      "bytes": 6899,
+      "sha256": "fc31ee7861e81f18574ae1af6b168c34ff370fd37132f8d258548381631df852"
+    }
+  },
+  "destination": "/workspace/scratch/3f6a885bb83c/round3_root_restore_mic_s2_0006",
+  "archived_sources_executed": false,
+  "native_tests_or_scanner_or_models_executed": false,
+  "qualification": "EXACT_SELECTED_BYTES_ROUNDTRIP; INDEPENDENT_MIC_COUNTEREXAMPLE; SELECTED_REFUSAL_UNCHANGED; P0_OPEN",
+  "limits": [
+    "All unscanned private native job consoles, including S2 Windows shard2 and Clippy, and their raw transport JSON; only approved fixed observations and hashes remain.",
+    "Every scanner-rejected selected stream; no alternate workflow or encoding is used to transport rejected bytes.",
+    "Compiler products, package caches, Python bytecode, repeated formatter staging and unrelated native work.",
+    "The already published MIC181 packet is not duplicated; this packet adds conditional source36 and independent S2 outcome without changing that historical snapshot."
+  ],
+  "initial_inspection_note": "The actual packet manifest and reader schemas were inspected before this independent restoration. No native execution or scanner replay was performed."
+}
