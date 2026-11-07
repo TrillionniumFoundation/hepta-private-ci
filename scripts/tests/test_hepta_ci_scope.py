@@ -80,6 +80,12 @@ class ScopeTests(unittest.TestCase):
         self.assertTrue(all(lock_scope[key] for key in GROUPS))
         self.assertTrue(lock_scope["full_repo"])
 
+    def test_authbus_outbox_fixture_requires_full_repo_bazel_validation(self):
+        scope = select(["codex-rs/hepta-evidence/src/authbus_outbox_tests.rs"])
+        self.assertTrue(all(scope[key] for key in GROUPS))
+        self.assertTrue(scope["native"])
+        self.assertTrue(scope["full_repo"])
+
     def test_generated_module_projections_do_not_force_native_builds(self):
         for path in [
             "docs/modules/SOURCE_BINDINGS.json",

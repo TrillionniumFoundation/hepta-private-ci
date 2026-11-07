@@ -123,7 +123,7 @@ jobs:
   hepta-scoped:
     name: Hepta scoped native checks
     needs: scope
-    if: needs.scope.outputs.native == 'true'
+    if: needs.scope.outputs.native == 'true' && needs.scope.outputs.full_repo != 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 75
     env:
@@ -277,7 +277,7 @@ jobs:
               allowed.append("hepta-contract-gate")
           if not full:
               allowed += ["bazel", "cargo-deny", "repo-checks", "rust-ci", "sdk"]
-          if not native:
+          if not (native and not full):
               allowed.append("hepta-scoped")
           if not (not native and not full):
               allowed.append("lightweight")
