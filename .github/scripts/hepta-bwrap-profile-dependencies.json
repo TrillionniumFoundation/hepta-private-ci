@@ -1,0 +1,142 @@
+{
+  "absent_optional_paths": [
+    "/etc/apparmor.d/local/bwrap-userns-restrict",
+    "/etc/apparmor.d/local/unpriv_bwrap",
+    "/etc/apparmor.d/tunables/alias.d",
+    "/etc/apparmor.d/tunables/etc.d",
+    "/etc/apparmor.d/tunables/global.d",
+    "/etc/apparmor.d/tunables/kernelvars.d",
+    "/etc/apparmor.d/tunables/proc.d",
+    "/etc/apparmor.d/tunables/run.d",
+    "/etc/apparmor.d/tunables/share.d",
+    "/etc/apparmor.d/tunables/system.d"
+  ],
+  "binaries": {
+    "/usr/bin/bwrap": {
+      "bytes": 72160,
+      "gid": 0,
+      "mode": "0o755",
+      "sha256": "e318903862396f96de3df57264e0158682b952fd3fb53ac23d876413e7b30f71",
+      "uid": 0
+    },
+    "/usr/sbin/apparmor_parser": {
+      "bytes": 1629848,
+      "gid": 0,
+      "mode": "0o755",
+      "sha256": "85e67b4ebc2559cc84c7d256d14890b8a7521e0278aedd544e13a3204a387d05",
+      "uid": 0
+    }
+  },
+  "included_directories": {
+    "/etc/apparmor.d/tunables/home.d": ["site.local"],
+    "/etc/apparmor.d/tunables/multiarch.d": ["site.local"],
+    "/etc/apparmor.d/tunables/xdg-user-dirs.d": []
+  },
+  "regular_files": {
+    "/etc/apparmor.d/abi/4.0": {
+      "bytes": 2205,
+      "gid": 0,
+      "mode": "0o644",
+      "sha256": "e510bb8f6788b45e48de2f859a6f94a7b8416cbac5a1051814cfce925fa911bd",
+      "uid": 0
+    },
+    "/etc/apparmor.d/tunables/alias": {
+      "bytes": 734,
+      "gid": 0,
+      "mode": "0o644",
+      "sha256": "e7b8b278db3f7aca74e0176f22cbd3adc3c89212cc9e66a90a2787b3ceee8030",
+      "uid": 0
+    },
+    "/etc/apparmor.d/tunables/etc": {
+      "bytes": 1256,
+      "gid": 0,
+      "mode": "0o644",
+      "sha256": "4211a2db7a81c3edea6a657f8eacdae4322235c1d766ac95a592cb6f1b43f7ee",
+      "uid": 0
+    },
+    "/etc/apparmor.d/tunables/global": {
+      "bytes": 897,
+      "gid": 0,
+      "mode": "0o644",
+      "sha256": "2c1d72013b53bf103fb8abe2199ce5775f8493df1acd3ef497046156c09fdf7c",
+      "uid": 0
+    },
+    "/etc/apparmor.d/tunables/home": {
+      "bytes": 974,
+      "gid": 0,
+      "mode": "0o644",
+      "sha256": "806a4e80696e3870d46d1ae99ac7fe7099680b39040c2183094a44671d83218e",
+      "uid": 0
+    },
+    "/etc/apparmor.d/tunables/home.d/site.local": {
+      "bytes": 634,
+      "gid": 0,
+      "mode": "0o644",
+      "sha256": "f6f9d209f8015196f2e391ea02debcebecbf8022ececfee3a08e3973c3bb06d4",
+      "uid": 0
+    },
+    "/etc/apparmor.d/tunables/kernelvars": {
+      "bytes": 1511,
+      "gid": 0,
+      "mode": "0o644",
+      "sha256": "a2fa754e93a435722ea4b8b03e2bdf52bf4c029c66397b773f5e4321d6f66ea5",
+      "uid": 0
+    },
+    "/etc/apparmor.d/tunables/multiarch": {
+      "bytes": 607,
+      "gid": 0,
+      "mode": "0o644",
+      "sha256": "0d35e0680f4dd9085a1c64911be21e95a65d12db045bde4b4ecae22915ce53ff",
+      "uid": 0
+    },
+    "/etc/apparmor.d/tunables/multiarch.d/site.local": {
+      "bytes": 645,
+      "gid": 0,
+      "mode": "0o644",
+      "sha256": "731ad52936633b9a0c738605a2a08aad2357df91ca8fbe3bd2c3427d7aac240b",
+      "uid": 0
+    },
+    "/etc/apparmor.d/tunables/proc": {
+      "bytes": 548,
+      "gid": 0,
+      "mode": "0o644",
+      "sha256": "d6a8ac6910ecdde3930916dcb44d7b3d3bf1cfe5a8f54728f1f599e32a26ece7",
+      "uid": 0
+    },
+    "/etc/apparmor.d/tunables/run": {
+      "bytes": 129,
+      "gid": 0,
+      "mode": "0o644",
+      "sha256": "cbe2d9c99a82124d6206bfdd377895fa3dec48ee255923d2c31b71be53ab9bdd",
+      "uid": 0
+    },
+    "/etc/apparmor.d/tunables/share": {
+      "bytes": 929,
+      "gid": 0,
+      "mode": "0o644",
+      "sha256": "5389ddceeb78d2012f528037e5c8205535f145c906cf6266ba400d9bafea26b7",
+      "uid": 0
+    },
+    "/etc/apparmor.d/tunables/system": {
+      "bytes": 5055,
+      "gid": 0,
+      "mode": "0o644",
+      "sha256": "84dfeb5a2239e9cb7626b8008275c5aa0602d671303f4b43b7db0eff4688b828",
+      "uid": 0
+    },
+    "/etc/apparmor.d/tunables/xdg-user-dirs": {
+      "bytes": 844,
+      "gid": 0,
+      "mode": "0o644",
+      "sha256": "1d92b108e04a4067333224c4dbfd19df8ca0f0deef7a28b153995e22fe8cedb7",
+      "uid": 0
+    },
+    "/etc/apparmor/parser.conf": {
+      "bytes": 2270,
+      "gid": 0,
+      "mode": "0o644",
+      "sha256": "f8586f1c3bfd7abac6a182c1b45d22a8397c0db5a737b54bc8f9fc48da53d5bd",
+      "uid": 0
+    }
+  }
+}
