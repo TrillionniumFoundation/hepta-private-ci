@@ -1,0 +1,48 @@
+{
+  "parent_sha": "e23dfea486025e09d7e11dd17ea0852d6e3e89d0",
+  "branch": "fix/ndu-image-fingerprint-20261107-8ef7",
+  "changed_files": {
+    ".github/workflows/ndu-adapter-training.yml": "d5265fd801885e86ca64d3686616dac1110b7b31b2640cf6c7c1f5fb51f35ddd",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/test_train_adapter.py": "2086dd4b3b148f5f9a865231d6bc865e71bd02ae9981cef8d6a9cf044fe04f15",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/train_adapter.py": "ba76e1a7f38632f65c86d16b70ba4ecd47f98c616649b0e08fb81b2a1f911c4f"
+  },
+  "historical_failure": {
+    "run_id": 41976044300,
+    "job_id": 127075010670,
+    "source": "e23dfea486025e09d7e11dd17ea0852d6e3e89d0",
+    "status": "failure",
+    "image_updates": 0,
+    "error": "self.stride(-1) must be 1 to view BFloat16 as Byte (different element sizes), but got 320"
+  },
+  "tests": {
+    "pre_fix_new_regressions": {
+      "tests": 3,
+      "errors": 4,
+      "exit_code": 1
+    },
+    "first_full_suite": {
+      "tests": 68,
+      "errors": 7,
+      "cause": "one original oracle test lacks sparse unified_20261028 dependency; source unchanged"
+    },
+    "complete_same_scope_suite": {
+      "tests": 68,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "exit_code": 0,
+      "reported_seconds": 3.184
+    }
+  },
+  "workflow_only_branch_added": true,
+  "scientific_inputs_and_budgets_unchanged": true,
+  "local_model_experiment_executed": false,
+  "logs": {
+    "after-suite-missing-sparse-dependency.log": "6213f471009e016c6a007e1fe814fadf8bdc4045a2ccca1de87c297f340a4987",
+    "just-fmt.log": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752",
+    "after-suite.log": "0f94dc34d1d5ec2b56c3184827da3e1c52a940f60c73653b54b8659298ff0ab5",
+    "before-regressions.log": "7cc2d16cf49b77df902dc33b916b394282e47a34dd47b0423ee673bf3d04220b"
+  },
+  "test_runtime": "Python 3.12.14, Torch 2.8.0+cpu",
+  "local_installation_and_test_cpu_energy_cost": "not_metered; not_zero"
+}

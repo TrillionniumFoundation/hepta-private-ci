@@ -29,7 +29,12 @@ SCHEMA = "hepta.real-vlm-output-adapter.v1"
 
 
 def tensor_hash(value):
-    array = value.detach().cpu().contiguous().view(torch.uint8).reshape(-1).numpy()
+    flat = value.detach().cpu().reshape(-1)
+    # Singleton axes can be contiguous while retaining a non-unit byte-view
+    # stride. A fresh one-dimensional destination also covers strided slices.
+    if flat.stride() != (1,):
+        flat = torch.empty(flat.numel(), dtype=flat.dtype, device="cpu").copy_(flat)
+    array = flat.view(torch.uint8).numpy()
     h = hashlib.sha256(str((tuple(value.shape), str(value.dtype))).encode())
     h.update(memoryview(array))
     return h.hexdigest()
