@@ -32,7 +32,7 @@ an operating-system isolation certificate.
 The plan registers 18 fixed-schedule collection episodes, 12 physical predictor
 fits (seeds 17, 29, 43 crossed with ordinary/Hepta and frozen/joint), and 216
 development policy episodes. The six policies are initial delivery, Light, NDU,
-tuned fixed, same-data VOI, and deployable MPC. Every fit has a distinct physical
+tuned fixed, same-data VOI, and deployable MPC. The plan requires each fit to have a distinct physical
 attempt, checkpoint, input digest, resource opportunity, and failure record.
 Episode seed 17 is not counted as another training replicate.
 
@@ -88,7 +88,7 @@ native cgroup limits of at most two CPUs and 16 GiB, and narrows its affinity to
 two logical CPUs. It never repairs a GPU driver or changes the cloud CUDA guard.
 The CPU/bfloat16 run has its own 1740-second budget and preserves the same full
 18/12/216 roster. Small original cost and admission receipts survive even a failed
-large evidence export. This entry point is preparation, not execution evidence.
+large evidence export. The observed bounded attempt and its failure are recorded below.
 
 ## Validation and review
 
@@ -112,3 +112,61 @@ An engineering execution failure cannot become NoUpdate. A finite NoUpdate keeps
 the incumbent; it never submits a V5 zero-delta update or relaxes no-op rejection
 and positive-gain reward rules. Native consumption evidence is a separate layer
 and cannot certify the missing five-family scientific experiment.
+
+## Observed bounded execution results
+
+The actual execution counters are **0 collected episodes, 0 physical fits,
+0 development policy episodes, and 0 pretrained-model executions**. The planned
+18/12/216 roster remains a plan; no smaller roster is reported as successful.
+
+| Attempt | Observed result | Bound and accounting |
+| --- | --- | --- |
+| Colab | T4 CUDA matrix preflight passed; runtime released; no models or training | Device worker 7.688 s within 135.739 s controller wall. Existing per-file write ceilings block cold pinned weights and were preserved. |
+| Kaggle version 1 | Failed at driver admission: actual Torch 2.11.0+cpu, no CUDA device | Wrapper wall 4.840 s; provider COMPLETE only delivers artifacts. Model and later phases never started. |
+| Desktop CPU | Failed during model acquisition; timeout 124; child reaped | Model phase reached 420.020 s, within the 430.202 s worker. Model and policy execution never started. |
+
+The CPU attempt is bound to source commit
+`ae214f4ca42f31b5e5939932736b170bb7744a50`; later CI repairs do not rewrite that
+executed source. The CPU artifact manifest is
+`d0296ab23120f1a16da9b2531e1f644687eead7d59252e0c337a784412627ee7`.
+The model acquisition left an incomplete 124,780,544-byte weight file.
+The two inspected task/previous model directories contained no complete eligible
+cache; this is not a claim about every other host or directory.
+
+The material preparation used 6,605,313 new HTTP body bytes, bringing the preserved
+acquisition total to 17,669,796 of the 26,214,400-byte cap. Its 151.070 s wall
+is separate from the CPU worker. Nested phase/controller wall costs are not added
+twice. All failures remain budget evidence; energy, complete provider billing,
+orchestration and total CI costs are still incomplete.
+
+See [EXECUTION_STATUS.json](EXECUTION_STATUS.json) for machine-readable source,
+plan, profile, output-digest, phase and cost boundaries. Raw owner records and
+model/evidence artifacts remain private. Both infrastructure attempts are
+**Failed**. The formal scientific result remains **Inconclusive / HOLD**, with
+zero confirmation and zero retention episodes; no production learning NoUpdate
+is emitted from these failures.
+
+## CI repair evidence
+
+[LOCAL_VALIDATION.json](LOCAL_VALIDATION.json) and its archive are the historical
+four-attempt local engineering snapshot.
+[CI_REPAIR_VALIDATION.json](CI_REPAIR_VALIDATION.json) records the subsequent
+clock-origin regression repair and exact source-preservation proof. The focused
+existing clock test passed at two arbitrary monotonic origins and three boundary
+positions (six subtests); it does not increase the 315 distinct-test count.
+
+The empty inherited root README now links to readiness documentation. Fence is
+pinned to the immutable v0.12.7 Action, preserving its first-step audit mode and
+all checks. The same Ubuntu image passed the upstream audit/block canaries;
+this is compatibility evidence, not a substitute for this PR's fresh CI.
+
+The unchanged locked Ruff 0.15.13 check passes for 193 files. All 27 mechanically
+formatted files retain the exact raw AST, including original docstring values.
+No formatter exclusions or dependency-lock changes were made. Tests were not
+rerun after mechanical formatting. Rust formatting was unavailable in this
+source-only sparse checkout; no Rust source was changed by these repairs.
+
+Fresh hosted checks are required on the published repair head. The old-head
+Rust/Clippy failures and 25 cargo-deny advisory errors remain open. Their affected
+Rust tree and dependency configuration are byte-identical to the PR base; they
+are not waived or represented as passing.
