@@ -1,0 +1,22 @@
+{
+  "decision": "PASS_EXACT_SAFE_PUBLICATION_INPUTS",
+  "groups": [
+    {
+      "group": "A",
+      "manifest_sha256": "34885cbf0e22cc4b7c4cfc122719c6eba0d2851427cab5027cd8ff9fbb6513f7",
+      "files": 9,
+      "nonmechanical_lines": 774
+    },
+    {
+      "group": "B",
+      "manifest_sha256": "baba027f8d240d0348c7963062d1c8951edf270b51e39257ca3cb178f93235da",
+      "files": 60,
+      "nonmechanical_lines": 725
+    }
+  ],
+  "source_and_destination_disjoint": true,
+  "selected_sources": 69,
+  "raw_console_retained_private_files_wrapper_or_SQLite_read": false,
+  "Rust_reference_scope": "The four full Rust files in the error call chain are identity-referenced only. The unchanged original GitHub API includes its six historical patches, including previously published added-source content; those fields remain intact.",
+  "new_native_execution": false
+}

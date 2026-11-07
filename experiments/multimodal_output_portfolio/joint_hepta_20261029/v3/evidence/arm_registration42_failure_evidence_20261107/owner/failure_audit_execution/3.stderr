@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "/dev/shm/ndu_arm42_failure_20261107/audit_native_failure.py", line 290, in <module>
+    need(stage in source_labels, "STAGE_NOT_IN_FIXED_SOURCE")
+  File "/dev/shm/ndu_arm42_failure_20261107/audit_native_failure.py", line 31, in need
+    raise ValueError(code)
+ValueError: STAGE_NOT_IN_FIXED_SOURCE

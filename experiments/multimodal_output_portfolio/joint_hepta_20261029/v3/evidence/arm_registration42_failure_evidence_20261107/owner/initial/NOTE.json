@@ -1,0 +1,9 @@
+{
+  "kind": "LOCAL_AUDITOR_SOURCE_LABEL_FAILURE_NOT_NATIVE",
+  "source_sha256": "0ec98730519ace5ca128a55628ad341491e8eb444b4c7caddadb7a743260ad23",
+  "execution_receipt": "/dev/shm/ndu_arm42_failure_20261107/failure_audit_execution/EXECUTION.json",
+  "exit_code": 1,
+  "fixed_error": "STAGE_NOT_IN_FIXED_SOURCE",
+  "reason": "The source-label predicate covered only literal R4_STAGE strings in the top-level Rust fixture. It omitted the fixed two-label formatter, timed labels and the separately frozen registration helper. Original native bytes and source trees are unchanged.",
+  "correction": "Bind the frozen registration helper too; require the exact fixed formatter or timed literal for every such observed stage."
+}

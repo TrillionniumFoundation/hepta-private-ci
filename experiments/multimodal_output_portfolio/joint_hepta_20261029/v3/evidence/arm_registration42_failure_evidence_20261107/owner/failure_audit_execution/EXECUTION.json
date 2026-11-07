@@ -1,0 +1,93 @@
+{
+  "source": {
+    "path": "/dev/shm/ndu_arm42_failure_20261107/audit_native_failure.py",
+    "bytes": 19224,
+    "sha256": "0ec98730519ace5ca128a55628ad341491e8eb444b4c7caddadb7a743260ad23",
+    "lines": 534
+  },
+  "commands": [
+    {
+      "argv": [
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/ruff",
+        "format",
+        "--config",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/pyproject.toml",
+        "/dev/shm/ndu_arm42_failure_20261107/audit_native_failure.py"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": "/dev/shm/ndu_arm42_failure_20261107/failure_audit_execution/0.stdout",
+        "bytes": 19,
+        "sha256": "413a709001976657cb743636fd34e48fc41d8d302d665460d3f874b3313da127"
+      },
+      "stderr": {
+        "path": "/dev/shm/ndu_arm42_failure_20261107/failure_audit_execution/0.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/ruff",
+        "check",
+        "--config",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/pyproject.toml",
+        "/dev/shm/ndu_arm42_failure_20261107/audit_native_failure.py"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": "/dev/shm/ndu_arm42_failure_20261107/failure_audit_execution/1.stdout",
+        "bytes": 19,
+        "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+      },
+      "stderr": {
+        "path": "/dev/shm/ndu_arm42_failure_20261107/failure_audit_execution/1.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/ruff",
+        "format",
+        "--check",
+        "--config",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/pyproject.toml",
+        "/dev/shm/ndu_arm42_failure_20261107/audit_native_failure.py"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "path": "/dev/shm/ndu_arm42_failure_20261107/failure_audit_execution/2.stdout",
+        "bytes": 25,
+        "sha256": "fd2299c9f1c6dc869070883e281051bfe93aacf66c1a3b0069f45b4aa410ca50"
+      },
+      "stderr": {
+        "path": "/dev/shm/ndu_arm42_failure_20261107/failure_audit_execution/2.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "-O",
+        "/dev/shm/ndu_arm42_failure_20261107/audit_native_failure.py"
+      ],
+      "exit_code": 1,
+      "stdout": {
+        "path": "/dev/shm/ndu_arm42_failure_20261107/failure_audit_execution/3.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/dev/shm/ndu_arm42_failure_20261107/failure_audit_execution/3.stderr",
+        "bytes": 341,
+        "sha256": "4e7c526ce2fc132a8e0f0344576c5f8c69e5d703e027e26e7a442199ea651a1d"
+      }
+    }
+  ],
+  "all_exit_zero": false,
+  "HOME_inherited": true,
+  "native_execution": false
+}

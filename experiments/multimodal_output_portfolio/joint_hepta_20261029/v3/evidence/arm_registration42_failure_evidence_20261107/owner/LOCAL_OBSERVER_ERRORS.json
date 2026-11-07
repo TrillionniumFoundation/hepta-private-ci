@@ -1,0 +1,10 @@
+{
+  "scope": "Local observer helpers only; no native result changed",
+  "errors": [
+    {
+      "operation": "Inspect returned transfer URL scheme and host",
+      "error": "ReferenceError: URL is not defined",
+      "effect": "No URL or raw payload was printed; no transfer started; regular-expression scheme/host validation follows instead"
+    }
+  ]
+}

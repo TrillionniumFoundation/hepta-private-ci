@@ -1,0 +1,8 @@
+{
+  "kind": "LOCAL_SUMMARY_SERIALIZATION_FAILURE_NOT_NATIVE",
+  "phase": "After ROOT_HANDOFF and FINAL_QA were written, during the final console summary",
+  "exception_type": "TypeError",
+  "reason": "Counter used tuple keys in a display-only JSON object; the stored report and QA already existed unchanged.",
+  "correction": "Display endpoint counts as a list of typed rows.",
+  "original_native_or_frozen_report_changed": false
+}

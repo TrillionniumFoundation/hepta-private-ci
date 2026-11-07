@@ -1,0 +1,61 @@
+{
+  "decision": "QUALIFIED_ORIGINAL_ARM42_FAILURE_ONLY",
+  "head": "8b0fcf80afb95c5199be9b5f131d6454663c1632",
+  "tree": "8b46b24ccca6bf77227e1b21aa66ec84b0ea5473",
+  "run": 42353199414,
+  "attempt": 1,
+  "job": 128346079305,
+  "fresh_terminal_api": {
+    "bytes": 79053,
+    "sha256": "da291ecdd31a60c61a7328fbb597d7ca93959bdf5b7aa888d89dc7c4c76f868d"
+  },
+  "guard_literal_adaptation_exact": true,
+  "owner_original_guard_optimized_execution_exit": 0,
+  "guard_receipt_files_bytes_catalogue": [
+    1474,
+    68665776,
+    84475
+  ],
+  "root_reran_full_projection_guard": false,
+  "independently_read_original_members": {
+    "qualification/plan/SOURCE_SEAL.json": {
+      "bytes": 5342,
+      "sha256": "c7bd7b2b11421f14319456a5fe99bc60c74c7014269112716bc5a50428d296ab"
+    },
+    "qualification/runtime/commands/025-START.json": {
+      "bytes": 2517,
+      "sha256": "943bf270799ba2166fdcda8c6befa7dd0b50691ea6a1fd292059faeeb78bc7ac"
+    },
+    "qualification/runtime/commands/025-END.json": {
+      "bytes": 2943,
+      "sha256": "072915d97e2eac9d7d24aee78f66929450f72cad7aac16dfcf5ab047bb556bf7"
+    },
+    "qualification/runtime/commands/025-actual-just-test.stderr": {
+      "bytes": 14436,
+      "sha256": "26c80d9715c2934563fcc07ada928e9b38009cca3e8cffed9c78dd3a8903f345"
+    },
+    "qualification/runtime/nextest-store/linux-synapse/junit.xml": {
+      "bytes": 13765,
+      "sha256": "91556268568904ff1d5bdb6c7185f76d5d1d2c33ba00a1da00ac099b3bfeac35"
+    }
+  },
+  "just_exit": 100,
+  "just_wall_seconds": 439.03385301399976,
+  "one_original_case": {
+    "name": "real_synapse_dual_agentd_dual_matrixd_restart_and_isolation",
+    "classname": "codex-hepta-matrixd::real_synapse_e2e",
+    "timestamp": "2026-11-07T08:31:09.159+00:00",
+    "time": "438.885"
+  },
+  "observed_stage_records": 68,
+  "completed_prefix_does_not_qualify_later_phases": true,
+  "failed_wait": "authority_probe_wait_for_body",
+  "reported_child_operation": "record reconciled Core turn",
+  "reported_child_source_variant": "MatrixDurableError::Unavailable",
+  "underlying_SQLx_site_or_SQLite_code": "UNKNOWN",
+  "failed_event_identity_and_error_clock_order": "UNKNOWN",
+  "new_native_execution_or_candidate_helper_execution": false,
+  "private_raw_exported": false,
+  "business_qualified": false,
+  "all_blockers_closed": false
+}

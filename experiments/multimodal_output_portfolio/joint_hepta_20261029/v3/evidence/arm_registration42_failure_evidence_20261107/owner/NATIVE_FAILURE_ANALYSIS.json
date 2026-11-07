@@ -1,0 +1,600 @@
+{
+  "scope": "Original ARM42 terminal failure and fixed source meanings; no new native execution, candidate, timeout or retry change",
+  "run": 42353199414,
+  "attempt": 1,
+  "job": 128346079305,
+  "head": "8b0fcf80afb95c5199be9b5f131d6454663c1632",
+  "tree": "8b46b24ccca6bf77227e1b21aa66ec84b0ea5473",
+  "workflow_merge": "99e81f8e932e805869d57bd8534761b9f3266ed8",
+  "workflow_result": "FAILURE",
+  "other_successful_job_API_conclusions": 10,
+  "job_API_counts_are_test_counts": false,
+  "projection_validation": {
+    "path": "/dev/shm/ndu_arm42_failure_20261107/PROJECTION_PAYLOAD_VALIDATION.json",
+    "bytes": 27421,
+    "sha256": "edaa438f48de3f81222d83c5002e031984cd2d0109adb0bbb414e84f36ff7bb2"
+  },
+  "primary_source_API": {
+    "path": "/dev/shm/ndu_arm42_failure_20261107/ERROR_SOURCE_API.json",
+    "bytes": 143238,
+    "sha256": "e8bbbc097ad5fddba6436422d7deb39b2c8bd0e3aeb0973815bae91178f7fdc9"
+  },
+  "complete_primary_trees_rehashed": 10,
+  "primary_sources": [
+    {
+      "path": "codex-rs/hepta-matrixd/src/runtime.rs",
+      "local": "/dev/shm/ndu_arm42_failure_20261107/source/runtime.rs",
+      "bytes": 24286,
+      "sha256": "3b983a64f68bc8aed5e2b7fabb432ac5bd9023f750d601960ee1826d63338404",
+      "git_blob": "7a81a5a338e153bae8df20c46575fc3e5d1b1080",
+      "git_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-matrix-store/src/store.rs",
+      "local": "/dev/shm/ndu_arm42_failure_20261107/source/store.rs",
+      "bytes": 151045,
+      "sha256": "8264b8de5dbca3d5fa1048092978c89b765e0e2d5ca2f32322aab4601f282598",
+      "git_blob": "a19ab6a201652d9ca5135dccd65aff9b2731dc10",
+      "git_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/matrix.rs",
+      "local": "/dev/shm/ndu_arm42_failure_20261107/source/supervisor_matrix.rs",
+      "bytes": 31847,
+      "sha256": "021fd2d4cef0a765e651676a7efd06a58dc77f7932d184001d1ade8cf09b3bed",
+      "git_blob": "58f0ac9ef340c5253b56e22a5baef969a941055f",
+      "git_mode": "100644"
+    },
+    {
+      "path": "codex-rs/hepta-matrix-sdk/src/sdk.rs",
+      "local": "/dev/shm/ndu_arm42_failure_20261107/source/sdk.rs",
+      "bytes": 29341,
+      "sha256": "9462a09f15bf7130413669dba1c29cd737c9421740c7307d2218782fd5d68848",
+      "git_blob": "82c7e2a7151dfbc9590502feb780511727d73f7d",
+      "git_mode": "100644"
+    }
+  ],
+  "registration_stage_source": {
+    "manifest": {
+      "path": "/dev/shm/ndu_arm_session_20261107/final_unit/manifest.json",
+      "bytes": 11265,
+      "sha256": "907d8885e755dce93c71033a0c3efe47d86ff84f3e13fc8288e67419107adeb0"
+    },
+    "source": {
+      "path": "/dev/shm/ndu_arm_session_20261107/post_format/codex-rs/hepta-matrixd/tests/fixtures/linux_qualification/registration.rs",
+      "bytes": 10242,
+      "sha256": "d5c4fca4165236c14f574436b81bcba20eecf1050118af555e9264c4bbb12db2"
+    },
+    "git_blob": "9f716b9f4beed3e4111527d4b42a25c95d351437",
+    "scope": "Previously root-qualified six-source manifest; the original qualification tree is the same published tree"
+  },
+  "original_console": {
+    "bytes": 45011,
+    "sha256": "ff7ab787bdcb96287b2744b5928523e10ede0b29cdab34364513b6b7f6d8c6dd",
+    "mode": "0600",
+    "fresh_second_decoded_read_equal": true,
+    "actual_checkout": "8b0fcf80afb95c5199be9b5f131d6454663c1632"
+  },
+  "executed_source": {
+    "seal_member": "qualification/plan/SOURCE_SEAL.json",
+    "bytes": 5342,
+    "sha256": "c7bd7b2b11421f14319456a5fe99bc60c74c7014269112716bc5a50428d296ab",
+    "qualification_commit": "9358ec959209a650ca4a9b99f4e15a85f67f7207",
+    "candidate_tree": "8b46b24ccca6bf77227e1b21aa66ec84b0ea5473",
+    "qualification_tree": "8b46b24ccca6bf77227e1b21aa66ec84b0ea5473",
+    "candidate_patch": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "test_overlay": null,
+    "source_clean": true,
+    "test_source": {
+      "path": "/dev/shm/ndu_arm_session_20261107/post_format/codex-rs/hepta-matrixd/tests/real_synapse_e2e.rs",
+      "bytes": 239842,
+      "sha256": "7d6c72402524b28f663cb0a27f93e17f854244a761f107431813f21d631fffb3"
+    }
+  },
+  "build": {
+    "member": "qualification/build/BUILD_RESULT.json",
+    "bytes": 158833,
+    "sha256": "a3cec5b0fef1acd5a4a1d94ce6d394f7fe419004e6daddc5264fc2ef75f04f7a",
+    "status": "built_not_executed",
+    "source_clean": true,
+    "seed_unchanged": true,
+    "cold_test_seconds": 635.8671261009999,
+    "cold_product_seconds": 1018.61598331
+  },
+  "actual_test": {
+    "just_invoked": true,
+    "end_member": "qualification/runtime/commands/025-END.json",
+    "bytes": 2943,
+    "sha256": "072915d97e2eac9d7d24aee78f66929450f72cad7aac16dfcf5ab047bb556bf7",
+    "exit_code": 100,
+    "wall_seconds": 439.03385301399976,
+    "child_cpu_seconds": 406.088282,
+    "executable_unchanged": true,
+    "stderr_member": "qualification/runtime/commands/025-actual-just-test.stderr",
+    "stderr": {
+      "bytes": 14436,
+      "sha256": "26c80d9715c2934563fcc07ada928e9b38009cca3e8cffed9c78dd3a8903f345"
+    },
+    "junit_member": "qualification/runtime/nextest-store/linux-synapse/junit.xml",
+    "junit": {
+      "bytes": 13765,
+      "sha256": "91556268568904ff1d5bdb6c7185f76d5d1d2c33ba00a1da00ac099b3bfeac35"
+    },
+    "case": {
+      "name": "real_synapse_dual_agentd_dual_matrixd_restart_and_isolation",
+      "classname": "codex-hepta-matrixd::real_synapse_e2e",
+      "timestamp": "2026-11-07T08:31:09.159+00:00",
+      "time": "438.885"
+    },
+    "direct_framework": {
+      "passed": 0,
+      "failed": 1,
+      "ignored": 0,
+      "filtered_out": 8
+    }
+  },
+  "observed_stages": [
+    {
+      "line": 30,
+      "stage": "dual_encrypted_dm_setup:start"
+    },
+    {
+      "line": 31,
+      "stage": "human_client_build:start"
+    },
+    {
+      "line": 32,
+      "stage": "human_client_build:done"
+    },
+    {
+      "line": 33,
+      "stage": "human_login:start"
+    },
+    {
+      "line": 34,
+      "stage": "human_login:done"
+    },
+    {
+      "line": 35,
+      "stage": "create_encrypted_dm:start"
+    },
+    {
+      "line": 36,
+      "stage": "create_encrypted_dm:done"
+    },
+    {
+      "line": 37,
+      "stage": "human_initial_sync:start"
+    },
+    {
+      "line": 38,
+      "stage": "human_initial_sync:done"
+    },
+    {
+      "line": 39,
+      "stage": "human_client_build:start"
+    },
+    {
+      "line": 40,
+      "stage": "human_client_build:done"
+    },
+    {
+      "line": 41,
+      "stage": "human_login:start"
+    },
+    {
+      "line": 42,
+      "stage": "human_login:done"
+    },
+    {
+      "line": 43,
+      "stage": "create_encrypted_dm:start"
+    },
+    {
+      "line": 44,
+      "stage": "create_encrypted_dm:done"
+    },
+    {
+      "line": 45,
+      "stage": "human_initial_sync:start"
+    },
+    {
+      "line": 46,
+      "stage": "human_initial_sync:done"
+    },
+    {
+      "line": 47,
+      "stage": "agent_a_join:start"
+    },
+    {
+      "line": 48,
+      "stage": "agent_join_whoami:start"
+    },
+    {
+      "line": 49,
+      "stage": "agent_join_whoami:done"
+    },
+    {
+      "line": 50,
+      "stage": "agent_join_request:start"
+    },
+    {
+      "line": 51,
+      "stage": "agent_join_logout:start"
+    },
+    {
+      "line": 52,
+      "stage": "agent_join_logout:done"
+    },
+    {
+      "line": 53,
+      "stage": "agent_join_request:done"
+    },
+    {
+      "line": 54,
+      "stage": "agent_a_join:done"
+    },
+    {
+      "line": 55,
+      "stage": "agent_b_join:start"
+    },
+    {
+      "line": 56,
+      "stage": "agent_join_whoami:start"
+    },
+    {
+      "line": 57,
+      "stage": "agent_join_whoami:done"
+    },
+    {
+      "line": 58,
+      "stage": "agent_join_request:start"
+    },
+    {
+      "line": 59,
+      "stage": "agent_join_logout:start"
+    },
+    {
+      "line": 60,
+      "stage": "agent_join_logout:done"
+    },
+    {
+      "line": 61,
+      "stage": "agent_join_request:done"
+    },
+    {
+      "line": 62,
+      "stage": "agent_b_join:done"
+    },
+    {
+      "line": 63,
+      "stage": "dual_encrypted_dm_setup:done"
+    },
+    {
+      "line": 64,
+      "stage": "raw_sync_cursor:start"
+    },
+    {
+      "line": 65,
+      "stage": "raw_sync_cursor:done"
+    },
+    {
+      "line": 66,
+      "stage": "fault_proxy:start"
+    },
+    {
+      "line": 67,
+      "stage": "fault_proxy:done"
+    },
+    {
+      "line": 68,
+      "stage": "matrix_config:start"
+    },
+    {
+      "line": 69,
+      "stage": "matrix_config:done"
+    },
+    {
+      "line": 70,
+      "stage": "paired_release_install:start"
+    },
+    {
+      "line": 107,
+      "stage": "paired_release_install:done"
+    },
+    {
+      "line": 108,
+      "stage": "agent_pair_start:start"
+    },
+    {
+      "line": 133,
+      "stage": "agent_pair_start:done"
+    },
+    {
+      "line": 134,
+      "stage": "agent_pair_ready:start"
+    },
+    {
+      "line": 135,
+      "stage": "agent_pair_ready:done"
+    },
+    {
+      "line": 136,
+      "stage": "post_ready_record_a:start",
+      "elapsed_ms": 0
+    },
+    {
+      "line": 145,
+      "stage": "post_ready_record_a:done",
+      "elapsed_ms": 33083
+    },
+    {
+      "line": 146,
+      "stage": "post_ready_record_b:start",
+      "elapsed_ms": 33083
+    },
+    {
+      "line": 155,
+      "stage": "post_ready_record_b:done",
+      "elapsed_ms": 66169
+    },
+    {
+      "line": 156,
+      "stage": "post_ready_sync_a:start",
+      "elapsed_ms": 66169
+    },
+    {
+      "line": 157,
+      "stage": "post_ready_sync_a:done",
+      "elapsed_ms": 66278
+    },
+    {
+      "line": 158,
+      "stage": "post_ready_sync_b:start",
+      "elapsed_ms": 66278
+    },
+    {
+      "line": 159,
+      "stage": "post_ready_sync_b:done",
+      "elapsed_ms": 66363
+    },
+    {
+      "line": 160,
+      "stage": "idle_ready_a:start",
+      "elapsed_ms": 68863
+    },
+    {
+      "line": 161,
+      "stage": "idle_ready_a:done",
+      "elapsed_ms": 68869
+    },
+    {
+      "line": 162,
+      "stage": "idle_ready_b:start",
+      "elapsed_ms": 68869
+    },
+    {
+      "line": 163,
+      "stage": "idle_ready_b:done",
+      "elapsed_ms": 68875
+    },
+    {
+      "line": 164,
+      "stage": "first_encrypted_turn:start"
+    },
+    {
+      "line": 165,
+      "stage": "first_encrypted_turn:done"
+    },
+    {
+      "line": 166,
+      "stage": "outbound_post_send_pre_mark:start"
+    },
+    {
+      "line": 167,
+      "stage": "outbound_post_send_pre_mark:done"
+    },
+    {
+      "line": 168,
+      "stage": "network_disconnect_recovery:start"
+    },
+    {
+      "line": 177,
+      "stage": "network_disconnect_recovery:a_offline_event_sent"
+    },
+    {
+      "line": 178,
+      "stage": "authority_probe:start"
+    },
+    {
+      "line": 179,
+      "stage": "authority_probe:cancelled"
+    },
+    {
+      "line": 180,
+      "stage": "authority_probe:resume_and_queue_start:start"
+    },
+    {
+      "line": 181,
+      "stage": "authority_probe:resume_and_queue_start:done"
+    }
+  ],
+  "diagnostic_snapshots": [
+    {
+      "line": 183,
+      "agent": "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12",
+      "active": true,
+      "healthy": true,
+      "matrix_active": true,
+      "matrix_healthy": false,
+      "matrix_degraded": true,
+      "matrix_last_error": "Matrix companion exited while its agent remained healthy"
+    },
+    {
+      "line": 195,
+      "agent": "019153a4-3088-7e03-a56a-9b1964f75dd3",
+      "active": true,
+      "healthy": true,
+      "matrix_active": false,
+      "matrix_healthy": false,
+      "matrix_degraded": true,
+      "matrix_last_error": "Matrix companion exited while its agent remained healthy"
+    }
+  ],
+  "original_primary_error": {
+    "line": 210,
+    "text": "Error: timed out decrypting @hepta-agent-b:localhost: agent-b-authority-probe",
+    "context": "authority_probe_wait_for_body",
+    "meaning": "Human B did not receive the required decrypted reply after the authority queue-start boundary"
+  },
+  "earlier_reported_B_child_error": {
+    "line": 204,
+    "text": "Error: Matrix durable store operation record reconciled Core turn failed: Matrix durable-core storage is unavailable",
+    "matrix_runtime_enum": "MatrixRuntimeError::StoreOperation",
+    "operation": "record reconciled Core turn",
+    "source_enum": "MatrixDurableError::Unavailable",
+    "boundary": "B Matrix process failure reported by the original failure-path Supervisor poll; raw stderr ordering is not a calibrated process clock"
+  },
+  "auth_endpoint_observations": {
+    "server_member": "qualification/controller-commands/083-container-final-log.stderr",
+    "bytes": 162927,
+    "sha256": "39323abb55714fa07ea0aef1f2be6ca59b344f9ffe18a5807cc0be2907572595",
+    "records": [
+      {
+        "line": 302,
+        "endpoint": "login",
+        "method": "POST",
+        "server_timestamp_literal": "2026-11-07 08:31:36,426",
+        "request_id": "POST-11",
+        "response_bytes": 172,
+        "status": 200,
+        "user_agent": "matrix-rust-sdk",
+        "peer": "::ffff:127.0.0.1",
+        "fixed_users_from_same_request": [
+          "@hepta-human:localhost"
+        ]
+      },
+      {
+        "line": 333,
+        "endpoint": "login",
+        "method": "POST",
+        "server_timestamp_literal": "2026-11-07 08:31:37,030",
+        "request_id": "POST-24",
+        "response_bytes": 172,
+        "status": 200,
+        "user_agent": "matrix-rust-sdk",
+        "peer": "::ffff:127.0.0.1",
+        "fixed_users_from_same_request": [
+          "@hepta-human:localhost"
+        ]
+      },
+      {
+        "line": 358,
+        "endpoint": "account/whoami",
+        "method": "GET",
+        "server_timestamp_literal": "2026-11-07 08:31:37,403",
+        "request_id": "GET-36",
+        "response_bytes": 80,
+        "status": 200,
+        "user_agent": "-",
+        "peer": "::ffff:127.0.0.1",
+        "fixed_users_from_same_request": [
+          "@hepta-agent-a:localhost"
+        ]
+      },
+      {
+        "line": 362,
+        "endpoint": "logout",
+        "method": "POST",
+        "server_timestamp_literal": "2026-11-07 08:31:37,486",
+        "request_id": "POST-38",
+        "response_bytes": 2,
+        "status": 200,
+        "user_agent": "-",
+        "peer": "::ffff:127.0.0.1",
+        "fixed_users_from_same_request": [
+          "@hepta-agent-a:localhost"
+        ]
+      },
+      {
+        "line": 363,
+        "endpoint": "account/whoami",
+        "method": "GET",
+        "server_timestamp_literal": "2026-11-07 08:31:37,597",
+        "request_id": "GET-39",
+        "response_bytes": 80,
+        "status": 200,
+        "user_agent": "-",
+        "peer": "::ffff:127.0.0.1",
+        "fixed_users_from_same_request": [
+          "@hepta-agent-b:localhost"
+        ]
+      },
+      {
+        "line": 367,
+        "endpoint": "logout",
+        "method": "POST",
+        "server_timestamp_literal": "2026-11-07 08:31:37,682",
+        "request_id": "POST-41",
+        "response_bytes": 2,
+        "status": 200,
+        "user_agent": "-",
+        "peer": "::ffff:127.0.0.1",
+        "fixed_users_from_same_request": [
+          "@hepta-agent-b:localhost"
+        ]
+      },
+      {
+        "line": 479,
+        "endpoint": "login",
+        "method": "POST",
+        "server_timestamp_literal": "2026-11-07 08:35:53,966",
+        "request_id": "POST-61",
+        "response_bytes": 263,
+        "status": 200,
+        "user_agent": "matrix-rust-sdk",
+        "peer": "::ffff:127.0.0.1",
+        "fixed_users_from_same_request": [
+          "@hepta-agent-a:localhost"
+        ]
+      },
+      {
+        "line": 497,
+        "endpoint": "login",
+        "method": "POST",
+        "server_timestamp_literal": "2026-11-07 08:35:54,429",
+        "request_id": "POST-71",
+        "response_bytes": 263,
+        "status": 200,
+        "user_agent": "matrix-rust-sdk",
+        "peer": "::ffff:127.0.0.1",
+        "fixed_users_from_same_request": [
+          "@hepta-agent-b:localhost"
+        ]
+      }
+    ],
+    "rc_login_address_reason_lines": [],
+    "clock_scope": "Literal server timestamps only; no server-to-client clock calibration"
+  },
+  "limits": [
+    "The Unavailable display does not identify the lower database or I/O error category or code.",
+    "The recovery loop can process any pending inbox item for B. The operation label does not identify the failed event or turn.",
+    "The failure-path Supervisor sample does not establish the child error time relative to queue-start completion.",
+    "No claim of SQLite busy, lock contention, corruption, a specific race, or authorization to add a retry or extend a timeout.",
+    "A was deliberately disconnected; the B reply wait fails before A reconnect and its later assertions.",
+    "Stage completion supports only the checks before that marker; it does not qualify later recovery, shutdown, or the whole business case.",
+    "No causal latency benefit follows from comparing different failed execution paths.",
+    "No full large artifact, excluded contents, ambient credential filtering, candidate helper execution or native rerun."
+  ],
+  "business_qualified": false,
+  "all_blockers_closed": false,
+  "large_scale_training_status": "NO_GO_FOR_LARGE_SCALE_TRAINING",
+  "auditor": {
+    "path": "/dev/shm/ndu_arm42_failure_20261107/audit_native_failure.py",
+    "bytes": 21202,
+    "sha256": "c9927883b3755e20dd23f78c3965a275c7f133ee38dad01b2aa1b6a6b3458653"
+  }
+}
