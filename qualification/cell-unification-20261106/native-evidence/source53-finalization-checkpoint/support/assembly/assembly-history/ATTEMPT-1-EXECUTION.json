@@ -1,7 +1,0 @@
-{
-  "chunk_id": "470f0a",
-  "wall_time_seconds": 0.115075522,
-  "exit_code": 1,
-  "original_token_count": 218,
-  "output": "Traceback (most recent call last):\n  File \"/workspace/scratch/08f5efd48967/source53-finalization-formal-preparation/assemble_finalization.py\", line 383, in <module>\n    main()\n  File \"/workspace/scratch/08f5efd48967/source53-finalization-formal-preparation/assemble_finalization.py\", line 288, in main\n    report = validate_closed(raws, terminal, scope)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/08f5efd48967/source53-finalization-formal-preparation/assemble_finalization.py\", line 188, in validate_closed\n    require(set(actual_delta) <= allowed and sorted(guard[\"tracked_changed_paths\"]) == actual_delta,\n  File \"/workspace/scratch/08f5efd48967/source53-finalization-formal-preparation/assemble_finalization.py\", line 26, in require\n    raise ValueError(message)\nValueError: phase changed paths disagree with source snapshots/scope\n"
-}

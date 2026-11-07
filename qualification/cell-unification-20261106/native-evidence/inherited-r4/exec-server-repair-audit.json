@@ -1,8 +1,0 @@
-{
-  "path": "codex-rs/exec-server/src/local_process_custody.rs",
-  "baseline_sha256": "2fefd56022bdefc0f5b8d1a1049ac5d25e40922dcc4e27d8d0c14f65fc6bd225",
-  "frozen_sha256": "207bb32ea1427e4cb425d01a56eb06fdcb7e2c60088c417dd024f7190c08b62d",
-  "replacements": 1,
-  "inverse_identical": true,
-  "semantics": "Closure calls exactly the same PoisonError::into_inner method on the same owned error; no lock, poisoning or custody order change."
-}

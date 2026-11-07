@@ -1,7 +1,0 @@
-[
-  {
-    "path": "codex-rs/core/src/hook_mcp_executor.rs",
-    "before": "            let result = prepared_call\n                .call(\n                    Some(Value::Object(call.input)),\n                    Some(serde_json::json!({ \"threadId\": self.thread_id.to_string() })),\n",
-    "after": "            let mut metadata = call.metadata.unwrap_or_default();\n            metadata.insert(\n                \"threadId\".to_string(),\n                Value::String(self.thread_id.to_string()),\n            );\n            let result = prepared_call\n                .call(\n                    Some(Value::Object(call.input)),\n                    Some(Value::Object(metadata)),\n"
-  }
-]
