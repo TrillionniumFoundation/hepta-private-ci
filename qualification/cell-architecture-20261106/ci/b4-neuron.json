@@ -1,0 +1,180 @@
+{
+  "schema_version": 1,
+  "source_commit": "b4afdbadc247c6fadfad4e416c00a9a853affa1c",
+  "retrieval": "GitHub connector fetch_workflow_run_jobs and complete decoded fetch_workflow_job_logs content; UTF-8 BOM and original LF preserved",
+  "job": {
+    "id": 128252597941,
+    "name": "Exact Cell candidate (representation-circuit-lifecycle)",
+    "status": "completed",
+    "conclusion": "failure",
+    "run_id": 42323275303,
+    "logs_url": null,
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1
+      },
+      {
+        "name": "Check out the exact candidate",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2
+      },
+      {
+        "name": "Bind source identity",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3
+      },
+      {
+        "name": "Install native prerequisites",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4
+      },
+      {
+        "name": "Run taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 5
+      },
+      {
+        "name": "Run facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 6
+      },
+      {
+        "name": "Expose DotSlash to the original owner fixtures",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 7
+      },
+      {
+        "name": "Resolve repository-verified V8 artifacts",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 8
+      },
+      {
+        "name": "Record pinned toolchain",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 9
+      },
+      {
+        "name": "Run the affected owner suites",
+        "status": "completed",
+        "conclusion": "failure",
+        "number": 10
+      },
+      {
+        "name": "Check the same owners with strict lint",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 11
+      },
+      {
+        "name": "Check formatting and immutable tested source",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 12
+      },
+      {
+        "name": "Preserve every observed result",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 13
+      },
+      {
+        "name": "Post Check out the exact candidate",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 26
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 27
+      }
+    ]
+  },
+  "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42323275303/job/128252597941",
+  "original_log": {
+    "path": "b4-neuron.log.gz",
+    "encoding": "gzip of exact UTF-8 decoded GitHub job log",
+    "decoded_bytes": 206124,
+    "decoded_sha256": "f8cbad353361171037a2dbed7c576486ef7affcc3d4432a63818b934c1a5b6d4",
+    "compressed_bytes": 44565,
+    "compressed_sha256": "177ad651c042a5a54446fb010f8903e132b79f6fce3c812854f31789a4f06a4e"
+  },
+  "classification": "Rust compilation failed before product test execution",
+  "compiler_error": "E0659 ambiguous assert_eq macro import",
+  "compiler_error_occurrences": 14,
+  "original_helper_receipt": {
+    "after": {
+      "commit": "b4afdbadc247c6fadfad4e416c00a9a853affa1c",
+      "dirty": false,
+      "parents": [
+        "37e6ffe9dda66289580f9e3bdf6b161b2ee7d02e"
+      ],
+      "tree": "b63abc5963ee86cfe056894096d9128c8e42e0e6"
+    },
+    "base_sha": "a6f3aa12ba187448c35449c7da0a9798ae4ca987",
+    "before": {
+      "commit": "b4afdbadc247c6fadfad4e416c00a9a853affa1c",
+      "dirty": false,
+      "parents": [
+        "37e6ffe9dda66289580f9e3bdf6b161b2ee7d02e"
+      ],
+      "tree": "b63abc5963ee86cfe056894096d9128c8e42e0e6"
+    },
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "-p",
+      "codex-hepta-neuron",
+      "-p",
+      "codex-hepta-automation",
+      "-p",
+      "codex-hepta-runtime",
+      "--retries",
+      "0"
+    ],
+    "command_exit_code": 101,
+    "elapsed_seconds": 253.11465604,
+    "error": "required tests were not observed passing",
+    "exit_code": 101,
+    "finished_at": "2026-11-07T01:35:04.344477+00:00",
+    "job": "native",
+    "lane": "source-head",
+    "log_bytes": 36425,
+    "log_file": "tests.json.eee01c85d27747e7a96e844fe9cd3dd0.log",
+    "log_sha256": "7159a24d878e4bd02f0ac7c13193d985b31b886d14d135af3aa28d2fee10c5f6",
+    "minimum_tests": 1,
+    "observed_failed_tests": 0,
+    "observed_passed_tests": 0,
+    "output_limit_exceeded": false,
+    "returncode": 101,
+    "run_attempt": "1",
+    "run_id": "42323275303",
+    "schema_version": 1,
+    "source_sha": "b4afdbadc247c6fadfad4e416c00a9a853affa1c",
+    "started_at": "2026-11-07T01:30:51.194772+00:00",
+    "status": "failed",
+    "tested_sha": "b4afdbadc247c6fadfad4e416c00a9a853affa1c",
+    "timed_out": false,
+    "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+  },
+  "repair_observation": {
+    "source": "87cce8066b5f41e2d462b9469a301245f43d8c23",
+    "detail": "Affected test modules now contain explicit pretty_assertions::assert_eq imports; current-source native and CI qualification are separately recorded."
+  },
+  "qualification_boundary": "This original failure is retained. No tests passed or failed at runtime in this job; strict lint and format steps were skipped. It does not describe a later source revision.",
+  "record_created_at": "2026-11-07T02:34:03.924281+00:00",
+  "retrieved_in_session_date": "2026-11-07 UTC"
+}

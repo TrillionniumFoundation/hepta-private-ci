@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "kind": "Independent local final formatted-source caller proof",
+  "result": {
+    "schema": "hepta.final-caller-local-result.v1",
+    "status": "PASS_HEPTA_CALLER_CLOSED_SET",
+    "process_returncode": 0,
+    "timed_out": false,
+    "duration_seconds": 324.4244930290006,
+    "budget_seconds": 900,
+    "executions": 1,
+    "rust_files_scanned": 5315,
+    "boundaries": 171,
+    "authority_granted": false,
+    "rust_tree_git_sha1": "3deb8503bc873331518c0c536a269c00d754a8bf",
+    "tracked_blobs_verified_before_and_after": 9451,
+    "tracked_blob_bytes": 128230122,
+    "audit_inputs_verified_before_and_after": 8,
+    "inputs_unchanged": true,
+    "local_git_head": "a6f3aa12ba187448c35449c7da0a9798ae4ca987",
+    "whole_publication_head_clean_asserted": false,
+    "reported_native07_outcome": {
+      "status": "timeout",
+      "duration_seconds": 900.165,
+      "stdout_bytes": 0,
+      "basis": "parent reported original native07 execution; original native failure artifacts remain separate and unchanged"
+    },
+    "scope": "Independent local full caller proof on the exact formatted Rust tree and eight audit inputs; not a native07 pass, Rust product test, or production qualification."
+  },
+  "exact_audit_inputs": {
+    "scripts/hepta_typed_callers.py": "0774d796759876fab1873a2a1dcbb4c91210533d34edbe32707fb8f52b9d569c",
+    "scripts/test_hepta_typed_callers.py": "059d636fe604217c7c01975e50c5d8a3074445fd5bc31ef8652b09220c4dd0d5",
+    "scripts/verify_hepta_callers.py": "ff62f959e78225aa198ec73d0cfe3747bab3a85f80e58fccec7857e407486f71",
+    "CALLERS.toml": "715df436da33503674ca02453360d1f03e2d919c2fd8d9e059eca9efd90be0ee",
+    "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json": "aa38dd3e67013b55fba4080f92d31c6932cf78d477a9df3d40abb64858bf7fbc",
+    "qa/b4-no-bypass/test_verify_hepta_callers.py": "dba4c5421ed30f7ea83d2b9c160b38a3570fc05cae7de5f68310d47062783c1d",
+    "qa/b4-no-bypass/test_kernel_authority_closed_world.py": "5ea3ab6a21f48e90f414d7e7865d1ec77008c1006b4262a4ea489cca096f035a",
+    "qa/b4-no-bypass/test_root_admin_source_closure.py": "aa5036a5498383d8c4968f7fc546d1e93c15e10b7bb76cd288804100273a8b7e"
+  },
+  "archive": {
+    "path": "final-caller.tar.gz",
+    "bytes": 326461,
+    "sha256": "a7acd3ad0be49e01401f35ceb17cf4b237a721baf5577df1d57685ffc1fee654",
+    "members": [
+      {
+        "path": "archive-reference-review.txt",
+        "bytes": 1860,
+        "sha256": "28678a8a8643f458c26f7a4bc2063ff3c7522b5c2d22011c8c5b04f2c82d2015"
+      },
+      {
+        "path": "final-caller-artifacts.json",
+        "bytes": 1177,
+        "sha256": "1e3259ddfe6cb87769ad627c86d785039c530dfa79a5787502cfc08dcec4745f"
+      },
+      {
+        "path": "final-caller-result.json",
+        "bytes": 1074,
+        "sha256": "82d9e6e3933f7486c890b9efffe2422055ff9f0970cd86f1bbbd25ea61e4defe"
+      },
+      {
+        "path": "final-caller-run.json",
+        "bytes": 1514,
+        "sha256": "3c20df4d1a3976ca83e40f79905acb14c214e09ecb98e878b270ec7a19cc5ea5"
+      },
+      {
+        "path": "final-caller-rust-listing.z.gz",
+        "bytes": 313059,
+        "sha256": "ede0db6c4822b2afb7d7dcde7d43d9584cd356be61675ae3a67ca82f422d29f8"
+      },
+      {
+        "path": "final-caller-source-after.json",
+        "bytes": 2146,
+        "sha256": "6d69dd720899aabf155026cd6b519ef39b0e959cdc9a9c66012a2f968e34f5e5"
+      },
+      {
+        "path": "final-caller-source-before.json",
+        "bytes": 1923,
+        "sha256": "eb6711c0dc94d9896851c0d805bc2cde25258b76e49e6a5b0d2a1b90d0b3b5bd"
+      },
+      {
+        "path": "final-caller-stderr.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "final-caller-stdout.log",
+        "bytes": 79750,
+        "sha256": "5edfb07a78c0b91e4a972235ba216fe22e34bc46e6f1c05e36161b15e447cac7"
+      }
+    ]
+  },
+  "original_artifact_manifest_sha256": "1e3259ddfe6cb87769ad627c86d785039c530dfa79a5787502cfc08dcec4745f",
+  "notes": [
+    "The original command ran once with its unchanged 900-second budget.",
+    "This proof binds the entire Rust3deb subtree and eight audit inputs, not the incomplete local whole-repository HEAD.",
+    "Native07 remains a separate 900.165-second timeout and is not relabeled by this local pass.",
+    "The raw stdout equals the earlier r4 stdout; this archive retains a distinct execution receipt and before/after source identities.",
+    "The static archive-reference review is not a product test."
+  ],
+  "authority_granted": false
+}

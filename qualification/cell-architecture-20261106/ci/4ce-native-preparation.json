@@ -1,0 +1,137 @@
+{
+  "schema_version": 1,
+  "source_commit": "4ce8808d8b48624a17d247fdf47c7fbdaaab80a4",
+  "job": {
+    "id": 128279386660,
+    "name": "Exact Cell candidate (representation-circuit-lifecycle)",
+    "status": "completed",
+    "conclusion": "failure",
+    "run_id": 42331671861,
+    "logs_url": null,
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1
+      },
+      {
+        "name": "Check out the exact candidate",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2
+      },
+      {
+        "name": "Bind source identity",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3
+      },
+      {
+        "name": "Install native prerequisites",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4
+      },
+      {
+        "name": "Run taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 5
+      },
+      {
+        "name": "Run facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 6
+      },
+      {
+        "name": "Expose DotSlash to the original owner fixtures",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 7
+      },
+      {
+        "name": "Resolve repository-verified V8 artifacts",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 8
+      },
+      {
+        "name": "Record pinned toolchain",
+        "status": "completed",
+        "conclusion": "failure",
+        "number": 9
+      },
+      {
+        "name": "Run the affected owner suites",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 10
+      },
+      {
+        "name": "Check the same owners with strict lint",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 11
+      },
+      {
+        "name": "Check formatting and immutable tested source",
+        "status": "completed",
+        "conclusion": "skipped",
+        "number": 12
+      },
+      {
+        "name": "Preserve every observed result",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 13
+      },
+      {
+        "name": "Post Check out the exact candidate",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 26
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 27
+      }
+    ]
+  },
+  "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42331671861/job/128279386660",
+  "classification": "Dependency-index transport failure before product-test execution",
+  "failing_step": "Record pinned toolchain",
+  "failing_command": "cargo metadata --locked --format-version=1",
+  "exit_code": 101,
+  "observed_failure": "crates.io percent-encoding sparse-index retrieval: curl [55] / OpenSSL SSL_read SSL_ERROR_SYSCALL",
+  "product_test_step": "skipped",
+  "strict_clippy_step": "skipped",
+  "format_step": "skipped",
+  "rerun_request": {
+    "job_id": 128279386660,
+    "response": {
+      "error": "GitHub API error 403: {\"message\":\"The workflow run containing this job is already running\",\"documentation_url\":\"https://docs.github.com/rest/actions/workflow-runs#re-run-a-job-from-a-workflow-run\",\"status\":\"403\"}",
+      "error_code": "FORBIDDEN",
+      "error_data": {
+        "message": "The workflow run containing this job is already running",
+        "documentation_url": "https://docs.github.com/rest/actions/workflow-runs#re-run-a-job-from-a-workflow-run",
+        "status": "403"
+      }
+    },
+    "interpretation": "Request rejected because the containing workflow was still running; no rerun was started by this request."
+  },
+  "qualification_boundary": "This preparation failure does not count as a Rust test assertion failure or a pass. Native87cc product results remain separately source-bound; the unchanged source was not weakened to bypass dependency retrieval.",
+  "original_log": {
+    "path": "4ce-native-preparation.log.gz",
+    "decoded_bytes": 61301,
+    "decoded_sha256": "8df53b3bd16fc430a9d8747927d6e03ed9cbf9681ca84ca10e1f4f5fc574bae2",
+    "compressed_bytes": 13251,
+    "compressed_sha256": "c026497343147a5474bdbc021585639105c6d64662f58cb9e470f7f3ad71575c",
+    "crlf_count": 0,
+    "retrieval": "Exact UTF-8 encoding of full decoded GitHub connector job log; BOM and CRLF/LF preserved."
+  },
+  "record_created_at": "2026-11-07T03:07:14.019041+00:00"
+}

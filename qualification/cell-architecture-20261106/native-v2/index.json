@@ -1,0 +1,66 @@
+{
+  "schema": "hepta.native-closure-index.v2",
+  "scope": "Complete closed native command files, original failures, controller stdout/stderr/status receipts, tool preparation, merge and formatting proofs, source publication and transfer verification. Raw outcomes retain their original source identities.",
+  "parts": [
+    {
+      "path": "c000.tar.gz",
+      "bytes": 470447,
+      "sha256": "f618cfff4e57cc332b07831826178215202b5b5f9c3592c94d17aaa2344a7830",
+      "member_count": 252
+    },
+    {
+      "path": "c001.tar.gz",
+      "bytes": 300539,
+      "sha256": "9e194bba07bcf6755553890054a8cb44394d39ca7978e48a0eb2163e4b4cbb19",
+      "member_count": 253
+    },
+    {
+      "path": "d000.tar.gz",
+      "bytes": 72593,
+      "sha256": "e30ad11844e71d2b01c15d81a3ea1913c89631134069a4757feaf019a3d401ec",
+      "member_count": 22
+    },
+    {
+      "path": "p001.tar.gz",
+      "bytes": 233056,
+      "sha256": "184fc22b52dfcff299a8e1015953d117fb2d26ee5a86a2b7a4e3029d9c0f175c",
+      "member_count": 484
+    }
+  ],
+  "members_manifest": {
+    "path": "members.json",
+    "bytes": 334381,
+    "sha256": "312979a8455e55ce70284160201fe84462537a559022b232483068c5ab3f55fd"
+  },
+  "member_count": 1011,
+  "total_member_bytes": 6033160,
+  "max_member_path": 116,
+  "max_delivered_file_bytes": 470447,
+  "anchors": {
+    "tested_revision": "87cce8066b5f41e2d462b9469a301245f43d8c23",
+    "tested_tree": "60604de0d6ea4805fd248574ba83fe49f16b261a",
+    "published_source_revision": "4ce8808d8b48624a17d247fdf47c7fbdaaab80a4",
+    "published_source_tree": "0b668cec797c009c7ba710607931f011f4338e52",
+    "rust_tree": "3deb8503bc873331518c0c536a269c00d754a8bf"
+  },
+  "prior_archive_reference": {
+    "label": "closed-evidence-source-stage1-v1.tar.gz",
+    "sha256": "d17ea73df84263cbf9a6791001d5fb4f22f009815a0f51167c27011762e18fa8",
+    "bytes": 337930,
+    "scope": "Previously published archive remains separate; its source-stage1 and source-ff-r3 native directories are intentionally not duplicated here."
+  },
+  "validation": {
+    "all_members_verified": true,
+    "all_tar_headers_verified": true,
+    "unlisted_or_duplicate_members": 0,
+    "credential_pattern_matches": 0
+  },
+  "excluded_material": "No V8, nextest, Prettier package payloads, Cargo targets, or live job directory snapshots.",
+  "outcome_boundaries": {
+    "native_rust": "Original four-package tests and strict Clippy passed on 87cc; 990 passed, 66 skipped, 31 binaries, one slow test.",
+    "native_python_text_07": "Original aggregate failed: caller proof timed out at 900.165s and original whole-glob Prettier found 31 existing files. These failures are preserved.",
+    "formatting_followthrough": "31 JavaScript files changed only by pinned observed Prettier; strict AST equality preserved semantic raw fields. Whole-glob underlying Prettier passed after publication 4ce880.",
+    "full_ruff_diagnostic": "Three unchanged baseline Python files would be reformatted; diagnostic remains failed.",
+    "external_caller_followthrough": "Root-owned separately archived source-bound local full caller proof supplies its own result and checkout limitations."
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "source_commit": "4ce8808d8b48624a17d247fdf47c7fbdaaab80a4",
+  "job": {
+    "id": 128279386114,
+    "name": "Verify complete evidence archive (windows-2025)",
+    "status": "completed",
+    "conclusion": "success",
+    "run_id": 42331671872,
+    "logs_url": null,
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1
+      },
+      {
+        "name": "Check out the exact candidate",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2
+      },
+      {
+        "name": "Verify integrity, source coverage and bounded checkout files",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3
+      },
+      {
+        "name": "Preserve verification output",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4
+      },
+      {
+        "name": "Post Check out the exact candidate",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 8
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 9
+      }
+    ]
+  },
+  "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42331671872/job/128279386114",
+  "classification": "Archive checkout and verification passed",
+  "archive_tests": {
+    "passed": 14,
+    "failed": 0,
+    "skipped": 0,
+    "elapsed_seconds": 5.365
+  },
+  "qualification_boundary": "Exact 4ce source archive checkout, complete original-member integrity and path/blob budgets only; no Rust product tests or later-source qualification.",
+  "original_log": {
+    "path": "4ce-windows-archive.log.gz",
+    "decoded_bytes": 30832,
+    "decoded_sha256": "35c9789c2d8e09227b355d18fb26a60c7a5ca499c855eb0dcb00f28bcad1de23",
+    "compressed_bytes": 6826,
+    "compressed_sha256": "5d23c6d2a8e2bd7021bf38abc37d5d01d575b01b692d67bfd6249c38d8a4ef3b",
+    "crlf_count": 328,
+    "retrieval": "Exact UTF-8 encoding of full decoded GitHub connector job log; BOM and CRLF/LF preserved."
+  },
+  "record_created_at": "2026-11-07T03:07:12.560799+00:00"
+}

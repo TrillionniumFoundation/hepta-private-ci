@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "source_commit": "b4afdbadc247c6fadfad4e416c00a9a853affa1c",
+  "retrieval": "GitHub connector fetch_workflow_run_jobs and complete decoded fetch_workflow_job_logs content; UTF-8 BOM and original LF preserved",
+  "job": {
+    "id": 128252598512,
+    "name": "Verify complete evidence archive (ubuntu-24.04)",
+    "status": "completed",
+    "conclusion": "success",
+    "run_id": 42323275294,
+    "logs_url": null,
+    "steps": [
+      {
+        "name": "Set up job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 1
+      },
+      {
+        "name": "Check out the exact candidate",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 2
+      },
+      {
+        "name": "Verify integrity, source coverage and bounded checkout files",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 3
+      },
+      {
+        "name": "Preserve verification output",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 4
+      },
+      {
+        "name": "Post Check out the exact candidate",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 8
+      },
+      {
+        "name": "Complete job",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 9
+      }
+    ]
+  },
+  "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42323275294/job/128252598512",
+  "original_log": {
+    "path": "b4-linux-archive.log.gz",
+    "encoding": "gzip of exact UTF-8 decoded GitHub job log",
+    "decoded_bytes": 25191,
+    "decoded_sha256": "065d78c9136a8bbad3b333221d6ae8216cd685f24c9994610b04c469de83a9ee",
+    "compressed_bytes": 6062,
+    "compressed_sha256": "0f35aeaa8262a48f12a9e66360aad51f5b1ff5cdd6a14e2ee58ba599a84b7e9a"
+  },
+  "classification": "Archive checkout and verification passed",
+  "archive_tests": {
+    "passed": 14,
+    "failed": 0,
+    "elapsed_seconds": 0.514
+  },
+  "qualification_boundary": "Exact b4 source archive checkout, integrity and path/blob budgets only. No Rust product tests or later source qualification.",
+  "record_created_at": "2026-11-07T02:34:03.924850+00:00",
+  "retrieved_in_session_date": "2026-11-07 UTC"
+}
