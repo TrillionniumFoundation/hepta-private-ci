@@ -1,0 +1,122 @@
+{
+  "checks": [
+    {
+      "argv": [
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/ruff",
+        "format",
+        "--config",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/pyproject.toml",
+        "/dev/shm/ndu_root_continuation_20261107/review_e17_sources.py"
+      ],
+      "cwd": "/workspace/scratch/3f6a885bb83c",
+      "exit_code": 0,
+      "wall_seconds": 0.008566659002099186,
+      "stdout": {
+        "path": "/dev/shm/ndu_root_continuation_20261107/e17_root_checks/00.stdout",
+        "bytes": 19,
+        "sha256": "413a709001976657cb743636fd34e48fc41d8d302d665460d3f874b3313da127"
+      },
+      "stderr": {
+        "path": "/dev/shm/ndu_root_continuation_20261107/e17_root_checks/00.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/ruff",
+        "check",
+        "--config",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/pyproject.toml",
+        "/dev/shm/ndu_root_continuation_20261107/review_e17_sources.py"
+      ],
+      "cwd": "/workspace/scratch/3f6a885bb83c",
+      "exit_code": 0,
+      "wall_seconds": 0.008168227010173723,
+      "stdout": {
+        "path": "/dev/shm/ndu_root_continuation_20261107/e17_root_checks/01.stdout",
+        "bytes": 19,
+        "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+      },
+      "stderr": {
+        "path": "/dev/shm/ndu_root_continuation_20261107/e17_root_checks/01.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/ruff",
+        "format",
+        "--check",
+        "--config",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/pyproject.toml",
+        "/dev/shm/ndu_root_continuation_20261107/review_e17_sources.py"
+      ],
+      "cwd": "/workspace/scratch/3f6a885bb83c",
+      "exit_code": 0,
+      "wall_seconds": 0.006227130987099372,
+      "stdout": {
+        "path": "/dev/shm/ndu_root_continuation_20261107/e17_root_checks/02.stdout",
+        "bytes": 25,
+        "sha256": "fd2299c9f1c6dc869070883e281051bfe93aacf66c1a3b0069f45b4aa410ca50"
+      },
+      "stderr": {
+        "path": "/dev/shm/ndu_root_continuation_20261107/e17_root_checks/02.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "-O",
+        "/dev/shm/ndu_root_continuation_20261107/review_e17_sources.py"
+      ],
+      "cwd": "/workspace/scratch/3f6a885bb83c",
+      "exit_code": 0,
+      "wall_seconds": 0.09358586299640592,
+      "stdout": {
+        "path": "/dev/shm/ndu_root_continuation_20261107/e17_root_checks/03.stdout",
+        "bytes": 194,
+        "sha256": "2ef0095f1c6614a7627cdd4caf7c9d07e2b2bf646d5f44e1e4604b103356bcb9"
+      },
+      "stderr": {
+        "path": "/dev/shm/ndu_root_continuation_20261107/e17_root_checks/03.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-B",
+        "-m",
+        "codespell_lib",
+        "--ignore-words",
+        ".codespellignore",
+        "--skip",
+        "./.git",
+        "/dev/shm/ndu_root_continuation_20261107/review_e17_sources.py",
+        "/dev/shm/ndu_root_continuation_20261107/e17_root_review/ROOT_REVIEW.json",
+        "/dev/shm/ndu_e17_production_review_20261107/PRODUCTION_ADMISSION_REVIEW.md"
+      ],
+      "cwd": "/workspace/scratch/3f6a885bb83c/hepta-complete-5083",
+      "exit_code": 1,
+      "wall_seconds": 0.01306783000472933,
+      "stdout": {
+        "path": "/dev/shm/ndu_root_continuation_20261107/e17_root_checks/04.stdout",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/dev/shm/ndu_root_continuation_20261107/e17_root_checks/04.stderr",
+        "bytes": 104,
+        "sha256": "f706ae3561edc15cdf67be0c6f7abc48e97b346ad9327d1639c37f8aeeaa95c0"
+      }
+    }
+  ],
+  "HOME_inherited": true,
+  "native_execution": false
+}
