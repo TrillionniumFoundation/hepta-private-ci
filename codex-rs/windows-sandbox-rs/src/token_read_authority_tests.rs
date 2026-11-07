@@ -3,6 +3,9 @@
 #[path = "token_access_request_tests.rs"]
 mod access_requests;
 
+#[path = "token_descriptor_access_tests.rs"]
+mod access_checks;
+
 use super::*;
 use anyhow::Context;
 use std::path::Path;
@@ -675,11 +678,15 @@ fn observe(case: u8, root: &Path) -> Result<Observation> {
             );
         }
     }
+    let descriptor_checks = access_checks::capture(case, &allowed[0], &git)?;
     let token = full_token(case, base.0, &read, &[&cap_a, &cap_b])?;
     let (inside, outside_read, contents_match, refused, permissions, protected_git) = {
         // SAFETY: the token stays owned until after this guard reverts the thread.
         let _impersonation = unsafe { Impersonation::enter(token.0)? };
         access_requests::observe(case, &allowed[0], &git)?;
+        if let Some(checks) = &descriptor_checks {
+            checks.observe(token.0, [read.sid.as_ptr(), cap_a.as_ptr(), cap_b.as_ptr()])?;
+        }
         let inside = allowed.each_ref().map(|path| {
             [
                 operation(std::fs::write(path.join("created.txt"), "allowed")),
