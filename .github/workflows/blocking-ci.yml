@@ -223,9 +223,13 @@ jobs:
             git merge-base --is-ancestor "$SOURCE_SHA" "$TESTED_SHA"
           fi
           expected_files="$(printf '%s\n' \
+            ".github/scripts/test_check_windows_private_state_acquisition.py" \
             ".github/workflows/blocking-ci.yml" \
             ".github/workflows/hepta-cell-differentiation.yml" \
+            ".github/workflows/hepta-windows-private-state-native.yml" \
             "codex-rs/Cargo.lock" \
+            "codex-rs/hepta-contracts/src/final_use_existing.rs" \
+            "codex-rs/hepta-contracts/src/final_use_tests.rs" \
             "codex-rs/hepta-neuron/src/cell_generation_observation_tests.rs")"
           actual_files="$(git diff --name-only "$PARENT_SHA" "$SOURCE_SHA")"
           test "$actual_files" = "$expected_files"
