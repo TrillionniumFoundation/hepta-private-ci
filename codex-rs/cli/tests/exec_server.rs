@@ -423,7 +423,11 @@ metrics_exporter = {{ otlp-http = {{ endpoint = "{base_url}/v1/metrics", protoco
             &serde_json::json!({
                 "id": 1,
                 "method": "initialize",
-                "params": {"clientName": "otel-test", "resumeSessionId": null}
+                "params": {
+                    "clientName": "otel-test",
+                    "resumeSessionId": null,
+                    "processExitObservation": true
+                }
             }),
         )
         .await?;
