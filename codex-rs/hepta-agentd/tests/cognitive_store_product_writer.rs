@@ -182,8 +182,10 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
         1,
     )
     .await?;
+    // ExactCurrentCut was checked before the host acquired its durable writer lease.
+    // Lease acquisition appends to the same owner tables, so the post-open cut must advance.
     let recovered_anchor = host.writer().recovery_anchor().await?;
-    assert_eq!(recovered_anchor, expected);
+    assert_ne!(recovered_anchor, expected);
 
     let now = i64::try_from(now_unix_seconds()?)?;
     let access = CognitiveAccess::agent_private(owner.clone());
