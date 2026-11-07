@@ -292,15 +292,22 @@ impl Fixture {
     }
 
     pub(crate) fn reopen_current(&self) -> anyhow::Result<Arc<NeuronGenerationCurrentOwnerV1>> {
+        Ok(self.reopen_current_with_ack_loss_hook()?.0)
+    }
+
+    pub(crate) fn reopen_current_with_ack_loss_hook(
+        &self,
+    ) -> anyhow::Result<(Arc<NeuronGenerationCurrentOwnerV1>, impl FnOnce())> {
         let store = Arc::new(FileCas::<CurrentHead>::reopen(
             &self.directory.path().join("current.json"),
             current_id(&self.old_config)?,
         )?);
         let current = NeuronGenerationCurrentOwnerV1 {
-            store: CurrentStore::from_test_store(&self.old_config.initial.scope, store)?,
+            store: CurrentStore::from_test_store(&self.old_config.initial.scope, store.clone())?,
         };
         current.store.load()?;
-        Ok(Arc::new(current))
+        // Arm only this reopened owner's next CAS, after forward preparation.
+        Ok((Arc::new(current), move || store.lose_next_ack()))
     }
 
     pub(crate) fn lose_publication_ack(&self) {

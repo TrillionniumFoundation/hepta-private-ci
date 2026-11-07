@@ -154,8 +154,9 @@ fn typed_forward_reopens_original_prepared_files_and_requires_a_distinct_signed_
     ), Err(AgentdError::Invalid(message)) if message.contains("remains pending; no redispatch")));
     assert_eq!(f.bytes()?, pending);
     let target_before = f.host.owner_bytes()?;
+    let (current, lose_publication_ack) = f.update.reopen_current_with_ack_loss_hook()?;
     let forward = prepare_agentd_v13_generation_forward_recovery_v1(
-        f.update.reopen_current()?,
+        current,
         f.update.authorities()?,
         f.update.old_journal()?,
         f.update.selection()?,
@@ -172,7 +173,7 @@ fn typed_forward_reopens_original_prepared_files_and_requires_a_distinct_signed_
     let signed = f.update.sign(forward.final_use_binding())?;
     assert_ne!(signed.grant.nonce, original.grant.nonce);
     let forward_intent = forward.intent_digest();
-    f.update.lose_publication_ack();
+    lose_publication_ack();
     assert!(forward.publish(&signed).is_err());
     assert_eq!(f.update.authority.capacity()?.used_nonces, 2);
     assert_eq!(f.host.owner_bytes()?, target_before);
