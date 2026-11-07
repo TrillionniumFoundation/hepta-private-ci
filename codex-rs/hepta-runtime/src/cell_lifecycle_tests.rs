@@ -10,6 +10,9 @@ use sqlx::sqlite::SqlitePoolOptions;
 
 use super::*;
 
+#[path = "cell_lifecycle_state_tests.rs"]
+mod state_closure_tests;
+
 // Qualification fixtures only: physical independent custody is not modeled.
 // They cannot satisfy the unchanged public Control lifecycle admission gate.
 #[derive(Clone)]
