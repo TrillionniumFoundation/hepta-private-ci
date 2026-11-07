@@ -65,7 +65,8 @@ separate engineering profile, requiring an actual externally pinned device smoke
 with the same source, weight revisions, runtime versions, device, and dtype.
 Requested T4, quota, a provider's COMPLETE state, and mocked tests are insufficient.
 The model pins remain SmolVLM2-256M-Video-Instruct and segmind/tiny-sd; no larger
-model or alternate revision is substituted. A failed CUDA check has no CPU fallback.
+model or alternate revision is substituted. A failed CUDA check never silently
+changes the device profile.
 
 The original 25 MiB material body-byte cap and immutable train/development roles
 remain binding during any transfer. Worker copies can carry only the nine selected
@@ -80,11 +81,20 @@ A transport-level zero exit exists only because the existing Kaggle artifact API
 requires COMPLETE; `experiment_status` is authoritative and scientific acceptance
 remains false. This provider profile does not alter Colab's limits.
 
+A separate `local_cpu_pilot` entry point requires a new request ID and the current
+Kaggle run's externally pinned, original Failed result and actual no-CUDA probe.
+It reuses verified materials and the exact existing CPU venv, requires observed
+native cgroup limits of at most two CPUs and 16 GiB, and narrows its affinity to
+two logical CPUs. It never repairs a GPU driver or changes the cloud CUDA guard.
+The CPU/bfloat16 run has its own 1740-second budget and preserves the same full
+18/12/216 roster. Small original cost and admission receipts survive even a failed
+large evidence export. This entry point is preparation, not execution evidence.
+
 ## Validation and review
 
 `LOCAL_VALIDATION.json` and `local-validation.zip` preserve the integrated attempt,
 the missing-reference failure, the focused repair, and exact source hashes.
-Current coverage is 177 portfolio, 49 semantic, and 83 generator/runtime tests,
+Current coverage is 183 portfolio, 49 semantic, and 83 generator/runtime tests,
 with no runtime skips. These are local engineering tests, not hosted CI or real
 model benefit measurements. Required CI also runs the source admission checks and
 bounded runtime regressions with their needed dependencies.

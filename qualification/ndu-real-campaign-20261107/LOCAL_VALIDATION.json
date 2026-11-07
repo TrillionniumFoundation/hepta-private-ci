@@ -1,9 +1,9 @@
 {
   "schema": "hepta.integrated-validation-summary.v1",
-  "current_code_commit": "93703d7f6f3216afcfa0303ed55876f1489d883a",
-  "unique_current_test_coverage": 309,
+  "current_code_commit": "36de4a4f1aa8626225c2108dbca87e892ba0ce6e",
+  "unique_current_test_coverage": 315,
   "counts": {
-    "portfolio": 177,
+    "portfolio": 183,
     "semantic": 49,
     "decision_audit": 83
   },
@@ -30,6 +30,12 @@
       "tests": 6,
       "errors": 0,
       "reason": "New cloud orchestration checked on the integrated tree with real bounded child processes and source/transfer/export fixtures."
+    },
+    {
+      "path": "attempt-004-desktop-cpu/result.json",
+      "tests": 6,
+      "errors": 0,
+      "reason": "New separate CPU fallback guards checked with exact Kaggle proof/cgroup fixtures and a real exit-7 child; formatted source is AST-equivalent to the retained tested bytes. No model or cloud execution."
     }
   ],
   "unchanged_successful_sources": [
@@ -50,5 +56,5 @@
     "ast_equivalent": true,
     "file_bytes_changed": false
   },
-  "interpretation": "309 distinct tests are covered by three receipts; the 83 repeated tests are not counted again. No cloud/GPU/model execution is inferred from unit tests."
+  "interpretation": "315 distinct tests are covered by four receipts; overlapping repeats are not counted twice. No cloud/GPU/model execution is inferred from unit tests."
 }
