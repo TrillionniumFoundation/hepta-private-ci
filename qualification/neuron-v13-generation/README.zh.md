@@ -175,6 +175,20 @@ evolution 的 structure/lineage 由实际原代码、config、release 和 parent
 
 ## 验证入口和证据边界
 
+### 同一模型的下一任务
+
+`prepare_agentd_v13_generation_same_model_task_v1` 与对应的
+`prepare_agentd_v13_generation_cold_same_model_task_v1` 显式沿用完整相同的
+manifest。旧任务必须完成真实 ACK 和持久 drain；新 task/run 必须不同，
+generation 和 writer epoch 各前进一代。原 stopped/drained 模型更新入口仍
+拒绝相同 manifest，不需要为继续工作改写 bundle 或 adoption receipt。
+
+这一操作保留 CURRENT/selection/撤回复核、V13 文件与 boot 校验，并要求独立
+签名目的 `agentd.cell-generation.next-task-same-model`。它不发布模型候选，
+不把继续执行解释为一次采用，也不证明独立评价已产生 no_update；真实评价
+返回 no_update 时，其结果必须仍由原评价 owner 保留。冷恢复读取原 publication
+和已提交结果，不重复领取签名 nonce 或执行已完成请求。
+
 纯协议负例不需要 NumPy、ORT 或模型资产：
 
 ```sh

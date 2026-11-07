@@ -65,6 +65,9 @@ impl Case {
                     &selected,
                 )?
             }
+            NeuronGenerationPredecessorCompletionV1::OwnerDrainedSameModel => {
+                anyhow::bail!("replacement fixture requires a changed manifest")
+            }
         };
         let target = fixture.target_create()?;
         let new = CellGenerationJournalV2::open_guarded(

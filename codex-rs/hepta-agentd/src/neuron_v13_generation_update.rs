@@ -21,10 +21,12 @@ use crate::neuron_generation_update::AgentdGenerationUpdateRequestV1;
 use crate::neuron_generation_update::AgentdGenerationUpdateTargetV1;
 use crate::neuron_generation_update::PreparedAgentdGenerationUpdateV1;
 use crate::neuron_generation_update::prepare_agentd_generation_drained_update_v1;
+use crate::neuron_generation_update::prepare_agentd_generation_same_model_task_v1;
 use crate::neuron_generation_update::prepare_agentd_generation_update_v1;
 use crate::neuron_generation_update::recover_agentd_generation_update_v1;
 use crate::neuron_generation_update_cold::AgentdGenerationUpdatePredecessorFilesV1;
 use crate::neuron_generation_update_cold::prepare_agentd_generation_cold_drained_update_v1;
+use crate::neuron_generation_update_cold::prepare_agentd_generation_cold_same_model_task_v1;
 use crate::neuron_generation_update_cold::prepare_agentd_generation_cold_update_v1;
 use crate::neuron_generation_update_forward::AgentdGenerationForwardRecoveryV1;
 use crate::neuron_generation_update_forward::prepare_agentd_generation_forward_recovery_v1;
@@ -232,6 +234,53 @@ pub fn prepare_agentd_v13_generation_cold_drained_update_v1<Old: AnchorWitnessSt
     inputs.revalidate_selection(&authorities, &mut selected)?;
     let (target, backend) = inputs.open(V13GenerationOwnerModeV1::InitializeEmpty)?;
     let update = prepare_agentd_generation_cold_drained_update_v1(
+        current,
+        authorities,
+        predecessor,
+        selected,
+        target,
+        request,
+    )?;
+    Ok(PreparedAgentdV13GenerationUpdateV1 { update, backend })
+}
+
+/// Carry the exact V13 manifest into a new task after the actual ACK and drain.
+/// Independent evaluation's no-update outcome needs no fabricated model change;
+/// this operation still requires current selection and its own FinalUse grant.
+pub fn prepare_agentd_v13_generation_same_model_task_v1<Old: AnchorWitnessStore>(
+    current: Arc<NeuronGenerationCurrentOwnerV1>,
+    authorities: AgentdGenerationUpdateAuthoritiesV1,
+    old: CellGenerationJournalV2<Old>,
+    mut selected: AgentdSelectedGenerationV1,
+    inputs: AgentdV13GenerationUpdateInputsV1<'_>,
+    request: AgentdGenerationUpdateRequestV1,
+) -> Result<PreparedAgentdV13GenerationUpdateV1<Old>, AgentdError> {
+    inputs.revalidate_selection(&authorities, &mut selected)?;
+    let (target, backend) = inputs.open(V13GenerationOwnerModeV1::InitializeEmpty)?;
+    let update = prepare_agentd_generation_same_model_task_v1(
+        current,
+        authorities,
+        old,
+        selected,
+        target,
+        request,
+    )?;
+    Ok(PreparedAgentdV13GenerationUpdateV1 { update, backend })
+}
+
+/// Reopen the drained predecessor only for same-model task handoff. The closed
+/// old owner is never exposed to a worker or resumed under a weaker guard.
+pub fn prepare_agentd_v13_generation_cold_same_model_task_v1<Old: AnchorWitnessStore>(
+    current: Arc<NeuronGenerationCurrentOwnerV1>,
+    authorities: AgentdGenerationUpdateAuthoritiesV1,
+    predecessor: AgentdGenerationUpdatePredecessorFilesV1<Old>,
+    mut selected: AgentdSelectedGenerationV1,
+    inputs: AgentdV13GenerationUpdateInputsV1<'_>,
+    request: AgentdGenerationUpdateRequestV1,
+) -> Result<PreparedAgentdV13GenerationUpdateV1<Old>, AgentdError> {
+    inputs.revalidate_selection(&authorities, &mut selected)?;
+    let (target, backend) = inputs.open(V13GenerationOwnerModeV1::InitializeEmpty)?;
+    let update = prepare_agentd_generation_cold_same_model_task_v1(
         current,
         authorities,
         predecessor,

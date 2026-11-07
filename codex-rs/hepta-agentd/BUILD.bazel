@@ -40,6 +40,12 @@ codex_rust_crate(
     integration_test_use_unit_test_dependencies = True,
     unit_test_dependency_replacements = _UNIT_TEST_DEPENDENCIES,
     unit_test_extra_binaries = ["//codex-rs/hepta-infer-worker-host:hepta-joint-propose"],
+    unit_test_extra_srcs = ["tests/support/terminal_cell_owner.rs"],
+    integration_test_extra_srcs = {
+        "tests/neuron_generation_process_e2e.rs": [
+            "//codex-rs/hepta-neuron:tests/support/joint_synthetic.rs",
+        ],
+    },
 )
 
 v13_acceptance_example()
@@ -50,7 +56,7 @@ v13_acceptance_example()
 rust_library(
     name = "hepta-agentd-cognitive-write-qualification-lib",
     testonly = True,
-    srcs = glob(["src/**/*.rs"]),
+    srcs = glob(["src/**/*.rs"]) + ["tests/support/terminal_cell_owner.rs"],
     compile_data = [
         "tests/fixtures/android-bound-text-v1.json",
         "tests/fixtures/hos2_production_owner.json",

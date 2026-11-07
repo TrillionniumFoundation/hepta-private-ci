@@ -718,6 +718,8 @@ pub use neuron_generation_update::PreparedAgentdGenerationUpdateV1;
 #[cfg(unix)]
 pub use neuron_generation_update::prepare_agentd_generation_drained_update_v1;
 #[cfg(unix)]
+pub use neuron_generation_update::prepare_agentd_generation_same_model_task_v1;
+#[cfg(unix)]
 pub use neuron_generation_update::prepare_agentd_generation_update_v1;
 #[cfg(unix)]
 pub use neuron_generation_update::recover_agentd_generation_update_v1;
@@ -731,6 +733,8 @@ pub use neuron_generation_update_bootstrap::ReadyAgentdGenerationUpdateV1;
 pub use neuron_generation_update_cold::AgentdGenerationUpdatePredecessorFilesV1;
 #[cfg(unix)]
 pub use neuron_generation_update_cold::prepare_agentd_generation_cold_drained_update_v1;
+#[cfg(unix)]
+pub use neuron_generation_update_cold::prepare_agentd_generation_cold_same_model_task_v1;
 #[cfg(unix)]
 pub use neuron_generation_update_cold::prepare_agentd_generation_cold_update_v1;
 #[cfg(unix)]
@@ -775,11 +779,15 @@ pub use neuron_v13_generation_update::PreparedAgentdV13GenerationUpdateV1;
 #[cfg(target_os = "linux")]
 pub use neuron_v13_generation_update::prepare_agentd_v13_generation_cold_drained_update_v1;
 #[cfg(target_os = "linux")]
+pub use neuron_v13_generation_update::prepare_agentd_v13_generation_cold_same_model_task_v1;
+#[cfg(target_os = "linux")]
 pub use neuron_v13_generation_update::prepare_agentd_v13_generation_cold_update_v1;
 #[cfg(target_os = "linux")]
 pub use neuron_v13_generation_update::prepare_agentd_v13_generation_drained_update_v1;
 #[cfg(target_os = "linux")]
 pub use neuron_v13_generation_update::prepare_agentd_v13_generation_forward_recovery_v1;
+#[cfg(target_os = "linux")]
+pub use neuron_v13_generation_update::prepare_agentd_v13_generation_same_model_task_v1;
 #[cfg(target_os = "linux")]
 pub use neuron_v13_generation_update::prepare_agentd_v13_generation_update_v1;
 #[cfg(target_os = "linux")]

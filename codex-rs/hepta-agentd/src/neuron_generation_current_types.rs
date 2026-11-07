@@ -20,6 +20,9 @@ pub enum NeuronGenerationPredecessorCompletionV1 {
     #[default]
     ModelStopped,
     OwnerDrained,
+    /// Start another task with the identical complete manifest. This carries
+    /// no assertion that an evaluation ran or a candidate was adopted.
+    OwnerDrainedSameModel,
 }
 
 impl NeuronGenerationPredecessorCompletionV1 {
@@ -68,6 +71,9 @@ impl UpdateIntent {
                 }
                 NeuronGenerationPredecessorCompletionV1::OwnerDrained => {
                     "agentd.cell-generation.replace-drained"
+                }
+                NeuronGenerationPredecessorCompletionV1::OwnerDrainedSameModel => {
+                    "agentd.cell-generation.next-task-same-model"
                 }
             }
             .into(),

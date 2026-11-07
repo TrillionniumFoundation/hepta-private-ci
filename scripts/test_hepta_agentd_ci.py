@@ -4,8 +4,6 @@ These exercise the actual shared checker in child Python processes. Workflow
 checks cover wiring only, not a GitHub run, Rust build or process qualification.
 """
 
-from __future__ import annotations
-
 import json
 import os
 from pathlib import Path
@@ -23,6 +21,96 @@ LANES = (
     "catalog-admission",
     "process-qualification",
 )
+
+
+def job_field(job, name):
+    """Read one explicit field at the checked-in job indentation, not a step."""
+    fields = re.split(r"(?m)^    (?=[^\s#])", job)[1:]
+    values = []
+    for field in fields:
+        key, separator, value = field.partition(":")
+        if separator and key.strip() in (name, f"'{name}'", f'"{name}"'):
+            values.append(value)
+    if len(values) != 1:
+        raise ValueError(f"expected exactly one job-level {name} field")
+    return values[0].strip("\n")
+
+
+def job_needs(job):
+    """Parse explicit job IDs in flow/block lists; reject unsupported YAML."""
+    # Job IDs contain no '#'. Strip only whitespace-separated YAML comments;
+    # a '#' joined to an ID remains part of the token and is rejected below.
+    lines = [
+        re.sub(r"(?:^|[ \t]+)#.*$", "", line).rstrip()
+        for line in job_field(job, "needs").splitlines()
+    ]
+    lines = [line for line in lines if line.strip()]
+    value = "\n".join(lines).strip()
+    if value.startswith("[") and value.endswith("]"):
+        items = value[1:-1].split(",")
+        if not items[-1].strip():
+            items.pop()  # YAML permits one trailing comma, not empty members.
+    elif value.startswith("-"):
+        # Keep the common indentation; nested sequences are not job IDs.
+        items = []
+        indentation = None
+        for line in lines:
+            match = re.fullmatch(r"( *)-[ \t]+(.+)", line)
+            if match is None or len(match[1]) < 6:
+                raise ValueError("invalid block needs sequence")
+            if indentation is None:
+                indentation = match[1]
+            if match[1] != indentation:
+                raise ValueError("inconsistent block needs indentation")
+            items.append(match[2])
+    else:
+        items = [value]
+    names = []
+    identifier = r"[a-zA-Z_][a-zA-Z0-9_-]*"
+    for item in items:
+        match = re.fullmatch(
+            rf"({identifier})|'({identifier})'|\"({identifier})\"", item.strip()
+        )
+        if match is None:
+            raise ValueError("needs must contain only explicit job IDs")
+        names.append(next(group for group in match.groups() if group is not None))
+    if not names or len(names) != len(set(names)):
+        raise ValueError("needs must be nonempty and contain no duplicate job IDs")
+    return names
+
+
+class WorkflowNeedsParsingTests(unittest.TestCase):
+    def test_equivalent_single_line_multiline_and_block_sequences(self):
+        for value in (
+            "[derived-projections, owner-formatting, catalog-admission, process-qualification]",
+            "\n      [\n        derived-projections, # required\n        owner-formatting,\n"
+            "        'catalog-admission',\n        \"process-qualification\",\n      ]",
+            "\n      - derived-projections\n      - owner-formatting\n"
+            "      - catalog-admission\n      - process-qualification",
+        ):
+            with self.subTest(value=value):
+                self.assertEqual(
+                    job_needs(f"    needs: {value}\n    steps: []\n"), list(LANES)
+                )
+
+    def test_malformed_or_ambiguous_needs_are_rejected(self):
+        for job in (
+            "    steps:\n      - needs: [derived-projections]\n",
+            "    # needs: [derived-projections]\n",
+            "    needs: [derived-projections]\n    'needs': [owner-formatting]\n",
+            "    needs: []\n",
+            "    needs: [derived-projections, derived-projections]\n",
+            "    needs: [derived-projections,, owner-formatting]\n",
+            "    needs: [derived-projections] ignored\n",
+            "    needs: [derived-projections#not-a-comment]\n",
+            "    needs: [derived-projections, [owner-formatting]]\n",
+            "    needs: ${{ inputs.needs }}\n",
+            "    needs: *shared-needs\n",
+            "    needs:\n      - derived-projections\n        - owner-formatting\n",
+            "    needs:\n      - derived-projections\n        - owner-formatting\n      - catalog-admission\n",
+        ):
+            with self.subTest(job=job), self.assertRaises(ValueError):
+                job_needs(job)
 
 
 class TerminalGateTests(unittest.TestCase):
@@ -117,6 +205,10 @@ class WorkflowDependencyTests(unittest.TestCase):
         )
         self.jobs = dict(zip(parts[1::2], parts[2::2]))
 
+    def assert_terminal_dependencies(self, job):
+        self.assertEqual(job_field(job, "if").strip(), "${{ always() }}")
+        self.assertCountEqual(job_needs(job), LANES)
+
     def test_behavior_and_format_lanes_have_no_predecessor_gate(self):
         for name in LANES:
             with self.subTest(name=name):
@@ -129,16 +221,41 @@ class WorkflowDependencyTests(unittest.TestCase):
 
     def test_terminal_gate_is_always_run_and_binds_all_lanes(self):
         job = self.jobs["qualification-result"]
-        self.assertIn("if: ${{ always() }}", job)
-        matched = re.search(r"(?m)^    needs: \[([^\]]+)\]$", job)
-        self.assertIsNotNone(matched)
-        self.assertEqual(
-            {name.strip() for name in matched.group(1).split(",")}, set(LANES)
-        )
-        self.assertIn("EXPECTED_NEEDS:", job)
+        self.assert_terminal_dependencies(job)
+        expected = re.findall(r"(?m)^          EXPECTED_NEEDS: '([^']+)'$", job)
+        self.assertEqual(len(expected), 1)
+        self.assertCountEqual(json.loads(expected[0]), LANES)
+        self.assertIn("NEEDS: ${{ toJSON(needs) }}", job)
         self.assertNotIn("ALLOWED_SKIPPED", job)
         self.assertIn("python3 .github/scripts/check_ci_results.py", job)
         self.assertNotIn("continue-on-error", self.text)
+
+    def test_terminal_gate_rejects_changed_dependencies_or_condition(self):
+        for needs in (
+            LANES[:-1],
+            LANES + ("unreviewed-lane",),
+            LANES + (LANES[0],),
+        ):
+            job = f"    if: ${{{{ always() }}}}\n    needs: [{', '.join(needs)}]\n"
+            with (
+                self.subTest(needs=needs),
+                self.assertRaises((AssertionError, ValueError)),
+            ):
+                self.assert_terminal_dependencies(job)
+        for condition in ("${{ success() }}", "${{ always() && false }}"):
+            job = f"    if: {condition}\n    needs: [{', '.join(LANES)}]\n"
+            with self.subTest(condition=condition), self.assertRaises(AssertionError):
+                self.assert_terminal_dependencies(job)
+        with self.assertRaises(ValueError):
+            self.assert_terminal_dependencies(
+                f"    needs: [{', '.join(LANES)}]\n"
+                "    steps:\n      - if: ${{ always() }}\n"
+            )
+        with self.assertRaises(ValueError):
+            self.assert_terminal_dependencies(
+                "    if: ${{ always() }}\n    if: ${{ success() }}\n"
+                f"    needs: [{', '.join(LANES)}]\n"
+            )
 
     def test_existing_behavior_suites_remain(self):
         process = self.jobs["process-qualification"]
@@ -185,7 +302,7 @@ class WorkflowDependencyTests(unittest.TestCase):
         self.assertIn("args+=(--lane source-head)", process)
         self.assertIn("steps.execution.outputs.run_native == 'true'", process)
         terminal = self.jobs["qualification-result"]
-        self.assertIn("process-qualification]", terminal)
+        self.assert_terminal_dependencies(terminal)
         self.assertIn(
             "scripts.tests.test_hepta_ci_candidate", self.jobs["derived-projections"]
         )

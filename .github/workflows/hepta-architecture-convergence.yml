@@ -59,15 +59,42 @@ jobs:
         run: |
           set -euo pipefail
           test -n "$PR_NUMBER"
-          ref_json="$(gh api "repos/$REPO/git/ref/pull/$PR_NUMBER/merge")"
-          actual_sha="$(jq -er '.object.sha' <<<"$ref_json")"
-          commit_json="$(gh api "repos/$REPO/git/commits/$actual_sha")"
+          identity="$RUNNER_TEMP/hepta-command-records/merge-identity"
+          mkdir -p "$identity"
+          jq -n --arg source "$SOURCE_SHA" --arg base "$BASE_SHA" \
+            --arg pr "$PR_NUMBER" --arg repository "$REPO" \
+            '{schema:"hepta-prospective-merge-observation-v1", expected_source:$source,
+              expected_base:$base, pull_request:$pr, repository:$repository,
+              current_ref_is_not_historical_run_evidence:true}' > "$identity/expected.json"
+          gh api "repos/$REPO/git/ref/pull/$PR_NUMBER/merge" \
+            > "$identity/ref.json" 2> "$identity/ref.stderr"
+          actual_sha="$(jq -er '.object.sha' "$identity/ref.json")"
+          gh api "repos/$REPO/git/commits/$actual_sha" \
+            > "$identity/commit.json" 2> "$identity/commit.stderr"
+          commit_json="$(cat "$identity/commit.json")"
           mapfile -t parents < <(jq -r '.parents[].sha' <<<"$commit_json")
+          jq -n --arg source "$SOURCE_SHA" --arg base "$BASE_SHA" \
+            --arg actual "$actual_sha" --argjson parents "$(jq '.parents | map(.sha)' <<<"$commit_json")" \
+            '{schema:"hepta-prospective-merge-parents-v1", expected_source:$source,
+              expected_base:$base, actual_commit:$actual, actual_parents:$parents,
+              two_parents:($parents|length==2), base_matches:($parents[0]==$base),
+              source_matches:($parents[1]==$source)}' > "$identity/parents.json"
+          cat "$identity/parents.json"
           test "${#parents[@]}" -eq 2
           test "${parents[0]}" = "$BASE_SHA"
           test "${parents[1]}" = "$SOURCE_SHA"
           actual_tree="$(jq -er '.tree.sha' <<<"$commit_json")"
-          expected_tree="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+          merge_status=0
+          git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA" \
+            > "$identity/merge-tree.stdout" 2> "$identity/merge-tree.stderr" || merge_status=$?
+          expected_tree="$(cat "$identity/merge-tree.stdout")"
+          jq -n --arg actual "$actual_tree" --arg expected "$expected_tree" \
+            --argjson command_exit "$merge_status" \
+            '{schema:"hepta-prospective-merge-tree-v1", actual_tree:$actual,
+              expected_tree:$expected, merge_tree_exit:$command_exit,
+              matches:($command_exit==0 and $actual==$expected)}' > "$identity/tree.json"
+          cat "$identity/tree.json"
+          test "$merge_status" -eq 0
           test "$actual_tree" = "$expected_tree"
           printf 'GITHUB_PROSPECTIVE_MERGE_SHA=%s\n' "$actual_sha" >> "$GITHUB_ENV"
           printf 'GITHUB_PROSPECTIVE_MERGE_TREE=%s\n' "$actual_tree" >> "$GITHUB_ENV"
@@ -125,7 +152,7 @@ jobs:
       - name: Repository-control rejection regressions
         run: |
           set -euo pipefail
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/repository-controls.json" --minimum-tests 1 -- python3 -m unittest -v scripts.tests.test_hepta_repository_controls scripts.test_hepta_control_hardening scripts.test_hepta_candidate_transport_workflow
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/repository-controls.json" --minimum-tests 1 -- python3 -m unittest -v scripts.tests.test_hepta_repository_controls scripts.test_hepta_control_hardening scripts.test_hepta_candidate_transport_workflow scripts.test_hepta_merge_identity_records
       - name: Prepare native prerequisites
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.native == 'true'
         run: |

@@ -210,6 +210,8 @@ def codex_rust_crate(
         test_threads = 0,
         unit_test_timeout = None,
         unit_test_extra_binaries = [],
+        unit_test_extra_srcs = [],
+        integration_test_extra_srcs = {},
         extra_binaries = [],
         extra_binaries_non_windows = [],
         run_tests_with_wine_exec = False):
@@ -271,6 +273,10 @@ def codex_rust_crate(
             generated from `src/**/*.rs`.
         unit_test_extra_binaries: Additional binary labels to surface as
             unit-test runfiles and `CARGO_BIN_EXE_*` environment variables.
+        unit_test_extra_srcs: Additional source files required only by the
+            test-only library, such as shared test support imported with `#[path]`.
+        integration_test_extra_srcs: Mapping from `tests/*.rs` paths to extra
+            source labels imported by that integration test with `#[path]`.
         extra_binaries: Additional binary labels to surface as test data and
             `CARGO_BIN_EXE_*` environment variables. These are only needed for binaries from a different crate.
         extra_binaries_non_windows: Like `extra_binaries`, but omitted from
@@ -358,7 +364,7 @@ def codex_rust_crate(
         unit_test_shard_count = _test_shard_count(test_shard_counts, unit_test_name)
 
         unit_test_library = name
-        if unit_test_dependency_replacements or unit_test_features:
+        if unit_test_dependency_replacements or unit_test_features or unit_test_extra_srcs:
             unit_test_library = name + "-test-lib"
             lib_rule(
                 name = unit_test_library,
@@ -368,7 +374,7 @@ def codex_rust_crate(
                 deps = rust_test_dependencies(unit_test_dependency_replacements) + maybe_deps + deps_extra,
                 compile_data = compile_data,
                 data = lib_data_extra,
-                srcs = lib_srcs,
+                srcs = lib_srcs + unit_test_extra_srcs,
                 edition = crate_edition,
                 rustc_flags = rustc_flags_extra,
                 rustc_env = rustc_env,
@@ -555,6 +561,7 @@ def codex_rust_crate(
         ] + deps_extra
 
     for test in native.glob(["tests/*.rs"], allow_empty = True):
+        extra_test_srcs = integration_test_extra_srcs.get(test, [])
         test_file_stem = test.removeprefix("tests/").removesuffix(".rs")
         test_crate_name = test_file_stem.replace("-", "_")
         test_name = name + "-" + test_file_stem.replace("/", "-")
@@ -601,7 +608,7 @@ def codex_rust_crate(
                 name = integration_test_binary,
                 crate_name = test_crate_name,
                 crate_root = test,
-                srcs = [test],
+                srcs = [test] + extra_test_srcs,
                 data = native.glob(["tests/**"], allow_empty = True) + integration_test_binaries + integration_test_data_extra,
                 compile_data = native.glob(["tests/**"], allow_empty = True) + integration_compile_data_extra,
                 deps = integration_test_deps,
@@ -641,7 +648,7 @@ def codex_rust_crate(
                 name = test_name,
                 crate_name = test_crate_name,
                 crate_root = test,
-                srcs = [test],
+                srcs = [test] + extra_test_srcs,
                 data = native.glob(["tests/**"], allow_empty = True) + integration_test_binaries + integration_test_data_extra,
                 compile_data = native.glob(["tests/**"], allow_empty = True) + integration_compile_data_extra,
                 deps = integration_test_deps,
@@ -716,7 +723,7 @@ def codex_rust_crate(
             name = windows_cross_test_binary,
             crate_name = test_crate_name,
             crate_root = test,
-            srcs = [test],
+            srcs = [test] + extra_test_srcs,
             data = native.glob(["tests/**"], allow_empty = True) + integration_test_binaries + integration_test_data_extra,
             compile_data = native.glob(["tests/**"], allow_empty = True) + integration_compile_data_extra,
             deps = integration_test_deps,

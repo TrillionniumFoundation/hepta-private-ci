@@ -18,18 +18,42 @@ use super::support::runtime_config;
 use crate::AgentdError;
 use crate::neuron_generation_update::AgentdGenerationUpdateRecoveryV1;
 use crate::neuron_generation_update::AgentdGenerationUpdateRequestV1;
+use crate::neuron_v13_generation_update::prepare_agentd_v13_generation_cold_same_model_task_v1;
 use crate::neuron_v13_generation_update::prepare_agentd_v13_generation_cold_update_v1;
 use crate::neuron_v13_generation_update::recover_agentd_v13_generation_update_v1;
 
 #[tokio::test]
 async fn cold_typed_publication_recovery_charges_preparation_once_and_replays_real_v13_rejection()
 -> anyhow::Result<()> {
-    let mut f = Fixture::new()?;
+    typed_publication_recovery(/*same_model*/ false).await
+}
+
+#[tokio::test]
+async fn cold_same_model_v13_task_uses_typed_worker_and_cold_recovery_without_reexecution()
+-> anyhow::Result<()> {
+    typed_publication_recovery(/*same_model*/ true).await
+}
+
+async fn typed_publication_recovery(same_model: bool) -> anyhow::Result<()> {
+    let mut f = if same_model {
+        Fixture::same_model()?
+    } else {
+        Fixture::new()?
+    };
     let old_bytes = (
         f.update.bytes("old-journal")?,
         f.update.bytes("old-witness")?,
     );
-    let prepared = prepare_agentd_v13_generation_cold_update_v1(
+    let prepare = if same_model {
+        assert_eq!(
+            f.update.old_config.manifest,
+            f.host.config.generation.manifest
+        );
+        prepare_agentd_v13_generation_cold_same_model_task_v1
+    } else {
+        prepare_agentd_v13_generation_cold_update_v1
+    };
+    let prepared = prepare(
         f.update.current.clone(),
         f.update.authorities()?,
         f.predecessor()?,

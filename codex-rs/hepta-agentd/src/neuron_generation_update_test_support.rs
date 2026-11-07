@@ -292,7 +292,8 @@ impl Fixture {
     }
 
     pub(crate) fn reopen_current(&self) -> anyhow::Result<Arc<NeuronGenerationCurrentOwnerV1>> {
-        Ok(self.reopen_current_with_ack_loss_hook()?.0)
+        let (current, _lose_publication_ack) = self.reopen_current_with_ack_loss_hook()?;
+        Ok(current)
     }
 
     pub(crate) fn reopen_current_with_ack_loss_hook(
@@ -306,7 +307,7 @@ impl Fixture {
             store: CurrentStore::from_test_store(&self.old_config.initial.scope, store.clone())?,
         };
         current.store.load()?;
-        // Arm only this reopened owner's next CAS, after forward preparation.
+        // Arm this reopened owner only after preparation has committed its own CAS.
         Ok((Arc::new(current), move || store.lose_next_ack()))
     }
 
