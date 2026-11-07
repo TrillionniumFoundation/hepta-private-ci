@@ -1,0 +1,792 @@
+{
+  "agent_hypothesis": "Suppressing weakly supported feature modes may reduce continuation ranking distortion. This is a fixed falsifiable proposal informed by the exposed prior audit, not a blind autonomous circuit-discovery trial.",
+  "arm_contracts": {
+    "A": "Agent-proposed spectral restriction: retain unregularized H^TWH modes >=1% of each action maximum; exact quadratic solve in that subspace and original shared ball, same TRAIN dose path",
+    "C": "unchanged checkpoint with checked F64 execution",
+    "E": "mechanical exact-quadratic terminal-anchored solution; five TRAIN own-utility doses",
+    "EG": "selected E followed by 32 projected gradient steps on the same objective, zero optimizer state, same five doses",
+    "G": "matched PGD, identical loss, data, center, radius and five TRAIN doses",
+    "J": "complete checkpoint-own-law Bellman program, including cold planning cost",
+    "L": "literal stored-head execution fidelity control; no known layout defect, no fabricated weight change",
+    "MYOPIC": "cheap checkpoint-own-law one-step lookahead followed by immediate best terminal action; not the old M/DQ checkpoint",
+    "R": "one seeded signed permutation of selected effective E delta, matching both L2 and Linf"
+  },
+  "arms": [
+    "C",
+    "L",
+    "E",
+    "R",
+    "A",
+    "G",
+    "EG",
+    "J",
+    "MYOPIC"
+  ],
+  "confirmation": {
+    "candidate_selection_on_confirmation": false,
+    "collision": "abort complete cohort, no replacement or adaptive resampling",
+    "domains": [
+      "iid",
+      "ood"
+    ],
+    "external_history_unknown": true,
+    "independent_authority_verified": false,
+    "ledger": "local SQLite FULL synchronous; whole fixed cohort consumed before first score",
+    "seed": "evaluator secrets.token_hex(32) only after all candidate hashes freeze",
+    "statistical_unit": "paired means across five pre-existing fits; worlds do not create new fits",
+    "worlds_per_fit_domain": 32
+  },
+  "excluded_search": "full Bellman-order replication in the fixed 147-parameter class; no repeat fitting of certified infeasible targets",
+  "fits": [
+    11,
+    23,
+    37,
+    53,
+    71
+  ],
+  "fixed_external_objective": {
+    "joint_law.py": {
+      "bytes": 4396,
+      "sha256": "2e7f19a2534567e31370eea24dec096a309e4db4aa42770efbf544bed84bcf65"
+    },
+    "joint_protocol.json": {
+      "bytes": 12063,
+      "sha256": "1c6ffc51d8d9df8f57bb350dd9d80a264b889a14882da553c63e60c547a18606"
+    },
+    "joint_task.py": {
+      "bytes": 12845,
+      "sha256": "51139ba57004f2a5d69381af2f781b3717404318f122d8b6bec8416004efffa5"
+    },
+    "truth_transitions.npz": {
+      "bytes": 101566,
+      "sha256": "3a62c48272d90b459622ed8818fddf36de983831fbc0c1306fc39b27345228f0"
+    }
+  },
+  "frozen_utc": "2026-11-07T05:44:38.799333+00:00",
+  "inference": {
+    "alpha_family": 0.05,
+    "method": "Student t, df=4, two-sided Bonferroni for two primary contrasts; secondary arms descriptive",
+    "minimum_lower_bound_gain": 0.005,
+    "primary": [
+      "E-C iid",
+      "E-C ood"
+    ]
+  },
+  "missing_state_status": "not established; 85-to-48 compression alone does not prove an alias; no silent new model class",
+  "models": {
+    "11": {
+      "canonical_checkpoint_sha256": "cce6d9e9a1b9a2f17c2fbe3668fedccdaba6de3499d32bb3bd737c656efd9c1b",
+      "core_sha256": "66b372fd534e765c129d89249a0af2be0609e4bd54ed4c4dee9b4d2f59a5d201",
+      "event_contract": "deadline sign; endpoint bank is not first-passage probability",
+      "generator_sha256": "6168a76101be2dda0b10d060628d40dd643e72ea38d75e3afc7b6df27fca8df7",
+      "parameter_count": 4332,
+      "protected_model_sha256": "00e3bec87118c0d97a647c0c7ca34d03c2d4535c6e7a06e2bec31ac525e2ba43",
+      "representation_sha256": "3da360da47f528bbd00f655904610fdb05cc28cad78be43489d8a055a2f0362e",
+      "tensor_map": {
+        "b1": {
+          "dtype": "IEEE754-F64-LE",
+          "layout": "row-major",
+          "sha256": "a8cbf960937810e220c625ec369bb3ae8519394fd206ea2eeb0c2b540e7ad136",
+          "shape": [
+            48
+          ]
+        },
+        "b2": {
+          "dtype": "IEEE754-F64-LE",
+          "layout": "row-major",
+          "sha256": "fa5c2450968e9c9d6444844ff7764d03305a9b24d511a3cf0619ecba6d61e9c2",
+          "shape": [
+            4
+          ]
+        },
+        "w1": {
+          "dtype": "IEEE754-F64-LE",
+          "layout": "row-major",
+          "sha256": "6e9025b45fff43330624f421269fc1cfe875338049c8550096c461c1585f2c4e",
+          "shape": [
+            48,
+            85
+          ]
+        },
+        "w2": {
+          "dtype": "IEEE754-F64-LE",
+          "layout": "row-major",
+          "sha256": "298a96b275bfcd0b385049015d2d1b1c7408532df6a1a16cb8f90a71f7b28199",
+          "shape": [
+            4,
+            48
+          ]
+        }
+      },
+      "tensor_roles": {
+        "w2[0:3],b2[0:3]": "WAIT,READ,REPAIR continuation",
+        "w2[3],b2[3]": "protected Belief logit"
+      },
+      "time_contract": "six decision ticks; physical elapsed is the sum of scheduled durations",
+      "transition_tables_sha256": "63090968ee11aca175a4629761ec83b284515ce738c7d8f9f268e762e732f04f",
+      "value_units": "fixed task reward minus read, repair and elapsed-time charges"
+    },
+    "23": {
+      "canonical_checkpoint_sha256": "008a968d34091938b2bc63cd05e560e60d6aed1058a72dbf35cbe56803e221a4",
+      "core_sha256": "e76c96f5166f4964c089745699f0cf3c6477dc06c08653aa115464cba6c1ba92",
+      "event_contract": "deadline sign; endpoint bank is not first-passage probability",
+      "generator_sha256": "d10140f26e0506ab666f0815165ea754d9b9a077b566025ca13d8e18f2852dd6",
+      "parameter_count": 4332,
+      "protected_model_sha256": "8953cb2c584922f10a94f796889e55c311ed3bfea6fd4b973c5e8da0fdf2a8af",
+      "representation_sha256": "3da360da47f528bbd00f655904610fdb05cc28cad78be43489d8a055a2f0362e",
+      "tensor_map": {
+        "b1": {
+          "dtype": "IEEE754-F64-LE",
+          "layout": "row-major",
+          "sha256": "99a493b65c326ae8516b670ed442bf23606715bdddd5c665d3cfae15ac531c88",
+          "shape": [
+            48
+          ]
+        },
+        "b2": {
+          "dtype": "IEEE754-F64-LE",
+          "layout": "row-major",
+          "sha256": "eaa95f7e62caaa325ae91f93d27c2780d8cd88032b79a9fe9a173cb263828220",
+          "shape": [
+            4
+          ]
+        },
+        "w1": {
+          "dtype": "IEEE754-F64-LE",
+          "layout": "row-major",
+          "sha256": "4d4918e06b9a6abc77b87b3c46c5d6335ef4a2c483e06cbd6beb18d0a000a25d",
+          "shape": [
+            48,
+            85
+          ]
+        },
+        "w2": {
+          "dtype": "IEEE754-F64-LE",
+          "layout": "row-major",
+          "sha256": "ea1f73bbdadd983ec345a8d408c2e6529ef99277d479616ac937d7592d87080e",
+          "shape": [
+            4,
+            48
+          ]
+        }
+      },
+      "tensor_roles": {
+        "w2[0:3],b2[0:3]": "WAIT,READ,REPAIR continuation",
+        "w2[3],b2[3]": "protected Belief logit"
+      },
+      "time_contract": "six decision ticks; physical elapsed is the sum of scheduled durations",
+      "transition_tables_sha256": "dc20bc8c6194a872abb2e6dbbac44cebd3a2820059d94c3e352b0afe832198da",
+      "value_units": "fixed task reward minus read, repair and elapsed-time charges"
+    },
+    "37": {
+      "canonical_checkpoint_sha256": "55cb96af3ddc39b76de569e6033949b04d1d90144de7a683d43e4901fd2f6787",
+      "core_sha256": "879f89fa890e687d48cb69c4752fa0e22fe2da26b8e14ddcaef4533ff3dd8ad0",
+      "event_contract": "deadline sign; endpoint bank is not first-passage probability",
+      "generator_sha256": "411cebd98c215fafd27ed087b9cca8a5b7d96c36461066abf1add14137939b6c",
+      "parameter_count": 4332,
+      "protected_model_sha256": "a70c1ca634ebe9a4af7650786f9fc45eaeed92d47aae364d642913a8944bb7e8",
+      "representation_sha256": "3da360da47f528bbd00f655904610fdb05cc28cad78be43489d8a055a2f0362e",
+      "tensor_map": {
+        "b1": {
+          "dtype": "IEEE754-F64-LE",
+          "layout": "row-major",
+          "sha256": "ba12f916f376e810e8ed3b6aada0cc1898514df109005a95100b364d41580604",
+          "shape": [
+            48
+          ]
+        },
+        "b2": {
+          "dtype": "IEEE754-F64-LE",
+          "layout": "row-major",
+          "sha256": "35df319bbb41d16b49fa2b01b69cbfa36af9ca350304378a08c06c1006d8e55d",
+          "shape": [
+            4
+          ]
+        },
+        "w1": {
+          "dtype": "IEEE754-F64-LE",
+          "layout": "row-major",
+          "sha256": "42ff58f87ac58c3b59db9902cbe29429f4c08cba2ec40df326bc7d9f311d8667",
+          "shape": [
+            48,
+            85
+          ]
+        },
+        "w2": {
+          "dtype": "IEEE754-F64-LE",
+          "layout": "row-major",
+          "sha256": "b72eff07fe7a0fcef38adddcb862b7a2906c34926796e9c4d5066be56da40f17",
+          "shape": [
+            4,
+            48
+          ]
+        }
+      },
+      "tensor_roles": {
+        "w2[0:3],b2[0:3]": "WAIT,READ,REPAIR continuation",
+        "w2[3],b2[3]": "protected Belief logit"
+      },
+      "time_contract": "six decision ticks; physical elapsed is the sum of scheduled durations",
+      "transition_tables_sha256": "1891d40e099e76daff0fccd9d0c33a889a2ddb3c8e0ae6a6e69c125a6e378287",
+      "value_units": "fixed task reward minus read, repair and elapsed-time charges"
+    },
+    "53": {
+      "canonical_checkpoint_sha256": "a1a40e7ea6c11c85c34e62097c7bb47f521836c8ce29bfe28ec55481ed6ce9ed",
+      "core_sha256": "575deb167cc23c825f90e0b73d9d7de86166def750bca5a513701745c7eacb37",
+      "event_contract": "deadline sign; endpoint bank is not first-passage probability",
+      "generator_sha256": "f9dd29dafab561e153da0e1e4b8b0be8426e0781bd6241f51990e667565e4aa0",
+      "parameter_count": 4332,
+      "protected_model_sha256": "92b10edb4420706a65b7f3c74b01ed0c4f025200c27df36ddb0bd595a80aee4e",
+      "representation_sha256": "3da360da47f528bbd00f655904610fdb05cc28cad78be43489d8a055a2f0362e",
+      "tensor_map": {
+        "b1": {
+          "dtype": "IEEE754-F64-LE",
+          "layout": "row-major",
+          "sha256": "222eeba346c7d3b37adc5e7a46e34309d687e91b166e9a83161ff000f3a00208",
+          "shape": [
+            48
+          ]
+        },
+        "b2": {
+          "dtype": "IEEE754-F64-LE",
+          "layout": "row-major",
+          "sha256": "51bee5b5cc5182f2f1a5bff71f4e7ca6f7fcfcc3de1f4d3e7518fa8d3cff48c3",
+          "shape": [
+            4
+          ]
+        },
+        "w1": {
+          "dtype": "IEEE754-F64-LE",
+          "layout": "row-major",
+          "sha256": "e76c125fe3d73fe74a91021a08be2fdf739dfa222ddbefa1e129798a982a9b33",
+          "shape": [
+            48,
+            85
+          ]
+        },
+        "w2": {
+          "dtype": "IEEE754-F64-LE",
+          "layout": "row-major",
+          "sha256": "1a26996cddfb9328f8742c75650f300203220e651444bc8d9484755c8e6446f1",
+          "shape": [
+            4,
+            48
+          ]
+        }
+      },
+      "tensor_roles": {
+        "w2[0:3],b2[0:3]": "WAIT,READ,REPAIR continuation",
+        "w2[3],b2[3]": "protected Belief logit"
+      },
+      "time_contract": "six decision ticks; physical elapsed is the sum of scheduled durations",
+      "transition_tables_sha256": "e92e70d10ce6eee9c178321ba86bd11a3c7fa28e4151a270856af41e856a5e11",
+      "value_units": "fixed task reward minus read, repair and elapsed-time charges"
+    },
+    "71": {
+      "canonical_checkpoint_sha256": "bc928fc872ade9f52400d5b9d4aaecab715af7b75a79ffd7ac7f92d294b0238d",
+      "core_sha256": "135ae197f9b26d0621d99fc3738a9c406c09c2e031ffc778b79a3a20eb960fca",
+      "event_contract": "deadline sign; endpoint bank is not first-passage probability",
+      "generator_sha256": "1502ec06a2f8fb223fca8821b060c312df039c3415732c22824922b00d0253b4",
+      "parameter_count": 4332,
+      "protected_model_sha256": "91a5d4d1705cfb0270a5129ead64a98022a681a49acd7ed1a1a0b2c5ea4b562e",
+      "representation_sha256": "3da360da47f528bbd00f655904610fdb05cc28cad78be43489d8a055a2f0362e",
+      "tensor_map": {
+        "b1": {
+          "dtype": "IEEE754-F64-LE",
+          "layout": "row-major",
+          "sha256": "2bebc187d9b1aacf4cf24b7124a17aaf02f73b9b90d535caff734f1d6ac000d5",
+          "shape": [
+            48
+          ]
+        },
+        "b2": {
+          "dtype": "IEEE754-F64-LE",
+          "layout": "row-major",
+          "sha256": "61fa502983984d08fe7da69d47113f402cee711fb885b9dde4229bf1a9cae8c9",
+          "shape": [
+            4
+          ]
+        },
+        "w1": {
+          "dtype": "IEEE754-F64-LE",
+          "layout": "row-major",
+          "sha256": "89980be75f5edfa1bcc9eaf6cd62d2d00aafaecc4ad2fc38d4d8afd6b382c188",
+          "shape": [
+            48,
+            85
+          ]
+        },
+        "w2": {
+          "dtype": "IEEE754-F64-LE",
+          "layout": "row-major",
+          "sha256": "11fd563604e59fa8a669dfeab8b5e3c69227c45adbf8bf8f26890723539530ac",
+          "shape": [
+            4,
+            48
+          ]
+        }
+      },
+      "tensor_roles": {
+        "w2[0:3],b2[0:3]": "WAIT,READ,REPAIR continuation",
+        "w2[3],b2[3]": "protected Belief logit"
+      },
+      "time_contract": "six decision ticks; physical elapsed is the sum of scheduled durations",
+      "transition_tables_sha256": "9750a5182f1cc945b69906f87c838d94f29db9bfda2c0552b696d603ba08fae7",
+      "value_units": "fixed task reward minus read, repair and elapsed-time charges"
+    }
+  },
+  "optimization": {
+    "agent_eigenvalue_fraction": 0.01,
+    "alphas": [
+      0.0,
+      0.25,
+      0.5,
+      0.75,
+      1.0
+    ],
+    "occupancy_mixture": 0.9,
+    "short_training_steps": 32
+  },
+  "optimizer_state": {
+    "EG": "fresh stateless projected gradient; no inherited momentum, moments or parameter-wise age; center stays original C"
+  },
+  "quality": {
+    "calibration": "own-policy visitation-weighted probability MSE, plus C-visitation common-state preservation",
+    "failure": "all reserved denominators, timeouts, failed construction, verification and recovery retained",
+    "latency": "per-world cold program preparation and policy CPU; evaluator CPU is separate",
+    "ood": "new schedules from the original OOD domain",
+    "primary": "complete expected finite-task utility",
+    "retention_limit": "Belief/encoder/core protected; general non-task retained capabilities remain unmeasured"
+  },
+  "resources": {
+    "cpu_seconds": 1200,
+    "numeric_threads": 1,
+    "per_fit_per_arm_candidate_cpu_cap": 180,
+    "rss_limit_bytes": 1073741824,
+    "shared_preparation": "physically executed once; report inclusive per-arm alternatives, never sum them as physical cost",
+    "verifier_cpu_seconds": 900,
+    "verifier_wall_seconds": 1200,
+    "wall_seconds": 1800
+  },
+  "schema": "hepta-wsp-fresh-cohort-v1",
+  "scope": "fresh finite-task confirmation only; no live Trader gain, new training fits, independent authority or complete-network-training comparison",
+  "source_commit": "8db5c6ed370dca8cba6a63b37d52714d4220a6c1",
+  "source_files": {
+    "tools/hcsn/wsp_confirmation_20261107/candidates.py": {
+      "bytes": 9046,
+      "sha256": "67cde3522b6a5521669719182d1304c1ae89d13277e5b4c75639dddb2a407147"
+    },
+    "tools/hcsn/wsp_confirmation_20261107/evaluate.py": {
+      "bytes": 6985,
+      "sha256": "6cfecfe4d7eb7da6019eb2d63a45d63486acfec29b42b476746724da1d2adf09"
+    },
+    "tools/hcsn/wsp_confirmation_20261107/freeze.py": {
+      "bytes": 6202,
+      "sha256": "35adfded603fd0009405ccfc79f3c403bb87f97400208e493d05015c75095cde"
+    },
+    "tools/hcsn/wsp_confirmation_20261107/guard.py": {
+      "bytes": 8753,
+      "sha256": "b8ef8e8e104a5d32e6baa60ec0e71c80c65f506bc3109800e7952c1bcab36d41"
+    },
+    "tools/hcsn/wsp_confirmation_20261107/run.py": {
+      "bytes": 10191,
+      "sha256": "e528a1b2dd3ce3a874387161d0153b4633156ec07c7bffd9f9faf089c5d3d3ec"
+    },
+    "tools/hcsn/wsp_confirmation_20261107/test_execution.py": {
+      "bytes": 2497,
+      "sha256": "7d9fe198d20a3b614c6565aee45243a47329a9c4051545f808dbf1455b22d068"
+    },
+    "tools/hcsn/wsp_confirmation_20261107/test_guard.py": {
+      "bytes": 4276,
+      "sha256": "65bd630b018987e6ee2e41bd7aae9a504d14438e2afd1011fe40149d78a2909c"
+    },
+    "tools/hcsn/wsp_confirmation_20261107/verification.py": {
+      "bytes": 35233,
+      "sha256": "58442041c416d68466805f650045c83247440561706a646ece6dc5c251e2e6f1"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/artifact_io.py": {
+      "bytes": 2031,
+      "sha256": "cdf524ff7a3fe729a1b62136ab987156526ac4d1e3e73d061c76520df473770a"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/execution_r1/run/worlds/test_11_iid.json.gz": {
+      "bytes": 1420,
+      "sha256": "7f061559eb7361d865004189cce859e3b15454d6a7be67d063ed868a44692b9f"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/execution_r1/run/worlds/test_11_ood.json.gz": {
+      "bytes": 1538,
+      "sha256": "85b037092fb338a0d1f1fee55cee60bb18f3390fc6b3e4f0a750ba426c121a9a"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/execution_r1/run/worlds/test_23_iid.json.gz": {
+      "bytes": 1429,
+      "sha256": "9da6638a5e19ccc74eafea20fb1e07d90ef693ea6240779362257e1ac34a0f6f"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/execution_r1/run/worlds/test_23_ood.json.gz": {
+      "bytes": 1539,
+      "sha256": "4e850c5260411535372aa84bec8b2d037bd6b0cb0eab3983ceeffb2c2e784d20"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/execution_r1/run/worlds/test_37_iid.json.gz": {
+      "bytes": 1469,
+      "sha256": "8b5ed030c163f9657521b33b5a57a835d254e69bac676d4faefcffaec252b779"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/execution_r1/run/worlds/test_37_ood.json.gz": {
+      "bytes": 1510,
+      "sha256": "92378fe98da32ba76c47b0660b468f58f990b0e2873099c4c21cca1eedb34a8e"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/execution_r1/run/worlds/test_53_iid.json.gz": {
+      "bytes": 1434,
+      "sha256": "0f344c43819b2f2f608ce314d6e0570875a3bdc7a9a027bac15d676382613ed1"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/execution_r1/run/worlds/test_53_ood.json.gz": {
+      "bytes": 1530,
+      "sha256": "02d753c9f35b5e5de4bc9a863198cf0c0981ce606f67268127062471f884dd91"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/execution_r1/run/worlds/test_71_iid.json.gz": {
+      "bytes": 1422,
+      "sha256": "4f38cecc05b744bc7bfc96889c84915b5982ea3238799cc2fcd812a485cce9b2"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/execution_r1/run/worlds/test_71_ood.json.gz": {
+      "bytes": 1509,
+      "sha256": "5a0823d7f27e9fb531a2fdceb696758dababecaffce44f5f0c05881a2c57c062"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/execution_r1/run/worlds/validation_11_iid.json.gz": {
+      "bytes": 988,
+      "sha256": "56198ac1789c87e0ebc5a1588c314668cba6dc10e13347a8f8cb7a7ae2b1b546"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/execution_r1/run/worlds/validation_11_ood.json.gz": {
+      "bytes": 1023,
+      "sha256": "6f2c354e540f3d0b69225bcdfe8637a02473db418c95821256313b89789de1ab"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/execution_r1/run/worlds/validation_23_iid.json.gz": {
+      "bytes": 1005,
+      "sha256": "683751aaedef0b81aed83ca210d2356a345153e8f58a482db8f55bbf26b09484"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/execution_r1/run/worlds/validation_23_ood.json.gz": {
+      "bytes": 1022,
+      "sha256": "1f28c677804f6d4dc491efde68019c38fbc66f2d410ac648c27022ad6f6397bf"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/execution_r1/run/worlds/validation_37_iid.json.gz": {
+      "bytes": 1009,
+      "sha256": "06ddfb365733f494407c9117864b66583f77fbb6443ce74a7c4a0a3806a77b9e"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/execution_r1/run/worlds/validation_37_ood.json.gz": {
+      "bytes": 998,
+      "sha256": "ea36f37b6642cae5f1a83cc0474a670016c1a43fb2c17f5e15498884a37ff40e"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/execution_r1/run/worlds/validation_53_iid.json.gz": {
+      "bytes": 986,
+      "sha256": "6a84f00060544fefcc82d718587a680dc7072754d9981bfd001faab23b187675"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/execution_r1/run/worlds/validation_53_ood.json.gz": {
+      "bytes": 1030,
+      "sha256": "08f3129aacf259366a0720f59cab53e8465a8a610dad3208ea4c00aa25871b3e"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/execution_r1/run/worlds/validation_71_iid.json.gz": {
+      "bytes": 984,
+      "sha256": "1ef720ca48f50e5e125d356c3cf3e5498dd2b2cc8ba4b31a7f5166a46252e7af"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/execution_r1/run/worlds/validation_71_ood.json.gz": {
+      "bytes": 1044,
+      "sha256": "85ef511f8689fd9497fd8bc60755c297aa24e04b3b672d89691c6c469b642595"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/freeze_protocol.py": {
+      "bytes": 13170,
+      "sha256": "1f488a81c97212b26b282b54282607430464c7e5ba805fdb6cefe18eae2d727f"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/OLD_CONTINUATION_HEADS.json.gz": {
+      "bytes": 11128,
+      "sha256": "d4f220739bc5b76d19ab02e1440e48b2ef82f6098a7ff78516284e61d32518e1"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/OLD_PROTOCOL_FROZEN.json": {
+      "bytes": 13285,
+      "sha256": "735df99e3366a5d9343e1642a8c370b8d3359169bc70a98572476c6747a88251"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/fit_11_A.json.gz": {
+      "bytes": 162209,
+      "sha256": "9284042e5a17d2b45ea1821c1a8b33793888e13dddb80076add69d41ff5d91d1"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/fit_11_C.json.gz": {
+      "bytes": 172526,
+      "sha256": "fd4e8104066879320811d8276eb96ff524fcb224f80aab4dd20dacb4a9d628e9"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/fit_11_M.json.gz": {
+      "bytes": 172534,
+      "sha256": "9b86f841e379b5b1318f7ebc51a3a6fb025b6d9b01c7aed9d5a11cdfb0833431"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/fit_11_TRAIN_PUBLICS.json.gz": {
+      "bytes": 17697,
+      "sha256": "1b8381020bb5ecb60a5d75233082de80b9761cb61a1e43b08ce7b9ff2f7c1960"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/fit_23_A.json.gz": {
+      "bytes": 162359,
+      "sha256": "90f87ae8383ae97b511aee87916d34117f28a6d9abeab0eadc20350e0ab9fa4d"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/fit_23_C.json.gz": {
+      "bytes": 172558,
+      "sha256": "2037bf93f45bf19cd27f73201e57bedc41ddea08243728eaa466d8f7e3555693"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/fit_23_M.json.gz": {
+      "bytes": 172576,
+      "sha256": "9c0b5a2aecb636bfc6303e9d0d3514aeedc31a244665cdc002911a7133cc8382"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/fit_23_TRAIN_PUBLICS.json.gz": {
+      "bytes": 17643,
+      "sha256": "a8f2b75e8dd939b8c5c357ee22db5b1b734f39041b482fc09daeb30e557cb5a5"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/fit_37_A.json.gz": {
+      "bytes": 162410,
+      "sha256": "8db0ae6b2268f108951eb0bfcd475960c7157305376a2f481e7b3457256de086"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/fit_37_C.json.gz": {
+      "bytes": 172564,
+      "sha256": "1f4a3be85213f3fc221187dcb16308d033d033cccf48c86da7fec703e7bfb774"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/fit_37_M.json.gz": {
+      "bytes": 172557,
+      "sha256": "e48a79ffbda6b1435b4ef12ccfbdfc70cebdc7149d7dba59bf6c02339ddd971c"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/fit_37_TRAIN_PUBLICS.json.gz": {
+      "bytes": 17677,
+      "sha256": "89ce630969362b3352bf7fa6f079293674b4300b010f2dc6e5c05952b46feeed"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/fit_53_A.json.gz": {
+      "bytes": 162370,
+      "sha256": "f08c9cf21a819ab3b666447533caa3cfbc022a3da2da4ea11df07d8268513edd"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/fit_53_C.json.gz": {
+      "bytes": 172562,
+      "sha256": "b412cd6743563caaa57d66399c46afdd7394bfd4fe4c964a84e221b3c23ffd24"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/fit_53_M.json.gz": {
+      "bytes": 172560,
+      "sha256": "da3a2d07f272cc861f66cf2f0312c8eb656cdc5b745ce19a15c324d907f9796c"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/fit_53_TRAIN_PUBLICS.json.gz": {
+      "bytes": 17630,
+      "sha256": "5903b1ac76387ab25a6a24d996869c800b2752f0742e3f7e0c50f02caa3bc90b"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/fit_71_A.json.gz": {
+      "bytes": 162365,
+      "sha256": "1075902eff61964052ee2ab3a96c9cc97f1dbeee4366447943ef0e3727d5046b"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/fit_71_C.json.gz": {
+      "bytes": 172492,
+      "sha256": "8420c224f35255dfba2e30dbbd59947fe3e64281473877d9d47869bef995df6f"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/fit_71_M.json.gz": {
+      "bytes": 172489,
+      "sha256": "074beb1863ab5fcfd79f681f5d7e0714c242e5ce2bc0afc4027860102c69c35c"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/fit_71_TRAIN_PUBLICS.json.gz": {
+      "bytes": 17649,
+      "sha256": "e89efc01d96de6ce3d48127b9866474bb98b0f342a1a35eb1c3c0ba4d54d1bff"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/history/HISTORY_REGISTRY.json.gz": {
+      "bytes": 226015,
+      "sha256": "e29228a4b6858b6aea4d4fd623bb5ac26db450dab61bc660e148493d97fd9163"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/history/fit_11_iid_WORLDS.json.gz": {
+      "bytes": 1321,
+      "sha256": "d78c5b544825e40118ba1684f1f072fd60496e750c420530e6c3cb21c80eda07"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/history/fit_11_ood_WORLDS.json.gz": {
+      "bytes": 1369,
+      "sha256": "fd55819e14aca2624ed81af0586902280d43752c107eb022c295a153bda2dbfd"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/history/fit_23_iid_WORLDS.json.gz": {
+      "bytes": 1318,
+      "sha256": "5c7c67ffbe7bbcfcda51eaa63f8df069fdad82b36633b21ba57baaefa5851f67"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/history/fit_23_ood_WORLDS.json.gz": {
+      "bytes": 1405,
+      "sha256": "db6154cfc4544f500977dacbc61f20055017307dc35d772dc544d4ab6b893636"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/history/fit_37_iid_WORLDS.json.gz": {
+      "bytes": 1306,
+      "sha256": "283cc7219bb8430457f19edfc7f6ea0addf4fc44ce3c7fb99705066a0074ee9c"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/history/fit_37_ood_WORLDS.json.gz": {
+      "bytes": 1389,
+      "sha256": "bf9f66c56f24010e9fec746726da3ef8767e8323ddb6b6665cba5d0a651cb57a"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/history/fit_53_iid_WORLDS.json.gz": {
+      "bytes": 1304,
+      "sha256": "887da9397609946e2a317a4d0fb5540a984c0a5fc1d6a46e310120437687489a"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/history/fit_53_ood_WORLDS.json.gz": {
+      "bytes": 1375,
+      "sha256": "2ebd35f81856ee15d15dd98b963dbeb4d3e099e6d2720a637db248fa7f2e51fa"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/history/fit_71_iid_WORLDS.json.gz": {
+      "bytes": 1332,
+      "sha256": "e3652014f1433eb797e52bd65ea2dc3ee3a68d34629c75e5cf24ab4d3ea419a4"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/history/fit_71_ood_WORLDS.json.gz": {
+      "bytes": 1404,
+      "sha256": "92a1a3669d03221668775923c4ae368acb75c2d1fdf618406f988abf28b4f2c9"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/history/followup/test_11_iid.json.gz": {
+      "bytes": 1421,
+      "sha256": "4c5eb52e48b0b6b5d1fa3bd521a77f5ad06b2917725c9d42b493884a822d58e4"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/history/followup/test_11_ood.json.gz": {
+      "bytes": 1530,
+      "sha256": "ed3771986348a1c1e5160f14febb8369bd06bf4c10c850eefe51dbaa3513aa21"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/history/followup/test_23_iid.json.gz": {
+      "bytes": 1436,
+      "sha256": "e35cb96f5750d70b9944eeda5cb7689422ccb88a99455764540e515e60c89c31"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/history/followup/test_23_ood.json.gz": {
+      "bytes": 1513,
+      "sha256": "c2e222228c4a5414115d976d81140400513b7b6102b25efff921d14772d2a50f"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/history/followup/test_37_iid.json.gz": {
+      "bytes": 1424,
+      "sha256": "74acebcbe839c266defb0cb383439ba170f903814cc2360a39b30798df832a0d"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/history/followup/test_37_ood.json.gz": {
+      "bytes": 1505,
+      "sha256": "dc43f296cee688cedde130381881a70b176e1510f3aa9ca9b7646dd628968ae9"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/history/followup/test_53_iid.json.gz": {
+      "bytes": 1431,
+      "sha256": "068115da53ef0c92198fdbbbf64293fc5f82f7cb13ef2805ff4fe296809a712f"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/history/followup/test_53_ood.json.gz": {
+      "bytes": 1513,
+      "sha256": "431881f189d4d968a03df8be7d1e3d1d9773e86a75c3e3ad41b6c63a2796fc05"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/history/followup/test_71_iid.json.gz": {
+      "bytes": 1439,
+      "sha256": "049d13bec340bca04c24fdd4fc13e31c3915e002490fdd1bb3b4b7405715dca9"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/history/followup/test_71_ood.json.gz": {
+      "bytes": 1500,
+      "sha256": "ca97e640470104887e48445b3d115a451a6fef2610b68ab5a68ac267daad81c2"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/history/followup/validation_11_iid.json.gz": {
+      "bytes": 991,
+      "sha256": "118bf4c213e331cdd25d056600a926ea85c0a812778d30744b0fedde8b0dd98b"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/history/followup/validation_11_ood.json.gz": {
+      "bytes": 1019,
+      "sha256": "cdcaa777c60d260a8bd9fd13e314d2b1d608d07df7254ba6e5561c8d4016891c"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/history/followup/validation_23_iid.json.gz": {
+      "bytes": 987,
+      "sha256": "89e4c4d0c9dfcde9b088318944b716f2fa5687daccd3e301ab199b8eab6029fc"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/history/followup/validation_23_ood.json.gz": {
+      "bytes": 1013,
+      "sha256": "50f9d60333dc44bf8c925d8b77d88fd5296927aaf6f774b9ca133bcf2bc03d2b"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/history/followup/validation_37_iid.json.gz": {
+      "bytes": 991,
+      "sha256": "b54ae0d1a43dd0be24d9ec11f25050a9499109e5c1212f3e758b9925418e2e09"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/history/followup/validation_37_ood.json.gz": {
+      "bytes": 1018,
+      "sha256": "c25955ed78da1bf08fc1f077f98ee12c81d14ea722ad8b61fbb71050b3136b96"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/history/followup/validation_53_iid.json.gz": {
+      "bytes": 1006,
+      "sha256": "aaef98ef6e30b16405af3380968eddeefb7711b3bd294c49323724c418c377ad"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/history/followup/validation_53_ood.json.gz": {
+      "bytes": 1028,
+      "sha256": "5a3f120ed92aec96d276147705fd7091d11e16b7f79c02a4052f3063e97602f8"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/history/followup/validation_71_iid.json.gz": {
+      "bytes": 995,
+      "sha256": "1948eb8f4e7e64c8cf8bd9605529fa6ca4c658abb39dc37342701031eb0e3d0f"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/inputs/history/followup/validation_71_ood.json.gz": {
+      "bytes": 1022,
+      "sha256": "43a516ceee2a3f27e00c883b71afed262233d8ae7c001f7b081e0dbc3b980577"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/measure_process.py": {
+      "bytes": 2862,
+      "sha256": "64e85e07ab6695409dccab89187f06fbff984f27184104eb5e3b4a8770d2903a"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/prepare_inputs.py": {
+      "bytes": 6519,
+      "sha256": "2bc40de43680031dd82371627fa1d210fe619cfdd58b6a2bb6a62f1e0b409b21"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/run_experiment.py": {
+      "bytes": 27815,
+      "sha256": "718d0a2a6bccb014ac593d9263f8e9b3637d7abd4c020c7f6d7eadf6e47aa930"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/task_graph.py": {
+      "bytes": 11798,
+      "sha256": "c76e7e477f2001455f7d21ba0e1de3d0364fe759cb7a15c75668834e204e10ac"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/test_semantics.py": {
+      "bytes": 2599,
+      "sha256": "8e0c0ebac043b1b3e352e33a7e8e82efc312ca117c58507c33ed9b851fd38eac"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/vendor/frozen_joint/INPUT_ACQUISITION.json": {
+      "bytes": 2241,
+      "sha256": "ece5c3d10514f0a46711795e7e67b504b5d180b9b31423b59add8b74874c03d8"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/vendor/frozen_joint/checked_replay.py": {
+      "bytes": 2614,
+      "sha256": "d0922ab0c458d9d382e1f9c851c52731c4a71256870000862dbebf5d38366b24"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/vendor/frozen_joint/joint_deploy.py": {
+      "bytes": 4445,
+      "sha256": "c91ef40c484000e2a2b923425467c03fbbfb4e15a1f54856f6c850f9242c8e26"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/vendor/frozen_joint/joint_law.py": {
+      "bytes": 4396,
+      "sha256": "2e7f19a2534567e31370eea24dec096a309e4db4aa42770efbf544bed84bcf65"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/vendor/frozen_joint/joint_protocol.json": {
+      "bytes": 12063,
+      "sha256": "1c6ffc51d8d9df8f57bb350dd9d80a264b889a14882da553c63e60c547a18606"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/vendor/frozen_joint/joint_task.py": {
+      "bytes": 12845,
+      "sha256": "51139ba57004f2a5d69381af2f781b3717404318f122d8b6bec8416004efffa5"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/vendor/frozen_joint/legacy_task.py": {
+      "bytes": 12163,
+      "sha256": "d8e88364932bb344e4df811f40163550e9c198b8e34778b5664c72367f4bde06"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/vendor/frozen_joint/run_head_edit.py": {
+      "bytes": 18348,
+      "sha256": "fe0681ef732b660db0b195bda21cf9ab40b0d6cd8b7fe0c69ade7b9e67198b6f"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/vendor/frozen_joint/truth_transitions.npz": {
+      "bytes": 101566,
+      "sha256": "3a62c48272d90b459622ed8818fddf36de983831fbc0c1306fc39b27345228f0"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/vendor/planning.py": {
+      "bytes": 12785,
+      "sha256": "2fbd9b00861d3ff932c81b975b60e39dc9d4e9138e160a99222e6fdc6eb0a687"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/vendor/quadratic.py": {
+      "bytes": 8003,
+      "sha256": "2cdfabe96b4e9af0cc565352f8ed6fcca02646f667e7e6d34639e39c37a62d6c"
+    },
+    "tools/hcsn/wsp_native_value_20261105/value_edit/verify_records.py": {
+      "bytes": 24878,
+      "sha256": "7b6402589c9eaf8004c4103ae3da09272ae0c850e8f647d3afaa70a1d2f50d1c"
+    }
+  },
+  "state_caps": {
+    "full_per_world": 20000,
+    "markov_per_world": 20000,
+    "training_rows_per_fit": 200000
+  },
+  "status": "FROZEN_BEFORE_CANDIDATES_AND_CONFIRMATION",
+  "target": "one-step incumbent own-law advantages with the existing terminal anchor",
+  "unmeasured_costs": [
+    "agent_input_tokens",
+    "agent_output_tokens",
+    "agent_service_cpu",
+    "energy_joules",
+    "unknown_prior_search",
+    "production_publication_and_recovery"
+  ],
+  "upstream_protocol_sha256": "226713c4ceab5ebf4da08e62d495a529ddb41a461bec1ce3f7f6ffbecab981dd"
+}
