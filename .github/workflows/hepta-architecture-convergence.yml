@@ -119,9 +119,13 @@ jobs:
           fi
           python3 scripts/hepta_ci_scope.py "${args[@]}" | tee "$RUNNER_TEMP/hepta-command-records/scope.json"
       - name: Test execution-record rejection and retained diagnostics
+        env:
+          PYTHONPATH: scripts
+        shell: bash
         run: |
           set -euo pipefail
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/runner-tests.json" -- python3 -m unittest discover -v -s scripts -p 'test_hepta_ci_exec*.py'
+          tests=(scripts/test_hepta_ci_exec*.py)
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/runner-tests.json" --minimum-tests 1 -- python3 -m unittest -v "${tests[@]}"
       - name: Repository-control rejection regressions
         run: |
           set -euo pipefail
