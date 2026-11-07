@@ -561,7 +561,7 @@ id = "final_use_pq_open_state"
 symbol = "FinalUseAuthority::open_pq_state_dir_with_issuer_keys"
 definition_path = "codex-rs/hepta-contracts/src/final_use_pq.rs"
 definition_markers = ["pub fn open_pq_state_dir_with_issuer_keys", "pin_pq_keys", "clock.now_unix_ms()", "frontier_store.load", "AntiRollbackViolation"]
-product_callers = ["codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/automation_effect_host_pq.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer/pq.rs"]
 caller_markers = ["FinalUseAuthority::open_pq_state_dir_with_issuer_keys", "FinalUseAuthenticationProfile::MlDsa65V2", "clock.now_unix_ms()?", "frontier.load"]
 
 [[boundary]]
