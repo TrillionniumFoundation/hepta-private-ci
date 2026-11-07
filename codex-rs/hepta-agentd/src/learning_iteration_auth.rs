@@ -32,15 +32,8 @@ pub(super) async fn authenticate_restored_iteration_v1(
         LearningIterationCoordinatorV1::new(snapshot.request.clone(), snapshot.owners.clone())?;
     for receipt in &snapshot.receipts {
         if receipt.observation.stage() != LearningIterationStageV1::Proposal {
-            authenticate_iteration_receipt_v1(
-                state,
-                ports,
-                verifier,
-                &predecessor,
-                receipt,
-                clock,
-            )
-            .await?;
+            authenticate_iteration_receipt_v1(state, ports, verifier, &predecessor, receipt, clock)
+                .await?;
         }
         // Structural replay uses the original observation time. A completed
         // iteration can be read after its work deadline if current evidence is
@@ -126,7 +119,9 @@ async fn verify_receipt(
         }
     };
     let payload = learning_iteration_receipt_signing_bytes_v1(receipt)?;
-    let signature = ports.receipt_attestation(snapshot, receipt, clock()?).await?;
+    let signature = ports
+        .receipt_attestation(snapshot, receipt, clock()?)
+        .await?;
     let now = clock()?;
     let verified = verifier
         .verify(role, &signature, &payload, now)

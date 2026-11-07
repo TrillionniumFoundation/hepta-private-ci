@@ -28,9 +28,7 @@ enum WhileWaiting {
 fn recovery_ports(decision: Decision, trust: Trust) -> IterationPorts {
     let evaluation = match decision {
         Decision::EvaluatedNoUpdate => LearningEvaluationDispositionV1::NoUpdate,
-        Decision::ProposedNoUpdate | Decision::Update => {
-            LearningEvaluationDispositionV1::Qualified
-        }
+        Decision::ProposedNoUpdate | Decision::Update => LearningEvaluationDispositionV1::Qualified,
     };
     let mut ports = IterationPorts::new(/*proposal*/ None, evaluation);
     ports.verifier = ok(LearningEvidenceVerifierV1::new(LearningEvidenceTrustV1 {
@@ -120,7 +118,10 @@ async fn completed_snapshot(
         };
         record_observation(&mut coordinator, proposal);
     }
-    let bundle = ok(coordinator.next_task_bundle().expect("selected bundle").digest());
+    let bundle = ok(coordinator
+        .next_task_bundle()
+        .expect("selected bundle")
+        .digest());
     record_observation(
         &mut coordinator,
         LearningIterationObservationV1::Selection {
@@ -182,17 +183,15 @@ fn runtime(
     owner
 }
 
-fn assert_no_work_or_checkpoint(
-    ports: &IterationPorts,
-    snapshot: &LearningIterationSnapshotV1,
-) {
+fn assert_no_work_or_checkpoint(ports: &IterationPorts, snapshot: &LearningIterationSnapshotV1) {
     assert_eq!(ok(ports.checkpoint.lock()).as_ref(), Some(snapshot));
     assert!(ok(ports.executed.lock()).is_empty());
     assert!(ok(ports.checkpoint_calls.lock()).is_empty());
 }
 
 #[tokio::test]
-async fn completed_recovery_reauthenticates_all_signed_stages_without_reproposing_or_checkpointing() {
+async fn completed_recovery_reauthenticates_all_signed_stages_without_reproposing_or_checkpointing()
+{
     for decision in [
         Decision::EvaluatedNoUpdate,
         Decision::ProposedNoUpdate,
@@ -249,7 +248,11 @@ async fn completed_recovery_rejects_each_invalid_retained_signature_before_work(
 #[tokio::test]
 async fn completed_recovery_checks_current_revocation_controller_and_signature_expiry() {
     for (trust, now, expected) in [
-        (Trust::SharedController, 60, SignedEvidenceError::ControllerCollision),
+        (
+            Trust::SharedController,
+            60,
+            SignedEvidenceError::ControllerCollision,
+        ),
         (Trust::RevokedEvaluator, 60, SignedEvidenceError::Revoked),
         (Trust::Independent, 95, SignedEvidenceError::ValidityWindow),
     ] {
@@ -291,9 +294,11 @@ async fn partial_and_completed_recovery_preserve_deadlines_and_only_resume_after
         completed.request.clone(),
         completed.owners.clone(),
     ));
-    for receipt in completed.receipts.iter().take_while(|receipt| {
-        receipt.observation.stage() != LearningIterationStageV1::Selection
-    }) {
+    for receipt in completed
+        .receipts
+        .iter()
+        .take_while(|receipt| receipt.observation.stage() != LearningIterationStageV1::Selection)
+    {
         ok(prefix.record(receipt.clone(), receipt.observed_unix_seconds));
     }
     let partial = prefix.snapshot().clone();
@@ -327,7 +332,10 @@ async fn partial_and_completed_recovery_preserve_deadlines_and_only_resume_after
             "unexpected downstream stage"
         ))
     ));
-    assert_eq!(ok(ports.executed.lock()).as_slice(), &[LearningIterationStageV1::Selection]);
+    assert_eq!(
+        ok(ports.executed.lock()).as_slice(),
+        &[LearningIterationStageV1::Selection]
+    );
     assert_eq!(ok(ports.checkpoint.lock()).as_ref(), Some(&partial));
     assert!(ok(ports.checkpoint_calls.lock()).is_empty());
 }
@@ -364,16 +372,25 @@ async fn completed_recovery_checks_ready_and_clock_after_awaiting_owner_attestat
         let result = process.await;
         match change {
             WhileWaiting::Drain => {
-                assert!(matches!(result, Err(LearningIterationRuntimeErrorV1::Unavailable)));
+                assert!(matches!(
+                    result,
+                    Err(LearningIterationRuntimeErrorV1::Unavailable)
+                ));
             }
             WhileWaiting::Expire => {
-                assert!(matches!(result, Err(LearningIterationRuntimeErrorV1::Evidence(
-                    SignedEvidenceError::ValidityWindow
-                ))));
+                assert!(matches!(
+                    result,
+                    Err(LearningIterationRuntimeErrorV1::Evidence(
+                        SignedEvidenceError::ValidityWindow
+                    ))
+                ));
             }
         }
         assert_no_work_or_checkpoint(&ports, &snapshot);
-        assert_eq!(ok(ports.attested.lock()).as_slice(), &[LearningIterationStageV1::Experience]);
+        assert_eq!(
+            ok(ports.attested.lock()).as_slice(),
+            &[LearningIterationStageV1::Experience]
+        );
     }
 }
 
@@ -382,13 +399,19 @@ async fn fresh_receipt_wait_rechecks_time_and_ready_before_checkpointing() {
     for change in [WhileWaiting::Drain, WhileWaiting::Expire] {
         let daemon = AgentdFixture::new();
         let state = daemon.state();
-        let ports = Arc::new(recovery_ports(Decision::EvaluatedNoUpdate, Trust::Independent));
+        let ports = Arc::new(recovery_ports(
+            Decision::EvaluatedNoUpdate,
+            Trust::Independent,
+        ));
         let mut request = iteration_request(&daemon);
         // Keep the task deadline live while the original signature expires.
         request.envelope.expiry_unix_seconds = 120;
-        let initial = ok(LearningIterationCoordinatorV1::new(request.clone(), ports.owners()))
-            .snapshot()
-            .clone();
+        let initial = ok(LearningIterationCoordinatorV1::new(
+            request.clone(),
+            ports.owners(),
+        ))
+        .snapshot()
+        .clone();
         let (entered, receive_entered) = tokio::sync::oneshot::channel();
         let (resume, receive_resume) = tokio::sync::oneshot::channel();
         *ok(ports.attestation_barrier.lock()) = Some(AttestationBarrier {
@@ -412,17 +435,32 @@ async fn fresh_receipt_wait_rechecks_time_and_ready_before_checkpointing() {
         let result = process.await;
         match change {
             WhileWaiting::Drain => {
-                assert!(matches!(result, Err(LearningIterationRuntimeErrorV1::Unavailable)));
+                assert!(matches!(
+                    result,
+                    Err(LearningIterationRuntimeErrorV1::Unavailable)
+                ));
             }
             WhileWaiting::Expire => {
-                assert!(matches!(result, Err(LearningIterationRuntimeErrorV1::Evidence(
-                    SignedEvidenceError::ValidityWindow
-                ))));
+                assert!(matches!(
+                    result,
+                    Err(LearningIterationRuntimeErrorV1::Evidence(
+                        SignedEvidenceError::ValidityWindow
+                    ))
+                ));
             }
         }
         assert_eq!(ok(ports.checkpoint.lock()).as_ref(), Some(&initial));
-        assert_eq!(ok(ports.checkpoint_calls.lock()).as_slice(), &[Digest32::ZERO]);
-        assert_eq!(ok(ports.executed.lock()).as_slice(), &[LearningIterationStageV1::Experience]);
-        assert_eq!(ok(ports.attested.lock()).as_slice(), &[LearningIterationStageV1::Experience]);
+        assert_eq!(
+            ok(ports.checkpoint_calls.lock()).as_slice(),
+            &[Digest32::ZERO]
+        );
+        assert_eq!(
+            ok(ports.executed.lock()).as_slice(),
+            &[LearningIterationStageV1::Experience]
+        );
+        assert_eq!(
+            ok(ports.attested.lock()).as_slice(),
+            &[LearningIterationStageV1::Experience]
+        );
     }
 }
