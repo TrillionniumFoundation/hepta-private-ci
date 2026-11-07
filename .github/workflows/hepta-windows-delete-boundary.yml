@@ -11,6 +11,7 @@ on:
       - scripts/test_hepta_windows_terminal_receipts.py
       - scripts/hepta_windows_prepared_owner_receipt.py
       - scripts/test_hepta_windows_prepared_owner_receipt.py
+      - scripts/hepta_windows_psec_capability.ps1
       - .github/workflows/hepta-windows-delete-boundary.yml
 
 permissions:
@@ -756,5 +757,78 @@ jobs:
         with:
           name: hepta-windows-process-root-pins-${{ matrix.runner }}-${{ matrix.lane }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/windows-process-root-pins/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Record read-only PSEC API diagnostics after all original Windows controls
+        if: always()
+        timeout-minutes: 2
+        working-directory: ${{ github.workspace }}
+        run: |
+          python - <<'PY'
+          import hashlib, json, os, shutil, subprocess, time
+          from datetime import datetime, timezone
+          from pathlib import Path
+          root = Path.cwd() / "hepta"
+          out = Path(os.environ["RUNNER_TEMP"]) / "windows-psec-capability"
+          out.mkdir(exist_ok=False)
+          relative = "scripts/hepta_windows_psec_capability.ps1"
+          script = root / relative
+          report = {
+              "schema": "hepta-windows-psec-diagnostic-invocation-v1",
+              "scope": "Read-only API observations, never original20 or sandbox qualification",
+              "source_sha": os.environ["SOURCE_SHA"], "tested_sha": os.environ["TESTED_SHA"],
+              "base_sha": os.environ["BASE_SHA"], "lane": os.environ["HEPTA_CI_LANE"],
+              "runner": os.environ["HEPTA_CI_RUNNER"], "target": os.environ["HEPTA_CI_TARGET"],
+              "runner_arch": os.environ.get("RUNNER_ARCH"), "image_version": os.environ.get("ImageVersion"),
+              "cwd": str(root), "started_at": datetime.now(timezone.utc).isoformat(),
+              "timeout_seconds": 60, "timed_out": False, "returncode": None, "error": None,
+              "counts_as_original20_pass": False, "production_sandbox_admitted": False,
+          }
+          started = time.monotonic()
+          with (out / "query.stdout.json").open("xb") as stdout, (out / "query.stderr.log").open("xb") as stderr:
+              try:
+                  def git(*args):
+                      return subprocess.check_output(["git", "-C", str(root), *args], timeout=10)
+                  report["checkout_head"] = git("rev-parse", "HEAD").decode().strip()
+                  report["checkout_tree"] = git("rev-parse", "HEAD^{tree}").decode().strip()
+                  if report["checkout_head"] != report["tested_sha"]:
+                      raise RuntimeError("PSEC diagnostic checkout does not match this lane")
+                  raw = script.read_bytes()
+                  if raw != git("show", "HEAD:" + relative):
+                      raise RuntimeError("PSEC query bytes differ from the tested commit")
+                  report["script_sha256"] = hashlib.sha256(raw).hexdigest()
+                  report["script_git_blob"] = hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest()
+                  (out / "query-source.ps1").write_bytes(raw)
+                  pwsh = shutil.which("pwsh")
+                  if pwsh is None:
+                      raise RuntimeError("PowerShell 7 is unavailable; original controls remain independent")
+                  report["argv"] = [pwsh, "-NoLogo", "-NoProfile", "-NonInteractive", "-File", str(script)]
+                  report["returncode"] = subprocess.run(
+                      report["argv"], cwd=root, stdin=subprocess.DEVNULL,
+                      stdout=stdout, stderr=stderr, timeout=60, check=False,
+                  ).returncode
+                  if script.read_bytes() != raw:
+                      raise RuntimeError("PSEC query source changed during observation")
+              except subprocess.TimeoutExpired as error:
+                  report["timed_out"] = True
+                  report["error"] = str(error)
+              except Exception as error:
+                  report["error"] = str(error)
+          report["elapsed_seconds"] = time.monotonic() - started
+          report["finished_at"] = datetime.now(timezone.utc).isoformat()
+          report["files"] = {
+              name: {"bytes": (out / name).stat().st_size, "sha256": hashlib.sha256((out / name).read_bytes()).hexdigest()}
+              for name in ("query.stdout.json", "query.stderr.log")
+          }
+          (out / "invocation.json").write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+          if report["error"] is not None or report["returncode"] != 0:
+              raise SystemExit(1)
+          PY
+      - name: Upload separate PSEC diagnostics without changing original result receipts
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-windows-psec-capability-${{ matrix.runner }}-${{ matrix.lane }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/windows-psec-capability/
           if-no-files-found: error
           retention-days: 14
