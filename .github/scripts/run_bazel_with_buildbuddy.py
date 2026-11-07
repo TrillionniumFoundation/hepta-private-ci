@@ -322,17 +322,47 @@ def windows_target_patterns(args: Sequence[str], env: Mapping[str, str]):
         return
     if any("\n" in target or "\r" in target for target in targets):
         raise ValueError("Bazel target patterns cannot contain line breaks")
-    # Bazel reads one UTF-8 pattern per line, including exclusion patterns.
+    # Bazel 9 strips hash comments, Java-trims each line and drops empty lines.
+    # Reject any roster entry that this file grammar would silently change.
+    if any(
+        not target
+        or "#" in target
+        or "\0" in target
+        or ord(target[0]) <= 0x20
+        or ord(target[-1]) <= 0x20
+        for target in targets
+    ):
+        raise ValueError(
+            "Bazel target patterns cannot be represented losslessly in a file"
+        )
+    # UTF-8 bytes become Bazel's internal Latin-1 raw-byte strings. This is
+    # its documented Windows encoding contract, not a Unicode conversion.
     # Keep the file until the real child retires, even when it reports failure.
-    with NamedTemporaryFile(
-        mode="w", encoding="utf-8", newline="\n", delete=False
-    ) as output:
-        path = Path(output.name)
-        output.writelines(f"{target}\n" for target in targets)
+    path = None
     try:
+        with NamedTemporaryFile(
+            mode="w", encoding="utf-8", newline="\n", delete=False
+        ) as output:
+            path = Path(output.name)
+            output.writelines(f"{target}\n" for target in targets)
         yield [*args[:separator], f"--target_pattern_file={path}"], path
     finally:
-        path.unlink()
+        if path is not None:
+            pending_error = sys.exc_info()[1]
+            try:
+                path.unlink()
+            except OSError as cleanup_error:
+                # A cleanup failure must not replace the child's real failure
+                # status. A successful child still fails CI if cleanup fails.
+                if pending_error is None or (
+                    isinstance(pending_error, SystemExit)
+                    and pending_error.code in (None, 0)
+                ):
+                    raise
+                print(
+                    f"Failed to remove Bazel target pattern file {path}: {cleanup_error}",
+                    file=sys.stderr,
+                )
 
 
 def main() -> None:

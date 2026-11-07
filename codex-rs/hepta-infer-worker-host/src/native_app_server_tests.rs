@@ -66,6 +66,24 @@ fn output() -> NativeRunOutput {
     }
 }
 
+#[test]
+fn appended_reconciliation_reason_stays_within_durable_utf8_byte_limit() {
+    let note = format!("grace observed: {}", "界".repeat(1024));
+    let reason = append_stop_reason(
+        Some(format!("provider interruption: {}", "界".repeat(1024))),
+        note.clone(),
+    );
+
+    assert!(reason.len() <= MAX_STOP_REASON_BYTES);
+    assert!(reason.is_char_boundary(reason.len()));
+    assert!(reason.ends_with(truncate_utf8(&note, MAX_STOP_REASON_BYTES - 2)));
+
+    let observation_failure = "界".repeat(2048);
+    let bounded_failure = truncate_utf8(&observation_failure, MAX_STOP_REASON_BYTES);
+    assert_eq!(bounded_failure.len(), MAX_STOP_REASON_BYTES - 1);
+    assert!(bounded_failure.is_char_boundary(bounded_failure.len()));
+}
+
 fn terminal(thread: &str, turn: &str, status: TurnStatus) -> ServerNotification {
     ServerNotification::TurnCompleted(TurnCompletedNotification {
         thread_id: thread.to_string(),
@@ -400,30 +418,60 @@ async fn success_requires_both_matching_completion_and_final_ready_owner() {
 #[test]
 fn cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_start() {
     let source = include_str!("native_app_server.rs");
-    let durable_dispatch = source
+    // This is a source-order regression guard, not runtime authorization proof.
+    let run_once = source
+        .split_once("    async fn run_once(")
+        .expect("native run implementation")
+        .1
+        .split_once("\n    async fn observe(")
+        .expect("end of native run implementation")
+        .0;
+    let durable_dispatch = run_once
         .find("control.dispatch_native_with_pre_effect_abort(")
         .expect("durable native dispatch");
-    let revalidation = source
+    let revalidation = run_once
         .find("owner.revalidate_cognitive_context(snapshot).await")
         .expect("final-use cognitive revalidation");
-    let turn_start = source
-        .find("client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart")
-        .expect("physical turn start");
-    let durable_stop = source
-        .find("control.abort_native_before_effect(")
-        .expect("durable pre-turn stop");
+    let turn_start = run_once
+        .find("send_authorized_turn_start(&mut client, entered_use, turn_params)")
+        .expect("entered-token turn/start invocation");
+    let durable_stop = revalidation
+        + run_once[revalidation..]
+            .find("control.abort_native_before_effect(pre_effect_abort, reason);")
+            .expect("durable stop after cognitive revalidation failure");
+    let authority_entry = run_once
+        .find("let entered_use = match verified_use.enter(&authority_binding)")
+        .expect("final-use authority entry");
+    let release_abort = run_once
+        .find("drop(pre_effect_abort);")
+        .expect("pre-effect proof consumed before send");
     assert!(durable_dispatch < revalidation);
     assert!(revalidation < turn_start);
     assert!(durable_stop < turn_start);
+    assert!(durable_stop < authority_entry);
+    assert!(authority_entry < release_abort);
+    assert!(release_abort < turn_start);
+
+    // Check the call site above, not the helper's position in this file. Also
+    // fail if the real request escapes the entered-token helper or is duplicated.
+    assert_eq!(source.matches("send_authorized_turn_start").count(), 2);
+    assert_eq!(source.matches("ClientRequest::TurnStart").count(), 1);
+    let send_helper = source
+        .split_once("async fn send_authorized_turn_start(")
+        .expect("authorized send helper")
+        .1
+        .split_once("\n}")
+        .expect("end of authorized send helper")
+        .0;
+    assert!(send_helper.contains("_entered: EnteredUseToken,"));
+    assert!(send_helper.contains(".request_typed_observed(ClientRequest::TurnStart {"));
 }
 
 #[cfg(unix)]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone() -> Result<()> {
     use std::sync::Arc;
-    use std::time::SystemTime;
-    use std::time::UNIX_EPOCH;
-
+    // Each test owns its own unique temporary journal namespace.
     use codex_hepta_agentd::test_support::CognitiveTestHost;
     use codex_hepta_infer_core::durable_control::DurableInferenceControl;
     use codex_hepta_infer_core::durable_control::native::NativeReservationState;
@@ -442,16 +490,37 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let server = responses::start_mock_server().await;
     let response = responses::sse(vec![
         responses::ev_response_created("resp-cognitive-worker"),
+        // The native Worker observes App Server item/agentMessage/delta
+        // notifications, not an invented terminal output string. A mock
+        // containing only output_item.done can complete successfully yet
+        // legitimately produce no streamed output for this observer.
+        // Use the same actual Responses streaming sequence exercised by
+        // the App Server integration suite; do not weaken output checks.
+        responses::ev_message_item_added("msg-cognitive-worker", ""),
+        responses::ev_output_text_delta("fresh context accepted"),
         responses::ev_assistant_message("msg-cognitive-worker", "fresh context accepted"),
         responses::ev_completed("resp-cognitive-worker"),
     ]);
     let response_mock = responses::mount_sse_once(&server, response).await;
 
-    let nonce = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
-    let root = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}"));
+    let test_namespace = tempfile::tempdir()?;
+    let root = test_namespace.path().join("agentd");
     let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)?;
-    let host =
-        CognitiveTestHost::start(root, agent_id, MODEL, &format!("{}/v1", server.uri())).await?;
+    // The focused native CI lane supplies a real Codex binary. Bazel's
+    // unit-test harness has no CLI artifact; this no-tool-turn fixture may
+    // use its own executable only as an inert exec-server path at startup.
+    // Any actual helper re-exec must be covered by a real CLI integration test.
+    let codex_executable = std::env::var_os("HEPTA_TEST_CODEX_EXECUTABLE")
+        .map(PathBuf::from)
+        .map_or_else(std::env::current_exe, Ok)?;
+    let host = CognitiveTestHost::start(
+        root,
+        agent_id,
+        MODEL,
+        &format!("{}/v1", server.uri()),
+        codex_executable,
+    )
+    .await?;
     let _accepted_memory = host
         .seed_verified_memory("worker-final-use-accept", ACCEPT_MEMORY)
         .await?;
@@ -470,8 +539,10 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
         timeout: Duration::from_secs(20),
     })?
     .with_turn_start_authorizer(Arc::new(authorizer));
-    let journal = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}.journal"));
-    let mut durable = DurableInferenceControl::open(&journal, 8)?;
+    let journal = test_namespace.path().join("native-inference-owner.journal");
+    let mut durable = DurableInferenceControl::open(&journal, 8).map_err(|error| {
+        std::io::Error::other(format!("native control initial-owner open: {error:?}"))
+    })?;
 
     let accepted = driver
         .run(
@@ -484,7 +555,10 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
             Some("lemon".to_string()),
             &CancellationToken::new(),
         )
-        .await?;
+        .await
+        .map_err(|error| {
+            std::io::Error::other(format!("native Worker accepted TurnStart: {error:?}"))
+        })?;
     assert!(
         accepted.succeeded(),
         "fresh context must reach a successful real TurnStart"
@@ -636,7 +710,9 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     );
 
     drop(durable);
-    let reopened = DurableInferenceControl::open(&journal, 8)?;
+    let reopened = DurableInferenceControl::open(&journal, 8).map_err(|error| {
+        std::io::Error::other(format!("native control post-final-use recovery: {error:?}"))
+    })?;
     assert_eq!(
         reopened.native_record(ACCEPT_REQUEST_ID),
         Some(&accepted_record)

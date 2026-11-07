@@ -1054,7 +1054,9 @@ fn extract_zipball_to_dir(bytes: &[u8], destination: &Path) -> Result<(), String
         let Some(relative_path) = entry.enclosed_name() else {
             return Err(format!(
                 "curated plugins zip entry `{}` escapes extraction root",
-                entry.name()
+                entry.name().map_err(|err| {
+                    format!("failed to read curated plugins zip entry name: {err}")
+                })?
             ));
         };
 
@@ -1073,6 +1075,13 @@ fn extract_zipball_to_dir(bytes: &[u8], destination: &Path) -> Result<(), String
             continue;
         }
 
+        // Never materialize a privileged or symlink-like archive entry.
+        // ZipArchive::extract() is intentionally not used, but archived Unix
+        // mode bits still require independent fail-closed checks.
+        let safe_mode = entry
+            .unix_mode()
+            .map(|mode| safe_curated_zip_entry_mode(mode, entry.is_dir()))
+            .transpose()?;
         let output_path = destination.join(&output_relative);
         if entry.is_dir() {
             std::fs::create_dir_all(&output_path).map_err(|err| {
@@ -1104,17 +1113,32 @@ fn extract_zipball_to_dir(bytes: &[u8], destination: &Path) -> Result<(), String
                 output_path.display()
             )
         })?;
-        apply_zip_permissions(&entry, &output_path)?;
+        apply_zip_permissions(safe_mode, &output_path)?;
     }
 
     Ok(())
 }
 
+// Enforce a regular-file-only archive policy independently of the ZIP crate.
+// A plugin zipball never needs SUID/SGID/sticky bits or symlink/device entries.
+fn safe_curated_zip_entry_mode(mode: u32, is_dir: bool) -> Result<u32, String> {
+    const FILE_TYPE_MASK: u32 = 0o170000;
+    const REGULAR_FILE: u32 = 0o100000;
+    const DIRECTORY: u32 = 0o040000;
+    const PRIVILEGED_BITS: u32 = 0o7000;
+    let kind = mode & FILE_TYPE_MASK;
+    let expected_kind = if is_dir { DIRECTORY } else { REGULAR_FILE };
+    if mode & PRIVILEGED_BITS != 0 || (kind != 0 && kind != expected_kind) {
+        return Err("curated plugins zip entry contains privileged or non-file Unix mode".into());
+    }
+    Ok(mode & 0o777)
+}
+
 #[cfg(unix)]
-fn apply_zip_permissions(entry: &zip::read::ZipFile<'_>, output_path: &Path) -> Result<(), String> {
+fn apply_zip_permissions(mode: Option<u32>, output_path: &Path) -> Result<(), String> {
     use std::os::unix::fs::PermissionsExt;
 
-    let Some(mode) = entry.unix_mode() else {
+    let Some(mode) = mode else {
         return Ok(());
     };
     std::fs::set_permissions(output_path, std::fs::Permissions::from_mode(mode)).map_err(|err| {
@@ -1126,10 +1150,7 @@ fn apply_zip_permissions(entry: &zip::read::ZipFile<'_>, output_path: &Path) -> 
 }
 
 #[cfg(not(unix))]
-fn apply_zip_permissions(
-    _entry: &zip::read::ZipFile<'_>,
-    _output_path: &Path,
-) -> Result<(), String> {
+fn apply_zip_permissions(_mode: Option<u32>, _output_path: &Path) -> Result<(), String> {
     Ok(())
 }
 

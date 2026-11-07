@@ -435,7 +435,7 @@ pub(super) async fn persist_thread_memory_mode_update(
     // final flush would let task terminalization publish a competing tail.
     let _active = sess.active_turn.lock().await;
     if sess.shutdown_started()
-        || sess.has_pending_task_terminalization()
+        || sess.has_task_terminalization_admission_fence()
         || _active
             .as_ref()
             .is_some_and(|active_turn| active_turn.task_terminalization.is_some())

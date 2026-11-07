@@ -1,0 +1,155 @@
+name: Hepta ZIP9 locked-migration feasibility (diagnostic only)
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/hepta-zip9-security-migration.yml"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/core-plugins/**"
+      - "codex-rs/rust-toolchain.toml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-zip9-diagnostic-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  real-cargo-zip9-candidate:
+    name: Actual ZIP9 resolver and curated extraction regressions (no promotion)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+    steps:
+      - name: Checkout exact immutable pull request candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Pin actual Rust toolchain
+        uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58
+        with:
+          toolchain: "1.96.0"
+          components: clippy, rustfmt
+
+      - name: Prove HEAD identity and isolate disposable security experiment
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          git diff --check
+          git diff --exit-code
+          evidence="$RUNNER_TEMP/zip9-evidence"
+          mkdir -p "$evidence"
+          echo "$EXPECTED_SHA" > "$evidence/source-sha.txt"
+          candidate="$(mktemp -d "$RUNNER_TEMP/zip9-candidate.XXXXXXXX")"
+          git worktree add --detach "$candidate" "$EXPECTED_SHA"
+          echo "ZIP9_CANDIDATE=$candidate" >> "$GITHUB_ENV"
+          echo "ZIP9_EVIDENCE=$evidence" >> "$GITHUB_ENV"
+          python3 - "$candidate/codex-rs/Cargo.toml" <<'PY'
+          import sys
+          from pathlib import Path
+          manifest = Path(sys.argv[1])
+          text = manifest.read_text(encoding="utf-8")
+          old = 'zip = "2.4.2"'
+          pinned = 'zip = "=9.0.4"'
+          if text.count(old) == 1 and pinned not in text:
+              manifest.write_text(text.replace(old, pinned), encoding="utf-8")
+          elif text.count(pinned) != 1 or old in text:
+              raise SystemExit("unexpected ZIP package pin; failing closed on source drift")
+          print("verified exact ZIP =9.0.4 in detached Git worktree")
+          PY
+          # ZIP 9 changed ZipFile::name() from &str to Result<Cow<str>, ZipError>.
+          # Adapt only the disposable candidate so the real compiler can expose
+          # any additional migration incompatibilities. Keep fail-closed errors.
+          python3 - "$candidate/codex-rs/core-plugins/src/startup_sync.rs" <<'PY'
+          import sys
+          from pathlib import Path
+          source = Path(sys.argv[1])
+          original = source.read_text(encoding="utf-8")
+          # Use explicit newline escapes: YAML's block indentation otherwise
+          # strips the leading spaces inside Python multiline literals.
+          old = '                entry.name()\n            ));'
+          replacement = (
+              '                entry.name().map_err(|err| {\n'
+              '                    format!("failed to read curated plugins zip entry name: {err}")\n'
+              '                })?\n'
+              '            ));'
+          )
+          if original.count(old) == 1 and replacement not in original:
+              source.write_text(original.replace(old, replacement), encoding="utf-8")
+          elif original.count(replacement) != 1 or old in original:
+              raise SystemExit("ZIP9 ZipFile::name API site drifted; aborting candidate")
+          print("verified fail-closed ZIP9 entry-name handling in detached worktree")
+          PY
+
+      - name: Resolve genuine locked security upgrade using Cargo
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$ZIP9_CANDIDATE/codex-rs"
+          rustc --version --verbose | tee "$ZIP9_EVIDENCE/rust-version.txt"
+          cargo --version | tee "$ZIP9_EVIDENCE/cargo-version.txt"
+          cargo update --manifest-path Cargo.toml --package zip --precise 9.0.4 2>&1 | tee "$ZIP9_EVIDENCE/cargo-update.txt"
+          python3 - <<'PY'
+          import pathlib
+          import tomllib
+          lock = tomllib.loads(pathlib.Path("Cargo.lock").read_text(encoding="utf-8"))
+          packages = [(p["name"], p["version"]) for p in lock["package"] if p["name"] == "zip"]
+          if packages != [("zip", "9.0.4")]:
+              raise SystemExit(f"ZIP version graph must be singular and fully upgraded: {packages!r}")
+          print("exact Cargo lock contains only zip 9.0.4")
+          PY
+          cargo metadata --locked --format-version 1 --no-deps >/dev/null
+
+      - name: Compile real ZIP-using production crate
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$ZIP9_CANDIDATE/codex-rs"
+          cargo check --locked -p codex-core-plugins --lib 2>&1 | tee "$ZIP9_EVIDENCE/cargo-check.txt"
+
+      - name: Execute real curated ZIP and privileged-entry tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$ZIP9_CANDIDATE/codex-rs"
+          cargo test --locked -p codex-core-plugins --lib startup_sync::tests:: -- --test-threads=1 2>&1 | tee "$ZIP9_EVIDENCE/cargo-tests.txt"
+          cargo clippy --locked -p codex-core-plugins --lib -- -D clippy::correctness 2>&1 | tee "$ZIP9_EVIDENCE/clippy.txt"
+          cargo fmt --manifest-path Cargo.toml --package codex-core-plugins -- --check 2>&1 | tee "$ZIP9_EVIDENCE/rustfmt.txt"
+
+      - name: Preserve actual solver output and verify source remains unchanged
+        if: always() && !cancelled()
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/zip9-evidence"
+          mkdir -p "$evidence"
+          if [[ -n "${ZIP9_CANDIDATE:-}" ]]; then
+            cp "$ZIP9_CANDIDATE/codex-rs/Cargo.toml" "$evidence/Cargo.toml"
+            cp "$ZIP9_CANDIDATE/codex-rs/Cargo.lock" "$evidence/Cargo.lock"
+            git -C "$ZIP9_CANDIDATE" diff -- codex-rs/Cargo.toml codex-rs/Cargo.lock codex-rs/core-plugins/src/startup_sync.rs > "$evidence/actual-cargo-diff.patch"
+          fi
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Upload real locked resolver and compiler evidence
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: zip9-locked-migration-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/zip9-evidence/
+          if-no-files-found: error
+          retention-days: 14

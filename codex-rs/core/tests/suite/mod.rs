@@ -163,6 +163,8 @@ mod tool_lifecycle;
 mod tool_parallelism;
 mod tools;
 mod truncation;
+#[path = "turn_completion_ordering_tests.rs"]
+mod turn_completion_ordering;
 mod turn_input_submission;
 mod turn_state;
 mod unified_exec;

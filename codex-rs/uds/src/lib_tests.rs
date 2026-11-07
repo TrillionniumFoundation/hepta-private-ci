@@ -42,6 +42,19 @@ async fn prepare_private_socket_directory_sets_existing_permissions_to_owner_onl
     }
 }
 
+#[tokio::test]
+async fn absent_rendezvous_is_not_stale_socket_path() {
+    let temp_dir = tempfile::TempDir::new().expect("temp dir");
+    let missing_socket = temp_dir.path().join("already-unlinked");
+
+    assert!(
+        !is_stale_socket_path(&missing_socket)
+            .await
+            .expect("a missing rendezvous must be treated as absent, not a hard failure")
+    );
+    assert!(!missing_socket.exists());
+}
+
 #[cfg(unix)]
 #[tokio::test]
 async fn regular_file_path_is_not_stale_socket_path() {

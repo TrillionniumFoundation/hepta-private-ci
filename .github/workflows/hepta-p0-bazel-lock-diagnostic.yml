@@ -1,0 +1,104 @@
+name: Hepta P0 Bazel lock exact-HEAD regeneration (diagnostic only)
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/hepta-p0-bazel-lock-diagnostic.yml"
+      - "MODULE.bazel"
+      - "MODULE.bazel.lock"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/rust-toolchain.toml"
+      - "third_party/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-p0-bazel-lock-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  exact-lock-candidate:
+    name: Rebuild rules_rs facts and verify Bazel lock (no promotion)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    steps:
+      - name: Checkout exact PR HEAD without write credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Prepare pinned Bazel and repository cache
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: p0-exact-lock-candidate
+
+      - name: Prove source identity and create detached disposable worktree
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          git diff --check
+          git diff --exit-code
+          evidence="$RUNNER_TEMP/hepta-p0-bazel-lock-evidence"
+          mkdir -p "$evidence"
+          printf '%s\n' "$EXPECTED_SHA" > "$evidence/source-sha.txt"
+          sha256sum MODULE.bazel codex-rs/Cargo.toml codex-rs/Cargo.lock MODULE.bazel.lock > "$evidence/source-file-hashes.txt"
+          candidate="$(mktemp -d "$RUNNER_TEMP/hepta-p0-bazel-lock.XXXXXXXX")"
+          git worktree add --detach "$candidate" "$EXPECTED_SHA"
+          echo "BAZEL_LOCK_CANDIDATE=$candidate" >> "$GITHUB_ENV"
+          echo "BAZEL_LOCK_EVIDENCE=$evidence" >> "$GITHUB_ENV"
+          git -C "$candidate" rev-parse HEAD > "$evidence/candidate-sha.txt"
+          cmp "$evidence/source-sha.txt" "$evidence/candidate-sha.txt"
+
+      - name: Regenerate lock with actual Bazel rules_rs extension (no synthetic facts)
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$BAZEL_LOCK_CANDIDATE"
+          set +e
+          ./scripts/check-module-bazel-lock.sh > "$BAZEL_LOCK_EVIDENCE/before-check.log" 2>&1
+          before_status=$?
+          bazel mod deps --lockfile_mode=update > "$BAZEL_LOCK_EVIDENCE/actual-bazel-update.log" 2>&1
+          update_status=$?
+          ./scripts/check-module-bazel-lock.sh > "$BAZEL_LOCK_EVIDENCE/after-check.log" 2>&1
+          after_status=$?
+          set -e
+          printf '%s\n' "$before_status" > "$BAZEL_LOCK_EVIDENCE/before.exit"
+          printf '%s\n' "$update_status" > "$BAZEL_LOCK_EVIDENCE/update.exit"
+          printf '%s\n' "$after_status" > "$BAZEL_LOCK_EVIDENCE/after.exit"
+          if (( update_status != 0 || after_status != 0 )); then
+            echo 'Actual Bazel lock regeneration or post-update check failed' >&2
+            tail -n 80 "$BAZEL_LOCK_EVIDENCE/actual-bazel-update.log" >&2
+            tail -n 40 "$BAZEL_LOCK_EVIDENCE/after-check.log" >&2
+            exit 1
+          fi
+          git diff --check
+          if ! git diff --name-only --exit-code -- . ':(exclude)MODULE.bazel.lock'; then
+            echo 'Bazel mutated tracked files other than MODULE.bazel.lock' >&2
+            exit 1
+          fi
+          sha256sum MODULE.bazel.lock > "$BAZEL_LOCK_EVIDENCE/generated-lock-sha256.txt"
+          git diff --stat -- MODULE.bazel.lock > "$BAZEL_LOCK_EVIDENCE/lock-diff-stat.txt"
+          git diff --binary -- MODULE.bazel.lock > "$BAZEL_LOCK_EVIDENCE/actual-lock.patch"
+          cp MODULE.bazel.lock "$BAZEL_LOCK_EVIDENCE/MODULE.bazel.lock"
+          cd "$GITHUB_WORKSPACE"
+          git diff --check
+          git diff --exit-code
+          test "$(git rev-parse HEAD)" = "$(cat "$BAZEL_LOCK_EVIDENCE/source-sha.txt")"
+
+      - name: Retain actual lock candidate and resolver receipts
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-p0-bazel-lock-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/hepta-p0-bazel-lock-evidence/
+          if-no-files-found: error
+          retention-days: 14

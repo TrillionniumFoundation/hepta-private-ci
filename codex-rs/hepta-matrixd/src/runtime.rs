@@ -1,9 +1,12 @@
 use std::future::Future;
 use std::pin::Pin;
+use std::sync::atomic::AtomicU64;
+use std::sync::atomic::Ordering;
 
 use codex_app_server_client::AppServerEvent;
 use codex_app_server_protocol::ServerNotification;
 use codex_app_server_protocol::ThreadItem;
+use codex_app_server_protocol::Turn;
 use codex_app_server_protocol::TurnStatus;
 use codex_app_server_protocol::UserInput;
 use codex_hepta_matrix_protocol::MatrixEventId;
@@ -28,6 +31,7 @@ use codex_hepta_matrix_store::RoomThreadBindingDraft;
 use serde::Deserialize;
 use tokio::sync::Semaphore;
 
+use crate::BridgePage;
 use crate::MatrixAdmissionMode;
 use crate::MatrixAppServerBridge;
 use crate::MatrixAppServerTransport;
@@ -36,15 +40,30 @@ use crate::MatrixSubmission;
 use crate::MatrixSubmissionState;
 use crate::RoomThreadBinding;
 
+mod recovery;
+
+enum RecoveryObservation {
+    AdmissionOnly,
+    PersistedTerminal,
+}
+
 const MATRIX_ROOM_MESSAGE: &str = "m.room.message";
 const MATRIX_TEXT_MESSAGE: &str = "m.text";
 const DEFAULT_RECOVERY_LIMIT: usize = 1_024;
+const TURN_PAGE_BUDGET: usize = 16;
 
 pub type MatrixRuntimeFuture<'a, T> =
     Pin<Box<dyn Future<Output = Result<T, MatrixBridgeError>> + Send + 'a>>;
 
 /// Narrow seam between the durable runtime and Codex App Server admission.
 pub trait MatrixRuntimeBridge: Send + Sync {
+    /// Bounded persisted history observation for an already admitted turn.
+    fn list_persisted_turns<'a>(
+        &'a self,
+        thread_id: &'a str,
+        cursor: Option<&'a str>,
+    ) -> MatrixRuntimeFuture<'a, BridgePage<Turn>>;
+
     fn ensure_room_thread<'a>(
         &'a self,
         room_id: &'a MatrixRoomId,
@@ -65,6 +84,14 @@ impl<T> MatrixRuntimeBridge for MatrixAppServerBridge<T>
 where
     T: MatrixAppServerTransport,
 {
+    fn list_persisted_turns<'a>(
+        &'a self,
+        thread_id: &'a str,
+        cursor: Option<&'a str>,
+    ) -> MatrixRuntimeFuture<'a, BridgePage<Turn>> {
+        self.transport.list_persisted_turns(thread_id, cursor)
+    }
+
     fn ensure_room_thread<'a>(
         &'a self,
         room_id: &'a MatrixRoomId,
@@ -96,6 +123,7 @@ where
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum MatrixDispatchOutcome {
     IgnoredUnsupported { event_id: MatrixEventId },
+    Quarantined { event_id: MatrixEventId },
     Queued { dispatch: InboxDispatchRecord },
     Admitted { dispatch: InboxDispatchRecord },
     Completed { dispatch: InboxDispatchRecord },
@@ -126,6 +154,7 @@ pub struct MatrixRuntime<B> {
     bridge: B,
     operation: Semaphore,
     recovery_limit: usize,
+    recovery_frontier: AtomicU64,
 }
 
 impl<B> MatrixRuntime<B>
@@ -138,6 +167,7 @@ where
             bridge,
             operation: Semaphore::new(1),
             recovery_limit: DEFAULT_RECOVERY_LIMIT,
+            recovery_frontier: AtomicU64::new(0),
         }
     }
 
@@ -161,9 +191,33 @@ where
             .store
             .inbox(event_id)
             .await
-            .store_operation("load inbox event")?
-            .ok_or(MatrixRuntimeError::MissingInbox)?;
-        self.process_inbox_locked(&inbox, now_ms).await
+            .store_operation("load inbox event")?;
+        let Some(inbox) = inbox else {
+            if let Some(dispatch) = self.store.inbox_dispatch(event_id).await?
+                && self
+                    .store
+                    .is_scope_quarantined(
+                        &dispatch.room_id,
+                        dispatch.binding_revision,
+                        dispatch.generation,
+                    )
+                    .await?
+            {
+                return Ok(MatrixDispatchOutcome::Quarantined {
+                    event_id: event_id.clone(),
+                });
+            }
+            return Err(MatrixRuntimeError::MissingInbox);
+        };
+        let outcome = self.process_inbox_locked(&inbox, now_ms).await?;
+        match outcome {
+            MatrixDispatchOutcome::Admitted { dispatch } => {
+                let mut remaining_pages = TURN_PAGE_BUDGET;
+                self.recover_admitted_turn(dispatch, now_ms, &mut remaining_pages)
+                    .await
+            }
+            outcome => Ok(outcome),
+        }
     }
 
     pub async fn recover_pending(
@@ -179,7 +233,8 @@ where
         let _operation = self.operation.acquire().await.map_err(|_| {
             MatrixRuntimeError::Protocol("Matrix runtime operation gate closed".to_string())
         })?;
-        self.recover_pending_locked(limit, now_ms).await
+        self.recover_pending_locked(limit, now_ms, RecoveryObservation::PersistedTerminal)
+            .await
     }
 
     pub async fn project_app_server_event(
@@ -198,8 +253,12 @@ where
         // has already persisted the user item before emitting turn activity,
         // so exact client-id reconciliation closes that window without a new
         // admission.
-        self.recover_pending_locked(self.recovery_limit, now_ms)
-            .await?;
+        self.recover_pending_locked(
+            self.recovery_limit,
+            now_ms,
+            RecoveryObservation::AdmissionOnly,
+        )
+        .await?;
         let Some(dispatch) = self
             .store
             .inbox_dispatch_for_turn(projectable.thread_id(), projectable.turn_id())
@@ -208,48 +267,132 @@ where
         else {
             return Ok(MatrixEventProjection::Ignored);
         };
-
-        let disposition = self
-            .enqueue_projection(&dispatch, &projectable, now_ms)
-            .await?;
-        if !projectable.is_terminal() {
-            return Ok(MatrixEventProjection::Stored {
-                kind: projectable.kind(),
-                disposition,
-            });
+        if dispatch.state == InboxDispatchState::Completed
+            && matches!(projectable, ProjectableEvent::Delta { .. })
+        {
+            return Ok(MatrixEventProjection::Ignored);
+        }
+        if self
+            .store
+            .is_scope_quarantined(
+                &dispatch.room_id,
+                dispatch.binding_revision,
+                dispatch.generation,
+            )
+            .await?
+        {
+            return Ok(MatrixEventProjection::Ignored);
         }
 
-        let admission = admission_from_dispatch(&dispatch, projectable.turn_id(), now_ms)?;
-        let admitted = self
-            .store
-            .record_inbox_admitted(&admission)
-            .await
-            .store_operation("record projected turn admission")?;
-        let completed_at_ms = now_ms.max(admitted.updated_at_ms);
-        let completed = self
-            .store
-            .complete_inbox_dispatch(&admission, completed_at_ms)
-            .await
-            .store_operation("complete projected inbox dispatch")?;
-        Ok(MatrixEventProjection::TurnCompleted {
-            dispatch: Box::new(completed),
-            disposition,
-        })
+        let projection: Result<MatrixEventProjection, MatrixRuntimeError> = async {
+            let disposition = self
+                .enqueue_projection(&dispatch, &projectable, now_ms)
+                .await?;
+            if !projectable.is_terminal() {
+                return Ok(MatrixEventProjection::Stored {
+                    kind: projectable.kind(),
+                    disposition,
+                });
+            }
+
+            let admission = admission_from_dispatch(&dispatch, projectable.turn_id(), now_ms)?;
+            let admitted = self
+                .store
+                .record_inbox_admitted(&admission)
+                .await
+                .store_operation("record projected turn admission")?;
+            let completed_at_ms = now_ms.max(admitted.updated_at_ms);
+            let completed = self
+                .store
+                .complete_inbox_dispatch(&admission, completed_at_ms)
+                .await
+                .store_operation("complete projected inbox dispatch")?;
+            Ok(MatrixEventProjection::TurnCompleted {
+                dispatch: Box::new(completed),
+                disposition,
+            })
+        }
+        .await;
+        match projection {
+            Err(error)
+                if error.is_scope_fence_error()
+                    && self
+                        .store
+                        .is_scope_quarantined(
+                            &dispatch.room_id,
+                            dispatch.binding_revision,
+                            dispatch.generation,
+                        )
+                        .await? =>
+            {
+                Ok(MatrixEventProjection::Ignored)
+            }
+            result => result,
+        }
     }
 
     async fn recover_pending_locked(
         &self,
         limit: usize,
         now_ms: u64,
+        observation: RecoveryObservation,
     ) -> Result<MatrixRuntimeRecovery, MatrixRuntimeError> {
-        let pending = self
-            .store
-            .pending_inbox(limit)
-            .await
-            .store_operation("list pending inbox events")?;
+        let pending = match observation {
+            RecoveryObservation::AdmissionOnly => self.store.pending_inbox(limit).await,
+            RecoveryObservation::PersistedTerminal => {
+                self.store
+                    .pending_recovery_inbox(limit, self.recovery_frontier.load(Ordering::Relaxed))
+                    .await
+            }
+        }
+        .store_operation("list pending inbox events")?;
         let mut outcomes = Vec::with_capacity(pending.len());
+        let last_selected_cursor = pending.last().map(|inbox| inbox.cursor);
+        let mut observed_turn = false;
+        let mut remaining_pages = TURN_PAGE_BUDGET;
         for inbox in pending {
-            outcomes.push(self.process_inbox_locked(&inbox, now_ms).await?);
+            let result: Result<MatrixDispatchOutcome, MatrixRuntimeError> = async {
+                let outcome = self.process_inbox_locked(&inbox, now_ms).await?;
+                match outcome {
+                    MatrixDispatchOutcome::Admitted { dispatch }
+                        if matches!(observation, RecoveryObservation::PersistedTerminal) =>
+                    {
+                        if remaining_pages > 0 {
+                            observed_turn = true;
+                            self.recovery_frontier
+                                .store(inbox.cursor, Ordering::Relaxed);
+                        }
+                        self.recover_admitted_turn(dispatch, now_ms, &mut remaining_pages)
+                            .await
+                    }
+                    outcome => Ok(outcome),
+                }
+            }
+            .await;
+            outcomes.push(match result {
+                Err(error)
+                    if error.is_scope_fence_error()
+                        && self
+                            .store
+                            .is_scope_quarantined(
+                                &inbox.room_id,
+                                inbox.binding_revision,
+                                inbox.generation,
+                            )
+                            .await? =>
+                {
+                    MatrixDispatchOutcome::Quarantined {
+                        event_id: inbox.event_id,
+                    }
+                }
+                result => result?,
+            });
+        }
+        if !observed_turn
+            && matches!(observation, RecoveryObservation::PersistedTerminal)
+            && let Some(cursor) = last_selected_cursor
+        {
+            self.recovery_frontier.store(cursor, Ordering::Relaxed);
         }
         Ok(MatrixRuntimeRecovery { outcomes })
     }
@@ -259,6 +402,15 @@ where
         inbox: &InboxRecord,
         now_ms: u64,
     ) -> Result<MatrixDispatchOutcome, MatrixRuntimeError> {
+        if self
+            .store
+            .is_scope_quarantined(&inbox.room_id, inbox.binding_revision, inbox.generation)
+            .await?
+        {
+            return Ok(MatrixDispatchOutcome::Quarantined {
+                event_id: inbox.event_id.clone(),
+            });
+        }
         if inbox.state == InboxState::Processed {
             return match self
                 .store
@@ -313,6 +465,9 @@ where
             return Err(MatrixRuntimeError::Protocol(
                 "durable dispatch project drifted from the exact Agent/room identity".to_string(),
             ));
+        }
+        if dispatch.state == InboxDispatchState::Admitted {
+            return Ok(MatrixDispatchOutcome::Admitted { dispatch });
         }
 
         let binding = self
@@ -674,6 +829,20 @@ pub enum MatrixRuntimeError {
     },
     #[error(transparent)]
     MatrixProtocol(#[from] MatrixProtocolError),
+}
+
+impl MatrixRuntimeError {
+    fn is_scope_fence_error(&self) -> bool {
+        matches!(
+            self,
+            Self::MissingInbox
+                | Self::Store(MatrixDurableError::AccessDenied)
+                | Self::StoreOperation {
+                    source: MatrixDurableError::AccessDenied,
+                    ..
+                }
+        )
+    }
 }
 
 trait StoreResultExt<T> {

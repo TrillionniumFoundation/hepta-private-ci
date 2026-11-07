@@ -1,7 +1,7 @@
 use crate::RewriteProfile;
 use crate::invalid_data_error;
 use crate::scope::is_redirected_destination;
-use serde_yaml::Value as YamlValue;
+use serde_json::Value as YamlValue;
 use std::collections::BTreeMap;
 use std::fs;
 use std::io;
@@ -164,23 +164,47 @@ fn frontmatter_end(rest: &str) -> Option<(usize, usize)> {
 fn parse_frontmatter(
     raw_frontmatter: &str,
 ) -> (BTreeMap<String, FrontmatterValue>, Option<String>) {
-    let parsed: YamlValue = match serde_yaml::from_str(raw_frontmatter) {
-        Ok(parsed) => parsed,
-        Err(err) => return (BTreeMap::new(), Some(err.to_string())),
-    };
-    let Some(mapping) = parsed.as_mapping() else {
+    // Keep explicit YAML tags visible until all imported scalar fields are
+    // checked. The serde-saphyr -> serde_json::Value projection alone discards
+    // tag identities, which could silently admit an annotated agent metadata
+    // field that the original migration contract rejected.
+    let parsed: serde_yaml::Tagged<BTreeMap<String, serde_yaml::Tagged<YamlValue>>> =
+        match serde_yaml::from_str(raw_frontmatter) {
+            Ok(parsed) => parsed,
+            Err(err) => return (BTreeMap::new(), Some(err.to_string())),
+        };
+    if parsed.1.is_some() {
         return (
             BTreeMap::new(),
-            Some("frontmatter is not a YAML mapping".to_string()),
+            Some("frontmatter root must not have an explicit YAML tag".to_string()),
         );
-    };
+    }
 
     let mut frontmatter = BTreeMap::new();
-    for (key, value) in mapping {
-        let Some(key) = key.as_str().map(str::trim).filter(|key| !key.is_empty()) else {
+    for (key, value) in parsed.0 {
+        let key = key.trim();
+        if key.is_empty() {
             continue;
-        };
-        frontmatter.insert(key.to_string(), frontmatter_value_from_yaml(value));
+        }
+        if value.1.is_some() {
+            return (
+                BTreeMap::new(),
+                Some(format!(
+                    "frontmatter field {key:?} has an explicit YAML tag"
+                )),
+            );
+        }
+        // Fail closed if two YAML-distinct keys normalize to the same
+        // identity, permission, or other metadata key after trimming.
+        if frontmatter
+            .insert(key.to_string(), frontmatter_value_from_yaml(&value.0))
+            .is_some()
+        {
+            return (
+                BTreeMap::new(),
+                Some(format!("duplicate normalized frontmatter key: {key}")),
+            );
+        }
     }
 
     (frontmatter, None)
@@ -191,9 +215,7 @@ fn frontmatter_value_from_yaml(value: &YamlValue) -> FrontmatterValue {
         YamlValue::String(value) => FrontmatterValue::Scalar(value.trim().to_string()),
         YamlValue::Bool(value) => FrontmatterValue::Scalar(value.to_string()),
         YamlValue::Number(value) => FrontmatterValue::Scalar(value.to_string()),
-        YamlValue::Null | YamlValue::Sequence(_) | YamlValue::Mapping(_) | YamlValue::Tagged(_) => {
-            FrontmatterValue::Other
-        }
+        YamlValue::Null | YamlValue::Array(_) | YamlValue::Object(_) => FrontmatterValue::Other,
     }
 }
 
@@ -309,3 +331,7 @@ impl FrontmatterValue {
         }
     }
 }
+
+#[cfg(test)]
+#[path = "subagents_tests.rs"]
+mod tests;

@@ -31,6 +31,8 @@ const OVERLOAD_WRITE_TIMEOUT: Duration = Duration::from_millis(50);
 pub(crate) struct AgentdControlServer {
     listener: UnixListener,
     socket_path: PathBuf,
+    #[cfg(unix)]
+    socket_identity: (u64, u64),
     state: Arc<AgentdState>,
     cancellation: CancellationToken,
     connections: Arc<Semaphore>,
@@ -46,10 +48,22 @@ impl AgentdControlServer {
         let listener = UnixListener::bind(&socket_path)
             .await
             .map_err(|error| io_context("bind agentd control socket", &socket_path, error))?;
+        #[cfg(unix)]
+        let socket_identity = control_socket_identity(&socket_path)?.ok_or_else(|| {
+            AgentdError::Protocol("bound control socket was replaced".to_string())
+        })?;
         set_owner_only(&socket_path).await?;
+        #[cfg(unix)]
+        if control_socket_identity(&socket_path)? != Some(socket_identity) {
+            return Err(AgentdError::Protocol(
+                "bound control socket changed during permission setup".to_string(),
+            ));
+        }
         Ok(Self {
             listener,
             socket_path,
+            #[cfg(unix)]
+            socket_identity,
             state,
             cancellation,
             connections: Arc::new(Semaphore::new(CONNECTION_CAPACITY)),
@@ -82,15 +96,48 @@ impl AgentdControlServer {
 
 impl Drop for AgentdControlServer {
     fn drop(&mut self) {
-        if let Err(error) = std::fs::remove_file(&self.socket_path)
-            && error.kind() != ErrorKind::NotFound
+        // On Windows the path is not unlinked by an old owner: a newer
+        // generation can own the same rendezvous after a restart.
+        #[cfg(unix)]
         {
-            eprintln!(
-                "failed to remove agentd control socket {}: {error}",
-                self.socket_path.display()
-            );
+            // A displaced predecessor must not unlink a successor's rendezvous or
+            // another replacement object. The private namespace still belongs to
+            // the trusted operator; this is not an atomic unlink against a hostile
+            // same-UID process changing the path between observation and removal.
+            match control_socket_identity(&self.socket_path) {
+                Ok(Some(identity)) if identity == self.socket_identity => {}
+                Ok(_) => return,
+                Err(error) if error.kind() == ErrorKind::NotFound => return,
+                Err(error) => {
+                    eprintln!(
+                        "failed to inspect owned agentd control socket {}: {error}",
+                        self.socket_path.display()
+                    );
+                    return;
+                }
+            }
+            if let Err(error) = std::fs::remove_file(&self.socket_path)
+                && error.kind() != ErrorKind::NotFound
+            {
+                eprintln!(
+                    "failed to remove agentd control socket {}: {error}",
+                    self.socket_path.display()
+                );
+            }
         }
     }
+}
+
+#[cfg(unix)]
+fn control_socket_identity(path: &Path) -> std::io::Result<Option<(u64, u64)>> {
+    use std::os::unix::fs::FileTypeExt;
+    use std::os::unix::fs::MetadataExt;
+
+    let metadata = std::fs::symlink_metadata(path)?;
+    Ok(metadata
+        .file_type()
+        .is_socket()
+        .then_some((metadata.dev(), metadata.ino())))
 }
 
 async fn serve_connection(stream: UnixStream, state: Arc<AgentdState>) -> Result<(), AgentdError> {
@@ -195,9 +242,20 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), AgentdError> {
         .await
         .map_err(|error| io_context("inspect stale agentd control socket", socket_path, error))?
     {
-        tokio::fs::remove_file(socket_path).await.map_err(|error| {
-            io_context("remove stale agentd control socket", socket_path, error)
-        })?;
+        match tokio::fs::remove_file(socket_path).await {
+            Ok(()) => Ok(()),
+            Err(error) if error.kind() == ErrorKind::NotFound => Ok(()),
+            Err(error) => Err(io_context(
+                "remove stale agentd control socket",
+                socket_path,
+                error,
+            )),
+        }
+    } else if !tokio::fs::try_exists(socket_path)
+        .await
+        .map_err(|error| io_context("recheck agentd control socket", socket_path, error))?
+    {
+        // A disappeared rendezvous cannot be stolen; the next bind is exclusive.
         Ok(())
     } else {
         Err(AgentdError::Io(std::io::Error::new(
@@ -229,4 +287,30 @@ async fn set_owner_only(path: &Path) -> Result<(), AgentdError> {
 #[cfg(not(unix))]
 async fn set_owner_only(_path: &Path) -> Result<(), AgentdError> {
     Ok(())
+}
+
+#[cfg(all(test, unix))]
+#[path = "control_tests.rs"]
+mod tests;
+
+#[cfg(all(test, windows))]
+mod tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn preflight_rejects_live_control_listener() -> Result<(), Box<dyn std::error::Error>> {
+        let temp = tempfile::tempdir()?;
+        let socket = temp.path().join("live-agentd-control");
+        let _live = UnixListener::bind(&socket).await?;
+
+        assert!(
+            matches!(prepare_socket(&socket).await, Err(AgentdError::Io(_))),
+            "a running control listener must retain exclusive ownership"
+        );
+        assert!(
+            socket.exists(),
+            "preflight must preserve the active rendezvous"
+        );
+        Ok(())
+    }
 }

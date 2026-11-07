@@ -41,29 +41,36 @@ fn spawn_git_command(command: &mut Command) -> Option<(Child, KillGitProcessTree
         .stderr(Stdio::piped());
 
     #[cfg(windows)]
-    let (child, job) = match JobObject::create()
-        .and_then(|job| job.spawn_contained(command).map(|child| (child, job)))
     {
-        Ok((child, job)) => (child, Some(job)),
-        Err(_) => {
-            // A failed contained spawn leaves CREATE_SUSPENDED on the command.
-            command.creation_flags(0);
-            (command.spawn().ok()?, None)
-        }
-    };
+        // A timed-out Git command must never be started outside its owned
+        // process tree. If the Windows Job Object cannot be created, assigned,
+        // or resumed, refuse the invocation rather than spawning a fallback
+        // child whose descendants cannot be reliably terminated.
+        spawn_contained_git_command(command, JobObject::create)
+    }
     #[cfg(not(windows))]
-    let child = command.spawn().ok()?;
+    {
+        let child = command.spawn().ok()?;
+        let process_tree = KillGitProcessTreeOnDrop {
+            #[cfg(unix)]
+            process_id: child.id()?,
+            #[cfg(unix)]
+            armed: true,
+        };
+        Some((child, process_tree))
+    }
+}
 
-    let process_tree = KillGitProcessTreeOnDrop {
-        #[cfg(unix)]
-        process_id: child.id()?,
-        #[cfg(windows)]
-        job,
-        #[cfg(unix)]
-        armed: true,
-    };
-
-    Some((child, process_tree))
+#[cfg(windows)]
+fn spawn_contained_git_command(
+    command: &mut Command,
+    create_job: impl FnOnce() -> std::io::Result<JobObject>,
+) -> Option<(Child, KillGitProcessTreeOnDrop)> {
+    // This is also the entry exercised by the Windows negative tests; no
+    // environment-controlled test override exists in production.
+    let job = create_job().ok()?;
+    let child = job.spawn_contained(command).ok()?;
+    Some((child, KillGitProcessTreeOnDrop { job: Some(job) }))
 }
 
 async fn wait_for_git_command_with_timeout_output(
