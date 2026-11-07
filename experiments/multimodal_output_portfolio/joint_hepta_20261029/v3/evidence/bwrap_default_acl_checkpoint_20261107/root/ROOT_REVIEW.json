@@ -1,0 +1,49 @@
+{
+  "observed_at_utc": "2026-11-07T06:04:12.378477+00:00",
+  "scope": "Independent canonical reader and complete original bytes and modes",
+  "publication": {
+    "bytes": 7542,
+    "sha256": "c6820bca7f6796149acaf0c837f658e46968fb172af82cb3043515268a15a38f",
+    "git_blob": "579e5f22fc4738d798ac9d546d9b73d2081443b1"
+  },
+  "index": {
+    "bytes": 132412,
+    "sha256": "8c9d0ed50db9b1c3dc65aa1849eff8e0d439b66dad9818dad1cc332b3a6cc779",
+    "git_blob": "106e623ed3677362bdc4a54dd5f12ec861eedf9d"
+  },
+  "canonical_source_API": {
+    "bytes": 605,
+    "sha256": "69aba48fb5d1e7e41dbaaa8770aa470b38928723faeef18297590fe5d38d2dbe",
+    "git_blob": "8e284d216e31f5cf267bc7b796db136eedcb7245"
+  },
+  "reader": {
+    "bytes": 6899,
+    "sha256": "4fc8b0b2584cbac0c081e1e5257bac5843f0bc5a7cf46a819ab7a5f7e6ab4091",
+    "git_blob": "5d2f6e9d8a0d3d8e43f83c42c7793948c10abc0e"
+  },
+  "reader_only_seal_changed": true,
+  "original_files": 420,
+  "original_bytes": 2208974,
+  "publication_files": 14,
+  "accepted_native_originals": 136,
+  "missing_native_originals": 10,
+  "official_ZIP_members": 137,
+  "all_CRC_and_original_members_verified": true,
+  "every_original_byte_and_source_mode_equal": true,
+  "root_evidence_included": {
+    "round3_local_qualification/bwrap33_terminal_root/ROOT_REVIEW.json": "b874bead960c601712079f0ab551a2bdde619589f2aa75577e3defc17e2c44aa",
+    "round3_local_qualification/bwrap33_native_checks/ROOT_CHECKS.json": "d461753052a6061dc4428ed80575abcdca79fb7c005d2f1fe7ba2ab23b9ea502"
+  },
+  "private_console_contents_excluded": true,
+  "archived_sources_executed": false,
+  "expanded_restore_written": false,
+  "new_native_execution": false,
+  "mechanism_qualified": false,
+  "product_P0_closed": false,
+  "qualification": "Original ACL-preserving mode tightening and successful parser prechecks followed by exact names-guard rejection. The 136 accepted and ten missing slots remain incomplete; no profile load, post-namespace success or product qualification follows.",
+  "reviewer": {
+    "bytes": 9035,
+    "sha256": "6c671dcb270ddc8a6d235952e0398fb55e26f31852090d89c5adfa9e6acb916f",
+    "git_blob": "0575d447a597cb7f204cc6c83f149bfe900dbe44"
+  }
+}
