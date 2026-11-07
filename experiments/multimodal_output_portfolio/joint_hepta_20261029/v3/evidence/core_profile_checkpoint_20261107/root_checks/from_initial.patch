@@ -1,0 +1,11 @@
+--- reviewer.initial.py
++++ review_terminal_packets.py
+@@ -249,7 +249,7 @@
+     )
+     require(
+         all(
+-            not Path(name).suffix.lower() in {".zip", ".gz", ".xml", ".raw"}
++            Path(name).suffix.lower() not in {".zip", ".gz", ".xml", ".raw"}
+             and "/reviewed-diagnostics/" not in name
+             for name in members
+         ),
