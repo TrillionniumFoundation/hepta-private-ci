@@ -22,6 +22,8 @@ use crate::recover_agentd_generation_update_v1;
 
 #[path = "neuron_generation_context_runtime_tests.rs"]
 mod expected_context;
+#[path = "neuron_generation_learning_runtime_tests.rs"]
+mod learning;
 #[path = "neuron_generation_same_model_runtime_tests.rs"]
 mod same_model;
 #[path = "neuron_generation_update_successive_tests.rs"]

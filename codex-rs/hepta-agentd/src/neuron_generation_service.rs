@@ -19,6 +19,8 @@ use crate::NeuronGenerationRuntimeBootstrapV2;
 use crate::RuntimeTasks;
 use crate::neuron_generation::GenerationOwnerBoundary;
 use crate::neuron_generation_runtime::GenerationCommand;
+#[cfg(unix)]
+use crate::neuron_generation_runtime::GenerationLearningPublicationV1;
 use crate::neuron_generation_runtime::OutputAcknowledgement;
 use crate::neuron_generation_runtime::Response;
 use crate::state::neuron_generation::NeuronGenerationProjection;
@@ -44,6 +46,8 @@ pub(crate) trait GenerationRuntimeOwner: Send {
 pub(crate) struct BoundGenerationOwner<W: AnchorWitnessStore, P: CellGenerationControlPortV2, C> {
     pub(crate) owner: AgentdNeuronGenerationOwnerV2<W, P>,
     pub(crate) clock: C,
+    #[cfg(unix)]
+    pub(crate) learning_publication: GenerationLearningPublicationV1,
 }
 
 impl<W, P, C> GenerationRuntimeOwner for BoundGenerationOwner<W, P, C>
@@ -140,6 +144,13 @@ where
             }
             GenerationCommand::ObserveGeneration(response) => {
                 respond(state, response, self.owner.journal().observe_generation())
+            }
+            #[cfg(unix)]
+            GenerationCommand::LearningRead { request, response } => {
+                let result = self
+                    .learning_publication
+                    .read(self.owner.journal(), *request);
+                respond(state, response, Ok(result))
             }
             GenerationCommand::PendingRequest(response) => respond(
                 state,

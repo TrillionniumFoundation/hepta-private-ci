@@ -12,12 +12,14 @@ use codex_hepta_learning_artifacts::LearningIterationStageV1;
 use codex_hepta_neuron::AnchorWitnessStore;
 use codex_hepta_neuron::CellGenerationDispositionV2;
 use codex_hepta_neuron::CellGenerationIntentV2;
+use codex_hepta_neuron::CellGenerationJournalV2;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
 use super::ReadyAgentdGenerationUpdateV1;
 use crate::AgentdError;
 use crate::NeuronGenerationPredecessorCompletionV1;
+use crate::PublishedNeuronGenerationUpdateV1;
 
 /// Deterministic identity for the original same-model task operation. This
 /// binds the complete evaluated decision cut without changing CURRENT's wire
@@ -78,6 +80,41 @@ impl<W: AnchorWitnessStore> ReadyAgentdGenerationUpdateV1<W> {
         &self,
         coordinator: &LearningIterationCoordinatorV1,
     ) -> Result<LearningIterationObservationV1, AgentdError> {
+        GenerationLearningReadbackV1 {
+            journal: &self.journal,
+            publication: &self.publication,
+        }
+        .read_selection(coordinator)
+    }
+
+    /// Resolve an exact retained intent in this same exclusively held journal.
+    /// Pending, failed and cancelled work cannot stand in for actual use. The
+    /// caller supplies no purported use, checkpoint or cutover receipt hash.
+    pub fn read_learning_next_use(
+        &self,
+        coordinator: &LearningIterationCoordinatorV1,
+        intent: &CellGenerationIntentV2,
+    ) -> Result<LearningIterationObservationV1, AgentdError> {
+        GenerationLearningReadbackV1 {
+            journal: &self.journal,
+            publication: &self.publication,
+        }
+        .read_next_use(coordinator, intent)
+    }
+}
+
+/// Borrow the same guarded journal before or after its ordinary actor handoff.
+/// This view neither opens another writer nor authenticates a learning role.
+pub(crate) struct GenerationLearningReadbackV1<'a, W: AnchorWitnessStore> {
+    pub(crate) journal: &'a CellGenerationJournalV2<W>,
+    pub(crate) publication: &'a PublishedNeuronGenerationUpdateV1,
+}
+
+impl<W: AnchorWitnessStore> GenerationLearningReadbackV1<'_, W> {
+    pub(crate) fn read_selection(
+        &self,
+        coordinator: &LearningIterationCoordinatorV1,
+    ) -> Result<LearningIterationObservationV1, AgentdError> {
         let candidate_bundle =
             self.learning_bundle(coordinator, LearningIterationStageV1::Selection)?;
         Ok(LearningIterationObservationV1::Selection {
@@ -86,10 +123,7 @@ impl<W: AnchorWitnessStore> ReadyAgentdGenerationUpdateV1<W> {
         })
     }
 
-    /// Resolve an exact retained intent in this same exclusively held journal.
-    /// Pending, failed and cancelled work cannot stand in for actual use. The
-    /// caller supplies no purported use, checkpoint or cutover receipt hash.
-    pub fn read_learning_next_use(
+    pub(crate) fn read_next_use(
         &self,
         coordinator: &LearningIterationCoordinatorV1,
         intent: &CellGenerationIntentV2,
@@ -206,4 +240,4 @@ fn invalid(error: impl std::fmt::Display) -> AgentdError {
 
 #[cfg(test)]
 #[path = "neuron_generation_update_learning_tests.rs"]
-mod tests;
+pub(super) mod tests;

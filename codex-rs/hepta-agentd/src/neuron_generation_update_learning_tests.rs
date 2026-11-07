@@ -20,8 +20,8 @@ fn d(label: &str) -> Digest32 {
     Digest32::of_bytes(label.as_bytes())
 }
 
-fn setup() -> anyhow::Result<(Fixture, LearningIterationCoordinatorV1)> {
-    let baseline = CellCompatibilityBundleV1 {
+pub(crate) fn baseline() -> anyhow::Result<CellCompatibilityBundleV1> {
+    Ok(CellCompatibilityBundleV1 {
         artifact_id: StableId::new("fixture-baseline")?,
         generation: Generation::new(1)?,
         components: CellBundleComponentsV1 {
@@ -41,7 +41,11 @@ fn setup() -> anyhow::Result<(Fixture, LearningIterationCoordinatorV1)> {
         },
         training_lineage: None,
         rollback_predecessor: None,
-    };
+    })
+}
+
+fn setup() -> anyhow::Result<(Fixture, LearningIterationCoordinatorV1)> {
+    let baseline = baseline()?;
     let mut old = config()?;
     old.manifest.bundle_digest = baseline.digest()?.into_array();
     old.initial.manifest_digest = old.manifest.digest()?;
@@ -55,7 +59,7 @@ fn setup() -> anyhow::Result<(Fixture, LearningIterationCoordinatorV1)> {
     Ok((f, coordinator))
 }
 
-fn decision(
+pub(crate) fn decision(
     f: &Fixture,
     baseline: CellCompatibilityBundleV1,
     change: &str,
@@ -160,7 +164,7 @@ fn decision(
     Ok(coordinator)
 }
 
-fn observed(
+pub(crate) fn observed(
     coordinator: &LearningIterationCoordinatorV1,
     observation: LearningIterationObservationV1,
 ) -> LearningIterationReceiptV1 {

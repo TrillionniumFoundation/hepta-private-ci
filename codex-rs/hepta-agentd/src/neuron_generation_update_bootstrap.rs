@@ -16,14 +16,22 @@ use codex_hepta_neuron::CellGenerationOwnerBindingV1;
 use crate::AgentdConfig;
 use crate::AgentdError;
 use crate::NeuronGenerationRuntimeHandleV2;
-use crate::neuron_generation_channel_v2;
 use crate::neuron_generation_current::PublishedNeuronGenerationUpdateV1;
+use crate::neuron_generation_runtime::GenerationLearningPublicationV1;
+use crate::neuron_generation_runtime::neuron_generation_channel_with_learning_v2;
 use crate::neuron_generation_update_live::LiveGenerationCurrent;
 
 #[path = "neuron_generation_update_learning.rs"]
 mod learning;
 
+pub(crate) use learning::GenerationLearningReadbackV1;
 pub use learning::learning_retained_task_operation_id_v1;
+#[cfg(test)]
+pub(crate) use learning::tests::baseline as learning_test_baseline;
+#[cfg(test)]
+pub(crate) use learning::tests::decision as learning_test_decision;
+#[cfg(test)]
+pub(crate) use learning::tests::observed as learning_test_receipt;
 
 pub struct AgentdGenerationUpdateRuntimeOptionsV1 {
     pub queue_capacity: usize,
@@ -114,12 +122,13 @@ impl<W: AnchorWitnessStore + Send + 'static> ReadyAgentdGenerationUpdateV1<W> {
         }
         // snapshot/channel consult the live Control floor. A deferred bootstrap
         // cannot revive this owner after another admitted generation replaces it.
-        let (handle, bootstrap) = neuron_generation_channel_v2(
+        let (handle, bootstrap) = neuron_generation_channel_with_learning_v2(
             config.identity(),
             self.journal,
             control,
             clock,
             options.queue_capacity,
+            GenerationLearningPublicationV1::Published(self.publication.clone()),
         )?;
         let bootstrap = if options.control_endpoint {
             bootstrap.with_control_endpoint()?
