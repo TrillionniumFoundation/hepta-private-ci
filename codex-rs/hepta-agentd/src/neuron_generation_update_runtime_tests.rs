@@ -20,6 +20,8 @@ use crate::neuron_generation_current::test_support::Fixture;
 use crate::prepare_agentd_generation_update_v1;
 use crate::recover_agentd_generation_update_v1;
 
+#[path = "neuron_generation_no_update_runtime_tests.rs"]
+mod evaluated_no_update;
 #[path = "neuron_generation_same_model_runtime_tests.rs"]
 mod same_model;
 #[path = "neuron_generation_update_successive_tests.rs"]
