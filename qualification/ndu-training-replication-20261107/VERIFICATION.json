@@ -1,0 +1,39 @@
+{
+  "schema": "ndu-replication-local-verification-v1",
+  "started_at": "2026-11-07T11:31:20.187151+00:00",
+  "status": "PASS_CONTRACTS",
+  "tests_run": 50,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "source_before": {
+    "scripts/ndu_portfolio/factorial.py": "740169ab85c62eed3fafd6eb562f7f21358a1bae146cbddf3b5a4b38362404cc",
+    "scripts/ndu_portfolio/example_factorial.py": "d1e731518276b6175c98c28d6028db94fa7834def3dcc94c43b0e1c946ea20fc",
+    "scripts/ndu_portfolio/test_factorial.py": "40b830ed35ab2a998c88daaf708a9eeda52c4455f1176049e7bb15c29ba9d258",
+    "scripts/ndu_portfolio/factorial_replication.py": "fcd8ae8020e3299a738f1333be41ce7c063b6f1a596fb4c3a16cad8a3d543196",
+    "scripts/ndu_portfolio/test_factorial_replication.py": "40b3722d80ea1b903e4b70594303d64a2beda6c8d23940042faec630072482ab",
+    "qualification/ndu-training-replication-20261107/reproduce.py": "e8131b7a1e4385035663a5a4add235e5db95d8453b1b60559ba1b6d34579e703"
+  },
+  "source_after": {
+    "scripts/ndu_portfolio/factorial.py": "740169ab85c62eed3fafd6eb562f7f21358a1bae146cbddf3b5a4b38362404cc",
+    "scripts/ndu_portfolio/example_factorial.py": "d1e731518276b6175c98c28d6028db94fa7834def3dcc94c43b0e1c946ea20fc",
+    "scripts/ndu_portfolio/test_factorial.py": "40b830ed35ab2a998c88daaf708a9eeda52c4455f1176049e7bb15c29ba9d258",
+    "scripts/ndu_portfolio/factorial_replication.py": "fcd8ae8020e3299a738f1333be41ce7c063b6f1a596fb4c3a16cad8a3d543196",
+    "scripts/ndu_portfolio/test_factorial_replication.py": "40b3722d80ea1b903e4b70594303d64a2beda6c8d23940042faec630072482ab",
+    "qualification/ndu-training-replication-20261107/reproduce.py": "e8131b7a1e4385035663a5a4add235e5db95d8453b1b60559ba1b6d34579e703"
+  },
+  "source_unchanged": true,
+  "python": "3.12.14",
+  "cpu_seconds": 33.793340420999996,
+  "wall_seconds": 33.80690739000056,
+  "timing_scope": "test and synthetic arithmetic execution, excludes startup and final receipt write",
+  "energy_joules": null,
+  "complete_research_cost": null,
+  "tests_log_sha256": "26ae8d66733d3ed572ec557cebebcdbac7de5bdddc33f57a553fe1db75f74b70",
+  "inputs_zip_sha256": "01d0da5aca3720c422f4a54a7072d882a9d7c9eadee3542bb55f941df17a24cb",
+  "declared_synthetic_fits": 4,
+  "synthetic_rows": 10240,
+  "scientific_admission": "HOLD",
+  "real_models_executed": false,
+  "claim": "Synthetic software evidence only; no real independent training or task efficacy."
+}
