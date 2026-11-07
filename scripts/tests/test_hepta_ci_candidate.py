@@ -121,5 +121,22 @@ class CandidatePlanTests(unittest.TestCase):
                 git.assert_not_called()
 
 
+
+
+class ArchitectureWorkflowDependencyTests(unittest.TestCase):
+    def test_ndu_semantic_state_dependencies_are_installed_before_discovery(self):
+        root = Path(__file__).resolve().parents[2]
+        workflow = (root / ".github/workflows/hepta-architecture-convergence.yml").read_text()
+        install = workflow.index("Install pinned NDU semantic-state test dependencies")
+        discovery = workflow.index("Test execution-record rejection and retained diagnostics")
+        self.assertLess(install, discovery)
+        self.assertIn('python3 -m venv "$RUNNER_TEMP/hepta-architecture-venv"', workflow)
+        self.assertIn(
+            '"$RUNNER_TEMP/hepta-architecture-venv/bin/python" -m pip install --disable-pip-version-check -r scripts/ndu_portfolio/requirements.txt',
+            workflow,
+        )
+        self.assertIn('echo "$RUNNER_TEMP/hepta-architecture-venv/bin" >> "$GITHUB_PATH"', workflow)
+
+
 if __name__ == "__main__":
     unittest.main()
