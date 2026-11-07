@@ -224,9 +224,11 @@ jobs:
           fi
           expected_files="$(printf '%s\n' \
             ".github/scripts/test_check_windows_private_state_acquisition.py" \
+            ".github/workflows/bazel.yml" \
             ".github/workflows/blocking-ci.yml" \
             ".github/workflows/hepta-cell-differentiation.yml" \
             ".github/workflows/hepta-windows-private-state-native.yml" \
+            ".github/workflows/repo-checks.yml" \
             "codex-rs/Cargo.lock" \
             "codex-rs/hepta-contracts/src/final_use_existing.rs" \
             "codex-rs/hepta-contracts/src/final_use_tests.rs" \

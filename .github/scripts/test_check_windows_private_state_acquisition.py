@@ -35,6 +35,17 @@ def fixture(lane):
 
 
 class AcquisitionOracleTests(unittest.TestCase):
+    def test_all_checkout_workflows_enable_long_paths_before_jobs(self):
+        workflows = Path(__file__).resolve().parents[1] / "workflows"
+        for name in ("repo-checks.yml", "bazel.yml"):
+            with self.subTest(workflow=name):
+                source = (workflows / name).read_text(encoding="utf-8")
+                env = source.index('env:\n  GIT_CONFIG_COUNT: "1"')
+                jobs = source.index("jobs:")
+                self.assertLess(env, jobs)
+                self.assertIn("GIT_CONFIG_KEY_0: core.longpaths", source[env:jobs])
+                self.assertIn('GIT_CONFIG_VALUE_0: "true"', source[env:jobs])
+
     def test_windows_checkout_enables_git_longpaths_before_checkout(self):
         workflow = (
             Path(__file__).resolve().parents[1]
