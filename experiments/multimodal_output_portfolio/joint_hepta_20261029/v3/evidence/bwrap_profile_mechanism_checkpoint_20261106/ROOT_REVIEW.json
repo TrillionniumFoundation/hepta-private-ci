@@ -1,0 +1,58 @@
+{
+  "observed_at_utc": "2026-11-07T01:10:19.089812+00:00",
+  "scope": "Independent complete selected-byte checkpoint restoration, no native or policy execution.",
+  "publication": {
+    "bytes": 6742,
+    "sha256": "09518b0bb4e4294921de69306589d8e55aaf2cf6ad34cc787e09e487ddce41a6",
+    "git_blob": "10ca4f8ea6c88e9e6d39d9427d3673394518e92b"
+  },
+  "index": {
+    "bytes": 180542,
+    "sha256": "ed73e4263921ef02e759b0bc96134d81708a538fbef46bfd7509edeb8efea4ff",
+    "git_blob": "3aa431d63da43319a70fda0e4b2419b3f0b9470c"
+  },
+  "reader": {
+    "bytes": 6899,
+    "sha256": "3ca7a2d6b9593fd0bd799a6b6312e50e01c196f93b341ba0ba142d35018169fc",
+    "git_blob": "46ba111000ce8038164bc0fea6b2ce501c1a5d7f"
+  },
+  "original_published_reader": {
+    "bytes": 6899,
+    "sha256": "af61744d776034fb41dac291fbca63d30082c6ec15df821824b49df4678c8d3d",
+    "git_blob": "04729fbf463b340fcb6fc0a925f4c9e0da61f6a1"
+  },
+  "reader_only_seal_changed": true,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-B",
+    "-O",
+    "/workspace/scratch/3f6a885bb83c/round3_core_ci/bwrap28_evidence_checkpoint_v2/restore.py",
+    "/workspace/scratch/3f6a885bb83c/round3_root_restore_bwrap28_0115"
+  ],
+  "exit_code": 0,
+  "files": 586,
+  "bytes": 6218948,
+  "all_original_members_bytes_and_mode_records_verified": true,
+  "all_restored_files_inert_0644": true,
+  "source_PR": 5201,
+  "source_commit": "25d940b9b768b9117a020fe350fd134198a2efcf",
+  "recorded_run": 42319745250,
+  "recorded_job": 128241131839,
+  "recorded_attempt": 1,
+  "accepted_originals": 91,
+  "missing_originals": 43,
+  "required_slots": 134,
+  "profile_add_status": "NOT_STARTED",
+  "mechanism_verified": false,
+  "product_qualification": false,
+  "original_HOME_model_process_defect_retained": true,
+  "eleven_later_Git_checks_not_relabelled_as_original_27": true,
+  "prior_failed_lint_source_audit_and_packet_attempts_retained": true,
+  "excluded_private_console_not_reconstructed": true,
+  "limits": [
+    "This reproduces selected inert bytes, not an independently executed Windows/Linux native suite.",
+    "Unknown extra include contents remain absent. The unsafe-parent observation is not waived.",
+    "Original source review/formatting requires its original external checkout and tools; the packet is not a self-contained native runner.",
+    "The prior 5184 and current 5201 observations are from different hosted VMs and do not retroactively qualify one another."
+  ]
+}
