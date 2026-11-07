@@ -9,7 +9,7 @@
 | 用户要求 | a6f3aa12 已有的机制 | 本候选增量 | 尚未获得的资格 |
 | --- | --- | --- | --- |
 | 5.2 外层契约与内部表示 | 不可变 backend 注册、scope／来源／bundle 身份、原生决定回执；Q24 输入宽度 1–512 | 五类精确表示 profile、完整来源 envelope、显式协商与投影；双方完整契约的 current-use 核对、密封 backend 绑定、原 admission／commit 的冷重建 | 真实 EG2 特征来源和质量资格；token／时空／生成／训练状态的完整执行后端；owner 对材料和评价证据的独立认证 |
-| 5.3 控制与高频计算分离 | 独立 inference port、共享 worker 抽象、Cell 分区状态、按兼容性组成 microbatch；Organ 回调保持轻量可信代码边界 | Circuit 表示入口复用原 Cell owner／worker，并在 durable admission 后再次核对当前契约；Cell 队列／批次字节上限、队列局部取消与 plasticity 即时背压 | 默认 daemon 的统一 Cell scheduler、GPU 批处理与运行中取消／watchdog、受控大张量引用的生产实现 |
+| 5.3 控制与高频计算分离 | 独立 inference port、共享 worker 抽象、Cell 分区状态、按兼容性组成 microbatch；Organ 回调保持轻量可信代码边界 | Circuit 表示入口复用原 Cell owner／inference-control port，并在 durable admission 后再次核对当前契约；Cell 队列／批次字节上限、队列局部取消与 plasticity 即时背压 | 默认 daemon 的统一 Cell scheduler、实际 model／GPU batch driver、运行中取消／watchdog、受控大张量引用的生产实现 |
 | 5.4 有界反馈执行 | 独立的 Circuit V2 profile、延迟边、轮次、子回路、join／退出、预算、SQLite 历史、一次计算 admission 和只读恢复 | 停止后拒绝追加调度轮询；普通 lease、最后恢复接管与结算余量分开 | V1 candidate 到 V2 的完整升级／编译入口、普通 daemon 调度接线、无限恢复或无界日志压缩 |
 | 5.5 可恢复拓扑变化 | 七阶段 lifecycle journal、独立 observer 与 anchor、原 intent 恢复；公开拓扑执行入口保持关闭 | V2 静止完整状态 roster、实际字节验证、前后 state root／migration pin 绑定、EffectLedger 保持、逐阶段 bundle 核验 | 全部真实 owner 的物理停发、迁移、writer 转移与路由发布；在途工作跨代迁移；Control lifecycle 启用 |
 | 5.6 三种更新速度 | 快速 checkpoint；受预算的参数候选；独立评价／提案／选择／下一任务观察；结构 proposal 与 lifecycle 分离 | 利用既有分离，增加结构快照完整性与慢学习入口的即时背压 | 通用训练 job owner、真实异步训练恢复和采用适配器；跨 Cell 联合 BP、长期信用分配的科学结果 |
@@ -118,6 +118,8 @@
 这个 profile 明确要求静止快照：in-flight requests 和 UNKNOWN effects 必须为零。EffectLedger 的 owner、checkpoint、schema、content digest 和字节长度必须前后一致；模型或拓扑恢复不能改写外部世界。真正的补偿必须作为独立效果处理。
 
 [`cell_lifecycle_state_journal.rs`][lifecycle-state-journal] 的 create／prepare／record 调用原 journal，未增加第二个 DB、writer 或 native callback。记录观察时，V2 再按 Applied／NotApplied 的有效阶段核对 predecessor／successor bundle；TransferState 的 NotApplied 仍应观察到 predecessor bundle。[真实 SQLite 回归][lifecycle-state-tests]
+
+新增 `RuntimeCellLifecyclePlanV2::recover` 先复验冻结的完整材料，再进入原 journal 的 `recover_with_profile`。恢复在同一 `BEGIN IMMEDIATE` SQLite 事务中核验链与重放，并在任何独立 anchor 推进前检查**该 operation 全部保留 observation 的阶段 bundle**，同时覆盖已确认前缀与未确认尾部；因此错误 bundle 不能靠只验证尾部或先被 V1 确认来取得 V2 资格。若待确认尾部是 `Observed`，原 observer 还必须重新认证其原生结果并匹配原认证 digest；已确认历史仍依赖原 anchor，不意味着每次重新认证全部旧观察。恢复不调用原生生命周期操作、不签发第二个 attempt；两项新增恢复测试的源码分别检查丢失确认后的认证／幂等读回，以及前缀或尾部 bundle 不匹配时 anchor 保持不变。[V2 恢复入口][lifecycle-state-journal]、[同事务恢复实现][lifecycle-recovery]、[恢复回归源码][lifecycle-state-tests]
 
 ### 仍然关闭的边界
 

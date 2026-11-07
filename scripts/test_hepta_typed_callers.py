@@ -141,6 +141,44 @@ class TypedAuthorityCallTests(unittest.TestCase):
             )
         )
 
+    def test_unfinished_annotation_cannot_hide_the_authority_parameter(self):
+        self.assertTrue(
+            self.match(
+                "fn f(original: &Gate, service: &Other) { "
+                "let original: Other = service.prepare(original.enter())?; }"
+            )
+        )
+
+    def test_unfinished_annotation_cannot_retype_an_unrelated_parameter(self):
+        self.assertFalse(
+            self.match(
+                "fn f(original: &Other, service: &Other) { "
+                "let original: Gate = service.prepare(original.enter())?; }"
+            )
+        )
+
+    def test_unfinished_annotation_cannot_hide_an_opaque_local_receiver(self):
+        with self.assertRaises(UnresolvedTypedReceiver):
+            self.match(
+                "fn f(original: &Gate, service: &Other) { "
+                "let opaque = opaque_factory(original); "
+                "let opaque: Other = service.prepare(opaque.enter())?; }"
+            )
+
+    def test_completed_typed_declarations_shadow_in_original_statement_order(self):
+        for annotation, expected in (("Gate", True), ("Other", False)):
+            for initializer in (" = value()", ""):
+                with self.subTest(annotation=annotation, initializer=initializer):
+                    self.assertEqual(
+                        self.match(
+                            "fn f(original: &Gate) { "
+                            "let alias = Other::new(); "
+                            f"let alias: &{annotation}{initializer}; "
+                            "alias = value(); alias.enter(); }"
+                        ),
+                        expected,
+                    )
+
     def test_unrelated_argument_inside_an_unfinished_method_initializer(self):
         self.assertFalse(
             self.match(

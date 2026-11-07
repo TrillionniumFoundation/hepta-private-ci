@@ -192,20 +192,25 @@ def _field_alias_type(
 
 
 def _initializers(scope: str):
-    """Yield completed let initializers without splitting nested expressions.
+    """Yield completed let declarations without splitting nested expressions.
 
     The current authority call can itself be inside an initializer. That new
     binding is not in scope yet, and its unfinished prefix must not be parsed
     as a field alias. Semicolons in method arguments and closure/block bodies
-    likewise do not finish the containing let statement.
+    likewise do not finish the containing let statement. An explicit typed
+    declaration without an initializer also takes effect at its semicolon.
     """
     declaration = re.compile(
-        r"\blet\s+(?:mut\s+)?(\w+)(?:\s*:\s*([^=;]+))?\s*=\s*"
+        r"\blet\s+(?:mut\s+)?(\w+)(?:\s*:\s*([^=;]+))?\s*([=;])\s*"
     )
     cursor = 0
     while assignment := declaration.search(scope, cursor):
+        name, annotation, terminator = assignment.groups()
         stack = []
         cursor = assignment.end()
+        if terminator == ";":
+            yield name, annotation, ""
+            continue
         for position in range(cursor, len(scope)):
             char = scope[position]
             if char in "([{":
@@ -213,7 +218,7 @@ def _initializers(scope: str):
             elif char in ")]}" and (not stack or stack.pop() != char):
                 break
             elif char == ";" and not stack:
-                yield (*assignment.groups(), scope[cursor:position])
+                yield name, annotation, scope[cursor:position]
                 # Declarations inside a completed initializer belong to its
                 # nested scopes, not to the subsequent authority call.
                 cursor = position + 1
@@ -230,6 +235,11 @@ def _bindings(
     scope = code[_function_start(code, position) : position]
     bindings = {}
     for parameter in re.finditer(r"\b(\w+)\s*:\s*([^,;={}]+)", scope):
+        # Local annotations are applied below, in completed declaration order.
+        # An annotation on the initializer containing this call must not hide
+        # the still-live parameter or earlier local binding with the same name.
+        if re.search(r"\blet\s+(?:mut\s+)?$", scope[: parameter.start()]):
+            continue
         bindings[parameter.group(1)] = _type(parameter.group(2), target)
     for name, annotation, expression in _initializers(scope):
         if annotation:
