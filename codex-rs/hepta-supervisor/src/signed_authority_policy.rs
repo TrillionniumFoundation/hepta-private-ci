@@ -4,6 +4,7 @@ use super::*;
 use codex_hepta_contracts::pq_auth::ML_DSA_65_SIGNATURE_BYTES;
 use codex_hepta_contracts::pq_auth::ML_DSA_65_SPKI_BYTES;
 use codex_hepta_contracts::pq_auth::PqNativeVerifier;
+use codex_hepta_contracts::pq_auth::ml_dsa_65_key_id_from_spki;
 use std::sync::Arc;
 
 pub const MAX_PRODUCTION_AUTHORITY_POLICY_BYTES: u64 = 16_384;
@@ -47,11 +48,17 @@ struct PreparedPolicy {
 pub(super) fn decode_policy(
     bytes: &[u8],
 ) -> Result<(ProductionAuthorityPolicyV1, Sha256Digest), ProductionAuthorityError> {
-    let prepared = prepare_policy(bytes)?;
-    Ok((prepared.policy, prepared.policy_sha256))
+    let policy = parse_policy(bytes)?;
+    // The pinned ml-dsa 0.1.1 decoder accepts every fixed-size public-key body.
+    // Strict SPKI, canonical base64 and the independent pin are all checked here;
+    // expanding the verification matrix is only needed for actual verification.
+    policy.grant.canonical_spki()?;
+    policy.artifact.canonical_spki()?;
+    policy.recovery.canonical_spki()?;
+    Ok((policy, Sha256Digest::for_bytes(bytes)))
 }
 
-fn prepare_policy(bytes: &[u8]) -> Result<PreparedPolicy, ProductionAuthorityError> {
+fn parse_policy(bytes: &[u8]) -> Result<ProductionAuthorityPolicyV1, ProductionAuthorityError> {
     if bytes.is_empty() || bytes.len() as u64 > MAX_PRODUCTION_AUTHORITY_POLICY_BYTES {
         return Err(ProductionAuthorityError::Invalid(
             "production authority policy exceeds its bound".to_string(),
@@ -69,6 +76,11 @@ fn prepare_policy(bytes: &[u8]) -> Result<PreparedPolicy, ProductionAuthorityErr
             "three distinct explicit ML-DSA-65 authority roles are required".to_string(),
         ));
     }
+    Ok(policy)
+}
+
+fn prepare_policy(bytes: &[u8]) -> Result<PreparedPolicy, ProductionAuthorityError> {
+    let policy = parse_policy(bytes)?;
     // Validate every role in the original order, including the recovery key
     // when the immediate caller only needs to check a grant or artifact.
     let grant = policy.grant.verifier()?;
@@ -85,6 +97,15 @@ fn prepare_policy(bytes: &[u8]) -> Result<PreparedPolicy, ProductionAuthorityErr
 
 impl ProductionAuthorityRoleV1 {
     pub(super) fn verifier(&self) -> Result<PqNativeVerifier, ProductionAuthorityError> {
+        let spki = self.canonical_spki()?;
+        PqNativeVerifier::from_pinned_spki(&spki, self.public_key_id).map_err(|_| {
+            ProductionAuthorityError::Invalid(
+                "PQ authority key does not match its canonical pin".to_string(),
+            )
+        })
+    }
+
+    fn canonical_spki(&self) -> Result<Vec<u8>, ProductionAuthorityError> {
         validate_identifier(&self.signer_id, "PQ authority signer id")?;
         if self.signer_epoch == 0
             || self.public_spki_base64.len() != ML_DSA_65_SPKI_BYTES.div_ceil(3) * 4
@@ -99,11 +120,12 @@ impl ProductionAuthorityRoleV1 {
         if STANDARD.encode(&spki) != self.public_spki_base64 {
             return Err(ProductionAuthorityError::SignatureMalformed);
         }
-        PqNativeVerifier::from_pinned_spki(&spki, self.public_key_id).map_err(|_| {
-            ProductionAuthorityError::Invalid(
+        if ml_dsa_65_key_id_from_spki(&spki).ok() != Some(self.public_key_id) {
+            return Err(ProductionAuthorityError::Invalid(
                 "PQ authority key does not match its canonical pin".to_string(),
-            )
-        })
+            ));
+        }
+        Ok(spki)
     }
 }
 
@@ -123,6 +145,22 @@ pub(super) enum AuthorityVerificationKeys {
 }
 
 impl H7H89ProductionGrantVerifier {
+    /// Checks the complete canonical policy shape without producing a verifier,
+    /// a signature observation or current authority. Exact raw bytes bind its digest.
+    pub(crate) fn validate_pq_policy_bytes(
+        bytes: &[u8],
+    ) -> Result<Sha256Digest, ProductionAuthorityError> {
+        let (policy, digest) = decode_policy(bytes)?;
+        // Role identifier and epoch checks above equal the H7 constructor's
+        // checks. Preserve its additional explicit rejection of a zero key ID.
+        if policy.artifact.public_key_id == [0; 32] {
+            return Err(ProductionAuthorityError::H7Binding(
+                "PQ artifact epoch or key ID is invalid".to_string(),
+            ));
+        }
+        Ok(digest)
+    }
+
     /// The raw policy bytes must separately be admitted by the current Fleet
     /// publication owner. This constructor never manufactures that admission.
     pub fn from_pq_policy_bytes(bytes: &[u8]) -> Result<Self, ProductionAuthorityError> {
