@@ -1,0 +1,100 @@
+{
+  "observed_at_utc": "2026-11-07T02:20:46.111729+00:00",
+  "publication": {
+    "bytes": 7601,
+    "sha256": "c17c446336d4bc6c66448f2bd5bf9dd408ac58345b29b2802134f26f3d5b81cf",
+    "git_blob": "14edba6549a8e140327a3a16f26b57a45a4076b0"
+  },
+  "index": {
+    "bytes": 47192,
+    "sha256": "553c2c4ea354c62f2a5983c85ee12abb7a387089a698da59cff4ed39a3ea52ac",
+    "git_blob": "a7be9909a9560f689b9b4dc519ae89f86d42c14f"
+  },
+  "canonical_reader": {
+    "bytes": 6899,
+    "sha256": "af61744d776034fb41dac291fbca63d30082c6ec15df821824b49df4678c8d3d",
+    "git_blob": "04729fbf463b340fcb6fc0a925f4c9e0da61f6a1"
+  },
+  "reader": {
+    "bytes": 6899,
+    "sha256": "76d4256c303331981d62d7c876368a76ecf22a1c03181cd9a570ac96b3e1f47e",
+    "git_blob": "162d49a929eead7b9683a9ce59f8332899bff072"
+  },
+  "fresh_API_files": {
+    "fresh_api_0.json": {
+      "bytes": 32476,
+      "sha256": "ae85e96986ee90775ab16ef47109971c6171295ba85ac522434a365af4e2ddce",
+      "git_blob": "29983d53614636748fb737d17c3b9c450bb482a3"
+    },
+    "fresh_api_1.json": {
+      "bytes": 8037,
+      "sha256": "75d8e9c280f22215c9b81bf0e87d80b429ee7fdbd7b4919b5241ebebd8d03f1f",
+      "git_blob": "0621ea000c11ceb771c28cc735aebebe1a12b237"
+    },
+    "fresh_api_2.json": {
+      "bytes": 2475,
+      "sha256": "32054006ed7fbd205b0d353488486185c3722abe1293c17f5960487d8b43a94b",
+      "git_blob": "61ba468e78a3e24ee6e69915f2e145d6146bd607"
+    },
+    "fresh_api_3.json": {
+      "bytes": 3761,
+      "sha256": "82b7672d56076ad39ccb481eaa3308da07c5a8bdcf7228a374ff79772b88e5ba",
+      "git_blob": "36710a0b65324773e73bb0f44301ea52a0a5076d"
+    }
+  },
+  "fresh_source_API": {
+    "bytes": 2298,
+    "sha256": "bd1e2a1c1eb6ec525c37a294da3edb11abd2764989b9c1ec1ab68889d0756156",
+    "git_blob": "6b0be5e6c8d3752ee2cf714ee92542426208e702"
+  },
+  "restore_command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-B",
+    "-O",
+    "/workspace/scratch/3f6a885bb83c/round3_core_ci/bwrap29_evidence_checkpoint/restore.py",
+    "/workspace/scratch/3f6a885bb83c/round3_root_restore_bwrap29_20261107"
+  ],
+  "restore_exit_code": 0,
+  "restored_files": 156,
+  "restored_bytes": 808481,
+  "complete_bytes_and_original_mode_records_equal": true,
+  "all_restored_files_inert_0644": true,
+  "native_run": 42324795586,
+  "native_attempt": 1,
+  "native_job": 128257475236,
+  "native_workflow_and_job": "SUCCESS",
+  "native_artifact": 13555621809,
+  "original_ZIP": {
+    "bytes": 6911,
+    "sha256": "45e25fe86bc849b991cd3b6c5d662a52469b9d3ea65bad50caab50149d520519",
+    "git_blob": "9e75c43456c304675be33fe1eb90fe8a99c2ec73"
+  },
+  "ZIP_members_CRC_verified": 9,
+  "accepted_original_slots": 8,
+  "missing_or_rejected_slots": 0,
+  "reported_native_tracked_source_blobs_verified": 14936,
+  "snapshot_path_count": 13,
+  "snapshots_equal": true,
+  "observed_include_bytes": {
+    "include_01": 337,
+    "include_02": 730
+  },
+  "observed_nonblank_include_lines_are_comments_without_include_directives": true,
+  "usr_share_mode": "0777",
+  "apparmor_shared_paths": "ABSENT_ENOENT",
+  "mechanism_verified": false,
+  "product_qualification": false,
+  "scanner_or_profile_commands_executed_by_root": false,
+  "older_failed_packet": {
+    "bytes": 180542,
+    "sha256": "ed73e4263921ef02e759b0bc96134d81708a538fbef46bfd7509edeb8efea4ff",
+    "git_blob": "3aa431d63da43319a70fda0e4b2419b3f0b9470c"
+  },
+  "limits": [
+    "This complete observation belongs only to the new VM. It does not fill gaps in the older failed VM.",
+    "Matching path snapshots do not establish an atomic history or approve the writable ancestor.",
+    "Root checked original API and artifact bytes; the full native source guard count is the source-bound guard's report, not a second reconstruction of the remote worktree.",
+    "No parser load, namespace execution, administrative mutation, mechanism or production success is established.",
+    "Only the canonical restore program was executed; no archived observer or collected source was executed by this review."
+  ]
+}
