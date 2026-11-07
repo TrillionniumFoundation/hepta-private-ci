@@ -42,7 +42,9 @@ def main() -> int:
         raise ValueError("native evidence must stay outside the checkout")
     target = Path(os.environ["CARGO_TARGET_DIR"]).resolve()
     if target.is_relative_to(root):
-        raise ValueError("this qualification requires its own target outside the checkout")
+        raise ValueError(
+            "this qualification requires its own target outside the checkout"
+        )
     workflow = {
         "runId": os.environ.get("GITHUB_RUN_ID"),
         "runAttempt": os.environ.get("GITHUB_RUN_ATTEMPT"),
@@ -50,7 +52,10 @@ def main() -> int:
         "runnerOs": os.environ.get("RUNNER_OS"),
     }
     if (
-        not all(re.fullmatch(r"[1-9][0-9]*", workflow[key] or "") for key in ("runId", "runAttempt"))
+        not all(
+            re.fullmatch(r"[1-9][0-9]*", workflow[key] or "")
+            for key in ("runId", "runAttempt")
+        )
         or not workflow["runnerName"]
         or workflow["runnerOs"] != "Windows"
     ):
@@ -71,7 +76,9 @@ def main() -> int:
         compiler_sha = hashlib.sha256(compiler).hexdigest()
         if not compiler.startswith(b"rustc 1.96.0 "):
             raise RuntimeError("native compiler differs from Rust 1.96.0")
-        original = (root / ".github/fixtures/windows-current-ci-scope.json").read_bytes()
+        original = (
+            root / ".github/fixtures/windows-current-ci-scope.json"
+        ).read_bytes()
         # Validate, but never extend, the existing 19-group/167-case partition.
         selected_groups(json.loads(original))
         original_manifest_sha = hashlib.sha256(original).hexdigest()
@@ -86,8 +93,13 @@ def main() -> int:
         # assessment. Missing, failing, skipped or LEAK cases cannot pass.
         results = execute_groups(root, output, [group])
         raw = read_bytes(output / (group["id"] + ".log"))
-        if len(results) != 1 or hashlib.sha256(raw).hexdigest() != results[0]["logSha256"]:
-            raise ValueError("the actual new child-owner log does not match its receipt")
+        if (
+            len(results) != 1
+            or hashlib.sha256(raw).hexdigest() != results[0]["logSha256"]
+        ):
+            raise ValueError(
+                "the actual new child-owner log does not match its receipt"
+            )
         nextest_run = single_nextest_run(group, raw.decode("utf-8"))
     except Exception as failure:
         error = {"type": type(failure).__name__, "message": str(failure)}
@@ -100,14 +112,19 @@ def main() -> int:
     (output / "source-after.json").write_text(json.dumps(after, indent=2) + "\n")
     intact = after is not None and valid_source(args.expected_head, before, after)
     passed = (
-        error is None and intact and nextest_run is not None
-        and len(results) == 1 and results[0]["passed"]
+        error is None
+        and intact
+        and nextest_run is not None
+        and len(results) == 1
+        and results[0]["passed"]
     )
     receipt = {
         "schema": "hepta.windows-std-child-custody-native.v1",
         "createdAt": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "workflow": workflow,
-        "status": "PASS_NEW_CHILD_OWNER_SCOPE" if passed else "FAIL_NEW_CHILD_OWNER_SCOPE",
+        "status": "PASS_NEW_CHILD_OWNER_SCOPE"
+        if passed
+        else "FAIL_NEW_CHILD_OWNER_SCOPE",
         "sourceBefore": before,
         "sourceAfter": after,
         "sourceAfterError": after_error,

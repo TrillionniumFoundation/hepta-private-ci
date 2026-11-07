@@ -33,10 +33,14 @@ impl WorkerJournalDirectory {
         slot_sequence: u64,
         initial_frontier: FinalUseFrontier,
     ) -> io::Result<Self> {
-        if rustix::process::getuid().as_raw() != 0 || rustix::process::geteuid().as_raw() != 0
-            || registration.root.pid != std::process::id() || slot_sequence == 0
+        if rustix::process::getuid().as_raw() != 0
+            || rustix::process::geteuid().as_raw() != 0
+            || registration.root.pid != std::process::id()
+            || slot_sequence == 0
         {
-            return Err(refused("actual Root producer and reserved Worker slot required"));
+            return Err(refused(
+                "actual Root producer and reserved Worker slot required",
+            ));
         }
         registration.validate()?;
         let parent = open_root_parent(parent_path)?;
@@ -49,7 +53,14 @@ impl WorkerJournalDirectory {
         let directory = open_child(&parent, Path::new(&name))?;
         // SAFETY: this is the newly created, owned directory FD; the target
         // credentials are from the original actual Child observation.
-        if unsafe { libc::fchown(directory.as_raw_fd(), registration.worker.uid, registration.worker.gid) } != 0 {
+        if unsafe {
+            libc::fchown(
+                directory.as_raw_fd(),
+                registration.worker.uid,
+                registration.worker.gid,
+            )
+        } != 0
+        {
             return Err(io::Error::last_os_error());
         }
         rustix::fs::fchmod(&directory, Mode::RWXU).map_err(io::Error::from)?;
@@ -58,18 +69,32 @@ impl WorkerJournalDirectory {
         let parent_meta = parent.metadata()?;
         let child_meta = directory.metadata()?;
         let pin = WorkerJournalDirectoryPinV1 {
-            schema_version: 1, purpose: WORKER_ROOT_JOURNAL_V1.into(),
-            registration_sha256: Sha256Digest::for_bytes(&serde_json::to_vec(registration).map_err(io::Error::other)?),
-            slot_sequence, parent: parent_path.to_path_buf(), directory: parent_path.join(name),
-            parent_device: parent_meta.dev(), parent_inode: parent_meta.ino(),
-            directory_device: child_meta.dev(), directory_inode: child_meta.ino(),
-            worker_uid: registration.worker.uid, worker_gid: registration.worker.gid,
+            schema_version: 1,
+            purpose: WORKER_ROOT_JOURNAL_V1.into(),
+            registration_sha256: Sha256Digest::for_bytes(
+                &serde_json::to_vec(registration).map_err(io::Error::other)?,
+            ),
+            slot_sequence,
+            parent: parent_path.to_path_buf(),
+            directory: parent_path.join(name),
+            parent_device: parent_meta.dev(),
+            parent_inode: parent_meta.ino(),
+            directory_device: child_meta.dev(),
+            directory_inode: child_meta.ino(),
+            worker_uid: registration.worker.uid,
+            worker_gid: registration.worker.gid,
             initial_frontier,
         };
-        let value = Self { parent, directory, pin };
+        let value = Self {
+            parent,
+            directory,
+            pin,
+        };
         value.check()?;
         if std::fs::read_dir(&value.pin.directory)?.next().is_some() {
-            return Err(refused("fresh Worker journal directory was populated before sealed handoff"));
+            return Err(refused(
+                "fresh Worker journal directory was populated before sealed handoff",
+            ));
         }
         value.check()?;
         Ok(value)
@@ -79,14 +104,23 @@ impl WorkerJournalDirectory {
     /// sealed Root handoff. It never creates/chowns/chmods a missing directory.
     pub(crate) fn open_from_root_pin(pin: &WorkerJournalDirectoryPinV1) -> io::Result<Self> {
         let parent = open_root_parent(&pin.parent)?;
-        let name = pin.directory.file_name().ok_or_else(|| refused("Worker journal basename missing"))?;
+        let name = pin
+            .directory
+            .file_name()
+            .ok_or_else(|| refused("Worker journal basename missing"))?;
         let directory = open_child(&parent, Path::new(name))?;
-        let value = Self { parent, directory, pin: pin.clone() };
+        let value = Self {
+            parent,
+            directory,
+            pin: pin.clone(),
+        };
         value.check()?;
         Ok(value)
     }
 
-    pub(crate) fn observation(&self) -> &WorkerJournalDirectoryPinV1 { &self.pin }
+    pub(crate) fn observation(&self) -> &WorkerJournalDirectoryPinV1 {
+        &self.pin
+    }
 
     pub(crate) fn check(&self) -> io::Result<()> {
         let named_parent = open_root_parent(&self.pin.parent)?;
@@ -98,15 +132,24 @@ impl WorkerJournalDirectory {
             return Err(refused("Worker journal Root parent inode changed"));
         }
         check_root_parent(&self.parent)?;
-        let name = self.pin.directory.file_name().ok_or_else(|| refused("Worker journal basename missing"))?;
+        let name = self
+            .pin
+            .directory
+            .file_name()
+            .ok_or_else(|| refused("Worker journal basename missing"))?;
         let named = open_child(&named_parent, Path::new(name))?;
         for file in [&self.directory, &named] {
             let metadata = file.metadata()?;
-            if !metadata.is_dir() || metadata.uid() != self.pin.worker_uid
-                || metadata.gid() != self.pin.worker_gid || metadata.mode() & 0o7777 != 0o700
-                || (metadata.dev(), metadata.ino()) != (self.pin.directory_device, self.pin.directory_inode)
+            if !metadata.is_dir()
+                || metadata.uid() != self.pin.worker_uid
+                || metadata.gid() != self.pin.worker_gid
+                || metadata.mode() & 0o7777 != 0o700
+                || (metadata.dev(), metadata.ino())
+                    != (self.pin.directory_device, self.pin.directory_inode)
             {
-                return Err(refused("Worker journal exact UID/GID/mode or directory inode changed"));
+                return Err(refused(
+                    "Worker journal exact UID/GID/mode or directory inode changed",
+                ));
             }
         }
         Ok(())
@@ -114,21 +157,37 @@ impl WorkerJournalDirectory {
 }
 
 fn open_child(parent: &File, name: &Path) -> io::Result<File> {
-    rustix::fs::openat(parent, name, OFlags::RDONLY | OFlags::DIRECTORY | OFlags::NOFOLLOW | OFlags::CLOEXEC, Mode::empty())
-        .map(File::from).map_err(io::Error::from)
+    rustix::fs::openat(
+        parent,
+        name,
+        OFlags::RDONLY | OFlags::DIRECTORY | OFlags::NOFOLLOW | OFlags::CLOEXEC,
+        Mode::empty(),
+    )
+    .map(File::from)
+    .map_err(io::Error::from)
 }
 
 fn open_search_child(parent: &File, name: &Path) -> io::Result<File> {
-    rustix::fs::openat(parent, name, OFlags::PATH | OFlags::DIRECTORY | OFlags::NOFOLLOW | OFlags::CLOEXEC, Mode::empty())
-        .map(File::from).map_err(io::Error::from)
+    rustix::fs::openat(
+        parent,
+        name,
+        OFlags::PATH | OFlags::DIRECTORY | OFlags::NOFOLLOW | OFlags::CLOEXEC,
+        Mode::empty(),
+    )
+    .map(File::from)
+    .map_err(io::Error::from)
 }
 
 fn check_root_parent(directory: &File) -> io::Result<()> {
     let metadata = directory.metadata()?;
-    if !metadata.is_dir() || metadata.uid() != 0 || metadata.mode() & 0o022 != 0
+    if !metadata.is_dir()
+        || metadata.uid() != 0
+        || metadata.mode() & 0o022 != 0
         || metadata.mode() & 0o001 == 0
     {
-        return Err(refused("Root-owned non-writable traversable journal ancestor required"));
+        return Err(refused(
+            "Root-owned non-writable traversable journal ancestor required",
+        ));
     }
     Ok(())
 }
@@ -137,14 +196,26 @@ fn open_root_parent(path: &Path) -> io::Result<File> {
     if !path.is_absolute() || path.to_str().is_none_or(|value| value.len() > 4096) {
         return Err(refused("bounded absolute Root journal parent required"));
     }
-    let mut current: File = rustix::fs::open("/", OFlags::PATH | OFlags::DIRECTORY | OFlags::NOFOLLOW | OFlags::CLOEXEC, Mode::empty())
-        .map_err(io::Error::from)?.into();
+    let mut current: File = rustix::fs::open(
+        "/",
+        OFlags::PATH | OFlags::DIRECTORY | OFlags::NOFOLLOW | OFlags::CLOEXEC,
+        Mode::empty(),
+    )
+    .map_err(io::Error::from)?
+    .into();
     check_root_parent(&current)?;
     for component in path.components() {
         match component {
             Component::RootDir => {}
-            Component::Normal(name) => { current = open_search_child(&current, Path::new(name))?; check_root_parent(&current)?; }
-            _ => return Err(refused("journal path traversal, aliases and symlinks are refused")),
+            Component::Normal(name) => {
+                current = open_search_child(&current, Path::new(name))?;
+                check_root_parent(&current)?;
+            }
+            _ => {
+                return Err(refused(
+                    "journal path traversal, aliases and symlinks are refused",
+                ));
+            }
         }
     }
     Ok(current)

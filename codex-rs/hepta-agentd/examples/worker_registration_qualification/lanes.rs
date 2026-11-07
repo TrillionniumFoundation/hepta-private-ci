@@ -13,13 +13,22 @@ use std::os::unix::net::UnixDatagram;
 use std::os::unix::net::UnixStream;
 use std::time::Duration;
 
-pub(super) fn run(mode: &str, socket: UnixDatagram, agent: &AgentId, generation: u64) -> Result<(), Box<dyn std::error::Error>> {
+pub(super) fn run(
+    mode: &str,
+    socket: UnixDatagram,
+    agent: &AgentId,
+    generation: u64,
+) -> Result<(), Box<dyn std::error::Error>> {
     let unacknowledged = socket.try_clone()?;
-    let registration = receive_worker_root_registration(socket, agent, generation, Duration::from_secs(5))?;
+    let registration =
+        receive_worker_root_registration(socket, agent, generation, Duration::from_secs(5))?;
     let message = match mode {
         "lanes-lifecycle-gate" => {
-            let executor = tokio::runtime::Builder::new_current_thread().enable_all().build()?;
-            let mut lanes = executor.block_on(registration.receive_worker_lanes(Duration::from_secs(5)))?;
+            let executor = tokio::runtime::Builder::new_current_thread()
+                .enable_all()
+                .build()?;
+            let mut lanes =
+                executor.block_on(registration.receive_worker_lanes(Duration::from_secs(5)))?;
             let bootstrap = lanes.bootstrap_observation().clone();
             let observation = lanes.read_observation()?;
             let proof = lanes.read_original_writer_proof()?;
@@ -32,9 +41,11 @@ pub(super) fn run(mode: &str, socket: UnixDatagram, agent: &AgentId, generation:
             assert_eq!(command, [2]);
             let first = lanes.load_frontier();
             let first_error = first.as_ref().err().map(ToString::to_string);
-            write_message(&serde_json::json!({"kind":"worker_lifecycle_gate_first_load",
+            write_message(
+                &serde_json::json!({"kind":"worker_lifecycle_gate_first_load",
                 "accepted":first.is_ok(), "frontier":first.ok(), "error":first_error,
-                "effect_authorization_available":false}))?;
+                "effect_authorization_available":false}),
+            )?;
             std::io::stdin().read_exact(&mut command)?;
             assert_eq!(command, [3]);
             let later = lanes.load_frontier();
@@ -47,8 +58,11 @@ pub(super) fn run(mode: &str, socket: UnixDatagram, agent: &AgentId, generation:
             report
         }
         "lanes-roundtrip" => {
-            let executor = tokio::runtime::Builder::new_current_thread().enable_all().build()?;
-            let mut lanes = executor.block_on(registration.receive_worker_lanes(Duration::from_secs(5)))?;
+            let executor = tokio::runtime::Builder::new_current_thread()
+                .enable_all()
+                .build()?;
+            let mut lanes =
+                executor.block_on(registration.receive_worker_lanes(Duration::from_secs(5)))?;
             let bootstrap = lanes.bootstrap_observation().clone();
             let observation = lanes.read_observation()?;
             let proof = lanes.read_original_writer_proof()?;
@@ -59,11 +73,17 @@ pub(super) fn run(mode: &str, socket: UnixDatagram, agent: &AgentId, generation:
             next.state_sha256 = [0x57; 32];
             lanes.compare_and_set_frontier(&initial, &next)?;
             assert_eq!(lanes.load_frontier()?, next);
-            assert_eq!(lanes.compare_and_set_frontier(&initial, &next), Err(AuthorityTrustError::Conflict));
+            assert_eq!(
+                lanes.compare_and_set_frontier(&initial, &next),
+                Err(AuthorityTrustError::Conflict)
+            );
             let after_conflict = lanes.load_frontier()?;
             assert_eq!(after_conflict, next);
             assert_eq!(lanes.read_original_writer_proof()?, proof);
-            assert!(!bootstrap.effect_authorization_available && !observation.effect_authorization_available);
+            assert!(
+                !bootstrap.effect_authorization_available
+                    && !observation.effect_authorization_available
+            );
             drop(lanes);
             executor.shutdown_timeout(Duration::from_secs(1));
             serde_json::json!({"kind":"three_original_lanes", "bootstrap":bootstrap, "observation":observation,
@@ -71,13 +91,18 @@ pub(super) fn run(mode: &str, socket: UnixDatagram, agent: &AgentId, generation:
                 "after_exact_conflict":after_conflict, "effect_owner_created":false})
         }
         "lanes-root-head-revoked" => {
-            let executor = tokio::runtime::Builder::new_current_thread().enable_all().build()?;
-            let mut lanes = executor.block_on(registration.receive_worker_lanes(Duration::from_secs(5)))?;
+            let executor = tokio::runtime::Builder::new_current_thread()
+                .enable_all()
+                .build()?;
+            let mut lanes =
+                executor.block_on(registration.receive_worker_lanes(Duration::from_secs(5)))?;
             let bootstrap = lanes.bootstrap_observation().clone();
             let before = lanes.read_observation()?;
             let original_proof = lanes.read_original_writer_proof()?;
             let initial = lanes.load_frontier()?;
-            assert!(!bootstrap.effect_authorization_available && !before.effect_authorization_available);
+            assert!(
+                !bootstrap.effect_authorization_available && !before.effect_authorization_available
+            );
             let ready = serde_json::json!({"kind":"worker_floor_ready_before_original_revoke",
                 "bootstrap":&bootstrap, "observation":&before, "writer_proof":&original_proof,
                 "frontier":initial, "effect_authorization_available":false});
@@ -103,7 +128,10 @@ pub(super) fn run(mode: &str, socket: UnixDatagram, agent: &AgentId, generation:
             let later_observation = lanes.read_observation();
             let first_error = first_load.as_ref().err().map(|error| format!("{error:?}"));
             let retry_error = retry_load.as_ref().err().map(|error| format!("{error:?}"));
-            let later_error = later_observation.as_ref().err().map(|error| error.to_string());
+            let later_error = later_observation
+                .as_ref()
+                .err()
+                .map(|error| error.to_string());
             // Report the real original behavior, including accepted stale
             // values on the unfixed source. The parent owns the regression
             // assertion; this Child does not synthesize a refused outcome.
@@ -120,27 +148,42 @@ pub(super) fn run(mode: &str, socket: UnixDatagram, agent: &AgentId, generation:
             report
         }
         "lanes-second-offer-no-ack" => {
-            let (mut sealed, _root) = receive_root_production_handoff(unacknowledged, Duration::from_secs(5))?;
+            let (mut sealed, _root) =
+                receive_root_production_handoff(unacknowledged, Duration::from_secs(5))?;
             sealed.rewind()?;
             let mut bytes = Vec::new();
-            Read::by_ref(&mut sealed).take(64 * 1024 + 1).read_to_end(&mut bytes)?;
+            Read::by_ref(&mut sealed)
+                .take(64 * 1024 + 1)
+                .read_to_end(&mut bytes)?;
             assert!(bytes.len() <= 64 * 1024);
             let offer: WorkerRootLaneBootstrapV1 = serde_json::from_slice(&bytes)?;
             // Even a hostile original Child can reach the kernel backlog.
             // No Root lane may consume its request before the second ACK.
             let mut streams = Vec::new();
-            for path in [&offer.sockets.observation, &offer.sockets.issuer, &offer.sockets.consumer_frontier] {
+            for path in [
+                &offer.sockets.observation,
+                &offer.sockets.issuer,
+                &offer.sockets.consumer_frontier,
+            ] {
                 let stream = UnixStream::connect(path)?;
                 stream.set_read_timeout(Some(Duration::from_millis(80)))?;
                 streams.push(stream);
             }
-            let request = serde_json::to_vec(&HostConsumerFrontierRequestV1::Load { schema_version: 1, request_id: 1 })?;
+            let request = serde_json::to_vec(&HostConsumerFrontierRequestV1::Load {
+                schema_version: 1,
+                request_id: 1,
+            })?;
             let stream = &mut streams[2];
             stream.write_all(&(request.len() as u32).to_be_bytes())?;
             stream.write_all(&request)?;
             let mut response = [0];
-            let error = stream.read(&mut response).expect_err("unacknowledged Worker must receive no frontier response");
-            assert!(matches!(error.kind(), std::io::ErrorKind::TimedOut | std::io::ErrorKind::WouldBlock));
+            let error = stream
+                .read(&mut response)
+                .expect_err("unacknowledged Worker must receive no frontier response");
+            assert!(matches!(
+                error.kind(),
+                std::io::ErrorKind::TimedOut | std::io::ErrorKind::WouldBlock
+            ));
             drop(streams);
             drop(registration);
             serde_json::json!({"kind":"second_offer_without_ack", "raw_offer_bytes":bytes.len(),

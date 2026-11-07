@@ -36,13 +36,12 @@ async fn corrupt_provider_storage_class(
         .await
         .expect("raw evidence pool");
     let trigger_name = format!("{table}_no_update");
-    let trigger: String = sqlx::query_scalar(
-        "SELECT sql FROM sqlite_master WHERE type = 'trigger' AND name = ?",
-    )
-    .bind(&trigger_name)
-    .fetch_one(&raw)
-    .await
-    .expect("original immutable trigger");
+    let trigger: String =
+        sqlx::query_scalar("SELECT sql FROM sqlite_master WHERE type = 'trigger' AND name = ?")
+            .bind(&trigger_name)
+            .fetch_one(&raw)
+            .await
+            .expect("original immutable trigger");
     let mut transaction = raw.begin().await.expect("corruption transaction");
     let original_schema: Vec<(String, String, Option<String>)> =
         sqlx::query_as("SELECT type, name, sql FROM sqlite_master ORDER BY type, name")
@@ -99,14 +98,16 @@ async fn corrupt_provider_storage_class(
             .await
             .expect("restored complete schema");
     assert_eq!(restored_schema, original_schema);
-    transaction.commit().await.expect("commit restored-schema corruption");
-    let restored: String = sqlx::query_scalar(
-        "SELECT sql FROM sqlite_master WHERE type = 'trigger' AND name = ?",
-    )
-    .bind(&trigger_name)
-    .fetch_one(&raw)
-    .await
-    .expect("restored trigger");
+    transaction
+        .commit()
+        .await
+        .expect("commit restored-schema corruption");
+    let restored: String =
+        sqlx::query_scalar("SELECT sql FROM sqlite_master WHERE type = 'trigger' AND name = ?")
+            .bind(&trigger_name)
+            .fetch_one(&raw)
+            .await
+            .expect("restored trigger");
     assert_eq!(restored, trigger);
     raw.close().await;
 }
@@ -128,11 +129,13 @@ async fn ordinary_provider_intent_storage_class_corruption_returns_corrupt_witho
             .expect("open evidence");
         let intent = ephemeral_intent(/*nonce*/ 111, "storage-class-intent");
         store.append_provider_intent(&intent).await.expect("intent");
-        assert!(store
-            .get_provider_attempt(&intent.attempt_id)
-            .await
-            .expect("valid ordinary read before corruption")
-            .is_some());
+        assert!(
+            store
+                .get_provider_attempt(&intent.attempt_id)
+                .await
+                .expect("valid ordinary read before corruption")
+                .is_some()
+        );
         corrupt_provider_storage_class(&store, &sqlite, "provider_invocation_intents", column)
             .await;
         let error = store
@@ -146,7 +149,12 @@ async fn ordinary_provider_intent_storage_class_corruption_returns_corrupt_witho
 
 #[tokio::test]
 async fn ordinary_provider_terminal_storage_class_corruption_returns_corrupt_without_panic() {
-    for column in ["payload_json", "payload_sha256", "thread_id", "schema_version"] {
+    for column in [
+        "payload_json",
+        "payload_sha256",
+        "thread_id",
+        "schema_version",
+    ] {
         let temp = TempDir::new().expect("temp dir");
         let sqlite = sqlite_config(&temp);
         let store = HeptaEvidenceStore::open(&sqlite)
@@ -159,11 +167,13 @@ async fn ordinary_provider_terminal_storage_class_corruption_returns_corrupt_wit
             .append_provider_receipt(&receipt)
             .await
             .expect("terminal");
-        assert!(store
-            .get_provider_attempt(&intent.attempt_id)
-            .await
-            .expect("valid ordinary read before corruption")
-            .is_some());
+        assert!(
+            store
+                .get_provider_attempt(&intent.attempt_id)
+                .await
+                .expect("valid ordinary read before corruption")
+                .is_some()
+        );
         corrupt_provider_storage_class(&store, &sqlite, "provider_invocation_terminals", column)
             .await;
         let error = store

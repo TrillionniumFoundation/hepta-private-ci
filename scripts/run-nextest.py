@@ -226,7 +226,8 @@ def run_binary_command(command, metadata=None):
     import importlib.util
 
     spec = importlib.util.spec_from_file_location(
-        "nextest_binary_environment", Path(__file__).with_name("nextest_binary_environment.py")
+        "nextest_binary_environment",
+        Path(__file__).with_name("nextest_binary_environment.py"),
     )
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)

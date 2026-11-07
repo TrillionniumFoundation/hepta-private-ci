@@ -25,14 +25,22 @@ class OriginalWindowsShardControls(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.evidence = Path(self.temp.name)
         self.manifest = json.loads(
-            (Path(__file__).resolve().parents[1] / "fixtures/windows-current-ci-scope.json").read_text()
+            (
+                Path(__file__).resolve().parents[1]
+                / "fixtures/windows-current-ci-scope.json"
+            ).read_text()
         )
         self.head, self.tree, self.run_id, self.attempt = "a" * 40, "b" * 40, "123", "1"
         self.lock = b"version = 4\n"
-        self.native_paths = {"checkout": r"D:\a\source", "target": r"D:\a\_temp\native-target"}
+        self.native_paths = {
+            "checkout": r"D:\a\source",
+            "target": r"D:\a\_temp\native-target",
+        }
         self.receipts = {}
         self.source = {
-            "head": self.head, "tree": self.tree, "trackedChanges": "",
+            "head": self.head,
+            "tree": self.tree,
+            "trackedChanges": "",
             "cargoLockSha256": hashlib.sha256(self.lock).hexdigest(),
         }
         for shard in SHARD_PACKAGES:
@@ -43,11 +51,21 @@ class OriginalWindowsShardControls(unittest.TestCase):
                 index = self.manifest["groups"].index(group) + 1
                 log = f"Nextest run ID {index:08x}-0000-4000-8000-000000000001 with nextest profile: local\n"
                 log += f"Starting {group['expectedTestCount']} tests across 1 binary\n"
-                log += "".join(f"PASS [ 0.01s] {group['package']} {name}\n" for name in group["requiredTests"])
+                log += "".join(
+                    f"PASS [ 0.01s] {group['package']} {name}\n"
+                    for name in group["requiredTests"]
+                )
                 log += f"Summary [ 0.01s] {group['expectedTestCount']} tests run: {group['expectedTestCount']} passed, 0 skipped\n"
                 data = log.encode()
                 (directory / (group["id"] + ".log")).write_bytes(data)
-                rows.append({**assess(group, 0, log), "command": original_command(group), "logSha256": hashlib.sha256(data).hexdigest(), "durationSeconds": 0.01})
+                rows.append(
+                    {
+                        **assess(group, 0, log),
+                        "command": original_command(group),
+                        "logSha256": hashlib.sha256(data).hexdigest(),
+                        "durationSeconds": 0.01,
+                    }
+                )
             helpers = None
             if shard == "process":
                 artifacts, records = [], []
@@ -55,37 +73,99 @@ class OriginalWindowsShardControls(unittest.TestCase):
                 binaries.mkdir()
                 root = PureWindowsPath(self.native_paths["checkout"])
                 profile = PureWindowsPath(self.native_paths["target"]) / "dev-small"
-                for name, source in zip(SANDBOX_HELPERS, ("setup_main", "command_runner")):
+                for name, source in zip(
+                    SANDBOX_HELPERS, ("setup_main", "command_runner")
+                ):
                     data = b"MZ-synthetic-receipt-unit-fixture-only-" + name.encode()
                     binary = profile / (name + ".exe")
                     (binaries / binary.name).write_bytes(data)
-                    artifacts.append({"name": name, "source": str(binary), "testSibling": str(profile / "deps" / binary.name), "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest(), "evidenceFile": "sandbox-helper-binaries/" + binary.name})
-                    records.append({"reason": "compiler-artifact", "manifest_path": str(root / "codex-rs/windows-sandbox-rs/Cargo.toml"), "target": {"name": name, "kind": ["bin"], "crate_types": ["bin"], "src_path": str(root / f"codex-rs/windows-sandbox-rs/src/bin/{source}/main.rs")}, "executable": str(binary), "filenames": [str(binary)], "profile": {"test": False}})
+                    artifacts.append(
+                        {
+                            "name": name,
+                            "source": str(binary),
+                            "testSibling": str(profile / "deps" / binary.name),
+                            "bytes": len(data),
+                            "sha256": hashlib.sha256(data).hexdigest(),
+                            "evidenceFile": "sandbox-helper-binaries/" + binary.name,
+                        }
+                    )
+                    records.append(
+                        {
+                            "reason": "compiler-artifact",
+                            "manifest_path": str(
+                                root / "codex-rs/windows-sandbox-rs/Cargo.toml"
+                            ),
+                            "target": {
+                                "name": name,
+                                "kind": ["bin"],
+                                "crate_types": ["bin"],
+                                "src_path": str(
+                                    root
+                                    / f"codex-rs/windows-sandbox-rs/src/bin/{source}/main.rs"
+                                ),
+                            },
+                            "executable": str(binary),
+                            "filenames": [str(binary)],
+                            "profile": {"test": False},
+                        }
+                    )
                 records.append({"reason": "build-finished", "success": True})
-                build = ("\n".join(json.dumps(record) for record in records) + "\n").encode()
+                build = (
+                    "\n".join(json.dumps(record) for record in records) + "\n"
+                ).encode()
                 (directory / "sandbox-helper-build.log").write_bytes(build)
-                command = ["cargo", "build", "--locked", "-p", "codex-windows-sandbox", "--profile", "dev-small", "--message-format=json"]
+                command = [
+                    "cargo",
+                    "build",
+                    "--locked",
+                    "-p",
+                    "codex-windows-sandbox",
+                    "--profile",
+                    "dev-small",
+                    "--message-format=json",
+                ]
                 for name in SANDBOX_HELPERS:
                     command.extend(["--bin", name])
-                helpers = {"command": command, "exitCode": 0, "passed": True, "logSha256": hashlib.sha256(build).hexdigest(), "artifacts": artifacts}
+                helpers = {
+                    "command": command,
+                    "exitCode": 0,
+                    "passed": True,
+                    "logSha256": hashlib.sha256(build).hexdigest(),
+                    "artifacts": artifacts,
+                }
                 self.write_json(directory / "sandbox-helper-preparation.json", helpers)
             compiler = b"rustc 1.96.0 (unit-fixture)\nhost: x86_64-pc-windows-msvc\n"
             (directory / "compiler.txt").write_bytes(compiler)
             receipt = {
-                "schema": "hepta.windows-current-ci-shard-receipt.v1", "shard": shard,
-                "status": "PASS_DECLARED_WINDOWS_SHARD", "declaredScopeDigest": scope_digest(self.manifest),
-                "sourceBefore": self.source.copy(), "sourceAfter": self.source.copy(), "sourceUnchanged": True,
-                "workflow": {"runId": self.run_id, "runAttempt": self.attempt, "runnerOs": "Windows", "runnerName": "synthetic-" + shard},
+                "schema": "hepta.windows-current-ci-shard-receipt.v1",
+                "shard": shard,
+                "status": "PASS_DECLARED_WINDOWS_SHARD",
+                "declaredScopeDigest": scope_digest(self.manifest),
+                "sourceBefore": self.source.copy(),
+                "sourceAfter": self.source.copy(),
+                "sourceUnchanged": True,
+                "workflow": {
+                    "runId": self.run_id,
+                    "runAttempt": self.attempt,
+                    "runnerOs": "Windows",
+                    "runnerName": "synthetic-" + shard,
+                },
                 "nativePaths": self.native_paths.copy(),
-                "platform": "Windows-unit-fixture", "compilerSha256": hashlib.sha256(compiler).hexdigest(),
-                "groups": rows, "sandboxHelperPreparation": helpers, "testRetries": 0,
-                "productionAuthorityGranted": False, "finalProductQualification": False,
+                "platform": "Windows-unit-fixture",
+                "compilerSha256": hashlib.sha256(compiler).hexdigest(),
+                "groups": rows,
+                "sandboxHelperPreparation": helpers,
+                "testRetries": 0,
+                "productionAuthorityGranted": False,
+                "finalProductQualification": False,
             }
             self.receipts[shard] = receipt
             self.save(shard, receipt)
 
     def directory(self, shard):
-        return self.evidence / artifact_name(self.head, self.run_id, self.attempt, shard)
+        return self.evidence / artifact_name(
+            self.head, self.run_id, self.attempt, shard
+        )
 
     def write_json(self, path, value):
         path.write_text(json.dumps(value, indent=2) + "\n", encoding="utf-8")
@@ -98,14 +178,29 @@ class OriginalWindowsShardControls(unittest.TestCase):
         self.write_json(directory / "source-after.json", receipt["sourceAfter"])
 
     def validate(self, matrix_result="success"):
-        return validate_shards(self.manifest, self.head, self.tree, self.lock, self.run_id, self.attempt, matrix_result, self.evidence)
+        return validate_shards(
+            self.manifest,
+            self.head,
+            self.tree,
+            self.lock,
+            self.run_id,
+            self.attempt,
+            matrix_result,
+            self.evidence,
+        )
 
     def test_exact_disjoint_partition_and_complete_synthetic_receipts(self):
         owners = selected_groups(self.manifest, "owners")
         process = selected_groups(self.manifest, "process")
-        self.assertEqual((len(owners), sum(g["expectedTestCount"] for g in owners)), (8, 98))
-        self.assertEqual((len(process), sum(g["expectedTestCount"] for g in process)), (11, 69))
-        self.assertFalse({g["package"] for g in owners} & {g["package"] for g in process})
+        self.assertEqual(
+            (len(owners), sum(g["expectedTestCount"] for g in owners)), (8, 98)
+        )
+        self.assertEqual(
+            (len(process), sum(g["expectedTestCount"] for g in process)), (11, 69)
+        )
+        self.assertFalse(
+            {g["package"] for g in owners} & {g["package"] for g in process}
+        )
         result = self.validate()
         self.assertEqual((result["groupCount"], result["testCount"]), (19, 167))
         self.assertTrue(all(row["source"] == self.source for row in result["groups"]))
@@ -131,7 +226,10 @@ class OriginalWindowsShardControls(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.validate()
         path.write_bytes(data)
-        for rows in (self.receipts["owners"]["groups"][:-1], self.receipts["owners"]["groups"] + [self.receipts["owners"]["groups"][0]]):
+        for rows in (
+            self.receipts["owners"]["groups"][:-1],
+            self.receipts["owners"]["groups"] + [self.receipts["owners"]["groups"][0]],
+        ):
             receipt = copy.deepcopy(self.receipts["owners"])
             receipt["groups"] = rows
             self.save("owners", receipt)
@@ -171,7 +269,11 @@ class OriginalWindowsShardControls(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.validate()
         path.write_bytes(data)
-        for flag, value in (("--retries", "1"), ("--cargo-profile", "test"), ("-E", "all()")):
+        for flag, value in (
+            ("--retries", "1"),
+            ("--cargo-profile", "test"),
+            ("-E", "all()"),
+        ):
             receipt = copy.deepcopy(original)
             command = receipt["groups"][0]["command"]
             command[command.index(flag) + 1] = value
@@ -180,7 +282,13 @@ class OriginalWindowsShardControls(unittest.TestCase):
                 self.validate()
 
     def test_wrong_dirty_or_changed_source_is_rejected(self):
-        for key, value in (("head", "d" * 40), ("tree", "d" * 40), ("cargoLockSha256", "d" * 64), ("trackedChanges", " M source.rs"), ("trackedChanges", False)):
+        for key, value in (
+            ("head", "d" * 40),
+            ("tree", "d" * 40),
+            ("cargoLockSha256", "d" * 64),
+            ("trackedChanges", " M source.rs"),
+            ("trackedChanges", False),
+        ):
             receipt = copy.deepcopy(self.receipts["owners"])
             receipt["sourceBefore"][key] = value
             receipt["sourceAfter"][key] = value
@@ -215,7 +323,9 @@ class OriginalWindowsShardControls(unittest.TestCase):
     def test_native_compiler_host_and_helper_build_are_required(self):
         directory = self.directory("owners")
         compiler = (directory / "compiler.txt").read_bytes()
-        changed = compiler.replace(b"x86_64-pc-windows-msvc", b"x86_64-unknown-linux-gnu")
+        changed = compiler.replace(
+            b"x86_64-pc-windows-msvc", b"x86_64-unknown-linux-gnu"
+        )
         receipt = copy.deepcopy(self.receipts["owners"])
         receipt["compilerSha256"] = hashlib.sha256(changed).hexdigest()
         (directory / "compiler.txt").write_bytes(changed)
@@ -234,7 +344,9 @@ class OriginalWindowsShardControls(unittest.TestCase):
             else:
                 helpers["command"].append("--release")
             self.save("process", receipt)
-            self.write_json(self.directory("process") / "sandbox-helper-preparation.json", helpers)
+            self.write_json(
+                self.directory("process") / "sandbox-helper-preparation.json", helpers
+            )
             with self.subTest(change=change), self.assertRaises(ValueError):
                 self.validate()
 
@@ -284,9 +396,16 @@ class OriginalWindowsShardControls(unittest.TestCase):
         receipt = copy.deepcopy(self.receipts["process"])
         helpers = receipt["sandboxHelperPreparation"]
         for item in helpers["artifacts"]:
-            item.update(bytes=1, sha256="e" * 64, source=r"Z:\historical\helper.exe", testSibling=r"Z:\historical\deps\helper.exe")
+            item.update(
+                bytes=1,
+                sha256="e" * 64,
+                source=r"Z:\historical\helper.exe",
+                testSibling=r"Z:\historical\deps\helper.exe",
+            )
         self.save("process", receipt)
-        self.write_json(self.directory("process") / "sandbox-helper-preparation.json", helpers)
+        self.write_json(
+            self.directory("process") / "sandbox-helper-preparation.json", helpers
+        )
         with self.assertRaisesRegex(ValueError, "original compiler artifact"):
             self.validate()
 
@@ -303,9 +422,14 @@ class OriginalWindowsShardControls(unittest.TestCase):
                 path.write_bytes(changed)
                 if changed.startswith(b"NO"):
                     claim = receipt["sandboxHelperPreparation"]["artifacts"][0]
-                    claim.update(bytes=len(changed), sha256=hashlib.sha256(changed).hexdigest())
+                    claim.update(
+                        bytes=len(changed), sha256=hashlib.sha256(changed).hexdigest()
+                    )
             self.save("process", receipt)
-            self.write_json(self.directory("process") / "sandbox-helper-preparation.json", receipt["sandboxHelperPreparation"])
+            self.write_json(
+                self.directory("process") / "sandbox-helper-preparation.json",
+                receipt["sandboxHelperPreparation"],
+            )
             with self.subTest(changed=changed), self.assertRaises(ValueError):
                 self.validate()
             path.write_bytes(data)
@@ -320,7 +444,9 @@ class OriginalWindowsShardControls(unittest.TestCase):
             lambda r: r[0]["target"].update(name="different-helper"),
             lambda r: r[0]["target"].update(kind=["lib"]),
             lambda r: r[0]["profile"].update(test=True),
-            lambda r: r[0].update(executable=r"D:\a\_temp\native-target\release\wrong.exe"),
+            lambda r: r[0].update(
+                executable=r"D:\a\_temp\native-target\release\wrong.exe"
+            ),
             lambda r: r[-1].update(success=False),
         ]
         for index, mutation in enumerate(mutations):
@@ -363,7 +489,13 @@ class OriginalWindowsShardControls(unittest.TestCase):
         data = b"MZ-synthetic-export-control"
         source.write_bytes(data)
         sibling.write_bytes(data)
-        item = {"name": SANDBOX_HELPERS[0], "source": str(source), "testSibling": str(sibling), "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest()}
+        item = {
+            "name": SANDBOX_HELPERS[0],
+            "source": str(source),
+            "testSibling": str(sibling),
+            "bytes": len(data),
+            "sha256": hashlib.sha256(data).hexdigest(),
+        }
         output = root / "valid"
         output.mkdir()
         export_sandbox_helper_evidence(output, [item])

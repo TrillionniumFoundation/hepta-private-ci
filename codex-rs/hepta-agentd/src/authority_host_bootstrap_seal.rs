@@ -73,7 +73,10 @@ pub(crate) fn seal_worker_lanes(
     require_root()?;
     bundle.validate()?;
     if bundle.registration.root.pid != std::process::id() {
-        return Err(io::Error::new(io::ErrorKind::PermissionDenied, "Worker lanes must name their actual Root producer"));
+        return Err(io::Error::new(
+            io::ErrorKind::PermissionDenied,
+            "Worker lanes must name their actual Root producer",
+        ));
     }
     let mut bytes = BoundedBytes(Vec::new());
     serde_json::to_writer(&mut bytes, bundle).map_err(io::Error::other)?;
@@ -86,7 +89,10 @@ pub(crate) fn seal_worker_journal(
     require_root()?;
     bundle.validate()?;
     if bundle.lanes.registration.root.pid != std::process::id() {
-        return Err(io::Error::new(io::ErrorKind::PermissionDenied, "Worker journal must name its actual Root producer"));
+        return Err(io::Error::new(
+            io::ErrorKind::PermissionDenied,
+            "Worker journal must name its actual Root producer",
+        ));
     }
     let mut bytes = BoundedBytes(Vec::new());
     serde_json::to_writer(&mut bytes, bundle).map_err(io::Error::other)?;

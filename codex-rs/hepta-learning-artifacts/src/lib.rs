@@ -17,9 +17,9 @@ mod iteration;
 mod iteration_ledger;
 mod learning_iteration;
 mod learning_iteration_digest;
-mod learning_iteration_types;
 #[cfg(test)]
 mod learning_iteration_test_support;
+mod learning_iteration_types;
 mod lifecycle_journal;
 mod limits;
 mod model;

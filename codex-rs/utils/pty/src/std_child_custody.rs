@@ -3,10 +3,10 @@ use std::process::Child;
 use std::process::Command;
 use std::process::ExitStatus;
 
-#[cfg(unix)]
-use std::os::unix::process::CommandExt;
 #[cfg(windows)]
 use crate::JobObject;
+#[cfg(unix)]
+use std::os::unix::process::CommandExt;
 
 #[cfg(unix)]
 enum ChildExitObservation {

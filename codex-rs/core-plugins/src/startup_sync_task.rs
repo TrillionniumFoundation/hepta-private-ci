@@ -27,30 +27,55 @@ pub(crate) struct StartupSyncTask {
 }
 
 impl StartupSyncTask {
-    pub(crate) fn start(&self, run: impl FnOnce(GitCommandCancellation) + Send + 'static) -> io::Result<()> {
-        let mut state = self.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+    pub(crate) fn start(
+        &self,
+        run: impl FnOnce(GitCommandCancellation) + Send + 'static,
+    ) -> io::Result<()> {
+        let mut state = self
+            .state
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         if state.closed || state.joining.is_some() {
-            return Err(io::Error::new(io::ErrorKind::BrokenPipe, "plugin startup owner has closed"));
+            return Err(io::Error::new(
+                io::ErrorKind::BrokenPipe,
+                "plugin startup owner has closed",
+            ));
         }
-        if state.running.as_ref().is_some_and(|running| !running.thread.is_finished()) {
-            return Err(io::Error::new(io::ErrorKind::AlreadyExists, "plugin startup thread is already owned"));
+        if state
+            .running
+            .as_ref()
+            .is_some_and(|running| !running.thread.is_finished())
+        {
+            return Err(io::Error::new(
+                io::ErrorKind::AlreadyExists,
+                "plugin startup thread is already owned",
+            ));
         }
         if let Some(previous) = state.running.take() {
             // is_finished above guarantees that no callback can wait on this lock.
-            previous.thread.join().map_err(|_| io::Error::other("previous plugin startup thread panicked"))?;
+            previous
+                .thread
+                .join()
+                .map_err(|_| io::Error::other("previous plugin startup thread panicked"))?;
         }
         let cancellation = GitCommandCancellation::default();
         let worker_cancellation = cancellation.clone();
         let thread = std::thread::Builder::new()
             .name("plugins-curated-repo-sync".to_string())
             .spawn(move || run(worker_cancellation))?;
-        state.running = Some(Running { cancellation, thread });
+        state.running = Some(Running {
+            cancellation,
+            thread,
+        });
         state.terminal = None;
         Ok(())
     }
 
     pub(crate) fn cancel(&self) {
-        let mut state = self.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+        let mut state = self
+            .state
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         state.closed = true;
         if let Some(running) = &state.running {
             running.cancellation.cancel();
@@ -60,14 +85,20 @@ impl StartupSyncTask {
     /// A completed join only attests thread completion, not a successful plugin
     /// sync. Concurrent shutdown callers wait for the same retained join result.
     pub(crate) fn shutdown(&self) -> Result<(), String> {
-        let mut state = self.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+        let mut state = self
+            .state
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         state.closed = true;
         loop {
             if let Some(worker_id) = state.joining {
                 if worker_id == std::thread::current().id() {
                     return Err("plugin startup worker cannot join itself".to_string());
                 }
-                state = self.joined.wait(state).unwrap_or_else(std::sync::PoisonError::into_inner);
+                state = self
+                    .joined
+                    .wait(state)
+                    .unwrap_or_else(std::sync::PoisonError::into_inner);
                 continue;
             }
             let Some(running) = state.running.take() else {
@@ -84,9 +115,15 @@ impl StartupSyncTask {
                 drop(running.thread);
                 Err("plugin startup owner dropped on its own worker; join unavailable".to_string())
             } else {
-                running.thread.join().map_err(|_| "plugin startup thread panicked".to_string())
+                running
+                    .thread
+                    .join()
+                    .map_err(|_| "plugin startup thread panicked".to_string())
             };
-            state = self.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+            state = self
+                .state
+                .lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner);
             state.joining = None;
             state.terminal = Some(result.clone());
             self.joined.notify_all();

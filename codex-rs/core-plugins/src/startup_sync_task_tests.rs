@@ -10,7 +10,10 @@ use std::time::Instant;
 fn wait_for(mut condition: impl FnMut() -> bool) {
     let deadline = Instant::now() + Duration::from_secs(5);
     while !condition() {
-        assert!(Instant::now() < deadline, "owned startup thread did not reach the expected state");
+        assert!(
+            Instant::now() < deadline,
+            "owned startup thread did not reach the expected state"
+        );
         std::thread::sleep(Duration::from_millis(1));
     }
 }
@@ -25,13 +28,17 @@ fn explicit_shutdown_joins_the_actual_thread_and_closes_further_admission() {
         started.send(()).unwrap();
         wait_for(|| cancellation.is_cancelled());
         worker_finished.store(true, Ordering::Release);
-    }).unwrap();
+    })
+    .unwrap();
     ready.recv_timeout(Duration::from_secs(5)).unwrap();
     task.cancel();
     assert_eq!(task.shutdown(), Ok(()));
     assert!(finished.load(Ordering::Acquire));
     assert_eq!(task.shutdown(), Ok(()));
-    assert!(task.start(|_| panic!("closed owner must not start another thread")).is_err());
+    assert!(
+        task.start(|_| panic!("closed owner must not start another thread"))
+            .is_err()
+    );
 }
 
 #[test]
@@ -44,7 +51,8 @@ fn dropping_the_owner_cancels_and_joins_its_actual_thread() {
         started.send(()).unwrap();
         wait_for(|| cancellation.is_cancelled());
         worker_finished.store(true, Ordering::Release);
-    }).unwrap();
+    })
+    .unwrap();
     ready.recv_timeout(Duration::from_secs(5)).unwrap();
     drop(task);
     assert!(finished.load(Ordering::Acquire));
@@ -59,7 +67,8 @@ fn concurrent_shutdowns_wait_for_the_same_retained_thread_to_finish() {
         started.send(()).unwrap();
         wait_for(|| cancellation.is_cancelled());
         released.recv_timeout(Duration::from_secs(5)).unwrap();
-    }).unwrap();
+    })
+    .unwrap();
     ready.recv_timeout(Duration::from_secs(5)).unwrap();
     std::thread::scope(|scope| {
         let (done, completions) = mpsc::channel();
@@ -78,8 +87,14 @@ fn concurrent_shutdowns_wait_for_the_same_retained_thread_to_finish() {
         entered.recv_timeout(Duration::from_secs(5)).unwrap();
         assert_eq!(completions.try_recv(), Err(mpsc::TryRecvError::Empty));
         release.send(()).unwrap();
-        assert_eq!(completions.recv_timeout(Duration::from_secs(5)).unwrap(), Ok(()));
-        assert_eq!(completions.recv_timeout(Duration::from_secs(5)).unwrap(), Ok(()));
+        assert_eq!(
+            completions.recv_timeout(Duration::from_secs(5)).unwrap(),
+            Ok(())
+        );
+        assert_eq!(
+            completions.recv_timeout(Duration::from_secs(5)).unwrap(),
+            Ok(())
+        );
         first.join().unwrap();
         second.join().unwrap();
     });

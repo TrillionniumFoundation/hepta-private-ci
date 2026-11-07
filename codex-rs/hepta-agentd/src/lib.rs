@@ -179,13 +179,23 @@ mod root_production_inputs;
 #[cfg(target_os = "linux")]
 mod worker_root_registration;
 #[cfg(target_os = "linux")]
+pub use authority_host_runtime::HeldWorkerRootRegistration;
+#[cfg(target_os = "linux")]
+pub use root_production_inputs::AgentdRootProductionInputs;
+#[cfg(target_os = "linux")]
+pub use root_production_inputs::receive_root_production_inputs;
+#[cfg(target_os = "linux")]
 pub use worker_root_registration::WORKER_ROOT_REGISTRATION_V1;
+#[cfg(target_os = "linux")]
+pub use worker_root_registration::WorkerJournalDirectoryPinV1;
 #[cfg(target_os = "linux")]
 pub use worker_root_registration::WorkerProcessIdentityV1;
 #[cfg(target_os = "linux")]
-pub use worker_root_registration::WorkerRootRegistrationV1;
+pub use worker_root_registration::WorkerRootJournal;
 #[cfg(target_os = "linux")]
-pub use worker_root_registration::WorkerRootRegistrationReceipt;
+pub use worker_root_registration::WorkerRootJournalBootstrapV1;
+#[cfg(target_os = "linux")]
+pub use worker_root_registration::WorkerRootJournalObservationV1;
 #[cfg(target_os = "linux")]
 pub use worker_root_registration::WorkerRootLaneBootstrapV1;
 #[cfg(target_os = "linux")]
@@ -195,21 +205,11 @@ pub use worker_root_registration::WorkerRootLaneReceipt;
 #[cfg(target_os = "linux")]
 pub use worker_root_registration::WorkerRootObservationV1;
 #[cfg(target_os = "linux")]
-pub use worker_root_registration::WorkerJournalDirectoryPinV1;
+pub use worker_root_registration::WorkerRootRegistrationReceipt;
 #[cfg(target_os = "linux")]
-pub use worker_root_registration::WorkerRootJournalBootstrapV1;
-#[cfg(target_os = "linux")]
-pub use worker_root_registration::WorkerRootJournal;
-#[cfg(target_os = "linux")]
-pub use worker_root_registration::WorkerRootJournalObservationV1;
+pub use worker_root_registration::WorkerRootRegistrationV1;
 #[cfg(target_os = "linux")]
 pub use worker_root_registration::receive_worker_root_registration;
-#[cfg(target_os = "linux")]
-pub use authority_host_runtime::HeldWorkerRootRegistration;
-#[cfg(target_os = "linux")]
-pub use root_production_inputs::AgentdRootProductionInputs;
-#[cfg(target_os = "linux")]
-pub use root_production_inputs::receive_root_production_inputs;
 #[cfg(target_os = "linux")]
 mod root_production_handoff;
 #[cfg(target_os = "linux")]
@@ -388,6 +388,8 @@ mod plasticity_owner_evidence;
 mod plasticity_process_bootstrap;
 mod plasticity_runtime;
 #[cfg(target_os = "linux")]
+mod pq_final_use;
+#[cfg(target_os = "linux")]
 mod production_authority;
 #[cfg(target_os = "linux")]
 mod production_composition;
@@ -395,8 +397,6 @@ mod production_composition;
 mod production_launcher;
 #[cfg(target_os = "linux")]
 mod production_root_composition;
-#[cfg(target_os = "linux")]
-mod pq_final_use;
 mod production_writer_host;
 mod prompt_runtime;
 #[cfg(target_os = "linux")]

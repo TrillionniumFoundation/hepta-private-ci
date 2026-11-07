@@ -22,9 +22,9 @@ mod execution;
 #[path = "startup_sync_git.rs"]
 mod git;
 pub use execution::sync_openai_plugins_repo;
-pub(crate) use execution::sync_openai_plugins_repo_with_cancellation;
 #[cfg(test)]
 use execution::sync_openai_plugins_repo_via_http;
+pub(crate) use execution::sync_openai_plugins_repo_with_cancellation;
 #[cfg(test)]
 use execution::sync_openai_plugins_repo_with_transport_overrides;
 #[cfg(test)]

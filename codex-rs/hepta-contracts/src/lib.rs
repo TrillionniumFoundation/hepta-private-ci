@@ -11,6 +11,7 @@ pub mod authbus_b5;
 #[cfg(test)]
 #[path = "authbus_tests.rs"]
 mod authbus_tests;
+mod authority_authentication;
 mod authority_consumer_wire;
 #[cfg(target_os = "linux")]
 mod authority_host_clock;
@@ -18,7 +19,6 @@ mod authority_host_clock;
 mod authority_host_issuer_transport;
 #[cfg(unix)]
 mod authority_host_store;
-mod authority_authentication;
 pub mod authority_lease;
 #[cfg(target_os = "linux")]
 mod authority_root_frontier;
@@ -39,6 +39,8 @@ mod receipt;
 mod stable_id;
 mod verified_use_witness;
 
+pub use authority_authentication::FinalUseAuthenticationProfile;
+pub use authority_authentication::PqAuthorityTrustKey;
 pub use authority_consumer_wire::HostConsumerFrontierRequestV1;
 pub use authority_consumer_wire::HostConsumerFrontierResponseV1;
 pub use authority_consumer_wire::HostConsumerFrontierStatusV1;
@@ -68,8 +70,6 @@ pub use authority_host_store::HostFinalUseIssuer;
 pub use authority_host_store::HostIssuerError;
 #[cfg(unix)]
 pub use authority_host_store::RootAuthorityDirectory;
-pub use authority_authentication::FinalUseAuthenticationProfile;
-pub use authority_authentication::PqAuthorityTrustKey;
 pub use authority_lease::deliver_authority_lease_with_witness;
 pub use authority_lease::dispatch_authority_lease_with_witness;
 #[cfg(target_os = "linux")]

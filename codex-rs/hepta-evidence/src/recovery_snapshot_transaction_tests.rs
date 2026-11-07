@@ -17,13 +17,22 @@ async fn recovery_snapshot_does_not_mix_atomic_commits_between_pool_reads() {
     let store = HeptaEvidenceStore::open(&sqlite)
         .await
         .expect("open original evidence schema through the SQLite shim");
-    let before = store.recovery_snapshot().await.expect("snapshot before write");
+    let before = store
+        .recovery_snapshot()
+        .await
+        .expect("snapshot before write");
 
     // Hold every shim-created connection. SQLx's FIFO acquire queue then lets
     // the reader start before the writer, without a sleep or a product hook.
     let mut held = Vec::new();
     for _ in 0..store.pool.options().get_max_connections() {
-        held.push(store.pool.acquire().await.expect("hold existing connection"));
+        held.push(
+            store
+                .pool
+                .acquire()
+                .await
+                .expect("hold existing connection"),
+        );
     }
     let snapshot = store.recovery_snapshot();
     let mut snapshot = std::pin::pin!(snapshot);
@@ -61,7 +70,10 @@ async fn recovery_snapshot_does_not_mix_atomic_commits_between_pool_reads() {
         .execute(&mut *transaction)
         .await
         .expect("change fixture replay frontier in the same transaction");
-        transaction.commit().await.expect("commit both frontier changes");
+        transaction
+            .commit()
+            .await
+            .expect("commit both frontier changes");
     };
     let mut write = std::pin::pin!(write);
     poll_fn(|context| {
@@ -77,7 +89,16 @@ async fn recovery_snapshot_does_not_mix_atomic_commits_between_pool_reads() {
     let (during, ()) = tokio::join!(snapshot, write);
     drop(held);
     let during = during.expect("snapshot overlapping the writer");
-    let after = store.recovery_snapshot().await.expect("snapshot after write");
-    assert_ne!(before, after, "the fixture must actually commit its changes");
-    assert_eq!(during, before, "every component must belong to one SQLite snapshot");
+    let after = store
+        .recovery_snapshot()
+        .await
+        .expect("snapshot after write");
+    assert_ne!(
+        before, after,
+        "the fixture must actually commit its changes"
+    );
+    assert_eq!(
+        during, before,
+        "every component must belong to one SQLite snapshot"
+    );
 }

@@ -315,7 +315,9 @@ fn report_inherited_verifier_context(verifier: &TrustedOpenSsh) {
     let executable_sha256 = (|| -> std::io::Result<String> {
         let length = verifier.file.metadata()?.len();
         if length > 64 * 1024 * 1024 {
-            return Err(std::io::Error::other("diagnostic executable exceeds 64 MiB read bound"));
+            return Err(std::io::Error::other(
+                "diagnostic executable exceeds 64 MiB read bound",
+            ));
         }
         let mut digest = sha2::Sha256::new();
         let mut offset = 0;
@@ -324,7 +326,9 @@ fn report_inherited_verifier_context(verifier: &TrustedOpenSsh) {
             let wanted = usize::try_from((length - offset).min(bytes.len() as u64)).unwrap();
             let count = verifier.file.seek_read(&mut bytes[..wanted], offset)?;
             if count == 0 {
-                return Err(std::io::Error::other("diagnostic executable ended before its bound"));
+                return Err(std::io::Error::other(
+                    "diagnostic executable ended before its bound",
+                ));
             }
             digest.update(&bytes[..count]);
             offset += count as u64;
@@ -414,10 +418,7 @@ pub(crate) fn verify(
     // SAFETY: the buffer has the stated UTF-16 capacity and the size pointer
     // remains valid for this synchronous OS query. This API does not create it.
     if unsafe {
-        GetAllUsersProfileDirectoryW(
-            program_data_buffer.as_mut_ptr(),
-            &mut program_data_capacity,
-        )
+        GetAllUsersProfileDirectoryW(program_data_buffer.as_mut_ptr(), &mut program_data_capacity)
     } == 0
     {
         return Err(std::io::Error::last_os_error().into());
@@ -491,7 +492,9 @@ pub(crate) fn verify(
         Ok(status) => status,
         Err(error) => {
             #[cfg(test)]
-            eprintln!("HEPTA_OPENSSH_DIAGNOSTIC wait_unknown={error:?}; original_child_and_pins_retained=true");
+            eprintln!(
+                "HEPTA_OPENSSH_DIAGNOSTIC wait_unknown={error:?}; original_child_and_pins_retained=true"
+            );
             // Keep the original Child and its pins in the single process slot.
             // Later calls can only reconcile it until termination is observed.
             *pending = Some(ActiveVerifier {
@@ -503,7 +506,9 @@ pub(crate) fn verify(
         }
     };
     #[cfg(test)]
-    eprintln!("HEPTA_OPENSSH_DIAGNOSTIC child_terminal={status:?} stdin_write_result={write_result:?}");
+    eprintln!(
+        "HEPTA_OPENSSH_DIAGNOSTIC child_terminal={status:?} stdin_write_result={write_result:?}"
+    );
     write_result?;
     inputs.verify()?;
     if identity(&verifier.file, Kind::File)? != verifier.id {

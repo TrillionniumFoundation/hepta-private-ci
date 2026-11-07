@@ -64,7 +64,10 @@ pub(crate) fn openssh_command() -> std::process::Command {
         // SAFETY: both pointers remain valid for this synchronous query and
         // the buffer has the stated number of writable UTF-16 elements.
         if unsafe { GetAllUsersProfileDirectoryW(buffer.as_mut_ptr(), &mut capacity) } == 0 {
-            panic!("query fixture ProgramData: {}", std::io::Error::last_os_error());
+            panic!(
+                "query fixture ProgramData: {}",
+                std::io::Error::last_os_error()
+            );
         }
         let Some(length) = buffer
             .iter()
@@ -74,7 +77,10 @@ pub(crate) fn openssh_command() -> std::process::Command {
             panic!("fixture ProgramData path is empty or exceeds its bound");
         };
         let path = PathBuf::from(OsString::from_wide(&buffer[..length]));
-        assert!(path.is_absolute(), "fixture ProgramData path must be absolute");
+        assert!(
+            path.is_absolute(),
+            "fixture ProgramData path must be absolute"
+        );
         let mut command = command;
         command.env("ProgramData", path);
         command

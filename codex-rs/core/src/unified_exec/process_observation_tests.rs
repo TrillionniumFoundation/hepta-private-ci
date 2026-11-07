@@ -175,7 +175,10 @@ async fn requested_driver_termination_waits_for_native_exit() -> Result<()> {
         }
     })
     .await?;
-    assert!(!task.is_finished(), "a request alone must not finish termination");
+    assert!(
+        !task.is_finished(),
+        "a request alone must not finish termination"
+    );
     assert!(!process.has_exited());
     assert_eq!(process.exit_code(), None);
     fixture

@@ -231,14 +231,16 @@ async fn assert_user_turn_local_image_resizes_to(
                 model_info.use_responses_lite = true;
             }),
     };
-    let mut builder = builder.with_internal_metadata_for_mock().with_config(move |config| {
-        if image_budget_policy != ImageBudgetPolicy::DetailBased {
-            let _ = config.features.enable(Feature::UnifiedImageBudget);
-        }
-        if matches!(resize_notice_expectation, ResizeNoticeExpectation::Enabled) {
-            let _ = config.features.enable(Feature::ImageResizeNotice);
-        }
-    });
+    let mut builder = builder
+        .with_internal_metadata_for_mock()
+        .with_config(move |config| {
+            if image_budget_policy != ImageBudgetPolicy::DetailBased {
+                let _ = config.features.enable(Feature::UnifiedImageBudget);
+            }
+            if matches!(resize_notice_expectation, ResizeNoticeExpectation::Enabled) {
+                let _ = config.features.enable(Feature::ImageResizeNotice);
+            }
+        });
     let test = builder.build_with_auto_env(&server).await?;
     let TestCodex {
         codex,

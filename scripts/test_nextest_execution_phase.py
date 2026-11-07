@@ -1,4 +1,5 @@
 """Actual file-identity controls with simulated Cargo/Nextest, not native tests."""
+
 import importlib.util
 import json
 import os
@@ -9,41 +10,88 @@ from unittest.mock import patch
 
 
 HERE = Path(__file__).resolve().parent
-SPEC = importlib.util.spec_from_file_location("phase_candidate", HERE / "nextest_binary_environment.py")
+SPEC = importlib.util.spec_from_file_location(
+    "phase_candidate", HERE / "nextest_binary_environment.py"
+)
 ENV = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(ENV)
 
 
 class ExecutionArgumentTests(unittest.TestCase):
     def test_build_selectors_stay_in_build_runtime_options_stay_in_execution(self):
-        build = ["-p", "fixture", "--locked", "--offline", "--features=one,two",
-                 "--no-default-features", "--lib", "--cargo-profile", "dev-small",
-                 "--target-dir", "/exact/target", "-pother", "-Fmore"]
-        runtime = ["--cargo-metadata", "/owned/current.json", "--profile", "local",
-                   "-E", "test(original)", "--partition=hash:1/2", "--retries", "1",
-                   "--test-threads=2", "--no-fail-fast", "--run-ignored", "only"]
+        build = [
+            "-p",
+            "fixture",
+            "--locked",
+            "--offline",
+            "--features=one,two",
+            "--no-default-features",
+            "--lib",
+            "--cargo-profile",
+            "dev-small",
+            "--target-dir",
+            "/exact/target",
+            "-pother",
+            "-Fmore",
+        ]
+        runtime = [
+            "--cargo-metadata",
+            "/owned/current.json",
+            "--profile",
+            "local",
+            "-E",
+            "test(original)",
+            "--partition=hash:1/2",
+            "--retries",
+            "1",
+            "--test-threads=2",
+            "--no-fail-fast",
+            "--run-ignored",
+            "only",
+        ]
         tail = ["--", "literal--locked", "--exact", "--skip", "-pnot-an-option"]
         command = ["cargo", "nextest", "run", *build, *runtime, *tail]
         original = command[:]
-        execution, metadata, reason = ENV.listed_execution_arguments(command, "/owned/binaries.json")
+        execution, metadata, reason = ENV.listed_execution_arguments(
+            command, "/owned/binaries.json"
+        )
         self.assertEqual(command, original)
-        self.assertEqual(execution, ["cargo", "nextest", "run", *runtime,
-                                    "--binaries-metadata", "/owned/binaries.json", *tail])
+        self.assertEqual(
+            execution,
+            [
+                "cargo",
+                "nextest",
+                "run",
+                *runtime,
+                "--binaries-metadata",
+                "/owned/binaries.json",
+                *tail,
+            ],
+        )
         self.assertEqual(metadata, "/owned/current.json")
         self.assertIsNone(reason)
         listing, reason = ENV.listing_arguments(command[3:], internal_metadata=True)
         self.assertIsNone(reason)
-        self.assertEqual(listing[:len(build)], build)
+        self.assertEqual(listing[: len(build)], build)
 
     def test_unknown_configuration_target_and_missing_metadata_keep_original_path(self):
         prefix = ["cargo", "nextest", "run", "-p", "fixture"]
-        for tail in (["--config", "target.runner='custom'"], ["-Zunstable-options"],
-                     ["--target", "foreign"], ["--config-file", "custom.toml"],
-                     ["--future-flag", "value"], ["--cargo-metadata", "one", "--cargo-metadata", "two"],
-                     [], ["--cargo-metadata"], ["--cargo-metadata", "--"]):
+        for tail in (
+            ["--config", "target.runner='custom'"],
+            ["-Zunstable-options"],
+            ["--target", "foreign"],
+            ["--config-file", "custom.toml"],
+            ["--future-flag", "value"],
+            ["--cargo-metadata", "one", "--cargo-metadata", "two"],
+            [],
+            ["--cargo-metadata"],
+            ["--cargo-metadata", "--"],
+        ):
             with self.subTest(tail=tail):
                 command = prefix + tail
-                result, metadata, reason = ENV.listed_execution_arguments(command, "/owned/list.json")
+                result, metadata, reason = ENV.listed_execution_arguments(
+                    command, "/owned/list.json"
+                )
                 self.assertIsNone(result)
                 self.assertIsNone(metadata)
                 self.assertIsInstance(reason, str)
@@ -63,17 +111,54 @@ class ExecutionIdentityTests(unittest.TestCase):
         self.helper = self.target / "fixture-tool"
         self.helper.write_bytes(b"Synthetic helper, not a native executable\n")
         self.helper.chmod(0o700)
-        self.metadata = {"workspace_root": str(self.root), "workspace_members": ["fixture-id"],
-                         "packages": [{"id": "fixture-id", "name": "fixture",
-                          "manifest_path": str(self.manifest), "targets": [
-                              {"kind": ["bin"], "name": "fixture-tool", "src_path": str(self.source)}]}]}
+        self.metadata = {
+            "workspace_root": str(self.root),
+            "workspace_members": ["fixture-id"],
+            "packages": [
+                {
+                    "id": "fixture-id",
+                    "name": "fixture",
+                    "manifest_path": str(self.manifest),
+                    "targets": [
+                        {
+                            "kind": ["bin"],
+                            "name": "fixture-tool",
+                            "src_path": str(self.source),
+                        }
+                    ],
+                }
+            ],
+        }
         self.metadata_path = self.root / "current-metadata.json"
         self.metadata_path.write_text(json.dumps(self.metadata))
-        self.listing = {"rust-build-meta": {"target-directory": str(self.target),
-            "non-test-binaries": {"fixture-id": [{"kind": "bin-exe", "name": "fixture-tool", "path": "fixture-tool"}]}},
-            "rust-binaries": {}}
-        self.command = ["cargo", "nextest", "run", "--no-fail-fast", "-p", "fixture", "--locked",
-                        "-E", "test(original_case)", "--cargo-metadata", str(self.metadata_path)]
+        self.listing = {
+            "rust-build-meta": {
+                "target-directory": str(self.target),
+                "non-test-binaries": {
+                    "fixture-id": [
+                        {
+                            "kind": "bin-exe",
+                            "name": "fixture-tool",
+                            "path": "fixture-tool",
+                        }
+                    ]
+                },
+            },
+            "rust-binaries": {},
+        }
+        self.command = [
+            "cargo",
+            "nextest",
+            "run",
+            "--no-fail-fast",
+            "-p",
+            "fixture",
+            "--locked",
+            "-E",
+            "test(original_case)",
+            "--cargo-metadata",
+            str(self.metadata_path),
+        ]
         self.calls = []
 
     def replace_same_bytes(self, path):
@@ -99,7 +184,9 @@ class ExecutionIdentityTests(unittest.TestCase):
                 listed = Path(argv[argv.index("--binaries-metadata") + 1])
                 self.assertEqual(json.loads(listed.read_bytes()), self.listing)
                 self.assertEqual(argv[argv.index("-E") + 1], "test(original_case)")
-                self.assertEqual(kwargs["env"]["NEXTEST_BIN_EXE_fixture_tool"], str(self.helper))
+                self.assertEqual(
+                    kwargs["env"]["NEXTEST_BIN_EXE_fixture_tool"], str(self.helper)
+                )
                 if mode == "helper-replace":
                     self.replace_same_bytes(self.helper)
                 elif mode == "helper-content":
@@ -111,6 +198,7 @@ class ExecutionIdentityTests(unittest.TestCase):
                 elif mode == "source-change":
                     self.source.write_text("fn main() { panic!(); }\n")
             return native_exit
+
         with patch.object(module.subprocess, "call", side_effect=fake_call):
             status = module.run(self.command, self.metadata)
         paths = list(self.target.glob("hepta-nextest/*/receipt.json"))
@@ -118,13 +206,19 @@ class ExecutionIdentityTests(unittest.TestCase):
         return status, json.loads(paths[0].read_bytes())
 
     def test_same_bytes_second_build_replacement_rejects_original_path(self):
-        with patch.object(ENV, "listed_execution_arguments",
-                          return_value=(None, None, "exercise unchanged original-command path")):
+        with patch.object(
+            ENV,
+            "listed_execution_arguments",
+            return_value=(None, None, "exercise unchanged original-command path"),
+        ):
             status, receipt = self.execute()
         self.assertEqual(status, 1)
         self.assertEqual(receipt["command_exit_code"], 100)
         self.assertEqual(receipt["status"], "BINARY_IDENTITY_REJECTED")
-        before, after = receipt["helpers"][0]["executable"], receipt["payloads_after"][0]
+        before, after = (
+            receipt["helpers"][0]["executable"],
+            receipt["payloads_after"][0],
+        )
         self.assertEqual(before["sha256"], after["sha256"])
         self.assertNotEqual(before["inode"], after["inode"])
 
@@ -132,14 +226,24 @@ class ExecutionIdentityTests(unittest.TestCase):
         status, receipt = self.execute()
         self.assertEqual(status, 100)
         self.assertEqual(receipt["command"], self.command)
-        self.assertEqual(receipt["status"], "LISTED_BINARIES_TERMINAL_OBSERVATIONS_MATCH")
-        self.assertEqual(receipt["payloads_after"], [receipt["helpers"][0]["executable"]])
-        self.assertEqual(receipt["execution_inputs_before"], receipt["execution_inputs_after"])
+        self.assertEqual(
+            receipt["status"], "LISTED_BINARIES_TERMINAL_OBSERVATIONS_MATCH"
+        )
+        self.assertEqual(
+            receipt["payloads_after"], [receipt["helpers"][0]["executable"]]
+        )
+        self.assertEqual(
+            receipt["execution_inputs_before"], receipt["execution_inputs_after"]
+        )
         saved_cargo = receipt["execution_cargo_metadata"]
-        self.assertEqual(Path(saved_cargo["path"]).read_bytes(), self.metadata_path.read_bytes())
+        self.assertEqual(
+            Path(saved_cargo["path"]).read_bytes(), self.metadata_path.read_bytes()
+        )
         self.assertEqual(saved_cargo, receipt["execution_cargo_metadata_after"])
-        self.assertEqual({key: saved_cargo[key] for key in ("bytes", "sha256")},
-                         receipt["execution_input_expected"][1])
+        self.assertEqual(
+            {key: saved_cargo[key] for key in ("bytes", "sha256")},
+            receipt["execution_input_expected"][1],
+        )
         self.assertEqual(len(self.calls), 2)
         self.assertNotIn("-p", self.calls[1])
         self.assertNotIn("--locked", self.calls[1])
@@ -178,11 +282,13 @@ class ExecutionIdentityTests(unittest.TestCase):
 
     def test_wrong_metadata_bytes_refuse_to_run_tests(self):
         self.metadata_path.write_text(json.dumps({"not": "the supplied inventory"}))
+
         def fake_call(argv, **kwargs):
             self.calls.append(argv)
             self.assertEqual(argv[2], "list")
             kwargs["stdout"].write(json.dumps(self.listing).encode())
             return 0
+
         with patch.object(ENV.subprocess, "call", side_effect=fake_call):
             self.assertEqual(ENV.run(self.command, self.metadata), 1)
         self.assertEqual(len(self.calls), 1)
@@ -190,14 +296,22 @@ class ExecutionIdentityTests(unittest.TestCase):
     def test_listing_rewritten_after_parse_and_binding_refuses_execution(self):
         observe = ENV.file_observation
         changed = []
+
         def mutate(path, **kwargs):
             path = Path(path)
-            if not changed and path.name == "binaries.json" and path.parent.parent == self.target / "hepta-nextest":
+            if (
+                not changed
+                and path.name == "binaries.json"
+                and path.parent.parent == self.target / "hepta-nextest"
+            ):
                 value = json.loads(path.read_bytes())
-                value["rust-build-meta"]["target-directory"] = str(self.root / "different-target")
+                value["rust-build-meta"]["target-directory"] = str(
+                    self.root / "different-target"
+                )
                 path.write_text(json.dumps(value))
                 changed.append(str(path))
             return observe(path, **kwargs)
+
         with patch.object(ENV, "file_observation", side_effect=mutate):
             status, receipt = self.execute(native_exit=0)
         self.assertEqual(status, 1)
@@ -206,9 +320,12 @@ class ExecutionIdentityTests(unittest.TestCase):
         self.assertNotIn("command_exit_code", receipt)
         self.assertIn("metadata differs from validated bytes", receipt["error"])
 
-    def test_cargo_metadata_rewritten_between_equality_read_and_observation_refuses_execution(self):
+    def test_cargo_metadata_rewritten_between_equality_read_and_observation_refuses_execution(
+        self,
+    ):
         observe = ENV.file_observation
         changed = []
+
         def mutate(path, **kwargs):
             path = Path(path)
             if not changed and path == self.metadata_path:
@@ -217,6 +334,7 @@ class ExecutionIdentityTests(unittest.TestCase):
                 path.write_text(json.dumps(value))
                 changed.append(str(path))
             return observe(path, **kwargs)
+
         with patch.object(ENV, "file_observation", side_effect=mutate):
             status, receipt = self.execute(native_exit=0)
         self.assertEqual(status, 1)

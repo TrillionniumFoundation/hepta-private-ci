@@ -23,7 +23,15 @@ impl FinalUseAuthority {
         clock: Arc<dyn AuthorityClock>,
         frontier_store: Arc<dyn AuthorityFrontierStore<FinalUseFrontier>>,
     ) -> Result<Self, FinalUseError> {
-        Self::open_selected_issuer_journal(directory, signer_id, issuer_keys, head, clock, frontier_store, JournalOpenSelection::Fresh)
+        Self::open_selected_issuer_journal(
+            directory,
+            signer_id,
+            issuer_keys,
+            head,
+            clock,
+            frontier_store,
+            JournalOpenSelection::Fresh,
+        )
     }
 
     /// Open only complete current-schema state. Missing/partial state, missing
@@ -37,7 +45,15 @@ impl FinalUseAuthority {
         clock: Arc<dyn AuthorityClock>,
         frontier_store: Arc<dyn AuthorityFrontierStore<FinalUseFrontier>>,
     ) -> Result<Self, FinalUseError> {
-        Self::open_selected_issuer_journal(directory, signer_id, issuer_keys, head, clock, frontier_store, JournalOpenSelection::Existing)
+        Self::open_selected_issuer_journal(
+            directory,
+            signer_id,
+            issuer_keys,
+            head,
+            clock,
+            frontier_store,
+            JournalOpenSelection::Existing,
+        )
     }
 
     fn open_selected_issuer_journal(
@@ -57,14 +73,25 @@ impl FinalUseAuthority {
         // A fresh consumer may initialize only the original empty frontier.
         // Check it before creating the one-shot lock; an uncertain read does
         // not authorize a local genesis. Recheck the actual opened state below.
-        if matches!(selection, JournalOpenSelection::Fresh) && frontier_store.load(&signer_id).map_err(map_trust_error)?
-            != FinalUseFrontier::for_initial_head(&head)?
+        if matches!(selection, JournalOpenSelection::Fresh)
+            && frontier_store.load(&signer_id).map_err(map_trust_error)?
+                != FinalUseFrontier::for_initial_head(&head)?
         {
             return Err(FinalUseError::AntiRollbackViolation);
         }
         let (store, state) = match selection {
-            JournalOpenSelection::Fresh => store::Store::initialize_key_ring_fresh(directory, &signer_id, issuer_trust_sha256, head)?,
-            JournalOpenSelection::Existing => store::Store::open_key_ring_existing(directory, &signer_id, issuer_trust_sha256, head)?,
+            JournalOpenSelection::Fresh => store::Store::initialize_key_ring_fresh(
+                directory,
+                &signer_id,
+                issuer_trust_sha256,
+                head,
+            )?,
+            JournalOpenSelection::Existing => store::Store::open_key_ring_existing(
+                directory,
+                &signer_id,
+                issuer_trust_sha256,
+                head,
+            )?,
         };
         let observed = frontier_for_state(&state);
         let trusted = frontier_store.load(&signer_id).map_err(map_trust_error)?;

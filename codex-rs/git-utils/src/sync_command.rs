@@ -76,22 +76,37 @@ pub fn run_git_command_with_custody(
     cancellation: &GitCommandCancellation,
 ) -> Result<Output, String> {
     cancellation.check()?;
-    let stdout = tempfile::tempfile().map_err(|err| format!("failed to capture {context}: {err}"))?;
-    let stderr = tempfile::tempfile().map_err(|err| format!("failed to capture {context}: {err}"))?;
+    let stdout =
+        tempfile::tempfile().map_err(|err| format!("failed to capture {context}: {err}"))?;
+    let stderr =
+        tempfile::tempfile().map_err(|err| format!("failed to capture {context}: {err}"))?;
     command
         .stdin(Stdio::null())
-        .stdout(stdout.try_clone().map_err(|err| format!("failed to capture {context}: {err}"))?)
-        .stderr(stderr.try_clone().map_err(|err| format!("failed to capture {context}: {err}"))?);
+        .stdout(
+            stdout
+                .try_clone()
+                .map_err(|err| format!("failed to capture {context}: {err}"))?,
+        )
+        .stderr(
+            stderr
+                .try_clone()
+                .map_err(|err| format!("failed to capture {context}: {err}"))?,
+        );
     cancellation.check()?;
-    let mut child = StdChildCustody::spawn(command)
-        .map_err(|err| format!("failed to run {context}: {err}"))?;
+    let mut child =
+        StdChildCustody::spawn(command).map_err(|err| format!("failed to run {context}: {err}"))?;
     let start = Instant::now();
     loop {
         if cancellation.is_cancelled() {
-            child.kill_and_wait().map_err(|err| format!("failed to stop cancelled {context}: {err}"))?;
+            child
+                .kill_and_wait()
+                .map_err(|err| format!("failed to stop cancelled {context}: {err}"))?;
             return Err(format!("{context} cancelled"));
         }
-        if let Some(status) = child.try_wait().map_err(|err| format!("failed to poll {context}: {err}"))? {
+        if let Some(status) = child
+            .try_wait()
+            .map_err(|err| format!("failed to poll {context}: {err}"))?
+        {
             return Ok(Output {
                 status,
                 stdout: read_captured(&stdout, context)?,
@@ -99,13 +114,18 @@ pub fn run_git_command_with_custody(
             });
         }
         if start.elapsed() >= timeout {
-            child.kill_and_wait().map_err(|err| format!("failed to stop {context} after timeout: {err}"))?;
+            child
+                .kill_and_wait()
+                .map_err(|err| format!("failed to stop {context} after timeout: {err}"))?;
             let bytes = read_captured(&stderr, context)?;
             let stderr = String::from_utf8_lossy(&bytes).trim().to_string();
             return if stderr.is_empty() {
                 Err(format!("{context} timed out after {}s", timeout.as_secs()))
             } else {
-                Err(format!("{context} timed out after {}s: {stderr}", timeout.as_secs()))
+                Err(format!(
+                    "{context} timed out after {}s: {stderr}",
+                    timeout.as_secs()
+                ))
             };
         }
         std::thread::sleep(POLL_INTERVAL);
@@ -116,7 +136,10 @@ fn read_captured(file: &File, context: &str) -> Result<Vec<u8>, String> {
     // Bound this read to the observed file length. An escaped Unix descendant
     // cannot turn a continually appended file into an unbounded EOF wait.
     // Positional reads also leave the inherited writer's shared offset alone.
-    let length = file.metadata().map_err(|err| format!("failed to read {context} capture: {err}"))?.len();
+    let length = file
+        .metadata()
+        .map_err(|err| format!("failed to read {context} capture: {err}"))?
+        .len();
     let mut bytes = Vec::new();
     let mut offset = 0;
     let mut buffer = [0; 8192];

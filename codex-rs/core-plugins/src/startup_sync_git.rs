@@ -51,7 +51,12 @@ pub(super) fn sync_with_cancellation(
             cancellation,
         )?;
     } else {
-        fetch_curated_plugins_commit(staged_repo_dir.path(), &remote_sha, git_binary, cancellation)?;
+        fetch_curated_plugins_commit(
+            staged_repo_dir.path(),
+            &remote_sha,
+            git_binary,
+            cancellation,
+        )?;
     }
 
     reset_curated_plugins_checkout(staged_repo_dir.path(), git_binary, cancellation)?;
@@ -118,11 +123,20 @@ fn fetch_curated_plugins_commit_from(
         .args(["fetch", "--depth", "1", "--no-tags"])
         .arg(source)
         .arg(fetch_refspec);
-    let output = run_git_command_with_custody(&mut command, context, CURATED_PLUGINS_GIT_TIMEOUT, cancellation)?;
+    let output = run_git_command_with_custody(
+        &mut command,
+        context,
+        CURATED_PLUGINS_GIT_TIMEOUT,
+        cancellation,
+    )?;
     ensure_git_success(&output, context)
 }
 
-fn reset_curated_plugins_checkout(repo_path: &Path, git_binary: &Path, cancellation: &GitCommandCancellation) -> Result<(), String> {
+fn reset_curated_plugins_checkout(
+    repo_path: &Path,
+    git_binary: &Path,
+    cancellation: &GitCommandCancellation,
+) -> Result<(), String> {
     run_git_in_repo(
         repo_path,
         git_binary,
@@ -148,7 +162,12 @@ fn run_git_in_repo(
 ) -> Result<(), String> {
     let mut command = git_command(git_binary);
     command.arg("-C").arg(repo_path).args(args);
-    let output = run_git_command_with_custody(&mut command, context, CURATED_PLUGINS_GIT_TIMEOUT, cancellation)?;
+    let output = run_git_command_with_custody(
+        &mut command,
+        context,
+        CURATED_PLUGINS_GIT_TIMEOUT,
+        cancellation,
+    )?;
     ensure_git_success(&output, context)
 }
 
@@ -167,7 +186,11 @@ fn read_local_git_or_sha_file(
     read_sha_file(sha_path)
 }
 
-fn git_ls_remote_head_sha(codex_home: &Path, git_binary: &Path, cancellation: &GitCommandCancellation) -> Result<String, String> {
+fn git_ls_remote_head_sha(
+    codex_home: &Path,
+    git_binary: &Path,
+    cancellation: &GitCommandCancellation,
+) -> Result<String, String> {
     let mut command = git_command(git_binary);
     let _trusted_repository = crate::configure_trusted_git_repository(&mut command, codex_home)?;
     command
@@ -197,11 +220,22 @@ fn git_ls_remote_head_sha(codex_home: &Path, git_binary: &Path, cancellation: &G
     Ok(sha.to_string())
 }
 
-fn git_head_sha(repo_path: &Path, git_binary: &Path, cancellation: &GitCommandCancellation) -> Result<String, String> {
+fn git_head_sha(
+    repo_path: &Path,
+    git_binary: &Path,
+    cancellation: &GitCommandCancellation,
+) -> Result<String, String> {
     let mut command = git_command(git_binary);
-    command.arg("-C").arg(repo_path).arg("rev-parse").arg("HEAD");
+    command
+        .arg("-C")
+        .arg(repo_path)
+        .arg("rev-parse")
+        .arg("HEAD");
     let output = run_git_command_with_custody(
-        &mut command, "git rev-parse HEAD", CURATED_PLUGINS_GIT_TIMEOUT, cancellation,
+        &mut command,
+        "git rev-parse HEAD",
+        CURATED_PLUGINS_GIT_TIMEOUT,
+        cancellation,
     )?;
     ensure_git_success(&output, "git rev-parse HEAD")?;
 
@@ -216,17 +250,25 @@ fn git_head_sha(repo_path: &Path, git_binary: &Path, cancellation: &GitCommandCa
 }
 
 #[cfg(target_os = "macos")]
-pub(super) fn apple_developer_tools_available(cancellation: &GitCommandCancellation) -> Result<bool, String> {
+pub(super) fn apple_developer_tools_available(
+    cancellation: &GitCommandCancellation,
+) -> Result<bool, String> {
     let mut command = std::process::Command::new("/usr/bin/xcode-select");
     command.arg("-p");
     let result = run_git_command_with_custody(
-        &mut command, "xcode-select developer tools probe", CURATED_PLUGINS_GIT_TIMEOUT, cancellation,
+        &mut command,
+        "xcode-select developer tools probe",
+        CURATED_PLUGINS_GIT_TIMEOUT,
+        cancellation,
     );
     cancellation.check()?;
     Ok(result.is_ok_and(|output| output.status.success()))
 }
 
 #[cfg(test)]
-pub(super) fn sync_openai_plugins_repo_via_git(codex_home: &Path, git_binary: &Path) -> Result<String, String> {
+pub(super) fn sync_openai_plugins_repo_via_git(
+    codex_home: &Path,
+    git_binary: &Path,
+) -> Result<String, String> {
     sync_with_cancellation(codex_home, git_binary, &GitCommandCancellation::default())
 }

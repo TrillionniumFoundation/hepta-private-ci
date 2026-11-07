@@ -57,7 +57,10 @@ fn fixture_command(role: &str, root: &Path) -> Command {
 fn wait_for(mut condition: impl FnMut() -> bool) {
     let deadline = Instant::now() + Duration::from_secs(5);
     while !condition() {
-        assert!(Instant::now() < deadline, "native fixture did not reach its terminal state");
+        assert!(
+            Instant::now() < deadline,
+            "native fixture did not reach its terminal state"
+        );
         std::thread::sleep(Duration::from_millis(10));
     }
 }
@@ -139,7 +142,9 @@ fn normal_leader_exit_cleans_descendants_and_preserves_an_unrelated_owner() {
     wait_for(|| child.gone());
     assert!(!unrelated_identity.gone());
     assert_eq!(unrelated.try_wait().expect("poll independent owner"), None);
-    unrelated.kill_and_wait().expect("clean up independent owner");
+    unrelated
+        .kill_and_wait()
+        .expect("clean up independent owner");
     wait_for(|| unrelated_identity.gone());
 }
 
@@ -151,7 +156,10 @@ fn explicit_cleanup_kills_the_live_leader_and_its_descendant() {
     let child = descendant(&root.0);
     let terminal = owned.kill_and_wait().expect("clean up live owned tree");
     assert!(!terminal.success());
-    assert_eq!(owned.try_wait().expect("repeat cleanup status"), Some(terminal));
+    assert_eq!(
+        owned.try_wait().expect("repeat cleanup status"),
+        Some(terminal)
+    );
     wait_for(|| child.gone());
 }
 
@@ -176,9 +184,14 @@ fn explicit_cleanup_reaps_the_actual_child_after_it_moves_out_of_the_owned_group
     let child = descendant(&root.0);
     assert_eq!(child.0, owned.child.id() as libc::pid_t);
     assert_eq!(unsafe { libc::getpgid(child.0) }, parent_group);
-    let status = owned.kill_and_wait().expect("reap the retained direct child after group migration");
+    let status = owned
+        .kill_and_wait()
+        .expect("reap the retained direct child after group migration");
     assert!(!status.success());
-    assert_eq!(owned.try_wait().expect("repeated terminal observation"), Some(status));
+    assert_eq!(
+        owned.try_wait().expect("repeated terminal observation"),
+        Some(status)
+    );
     wait_for(|| child.gone());
 }
 
@@ -192,15 +205,34 @@ fn solo_exited_leader_is_reaped_and_keeps_its_actual_exit_status() {
     let root = FixtureRoot::new();
     let mut owned = StdChildCustody::spawn(&mut fixture_command("solo-exit", &root.0))
         .expect("spawn the actual solo child");
-    wait_for(|| owned.peek_exit().expect("observe actual exit without reaping"));
-    let terminal = owned.try_wait().expect("reap the retained solo zombie")
+    wait_for(|| {
+        owned
+            .peek_exit()
+            .expect("observe actual exit without reaping")
+    });
+    let terminal = owned
+        .try_wait()
+        .expect("reap the retained solo zombie")
         .expect("the actual child has exited");
     assert_eq!(terminal.code(), Some(7));
-    assert_eq!(owned.try_wait().expect("repeat the actual status"), Some(terminal));
-    assert_eq!(owned.kill_and_wait().expect("repeated cleanup returns cached status"), terminal);
+    assert_eq!(
+        owned.try_wait().expect("repeat the actual status"),
+        Some(terminal)
+    );
+    assert_eq!(
+        owned
+            .kill_and_wait()
+            .expect("repeated cleanup returns cached status"),
+        terminal
+    );
     assert!(!unrelated_identity.gone());
-    assert_eq!(unrelated.try_wait().expect("unrelated owner remains live"), None);
-    unrelated.kill_and_wait().expect("clean up the unrelated owner");
+    assert_eq!(
+        unrelated.try_wait().expect("unrelated owner remains live"),
+        None
+    );
+    unrelated
+        .kill_and_wait()
+        .expect("clean up the unrelated owner");
     wait_for(|| unrelated_identity.gone());
 }
 
@@ -208,7 +240,10 @@ fn solo_exited_leader_is_reaped_and_keeps_its_actual_exit_status() {
 #[ignore = "native child fixture, invoked only through the owning test executable"]
 fn native_child_fixture() {
     let root = PathBuf::from(std::env::var_os(ROOT).expect("owning parent supplies fixture root"));
-    match std::env::var(ROLE).expect("owning parent supplies fixture role").as_str() {
+    match std::env::var(ROLE)
+        .expect("owning parent supplies fixture role")
+        .as_str()
+    {
         #[cfg(target_os = "macos")]
         "solo-exit" => std::process::exit(7),
         "hold" => {
@@ -223,7 +258,9 @@ fn native_child_fixture() {
         "leader" => {
             // This child intentionally inherits the containing group/job and outlives its leader.
             // It is retained by StdChildCustody in the original parent, not by this helper handle.
-            let _child = fixture_command("hold", &root).spawn().expect("spawn actual descendant");
+            let _child = fixture_command("hold", &root)
+                .spawn()
+                .expect("spawn actual descendant");
             wait_for(|| root.join("release").exists());
         }
         #[cfg(target_os = "macos")]
@@ -231,15 +268,24 @@ fn native_child_fixture() {
             for name in ["first", "second"] {
                 let child_root = root.join(name);
                 std::fs::create_dir(&child_root).expect("create descendant fixture root");
-                let _child = fixture_command("hold", &child_root).spawn()
+                let _child = fixture_command("hold", &child_root)
+                    .spawn()
                     .expect("spawn an actual group member");
             }
             wait_for(|| root.join("release").exists());
         }
         #[cfg(unix)]
         "moved-direct" => {
-            let parent_group = std::env::var(PARENT_GROUP).unwrap().parse::<libc::pid_t>().unwrap();
-            assert_eq!(unsafe { libc::setpgid(/*pid*/ 0, parent_group) }, 0);
+            let parent_group = std::env::var(PARENT_GROUP)
+                .unwrap()
+                .parse::<libc::pid_t>()
+                .unwrap();
+            assert_eq!(
+                unsafe {
+                    libc::setpgid(/*pid*/ 0, parent_group)
+                },
+                0
+            );
             std::fs::write(root.join("ready.pending"), std::process::id().to_string()).unwrap();
             std::fs::rename(root.join("ready.pending"), root.join("ready.pid")).unwrap();
             loop {

@@ -58,11 +58,9 @@ fn compaction_phase_reuses_socket_identity_but_keeps_recovery_phase() {
         .expect("provider");
     let turn = metadata(CodexResponsesRequestKind::Turn);
     let connection = WebsocketConnectionIdentity::from_provider(
-        &provider,
-        /*beta_features_header*/ None,
-        &turn,
+        &provider, /*beta_features_header*/ None, &turn,
     )
-        .expect("turn connection identity");
+    .expect("turn connection identity");
     let recovery = serde_json::to_value(turn.turn_recovery_compatibility_projection())
         .expect("turn recovery projection");
 
@@ -71,14 +69,13 @@ fn compaction_phase_reuses_socket_identity_but_keeps_recovery_phase() {
         assert_eq!(
             connection,
             WebsocketConnectionIdentity::from_provider(
-                &provider,
-                /*beta_features_header*/ None,
-                &compact,
+                &provider, /*beta_features_header*/ None, &compact,
             )
-                .expect("compaction connection identity")
+            .expect("compaction connection identity")
         );
-        let compact_recovery = serde_json::to_value(compact.turn_recovery_compatibility_projection())
-            .expect("compaction recovery projection");
+        let compact_recovery =
+            serde_json::to_value(compact.turn_recovery_compatibility_projection())
+                .expect("compaction recovery projection");
         assert_ne!(recovery, compact_recovery);
         assert_eq!(compact_recovery["request_kind"], "compaction");
     }
@@ -91,11 +88,9 @@ fn compaction_still_rebinds_sandbox_and_product_owned_connection_metadata() {
         .expect("provider");
     let turn = metadata(CodexResponsesRequestKind::Turn);
     let connection = WebsocketConnectionIdentity::from_provider(
-        &provider,
-        /*beta_features_header*/ None,
-        &turn,
+        &provider, /*beta_features_header*/ None, &turn,
     )
-        .expect("turn connection identity");
+    .expect("turn connection identity");
     let compact = metadata(compaction_kind(CompactionPhase::MidTurn));
 
     let mut changed_sandbox = compact.clone();
@@ -107,7 +102,7 @@ fn compaction_still_rebinds_sandbox_and_product_owned_connection_metadata() {
             /*beta_features_header*/ None,
             &changed_sandbox,
         )
-            .expect("different sandbox identity")
+        .expect("different sandbox identity")
     );
     let mut changed_product = compact;
     let configured = BTreeMap::from([("codex_security_surface".to_string(), "other".to_string())]);
@@ -120,17 +115,15 @@ fn compaction_still_rebinds_sandbox_and_product_owned_connection_metadata() {
             /*beta_features_header*/ None,
             &changed_product,
         )
-            .expect("different product identity")
+        .expect("different product identity")
     );
     let memory = metadata(CodexResponsesRequestKind::Memory);
     assert_ne!(
         connection,
         WebsocketConnectionIdentity::from_provider(
-            &provider,
-            /*beta_features_header*/ None,
-            &memory,
+            &provider, /*beta_features_header*/ None, &memory,
         )
-            .expect("memory request remains separate")
+        .expect("memory request remains separate")
     );
 }
 
@@ -180,7 +173,9 @@ fn compaction_phase_still_reaches_wire_and_provider_request_binding() {
         let encoded_metadata = encoded["client_metadata"]["x-codex-turn-metadata"]
             .as_str()
             .expect("request-scoped metadata carrier");
-        let expected_metadata = metadata.turn_metadata_value().expect("complete turn metadata");
+        let expected_metadata = metadata
+            .turn_metadata_value()
+            .expect("complete turn metadata");
         assert_eq!(
             serde_json::from_str::<serde_json::Value>(encoded_metadata)
                 .expect("encoded turn metadata"),
@@ -207,7 +202,9 @@ fn compaction_phase_still_reaches_wire_and_provider_request_binding() {
             ModelProviderTransport::WebSocket,
             "ws://127.0.0.1:1/v1/responses",
             &logical_responses_request(&request),
-            &ProviderWireSemantic::new(&wire, /*routing_hint*/ None, /*responses_lite*/ false),
+            &ProviderWireSemantic::new(
+                &wire, /*routing_hint*/ None, /*responses_lite*/ false,
+            ),
             /*previous_response_id*/ None,
             /*generate*/ true,
         )

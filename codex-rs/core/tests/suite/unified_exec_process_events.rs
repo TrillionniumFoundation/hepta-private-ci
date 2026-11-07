@@ -916,7 +916,8 @@ timeout = 900
         if managed_network {
             loop {
                 let event = test.codex.next_event().await?;
-                if matches!(event.msg, EventMsg::ExecCommandEnd(event) if event.call_id == CALL_ID) {
+                if matches!(event.msg, EventMsg::ExecCommandEnd(event) if event.call_id == CALL_ID)
+                {
                     break;
                 }
             }
@@ -927,7 +928,9 @@ timeout = 900
             test_complete_tx.send(()).is_ok(),
             "fake exec-server must remain alive until output was consumed"
         );
-        exec_server.await.context("fake exec-server task should finish")
+        exec_server
+            .await
+            .context("fake exec-server task should finish")
     })
     .await
     .context("fake exec-server should finish after output observation")??;

@@ -45,8 +45,7 @@ async fn connect_fixture() -> IoResult<(RemoteAppServerClient, WebSocketStream<D
     let (client_io, peer_io) = tokio::io::duplex(TRANSPORT_BUFFER_BYTES);
     let client_stream =
         WebSocketStream::from_raw_socket(client_io, Role::Client, /*config*/ None).await;
-    let mut peer =
-        WebSocketStream::from_raw_socket(peer_io, Role::Server, /*config*/ None).await;
+    let mut peer = WebSocketStream::from_raw_socket(peer_io, Role::Server, /*config*/ None).await;
     let handshake = async {
         let initialize = read_message(&mut peer).await?;
         assert_eq!(initialize["method"], "initialize");
@@ -82,10 +81,9 @@ async fn queued_request_cancelled_before_worker_poll_is_not_written() -> IoResul
     timeout(CASE_TIMEOUT, async {
         let (client, mut peer) = connect_fixture().await?;
         let handle = client.request_handle();
-        let mut cancelled = Box::pin(handle.request_json_rpc(request(
-            RequestId::Integer(1001),
-            "cancelled-before-write",
-        )));
+        let mut cancelled = Box::pin(
+            handle.request_json_rpc(request(RequestId::Integer(1001), "cancelled-before-write")),
+        );
         // No executor yield between this actual enqueue and dropping its waiter.
         assert!(futures::poll!(cancelled.as_mut()).is_pending());
         assert_eq!(handle.command_tx.capacity(), 0);
@@ -97,8 +95,11 @@ async fn queued_request_cancelled_before_worker_poll_is_not_written() -> IoResul
             let mut frames = Vec::new();
             loop {
                 let frame = read_message(&mut peer).await?;
-                send_message(&mut peer, serde_json::json!({"id": frame["id"], "result": {}}))
-                    .await?;
+                send_message(
+                    &mut peer,
+                    serde_json::json!({"id": frame["id"], "result": {}}),
+                )
+                .await?;
                 let is_barrier = frame["id"] == expected["id"];
                 frames.push(frame);
                 if is_barrier {
@@ -148,8 +149,11 @@ async fn cancelled_after_write_keeps_pending_id_until_the_actual_reply() -> IoRe
         let expected_barrier = serde_json::to_value(&barrier).map_err(IoError::other)?;
         let receive = async {
             let frame = read_message(&mut peer).await?;
-            send_message(&mut peer, serde_json::json!({"id": frame["id"], "result": {}}))
-                .await?;
+            send_message(
+                &mut peer,
+                serde_json::json!({"id": frame["id"], "result": {}}),
+            )
+            .await?;
             Ok::<_, IoError>(frame)
         };
         let (response, barrier_frame) = tokio::join!(handle.request_json_rpc(barrier), receive);
@@ -192,18 +196,25 @@ async fn lost_reply_after_actual_frame_remains_a_transport_error() -> IoResult<(
         let unknown = pending.await;
         let event = client.next_event().await;
         let closed_owner = handle
-            .request_json_rpc(request(RequestId::Integer(3002), "closed-owner-must-not-reconnect"))
+            .request_json_rpc(request(
+                RequestId::Integer(3002),
+                "closed-owner-must-not-reconnect",
+            ))
             .await;
         client.shutdown().await?;
 
         assert_eq!(frame, expected);
         assert_eq!(
-            unknown.expect_err("a lost reply is not success or a no-effect receipt").kind(),
+            unknown
+                .expect_err("a lost reply is not success or a no-effect receipt")
+                .kind(),
             ErrorKind::ConnectionAborted
         );
         assert!(matches!(event, Some(AppServerEvent::Disconnected { .. })));
         assert_eq!(
-            closed_owner.expect_err("the closed worker must not reconnect or replay").kind(),
+            closed_owner
+                .expect_err("the closed worker must not reconnect or replay")
+                .kind(),
             ErrorKind::BrokenPipe
         );
         Ok::<(), IoError>(())

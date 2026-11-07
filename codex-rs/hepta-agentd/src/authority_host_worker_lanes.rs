@@ -78,24 +78,50 @@ impl HeldWorkerRootRegistration<'_> {
     /// fallback, restart claim, reconnect, successor reset or refund exists.
     /// This blocks until the peer closes a lane or an original owner fails.
     pub fn serve_worker_lanes(self, timeout: Duration, lifetime: Duration) -> io::Result<()> {
-        self.serve_worker_lanes_selected(timeout, lifetime, RootWorkerLaneSelection::ObservationOnly)
+        self.serve_worker_lanes_selected(
+            timeout,
+            lifetime,
+            RootWorkerLaneSelection::ObservationOnly,
+        )
     }
 
     /// Root alone selects a safe journal parent. The actual retained Child,
     /// original issuer/writer and reserved slot determine every other pin.
     /// This publishes only an empty directory and a second sealed offer; the
     /// Worker, after confirmation, creates its own journal as its actual UID.
-    pub fn serve_worker_journal_lanes(self, journal_parent: &std::path::Path, timeout: Duration, lifetime: Duration) -> io::Result<()> {
-        self.serve_worker_lanes_selected(timeout, lifetime, RootWorkerLaneSelection::Journal { parent: journal_parent })
+    pub fn serve_worker_journal_lanes(
+        self,
+        journal_parent: &std::path::Path,
+        timeout: Duration,
+        lifetime: Duration,
+    ) -> io::Result<()> {
+        self.serve_worker_lanes_selected(
+            timeout,
+            lifetime,
+            RootWorkerLaneSelection::Journal {
+                parent: journal_parent,
+            },
+        )
     }
 
-    fn serve_worker_lanes_selected(self, timeout: Duration, lifetime: Duration, selection: RootWorkerLaneSelection<'_>) -> io::Result<()> {
-        if timeout.is_zero() || timeout > Duration::from_millis(self._session.config.timeout_ms.min(5_000))
-            || lifetime.is_zero() || lifetime > Duration::from_millis(self._session.config.lifetime_ms.min(300_000))
+    fn serve_worker_lanes_selected(
+        self,
+        timeout: Duration,
+        lifetime: Duration,
+        selection: RootWorkerLaneSelection<'_>,
+    ) -> io::Result<()> {
+        if timeout.is_zero()
+            || timeout > Duration::from_millis(self._session.config.timeout_ms.min(5_000))
+            || lifetime.is_zero()
+            || lifetime > Duration::from_millis(self._session.config.lifetime_ms.min(300_000))
         {
-            return Err(refused("Worker lane limits must remain within the original Root service"));
+            return Err(refused(
+                "Worker lane limits must remain within the original Root service",
+            ));
         }
-        let end = Instant::now().checked_add(lifetime).ok_or_else(|| refused("Worker lifetime overflow"))?;
+        let end = Instant::now()
+            .checked_add(lifetime)
+            .ok_or_else(|| refused("Worker lifetime overflow"))?;
         let handoff_end = end.min(wire::deadline(timeout)?);
         self.verify_original_custody(handoff_end)?;
         let mut floor = ReservedWorkerFloor::reserve(self._session, &self.registration)?;
@@ -103,12 +129,23 @@ impl HeldWorkerRootRegistration<'_> {
         let result = (|| {
             self.verify_original_custody(handoff_end)?;
             let mut journal = match selection {
-                RootWorkerLaneSelection::Journal { parent } => Some(self._session.service.with_worker_floor_fence(Some(&self.registration), |view| {
-                    self.verify_original_custody(handoff_end)?;
-                    let journal = RootWorkerJournal::create_fresh(&floor, &self.registration, &view.owner_id, floor.frontier_for_handoff(&view.head)?, parent)?;
-                    self.verify_original_custody(handoff_end)?;
-                    Ok(journal)
-                })?),
+                RootWorkerLaneSelection::Journal { parent } => {
+                    Some(self._session.service.with_worker_floor_fence(
+                        Some(&self.registration),
+                        |view| {
+                            self.verify_original_custody(handoff_end)?;
+                            let journal = RootWorkerJournal::create_fresh(
+                                &floor,
+                                &self.registration,
+                                &view.owner_id,
+                                floor.frontier_for_handoff(&view.head)?,
+                                parent,
+                            )?;
+                            self.verify_original_custody(handoff_end)?;
+                            Ok(journal)
+                        },
+                    )?)
+                }
                 RootWorkerLaneSelection::ObservationOnly => None,
             };
             let bound = BoundWorkerLanes::bind(&self.registration, floor.slot_sequence())?;
@@ -165,20 +202,33 @@ impl HeldWorkerRootRegistration<'_> {
             for (lane, listener) in &bound.listeners {
                 let stream = self.accept_worker(listener, &floor, handoff_end)?;
                 let policy = HostAuthorityPeerPolicy {
-                    peer: HostIssuerPeer { uid: self.registration.worker.uid, pid: self.registration.worker.pid },
+                    peer: HostIssuerPeer {
+                        uid: self.registration.worker.uid,
+                        pid: self.registration.worker.pid,
+                    },
                     timeout,
                     lifetime: wire::remaining(end)?,
                     request_bound: 16 * 1024,
                     response_bound: 64 * 1024,
                 };
                 let shutdown = stream.try_clone()?;
-                let channel = HostAuthorityPeerChannel::from_stream(stream, policy, self._worker.pidfd.try_clone()?)
-                    .map_err(io::Error::other)?;
-                connected.push(ConnectedLane { lane: *lane, channel, stream: shutdown });
+                let channel = HostAuthorityPeerChannel::from_stream(
+                    stream,
+                    policy,
+                    self._worker.pidfd.try_clone()?,
+                )
+                .map_err(io::Error::other)?;
+                connected.push(ConnectedLane {
+                    lane: *lane,
+                    channel,
+                    stream: shutdown,
+                });
             }
             self.verify_original_custody(handoff_end)?;
             floor.check_current()?;
-            if let Some(journal) = journal.as_ref() { journal.check()?; }
+            if let Some(journal) = journal.as_ref() {
+                journal.check()?;
+            }
             loop {
                 let index = self.wait_lane(&connected, &floor, end)?;
                 let lane = connected[index].lane;
@@ -247,44 +297,72 @@ impl HeldWorkerRootRegistration<'_> {
         result
     }
 
-    fn accept_worker(&self, listener: &UnixListener, floor: &ReservedWorkerFloor, end: Instant) -> io::Result<UnixStream> {
+    fn accept_worker(
+        &self,
+        listener: &UnixListener,
+        floor: &ReservedWorkerFloor,
+        end: Instant,
+    ) -> io::Result<UnixStream> {
         loop {
             self.verify_original_custody(end)?;
             floor.check_current()?;
             match listener.accept() {
                 Ok((stream, _)) => return Ok(stream),
-                Err(error) if error.kind() == io::ErrorKind::WouldBlock || error.kind() == io::ErrorKind::Interrupted => {},
+                Err(error)
+                    if error.kind() == io::ErrorKind::WouldBlock
+                        || error.kind() == io::ErrorKind::Interrupted => {}
                 Err(error) => return Err(error),
             }
-            let timeout = Timespec::try_from(wire::remaining(end)?.min(Duration::from_millis(100))).map_err(io::Error::other)?;
-            let mut descriptors = [PollFd::new(listener, PollFlags::IN), PollFd::new(&self._worker.pidfd, PollFlags::IN)];
+            let timeout = Timespec::try_from(wire::remaining(end)?.min(Duration::from_millis(100)))
+                .map_err(io::Error::other)?;
+            let mut descriptors = [
+                PollFd::new(listener, PollFlags::IN),
+                PollFd::new(&self._worker.pidfd, PollFlags::IN),
+            ];
             match rustix::event::poll(&mut descriptors, Some(&timeout)) {
-                Ok(_) if !descriptors[1].revents().is_empty() => return Err(refused("original Worker exited before all lanes connected")),
-                Ok(_) => {},
-                Err(rustix::io::Errno::INTR) => {},
+                Ok(_) if !descriptors[1].revents().is_empty() => {
+                    return Err(refused("original Worker exited before all lanes connected"));
+                }
+                Ok(_) => {}
+                Err(rustix::io::Errno::INTR) => {}
                 Err(error) => return Err(io::Error::from(error)),
             }
         }
     }
 
-    fn wait_lane(&self, lanes: &[ConnectedLane], floor: &ReservedWorkerFloor, end: Instant) -> io::Result<usize> {
+    fn wait_lane(
+        &self,
+        lanes: &[ConnectedLane],
+        floor: &ReservedWorkerFloor,
+        end: Instant,
+    ) -> io::Result<usize> {
         loop {
             self.verify_original_custody(end)?;
             floor.check_current()?;
-            let timeout = Timespec::try_from(wire::remaining(end)?.min(Duration::from_millis(100))).map_err(io::Error::other)?;
-            let mut descriptors: Vec<_> = lanes.iter().map(|lane| PollFd::new(&lane.stream, PollFlags::IN)).collect();
+            let timeout = Timespec::try_from(wire::remaining(end)?.min(Duration::from_millis(100)))
+                .map_err(io::Error::other)?;
+            let mut descriptors: Vec<_> = lanes
+                .iter()
+                .map(|lane| PollFd::new(&lane.stream, PollFlags::IN))
+                .collect();
             descriptors.push(PollFd::new(&self._worker.pidfd, PollFlags::IN));
             descriptors.push(PollFd::new(&self._session.owner_pidfd, PollFlags::IN));
             match rustix::event::poll(&mut descriptors, Some(&timeout)) {
                 Ok(_) => {
-                    if descriptors[lanes.len()..].iter().any(|value| !value.revents().is_empty()) {
+                    if descriptors[lanes.len()..]
+                        .iter()
+                        .any(|value| !value.revents().is_empty())
+                    {
                         return Err(refused("an original Worker or Agentd process exited"));
                     }
-                    if let Some(index) = descriptors[..lanes.len()].iter().position(|value| !value.revents().is_empty()) {
+                    if let Some(index) = descriptors[..lanes.len()]
+                        .iter()
+                        .position(|value| !value.revents().is_empty())
+                    {
                         return Ok(index);
                     }
                 }
-                Err(rustix::io::Errno::INTR) => {},
+                Err(rustix::io::Errno::INTR) => {}
                 Err(error) => return Err(io::Error::from(error)),
             }
         }

@@ -22,14 +22,16 @@ fn acknowledgement_is_bound_to_actual_kernel_sender_and_complete_offer() {
     );
 
     send(&one, Phase::Acknowledged, &digest, end).unwrap();
-    assert!(receive(
-        &two,
-        Phase::Acknowledged,
-        &Sha256Digest::for_bytes(b"different sealed offer"),
-        &sender,
-        end,
-    )
-    .is_err());
+    assert!(
+        receive(
+            &two,
+            Phase::Acknowledged,
+            &Sha256Digest::for_bytes(b"different sealed offer"),
+            &sender,
+            end,
+        )
+        .is_err()
+    );
     send(&one, Phase::Acknowledged, &digest, end).unwrap();
     assert!(receive(&two, Phase::Confirmed, &digest, &sender, end).is_err());
 }
@@ -43,14 +45,16 @@ fn missing_credentials_or_lost_ack_never_confirms_registration() {
     send(&one, Phase::Acknowledged, &digest, end).unwrap();
     assert!(receive(&two, Phase::Acknowledged, &digest, &sender, end).is_err());
     enable_credentials(&two).unwrap();
-    assert!(receive(
-        &two,
-        Phase::Acknowledged,
-        &digest,
-        &sender,
-        deadline(Duration::from_millis(10)).unwrap(),
-    )
-    .is_err());
+    assert!(
+        receive(
+            &two,
+            Phase::Acknowledged,
+            &digest,
+            &sender,
+            deadline(Duration::from_millis(10)).unwrap(),
+        )
+        .is_err()
+    );
 }
 
 #[test]

@@ -99,8 +99,7 @@ impl RootAuthorityDirectory {
         let directory = open_directory(Some(&self.directory), Path::new(name))?;
         // A newly created directory can inherit setgid. Only this just-created
         // descriptor is changed; existing or partial entries never reach here.
-        rustix::fs::fchmod(&directory, Mode::RWXU)
-            .map_err(|_| AuthorityTrustError::Unavailable)?;
+        rustix::fs::fchmod(&directory, Mode::RWXU).map_err(|_| AuthorityTrustError::Unavailable)?;
         check_directory(&directory, self.owner_uid, DirectoryAccess::Private)?;
         directory.sync_all().map_err(unavailable)?;
         self.sync_directory()?;
@@ -218,7 +217,9 @@ impl RootAuthorityDirectory {
 fn check_child_name(name: &str) -> Result<(), AuthorityTrustError> {
     if name.is_empty()
         || name.len() > 128
-        || !name.bytes().all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_'))
+        || !name
+            .bytes()
+            .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_'))
     {
         return Err(AuthorityTrustError::Invalid);
     }

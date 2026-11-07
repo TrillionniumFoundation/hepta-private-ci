@@ -30,8 +30,15 @@ use std::path::PathBuf;
 use std::time::Duration;
 use tracing::warn;
 
-pub fn sync_openai_plugins_repo(codex_home: &Path, http_client_factory: HttpClientFactory) -> Result<String, String> {
-    sync_openai_plugins_repo_with_cancellation(codex_home, http_client_factory, &GitCommandCancellation::default())
+pub fn sync_openai_plugins_repo(
+    codex_home: &Path,
+    http_client_factory: HttpClientFactory,
+) -> Result<String, String> {
+    sync_openai_plugins_repo_with_cancellation(
+        codex_home,
+        http_client_factory,
+        &GitCommandCancellation::default(),
+    )
 }
 
 pub(crate) fn sync_openai_plugins_repo_with_cancellation(
@@ -42,13 +49,22 @@ pub(crate) fn sync_openai_plugins_repo_with_cancellation(
     cancellation.check()?;
     #[cfg(target_os = "macos")]
     let git_binary = match which::which("git") {
-        Ok(git_path) => super::macos_git_binary_from_path(git_path, super::git::apple_developer_tools_available(cancellation)?),
+        Ok(git_path) => super::macos_git_binary_from_path(
+            git_path,
+            super::git::apple_developer_tools_available(cancellation)?,
+        ),
         Err(_) => None,
     };
     #[cfg(not(target_os = "macos"))]
     let git_binary = Some(PathBuf::from("git"));
-    sync_with_transport(codex_home, git_binary.as_deref(), GITHUB_API_BASE_URL,
-        CURATED_PLUGINS_BACKUP_ARCHIVE_API_URL, &http_client_factory, cancellation)
+    sync_with_transport(
+        codex_home,
+        git_binary.as_deref(),
+        GITHUB_API_BASE_URL,
+        CURATED_PLUGINS_BACKUP_ARCHIVE_API_URL,
+        &http_client_factory,
+        cancellation,
+    )
 }
 
 fn sync_with_transport(
@@ -62,7 +78,9 @@ fn sync_with_transport(
     let _file_guard = lock_curated_plugins_startup_sync(codex_home, cancellation)?;
 
     let git_sync_result = match git_binary {
-        Some(git_binary) => super::git::sync_with_cancellation(codex_home, git_binary, cancellation),
+        Some(git_binary) => {
+            super::git::sync_with_cancellation(codex_home, git_binary, cancellation)
+        }
         None => Err("git executable is unavailable".to_string()),
     };
 
@@ -126,7 +144,10 @@ fn sync_with_transport(
     }
 }
 
-fn lock_curated_plugins_startup_sync(codex_home: &Path, cancellation: &GitCommandCancellation) -> Result<File, String> {
+fn lock_curated_plugins_startup_sync(
+    codex_home: &Path,
+    cancellation: &GitCommandCancellation,
+) -> Result<File, String> {
     cancellation.check()?;
     let lock_path = codex_home.join(CURATED_PLUGINS_SYNC_LOCK_FILE);
     std::fs::create_dir_all(codex_home.join(".tmp"))
@@ -141,8 +162,12 @@ fn lock_curated_plugins_startup_sync(codex_home: &Path, cancellation: &GitComman
         cancellation.check()?;
         match lock_file.try_lock() {
             Ok(()) => break,
-            Err(std::fs::TryLockError::WouldBlock) => std::thread::sleep(Duration::from_millis(100)),
-            Err(std::fs::TryLockError::Error(err)) => return Err(format!("failed to lock curated plugins sync: {err}")),
+            Err(std::fs::TryLockError::WouldBlock) => {
+                std::thread::sleep(Duration::from_millis(100))
+            }
+            Err(std::fs::TryLockError::Error(err)) => {
+                return Err(format!("failed to lock curated plugins sync: {err}"));
+            }
         }
     }
     cancellation.check()?;
@@ -163,8 +188,8 @@ fn sync_via_http(
         .build()
         .map_err(|err| format!("failed to create curated plugins sync runtime: {err}"))?;
     let http_clients = StartupSyncHttpClient::new(http_client_factory);
-    let remote_sha =
-        runtime.block_on(cancellation.run(fetch_curated_repo_remote_sha(&http_clients, api_base_url)))?;
+    let remote_sha = runtime
+        .block_on(cancellation.run(fetch_curated_repo_remote_sha(&http_clients, api_base_url)))?;
     let local_sha = read_sha_file(&sha_path);
 
     if local_sha.as_deref() == Some(remote_sha.as_str()) && repo_path.is_dir() {
@@ -201,10 +226,9 @@ fn sync_openai_plugins_repo_via_backup_archive(
         .map_err(|err| format!("failed to create curated plugins sync runtime: {err}"))?;
     let staged_repo_dir = prepare_curated_repo_parent_and_temp_dir(&repo_path)?;
     let http_clients = StartupSyncHttpClient::new(http_client_factory);
-    let zipball_bytes = runtime.block_on(cancellation.run(fetch_curated_repo_backup_archive_zip(
-        &http_clients,
-        backup_archive_api_url,
-    )))?;
+    let zipball_bytes = runtime.block_on(cancellation.run(
+        fetch_curated_repo_backup_archive_zip(&http_clients, backup_archive_api_url),
+    ))?;
     cancellation.check()?;
     extract_zipball_to_dir(&zipball_bytes, staged_repo_dir.path())?;
     ensure_marketplace_manifest_exists(staged_repo_dir.path())?;
@@ -224,8 +248,14 @@ pub(super) fn sync_openai_plugins_repo_with_transport_overrides(
     backup_archive_api_url: &str,
     http_client_factory: &HttpClientFactory,
 ) -> Result<String, String> {
-    sync_with_transport(codex_home, git_binary, api_base_url, backup_archive_api_url,
-        http_client_factory, &GitCommandCancellation::default())
+    sync_with_transport(
+        codex_home,
+        git_binary,
+        api_base_url,
+        backup_archive_api_url,
+        http_client_factory,
+        &GitCommandCancellation::default(),
+    )
 }
 
 #[cfg(test)]
@@ -234,7 +264,12 @@ pub(super) fn sync_openai_plugins_repo_via_http(
     api_base_url: &str,
     http_client_factory: &HttpClientFactory,
 ) -> Result<String, String> {
-    sync_via_http(codex_home, api_base_url, http_client_factory, &GitCommandCancellation::default())
+    sync_via_http(
+        codex_home,
+        api_base_url,
+        http_client_factory,
+        &GitCommandCancellation::default(),
+    )
 }
 
 #[cfg(test)]

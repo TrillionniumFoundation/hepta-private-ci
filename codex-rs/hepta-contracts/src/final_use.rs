@@ -23,15 +23,15 @@ use serde::Serialize;
 use sha2::Digest;
 use sha2::Sha256;
 
+#[cfg(unix)]
+#[path = "final_use_existing.rs"]
+mod existing;
 #[path = "final_use_live_owner.rs"]
 mod live_owner;
 #[path = "final_use_pq.rs"]
 mod pq;
 #[path = "final_use_store.rs"]
 mod store;
-#[cfg(unix)]
-#[path = "final_use_existing.rs"]
-mod existing;
 
 const MAX_CLAIMS: usize = 1_048_576;
 const MAX_LIFETIME_MS: u64 = 300_000;

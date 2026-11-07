@@ -1,10 +1,10 @@
+use super::super::macos;
 use super::FixtureRoot;
 use super::PARENT_GROUP;
 use super::StdChildCustody;
 use super::descendant;
 use super::fixture_command;
 use super::wait_for;
-use super::super::macos;
 use pretty_assertions::assert_eq;
 
 #[test]
@@ -27,10 +27,19 @@ fn darwin_zombie_exception_rejects_a_group_with_a_live_descendant() {
         .expect("spawn a leader with an actual descendant");
     let child = descendant(&root.0);
     std::fs::write(root.0.join("release"), b"exit").expect("release the original leader");
-    wait_for(|| owned.peek_exit().expect("observe retained leader exit without reaping"));
+    wait_for(|| {
+        owned
+            .peek_exit()
+            .expect("observe retained leader exit without reaping")
+    });
     assert!(macos::require_sole_retained_zombie(owned.child.id()).is_err());
     assert!(!child.gone());
-    assert!(owned.kill_and_wait().expect("terminate the live member before reaping").success());
+    assert!(
+        owned
+            .kill_and_wait()
+            .expect("terminate the live member before reaping")
+            .success()
+    );
     wait_for(|| child.gone());
 }
 
@@ -46,7 +55,9 @@ fn darwin_zombie_exception_rejects_a_full_group_snapshot() {
     assert!(macos::require_sole_retained_zombie(owned.child.id()).is_err());
     assert!(!first.gone());
     assert!(!second.gone());
-    owned.kill_and_wait().expect("terminate both live members before reaping");
+    owned
+        .kill_and_wait()
+        .expect("terminate both live members before reaping");
     wait_for(|| first.gone() && second.gone());
 }
 
@@ -60,8 +71,14 @@ fn darwin_zombie_exception_rejects_the_actual_child_after_group_migration() {
     let child = descendant(&root.0);
     assert_eq!(child.0, owned.child.id() as libc::pid_t);
     assert_eq!(unsafe { libc::getpgid(child.0) }, parent_group);
-    assert!(!owned.peek_exit().expect("the moved direct child remains live"));
+    assert!(
+        !owned
+            .peek_exit()
+            .expect("the moved direct child remains live")
+    );
     assert!(macos::require_sole_retained_zombie(owned.child.id()).is_err());
-    owned.kill_and_wait().expect("reap only the retained direct child after migration");
+    owned
+        .kill_and_wait()
+        .expect("reap only the retained direct child after migration");
     wait_for(|| child.gone());
 }
