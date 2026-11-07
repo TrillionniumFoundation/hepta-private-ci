@@ -50,6 +50,30 @@ class LocalModelTests(unittest.TestCase):
         self.assertEqual(result["models"], {})
         self.assertEqual(result["loads"], [])
         self.assertFalse(result["independent_semantic_scorer"])
+        self.assertEqual((result["device"], result["dtype"], result["runtime"]), ("cpu", "bfloat16", None))
+
+    def test_device_profiles_are_explicit_and_do_not_fall_back(self):
+        for device, dtype in (("auto", "bfloat16"), ("cpu", "float16"), ("cuda:-1", "float32"), ("cuda", "auto")):
+            with self.subTest(device=device, dtype=dtype), self.assertRaises(ValueError):
+                LocalModels(self.root, self.root, device=device, dtype=dtype)
+        backend = LocalModels(self.root, self.root, device="cuda:0", dtype="float32")
+        with patch("torch.cuda.is_available", return_value=False), self.assertRaisesRegex(RuntimeError, "no CPU fallback"):
+            backend._placement()
+
+    def test_cpu_input_placement_preserves_integer_ids_and_requested_float_dtype(self):
+        import torch
+        backend = LocalModels(self.root, self.root, dtype="float32")
+        backend._placement()
+        inputs = backend._inputs({"ids": torch.tensor([[1, 2]]), "pixels": torch.ones(1, 3, dtype=torch.bfloat16)})
+        self.assertEqual(inputs["ids"].dtype, torch.int64)
+        self.assertEqual(inputs["pixels"].dtype, torch.float32)
+        self.assertEqual(str(inputs["pixels"].device), "cpu")
+
+    def test_cuda_synchronization_uses_the_declared_device(self):
+        backend = LocalModels(self.root, self.root, device="cuda:1", dtype="float32")
+        with patch("torch.cuda.synchronize") as barrier:
+            backend.synchronize()
+        barrier.assert_called_once_with("cuda:1")
 
     def test_incomplete_or_missing_weight_manifest_rejected(self):
         backend = LocalModels(self.root, self.root)
