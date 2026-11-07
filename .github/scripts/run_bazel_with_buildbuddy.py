@@ -202,6 +202,17 @@ def bazel_args_without_remote_execution(
             if not option_contains_value(prefix, option, value):
                 injected_args.append(f"{option}={value}")
 
+    if requested_native_windows_msvc and not requested_windows_cross:
+        # The rules_rs Rust toolchain's target_triple select is evaluated in
+        # the execution configuration. Native MSVC jobs therefore need the
+        # ABI-qualified exec platform as well as the target and host platforms.
+        if not option_contains_value(
+            prefix, "--extra_execution_platforms", LOCAL_WINDOWS_MSVC_EXEC_PLATFORM
+        ):
+            injected_args.append(
+                f"--extra_execution_platforms={LOCAL_WINDOWS_MSVC_EXEC_PLATFORM}"
+            )
+
     if requested_windows_cross or requested_native_windows_msvc:
         # Keep native archives on the same ABI as the Rust action that links
         # them. Without this bounded override, globally registered hermetic
