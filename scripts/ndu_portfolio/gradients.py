@@ -22,11 +22,17 @@ class SoftmaxPolicy:
                 if action != "stop":
                     for _, successor in env.transitions(state, action):
                         collect(successor)
+
         collect(env.initial)
-        self.states = sorted(states, key=lambda s: (s.elapsed, s.budget, s.quality, s.preference, s.verified))
+        self.states = sorted(
+            states,
+            key=lambda s: (s.elapsed, s.budget, s.quality, s.preference, s.verified),
+        )
         self.rows = {state: i for i, state in enumerate(self.states)}
         self.actions = env.action_names
-        self.theta = np.random.default_rng(seed).normal(0, 0.03, (len(states), len(self.actions)))
+        self.theta = np.random.default_rng(seed).normal(
+            0, 0.03, (len(states), len(self.actions))
+        )
 
     def __call__(self, state):
         legal = self.env.actions(state)
@@ -66,13 +72,21 @@ def policy_value_gradient(policy):
                 entries.append((pi, env.terminal_value(state), None, 0.0, index))
             else:
                 cost, duration = env.cost_duration(action)
-                discount = env.config.discount ** duration
+                discount = env.config.discount**duration
                 for probability, successor in env.transitions(state, action):
                     joint_probability = pi * probability
                     if joint_probability == 0:
                         continue
-                    entries.append((joint_probability, -env.config.cost_weight * cost +
-                                    discount * visit(successor), successor, discount, index))
+                    entries.append(
+                        (
+                            joint_probability,
+                            -env.config.cost_weight * cost
+                            + discount * visit(successor),
+                            successor,
+                            discount,
+                            index,
+                        )
+                    )
         probabilities = np.array([entry[0] for entry in entries])
         returns = np.array([entry[1] for entry in entries])
         value = certainty_equivalent(returns, probabilities, env.config.risk)
@@ -82,7 +96,9 @@ def policy_value_gradient(policy):
             # Log normalization keeps rare supported branches representable
             # until the relative weights are formed. A zero-mass low return
             # must never supply the exponential shift.
-            log_weights = np.log(probabilities) - env.config.risk * (returns - returns.min())
+            log_weights = np.log(probabilities) - env.config.risk * (
+                returns - returns.min()
+            )
             log_weights -= log_weights.max()
             tilted = np.exp(log_weights)
             tilted /= tilted.sum()
@@ -106,36 +122,51 @@ def policy_value_gradient(policy):
             else:
                 coefficients[index] -= weight / env.config.risk
             if successor is not None:
-                adjoints[successor] = adjoints.get(successor, 0.0) + multiplier * weight * discount
+                adjoints[successor] = (
+                    adjoints.get(successor, 0.0) + multiplier * weight * discount
+                )
         # Avoid subtraction of O(1/eta) terms when risk is near zero.
         if 0 < env.config.risk < 1e-6:
             reference = min(entry[1] for entry in entries)
-            deltas = np.array([math.expm1(-env.config.risk * (e[1] - reference)) for e in entries])
+            deltas = np.array(
+                [math.expm1(-env.config.risk * (e[1] - reference)) for e in entries]
+            )
             mean_delta = sum(e[0] * d for e, d in zip(entries, deltas))
             for action, pi in pis.items():
                 index = policy.actions.index(action)
-                action_delta_mass = sum(e[0] * d for e, d in zip(entries, deltas) if e[4] == index)
+                action_delta_mass = sum(
+                    e[0] * d for e, d in zip(entries, deltas) if e[4] == index
+                )
                 # Algebraically cancel division by pi before evaluating; pi
                 # can be exactly zero after softmax underflow.
-                gradient[policy.rows[state], index] += multiplier * (pi * mean_delta - action_delta_mass) / (env.config.risk * (1 + mean_delta))
+                gradient[policy.rows[state], index] += (
+                    multiplier
+                    * (pi * mean_delta - action_delta_mass)
+                    / (env.config.risk * (1 + mean_delta))
+                )
         else:
             # dlog softmax(a)/dz_b = 1[a=b] - pi(b).
             total = coefficients.sum()
             for action, pi in pis.items():
                 index = policy.actions.index(action)
-                gradient[policy.rows[state], index] += multiplier * (coefficients[index] - pi * total)
+                gradient[policy.rows[state], index] += multiplier * (
+                    coefficients[index] - pi * total
+                )
     return value, gradient
 
 
 def check_gradient(policy, epsilon=1e-5, max_coordinates=24):
     value, derivative = policy_value_gradient(policy)
-    legal_coordinates = [(policy.rows[s], policy.actions.index(a))
-                         for s in policy.states for a in policy.env.actions(s)]
+    legal_coordinates = [
+        (policy.rows[s], policy.actions.index(a))
+        for s in policy.states
+        for a in policy.env.actions(s)
+    ]
     # Exercise high-signal coordinates plus state-spread coordinates deterministically.
     order = sorted(legal_coordinates, key=lambda ij: abs(derivative[ij]), reverse=True)
-    chosen = order[:max_coordinates // 2]
+    chosen = order[: max_coordinates // 2]
     stride = max(1, len(legal_coordinates) // max(1, max_coordinates // 2))
-    chosen.extend(legal_coordinates[::stride][:max_coordinates - len(chosen)])
+    chosen.extend(legal_coordinates[::stride][: max_coordinates - len(chosen)])
     errors = []
     for ij in dict.fromkeys(chosen):
         original = policy.theta[ij]
@@ -146,8 +177,12 @@ def check_gradient(policy, epsilon=1e-5, max_coordinates=24):
         policy.theta[ij] = original
         numerical = (plus - minus) / (2 * epsilon)
         errors.append(abs(numerical - derivative[ij]))
-    return {"value": value, "checked_coordinates": len(errors),
-            "max_absolute_error": float(max(errors, default=0.0)), "epsilon": epsilon}
+    return {
+        "value": value,
+        "checked_coordinates": len(errors),
+        "max_absolute_error": float(max(errors, default=0.0)),
+        "epsilon": epsilon,
+    }
 
 
 def train_policy(env, seed=0, steps=120, learning_rate=0.15):
@@ -156,7 +191,12 @@ def train_policy(env, seed=0, steps=120, learning_rate=0.15):
     This is a tabular control experiment, not a neural actor-critic or model
     quality result. No DP target or best-action table is supplied to training.
     """
-    if type(steps) is not int or steps < 0 or not math.isfinite(learning_rate) or learning_rate <= 0:
+    if (
+        type(steps) is not int
+        or steps < 0
+        or not math.isfinite(learning_rate)
+        or learning_rate <= 0
+    ):
         raise ValueError("invalid training configuration")
     policy = SoftmaxPolicy(env, seed)
     initial_value = policy_value_gradient(policy)[0]
@@ -165,11 +205,19 @@ def train_policy(env, seed=0, steps=120, learning_rate=0.15):
         _, gradient = policy_value_gradient(policy)
         moment = 0.9 * moment + 0.1 * gradient
         variance = 0.999 * variance + 0.001 * gradient * gradient
-        update = (moment / (1 - 0.9 ** step)) / (np.sqrt(variance / (1 - 0.999 ** step)) + 1e-8)
+        update = (moment / (1 - 0.9**step)) / (
+            np.sqrt(variance / (1 - 0.999**step)) + 1e-8
+        )
         policy.theta += learning_rate * update
     learned = policy_value_gradient(policy)[0]
     optimum = optimal(env)[0]
-    return policy, {"seed": seed, "steps": steps, "initial_value": initial_value,
-                    "learned_value": learned, "optimal_value": optimum,
-                    "optimality_gap": optimum - learned,
-                    "trainable_parameters": int(policy.theta.size), "reachable_states": len(policy.states)}
+    return policy, {
+        "seed": seed,
+        "steps": steps,
+        "initial_value": initial_value,
+        "learned_value": learned,
+        "optimal_value": optimum,
+        "optimality_gap": optimum - learned,
+        "trainable_parameters": int(policy.theta.size),
+        "reachable_states": len(policy.states),
+    }
