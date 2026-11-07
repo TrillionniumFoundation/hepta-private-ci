@@ -52,6 +52,7 @@ const INHERITED_ACE: u8 = 0x10;
 const ACCESS_ALLOWED_ACE_TYPE: u8 = 0;
 const ACCESS_DENIED_ACE_TYPE: u8 = 1;
 const GENERIC_READ_MASK: u32 = 0x8000_0000;
+#[cfg(test)]
 const GENERIC_WRITE_MASK: u32 = 0x4000_0000;
 const DENY_ACCESS: i32 = 3;
 
@@ -522,6 +523,9 @@ pub unsafe fn add_allow_ace(path: &Path, psid: *mut c_void) -> Result<bool> {
 
 /// Adds a deny ACE to prevent write/append/delete for the given SID on the target path.
 ///
+/// Existing denies are preserved, including broader denies that also block reads.
+/// This function adds missing denial; it does not migrate old ACLs.
+///
 /// # Safety
 /// Caller must ensure `psid` points to a valid SID and `path` refers to an existing file or directory.
 pub unsafe fn add_deny_write_ace(path: &Path, psid: *mut c_void) -> Result<bool> {
@@ -539,12 +543,12 @@ impl DenyAceKind {
         match self {
             Self::Read => FILE_GENERIC_READ | GENERIC_READ_MASK,
             Self::Write => {
-                FILE_GENERIC_WRITE
-                    | FILE_WRITE_DATA
+                // Generic write includes READ_CONTROL and SYNCHRONIZE, which
+                // reads also request. Keep those shared rights out of this deny.
+                FILE_WRITE_DATA
                     | FILE_APPEND_DATA
                     | FILE_WRITE_EA
                     | FILE_WRITE_ATTRIBUTES
-                    | GENERIC_WRITE_MASK
                     | DELETE
                     | FILE_DELETE_CHILD
             }
