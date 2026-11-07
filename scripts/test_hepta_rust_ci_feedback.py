@@ -314,5 +314,11 @@ class FastFeedbackTests(unittest.TestCase):
                 self.assertEqual(result.returncode, 0, result.stderr)
 
 
+    def test_fast_feedback_step_runs_only_its_test_module(self):
+        text = WORKFLOW.read_text(encoding="utf-8")
+        self.assertIn("run: python3 -B scripts/test_hepta_rust_ci_feedback.py -v", text)
+        self.assertNotIn("unittest discover -s scripts -p 'test_hepta_rust_ci_feedback.py'", text)
+
+
 if __name__ == "__main__":
     unittest.main()
