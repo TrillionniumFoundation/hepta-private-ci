@@ -78,7 +78,7 @@ but not arithmetic semantics. `FixedQ32` compatibility multiply/divide uses
 `fixed-q32-toward-zero-v1`; the numeric conversion profile uses
 nearest-ties-even. The source API exposes this distinction explicitly.
 
-## Durability and product composition
+## Durability and activation
 
 The module is stateless and has no durability. `productCallerState` is
 `not_composed`: source tests, generated bindings and conformance oracles are
@@ -86,7 +86,7 @@ not a named production caller. Product provisioning of an authenticated
 registry generation, target-host qualification and operator acceptance are
 separate gates.
 
-## Owned target protocols still source-pending
+## Target-only design
 
 Canonical registries assign these protocols to `platform.types`, but no native
 Rust contract exists for them in this candidate:
@@ -95,8 +95,13 @@ Rust contract exists for them in this candidate:
 - `ExternalSystemManifestV1`;
 - `SensorCalibrationManifestV1`.
 
+## Known limits and non-claims
+
 Their ownership does not make the module's full target protocol inventory source
 complete.
+
+Library source, generated bindings and conformance oracles do not establish
+product activation or independent acceptance.
 
 ## Verification
 
@@ -110,3 +115,10 @@ Python/Node accepted and rejected conformance oracles, regenerate bindings with
 `--check`, run generated Python/JavaScript consumer compatibility gates and
 run Lane A native tests plus strict lint. Executed workflow artifacts, not this
 document, are the candidate receipts.
+
+## Integration prerequisites
+
+A product owner must provision an authenticated registry generation and a named
+consumer composition. Full consumer compilation, independent semantic review,
+target-host qualification and operator acceptance remain separate requirements;
+the library cannot issue these approvals for itself.

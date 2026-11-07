@@ -118,7 +118,10 @@ def validate_matrix(matrix: dict[str, Any], root: Path = ROOT) -> dict[str, Any]
     capability = read_json(root / "docs/lane-a-foundation/CAPABILITY_EVIDENCE_MAP.json")
     validate_capability_map(matrix, capability, root)
     validate_operations_source_evidence(
-        read_json(root / "docs/lane-a-foundation/kernel.operations/CAPABILITY_EVIDENCE_V2.json"),
+        read_json(
+            root
+            / "docs/lane-a-foundation/kernel.operations/CAPABILITY_EVIDENCE_V2.json"
+        ),
         root,
     )
     validate_protocol_registry(

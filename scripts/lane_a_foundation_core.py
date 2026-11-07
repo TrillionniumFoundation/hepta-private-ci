@@ -84,16 +84,11 @@ OPERATIONS_PRODUCT_SOURCES = {
     "kernel.operations.agentd-daemon-composition.v1": "codex-rs/hepta-agentd/src/runtime.rs",
 }
 OPS_SOURCE_CAPABILITIES = {
-    "kernel.operations.atomic-durable-ledger-outbox.v1":
-        "atomic durable operation ledger and source outbox co-commit",
-    "kernel.operations.leased-fenced-outbox.v1":
-        "bounded leased outbox claims with generation fencing and crash-reopen takeover",
-    "kernel.operations.final-use-reconciliation.v1":
-        "final-use authority dispatch admission with indeterminate recovery and terminal reconciliation",
-    "kernel.operations.destination-transaction-dedupe.v1":
-        "destination-owner transaction dedupe primitive with immutable apply receipts",
-    "kernel.operations.retention-observability.v1":
-        "bounded retention tombstones and backlog metrics",
+    "kernel.operations.atomic-durable-ledger-outbox.v1": "atomic durable operation ledger and source outbox co-commit",
+    "kernel.operations.leased-fenced-outbox.v1": "bounded leased outbox claims with generation fencing and crash-reopen takeover",
+    "kernel.operations.final-use-reconciliation.v1": "final-use authority dispatch admission with indeterminate recovery and terminal reconciliation",
+    "kernel.operations.destination-transaction-dedupe.v1": "destination-owner transaction dedupe primitive with immutable apply receipts",
+    "kernel.operations.retention-observability.v1": "bounded retention tombstones and backlog metrics",
 }
 PROTOCOL_IDENTITIES = [
     ("platform.types", "hepta.platform.types.primitives.v1"),
@@ -230,14 +225,18 @@ def validate_capability_map(
                 anchor["path"] == source and anchor.get("mustContain")
                 for anchor in row["sourceEvidence"]
             ):
-                raise VerificationError(f"{capability_id}: product evidence owner mismatch")
+                raise VerificationError(
+                    f"{capability_id}: product evidence owner mismatch"
+                )
     if observed != expected:
         raise VerificationError(
             "capability map does not exactly cover ordered current capabilities"
         )
 
 
-def validate_operations_source_evidence(value: dict[str, Any], root: Path = ROOT) -> None:
+def validate_operations_source_evidence(
+    value: dict[str, Any], root: Path = ROOT
+) -> None:
     """Check the standalone owner without adding it to product coverage."""
     entries = value.get("entries")
     if (
@@ -253,7 +252,9 @@ def validate_operations_source_evidence(value: dict[str, Any], root: Path = ROOT
         or [(row.get("capabilityId"), row.get("summary")) for row in entries]
         != list(OPS_SOURCE_CAPABILITIES.items())
     ):
-        raise VerificationError("standalone operations evidence scope/ordered coverage mismatch")
+        raise VerificationError(
+            "standalone operations evidence scope/ordered coverage mismatch"
+        )
     owner = (root / value["owner"]).resolve()
     for row in entries:
         capability_id = row["capabilityId"]
@@ -264,7 +265,10 @@ def validate_operations_source_evidence(value: dict[str, Any], root: Path = ROOT
             or row.get("receiptStatus") != "native_workflow_required"
             or not isinstance(row.get("publicSymbols"), list)
             or not row["publicSymbols"]
-            or any(not isinstance(symbol, str) or not symbol for symbol in row["publicSymbols"])
+            or any(
+                not isinstance(symbol, str) or not symbol
+                for symbol in row["publicSymbols"]
+            )
         ):
             raise VerificationError(f"{capability_id}: standalone owner state mismatch")
         for field in ("sourceEvidence", "positiveTests", "negativeTests"):
@@ -274,7 +278,9 @@ def validate_operations_source_evidence(value: dict[str, Any], root: Path = ROOT
             for anchor in anchors:
                 validate_anchor(f"{capability_id}/{field}", anchor, root)
                 if not (root / anchor["path"]).resolve().is_relative_to(owner):
-                    raise VerificationError(f"{capability_id}: standalone evidence owner mismatch")
+                    raise VerificationError(
+                        f"{capability_id}: standalone evidence owner mismatch"
+                    )
 
 
 def validate_protocol_registry(value: dict[str, Any], root: Path = ROOT) -> None:
@@ -293,18 +299,36 @@ def validate_protocol_registry(value: dict[str, Any], root: Path = ROOT) -> None
     for row in rows:
         for field in ("source", "invariants"):
             items = row.get(field)
-            if not isinstance(items, list) or not items or any(
-                not isinstance(item, str) or not item for item in items
+            if (
+                not isinstance(items, list)
+                or not items
+                or any(not isinstance(item, str) or not item for item in items)
             ):
                 raise VerificationError(f"{row['protocolId']}: {field} required")
         if any(not (root / path).exists() for path in row["source"]):
             raise VerificationError(f"{row['protocolId']}: protocol source missing")
     for row, owner, scope, source in (
-        (rows[3], "codex-rs/hepta-operations", "standalone_source_evidence", "src/durable_store.rs"),
-        (rows[4], "codex-rs/hepta-memory", "product_current_contract", "src/production_writer.rs"),
+        (
+            rows[3],
+            "codex-rs/hepta-operations",
+            "standalone_source_evidence",
+            "src/durable_store.rs",
+        ),
+        (
+            rows[4],
+            "codex-rs/hepta-memory",
+            "product_current_contract",
+            "src/production_writer.rs",
+        ),
     ):
-        if row.get("owner") != owner or row.get("scope") != scope or f"{owner}/{source}" not in row["source"]:
-            raise VerificationError(f"{row['protocolId']}: protocol owner/scope mismatch")
+        if (
+            row.get("owner") != owner
+            or row.get("scope") != scope
+            or f"{owner}/{source}" not in row["source"]
+        ):
+            raise VerificationError(
+                f"{row['protocolId']}: protocol owner/scope mismatch"
+            )
     if rows[3].get("legacyProtocolId") != "hepta.kernel.operations.reference-model.v1":
         raise VerificationError("standalone operations legacy protocol drift")
 

@@ -117,7 +117,9 @@ class LaneAFoundationTruthTests(unittest.TestCase):
         with self.assertRaises(verify.VerificationError):
             verify.validate_capability_map(self.matrix, value)
 
-    def test_standalone_evidence_missing_extra_duplicate_or_reordered_is_rejected(self) -> None:
+    def test_standalone_evidence_missing_extra_duplicate_or_reordered_is_rejected(
+        self,
+    ) -> None:
         entries = self.operations_capability_map["entries"]
         for invalid in (
             entries[:-1],
@@ -135,7 +137,8 @@ class LaneAFoundationTruthTests(unittest.TestCase):
     def test_operations_owners_cannot_supply_each_others_evidence(self) -> None:
         product = deepcopy(self.capability_map)
         integrated = next(
-            row for row in product["entries"]
+            row
+            for row in product["entries"]
             if row["capabilityId"] == "kernel.operations.durable-owner.v1"
         )
         standalone = deepcopy(self.operations_capability_map)
@@ -144,10 +147,14 @@ class LaneAFoundationTruthTests(unittest.TestCase):
         with self.assertRaisesRegex(verify.VerificationError, "product evidence owner"):
             verify.validate_capability_map(self.matrix, product)
         standalone["entries"][0]["sourceEvidence"] = original_product_anchors
-        with self.assertRaisesRegex(verify.VerificationError, "standalone evidence owner"):
+        with self.assertRaisesRegex(
+            verify.VerificationError, "standalone evidence owner"
+        ):
             verify.validate_operations_source_evidence(standalone)
 
-    def test_standalone_scope_state_or_missing_anchors_cannot_grant_product_coverage(self) -> None:
+    def test_standalone_scope_state_or_missing_anchors_cannot_grant_product_coverage(
+        self,
+    ) -> None:
         for field, invalid in (
             ("owner", "codex-rs/hepta-memory"),
             ("role", "product_current_capabilities"),
@@ -187,14 +194,18 @@ class LaneAFoundationTruthTests(unittest.TestCase):
             self.capability_map["entryCount"],
         )
         standalone = receipt["standaloneOperationsSourceEvidence"]
-        self.assertEqual(standalone["entryCount"], self.operations_capability_map["entryCount"])
+        self.assertEqual(
+            standalone["entryCount"], self.operations_capability_map["entryCount"]
+        )
         self.assertEqual(standalone["productCapabilityCoverageContribution"], 0)
         self.assertEqual(standalone["productQualification"], "not_granted")
         self.assertEqual(standalone["owner"], "codex-rs/hepta-operations")
         self.assertEqual(receipt["productOperationsOwner"], "codex-rs/hepta-memory")
         self.assertEqual(
             standalone["sha256"],
-            verify.hashlib.sha256(verify.canonical(self.operations_capability_map)).hexdigest(),
+            verify.hashlib.sha256(
+                verify.canonical(self.operations_capability_map)
+            ).hexdigest(),
         )
         self.assertEqual(
             receipt["currentImplementationTruth"], "source_and_test_anchored"
@@ -315,7 +326,9 @@ class LaneAFoundationTruthTests(unittest.TestCase):
             "hepta.kernel.operations.reference-model.v1",
         )
 
-    def test_protocol_missing_duplicate_reordered_or_cross_owner_is_rejected(self) -> None:
+    def test_protocol_missing_duplicate_reordered_or_cross_owner_is_rejected(
+        self,
+    ) -> None:
         registry = verify.read_json(verify.PROTOCOL_REGISTRY_PATH)
         rows = registry["protocols"]
         for invalid in (
