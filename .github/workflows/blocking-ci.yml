@@ -227,6 +227,15 @@ jobs:
           "$RUNNER_TEMP/ndu-reference-venv/bin/python" -m ndu_portfolio.run --quick --output "$RUNNER_TEMP/ndu-reference-evidence"
           git diff --check
           git diff --exit-code
+      - name: Validate semantic state and material admission contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/ndu-reference-venv/bin/python" -m unittest -v \
+            ndu_semantic_state.test_state ndu_semantic_state.test_materials \
+            2>&1 | tee "$RUNNER_TEMP/ndu-reference-evidence/semantic-contracts.log"
+          git diff --check
+          git diff --exit-code
       - name: Retain source-bound research evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -286,4 +295,5 @@ jobs:
           PY
           )"
           python3 .github/scripts/check_ci_results.py
+
 
