@@ -30,6 +30,31 @@ def measured_total(records, key):
     return sum(values) if all(nonnegative_number(value) for value in values) else None
 
 
+def unresolved_attempts(run):
+    """Inventory original attempt markers without traversing linked evidence."""
+    errors = {}
+    root = run / "attempts"
+    try:
+        if root.is_symlink() or (root.exists() and not root.is_dir()):
+            return {"attempts": "attempt inventory is linked or not a directory"}
+        for path in sorted(root.iterdir()) if root.exists() else ():
+            if path.name not in PHASES:
+                errors[path.name] = "attempt is outside the frozen phase schedule"
+            elif path.is_symlink() or not path.is_dir():
+                errors[path.name] = "attempt is linked or not a directory"
+            else:
+                receipt = run / "phase_results" / (path.name + ".json")
+                if receipt.is_symlink() or not receipt.is_file():
+                    errors[path.name] = "attempt has no regular completion receipt"
+        marker = run / "TRAINING_STARTED.json"
+        receipt = run / "phase_results/train.json"
+        if (marker.exists() or marker.is_symlink()) and (receipt.is_symlink() or not receipt.is_file()):
+            errors.setdefault("train", "training marker has no regular completion receipt")
+    except OSError as error:
+        errors["attempts"] = "attempt inventory could not be read: " + str(error)
+    return errors
+
+
 def main(args):
     run = args.output.resolve()
     if not run.is_relative_to(HERE):
@@ -50,6 +75,10 @@ def main(args):
         for directory in (run / "attempts", run / "phase_results"):
             if directory.is_symlink() or (directory.exists() and not directory.is_dir()):
                 raise ValueError("Invalid phase evidence directory; no implicit retry: " + directory.name)
+        pending = unresolved_attempts(run)
+        if pending:
+            raise ValueError("Unsettled attempts are preserved; no implicit retry: "
+                             + ", ".join(sorted(pending)))
         environment = {**os.environ, "PYTHONDONTWRITEBYTECODE": "1", "OPENBLAS_NUM_THREADS": "1",
                        "OMP_NUM_THREADS": "1", "MKL_NUM_THREADS": "1", "NUMEXPR_NUM_THREADS": "1"}
         for phase in PHASES:
@@ -142,16 +171,20 @@ def main(args):
             unverified.setdefault(path.stem, str(error))
         else:
             completed.add(path.stem)
+    pending = unresolved_attempts(run)
+    for phase, reason in pending.items():
+        unverified.setdefault(phase, reason)
     if unverified and failure is None:
         failure = ValueError("Unverified phase receipts are preserved; no implicit retry: "
                              + ", ".join(sorted(unverified)))
     orchestration = [read(path) for path in sorted(run.glob("orchestrator-*.json"))]
     final = completed == set(PHASES) and failure is None
-    child_user = measured_total(records, "cpu_user_seconds")
-    child_system = measured_total(records, "cpu_system_seconds")
+    child_user = None if pending else measured_total(records, "cpu_user_seconds")
+    child_system = None if pending else measured_total(records, "cpu_system_seconds")
     missing_rss = [r.get("phase") for r in records if type(r.get("worker_metrics")) is not dict
                    or type(r["worker_metrics"].get("peak_rss_bytes")) is not int
                    or r["worker_metrics"]["peak_rss_bytes"] <= 0]
+    missing_rss.extend(phase for phase in pending if phase not in missing_rss)
     summary = {"schema": "hepta.cell-learning.engineering.result.v1", "engineering_passed": final,
                "completed_phases": sorted(completed), "unverified_phase_receipts": unverified,
                "distinct_worker_pids": sorted({r["pid"] for r in records if type(r.get("pid")) is int and r["pid"] > 0}),
@@ -161,7 +194,7 @@ def main(args):
                "scientific_benefit_claimed": False, "formal_future_adoption_qualified": False,
                "natural_future_source_groups": 0, "training_attempts": int((run / "TRAINING_STARTED.json").exists()),
                "measured_cost": {"worker_cpu_user_seconds": child_user, "worker_cpu_system_seconds": child_system,
-                   "worker_wall_seconds": measured_total(records, "wall_seconds"),
+                   "worker_wall_seconds": None if pending else measured_total(records, "wall_seconds"),
                    "parent_cpu_user_seconds": sum(x["cpu_user_seconds"] for x in orchestration),
                    "parent_cpu_system_seconds": sum(x["cpu_system_seconds"] for x in orchestration),
                    "all_child_cpu_seconds": sum(x["all_child_cpu_user_seconds"] + x["all_child_cpu_system_seconds"] for x in orchestration),

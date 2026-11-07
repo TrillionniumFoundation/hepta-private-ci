@@ -144,3 +144,20 @@ Run the subprocess and recovery regressions without loading a model:
 cd qualification/cell-learning-loop-v1
 python3 -B -m unittest -v loop_tests
 ```
+
+## Unsettled attempts remain part of the cost inventory
+
+The driver reconciles all original attempt directories and the training marker
+before dispatch and during final reporting, including phases beyond an early
+stop. Missing or linked results and attempts outside the frozen schedule prevent
+further dispatch. Their unmeasured CPU, wall time and RSS remain unknown rather
+than disappearing from an empty sum. Existing failed measurements remain
+available in their original receipts. See
+`attempt_inventory_validation_20261106/` for the five original counterexamples,
+18 passing recovery tests and exact source/log bindings.
+
+Run the combined recovery and attempt-accounting regressions with:
+
+```sh
+python3 -B -m unittest -v loop_tests test_attempt_accounting
+```

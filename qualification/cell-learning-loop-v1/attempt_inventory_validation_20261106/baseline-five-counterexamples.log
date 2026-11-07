@@ -1,0 +1,53 @@
+test_dispatch_exception_leaves_attempt_cost_unknown (test_attempt_accounting.AttemptAccounting.test_dispatch_exception_leaves_attempt_cost_unknown) ... FAIL
+test_linked_attempt_inventory_is_not_traversed_or_costed (test_attempt_accounting.AttemptAccounting.test_linked_attempt_inventory_is_not_traversed_or_costed) ... FAIL
+test_lost_completed_receipt_preserves_unknown_prior_cost (test_attempt_accounting.AttemptAccounting.test_lost_completed_receipt_preserves_unknown_prior_cost) ... FAIL
+test_unknown_attempt_roster_prevents_later_model_work (test_attempt_accounting.AttemptAccounting.test_unknown_attempt_roster_prevents_later_model_work) ... FAIL
+test_unvisited_attempt_is_reconciled_before_any_phase_dispatch (test_attempt_accounting.AttemptAccounting.test_unvisited_attempt_is_reconciled_before_any_phase_dispatch) ... FAIL
+
+======================================================================
+FAIL: test_dispatch_exception_leaves_attempt_cost_unknown (test_attempt_accounting.AttemptAccounting.test_dispatch_exception_leaves_attempt_cost_unknown)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/b520837f9caa/memory-adoption/qualification/cell-learning-loop-v1/test_attempt_accounting.py", line 65, in test_dispatch_exception_leaves_attempt_cost_unknown
+    self.assertIn("bootstrap", summary["unverified_phase_receipts"])
+AssertionError: 'bootstrap' not found in {}
+
+======================================================================
+FAIL: test_linked_attempt_inventory_is_not_traversed_or_costed (test_attempt_accounting.AttemptAccounting.test_linked_attempt_inventory_is_not_traversed_or_costed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/b520837f9caa/memory-adoption/qualification/cell-learning-loop-v1/test_attempt_accounting.py", line 78, in test_linked_attempt_inventory_is_not_traversed_or_costed
+    with self.assertRaisesRegex(ValueError, "no implicit retry"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_lost_completed_receipt_preserves_unknown_prior_cost (test_attempt_accounting.AttemptAccounting.test_lost_completed_receipt_preserves_unknown_prior_cost)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/b520837f9caa/memory-adoption/qualification/cell-learning-loop-v1/test_attempt_accounting.py", line 24, in test_lost_completed_receipt_preserves_unknown_prior_cost
+    self.assertIsNone(cost[field], field)
+AssertionError: 0 is not None : worker_cpu_user_seconds
+
+======================================================================
+FAIL: test_unknown_attempt_roster_prevents_later_model_work (test_attempt_accounting.AttemptAccounting.test_unknown_attempt_roster_prevents_later_model_work)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/b520837f9caa/memory-adoption/qualification/cell-learning-loop-v1/test_attempt_accounting.py", line 51, in test_unknown_attempt_roster_prevents_later_model_work
+    with self.assertRaisesRegex(ValueError, "no implicit retry"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_unvisited_attempt_is_reconciled_before_any_phase_dispatch (test_attempt_accounting.AttemptAccounting.test_unvisited_attempt_is_reconciled_before_any_phase_dispatch)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/b520837f9caa/memory-adoption/qualification/cell-learning-loop-v1/test_attempt_accounting.py", line 34, in test_unvisited_attempt_is_reconciled_before_any_phase_dispatch
+    with self.assertRaisesRegex(ValueError, "no implicit retry"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.132s
+
+FAILED (failures=5)
