@@ -203,9 +203,14 @@ def bazel_args_without_remote_execution(
                 injected_args.append(f"{option}={value}")
 
     if requested_native_windows_msvc and not requested_windows_cross:
-        # The rules_rs Rust toolchain's target_triple select is evaluated in
-        # the execution configuration. Native MSVC jobs therefore need the
-        # ABI-qualified exec platform as well as the target and host platforms.
+        # The native MSVC target needs the MSVC host platform as well as an
+        # ABI-qualified execution-platform candidate. The ci-windows config
+        # otherwise supplies the gnullvm host platform by default.
+        if not any(
+            arg == "--host_platform" or arg.startswith("--host_platform=")
+            for arg in prefix
+        ):
+            injected_args.append("--host_platform=//:local_windows_msvc")
         if not option_contains_value(
             prefix, "--extra_execution_platforms", LOCAL_WINDOWS_MSVC_EXEC_PLATFORM
         ):
