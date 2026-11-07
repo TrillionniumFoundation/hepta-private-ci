@@ -302,6 +302,8 @@ mod intuition_policy;
 mod lane_b_runtime;
 mod learning_iteration;
 mod learning_iteration_auth;
+#[cfg(unix)]
+mod learning_iteration_checkpoint;
 mod learning_iteration_ports;
 mod learning_iteration_proposal;
 mod neuron_cell_evaluation;
@@ -647,6 +649,12 @@ pub use learning_iteration::LearningIterationHandleV1;
 pub use learning_iteration::LearningIterationRuntimeBootstrapV1;
 pub use learning_iteration::LearningIterationRuntimeErrorV1;
 pub use learning_iteration::learning_iteration_channel_v1;
+#[cfg(unix)]
+pub use learning_iteration_checkpoint::LearningIterationCheckpointErrorV1;
+#[cfg(unix)]
+pub use learning_iteration_checkpoint::LearningIterationCheckpointOwnerV1;
+#[cfg(unix)]
+pub use learning_iteration_checkpoint::LearningIterationCheckpointRecordV1;
 pub use learning_iteration_ports::LearningIterationOwnerFutureV1;
 pub use learning_iteration_ports::LearningIterationOwnerPortsV1;
 pub use learning_iteration_ports::LearningIterationProposalPayloadV1;
