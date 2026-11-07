@@ -27,6 +27,27 @@ The local Git HEAD remained `a6f3aa12ba187448c35449c7da0a9798ae4ca987`; it is on
 
 ## Review and integrity
 
+### Final formatted-source execution
+
+[`final-caller.json`](final-caller.json) and `final-caller.tar.gz` preserve a new,
+independent execution on the final Rust subtree
+`3deb8503bc873331518c0c536a269c00d754a8bf` and eight exact audit inputs. The original
+command passed once in **324.424493 seconds** within its unchanged 900-second
+budget: **171 boundaries and 5,315 Rust files**, with `authorityGranted=false`.
+Before and after execution, all 9,451 tracked blobs (128,230,122 bytes) and all
+eight inputs matched. The local checkout's whole HEAD is not asserted to equal
+the published candidate; the complete Rust tree and relevant audit inputs are
+the qualification boundary.
+
+The native07 attempt on the clean published candidate separately exceeded its
+900-second budget and produced no stdout. Its original timeout remains a failure;
+the successful local execution does not change its host, identity or outcome.
+The final stdout is byte-identical to the prior r4 stdout, but the new execution
+receipt, before/after snapshots and full Git listing are retained independently.
+The adjacent manifest records every archive member and the archive SHA-256.
+
+### Historical members
+
 Gzip members contain exact original bytes, with deterministic gzip timestamps. The manifest records both compressed and raw SHA-256 and byte counts. From the repository root:
 
 ```python
@@ -43,4 +64,7 @@ for item in m["artifacts"]:
     assert hashlib.sha256(raw).hexdigest() == item["raw_sha256"]
 ```
 
-This proves local Python audit outcomes and archive integrity. It does not execute Rust products, models or external effects, or establish independent authority custody. Final native/CI validation must rerun and bind the exact final formatted source. No record grants authority.
+This proves the stated Python audit outcomes and archive integrity. It does not
+execute Rust products, models or external effects, or establish independent
+authority custody. Rust product execution and native/CI outcomes are recorded
+separately in [the validation report](../VALIDATION.md). No record grants authority.
