@@ -343,6 +343,16 @@ impl CognitiveStore {
         })
     }
 
+    /// Close the shared SQLite pool and wait for its worker connections to stop.
+    ///
+    /// Hosts must stop users of all cloned handles before calling this method.
+    /// All clones become closed; retained clones still hold the owner lock until
+    /// dropped. Await this before binding an immutable recovery-file identity,
+    /// because dropping the final pool handle alone schedules asynchronous close.
+    pub async fn close(self) {
+        self.pool.close().await;
+    }
+
     pub fn path(&self) -> &Path {
         &self.path
     }
