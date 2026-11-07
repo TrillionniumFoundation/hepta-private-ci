@@ -1,0 +1,20 @@
+{
+  "scope": "local selected-source replay of exact CI discovery arguments; only package init changed",
+  "stage": "after",
+  "name": "exec-full",
+  "argv": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-v",
+    "-s",
+    "scripts",
+    "-p",
+    "test_hepta_ci_exec*.py"
+  ],
+  "exit_code": 0,
+  "wall_seconds": 9.594982351998624,
+  "log_sha256": "d4d7c6eadc2b055a12f63ae826dd0beb6f575d43b29fd2c0391be07ebfded244",
+  "tail": "d (test_hepta_ci_exec_output.CommandOutputTests.test_unittest_footer_at_eof_is_counted) ... ok\ntest_wrong_source_never_creates_a_command_log (test_hepta_ci_exec_output.CommandOutputTests.test_wrong_source_never_creates_a_command_log) ... ok\ntest_zero_tests_is_failure_even_with_process_success (test_hepta_ci_exec_output.CommandOutputTests.test_zero_tests_is_failure_even_with_process_success) ... ok\n\n----------------------------------------------------------------------\nRan 45 tests in 9.455s\n\nOK\n"
+}

@@ -1,0 +1,18 @@
+{
+  "scope": "local selected-source replay; all three pattern-matched test modules verified against 5309",
+  "stage": "before",
+  "argv": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-v",
+    "-s",
+    "scripts",
+    "-p",
+    "test_hepta_ci_exec*.py"
+  ],
+  "exit_code": 1,
+  "wall_seconds": 9.786783837997064,
+  "tail": "_eof_is_counted) ... ok\ntest_wrong_source_never_creates_a_command_log (test_hepta_ci_exec_output.CommandOutputTests.test_wrong_source_never_creates_a_command_log) ... ok\ntest_zero_tests_is_failure_even_with_process_success (test_hepta_ci_exec_output.CommandOutputTests.test_zero_tests_is_failure_even_with_process_success) ... ok\n\n======================================================================\nERROR: ndu_semantic_state (unittest.loader._FailedTest.ndu_semantic_state)\n----------------------------------------------------------------------\nImportError: Failed to import test module: ndu_semantic_state\nTraceback (most recent call last):\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/unittest/loader.py\", line 429, in _find_test_path\n    package = self._get_module_from_name(name)\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/unittest/loader.py\", line 339, in _get_module_from_name\n    __import__(name)\n  File \"/workspace/scratch/bc2efaf10cd0/ndu-import-ci-replay/source/scripts/ndu_semantic_state/__init__.py\", line 6, in <module>\n    from .state import (\n  File \"/workspace/scratch/bc2efaf10cd0/ndu-import-ci-replay/source/scripts/ndu_semantic_state/state.py\", line 16, in <module>\n    import numpy as np\nModuleNotFoundError: No module named 'numpy'\n\n\n----------------------------------------------------------------------\nRan 46 tests in 9.604s\n\nFAILED (errors=1)\n"
+}
