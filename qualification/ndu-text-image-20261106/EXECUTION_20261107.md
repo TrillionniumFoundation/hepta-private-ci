@@ -12,6 +12,8 @@ The original #5198 evidence remains bound to `006e744fbb10a6ee393166eed2e5d1e91f
 The new fit auditor is [#5306](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5306).
 The independent native learning-outcome contract is
 [#5307](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5307).
+The execution prerequisites and combined evidence are
+[#5309](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5309).
 They are research/development drafts, not production activation.
 
 ## Changes and actual validation
@@ -20,27 +22,39 @@ They are research/development drafts, not production activation.
 | --- | --- | --- |
 | Independent fit/cluster audit | 19 new regressions pass | Frozen identity, prospective power, all 20 contrasts, failed/unstarted/unresolved fits, partial evaluation costs, null amortization and sealed receipts |
 | Execution plan and actor projection | 16 new regressions pass | Externally pinned materials, full 16-provider roster, source/family/split mapping and public-only current inputs |
-| Integrated Python suite | 174 discovered; local 171 pass, 3 Torch skips | Final local source manifest unchanged |
-| Final-source native Torch execution | Same 3 Torch tests pass, zero skips | The 174 distinct tests are now covered across two environments; not 177 distinct tests |
+| Import/discovery repair | 3 new isolated regressions pass; original CI commands replay as 45/45 and 20/20 | Public API and missing-dependency errors preserved; no discovery or gate bypass |
+| Integrated Python suite, final v3 | 177 discovered; local 174 pass, 3 Torch skips | Final local source manifest unchanged |
+| Final-source native Torch execution, v3 | Same 3 Torch tests pass, zero skips | 177 distinct tests covered across two environments; duplicate execution is not another distinct test |
 | Independent Rust learning-cycle contract | 101 owning-crate tests pass; 12 new regressions | Authenticated Adoptable/NoUpdate/Inconclusive/Failed arithmetic and rejection cases; no durable owner adoption |
 
 The Python source bundle has SHA256
-`61e8ddf988cd62def71076a92b87c07563b8e0993e9121d30aa9fd6d5c42954f`.
+`f504df54aa6c631949ba98d454e1ffc5c41573bc20cae046fba0d9c9875260c0`.
 All 36 source files match the supplied manifest, remote unpacked files, test
-before/after manifests, and local readback. The original Hepta job is
-`ai395 / 1a1b5c71440-12894-f2`: succeeded, exit 0, terminal publication confirmed,
-durable complete output and no truncation. Only the final v2 bundle executed.
+before/after manifests, and local readback. The current original Hepta job is
+`ai395 / 1a1b5d4d871-12894-10f`: succeeded, exit 0, terminal publication confirmed,
+durable complete output and no truncation. Its stable request key is
+`ndu-torch-contract-f504df54aa6c-bc2efaf10cd0-001`.
 
-The Torch child took 2.229263489 wall seconds including Python startup/imports,
-tests, report and exit; user CPU 1.651359 s, system CPU 0.162527 s, peak RSS
-234,446,848 bytes. Supervisor CPU was separately observed at 0.031685456 s before
-final report writing. Energy, provider charges, preparation/transfer CPU and
-shared-host overhead remain unknown. These measurements do not close a real
-study's nine-category physical or research cost ledger. No GPU was allocated and
-no new dependencies were installed for this validation.
+Both executed source versions remain retained; neither attempt is erased or
+relabelled. The earlier v1 bundle never executed. The v2 and v3 runs each execute
+the same three engineering tests, and are not independent model-training fits.
+
+| Version and original ai395 job | Child wall seconds | Child CPU seconds | Peak RSS bytes | Supervisor CPU seconds |
+| --- | ---: | ---: | ---: | ---: |
+| v2 `1a1b5c71440-12894-f2` | 2.229263489 | 1.813886 | 234,446,848 | 0.031685456 |
+| v3 `1a1b5d4d871-12894-10f` | 1.116168495 | 0.682432 | 234,885,120 | 0.012163296 |
+
+Child measurements include Python startup/imports, tests, report and exit;
+supervisor CPU is observed before final report writing. These are retained
+execution costs, not comparative performance benchmarks. Energy, provider
+charges, preparation/transfer CPU and shared-host overhead remain unknown. These
+measurements do not close a real study's nine-category physical or research cost
+ledger. No GPU was allocated and no new dependencies were installed.
 
 Full receipts are under `evidence/execution-20261107/`; original local skip
-records are preserved alongside remote passes. Rust retains its initial compiler
+records are preserved alongside remote passes. Current local and remote receipts
+are in its `validation-v3/` subdirectory; the preceding v2 evidence is unchanged.
+Rust retains its initial compiler
 failure and successive 97/100/101-test results in its own validation directory.
 Its manifest distinguishes tested from subsequently formatted source bytes and
 does not inherit qualification for an untested merge with its advancing base.
@@ -58,6 +72,35 @@ does not inherit qualification for an untested merge with its advancing base.
   and signed explicit retry lineage now reject those paths.
 - Native budget-stop checks include the evaluated candidate cap. Revalidation
   keeps a stable receipt identity while checking current trust and expiry.
+- Unrelated unittest discovery previously eagerly imported NumPy through the
+  semantic-state package initializer. Explicit API access now loads the original
+  state objects on demand; real missing-dependency errors still propagate.
+
+## CI evidence and remaining delivery status
+
+The import repair is published in #5306 commit
+`383b7b934204eebff8e4eede5e4b2f6a2f2b0f63` and carried into the #5309 stack.
+`evidence/import-fix-20261107/` retains four complete original Actions logs,
+including the same import failure on #5198, plus exact CI-input Git identities,
+before/after local logs, the patch and source hashes. The local 45/45 and 20/20
+replays use the original discovery arguments in a fresh environment without
+NumPy. They are not a substitute for whole-repository Actions. New-head CI was
+requested by publication; overall CI success is not claimed here.
+
+The original #5309 blob-policy job `128392584688` failed during Fence startup
+with `unsupported_resolver_layout`, before source checkout or blob inspection.
+Its complete original log is retained as `ci-original-blob-128392584688.log`.
+No Fence policy was changed and no pass is inferred from this failure.
+
+The original #5307 blocking run remains red. `NATIVE_CI_TRIAGE.md` records a
+timestamped 35-job snapshot, the 14 failure links, and 64 diagnostic/input file
+identities. Those files are outside the native PR's diff; this does not establish
+baseline execution or exclude indirect merge/environment effects. The owning
+intelligence unit-test target is reported PASSED in GNU/musl CI summaries (GNU
+explicitly cached), but other build, provisioning, formatting and runtime gates
+failed. The cargo-deny diagnostics could not be retrieved and remain unlocalized.
+CI, transfer and preparation resource costs are not available as a complete
+ledger; unknown values are not zero. All three PRs remain draft and unmerged.
 
 ## Current compute and material readiness
 

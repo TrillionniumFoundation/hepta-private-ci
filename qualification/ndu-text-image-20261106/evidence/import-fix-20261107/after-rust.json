@@ -1,0 +1,20 @@
+{
+  "scope": "local selected-source replay of exact CI discovery arguments; only package init changed",
+  "stage": "after",
+  "name": "rust",
+  "argv": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "scripts",
+    "-p",
+    "test_hepta_rust_ci_feedback.py",
+    "-v"
+  ],
+  "exit_code": 0,
+  "wall_seconds": 0.6640741329974844,
+  "log_sha256": "7deeee4cc2eff297f5ef58923bfeac60faf1772cd50a1d77b111769622ef7639",
+  "tail": "checks (test_hepta_rust_ci_feedback.FastFeedbackTests.test_selected_workflows_still_require_native_rust_checks) ... ok\ntest_shared_build_inputs_select_manifest_checks (test_hepta_rust_ci_feedback.FastFeedbackTests.test_shared_build_inputs_select_manifest_checks) ... ok\ntest_valid_empty_diff_is_not_an_error (test_hepta_rust_ci_feedback.FastFeedbackTests.test_valid_empty_diff_is_not_an_error) ... ok\n\n----------------------------------------------------------------------\nRan 20 tests in 0.583s\n\nOK\n"
+}

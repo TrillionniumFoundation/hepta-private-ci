@@ -1,0 +1,44 @@
+{
+  "schema": "ndu-import-ci-replay-inputs-v1",
+  "scope": "Selected-source local replay, not a GitHub Actions receipt or full repository checkout",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "ref": "1c5436ae52771360cc9fd6eef6e365a1675cb502",
+  "files": [
+    {
+      "path": "scripts/test_hepta_ci_exec.py",
+      "git_blob": "8989e05a8466fb661394fd3501f5d7bb776d107d"
+    },
+    {
+      "path": "scripts/test_hepta_ci_exec_output.py",
+      "git_blob": "f92628ad9b15cdad591dbc30b6c90e2074a501aa"
+    },
+    {
+      "path": "scripts/test_hepta_ci_exec_deadline.py",
+      "git_blob": "46a921675313f43a3720f69334d49599695fb27d"
+    },
+    {
+      "path": "scripts/test_hepta_rust_ci_feedback.py",
+      "git_blob": "cc73d678ae0e785886a7fbb5fcfff677e5ca75fd"
+    },
+    {
+      "path": "scripts/hepta_ci_exec.py",
+      "git_blob": "c9434b3a4afb31f80e323d543936386a2fa738de"
+    },
+    {
+      "path": "scripts/hepta_ci_dependencies.py",
+      "git_blob": "ac08a17d51010c70ad21fdfc37fe1509f6f52040"
+    },
+    {
+      "path": ".github/workflows/hepta-consolidated-source.yml",
+      "git_blob": "c7d7e7acbec213f2380ca2457737bf2e8aae9087"
+    },
+    {
+      "path": ".github/workflows/rust-ci.yml",
+      "git_blob": "81330bf3ed388e9deafa474516be437ac165cbb7"
+    },
+    {
+      "path": ".github/workflows/rust-ci-full.yml",
+      "git_blob": "a388ab40723d2d2cab332a05e39fa96668c95aa4"
+    }
+  ]
+}

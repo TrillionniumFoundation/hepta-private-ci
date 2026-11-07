@@ -1,0 +1,19 @@
+{
+  "scope": "local selected-source replay of exact CI discovery arguments",
+  "stage": "before",
+  "name": "rust",
+  "argv": [
+    "python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "scripts",
+    "-p",
+    "test_hepta_rust_ci_feedback.py",
+    "-v"
+  ],
+  "exit_code": 1,
+  "wall_seconds": 0.6261084689976997,
+  "tail": "kflows_still_require_native_rust_checks) ... ok\ntest_shared_build_inputs_select_manifest_checks (test_hepta_rust_ci_feedback.FastFeedbackTests.test_shared_build_inputs_select_manifest_checks) ... ok\ntest_valid_empty_diff_is_not_an_error (test_hepta_rust_ci_feedback.FastFeedbackTests.test_valid_empty_diff_is_not_an_error) ... ok\n\n======================================================================\nERROR: ndu_semantic_state (unittest.loader._FailedTest.ndu_semantic_state)\n----------------------------------------------------------------------\nImportError: Failed to import test module: ndu_semantic_state\nTraceback (most recent call last):\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/unittest/loader.py\", line 429, in _find_test_path\n    package = self._get_module_from_name(name)\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/unittest/loader.py\", line 339, in _get_module_from_name\n    __import__(name)\n  File \"/workspace/scratch/bc2efaf10cd0/ndu-import-ci-replay/source/scripts/ndu_semantic_state/__init__.py\", line 6, in <module>\n    from .state import (\n  File \"/workspace/scratch/bc2efaf10cd0/ndu-import-ci-replay/source/scripts/ndu_semantic_state/state.py\", line 16, in <module>\n    import numpy as np\nModuleNotFoundError: No module named 'numpy'\n\n\n----------------------------------------------------------------------\nRan 21 tests in 0.532s\n\nFAILED (errors=1)\n"
+}
