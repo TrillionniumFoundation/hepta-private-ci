@@ -19,17 +19,32 @@ def features_torch(shared, encodings, state, binding):
     tensors = [shared] + [encodings[name] for name in MODALITIES]
     snapshots = [state.shared] + [slot.encoding for slot in state.slots]
     for tensor, snapshot in zip(tensors, snapshots, strict=True):
-        if (not isinstance(tensor, torch.Tensor) or tuple(tensor.shape) != state.shared.shape
-                or tensor.dtype not in (torch.float32, torch.float64)
-                or tensor.device != shared.device or tensor.dtype != shared.dtype
-                or not torch.isfinite(tensor).all().item()):
-            raise ValueError("Content tensors must share the validated shape, dtype and device")
+        if (
+            not isinstance(tensor, torch.Tensor)
+            or tuple(tensor.shape) != state.shared.shape
+            or tensor.dtype not in (torch.float32, torch.float64)
+            or tensor.device != shared.device
+            or tensor.dtype != shared.dtype
+            or not torch.isfinite(tensor).all().item()
+        ):
+            raise ValueError(
+                "Content tensors must share the validated shape, dtype and device"
+            )
         if not np.array_equal(tensor.detach().cpu().numpy(), snapshot):
             raise ValueError("Validated content snapshot differs from graph tensors")
     columns = [shared]
     for name, slot in zip(MODALITIES, state.slots, strict=True):
-        columns.extend((encodings[name], torch.as_tensor(slot.metadata(), dtype=shared.dtype, device=shared.device)))
-    clock = np.stack((np.log1p(state.remaining_budget), np.log1p(state.elapsed_seconds)), axis=-1)
+        columns.extend(
+            (
+                encodings[name],
+                torch.as_tensor(
+                    slot.metadata(), dtype=shared.dtype, device=shared.device
+                ),
+            )
+        )
+    clock = np.stack(
+        (np.log1p(state.remaining_budget), np.log1p(state.elapsed_seconds)), axis=-1
+    )
     columns.append(torch.as_tensor(clock, dtype=shared.dtype, device=shared.device))
     return torch.cat(columns, dim=-1)
 
@@ -46,7 +61,10 @@ def encode_public_outputs_torch(shared, outputs, encoders, metadata):
 
     exact_fields(outputs, MODALITIES, "public outputs")
     exact_fields(encoders, MODALITIES, "public output encoders")
-    if not isinstance(shared, torch.Tensor) or shared.dtype not in (torch.float32, torch.float64):
+    if not isinstance(shared, torch.Tensor) or shared.dtype not in (
+        torch.float32,
+        torch.float64,
+    ):
         raise ValueError("Shared content must be a floating Torch tensor")
     encodings = {}
     for name in MODALITIES:
@@ -55,7 +73,10 @@ def encode_public_outputs_torch(shared, outputs, encoders, metadata):
         encodings[name] = encoders[name](outputs[name])
         if not isinstance(encodings[name], torch.Tensor):
             raise ValueError("Encoder did not return a Torch tensor")
-    snapshot = from_public_encodings(shared.detach().cpu().numpy(),
-        {name: encodings[name].detach().cpu().numpy() for name in MODALITIES}, metadata)
+    snapshot = from_public_encodings(
+        shared.detach().cpu().numpy(),
+        {name: encodings[name].detach().cpu().numpy() for name in MODALITIES},
+        metadata,
+    )
     binding = actor_binding(snapshot)
     return features_torch(shared, encodings, snapshot, binding), snapshot, binding
