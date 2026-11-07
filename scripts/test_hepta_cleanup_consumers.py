@@ -59,6 +59,43 @@ class CleanupConsumerTests(unittest.TestCase):
             with patch.object(VERIFIER, "ROOT", root):
                 VERIFIER.verify_exact_workflow_references()
 
+    def test_foreign_repository_workflow_path_is_not_a_local_reference(self):
+        with tempfile.TemporaryDirectory(
+            prefix="hepta-foreign-workflow-reference-"
+        ) as directory:
+            root = Path(directory)
+            (root / "docs").mkdir()
+            (root / "scripts").mkdir()
+            (root / "docs/reference.json").write_text(
+                '{"signer_workflow":"openai/fence/.github/workflows/release.yml"}\n',
+                encoding="utf-8",
+            )
+            for relative in VERIFIER.WORKFLOW_REFERENCE_SCRIPTS:
+                target = root / relative
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text("", encoding="utf-8")
+            with patch.object(VERIFIER, "ROOT", root):
+                VERIFIER.verify_exact_workflow_references()
+
+    def test_dot_relative_local_workflow_path_is_still_checked(self):
+        with tempfile.TemporaryDirectory(
+            prefix="hepta-relative-workflow-reference-"
+        ) as directory:
+            root = Path(directory)
+            (root / "docs").mkdir()
+            (root / "scripts").mkdir()
+            (root / "docs/reference.md").write_text(
+                ""./.github/workflows/missing.yml"\n", encoding="utf-8"
+            )
+            for relative in VERIFIER.WORKFLOW_REFERENCE_SCRIPTS:
+                target = root / relative
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text("", encoding="utf-8")
+            with patch.object(VERIFIER, "ROOT", root):
+                with self.assertRaisesRegex(
+                    SystemExit, "stale exact workflow references"
+                ):
+                    VERIFIER.verify_exact_workflow_references()
     def check_history(
         self, text, name=FIXTURE_NAME, wrong_count=False, copied_name="copied.txt"
     ):
