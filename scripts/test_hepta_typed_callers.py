@@ -179,6 +179,284 @@ class TypedAuthorityCallTests(unittest.TestCase):
                         expected,
                     )
 
+    def test_closed_block_cannot_replace_the_live_outer_parameter(self):
+        for outer, inner, expected in (("Gate", "Other", True), ("Other", "Gate", False)):
+            with self.subTest(outer=outer, inner=inner):
+                self.assertEqual(
+                    self.match(
+                        f"fn f(original: &{outer}) {{ "
+                        f"{{ let original: {inner} = {inner}::new(); original.other(); }} "
+                        "original.enter(); }"
+                    ),
+                    expected,
+                )
+
+    def test_closed_block_preserves_the_preceding_live_local_alias(self):
+        self.assertTrue(
+            self.match(
+                "fn f(original: &Gate) { let alias = original.clone(); "
+                "{ let alias: Other = Other::new(); alias.other(); } alias.enter(); }"
+            )
+        )
+
+    def test_open_block_applies_its_current_local_shadow(self):
+        for outer, inner, expected in (("Gate", "Other", False), ("Other", "Gate", True)):
+            with self.subTest(outer=outer, inner=inner):
+                self.assertEqual(
+                    self.match(
+                        f"fn f(original: &{outer}) {{ "
+                        f"{{ let original: {inner} = {inner}::new(); original.enter(); }} }}"
+                    ),
+                    expected,
+                )
+
+    def test_closed_nested_function_parameter_cannot_retype_the_outer_receiver(self):
+        for outer, inner, expected in (("Gate", "Other", True), ("Other", "Gate", False)):
+            with self.subTest(outer=outer, inner=inner):
+                self.assertEqual(
+                    self.match(
+                        f"fn f(original: &{outer}) {{ "
+                        f"fn nested(original: &{inner}) {{ original.other(); }} "
+                        "original.enter(); }"
+                    ),
+                    expected,
+                )
+
+    def test_nested_function_uses_its_own_parameter_type(self):
+        for outer, inner, expected in (("Gate", "Other", False), ("Other", "Gate", True)):
+            with self.subTest(outer=outer, inner=inner):
+                self.assertEqual(
+                    self.match(
+                        f"fn f(original: &{outer}) {{ "
+                        f"fn nested(original: &{inner}) {{ original.enter(); }} }}"
+                    ),
+                    expected,
+                )
+
+    def test_closed_closure_annotations_cannot_retype_the_outer_receiver(self):
+        for outer, inner, expected in (("Gate", "Other", True), ("Other", "Gate", False)):
+            for body in ("original.other()", "{ original.other() }"):
+                with self.subTest(outer=outer, inner=inner, body=body):
+                    self.assertEqual(
+                        self.match(
+                            f"fn f(original: &{outer}) {{ "
+                            f"let closed = |original: &{inner}| {body}; original.enter(); }}"
+                        ),
+                        expected,
+                    )
+
+    def test_live_closure_parameter_shadows_an_earlier_local_binding(self):
+        for inner, expected in (("Gate", True), ("Other", False)):
+            for body in ("original.enter()", "{ original.enter() }"):
+                with self.subTest(inner=inner, body=body):
+                    self.assertEqual(
+                        self.match(
+                            "fn f(original: &Gate) { let original = original.clone(); "
+                            f"let pending = |original: &{inner}| {body}; }}"
+                        ),
+                        expected,
+                    )
+
+    def test_local_inside_live_closure_can_shadow_its_parameter(self):
+        for inner, expected in (("Gate", True), ("Other", False)):
+            with self.subTest(inner=inner):
+                self.assertEqual(
+                    self.match(
+                        "fn f(known: &Gate) { let pending = |original: &Other| { "
+                        f"let original: {inner} = {inner}::new(); original.enter(); }}; }}"
+                    ),
+                    expected,
+                )
+
+    def test_untyped_closure_patterns_cannot_inherit_an_unrelated_outer_type(self):
+        for pattern in ("original", "(original, _)", "(Some(original) | Other(original))"):
+            with self.subTest(pattern=pattern), self.assertRaises(UnresolvedTypedReceiver):
+                self.match(
+                    "fn f(original: &Other, known: &Gate) { "
+                    f"let pending = |{pattern}| original.enter(); }}"
+                )
+
+    def test_nested_expression_closures_keep_the_live_outer_parameter(self):
+        self.assertTrue(
+            self.match(
+                "fn f(original: &Other) { let pending = |original: &Gate| "
+                "|first: Other, second: Other| original.enter(); }"
+            )
+        )
+
+    def test_generic_arguments_do_not_end_a_live_closure_expression(self):
+        for expression in (
+            "accept::<First, Second>(original.enter())",
+            "accept::<Container<First, Second>, Last>(original.enter())",
+            "<First as Trait<First, Second>>::accept(original.enter())",
+        ):
+            with self.subTest(expression=expression):
+                self.assertTrue(
+                    self.match(
+                        "fn f(original: &Other) { "
+                        f"let pending = |original: &Gate| {expression}; }}"
+                    )
+                )
+
+    def test_completed_comparison_closure_cannot_leak_its_parameter(self):
+        self.assertTrue(
+            self.match(
+                "fn f(original: &Gate) { "
+                "let closed = |original: &Other| original.count() < limit; "
+                "original.enter(); }"
+            )
+        )
+
+    def test_completed_unsupported_let_pattern_cannot_inherit_the_outer_type(self):
+        for declaration in (
+            "let (original, _) = obtain();",
+            "let Some(original) = obtain() else { return };",
+            "let [original, ..] = obtain() else { return };",
+            "let original @ Some(_) = obtain() else { return };",
+            "let ref original = obtain();",
+        ):
+            with self.subTest(declaration=declaration):
+                with self.assertRaises(UnresolvedTypedReceiver):
+                    self.match(
+                        "fn f(original: &Other, known: &Gate) { "
+                        f"{declaration} original.enter(); }}"
+                    )
+
+    def test_unfinished_pattern_initializer_keeps_the_outer_binding(self):
+        for outer, expected in (("Gate", True), ("Other", False)):
+            with self.subTest(outer=outer):
+                self.assertEqual(
+                    self.match(
+                        f"fn f(original: &{outer}, known: &Gate) {{ "
+                        "let (original, _) = (original.enter(), obtain()); }"
+                    ),
+                    expected,
+                )
+
+    def test_live_conditional_pattern_cannot_inherit_the_outer_type(self):
+        for control in ("if", "while"):
+            for condition in ("obtain()", "obtain() && original.enter()"):
+                with self.subTest(control=control, condition=condition):
+                    with self.assertRaises(UnresolvedTypedReceiver):
+                        self.match(
+                            "fn f(original: &Other, known: &Gate) { "
+                            f"{control} let Some(original) = {condition} "
+                            "{ original.enter(); } }"
+                        )
+
+    def test_closed_conditional_pattern_restores_the_outer_binding(self):
+        for outer, expected in (("Gate", True), ("Other", False)):
+            for suffix in ("original.enter();", "else { original.enter(); }"):
+                with self.subTest(outer=outer, suffix=suffix):
+                    self.assertEqual(
+                        self.match(
+                            f"fn f(original: &{outer}, known: &Gate) {{ "
+                            "if let Some(original) = obtain() { original.other(); } "
+                            f"{suffix} }}"
+                        ),
+                        expected,
+                    )
+
+    def test_live_for_pattern_cannot_inherit_the_outer_type(self):
+        for pattern in ("original", "(original, _)"):
+            with self.subTest(pattern=pattern):
+                with self.assertRaises(UnresolvedTypedReceiver):
+                    self.match(
+                        "fn f(original: &Other, known: &Gate) { "
+                        f"for {pattern} in obtain() {{ original.enter(); }} }}"
+                    )
+
+    def test_closed_for_pattern_restores_the_outer_binding(self):
+        self.assertTrue(
+            self.match(
+                "fn f(original: &Gate) { "
+                "for original in obtain() { original.other(); } original.enter(); }"
+            )
+        )
+
+    def test_live_match_pattern_cannot_inherit_the_outer_type(self):
+        for arm in (
+            "Some(original) => original.enter(),",
+            "Some(original) => { original.enter(); },",
+            "Some(original) if original.enter() => take(),",
+        ):
+            with self.subTest(arm=arm):
+                with self.assertRaises(UnresolvedTypedReceiver):
+                    self.match(
+                        "fn f(original: &Other, known: &Gate) { "
+                        f"match obtain() {{ {arm} _ => skip() }} }}"
+                    )
+
+    def test_completed_match_arm_cannot_leak_its_pattern(self):
+        for arm in (
+            "Some(original) => original.other(),",
+            "Some(original) => { original.other(); },",
+            "Some(original) => { original.other(); }",
+        ):
+            with self.subTest(arm=arm):
+                self.assertTrue(
+                    self.match(
+                        "fn f(original: &Gate) { "
+                        f"match obtain() {{ {arm} _ => original.enter() }} }}"
+                    )
+                )
+
+    def test_match_binding_suffix_cannot_be_mistaken_for_a_guard_keyword(self):
+        with self.assertRaises(UnresolvedTypedReceiver):
+            self.match(
+                "fn f(original_if: &Other, known: &Gate) { "
+                "match obtain() { original_if => original_if.enter() } }"
+            )
+
+    def test_struct_pattern_names_survive_closed_block_masking(self):
+        for body in (
+            "let Holder { value: original } = obtain(); original.enter();",
+            "if let Holder { value: original } = obtain() { original.enter(); }",
+            "for Holder { value: original } in obtain() { original.enter(); }",
+            "match obtain() { Holder { value: original } => original.enter() }",
+            "let pending = |Holder { value: original }| original.enter();",
+        ):
+            with self.subTest(body=body), self.assertRaises(UnresolvedTypedReceiver):
+                self.match(f"fn f(original: &Other, known: &Gate) {{ {body} }}")
+
+    def test_later_explicit_let_can_replace_an_unresolved_pattern_binding(self):
+        for inner, expected in (("Gate", True), ("Other", False)):
+            with self.subTest(inner=inner):
+                self.assertEqual(
+                    self.match(
+                        "fn f(original: &Other, known: &Gate) { "
+                        "let (original, _) = obtain(); "
+                        f"let original: {inner} = {inner}::new(); original.enter(); }}"
+                    ),
+                    expected,
+                )
+
+    def test_generic_callback_bound_does_not_hide_the_function_parameters(self):
+        self.assertTrue(
+            self.match(
+                "fn f<F: Fn() -> Other>(original: &Gate, callback: F) { original.enter(); }"
+            )
+        )
+
+    def test_return_typed_closure_keeps_only_its_live_parameter(self):
+        for inner, expected in (("Gate", True), ("Other", False)):
+            with self.subTest(inner=inner):
+                self.assertEqual(
+                    self.match(
+                        "fn f(original: &Other, known: &Gate) { "
+                        f"let pending = |original: &{inner}| -> Result<Gate, Failure> "
+                        "{ original.enter() }; }"
+                    ),
+                    expected,
+                )
+
+    def test_closed_block_initializer_remains_an_opaque_expression(self):
+        with self.assertRaises(UnresolvedTypedReceiver):
+            self.match(
+                "fn f(original: &Gate) { "
+                "let opaque = { let alias = original; alias }; opaque.enter(); }"
+            )
+
     def test_unrelated_argument_inside_an_unfinished_method_initializer(self):
         self.assertFalse(
             self.match(
