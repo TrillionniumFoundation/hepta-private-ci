@@ -153,3 +153,38 @@ async fn observed_driver_exit_keeps_its_actual_code() -> Result<()> {
     assert_eq!(process.failure_message(), None);
     Ok(())
 }
+
+#[tokio::test]
+async fn requested_driver_termination_waits_for_native_exit() -> Result<()> {
+    let fixture = driver_fixture();
+    let process = Arc::new(
+        UnifiedExecProcess::from_spawned(
+            fixture.spawned,
+            SandboxType::None,
+            Box::new(NoopSpawnLifecycle),
+        )
+        .await?,
+    );
+    let task = tokio::spawn({
+        let process = Arc::clone(&process);
+        async move { process.terminate_confirmed().await }
+    });
+    tokio::time::timeout(Duration::from_secs(/*secs*/ 2), async {
+        while fixture.terminations.load(Ordering::SeqCst) == 0 {
+            tokio::task::yield_now().await;
+        }
+    })
+    .await?;
+    assert!(!task.is_finished(), "a request alone must not finish termination");
+    assert!(!process.has_exited());
+    assert_eq!(process.exit_code(), None);
+    fixture
+        .exit_tx
+        .send(/*t*/ 59)
+        .map_err(|_| anyhow::anyhow!("driver exit receiver closed"))?;
+    tokio::time::timeout(Duration::from_secs(/*secs*/ 2), task).await???;
+    assert!(process.has_exited());
+    assert_eq!(process.exit_code(), Some(59));
+    assert_eq!(process.failure_message(), None);
+    Ok(())
+}

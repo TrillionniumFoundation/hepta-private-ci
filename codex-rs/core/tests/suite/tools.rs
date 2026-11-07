@@ -351,7 +351,7 @@ async fn namespaced_custom_tool_call_preserves_namespace_through_dispatch_and_re
     skip_if_no_network!(Ok(()));
 
     let server = start_mock_server().await;
-    let mut builder = test_codex();
+    let mut builder = test_codex().with_internal_metadata_for_mock();
     builder = builder.with_config(|config| {
         let _ = config.features.enable(Feature::ExecutedToolCallMetadata);
     });

@@ -46,38 +46,38 @@ struct FailureHooks {
 static JOURNAL_HOOK: OnceLock<Mutex<FailureHooks>> = OnceLock::new();
 
 /// Notify only after the real, correlated usage event has updated the output.
-pub(super) fn notify_observed_usage(observed_tokens: u64) {
+pub(super) fn notify_observed_usage(observed_tokens: u64) -> std::result::Result<(), String> {
     if observed_tokens != 17 {
-        return;
+        return Ok(());
     }
-    let Some(hooks) = JOURNAL_HOOK.get() else {
-        return;
-    };
-    let hook = match hooks.lock() {
-        Ok(mut hooks) => hooks.usage.take(),
-        Err(error) => panic!("native failure usage hook: {error}"),
-    };
-    if let Some(hook) = hook {
+    if let Some(hooks) = JOURNAL_HOOK.get()
+        && let Some(hook) = hooks
+            .lock()
+            .map_err(|error| format!("native failure usage hook: {error}"))?
+            .usage
+            .take()
+    {
         let _ = hook.send(());
     }
+    Ok(())
 }
 
 /// The isolated child pauses after both synchronous journal appends.
-pub(super) async fn pause_after_observation_journal(request_id: &str) {
+pub(super) async fn pause_after_observation_journal(request_id: &str) -> Result<()> {
     if request_id != REQUEST_ID {
-        return;
+        return Ok(());
     }
-    let hook = match JOURNAL_HOOK
+    let hook = JOURNAL_HOOK
         .get_or_init(|| Mutex::new(FailureHooks::default()))
         .lock()
-    {
-        Ok(mut hooks) => hooks.journal.take(),
-        Err(error) => panic!("native failure journal hook: {error}"),
-    };
+        .map_err(|error| format!("native failure journal hook: {error}"))?
+        .journal
+        .take();
     if let Some(hook) = hook {
         let _ = hook.send(());
         std::future::pending::<()>().await;
     }
+    Ok(())
 }
 
 #[derive(Deserialize, Serialize)]

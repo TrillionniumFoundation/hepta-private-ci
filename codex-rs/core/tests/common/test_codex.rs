@@ -333,6 +333,7 @@ pub struct TestCodexBuilder {
     extensions: Arc<ExtensionRegistry<Config>>,
     user_instructions_provider: Option<Arc<dyn UserInstructionsProvider>>,
     supports_openai_form_elicitation: bool,
+    internal_metadata_for_mock: bool,
     external_time_provider: Option<Arc<dyn TimeProvider>>,
     code_mode_host_program: Option<PathBuf>,
     history_mode: Option<ThreadHistoryMode>,
@@ -359,6 +360,14 @@ impl TestCodexBuilder {
         T: FnOnce(&mut Config) + Send + 'static,
     {
         self.config_mutators.push(Box::new(mutator));
+        self
+    }
+
+    /// Grant private response-item metadata only to this explicitly selected
+    /// loopback fixture. Ordinary mock providers retain the custom-provider
+    /// boundary, even when their display name is OpenAI.
+    pub fn with_internal_metadata_for_mock(mut self) -> Self {
+        self.internal_metadata_for_mock = true;
         self
     }
 
@@ -823,20 +832,13 @@ impl TestCodexBuilder {
         home: &TempDir,
         cwd_override: AbsolutePathBuf,
     ) -> anyhow::Result<(Config, Arc<TempDir>)> {
-        let mut model_provider = ModelProviderInfo {
+        let model_provider = ModelProviderInfo {
             base_url: Some(base_url),
             // Most core tests use SSE-only mock servers, so keep websocket transport off unless
             // a test explicitly opts into websocket coverage.
             supports_websockets: false,
             ..built_in_model_providers(/*openai_base_url*/ None)["openai"].clone()
         };
-        // The default fixture models a metadata-capable backend. Tests for a
-        // custom endpoint's wire boundary must explicitly clear this permit
-        // in their config mutator, independently of the provider display name.
-        codex_model_provider_info::test_support::allow_internal_metadata_for_mock(
-            &mut model_provider,
-        )
-        .map_err(anyhow::Error::msg)?;
         let cwd = Arc::new(TempDir::new()?);
         for hook in self.pre_build_hooks.drain(..) {
             hook(home.path());
@@ -873,6 +875,12 @@ impl TestCodexBuilder {
         swap(&mut self.config_mutators, &mut mutators);
         for mutator in mutators {
             mutator(&mut config);
+        }
+        if self.internal_metadata_for_mock {
+            codex_model_provider_info::test_support::allow_internal_metadata_for_mock(
+                &mut config.model_provider,
+            )
+            .map_err(anyhow::Error::msg)?;
         }
         ensure_test_model_catalog(&mut config)?;
 
@@ -1398,6 +1406,7 @@ pub fn test_codex() -> TestCodexBuilder {
         extensions: empty_extension_registry(),
         user_instructions_provider: None,
         supports_openai_form_elicitation: false,
+        internal_metadata_for_mock: false,
         external_time_provider: None,
         code_mode_host_program: None,
         history_mode: None,

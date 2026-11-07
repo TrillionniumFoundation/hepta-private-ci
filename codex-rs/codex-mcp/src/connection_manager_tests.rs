@@ -4,6 +4,8 @@ use super::*;
 mod configured_hook_binding_tests;
 #[path = "binding_retained_tests.rs"]
 mod retained_binding_tests;
+#[path = "hook_connected_call_tests.rs"]
+mod hook_connected_call_tests;
 use crate::McpBinding;
 use crate::elicitation::ElicitationLifecycle;
 use crate::elicitation::ElicitationRequestManager;

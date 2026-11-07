@@ -39,26 +39,28 @@ impl HookMcpExecutor for CoreHookMcpExecutor {
                 );
             }
 
-            let binding = self.runtime.current_binding().await.ok_or_else(|| {
-                anyhow::anyhow!(
-                    "MCP server `{}` or tool `{}` is not connected and available",
-                    call.server,
-                    call.tool
-                )
-            })?;
-            let prepared_call = binding
-                .prepare_configured_hook_call(
-                    &call.server,
-                    &call.tool,
-                    call.environment_id.as_deref(),
-                )
-                .ok_or_else(|| {
-                    anyhow::anyhow!(
-                        "MCP server `{}` or tool `{}` is not connected and available in the hook's environment",
-                        call.server,
-                        call.tool
+            // Configured hooks use the permitted live catalog, including app-only tools,
+            // without starting or reconnecting an MCP server.
+            let prepared_call = self
+                .runtime
+                .prepare_call_if_connected(&call.server, &call.tool)
+                .await
+                .with_context(|| {
+                    format!(
+                        "MCP server `{}` or tool `{}` is not connected and available",
+                        call.server, call.tool
                     )
                 })?;
+            if let Some(environment_id) = call.environment_id.as_deref()
+                && prepared_call.server_environment_id() != environment_id
+            {
+                bail!(
+                    "MCP server `{}` is running in environment `{}`, expected `{environment_id}`",
+                    call.server,
+                    prepared_call.server_environment_id()
+                );
+            }
+
             let mut metadata = call.metadata.unwrap_or_default();
             metadata.insert(
                 "threadId".to_string(),

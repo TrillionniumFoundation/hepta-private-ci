@@ -488,7 +488,12 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let response_mock = responses::mount_sse_once(&server, response).await;
 
     let nonce = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
-    let root = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}"));
+    // Retain the original failed-fixture lifetime in a short, private directory
+    // so the real agentd sockets fit the Unix sockaddr path limit.
+    let root = tempfile::Builder::new()
+        .prefix("hcw-")
+        .tempdir_in(std::path::Path::new("/tmp").canonicalize()?)?
+        .keep();
     let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)?;
     // core_test_support registers the production arg0 helper dispatch before
     // this test executable enters the harness.

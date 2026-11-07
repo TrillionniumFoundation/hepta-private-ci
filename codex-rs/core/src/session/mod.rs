@@ -4045,9 +4045,7 @@ impl Session {
                         "notes",
                         "thread_hint",
                         /*environment_id*/ None,
-                        Some(serde_json::json!({
-                            "threadId": self.thread_id().to_string(),
-                        })),
+                        /*arguments*/ None,
                         Some(serde_json::json!({
                             "threadId": self.thread_id().to_string(),
                         })),

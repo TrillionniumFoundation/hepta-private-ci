@@ -22,6 +22,9 @@ use crate::AuthBusObjectiveBody;
 use crate::AuthBusObjectiveIngress;
 use crate::DeploymentFinalUseIssuer;
 
+#[path = "authority_host_worker_registration.rs"]
+mod worker_registration;
+
 #[path = "authority_host_writer.rs"]
 mod writer;
 pub use writer::FreshHostCognitiveState;
@@ -81,6 +84,15 @@ pub struct HostAuthorityService {
 }
 
 impl HostAuthorityService {
+    /// Qualification-only access to the same retained original issuer. This
+    /// neither constructs an issuer nor exposes signing or clock selection.
+    #[cfg(test)]
+    pub(crate) fn revoke_worker_journal_qualification_grant(&self, grant_id: &str) -> io::Result<FinalUseRevocations> {
+        if rustix::process::getuid().as_raw() != 0 || rustix::process::geteuid().as_raw() != 0 || self.root_registry.is_none() {
+            return Err(io::Error::other("actual original Root required for journal qualification revocation"));
+        }
+        self.issuer.revoke(grant_id)
+    }
     pub fn from_registered_owner(
         issuer: Arc<DeploymentFinalUseIssuer>,
         clock: Arc<HostAuthorityClock>,

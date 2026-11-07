@@ -46,6 +46,42 @@ pub(crate) fn openssh_keygen() -> &'static Path {
     })
 }
 
+/// Keep fixture subprocesses on the resolved OpenSSH executable and supply
+/// the one OS-owned location required by Win32 OpenSSH during initialization.
+pub(crate) fn openssh_command() -> std::process::Command {
+    let command = std::process::Command::new(openssh_keygen());
+    #[cfg(windows)]
+    let command = {
+        use std::ffi::OsString;
+        use std::os::windows::ffi::OsStringExt as _;
+
+        use windows_sys::Win32::UI::Shell::GetAllUsersProfileDirectoryW;
+
+        // Match the production verifier's bounded OS query. Do not guess a
+        // drive or reuse a possibly absent caller-provided environment value.
+        let mut buffer = vec![0_u16; 32_768];
+        let mut capacity = buffer.len() as u32;
+        // SAFETY: both pointers remain valid for this synchronous query and
+        // the buffer has the stated number of writable UTF-16 elements.
+        if unsafe { GetAllUsersProfileDirectoryW(buffer.as_mut_ptr(), &mut capacity) } == 0 {
+            panic!("query fixture ProgramData: {}", std::io::Error::last_os_error());
+        }
+        let Some(length) = buffer
+            .iter()
+            .position(|character| *character == 0)
+            .filter(|length| *length > 0)
+        else {
+            panic!("fixture ProgramData path is empty or exceeds its bound");
+        };
+        let path = PathBuf::from(OsString::from_wide(&buffer[..length]));
+        assert!(path.is_absolute(), "fixture ProgramData path must be absolute");
+        let mut command = command;
+        command.env("ProgramData", path);
+        command
+    };
+    command
+}
+
 #[cfg(not(windows))]
 pub(crate) type PrivateTempDir = TempDir;
 

@@ -4,17 +4,30 @@ on:
   # Automatic pull-request and main-branch fan-out is owned by the two
   # aggregate checks. Deep qualifications remain reusable and manually runnable.
   workflow_call:
+    inputs:
+      input_set:
+        description: Dependency preparation scope (no product qualification)
+        type: string
+        required: false
+        default: backend
   workflow_dispatch:
+    inputs:
+      input_set:
+        description: Dependency preparation scope (no product qualification)
+        type: choice
+        default: backend
+        options: [backend, ui-inputs]
 
 permissions:
   contents: read
 
 concurrency:
-  group: hepta-offline-build-inputs-${{ github.ref }}
+  group: hepta-offline-build-inputs-${{ github.ref }}${{ inputs.input_set == 'ui-inputs' && '-ui-inputs' || '' }}
   cancel-in-progress: true
 
 jobs:
   inputs:
+    if: inputs.input_set != 'ui-inputs'
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 25
     steps:
@@ -177,6 +190,32 @@ jobs:
         with:
           name: hepta-offline-v8-${{ github.sha }}
           path: ${{ runner.temp }}/hepta-offline-v8/*
+          retention-days: 3
+          compression-level: 0
+          if-no-files-found: error
+
+  ui-inputs:
+    name: Verify committed UI lock and public dependency inputs
+    if: inputs.input_set == 'ui-inputs'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+      - name: Verify locked UI dependencies and export complete pinned source
+        timeout-minutes: 20
+        env:
+          HEPTA_INPUT_SET: ${{ inputs.input_set }}
+        run: python3 scripts/hepta_ui_public_inputs.py
+      - name: Preserve UI dependency preparation evidence, including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-ui-public-inputs-${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-ui-public-inputs/evidence/
           retention-days: 3
           compression-level: 0
           if-no-files-found: error

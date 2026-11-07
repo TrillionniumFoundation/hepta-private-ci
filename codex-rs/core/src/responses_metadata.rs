@@ -354,9 +354,9 @@ impl CodexResponsesMetadata {
 
     /// Returns the stable compatibility fields bound to an open WebSocket.
     ///
-    /// Prewarm and turn requests share the same connection. Their request phase
-    /// is carried in each response.create message, so a prewarm-to-turn phase
-    /// change must not discard an otherwise compatible socket. Parent/root turn
+    /// Prewarm, turn, and compaction requests share an otherwise compatible
+    /// connection. Their phase is carried by each response.create message and
+    /// remains in the per-request provider binding. Parent/root turn
     /// lineage and caller attribution are also sent with each request; only
     /// separately captured product-owned extra metadata belongs to the connection.
     /// Unknown provenance remains conservative and binds all extra metadata.
@@ -366,7 +366,10 @@ impl CodexResponsesMetadata {
         &self,
     ) -> TurnRecoveryCompatibilityProjection<'_> {
         let mut projection = self.turn_recovery_compatibility_projection();
-        if matches!(self.request_kind, Some(CodexResponsesRequestKind::Prewarm)) {
+        if matches!(
+            self.request_kind,
+            Some(CodexResponsesRequestKind::Prewarm | CodexResponsesRequestKind::Compaction(_))
+        ) {
             projection.request_kind = None;
         }
         projection.parent_turn_id = None;

@@ -306,8 +306,22 @@ pub struct RoomScreen {
 }
 impl Widget for RoomScreen {
     fn handle_event(&mut self, cx: &mut Cx, event: &Event, scope: &mut Scope) {
+        let input = self.view.text_input(cx, ids!(message_input));
+        let ending_preedit = match event {
+            Event::TextInput(event)
+                if event
+                    .full_state_sync
+                    .as_ref()
+                    .is_some_and(|state| state.composition.is_none())
+                    && input.area().is_valid(cx)
+                    && cx.key_focus() == input.area()
+                    && input.is_composing() =>
+            {
+                Some((input.widget_uid(), input.text()))
+            }
+            _ => None,
+        };
         if let Some(workspace) = scope.data.get_mut::<ChatWorkspace>() {
-            let input = self.view.text_input(cx, ids!(message_input));
             self.composer_transaction
                 .checkpoint(&input, workspace, self.active_key);
         }
@@ -319,6 +333,20 @@ impl Widget for RoomScreen {
             return;
         };
         let input = self.view.text_input(cx, ids!(message_input));
+        if let Some((previous_widget, previous_text)) = ending_preedit
+            && previous_widget == input.widget_uid()
+            && input.area().is_valid(cx)
+            && cx.key_focus() == input.area()
+            && !input.is_composing()
+            && input.text() == previous_text
+        {
+            // A full-state IME commit may only clear composition. The pinned SDK
+            // emits Changed only when text differs, so publish this missing
+            // transition through the same room/limit/checkpoint admission.
+            self.composer_transaction
+                .edit(cx, &input, workspace, source, previous_text);
+            self.view.redraw(cx);
+        }
         let follow_latest = workspace
             .timeline()
             .is_none_or(|timeline| timeline.scroll.at_end);
@@ -929,3 +957,7 @@ impl Widget for RoomScreen {
         DrawStep::done()
     }
 }
+
+#[cfg(test)]
+#[path = "room_ime_tests.rs"]
+mod ime_tests;

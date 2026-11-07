@@ -693,7 +693,7 @@ impl AppServerModelDriver {
                 .map(|_| ());
             let cancel_recorded = control.cancel_native(request_id);
             #[cfg(all(test, unix))]
-            failure_tests::pause_after_observation_journal(request_id).await;
+            failure_tests::pause_after_observation_journal(request_id).await?;
             if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision)
                 && let Ok(cancelled) = owner
                     .run_cancel(
@@ -1246,7 +1246,7 @@ fn observe_event(
             }
             output.observed_output_tokens = Some(observed_tokens);
             #[cfg(all(test, unix))]
-            failure_tests::notify_observed_usage(observed_tokens);
+            failure_tests::notify_observed_usage(observed_tokens)?;
         }
         ServerNotification::TurnCompleted(completed)
             if completed.thread_id == output.thread_id && completed.turn.id == output.turn_id =>

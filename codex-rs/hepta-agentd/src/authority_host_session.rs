@@ -2,6 +2,10 @@
 
 use super::*;
 
+#[path = "authority_host_worker_session.rs"]
+mod worker_session;
+pub use worker_session::HeldWorkerRootRegistration;
+
 #[path = "root_agentd_filesystem.rs"]
 mod filesystem;
 

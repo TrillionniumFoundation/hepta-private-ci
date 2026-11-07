@@ -164,7 +164,7 @@ async fn respond_environment_info(
 async fn serve_exec_with_pushed_events(
     listener: TcpListener,
     scenario: PushedExecScenario,
-    mut turn_completed: oneshot::Receiver<()>,
+    mut test_complete_rx: oneshot::Receiver<()>,
 ) -> PushedExecServerResult {
     let unrestricted_patch = matches!(
         scenario,
@@ -425,11 +425,15 @@ async fn serve_exec_with_pushed_events(
     let mut process_read_requests = 0;
     loop {
         let request = tokio::select! {
-            completed = &mut turn_completed => {
-                completed.expect("the test must observe completion before closing the fixture");
-                return PushedExecServerResult { process_read_requests, process_start };
-            }
+            biased;
             request = read_exec_server_json(&mut websocket) => request,
+            completed = &mut test_complete_rx => {
+                assert!(completed.is_ok(), "test must observe output before releasing the server");
+                return PushedExecServerResult {
+                    process_read_requests,
+                    process_start,
+                };
+            }
         };
         match request["method"].as_str() {
             Some("process/read") => {
@@ -523,18 +527,7 @@ async fn serve_exec_with_pushed_events(
                 }
             }
             Some("process/terminate") => {
-                send_exec_server_json(
-                    &mut websocket,
-                    json!({
-                        "id": request["id"],
-                        "result": { "running": false }
-                    }),
-                )
-                .await;
-                return PushedExecServerResult {
-                    process_read_requests,
-                    process_start,
-                };
+                panic!("an observed remote exit must not request another termination");
             }
             method => panic!("unexpected exec-server request: {method:?}"),
         }
@@ -608,9 +601,11 @@ async fn exec_command_consumes_pushed_remote_process_events(
     )
     .await;
     let exec_server_url = format!("ws://{}", listener.local_addr()?);
-    let (turn_completed, completion) = oneshot::channel();
+    let (test_complete_tx, test_complete_rx) = oneshot::channel();
     let exec_server = tokio::spawn(serve_exec_with_pushed_events(
-        listener, scenario, completion,
+        listener,
+        scenario,
+        test_complete_rx,
     ));
     let mut builder = test_codex().with_exec_server_url(exec_server_url);
     if managed_network {
@@ -912,19 +907,30 @@ timeout = 900
         .await
         .context("model should receive the remote exec output")?;
     }
-    // The fixture has sent the actual exit events, and the turn consumed the
-    // output. An already observed exit does not require a new termination RPC.
-    // The receiver may have finished earlier after a real termination request;
-    // its join result below still verifies that path and every read count.
-    let _ = turn_completed.send(());
     let cleanup_timeout = if managed_network {
         Duration::from_secs(15)
     } else {
         Duration::from_secs(5)
     };
-    let exec_server_result = timeout(cleanup_timeout, exec_server)
-        .await
-        .context("fake exec-server should finish after observed turn completion")??;
+    let exec_server_result = timeout(cleanup_timeout, async {
+        if managed_network {
+            loop {
+                let event = test.codex.next_event().await?;
+                if matches!(event.msg, EventMsg::ExecCommandEnd(event) if event.call_id == CALL_ID) {
+                    break;
+                }
+            }
+        }
+        // Keep the fake transport alive through actual exec output observation.
+        // Event consumption and the server join share the original cleanup budget.
+        assert!(
+            test_complete_tx.send(()).is_ok(),
+            "fake exec-server must remain alive until output was consumed"
+        );
+        exec_server.await.context("fake exec-server task should finish")
+    })
+    .await
+    .context("fake exec-server should finish after output observation")??;
     if foreign_cwd {
         let params = &exec_server_result.process_start["params"];
         assert_eq!(params["cwd"], "file:///C:/workspace");

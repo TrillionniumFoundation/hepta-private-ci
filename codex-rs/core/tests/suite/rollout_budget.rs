@@ -88,7 +88,7 @@ async fn adds_weighted_initial_and_threshold_reminders(
         ],
     )
     .await;
-    let test = test_codex()
+    let test = test_codex().with_internal_metadata_for_mock()
         .with_config(|config| {
             config.rollout_budget = Some(RolloutBudgetConfig {
                 sampling_token_weight: 2.0,

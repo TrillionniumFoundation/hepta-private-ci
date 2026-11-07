@@ -408,7 +408,7 @@ async fn setup_turn_one_with_spawned_child(
         }),
         child_response_delay,
         /*wait_for_parent_notification*/ true,
-        |builder| builder,
+        |builder| builder.with_internal_metadata_for_mock(),
     )
     .await?;
     Ok((test, spawned_id))
@@ -1187,7 +1187,7 @@ async fn spawned_full_history_v2_child_uses_model_precedence_without_dropping_co
         ]),
     )
     .await;
-    let mut builder = test_codex().with_config(move |config| {
+    let mut builder = test_codex().with_internal_metadata_for_mock().with_config(move |config| {
         config
             .features
             .enable(Feature::Collab)

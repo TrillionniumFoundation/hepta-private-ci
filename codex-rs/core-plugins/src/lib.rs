@@ -28,6 +28,7 @@ mod remote_plugin_id_resolver;
 mod script_attribution;
 mod skill_snapshots;
 pub mod startup_sync;
+mod startup_sync_task;
 pub mod store;
 #[cfg(test)]
 mod test_support;

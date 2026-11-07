@@ -686,6 +686,7 @@ fn query_agent_drain_once(
                 error.kind(),
                 std::io::ErrorKind::NotFound
                     | std::io::ErrorKind::ConnectionRefused
+                    | std::io::ErrorKind::NotConnected
                     | std::io::ErrorKind::ConnectionReset
                     | std::io::ErrorKind::ConnectionAborted
                     | std::io::ErrorKind::BrokenPipe

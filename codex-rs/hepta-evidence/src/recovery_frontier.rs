@@ -68,13 +68,16 @@ impl HeptaEvidenceStore {
     }
 
     pub async fn recovery_snapshot(&self) -> Result<EvidenceRecoverySnapshotV1, EvidenceError> {
+        // Retain one SQLite snapshot across every checkpoint component.
+        // Releasing the connection between reads can combine distinct commits.
+        let mut transaction = self.pool.begin().await.map_err(classify_sqlx_error)?;
         let migration_rows = sqlx::query(
             "SELECT version, description, checksum
              FROM _sqlx_migrations
              WHERE success = 1
              ORDER BY version",
         )
-        .fetch_all(&self.pool)
+        .fetch_all(&mut *transaction)
         .await
         .map_err(classify_sqlx_error)?;
         let mut migration_frontier = empty_frontier(b"hepta.evidence.migrations.v1");
@@ -104,7 +107,7 @@ impl HeptaEvidenceStore {
                 EvidenceError::InvalidRecord("qualification recovery bound overflow".into())
             })?,
         )
-        .fetch_all(&self.pool)
+        .fetch_all(&mut *transaction)
         .await
         .map_err(classify_sqlx_error)?;
         if qualification_rows.len() > MAX_QUALIFICATION_FRONTIER_ROWS {
@@ -146,7 +149,7 @@ impl HeptaEvidenceStore {
                 EvidenceError::InvalidRecord("AuthBus recovery bound overflow".into())
             })?,
         )
-        .fetch_all(&self.pool)
+        .fetch_all(&mut *transaction)
         .await
         .map_err(classify_sqlx_error)?;
         if replay_rows.len() > MAX_AUTHBUS_REPLAY_FRONTIER_ROWS {
@@ -187,6 +190,7 @@ impl HeptaEvidenceStore {
             );
         }
 
+        transaction.commit().await.map_err(classify_sqlx_error)?;
         Ok(EvidenceRecoverySnapshotV1 {
             schema_version: 1,
             database_lineage: EVIDENCE_DATABASE_LINEAGE.to_string(),

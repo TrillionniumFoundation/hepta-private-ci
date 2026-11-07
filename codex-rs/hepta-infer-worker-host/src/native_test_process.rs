@@ -1,12 +1,11 @@
 //! Isolate real Agentd/App Server hosts without resetting the product home binding.
 
 use std::path::PathBuf;
-use std::process::Child;
 use std::process::Command;
 use std::process::Stdio;
 use std::time::Duration;
 
-use std::os::unix::process::CommandExt as _;
+use codex_utils_pty::StdChildCustody;
 use tokio::time::Instant;
 
 use super::Result;
@@ -24,26 +23,6 @@ impl HostCompletion {
     pub(super) fn complete(self) -> Result<()> {
         std::fs::write(self.path, self.test_name.as_bytes())?;
         Ok(())
-    }
-}
-
-struct HostProcess {
-    child: Child,
-}
-
-impl Drop for HostProcess {
-    fn drop(&mut self) {
-        if self.child.try_wait().is_ok_and(|status| status.is_some()) {
-            return;
-        }
-        // The still-owned child was created as the leader of its own group.
-        // Kill its test workers too when the host exceeds its bound or is cancelled.
-        let _ = rustix::process::kill_process_group(
-            rustix::process::Pid::from_child(&self.child),
-            rustix::process::Signal::KILL,
-        );
-        let _ = self.child.kill();
-        let _ = self.child.wait();
     }
 }
 
@@ -70,18 +49,17 @@ pub(super) async fn isolate_host(test_name: &'static str) -> Result<Option<HostC
     let log = std::fs::File::create(&log_path)?;
     // The exact test runs in a fresh host process. core_test_support also
     // registers the production arg0 helpers used by the embedded App Server.
-    let child = Command::new(std::env::current_exe()?)
+    let mut command = Command::new(std::env::current_exe()?);
+    command
         .args(["--exact", test_name, "--nocapture"])
         .env(HOST_CASE_ENV, test_name)
         .env(HOST_DONE_ENV, &completion_path)
         .stdout(Stdio::from(log.try_clone()?))
-        .stderr(Stdio::from(log))
-        .process_group(0)
-        .spawn()?;
-    let mut process = HostProcess { child };
+        .stderr(Stdio::from(log));
+    let mut process = StdChildCustody::spawn(&mut command)?;
     let deadline = Instant::now() + HOST_TIMEOUT;
     let status = loop {
-        if let Some(status) = process.child.try_wait()? {
+        if let Some(status) = process.try_wait()? {
             break status;
         }
         if Instant::now() >= deadline {
