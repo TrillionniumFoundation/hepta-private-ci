@@ -32,7 +32,9 @@ def native_golden_reference():
     No cross-backend equivalence is inferred outside this single golden vector.
     """
     scale = 1 << 32
-    discount = int((Decimal("0.8") * scale).quantize(Decimal(1), rounding=ROUND_HALF_EVEN))
+    discount = int(
+        (Decimal("0.8") * scale).quantize(Decimal(1), rounding=ROUND_HALF_EVEN)
+    )
     values = [scale]
     for instant in (scale // 4, scale // 2):
         product = discount * values[0]
@@ -43,24 +45,44 @@ def native_golden_reference():
     expected = [5755256177, 4509715661, 4294967296]
     if values != expected:
         raise AssertionError("native published golden vector mismatch")
-    return {"vector": "NDU-GV-001", "q32_values": values, "pass": True,
-            "native_rust_executed": False,
-            "scope": "independent arithmetic matches published vector, not native integration"}
+    return {
+        "vector": "NDU-GV-001",
+        "q32_values": values,
+        "pass": True,
+        "native_rust_executed": False,
+        "scope": "independent arithmetic matches published vector, not native integration",
+    }
 
 
 def phase_one(seeds, quick):
     oracle_checks, gradients, learning = [], [], []
     for risk in (0.0, 0.25, 2.0):
-        tiny = Environment(Config(budget=3, horizon=3, durations=(1, 1),
-                                  dynamic_preferences=False, risk=risk))
+        tiny = Environment(
+            Config(
+                budget=3,
+                horizon=3,
+                durations=(1, 1),
+                dynamic_preferences=False,
+                risk=risk,
+            )
+        )
         dp, _, values = optimal(tiny)
         enumerated, count = enumerate_policy_trees(tiny)
         error = abs(dp - enumerated)
         if error > 1e-12:
-            raise AssertionError("DP differs from independent contingent-plan enumeration")
-        oracle_checks.append({"risk": risk, "dp_value": dp, "enumerated_value": enumerated,
-                              "absolute_error": error, "policy_trees": count,
-                              "dp_states": len(values)})
+            raise AssertionError(
+                "DP differs from independent contingent-plan enumeration"
+            )
+        oracle_checks.append(
+            {
+                "risk": risk,
+                "dp_value": dp,
+                "enumerated_value": enumerated,
+                "absolute_error": error,
+                "policy_trees": count,
+                "dp_states": len(values),
+            }
+        )
         env = Environment(Config(budget=4, horizon=5, risk=risk))
         result = check_gradient(SoftmaxPolicy(env, seeds[0]))
         if result["max_absolute_error"] > 1e-7:
@@ -69,45 +91,77 @@ def phase_one(seeds, quick):
         for seed in seeds:
             _, receipt = train_policy(env, seed, steps=30 if quick else 120)
             learning.append({"risk": risk, "config": vars(env.config), **receipt})
-    return {"status": "PASS_FINITE_CONTROL_REFERENCE", "native_golden": native_golden_reference(),
-            "oracle_checks": oracle_checks, "policy_gradient_checks": gradients,
-            "tabular_learning": learning,
-            "scope": "finite two/three-branch control; no continuous-time FBSDE or generation efficacy claim"}
+    return {
+        "status": "PASS_FINITE_CONTROL_REFERENCE",
+        "native_golden": native_golden_reference(),
+        "oracle_checks": oracle_checks,
+        "policy_gradient_checks": gradients,
+        "tabular_learning": learning,
+        "scope": "finite two/three-branch control; no continuous-time FBSDE or generation efficacy claim",
+    }
 
 
 def tests_receipt(output_directory):
     root = Path(__file__).resolve().parent
-    for name in ("test_core", "test_experiments", "test_generation", "test_adapters_streaming", "test_assessment"):
+    for name in (
+        "test_core",
+        "test_experiments",
+        "test_generation",
+        "test_adapters_streaming",
+        "test_assessment",
+    ):
         if not (root / (name + ".py")).is_file():
             raise RuntimeError("missing required test module: " + name)
-    suite = unittest.defaultTestLoader.discover(str(root), pattern="test_*.py",
-                                               top_level_dir=str(root.parent))
+    suite = unittest.defaultTestLoader.discover(
+        str(root), pattern="test_*.py", top_level_dir=str(root.parent)
+    )
     stream = io.StringIO()
     started = time.perf_counter()
     result = unittest.TextTestRunner(stream=stream, verbosity=2).run(suite)
     (output_directory / "tests.log").write_text(stream.getvalue(), encoding="utf-8")
     if not result.wasSuccessful() or result.testsRun < 30 or result.skipped:
         raise RuntimeError("reference tests did not qualify:\n" + stream.getvalue())
-    return {"tests_run": result.testsRun, "failures": len(result.failures),
-            "errors": len(result.errors), "skipped": len(result.skipped),
-            "wall_seconds": time.perf_counter() - started, "log": stream.getvalue()}
+    return {
+        "tests_run": result.testsRun,
+        "failures": len(result.failures),
+        "errors": len(result.errors),
+        "skipped": len(result.skipped),
+        "wall_seconds": time.perf_counter() - started,
+        "log": stream.getvalue(),
+    }
 
 
 def source_identity():
     package = Path(__file__).resolve().parent
     repo = package.parents[1]
-    files = {str(p.relative_to(repo)): hashlib.sha256(p.read_bytes()).hexdigest()
-             for p in sorted(package.glob("*.py"))}
+    files = {
+        str(p.relative_to(repo)): hashlib.sha256(p.read_bytes()).hexdigest()
+        for p in sorted(package.glob("*.py"))
+    }
     config = repo / "qualification/ndu-portfolio-v1/preregistration.json"
-    files[str(config.relative_to(repo))] = hashlib.sha256(config.read_bytes()).hexdigest()
-    for path in (package / "requirements.txt", repo / ".github/workflows/blocking-ci.yml"):
-        files[str(path.relative_to(repo))] = hashlib.sha256(path.read_bytes()).hexdigest()
+    files[str(config.relative_to(repo))] = hashlib.sha256(
+        config.read_bytes()
+    ).hexdigest()
+    for path in (
+        package / "requirements.txt",
+        repo / ".github/workflows/blocking-ci.yml",
+    ):
+        files[str(path.relative_to(repo))] = hashlib.sha256(
+            path.read_bytes()
+        ).hexdigest()
     canonical = json.dumps(files, sort_keys=True, separators=(",", ":")).encode()
-    return {"base_source_sha": BASE_SHA, "source_files_sha256": files,
-            "source_manifest_sha256": hashlib.sha256(canonical).hexdigest(),
-            "python": platform.python_version(), "numpy": np.__version__, "pillow": PIL.__version__,
-            "platform": platform.platform(), "precision": "float64",
-            "execution_device": "CPU", "run_timestamp_utc": datetime.now(timezone.utc).isoformat()}
+    return {
+        "base_source_sha": BASE_SHA,
+        "source_files_sha256": files,
+        "source_manifest_sha256": hashlib.sha256(canonical).hexdigest(),
+        "python": platform.python_version(),
+        "numpy": np.__version__,
+        "pillow": PIL.__version__,
+        "platform": platform.platform(),
+        "precision": "float64",
+        "execution_device": "CPU",
+        "run_timestamp_utc": datetime.now(timezone.utc).isoformat(),
+    }
 
 
 def render_report(result):
@@ -144,27 +198,50 @@ def render_report(result):
         "|---|---:|---:|---:|---:|",
     ]
     for row in phase1["tabular_learning"]:
-        lines.append(f"| {row['risk']:g} | {row['seed']} | {row['learned_value']:.8f} | {row['optimal_value']:.8f} | {row['optimality_gap']:.8f} |")
-    lines += ["", "Different-risk rows have different objectives; their raw utilities are not efficacy comparisons.",
-              "", "## Common-observer controller comparisons", "",
-              "All controllers below are scored on the same original toy environment. "
-              "The shared learned routers have 130 parameters, identical initializations per seed and equal update counts. "
-              "Test configurations never enter gradient fitting. These are exact model-based routers, not actor-critic training.", ""]
-    for split, title in (("train", "Training configurations"), ("heldout", "Unseen budget/cost configurations")):
+        lines.append(
+            f"| {row['risk']:g} | {row['seed']} | {row['learned_value']:.8f} | {row['optimal_value']:.8f} | {row['optimality_gap']:.8f} |"
+        )
+    lines += [
+        "",
+        "Different-risk rows have different objectives; their raw utilities are not efficacy comparisons.",
+        "",
+        "## Common-observer controller comparisons",
+        "",
+        "All controllers below are scored on the same original toy environment. "
+        "The shared learned routers have 130 parameters, identical initializations per seed and equal update counts. "
+        "Test configurations never enter gradient fitting. These are exact model-based routers, not actor-critic training.",
+        "",
+    ]
+    for split, title in (
+        ("train", "Training configurations"),
+        ("heldout", "Unseen budget/cost configurations"),
+    ):
         rows = [r for r in result["comparisons"]["comparisons"] if r["split"] == split]
         grouped = defaultdict(list)
         for row in rows:
             grouped[row["controller"]].append(row)
-        lines += [f"### {title}", "",
-                  "Equal-weight means across configurations and seeds; descriptive toy results, without a real-model significance claim.", "",
-                  "| Controller | Joint success | Weakest quality | Compute units | Duration ticks | NDU gap |",
-                  "|---|---:|---:|---:|---:|---:|"]
+        lines += [
+            f"### {title}",
+            "",
+            "Equal-weight means across configurations and seeds; descriptive toy results, without a real-model significance claim.",
+            "",
+            "| Controller | Joint success | Weakest quality | Compute units | Duration ticks | NDU gap |",
+            "|---|---:|---:|---:|---:|---:|",
+        ]
         for label, group in grouped.items():
             mean = lambda key: float(np.mean([r[key] for r in group]))
-            lines.append(f"| {label} | {mean('joint_success_rate'):.4f} | {mean('weakest_modality_quality'):.4f} | {mean('expected_generation_compute_units'):.3f} | {mean('expected_generation_duration_ticks'):.3f} | {mean('optimality_gap'):.5f} |")
-        ordinary = np.mean([r["joint_success_rate"] for r in grouped["ordinary_learned_router"]])
+            lines.append(
+                f"| {label} | {mean('joint_success_rate'):.4f} | {mean('weakest_modality_quality'):.4f} | {mean('expected_generation_compute_units'):.3f} | {mean('expected_generation_duration_ticks'):.3f} | {mean('optimality_gap'):.5f} |"
+            )
+        ordinary = np.mean(
+            [r["joint_success_rate"] for r in grouped["ordinary_learned_router"]]
+        )
         ndu = np.mean([r["joint_success_rate"] for r in grouped["ndu_learned_router"]])
-        lines += ["", f"NDU minus ordinary-router joint success: **{(ndu-ordinary)*100:+.3f} percentage points**.", ""]
+        lines += [
+            "",
+            f"NDU minus ordinary-router joint success: **{(ndu - ordinary) * 100:+.3f} percentage points**.",
+            "",
+        ]
     lines += [
         "The explicit cross-modal-feature ablation preserves the joint reward; it removes minimum/product features only. "
         "A separate fully factorized model has not been tested. No-risk and ordinary router are identical in this profile.",
@@ -208,13 +285,22 @@ def render_report(result):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--quick", action="store_true", help="one seed and reduced steps; labelled smoke only")
+    parser.add_argument(
+        "--quick",
+        action="store_true",
+        help="one seed and reduced steps; labelled smoke only",
+    )
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=True)
     started = time.perf_counter()
     source = source_identity()
-    (args.output / "results.json").write_text('{"overall_status":"RUNNING_NOT_EVIDENCE"}\n', encoding="utf-8")
-    (args.output / "RESULTS.md").write_text("# Run in progress\n\nPrevious output is superseded; no result is established.\n", encoding="utf-8")
+    (args.output / "results.json").write_text(
+        '{"overall_status":"RUNNING_NOT_EVIDENCE"}\n', encoding="utf-8"
+    )
+    (args.output / "RESULTS.md").write_text(
+        "# Run in progress\n\nPrevious output is superseded; no result is established.\n",
+        encoding="utf-8",
+    )
     try:
         tests = tests_receipt(args.output)
         print(f"Reference regressions: {tests['tests_run']} passed", flush=True)
@@ -222,33 +308,74 @@ def main():
         core = phase_one(seeds, args.quick)
         print("Exact control, gradient and tabular policy checks complete", flush=True)
         comparisons = compare_routers(seeds=seeds, steps=20 if args.quick else 80)
-        print(f"Common-observer comparisons: {len(comparisons['comparisons'])}", flush=True)
-        result = {"schema": "hepta.ndu.portfolio.evidence.v1", "overall_status": "RESEARCH_ONLY_HOLD",
-                  "quick": args.quick, "source": source, "tests": tests,
-                  "phase_1": core, "comparisons": comparisons,
-                  "phase_2": {"status": "HOLD_REAL_GENERATION_NOT_EXECUTED",
-                              "transport_fixture": fixture_smoke(args.output / "transport_fixture"),
-                              "statistical_assessment": {"status": "HOLD_NO_REAL_PANEL",
-                                                         "estimator": "paired-group-bootstrap-v1",
-                                                         "real_observations": 0},
-                              "missing": ["frozen real text/image provider", "task dataset",
-                                          "independent evaluator", "verified provenance"]},
-                  "phase_3": run_adapter_experiment(), "phase_4": run_streaming_experiment(),
-                  "native_integration": "not executed; no Rust source changes",
-                  "wall_seconds": time.perf_counter() - started}
-        if source_identity()["source_manifest_sha256"] != source["source_manifest_sha256"]:
+        print(
+            f"Common-observer comparisons: {len(comparisons['comparisons'])}",
+            flush=True,
+        )
+        result = {
+            "schema": "hepta.ndu.portfolio.evidence.v1",
+            "overall_status": "RESEARCH_ONLY_HOLD",
+            "quick": args.quick,
+            "source": source,
+            "tests": tests,
+            "phase_1": core,
+            "comparisons": comparisons,
+            "phase_2": {
+                "status": "HOLD_REAL_GENERATION_NOT_EXECUTED",
+                "transport_fixture": fixture_smoke(args.output / "transport_fixture"),
+                "statistical_assessment": {
+                    "status": "HOLD_NO_REAL_PANEL",
+                    "estimator": "paired-group-bootstrap-v1",
+                    "real_observations": 0,
+                },
+                "missing": [
+                    "frozen real text/image provider",
+                    "task dataset",
+                    "independent evaluator",
+                    "verified provenance",
+                ],
+            },
+            "phase_3": run_adapter_experiment(),
+            "phase_4": run_streaming_experiment(),
+            "native_integration": "not executed; no Rust source changes",
+            "wall_seconds": time.perf_counter() - started,
+        }
+        if (
+            source_identity()["source_manifest_sha256"]
+            != source["source_manifest_sha256"]
+        ):
             raise RuntimeError("source changed during execution; evidence rejected")
         result["source_unchanged_during_run"] = True
-        (args.output / "results.json").write_text(json.dumps(result, indent=2, allow_nan=False) + "\n", encoding="utf-8")
+        (args.output / "results.json").write_text(
+            json.dumps(result, indent=2, allow_nan=False) + "\n", encoding="utf-8"
+        )
         (args.output / "RESULTS.md").write_text(render_report(result), encoding="utf-8")
     except Exception as error:
-        failed = {"overall_status": "FAILED_NOT_EVIDENCE", "source": source,
-                  "error": str(error), "wall_seconds": time.perf_counter() - started}
-        (args.output / "results.json").write_text(json.dumps(failed, indent=2, allow_nan=False) + "\n", encoding="utf-8")
-        (args.output / "RESULTS.md").write_text("# Run failed\n\nThis attempt produced no qualifying evidence. See results.json and tests.log.\n", encoding="utf-8")
+        failed = {
+            "overall_status": "FAILED_NOT_EVIDENCE",
+            "source": source,
+            "error": str(error),
+            "wall_seconds": time.perf_counter() - started,
+        }
+        (args.output / "results.json").write_text(
+            json.dumps(failed, indent=2, allow_nan=False) + "\n", encoding="utf-8"
+        )
+        (args.output / "RESULTS.md").write_text(
+            "# Run failed\n\nThis attempt produced no qualifying evidence. See results.json and tests.log.\n",
+            encoding="utf-8",
+        )
         raise
-    print(json.dumps({"overall_status": result["overall_status"], "tests": tests["tests_run"],
-                      "output": str(args.output), "wall_seconds": result["wall_seconds"]}), flush=True)
+    print(
+        json.dumps(
+            {
+                "overall_status": result["overall_status"],
+                "tests": tests["tests_run"],
+                "output": str(args.output),
+                "wall_seconds": result["wall_seconds"],
+            }
+        ),
+        flush=True,
+    )
 
 
 if __name__ == "__main__":
