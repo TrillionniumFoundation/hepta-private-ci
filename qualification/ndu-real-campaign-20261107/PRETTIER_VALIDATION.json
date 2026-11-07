@@ -1,0 +1,396 @@
+{
+  "schema": "hepta.prettier-application-validation.v1",
+  "head": "d42eb9ebe6de5663f6e3c9d001749a75d8d770d5",
+  "observed_at": "2026-11-07T16:01:25.064175+00:00",
+  "prettier": "3.5.3",
+  "tarball_sha256": "14841de7b71a93123d22997db22d088debb13976778d869e3622199108e85b4b",
+  "sri": "sha512-QQtaxnoDJeAkDvDKWCLiwIXkTgRhwYDEQCghU9Z6q03iyek/rxRh/2lC3HB7P8sWT2xC/y5JDctPLBIGzHKbhw==",
+  "scope": {
+    "script": "prettier --check *.json *.md docs/*.md .github/workflows/*.yml **/*.js",
+    "target_count": 134,
+    "materialized_count": 144,
+    "changed_files": 32,
+    "javascript_files": 31,
+    "yaml_files": 1,
+    "json_files": 0,
+    "markdown_files": 0
+  },
+  "files": [
+    {
+      "path": ".github/workflows/blocking-ci.yml",
+      "before_sha256": "01fb722614661ca0f12beaede3d6b732f865477e2820d1ae2b94e58e4c2afa31",
+      "after_sha256": "306d7c3eb2c43eb1f2d546f022d25b96644f7b3792e181a79440983355df98e7",
+      "before_bytes": 11925,
+      "after_bytes": 11923,
+      "changed_relative_to_pr_base": true
+    },
+    {
+      "path": "apps/hepta-browser/scripts/journal-scale-probe.js",
+      "before_sha256": "c8c43fc110cfbb542550132a4c1b1dac1106c5e0f001881288c4cc3e9706e0f2",
+      "after_sha256": "fa7b9d82eadbd059ff98bfbe1d0742eaa736ff56e9c2cd28e6407981f3badc21",
+      "before_bytes": 4069,
+      "after_bytes": 4307,
+      "changed_relative_to_pr_base": false
+    },
+    {
+      "path": "apps/hepta-browser/scripts/linux-sandbox-probe.js",
+      "before_sha256": "e9ac5dd1f319d3d7a94bfbbb5098abd02efbb23234750e4ab12c7e71bfda73d0",
+      "after_sha256": "025f410f56808970ff6b6c526ec73e0559ab841c15a5c5d557e2267271042010",
+      "before_bytes": 3844,
+      "after_bytes": 4008,
+      "changed_relative_to_pr_base": false
+    },
+    {
+      "path": "apps/hepta-browser/scripts/real-worker-smoke.js",
+      "before_sha256": "86230b09935ae411bd55f9725ac17d8db0fb4269f309a879ed46a15e6b6b9d27",
+      "after_sha256": "5a93e051f356ab9ff449433bb30f69036879888119cf53199fb194f4e8155354",
+      "before_bytes": 1734,
+      "after_bytes": 1773,
+      "changed_relative_to_pr_base": false
+    },
+    {
+      "path": "apps/hepta-browser/src/action.js",
+      "before_sha256": "0555495e11a97a0f550029a9e30c28770a0dd594b2fc9a0dc3dc310e7b70ce5a",
+      "after_sha256": "5cb3c2480927099a77730fa6ca6bea41667a94800e9292d845ac248058628ac5",
+      "before_bytes": 7550,
+      "after_bytes": 8201,
+      "changed_relative_to_pr_base": false
+    },
+    {
+      "path": "apps/hepta-browser/src/agentd-protocol.js",
+      "before_sha256": "e9b7503c69a49082bf45693cb238087d250f691fe31846315811163831036bfa",
+      "after_sha256": "c9e42a1789cd7033a829d527390c6e0017da0287cfb96e16bdf43930f62b2e0a",
+      "before_bytes": 5324,
+      "after_bytes": 5396,
+      "changed_relative_to_pr_base": false
+    },
+    {
+      "path": "apps/hepta-browser/src/agentd-service-main.js",
+      "before_sha256": "bb835ea2dd3707871b4fd526d8bf4d00d90638f7c0c2f7eb34453eccd4b1a601",
+      "after_sha256": "fd7b162a3b85f19a9544044478885d2f071bd0e26c1a2ee33d6b91116ba16ed9",
+      "before_bytes": 2394,
+      "after_bytes": 2430,
+      "changed_relative_to_pr_base": false
+    },
+    {
+      "path": "apps/hepta-browser/src/agentd-service.js",
+      "before_sha256": "b52cebc1d7aeadd0b72a85844fa6aa1f36468ff86199c800fd994f93d20b4e72",
+      "after_sha256": "019a8d2978d3dec105e6f88092678c3fc2a589ccd7ae30b3dc4fb627e608a96b",
+      "before_bytes": 8608,
+      "after_bytes": 8879,
+      "changed_relative_to_pr_base": false
+    },
+    {
+      "path": "apps/hepta-browser/src/bridge.js",
+      "before_sha256": "fa298e213937d1de05e28b8854e6dddae0305894d8069573eff865c83b28ee2f",
+      "after_sha256": "ca1ec0ec908cde5edc3eee18b812be209befb2fb9f93305690a9f578776c9b0d",
+      "before_bytes": 4809,
+      "after_bytes": 4886,
+      "changed_relative_to_pr_base": false
+    },
+    {
+      "path": "apps/hepta-browser/src/browser.js",
+      "before_sha256": "a9c66ce96b7d219e635694b69deeb8c80963c585d3a36c275a9aee19784572b9",
+      "after_sha256": "73bc49ad5267a3edb925d9f2ce9ac3ef2f6155cc092519cc4fd710dc0beb4a59",
+      "before_bytes": 8428,
+      "after_bytes": 8453,
+      "changed_relative_to_pr_base": false
+    },
+    {
+      "path": "apps/hepta-browser/src/journal.js",
+      "before_sha256": "628474b848d46437494f8b28f92c30683d6458aacd81271540e2bae9db7c5004",
+      "after_sha256": "cd6e116f7658a5cc650bab6157043eacc4cd7b1ca53e40c63ff9c5c23a7c76ea",
+      "before_bytes": 8560,
+      "after_bytes": 8967,
+      "changed_relative_to_pr_base": false
+    },
+    {
+      "path": "apps/hepta-browser/src/runtime-boundary.js",
+      "before_sha256": "9908f31df7aba45ad908338e322c46df726b8969e7676a82d6cf204933382d28",
+      "after_sha256": "d62572bbeef6b95e7b51402223943cd572d312bd29dae005d5aff1b83344d327",
+      "before_bytes": 1282,
+      "after_bytes": 1347,
+      "changed_relative_to_pr_base": false
+    },
+    {
+      "path": "apps/hepta-browser/src/runtime-contract.js",
+      "before_sha256": "39519faaa82c82e0bc463bf2fe6f6a564f4c3bf8985040d79f83308f1d505d8d",
+      "after_sha256": "25a6cf80e99e539a9bdb282d8e0d4227eef7736027ba64cc396898d6d9edea63",
+      "before_bytes": 7587,
+      "after_bytes": 7801,
+      "changed_relative_to_pr_base": false
+    },
+    {
+      "path": "apps/hepta-browser/src/runtime-host.js",
+      "before_sha256": "d2ac2f1eed8702b16ece0900f64ef988200d341c29f32a7f15dd9dbc0a4fe1ba",
+      "after_sha256": "16f5067013a340b0615cbb7361664e339ec1eb624d8f3152a94ac1df9f534219",
+      "before_bytes": 25329,
+      "after_bytes": 26295,
+      "changed_relative_to_pr_base": false
+    },
+    {
+      "path": "apps/hepta-browser/src/worker-driver.js",
+      "before_sha256": "72425af9430c10d8e786df2426bbb96a171bb8dc5e93343bb70474db2d878c38",
+      "after_sha256": "7e2c9bf66b0c11897bb010bfb2ba947fde67aad8f771f774f20320877b7d472b",
+      "before_bytes": 15835,
+      "after_bytes": 16715,
+      "changed_relative_to_pr_base": false
+    },
+    {
+      "path": "apps/hepta-browser/src/worker-protocol.js",
+      "before_sha256": "ae58c7ce098515412e5e23671fd432d74111078ed39f12691f3be63aa37153ae",
+      "after_sha256": "6785360d21bafbc8309bc5e92497adbc583c15daa68eb53f3186c65c22f97a63",
+      "before_bytes": 5428,
+      "after_bytes": 5505,
+      "changed_relative_to_pr_base": false
+    },
+    {
+      "path": "apps/hepta-browser/test/agentd-service.test.js",
+      "before_sha256": "b3b2a6b128750b977da30d7155b99be35b091b118ea884877c9b97153ee38aa0",
+      "after_sha256": "1476510df89930bd05fb0e67ae2031e56621d2aefdec28983590991c1618c299",
+      "before_bytes": 5236,
+      "after_bytes": 5356,
+      "changed_relative_to_pr_base": false
+    },
+    {
+      "path": "apps/hepta-browser/test/browser.test.js",
+      "before_sha256": "94da284aa5493a3ff032cc1328b73ed5bfc3c9e11c2e43125377e35ac6e69aa0",
+      "after_sha256": "1787b2e1a9a7498f35b7f0d196ad048170f137d43af2c832b8ba5e78c1141877",
+      "before_bytes": 14632,
+      "after_bytes": 14591,
+      "changed_relative_to_pr_base": false
+    },
+    {
+      "path": "apps/hepta-browser/test/journal-durability.test.js",
+      "before_sha256": "569ea3a5e11bba47aab2c9a956a30c7470ab1858b732478d7dbe2b8111659b9f",
+      "after_sha256": "62478e28a0d3989f083e9e0037a2731bda43381f7993ab83deaa0f470bbae7f9",
+      "before_bytes": 8471,
+      "after_bytes": 8828,
+      "changed_relative_to_pr_base": false
+    },
+    {
+      "path": "apps/hepta-browser/test/journal-monotonicity.test.js",
+      "before_sha256": "da5abd07fcde5821fbe1a4af099339a0d7ab3b1f48dc666255b39cb7fec08f34",
+      "after_sha256": "ea58ea292994ea69c63b265a132417c59e2effe9a542d63200f873fdaad19da9",
+      "before_bytes": 9197,
+      "after_bytes": 9683,
+      "changed_relative_to_pr_base": false
+    },
+    {
+      "path": "apps/hepta-browser/test/journal.test.js",
+      "before_sha256": "f39ea660342a382dacc7d99729241f6cee4128f97fa5444869707ab685efcffb",
+      "after_sha256": "4dc8a55c1cca975dbda54796338eaff1f6257de9e422d0aec53df6fba89be2ea",
+      "before_bytes": 2415,
+      "after_bytes": 2441,
+      "changed_relative_to_pr_base": false
+    },
+    {
+      "path": "apps/hepta-browser/test/runtime.test.js",
+      "before_sha256": "bdb6e69e9af2343a4131244fec2e48750ba957585ec3fff39313e312c832e5c8",
+      "after_sha256": "4e46f6a61e95c6e0861a6fd44d47176c80a41ef530432b64b3fde9f25bb73943",
+      "before_bytes": 14625,
+      "after_bytes": 14876,
+      "changed_relative_to_pr_base": false
+    },
+    {
+      "path": "apps/hepta-browser/test/worker-driver.test.js",
+      "before_sha256": "d24342c9fd651c96f9d8e97b30c879ee00acc3cf5306e6dce8108ddc7346e914",
+      "after_sha256": "3e2564e460b60fa98336b908fdc6fbcf5937e433a27d75e248813863c9a3af0a",
+      "before_bytes": 9286,
+      "after_bytes": 9465,
+      "changed_relative_to_pr_base": false
+    },
+    {
+      "path": "apps/hepta-browser/test/worker-protocol.test.js",
+      "before_sha256": "07db25449456dec4a53ccdef75117c740663ed05e6e4e52662a3f6f9bef6e5c1",
+      "after_sha256": "87b7a9b9457b1e47a365cab524fbed0eee48c3ad7805e927a27a6c5b3fd93398",
+      "before_bytes": 2570,
+      "after_bytes": 2583,
+      "changed_relative_to_pr_base": false
+    },
+    {
+      "path": "apps/hepta-control-ui/src/control.js",
+      "before_sha256": "a9b4eb27d572a046aee71a56dee298fa8d0eca9c971945fdbcb3d4a6d084cb65",
+      "after_sha256": "ead0c0ebe1cecfcff691519304550ad5c9a17725ba880a8a78336ea720d84a92",
+      "before_bytes": 5892,
+      "after_bytes": 5918,
+      "changed_relative_to_pr_base": false
+    },
+    {
+      "path": "apps/hepta-control-ui/src/runtime-client.js",
+      "before_sha256": "62be5f575b6e31ae607fb71ed398fec214f1a959fbede7db760cd63997f5993d",
+      "after_sha256": "a5a18e5e95603006b5d4e878d8a3d4d477e2797881b07766d1a9301782ef2cd3",
+      "before_bytes": 8084,
+      "after_bytes": 8188,
+      "changed_relative_to_pr_base": false
+    },
+    {
+      "path": "apps/hepta-control-ui/test/control.test.js",
+      "before_sha256": "3ac4403e022be9d2792e9ffbbfb1d4907deec19ccfcccefed91a3ea6e026dee2",
+      "after_sha256": "b5e11f8f327401ce95485204242e32f17d5ae7cf0ed3debfd9c1e2c6d10d2c3f",
+      "before_bytes": 10406,
+      "after_bytes": 10404,
+      "changed_relative_to_pr_base": false
+    },
+    {
+      "path": "apps/hepta-control-ui/test/runtime-client.test.js",
+      "before_sha256": "b58227e3b1e32374a659d379ef1656a42ba34d2cadb26b75fb533196117d122d",
+      "after_sha256": "eab8a35c571a12ac66e0771d3b8719b96595a668882ea66d4d65236ef63b7150",
+      "before_bytes": 2829,
+      "after_bytes": 2842,
+      "changed_relative_to_pr_base": false
+    },
+    {
+      "path": "apps/hepta-native/src/native.js",
+      "before_sha256": "318a7606316a0167cddded9284b0b551456390b49bc0d9f1db9e2c5c0ed00cf3",
+      "after_sha256": "9af8c3f0b64a8650b2e2ff5c2e2d628e51da3b750f8324cf8efe231f22ccce33",
+      "before_bytes": 4190,
+      "after_bytes": 4203,
+      "changed_relative_to_pr_base": false
+    },
+    {
+      "path": "apps/hepta-native/src/shell-runtime.js",
+      "before_sha256": "5a7de8a5bc3f696437dca8513b375e62d500a4f243cce5659a2201922c63cffd",
+      "after_sha256": "b8c4adf07caa8b137bd40a79b3fa8c1c57e143e138e8de911dce8a744a145c27",
+      "before_bytes": 8757,
+      "after_bytes": 8942,
+      "changed_relative_to_pr_base": false
+    },
+    {
+      "path": "apps/hepta-native/test/native.test.js",
+      "before_sha256": "49cb01bc1b50cb42ab20f286a7c39ac958fd502fe86151787817eeb110a004e8",
+      "after_sha256": "421546656a0fe5dabf757c065604161c28ce046e3d181c0edd7e9d1d181571da",
+      "before_bytes": 5412,
+      "after_bytes": 5456,
+      "changed_relative_to_pr_base": false
+    },
+    {
+      "path": "apps/hepta-native/test/shell-runtime.test.js",
+      "before_sha256": "e279e90ac4c6d9392711b01cac3751a0fd128d6b71c802d1d6f187e2e185bad3",
+      "after_sha256": "fa0f1ada30307abc83b3917d87e801f59bf6999c416eeaacdf73bbd497756177",
+      "before_bytes": 3885,
+      "after_bytes": 3929,
+      "changed_relative_to_pr_base": false
+    }
+  ],
+  "post_format_check": {
+    "exit_code": 0,
+    "stdout": "Checking formatting...\nAll matched files use Prettier code style!\n",
+    "stderr": ""
+  },
+  "js_ast": {
+    "exit_code": 0,
+    "all_semantic_ast_equal": true,
+    "all_ordered_comment_values_equal": true,
+    "rules": {
+      "ignoredLocationFields": [
+        "start",
+        "end",
+        "loc",
+        "range"
+      ],
+      "ignoredAttachmentFields": [
+        "leadingComments",
+        "trailingComments",
+        "innerComments"
+      ],
+      "ignoredExtraFields": [
+        "raw",
+        "rawValue",
+        "parenthesized",
+        "parenStart",
+        "trailingComma"
+      ],
+      "comments": "All parsed root comments are compared independently in order, preserving type and exact value; node attachment placement is ignored.",
+      "tokens": "The parser token cache is excluded; executable node types/fields/literal values remain compared.",
+      "empty_extra": "Empty extra objects after removing only the listed lexical fields are omitted.",
+      "all_other_fields": "Compared recursively with exact scalar types/values and array order; no code nodes are omitted."
+    },
+    "stdout": "{\"files\":31,\"all_semantic_ast_equal\":true,\"all_ordered_comment_values_equal\":true,\"differences\":[]}\n",
+    "stderr": "",
+    "raw_ast_equal_claimed": false
+  },
+  "yaml": {
+    "available": true,
+    "value_structure_equal": true,
+    "rules": "Preserve every node kind, YAML tag, exact scalar value, sequence order, mapping entry order, and alias graph. Exclude parser positions, scalar quoting style and flow layout. No values or mapping keys omitted."
+  },
+  "tests_run": false,
+  "ignore_or_lock_changed": false,
+  "source_checked_before_format": "d42eb9ebe6de5663f6e3c9d001749a75d8d770d5",
+  "applied_code_commit": "9060479892fa4c12191d0018b0a638131fe6301d",
+  "applied_files_equal_checked_bytes": true,
+  "semantic_tests_rerun_locally": false,
+  "instructions": {
+    "root_AGENTS_read": true,
+    "additional_app_ancestor_AGENTS_found": false
+  },
+  "mechanical_commits": [
+    {
+      "head": "90a7f1454d967a4dc7b03a371c292077fb7ee489",
+      "paths": [
+        ".github/workflows/blocking-ci.yml",
+        "apps/hepta-browser/scripts/journal-scale-probe.js",
+        "apps/hepta-browser/scripts/linux-sandbox-probe.js",
+        "apps/hepta-browser/scripts/real-worker-smoke.js",
+        "apps/hepta-browser/src/action.js",
+        "apps/hepta-browser/src/agentd-protocol.js",
+        "apps/hepta-browser/src/agentd-service-main.js",
+        "apps/hepta-browser/src/agentd-service.js",
+        "apps/hepta-browser/src/bridge.js",
+        "apps/hepta-browser/src/browser.js",
+        "apps/hepta-browser/src/journal.js",
+        "apps/hepta-browser/src/runtime-boundary.js",
+        "apps/hepta-browser/src/runtime-contract.js"
+      ],
+      "numstat": "0\t2\t.github/workflows/blocking-ci.yml\n60\t20\tapps/hepta-browser/scripts/journal-scale-probe.js\n59\t43\tapps/hepta-browser/scripts/linux-sandbox-probe.js\n17\t10\tapps/hepta-browser/scripts/real-worker-smoke.js\n90\t19\tapps/hepta-browser/src/action.js\n28\t9\tapps/hepta-browser/src/agentd-protocol.js\n14\t4\tapps/hepta-browser/src/agentd-service-main.js\n53\t16\tapps/hepta-browser/src/agentd-service.js\n21\t5\tapps/hepta-browser/src/bridge.js\n12\t10\tapps/hepta-browser/src/browser.js\n71\t21\tapps/hepta-browser/src/journal.js\n19\t4\tapps/hepta-browser/src/runtime-boundary.js\n64\t16\tapps/hepta-browser/src/runtime-contract.js\n"
+    },
+    {
+      "head": "80344aa7046f8955dae2d5a5258820cf58c87806",
+      "paths": [
+        "apps/hepta-browser/src/runtime-host.js",
+        "apps/hepta-browser/src/worker-driver.js",
+        "apps/hepta-browser/src/worker-protocol.js",
+        "apps/hepta-browser/test/agentd-service.test.js",
+        "apps/hepta-browser/test/browser.test.js",
+        "apps/hepta-browser/test/journal-durability.test.js"
+      ],
+      "numstat": "138\t44\tapps/hepta-browser/src/runtime-host.js\n182\t67\tapps/hepta-browser/src/worker-driver.js\n30\t9\tapps/hepta-browser/src/worker-protocol.js\n18\t4\tapps/hepta-browser/test/agentd-service.test.js\n10\t15\tapps/hepta-browser/test/browser.test.js\n101\t26\tapps/hepta-browser/test/journal-durability.test.js\n"
+    },
+    {
+      "head": "9060479892fa4c12191d0018b0a638131fe6301d",
+      "paths": [
+        "apps/hepta-browser/test/journal-monotonicity.test.js",
+        "apps/hepta-browser/test/journal.test.js",
+        "apps/hepta-browser/test/runtime.test.js",
+        "apps/hepta-browser/test/worker-driver.test.js",
+        "apps/hepta-browser/test/worker-protocol.test.js",
+        "apps/hepta-control-ui/src/control.js",
+        "apps/hepta-control-ui/src/runtime-client.js",
+        "apps/hepta-control-ui/test/control.test.js",
+        "apps/hepta-control-ui/test/runtime-client.test.js",
+        "apps/hepta-native/src/native.js",
+        "apps/hepta-native/src/shell-runtime.js",
+        "apps/hepta-native/test/native.test.js",
+        "apps/hepta-native/test/shell-runtime.test.js"
+      ],
+      "numstat": "130\t37\tapps/hepta-browser/test/journal-monotonicity.test.js\n11\t7\tapps/hepta-browser/test/journal.test.js\n61\t18\tapps/hepta-browser/test/runtime.test.js\n34\t8\tapps/hepta-browser/test/worker-driver.test.js\n4\t1\tapps/hepta-browser/test/worker-protocol.test.js\n6\t2\tapps/hepta-control-ui/src/control.js\n20\t5\tapps/hepta-control-ui/src/runtime-client.js\n1\t2\tapps/hepta-control-ui/test/control.test.js\n4\t1\tapps/hepta-control-ui/test/runtime-client.test.js\n8\t7\tapps/hepta-native/src/native.js\n36\t9\tapps/hepta-native/src/shell-runtime.js\n14\t5\tapps/hepta-native/test/native.test.js\n17\t4\tapps/hepta-native/test/shell-runtime.test.js\n"
+    }
+  ],
+  "prior_hosted_ndu": {
+    "associated_pr_head": "d42eb9ebe6de5663f6e3c9d001749a75d8d770d5",
+    "actual_checkout": "7e33710240c1154d5adf0b8dc712a97b5dc1395d",
+    "run_id": 42387130160,
+    "job_id": 128446926631,
+    "reference_regressions_passed": 183,
+    "reference_skip_count": null,
+    "semantic_unittest_passed": 49,
+    "semantic_unittest_skipped": 0,
+    "runtime_unittest_passed": 83,
+    "runtime_unittest_skipped": 0,
+    "reported_check_total": 315,
+    "scientific_result": "RESEARCH_ONLY_HOLD",
+    "not_evidence_for_a_new_head": true
+  },
+  "hosted_final_head_validation": "Pending publication; do not substitute the prior head's results."
+}

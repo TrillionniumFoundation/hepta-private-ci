@@ -51,8 +51,12 @@ class SaturatedGradientTests(unittest.TestCase):
                 policy.theta[:] = -1000.0
                 for state in policy.states:
                     legal = policy.env.actions(state)
-                    policy.theta[policy.rows[state], policy.actions.index(legal[0])] = 1000.0
-                    self.assertEqual(sorted(policy(state).values()), [0.0] * (len(legal) - 1) + [1.0])
+                    policy.theta[policy.rows[state], policy.actions.index(legal[0])] = (
+                        1000.0
+                    )
+                    self.assertEqual(
+                        sorted(policy(state).values()), [0.0] * (len(legal) - 1) + [1.0]
+                    )
                 _, gradient = self.assert_matches_forward(policy)
                 np.testing.assert_array_equal(gradient, np.zeros_like(gradient))
 
@@ -63,13 +67,19 @@ class SaturatedGradientTests(unittest.TestCase):
                 for row in range(len(policy.states)):
                     policy.theta[row] = np.roll(np.linspace(-9.0, 9.0, 4), row % 4)
                 _, gradient = self.assert_matches_forward(policy)
-                positive = [p for state in policy.states for p in policy(state).values()]
+                positive = [
+                    p for state in policy.states for p in policy(state).values()
+                ]
                 self.assertGreater(min(positive), 0.0)
                 self.assertLess(min(positive), 1e-6)
                 coordinates = sorted(
-                    [(policy.rows[state], policy.actions.index(action))
-                     for state in policy.states for action in policy.env.actions(state)],
-                    key=lambda ij: abs(gradient[ij]), reverse=True,
+                    [
+                        (policy.rows[state], policy.actions.index(action))
+                        for state in policy.states
+                        for action in policy.env.actions(state)
+                    ],
+                    key=lambda ij: abs(gradient[ij]),
+                    reverse=True,
                 )[:20]
                 self.assertGreater(max(abs(gradient[ij]) for ij in coordinates), 1e-7)
                 epsilon = 1e-3

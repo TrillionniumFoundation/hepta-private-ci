@@ -221,6 +221,8 @@ jobs:
         run: |
           python3 -m venv "$RUNNER_TEMP/ndu-reference-venv"
           "$RUNNER_TEMP/ndu-reference-venv/bin/python" -m pip install -r scripts/ndu_portfolio/requirements.txt
+          "$RUNNER_TEMP/ndu-reference-venv/bin/python" -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.8.0+cpu
+          "$RUNNER_TEMP/ndu-reference-venv/bin/python" -m pip install diffusers==0.35.2 safetensors==0.7.0
       - name: Run regressions and labelled quick research evidence
         run: |
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
@@ -233,7 +235,26 @@ jobs:
           set -euo pipefail
           "$RUNNER_TEMP/ndu-reference-venv/bin/python" -m unittest -v \
             ndu_semantic_state.test_state ndu_semantic_state.test_materials \
+            ndu_semantic_state.test_source_pool ndu_semantic_state.test_acquire_vizwiz \
+            ndu_semantic_state.test_torch_adapter \
             2>&1 | tee "$RUNNER_TEMP/ndu-reference-evidence/semantic-contracts.log"
+          git diff --check
+          git diff --exit-code
+      - name: Validate bounded generation runtime and command cleanup
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/ndu-reference-venv/bin/python" - <<'PY' 2>&1 | tee "$RUNNER_TEMP/ndu-reference-evidence/generation-runtime.log"
+          from pathlib import Path
+          import unittest
+          prefix = "experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit"
+          root = Path(*prefix.split("."))
+          modules = [prefix + "." + path.stem for path in sorted(root.glob("test_*.py"))]
+          if not modules:
+              raise RuntimeError("Generation runtime test modules are missing")
+          result = unittest.TextTestRunner(verbosity=2).run(unittest.defaultTestLoader.loadTestsFromNames(modules))
+          raise SystemExit(0 if result.wasSuccessful() and not result.skipped else 1)
+          PY
           git diff --check
           git diff --exit-code
       - name: Retain source-bound research evidence
@@ -295,5 +316,3 @@ jobs:
           PY
           )"
           python3 .github/scripts/check_ci_results.py
-
-

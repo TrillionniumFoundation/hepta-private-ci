@@ -38,8 +38,8 @@ class Config:
             raise ValueError("two or three branches required")
         for name, default in (
             ("costs", (1,) * self.branches),
-            ("durations", (1, 2, 1)[:self.branches]),
-            ("success_probabilities", (0.68, 0.55, 0.62)[:self.branches]),
+            ("durations", (1, 2, 1)[: self.branches]),
+            ("success_probabilities", (0.68, 0.55, 0.62)[: self.branches]),
         ):
             if not getattr(self, name):
                 object.__setattr__(self, name, default)
@@ -48,8 +48,14 @@ class Config:
         for v in (self.budget, self.horizon, *self.costs, *self.durations):
             if type(v) is not int or v <= 0:
                 raise ValueError("resources and durations must be positive integers")
-        numbers = (self.risk, self.discount, self.cost_weight, self.interaction,
-                   self.preference_flip, *self.success_probabilities)
+        numbers = (
+            self.risk,
+            self.discount,
+            self.cost_weight,
+            self.interaction,
+            self.preference_flip,
+            *self.success_probabilities,
+        )
         if not all(math.isfinite(v) for v in numbers):
             raise ValueError("nonfinite configuration")
         if self.risk < 0 or self.cost_weight < 0 or self.interaction < 0:
@@ -78,7 +84,9 @@ class Environment:
         self.config = config
         self.initial = State((0,) * config.branches, 0, config.budget, 0)
         self.action_names = tuple(f"generate_{i}" for i in range(config.branches)) + (
-            "verify", "stop")
+            "verify",
+            "stop",
+        )
 
     def cost_duration(self, action):
         if action == "stop":
@@ -93,12 +101,18 @@ class Environment:
     @lru_cache(maxsize=None)
     def actions(self, state):
         """Reserve enough resource/time to deliver every still-missing branch."""
-        if (len(state.quality) != self.config.branches or
-                any(type(q) is not int or q not in (0, 1, 2) for q in state.quality) or
-                type(state.preference) is not int or state.preference not in (0, 1) or
-                type(state.budget) is not int or not 0 <= state.budget <= self.config.budget or
-                type(state.elapsed) is not int or not 0 <= state.elapsed <= self.config.horizon or
-                type(state.verified) is not bool or (state.verified and not all(state.quality))):
+        if (
+            len(state.quality) != self.config.branches
+            or any(type(q) is not int or q not in (0, 1, 2) for q in state.quality)
+            or type(state.preference) is not int
+            or state.preference not in (0, 1)
+            or type(state.budget) is not int
+            or not 0 <= state.budget <= self.config.budget
+            or type(state.elapsed) is not int
+            or not 0 <= state.elapsed <= self.config.horizon
+            or type(state.verified) is not bool
+            or (state.verified and not all(state.quality))
+        ):
             raise ValueError("invalid finite control state")
         result = []
         for action in self.action_names:
@@ -114,13 +128,16 @@ class Environment:
                 branch = int(action.rsplit("_", 1)[1])
                 if state.quality[branch] >= 2:
                     continue
-                missing = [i for i, q in enumerate(state.quality)
-                           if q == 0 and i != branch]
+                missing = [
+                    i for i, q in enumerate(state.quality) if q == 0 and i != branch
+                ]
             cost, duration = self.cost_duration(action)
             reserve_cost = sum(self.config.costs[i] for i in missing)
             reserve_time = sum(self.config.durations[i] for i in missing)
-            if (cost + reserve_cost <= state.budget and
-                    state.elapsed + duration + reserve_time <= self.config.horizon):
+            if (
+                cost + reserve_cost <= state.budget
+                and state.elapsed + duration + reserve_time <= self.config.horizon
+            ):
                 result.append(action)
         return tuple(result)
 
@@ -130,8 +147,11 @@ class Environment:
         if action not in self.actions(state) or action == "stop":
             raise ValueError("transition requires a legal non-stop action")
         cost, duration = self.cost_duration(action)
-        flip = (0.5 * (1 - (1 - 2 * self.config.preference_flip) ** duration)
-                if self.config.dynamic_preferences else 0.0)
+        flip = (
+            0.5 * (1 - (1 - 2 * self.config.preference_flip) ** duration)
+            if self.config.dynamic_preferences
+            else 0.0
+        )
         quality_outcomes = [(1.0, state.quality)]
         if action != "verify":
             i = int(action.rsplit("_", 1)[1])
@@ -142,9 +162,16 @@ class Environment:
                 q[i] = 2 if success else max(1, q[i])
                 quality_outcomes.append((probability, tuple(q)))
         outcomes = {}
-        for (p, q), (change, pp) in product(quality_outcomes, ((0, 1 - flip), (1, flip))):
-            successor = State(q, state.preference ^ change, state.budget - cost,
-                              state.elapsed + duration, action == "verify")
+        for (p, q), (change, pp) in product(
+            quality_outcomes, ((0, 1 - flip), (1, flip))
+        ):
+            successor = State(
+                q,
+                state.preference ^ change,
+                state.budget - cost,
+                state.elapsed + duration,
+                action == "verify",
+            )
             outcomes[successor] = outcomes.get(successor, 0.0) + p * pp
         return tuple((p, s) for s, p in outcomes.items() if p > 0)
 
@@ -155,16 +182,20 @@ class Environment:
         weights = np.ones(self.config.branches)
         weights[0 if state.preference == 0 else -1] += 0.6
         quality = float(weights @ q / weights.sum())
-        joint = self.config.interaction * float(q.min()) * (1 if state.verified else 0.5)
+        joint = (
+            self.config.interaction * float(q.min()) * (1 if state.verified else 0.5)
+        )
         return quality + joint
 
     def external_metrics(self, state):
         """Fixed task outcome, independent of preference/risk/internal value."""
-        return {"joint_success": all(q == 2 for q in state.quality) and state.verified,
-                "weakest_quality": min(state.quality) / 2,
-                "missing_deliveries": sum(q == 0 for q in state.quality),
-                "unchecked_cross_modal": not state.verified,
-                "per_modality_quality": [q / 2 for q in state.quality]}
+        return {
+            "joint_success": all(q == 2 for q in state.quality) and state.verified,
+            "weakest_quality": min(state.quality) / 2,
+            "missing_deliveries": sum(q == 0 for q in state.quality),
+            "unchecked_cross_modal": not state.verified,
+            "per_modality_quality": [q / 2 for q in state.quality],
+        }
 
 
 def certainty_equivalent(values, probabilities, risk):
@@ -174,7 +205,11 @@ def certainty_equivalent(values, probabilities, risk):
         raise ValueError("invalid lottery shape")
     if not np.all(np.isfinite(x)) or not np.all(np.isfinite(p)) or np.any(p < 0):
         raise ValueError("invalid lottery values")
-    if not math.isfinite(risk) or risk < 0 or not np.isclose(p.sum(), 1, atol=1e-12, rtol=0):
+    if (
+        not math.isfinite(risk)
+        or risk < 0
+        or not np.isclose(p.sum(), 1, atol=1e-12, rtol=0)
+    ):
         raise ValueError("invalid risk or total probability")
     x, p = x[p > 0], p[p > 0]
     if risk == 0:
@@ -182,7 +217,9 @@ def certainty_equivalent(values, probabilities, risk):
     minimum = float(x.min())
     scaled = -risk * (x - minimum)
     delta = float(p @ np.expm1(scaled))
-    log_mean = math.log1p(delta) if delta > -0.5 else math.log(float(p @ np.exp(scaled)))
+    log_mean = (
+        math.log1p(delta) if delta > -0.5 else math.log(float(p @ np.exp(scaled)))
+    )
     return minimum - log_mean / risk
 
 
@@ -200,9 +237,14 @@ def optimal(env, start=None):
             else:
                 cost, duration = env.cost_duration(action)
                 pairs = env.transitions(state, action)
-                future = [-env.config.cost_weight * cost +
-                          env.config.discount ** duration * visit(s) for _, s in pairs]
-                choices[action] = certainty_equivalent(future, [p for p, _ in pairs], env.config.risk)
+                future = [
+                    -env.config.cost_weight * cost
+                    + env.config.discount**duration * visit(s)
+                    for _, s in pairs
+                ]
+                choices[action] = certainty_equivalent(
+                    future, [p for p, _ in pairs], env.config.risk
+                )
         if not choices:
             raise ValueError("unreachable infeasible state")
         policy[state] = max(choices, key=choices.get)
@@ -215,6 +257,7 @@ def optimal(env, start=None):
 
 def evaluate_policy(env, policy, start=None):
     """Evaluate deterministic or probability-mapping policies under the same R_J."""
+
     @lru_cache(maxsize=None)
     def visit(state):
         choice = policy(state) if callable(policy) else policy[state]
@@ -235,10 +278,13 @@ def evaluate_policy(env, policy, start=None):
                 continue
             cost, duration = env.cost_duration(action)
             for probability, successor in env.transitions(state, action):
-                values.append(-env.config.cost_weight * cost +
-                              env.config.discount ** duration * visit(successor))
+                values.append(
+                    -env.config.cost_weight * cost
+                    + env.config.discount**duration * visit(successor)
+                )
                 probabilities.append(weight * probability)
         return certainty_equivalent(values, probabilities, env.config.risk)
+
     return visit(start or env.initial)
 
 
@@ -248,6 +294,7 @@ def enumerate_policy_trees(env, start=None, limit=100000):
     This includes history-dependent deterministic plans and recomputes repeated
     states. Tiny configurations only; the limit fails rather than pruning trees.
     """
+
     def enumerate_at(state):
         results = []
         for action in env.actions(state):
@@ -261,17 +308,28 @@ def enumerate_policy_trees(env, start=None, limit=100000):
                 raise ValueError("policy tree enumeration limit exceeded")
             cost, duration = env.cost_duration(action)
             for continuation in product(*child_values):
-                returns = [-env.config.cost_weight * cost +
-                           env.config.discount ** duration * value for value in continuation]
+                returns = [
+                    -env.config.cost_weight * cost
+                    + env.config.discount**duration * value
+                    for value in continuation
+                ]
                 if env.config.risk == 0:
                     value = math.fsum(p * x for (p, _), x in zip(outcomes, returns))
                 else:
-                    value = -math.log(math.fsum(p * math.exp(-env.config.risk * x)
-                                               for (p, _), x in zip(outcomes, returns))) / env.config.risk
+                    value = (
+                        -math.log(
+                            math.fsum(
+                                p * math.exp(-env.config.risk * x)
+                                for (p, _), x in zip(outcomes, returns)
+                            )
+                        )
+                        / env.config.risk
+                    )
                 results.append(value)
         if len(results) > limit:
             raise ValueError("policy tree enumeration limit exceeded")
         return results
+
     values = enumerate_at(start or env.initial)
     return max(values), len(values)
 
@@ -291,7 +349,14 @@ def rollout(env, policy, seed=0, start=None):
         if action == "stop":
             return state, trace
         outcomes = env.transitions(state, action)
-        successor = outcomes[int(rng.choice(len(outcomes), p=[p for p, _ in outcomes]))][1]
-        trace.append({"action": action, "cost": state.budget - successor.budget,
-                      "duration": successor.elapsed - state.elapsed})
+        successor = outcomes[
+            int(rng.choice(len(outcomes), p=[p for p, _ in outcomes]))
+        ][1]
+        trace.append(
+            {
+                "action": action,
+                "cost": state.budget - successor.budget,
+                "duration": successor.elapsed - state.elapsed,
+            }
+        )
         state = successor

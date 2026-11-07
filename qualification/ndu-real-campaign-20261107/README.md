@@ -1,0 +1,193 @@
+# Real-source controller pilot, 2026-11-07
+
+**#5198 remains Inconclusive / HOLD. Registered five-family confirmation episodes: 0.**
+
+This branch connects the existing bounded generator runtime to source-bound
+predictive controllers and a prospective nine-case engineering pilot. It does
+not qualify Hepta, NDU, generator joint training, an independent domain evaluator,
+retention, or production native-owner adoption.
+
+## Real materials and public observations
+
+The immutable VizWiz pool contains six pilot-training and three development
+photo/question records, with all 90 original human answers retained for offline
+scoring. Its candidate manifest is
+`bfdc06b75f8c0f1fbefd2aa1c868dcf214dbc093554e21a067d470a7dfe1add0`;
+the separately pinned exposure history is
+`7247a0d306aee50204e9c15cc5daa841191fd5ea8f520cbe8159474f04af39e5`.
+The full acquisition and limits are recorded in the real-materials branch and
+`qualification/ndu-text-image-20261106/evidence/real-sources-20261107`.
+The original public training annotations have been exposed to the acquisition
+process. Photographer/session clusters are unavailable. The nine images must
+not be relabelled as nine independent confirmation clusters.
+
+Only the current public text and pixels cross the online controller interface.
+Frozen SmolVLM features distinguish the original image from a current generated
+image. Reference answers, source identity, task-family labels, and future outcomes
+are absent from the learned planning input. This is a checked API boundary, not
+an operating-system isolation certificate.
+
+## Physical fitting and policies
+
+The plan registers 18 fixed-schedule collection episodes, 12 physical predictor
+fits (seeds 17, 29, 43 crossed with ordinary/Hepta and frozen/joint), and 216
+development policy episodes. The six policies are initial delivery, Light, NDU,
+tuned fixed, same-data VOI, and deployable MPC. The plan requires each fit to have a distinct physical
+attempt, checkpoint, input digest, resource opportunity, and failure record.
+Episode seed 17 is not counted as another training replicate.
+
+The Hepta state implementation is pinned to the existing HCSN source; the ordinary
+ablation has the same parameter opportunity. `frozen` freezes the predictor's
+content-state encoder/core; `joint` fits that predictor state and its heads.
+**Neither regime trains the generator with joint return.** The conditional stop
+critic fits an exponential moment at the registered gamma. Each deployed action
+must have actual training-transition coverage. This pilot permits only perceive,
+text, and stop; it does not extrapolate unseen image-edit actions into evidence.
+
+All planners use the fitted prediction law with a bounded node budget. They have
+no access to an exact environment oracle. Finite-law oracle code retained under
+`experiments/` is only a mathematical regression reference. Shared development
+tuning preserves both fixed candidates and all their costs. The offline metric
+is explicitly named `human_consensus_casefold_whitespace.v1`; it is neither the
+official VQA normalization nor an independent semantic image-quality evaluator.
+
+## Execution and resource evidence
+
+`pilot_cli` separates plan, collect, score, fit, and evaluate. Every stage pins
+its plan and prior-phase receipt. Incomplete collection or fit rosters cannot
+silently become smaller successful experiments. Raw observations, outputs,
+encoder work, planning, synchronization, failures, and attempted actions are
+retained. Inclusive phase costs must not be added again to their nested costs.
+Unknown energy, billing, and native-owner costs remain unknown.
+
+The inherited CPU/bfloat16 runtime remains available. CUDA/float16 is an explicit
+separate engineering profile, requiring an actual externally pinned device smoke
+with the same source, weight revisions, runtime versions, device, and dtype.
+Requested T4, quota, a provider's COMPLETE state, and mocked tests are insufficient.
+The model pins remain SmolVLM2-256M-Video-Instruct and segmind/tiny-sd; no larger
+model or alternate revision is substituted. A failed CUDA check never silently
+changes the device profile.
+
+The original 25 MiB material body-byte cap and immutable train/development roles
+remain binding during any transfer. Worker copies can carry only the nine selected
+reference records and retrieve their exact images; original acquisition receipts
+remain historical evidence and are never rewritten as new-transfer receipts.
+
+The cloud entry point additionally binds the exact source-file manifest and executes
+one Kaggle worker budget of at most 1740 seconds inside the provider's 1800-second
+cap. CUDA failure stops model acquisition. Failed commands, unstarted phases,
+model-acquisition records, and lossless output path/hash mappings are exported.
+A transport-level zero exit exists only because the existing Kaggle artifact API
+requires COMPLETE; `experiment_status` is authoritative and scientific acceptance
+remains false. This provider profile does not alter Colab's limits.
+
+A separate `local_cpu_pilot` entry point requires a new request ID and the current
+Kaggle run's externally pinned, original Failed result and actual no-CUDA probe.
+It reuses verified materials and the exact existing CPU venv, requires observed
+native cgroup limits of at most two CPUs and 16 GiB, and narrows its affinity to
+two logical CPUs. It never repairs a GPU driver or changes the cloud CUDA guard.
+The CPU/bfloat16 run has its own 1740-second budget and preserves the same full
+18/12/216 roster. Small original cost and admission receipts survive even a failed
+large evidence export. The observed bounded attempt and its failure are recorded below.
+
+## Validation and review
+
+`LOCAL_VALIDATION.json` and `local-validation.zip` preserve the integrated attempt,
+the missing-reference failure, the focused repair, and exact source hashes.
+Current coverage is 183 portfolio, 49 semantic, and 83 generator/runtime tests,
+with no runtime skips. These are local engineering tests, not hosted CI or real
+model benefit measurements. Required CI also runs the source admission checks and
+bounded runtime regressions with their needed dependencies.
+
+Review the commits in dependency order: material boundaries and acquisition;
+source-bound predictor; bounded controllers; frozen encoder; real execution;
+mechanical import of the existing runtime; explicit device profile; conditional
+risk/action-coverage contract; pilot data and scoring; pilot orchestration.
+The existing runtime and mathematical reference imports preserve source bytes.
+New logic is split into individually reviewable commits, with mechanical evidence
+and runtime imports identified separately.
+
+The learning outcomes remain Adoptable, NoUpdate, Inconclusive, and Failed.
+An engineering execution failure cannot become NoUpdate. A finite NoUpdate keeps
+the incumbent; it never submits a V5 zero-delta update or relaxes no-op rejection
+and positive-gain reward rules. Native consumption evidence is a separate layer
+and cannot certify the missing five-family scientific experiment.
+
+## Observed bounded execution results
+
+The actual execution counters are **0 collected episodes, 0 physical fits,
+0 development policy episodes, and 0 pretrained-model executions**. The planned
+18/12/216 roster remains a plan; no smaller roster is reported as successful.
+
+| Attempt | Observed result | Bound and accounting |
+| --- | --- | --- |
+| Colab | T4 CUDA matrix preflight passed; runtime released; no models or training | Device worker 7.688 s within 135.739 s controller wall. Existing per-file write ceilings block cold pinned weights and were preserved. |
+| Kaggle version 1 | Failed at driver admission: actual Torch 2.11.0+cpu, no CUDA device | Wrapper wall 4.840 s; provider COMPLETE only delivers artifacts. Model and later phases never started. |
+| Desktop CPU | Failed during model acquisition; timeout 124; child reaped | Model phase reached 420.020 s, within the 430.202 s worker. Model and policy execution never started. |
+
+The CPU attempt is bound to source commit
+`ae214f4ca42f31b5e5939932736b170bb7744a50`; later CI repairs do not rewrite that
+executed source. The CPU artifact manifest is
+`d0296ab23120f1a16da9b2531e1f644687eead7d59252e0c337a784412627ee7`.
+The model acquisition left an incomplete 124,780,544-byte weight file.
+The two inspected task/previous model directories contained no complete eligible
+cache; this is not a claim about every other host or directory.
+
+The material preparation used 6,605,313 new HTTP body bytes, bringing the preserved
+acquisition total to 17,669,796 of the 26,214,400-byte cap. Its 151.070 s wall
+is separate from the CPU worker. Nested phase/controller wall costs are not added
+twice. All failures remain budget evidence; energy, complete provider billing,
+orchestration and total CI costs are still incomplete.
+
+See [EXECUTION_STATUS.json](EXECUTION_STATUS.json) for machine-readable source,
+plan, profile, output-digest, phase and cost boundaries. Raw owner records and
+model/evidence artifacts remain private. Both infrastructure attempts are
+**Failed**. The formal scientific result remains **Inconclusive / HOLD**, with
+zero confirmation and zero retention episodes; no production learning NoUpdate
+is emitted from these failures.
+
+## CI repair evidence
+
+[LOCAL_VALIDATION.json](LOCAL_VALIDATION.json) and its archive are the historical
+four-attempt local engineering snapshot.
+[CI_REPAIR_VALIDATION.json](CI_REPAIR_VALIDATION.json) records the subsequent
+clock-origin regression repair and exact source-preservation proof. The focused
+existing clock test passed at two arbitrary monotonic origins and three boundary
+positions (six subtests); it does not increase the 315 distinct-test count.
+
+The empty inherited root README now links to readiness documentation. Fence is
+pinned to the immutable v0.12.7 Action, preserving its first-step audit mode and
+all checks. The same Ubuntu image passed the upstream audit/block canaries;
+this is compatibility evidence, not a substitute for this PR's fresh CI.
+
+The unchanged locked Ruff 0.15.13 check passes for 193 files. All 27 mechanically
+formatted files retain the exact raw AST, including original docstring values.
+No formatter exclusions or dependency-lock changes were made. Tests were not
+rerun after mechanical formatting. Rust formatting was unavailable in this
+source-only sparse checkout; no Rust source was changed by these repairs.
+
+Fresh hosted checks are required on the published repair head. The old-head
+Rust/Clippy failures and 25 cargo-deny advisory errors remain open. Their affected
+Rust tree and dependency configuration are byte-identical to the PR base; they
+are not waived or represented as passing.
+
+## Complete root Prettier check
+
+The later repo-checks job on head d42eb9e passed Python formatting, then failed
+Prettier. The unchanged root lock selects Prettier 3.5.3. Its complete 134-target
+check was reproduced from verified Git blobs, with all 144 target/config files
+materialized. The patch removes two final blank lines from the existing workflow
+and formats 31 JavaScript files inherited byte-for-byte from the PR base.
+
+[PRETTIER_VALIDATION.json](PRETTIER_VALIDATION.json) records the full passing check,
+every before/after hash, semantic JavaScript AST equality, exact ordered comment
+values, and exact YAML scalar/structure equality. JavaScript lexical metadata is
+explicitly excluded from that comparison; raw AST equality is not claimed.
+No ignore, lock, privilege policy, test selection, or resource guard was changed.
+No additional local semantic tests were run for these mechanical changes.
+
+The prior d42eb9e PR's prospective merge 7e33710 passed the NDU job: 183 reference
+regressions plus 49 and 83 unittest executions. The latter two suites reported
+zero skips; the reference summary did not expose a skip count. This is engineering
+CI evidence for that exact prior candidate, not independent training or formal
+confirmation data. Final-head hosted results must be read separately.

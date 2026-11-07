@@ -6,31 +6,60 @@ import unittest
 import numpy as np
 
 from ndu_semantic_state.state import (
-    EMPTY_SHA256, MODALITIES, SCHEMA, Prefix, SemanticState, Slot, actor_binding,
-    check_actor_binding, check_transition, from_public_encodings, migrate_v3_latents,
+    EMPTY_SHA256,
+    MODALITIES,
+    SCHEMA,
+    Prefix,
+    SemanticState,
+    Slot,
+    actor_binding,
+    check_actor_binding,
+    check_transition,
+    from_public_encodings,
+    migrate_v3_latents,
 )
 
 
 def prefix(value=b"", version=0):
-    return {"sha256": hashlib.sha256(value).hexdigest(), "byte_count": len(value), "content_version": version}
+    return {
+        "sha256": hashlib.sha256(value).hexdigest(),
+        "byte_count": len(value),
+        "content_version": version,
+    }
 
 
 def metadata():
-    return {"slots": {name: {"available": [True], "progress": [0.0], "preparation": ["not_required"],
-        "version": [0], "committed_prefix": [prefix()]} for name in MODALITIES},
-        "remaining_budget": [5.0], "elapsed_seconds": [0.0]}
+    return {
+        "slots": {
+            name: {
+                "available": [True],
+                "progress": [0.0],
+                "preparation": ["not_required"],
+                "version": [0],
+                "committed_prefix": [prefix()],
+            }
+            for name in MODALITIES
+        },
+        "remaining_budget": [5.0],
+        "elapsed_seconds": [0.0],
+    }
 
 
 class PublicStateTests(unittest.TestCase):
     def build(self, meta=None, encodings=None):
-        return from_public_encodings([[3.0, 4.0]],
-            encodings or {"text": [[1.0, 2.0]], "image": [[5.0, 6.0]]}, meta or metadata())
+        return from_public_encodings(
+            [[3.0, 4.0]],
+            encodings or {"text": [[1.0, 2.0]], "image": [[5.0, 6.0]]},
+            meta or metadata(),
+        )
 
     def test_same_mean_swapped_output_needs_are_distinguishable(self):
         normal = self.build()
         swapped = self.build(encodings={"text": [[5.0, 6.0]], "image": [[1.0, 2.0]]})
-        np.testing.assert_array_equal(np.mean([s.encoding for s in normal.slots], axis=0),
-                                      np.mean([s.encoding for s in swapped.slots], axis=0))
+        np.testing.assert_array_equal(
+            np.mean([s.encoding for s in normal.slots], axis=0),
+            np.mean([s.encoding for s in swapped.slots], axis=0),
+        )
         self.assertFalse(np.array_equal(normal.features(), swapped.features()))
         self.assertEqual(normal.features().shape, (1, 3 * 2 + 20))
         self.assertEqual(len(set(normal.feature_names())), normal.features().shape[1])
@@ -46,11 +75,17 @@ class PublicStateTests(unittest.TestCase):
         bindings = [actor_binding(state) for _ in ("A", "B", "C", "D")]
         self.assertTrue(all(binding == bindings[0] for binding in bindings))
         with self.assertRaises(TypeError):
-            from_public_encodings([[1.0]], {"text": [[1.0]], "image": [[1.0]]}, metadata(), arm="D")
+            from_public_encodings(
+                [[1.0]], {"text": [[1.0]], "image": [[1.0]]}, metadata(), arm="D"
+            )
 
     def test_joint_content_latents_do_not_assert_decoded_output_or_delivery(self):
-        state = from_public_encodings([[3.0, 4.0]], {"text": [[1.0, 2.0]], "image": [[5.0, 6.0]]},
-                                      metadata(), representation="joint_content_latent")
+        state = from_public_encodings(
+            [[3.0, 4.0]],
+            {"text": [[1.0, 2.0]], "image": [[5.0, 6.0]]},
+            metadata(),
+            representation="joint_content_latent",
+        )
         self.assertEqual(state.representation, "joint_content_latent")
         self.assertTrue(state.slots[0].available[0])
         self.assertEqual(state.slots[0].committed_prefix[0].byte_count, 0)
@@ -61,18 +96,22 @@ class PublicStateTests(unittest.TestCase):
     def test_private_or_future_fields_rejected_at_every_structured_boundary(self):
         for forbidden in ("targets", "future", "evaluator", "arm", "quality_label"):
             with self.subTest(field=forbidden):
-                meta = metadata(); meta[forbidden] = 1
+                meta = metadata()
+                meta[forbidden] = 1
                 with self.assertRaises(ValueError):
                     self.build(meta)
-                meta = metadata(); meta["slots"]["text"][forbidden] = 1
+                meta = metadata()
+                meta["slots"]["text"][forbidden] = 1
                 with self.assertRaises(ValueError):
                     self.build(meta)
-                meta = metadata(); meta["slots"]["text"]["committed_prefix"][0][forbidden] = 1
+                meta = metadata()
+                meta["slots"]["text"]["committed_prefix"][0][forbidden] = 1
                 with self.assertRaises(ValueError):
                     self.build(meta)
 
     def test_missing_output_is_explicit_and_cannot_carry_hidden_encoding(self):
-        meta = metadata(); meta["slots"]["image"]["available"] = [False]
+        meta = metadata()
+        meta["slots"]["image"]["available"] = [False]
         with self.assertRaises(ValueError):
             self.build(meta)
         state = self.build(meta, {"text": [[1.0, 2.0]], "image": [[0.0, 0.0]]})
@@ -83,11 +122,23 @@ class PublicStateTests(unittest.TestCase):
     def test_preparation_progress_and_versions_remain_separate(self):
         normal = self.build()
         meta = metadata()
-        meta["slots"]["image"].update(preparation=["pending"], progress=[0.5], version=[2])
+        meta["slots"]["image"].update(
+            preparation=["pending"], progress=[0.5], version=[2]
+        )
         state = self.build(meta)
         self.assertFalse(np.array_equal(normal.features(), state.features()))
-        self.assertEqual(state.features()[0, state.feature_names().index("image.preparation.pending")], 1.0)
-        self.assertEqual(state.features()[0, state.feature_names().index("text.preparation.pending")], 0.0)
+        self.assertEqual(
+            state.features()[
+                0, state.feature_names().index("image.preparation.pending")
+            ],
+            1.0,
+        )
+        self.assertEqual(
+            state.features()[
+                0, state.feature_names().index("text.preparation.pending")
+            ],
+            0.0,
+        )
 
     def test_source_arrays_are_copied_and_finite(self):
         encodings = {"text": np.array([[1.0, 2.0]]), "image": np.array([[5.0, 6.0]])}
@@ -96,8 +147,13 @@ class PublicStateTests(unittest.TestCase):
         self.assertEqual(state.slots[0].encoding[0, 0], 1)
         with self.assertRaises(ValueError):
             state.slots[0].encoding[0, 0] = 8
-        for array in (state.shared, state.slots[0].encoding, state.slots[0].progress,
-                      state.remaining_budget, state.elapsed_seconds):
+        for array in (
+            state.shared,
+            state.slots[0].encoding,
+            state.slots[0].progress,
+            state.remaining_budget,
+            state.elapsed_seconds,
+        ):
             with self.assertRaises(ValueError):
                 array.setflags(write=True)
         for bad in (float("nan"), float("inf")):
@@ -105,22 +161,34 @@ class PublicStateTests(unittest.TestCase):
                 self.build(encodings={"text": [[bad, 2.0]], "image": [[5.0, 6.0]]})
 
     def test_strict_numeric_and_prefix_contracts(self):
-        for field, value in (("version", [True]), ("progress", [1.1]), ("preparation", ["oracle_ready"]),
-                             ("available", [1]), ("committed_prefix", [prefix(b"x", 1)])):
-            meta = metadata(); meta["slots"]["text"][field] = value
+        for field, value in (
+            ("version", [True]),
+            ("progress", [1.1]),
+            ("preparation", ["oracle_ready"]),
+            ("available", [1]),
+            ("committed_prefix", [prefix(b"x", 1)]),
+        ):
+            meta = metadata()
+            meta["slots"]["text"][field] = value
             with self.subTest(field=field), self.assertRaises(ValueError):
                 self.build(meta)
 
     def test_prefix_extension_requires_real_witnesses(self):
         a = self.build()
-        meta = metadata(); meta["remaining_budget"] = [4.0]; meta["elapsed_seconds"] = [0.3]
-        meta["slots"]["text"].update(version=[1], committed_prefix=[prefix("文".encode(), 1)])
+        meta = metadata()
+        meta["remaining_budget"] = [4.0]
+        meta["elapsed_seconds"] = [0.3]
+        meta["slots"]["text"].update(
+            version=[1], committed_prefix=[prefix("文".encode(), 1)]
+        )
         b = self.build(meta)
         with self.assertRaises(ValueError):
             check_transition(a, b)
         check_transition(a, b, {"text": [(b"", "文".encode())]})
         bad = deepcopy(meta)
-        bad["slots"]["text"].update(version=[2], committed_prefix=[prefix("字".encode(), 2)])
+        bad["slots"]["text"].update(
+            version=[2], committed_prefix=[prefix("字".encode(), 2)]
+        )
         c = self.build(bad)
         with self.assertRaises(ValueError):
             check_transition(b, c, {"text": [("文".encode(), "字".encode())]})
@@ -130,8 +198,16 @@ class PublicStateTests(unittest.TestCase):
         meta["slots"]["text"].update(version=[1], committed_prefix=[prefix(b"abc", 1)])
         state = self.build(meta)
         check_transition(state, state, {"text": [(b"abc", b"abc")]})
-        for witness in ([(b"abc", b"xyz")], [(b"xyz", b"abc")], "not-a-witness-list", None,
-                        [], [(b"abc",)], [(b"abc", "abc")], [(b"abc", b"abc"), (b"abc", b"abc")]):
+        for witness in (
+            [(b"abc", b"xyz")],
+            [(b"xyz", b"abc")],
+            "not-a-witness-list",
+            None,
+            [],
+            [(b"abc",)],
+            [(b"abc", "abc")],
+            [(b"abc", b"abc"), (b"abc", b"abc")],
+        ):
             with self.subTest(witness=witness), self.assertRaises(ValueError):
                 check_transition(state, state, {"text": witness})
         with self.assertRaises(ValueError):
@@ -142,8 +218,13 @@ class PublicStateTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "identities and order"):
             replace(state, slots=state.slots[::-1])
         with self.assertRaises(ValueError):
-            SemanticState(state.shared, (state.slots[0], state.slots[0]),
-                          state.remaining_budget, state.elapsed_seconds, state.representation)
+            SemanticState(
+                state.shared,
+                (state.slots[0], state.slots[0]),
+                state.remaining_budget,
+                state.elapsed_seconds,
+                state.representation,
+            )
         with self.assertRaises(ValueError):
             replace(state, shared=[[1.0, 2.0, 3.0]])
         with self.assertRaises(ValueError):
@@ -159,29 +240,47 @@ class PublicStateTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             Prefix("0" * 64, 0, 0)
         with self.assertRaises(ValueError):
-            replace(state.slots[0], committed_prefix=(Prefix(hashlib.sha256(b"x").hexdigest(), 1, 1),))
+            replace(
+                state.slots[0],
+                committed_prefix=(Prefix(hashlib.sha256(b"x").hexdigest(), 1, 1),),
+            )
         with self.assertRaises(ValueError):
             replace(state.slots[0], available=(False,))
         with self.assertRaises(ValueError):
-            Slot("text", [[float("nan"), 0.0]], (True,), [0.0], ("ready",), (0,),
-                 (Prefix(EMPTY_SHA256, 0, 0),))
+            Slot(
+                "text",
+                [[float("nan"), 0.0]],
+                (True,),
+                [0.0],
+                ("ready",),
+                (0,),
+                (Prefix(EMPTY_SHA256, 0, 0),),
+            )
 
     def test_budget_clock_encoding_and_prefix_cannot_silently_rewind(self):
         a = self.build()
-        meta = metadata(); meta["remaining_budget"] = [6.0]
+        meta = metadata()
+        meta["remaining_budget"] = [6.0]
         with self.assertRaises(ValueError):
             check_transition(a, self.build(meta))
         with self.assertRaises(ValueError):
-            check_transition(a, self.build(encodings={"text": [[9.0, 2.0]], "image": [[5.0, 6.0]]}))
-        meta = metadata(); meta["slots"]["text"]["version"] = [1]
+            check_transition(
+                a, self.build(encodings={"text": [[9.0, 2.0]], "image": [[5.0, 6.0]]})
+            )
+        meta = metadata()
+        meta["slots"]["text"]["version"] = [1]
         b = self.build(meta, {"text": [[9.0, 2.0]], "image": [[5.0, 6.0]]})
         check_transition(a, b)
         with self.assertRaises(ValueError):
             check_transition(b, a)
 
     def test_v3_migration_is_named_and_rejects_old_actor_and_false_semantics(self):
-        old = np.array([[[5., 6.], [11., 12.], [13., 14.], [1., 2.]]], dtype=np.float32)
-        state, receipt = migrate_v3_latents(np.array([[3., 4.]], dtype=np.float32), old, metadata())
+        old = np.array(
+            [[[5.0, 6.0], [11.0, 12.0], [13.0, 14.0], [1.0, 2.0]]], dtype=np.float32
+        )
+        state, receipt = migrate_v3_latents(
+            np.array([[3.0, 4.0]], dtype=np.float32), old, metadata()
+        )
         np.testing.assert_array_equal(state.features(), self.build().features())
         self.assertEqual(state.representation, "legacy_v3_latent")
         self.assertFalse(receipt["old_actor_compatible"])

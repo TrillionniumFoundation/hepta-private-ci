@@ -1,0 +1,352 @@
+{
+  "schema": "hepta.ndu-engineering-execution-status.v1",
+  "snapshot_utc": "2026-11-07T15:31:55.496119+00:00",
+  "qualification_issue": 5198,
+  "scientific_outcome": "Inconclusive",
+  "admission": "HOLD",
+  "scientific_acceptance": false,
+  "production_native_owner_verified": false,
+  "registered_confirmation_episodes": 0,
+  "formal_retention_episodes": 0,
+  "materials": {
+    "dataset": "VizWiz public photographs and human VQA annotations",
+    "training_candidates": 6,
+    "development_candidates": 3,
+    "original_human_answers": 90,
+    "manifest_sha256": "bfdc06b75f8c0f1fbefd2aa1c868dcf214dbc093554e21a067d470a7dfe1add0",
+    "exposure_history_sha256": "7247a0d306aee50204e9c15cc5daa841191fd5ea8f520cbe8159474f04af39e5",
+    "photographer_or_session_clusters_known": false,
+    "qualified_five_family_roster": false,
+    "original_full_training_annotations_exposed_to_acquisition": true,
+    "cumulative_http_response_body_bytes": 17669796,
+    "http_response_body_byte_cap": 26214400,
+    "material_transfer_new_bytes": 6605313,
+    "original_acquisition_bytes": 11064483
+  },
+  "factorial_design": {
+    "cells": {
+      "A": [
+        "Ordinary",
+        "Light"
+      ],
+      "B": [
+        "Ordinary",
+        "NDU"
+      ],
+      "C": [
+        "Hepta",
+        "Light"
+      ],
+      "D": [
+        "Hepta",
+        "NDU"
+      ]
+    },
+    "regimes": [
+      "frozen",
+      "joint"
+    ],
+    "primary_contrasts": [
+      "B-A",
+      "D-C",
+      "D-B",
+      "(D-C)-(B-A)"
+    ],
+    "full_registered_matrix_executed": false,
+    "pilot_regime_scope": "predictor content-state/head fitting only; not generator joint-return training",
+    "prospective_confirmation_power": "blocked pending real effect/variance, independent training repetitions, family/group admission, and multiplicity registration"
+  },
+  "pilot": {
+    "planned_counts": {
+      "collection_episodes": 18,
+      "physical_fits": 12,
+      "development_policy_episodes": 216
+    },
+    "actual_counts": {
+      "collection_episodes": 0,
+      "physical_fits": 0,
+      "development_policy_episodes": 0,
+      "pretrained_models_executed": 0
+    },
+    "policies": [
+      "initial delivery",
+      "Light",
+      "NDU",
+      "tuned fixed",
+      "same-data VOI",
+      "deployable MPC"
+    ],
+    "action_coverage": [
+      "perceive",
+      "text",
+      "stop"
+    ],
+    "full_formal_action_space_qualified": false,
+    "scorer": "human_consensus_casefold_whitespace.v1",
+    "independent_domain_evaluator_qualified": false,
+    "online_observation_boundary": "public current text/pixels and budget only; API projection, not OS isolation"
+  },
+  "executions": [
+    {
+      "provider": "colab",
+      "outcome": "DevicePreflightPassed",
+      "device": "Tesla T4",
+      "dtype": "float16",
+      "actual_cuda_matrix_execution": true,
+      "pretrained_models_executed": 0,
+      "training_executed": false,
+      "owned_runtime_released": true,
+      "allocation_to_release_seconds": 82.212,
+      "controller_wall_seconds": 135.738926075981,
+      "device_worker_wall_seconds": 7.688467355,
+      "device_wall_nested_in_controller_wall": true,
+      "source_receipt_sha256": "1ce79194272931fa7b5fd02b6371fb43fe047b09a121e3809ad328680690301f",
+      "model_cold_download_blocker": "Existing Colab per-file write ceiling is below the pinned model weight files; existing ceilings were preserved."
+    },
+    {
+      "provider": "kaggle-batch",
+      "request_id": "ndu-real-pilot-20261107-8ef7-01",
+      "source_sha": "7f1cb07564eb7a89b038eaa26727faedf2e50ccf",
+      "source_file_sha256": "8506b2084a8a3e0004eb130149df975de845c2c18aa1fff94b8286875e39348b",
+      "notebook_version": 1,
+      "provider_state": "COMPLETE",
+      "experiment_status": "Failed",
+      "artifact_complete": true,
+      "requested_accelerator": "NvidiaTeslaT4",
+      "actual_torch": "2.11.0+cpu",
+      "actual_cuda_available": false,
+      "actual_cuda_device_count": 0,
+      "nvidia_smi_present": false,
+      "failed_phase": "driver",
+      "subsequent_phases": "not_started",
+      "actual_counts": {
+        "collection_episodes": 0,
+        "physical_fits": 0,
+        "development_policy_episodes": 0,
+        "pretrained_models_executed": 0
+      },
+      "wrapper_wall_seconds": 4.839818675999993,
+      "wrapper_cpu_seconds": 2.903502634,
+      "nested_probe_and_worker_not_added_again": true,
+      "manifest_sha256": "78d638b2b88ef4c755cd9f22d29108406e2bab51a33f3edf40eabba565876130",
+      "evidence_archive_sha256": "d97cb06078590c48bf270836b90a17e3d3e7afdcde6eca862e78ae158f3800cb",
+      "evidence_paths": 61,
+      "evidence_unique_blobs": 59
+    },
+    {
+      "provider": "heptaruntime-desktop-cpu",
+      "request_id": "ndu-real-pilot-desktop-cpu-20261107-8ef7-01",
+      "source_sha": "ae214f4ca42f31b5e5939932736b170bb7744a50",
+      "experiment_status": "Failed",
+      "artifact_complete": true,
+      "profile": {
+        "device": "cpu",
+        "dtype": "bfloat16",
+        "threads": 2,
+        "cpu_quota_percent": 200,
+        "memory_max_bytes": 17179869184,
+        "nice": 5
+      },
+      "worker_budget_seconds": 1740,
+      "provider_timeout_seconds": 1800,
+      "completed_phases": [
+        "cpu_preflight",
+        "verify_existing_pool",
+        "plan"
+      ],
+      "failed_phase": "models",
+      "model_phase_budget_seconds": 420,
+      "model_phase_return_code": 124,
+      "subsequent_phases": "not_started",
+      "actual_counts": {
+        "collection_episodes": 0,
+        "physical_fits": 0,
+        "development_policy_episodes": 0,
+        "pretrained_models_executed": 0
+      },
+      "worker_costs": {
+        "elapsed_wall_seconds": 430.2022651541047,
+        "launcher_cpu_seconds": 3.150236491,
+        "phase_child_cpu_seconds_sum": 10.846969,
+        "phase_parent_cpu_not_added_again": true,
+        "phase_wall_not_added_again": true,
+        "unknown_costs": [
+          "energy",
+          "prior_acquisition_excluded",
+          "source_and_pool_transfer_before_worker",
+          "final_export_write"
+        ],
+        "meters": [
+          {
+            "file": "cpu_preflight.meter.json",
+            "status": "completed",
+            "return_code": 0,
+            "wall_seconds": 3.713720266940072,
+            "parent_cpu_seconds": 0.025927798000000002,
+            "child_cpu_seconds": 2.957521,
+            "sha256": "7e49a7e790bf78bd9273c04b7c203303ffc52f4f0769a21476dd63e0a82fbe1f"
+          },
+          {
+            "file": "models.meter.json",
+            "status": "timed_out",
+            "return_code": 124,
+            "wall_seconds": 420.0204918049276,
+            "parent_cpu_seconds": 2.696633936,
+            "child_cpu_seconds": 1.854507,
+            "sha256": "5ca71106f6e3bdfb31137f3629445c45d98d13981bf7abdf124dd7e14159ebcb"
+          },
+          {
+            "file": "plan.meter.json",
+            "status": "completed",
+            "return_code": 0,
+            "wall_seconds": 2.6996410170104355,
+            "parent_cpu_seconds": 0.019675411000000004,
+            "child_cpu_seconds": 2.776154,
+            "sha256": "99cc98c3ed6f59376f75c2eeca72e9839f3a604591ef1a883c6dc9f0b7a442d2"
+          },
+          {
+            "file": "verify_existing_pool.meter.json",
+            "status": "completed",
+            "return_code": 0,
+            "wall_seconds": 3.300160718150437,
+            "parent_cpu_seconds": 0.02313679299999999,
+            "child_cpu_seconds": 3.258787,
+            "sha256": "291aebdf4614cb95e655d02a8f6f3438eee5f5ae60142423f3a0d1cf15f73660"
+          }
+        ]
+      },
+      "material_preparation_costs": {
+        "elapsed_wall_seconds": 151.06998832989484,
+        "parent_cpu_seconds": 3.543090046,
+        "child_cpu_seconds": 4.345021,
+        "new_material_body_bytes": 6605313,
+        "cumulative_material_body_bytes": 17669796
+      },
+      "model_partial_file_bytes": 124780544,
+      "source_files_verified": 79,
+      "result_sha256": "2635627be15f54bd5f6626b971e205cb0f68ef7005edf930b245adfaf571800a",
+      "artifact_manifest_sha256": "d0296ab23120f1a16da9b2531e1f644687eead7d59252e0c337a784412627ee7",
+      "private_archive": {
+        "bytes": 4391131,
+        "sha256": "797ccf571b5c6d0dfda0383c64b0659c283b5798e036a7e248062ad8068df77c",
+        "sealed_files": 40
+      },
+      "private_archive_published_to_github": false,
+      "source_manifest_sha256": "e15bac4f77f4abd17bba0e4f1898802b3685b9ab7ee2340e4adde1128e34b00b",
+      "profile_sha256": "3ed8f42f836a478dc1ae2a190eb4f71cf61def80e341ffee833dfd85ab37c443",
+      "plan_sha256": "5e9cee3423efdbb4ed0b98fe53c2719908d078cb53e28129cafb4c5ef95c7bb5",
+      "complete_model_cache_count_in_two_checked_directories": 0,
+      "cache_inspection_scope": "Only the previously known model directory and this task's model directory; no claim about all other hosts or directories.",
+      "cache_attachment": {
+        "bytes": 17194,
+        "sha256": "1cfc2bf502f234325cce715a4770768dde26a2ba9eaad912be8670648a254747"
+      },
+      "owned_cpu_task_jobs_all_terminal": true
+    }
+  ],
+  "native_fixture": {
+    "extension_of_existing_native_NoUpdate": true,
+    "source_prs": [
+      5315,
+      5316
+    ],
+    "selected_tests_passed": 3,
+    "tests_excluded_by_filter": 718,
+    "selected_runtime_skips": 0,
+    "unchanged_model_file_bytes": 8,
+    "actual_successor_output": 2,
+    "model_executions": 1,
+    "final_use_nonce_uses": 1,
+    "cold_recovery_same_readback": true,
+    "revocation_blocks_dispatch_and_recovery": true,
+    "production_issuer_custody_verified": false,
+    "cross_process_learning_owner_restore_verified": false,
+    "learning_restore_scope": "in-memory deterministic engineering fixture",
+    "scientific_learning_conclusion": false,
+    "raw_evidence_private": true
+  },
+  "outcomes": {
+    "allowed": [
+      "Adoptable",
+      "NoUpdate",
+      "Inconclusive",
+      "Failed"
+    ],
+    "this_formal_campaign": "Inconclusive",
+    "infrastructure_attempts": "Failed",
+    "production_learning_NoUpdate_emitted": false,
+    "incumbent_retained": true,
+    "v5_zero_delta_submitted": false,
+    "no_op_rejection_relaxed": false,
+    "positive_gain_reward_relaxed": false
+  },
+  "costs": {
+    "all_costs_complete": false,
+    "all_attempts_must_remain_in_research_budget": true,
+    "phase_and_nested_wall_costs_not_summed_twice": true,
+    "unknowns": [
+      "provider startup and billing",
+      "energy",
+      "complete CI and host setup totals",
+      "control-plane transfer and orchestration costs",
+      "prior model acquisition costs",
+      "outer process and final publication costs"
+    ],
+    "native_five_measured_commands": {
+      "wall_seconds_sum": 1645.902780116303,
+      "child_cpu_seconds_sum": 2810.693329,
+      "includes_first_failed_compile": true,
+      "complete_research_budget": false
+    }
+  },
+  "remaining_formal_gates": [
+    "Five real task families and retention materials with source/episode-group isolation",
+    "Locked independent evaluator with explicit privileged-data boundary",
+    "Complete Light/NDU/fixed/VOI/deployable-MPC controllers and matched full-task resources",
+    "Prospective effect/real variance/multiple-comparison power and independent training repetitions",
+    "Full frozen/joint factorial matrix and all required contrasts",
+    "Production native-owner use evidence"
+  ],
+  "delivery": {
+    "source_and_sanitized_summary_for_github": true,
+    "raw_owner_and_model_artifacts_not_publicly_uploaded": true,
+    "private_originals_retained_on_operator_hosts": true
+  },
+  "ci_before_repair": {
+    "source_head": "ae214f4ca42f31b5e5939932736b170bb7744a50",
+    "merge_sha": "0bfaf96ee34a8b140023922792bd646ee75b9aea",
+    "run_id": 42382442435,
+    "observed_snapshot_utc": "2026-11-07T14:43:40Z",
+    "checks": {
+      "failure": 6,
+      "in_progress": 16,
+      "skipped": 4,
+      "success": 13
+    },
+    "ndu_reference": {
+      "tests_executed": 183,
+      "failures": 1,
+      "cause": "Test incorrectly treated perf_counter's arbitrary origin as elapsed phase time; production before_task budget logic was correct."
+    },
+    "blob_policy": {
+      "comparison_executed": false,
+      "cause": "Fence v0.10.0 failed before checkout with unsupported_resolver_layout."
+    },
+    "contract_gate": {
+      "cause": "Empty inherited root README lacked the required readiness discovery link."
+    },
+    "repo_checks": {
+      "cause": "27 inherited Python files were not formatted by the pinned Ruff 0.15.13."
+    },
+    "rust_and_dependency_baseline": {
+      "base": "fe146282d4041f8efc5ccf841740074e297706f6",
+      "identical_codex_rs_tree": "e81476aec4f5b2066b45f9e19488b6ecc7d51399",
+      "bazel_errors": "Multiple inherited Rust/Clippy compile errors; no distinct-defect count inferred from repeated log diagnostics.",
+      "cargo_advisory_errors": 25,
+      "cargo_unmaintained": 7,
+      "cargo_vulnerability": 18,
+      "advisory_ignores_modified": false
+    },
+    "latest_repair_ci": "Repairs committed locally; exact new GitHub head verification pending at this snapshot."
+  }
+}
