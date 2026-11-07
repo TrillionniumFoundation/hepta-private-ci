@@ -32,7 +32,7 @@ jobs:
           set -euo pipefail
           python3 scripts/hepta_ci_history.py --commit "$BASE_SHA" --commit "$HEAD_SHA"
       - name: Test fast-feedback failure semantics
-        run: python3 -m unittest discover -s scripts -p 'test_hepta_rust_ci_feedback.py' -v
+        run: python3 -m unittest -v scripts.test_hepta_rust_ci_feedback
       - name: Detect changed paths (no external action)
         id: detect
         shell: bash

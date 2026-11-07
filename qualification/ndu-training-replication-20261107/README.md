@@ -9,6 +9,14 @@ contrasts. See [VERIFICATION.json](VERIFICATION.json) and the complete
 [execution-evidence.zip](execution-evidence.zip). These are software fixtures;
 zero real training fits or confirmation tasks ran in this package.
 
+[PACKAGING.json](PACKAGING.json) records a later container-only repack under
+the repository's existing 512,000-byte blob limit. The nested input ZIP was
+expanded to `synthetic-inputs/` inside the LZMA-compressed evidence ZIP. Every
+input, log and receipt payload is byte-identical; the manifest retains the
+original container digests and each member's mapping/hash. Existing execution
+receipts are unchanged. The original over-limit packaging failure is retained
+as a CI finding, not relabelled as a passing run.
+
 The first published head `2049567ce7dd6ca81758431b8797938e017a070b`
 passed the remote NDU reference job: **151 tests, zero skips**. That workflow
 does not invoke the three Torch adapter tests, which passed in the separate
@@ -25,6 +33,11 @@ tests passed with site-packages disabled (`python -S`). A separate local wrapper
 preflight rejected a missing source-identity environment before running tests;
 that rejection is retained too. A newer remote workflow result must be read
 under its own source identity; this record does not claim all CI passed.
+
+The Rust fast-feedback workflow had the same unrelated-package discovery
+problem. Its entry point now invokes the original test module directly; all
+20 tests passed under `python -S` (1.382 seconds). The workflow's failure,
+selection and fan-in assertions are preserved.
 
 This extension is stacked on #5198 at
 `006e744fbb10a6ee393166eed2e5d1e91f2fab1f`. It leaves the v1 protocol,
