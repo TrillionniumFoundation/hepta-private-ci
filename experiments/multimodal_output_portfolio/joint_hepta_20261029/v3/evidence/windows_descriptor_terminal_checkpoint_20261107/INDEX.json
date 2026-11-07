@@ -1,0 +1,974 @@
+{
+  "format": "native-blocker-evidence-v1",
+  "created_at_utc": "2026-11-07T06:20:48.775461+00:00",
+  "archive_bytes": 2088960,
+  "archive_sha256": "2b3253bfb46452de23c76cbbf1f88cacea686dbf9d14c60d8921e39e472c75f7",
+  "compressed_bytes": 167776,
+  "compressed_sha256": "7a03ad62450c1be827c51a883817c90a7bcb29ffd39f8652508f160b83936ec4",
+  "parts": [
+    {
+      "name": "native-evidence.tar.xz.part000.gz",
+      "bytes": 167849,
+      "sha256": "0a790c3ec066d962982dcdab4381e766e6858a941e65d80fa0c5f242c0ec8e4d",
+      "segment_bytes": 167776,
+      "segment_sha256": "7a03ad62450c1be827c51a883817c90a7bcb29ffd39f8652508f160b83936ec4"
+    }
+  ],
+  "files": [
+    {
+      "path": "hepta-research/.codespell-exclude-lines",
+      "bytes": 20003,
+      "sha256": "5e2119d75aa7cfa61e87b9c3d98863d0b5d6672eeaccc7411695e91e2366d52b",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "hepta-research/.codespellignore",
+      "bytes": 69,
+      "sha256": "9c6cd9dd86c6300ff67edbe64b2e18ed089714151e5c166382c8ea99931bc275",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "hepta-research/.codespellrc",
+      "bytes": 471,
+      "sha256": "80805b9340dbdd76645a25929f56c96606e187db8e9d16b75a4a47dcdd248c04",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_ci/independent_reviews/windows_access_model42_lifecycle/INITIAL_REVIEWER_SHAPE_FAILURE.json",
+      "bytes": 496,
+      "sha256": "4c729ef820fe50e2bdefd2563e754befb46fedfc182311a674a29f924fd9c2bb",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_ci/independent_reviews/windows_access_model42_lifecycle/REVIEW.json",
+      "bytes": 10302,
+      "sha256": "01e98de8cfe8e053bcf3bb878554eacf6148c2357087c5013a82573759a08c24",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_ci/independent_reviews/windows_access_model42_lifecycle/review.py",
+      "bytes": 11636,
+      "sha256": "2febcbd428d8e352000558a8ae43a17a29c3ca1f3dc902f687dd4b42d62290d0",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_core_ci/independent_reviews/windows42_observer_v1/REVIEW.json",
+      "bytes": 4002,
+      "sha256": "136d1371578b22249cdce5a8cb9192ee5d1b813b7b15e1d89dceb5ff08eef85f",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_core_ci/independent_reviews/windows42_observer_v1/REVIEW2_ADDENDUM.json",
+      "bytes": 3520,
+      "sha256": "20a07b1fb2cb38c66148e04d8455577d0201959c8dc7e64e497beb1aa7dd84bb",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_core_ci/independent_reviews/windows_descriptor42_api_v1/REVIEW.json",
+      "bytes": 5909,
+      "sha256": "1f623cbe68c67b989a13e6ff2af8c405c3b5785c5e36d4fbc62cc6de3a927bd2",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_local_qualification/bwrap32_packet_windows42_checks/0.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_local_qualification/bwrap32_packet_windows42_checks/0.stdout.log",
+      "bytes": 19,
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_local_qualification/bwrap32_packet_windows42_checks/1.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_local_qualification/bwrap32_packet_windows42_checks/1.stdout.log",
+      "bytes": 26,
+      "sha256": "3bc53bf3e981a98a34a852e175bf9b77af841edea74fca595d9aedcbaf9a4938",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_local_qualification/bwrap32_packet_windows42_checks/2.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_local_qualification/bwrap32_packet_windows42_checks/2.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_local_qualification/bwrap32_packet_windows42_checks/ROOT_CHECKS.json",
+      "bytes": 7035,
+      "sha256": "9ffc26c3e8944222038ca381313f08396251476f9b10d438f49df971a231bc39",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_local_qualification/review_windows42.py",
+      "bytes": 12033,
+      "sha256": "357225b646cdb1cfbc9accfd03a9378eba9b46cd639961d53bd073584481531f",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_local_qualification/windows42/ROOT_REVIEW.json",
+      "bytes": 71802,
+      "sha256": "d60586e3304455e0292f385962e9c2ca707a87e34388260d584e28333cfddfeb",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_local_qualification/windows42/just-fmt.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_local_qualification/windows42/just-fmt.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_local_qualification/windows42_execution/EXECUTION.json",
+      "bytes": 125,
+      "sha256": "5e13ef569c665bf86f3a7a1b3f0183a26bad8feecd64f63396de527158323623",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_local_qualification/windows42_execution/ROOT_CHECKS.json",
+      "bytes": 1183,
+      "sha256": "6b479293d35cc7f846e6c7a24cf316ab19e65b6d00eefb9d9fb49655c516861f",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_local_qualification/windows42_execution/codespell.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_local_qualification/windows42_execution/codespell.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_local_qualification/windows42_execution/review.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_local_qualification/windows42_execution/review.stdout",
+      "bytes": 183,
+      "sha256": "e481f0bf963da1680ab1b4e59ccd876e0b8230fee87ad00fea65012416d3efa0",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_local_qualification/windows42_terminal_root/ROOT_REVIEW.json",
+      "bytes": 4654,
+      "sha256": "04c18914ea329ef8f416e53f005b3ed76ac8d9de2fee5ddb7f510e4eaa6cf7c7",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_local_qualification/windows42_terminal_root/review.py",
+      "bytes": 12980,
+      "sha256": "d7ac441b257cef81a2567f6995790a48b6c3b214e3656fd084397f3cf2d19dba",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_mirror_receipts/windows42-recovery/INITIAL_FAILURE.json",
+      "bytes": 417,
+      "sha256": "5eef6fa90f9c6eb819debd6f944929f48224e7f6cc59d7239575df2bd60d66c8",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_mirror_receipts/windows42-recovery/PREIMAGE_INITIALIZATION.json",
+      "bytes": 703,
+      "sha256": "53890f8b871de988e7fe400fda16c9c0ec84b0d4ca8ec173d4eaf2797fadf553",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_mirror_receipts/windows42.json",
+      "bytes": 1102,
+      "sha256": "ea36d90af70039f749790ba74c19fe3587c8c06afd45549678bb0bbe3feac61b",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/access_terminal_checkpoint_inputs/reviewed_restore.py",
+      "bytes": 6899,
+      "sha256": "af61744d776034fb41dac291fbca63d30082c6ec15df821824b49df4678c8d3d",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/build_safe_41_42_checkpoint.py",
+      "bytes": 12983,
+      "sha256": "ae4ab4abb05ce0ed9339725adae78e6649f179f7029d28866411a4e1fb07bdf1",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/select_safe_41_42_checkpoints.py",
+      "bytes": 14160,
+      "sha256": "614e1a6085ebf477e319bd4834a751b18058a3d18cddb843dabbe6702a4e5b4f",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows42_safe_checkpoint_inputs/HISTORY.md",
+      "bytes": 1827,
+      "sha256": "cb7f44f58ded61cd857403a024af5b596fa71e2ef58f5e9971d2b4b6d6bcdd61",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows42_safe_checkpoint_inputs/RUN_STATUS.json",
+      "bytes": 1562,
+      "sha256": "3a35b39d1ba1adf9f8f3f5fd96e7f36c79c6a8a9cf2d82c4e1effdae3a5f9d0d",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows42_safe_checkpoint_inputs/SELECTED_FILES.json",
+      "bytes": 52728,
+      "sha256": "59e166bdf90829748f2614c3cf5e81c2a6adbe95bb1e3b87c9c94e8b27fe6721",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/MECHANISM_ASSESSMENT.md",
+      "bytes": 10301,
+      "sha256": "99650bd03ff4dd04312fe90cb4d4c9502d6f22ac0cb9d8b17493975cecd1024b",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/NEXT_UNIT_CONTRACT.md",
+      "bytes": 5728,
+      "sha256": "d8e1ef300bae778d5dcf714c190a6527240a19c57c99d6cd633b3adaeed90e8e",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/SOURCE_AND_EVIDENCE.json",
+      "bytes": 4729,
+      "sha256": "dd4367438639d3ef36ac61834322718e560af627fb70eac68a2f53229dd730ff",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/observer_binding_v1/BINDING_RECEIPT.json",
+      "bytes": 7150,
+      "sha256": "0c0496fa97ef85b54d7a8000c6f423ae3de56746dccb023f2637e0448f5e967c",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/observer_binding_v1/OBSERVATION_CONTRACT_BOUND.json",
+      "bytes": 22646,
+      "sha256": "c15fe34e520c13cc23a34d359259d9b951a35b526b7ea4b6567316499caae6bf",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/observer_contract_v1/CONTRACT_CHECKS.json",
+      "bytes": 1588,
+      "sha256": "e6badee204aec4875e45c7a51c6c659e7de2bb4ea155b2e373ed9f56e7437dcc",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/observer_contract_v1/OBSERVATION_CONTRACT.json",
+      "bytes": 22577,
+      "sha256": "05b3c4a922bee1af4976b43be9997e529d296127f80b21ea0d4a11d8861ef16e",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/observer_contract_v1/PUBLICATION_INPUT.json",
+      "bytes": 1310,
+      "sha256": "07568e38478ae06e33ac6d61e77a5fe580329de0e58de09b7e5ac15d10aaef6d",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/observer_contract_v1/STYLE_CHECKS.json",
+      "bytes": 1903,
+      "sha256": "2bc61948b10233d18909a469062d53918605147acd9fb3518cf1c535264bb293",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/observer_v1/FINAL_STYLE_CHECKS.json",
+      "bytes": 3083,
+      "sha256": "4f4bc83616828dba5a3c10f02c318883161a721afea78b023d4d39f9385ea904",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/observer_v1/INITIAL_INHERITANCE.json",
+      "bytes": 5065,
+      "sha256": "e122773d0b0cd60c9eb88dceab772c7f7ffb8cc34518cbc1c28b4ec9b13c2e7e",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/observer_v1/MANIFEST.json",
+      "bytes": 5110,
+      "sha256": "e7e4bef104afaa1a1b327dccd07187d448d7801e3b50cb5dbde97f793a1e6ec7",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/observer_v1/MODEL_CHECKS.json",
+      "bytes": 3002,
+      "sha256": "7c9cdde3d9c3291ec25bd659b64b730621e33696248393c870a19a509513d531",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/observer_v1/MODEL_CHECKS.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/observer_v1/block_review.py",
+      "bytes": 6719,
+      "sha256": "69cba54984f252bdae6d9e7ec9f471f8351d0033be0ca6f47bef8760a4203c6c",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/observer_v1/check_codec.py",
+      "bytes": 10109,
+      "sha256": "07b9a5fa69811432f8d6aa5135c3887e6e99abf41502abb576168ada6f8ff49f",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/observer_v1/descriptor_codec.py",
+      "bytes": 6190,
+      "sha256": "c178b8073f86d96ad91bbab86411bddce482d4b4e3849393962a84edaaf1c55b",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/observer_v1/observe_native.py",
+      "bytes": 18183,
+      "sha256": "7bb55c983777702f66061f92ed6b1aca9f2ddc7038d8ccbb8bbb9e8a6055ce51",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/observer_v2/MANIFEST.json",
+      "bytes": 4571,
+      "sha256": "25c0d19f3c138e96638308c3390114efffa77b1b015ff689bb884ea4f66186a5",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/observer_v2/MODEL_CHECKS.json",
+      "bytes": 3090,
+      "sha256": "10386347b7458cb5ed55439dccc2cd908b40b164072752addff1506133fab8e8",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/observer_v2/MODEL_CHECKS.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/observer_v2/OBSERVATION_CONTRACT_BOUND.json",
+      "bytes": 22759,
+      "sha256": "5d2b778692005ec9da7f1e2f4e36d69af0bc7072883af2ac1f573d40e6f42260",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/observer_v2/STYLE_CHECKS.json",
+      "bytes": 2096,
+      "sha256": "3bf619202be51861f818e014a298b5d202ecc5b5b9771393e7f34ede9523f392",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/observer_v2/block_review.py",
+      "bytes": 6874,
+      "sha256": "add86d247fc2b1245ef939f96cb3912c00972aeefa62ac73b4cf6ccc764439cf",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/observer_v2/check_codec.py",
+      "bytes": 11256,
+      "sha256": "c51f117cfed4d94d8f327445c36903442ef14298b25b426c4acb554b99c72d28",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/observer_v2/descriptor_codec.py",
+      "bytes": 6190,
+      "sha256": "c178b8073f86d96ad91bbab86411bddce482d4b4e3849393962a84edaaf1c55b",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/observer_v2/from_v1.patch",
+      "bytes": 2589,
+      "sha256": "ec07ee201abb6b3d90c89f6b5fe04276ea0bc9dd71c9c6753730535b08b0b435",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/observer_v2/from_v1_formatted.patch",
+      "bytes": 2613,
+      "sha256": "daeecb92f1d4487d5eee3da35c3b60d05381cee2d061c55c8213ddb4df7f9a19",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/observer_v2/observe_native.py",
+      "bytes": 18183,
+      "sha256": "db41eedbe547ba8ee8cb0227297295e411eca91d936c9f6bbf1324a0519948b3",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/qualify_native5249.py",
+      "bytes": 16154,
+      "sha256": "85278e0b7b1d9550c4e4a43c5b000bb4c650823027925e7480a96f8f1d277e2d",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/reference/FSA_DELETE_ACCESS_ALGORITHM.json",
+      "bytes": 5360,
+      "sha256": "1fe00f0223bc60ed8fa5cfaf5db5ea0e126d790923da9b80b73b013652630edf",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/reference/OFFICIAL_ACCESSCHECK_DOCUMENTS.json",
+      "bytes": 28629,
+      "sha256": "5519fcb92ec7737d29e007db44b4f4ae19fd900df3850ac3e45353833a878f2e",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/reference/OFFICIAL_ACCESS_DOCUMENTS.json",
+      "bytes": 36147,
+      "sha256": "4651585544dec5bb0b27d6ff0289a21f91aa9a7e5033d1397c733fd96b078f56",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/reference/OFFICIAL_RESTRICTED_AND_FSA_SCOPE.json",
+      "bytes": 16956,
+      "sha256": "ec38b00b21aa1b77926fa161818130eac025a7b6bef1a02f293b282b008235ed",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/review1/BUILD_SOURCE_API.json",
+      "bytes": 13179,
+      "sha256": "e1fa42c3cd019a15bac232f61a72afb5efd06c1b7bcd45addcf129ab994fa2eb",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/review1/CODESPELL.json",
+      "bytes": 834,
+      "sha256": "f95f775d0af25fe6006295f3a8b991ff350caafab062cfb298b9d1b1d18b9e95",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/review1/METADATA_CHECK.json",
+      "bytes": 6048,
+      "sha256": "4718ab48c2b65918e7fa6ebdbbaa1c31b10cfef48958a2d4763260f78375816f",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/review1/PROTOCOL.md",
+      "bytes": 4688,
+      "sha256": "bda528e3747659ef63d958171fb0f81ab1c94c4114a6f778e539bf5bffcf2540",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/review1/RUSTFMT.json",
+      "bytes": 1962,
+      "sha256": "10109cb7cf0c2569f9aac49b31206824bd125d93ec8cb5ccb0640e464e3e3174",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/review1/SOURCE_TREES_API.json",
+      "bytes": 93085,
+      "sha256": "0fadd5a9c06ca7c09110e2dbcd8a891519529b7a496d18014c7cd6c0a23c2b59",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/review1/VERIFICATION.json",
+      "bytes": 1968,
+      "sha256": "e8add8814d995fbaec899005f0b84386d05934cef9c58867efa0f8da8fdfa5a2",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/review1/before_rustfmt/token_access_request_tests.rs",
+      "bytes": 3753,
+      "sha256": "9679df8c7064895940faf2e84e622a5b01967e948a44dfa118333215dc989593",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/review1/before_rustfmt/token_descriptor_access_tests.rs",
+      "bytes": 11022,
+      "sha256": "2d4be0145d6f651bcdb8e9de3428486d29087e41779e05c7776a3ae6e7aca61b",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/review1/before_rustfmt/token_read_authority_tests.rs",
+      "bytes": 30505,
+      "sha256": "e9d764a51c7cbcd8897f2608430d1065e0cca99016d1ff44e936d28c96446e29",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/review1/candidate/codex-rs/windows-sandbox-rs/src/token_access_request_tests.rs",
+      "bytes": 3753,
+      "sha256": "9679df8c7064895940faf2e84e622a5b01967e948a44dfa118333215dc989593",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/review1/candidate/codex-rs/windows-sandbox-rs/src/token_descriptor_access_tests.rs",
+      "bytes": 11177,
+      "sha256": "c1891d4f1f3beb354789d31ee9cff635ce923b719f83a5db550907b279c45705",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/review1/candidate/codex-rs/windows-sandbox-rs/src/token_read_authority_tests.rs",
+      "bytes": 30505,
+      "sha256": "e9d764a51c7cbcd8897f2608430d1065e0cca99016d1ff44e936d28c96446e29",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/review1/codespell.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/review1/codespell.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/review1/manifest.json",
+      "bytes": 6802,
+      "sha256": "c02f5f37a50df9d27ee31ef117011bbd4c2369a6c96ea17af2a7944b291aa223",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/review1/metadata-check.stderr",
+      "bytes": 46349,
+      "sha256": "3c28ea2f0a9d48d988abd6db1b3b5c073318d2d331afe4e92677b97daaf4c136",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/review1/metadata-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/review1/metadata_projection/src/lib.rs",
+      "bytes": 1006,
+      "sha256": "965437d27e2c275a2b1b4a75b7fbeb6c656fb4db832b43c4e54585fbe6859ebf",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/review1/metadata_projection/src/parent_tests.rs",
+      "bytes": 1197,
+      "sha256": "811e80a56e7048b82a66b2cefde857428f68944d8fd1e487ef1b1efce67fb1ce",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/review1/metadata_projection/src/token.rs",
+      "bytes": 18360,
+      "sha256": "dfcab3add0e5888c85c37bf307736291173d71fa1b989c91e41856e3837b4528",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/review1/metadata_projection/src/token_access_request_tests.rs",
+      "bytes": 3753,
+      "sha256": "9679df8c7064895940faf2e84e622a5b01967e948a44dfa118333215dc989593",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/review1/metadata_projection/src/token_descriptor_access_tests.rs",
+      "bytes": 11177,
+      "sha256": "c1891d4f1f3beb354789d31ee9cff635ce923b719f83a5db550907b279c45705",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/review1/metadata_projection/src/token_read_authority_tests.rs",
+      "bytes": 30505,
+      "sha256": "e9d764a51c7cbcd8897f2608430d1065e0cca99016d1ff44e936d28c96446e29",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/review1/repair.patch",
+      "bytes": 13005,
+      "sha256": "2b6c8dca2af42c445e9cf0e2b3c645005c8aca87a8420aa8999a8a44c43e8ab8",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/review1/rustc-version.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/review1/rustc-version.stdout",
+      "bytes": 196,
+      "sha256": "f64c55ed9f210d80a9b248206104a47175faf5ec94a093e4ad132549209089fc",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/review1/rustfmt.stderr",
+      "bytes": 106,
+      "sha256": "46e6296365b301e2eb16bb5b40f88b1aab521b90ae30c5631fe41d6319ca14c8",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/review1/rustfmt.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/source_auto_ci/42340694993/CHECKOUT_COMMIT_API.json",
+      "bytes": 3009,
+      "sha256": "9134adef83fff8f9e6781418c111b74e763c5c189fcdcb06f7dfd500ecdc7b00",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/source_auto_ci/42340694993/FROZEN_NATIVE_EVIDENCE.json",
+      "bytes": 18850,
+      "sha256": "e01d4fbacee03d215f87c5a8ebc1ad25e2f4424a60ce3d1a2cd2bdc76e1df483",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/source_auto_ci/42340694993/HEAD_COMMIT_API.json",
+      "bytes": 1388,
+      "sha256": "cecffdd3dac823e521627cbfbdd424484b774b490f29c966972143ae6a47e5f5",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/source_auto_ci/42340694993/JOBS_INITIAL_API.json",
+      "bytes": 4327,
+      "sha256": "af963ff085397f0cc4e1daab717fcb237d4ad1b6ba51f55163e2b63f2275661e",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/source_auto_ci/42340694993/JOBS_OBSERVATION2_API.json",
+      "bytes": 90489,
+      "sha256": "227847b9254f091448dafee9e79e34dec46202a7409e14daf9e4f53657e4ebaa",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/source_auto_ci/42340694993/JOBS_OBSERVATION3_API.json",
+      "bytes": 130600,
+      "sha256": "06c26cba845c46de2066b4645b2a8d593f40eb1ac57d0ae67f06197407fd2ff9",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/source_auto_ci/42340694993/JOBS_TERMINAL_API.json",
+      "bytes": 135479,
+      "sha256": "bc73b3b034e2e720917ca2465f6fee8f38bc7dfbcbf2436d05e671bf3fd42883",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/source_auto_ci/42340694993/NATIVE_MECHANISM_SUMMARY.json",
+      "bytes": 13017,
+      "sha256": "49045fe03ed4688dbcebf5d376c1630474e30946fbbb1ee4c029982b944a08fb",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/source_auto_ci/42340694993/OBSERVER_EXECUTION.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/source_auto_ci/42340694993/OBSERVER_EXECUTION.stdout",
+      "bytes": 669,
+      "sha256": "a8603008147a4598aa22d33e90807bf3f1b93395e1c996345596410934663ef7",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/source_auto_ci/42340694993/PRIVATE_TRANSPORT_RECEIPT.json",
+      "bytes": 847,
+      "sha256": "41a16912347eee85dee8db6cfc43366cd59ce196c2b10bea7ed8e04c92ef29de",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/source_auto_ci/42340694993/PR_API.json",
+      "bytes": 20424,
+      "sha256": "8bba0b1b38bdbe3c67ae59ad84a902ced6c7908bf112559480344a942de4f20c",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/source_auto_ci/42340694993/QUALIFIER_STYLE_CHECKS.json",
+      "bytes": 2397,
+      "sha256": "50d407ebaa62e63f4656e9887b761ea167d86680c7141132d56ab8a68895093c",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/source_auto_ci/42340694993/QUALIFY_EXECUTION.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/source_auto_ci/42340694993/QUALIFY_EXECUTION.stdout",
+      "bytes": 269,
+      "sha256": "130fc8e4f6d644eef9fe77beb57da15d0646ad071ba036a099723586c037e05d",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/source_auto_ci/42340694993/RUN_AT_JOB_TERMINAL_API.json",
+      "bytes": 19016,
+      "sha256": "5c183cd75c267cee60313a0afe2911d6e1f953f920e79aac819596f2ce49d017",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/source_auto_ci/42340694993/RUN_DISCOVERY_API.json",
+      "bytes": 47374,
+      "sha256": "fdf293d12f433ab60f6fe5d6ca709a25bcaec4b7db8adc1e2dba9181de4ece31",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/source_auto_ci/42340694993/RUN_INITIAL_API.json",
+      "bytes": 17123,
+      "sha256": "107a1b359ea18c11628c4778133fea5e130fe8bee1bf117e52a29ed64b9e48eb",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/source_auto_ci/42340694993/SAFE_NATIVE_OBSERVATIONS.json",
+      "bytes": 66980,
+      "sha256": "5de43413ea907c5333b9e688000d5c3f5dc29545c88912e49504d09cb4791601",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/source_auto_ci/42340694993/SOURCE_DIRECTORY_API.json",
+      "bytes": 58465,
+      "sha256": "7ae381f9e5a8d7c3f74c8a336307e39d174281cea21051e455019922c0e2d86c",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/source_auto_ci/42340694993/TREE_codex_API.json",
+      "bytes": 38697,
+      "sha256": "ba08fcd7c2c9b5e008d7e562f019013ff665044a2be6aa1c9aad3c69ba8360cf",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/source_auto_ci/42340694993/TREE_crate_API.json",
+      "bytes": 1893,
+      "sha256": "a94b78fe533ebfb01612fbdca9b680e0bd8391be220a56d2c1a200fb4ce784a0",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/source_auto_ci/42340694993/TREE_root_API.json",
+      "bytes": 13040,
+      "sha256": "836fc8451c5418c7fa126da8e23f575fa05dd53c9df09d775367a988c13d991e",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/source_auto_ci/42340694993/TREE_src_API.json",
+      "bytes": 11418,
+      "sha256": "3cde848c0fb82eb782ab0b7693b6d36e52c053986a6ed35139ba5a58158b4837",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/source_auto_ci/42340694993/TREE_unified_API.json",
+      "bytes": 1417,
+      "sha256": "8ed0a1207f2e57247fc8a17a78d0410ab375d400856ade8b47e2e6e0f6a03586",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_model_42/source_auto_ci/42340694993/UNIFIED_DIRECTORY_API.json",
+      "bytes": 6646,
+      "sha256": "236d67367e55b735bc1a8e541775cb9db1d87b1aa23a1d934e96ac15275ea182",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_requests_40/source_auto_ci/42332553913/source/codex-rs/windows-sandbox-rs/src/acl.rs",
+      "bytes": 23412,
+      "sha256": "4e4f1d0ad6fc21f1fa92234ed3dbe027fc314dfe6171b3d74a2405e122383e29",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_requests_40/source_auto_ci/42332553913/source/codex-rs/windows-sandbox-rs/src/token.rs",
+      "bytes": 18359,
+      "sha256": "3fe5daee06868755f298a415864e4087984f95b1d20325a86687638bba4cd8ac",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_requests_40/source_auto_ci/42332553913/source/codex-rs/windows-sandbox-rs/src/token_tests.rs",
+      "bytes": 11370,
+      "sha256": "9aabb034fbc3ca9fa536aeeb7170a4e456a5b9ef7f859b1e93ea79345309c53c",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_native/windows_access_requests_40/source_auto_ci/42332553913/source/codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+      "bytes": 41867,
+      "sha256": "1c433d36d0099a33d1e96570b77a753ade76bdfa3f1dec1e91197895c3b3715e",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_publications/round3_windows42.json",
+      "bytes": 2631,
+      "sha256": "29367ee4b0075ffb33552183d2211d3af8a5bfb8b8b439d80c984d61b3abda2d",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_windows42_native_api.json",
+      "bytes": 139171,
+      "sha256": "8d2705f41b3040a0d7e96077e9a62780831f636186a118e752b0e67460493d7b",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_windows42_native_api_initial_failure.json",
+      "bytes": 401,
+      "sha256": "c7bcbc85a863e2e165531d110ff810d8c87c24569d8e556afd64788710ff3393",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_windows42_native_source.json",
+      "bytes": 2437,
+      "sha256": "c2f8e41d3de6015fd270b39138067cec08467faddc7944539f303bb262270a0b",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    },
+    {
+      "path": "round3_windows42_source_api.json",
+      "bytes": 114690,
+      "sha256": "823dba241e2486cf2bbb1521d981b605ba3128e657c03fdaf6317a1e2847267c",
+      "source_permission_bits": "0644",
+      "source_stat_mode": "100644"
+    }
+  ],
+  "container": "Independent binary gzip members around bounded segments of one tar.xz.",
+  "scope": "Windows42 descriptor observations and unchanged failures; production P0 remains open.",
+  "source_restore": "Inert regular files, always 0644; source permission records are evidence only.",
+  "excluded": [
+    "Private original consoles and execution ZIPs; their identities only are retained.",
+    "Signed transfer URLs, caches, metadata binaries and redundant spellcheck staging copies.",
+    "No rejected or unavailable raw evidence is reconstructed or encoded.",
+    "This approved source and finite-schema selection is not a general scanner exemption."
+  ],
+  "lossless_boundary": "Exact explicitly selected members only. Private consoles, execution ZIPs and unavailable evidence cannot be reconstructed."
+}
