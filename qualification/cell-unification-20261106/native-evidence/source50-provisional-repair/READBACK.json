@@ -1,0 +1,47 @@
+{
+  "schema": "hepta.source50-provisional-repair-checkpoint.v1",
+  "frozen": true,
+  "source_before": {
+    "commit": "50dd4bedefcd1b8e2e8cd5cf5023c60a86d38d0a",
+    "tree": "be34ab1afe622ad3b8f030c8c5018f4f54fbc304"
+  },
+  "provisional_after_tree": "ea48acf562499192a25e05ae28926a32632dee62",
+  "source_commit_created": false,
+  "files_in_patch": 9,
+  "changed_paths_over_framework": 194,
+  "changed_rust_paths": 180,
+  "ci_selectors": 27,
+  "affected_packages": [
+    "codex-cli",
+    "codex-exec-server",
+    "codex-network-proxy",
+    "codex-external-agent-migration"
+  ],
+  "reviewed_context_archive": {
+    "bytes": 394844,
+    "sha256": "a86df1b59dd2b4708b3e5ebee4c856e2a4d4789badd834db5308856d7a2fde8f",
+    "git_blob": "999db22c499c6b0158f68c382824e972cd232e4d"
+  },
+  "context_members": 153,
+  "stage_input_archive": {
+    "bytes": 60602,
+    "sha256": "f306c8175dd1a72ca3e5182203a8ca66340640bdac6040a88ea532e003e53a53",
+    "git_blob": "2cb50a7ecc3afc425d398895fab464f51cbae843"
+  },
+  "all_static_reviews_clear": true,
+  "native_qualification": "PENDING",
+  "bazel_lock_update": "REQUIRED_PENDING",
+  "original_r23_gate": "FAILED_100_20220_PASS_7_FAIL_1_TIMEOUT_130_REPORTED_SKIPS",
+  "required_order": [
+    "just bazel-lock-update after exact nine-file application and before source identity freeze",
+    "python3 -m unittest discover -s scripts -p test_run_nextest*.py -v",
+    "just clippy --locked -p codex-cli -p codex-exec-server -p codex-network-proxy -p codex-external-agent-migration -- -D warnings",
+    "just test --locked -p codex-cli -p codex-exec-server -p codex-network-proxy -p codex-external-agent-migration --retries 0",
+    "just test --locked --retries 0 with unchanged 193 default workspace members",
+    "only after required gates pass: final scoped just fix --locked, then just fmt; no later local tests"
+  ],
+  "science": "HOLD",
+  "authority": "DENY_ALL",
+  "original_assertions_timeouts_retries_filters_features_ignored_reporting_preserved": true,
+  "git_probe_limit": "Only exact child Git rewrite plus production clone argv is proven; no original timeout syscall diagnosis and no Rust qualification."
+}

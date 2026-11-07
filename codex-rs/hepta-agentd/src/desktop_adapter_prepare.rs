@@ -18,6 +18,11 @@ use codex_hepta_types::StableId;
 use serde_json::Value;
 use serde_json::json;
 
+struct DesktopCallIdentity<'a> {
+    turn: &'a str,
+    original_call_id: &'a str,
+}
+
 impl AgentdNotesLiteralAdapter {
     pub(crate) async fn prepare_desktop(
         &mut self,
@@ -51,8 +56,18 @@ impl AgentdNotesLiteralAdapter {
                     "original human authorization changed before Desktop preparation",
                 ));
             }
-            self.prepare_desktop_bound(calculator, reference, arguments, human, &turn, &call, end)
-                .await
+            self.prepare_desktop_bound(
+                calculator,
+                reference,
+                arguments,
+                human,
+                DesktopCallIdentity {
+                    turn: &turn,
+                    original_call_id: &call,
+                },
+                end,
+            )
+            .await
         })
         .await
         .map_err(|_| invalid("original Desktop preparation acknowledgement unknown"))??;
@@ -66,10 +81,13 @@ impl AgentdNotesLiteralAdapter {
         reference: OriginalDesktopThreadReference,
         arguments: &Value,
         human: &VerifiedHumanTurn,
-        turn: &str,
-        original_call_id: &str,
+        call: DesktopCallIdentity<'_>,
         end: Deadline,
     ) -> Result<AgentdNotesPreparedObjective, AgentdError> {
+        let DesktopCallIdentity {
+            turn,
+            original_call_id,
+        } = call;
         let run_id = self.run_id(turn)?;
         if let Some(retained) = self
             .sender
@@ -85,7 +103,7 @@ impl AgentdNotesLiteralAdapter {
                 ));
             }
             require_original_thread_call(&retained, original_call_id)?;
-            return Ok(AgentdNotesPreparedObjective::Retained(retained));
+            return Ok(AgentdNotesPreparedObjective::Retained(Box::new(retained)));
         }
         // Shared across BOTH effect tools, including a prepared operation whose
         // source signing or sender acknowledgement was lost. No new send token.
@@ -334,8 +352,8 @@ impl AgentdNotesLiteralAdapter {
         }
         Ok(AgentdNotesPreparedObjective::Ready {
             sender: Arc::clone(&self.sender),
-            ticket,
-            ingress: signed,
+            ticket: Box::new(ticket),
+            ingress: Box::new(signed),
         })
     }
 }

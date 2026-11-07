@@ -1,0 +1,19 @@
+{
+  "schema": "hepta.offline-reader-preparation-attempt.v1",
+  "command": [
+    "python3",
+    "r28-formal-preparation/verify_and_assemble.py",
+    "--root-file",
+    "native-validation-results/r28-archive-closed/ROOT-ARCHIVE-READBACK.json"
+  ],
+  "result": {
+    "chunk_id": "92d34e",
+    "wall_time_seconds": 0.07333611,
+    "exit_code": 1,
+    "original_token_count": 249,
+    "output": "Traceback (most recent call last):\n  File \"/workspace/scratch/08f5efd48967/r28-formal-preparation/verify_and_assemble.py\", line 740, in <module>\n    main()\n  File \"/workspace/scratch/08f5efd48967/r28-formal-preparation/verify_and_assemble.py\", line 568, in main\n    phase_data,py,start,summary,rows,keyed,per_package,terminal,complete=verify_phases(members)\n                                                                         ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/08f5efd48967/r28-formal-preparation/verify_and_assemble.py\", line 306, in verify_phases\n    start,summary,rows,keyed,footer = parse_log(evidence('-tests.log'))\n                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/08f5efd48967/r28-formal-preparation/verify_and_assemble.py\", line 132, in parse_log\n    assert start['binaries'] == 49 and len({r['binary'] for r in rows}) == 49\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+  },
+  "reason": "The original Starting roster reports 49 binaries, while actual unique execution rows contain 47 binary identifiers. The local reader incorrectly required these different observations to be equal. No formal files had been created; no gate, source, or original evidence changed.",
+  "original_gate_result_unchanged": "1564 unique PASS / 3 reported skipped",
+  "corrected_boundary": "Preserve both counts; require execution binary set no larger than reported roster. Do not infer skip IDs or reasons."
+}

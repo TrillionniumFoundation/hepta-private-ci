@@ -1,0 +1,169 @@
+{
+  "schema": "hepta.candidate-audit-closure-mapping.v1",
+  "purpose": "Exact-byte archive and reference closure only; not execution evidence or a new causal review. Frozen originals keep their original pending/active-prefix wording.",
+  "source43": {
+    "commit": "b44d4ca4aa0ef9f894eff29e9975938e066a82f5",
+    "tree": "d3d2313b838422818bf9448ce5a1b86d89abdf69"
+  },
+  "integrated_source44": {
+    "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+    "tree": "1646e1656cf6365e74accae19a1225fd2ce6d964",
+    "all_candidate_after_pins_match_retained_native_source_inventory": true
+  },
+  "retained_artifacts": [
+    {
+      "original_path": "core-mcp-ci-r14-repair/edit-operations.json",
+      "archived_path": "edit-operations.json",
+      "bytes": 354,
+      "sha256": "4fec0c13b0a89c315c69e7c8de37b1a93331abf297dd1943f2fd8b440941f327",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-mcp-ci-r14-repair/repair-audit.json",
+      "archived_path": "repair-audit.json",
+      "bytes": 2452,
+      "sha256": "30f867eae28db180afeb80b8c0570ffda959b83bd2a0c6a02b6eadaf2ada79ee",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-mcp-ci-r14-repair/repair.patch",
+      "archived_path": "repair.patch",
+      "bytes": 485,
+      "sha256": "502bc102de38dc35bd374cdef4a75f77df80c998b3865323270ceeaeff34c132",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-mcp-ci-r14-repair/root-independent-review.json",
+      "archived_path": "root-independent-review.json",
+      "bytes": 484,
+      "sha256": "769c22c3fb5649885dab4277908f23d405f21da94cc96135ccab80c67a460aa6",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-mcp-ci-r14-repair/source-manifest.json",
+      "archived_path": "source-manifest.json",
+      "bytes": 897,
+      "sha256": "a605250324eff584f7012bdb65fa31ab681d13ce70c9e5a4d3b302204d3a5bdb",
+      "copied_bytes_exact": true
+    }
+  ],
+  "reference_mappings": [
+    {
+      "artifact": "edit-operations.json",
+      "pointer": "/operations/0/path",
+      "reference": ".github/workflows/hepta-cell-framework-native.yml",
+      "source_keys": [
+        ".github/workflows/hepta-cell-framework-native.yml@9b04365dba53f7bf2b9c5f57bbfb264cddfa63d0509ee1d0401762d52ca46d1c"
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/source_path",
+      "reference": ".github/workflows/hepta-cell-framework-native.yml",
+      "source_keys": [
+        ".github/workflows/hepta-cell-framework-native.yml@9b04365dba53f7bf2b9c5f57bbfb264cddfa63d0509ee1d0401762d52ca46d1c"
+      ]
+    },
+    {
+      "artifact": "source-manifest.json",
+      "pointer": "/files/0/path",
+      "reference": ".github/workflows/hepta-cell-framework-native.yml",
+      "source_keys": [
+        ".github/workflows/hepta-cell-framework-native.yml@9b04365dba53f7bf2b9c5f57bbfb264cddfa63d0509ee1d0401762d52ca46d1c"
+      ]
+    }
+  ],
+  "source_objects": [
+    {
+      "path": ".github/workflows/hepta-cell-framework-native.yml",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "bytes": 8827,
+      "sha256": "9b04365dba53f7bf2b9c5f57bbfb264cddfa63d0509ee1d0401762d52ca46d1c",
+      "git_blob": "e175cee31931f94487a134873465e97987102718",
+      "pin_evidence": "core-mcp-ci-r14-repair/source-manifest.json",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/.github/workflows/hepta-cell-framework-native.yml"
+    },
+    {
+      "path": ".github/workflows/hepta-cell-framework-native.yml",
+      "commit": "b44d4ca4aa0ef9f894eff29e9975938e066a82f5",
+      "bytes": 8814,
+      "sha256": "d2ddf46619bf94df3d20f8ed07244bf79ad2ecc8cfb647615c0753fe57f791de",
+      "git_blob": "f1ffc9f3db7c081df051e80d68413b8c725e0909",
+      "pin_evidence": "core-mcp-ci-r14-repair/source-manifest.json",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b44d4ca4aa0ef9f894eff29e9975938e066a82f5/.github/workflows/hepta-cell-framework-native.yml"
+    }
+  ],
+  "formal_evidence": [
+    {
+      "path": "../r14-core-checkpoint/native-core-r14-result-review.json",
+      "bytes": 35985,
+      "sha256": "9b5b3a81d4901d8c6769908e2021235e3ef82e3257d5b0c21bf1c086899f0732"
+    },
+    {
+      "path": "../r14-core-checkpoint/native-core-r14-tests-receipt.json",
+      "bytes": 855,
+      "sha256": "c532ec738074e4add3165e0f74bd992d127ab75bf9b0736c78012ec91e273c22"
+    },
+    {
+      "path": "../r14-core-checkpoint/native-core-r14-tests.log.gz",
+      "bytes": 85335,
+      "sha256": "400ba9860f303f32173fdf7c51a67aed56701c76319e12a18c0bf68f03c9fe9a"
+    },
+    {
+      "path": "../r14-core-checkpoint/native-candidate-r14-source.json",
+      "bytes": 45387,
+      "sha256": "dffa92b76aa4354dc39bee15d2ad1078e0e72d00bc6b20f78acbe5243394a059"
+    },
+    {
+      "path": "../r14-core-checkpoint/ROOT-RESULT-READBACK.json",
+      "bytes": 7396,
+      "sha256": "5310930bb7d6c1eab285121e9affd96c0d278b54676a467ca0aacbe7a6e9bab6"
+    },
+    {
+      "path": "../r14-core-checkpoint/ROOT-SOURCE-ROUNDTRIP.json",
+      "bytes": 527,
+      "sha256": "b561099ba816f5b07d36d8258628bae8c7081d95bfa32dc43d835ec59313bd9b"
+    },
+    {
+      "path": "../r15-stage44-input/root-published-source.json",
+      "bytes": 8218,
+      "sha256": "2ce4a25a216fe706b2edde8f387fdfa8fe364d3c2203f981c94a8ea3a62b7c09"
+    },
+    {
+      "path": "../r15-stage44-input/R14-REPAIR-COVERAGE-MAP.json",
+      "bytes": 17982,
+      "sha256": "e86433a54987d902543ca7194328f3a85403f6c12d192cf9a70a029f9bae9a9d"
+    },
+    {
+      "path": "../r15-core-mcp-checkpoint/native-candidate-r15-source.json",
+      "bytes": 48734,
+      "sha256": "ee85feeca1c8da886ab3f52ab26fb741bb5d8569880b26985a2b0d7f8533dc2d"
+    },
+    {
+      "path": "../r15-core-mcp-checkpoint/native-core-mcp-r15-strict-receipt.json",
+      "bytes": 917,
+      "sha256": "4129fe2f4a14b757d642661b9da5e55bb3633e32cc61a9f7ee4e8574cb9f240a"
+    }
+  ],
+  "shared_hook_pins": {
+    "path": "../core-hook-binding-r14-repair/hook-shared-source-pins.json",
+    "bytes": 9853,
+    "sha256": "0385e4a104ba74c57dd250e4d0267a71a31361aff6c936567364dab37c776ce4"
+  },
+  "additional_source_pins": {
+    "path": "../core-hook-binding-r14-repair/additional-source-pins.json",
+    "bytes": 1244,
+    "sha256": "b5b306eb4829af7de89ea145e1697077dc7b654545304ad1bf66a25e85bd6845"
+  },
+  "closed_original_failures": [],
+  "closed_log_raw_sha256": "443a58d70c34d76ba9b8141ad7ee32d997a4f16af79e8f5a873770966028952c",
+  "qualifications": [
+    "All source URLs are immutable commits; before and after versions are explicitly distinct. Legacy pre-stage42 comparison uses its original retained formal manifest.",
+    "The OAuth native-runtime-refresh-proof.json is native source-content evidence, not a successful OAuth runtime execution.",
+    "The MCP closed-failure-addendum.json supersedes only its earlier individual active-prefix status; the original causal review remains unchanged.",
+    "No whole source/original tree or duplicate full test log is copied. The existing formal gzip/receipt holds the closed full log.",
+    "Strict compilation, source matching and artifact hashes do not establish candidate test PASS. r15 terminal test receipts are separate and are not authored or inferred by this archive task."
+  ],
+  "unresolved_references": [],
+  "rust_or_ci_execution_by_archive_task": false
+}

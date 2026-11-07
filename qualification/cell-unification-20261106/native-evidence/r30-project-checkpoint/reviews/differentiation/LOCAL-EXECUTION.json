@@ -1,0 +1,21 @@
+{
+  "schema": "hepta.local-readonly-execution-records.v1",
+  "calls": {
+    "closed_gate_read": {
+      "chunk_id": "0ff69b",
+      "wall_time_seconds": 2.9595e-05,
+      "exit_code": 0,
+      "original_token_count": 70,
+      "output": "{\"report\": {\"path\": \"INDEPENDENT-READBACK.json\", \"bytes\": 12090, \"sha256\": \"f03be158c3bc5a305c763fce7d4783eea23f6e0fdfd306cd2ae76d6fc33a7225\", \"git_blob\": \"102282250097403ac8a594b210eb82c95deca356\"}, \"classification\": \"CLOSED_ENGINEERING_PROJECT_PASS\", \"integrity_errors\": []}\n"
+    },
+    "controller_read": {
+      "chunk_id": "c2d770",
+      "wall_time_seconds": 3.0466e-05,
+      "exit_code": 0,
+      "original_token_count": 106,
+      "output": "{\"controller\": {\"path\": \"CONTROLLER-READBACK.json\", \"bytes\": 4974, \"sha256\": \"f94b102a76d57ae627e0ffde90cd6e7aad004b45c0e7e9d5c49f92ef174129e9\", \"git_blob\": \"4f12b03e9c44a8acec5d4e2219eb1f55eaad4d99\"}, \"summary\": {\"path\": \"CLOSURE-SUMMARY.json\", \"bytes\": 2960, \"sha256\": \"97e98591b62e7bb39e7cb907723b7fabd96885dabb1b53809b74a50860320f27\", \"git_blob\": \"aa76b82ce2fc2193a7c9579754040c2189cd979b\"}, \"result\": \"READBACK_PASS\"}\n"
+    }
+  },
+  "runner_imported_or_executed": false,
+  "native_Rust_metadata_fix_fmt_or_tool_queries": false
+}

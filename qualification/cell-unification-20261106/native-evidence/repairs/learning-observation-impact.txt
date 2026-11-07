@@ -1,0 +1,49 @@
+codex-rs/hepta-learning-artifacts/src/lib.rs:104:pub use learning_iteration_types::LearningIterationObservationV1;
+codex-rs/hepta-learning-artifacts/src/learning_iteration_types.rs:67:pub enum LearningIterationObservationV1 {
+codex-rs/hepta-learning-artifacts/src/learning_iteration_types.rs:121:    pub observation: LearningIterationObservationV1,
+codex-rs/hepta-learning-artifacts/src/learning_iteration_types.rs:135:impl LearningIterationObservationV1 {
+codex-rs/hepta-learning-artifacts/src/learning_iteration.rs:96:            Some(LearningIterationObservationV1::Evaluation { disposition: LearningEvaluationDispositionV1::NoUpdate, .. })
+codex-rs/hepta-learning-artifacts/src/learning_iteration.rs:97:            | Some(LearningIterationObservationV1::Proposal { disposition: LearningProposalDispositionV1::NoAdmissibleUpdate, .. })
+codex-rs/hepta-learning-artifacts/src/learning_iteration.rs:99:            Some(LearningIterationObservationV1::NextUse { .. }) => LearningIterationDispositionV1::UsedByNextTask,
+codex-rs/hepta-learning-artifacts/src/learning_iteration.rs:111:            Some(LearningIterationObservationV1::Training { candidate, .. }) => Some(candidate),
+codex-rs/hepta-learning-artifacts/src/learning_iteration.rs:137:    fn validate_observation(&self, observation: &LearningIterationObservationV1) -> Result<(), LearningIterationError> {
+codex-rs/hepta-learning-artifacts/src/learning_iteration.rs:142:            LearningIterationObservationV1::Experience { episode_digest, completed_task_receipt } =>
+codex-rs/hepta-learning-artifacts/src/learning_iteration.rs:144:            LearningIterationObservationV1::Dataset { snapshot_digest, episode_digest, withdrawal_frontier, rows, bytes } => {
+codex-rs/hepta-learning-artifacts/src/learning_iteration.rs:148:                    && matches!(source, Some(LearningIterationObservationV1::Experience { episode_digest: expected, .. }) if episode_digest == expected)
+codex-rs/hepta-learning-artifacts/src/learning_iteration.rs:150:            LearningIterationObservationV1::Training { candidate, steps, milliseconds, artifact_bytes } => {
+codex-rs/hepta-learning-artifacts/src/learning_iteration.rs:159:                            && matches!(source, Some(LearningIterationObservationV1::Dataset { snapshot_digest, .. }) if lineage.dataset == *snapshot_digest)
+codex-rs/hepta-learning-artifacts/src/learning_iteration.rs:165:            LearningIterationObservationV1::Evaluation { candidate_bundle, evaluation_profile, .. } =>
+codex-rs/hepta-learning-artifacts/src/learning_iteration.rs:169:            LearningIterationObservationV1::Proposal { candidate_bundle, proposal_id, composition_digest, .. } =>
+codex-rs/hepta-learning-artifacts/src/learning_iteration.rs:171:            LearningIterationObservationV1::Selection { candidate_bundle, selection_digest } =>
+codex-rs/hepta-learning-artifacts/src/learning_iteration.rs:173:            LearningIterationObservationV1::NextUse { candidate_bundle, state_partition, checkpoint_digest, selection_digest, committed_step_receipt, state_cutover_receipt } =>
+codex-rs/hepta-learning-artifacts/src/learning_iteration.rs:179:                        Some(LearningIterationObservationV1::Selection { selection_digest: expected, .. }) if selection_digest == expected)
+codex-rs/hepta-learning-artifacts/src/learning_iteration_test_support.rs:66:        LearningIterationStageV1::Experience => LearningIterationObservationV1::Experience {
+codex-rs/hepta-learning-artifacts/src/learning_iteration_test_support.rs:69:        LearningIterationStageV1::Dataset => LearningIterationObservationV1::Dataset {
+codex-rs/hepta-learning-artifacts/src/learning_iteration_test_support.rs:73:        LearningIterationStageV1::Training => LearningIterationObservationV1::Training {
+codex-rs/hepta-learning-artifacts/src/learning_iteration_test_support.rs:76:        LearningIterationStageV1::Evaluation => LearningIterationObservationV1::Evaluation {
+codex-rs/hepta-learning-artifacts/src/learning_iteration_test_support.rs:79:        LearningIterationStageV1::Proposal => LearningIterationObservationV1::Proposal {
+codex-rs/hepta-learning-artifacts/src/learning_iteration_test_support.rs:83:        LearningIterationStageV1::Selection => LearningIterationObservationV1::Selection {
+codex-rs/hepta-learning-artifacts/src/learning_iteration_test_support.rs:86:        LearningIterationStageV1::NextUse => LearningIterationObservationV1::NextUse {
+codex-rs/hepta-learning-artifacts/src/learning_iteration_digest.rs:48:        LearningIterationObservationV1::Experience { episode_digest, completed_task_receipt } => {
+codex-rs/hepta-learning-artifacts/src/learning_iteration_digest.rs:53:        LearningIterationObservationV1::Dataset { snapshot_digest, episode_digest, withdrawal_frontier, rows, bytes: dataset_bytes } => {
+codex-rs/hepta-learning-artifacts/src/learning_iteration_digest.rs:61:        LearningIterationObservationV1::Training { candidate, steps, milliseconds, artifact_bytes } => {
+codex-rs/hepta-learning-artifacts/src/learning_iteration_digest.rs:68:        LearningIterationObservationV1::Evaluation { candidate_bundle, evaluation_profile, disposition } => {
+codex-rs/hepta-learning-artifacts/src/learning_iteration_digest.rs:74:        LearningIterationObservationV1::Proposal { candidate_bundle, proposal_id, composition_digest, disposition } => {
+codex-rs/hepta-learning-artifacts/src/learning_iteration_digest.rs:81:        LearningIterationObservationV1::Selection { candidate_bundle, selection_digest } => {
+codex-rs/hepta-learning-artifacts/src/learning_iteration_digest.rs:86:        LearningIterationObservationV1::NextUse { candidate_bundle, state_partition, checkpoint_digest, selection_digest, committed_step_receipt, state_cutover_receipt } => {
+codex-rs/hepta-learning-artifacts/src/learning_iteration_tests.rs:51:    if let LearningIterationObservationV1::Dataset { rows, .. } = &mut over_budget.observation { *rows = 11; }
+codex-rs/hepta-learning-artifacts/src/learning_iteration_tests.rs:56:    if let LearningIterationObservationV1::Training { candidate, .. } = &mut wrong.observation {
+codex-rs/hepta-learning-artifacts/src/learning_iteration_tests.rs:70:            LearningIterationObservationV1::Evaluation { disposition, .. } => *disposition = LearningEvaluationDispositionV1::NoUpdate,
+codex-rs/hepta-learning-artifacts/src/learning_iteration_tests.rs:71:            LearningIterationObservationV1::Proposal { disposition, .. } => *disposition = LearningProposalDispositionV1::NoAdmissibleUpdate,
+codex-rs/hepta-learning-artifacts/src/learning_iteration_tests.rs:86:    let changes: [fn(&mut LearningIterationObservationV1); 4] = [
+codex-rs/hepta-learning-artifacts/src/learning_iteration_tests.rs:87:        |o| if let LearningIterationObservationV1::NextUse { state_partition, .. } = o { state_partition.run_id = id("run:source"); },
+codex-rs/hepta-learning-artifacts/src/learning_iteration_tests.rs:88:        |o| if let LearningIterationObservationV1::NextUse { state_partition, .. } = o { state_partition.cell_id = id("cell:other"); },
+codex-rs/hepta-learning-artifacts/src/learning_iteration_tests.rs:89:        |o| if let LearningIterationObservationV1::NextUse { state_partition, .. } = o { state_partition.principal_id = id("principal:other"); },
+codex-rs/hepta-learning-artifacts/src/learning_iteration_tests.rs:90:        |o| if let LearningIterationObservationV1::NextUse { selection_digest, .. } = o { *selection_digest = digest("other-selection"); },
+codex-rs/hepta-agentd/src/learning_iteration_proposal.rs:6:use codex_hepta_learning_artifacts::LearningIterationObservationV1;
+codex-rs/hepta-agentd/src/learning_iteration_proposal.rs:83:        observation: LearningIterationObservationV1::Proposal {
+codex-rs/hepta-agentd/src/learning_iteration_runtime_tests.rs:16:use codex_hepta_learning_artifacts::LearningIterationObservationV1;
+codex-rs/hepta-agentd/src/learning_iteration_runtime_tests.rs:102:                LearningIterationStageV1::Experience => LearningIterationObservationV1::Experience {
+codex-rs/hepta-agentd/src/learning_iteration_runtime_tests.rs:105:                LearningIterationStageV1::Dataset => LearningIterationObservationV1::Dataset {
+codex-rs/hepta-agentd/src/learning_iteration_runtime_tests.rs:109:                LearningIterationStageV1::Training => LearningIterationObservationV1::Training {
+codex-rs/hepta-agentd/src/learning_iteration_runtime_tests.rs:112:                LearningIterationStageV1::Evaluation => LearningIterationObservationV1::Evaluation {

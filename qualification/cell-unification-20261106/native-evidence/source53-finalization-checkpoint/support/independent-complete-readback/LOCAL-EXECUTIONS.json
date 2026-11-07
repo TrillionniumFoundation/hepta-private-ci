@@ -1,0 +1,87 @@
+{
+  "schema": "hepta.source53-finalization-local-data-reader-executions.v1",
+  "scope": "Only independent local Python data reading, AST parsing and source/patch comparison; not native test, metadata, formatter, Rust or project execution.",
+  "entries": [
+    {
+      "name": "ast",
+      "result": {
+        "chunk_id": "6e5165",
+        "wall_time_seconds": 0.000028473,
+        "exit_code": 0,
+        "original_token_count": 14,
+        "output": "source_compare.py AST_OK\nreview_finalization.py AST_OK\n"
+      }
+    },
+    {
+      "name": "mechanical_attempt_1",
+      "result": {
+        "chunk_id": "e0bf5b",
+        "wall_time_seconds": 0.000029405,
+        "exit_code": 1,
+        "original_token_count": 138,
+        "output": "Traceback (most recent call last):\n  File \"/workspace/scratch/08f5efd48967/source53-finalization-independent-readback/review_finalization.py\", line 355, in <module>\n    main()\n  File \"/workspace/scratch/08f5efd48967/source53-finalization-independent-readback/review_finalization.py\", line 126, in main\n    require(scope[k] == selection[k], \"scope input \" + k)\n  File \"/workspace/scratch/08f5efd48967/source53-finalization-independent-readback/source_compare.py\", line 24, in require\n    raise ValueError(message)\nValueError: scope input python_paths\n"
+      }
+    },
+    {
+      "name": "mechanical_attempt_2",
+      "result": {
+        "chunk_id": "d35f4f",
+        "wall_time_seconds": 0.000027852,
+        "exit_code": 1,
+        "original_token_count": 154,
+        "output": "Traceback (most recent call last):\n  File \"/workspace/scratch/08f5efd48967/source53-finalization-independent-readback/review_finalization_v2.py\", line 357, in <module>\n    main()\n  File \"/workspace/scratch/08f5efd48967/source53-finalization-independent-readback/review_finalization_v2.py\", line 135, in main\n    require(packages[\"package_args\"] == [v for owner in scope[\"owners\"] for v in (\"-p\", owner)], \"original26 packages\")\n  File \"/workspace/scratch/08f5efd48967/source53-finalization-independent-readback/source_compare.py\", line 24, in require\n    raise ValueError(message)\nValueError: original26 packages\n"
+      }
+    },
+    {
+      "name": "mechanical_attempt_3",
+      "result": {
+        "chunk_id": "01c471",
+        "wall_time_seconds": 0.442112249,
+        "exit_code": 0,
+        "original_token_count": 97,
+        "output": "{\"status\": \"ACTUAL_PHASE_ARCHIVE_AND_PATCH_MECHANICAL_READBACK_PASS_SEMANTIC_REVIEW_SEPARATE\", \"report\": {\"path\": \"MECHANICAL-READBACK.json\", \"bytes\": 40259, \"sha256\": \"001ca6707834e117d121522e177fbb58f7654cb43a285133dca8f6febdf44c7c\", \"git_blob\": \"a026c87ebfd2a6cc4f54fb094f1df022e90c93fe\"}, \"snapshots\": 3, \"source_files_each\": 197, \"format_changed\": 56, \"phases\": [0, 0], \"outer\": 0}\n"
+      }
+    },
+    {
+      "name": "semantic_initial",
+      "result": {
+        "chunk_id": "4584fa",
+        "wall_time_seconds": 1.001349602,
+        "session_id": 72842,
+        "original_token_count": 0,
+        "output": ""
+      }
+    },
+    {
+      "name": "semantic_completion",
+      "result": {
+        "chunk_id": "8db0b8",
+        "wall_time_seconds": 0.631520444,
+        "exit_code": 0,
+        "original_token_count": 110,
+        "output": "{\"path\": \"source53-finalization-independent-readback/STATIC-SEMANTIC-READBACK.json\", \"bytes\": 58104, \"sha256\": \"11f8a0009e5f8a76f7c1e45b2168a998b494c9d168a9149881cb4501f9b1de99\", \"git_blob\": \"dc19d6a2daae65dc1583d315cc583c1f747f13b4\", \"rust_files\": 54, \"python_AST_equal\": 2, \"protected_macros\": 1960, \"classifications\": {\"trailing_comma_adjacent_to_closing_delimiter\": 279, \"brace_semicolon_deltas\": 20, \"declaration_reorder_deltas\": 59}}\n"
+      }
+    },
+    {
+      "name": "lexical_initial",
+      "result": {
+        "chunk_id": "7c7e1a",
+        "wall_time_seconds": 1.000895747,
+        "session_id": 49241,
+        "original_token_count": 0,
+        "output": ""
+      }
+    },
+    {
+      "name": "lexical_completion",
+      "result": {
+        "chunk_id": "b662d1",
+        "wall_time_seconds": 0.000020922,
+        "exit_code": 0,
+        "original_token_count": 33590,
+        "output": "Warning: truncated output (original token count: 33590)\nTotal output lines: 1\n\n{\"output\": {\"bytes\": 384234, \"sha256\": \"cd6bcf4778fafe0c1418d177061a49f1623f2b3100855896b762402166d40005\", \"git_blob\": \"f920c23a8605a05214d56d921e9b7d7121e56a53\"}, \"files\": 56, \"rust_exact_token\": 15, \"python_ast_equal\": 2, \"token_deltas\": [{\"path\": \"codex-rs/core/src/session/tests.rs\", \"deltas\": [{\"tag\": \"delete\", \"old_index\": [15190, 15191], \"new_index\": [15190, 1519",
+        "output_excerpt_only": true
+      }
+    }
+  ]
+}

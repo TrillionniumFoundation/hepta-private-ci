@@ -1,0 +1,34 @@
+{
+  "source_commit": "bef6fa7645df9df12b69fda499e97eed25de6c75",
+  "repair": "Group local delivery observation id/time; remove doc-comment empty line",
+  "native_impact_search": "All7 observe_delivery calls in v2_tests.rs; no external callers (native agent full-checkout rg)",
+  "observe_delivery_body_byte_identical_after_metadata_unpack": true,
+  "existing_call_arguments_assertions_preserved": true,
+  "existing_tests_changed": 7,
+  "new_behavior_tests_added": 0,
+  "wire_or_digest_definitions_changed": false,
+  "native_execution_status": "PENDING_NATIVE_VALIDATION",
+  "files": [
+    {
+      "path": "codex-rs/hepta-context-compiler/src/v2.rs",
+      "before_sha256": "e0b34552f824a5f02cda51410588d2907803290da21db7f1eba8fe75046ac62d",
+      "after_sha256": "f9a270563e1ee4c041cfaebb3c8784cf77b88553f196881ac5d5c37272671811",
+      "before_bytes": 88054,
+      "after_bytes": 88483
+    },
+    {
+      "path": "codex-rs/hepta-context-compiler/src/lib.rs",
+      "before_sha256": "4a366a6a8d84890aa2988aaf73e4209de02e6f60e102147b6aab8daf63ac3348",
+      "after_sha256": "a2316e81f7d937ba20ddbf5c36925b7a654b6c1ec2d36f290619382425060b96",
+      "before_bytes": 9749,
+      "after_bytes": 9799
+    },
+    {
+      "path": "codex-rs/hepta-context-compiler/src/v2_tests.rs",
+      "before_sha256": "f2a8ef6b4b459562e9a2fb5343cca0027ad2e97c3d183f92a5603615ff3d4861",
+      "after_sha256": "d7ab4a54eb887cb5b7cffd38e42f3d0c9f74447d875c87f2d79ac09932f56310",
+      "before_bytes": 43808,
+      "after_bytes": 44519
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "schema": "hepta.compact-finish-root-composition-review.v1",
+  "parent_commit": "c51a975ddb70e8d912867349ee849c552664d51f",
+  "parent_tree": "da652e666b89d26851829e9f663d73ab22a2b030",
+  "path": "codex-rs/core/tests/suite/compact.rs",
+  "before_sha256": "051e39ed713ae26790401210d131f033750b0f50e6597c238c50e931397de25d",
+  "after_sha256": "fcbeedcbede3d23452f4c501ba7c16d5dcf6c3eb52278acad323d217d677a877",
+  "after_git_blob": "fb7fbb38f8d4bd2789c6a98269389f949aca9cdf",
+  "inverse_restores_exact_commit32_file": true,
+  "provider_fixture_repair_preserved": true,
+  "independently_read_production_sources": [
+    "core/src/tasks/mod.rs normal Finish completion observer and terminal event publishing before finish owner retirement",
+    "core/src/session/turn_input.rs NotIdle rejected route returns Ok(NotSubmitted)",
+    "core/tests/common/lib.rs existing normal completion observer"
+  ],
+  "validation": "source review only; original native Core tests pending"
+}

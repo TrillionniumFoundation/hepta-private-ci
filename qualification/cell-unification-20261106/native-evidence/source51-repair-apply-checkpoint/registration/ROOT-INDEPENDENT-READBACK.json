@@ -1,0 +1,108 @@
+{
+  "schema": "hepta.root-source51-independent-prepare-readback.v1",
+  "status": "CLEAR_FOR_GITDATA_CREATION_NOT_NATIVE_QUALIFIED",
+  "base_commit": "1fdd647b0ecb235530e8b88bbea45b3d3762906f",
+  "base_tree": "ea48acf562499192a25e05ae28926a32632dee62",
+  "expected_tree": "763c8d2b4089f6e9806c3bbb68fa247bc2f6af36",
+  "all_handoff_files_verified": 30,
+  "original_direct_trees_rehashed": 7,
+  "parent_child_links_verified": 6,
+  "new_direct_trees_rebuilt": 7,
+  "only_leaf_changes": [
+    {
+      "path": "codex-rs/exec-server/tests/common/fake_bwrap.rs",
+      "mode": "100644",
+      "before": {
+        "bytes": 1635,
+        "sha256": "ae37954afd591c387652cd8ea036a15f461dbad48946274bbca57be4bd1648de",
+        "git_blob": "cc79362f7a8a3a44b0a93949d18494281511ec7b"
+      },
+      "after": {
+        "bytes": 1817,
+        "sha256": "83d3637f2648b967c70e2368c623fe0b84afe1cdf32860284d897923ad0dc1ca",
+        "git_blob": "e74489437549cf2c61075fd893945cd78e34247c"
+      },
+      "source_candidate_directory": "exec-server-bwrap-r24-repair",
+      "original_patch": {
+        "path": "repair.patch",
+        "bytes": 663,
+        "sha256": "0f8ee51664c850a9fd450bcba800d3ffb6866633f1924845b058ffadcc7b1ba8",
+        "git_blob": "8330f69c096dae85afbd9ec10346a5c93acd81d5"
+      }
+    },
+    {
+      "path": "codex-rs/network-proxy/src/http_proxy.rs",
+      "mode": "100644",
+      "before": {
+        "bytes": 69053,
+        "sha256": "7500b8820d7894da45ed4f444aca28573f1e5f9462f94c97ccb19019a0f6b430",
+        "git_blob": "50135c6cd4c426c3ec16d65d448c01a1fb776ddd"
+      },
+      "after": {
+        "bytes": 69092,
+        "sha256": "f8b6cb1adf67ea828efb29f68e10fd97a30e379574c93374c2a88f5364153967",
+        "git_blob": "17220a242091325aa66bd4cdb3419cd3a30b09ed"
+      },
+      "source_candidate_directory": "source51-network-candidate",
+      "original_patch": {
+        "path": "network-fixture.patch",
+        "bytes": 420,
+        "sha256": "24fcba74cab54f242f1249bddf43ebc3be2bd3bbb7f16964dd7f24f334989198",
+        "git_blob": "09235650429cab4b8cc24360eadd9a7eeae1fb85"
+      }
+    }
+  ],
+  "source_manifest_rows": 194,
+  "unchanged_source_rows": 192,
+  "rust_paths": 180,
+  "other_paths": 14,
+  "locks_unchanged": true,
+  "dependency_files_unchanged": true,
+  "mechanical_commands": [
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/08f5efd48967/source51-preparation/combined.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "source_commit_created": false,
+  "native_apply_executed": false,
+  "rust_tests_run": false,
+  "science": "HOLD",
+  "authority": "DENY_ALL"
+}

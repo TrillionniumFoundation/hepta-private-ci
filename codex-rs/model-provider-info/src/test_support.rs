@@ -35,7 +35,7 @@ pub fn allow_internal_metadata_for_mock(
         return Err("mock metadata requires one explicit HTTP or WS endpoint");
     }
     let authority = uri.authority().ok_or("mock authority is required")?;
-    if authority.as_str().contains('@') || !uri.port_u16().is_some_and(|port| port != 0) {
+    if authority.as_str().contains('@') || uri.port_u16().is_none_or(|port| port == 0) {
         return Err("mock metadata requires an explicit port and no credentials");
     }
     let host = uri.host().ok_or("mock host is required")?;

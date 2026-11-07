@@ -1,0 +1,114 @@
+{
+  "actual_source_apply_not_claimed": true,
+  "additional_authoritative_controller_terminal": "native-source53-project-r30-terminal-process-status.json",
+  "apply_schemas": {
+    "complete": "hepta.source53-apply-complete.v1",
+    "delta": "hepta.source53-apply-delta.v1",
+    "postguard": "hepta.source53-apply-postguard.v1"
+  },
+  "baseline": {
+    "acceptance_only": true,
+    "bytes": 555309,
+    "count": 1345,
+    "exact_identity_set_required": true,
+    "git_blob": "73c89e9f100edae10b9e1dac6200fa25c17918a4",
+    "local_path": "/workspace/scratch/08f5efd48967/source53-app-server-baseline-preparation/BASELINE-IDS.json",
+    "missing_additional_duplicate_or_nonpass_reject": true,
+    "runtime_evidence_name": "source53-app-server-r29-baseline.json",
+    "sha256": "92e7ef41b0c2b08b81bb3ad9542f20ec820d86185f80369b4478cb5bd9c20cf1"
+  },
+  "behavior_repair_claimed": false,
+  "commands": [
+    [
+      "just",
+      "clippy",
+      "--locked",
+      "-p",
+      "codex-app-server",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    [
+      "just",
+      "test",
+      "--locked",
+      "--retries",
+      "0",
+      "-p",
+      "codex-app-server"
+    ]
+  ],
+  "diagnostic_only": true,
+  "expected_runtime_manifest_name": "native-candidate-r30-source.json",
+  "free_space_precondition_bytes": 21474836480,
+  "frozen": false,
+  "new_bazel_update_executed": false,
+  "original_parallelism": {
+    "cargo_jobs": 2,
+    "test_threads": 2
+  },
+  "outer_timeout_seconds_required_at_launch": 9600,
+  "output_schemas": {
+    "complete": "hepta.source53-project-gates-complete.v1",
+    "environment": "hepta.source53-project-environment.v1",
+    "preconditions": "hepta.source53-project-preconditions.v1",
+    "raw_process_result": "hepta.native-raw-process-result.v1",
+    "receipt": "hepta.native-gate-receipt.v2",
+    "test_readback": "hepta.source53-app-server-closed-readback.v1"
+  },
+  "planned_source_commit": "f74be175de66a4b351cd239d39d98cd34fe9cc1b",
+  "planned_source_tree": "440d4a8e09af4009e4d9ea067388826308da8803",
+  "prefix": "native-source53-project-r30",
+  "python_suite_reexecuted": false,
+  "schema": "hepta.source53-r30-inert-producer-contract.v1",
+  "source_count_contract": 197,
+  "successful_closed_original_count": 19,
+  "successful_closed_originals": [
+    "native-source53-project-r30-environment.json",
+    "native-source53-project-r30-preconditions.json",
+    "native-source53-project-r30-source-pre-verification.json",
+    "native-source53-project-r30-source-final-verification.json",
+    "native-source53-project-r30-complete.json",
+    "native-source53-project-r30-strict-source-pre-verification.json",
+    "native-source53-project-r30-strict.log",
+    "native-source53-project-r30-strict-resources.txt",
+    "native-source53-project-r30-strict-raw-process-result.json",
+    "native-source53-project-r30-strict-source-post-verification.json",
+    "native-source53-project-r30-strict-receipt.json",
+    "native-source53-project-r30-tests-source-pre-verification.json",
+    "native-source53-project-r30-tests.log",
+    "native-source53-project-r30-tests-resources.txt",
+    "native-source53-project-r30-tests-raw-process-result.json",
+    "native-source53-project-r30-tests-source-post-verification.json",
+    "native-source53-project-r30-tests-receipt.json",
+    "native-source53-project-r30-tests-test-results.json",
+    "native-source53-project-r30-tests-result-review.json"
+  ],
+  "template": {
+    "bytes": 60715,
+    "git_blob": "d8ea3f26442a040210e542d48103952609b4c5e1",
+    "path": "native-run-r30-template-v2.py",
+    "sha256": "a4bb18b0f2d2af63625e7ee6629df9f5a42f47c684bd8e4a72125b62b05d2c0b"
+  },
+  "terminal_and_file_pins": "Unknown until the single authorized run naturally closes.",
+  "unbound_literal_names": [
+    "APPLY_COMPLETE_BYTES",
+    "APPLY_COMPLETE_NAME",
+    "APPLY_COMPLETE_SHA256",
+    "APPLY_JOB_ID",
+    "APPLY_TERMINAL_BYTES",
+    "APPLY_TERMINAL_NAME",
+    "APPLY_TERMINAL_SHA256",
+    "DELTA_MANIFEST_BYTES",
+    "DELTA_MANIFEST_NAME",
+    "DELTA_MANIFEST_SHA256",
+    "EXPECTED_CHANGED_COUNT",
+    "EXPECTED_COMMIT",
+    "EXPECTED_TREE",
+    "SOURCE_MANIFEST_NAME",
+    "SOURCE_MANIFEST_SHA256"
+  ],
+  "working_directory": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs",
+  "workspace_or_finalizer_in_runner": false
+}

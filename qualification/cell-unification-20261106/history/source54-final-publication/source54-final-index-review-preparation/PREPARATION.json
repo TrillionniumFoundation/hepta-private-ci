@@ -1,0 +1,99 @@
+{
+  "schema": "hepta.source54-final-index-validator-preparation.v1",
+  "status": "PREPARATION_ONLY_NO_CANDIDATE_VALIDATION",
+  "script": {
+    "path": "validate_final_index.py",
+    "bytes": 22316,
+    "sha256": "b71e2e73ca47e03ecefc2564e850f4a1a9fc2d7b05bee1cc5b9e23bb126587c6",
+    "git_blob": "2d1c6b2693904eab0c549da34f84682caf796be1"
+  },
+  "readme": {
+    "path": "README.md",
+    "bytes": 6290,
+    "sha256": "d4083b7c672e0823bb6c51ed19bf0bf9c5016cf81bd9b0954d8c7982c9a47acf",
+    "git_blob": "99119ecd8c5f03b62c9da30cc0678e40ccc75776"
+  },
+  "frozen_inputs": {
+    "prior_index": {
+      "bytes": 1548794,
+      "sha256": "fe9d15906ac379e33e7d58e0bed4e385592cf79d4b8eaf6e76e2c90beb48dc61",
+      "git_blob": "be2dc30cf40e49a2758d8a57886243a757bc691e"
+    },
+    "prior_retained_gzip": {
+      "path": "qualification/cell-unification-20261106/native-evidence/history/source54-index/INDEX-v4.json.gz",
+      "bytes": 298273,
+      "sha256": "4680e55f204a00a0d096d735d9933548cf8ae54c55290afd502fd46d62486b23",
+      "git_blob": "cfb89b141b056b9e4ac4e3896fae7f8e83d5239f"
+    },
+    "checkpoint6": {
+      "path": "publication-recovery-prep/checkpoint6-actual-leaf-map.json",
+      "bytes": 735691,
+      "sha256": "5adec73ba544d2a4de453921c6abeed3632eaf51e0314816fabbaf2e41ab021d",
+      "git_blob": "fb6872c0a6bd28f0a62a645567de4ef472d7d25c"
+    },
+    "staged_overlay": {
+      "path": "r31-formal-root-preparation/COMBINED-STAGED-OVERLAY.json",
+      "bytes": 389725,
+      "sha256": "e68b08d354ec782ef9a142cde77f0840d1eb06101b5258a16ca72bfcd15e6c8d",
+      "git_blob": "3c1c2deb517689a0f090672b7565de17414cb77e"
+    },
+    "actual_source54_registration": {
+      "path": "source54-root-registration/ROOT-REGISTRATION-READBACK.json",
+      "bytes": 3786,
+      "sha256": "7b9642d8c6a50393dc4f6421b9d1499135efb4faaf3347a1550c678900ca32ac",
+      "git_blob": "c175b034528197f7256326ba7b158ce69a8f879d"
+    }
+  },
+  "basis_counts": {
+    "prior_raw_rows": 2109,
+    "prior_historical_bindings": 1673,
+    "prior_observed_rows": 436,
+    "prior_git_only_paths": 50,
+    "prior_unmaterialized_rows": 139,
+    "unmaterialized_overlap_raw": 89,
+    "unmaterialized_overlap_git_only": 50,
+    "checkpoint6_all_leaves": 2370,
+    "checkpoint6_native_evidence_leaves": 2160,
+    "staged_new_leaves": 1103
+  },
+  "local_basis_readback": {
+    "old_raw_available_rehashed": 816,
+    "old_raw_missing_preserved": 1293,
+    "old_git_only_available": 0,
+    "old_unmaterialized_available": 0,
+    "staged_raw_available_rehashed": 1103,
+    "old_readbacks_sha256": "a25f5147234b28fbbb490b7adb1f6f995ec14fbb6202e03c9a2a15fb6a8b6a24",
+    "staged_readbacks_sha256": "d0022d259c024d257a76f2eb3c30653fa68ccc70417a333c1e2b953d8020bef2",
+    "all_observed_raw_sha_and_git_matched_actual_maps": true
+  },
+  "static_checks": {
+    "ast_parse_pass": true,
+    "symbol_table_undefined_globals": [],
+    "imports": [
+      "import argparse",
+      "import gzip",
+      "import hashlib",
+      "import json",
+      "import os",
+      "from pathlib import Path, PurePosixPath",
+      "import re",
+      "import stat",
+      "import sys"
+    ],
+    "frozen_constants_equal_actual_input_pins": true,
+    "candidate_validator_not_imported_or_executed": true,
+    "no_future_candidate_or_map_synthesized": true
+  },
+  "current_registered_source": {
+    "commit": "b5209cfdf509e990f10922197b32540bf8c353a7",
+    "tree": "42c1dd4e1a751c690c2800dfc3868e771dc9c70b",
+    "parent": "f74be175de66a4b351cd239d39d98cd34fe9cc1b"
+  },
+  "qualification_source_kept_separate": {
+    "commit": "f74be175de66a4b351cd239d39d98cd34fe9cc1b",
+    "tree": "440d4a8e09af4009e4d9ea067388826308da8803"
+  },
+  "canonical_source_index_ledger_and_native_modified": false,
+  "Git_API_or_Rust_or_tests_or_metadata_executed": false,
+  "actual_candidate_validation_still_pending": true
+}

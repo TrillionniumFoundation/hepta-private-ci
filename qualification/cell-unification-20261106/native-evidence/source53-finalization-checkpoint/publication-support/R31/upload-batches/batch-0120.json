@@ -1,0 +1,77 @@
+{
+  "schema": "hepta.root-reviewed-actual-upload-batch.v1",
+  "plan": "r31-formal-root-preparation/ROOT-UPLOAD-PLAN.json",
+  "plan_sha256": "4d4dc1d9d811c57dc804bf5555f8aa19bfc5adc2f0efe728675d350f51d3cf5f",
+  "completed_paths": 120,
+  "total_paths": 329,
+  "staged": [
+    {
+      "repo_path": "qualification/cell-unification-20261106/native-evidence/r31-workspace-checkpoint/original/evidence/native-workspace-r31-tests-resources.txt",
+      "git_blob": "4e961ebb39cb48d1aef57e2db77cdf0fbe24ccb5",
+      "binary": false,
+      "reused": true,
+      "origin": "verified_actual_checkpoint6_overlay_ledger_or_prior_batch"
+    },
+    {
+      "repo_path": "qualification/cell-unification-20261106/native-evidence/r31-workspace-checkpoint/original/evidence/native-workspace-r31-tests-source-pre-verification.json",
+      "git_blob": "fa3b9dd96c693c690b97f346ddaeb79776b316e9",
+      "binary": false,
+      "reused": true,
+      "origin": "verified_actual_checkpoint6_overlay_ledger_or_prior_batch"
+    },
+    {
+      "repo_path": "qualification/cell-unification-20261106/native-evidence/r31-workspace-checkpoint/original/evidence/native-workspace-r31-tests.log.gz",
+      "git_blob": "1498baeb3760b27dec9eb045ecd61daa2ce7d826",
+      "binary": true,
+      "reused": false,
+      "actual_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "1498baeb3760b27dec9eb045ecd61daa2ce7d826"
+        },
+        "isError": false
+      }
+    },
+    {
+      "repo_path": "qualification/cell-unification-20261106/native-evidence/r31-workspace-checkpoint/original/failure-blocks/INDEX.json",
+      "git_blob": "d19adf2bfbb82a5d35e0387b975e0c0f0534d18b",
+      "binary": false,
+      "reused": true,
+      "origin": "verified_actual_checkpoint6_overlay_ledger_or_prior_batch"
+    },
+    {
+      "repo_path": "qualification/cell-unification-20261106/native-evidence/r31-workspace-checkpoint/original/guidance/AGENTS.md",
+      "git_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+      "binary": false,
+      "reused": true,
+      "origin": "verified_actual_checkpoint6_overlay_ledger_or_prior_batch"
+    },
+    {
+      "repo_path": "qualification/cell-unification-20261106/native-evidence/r31-workspace-checkpoint/original/input/ancestor-manifests/native-candidate-r24-source.json",
+      "git_blob": "2b6988709adfd80084a846688453ceafd3f4accf",
+      "binary": false,
+      "reused": true,
+      "origin": "verified_actual_checkpoint6_overlay_ledger_or_prior_batch"
+    },
+    {
+      "repo_path": "qualification/cell-unification-20261106/native-evidence/r31-workspace-checkpoint/original/input/ancestor-manifests/native-candidate-r26-source.json",
+      "git_blob": "09ad6990ac2eeec1eb7d21689eef7733a531f75b",
+      "binary": false,
+      "reused": true,
+      "origin": "verified_actual_checkpoint6_overlay_ledger_or_prior_batch"
+    },
+    {
+      "repo_path": "qualification/cell-unification-20261106/native-evidence/r31-workspace-checkpoint/original/input/ancestor-manifests/native-candidate-r28-source.json",
+      "git_blob": "f057b526bf2ba492d6bb5810222f69ac0cc3bdd2",
+      "binary": false,
+      "reused": true,
+      "origin": "verified_actual_checkpoint6_overlay_ledger_or_prior_batch"
+    }
+  ],
+  "errors": []
+}

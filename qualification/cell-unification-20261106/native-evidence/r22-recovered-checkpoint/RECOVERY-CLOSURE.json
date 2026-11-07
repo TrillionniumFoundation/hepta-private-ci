@@ -1,0 +1,60 @@
+{
+  "schema": "hepta.recovered-evidence-closure.v1",
+  "state": "NEW_RECOVERY_AUDITS_CLOSED",
+  "stage": 22,
+  "source_commit": "50dd4bedefcd1b8e2e8cd5cf5023c60a86d38d0a",
+  "source_tree": "be34ab1afe622ad3b8f030c8c5018f4f54fbc304",
+  "original_gate_state": "PASS",
+  "original_outer_exit": 0,
+  "counts": {
+    "unique_test_results": 30,
+    "passed": 30,
+    "failed": 0,
+    "timed_out": 0,
+    "reported_skipped": 0
+  },
+  "original_material_mapping": {
+    "path": "SOURCE-TO-DESTINATION.json",
+    "bytes": 17975,
+    "sha256": "e516e41ca7b8cd1f486d8122f6f936c77034b8323a040352e43c4156bac25454",
+    "git_blob": "9ffd9b031d86e06f6a6f9102bd5567c22c5d3ea8",
+    "count": 28
+  },
+  "independent_material_mapping": {
+    "path": "INDEPENDENT-SOURCE-TO-DESTINATION.json",
+    "bytes": 15473,
+    "sha256": "07eeea64e708b061d99f2c16b33430c7728415b0846025a4cbc08e34ff359fd2",
+    "git_blob": "63d927381b0550bf4d02b32a778f576ec9521ea9",
+    "count": 26
+  },
+  "log_semantics": {
+    "path": "RECOVERY-READBACK.json",
+    "bytes": 7435,
+    "sha256": "553b28197f2a117aab077160fc0635d2e2e4b8e6b46207281ba3aa121e69e9a1",
+    "git_blob": "8fa4a872fbede29cf832f377c850e09e1323ed53"
+  },
+  "independent_source_tree": {
+    "path": "independent-recovery/r22/INDEPENDENT-READBACK.json",
+    "bytes": 6688,
+    "sha256": "846e614826f26378f37f70044803bec581b118c8e9e5df71aa70b9a5716060b5",
+    "git_blob": "c4bc632fc092e61350975abac011c0e809db07f8"
+  },
+  "independent_pending_snapshot_superseded": true,
+  "pending_snapshot_field": "RECOVERY-READBACK.json.independent_recovered_tree_review",
+  "all_archive_evidence_input_index_preserved": true,
+  "source_only_in_archive": true,
+  "source_counts_are_regular_files": true,
+  "source_directory_count_not_used_as_source_file_count": true,
+  "source47_original_fixture_comparison_not_redone": true,
+  "full_original_sources_in_archive": 188,
+  "archive_members": 215,
+  "old_lost_formal_artifacts_recreated": false,
+  "old_pins_only_historical": true,
+  "rust_or_formatter_rerun": false,
+  "active_future_logs_read": false,
+  "original_evidence_modified": false,
+  "actual_old_gate_not_rerun_or_requalified": true,
+  "scope_and_scientific_dispositions_unchanged": true,
+  "note": "Both readers are new post-recovery audits. Historical pending fields and stale native export-v1 fields remain unchanged in their original snapshots.",
+  "closure_gaps": []
+}

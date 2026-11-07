@@ -1,0 +1,41 @@
+{
+  "schema": "hepta.r30-export-inert-static-build.v1",
+  "template": {
+    "bytes": 44373,
+    "sha256": "45e64afcdffd597de793c12158f90f605bb2274667b2774ad39d431a4af3700a",
+    "git_blob": "e5b3b0ece9973e315b91da61b02d9de9a16a51aa"
+  },
+  "reference_exporter": {
+    "path": "r28-export-preparation/export-r28-closed-template-v2.py",
+    "bytes": 33598,
+    "sha256": "4568d25b1d122e209ce59d9f1a4015e65ca77246f23b2ece4f86b07a6398d4d8",
+    "git_blob": "8f2ed4a147bf1b7c69bb69e882fff616725988af"
+  },
+  "producer": {
+    "path": "source53-native-gates-preparation/native-run-r30-template-v2.py",
+    "bytes": 60715,
+    "sha256": "a4bb18b0f2d2af63625e7ee6629df9f5a42f47c684bd8e4a72125b62b05d2c0b",
+    "git_blob": "d8ea3f26442a040210e542d48103952609b4c5e1"
+  },
+  "shared_export_helpers_exact": [
+    "require",
+    "sha",
+    "data_pin",
+    "safe_relative",
+    "check_pin",
+    "stable_read",
+    "git",
+    "natural_terminal"
+  ],
+  "producer_parsers_exact": [
+    "clean_lines",
+    "review_tests"
+  ],
+  "ast_parse": "PASS",
+  "inert": true,
+  "unknown_maps": 3,
+  "success_original_count": 19,
+  "failure_uses_actual_existing_set": true,
+  "runner_imported_or_executed": false,
+  "native_access": false
+}

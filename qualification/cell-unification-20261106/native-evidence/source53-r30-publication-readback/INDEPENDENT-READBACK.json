@@ -1,0 +1,96 @@
+{
+  "schema": "hepta.source53-r30-publication-independent-readback.v1",
+  "classification": "PUBLICATION_OBJECT_CUSTODY_ONLY_NOT_AN_ENGINEERING_GATE",
+  "source_commit": "f74be175de66a4b351cd239d39d98cd34fe9cc1b",
+  "source_tree": "440d4a8e09af4009e4d9ea067388826308da8803",
+  "groups": [
+    {
+      "name": "source53-apply-publication",
+      "paths": 238,
+      "raw_bytes": 3416116,
+      "batches": 30,
+      "actual_create_responses": 169,
+      "known_object_reuses": 69,
+      "binary_paths_before": 222,
+      "binary_paths_after": 224,
+      "added_binary_paths": {
+        "qualification/cell-unification-20261106/native-evidence/source53-diagnostic-apply-checkpoint/apply-preparation/derived/source53-apply-input.tar.gz": "3e0f823bcd8986fb6b97a5b032b8042405fa221e",
+        "qualification/cell-unification-20261106/native-evidence/source53-diagnostic-apply-checkpoint/apply-preparation/references/native-workspace-r29-metadata.json.gz": "7674123efb977318cf455db1ce86de6f101b2e29"
+      },
+      "combined_overlay_paths": 481,
+      "all_original_attachment_raw_sha256_git_blob_mode_and_byte_counts_match": true,
+      "all_actual_responses_and_recorded_reuse_objects_match": true
+    },
+    {
+      "name": "r30-project-publication",
+      "paths": 213,
+      "raw_bytes": 4427017,
+      "batches": 27,
+      "actual_create_responses": 126,
+      "known_object_reuses": 87,
+      "binary_paths_before": 225,
+      "binary_paths_after": 235,
+      "added_binary_paths": {
+        "qualification/cell-unification-20261106/native-evidence/r30-project-checkpoint/original/evidence/native-source53-project-r30-closed-test-results.json.gz": "3442e5e96f69605dc186ae137caba82e2fd86fcf",
+        "qualification/cell-unification-20261106/native-evidence/r30-project-checkpoint/original/evidence/native-source53-project-r30-tests-test-results.json.gz": "3442e5e96f69605dc186ae137caba82e2fd86fcf",
+        "qualification/cell-unification-20261106/native-evidence/r30-project-checkpoint/original/evidence/native-source53-project-r30-tests.log.gz": "0cda8a888ff996a7582e3346f283d9b1b5d3f062",
+        "qualification/cell-unification-20261106/native-evidence/r30-project-checkpoint/original/input/baseline/source53-app-server-r29-baseline.json.gz": "09bdcba6590df478a6252784419fb6f6efda4924",
+        "qualification/cell-unification-20261106/native-evidence/r30-project-checkpoint/original/input/source53-apply-input.tar.gz": "3e0f823bcd8986fb6b97a5b032b8042405fa221e",
+        "qualification/cell-unification-20261106/native-evidence/r30-project-checkpoint/original/locks/MODULE.bazel.lock.gz": "4483319a2c435ed72c203ad462a7ad47a0205fb4",
+        "qualification/cell-unification-20261106/native-evidence/r30-project-checkpoint/original/locks/codex-rs/Cargo.lock.gz": "4be162f8e6d725fe1dd26c5304f8085e3c27586c",
+        "qualification/cell-unification-20261106/native-evidence/r30-project-checkpoint/preparation/export/r28-v2-to-r30.patch.gz": "109d0ad736bf303e4b8be6ddc737ee998520b4ae",
+        "qualification/cell-unification-20261106/native-evidence/r30-project-checkpoint/preparation/export/superseded-local-draft-v1/r28-v2-to-r30.patch.gz": "a78242ff790924e265583aefd72c380a18f806ff",
+        "qualification/cell-unification-20261106/native-evidence/r30-project-checkpoint/reviews/differentiation/closed-readback-v1/EXECUTED-ROWS.json.gz": "3442e5e96f69605dc186ae137caba82e2fd86fcf"
+      },
+      "combined_overlay_paths": 694,
+      "all_original_attachment_raw_sha256_git_blob_mode_and_byte_counts_match": true,
+      "all_actual_responses_and_recorded_reuse_objects_match": true
+    }
+  ],
+  "source53_registration_count": 53,
+  "fixed_binary_registration_sequence": [
+    222,
+    224,
+    225,
+    235
+  ],
+  "artifact_checkpoint_count_unchanged": 6,
+  "archive_actual_Git_response_matches_local_full_bytes": {
+    "bytes": 1761785,
+    "sha256": "14abba7cfb44b96d6a13c926335a38eb8be55c786a865c3887b3908b48f2ddce",
+    "git_blob": "7bcac57e66f262e36a159e6530d7c178ccac51f7"
+  },
+  "archive_payload_already_preserved_at": "../r30-project-checkpoint/archive/checkpoint-r30-closed.tar.gz",
+  "old_source_commits_other_ledger_fields_and_existing_binary_entries_unchanged": true,
+  "known_reuse_inputs": [
+    {
+      "path": "publication-recovery-prep/checkpoint6-actual-leaf-map.json",
+      "bytes": 735691,
+      "sha256": "5adec73ba544d2a4de453921c6abeed3632eaf51e0314816fabbaf2e41ab021d",
+      "git_blob": "fb6872c0a6bd28f0a62a645567de4ef472d7d25c"
+    },
+    {
+      "path": "r29-publication-root-preparation/COMBINED-STAGED-OVERLAY.json",
+      "bytes": 82315,
+      "sha256": "7de63c5145ac3db3093e5d1323ddeb6a198fdf933d332adca2d1dc42ae5dec45",
+      "git_blob": "36165fbc1e2b321403d523b6018393e17df58486"
+    }
+  ],
+  "same_bytes_duplicate_ledger_snapshots_preserved_separately": true,
+  "new_Git_API_requests_made": false,
+  "remote_blobs_directly_re_read_this_time": false,
+  "new_artifact_checkpoint_branch_or_PR_created": false,
+  "R30_counts_are_existing_original_gate_not_upload_result": {
+    "PASS": 1345,
+    "FAIL": 0,
+    "TIMEOUT": 0,
+    "reported_skipped": 2
+  },
+  "R31_results_not_in_this_group": true,
+  "R31_result": null,
+  "diagnostic_only": true,
+  "behavior_repair_claimed": false,
+  "science": "HOLD",
+  "authority": "DENY_ALL",
+  "native_execution": false
+}

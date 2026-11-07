@@ -1,0 +1,220 @@
+{
+  "schema": "hepta.workspace-default-nextest-scope-audit.v1",
+  "state": "COMPLETE_STATIC_AND_NATIVE_RUNNER_SCOPE_AUDIT_FULL_SUITE_RESULT_PENDING",
+  "authority": "read-only source/configuration review; no Rust builds or tests started by this reviewer",
+  "source_commit": "bef6fa7645df9df12b69fda499e97eed25de6c75",
+  "sources": [
+    {
+      "path": "scripts/run-nextest.py",
+      "blob": "1ed63abe84267b320cbfb0123a70aac5507f4595",
+      "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127",
+      "bytes": 10206
+    },
+    {
+      "path": "codex-rs/.config/nextest.toml",
+      "blob": "bad30f934f89b22c48d972c28d4b493fc10299bd",
+      "sha256": "351cdfe17480eae1124145e32a0de6de2889a38f01b14036187bc42e2553fdde",
+      "bytes": 5786
+    },
+    {
+      "path": "justfile",
+      "blob": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124",
+      "bytes": 7838
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "blob": "7e2ec509988e11cdf92130e385ffdf409bbcc15d",
+      "sha256": "de54aafbd8e041cdaec30705fb6c286bd308f2a03de1c598a778f20feaade34b",
+      "bytes": 23125
+    },
+    {
+      "path": "codex-rs/.cargo/config.toml",
+      "blob": "8a6f2c11ee7afbb11f7033ef3390fb1c57b4cd44",
+      "sha256": "b8ae1cea341beb2d4a3c8fb81f97a96f4aee1fd53f769c57f140dfe949806a80",
+      "bytes": 634
+    },
+    {
+      "path": "scripts/just-shell.py",
+      "blob": "bb2db6ebc4312a301ee39d2793fde16289d046d8",
+      "sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9",
+      "bytes": 2030
+    }
+  ],
+  "requested_command": [
+    "just",
+    "test",
+    "--locked",
+    "--retries",
+    "0"
+  ],
+  "recipe": {
+    "path": "justfile",
+    "working_directory": "codex-rs",
+    "unix_shell_adapter": "scripts/just-shell.py -> sh -cu with positional arguments preserved",
+    "explicit_environment": {
+      "NEXTEST_PROFILE": "local",
+      "RUST_MIN_STACK": "8388608"
+    },
+    "runner": "scripts/run-nextest.py"
+  },
+  "effective_nextest_command": [
+    "cargo",
+    "nextest",
+    "run",
+    "--no-fail-fast",
+    "--locked",
+    "--retries",
+    "0"
+  ],
+  "metadata_strategy": "normal nextest full metadata path: no package selector means use_scoped_metadata returns false",
+  "selection": {
+    "virtual_workspace": true,
+    "default_members_override": null,
+    "workspace_scope": "all Cargo-resolved workspace members by virtual-workspace default, not merely literal members array length",
+    "explicit_manifest_members_count_not_resolved_count": 187,
+    "manifest_excluded_paths": [
+      "third_party/i18n-config-0.4.8",
+      "third_party/secret-service-6.0.0",
+      "third_party/zbus-secret-service-keyring-store-1.0.1"
+    ],
+    "explicit_package_selectors": [],
+    "explicit_filtersets": [],
+    "explicit_skip_filters": [],
+    "explicit_partitions": [],
+    "repository_default_filter_present": false,
+    "repository_platform_default_filters_present": false,
+    "profile": "local",
+    "inherits_default": true,
+    "local_override": "codex-app-server integration tests use group max-threads=4; default group max-threads=1",
+    "run_ignored_override": null,
+    "ignored_test_selection": "default: non-ignored discovered tests only",
+    "feature_selection": "Cargo default feature selection and normal unification; no --all-features or feature matrix requested",
+    "target_selection": "No --target; reported task nextest binary/host x86_64-unknown-linux-gnu, inherited CARGO_BUILD_TARGET unset; actual Cargo target artifacts remain bound by final native receipts.",
+    "doctests_included": false,
+    "bench_bazel_python_or_other_recipes_automatically_included": false
+  },
+  "execution_policy": {
+    "no_fail_fast": true,
+    "cli_retries": 0,
+    "repository_default_retries": 1,
+    "repository_default_slow_timeout": {
+      "period": "30s",
+      "terminate-after": 2
+    },
+    "existing_per_test_timeouts_groups_and_overrides_preserved": true,
+    "effective_global_test_threads": 2,
+    "local_app_server_group_cap": 4,
+    "actual_app_server_parallel_limit_note": "The group cap of 4 remains subject to the task global nextest pool of 2."
+  },
+  "result_interpretation": [
+    "Do not add stage test totals: later suites overlap earlier runs.",
+    "Report the full command, source tree, profile, target, passed/failed/skipped totals and original ignored identities from actual terminal evidence.",
+    "An ignored subprocess helper may be invoked by its non-ignored parent test; retain the original skip count and require the parent PASS/invocation evidence, without counting the child twice.",
+    "Tests compiled out by cfg or required features are absent from the discovered test list, not necessarily present in the skipped count.",
+    "A test function that returns early because a platform/service/permission prerequisite is unavailable can be reported as PASS by libtest; that alone does not qualify the omitted behavior.",
+    "The default workspace run does not prove all feature combinations, all operating systems, external live services, production GUI/media/model behavior or seven-role efficacy."
+  ],
+  "existing_helper_example": {
+    "path": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
+    "ignored_test": "owner_host::tests::owner_host_process_fault_worker",
+    "reason": "worker is invoked only by owner_host_process_kill_reopen_matrix",
+    "parent": "owner_host::tests::owner_host_process_kill_reopen_matrix",
+    "explicit_child_arguments": [
+      "--ignored",
+      "--exact"
+    ],
+    "existing_evidence": "../hepta-cell/qualification/cell-unification-20261106/native-evidence/combined/ignored-worker-evidence.txt",
+    "previous_stage_tree": "e634d4d2f7ce4a9bc78d3d1756e3242c5d3eb211",
+    "does_not_assert_new_full_run_result": true
+  },
+  "limited_platform_service_examples_pending": false,
+  "native_confirmation_pending": {
+    "full_suite_actual_test_list_and_skips": true,
+    "terminal_full_suite_receipt": true
+  },
+  "environment_collection_limit": "Only explicit runner and package/target selection noncredential keys requested; no complete environment or service credential values collected.",
+  "primary_semantics_sources": [
+    {
+      "url": "https://doc.rust-lang.org/cargo/reference/workspaces.html",
+      "claim": "Virtual workspace without default-members selects all members; in-workspace path dependencies can be members."
+    },
+    {
+      "url": "https://nexte.st/docs/selecting/",
+      "claim": "Default nextest execution runs all discovered non-ignored tests unless selection/default filters narrow it."
+    },
+    {
+      "url": "https://nexte.st/docs/running/",
+      "claim": "Ignored tests require explicit run-ignored; retries and no-fail-fast are runner policies; current nextest does not run doctests."
+    }
+  ],
+  "native_runner_confirmation": {
+    "basis": "native_validation independently reported SHA256/blob matches against bef in isolated full checkout; task-scoped nextest receipt independently read locally",
+    "raw_sha256_matched_paths": [
+      "justfile",
+      "scripts/run-nextest.py",
+      "codex-rs/.config/nextest.toml",
+      "codex-rs/Cargo.toml",
+      "codex-rs/.cargo/config.toml",
+      "scripts/just-shell.py"
+    ],
+    "shell_adapter_native_hash_pending": false,
+    "nextest": {
+      "version": "0.9.103",
+      "release_commit_prefix": "d2e7b879f",
+      "artifact_receipt": "../native-validation-results/checkpoint-nine/evidence/nextest-tool.json",
+      "artifact_sha256": "b6b5daad02ddef2d0e1f1114c4cd708f2960fd421a415693f995cef3bef90036",
+      "target": "x86_64-unknown-linux-gnu"
+    },
+    "reported_inherited_unset": [
+      "NEXTEST_PROFILE",
+      "RUST_MIN_STACK",
+      "NEXTEST_TEST_THREADS",
+      "NEXTEST_USER_CONFIG_FILE",
+      "HEPTA_NEXTTEST_FULL_METADATA",
+      "NEXTEST_DEFAULT_FILTER",
+      "NEXTEST_FILTER",
+      "CARGO_PROFILE",
+      "CARGO_BUILD_TARGET"
+    ],
+    "task_overrides": {
+      "NEXTEST_TEST_THREADS": "2"
+    },
+    "recipe_overrides": {
+      "NEXTEST_PROFILE": "local",
+      "RUST_MIN_STACK": "8388608"
+    },
+    "credentials_or_complete_environment_collected": false,
+    "all_six_runner_and_manifest_files_unchanged_from_bef": true
+  },
+  "limited_platform_service_examples": [
+    {
+      "path": "codex-rs/ollama/src/lib.rs",
+      "commit": "bef6fa7645df9df12b69fda499e97eed25de6c75",
+      "git_blob_sha1": "8b8fb4af441ade8d4698e182fbd41437879fbc65",
+      "sha256": "89d502416fcbd7039dadfd3cfeda8fde4ae0e2202b39b72a2890781bf7b4cd4d",
+      "test": "tests::version_check_reuses_existing_ollama_client",
+      "runtime_guard": "An existing CODEX_SANDBOX_NETWORK_DISABLED_ENV_VAR presence check logs and returns before exercising the body.",
+      "normal_execution": "Uses wiremock::MockServer for /api/tags and /api/version; it does not launch a real Ollama model server.",
+      "interpretation": "A PASS can be an early return; even full normal execution here qualifies a mocked protocol interaction rather than a live external model deployment.",
+      "actual_guard_environment_not_collected_or_modified": true
+    },
+    {
+      "path": "codex-rs/.config/nextest.toml",
+      "windows_overrides": "cfg(windows) overrides apply only on that platform; their presence does not turn this Linux invocation into Windows testing.",
+      "opt_in_notes_timeout_comment": "The preexisting Notes actual-app override only changes resource/timeout policy. Its comment alone does not prove the named live-app case is discovered, selected, or executed.",
+      "no_assertion_of_live_notes_qualification": true
+    }
+  ],
+  "reviewer_actions": {
+    "source_bytes_fetched_and_git_blob_verified": true,
+    "toml_parsed_without_executing_runner": true,
+    "nextest_release_receipt_read": true,
+    "rust_commands_started": 0,
+    "test_runs_started": 0,
+    "environment_changes": 0,
+    "runner_source_or_configuration_mutations": 0,
+    "scope": "Only this runner-scope audit; separately authorized Supervisor test import repair is documented in supervisor-restart-audit."
+  },
+  "no_runner_filters_environment_or_runner_source_modified": true
+}

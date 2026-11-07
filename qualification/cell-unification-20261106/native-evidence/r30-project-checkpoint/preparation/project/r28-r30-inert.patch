@@ -1,0 +1,732 @@
+--- source52-r28-reviewed-template.py
++++ native-run-r30-template.py
+@@ -1,11 +1,14 @@
+-"""INERT source52 r28 gates. Bind the separately applied one-leaf source first.
+-
+-The historical source50 lock command retains its original source identity.
+-Inheritance requires an exact three-file Rust-only tree delta from source50,
+-an exact one-leaf delta from source51, preservation of all 194 prior changed
+-entries, unchanged dependency inputs, and both original raw locks. Original
+-r24 and r26 failures remain evidence. This runner never applies or stages
+-patches, runs Bazel, fixes or formats code, or starts the workspace gate.
++"""INERT source53 r30 complete app-server diagnostic-source gates.
++
++The separately applied source53 must preserve all195 source52 entries and add
++only two pre-existing Bedrock Rust leaves. The actual source50 lock execution
++retains its historical source identity; inheritance requires an exact five-file
++non-build Rust delta, unchanged dependency inputs, and both original raw locks.
++Original r24/r26/r29 failures remain evidence. This runner performs only the
++original app-server strict command and full app-server test command. It never
++applies/stages source, runs Bazel/Python tests, changes budgets, retries a gate,
++starts the workspace gate, or performs fix/fmt. A diagnostic-source gate PASS
++does not demonstrate a behavior repair or relabel the original r29 failure.
+ """
+ from pathlib import Path, PurePosixPath
+ import hashlib
+@@ -30,30 +33,25 @@
+ LOCK_TERMINAL_SHA256 = '9f983f56f14016b31725f9bb75dc8b4c8772a3e69581b7387afa5fdaaddfeda0'
+ LOCK_TERMINAL_BYTES = 729
+ LOCK_JOB_ID = '1a1b16cb87c-fc05-7898'
+-BASELINE_NAME = 'source50-four-package-r23-baseline.json'
++BASELINE_NAME = "source53-app-server-r29-baseline.json"
+ 
+ T = Path("/home/alex/work/hepta-cell-unified-20261106-a")
+ S = T / "source"
+ E = T / "evidence"
+ LOCK_DIRECTORY = E / "native-source50-lock-update"
+ FRAMEWORK_PARENT = "bef6fa7645df9df12b69fda499e97eed25de6c75"
+-PREFIX = "native-source52-project-r28"
+-PACKAGES = [
+-    "codex-cli", "codex-exec-server", "codex-network-proxy",
+-    "codex-external-agent-migration",
+-]
++PREFIX = "native-source53-project-r30"
++PACKAGES = ["codex-app-server"]
+ LOCK_FILES = ("codex-rs/Cargo.lock", "MODULE.bazel.lock")
+ LOCK_EVIDENCE_FILES = (
+     "complete.json", "postguard.json", "generated-source.json",
+     "lock-update-raw-process-result.json", "lock-update-receipt.json",
+     "lock-update.log", "lock-update.resources.txt",
+ )
+-BASELINE_SHA256 = "6feba9a285f77f16fc1d34710d2737eae78a4ba3be74affd40f5703bc8ce405e"
+-BASELINE_BYTES = 277789
+-BASELINE_COUNT = 1564
+-PREVIOUS_SOURCE49_COMMIT = "50dd4bedefcd1b8e2e8cd5cf5023c60a86d38d0a"
+-PREVIOUS_SOURCE49_TREE = "be34ab1afe622ad3b8f030c8c5018f4f54fbc304"
+-# All future apply/source52 identities remain explicitly unbound.
++BASELINE_SHA256 = "92e7ef41b0c2b08b81bb3ad9542f20ec820d86185f80369b4478cb5bd9c20cf1"
++BASELINE_BYTES = 555309
++BASELINE_COUNT = 1345
++# All future apply/source53 identities remain explicitly unbound.
+ APPLY_COMPLETE_NAME = None
+ APPLY_COMPLETE_SHA256 = None
+ APPLY_COMPLETE_BYTES = None
+@@ -98,7 +96,36 @@
+ SOURCE51_MANIFEST_BYTES = 55418
+ SOURCE51_MANIFEST_SHA256 = "74b7a35a77019ec90e42ec33dc0e81bbdbaca585541a028d57fffbe77c69a41a"
+ ALLOWED_SOURCE52_DELTA = ("codex-rs/network-proxy/src/runtime.rs",)
+-LOCK_INHERITANCE_RUST_PATHS = ALLOWED_SOURCE51_DELTA + ALLOWED_SOURCE52_DELTA
++
++HISTORICAL_FOUR_PACKAGES = ["codex-cli", "codex-exec-server", "codex-network-proxy", "codex-external-agent-migration"]
++DIAGNOSTIC_ONLY = True
++SOURCE52_COMMIT = "1e0910becc37383e6d17ecf861ea844fd07d8862"
++SOURCE52_TREE = "211f15baff19095e8c98bcea2b0ed99ca2270ade"
++SOURCE52_CHANGED_COUNT = 195
++SOURCE52_MANIFEST_NAME = "native-candidate-r28-source.json"
++SOURCE52_MANIFEST_BYTES = 55209
++SOURCE52_MANIFEST_SHA256 = "3ff99b41bab572666b424fdbf9a508b33be13e6487d9effa7dd6a0e14b4ec898"
++ALLOWED_SOURCE53_DELTA = (
++    "codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs",
++    "codex-rs/app-server/tests/suite/v2/bedrock_setup.rs",
++)
++R29_JOB_ID = "1a1b1f83e4b-fc05-7bcd"
++R29_FAILURE_PINS = {
++    "native-workspace-r29-terminal-process-status.json": {
++        "bytes": 730, "sha256": "9577b5c1f87e1f529edffcb262683067d0379dc4a9b16c84a2a43c68388374bf",
++    },
++    "native-workspace-r29-tests-raw-process-result.json": {
++        "bytes": 500, "sha256": "c840e6ff388a9863aee1dce8b0bc148446ee6541025a7c7ba8b4ec96196d43c8",
++    },
++    "native-workspace-r29-tests-receipt.json": {
++        "bytes": 2782, "sha256": "9ca2e64a0ff00b86840d76c2003caf7608965719e481a541235e43d462bd574a",
++    },
++    "native-workspace-r29-source-post-test-verification.json": {
++        "bytes": 643, "sha256": "e116303f0a7fac5b3d9f79ca3471331c9be7640120b124585ce2a61c70623703",
++    },
++}
++
++LOCK_INHERITANCE_RUST_PATHS = ALLOWED_SOURCE51_DELTA + ALLOWED_SOURCE52_DELTA + ALLOWED_SOURCE53_DELTA
+ R26_JOB_ID = "1a1b1b739ee-fc05-7a70"
+ R26_FAILURE_PINS = {
+     "native-source51-project-r26-terminal-process-status.json": {
+@@ -115,7 +142,7 @@
+     },
+ }
+ 
+-PYTHON_TEST_COUNT = 32
++
+ MIN_FREE_BYTES = 20 * 1024**3
+ ANSI = re.compile(rb"\x1b\[[0-?]*[ -/]*[@-~]")
+ FILE_KEYS = ("path", "bytes", "sha256", "git_blob", "mode")
+@@ -154,30 +181,38 @@
+     require(FROZEN is True, "INERT PREPARATION: no gate may execute")
+     require(sys.flags.optimize == 0, "optimized Python is not an approved executor")
+     require(os.environ.get("PYTHONOPTIMIZE") in (None, "", "0"), "optimized child Python is not approved")
+-    require(hex_digest(EXPECTED_COMMIT, 40) and hex_digest(EXPECTED_TREE, 40), "actual source52 identity missing")
+-    require(EXPECTED_COMMIT not in (LOCK_SOURCE50_COMMIT, SOURCE51_COMMIT) and EXPECTED_TREE not in (LOCK_SOURCE50_TREE, SOURCE51_TREE), "new source52 identity was not bound")
+-    require(type(EXPECTED_CHANGED_COUNT) is int and EXPECTED_CHANGED_COUNT == 195, "actual source52 changed count must be 195")
++    require(hex_digest(EXPECTED_COMMIT, 40) and hex_digest(EXPECTED_TREE, 40), "actual source53 identity missing")
++    require(EXPECTED_COMMIT not in (LOCK_SOURCE50_COMMIT, SOURCE51_COMMIT, SOURCE52_COMMIT)
++            and EXPECTED_TREE not in (LOCK_SOURCE50_TREE, SOURCE51_TREE, SOURCE52_TREE),
++            "new source53 identity was not bound")
++    require(type(EXPECTED_CHANGED_COUNT) is int and EXPECTED_CHANGED_COUNT == 197,
++            "actual source53 changed count must be 197")
+     for value in (
+         SOURCE_MANIFEST_SHA256, CARGO_LOCK_SHA256, BAZEL_LOCK_SHA256,
+         LOCK_TERMINAL_SHA256, APPLY_COMPLETE_SHA256, APPLY_TERMINAL_SHA256,
+-        DELTA_MANIFEST_SHA256,
++        DELTA_MANIFEST_SHA256, BASELINE_SHA256,
+     ):
+-        require(hex_digest(value, 64), "actual source/dual-lock/apply/terminal hash missing")
++        require(hex_digest(value, 64), "actual source/dual-lock/apply/terminal/baseline hash missing")
+     for name in (
+         SOURCE_MANIFEST_NAME, LOCK_TERMINAL_NAME, BASELINE_NAME,
+         APPLY_COMPLETE_NAME, APPLY_TERMINAL_NAME, DELTA_MANIFEST_NAME,
+     ):
+         safe_relative(name)
+         require(not name.startswith(PREFIX + "-"), "input name collides with create-only output prefix")
+-    for value in (LOCK_TERMINAL_BYTES, APPLY_COMPLETE_BYTES, APPLY_TERMINAL_BYTES, DELTA_MANIFEST_BYTES):
++    for value in (LOCK_TERMINAL_BYTES, APPLY_COMPLETE_BYTES, APPLY_TERMINAL_BYTES,
++                  DELTA_MANIFEST_BYTES, BASELINE_BYTES):
+         require(type(value) is int and value > 0, "actual closure byte count missing")
+     for value in (LOCK_JOB_ID, APPLY_JOB_ID):
+         require(isinstance(value, str) and bool(value), "actual closed job ID missing")
+-    require(APPLY_JOB_ID not in (LOCK_JOB_ID, R24_JOB_ID, R26_JOB_ID), "apply job identity reused")
+-    require(isinstance(LOCK_INPUT_PINS, dict) and set(LOCK_INPUT_PINS) == set(LOCK_EVIDENCE_FILES), "seven source50 lock input pins required")
++    require(APPLY_JOB_ID not in (LOCK_JOB_ID, R24_JOB_ID, R26_JOB_ID, R29_JOB_ID),
++            "apply job identity reused")
++    require(isinstance(LOCK_INPUT_PINS, dict) and set(LOCK_INPUT_PINS) == set(LOCK_EVIDENCE_FILES),
++            "seven source50 lock input pins required")
+     for name, expected in LOCK_INPUT_PINS.items():
+         require(type(expected["bytes"]) is int and expected["bytes"] >= 0, "lock input size missing: " + name)
+         require(hex_digest(expected["sha256"], 64), "lock input hash missing: " + name)
++    require(PACKAGES == ["codex-app-server"] and DIAGNOSTIC_ONLY is True,
++            "this prepared runner is only the complete app-server diagnostic source gate")
+ 
+ 
+ def write_json(name, value):
+@@ -324,38 +359,70 @@
+ 
+ def load_source(generated):
+     old_raw = (E / SOURCE50_MANIFEST_NAME).read_bytes()
+-    require(len(old_raw) == SOURCE50_MANIFEST_BYTES and sha(old_raw) == SOURCE50_MANIFEST_SHA256, "historical source50 root manifest mismatch")
++    require(len(old_raw) == SOURCE50_MANIFEST_BYTES and sha(old_raw) == SOURCE50_MANIFEST_SHA256,
++            "historical source50 root manifest mismatch")
+     old = json.loads(old_raw)
+-    require(old["source_tree"] == LOCK_SOURCE50_TREE and old["source_commit"] == LOCK_SOURCE50_COMMIT, "historical source50 root identity mismatch")
+-    require(old["cargo_lock_sha256"] == CARGO_LOCK_SHA256 and old["bazel_lock_sha256"] == BAZEL_LOCK_SHA256, "source50 dual-lock mismatch")
++    require(old["source_tree"] == LOCK_SOURCE50_TREE and old["source_commit"] == LOCK_SOURCE50_COMMIT,
++            "historical source50 root identity mismatch")
++    require(old["cargo_lock_sha256"] == CARGO_LOCK_SHA256 and old["bazel_lock_sha256"] == BAZEL_LOCK_SHA256,
++            "source50 dual-lock mismatch")
+     old_files = normalized_files(old["changed_files"])
+     require(len(old_files) == LOCK_SOURCE50_CHANGED_COUNT, "historical source50 count mismatch")
+-    require(old_files == normalized_files(generated["changed_files"]), "source50 root manifest differs from original lock-generated source")
++    require(old_files == normalized_files(generated["changed_files"]),
++            "source50 root manifest differs from original lock-generated source")
+ 
+     prior_raw = (E / SOURCE51_MANIFEST_NAME).read_bytes()
+-    require(len(prior_raw) == SOURCE51_MANIFEST_BYTES and sha(prior_raw) == SOURCE51_MANIFEST_SHA256, "source51 parent manifest mismatch")
++    require(len(prior_raw) == SOURCE51_MANIFEST_BYTES and sha(prior_raw) == SOURCE51_MANIFEST_SHA256,
++            "source51 historical manifest mismatch")
+     prior = json.loads(prior_raw)
+-    require(prior["source_commit"] == SOURCE51_COMMIT and prior["source_tree"] == SOURCE51_TREE, "source51 parent identity mismatch")
++    require(prior["source_commit"] == SOURCE51_COMMIT and prior["source_tree"] == SOURCE51_TREE,
++            "source51 historical identity mismatch")
+     require(prior["source_parent_commit"] == LOCK_SOURCE50_COMMIT, "source51 historical parent mismatch")
+-    require(prior["cargo_lock_sha256"] == CARGO_LOCK_SHA256 and prior["bazel_lock_sha256"] == BAZEL_LOCK_SHA256, "source51 parent dual-lock mismatch")
++    require(prior["cargo_lock_sha256"] == CARGO_LOCK_SHA256 and prior["bazel_lock_sha256"] == BAZEL_LOCK_SHA256,
++            "source51 historical dual-lock mismatch")
+     prior_files = normalized_files(prior["changed_files"])
+-    require(len(prior_files) == SOURCE51_CHANGED_COUNT and set(prior_files) == set(old_files), "source50/source51 changed path set mismatch")
+-    require({path for path in prior_files if prior_files[path] != old_files[path]} == set(ALLOWED_SOURCE51_DELTA), "source50/source51 manifest delta mismatch")
+-    require(not (set(ALLOWED_SOURCE52_DELTA) & set(prior_files)), "new changed leaf was already in prior manifest")
++    require(len(prior_files) == SOURCE51_CHANGED_COUNT and set(prior_files) == set(old_files),
++            "source50/source51 changed path set mismatch")
++    require({path for path in prior_files if prior_files[path] != old_files[path]} == set(ALLOWED_SOURCE51_DELTA),
++            "source50/source51 manifest delta mismatch")
++    require(not (set(ALLOWED_SOURCE52_DELTA) & set(prior_files)), "runtime was already in source51 changed manifest")
++
++    parent_raw = (E / SOURCE52_MANIFEST_NAME).read_bytes()
++    require(len(parent_raw) == SOURCE52_MANIFEST_BYTES and sha(parent_raw) == SOURCE52_MANIFEST_SHA256,
++            "source52 parent manifest mismatch")
++    parent = json.loads(parent_raw)
++    require(parent["source_commit"] == SOURCE52_COMMIT and parent["source_tree"] == SOURCE52_TREE
++            and parent["source_parent_commit"] == SOURCE51_COMMIT, "source52 parent identity mismatch")
++    require(parent["cargo_lock_sha256"] == CARGO_LOCK_SHA256 and parent["bazel_lock_sha256"] == BAZEL_LOCK_SHA256,
++            "source52 parent dual-lock mismatch")
++    parent_files = normalized_files(parent["changed_files"])
++    require(len(parent_files) == SOURCE52_CHANGED_COUNT == 195
++            and set(parent_files) == set(prior_files) | set(ALLOWED_SOURCE52_DELTA),
++            "source52 must retain source51 and add exactly the runtime leaf")
++    require(all(parent_files[path] == row for path, row in prior_files.items()),
++            "original source51 changed row differs in source52")
++    require(not (set(ALLOWED_SOURCE53_DELTA) & set(parent_files)),
++            "Bedrock leaves were already in source52 changed manifest")
+ 
+     raw = (E / safe_relative(SOURCE_MANIFEST_NAME)).read_bytes()
+-    require(sha(raw) == SOURCE_MANIFEST_SHA256, "actual source52 manifest hash mismatch")
++    require(sha(raw) == SOURCE_MANIFEST_SHA256, "actual source53 manifest hash mismatch")
+     source = json.loads(raw)
+-    require(source["source_tree"] == EXPECTED_TREE and source["source_commit"] == EXPECTED_COMMIT, "root-frozen source52 identity mismatch")
+-    require(source["source_parent_commit"] == SOURCE51_COMMIT, "source52 root manifest parent mismatch")
+-    require(source["cargo_lock_sha256"] == CARGO_LOCK_SHA256 and source["bazel_lock_sha256"] == BAZEL_LOCK_SHA256, "source52 dual-lock mismatch")
++    require(source["source_tree"] == EXPECTED_TREE and source["source_commit"] == EXPECTED_COMMIT
++            and source["source_parent_commit"] == SOURCE52_COMMIT, "root-frozen source53 identity mismatch")
++    require(source["cargo_lock_sha256"] == CARGO_LOCK_SHA256 and source["bazel_lock_sha256"] == BAZEL_LOCK_SHA256,
++            "source53 dual-lock mismatch")
++    require(source["diagnostic_only"] is True and source["behavior_repair_claimed"] is False,
++            "diagnostic source cannot be relabeled as a behavior repair")
+     files = normalized_files(source["changed_files"])
+-    require(len(files) == EXPECTED_CHANGED_COUNT == 195, "actual source52 file count mismatch")
+-    require(set(files) == set(prior_files) | set(ALLOWED_SOURCE52_DELTA), "source52 must add exactly the existing runtime leaf to changed paths")
+-    require(all(files[path] == row for path, row in prior_files.items()), "an original source51 changed entry differs")
++    require(len(files) == EXPECTED_CHANGED_COUNT == 197, "actual source53 file count mismatch")
++    require(set(files) == set(parent_files) | set(ALLOWED_SOURCE53_DELTA),
++            "source53 must add exactly two existing Bedrock leaves to changed paths")
++    require(all(files[path] == row for path, row in parent_files.items()),
++            "an original source52 changed entry differs")
+     return (files, {"path": SOURCE_MANIFEST_NAME, **data_pin(raw)},
+             old_files, {"path": SOURCE50_MANIFEST_NAME, **data_pin(old_raw)},
+-            prior_files, {"path": SOURCE51_MANIFEST_NAME, **data_pin(prior_raw)})
++            prior_files, {"path": SOURCE51_MANIFEST_NAME, **data_pin(prior_raw)},
++            parent_files, {"path": SOURCE52_MANIFEST_NAME, **data_pin(parent_raw)})
+ 
+ def read_fixed(name, byte_count, digest):
+     raw = (E / safe_relative(name)).read_bytes()
+@@ -397,7 +464,7 @@
+     raw_result = json.loads(originals["native-source50-project-r24-tests-raw-process-result.json"])
+     receipt = json.loads(originals["native-source50-project-r24-tests-receipt.json"])
+     post = json.loads(originals["native-source50-project-r24-tests-source-post-verification.json"])
+-    args = [value for package in PACKAGES for value in ("-p", package)]
++    args = [value for package in HISTORICAL_FOUR_PACKAGES for value in ("-p", package)]
+     for value in (raw_result, receipt):
+         require(value["phase"] == "tests" and value["exit_code"] == 100, "original r24 test failure changed")
+         require(value["source_tree"] == LOCK_SOURCE50_TREE and value["source_commit"] == LOCK_SOURCE50_COMMIT, "r24 failure source mismatch")
+@@ -430,7 +497,7 @@
+     raw_result = json.loads(originals["native-source51-project-r26-tests-raw-process-result.json"])
+     receipt = json.loads(originals["native-source51-project-r26-tests-receipt.json"])
+     post = json.loads(originals["native-source51-project-r26-tests-source-post-verification.json"])
+-    args = [value for package in PACKAGES for value in ("-p", package)]
++    args = [value for package in HISTORICAL_FOUR_PACKAGES for value in ("-p", package)]
+     for value in (raw_result, receipt):
+         require(value["phase"] == "tests" and value["exit_code"] == 100, "original r26 test failure changed")
+         require(value["source_tree"] == SOURCE51_TREE and value["source_commit"] == SOURCE51_COMMIT, "r26 failure source mismatch")
+@@ -450,120 +517,205 @@
+ 
+ 
+ 
+-def inherited_dependency_check(old_files, prior_files, files, delta):
+-    require(delta["schema"] == "hepta.source52-apply-delta.v1", "unexpected source52 delta schema")
+-    require(delta["source_before_tree"] == SOURCE51_TREE and delta["source_before_commit"] == SOURCE51_COMMIT, "delta source51 parent mismatch")
+-    require(delta["source_tree"] == EXPECTED_TREE and delta["source_commit"] == EXPECTED_COMMIT, "delta source52 identity mismatch")
+-    parent_paths = git_paths("diff", "--no-ext-diff", "--no-textconv", "--no-renames", "--name-only", "-z", SOURCE51_TREE, EXPECTED_TREE)
+-    require(len(parent_paths) == 1 and set(parent_paths) == set(ALLOWED_SOURCE52_DELTA), "source52 Git delta is not the reviewed existing runtime leaf")
+-    actual_paths = git_paths("diff", "--no-ext-diff", "--no-textconv", "--no-renames", "--name-only", "-z", LOCK_SOURCE50_TREE, EXPECTED_TREE)
+-    require(len(actual_paths) == 3 and set(actual_paths) == set(LOCK_INHERITANCE_RUST_PATHS), "source50-to-source52 Git delta contains an unreviewed path")
++def tree_file_pin(tree, path):
++    safe_relative(path)
++    record = git("ls-tree", "-z", tree, "--", path).rstrip(b"\0")
++    header, actual_path = record.split(b"\t", 1)
++    mode, kind, object_id = header.decode().split()
++    require(actual_path.decode() == path and kind == "blob" and mode in ("100644", "100755"),
++            "missing/nonregular immutable tree leaf: " + path)
++    raw = git("cat-file", "blob", object_id)
++    require(data_pin(raw)["git_blob"] == object_id, "immutable blob byte identity mismatch")
++    return {"path": path, **data_pin(raw), "mode": mode}
++
++
++def r29_failed_prerequisite():
++    originals = {}
++    pins = []
++    for name, expected in R29_FAILURE_PINS.items():
++        raw, pin = read_fixed(name, expected["bytes"], expected["sha256"])
++        originals[name] = raw
++        pins.append(pin)
++    prefix = "native-workspace-r29"
++    terminal = closed_terminal(originals[prefix + "-terminal-process-status.json"], R29_JOB_ID, "failed", 100)
++    raw_result = json.loads(originals[prefix + "-tests-raw-process-result.json"])
++    receipt = json.loads(originals[prefix + "-tests-receipt.json"])
++    post = json.loads(originals[prefix + "-source-post-test-verification.json"])
++    require(receipt["schema"] == "hepta.native-workspace-gate-receipt.v2", "r29 receipt schema mismatch")
++    for value in (raw_result, receipt):
++        require(value["phase"] == "workspace-tests" and value["exit_code"] == 100, "original r29 failure changed")
++        require(value["source_tree"] == SOURCE52_TREE and value["source_commit"] == SOURCE52_COMMIT,
++                "r29 failure source mismatch")
++        require(value["command"] == ["just", "test", "--locked", "--retries", "0"],
++                "r29 original no-p command mismatch")
++        require(value["cwd"] == str(S / "codex-rs"), "r29 cwd mismatch")
++    for key in ("command", "cwd", "source_tree", "source_commit", "phase", "exit_code", "start_unix", "end_unix"):
++        require(raw_result[key] == receipt[key], "r29 raw/receipt mismatch: " + key)
++    require(receipt["effective_exit_code"] == 100 and receipt["phase_pass"] is False,
++            "r29 failure qualification changed")
++    require(receipt["raw_process_result"] == {
++                "path": prefix + "-tests-raw-process-result.json",
++                **data_pin(originals[prefix + "-tests-raw-process-result.json"])},
++            "r29 raw receipt binding mismatch")
++    require(receipt["source_postguard"] == {
++                "path": prefix + "-source-post-test-verification.json",
++                **data_pin(originals[prefix + "-source-post-test-verification.json"])},
++            "r29 postguard binding mismatch")
++    require(receipt["source_guards_pass"] is True and post["pass"] is True, "r29 source guard failed")
++    require(post["actual_tree"] == post["expected_tree"] == SOURCE52_TREE
++            and post["source_commit"] == SOURCE52_COMMIT and post["native_head"] == FRAMEWORK_PARENT,
++            "r29 postguard source/HEAD mismatch")
++    require(post["changed_file_count"] == SOURCE52_CHANGED_COUNT and post["gate_exit_code"] == 100,
++            "r29 postguard count/exit mismatch")
++    require(post["cargo_lock_sha256"] == CARGO_LOCK_SHA256 and post["bazel_lock_sha256"] == BAZEL_LOCK_SHA256,
++            "r29 dual-lock mismatch")
++    require(terminal["at_unix_ms"] / 1000 >= receipt["end_unix"], "r29 terminal precedes test end")
++    return pins
++
++
++def inherited_dependency_check(old_files, prior_files, parent_files, files, delta):
++    require(delta["schema"] == "hepta.source53-apply-delta.v1", "unexpected source53 delta schema")
++    require(delta["source_before_tree"] == SOURCE52_TREE and delta["source_before_commit"] == SOURCE52_COMMIT,
++            "delta source52 parent mismatch")
++    require(delta["source_tree"] == EXPECTED_TREE and delta["source_commit"] == EXPECTED_COMMIT,
++            "delta source53 identity mismatch")
++    require(delta["diagnostic_only"] is True and delta["behavior_repair_claimed"] is False,
++            "diagnostic delta classification changed")
++    parent_paths = git_paths("diff", "--no-ext-diff", "--no-textconv", "--no-renames", "--name-only",
++                             "-z", SOURCE52_TREE, EXPECTED_TREE)
++    require(len(parent_paths) == 2 and set(parent_paths) == set(ALLOWED_SOURCE53_DELTA),
++            "source53 Git delta is not the two reviewed existing Bedrock leaves")
++    source51_paths = git_paths("diff", "--no-ext-diff", "--no-textconv", "--no-renames", "--name-only",
++                               "-z", SOURCE51_TREE, SOURCE52_TREE)
++    require(len(source51_paths) == 1 and set(source51_paths) == set(ALLOWED_SOURCE52_DELTA),
++            "historical source51-to-source52 delta changed")
++    actual_paths = git_paths("diff", "--no-ext-diff", "--no-textconv", "--no-renames", "--name-only",
++                             "-z", LOCK_SOURCE50_TREE, EXPECTED_TREE)
++    require(len(actual_paths) == 5 and set(actual_paths) == set(LOCK_INHERITANCE_RUST_PATHS),
++            "source50-to-source53 Git delta contains an unreviewed path")
+     delta_rows = delta["files"]
+-    require(isinstance(delta_rows, list) and len(delta_rows) == 1, "wrong one-leaf delta row count")
++    require(isinstance(delta_rows, list) and len(delta_rows) == 2, "wrong two-leaf delta row count")
+     rows = {row["path"]: row for row in delta_rows}
+-    require(set(rows) == set(ALLOWED_SOURCE52_DELTA), "wrong delta leaf")
+-    path = ALLOWED_SOURCE52_DELTA[0]
+-    before_leaf = {"path": path, **rows[path]["before"]}
+-    after_leaf = {"path": path, **rows[path]["after"]}
+-    require(path not in prior_files and path not in old_files, "runtime leaf must be newly changed relative to the framework")
+-    require(after_leaf == files[path], "runtime after image differs from complete current manifest")
+-    require(before_leaf["mode"] == after_leaf["mode"] == "100644" and before_leaf["git_blob"] != after_leaf["git_blob"], "runtime leaf mode or delta invalid")
+-    # This is an existing repository leaf, not a newly created repository file.
+-    for tree in (LOCK_SOURCE50_TREE, SOURCE51_TREE):
+-        record = git("ls-tree", "-z", tree, "--", path).rstrip(b"\0")
+-        header, actual_path = record.split(b"\t", 1)
+-        mode, kind, blob = header.decode().split()
+-        require(actual_path.decode() == path and kind == "blob" and mode == before_leaf["mode"] and blob == before_leaf["git_blob"], "existing runtime before tree entry mismatch")
+-        require(data_pin(git("cat-file", "blob", blob)) == {key: before_leaf[key] for key in ("bytes", "sha256", "git_blob")}, "existing runtime before raw bytes mismatch")
++    require(set(rows) == set(ALLOWED_SOURCE53_DELTA), "wrong diagnostic delta leaves")
++    before_images = {}
++    for path in ALLOWED_SOURCE53_DELTA:
++        before_leaf = {"path": path, **rows[path]["before"]}
++        after_leaf = {"path": path, **rows[path]["after"]}
++        require(path not in parent_files and path not in prior_files and path not in old_files,
++                "Bedrock leaf must be newly changed relative to the framework")
++        require(after_leaf == files[path], "Bedrock after image differs from complete current manifest")
++        require(before_leaf["mode"] == after_leaf["mode"] == "100644"
++                and before_leaf["git_blob"] != after_leaf["git_blob"], "Bedrock mode or delta invalid")
++        for tree in (LOCK_SOURCE50_TREE, SOURCE51_TREE, SOURCE52_TREE):
++            require(tree_file_pin(tree, path) == before_leaf, "existing Bedrock before tree/raw identity mismatch")
++        before_images[path] = before_leaf
++    runtime_path = ALLOWED_SOURCE52_DELTA[0]
++    before_images[runtime_path] = tree_file_pin(LOCK_SOURCE50_TREE, runtime_path)
++    require(tree_file_pin(SOURCE51_TREE, runtime_path) == before_images[runtime_path],
++            "runtime pre-source52 original tree entry differs")
++    require(tree_file_pin(SOURCE52_TREE, runtime_path) == parent_files[runtime_path] == files[runtime_path],
++            "source52 runtime change was not retained exactly")
+     for path in LOCK_INHERITANCE_RUST_PATHS:
+-        require(PurePosixPath(path).suffix == ".rs" and PurePosixPath(path).name != "build.rs", "dependency/build input cannot inherit a lock result")
+-        before = old_files[path] if path in old_files else before_leaf
++        require(PurePosixPath(path).suffix == ".rs" and PurePosixPath(path).name != "build.rs",
++                "dependency/build input cannot inherit a lock result")
++        before = old_files[path] if path in old_files else before_images[path]
+         after = files[path]
+-        require(before["mode"] == after["mode"] and before["git_blob"] != after["git_blob"], "unexpected mode change or unchanged inherited delta")
+-        for tree, expected in ((LOCK_SOURCE50_TREE, before), (EXPECTED_TREE, after)):
+-            record = git("ls-tree", "-z", tree, "--", path).rstrip(b"\0")
+-            header, actual_path = record.split(b"\t", 1)
+-            mode, kind, blob = header.decode().split()
+-            require(actual_path.decode() == path and kind == "blob" and mode == expected["mode"] and blob == expected["git_blob"], "inheritance Git tree entry mismatch")
+-            require(data_pin(git("cat-file", "blob", blob)) == {key: expected[key] for key in ("bytes", "sha256", "git_blob")}, "inheritance Git raw bytes mismatch")
+-    require(all(files[path] == row for path, row in prior_files.items()), "one of the 194 prior changed rows differs")
++        require(before["mode"] == after["mode"] and before["git_blob"] != after["git_blob"],
++                "unexpected mode change or unchanged inherited delta")
++        require(tree_file_pin(LOCK_SOURCE50_TREE, path) == before
++                and tree_file_pin(EXPECTED_TREE, path) == after, "inheritance Git tree/raw identity mismatch")
++    require(all(files[path] == row for path, row in parent_files.items()),
++            "one of the195 source52 changed rows differs")
+     for path in set(old_files) - set(ALLOWED_SOURCE51_DELTA):
+         require(files[path] == old_files[path], "unreviewed source50 manifest path changed: " + path)
+     for path, digest in zip(LOCK_FILES, (CARGO_LOCK_SHA256, BAZEL_LOCK_SHA256)):
+-        old_raw = git("show", LOCK_SOURCE50_TREE + ":" + path)
+-        prior_raw = git("show", SOURCE51_TREE + ":" + path)
+-        current_raw = git("show", EXPECTED_TREE + ":" + path)
+-        require(old_raw == prior_raw == current_raw and sha(old_raw) == digest, "source50/source51/source52 Git lock bytes differ")
++        raw_locks = [git("show", tree + ":" + path)
++                     for tree in (LOCK_SOURCE50_TREE, SOURCE51_TREE, SOURCE52_TREE, EXPECTED_TREE)]
++        require(all(raw == raw_locks[0] for raw in raw_locks) and sha(raw_locks[0]) == digest,
++                "source50/source51/source52/source53 Git lock bytes differ")
+     require(delta["patch"]["path"] == "candidate.patch", "unexpected delta patch member")
+-    resolved_patch_pin = {
+-        **delta["patch"],
+-        "path": str(safe_relative(DELTA_MANIFEST_NAME).parent / "candidate.patch"),
+-    }
+-    require(bool(read_pinned(resolved_patch_pin)), "reviewed one-leaf patch is empty")
++    resolved_patch_pin = {**delta["patch"],
++                          "path": str(safe_relative(DELTA_MANIFEST_NAME).parent / "candidate.patch")}
++    require(bool(read_pinned(resolved_patch_pin)), "reviewed two-leaf diagnostic patch is empty")
+     return {
+-        "schema": "hepta.source52-source50-lock-inheritance.v1",
++        "schema": "hepta.source53-source50-lock-inheritance.v1",
+         "lock_executed_for_source_commit": LOCK_SOURCE50_COMMIT,
+         "lock_executed_for_source_tree": LOCK_SOURCE50_TREE,
+-        "parent_source_commit": SOURCE51_COMMIT, "parent_source_tree": SOURCE51_TREE,
++        "parent_source_commit": SOURCE52_COMMIT, "parent_source_tree": SOURCE52_TREE,
+         "current_source_commit": EXPECTED_COMMIT, "current_source_tree": EXPECTED_TREE,
+         "actual_git_tree_changed_paths_from_source50": actual_paths,
+-        "actual_git_tree_changed_paths_from_source51": parent_paths,
++        "actual_git_tree_changed_paths_from_source52": parent_paths,
++        "historical_git_tree_changed_paths_from_source51_to_source52": source51_paths,
+         "all_other_git_tree_entries_unchanged": True,
+-        "prior_194_changed_entries_unchanged": True,
+-        "existing_runtime_leaf_newly_in_changed_manifest": True,
++        "prior_195_changed_entries_unchanged": True,
++        "existing_bedrock_leaves_newly_in_changed_manifest": True,
+         "dependency_inputs_changed_paths": [], "git_modes_unchanged": True,
+         "cargo_lock_sha256": CARGO_LOCK_SHA256, "bazel_lock_sha256": BAZEL_LOCK_SHA256,
+-        "source52_bazel_lock_update_executed": False,
+-        "inheritance_basis": "Exact three existing non-build Rust paths since source50; one leaf since source51; all other Git entries and both raw locks unchanged.",
++        "source53_bazel_lock_update_executed": False,
++        "diagnostic_only": True, "behavior_repair_claimed": False,
++        "inheritance_basis": "Exact five existing non-build Rust paths since source50; two leaves since source52; all other Git entries and both raw locks unchanged.",
+         "reviewed_delta_patch": delta["patch"], "resolved_patch_evidence": resolved_patch_pin,
+     }
+ 
+ 
+-def apply_prerequisite(files, source_pin, old_files, prior_files):
++def apply_prerequisite(files, source_pin, old_files, prior_files, parent_files):
+     complete_raw, complete_pin = read_fixed(APPLY_COMPLETE_NAME, APPLY_COMPLETE_BYTES, APPLY_COMPLETE_SHA256)
+     terminal_raw, terminal_pin = read_fixed(APPLY_TERMINAL_NAME, APPLY_TERMINAL_BYTES, APPLY_TERMINAL_SHA256)
+     delta_raw, delta_pin = read_fixed(DELTA_MANIFEST_NAME, DELTA_MANIFEST_BYTES, DELTA_MANIFEST_SHA256)
+     complete = json.loads(complete_raw)
+-    require(complete["schema"] == "hepta.source52-apply-complete.v1", "source52 apply complete schema mismatch")
+-    require(complete["source_before_tree"] == SOURCE51_TREE and complete["source_before_commit"] == SOURCE51_COMMIT, "apply source51 parent mismatch")
+-    require(complete["source_tree"] == EXPECTED_TREE and complete["source_commit"] == EXPECTED_COMMIT, "apply new identity mismatch")
+-    require(complete["source_manifest"] == source_pin and complete["delta_manifest"] == delta_pin, "apply manifests not bound to current originals")
+-    require(complete["source_guards_pass"] is True and complete["actual_changed_file_count"] == len(files) == 195, "apply source/count guard failed")
+-    require(complete["prior_changed_file_count"] == len(prior_files) == 194, "apply prior count mismatch")
+-    require(complete["before_existing_repo_leaf_not_in_prior_changed_manifest"] is True, "apply did not verify the pre-existing unmodified runtime leaf")
+-    require(complete["cargo_lock_sha256"] == CARGO_LOCK_SHA256 and complete["bazel_lock_sha256"] == BAZEL_LOCK_SHA256, "apply dual-lock mismatch")
+-    require(complete["changed_from_source51_paths"] == list(ALLOWED_SOURCE52_DELTA), "apply changed leaf mismatch")
++    require(complete["schema"] == "hepta.source53-apply-complete.v1", "source53 apply complete schema mismatch")
++    require(complete["source_before_tree"] == SOURCE52_TREE and complete["source_before_commit"] == SOURCE52_COMMIT,
++            "apply source52 parent mismatch")
++    require(complete["source_tree"] == EXPECTED_TREE and complete["source_commit"] == EXPECTED_COMMIT,
++            "apply new identity mismatch")
++    require(complete["source_manifest"] == source_pin and complete["delta_manifest"] == delta_pin,
++            "apply manifests not bound to current originals")
++    require(complete["source_guards_pass"] is True and complete["actual_changed_file_count"] == len(files) == 197,
++            "apply source/count guard failed")
++    require(complete["prior_changed_file_count"] == len(parent_files) == 195, "apply prior count mismatch")
++    require(complete["before_existing_repo_leaves_not_in_prior_changed_manifest"] is True,
++            "apply did not verify both pre-existing unchanged Bedrock leaves")
++    require(complete["cargo_lock_sha256"] == CARGO_LOCK_SHA256 and complete["bazel_lock_sha256"] == BAZEL_LOCK_SHA256,
++            "apply dual-lock mismatch")
++    require(complete["changed_from_source52_paths"] == list(ALLOWED_SOURCE53_DELTA), "apply changed leaves mismatch")
+     require(complete["dependency_inputs_changed_paths"] == [], "apply changed dependency inputs")
++    require(complete["diagnostic_only"] is True and complete["behavior_repair_claimed"] is False,
++            "apply diagnostic classification changed")
+     for key in ("bazel_lock_update_executed", "rust_executed", "fix_fmt_executed"):
+         require(complete[key] is False, "apply-only phase scope changed: " + key)
+     post_raw = read_pinned(complete["source_postguard"])
+     post = json.loads(post_raw)
+-    require(post["schema"] == "hepta.source52-apply-postguard.v1" and post["pass"] is True, "apply postguard failed")
+-    require(post["actual_tree"] == EXPECTED_TREE and post["source_commit"] == EXPECTED_COMMIT, "apply postguard identity mismatch")
+-    require(post["actual_changed_file_count"] == len(files) and post["changed_path_set_matches"] is True, "apply postguard count/path mismatch")
+-    require(post["cargo_lock_sha256"] == CARGO_LOCK_SHA256 and post["bazel_lock_sha256"] == BAZEL_LOCK_SHA256, "apply postguard lock mismatch")
++    require(post["schema"] == "hepta.source53-apply-postguard.v1" and post["pass"] is True, "apply postguard failed")
++    require(post["actual_tree"] == EXPECTED_TREE and post["source_commit"] == EXPECTED_COMMIT,
++            "apply postguard identity mismatch")
++    require(post["actual_changed_file_count"] == len(files) and post["changed_path_set_matches"] is True,
++            "apply postguard count/path mismatch")
++    require(post["cargo_lock_sha256"] == CARGO_LOCK_SHA256 and post["bazel_lock_sha256"] == BAZEL_LOCK_SHA256,
++            "apply postguard lock mismatch")
+     for key in ("unstaged_paths", "untracked_paths", "file_mismatches"):
+         require(post[key] == [], "apply postguard contains a mismatch: " + key)
+     terminal = closed_terminal(terminal_raw, APPLY_JOB_ID, "succeeded", 0)
+     if "ended_unix" in complete:
+         require(terminal["at_unix_ms"] / 1000 >= complete["ended_unix"], "apply terminal precedes completion")
+-    inheritance = inherited_dependency_check(old_files, prior_files, files, json.loads(delta_raw))
+-    return {
+-        "complete": complete_pin, "terminal": terminal_pin,
+-        "source_postguard": complete["source_postguard"], "delta_manifest": delta_pin,
+-        "source50_lock_inheritance": inheritance,
+-    }
++    inheritance = inherited_dependency_check(old_files, prior_files, parent_files, files, json.loads(delta_raw))
++    return {"complete": complete_pin, "terminal": terminal_pin,
++            "source_postguard": complete["source_postguard"], "delta_manifest": delta_pin,
++            "source50_lock_inheritance": inheritance}
+ 
+ def load_baseline():
+     raw = (E / safe_relative(BASELINE_NAME)).read_bytes()
+-    require(len(raw) == BASELINE_BYTES and sha(raw) == BASELINE_SHA256, "1564-ID baseline pin mismatch")
++    require(len(raw) == BASELINE_BYTES and sha(raw) == BASELINE_SHA256, "1345-ID original r29 baseline pin mismatch")
+     baseline = json.loads(raw)
+-    require(baseline["schema"] == "hepta.closed-four-package-executed-baseline.v1", "baseline schema mismatch")
+-    require(baseline["source_commit"] == PREVIOUS_SOURCE49_COMMIT and baseline["source_tree"] == PREVIOUS_SOURCE49_TREE, "baseline is not original source49")
+-    require(set(baseline["packages"]) == set(PACKAGES) and baseline["identity_key"] == ["binary", "name"], "baseline owner/key mismatch")
++    require(baseline["schema"] == "hepta.closed-app-server-r29-executed-baseline.v1", "baseline schema mismatch")
++    require(baseline["source_commit"] == SOURCE52_COMMIT and baseline["source_tree"] == SOURCE52_TREE,
++            "baseline is not the original source52 r29 execution")
++    require(baseline["package"] == "codex-app-server" and baseline["identity_key"] == ["binary", "name"],
++            "baseline owner/key mismatch")
+     ids = {(row["binary"], row["name"]) for row in baseline["test_ids"]}
+-    require(len(ids) == len(baseline["test_ids"]) == baseline["count"] == BASELINE_COUNT, "baseline duplicate/count mismatch")
+-    require(all(row["package"] in PACKAGES and row["binary"].split("::", 1)[0] == row["package"] for row in baseline["test_ids"]), "baseline package mismatch")
++    require(len(ids) == len(baseline["test_ids"]) == baseline["count"] == BASELINE_COUNT == 1345,
++            "baseline duplicate/count mismatch")
++    require(all(row["binary"].split("::", 1)[0] == "codex-app-server" for row in baseline["test_ids"]),
++            "baseline contains another owner")
+     return ids, {"path": BASELINE_NAME, **data_pin(raw)}
+ 
+ 
+@@ -598,22 +750,6 @@
+         offset += len(line)
+ 
+ 
+-def review_python(raw):
+-    lines = list(clean_lines(raw))
+-    summaries = [(n, o, text, re.fullmatch(r"\s*Ran ([0-9]+) tests? in ([0-9.]+)s\s*", text)) for n, o, text in lines]
+-    summaries = [(n, o, text, match) for n, o, text, match in summaries if match]
+-    ok = [(n, o, text) for n, o, text in lines if text.strip() == "OK"]
+-    skipped = [(n, o, text) for n, o, text in lines if re.search(r"\.\.\. skipped\b|^OK \(.*skipped=", text)]
+-    passed = len(summaries) == 1 and int(summaries[0][3][1]) == PYTHON_TEST_COUNT and len(ok) == 1 and not skipped
+-    return {
+-        "schema": "hepta.source51-python-runner-readback.v1",
+-        "log": data_pin(raw), "expected_test_count": PYTHON_TEST_COUNT,
+-        "reported_test_count": int(summaries[0][3][1]) if len(summaries) == 1 else None,
+-        "summary_lines": [{"line": n, "byte_offset": o, "text": text} for n, o, text, _ in summaries],
+-        "ok_lines": [{"line": n, "byte_offset": o, "text": text} for n, o, text in ok],
+-        "skip_lines": [{"line": n, "byte_offset": o, "text": text} for n, o, text in skipped],
+-        "reported_skipped": 0 if passed else None, "pass": passed,
+-    }
+ 
+ 
+ def review_tests(raw, baseline):
+@@ -656,14 +792,15 @@
+         and not missing and not unsuccessful and not unexpected_packages
+     )
+     review = {
+-        "schema": "hepta.source52-four-package-closed-readback.v1",
++        "schema": "hepta.source53-app-server-closed-readback.v1",
+         "log": data_pin(raw), "starting": {"line": start[0], "byte_offset": start[1], "text": start[2]},
+         "summary": {"line": summary[0], "byte_offset": summary[1], "text": summary[2], "seconds": float(summary[3][1])},
+         "unique_test_count": len(current), "execution_rows": len(rows), "counts": counts,
+         "summary_counts": expected_counts, "reported_skipped": reported_skipped,
+         "skip_identities_inferred": False, "duplicate_execution_ids": len(rows) != len(current),
+         "footer_rows_excluded": footer_rows, "baseline_count": len(baseline),
+-        "baseline_is_source49_previous_failure_population_not_previous_pass": True,
++        "baseline_is_source52_r29_actual_app_server_population": True,
++        "diagnostic_only": True, "behavior_repair_claimed": False,
+         "baseline_missing": [{"binary": b, "name": n} for b, n in missing],
+         "baseline_not_pass": [{"binary": b, "name": n} for b, n in unsuccessful],
+         "additional_test_ids": [{"binary": b, "name": n} for b, n in sorted(set(current) - baseline)],
+@@ -726,13 +863,10 @@
+     if not post["pass"]:
+         issues.append({"stage": "source_postguard", "error": "source/dual-lock guard failed; source retained"})
+     acceptance = None
+-    if log_raw is not None and phase in ("python-runner", "tests"):
++    if log_raw is not None and phase == "tests":
+         try:
+-            if phase == "python-runner":
+-                review = review_python(log_raw)
+-            else:
+-                rows, review = review_tests(log_raw, baseline)
+-                write_json(stem + "-test-results.json", rows)
++            rows, review = review_tests(log_raw, baseline)
++            write_json(stem + "-test-results.json", rows)
+             acceptance = write_json(stem + "-result-review.json", review)
+             if not review["pass"]:
+                 issues.append({"stage": "closed_log_acceptance", "error": "required original execution coverage/result not met"})
+@@ -749,11 +883,12 @@
+         "log_sha256": sha(log_raw) if log_raw is not None else None,
+         "resources_sha256": sha(resource_raw) if resource_raw is not None else None,
+         "source_postguard": post_pin, "source_guards_pass": post["pass"],
+-        "packages": PACKAGES if phase != "python-runner" else [],
++        "packages": PACKAGES,
+         "retries": 0 if phase == "tests" else None,
+         "filters": "no_additions", "features": "unchanged_defaults",
+         "acceptance_readback": acceptance, "issues": issues, "phase_pass": effective == 0,
+         "fix_fmt_executed": False, "baseline_used_as_filter": False,
++        "diagnostic_only": True, "behavior_repair_claimed": False,
+     }
+     receipt_pin = write_json(stem + "-receipt.json", receipt)
+     announce(receipt)
+@@ -765,17 +900,19 @@
+     require(not list(E.glob(PREFIX + "-*")), "this run prefix already has evidence; no automatic retry")
+     require(shutil.disk_usage(T).free > MIN_FREE_BYTES, "insufficient free space")
+     generated, lock_pins = lock_prerequisite()
+-    files, source_pin, source50_files, source50_pin, source51_files, source51_pin = load_source(generated)
++    (files, source_pin, source50_files, source50_pin, source51_files,
++     source51_pin, source52_files, source52_pin) = load_source(generated)
+     r24_failed_pins = r24_failed_prerequisite()
+     r26_failed_pins = r26_failed_prerequisite()
+-    apply_proof = apply_prerequisite(files, source_pin, source50_files, source51_files)
++    r29_failed_pins = r29_failed_prerequisite()
++    apply_proof = apply_prerequisite(files, source_pin, source50_files, source51_files, source52_files)
+     baseline, baseline_pin = load_baseline()
+     initial = guard(files)
+     initial_pin = write_json(PREFIX + "-source-pre-verification.json", initial)
+     require(initial["pass"], "actual frozen source is not clean/byte-identical")
+     env, selection, prerequisite_env_pin = execution_environment()
+     write_json(PREFIX + "-environment.json", {
+-        "schema": "hepta.source52-project-environment.v1",
++        "schema": "hepta.source53-project-environment.v1",
+         "source_tree": EXPECTED_TREE, "source_commit": EXPECTED_COMMIT,
+         "source_manifest": SOURCE_MANIFEST_NAME, "source_manifest_sha256": SOURCE_MANIFEST_SHA256,
+         "selection": selection, "approved_prerequisite_env_pin": prerequisite_env_pin,
+@@ -783,32 +920,32 @@
+         "source_environment_immutable_during_gates": True,
+         "test_deadlines_features_filters_retries_unchanged": True,
+         "sandbox_or_network_protection_environment_overridden": False,
++        "diagnostic_only": True, "behavior_repair_claimed": False,
+     })
+     write_json(PREFIX + "-preconditions.json", {
+-        "schema": "hepta.source52-project-preconditions.v1",
++        "schema": "hepta.source53-project-preconditions.v1",
+         "source_tree": EXPECTED_TREE, "source_commit": EXPECTED_COMMIT,
+         "actual_changed_file_count": len(files), "source_manifest": source_pin,
+         "cargo_lock_sha256": CARGO_LOCK_SHA256, "bazel_lock_sha256": BAZEL_LOCK_SHA256,
+         "source50_lock_originals_and_outer_terminal": lock_pins,
+-        "source50_root_manifest": source50_pin, "source51_parent_manifest": source51_pin, "source52_apply": apply_proof,
++        "source50_root_manifest": source50_pin, "source51_historical_manifest": source51_pin,
++        "source52_parent_manifest": source52_pin, "source53_apply": apply_proof,
+         "original_r24_failed_100_provenance": r24_failed_pins,
+         "original_r26_failed_100_provenance": r26_failed_pins,
++        "original_r29_failed_100_provenance": r29_failed_pins,
+         "source50_lock_inherited_only_for_unchanged_dependency_inputs": True,
+-        "source52_bazel_lock_update_executed": False,
++        "source53_bazel_lock_update_executed": False,
+         "initial_source_guard": initial_pin,
+-        "baseline": baseline_pin, "baseline_use": "acceptance only after the full unfiltered gate",
+-        "previous_source49_workspace_result": "FAILED_100_20220_PASS_7_FAIL_1_TIMEOUT_130_REPORTED_SKIP",
+-        "previous_source50_project_result": "FAILED_100_1561_PASS_3_FAIL_0_TIMEOUT_3_REPORTED_SKIP",
+-        "previous_source51_project_result": "FAILED_100_1562_PASS_2_FAIL_0_TIMEOUT_3_REPORTED_SKIP",
++        "baseline": baseline_pin, "baseline_use": "acceptance only after the full unfiltered app-server gate",
++        "previous_source52_workspace_result": "FAILED_100_20227_PASS_1_FAIL_0_TIMEOUT_130_REPORTED_SKIP",
+         "patch_application_performed_by_this_runner": False,
+         "lock_update_performed_by_this_runner": False,
+-        "expected_python_tests": PYTHON_TEST_COUNT,
++        "python_runner_source_unchanged": True, "python_suite_reexecuted": False,
++        "diagnostic_only": True, "behavior_repair_claimed": False,
+     })
+-    args = [value for package in PACKAGES for value in ("-p", package)]
+     phases = [
+-        ("python-runner", ["python3", "-m", "unittest", "discover", "-s", "scripts", "-p", "test_run_nextest*.py", "-v"], S),
+-        ("strict", ["just", "clippy", "--locked", *args, "--", "-D", "warnings"], S / "codex-rs"),
+-        ("tests", ["just", "test", "--locked", *args, "--retries", "0"], S / "codex-rs"),
++        ("strict", ["just", "clippy", "--locked", "-p", "codex-app-server", "--", "-D", "warnings"], S / "codex-rs"),
++        ("tests", ["just", "test", "--locked", "--retries", "0", "-p", "codex-app-server"], S / "codex-rs"),
+     ]
+     receipts = []
+     for phase, command, cwd in phases:
+@@ -820,25 +957,28 @@
+                 "failed_phase": phase, "effective_exit_code": code, "completed_phase_receipts": receipts,
+                 "subsequent_phases_started": False, "source_retained": True,
+                 "workspace_started": False, "fix_fmt_executed": False,
++                "diagnostic_only": True, "behavior_repair_claimed": False,
+             })
+             return code
+     final_guard = guard(files)
+     write_json(PREFIX + "-source-final-verification.json", final_guard)
+     require(final_guard["pass"], "final same-source guard failed")
+     write_json(PREFIX + "-complete.json", {
+-        "schema": "hepta.source52-project-gates-complete.v1",
++        "schema": "hepta.source53-project-gates-complete.v1",
+         "source_tree": EXPECTED_TREE, "source_commit": EXPECTED_COMMIT,
+         "source_manifest": SOURCE_MANIFEST_NAME, "source_manifest_sha256": SOURCE_MANIFEST_SHA256,
+         "cargo_lock_sha256": CARGO_LOCK_SHA256, "bazel_lock_sha256": BAZEL_LOCK_SHA256,
+-        "python_exit": 0, "python_tests": PYTHON_TEST_COUNT, "python_skipped": 0,
+         "strict_exit": 0, "tests_exit": 0, "packages": PACKAGES,
+         "required_old_ids": BASELINE_COUNT, "all_old_ids_observed_pass": True,
+         "phase_receipts": receipts, "source_guards_pass": True,
+         "source50_lock_inherited_for_unchanged_dependency_inputs": True,
+-        "source52_bazel_lock_update_executed": False,
+-        "source52_apply_complete": apply_proof["complete"],
++        "source53_bazel_lock_update_executed": False,
++        "source53_apply_complete": apply_proof["complete"],
+         "workspace_not_started_by_this_runner": True, "fix_fmt_executed": False,
++        "python_suite_reexecuted": False,
+         "free_bytes_after": shutil.disk_usage(T).free,
++        "diagnostic_only": True, "behavior_repair_claimed": False,
++        "original_r29_failure_relabelled_as_pass": False,
+         "whole_workspace_qualification": "PENDING_SEPARATE_ORIGINAL_GATE",
+     })
+     return 0
+@@ -852,11 +992,12 @@
+         path = E / (PREFIX + "-orchestration-error.json")
+         if E.is_dir() and not path.exists():
+             write_json(path.name, {
+-                "schema": "hepta.source52-project-orchestration-error.v1",
++                "schema": "hepta.source53-project-orchestration-error.v1",
+                 "source_tree": EXPECTED_TREE, "source_commit": EXPECTED_COMMIT,
+                 "error_type": type(error).__name__, "error": str(error),
+                 "no_automatic_retry": True, "source_retained": True,
+                 "workspace_started": False, "fix_fmt_executed": False,
++                "diagnostic_only": True, "behavior_repair_claimed": False,
+             })
+         raise
+ 

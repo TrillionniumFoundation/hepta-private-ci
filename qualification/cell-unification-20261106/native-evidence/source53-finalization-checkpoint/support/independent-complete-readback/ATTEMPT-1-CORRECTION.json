@@ -1,0 +1,19 @@
+{
+  "schema": "hepta.independent-reader-attempt-correction.v1",
+  "attempt": 1,
+  "original_reader": {
+    "path": "source53-finalization-independent-readback/review_finalization.py",
+    "bytes": 25252,
+    "sha256": "ff0df0e71b06499f48dc2bab62f5a1f503b6003ddf56425fe875510999431797"
+  },
+  "actual_local_python_exit": 1,
+  "error": "ValueError: scope input python_paths",
+  "reason": "Prepared EXPECTED-SELECTION uses ./scripts/... for formatter argv; actual finalizer scope intentionally normalizes to scripts/... as frozen load_final_scope lines1925-1926 specify. No native source/evidence changed.",
+  "correction": "V2 strips only the asserted ./ prefix for the two exact approved Python paths before comparing normalized scope and native selection.",
+  "v2_reader": {
+    "path": "source53-finalization-independent-readback/review_finalization_v2.py",
+    "bytes": 25502,
+    "sha256": "6d12afa03142a73678dec76a0ce30bb77f6677b68a53dc7fae9cb06feb97f5b2"
+  },
+  "project_execution": false
+}

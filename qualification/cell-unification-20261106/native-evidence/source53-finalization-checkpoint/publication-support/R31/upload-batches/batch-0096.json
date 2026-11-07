@@ -1,0 +1,77 @@
+{
+  "schema": "hepta.root-reviewed-actual-upload-batch.v1",
+  "plan": "r31-formal-root-preparation/ROOT-UPLOAD-PLAN.json",
+  "plan_sha256": "4d4dc1d9d811c57dc804bf5555f8aa19bfc5adc2f0efe728675d350f51d3cf5f",
+  "completed_paths": 96,
+  "total_paths": 329,
+  "staged": [
+    {
+      "repo_path": "qualification/cell-unification-20261106/native-evidence/r31-workspace-checkpoint/original/controller/launch.json",
+      "git_blob": "1e6c823a69296b0da1e45397e0a904fc09b15de0",
+      "binary": false,
+      "reused": true,
+      "origin": "verified_actual_checkpoint6_overlay_ledger_or_prior_batch"
+    },
+    {
+      "repo_path": "qualification/cell-unification-20261106/native-evidence/r31-workspace-checkpoint/original/controller/original-stderr.txt",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "binary": false,
+      "reused": true,
+      "origin": "verified_actual_checkpoint6_overlay_ledger_or_prior_batch"
+    },
+    {
+      "repo_path": "qualification/cell-unification-20261106/native-evidence/r31-workspace-checkpoint/original/controller/original-stdout.txt",
+      "git_blob": "4f774d05dc4f13d273334faed4fd26368f923680",
+      "binary": false,
+      "reused": true,
+      "origin": "verified_actual_checkpoint6_overlay_ledger_or_prior_batch"
+    },
+    {
+      "repo_path": "qualification/cell-unification-20261106/native-evidence/r31-workspace-checkpoint/original/controller/read-0.json",
+      "git_blob": "a03241d21a27a0280497d967e5e0aa4942e589a1",
+      "binary": false,
+      "reused": true,
+      "origin": "verified_actual_checkpoint6_overlay_ledger_or_prior_batch"
+    },
+    {
+      "repo_path": "qualification/cell-unification-20261106/native-evidence/r31-workspace-checkpoint/original/controller/read-1.json",
+      "git_blob": "5d8f49e111a6b4a5e586453ea80481bd30ac949c",
+      "binary": false,
+      "reused": true,
+      "origin": "verified_actual_checkpoint6_overlay_ledger_or_prior_batch"
+    },
+    {
+      "repo_path": "qualification/cell-unification-20261106/native-evidence/r31-workspace-checkpoint/original/controller/terminal-process-status.json",
+      "git_blob": "9a2ec1b454fc54cb66b7366a24f941c680f7ea4f",
+      "binary": false,
+      "reused": true,
+      "origin": "verified_actual_checkpoint6_overlay_ledger_or_prior_batch"
+    },
+    {
+      "repo_path": "qualification/cell-unification-20261106/native-evidence/r31-workspace-checkpoint/original/evidence/native-workspace-r31-closed-result-review.json",
+      "git_blob": "b6884ba818a41526310b9fe3832cec925f9f55d8",
+      "binary": false,
+      "reused": true,
+      "origin": "verified_actual_checkpoint6_overlay_ledger_or_prior_batch"
+    },
+    {
+      "repo_path": "qualification/cell-unification-20261106/native-evidence/r31-workspace-checkpoint/original/evidence/native-workspace-r31-closed-test-results.json.gz",
+      "git_blob": "7179879d8a6562d342df7909d2e0c2b2637eccee",
+      "binary": true,
+      "reused": false,
+      "actual_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "7179879d8a6562d342df7909d2e0c2b2637eccee"
+        },
+        "isError": false
+      }
+    }
+  ],
+  "errors": []
+}

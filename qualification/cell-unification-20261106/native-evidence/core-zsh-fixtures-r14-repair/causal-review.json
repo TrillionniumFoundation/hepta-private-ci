@@ -1,0 +1,206 @@
+{
+  "schema": "hepta.core-zsh-fixture-cause-review.v1",
+  "source_commit": "b44d4ca4aa0ef9f894eff29e9975938e066a82f5",
+  "source_tree": "d3d2313b838422818bf9448ce5a1b86d89abdf69",
+  "scope": "Two existing integration-test fixture defects; no production changes, no Rust execution and no dynamic success claim.",
+  "evidence": {
+    "closed_result": {
+      "path": "core-zsh-fixtures-r14-audit/evidence/native-core-r14-result-review.json",
+      "bytes": 35985,
+      "sha256": "9b5b3a81d4901d8c6769908e2021235e3ef82e3257d5b0c21bf1c086899f0732"
+    },
+    "full_log_reported_sha256": "443a58d70c34d76ba9b8141ad7ee32d997a4f16af79e8f5a873770966028952c",
+    "closed_unique_counts": {
+      "PASS": 3806,
+      "FAIL": 24
+    },
+    "closed_skipped": 9,
+    "failures": [
+      {
+        "status": "FAIL",
+        "elapsed": "10.326s",
+        "binary": "codex-core::all",
+        "name": "suite::skill_approval::shell_zsh_fork_skill_scripts_ignore_declared_permissions",
+        "log_byte_range": [
+          504259,
+          505038
+        ],
+        "excerpt": "        FAIL [  10.326s] codex-core::all suite::skill_approval::shell_zsh_fork_skill_scripts_ignore_declared_permissions\n  stdout ───\n\n    running 1 test\n    test suite::skill_approval::shell_zsh_fork_skill_scripts_ignore_declared_permissions ... FAILED\n\n    failures:\n\n    failures:\n        suite::skill_approval::shell_zsh_fork_skill_scripts_ignore_declared_permissions\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1425 filtered out; finished in 10.31s\n\n  stderr ───\n\n    thread 'suite::skill_approval::shell_zsh_fork_skill_scripts_ignore_declared_permissions' (1054752) panicked at core/tests/common/lib.rs:356:14:\n    timeout waiting for event: Elapsed(())\n    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+      },
+      {
+        "status": "FAIL",
+        "elapsed": "0.138s",
+        "binary": "codex-core::all",
+        "name": "suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_preserves_denied_reads",
+        "log_byte_range": [
+          538582,
+          539548
+        ],
+        "excerpt": "        FAIL [   0.138s] codex-core::all suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_preserves_denied_reads\n  stdout ───\n\n    running 1 test\n    test suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_preserves_denied_reads ... FAILED\n\n    failures:\n\n    failures:\n        suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_preserves_denied_reads\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1425 filtered out; finished in 0.12s\n\n  stderr ───\n    Error: Fatal error: Failed to initialize session: failed to load AGENTS.md instructions for environment `local`: fs sandbox helper failed with status exit status: 1: error building bubblewrap command: Fatal error: unreadable glob `/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/core/.tmp1EQr3C/secret.env` cannot be safely expanded; use a pattern with a non-root directory prefix\n"
+      }
+    ],
+    "applicable_instructions": {
+      "path": "core-zsh-fixtures-r14-audit/evidence/AGENTS.md",
+      "bytes": 22519,
+      "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480"
+    }
+  },
+  "source_pins": [
+    {
+      "path": "codex-rs/config/src/permissions_toml.rs",
+      "bytes": 21021,
+      "sha256": "8246747d3777d30f2bb3356353f76d8a675ef1b8a2774bbf08dfd67081d4111d",
+      "git_blob": "98fd3534d62b304b0bee37810386c7f94e90e20b",
+      "source_commit": "b44d4ca4aa0ef9f894eff29e9975938e066a82f5",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b44d4ca4aa0ef9f894eff29e9975938e066a82f5/codex-rs/config/src/permissions_toml.rs"
+    },
+    {
+      "path": "codex-rs/core/src/config/permissions.rs",
+      "bytes": 34126,
+      "sha256": "7d2566dbc3dc1ef8397f3757373f9983a6dbb2b91c6a0a9e0c7f3c244743e9e9",
+      "git_blob": "a3b6dc5963dda0d0b06ef80c6bf22fad8749a952",
+      "source_commit": "b44d4ca4aa0ef9f894eff29e9975938e066a82f5",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b44d4ca4aa0ef9f894eff29e9975938e066a82f5/codex-rs/core/src/config/permissions.rs"
+    },
+    {
+      "commit": "b44d4ca4aa0ef9f894eff29e9975938e066a82f5",
+      "path": "codex-rs/core/tests/common/lib.rs",
+      "bytes": 23401,
+      "sha256": "34120e98be2ac8e1ee96373373f2241f9383f2cfb724d55cbcce2fb049468de9",
+      "git_blob": "f4e0d11e0b440b57faeba5c400e343975a0506d3"
+    },
+    {
+      "path": "codex-rs/core/tests/common/zsh_fork.rs",
+      "bytes": 4047,
+      "sha256": "c8ec104fe613f1b0695e9c0cc35120540a223a57f3cd5b0ac1c56699b631531f",
+      "git_blob": "225867d8c72283b57540a38c97d6c44106eef33e",
+      "source_commit": "b44d4ca4aa0ef9f894eff29e9975938e066a82f5",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b44d4ca4aa0ef9f894eff29e9975938e066a82f5/codex-rs/core/tests/common/zsh_fork.rs"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/skill_approval.rs",
+      "bytes": 9892,
+      "sha256": "8e977c5bf5bbd94f345886b83e16fcf8a3661a467090bc3ab67ae7604de79952",
+      "git_blob": "b62848b6bd3c88e776d5bb0683f24cbacddd787b",
+      "source_commit": "b44d4ca4aa0ef9f894eff29e9975938e066a82f5",
+      "source_tree": "d3d2313b838422818bf9448ce5a1b86d89abdf69",
+      "native_pin_file": "native-validation-results/r14-blockers/native-core-r14-result-review.json"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs",
+      "bytes": 31383,
+      "sha256": "79e550c948ce2eb51f0829c619bd73c2dd582c800299cbc78bc86c1feb524cae",
+      "git_blob": "218e22809391565142021a9809c1d5ef2adc0f14",
+      "source_commit": "b44d4ca4aa0ef9f894eff29e9975938e066a82f5",
+      "source_tree": "d3d2313b838422818bf9448ce5a1b86d89abdf69",
+      "native_pin_file": "native-validation-results/r14-blockers/native-core-r14-result-review.json"
+    },
+    {
+      "path": "codex-rs/linux-sandbox/src/bwrap.rs",
+      "bytes": 106289,
+      "sha256": "bfce8aa44048b2441a7c02b301fe7366ae1b8b9ddd8ff8518711cd874a9e749e",
+      "git_blob": "11e8e612af3cc4245a537fae18199acc74075a3b",
+      "source_commit": "b44d4ca4aa0ef9f894eff29e9975938e066a82f5",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b44d4ca4aa0ef9f894eff29e9975938e066a82f5/codex-rs/linux-sandbox/src/bwrap.rs"
+    },
+    {
+      "path": "codex-rs/protocol/src/permissions.rs",
+      "bytes": 145214,
+      "sha256": "3ad7c54a19a3bddd72e9e8d8d0641835674ac2b596001ee0d7ce32293863fe06",
+      "git_blob": "1537230e0a8f1685530eb03c2c782a587ad6bb6a",
+      "source_commit": "b44d4ca4aa0ef9f894eff29e9975938e066a82f5",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/b44d4ca4aa0ef9f894eff29e9975938e066a82f5/codex-rs/protocol/src/permissions.rs"
+    }
+  ],
+  "cases": [
+    {
+      "test": "suite::skill_approval::shell_zsh_fork_skill_scripts_ignore_declared_permissions",
+      "observed": "Generic event waiter timeout at core/tests/common/lib.rs:356:14 after 10.326 seconds; the original block has no caller backtrace or event trace.",
+      "source_chain": [
+        {
+          "path": "codex-rs/core/tests/suite/skill_approval.rs",
+          "lines": "119-125",
+          "fact": "wait_for_exec_approval_request returns Some(request) on ExecApprovalRequest and None only on TurnComplete; no other event satisfies the predicate."
+        },
+        {
+          "path": "codex-rs/core/tests/common/lib.rs",
+          "lines": "331-336, 351-372",
+          "fact": "wait_for_event_match consumes the event through wait_for_event; when the matching event is normal TurnComplete, the common waiter also observes the exact pending normal finish owner under its existing event deadline."
+        },
+        {
+          "path": "codex-rs/core/tests/suite/skill_approval.rs",
+          "lines": "207-213",
+          "fact": "The test asserts approval.is_none(), proving the matching completion was consumed on any path that reaches the following wait_for_turn_complete; it then waits for another completion without submitting another turn."
+        }
+      ],
+      "classification": "Deterministic redundant wait on the no-approval success path. The source establishes why this path cannot complete normally; the terse observed panic is consistent but does not itself identify the waiter call site.",
+      "repair": "Remove only the second completion wait and explain that the no-approval branch already consumed it. Preserve the approval-is-none assertion and all three output/filesystem security assertions.",
+      "preserved": "Granular approval fields, script bytes, declared write metadata, real shell intercept runtime, same command, same restrictive workspace profile, all existing wait budgets, responses and single-request output checks.",
+      "helper_scope": "The local approval waiter has one call site. The separate wait_for_turn_complete helper remains used by the other test in this source file."
+    },
+    {
+      "test": "suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_preserves_denied_reads",
+      "observed": "Session initialization fails while loading AGENTS.md, before model requests or parent approval: bubblewrap rejects an unreadable glob whose reported value is an absolute secret.env path without glob metacharacters.",
+      "source_chain": [
+        {
+          "path": "codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs",
+          "lines": "60-80,633-645",
+          "fact": "The test creates a real absolute temporary secret.env file, inserts that exact path as a deny TOML key, and builds the session with this profile."
+        },
+        {
+          "path": "codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs",
+          "lines": "648-680",
+          "fact": "Its private permission_profile_from_toml helper unconditionally maps every Deny entry to FileSystemPath::GlobPattern. Full-file references show this helper is used only by denied_read_permission_profile, which is used only by this test."
+        },
+        {
+          "path": "codex-rs/protocol/src/permissions.rs",
+          "lines": "401-445,1321-1365",
+          "fact": "Literal paths and glob patterns are distinct runtime variants. AbsolutePathBuf converts to the literal Path variant. Denied literal paths are returned as unreadable roots; only GlobPattern entries are returned as unreadable globs."
+        },
+        {
+          "path": "codex-rs/linux-sandbox/src/bwrap.rs",
+          "lines": "698-716,747-759",
+          "fact": "Glob expansion requires a first glob metacharacter. The exact file has none, so split_pattern_for_ripgrep returns None and expansion returns the exact fatal message observed in the original failure."
+        },
+        {
+          "path": "codex-rs/core/src/config/permissions.rs",
+          "lines": "572-605",
+          "fact": "The production config compiler already sends keys with no glob metacharacters through literal absolute-path compilation, instead of manufacturing a GlobPattern."
+        },
+        {
+          "path": "codex-rs/linux-sandbox/src/bwrap.rs",
+          "lines": "2577-2610",
+          "fact": "Existing sandbox unit coverage expresses an exact denied file as AbsolutePathBuf.into() and checks the unreadable file mask. It was inspected as source, not run in this review."
+        }
+      ],
+      "classification": "Incorrect private fixture translation of a literal path, not a production authorization or glob-expansion failure.",
+      "repair": "For the fixture helper's only Deny input, validate AbsolutePathBuf::from_absolute_path(path) and convert to the existing literal runtime Path representation. Preserve Deny, root Read, project-root Write, network Restricted, missing-path behavior and glob depth.",
+      "preserved": "Original secret bytes and location, explicit has_denied_read_restrictions assertion, parent-approval command and flow, nonzero exit-code assertion, secret non-disclosure assertion, existing parser rejection of unsupported entries. Production glob fail-closed behavior is unchanged."
+    }
+  ],
+  "environment_boundary": "The shared zsh-fork test runtime already sets allow_login_shell=false. Neither candidate changes shell/login behavior, DotSlash fetching, native environment, sandbox escape or permissions. These causes do not rely on the prior login-profile stderr attribution.",
+  "validation": {
+    "source_pin_verification": "Each retained support file is bound to source43 by pinned GitHub blob/raw bytes or native source43 pins; raw SHA/Gitblob were checked. Source bytes are retained under original/.",
+    "mechanical_review": {
+      "path": "core-zsh-fixtures-r14-repair/mechanical-review.json",
+      "bytes": 1789,
+      "sha256": "be0b31425943f71f071f74a0e82200497473f19773e9d05a38747b8893eb8465"
+    },
+    "assertion_preservation": [
+      {
+        "path": "codex-rs/core/tests/suite/skill_approval.rs",
+        "original_count": 6,
+        "candidate_count": 6
+      },
+      {
+        "path": "codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs",
+        "original_count": 23,
+        "candidate_count": 23
+      }
+    ],
+    "whole_file_inverse": true,
+    "rust_executed": false,
+    "native_applied": false,
+    "required_remaining": "Root independent review and the native original strict / full Core gates; existing tests provide direct regression coverage, so no mirrored new tests were added."
+  }
+}

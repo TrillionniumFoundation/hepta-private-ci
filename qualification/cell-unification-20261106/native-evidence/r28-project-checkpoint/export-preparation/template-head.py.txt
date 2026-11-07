@@ -1,0 +1,144 @@
+#!/usr/bin/env python3
+"""Closed r28 evidence exporter. Bind exact originals and review before enabling.
+
+This program never executes a gate, Cargo, metadata, formatter, patch or source
+mutation. The only subprocesses are explicit Git reads of the frozen checkout.
+All new derived files and the archive are create-only; original bytes stay intact.
+"""
+from pathlib import Path, PurePosixPath
+import gzip
+import hashlib
+import io
+import json
+import re
+import stat
+import subprocess
+import sys
+import tarfile
+
+FROZEN = False
+TERMINAL_PIN = None
+CLOSED_ORIGINAL_PINS = None
+CONTROLLER_ORIGINAL_PINS = None
+
+T = Path('/home/alex/work/hepta-cell-unified-20261106-a')
+S = T / 'source'
+E = T / 'evidence'
+PREFIX = 'native-source52-project-r28'
+COMMIT = '1e0910becc37383e6d17ecf861ea844fd07d8862'
+TREE = '211f15baff19095e8c98bcea2b0ed99ca2270ade'
+HEAD = 'bef6fa7645df9df12b69fda499e97eed25de6c75'
+JOB_ID = '1a1b1e9bee0-fc05-7b7c'
+SOURCE_NAME = 'native-candidate-r28-source.json'
+SOURCE_PIN = {'bytes':55209,'sha256':'3ff99b41bab572666b424fdbf9a508b33be13e6487d9effa7dd6a0e14b4ec898','git_blob':'f057b526bf2ba492d6bb5810222f69ac0cc3bdd2'}
+RUNNER_PIN = {'bytes':54455,'sha256':'a7b64eb8ff8ec2b5bc75ae836e3ff423ce31ee86d5c4daf64b7543a8fa7aae9e','git_blob':'9f1a10e6eb0998b9c5e297a2d0a5382f0a289f0d'}
+INPUT_PIN = {'bytes':43267,'sha256':'9c7a414899bd05d1e70b9a6cbac64eef9dda552f8e56c904ee9f8e21ab37d6cb','git_blob':'eefc9ec94d7c5a0074eaa35788b3fbe670314420'}
+BASELINE_NAME = 'source50-four-package-r23-baseline.json'
+BASELINE_SHA = '6feba9a285f77f16fc1d34710d2737eae78a4ba3be74affd40f5703bc8ce405e'
+R26_PRE_PIN = {'bytes':7651,'sha256':'d1b604225a9162ffd3bfc1b4a372dac755f79ce63fe48e8614920d95682ee118','git_blob':'9e919e732f041571afe7b9e1c273d6a45b5ca682'}
+LOCKS = {'codex-rs/Cargo.lock':'4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c','MODULE.bazel.lock':'e80ef06b6f824a19cdcedd6010738b316ccca96b83ad8730fafb52153a2634fb'}
+PACKAGES = ['codex-cli','codex-exec-server','codex-network-proxy','codex-external-agent-migration']
+PYTHON_TEST_COUNT = 32
+BASELINE_COUNT = 1564
+ANSI = re.compile(rb'\x1b\[[0-?]*[ -/]*[@-~]')
+CONTROLLER_PREFIX = 'r28-controller-closed-'
+OUT = E / 'checkpoint-r28-closed.tar.gz'
+DERIVED = E / 'r28-closed-export'
+RESULT = E / 'checkpoint-r28-export.json'
+
+
+def require(condition, message):
+    if not condition:
+        raise RuntimeError(message)
+
+
+def sha(raw):
+    return hashlib.sha256(raw).hexdigest()
+
+
+def data_pin(raw):
+    return {'bytes':len(raw),'sha256':sha(raw),'git_blob':hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()}
+
+
+def safe_relative(value):
+    p=PurePosixPath(value)
+    require(isinstance(value,str) and value and not p.is_absolute() and '..' not in p.parts and '.' not in p.parts,'unsafe relative path')
+    return p
+
+
+def check_pin(raw,pin,label):
+    require(isinstance(pin,dict) and 'bytes' in pin and 'sha256' in pin,'missing pin: '+label)
+    actual=data_pin(raw)
+    require(actual['bytes']==pin['bytes'] and actual['sha256']==pin['sha256'],'byte/SHA mismatch: '+label)
+    if 'git_blob' in pin:require(actual['git_blob']==pin['git_blob'],'Git blob mismatch: '+label)
+
+
+def check_bindings():
+    require(__debug__,'do not run evidence validation with Python optimization')
+    require(FROZEN is True,'inert exporter: FROZEN must be explicitly reviewed and bound')
+    require(isinstance(TERMINAL_PIN,dict) and isinstance(CLOSED_ORIGINAL_PINS,dict) and isinstance(CONTROLLER_ORIGINAL_PINS,dict),'closed binding maps are not set')
+    for name,pin in CLOSED_ORIGINAL_PINS.items():
+        safe_relative(name);require('/' not in name and name.startswith(PREFIX+'-'),'unexpected closed gate path')
+        require(isinstance(pin,dict) and isinstance(pin.get('bytes'),int) and re.fullmatch('[0-9a-f]{64}',pin.get('sha256','')) is not None,'invalid closed gate pin')
+    for name,pin in CONTROLLER_ORIGINAL_PINS.items():
+        safe_relative(name);require('/' not in name and name.startswith(CONTROLLER_PREFIX),'unexpected controller path')
+        require(isinstance(pin,dict) and isinstance(pin.get('bytes'),int) and re.fullmatch('[0-9a-f]{64}',pin.get('sha256','')) is not None,'invalid controller pin')
+    suffixes={name[len(CONTROLLER_PREFIX):] for name in CONTROLLER_ORIGINAL_PINS}
+    require({'launch.json','terminal-process-status.json'}<=suffixes,'controller launch/terminal required')
+    require(any(re.fullmatch(r'read-[0-9]+\.json',name) for name in suffixes),'closed controller read records required')
+    require(all(name in {'launch.json','terminal-process-status.json'} or re.fullmatch(r'read-[0-9]+\.json',name) for name in suffixes),'unexpected controller input')
+
+
+def stable_read(path):
+    first=path.lstat()
+    require(stat.S_ISREG(first.st_mode) and first.st_nlink==1,'not an owned regular file: '+str(path))
+    raw=path.read_bytes();last=path.lstat()
+    fields=('st_dev','st_ino','st_mode','st_nlink','st_size','st_mtime_ns','st_ctime_ns')
+    require(all(getattr(first,k)==getattr(last,k) for k in fields) and len(raw)==last.st_size,'file changed during read: '+str(path))
+    return raw,stat.S_IMODE(last.st_mode)
+
+
+def git(*args):
+    require(args[0] in {'write-tree','rev-parse','diff','ls-files','ls-tree'},'export Git allowlist violation')
+    return subprocess.check_output(['git','--no-optional-locks',*args],cwd=S)
+
+
+def source_guard(source):
+    require(source['source_commit']==COMMIT and source['source_tree']==TREE,'wrong source52 identity')
+    rows=source['changed_files'];files={row['path']:row for row in rows}
+    require(len(files)==len(rows)==195,'wrong source52 changed count')
+    require(git('rev-parse','HEAD').decode().strip()==HEAD,'native HEAD changed')
+    require(git('write-tree').decode().strip()==TREE,'staged tree changed')
+    require(not git('diff','--name-only') and not git('ls-files','--others','--exclude-standard'),'source is not clean/staged only')
+    paths=git('diff','--cached','--no-renames','--name-only','-z',HEAD).decode().split('\0')[:-1]
+    require(len(paths)==195 and set(paths)==set(files),'changed path set differs')
+    index={}
+    for entry in git('ls-files','--stage','-z').split(b'\0'):
+        if not entry:continue
+        left,path=entry.split(b'\t',1);mode,blob,stage=left.decode().split()
+        require(stage=='0','unmerged index entry')
+        index[path.decode()]=(mode,blob)
+    for path,row in files.items():
+        safe_relative(path);raw,mode=stable_read(S/path)
+        require(data_pin(raw)=={k:row[k] for k in ('bytes','sha256','git_blob')},'source byte mismatch: '+path)
+        require(index[path]==(row['mode'],row['git_blob']),'source index mode/blob mismatch: '+path)
+        require(('100755' if mode&0o111 else '100644')==row['mode'],'source execute-bit mismatch: '+path)
+    for path,digest in LOCKS.items():require(sha(stable_read(S/path)[0])==digest,'raw lock changed: '+path)
+    return {'source_commit':COMMIT,'source_tree':TREE,'native_head':HEAD,'source_count':195,'all_raw_sha_gitblob_gitmode_verified':True,'no_unstaged_untracked_or_extra_paths':True,'cargo_lock_sha256':LOCKS['codex-rs/Cargo.lock'],'bazel_lock_sha256':LOCKS['MODULE.bazel.lock'],'pass':True}
+
+
+def recorded_guard(value):
+    require(value['pass'] is True and value['source_commit']==COMMIT and value['actual_tree']==value['expected_tree']==TREE,'original source guard failed')
+    require(value['changed_file_count']==195 and value['native_head']==HEAD and value['changed_path_set_matches'] is True,'original source count/HEAD differs')
+    require(value['file_mismatches']==value['unstaged_paths']==value['untracked_paths']==[],'original source guard mismatches')
+    require(value['cargo_lock_sha256']==LOCKS['codex-rs/Cargo.lock'] and value['bazel_lock_sha256']==LOCKS['MODULE.bazel.lock'],'original guard dual locks differ')
+
+
+def natural_terminal(value):
+    require(value['job_id']==JOB_ID and isinstance(value['exit_code'],int),'wrong original gate terminal')
+    require(value['state']==('succeeded' if value['exit_code']==0 else 'failed'),'outer state/exit mismatch')
+    for key in ('output_complete','output_durable','terminal_publication_confirmed'):require(value[key] is True,'incomplete outer publication')
+    for key in ('timed_out','cancelled','automatic_retry'):require(value[key] is False,'not a natural closed gate')
+    require(not any(value['log_truncated'].values()) and all(x is None for x in value['log_errors'].values()),'outer output truncated or unavailable')
+
+

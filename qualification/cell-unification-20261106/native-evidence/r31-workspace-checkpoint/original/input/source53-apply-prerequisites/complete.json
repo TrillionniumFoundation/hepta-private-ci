@@ -1,0 +1,45 @@
+{
+  "actual_changed_file_count": 197,
+  "bazel_lock_sha256": "e80ef06b6f824a19cdcedd6010738b316ccca96b83ad8730fafb52153a2634fb",
+  "bazel_lock_update_executed": false,
+  "before_existing_repo_leaves_not_in_prior_changed_manifest": true,
+  "behavior_repair_claimed": false,
+  "cargo_lock_sha256": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c",
+  "changed_from_source52_paths": [
+    "codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs",
+    "codex-rs/app-server/tests/suite/v2/bedrock_setup.rs"
+  ],
+  "delta_manifest": {
+    "bytes": 1749,
+    "git_blob": "5e9a74a299537dd96631976e8b03f189eb17ef3e",
+    "path": "native-source53-apply/input/delta-manifest.json",
+    "sha256": "26ade20e3c00fcd2e37b922b0d0f3caad1354af39767cd3fd35aafd3d7d99cf4"
+  },
+  "dependency_inputs_changed_paths": [],
+  "diagnostic_only": true,
+  "fix_fmt_executed": false,
+  "inherited_lock_boundary": "The original source50 lock success is retained only for identical dependency inputs and unchanged raw locks through source51, source52 and source53; this is not a new lock invocation or Rust qualification.",
+  "native_git_head": "bef6fa7645df9df12b69fda499e97eed25de6c75",
+  "prior_changed_file_count": 195,
+  "root_commit_mapping_is_tree_identity_not_checkout_claim": true,
+  "rust_executed": false,
+  "schema": "hepta.source53-apply-complete.v1",
+  "source52_original_changed_manifest_rows_unchanged": true,
+  "source_before_commit": "1e0910becc37383e6d17ecf861ea844fd07d8862",
+  "source_before_tree": "211f15baff19095e8c98bcea2b0ed99ca2270ade",
+  "source_commit": "f74be175de66a4b351cd239d39d98cd34fe9cc1b",
+  "source_guards_pass": true,
+  "source_manifest": {
+    "bytes": 56747,
+    "git_blob": "eea9da2308a920486e1bbfd613745d390cde61de",
+    "path": "native-candidate-r30-source.json",
+    "sha256": "9292bd9002716a0bec35ecea294f9dfef3dbb1e9c1d8fe66660e502aecc5cdda"
+  },
+  "source_postguard": {
+    "bytes": 12428,
+    "git_blob": "657c7e9424f770d7e4fd50f8ab820f88e352f5d0",
+    "path": "native-source53-apply/post-apply-source-guard.json",
+    "sha256": "5545c93f2a78080f8a15cc4a3370b8453b521f820e8283606176e5c5af023fe2"
+  },
+  "source_tree": "440d4a8e09af4009e4d9ea067388826308da8803"
+}

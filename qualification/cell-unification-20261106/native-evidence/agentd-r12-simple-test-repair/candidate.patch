@@ -1,0 +1,80 @@
+--- a/codex-rs/hepta-agentd/src/authority_host_admin_issuer_tests.rs
++++ b/codex-rs/hepta-agentd/src/authority_host_admin_issuer_tests.rs
+@@ -70,7 +70,7 @@
+         assert!(confirm_committed(&registry, &original, &changed, end).is_err());
+         assert_eq!(registry.frontier()?, frontier);
+     }
+-    let mut changed_original = original.clone();
++    let mut changed_original = original;
+     changed_original.binding.destination_id.push('x');
+     assert!(confirm_committed(&registry, &changed_original, &receipt, end).is_err());
+     assert_eq!(registry.frontier()?, frontier);
+@@ -95,7 +95,7 @@
+         .read_revocation(&original.lease_id)?
+         .ok_or("revocation absent")?;
+     assert_eq!(retained.revocation.reason_sha256, [7; 32]);
+-    let mut renewed = original.clone();
++    let mut renewed = original;
+     renewed.revision = receipt
+         .lease_revision
+         .checked_add(1)
+--- a/codex-rs/hepta-agentd/src/deployment_authbus_issuer_followup_tests.rs
++++ b/codex-rs/hepta-agentd/src/deployment_authbus_issuer_followup_tests.rs
+@@ -13,7 +13,7 @@
+             destination_id: "canonical-objective-issuer".into(),
+             ..f.registration.authority_lease.binding.clone()
+         },
+-        ..f.registration.authority_lease.clone()
++        ..f.registration.authority_lease
+     };
+     f.leases.put_lease(parent.clone(), 0).unwrap();
+     // The original registered fixture initially aliases issuer and writer.
+@@ -69,7 +69,7 @@
+             destination_id: "canonical-text-issuer".into(),
+             ..f.registration.authority_lease.binding.clone()
+         },
+-        ..f.registration.authority_lease.clone()
++        ..f.registration.authority_lease
+     };
+     f.leases.put_lease(parent.clone(), 0).unwrap();
+     f.base.issuer.lease = Some(
+--- a/codex-rs/hepta-agentd/src/deployment_authbus_issuer_final_tests.rs
++++ b/codex-rs/hepta-agentd/src/deployment_authbus_issuer_final_tests.rs
+@@ -15,7 +15,7 @@
+             destination_id: "canonical-final-signature-issuer".into(),
+             ..f.registration.authority_lease.binding.clone()
+         },
+-        ..f.registration.authority_lease.clone()
++        ..f.registration.authority_lease
+     };
+     f.leases.put_lease(parent.clone(), 0).unwrap();
+     f.base.issuer.lease = Some(
+--- a/codex-rs/hepta-agentd/src/deployment_notes_issuer_deadline_tests.rs
++++ b/codex-rs/hepta-agentd/src/deployment_notes_issuer_deadline_tests.rs
+@@ -13,7 +13,7 @@
+             destination_id: "canonical-notes-issuer".into(),
+             ..f.writer.authority_lease.binding.clone()
+         },
+-        ..f.writer.authority_lease.clone()
++        ..f.writer.authority_lease
+     };
+     f.registry.put_lease(parent.clone(), 0).unwrap();
+     f.issuer.lease = Some(
+--- a/codex-rs/hepta-agentd/src/root_desktop_startup_tests.rs
++++ b/codex-rs/hepta-agentd/src/root_desktop_startup_tests.rs
+@@ -149,12 +149,11 @@
+             }
+             _ => value["previous_recovery"]["grant"] = true.into(),
+         }
+-        match serde_json::from_value::<Profile>(value) {
+-            Ok(profile) => assert!(
++        if let Ok(profile) = serde_json::from_value::<Profile>(value) {
++            assert!(
+                 validate_profile(&profile, "fixture-root", true).is_err(),
+                 "accepted {change}"
+-            ),
+-            Err(_) => {}
++            );
+         }
+     }
+     let mut value = recovered_wire();

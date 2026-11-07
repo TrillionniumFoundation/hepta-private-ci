@@ -1,0 +1,76 @@
+[
+  {
+    "job_id": 127392153944,
+    "decoded_log_sha256": "3060824c2950db5bbdabf29957bf756074c20f86d0d9e1392382b16b12b737bf",
+    "bytes": 388410,
+    "gzip_sha256": "e4d1706da3ecdd6c1e544ad0c2b8f1deee8f63ed9c1dd870a6747c6f70e9744f",
+    "summary": [
+      "2026-11-05T22:24:16.0774490Z      Summary [ 108.262s] 631 tests run: 631 passed (1 slow), 66 skipped"
+    ],
+    "errors": [
+      "2026-11-05T22:25:40.2121381Z error: use of deprecated associated function `tokio::io::unix::AsyncFd::<T>::new`: unsound due to lack of I/O safety; use `AsyncFd::register` instead (see https://github.com/tokio-rs/tokio/pull/8587)",
+      "2026-11-05T22:25:40.3379281Z error: could not compile `codex-utils-pty` (lib) due to 1 previous error",
+      "2026-11-05T22:25:55.3487271Z error: recipe `clippy` failed on line 61 with exit code 101"
+    ],
+    "source_commit": "bef6fa7645df9df12b69fda499e97eed25de6c75",
+    "run_id": 42069233246,
+    "owner": "agentd_composition",
+    "tests": {
+      "run": 631,
+      "passed": 631,
+      "failed": 0,
+      "skipped": 66
+    },
+    "lint": "failed",
+    "failure": "Tokio 1.53.3 AsyncFd::new is deprecated; -D warnings rejected codex-utils-pty",
+    "overall": "failed"
+  },
+  {
+    "job_id": 127369396829,
+    "decoded_log_sha256": "5460abc5e15f884038a56ef9c6c254e417d2071d59031a4a4f270d870cc5c5bb",
+    "bytes": 72029,
+    "gzip_sha256": "47f35adf8b6d898969b7b5959bc7e58275fe0f3c335152909b829b16df190daf",
+    "summary": [
+      "2026-11-05T21:56:26.8658099Z      Summary [   0.518s] 165 tests run: 165 passed, 0 skipped"
+    ],
+    "errors": [],
+    "source_commit": "caf06e0d9c78ba2b8e2ab860ec1b37f049e30f1b",
+    "run_id": 42062983444,
+    "owner": "roles_and_differentiation",
+    "tests": {
+      "run": 165,
+      "passed": 165,
+      "failed": 0,
+      "skipped": 0
+    },
+    "lint": "selective_gate_passed",
+    "format": "failed",
+    "overall": "failed"
+  },
+  {
+    "job_id": 127392153697,
+    "decoded_log_sha256": "218b8abd65492229f516af0b7f4e92eb9b2da9b72e884b0f0cd4e718ad78db85",
+    "bytes": 278685,
+    "gzip_sha256": "d645a20d84c4ecb2ff0d6322eb4e67e5f6a7476a8cb0470d4c55e5df2126f640",
+    "summary": [
+      "2026-11-05T22:20:53.0233682Z      Summary [   6.813s] 502 tests run: 501 passed, 1 failed, 1 skipped"
+    ],
+    "errors": [
+      "2026-11-05T22:20:53.0237556Z error: test run failed",
+      "2026-11-05T22:20:53.0321871Z error: recipe `test` failed on line 89 with exit code 100"
+    ],
+    "source_commit": "bef6fa7645df9df12b69fda499e97eed25de6c75",
+    "run_id": 42069233246,
+    "owner": "framework_mechanisms",
+    "tests": {
+      "run": 502,
+      "passed": 501,
+      "failed": 1,
+      "skipped": 1
+    },
+    "failed_test": "codex-hepta-automation::automation v1_store_migrates_atomically_to_dispatch_outcome_schema",
+    "failure": "Unavailable at existing test line 1075; v1 fixture did not remove three post-v1 Circuit V2 tables",
+    "lint": "not_run_after_test_failure",
+    "overall": "failed"
+  }
+]

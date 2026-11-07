@@ -1,0 +1,79 @@
+{
+  "schema": "hepta.source51-network-fixture-candidate.v1",
+  "status": "CANDIDATE_NOT_APPLIED_NOT_TESTED",
+  "source50_commit": "1fdd647b0ecb235530e8b88bbea45b3d3762906f",
+  "source50_tree": "ea48acf562499192a25e05ae28926a32632dee62",
+  "path": "codex-rs/network-proxy/src/http_proxy.rs",
+  "before": {
+    "bytes": 69053,
+    "sha256": "7500b8820d7894da45ed4f444aca28573f1e5f9462f94c97ccb19019a0f6b430",
+    "git_blob": "50135c6cd4c426c3ec16d65d448c01a1fb776ddd"
+  },
+  "after": {
+    "bytes": 69092,
+    "sha256": "f8b6cb1adf67ea828efb29f68e10fd97a30e379574c93374c2a88f5364153967",
+    "git_blob": "17220a242091325aa66bd4cdb3419cd3a30b09ed"
+  },
+  "patch": {
+    "bytes": 420,
+    "sha256": "24fcba74cab54f242f1249bddf43ebc3be2bd3bbb7f16964dd7f24f334989198",
+    "git_blob": "09235650429cab4b8cc24360eadd9a7eeae1fb85"
+  },
+  "original_failure": {
+    "bytes": 1033,
+    "sha256": "713acb54080010d3ecafa27c529e978ec778daa337767674c8f0d37fc3913e36",
+    "git_blob": "af6badf1cc39163e6813421091448b641a88d607"
+  },
+  "observed_failure": "HTTP 403 blocked-by-allowlist at http_proxy.rs:1366 before DetectTls assertion",
+  "mechanism_from_source": "evaluate_host_policy calls NetworkProxyState::host_blocked before selecting ConnectMitmMode; default allow_local_binding=false performs live DNS/address classification even for the exactly allowlisted github.com. This unit fixture supplies no network stream and asserts only deferred credential MITM state.",
+  "inference_boundary": "The original failure does not expose an observed DNS response or syscall trace. No claim of a measured DNS timeout, private result, or causal timing is made.",
+  "repair": "Set only this test-local policy allow_local_binding=true, as in the neighboring direct CONNECT policy fixtures; retain canonical broker hostname/token virtualization and all original assertions.",
+  "assertions_and_deadlines_unchanged": true,
+  "production_code_and_defaults_unchanged": true,
+  "local_address_guard_tests_unchanged": true,
+  "only_added_line": "            allow_local_binding: true,",
+  "mechanical_patch_commands": [
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/workspace/scratch/08f5efd48967/source51-network-candidate/network-fixture.patch"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--reverse"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "rust_tests_run": false,
+  "source_commit_created": false
+}

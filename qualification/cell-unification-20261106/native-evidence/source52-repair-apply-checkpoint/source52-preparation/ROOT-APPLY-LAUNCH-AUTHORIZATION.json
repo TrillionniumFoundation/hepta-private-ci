@@ -1,0 +1,67 @@
+{
+  "schema": "hepta.root-source52-apply-launch-authorization.v1",
+  "authorization": "RUN_EXACT_SINGLE_APPLY_ONLY_JOB",
+  "source_commit": "1e0910becc37383e6d17ecf861ea844fd07d8862",
+  "source_tree": "211f15baff19095e8c98bcea2b0ed99ca2270ade",
+  "source_parent_commit": "e28b0f385ee882f842911044958b2810f62f6379",
+  "native_before_tree": "763c8d2b4089f6e9806c3bbb68fa247bc2f6af36",
+  "expected_head": "bef6fa7645df9df12b69fda499e97eed25de6c75",
+  "source_count_before": 194,
+  "source_count_after": 195,
+  "only_source_change": "codex-rs/network-proxy/src/runtime.rs",
+  "runner": {
+    "path": "ROOT-APPROVED-APPLY.py",
+    "bytes": 36495,
+    "sha256": "09c5e71fdfe2259dedbc9cf31d45f883b5703d9d69e8a86b419c7d28ebbf45f4"
+  },
+  "archive": {
+    "bytes": 43267,
+    "sha256": "9c7a414899bd05d1e70b9a6cbac64eef9dda552f8e56c904ee9f8e21ab37d6cb"
+  },
+  "exact_bound_AST_literals": {
+    "EXPECTED_COMMIT": "1e0910becc37383e6d17ecf861ea844fd07d8862",
+    "EXPECTED_TREE": "211f15baff19095e8c98bcea2b0ed99ca2270ade",
+    "EXPECTED_CHANGED_COUNT": 195,
+    "INPUT_BYTES": 43267,
+    "INPUT_SHA256": "9c7a414899bd05d1e70b9a6cbac64eef9dda552f8e56c904ee9f8e21ab37d6cb",
+    "SOURCE52_MANIFEST_PIN": {
+      "bytes": 55209,
+      "sha256": "3ff99b41bab572666b424fdbf9a508b33be13e6487d9effa7dd6a0e14b4ec898",
+      "git_blob": "f057b526bf2ba492d6bb5810222f69ac0cc3bdd2"
+    },
+    "DELTA_MANIFEST_PIN": {
+      "bytes": 1116,
+      "sha256": "0e9d938287ebc74d89e2bcaf2a102e7a83c063aac5705009ebd2eeb327af571a",
+      "git_blob": "1c3e5ee10fab525c293e3746c3d439ed925baeaa"
+    },
+    "CANDIDATE_PINS": {
+      "codex-rs/network-proxy/src/runtime.rs": {
+        "before": {
+          "mode": "100644",
+          "bytes": 75473,
+          "sha256": "3214446d85796e5d1c4a308ba53aab3bf7098fc18cd38cfc6f97a1cbb14d2e4f",
+          "git_blob": "1a449a44381fafa4a5d6a5d0e08753f425f339fc"
+        },
+        "after": {
+          "mode": "100644",
+          "bytes": 76209,
+          "sha256": "1d8523c4eda08408eb952a86d692f1e2cfb2975de934de6f1f325597fe9681c8",
+          "git_blob": "2c0b88642d1c079ee3991e9e1e418bbb01203694"
+        }
+      }
+    }
+  },
+  "whole_template_inverse_exact": true,
+  "only_final_change": "FROZEN = False to True",
+  "independent_review_sha256": "859aad85b9520ee2ed47d733f03c3ee1f91aeccf009932e2f319be17040f24d1",
+  "host": "pocket4",
+  "one_original_job": true,
+  "idempotency_key": "cell-source52-apply-only-20261106-v1",
+  "outer_timeout_seconds": 120,
+  "post_apply_required": "Original three Git commands and natural outer terminal0 plus complete195/raw-lock/HEAD guards. Preserve failure state; do not reset/retry.",
+  "rust_or_new_lock_or_fix_fmt_authorized_by_this_record": false,
+  "source52_native_applied_before_launch": false,
+  "r26_failure_retained": true,
+  "science": "HOLD",
+  "authority": "DENY_ALL"
+}

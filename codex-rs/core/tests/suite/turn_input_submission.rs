@@ -23,6 +23,7 @@ use core_test_support::responses::ev_completed;
 use core_test_support::responses::ev_response_created;
 use core_test_support::streaming_sse::StreamingSseChunk;
 use core_test_support::streaming_sse::start_streaming_sse_server;
+use core_test_support::streaming_sse::start_streaming_sse_server_with_initial_response_gate;
 use core_test_support::test_codex::local;
 use core_test_support::test_codex::test_codex;
 use core_test_support::wait_for_event;
@@ -118,25 +119,30 @@ async fn recover_turn_if_idle_requires_hepta_turn_recovery_feature() {
 #[tokio::test]
 async fn recover_turn_if_idle_preserves_id_and_resumes_plan_mode() {
     let (first_response_release, first_response_gate) = oneshot::channel();
-    let (server, _completions) = start_streaming_sse_server(vec![
+    // HTTP headers produce a RateLimits event before any SSE chunk. Hold the
+    // initial response before its headers so recovery stays before provider output.
+    let (server, _completions) = start_streaming_sse_server_with_initial_response_gate(
         vec![
-            StreamingSseChunk {
+            vec![
+                StreamingSseChunk {
+                    gate: None,
+                    body: responses::sse(vec![ev_response_created("resp-interrupted")]),
+                },
+                StreamingSseChunk {
+                    gate: None,
+                    body: responses::sse(vec![ev_completed("resp-interrupted")]),
+                },
+            ],
+            vec![StreamingSseChunk {
                 gate: None,
-                body: responses::sse(vec![ev_response_created("resp-interrupted")]),
-            },
-            StreamingSseChunk {
-                gate: Some(first_response_gate),
-                body: responses::sse(vec![ev_completed("resp-interrupted")]),
-            },
+                body: responses::sse(vec![
+                    ev_response_created("resp-recovered"),
+                    ev_completed("resp-recovered"),
+                ]),
+            }],
         ],
-        vec![StreamingSseChunk {
-            gate: None,
-            body: responses::sse(vec![
-                ev_response_created("resp-recovered"),
-                ev_completed("resp-recovered"),
-            ]),
-        }],
-    ])
+        Some(first_response_gate),
+    )
     .await;
     let test = test_codex()
         .with_config(|config| {
@@ -146,12 +152,35 @@ async fn recover_turn_if_idle_preserves_id_and_resumes_plan_mode() {
         .await
         .expect("build recovered turn session");
 
-    let initial_submission = submit_user_message(&test.codex, "recoverable user input")
+    let plan_mode = CollaborationMode {
+        mode: ModeKind::Plan,
+        settings: Settings {
+            model: test.session_configured.model.clone(),
+            reasoning_effort: None,
+            developer_instructions: None,
+        },
+    };
+    // Recovery resumes the interrupted settings; select Plan on the original user turn.
+    let initial_submission = test
+        .codex
+        .start_or_steer_turn(
+            user_message_request("recoverable user input").with_thread_settings(
+                ThreadSettingsOverrides {
+                    collaboration_mode: Some(plan_mode.clone()),
+                    ..Default::default()
+                },
+            ),
+        )
         .await
         .expect("initial turn should start");
     let TurnInputSubmission::Started { turn_id } = initial_submission else {
         panic!("initial recovery fixture turn must start: {initial_submission:?}");
     };
+    assert_eq!(
+        test.codex.config_snapshot().await.collaboration_mode,
+        plan_mode,
+        "the original user turn must enter Plan mode before interruption"
+    );
     timeout(Duration::from_secs(5), server.wait_for_request_count(1))
         .await
         .expect("initial turn should reach the model");
@@ -214,17 +243,7 @@ async fn recover_turn_if_idle_preserves_id_and_resumes_plan_mode() {
         .recover_turn_if_idle(RecoverTurnRequest {
             turn_id: turn_id.clone(),
             expected_epoch,
-            thread_settings: ThreadSettingsOverrides {
-                collaboration_mode: Some(CollaborationMode {
-                    mode: ModeKind::Plan,
-                    settings: Settings {
-                        model: test.session_configured.model.clone(),
-                        reasoning_effort: None,
-                        developer_instructions: None,
-                    },
-                }),
-                ..Default::default()
-            },
+            thread_settings: ThreadSettingsOverrides::default(),
             trace: None,
         })
         .await
@@ -234,6 +253,12 @@ async fn recover_turn_if_idle_preserves_id_and_resumes_plan_mode() {
         StartIfIdleSubmission::Started {
             turn_id: turn_id.clone(),
         }
+    );
+
+    assert_eq!(
+        test.codex.config_snapshot().await.collaboration_mode,
+        plan_mode,
+        "recovery must preserve the original Plan mode and its settings"
     );
 
     let started = wait_for_event(&test.codex, |event| {

@@ -1,0 +1,123 @@
+{
+  "schema": "hepta.source53-actual-apply-independent-closure.v1",
+  "status": "APPLY_ONLY_NATURAL_0_DIAGNOSTIC_SOURCE53_EXACT197",
+  "actual_source_commit": "f74be175de66a4b351cd239d39d98cd34fe9cc1b",
+  "actual_source_tree": "440d4a8e09af4009e4d9ea067388826308da8803",
+  "source_before_commit": "1e0910becc37383e6d17ecf861ea844fd07d8862",
+  "source_before_tree": "211f15baff19095e8c98bcea2b0ed99ca2270ade",
+  "native_HEAD": "bef6fa7645df9df12b69fda499e97eed25de6c75",
+  "checkout_of_registered_commit_claimed": false,
+  "original_apply_job": "1a1b2552130-fc05-7d91",
+  "original_outer_exit": 0,
+  "natural_complete_durable_terminal": true,
+  "three_original_Git_commands": [
+    {
+      "command": [
+        "git",
+        "apply",
+        "--check",
+        "/home/alex/work/hepta-cell-unified-20261106-a/evidence/native-source53-apply/input/candidate.patch"
+      ],
+      "cwd": "/home/alex/work/hepta-cell-unified-20261106-a/source",
+      "elapsed_seconds": 0.0019841870525851846,
+      "ended_unix": 1793993287.4721591,
+      "exit_code": 0,
+      "schema": "hepta.source53-original-git-command-result.v1",
+      "started_unix": 1793993287.4701757,
+      "wait_exception": null
+    },
+    {
+      "command": [
+        "git",
+        "apply",
+        "/home/alex/work/hepta-cell-unified-20261106-a/evidence/native-source53-apply/input/candidate.patch"
+      ],
+      "cwd": "/home/alex/work/hepta-cell-unified-20261106-a/source",
+      "elapsed_seconds": 0.0027490240754559636,
+      "ended_unix": 1793993287.8561332,
+      "exit_code": 0,
+      "schema": "hepta.source53-original-git-command-result.v1",
+      "started_unix": 1793993287.853385,
+      "wait_exception": null
+    },
+    {
+      "command": [
+        "git",
+        "add",
+        "--",
+        "codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs",
+        "codex-rs/app-server/tests/suite/v2/bedrock_setup.rs"
+      ],
+      "cwd": "/home/alex/work/hepta-cell-unified-20261106-a/source",
+      "elapsed_seconds": 0.011356386006809771,
+      "ended_unix": 1793993288.0394645,
+      "exit_code": 0,
+      "schema": "hepta.source53-original-git-command-result.v1",
+      "started_unix": 1793993288.0281096,
+      "wait_exception": null
+    }
+  ],
+  "all43_underlying_files_and_local_readback_rehashed": true,
+  "seven_input_members_equal_exact_approved_archive": true,
+  "pre195_intermediate_exact_two_unstaged_and_post197_guards_verified": true,
+  "native_guard_attests_full_raw_source_rehash": true,
+  "reviewer_independently_read_all197_native_source_payloads": false,
+  "source_identity_independent_git_and_manifest_verification": {
+    "direct_trees_canonical_hash_recomputed": 18,
+    "old_tree": "211f15baff19095e8c98bcea2b0ed99ca2270ade",
+    "new_tree": "440d4a8e09af4009e4d9ea067388826308da8803",
+    "exact_changed_existing_leaves": [
+      {
+        "path": "codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs",
+        "mode": "100644",
+        "before": "9e7cb31856c2b938c6a8ba73f8affb36bd4b5e3d",
+        "after": "747ae860d47bc33dfa48c7dcfb944dd6e4dd2865"
+      },
+      {
+        "path": "codex-rs/app-server/tests/suite/v2/bedrock_setup.rs",
+        "mode": "100644",
+        "before": "87cfaf3ae45eafbc54dad94a96226f4a807209a5",
+        "after": "daaddd66a0b02a044263da26be6302b2d4ee4584"
+      }
+    ],
+    "single_parent_commit": "1e0910becc37383e6d17ecf861ea844fd07d8862",
+    "old195_row_values_and_individual_JSON_slices_exact": true,
+    "manifest_scope": {
+      "all": 197,
+      "rust": 183,
+      "other": 14
+    }
+  },
+  "actual_native_diff_pure_python_forward_replay_matches_both_after_files": true,
+  "original_Git_harness_has_raw_timing_and_receipts_not_time_resources": true,
+  "preliminary_plan_resource_wording_superseded_by_actual_schema": true,
+  "dual_locks_unchanged": true,
+  "dependency_inputs_changed": [],
+  "complete": {
+    "path": "native-validation-results/source53-apply-v2-closed/evidence/native-source53-apply/complete.json",
+    "bytes": 2220,
+    "sha256": "5934056021848d5203e40458f97654556b97c113155a5512ed469c8df26efd93",
+    "git_blob": "ac0737a662cb9efc5e4c81f8ce0ee4601ddb5401"
+  },
+  "postguard": {
+    "path": "native-validation-results/source53-apply-v2-closed/evidence/native-source53-apply/post-apply-source-guard.json",
+    "bytes": 12428,
+    "sha256": "5545c93f2a78080f8a15cc4a3370b8453b521f820e8283606176e5c5af023fe2",
+    "git_blob": "657c7e9424f770d7e4fd50f8ab820f88e352f5d0"
+  },
+  "source_manifest": {
+    "path": "native-validation-results/source53-apply-v2-closed/evidence/native-candidate-r30-source.json",
+    "bytes": 56747,
+    "sha256": "9292bd9002716a0bec35ecea294f9dfef3dbb1e9c1d8fe66660e502aecc5cdda",
+    "git_blob": "eea9da2308a920486e1bbfd613745d390cde61de"
+  },
+  "original_v1_path_failure_preserved": true,
+  "diagnostic_only": true,
+  "behavior_repair_claimed": false,
+  "root_cause_proven": false,
+  "Rust_lock_update_fix_fmt_executed_by_apply": false,
+  "R30_R31_execution_or_results_in_this_group": false,
+  "scientific_disposition": "HOLD",
+  "authority": "DENY_ALL",
+  "this_readback_runs_only_local_Python_data_checks": true
+}

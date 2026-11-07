@@ -1,0 +1,11 @@
+--- bound-template.py
++++ expected-final.py
+@@ -17,7 +17,7 @@
+ import sys
+ import time
+ 
+-FROZEN = False
++FROZEN = True
+ EXPECTED_COMMIT = '1e0910becc37383e6d17ecf861ea844fd07d8862'
+ EXPECTED_TREE = '211f15baff19095e8c98bcea2b0ed99ca2270ade'
+ EXPECTED_CHANGED_COUNT = 195

@@ -1,0 +1,37 @@
+{
+  "schema": "hepta.source54-final-index-actual-command.v1",
+  "argv": [
+    "python3",
+    "/workspace/scratch/08f5efd48967/source54-final-index-review-preparation/validate_final_index.py",
+    "--candidate-index",
+    "/workspace/scratch/08f5efd48967/source54-index-root-preparation/INDEX.candidate-v2.json",
+    "--new-blobmap",
+    "/workspace/scratch/08f5efd48967/source54-index-root-preparation/COMPLETE-STAGED-OVERLAY.json",
+    "--map-kind",
+    "overlay",
+    "--canonical-root",
+    "/workspace/scratch/08f5efd48967/hepta-cell",
+    "--report",
+    "/workspace/scratch/08f5efd48967/source54-final-index-independent-review/INDEX-INDEPENDENT-READBACK.json"
+  ],
+  "cwd": "/workspace/scratch/08f5efd48967",
+  "inputs": [
+    {
+      "path": "/workspace/scratch/08f5efd48967/source54-final-index-review-preparation/validate_final_index.py",
+      "bytes": 22316,
+      "sha256": "b71e2e73ca47e03ecefc2564e850f4a1a9fc2d7b05bee1cc5b9e23bb126587c6"
+    },
+    {
+      "path": "/workspace/scratch/08f5efd48967/source54-index-root-preparation/INDEX.candidate-v2.json",
+      "bytes": 2414064,
+      "sha256": "23c4d89462c4aa23f6cc103b82880750b5421f45cd3c3a18a97d4f1deb4477b0"
+    },
+    {
+      "path": "/workspace/scratch/08f5efd48967/source54-index-root-preparation/COMPLETE-STAGED-OVERLAY.json",
+      "bytes": 536644,
+      "sha256": "b4cec5370f0f69ca676f26ef1908d6f5a2a6653fe5743986aed3e581edd3d7a2"
+    }
+  ],
+  "single_actual_validation": true,
+  "candidate_preview": false
+}

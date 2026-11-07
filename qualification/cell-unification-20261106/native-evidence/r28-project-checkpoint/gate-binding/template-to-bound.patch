@@ -1,0 +1,46 @@
+--- reviewed-template.py
++++ bound-template.py
+@@ -18,11 +18,11 @@
+ import time
+ 
+ FROZEN = False
+-EXPECTED_COMMIT = None
+-EXPECTED_TREE = None
+-EXPECTED_CHANGED_COUNT = None
+-SOURCE_MANIFEST_NAME = None
+-SOURCE_MANIFEST_SHA256 = None
++EXPECTED_COMMIT = '1e0910becc37383e6d17ecf861ea844fd07d8862'
++EXPECTED_TREE = '211f15baff19095e8c98bcea2b0ed99ca2270ade'
++EXPECTED_CHANGED_COUNT = 195
++SOURCE_MANIFEST_NAME = 'native-candidate-r28-source.json'
++SOURCE_MANIFEST_SHA256 = '3ff99b41bab572666b424fdbf9a508b33be13e6487d9effa7dd6a0e14b4ec898'
+ CARGO_LOCK_SHA256 = '4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c'
+ BAZEL_LOCK_SHA256 = 'e80ef06b6f824a19cdcedd6010738b316ccca96b83ad8730fafb52153a2634fb'
+ LOCK_INPUT_PINS = {'complete.json': {'bytes': 2292, 'sha256': '141820576f72e474b614a75b7414f1508575e636fca059b5593ab36ec05f8b7c'}, 'postguard.json': {'bytes': 1250, 'sha256': '835e143f4ebc54028640e25df8fef74e7fc3bf1a55caca4027e4e4c2ba7c20fe'}, 'generated-source.json': {'bytes': 52992, 'sha256': '7e5b9d8ba537cc527f94154ae405382ac4197e217d14a44a6c48d4e70099fe97'}, 'lock-update-raw-process-result.json': {'bytes': 384, 'sha256': '625775accc1f9507cb142f9b34a6d81aac05885ca4459b94eaf36b1d7e8839a8'}, 'lock-update-receipt.json': {'bytes': 777, 'sha256': 'dce6237eabf6c713e750dd6f6d5d8ac1336c98ab90a03a63b831a5cf0f503007'}, 'lock-update.log': {'bytes': 2808, 'sha256': '580619bbafa9c83e4d461572f7d138531b14d8cfb078be0933fc9467d8ebfff2'}, 'lock-update.resources.txt': {'bytes': 752, 'sha256': '95bc589bd25490158644c6c5eebae3f3e6a491be76565824b0fc0eb8cf7fc3bb'}}
+@@ -54,16 +54,16 @@
+ PREVIOUS_SOURCE49_COMMIT = "50dd4bedefcd1b8e2e8cd5cf5023c60a86d38d0a"
+ PREVIOUS_SOURCE49_TREE = "be34ab1afe622ad3b8f030c8c5018f4f54fbc304"
+ # All future apply/source52 identities remain explicitly unbound.
+-APPLY_COMPLETE_NAME = None
+-APPLY_COMPLETE_SHA256 = None
+-APPLY_COMPLETE_BYTES = None
+-APPLY_TERMINAL_NAME = None
+-APPLY_TERMINAL_SHA256 = None
+-APPLY_TERMINAL_BYTES = None
+-APPLY_JOB_ID = None
+-DELTA_MANIFEST_NAME = None
+-DELTA_MANIFEST_SHA256 = None
+-DELTA_MANIFEST_BYTES = None
++APPLY_COMPLETE_NAME = 'native-source52-apply/complete.json'
++APPLY_COMPLETE_SHA256 = 'c9ecdc0ba8a34cd9f1a0a9bccb5e4d58034ce21558fe619d7351ca3e8eccfa14'
++APPLY_COMPLETE_BYTES = 2046
++APPLY_TERMINAL_NAME = 'native-source52-apply-terminal-process-status.json'
++APPLY_TERMINAL_SHA256 = 'aa92d5cf988a3f2a1ea434dcdd4c39274c2c783cd69609edc04da655e3457a9e'
++APPLY_TERMINAL_BYTES = 729
++APPLY_JOB_ID = '1a1b1e474a3-fc05-7b5b'
++DELTA_MANIFEST_NAME = 'native-source52-apply/input/delta-manifest.json'
++DELTA_MANIFEST_SHA256 = '0e9d938287ebc74d89e2bcaf2a102e7a83c063aac5705009ebd2eeb327af571a'
++DELTA_MANIFEST_BYTES = 1116
+ 
+ LOCK_SOURCE50_COMMIT = "1fdd647b0ecb235530e8b88bbea45b3d3762906f"
+ LOCK_SOURCE50_TREE = "ea48acf562499192a25e05ae28926a32632dee62"

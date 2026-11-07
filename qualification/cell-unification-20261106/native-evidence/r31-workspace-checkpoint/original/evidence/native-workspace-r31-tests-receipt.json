@@ -1,0 +1,118 @@
+{
+  "schema": "hepta.native-workspace-gate-receipt.v2",
+  "phase": "workspace-tests",
+  "source_tree": "440d4a8e09af4009e4d9ea067388826308da8803",
+  "source_commit": "f74be175de66a4b351cd239d39d98cd34fe9cc1b",
+  "source_manifest": "native-candidate-r30-source.json",
+  "source_manifest_sha256": "9292bd9002716a0bec35ecea294f9dfef3dbb1e9c1d8fe66660e502aecc5cdda",
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "--retries",
+    "0"
+  ],
+  "cwd": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs",
+  "start_unix": 1793995431.72244,
+  "end_unix": 1793997286.1504016,
+  "elapsed_seconds": 1854.4279615879059,
+  "exit_code": 0,
+  "effective_exit_code": 0,
+  "raw_process_result": {
+    "path": "native-workspace-r31-tests-raw-process-result.json",
+    "bytes": 496,
+    "sha256": "bbe125c63b619fed66c4cab2fe65942f159e4c06b234db2c8bac6e280e382899",
+    "git_blob": "0d71c937f4aeb75834a8848182add7b7de539444"
+  },
+  "log_sha256": "400d8c03545e34e1b7b6b517d775b07f9d0486d2bfa70d8dea4e62045c78dd5b",
+  "resources_sha256": "991023ae559ad04f6fe06c8517de6ee5ebae8fa47cb1eadec2d6a70005029fab",
+  "environment_manifest": "native-workspace-r31-environment.json",
+  "source_preguard": {
+    "path": "native-workspace-r31-tests-source-pre-verification.json",
+    "bytes": 588,
+    "sha256": "c2063342dd1ec7d4e8662c886448dbc83e8a8b2a4ab335a149ac409a6f13a3c5",
+    "git_blob": "fa3b9dd96c693c690b97f346ddaeb79776b316e9"
+  },
+  "source_postguard": {
+    "path": "native-workspace-r31-source-post-test-verification.json",
+    "bytes": 641,
+    "sha256": "5d97405e5ca0e53deaa17a6377404e77de4c0bb2bcbfd9b6362b5ce850a906ea",
+    "git_blob": "9c018a268afd0ba74fa02b88e17831fa15790381"
+  },
+  "source_guards_pass": true,
+  "test_scope": "original_default_workspace",
+  "packages_argument": null,
+  "workspace_member_count": 193,
+  "workspace_default_member_count": 193,
+  "scope": {
+    "path": "native-workspace-r31-scope.json",
+    "bytes": 93425,
+    "sha256": "bb3fd5a19ef48a929058d66430b09654d4ab3cf36924a223b4dc32cef7faf533",
+    "git_blob": "8f548a2747ff38fe2bd7494059f9e5c691f06c17"
+  },
+  "retries": 0,
+  "features": "unchanged_defaults",
+  "filters": "no_additions",
+  "acceptance_readback": {
+    "path": "native-workspace-r31-result-review.json",
+    "bytes": 1809,
+    "sha256": "6979a8812fcf1dd69f3e63f67588f25040af99c377baf7221eafe818ee001426",
+    "git_blob": "9d9ebb7af93c2a886e1b261f56ce5d76b1f2a7aa"
+  },
+  "issues": [],
+  "phase_pass": true,
+  "fix_fmt_executed": false,
+  "outer_timeout_seconds_contract": 9600,
+  "free_bytes_after": 292151554048,
+  "free_space_is_shared_filesystem_sample_not_exclusive_gate_cost": true,
+  "original_r29_workspace_baseline": {
+    "schema": "hepta.r31-original-r29-workspace-baseline.v1",
+    "source_commit": "1e0910becc37383e6d17ecf861ea844fd07d8862",
+    "source_tree": "211f15baff19095e8c98bcea2b0ed99ca2270ade",
+    "originals": [
+      {
+        "path": "native-workspace-r29-tests.log",
+        "bytes": 2499408,
+        "sha256": "3a95dcc8f0c486594fe3ff41c50fcaaa363bf00533f3ab7d37330e1c757a8559",
+        "git_blob": "7f719a1cf8f2b29c883edfd121293b6a509d8273"
+      },
+      {
+        "path": "native-workspace-r29-test-results.json",
+        "bytes": 4586810,
+        "sha256": "2070a63e9b17a64f75f447c39bb3a7d00a91c0273810fdb86ded4656318b9930",
+        "git_blob": "ffe853d4c13032f64e2d57ac7540bc23a55c9f15"
+      },
+      {
+        "path": "native-workspace-r29-result-review.json",
+        "bytes": 1775,
+        "sha256": "6cd91d2003e8fcd5eb576b5db22559683dfa5a4f0259e7a545f07d4580cb9004",
+        "git_blob": "ae4581b9939e29cbc42bab725934d63a0c1af9b2"
+      },
+      {
+        "path": "native-workspace-r29-metadata.json",
+        "bytes": 937659,
+        "sha256": "b29d6b0c49c63d6345f50597873e3fa98c79ea0cbfe923ae3dd700b5cc08af8d",
+        "git_blob": "0db6b5ccf051718a85b4aa0e7a57b7d62b393ecb"
+      }
+    ],
+    "identity_key": [
+      "binary",
+      "name"
+    ],
+    "count": 20228,
+    "observed_original_counts": {
+      "PASS": 20227,
+      "FAIL": 1,
+      "TIMEOUT": 0
+    },
+    "original_reported_skipped": 130,
+    "original_failed_100_preserved": true,
+    "test_ids_used_as_filter": false,
+    "acceptance": "exact identity set only after the complete original unfiltered workspace gate",
+    "old_metadata_reused_as_current": false
+  },
+  "test_ids_used_as_filter": false,
+  "exact_old_test_id_set_required": true,
+  "diagnostic_only": true,
+  "behavior_repair_claimed": false
+}

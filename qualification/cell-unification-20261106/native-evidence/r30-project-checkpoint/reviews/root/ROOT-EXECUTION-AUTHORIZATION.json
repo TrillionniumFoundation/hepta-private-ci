@@ -1,0 +1,64 @@
+{
+  "schema": "hepta.root-source53-project-r30-authorization.v1",
+  "authorized": "ONE_COMPLETE_APP_SERVER_STRICT_AND_TEST_GATE_ON_SOURCE53",
+  "unique_launch_key": "cell-source53-project-r30-20261106-v1",
+  "outer_timeout_seconds": 9600,
+  "runner": {
+    "path": "source53-r30-binding/native-run-r30.py",
+    "bytes": 61214,
+    "sha256": "b72407252efdaf81d8e3bc5280c3fa7ad9afb36fa398869e8023daaa392ff3c8"
+  },
+  "exact15_actual_literals_only": true,
+  "bound_inverse_equals_reviewed_V2_template": true,
+  "final_only_freeze_flip": true,
+  "all_bound_apply_and_source_originals_independently_rehashed": true,
+  "binding_readback": {
+    "path": "source53-r30-binding/BINDING-READBACK.json",
+    "bytes": 3847,
+    "sha256": "904df66fb885b3a1d98bb819a5b766818f50166b362c24dc0cf0073ee2e7d59b"
+  },
+  "source_commit": "f74be175de66a4b351cd239d39d98cd34fe9cc1b",
+  "source_tree": "440d4a8e09af4009e4d9ea067388826308da8803",
+  "native_HEAD_must_remain": "bef6fa7645df9df12b69fda499e97eed25de6c75",
+  "changed_path_count": 197,
+  "commands": [
+    [
+      "just",
+      "clippy",
+      "--locked",
+      "-p",
+      "codex-app-server",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    [
+      "just",
+      "test",
+      "--locked",
+      "--retries",
+      "0",
+      "-p",
+      "codex-app-server"
+    ]
+  ],
+  "baseline": {
+    "local_path": "source53-app-server-baseline-preparation/BASELINE-IDS.json",
+    "native_path": "/home/alex/work/hepta-cell-unified-20261106-a/evidence/source53-app-server-r29-baseline.json",
+    "bytes": 555309,
+    "sha256": "92e7ef41b0c2b08b81bb3ad9542f20ec820d86185f80369b4478cb5bd9c20cf1",
+    "post_execution_exact_ID_count": 1345,
+    "used_as_filter": false
+  },
+  "approved_runner_and_baseline_create_only_upload_authorized": true,
+  "remote_file_info_must_match_before_unique_launch": true,
+  "single_native_Rust_executor": true,
+  "no_deadline_retry_filter_feature_skip_assertion_sandbox_changes": true,
+  "raw_return_before_derived_processing_required": true,
+  "original_r29_failure_preserved": true,
+  "diagnostic_only": true,
+  "behavior_repair_claimed": false,
+  "workspace_gate_authorized": false,
+  "fix_fmt_authorized": false,
+  "automatic_retry_or_restore_authorized": false
+}

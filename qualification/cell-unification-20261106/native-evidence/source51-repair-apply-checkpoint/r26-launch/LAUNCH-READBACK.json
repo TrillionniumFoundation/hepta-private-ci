@@ -1,0 +1,53 @@
+{
+  "schema": "hepta.source51-r26-launch-readback.v1",
+  "source_commit": "e28b0f385ee882f842911044958b2810f62f6379",
+  "source_tree": "763c8d2b4089f6e9806c3bbb68fa247bc2f6af36",
+  "changed_file_count": 194,
+  "job_id": "1a1b1b739ee-fc05-7a70",
+  "idempotency_key": "cell-source51-project-r26-20261106-v1",
+  "launch_state": "launched",
+  "outer_timeout_seconds": 9600,
+  "runner_sha256": "c46f22be2c4b71004dc086870eaf5a69efed0ee32cde47cf33a2ef818f168396",
+  "source51_apply_naturally_completed_zero": true,
+  "latest_gate_observation": "LAUNCHED_FIRST_STATUS_AND_READ_UNAVAILABLE_CONTROL_ADMISSION",
+  "initial_control_query_error": "direct SSH host admission deadline; no child submitted",
+  "control_error_is_gate_result": false,
+  "python_result": null,
+  "strict_result": null,
+  "tests_result": null,
+  "no_execution_restart": true,
+  "no_source_mutation_while_gate_active": true,
+  "fix_fmt_executed": false,
+  "originals": [
+    {
+      "path": "original-launch.json",
+      "bytes": 1557,
+      "sha256": "a3c6cdbbceba179a7d59d236bcf740d4bc9b1a6aee7634d067a305044467d6fb"
+    },
+    {
+      "path": "original-command.txt",
+      "bytes": 533,
+      "sha256": "32ed4a48bd79ef784246f78e4afe4af97a25f69b19cd2ced1862aedc8733be98"
+    },
+    {
+      "path": "runner-file-info.json",
+      "bytes": 451,
+      "sha256": "7ab16e085419f21d7b3ed141c5d9935a87a6831ec303b56245f7f86b1f0ddb43"
+    },
+    {
+      "path": "runner-upload-original.json",
+      "bytes": 190,
+      "sha256": "553a40968bd525934ae5d89e92490244fcca108ff9a7ab0460f5e1a9480e1ccb"
+    },
+    {
+      "path": "initial-status-query-error.txt",
+      "bytes": 55,
+      "sha256": "b8875bfb184478b5869490e02c56fc58e4a71b78bdcc015807b05a8f621ff6bb"
+    },
+    {
+      "path": "initial-process-read-query-error.txt",
+      "bytes": 57,
+      "sha256": "2882aaf7fc2a093327e5d388bc582377d0fc8ea46e1597b5ffc7f7c6fb3cd948"
+    }
+  ]
+}

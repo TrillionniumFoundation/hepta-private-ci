@@ -1,7 +1,9 @@
 use super::EXIT_OBSERVATION_LOST;
 use super::NoopSpawnLifecycle;
+use super::TERMINATION_NOT_OBSERVED;
 use super::UnifiedExecProcess;
 use crate::unified_exec::UnifiedExecError;
+use crate::unified_exec::process_state::ProcessState;
 use anyhow::Result;
 use codex_sandboxing::SandboxType;
 use codex_utils_pty::ProcessDriver;
@@ -15,6 +17,7 @@ use std::time::Duration;
 use tokio::sync::broadcast;
 use tokio::sync::mpsc;
 use tokio::sync::oneshot;
+use tokio::time::Instant;
 
 struct DriverFixture {
     spawned: SpawnedPty,
@@ -116,7 +119,7 @@ async fn late_driver_sender_loss_cannot_be_upgraded_by_write_or_termination() ->
         Err(mpsc::error::TryRecvError::Empty)
     ));
     let terminate_error = process
-        .terminate_confirmed()
+        .terminate_confirmed(Instant::now() + Duration::from_secs(1))
         .await
         .expect_err("a termination request cannot supply a lost observation");
     assert!(matches!(
@@ -151,5 +154,88 @@ async fn observed_driver_exit_keeps_its_actual_code() -> Result<()> {
     assert!(process.has_exited());
     assert_eq!(process.exit_code(), Some(23));
     assert_eq!(process.failure_message(), None);
+    Ok(())
+}
+
+#[tokio::test]
+async fn termination_waits_for_the_drivers_later_native_result() -> Result<()> {
+    let fixture = driver_fixture();
+    let process = UnifiedExecProcess::from_spawned(
+        fixture.spawned,
+        SandboxType::None,
+        Box::new(NoopSpawnLifecycle),
+    )
+    .await?;
+    let termination = process.terminate_confirmed(Instant::now() + Duration::from_secs(1));
+    tokio::pin!(termination);
+
+    assert!(futures::poll!(&mut termination).is_pending());
+    assert_eq!(fixture.terminations.load(Ordering::SeqCst), 1);
+    assert_eq!(*process.state_rx.borrow(), ProcessState::default());
+    fixture
+        .exit_tx
+        .send(53)
+        .map_err(|_| anyhow::anyhow!("native exit receiver closed during confirmation"))?;
+    tokio::time::timeout(Duration::from_secs(2), &mut termination).await??;
+
+    assert_eq!(
+        *process.state_rx.borrow(),
+        ProcessState {
+            has_exited: true,
+            exit_code: Some(53),
+            ..ProcessState::default()
+        }
+    );
+    assert_eq!(fixture.terminations.load(Ordering::SeqCst), 1);
+    Ok(())
+}
+
+#[tokio::test]
+async fn termination_without_a_native_driver_result_remains_indeterminate() -> Result<()> {
+    let fixture = driver_fixture();
+    let process = UnifiedExecProcess::from_spawned(
+        fixture.spawned,
+        SandboxType::None,
+        Box::new(NoopSpawnLifecycle),
+    )
+    .await?;
+    let termination = process.terminate_confirmed(Instant::now() + Duration::from_secs(1));
+    tokio::pin!(termination);
+
+    assert!(futures::poll!(&mut termination).is_pending());
+    assert_eq!(fixture.terminations.load(Ordering::SeqCst), 1);
+    let error = tokio::time::timeout(Duration::from_secs(2), &mut termination)
+        .await?
+        .expect_err("requesting termination does not supply the missing native result");
+    assert!(error.to_string().contains(TERMINATION_NOT_OBSERVED));
+    assert_eq!(
+        *process.state_rx.borrow(),
+        ProcessState {
+            failure_message: Some(TERMINATION_NOT_OBSERVED.to_string()),
+            ..ProcessState::default()
+        }
+    );
+
+    // The deadline must not destroy the original native-result observer.
+    fixture
+        .exit_tx
+        .send(59)
+        .map_err(|_| anyhow::anyhow!("native exit receiver closed after the deadline"))?;
+    let mut state_rx = process.state_rx.clone();
+    tokio::time::timeout(
+        Duration::from_secs(2),
+        state_rx.wait_for(|state| state.has_exited),
+    )
+    .await??;
+    assert_eq!(
+        *process.state_rx.borrow(),
+        ProcessState {
+            has_exited: true,
+            exit_code: Some(59),
+            failure_message: Some(TERMINATION_NOT_OBSERVED.to_string()),
+            ..ProcessState::default()
+        }
+    );
+    assert_eq!(fixture.terminations.load(Ordering::SeqCst), 1);
     Ok(())
 }

@@ -1,0 +1,75 @@
+{
+  "actual_changed_file_count": 197,
+  "before_existing_repo_leaves_not_in_prior_changed_manifest": true,
+  "behavior_repair_claimed": false,
+  "declared_paths": [
+    "codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs",
+    "codex-rs/app-server/tests/suite/v2/bedrock_setup.rs"
+  ],
+  "diagnostic_only": true,
+  "existing_baseline_leaves": {
+    "before_existing_repo_leaves_not_in_prior_changed_manifest": true,
+    "leaves": [
+      {
+        "actual_working_bytes_equal_existing_Git_leaf": true,
+        "bytes": 5606,
+        "git_blob": "9e7cb31856c2b938c6a8ba73f8affb36bd4b5e3d",
+        "mode": "100644",
+        "path": "codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs",
+        "sha256": "af9ceab5047c7ee06bba84d47684748b38bfbb32e287db4a6fca84b2b45fa6fa",
+        "source_tree": "211f15baff19095e8c98bcea2b0ed99ca2270ade"
+      },
+      {
+        "actual_working_bytes_equal_existing_Git_leaf": true,
+        "bytes": 11612,
+        "git_blob": "87cfaf3ae45eafbc54dad94a96226f4a807209a5",
+        "mode": "100644",
+        "path": "codex-rs/app-server/tests/suite/v2/bedrock_setup.rs",
+        "sha256": "25c5036f352b673af21adfd37930f3f1762359b7422084c6e4eaaa9c1f513d55",
+        "source_tree": "211f15baff19095e8c98bcea2b0ed99ca2270ade"
+      }
+    ]
+  },
+  "input_archive": {
+    "bytes": 23866,
+    "git_blob": "3e0f823bcd8986fb6b97a5b032b8042405fa221e",
+    "path": "source53-apply-input.tar.gz",
+    "sha256": "a07c097b1873b65bf86e8b445ceddebc4f994ca0c39bd7900f1a184a0259c81a"
+  },
+  "patch_forward_inverse_exact": true,
+  "prior_changed_file_count": 195,
+  "r29_original_failed_100_closure": [
+    {
+      "bytes": 730,
+      "git_blob": "1c6fc37a5f85c915bd1fac9ae7a4fa10db35ae03",
+      "path": "native-workspace-r29-terminal-process-status.json",
+      "sha256": "9577b5c1f87e1f529edffcb262683067d0379dc4a9b16c84a2a43c68388374bf"
+    },
+    {
+      "bytes": 500,
+      "git_blob": "9db48c9908ac31a1e0f4def51657c1e5d6bd1e46",
+      "path": "native-workspace-r29-tests-raw-process-result.json",
+      "sha256": "c840e6ff388a9863aee1dce8b0bc148446ee6541025a7c7ba8b4ec96196d43c8"
+    },
+    {
+      "bytes": 2782,
+      "git_blob": "635387c0203c9023312dd1c80984803834d20d87",
+      "path": "native-workspace-r29-tests-receipt.json",
+      "sha256": "9ca2e64a0ff00b86840d76c2003caf7608965719e481a541235e43d462bd574a"
+    },
+    {
+      "bytes": 643,
+      "git_blob": "8004aaebcc2ef58884dbc24ce17a287cc4e416e8",
+      "path": "native-workspace-r29-source-post-test-verification.json",
+      "sha256": "e116303f0a7fac5b3d9f79ca3471331c9be7640120b124585ce2a61c70623703"
+    }
+  ],
+  "source52_manifest": {
+    "bytes": 55209,
+    "git_blob": "f057b526bf2ba492d6bb5810222f69ac0cc3bdd2",
+    "path": "native-candidate-r28-source.json",
+    "sha256": "3ff99b41bab572666b424fdbf9a508b33be13e6487d9effa7dd6a0e14b4ec898"
+  },
+  "source52_original_changed_manifest_rows_unchanged": true,
+  "source52_original_manifest_row_json_slices_byte_identical": true
+}

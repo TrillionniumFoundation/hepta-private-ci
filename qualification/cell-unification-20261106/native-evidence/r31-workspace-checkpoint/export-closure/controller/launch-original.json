@@ -1,0 +1,32 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "/home/alex/work/hepta-cell-unified-20261106-a/export-r31-closed.py"
+    ],
+    "created_unix_ms": 1793997829289,
+    "cwd": "/home/alex/work/hepta-cell-unified-20261106-a",
+    "env_keys": [],
+    "executable": "/usr/bin/python3",
+    "execution_mode": "operator",
+    "host": "pocket4",
+    "id": "1a1b29a74a9-fc05-7ede",
+    "idempotency_key": "cell-source53-r31-export-20261106-v1",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/alex/.local/state/hepta-runtime-mac-worker/jobs/1a1b29a74a9-fc05-7ede",
+    "request_digest": "8fa1fd6bf01ad536b599ad47c00403450f0c60eb17cd8fa6f24d2639e93b4b73",
+    "request_fingerprint": 10349832058705728822,
+    "ssh_target": "hepta-pocket4",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1b29a74a9-fc05-7ede"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1b29a74a9-fc05-7ede"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

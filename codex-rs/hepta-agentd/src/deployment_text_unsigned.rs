@@ -10,10 +10,13 @@ impl DeploymentFinalUseIssuer {
         namespace: &str,
         request_id: &str,
         body: AuthBusTextBody,
-        registration: &HostAuthorityWriterRegistration,
-        leases: &AuthorityLeaseVerifier,
-        proof: &crate::HostSignedWriterAuthorizationV1,
+        authority: RegisteredTextWriterAuthority<'_>,
     ) -> io::Result<TextUnsignedClosure> {
+        let RegisteredTextWriterAuthority {
+            registration,
+            leases,
+            proof,
+        } = authority;
         if self.lease.is_none()
             || registration.registered_agent_id != identity.agent_id
             || registration.spawn_generation != identity.spawn_generation

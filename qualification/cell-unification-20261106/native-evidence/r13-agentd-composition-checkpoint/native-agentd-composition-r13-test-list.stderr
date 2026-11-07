@@ -1,0 +1,114 @@
+ Downloading crates ...
+  Downloaded async-once-cell v0.5.4
+  Downloaded gzip-header v1.1.0
+  Downloaded ixdtf v0.6.6
+  Downloaded instability v0.3.14
+  Downloaded line-clipping v0.3.8
+  Downloaded mac_address v1.2.1
+  Downloaded indoc v2.0.8
+  Downloaded macroific_core v3.1.0
+  Downloaded gloo-utils v0.2.0
+  Downloaded palette_derive v0.7.7
+  Downloaded const_panic v0.2.17
+  Downloaded async-compression v0.4.51
+  Downloaded arboard v3.7.0
+  Downloaded itertools v0.10.5
+  Downloaded eyeball-im v0.8.0
+  Downloaded diplomat-runtime v0.16.0
+  Downloaded tiff v0.11.3
+  Downloaded icu_calendar_data v2.3.0
+  Downloaded fax v0.2.7
+  Downloaded ruma-html v0.8.0
+  Downloaded temporal_capi v0.2.6
+  Downloaded xxhash-rust v0.8.19
+  Downloaded compression-codecs v0.4.46
+  Downloaded smawk v0.3.3
+  Downloaded pest_generator v2.9.4
+  Downloaded onig v6.5.3
+  Downloaded finl_unicode v1.5.0
+  Downloaded macroific v3.1.0
+  Downloaded eyre v0.6.14
+  Downloaded diplomat_core v0.16.1
+  Downloaded palette_math v0.7.7
+  Downloaded psm v0.1.24
+  Downloaded macroific_macro v3.1.0
+  Downloaded wl-clipboard-rs v0.9.4
+  Downloaded compression-core v0.4.34
+  Downloaded archery v1.2.3
+  Downloaded web_atoms v0.2.6
+  Downloaded ulid v1.2.1
+  Downloaded stacker v0.1.25
+  Downloaded ruma v0.16.0
+  Downloaded matrix-sdk-store-encryption v0.18.0
+  Downloaded wayland-scanner v0.31.11
+  Downloaded deadpool v0.13.1
+  Downloaded wayland-backend v0.3.17
+  Downloaded siphasher v1.0.4
+  Downloaded plist v1.10.1
+  Downloaded pest_derive v2.9.4
+  Downloaded macroific_attr_parse v3.1.0
+  Downloaded ruma-events v0.34.0
+  Downloaded kasuari v0.4.13
+  Downloaded diplomat v0.16.1
+  Downloaded textwrap v0.16.4
+  Downloaded rustls-platform-verifier v0.7.1
+  Downloaded pest v2.9.4
+  Downloaded pest_meta v2.9.4
+  Downloaded clap_complete v4.6.11
+  Downloaded ruma-macros v0.19.0
+  Downloaded wayland-client v0.31.15
+  Downloaded timezone_provider v0.2.6
+  Downloaded ruma-client-api v0.24.0
+  Downloaded zerocopy-derive v0.8.63
+  Downloaded matrix-sdk-indexeddb v0.18.0
+  Downloaded matrix-sdk-common v0.18.0
+  Downloaded temporal_rs v0.2.6
+  Downloaded ruma-common v0.19.0
+  Downloaded quick-xml v0.42.0
+  Downloaded matrix-sdk-base v0.18.0
+  Downloaded palette v0.7.7
+  Downloaded unicode-width v0.2.2
+  Downloaded onig_sys v69.9.3
+  Downloaded icu_calendar v2.3.0
+  Downloaded matrix-sdk v0.18.0
+  Downloaded vodozemac v0.10.0
+  Downloaded aquamarine v0.6.0
+  Downloaded icu_segmenter_data v2.3.0
+  Downloaded two-face v0.5.2+bat-0.26.1
+  Downloaded icu_segmenter v2.3.0
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> third_party/i18n-config-0.4.8/src/lib.rs:144:9
+    |
+144 |         &self,
+    |         ^^^^^ the lifetime is elided here
+145 |     ) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    |                          ^^ ^^^^^   ^^ the same lifetime is elided here
+    |                          |  |
+    |                          |  the same lifetime is hidden here
+    |                          the same lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+    = note: `#[warn(mismatched_lifetime_syntaxes)]` on by default
+help: use `'_` for type paths
+    |
+145 |     ) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {
+    |                                  ++++
+
+warning: hiding a lifetime that's elided elsewhere is confusing
+   --> third_party/i18n-config-0.4.8/src/lib.rs:155:26
+    |
+155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate, &'_ I18nConfig)>, I18nConfigError> {
+    |                          ^^^^^                     ^^ ^^^^^   ^^ the same lifetime is elided here
+    |                          |                         |  |
+    |                          |                         |  the same lifetime is hidden here
+    |                          |                         the same lifetime is elided here
+    |                          the lifetime is elided here
+    |
+    = help: the same lifetime is referred to in inconsistent ways, making the signature confusing
+help: use `'_` for type paths
+    |
+155 |     pub fn active_config(&self) -> Result<Option<(&'_ Crate<'_>, &'_ I18nConfig)>, I18nConfigError> {
+    |                                                            ++++
+
+warning: `i18n-config` (lib) generated 2 warnings (run `cargo fix --lib -p i18n-config` to apply 2 suggestions)
+    Finished `test` profile [unoptimized] target(s) in 1.08s

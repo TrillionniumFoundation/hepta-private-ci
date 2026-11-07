@@ -26,6 +26,10 @@ use crate::bwrap::create_bwrap_command_args;
 use crate::landlock::apply_permission_profile_to_current_thread;
 use crate::launcher::exec_bwrap;
 use crate::launcher::preferred_bwrap_supports_argv0;
+use crate::owner_lifetime::ensure_owner_alive;
+use crate::owner_lifetime::monitor_owner;
+use crate::owner_lifetime::open_current_owner;
+use crate::owner_lifetime::take_inherited_owner;
 use crate::proxy_routing::activate_proxy_routes_in_netns;
 use crate::proxy_routing::prepare_host_proxy_route_spec;
 use codex_protocol::error::Result as CodexResult;
@@ -122,6 +126,11 @@ pub struct LandlockCommand {
     #[arg(long = "apply-seccomp-then-exec", hide = true, default_value_t = false)]
     pub apply_seccomp_then_exec: bool,
 
+    /// Internal: pidfd for the original command owner, opened before any
+    /// optional outer cleanup fork and consumed only by the trusted reaper.
+    #[arg(long = "owner-pidfd", hide = true)]
+    pub owner_pidfd: Option<libc::c_int>,
+
     /// Internal compatibility flag.
     ///
     /// By default, restricted-network sandboxing uses isolated networking.
@@ -163,6 +172,7 @@ pub fn run_main() -> ! {
         permission_profile,
         use_legacy_landlock,
         apply_seccomp_then_exec,
+        owner_pidfd,
         allow_network_for_proxy,
         proxy_route_spec,
         verify_fd_mounts,
@@ -175,6 +185,9 @@ pub fn run_main() -> ! {
     }
     if !apply_seccomp_then_exec && !verify_fd_mounts.is_empty() {
         panic!("--verify-fd-mount is only supported in the inner sandbox stage");
+    }
+    if !apply_seccomp_then_exec && owner_pidfd.is_some() {
+        panic!("--owner-pidfd is only supported in the inner sandbox stage");
     }
     ensure_inner_stage_mode_is_valid(apply_seccomp_then_exec, use_legacy_landlock);
     let EffectivePermissions {
@@ -192,6 +205,12 @@ pub fn run_main() -> ! {
     // Inner stage: apply seccomp/no_new_privs after bubblewrap has already
     // established the filesystem view.
     if apply_seccomp_then_exec {
+        let owner = owner_pidfd.map(|fd| {
+            // SAFETY: the private outer stage handed this owned descriptor
+            // across exec; no File in this process has taken ownership yet.
+            unsafe { take_inherited_owner(fd) }
+                .unwrap_or_else(|err| panic!("invalid sandbox owner pidfd: {err}"))
+        });
         if let Err(err) = crate::fd_mount::verify_fd_mounts(&verify_fd_mounts) {
             panic!("failed to verify descriptor-backed bubblewrap mount: {err}");
         }
@@ -219,6 +238,12 @@ pub fn run_main() -> ! {
         {
             panic!("Linux sandbox retained effective or permitted capabilities");
         }
+        // Ending this trusted reaper must terminate the whole PID namespace,
+        // including payload descendants that create their own process groups.
+        if unsafe { libc::getpid() } != 1 {
+            panic!("inner Linux sandbox must be PID 1 in its own namespace");
+        }
+        let owner = owner.unwrap_or_else(|| panic!("inner Linux sandbox requires --owner-pidfd"));
 
         if allow_network_for_proxy {
             let spec = proxy_route_spec
@@ -238,6 +263,8 @@ pub fn run_main() -> ! {
         ) {
             panic!("error applying Linux sandbox restrictions: {e:?}");
         }
+        ensure_owner_alive(&owner)
+            .unwrap_or_else(|err| panic!("sandbox command owner is unavailable: {err}"));
 
         let signal_mask = ForwardedSignalMask::block();
         let command_pid = unsafe { libc::fork() };
@@ -247,12 +274,15 @@ pub fn run_main() -> ! {
         }
 
         if command_pid == 0 {
+            // Close explicitly in the payload branch, not merely at exec.
+            drop(owner);
             reset_forwarded_signal_handlers_to_default();
             signal_mask.restore();
             exec_or_panic(command);
         }
 
         let signal_forwarders = install_bwrap_signal_forwarders(command_pid);
+        monitor_owner(owner);
         signal_mask.restore();
         loop {
             let mut status = 0;
@@ -399,7 +429,7 @@ fn run_bwrap_with_proc_fallback(
     command_cwd: Option<&Path>,
     file_system_sandbox_policy: &FileSystemSandboxPolicy,
     network_sandbox_policy: NetworkSandboxPolicy,
-    inner: Vec<String>,
+    mut inner: Vec<String>,
     mount_proc: bool,
     allow_network_for_proxy: bool,
 ) -> ! {
@@ -416,6 +446,20 @@ fn run_bwrap_with_proc_fallback(
         mount_proc = false;
     }
 
+    // Bind the same original helper PID that the external command owner
+    // controls. Open before the optional cleanup fork, so that path observes
+    // the original owner rather than relying on an intermediate bwrap parent.
+    let owner = open_current_owner()
+        .unwrap_or_else(|err| panic!("failed to open sandbox owner pidfd: {err}"));
+    let command_separator = inner
+        .iter()
+        .position(|argument| argument == "--")
+        .unwrap_or_else(|| panic!("inner sandbox command is missing '--'"));
+    inner.splice(
+        command_separator..command_separator,
+        ["--owner-pidfd".to_string(), owner.as_raw_fd().to_string()],
+    );
+
     let options = BwrapOptions {
         mount_proc,
         network_mode,
@@ -429,6 +473,9 @@ fn run_bwrap_with_proc_fallback(
         options,
     )
     .unwrap_or_else(|err| exit_with_bwrap_build_error(err));
+    // The filesystem builder reserves its first preserved file for /dev/null.
+    // Add the owner only after that builder has finished.
+    bwrap_args.preserved_files.push(owner);
     apply_inner_command_argv0(&mut bwrap_args.args);
     run_or_exec_bwrap(bwrap_args);
 }

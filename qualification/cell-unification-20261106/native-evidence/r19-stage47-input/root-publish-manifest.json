@@ -1,0 +1,47 @@
+{
+  "base_commit": "2d7ad1d60019f35fc13d84138ceb2755d914f434",
+  "base_tree": "ffa0a37f4616c5563169c7f0a9305bf6c982d58b",
+  "stage_file_count": 2,
+  "changed_source_files_against_original_framework_after": 181,
+  "packages_changed_this_stage": [
+    "codex-app-server"
+  ],
+  "packages_full_gate": [
+    "codex-app-server"
+  ],
+  "expected_final_fix_packages": 22,
+  "no_native_execution_yet": true,
+  "files": [
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/process_exec.rs",
+      "local_path": "/workspace/scratch/08f5efd48967/app-server-process-exec-r18-repair/source/codex-rs/app-server/tests/suite/v2/process_exec.rs",
+      "bytes": 10708,
+      "characters": 10708,
+      "sha256": "3ec4fd5e7dc024df3fd3af10e3b529bea98491d9e104b32e9fcea93077b9e0e7",
+      "git_blob_sha": "91fc35830de83b8fb9ac1da3c8846e14740a7058",
+      "mode": "100644",
+      "candidate": "app-server-process-exec-r18-repair",
+      "before": {
+        "bytes": 10437,
+        "sha256": "421f3f6664bf901c624e18ee4cd4ee4dab710a8607c581f55e39b7925698610d",
+        "git_blob": "af26eb8e4b63b9adf51f07d82c72a72d5c5cf242",
+        "git_mode": "100644"
+      }
+    },
+    {
+      "path": ".github/workflows/hepta-cell-framework-native.yml",
+      "local_path": "/workspace/scratch/08f5efd48967/app-server-ci-r18-repair/source/.github/workflows/hepta-cell-framework-native.yml",
+      "bytes": 8952,
+      "characters": 8952,
+      "sha256": "5c1947922fc66c513f96a3c2c221fcfc812b0773263f6fed0ac5e7489be19e32",
+      "git_blob_sha": "59bd4d8e0dfa8001a12578d9b8ad706de16ec029",
+      "mode": "100644",
+      "candidate": "app-server-ci-r18-repair",
+      "before": {
+        "bytes": 8848,
+        "sha256": "4a0cbfa961838f492423e6897d24802c1b456278032a0cedc8c33da385653ed0",
+        "git_blob": "29eb48f017280fee3bbc1efc48ac1e9eb204bc32"
+      }
+    }
+  ]
+}

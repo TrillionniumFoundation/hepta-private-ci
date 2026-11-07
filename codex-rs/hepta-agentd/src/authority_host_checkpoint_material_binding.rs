@@ -5,7 +5,7 @@ use codex_hepta_memory::CognitiveCheckpointReceipt;
 
 pub(super) enum FreshMaterial {
     LogicalOnly,
-    Physical(RootMaterialProfile),
+    Physical(Box<RootMaterialProfile>),
 }
 
 impl FreshMaterial {
@@ -16,7 +16,7 @@ impl FreshMaterial {
         match self {
             Self::LogicalOnly => Ok(None),
             Self::Physical(profile) => {
-                let owner = RootCheckpointMaterial::open(profile, head.peer_lifetime.clone())?;
+                let owner = RootCheckpointMaterial::open(*profile, head.peer_lifetime.clone())?;
                 owner.prepare(receipt(head)?, SourceCustody::FreshRoot)?;
                 Ok(Some(owner))
             }
@@ -75,7 +75,7 @@ impl HostCognitiveCheckpoint {
             registration,
             initial_cut,
             clock,
-            FreshMaterial::Physical(profile),
+            FreshMaterial::Physical(Box::new(profile)),
         )
     }
 

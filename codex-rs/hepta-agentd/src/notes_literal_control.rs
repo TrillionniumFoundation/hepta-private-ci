@@ -43,7 +43,7 @@ impl AgentdNotesPreparedObjective {
                 sender,
                 ticket,
                 ingress,
-            } => submit_original(sender, ticket, ingress, deadline).await,
+            } => submit_original(sender, *ticket, *ingress, deadline).await,
             Self::Retained(_) => Err(invalid(
                 "retained Notes Objective has no sending permission",
             )),

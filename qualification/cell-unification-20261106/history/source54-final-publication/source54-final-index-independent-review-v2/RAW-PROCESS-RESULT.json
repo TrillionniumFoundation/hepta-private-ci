@@ -1,0 +1,25 @@
+{
+  "schema": "hepta.source54-final-index-actual-process-result.v1",
+  "argv": [
+    "python3",
+    "/workspace/scratch/08f5efd48967/source54-final-index-review-preparation/validate_final_index-v2.py",
+    "--candidate-index",
+    "/workspace/scratch/08f5efd48967/source54-index-root-preparation/INDEX.candidate-v2.json",
+    "--new-blobmap",
+    "/workspace/scratch/08f5efd48967/source54-index-root-preparation/COMPLETE-STAGED-OVERLAY.json",
+    "--map-kind",
+    "overlay",
+    "--canonical-root",
+    "/workspace/scratch/08f5efd48967/hepta-cell",
+    "--report",
+    "/workspace/scratch/08f5efd48967/source54-final-index-independent-review-v2/INDEX-INDEPENDENT-READBACK.json"
+  ],
+  "cwd": "/workspace/scratch/08f5efd48967",
+  "started_unix": 1794001542.055505,
+  "ended_unix": 1794001542.6239803,
+  "elapsed_seconds": 0.5684752464294434,
+  "returncode": 0,
+  "automatic_retry": false,
+  "explicit_parent_authorized_corrected_validation": true,
+  "Rust_tests_metadata_or_Git_API_executed": false
+}

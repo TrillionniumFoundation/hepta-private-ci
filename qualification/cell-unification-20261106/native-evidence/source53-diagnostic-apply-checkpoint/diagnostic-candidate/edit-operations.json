@@ -1,0 +1,44 @@
+[
+  {
+    "path": "codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs",
+    "label": "entry-and-config-precedence-await",
+    "before": "    ) -> Result<Option<ClientResponsePayload>, JSONRPCErrorError> {\n        self.ensure_bedrock_login_allowed()?;\n        ensure_user_model_provider_can_be_bedrock(&self.config_manager).await?;\n",
+    "after": "    ) -> Result<Option<ClientResponsePayload>, JSONRPCErrorError> {\n        tracing::info!(\n            target: \"bedrock_setup_diagnostic\",\n            stage = \"handler_entered\",\n            \"diagnostic-only Bedrock setup boundary\"\n        );\n        self.ensure_bedrock_login_allowed()?;\n        tracing::info!(\n            target: \"bedrock_setup_diagnostic\",\n            stage = \"config_precedence_start\",\n            \"diagnostic-only Bedrock setup boundary\"\n        );\n        ensure_user_model_provider_can_be_bedrock(&self.config_manager).await?;\n        tracing::info!(\n            target: \"bedrock_setup_diagnostic\",\n            stage = \"config_precedence_complete\",\n            \"diagnostic-only Bedrock setup boundary\"\n        );\n"
+  },
+  {
+    "path": "codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs",
+    "label": "profile-validation-start",
+    "before": "                codex_aws_auth::validate_aws_profile(profile, region)\n",
+    "after": "                tracing::info!(\n                    target: \"bedrock_setup_diagnostic\",\n                    stage = \"profile_validation_start\",\n                    \"diagnostic-only Bedrock setup boundary\"\n                );\n                codex_aws_auth::validate_aws_profile(profile, region)\n"
+  },
+  {
+    "path": "codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs",
+    "label": "profile-validation-complete",
+    "before": "                    })?;\n                Some(profile.to_string())\n",
+    "after": "                    })?;\n                tracing::info!(\n                    target: \"bedrock_setup_diagnostic\",\n                    stage = \"profile_validation_complete\",\n                    \"diagnostic-only Bedrock setup boundary\"\n                );\n                Some(profile.to_string())\n"
+  },
+  {
+    "path": "codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs",
+    "label": "original-login-cancel-await",
+    "before": "        self.cancel_active_login().await;\n",
+    "after": "        tracing::info!(\n            target: \"bedrock_setup_diagnostic\",\n            stage = \"login_cancel_start\",\n            \"diagnostic-only Bedrock setup boundary\"\n        );\n        self.cancel_active_login().await;\n        tracing::info!(\n            target: \"bedrock_setup_diagnostic\",\n            stage = \"login_cancel_complete\",\n            \"diagnostic-only Bedrock setup boundary\"\n        );\n"
+  },
+  {
+    "path": "codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs",
+    "label": "provider-config-start",
+    "before": "        configure_bedrock_provider(\n",
+    "after": "        tracing::info!(\n            target: \"bedrock_setup_diagnostic\",\n            stage = \"provider_config_start\",\n            \"diagnostic-only Bedrock setup boundary\"\n        );\n        configure_bedrock_provider(\n"
+  },
+  {
+    "path": "codex-rs/app-server/src/request_processors/account_processor/bedrock_setup.rs",
+    "label": "provider-config-complete",
+    "before": "        .await?;\n\n        Ok(Some(BedrockSetupResponse {}.into()))\n",
+    "after": "        .await?;\n        tracing::info!(\n            target: \"bedrock_setup_diagnostic\",\n            stage = \"provider_config_complete\",\n            \"diagnostic-only Bedrock setup boundary\"\n        );\n\n        Ok(Some(BedrockSetupResponse {}.into()))\n"
+  },
+  {
+    "path": "codex-rs/app-server/tests/suite/v2/bedrock_setup.rs",
+    "label": "only-original-failed-test-first-child-log-filter",
+    "before": "            (\"AWS_DEFAULT_REGION\", Some(\"us-east-1\")),\n",
+    "after": "            (\"AWS_DEFAULT_REGION\", Some(\"us-east-1\")),\n            (\n                \"RUST_LOG\",\n                Some(\"warn,codex_app_server::app_server_tracing=info,codex_app_server::request_serialization=debug,bedrock_setup_diagnostic=info\"),\n            ),\n"
+  }
+]

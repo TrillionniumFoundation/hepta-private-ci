@@ -1,0 +1,31 @@
+{
+  "schema": "hepta.root-r18-exact-archive-transfer.v1",
+  "archive_bytes": 1093599,
+  "archive_sha256": "23740da4ca9da3997e2e16de20adf4d97ac0f4c7172fa7a752a625d65a27a06a",
+  "regular_members": 196,
+  "indexed_members": 195,
+  "all_member_bytes_and_hashes_verified": true,
+  "source_files": 180,
+  "all_source_git_blobs_and_modes_verified": true,
+  "source_identities_equal_closed_r17": true,
+  "source_tree": "ffa0a37f4616c5563169c7f0a9305bf6c982d58b",
+  "evidence_mode_scope": "All tar evidence entries are regular files; this INDEX does not pin evidence permission modes, so no index equality is claimed for those modes.",
+  "validator_format_correction": "Initial direct mode equality stopped on Git mode 100644 versus tar permission mode 644. Correct verification checks the Git regular-file type and compares permission bits; no archive or INDEX bytes were changed.",
+  "index_fields": {
+    "schema": "hepta.native-closed-checkpoint.v1",
+    "stage": "r18-default-workspace-source46",
+    "source_tree": "ffa0a37f4616c5563169c7f0a9305bf6c982d58b",
+    "source_commit": "2d7ad1d60019f35fc13d84138ceb2755d914f434",
+    "source_file_count": 180,
+    "evidence_file_count": 15,
+    "outcome": "COMPILATION_FAILED",
+    "test_execution_started": false,
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "--retries",
+      "0"
+    ]
+  }
+}

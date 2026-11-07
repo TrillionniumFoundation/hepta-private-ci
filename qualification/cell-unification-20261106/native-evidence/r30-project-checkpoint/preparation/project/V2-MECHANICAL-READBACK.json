@@ -1,0 +1,29 @@
+{
+  "schema": "hepta.source53-r30-v2-mechanical-readback.v1",
+  "v1": {
+    "bytes": 60611,
+    "sha256": "7e5c320133b585f9f1ce18e272ebbe26c0ad0da430fbde46d988aa89bb6a4dc9",
+    "git_blob": "84a87ab8ffb61c362cfefd6ba7ccde5d499f3333"
+  },
+  "v2": {
+    "path": "native-run-r30-template-v2.py",
+    "bytes": 60715,
+    "sha256": "a4bb18b0f2d2af63625e7ee6629df9f5a42f47c684bd8e4a72125b62b05d2c0b",
+    "git_blob": "d8ea3f26442a040210e542d48103952609b4c5e1"
+  },
+  "changed_functions": [
+    "write_json",
+    "review_tests"
+  ],
+  "wholefile_reverse_exact": true,
+  "other_functions_byte_exact": true,
+  "actual_ast_parse": true,
+  "frozen": false,
+  "future_none_bindings": 15,
+  "runner_imported_or_executed": false,
+  "changes": [
+    "write_json preserves exact UTF8 JSON bytes/create-only path, then flush/fsync before raw result returns or announce",
+    "readback rejects any additional actual test ID along with missing/duplicate/non-PASS; baseline remains only a closed-log check, no test command/filter changes"
+  ],
+  "schema_and_producer_contract_unchanged": true
+}

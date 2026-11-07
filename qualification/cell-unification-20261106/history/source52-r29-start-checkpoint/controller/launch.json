@@ -1,0 +1,33 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-c",
+      "/usr/bin/python3 -u -c 'from pathlib import Path; import hashlib; p=Path('\\''/home/alex/work/hepta-cell-unified-20261106-a/native-run-r29.py'\\''); b=p.read_bytes(); assert len(b)==82985 and hashlib.sha256(b).hexdigest()=='\\''26bb2c31806895b19410f290e1f20232ee3be2dbe09321e081857dddefac1fa2'\\''; exec(compile(b,str(p),'\\''exec'\\''),{'\\''__name__'\\'':'\\''__main__'\\'','\\''__file__'\\'':str(p)})'"
+    ],
+    "created_unix_ms": 1793987198539,
+    "cwd": "/home/alex/work/hepta-cell-unified-20261106-a",
+    "env_keys": [],
+    "executable": "/bin/sh",
+    "execution_mode": "operator",
+    "host": "pocket4",
+    "id": "1a1b1f83e4b-fc05-7bcd",
+    "idempotency_key": "cell-source52-workspace-r29-20261106-v1",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/alex/.local/state/hepta-runtime-mac-worker/jobs/1a1b1f83e4b-fc05-7bcd",
+    "request_digest": "5e0d0230dc297263baf93dee6e9a61d18d0057b35ea2cf66abb054b4f7f7e40f",
+    "request_fingerprint": 6777075423137854051,
+    "ssh_target": "hepta-pocket4",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1b1f83e4b-fc05-7bcd"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1b1f83e4b-fc05-7bcd"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

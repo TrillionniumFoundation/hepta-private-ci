@@ -1,0 +1,110 @@
+{
+  "schema": "hepta.r26-export-local-readback.v1",
+  "export_terminal": {
+    "at_unix_ms": 1793984627081,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1b1d0e692-fc05-7aee",
+    "launch_nonce": "65d0c20bd3dd4acf7c57c780ec15334e",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 833,
+        "stored": 833
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "archive": {
+    "path": "/home/alex/work/hepta-cell-unified-20261106-a/evidence/checkpoint-r26-closed.tar.gz",
+    "bytes": 1667299,
+    "sha256": "1c4f0b7319047291c98ccb52a97a69482247bba317a036294965533d26547683",
+    "git_blob": "8b837b44751b5d72e52982d80d99b445883436cc",
+    "members": 279,
+    "source_count": 194,
+    "source_tree": "763c8d2b4089f6e9806c3bbb68fa247bc2f6af36",
+    "source_commit": "e28b0f385ee882f842911044958b2810f62f6379",
+    "counts": {
+      "PASS": 1562,
+      "FAIL": 2,
+      "TIMEOUT": 0
+    },
+    "reported_skipped": 3,
+    "failure_blocks": "/home/alex/work/hepta-cell-unified-20261106-a/evidence/r26-failure-blocks",
+    "failures": [
+      {
+        "binary": "codex-network-proxy",
+        "name": "runtime::tests::host_blocked_subdomain_wildcards_exclude_apex"
+      },
+      {
+        "binary": "codex-network-proxy",
+        "name": "runtime::tests::host_blocked_global_wildcard_allowlist_allows_public_hosts_except_denylist"
+      }
+    ]
+  },
+  "file_info": {
+    "metadata": {
+      "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gid": 1000,
+      "link_count": 1,
+      "metadata_platform": "linux",
+      "mode": 384,
+      "uid": 1000,
+      "xattr_names": [],
+      "xattr_sha256": {}
+    },
+    "mode": 384,
+    "path": "/home/alex/work/hepta-cell-unified-20261106-a/evidence/checkpoint-r26-closed.tar.gz",
+    "sha256": "1c4f0b7319047291c98ccb52a97a69482247bba317a036294965533d26547683",
+    "size": 1667299,
+    "version": "66306:50875442:1667299:1793984627059470276:1793984627059470276"
+  },
+  "original_files": [
+    {
+      "local_name": "checkpoint-r26-export.json",
+      "path": "/home/alex/work/hepta-cell-unified-20261106-a/evidence/checkpoint-r26-export.json",
+      "size": 923,
+      "sha256": "71cc017e3ab69babe974ce635527bd75a75daac09df53a266b4a4322269f3ad4",
+      "version": "66306:50875443:923:1793984627063322610:1793984627063322610"
+    },
+    {
+      "local_name": "native-source51-project-r26-export-source-verification.json",
+      "path": "/home/alex/work/hepta-cell-unified-20261106-a/evidence/native-source51-project-r26-export-source-verification.json",
+      "size": 1039,
+      "sha256": "68f9266644a6812863f75e3693fb6a204a331d5c68fcdc6c3cf8b5818191c515",
+      "version": "66306:50875429:1039:1793984626663326101:1793984626663326101"
+    },
+    {
+      "local_name": "failure-blocks-INDEX.json",
+      "path": "/home/alex/work/hepta-cell-unified-20261106-a/evidence/r26-failure-blocks/INDEX.json",
+      "size": 1783,
+      "sha256": "979021e653b915ebc9ef7dc14770a6ae3b39ea75015f43efafa482f28a778414",
+      "version": "66306:50987184:1783:1793984626649370027:1793984626649370027"
+    }
+  ],
+  "full_archive_download_owner": "/root",
+  "native_source_modified": false,
+  "rust_rerun": false
+}

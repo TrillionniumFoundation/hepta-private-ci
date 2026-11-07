@@ -1,0 +1,21 @@
+{
+  "schema": "hepta.r15-scoped-closed-failure.v1",
+  "source_commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+  "source_tree": "1646e1656cf6365e74accae19a1225fd2ce6d964",
+  "closed_review_sha256": "a31121be22b0ff02347fbae5266a21597fe58e811f2cd697617e1bda577bc061",
+  "log_sha256": "2e9b11682a84cce7be7e1db72e47eb4be260e8d7ef7a3b1fa916fe59c5a3e39f",
+  "log_bytes": 515261,
+  "blocks": [
+    {
+      "status": "FAIL",
+      "elapsed": "0.569s",
+      "binary": "codex-core::all",
+      "name": "suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_preserves_denied_reads",
+      "log_byte_range": [
+        484059,
+        485047
+      ],
+      "excerpt": "        FAIL [   0.569s] codex-core::all suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_preserves_denied_reads\n  stdout ───\n\n    running 1 test\n    test suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_preserves_denied_reads ... FAILED\n\n    failures:\n\n    failures:\n        suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_preserves_denied_reads\n\n    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1425 filtered out; finished in 0.55s\n\n  stderr ───\n\n    thread 'suite::unified_exec_zsh_fork_approvals::unified_exec_zsh_fork_parent_approval_preserves_denied_reads' (1375996) panicked at core/tests/suite/unified_exec_zsh_fork_approvals.rs:893:13:\n    unexpected approval request: [\"/usr/bin/cat\", \"/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs/core/.tmpHlgOPP/secret.env\"]\n    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+    }
+  ]
+}

@@ -1,0 +1,187 @@
+{
+  "schema": "hepta.source54-final-report-final-independent-review.v1",
+  "state": "CLEAR",
+  "candidate": {
+    "directory": "source53-final-report-preparation/final-candidate-v2",
+    "handoff": {
+      "bytes": 40784,
+      "sha256": "6c3d30d2e329671e3735abc0b4b3ff4c8f5ba02dd173f96e8aad0f2c138429b8",
+      "git_blob": "d3c6669623c8778c8c65b5e5146c8824ed22cef2"
+    },
+    "regular_files": 148
+  },
+  "review_scope": "只读审核最终README、STATUS、SOURCE_IDENTITY与PR指南；不修改候选或canonical，不执行native/Rust/metadata/fix/fmt，不上传或发PR。",
+  "mechanical": {
+    "checks": 1802,
+    "mismatches": 0,
+    "remaining_findings": 0,
+    "generation_input_pins": 125,
+    "structured_reference_occurrences": 351,
+    "markdown_link_occurrences": 105,
+    "structured_reference_resolution": {
+      "local_exact_bytes": 330,
+      "formal_source_mapping_exact_bytes": 6,
+      "inherited_frozen_INDEX_reference_no_fresh_bytes_claim": 15
+    },
+    "markdown_reference_resolution": {
+      "inherited_frozen_INDEX_reference_no_fresh_bytes_claim": 10,
+      "local_exact_bytes": 35,
+      "immutable_source_URL": 60
+    }
+  },
+  "protected_content": {
+    "README_sections_1_and_4": "整节原字节相等",
+    "README_section_2": "仅root已授权链接label“源码来源与 53 个登记记录”增加“受测”；逆此唯一label后整节原字节相等，所有实现与Q24限制未变。",
+    "STATUS_exact_old_fields": [
+      "taxonomy",
+      "source_inputs",
+      "implementation",
+      "science",
+      "historical_assets",
+      "upstream_ci_history",
+      "source_compatibility"
+    ],
+    "taxonomy": "七类功能职责≠HNMF七类engram；角色、capability、expert、实例分别计数；没有“恰好七模型”结论。",
+    "backend_families": "冻结表示＋私有Head/Adapter、生成模型＋私有Adapter/解码状态、可训练状态模型三家族。",
+    "science": "冲突与冗余双HOLD；完整成本与独立retention限制、actual FeatureBundle缺口、Q24宽度1..512与EG2 768拒绝边界保持；14机制夹具回归不证明真实模型效能。"
+  },
+  "source_identity": {
+    "actual_final_commit": "b5209cfdf509e990f10922197b32540bf8c353a7",
+    "actual_final_tree": "42c1dd4e1a751c690c2800dfc3868e771dc9c70b",
+    "tested_commit": "f74be175de66a4b351cd239d39d98cd34fe9cc1b",
+    "tested_tree": "440d4a8e09af4009e4d9ea067388826308da8803",
+    "actual_commit_API_and_parent_match": true,
+    "source54_registration_not_native_checkout": true,
+    "old53_records_retained_exact": true,
+    "source_path_count": 197,
+    "Rust_paths": 183,
+    "other_paths": 14,
+    "owners": 26,
+    "CI_selectors": 27,
+    "PR_groups": {
+      "A": 25,
+      "B": 123,
+      "C": 38,
+      "D": 9,
+      "E": 2
+    },
+    "every_final_and_tested_pin_verified": true,
+    "source53_E2_diagnostic_only_no_behavior_or_rootcause_repair_claim": true
+  },
+  "engineering_results": {
+    "R30": {
+      "source": "tested source53",
+      "PASS": 1345,
+      "FAIL": 0,
+      "TIMEOUT": 0,
+      "reported_skip": 2,
+      "strict_raw_effective_outer": 0
+    },
+    "R31": {
+      "source": "tested source53",
+      "PASS": 20228,
+      "FAIL": 0,
+      "TIMEOUT": 0,
+      "reported_skip": 130,
+      "default_members": 193,
+      "raw_effective_outer": 0
+    },
+    "counts_not_summed": true,
+    "prior_R29_failed100_and_original_FAIL_identity_preserved": true,
+    "all_old_gate_records_except_newly_closed_R31_equal_prior_v2": true,
+    "fix": {
+      "exit0": true,
+      "changed_paths": 0,
+      "tree_unchanged": true
+    },
+    "format": {
+      "exit0": true,
+      "changed_paths": 56,
+      "Rust": 54,
+      "Python": 2
+    },
+    "warnings": {
+      "diagnostic": 3,
+      "summary_headers": 3,
+      "full_original_blocks_offsets_pinned": true,
+      "additional_strict_Dwarnings_clear_not_claimed": true
+    },
+    "post_fix_or_format_local_tests": false,
+    "qualification_transferred_to_final_formatted_tree": false,
+    "final_SHA_CI": "PENDING",
+    "branch_created": false,
+    "PR_created": false,
+    "science": "HOLD",
+    "authority": "DENY_ALL"
+  },
+  "review_history": {
+    "original_v1_preserved": true,
+    "v1_four_editorial_findings_resolved_by_five_literal_operations_in_four_files": true,
+    "four_structured_final_reports_unchanged_bytes": true,
+    "first_reader_reference_resolution_correction": "原第一轮未列入checkpoint6完整报告Git树和旧source53 new-files overlay，19处未解析引用已保留；补充既有来源后0 mismatch，不是候选字节错误。",
+    "immutable_Git_only_reference_boundary": "4个历史Markdown目标以实际checkpoint6树的原Git身份和大小核存在，不宣称本轮重读其raw bytes。"
+  },
+  "candidate_output_pins": [
+    {
+      "path": "candidates/README.md",
+      "bytes": 25722,
+      "sha256": "214a7bcab9eee4ac1b680162aa04ad55e78bd441e1dd928b1b05be06631f2ba3",
+      "git_blob": "775a8002d558866769e50344619585409ac4f075"
+    },
+    {
+      "path": "candidates/STATUS.json",
+      "bytes": 175653,
+      "sha256": "6e56a6a8a7686c0c90841d6e6cbc611bd652df669eb4f6ece10a1a43512661d0",
+      "git_blob": "70148e5ddaa7772aa609b39aed553ad33b03b27d"
+    },
+    {
+      "path": "candidates/SOURCE_IDENTITY.json",
+      "bytes": 93787,
+      "sha256": "8e4ad2e6f4ddf3b5acc6ea89bbbb5f4f490757f10606d83b15abbc1aa2914e60",
+      "git_blob": "4f0dc6d3c72f356a38db814f1eaae6a837dc59d9"
+    },
+    {
+      "path": "pr-guide-candidates/PR-PARAGRAPHS.zh-CN.md",
+      "bytes": 2690,
+      "sha256": "1d326730aad79902598f4be5391a383cb1641b5543da5c5f2a7e767af97f300f",
+      "git_blob": "e67e6ef03f5274adf73b0e748e98ca0264120ba5"
+    },
+    {
+      "path": "pr-guide-candidates/PR-BODY.md",
+      "bytes": 2647,
+      "sha256": "2799149e53ea9b0a5350ed4c47b474c8ced5b0c6d9934cec262dbc15dbc352ee",
+      "git_blob": "2deddf07b78846280bb3ee21a96ac04a953f9042"
+    },
+    {
+      "path": "pr-guide-candidates/REVIEW-GUIDE.zh-CN.md",
+      "bytes": 19257,
+      "sha256": "a6a33aa8332a6d4781eb6cf6fdc1ada28a8c048609c55ace850332d121f9d432",
+      "git_blob": "c70935ad58d426db9cfb3afcbf1ebe69aea6455d"
+    },
+    {
+      "path": "pr-guide-candidates/PATH-GROUPS.json",
+      "bytes": 208394,
+      "sha256": "692e6fb29225a7e550a01116957dc975fc171710411f6f220de65edd3c947788",
+      "git_blob": "a9184d7d037c7b83b2fe467e109429a504638869"
+    },
+    {
+      "path": "pr-guide-candidates/DYNAMIC-STATUS.json",
+      "bytes": 40791,
+      "sha256": "56b4ba132cd6c5f02eafc508ad952089240e360c1782b5f9f6dde1fb21c62fcc",
+      "git_blob": "0e0a13fe6c378a6c658ccaf86bb0668dd66697fb"
+    }
+  ],
+  "evidence": {
+    "full_checker": "verify_reports-v3.py",
+    "final_data_review": "review-v2-final/INDEPENDENT-REVIEW.json",
+    "all_checks": "review-v2-final/CHECKS.json",
+    "references": "review-v2-final/PINNED-REFERENCE-READBACK.json",
+    "markdown": "review-v2-final/MARKDOWN-REFERENCE-READBACK.json",
+    "editorial": "EDITORIAL-INDEPENDENT-READBACK.json",
+    "prior_findings": "review-v1-complete-refs/INDEPENDENT-REVIEW.json"
+  },
+  "limits": [
+    "本审阅不重跑已冻结的完整原日志、三源码tar或Rust语义审核；那些独立原件保持各自范围。",
+    "本文没有创建branch/PR或证明最终SHA CI。"
+  ]
+}

@@ -1,0 +1,158 @@
+{
+  "schema": "hepta.r28-export-closed-results.v1",
+  "original_test_review": {
+    "schema": "hepta.source52-four-package-closed-readback.v1",
+    "log": {
+      "bytes": 216247,
+      "sha256": "1af36d6404dff5026eca008da904354e4346523cb7cdca4d1231a59036d18347",
+      "git_blob": "49b6e83c662113ace46de9a05ea2db3e94911699"
+    },
+    "starting": {
+      "line": 268,
+      "byte_offset": 31748,
+      "text": "    Starting 1564 tests across 49 binaries (3 tests skipped)"
+    },
+    "summary": {
+      "line": 1834,
+      "byte_offset": 216183,
+      "text": "     Summary [  52.852s] 1564 tests run: 1564 passed, 3 skipped",
+      "seconds": 52.852
+    },
+    "unique_test_count": 1564,
+    "execution_rows": 1564,
+    "counts": {
+      "PASS": 1564,
+      "FAIL": 0,
+      "TIMEOUT": 0
+    },
+    "summary_counts": {
+      "PASS": 1564,
+      "FAIL": 0,
+      "TIMEOUT": 0
+    },
+    "reported_skipped": 3,
+    "skip_identities_inferred": false,
+    "duplicate_execution_ids": false,
+    "footer_rows_excluded": [],
+    "baseline_count": 1564,
+    "baseline_is_source49_previous_failure_population_not_previous_pass": true,
+    "baseline_missing": [],
+    "baseline_not_pass": [],
+    "additional_test_ids": [],
+    "unexpected_packages": [],
+    "per_package": {
+      "codex-cli": {
+        "PASS": 652,
+        "FAIL": 0,
+        "TIMEOUT": 0
+      },
+      "codex-exec-server": {
+        "PASS": 524,
+        "FAIL": 0,
+        "TIMEOUT": 0
+      },
+      "codex-network-proxy": {
+        "PASS": 220,
+        "FAIL": 0,
+        "TIMEOUT": 0
+      },
+      "codex-external-agent-migration": {
+        "PASS": 168,
+        "FAIL": 0,
+        "TIMEOUT": 0
+      }
+    },
+    "baseline_used_as_filter": false,
+    "pass": true
+  },
+  "phase_results": {
+    "python-runner": {
+      "original_exit": 0,
+      "effective_exit": 0,
+      "elapsed_seconds": 4.025784969329834,
+      "raw": {
+        "bytes": 551,
+        "sha256": "51d4478678c3776377e3cc9874e858319f41ad9bf091f36549b5324dc176cc94",
+        "git_blob": "2a2e2543143462b85ec2187c09aba8a0fc435f54"
+      },
+      "receipt": {
+        "bytes": 2018,
+        "sha256": "132959ea0f647cdfc6bebf2ad1c6df1932cabaaf478df6766a9efe1b5cc1214c",
+        "git_blob": "6f34305eefd7fe3e5afb91e339e93486b0505cd7"
+      },
+      "log": {
+        "bytes": 8449,
+        "sha256": "2eb07b7f4af98d408131099bf8980c3ac298d4447b4b5a6334634696c5f78d78",
+        "git_blob": "a6deee3b21a22596f45f68974a391b8d2a851d60"
+      },
+      "resources": {
+        "bytes": 799,
+        "sha256": "b8f3cadb21631aa89ed6461c53c6578185e61201efe71d236849f77b33c11d36",
+        "git_blob": "789c84715e300199038eb855d0d4768f97c263f3"
+      }
+    },
+    "strict": {
+      "original_exit": 0,
+      "effective_exit": 0,
+      "elapsed_seconds": 89.19241714477539,
+      "raw": {
+        "bytes": 648,
+        "sha256": "ba9571183c1718b35852a662348685b649df801ca7a8d81b997b1eabf8ee65f0",
+        "git_blob": "6343eaf98b91f8688f91f27e38129290bd2df8b0"
+      },
+      "receipt": {
+        "bytes": 1974,
+        "sha256": "72c3fc2b3eb14f24f921b00126b3cd0f97fb25001c3d2b7f616f5d0b9807dc33",
+        "git_blob": "6757c6739e35a16dfc27425a29b9a442bd012f44"
+      },
+      "log": {
+        "bytes": 13645,
+        "sha256": "a0ee362bdfc5f2811b26ee60bc0f4310003a786a27cd3190a48bdf064c656231",
+        "git_blob": "03203ae823c8f5a2d7a25470a95e2b7b928f1246"
+      },
+      "resources": {
+        "bytes": 875,
+        "sha256": "86a4a7cd6a1d6c0f1256c3f1b08673c7a2007a2b7d79517040e05f61e7324399",
+        "git_blob": "45f63ed5182e6aea6e6316354eb7776c9071c5b3"
+      }
+    },
+    "tests": {
+      "original_exit": 0,
+      "effective_exit": 0,
+      "elapsed_seconds": 347.58449029922485,
+      "raw": {
+        "bytes": 634,
+        "sha256": "cf8237de117ec35091a76f9aa19616bfbddf565902cf260b00a3c67c7b8942b5",
+        "git_blob": "53bc6903ef316420b915d2ddb004b82827a6d09e"
+      },
+      "receipt": {
+        "bytes": 2185,
+        "sha256": "5c9e23a6af959cb85cc6fb51ac64c9007598a0fc6e5249cc08317fc32eab94c9",
+        "git_blob": "5b46441d4e4be7617bafb34d700a13f536acd1c8"
+      },
+      "log": {
+        "bytes": 216247,
+        "sha256": "1af36d6404dff5026eca008da904354e4346523cb7cdca4d1231a59036d18347",
+        "git_blob": "49b6e83c662113ace46de9a05ea2db3e94911699"
+      },
+      "resources": {
+        "bytes": 874,
+        "sha256": "3bc47b2c37fba391808302569702b55882256cd22b31cdbc88fdd780f604b774",
+        "git_blob": "e1036de936fad5915ee2de81f5eaf90f4b770f5d"
+      }
+    }
+  },
+  "outer_original_exit": 0,
+  "engineering_gate": "PASS",
+  "test_execution_counts": {
+    "PASS": 1564,
+    "FAIL": 0,
+    "TIMEOUT": 0
+  },
+  "reported_skipped": 3,
+  "failure_blocks": [],
+  "nextest_complete_summary_present": true,
+  "parse_error": null,
+  "skip_identities_inferred": false,
+  "archive_export_success_is_not_a_new_gate": true
+}

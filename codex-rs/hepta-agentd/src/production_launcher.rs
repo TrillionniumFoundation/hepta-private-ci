@@ -378,7 +378,7 @@ impl AgentdProductionLaunch {
                                 route,
                                 Duration::from_secs(10),
                             )?
-                            .with_original_notes_thread_seed(seed)?
+                            .with_original_notes_thread_seed(*seed)?
                             .with_original_notes_thread_session(lifetime)?;
                         // The explicit model profile admits no literal UI
                         // endpoint. Root retains pathname cleanup custody.

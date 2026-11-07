@@ -143,7 +143,7 @@ impl AgentdDesktopThreadToolRuntime {
                                 && original.reference.tool == call.tool()
                                 && original.reference.callback_sha256 == call.callback_digest().to_string();
                             let reference = serde_json::to_value(&original.reference)?;
-                            let observed = self.observe_recorded(original).await?;
+                            let observed = self.observe_recorded(*original).await?;
                             return Ok(if same { observed } else {
                                 fenced_response(self.provenance(&call), reference, observed)
                             });

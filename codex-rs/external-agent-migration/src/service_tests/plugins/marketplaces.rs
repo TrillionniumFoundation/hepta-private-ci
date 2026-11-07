@@ -480,6 +480,83 @@ async fn import_plugins_supports_relative_external_agent_plugin_marketplace_path
 
 #[tokio::test]
 async fn import_plugins_infers_external_official_marketplace_when_missing_from_settings() {
+    const CHILD_ENV: &str = "CODEX_EXTERNAL_OFFICIAL_MARKETPLACE_IMPORT_CHILD";
+    if std::env::var_os(CHILD_ENV).is_none() {
+        let root = TempDir::new().expect("create local marketplace fixture");
+        let marketplace_root = root.path().join("official-marketplace");
+        let working_dir = root.path().join("work");
+        fs::create_dir_all(marketplace_root.join(EXTERNAL_AGENT_PLUGIN_MANIFEST_DIR))
+            .expect("create marketplace manifest dir");
+        fs::create_dir_all(&working_dir).expect("create child working directory");
+        fs::write(
+            marketplace_root
+                .join(EXTERNAL_AGENT_PLUGIN_MANIFEST_DIR)
+                .join("marketplace.json"),
+            format!(r#"{{"name":"{EXTERNAL_OFFICIAL_MARKETPLACE_NAME}","plugins":[]}}"#),
+        )
+        .expect("write local official marketplace");
+        for args in [
+            &["init", "--quiet"][..],
+            &["add", "."],
+            &[
+                "-c",
+                "user.name=Codex Tests",
+                "-c",
+                "user.email=codex-tests@openai.com",
+                "-c",
+                "commit.gpgsign=false",
+                "commit",
+                "--quiet",
+                "-m",
+                "official marketplace fixture",
+            ],
+        ] {
+            let output = std::process::Command::new("git")
+                .current_dir(&marketplace_root)
+                .args(args)
+                .output()
+                .expect("create local Git marketplace");
+            assert!(
+                output.status.success(),
+                "git {args:?} failed: {}{}",
+                String::from_utf8_lossy(&output.stdout),
+                String::from_utf8_lossy(&output.stderr)
+            );
+        }
+
+        // Keep source inference and real Git cloning, with transport confined to
+        // this fixture. Child-only configuration avoids changing parallel tests.
+        let output = std::process::Command::new(std::env::current_exe().expect("locate test binary"))
+            .args([
+                "--exact",
+                "service::tests::plugins::marketplaces::import_plugins_infers_external_official_marketplace_when_missing_from_settings",
+                "--nocapture",
+            ])
+            .current_dir(&working_dir)
+            .env(CHILD_ENV, "1")
+            .env("GIT_CONFIG_COUNT", "2")
+            .env("GIT_CONFIG_KEY_0", "url.../official-marketplace.insteadOf")
+            .env(
+                "GIT_CONFIG_VALUE_0",
+                "https://github.com/anthropics/claude-plugins-official.git",
+            )
+            .env("GIT_CONFIG_KEY_1", "protocol.file.allow")
+            .env("GIT_CONFIG_VALUE_1", "always")
+            .output()
+            .expect("run isolated official marketplace import");
+        let stdout = String::from_utf8_lossy(&output.stdout);
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        assert!(
+            output.status.success(),
+            "official marketplace import failed: {stdout}{stderr}"
+        );
+        assert!(
+            stdout.contains("test result: ok. 1 passed; 0 failed;"),
+            "expected exactly one child test to run: {stdout}{stderr}"
+        );
+        return;
+    }
+
     let (_root, external_agent_home, codex_home) = fixture_paths();
     fs::create_dir_all(&external_agent_home).expect("create external agent home");
     fs::create_dir_all(&codex_home).expect("create codex home");

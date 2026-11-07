@@ -10,6 +10,7 @@ use tokio::sync::oneshot::error::TryRecvError;
 use tokio::sync::watch;
 use tokio::task::JoinHandle;
 use tokio::time::Duration;
+use tokio::time::Instant;
 use tokio_util::sync::CancellationToken;
 
 use codex_exec_server::ExecProcess;
@@ -40,6 +41,8 @@ const EXIT_OBSERVATION_LOST: &str =
     "process exit observation channel closed without a native result";
 const TERMINATION_NOT_OBSERVED: &str =
     "termination was requested but native exit has not been observed";
+const TERMINATION_REQUEST_DEADLINE_ELAPSED: &str =
+    "termination request exceeded the confirmation deadline";
 pub(crate) trait SpawnLifecycle: std::fmt::Debug + Send + Sync {
     /// Returns file descriptors that must stay open across the child `exec()`.
     ///
@@ -244,36 +247,97 @@ impl UnifiedExecProcess {
         self.finish_termination();
     }
 
-    pub(super) async fn terminate_confirmed(&self) -> Result<(), UnifiedExecError> {
+    pub(super) async fn terminate_confirmed(
+        &self,
+        deadline: Instant,
+    ) -> Result<(), UnifiedExecError> {
         if self.observe_current_exit() {
             self.finish_termination();
             return Ok(());
         }
-        if let Some(message) = self.failure_message() {
-            self.terminate();
+        let prior_failure = self.failure_message();
+        // The owner supplies one cooperative budget for both the request and
+        // observation. The existing synchronous local driver is not preemptible.
+        let request_result = if Instant::now() >= deadline {
+            Err(UnifiedExecError::process_failed(
+                TERMINATION_REQUEST_DEADLINE_ELAPSED.to_string(),
+            ))
+        } else {
+            tokio::time::timeout_at(deadline, async {
+                match &self.process_handle {
+                    ProcessHandle::Local(process_handle) => process_handle.terminate(),
+                    ProcessHandle::ExecServer(process_handle) => {
+                        process_handle
+                            .terminate()
+                            .await
+                            .map_err(|err| UnifiedExecError::process_failed(err.to_string()))?;
+                    }
+                }
+                Ok(())
+            })
+            .await
+            .unwrap_or_else(|_| {
+                Err(UnifiedExecError::process_failed(
+                    TERMINATION_REQUEST_DEADLINE_ELAPSED.to_string(),
+                ))
+            })
+        };
+        if let Some(message) = prior_failure {
+            // Cleanup was attempted at most once within this call's budget.
+            // Its result cannot replace an already retained observation failure.
+            self.finish_termination();
             return Err(UnifiedExecError::process_failed(message));
         }
-        match &self.process_handle {
-            ProcessHandle::Local(process_handle) => process_handle.terminate(),
-            ProcessHandle::ExecServer(process_handle) => {
-                process_handle
-                    .terminate()
-                    .await
-                    .map_err(|err| UnifiedExecError::process_failed(err.to_string()))?;
+        // Preserve the original driver-error precedence even if an independent
+        // observer reports exit while the request is returning an error.
+        request_result?;
+
+        let mut state_rx = self.state_rx.clone();
+        // Check the same deadline immediately after the synchronous driver too.
+        if Instant::now() < deadline {
+            let observed = tokio::time::timeout_at(deadline, async {
+                loop {
+                    let state = state_rx.borrow_and_update().clone();
+                    if state.has_exited {
+                        return Ok(());
+                    }
+                    if let Some(message) = state.failure_message {
+                        return Err(UnifiedExecError::process_failed(message));
+                    }
+                    state_rx.changed().await.map_err(|_| {
+                        UnifiedExecError::process_failed(EXIT_OBSERVATION_LOST.to_string())
+                    })?;
+                }
+            })
+            .await;
+            if let Ok(result) = observed {
+                if result.is_ok() {
+                    self.finish_termination();
+                }
+                return result;
             }
         }
-        // The existing callers provide no deadline for an additional read RPC
-        // or wait. An ACK confirms the request, not a native process exit.
-        if self.observe_current_exit() {
+
+        // Decide under the state writer's lock so a native exit committed at
+        // the deadline cannot be replaced by an indeterminate observation.
+        let mut result = Ok(());
+        self.state_tx.send_modify(|state| {
+            if !state.has_exited {
+                *state = state.observation_failed(TERMINATION_NOT_OBSERVED.to_string());
+                result = Err(UnifiedExecError::process_failed(
+                    state
+                        .failure_message
+                        .clone()
+                        .unwrap_or_else(|| TERMINATION_NOT_OBSERVED.to_string()),
+                ));
+            }
+        });
+        if result.is_ok() {
             self.finish_termination();
-            Ok(())
         } else {
-            self.signal_observation_failure(TERMINATION_NOT_OBSERVED.to_string());
-            Err(UnifiedExecError::process_failed(
-                self.failure_message()
-                    .unwrap_or_else(|| TERMINATION_NOT_OBSERVED.to_string()),
-            ))
+            self.output.cancellation_token.cancel();
         }
+        result
     }
 
     fn observe_current_exit(&self) -> bool {

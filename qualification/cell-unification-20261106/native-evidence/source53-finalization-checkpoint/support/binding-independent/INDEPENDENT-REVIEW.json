@@ -1,0 +1,96 @@
+{
+  "schema": "hepta.source53-finalizer-binding-independent-review.v1",
+  "conclusion": "STATIC_BINDING_CLEAR",
+  "scope": "Narrow actual-literal, full-byte inverse, frozen-function and exact original input review; candidate code was never imported or executed.",
+  "template": {
+    "path": "source53-finalize-preparation/native-finalize-source53-template.py",
+    "bytes": 174038,
+    "sha256": "41c18849f6ebd24b17695051ee9c1c47c38ae207f87bf6c004f76248210fa22d",
+    "git_blob": "b0b6bee3dcb61ec58c928ab1325bb1407f83baa5"
+  },
+  "bound": {
+    "path": "source53-finalize-binding/native-finalize-source53-bound.py",
+    "bytes": 181140,
+    "sha256": "204f0183524893e092f0ce87b3ce694b04c5f3d223a6a92c66781b81f4802cac",
+    "git_blob": "fdb77dad48c91cdb5eeaa9897bb46041d881760a"
+  },
+  "final": {
+    "path": "source53-finalize-binding/native-finalize-source53.py",
+    "bytes": 181139,
+    "sha256": "6f63696d009ee52726a36e96a6abccadc613df62d8bcc0be590644ea40c21dd1",
+    "git_blob": "ece28effa2b94e4ed84447306312e1f8c2ba73a4"
+  },
+  "mechanical": {
+    "literal_count": 35,
+    "template_unknowns_equal_binding_keys": true,
+    "ast_value_spans_inverse_equals_complete_template": true,
+    "final_inverse_only_FROZEN_equals_complete_bound": true,
+    "patches_independently_regenerated_exact": true,
+    "all_top_level_functions_byte_identical": 62,
+    "actual_R31_prior_bindings_preserved": 21,
+    "independent_inventory_bindings_preserved": 7,
+    "no_substring_based_constant_replacement": true
+  },
+  "actual_inputs": {
+    "R31_originals": 18,
+    "R30_originals": 19,
+    "R30_archive_bytes_equal_separately_closed_originals": true,
+    "natural_apply_R30_R31_terminals": {
+      "APPLY": "1a1b2552130-fc05-7d91",
+      "R30": "1a1b25b399f-fc05-7daa",
+      "R31": "1a1b275ba33-fc05-7e17"
+    },
+    "source_commit": "f74be175de66a4b351cd239d39d98cd34fe9cc1b",
+    "source_tree": "440d4a8e09af4009e4d9ea067388826308da8803",
+    "changed_files": 197,
+    "source_and_complete_diagnostic_only_preserved": true,
+    "scope_files": 4,
+    "primary_pin_count": 34,
+    "fresh_metadata_members": 193,
+    "fresh_metadata_default_members": 193,
+    "Rust_selection": 183,
+    "Python_selection": 2,
+    "owning_packages": 26,
+    "CI_selectors": 27,
+    "native_HEAD": "bef6fa7645df9df12b69fda499e97eed25de6c75",
+    "default_fmt_command": [
+      "just",
+      "fmt"
+    ],
+    "all_flag": false,
+    "inventory_actual_readback_reference": "source53-formatter-inventory-actual-independent-review/INDEPENDENT-READBACK.json"
+  },
+  "R31_bound_closed_result": {
+    "raw_exit": 0,
+    "effective_exit": 0,
+    "outer_exit": 0,
+    "original_command": [
+      "just",
+      "test",
+      "--locked",
+      "--retries",
+      "0"
+    ],
+    "counts": {
+      "PASS": 20228,
+      "FAIL": 0,
+      "TIMEOUT": 0
+    },
+    "reported_skipped": 130,
+    "source_and_dual_lock_postguard_pass": true,
+    "baseline_missing": [],
+    "additional_test_ids": []
+  },
+  "boundaries": [
+    "This narrow review rehashes the complete R31 log and rows and binds their native closed accounting; it is not a replacement for the separate full-log/archive independent reconstruction.",
+    "The earlier scope files retain their historical NOT_EXECUTED and pending labels; actual terminal and inventory inputs are separately bound without changing those frozen source artifacts.",
+    "Source53 is diagnostic instrumentation; project/workspace engineering PASS does not prove the original Bedrock cause repaired or grant scientific/model qualification.",
+    "Actual native binary identities/version receipts were independently reviewed earlier; this review performs no tool probe. Runtime source, disk, scope, dependency, tool and artifact guards remain required by the unchanged finalizer.",
+    "Local upload plan is checked for four exact inputs and create-only paths; actual remote upload is separately documented by the native owner. This review does not perform upload or execution.",
+    "No source, index, HEAD, canonical reports, ledger, native state, tests, fix or formatter were changed or executed. Final authorization remains with root."
+  ],
+  "execution_authorized_by_this_review": false,
+  "finalizer_executed_by_this_review": false,
+  "blockers": [],
+  "input_pin_file": "INPUT-PINS.json"
+}

@@ -136,6 +136,10 @@ async fn setup_bedrock_profile_and_environment() -> Result<()> {
             ("AWS_ACCESS_KEY_ID", Some("environment-id")),
             ("AWS_SECRET_ACCESS_KEY", Some("environment-secret")),
             ("AWS_DEFAULT_REGION", Some("us-east-1")),
+            (
+                "RUST_LOG",
+                Some("warn,codex_app_server::app_server_tracing=info,codex_app_server::request_serialization=debug,bedrock_setup_diagnostic=info"),
+            ),
         ],
     )
     .await?;

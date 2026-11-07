@@ -1,0 +1,27 @@
+        FAIL [   0.404s] codex-core::all suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions
+  stdout ───
+
+    running 1 test
+    test suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions ... FAILED
+
+    failures:
+
+    failures:
+        suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1425 filtered out; finished in 0.39s
+
+  stderr ───
+
+    thread 'suite::request_permissions::partial_request_permissions_grants_do_not_preapprove_new_permissions' (374668) panicked at core/tests/suite/request_permissions.rs:1802:5:
+    assertion failed: `(left == right)`
+
+    Diff < left / right > :
+    <Failed to create stream fd: Operation not permitted
+    <Failed to create stream fd: Operation not permitted
+    <Failed to create stream fd: Operation not permitted
+     partial-grant-ok
+
+
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+

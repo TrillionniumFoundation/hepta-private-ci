@@ -57,18 +57,6 @@ impl<'de> Deserialize<'de> for AgentdCalculatorRecoverySelector {
 }
 
 impl AgentdCalculatorRecoverySelector {
-    pub(crate) fn from_fields(
-        operation_id: Option<&str>,
-        selector: Option<&Self>,
-    ) -> Result<Self, AgentdError> {
-        match (operation_id, selector) {
-            (Some(operation_id), None) => Self::checked_exact(operation_id.into()),
-            (None, Some(Self::ExactOperation { operation_id })) => Self::checked_exact(operation_id.clone()),
-            (None, Some(Self::LatestRecordedOriginalCalculator)) => Ok(Self::LatestRecordedOriginalCalculator),
-            _ => Err(AgentdError::Invalid("previous Calculator recovery requires exactly one typed selector or legacy operation_id".into())),
-        }
-    }
-
     fn checked_exact(operation_id: String) -> Result<Self, AgentdError> {
         codex_hepta_types::StableId::new(&operation_id)
             .map_err(|error| AgentdError::Invalid(error.to_string()))?;

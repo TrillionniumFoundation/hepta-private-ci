@@ -1,0 +1,65 @@
+codex-rs/hepta-automation/src/lib.rs:56:pub use authorized_effect::AuthorizedEffectRecoveryResult;
+codex-rs/hepta-automation/src/lib.rs:113:pub use neural_circuit::NeuralCircuitCandidateV1;
+codex-rs/hepta-automation/src/authorized_effect.rs:540:pub enum AuthorizedEffectRecoveryResult {
+codex-rs/hepta-automation/src/authorized_effect.rs:644:    pub async fn execute_authorized_taskflow_effect<D: AuthorizedEffectDriver>(
+codex-rs/hepta-automation/src/authorized_effect.rs:708:                AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(receipt),
+codex-rs/hepta-automation/src/authorized_effect.rs:709:                AuthorizedEffectRecoveryResult::ProvenAbsent => {
+codex-rs/hepta-automation/src/authorized_effect.rs:747:                    AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(receipt),
+codex-rs/hepta-automation/src/authorized_effect.rs:748:                    AuthorizedEffectRecoveryResult::ProvenAbsent => {
+codex-rs/hepta-automation/src/authorized_effect.rs:812:            AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(receipt),
+codex-rs/hepta-automation/src/authorized_effect.rs:813:            AuthorizedEffectRecoveryResult::ProvenAbsent => {
+codex-rs/hepta-automation/src/authorized_effect.rs:844:    ) -> Result<Option<AuthorizedEffectRecoveryResult>, AuthorizedEffectError> {
+codex-rs/hepta-automation/src/authorized_effect.rs:866:    pub async fn execute_authorized_taskflow_effect_async<D: AsyncAuthorizedEffectDriver>(
+codex-rs/hepta-automation/src/authorized_effect.rs:925:                AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(receipt),
+codex-rs/hepta-automation/src/authorized_effect.rs:926:                AuthorizedEffectRecoveryResult::ProvenAbsent => {
+codex-rs/hepta-automation/src/authorized_effect.rs:964:                    AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(receipt),
+codex-rs/hepta-automation/src/authorized_effect.rs:965:                    AuthorizedEffectRecoveryResult::ProvenAbsent => {
+codex-rs/hepta-automation/src/authorized_effect.rs:1028:            AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(receipt),
+codex-rs/hepta-automation/src/authorized_effect.rs:1029:            AuthorizedEffectRecoveryResult::ProvenAbsent => {
+codex-rs/hepta-automation/src/authorized_effect.rs:1063:    ) -> Result<AuthorizedEffectRecoveryResult, AuthorizedEffectError> {
+codex-rs/hepta-automation/src/authorized_effect.rs:1094:    ) -> Result<AuthorizedEffectRecoveryResult, AuthorizedEffectError> {
+codex-rs/hepta-automation/src/authorized_effect.rs:1102:            return Ok(AuthorizedEffectRecoveryResult::ProvenAbsent);
+codex-rs/hepta-automation/src/authorized_effect.rs:1199:        Ok(AuthorizedEffectRecoveryResult::Observed(step))
+codex-rs/hepta-automation/src/neural_circuit.rs:100:pub struct NeuralCircuitCandidateV1 {
+codex-rs/hepta-automation/src/neural_circuit.rs:124:impl NeuralCircuitCandidateV1 {
+codex-rs/hepta-automation/src/neural_circuit.rs:331:    current: &NeuralCircuitCandidateV1,
+codex-rs/hepta-automation/src/neural_circuit.rs:332:    successor: &NeuralCircuitCandidateV1,
+codex-rs/hepta-automation/src/neural_circuit.rs:383:    candidate: &NeuralCircuitCandidateV1,
+codex-rs/hepta-automation/src/neural_circuit.rs:433:    fn v1() -> NeuralCircuitCandidateV1 {
+codex-rs/hepta-automation/src/neural_circuit.rs:434:        NeuralCircuitCandidateV1::new(
+codex-rs/hepta-automation/src/neural_circuit.rs:475:        let successor = NeuralCircuitCandidateV1::new(
+codex-rs/hepta-automation/src/neural_circuit.rs:507:        let wrong = NeuralCircuitCandidateV1::new(
+codex-rs/hepta-automation/src/neural_circuit.rs:522:        let widened = NeuralCircuitCandidateV1::new(
+codex-rs/hepta-automation/src/neural_circuit.rs:550:        let result = NeuralCircuitCandidateV1::new(
+codex-rs/hepta-automation/src/circuit_runtime_tests.rs:99:    let result = NeuralCircuitCandidateV1::new("legacy-loop", /*version*/ 1, /*predecessor_digest*/ None, "work",
+codex-rs/hepta-automation/src/circuit_store_tests.rs:176:    let v1 = NeuralCircuitCandidateV1::new("legacy-dag", /*version*/ 1, /*predecessor_digest*/ None, "work",
+codex-rs/hepta-automation/tests/authorized_effect.rs:26:use codex_hepta_automation::AuthorizedEffectRecoveryResult;
+codex-rs/hepta-automation/tests/authorized_effect.rs:564:            .execute_authorized_taskflow_effect(
+codex-rs/hepta-automation/tests/authorized_effect.rs:581:        .execute_authorized_taskflow_effect(
+codex-rs/hepta-automation/tests/authorized_effect.rs:620:            .execute_authorized_taskflow_effect_async(
+codex-rs/hepta-automation/tests/authorized_effect.rs:641:        .execute_authorized_taskflow_effect_async(
+codex-rs/hepta-automation/tests/authorized_effect.rs:686:        .execute_authorized_taskflow_effect_async(
+codex-rs/hepta-automation/tests/authorized_effect.rs:735:            .execute_authorized_taskflow_effect(
+codex-rs/hepta-automation/tests/authorized_effect.rs:752:        .execute_authorized_taskflow_effect(
+codex-rs/hepta-automation/tests/authorized_effect.rs:789:        .execute_authorized_taskflow_effect(
+codex-rs/hepta-automation/tests/authorized_effect.rs:806:        .execute_authorized_taskflow_effect(
+codex-rs/hepta-automation/tests/authorized_effect.rs:844:            .execute_authorized_taskflow_effect(
+codex-rs/hepta-automation/tests/authorized_effect.rs:877:        .execute_authorized_taskflow_effect(
+codex-rs/hepta-automation/tests/authorized_effect.rs:911:        AuthorizedEffectRecoveryResult::Observed(_)
+codex-rs/hepta-automation/tests/authorized_effect.rs:924:        .execute_authorized_taskflow_effect(
+codex-rs/hepta-automation/tests/authorized_effect.rs:967:        .execute_authorized_taskflow_effect(
+codex-rs/hepta-automation/tests/authorized_effect.rs:999:    let AuthorizedEffectRecoveryResult::Observed(receipt) = recovered else {
+codex-rs/hepta-automation/tests/authorized_effect.rs:1027:            .execute_authorized_taskflow_effect(
+codex-rs/hepta-automation/tests/authorized_effect.rs:1055:        .execute_authorized_taskflow_effect(
+codex-rs/hepta-automation/tests/authorized_effect.rs:1086:        .execute_authorized_taskflow_effect(
+codex-rs/hepta-automation/tests/authorized_effect.rs:1121:            .execute_authorized_taskflow_effect(
+codex-rs/hepta-automation/tests/authorized_effect.rs:1154:        .execute_authorized_taskflow_effect(
+codex-rs/hepta-automation/tests/authorized_effect.rs:1200:    let AuthorizedEffectRecoveryResult::Observed(receipt) = recovered else {
+codex-rs/hepta-automation/tests/authorized_effect.rs:1213:            .execute_authorized_taskflow_effect(
+codex-rs/hepta-agentd/src/automation_effect_host.rs:24:use codex_hepta_automation::AuthorizedEffectRecoveryResult;
+codex-rs/hepta-agentd/src/automation_effect_host.rs:259:            .execute_authorized_taskflow_effect(
+codex-rs/hepta-agentd/src/automation_effect_host.rs:316:                AuthorizedEffectRecoveryResult::Observed(receipt)
+codex-rs/hepta-agentd/src/automation_effect_host.rs:321:                AuthorizedEffectRecoveryResult::ProvenAbsent => {
+codex-rs/hepta-agentd/src/automation_effect_host.rs:324:                AuthorizedEffectRecoveryResult::Observed(_) => {}
+codex-rs/hepta-agentd/src/automation_effect_host.rs:348:                    AuthorizedEffectRecoveryResult::Observed(receipt) => {
+codex-rs/hepta-agentd/src/automation_effect_host.rs:351:                    AuthorizedEffectRecoveryResult::ProvenAbsent => Err(AgentdError::Protocol(

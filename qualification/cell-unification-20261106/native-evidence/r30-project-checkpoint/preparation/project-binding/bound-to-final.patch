@@ -1,0 +1,11 @@
+--- native-run-r30-bound.py
++++ native-run-r30.py
+@@ -20,7 +20,7 @@
+ import sys
+ import time
+ 
+-FROZEN = False
++FROZEN = True
+ EXPECTED_COMMIT = 'f74be175de66a4b351cd239d39d98cd34fe9cc1b'
+ EXPECTED_TREE = '440d4a8e09af4009e4d9ea067388826308da8803'
+ EXPECTED_CHANGED_COUNT = 197

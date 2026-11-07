@@ -1,0 +1,341 @@
+{
+  "schema": "hepta.root-r19-closed-result-readback.v1",
+  "state": "STRICT_PASS_TESTS_FAILED_CLOSED_AND_REBUILT",
+  "source_commit": "0c78b43424ced27d37892a7744de065c1497d5e8",
+  "source_tree": "cc2b01c2f69f43d63f8f5c561abd5e941d645769",
+  "root_gitdata_source_reconstruction": "ROOT-SOURCE-ROUNDTRIP.json",
+  "archive_bytes": 1127067,
+  "archive_sha256": "5001f43d00ca61b2da70cedc1ba073f2cc17c7a5c5c30eaf1c0a78df4f1d4908",
+  "regular_archive_members_verified": 203,
+  "source_files_verified": 181,
+  "original_evidence_files_verified": 20,
+  "strict_exit": 0,
+  "strict_elapsed_seconds": 118.43502449989319,
+  "tests_exit": 100,
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-app-server",
+    "--retries",
+    "0"
+  ],
+  "test_total_seconds": 587.970730304718,
+  "test_execution_seconds": 396.597,
+  "test_execution_started": true,
+  "test_result_lines_including_footer": 1352,
+  "footer_duplicates_removed": 7,
+  "tests_run_unique": 1345,
+  "counts_unique": {
+    "PASS": 1338,
+    "FAIL": 7,
+    "TIMEOUT": 0
+  },
+  "skipped_reported": 2,
+  "skip_identities_reconstructed": false,
+  "per_binary": {
+    "codex-app-server": {
+      "PASS": 321
+    },
+    "codex-app-server::all": {
+      "PASS": 1013,
+      "FAIL": 7
+    },
+    "codex-app-server::bin/codex-app-server": {
+      "PASS": 4
+    }
+  },
+  "failure_blocks": [
+    {
+      "binary": "codex-app-server::all",
+      "name": "suite::v2::command_exec::command_exec_accepts_permission_profile",
+      "sha256": "0769b23822e3770e666fc71c86ed84a4ee7ecab2a9ee51d29868e71fef2b15a9",
+      "original_log_byte_interval": [
+        83934,
+        86888
+      ]
+    },
+    {
+      "binary": "codex-app-server::all",
+      "name": "suite::v2::command_exec::command_exec_env_overrides_merge_with_server_environment_and_support_unset",
+      "sha256": "8e1e65afcd3196dd7acfb845a10aa892afd3d910738268319bf8799a5d7154a5",
+      "original_log_byte_interval": [
+        87302,
+        90817
+      ]
+    },
+    {
+      "binary": "codex-app-server::all",
+      "name": "suite::v2::command_exec::command_exec_non_streaming_respects_output_cap",
+      "sha256": "4b596ddbe4920b7782f46394f132f0663906faadab5be4f2c98aa0457b1468be",
+      "original_log_byte_interval": [
+        90817,
+        93512
+      ]
+    },
+    {
+      "binary": "codex-app-server::all",
+      "name": "suite::v2::command_exec::command_exec_permission_profile_does_not_reuse_default_network_proxy",
+      "sha256": "f564e2ae0552c70bf4288ef4fd0c2912f26c0c4cb79640f21d0483aa120846e7",
+      "original_log_byte_interval": [
+        93512,
+        96613
+      ]
+    },
+    {
+      "binary": "codex-app-server::all",
+      "name": "suite::v2::command_exec::command_exec_permission_profile_starts_selected_network_proxy",
+      "sha256": "dfc7b515cce7aa12727c2bdb1c71fcc631b27f00eeb3ef4592342e766db36e49",
+      "original_log_byte_interval": [
+        96747,
+        100001
+      ]
+    },
+    {
+      "binary": "codex-app-server::all",
+      "name": "suite::v2::command_exec::command_exec_without_process_id_keeps_buffered_compatibility",
+      "sha256": "cfc9bd89e23b595b279db7fb55318666878e79b3edd8d153d0130bac8fd748e6",
+      "original_log_byte_interval": [
+        101244,
+        104330
+      ]
+    },
+    {
+      "binary": "codex-app-server::all",
+      "name": "suite::v2::command_exec::command_exec_process_ids_are_connection_scoped_and_disconnect_terminates_process",
+      "sha256": "7c789faa32af84eb768e3e2cc69ed286c2f5197ab1d8ec11be6e447858b13ccc",
+      "original_log_byte_interval": [
+        105196,
+        107788
+      ]
+    }
+  ],
+  "original_process_exec_cases": [
+    {
+      "binary": "codex-app-server::all",
+      "name": "suite::v2::process_exec::process_kill_terminates_running_process",
+      "status": "PASS",
+      "elapsed_seconds": 0.177
+    },
+    {
+      "binary": "codex-app-server::all",
+      "name": "suite::v2::process_exec::capability_tests::process_spawn_refuses_legacy_or_terminal_opt_out_before_creating_a_process",
+      "status": "PASS",
+      "elapsed_seconds": 0.488
+    },
+    {
+      "binary": "codex-app-server::all",
+      "name": "suite::v2::process_exec::process_spawn_reports_buffered_output_cap_reached",
+      "status": "PASS",
+      "elapsed_seconds": 0.231
+    },
+    {
+      "binary": "codex-app-server::all",
+      "name": "suite::v2::process_exec::process_spawn_returns_before_exit_and_emits_exit_notification",
+      "status": "PASS",
+      "elapsed_seconds": 0.233
+    },
+    {
+      "binary": "codex-app-server::all",
+      "name": "suite::v2::process_exec::process_spawn_returns_error_when_local_environment_is_disabled",
+      "status": "PASS",
+      "elapsed_seconds": 0.176
+    }
+  ],
+  "receipt_log_resources_and_source_phase_proofs_verified": true,
+  "strict_log_sha256": "333adb720288c90c2932075d7f18597e352c808caeeb0ff7d0e379a15ec7437f",
+  "test_log_sha256": "917632f553e67bb4787e160da977f3d97440c4d9e50bfcc09d733ad752c7e73e",
+  "control_plane_timeout_is_not_rust_timeout_or_cancellation": true,
+  "authoritative_terminal_status": "native-app-server-r19-terminal-process-status.json",
+  "phase_logs_are_separate_from_supervisor_wrapper_stdout_accounting": true,
+  "all_source_files_reconstructed_from_original_framework_base": true,
+  "earlier_strict_only_readback_is_historical_snapshot": "ROOT-STRICT-READBACK.json",
+  "source_identity_scope": "The native staged tree matches the GitData commit; matching commit creation is not a claim that it was checked out. Neither prior r17 pass nor this failed gate qualifies later source.",
+  "workspace_followup_started": false,
+  "final_fix_fmt_ran": false,
+  "scientific_adoption": "HOLD",
+  "authority": "DENY_ALL",
+  "closed_original_attachments": [
+    {
+      "original_name": "native-app-server-r19-blocker-input.json",
+      "original_bytes": 7418,
+      "original_sha256": "32cc18f5f3fe1133567dd6fbb30915c600293e570da03b18bdd2edc67f3dd543",
+      "attachment": "native-app-server-r19-blocker-input.json",
+      "attachment_bytes": 7418,
+      "attachment_sha256": "32cc18f5f3fe1133567dd6fbb30915c600293e570da03b18bdd2edc67f3dd543",
+      "lossless_gzip": false
+    },
+    {
+      "original_name": "native-app-server-r19-blocker-input.tar.gz",
+      "original_bytes": 29030,
+      "original_sha256": "d19e33e9709af2d325e8cf7de0ea1aa335211c7e28f5ddf156eec32034abab06",
+      "attachment": "native-app-server-r19-blocker-input.tar.gz",
+      "attachment_bytes": 29030,
+      "attachment_sha256": "d19e33e9709af2d325e8cf7de0ea1aa335211c7e28f5ddf156eec32034abab06",
+      "lossless_gzip": false
+    },
+    {
+      "original_name": "native-app-server-r19-command.sh",
+      "original_bytes": 7592,
+      "original_sha256": "c6472a8d71a550b1a363483aa1ed7c442947238aa9f5006cbe3f33266f1d6e13",
+      "attachment": "native-app-server-r19-command.sh",
+      "attachment_bytes": 7592,
+      "attachment_sha256": "c6472a8d71a550b1a363483aa1ed7c442947238aa9f5006cbe3f33266f1d6e13",
+      "lossless_gzip": false
+    },
+    {
+      "original_name": "native-app-server-r19-control-status-timeout.txt",
+      "original_bytes": 150,
+      "original_sha256": "8098e665baa6f8a813ad99b7602a1a061022551bf5f6935bf0238afe782c48fe",
+      "attachment": "native-app-server-r19-control-status-timeout.txt",
+      "attachment_bytes": 150,
+      "attachment_sha256": "8098e665baa6f8a813ad99b7602a1a061022551bf5f6935bf0238afe782c48fe",
+      "lossless_gzip": false
+    },
+    {
+      "original_name": "native-app-server-r19-disconnect-owner-map.json",
+      "original_bytes": 22528,
+      "original_sha256": "8607964dea2541e3cb3c6ff7bd47613992348252eeade2de95ed33658fb97d62",
+      "attachment": "native-app-server-r19-disconnect-owner-map.json",
+      "attachment_bytes": 22528,
+      "attachment_sha256": "8607964dea2541e3cb3c6ff7bd47613992348252eeade2de95ed33658fb97d62",
+      "lossless_gzip": false
+    },
+    {
+      "original_name": "native-app-server-r19-environment.json",
+      "original_bytes": 777,
+      "original_sha256": "a94b261ea6ab9cb0ef47e20a87748a0f4b1567f3c2656fd333275329b9f37e93",
+      "attachment": "native-app-server-r19-environment.json",
+      "attachment_bytes": 777,
+      "attachment_sha256": "a94b261ea6ab9cb0ef47e20a87748a0f4b1567f3c2656fd333275329b9f37e93",
+      "lossless_gzip": false
+    },
+    {
+      "original_name": "native-app-server-r19-failure-blocks.json",
+      "original_bytes": 24239,
+      "original_sha256": "8869f7025729a943a2b9d82f565fea7c0af429db9bb26871c7c9a8581a57a26e",
+      "attachment": "native-app-server-r19-failure-blocks.json",
+      "attachment_bytes": 24239,
+      "attachment_sha256": "8869f7025729a943a2b9d82f565fea7c0af429db9bb26871c7c9a8581a57a26e",
+      "lossless_gzip": false
+    },
+    {
+      "original_name": "native-app-server-r19-result-review.json",
+      "original_bytes": 4430,
+      "original_sha256": "ca517353f1bb4983e39775be2c229d5529ae3088785873b64bb84a57054e4724",
+      "attachment": "native-app-server-r19-result-review.json",
+      "attachment_bytes": 4430,
+      "attachment_sha256": "ca517353f1bb4983e39775be2c229d5529ae3088785873b64bb84a57054e4724",
+      "lossless_gzip": false
+    },
+    {
+      "original_name": "native-app-server-r19-source-post-test-verification.json",
+      "original_bytes": 565,
+      "original_sha256": "c54cfc32f2d79861a9ff1609abca2b97f84356f8e00dfb658b37ebcd0e2ce30d",
+      "attachment": "native-app-server-r19-source-post-test-verification.json",
+      "attachment_bytes": 565,
+      "attachment_sha256": "c54cfc32f2d79861a9ff1609abca2b97f84356f8e00dfb658b37ebcd0e2ce30d",
+      "lossless_gzip": false
+    },
+    {
+      "original_name": "native-app-server-r19-strict-receipt.json",
+      "original_bytes": 887,
+      "original_sha256": "31dba7a9821ad3a46e48714cba9819665a23bb6919c71c97865a5f11b637a8e6",
+      "attachment": "native-app-server-r19-strict-receipt.json",
+      "attachment_bytes": 887,
+      "attachment_sha256": "31dba7a9821ad3a46e48714cba9819665a23bb6919c71c97865a5f11b637a8e6",
+      "lossless_gzip": false
+    },
+    {
+      "original_name": "native-app-server-r19-strict-resources.txt",
+      "original_bytes": 800,
+      "original_sha256": "ac96f88d8b11f18a02d406d709e206d094fe641ee6c9d4eb5cffb608d98b10b1",
+      "attachment": "native-app-server-r19-strict-resources.txt",
+      "attachment_bytes": 800,
+      "attachment_sha256": "ac96f88d8b11f18a02d406d709e206d094fe641ee6c9d4eb5cffb608d98b10b1",
+      "lossless_gzip": false
+    },
+    {
+      "original_name": "native-app-server-r19-strict-source-post-verification.json",
+      "original_bytes": 390,
+      "original_sha256": "583e0a5cb059e47c3faa9aca119c58084bc73858414db6666ac5af1e7f1ef28e",
+      "attachment": "native-app-server-r19-strict-source-post-verification.json",
+      "attachment_bytes": 390,
+      "attachment_sha256": "583e0a5cb059e47c3faa9aca119c58084bc73858414db6666ac5af1e7f1ef28e",
+      "lossless_gzip": false
+    },
+    {
+      "original_name": "native-app-server-r19-strict.log",
+      "original_bytes": 5998,
+      "original_sha256": "333adb720288c90c2932075d7f18597e352c808caeeb0ff7d0e379a15ec7437f",
+      "attachment": "native-app-server-r19-strict.log.gz",
+      "attachment_bytes": 1037,
+      "attachment_sha256": "1f1b6b23514a64b573845d417f44e9fe044c8ea529938865051e85a8355834a2",
+      "lossless_gzip": true
+    },
+    {
+      "original_name": "native-app-server-r19-terminal-process-status.json",
+      "original_bytes": 732,
+      "original_sha256": "7ffa23b12b96b41aef0b34d60637f5fcf79496d9df41d743369ddd09b4ade7de",
+      "attachment": "native-app-server-r19-terminal-process-status.json",
+      "attachment_bytes": 732,
+      "attachment_sha256": "7ffa23b12b96b41aef0b34d60637f5fcf79496d9df41d743369ddd09b4ade7de",
+      "lossless_gzip": false
+    },
+    {
+      "original_name": "native-app-server-r19-test-results.json",
+      "original_bytes": 421335,
+      "original_sha256": "1cd3c7723218717f9098bd2a588ed1b8fedd4e23edad3979b76b328461a6a8af",
+      "attachment": "native-app-server-r19-test-results.json.gz",
+      "attachment_bytes": 35552,
+      "attachment_sha256": "80c2c95b7eb4e782a0ef384920231086918c93cabe9143b9cffb634e2ec8c931",
+      "lossless_gzip": true
+    },
+    {
+      "original_name": "native-app-server-r19-tests-receipt.json",
+      "original_bytes": 871,
+      "original_sha256": "33363223b037d441edecfdd7ec282317b0436181dc846564e2ee178ccbcaf147",
+      "attachment": "native-app-server-r19-tests-receipt.json",
+      "attachment_bytes": 871,
+      "attachment_sha256": "33363223b037d441edecfdd7ec282317b0436181dc846564e2ee178ccbcaf147",
+      "lossless_gzip": false
+    },
+    {
+      "original_name": "native-app-server-r19-tests-resources.txt",
+      "original_bytes": 845,
+      "original_sha256": "6148eea4d4c51d6704bb4dea6ea9bda0c3f026ecf194ea77d3b8855b752fb53a",
+      "attachment": "native-app-server-r19-tests-resources.txt",
+      "attachment_bytes": 845,
+      "attachment_sha256": "6148eea4d4c51d6704bb4dea6ea9bda0c3f026ecf194ea77d3b8855b752fb53a",
+      "lossless_gzip": false
+    },
+    {
+      "original_name": "native-app-server-r19-tests-source-post-verification.json",
+      "original_bytes": 391,
+      "original_sha256": "422697b457241ff4c62ae0bfac275234f2d92123e5209b6e6593a3fdd6ced7a6",
+      "attachment": "native-app-server-r19-tests-source-post-verification.json",
+      "attachment_bytes": 391,
+      "attachment_sha256": "422697b457241ff4c62ae0bfac275234f2d92123e5209b6e6593a3fdd6ced7a6",
+      "lossless_gzip": false
+    },
+    {
+      "original_name": "native-app-server-r19-tests.log",
+      "original_bytes": 225301,
+      "original_sha256": "917632f553e67bb4787e160da977f3d97440c4d9e50bfcc09d733ad752c7e73e",
+      "attachment": "native-app-server-r19-tests.log.gz",
+      "attachment_bytes": 32640,
+      "attachment_sha256": "be52e553da7de4f1c2be7813c1d6f04bcbe0be29ac642327437b404d7688cdec",
+      "lossless_gzip": true
+    },
+    {
+      "original_name": "native-candidate-r19-source.json",
+      "original_bytes": 49810,
+      "original_sha256": "64e26c5c3340b27d6b64b7342fac8561300224f9f1e96c22f2aa23b184eafee3",
+      "attachment": "native-candidate-r19-source.json",
+      "attachment_bytes": 49810,
+      "attachment_sha256": "64e26c5c3340b27d6b64b7342fac8561300224f9f1e96c22f2aa23b184eafee3",
+      "lossless_gzip": false
+    }
+  ]
+}

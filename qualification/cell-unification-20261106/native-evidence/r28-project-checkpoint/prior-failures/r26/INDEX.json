@@ -1,0 +1,57 @@
+{
+  "schema": "hepta.r26-closed-failure-blocks.v1",
+  "source_tree": "763c8d2b4089f6e9806c3bbb68fa247bc2f6af36",
+  "source_commit": "e28b0f385ee882f842911044958b2810f62f6379",
+  "log": {
+    "bytes": 217900,
+    "sha256": "a7f1e74cfc5f621dc2db1bf9b55da64b31ce91cb0e399fb09617ca202156ef68",
+    "git_blob": "1f8593a506f25258fff5f34e830a93dec16fe8d3"
+  },
+  "counts": {
+    "PASS": 1562,
+    "FAIL": 2,
+    "TIMEOUT": 0
+  },
+  "reported_skipped": 3,
+  "failures": [
+    {
+      "status": "FAIL",
+      "binary": "codex-network-proxy",
+      "name": "runtime::tests::host_blocked_subdomain_wildcards_exclude_apex",
+      "line": 1795,
+      "byte_offset": 211476,
+      "end_byte_offset": 212277,
+      "file": "failure-1.txt",
+      "bytes": 801,
+      "sha256": "a901943cf23746aa9895740962075ad1a9e4273f44881086218b486514d2abdd",
+      "git_blob": "79b4ccfcb3a794ec1dc1788869a65f394fb74cce"
+    },
+    {
+      "status": "FAIL",
+      "binary": "codex-network-proxy",
+      "name": "runtime::tests::host_blocked_global_wildcard_allowlist_allows_public_hosts_except_denylist",
+      "line": 1822,
+      "byte_offset": 212277,
+      "end_byte_offset": 213194,
+      "file": "failure-2.txt",
+      "bytes": 917,
+      "sha256": "0265e674d8ce1a5cba4d6697a2105b685e6dcbf33782d883a1d29f1a74546567",
+      "git_blob": "df1edb887ebb248201fa1ffca6035a37816efb63"
+    }
+  ],
+  "support_source": [
+    {
+      "path": "codex-rs/network-proxy/src/runtime.rs",
+      "bytes": 75473,
+      "sha256": "3214446d85796e5d1c4a308ba53aab3bf7098fc18cd38cfc6f97a1cbb14d2e4f",
+      "git_blob": "1a449a44381fafa4a5d6a5d0e08753f425f339fc",
+      "mode": "100644"
+    }
+  ],
+  "guidance": [
+    "AGENTS.md"
+  ],
+  "two_footer_duplicates_excluded": true,
+  "original_test_exit": 100,
+  "postguard_pass": true
+}

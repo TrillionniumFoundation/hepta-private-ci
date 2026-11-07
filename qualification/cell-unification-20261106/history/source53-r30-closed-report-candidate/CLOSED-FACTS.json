@@ -1,0 +1,220 @@
+{
+  "schema": "hepta.source53-r30-closed-report-candidate-facts.v1",
+  "final_report_frozen": false,
+  "source_commit": "f74be175de66a4b351cd239d39d98cd34fe9cc1b",
+  "source_tree": "440d4a8e09af4009e4d9ea067388826308da8803",
+  "r30": {
+    "source_stage": 53,
+    "source_commit": "f74be175de66a4b351cd239d39d98cd34fe9cc1b",
+    "source_tree": "440d4a8e09af4009e4d9ea067388826308da8803",
+    "state": "COMPLETE_APP_SERVER_PROJECT_PASS_DIAGNOSTIC_SOURCE53",
+    "job_id": "1a1b25b399f-fc05-7daa",
+    "idempotency_key": "cell-source53-project-r30-20261106-v1",
+    "outer_timeout_seconds": 9600,
+    "runner_sha256": "b72407252efdaf81d8e3bc5280c3fa7ad9afb36fa398869e8023daaa392ff3c8",
+    "packages": [
+      "codex-app-server"
+    ],
+    "expected_original_test_ids_after_complete_gate": 1345,
+    "baseline_is_post_gate_acceptance_not_filter": true,
+    "original_strict_command": [
+      "just",
+      "clippy",
+      "--locked",
+      "-p",
+      "codex-app-server",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "original_test_command": [
+      "just",
+      "test",
+      "--locked",
+      "--retries",
+      "0",
+      "-p",
+      "codex-app-server"
+    ],
+    "strict_started": true,
+    "strict_exit_code": 0,
+    "test_execution_started": true,
+    "tests_raw_exit_code": 0,
+    "tests_effective_exit_code": 0,
+    "original_outer_exit_code": 0,
+    "counts": {
+      "unique_test_results": 1345,
+      "passed": 1345,
+      "failed": 0,
+      "timed_out": 0,
+      "reported_skipped": 2
+    },
+    "last_observed_job_state": "succeeded",
+    "source_and_dual_lock_preguard_pass": true,
+    "closed_initial_observation": {
+      "path": "history/source53-r30-start-checkpoint/MANIFEST.json",
+      "bytes": 4290,
+      "sha256": "6edcba36b466877a4fd04ead15c9674dbef20e08625218fc6d8a8029c0bf75ff",
+      "git_blob": "c6c5736ac6b2c801d464108df434321222f5b5dc"
+    },
+    "diagnostic_only": true,
+    "behavior_repair_claimed": false,
+    "future_project_PASS_would_not_prove_root_cause_repair_or_workspace_scientific_qualification": true,
+    "active_phase_log_read_by_report_editor": false,
+    "strict_effective_exit_code": 0,
+    "strict_elapsed_seconds": 189.01348495483398,
+    "tests_elapsed_seconds": 972.5199975967407,
+    "nextest_execution_seconds": 404.442,
+    "source_and_dual_lock_postguards_pass": true,
+    "natural_outer_durable_complete": true,
+    "no_execution_restart": true,
+    "all_original_1345_ids_observed_pass": true,
+    "baseline_identity_set_used_as_filter": false,
+    "closed_originals": {
+      "path": "native-evidence/r30-project-checkpoint/CLOSURE.json",
+      "bytes": 1537,
+      "sha256": "cee456f1815c3742b208e29f291c84619f74b2491966522831492eb93b65e6af",
+      "git_blob": "87e13edf221a9d18910601e2e5f47493481a07f5"
+    },
+    "independent_closed_gate_readback": {
+      "path": "native-evidence/r30-project-checkpoint/INDEPENDENT-READBACK.json",
+      "bytes": 4833,
+      "sha256": "89fa7fd8ad1d363a8f5f5ebbf0a80fe25fc5190920e851f4b637e6a5d3a38f76",
+      "git_blob": "aeeea188b4ccb2747b06e03a4d78efc3b99eea6a"
+    },
+    "bedrock_result": {
+      "status": "PASS",
+      "seconds": 0.352,
+      "binary": "codex-app-server::all",
+      "name": "suite::v2::bedrock_setup::setup_bedrock_profile_and_environment",
+      "line": 797,
+      "byte_offset": 99547
+    },
+    "root_cause_proven": false,
+    "whole_workspace_qualification_transferred": false
+  },
+  "r31_start_only": {
+    "source_stage": 53,
+    "source_commit": "f74be175de66a4b351cd239d39d98cd34fe9cc1b",
+    "source_tree": "440d4a8e09af4009e4d9ea067388826308da8803",
+    "state": "LAST_OBSERVED_RUNNING_FRESH_METADATA_0_WORKSPACE_TERMINAL_PENDING",
+    "original_command": [
+      "just",
+      "test",
+      "--locked",
+      "--retries",
+      "0"
+    ],
+    "future_fresh_metadata_required": false,
+    "expected_default_member_count": 193,
+    "job_id": "1a1b275ba33-fc05-7e17",
+    "original_outer_exit_code": null,
+    "test_execution_started": null,
+    "counts": null,
+    "diagnostic_only": true,
+    "behavior_repair_claimed": false,
+    "idempotency_key": "cell-source53-workspace-r31-20261106-v1",
+    "outer_timeout_seconds": 9600,
+    "runner_sha256": "2dc7b84b7dad0d6e150817e0dfc4105c4bb4d343103aacef0fb932eab698a6f9",
+    "fresh_metadata_generated_on_current_source": true,
+    "metadata_exit_code": 0,
+    "metadata_elapsed_seconds": 0.1547842025756836,
+    "actual_workspace_member_count": 193,
+    "actual_workspace_default_member_count": 193,
+    "metadata": {
+      "path": "history/source53-r31-scope-preparation/input/native-workspace-r31-metadata.json.gz",
+      "bytes": 38947,
+      "sha256": "c728eb280c432f76e88dc52a661090be5811169de5d2b5372cf066b77ddf3b8d",
+      "git_blob": "7674123efb977318cf455db1ce86de6f101b2e29",
+      "compression": "gzip",
+      "original_uncompressed": {
+        "bytes": 937659,
+        "sha256": "b29d6b0c49c63d6345f50597873e3fa98c79ea0cbfe923ae3dd700b5cc08af8d",
+        "git_blob": "0db6b5ccf051718a85b4aa0e7a57b7d62b393ecb"
+      }
+    },
+    "metadata_receipt": {
+      "path": "history/source53-r31-scope-preparation/input/r31-start/evidence/native-workspace-r31-metadata-receipt.json",
+      "bytes": 1401,
+      "sha256": "ef6ce09448f4e22c5bb2450e45963e863cbe909de2151c6ebea3cb9bbb7f78b5",
+      "git_blob": "6cbc897c78f72811c15b731177c7be7439b14aa0"
+    },
+    "metadata_source_guard": {
+      "path": "history/source53-r31-scope-preparation/input/r31-start/evidence/native-workspace-r31-metadata-source-post-verification.json",
+      "bytes": 588,
+      "sha256": "c2063342dd1ec7d4e8662c886448dbc83e8a8b2a4ab335a149ac409a6f13a3c5",
+      "git_blob": "fa3b9dd96c693c690b97f346ddaeb79776b316e9"
+    },
+    "launch": {
+      "path": "history/source53-r31-scope-preparation/input/r31-start/controller/launch-original.json",
+      "bytes": 1058,
+      "sha256": "90eb27fff124b1035577ea44ee327270bf3d9fd4c3a70e00446cb81bfa63b705",
+      "git_blob": "1e6c823a69296b0da1e45397e0a904fc09b15de0"
+    },
+    "closed_running_snapshot": {
+      "path": "history/source53-r31-scope-preparation/input/r31-start/controller/status-original.json",
+      "bytes": 471,
+      "sha256": "72cfd37b36ff27cb7e6e88492d6a88ea0f576501221cbb6c29e26ea1ff775e1f",
+      "git_blob": "a7c8130f77b421b67ef890416c840dc060acff8e"
+    },
+    "closed_start_stdout": {
+      "path": "history/source53-r31-scope-preparation/input/r31-start/controller/initial-stdout.log",
+      "bytes": 407,
+      "sha256": "93ad03048cf81ea51a6442e1f03077b40eb1d4628c3391fbb144ba6012664310",
+      "git_blob": "191f49594bb5ed9bd1f1a9421e9c6b423ceeebd7"
+    },
+    "last_observed_job_state": "running",
+    "original_no_p_command_started": true,
+    "tests_raw_exit_code": null,
+    "tests_effective_exit_code": null,
+    "result_boundary": "Closed start/metadata observations only; full workspace log, terminal and counts are not read or inferred by this report preparation.",
+    "metadata_byte_cache_reuse_not_old_invocation_relabel": true
+  },
+  "fresh_scope_preparation": {
+    "path": "history/source53-r31-scope-preparation/HANDOFF-MANIFEST.json",
+    "bytes": 21650,
+    "sha256": "d217d3c9c195623b71b9763ccfa929013d4e77b2c62496ef2e3fba81450cc685",
+    "git_blob": "d5b7eaca9d29b1dd446a11f508f959611349a62d"
+  },
+  "fresh_scope_independent_review": {
+    "path": "history/source53-r31-scope-preparation/independent-review/HANDOFF-MANIFEST.json",
+    "bytes": 585,
+    "sha256": "564877de077b6a2220e7ae614965b1ffb0e0ff88247754771b47ecfe5314cc2a",
+    "git_blob": "77879664ec3811c5e0905b2296d974c63527ec95"
+  },
+  "publication_evidence_snapshot": {
+    "source_object_count": 53,
+    "registered_binary_path_count": 235,
+    "artifact_checkpoint_count": 6,
+    "ledger": {
+      "path": "history/source53-r30-upload-ledger-snapshot/publication-ledger.json",
+      "bytes": 57018,
+      "sha256": "56ff5327d71c430f46a101d922af7f7717fbfee1bbaea56d991d35b1699862eb",
+      "git_blob": "9d1a7a772249d8b360791285ed86d3faf1e08eab"
+    },
+    "r30_formal_upload_closed": {
+      "path": "history/source53-r30-upload-ledger-snapshot/UPLOAD-CLOSED.json",
+      "bytes": 2945,
+      "sha256": "b5451f4a206d9acbed57eb1cc92914d6a396cd16e00f5bdc766e345090d4102d",
+      "git_blob": "c641304f2e5f74ab75dcad966693c21d941bbbc5"
+    },
+    "fixed_snapshot_not_live_counter": true,
+    "earlier_208_binary_path_snapshot_preserved": {
+      "path": "history/source53-ledger-snapshot/publication-ledger.json",
+      "bytes": 51903,
+      "sha256": "2a41f36619330ccd69bed3ca365842d5514c6ea76927c571403f0eb691cad2ae",
+      "git_blob": "37b767bd82cb0b1a75a41a5c82195b5f71662aa1"
+    },
+    "artifact_checkpoint7_created": false,
+    "branch_or_PR_created": false,
+    "Git_upload_is_not_native_or_scientific_qualification": true
+  },
+  "formatter_result": null,
+  "final_release_source": null,
+  "final_SHA_CI_result": null,
+  "scientific_disposition": "HOLD",
+  "authority": "DENY_ALL",
+  "diagnostic_only": true,
+  "behavior_repair_claimed": false,
+  "root_cause_proven": false
+}

@@ -1,0 +1,314 @@
+{
+  "schema": "hepta.fixture-repair-audit.v1",
+  "status": "STATIC_CANDIDATE_FROZEN_NATIVE_VALIDATION_PENDING",
+  "base_commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+  "base_tree": "1646e1656cf6365e74accae19a1225fd2ce6d964",
+  "diagnosed_case": "codex-core::all suite::turn_input_submission::recover_turn_if_idle_preserves_id_and_resumes_plan_mode",
+  "closed_failure": {
+    "schema": "hepta.closed-core-mcp-r15-result.v1",
+    "status": "COMPLETE_FAILED",
+    "source_tree": "1646e1656cf6365e74accae19a1225fd2ce6d964",
+    "source_commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+    "log_sha256": "2e9b11682a84cce7be7e1db72e47eb4be260e8d7ef7a3b1fa916fe59c5a3e39f",
+    "log_bytes": 515261,
+    "selected_block": {
+      "status": "FAIL",
+      "elapsed": "5.166s",
+      "binary": "codex-core::all",
+      "name": "suite::turn_input_submission::recover_turn_if_idle_preserves_id_and_resumes_plan_mode",
+      "log_byte_range": [
+        476277,
+        477124
+      ]
+    },
+    "review_path": "../native-validation-results/r15-blockers/native-core-mcp-r15-result-review.json",
+    "review_sha256": "a31121be22b0ff02347fbae5266a21597fe58e811f2cd697617e1bda577bc061",
+    "excerpt_sha256": "d22af15eb161af09b2c051dbc386d4929b09ec86e428e59022da62789524dfe5"
+  },
+  "evidence_strength": {
+    "observed": "The complete closed r15 block proves the original 5-second recovery-epoch wait elapsed at line212; it does not contain a per-event transport trace.",
+    "source_demonstrated": "At this exact source, receiving the fixture HTTP headers emits a default RateLimits before any gated SSE chunk; any such first event reaching the turn executor revokes Ready. The previous r14 body-only gate does not control this boundary.",
+    "not_claimed": [
+      "No direct trace proving the exact instant RateLimits was consumed in the original failing process.",
+      "No claim that this static candidate has passed Rust compilation, the original regression, strict lint, formatting, or the complete gate."
+    ]
+  },
+  "causal_chain": [
+    {
+      "step": 1,
+      "statement": "The stage44 fixture gates only the first SSE body chunk; the common server records the real POST and writes HTTP headers before it awaits any per-chunk gate.",
+      "sources": [
+        {
+          "path": "codex-rs/core/tests/suite/turn_input_submission.rs",
+          "sha256": "ae71b734d0b46ce5b285afc827d765d0a4a066bbe825ffd0aba467a4d78e1824",
+          "lines": [
+            119,
+            146
+          ],
+          "text": "async fn recover_turn_if_idle_preserves_id_and_resumes_plan_mode() {\n    let (first_response_release, first_response_gate) = oneshot::channel();\n    let (server, _completions) = start_streaming_sse_server(vec![\n        vec![\n            StreamingSseChunk {\n                // Recovery ends when the first provider event reaches the turn\n                // executor, including response.created. Keep that event gated.\n                gate: Some(first_response_gate),\n                body: responses::sse(vec![ev_response_created(\"resp-interrupted\")]),\n            },\n            StreamingSseChunk {\n                gate: None,\n                body: responses::sse(vec![ev_completed(\"resp-interrupted\")]),\n            },\n        ],\n        vec![StreamingSseChunk {\n            gate: None,\n            body: responses::sse(vec![\n                ev_response_created(\"resp-recovered\"),\n                ev_completed(\"resp-recovered\"),\n            ]),\n        }],\n    ])\n    .await;\n    let test = test_codex()\n        .with_config(|config| {\n            let _ = config.features.enable(Feature::HeptaTurnRecovery);\n        })\n"
+        },
+        {
+          "path": "codex-rs/core/tests/common/streaming_sse.rs",
+          "sha256": "ed1e35fa973116adf94c8ddbb39bb7e0d2c4c7773b980277921f859ce40d252b",
+          "lines": [
+            119,
+            155
+          ],
+          "text": "                        if method == \"POST\" && path == \"/v1/responses\" {\n                            let body = match read_request_body(&mut stream, &request, body_prefix)\n                                .await\n                            {\n                                Ok(body) => body,\n                                Err(_) => {\n                                    let _ = write_http_response(&mut stream, /*status*/ 400, \"bad request\", \"text/plain\").await;\n                                    return;\n                                }\n                            };\n                            requests.lock().await.push(body);\n                            request_notify.notify_one();\n                            let Some((chunks, completion)) = take_next_stream(&state).await else {\n                                let _ = write_http_response(&mut stream, /*status*/ 500, \"no responses queued\", \"text/plain\").await;\n                                return;\n                            };\n\n                            if write_sse_headers(&mut stream).await.is_err() {\n                                return;\n                            }\n\n                            for chunk in chunks {\n                                if let Some(gate) = chunk.gate\n                                    && gate.await.is_err() {\n                                        return;\n                                    }\n                                if stream.write_all(chunk.body.as_bytes()).await.is_err() {\n                                    return;\n                                }\n                                let _ = stream.flush().await;\n                            }\n\n                            let _ = completion.send(unix_ms_now());\n                            let _ = stream.shutdown().await;\n                            return;\n                        }\n\n"
+        },
+        {
+          "path": "codex-rs/core/tests/common/streaming_sse.rs",
+          "sha256": "ed1e35fa973116adf94c8ddbb39bb7e0d2c4c7773b980277921f859ce40d252b",
+          "lines": [
+            254,
+            263
+          ],
+          "text": "    Ok(body_prefix)\n}\n\nasync fn write_sse_headers(stream: &mut tokio::net::TcpStream) -> std::io::Result<()> {\n    let headers = \"HTTP/1.1 200 OK\\r\\ncontent-type: text/event-stream\\r\\ncache-control: no-cache\\r\\nconnection: close\\r\\n\\r\\n\";\n    stream.write_all(headers.as_bytes()).await\n}\n\nasync fn write_http_response(\n    stream: &mut tokio::net::TcpStream,\n"
+        }
+      ]
+    },
+    {
+      "step": 2,
+      "statement": "Empty rate-limit headers still produce a default snapshot. This is explicit production behavior and has its own pre-existing empty-header unit case.",
+      "sources": [
+        {
+          "path": "codex-rs/codex-api/src/rate_limits.rs",
+          "sha256": "4b3d72fd41a9bfa84c00c564643f73fe4455e63b05f13f2657c8ccbf65621d6d",
+          "lines": [
+            22,
+            32
+          ],
+          "text": "/// Parses the default Codex rate-limit header family into a `RateLimitSnapshot`.\npub fn parse_default_rate_limit(headers: &HeaderMap) -> Option<RateLimitSnapshot> {\n    parse_rate_limit_for_limit(headers, /*limit_id*/ None)\n}\n\n/// Parses all known rate-limit header families into update records keyed by limit id.\npub fn parse_all_rate_limits(headers: &HeaderMap) -> Vec<RateLimitSnapshot> {\n    let mut snapshots = Vec::new();\n    if let Some(snapshot) = parse_default_rate_limit(headers) {\n        snapshots.push(snapshot);\n    }\n"
+        },
+        {
+          "path": "codex-rs/codex-api/src/rate_limits.rs",
+          "sha256": "4b3d72fd41a9bfa84c00c564643f73fe4455e63b05f13f2657c8ccbf65621d6d",
+          "lines": [
+            82,
+            101
+          ],
+          "text": "    let normalized_limit_id = normalize_limit_id(normalized_limit);\n    let credits = parse_credits_snapshot(headers);\n    let limit_name_header = format!(\"{prefix}-limit-name\");\n    let parsed_limit_name = parse_header_str(headers, &limit_name_header)\n        .map(str::trim)\n        .filter(|name| !name.is_empty())\n        .map(std::string::ToString::to_string);\n\n    Some(RateLimitSnapshot {\n        limit_id: Some(normalized_limit_id),\n        limit_name: parsed_limit_name,\n        primary,\n        secondary,\n        credits,\n        individual_limit: None,\n        spend_control_reached: None,\n        plan_type: None,\n        rate_limit_reached_type: None,\n    })\n}\n"
+        },
+        {
+          "path": "codex-rs/codex-api/src/rate_limits.rs",
+          "sha256": "4b3d72fd41a9bfa84c00c564643f73fe4455e63b05f13f2657c8ccbf65621d6d",
+          "lines": [
+            368,
+            379
+          ],
+          "text": "    #[test]\n    fn parse_all_rate_limits_includes_default_codex_snapshot() {\n        let headers = HeaderMap::new();\n\n        let updates = parse_all_rate_limits(&headers);\n        assert_eq!(updates.len(), 1);\n        assert_eq!(updates[0].limit_id.as_deref(), Some(\"codex\"));\n        assert_eq!(updates[0].limit_name, None);\n        assert_eq!(updates[0].primary, None);\n        assert_eq!(updates[0].secondary, None);\n        assert_eq!(updates[0].credits, None);\n    }\n"
+        }
+      ]
+    },
+    {
+      "step": 3,
+      "statement": "spawn_response_stream sends the header-derived RateLimits event before reading the SSE body.",
+      "sources": [
+        {
+          "path": "codex-rs/codex-api/src/sse/responses.rs",
+          "sha256": "e5bdeb7325bb5b659cd09422905220c1201d86dabc1d24bc670326de62a72b50",
+          "lines": [
+            34,
+            41
+          ],
+          "text": "pub fn spawn_response_stream(\n    stream_response: StreamResponse,\n    idle_timeout: Duration,\n    telemetry: Option<Arc<dyn SseTelemetry>>,\n    turn_state: Option<Arc<OnceLock<String>>>,\n    redact_provider_diagnostics: bool,\n) -> ResponseStream {\n    let rate_limit_snapshots = parse_all_rate_limits(&stream_response.headers);\n"
+        },
+        {
+          "path": "codex-rs/codex-api/src/sse/responses.rs",
+          "sha256": "e5bdeb7325bb5b659cd09422905220c1201d86dabc1d24bc670326de62a72b50",
+          "lines": [
+            71,
+            96
+          ],
+          "text": "    let (tx_event, rx_event) = mpsc::channel::<Result<ResponseEvent, ApiError>>(1600);\n    tokio::spawn(async move {\n        if let Some(model) = server_model {\n            let _ = tx_event.send(Ok(ResponseEvent::ServerModel(model))).await;\n        }\n        for snapshot in rate_limit_snapshots {\n            let _ = tx_event.send(Ok(ResponseEvent::RateLimits(snapshot))).await;\n        }\n        if let Some(etag) = models_etag {\n            let _ = tx_event.send(Ok(ResponseEvent::ModelsEtag(etag))).await;\n        }\n        if reasoning_included {\n            let _ = tx_event\n                .send(Ok(ResponseEvent::ServerReasoningIncluded(true)))\n                .await;\n        }\n        process_sse_with_treatment(\n            stream_response.bytes,\n            tx_event,\n            idle_timeout,\n            telemetry,\n            safety_buffering_treatment,\n            redact_provider_diagnostics,\n        )\n        .await;\n    });\n"
+        }
+      ]
+    },
+    {
+      "step": 4,
+      "statement": "The client mapper forwards other response events, including RateLimits, to the outer stream.",
+      "sources": [
+        {
+          "path": "codex-rs/core/src/client.rs",
+          "sha256": "60322c97712b9849dea763eb5fa5700a381c7c0e5eded73a5a4171bd51eaba09",
+          "lines": [
+            3260,
+            3283
+          ],
+          "text": "                    if provider_terminal_committed {\n                        return;\n                    }\n                }\n                Ok(event) => {\n                    if matches!(&event, ResponseEvent::OutputItemAdded(_)) && ttft_ms.is_none() {\n                        ttft_ms = Some(\n                            i64::try_from(request_start.elapsed().as_millis()).unwrap_or(i64::MAX),\n                        );\n                    }\n                    if tx_event.send(Ok(event)).await.is_err() {\n                        finish_abandoned_provider_response(\n                            &mut provider_terminal,\n                            \"provider_response_consumer_dropped\",\n                            &items_added,\n                            encoded_request_observer.as_ref(),\n                        )\n                        .await;\n                        inference_trace_attempt.record_cancelled(\n                            STREAM_DROPPED_REASON,\n                            upstream_request_id,\n                            &items_added,\n                        );\n                        return;\n"
+        }
+      ]
+    },
+    {
+      "step": 5,
+      "statement": "The first outer ResponseEvent closes the recovery arm and gates provider output before the event variant is matched. Durable Ready seen earlier is therefore insufficient to prove current eligibility.",
+      "sources": [
+        {
+          "path": "codex-rs/core/src/session/turn.rs",
+          "sha256": "a0cdb211158e4e3f46a5fe35f61dd778432ad115c710ead77500126066bdacf4",
+          "lines": [
+            2820,
+            2854
+          ],
+          "text": "\n        // Recovery authority covers only a request attempt whose output has\n        // not crossed into the outer turn executor. Close the local window\n        // before that executor can persist model-visible content, create a\n        // tool future, or cause a product effect. The transport's background\n        // mapper may already have recorded provider-policy evidence, tracing,\n        // or diagnostic telemetry; those are outside this bounded contract.\n        // Do not move this revocation before `stream.next()`: doing so\n        // would discard pre-output crash recovery without solving whether the\n        // provider accepted or produced output for the request. Provider\n        // sampling/output-arrival exactly-once requires provider idempotency\n        // and acknowledgement; this gate deliberately makes no such claim.\n        // Mid-stream and mid-tool host-side crashes therefore fail closed.\n        if first_provider_output_pending {\n            if let Some(checkpoint) = recovery_checkpoint {\n                checkpoint.arm.close();\n            }\n            match sess\n                .gate_first_provider_output(&turn_context.sub_id, &recovery_authority)\n                .await?\n            {\n                RecoveryProviderOutputGate::Attached => {\n                    first_provider_output_pending = false;\n                }\n                RecoveryProviderOutputGate::Detached => break Err(CodexErr::TurnAborted),\n            }\n        }\n\n        sess.services\n            .session_telemetry\n            .record_responses(&handle_responses, &event);\n        record_turn_ttft_metric(&turn_context, &event).await;\n\n        match event {\n            ResponseEvent::Created => {}\n"
+        },
+        {
+          "path": "codex-rs/core/src/tasks/mod.rs",
+          "sha256": "b51df87d911a73b51ac13cf28157f4d3bb3a7192f3aa2621265c849acc157a88",
+          "lines": [
+            1720,
+            1758
+          ],
+          "text": "    fn recovery_seed_for_task(\n        task: &RunningTask,\n        abort_reason: Option<&TurnAbortReason>,\n    ) -> Option<RecoverySeed> {\n        if !task.recovery_eligible_model_turn\n            || !matches!(\n                abort_reason,\n                Some(TurnAbortReason::Interrupted | TurnAbortReason::BudgetLimited)\n            )\n        {\n            return None;\n        }\n        let authority = task.recovery_authority.as_ref()?.clone();\n        // A transition in flight is intentionally not recoverable. Waiting on\n        // this mutex could delay cancellation behind a blocked rollout flush;\n        // fail closed instead and let the abort path quiesce the task.\n        let state = authority.state.try_lock().ok()?;\n        if state.poisoned\n            || state.durable_state != DurableRecoveryState::Ready\n            || !authority.ready.load(Ordering::Acquire)\n        {\n            return None;\n        }\n        let generation = state.generation;\n        let request_fingerprint_sha256 = state.request_fingerprint_sha256.clone()?;\n        let replay = state.replay.clone()?;\n        let persistence_failure_generation = state.ready_persistence_failure_generation?;\n        drop(state);\n        Some(RecoverySeed {\n            turn_id: task.turn_context.sub_id.clone(),\n            authority,\n            generation,\n            request_fingerprint_sha256,\n            replay,\n            persistence_failure_generation,\n            attach_epoch: task.attach_epoch,\n            confirmation_generation: None,\n        })\n    }\n"
+        }
+      ]
+    }
+  ],
+  "scope": {
+    "changed_files": [
+      "codex-rs/core/tests/common/streaming_sse.rs",
+      "codex-rs/core/tests/suite/turn_input_submission.rs"
+    ],
+    "production_files_changed": [],
+    "new_api": "start_streaming_sse_server_with_initial_response_gate(responses, initial_response_gate)",
+    "existing_api": "start_streaming_sse_server(responses) keeps its public signature and delegates with initial_response_gate=None.",
+    "actual_new_call_sites": [
+      "Legacy default wrapper delegates with explicit None.",
+      "Exactly one recovery integration case delegates with Some(original first_response_gate)."
+    ],
+    "original_factory_calls_found": 48,
+    "original_call_files": 14,
+    "original_calls_switched_to_opt_in": 1,
+    "remaining_original_calls_unchanged": 47,
+    "header_helper_search": {
+      "path": "native-callers.json",
+      "bytes": 16295,
+      "sha256": "7e684c929e104e588ea5534ec7ea2ca029aae8af0cdce9ab8aa10ef1db7c7d05",
+      "git_blob": "528fd431ea40356796114e9800a7980170b71f29",
+      "scope": "All codex-rs Rust files at stage44; header_gate|response_gate|gate.*header|header.*gate and start_streaming_sse_server",
+      "result": "No existing pre-header gate helper in common; response_gate matches in its callers are per-chunk gates."
+    }
+  },
+  "ownership_and_cancellation_review": [
+    "The first queued chunks, their completion sender, and initial_response_gate.take() are selected under one existing state mutex. Later responses receive no initial gate.",
+    "take_next_stream returns an owned private StreamingSseResponse; its state guard is dropped when the function returns. The header gate is awaited by the connection handler after this return, with neither queue nor request mutex held.",
+    "The raw POST body is recorded and request_notify fired before selecting/awaiting the response gate. Read-only rollout checks continue to observe the actual physical send, not a synthetic request or Ready state.",
+    "Dropping the existing gate sender yields Err and returns before headers, chunks, or the completion timestamp are sent. Dropping the owned socket and completion sender reports connection/receipt cancellation; no successful fake response or recovery marker is manufactured.",
+    "Gate success continues through the same write_sse_headers, per-chunk gates, body write/flush, completion send, and shutdown as the original helper. Gate=None adds no suspension point before headers.",
+    "GET /v1/models, malformed request handling, unknown paths, empty response queue behavior, timeout values, and shutdown ownership remain unchanged. The existing helper does not track every spawned connection task; this candidate does not claim to add that behavior."
+  ],
+  "mechanical_checks": [
+    {
+      "path": "codex-rs/core/tests/common/streaming_sse.rs",
+      "exact_inverse": true,
+      "test_function_names_unchanged": [
+        "get_models_returns_empty_list",
+        "post_responses_streams_in_order_and_closes",
+        "none_gate_streams_immediately",
+        "post_responses_with_no_queue_returns_500",
+        "gated_chunks_wait_for_signal_and_preserve_order",
+        "multiple_responses_are_fifo_and_completion_timestamps_monotonic",
+        "unknown_route_returns_404",
+        "malformed_request_returns_400",
+        "responses_post_drains_request_body",
+        "read_http_request_returns_after_header_terminator",
+        "parse_request_line_handles_valid_and_invalid",
+        "take_next_stream_consumes_in_lockstep",
+        "shutdown_terminates_accept_loop"
+      ],
+      "assertion_macro_token_counts_before_after": {
+        "assert": [
+          12,
+          12
+        ],
+        "assert_eq": [
+          34,
+          34
+        ],
+        "assert_ne": [
+          0,
+          0
+        ],
+        "assert_matches": [
+          0,
+          0
+        ]
+      },
+      "every_original_assertion_outside_replacement_regions": true
+    },
+    {
+      "path": "codex-rs/core/tests/suite/turn_input_submission.rs",
+      "exact_inverse": true,
+      "test_function_names_unchanged": [
+        "start_turn_if_idle_rejects_non_user_input_that_requests_plan_mode",
+        "recover_turn_if_idle_requires_hepta_turn_recovery_feature",
+        "recover_turn_if_idle_preserves_id_and_resumes_plan_mode",
+        "turn_input_submission_reports_started_and_steered_for_concurrent_submissions",
+        "turn_input_submission_applies_thread_settings_only_after_accepted_input",
+        "start_or_steer_turn_requires_matching_active_output_schema"
+      ],
+      "assertion_macro_token_counts_before_after": {
+        "assert": [
+          8,
+          8
+        ],
+        "assert_eq": [
+          19,
+          19
+        ],
+        "assert_ne": [
+          0,
+          0
+        ],
+        "assert_matches": [
+          0,
+          0
+        ]
+      },
+      "every_original_assertion_outside_replacement_regions": true
+    }
+  ],
+  "additional_invariants": {
+    "suite_from_feature_setup_to_end_exact": true,
+    "all_other_suite_tests_exact_except_additive_import": true,
+    "all_existing_helper_test_bodies_exact_after_reversing_only_state_construction_and_destructuring": true,
+    "response_created_completed_event_sequence_exact": true,
+    "original_two_response_plan": true,
+    "original_first_sender_drop_after_TurnAborted": true,
+    "original_5_second_and_10_millisecond_budgets": true,
+    "same_turn_id_expected_epoch_Plan_request_and_replayed_input_assertions": true,
+    "production_first_event_eligibility_gate_unchanged": true,
+    "no_allow_filter_ignore_deadline_changes": true,
+    "no_new_static_tests": true
+  },
+  "validation": {
+    "rust_commands_executed": false,
+    "native_source_modified": false,
+    "canonical_repo_source_modified": false,
+    "text_only_checks": "Two full-file exact reverse transformations, raw SHA256 and Git blob checks, assertion edit-region and original test-name preservation, immutable full checkout caller inventory, header-gate ownership/order review.",
+    "pending": [
+      "Parent independent review and exact source publication.",
+      "Original strict and package tests including the helper-owning test support package if separately owned.",
+      "Original Core recovery test and complete suite under existing deadlines/selection.",
+      "Final repository formatting and broader required gates by native owner."
+    ]
+  },
+  "patch": {
+    "path": "repair.patch",
+    "bytes": 7039,
+    "sha256": "7fd5e5f0e43ecd80505ca93630ccc9c5ebd29e24b9d16615f9cf0714ca8b55f5",
+    "git_blob": "cf209a91f37031f3cae1fa36fb569f38c7a6dcd7"
+  },
+  "source_manifest": {
+    "path": "source-manifest.json",
+    "bytes": 1877,
+    "sha256": "11d58a9e01c6d3aa0f3d185d71e7c61d3faf2045ea6aa235fa17d9c6b5084576",
+    "git_blob": "1a22fba823165b724079216c804c0a62d24203df"
+  },
+  "input_pins": {
+    "path": "input-pins.json",
+    "bytes": 6998,
+    "sha256": "83c60764a161e2b8e776c0aa6c4054d27996b3df4ff0efef77bd4cde838b6ece",
+    "git_blob": "09f3379e8cded2a14bd6a8d96e4d5288ee78db01"
+  }
+}

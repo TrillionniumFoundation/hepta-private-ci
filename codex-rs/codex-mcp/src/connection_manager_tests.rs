@@ -1954,9 +1954,14 @@ async fn capture_binding_uses_the_ready_clients_own_tools() {
             "shared_cached_tool",
         )],
     );
+    let mut hidden_tool = create_test_tool(CODEX_APPS_MCP_SERVER_NAME, "client_local_hidden");
+    let mut hidden_meta = rmcp::model::MetaObject::new();
+    hidden_meta.insert("ui".to_string(), serde_json::json!({ "visibility": [] }));
+    hidden_tool.tool.meta = Some(hidden_meta);
     let mut ready_client = create_test_managed_client(vec![
         create_test_tool(CODEX_APPS_MCP_SERVER_NAME, "client_local_tool"),
         create_test_tool(CODEX_APPS_MCP_SERVER_NAME, "client_local_blocked"),
+        hidden_tool,
     ])
     .await;
     let tool_filter = ToolFilter {
@@ -2029,6 +2034,26 @@ async fn capture_binding_uses_the_ready_clients_own_tools() {
     );
     assert!(
         step.prepare_call(CODEX_APPS_MCP_SERVER_NAME, "client_local_blocked")
+            .is_none()
+    );
+    assert!(
+        step.prepare_call(CODEX_APPS_MCP_SERVER_NAME, "client_local_hidden")
+            .is_none()
+    );
+    assert!(
+        step.prepare_hook_call(CODEX_APPS_MCP_SERVER_NAME, "client_local_hidden")
+            .is_some()
+    );
+    assert!(
+        step.prepare_hook_call(CODEX_APPS_MCP_SERVER_NAME, "client_local_tool")
+            .is_some()
+    );
+    assert!(
+        step.prepare_hook_call(CODEX_APPS_MCP_SERVER_NAME, "shared_cached_tool")
+            .is_none()
+    );
+    assert!(
+        step.prepare_hook_call(CODEX_APPS_MCP_SERVER_NAME, "client_local_blocked")
             .is_none()
     );
 }
@@ -4553,6 +4578,13 @@ async fn reconciliation_cancels_a_reused_pending_server_when_disabled() -> anyho
     config.enabled = false;
     let removed = reconcile_reusable_server(&reused, config, runtime_context).await;
     assert!(!removed.servers.contains_key("docs"));
+    let removed = Arc::new(removed);
+    let removed_binding = capture_binding(&removed).await;
+    assert!(
+        removed_binding
+            .prepare_hook_call("docs", "search")
+            .is_none()
+    );
     drop(previous);
     drop(reused);
 

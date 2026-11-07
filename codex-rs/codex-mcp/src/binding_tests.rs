@@ -4,6 +4,7 @@ use std::sync::Arc;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
 
+use anyhow::Context;
 use codex_config::AppToolApproval;
 use codex_config::Constrained;
 use codex_config::types::ApprovalsReviewer;
@@ -372,4 +373,42 @@ async fn preparation_holds_catalog_authority_until_it_finishes() {
         .expect("call task should finish")
         .expect_err("the test preparation should stop the call");
     assert!(step.tool_catalog_revision.try_write().is_ok());
+}
+
+#[tokio::test]
+async fn hook_call_retains_owner_and_rejects_stale_catalog_before_preparation() -> anyhow::Result<()>
+{
+    let step = test_step(
+        "old",
+        AppToolApproval::Prompt,
+        /*supports_sandbox_state_meta*/ true,
+    )
+    .await;
+    let prepared = step
+        .step
+        .prepare_hook_call(SERVER_NAME, TOOL_NAME)
+        .context("configured hook should retain the permitted original call")?;
+    assert!(Arc::ptr_eq(&prepared.client.client, &step.client));
+    assert_eq!(
+        (
+            prepared.server_environment_id(),
+            prepared.tool_approval_mode()
+        ),
+        ("old-environment", AppToolApproval::Prompt)
+    );
+
+    *step.tool_catalog_revision.write().await += 1;
+    let preparation_ran = Arc::new(AtomicBool::new(false));
+    let marker = Arc::clone(&preparation_ran);
+    let error = prepared
+        .call_with_preparation(/*requested_timeout*/ None, || async move {
+            marker.store(true, Ordering::SeqCst);
+            Ok((None, None))
+        })
+        .await
+        .err()
+        .context("a stale hook call must fail before irreversible preparation")?;
+    assert!(format!("{error:#}").contains("catalog changed"));
+    assert!(!preparation_ran.load(Ordering::SeqCst));
+    Ok(())
 }

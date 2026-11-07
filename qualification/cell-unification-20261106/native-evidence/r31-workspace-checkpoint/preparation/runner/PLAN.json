@@ -1,0 +1,87 @@
+{
+  "schema": "hepta.source53-r31-inert-preparation.v1",
+  "root_announced_source53_registration": {
+    "source_commit": "f74be175de66a4b351cd239d39d98cd34fe9cc1b",
+    "source_tree": "440d4a8e09af4009e4d9ea067388826308da8803",
+    "changed_files": 197,
+    "rust_files": 183,
+    "native_head": "bef6fa7645df9df12b69fda499e97eed25de6c75",
+    "diagnostic_only": true,
+    "behavior_repair_claimed": false
+  },
+  "executable_bindings_status": "UNBOUND_NONE_FROZEN_FALSE",
+  "no_future_r30_closures_fabricated": true,
+  "success_prerequisite": {
+    "r30_prefix": "native-source53-project-r30",
+    "phases": [
+      "strict",
+      "tests"
+    ],
+    "success_originals": 19,
+    "natural_outer_exit_required": 0,
+    "exact_app_server_ids": 1345,
+    "baseline_is_post_execution_acceptance_only": true
+  },
+  "historical_inheritance": {
+    "r28_source": "source52",
+    "originals": 26,
+    "python_tests": 32,
+    "four_package_test_ids": 1564,
+    "not_same_source53_execution": true,
+    "does_not_substitute_for_r30": true,
+    "r29_original_exit": 100,
+    "r29_unique": 20228,
+    "r29_counts": {
+      "PASS": 20227,
+      "FAIL": 1,
+      "TIMEOUT": 0
+    },
+    "r29_reported_skipped": 130
+  },
+  "proposed_workspace": {
+    "prefix": "native-workspace-r31",
+    "fresh_metadata_command": [
+      "cargo",
+      "metadata",
+      "--locked",
+      "--no-deps",
+      "--format-version",
+      "1"
+    ],
+    "actual_and_default_members": 193,
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "--retries",
+      "0"
+    ],
+    "outer_timeout_seconds": 9600,
+    "exact_prior_ids_required_after_execution": 20228,
+    "prior_ids_used_as_selector": false,
+    "source_file_guard_count": 197,
+    "free_space_before_bytes": 21474836480,
+    "features": "unchanged_defaults",
+    "filters": "no_additions",
+    "ignore_rules": "unchanged",
+    "additional_test_timeouts": false
+  },
+  "runtime_execution": {
+    "r31_started": false,
+    "native_rust_metadata_or_formatter_executed": false,
+    "raw_return_write": "create-only exact JSON, flush, fsync before derived acceptance",
+    "natural_wait": true,
+    "no_automatic_retry": true,
+    "failures_retain_original_rc_and_source": true
+  },
+  "future_final_binding_requires_root_and_native_independent_review": true,
+  "outputs": [
+    "native-run-r31-template.py",
+    "r29-r31-template.patch",
+    "MECHANICAL-READBACK.json",
+    "PRODUCER-CONSUMER-READBACK.json",
+    "INPUT-PINS.json",
+    "references/native-run-r29-actual.py",
+    "references/native-run-r30-template-v2.py"
+  ]
+}

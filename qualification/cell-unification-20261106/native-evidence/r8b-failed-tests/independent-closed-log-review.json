@@ -1,0 +1,480 @@
+{
+  "schema": "hepta.independent-closed-log-review.v1",
+  "state": "CLOSED_LOG_COUNTS_VERIFIED_COMMAND_AND_FULL_SOURCE_BINDING_PARTIAL",
+  "reviewer": "/root/differentiation_study",
+  "scope": "Only terminated r8 strict diagnostic and r8b inherited seven-package tests; no active core log read, no Rust execution, no source/runner/profile edits.",
+  "input_artifacts": [
+    {
+      "path": "r8-blockers/native-candidate-r8-strict-diagnostic.log",
+      "bytes": 25445,
+      "sha256": "04424a725bff43ebb69deb2090a509cd6eface05b2a1ff61341b5eb433ca6013"
+    },
+    {
+      "path": "r8-blockers/native-candidate-r8-strict-diagnostic-receipt.json",
+      "bytes": 937,
+      "sha256": "22b6ac7ad13e039cbf30bc78b58a3a7bda55c3d9d992a9d1e3119d46b8c81c88"
+    },
+    {
+      "path": "r8-blockers/native-candidate-r8-strict-diagnostic-resources.txt",
+      "bytes": 1050,
+      "sha256": "71091e829b66338519f7f66f58ae5c7e5a0239b4503c570b6097c266b44a4779"
+    },
+    {
+      "path": "r8-blockers/diagnostic-index.json",
+      "bytes": 4718,
+      "sha256": "9bedd815cbebabba5836576db27a67c7a885febe2c98d74f4a477b637a2d8c6e"
+    },
+    {
+      "path": "r8-blockers/inventory.json",
+      "bytes": 64967,
+      "sha256": "1cfa76f14bcf5cb873f1b9047cf2eae8f3cd4a9c3b14bbe546753a17c90ebacc"
+    },
+    {
+      "path": "r8b-test-failures/native-inherited-seven-r8b-tests.log",
+      "bytes": 230457,
+      "sha256": "a68e4640f13a44efab1403a4563c1cffb056b6847d09723484d29ab74be04ec0"
+    },
+    {
+      "path": "r8b-test-failures/failure-index.json",
+      "bytes": 8121,
+      "sha256": "749c09c1de9a00f960b3016f4e7ef9664aa992995519a4d9f27449192c00ec90"
+    },
+    {
+      "path": "r8b-test-failures/fixture-inventory.json",
+      "bytes": 28044,
+      "sha256": "1f93b17daf5bd1a85e0353009bf5fae972ab8cbfa7124e1f5e10306c8e6d5bef"
+    },
+    {
+      "path": "r8b-test-failures/native-r8b-fixture-runtime-audit.json",
+      "bytes": 7784,
+      "sha256": "f34ed339b3caa89da646014437f08cb3613ad633e693d031723b8a91ad62a41b"
+    }
+  ],
+  "r8_strict": {
+    "raw_log_sha256_matches_original_receipt_and_inventory": true,
+    "declared_tree": "6d88ca9c8964669a408d8549efaeff7b94d68674",
+    "command_from_original_receipt": [
+      "just",
+      "clippy",
+      "--locked",
+      "--keep-going",
+      "-p",
+      "codex-model-provider-info",
+      "-p",
+      "codex-shell-escalation",
+      "-p",
+      "codex-linux-sandbox",
+      "-p",
+      "codex-hepta-memory",
+      "-p",
+      "codex-exec-server",
+      "-p",
+      "codex-hepta-supervisor",
+      "-p",
+      "codex-hepta-memory-extension",
+      "-p",
+      "codex-core",
+      "-p",
+      "codex-hepta-agentd",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "exit_code_from_receipt_resources_and_log": 101,
+    "elapsed_seconds_from_receipt": 59.82199716567993,
+    "actual_unique_source_diagnostics": 31,
+    "aggregate_error_lines_excluded": 2,
+    "diagnostic_category_counts": {
+      "dead_code": 4,
+      "large_enum_variant": 16,
+      "too_many_arguments": 11
+    },
+    "all_source_diagnostics_in": "hepta-agentd/src",
+    "source_diagnostics": [
+      {
+        "error": "error: field `sequence` is never read",
+        "location": "--> hepta-agentd/src/browser_servo.rs:317:5",
+        "log_line": 43
+      },
+      {
+        "error": "error: methods `append` and `append_with_delivery` are never used",
+        "location": "--> hepta-agentd/src/cognitive_retrieval_learning.rs:32:19",
+        "log_line": 55
+      },
+      {
+        "error": "error: associated function `from_fields` is never used",
+        "location": "--> hepta-agentd/src/calculator_recovery_selection.rs:60:19",
+        "log_line": 67
+      },
+      {
+        "error": "error: field `idempotent` is never read",
+        "location": "--> hepta-agentd/src/notes_literal_receipts.rs:107:9",
+        "log_line": 75
+      },
+      {
+        "error": "error: large size difference between variants",
+        "location": "--> hepta-agentd/src/authority_host_checkpoint_adoption.rs:162:1",
+        "log_line": 84
+      },
+      {
+        "error": "error: large size difference between variants",
+        "location": "--> hepta-agentd/src/authority_host_checkpoint_material_worker.rs:12:1",
+        "log_line": 104
+      },
+      {
+        "error": "error: large size difference between variants",
+        "location": "--> hepta-agentd/src/authority_host_checkpoint_material_worker.rs:29:1",
+        "log_line": 128
+      },
+      {
+        "error": "error: large size difference between variants",
+        "location": "--> hepta-agentd/src/authority_host_checkpoint_material_binding.rs:6:1",
+        "log_line": 146
+      },
+      {
+        "error": "error: large size difference between variants",
+        "location": "--> hepta-agentd/src/authority_host_admin_protocol.rs:79:1",
+        "log_line": 164
+      },
+      {
+        "error": "error: large size difference between variants",
+        "location": "--> hepta-agentd/src/automation_effect_host.rs:59:1",
+        "log_line": 193
+      },
+      {
+        "error": "error: this function has too many arguments (9/7)",
+        "location": "--> hepta-agentd/src/cognitive_context.rs:105:1",
+        "log_line": 212
+      },
+      {
+        "error": "error: this function has too many arguments (10/7)",
+        "location": "--> hepta-agentd/src/cognitive_context.rs:507:1",
+        "log_line": 228
+      },
+      {
+        "error": "error: this function has too many arguments (8/7)",
+        "location": "--> hepta-agentd/src/cognitive_retrieval_learning.rs:52:5",
+        "log_line": 242
+      },
+      {
+        "error": "error: this function has too many arguments (8/7)",
+        "location": "--> hepta-agentd/src/deployment_text_unsigned.rs:7:5",
+        "log_line": 256
+      },
+      {
+        "error": "error: this function has too many arguments (8/7)",
+        "location": "--> hepta-agentd/src/deployment_text.rs:139:5",
+        "log_line": 270
+      },
+      {
+        "error": "error: this function has too many arguments (8/7)",
+        "location": "--> hepta-agentd/src/deployment_text.rs:183:5",
+        "log_line": 284
+      },
+      {
+        "error": "error: large size difference between variants",
+        "location": "--> hepta-agentd/src/intelligence_product.rs:584:1",
+        "log_line": 298
+      },
+      {
+        "error": "error: large size difference between variants",
+        "location": "--> hepta-agentd/src/intelligence_product.rs:593:1",
+        "log_line": 317
+      },
+      {
+        "error": "error: large size difference between variants",
+        "location": "--> hepta-agentd/src/intelligence_product.rs:722:1",
+        "log_line": 339
+      },
+      {
+        "error": "error: this function has too many arguments (8/7)",
+        "location": "--> hepta-agentd/src/notes_primary_bootstrap.rs:7:1",
+        "log_line": 360
+      },
+      {
+        "error": "error: this function has too many arguments (9/7)",
+        "location": "--> hepta-agentd/src/notes_primary_bootstrap.rs:37:1",
+        "log_line": 374
+      },
+      {
+        "error": "error: this function has too many arguments (9/7)",
+        "location": "--> hepta-agentd/src/notes_primary_bootstrap.rs:68:1",
+        "log_line": 388
+      },
+      {
+        "error": "error: large size difference between variants",
+        "location": "--> hepta-agentd/src/notes_launch_mode.rs:13:1",
+        "log_line": 402
+      },
+      {
+        "error": "error: this function has too many arguments (8/7)",
+        "location": "--> hepta-agentd/src/desktop_adapter_prepare.rs:63:5",
+        "log_line": 424
+      },
+      {
+        "error": "error: large size difference between variants",
+        "location": "--> hepta-agentd/src/notes_thread_recorded.rs:41:1",
+        "log_line": 438
+      },
+      {
+        "error": "error: large size difference between variants",
+        "location": "--> hepta-agentd/src/notes_thread_recorded.rs:288:1",
+        "log_line": 459
+      },
+      {
+        "error": "error: large size difference between variants",
+        "location": "--> hepta-agentd/src/desktop_thread_recorded.rs:19:1",
+        "log_line": 477
+      },
+      {
+        "error": "error: large size difference between variants",
+        "location": "--> hepta-agentd/src/notes_literal_adapter.rs:88:1",
+        "log_line": 495
+      },
+      {
+        "error": "error: this function has too many arguments (9/7)",
+        "location": "--> hepta-agentd/src/plasticity_host.rs:704:1",
+        "log_line": 517
+      },
+      {
+        "error": "error: large size difference between variants",
+        "location": "--> hepta-agentd/src/text_session_events.rs:25:1",
+        "log_line": 531
+      },
+      {
+        "error": "error: large size difference between variants",
+        "location": "--> hepta-agentd/src/text_session_worker.rs:80:1",
+        "log_line": 549
+      }
+    ],
+    "excluded_aggregate_lines": [
+      {
+        "error": "error: could not compile `codex-hepta-agentd` (lib) due to 31 previous errors",
+        "location": null,
+        "log_line": 576
+      },
+      {
+        "error": "error: recipe `clippy` failed on line 61 with exit code 101",
+        "location": null,
+        "log_line": 580
+      }
+    ],
+    "independent_parser_exactly_matches_supplied_33_item_index": true,
+    "referenced_full_source_manifest": {
+      "path": "native-candidate-r8-source.json",
+      "present_in_local_r8_directory": false,
+      "limit": "Full original command source manifest was not exported here. The original receipt binds the log to its declared tree and the 74-file inventory supplies partial source pins, but this reviewer did not reconstruct the complete tree."
+    }
+  },
+  "r8b_tests": {
+    "raw_log_sha256_matches_original_failure_index": true,
+    "declared_tree_from_failure_and_fixture_metadata": "6d88ca9c8964669a408d8549efaeff7b94d68674",
+    "source_tree_not_independently_derived_from_test_log": true,
+    "nextest_profile_as_printed": "local",
+    "nextest_run_id": "ce4f7526-3fc4-4e86-b3e5-95484649fa8f",
+    "start_line": {
+      "log_line": 810,
+      "text": "Starting 1355 tests across 41 binaries (17 tests skipped)"
+    },
+    "summary_line": {
+      "log_line": 2294,
+      "text": "Summary [ 163.059s] 1355 tests run: 1349 passed, 4 failed, 2 timed out, 17 skipped",
+      "test_phase_elapsed_seconds": 163.059
+    },
+    "unique_executed_test_ids": 1355,
+    "unique_status_counts": {
+      "PASS": 1349,
+      "FAIL": 4,
+      "TIMEOUT": 2
+    },
+    "summary_counts": {
+      "run": 1355,
+      "passed": 1349,
+      "failed": 4,
+      "timed_out": 2,
+      "skipped": 17
+    },
+    "arithmetic_verified": "1355 = 1349 PASS + 4 FAIL + 2 TIMEOUT; 17 skipped are outside the 1355 executed tests.",
+    "terminal_status_lines_before_summary": 1355,
+    "terminal_status_lines_after_summary": 6,
+    "footer_repeats_excluded": 6,
+    "footer_repeat_counts": {
+      "FAIL": 4,
+      "TIMEOUT": 2
+    },
+    "terminating_notice_lines_excluded": [
+      {
+        "log_line": 2073,
+        "text": "TERMINATING [> 60.000s] codex-hepta-supervisor::paired_process_product five_real_pairs_adopt_all_ten_children_and_isolate_one_matrix_crash"
+      },
+      {
+        "log_line": 2082,
+        "text": "TERMINATING [> 60.000s] codex-hepta-supervisor::paired_process_product two_real_pairs_restart_one_without_peer_pid_churn"
+      }
+    ],
+    "canonical_unique_result_set_sha256": "bb7fb77f81f6d31f02eea5674822bb4432201c42372f6131183346b2b93e4266",
+    "canonical_result_hash_format": "JSON array sorted by exact binary_id + space + test_name, each object in key order test_id,status,elapsed_seconds; UTF-8 compact separators; no trailing newline.",
+    "observed_package_unique_executed_counts": {
+      "codex-exec-server": 524,
+      "codex-hepta-memory": 411,
+      "codex-hepta-memory-extension": 100,
+      "codex-hepta-supervisor": 123,
+      "codex-linux-sandbox": 146,
+      "codex-model-provider-info": 31,
+      "codex-shell-escalation": 20
+    },
+    "confirmed_target_passes": {
+      "supervisor_new_regressions": [
+        {
+          "test_id": "codex-hepta-supervisor supervisor::tests::restart_recovery::matrix_budget_identity_is_checked_even_when_agent_recovery_faults",
+          "binary_id": "codex-hepta-supervisor",
+          "name": "supervisor::tests::restart_recovery::matrix_budget_identity_is_checked_even_when_agent_recovery_faults",
+          "status": "PASS",
+          "elapsed_seconds": 0.015,
+          "log_line": 2034
+        },
+        {
+          "test_id": "codex-hepta-supervisor supervisor::tests::restart_recovery::matrix_exhausted_budget_survives_repeated_supervisor_recovery",
+          "binary_id": "codex-hepta-supervisor",
+          "name": "supervisor::tests::restart_recovery::matrix_exhausted_budget_survives_repeated_supervisor_recovery",
+          "status": "PASS",
+          "elapsed_seconds": 0.029,
+          "log_line": 2035
+        },
+        {
+          "test_id": "codex-hepta-supervisor supervisor::tests::restart_recovery::matrix_orphan_fault_uses_lease_release_budget_before_writing",
+          "binary_id": "codex-hepta-supervisor",
+          "name": "supervisor::tests::restart_recovery::matrix_orphan_fault_uses_lease_release_budget_before_writing",
+          "status": "PASS",
+          "elapsed_seconds": 0.022,
+          "log_line": 2036
+        },
+        {
+          "test_id": "codex-hepta-supervisor supervisor::tests::restart_recovery::unresolved_agent_release_cannot_reset_another_release_matrix_budget",
+          "binary_id": "codex-hepta-supervisor",
+          "name": "supervisor::tests::restart_recovery::unresolved_agent_release_cannot_reset_another_release_matrix_budget",
+          "status": "PASS",
+          "elapsed_seconds": 0.023,
+          "log_line": 2037
+        }
+      ],
+      "exec_changed_lock_tests": [
+        {
+          "test_id": "codex-exec-server local_process::observation_tests::actual_exit_fact_survives_cancelled_map_publication",
+          "binary_id": "codex-exec-server",
+          "name": "local_process::observation_tests::actual_exit_fact_survives_cancelled_map_publication",
+          "status": "PASS",
+          "elapsed_seconds": 0.01,
+          "log_line": 954
+        },
+        {
+          "test_id": "codex-exec-server local_process::observation_tests::blocked_stdin_reservation_wakes_for_retained_outcome",
+          "binary_id": "codex-exec-server",
+          "name": "local_process::observation_tests::blocked_stdin_reservation_wakes_for_retained_outcome",
+          "status": "PASS",
+          "elapsed_seconds": 0.009,
+          "log_line": 956
+        }
+      ]
+    },
+    "unique_nonpassing_tests": [
+      {
+        "test_id": "codex-exec-server process_sandbox::tests::native_request_handles_remote_proxy_config_for_platform",
+        "binary_id": "codex-exec-server",
+        "name": "process_sandbox::tests::native_request_handles_remote_proxy_config_for_platform",
+        "status": "FAIL",
+        "elapsed_seconds": 5.499,
+        "log_line": 1050,
+        "all_terminal_result_log_lines": [
+          1050,
+          2295
+        ]
+      },
+      {
+        "test_id": "codex-exec-server::exec_process shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_3_remote_pipe_recovery",
+        "binary_id": "codex-exec-server::exec_process",
+        "name": "shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_3_remote_pipe_recovery",
+        "status": "FAIL",
+        "elapsed_seconds": 0.291,
+        "log_line": 1173,
+        "all_terminal_result_log_lines": [
+          1173,
+          2296
+        ]
+      },
+      {
+        "test_id": "codex-exec-server::exec_process shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_4_remote_tty_recovery",
+        "binary_id": "codex-exec-server::exec_process",
+        "name": "shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_4_remote_tty_recovery",
+        "status": "FAIL",
+        "elapsed_seconds": 0.306,
+        "log_line": 1206,
+        "all_terminal_result_log_lines": [
+          1206,
+          2297
+        ]
+      },
+      {
+        "test_id": "codex-exec-server::exec_process shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_6_remote_retry_budget_exhausted",
+        "binary_id": "codex-exec-server::exec_process",
+        "name": "shell_snapshot_v2_capture_failure_falls_back_and_retries::test_case_6_remote_retry_budget_exhausted",
+        "status": "FAIL",
+        "elapsed_seconds": 0.289,
+        "log_line": 1238,
+        "all_terminal_result_log_lines": [
+          1238,
+          2298
+        ]
+      },
+      {
+        "test_id": "codex-hepta-supervisor::paired_process_product five_real_pairs_adopt_all_ten_children_and_isolate_one_matrix_crash",
+        "binary_id": "codex-hepta-supervisor::paired_process_product",
+        "name": "five_real_pairs_adopt_all_ten_children_and_isolate_one_matrix_crash",
+        "status": "TIMEOUT",
+        "elapsed_seconds": 60.004,
+        "log_line": 2074,
+        "all_terminal_result_log_lines": [
+          2074,
+          2299
+        ]
+      },
+      {
+        "test_id": "codex-hepta-supervisor::paired_process_product two_real_pairs_restart_one_without_peer_pid_churn",
+        "binary_id": "codex-hepta-supervisor::paired_process_product",
+        "name": "two_real_pairs_restart_one_without_peer_pid_churn",
+        "status": "TIMEOUT",
+        "elapsed_seconds": 60.004,
+        "log_line": 2083,
+        "all_terminal_result_log_lines": [
+          2083,
+          2300
+        ]
+      }
+    ],
+    "skip_evidence": {
+      "reported_count": 17,
+      "explicit_skip_identity_lines": 0,
+      "supplied_failure_index_skipped_tests_empty": true,
+      "identities": null,
+      "per_test_skip_reasons": null,
+      "limit": "The log reports a count, not the 17 identities or their reasons. Empty skipped_tests means unavailable detail, not zero skipped. This review cannot independently classify each as ignored/helper/platform/filter or prove prior exclusion equivalence."
+    },
+    "command_and_resources_binding": {
+      "original_command_receipt_exported_here": false,
+      "original_complete_source_manifest_exported_here": false,
+      "original_resource_record_exported_here": false,
+      "exit_100_evidence": "The log ends with recipe test failed on line 89 with exit code 100; no independently exported original command receipt is present here.",
+      "exact_argv_environment_total_wall_time": "PENDING original receipt/resource export; not fabricated from filename or test summary."
+    },
+    "coverage_limit": "Seven observed package names and the start/summary counts describe this terminated stage, not the full workspace, Agentd gate, every feature/platform or external service qualification."
+  },
+  "pending_closure": [
+    "Original r8b command receipt with argv, environment/profile, exit and log SHA",
+    "Original r8b complete source manifest/tree binding and retained-source equivalence",
+    "Original r8b resource/time record",
+    "Exact 17 skipped test identities and reasons from retained nextest metadata/list or another authoritative original record",
+    "Original r8 full source manifest referenced by the available strict receipt"
+  ],
+  "input_bytes_unchanged_at_review_end": true,
+  "later_results_not_included": true
+}

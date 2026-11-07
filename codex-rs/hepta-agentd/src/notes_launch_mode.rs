@@ -15,7 +15,7 @@ pub(crate) enum NotesLaunchMode {
     LiteralUiV1,
     OriginalThreadToolV1 {
         route: AgentdTextSessionConfig,
-        seed: crate::NotesThreadSeedReceipt,
+        seed: Box<crate::NotesThreadSeedReceipt>,
     },
 }
 

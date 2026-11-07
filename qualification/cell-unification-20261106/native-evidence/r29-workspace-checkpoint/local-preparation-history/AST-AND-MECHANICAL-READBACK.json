@@ -1,0 +1,42 @@
+{
+  "schema": "hepta.r29-formal-preparation-static-readback.v1",
+  "reader": {
+    "path": "r29-formal-preparation/verify_and_assemble.py",
+    "bytes": 57808,
+    "sha256": "d22e6723a47215d707157093a2b0005048e5e5de4b214b370390ada3017a3c01",
+    "git_blob": "fa055b854dde38d6e846c831099c80d29b5adf20"
+  },
+  "ast_valid": true,
+  "imports": [
+    "collections",
+    "argparse",
+    "ast",
+    "gzip",
+    "hashlib",
+    "io",
+    "json",
+    "pathlib",
+    "re",
+    "tarfile"
+  ],
+  "twelve_common_reader_helpers_byte_equal_to_closed_r28_reader": [
+    "check_recorded_guard",
+    "exact",
+    "gz",
+    "inspect_literal_bindings",
+    "natural_terminal",
+    "original_lines",
+    "parse_python",
+    "pin",
+    "raw_json",
+    "safe",
+    "verify_sealed",
+    "verify_sources"
+  ],
+  "current_test_count_hardcoded": false,
+  "prior1564_and_python32_are_r28_prerequisite_only": true,
+  "actual_archive_pins_unbound": true,
+  "reader_executed": false,
+  "native_or_rust_or_metadata_or_formatter_executed": false,
+  "formal_group_created": false
+}

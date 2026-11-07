@@ -1,0 +1,26 @@
+{
+  "schema": "hepta.root-source53-r30-start-readback.v1",
+  "readback_path": "native-validation-results/r30-start-closed/LOCAL-READBACK.json",
+  "readback_bytes": 4621,
+  "readback_sha256": "7fbb6b741758192c8d002c5db5cdbfef3bf637d68f0f3665e93463e9f13b154b",
+  "all_15_original_pins_independently_rehashed": true,
+  "actual_job_id": "1a1b25b399f-fc05-7daa",
+  "launch_arguments": {
+    "host": "pocket4",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "/home/alex/work/hepta-cell-unified-20261106-a/native-run-r30.py"
+    ],
+    "cwd": "/home/alex/work/hepta-cell-unified-20261106-a",
+    "idempotency_key": "cell-source53-project-r30-20261106-v1",
+    "timeout_seconds": 9600
+  },
+  "actual_runner_and_baseline_file_info_match": true,
+  "source197_HEAD_dual_lock_preguards_pass": true,
+  "state_at_readback": "RUNNING_STRICT_START",
+  "terminal": null,
+  "test_counts": null,
+  "diagnostic_only": true,
+  "behavior_repair_claimed": false,
+  "workspace_or_formatter_launched": false
+}

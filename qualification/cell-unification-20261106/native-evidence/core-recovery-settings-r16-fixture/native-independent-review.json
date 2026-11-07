@@ -1,0 +1,42 @@
+{
+  "schema": "hepta.independent-static-review.v1",
+  "reviewer": "native_validation",
+  "source_tree": "3ebd193f213d640e5330a1be4b983bcc4b06617a",
+  "source_commit": "96dc9232535fedf735e3099ef1391b69477270d4",
+  "status": "PASS_STATIC_REVIEW_NATIVE_GATE_PENDING",
+  "files": [
+    {
+      "path": "codex-rs/core/tests/suite/turn_input_submission.rs",
+      "before": {
+        "bytes": 21320,
+        "sha256": "7dc33fdd6c892deda4b145edbd61a653c1cd3b4eaaae6c635caadaf2fd2e5919",
+        "git_blob": "a3e4ecc296ff71736bac1e2c441d7e7b0762a2a7"
+      },
+      "after": {
+        "bytes": 21840,
+        "sha256": "cc09700dd4be2f5d206de412d56e852fdf09ccfd559cd9e9b9dcd7b39689fd08",
+        "git_blob": "9e79acff561d58136981768f6dfbc8efb20f5cad"
+      }
+    }
+  ],
+  "patch_sha256": "e4d0b6bc9d62b3ca8895e755818854dfbb41d663d9a949001497f3413fdf7bfd",
+  "native_before_exact": true,
+  "full_file_forward_and_reverse_exact": true,
+  "outside_target_function_exact": true,
+  "producer_validator_native_pin": {
+    "path": "codex-rs/core/src/session/turn_input.rs",
+    "bytes": 41654,
+    "sha256": "7959e38afd075c5cad233a7d1ba59b3406b1de96d9076e444a51ce8ac33b9841",
+    "git_blob": "215af4dd2a36cf07915e2451040c19527bac3c9a",
+    "mode": "100644"
+  },
+  "findings": [
+    "Initial normal user submission selects the exact Plan object before interrupted-turn recovery state is captured.",
+    "Recovery carries default overrides, satisfying the unchanged fail-closed producer contract.",
+    "Two complete collaboration_mode readbacks make actual initial Plan setup and post-recovery preservation observable.",
+    "Original turn/epoch IDs, durable input/context/Ready ordering, request count, user input count, headers gate, event waits and time budgets are unchanged.",
+    "No production validator, assertion, timeout, filter or retry is weakened."
+  ],
+  "native_source_modified": false,
+  "rust_executed": false
+}

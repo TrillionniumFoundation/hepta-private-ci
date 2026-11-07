@@ -28,6 +28,7 @@ use crate::release_transaction::ReleaseTransactionKind;
 use crate::release_transaction::ReleaseTransactionPhase;
 use crate::release_transaction::read_release_transaction;
 use crate::release_transaction::write_release_transaction;
+use crate::restart_state::MatrixRestartRecovery;
 use crate::runtime::AgentSlot;
 use crate::runtime::RuntimePhase;
 use crate::runtime::bounded_message;
@@ -85,7 +86,30 @@ impl<D: ProcessDriver> Supervisor<D> {
                 // hide a recovery-required signed intent or restart/release
                 // fence and incorrectly make the daemon appear ready.
                 supervisor.restore_release_state(&agent_id, slot, &record)?;
-                let process_fault = supervisor.recover_slot(&agent_id, slot, &record, now).err();
+                let mut process_fault =
+                    supervisor.recover_slot(&agent_id, slot, &record, now).err();
+                // Exact Agent adoption can resolve a release that was not yet
+                // committed to the registry. Restore that release's Matrix
+                // budget before orphan recovery can record another fault.
+                // Hydrate it even when Agent recovery failed; only process
+                // adoption retains the original per-Agent fault behavior.
+                let matrix_recovery = if process_fault.is_none() {
+                    MatrixRestartRecovery::ResolvedAgentState
+                } else {
+                    MatrixRestartRecovery::UnresolvedAgentState
+                };
+                supervisor.restore_matrix_restart_budget(
+                    &agent_id,
+                    slot,
+                    &record,
+                    now,
+                    matrix_recovery,
+                )?;
+                if process_fault.is_none() {
+                    process_fault = supervisor
+                        .recover_matrix_companion(&agent_id, slot, &record, now)
+                        .err();
+                }
                 supervisor.recover_restart_budget(&agent_id, slot, now)?;
                 supervisor.recover_release_transaction(&agent_id, slot, now)?;
                 supervisor.recover_signed_intent(&agent_id, slot, &record)?;

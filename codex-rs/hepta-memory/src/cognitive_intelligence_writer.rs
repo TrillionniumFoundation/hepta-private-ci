@@ -63,6 +63,12 @@ pub(crate) struct CanonicalFactSet {
     pub(crate) relations: Vec<CanonicalRelationFact>,
 }
 
+/// Expected memory head for a compare-and-swap correction.
+pub(crate) struct MemoryCorrectionTarget<'a> {
+    pub(crate) memory_id: &'a StableMemoryId,
+    pub(crate) expected_revision: u64,
+}
+
 impl CognitiveStore {
     /// Atomically appends the cited source, creates the first memory revision,
     /// persists its immutable structured facts, and publishes the next complete
@@ -134,8 +140,10 @@ impl CognitiveStore {
             .correct_with_kg_tx(
                 &mut transaction,
                 access,
-                memory_id,
-                expected_revision,
+                MemoryCorrectionTarget {
+                    memory_id,
+                    expected_revision,
+                },
                 source,
                 draft,
                 facts,
@@ -149,12 +157,15 @@ impl CognitiveStore {
         &self,
         transaction: &mut Transaction<'_, Sqlite>,
         access: &CognitiveAccess,
-        memory_id: &StableMemoryId,
-        expected_revision: u64,
+        target: MemoryCorrectionTarget<'_>,
         source: &SourceDraft,
         draft: &MemoryRevisionDraft,
         facts: &KgFactSetDraft,
     ) -> Result<CognitiveWriteReceipt, CognitiveStoreError> {
+        let MemoryCorrectionTarget {
+            memory_id,
+            expected_revision,
+        } = target;
         validate_source_binding(source, &draft.scope, &draft.content)?;
         if draft.verification != MemoryVerification::Verified
             || draft.lifecycle != MemoryLifecycleState::Active

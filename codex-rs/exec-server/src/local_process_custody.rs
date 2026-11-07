@@ -168,7 +168,7 @@ impl ProcessCustody {
             let mut state = registry
                 .state
                 .lock()
-                .unwrap_or_else(|error| error.into_inner());
+                .unwrap_or_else(std::sync::PoisonError::into_inner);
             state.poisoned = true;
             state.unclassified.push(owner);
             return Err(internal_error(

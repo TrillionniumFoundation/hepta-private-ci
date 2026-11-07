@@ -86,11 +86,11 @@ pub struct AgentdNotesLiteralBindings {
 /// permission before authenticated original control I/O, then retains the
 /// observation. Losing this result never rearms the request.
 pub enum AgentdNotesPreparedObjective {
-    Retained(ObjectiveSenderRequest),
+    Retained(Box<ObjectiveSenderRequest>),
     Ready {
         sender: Arc<ProductionObjectiveSender<RootCheckpoint>>,
-        ticket: ObjectiveSenderTicket,
-        ingress: AuthBusObjectiveIngress,
+        ticket: Box<ObjectiveSenderTicket>,
+        ingress: Box<AuthBusObjectiveIngress>,
     },
 }
 
@@ -482,7 +482,7 @@ impl AgentdNotesLiteralAdapter {
                     ));
                 }
             }
-            return Ok(AgentdNotesPreparedObjective::Retained(retained));
+            return Ok(AgentdNotesPreparedObjective::Retained(Box::new(retained)));
         }
         // The operation ID is the durable original-turn fence. A preparation
         // without a signed sender is uncertainty, not permission to sign again
@@ -668,8 +668,8 @@ impl AgentdNotesLiteralAdapter {
         }
         Ok(AgentdNotesPreparedObjective::Ready {
             sender: Arc::clone(&self.sender),
-            ticket,
-            ingress: signed,
+            ticket: Box::new(ticket),
+            ingress: Box::new(signed),
         })
     }
 }

@@ -1,0 +1,28 @@
+{
+  "schema": "hepta.root-r19-exact-archive-transfer.v1",
+  "archive_bytes": 1127067,
+  "archive_sha256": "5001f43d00ca61b2da70cedc1ba073f2cc17c7a5c5c30eaf1c0a78df4f1d4908",
+  "regular_members": 203,
+  "indexed_members": 202,
+  "all_indexed_raw_bytes_and_hashes_verified": true,
+  "source_git_blob_and_mode_verified": 181,
+  "source_tree": "cc2b01c2f69f43d63f8f5c561abd5e941d645769",
+  "source_commit": "0c78b43424ced27d37892a7744de065c1497d5e8",
+  "index_fields": {
+    "schema": "hepta.native-closed-checkpoint.v1",
+    "stage": "r19-app-server-source47",
+    "source_tree": "cc2b01c2f69f43d63f8f5c561abd5e941d645769",
+    "source_commit": "0c78b43424ced27d37892a7744de065c1497d5e8",
+    "source_file_count": 181,
+    "evidence_file_count": 20,
+    "outcome": "STRICT_PASS_TESTS_FAILED",
+    "test_execution_started": true,
+    "counts": {
+      "PASS": 1338,
+      "FAIL": 7,
+      "TIMEOUT": 0
+    },
+    "reported_skipped": 2
+  },
+  "evidence_modes": "Verified where explicitly pinned in INDEX; all tar members are regular files."
+}

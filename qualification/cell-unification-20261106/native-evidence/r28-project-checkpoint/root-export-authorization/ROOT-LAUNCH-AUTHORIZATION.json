@@ -1,0 +1,30 @@
+{
+  "schema": "hepta.root-r28-artifact-export-authorization.v1",
+  "source_commit": "1e0910becc37383e6d17ecf861ea844fd07d8862",
+  "source_tree": "211f15baff19095e8c98bcea2b0ed99ca2270ade",
+  "approved_exporter": {
+    "path": "r28-export-root-review/ROOT-APPROVED-EXPORT.py",
+    "bytes": 38330,
+    "sha256": "044b8ab379b1eed3b4f1aa086285183b7423323d554b49e6955cffdeb0cfdebf"
+  },
+  "actual_inputs_review": {
+    "path": "r28-export-root-review/ROOT-BOUND-REVIEW.json",
+    "bytes": 1026,
+    "sha256": "4cd7db148c566ba5e9fcd293d265fdd3afb899531a6b8a87d5e995971b8d0cbe"
+  },
+  "closed_gate_job": "1a1b1e9bee0-fc05-7b7c",
+  "closed_gate_status": "NATURAL_SUCCEEDED_0_1564_PASS_3_REPORTED_SKIP",
+  "active_workspace_job": "1a1b1f83e4b-fc05-7bcd",
+  "active_workspace_qualification_not_claimed": true,
+  "unique_launch_key": "cell-source52-r28-export-20261106-v1",
+  "outer_timeout_seconds": 180,
+  "sole_executor": "native_validation",
+  "authorized_once": true,
+  "allowed_behavior": "read already-closed r28/source52 inputs, recheck frozen195 source and locks, create new archive and derived evidence only",
+  "native_rust_or_gate_execution_authorized": false,
+  "no_source_mutation": true,
+  "no_retry": true,
+  "no_fix_fmt": true,
+  "science": "HOLD",
+  "authority": "DENY_ALL"
+}

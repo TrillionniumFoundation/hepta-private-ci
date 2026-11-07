@@ -1,0 +1,9 @@
+{
+  "initial_attempt_response": "ACTUAL-GIT-BLOB-CREATE-RESPONSE.json",
+  "initial_unreferenced_object": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+  "cause": "Cache serialization converts Uint8Array to a numeric-key object without a length; Uint8Array.from(object) constructed empty input.",
+  "correction": "Reconstruct with exact 3334510 length; independently reverify full SHA256 and Git blob before encoding and upload.",
+  "actual_archive_blob": "4147c2510b0f1a462d121eb211d7ac073274fe38",
+  "wrong_object_not_registered_or_bound_to_report": true,
+  "native_gate_or_source_changed": false
+}

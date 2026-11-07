@@ -1,0 +1,62 @@
+{
+  "schema": "hepta.source53-finalization-phase-receipt.v1",
+  "phase": "format",
+  "command": [
+    "just",
+    "fmt"
+  ],
+  "cwd": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs",
+  "before_tree": "440d4a8e09af4009e4d9ea067388826308da8803",
+  "after_tree": "42c1dd4e1a751c690c2800dfc3868e771dc9c70b",
+  "tested_source_tree": "440d4a8e09af4009e4d9ea067388826308da8803",
+  "tested_source_commit": "f74be175de66a4b351cd239d39d98cd34fe9cc1b",
+  "start_unix": 1793999162.2159421,
+  "end_unix": 1793999166.4283366,
+  "elapsed_seconds": 4.21239447593689,
+  "exit_code": 0,
+  "effective_exit_code": 0,
+  "raw_process_result": {
+    "path": "native-source53-finalization/format-raw-process-result.json",
+    "bytes": 710,
+    "sha256": "3caeaefd5a61f4fbbcce513959a8ccf4ea0f661e0304c53ee86037321db9b631",
+    "git_blob": "a2f37ee7c2b6fb527124ac325f97d33efb08af8c"
+  },
+  "log": {
+    "path": "native-source53-finalization/format.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+  },
+  "resources": {
+    "path": "native-source53-finalization/format-resources.txt",
+    "bytes": 738,
+    "sha256": "d960cef850def9648dcfedd86e7b2ac906361b4a1b1c743bdcd0fc5ac02b9b21",
+    "git_blob": "e3e64869dbed0e251c1f3cb759049a16c9a8375b"
+  },
+  "phase_only_patch": {
+    "path": "native-source53-finalization/format-only.patch",
+    "bytes": 377708,
+    "sha256": "481c4d038d77628bcf1a79d057bc9d7b54be1467e94038130c24c6d2f36b3997",
+    "git_blob": "5d0df54deb314657dc3f980d332e89b41df2ffb0"
+  },
+  "source_postguard": {
+    "path": "native-source53-finalization/format-post-command-guard.json",
+    "bytes": 90917,
+    "sha256": "f1c91f68265e362a44e7efdcad6c112c22f0755c3067e385e9c6011cadac0594",
+    "git_blob": "3d6aa3919adf11e16fdfb68af94851b940fab68a"
+  },
+  "exact_stage_raw_result": {
+    "path": "native-source53-finalization/format-stage-raw-process-result.json",
+    "bytes": 3512,
+    "sha256": "d18018e5742f3e8e07e4b6f9a1e227bbc32d36b14e17671e8b94ab03cebae400",
+    "git_blob": "dd30af0ddfbd2077ba31d3cf7c5ce78cb4680b4b"
+  },
+  "issues": [],
+  "phase_pass": true,
+  "post_source_tree_bound": true,
+  "post_fix_or_format_tests_executed": false,
+  "qualification_transferred_to_mutated_tree": false,
+  "free_bytes_after": 282357002240,
+  "diagnostic_only": true,
+  "behavior_repair_claimed": false
+}

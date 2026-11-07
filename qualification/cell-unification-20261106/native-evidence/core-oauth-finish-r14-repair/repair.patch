@@ -1,0 +1,35 @@
+diff --git a/codex-rs/core/tests/suite/rmcp_client.rs b/codex-rs/core/tests/suite/rmcp_client.rs
+--- a/codex-rs/core/tests/suite/rmcp_client.rs
++++ b/codex-rs/core/tests/suite/rmcp_client.rs
+@@ -3537,7 +3537,16 @@
+                     EventMsg::McpStartupComplete(startup) => {
+                         refreshed_failed_servers = Some(startup.failed);
+                     }
+-                    EventMsg::TurnComplete(turn) => contended_turn = Some(turn),
++                    EventMsg::TurnComplete(turn) => {
++                        // This observed completion still has an exact finish owner.
++                        if let Some(completion) = fixture
++                            .codex
++                            .pending_normal_turn_finish_completion(&turn.turn_id)
++                        {
++                            completion.await;
++                        }
++                        contended_turn = Some(turn);
++                    }
+                     _ => {}
+                 }
+             }
+@@ -3592,6 +3601,13 @@
+             .await?;
+         loop {
+             if let EventMsg::TurnComplete(turn) = fixture.codex.next_event().await?.msg {
++                // Keep the next sequential refresh behind this same turn's finish owner.
++                if let Some(completion) = fixture
++                    .codex
++                    .pending_normal_turn_finish_completion(&turn.turn_id)
++                {
++                    completion.await;
++                }
+                 return Ok::<_, anyhow::Error>(turn);
+             }
+         }

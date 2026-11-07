@@ -1,0 +1,108 @@
+{
+  "schema": "hepta.source53-finalizer-scope-upload-plan.v1",
+  "status": "PREPARED_NOT_UPLOADED",
+  "native_mutation_executed": false,
+  "source_tree": "440d4a8e09af4009e4d9ea067388826308da8803",
+  "source_commit": "f74be175de66a4b351cd239d39d98cd34fe9cc1b",
+  "destination_directory": "/home/alex/work/hepta-cell-unified-20261106-a/evidence/native-source53-finalizer-input",
+  "directory_creation": "First file uses the documented text_editor create operation, which creates missing parents; no separate native process is needed.",
+  "operations": [
+    {
+      "sequence": 1,
+      "name": "PACKAGE-ARGS.json",
+      "source": {
+        "path": "source53-final-scope-preparation/PACKAGE-ARGS.json",
+        "bytes": 4880,
+        "sha256": "ba044ba7576a3e20bfc483d9ab9009733ebd3d46a2c52d0305cb0ad15f0ab886",
+        "git_blob": "43026367f19ffc850bd60822e0642b7dbce5ec48"
+      },
+      "target_host": "pocket4",
+      "target_path": "/home/alex/work/hepta-cell-unified-20261106-a/evidence/native-source53-finalizer-input/PACKAGE-ARGS.json",
+      "tool": "text_editor",
+      "create_only": true,
+      "overwrite_allowed": false,
+      "arguments_except_content": {
+        "command": "create",
+        "path": "ssh://pocket4/home/alex/work/hepta-cell-unified-20261106-a/evidence/native-source53-finalizer-input/PACKAGE-ARGS.json"
+      },
+      "required_postcondition": "file_info exact bytes/SHA matches this unchanged frozen local input; stop on any mismatch or unknown outcome"
+    },
+    {
+      "sequence": 2,
+      "name": "EXPECTED-SELECTION.json",
+      "source": {
+        "path": "source53-final-scope-preparation/EXPECTED-SELECTION.json",
+        "bytes": 47464,
+        "sha256": "9fdc8321c241b7f852bb055db9d23caa471f70349c269fa7746bd819dc80dfeb",
+        "git_blob": "cb08f849cc857b903e12597dc9b237877fe4777f"
+      },
+      "target_host": "pocket4",
+      "target_path": "/home/alex/work/hepta-cell-unified-20261106-a/evidence/native-source53-finalizer-input/EXPECTED-SELECTION.json",
+      "tool": "binary_write",
+      "create_only": true,
+      "overwrite_allowed": false,
+      "arguments_except_content": {
+        "host": "pocket4",
+        "path": "/home/alex/work/hepta-cell-unified-20261106-a/evidence/native-source53-finalizer-input/EXPECTED-SELECTION.json",
+        "expected_version": "absent"
+      },
+      "required_postcondition": "file_info exact bytes/SHA matches this unchanged frozen local input; stop on any mismatch or unknown outcome"
+    },
+    {
+      "sequence": 3,
+      "name": "RUST-FILE-COMMANDS.json",
+      "source": {
+        "path": "source53-final-scope-preparation/RUST-FILE-COMMANDS.json",
+        "bytes": 97159,
+        "sha256": "19a78abce6965f0da7df8a67d8f06b499185daac983fe78a1e5bedc943d026d0",
+        "git_blob": "6283404fbb76d26b1ddeb599cfc00be667aa992f"
+      },
+      "target_host": "pocket4",
+      "target_path": "/home/alex/work/hepta-cell-unified-20261106-a/evidence/native-source53-finalizer-input/RUST-FILE-COMMANDS.json",
+      "tool": "binary_write",
+      "create_only": true,
+      "overwrite_allowed": false,
+      "arguments_except_content": {
+        "host": "pocket4",
+        "path": "/home/alex/work/hepta-cell-unified-20261106-a/evidence/native-source53-finalizer-input/RUST-FILE-COMMANDS.json",
+        "expected_version": "absent"
+      },
+      "required_postcondition": "file_info exact bytes/SHA matches this unchanged frozen local input; stop on any mismatch or unknown outcome"
+    },
+    {
+      "sequence": 4,
+      "name": "PRIMARY-SOURCE-PINS.json",
+      "source": {
+        "path": "source53-final-scope-preparation/PRIMARY-SOURCE-PINS.json",
+        "bytes": 13098,
+        "sha256": "afc57e362890925d5628947a95dd1f719816996d0b26b2fef101dbcf827e7dd3",
+        "git_blob": "e8c6c477bba521b82c900a4545a6cf56f5591a07"
+      },
+      "target_host": "pocket4",
+      "target_path": "/home/alex/work/hepta-cell-unified-20261106-a/evidence/native-source53-finalizer-input/PRIMARY-SOURCE-PINS.json",
+      "tool": "binary_write",
+      "create_only": true,
+      "overwrite_allowed": false,
+      "arguments_except_content": {
+        "host": "pocket4",
+        "path": "/home/alex/work/hepta-cell-unified-20261106-a/evidence/native-source53-finalizer-input/PRIMARY-SOURCE-PINS.json",
+        "expected_version": "absent"
+      },
+      "required_postcondition": "file_info exact bytes/SHA matches this unchanged frozen local input; stop on any mismatch or unknown outcome"
+    }
+  ],
+  "finalizer_script": {
+    "target_host": "pocket4",
+    "target_path": "/home/alex/work/hepta-cell-unified-20261106-a/native-finalize-source53.py",
+    "tool": "binary_write",
+    "expected_version": "absent",
+    "local_pin": {
+      "path": "source53-finalize-binding/native-finalize-source53.py",
+      "bytes": 181139,
+      "sha256": "6f63696d009ee52726a36e96a6abccadc613df62d8bcc0be590644ea40c21dd1",
+      "git_blob": "ece28effa2b94e4ed84447306312e1f8c2ba73a4"
+    },
+    "execution_authorized": false
+  },
+  "same_source_tests_and_metadata_not_rerun": true
+}

@@ -1,0 +1,154 @@
+{
+  "schema": "hepta.bwrap-system-repo-diagnostic-result.v1",
+  "status": "DIAGNOSTIC_COMPLETE_NOT_A_RUST_GATE",
+  "source_tree": "ea48acf562499192a25e05ae28926a32632dee62",
+  "source_count": 194,
+  "source_guard_pass": true,
+  "locks_after": {
+    "codex-rs/Cargo.lock": {
+      "bytes": 417315,
+      "sha256": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c",
+      "git_blob": "b7e710988d6a3377a7e0a1dc68aef49c68dda36e"
+    },
+    "MODULE.bazel.lock": {
+      "bytes": 1761877,
+      "sha256": "e80ef06b6f824a19cdcedd6010738b316ccca96b83ad8730fafb52153a2634fb",
+      "git_blob": "b91bee756020f2b6b0e92b1a5c4477e6a180149e"
+    }
+  },
+  "programs": {
+    "system": {
+      "path": "/usr/bin/bwrap",
+      "bytes": 80424,
+      "sha256": "523da3e7399044be5163aee6f57a77a6bef7454376e28f0a0627920bae1b76b6",
+      "git_blob": "9b6bfc20165699d1b68c3c0a997056bc51bc3545",
+      "mode": 493,
+      "uid": 0,
+      "gid": 0,
+      "device": 66306,
+      "inode": 108014053,
+      "mtime_ns": 1789675933000000000,
+      "ctime_ns": 1791083452052700787,
+      "elf": true
+    },
+    "repo": {
+      "path": "/home/alex/work/hepta-cell-unified-20261106-a/target/debug/bwrap",
+      "bytes": 562888,
+      "sha256": "ac42c282cd2e1227e7654ae7870dd8e91194d6f7f2bc462cc222a2d3d9abb0b1",
+      "git_blob": "618670b9a5dbb9554092527bb8f549aad2f5b587",
+      "mode": 448,
+      "uid": 1000,
+      "gid": 1000,
+      "device": 66306,
+      "inode": 51906535,
+      "mtime_ns": 1793979553484604776,
+      "ctime_ns": 1793979553491604911,
+      "elf": true
+    }
+  },
+  "results": [
+    {
+      "label": "system",
+      "kind": "version",
+      "command": [
+        "/usr/bin/bwrap",
+        "--version"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.0010747909545898438,
+      "stdout": {
+        "bytes": 18,
+        "sha256": "3982b5c6efde838f903123b493520814ab1b56dfb7f35ac96af62ef443eb6acc",
+        "git_blob": "10e93cb849ff6343a9bf2dbc994bfc6a9915bc9c"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      "stdout_text": "bubblewrap 0.11.1\n",
+      "stderr_text": ""
+    },
+    {
+      "label": "system",
+      "kind": "probe",
+      "command": [
+        "/usr/bin/bwrap",
+        "--unshare-user",
+        "--unshare-net",
+        "--ro-bind",
+        "/",
+        "/",
+        "/bin/true"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.006486415863037109,
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      "stdout_text": "",
+      "stderr_text": ""
+    },
+    {
+      "label": "repo",
+      "kind": "version",
+      "command": [
+        "/home/alex/work/hepta-cell-unified-20261106-a/target/debug/bwrap",
+        "--version"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.0007483959197998047,
+      "stdout": {
+        "bytes": 27,
+        "sha256": "214d11e8b4e9feaaae36992fa6e67707f70319ff49f0b9b47da85c52bab7c53b",
+        "git_blob": "8f8400bdf5a776773c393cbdc7499c55f3baf096"
+      },
+      "stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      "stdout_text": "bubblewrap built for Codex\n",
+      "stderr_text": ""
+    },
+    {
+      "label": "repo",
+      "kind": "probe",
+      "command": [
+        "/home/alex/work/hepta-cell-unified-20261106-a/target/debug/bwrap",
+        "--unshare-user",
+        "--unshare-net",
+        "--ro-bind",
+        "/",
+        "/",
+        "/bin/true"
+      ],
+      "exit_code": 1,
+      "elapsed_seconds": 0.001870870590209961,
+      "stdout": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      "stderr": {
+        "bytes": 61,
+        "sha256": "ed3471f7900377f86150471417911309833a36d664cb5af7409e139103f67ddf",
+        "git_blob": "78d974bb32e69e6ff02b444e7bb35fde2886dbd6"
+      },
+      "stdout_text": "",
+      "stderr_text": "bwrap: loopback: Failed RTM_NEWADDR: Operation not permitted\n"
+    }
+  ],
+  "same_probe_argv": true,
+  "no_automatic_retry": true,
+  "source_mutation": false,
+  "rust_execution": false,
+  "full_fs_helper_or_test_suite_qualification": false
+}

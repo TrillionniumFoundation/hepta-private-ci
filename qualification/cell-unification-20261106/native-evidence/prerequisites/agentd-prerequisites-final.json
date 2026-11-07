@@ -1,0 +1,79 @@
+{
+  "started_unix": 1793935009.9547038,
+  "host": "pocket4",
+  "task_root": "/home/alex/work/hepta-cell-unified-20261106-a",
+  "rustc": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: x86_64-unknown-linux-gnu\nrelease: 1.96.0\nLLVM version: 22.1.2\n",
+  "nearest_instructions": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480"
+    }
+  ],
+  "tools": {
+    "protoc": {
+      "release_api": "https://api.github.com/repos/protocolbuffers/protobuf/releases/tags/v21.12",
+      "tag": "v21.12",
+      "asset_id": 88187108,
+      "download_url": "https://github.com/protocolbuffers/protobuf/releases/download/v21.12/protoc-21.12-linux-x86_64.zip",
+      "archive_sha256": "3a4c1e5f2516c639d3079b1586e703fc7bcfa2136d58bda24d1d54f949c315e8",
+      "upstream_digest": null,
+      "executable": "/home/alex/work/hepta-cell-unified-20261106-a/tools/protoc-21.12/bin/protoc",
+      "executable_sha256": "e6a75cf6660945fbfec0d321808442ce3649cd7820079eece1098c881b315f55",
+      "version": "libprotoc 3.21.12"
+    },
+    "v8": {
+      "resolved_crate_version": "150.4.0",
+      "overrides": {
+        "RUSTY_V8_ARCHIVE": "/home/alex/work/hepta-cell-unified-20261106-a/tools/v8/rusty-v8-150.4.0-x86_64-unknown-linux-gnu/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+        "RUSTY_V8_SRC_BINDING_PATH": "/home/alex/work/hepta-cell-unified-20261106-a/tools/v8/rusty-v8-150.4.0-x86_64-unknown-linux-gnu/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs"
+      },
+      "files": [
+        {
+          "path": "/home/alex/work/hepta-cell-unified-20261106-a/tools/v8/rusty-v8-150.4.0-x86_64-unknown-linux-gnu/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz",
+          "sha256": "a35c75d1f26e6a983885a45b33490a4ebe54f05050568b32b89cfb421b30b583",
+          "size": 29366352
+        },
+        {
+          "path": "/home/alex/work/hepta-cell-unified-20261106-a/tools/v8/rusty-v8-150.4.0-x86_64-unknown-linux-gnu/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs",
+          "sha256": "7727826ae479bdb645e807239fb12d1f8e2e23de7a6cf16f5ee592690d1d8506",
+          "size": 39884
+        }
+      ],
+      "resolver_sha256": "d7739840d17ea4f1afff15e552add403f2a479cde6422c27c92c2ef3823c27fc",
+      "cargo_lock_sha256": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c"
+    },
+    "dotslash": {
+      "completed_unix": 1793935352.1834705,
+      "reason": "GitHub canonical upstream moved facebook/dotslash to meta/dotslash; original strict prefix check stopped before download",
+      "official_release_asset": {
+        "name": "dotslash-ubuntu-22.04.x86_64.tar.gz",
+        "digest": "sha256:3905bd406a0b4cc5fbe69843dca96fc7937fed6109164a6d56335fbf61187120",
+        "url": "https://github.com/meta/dotslash/releases/download/v0.5.8/dotslash-ubuntu-22.04.x86_64.tar.gz",
+        "id": 284500922
+      },
+      "archive_sha256": "3905bd406a0b4cc5fbe69843dca96fc7937fed6109164a6d56335fbf61187120",
+      "executable": "/home/alex/work/hepta-cell-unified-20261106-a/bin/dotslash",
+      "executable_sha256": "ff444143d03355b14fc52c473f5423d7c52ac188f1f984c167f6ebad0145ba93",
+      "version": "DotSlash 0.5.8"
+    }
+  },
+  "errors": [],
+  "pkg_config": {
+    "openssl": {
+      "exit_code": 0,
+      "output": "3.5.5"
+    },
+    "libcap": {
+      "exit_code": 0,
+      "output": "2.75"
+    }
+  },
+  "finished_unix": 1793935028.5037365,
+  "initial_errors": [
+    {
+      "tool": "dotslash",
+      "error": ""
+    }
+  ],
+  "completed_unix": 1793935352.1860528
+}

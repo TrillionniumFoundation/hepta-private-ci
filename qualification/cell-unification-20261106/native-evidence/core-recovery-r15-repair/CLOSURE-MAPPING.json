@@ -1,0 +1,1178 @@
+{
+  "schema": "hepta.candidate-audit-closure-mapping.v1",
+  "purpose": "Exact-byte archive and source/reference closure. This task does not rerun Rust, qualify candidate behavior, or rewrite frozen audits.",
+  "original_executed_source44": {
+    "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+    "tree": "1646e1656cf6365e74accae19a1225fd2ce6d964",
+    "gate": "r15 Core+MCP",
+    "terminal": "FAIL",
+    "counts": {
+      "run": 4026,
+      "passed": 4023,
+      "failed": 3,
+      "timeout": 0,
+      "skipped": 9
+    }
+  },
+  "published_candidate_source45": {
+    "commit": "96dc9232535fedf735e3099ef1391b69477270d4",
+    "tree": "3ebd193f213d640e5330a1be4b983bcc4b06617a",
+    "candidate_after_pins_match_root_publication": true,
+    "execution_outcome": "NOT_ESTABLISHED_BY_THIS_ARCHIVE"
+  },
+  "retained_artifacts": [
+    {
+      "original_path": "core-recovery-r15-repair/build_candidate.py",
+      "archived_path": "build_candidate.py",
+      "bytes": 10157,
+      "sha256": "08b7ba58caa724d97124bfcfaafa1cf5ba9e2379ff4d8b71e9031cca1e2281b5",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-recovery-r15-repair/closed-failure.json",
+      "archived_path": "closed-failure.json",
+      "bytes": 857,
+      "sha256": "bc26bfbb9e4d5effb8bff69f25f6bfe932aa17fa5ab32a9f7ea50a4618edb054",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-recovery-r15-repair/edit-operations.json",
+      "archived_path": "edit-operations.json",
+      "bytes": 6961,
+      "sha256": "f3f305653e3e38c0fb18b758307c437bb607a7a8eaac2830e86c4ee5a9411f56",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-recovery-r15-repair/input-pins.json",
+      "archived_path": "input-pins.json",
+      "bytes": 6998,
+      "sha256": "83c60764a161e2b8e776c0aa6c4054d27996b3df4ff0efef77bd4cde838b6ece",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-recovery-r15-repair/native-callers.json",
+      "archived_path": "native-callers.json",
+      "bytes": 16295,
+      "sha256": "7e684c929e104e588ea5534ec7ea2ca029aae8af0cdce9ab8aa10ef1db7c7d05",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-recovery-r15-repair/original-failure.log",
+      "archived_path": "original-failure.log",
+      "bytes": 847,
+      "sha256": "d22af15eb161af09b2c051dbc386d4929b09ec86e428e59022da62789524dfe5",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-recovery-r15-repair/repair-audit.json",
+      "archived_path": "repair-audit.json",
+      "bytes": 23934,
+      "sha256": "42d2de8b0afd53da92292f3d49de47852601c69017852b23d87d85621549ee69",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-recovery-r15-repair/repair.patch",
+      "archived_path": "repair.patch",
+      "bytes": 7039,
+      "sha256": "7fd5e5f0e43ecd80505ca93630ccc9c5ebd29e24b9d16615f9cf0714ca8b55f5",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-recovery-r15-repair/root-independent-review.json",
+      "archived_path": "root-independent-review.json",
+      "bytes": 2216,
+      "sha256": "1bef9e3242fa383609eaaef7d023d24ae6801d2a1b3d83963a22a1840cd18163",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "core-recovery-r15-repair/source-manifest.json",
+      "archived_path": "source-manifest.json",
+      "bytes": 1877,
+      "sha256": "11d58a9e01c6d3aa0f3d185d71e7c61d3faf2045ea6aa235fa17d9c6b5084576",
+      "copied_bytes_exact": true
+    },
+    {
+      "original_path": "native-validation-results/r15-blockers/original-input/source-manifest.json",
+      "archived_path": "support/native-r15-input-manifest.json",
+      "bytes": 1415,
+      "sha256": "717fc6cb82f9ef3d99f3300598e9f3b4709b90dd6d16ab4ebe455df348d8436a",
+      "copied_bytes_exact": true
+    }
+  ],
+  "reference_mappings": [
+    {
+      "artifact": "closed-failure.json",
+      "pointer": "/review_path",
+      "reference": "../native-validation-results/r15-blockers/native-core-mcp-r15-result-review.json",
+      "formal_artifact": {
+        "path": "../r15-core-mcp-checkpoint/native-core-mcp-r15-result-review.json",
+        "bytes": 9965,
+        "sha256": "a31121be22b0ff02347fbae5266a21597fe58e811f2cd697617e1bda577bc061"
+      }
+    },
+    {
+      "artifact": "input-pins.json",
+      "pointer": "/files/0/path",
+      "reference": "codex-rs/codex-api/src/endpoint/responses.rs",
+      "source_keys": [
+        "codex-rs/codex-api/src/endpoint/responses.rs@d096b953e704d3d485bedadee44474bb640d11f36b04dece06c83278eae76be4"
+      ]
+    },
+    {
+      "artifact": "input-pins.json",
+      "pointer": "/files/1/path",
+      "reference": "codex-rs/codex-api/src/rate_limits.rs",
+      "source_keys": [
+        "codex-rs/codex-api/src/rate_limits.rs@4b3d72fd41a9bfa84c00c564643f73fe4455e63b05f13f2657c8ccbf65621d6d"
+      ]
+    },
+    {
+      "artifact": "input-pins.json",
+      "pointer": "/files/2/path",
+      "reference": "codex-rs/codex-api/src/sse/responses.rs",
+      "source_keys": [
+        "codex-rs/codex-api/src/sse/responses.rs@e5bdeb7325bb5b659cd09422905220c1201d86dabc1d24bc670326de62a72b50"
+      ]
+    },
+    {
+      "artifact": "input-pins.json",
+      "pointer": "/files/3/path",
+      "reference": "codex-rs/core/src/client.rs",
+      "source_keys": [
+        "codex-rs/core/src/client.rs@60322c97712b9849dea763eb5fa5700a381c7c0e5eded73a5a4171bd51eaba09"
+      ]
+    },
+    {
+      "artifact": "input-pins.json",
+      "pointer": "/files/4/path",
+      "reference": "codex-rs/core/src/session/mod.rs",
+      "source_keys": [
+        "codex-rs/core/src/session/mod.rs@c262bc85649869dcc1eea4096773d577959989c54e264e6f03a341448ac3ad4d"
+      ]
+    },
+    {
+      "artifact": "input-pins.json",
+      "pointer": "/files/5/path",
+      "reference": "codex-rs/core/src/session/turn.rs",
+      "source_keys": [
+        "codex-rs/core/src/session/turn.rs@a0cdb211158e4e3f46a5fe35f61dd778432ad115c710ead77500126066bdacf4"
+      ]
+    },
+    {
+      "artifact": "input-pins.json",
+      "pointer": "/files/6/path",
+      "reference": "codex-rs/core/src/tasks/mod.rs",
+      "source_keys": [
+        "codex-rs/core/src/tasks/mod.rs@b51df87d911a73b51ac13cf28157f4d3bb3a7192f3aa2621265c849acc157a88"
+      ]
+    },
+    {
+      "artifact": "input-pins.json",
+      "pointer": "/files/7/path",
+      "reference": "codex-rs/core/src/tasks/regular.rs",
+      "source_keys": [
+        "codex-rs/core/src/tasks/regular.rs@bacfc1f5c9b1b1de6951f14558dad4d43ceaaa265600aac3ecedce04bdf4240f"
+      ]
+    },
+    {
+      "artifact": "input-pins.json",
+      "pointer": "/files/8/path",
+      "reference": "codex-rs/core/tests/common/streaming_sse.rs",
+      "source_keys": [
+        "codex-rs/core/tests/common/streaming_sse.rs@ed1e35fa973116adf94c8ddbb39bb7e0d2c4c7773b980277921f859ce40d252b"
+      ]
+    },
+    {
+      "artifact": "input-pins.json",
+      "pointer": "/files/9/path",
+      "reference": "codex-rs/core/tests/suite/turn_input_submission.rs",
+      "source_keys": [
+        "codex-rs/core/tests/suite/turn_input_submission.rs@ae71b734d0b46ce5b285afc827d765d0a4a066bbe825ffd0aba467a4d78e1824"
+      ]
+    },
+    {
+      "artifact": "input-pins.json",
+      "pointer": "/nearest_instructions/path",
+      "reference": "AGENTS.md",
+      "source_keys": [
+        "AGENTS.md@c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480"
+      ]
+    },
+    {
+      "artifact": "input-pins.json",
+      "pointer": "/native_manifest/path",
+      "reference": "hepta-cell/qualification/cell-unification-20261106/native-evidence/r15-core-mcp-checkpoint/native-candidate-r15-source.json",
+      "formal_artifact": {
+        "path": "../r15-core-mcp-checkpoint/native-candidate-r15-source.json",
+        "bytes": 48734,
+        "sha256": "ee85feeca1c8da886ab3f52ab26fb741bb5d8569880b26985a2b0d7f8533dc2d"
+      }
+    },
+    {
+      "artifact": "input-pins.json",
+      "pointer": "/native_input_manifest/path",
+      "reference": "native-validation-results/r15-blockers/original-input/source-manifest.json",
+      "formal_artifact": {
+        "path": "support/native-r15-input-manifest.json",
+        "bytes": 1415,
+        "sha256": "717fc6cb82f9ef3d99f3300598e9f3b4709b90dd6d16ab4ebe455df348d8436a"
+      }
+    },
+    {
+      "artifact": "native-callers.json",
+      "pointer": "/source_pins/0/path",
+      "reference": "codex-rs/app-server/tests/suite/v2/mcp_server_status.rs",
+      "source_keys": [
+        "codex-rs/app-server/tests/suite/v2/mcp_server_status.rs@1275b80ccef7731404b120f2d2a1c00b09c033ee327ffc6ec08afbede811c9b0"
+      ]
+    },
+    {
+      "artifact": "native-callers.json",
+      "pointer": "/source_pins/1/path",
+      "reference": "codex-rs/app-server/tests/suite/v2/thread_resume.rs",
+      "source_keys": [
+        "codex-rs/app-server/tests/suite/v2/thread_resume.rs@96cf60231698369edf37c57b68678632eecc54e6374e9643a3ecd987f15d825e"
+      ]
+    },
+    {
+      "artifact": "native-callers.json",
+      "pointer": "/source_pins/2/path",
+      "reference": "codex-rs/app-server/tests/suite/v2/thread_unsubscribe.rs",
+      "source_keys": [
+        "codex-rs/app-server/tests/suite/v2/thread_unsubscribe.rs@042efe238f375e03a7ff4ece7a2c05ebc0b3d285c9336b785449ca6ef2e9eac0"
+      ]
+    },
+    {
+      "artifact": "native-callers.json",
+      "pointer": "/source_pins/3/path",
+      "reference": "codex-rs/app-server/tests/suite/v2/turn_start.rs",
+      "source_keys": [
+        "codex-rs/app-server/tests/suite/v2/turn_start.rs@c6766a9dce3127768f8fffa9adc78f539405ac6aa02aacbabbd41a0acd5663d9"
+      ]
+    },
+    {
+      "artifact": "native-callers.json",
+      "pointer": "/source_pins/4/path",
+      "reference": "codex-rs/cli/tests/mcp_add_remove.rs",
+      "source_keys": [
+        "codex-rs/cli/tests/mcp_add_remove.rs@290e3fb1231fead2b45e498abd917e9448bf57dbd6280ea8f12c11e176e35b27"
+      ]
+    },
+    {
+      "artifact": "native-callers.json",
+      "pointer": "/source_pins/5/path",
+      "reference": "codex-rs/codex-api/src/safety_buffering.rs",
+      "source_keys": [
+        "codex-rs/codex-api/src/safety_buffering.rs@c30b4ea92060a3f6907528457cf8417dfa4f3811f6ae8efb6c89d84c8699bbf6"
+      ]
+    },
+    {
+      "artifact": "native-callers.json",
+      "pointer": "/source_pins/6/path",
+      "reference": "codex-rs/core/src/guardian/tests.rs",
+      "source_keys": [
+        "codex-rs/core/src/guardian/tests.rs@0048e5f001e0f63d6db015b1481ce51df51f735f785d7c5cab6e0ac747f9adfb"
+      ]
+    },
+    {
+      "artifact": "native-callers.json",
+      "pointer": "/source_pins/7/path",
+      "reference": "codex-rs/core/tests/common/streaming_sse.rs",
+      "source_keys": [
+        "codex-rs/core/tests/common/streaming_sse.rs@ed1e35fa973116adf94c8ddbb39bb7e0d2c4c7773b980277921f859ce40d252b"
+      ]
+    },
+    {
+      "artifact": "native-callers.json",
+      "pointer": "/source_pins/8/path",
+      "reference": "codex-rs/core/tests/suite/hooks.rs",
+      "source_keys": [
+        "codex-rs/core/tests/suite/hooks.rs@027b1d58726b5030178c3bbd4e4c3156ac281e94b2abc59f56b463092b095b31"
+      ]
+    },
+    {
+      "artifact": "native-callers.json",
+      "pointer": "/source_pins/9/path",
+      "reference": "codex-rs/core/tests/suite/pending_input.rs",
+      "source_keys": [
+        "codex-rs/core/tests/suite/pending_input.rs@268a6721fbc8a8f26a4492137d717c4b6a6d4d0c07dedf302094c24929bf61d0"
+      ]
+    },
+    {
+      "artifact": "native-callers.json",
+      "pointer": "/source_pins/10/path",
+      "reference": "codex-rs/core/tests/suite/realtime_conversation.rs",
+      "source_keys": [
+        "codex-rs/core/tests/suite/realtime_conversation.rs@89cc149669017ce8cff40a7ec93675283946a14f5a8a0ace65dc7e6dc8e57c98"
+      ]
+    },
+    {
+      "artifact": "native-callers.json",
+      "pointer": "/source_pins/11/path",
+      "reference": "codex-rs/core/tests/suite/rmcp_client.rs",
+      "source_keys": [
+        "codex-rs/core/tests/suite/rmcp_client.rs@11ba2ce26510c4b3edac11351bd83efb879b466a22c9dc1c241dde63890ecb16"
+      ]
+    },
+    {
+      "artifact": "native-callers.json",
+      "pointer": "/source_pins/12/path",
+      "reference": "codex-rs/core/tests/suite/stream_no_completed.rs",
+      "source_keys": [
+        "codex-rs/core/tests/suite/stream_no_completed.rs@677d7c95da61d56711ae8b8ab3884f6d6b8622d1e6cc3edabd59b2d7dcc2544f"
+      ]
+    },
+    {
+      "artifact": "native-callers.json",
+      "pointer": "/source_pins/13/path",
+      "reference": "codex-rs/core/tests/suite/tool_parallelism.rs",
+      "source_keys": [
+        "codex-rs/core/tests/suite/tool_parallelism.rs@e78e140adeaf0e671568dd54dab6d64d21704f98a0ae48e17dff00a18c6933dc"
+      ]
+    },
+    {
+      "artifact": "native-callers.json",
+      "pointer": "/source_pins/14/path",
+      "reference": "codex-rs/core/tests/suite/turn_input_submission.rs",
+      "source_keys": [
+        "codex-rs/core/tests/suite/turn_input_submission.rs@ae71b734d0b46ce5b285afc827d765d0a4a066bbe825ffd0aba467a4d78e1824"
+      ]
+    },
+    {
+      "artifact": "native-callers.json",
+      "pointer": "/source_pins/15/path",
+      "reference": "codex-rs/core/tests/suite/user_message_admission.rs",
+      "source_keys": [
+        "codex-rs/core/tests/suite/user_message_admission.rs@578fb63d11fa8faae52d828487c3c598d0680e95c79136d44b91c3371c44506a"
+      ]
+    },
+    {
+      "artifact": "native-callers.json",
+      "pointer": "/source_pins/16/path",
+      "reference": "codex-rs/ext/queue/tests/queue_service.rs",
+      "source_keys": [
+        "codex-rs/ext/queue/tests/queue_service.rs@254b9e09e5aac85c283d1268110a3be4e1f492848014281d3247cde4c9200106"
+      ]
+    },
+    {
+      "artifact": "native-callers.json",
+      "pointer": "/source_pins/17/path",
+      "reference": "codex-rs/network-proxy/src/credential_broker_tests.rs",
+      "source_keys": [
+        "codex-rs/network-proxy/src/credential_broker_tests.rs@6bed6f6bafc2dee6e4568929d43f670bb1cc4801f6901a65d7340a1574064f79"
+      ]
+    },
+    {
+      "artifact": "native-callers.json",
+      "pointer": "/source_pins/18/path",
+      "reference": "codex-rs/rmcp-client/src/retained_tool_session_tests.rs",
+      "source_keys": [
+        "codex-rs/rmcp-client/src/retained_tool_session_tests.rs@0705d957aeded5f0950424027f58173b29e8d3de378cda2c66a7aa721bf30c1d"
+      ]
+    },
+    {
+      "artifact": "native-callers.json",
+      "pointer": "/source_pins/19/path",
+      "reference": "codex-rs/rmcp-client/tests/streamable_http_oauth_startup.rs",
+      "source_keys": [
+        "codex-rs/rmcp-client/tests/streamable_http_oauth_startup.rs@7d70a86de51fac115907e7fd869eb56af76f3229716075451d4cab9b54cb2e62"
+      ]
+    },
+    {
+      "artifact": "native-callers.json",
+      "pointer": "/source_pins/20/path",
+      "reference": "codex-rs/tui/src/app/tests/safety_buffering.rs",
+      "source_keys": [
+        "codex-rs/tui/src/app/tests/safety_buffering.rs@b0aa8dbce4cf3f90ecc789f20c99462b7ebb55e66f2f1f69fdce7a8a794beefd"
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/closed_failure/review_path",
+      "reference": "../native-validation-results/r15-blockers/native-core-mcp-r15-result-review.json",
+      "formal_artifact": {
+        "path": "../r15-core-mcp-checkpoint/native-core-mcp-r15-result-review.json",
+        "bytes": 9965,
+        "sha256": "a31121be22b0ff02347fbae5266a21597fe58e811f2cd697617e1bda577bc061"
+      }
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/causal_chain/0/sources/0/path",
+      "reference": "codex-rs/core/tests/suite/turn_input_submission.rs",
+      "source_keys": [
+        "codex-rs/core/tests/suite/turn_input_submission.rs@ae71b734d0b46ce5b285afc827d765d0a4a066bbe825ffd0aba467a4d78e1824"
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/causal_chain/0/sources/1/path",
+      "reference": "codex-rs/core/tests/common/streaming_sse.rs",
+      "source_keys": [
+        "codex-rs/core/tests/common/streaming_sse.rs@ed1e35fa973116adf94c8ddbb39bb7e0d2c4c7773b980277921f859ce40d252b"
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/causal_chain/0/sources/2/path",
+      "reference": "codex-rs/core/tests/common/streaming_sse.rs",
+      "source_keys": [
+        "codex-rs/core/tests/common/streaming_sse.rs@ed1e35fa973116adf94c8ddbb39bb7e0d2c4c7773b980277921f859ce40d252b"
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/causal_chain/1/sources/0/path",
+      "reference": "codex-rs/codex-api/src/rate_limits.rs",
+      "source_keys": [
+        "codex-rs/codex-api/src/rate_limits.rs@4b3d72fd41a9bfa84c00c564643f73fe4455e63b05f13f2657c8ccbf65621d6d"
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/causal_chain/1/sources/1/path",
+      "reference": "codex-rs/codex-api/src/rate_limits.rs",
+      "source_keys": [
+        "codex-rs/codex-api/src/rate_limits.rs@4b3d72fd41a9bfa84c00c564643f73fe4455e63b05f13f2657c8ccbf65621d6d"
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/causal_chain/1/sources/2/path",
+      "reference": "codex-rs/codex-api/src/rate_limits.rs",
+      "source_keys": [
+        "codex-rs/codex-api/src/rate_limits.rs@4b3d72fd41a9bfa84c00c564643f73fe4455e63b05f13f2657c8ccbf65621d6d"
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/causal_chain/2/sources/0/path",
+      "reference": "codex-rs/codex-api/src/sse/responses.rs",
+      "source_keys": [
+        "codex-rs/codex-api/src/sse/responses.rs@e5bdeb7325bb5b659cd09422905220c1201d86dabc1d24bc670326de62a72b50"
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/causal_chain/2/sources/1/path",
+      "reference": "codex-rs/codex-api/src/sse/responses.rs",
+      "source_keys": [
+        "codex-rs/codex-api/src/sse/responses.rs@e5bdeb7325bb5b659cd09422905220c1201d86dabc1d24bc670326de62a72b50"
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/causal_chain/3/sources/0/path",
+      "reference": "codex-rs/core/src/client.rs",
+      "source_keys": [
+        "codex-rs/core/src/client.rs@60322c97712b9849dea763eb5fa5700a381c7c0e5eded73a5a4171bd51eaba09"
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/causal_chain/4/sources/0/path",
+      "reference": "codex-rs/core/src/session/turn.rs",
+      "source_keys": [
+        "codex-rs/core/src/session/turn.rs@a0cdb211158e4e3f46a5fe35f61dd778432ad115c710ead77500126066bdacf4"
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/causal_chain/4/sources/1/path",
+      "reference": "codex-rs/core/src/tasks/mod.rs",
+      "source_keys": [
+        "codex-rs/core/src/tasks/mod.rs@b51df87d911a73b51ac13cf28157f4d3bb3a7192f3aa2621265c849acc157a88"
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/scope/changed_files/0",
+      "reference": "codex-rs/core/tests/common/streaming_sse.rs",
+      "source_keys": [
+        "codex-rs/core/tests/common/streaming_sse.rs@ed1e35fa973116adf94c8ddbb39bb7e0d2c4c7773b980277921f859ce40d252b"
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/scope/changed_files/1",
+      "reference": "codex-rs/core/tests/suite/turn_input_submission.rs",
+      "source_keys": [
+        "codex-rs/core/tests/suite/turn_input_submission.rs@ae71b734d0b46ce5b285afc827d765d0a4a066bbe825ffd0aba467a4d78e1824"
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/scope/header_helper_search/path",
+      "reference": "native-callers.json",
+      "formal_artifact": {
+        "path": "native-callers.json",
+        "bytes": 16295,
+        "sha256": "7e684c929e104e588ea5534ec7ea2ca029aae8af0cdce9ab8aa10ef1db7c7d05"
+      }
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/mechanical_checks/0/path",
+      "reference": "codex-rs/core/tests/common/streaming_sse.rs",
+      "source_keys": [
+        "codex-rs/core/tests/common/streaming_sse.rs@ed1e35fa973116adf94c8ddbb39bb7e0d2c4c7773b980277921f859ce40d252b"
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/mechanical_checks/1/path",
+      "reference": "codex-rs/core/tests/suite/turn_input_submission.rs",
+      "source_keys": [
+        "codex-rs/core/tests/suite/turn_input_submission.rs@ae71b734d0b46ce5b285afc827d765d0a4a066bbe825ffd0aba467a4d78e1824"
+      ]
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/patch/path",
+      "reference": "repair.patch",
+      "formal_artifact": {
+        "path": "repair.patch",
+        "bytes": 7039,
+        "sha256": "7fd5e5f0e43ecd80505ca93630ccc9c5ebd29e24b9d16615f9cf0714ca8b55f5"
+      }
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/source_manifest/path",
+      "reference": "source-manifest.json",
+      "formal_artifact": {
+        "path": "source-manifest.json",
+        "bytes": 1877,
+        "sha256": "11d58a9e01c6d3aa0f3d185d71e7c61d3faf2045ea6aa235fa17d9c6b5084576"
+      }
+    },
+    {
+      "artifact": "repair-audit.json",
+      "pointer": "/input_pins/path",
+      "reference": "input-pins.json",
+      "formal_artifact": {
+        "path": "input-pins.json",
+        "bytes": 6998,
+        "sha256": "83c60764a161e2b8e776c0aa6c4054d27996b3df4ff0efef77bd4cde838b6ece"
+      }
+    },
+    {
+      "artifact": "root-independent-review.json",
+      "pointer": "/files/0/path",
+      "reference": "codex-rs/core/tests/common/streaming_sse.rs",
+      "versions": [
+        {
+          "role": "before",
+          "source_key": "codex-rs/core/tests/common/streaming_sse.rs@ed1e35fa973116adf94c8ddbb39bb7e0d2c4c7773b980277921f859ce40d252b"
+        },
+        {
+          "role": "after",
+          "source_key": "codex-rs/core/tests/common/streaming_sse.rs@0d8d35afd738823226e0aa9c0636e7337b958de5a66418e49190a231b3dd79c0"
+        }
+      ],
+      "source_keys": [
+        "codex-rs/core/tests/common/streaming_sse.rs@ed1e35fa973116adf94c8ddbb39bb7e0d2c4c7773b980277921f859ce40d252b",
+        "codex-rs/core/tests/common/streaming_sse.rs@0d8d35afd738823226e0aa9c0636e7337b958de5a66418e49190a231b3dd79c0"
+      ]
+    },
+    {
+      "artifact": "root-independent-review.json",
+      "pointer": "/files/1/path",
+      "reference": "codex-rs/core/tests/suite/turn_input_submission.rs",
+      "versions": [
+        {
+          "role": "before",
+          "source_key": "codex-rs/core/tests/suite/turn_input_submission.rs@ae71b734d0b46ce5b285afc827d765d0a4a066bbe825ffd0aba467a4d78e1824"
+        },
+        {
+          "role": "after",
+          "source_key": "codex-rs/core/tests/suite/turn_input_submission.rs@7dc33fdd6c892deda4b145edbd61a653c1cd3b4eaaae6c635caadaf2fd2e5919"
+        }
+      ],
+      "source_keys": [
+        "codex-rs/core/tests/suite/turn_input_submission.rs@ae71b734d0b46ce5b285afc827d765d0a4a066bbe825ffd0aba467a4d78e1824",
+        "codex-rs/core/tests/suite/turn_input_submission.rs@7dc33fdd6c892deda4b145edbd61a653c1cd3b4eaaae6c635caadaf2fd2e5919"
+      ]
+    },
+    {
+      "artifact": "source-manifest.json",
+      "pointer": "/files/0/path",
+      "reference": "codex-rs/core/tests/common/streaming_sse.rs",
+      "versions": [
+        {
+          "role": "before",
+          "source_key": "codex-rs/core/tests/common/streaming_sse.rs@ed1e35fa973116adf94c8ddbb39bb7e0d2c4c7773b980277921f859ce40d252b"
+        },
+        {
+          "role": "after",
+          "source_key": "codex-rs/core/tests/common/streaming_sse.rs@0d8d35afd738823226e0aa9c0636e7337b958de5a66418e49190a231b3dd79c0"
+        }
+      ],
+      "source_keys": [
+        "codex-rs/core/tests/common/streaming_sse.rs@ed1e35fa973116adf94c8ddbb39bb7e0d2c4c7773b980277921f859ce40d252b",
+        "codex-rs/core/tests/common/streaming_sse.rs@0d8d35afd738823226e0aa9c0636e7337b958de5a66418e49190a231b3dd79c0"
+      ]
+    },
+    {
+      "artifact": "source-manifest.json",
+      "pointer": "/files/1/path",
+      "reference": "codex-rs/core/tests/suite/turn_input_submission.rs",
+      "versions": [
+        {
+          "role": "before",
+          "source_key": "codex-rs/core/tests/suite/turn_input_submission.rs@ae71b734d0b46ce5b285afc827d765d0a4a066bbe825ffd0aba467a4d78e1824"
+        },
+        {
+          "role": "after",
+          "source_key": "codex-rs/core/tests/suite/turn_input_submission.rs@7dc33fdd6c892deda4b145edbd61a653c1cd3b4eaaae6c635caadaf2fd2e5919"
+        }
+      ],
+      "source_keys": [
+        "codex-rs/core/tests/suite/turn_input_submission.rs@ae71b734d0b46ce5b285afc827d765d0a4a066bbe825ffd0aba467a4d78e1824",
+        "codex-rs/core/tests/suite/turn_input_submission.rs@7dc33fdd6c892deda4b145edbd61a653c1cd3b4eaaae6c635caadaf2fd2e5919"
+      ]
+    },
+    {
+      "artifact": "source-manifest.json",
+      "pointer": "/patch/path",
+      "reference": "repair.patch",
+      "formal_artifact": {
+        "path": "repair.patch",
+        "bytes": 7039,
+        "sha256": "7fd5e5f0e43ecd80505ca93630ccc9c5ebd29e24b9d16615f9cf0714ca8b55f5"
+      }
+    },
+    {
+      "artifact": "support/native-r15-input-manifest.json",
+      "pointer": "/files/0/path",
+      "reference": "codex-rs/core/src/session/tests.rs",
+      "source_keys": [
+        "codex-rs/core/src/session/tests.rs@29da32a96770cc74df87d09465c9d138dbabc539d038d1641001a0affd29d085"
+      ]
+    },
+    {
+      "artifact": "support/native-r15-input-manifest.json",
+      "pointer": "/files/1/path",
+      "reference": "codex-rs/core/tests/suite/turn_input_submission.rs",
+      "source_keys": [
+        "codex-rs/core/tests/suite/turn_input_submission.rs@ae71b734d0b46ce5b285afc827d765d0a4a066bbe825ffd0aba467a4d78e1824"
+      ]
+    },
+    {
+      "artifact": "support/native-r15-input-manifest.json",
+      "pointer": "/files/2/path",
+      "reference": "codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs",
+      "source_keys": [
+        "codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs@35982a2804b74d3f2eb1027bda62e097abe20c546937b25ee251274b7bdbd6ec"
+      ]
+    },
+    {
+      "artifact": "support/native-r15-input-manifest.json",
+      "pointer": "/instructions/0/path",
+      "reference": "AGENTS.md",
+      "source_keys": [
+        "AGENTS.md@c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480"
+      ]
+    },
+    {
+      "artifact": "support/native-r15-input-manifest.json",
+      "pointer": "/failure_review",
+      "reference": "native-core-mcp-r15-result-review.json",
+      "formal_artifact": {
+        "path": "../r15-core-mcp-checkpoint/native-core-mcp-r15-result-review.json",
+        "bytes": 9965,
+        "sha256": "a31121be22b0ff02347fbae5266a21597fe58e811f2cd697617e1bda577bc061"
+      }
+    }
+  ],
+  "source_objects": [
+    {
+      "path": "AGENTS.md",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480",
+      "git_blob": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/AGENTS.md",
+      "pin_evidence": "core-recovery-r15-repair/input-pins.json",
+      "bytes": 22519
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/mcp_server_status.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "1275b80ccef7731404b120f2d2a1c00b09c033ee327ffc6ec08afbede811c9b0",
+      "git_blob": "d339c345ea1382ec463a0a2ddacc1f2251debe0b",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/app-server/tests/suite/v2/mcp_server_status.rs",
+      "pin_evidence": "core-recovery-r15-repair/native-callers.json",
+      "bytes": 37779
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/thread_resume.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "96cf60231698369edf37c57b68678632eecc54e6374e9643a3ecd987f15d825e",
+      "git_blob": "4e9f334b1da9089cf7e93293d28acd829da651e7",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/app-server/tests/suite/v2/thread_resume.rs",
+      "pin_evidence": "core-recovery-r15-repair/native-callers.json",
+      "bytes": 194737
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/thread_unsubscribe.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "042efe238f375e03a7ff4ece7a2c05ebc0b3d285c9336b785449ca6ef2e9eac0",
+      "git_blob": "da456ac820c8f04bb51ae902594d53972a289fbb",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/app-server/tests/suite/v2/thread_unsubscribe.rs",
+      "pin_evidence": "core-recovery-r15-repair/native-callers.json",
+      "bytes": 13087
+    },
+    {
+      "path": "codex-rs/app-server/tests/suite/v2/turn_start.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "c6766a9dce3127768f8fffa9adc78f539405ac6aa02aacbabbd41a0acd5663d9",
+      "git_blob": "7cf967f0670c8d5b5e258e839e7a1f7a85833c00",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/app-server/tests/suite/v2/turn_start.rs",
+      "pin_evidence": "core-recovery-r15-repair/native-callers.json",
+      "bytes": 181249
+    },
+    {
+      "path": "codex-rs/cli/tests/mcp_add_remove.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "290e3fb1231fead2b45e498abd917e9448bf57dbd6280ea8f12c11e176e35b27",
+      "git_blob": "7103c3712e35393b455445a8c9fe91d237713963",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/cli/tests/mcp_add_remove.rs",
+      "pin_evidence": "core-recovery-r15-repair/native-callers.json",
+      "bytes": 12914
+    },
+    {
+      "path": "codex-rs/codex-api/src/endpoint/responses.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "d096b953e704d3d485bedadee44474bb640d11f36b04dece06c83278eae76be4",
+      "git_blob": "187a64676968e80ed7ff40a9b6d8b8b4ba31f232",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/codex-api/src/endpoint/responses.rs",
+      "pin_evidence": "core-recovery-r15-repair/input-pins.json",
+      "bytes": 7931
+    },
+    {
+      "path": "codex-rs/codex-api/src/rate_limits.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "4b3d72fd41a9bfa84c00c564643f73fe4455e63b05f13f2657c8ccbf65621d6d",
+      "git_blob": "d0f936a81fdeba3ca74bf36db342248af1cf444b",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/codex-api/src/rate_limits.rs",
+      "pin_evidence": "core-recovery-r15-repair/input-pins.json",
+      "bytes": 12511
+    },
+    {
+      "path": "codex-rs/codex-api/src/safety_buffering.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "c30b4ea92060a3f6907528457cf8417dfa4f3811f6ae8efb6c89d84c8699bbf6",
+      "git_blob": "aaf09c8eb42d311b7f16236db579afa4a6fc636e",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/codex-api/src/safety_buffering.rs",
+      "pin_evidence": "core-recovery-r15-repair/native-callers.json",
+      "bytes": 2107
+    },
+    {
+      "path": "codex-rs/codex-api/src/sse/responses.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "e5bdeb7325bb5b659cd09422905220c1201d86dabc1d24bc670326de62a72b50",
+      "git_blob": "3bd82f2ab0b145e49238e67a4fc12c838bceb52f",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/codex-api/src/sse/responses.rs",
+      "pin_evidence": "core-recovery-r15-repair/input-pins.json",
+      "bytes": 68819
+    },
+    {
+      "path": "codex-rs/core/src/client.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "60322c97712b9849dea763eb5fa5700a381c7c0e5eded73a5a4171bd51eaba09",
+      "git_blob": "00cf9e922f85dff6c67f026f53c9d814b2849c1d",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/core/src/client.rs",
+      "pin_evidence": "r15-core-mcp-checkpoint/native-candidate-r15-source.json",
+      "bytes": 162063,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/src/guardian/tests.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "0048e5f001e0f63d6db015b1481ce51df51f735f785d7c5cab6e0ac747f9adfb",
+      "git_blob": "5a922e9c0b7ec85c9c4d3088cb47896fada70b43",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/core/src/guardian/tests.rs",
+      "pin_evidence": "core-recovery-r15-repair/native-callers.json",
+      "bytes": 144434
+    },
+    {
+      "path": "codex-rs/core/src/session/mod.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "c262bc85649869dcc1eea4096773d577959989c54e264e6f03a341448ac3ad4d",
+      "git_blob": "f4a925c7deb8d9c939cc2900d160f8f25c352b39",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/core/src/session/mod.rs",
+      "pin_evidence": "r15-core-mcp-checkpoint/native-candidate-r15-source.json",
+      "bytes": 215822,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/src/session/tests.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "29da32a96770cc74df87d09465c9d138dbabc539d038d1641001a0affd29d085",
+      "git_blob": "dce43c7f844f45036a7b58b307de500029f1f001",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/core/src/session/tests.rs",
+      "pin_evidence": "core-managed-proxy-r15-fixture/repair-audit.json",
+      "bytes": 504602
+    },
+    {
+      "path": "codex-rs/core/src/session/turn.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "a0cdb211158e4e3f46a5fe35f61dd778432ad115c710ead77500126066bdacf4",
+      "git_blob": "a8e1fca6dd5a97f838262cf8f13087928beb9a20",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/core/src/session/turn.rs",
+      "pin_evidence": "core-recovery-r15-repair/input-pins.json",
+      "bytes": 132498
+    },
+    {
+      "path": "codex-rs/core/src/tasks/mod.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "b51df87d911a73b51ac13cf28157f4d3bb3a7192f3aa2621265c849acc157a88",
+      "git_blob": "04332800b862436b2e372c78145bae849e596822",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/core/src/tasks/mod.rs",
+      "pin_evidence": "core-recovery-r15-repair/input-pins.json",
+      "bytes": 178832
+    },
+    {
+      "path": "codex-rs/core/src/tasks/regular.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "bacfc1f5c9b1b1de6951f14558dad4d43ceaaa265600aac3ecedce04bdf4240f",
+      "git_blob": "a9c7225095f4109d6d8af01279475fe840ae816e",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/core/src/tasks/regular.rs",
+      "pin_evidence": "core-recovery-r15-repair/input-pins.json",
+      "bytes": 5432
+    },
+    {
+      "path": "codex-rs/core/tests/common/streaming_sse.rs",
+      "commit": "96dc9232535fedf735e3099ef1391b69477270d4",
+      "sha256": "0d8d35afd738823226e0aa9c0636e7337b958de5a66418e49190a231b3dd79c0",
+      "git_blob": "5650fb5d4738ca0442fd2afebd2268e3414e9b1d",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/96dc9232535fedf735e3099ef1391b69477270d4/codex-rs/core/tests/common/streaming_sse.rs",
+      "pin_evidence": "core-recovery-r15-repair/source-manifest.json",
+      "bytes": 27584,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/tests/common/streaming_sse.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "ed1e35fa973116adf94c8ddbb39bb7e0d2c4c7773b980277921f859ce40d252b",
+      "git_blob": "3766bbd88084f0ba514df52143918450be7d21eb",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/core/tests/common/streaming_sse.rs",
+      "pin_evidence": "core-recovery-r15-repair/input-pins.json",
+      "bytes": 26206
+    },
+    {
+      "path": "codex-rs/core/tests/suite/hooks.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "027b1d58726b5030178c3bbd4e4c3156ac281e94b2abc59f56b463092b095b31",
+      "git_blob": "ecd0d8a0f81d3f199dc77830d60d67c7777ba6d3",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/core/tests/suite/hooks.rs",
+      "pin_evidence": "r15-core-mcp-checkpoint/native-candidate-r15-source.json",
+      "bytes": 179232,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/pending_input.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "268a6721fbc8a8f26a4492137d717c4b6a6d4d0c07dedf302094c24929bf61d0",
+      "git_blob": "a26638430e20b865e95b45aea385dbbd0c253ace",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/core/tests/suite/pending_input.rs",
+      "pin_evidence": "core-recovery-r15-repair/native-callers.json",
+      "bytes": 47813
+    },
+    {
+      "path": "codex-rs/core/tests/suite/realtime_conversation.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "89cc149669017ce8cff40a7ec93675283946a14f5a8a0ace65dc7e6dc8e57c98",
+      "git_blob": "7df6a447bfc58f878ff8c160d0c390016322e1cf",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/core/tests/suite/realtime_conversation.rs",
+      "pin_evidence": "core-recovery-r15-repair/native-callers.json",
+      "bytes": 195819
+    },
+    {
+      "path": "codex-rs/core/tests/suite/rmcp_client.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "11ba2ce26510c4b3edac11351bd83efb879b466a22c9dc1c241dde63890ecb16",
+      "git_blob": "5b7c708647d343820ca5ca1fb0c3a1754d317d25",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/core/tests/suite/rmcp_client.rs",
+      "pin_evidence": "r15-core-mcp-checkpoint/native-candidate-r15-source.json",
+      "bytes": 147566,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/stream_no_completed.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "677d7c95da61d56711ae8b8ab3884f6d6b8622d1e6cc3edabd59b2d7dcc2544f",
+      "git_blob": "21eacdfb91316eea90eee401678c901d085fcec3",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/core/tests/suite/stream_no_completed.rs",
+      "pin_evidence": "core-recovery-r15-repair/native-callers.json",
+      "bytes": 5639
+    },
+    {
+      "path": "codex-rs/core/tests/suite/tool_parallelism.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "e78e140adeaf0e671568dd54dab6d64d21704f98a0ae48e17dff00a18c6933dc",
+      "git_blob": "e7b628b81901f837decea99a177b2e70a9e7e6e2",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/core/tests/suite/tool_parallelism.rs",
+      "pin_evidence": "core-recovery-r15-repair/native-callers.json",
+      "bytes": 14933
+    },
+    {
+      "path": "codex-rs/core/tests/suite/turn_input_submission.rs",
+      "commit": "96dc9232535fedf735e3099ef1391b69477270d4",
+      "sha256": "7dc33fdd6c892deda4b145edbd61a653c1cd3b4eaaae6c635caadaf2fd2e5919",
+      "git_blob": "a3e4ecc296ff71736bac1e2c441d7e7b0762a2a7",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/96dc9232535fedf735e3099ef1391b69477270d4/codex-rs/core/tests/suite/turn_input_submission.rs",
+      "pin_evidence": "core-recovery-r15-repair/source-manifest.json",
+      "bytes": 21320,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/turn_input_submission.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "ae71b734d0b46ce5b285afc827d765d0a4a066bbe825ffd0aba467a4d78e1824",
+      "git_blob": "4ee793ddfc1a9592c933e8b861e76d46bf111c40",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/core/tests/suite/turn_input_submission.rs",
+      "pin_evidence": "r15-core-mcp-checkpoint/native-candidate-r15-source.json",
+      "bytes": 21096,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "35982a2804b74d3f2eb1027bda62e097abe20c546937b25ee251274b7bdbd6ec",
+      "git_blob": "02a8e0abc60f415327cd2713d92d23bc503ab3e4",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/core/tests/suite/unified_exec_zsh_fork_approvals.rs",
+      "pin_evidence": "r15-core-mcp-checkpoint/native-candidate-r15-source.json",
+      "bytes": 31429,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/user_message_admission.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "578fb63d11fa8faae52d828487c3c598d0680e95c79136d44b91c3371c44506a",
+      "git_blob": "91a4e4c059784baa88e2a86c4f60e60b2238a27b",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/core/tests/suite/user_message_admission.rs",
+      "pin_evidence": "core-recovery-r15-repair/native-callers.json",
+      "bytes": 16709
+    },
+    {
+      "path": "codex-rs/ext/queue/tests/queue_service.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "254b9e09e5aac85c283d1268110a3be4e1f492848014281d3247cde4c9200106",
+      "git_blob": "2ec0db1f7483b311d8982d9b25ca56f4da30121e",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/ext/queue/tests/queue_service.rs",
+      "pin_evidence": "core-recovery-r15-repair/native-callers.json",
+      "bytes": 115730
+    },
+    {
+      "path": "codex-rs/network-proxy/src/credential_broker_tests.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "6bed6f6bafc2dee6e4568929d43f670bb1cc4801f6901a65d7340a1574064f79",
+      "git_blob": "fc89aa3a336d7175f2f727e061a266fa98ef4d44",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/network-proxy/src/credential_broker_tests.rs",
+      "pin_evidence": "core-recovery-r15-repair/native-callers.json",
+      "bytes": 14133
+    },
+    {
+      "path": "codex-rs/rmcp-client/src/retained_tool_session_tests.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "0705d957aeded5f0950424027f58173b29e8d3de378cda2c66a7aa721bf30c1d",
+      "git_blob": "6f4a3850a15767e97e0647bb326de3b3637f062d",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/rmcp-client/src/retained_tool_session_tests.rs",
+      "pin_evidence": "core-recovery-r15-repair/native-callers.json",
+      "bytes": 12487
+    },
+    {
+      "path": "codex-rs/rmcp-client/tests/streamable_http_oauth_startup.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "7d70a86de51fac115907e7fd869eb56af76f3229716075451d4cab9b54cb2e62",
+      "git_blob": "e6b98304d28e1c9ae2aff16804b8a458df3d9d66",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/rmcp-client/tests/streamable_http_oauth_startup.rs",
+      "pin_evidence": "core-recovery-r15-repair/native-callers.json",
+      "bytes": 30741
+    },
+    {
+      "path": "codex-rs/tui/src/app/tests/safety_buffering.rs",
+      "commit": "638997499470f0b7dd33ad18226feacf0198ef3d",
+      "sha256": "b0aa8dbce4cf3f90ecc789f20c99462b7ebb55e66f2f1f69fdce7a8a794beefd",
+      "git_blob": "887d0bcd5f5d2e9fbce1447f063f53f418d54d82",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/638997499470f0b7dd33ad18226feacf0198ef3d/codex-rs/tui/src/app/tests/safety_buffering.rs",
+      "pin_evidence": "core-recovery-r15-repair/native-callers.json",
+      "bytes": 35708
+    }
+  ],
+  "candidate_source_objects": [
+    {
+      "path": "codex-rs/core/tests/common/streaming_sse.rs",
+      "commit": "96dc9232535fedf735e3099ef1391b69477270d4",
+      "sha256": "0d8d35afd738823226e0aa9c0636e7337b958de5a66418e49190a231b3dd79c0",
+      "git_blob": "5650fb5d4738ca0442fd2afebd2268e3414e9b1d",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/96dc9232535fedf735e3099ef1391b69477270d4/codex-rs/core/tests/common/streaming_sse.rs",
+      "pin_evidence": "core-recovery-r15-repair/source-manifest.json",
+      "bytes": 27584,
+      "mode": "100644"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/turn_input_submission.rs",
+      "commit": "96dc9232535fedf735e3099ef1391b69477270d4",
+      "sha256": "7dc33fdd6c892deda4b145edbd61a653c1cd3b4eaaae6c635caadaf2fd2e5919",
+      "git_blob": "a3e4ecc296ff71736bac1e2c441d7e7b0762a2a7",
+      "immutable_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/96dc9232535fedf735e3099ef1391b69477270d4/codex-rs/core/tests/suite/turn_input_submission.rs",
+      "pin_evidence": "core-recovery-r15-repair/source-manifest.json",
+      "bytes": 21320,
+      "mode": "100644"
+    }
+  ],
+  "formal_evidence": [
+    {
+      "path": "../r15-core-mcp-checkpoint/native-core-mcp-r15-result-review.json",
+      "bytes": 9965,
+      "sha256": "a31121be22b0ff02347fbae5266a21597fe58e811f2cd697617e1bda577bc061"
+    },
+    {
+      "path": "../r15-core-mcp-checkpoint/native-core-mcp-r15-tests.log.gz",
+      "bytes": 80935,
+      "sha256": "200254fdc071f68f4a67f6c8b5518775ecc4bf7bd4a0f0b6db29aad3ed3d9829",
+      "representation": "gzip of the exact original raw log",
+      "raw_bytes": 515261,
+      "raw_sha256": "2e9b11682a84cce7be7e1db72e47eb4be260e8d7ef7a3b1fa916fe59c5a3e39f"
+    },
+    {
+      "path": "../r15-core-mcp-checkpoint/native-candidate-r15-source.json",
+      "bytes": 48734,
+      "sha256": "ee85feeca1c8da886ab3f52ab26fb741bb5d8569880b26985a2b0d7f8533dc2d"
+    },
+    {
+      "path": "../r15-core-mcp-checkpoint/native-core-mcp-r15-tests-receipt.json",
+      "bytes": 903,
+      "sha256": "cae7277834a12e8a42fc3e559eb1c99996a72f19d276cecda55871768e9ed2f6"
+    },
+    {
+      "path": "../r15-core-mcp-checkpoint/ROOT-RESULT-READBACK.json",
+      "bytes": 8337,
+      "sha256": "afd285a66165a0f28ec41a2f2926c1c313d07f5a4cafe5ab53f5d0673361a8de"
+    },
+    {
+      "path": "../r15-core-mcp-checkpoint/ROOT-SOURCE-ROUNDTRIP.json",
+      "bytes": 524,
+      "sha256": "1d2967bbf8914f22d3b3fb4eb3684ab66e8a165ebbb7624e3a8a6ddc6ad9fa2f"
+    },
+    {
+      "path": "../r16-stage45-input/root-published-source.json",
+      "bytes": 3039,
+      "sha256": "815c43fa1bb9e2ceddcc0ff6491b310b0a731fd7b26baa50a89345047f16448b"
+    },
+    {
+      "path": "../r16-stage45-input/root-publish-manifest.json",
+      "bytes": 2915,
+      "sha256": "ce5772f0884caa85935f066044521eec2dc66ea58415541f1b83bcf378422aee"
+    },
+    {
+      "path": "../r16-stage45-input/ROOT-SOURCE-REVIEWS.json",
+      "bytes": 6512,
+      "sha256": "0eb1bf5c6e9a6cf60c60097006fc9657baf061566e7007fdc2f7ca0f0268ad11"
+    }
+  ],
+  "closed_original_failures": [
+    {
+      "binary": "codex-core::all",
+      "name": "suite::turn_input_submission::recover_turn_if_idle_preserves_id_and_resumes_plan_mode",
+      "status": "FAIL",
+      "elapsed": "5.166s",
+      "log_byte_range": [
+        476277,
+        477124
+      ],
+      "excerpt_sha256": "d22af15eb161af09b2c051dbc386d4929b09ec86e428e59022da62789524dfe5",
+      "excerpt_exact_against_closed_raw_log": true
+    }
+  ],
+  "closed_log_raw_sha256": "2e9b11682a84cce7be7e1db72e47eb4be260e8d7ef7a3b1fa916fe59c5a3e39f",
+  "closed_log_raw_bytes": 515261,
+  "local_materialized_original_source_pins_checked": [
+    {
+      "group": "core-recovery-r15-repair",
+      "path": "codex-rs/codex-api/src/endpoint/responses.rs",
+      "bytes": 7931,
+      "sha256": "d096b953e704d3d485bedadee44474bb640d11f36b04dece06c83278eae76be4",
+      "git_blob": "187a64676968e80ed7ff40a9b6d8b8b4ba31f232"
+    },
+    {
+      "group": "core-recovery-r15-repair",
+      "path": "codex-rs/codex-api/src/rate_limits.rs",
+      "bytes": 12511,
+      "sha256": "4b3d72fd41a9bfa84c00c564643f73fe4455e63b05f13f2657c8ccbf65621d6d",
+      "git_blob": "d0f936a81fdeba3ca74bf36db342248af1cf444b"
+    },
+    {
+      "group": "core-recovery-r15-repair",
+      "path": "codex-rs/codex-api/src/sse/responses.rs",
+      "bytes": 68819,
+      "sha256": "e5bdeb7325bb5b659cd09422905220c1201d86dabc1d24bc670326de62a72b50",
+      "git_blob": "3bd82f2ab0b145e49238e67a4fc12c838bceb52f"
+    },
+    {
+      "group": "core-recovery-r15-repair",
+      "path": "codex-rs/core/src/client.rs",
+      "bytes": 162063,
+      "sha256": "60322c97712b9849dea763eb5fa5700a381c7c0e5eded73a5a4171bd51eaba09",
+      "git_blob": "00cf9e922f85dff6c67f026f53c9d814b2849c1d"
+    },
+    {
+      "group": "core-recovery-r15-repair",
+      "path": "codex-rs/core/src/session/mod.rs",
+      "bytes": 215822,
+      "sha256": "c262bc85649869dcc1eea4096773d577959989c54e264e6f03a341448ac3ad4d",
+      "git_blob": "f4a925c7deb8d9c939cc2900d160f8f25c352b39"
+    },
+    {
+      "group": "core-recovery-r15-repair",
+      "path": "codex-rs/core/src/session/turn.rs",
+      "bytes": 132498,
+      "sha256": "a0cdb211158e4e3f46a5fe35f61dd778432ad115c710ead77500126066bdacf4",
+      "git_blob": "a8e1fca6dd5a97f838262cf8f13087928beb9a20"
+    },
+    {
+      "group": "core-recovery-r15-repair",
+      "path": "codex-rs/core/src/tasks/mod.rs",
+      "bytes": 178832,
+      "sha256": "b51df87d911a73b51ac13cf28157f4d3bb3a7192f3aa2621265c849acc157a88",
+      "git_blob": "04332800b862436b2e372c78145bae849e596822"
+    },
+    {
+      "group": "core-recovery-r15-repair",
+      "path": "codex-rs/core/src/tasks/regular.rs",
+      "bytes": 5432,
+      "sha256": "bacfc1f5c9b1b1de6951f14558dad4d43ceaaa265600aac3ecedce04bdf4240f",
+      "git_blob": "a9c7225095f4109d6d8af01279475fe840ae816e"
+    },
+    {
+      "group": "core-recovery-r15-repair",
+      "path": "codex-rs/core/tests/common/streaming_sse.rs",
+      "bytes": 26206,
+      "sha256": "ed1e35fa973116adf94c8ddbb39bb7e0d2c4c7773b980277921f859ce40d252b",
+      "git_blob": "3766bbd88084f0ba514df52143918450be7d21eb"
+    },
+    {
+      "group": "core-recovery-r15-repair",
+      "path": "codex-rs/core/tests/suite/turn_input_submission.rs",
+      "bytes": 21096,
+      "sha256": "ae71b734d0b46ce5b285afc827d765d0a4a066bbe825ffd0aba467a4d78e1824",
+      "git_blob": "4ee793ddfc1a9592c933e8b861e76d46bf111c40"
+    }
+  ],
+  "qualifications": [
+    "The source44 r15 result is the original failed execution. It is not a source45 result and does not qualify any changed source45 behavior.",
+    "Source45 publication metadata and matching Git blob/SHA pins establish content identity only, not a successful native or CI run.",
+    "Frozen pending/native-not-run wording is preserved as written at candidate creation; later execution receipts must remain separate.",
+    "Source/original trees and duplicate full logs are not copied. Immutable source URLs and existing formal raw-log gzip/receipts close those references.",
+    "Copied native support maps/proofs are source-content evidence unless the artifact expressly records an executed result. No event trace, DNS timing, or new permission grant is inferred.",
+    "Zsh independent review checked its then-existing 13 original inputs; the final author pins add two enum/reexport inputs without changing candidate source or patch.",
+    "The CI package-owner pin establishes core_test_support from its manifest. This archive does not reinterpret a literal Cargo.toml members search as Cargo metadata membership or claim full platform/feature/service coverage.",
+    "Reproduction scripts require materializing their pinned originals from the immutable source before use; merely archiving a script is not execution evidence."
+  ],
+  "scientific_disposition": "HOLD",
+  "cell_authority": "DENY_ALL",
+  "unresolved_references": [],
+  "rust_or_ci_execution_by_archive_task": false
+}

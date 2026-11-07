@@ -733,7 +733,9 @@ async fn terminating_during_stdin_poll_returns_exited_response() -> anyhow::Resu
 
     manager.release_process_id(process_id).await;
     allow_terminate.notify_one();
-    process.terminate_confirmed().await?;
+    process
+        .terminate_confirmed(Instant::now() + Duration::from_secs(1))
+        .await?;
 
     let output = tokio::time::timeout(Duration::from_secs(2), poll_task)
         .await

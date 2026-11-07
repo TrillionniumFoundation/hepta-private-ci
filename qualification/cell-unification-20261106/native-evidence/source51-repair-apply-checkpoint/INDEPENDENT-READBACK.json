@@ -1,0 +1,332 @@
+{
+  "schema": "hepta.source51-repair-apply-attachment-independent-readback.v1",
+  "scope": "Local raw-byte and static evidence reconciliation; no command/runner/Git/Rust/formatter execution.",
+  "source_registration": {
+    "commit": "e28b0f385ee882f842911044958b2810f62f6379",
+    "tree": "763c8d2b4089f6e9806c3bbb68fa247bc2f6af36",
+    "parent_commit": "1fdd647b0ecb235530e8b88bbea45b3d3762906f",
+    "parent_tree": "ea48acf562499192a25e05ae28926a32632dee62",
+    "actual_git_api_verified": true,
+    "unsigned_git_commit_preserved": true
+  },
+  "source_manifest": {
+    "rows": 194,
+    "rust_paths": 180,
+    "other_paths": 14,
+    "changed_parent_rows": 2,
+    "unchanged_parent_rows": 192,
+    "two_raw_before_after_pairs_verified": true,
+    "other_192_source_payloads_reread_by_this_audit": false,
+    "native_full_source_guard_retained": true,
+    "pin": {
+      "bytes": 55418,
+      "sha256": "74b7a35a77019ec90e42ec33dc0e81bbdbaca585541a028d57fffbe77c69a41a",
+      "git_blob": "09ad6990ac2eeec1eb7d21689eef7733a531f75b"
+    }
+  },
+  "offline_git_rebuild": {
+    "original_direct_trees_rehashed": 7,
+    "parent_child_links_verified": 6,
+    "new_direct_trees_rebuilt": 7,
+    "only_changed_leaf_paths": [
+      "codex-rs/exec-server/tests/common/fake_bwrap.rs",
+      "codex-rs/network-proxy/src/http_proxy.rs"
+    ],
+    "computed_tree": "763c8d2b4089f6e9806c3bbb68fa247bc2f6af36",
+    "remote_git_writes": false
+  },
+  "mechanical_patch": {
+    "paths": [
+      "codex-rs/exec-server/tests/common/fake_bwrap.rs",
+      "codex-rs/network-proxy/src/http_proxy.rs"
+    ],
+    "forward_and_inverse_exact": true,
+    "combined": {
+      "bytes": 1083,
+      "sha256": "55181ee269a2f06d83a04d4326d22f0ebe5e08a3ba387e5691e79f987b3d8d29",
+      "git_blob": "3600118628e4f98de2a90e0be43e650790ca9fdb"
+    }
+  },
+  "frozen_handoff_subsets": [
+    {
+      "path": "exec-server-bwrap-r24-repair/HANDOFF-MANIFEST.json",
+      "listed_files_verified": 69,
+      "bytes": 17119,
+      "sha256": "4fbf019c6434b256c72f303d3c34312292d97b63c03a1d25f73e3668210eb4fb",
+      "git_blob": "c30847bb3628f74572e6cc3408e9959d241e6076"
+    },
+    {
+      "path": "source51-preparation/HANDOFF-MANIFEST.json",
+      "listed_files_verified": 30,
+      "bytes": 7289,
+      "sha256": "960504c1368aef8ebca4dc8d0e10a0becb26183b1d0369257f36fade1a215e90",
+      "git_blob": "5a3c7503a928fe323e7a5581ce43d6042d7e5c0f"
+    },
+    {
+      "path": "source51-native-gates-preparation/HANDOFF-MANIFEST.json",
+      "listed_files_verified": 10,
+      "bytes": 2531,
+      "sha256": "7c790812a9d826f192ad6078cf8f7018d7b8ead3ee921096d6f7e0bc9060e2b2",
+      "git_blob": "74bc97b6dac5bde8302652b4b043eca4e4001f57"
+    }
+  ],
+  "apply_input_archive": {
+    "bytes": 43449,
+    "sha256": "dc2f53ce98abf1e4d4c7172fd10fbf14815a1e33d26fda817932c60ed85b9357",
+    "git_blob": "09aa5469689cc2d0af5402b506997a3b77f188a4",
+    "regular_members": 7,
+    "members": [
+      {
+        "path": "after/codex-rs/exec-server/tests/common/fake_bwrap.rs",
+        "tar_mode": "0o600",
+        "bytes": 1817,
+        "sha256": "83d3637f2648b967c70e2368c623fe0b84afe1cdf32860284d897923ad0dc1ca",
+        "git_blob": "e74489437549cf2c61075fd893945cd78e34247c"
+      },
+      {
+        "path": "after/codex-rs/network-proxy/src/http_proxy.rs",
+        "tar_mode": "0o600",
+        "bytes": 69092,
+        "sha256": "f8b6cb1adf67ea828efb29f68e10fd97a30e379574c93374c2a88f5364153967",
+        "git_blob": "17220a242091325aa66bd4cdb3419cd3a30b09ed"
+      },
+      {
+        "path": "before/codex-rs/exec-server/tests/common/fake_bwrap.rs",
+        "tar_mode": "0o600",
+        "bytes": 1635,
+        "sha256": "ae37954afd591c387652cd8ea036a15f461dbad48946274bbca57be4bd1648de",
+        "git_blob": "cc79362f7a8a3a44b0a93949d18494281511ec7b"
+      },
+      {
+        "path": "before/codex-rs/network-proxy/src/http_proxy.rs",
+        "tar_mode": "0o600",
+        "bytes": 69053,
+        "sha256": "7500b8820d7894da45ed4f444aca28573f1e5f9462f94c97ccb19019a0f6b430",
+        "git_blob": "50135c6cd4c426c3ec16d65d448c01a1fb776ddd"
+      },
+      {
+        "path": "candidate.patch",
+        "tar_mode": "0o600",
+        "bytes": 1083,
+        "sha256": "55181ee269a2f06d83a04d4326d22f0ebe5e08a3ba387e5691e79f987b3d8d29",
+        "git_blob": "3600118628e4f98de2a90e0be43e650790ca9fdb"
+      },
+      {
+        "path": "delta-manifest.json",
+        "tar_mode": "0o600",
+        "bytes": 1583,
+        "sha256": "b0a7085b6731978cea2614ff9660c2b47e9c0a0ac5228c5b96694c62ba56a74d",
+        "git_blob": "cc51d64769a0d0664f9d1f46ee6e8a1e57307e14"
+      },
+      {
+        "path": "source51-manifest.json",
+        "tar_mode": "0o600",
+        "bytes": 55418,
+        "sha256": "74b7a35a77019ec90e42ec33dc0e81bbdbaca585541a028d57fffbe77c69a41a",
+        "git_blob": "09ad6990ac2eeec1eb7d21689eef7733a531f75b"
+      }
+    ],
+    "raw_archive_unchanged": true
+  },
+  "diagnostic": {
+    "job_id": "1a1b19909e1-fc05-79c4",
+    "outer_exit": 0,
+    "source_tree": "ea48acf562499192a25e05ae28926a32632dee62",
+    "programs": {
+      "system": {
+        "path": "/usr/bin/bwrap",
+        "bytes": 80424,
+        "sha256": "523da3e7399044be5163aee6f57a77a6bef7454376e28f0a0627920bae1b76b6",
+        "git_blob": "9b6bfc20165699d1b68c3c0a997056bc51bc3545",
+        "mode": 493,
+        "uid": 0,
+        "gid": 0,
+        "device": 66306,
+        "inode": 108014053,
+        "mtime_ns": 1789675933000000000,
+        "ctime_ns": 1791083452052700787,
+        "elf": true
+      },
+      "repo": {
+        "path": "/home/alex/work/hepta-cell-unified-20261106-a/target/debug/bwrap",
+        "bytes": 562888,
+        "sha256": "ac42c282cd2e1227e7654ae7870dd8e91194d6f7f2bc462cc222a2d3d9abb0b1",
+        "git_blob": "618670b9a5dbb9554092527bb8f549aad2f5b587",
+        "mode": 448,
+        "uid": 1000,
+        "gid": 1000,
+        "device": 66306,
+        "inode": 51906535,
+        "mtime_ns": 1793979553484604776,
+        "ctime_ns": 1793979553491604911,
+        "elf": true
+      }
+    },
+    "original_results": [
+      {
+        "label": "system",
+        "kind": "version",
+        "command": [
+          "/usr/bin/bwrap",
+          "--version"
+        ],
+        "exit_code": 0,
+        "receipt": {
+          "bytes": 579,
+          "sha256": "3a8cf5f10c547ca07beee07a38c83f5d62fd74b72e003eefacac7f6c7d822b43",
+          "git_blob": "48d39d882a0c374bcb33d7be98378daaf5f435bc"
+        }
+      },
+      {
+        "label": "system",
+        "kind": "probe",
+        "command": [
+          "/usr/bin/bwrap",
+          "--unshare-user",
+          "--unshare-net",
+          "--ro-bind",
+          "/",
+          "/",
+          "/bin/true"
+        ],
+        "exit_code": 0,
+        "receipt": {
+          "bytes": 634,
+          "sha256": "28442a2a1e6db62053cd5a470ee9b4adcc269f2271dc7fdb4b81df810214fea3",
+          "git_blob": "aa45abef6d429f523cd301905bd1a11555904259"
+        }
+      },
+      {
+        "label": "repo",
+        "kind": "version",
+        "command": [
+          "/home/alex/work/hepta-cell-unified-20261106-a/target/debug/bwrap",
+          "--version"
+        ],
+        "exit_code": 0,
+        "receipt": {
+          "bytes": 636,
+          "sha256": "805e1e965a9fe685ccbdaa4331dfc6c68d42d83a85ef21284b490307c225ad71",
+          "git_blob": "e1f3b0f794d406f97b4c58918fc3e06cdad38fdf"
+        }
+      },
+      {
+        "label": "repo",
+        "kind": "probe",
+        "command": [
+          "/home/alex/work/hepta-cell-unified-20261106-a/target/debug/bwrap",
+          "--unshare-user",
+          "--unshare-net",
+          "--ro-bind",
+          "/",
+          "/",
+          "/bin/true"
+        ],
+        "exit_code": 1,
+        "receipt": {
+          "bytes": 745,
+          "sha256": "6c004656294449339dbc2d069a6199a819d98e7336027400f219903243c3ec4d",
+          "git_blob": "8155c44ffb701924e10fda51615d22c61104ce73"
+        }
+      }
+    ],
+    "same_restricted_probe_argv": true,
+    "system_probe_exit": 0,
+    "repo_probe_exit": 1,
+    "repo_stderr": {
+      "bytes": 61,
+      "sha256": "ed3471f7900377f86150471417911309833a36d664cb5af7409e139103f67ddf",
+      "git_blob": "78d974bb32e69e6ff02b444e7bb35fde2886dbd6"
+    },
+    "rust_gate_qualification": false,
+    "specific_LSM_or_netlink_errno_cause_proven": false
+  },
+  "native_apply": {
+    "job_id": "1a1b1ae7f60-fc05-7a41",
+    "outer_exit": 0,
+    "natural_durable_terminal": true,
+    "original_git_results": [
+      {
+        "name": "apply-check",
+        "command": [
+          "git",
+          "apply",
+          "--check",
+          "/home/alex/work/hepta-cell-unified-20261106-a/evidence/native-source51-apply/input/candidate.patch"
+        ],
+        "exit_code": 0,
+        "raw_receipt_fields_exact": true,
+        "streams_empty": true
+      },
+      {
+        "name": "apply",
+        "command": [
+          "git",
+          "apply",
+          "/home/alex/work/hepta-cell-unified-20261106-a/evidence/native-source51-apply/input/candidate.patch"
+        ],
+        "exit_code": 0,
+        "raw_receipt_fields_exact": true,
+        "streams_empty": true
+      },
+      {
+        "name": "stage-exact-paths",
+        "command": [
+          "git",
+          "add",
+          "--",
+          "codex-rs/exec-server/tests/common/fake_bwrap.rs",
+          "codex-rs/network-proxy/src/http_proxy.rs"
+        ],
+        "exit_code": 0,
+        "raw_receipt_fields_exact": true,
+        "streams_empty": true
+      }
+    ],
+    "native_head": "bef6fa7645df9df12b69fda499e97eed25de6c75",
+    "native_index_tree": "763c8d2b4089f6e9806c3bbb68fa247bc2f6af36",
+    "guards_pass": true,
+    "complete": {
+      "bytes": 1898,
+      "sha256": "9e295dd805964c19f283a8a43c803844ee0470f7105d67fa01dc4b7f2e81f3ff",
+      "git_blob": "081141875674403f84575bfbb7980c1ec6fb4ab4"
+    },
+    "postguard": {
+      "bytes": 11970,
+      "sha256": "82795155856d7a1f7db3e35db53b3e7d32f7adf080cd00cf90200dcc68fade15",
+      "git_blob": "cea11a9b4278aa615291ec8a669c9bebb2afad9e"
+    },
+    "cargo_lock_sha256": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c",
+    "bazel_lock_sha256": "e80ef06b6f824a19cdcedd6010738b316ccca96b83ad8730fafb52153a2634fb",
+    "dependency_inputs_changed": [],
+    "new_lock_invocation": false,
+    "rust_or_formatter_invocation": false
+  },
+  "r26_launch_snapshot": {
+    "job_id": "1a1b1b739ee-fc05-7a70",
+    "state": "LAUNCHED_ONLY",
+    "final_runner": {
+      "bytes": 46796,
+      "sha256": "c46f22be2c4b71004dc086870eaf5a69efed0ee32cde47cf33a2ef818f168396",
+      "git_blob": "7c946b313cfbc9d6e884b9b8216150fdc15e6040"
+    },
+    "fifteen_literal_bindings_inverse_exact": true,
+    "only_freeze_delta": true,
+    "actual_uploaded_runner_matches": true,
+    "saved_command_file_equals_original_argument_plus_one_final_lf": true,
+    "python_result": null,
+    "strict_result": null,
+    "tests_result": null,
+    "initial_control_errors_are_not_gate_results": true
+  },
+  "qualification_boundaries": {
+    "r24": "FAIL: original 1561 PASS / 3 FAIL / 0 TIMEOUT / 3 reported skip, Python32 and strict0 do not promote the gate",
+    "r25": "NOT_EXECUTED_BLOCKED",
+    "source51_rust_gate_result_in_this_attachment": null,
+    "r26_active_logs_read": false,
+    "final_fix_fmt_executed_by_this_audit": false,
+    "science": "HOLD",
+    "authority": "DENY_ALL"
+  },
+  "history": "Original provisional false/pending fields, original readback corrections, and initial controller errors are preserved byte-for-byte. Later apply success is recorded separately; no original report is rewritten."
+}

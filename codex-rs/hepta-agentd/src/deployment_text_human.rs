@@ -46,9 +46,11 @@ impl DeploymentFinalUseIssuer {
                 request.request_id,
                 request.body,
                 request.operation,
-                Some(&registration.authority_lease),
-                Some(request.human),
-                Some(parent),
+                TextSigningAuthority {
+                    lease: Some(&registration.authority_lease),
+                    human: Some(request.human),
+                    parent: Some(parent),
+                },
             )
         })
     }

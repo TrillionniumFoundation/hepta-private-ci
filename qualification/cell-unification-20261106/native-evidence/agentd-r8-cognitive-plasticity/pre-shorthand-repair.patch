@@ -1,0 +1,541 @@
+--- a/codex-rs/hepta-agentd/src/cognitive_context.rs
++++ b/codex-rs/hepta-agentd/src/cognitive_context.rs
+@@ -33,6 +33,23 @@
+ use crate::CognitiveContextRevalidation;
+ use crate::CognitiveContextSnapshot;
+ 
++/// Optional retrieval owner and learning bindings for one read request.
++pub(crate) struct CognitiveRetrievalReadContext<'a> {
++    pub(crate) current_retrieval:
++        Option<&'a std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
++    pub(crate) learning_sink: Option<&'a std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
++    pub(crate) request_id: Option<u64>,
++}
++
++/// Borrowed contents of the previously emitted context receipt, before final use.
++pub(crate) struct CognitiveContextRevalidationInput<'a> {
++    pub(crate) snapshot_digest: &'a str,
++    pub(crate) read_digest: &'a str,
++    pub(crate) omitted_records: u64,
++    pub(crate) items: &'a [CognitiveContextItem],
++    pub(crate) plan: Option<&'a CognitiveContextPlan>,
++}
++
+ const MAX_CONTEXT_JSON_BYTES: usize = crate::MAX_COGNITIVE_CONTEXT_BYTES;
+ const CONTEXT_READ_BINDING_DOMAIN: &[u8] = b"hepta.agentd.cognitive-context-read.v1";
+ 
+@@ -71,9 +88,11 @@
+         query,
+         limit,
+         ranker,
+-        None,
+-        None,
+-        None,
++        CognitiveRetrievalReadContext {
++            current_retrieval: None,
++            learning_sink: None,
++            request_id: None,
++        },
+     )
+     .await
+ }
+@@ -95,9 +114,11 @@
+         query,
+         limit,
+         ranker,
+-        current_retrieval,
+-        None,
+-        None,
++        CognitiveRetrievalReadContext {
++            current_retrieval: current_retrieval,
++            learning_sink: None,
++            request_id: None,
++        },
+     )
+     .await
+ }
+@@ -109,10 +130,13 @@
+     query: &str,
+     limit: u16,
+     ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
+-    current_retrieval: Option<&std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
+-    learning_sink: Option<&std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
+-    request_id: Option<u64>,
++    read_context: CognitiveRetrievalReadContext<'_>,
+ ) -> Result<CognitiveContextSnapshot, CognitiveContextError> {
++    let CognitiveRetrievalReadContext {
++        current_retrieval,
++        learning_sink,
++        request_id,
++    } = read_context;
+     if query.is_empty() || query.len() > 2048 || !(1..=4).contains(&limit) {
+         return Err(CognitiveStoreError::Invalid(
+             "context requires a 1..2048 byte query and a 1..4 result limit".to_string(),
+@@ -482,40 +506,35 @@
+ pub(crate) async fn revalidate(
+     store: &CognitiveStore,
+     owner: &AgentId,
+-    snapshot_digest: &str,
+-    read_digest: &str,
+-    omitted_records: u64,
+-    items: &[CognitiveContextItem],
+-    plan: Option<&CognitiveContextPlan>,
++    input: CognitiveContextRevalidationInput<'_>,
+     ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
+ ) -> Result<CognitiveContextRevalidation, CognitiveContextError> {
+     revalidate_with_retrieval_context(
+         store,
+         owner,
++        input,
++        ranker,
++        /*body_generation*/ 1,
++        /*current_retrieval*/ None,
++    )
++    .await
++}
++
++pub(crate) async fn revalidate_with_retrieval_context(
++    store: &CognitiveStore,
++    owner: &AgentId,
++    input: CognitiveContextRevalidationInput<'_>,
++    ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
++    body_generation: u64,
++    current_retrieval: Option<&std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
++) -> Result<CognitiveContextRevalidation, CognitiveContextError> {
++    let CognitiveContextRevalidationInput {
+         snapshot_digest,
+         read_digest,
+         omitted_records,
+         items,
+         plan,
+-        ranker,
+-        1,
+-        None,
+-    )
+-    .await
+-}
+-
+-pub(crate) async fn revalidate_with_retrieval_context(
+-    store: &CognitiveStore,
+-    owner: &AgentId,
+-    snapshot_digest: &str,
+-    read_digest: &str,
+-    omitted_records: u64,
+-    items: &[CognitiveContextItem],
+-    plan: Option<&CognitiveContextPlan>,
+-    ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
+-    body_generation: u64,
+-    current_retrieval: Option<&std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
+-) -> Result<CognitiveContextRevalidation, CognitiveContextError> {
++    } = input;
+     if items.len() > 4 {
+         return Err(CognitiveStoreError::Invalid(
+             "context revalidation accepts at most four items".to_string(),
+--- a/codex-rs/hepta-agentd/src/cognitive_context_tests.rs
++++ b/codex-rs/hepta-agentd/src/cognitive_context_tests.rs
+@@ -83,11 +83,13 @@
+     let current = revalidate(
+         &store,
+         &owner,
+-        &context.snapshot_digest,
+-        &context.read_digest,
+-        context.omitted_records,
+-        &context.items,
+-        context.plan.as_ref(),
++        super::CognitiveContextRevalidationInput {
++            snapshot_digest: &context.snapshot_digest,
++            read_digest: &context.read_digest,
++            omitted_records: context.omitted_records,
++            items: &context.items,
++            plan: context.plan.as_ref(),
++        },
+         None,
+     )
+     .await
+@@ -104,11 +106,13 @@
+         revalidate(
+             &store,
+             &owner,
+-            &context.snapshot_digest,
+-            &context.read_digest,
+-            context.omitted_records,
+-            &context.items,
+-            Some(&tampered_plan),
++            super::CognitiveContextRevalidationInput {
++                snapshot_digest: &context.snapshot_digest,
++                read_digest: &context.read_digest,
++                omitted_records: context.omitted_records,
++                items: &context.items,
++                plan: Some(&tampered_plan),
++            },
+             None,
+         )
+         .await
+@@ -119,11 +123,13 @@
+         revalidate(
+             &store,
+             &owner,
+-            &context.snapshot_digest,
+-            &"11".repeat(32),
+-            context.omitted_records,
+-            &context.items,
+-            context.plan.as_ref(),
++            super::CognitiveContextRevalidationInput {
++                snapshot_digest: &context.snapshot_digest,
++                read_digest: &"11".repeat(32),
++                omitted_records: context.omitted_records,
++                items: &context.items,
++                plan: context.plan.as_ref(),
++            },
+             None,
+         )
+         .await
+@@ -148,11 +154,13 @@
+         revalidate(
+             &store,
+             &owner,
+-            &context.snapshot_digest,
+-            &context.read_digest,
+-            context.omitted_records,
+-            &context.items,
+-            context.plan.as_ref(),
++            super::CognitiveContextRevalidationInput {
++                snapshot_digest: &context.snapshot_digest,
++                read_digest: &context.read_digest,
++                omitted_records: context.omitted_records,
++                items: &context.items,
++                plan: context.plan.as_ref(),
++            },
+             None,
+         )
+         .await
+@@ -248,11 +256,13 @@
+         revalidate(
+             &store,
+             &owner,
+-            &context.snapshot_digest,
+-            &context.read_digest,
+-            context.omitted_records,
+-            &context.items,
+-            context.plan.as_ref(),
++            super::CognitiveContextRevalidationInput {
++                snapshot_digest: &context.snapshot_digest,
++                read_digest: &context.read_digest,
++                omitted_records: context.omitted_records,
++                items: &context.items,
++                plan: context.plan.as_ref(),
++            },
+             None,
+         )
+         .await
+--- a/codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs
++++ b/codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs
+@@ -259,11 +259,13 @@
+     let accepted = crate::cognitive_context::revalidate_with_retrieval_context(
+         &store,
+         &owner,
+-        &snapshot.snapshot_digest,
+-        &snapshot.read_digest,
+-        snapshot.omitted_records,
+-        &snapshot.items,
+-        snapshot.plan.as_ref(),
++        crate::cognitive_context::CognitiveContextRevalidationInput {
++            snapshot_digest: &snapshot.snapshot_digest,
++            read_digest: &snapshot.read_digest,
++            omitted_records: snapshot.omitted_records,
++            items: &snapshot.items,
++            plan: snapshot.plan.as_ref(),
++        },
+         None,
+         1,
+         Some(&stable),
+@@ -284,11 +286,13 @@
+     let rejected = crate::cognitive_context::revalidate_with_retrieval_context(
+         &store,
+         &owner,
+-        &snapshot.snapshot_digest,
+-        &snapshot.read_digest,
+-        snapshot.omitted_records,
+-        &snapshot.items,
+-        snapshot.plan.as_ref(),
++        crate::cognitive_context::CognitiveContextRevalidationInput {
++            snapshot_digest: &snapshot.snapshot_digest,
++            read_digest: &snapshot.read_digest,
++            omitted_records: snapshot.omitted_records,
++            items: &snapshot.items,
++            plan: snapshot.plan.as_ref(),
++        },
+         None,
+         1,
+         Some(&changed),
+--- a/codex-rs/hepta-agentd/src/cognitive_retrieval_learning.rs
++++ b/codex-rs/hepta-agentd/src/cognitive_retrieval_learning.rs
+@@ -27,49 +27,6 @@
+         Self {
+             writer: Mutex::new(writer),
+         }
+-    }
+-
+-    pub(crate) fn append(
+-        &self,
+-        owner: &AgentId,
+-        body_generation: u64,
+-        request_id: u64,
+-        observation: &RetrievalAssignmentObservationV1,
+-    ) -> Result<AppendReceipt, String> {
+-        self.append_with_delivery_policy(
+-            owner,
+-            body_generation,
+-            request_id,
+-            observation,
+-            &[],
+-            false,
+-            None,
+-            None,
+-            ProbabilityQ32::ONE,
+-        )
+-    }
+-
+-    pub(crate) fn append_with_delivery(
+-        &self,
+-        owner: &AgentId,
+-        body_generation: u64,
+-        request_id: u64,
+-        observation: &RetrievalAssignmentObservationV1,
+-        delivered_candidates: &[RetrievalCandidateIdentityV1],
+-        context_exposed: bool,
+-        published_context_digest: Option<Digest32>,
+-    ) -> Result<AppendReceipt, String> {
+-        self.append_with_delivery_policy(
+-            owner,
+-            body_generation,
+-            request_id,
+-            observation,
+-            delivered_candidates,
+-            context_exposed,
+-            published_context_digest,
+-            None,
+-            ProbabilityQ32::ONE,
+-        )
+     }
+ 
+     #[allow(clippy::too_many_arguments)]
+--- a/codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs
++++ b/codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs
+@@ -203,14 +203,33 @@
+     (temp, CognitiveRetrievalLearningSink::new(writer))
+ }
+ 
++fn append_fixture(
++    sink: &CognitiveRetrievalLearningSink,
++    owner: &AgentId,
++    body_generation: u64,
++    request_id: u64,
++    observation: &RetrievalAssignmentObservationV1,
++) -> Result<AppendReceipt, String> {
++    sink.append_with_delivery_policy(
++        owner,
++        body_generation,
++        request_id,
++        observation,
++        &[],
++        /*context_exposed*/ false,
++        /*published_context_digest*/ None,
++        /*downstream_policy_digest*/ None,
++        ProbabilityQ32::ONE,
++    )
++}
++
+ #[test]
+ fn same_rpc_and_observation_replays_idempotently() {
+     let (_temp, sink) = sink();
+     let observation = observation("packet");
+-    let first = sink
+-        .append(&owner(), 1, 77, &observation)
++    let first = append_fixture(&sink, &owner(), /*body_generation*/ 1, /*request_id*/ 77, &observation)
+         .expect("first append");
+-    let second = sink.append(&owner(), 1, 77, &observation).expect("replay");
++    let second = append_fixture(&sink, &owner(), /*body_generation*/ 1, /*request_id*/ 77, &observation).expect("replay");
+     assert_eq!(first.disposition, AppendDisposition::Appended);
+     assert_eq!(second.disposition, AppendDisposition::IdempotentReplay);
+     assert_eq!(first.event_digest, second.event_digest);
+@@ -226,10 +245,10 @@
+ #[test]
+ fn same_rpc_with_different_assignment_is_identity_conflict() {
+     let (_temp, sink) = sink();
+-    sink.append(&owner(), 1, 88, &observation("packet-a"))
++    append_fixture(&sink, &owner(), /*body_generation*/ 1, /*request_id*/ 88, &observation("packet-a"))
+         .expect("first append");
+     assert!(
+-        sink.append(&owner(), 1, 88, &observation("packet-b"))
++        append_fixture(&sink, &owner(), /*body_generation*/ 1, /*request_id*/ 88, &observation("packet-b"))
+             .is_err()
+     );
+     let snapshot = sink
+@@ -245,8 +264,8 @@
+ fn different_rpc_ids_create_distinct_assignment_records() {
+     let (_temp, sink) = sink();
+     let observation = observation("packet");
+-    sink.append(&owner(), 1, 1, &observation).expect("first");
+-    sink.append(&owner(), 1, 2, &observation).expect("second");
++    append_fixture(&sink, &owner(), /*body_generation*/ 1, /*request_id*/ 1, &observation).expect("first");
++    append_fixture(&sink, &owner(), /*body_generation*/ 1, /*request_id*/ 2, &observation).expect("second");
+     let snapshot = sink
+         .writer
+         .lock()
+@@ -260,9 +279,9 @@
+ fn historical_assignment_retry_keeps_original_predecessor_after_later_appends() {
+     let (_temp, sink) = sink();
+     let observation = observation("packet");
+-    let first = sink.append(&owner(), 1, 1, &observation).expect("first");
++    let first = append_fixture(&sink, &owner(), /*body_generation*/ 1, /*request_id*/ 1, &observation).expect("first");
+     for request in 2..=64 {
+-        sink.append(&owner(), 1, request, &observation)
++        append_fixture(&sink, &owner(), /*body_generation*/ 1, request, &observation)
+             .expect("later");
+     }
+     let before = sink
+@@ -271,8 +290,7 @@
+         .expect("lock")
+         .witness_frontier()
+         .expect("frontier");
+-    let retry = sink
+-        .append(&owner(), 1, 1, &observation)
++    let retry = append_fixture(&sink, &owner(), /*body_generation*/ 1, /*request_id*/ 1, &observation)
+         .expect("historical retry");
+     assert_eq!(retry.disposition, AppendDisposition::IdempotentReplay);
+     assert_eq!(retry.sequence, first.sequence);
+@@ -286,9 +304,9 @@
+ #[test]
+ fn indexed_historical_identity_does_not_accept_changed_assignment() {
+     let (_temp, sink) = sink();
+-    sink.append(&owner(), 1, 1, &observation("packet-a"))
++    append_fixture(&sink, &owner(), /*body_generation*/ 1, /*request_id*/ 1, &observation("packet-a"))
+         .expect("first");
+-    sink.append(&owner(), 1, 2, &observation("packet-b"))
++    append_fixture(&sink, &owner(), /*body_generation*/ 1, /*request_id*/ 2, &observation("packet-b"))
+         .expect("later");
+     let before = sink
+         .writer
+@@ -297,7 +315,7 @@
+         .witness_frontier()
+         .expect("frontier");
+     assert!(
+-        sink.append(&owner(), 1, 1, &observation("replacement"))
++        append_fixture(&sink, &owner(), /*body_generation*/ 1, /*request_id*/ 1, &observation("replacement"))
+             .is_err()
+     );
+     let writer = sink.writer.lock().expect("lock");
+--- a/codex-rs/hepta-agentd/src/plasticity_host.rs
++++ b/codex-rs/hepta-agentd/src/plasticity_host.rs
+@@ -698,20 +698,32 @@
+     })
+ }
+ 
++/// Owner stores and evidence policy used to recompute the admission frontier.
++/// These references are borrowed for one host call and add no serialized state.
++pub struct AgentdPlasticityAdmissionContextV1<'a> {
++    pub artifacts: &'a ArtifactRegistry,
++    pub ledger: &'a DurableLedger,
++    pub owner_evidence_resolver: &'a dyn PlasticityOwnerEvidenceResolverV1,
++    pub owner_evidence_policy: &'a PlasticityOwnerEvidencePolicyV1,
++}
++
+ /// Actual Agentd host callsite. It recomputes owner-store frontiers immediately
+ /// before the product adapter runs, so a stale Observer signature cannot be
+ /// transplanted across artifact/ledger changes.
+ pub fn propose_agentd_plasticity_v1(
+     mut request: ParameterPlasticityProductRequestV1,
+-    artifacts: &ArtifactRegistry,
+-    ledger: &DurableLedger,
+-    owner_evidence_resolver: &dyn PlasticityOwnerEvidenceResolverV1,
+-    owner_evidence_policy: &PlasticityOwnerEvidencePolicyV1,
++    admission_context: AgentdPlasticityAdmissionContextV1<'_>,
+     verifier: &LearningEvidenceVerifierV1,
+     writer: &mut AnchoredPlasticityWriterV1,
+     anchor_store: &mut AgentdPlasticityAnchorStoreV1,
+     now: u64,
+ ) -> Result<ParameterPlasticityProductReceiptV1, AgentdPlasticityHostErrorV1> {
++    let AgentdPlasticityAdmissionContextV1 {
++        artifacts,
++        ledger,
++        owner_evidence_resolver,
++        owner_evidence_policy,
++    } = admission_context;
+     let resolved = resolve_agentd_plasticity_admission_v1(
+         &AgentdPlasticityAdmissionInputV1 {
+             baseline_id: request.admission.baseline_id.clone(),
+--- a/codex-rs/hepta-agentd/src/plasticity_runtime.rs
++++ b/codex-rs/hepta-agentd/src/plasticity_runtime.rs
+@@ -298,10 +298,12 @@
+                     }
+                     let result = propose_agentd_plasticity_v1(
+                         *request,
+-                        &self.artifacts,
+-                        &self.ledger,
+-                        self.owner_evidence_resolver.as_ref(),
+-                        &self.owner_evidence_policy,
++                        crate::AgentdPlasticityAdmissionContextV1 {
++                            artifacts: &self.artifacts,
++                            ledger: &self.ledger,
++                            owner_evidence_resolver: self.owner_evidence_resolver.as_ref(),
++                            owner_evidence_policy: &self.owner_evidence_policy,
++                        },
+                         &self.verifier,
+                         &mut self.parameter_writer,
+                         &mut self.parameter_anchor_store,
+--- a/codex-rs/hepta-agentd/src/state_control.rs
++++ b/codex-rs/hepta-agentd/src/state_control.rs
+@@ -300,9 +300,11 @@
+                     &query,
+                     limit,
+                     self.cognitive_ranker.get(),
+-                    self.cognitive_retrieval_context.get(),
+-                    self.cognitive_retrieval_learning.get(),
+-                    Some(request_id),
++                    crate::cognitive_context::CognitiveRetrievalReadContext {
++                        current_retrieval: self.cognitive_retrieval_context.get(),
++                        learning_sink: self.cognitive_retrieval_learning.get(),
++                        request_id: Some(request_id),
++                    },
+                 )
+                 .await;
+                 self.refresh_generation()?;
+@@ -376,11 +378,13 @@
+                 let result = crate::cognitive_context::revalidate_with_retrieval_context(
+                     store.as_ref(),
+                     &self.identity.agent_id,
+-                    &snapshot_digest,
+-                    &read_digest,
+-                    omitted_records,
+-                    &items,
+-                    plan.as_ref(),
++                    crate::cognitive_context::CognitiveContextRevalidationInput {
++                        snapshot_digest: &snapshot_digest,
++                        read_digest: &read_digest,
++                        omitted_records: omitted_records,
++                        items: &items,
++                        plan: plan.as_ref(),
++                    },
+                     self.cognitive_ranker.get(),
+                     self.identity.spawn_generation,
+                     self.cognitive_retrieval_context.get(),
+@@ -669,7 +673,7 @@
+                         receipt,
+                     ) => crate::AutomationEffectReconcileSnapshot {
+                         state: crate::AutomationEffectReconcileState::Terminal,
+-                        effect: Some(effect_snapshot(receipt)?),
++                        effect: Some(effect_snapshot(*receipt)?),
+                     },
+                     crate::automation_effect_host::AgentdAutomationEffectReconcileOutcome::Indeterminate => {
+                         crate::AutomationEffectReconcileSnapshot {
+--- a/codex-rs/hepta-agentd/src/lib.rs
++++ b/codex-rs/hepta-agentd/src/lib.rs
+@@ -652,6 +652,7 @@
+ #[cfg(target_os = "linux")]
+ pub use notes_ui_endpoint::AgentdNotesUiPeer;
+ pub use objective_runtime::authbus_objective_claims;
++pub use plasticity_host::AgentdPlasticityAdmissionContextV1;
+ pub use plasticity_host::AgentdPlasticityAdmissionInputV1;
+ pub use plasticity_host::AgentdPlasticityAnchorStoreV1;
+ pub use plasticity_host::AgentdPlasticityHostErrorV1;

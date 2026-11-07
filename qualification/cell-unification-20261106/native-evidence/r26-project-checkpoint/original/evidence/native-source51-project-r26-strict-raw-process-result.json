@@ -1,0 +1,27 @@
+{
+  "schema": "hepta.native-raw-process-result.v1",
+  "phase": "strict",
+  "source_tree": "763c8d2b4089f6e9806c3bbb68fa247bc2f6af36",
+  "source_commit": "e28b0f385ee882f842911044958b2810f62f6379",
+  "command": [
+    "just",
+    "clippy",
+    "--locked",
+    "-p",
+    "codex-cli",
+    "-p",
+    "codex-exec-server",
+    "-p",
+    "codex-network-proxy",
+    "-p",
+    "codex-external-agent-migration",
+    "--",
+    "-D",
+    "warnings"
+  ],
+  "cwd": "/home/alex/work/hepta-cell-unified-20261106-a/source/codex-rs",
+  "start_unix": 1793983046.8544755,
+  "end_unix": 1793983458.9506578,
+  "exit_code": 0,
+  "log_and_resource_hashing_pending": true
+}

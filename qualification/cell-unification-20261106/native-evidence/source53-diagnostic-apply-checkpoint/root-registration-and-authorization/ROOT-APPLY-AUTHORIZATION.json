@@ -1,0 +1,34 @@
+{
+  "schema": "hepta.root-source53-apply-authorization.v1",
+  "authorized": "ONE_NATIVE_APPLY_ONLY_NO_RUST_NO_FORMATTER",
+  "final_script": {
+    "path": "source53-apply-binding/native-source53-apply.py",
+    "bytes": 39810,
+    "sha256": "5265e05a75c1aa4ba4eb36257a704306c17dc66ef78c2f7386a5beeb990b9168"
+  },
+  "input_archive": {
+    "bytes": 23866,
+    "sha256": "a07c097b1873b65bf86e8b445ceddebc4f994ca0c39bd7900f1a184a0259c81a",
+    "git_blob": "3e0f823bcd8986fb6b97a5b032b8042405fa221e"
+  },
+  "source_before_commit": "1e0910becc37383e6d17ecf861ea844fd07d8862",
+  "source_before_tree": "211f15baff19095e8c98bcea2b0ed99ca2270ade",
+  "source_commit": "f74be175de66a4b351cd239d39d98cd34fe9cc1b",
+  "source_tree": "440d4a8e09af4009e4d9ea067388826308da8803",
+  "source_count": 197,
+  "only_eight_reviewed_actual_literals_and_freeze_changed": true,
+  "entire_inverse_matches_reviewed_template": true,
+  "r29_original_failed_gate_and_full_archive_readback_retained": true,
+  "required_native_HEAD": "bef6fa7645df9df12b69fda499e97eed25de6c75",
+  "dual_locks_must_remain_identical": true,
+  "native_commands": [
+    "git apply --check",
+    "git apply",
+    "git add -- two reviewed paths"
+  ],
+  "diagnostic_only": true,
+  "behavior_repair_claimed": false,
+  "Rust_gate_authorized": false,
+  "fix_fmt_authorized": false,
+  "automatic_retry_or_restore_authorized": false
+}

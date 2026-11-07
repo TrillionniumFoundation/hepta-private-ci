@@ -1,0 +1,145 @@
+{
+  "schema": "hepta.r26-closed-local-readback.v1",
+  "log": {
+    "metadata": {
+      "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gid": 1000,
+      "link_count": 1,
+      "metadata_platform": "linux",
+      "mode": 384,
+      "uid": 1000,
+      "xattr_names": [],
+      "xattr_sha256": {}
+    },
+    "mode": 384,
+    "path": "/home/alex/work/hepta-cell-unified-20261106-a/evidence/native-source51-project-r26-tests.log",
+    "sha256": "a7f1e74cfc5f621dc2db1bf9b55da64b31ce91cb0e399fb09617ca202156ef68",
+    "size": 217900,
+    "version": "66306:50875426:217900:1793983823050733507:1793983823050733507"
+  },
+  "unique_count": 1564,
+  "counts": {
+    "PASS": 1562,
+    "FAIL": 2,
+    "TIMEOUT": 0
+  },
+  "reported_skip": 3,
+  "summary_line": "     Summary [  84.109s] 1564 tests run: 1562 passed, 2 failed, 3 skipped",
+  "original_r24_three_ids": [
+    {
+      "status": "PASS",
+      "seconds": 1.424,
+      "binary": "codex-exec-server::capability_discovery",
+      "name": "sandboxed_discovery_batches_roots_without_combining_different_permissions",
+      "line": 1217,
+      "byte_offset": 138251
+    },
+    {
+      "status": "PASS",
+      "seconds": 0.1,
+      "binary": "codex-exec-server::file_system_unix",
+      "name": "sandboxed_file_system_helper_finds_bwrap_on_preserved_path",
+      "line": 1350,
+      "byte_offset": 155425
+    },
+    {
+      "status": "PASS",
+      "seconds": 0.006,
+      "binary": "codex-network-proxy",
+      "name": "http_proxy::tests::http_connect_accept_defers_brokered_host_mitm_until_protocol_detection",
+      "line": 1667,
+      "byte_offset": 196767
+    }
+  ],
+  "terminal": {
+    "at_unix_ms": 1793983823624,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 100,
+    "job_id": "1a1b1b739ee-fc05-7a70",
+    "launch_nonce": "22bead6918c2b43d2ce0000095ba7224",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 8410,
+        "stored": 8410
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "failed",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "source_guard": {
+    "expected_tree": "763c8d2b4089f6e9806c3bbb68fa247bc2f6af36",
+    "source_commit": "e28b0f385ee882f842911044958b2810f62f6379",
+    "changed_file_count": 194,
+    "pass": true,
+    "actual_tree": "763c8d2b4089f6e9806c3bbb68fa247bc2f6af36",
+    "native_head": "bef6fa7645df9df12b69fda499e97eed25de6c75",
+    "unstaged_paths": [],
+    "untracked_paths": [],
+    "changed_path_set_matches": true,
+    "file_mismatches": [],
+    "cargo_lock_sha256": "4165307bb6c41d08e6c1c362060f2a958c8200ea43fdab2b8b1e6220ad82b55c",
+    "bazel_lock_sha256": "e80ef06b6f824a19cdcedd6010738b316ccca96b83ad8730fafb52153a2634fb",
+    "phase": "tests",
+    "gate_exit_code": 100
+  },
+  "original_files": [
+    {
+      "path": "/home/alex/work/hepta-cell-unified-20261106-a/evidence/native-source51-project-r26-tests-result-review.json",
+      "size": 2317,
+      "sha256": "b18ea1b57b138eb3cb67d607d59582f017d178432f3e727e72c4e3d43d72e97a",
+      "version": "66306:50875431:2317:1793983823508121552:1793983823508121552"
+    },
+    {
+      "path": "/home/alex/work/hepta-cell-unified-20261106-a/evidence/native-source51-project-r26-tests-raw-process-result.json",
+      "size": 635,
+      "sha256": "ac2729d6bd5424bc5744baa7625aa64daccd429b90f7e172e2f17c764fb112c2",
+      "version": "66306:50875428:635:1793983823080734611:1793983823080734611"
+    },
+    {
+      "path": "/home/alex/work/hepta-cell-unified-20261106-a/evidence/native-source51-project-r26-tests-receipt.json",
+      "size": 2312,
+      "sha256": "dd6e5fa8629a57f90774282d70a1a81fe641faaec7ca0e0a89590522bfdf7cf3",
+      "version": "66306:50875432:2312:1793983823508499523:1793983823508499523"
+    },
+    {
+      "path": "/home/alex/work/hepta-cell-unified-20261106-a/evidence/native-source51-project-r26-tests-resources.txt",
+      "size": 915,
+      "sha256": "b19c3359ffd3318082ca95c27d0156b0b41a3bf0196e5a57bb2840c22c546547",
+      "version": "66306:50875427:915:1793983823052733581:1793983823052733581"
+    },
+    {
+      "path": "/home/alex/work/hepta-cell-unified-20261106-a/evidence/native-source51-project-r26-tests-source-pre-verification.json",
+      "size": 588,
+      "sha256": "b5ed1255cfe9eb3efc0f5af8a91d8a4e283f4f6633c061307bf69014206a3ca4",
+      "version": "66306:50875423:588:1793983459674427124:1793983459674427124"
+    },
+    {
+      "path": "/home/alex/work/hepta-cell-unified-20261106-a/evidence/native-source51-project-r26-tests-source-post-verification.json",
+      "size": 633,
+      "sha256": "f94acb64e0b875228625feac0a9485efbd3bf68d2058447130abcb1e4c15ea4b",
+      "version": "66306:50875425:633:1793983823476580857:1793983823476580857"
+    }
+  ]
+}

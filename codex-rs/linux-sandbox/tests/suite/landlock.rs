@@ -445,6 +445,46 @@ async fn sandboxed_command_has_no_effective_or_permitted_capabilities() {
 }
 
 #[tokio::test]
+async fn sandbox_payload_does_not_inherit_the_owner_pidfd() {
+    let root = tempfile::tempdir().expect("writable root");
+    let writable_root = AbsolutePathBuf::try_from(root.path()).expect("absolute writable root");
+    let profiles = [
+        PermissionProfile::read_only(),
+        PermissionProfile::workspace_write_with(
+            &[writable_root],
+            NetworkSandboxPolicy::Restricted,
+            /*exclude_tmpdir_env_var*/ true,
+            /*exclude_slash_tmp*/ true,
+        ),
+    ];
+    let script = r#"
+import os
+leaked = []
+for fd in os.listdir("/proc/self/fd"):
+    try:
+        target = os.readlink("/proc/self/fd/" + fd)
+    except FileNotFoundError:
+        continue
+    if target == "anon_inode:[pidfd]":
+        leaked.append(fd)
+assert not leaked, leaked
+print("owner-pidfd-closed")
+"#;
+    for profile in profiles {
+        let output = run_cmd_result_with_permission_profile(
+            &["python3", "-c", script],
+            profile,
+            SHORT_TIMEOUT_MS,
+            /*use_legacy_landlock*/ false,
+        )
+        .await
+        .expect("sandbox payload executes");
+        assert_eq!(output.exit_code, 0, "{}", output.stderr.text);
+        assert_eq!(output.stdout.text, "owner-pidfd-closed\n");
+    }
+}
+
+#[tokio::test]
 async fn sandbox_inner_stage_rejects_retained_capabilities() {
     if should_skip_bwrap_tests().await {
         eprintln!("skipping bwrap test: bwrap sandbox prerequisites are unavailable");

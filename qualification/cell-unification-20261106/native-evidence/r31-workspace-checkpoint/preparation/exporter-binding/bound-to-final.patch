@@ -1,0 +1,11 @@
+--- export-r31-closed-bound.py
++++ export-r31-closed.py
+@@ -19,7 +19,7 @@
+ import sys
+ import tarfile
+ 
+-FROZEN = False
++FROZEN = True
+ TERMINAL_PIN = {'bytes': 731,
+  'git_blob': '9a2ec1b454fc54cb66b7366a24f941c680f7ea4f',
+  'sha256': '56e8d10b8a04bb14fd5ec432610878f9d648ca724d4fe860f644d7831f93047e'}

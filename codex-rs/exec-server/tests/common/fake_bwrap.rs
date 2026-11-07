@@ -1,44 +1,48 @@
+use anyhow::Context;
 use std::os::unix::fs::PermissionsExt;
 use std::path::Path;
 use std::path::PathBuf;
 
 pub(crate) fn write_fake_bwrap(bin_dir: &Path) -> anyhow::Result<PathBuf> {
+    // Resolve the real launcher before the shim can enter the child's PATH.
+    let real_bwrap = match codex_sandboxing::find_system_bwrap_in_path() {
+        Some(path) => path,
+        None => codex_utils_cargo_bin::cargo_bin("bwrap")?,
+    };
+    let real_bwrap = real_bwrap
+        .to_str()
+        .context("bwrap test binary path is not valid UTF-8")?
+        .replace('\'', "'\\''");
     std::fs::create_dir_all(bin_dir)?;
     let fake_bwrap = bin_dir.join("bwrap");
-    std::fs::write(
-        &fake_bwrap,
-        r#"#!/bin/bash
-set -euo pipefail
+    let mut script = format!("#!/bin/bash\nreal_bwrap='{real_bwrap}'\n");
+    script.push_str(
+        r#"set -euo pipefail
 
 for arg in "$@"; do
   if [[ "${arg}" == "--help" ]]; then
-    echo "Usage: bwrap --argv0 --perms --as-pid-1"
-    exit 0
+    exec "$real_bwrap" "$@"
   fi
 done
 
 args=("$@")
-argv0=""
 command_start=-1
 for i in "${!args[@]}"; do
-  if [[ "${args[$i]}" == "--argv0" && $((i + 1)) -lt ${#args[@]} ]]; then
-    argv0="${args[$((i + 1))]}"
-  fi
   if [[ "${args[$i]}" == "--" ]]; then
     command_start=$((i + 1))
     break
   fi
 done
 
+# Capability probes must exercise the same binary without consuming fail-once.
 if [[ "${command_start}" -lt 0 || "${command_start}" -ge "${#args[@]}" ]]; then
-  echo "fake bwrap did not find an inner command" >&2
-  exit 125
+  exec "$real_bwrap" "$@"
 fi
 
 cmd=("${args[@]:$command_start}")
 case "${cmd[0]}" in
   /usr/bin/true|/bin/true|true)
-    exec "${cmd[@]}"
+    exec "$real_bwrap" "$@"
     ;;
 esac
 
@@ -49,12 +53,11 @@ if [[ -f "${0}.fail-once" ]]; then
   exit 125
 fi
 
-if [[ -n "${argv0}" ]]; then
-  exec -a "${argv0}" "${cmd[@]}"
-fi
-exec "${cmd[@]}"
+# Preserve namespace options, argv0, and all inherited descriptors.
+exec "$real_bwrap" "$@"
 "#,
-    )?;
+    );
+    std::fs::write(&fake_bwrap, script)?;
     let mut permissions = std::fs::metadata(&fake_bwrap)?.permissions();
     permissions.set_mode(0o755);
     std::fs::set_permissions(&fake_bwrap, permissions)?;

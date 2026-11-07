@@ -1,0 +1,308 @@
+--- a/codex-rs/cli/tests/exec_server.rs
++++ b/codex-rs/cli/tests/exec_server.rs
+@@ -423,7 +423,11 @@
+             &serde_json::json!({
+                 "id": 1,
+                 "method": "initialize",
+-                "params": {"clientName": "otel-test", "resumeSessionId": null}
++                "params": {
++                    "clientName": "otel-test",
++                    "resumeSessionId": null,
++                    "processExitObservation": true
++                }
+             }),
+         )
+         .await?;
+--- a/codex-rs/network-proxy/src/http_proxy.rs
++++ b/codex-rs/network-proxy/src/http_proxy.rs
+@@ -1435,6 +1435,7 @@
+     #[tokio::test]
+     async fn http_connect_accept_blocks_hooked_host_in_full_mode_without_mitm_state() {
+         let mut policy = NetworkProxyConfig {
++            allow_local_binding: true,
+             mitm: true,
+             mitm_hooks: vec![crate::mitm_hook::MitmHookConfig {
+                 host: "api.github.com".to_string(),
+--- a/codex-rs/network-proxy/src/mitm_tests.rs
++++ b/codex-rs/network-proxy/src/mitm_tests.rs
+@@ -241,6 +241,7 @@
+     hook.actions.inject_request_headers[0].secret_file =
+         Some(secret_file.path().display().to_string());
+     let mut network = NetworkProxyConfig {
++        allow_local_binding: true,
+         mitm: true,
+         mitm_hooks: vec![hook],
+         mode: NetworkMode::Full,
+@@ -278,6 +279,7 @@
+     hook.matcher.path_prefixes = vec!["pattern:/openai/openai/**".to_string()];
+     hook.actions.inject_request_headers.clear();
+     let mut network = NetworkProxyConfig {
++        allow_local_binding: true,
+         mitm: true,
+         mitm_hooks: vec![hook],
+         mode: NetworkMode::Full,
+@@ -394,6 +396,7 @@
+     hook.actions.inject_request_headers[0].secret_file =
+         Some(secret_file.path().display().to_string());
+     let mut network = NetworkProxyConfig {
++        allow_local_binding: true,
+         mitm: true,
+         mitm_hooks: vec![hook],
+         mode: NetworkMode::Full,
+--- a/codex-rs/exec-server/tests/common/fake_bwrap.rs
++++ b/codex-rs/exec-server/tests/common/fake_bwrap.rs
+@@ -1,44 +1,44 @@
++use anyhow::Context;
+ use std::os::unix::fs::PermissionsExt;
+ use std::path::Path;
+ use std::path::PathBuf;
+ 
+ pub(crate) fn write_fake_bwrap(bin_dir: &Path) -> anyhow::Result<PathBuf> {
++    let real_bwrap = codex_utils_cargo_bin::cargo_bin("bwrap")?;
++    let real_bwrap = real_bwrap
++        .to_str()
++        .context("bwrap test binary path is not valid UTF-8")?
++        .replace('\'', "'\\''");
+     std::fs::create_dir_all(bin_dir)?;
+     let fake_bwrap = bin_dir.join("bwrap");
+-    std::fs::write(
+-        &fake_bwrap,
+-        r#"#!/bin/bash
+-set -euo pipefail
++    let mut script = format!("#!/bin/bash\nreal_bwrap='{real_bwrap}'\n");
++    script.push_str(
++        r#"set -euo pipefail
+ 
+ for arg in "$@"; do
+   if [[ "${arg}" == "--help" ]]; then
+-    echo "Usage: bwrap --argv0 --perms --as-pid-1"
+-    exit 0
++    exec "$real_bwrap" "$@"
+   fi
+ done
+ 
+ args=("$@")
+-argv0=""
+ command_start=-1
+ for i in "${!args[@]}"; do
+-  if [[ "${args[$i]}" == "--argv0" && $((i + 1)) -lt ${#args[@]} ]]; then
+-    argv0="${args[$((i + 1))]}"
+-  fi
+   if [[ "${args[$i]}" == "--" ]]; then
+     command_start=$((i + 1))
+     break
+   fi
+ done
+ 
++# Capability probes must exercise the same binary without consuming fail-once.
+ if [[ "${command_start}" -lt 0 || "${command_start}" -ge "${#args[@]}" ]]; then
+-  echo "fake bwrap did not find an inner command" >&2
+-  exit 125
++  exec "$real_bwrap" "$@"
+ fi
+ 
+ cmd=("${args[@]:$command_start}")
+ case "${cmd[0]}" in
+   /usr/bin/true|/bin/true|true)
+-    exec "${cmd[@]}"
++    exec "$real_bwrap" "$@"
+     ;;
+ esac
+ 
+@@ -49,12 +49,11 @@
+   exit 125
+ fi
+ 
+-if [[ -n "${argv0}" ]]; then
+-  exec -a "${argv0}" "${cmd[@]}"
+-fi
+-exec "${cmd[@]}"
++# Preserve namespace options, argv0, and all inherited descriptors.
++exec "$real_bwrap" "$@"
+ "#,
+-    )?;
++    );
++    std::fs::write(&fake_bwrap, script)?;
+     let mut permissions = std::fs::metadata(&fake_bwrap)?.permissions();
+     permissions.set_mode(0o755);
+     std::fs::set_permissions(&fake_bwrap, permissions)?;
+--- a/codex-rs/exec-server/Cargo.toml
++++ b/codex-rs/exec-server/Cargo.toml
+@@ -76,6 +76,7 @@
+ anyhow = { workspace = true }
+ codex-exec-server-test-support = { workspace = true }
+ codex-test-binary-support = { workspace = true }
++codex-utils-cargo-bin = { workspace = true }
+ ctor = { workspace = true }
+ http = { workspace = true }
+ opentelemetry = { workspace = true }
+@@ -90,6 +91,3 @@
+ tracing-opentelemetry = { workspace = true }
+ tracing-subscriber = { workspace = true }
+ wiremock = { workspace = true }
+-
+-[target.'cfg(windows)'.dev-dependencies]
+-codex-utils-cargo-bin = { workspace = true }
+--- a/scripts/run-nextest.py
++++ b/scripts/run-nextest.py
+@@ -42,6 +42,7 @@
+         ("codex-windows-sandbox", "codex-windows-sandbox-setup"),
+     ),
+     "codex-exec-server": (
++        ("codex-bwrap", "bwrap"),
+         ("codex-windows-sandbox", "codex-command-runner"),
+         ("codex-windows-sandbox", "codex-windows-sandbox-setup"),
+     ),
+--- a/scripts/test_run_nextest_helpers.py
++++ b/scripts/test_run_nextest_helpers.py
+@@ -43,6 +43,7 @@
+         self.executable.chmod(0o700)
+         self.target = self.owner["targets"][0]
+         self.expected = {(self.owner["id"], "fixture-helper"): self.target}
++        self.declared_helpers = copy.deepcopy(RUNNER.RUNTIME_TEST_HELPERS)
+         helper_map = patch.dict(
+             RUNNER.RUNTIME_TEST_HELPERS,
+             {"consumer": (("helper-owner", "fixture-helper"),)},
+@@ -90,6 +91,39 @@
+                 args, self.metadata, environment={} if environment is None else environment,
+             )
+         return env, build
++
++    def test_exec_server_receives_repo_bwrap_for_scoped_and_workspace_runs(self):
++        consumer = self.package("codex-exec-server", [])
++        owner = self.package("codex-bwrap", ["bwrap"])
++        windows = self.package("codex-windows-sandbox", [
++            "codex-command-runner", "codex-windows-sandbox-setup",
++        ])
++        packages = [consumer, owner, windows]
++        self.metadata = {
++            "workspace_root": str(self.root),
++            "workspace_members": [package["id"] for package in packages],
++            "workspace_default_members": [consumer["id"]],
++            "packages": packages,
++        }
++        existing = {
++            f"CARGO_BIN_EXE_{name}": str(self.executable)
++            for name in ("codex-command-runner", "codex-windows-sandbox-setup")
++        }
++        output = self.output(self.receipt(
++            package_id=owner["id"], target=owner["targets"][0],
++        ))
++        with patch.dict(RUNNER.RUNTIME_TEST_HELPERS, self.declared_helpers, clear=True):
++            for arguments in (["-p", "codex-exec-server", "--locked"], ["--workspace", "--locked"]):
++                with self.subTest(arguments=arguments):
++                    env, build = self.prepare(arguments, output=output, environment=existing)
++                    self.assertEqual(env, {**existing, "CARGO_BIN_EXE_bwrap": str(self.executable)})
++                    build.assert_called_once()
++                    command = build.call_args.args[0]
++                    self.assertIn(owner["id"], command)
++                    self.assertEqual(
++                        [command[index + 1] for index, value in enumerate(command) if value == "--bin"],
++                        ["bwrap"],
++                    )
+ 
+     def test_exact_artifact_path_is_exposed_without_changing_test_arguments(self):
+         args = ["-p", "consumer", "--locked", "--offline", "--retries", "0", "--", "--exact"]
+--- a/codex-rs/external-agent-migration/src/service_tests/plugins/marketplaces.rs
++++ b/codex-rs/external-agent-migration/src/service_tests/plugins/marketplaces.rs
+@@ -480,6 +480,83 @@
+ 
+ #[tokio::test]
+ async fn import_plugins_infers_external_official_marketplace_when_missing_from_settings() {
++    const CHILD_ENV: &str = "CODEX_EXTERNAL_OFFICIAL_MARKETPLACE_IMPORT_CHILD";
++    if std::env::var_os(CHILD_ENV).is_none() {
++        let root = TempDir::new().expect("create local marketplace fixture");
++        let marketplace_root = root.path().join("official-marketplace");
++        let working_dir = root.path().join("work");
++        fs::create_dir_all(marketplace_root.join(EXTERNAL_AGENT_PLUGIN_MANIFEST_DIR))
++            .expect("create marketplace manifest dir");
++        fs::create_dir_all(&working_dir).expect("create child working directory");
++        fs::write(
++            marketplace_root
++                .join(EXTERNAL_AGENT_PLUGIN_MANIFEST_DIR)
++                .join("marketplace.json"),
++            format!(r#"{{"name":"{EXTERNAL_OFFICIAL_MARKETPLACE_NAME}","plugins":[]}}"#),
++        )
++        .expect("write local official marketplace");
++        for args in [
++            &["init", "--quiet"][..],
++            &["add", "."],
++            &[
++                "-c",
++                "user.name=Codex Tests",
++                "-c",
++                "user.email=codex-tests@openai.com",
++                "-c",
++                "commit.gpgsign=false",
++                "commit",
++                "--quiet",
++                "-m",
++                "official marketplace fixture",
++            ],
++        ] {
++            let output = std::process::Command::new("git")
++                .current_dir(&marketplace_root)
++                .args(args)
++                .output()
++                .expect("create local Git marketplace");
++            assert!(
++                output.status.success(),
++                "git {args:?} failed: {}{}",
++                String::from_utf8_lossy(&output.stdout),
++                String::from_utf8_lossy(&output.stderr)
++            );
++        }
++
++        // Keep source inference and real Git cloning, with transport confined to
++        // this fixture. Child-only configuration avoids changing parallel tests.
++        let output = std::process::Command::new(std::env::current_exe().expect("locate test binary"))
++            .args([
++                "--exact",
++                "service::tests::plugins::marketplaces::import_plugins_infers_external_official_marketplace_when_missing_from_settings",
++                "--nocapture",
++            ])
++            .current_dir(&working_dir)
++            .env(CHILD_ENV, "1")
++            .env("GIT_CONFIG_COUNT", "2")
++            .env("GIT_CONFIG_KEY_0", "url.../official-marketplace.insteadOf")
++            .env(
++                "GIT_CONFIG_VALUE_0",
++                "https://github.com/anthropics/claude-plugins-official.git",
++            )
++            .env("GIT_CONFIG_KEY_1", "protocol.file.allow")
++            .env("GIT_CONFIG_VALUE_1", "always")
++            .output()
++            .expect("run isolated official marketplace import");
++        let stdout = String::from_utf8_lossy(&output.stdout);
++        let stderr = String::from_utf8_lossy(&output.stderr);
++        assert!(
++            output.status.success(),
++            "official marketplace import failed: {stdout}{stderr}"
++        );
++        assert!(
++            stdout.contains("test result: ok. 1 passed; 0 failed;"),
++            "expected exactly one child test to run: {stdout}{stderr}"
++        );
++        return;
++    }
++
+     let (_root, external_agent_home, codex_home) = fixture_paths();
+     fs::create_dir_all(&external_agent_home).expect("create external agent home");
+     fs::create_dir_all(&codex_home).expect("create codex home");
+--- a/.github/workflows/hepta-cell-framework-native.yml
++++ b/.github/workflows/hepta-cell-framework-native.yml
+@@ -46,11 +46,11 @@
+               -p codex-model-provider-info -p codex-shell-escalation
+               -p codex-linux-sandbox -p codex-hepta-memory
+               -p codex-exec-server -p codex-hepta-supervisor
+-              -p codex-hepta-memory-extension
++              -p codex-hepta-memory-extension -p codex-network-proxy
+           - owner: core
+-            packages: -p codex-core -p codex-mcp -p core_test_support
++            packages: -p codex-core -p codex-mcp -p core_test_support -p codex-external-agent-migration
+           - owner: app-server
+-            packages: -p codex-app-server -p codex-app-server-client
++            packages: -p codex-app-server -p codex-app-server-client -p codex-cli
+     steps:
+       - name: Check out the exact source commit
+         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd

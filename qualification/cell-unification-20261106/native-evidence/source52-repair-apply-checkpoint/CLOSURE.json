@@ -1,0 +1,72 @@
+{
+  "schema": "hepta.source52-repair-apply-closure.v1",
+  "status": "CLOSED_REGISTERED_APPLY_PASS_R28_LAUNCH_ONLY",
+  "source_commit": "1e0910becc37383e6d17ecf861ea844fd07d8862",
+  "source_tree": "211f15baff19095e8c98bcea2b0ed99ca2270ade",
+  "source_parent_commit": "e28b0f385ee882f842911044958b2810f62f6379",
+  "source_before_tree": "763c8d2b4089f6e9806c3bbb68fa247bc2f6af36",
+  "native_head": "bef6fa7645df9df12b69fda499e97eed25de6c75",
+  "changed_paths": 195,
+  "rust_paths": 181,
+  "other_paths": 14,
+  "owners_prepared": 26,
+  "ci_selectors": 27,
+  "source51_original194_retained": true,
+  "single_delta_path": "codex-rs/network-proxy/src/runtime.rs",
+  "actual_apply": {
+    "job_id": "1a1b1e474a3-fc05-7b5b",
+    "original_git_command_exit_codes": [
+      0,
+      0,
+      0
+    ],
+    "natural_outer_exit": 0,
+    "source_guards": "PASS",
+    "new_lock_or_rust_or_fix_fmt": false
+  },
+  "r28": {
+    "job_id": "1a1b1e9bee0-fc05-7b7c",
+    "snapshot": "LAUNCHED",
+    "python_result": null,
+    "strict_result": null,
+    "tests_result": null,
+    "terminal": null,
+    "counts": null
+  },
+  "history_fields_preserved": true,
+  "original_archive": {
+    "path": "source52-preparation/source52-apply-input.tar.gz",
+    "bytes": 43267,
+    "sha256": "9c7a414899bd05d1e70b9a6cbac64eef9dda552f8e56c904ee9f8e21ab37d6cb",
+    "git_blob": "eefc9ec94d7c5a0074eaa35788b3fbe670314420"
+  },
+  "independent_readback": {
+    "path": "INDEPENDENT-READBACK.json",
+    "bytes": 8696,
+    "sha256": "7858014416ac0fb0b51d15b13036a0cb35104cf7c2ec565e111d15f5e9333051",
+    "git_blob": "dcaa0edbede972d37445d8a1eef3c8f59c47c700"
+  },
+  "references": [
+    {
+      "kind": "r26_original_failure",
+      "relative_to_native_evidence": "r26-project-checkpoint/CLOSURE.json",
+      "bytes": 2441,
+      "sha256": "e372fbd885d18fbe9fdca0af9bf475c532aa5735f8e47bfdf025ef687a53e359",
+      "git_blob": "1e27e197ef832cf151d24954216cb68e86545687",
+      "copied_archive": false
+    },
+    {
+      "kind": "source51_original_apply",
+      "relative_to_native_evidence": "source51-repair-apply-checkpoint/CLOSURE.json",
+      "bytes": 2352,
+      "sha256": "1d4f25af94f81c5ce7e80970a1eaed76f1be2d6c8369a75f6d18867017578131",
+      "git_blob": "c587aea5e7994e250effb55180715d8c0a133324",
+      "copied_archive": false
+    }
+  ],
+  "closure_gaps": [],
+  "science": "HOLD",
+  "authority": "DENY_ALL",
+  "formal_group_later_gate_results_included": false,
+  "source_or_report_edits_outside_new_group": false
+}

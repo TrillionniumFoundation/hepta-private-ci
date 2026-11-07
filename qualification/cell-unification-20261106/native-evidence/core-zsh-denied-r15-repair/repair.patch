@@ -1,0 +1,26 @@
+--- a/codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs
++++ b/codex-rs/core/src/tools/runtimes/zsh_fork/unix_escalation.rs
+@@ -10,6 +10,7 @@
+ use crate::tools::sandboxing::SandboxAttempt;
+ use crate::tools::sandboxing::ToolCtx;
+ use crate::tools::sandboxing::ToolError;
++use crate::tools::sandboxing::sandbox_permissions_preserving_denied_reads;
+ use crate::tools::sandboxing::unsandboxed_execution_allowed;
+ use codex_execpolicy::Decision;
+ use codex_execpolicy::Evaluation;
+@@ -153,8 +154,14 @@
+         approval_policy: ctx.step_context.turn.approval_policy(),
+         permission_profile: exec_request.permission_profile.clone(),
+         sandbox_permissions: req.sandbox_permissions,
++        // The parent has already passed ToolOrchestrator's approval gate.
++        // Match its denied-read-preserving launch for fallback approval.
++        // Explicit rule and dangerous-command prompts remain independent.
+         approval_sandbox_permissions: approval_sandbox_permissions(
+-            req.sandbox_permissions,
++            sandbox_permissions_preserving_denied_reads(
++                req.sandbox_permissions,
++                &exec_request.permission_profile.file_system_sandbox_policy(),
++            ),
+             req.additional_permissions_preapproved,
+         ),
+         prompt_permissions: req.additional_permissions.clone(),

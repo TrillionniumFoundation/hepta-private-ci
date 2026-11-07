@@ -1,0 +1,36 @@
+{
+  "schema": "hepta.root-single-attachment-upload-recovery.v1",
+  "affected_path": "qualification/cell-unification-20261106/native-evidence/source53-finalization-checkpoint/support/fresh-scope/input/primary/original/codex-rs/utils/pty/Cargo.toml",
+  "expected_and_actual_raw": {
+    "bytes": 860,
+    "sha256": "3333e26a50a65111ea1c961fa0eec59661196a88e1b2bf51ab647b8cc50ab08f",
+    "git_blob": "2a27ab72ea290862887abfc857c86efe6fad12c1"
+  },
+  "actual_read_only_response": {
+    "path": "source53-finalization-root-publication/recovery/ACTUAL-EXISTING-BLOB-API-RESPONSE.json",
+    "bytes": 2729,
+    "sha256": "17a9fb2a32325104f6c600ced9b7028adbdefaf05fa620ea3807610bd72a4930",
+    "git_blob": "1b31efa8452400f3742cb3aa409534e97ea5ab96"
+  },
+  "original_partial_batch": {
+    "path": "source53-finalization-root-publication/upload-batches/batch-0287.json",
+    "bytes": 9462,
+    "sha256": "faa73e1a5baf5419d35b7be6f31a445bb251e0e9adc1f7d34a655f034f9a8d39",
+    "git_blob": "baae459562ce47692a4a330caf7a56f20c9a4529"
+  },
+  "verified_successes_retained": 15,
+  "missing_path_counted_in_resumed_batch_only": true,
+  "failed_create_full_response_retained": false,
+  "cause_of_original_unaccepted_creation_response": "UNKNOWN_NO_ROOT_CAUSE_INFERRED",
+  "readback_adapter_note": "GitHub fetch returned decoded TOML text, not a JSON Git blob object. The first parser failed after preserving the full original; exact decoded UTF-8 bytes were then validated.",
+  "remote_read_body_equals_original_source": true,
+  "remote_blob_sha_recomputed_from_full_bytes": true,
+  "no_second_create_or_permission_bypass": true,
+  "source_or_native_changed": false,
+  "known_overlay": {
+    "path": "source53-finalization-root-publication/recovery/KNOWN-BLOB-OVERLAY.json",
+    "bytes": 390425,
+    "sha256": "b3afebbe95244d50af8ded522d8279652214e38d11ef0d606bb5c6300f72852b",
+    "git_blob": "b229cbff301167c78e54010c5b2dcfdd66e6bdb0"
+  }
+}

@@ -1,0 +1,464 @@
+def export_closed():
+    require(not OUT.exists() and not DERIVED.exists() and not RESULT.exists(),
+            'create-only export output already exists')
+    contents, modes, read_paths = {}, {}, {}
+
+    def add(name, path, expected=None):
+        safe_relative(name)
+        raw, mode = stable_read(path)
+        if expected is not None:
+            check_pin(raw, expected, name)
+        if name in contents:
+            require(contents[name] == raw and modes[name] == mode, 'duplicate archive member differs: ' + name)
+        else:
+            contents[name], modes[name] = raw, mode
+        read_paths[str(path)] = {'raw': data_pin(raw), 'mode': mode}
+        return raw
+
+    def pinned_input(pin, directory):
+        rel = str(safe_relative(pin['path']))
+        return add(directory + '/' + rel, E / rel, pin)
+
+    terminal_raw = add('evidence/' + PREFIX + '-terminal-process-status.json',
+                       E / (PREFIX + '-terminal-process-status.json'), TERMINAL_PIN)
+    terminal = json.loads(terminal_raw)
+    natural_terminal(terminal)
+    source_raw = add('input/' + SOURCE_NAME, E / SOURCE_NAME, SOURCE_PIN)
+    source = json.loads(source_raw)
+    initial_source = source_guard(source)
+    for row in source['changed_files']:
+        add('source/' + row['path'], S / row['path'], row)
+    for path, digest in LOCKS.items():
+        require(sha(add('locks/' + path, S / path)) == digest, 'lock copy mismatch')
+    for name, pin in CLOSED_ORIGINAL_PINS.items():
+        add('evidence/' + name, E / name, pin)
+    closed = {name: contents['evidence/' + name] for name in CLOSED_ORIGINAL_PINS}
+
+    def get(suffix):
+        return json.loads(closed[PREFIX + suffix])
+
+    def pointer(pin, expected_name):
+        require(pin == {'path': expected_name, **data_pin(closed[expected_name])},
+                'original receipt pointer differs: ' + expected_name)
+
+    pre, env = get('-preconditions.json'), get('-environment.json')
+    for value in (pre, env):
+        require(value['source_commit'] == COMMIT and value['source_tree'] == TREE,
+                'original workspace source identity differs')
+    require(pre['actual_changed_file_count'] == 195
+            and pre['source_manifest'] == {'path': SOURCE_NAME, **data_pin(source_raw)},
+            'workspace full manifest not bound')
+    require(pre['patch_application_performed'] is False and pre['lock_update_performed'] is False
+            and pre['source52_bazel_lock_update_executed'] is False and pre['fix_fmt_executed'] is False,
+            'workspace scope differs')
+    require(pre['workspace_test_command'] == COMMAND, 'original no-p command differs')
+    recorded_guard(get('-source-pre-verification.json'))
+    pointer(pre['initial_source_guard'], PREFIX + '-source-pre-verification.json')
+    require(env['source_manifest'] == SOURCE_NAME and env['source_manifest_sha256'] == SOURCE_PIN['sha256']
+            and env['original_default_workspace_selection'] is True
+            and env['fresh_current_source_metadata_required'] is True
+            and env['test_deadlines_features_filters_retries_unchanged'] is True
+            and env['sandbox_or_network_protection_environment_overridden'] is False
+            and env['outer_timeout_seconds_contract'] == 9600, 'original workspace environment differs')
+    selection = env['selection']
+    for key, value in {'RUSTUP_TOOLCHAIN': '1.96.0', 'CARGO_BUILD_JOBS': '2',
+                       'CARGO_TARGET_DIR': str(T / 'target'), 'NEXTEST_TEST_THREADS': '2',
+                       'CARGO_PROFILE_TEST_DEBUG': '0', 'CARGO_PROFILE_DEV_DEBUG': '0',
+                       'NEXTEST_PROFILE': None, 'HEPTA_NEXTTEST_FULL_METADATA': None,
+                       'CARGO_INCREMENTAL': None, 'CARGO_BUILD_TARGET': None,
+                       'RUSTFLAGS': None, 'PYTHONOPTIMIZE': None}.items():
+        require(selection[key] == value, 'original selection differs: ' + key)
+
+    # Preserve the complete already-passed r28 prerequisite originals. Their
+    # actual 26-file pins come from the frozen r29 precondition, not guessed IDs.
+    project = pre['r28_closed_gate_readback']
+    require(project['source_commit'] == COMMIT and project['source_tree'] == TREE
+            and project['same_source_all_three_phases_and_outer_pass'] is True
+            and project['python_tests'] == 32 and project['python_skipped'] == 0
+            and project['old_four_package_ids_recomputed_from_full_log'] == 1564,
+            'r28 prerequisite identity/results differ')
+    require(len(project['originals']) == 26
+            and len({pin['path'] for pin in project['originals']}) == 26,
+            'r28 prerequisite original set differs')
+    project_files = {pin['path']: pinned_input(pin, 'input/r28-prerequisites')
+                     for pin in project['originals']}
+    project_terminal = json.loads(pinned_input(project['outer_terminal'], 'input/r28-prerequisites'))
+    require(project_terminal['job_id'] == R28_JOB_ID
+            and project_terminal['state'] == 'succeeded' and project_terminal['exit_code'] == 0,
+            'r28 natural outer result differs')
+    for key in ('output_complete', 'output_durable', 'terminal_publication_confirmed'):
+        require(project_terminal[key] is True, 'r28 outer publication incomplete')
+    for key in ('timed_out', 'cancelled', 'automatic_retry'):
+        require(project_terminal[key] is False, 'r28 prerequisite is not natural')
+    project_complete = json.loads(project_files[R28_PREFIX + '-complete.json'])
+    require(project_complete['source_tree'] == TREE and project_complete['source_commit'] == COMMIT
+            and project_complete['python_exit'] == project_complete['strict_exit']
+            == project_complete['tests_exit'] == 0
+            and project_complete['source_guards_pass'] is True
+            and project_complete['all_old_ids_observed_pass'] is True,
+            'r28 complete original differs')
+    project_pre = json.loads(project_files[R28_PREFIX + '-preconditions.json'])
+    pinned_input(project_pre['baseline'], 'input/baseline')
+    for phase in ('python-runner', 'strict', 'tests'):
+        stem = R28_PREFIX + '-' + phase
+        phase_raw = json.loads(project_files[stem + '-raw-process-result.json'])
+        phase_rec = json.loads(project_files[stem + '-receipt.json'])
+        require(phase_raw['exit_code'] == phase_rec['exit_code'] == phase_rec['effective_exit_code'] == 0
+                and phase_rec['source_commit'] == COMMIT and phase_rec['source_tree'] == TREE,
+                'r28 phase original differs')
+        require(phase_rec['log_sha256'] == sha(project_files[stem + '.log'])
+                and phase_rec['resources_sha256'] == sha(project_files[stem + '-resources.txt']),
+                'r28 phase log/resource pin differs')
+        recorded_guard(json.loads(project_files[stem + '-source-post-verification.json']))
+
+    source50 = json.loads(pinned_input(pre['source50_root_manifest'], 'input/ancestor-manifests'))
+    source51 = json.loads(pinned_input(pre['source51_parent_manifest'], 'input/ancestor-manifests'))
+    old = {row['path']: row for row in source51['changed_files']}
+    new = {row['path']: row for row in source['changed_files']}
+    require(len(old) == 194 and set(new) == set(old) | {'codex-rs/network-proxy/src/runtime.rs'}
+            and all(new[path] == row for path, row in old.items()), 'source51-to52 manifest delta differs')
+    require(source51['source_commit'] == 'e28b0f385ee882f842911044958b2810f62f6379'
+            and source51['source_tree'] == '763c8d2b4089f6e9806c3bbb68fa247bc2f6af36',
+            'wrong source51 ancestor')
+    require(source50['source_commit'] == '1fdd647b0ecb235530e8b88bbea45b3d3762906f'
+            and source50['source_tree'] == 'ea48acf562499192a25e05ae28926a32632dee62',
+            'wrong source50 ancestor')
+    for value in (pre, source50, source51):
+        require(value['cargo_lock_sha256'] == LOCKS['codex-rs/Cargo.lock']
+                and value['bazel_lock_sha256'] == LOCKS['MODULE.bazel.lock'], 'ancestor lock pins differ')
+    for key, directory in (
+        ('source50_lock_originals_and_outer_terminal', 'input/source50-lock-prerequisites'),
+        ('original_r24_failed_100_provenance', 'input/r24-failed-provenance'),
+        ('original_r26_failed_100_provenance', 'input/r26-failed-provenance'),
+    ):
+        for pin in pre[key]:
+            pinned_input(pin, directory)
+    r26pre = json.loads(add('input/source51-ancestor/native-source51-project-r26-preconditions.json',
+                           E / 'native-source51-project-r26-preconditions.json', R26_PRE_PIN))
+    for key in ('complete', 'terminal', 'source_postguard', 'delta_manifest'):
+        pinned_input(r26pre['source51_apply'][key], 'input/source51-apply-prerequisites')
+        pinned_input(pre['source52_apply'][key], 'input/source52-apply-pins')
+    apply_dir = E / 'native-source52-apply'
+    require(apply_dir.is_dir() and not apply_dir.is_symlink(), 'source52 apply directory missing')
+    for path in sorted(apply_dir.rglob('*')):
+        require(not path.is_symlink(), 'symlink in apply originals')
+        if path.is_file():
+            add('input/source52-apply-prerequisites/' + str(path.relative_to(apply_dir)), path)
+    original_input = add('input/source52-apply-input.tar.gz', T / 'source52-apply-input.tar.gz', INPUT_PIN)
+    with tarfile.open(fileobj=io.BytesIO(original_input), mode='r:gz') as tf:
+        mems = {}
+        for member in tf.getmembers():
+            safe_relative(member.name)
+            require(member.isfile() and not member.issym() and not member.islnk() and member.name not in mems,
+                    'unsafe apply archive member')
+            mems[member.name] = tf.extractfile(member).read()
+            require(len(mems[member.name]) == member.size, 'apply archive member size mismatch')
+        require(set(mems) == {'before/codex-rs/network-proxy/src/runtime.rs',
+                             'after/codex-rs/network-proxy/src/runtime.rs',
+                             'candidate.patch', 'delta-manifest.json', 'source52-manifest.json'},
+                'wrong five-member apply input')
+        require(mems['source52-manifest.json'] == source_raw, 'apply/full manifest differs')
+        check_pin(mems['after/codex-rs/network-proxy/src/runtime.rs'],
+                  new['codex-rs/network-proxy/src/runtime.rs'], 'apply after source')
+    add('input/native-run-r29.py', T / 'native-run-r29.py', RUNNER_PIN)
+    add('input/native-run-r28.py', T / 'native-run-r28.py', R28_RUNNER_PIN)
+
+    controller = {}
+    for name, pin in CONTROLLER_ORIGINAL_PINS.items():
+        base = name[len(CONTROLLER_PREFIX):]
+        controller[base] = json.loads(add('controller/' + base, E / name, pin))
+    require(controller['terminal-process-status.json'] == terminal, 'controller/gate terminal differs')
+    launch = controller['launch.json']
+    require(launch['job']['id'] == JOB_ID and launch['job']['launch_state'] == 'launched'
+            and launch['launch']['ok'] is True and RUNNER_PIN['sha256'] in launch['job']['args'][1],
+            'wrong original controller launch/runner')
+    for stream in ('stdout', 'stderr'):
+        chunks = []
+        for name, value in controller.items():
+            if not name.startswith('read-'):
+                continue
+            require(value['job_id'] == JOB_ID, 'controller read job differs')
+            part = value[stream]
+            raw = bytes.fromhex(part['bytes_hex'])
+            require(len(raw) == part['next_offset'] - part['offset']
+                    and part['size'] >= part['next_offset'] and part['text'].encode() == raw,
+                    'controller text/hex/offset differs')
+            chunks.append((part['offset'], raw))
+        end, parts = 0, []
+        for offset, raw in sorted(chunks, key=lambda item: item[0]):
+            if not raw:
+                require(offset <= end, 'empty controller read beyond known end')
+                continue
+            require(offset == end, 'controller output gap/overlap')
+            parts.append(raw)
+            end += len(raw)
+        require(terminal['log_bytes'][stream]['seen'] == terminal['log_bytes'][stream]['stored'] == end,
+                'controller original output incomplete')
+        contents['controller/original-' + stream + '.txt'] = b''.join(parts)
+        modes['controller/original-' + stream + '.txt'] = 0o600
+
+    # The raw metadata is the actual invocation made before this workspace gate.
+    metadata_raw = closed[PREFIX + '-metadata.json']
+    metadata = json.loads(metadata_raw)
+    metadata_rec, metadata_rc = get('-metadata-receipt.json'), get('-metadata-raw-process-result.json')
+    for value in (metadata_rec, metadata_rc):
+        require(value['source_commit'] == COMMIT and value['source_tree'] == TREE
+                and value['command'] == METADATA_COMMAND and value['cwd'] == str(S / 'codex-rs')
+                and value['exit_code'] == 0, 'original fresh metadata result differs')
+    for key in ('source_commit', 'source_tree', 'command', 'cwd', 'start_unix', 'end_unix', 'exit_code'):
+        require(metadata_rec[key] == metadata_rc[key], 'metadata raw/receipt differs: ' + key)
+    require(metadata_rc['phase'] == 'workspace-metadata'
+            and metadata_rc['resources_not_collected_for_read_only_metadata'] is True,
+            'metadata original phase differs')
+    require(abs(metadata_rec['elapsed_seconds'] - (metadata_rec['end_unix'] - metadata_rec['start_unix'])) < 1e-6,
+            'metadata elapsed differs')
+    pointer(metadata_rec['raw_process_result'], PREFIX + '-metadata-raw-process-result.json')
+    require(metadata_rec['stdout'] == data_pin(metadata_raw)
+            and metadata_rec['stderr'] == data_pin(closed[PREFIX + '-metadata-stderr.log']),
+            'metadata output pin differs')
+    pointer(metadata_rec['source_postguard'], PREFIX + '-metadata-source-post-verification.json')
+    require(metadata_rec['source_guards_pass'] is True, 'metadata source guard failed')
+    recorded_guard(get('-metadata-source-post-verification.json'))
+    require(metadata['workspace_root'] == str(S / 'codex-rs')
+            and metadata['target_directory'] == str(T / 'target'), 'metadata directory scope differs')
+    members, defaults = metadata['workspace_members'], metadata['workspace_default_members']
+    packages = {package['id']: package for package in metadata['packages']}
+    require(len(members) == len(set(members)) == len(defaults) == len(set(defaults)) == 193
+            and set(members) == set(defaults), 'current default workspace is not all193')
+    require(len(packages) == len(metadata['packages']) and set(members) <= set(packages),
+            'ambiguous metadata identities')
+    scope = get('-scope.json')
+    expected_scope = {
+        'schema': 'hepta.source52-current-default-workspace-scope.v1',
+        'source_tree': TREE, 'source_commit': COMMIT,
+        'metadata_command': METADATA_COMMAND,
+        'metadata': {'path': PREFIX + '-metadata.json', **data_pin(metadata_raw)},
+        'metadata_generated_on_current_source': True, 'old_metadata_reused_as_current': False,
+        'workspace_root': metadata['workspace_root'], 'target_directory': metadata['target_directory'],
+        'workspace_member_count': len(members), 'workspace_default_member_count': len(defaults),
+        'workspace_members': [{'id': identity, 'name': packages[identity]['name'],
+                               'manifest_path': packages[identity]['manifest_path']} for identity in members],
+        'workspace_default_members': [{'id': identity, 'name': packages[identity]['name']} for identity in defaults],
+        'command': COMMAND, 'features': 'unchanged_defaults', 'filters': 'no_additions',
+        'all_platforms_features_external_services_qualified': False,
+    }
+    require(scope == expected_scope, 'scope does not reproduce fresh metadata/default no-p selection')
+
+    raw_result, receipt = get('-tests-raw-process-result.json'), get('-tests-receipt.json')
+    log, resources = closed[PREFIX + '-tests.log'], closed[PREFIX + '-tests-resources.txt']
+    for value in (raw_result, receipt):
+        require(value['source_commit'] == COMMIT and value['source_tree'] == TREE
+                and value['phase'] == 'workspace-tests' and value['command'] == COMMAND
+                and value['cwd'] == str(S / 'codex-rs'), 'original workspace phase/command differs')
+    for key in ('source_commit', 'source_tree', 'phase', 'command', 'cwd', 'start_unix', 'end_unix', 'exit_code'):
+        require(raw_result[key] == receipt[key], 'workspace raw/receipt differs: ' + key)
+    rc, effective = raw_result['exit_code'], receipt['effective_exit_code']
+    require(isinstance(rc, int) and isinstance(effective, int), 'missing original process result')
+    if rc != 0:
+        require(effective == rc, 'nonzero original workspace result changed')
+    require(receipt['phase_pass'] is (effective == 0)
+            and terminal['exit_code'] == effective
+            and terminal['at_unix_ms'] / 1000 >= receipt['end_unix'], 'outer/effective result differs')
+    require(receipt['end_unix'] >= receipt['start_unix'] >= metadata_rec['end_unix']
+            and abs(receipt['elapsed_seconds'] - (receipt['end_unix'] - receipt['start_unix'])) < 1e-6,
+            'workspace/metadata time order or elapsed differs')
+    pointer(receipt['raw_process_result'], PREFIX + '-tests-raw-process-result.json')
+    require(receipt['log_sha256'] == sha(log) and receipt['resources_sha256'] == sha(resources),
+            'workspace log/resource pin differs')
+    require(re.findall(rb'^\s*Exit status: (-?[0-9]+)\s*$', resources, re.M) == [str(rc).encode()],
+            'workspace resource exit differs')
+    require(receipt['source_manifest'] == SOURCE_NAME
+            and receipt['source_manifest_sha256'] == SOURCE_PIN['sha256']
+            and receipt['source_guards_pass'] is True, 'workspace manifest/source guard differs')
+    pointer(receipt['source_preguard'], PREFIX + '-tests-source-pre-verification.json')
+    pointer(receipt['source_postguard'], PREFIX + '-source-post-test-verification.json')
+    recorded_guard(get('-tests-source-pre-verification.json'))
+    post = get('-source-post-test-verification.json')
+    recorded_guard(post)
+    require(post['phase'] == 'workspace-tests' and post['gate_exit_code'] == rc,
+            'workspace postguard raw exit differs')
+    pointer(receipt['scope'], PREFIX + '-scope.json')
+    require(receipt['test_scope'] == 'original_default_workspace' and receipt['packages_argument'] is None
+            and receipt['workspace_member_count'] == receipt['workspace_default_member_count'] == 193
+            and receipt['retries'] == 0 and receipt['filters'] == 'no_additions'
+            and receipt['features'] == 'unchanged_defaults' and receipt['fix_fmt_executed'] is False
+            and receipt['outer_timeout_seconds_contract'] == 9600, 'workspace test selection differs')
+
+    rows, review = review_workspace(log, {package['name'] for package in scope['workspace_members']})
+    original_review_name, original_rows_name = PREFIX + '-result-review.json', PREFIX + '-test-results.json'
+    if original_review_name in closed:
+        require(review == json.loads(closed[original_review_name]), 'original workspace review differs')
+    if original_rows_name in closed:
+        require(rows == json.loads(closed[original_rows_name]), 'original workspace rows differ')
+    if receipt['acceptance_readback'] is not None:
+        pointer(receipt['acceptance_readback'], original_review_name)
+    if effective == 0:
+        require(rc == 0 and review['pass'] and receipt['issues'] == [], 'successful original lacks complete PASS accounting')
+        require(original_review_name in closed and original_rows_name in closed, 'success lacks original full rows/review')
+        complete = get('-complete.json')
+        require(PREFIX + '-incomplete.json' not in closed, 'complete/incomplete conflict')
+        require(complete['source_tree'] == TREE and complete['source_commit'] == COMMIT
+                and complete['source_manifest'] == SOURCE_NAME
+                and complete['source_manifest_sha256'] == SOURCE_PIN['sha256']
+                and complete['workspace_exit'] == complete['effective_exit_code'] == 0
+                and complete['source_guards_pass'] is True
+                and complete['command'] == COMMAND and complete['workspace_member_count']
+                == complete['workspace_default_member_count'] == 193, 'original complete identity/result differs')
+        require(complete['cargo_lock_sha256'] == LOCKS['codex-rs/Cargo.lock']
+                and complete['bazel_lock_sha256'] == LOCKS['MODULE.bazel.lock']
+                and complete['unique_test_count'] == review['terminal_unique_test_count']
+                and complete['counts'] == review['terminal_counts']
+                and complete['reported_skipped'] == review['reported_skipped']
+                and complete['fix_fmt_executed'] is False
+                and complete['all_platforms_features_external_services_qualified'] is False,
+                'original complete scope/counts differs')
+        pointer(complete['receipt'], PREFIX + '-tests-receipt.json')
+        pointer(complete['readback'], original_review_name)
+        pointer(complete['scope'], PREFIX + '-scope.json')
+    else:
+        incomplete = get('-incomplete.json')
+        require(PREFIX + '-complete.json' not in closed, 'failed original has a complete record')
+        require(incomplete['source_tree'] == TREE and incomplete['source_commit'] == COMMIT
+                and incomplete['original_exit_code'] == rc
+                and incomplete['effective_exit_code'] == effective
+                and incomplete['fix_fmt_executed'] is False
+                and incomplete['no_automatic_retry'] is True and incomplete['source_retained'] is True,
+                'original incomplete identity/result differs')
+        pointer(incomplete['receipt'], PREFIX + '-tests-receipt.json')
+        require(incomplete['terminal_counts'] == review['terminal_counts']
+                and incomplete['nextest_started'] == review['nextest_started'],
+                'original incomplete counts/phase differs')
+
+    derived, failure_blocks = {}, []
+    summary_offset = review['summary']['byte_offset'] if review['summary'] is not None else len(log)
+    for index, row in enumerate(rows):
+        if row['status'] == 'PASS':
+            continue
+        end = rows[index + 1]['byte_offset'] if index + 1 < len(rows) else summary_offset
+        require(row['byte_offset'] <= end <= len(log), 'failure block boundary differs')
+        block = log[row['byte_offset']:end]
+        name = 'failure-' + str(len(failure_blocks) + 1) + '.txt'
+        derived['failure-blocks/' + name] = block
+        failure_blocks.append({**row, 'end_byte_offset': end, 'file': name, **data_pin(block)})
+    if review['complete_execution_accounting']:
+        require(len(failure_blocks) == review['terminal_counts']['FAIL'] + review['terminal_counts']['TIMEOUT'],
+                'failure block count differs')
+        bad = {(row['binary'], row['name'], row['status']) for row in rows if row['status'] != 'PASS'}
+        footer = review['footer_rows_excluded']
+        require(len(footer) == len(bad) and {(row['binary'], row['name'], row['status']) for row in footer} == bad,
+                'footer failure duplicates differ')
+    failure_report = {
+        'schema': 'hepta.r29-closed-failure-blocks.v1',
+        'source_commit': COMMIT, 'source_tree': TREE, 'original_outer_exit': terminal['exit_code'],
+        'original_workspace_exit': rc, 'effective_workspace_exit': effective,
+        'complete_execution_accounting': review['complete_execution_accounting'],
+        'counts': review['terminal_counts'], 'reported_skipped': review['reported_skipped'],
+        'failures': failure_blocks, 'nextest_started': review['nextest_started'],
+        'skip_identities_inferred': False,
+    }
+    derived['failure-blocks/INDEX.json'] = (json.dumps(failure_report, indent=2) + '\n').encode()
+
+    guidance = set()
+    for row in source['changed_files']:
+        path = (S / row['path']).parent
+        while True:
+            if (path / 'AGENTS.md').is_file():
+                guidance.add(path / 'AGENTS.md')
+            if path == S:
+                break
+            path = path.parent
+    for path in sorted(guidance):
+        add('guidance/' + str(path.relative_to(S)), path)
+    final_source = source_guard(source)
+    require(final_source == initial_source, 'source changed across closed export readback')
+    for name, expected in read_paths.items():
+        raw, mode = stable_read(Path(name))
+        require(data_pin(raw) == expected['raw'] and mode == expected['mode'],
+                'an original changed before archive: ' + name)
+    proof = {
+        'schema': 'hepta.r29-export-source-verification.v1',
+        'source_commit': COMMIT, 'source_tree': TREE, 'source_count': 195,
+        'source_manifest': data_pin(source_raw),
+        'source_guard_before': initial_source, 'source_guard_after': final_source,
+        'workspace_raw_result': data_pin(closed[PREFIX + '-tests-raw-process-result.json']),
+        'workspace_receipt': data_pin(closed[PREFIX + '-tests-receipt.json']),
+        'original_workspace_exit': rc, 'effective_workspace_exit': effective,
+        'original_outer_exit': terminal['exit_code'],
+        'original_test_counts': review['terminal_counts'],
+        'original_reported_skipped': review['reported_skipped'],
+        'fresh_metadata': data_pin(metadata_raw), 'workspace_scope': data_pin(closed[PREFIX + '-scope.json']),
+        'workspace_member_count': 193, 'workspace_default_member_count': 193,
+        'all195_raw_sha_gitblob_gitmode_verified': True,
+        'source50_lock_inherited_not_new_invocation': True, 'source51_manifest_preserved_194': True,
+        'r28_originals_preserved_by_exact_prerequisite_pins': 26,
+        'export_modifies_source': False, 'rust_rerun': False, 'metadata_rerun': False,
+        'fix_fmt_executed_by_exporter': False,
+        'shared_filesystem_free_space_not_measured_or_attributed': True,
+    }
+    derived['evidence/' + PREFIX + '-export-source-verification.json'] = (json.dumps(proof, indent=2) + '\n').encode()
+    result_review = {
+        'schema': 'hepta.r29-export-closed-results.v1', 'original_workspace_review': review,
+        'original_workspace_exit': rc, 'effective_workspace_exit': effective,
+        'outer_original_exit': terminal['exit_code'], 'engineering_gate': 'PASS' if effective == 0 else 'FAIL',
+        'test_execution_counts': review['terminal_counts'], 'reported_skipped': review['reported_skipped'],
+        'failure_blocks': failure_blocks, 'complete_execution_accounting': review['complete_execution_accounting'],
+        'nextest_started': review['nextest_started'], 'skip_identities_inferred': False,
+        'archive_export_success_is_not_a_new_gate': True,
+        'all_platforms_features_external_services_qualified': False,
+    }
+    derived['evidence/' + PREFIX + '-closed-result-review.json'] = (json.dumps(result_review, indent=2) + '\n').encode()
+    derived['evidence/' + PREFIX + '-closed-test-results.json'] = (json.dumps(rows, indent=2) + '\n').encode()
+    DERIVED.mkdir(exist_ok=False)
+    for name, raw in derived.items():
+        path = DERIVED / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with path.open('xb') as output:
+            output.write(raw)
+        require(name not in contents, 'derived archive member conflicts with original')
+        contents[name], modes[name] = raw, 0o600
+    index = {
+        'schema': 'hepta.source52-workspace-closed-index.v1',
+        'source_commit': COMMIT, 'source_tree': TREE, 'source_count': 195,
+        'classification': 'original_default_workspace_passed' if effective == 0 else 'original_default_workspace_failed',
+        'original_workspace_exit': rc, 'effective_workspace_exit': effective,
+        'original_outer_exit': terminal['exit_code'], 'original_counts': review['terminal_counts'],
+        'reported_skipped': review['reported_skipped'],
+        'files': [{'path': name, **data_pin(raw), 'mode': modes[name]} for name, raw in sorted(contents.items())],
+    }
+    contents['INDEX.json'] = (json.dumps(index, indent=2) + '\n').encode()
+    modes['INDEX.json'] = 0o600
+    with OUT.open('xb') as output:
+        with gzip.GzipFile(filename='', mode='wb', fileobj=output, mtime=0) as gz:
+            with tarfile.open(fileobj=gz, mode='w') as tf:
+                for name, raw in sorted(contents.items()):
+                    info = tarfile.TarInfo(name)
+                    info.size, info.mode, info.mtime = len(raw), modes[name], 0
+                    tf.addfile(info, io.BytesIO(raw))
+    with tarfile.open(OUT, mode='r:gz') as tf:
+        packed = tf.getmembers()
+        require(len(packed) == len(contents), 'archive member count differs after write')
+        for member in packed:
+            require(member.isfile() and tf.extractfile(member).read() == contents[member.name]
+                    and member.mode == modes[member.name], 'archive readback mismatch')
+    result = {
+        'path': str(OUT), **data_pin(OUT.read_bytes()), 'members': len(contents), 'source_count': 195,
+        'source_commit': COMMIT, 'source_tree': TREE, 'original_outer_exit': terminal['exit_code'],
+        'original_workspace_exit': rc, 'effective_workspace_exit': effective,
+        'counts': review['terminal_counts'], 'reported_skipped': review['reported_skipped'],
+        'failure_blocks': len(failure_blocks), 'complete_execution_accounting': review['complete_execution_accounting'],
+        'nextest_started': review['nextest_started'], 'derived_directory': str(DERIVED),
+        'rust_or_formatter_executed': False, 'metadata_executed': False,
+    }
+    with RESULT.open('x') as output:
+        json.dump(result, output, indent=2)
+        output.write('\n')
+    print(json.dumps(result), flush=True)
+
+
+def main():
+    check_bindings()  # False/None rejects before any evidence read/write or Git subprocess.
+    export_closed()
+
+
+if __name__ == '__main__':
+    main()
