@@ -85,7 +85,7 @@ class CleanupConsumerTests(unittest.TestCase):
             (root / "docs").mkdir()
             (root / "scripts").mkdir()
             (root / "docs/reference.md").write_text(
-                ""./.github/workflows/missing.yml"\n", encoding="utf-8"
+                '"./.github/workflows/missing.yml"\n', encoding="utf-8"
             )
             for relative in VERIFIER.WORKFLOW_REFERENCE_SCRIPTS:
                 target = root / relative
