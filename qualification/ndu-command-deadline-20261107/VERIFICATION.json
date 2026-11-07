@@ -1,0 +1,30 @@
+{
+  "schema": "ndu-command-deadline-local-verification-v1",
+  "publication": "LOCAL_ONLY_GITHUB_WRITE_BLOCKED",
+  "source_only_commit": "1e913860bd0ec8aa4ea739ce7634effc7981d01c",
+  "source_sha256": {
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/meter.py": "8b960fbfb0fea4794339fcdbc2920b67060e397af72da1b784eebb04fe805398",
+    "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/test_meter.py": "d20d6c2d6b095076191ffe4541359c03248adc0830d6d510070110e252ed8a51",
+    ".github/workflows/ndu-adapter-training.yml": "e3fe7087baee913f1e28d9f0a54a76e9a09f78cef6464811656afe47ba2ed069"
+  },
+  "focused_tests": 79,
+  "focused_skips": 0,
+  "meter_tests_included": 13,
+  "new_meter_tests": 11,
+  "independent_subprocess_probes": 7,
+  "focused_log_sha256": "75dce2f999040ec4359f2e730e06bcfd54c00d50a21772bef4af5dbd4c14ecdb",
+  "probe_result_sha256": "e1dc77ac7ac216042f24f1751653500e5bc0c183f68f283241631693e3224f50",
+  "evidence_archive_sha256": "93236fcb0967d534f440990154f2365f5dcf554ffb7154fceaa2a4a9553a8248",
+  "evidence_archive_bytes": 80974,
+  "real_pretrained_model_retry": false,
+  "previous_real_canary_status": "Failed / partial; unchanged historical result",
+  "training_outer_wall_seconds": 1500,
+  "inner_cpu_and_wall_seconds": 600,
+  "training_steps_per_generator": 2,
+  "workflow_job_minutes": 30,
+  "containment_scope": "Inherited POSIX process group; no guarantee for escaped sessions, SIGKILL, host loss or failed receipt storage. Unreaped descendant usage remains unknown.",
+  "scientific_admission": "HOLD",
+  "adoption_authorized": false,
+  "chain_submission": null,
+  "reward_eligible": false
+}
