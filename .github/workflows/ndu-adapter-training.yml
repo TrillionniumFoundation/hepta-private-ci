@@ -58,7 +58,9 @@ jobs:
       - name: Train both adapters and run the adapted dual schedule
         run: |
           set -euo pipefail
-          python -B -m experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.meter --output "$RUNNER_TEMP/training-evidence/training_process_cost.json" -- python -B -m experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.run_training --models "$RUNNER_TEMP/dual-models" --output "$RUNNER_TEMP/training-evidence/real" --source-sha "${{ github.sha }}" --threads 2 2>&1 | tee "$RUNNER_TEMP/training-evidence/training.log"
+          # Predeclared outer training containment; finalization also handles runner cancellation.
+          # The inner 600-second budgets and two-update training design are unchanged.
+          python -B -m experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.meter --output "$RUNNER_TEMP/training-evidence/training_process_cost.json" --wall-timeout-seconds 1500 -- python -B -m experiments.multimodal_output_portfolio.joint_hepta_20261029.v3.decision_audit.run_training --models "$RUNNER_TEMP/dual-models" --output "$RUNNER_TEMP/training-evidence/real" --source-sha "${{ github.sha }}" --threads 2 2>&1 | tee "$RUNNER_TEMP/training-evidence/training.log"
           git diff --check
           git diff --exit-code
       - name: Preserve acquisition attempts including failures
