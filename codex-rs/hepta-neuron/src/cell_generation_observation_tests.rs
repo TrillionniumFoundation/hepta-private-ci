@@ -44,25 +44,28 @@ fn metered_proposal(
 fn pending_cancel_reopen_stop_and_ack_gate_complete_task_cost() {
     let fixture = Fixture::new();
     let mut owner = fixture.open();
-    for (index, stage) in [
-        CellCostStageV2::Encoder,
-        CellCostStageV2::Routing,
-        CellCostStageV2::Inference,
-        CellCostStageV2::Training,
-        CellCostStageV2::Planning,
-        CellCostStageV2::Critic,
-        CellCostStageV2::Codec,
-        CellCostStageV2::Queue,
-        CellCostStageV2::Persistence,
-        CellCostStageV2::Recovery,
-        CellCostStageV2::Communication,
-        CellCostStageV2::Evaluation,
+    // This fixture does not acquire a model or invoke Cell migration; record those verified no-work stages.
+    for (index, (stage, value)) in [
+        (CellCostStageV2::Encoder, 1),
+        (CellCostStageV2::Routing, 1),
+        (CellCostStageV2::Inference, 1),
+        (CellCostStageV2::Training, 1),
+        (CellCostStageV2::Planning, 1),
+        (CellCostStageV2::Critic, 1),
+        (CellCostStageV2::Codec, 1),
+        (CellCostStageV2::Queue, 1),
+        (CellCostStageV2::Persistence, 1),
+        (CellCostStageV2::Recovery, 1),
+        (CellCostStageV2::Communication, 1),
+        (CellCostStageV2::Evaluation, 1),
+        (CellCostStageV2::ModelAcquisition, 0),
+        (CellCostStageV2::Migration, 0),
     ]
     .into_iter()
     .enumerate()
     {
         let mut entry = charge(&format!("prior-{index}"), stage);
-        entry.metrics = measured(1);
+        entry.metrics = measured(value);
         checked(owner.record_cost(entry));
     }
     let before = checked(owner.observe_generation());

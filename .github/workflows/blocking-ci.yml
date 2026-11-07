@@ -189,6 +189,77 @@ jobs:
         if: needs.scope.outputs.derived == 'true'
         run: python3 scripts/hepta-module-docs.py refresh-derived --check
 
+  cell-cost-owner-replay:
+    name: Cell cost owner ${{ matrix.lane }} replay
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [source-head, prospective-merge]
+    env:
+      CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+    steps:
+      - name: Checkout exact ${{ matrix.lane }} commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ matrix.lane == 'source-head' && github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify exact tested commit and frozen Cell parent
+        env:
+          LANE: ${{ matrix.lane }}
+          TESTED_SHA: ${{ matrix.lane == 'source-head' && github.event.pull_request.head.sha || github.sha }}
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+          PARENT_SHA: 3aed50bf51249dbeae4506663b7029eef623ca14
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          git merge-base --is-ancestor "$PARENT_SHA" "$TESTED_SHA"
+          if [[ "$LANE" == "prospective-merge" ]]; then
+            git merge-base --is-ancestor "$SOURCE_SHA" "$TESTED_SHA"
+          fi
+          expected_files="$(printf '%s\n' ".github/workflows/blocking-ci.yml" "codex-rs/hepta-neuron/src/cell_generation_observation_tests.rs")"
+          actual_files="$(git diff --name-only "$PARENT_SHA" "$SOURCE_SHA")"
+          test "$actual_files" = "$expected_files"
+          printf 'Cell cost %s SHA: %s\n' "$LANE" "$TESTED_SHA"
+
+      - name: Record exact Cell source and lock identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/cell-cost-evidence"
+          git rev-parse HEAD 'HEAD^{tree}' > "$RUNNER_TEMP/cell-cost-evidence/source.txt"
+          cp codex-rs/rust-toolchain.toml "$RUNNER_TEMP/cell-cost-evidence/"
+          sha256sum codex-rs/Cargo.lock > "$RUNNER_TEMP/cell-cost-evidence/lock.sha256"
+
+      - name: Install pinned just and nextest
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Run complete Hepta neuron and plasticity test suites
+        shell: bash
+        run: |
+          set -euo pipefail
+          just test --locked -p codex-hepta-neuron -p codex-hepta-plasticity 2>&1 | tee "$RUNNER_TEMP/cell-cost-evidence/tests.log"
+
+      - name: Upload exact Cell test evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cell-cost-owner-replay-${{ matrix.lane }}
+          path: ${{ runner.temp }}/cell-cost-evidence
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Check for a clean worktree
+        if: always() && !cancelled()
+        uses: ./.github/actions/check-clean-worktree
+
   lightweight:
     name: Lightweight prose and derived checks
     needs: scope
@@ -229,6 +300,7 @@ jobs:
       - rust-ci
       - sdk
       - hepta-scoped
+      - cell-cost-owner-replay
       - lightweight
     runs-on: ubuntu-24.04
     steps:
@@ -241,6 +313,7 @@ jobs:
           NEEDS: ${{ toJSON(needs) }}
           NATIVE: ${{ needs.scope.outputs.native }}
           FULL_REPO: ${{ needs.scope.outputs.full_repo }}
+          EVENT_NAME: ${{ github.event_name }}
         shell: bash
         run: |
           set -euo pipefail
@@ -250,7 +323,10 @@ jobs:
           import os
           native = os.environ["NATIVE"] == "true"
           full = os.environ["FULL_REPO"] == "true"
+          event_name = os.environ["EVENT_NAME"]
           allowed = []
+          if event_name != "pull_request":
+              allowed.append("cell-cost-owner-replay")
           if not (native or full):
               allowed.append("hepta-contract-gate")
           if not full:
