@@ -154,8 +154,11 @@ def main(args):
         traceback.print_exc()
         return 1
     finally:
-        ledger.close()
-        signal.alarm(0)
+        try:
+            finalization = ledger.close()
+            save(out / "LEDGER_FINALIZATION.json", finalization)
+        finally:
+            signal.alarm(0)
 
 
 if __name__ == "__main__":

@@ -52,7 +52,7 @@ def main(output):
             "seed": "evaluator secrets.token_hex(32) only after all candidate hashes freeze",
             "collision": "abort complete cohort, no replacement or adaptive resampling",
             "candidate_selection_on_confirmation": False,
-            "ledger": "local SQLite FULL synchronous; whole fixed cohort consumed before first score",
+            "ledger": "local SQLite DELETE journal with EXTRA sync; whole cohort consumed before first score; quiescent close and normal readonly reopen verified; legacy WAL refused",
             "external_history_unknown": True, "independent_authority_verified": False,
             "statistical_unit": "paired means across five pre-existing fits; worlds do not create new fits"},
         "inference": {"primary": ["E-C iid", "E-C ood"], "alpha_family": .05,

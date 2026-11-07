@@ -1,0 +1,46 @@
+{
+  "child_peak_rss_bytes": 91385856,
+  "child_total_cpu_seconds": 2.876194,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tools/hcsn/wsp_confirmation_20261107",
+    "-p",
+    "test_*.py",
+    "-v"
+  ],
+  "elapsed_wall_seconds": 8.64819064599942,
+  "exit_code": 0,
+  "scope": "synthetic process termination/reopen and existing TRAIN semantic tests only; no new confirmation generation or scoring; no power-loss or original-WAL recovery qualification",
+  "source_files": {
+    "tools/hcsn/wsp_confirmation_20261107/freeze.py": {
+      "bytes": 6283,
+      "sha256": "938820065ebe7897d9b53210e191044006abaeb07f5c3e2d2f8c4d898a3c72d0"
+    },
+    "tools/hcsn/wsp_confirmation_20261107/guard.py": {
+      "bytes": 12718,
+      "sha256": "c6232985cceadf3d612a90993aad1a20d7e6a399b8e375e98086de921519ae92"
+    },
+    "tools/hcsn/wsp_confirmation_20261107/run.py": {
+      "bytes": 10309,
+      "sha256": "65c393ee3ac7607c9cd34ec6ff6f2aaeb1121ea5fa7dc6d2616603123e746957"
+    },
+    "tools/hcsn/wsp_confirmation_20261107/test_execution.py": {
+      "bytes": 2497,
+      "sha256": "7d9fe198d20a3b614c6565aee45243a47329a9c4051545f808dbf1455b22d068"
+    },
+    "tools/hcsn/wsp_confirmation_20261107/test_guard.py": {
+      "bytes": 4276,
+      "sha256": "65bd630b018987e6ee2e41bd7aae9a504d14438e2afd1011fe40149d78a2909c"
+    },
+    "tools/hcsn/wsp_confirmation_20261107/test_ledger_process.py": {
+      "bytes": 9796,
+      "sha256": "0a43ae9f147c61c7ace6e4de798af40fccac5933048dd00eebec517fe65fc6aa"
+    }
+  },
+  "stderr": "test_exposed_previous_confirmation_is_in_history (test_execution.FrozenExecutionTests.test_exposed_previous_confirmation_is_in_history) ... ok\ntest_literal_stored_head_matches_checked_execution (test_execution.FrozenExecutionTests.test_literal_stored_head_matches_checked_execution) ... ok\ntest_myopic_never_calls_recursive_bellman (test_execution.FrozenExecutionTests.test_myopic_never_calls_recursive_bellman) ... ok\ntest_tensor_shape_and_protected_identity_reject_mutation (test_execution.FrozenExecutionTests.test_tensor_shape_and_protected_identity_reject_mutation) ... ok\ntest_changed_candidate_and_missing_arm_are_rejected (test_guard.ConfirmationBoundaryTests.test_changed_candidate_and_missing_arm_are_rejected) ... ok\ntest_crash_consumes_all_arms_before_first_score (test_guard.ConfirmationBoundaryTests.test_crash_consumes_all_arms_before_first_score) ... ok\ntest_failed_attempt_cannot_be_retried (test_guard.ConfirmationBoundaryTests.test_failed_attempt_cannot_be_retried) ... ok\ntest_historical_collision_rolls_back_complete_reservation (test_guard.ConfirmationBoundaryTests.test_historical_collision_rolls_back_complete_reservation) ... ok\ntest_incomplete_or_nonfinite_contrasts_cannot_qualify (test_guard.ConfirmationBoundaryTests.test_incomplete_or_nonfinite_contrasts_cannot_qualify) ... ok\ntest_lost_execution_receipt_never_reexecutes (test_guard.ConfirmationBoundaryTests.test_lost_execution_receipt_never_reexecutes) ... ok\ntest_new_protocol_cannot_reuse_consumed_sample (test_guard.ConfirmationBoundaryTests.test_new_protocol_cannot_reuse_consumed_sample) ... ok\ntest_random_control_matches_two_norms_and_is_seeded (test_guard.ConfirmationBoundaryTests.test_random_control_matches_two_norms_and_is_seeded) ... ok\ntest_unmeasured_energy_cannot_qualify_production (test_guard.ConfirmationBoundaryTests.test_unmeasured_energy_cannot_qualify_production) ... ok\ntest_320_worlds_nine_arms_survive_process_exit_and_fresh_readonly_open (test_ledger_process.LedgerProcessTests.test_320_worlds_nine_arms_survive_process_exit_and_fresh_readonly_open) ... ok\ntest_existing_wal_main_or_sidecars_are_refused_without_migration (test_ledger_process.LedgerProcessTests.test_existing_wal_main_or_sidecars_are_refused_without_migration) ... ok\ntest_sigkill_after_claim_keeps_started_and_forbids_second_inference_claim (test_ledger_process.LedgerProcessTests.test_sigkill_after_claim_keeps_started_and_forbids_second_inference_claim) ... ok\ntest_sigkill_after_record_without_reply_preserves_result_and_forbids_retry (test_ledger_process.LedgerProcessTests.test_sigkill_after_record_without_reply_preserves_result_and_forbids_retry) ... ok\ntest_sigkill_after_reservation_keeps_every_denominator_and_refuses_reservation_retry (test_ledger_process.LedgerProcessTests.test_sigkill_after_reservation_keeps_every_denominator_and_refuses_reservation_retry) ... ok\ntest_sigkill_with_spilled_uncommitted_pages_recovers_the_original_reservation (test_ledger_process.LedgerProcessTests.test_sigkill_with_spilled_uncommitted_pages_recovers_the_original_reservation) ... ok\n\n----------------------------------------------------------------------\nRan 19 tests in 7.999s\n\nOK\n",
+  "stdout": ""
+}

@@ -83,13 +83,34 @@ def dual_norm_random(delta, rng):
 
 
 class Ledger:
-    """A frozen candidate cohort consumes each schedule once, including failures."""
+    """Single-use cohorts with checked, quiescent DELETE-journal finalization.
+
+    Existing WAL ledgers need a separate, explicit recovery/migration decision.
+    This constructor never checkpoints, removes or ignores their sidecars.
+    """
     def __init__(self, path):
-        self.path = Path(path)
+        self.path = Path(path).resolve()
         self.path.parent.mkdir(parents=True, exist_ok=True)
+        for suffix in ("-wal", "-shm"):
+            sidecar = Path(str(self.path) + suffix)
+            if sidecar.exists() or sidecar.is_symlink():
+                raise ValueError("legacy WAL ledger requires explicit offline recovery; sidecars retained")
+        if self.path.exists():
+            with self.path.open("rb") as stream:
+                header = stream.read(20)
+            if header[:16] == b"SQLite format 3\0" and 2 in header[18:20]:
+                raise ValueError("legacy WAL ledger requires explicit offline recovery; main file retained")
+        self.finalization = None
         self.db = sqlite3.connect(self.path, timeout=30, isolation_level=None)
-        self.db.execute("PRAGMA journal_mode=WAL")
-        self.db.execute("PRAGMA synchronous=FULL")
+        try:
+            if self.db.execute("PRAGMA journal_mode=DELETE").fetchall() != [("delete",)]:
+                raise RuntimeError("DELETE journal mode was not applied")
+            self.db.execute("PRAGMA synchronous=EXTRA")
+            if self.db.execute("PRAGMA synchronous").fetchall() != [(3,)]:
+                raise RuntimeError("EXTRA synchronous mode was not applied")
+        except BaseException:
+            self.db.close()
+            raise
         self.db.executescript("""
             CREATE TABLE IF NOT EXISTS runs (
               protocol TEXT PRIMARY KEY, candidates TEXT NOT NULL,
@@ -154,9 +175,59 @@ class Ledger:
     def counts(self, protocol):
         return dict(self.db.execute("SELECT state,count(*) FROM attempts WHERE run=? GROUP BY state", (protocol,)))
 
+    @staticmethod
+    def _audit(connection):
+        if connection.in_transaction:
+            raise RuntimeError("cannot finalize an active ledger transaction")
+        connection.execute("BEGIN")
+        try:
+            if connection.execute("PRAGMA integrity_check").fetchall() != [("ok",)]:
+                raise RuntimeError("ledger integrity check failed")
+            rows = {table: connection.execute(f"SELECT * FROM {table} ORDER BY {order}").fetchall()
+                    for table, order in (("runs", "protocol"), ("samples", "fingerprint"),
+                                         ("attempts", "run,sample,fit,arm"))}
+            return digest(rows), {table: len(items) for table, items in rows.items()}
+        finally:
+            connection.execute("ROLLBACK")
+
     def close(self):
-        self.db.execute("PRAGMA wal_checkpoint(FULL)")
-        self.db.close()
+        """Close, normally reopen, and compare every row before acknowledging.
+
+        Requires a quiescent ledger. A concurrent change is a finalization
+        failure, not permission to rewrite results or reuse a consumed sample.
+        This proves application close/reopen on the measured filesystem, not
+        power-loss durability or a diagnosis of an earlier WAL failure.
+        """
+        if self.db is None:
+            if self.finalization is None:
+                raise RuntimeError("ledger closed without verified finalization")
+            return self.finalization
+        try:
+            if self.db.execute("PRAGMA journal_mode").fetchall() != [("delete",)]:
+                raise RuntimeError("ledger journal mode changed")
+            if self.db.execute("PRAGMA synchronous").fetchall() != [(3,)]:
+                raise RuntimeError("ledger synchronous mode changed")
+            before = self._audit(self.db)
+        finally:
+            self.db.close()
+            self.db = None
+        reopened = sqlite3.connect(self.path.as_uri() + "?mode=ro", uri=True, timeout=30)
+        try:
+            reopened.execute("PRAGMA query_only=ON")
+            if reopened.execute("PRAGMA journal_mode").fetchall() != [("delete",)]:
+                raise RuntimeError("reopened ledger journal mode changed")
+            if self._audit(reopened) != before:
+                raise RuntimeError("closed/reopened ledger contents differ; keep the failed ledger")
+        finally:
+            reopened.close()
+        if any(Path(str(self.path) + suffix).exists() for suffix in ("-wal", "-shm", "-journal")):
+            raise RuntimeError("closed ledger retained a journal; preserve it for investigation")
+        self.finalization = {"schema": "wsp-ledger-finalization-v1", "journal_mode": "delete",
+            "synchronous": "EXTRA", "normal_readonly_reopen_verified": True,
+            "integrity_check": "ok", "logical_sha256": before[0], "row_counts": before[1],
+            "database": file_identity(self.path), "power_loss_qualified": False,
+            "legacy_WAL_recovery_qualified": False}
+        return self.finalization
 
 
 def quality_gate(contrasts, coverage, unknown_costs):

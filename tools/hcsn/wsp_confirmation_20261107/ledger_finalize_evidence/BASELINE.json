@@ -1,0 +1,27 @@
+{
+  "baseline_commit": "29a79d2",
+  "child_exit_code": 0,
+  "files_before_reopen": {
+    "baseline.sqlite": {
+      "bytes": 1843200,
+      "sha256": "3da764e4f8d76d2e55563a01ffc730fc052501ec43130a2778871682f9e4059f"
+    }
+  },
+  "filesystem_observed": "overlayfs",
+  "guard_source_sha256": "b8ef8e8e104a5d32e6baa60ec0e71c80c65f506bc3109800e7952c1bcab36d41",
+  "new_process_readonly_reopen_stdout": "{\"integrity\": [[\"ok\"]], \"counts\": [[\"COMPLETE\", 2880]], \"attempts\": 2880}\n",
+  "no_scientific_data_read_or_repeated": true,
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "reopen_stderr": "",
+  "sqlite": "3.53.1",
+  "stderr": "",
+  "stdout": "{\"before_close_counts\": {\"COMPLETE\": 2880}, \"journal_mode\": [[\"wal\"]], \"synchronous\": [[2]]}\n{\"close_return\": null}\n",
+  "total_wall_seconds": 1.448975719002192,
+  "workload": {
+    "arms": 9,
+    "claim_and_record_autocommits": 5760,
+    "history": 2896,
+    "synthetic_only": true,
+    "worlds": 320
+  }
+}

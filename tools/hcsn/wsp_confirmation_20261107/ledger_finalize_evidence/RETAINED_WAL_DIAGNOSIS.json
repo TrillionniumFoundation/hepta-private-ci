@@ -1,0 +1,66 @@
+{
+  "diagnostic_method": "Read file bytes; verify WAL header and chained frame checksums; reconstruct valid WAL overlay only in memory. Two ephemeral journal-mode header bytes changed to permit SQLite in-memory integrity checks. No original file opened through SQLite or modified by this diagnostic.",
+  "filesystem_observed": "overlayfs",
+  "first_previous_generation_frame": 154,
+  "interpretation": "Valid retained WAL pages and the complete main file disagree. This is not solely a SHM-index observation, but does not establish which writer, VFS or filesystem behavior caused it. The original close did not inspect checkpoint status or validate a normal post-close reopen.",
+  "last_committed_database_pages": 443,
+  "latest_WAL_pages_differing_from_main": [
+    6,
+    442,
+    443
+  ],
+  "main_attempt_counts": {
+    "COMPLETE": 2880
+  },
+  "main_in_memory_integrity_check": [
+    "ok"
+  ],
+  "natural_reproduction_by_clean_synthetic_workload": false,
+  "official_references": [
+    "https://www.sqlite.org/fileformat2.html#checksum_algorithm",
+    "https://www.sqlite.org/pragma.html#pragma_wal_checkpoint",
+    "https://www.sqlite.org/wal.html"
+  ],
+  "original_files": {
+    "COHORT_LEDGER.sqlite": {
+      "bytes": 1814528,
+      "sha256": "b40b8a4e97f9b2921ca1900dc87b663837364d008f987aecb2c2797c3462ab98"
+    },
+    "COHORT_LEDGER.sqlite-shm": {
+      "bytes": 32768,
+      "sha256": "84cc8cddc4f8161fb4ec9dfa8d1af243f07e972204877e681df3d33552e30ae9"
+    },
+    "COHORT_LEDGER.sqlite-wal": {
+      "bytes": 4128272,
+      "sha256": "d5f078a93fd3ae2eef1600278e5bd5f23fc7ceaae1ab0816a7b5d6c5a1385bf1"
+    }
+  },
+  "original_files_changed": false,
+  "original_frozen_experiment_reexecuted": false,
+  "original_live_WAL_recovery_qualified": false,
+  "pages_in_valid_prefix": [
+    1,
+    6,
+    366,
+    368,
+    370,
+    441,
+    442,
+    443
+  ],
+  "previous_generation_tail_frames": 849,
+  "schema": "wsp-retained-wal-readonly-diagnosis-v1",
+  "sqlite_version_observed": "3.53.1",
+  "underlying_cause_established": false,
+  "valid_WAL_overlay_attempt_counts": {
+    "COMPLETE": 2876,
+    "RESERVED": 12,
+    "STARTED": 1
+  },
+  "valid_WAL_overlay_integrity_errors": [
+    "Tree 6 page 6 cell 185: Rowid 2875 out of order",
+    "wrong # of entries in index sqlite_autoindex_attempts_1"
+  ],
+  "valid_current_generation_commits": 139,
+  "valid_current_generation_frames": 153
+}
