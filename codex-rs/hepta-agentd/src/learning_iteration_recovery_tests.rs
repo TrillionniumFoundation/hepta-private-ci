@@ -3,6 +3,7 @@
 //! Proposal data here does not prove the host's independent anchor obligation.
 
 use codex_hepta_learning_artifacts::LearningProposalDispositionV1;
+use pretty_assertions::assert_eq;
 
 use super::*;
 
