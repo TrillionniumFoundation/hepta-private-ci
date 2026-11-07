@@ -40,6 +40,9 @@ const MAX_PLASTICITY_RUNTIME_QUEUE: usize = 64;
 pub enum PlasticityRuntimeCallErrorV1 {
     Unavailable,
     Closed,
+    /// This attempt did not enter the owner queue. Earlier attempts under the
+    /// same operation identity must still be reconciled by their original owner.
+    QueueFull,
     Parameter(AgentdPlasticityHostErrorV1),
     Topology(AgentdTopologyHostErrorV1),
 }
@@ -70,6 +73,7 @@ enum PlasticityRuntimeCommandV1 {
 
 /// Bounded in-process product handle. It contains no writer, store or trust-root
 /// material, so dropping/recreating a handle cannot create another owner.
+/// A full queue refuses immediately without retaining another waiting request.
 #[derive(Clone)]
 pub struct PlasticityRuntimeHandleV1 {
     sender: mpsc::Sender<PlasticityRuntimeCommandV1>,
@@ -83,13 +87,15 @@ impl PlasticityRuntimeHandleV1 {
     ) -> Result<ParameterPlasticityProductReceiptV1, PlasticityRuntimeCallErrorV1> {
         let (response, receive) = oneshot::channel();
         self.sender
-            .send(PlasticityRuntimeCommandV1::Parameter {
+            .try_send(PlasticityRuntimeCommandV1::Parameter {
                 request: Box::new(request),
                 now,
                 response,
             })
-            .await
-            .map_err(|_| PlasticityRuntimeCallErrorV1::Closed)?;
+            .map_err(|error| match error {
+                mpsc::error::TrySendError::Full(_) => PlasticityRuntimeCallErrorV1::QueueFull,
+                mpsc::error::TrySendError::Closed(_) => PlasticityRuntimeCallErrorV1::Closed,
+            })?;
         receive
             .await
             .map_err(|_| PlasticityRuntimeCallErrorV1::Closed)?
@@ -102,13 +108,15 @@ impl PlasticityRuntimeHandleV1 {
     ) -> Result<TopologyPlasticityProductReceiptV1, PlasticityRuntimeCallErrorV1> {
         let (response, receive) = oneshot::channel();
         self.sender
-            .send(PlasticityRuntimeCommandV1::Topology {
+            .try_send(PlasticityRuntimeCommandV1::Topology {
                 request: Box::new(request),
                 now,
                 response,
             })
-            .await
-            .map_err(|_| PlasticityRuntimeCallErrorV1::Closed)?;
+            .map_err(|error| match error {
+                mpsc::error::TrySendError::Full(_) => PlasticityRuntimeCallErrorV1::QueueFull,
+                mpsc::error::TrySendError::Closed(_) => PlasticityRuntimeCallErrorV1::Closed,
+            })?;
         receive
             .await
             .map_err(|_| PlasticityRuntimeCallErrorV1::Closed)?

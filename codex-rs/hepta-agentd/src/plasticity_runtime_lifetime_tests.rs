@@ -95,6 +95,8 @@ use crate::resolve_agentd_topology_admission_v1;
 mod learning_iteration_tests;
 #[path = "terminal_learning_tests.rs"]
 mod terminal_learning_tests;
+#[path = "plasticity_runtime_budget_tests.rs"]
+mod budget_tests;
 
 const Q24: i64 = 1_i64 << 24;
 
