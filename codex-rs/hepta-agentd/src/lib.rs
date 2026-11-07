@@ -704,6 +704,8 @@ pub use neuron_generation_initial_bootstrap::ReadyAgentdGenerationInitialV1;
 pub use neuron_generation_initial_forward::prepare_agentd_generation_initial_forward_recovery_v1;
 pub use neuron_generation_process_bootstrap::load_neuron_generation_process_bootstrap_v1;
 pub use neuron_generation_process_bootstrap::neuron_generation_process_identity_digest_v1;
+#[cfg(unix)]
+pub use neuron_generation_runtime::NeuronGenerationLearningReadErrorV1;
 pub use neuron_generation_runtime::NeuronGenerationRuntimeBootstrapV2;
 pub use neuron_generation_runtime::NeuronGenerationRuntimeHandleV2;
 pub use neuron_generation_runtime::neuron_generation_channel_v2;

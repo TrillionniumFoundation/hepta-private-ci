@@ -3,6 +3,8 @@
 
 use std::sync::Arc;
 
+#[cfg(unix)]
+use codex_hepta_learning_artifacts::LearningIterationObservationV1;
 use codex_hepta_neuron::AnchorWitnessStore;
 use codex_hepta_neuron::CellCostAccountingV2;
 use codex_hepta_neuron::CellCostEntryV2;
@@ -29,6 +31,16 @@ use crate::AgentdState;
 use crate::neuron_generation_service::BoundGenerationOwner;
 use crate::neuron_generation_service::GenerationRuntimeOwner;
 use crate::state::neuron_generation::NeuronGenerationProjection;
+
+#[cfg(unix)]
+#[path = "neuron_generation_learning_runtime.rs"]
+mod learning;
+#[cfg(unix)]
+pub(crate) use learning::GenerationLearningPublicationV1;
+#[cfg(unix)]
+pub(crate) use learning::GenerationLearningReadV1;
+#[cfg(unix)]
+pub use learning::NeuronGenerationLearningReadErrorV1;
 
 pub(crate) type Response<T> = oneshot::Sender<Result<T, CellGenerationErrorV2>>;
 
@@ -63,6 +75,11 @@ pub(crate) enum GenerationCommand {
     },
     Snapshot(Response<CellRuntimeSnapshotV2>),
     ObserveGeneration(Response<CellGenerationObservationV1>),
+    #[cfg(unix)]
+    LearningRead {
+        request: Box<GenerationLearningReadV1>,
+        response: Response<Result<LearningIterationObservationV1, AgentdError>>,
+    },
     PendingRequest(Response<Option<CellGenerationRequestV2>>),
     PendingOutput(Response<Option<CellOutputChunkV2>>),
     TaskCost(Response<CellTaskCostV2>),
@@ -298,6 +315,36 @@ where
     P: CellGenerationControlPortV2 + Send + 'static,
     C: FnMut() -> u64 + Send + 'static,
 {
+    neuron_generation_channel_with_learning_v2(
+        identity,
+        journal,
+        inference_control,
+        clock,
+        capacity,
+        #[cfg(unix)]
+        GenerationLearningPublicationV1::Unpublished,
+    )
+}
+
+pub(crate) fn neuron_generation_channel_with_learning_v2<W, P, C>(
+    identity: &AgentdIdentity,
+    journal: CellGenerationJournalV2<W>,
+    inference_control: P,
+    clock: C,
+    capacity: usize,
+    #[cfg(unix)] learning_publication: GenerationLearningPublicationV1,
+) -> Result<
+    (
+        NeuronGenerationRuntimeHandleV2,
+        NeuronGenerationRuntimeBootstrapV2,
+    ),
+    AgentdError,
+>
+where
+    W: AnchorWitnessStore + Send + 'static,
+    P: CellGenerationControlPortV2 + Send + 'static,
+    C: FnMut() -> u64 + Send + 'static,
+{
     if !(1..=64).contains(&capacity) {
         return Err(AgentdError::Invalid(
             "generation service requires a 1..64 command queue".into(),
@@ -337,6 +384,8 @@ where
     let owner = Box::new(BoundGenerationOwner {
         owner: AgentdNeuronGenerationOwnerV2::new(journal, inference_control),
         clock,
+        #[cfg(unix)]
+        learning_publication,
     });
     Ok((
         handle,
