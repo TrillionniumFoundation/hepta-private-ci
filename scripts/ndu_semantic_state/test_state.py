@@ -1,6 +1,10 @@
 from copy import deepcopy
 from dataclasses import replace
 import hashlib
+from pathlib import Path
+import subprocess
+import sys
+import textwrap
 import unittest
 
 import numpy as np
@@ -19,6 +23,71 @@ def metadata():
     return {"slots": {name: {"available": [True], "progress": [0.0], "preparation": ["not_required"],
         "version": [0], "committed_prefix": [prefix()]} for name in MODALITIES},
         "remaining_budget": [5.0], "elapsed_seconds": [0.0]}
+
+
+class PackageImportTests(unittest.TestCase):
+    def run_isolated(self, code, *, block_numpy=False):
+        prelude = f"import sys\nsys.path.insert(0, {str(Path(__file__).resolve().parents[1])!r})\n"
+        if block_numpy:
+            prelude += textwrap.dedent("""
+                import importlib.abc
+                class BlockNumpy(importlib.abc.MetaPathFinder):
+                    def find_spec(self, fullname, path, target=None):
+                        if fullname == "numpy" or fullname.startswith("numpy."):
+                            raise ModuleNotFoundError("NumPy deliberately unavailable", name=fullname)
+                sys.meta_path.insert(0, BlockNumpy())
+            """)
+        result = subprocess.run(
+            [sys.executable, "-I", "-c", prelude + textwrap.dedent(code)],
+            capture_output=True, text=True, timeout=30,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_unrelated_discovery_does_not_require_numpy(self):
+        self.run_isolated("""
+            import unittest
+            import ndu_semantic_state as package
+            assert "ndu_semantic_state.state" not in sys.modules
+            assert getattr(package, "load_tests", None) is None
+            try:
+                package.not_an_export
+            except AttributeError:
+                pass
+            else:
+                raise AssertionError("unknown attribute was accepted")
+            loader = unittest.TestLoader()
+            assert loader.loadTestsFromModule(package).countTestCases() == 0
+            assert not loader.errors
+            assert "numpy" not in sys.modules
+            assert "ndu_semantic_state.state" not in sys.modules
+        """, block_numpy=True)
+
+    def test_explicit_state_access_preserves_missing_dependency_error(self):
+        self.run_isolated("""
+            import ndu_semantic_state as package
+            try:
+                from ndu_semantic_state import SemanticState
+            except ModuleNotFoundError as error:
+                assert error.name == "numpy", error
+            else:
+                raise AssertionError("state API ignored its missing dependency")
+            assert "SemanticState" not in vars(package)
+            assert "ndu_semantic_state.state" not in sys.modules
+        """, block_numpy=True)
+
+    def test_explicit_and_star_imports_preserve_public_objects(self):
+        self.run_isolated("""
+            import ndu_semantic_state as package
+            assert "ndu_semantic_state.state" not in sys.modules
+            from ndu_semantic_state import SemanticState, state
+            assert SemanticState is state.SemanticState
+            namespace = {}
+            exec("from ndu_semantic_state import *", namespace)
+            assert set(namespace) - {"__builtins__"} == set(package.__all__)
+            for name in package.__all__:
+                assert namespace[name] is getattr(state, name)
+                assert getattr(package, name) is vars(package)[name]
+        """)
 
 
 class PublicStateTests(unittest.TestCase):
