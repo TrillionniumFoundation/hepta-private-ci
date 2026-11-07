@@ -23,6 +23,7 @@ on:
       - codex-rs/keyring-store/tests/store_contract.rs
       - patches/BUILD.bazel
       - patches/zstd-sys_2_1_windows_msvc_include_dirs.patch
+      - codex-rs/hepta-matrix-store/**
       - codex-rs/hepta-matrixd/tests/real_synapse_e2e.rs
       - codex-rs/hepta-matrixd/tests/fixtures/linux_qualification/**
       - codex-rs/hepta-matrixd/tests/fixtures/linux_synapse/**
