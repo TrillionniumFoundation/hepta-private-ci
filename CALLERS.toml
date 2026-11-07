@@ -403,7 +403,7 @@ forbidden = ["ProductionDurableWriter", "CognitiveStore::open_with_recovery"]
 path = "codex-rs/hepta-agentd/src/runtime.rs"
 required = ["operations.attach(", "production_writer_host.as_ref()", "attach_production_operations", "run_production_operation_reconciler", "let notes_thread_tools = config.take_original_notes_thread_tools()", "let app_server_model_tools = if desktop_thread_tools.is_some()", "crate::app_runtime::AppServerModelToolProfile::OriginalNotes", "crate::app_runtime::AppServerModelToolProfile::Standard", "                app_server_model_tools,"]
 forbidden = ["ProductionAuthorityToken::from_verified_bytes", "SigningKey::from_bytes"]
-required_function_order = [{function = "fn run(", sequence = ["let notes_thread_tools = config.take_original_notes_thread_tools()", "let app_server_model_tools = if desktop_thread_tools.is_some()", "crate::app_runtime::AppServerModelToolProfile::OriginalNotes", "crate::app_runtime::AppServerModelToolProfile::Standard", "run_app_server(", "app_server_model_tools,"]}]
+required_function_order = [{function = "fn run(", sequence = ["run_with_shutdown(config, arg0_paths,", "shutdown_signal()).await"], top_level = ["run_with_shutdown(config, arg0_paths, shutdown_signal()).await"]}, {function = "fn run_with_shutdown(", sequence = ["let notes_thread_tools = config.take_original_notes_thread_tools()", "let app_server_model_tools = if desktop_thread_tools.is_some()", "crate::app_runtime::AppServerModelToolProfile::OriginalNotes", "crate::app_runtime::AppServerModelToolProfile::Standard", "run_app_server(", "app_server_model_tools,"]}]
 
 [[protected_file]]
 path = "codex-rs/hepta-learning-artifacts/src/owner_service.rs"
