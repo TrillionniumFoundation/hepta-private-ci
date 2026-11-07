@@ -53,7 +53,7 @@ WORKFLOW_REFERENCE_SCRIPTS = (
     "scripts/hepta_source_registry_closure.py",
 )
 WORKFLOW_REFERENCE_RE = re.compile(
-    r"(?<![A-Za-z0-9_.-])(?P<path>\.github/workflows/[A-Za-z0-9_.-]+\.ya?ml)(?![A-Za-z0-9_.-])"
+    r"(?<![A-Za-z0-9_./-])(?P<path>(?:\./)?\.github/workflows/[A-Za-z0-9_.-]+\.ya?ml)(?![A-Za-z0-9_.-])"
 )
 FILES = {
     "current": "docs/CURRENT.json",
