@@ -2,6 +2,8 @@
 
 import shutil
 
+from ndu_port_candidate_common import ASM_AMENDMENT
+
 from ndu_port_candidate_common import BUILD_AMENDMENT
 from ndu_port_candidate_common import DIAGNOSTIC_AMENDMENT
 from ndu_port_candidate_common import INTEGRATION
@@ -74,6 +76,11 @@ def generate_integrated(runner, expected_source):
             runner.root / SDK_AMENDMENT, runner.output / "sdk-amendment.json"
         )
         amendment_artifacts += ("sdk-amendment.json",)
+    if "asm_amendment" in binding:
+        shutil.copyfile(
+            runner.root / ASM_AMENDMENT, runner.output / "asm-amendment.json"
+        )
+        amendment_artifacts += ("asm-amendment.json",)
     # An explicitly declared empty delta binds this already committed source.
     # Patched mode still requires successful nonempty Git patch application.
     (runner.output / "candidate.patch").write_bytes(b"")

@@ -34,6 +34,9 @@ class SdkAmendmentTests(unittest.TestCase):
             target = self.root / name
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(ROOT / name, target)
+        historical_fixture.restore_pre_asm_source(
+            self.root, self.fixture.base, set(common.LOCKS) & common.SDK_EXISTING_INPUTS
+        )
         git(self.root, "add", "--force", "--", *sorted(names))
         git(self.root, "commit", "-qm", "Complete SDK fixture; no native qualification")
         self.calls = 0

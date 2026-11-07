@@ -713,6 +713,26 @@ def verify_integrated_source(runner, recipe, record=None, artifact=None):
             **describe(runner.root, (SDK_AMENDMENT,))[SDK_AMENDMENT],
         }
         manifest = {**manifest, "files": files, "file_modes": modes}
+    asm = load_asm_amendment(runner.root)
+    asm_identity = None
+    if asm is not None:
+        if set(files) & ASM_ADDED_INPUTS or not set(LOCKS) <= set(files):
+            raise ValueError("ASM amendment changed the predecessor inventory")
+        if any(modes[name] != asm["changes"][name]["mode"] for name in LOCKS):
+            raise ValueError("ASM amendment changed a predecessor mode")
+        files = effective_asm_inputs(runner.root, files)
+        files.update({name: asm["changes"][name]["after"] for name in ASM_ADDED_INPUTS})
+        modes = {
+            **modes,
+            **{name: asm["changes"][name]["mode"] for name in ASM_ADDED_INPUTS},
+        }
+        expected |= ASM_ADDED_INPUTS
+        committed |= {ASM_AMENDMENT, *asm["changes"], *asm["proofs"]}
+        asm_identity = {
+            "path": ASM_AMENDMENT,
+            **describe(runner.root, (ASM_AMENDMENT,))[ASM_AMENDMENT],
+        }
+        manifest = {**manifest, "files": files, "file_modes": modes}
     if describe(runner.root, expected) != files:
         raise ValueError("Integrated source or lock bytes differ from reviewed origin")
     if runner.text(
@@ -762,6 +782,8 @@ def verify_integrated_source(runner, recipe, record=None, artifact=None):
         binding["lock_amendment"] = lock_identity
     if sdk_identity is not None:
         binding["sdk_amendment"] = sdk_identity
+    if asm_identity is not None:
+        binding["asm_amendment"] = asm_identity
     if record is not None:
         if (
             candidate_source_mode(record) != "integrated"
@@ -784,6 +806,12 @@ def verify_integrated_source(runner, recipe, record=None, artifact=None):
             != (
                 {key: dependency_identity[key] for key in ("bytes", "sha256")}
                 if dependency_identity
+                else None
+            )
+            or record["artifacts"].get("asm-amendment.json")
+            != (
+                {key: asm_identity[key] for key in ("bytes", "sha256")}
+                if asm_identity
                 else None
             )
             or record["artifacts"].get("sdk-amendment.json")
@@ -826,6 +854,11 @@ def verify_integrated_source(runner, recipe, record=None, artifact=None):
                 dependency_identity is not None
                 and (artifact / "dependency-amendment.json").read_bytes()
                 != regular_path(runner.root, DEPENDENCY_AMENDMENT).read_bytes()
+            )
+            or (
+                asm_identity is not None
+                and (artifact / "asm-amendment.json").read_bytes()
+                != regular_path(runner.root, ASM_AMENDMENT).read_bytes()
             )
             or (
                 sdk_identity is not None
@@ -908,6 +941,8 @@ def load_candidate(runner, artifact, expected_result, expected_source):
             expected_files |= set(build["changes"])
         if load_sdk_amendment(runner.root) is not None:
             expected_files |= SDK_ADDED_INPUTS
+        if load_asm_amendment(runner.root) is not None:
+            expected_files |= ASM_ADDED_INPUTS
     if (
         set(record["files"]) != expected_files
         or not set(record["changed_paths"]) <= expected_files
@@ -1013,11 +1048,17 @@ def load_dependency_amendment(root, recipe, manifest=None):
         manifest = json.loads(regular_path(root, INTEGRATION).read_bytes())
     if set(amendment["changes"]) != DEPENDENCY_CHANGED:
         raise ValueError("Dependency amendment changed its exact existing-file set")
-    effective = effective_sdk_inputs(
+    effective = effective_asm_inputs(
         root,
-        effective_lock_inputs(
+        effective_sdk_inputs(
             root,
-            {name: change["after"] for name, change in amendment["changes"].items()},
+            effective_lock_inputs(
+                root,
+                {
+                    name: change["after"]
+                    for name, change in amendment["changes"].items()
+                },
+            ),
         ),
     )
     for name, change in amendment["changes"].items():
@@ -1208,7 +1249,10 @@ def load_diagnostic_amendment(root, files, modes):
         or describe(root, amendment["parents"]) != amendment["parents"]
         or set(amendment["locks"]) != set(LOCKS)
         or describe(root, LOCKS)
-        != effective_sdk_inputs(root, effective_lock_inputs(root, amendment["locks"]))
+        != effective_asm_inputs(
+            root,
+            effective_sdk_inputs(root, effective_lock_inputs(root, amendment["locks"])),
+        )
         or set(amendment["changes"]) != DIAGNOSTIC_SOURCES
         or describe(root, amendment["proofs"]) != amendment["proofs"]
     ):
@@ -1221,7 +1265,9 @@ def load_diagnostic_amendment(root, files, modes):
             or change["mode"] != modes.get(name)
             or actual_mode != change["mode"]
             or describe(root, (name,))[name]
-            != effective_sdk_inputs(root, {name: change["after"]})[name]
+            != effective_asm_inputs(
+                root, effective_sdk_inputs(root, {name: change["after"]})
+            )[name]
         ):
             raise ValueError("Diagnostic source differs from its reviewed successor")
     return amendment
@@ -1274,7 +1320,9 @@ def load_lock_amendment(root):
             or change["mode"] != "100644"
             or mode != change["mode"]
             or describe(root, (name,))[name]
-            != effective_sdk_inputs(root, {name: change["after"]})[name]
+            != effective_asm_inputs(
+                root, effective_sdk_inputs(root, {name: change["after"]})
+            )[name]
         ):
             raise ValueError("Lock amendment source or lock identity differs")
     return amendment
@@ -1345,7 +1393,8 @@ def load_sdk_amendment(root):
         or describe(root, amendment["parents"]) != amendment["parents"]
         or set(amendment["changes"]) != SDK_EXISTING_INPUTS | SDK_ADDED_INPUTS
         or set(amendment["unchanged_locks"]) != {"MODULE.bazel.lock"}
-        or describe(root, amendment["unchanged_locks"]) != amendment["unchanged_locks"]
+        or describe(root, amendment["unchanged_locks"])
+        != effective_asm_inputs(root, amendment["unchanged_locks"])
         or describe(root, amendment["proofs"]) != amendment["proofs"]
     ):
         raise ValueError("SDK amendment changed a fixed parent, lock or proof")
@@ -1380,7 +1429,8 @@ def load_sdk_amendment(root):
             or (name in expected and change["before"] != expected[name])
             or change["mode"] != "100644"
             or mode != change["mode"]
-            or describe(root, (name,))[name] != change["after"]
+            or describe(root, (name,))[name]
+            != effective_asm_inputs(root, {name: change["after"]})[name]
         ):
             raise ValueError("SDK complete successor source or mode differs")
     return amendment
@@ -1396,6 +1446,92 @@ def effective_sdk_inputs(root, historical):
         historical[name] != amendment["changes"][name]["before"] for name in relevant
     ):
         raise ValueError("SDK historical input differs from its fixed predecessor")
+    return {
+        **historical,
+        **{name: amendment["changes"][name]["after"] for name in relevant},
+    }
+
+
+ASM_AMENDMENT = "experiments/multimodal_output_portfolio/closure_20261028/ci/port-remediation/SOURCE_AMENDMENT.v7.7.json"
+ASM_AMENDMENT_SHA256 = (
+    "39d4f4aab79395ecc034379114bb1f5fd0a6aec4cf8c9da86ba46da03a8e1b8a"
+)
+ASM_ADDED_INPUTS = {"codex-rs/hepta-contracts/Cargo.toml"}
+
+
+def load_asm_amendment(root):
+    """Require the exact native backend successor without calling older loaders."""
+    path = regular_path(root, ASM_AMENDMENT)
+    if not path.exists():
+        return None
+    raw = path.read_bytes()
+    if hashlib.sha256(raw).hexdigest() != ASM_AMENDMENT_SHA256:
+        raise ValueError("ASM amendment differs from its fixed review seal")
+    amendment = json.loads(raw)
+    if (
+        amendment["schema"] != "hepta.port-linux-aarch64-sha256-amendment.v1"
+        or amendment["operation"] != "bind-native-linux-aarch64-sha256-backend"
+        or amendment["promotion_allowed"] is not False
+        or set(amendment["parents"])
+        != {
+            INTEGRATION,
+            RECIPE,
+            SOURCE_AMENDMENT,
+            DEPENDENCY_AMENDMENT,
+            BUILD_AMENDMENT,
+            DIAGNOSTIC_AMENDMENT,
+            LOCK_AMENDMENT,
+            SDK_AMENDMENT,
+        }
+        or describe(root, amendment["parents"]) != amendment["parents"]
+        or set(amendment["changes"]) != set(LOCKS) | ASM_ADDED_INPUTS
+        or set(amendment["previously_unsealed_source_inputs"]) != ASM_ADDED_INPUTS
+        or describe(root, amendment["proofs"]) != amendment["proofs"]
+    ):
+        raise ValueError("ASM amendment changed a fixed parent, source set or proof")
+    historical = {
+        name: json.loads(regular_path(root, name).read_bytes())
+        for name in amendment["parents"]
+    }
+    for record in historical.values():
+        if "proofs" in record and describe(root, record["proofs"]) != record["proofs"]:
+            raise ValueError("ASM amendment changed a historical native proof")
+    sdk = historical[SDK_AMENDMENT]
+    locked = historical[LOCK_AMENDMENT]
+    expected = {
+        "codex-rs/Cargo.lock": sdk["changes"]["codex-rs/Cargo.lock"]["after"],
+        "MODULE.bazel.lock": sdk["unchanged_locks"]["MODULE.bazel.lock"],
+        **amendment["previously_unsealed_source_inputs"],
+    }
+    if expected["MODULE.bazel.lock"] != locked["changes"]["MODULE.bazel.lock"]["after"]:
+        raise ValueError("ASM predecessor MODULE history differs")
+    for name, change in amendment["changes"].items():
+        current = regular_path(root, name)
+        mode = "100755" if current.stat().st_mode & 0o111 else "100644"
+        if (
+            set(change) != {"before", "after", "mode"}
+            or change["before"] != expected[name]
+            or not valid_file_identity(change["before"])
+            or not valid_file_identity(change["after"])
+            or change["before"] == change["after"]
+            or change["mode"] != "100644"
+            or mode != change["mode"]
+            or describe(root, (name,))[name] != change["after"]
+        ):
+            raise ValueError("ASM complete successor source or mode differs")
+    return amendment
+
+
+def effective_asm_inputs(root, historical):
+    """Map exact pre-ASM identities; no other historical input is substituted."""
+    amendment = load_asm_amendment(root)
+    if amendment is None:
+        return historical
+    relevant = set(historical) & set(amendment["changes"])
+    if any(
+        historical[name] != amendment["changes"][name]["before"] for name in relevant
+    ):
+        raise ValueError("ASM historical input differs from its fixed predecessor")
     return {
         **historical,
         **{name: amendment["changes"][name]["after"] for name in relevant},
