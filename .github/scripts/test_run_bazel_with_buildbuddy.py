@@ -144,7 +144,7 @@ class RunBazelWithBuildBuddyTest(unittest.TestCase):
             args, {"RUNNER_OS": "Windows"}
         )
 
-        self.assertIn("--host_platform=//:local_windows_msvc", result)
+        self.assertIn("--host_platform=//:windows_x86_64_msvc", result)
         self.assertIn(
             "--extra_execution_platforms=//:windows_x86_64_msvc", result
         )
@@ -167,7 +167,7 @@ class RunBazelWithBuildBuddyTest(unittest.TestCase):
         )
 
         self.assertIn("--host_platform=//:caller_host", result)
-        self.assertNotIn("--host_platform=//:local_windows_msvc", result)
+        self.assertNotIn("--host_platform=//:windows_x86_64_msvc", result)
 
     def test_native_windows_gnullvm_does_not_force_msvc_exec_platform(self) -> None:
         args = [
@@ -186,6 +186,7 @@ class RunBazelWithBuildBuddyTest(unittest.TestCase):
         self.assertNotIn(
             "--extra_execution_platforms=//:windows_x86_64_msvc", result
         )
+        self.assertNotIn("--host_platform=//:windows_x86_64_msvc", result)
         self.assertNotIn("--host_platform=//:local_windows_msvc", result)
 
     def test_query_remote_configuration_is_inserted_before_expression(self) -> None:
