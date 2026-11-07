@@ -23,7 +23,7 @@ permissions:
 
 jobs:
   source-and-owner:
-    if: github.event_name != 'pull_request' || github.head_ref == 'codex/hcsn-training-bridge-20261106' || github.head_ref == 'codex/hcsn-taskflow-integration-20261106' || github.head_ref == 'codex/hcsn-gap-closure-20261106' || github.head_ref == 'codex/hcsn-production-compose-20261106'
+    if: github.event_name != 'pull_request' || github.head_ref == 'codex/hcsn-training-bridge-20261106' || github.head_ref == 'codex/hcsn-taskflow-integration-20261106' || github.head_ref == 'codex/hcsn-gap-closure-20261106' || github.head_ref == 'codex/hcsn-production-compose-20261106' || github.head_ref == 'codex/cell-p0-p5-convergence-20261106-b520'
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     env:
@@ -183,7 +183,7 @@ jobs:
           if-no-files-found: warn
 
   agentd-registration:
-    if: github.event_name == 'pull_request' && (github.head_ref == 'codex/hcsn-gap-closure-20261106' || github.head_ref == 'codex/hcsn-production-compose-20261106')
+    if: github.event_name == 'pull_request' && (github.head_ref == 'codex/hcsn-gap-closure-20261106' || github.head_ref == 'codex/hcsn-production-compose-20261106' || github.head_ref == 'codex/cell-p0-p5-convergence-20261106-b520')
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     env:
