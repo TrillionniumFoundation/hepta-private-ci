@@ -194,7 +194,7 @@ jobs:
           filtered_selectors = {
               "partial-delete-deny": ("token::tests::partial_delete_deny_is_repaired_before_native_workspace_writes",),
               "broad-identity-delete": ("token::tests::workspace_capabilities_deny_writes_and_deletes_under_broad_identity_aces",),
-              "legacy-delete-boundary": ("unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots",),
+              "legacy-delete-boundary": ("unified_exec::tests::legacy_workspace_write_delete_refuses_unqualified_filesystem_backend",),
               "acl-unit-controls": acl_selectors,
               "full-restriction-candidate": ("token::tests::full_restriction::native_full_restriction_preserves_reads_and_refuses_parent_delete",),
               "held-read-acl": (
@@ -588,7 +588,7 @@ jobs:
         if: ${{ !cancelled() && steps.source.outcome == 'success' }}
         run: |
           set +e
-          just test --locked -p codex-windows-sandbox --lib -E 'test(=unified_exec::tests::legacy_workspace_write_delete_is_limited_to_writable_roots)' --no-capture 2>&1 | tee "$RUNNER_TEMP/windows-delete-boundary/legacy-delete-boundary.log"
+          just test --locked -p codex-windows-sandbox --lib -E 'test(=unified_exec::tests::legacy_workspace_write_delete_refuses_unqualified_filesystem_backend)' --no-capture 2>&1 | tee "$RUNNER_TEMP/windows-delete-boundary/legacy-delete-boundary.log"
           codes="${PIPESTATUS[*]}"
           set -e
           python "$RUNNER_TEMP/windows-delete-boundary/check.py" tests legacy-delete-boundary 1 "$codes"
