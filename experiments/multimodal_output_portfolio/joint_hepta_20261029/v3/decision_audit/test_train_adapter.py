@@ -1,7 +1,9 @@
 """Tiny neural contracts only; these tests are not pretrained-model efficacy."""
 
+import hashlib
 import json
 from pathlib import Path
+import struct
 from types import SimpleNamespace
 import tempfile
 import unittest
@@ -13,6 +15,54 @@ from torch import nn
 
 from . import train_adapter as training
 from .dual_runtime import digest_file
+
+
+class TensorHashTests(unittest.TestCase):
+    def test_singleton_strides_and_scalar_keep_exact_bfloat16_bytes(self):
+        payload = struct.pack("=4H", 0x3F80, 0x8000, 0x7FC1, 0x4000)
+        source = torch.frombuffer(bytearray(payload), dtype=torch.bfloat16)
+        cases = (
+            (source.as_strided((4, 1, 1), (1, 320, 320)), payload),
+            (source[:1].as_strided((1, 1), (320, 320)), payload[:2]),
+            (source[0], payload[:2]),
+        )
+        for value, raw in cases:
+            with self.subTest(shape=tuple(value.shape), stride=value.stride()):
+                self.assertTrue(value.is_contiguous())
+                expected = hashlib.sha256(
+                    str((tuple(value.shape), str(value.dtype))).encode() + raw
+                ).hexdigest()
+                self.assertEqual(training.tensor_hash(value), expected)
+
+    def test_hash_uses_logical_values_without_storage_padding_or_mutation(self):
+        source = torch.arange(24, dtype=torch.float32).reshape(4, 6)
+        before = source.clone()
+        cases = (source, source.t(), source[1:3, 1::2], source[:1].expand(3, 6), source[:0])
+        for value in cases:
+            with self.subTest(shape=tuple(value.shape), stride=value.stride()):
+                expected = hashlib.sha256(
+                    str((tuple(value.shape), str(value.dtype))).encode()
+                    + value.numpy().tobytes(order="C")
+                ).hexdigest()
+                self.assertEqual(training.tensor_hash(value), expected)
+        self.assertTrue(torch.equal(source, before))
+
+    def test_parameter_fingerprint_keeps_shape_dtype_name_and_value_bindings(self):
+        value = torch.tensor([1.0, 2.0], requires_grad=True)
+        module = nn.Module()
+        module.register_parameter("weight", nn.Parameter(value.detach().as_strided((2, 1), (1, 320))))
+        before = training.parameter_hashes(module)
+        canonical = nn.Module()
+        canonical.register_parameter("weight", nn.Parameter(value.detach().reshape(2, 1).clone()))
+        self.assertEqual(before, training.parameter_hashes(canonical))
+        self.assertNotEqual(training.tensor_hash(value), training.tensor_hash(value.reshape(2, 1)))
+        self.assertNotEqual(training.tensor_hash(value), training.tensor_hash(value.view(torch.int32)))
+        self.assertNotEqual(training.fingerprint(before), training.fingerprint({"renamed": before["weight"]}))
+        with torch.no_grad():
+            module.weight[0, 0] += 1
+        self.assertNotEqual(before, training.parameter_hashes(module))
+        self.assertTrue(module.weight.requires_grad)
+        self.assertIsNone(module.weight.grad)
 
 
 class TinyModel(nn.Module):

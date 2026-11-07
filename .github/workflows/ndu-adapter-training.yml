@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - research/ndu-training-wiring-20261105
+      - fix/ndu-image-fingerprint-20261107-8ef7
     paths:
       - experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/decision_audit/**
       - .github/workflows/ndu-adapter-training.yml
