@@ -115,5 +115,22 @@
       "bytes": 21539,
       "sha256": "446ba050e366125874cf8502f3f1a0f05fe9cac3c87a03217ec11f76ca6dbe06"
     }
-  ]
+  ],
+  "additional_test_reference_import": {
+    "source_commit": "a7af7254636910f83f517c58f97abc32136d289a",
+    "files": [
+      {
+        "path": "experiments/multimodal_output_portfolio/joint_hepta_20261029/oracle.py",
+        "bytes": 9912,
+        "sha256": "16ef7f37e8a35c9b1317149faf7ef1e5e4da85a6180d315a8399a1c8d0a5f29a"
+      },
+      {
+        "path": "experiments/multimodal_output_portfolio/unified_20261028/profile.py",
+        "bytes": 15309,
+        "sha256": "bbcc565becb5a1b8d06f9d2a4b4a82d9cded89e8c7ea2fe386c185688c402650"
+      }
+    ],
+    "reason": "Exact finite-law regression dependencies were absent from the receiving branch. These two unchanged reference modules are used by decision_audit.exact.risk_crosscheck tests, never by deployed learned controllers.",
+    "first_integrated_attempt": "303 tests executed; seven subtest/import errors arose from the same missing oracle dependency; all 171 portfolio and 49 semantic tests passed. Full attempt retained."
+  }
 }
