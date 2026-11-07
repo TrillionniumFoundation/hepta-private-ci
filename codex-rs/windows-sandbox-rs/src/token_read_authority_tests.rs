@@ -6,6 +6,9 @@ mod access_requests;
 #[path = "token_descriptor_access_tests.rs"]
 mod access_checks;
 
+#[path = "token_native_access_tests.rs"]
+mod native_access;
+
 use super::*;
 use anyhow::Context;
 use std::path::Path;
@@ -687,6 +690,7 @@ fn observe(case: u8, root: &Path) -> Result<Observation> {
         if let Some(checks) = &descriptor_checks {
             checks.observe(token.0, [read.sid.as_ptr(), cap_a.as_ptr(), cap_b.as_ptr()])?;
         }
+        native_access::observe(case, &allowed[0], &git)?;
         let inside = allowed.each_ref().map(|path| {
             [
                 operation(std::fs::write(path.join("created.txt"), "allowed")),
