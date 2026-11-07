@@ -1,0 +1,10 @@
+{
+  "observed_at_utc": "2026-11-07T07:25:24.801835+00:00",
+  "scope": "Reviewer preparation only",
+  "failure": "Global text replacement of the number 420 also modified a later artifact identifier in memory, so the required exact subsequent replacement was rejected.",
+  "actual_exit_code": 1,
+  "error": "RuntimeError: missing replacement 13562004209",
+  "candidate_script_written": false,
+  "native_execution": false,
+  "resolution": "Wrote the bounded reviewer explicitly; no original or packet changed."
+}

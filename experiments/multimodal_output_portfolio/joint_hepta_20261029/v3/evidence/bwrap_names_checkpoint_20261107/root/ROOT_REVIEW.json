@@ -1,0 +1,49 @@
+{
+  "observed_at_utc": "2026-11-07T07:25:31.361563+00:00",
+  "scope": "Independent canonical reader and complete original bytes and modes",
+  "publication": {
+    "bytes": 7412,
+    "sha256": "f7039fea427115a0105540aa1751fc1da3be19ce9cf31646e825f692f610b4fa",
+    "git_blob": "76e7eb9758155480317cf5f52955fdf767c289e4"
+  },
+  "index": {
+    "bytes": 326843,
+    "sha256": "cf1d3812d649643170c432a6008a269017accd8e88dd5b1b34b5a0dc459fee97",
+    "git_blob": "1812f8cdd1af5493b1e5a6362c48311d3bff1651"
+  },
+  "canonical_source_API": {
+    "bytes": 556,
+    "sha256": "517973e25886cf4a37191c1cf2aee3b65b5944e4b0148f59eaf38bc710f9c7ff",
+    "git_blob": "a66f8495ca6997e95e28367e6b89cf0e3d4d775a"
+  },
+  "reader": {
+    "bytes": 6899,
+    "sha256": "fc1bdae721a009609fdab7b3267f625bc3694935d9f5b50a2e644554b19962b3",
+    "git_blob": "e7fb7453b3b8e44bba9cb88d33e72b856fad10bf"
+  },
+  "reader_only_seal_changed": true,
+  "original_files": 1019,
+  "original_bytes": 4802076,
+  "publication_files": 14,
+  "accepted_native_originals": 146,
+  "missing_native_originals": 0,
+  "official_ZIP_members": 147,
+  "all_CRC_and_original_members_verified": true,
+  "every_original_byte_and_source_mode_equal": true,
+  "root_evidence_included": {
+    "round3_local_qualification/bwrap34_terminal_root/ROOT_REVIEW.json": "9bb2b4c8ee52ce1489b63de7e5ab6f2f439817eb4f3f7cbbd1cae4c9c95609c4",
+    "round3_local_qualification/bwrap34_native_checks/ROOT_CHECKS.json": "8f217aaa706a0c3cfdbd7d9b318c9a0167f8603f48006162c410a64212d6c1f3"
+  },
+  "private_console_contents_excluded": true,
+  "archived_sources_executed": false,
+  "expanded_restore_written": false,
+  "new_native_execution": false,
+  "mechanism_qualified": true,
+  "product_P0_closed": false,
+  "qualification": "Complete evidence of the unique 5260 VM mechanism is preserved. The same-fd ACL-preserving prerequisite, exact names gate, additive profile load and post-namespace checks pass. No Core test, production P0 closure, old-VM state or VM teardown qualification follows.",
+  "reviewer": {
+    "bytes": 9487,
+    "sha256": "763255cca0cc71fe529f3ddd06b0b2082840911b1c9cd69f37697dbac98e2766",
+    "git_blob": "96837e2a6c6205849d6f13efc55a244d8dd28bfc"
+  }
+}
