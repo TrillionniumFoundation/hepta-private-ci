@@ -149,7 +149,7 @@ id = "http_provider_effect_adapter"
 symbol = "HttpProviderEffectAdapter::new"
 definition_path = "codex-rs/model-provider/src/provider_effect.rs"
 definition_markers = ["pub struct HttpProviderEffectAdapter", "pub fn new", "ProviderEffectAdapter"]
-product_callers = ["codex-rs/hepta-agentd/src/automation_effect_host.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/automation_effect_host.rs", "codex-rs/hepta-agentd/src/automation_effect_host_pq.rs"]
 caller_markers = ["HttpProviderEffectAdapter::new", "HttpProviderEffectContractAttestation"]
 
 [[boundary]]
