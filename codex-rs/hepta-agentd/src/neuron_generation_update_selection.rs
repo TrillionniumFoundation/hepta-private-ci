@@ -70,6 +70,11 @@ impl AgentdGenerationSelectionObservationV1 {
     }
 
     #[must_use]
+    pub const fn manifest_digest(&self) -> [u8; 32] {
+        self.manifest
+    }
+
+    #[must_use]
     pub const fn authority(&self) -> AuthorityPosture {
         AuthorityPosture::DENY_ALL
     }
