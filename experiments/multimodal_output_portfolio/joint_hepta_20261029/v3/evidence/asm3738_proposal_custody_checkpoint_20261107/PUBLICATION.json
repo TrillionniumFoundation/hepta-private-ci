@@ -1,0 +1,273 @@
+{
+  "packet": "asm3738_proposal_custody_checkpoint_20261107",
+  "suggested_repository_directory": "experiments/multimodal_output_portfolio/joint_hepta_20261029/v3/evidence/asm3738_proposal_custody_checkpoint_20261107",
+  "snapshot_utc": "2026-11-07T03:20:38Z",
+  "prepared_at_utc": "2026-11-07T03:34:57.423347Z",
+  "index": {
+    "bytes": 141917,
+    "sha256": "ac12d080ef554a95c13bf0802e3549bb0e181945e1301a30b786e9709d101d2b",
+    "git_blob": "6f517b70148a94490b009f5308971c1c27a34731"
+  },
+  "source_file_count": 397,
+  "raw_source_bytes": 12359701,
+  "archive_bytes": 12697600,
+  "compressed_bytes": 3590760,
+  "publication_file_count": 12,
+  "publication_bytes": 3742322,
+  "verification": {
+    "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/ASM3738_CHECKPOINT_VERIFICATION.json",
+    "bytes": 750,
+    "sha256": "e6444939b0815143eb379e83468b0fa86d31626c292f2362eaaab5f6886b2edd",
+    "git_blob": "c00d8c3a516f3bbae443a3d44057382bdf0d9cde"
+  },
+  "build_execution": {
+    "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/ASM3738_CHECKPOINT_BUILD_EXECUTION.json",
+    "bytes": 340,
+    "sha256": "a269353620b4011472762383b561f0e081e279816e0bacc24751224c257f00b3",
+    "git_blob": "0392ef18e572423c0546ffad177b4b0b90f0ebc2"
+  },
+  "local_reader_validation": "The already published formatted canonical reader differs only in its fixed INDEX seal. The recorded build invoked read_package and recovered all 397 files in memory with identical bytes and original mode inventory. Original Ruff check/format and Codespell of all 12 publication files passed. No expanded disk restore.",
+  "reader_template": {
+    "source_file": "/workspace/scratch/3f6a885bb83c/round3_native/sdk_product_evidence_20261106/restore.py",
+    "bytes": 6899,
+    "sha256": "af61744d776034fb41dac291fbca63d30082c6ec15df821824b49df4678c8d3d",
+    "git_blob": "04729fbf463b340fcb6fc0a925f4c9e0da61f6a1",
+    "only_replacement": "fixed INDEX SHA-256",
+    "already_published_git_blob": "04729fbf463b340fcb6fc0a925f4c9e0da61f6a1"
+  },
+  "reader_template_binding": {
+    "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/asm3738_checkpoint_publication_checks/READER_TEMPLATE_BINDING.json",
+    "bytes": 1022,
+    "sha256": "2a87ae661fc6a1461b18c17e18c5cda00dfcc08f1436bd1e5d7263e10f6ab808",
+    "git_blob": "8dbcf6a4073d09d1a3d8f7c14581fb944a863da2"
+  },
+  "ruff": {
+    "receipt": {
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/asm3738_checkpoint_publication_checks/RUFF.json",
+      "bytes": 1822,
+      "sha256": "9f1c866851c80dafeec4cea95cf51aaa01b725c6b5689e26f2530e58e9a0afec",
+      "git_blob": "9c6d5991970d3800f095b9386c164d2f80bd3aeb"
+    },
+    "commands": [
+      {
+        "name": "ruff_check",
+        "argv": [
+          "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/ruff",
+          "check",
+          "--config",
+          "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/pyproject.toml",
+          "/workspace/scratch/3f6a885bb83c/round3_ci/asm3738_proposal_custody_checkpoint_20261107/restore.py"
+        ],
+        "cwd": "/workspace/scratch/3f6a885bb83c",
+        "exit_code": 0,
+        "stdout": {
+          "bytes": 19,
+          "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+        },
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      {
+        "name": "ruff_format",
+        "argv": [
+          "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/ruff",
+          "format",
+          "--check",
+          "--config",
+          "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/pyproject.toml",
+          "/workspace/scratch/3f6a885bb83c/round3_ci/asm3738_proposal_custody_checkpoint_20261107/restore.py"
+        ],
+        "cwd": "/workspace/scratch/3f6a885bb83c",
+        "exit_code": 0,
+        "stdout": {
+          "bytes": 25,
+          "sha256": "fd2299c9f1c6dc869070883e281051bfe93aacf66c1a3b0069f45b4aa410ca50"
+        },
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    ]
+  },
+  "codespell": {
+    "version": "2.4.3",
+    "argv": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "-m",
+      "codespell_lib",
+      "--ignore-words",
+      ".codespellignore",
+      "--skip",
+      "./.git",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/asm3738_proposal_custody_checkpoint_20261107/INDEX.json",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/asm3738_proposal_custody_checkpoint_20261107/README.md",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/asm3738_proposal_custody_checkpoint_20261107/native-evidence.tar.xz.part000.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/asm3738_proposal_custody_checkpoint_20261107/native-evidence.tar.xz.part001.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/asm3738_proposal_custody_checkpoint_20261107/native-evidence.tar.xz.part002.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/asm3738_proposal_custody_checkpoint_20261107/native-evidence.tar.xz.part003.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/asm3738_proposal_custody_checkpoint_20261107/native-evidence.tar.xz.part004.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/asm3738_proposal_custody_checkpoint_20261107/native-evidence.tar.xz.part005.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/asm3738_proposal_custody_checkpoint_20261107/native-evidence.tar.xz.part006.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/asm3738_proposal_custody_checkpoint_20261107/native-evidence.tar.xz.part007.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/asm3738_proposal_custody_checkpoint_20261107/native-evidence.tar.xz.part008.gz",
+      "/workspace/scratch/3f6a885bb83c/round3_ci/asm3738_proposal_custody_checkpoint_20261107/restore.py"
+    ],
+    "cwd": "/workspace/scratch/3f6a885bb83c/round3_ci/vodozemac_recipe_experiment/review-source",
+    "additional_environment": {
+      "PYTHONPATH": "/workspace/scratch/3f6a885bb83c/tooling/codespell-2.4.3"
+    },
+    "original_environment_otherwise_inherited": true,
+    "exit_code": 0,
+    "stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "scope": "Exactly all 12 publication files; original repository configuration and exclusions, no new skip.",
+    "configuration": {
+      ".codespellrc": {
+        "bytes": 471,
+        "sha256": "80805b9340dbdd76645a25929f56c96606e187db8e9d16b75a4a47dcdd248c04",
+        "git_blob": "663be376c7381108af0a41eafc3dd08f27125d96"
+      },
+      ".codespellignore": {
+        "bytes": 69,
+        "sha256": "9c6cd9dd86c6300ff67edbe64b2e18ed089714151e5c166382c8ea99931bc275",
+        "git_blob": "0da447f000de188776a33e770c2d2d77b37f97ee"
+      },
+      ".codespell-exclude-lines": {
+        "bytes": 20003,
+        "sha256": "5e2119d75aa7cfa61e87b9c3d98863d0b5d6672eeaccc7411695e91e2366d52b",
+        "git_blob": "490e840301fdfae10d6e40c44a566ff16f82e324"
+      }
+    },
+    "all_publication_bytes_unchanged": true
+  },
+  "terminal_observations": {
+    "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/arm_sha256_custody38/runs/42331975252/SAFE_NATIVE_TERMINAL_OBSERVATIONS.json",
+    "bytes": 13584,
+    "sha256": "cd1ea2815bf101deb93648798cd13f432c76f311c624dcd47d777b25ca16ce62",
+    "git_blob": "4c42d37ad4627253cde101b89e456fe812318535"
+  },
+  "files": [
+    {
+      "path": "INDEX.json",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/asm3738_proposal_custody_checkpoint_20261107/INDEX.json",
+      "mode": "100644",
+      "bytes": 141917,
+      "sha256": "ac12d080ef554a95c13bf0802e3549bb0e181945e1301a30b786e9709d101d2b",
+      "git_blob": "6f517b70148a94490b009f5308971c1c27a34731"
+    },
+    {
+      "path": "README.md",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/asm3738_proposal_custody_checkpoint_20261107/README.md",
+      "mode": "100644",
+      "bytes": 2242,
+      "sha256": "cf99d26f3753409568a6f6695557441ef7fa0b8dba46845b941ba7794322fd3d",
+      "git_blob": "8a083a232ddb6a5bc1941be11d601e1cbe7de0b6"
+    },
+    {
+      "path": "native-evidence.tar.xz.part000.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/asm3738_proposal_custody_checkpoint_20261107/native-evidence.tar.xz.part000.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "fd872516e22fc5bb687e6f25f0e7311793d16d6911ff9bbd5727cecee53ff51e",
+      "git_blob": "ebff91894f90b7fdbc71f2bbb6c89d036fad4c44"
+    },
+    {
+      "path": "native-evidence.tar.xz.part001.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/asm3738_proposal_custody_checkpoint_20261107/native-evidence.tar.xz.part001.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "d4c3a3d75f313423b01a1308726ece5830a2ea0fda3eaf17a227603a4e3fb968",
+      "git_blob": "0bbc75b1b808ff52353b1de96471db85a883a622"
+    },
+    {
+      "path": "native-evidence.tar.xz.part002.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/asm3738_proposal_custody_checkpoint_20261107/native-evidence.tar.xz.part002.gz",
+      "mode": "100644",
+      "bytes": 440144,
+      "sha256": "a1f316920147c74dd6b9e6dbd91c9ba6b2518437059d7a8c80dc5be6db6a62e4",
+      "git_blob": "bda70a871cabbfd0269b64021e81056740ecba7b"
+    },
+    {
+      "path": "native-evidence.tar.xz.part003.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/asm3738_proposal_custody_checkpoint_20261107/native-evidence.tar.xz.part003.gz",
+      "mode": "100644",
+      "bytes": 440104,
+      "sha256": "12a5f18c91a88ec001c2d55299997024c291ba5354641830006907eb5ab7c586",
+      "git_blob": "a7d575657aad70f7de2210ea72bb817a0f9c1791"
+    },
+    {
+      "path": "native-evidence.tar.xz.part004.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/asm3738_proposal_custody_checkpoint_20261107/native-evidence.tar.xz.part004.gz",
+      "mode": "100644",
+      "bytes": 440085,
+      "sha256": "09d0c830ed8da6495d47ac65501a3ac8bc376f125f8089c1b8ae5e69421978d0",
+      "git_blob": "cbea46f5d158ce0ec51c14ac012b6df1f9a8f2ab"
+    },
+    {
+      "path": "native-evidence.tar.xz.part005.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/asm3738_proposal_custody_checkpoint_20261107/native-evidence.tar.xz.part005.gz",
+      "mode": "100644",
+      "bytes": 440153,
+      "sha256": "bacc5547cbb854e8c8ac8e3cfbb45f62700f3eccd9c361f6f5169247abea2442",
+      "git_blob": "261fe42803572555454cdd08aa207d28691e3ac1"
+    },
+    {
+      "path": "native-evidence.tar.xz.part006.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/asm3738_proposal_custody_checkpoint_20261107/native-evidence.tar.xz.part006.gz",
+      "mode": "100644",
+      "bytes": 440048,
+      "sha256": "048f6c959bd401a09f814d3c003b359325b129cbb3d965e4da45c7fd2a1731df",
+      "git_blob": "9490503a8e26b1377a484bf4e8fdb428bb89815c"
+    },
+    {
+      "path": "native-evidence.tar.xz.part007.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/asm3738_proposal_custody_checkpoint_20261107/native-evidence.tar.xz.part007.gz",
+      "mode": "100644",
+      "bytes": 439621,
+      "sha256": "d39e0dfdf8e9e409e367b80f7284f756eda5f4c8825fc659a8aff05cc786e176",
+      "git_blob": "333c7d581a34795fb44c5b9374796ee46b4cff1a"
+    },
+    {
+      "path": "native-evidence.tar.xz.part008.gz",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/asm3738_proposal_custody_checkpoint_20261107/native-evidence.tar.xz.part008.gz",
+      "mode": "100644",
+      "bytes": 70803,
+      "sha256": "cc72e96cac12799d1157d2359f4453c30c13f0c69488de4a367d4c18dafe3c2f",
+      "git_blob": "9038eef3b22a87fa933e3c297044907423c2bfe3"
+    },
+    {
+      "path": "restore.py",
+      "source_file": "/workspace/scratch/3f6a885bb83c/round3_ci/asm3738_proposal_custody_checkpoint_20261107/restore.py",
+      "mode": "100644",
+      "bytes": 6899,
+      "sha256": "32bb99e023b9aa7a67ab819e0e5fb3a6fe3fb2dcd1cca962e22a64cf3af82e94",
+      "git_blob": "53b1a0463e539b3609220b3a39be74c3643f45dc"
+    }
+  ],
+  "qualification_scope": {
+    "original37": "The source-bound original collector failed the regular/link/size conjunction; the operand and command remain unknown. Its 24 generation events were zero, artifact count zero, qualification false.",
+    "new38": "The source-bound new collector observed the same fstat object at command stdout slot 14: regular true, nlink 1, size 80624041 bytes, exceeding the unchanged 67108864-byte bound. The complete 18-row prefix and all 24 zero-exit generation events are preserved. Artifact count zero; qualification false.",
+    "not_claimed": [
+      "No accepted ASM lock or aquery payload is available.",
+      "No original rejected payload was reconstructed, encoded, split or published.",
+      "No private raw console is included.",
+      "No historical original37 operand is inferred from the new38 observation.",
+      "No manual rerun, product integration, full native qualification or new platform license acceptance."
+    ],
+    "retained_material": "Fixed safe sources, official public input artifacts, exact control/API receipts, prior source and component failures, original 37/38 published stages, and independent internal reviews. The older 5188 producer ZIP is a previously accepted graph-model input, not an ASM-generated output.",
+    "root38_review": "A forthcoming independent root terminal review may be published as an external companion without changing this INDEX or archive."
+  },
+  "publication_ready": true,
+  "old_packets_modified": false
+}

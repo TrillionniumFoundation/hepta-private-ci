@@ -1,0 +1,456 @@
+{
+  "observed_at_utc": "2026-11-07T03:35:06.441445+00:00",
+  "scope": "Root independent fixed-control-record cross-check; no private stream export",
+  "fresh_api": {
+    "bytes": 46781,
+    "sha256": "e9e4965eb3d0850a749b574691b607ce1e724d1f4b4ae1c421665e03a4efa909",
+    "git_blob": "5f73673ecc3299142be5347f8bfa93ca2d1f3e4b"
+  },
+  "fresh_source_api": {
+    "bytes": 1703,
+    "sha256": "d05441d8e017c40249efed720b77714db39eb8c08f8f758d0e41f5806a4cf5b3",
+    "git_blob": "09e043937390553bd3639e3e0bec5501c85bd13c"
+  },
+  "source": {
+    ".github/scripts/propose_sha256_asm_locks.py": {
+      "bytes": 18570,
+      "sha256": "8f09fabea8257176153a32638e6749974e12c22f6deaaaad39b8850af306a187",
+      "git_blob": "9dc327172cf418094c7aa4aafac60a497c8e03ae"
+    },
+    ".github/scripts/sha256_asm_proposal_evidence.py": {
+      "bytes": 22743,
+      "sha256": "891de5303deee78409a79a753cd8f61f55473b4c9f367f08c42bca6ba9315fe8",
+      "git_blob": "50d3d5d751b07bcb805d6890c9a41e440aed7346"
+    },
+    ".github/scripts/sha256_asm_platform_guards.py": {
+      "bytes": 9917,
+      "sha256": "8c72efbc6f991e63990086cfbbf8a1aba9198b11795ec95c475f345449b85d1b",
+      "git_blob": "96d345634f4fb9e85d31a63b2cf8d48c3d37da54"
+    },
+    ".github/scripts/sha256-asm-proposal-spec.json": {
+      "bytes": 6563,
+      "sha256": "6b9334be67efba4f0480694fe77d0336c8f74339df1058914ca6fa086ebd6bb7",
+      "git_blob": "3626dcec52d87075dc66c3049d4626cd56250102"
+    }
+  },
+  "run": 42331975252,
+  "job": 128280323713,
+  "attempt": 1,
+  "head": "57015012fbcc3227c15e4eb3edbfff1d679f2c58",
+  "tree": "5fd210ff4608cf61f205a4f960ef2e12483e1449",
+  "run_conclusion": "failure",
+  "job_conclusion": "failure",
+  "artifact_count": 0,
+  "private_log_identity": {
+    "bytes": 1568846,
+    "sha256": "12887ac1c31fd479986abbd3466ac38f5b961783079715370d68019d8bfb470f",
+    "git_blob": "091609c6806f14483c15d13d851d6ee550526148",
+    "mode": "0600",
+    "exported": false
+  },
+  "original_commands": [
+    {
+      "line": 9163,
+      "timestamp_utc": "2026-11-07T03:18:12.2411266Z",
+      "stage": "cargo-version",
+      "exit_code": 0
+    },
+    {
+      "line": 9164,
+      "timestamp_utc": "2026-11-07T03:18:12.2531755Z",
+      "stage": "rustc-version",
+      "exit_code": 0
+    },
+    {
+      "line": 9165,
+      "timestamp_utc": "2026-11-07T03:18:12.2550315Z",
+      "stage": "deny-version",
+      "exit_code": 0
+    },
+    {
+      "line": 9166,
+      "timestamp_utc": "2026-11-07T03:18:12.2564364Z",
+      "stage": "just-version",
+      "exit_code": 0
+    },
+    {
+      "line": 9167,
+      "timestamp_utc": "2026-11-07T03:18:13.4384321Z",
+      "stage": "bazel-version",
+      "exit_code": 0
+    },
+    {
+      "line": 9168,
+      "timestamp_utc": "2026-11-07T03:18:27.2904920Z",
+      "stage": "metadata-before",
+      "exit_code": 0
+    },
+    {
+      "line": 9169,
+      "timestamp_utc": "2026-11-07T03:18:50.5124119Z",
+      "stage": "baseline-module-check",
+      "exit_code": 0
+    },
+    {
+      "line": 9170,
+      "timestamp_utc": "2026-11-07T03:19:25.8946386Z",
+      "stage": "aquery-before-aarch64-unknown-linux-gnu",
+      "exit_code": 0
+    },
+    {
+      "line": 9171,
+      "timestamp_utc": "2026-11-07T03:19:29.0232347Z",
+      "stage": "aquery-before-x86_64-unknown-linux-gnu",
+      "exit_code": 0
+    },
+    {
+      "line": 9172,
+      "timestamp_utc": "2026-11-07T03:19:34.5509724Z",
+      "stage": "aquery-before-aarch64-pc-windows-msvc",
+      "exit_code": 0
+    },
+    {
+      "line": 9173,
+      "timestamp_utc": "2026-11-07T03:19:41.0012014Z",
+      "stage": "aquery-before-x86_64-pc-windows-gnullvm",
+      "exit_code": 0
+    },
+    {
+      "line": 9174,
+      "timestamp_utc": "2026-11-07T03:19:41.0528132Z",
+      "stage": "source-patch-check",
+      "exit_code": 0
+    },
+    {
+      "line": 9175,
+      "timestamp_utc": "2026-11-07T03:19:41.0550135Z",
+      "stage": "source-patch-apply",
+      "exit_code": 0
+    },
+    {
+      "line": 9176,
+      "timestamp_utc": "2026-11-07T03:19:41.9581166Z",
+      "stage": "metadata-generate",
+      "exit_code": 0
+    },
+    {
+      "line": 9177,
+      "timestamp_utc": "2026-11-07T03:19:44.4120135Z",
+      "stage": "metadata-repeat",
+      "exit_code": 0
+    },
+    {
+      "line": 9178,
+      "timestamp_utc": "2026-11-07T03:19:47.3250546Z",
+      "stage": "bazel-update",
+      "exit_code": 0
+    },
+    {
+      "line": 9179,
+      "timestamp_utc": "2026-11-07T03:19:50.6749974Z",
+      "stage": "bazel-check",
+      "exit_code": 0
+    },
+    {
+      "line": 9180,
+      "timestamp_utc": "2026-11-07T03:19:53.7509107Z",
+      "stage": "bazel-repeat",
+      "exit_code": 0
+    },
+    {
+      "line": 9181,
+      "timestamp_utc": "2026-11-07T03:19:56.8668051Z",
+      "stage": "bazel-check-repeat",
+      "exit_code": 0
+    },
+    {
+      "line": 9182,
+      "timestamp_utc": "2026-11-07T03:20:12.2413245Z",
+      "stage": "aquery-after-aarch64-unknown-linux-gnu",
+      "exit_code": 0
+    },
+    {
+      "line": 9183,
+      "timestamp_utc": "2026-11-07T03:20:15.9823538Z",
+      "stage": "aquery-after-x86_64-unknown-linux-gnu",
+      "exit_code": 0
+    },
+    {
+      "line": 9184,
+      "timestamp_utc": "2026-11-07T03:20:19.3660336Z",
+      "stage": "aquery-after-aarch64-pc-windows-msvc",
+      "exit_code": 0
+    },
+    {
+      "line": 9185,
+      "timestamp_utc": "2026-11-07T03:20:22.6128612Z",
+      "stage": "aquery-after-x86_64-pc-windows-gnullvm",
+      "exit_code": 0
+    },
+    {
+      "line": 9186,
+      "timestamp_utc": "2026-11-07T03:20:30.5120486Z",
+      "stage": "cargo-deny-original",
+      "exit_code": 0
+    }
+  ],
+  "registered_stat_observations": [
+    {
+      "line": 9211,
+      "timestamp_utc": "2026-11-07T03:20:31.9162474Z",
+      "diagnostic": "sha256-command-read-stat-v1",
+      "slot": 10,
+      "regular": true,
+      "nlink": 1,
+      "size": 8280045
+    },
+    {
+      "line": 9212,
+      "timestamp_utc": "2026-11-07T03:20:32.3204536Z",
+      "diagnostic": "sha256-command-read-stat-v1",
+      "slot": 26,
+      "regular": true,
+      "nlink": 1,
+      "size": 8282689
+    },
+    {
+      "line": 9213,
+      "timestamp_utc": "2026-11-07T03:20:32.8151320Z",
+      "diagnostic": "sha256-command-read-stat-v1",
+      "slot": 28,
+      "regular": true,
+      "nlink": 1,
+      "size": 8282689
+    },
+    {
+      "line": 9214,
+      "timestamp_utc": "2026-11-07T03:20:35.1366222Z",
+      "diagnostic": "sha256-command-read-stat-v1",
+      "slot": 0,
+      "regular": true,
+      "nlink": 1,
+      "size": 36
+    },
+    {
+      "line": 9215,
+      "timestamp_utc": "2026-11-07T03:20:35.1367003Z",
+      "diagnostic": "sha256-command-read-stat-v1",
+      "slot": 1,
+      "regular": true,
+      "nlink": 1,
+      "size": 0
+    },
+    {
+      "line": 9216,
+      "timestamp_utc": "2026-11-07T03:20:35.1367696Z",
+      "diagnostic": "sha256-command-read-stat-v1",
+      "slot": 2,
+      "regular": true,
+      "nlink": 1,
+      "size": 36
+    },
+    {
+      "line": 9217,
+      "timestamp_utc": "2026-11-07T03:20:35.1369487Z",
+      "diagnostic": "sha256-command-read-stat-v1",
+      "slot": 3,
+      "regular": true,
+      "nlink": 1,
+      "size": 0
+    },
+    {
+      "line": 9218,
+      "timestamp_utc": "2026-11-07T03:20:35.1369998Z",
+      "diagnostic": "sha256-command-read-stat-v1",
+      "slot": 4,
+      "regular": true,
+      "nlink": 1,
+      "size": 18
+    },
+    {
+      "line": 9219,
+      "timestamp_utc": "2026-11-07T03:20:35.1370503Z",
+      "diagnostic": "sha256-command-read-stat-v1",
+      "slot": 5,
+      "regular": true,
+      "nlink": 1,
+      "size": 0
+    },
+    {
+      "line": 9220,
+      "timestamp_utc": "2026-11-07T03:20:35.1371083Z",
+      "diagnostic": "sha256-command-read-stat-v1",
+      "slot": 6,
+      "regular": true,
+      "nlink": 1,
+      "size": 12
+    },
+    {
+      "line": 9221,
+      "timestamp_utc": "2026-11-07T03:20:35.1371609Z",
+      "diagnostic": "sha256-command-read-stat-v1",
+      "slot": 7,
+      "regular": true,
+      "nlink": 1,
+      "size": 0
+    },
+    {
+      "line": 9222,
+      "timestamp_utc": "2026-11-07T03:20:35.1389405Z",
+      "diagnostic": "sha256-command-read-stat-v1",
+      "slot": 8,
+      "regular": true,
+      "nlink": 1,
+      "size": 12
+    },
+    {
+      "line": 9223,
+      "timestamp_utc": "2026-11-07T03:20:35.1389910Z",
+      "diagnostic": "sha256-command-read-stat-v1",
+      "slot": 9,
+      "regular": true,
+      "nlink": 1,
+      "size": 103
+    },
+    {
+      "line": 9224,
+      "timestamp_utc": "2026-11-07T03:20:35.1390291Z",
+      "diagnostic": "sha256-command-read-stat-v1",
+      "slot": 10,
+      "regular": true,
+      "nlink": 1,
+      "size": 8280045
+    },
+    {
+      "line": 9225,
+      "timestamp_utc": "2026-11-07T03:20:35.1488441Z",
+      "diagnostic": "sha256-command-read-stat-v1",
+      "slot": 11,
+      "regular": true,
+      "nlink": 1,
+      "size": 61248
+    },
+    {
+      "line": 9226,
+      "timestamp_utc": "2026-11-07T03:20:35.1490655Z",
+      "diagnostic": "sha256-command-read-stat-v1",
+      "slot": 12,
+      "regular": true,
+      "nlink": 1,
+      "size": 18
+    },
+    {
+      "line": 9227,
+      "timestamp_utc": "2026-11-07T03:20:35.1491185Z",
+      "diagnostic": "sha256-command-read-stat-v1",
+      "slot": 13,
+      "regular": true,
+      "nlink": 1,
+      "size": 2130
+    },
+    {
+      "line": 9228,
+      "timestamp_utc": "2026-11-07T03:20:35.1492311Z",
+      "diagnostic": "sha256-command-read-stat-v1",
+      "slot": 14,
+      "regular": true,
+      "nlink": 1,
+      "size": 80624041
+    }
+  ],
+  "complete_expected_success_order": [
+    10,
+    26,
+    28,
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47
+  ],
+  "source_preflight": {
+    "base_tree": "bf1843f43f0d61afdc91e423b59e1fffc97c374e",
+    "head_tree": "5fd210ff4608cf61f205a4f960ef2e12483e1449",
+    "base_leaves": 15340,
+    "checked_worktree_leaves": 15350,
+    "checked_bytes": 529384023,
+    "mode_counts": {
+      "100644": 15256,
+      "100755": 93,
+      "120000": 1
+    },
+    "worktree_inventory_sha256": "1e8259b13aff9e44c678b7a0f8a236d2187f608df915589f84d4564a71c3d0ba",
+    "exact_validated_output_overrides": {},
+    "all_tracked_objects_rehashed": true,
+    "symlink_targets_hashed_without_following": true,
+    "stat_cache_not_used_as_byte_evidence": true
+  },
+  "checkout_line": 8053,
+  "source_preflight_line": 8089,
+  "scanner_ready_line": 9139,
+  "failure_line": 9243,
+  "failed_slot": 14,
+  "failed_stage": "aquery-before-aarch64-unknown-linux-gnu",
+  "failed_stream": "stdout",
+  "failed_operand": "size_at_most_64MiB",
+  "actual_bytes": 80624041,
+  "maximum_bytes": 67108864,
+  "excess_bytes": 13515177,
+  "old37_failed_operand": "UNKNOWN",
+  "owner_receipt": {
+    "bytes": 13584,
+    "sha256": "cd1ea2815bf101deb93648798cd13f432c76f311c624dcd47d777b25ca16ce62",
+    "git_blob": "4c42d37ad4627253cde101b89e456fe812318535"
+  },
+  "complete_evidence_qualified": false,
+  "product_qualified": false,
+  "limits": [
+    "24 successful original commands do not replace the rejected collection gate.",
+    "No original lock, patch, configured graph, command stdout or stderr was extracted or reconstructed.",
+    "The actual 38 size observation does not backfill historical 37 failure operands.",
+    "No native command or repeated workflow was run for this audit."
+  ]
+}
