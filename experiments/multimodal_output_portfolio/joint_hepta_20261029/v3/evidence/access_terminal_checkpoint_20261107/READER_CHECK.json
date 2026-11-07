@@ -1,0 +1,32 @@
+{
+  "checks": [
+    {
+      "argv": [
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/ruff",
+        "format",
+        "--check",
+        "--config",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/pyproject.toml",
+        "/workspace/scratch/3f6a885bb83c/round3_native/access_terminal_evidence_20261107/restore.py"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": "1 file already formatted\n"
+    },
+    {
+      "argv": [
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/ruff",
+        "check",
+        "--config",
+        "/workspace/scratch/3f6a885bb83c/round3_ci/ruff_tooling/pyproject.toml",
+        "/workspace/scratch/3f6a885bb83c/round3_native/access_terminal_evidence_20261107/restore.py"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": "All checks passed!\n"
+    }
+  ],
+  "only_fixed_index_literal_changed": true,
+  "template_path": "/workspace/scratch/3f6a885bb83c/round3_native/access_terminal_checkpoint_inputs/reviewed_restore.py",
+  "template_sha256": "af61744d776034fb41dac291fbca63d30082c6ec15df821824b49df4678c8d3d"
+}

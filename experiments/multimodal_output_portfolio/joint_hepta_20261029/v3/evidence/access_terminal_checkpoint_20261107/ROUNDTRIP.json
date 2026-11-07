@@ -1,0 +1,55 @@
+{
+  "actual_restore_process_exit_code": 0,
+  "all_original_bytes_equal": true,
+  "all_original_mode_records_retained": true,
+  "exact_membership": true,
+  "format": "native-evidence-roundtrip-v1",
+  "native_tests_run_by_packet": false,
+  "negative_probes": [
+    {
+      "case": "existing destination unchanged",
+      "rejected": true
+    },
+    {
+      "case": "unsafe path ../outside",
+      "rejected": true
+    },
+    {
+      "case": "unsafe path /absolute",
+      "rejected": true
+    },
+    {
+      "case": "unsafe path a/../outside",
+      "rejected": true
+    },
+    {
+      "case": "unsafe path a\\outside",
+      "rejected": true
+    },
+    {
+      "case": "unsafe path C:outside",
+      "rejected": true
+    },
+    {
+      "case": "duplicate inventory",
+      "rejected": true
+    },
+    {
+      "case": "symlink member",
+      "rejected": true
+    },
+    {
+      "case": "corrupt part before write",
+      "rejected": true
+    }
+  ],
+  "restored": {
+    "archive_sha256": "e42feda05267d5712e3b1930af6b6bed1ce6b62f52096aae7cf061f8d32e4201",
+    "bytes": 3002691,
+    "executed_sources": false,
+    "files": 157,
+    "index_sha256": "7c21dcf9aff97e344d9a58fdfee8a414ee7f4338d74ec3dbbaedd5994e6f06b9",
+    "restored_permissions": "0644 regular files; original modes are evidence only"
+  },
+  "restored_permission_bits": "0644"
+}
