@@ -104,7 +104,6 @@ fn bounded_read(
 pub(crate) fn run(
     request: ProcessRequest<'_>,
 ) -> Result<ProcessObservation, CellGenerationErrorV2> {
-    use std::os::fd::AsRawFd;
     use std::os::unix::process::CommandExt;
 
     let started = Instant::now();
@@ -132,11 +131,7 @@ pub(crate) fn run(
     }
     // Resolve the already opened inode in the parent's procfs. The File stays
     // alive through wait; pathname replacement cannot switch the executable.
-    let path = format!(
-        "/proc/{}/fd/{}",
-        std::process::id(),
-        request.executable.as_raw_fd()
-    );
+    let path = crate::cell_joint_process::opened_file_proc_path(request.executable)?;
     let child = Command::new(path)
         .arg0(request.interpreter_argv0)
         .args(["-I", "-B", "-c"])

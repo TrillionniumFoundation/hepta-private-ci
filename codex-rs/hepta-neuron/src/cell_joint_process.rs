@@ -46,6 +46,30 @@ pub(crate) struct ProcessRequest<'a> {
     pub clock: &'a (dyn Fn() -> u64 + Send + Sync),
 }
 
+/// Resolve a held descriptor in the mounted procfs view. Its PID namespace may
+/// differ from the caller's `getpid()` namespace. The caller keeps the file open
+/// through child termination; lookup failures never fall back to an asset path.
+#[cfg(target_os = "linux")]
+pub(crate) fn opened_file_proc_path(
+    file: &File,
+) -> Result<std::path::PathBuf, CellGenerationErrorV2> {
+    use std::os::fd::AsRawFd;
+
+    let owner = std::fs::read_link("/proc/self").map_err(|_| CellGenerationErrorV2::Unavailable)?;
+    let component = owner.as_os_str().as_encoded_bytes();
+    if component.is_empty()
+        || component.len() > 10
+        || component[0] == b'0'
+        || !component.iter().all(u8::is_ascii_digit)
+    {
+        return Err(CellGenerationErrorV2::Unavailable);
+    }
+    Ok(std::path::Path::new("/proc")
+        .join(owner)
+        .join("fd")
+        .join(file.as_raw_fd().to_string()))
+}
+
 /// Hash the opened inode using an independent cursor. Concurrent invocations
 /// cannot interfere by seeking a shared descriptor, and path replacement does
 /// not substitute the file inspected here. The admitting host must keep this
@@ -161,8 +185,6 @@ fn bounded_read(
 pub(crate) fn run(
     request: ProcessRequest<'_>,
 ) -> Result<ProcessObservation, CellGenerationErrorV2> {
-    use std::os::fd::AsRawFd;
-
     let started = Instant::now();
     if executable_digest(request.executable)? != request.executable_digest {
         return Err(CellGenerationErrorV2::InvalidBinding);
@@ -185,11 +207,7 @@ pub(crate) fn run(
     }
     // Resolve the already opened inode in the parent's procfs. The File stays
     // alive through wait; pathname replacement cannot switch the executable.
-    let path = format!(
-        "/proc/{}/fd/{}",
-        std::process::id(),
-        request.executable.as_raw_fd()
-    );
+    let path = opened_file_proc_path(request.executable)?;
     let child = Command::new(path)
         .env_clear()
         .env("LC_ALL", "C")

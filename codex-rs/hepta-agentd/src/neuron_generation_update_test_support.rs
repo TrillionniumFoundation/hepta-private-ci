@@ -38,6 +38,8 @@ use crate::neuron_generation_update_selection::AgentdSelectedGenerationV1;
 mod artifacts;
 #[path = "neuron_generation_drained_tests.rs"]
 mod drained_tests;
+#[path = "neuron_generation_expected_context_tests.rs"]
+mod expected_context_tests;
 #[path = "neuron_generation_update_test_store.rs"]
 mod files;
 #[path = "neuron_generation_update_initial_test_support.rs"]

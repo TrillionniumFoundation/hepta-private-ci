@@ -28,6 +28,10 @@ use crate::cell_task_cost::CellCostRecordV2;
 use crate::cell_task_cost::CellTaskCostV2;
 use crate::journal_lock::LockedFile;
 
+#[path = "cell_generation_context.rs"]
+mod context;
+pub use context::CellGenerationExpectedContextV1;
+
 const MAGIC: &[u8; 8] = b"HPTACG02";
 const HEADER_BYTES: usize = 40;
 const MAX_FRAME: usize = 2 * 1024 * 1024;

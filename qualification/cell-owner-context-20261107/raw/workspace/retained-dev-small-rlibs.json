@@ -1,0 +1,521 @@
+{
+  "time": "2026-11-07T11:47:20.198600+00:00",
+  "reason": "move completed own-target archives to available overlay, retaining same Cargo paths via symlinks",
+  "files": [
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libstarlark-7f88e757b21f7cfc.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libstarlark-7f88e757b21f7cfc.rlib",
+      "bytes": 89603412,
+      "sha256": "6b2bf72338a4aa1bce1ccbf67d30d3e9ec1dab214bb363e643b460b75c6e563e"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libcodex_config-7555365b16b48937.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libcodex_config-7555365b16b48937.rlib",
+      "bytes": 79772310,
+      "sha256": "4c0b2b9c8f9716f3b2d27a2c82a2bb65e2d88d3981654a2007c5cddf64c16403"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libcodex_exec_server-d7aa0bceb9318c4c.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libcodex_exec_server-d7aa0bceb9318c4c.rlib",
+      "bytes": 56835728,
+      "sha256": "654727bd1c91d7973efd050f821db9f6b6d4e078d578a5b8f18925930325e9de"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libcodex_protocol-9a4c455d010b7e0f.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libcodex_protocol-9a4c455d010b7e0f.rlib",
+      "bytes": 43792776,
+      "sha256": "cacbc1b689b0e208454e2241dec6fe49c3b51e50b80b4243b4466274574eaee9"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libcodex_network_proxy-591920ccbe7168c9.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libcodex_network_proxy-591920ccbe7168c9.rlib",
+      "bytes": 42681280,
+      "sha256": "4cf92506dd11ba64769fd041a6c101d98eb80cdfa8e1d6c7430aa1d58afd206f"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/librmcp-ee33cab4b37b6f0d.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/librmcp-ee33cab4b37b6f0d.rlib",
+      "bytes": 34880958,
+      "sha256": "cc3a5b2b5fef3c5b63e3fbdc6fbfa3cf07b70c3b10fbf7b0ad107dd8a2e3c59a"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/librama_http-cb13d0490c75a9db.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/librama_http-cb13d0490c75a9db.rlib",
+      "bytes": 31006264,
+      "sha256": "40ccd621dc8a860e2fc67fcfcc41809e9bfca5ecb60ee47362547a6ec77d5124"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/librama_net-b8d869216b0052fb.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/librama_net-b8d869216b0052fb.rlib",
+      "bytes": 22714730,
+      "sha256": "7134140049b4e2da2110474f53e317cdd04644ab68ddf3a50d0f6a5cd2836624"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libzbus-343b39910b6c270a.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libzbus-343b39910b6c270a.rlib",
+      "bytes": 20084012,
+      "sha256": "bc851ae401d517e7fe02ff533c354693a0bda61cf4df0dbaa6ae63e2c82960c3"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libcodex_code_mode-098a8a9824c9df07.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libcodex_code_mode-098a8a9824c9df07.rlib",
+      "bytes": 19311480,
+      "sha256": "003de0fc12f8ada0a29be422607f681cefd0ec21b52568a64defdd7e0d33f5dc"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libmoxcms-7bb557fcaca31525.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libmoxcms-7bb557fcaca31525.rlib",
+      "bytes": 19252816,
+      "sha256": "68e94368fbacd9e575a64d08bb328e8a73494d49c8148cf436fe35ae6de187dc"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libcodex_rmcp_client-19f9e653bfb78d3c.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libcodex_rmcp_client-19f9e653bfb78d3c.rlib",
+      "bytes": 18895012,
+      "sha256": "ef72d2b60d05c8683965d686ae1d0fada005a2adc8d4268afe7267f2be08e000"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libaws_smithy_http_client-1094a817f74a121e.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libaws_smithy_http_client-1094a817f74a121e.rlib",
+      "bytes": 18368262,
+      "sha256": "d9dbe5bb7302e3de7bc7c21804976efc59b9ec5a92f0963c16f161ccca515067"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libaws_lc_sys-293c751aef9524de.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libaws_lc_sys-293c751aef9524de.rlib",
+      "bytes": 17027420,
+      "sha256": "7ac600e100018dc4f0fd5e33a5282b000f932b8c0c0772ea55ab72e062abfd13"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libcodex_hepta_contracts-11420acf37479cba.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libcodex_hepta_contracts-11420acf37479cba.rlib",
+      "bytes": 16479256,
+      "sha256": "e160f63222c9d9f6512707abc1bf1a8d0960038306b02a0100d14b7d40c7d3a7"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libtokio-01428618a41e6932.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libtokio-01428618a41e6932.rlib",
+      "bytes": 15726074,
+      "sha256": "9759ea584028a51f9d4259877158eb23541f8bcf5196f20b1029b91a67a3614b"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/liblsp_types-1551391550272750.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/liblsp_types-1551391550272750.rlib",
+      "bytes": 14974188,
+      "sha256": "e3ccbdad03f8c6fd7d71a49d63f2aafab96dcfb17a1b2fa4c4c691d4ed733cdd"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libzerocopy-ea7d052f88213ef3.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libzerocopy-ea7d052f88213ef3.rlib",
+      "bytes": 14338878,
+      "sha256": "2c39155b975a08fd71fc64497492aca04bb7bc75394ed0b79b7316f697d72fbd"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/librustls-0c612c8166a5fa31.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/librustls-0c612c8166a5fa31.rlib",
+      "bytes": 14055014,
+      "sha256": "c316c0b0b100b435cb2e9326351d5b0f9ce1646e7046a060803ba486e9bf150a"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libbindgen-4d5cf20a984a0968.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libbindgen-4d5cf20a984a0968.rlib",
+      "bytes": 13200288,
+      "sha256": "2445f2770e27e0a84d5a403b1f2b5ea400684d98265300a924ae30deea583036"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libcodex_api-6bdf509d5f6599b9.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libcodex_api-6bdf509d5f6599b9.rlib",
+      "bytes": 13188078,
+      "sha256": "cf78fc277284dc75df3c6c3462876043fc2caed2b3115ce439e3d42b4fefbf6b"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libbindgen-0e18eeea5720302f.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libbindgen-0e18eeea5720302f.rlib",
+      "bytes": 12936824,
+      "sha256": "5b3b8032c20cd0efd36f31f61ffa91a4efb04ad6ac364a2de27c846c3bbbd0fb"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libimage-de9e07a3c56b37a3.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libimage-de9e07a3c56b37a3.rlib",
+      "bytes": 12881424,
+      "sha256": "24241573ef150d62626fd35b37d0694fe7cee9b1af04960e1baef20d84354d86"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/librustix-5433f9b5da281698.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/librustix-5433f9b5da281698.rlib",
+      "bytes": 12707014,
+      "sha256": "9cc263d8df4f6a03ec28279fb234522923b5ec41e8c9ae39cf697e9f2bb32761"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/librama_http_core-9297eb0d93efb208.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/librama_http_core-9297eb0d93efb208.rlib",
+      "bytes": 12531974,
+      "sha256": "ac9440b127a3491ce9f8587e49bb37b09135552d78a5bb2649f0233b1cbf2a1f"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libsyn-ca8311705f898ea4.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libsyn-ca8311705f898ea4.rlib",
+      "bytes": 12346878,
+      "sha256": "09050ba41d64a43679e659765b119b48f6fabedef4541df89b75c42cf40e7e5a"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libtokio-447bb5b946a5bd28.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libtokio-447bb5b946a5bd28.rlib",
+      "bytes": 12258224,
+      "sha256": "b1368fae3b993a413a5a7d205a0e91334b2058c164074958386b495caa4c5729"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/librustls-0a28651a7bd3dc14.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/librustls-0a28651a7bd3dc14.rlib",
+      "bytes": 12062848,
+      "sha256": "0f4a7fcfb66894c11af6f4e8e8c1b37fd5725fce35dc952ba2dd7de5fa0a24eb"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libreqwest-1b68a354d3f9f813.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libreqwest-1b68a354d3f9f813.rlib",
+      "bytes": 11993928,
+      "sha256": "ca6664c1d81891e56d571f039a621eaae514fb6741d2448a70743500a36517eb"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libsyn-16c672faab512774.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libsyn-16c672faab512774.rlib",
+      "bytes": 11856400,
+      "sha256": "9514df80dcec7af9d2dd27c013115b69c2b8b581afc4a1c49b0a2ea95a872a27"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libaws_sdk_signin-0a773f1439d8d2dd.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libaws_sdk_signin-0a773f1439d8d2dd.rlib",
+      "bytes": 11501624,
+      "sha256": "1e3f29e88c9df6423f641632315b5af33bf102929287d3fe09adcebe8e4780d4"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libregex_automata-922d4e94cf06cf26.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libregex_automata-922d4e94cf06cf26.rlib",
+      "bytes": 11258212,
+      "sha256": "27ccd241de5cafe93902a4c82fbd28e88c2a51f9dbe90c36e29565d5d70f1343"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libsyn-475153ef6cb20c8f.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libsyn-475153ef6cb20c8f.rlib",
+      "bytes": 11079450,
+      "sha256": "c5b8e56da4a19c722ad607c90a0f53522778bc0a8a333c6d1b2fc4d405acd8df"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libopentelemetry_sdk-fc345a2dcf77a49b.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libopentelemetry_sdk-fc345a2dcf77a49b.rlib",
+      "bytes": 10919038,
+      "sha256": "fea023a9a04a8bd9688d06c20871f3d3b9927dbbe6e07d4ea7fe8bcfb15aa4f5"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libaws_sdk_sts-17b687d201fd903e.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libaws_sdk_sts-17b687d201fd903e.rlib",
+      "bytes": 10747916,
+      "sha256": "58583441326a318ff6341d0c5401b001a0758be65d795693c8e1248292a37837"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libclang_sys-b2f90b054fae8b21.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libclang_sys-b2f90b054fae8b21.rlib",
+      "bytes": 10630698,
+      "sha256": "f5f8c75e30e1dd9ce0b70feb4567e31d0d1104d57280c632e1e15095c68f4568"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libjiff-3cddb7e0905f94ab.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libjiff-3cddb7e0905f94ab.rlib",
+      "bytes": 10621994,
+      "sha256": "ced08f5fd335f8ac7fa7f927011c6264f115114308d9ef92e4b6bb083c39631b"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libaws_config-023c7a8f672f1dc9.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libaws_config-023c7a8f672f1dc9.rlib",
+      "bytes": 10330222,
+      "sha256": "c0966ccf1e2339244637675273246258aae3ca55254716b4b1925f3d427a05ca"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/librama_dns-36899420f2f1e325.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/librama_dns-36899420f2f1e325.rlib",
+      "bytes": 10152774,
+      "sha256": "dd0ef797f62efc8cdac296e422546099aa9481c9f4ed5166d12b902965d15e73"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libsentry_types-3bdb13f07815c031.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libsentry_types-3bdb13f07815c031.rlib",
+      "bytes": 10110914,
+      "sha256": "9e56cea137c3ce23c65170da409a6483c1fcb167886406592340aa64a933cc23"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libcodex_state-90c8ecbfa98245cf.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libcodex_state-90c8ecbfa98245cf.rlib",
+      "bytes": 9996230,
+      "sha256": "c28457efc538deb92fe36df45fd91cba92b2e24c75e679218ef32c93f3be69bb"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libpsl-cf3141ad2c8f44b4.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libpsl-cf3141ad2c8f44b4.rlib",
+      "bytes": 9924992,
+      "sha256": "b2ffac730b590baf708a6e845cd6ae86f6291ba47863a4ef72a28bf8b92cc024"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libgix-dda06b8c483ca3f0.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libgix-dda06b8c483ca3f0.rlib",
+      "bytes": 9777464,
+      "sha256": "cc945be23c71d09d2fab44639674e4e14581dc32e543daccb0152b9af79e418a"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/librama_core-6dc3350bb5659956.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/librama_core-6dc3350bb5659956.rlib",
+      "bytes": 8887560,
+      "sha256": "4503ebec22f302f6d0fd627b84e90f12a0950759e939b8e3b69b6a1cd29596a1"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libcodex_otel-afc04601c2eec4ca.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libcodex_otel-afc04601c2eec4ca.rlib",
+      "bytes": 8783118,
+      "sha256": "b728e4b105800fdc2bc37c7dd804ed4326aef1b15726151caf95dd95b46152e3"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libaws_smithy_runtime-07630c16f883d058.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libaws_smithy_runtime-07630c16f883d058.rlib",
+      "bytes": 8665460,
+      "sha256": "820b9462db5afd0db5ce2bac3e8d60c184e6e248c3312f45abf153dec35eda99"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libhickory_proto-faf939b02820ab5f.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libhickory_proto-faf939b02820ab5f.rlib",
+      "bytes": 8456440,
+      "sha256": "65b8ba8b40f29972f9f28adeb066bac820f6dcf5b84561f02148eb5f838c1d42"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libcodex_login-f33cf259e4f18555.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libcodex_login-f33cf259e4f18555.rlib",
+      "bytes": 8442978,
+      "sha256": "1b80e29dd352e91c997052bf304c5e3ea7654a958a38830f17505d73b973961c"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libsqlx_sqlite-77123c59d966fe07.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libsqlx_sqlite-77123c59d966fe07.rlib",
+      "bytes": 8276170,
+      "sha256": "533edc1341f9f80ae6181995e4d5a78c6a8026df2bcb49543437002769a0c3d5"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libregex_automata-8b652684646cd806.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libregex_automata-8b652684646cd806.rlib",
+      "bytes": 8264212,
+      "sha256": "1a1d2e268d7a0c1235f5e79c881b86a959b683b3bfec68e8bfa27d29f0688f4c"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libopenssl-62e5bcfbe514d195.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libopenssl-62e5bcfbe514d195.rlib",
+      "bytes": 8224632,
+      "sha256": "535c487a1cf6163bc40c0015c924897681b4c85604c386ce180e9059a86a3ad1"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libregex_syntax-7b16ac926dc2f36f.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libregex_syntax-7b16ac926dc2f36f.rlib",
+      "bytes": 8216260,
+      "sha256": "98b4a2a102e56c8da2097a49e767c6670a611f4a353db0d6b42edaa9dd2d9f0f"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/librama_http_types-0efba79dc97a61d5.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/librama_http_types-0efba79dc97a61d5.rlib",
+      "bytes": 8032292,
+      "sha256": "3714c373bcb7f74be0c1aea07c8a20e01f2e38b6e006357c9a9ff4722493e517"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libsqlx_sqlite-1d71afb87cf8f3fb.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libsqlx_sqlite-1d71afb87cf8f3fb.rlib",
+      "bytes": 7831782,
+      "sha256": "926e8648fe7f5afdca498f3614296ba71d14bd7b1b4d50017c7095c9a1cda91a"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libsecret_service-56584c913c4b2caf.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libsecret_service-56584c913c4b2caf.rlib",
+      "bytes": 7828372,
+      "sha256": "5871d72b9ee7ff19dfc5c0f7fb7bf0faf036eeb5a83941296ccead882c1f4a5f"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libh2-9c3b22a85945825f.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libh2-9c3b22a85945825f.rlib",
+      "bytes": 7757314,
+      "sha256": "87e25319312a75e7ef476b0786e7eea2844b298bbfc7fdcf07ad25c4cda8ab92"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libdebugserver_types-b58f2d93e25c4b14.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libdebugserver_types-b58f2d93e25c4b14.rlib",
+      "bytes": 7571134,
+      "sha256": "3f6daca455136535be6ee7f3760ea0118e93cb5382b3eadf28ad7e65843523f5"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libsyn-046ff55bc06771d0.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libsyn-046ff55bc06771d0.rlib",
+      "bytes": 7458684,
+      "sha256": "c74e64df0128651ea54be904d1ec22680713acd17559b0015bf304a9017dcfc6"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libdarling_core-81a110771761bc75.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libdarling_core-81a110771761bc75.rlib",
+      "bytes": 7442140,
+      "sha256": "b67ab43084f2ee8e96f6e91f91a84b1c19206a0bb7059b477b45258f9a8a2f03"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libtonic-1de67a25c23ed853.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libtonic-1de67a25c23ed853.rlib",
+      "bytes": 7386920,
+      "sha256": "eb1afa116815559780f0dd0c0de541afbe17d03d48e1a28ef0c8f50dbe1876c9"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libclap_builder-b9806ef221e0982e.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libclap_builder-b9806ef221e0982e.rlib",
+      "bytes": 7318300,
+      "sha256": "a92f45600d023e6b361e987d051651285baf592a59a95508d01d1f55be158e1d"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libobject-9473c409cc91a387.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libobject-9473c409cc91a387.rlib",
+      "bytes": 7303098,
+      "sha256": "9a4af1a3f7b71ed8fb16faf980aa3958d9052711aaf8817dcfea73a0ace4ca5a"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libreqwest-8d4121b3127e207a.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libreqwest-8d4121b3127e207a.rlib",
+      "bytes": 7236392,
+      "sha256": "6a3fae2944ba14f723149be544d822c5835084ff14c0dc2ebfc1f810cea59d08"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libaws_sdk_ssooidc-c8bfb9b4d9fd0f52.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libaws_sdk_ssooidc-c8bfb9b4d9fd0f52.rlib",
+      "bytes": 6996600,
+      "sha256": "f5f535ee939e21303729eaf8401739957978295c60c2e25acf3725e9d898ab9a"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libring-aa45f3869ca80735.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libring-aa45f3869ca80735.rlib",
+      "bytes": 6753752,
+      "sha256": "edb3b631fb203b0bd339d12255edab66cb4a3b24209b2def968fdcec6653b757"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libring-d936afcc642d2512.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libring-d936afcc642d2512.rlib",
+      "bytes": 6733220,
+      "sha256": "b92f01bfc31ac02883d0a0e837b6b6ae62ed659b79450f8f6b8e9beb9273e3db"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libsqlx_core-97b341ceca4fd0be.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libsqlx_core-97b341ceca4fd0be.rlib",
+      "bytes": 6686514,
+      "sha256": "50479868df5c4ee641f7e810d09fc9d5b80a46e5aecd100faa64f06dcf403e44"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/librama_http_headers-fb6a7e2430e1bd9b.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/librama_http_headers-fb6a7e2430e1bd9b.rlib",
+      "bytes": 6610882,
+      "sha256": "49ceb6549001cc0a9fcb0dc748c6abb62f9f5b8c4c9b7504a6130c48a0a068b8"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libaxum-2980c8fd08b1d4bc.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libaxum-2980c8fd08b1d4bc.rlib",
+      "bytes": 6605538,
+      "sha256": "e0eb4c65cec77f862988f8c4a86d47a2dc648589657c0bed67c315b6e5513886"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libsymphonia_core-2a665930b5711c73.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libsymphonia_core-2a665930b5711c73.rlib",
+      "bytes": 6353050,
+      "sha256": "6c3ecc50efb83587939c3be8b7f705ef155c3e8dd098207e70ff6459493b47d4"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libaws_sdk_sso-ad87a8026fa701fe.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libaws_sdk_sso-ad87a8026fa701fe.rlib",
+      "bytes": 6317540,
+      "sha256": "5eef44f3727290447e64116e8e266085b980c1b4da27155ea6c8924ed2f29f50"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libfutures_util-a72157a205a58923.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libfutures_util-a72157a205a58923.rlib",
+      "bytes": 6191666,
+      "sha256": "b5fc074adb9bc64019fe6fff4dcf06cd5d049ca6a8c8e9a028f8cb218d5fb9d9"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libcrypto_bigint-8caf6632dd9fb3b5.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libcrypto_bigint-8caf6632dd9fb3b5.rlib",
+      "bytes": 6064336,
+      "sha256": "1968553e447f261ed73b28bef115498080a463e7dbf390370656faa05b016677"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libpxfm-89b12619c0f6eab6.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libpxfm-89b12619c0f6eab6.rlib",
+      "bytes": 6063644,
+      "sha256": "51bfc16e65dde99ac47f0e51fc1c896978a6ed5a5980e130dd9415f05c4c2eb1"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libhickory_resolver-a3418a9be419efe7.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libhickory_resolver-a3418a9be419efe7.rlib",
+      "bytes": 6055596,
+      "sha256": "29d56cce626955be23e03b96393bb9998208e358f2c66f80a148b398242cd9f8"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libfutures_util-a7626b5959f84e1d.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libfutures_util-a7626b5959f84e1d.rlib",
+      "bytes": 6046426,
+      "sha256": "691dc237b2f88b27da1ae1aa8020c9e941592fe5cdf02b6fdc06b5790174d66c"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/liblinux_raw_sys-2f60c704db664dfc.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/liblinux_raw_sys-2f60c704db664dfc.rlib",
+      "bytes": 5983100,
+      "sha256": "21bf7eeaae2e346bf3d56dc3057fcb04f6ac5ff9c81e85ee9282aa2799f27dda"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libstarlark_syntax-446a0d6a5523629c.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libstarlark_syntax-446a0d6a5523629c.rlib",
+      "bytes": 5965358,
+      "sha256": "3ad71c61434b82b8fb09aaff97adc40d100edd7e3036a1a02a6797bf6874509d"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libcodex_utils_pty-af442d0896df5da1.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libcodex_utils_pty-af442d0896df5da1.rlib",
+      "bytes": 5838240,
+      "sha256": "4be98c5118c5778a7aeb7dc6dc778914b9d15fc894a83585aeac562282fb2512"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/liblibc-bef9d305824d0308.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/liblibc-bef9d305824d0308.rlib",
+      "bytes": 5599970,
+      "sha256": "1c130827fc3fea579e2d06fcace83a4ed8838eb79e7fb05d5d4061e285e29f94"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libopenssl_sys-baf4c45904f44592.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libopenssl_sys-baf4c45904f44592.rlib",
+      "bytes": 5355822,
+      "sha256": "27b06759a8623a1cbbe9d6082528c9d90978799afa0c4f34f47b6ccda23bb9fa"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libnix-9adb09eae5717a1c.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libnix-9adb09eae5717a1c.rlib",
+      "bytes": 5299400,
+      "sha256": "fc19987b993b79d239992f0ad8529f37665028765838a70ea6a26ec441f7fe83"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libsqlx_core-8adf1b945cc4551b.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libsqlx_core-8adf1b945cc4551b.rlib",
+      "bytes": 5265262,
+      "sha256": "31ad6e3b07d548599fb9aeea7c8810a5d53e4943cba171962265a7a40c3555ba"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libtracing_subscriber-e1a8d010573aeefa.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libtracing_subscriber-e1a8d010573aeefa.rlib",
+      "bytes": 5162536,
+      "sha256": "b95293e725c5fdaef9458fba8264cc833eda33aa36fe029d17d561d9ed43e4cd"
+    },
+    {
+      "source": "/dev/shm/hepta-cell-target-93ddee66e1b3/dev-small/deps/libopentelemetry_proto-16671eeee53e34b6.rlib",
+      "retained": "/workspace/scratch/93ddee66e1b3/hepta-cell-build-retained/deps/libopentelemetry_proto-16671eeee53e34b6.rlib",
+      "bytes": 5107776,
+      "sha256": "ced2aad8c5f1ffb6d476af020feac2f9e62124b0b9434c07f8c466b41098c37d"
+    }
+  ],
+  "total_bytes": 1157254764,
+  "after_free": {
+    "/workspace": 1180127232,
+    "/dev/shm": 2555068416
+  }
+}
