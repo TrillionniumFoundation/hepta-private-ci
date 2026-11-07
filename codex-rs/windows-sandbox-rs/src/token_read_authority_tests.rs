@@ -26,6 +26,7 @@ use windows_sys::Win32::Storage::FileSystem::FILE_ATTRIBUTE_NORMAL;
 use windows_sys::Win32::Storage::FileSystem::FILE_DELETE_CHILD;
 use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_EXECUTE;
 use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_READ;
+use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_WRITE;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_DELETE;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ;
 use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_WRITE;
@@ -440,6 +441,54 @@ impl Observation {
     }
 }
 
+fn add_parent_delete_child(parent: &Path, child: &Path, known: &[*mut c_void; 5]) -> Result<()> {
+    let writable = FILE_GENERIC_READ | FILE_GENERIC_WRITE | FILE_GENERIC_EXECUTE | DELETE;
+    let snapshot = |path: &Path, object| -> Result<Vec<(u8, u8, u8, u32)>> {
+        // SAFETY: both paths and all role pointers belong to the owned fixture.
+        let (acl, descriptor) = unsafe { fetch_dacl_handle(path) }
+            .map_err(|_| anyhow!("FULL_SETUP parent_addition_query"))?;
+        let _owner = Descriptor(descriptor);
+        audit_acl(/*case*/ 3, object, acl, known)
+    };
+    let expected = |rows: &[(u8, u8, u8, u32)], flags| -> Result<Vec<(u8, u8, u8, u32)>> {
+        let mut result = rows.to_vec();
+        let mut active_allows = 0;
+        for row in &mut result {
+            if row.0 == 2 && row.1 == 0 {
+                anyhow::ensure!(
+                    row.2 == flags && row.3 == writable,
+                    "FULL_SETUP parent_addition_baseline"
+                );
+                row.3 |= FILE_DELETE_CHILD;
+                active_allows += 1;
+            }
+        }
+        anyhow::ensure!(
+            active_allows == 1,
+            "FULL_SETUP parent_addition_active_allow"
+        );
+        Ok(result)
+    };
+    let before_parent = snapshot(parent, /*object*/ 12)?;
+    let before_child = snapshot(child, /*object*/ 13)?;
+    let expected_parent = expected(&before_parent, /*flags*/ 3)?;
+    let expected_child = expected(&before_child, /*flags*/ 19)?;
+    // SET_ACCESS replaces the active allow entry. Preserve every baseline bit
+    // and add only FILE_DELETE_CHILD; the fresh complete ACLs must prove it.
+    unsafe { ensure_allow_mask_aces(parent, &[known[2]], writable | FILE_DELETE_CHILD)? };
+    let after_parent = snapshot(parent, /*object*/ 14)?;
+    let after_child = snapshot(child, /*object*/ 15)?;
+    anyhow::ensure!(
+        after_parent == expected_parent,
+        "FULL_SETUP parent_addition_parent_rows"
+    );
+    anyhow::ensure!(
+        after_child == expected_child,
+        "FULL_SETUP parent_addition_child_rows"
+    );
+    Ok(())
+}
+
 fn observe(case: u8, root: &Path) -> Result<Observation> {
     let read = ReadAuthority::issue_for_fixture()?;
     let everyone = LocalSid::from_string("S-1-1-0")?;
@@ -497,13 +546,20 @@ fn observe(case: u8, root: &Path) -> Result<Observation> {
         )
     };
     anyhow::ensure!(status == ERROR_SUCCESS, "FULL_SETUP owner os={status}");
+    let known = [
+        everyone.as_ptr(),
+        read.sid.as_ptr(),
+        cap_a.as_ptr(),
+        cap_b.as_ptr(),
+        stale.as_ptr(),
+    ];
     match case {
         0 | 1 => {}
         2 => {
             unsafe { ensure_allow_mask_aces(&outside_file, &[read.sid.as_ptr()], DELETE)? };
         }
         3 => {
-            unsafe { ensure_allow_mask_aces(&allowed[0], &[cap_a.as_ptr()], FILE_DELETE_CHILD)? };
+            add_parent_delete_child(&allowed[0], &git, &known)?;
         }
         4 => {
             // SAFETY: only this owned file receives the deliberately null DACL.
@@ -535,13 +591,6 @@ fn observe(case: u8, root: &Path) -> Result<Observation> {
         outside_file.clone(),
         outside.join("keep-dir"),
     ]);
-    let known = [
-        everyone.as_ptr(),
-        read.sid.as_ptr(),
-        cap_a.as_ptr(),
-        cap_b.as_ptr(),
-        stale.as_ptr(),
-    ];
     for (object, path) in objects.iter().enumerate() {
         let mut descriptor = std::ptr::null_mut();
         let mut owner = std::ptr::null_mut();
