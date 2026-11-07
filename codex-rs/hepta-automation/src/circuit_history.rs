@@ -14,6 +14,7 @@ use crate::CircuitStartV2;
 use crate::CircuitStopReasonV2;
 use crate::TaskFlowError;
 use crate::TaskFlowFence;
+use crate::circuit_delivery_owner::CircuitDeliveryLeaseV1;
 use crate::circuit_profile::digest;
 use crate::circuit_profile::invalid;
 use crate::circuit_state::CircuitWriterV2;
@@ -38,7 +39,7 @@ impl CircuitFenceIdentityV2 {
         })
     }
 
-    fn to_fence(&self, owner: &AgentId) -> Result<TaskFlowFence, TaskFlowError> {
+    pub(crate) fn to_fence(&self, owner: &AgentId) -> Result<TaskFlowFence, TaskFlowError> {
         TaskFlowFence::new(
             owner.clone(),
             &self.owner_id,
@@ -98,6 +99,8 @@ pub(crate) enum CircuitLedgerEventV2 {
         now_ms: u64,
         event: CircuitEventV2,
     },
+    #[serde(rename = "delivery_owner_claimed_v1")]
+    DeliveryOwnerClaimedV1 { claim: CircuitDeliveryLeaseV1 },
 }
 
 impl CircuitLedgerEventV2 {
@@ -108,6 +111,10 @@ impl CircuitLedgerEventV2 {
         owner: &AgentId,
     ) -> Result<(CircuitRunV2, Vec<CircuitDispatchV2>), TaskFlowError> {
         match self {
+            Self::DeliveryOwnerClaimedV1 { claim } => {
+                let run = previous.ok_or_else(|| invalid("delivery claim before creation"))?;
+                Ok((claim.replay(run, owner)?, Vec::new()))
+            }
             Self::Created { start, fence } => {
                 if previous.is_some() {
                     return Err(invalid("duplicate circuit creation"));

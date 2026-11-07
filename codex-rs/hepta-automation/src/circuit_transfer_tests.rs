@@ -9,6 +9,9 @@ use crate::circuit_runtime_tests::completion;
 use crate::circuit_runtime_tests::fence;
 use crate::*;
 
+#[path = "circuit_delivery_tests.rs"]
+mod retained_delivery;
+
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 
 #[derive(Debug, Eq, PartialEq)]

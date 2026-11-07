@@ -239,6 +239,13 @@ pub(crate) async fn load(
             if encode(&payload)? != json {
                 return Err(corrupt("noncanonical circuit event"));
             }
+            if let CircuitLedgerEventV2::DeliveryOwnerClaimedV1 { claim } = &payload
+                && transfer_digests.get(&claim.activation_id) != Some(&claim.transfer_digest)
+            {
+                return Err(corrupt(
+                    "delivery claim lacks its original transfer history",
+                ));
+            }
             let command_id: String = event.try_get("command_id").map_err(unavailable)?;
             crate::circuit_profile::text(&command_id)?;
             let command_digest = hash("hepta.circuit.command.v2", &payload)?;

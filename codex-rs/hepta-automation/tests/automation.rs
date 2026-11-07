@@ -994,6 +994,8 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
     // Remove every post-v1 object in reverse dependency order, then rewind the
     // migration ledger so reopening exercises the real v1 -> latest path.
     for statement in [
+        "DROP TABLE circuit_v2_computation_transfers",
+        "DROP TABLE circuit_v2_computation_inputs",
         "DROP TABLE circuit_v2_events",
         "DROP TABLE circuit_v2_runs",
         "DROP TABLE circuit_v2_definitions",
